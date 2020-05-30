@@ -45,10 +45,12 @@ export class Model {
 	 * The statements returned are escaped for use in cell of a python notebook.
 	 *
 	 * @param tools - optional set of tools for which variable value setting statements need to be generated;
+	 * @param inputFilter - optional parameter to filter out setting of specific variable names. Every variable for which this function returns false is not included
+	 * 						in the emitted code.
 	 */
-	public getCodeCellContentForNotebook(tools: ITool[] = []): string[] {
+	public getCodeCellContentForNotebook(tools: ITool[] = [], inputFilter: (varName: string) => boolean = () => true): string[] {
 		const statements: string[] = Object.keys(this.propValueObject)
-			.filter(propertyName => propertyName.startsWith(NoteBookEnvironmentVariablePrefix))
+			.filter(propertyName => propertyName.startsWith(NoteBookEnvironmentVariablePrefix) && inputFilter(propertyName))
 			.map(propertyName => {
 				const value = this.escapeForNotebookCodeCell(this.getStringValue(propertyName, ''));
 				const varName = propertyName.replace(NotebookEnvironmentVariablePrefixRegex, '').toLocaleLowerCase();
@@ -78,15 +80,16 @@ export class Model {
 	 * current process.
 	 *
 	 * @param env - env variable object in which the environment variables are populated. Default: process.env
-	 * @param tools  - set of tools for which variable value setting statements need to be generated; optional
+	 * @param inputFilter - an optional filter to further restrict the variables that are set into the env object.
+	 *						Every variable for which this function returns false is not included does not get the env variable set.
+	 * 						Default all variable meeting prefix requirements are set.
 	 */
-	public setEnvironmentVariables(env: NodeJS.ProcessEnv = process.env, tools: ITool[] = []): void {
+	public setEnvironmentVariables(env: NodeJS.ProcessEnv = process.env, inputFilter: (varName: string) => boolean = () => true): void {
 		Object.keys(this.propValueObject)
-			.filter(propertyName => propertyName.startsWith(NoteBookEnvironmentVariablePrefix))
+			.filter(propertyName => propertyName.startsWith(NoteBookEnvironmentVariablePrefix) && inputFilter(propertyName))
 			.forEach(propertyName => {
 				const value = this.getStringValue(propertyName);
 				env[propertyName] = value === undefined ? '' : value;
 			});
-		setEnvironmentVariablesForInstallPaths(tools, env);
 	}
 }

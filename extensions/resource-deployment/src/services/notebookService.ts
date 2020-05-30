@@ -9,7 +9,7 @@ import * as path from 'path';
 import { isString } from 'util';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { NotebookInfo } from '../interfaces';
+import { NotebookPathInfo } from '../interfaces';
 import { getDateTimeString, getErrorMessage } from '../utils';
 import { IPlatformService } from './platformService';
 const localize = nls.loadMessageBundle();
@@ -33,12 +33,13 @@ export interface NotebookExecutionResult {
 }
 
 export interface INotebookService {
-	launchNotebook(notebook: string | NotebookInfo): Promise<azdata.nb.NotebookEditor>;
-	launchNotebookWithEdits(notebook: string | NotebookInfo, cellStatements: string[], insertionPosition?: number): Promise<void>;
+	launchNotebook(notebook: string | NotebookPathInfo): Promise<azdata.nb.NotebookEditor>;
+	launchNotebookWithEdits(notebook: string | NotebookPathInfo, cellStatements: string[], insertionPosition?: number): Promise<void>;
 	launchNotebookWithContent(title: string, content: string): Promise<azdata.nb.NotebookEditor>;
-	getNotebook(notebook: string | NotebookInfo): Promise<Notebook>;
+	getNotebook(notebook: string | NotebookPathInfo): Promise<Notebook>;
+	getNotebookPath(notebook: string | NotebookPathInfo): string;
 	executeNotebook(notebook: any, env?: NodeJS.ProcessEnv): Promise<NotebookExecutionResult>;
-	backgroundExecuteNotebook(taskName: string | undefined, notebookInfo: string | NotebookInfo, tempNoteBookPrefix: string, platformService: IPlatformService, env?: NodeJS.ProcessEnv): void;
+	backgroundExecuteNotebook(taskName: string | undefined, notebookInfo: string | NotebookPathInfo | Notebook, tempNotebookPrefix: string, platformService: IPlatformService, env?: NodeJS.ProcessEnv): void;
 }
 
 export class NotebookService implements INotebookService {
@@ -49,7 +50,7 @@ export class NotebookService implements INotebookService {
 	 * Launch notebook with file path
 	 * @param notebook the path of the notebook
 	 */
-	async launchNotebook(notebook: string | NotebookInfo): Promise<azdata.nb.NotebookEditor> {
+	async launchNotebook(notebook: string | NotebookPathInfo): Promise<azdata.nb.NotebookEditor> {
 		const notebookPath = await this.getNotebookFullPath(notebook);
 		return await this.showNotebookAsUntitled(notebookPath);
 	}
@@ -88,7 +89,7 @@ export class NotebookService implements INotebookService {
 	}
 
 
-	async getNotebook(notebook: string | NotebookInfo): Promise<Notebook> {
+	async getNotebook(notebook: string | NotebookPathInfo): Promise<Notebook> {
 		const notebookPath = await this.getNotebookFullPath(notebook);
 		return <Notebook>JSON.parse(await this.platformService.readTextFile(notebookPath));
 	}
@@ -127,14 +128,16 @@ export class NotebookService implements INotebookService {
 		}
 	}
 
-	backgroundExecuteNotebook(taskName: string | undefined, notebookInfo: string | NotebookInfo, tempNotebookPrefix: string, platformService: IPlatformService, env?: NodeJS.ProcessEnv): void {
+	backgroundExecuteNotebook(taskName: string = 'Executing notebook', notebookInfo: string | NotebookPathInfo | Notebook, tempNotebookPrefix: string, platformService: IPlatformService, env?: NodeJS.ProcessEnv): void {
 		azdata.tasks.startBackgroundOperation({
-			displayName: taskName!,
-			description: taskName!,
+			displayName: taskName,
+			description: taskName,
 			isCancelable: false,
 			operation: async op => {
 				op.updateStatus(azdata.TaskStatus.InProgress);
-				const notebook = await this.getNotebook(notebookInfo);
+				const notebook = (typeof notebookInfo === 'object' && 'cells' in notebookInfo)
+					? <Notebook>notebookInfo
+					: await this.getNotebook(notebookInfo);
 				const result = await this.executeNotebook(notebook, env);
 				if (result.succeeded) {
 					op.updateStatus(azdata.TaskStatus.Succeeded);
@@ -164,7 +167,7 @@ export class NotebookService implements INotebookService {
 		});
 	}
 
-	async getNotebookFullPath(notebook: string | NotebookInfo): Promise<string> {
+	async getNotebookFullPath(notebook: string | NotebookPathInfo): Promise<string> {
 		const notebookPath = this.getNotebookPath(notebook);
 		let notebookExists = await this.platformService.fileExists(notebookPath);
 		if (notebookExists) {
@@ -186,7 +189,7 @@ export class NotebookService implements INotebookService {
 	 * get the notebook path for current platform
 	 * @param notebook the notebook path
 	 */
-	getNotebookPath(notebook: string | NotebookInfo): string {
+	getNotebookPath(notebook: string | NotebookPathInfo): string {
 		let notebookPath;
 		if (notebook && !isString(notebook)) {
 			const platform = this.platformService.platform();

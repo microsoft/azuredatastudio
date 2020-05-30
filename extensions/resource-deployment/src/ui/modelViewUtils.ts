@@ -24,7 +24,8 @@ export type InputValueTransformer = (inputValue: string) => string;
 export type InputComponent = azdata.TextComponent | azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent | RadioGroupLoadingComponentBuilder;
 export type InputComponentInfo = {
 	component: InputComponent;
-	inputValueTransformer?: InputValueTransformer
+	inputValueTransformer?: InputValueTransformer;
+	isPassword?: boolean
 };
 
 export type InputComponents = {
@@ -102,7 +103,7 @@ interface ContextBase {
 	inputComponents: InputComponents;
 	onNewValidatorCreated: (validator: Validator) => void;
 	onNewDisposableCreated: (disposable: vscode.Disposable) => void;
-	onNewInputComponentCreated: (name: string, component: InputComponent, inputValueTransformer?: InputValueTransformer) => void;
+	onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo) => void;
 }
 
 export function createTextInput(view: azdata.ModelView, inputInfo: { defaultValue?: string, ariaLabel: string, required?: boolean, placeHolder?: string, width?: string, enabled?: boolean }): azdata.InputBoxComponent {
@@ -408,7 +409,7 @@ function processDropdownOptionsTypeField(context: FieldContext): void {
 		label: context.fieldInfo.label
 	});
 	dropdown.fireOnTextChange = true;
-	context.onNewInputComponentCreated(context.fieldInfo.variableName!, dropdown);
+	context.onNewInputComponentCreated(context.fieldInfo.variableName!, { component: dropdown });
 	addLabelInputPairToContainer(context.view, context.components, label, dropdown, context.fieldInfo);
 }
 
@@ -423,7 +424,7 @@ function processDateTimeTextField(context: FieldContext): void {
 		placeHolder: context.fieldInfo.placeHolder
 	}).component();
 	input.width = context.fieldInfo.inputWidth;
-	context.onNewInputComponentCreated(context.fieldInfo.variableName!, input);
+	context.onNewInputComponentCreated(context.fieldInfo.variableName!, { component: input });
 	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo);
 }
 
@@ -438,7 +439,7 @@ function processNumberField(context: FieldContext): void {
 		width: context.fieldInfo.inputWidth,
 		placeHolder: context.fieldInfo.placeHolder
 	});
-	context.onNewInputComponentCreated(context.fieldInfo.variableName!, input);
+	context.onNewInputComponentCreated(context.fieldInfo.variableName!, { component: input });
 	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo);
 }
 
@@ -452,7 +453,7 @@ function processTextField(context: FieldContext): void {
 		width: context.fieldInfo.inputWidth,
 		enabled: context.fieldInfo.enabled
 	});
-	context.onNewInputComponentCreated(context.fieldInfo.variableName!, input);
+	context.onNewInputComponentCreated(context.fieldInfo.variableName!, { component: input });
 	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo);
 
 	if (context.fieldInfo.textValidationRequired) {
@@ -485,7 +486,7 @@ function processPasswordField(context: FieldContext): void {
 		placeHolder: context.fieldInfo.placeHolder,
 		width: context.fieldInfo.inputWidth
 	}).component();
-	context.onNewInputComponentCreated(context.fieldInfo.variableName!, passwordInput);
+	context.onNewInputComponentCreated(context.fieldInfo.variableName!, { component: passwordInput, isPassword: true });
 	addLabelInputPairToContainer(context.view, context.components, passwordLabel, passwordInput, context.fieldInfo);
 
 	if (context.fieldInfo.type === FieldType.SQLPassword) {
@@ -560,9 +561,12 @@ function processHyperlinkedTextField(context: FieldContext): ReadOnlyFieldInputs
 
 function processEvaluatedTextField(context: FieldContext): ReadOnlyFieldInputs {
 	const readOnlyField = processReadonlyTextField(context, false /*allowEvaluation*/);
-	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, readOnlyField.text!, () => {
-		readOnlyField.text!.value = substituteVariableValues(context.inputComponents, context.fieldInfo.defaultValue);
-		return readOnlyField.text?.value!;
+	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, {
+		component: readOnlyField.text!,
+		inputValueTransformer: () => {
+			readOnlyField.text!.value = substituteVariableValues(context.inputComponents, context.fieldInfo.defaultValue);
+			return readOnlyField.text?.value!;
+		}
 	});
 	return readOnlyField;
 }
@@ -590,7 +594,7 @@ function substituteVariableValues(inputComponents: InputComponents, inputValue?:
 function processCheckboxField(context: FieldContext): void {
 	const checkbox = createCheckbox(context.view, { initialValue: context.fieldInfo.defaultValue! === 'true', label: context.fieldInfo.label, required: context.fieldInfo.required });
 	context.components.push(checkbox);
-	context.onNewInputComponentCreated(context.fieldInfo.variableName!, checkbox);
+	context.onNewInputComponentCreated(context.fieldInfo.variableName!, { component: checkbox });
 }
 
 /**
@@ -607,7 +611,7 @@ function processFilePickerField(context: FieldContext): FilePickerInputs {
 		width: context.fieldInfo.inputWidth,
 		enabled: context.fieldInfo.enabled
 	});
-	context.onNewInputComponentCreated(context.fieldInfo.variableName!, input);
+	context.onNewInputComponentCreated(context.fieldInfo.variableName!, { component: input });
 	input.enabled = false;
 	const browseFileButton = context.view!.modelBuilder.button().withProperties({ label: loc.browse }).component();
 	context.onNewDisposableCreated(browseFileButton.onDidClick(async () => {
@@ -710,7 +714,7 @@ async function createRadioOptions(context: FieldContext, getRadioButtonInfo?: ((
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
 	const radioGroupLoadingComponentBuilder = new RadioGroupLoadingComponentBuilder(context.view, context.onNewDisposableCreated);
 	context.fieldInfo.labelPosition = LabelPosition.Left;
-	context.onNewInputComponentCreated(context.fieldInfo.variableName!, radioGroupLoadingComponentBuilder);
+	context.onNewInputComponentCreated(context.fieldInfo.variableName!, { component: radioGroupLoadingComponentBuilder });
 	addLabelInputPairToContainer(context.view, context.components, label, radioGroupLoadingComponentBuilder.component(), context.fieldInfo);
 	const options = context.fieldInfo.options as OptionsInfo;
 	await radioGroupLoadingComponentBuilder.loadOptions(
@@ -766,7 +770,7 @@ function createAzureAccountDropdown(context: AzureAccountFieldContext): azdata.D
 		label: loc.account
 	});
 	accountDropdown.fireOnTextChange = true;
-	context.onNewInputComponentCreated(context.fieldInfo.variableName!, accountDropdown);
+	context.onNewInputComponentCreated(context.fieldInfo.variableName!, { component: accountDropdown });
 	addLabelInputPairToContainer(context.view, context.components, label, accountDropdown, context.fieldInfo);
 	return accountDropdown;
 }
@@ -792,15 +796,18 @@ function createAzureSubscriptionDropdown(
 		label: label.value!,
 		variableName: context.fieldInfo.subscriptionVariableName
 	});
-	context.onNewInputComponentCreated(context.fieldInfo.subscriptionVariableName!, subscriptionDropdown, (inputValue: string) => {
-		return subscriptionValueToSubscriptionMap.get(inputValue)?.id || inputValue;
+	context.onNewInputComponentCreated(context.fieldInfo.subscriptionVariableName!, {
+		component: subscriptionDropdown,
+		inputValueTransformer: (inputValue: string) => {
+			return subscriptionValueToSubscriptionMap.get(inputValue)?.id || inputValue;
+		}
 	});
 	if (context.fieldInfo.displaySubscriptionVariableName) {
 		context.fieldInfo.subFields!.push({
 			label: label.value!,
 			variableName: context.fieldInfo.displaySubscriptionVariableName
 		});
-		context.onNewInputComponentCreated(context.fieldInfo.displaySubscriptionVariableName, subscriptionDropdown);
+		context.onNewInputComponentCreated(context.fieldInfo.displaySubscriptionVariableName, { component: subscriptionDropdown });
 	}
 	addLabelInputPairToContainer(context.view, context.components, label, subscriptionDropdown, context.fieldInfo);
 	return subscriptionDropdown;
@@ -881,7 +888,7 @@ function createAzureResourceGroupsDropdown(
 	});
 	const rgValueChangedEmitter = new vscode.EventEmitter<void>();
 	resourceGroupDropdown.onValueChanged(() => rgValueChangedEmitter.fire());
-	context.onNewInputComponentCreated(context.fieldInfo.resourceGroupVariableName!, resourceGroupDropdown);
+	context.onNewInputComponentCreated(context.fieldInfo.resourceGroupVariableName!, { component: resourceGroupDropdown });
 	addLabelInputPairToContainer(context.view, context.components, label, resourceGroupDropdown, context.fieldInfo);
 	subscriptionDropdown.onValueChanged(async selectedItem => {
 		const selectedAccount = !accountDropdown || !accountDropdown.value ? undefined : accountValueToAccountMap.get(accountDropdown.value.toString());
@@ -953,8 +960,11 @@ function processAzureLocationsField(context: AzureLocationsFieldContext): azdata
 			label: label.value!,
 			variableName: context.fieldInfo.locationVariableName
 		});
-		context.onNewInputComponentCreated(context.fieldInfo.locationVariableName, locationDropdown, (inputValue: string) => {
-			return knownAzureLocationNameMappings.get(inputValue) || inputValue;
+		context.onNewInputComponentCreated(context.fieldInfo.locationVariableName, {
+			component: locationDropdown,
+			inputValueTransformer: (inputValue: string) => {
+				return knownAzureLocationNameMappings.get(inputValue) || inputValue;
+			}
 		});
 	}
 	if (context.fieldInfo.displayLocationVariableName) {
@@ -962,10 +972,13 @@ function processAzureLocationsField(context: AzureLocationsFieldContext): azdata
 			label: label.value!,
 			variableName: context.fieldInfo.displayLocationVariableName
 		});
-		context.onNewInputComponentCreated(context.fieldInfo.displayLocationVariableName, locationDropdown);
+		context.onNewInputComponentCreated(context.fieldInfo.displayLocationVariableName, { component: locationDropdown });
 	}
-	context.onNewInputComponentCreated(context.fieldInfo.variableName!, locationDropdown, (inputValue: string) => {
-		return knownAzureLocationNameMappings.get(inputValue) || inputValue;
+	context.onNewInputComponentCreated(context.fieldInfo.variableName!, {
+		component: locationDropdown,
+		inputValueTransformer: (inputValue: string) => {
+			return knownAzureLocationNameMappings.get(inputValue) || inputValue;
+		}
 	});
 	addLabelInputPairToContainer(context.view, context.components, label, locationDropdown, context.fieldInfo);
 	return locationDropdown;

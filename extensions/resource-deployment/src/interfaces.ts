@@ -50,7 +50,7 @@ export interface NotebookWizardDeploymentProvider extends DeploymentProviderBase
 }
 
 export interface NotebookDeploymentProvider extends DeploymentProviderBase {
-	notebook: string | NotebookInfo;
+	notebook: string | NotebookPathInfo;
 }
 
 export interface WebPageDeploymentProvider extends DeploymentProviderBase {
@@ -101,12 +101,12 @@ export interface DeploymentProviderBase {
 export type DeploymentProvider = DialogDeploymentProvider | BdcWizardDeploymentProvider | NotebookWizardDeploymentProvider | NotebookDeploymentProvider | WebPageDeploymentProvider | DownloadDeploymentProvider | CommandDeploymentProvider;
 
 export interface BdcWizardInfo {
-	notebook: string | NotebookInfo;
+	notebook: string | NotebookPathInfo;
 	type: BdcDeploymentType;
 }
 
 export interface NotebookWizardInfo extends WizardInfoBase {
-	notebook: string | NotebookInfo;
+	notebook: string | NotebookPathInfo;
 	runNotebook?: boolean;
 	codeCellInsertionPosition?: number;
 	pages: NotebookWizardPageInfo[]
@@ -125,7 +125,7 @@ export interface NotebookWizardPageInfo extends PageInfoBase {
 	description?: string;
 }
 export interface NotebookBasedDialogInfo extends DialogInfoBase {
-	notebook: string | NotebookInfo;
+	notebook: string | NotebookPathInfo;
 	runNotebook?: boolean;
 	taskName?: string;
 }
@@ -279,7 +279,7 @@ export enum OptionsType {
 	Radio = 'radio'
 }
 
-export interface NotebookInfo {
+export interface NotebookPathInfo {
 	win32: string;
 	darwin: string;
 	linux: string;

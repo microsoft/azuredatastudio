@@ -2,17 +2,18 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+import * as path from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { INotebookService } from '../../services/notebookService';
+import { INotebookService, Notebook } from '../../services/notebookService';
 import { IToolsService } from '../../services/toolsService';
 import { Model } from '../model';
+import { InputComponents, setModelValues } from '../modelViewUtils';
 import { WizardBase } from '../wizardBase';
 import { DeploymentType, NotebookWizardInfo } from './../../interfaces';
 import { IPlatformService } from './../../services/platformService';
 import { NotebookWizardAutoSummaryPage } from './notebookWizardAutoSummaryPage';
 import { NotebookWizardPage } from './notebookWizardPage';
-import { InputComponents, setModelValues } from '../modelViewUtils';
 
 const localize = nls.loadMessageBundle();
 
@@ -59,17 +60,40 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardPag
 
 	protected async onOk(): Promise<void> {
 		setModelValues(this.inputComponents, this.model);
+		const env: NodeJS.ProcessEnv = {};
+		this.model.setEnvironmentVariables(env, (varName) => {
+			const isPassword = !!this.inputComponents[varName]?.isPassword;
+			return isPassword;
+		});
+		console.log(`TCL:: env`, env);
+		const notebook: Notebook = await this.notebookService.getNotebook(this.wizardInfo.notebook);
+		// generate python code statements for all variables captured by the wizard
+		const statements = this.model.getCodeCellContentForNotebook(
+			this._toolsService.toolsForCurrentProvider,
+			(varName) => {
+				const isPassword = !!this.inputComponents[varName]?.isPassword;
+				return !isPassword;
+			}
+		);
+		// insert generated code statements into the notebook.
+		notebook.cells.splice(
+			this.wizardInfo.codeCellInsertionPosition ?? 0,
+			0,
+			{
+				cell_type: 'code',
+				source: statements,
+				metadata: {},
+				outputs: [],
+				execution_count: 0
+			}
+		);
 		try {
 			if (this.wizardInfo.runNotebook) {
-				const env: NodeJS.ProcessEnv = {};
-				this.model.setEnvironmentVariables(env, this._toolsService.toolsForCurrentProvider);
-				this.notebookService.backgroundExecuteNotebook(this.wizardInfo.taskName, this.wizardInfo.notebook, 'deploy', this.platformService, env);
+				this.notebookService.backgroundExecuteNotebook(this.wizardInfo.taskName, notebook, 'deploy', this.platformService, env);
 			} else {
-				await this.notebookService.launchNotebookWithEdits(
-					this.wizardInfo.notebook,
-					this.model.getCodeCellContentForNotebook(this._toolsService.toolsForCurrentProvider),
-					this._wizardInfo.codeCellInsertionPosition
-				);
+				Object.assign(process.env, env);
+				const title = path.basename(this.notebookService.getNotebookPath(this.wizardInfo.notebook));
+				await this.notebookService.launchNotebookWithContent(title, JSON.stringify(notebook, undefined, 4));
 			}
 		} catch (error) {
 			vscode.window.showErrorMessage(error);

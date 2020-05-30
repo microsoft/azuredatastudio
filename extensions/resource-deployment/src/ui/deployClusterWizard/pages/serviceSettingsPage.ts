@@ -5,11 +5,11 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DeployClusterWizard } from '../deployClusterWizard';
-import { SectionInfo, FieldType } from '../../../interfaces';
-import { Validator, InputComponents, InputComponent, createSection, createGroupContainer, createLabel, createFlexContainer, createTextInput, createNumberInput, setModelValues, getInputBoxComponent, getCheckboxComponent, getDropdownComponent } from '../../modelViewUtils';
+import { FieldType, SectionInfo } from '../../../interfaces';
+import { createFlexContainer, createGroupContainer, createLabel, createNumberInput, createSection, createTextInput, getCheckboxComponent, getDropdownComponent, getInputBoxComponent, InputComponentInfo, InputComponents, setModelValues, Validator } from '../../modelViewUtils';
 import { WizardPageBase } from '../../wizardPageBase';
 import * as VariableNames from '../constants';
+import { DeployClusterWizard } from '../deployClusterWizard';
 import { AuthenticationMode } from '../deployClusterWizardModel';
 const localize = nls.loadMessageBundle();
 
@@ -124,8 +124,8 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 						this.wizard.registerDisposable(disposable);
 					},
-					onNewInputComponentCreated: (name: string, component: InputComponent): void => {
-						this.inputComponents[name] = { component: component };
+					onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo): void => {
+						this.inputComponents[name] = { component: inputComponentInfo.component };
 					},
 					onNewValidatorCreated: (validator: Validator): void => {
 					}

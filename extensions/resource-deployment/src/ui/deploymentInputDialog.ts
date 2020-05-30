@@ -4,15 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import { EOL } from 'os';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DialogBase } from './dialogBase';
-import { INotebookService } from '../services/notebookService';
 import { DialogInfo, instanceOfNotebookBasedDialogInfo, NotebookBasedDialogInfo } from '../interfaces';
-import { Validator, initializeDialog, InputComponents, setModelValues, InputValueTransformer, InputComponent } from './modelViewUtils';
-import { Model } from './model';
-import { EOL } from 'os';
+import { INotebookService } from '../services/notebookService';
 import { IPlatformService } from '../services/platformService';
+import { DialogBase } from './dialogBase';
+import { Model } from './model';
+import { initializeDialog, InputComponentInfo, InputComponents, setModelValues, Validator } from './modelViewUtils';
 
 const localize = nls.loadMessageBundle();
 
@@ -46,8 +46,8 @@ export class DeploymentInputDialog extends DialogBase {
 			onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 				this._toDispose.push(disposable);
 			},
-			onNewInputComponentCreated: (name: string, component: InputComponent, inputValueTransformer?: InputValueTransformer): void => {
-				this.inputComponents[name] = { component: component, inputValueTransformer: inputValueTransformer };
+			onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo): void => {
+				this.inputComponents[name] = inputComponentInfo;
 			},
 			onNewValidatorCreated: (validator: Validator): void => {
 				validators.push(validator);

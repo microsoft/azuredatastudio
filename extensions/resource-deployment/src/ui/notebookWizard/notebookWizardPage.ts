@@ -7,7 +7,7 @@ import { EOL } from 'os';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { NotebookWizardPageInfo } from '../../interfaces';
-import { initializeWizardPage, InputComponent, InputValueTransformer, setModelValues, Validator } from '../modelViewUtils';
+import { initializeWizardPage, InputComponentInfo, setModelValues, Validator } from '../modelViewUtils';
 import { WizardPageBase } from '../wizardPageBase';
 import { NotebookWizard } from './notebookWizard';
 
@@ -44,11 +44,10 @@ export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
 			},
 			onNewInputComponentCreated: (
 				name: string,
-				component: InputComponent,
-				inputValueTransformer?: InputValueTransformer
+				inputComponentInfo: InputComponentInfo
 			): void => {
 				if (name) {
-					this.wizard.inputComponents[name] = { component: component, inputValueTransformer: inputValueTransformer };
+					this.wizard.inputComponents[name] = inputComponentInfo;
 				}
 			},
 			onNewValidatorCreated: (validator: Validator): void => {
