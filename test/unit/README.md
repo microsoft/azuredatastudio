@@ -11,6 +11,8 @@ All unit tests are run inside a electron-browser environment which access to DOM
 
 For instance, `./scripts/test.sh --debug --glob **/extHost*.test.js` runs all tests from `extHost`-files and enables you to debug them.
 
+Setting environment variable ADS_TEST_GREP also you to select the tests that are run.
+
 ## Run (inside browser)
 
 	yarn test-browser --browser webkit --browser chromium
