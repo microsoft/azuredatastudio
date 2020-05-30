@@ -152,6 +152,10 @@
         }
       },
       {
+        "command": "azure.resource.openInAzurePortal",
+        "title": "%azure.openInAzurePortal.title%"
+      },
+      {
         "command": "azure.resource.connectsqlserver",
         "title": "%azure.resource.connectsqlserver.title%",
         "icon": {
