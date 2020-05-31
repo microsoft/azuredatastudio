@@ -17,6 +17,8 @@ import { MountHdfsDialogModel as MountHdfsModel, MountHdfsProperties, MountHdfsD
 import { getControllerEndpoint } from './bigDataCluster/utils';
 import * as commands from './commands';
 import { HdfsDialogCancelledError } from './bigDataCluster/dialog/hdfsDialogBase';
+import { IExtension, AuthType, IClusterController } from 'bdc';
+import { ClusterController } from './bigDataCluster/controller/clusterControllerApi';
 
 const localize = nls.loadMessageBundle();
 
@@ -24,11 +26,16 @@ const endpointNotFoundError = localize('mount.error.endpointNotFound', "Controll
 
 let throttleTimers: { [key: string]: any } = {};
 
-export function activate(extensionContext: vscode.ExtensionContext) {
+export function activate(extensionContext: vscode.ExtensionContext): IExtension {
 	IconPathHelper.setExtensionContext(extensionContext);
 	let treeDataProvider = new ControllerTreeDataProvider(extensionContext.globalState);
 	registerTreeDataProvider(treeDataProvider);
 	registerCommands(extensionContext, treeDataProvider);
+	return {
+		getClusterController(url: string, authType: AuthType, username?: string, password?: string): IClusterController {
+			return new ClusterController(url, authType, username, password);
+		}
+	};
 }
 
 export function deactivate() {
@@ -68,7 +75,7 @@ function registerCommands(context: vscode.ExtensionContext, treeDataProvider: Co
 			await treeDataProvider.saveControllers();
 		}
 		const dashboard: BdcDashboard = new BdcDashboard(title, new BdcDashboardModel(info, treeDataProvider));
-		dashboard.showDashboard();
+		await dashboard.showDashboard();
 	});
 
 	vscode.commands.registerCommand(commands.MountHdfsCommand, e => mountHdfs(e).catch(error => {

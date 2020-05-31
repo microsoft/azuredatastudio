@@ -26,7 +26,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: commands.SCRIPT_AS_CREATE_COMMAND_ID,
 		title: localize('scriptAsCreate', "Script as Create")
 	},
-	when: ContextKeyExpr.and(MssqlNodeContext.CanScriptAsCreateOrDelete, MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()))
+	when: MssqlNodeContext.CanScriptAsCreateOrDelete
 });
 
 // Script as Delete
@@ -115,10 +115,10 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		title: localize('scriptCreate', "Script as Create")
 	},
 	when: ContextKeyExpr.or(
-		ContextKeyExpr.and(TreeNodeContextKey.NodeType.isEqualTo('Table'), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString())),
-		ContextKeyExpr.and(TreeNodeContextKey.NodeType.isEqualTo('View'), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString())),
-		ContextKeyExpr.and(TreeNodeContextKey.NodeType.isEqualTo('Schema'), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString())),
-		ContextKeyExpr.and(TreeNodeContextKey.NodeType.isEqualTo('User'), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString())),
+		TreeNodeContextKey.NodeType.isEqualTo('Table'),
+		TreeNodeContextKey.NodeType.isEqualTo('View'),
+		TreeNodeContextKey.NodeType.isEqualTo('Schema'),
+		TreeNodeContextKey.NodeType.isEqualTo('User'),
 		TreeNodeContextKey.NodeType.isEqualTo('UserDefinedTableType'),
 		TreeNodeContextKey.NodeType.isEqualTo('StoredProcedure'),
 		TreeNodeContextKey.NodeType.isEqualTo('AggregateFunction'),
@@ -296,7 +296,6 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 		id: commands.ExplorerScriptCreateAction.ID,
 		title: commands.ExplorerScriptCreateAction.LABEL
 	},
-	when: MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()),
 	order: 2
 });
 //#endregion

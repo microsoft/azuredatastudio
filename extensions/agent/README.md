@@ -8,7 +8,8 @@ basic functionality for the following.
 * View Job History with job execution results
 * Basic Job Control to start and stop jobs
 
-<img src="https://user-images.githubusercontent.com/599935/39215738-d3a52580-47cd-11e8-9788-b290048c270e.png" alt="SQL Agent" style="width:800px;"/>
+<img src="https://user-images.githubusercontent.com/6411451/82481964-f7b1a400-9a8a-11ea-8b25-2a6958a41e25.png" alt="SQL Agent" style="width:800px;"/>
+
 
 ## Code of Conduct
 

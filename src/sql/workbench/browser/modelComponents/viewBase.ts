@@ -105,6 +105,13 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 		this.queueAction(componentId, (component) => component.setLayout(layout));
 	}
 
+	setItemLayout(containerId: string, itemConfig: IItemConfig): void {
+		let childDescriptor = this.modelStore.getComponentDescriptor(itemConfig.componentShape.id);
+		this.queueAction(containerId, (component) => {
+			component.setItemLayout(childDescriptor, itemConfig.config);
+		});
+	}
+
 	setProperties(componentId: string, properties: { [key: string]: any; }): void {
 		if (!properties) {
 			return;
@@ -148,5 +155,9 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 
 	public focus(componentId: string): void {
 		return this.queueAction(componentId, (component) => component.focus());
+	}
+
+	public doAction(componentId: string, action: string, ...args: any[]): void {
+		return this.queueAction(componentId, (component) => component.doAction(action, ...args));
 	}
 }

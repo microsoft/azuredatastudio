@@ -132,6 +132,7 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 			}
 
 			if (this._actions && this.toggleMore) {
+				this._actionbar.context = { target: this._actionbarRef.nativeElement };
 				this._actionbar.push(this.instantiationService.createInstance(ToggleMoreWidgetAction, this._actions as Array<IAction>, this._component.actionsContext), { icon: true, label: false });
 			}
 		}

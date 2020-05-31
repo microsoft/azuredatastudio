@@ -40,7 +40,7 @@ suite('Notebook Actions', function (): void {
 	});
 
 	test('Clear All Outputs Action', async function (): Promise<void> {
-		let action = new ClearAllOutputsAction('TestId', 'TestLabel', 'TestClass');
+		let action = new ClearAllOutputsAction('TestId', true);
 
 		// Normal use case
 		let mockNotebookComponent = TypeMoq.Mock.ofType<INotebookEditor>(NotebookComponentStub);
@@ -63,7 +63,7 @@ suite('Notebook Actions', function (): void {
 		let mockNotification = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService);
 		mockNotification.setup(n => n.notify(TypeMoq.It.isAny()));
 
-		let action = new TrustedAction('TestId');
+		let action = new TrustedAction('TestId', true);
 		assert.strictEqual(action.trusted, false, 'Should not be trusted by default');
 
 		// Normal use case
@@ -105,7 +105,7 @@ suite('Notebook Actions', function (): void {
 	});
 
 	test('Collapse Cells Action', async function (): Promise<void> {
-		let action = new CollapseCellsAction('TestId');
+		let action = new CollapseCellsAction('TestId', true);
 		assert.strictEqual(action.isCollapsed, false, 'Should not be collapsed by default');
 
 		let context = <INotebookEditor>{

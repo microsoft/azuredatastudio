@@ -328,6 +328,7 @@ export interface INewConnectionParams {
 	showDashboard?: boolean;
 	providers?: string[];
 	isEditConnection?: boolean;
+	oldProfileId?: string; // used for edit connection
 }
 
 export interface IConnectableInput {

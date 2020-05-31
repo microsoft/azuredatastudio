@@ -1629,11 +1629,11 @@ export class ShowInstalledExtensionsAction extends Action {
 		super(id, label, undefined, true);
 	}
 
-	run(): Promise<void> {
+	run(refresh?: boolean): Promise<void> {
 		return this.viewletService.openViewlet(VIEWLET_ID, true)
 			.then(viewlet => viewlet?.getViewPaneContainer() as IExtensionsViewPaneContainer)
 			.then(viewlet => {
-				viewlet.search('@installed ');
+				viewlet.search('@installed ', refresh);
 				viewlet.focus();
 			});
 	}
@@ -2983,90 +2983,84 @@ export class InstallVSIXAction extends Action {
 		@IHostService private readonly hostService: IHostService,
 		@IFileDialogService private readonly fileDialogService: IFileDialogService,
 		@IExtensionService private readonly extensionService: IExtensionService,
+		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IConfigurationService private readonly configurationService: IConfigurationService, // {{SQL CARBON EDIT}}
 		@IStorageService private storageService: IStorageService
 	) {
 		super(id, label, 'extension-action install-vsix', true);
 	}
 
-	run(): Promise<any> {
+	async run(vsixPaths?: URI[]): Promise<void> {
 		// {{SQL CARBON EDIT}} - Replace run body
 		let extensionPolicy = this.configurationService.getValue<string>(ExtensionsPolicyKey);
 		if (extensionPolicy === ExtensionsPolicy.allowAll) {
-			return Promise.resolve(this.fileDialogService.showOpenDialog({
-				title: localize('installFromVSIX', "Install from VSIX"),
-				filters: [{ name: 'VSIX Extensions', extensions: ['vsix'] }],
-				canSelectFiles: true,
-				openLabel: mnemonicButtonLabel(localize({ key: 'installButton', comment: ['&& denotes a mnemonic'] }, "&&Install"))
-			}).then(result => {
-				if (!result) {
-					return Promise.resolve();
-				}
-				return Promise.all(result.map(vsix => {
-					if (!this.storageService.getBoolean(vsix.fsPath, StorageScope.GLOBAL)) {
+			if (!vsixPaths) {
+				vsixPaths = await this.fileDialogService.showOpenDialog({
+					title: localize('installFromVSIX', "Install from VSIX"),
+					filters: [{ name: 'VSIX Extensions', extensions: ['vsix'] }],
+					canSelectFiles: true,
+					openLabel: mnemonicButtonLabel(localize({ key: 'installButton', comment: ['&& denotes a mnemonic'] }, "&&Install"))
+				});
+			}
+
+			await Promise.all(vsixPaths.map(async vsix => {
+				if (!this.storageService.getBoolean(vsix.fsPath, StorageScope.GLOBAL)) {
+					const accept = await new Promise<boolean>(resolve => {
 						this.notificationService.prompt(
 							Severity.Warning,
 							localize('thirdPartyExtension.vsix', 'This is a third party extension and might involve security risks. Are you sure you want to install this extension?'),
 							[
 								{
 									label: localize('thirdPartExt.yes', 'Yes'),
-									run: () => {
-										this.extensionsWorkbenchService.install(vsix).then(extension => {
-											const requireReload = !(extension.local && this.extensionService.canAddExtension(toExtensionDescription(extension.local)));
-											const message = requireReload ? localize('InstallVSIXAction.successReload', "Please reload Azure Data Studio to complete installing the extension {0}.", extension.identifier.id)
-												: localize('InstallVSIXAction.success', "Completed installing the extension {0}.", extension.identifier.id);
-											const actions = requireReload ? [{
-												label: localize('InstallVSIXAction.reloadNow', "Reload Now"),
-												run: () => this.hostService.reload()
-											}] : [];
-											this.notificationService.prompt(
-												Severity.Info,
-												message,
-												actions,
-												{ sticky: true }
-											);
-										});
-									}
+									run: () => resolve(true)
 								},
 								{
 									label: localize('thirdPartyExt.no', 'No'),
-									run: () => { return Promise.resolve(); }
+									run: () => resolve(false)
 								},
 								{
 									label: localize('thirdPartyExt.dontShowAgain', 'Don\'t Show Again'),
 									isSecondary: true,
 									run: () => {
 										this.storageService.store(vsix.fsPath, true, StorageScope.GLOBAL);
-										return Promise.resolve();
+										resolve(true);
 									}
 								}
 							],
 							{ sticky: true }
 						);
-					} else {
-						this.extensionsWorkbenchService.install(vsix).then(extension => {
-							const requireReload = !(extension.local && this.extensionService.canAddExtension(toExtensionDescription(extension.local)));
-							const message = requireReload ? localize('InstallVSIXAction.successReload', "Please reload Azure Data Studio to complete installing the extension {0}.", extension.identifier.id)
-								: localize('InstallVSIXAction.success', "Completed installing the extension {0}.", extension.identifier.id);
-							const actions = requireReload ? [{
-								label: localize('InstallVSIXAction.reloadNow', "Reload Now"),
-								run: () => this.hostService.reload()
-							}] : [];
-							this.notificationService.prompt(
-								Severity.Info,
-								message,
-								actions,
-								{ sticky: true }
-							);
-						});
+					});
+
+					if (!accept) {
+						return undefined;
 					}
-				})).then(() => Promise.resolve());
-			}));
+				}
+
+				return this.extensionsWorkbenchService.install(vsix);
+			})).then(async (extensions) => {
+				for (const extension of extensions) {
+					if (!extension) {
+						return;
+					}
+					const requireReload = !(extension.local && this.extensionService.canAddExtension(toExtensionDescription(extension.local)));
+					const message = requireReload ? localize('InstallVSIXAction.successReload', "Please reload Azure Data Studio to complete installing the extension {0}.", extension.displayName || extension.name) // {{SQL CARBON EDIT}}
+						: localize('InstallVSIXAction.success', "Completed installing the extension {0}.", extension.displayName || extension.name);
+					const actions = requireReload ? [{
+						label: localize('InstallVSIXAction.reloadNow', "Reload Now"),
+						run: () => this.hostService.reload()
+					}] : [];
+					this.notificationService.prompt(
+						Severity.Info,
+						message,
+						actions,
+						{ sticky: true }
+					);
+				}
+				await this.instantiationService.createInstance(ShowInstalledExtensionsAction, ShowInstalledExtensionsAction.ID, ShowInstalledExtensionsAction.LABEL).run(true);
+			});
 		} else {
 			this.notificationService.error(localize('InstallVSIXAction.allowNone', 'Your extension policy does not allow downloading extensions. Please change your extension policy and try again.'));
-			return Promise.resolve();
 		}
-		// {{SQL CARBON EDIT}} - End
 	}
 
 	get enabled(): boolean { // {{SQL CARBON EDIT}} add enabled logic

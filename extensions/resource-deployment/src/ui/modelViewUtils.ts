@@ -701,16 +701,20 @@ function handleSelectedAccountChanged(
 	subscriptionValueToSubscriptionMap.clear();
 	subscriptionDropdown.values = [];
 	handleSelectedSubscriptionChanged(context, selectedAccount, undefined, resourceGroupDropdown);
+	if (!selectedAccount) {
+		subscriptionDropdown.values = [''];
+		if (locationDropdown) {
+			locationDropdown.values = [''];
+		}
+		return;
+	}
+
 	if (locationDropdown) {
-		if (selectedAccount) {
-			if (locationDropdown.values && locationDropdown.values.length === 0) {
-				locationDropdown.values = context.fieldInfo.locations;
-			}
-		} else {
-			locationDropdown.values = [];
-			return;
+		if (locationDropdown.values && locationDropdown.values.length === 0) {
+			locationDropdown.values = context.fieldInfo.locations;
 		}
 	}
+
 	vscode.commands.executeCommand<azurecore.GetSubscriptionsResult>('azure.accounts.getSubscriptions', selectedAccount, true /*ignoreErrors*/).then(response => {
 		if (!response) {
 			return;
@@ -765,7 +769,7 @@ function createAzureResourceGroupsDropdown(
 }
 
 function handleSelectedSubscriptionChanged(context: AzureAccountFieldContext, selectedAccount: azdata.Account | undefined, selectedSubscription: azureResource.AzureResourceSubscription | undefined, resourceGroupDropdown: azdata.DropDownComponent): void {
-	resourceGroupDropdown.values = [];
+	resourceGroupDropdown.values = [''];
 	if (!selectedAccount || !selectedSubscription) {
 		// Don't need to execute command if we don't have both an account and subscription selected
 		return;
@@ -781,7 +785,9 @@ function handleSelectedSubscriptionChanged(context: AzureAccountFieldContext, se
 				level: azdata.window.MessageLevel.Warning
 			};
 		}
-		resourceGroupDropdown.values = response.resourceGroups.map(resourceGroup => resourceGroup.name).sort((a: string, b: string) => a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase()));
+		resourceGroupDropdown.values = (response.resourceGroups.length !== 0)
+			? response.resourceGroups.map(resourceGroup => resourceGroup.name).sort((a: string, b: string) => a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase()))
+			: [''];
 	}, err => { vscode.window.showErrorMessage(localize('azure.accounts.unexpectedResourceGroupsError', "Unexpected error fetching resource groups for subscription {0} ({1}): {2}", selectedSubscription?.name, selectedSubscription?.id, err.message)); });
 }
 

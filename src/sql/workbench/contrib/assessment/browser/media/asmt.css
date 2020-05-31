@@ -1,0 +1,132 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+asmtview-component {
+	height: 100%;
+	width: 100%;
+	display: block;
+}
+
+.asmt-heading {
+	font-weight: bold;
+	font-size: large;
+}
+
+#asmtViewDiv .propertiesSectionTitle {
+	margin-bottom: 20px;
+	font-size: larger;
+}
+
+#asmtViewDiv .propertyBlock {
+	display: inline-block;
+	margin: 0px 0px 20px 20px;
+}
+
+#asmtViewDiv .propertyLabel {
+	font-size: 11px;
+}
+
+.asmt-actionbar-container {
+	padding-bottom: 10px;
+	border-top: 3px solid;
+}
+
+.asmtview-grid {
+	height: calc(100% - 75px);
+	width: 100%;
+	display: block;
+}
+
+#asmtViewDiv .slick-header-column {
+	border: 0px !important;
+	font-weight: bold;
+}
+
+.asmtview-grid>.monaco-table .slick-header-columns .slick-resizable-handle {
+	border-left: 1px dotted;
+}
+
+.asmtview-grid .grid-canvas>.ui-widget-content.slick-row>.slick-cell {
+	cursor: pointer;
+	border-right: none;
+}
+
+.asmtview-grid>.monaco-table .slick-viewport>.grid-canvas>.ui-widget-content.slick-row .slick-cell>.excl,
+.asmtview-grid .detail-container .excl {
+	width: 100%;
+	opacity: 1;
+	font-weight: 700;
+	text-overflow: ellipsis;
+}
+
+#asmtDiv .detail {
+	padding: 5px;
+}
+
+#asmtDiv .preload {
+	font-size: 13px;
+}
+
+#asmtDiv .codicon.in-progress {
+	padding-left: 0px;
+}
+
+#asmtDiv .carbon-taskbar .action-item {
+	margin-left: 0px;
+}
+
+.asmt-actionbar-container .monaco-action-bar>ul.actions-container>li.action-item {
+	padding-left: 20px;
+}
+
+.asmt-actionbar-container .actions-container .action-item .action-label {
+	padding-right: 0px;
+}
+
+asmtview-component .asmtview-grid .slick-cell.error-row {
+	opacity: 0;
+}
+
+
+#asmtDiv asmtview-component .monaco-toolbar.carbon-taskbar {
+	margin: 10px 0px 10px 0px;
+}
+
+#asmtDiv .helpLink {
+	margin-left: 5px;
+}
+
+.vs asmtview-component .action-label.codicon.exportAsScriptIcon {
+	background-image: url("newquery.svg");
+}
+
+.vs-dark asmtview-component .action-label.codicon.exportAsScriptIcon,
+.hc-black asmtview-component .action-label.codicon.exportAsScriptIcon {
+	background-image: url("newquery_inverse.svg");
+}
+
+.vs asmtview-component .action-label.codicon.asmt-learnmore {
+	background-image: url("configuredashboard.svg");
+}
+
+.vs-dark asmtview-component .action-label.codicon.asmt-learnmore,
+.hc-black asmtview-component .action-label.codicon.asmt-learnmore {
+	background-image: url("configuredashboard_inverse.svg");
+}
+
+.asmtview-grid>.monaco-table .slick-viewport>.grid-canvas>.ui-widget-content.slick-row .slick-cell .codicon {
+	background-position: left;
+	padding-left: 18px;
+}
+
+.asmt-actionbar-container .action-item>.action-label.codicon.database {
+	background-size: 12px;
+}
+
+#asmtDiv .placeholder {
+	font-style: italic;
+	position: relative;
+	top: 50px;
+}

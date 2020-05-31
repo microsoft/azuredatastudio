@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { WorkspaceConfiguration, ConfigurationTarget } from 'vscode';
 import { Account } from 'azdata';
 
 import { azureResource } from '../azure-resource';
@@ -53,25 +52,8 @@ export class AzureResourceSubscriptionFilterService implements IAzureResourceSub
 		for (const accountId in selectedSubscriptionsCache) {
 			filters.push(...selectedSubscriptionsCache[accountId].map((subcription) => `${accountId}/${subcription.id}/${subcription.name}`));
 		}
-
-		const resourceFilterConfig = this._config.inspect<string[]>(AzureResourceSubscriptionFilterService.filterConfigName);
-		let configTarget = ConfigurationTarget.Global;
-		if (resourceFilterConfig) {
-			if (resourceFilterConfig.workspaceFolderValue) {
-				configTarget = ConfigurationTarget.WorkspaceFolder;
-			} else if (resourceFilterConfig.workspaceValue) {
-				configTarget = ConfigurationTarget.Workspace;
-			} else if (resourceFilterConfig.globalValue) {
-				configTarget = ConfigurationTarget.Global;
-			}
-		}
-
-		await this._config.update(AzureResourceSubscriptionFilterService.filterConfigName, filters, configTarget);
 	}
 
-	private _config: WorkspaceConfiguration = undefined;
 	private _cacheService: IAzureResourceCacheService = undefined;
 	private _cacheKey: string = undefined;
-
-	private static readonly filterConfigName = 'azure.resource.config.filter';
 }
