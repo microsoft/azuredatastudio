@@ -54,7 +54,7 @@ jobs:
     # {{SQL CARBON EDIT}} Add coveralls. We merge first to get around issue where parallel builds weren't being combined correctly
     - run: |
         mkdir .build/coverage-combined
-        cat .build/coverage-single/lcov.info ./extensions/admin-tool-ext-win/coverage/lcov.info ./extensions/agent/coverage/lcov.info ./extensions/azurecore/coverage/lcov.info ./extensions/cms/coverage/lcov.info ./extensions/dacpac/coverage/lcov.info ./extensions/schema-compare/coverage/lcov.info ./extensions/notebook/coverage/lcov.info ./extensions/resource-deployment/coverage/lcov.info ./extensions/machine-learning/coverage/lcov.info > .build/coverage-combined/lcov.info
+        cat .build/coverage-single/lcov.info ./extensions/admin-tool-ext-win/coverage/lcov.info ./extensions/agent/coverage/lcov.info ./extensions/azurecore/coverage/lcov.info ./extensions/cms/coverage/lcov.info ./extensions/dacpac/coverage/lcov.info ./extensions/schema-compare/coverage/lcov.info ./extensions/notebook/coverage/lcov.info ./extensions/resource-deployment/coverage/lcov.info ./extensions/machine-learning/coverage/lcov.info ./extensions/sql-database-projects/coverage/lcov.info > .build/coverage-combined/lcov.info
       name: Merge coverage reports
     - name: Upload Code Coverage
       uses: coverallsapp/github-action@v1.1.1
