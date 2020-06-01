@@ -208,7 +208,8 @@ const externalExtensions = [
     'query-history',
     'liveshare',
     'sql-database-projects',
-    'machine-learning'
+    'machine-learning',
+    'sql-assessment'
 ];
 // extensions that require a rebuild since they have native parts
 const rebuildExtensions = [

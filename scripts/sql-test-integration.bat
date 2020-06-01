@@ -47,7 +47,7 @@ if "%SKIP_PYTHON_INSTALL_TEST%" == "1" (
 )
 
 call %INTEGRATION_TEST_ELECTRON_PATH% --user-data-dir=%VSCODEUSERDATADIR% --extensions-dir=%VSCODEEXTENSIONSDIR% --remote-debugging-port=9222 ^
---extensionDevelopmentPath=%~dp0\..\extensions\integration-tests --extensionTestsPath=%~dp0\..\extensions\integration-tests\out\tests --disable-telemetry --disable-crash-reporter --disable-updates -nogpu
+--extensionDevelopmentPath=%~dp0\..\extensions\integration-tests --extensionTestsPath=%~dp0\..\extensions\integration-tests\out\test --disable-telemetry --disable-crash-reporter --disable-updates -nogpu
 
 rmdir /s /q %VSCODEUSERDATADIR%
 rmdir /s /q %VSCODEEXTENSIONSDIR%
