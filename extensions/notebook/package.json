@@ -339,7 +339,7 @@
           "when": "false"
         }
       ],
-      "notebooks/notebook/title": [
+      "notebooks/title": [
         {
           "command": "notebook.command.createBook",
           "group": "secondary"
