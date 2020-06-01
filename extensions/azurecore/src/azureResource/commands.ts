@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-import { window, QuickPickItem } from 'vscode';
+import { window, QuickPickItem, env, Uri } from 'vscode';
 import * as azdata from 'azdata';
 import { TokenCredentials } from '@azure/ms-rest-js';
 import * as nls from 'vscode-nls';
@@ -238,7 +238,7 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 		}
 	});
 
-	appContext.apiWrapper.registerCommand('azure.resource.connectazureDataExplorer', async (node?: TreeNode) => {
+	appContext.apiWrapper.registerCommand('azure.resource.openInAzurePortal', async (node?: TreeNode) => {
 		if (!node) {
 			return;
 		}
@@ -247,11 +247,13 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 		if (!treeItem.payload) {
 			return;
 		}
-		// Ensure connection is saved to the Connections list, then open connection dialog
 		let connectionProfile = Object.assign({}, treeItem.payload, { saveProfile: true });
-		const conn = await appContext.apiWrapper.openConnectionDialog(undefined, connectionProfile, { saveConnection: true, showDashboard: true });
-		if (conn) {
-			appContext.apiWrapper.executeCommand('workbench.view.connections');
+
+		if (!connectionProfile.azureResourceId) {
+			return;
 		}
+
+		const urlToOpen = `${connectionProfile.azurePortalEndpoint}//${connectionProfile.azureTenantId}/#resource/${connectionProfile.azureResourceId}`;
+		env.openExternal(Uri.parse(urlToOpen));
 	});
 }
