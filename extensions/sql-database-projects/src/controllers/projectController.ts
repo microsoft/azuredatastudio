@@ -93,6 +93,13 @@ export class ProjectsController {
 		return newProject;
 	}
 
+	public async focusProject(project?: Project) {
+		if (project && this.projects.includes(project)) {
+			await this.apiWrapper.executeCommand('sqlDatabaseProjectsView.focus');
+			this.projectTreeViewProvider.focus(project);
+		}
+	}
+
 	public async createNewProject(newProjName: string, folderUri: Uri, projectGuid?: string): Promise<string> {
 		if (projectGuid && !UUID.isUUID(projectGuid)) {
 			throw new Error(`Specified GUID is invalid: '${projectGuid}'`);
@@ -228,11 +235,6 @@ export class ProjectsController {
 		} else {
 			this.apiWrapper.showErrorMessage(constants.schemaCompareNotInstalled);
 		}
-	}
-
-	public async import(treeNode: BaseProjectTreeItem) {
-		const project = ProjectsController.getProjectFromContext(treeNode);
-		await this.apiWrapper.showErrorMessage(`Import not yet implemented: ${project.projectFilePath}`); // TODO
 	}
 
 	public async addFolderPrompt(treeNode: BaseProjectTreeItem) {
@@ -419,6 +421,8 @@ export class ProjectsController {
 
 			//Refresh project to show the added files
 			this.refreshProjectsTree();
+
+			this.focusProject(project);
 		}
 		catch (err) {
 			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
