@@ -6,7 +6,7 @@
 import * as should from 'should';
 import * as vscode from 'vscode';
 
-import { Project } from '../models/project';
+import { Project, EntryType } from '../models/project';
 import { FolderNode, FileNode, sortFileFolderNodes } from '../models/tree/fileFolderTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 
@@ -25,10 +25,7 @@ describe('Project Tree tests', function (): void {
 			new FolderNode(vscode.Uri.file('Z:\\Y'), parent)
 		];
 
-		console.log('==A: ' + inputNodes.map(n => n.uri.path));
 		inputNodes = inputNodes.sort(sortFileFolderNodes);
-		console.log('==B: ' + inputNodes.map(n => n.uri.path));
-
 
 		const expectedNodes: (FileNode | FolderNode)[] = [
 			new FolderNode(vscode.Uri.file('Z:\\W'), parent),
@@ -42,5 +39,26 @@ describe('Project Tree tests', function (): void {
 		];
 
 		should(inputNodes.map(n => n.uri.path)).deepEqual(expectedNodes.map(n => n.uri.path));
+	});
+
+	it('Should ignore duplicate entries in Project file when building tree', async function (): Promise<void> {
+		const proj = new Project(vscode.Uri.file('Z:\\TestProj.sqlproj').fsPath);
+		proj.files.push(proj.createProjectEntry('someFolder\\nestedTest.sql', EntryType.File)); // nested file before explicit folder entry
+		proj.files.push(proj.createProjectEntry('someFolder', EntryType.Folder));
+
+		proj.files.push(proj.createProjectEntry('duplicate.sql', EntryType.File));
+		proj.files.push(proj.createProjectEntry('duplicate.sql', EntryType.File));
+
+		proj.files.push(proj.createProjectEntry('duplicateFolder', EntryType.Folder));
+		proj.files.push(proj.createProjectEntry('duplicateFolder', EntryType.Folder));
+
+		const tree = new ProjectRootTreeItem(proj);
+		should(tree.children.map(x => x.uri.path)).deepEqual([
+			'/TestProj.sqlproj/Data Sources',
+			'/TestProj.sqlproj/duplicateFolder',
+			'/TestProj.sqlproj/someFolder',
+			'/TestProj.sqlproj/duplicate.sql']);
+
+		should(tree.children.find(x => x.uri.path === '/TestProj.sqlproj/someFolder')?.children.map(y => y.uri.path)).deepEqual(['/TestProj.sqlproj/someFolder/nestedTest.sql']);
 	});
 });

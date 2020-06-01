@@ -46,7 +46,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 		for (const entry of this.project.files) {
 			const parentNode = this.getEntryParentNode(entry);
 
-			if (Object.keys(parentNode.fileChildren).includes(entry.fsUri.path)) {
+			if (Object.keys(parentNode.fileChildren).includes(path.basename(entry.fsUri.path))) {
 				continue; // ignore duplicate entries
 			}
 
