@@ -41,14 +41,22 @@ describe('Project Tree tests', function (): void {
 		should(inputNodes.map(n => n.uri.path)).deepEqual(expectedNodes.map(n => n.uri.path));
 	});
 
-	it('Should ignore duplicate entries in Project file when building tree', async function (): Promise<void> {
+	it('Should build tree from Project file correctly', async function (): Promise<void> {
 		const proj = new Project(vscode.Uri.file('Z:\\TestProj.sqlproj').fsPath);
-		proj.files.push(proj.createProjectEntry('someFolder\\nestedTest.sql', EntryType.File)); // nested file before explicit folder entry
+
+		// nested entries before explicit top-level folder entry
+		// also, ordering of files/folders at all levels
+		proj.files.push(proj.createProjectEntry('someFolder\\bNestedTest.sql', EntryType.File));
+		proj.files.push(proj.createProjectEntry('someFolder\\bNestedFolder', EntryType.Folder));
+		proj.files.push(proj.createProjectEntry('someFolder\\aNestedTest.sql', EntryType.File));
+		proj.files.push(proj.createProjectEntry('someFolder\\aNestedFolder', EntryType.Folder));
 		proj.files.push(proj.createProjectEntry('someFolder', EntryType.Folder));
 
+		// duplicate files
 		proj.files.push(proj.createProjectEntry('duplicate.sql', EntryType.File));
 		proj.files.push(proj.createProjectEntry('duplicate.sql', EntryType.File));
 
+		// duplicate folders
 		proj.files.push(proj.createProjectEntry('duplicateFolder', EntryType.Folder));
 		proj.files.push(proj.createProjectEntry('duplicateFolder', EntryType.Folder));
 
@@ -59,6 +67,10 @@ describe('Project Tree tests', function (): void {
 			'/TestProj.sqlproj/someFolder',
 			'/TestProj.sqlproj/duplicate.sql']);
 
-		should(tree.children.find(x => x.uri.path === '/TestProj.sqlproj/someFolder')?.children.map(y => y.uri.path)).deepEqual(['/TestProj.sqlproj/someFolder/nestedTest.sql']);
+		should(tree.children.find(x => x.uri.path === '/TestProj.sqlproj/someFolder')?.children.map(y => y.uri.path)).deepEqual([
+			'/TestProj.sqlproj/someFolder/aNestedFolder',
+			'/TestProj.sqlproj/someFolder/bNestedFolder',
+			'/TestProj.sqlproj/someFolder/aNestedTest.sql',
+			'/TestProj.sqlproj/someFolder/bNestedTest.sql']);
 	});
 });
