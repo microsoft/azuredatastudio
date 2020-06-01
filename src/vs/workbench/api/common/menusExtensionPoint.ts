@@ -70,6 +70,7 @@ namespace schema {
 		switch (menuId) {
 			case MenuId.StatusBarWindowIndicatorMenu:
 			case MenuId.MenubarWebNavigationMenu:
+			case MenuId.NotebookCellTitle:
 				return true;
 		}
 		return false;
