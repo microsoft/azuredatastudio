@@ -360,14 +360,8 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 	}
 
 	// ----- sash
-	public getHorizontalSashTop(sash: Sash): number {
+	public getVerticalSashLeft(_sash: Sash): number {
 		return 0;
-	}
-	public getHorizontalSashLeft?(sash: Sash): number {
-		return 0;
-	}
-	public getHorizontalSashWidth?(sash: Sash): number {
-		return 500;
 	}
 
 	// ----- initialization
