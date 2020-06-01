@@ -10,7 +10,7 @@ const localize = nls.loadMessageBundle();
 // Placeholder values
 export const dataSourcesFileName = 'datasources.json';
 export const sqlprojExtension = '.sqlproj';
-export const initialCatalogSetting = 'Initial Catalog';
+export const sqlFileExtension = '.sql';
 export const schemaCompareExtensionId = 'microsoft.schema-compare';
 export const sqlDatabaseProjectExtensionId = 'microsoft.sql-database-projects';
 export const mssqlExtensionId = 'microsoft.mssql';
@@ -23,6 +23,10 @@ export const dataSourcesNodeName = localize('dataSourcesNodeName', "Data Sources
 export const sqlConnectionStringFriendly = localize('sqlConnectionStringFriendly', "SQL connection string");
 export const newDatabaseProjectName = localize('newDatabaseProjectName', "New database project name:");
 export const sqlDatabaseProject = localize('sqlDatabaseProject', "SQL database project");
+export const yesString = localize('yesString', "Yes");
+export const noString = localize('noString', "No");
+export const extractTargetInput = localize('extractTargetInput', "Target for extraction:");
+export const selectFileFolder = localize('selectFileFolder', "Select");
 export function newObjectNamePrompt(objectType: string) { return localize('newObjectNamePrompt', 'New {0} name:', objectType); }
 
 // Deploy dialog strings
@@ -54,11 +58,19 @@ export const unknownDataSourceType = localize('unknownDataSourceType', "Unknown 
 export const invalidSqlConnectionString = localize('invalidSqlConnectionString', "Invalid SQL connection string");
 export const projectNameRequired = localize('projectNameRequired', "Name is required to create a new database project.");
 export const projectLocationRequired = localize('projectLocationRequired', "Location is required to create a new database project.");
+export const projectLocationNotEmpty = localize('projectLocationNotEmpty', "Current project location is not empty. Select an empty folder for precise extraction.");
+export const extractTargetRequired = localize('extractTargetRequired', "Target information for extract is required to import database to project.");
 export const schemaCompareNotInstalled = localize('schemaCompareNotInstalled', "Schema compare extension installation is required to run schema compare");
 export const buildDacpacNotFound = localize('buildDacpacNotFound', "Dacpac created from build not found");
+export const updateProjectForRoundTrip = localize('updateProjectForRoundTrip', "To build this project, Azure Data Studio needs to update targets and references. If the project is created in SSDT, it will continue to work in both tools. Do you want Azure Data Studio to update the project?");
 export function projectAlreadyOpened(path: string) { return localize('projectAlreadyOpened', "Project '{0}' is already opened.", path); }
 export function projectAlreadyExists(name: string, path: string) { return localize('projectAlreadyExists', "A project named {0} already exists in {1}.", name, path); }
+export function noFileExist(fileName: string) { return localize('noFileExist', "File {0} doesn't exist", fileName); }
+export function cannotResolvePath(path: string) { return localize('cannotResolvePath', "Cannot resolve path {0}", path); }
+
 export function mssqlNotFound(mssqlConfigDir: string) { return localize('mssqlNotFound', "Could not get mssql extension's install location at {0}", mssqlConfigDir); }
+export function projBuildFailed(errorMessage: string) { return localize('projBuildFailed', "Build failed. Check output pane for more details. {0}", errorMessage); }
+export function unexpectedProjectContext(uri: string) { return localize('unexpectedProjectContext', "Unable to establish project context.  Command invoked from unexpected location: {0}", uri); }
 
 // Project script types
 
@@ -73,3 +85,32 @@ export const ItemGroup = 'ItemGroup';
 export const Build = 'Build';
 export const Folder = 'Folder';
 export const Include = 'Include';
+export const Import = 'Import';
+export const Project = 'Project';
+export const Condition = 'Condition';
+export const PackageReference = 'PackageReference';
+export const Version = 'Version';
+export const PrivateAssets = 'PrivateAssets';
+
+
+// SqlProj File targets
+export const NetCoreTargets = '$(NETCoreTargetsPath)\\Microsoft.Data.Tools.Schema.SqlTasks.targets';
+export const SqlDbTargets = '$(SQLDBExtensionsRefPath)\\Microsoft.Data.Tools.Schema.SqlTasks.targets';
+export const MsBuildtargets = '$(MSBuildExtensionsPath)\\Microsoft\\VisualStudio\\v$(VisualStudioVersion)\\SSDT\\Microsoft.Data.Tools.Schema.SqlTasks.targets';
+export const NetCoreCondition = '\'$(NetCoreBuild)\' == \'true\'';
+export const SqlDbPresentCondition = '\'$(SQLDBExtensionsRefPath)\' != \'\'';
+export const SqlDbNotPresentCondition = '\'$(SQLDBExtensionsRefPath)\' == \'\'';
+export const RoundTripSqlDbPresentCondition = '\'$(NetCoreBuild)\' != \'true\' AND \'$(SQLDBExtensionsRefPath)\' != \'\'';
+export const RoundTripSqlDbNotPresentCondition = '\'$(NetCoreBuild)\' != \'true\' AND \'$(SQLDBExtensionsRefPath)\' == \'\'';
+
+// SqlProj Reference Assembly Information
+export const NETFrameworkAssembly = 'Microsoft.NETFramework.ReferenceAssemblies';
+export const VersionNumber = '1.0.0';
+export const All = 'All';
+
+// SQL connection string components
+export const initialCatalogSetting = 'Initial Catalog';
+export const dataSourceSetting = 'Data Source';
+export const integratedSecuritySetting = 'Integrated Security';
+export const userIdSetting = 'User ID';
+export const passwordSetting = 'Password';
