@@ -7,7 +7,8 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { IControllerTreeChangeHandler } from './controllerTreeChangeHandler';
 import { TreeNode } from './treeNode';
-import { IconPathHelper, BdcItemType, IconPath, AuthType } from '../constants';
+import { IconPathHelper, BdcItemType, IconPath } from '../constants';
+import { AuthType } from 'bdc';
 
 abstract class ControllerTreeNode extends TreeNode {
 

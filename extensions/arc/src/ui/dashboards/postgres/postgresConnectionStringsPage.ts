@@ -3,13 +3,23 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as loc from '../../../localizedConstants';
 import { IconPathHelper, cssStyles } from '../../../constants';
-import { PostgresDashboardPage } from './postgresDashboardPage';
-import { KeyValueContainer, KeyValue, InputKeyValue } from '../../components/keyValueContainer';
+import { KeyValueContainer, InputKeyValue } from '../../components/keyValueContainer';
+import { DashboardPage } from '../../components/dashboardPage';
+import { PostgresModel } from '../../../models/postgresModel';
 
-export class PostgresConnectionStringsPage extends PostgresDashboardPage {
+export class PostgresConnectionStringsPage extends DashboardPage {
+	private keyValueContainer?: KeyValueContainer;
+
+	constructor(protected modelView: azdata.ModelView, private _postgresModel: PostgresModel) {
+		super(modelView);
+		this._postgresModel.onServiceUpdated(() => this.eventuallyRunOnInitialized(() => this.refresh()));
+		this._postgresModel.onPasswordUpdated(() => this.eventuallyRunOnInitialized(() => this.refresh()));
+	}
+
 	protected get title(): string {
 		return loc.connectionStrings;
 	}
@@ -46,10 +56,39 @@ export class PostgresConnectionStringsPage extends PostgresDashboardPage {
 			this.modelView.modelBuilder.flexContainer().withItems([info, link]).withLayout({ flexWrap: 'wrap' }).component(),
 			{ CSSStyles: { display: 'inline-flex', 'margin-bottom': '25px' } });
 
-		const endpoint: { ip?: string, port?: number } = this.databaseModel.endpoint();
-		const password = this.databaseModel.password();
+		this.keyValueContainer = new KeyValueContainer(this.modelView.modelBuilder, []);
+		content.addItem(this.keyValueContainer.container);
+		this.initialized = true;
+		return root;
+	}
 
-		const pairs: KeyValue[] = [
+	protected get toolbarContainer(): azdata.ToolbarContainer {
+		const refreshButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			label: loc.refresh,
+			iconPath: IconPathHelper.refresh
+		}).component();
+
+		refreshButton.onDidClick(async () => {
+			refreshButton.enabled = false;
+			try {
+				await this._postgresModel.refresh();
+			} catch (error) {
+				vscode.window.showErrorMessage(loc.refreshFailed(error));
+			} finally {
+				refreshButton.enabled = true;
+			}
+		});
+
+		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems([
+			{ component: refreshButton }
+		]).component();
+	}
+
+	private refresh() {
+		const endpoint: { ip?: string, port?: number } = this._postgresModel.endpoint();
+		const password = this._postgresModel.password();
+
+		this.keyValueContainer?.refresh([
 			new InputKeyValue('ADO.NET', `Server=${endpoint.ip};Database=postgres;Port=${endpoint.port};User Id=postgres;Password=${password};Ssl Mode=Require;`),
 			new InputKeyValue('C++ (libpq)', `host=${endpoint.ip} port=${endpoint.port} dbname=postgres user=postgres password=${password} sslmode=require`),
 			new InputKeyValue('JDBC', `jdbc:postgresql://${endpoint.ip}:${endpoint.port}/postgres?user=postgres&password=${password}&sslmode=require`),
@@ -59,14 +98,6 @@ export class PostgresConnectionStringsPage extends PostgresDashboardPage {
 			new InputKeyValue('Python', `dbname='postgres' user='postgres' host='${endpoint.ip}' password='${password}' port='${endpoint.port}' sslmode='true'`),
 			new InputKeyValue('Ruby', `host=${endpoint.ip}; dbname=postgres user=postgres password=${password} port=${endpoint.port} sslmode=require`),
 			new InputKeyValue('Web App', `Database=postgres; Data Source=${endpoint.ip}; User Id=postgres; Password=${password}`)
-		];
-
-		const keyValueContainer = new KeyValueContainer(this.modelView.modelBuilder, pairs);
-		content.addItem(keyValueContainer.container);
-		return root;
-	}
-
-	protected get toolbarContainer(): azdata.ToolbarContainer {
-		return this.modelView.modelBuilder.toolbarContainer().component();
+		]);
 	}
 }
