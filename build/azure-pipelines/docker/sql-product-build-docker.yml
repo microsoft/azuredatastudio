@@ -65,17 +65,17 @@ steps:
       node build/azure-pipelines/mixin
     displayName: Mix in quality
 
-  - task: DownloadPipelineArtifact@2
+  - task: DownloadBuildArtifacts@0
     inputs:
       buildType: 'current'
-      targetPath: '$(Build.SourcesDirectory)/.build'
+      downloadPath: '$(Build.SourcesDirectory)/.build'
       artifactName: drop
       itemPattern: |
         drop/linux/server/*.tar.gz
 
   - script: |
       set -e
-      for f in $(Build.SourcesDirectory)/.build/linux/server/*.tar.gz
+      for f in $(Build.SourcesDirectory)/.build/drop/linux/server/*.tar.gz
       do
         tar -C $(agent.builddirectory) -zxvf $f
         rm $f

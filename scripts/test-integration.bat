@@ -19,13 +19,7 @@ if "%INTEGRATION_TEST_ELECTRON_PATH%"=="" (
 	:: Run from a built: need to compile all test extensions
 	:: because we run extension tests from their source folders
 	:: and the build bundles extensions into .build webpacked
-	call yarn gulp 	compile-extension:vscode-api-tests^
-					compile-extension:vscode-colorize-tests^
-					compile-extension:markdown-language-features^
-					compile-extension:emmet^
-					compile-extension:css-language-features-server^
-					compile-extension:html-language-features-server^
-					compile-extension:json-language-features-server^
+	call yarn gulp 	compile-extension:azurecore^
 					compile-extension:git
 
 	:: Configuration for more verbose output
@@ -68,8 +62,8 @@ call "%INTEGRATION_TEST_ELECTRON_PATH%" %GITWORKSPACE% --extensionDevelopmentPat
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 :: Tests in commonJS (HTML, CSS, JSON language server tests...)
-call .\scripts\node-electron.bat .\node_modules\mocha\bin\_mocha .\extensions\*\server\out\test\**\*.test.js
-if %errorlevel% neq 0 exit /b %errorlevel%
+REM call .\scripts\node-electron.bat .\node_modules\mocha\bin\_mocha .\extensions\*\server\out\test\**\*.test.js
+REM if %errorlevel% neq 0 exit /b %errorlevel%
 
 rmdir /s /q %VSCODEUSERDATADIR%
 

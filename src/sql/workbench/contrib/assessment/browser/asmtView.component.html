@@ -1,0 +1,57 @@
+<!--
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+-->
+<div id="asmtViewDiv" class="fullsize">
+	<div style="margin: 10px 0px 0px 10px;">
+		<div style="float: left; margin-right: 30px;">
+			<div class="propertiesSectionTitle">
+				<span>{{localizedStrings.SECTION_TITLE_API}}</span>
+			</div>
+			<div>
+				<div class="propertyBlock">
+					<div>
+						<span class="propertyLabel">{{localizedStrings.API_VERSION}}</span>
+						<span>{{api}}</span>
+					</div>
+					<div>
+						<span class="propertyLabel">{{localizedStrings.DEFAULT_RULESET_VERSION}}</span>
+						<span>{{ruleset}}</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div>
+			<div class="propertiesSectionTitle">
+				<span>{{localizedStrings.SECTION_TITLE_SQL_SERVER}}</span>
+			</div>
+			<div>
+				<div class="propertyBlock">
+					<div>
+						<span class="propertyLabel">{{localizedStrings.SERVER_VERSION}}</span>
+						<span>{{connectionInfo.serverVersion}}</span>
+					</div>
+					<div>
+						<span class="propertyLabel">{{localizedStrings.SERVER_EDITION}}</span>
+						<span>{{connectionInfo.serverEdition}}</span>
+					</div>
+				</div>
+				<div class="propertyBlock">
+					<div>
+						<span class="propertyLabel">{{localizedStrings.SERVER_INSTANCENAME}}</span>
+						<span>{{instanceName}}</span>
+					</div>
+					<div>
+						<span class="propertyLabel">{{localizedStrings.SERVER_OSVERSION}}</span>
+						<span>{{connectionInfo.osVersion}}</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div #asmtresultcomponent id="asmtDiv" class="fullsize">
+		<asmt-results-view-component></asmt-results-view-component>
+	</div>
+</div>

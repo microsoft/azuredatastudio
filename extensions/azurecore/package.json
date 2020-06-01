@@ -146,10 +146,11 @@
       {
         "command": "azure.resource.startterminal",
         "title": "%azure.resource.startterminal.title%",
-        "icon": {
-          "dark": "resources/dark/console.svg",
-          "light": "resources/light/console.svg"
-        }
+        "icon": "$(console)"
+      },
+      {
+        "command": "azure.resource.openInAzurePortal",
+        "title": "%azure.openInAzurePortal.title%"
       },
       {
         "command": "azure.resource.connectsqlserver",
@@ -284,6 +285,6 @@
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.1",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "github:corivera/vscodetestcover#1.0.6"
+    "vscodetestcover": "github:corivera/vscodetestcover#1.0.8"
   }
 }

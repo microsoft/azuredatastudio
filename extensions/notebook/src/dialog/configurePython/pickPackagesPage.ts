@@ -6,11 +6,22 @@
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import { BasePage } from './basePage';
-import { JupyterServerInstallation, PythonPkgDetails } from '../../jupyter/jupyterServerInstallation';
+import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
 import { python3DisplayName, pysparkDisplayName, sparkScalaDisplayName, sparkRDisplayName, powershellDisplayName, allKernelsName } from '../../common/constants';
 import { getDropdownValue } from '../../common/utils';
 
 const localize = nls.loadMessageBundle();
+
+interface RequiredPackageInfo {
+	name: string;
+	existingVersion: string;
+	requiredVersion: string;
+}
+
+namespace cssStyles {
+	export const tableHeader = { 'text-align': 'left', 'font-weight': 'lighter', 'font-size': '10px', 'user-select': 'text', 'border': 'none' };
+	export const tableRow = { 'border-top': 'solid 1px #ccc', 'border-bottom': 'solid 1px #ccc', 'border-left': 'none', 'border-right': 'none' };
+}
 
 export class PickPackagesPage extends BasePage {
 	private kernelLabel: azdata.TextComponent | undefined;
@@ -18,8 +29,8 @@ export class PickPackagesPage extends BasePage {
 	private requiredPackagesTable: azdata.DeclarativeTableComponent;
 	private packageTableSpinner: azdata.LoadingComponent;
 
-	private installedPackagesPromise: Promise<PythonPkgDetails[]>;
-	private installedPackages: PythonPkgDetails[];
+	private packageVersionRetrieval: Promise<void>;
+	private packageVersionMap = new Map<string, string>();
 
 	public async initialize(): Promise<boolean> {
 		if (this.model.kernelName) {
@@ -39,22 +50,46 @@ export class PickPackagesPage extends BasePage {
 			});
 		}
 
+		let nameColumn = localize('configurePython.pkgNameColumn', "Name");
+		let existingVersionColumn = localize('configurePython.existingVersionColumn', "Existing Version");
+		let requiredVersionColumn = localize('configurePython.requiredVersionColumn', "Required Version");
 		this.requiredPackagesTable = this.view.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
 			columns: [{
-				displayName: localize('configurePython.pkgNameColumn', "Name"),
+				displayName: nameColumn,
+				ariaLabel: nameColumn,
 				valueType: azdata.DeclarativeDataType.string,
 				isReadOnly: true,
-				width: '200px'
+				width: '200px',
+				headerCssStyles: {
+					...cssStyles.tableHeader
+				},
+				rowCssStyles: {
+					...cssStyles.tableRow
+				}
 			}, {
-				displayName: localize('configurePython.existingVersionColumn', "Existing Version"),
+				displayName: existingVersionColumn,
+				ariaLabel: existingVersionColumn,
 				valueType: azdata.DeclarativeDataType.string,
 				isReadOnly: true,
-				width: '200px'
+				width: '200px',
+				headerCssStyles: {
+					...cssStyles.tableHeader
+				},
+				rowCssStyles: {
+					...cssStyles.tableRow
+				}
 			}, {
-				displayName: localize('configurePython.requiredVersionColumn', "Required Version"),
+				displayName: requiredVersionColumn,
+				ariaLabel: requiredVersionColumn,
 				valueType: azdata.DeclarativeDataType.string,
 				isReadOnly: true,
-				width: '200px'
+				width: '200px',
+				headerCssStyles: {
+					...cssStyles.tableHeader
+				},
+				rowCssStyles: {
+					...cssStyles.tableRow
+				}
 			}],
 			data: [[]]
 		}).component();
@@ -74,9 +109,16 @@ export class PickPackagesPage extends BasePage {
 	}
 
 	public async onPageEnter(): Promise<void> {
+		this.packageVersionMap.clear();
 		let pythonExe = JupyterServerInstallation.getPythonExePath(this.model.pythonLocation, this.model.useExistingPython);
-		this.installedPackagesPromise = this.model.installation.getInstalledPipPackages(pythonExe);
-		this.installedPackages = undefined;
+		this.packageVersionRetrieval = this.model.installation.getInstalledPipPackages(pythonExe)
+			.then(installedPackages => {
+				if (installedPackages) {
+					installedPackages.forEach(pkg => {
+						this.packageVersionMap.set(pkg.name, pkg.version);
+					});
+				}
+			});
 
 		if (this.kernelDropdown) {
 			if (this.model.kernelName) {
@@ -89,45 +131,39 @@ export class PickPackagesPage extends BasePage {
 	}
 
 	public async onPageLeave(): Promise<boolean> {
-		return true;
+		return !this.packageTableSpinner.loading;
 	}
 
 	private async updateRequiredPackages(kernelName: string): Promise<void> {
+		this.instance.wizard.doneButton.enabled = false;
 		this.packageTableSpinner.loading = true;
 		try {
-			let pkgVersionMap = new Map<string, { currentVersion: string, newVersion: string }>();
-
 			// Fetch list of required packages for the specified kernel
-			let requiredPackages = JupyterServerInstallation.getRequiredPackagesForKernel(kernelName);
+			let requiredPkgVersions: RequiredPackageInfo[] = [];
+			let requiredPackages = this.model.installation.getRequiredPackagesForKernel(kernelName);
 			requiredPackages.forEach(pkg => {
-				pkgVersionMap.set(pkg.name, { currentVersion: undefined, newVersion: pkg.version });
+				requiredPkgVersions.push({ name: pkg.name, existingVersion: undefined, requiredVersion: pkg.version });
 			});
 
 			// For each required package, check if there is another version of that package already installed
-			if (!this.installedPackages) {
-				this.installedPackages = await this.installedPackagesPromise;
-			}
-			this.installedPackages.forEach(pkg => {
-				let info = pkgVersionMap.get(pkg.name);
-				if (info) {
-					info.currentVersion = pkg.version;
-					pkgVersionMap.set(pkg.name, info);
+			await this.packageVersionRetrieval;
+			requiredPkgVersions.forEach(pkgVersion => {
+				let installedPackageVersion = this.packageVersionMap.get(pkgVersion.name);
+				if (installedPackageVersion) {
+					pkgVersion.existingVersion = installedPackageVersion;
 				}
 			});
 
-			if (pkgVersionMap.size > 0) {
-				let packageData = [];
-				for (let [key, value] of pkgVersionMap.entries()) {
-					packageData.push([key, value.currentVersion ?? '-', value.newVersion]);
-				}
-				this.requiredPackagesTable.data = packageData;
+			if (requiredPkgVersions.length > 0) {
+				this.requiredPackagesTable.data = requiredPkgVersions.map(pkg => [pkg.name, pkg.existingVersion ?? '-', pkg.requiredVersion]);
 				this.model.packagesToInstall = requiredPackages;
 			} else {
-				this.instance.showErrorMessage(localize('msgUnsupportedKernel', "Could not retrieve packages for unsupported kernel {0}", kernelName));
+				this.instance.showErrorMessage(localize('msgUnsupportedKernel', "Could not retrieve packages for kernel {0}", kernelName));
 				this.requiredPackagesTable.data = [['-', '-', '-']];
 				this.model.packagesToInstall = undefined;
 			}
 		} finally {
+			this.instance.wizard.doneButton.enabled = true;
 			this.packageTableSpinner.loading = false;
 		}
 	}
