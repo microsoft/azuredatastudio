@@ -52,8 +52,7 @@ namespace schema {
 			case 'notebook/toolbar': return MenuId.NotebookToolbar;
 			case 'dataExplorer/context': return MenuId.DataExplorerContext;
 			case 'dataExplorer/action': return MenuId.DataExplorerAction;
-			case 'notebookExplorer/context': return MenuId.NotebookExplorerContext;
-			case 'notebookExplorer/action': return MenuId.NotebookExplorerAction;
+			case 'notebooks/notebook/title': return MenuId.NotebookTitle;
 			case 'comments/commentThread/title': return MenuId.CommentThreadTitle;
 			case 'comments/commentThread/context': return MenuId.CommentThreadActions;
 			case 'comments/comment/title': return MenuId.CommentTitle;

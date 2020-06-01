@@ -121,7 +121,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 	}
 
 	getSecondaryActions(): IAction[] {
-		let menu = this.menuService.createMenu(MenuId.NotebookExplorerAction, this.contextKeyService);
+		let menu = this.menuService.createMenu(MenuId.NotebookTitle, this.contextKeyService);
 		let actions = [];
 		menu.getActions({}).forEach(group => {
 			if (group[0] === 'secondary') {
