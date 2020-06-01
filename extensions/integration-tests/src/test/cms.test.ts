@@ -6,7 +6,7 @@
 import 'mocha';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import * as mssql from '../../../mssql/src/mssql';
+import * as mssql from '../../../mssql';
 import * as utils from './utils';
 import * as uuid from './uuid';
 import assert = require('assert');
