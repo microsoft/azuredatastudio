@@ -329,6 +329,11 @@ export class DashboardWidget {
 			width: maxWidth,
 			height: '500px',
 		}).component();
+		const moreLinksContainer = view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'column',
+			width: maxWidth,
+			height: '300px',
+		}).component();
 		const titleComponent = view.modelBuilder.text().withProperties({
 			value: constants.dashboardLinksTitle,
 			CSSStyles: {
@@ -350,18 +355,22 @@ export class DashboardWidget {
 			title: constants.sqlMlsDocTitle,
 			description: constants.sqlMlsDocDesc,
 			link: constants.mlsDocLink
-		},
-		{
+		}];
+
+		const moreLinks = [{
 			title: constants.onnxOnEdgeOdbcDocTitle,
 			description: constants.onnxOnEdgeOdbcDocDesc,
 			link: constants.onnxOnEdgeDocs
-		}];
-
-		const moreLink = {
+		},
+		{
+			title: constants.sqlMlsMIDocTitle,
+			description: constants.sqlMlsMIDocDesc,
+			link: constants.mlsMIDocLink
+		}, {
 			title: constants.mlsInstallOdbcDocTitle,
 			description: constants.mlsInstallOdbcDocDesc,
 			link: constants.odbcDriverDocuments
-		};
+		}];
 		const styles = {
 			'padding': '10px'
 		};
@@ -375,8 +384,10 @@ export class DashboardWidget {
 		linksContainer.addItems(links.map(l => this.createLink(view, l)), {
 			CSSStyles: styles
 		});
+		moreLinksContainer.addItems(moreLinks.map(l => this.createLink(view, l)));
 
-		this.addShowMorePanel(view, linksContainer, this.createLink(view, moreLink), { 'padding-left': '10px' }, styles);
+		this.addShowMorePanel(view, linksContainer, moreLinksContainer, { 'padding-left': '10px' }, styles);
+
 		return linksContainer;
 	}
 

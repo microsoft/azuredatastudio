@@ -28,7 +28,6 @@ export default class TableInsight extends Disposable implements IInsightsView, O
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
 	) {
 		super();
-		this._elementRef.nativeElement.className = 'slickgridContainer';
 	}
 
 	ngOnInit() {

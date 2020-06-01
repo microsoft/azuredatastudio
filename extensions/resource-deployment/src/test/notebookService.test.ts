@@ -7,7 +7,7 @@ import * as TypeMoq from 'typemoq';
 import 'mocha';
 import { NotebookService } from '../services/notebookService';
 import assert = require('assert');
-import { NotebookInfo } from '../interfaces';
+import { NotebookPathInfo } from '../interfaces';
 import { IPlatformService } from '../services/platformService';
 
 suite('Notebook Service Tests', function (): void {
@@ -35,7 +35,7 @@ suite('Notebook Service Tests', function (): void {
 		const notebookDarwin = 'test-notebook-darwin.ipynb';
 		const notebookLinux = 'test-notebook-linux.ipynb';
 
-		const notebookInput: NotebookInfo = {
+		const notebookInput: NotebookPathInfo = {
 			darwin: notebookDarwin,
 			win32: notebookWin32,
 			linux: notebookLinux

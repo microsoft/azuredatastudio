@@ -191,6 +191,8 @@ import { DashboardService } from 'sql/platform/dashboard/browser/dashboardServic
 import { NotebookService } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IScriptingService, ScriptingService } from 'sql/platform/scripting/common/scriptingService';
+import { IAssessmentService } from 'sql/workbench/services/assessment/common/interfaces';
+import { AssessmentService } from 'sql/workbench/services/assessment/common/assessmentService';
 
 registerSingleton(IDashboardService, DashboardService);
 registerSingleton(IDashboardViewService, DashboardViewService);
@@ -228,6 +230,7 @@ registerSingleton(IQueryEditorService, QueryEditorService);
 registerSingleton(IAdsTelemetryService, AdsTelemetryService);
 registerSingleton(IObjectExplorerService, ObjectExplorerService);
 registerSingleton(IOEShimService, OEShimService);
+registerSingleton(IAssessmentService, AssessmentService);
 
 //#endregion
 
@@ -390,6 +393,8 @@ import 'sql/workbench/contrib/query/common/resultsGrid.contribution';
 // data explorer
 import 'sql/workbench/contrib/dataExplorer/browser/dataExplorer.contribution';
 import 'sql/workbench/contrib/dataExplorer/browser/nodeActions.common.contribution';
+import 'sql/workbench/contrib/dataExplorer/browser/extensions.contribution';
+
 
 //editor replacement
 import 'sql/workbench/contrib/editorReplacement/common/editorReplacer.contribution';
@@ -465,5 +470,8 @@ import 'sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.cont
 
 // Extension
 import 'sql/workbench/contrib/extensions/browser/extensions.contribution';
+
+// Azure
+import 'sql/workbench/contrib/azure/browser/azure.contribution';
 
 //#endregion

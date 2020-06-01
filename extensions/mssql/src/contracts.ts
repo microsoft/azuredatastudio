@@ -678,26 +678,26 @@ export namespace SchemaCompareCancellationRequest {
 
 // ------------------------------- <Schema Compare> -----------------------------
 
-// ------------------------------- <Sql Assessment> -----------------------------
+/// ------------------------------- <Sql Assessment> -----------------------------
 
 export interface SqlAssessmentParams {
 	ownerUri: string;
-	targetType: mssql.SqlAssessmentTargetType
+	targetType: azdata.sqlAssessment.SqlAssessmentTargetType
 }
 
 export interface GenerateSqlAssessmentScriptParams {
-	items: mssql.SqlAssessmentResultItem[];
+	items: azdata.SqlAssessmentResultItem[];
 	taskExecutionMode: azdata.TaskExecutionMode;
 	targetServerName: string;
 	targetDatabaseName: string;
 }
 
 export namespace SqlAssessmentInvokeRequest {
-	export const type = new RequestType<SqlAssessmentParams, mssql.SqlAssessmentResult, void, void>('assessment/invoke');
+	export const type = new RequestType<SqlAssessmentParams, azdata.SqlAssessmentResult, void, void>('assessment/invoke');
 }
 
 export namespace GetSqlAssessmentItemsRequest {
-	export const type = new RequestType<SqlAssessmentParams, mssql.SqlAssessmentResult, void, void>('assessment/getAssessmentItems');
+	export const type = new RequestType<SqlAssessmentParams, azdata.SqlAssessmentResult, void, void>('assessment/getAssessmentItems');
 }
 
 export namespace GenerateSqlAssessmentScriptRequest {
@@ -705,7 +705,6 @@ export namespace GenerateSqlAssessmentScriptRequest {
 }
 
 // ------------------------------- <Sql Assessment> -----------------------------
-
 
 // ------------------------------- <Serialization> -----------------------------
 export namespace SerializeDataStartRequest {
