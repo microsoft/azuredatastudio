@@ -4,24 +4,39 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as request from 'request';
-// import * as fs from 'fs';
-import * as os from 'os';
+import * as fs from 'fs';
+import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
-import * as cp from 'child_process';
 import * as path from 'path';
+import * as zip from 'adm-zip';
+import * as tar from 'tar';
+import { ApiWrapper } from '../common/apiWrapper';
+import * as utils from '../common/utils';
+
+const localize = nls.loadMessageBundle();
+const msgRemoteBookDownloadProgress = localize('msgRemoteBookDownloadProgress', "Remote Book download is in progress");
+const msgRemoteBookDownloadComplete = localize('msgRemoteBookDownloadComplete', "Remote Book download is complete");
+const msgRemoteBookDownloadError = localize('msgRemoteBookDownloadError', "Error while downloading remote Book");
+const msgRemoteBookUnpackingError = localize('msgRemoteBookUnpackingError', "Error while decompressing remote Book");
+const msgRemoteBookDirectoryError = localize('msgRemoteBookDirectoryError', "Error while creating remote book directory");
+const msgTaskName = localize('msgTaskName', "Downloading selected Book");
 
 export class RemoteBookController {
 	private _book: RemoteBook;
 	constructor() {
 	}
 
-	public async setRemoteBook(url: URL, remoteLocation: string, zipURL?: URL, tarURL?: URL): Promise<boolean> {
+	public async setRemoteBook(url: URL, remoteLocation: string, zipURL?: URL, tarURL?: URL): Promise<string[]> {
 		if (remoteLocation === 'GitHub') {
 			this._book = new GitHubRemoteBook(url, zipURL, tarURL);
 		} else {
 			this._book = new SharedRemoteBook(url);
 		}
-		return this._book.createLocalCopy();
+		return await this._book.createLocalCopy();
+	}
+
+	public openRemoteBook(book: string) {
+		this._book.openRemoteBook(book);
 	}
 
 	public async getReleases(url: URL): Promise<IReleases[]> {
@@ -65,65 +80,8 @@ export class RemoteBookController {
 			});
 		});
 	}
-
-	public setLocalPath(): void {
-		// Save directory on User directory
-		if (vscode.workspace.workspaceFolders !== undefined) {
-			// Get workspace root path
-			let folders = vscode.workspace.workspaceFolders;
-			try {
-				this._book.local_path = new URL(folders[0].uri.fsPath);
-			}
-			catch (error) {
-				throw (error);
-			}
-		} else {
-			//If no workspace folder is opened then path is Users directory
-			try {
-				this._book.local_path = new URL(os.homedir());
-			}
-			catch (error) {
-				throw (error);
-			}
-		}
-	}
-
-	/**
-	 * Unzip a .zip or .tar.gz
-	 */
-	// private unzip(archivePath: string, extractDir: string) {
-	// 	if (archivePath.endsWith('.zip')) {
-	// 		if (process.platform === 'win32') {
-	// 			cp.spawnSync('powershell.exe', [
-	// 				'-NoProfile',
-	// 				'-ExecutionPolicy', 'Bypass',
-	// 				'-NonInteractive',
-	// 				'-NoLogo',
-	// 				'-Command',
-	// 				`Microsoft.PowerShell.Archive\\Expand-Archive -Path "${archivePath}" -DestinationPath "${extractDir}"`
-	// 			]);
-	// 		} else {
-	// 			cp.spawnSync('unzip', [archivePath, '-d', `${extractDir}`]);
-	// 		}
-	// 	} else {
-	// 		// tar does not create extractDir by default
-	// 		if (!fs.existsSync(extractDir)) {
-	// 			fs.mkdirSync(extractDir);
-	// 		}
-	// 		cp.spawnSync('tar', ['-xzf', archivePath, '-C', extractDir, '--strip-components', '1']);
-	// 	}
-	// }
 }
 
-export interface IRemoteBook {
-	remote_path: URL;
-	book_name?: string;
-	version?: string;
-	lang_code?: string;
-	local_path?: URL;
-	zipURL?: URL;
-	tarURL?: URL;
-}
 export interface IReleases {
 	remote_path: URL;
 	tag_name: string;
@@ -131,126 +89,173 @@ export interface IReleases {
 	tarURL: URL;
 }
 
-export abstract class RemoteBook implements IRemoteBook {
-	private _book_name: string;
-	private _version: string;
-	private _lang_code: string;
-	private _local_path: URL;
-	private _tarURL: URL;
-	private _zipURL: URL;
+export abstract class RemoteBook {
+	protected _book_name: string;
+	protected _version: string;
+	protected _lang_code: string;
+	protected _local_path: URL;
+	protected _tarURL: URL;
+	protected _zipURL: URL;
+	protected outputChannel: vscode.OutputChannel;
+	protected apiWrapper: ApiWrapper;
 
 	constructor(public remote_path: URL) {
 		this.remote_path = remote_path;
+		this.apiWrapper = new ApiWrapper();
+		this.outputChannel = this.apiWrapper.createOutputChannel(msgTaskName);
 	}
 
-	public async abstract createLocalCopy(): Promise<boolean>;
+	public async abstract createLocalCopy(): Promise<string[]>;
 
-	public abstract loadDirectoryContents(): void;
-
-	public openRemoteBook() {
-		vscode.commands.executeCommand('bookTreeView.openBook', path.join(this.local_path.href, this.version), false, undefined);
+	public openRemoteBook(selectedBook: string) {
+		vscode.commands.executeCommand('bookTreeView.openBook', selectedBook, false, undefined);
 	}
 
-	public set book_name(value: string) {
-		this._book_name = value;
+	public setLocalPath() {
+		// Save directory on User directory
+		if (vscode.workspace.workspaceFolders !== undefined) {
+			// Get workspace root path
+			let folders = vscode.workspace.workspaceFolders;
+			try {
+				this._local_path = new URL(folders[0].uri.fsPath);
+			}
+			catch (error) {
+				throw (error);
+			}
+		} else {
+			//If no workspace folder is opened then path is Users directory
+			try {
+				this._local_path = new URL(utils.getUserHome());
+			}
+			catch (error) {
+				throw (error);
+			}
+		}
 	}
 
-	public set version(value: string) {
-		this._version = value;
-	}
-
-	public set lang_code(value: string) {
-		this._lang_code = value;
-	}
-
-	public set local_path(value: URL) {
-		this._local_path = value;
-	}
-	public set zipURL(value: URL) {
-		this._zipURL = value;
-	}
-	public set tarURL(value: URL) {
-		this._tarURL = value;
-	}
-
-	public get book_name() {
-		return this._book_name;
-	}
-
-	public get version() {
-		return this._version;
-	}
-
-	public get lang_code() {
-		return this._lang_code;
-	}
-
-	public get local_path() {
-		return this._local_path;
-	}
-
-	public get tarURL() {
-		return this._tarURL;
-	}
-
-	public get zipURL() {
-		return this._zipURL;
+	public loadBooks(dir: string, books: string[]): string[] {
+		fs.readdirSync(dir).forEach(file => {
+			let fullPath = path.join(dir, file);
+			if (fs.lstatSync(fullPath).isDirectory()) {
+				if (isBook(fullPath)) {
+					books.push(fullPath);
+				}
+				return this.loadBooks(fullPath, books);
+			}
+			return [];
+		});
+		return books;
 	}
 }
 
-class SharedRemoteBook extends RemoteBook implements IRemoteBook {
+class SharedRemoteBook extends RemoteBook {
 	constructor(public remote_path: URL) {
 		super(remote_path);
 	}
 
-	public async createLocalCopy(): Promise<boolean> {
+	public async createLocalCopy(): Promise<string[]> {
 		//compress it
 		// copy it
 		// to local path
-		return true;
+		return [];
 	}
-
-	public loadDirectoryContents(): void {
-	}
-
 }
 
-export class GitHubRemoteBook extends RemoteBook implements IRemoteBook {
+export class GitHubRemoteBook extends RemoteBook {
 	constructor(public remote_path: URL, public zipURL: URL, public tarURL: URL) {
 		super(remote_path);
+		this._zipURL = zipURL;
+		this._tarURL = tarURL;
 	}
 
-	public async createLocalCopy(): Promise<boolean> {
-		let cmd;
-		return new Promise<boolean>((resolve, reject) => {
-			if (process.platform === 'win32') {
+	public async createLocalCopy(): Promise<string[]> {
+		this.outputChannel.show(true);
+		this.outputChannel.appendLine(msgRemoteBookDownloadProgress);
+		return new Promise((resolve, reject) => {
+			this.setLocalPath();
+			let re = /\//g;
+			let fileName = this._zipURL.pathname.substring(1).replace(re, '-').concat('-', utils.generateGuid());
+			this._local_path = new URL(path.join(this._local_path.href, fileName));
+			fs.mkdir(this._local_path.href, (err) => {
+				if (err) {
+					this.outputChannel.appendLine(msgRemoteBookDirectoryError);
+					return reject(err);
+				}
 
-				cmd = cp.spawn('powershell.exe', [
-					'-NoProfile',
-					'-ExecutionPolicy', 'Bypass',
-					'-NonInteractive',
-					'-NoLogo',
-					'-Command',
-					`Invoke-WebRequest -OutFile ${path.join(this.local_path.href, this.version)} ${this.zipURL.href}`
-				]);
+				let options = {
+					headers: {
+						'User-Agent': 'request'
+					},
+					timeout: 15000
+				};
+				let downloadRequest = request.get(this._zipURL.href, options)
+					.on('error', (downloadError) => {
+						this.outputChannel.appendLine(msgRemoteBookDownloadError);
+						reject(downloadError);
+					})
+					.on('response', (response) => {
+						if (response.statusCode !== 200) {
+							this.outputChannel.appendLine(msgRemoteBookDownloadError);
+							return reject(response.statusMessage);
+						}
+					});
+				let remoteBookFullPath = new URL(this._local_path.href.concat('.zip'));
+				downloadRequest.pipe(fs.createWriteStream(remoteBookFullPath.href))
+					.on('close', async () => {
+						//unpack python zip/tar file
+						this.outputChannel.appendLine(msgRemoteBookDownloadComplete);
+						if (utils.getOSPlatform() === utils.Platform.Windows || utils.getOSPlatform() === utils.Platform.Mac) {
+							try {
+								let zippedFile = new zip(remoteBookFullPath.href);
+								zippedFile.extractAllTo(this._local_path.href);
+							} catch (err) {
+								this.outputChannel.appendLine(msgRemoteBookDownloadError);
+								reject(err);
+							}
+							// Delete zip file
+							fs.unlink(remoteBookFullPath.href, (err) => {
+								if (err) {
+									this.outputChannel.appendLine(msgRemoteBookUnpackingError);
+									reject(err);
+								}
+							});
 
-			} else if (process.platform === 'darwin') {
-				cmd = cp.spawn(`curl -o ${path.join(this.local_path.href, this.version)} ${this.zipURL.href}`);
-			} else {
-				cmd = cp.spawn(`curl ${this.tarURL.href} | tar -xz -C ${path.join(this.local_path.href, this.version)} `);
-			}
-			cmd.on('exit', function (code) {
-				console.log(`Child exited with code ${code}`);
-				return true;
-			});
+							this.outputChannel.appendLine(msgRemoteBookDownloadComplete);
 
-			cmd.on('error', function (error) {
-				throw (error);
+						} else {
+							tar.extract({ file: remoteBookFullPath.href, cwd: this._local_path.href }).then(() => {
+								// Delete tar file
+								fs.unlink(remoteBookFullPath.href, (err) => {
+									if (err) {
+										this.outputChannel.appendLine(msgRemoteBookUnpackingError);
+										reject(err);
+									}
+								});
+								this.outputChannel.appendLine(msgRemoteBookDownloadComplete);
+							}).catch(err => {
+								this.outputChannel.appendLine(msgRemoteBookUnpackingError);
+								reject(err);
+							});
+						}
+						let books = this.loadBooks(this._local_path.href, []);
+						resolve(books);
+					})
+					.on('error', (downloadError) => {
+						this.outputChannel.appendLine(msgRemoteBookDownloadError);
+						reject(downloadError);
+						downloadRequest.abort();
+					});
 			});
 		});
-	}
-
-	public loadDirectoryContents(): void {
 
 	}
+}
+
+function isBook(fullPath: string) {
+	let contents: string[] = ['content', '_data', '_config.yml'];
+	let files = fs.readdirSync(fullPath);
+	if (files.includes(contents[0]) && files.includes(contents[1]) && files.includes(contents[2])) {
+		return true;
+	}
+	return false;
 }
