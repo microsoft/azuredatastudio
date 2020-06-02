@@ -13,7 +13,7 @@ import * as nls from 'vscode-nls';
 import { INotebookService } from './notebookService';
 import { IPlatformService } from './platformService';
 import { IToolsService } from './toolsService';
-import { ResourceType, ResourceTypeOption, NotebookInfo, DeploymentProvider, instanceOfWizardDeploymentProvider, instanceOfDialogDeploymentProvider, instanceOfNotebookDeploymentProvider, instanceOfDownloadDeploymentProvider, instanceOfWebPageDeploymentProvider, instanceOfCommandDeploymentProvider, instanceOfNotebookBasedDialogInfo, instanceOfNotebookWizardDeploymentProvider } from '../interfaces';
+import { ResourceType, ResourceTypeOption, NotebookPathInfo, DeploymentProvider, instanceOfWizardDeploymentProvider, instanceOfDialogDeploymentProvider, instanceOfNotebookDeploymentProvider, instanceOfDownloadDeploymentProvider, instanceOfWebPageDeploymentProvider, instanceOfCommandDeploymentProvider, instanceOfNotebookBasedDialogInfo, instanceOfNotebookWizardDeploymentProvider } from '../interfaces';
 import { DeployClusterWizard } from '../ui/deployClusterWizard/deployClusterWizard';
 import { DeploymentInputDialog } from '../ui/deploymentInputDialog';
 
@@ -77,7 +77,7 @@ export class ResourceTypeService implements IResourceTypeService {
 		});
 	}
 
-	private updateNotebookPath(objWithNotebookProperty: { notebook: string | NotebookInfo } | undefined, extensionPath: string): void {
+	private updateNotebookPath(objWithNotebookProperty: { notebook: string | NotebookPathInfo } | undefined, extensionPath: string): void {
 		if (objWithNotebookProperty && objWithNotebookProperty.notebook) {
 			if (typeof objWithNotebookProperty.notebook === 'string') {
 				objWithNotebookProperty.notebook = path.join(extensionPath, objWithNotebookProperty.notebook);
@@ -239,10 +239,10 @@ export class ResourceTypeService implements IResourceTypeService {
 	public startDeployment(provider: DeploymentProvider): void {
 		const self = this;
 		if (instanceOfWizardDeploymentProvider(provider)) {
-			const wizard = new DeployClusterWizard(provider.bdcWizard, new KubeService(), new AzdataService(this.platformService), this.notebookService);
+			const wizard = new DeployClusterWizard(provider.bdcWizard, new KubeService(), new AzdataService(this.platformService), this.notebookService, this.toolsService);
 			wizard.open();
 		} else if (instanceOfNotebookWizardDeploymentProvider(provider)) {
-			const wizard = new NotebookWizard(provider.notebookWizard, this.notebookService, this.platformService);
+			const wizard = new NotebookWizard(provider.notebookWizard, this.notebookService, this.platformService, this.toolsService);
 			wizard.open();
 		} else if (instanceOfDialogDeploymentProvider(provider)) {
 			const dialog = new DeploymentInputDialog(this.notebookService, this.platformService, provider.dialog);
