@@ -11,7 +11,6 @@ import * as utils from '../common/utils';
 import { Uri, window } from 'vscode';
 import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
-import { DatabaseReferenceLocation } from '../controllers/projectController';
 
 /**
  * Class representing a Project, and providing functions for operating on it
@@ -160,16 +159,10 @@ export class Project {
 
 	/**
 	 * Adds reference to a dacpac to the project
-	 * @param relativeFilePath Relative path to the dacpac
+	 * @param uri Uri of the dacpac
 	 * @param databaseName name of the database
 	 */
 	public async addDatabaseReference(uri: Uri, databaseLocation: DatabaseReferenceLocation, databaseName: string): Promise<void> {
-		//Check that dacpac being referenced actually exists
-		// let exists = await utils.exists(absoluteFilePath);
-		// if (!exists) {
-		// 	throw new Error(constants.noFileExist(absoluteFilePath));
-		// }
-
 		let databaseReferenceEntry = new DatabaseReferenceProjectEntry(uri, databaseLocation, databaseName);
 
 		await this.addToProjFile(databaseReferenceEntry);
@@ -351,4 +344,9 @@ export enum EntryType {
 	File,
 	Folder,
 	DatabaseReference
+}
+
+export enum DatabaseReferenceLocation {
+	sameDatabase,
+	differentDatabaseSameServer
 }

@@ -16,7 +16,7 @@ import { IConnectionProfile, TaskExecutionMode } from 'azdata';
 import { promises as fs } from 'fs';
 import { ApiWrapper } from '../common/apiWrapper';
 import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
-import { Project } from '../models/project';
+import { Project, DatabaseReferenceLocation } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { FolderNode } from '../models/tree/fileFolderTreeItem';
 import { IDeploymentProfile, IGenerateScriptProfile } from '../models/IDeploymentProfile';
@@ -34,11 +34,6 @@ export enum ExtractTarget {
 	objectType = 3,
 	schema = 4,
 	schemaObjectType = 5
-}
-
-export enum DatabaseReferenceLocation {
-	sameDatabase,
-	differentDatabaseSameServer
 }
 
 /**
