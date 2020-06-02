@@ -335,11 +335,11 @@ export class ProjectsController {
 					if (!databaseName) {
 						throw new Error(constants.databaseNameRequired);
 					}
+					await project.addDatabaseReference(dacpacFileLocation, <DatabaseReferenceLocation>databaseLocation, databaseName);
+				} else {
+					await project.addDatabaseReference(dacpacFileLocation, <DatabaseReferenceLocation>databaseLocation);
 				}
 
-				if (databaseName) {
-					await project.addDatabaseReference(dacpacFileLocation, <DatabaseReferenceLocation>databaseLocation, databaseName);
-				}
 			}
 		} catch (err) {
 			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));

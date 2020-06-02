@@ -162,13 +162,13 @@ export class Project {
 	 * @param uri Uri of the dacpac
 	 * @param databaseName name of the database
 	 */
-	public async addDatabaseReference(uri: Uri, databaseLocation: DatabaseReferenceLocation, databaseName: string): Promise<void> {
+	public async addDatabaseReference(uri: Uri, databaseLocation: DatabaseReferenceLocation, databaseName?: string): Promise<void> {
 		let databaseReferenceEntry = new DatabaseReferenceProjectEntry(uri, databaseLocation, databaseName);
 
 		await this.addToProjFile(databaseReferenceEntry);
 	}
 
-	private createProjectEntry(relativePath: string, entryType: EntryType): ProjectEntry {
+	public createProjectEntry(relativePath: string, entryType: EntryType): ProjectEntry {
 		return new ProjectEntry(Uri.file(path.join(this.projectFolderPath, relativePath)), relativePath, entryType);
 	}
 
@@ -330,13 +330,8 @@ export class ProjectEntry {
  * Represents a database reference entry in a project file
  */
 class DatabaseReferenceProjectEntry extends ProjectEntry {
-	name: string;
-	databaseLocation: DatabaseReferenceLocation;
-
-	constructor(uri: Uri, databaseLocation: DatabaseReferenceLocation, name: string) {
+	constructor(uri: Uri, public databaseLocation: DatabaseReferenceLocation, public name?: string) {
 		super(uri, '', EntryType.DatabaseReference);
-		this.name = name;
-		this.databaseLocation = databaseLocation;
 	}
 }
 
