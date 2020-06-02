@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import * as path from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { INotebookService, Notebook } from '../../services/notebookService';
@@ -91,8 +90,8 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardPag
 				this.notebookService.backgroundExecuteNotebook(this.wizardInfo.taskName, notebook, 'deploy', this.platformService, env);
 			} else {
 				Object.assign(process.env, env);
-				const title = path.basename(this.notebookService.getNotebookPath(this.wizardInfo.notebook));
-				await this.notebookService.launchNotebookWithContent(title, JSON.stringify(notebook, undefined, 4));
+				const notebookPath = this.notebookService.getNotebookPath(this.wizardInfo.notebook);
+				await this.notebookService.launchNotebookWithContent(notebookPath, JSON.stringify(notebook, undefined, 4));
 			}
 		} catch (error) {
 			vscode.window.showErrorMessage(error);
