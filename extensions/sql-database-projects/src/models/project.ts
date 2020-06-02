@@ -73,13 +73,13 @@ export class Project {
 			const importTarget = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Import)[i];
 
 			let condition = importTarget.getAttribute(constants.Condition);
-			let project = importTarget.getAttribute(constants.Project);
+			let projectAttributeVal = importTarget.getAttribute(constants.Project);
 
-			if (condition === constants.SqlDbPresentCondition && project === constants.SqlDbTargets) {
-				await this.updateImportedTargetsToProjFile(constants.RoundTripSqlDbPresentCondition, project, importTarget);
+			if (condition === constants.SqlDbPresentCondition && projectAttributeVal === constants.SqlDbTargets) {
+				await this.updateImportedTargetsToProjFile(constants.RoundTripSqlDbPresentCondition, projectAttributeVal, importTarget);
 			}
-			if (condition === constants.SqlDbNotPresentCondition && project === constants.MsBuildtargets) {
-				await this.updateImportedTargetsToProjFile(constants.RoundTripSqlDbNotPresentCondition, project, importTarget);
+			if (condition === constants.SqlDbNotPresentCondition && projectAttributeVal === constants.MsBuildtargets) {
+				await this.updateImportedTargetsToProjFile(constants.RoundTripSqlDbNotPresentCondition, projectAttributeVal, importTarget);
 			}
 		}
 
@@ -177,17 +177,17 @@ export class Project {
 		this.findOrCreateItemGroup(constants.Folder).appendChild(newFolderNode);
 	}
 
-	private async updateImportedTargetsToProjFile(condition: string, project: string, oldImportNode?: any): Promise<any> {
+	private async updateImportedTargetsToProjFile(condition: string, projectAttributeVal: string, oldImportNode?: any): Promise<any> {
 		const importNode = this.projFileXmlDoc.createElement(constants.Import);
 		importNode.setAttribute(constants.Condition, condition);
-		importNode.setAttribute(constants.Project, project);
+		importNode.setAttribute(constants.Project, projectAttributeVal);
 
 		if (oldImportNode) {
 			this.projFileXmlDoc.documentElement.replaceChild(importNode, oldImportNode);
 		}
 		else {
 			this.projFileXmlDoc.documentElement.appendChild(importNode, oldImportNode);
-			this.importedTargets.push(project);	// Add new import target to the list
+			this.importedTargets.push(projectAttributeVal);	// Add new import target to the list
 		}
 
 		await this.serializeToProjFile(this.projFileXmlDoc);
