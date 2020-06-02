@@ -146,10 +146,7 @@
       {
         "command": "azure.resource.startterminal",
         "title": "%azure.resource.startterminal.title%",
-        "icon": {
-          "dark": "resources/dark/console.svg",
-          "light": "resources/light/console.svg"
-        }
+        "icon": "$(console)"
       },
       {
         "command": "azure.resource.openInAzurePortal",
