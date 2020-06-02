@@ -7,7 +7,9 @@
 	],
 	"includePid": false,
 	"reports": [
-		"cobertura"
+		"cobertura",
+		"lcov",
+		"json"
 	],
 	"verbose": false,
 	"remapOptions": {
