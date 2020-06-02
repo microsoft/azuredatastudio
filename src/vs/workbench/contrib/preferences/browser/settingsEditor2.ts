@@ -1425,7 +1425,7 @@ class SyncControls extends Disposable {
 		DOM.hide(this.turnOnSyncButton.element);
 
 		this._register(this.turnOnSyncButton.onDidClick(async () => {
-			await this.commandService.executeCommand('workbench.userData.actions.syncStart');
+			await this.commandService.executeCommand('workbench.userDataSync.actions.turnOn');
 		}));
 
 		this.updateLastSyncedTime();
