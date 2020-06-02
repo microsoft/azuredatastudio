@@ -14,6 +14,7 @@ import { DeploymentType, NotebookWizardInfo } from './../../interfaces';
 import { IPlatformService } from './../../services/platformService';
 import { NotebookWizardAutoSummaryPage } from './notebookWizardAutoSummaryPage';
 import { NotebookWizardPage } from './notebookWizardPage';
+import { getDateTimeString } from '../../utils';
 
 const localize = nls.loadMessageBundle();
 
@@ -91,8 +92,11 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardPag
 				this.notebookService.backgroundExecuteNotebook(this.wizardInfo.taskName, notebook, 'deploy', this.platformService, env);
 			} else {
 				Object.assign(process.env, env);
-				const title = path.basename(this.notebookService.getNotebookPath(this.wizardInfo.notebook));
-				await this.notebookService.launchNotebookWithContent(title, JSON.stringify(notebook, undefined, 4));
+				const notebookPath = this.notebookService.getNotebookPath(this.wizardInfo.notebook);
+				const ext = path.extname(notebookPath);
+				const title = path.basename(notebookPath, ext);
+                console.log(`TCL::: NotebookWizard -> JSON.stringify(notebook, undefined, 4)`, JSON.stringify(notebook, undefined, 4));
+				await this.notebookService.launchNotebookWithContent(`${title}-${getDateTimeString()}`, JSON.stringify(notebook, undefined, 4));
 			}
 		} catch (error) {
 			vscode.window.showErrorMessage(error);
