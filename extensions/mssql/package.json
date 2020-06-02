@@ -1110,6 +1110,6 @@
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "github:corivera/vscodetestcover#1.0.8"
+    "vscodetestcover": "^1.0.9"
   }
 }

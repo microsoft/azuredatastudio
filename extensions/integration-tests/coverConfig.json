@@ -8,10 +8,10 @@
 		"**/node_modules/**",
 		"**/test/**"
 	],
-	"includePid": false,
 	"reports": [
 		"cobertura",
-		"lcov"
+		"lcov",
+		"json"
 	],
 	"verbose": false,
 	"remapOptions": {

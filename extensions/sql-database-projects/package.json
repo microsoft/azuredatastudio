@@ -279,6 +279,6 @@
     "tslint": "^5.8.0",
     "typemoq": "^2.1.0",
     "typescript": "^2.6.1",
-    "vscodetestcover": "github:corivera/vscodetestcover#1.0.8"
+    "vscodetestcover": "^1.0.9"
   }
 }
