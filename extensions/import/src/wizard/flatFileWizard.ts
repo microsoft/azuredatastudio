@@ -39,24 +39,11 @@ export class FlatFileWizard {
 
 		let pages: Map<number, ImportPage> = new Map<number, ImportPage>();
 
-		let currentConnection = await this._apiWrapper.getCurrentConnection();
+		let connectionId: string = await this.getConnectionId();
 
-		let connectionId: string;
-
-		if (!currentConnection) {
-			connectionId = (await this._apiWrapper.openConnectionDialog(constants.supportedProviders)).connectionId;
-			if (!connectionId) {
-				this._apiWrapper.showErrorMessage(constants.needConnectionText);
-				return;
-			}
-		} else {
-			if (currentConnection.providerId !== 'MSSQL') {
-				this._apiWrapper.showErrorMessage(constants.needSqlConnectionText);
-				return;
-			}
-			connectionId = currentConnection.connectionId;
+		if (!connectionId) {
+			return;
 		}
-
 
 		model.serverId = connectionId;
 
@@ -130,6 +117,28 @@ export class FlatFileWizard {
 		this.wizard.pages = [page1, page2, page3, page4];
 
 		this.wizard.open();
+	}
+
+	public async getConnectionId(): Promise<string> {
+		let currentConnection = await this._apiWrapper.getCurrentConnection();
+
+		let connectionId: string;
+
+		if (!currentConnection) {
+			let connection = await this._apiWrapper.openConnectionDialog(constants.supportedProviders);
+			if (!connection) {
+				this._apiWrapper.showErrorMessage(constants.needConnectionText);
+				return undefined;
+			}
+			connectionId = connection.connectionId;
+		} else {
+			if (currentConnection.providerId !== 'MSSQL') {
+				this._apiWrapper.showErrorMessage(constants.needSqlConnectionText);
+				return undefined;
+			}
+			connectionId = currentConnection.connectionId;
+		}
+		return connectionId;
 	}
 
 	public setImportAnotherFileVisibility(visibility: boolean) {

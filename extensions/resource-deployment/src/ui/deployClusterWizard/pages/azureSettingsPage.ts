@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { FieldType, LabelPosition, SectionInfo } from '../../../interfaces';
-import { createSection, getDropdownComponent, InputComponents, InputComponent, setModelValues, Validator } from '../../modelViewUtils';
+import { createSection, getDropdownComponent, InputComponentInfo, InputComponents, setModelValues, Validator } from '../../modelViewUtils';
 import { WizardPageBase } from '../../wizardPageBase';
 import { AksName_VariableName, Location_VariableName, ResourceGroup_VariableName, SubscriptionId_VariableName, VMCount_VariableName, VMSize_VariableName } from '../constants';
 import { DeployClusterWizard } from '../deployClusterWizard';
@@ -29,7 +29,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			labelPosition: LabelPosition.Left,
 			spaceBetweenFields: '5px',
 			rows: [{
-				fields: [{
+				items: [{
 					type: FieldType.Text,
 					label: localize('deployCluster.SubscriptionField', "Subscription id"),
 					required: false,
@@ -38,9 +38,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					description: localize('deployCluster.SubscriptionDescription', "The default subscription will be used if you leave this field blank.")
 				}, {
 					type: FieldType.ReadonlyText,
-					label: '',
-					labelWidth: '0px',
-					defaultValue: localize('deployCluster.SubscriptionHelpText', "{0}"),
+					label: '{0}',
 					links: [
 						{
 							text: localize('deployCluster.SubscriptionHelpLink', "View available Azure subscriptions"),
@@ -49,7 +47,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					]
 				}]
 			}, {
-				fields: [{
+				items: [{
 					type: FieldType.DateTimeText,
 					label: localize('deployCluster.ResourceGroupName', "New resource group name"),
 					required: true,
@@ -57,7 +55,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					defaultValue: 'mssql-'
 				}]
 			}, {
-				fields: [{
+				items: [{
 					type: FieldType.Options,
 					label: localize('deployCluster.Location', "Location"),
 					required: true,
@@ -79,9 +77,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					]
 				}, {
 					type: FieldType.ReadonlyText,
-					label: '',
-					labelWidth: '0px',
-					defaultValue: localize('deployCluster.LocationHelpText', "{0}"),
+					label: '{0}',
 					links: [
 						{
 							text: localize('deployCluster.AzureLocationHelpLink', "View available Azure locations"),
@@ -90,7 +86,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					]
 				}]
 			}, {
-				fields: [{
+				items: [{
 					type: FieldType.DateTimeText,
 					label: localize('deployCluster.AksName', "AKS cluster name"),
 					required: true,
@@ -98,7 +94,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					defaultValue: 'mssql-',
 				}]
 			}, {
-				fields: [
+				items: [
 					{
 						type: FieldType.Number,
 						label: localize('deployCluster.VMCount', "VM count"),
@@ -110,7 +106,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					}
 				]
 			}, {
-				fields: [{
+				items: [{
 					type: FieldType.Text,
 					label: localize('deployCluster.VMSize', "VM size"),
 					required: true,
@@ -118,9 +114,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					defaultValue: 'Standard_E8s_v3'
 				}, {
 					type: FieldType.ReadonlyText,
-					label: '',
-					labelWidth: '0px',
-					defaultValue: localize('deployCluster.VMSizeHelpText', "{0}"),
+					label: '{0}',
 					links: [
 						{
 							text: localize('deployCluster.VMSizeHelpLink', "View available VM sizes"),
@@ -137,13 +131,14 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 					self.wizard.registerDisposable(disposable);
 				},
-				onNewInputComponentCreated: (name: string, component: InputComponent): void => {
-					self.inputComponents[name] = { component: component };
+				onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo): void => {
+					this.inputComponents[name] = { component: inputComponentInfo.component };
 				},
 				onNewValidatorCreated: (validator: Validator): void => {
 					self.validators.push(validator);
 				},
-				container: this.wizard.wizardObject
+				container: this.wizard.wizardObject,
+				inputComponents: this.wizard.inputComponents
 			});
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[{
@@ -184,5 +179,6 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			return true;
 		});
 		setModelValues(this.inputComponents, this.wizard.model);
+		Object.assign(this.wizard.inputComponents, this.inputComponents);
 	}
 }

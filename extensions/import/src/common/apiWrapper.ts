@@ -80,5 +80,9 @@ export class ApiWrapper {
 		return azdata.connection.getCredentials(connectionId);
 	}
 
+	public getConnectionString(connectionId: string, includePassword: boolean) {
+		return azdata.connection.getConnectionString(connectionId, includePassword);
+	}
+
 
 }

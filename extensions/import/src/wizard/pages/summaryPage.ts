@@ -87,9 +87,11 @@ export class SummaryPage extends ImportPage {
 
 		let result: InsertDataResponse;
 		let err;
+		let includePasswordInConnectionString = (this.model.server.options.connectionId === 'Integrated') ? false : true;
+
 		try {
 			result = await this.provider.sendInsertDataRequest({
-				connectionString: await this.getConnectionString(),
+				connectionString: await this._apiWrapper.getConnectionString(this.model.server.connectionId, includePasswordInConnectionString),
 				//TODO check what SSMS uses as batch size
 				batchSize: 500
 			});
@@ -118,25 +120,6 @@ export class SummaryPage extends ImportPage {
 			value: updateText
 		});
 		return true;
-	}
-
-	/**
-	 * Gets the connection string to send to the middleware
-	 */
-	private async getConnectionString(): Promise<string> {
-		let options = this.model.server.options;
-		let connectionString: string;
-
-		if (options.authenticationType === 'Integrated') {
-			connectionString = `Data Source=${options.server + (options.port ? `,${options.port}` : '')};Initial Catalog=${this.model.database};Integrated Security=True`;
-		} else {
-			let credentials = await this._apiWrapper.getCredentials(this.model.server.connectionId);
-			connectionString = `Data Source=${options.server + (options.port ? `,${options.port}` : '')};Initial Catalog=${this.model.database};Integrated Security=False;User Id=${options.user};Password=${credentials.password}`;
-		}
-
-		// TODO: Fix this, it's returning undefined string.
-		//await azdata.connection.getConnectionString(this.model.server.connectionId, true);
-		return connectionString;
 	}
 
 	// private async getCountRowsInserted(): Promise<Number> {

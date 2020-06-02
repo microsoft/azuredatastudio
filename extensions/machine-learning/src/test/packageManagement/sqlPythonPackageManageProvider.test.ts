@@ -132,6 +132,7 @@ describe('SQL Python Package Manager', () => {
 		let connection = new azdata.connection.ConnectionProfile();
 		connection.serverName = 'serverName';
 		connection.databaseName = 'databaseName';
+		connection.userName = 'user';
 		let credentials = { [azdata.ConnectionOptionSpecialType.password]: 'password' };
 		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
 		testContext.apiWrapper.setup(x => x.getCredentials(TypeMoq.It.isAny())).returns(() => { return Promise.resolve(credentials); });
@@ -173,6 +174,7 @@ describe('SQL Python Package Manager', () => {
 		let connection = new azdata.connection.ConnectionProfile();
 		connection.serverName = 'serverName';
 		connection.databaseName = 'databaseName';
+		connection.userName = 'user';
 		let credentials = { [azdata.ConnectionOptionSpecialType.password]: 'password' };
 		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
 		testContext.apiWrapper.setup(x => x.getCredentials(TypeMoq.It.isAny())).returns(() => { return Promise.resolve(credentials); });
@@ -213,6 +215,7 @@ describe('SQL Python Package Manager', () => {
 		let connection = new azdata.connection.ConnectionProfile();
 		connection.serverName = 'serverName,3433';
 		connection.databaseName = 'databaseName';
+		connection.userName = 'user';
 		let credentials = { [azdata.ConnectionOptionSpecialType.password]: 'password' };
 		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
 		testContext.apiWrapper.setup(x => x.getCredentials(TypeMoq.It.isAny())).returns(() => { return Promise.resolve(credentials); });
@@ -225,6 +228,88 @@ describe('SQL Python Package Manager', () => {
 				scripts.find(x => x.indexOf('package="a-name"') > 0) &&
 				scripts.find(x => x.indexOf('version="1.1.2"') > 0) &&
 				scripts.find(x => x.indexOf('pwd="password"') > 0)) {
+				packagesUpdated = true;
+			}
+
+			return Promise.resolve('');
+		});
+
+		let provider = createProvider(testContext);
+		await provider.installPackages(packages, false, connection.databaseName);
+
+		should.deepEqual(packagesUpdated, true);
+	});
+
+	it('installPackages Should not include credential for windows auth', async function (): Promise<void> {
+		let testContext = createContext();
+		let packagesUpdated = false;
+		let packages: nbExtensionApis.IPackageDetails[] = [
+			{
+				'name': 'a-name',
+				'version': '1.1.2'
+			},
+			{
+				'name': 'b-name',
+				'version': '1.1.1'
+			}
+		];
+
+		let connection = new azdata.connection.ConnectionProfile();
+		connection.serverName = 'serverName,3433';
+		connection.databaseName = 'databaseName';
+		let credentials = { [azdata.ConnectionOptionSpecialType.password]: 'password' };
+		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
+		testContext.apiWrapper.setup(x => x.getCredentials(TypeMoq.It.isAny())).returns(() => { return Promise.resolve(credentials); });
+		testContext.processService.setup(x => x.execScripts(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((path, scripts: string[]) => {
+
+			if (path && scripts.find(x => x.indexOf('install') > 0) &&
+				scripts.find(x => x.indexOf('port=3433') > 0) &&
+				scripts.find(x => x.indexOf('server="serverName"') > 0) &&
+				scripts.find(x => x.indexOf('database="databaseName"') > 0) &&
+				scripts.find(x => x.indexOf('package="a-name"') > 0) &&
+				scripts.find(x => x.indexOf('version="1.1.2"') > 0) &&
+				scripts.find(x => x.indexOf('pwd="password"') < 0)) {
+				packagesUpdated = true;
+			}
+
+			return Promise.resolve('');
+		});
+
+		let provider = createProvider(testContext);
+		await provider.installPackages(packages, false, connection.databaseName);
+
+		should.deepEqual(packagesUpdated, true);
+	});
+
+	it('installPackages Should not include database if not specified', async function (): Promise<void> {
+		let testContext = createContext();
+		let packagesUpdated = false;
+		let packages: nbExtensionApis.IPackageDetails[] = [
+			{
+				'name': 'a-name',
+				'version': '1.1.2'
+			},
+			{
+				'name': 'b-name',
+				'version': '1.1.1'
+			}
+		];
+
+		let connection = new azdata.connection.ConnectionProfile();
+		connection.serverName = 'serverName,3433';
+		connection.databaseName = '';
+		let credentials = { [azdata.ConnectionOptionSpecialType.password]: 'password' };
+		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
+		testContext.apiWrapper.setup(x => x.getCredentials(TypeMoq.It.isAny())).returns(() => { return Promise.resolve(credentials); });
+		testContext.processService.setup(x => x.execScripts(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((path, scripts: string[]) => {
+
+			if (path && scripts.find(x => x.indexOf('install') > 0) &&
+				scripts.find(x => x.indexOf('port=3433') > 0) &&
+				scripts.find(x => x.indexOf('server="serverName"') > 0) &&
+				scripts.find(x => x.indexOf('database="databaseName"') < 0) &&
+				scripts.find(x => x.indexOf('package="a-name"') > 0) &&
+				scripts.find(x => x.indexOf('version="1.1.2"') > 0) &&
+				scripts.find(x => x.indexOf('pwd="password"') < 0)) {
 				packagesUpdated = true;
 			}
 

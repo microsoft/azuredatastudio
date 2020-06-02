@@ -337,6 +337,45 @@ class TestFormContainer extends TestComponentBase implements azdata.FormContaine
 	}
 }
 
+class TestDivContainer extends TestComponentBase implements azdata.DivContainer {
+	onDidClick: vscode.Event<any>;
+	items: azdata.Component[] = [];
+	clearItems(): void {
+	}
+	addItems(itemConfigs: azdata.Component[], itemLayout?: azdata.DivItemLayout): void {
+	}
+	addItem(component: azdata.Component, itemLayout?: azdata.DivItemLayout): void {
+	}
+	insertItem(component: azdata.Component, index: number, itemLayout?: azdata.DivItemLayout): void {
+	}
+	removeItem(component: azdata.Component): boolean {
+		return true;
+	}
+	setLayout(layout: azdata.DivLayout): void {
+	}
+	setItemLayout(component: azdata.Component, layout: azdata.DivItemLayout): void {
+	}
+}
+
+class TestFlexContainer extends TestComponentBase implements azdata.FlexContainer {
+	items: azdata.Component[] = [];
+	clearItems(): void {
+	}
+	addItems(itemConfigs: azdata.Component[], itemLayout?: azdata.FlexItemLayout): void {
+	}
+	addItem(component: azdata.Component, itemLayout?: azdata.FlexItemLayout): void {
+	}
+	insertItem(component: azdata.Component, index: number, itemLayout?: azdata.FlexItemLayout): void {
+	}
+	removeItem(component: azdata.Component): boolean {
+		return true;
+	}
+	setLayout(layout: azdata.FlexLayout): void {
+	}
+	setItemLayout(component: azdata.Component, layout: azdata.FlexItemLayout): void {
+	}
+}
+
 class TestComponentBuilder<T extends azdata.Component> implements azdata.ComponentBuilder<T> {
 	constructor(private _component: T) {
 	}
@@ -383,6 +422,34 @@ export function createViewContext(): TestContext {
 		withLayout: () => formBuilder
 	});
 
+	let div: azdata.DivContainer = new TestDivContainer();
+	let divBuilder: azdata.DivBuilder = Object.assign({}, {
+		component: () => div,
+		addFormItem: () => { },
+		insertFormItem: () => { },
+		removeFormItem: () => true,
+		addFormItems: () => { },
+		withFormItems: () => divBuilder,
+		withProperties: () => divBuilder,
+		withValidation: () => divBuilder,
+		withItems: () => divBuilder,
+		withLayout: () => divBuilder
+	});
+
+	let flex: azdata.FlexContainer = new TestFlexContainer();
+	let flexBuilder: azdata.FlexBuilder = Object.assign({}, {
+		component: () => flex,
+		addFormItem: () => { },
+		insertFormItem: () => { },
+		removeFormItem: () => true,
+		addFormItems: () => { },
+		withFormItems: () => flexBuilder,
+		withProperties: () => flexBuilder,
+		withValidation: () => flexBuilder,
+		withItems: () => flexBuilder,
+		withLayout: () => flexBuilder
+	});
+
 	let view: azdata.ModelView = {
 		onClosed: undefined!,
 		connection: undefined!,
@@ -398,7 +465,9 @@ export function createViewContext(): TestContext {
 			dropDown: () => dropdownBuilder,
 			declarativeTable: () => declarativeTableBuilder,
 			formContainer: () => formBuilder,
-			loadingComponent: () => loadingBuilder
+			loadingComponent: () => loadingBuilder,
+			divContainer: () => divBuilder,
+			flexContainer: () => flexBuilder
 		}
 	};
 
@@ -411,5 +480,14 @@ export function createViewContext(): TestContext {
 export interface TestContext {
 	view: azdata.ModelView;
 	onClick: vscode.EventEmitter<any>;
+}
+
+export class TestButton implements azdata.window.Button {
+	label: string;
+	enabled: boolean;
+	hidden: boolean;
+	constructor(private onClickEmitter: vscode.EventEmitter<void>) {
+	}
+	onClick: vscode.Event<void> = this.onClickEmitter.event;
 }
 //#endregion

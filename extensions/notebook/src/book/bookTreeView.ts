@@ -54,7 +54,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	private async initialize(workspaceFolders: vscode.WorkspaceFolder[]): Promise<void> {
-		await vscode.commands.executeCommand('setContext', 'unsavedBooks', this._openAsUntitled);
+		await vscode.commands.executeCommand('setContext', 'providedBooks', this._openAsUntitled);
 		await Promise.all(workspaceFolders.map(async (workspaceFolder) => {
 			try {
 				await this.loadNotebooksInFolder(workspaceFolder.uri.fsPath);
