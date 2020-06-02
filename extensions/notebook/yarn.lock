@@ -1661,9 +1661,9 @@ vscode-nls@^4.0.0:
   resolved "https://registry.yarnpkg.com/vscode-nls/-/vscode-nls-4.0.0.tgz#4001c8a6caba5cedb23a9c5ce1090395c0e44002"
   integrity sha512-qCfdzcH+0LgQnBpZA53bA32kzp9rpq/f66Som577ObeuDlFIrtbEJ+A/+CCxjIh4G8dpJYNCKIsxpRAHIfsbNw==
 
-"vscodetestcover@github:corivera/vscodetestcover#1.0.6":
-  version "1.0.5"
-  resolved "https://codeload.github.com/corivera/vscodetestcover/tar.gz/14e0f2c46346b31bc1af2c590febeaf69a9112eb"
+"vscodetestcover@github:corivera/vscodetestcover#1.0.8":
+  version "1.0.8"
+  resolved "https://codeload.github.com/corivera/vscodetestcover/tar.gz/4331080eed9d2713807e9a3f47610947d5b0a1d7"
   dependencies:
     decache "^4.4.0"
     glob "^7.1.2"
