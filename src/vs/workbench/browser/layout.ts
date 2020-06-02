@@ -600,6 +600,10 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 						case 'remote':
 							viewletId = 'workbench.view.remote';
 							break;
+						// {{SQL CARBON EDIT}} add notebook view container to views
+						case 'notebooks':
+							viewletId = 'workbench.view.notebooks';
+							break;
 						default:
 							viewletId = `workbench.view.extension.${container.id}`;
 					}
