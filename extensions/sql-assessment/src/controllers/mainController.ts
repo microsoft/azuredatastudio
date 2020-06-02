@@ -10,7 +10,7 @@ import * as nls from 'vscode-nls';
 import { TelemetryReporter, SqlAssessmentTelemetryView, SqlTelemetryActions } from '../telemetry';
 
 const localize = nls.loadMessageBundle();
-const tabName = 'sql-assessment-tab';
+const tabName = 'data-management-asmt';
 
 export enum AssessmentType {
 	AvailableRules = 1,
@@ -28,7 +28,7 @@ export default class MainController {
 	private apiVersionPropItem: azdata.PropertiesContainerItem;
 	private defaultRulesetPropItem: azdata.PropertiesContainerItem;
 	private toDispose: vscode.Disposable[] = [];
-	private lastInvokedResults!: mssql.SqlAssessmentResultItem[];
+	private lastInvokedResults!: azdata.SqlAssessmentResultItem[];
 	private tblResults!: azdata.DeclarativeTableComponent;
 	private btnExportAsScript!: azdata.ButtonComponent;
 	private isServerConnection: boolean = false;
@@ -49,9 +49,11 @@ export default class MainController {
 	}
 
 	public async activate(): Promise<boolean> {
+		console.log('activating sql-assessment');
 		this.sqlAssessment = ((await vscode.extensions.getExtension(mssql.extension.name)?.activate() as mssql.IExtension)).sqlAssessment;
+		console.log('sql-assessment loaded');
 		this.registerModelView();
-		TelemetryReporter.sendViewEvent(SqlAssessmentTelemetryView);
+		//TelemetryReporter.sendViewEvent(SqlAssessmentTelemetryView);
 		return true;
 	}
 
@@ -79,14 +81,8 @@ export default class MainController {
 					'height': '32px'
 				}
 			});
-			this.tblResults = await this.createTable(view);
-			this.modelView = view;
-			rootContainer.addItem(this.tblResults, { flex: '1 1 auto' });
-			rootContainer.addItem(view.modelBuilder.dom().withProperties<azdata.DomProperties>({
-				html: '<style> .cls1 {padding-right: 10px}</style>'
-			}).component());
-			await view.initializeModel(rootContainer);
 
+			await view.initializeModel(rootContainer);
 		});
 	}
 
@@ -154,8 +150,8 @@ export default class MainController {
 	private async performServerAssessment(asmtType: AssessmentType): Promise<void> {
 		let databaseListRequest = azdata.connection.listDatabases(this.connectionProfile.connectionId);
 		let assessmentResult = asmtType === AssessmentType.InvokeAssessment
-			? await this.sqlAssessment.assessmentInvoke(this.connectionUri, mssql.SqlAssessmentTargetType.Server)
-			: await this.sqlAssessment.getAssessmentItems(this.connectionUri, mssql.SqlAssessmentTargetType.Server);
+			? await this.sqlAssessment.assessmentInvoke(this.connectionUri, azdata.sqlAssessment.SqlAssessmentTargetType.Server)
+			: await this.sqlAssessment.getAssessmentItems(this.connectionUri, azdata.sqlAssessment.SqlAssessmentTargetType.Server);
 		this.displayResults(assessmentResult, asmtType);
 
 		let connectionProvider = azdata.dataprotocol.getProvider<azdata.ConnectionProvider>(
@@ -168,8 +164,8 @@ export default class MainController {
 
 			if (await connectionProvider.changeDatabase(this.connectionUri, db)) {
 				let assessmentResult = asmtType === AssessmentType.InvokeAssessment
-					? await this.sqlAssessment.assessmentInvoke(this.connectionUri, mssql.SqlAssessmentTargetType.Database)
-					: await this.sqlAssessment.getAssessmentItems(this.connectionUri, mssql.SqlAssessmentTargetType.Database);
+					? await this.sqlAssessment.assessmentInvoke(this.connectionUri, azdata.sqlAssessment.SqlAssessmentTargetType.Database)
+					: await this.sqlAssessment.getAssessmentItems(this.connectionUri, azdata.sqlAssessment.SqlAssessmentTargetType.Database);
 
 				this.appendResults(assessmentResult.items, asmtType);
 			}
@@ -205,7 +201,7 @@ export default class MainController {
 				await this.performServerAssessment(AssessmentType.InvokeAssessment);
 			} else {
 				TelemetryReporter.sendActionEvent(SqlAssessmentTelemetryView, SqlTelemetryActions.InvokeDatabaseAssessment);
-				let assessmentResult = await this.sqlAssessment.assessmentInvoke(this.connectionUri, mssql.SqlAssessmentTargetType.Database);
+				let assessmentResult = await this.sqlAssessment.assessmentInvoke(this.connectionUri, azdata.sqlAssessment.SqlAssessmentTargetType.Database);
 				this.displayResults(assessmentResult, AssessmentType.InvokeAssessment);
 			}
 			btnInvokeAssessmentLoading.loading = false;
@@ -230,7 +226,7 @@ export default class MainController {
 				await this.performServerAssessment(AssessmentType.AvailableRules);
 			} else {
 				TelemetryReporter.sendActionEvent(SqlAssessmentTelemetryView, SqlTelemetryActions.GetDatabaseAssessmentRules);
-				let assessmentResult = await this.sqlAssessment.assessmentInvoke(this.connectionUri, mssql.SqlAssessmentTargetType.Database);
+				let assessmentResult = await this.sqlAssessment.assessmentInvoke(this.connectionUri, azdata.sqlAssessment.SqlAssessmentTargetType.Database);
 				this.displayResults(assessmentResult, AssessmentType.AvailableRules);
 			}
 			btnGetAssessmentItemsLoading.loading = false;
@@ -340,7 +336,7 @@ export default class MainController {
 		return table;
 	}
 
-	private transformItem(item: mssql.SqlAssessmentResultItem, assessmentType: AssessmentType): any[] {
+	private transformItem(item: azdata.SqlAssessmentResultItem, assessmentType: AssessmentType): any[] {
 		return [
 			item.targetName,
 			item.level,
@@ -358,7 +354,7 @@ export default class MainController {
 		];
 	}
 
-	private displayResults(result: mssql.SqlAssessmentResult, assessmentType: AssessmentType): void {
+	private displayResults(result: azdata.SqlAssessmentResult, assessmentType: AssessmentType): void {
 		this.apiVersionPropItem.value = result.apiVersion;
 		this.defaultRulesetPropItem.value = result.items[0].rulesetVersion;
 		this.assessmentPropertiesContainer.propertyItems = [
@@ -378,7 +374,7 @@ export default class MainController {
 	}
 
 
-	private appendResults(results: mssql.SqlAssessmentResultItem[], assessmentType: AssessmentType): void {
+	private appendResults(results: azdata.SqlAssessmentResultItem[], assessmentType: AssessmentType): void {
 		this.lastInvokedResults.push(...results);
 
 		this.tblResults.data = this.lastInvokedResults.map(item => this.transformItem(item, assessmentType));
