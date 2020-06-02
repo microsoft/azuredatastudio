@@ -5,6 +5,8 @@
 
 import * as should from 'should';
 import * as vscode from 'vscode';
+import * as os from 'os';
+import * as path from 'path';
 
 import { Project, EntryType } from '../models/project';
 import { FolderNode, FileNode, sortFileFolderNodes } from '../models/tree/fileFolderTreeItem';
@@ -12,44 +14,47 @@ import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 
 describe('Project Tree tests', function (): void {
 	it('Should correctly order tree nodes by type, then by name', async function (): Promise<void> {
-		const parent = new ProjectRootTreeItem(new Project(vscode.Uri.file('Z:\\Fake.sqlproj').fsPath));
+		const root = os.platform() === 'win32' ? 'Z:\\' : '//';
+
+		const parent = new ProjectRootTreeItem(new Project(vscode.Uri.file(`${root}Fake.sqlproj`).fsPath));
 
 		let inputNodes: (FileNode | FolderNode)[] = [
-			new FileNode(vscode.Uri.file('Z:\\C'), parent),
-			new FileNode(vscode.Uri.file('Z:\\D'), parent),
-			new FolderNode(vscode.Uri.file('Z:\\Z'), parent),
-			new FolderNode(vscode.Uri.file('Z:\\X'), parent),
-			new FileNode(vscode.Uri.file('Z:\\B'), parent),
-			new FileNode(vscode.Uri.file('Z:\\A'), parent),
-			new FolderNode(vscode.Uri.file('Z:\\W'), parent),
-			new FolderNode(vscode.Uri.file('Z:\\Y'), parent)
+			new FileNode(vscode.Uri.file(`${root}C`), parent),
+			new FileNode(vscode.Uri.file(`${root}D`), parent),
+			new FolderNode(vscode.Uri.file(`${root}Z`), parent),
+			new FolderNode(vscode.Uri.file(`${root}X`), parent),
+			new FileNode(vscode.Uri.file(`${root}B`), parent),
+			new FileNode(vscode.Uri.file(`${root}A`), parent),
+			new FolderNode(vscode.Uri.file(`${root}W`), parent),
+			new FolderNode(vscode.Uri.file(`${root}Y`), parent)
 		];
 
 		inputNodes = inputNodes.sort(sortFileFolderNodes);
 
 		const expectedNodes: (FileNode | FolderNode)[] = [
-			new FolderNode(vscode.Uri.file('Z:\\W'), parent),
-			new FolderNode(vscode.Uri.file('Z:\\X'), parent),
-			new FolderNode(vscode.Uri.file('Z:\\Y'), parent),
-			new FolderNode(vscode.Uri.file('Z:\\Z'), parent),
-			new FileNode(vscode.Uri.file('Z:\\A'), parent),
-			new FileNode(vscode.Uri.file('Z:\\B'), parent),
-			new FileNode(vscode.Uri.file('Z:\\C'), parent),
-			new FileNode(vscode.Uri.file('Z:\\D'), parent)
+			new FolderNode(vscode.Uri.file(`${root}W`), parent),
+			new FolderNode(vscode.Uri.file(`${root}X`), parent),
+			new FolderNode(vscode.Uri.file(`${root}Y`), parent),
+			new FolderNode(vscode.Uri.file(`${root}Z`), parent),
+			new FileNode(vscode.Uri.file(`${root}A`), parent),
+			new FileNode(vscode.Uri.file(`${root}B`), parent),
+			new FileNode(vscode.Uri.file(`${root}C`), parent),
+			new FileNode(vscode.Uri.file(`${root}D`), parent)
 		];
 
 		should(inputNodes.map(n => n.uri.path)).deepEqual(expectedNodes.map(n => n.uri.path));
 	});
 
 	it('Should build tree from Project file correctly', async function (): Promise<void> {
-		const proj = new Project(vscode.Uri.file('Z:\\TestProj.sqlproj').fsPath);
+		const root = os.platform() === 'win32' ? 'Z:\\' : '//';
+		const proj = new Project(vscode.Uri.file(`${root}TestProj.sqlproj`).fsPath);
 
 		// nested entries before explicit top-level folder entry
 		// also, ordering of files/folders at all levels
-		proj.files.push(proj.createProjectEntry('someFolder\\bNestedTest.sql', EntryType.File));
-		proj.files.push(proj.createProjectEntry('someFolder\\bNestedFolder', EntryType.Folder));
-		proj.files.push(proj.createProjectEntry('someFolder\\aNestedTest.sql', EntryType.File));
-		proj.files.push(proj.createProjectEntry('someFolder\\aNestedFolder', EntryType.Folder));
+		proj.files.push(proj.createProjectEntry(path.join('someFolder', 'bNestedTest.sql'), EntryType.File));
+		proj.files.push(proj.createProjectEntry(path.join('someFolder', 'bNestedFolder'), EntryType.Folder));
+		proj.files.push(proj.createProjectEntry(path.join('someFolder', 'aNestedTest.sql'), EntryType.File));
+		proj.files.push(proj.createProjectEntry(path.join('someFolder', 'aNestedFolder'), EntryType.Folder));
 		proj.files.push(proj.createProjectEntry('someFolder', EntryType.Folder));
 
 		// duplicate files

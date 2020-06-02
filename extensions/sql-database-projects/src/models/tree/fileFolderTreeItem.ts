@@ -92,7 +92,7 @@ function fsPathToProjectUri(fileSystemUri: vscode.Uri, projectNode: ProjectRootT
 		localUri = fileSystemUri.fsPath.substring(projBaseDir.length);
 	}
 	else {
-		throw new Error(`Project (${projBaseDir}) pointing to file outside of directory (${fileSystemUri.fsPath}`);
+		throw new Error(`Project (${projBaseDir}) pointing to file outside of directory (${fileSystemUri.fsPath})`);
 	}
 
 	return vscode.Uri.file(path.join(projectNode.uri.path, localUri));
