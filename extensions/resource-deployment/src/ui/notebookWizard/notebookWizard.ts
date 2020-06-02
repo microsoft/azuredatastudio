@@ -95,7 +95,6 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardPag
 				const notebookPath = this.notebookService.getNotebookPath(this.wizardInfo.notebook);
 				const ext = path.extname(notebookPath);
 				const title = path.basename(notebookPath, ext);
-                console.log(`TCL::: NotebookWizard -> JSON.stringify(notebook, undefined, 4)`, JSON.stringify(notebook, undefined, 4));
 				await this.notebookService.launchNotebookWithContent(`${title}-${getDateTimeString()}`, JSON.stringify(notebook, undefined, 4));
 			}
 		} catch (error) {
