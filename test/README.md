@@ -27,4 +27,6 @@ These are the group of tests that have dependencies on outside resources such as
 
 ## Code Coverage
 
-To generate a report combining the code coverage for extensions + core run `node ./test/combineCoverage`. Currently this will combine coverage from the Core Unit Tests, Extension Unit Tests and Extension Integration tests - see above docs for instructions on how to run those to generate coverage. 
+To generate a report combining the code coverage for extensions + core run `node ./test/combineCoverage`. Currently this will combine coverage from the Core Unit Tests, Extension Unit Tests and Extension Integration tests - see above docs for instructions on how to run those to generate coverage.
+
+Once ran the combined coverage report will be located in `./test/coverage`.
