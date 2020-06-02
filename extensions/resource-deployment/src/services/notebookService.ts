@@ -79,7 +79,9 @@ export class NotebookService implements INotebookService {
 	 * @param content the notebook content
 	 */
 	async launchNotebookWithContent(title: string, content: string): Promise<azdata.nb.NotebookEditor> {
-		const uri: vscode.Uri = vscode.Uri.parse(`untitled:${title}`);
+		const ext = path.extname(title) ?? 'ipynb';
+		title = path.basename(title, ext);
+		const uri: vscode.Uri = vscode.Uri.parse(`untitled:${title}-${getDateTimeString()}.${ext}`);
 		return await azdata.nb.showNotebookDocument(uri, {
 			connectionProfile: undefined,
 			preview: false,

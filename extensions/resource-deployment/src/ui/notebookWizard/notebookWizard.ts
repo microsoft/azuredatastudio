@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import * as path from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { INotebookService, Notebook } from '../../services/notebookService';
@@ -14,7 +13,6 @@ import { DeploymentType, NotebookWizardInfo } from './../../interfaces';
 import { IPlatformService } from './../../services/platformService';
 import { NotebookWizardAutoSummaryPage } from './notebookWizardAutoSummaryPage';
 import { NotebookWizardPage } from './notebookWizardPage';
-import { getDateTimeString } from '../../utils';
 
 const localize = nls.loadMessageBundle();
 
@@ -93,9 +91,7 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardPag
 			} else {
 				Object.assign(process.env, env);
 				const notebookPath = this.notebookService.getNotebookPath(this.wizardInfo.notebook);
-				const ext = path.extname(notebookPath);
-				const title = path.basename(notebookPath, ext);
-				await this.notebookService.launchNotebookWithContent(`${title}-${getDateTimeString()}`, JSON.stringify(notebook, undefined, 4));
+				await this.notebookService.launchNotebookWithContent(notebookPath, JSON.stringify(notebook, undefined, 4));
 			}
 		} catch (error) {
 			vscode.window.showErrorMessage(error);
