@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ExtensionNodeType, TreeItem } from 'azdata';
+import { ExtensionNodeType, TreeItem, Account } from 'azdata';
 import { TreeItemCollapsibleState, ExtensionContext } from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
@@ -28,16 +28,16 @@ export class KustoTreeDataProvider extends ResourceTreeDataProviderBase<azureRes
 	}
 
 
-	protected getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer): TreeItem {
+	protected getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: Account): TreeItem {
 		return {
 			id: `Kusto_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
 			label: databaseServer.name,
 			iconPath: {
-				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_instance_inverse.svg'),
-				light: this._extensionContext.asAbsolutePath('resources/light/sql_instance.svg')
+				dark: this._extensionContext.asAbsolutePath('resources/dark/azureDE_inverse.svg'),
+				light: this._extensionContext.asAbsolutePath('resources/light/azureDE.svg')
 			},
 			collapsibleState: TreeItemCollapsibleState.Collapsed,
-			contextValue: AzureResourceItemType.databaseServer,
+			contextValue: AzureResourceItemType.azureDataExplorer,
 			payload: {
 				id: generateGuid(),
 				connectionName: undefined,
@@ -49,11 +49,12 @@ export class KustoTreeDataProvider extends ResourceTreeDataProviderBase<azureRes
 				savePassword: true,
 				groupFullName: '',
 				groupId: '',
-				providerName: 'MSSQL',
+				providerName: 'KUSTO',
 				saveProfile: false,
-				options: {}
+				options: {},
+				azureAccount: account.key.accountId
 			},
-			childProvider: 'MSSQL',
+			childProvider: 'KUSTO',
 			type: ExtensionNodeType.Server
 		};
 	}

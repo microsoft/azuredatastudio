@@ -175,8 +175,8 @@
         "command": "azure.resource.connectazureDataExplorer",
         "title": "%azure.resource.connectazureDataExplorer.title%",
         "icon": {
-          "dark": "resources/dark/add_to_server_list_inverse.svg",
-          "light": "resources/light/add_to_server_list.svg"
+          "dark": "resources/dark/connect_to_inverse.svg",
+          "light": "resources/light/connect_to.svg"
         }
       }
     ],
@@ -273,7 +273,7 @@
         },
         {
           "command": "azure.resource.connectazureDataExplorer",
-          "when": "viewItem == azure.resource.itemType.databaseServer || viewItem == azure.resource.itemType.database || viewItem == azure.resource.itemType.azureDataExplorer",
+          "when": "viewItem == azure.resource.itemType.azureDataExplorer",
           "group": "inline"
         },
         {
