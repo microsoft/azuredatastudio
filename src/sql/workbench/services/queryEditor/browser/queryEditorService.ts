@@ -44,43 +44,14 @@ export class QueryEditorService implements IQueryEditorService {
 	/**
 	 * Creates new untitled document for SQL query and opens in new editor tab
 	 */
-	/*	public newSqlEditor(sqlContent?: string, connectionProviderName?: string, isDirty?: boolean, objectName?: string): Promise<IConnectableInput> {
-			return new Promise<IConnectableInput>(async (resolve, reject) => {
-				try {
-					// Create file path and file URI
-					let filePath = await this.createUntitledSqlFilePath(connectionProviderName);
-					let docUri: URI = URI.from({ scheme: Schemas.untitled, path: filePath });
-
-					// Create a sql document pane with accoutrements
-					const fileInput = this._editorService.createInput({ forceUntitled: true, resource: docUri, mode: 'sql' }) as UntitledTextEditorInput;
-					let untitledEditorModel = await fileInput.resolve() as UntitledTextEditorModel;
-					if (sqlContent) {
-						untitledEditorModel.textEditorModel.setValue(sqlContent);
-						if (isDirty === false || (isDirty === undefined && !this._configurationService.getValue<boolean>('sql.promptToSaveGeneratedFiles'))) {
-							untitledEditorModel.setDirty(false);
-						}
-					}
-
-					const queryResultsInput: QueryResultsInput = this._instantiationService.createInstance(QueryResultsInput, docUri.toString());
-					let queryInput = this._instantiationService.createInstance(UntitledQueryEditorInput, objectName, fileInput, queryResultsInput);
-
-					this._editorService.openEditor(queryInput, { pinned: true })
-						.then((editor) => {
-							resolve(editor.input as UntitledQueryEditorInput);
-						}, (error) => {
-							reject(error);
-						});
-				} catch (error) {
-					reject(error);
-	*/
-	public async newSqlEditor(options: INewSqlEditorOptions = {}): Promise<IConnectableInput> {
+	public async newSqlEditor(options: INewSqlEditorOptions = {}, connectionProviderName?: string): Promise<IConnectableInput> {
 		options = mixin(options, defaults, false);
 		// Create file path and file URI
-		let filePath = await this.createUntitledSqlFilePath();
+		let filePath = await this.createUntitledSqlFilePath(connectionProviderName);
 		let docUri: URI = URI.from({ scheme: Schemas.untitled, path: filePath });
 
 		// Create a sql document pane with accoutrements
-		const fileInput = this._editorService.createEditorInput({ forceUntitled: true, resource: docUri, mode: 'sql' }) as UntitledTextEditorInput;
+		const fileInput = this._editorService.createEditorInput({ forceUntitled: true, resource: docUri, mode: this.getLanguageFlavor(connectionProviderName) }) as UntitledTextEditorInput;
 		let untitledEditorModel = await fileInput.resolve() as UntitledTextEditorModel;
 		if (options.initalContent) {
 			untitledEditorModel.textEditorModel.setValue(options.initalContent);
@@ -128,12 +99,17 @@ export class QueryEditorService implements IQueryEditorService {
 	}
 
 	////// Private functions
-	private createUntitledSqlFilePath(): Promise<string> {
-		//if (providerName === 'MSSQL') {
-		return this.createPrefixedSqlFilePath('SQLQuery');		//TODOKusto: Verify changes after merge.
-		//}
+	// Gets language depending on connection provider.
+	private getLanguageFlavor(providerName: string): string {		//TODOKusto: temporary fix until Anthony's generic fix to make it language agnostic
+		return providerName === 'KUSTO' ? 'kusto' : 'sql';
+	}
 
-		//return this.createPrefixedSqlFilePath(providerName + 'Query');
+	private createUntitledSqlFilePath(providerName: string): Promise<string> {
+		if (providerName === 'MSSQL') {
+			return this.createPrefixedSqlFilePath('SQLQuery');		//TODOKusto: Verify changes after merge.
+		}
+
+		return this.createPrefixedSqlFilePath(providerName + 'Query');
 	}
 
 	private async createPrefixedSqlFilePath(prefix: string): Promise<string> {
