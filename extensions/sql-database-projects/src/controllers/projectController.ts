@@ -301,10 +301,57 @@ export class ProjectsController {
 	 * Adds a database reference to the project
 	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
 	 */
-	public async addDatabaseReference(treeNode: BaseProjectTreeItem): Promise<void> {
-		const project = ProjectsController.getProjectFromContext(treeNode);
+	public async addDatabaseReference(treeNode: BaseProjectTreeItem): Promise<void>;
+	/**
+	 * Adds a database reference to the project
+	 * @param project Project to be built and deployed
+	 */
+	public async addDatabaseReference(project: Project): Promise<void>;
+	public async addDatabaseReference(context: Project | BaseProjectTreeItem): Promise<void> {
+		const project = ProjectsController.getProjectFromContext(context);
 
-		// choose if reference is to master or a dacpac
+		try {
+			// choose if reference is to master or a dacpac
+			const databaseReferenceType = await this.getDatabaseReferenceType();
+
+			if (!databaseReferenceType) {
+				throw new Error(constants.databaseReferenceTypeRequired);
+			}
+
+			// if master is selected, we know which dacpac needs to be added
+			if (databaseReferenceType === constants.master) {
+				await project.addMasterDatabaseReference();
+			} else {
+				// get other information needed to add a reference to the dacpac
+				let dacpacFileLocation = await this.getDacpacFileLocation();
+				if (!dacpacFileLocation) {
+					throw new Error(constants.dacpacFileLocationRequired);
+				}
+
+				let databaseLocation = await this.getDatabaseLocation();
+				if (databaseLocation === undefined) {
+					throw new Error(constants.databaseLocationRequired);
+				}
+
+				let databaseName = undefined;
+				if (databaseLocation === DatabaseReferenceLocation.differentDatabaseSameServer) {
+					databaseName = await this.getDatabaseName(<Uri>dacpacFileLocation);
+
+					if (!databaseName) {
+						throw new Error(constants.databaseNameRequired);
+					}
+				}
+
+				if (databaseName) {
+					await project.addDatabaseReference(dacpacFileLocation, <DatabaseReferenceLocation>databaseLocation, databaseName);
+				}
+			}
+		} catch (err) {
+			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
+		}
+	}
+
+	private async getDatabaseReferenceType(): Promise<string | undefined> {
 		let databaseReferenceOptions: QuickPickItem[] = [
 			{
 				label: constants.master
@@ -318,29 +365,8 @@ export class ProjectsController {
 			canPickMany: false,
 			placeHolder: constants.addDatabaseReferenceInput
 		});
-		let databaseReferenceInput = input?.label;
 
-		if (databaseReferenceInput) {
-			// if master is selected, we know which dacpac needs to be added
-			if (databaseReferenceInput === constants.master) {
-				await project.addMasterDatabaseReference();
-			} else {
-				// get other information needed to add a reference to the dacpac
-				let dacpacFileLocation = await this.getDacpacFileLocation();
-				if (dacpacFileLocation) {
-					let databaseLocation = await this.getDatabaseLocation();
-					let databaseName = undefined;
-
-					if (databaseLocation !== undefined && databaseLocation === DatabaseReferenceLocation.differentDatabaseSameServer) {
-						databaseName = await this.getDatabaseName(<Uri>dacpacFileLocation);
-					}
-
-					if (databaseName) {
-						await project.addDatabaseReference(dacpacFileLocation, <DatabaseReferenceLocation>databaseLocation, databaseName);
-					}
-				}
-			}
-		}
+		return input?.label;
 	}
 
 	private async getDacpacFileLocation(): Promise<Uri | undefined> {
@@ -378,6 +404,10 @@ export class ProjectsController {
 			canPickMany: false,
 			placeHolder: constants.databaseReferenceLocation
 		});
+
+		if (input === undefined) {
+			return undefined;
+		}
 
 		const location = input?.label === constants.databaseReferenceSameDatabase ? DatabaseReferenceLocation.sameDatabase : DatabaseReferenceLocation.differentDatabaseSameServer;
 		return location;
