@@ -13,14 +13,16 @@ const glob = require('glob');
 const coverageMap = iLibCoverage.createCoverageMap();
 const repoRoot = path.join(path.dirname(__filename), '..');
 
-const extensionCoverageFiles = glob.sync('extensions/**/coverage-final.json',
+// .build contain the core coverage files
+// extensions each may container their own coverage file
+const coverageFiles = glob.sync('{extensions,.build}/**/coverage-final.json',
 	{
 		cwd: repoRoot,
 		ignore: ['**/node_modules/**']
 	}
 );
 
-extensionCoverageFiles.forEach(file => {
+coverageFiles.forEach(file => {
 	console.log(`Merging coverage file ${path.join(repoRoot, file)}`);
 	coverageMap.merge(JSON.parse(fs.readFileSync(file)));
 });
