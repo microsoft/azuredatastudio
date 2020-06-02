@@ -40,15 +40,15 @@
 	overflow-y: hidden;
 }
 
-.modal.flyout-dialog.narrow-dialog .modal-dialog {
+.modal.flyout-dialog .modal-dialog.narrow-dialog {
 	width: 500px;
 }
 
-.modal.flyout-dialog.medium-dialog .modal-dialog {
+.modal.flyout-dialog .modal-dialog.medium-dialog {
 	width: 800px;
 }
 
-.modal.flyout-dialog.wide-dialog .modal-dialog {
+.modal.flyout-dialog .modal-dialog.wide-dialog {
 	width: 1200px;
 	max-width: 95%;
 	min-width: 400px;

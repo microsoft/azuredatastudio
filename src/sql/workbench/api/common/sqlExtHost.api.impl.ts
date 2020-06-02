@@ -402,6 +402,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				createWebViewDialog(name: string) {
 					return extHostModalDialogs.createDialog(name);
 				},
+				// the 'width' parameter used to be boolean type named 'isWide', the optional boolean type for 'width' parameter is added for backward compatibility support of 'isWide' parameter.
 				createModelViewDialog(title: string, dialogName?: string, width?: boolean | azdata.window.DialogWidth): azdata.window.Dialog {
 					let dialogWidth: azdata.window.DialogWidth;
 					if (typeof width === 'boolean') {

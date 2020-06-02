@@ -720,7 +720,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 			dialog.dialogName = dialogName;
 		}
 		dialog.title = title;
-		dialog.width = width === undefined ? 'narrow' : width;
+		dialog.width = width ?? 'narrow';
 		dialog.handle = this.getHandle(dialog);
 		return dialog;
 	}

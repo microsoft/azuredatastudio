@@ -177,10 +177,6 @@ export abstract class Modal extends Disposable implements IThemable {
 			builderClass += ' flyout-dialog';
 		}
 
-		if (this._modalOptions.width && typeof this._modalOptions.width === 'string') {
-			builderClass += ` ${this._modalOptions.width}-dialog `;
-		}
-
 		this._bodyContainer = DOM.$(`.${builderClass}`, { role: 'dialog', 'aria-label': this._title });
 		const top = this.layoutService.offset?.top ?? 0;
 		this._bodyContainer.style.top = `${top}px`;
@@ -189,6 +185,8 @@ export abstract class Modal extends Disposable implements IThemable {
 
 		if (typeof this._modalOptions.width === 'number') {
 			this._modalDialog.style.width = `${this._modalOptions.width}px`;
+		} else {
+			this._modalDialog.classList.add(`${this._modalOptions.width}-dialog`);
 		}
 
 		if (!isUndefinedOrNull(this._title)) {

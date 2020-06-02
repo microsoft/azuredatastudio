@@ -10,12 +10,13 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 
 import { MainThreadModelViewDialogShape, SqlMainContext, ExtHostModelViewDialogShape, SqlExtHostContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { Dialog, DialogTab, DialogButton, WizardPage, Wizard } from 'sql/workbench/services/dialog/common/dialogTypes';
-import { CustomDialogService } from 'sql/workbench/services/dialog/browser/customDialogService';
+import { CustomDialogService, DefaultWizardOptions, DefaultDialogOptions } from 'sql/workbench/services/dialog/browser/customDialogService';
 import { IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails, IModelViewWizardPageDetails, IModelViewWizardDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ModelViewInput, ModelViewInputModel, ModeViewSaveHandler } from 'sql/workbench/browser/modelComponents/modelViewInput';
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
+import { assign } from 'vs/base/common/objects';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadModelViewDialog)
 export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape {
@@ -67,7 +68,9 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 
 	public $openDialog(handle: number, dialogName?: string): Thenable<void> {
 		let dialog = this.getDialog(handle);
-		this._dialogService.showDialog(dialog, dialogName, { hasBackButton: false, width: dialog.width, hasErrors: true });
+		const options = assign({}, DefaultDialogOptions);
+		options.width = dialog.width;
+		this._dialogService.showDialog(dialog, dialogName, options);
 		return Promise.resolve();
 	}
 
@@ -214,7 +217,9 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 
 	public $openWizard(handle: number): Thenable<void> {
 		let wizard = this.getWizard(handle);
-		this._dialogService.showWizard(wizard, { hasBackButton: false, width: wizard.width, hasErrors: true });
+		const options = assign({}, DefaultWizardOptions);
+		options.width = wizard.width;
+		this._dialogService.showWizard(wizard, options);
 		return Promise.resolve();
 	}
 
