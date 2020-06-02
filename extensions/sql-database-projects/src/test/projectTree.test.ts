@@ -14,7 +14,7 @@ import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 
 describe('Project Tree tests', function (): void {
 	it('Should correctly order tree nodes by type, then by name', async function (): Promise<void> {
-		const root = os.platform() === 'win32' ? 'Z:\\' : '//';
+		const root = os.platform() === 'win32' ? 'Z:\\' : '/';
 
 		const parent = new ProjectRootTreeItem(new Project(vscode.Uri.file(`${root}Fake.sqlproj`).fsPath));
 
@@ -46,7 +46,7 @@ describe('Project Tree tests', function (): void {
 	});
 
 	it('Should build tree from Project file correctly', async function (): Promise<void> {
-		const root = os.platform() === 'win32' ? 'Z:\\' : '//';
+		const root = os.platform() === 'win32' ? 'Z:\\' : '/';
 		const proj = new Project(vscode.Uri.file(`${root}TestProj.sqlproj`).fsPath);
 
 		// nested entries before explicit top-level folder entry
