@@ -11,6 +11,7 @@ import * as utils from '../common/utils';
 import { Uri, window } from 'vscode';
 import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
+import { DatabaseReferenceLocation } from '../controllers/projectController';
 
 /**
  * Class representing a Project, and providing functions for operating on it
@@ -152,9 +153,9 @@ export class Project {
 		let version = dsp.substring(35);
 		// remove DatabaseSchemaProvider
 		version = version.substring(0, version.length - 22);
-		const relativeFilePath = path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', version, 'master.dacpac');
+		const uri = Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', version, 'master.dacpac'));
 
-		this.addDatabaseReference(relativeFilePath, 'master');
+		this.addDatabaseReference(uri, DatabaseReferenceLocation.differentDatabaseSameServer, 'master');
 	}
 
 	/**
@@ -162,14 +163,14 @@ export class Project {
 	 * @param relativeFilePath Relative path to the dacpac
 	 * @param databaseName name of the database
 	 */
-	public async addDatabaseReference(relativeFilePath: string, databaseName: string): Promise<void> {
+	public async addDatabaseReference(uri: Uri, databaseLocation: DatabaseReferenceLocation, databaseName: string): Promise<void> {
 		//Check that dacpac being referenced actually exists
 		// let exists = await utils.exists(absoluteFilePath);
 		// if (!exists) {
 		// 	throw new Error(constants.noFileExist(absoluteFilePath));
 		// }
 
-		let databaseReferenceEntry = new DatabaseReferenceProjectEntry(relativeFilePath, databaseName);
+		let databaseReferenceEntry = new DatabaseReferenceProjectEntry(uri, databaseLocation, databaseName);
 
 		await this.addToProjFile(databaseReferenceEntry);
 	}
@@ -218,20 +219,22 @@ export class Project {
 		this.findOrCreateItemGroup(constants.Folder).appendChild(newFolderNode);
 	}
 
-	private addDatabaseReferenceToProjFile(path: string, databaseName: string): void {
+	private addDatabaseReferenceToProjFile(entry: DatabaseReferenceProjectEntry): void {
 		const referenceNode = this.projFileXmlDoc.createElement(constants.ArtifactReference);
 		referenceNode.setAttribute(constants.Condition, constants.NetCoreCondition);
-		referenceNode.setAttribute(constants.Include, path);
+		referenceNode.setAttribute(constants.Include, entry.fsUri.fsPath);
 
 		let suppressMissingDependenciesErrorNode = this.projFileXmlDoc.createElement(constants.SuppressMissingDependenciesErrors);
 		let falseTextNode = this.projFileXmlDoc.createTextNode('False');
 		suppressMissingDependenciesErrorNode.appendChild(falseTextNode);
 		referenceNode.appendChild(suppressMissingDependenciesErrorNode);
 
-		let databaseVariableLiteralValue = this.projFileXmlDoc.createElement(constants.DatabaseVariableLiteralValue);
-		let databaseTextNode = this.projFileXmlDoc.createTextNode(databaseName);
-		databaseVariableLiteralValue.appendChild(databaseTextNode);
-		referenceNode.appendChild(databaseVariableLiteralValue);
+		if (entry.databaseLocation === DatabaseReferenceLocation.differentDatabaseSameServer) {
+			let databaseVariableLiteralValue = this.projFileXmlDoc.createElement(constants.DatabaseVariableLiteralValue);
+			let databaseTextNode = this.projFileXmlDoc.createTextNode(entry.name);
+			databaseVariableLiteralValue.appendChild(databaseTextNode);
+			referenceNode.appendChild(databaseVariableLiteralValue);
+		}
 
 		this.findOrCreateItemGroup().appendChild(referenceNode);
 	}
@@ -272,7 +275,7 @@ export class Project {
 			case EntryType.Folder:
 				this.addFolderToProjFile(entry.relativePath);
 			case EntryType.DatabaseReference:
-				this.addDatabaseReferenceToProjFile(entry.relativePath, (<DatabaseReferenceProjectEntry>entry).name);
+				this.addDatabaseReferenceToProjFile(<DatabaseReferenceProjectEntry>entry);
 		}
 
 		await this.serializeToProjFile(this.projFileXmlDoc);
@@ -335,10 +338,12 @@ export class ProjectEntry {
  */
 class DatabaseReferenceProjectEntry extends ProjectEntry {
 	name: string;
+	databaseLocation: DatabaseReferenceLocation;
 
-	constructor(relativePath: string, name: string) {
-		super(Uri.parse(relativePath), relativePath, EntryType.DatabaseReference);
+	constructor(uri: Uri, databaseLocation: DatabaseReferenceLocation, name: string) {
+		super(uri, '', EntryType.DatabaseReference);
 		this.name = name;
+		this.databaseLocation = databaseLocation;
 	}
 }
 

@@ -36,6 +36,11 @@ export enum ExtractTarget {
 	schemaObjectType = 5
 }
 
+export enum DatabaseReferenceLocation {
+	sameDatabase,
+	differentDatabaseSameServer
+}
+
 /**
  * Controller for managing project lifecycle
  */
@@ -292,11 +297,101 @@ export class ProjectsController {
 		this.refreshProjectsTree();
 	}
 
+	/**
+	 * Adds a database reference to the project
+	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
+	 */
 	public async addDatabaseReference(treeNode: BaseProjectTreeItem): Promise<void> {
 		const project = ProjectsController.getProjectFromContext(treeNode);
-		// await project.addDatabaseReference(path, dbName);
 
-		await project.addMasterDatabaseReference();
+		// choose if reference is to master or a dacpac
+		let databaseReferenceOptions: QuickPickItem[] = [
+			{
+				label: constants.master
+			},
+			{
+				label: constants.dacpac
+			}
+		];
+
+		let input = await this.apiWrapper.showQuickPick(databaseReferenceOptions, {
+			canPickMany: false,
+			placeHolder: constants.addDatabaseReferenceInput
+		});
+		let databaseReferenceInput = input?.label;
+
+		if (databaseReferenceInput) {
+			// if master is selected, we know which dacpac needs to be added
+			if (databaseReferenceInput === constants.master) {
+				await project.addMasterDatabaseReference();
+			} else {
+				// get other information needed to add a reference to the dacpac
+				let dacpacFileLocation = await this.getDacpacFileLocation();
+				if (dacpacFileLocation) {
+					let databaseLocation = await this.getDatabaseLocation();
+					let databaseName = undefined;
+
+					if (databaseLocation !== undefined && databaseLocation === DatabaseReferenceLocation.differentDatabaseSameServer) {
+						databaseName = await this.getDatabaseName(<Uri>dacpacFileLocation);
+					}
+
+					if (databaseName) {
+						await project.addDatabaseReference(dacpacFileLocation, <DatabaseReferenceLocation>databaseLocation, databaseName);
+					}
+				}
+			}
+		}
+	}
+
+	private async getDacpacFileLocation(): Promise<Uri | undefined> {
+		let fileUris = await this.apiWrapper.showOpenDialog(
+			{
+				canSelectFiles: true,
+				canSelectFolders: false,
+				canSelectMany: false,
+				defaultUri: this.apiWrapper.workspaceFolders() ? (this.apiWrapper.workspaceFolders() as WorkspaceFolder[])[0].uri : undefined,
+				openLabel: constants.selectString,
+				filters: {
+					'dacpac Files': ['dacpac'],
+				}
+			}
+		);
+
+		if (!fileUris || fileUris.length === 0) {
+			return undefined;
+		}
+
+		return fileUris[0];
+	}
+
+	private async getDatabaseLocation(): Promise<DatabaseReferenceLocation | undefined> {
+		let databaseReferenceOptions: QuickPickItem[] = [
+			{
+				label: constants.databaseReferenceSameDatabase
+			},
+			{
+				label: constants.databaseReferenceDifferentDabaseSameServer
+			}
+		];
+
+		let input = await this.apiWrapper.showQuickPick(databaseReferenceOptions, {
+			canPickMany: false,
+			placeHolder: constants.databaseReferenceLocation
+		});
+
+		const location = input?.label === constants.databaseReferenceSameDatabase ? DatabaseReferenceLocation.sameDatabase : DatabaseReferenceLocation.differentDatabaseSameServer;
+		return location;
+	}
+
+	private async getDatabaseName(dacpac: Uri): Promise<string | undefined> {
+		const dacpacName = path.parse(dacpac.toString()).name;
+		let databaseName = await this.apiWrapper.showInputBox({
+			prompt: constants.databaseReferenceDatabaseName,
+			value: `${dacpacName}`
+		});
+
+		databaseName = databaseName?.trim();
+		return databaseName;
 	}
 
 	//#region Helper methods
@@ -493,7 +588,7 @@ export class ProjectsController {
 				canSelectFiles: false,
 				canSelectFolders: true,
 				canSelectMany: false,
-				openLabel: constants.selectFileFolder,
+				openLabel: constants.selectString,
 				defaultUri: this.apiWrapper.workspaceFolders() ? (this.apiWrapper.workspaceFolders() as WorkspaceFolder[])[0].uri : undefined
 			});
 			if (selectionResult) {
@@ -504,7 +599,7 @@ export class ProjectsController {
 			selectionResult = await this.apiWrapper.showSaveDialog(
 				{
 					defaultUri: this.apiWrapper.workspaceFolders() ? (this.apiWrapper.workspaceFolders() as WorkspaceFolder[])[0].uri : undefined,
-					saveLabel: constants.selectFileFolder,
+					saveLabel: constants.selectString,
 					filters: {
 						'SQL files': ['sql'],
 						'All files': ['*']

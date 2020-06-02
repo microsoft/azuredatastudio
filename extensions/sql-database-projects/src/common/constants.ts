@@ -14,6 +14,8 @@ export const sqlFileExtension = '.sql';
 export const schemaCompareExtensionId = 'microsoft.schema-compare';
 export const sqlDatabaseProjectExtensionId = 'microsoft.sql-database-projects';
 export const mssqlExtensionId = 'microsoft.mssql';
+export const dacpac = 'dacpac';
+export const master = 'master';
 
 // UI Strings
 
@@ -26,7 +28,12 @@ export const sqlDatabaseProject = localize('sqlDatabaseProject', "SQL database p
 export const yesString = localize('yesString', "Yes");
 export const noString = localize('noString', "No");
 export const extractTargetInput = localize('extractTargetInput', "Target for extraction:");
-export const selectFileFolder = localize('selectFileFolder', "Select");
+export const selectString = localize('selectString', "Select");
+export const addDatabaseReferenceInput = localize('addDatabaseReferenceInput', "Add database reference for:");
+export const databaseReferenceLocation = localize('databaseReferenceLocation', "Database location");
+export const databaseReferenceSameDatabase = localize('databaseReferenceSameDatabase', "Same database");
+export const databaseReferenceDifferentDabaseSameServer = localize('databaseReferenceDifferentDabaseSameServer', "Different database, same server");
+export const databaseReferenceDatabaseName = localize('databaseReferenceDatabaseName', "Database name");
 export function newObjectNamePrompt(objectType: string) { return localize('newObjectNamePrompt', 'New {0} name:', objectType); }
 
 // Deploy dialog strings
