@@ -17,6 +17,9 @@ export const settings = localize('arc.settings', "Settings");
 export const security = localize('arc.security', "Security");
 export const computeAndStorage = localize('arc.computeAndStorage', 'Compute + Storage');
 export const backup = localize('arc.backup', "Backup");
+export const newSupportRequest = localize('arc.newSupportRequest', "New support request");
+export const diagnoseAndSolveProblems = localize('arc.diagnoseAndSolveProblems', "Diagnose and solve problems");
+export const supportAndTroubleshooting = localize('arc.supportAndTroubleshooting', "Support + troubleshooting");
 
 export const createNew = localize('arc.createNew', "Create New");
 export const deleteText = localize('arc.delete', "Delete");
@@ -47,6 +50,8 @@ export const selectConnectionString = localize('arc.selectConnectionString', 'Se
 export const vCores = localize('arc.vCores', 'vCores');
 export const ram = localize('arc.ram', 'RAM');
 export const refresh = localize('arc.refresh', 'Refresh');
+export const troubleshoot = localize('arc.troubleshoot', 'Troubleshoot');
+export const clickTheNewSupportRequestButton = localize('arc.clickTheNewSupportRequestButton', 'Click the new support request button to file a support request in the Azure Portal.');
 
 // Postgres constants
 export const coordinatorEndpoint = localize('arc.coordinatorEndpoint', 'Coordinator endpoint');
@@ -78,5 +83,6 @@ export function couldNotFindAzureResource(name: string): string { return localiz
 export function copiedToClipboard(name: string): string { return localize('arc.copiedToClipboard', '{0} copied to clipboard', name); }
 export function refreshFailed(error: any): string { return localize('arc.refreshFailed', "Refresh failed. {0}", (error instanceof Error ? error.message : error)); }
 export function failedToManagePostgres(name: string, error: any): string { return localize('arc.failedToManagePostgres', "Failed to manage Postgres {0}. {1}", name, (error instanceof Error ? error.message : error)); }
+export function clickTheTroubleshootButton(resourceType: string): string { return localize('arc.clickTheTroubleshootButton', "Click the troubleshoot button to open the Azure Arc {0} troubleshooting notebook.", resourceType); }
 
 export const arcResources = localize('arc.arcResources', "Azure Arc Resources");
