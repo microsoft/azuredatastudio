@@ -15,6 +15,7 @@
   "activationEvents": [
     "onCommand:sqlDatabaseProjects.new",
     "onCommand:sqlDatabaseProjects.open",
+    "onCommand:sqlDatabaseProjects.importDatabase",
     "workspaceContains:**/*.sqlproj"
   ],
   "main": "./out/extension",
@@ -107,6 +108,11 @@
         "command": "sqlDatabaseProjects.schemaCompare",
         "title": "%sqlDatabaseProjects.schemaCompare%",
         "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.importDatabase",
+        "title": "%sqlDatabaseProjects.importDatabase%",
+        "category": "%sqlDatabaseProjects.displayName%"
       }
     ],
     "menus": {
@@ -154,7 +160,8 @@
           "when": "false"
         },
         {
-          "command": "sqlDatabaseProjects.import"
+          "command": "sqlDatabaseProjects.import",
+          "when": "false"
         },
         {
           "command": "sqlDatabaseProjects.properties",
@@ -163,6 +170,9 @@
         {
           "command": "sqlDatabaseProjects.schemaCompare",
           "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.importDatabase"
         }
       ],
       "view/item/context": [
@@ -226,6 +236,13 @@
           "when": "view == sqlDatabaseProjectsView",
           "group": "9_dbProjectsLast"
         }
+      ],
+      "objectExplorer/item/context": [
+        {
+          "command": "sqlDatabaseProjects.importDatabase",
+          "when": "connectionProvider == MSSQL && nodeType && nodeType == Database && mssql:engineedition != 11",
+          "group": "export"
+        }
       ]
     },
     "views": {
@@ -252,6 +269,6 @@
     "tslint": "^5.8.0",
     "typemoq": "^2.1.0",
     "typescript": "^2.6.1",
-    "vscodetestcover": "github:corivera/vscodetestcover#1.0.6"
+    "vscodetestcover": "^1.0.9"
   }
 }

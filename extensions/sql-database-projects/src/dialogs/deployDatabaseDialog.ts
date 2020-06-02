@@ -4,14 +4,16 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import * as constants from '../common/constants';
+
 import { Project } from '../models/project';
-import { DataSource } from '../models/dataSources/dataSources';
 import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStringSource';
 import { ApiWrapper } from '../common/apiWrapper';
+import { IDeploymentProfile, IGenerateScriptProfile } from '../models/IDeploymentProfile';
 
 interface DataSourceDropdownValue extends azdata.CategoryValue {
-	dataSource: DataSource;
+	dataSource: SqlConnectionDataSource;
 	database: string;
 }
 
@@ -30,6 +32,11 @@ export class DeployDatabaseDialog {
 	private connection: azdata.connection.Connection | undefined;
 	private connectionIsDataSource: boolean | undefined;
 
+	private toDispose: vscode.Disposable[] = [];
+
+	public deploy: ((proj: Project, profile: IDeploymentProfile) => any) | undefined;
+	public generateScript: ((proj: Project, profile: IGenerateScriptProfile) => any) | undefined;
+
 	constructor(private apiWrapper: ApiWrapper, private project: Project) {
 		this.dialog = azdata.window.createModelViewDialog(constants.deployDialogName);
 		this.deployTab = azdata.window.createTab(constants.deployDialogName);
@@ -39,12 +46,12 @@ export class DeployDatabaseDialog {
 		this.initializeDialog();
 		this.dialog.okButton.label = constants.deployDialogOkButtonText;
 		this.dialog.okButton.enabled = false;
-		this.dialog.okButton.onClick(async () => await this.deploy());
+		this.toDispose.push(this.dialog.okButton.onClick(async () => await this.deployClick()));
 
 		this.dialog.cancelButton.label = constants.cancelButtonText;
 
 		let generateScriptButton: azdata.window.Button = azdata.window.createButton(constants.generateScriptButtonText);
-		generateScriptButton.onClick(async () => await this.generateScript());
+		this.toDispose.push(generateScriptButton.onClick(async () => await this.generateScriptClick()));
 		generateScriptButton.enabled = false;
 
 		this.dialog.customButtons = [];
@@ -53,6 +60,9 @@ export class DeployDatabaseDialog {
 		azdata.window.openDialog(this.dialog);
 	}
 
+	private dispose(): void {
+		this.toDispose.forEach(disposable => disposable.dispose());
+	}
 
 	private initializeDialog(): void {
 		this.initializeDeployTab();
@@ -104,15 +114,75 @@ export class DeployDatabaseDialog {
 		});
 	}
 
-	private async deploy(): Promise<void> {
-		// TODO: hook up with build and deploy
+	public async getConnectionUri(): Promise<string> {
 		// if target connection is a data source, have to check if already connected or if connection dialog needs to be opened
+		let connId: string;
+
+		if (this.dataSourcesRadioButton?.checked) {
+			const dataSource = (this.dataSourcesDropDown!.value! as DataSourceDropdownValue).dataSource;
+
+			const connProfile: azdata.IConnectionProfile = {
+				serverName: dataSource.server,
+				databaseName: dataSource.database,
+				connectionName: dataSource.name,
+				userName: dataSource.username,
+				password: dataSource.password,
+				authenticationType: dataSource.integratedSecurity ? 'Integrated' : 'SqlAuth',
+				savePassword: false,
+				providerName: 'MSSQL',
+				saveProfile: true,
+				id: dataSource.name + '-dataSource',
+				options: []
+			};
+
+			if (dataSource.integratedSecurity) {
+				connId = (await azdata.connection.connect(connProfile, false, false)).connectionId;
+			}
+			else {
+				connId = (await azdata.connection.openConnectionDialog(undefined, connProfile)).connectionId;
+			}
+		}
+		else {
+			if (!this.connection) {
+				throw new Error('Connection not defined.');
+			}
+
+			connId = this.connection?.connectionId;
+		}
+
+		return await azdata.connection.getUriForConnection(connId);
 	}
 
-	private async generateScript(): Promise<void> {
-		// TODO: hook up with build and generate script
-		// if target connection is a data source, have to check if already connected or if connection dialog needs to be opened
+	public async deployClick(): Promise<void> {
+		const profile: IDeploymentProfile = {
+			databaseName: this.getTargetDatabaseName(),
+			upgradeExisting: true,
+			connectionUri: await this.getConnectionUri(),
+			sqlCmdVariables: this.project.sqlCmdVariables
+		};
+
+		await this.deploy!(this.project, profile);
+
+		this.dispose();
 		azdata.window.closeDialog(this.dialog);
+	}
+
+	public async generateScriptClick(): Promise<void> {
+		const profile: IGenerateScriptProfile = {
+			databaseName: this.getTargetDatabaseName(),
+			connectionUri: await this.getConnectionUri()
+		};
+
+		if (this.generateScript) {
+			await this.generateScript!(this.project, profile);
+		}
+
+		this.dispose();
+		azdata.window.closeDialog(this.dialog);
+	}
+
+	private getTargetDatabaseName(): string {
+		return this.targetDatabaseTextBox?.value ?? '';
 	}
 
 	public getDefaultDatabaseName(): string {
@@ -193,13 +263,13 @@ export class DeployDatabaseDialog {
 	private createDataSourcesDropdown(view: azdata.ModelView): azdata.FormComponent {
 		let dataSourcesValues: DataSourceDropdownValue[] = [];
 
-		this.project.dataSources.forEach(dataSource => {
-			const dbName: string = (dataSource as SqlConnectionDataSource).getSetting(constants.initialCatalogSetting);
+		this.project.dataSources.filter(d => d instanceof SqlConnectionDataSource).forEach(dataSource => {
+			const dbName: string = (dataSource as SqlConnectionDataSource).database;
 			const displayName: string = `${dataSource.name}`;
 			dataSourcesValues.push({
 				displayName: displayName,
 				name: dataSource.name,
-				dataSource: dataSource,
+				dataSource: dataSource as SqlConnectionDataSource,
 				database: dbName
 			});
 		});
@@ -221,7 +291,7 @@ export class DeployDatabaseDialog {
 	}
 
 	private setDatabaseToSelectedDataSourceDatabase(): void {
-		if ((<DataSourceDropdownValue>this.dataSourcesDropDown!.value).database) {
+		if ((<DataSourceDropdownValue>this.dataSourcesDropDown!.value)?.database) {
 			this.targetDatabaseTextBox!.value = (<DataSourceDropdownValue>this.dataSourcesDropDown!.value).database;
 		}
 	}

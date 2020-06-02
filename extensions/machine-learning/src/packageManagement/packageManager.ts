@@ -96,7 +96,10 @@ export class PackageManager {
 					defaultProviderId: defaultProvider.providerId
 				});
 			} else {
-				this._apiWrapper.showInfoMessage(constants.managePackageCommandError);
+				const result = await this._apiWrapper.showInfoMessage(constants.managePackageCommandError, constants.learnMoreTitle);
+				if (result === constants.learnMoreTitle) {
+					await this._apiWrapper.openExternal(vscode.Uri.parse(constants.managePackagesDocs));
+				}
 			}
 		} catch (err) {
 			this._apiWrapper.showErrorMessage(err);

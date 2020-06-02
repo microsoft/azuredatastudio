@@ -14,8 +14,8 @@ export const pythonLanguageName = 'Python';
 export const rLanguageName = 'R';
 export const rLPackagedFolderName = 'r_packages';
 
-export const mlEnableMlsCommand = 'mls.command.enableMls';
-export const mlDisableMlsCommand = 'mls.command.disableMls';
+export const mlEnableMlsCommand = 'ml.command.enableMls';
+export const mlDisableMlsCommand = 'ml.command.disableMls';
 export const extensionOutputChannel = 'Machine Learning';
 export const notebookExtensionName = 'Microsoft.notebook';
 export const azureSubscriptionsCommand = 'azure.accounts.getSubscriptions';
@@ -24,18 +24,18 @@ export const signInToAzureCommand = 'azure.resource.signin';
 
 // Tasks, commands
 //
-export const mlManageLanguagesCommand = 'mls.command.manageLanguages';
-export const mlsPredictModelCommand = 'mls.command.predictModel';
-export const mlManageModelsCommand = 'mls.command.manageModels';
-export const mlImportModelCommand = 'mls.command.importModel';
-export const mlManagePackagesCommand = 'mls.command.managePackages';
-export const mlsDependenciesCommand = 'mls.command.dependencies';
-export const mlsEnableExternalScriptCommand = 'mls.command.enableExternalScript';
+export const mlManageLanguagesCommand = 'ml.command.manageLanguages';
+export const mlsPredictModelCommand = 'ml.command.predictModel';
+export const mlManageModelsCommand = 'ml.command.manageModels';
+export const mlImportModelCommand = 'ml.command.importModel';
+export const mlManagePackagesCommand = 'ml.command.managePackages';
+export const mlsDependenciesCommand = 'ml.command.dependencies';
+export const mlsEnableExternalScriptCommand = 'ml.command.enableExternalScript';
 export const notebookCommandNew = 'notebook.command.new';
 
 // Configurations
 //
-export const mlsConfigKey = 'machineLearningServices';
+export const mlsConfigKey = 'machineLearning';
 export const pythonPathConfigKey = 'pythonPath';
 export const pythonEnabledConfigKey = 'enablePython';
 export const rEnabledConfigKey = 'enableR';
@@ -104,6 +104,7 @@ export const extLangInstallTabTitle = localize('extLang.installTabTitle', "Insta
 export const extLangLanguageCreatedDate = localize('extLang.languageCreatedDate', "Installed");
 export const extLangLanguagePlatform = localize('extLang.languagePlatform', "Platform");
 export const deleteTitle = localize('extLang.delete', "Delete");
+export const editTitle = localize('editTitle', "Edit");
 export const extLangInstallButtonText = localize('extLang.installButtonText', "Install");
 export const extLangCancelButtonText = localize('extLang.CancelButtonText', "Cancel");
 export const extLangDoneButtonText = localize('extLang.DoneButtonText', "Close");
@@ -125,10 +126,14 @@ export const extLangInstallFailedError = localize('extLang.installFailedError', 
 export const extLangUpdateFailedError = localize('extLang.updateFailedError', "Failed to update language");
 
 export const modelUpdateFailedError = localize('models.modelUpdateFailedError', "Failed to update the model");
-export const modelsListEmptyMessage = localize('models.modelsListEmptyMessage', "No Models Yet");
+export const modelsListEmptyMessage = localize('models.modelsListEmptyMessage', "No models yet");
 export const modelsListEmptyDescription = localize('models.modelsListEmptyDescription', "Use import wizard to add models to this table");
 export const databaseName = localize('databaseName', "Models database");
+export const databaseToStoreInfo = localize('databaseToStoreInfo', "Select a database to store the new model.");
+export const tableToStoreInfo = localize('tableToStoreInfo', "Select an existing table that conforms the model schema or create a new one to store the imported model.");
 export const tableName = localize('tableName', "Models table");
+export const modelTableInfo = localize('modelTableInfo', "Select a model table to view the list of existing / imported models.");
+export const modelDatabaseInfo = localize('modelDatabaseInfo', "Select a database where existing / imported models are stored.");
 export const existingTableName = localize('existingTableName', "Existing table");
 export const newTableName = localize('newTableName', "New table");
 export const modelName = localize('models.name', "Name");
@@ -143,7 +148,9 @@ export const browseModels = localize('models.browseButton', "...");
 export const azureAccount = localize('models.azureAccount', "Azure account");
 export const azureSignIn = localize('models.azureSignIn', "Sign in to Azure");
 export const columnDatabase = localize('predict.columnDatabase', "Source database");
+export const columnDatabaseInfo = localize('predict.columnDatabaseInfo', "Select the database containing the dataset to apply the prediction.");
 export const columnTable = localize('predict.columnTable', "Source table");
+export const columnTableInfo = localize('predict.columnTableInfo', "Select the table containing the dataset to apply the prediction.");
 export const inputColumns = localize('predict.inputColumns', "Model Input mapping");
 export const outputColumns = localize('predict.outputColumns', "Model output");
 export const columnName = localize('predict.columnName', "Source columns");
@@ -173,13 +180,14 @@ export const currentModelsTitle = localize('models.currentModelsTitle', "Models"
 export const azureRegisterModel = localize('models.azureRegisterModel', "Deploy");
 export const predictModel = localize('models.predictModel', "Predict");
 export const registerModelTitle = localize('models.RegisterWizard', "Import models");
-export const importModelTitle = localize('models.importModelTitle', "Import models");
+export const importedModelTitle = localize('models.importedModelTitle', "Imported models");
+export const importModelTitle = localize('models.importModelTitle', "Import or view models");
 export const editModelTitle = localize('models.editModelTitle', "Edit model");
-export const importModelDesc = localize('models.importModelDesc', "Build, import and expose a machine learning model");
+export const importModelDesc = localize('models.importModelDesc', "Import or view machine learning models stored in database");
 export const makePredictionTitle = localize('models.makePredictionTitle', "Make predictions");
-export const makePredictionDesc = localize('models.makePredictionDesc', "Generates a predicted value or scores using a managed model");
+export const makePredictionDesc = localize('models.makePredictionDesc', "Generate a predicted value or scores using a managed model");
 export const createNotebookTitle = localize('models.createNotebookTitle', "Create notebook");
-export const createNotebookDesc = localize('models.createNotebookDesc', "Run experiments and create models");
+export const createNotebookDesc = localize('models.createNotebookDesc', "Run experiments and create models in a notebook");
 export const modelRegisteredSuccessfully = localize('models.modelRegisteredSuccessfully', "Model registered successfully");
 export const modelUpdatedSuccessfully = localize('models.modelUpdatedSuccessfully', "Model updated successfully");
 export const modelFailedToRegister = localize('models.modelFailedToRegistered', "Model failed to register");
@@ -204,7 +212,7 @@ export const selectModelsTableMessage = localize('models.selectModelsTableMessag
 export const modelSchemaIsNotAcceptedMessage = localize('models.modelSchemaIsNotAcceptedMessage', "Invalid table structure");
 export function importModelFailedError(modelName: string | undefined, filePath: string | undefined): string { return localize('models.importModelFailedError', "Failed to register the model: {0} ,file: {1}", modelName || '', filePath || ''); }
 export function invalidImportTableError(databaseName: string | undefined, tableName: string | undefined): string { return localize('models.invalidImportTableError', "Invalid table for importing models. database name: {0} ,table name: {1}", databaseName || '', tableName || ''); }
-export function invalidImportTableSchemaError(databaseName: string | undefined, tableName: string | undefined): string { return localize('models.invalidImportTableSchemaError', "Table schema is not supported for model import. database name: {0} ,table name: {1}", databaseName || '', tableName || ''); }
+export function invalidImportTableSchemaError(databaseName: string | undefined, tableName: string | undefined): string { return localize('models.invalidImportTableSchemaError', "Table schema is not supported for model import. Database name: {0}, table name: {1}.", databaseName || '', tableName || ''); }
 
 export const loadModelParameterFailedError = localize('models.loadModelParameterFailedError', "Failed to load model parameters'");
 export const unsupportedModelParameterType = localize('models.unsupportedModelParameterType', "unsupported");
@@ -216,6 +224,8 @@ export const showMoreTitle = localize('showMoreTitle', "Show more");
 export const showLessTitle = localize('showLessTitle', "Show less");
 export const learnMoreTitle = localize('learnMoreTitle', "Learn more");
 export const sqlMlDocTitle = localize('sqlMlDocTitle', "SQL machine learning documentation");
+export const sqlMlExtDocTitle = localize('sqlMlExtDocTitle', "Machine Learning extension in Azure Data Studio");
+export const sqlMlExtDocDesc = localize('sqlMlExtDocDesc', "Learn how to use Machine Learning extension in Azure Data Studio, to manage packages, make predictions, and import models.");
 export const sqlMlDocDesc = localize('sqlMlDocDesc', "Learn how to use machine learning in SQL Server and SQL on Azure, to run Python and R scripts on relational data.");
 export const sqlMlsDocTitle = localize('sqlMlsDocTitle', "SQL Server Machine Learning Services (Python and R)");
 export const sqlMlsDocDesc = localize('sqlMlsDocDesc', "Get started with Machine Learning Services on SQL Server and how to install it on Windows and Linux.");
@@ -230,9 +240,11 @@ export const onnxOnEdgeOdbcDocDesc = localize('onnxOnEdgeOdbcDocDesc', "Get star
 //
 export const odbcDriverDocuments = 'https://go.microsoft.com/fwlink/?linkid=2129818';
 export const mlDocLink = 'https://go.microsoft.com/fwlink/?linkid=2128671';
+export const mlExtDocLink = 'https://go.microsoft.com/fwlink/?linkid=2129918';
 export const mlsDocLink = 'https://go.microsoft.com/fwlink/?linkid=2128672';
-export const mlsAzureDocLink = 'https://go.microsoft.com/fwlink/?linkid=2128673';
+export const mlsMIDocLink = 'https://go.microsoft.com/fwlink/?linkid=2128673';
 export const onnxOnEdgeDocs = 'https://go.microsoft.com/fwlink/?linkid=2128882';
+export const managePackagesDocs = 'https://go.microsoft.com/fwlink/?linkid=2129919';
 
 // CSS Styles
 //

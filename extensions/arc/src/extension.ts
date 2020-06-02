@@ -10,7 +10,6 @@ import { BasicAuth } from './controller/auth';
 import { PostgresDashboard } from './ui/dashboards/postgres/postgresDashboard';
 import { ControllerModel } from './models/controllerModel';
 import { PostgresModel } from './models/postgresModel';
-import { MiaaDashboard } from './ui/dashboards/miaa/miaaDashboard';
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
 	IconPathHelper.setExtensionContext(context);
@@ -24,19 +23,19 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 		const dbNamespace = '';
 		const dbName = '';
 
-		const controllerModel = new ControllerModel(controllerUrl, auth);
-		const databaseModel = new PostgresModel(controllerUrl, auth, dbNamespace, dbName);
-		const postgresDashboard = new PostgresDashboard(loc.postgresDashboard, controllerModel, databaseModel);
-		await postgresDashboard.showDashboard();
-	});
+		try {
+			const controllerModel = new ControllerModel(controllerUrl, auth);
+			const postgresModel = new PostgresModel(controllerUrl, auth, dbNamespace, dbName);
+			const postgresDashboard = new PostgresDashboard(loc.postgresDashboard, controllerModel, postgresModel);
 
-	vscode.commands.registerCommand('arc.manageMiaa', async () => {
-		// Controller information
-		const controllerUrl = '';
-		const auth = new BasicAuth('', '');
-
-		const controllerModel = new ControllerModel(controllerUrl, auth);
-		await new MiaaDashboard('MIAA', controllerModel).showDashboard();
+			await Promise.all([
+				postgresDashboard.showDashboard(),
+				controllerModel.refresh(),
+				postgresModel.refresh()
+			]);
+		} catch (error) {
+			vscode.window.showErrorMessage(loc.failedToManagePostgres(`${dbNamespace}.${dbName}`, error));
+		}
 	});
 }
 

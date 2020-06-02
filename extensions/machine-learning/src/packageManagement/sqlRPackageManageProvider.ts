@@ -68,8 +68,10 @@ export class SqlRPackageManageProvider extends SqlPackageManageProviderBase impl
 		let credentials = await this._apiWrapper.getCredentials(connection.connectionId);
 
 		if (connection) {
+			let server = connection.serverName.replace('\\', '\\\\');
 			let database = databaseName ? `, database="${databaseName}"` : '';
-			let connectionParts = `server="${connection.serverName}", uid="${connection.userName}", pwd="${credentials[azdata.ConnectionOptionSpecialType.password]}"${database}`;
+			const auth = connection.userName ? `, uid="${connection.userName}", pwd="${credentials[azdata.ConnectionOptionSpecialType.password]}"` : '';
+			let connectionParts = `server="${server}"${auth}${database}`;
 			let rCommandScript = scriptMode === ScriptMode.Install ? 'sql_install.packages' : 'sql_remove.packages';
 
 			let scripts: string[] = [

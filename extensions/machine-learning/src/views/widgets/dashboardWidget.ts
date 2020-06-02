@@ -329,6 +329,11 @@ export class DashboardWidget {
 			width: maxWidth,
 			height: '500px',
 		}).component();
+		const moreLinksContainer = view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'column',
+			width: maxWidth,
+			height: '300px',
+		}).component();
 		const titleComponent = view.modelBuilder.text().withProperties({
 			value: constants.dashboardLinksTitle,
 			CSSStyles: {
@@ -339,6 +344,10 @@ export class DashboardWidget {
 		}).component();
 
 		const links = [{
+			title: constants.sqlMlExtDocTitle,
+			description: constants.sqlMlExtDocDesc,
+			link: constants.mlExtDocLink
+		}, {
 			title: constants.sqlMlDocTitle,
 			description: constants.sqlMlDocDesc,
 			link: constants.mlDocLink
@@ -346,18 +355,22 @@ export class DashboardWidget {
 			title: constants.sqlMlsDocTitle,
 			description: constants.sqlMlsDocDesc,
 			link: constants.mlsDocLink
-		},
-		{
+		}];
+
+		const moreLinks = [{
 			title: constants.onnxOnEdgeOdbcDocTitle,
 			description: constants.onnxOnEdgeOdbcDocDesc,
 			link: constants.onnxOnEdgeDocs
-		}];
-
-		const moreLink = {
+		},
+		{
+			title: constants.sqlMlsMIDocTitle,
+			description: constants.sqlMlsMIDocDesc,
+			link: constants.mlsMIDocLink
+		}, {
 			title: constants.mlsInstallOdbcDocTitle,
 			description: constants.mlsInstallOdbcDocDesc,
 			link: constants.odbcDriverDocuments
-		};
+		}];
 		const styles = {
 			'padding': '10px'
 		};
@@ -371,8 +384,10 @@ export class DashboardWidget {
 		linksContainer.addItems(links.map(l => this.createLink(view, l)), {
 			CSSStyles: styles
 		});
+		moreLinksContainer.addItems(moreLinks.map(l => this.createLink(view, l)));
 
-		this.addShowMorePanel(view, linksContainer, this.createLink(view, moreLink), { 'padding-left': '10px' }, styles);
+		this.addShowMorePanel(view, linksContainer, moreLinksContainer, { 'padding-left': '10px' }, styles);
+
 		return linksContainer;
 	}
 
@@ -461,7 +476,7 @@ export class DashboardWidget {
 				dark: this.asAbsolutePath('images/makePredictions.svg'),
 				light: this.asAbsolutePath('images/makePredictions.svg'),
 			},
-			link: '',
+			link: 'https://go.microsoft.com/fwlink/?linkid=2129795',
 			command: constants.mlsPredictModelCommand
 		};
 		const predictionButton = this.createTaskButton(view, predictionMetadata);
@@ -472,7 +487,7 @@ export class DashboardWidget {
 				dark: this.asAbsolutePath('images/manageModels.svg'),
 				light: this.asAbsolutePath('images/manageModels.svg'),
 			},
-			link: '',
+			link: 'https://go.microsoft.com/fwlink/?linkid=2129796',
 			command: constants.mlManageModelsCommand
 		};
 		const importModelsButton = this.createTaskButton(view, importMetadata);
@@ -483,7 +498,7 @@ export class DashboardWidget {
 				dark: this.asAbsolutePath('images/createNotebook.svg'),
 				light: this.asAbsolutePath('images/createNotebook.svg'),
 			},
-			link: '',
+			link: 'https://go.microsoft.com/fwlink/?linkid=2129920',
 			command: constants.notebookCommandNew
 		};
 		const notebookModelsButton = this.createTaskButton(view, notebookMetadata);
@@ -551,7 +566,7 @@ export class DashboardWidget {
 			CSSStyles: {
 				'padding': '0px',
 				'padding-bottom': '5px',
-				'width': '180px',
+				'width': '200px',
 				'margin': '0px',
 				'color': '#006ab1'
 			}

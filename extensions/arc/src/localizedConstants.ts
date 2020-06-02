@@ -46,6 +46,7 @@ export const feedback = localize('arc.feedback', 'Feedback');
 export const selectConnectionString = localize('arc.selectConnectionString', 'Select from available client connection strings below');
 export const vCores = localize('arc.vCores', 'vCores');
 export const ram = localize('arc.ram', 'RAM');
+export const refresh = localize('arc.refresh', 'Refresh');
 
 // Postgres constants
 export const coordinatorEndpoint = localize('arc.coordinatorEndpoint', 'Coordinator endpoint');
@@ -66,17 +67,16 @@ export const node = localize('arc.node', 'node');
 export const nodes = localize('arc.nodes', 'nodes');
 export const storagePerNode = localize('arc.storagePerNode', 'storage per node');
 
-export const pgSqlType = localize('arc.pgSqlType', "PostgreSQL Server group - Azure Arc");
-export const miaaType = localize('arc.miaaType', "SQL instance - Azure Arc");
-
-export function databaseCreated(name: string): string { return localize('arc.databaseCreated', "Database '{0}' created", name); }
-export function databaseCreationFailed(name: string, error: any): string { return localize('arc.databaseCreationFailed', "Failed to create database '{0}'. {1}", name, (error instanceof Error ? error.message : error)); }
-export function passwordReset(name: string): string { return localize('arc.passwordReset', "Password reset for service '{0}'", name); }
-export function passwordResetFailed(name: string, error: any): string { return localize('arc.passwordResetFailed', "Failed to reset password for service '{0}'. {1}", name, (error instanceof Error ? error.message : error)); }
-export function deleteServicePrompt(name: string): string { return localize('arc.deleteServicePrompt', "Delete service '{0}'?", name); }
-export function serviceDeleted(name: string): string { return localize('arc.serviceDeleted', "Service '{0}' deleted", name); }
-export function serviceDeletionFailed(name: string, error: any): string { return localize('arc.serviceDeletionFailed', "Failed to delete service '{0}'. {1}", name, (error instanceof Error ? error.message : error)); }
-export function couldNotFindAzureResource(name: string): string { return localize('arc.couldNotFindAzureResource', "Could not find Azure resource for '{0}'", name); }
+export function databaseCreated(name: string): string { return localize('arc.databaseCreated', "Database {0} created", name); }
+export function databaseCreationFailed(name: string, error: any): string { return localize('arc.databaseCreationFailed', "Failed to create database {0}. {1}", name, (error instanceof Error ? error.message : error)); }
+export function passwordReset(name: string): string { return localize('arc.passwordReset', "Password reset for service {0}", name); }
+export function passwordResetFailed(name: string, error: any): string { return localize('arc.passwordResetFailed', "Failed to reset password for service {0}. {1}", name, (error instanceof Error ? error.message : error)); }
+export function deleteServicePrompt(name: string): string { return localize('arc.deleteServicePrompt', "Delete service {0}?", name); }
+export function serviceDeleted(name: string): string { return localize('arc.serviceDeleted', "Service {0} deleted", name); }
+export function serviceDeletionFailed(name: string, error: any): string { return localize('arc.serviceDeletionFailed', "Failed to delete service {0}. {1}", name, (error instanceof Error ? error.message : error)); }
+export function couldNotFindAzureResource(name: string): string { return localize('arc.couldNotFindAzureResource', "Could not find Azure resource for {0}", name); }
 export function copiedToClipboard(name: string): string { return localize('arc.copiedToClipboard', '{0} copied to clipboard', name); }
+export function refreshFailed(error: any): string { return localize('arc.refreshFailed', "Refresh failed. {0}", (error instanceof Error ? error.message : error)); }
+export function failedToManagePostgres(name: string, error: any): string { return localize('arc.failedToManagePostgres', "Failed to manage Postgres {0}. {1}", name, (error instanceof Error ? error.message : error)); }
 
 export const arcResources = localize('arc.arcResources', "Azure Arc Resources");

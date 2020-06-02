@@ -7,12 +7,14 @@ import * as request from 'request';
 import { authenticateKerberos, getHostAndPortFromEndpoint } from '../auth';
 import { BdcRouterApi, Authentication, EndpointModel, BdcStatusModel, DefaultApi } from './apiGenerated';
 import { TokenRouterApi } from './clusterApiGenerated2';
-import { AuthType } from '../constants';
 import * as nls from 'vscode-nls';
 import { ConnectControllerDialog, ConnectControllerModel } from '../dialog/connectControllerDialog';
 import { getIgnoreSslVerificationConfigSetting } from '../utils';
+import { IClusterController, AuthType } from 'bdc';
 
 const localize = nls.loadMessageBundle();
+
+const DEFAULT_KNOX_USERNAME = 'root';
 
 class SslAuth implements Authentication {
 	constructor() { }
@@ -84,7 +86,7 @@ class DefaultApiWrapper extends DefaultApi {
 	}
 }
 
-export class ClusterController {
+export class ClusterController implements IClusterController {
 
 	private _authPromise: Promise<Authentication>;
 	private _url: string;
@@ -169,6 +171,42 @@ export class ClusterController {
 			let auths = error && error.response && error.response.statusCode === 401 && error.response.headers['www-authenticate'];
 			return auths && auths.includes('Negotiate');
 		}
+	}
+
+	public async getKnoxUsername(sqlLogin: string): Promise<string> {
+		try {
+			// This all is necessary because prior to CU5 BDC deployments all had the same default username for
+			// accessing the Knox gateway. But in the allowRunAsRoot setting was added and defaulted to false - so
+			// if that exists and is false then we use the username instead.
+			// Note that the SQL username may not necessarily be correct here either - but currently this is what
+			// we're requiring to run Notebooks in a BDC
+			const config = await this.getClusterConfig();
+			return config.spec?.spec?.security?.allowRunAsRoot === false ? sqlLogin : DEFAULT_KNOX_USERNAME;
+		} catch (err) {
+			console.log(`Unexpected error fetching cluster config for getKnoxUsername ${err}`);
+			// Optimistically fall back to SQL login since root shouldn't be typically used going forward
+			return sqlLogin;
+		}
+
+	}
+
+	public async getClusterConfig(promptConnect: boolean = false): Promise<any> {
+		return await this.withConnectRetry<IEndPointsResponse>(
+			this.getClusterConfigImpl,
+			promptConnect,
+			localize('bdc.error.getClusterConfig', "Error retrieving cluster config from {0}", this._url));
+	}
+
+	private async getClusterConfigImpl(self: ClusterController): Promise<any> {
+		let auth = await self._authPromise;
+		let endPointApi = new BdcApiWrapper(self._username, self._password, self._url, auth);
+		let options: any = {};
+
+		let result = await endPointApi.getCluster(options);
+		return {
+			response: result.response as IHttpResponse,
+			spec: JSON.parse(result.body.spec)
+		};
 	}
 
 	public async getEndPoints(promptConnect: boolean = false): Promise<IEndPointsResponse> {

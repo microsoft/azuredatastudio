@@ -10,6 +10,7 @@ import * as constants from '../common/constants';
 import { promises as fs } from 'fs';
 import should = require('should');
 import { AssertionError } from 'assert';
+import { Project } from '../models/project';
 
 export async function shouldThrowSpecificError(block: Function, expectedMessage: string, details?: string) {
 	let succeeded = false;
@@ -26,8 +27,12 @@ export async function shouldThrowSpecificError(block: Function, expectedMessage:
 	}
 }
 
-export async function createTestSqlProj(contents: string, folderPath?: string): Promise<string> {
+export async function createTestSqlProjFile(contents: string, folderPath?: string): Promise<string> {
 	return await createTestFile(contents, 'TestProject.sqlproj', folderPath);
+}
+
+export async function createTestProject(contents: string, folderPath?: string): Promise<Project> {
+	return new Project(await createTestSqlProjFile(contents, folderPath));
 }
 
 export async function createTestDataSources(contents: string, folderPath?: string): Promise<string> {
@@ -49,4 +54,68 @@ async function createTestFile(contents: string, fileName: string, folderPath?: s
 	await fs.writeFile(filePath, contents);
 
 	return filePath;
+}
+/**
+ * TestFolder directory structure
+ * 		- file1.sql
+ * 		- folder1
+ * 			-file1.sql
+ * 			-file2.sql
+ * 			-file3.sql
+ * 			-file4.sql
+ * 			-file5.sql
+ *	 	- folder2
+ * 			-file1.sql
+ * 			-file2.sql
+ * 			-file3.sql
+ * 			-file4.sql
+ * 			-file5.sql
+ * 		- file2.txt
+ *
+ * @param createList Boolean specifying to create a list of the files and folders been created
+ * @param list List of files and folders that are been created
+ */
+export async function createDummyFileStructure(createList?: boolean, list?: string[], testFolderPath?: string): Promise<string> {
+	testFolderPath = testFolderPath ?? await generateTestFolderPath();
+
+	let filePath = path.join(testFolderPath, 'file1.sql');
+	await fs.writeFile(filePath, '');
+	if (createList) {
+		list?.push(testFolderPath);
+		list?.push(filePath);
+	}
+
+	for (let dirCount = 1; dirCount <= 2; dirCount++) {
+		let dirName = path.join(testFolderPath, `folder${dirCount}`);
+		await fs.mkdir(dirName, { recursive: true });
+
+		if (createList) {
+			list?.push(dirName);
+		}
+
+		for (let fileCount = 1; fileCount <= 5; fileCount++) {
+			let fileName = path.join(dirName, `file${fileCount}.sql`);
+			await fs.writeFile(fileName, '');
+			if (createList) {
+				list?.push(fileName);
+			}
+		}
+	}
+
+	filePath = path.join(testFolderPath, 'file2.txt');
+	//await touchFile(filePath);
+	await fs.writeFile(filePath, '');
+	if (createList) {
+		list?.push(filePath);
+	}
+
+	return testFolderPath;
+}
+
+export async function createListOfFiles(filePath?: string): Promise<string[]> {
+	let fileFolderList: string[] = [];
+
+	await createDummyFileStructure(true, fileFolderList, filePath);
+
+	return fileFolderList;
 }
