@@ -65,7 +65,6 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardPag
 			const isPassword = !!this.inputComponents[varName]?.isPassword;
 			return isPassword;
 		});
-		console.log(`TCL:: env`, env);
 		const notebook: Notebook = await this.notebookService.getNotebook(this.wizardInfo.notebook);
 		// generate python code statements for all variables captured by the wizard
 		const statements = this.model.getCodeCellContentForNotebook(
