@@ -1,0 +1,20 @@
+name: Latest Release Monitor
+on:
+  schedule:
+    - cron: 0/10 * * * *
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Actions
+        uses: actions/checkout@v2
+        with:
+          repository: 'microsoft/vscode-github-triage-actions'
+          path: ./actions
+          ref: v19
+      - name: Install Actions
+        run: npm install --production --prefix ./actions
+        run: npm install @azure/storage-blob
+      - name: Run Locker
+        uses: ./actions/latest-release-monitor
