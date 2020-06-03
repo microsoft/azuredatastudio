@@ -195,7 +195,7 @@ export class ResourcesDropHandler {
 
 		//TODO: parameterize this
 		if (column[0].resource.scheme === 'Column' || column[0].resource.scheme === 'Table') {
-			SnippetController2.get(editor).insert(column[0].resource.query);
+			SnippetController2.get(editor).insert(`[${column[0].resource.query}]`);
 			return;
 		}
 
