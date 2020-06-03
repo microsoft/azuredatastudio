@@ -141,7 +141,7 @@ export class Project {
 		return fileEntry;
 	}
 
-	private createProjectEntry(relativePath: string, entryType: EntryType): ProjectEntry {
+	public createProjectEntry(relativePath: string, entryType: EntryType): ProjectEntry {
 		return new ProjectEntry(Uri.file(path.join(this.projectFolderPath, relativePath)), relativePath, entryType);
 	}
 
