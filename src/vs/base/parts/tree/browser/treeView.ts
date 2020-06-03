@@ -1285,7 +1285,7 @@ export class TreeView extends HeightMap {
 		// TODO: Figure out how to parse label
 
 		//TODO: change plus signs to string literals (using dollar sign)
-		e.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([element.nodeTypeId + ':' + item.uri + '?' + 'label=' + element.label]));
+		e.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([element.nodeTypeId + ':' + item.uri + '?' + element.label]));
 
 		if (e.dataTransfer.setDragImage) {
 			let label: string;

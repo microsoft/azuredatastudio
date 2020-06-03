@@ -194,10 +194,9 @@ export class ResourcesDropHandler {
 		await this.hostService.focus();
 
 		//TODO: parameterize this
-		if (column[0].resource.scheme === 'Column') {
-			// How do I get an ICodeEditor in here (that is the type of editor)
-
+		if (column[0].resource.scheme === 'Column' || column[0].resource.scheme === 'Table') {
 			SnippetController2.get(editor).insert(column[0].resource.query);
+			return;
 		}
 
 		// Check for special things being dropped
