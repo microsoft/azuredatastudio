@@ -30,6 +30,7 @@ import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { isStandalone } from 'vs/base/browser/browser';
 import { IBackupFileService } from 'vs/workbench/services/backup/common/backup';
 import { Emitter } from 'vs/base/common/event';
+import { SnippetController2 } from 'vs/editor/contrib/snippet/snippetController2';
 
 export interface IDraggedResource {
 	resource: URI;
@@ -187,12 +188,17 @@ export class ResourcesDropHandler {
 			return;
 		}
 
-		//TODO: parameterize this
-		if (column[0].resource.scheme === 'column') {
-			// insert text into editor
-		}
+		const editor = this.editorService.activeTextEditorControl;
+
 		// Make the window active to handle the drop properly within
 		await this.hostService.focus();
+
+		//TODO: parameterize this
+		if (column[0].resource.scheme === 'Column') {
+			// How do I get an ICodeEditor in here (that is the type of editor)
+
+			SnippetController2.get(editor).insert(column[0].resource.query);
+		}
 
 		// Check for special things being dropped
 		const isWorkspaceOpening = await this.doHandleDrop(untitledOrFileResources);
