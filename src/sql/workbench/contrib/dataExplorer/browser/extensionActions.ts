@@ -17,6 +17,7 @@ export const IMPORT_COMMAND_ID = 'dataExplorer.flatFileImport';
 export const SCHEMA_COMPARE_COMMAND_ID = 'dataExplorer.schemaCompare';
 export const GENERATE_SCRIPTS_COMMAND_ID = 'dataExplorer.generateScripts';
 export const PROPERTIES_COMMAND_ID = 'dataExplorer.properties';
+export const IMPORT_DATABASE_COMMAND_ID = 'dataExplorer.importDatabase';
 
 
 // Data Tier Wizard
@@ -96,5 +97,15 @@ CommandsRegistry.registerCommand({
 			nodeInfo: oeShimService.getNodeInfoForTreeItem(args.$treeItem)
 		};
 		return commandService.executeCommand('adminToolExtWin.launchSsmsMinPropertiesDialog', objectExplorerContext);
+	}
+});
+
+// Import Database
+CommandsRegistry.registerCommand({
+	id: IMPORT_DATABASE_COMMAND_ID,
+	handler: (accessor, args: TreeViewItemHandleArg) => {
+		const commandService = accessor.get(ICommandService);
+		let connectedContext: azdata.ConnectedContext = { connectionProfile: args.$treeItem.payload };
+		return commandService.executeCommand('sqlDatabaseProjects.importDatabase', connectedContext);
 	}
 });

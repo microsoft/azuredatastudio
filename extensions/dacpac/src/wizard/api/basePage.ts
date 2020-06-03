@@ -76,7 +76,14 @@ export abstract class BasePage {
 				usr = loc.defaultText;
 			}
 
-			let finalName = `${srv} (${usr})`;
+			let finalName;
+			// show connection name if there is one
+			if (c.options.connectionName) {
+				finalName = `${c.options.connectionName}`;
+			} else {
+				finalName = `${srv} (${usr})`;
+			}
+
 			return {
 				connection: c,
 				displayName: finalName,

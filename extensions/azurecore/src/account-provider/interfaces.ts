@@ -123,6 +123,8 @@ interface Settings {
 	redirectUri?: string;
 
 	scopes?: string[]
+
+	portalEndpoint?: string
 }
 
 /**

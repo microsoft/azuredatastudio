@@ -57,7 +57,8 @@ const publicAzureSettings: ProviderSettings = {
 			scopes: [
 				'openid', 'email', 'profile', 'offline_access',
 				'https://management.azure.com/user_impersonation',
-			]
+			],
+			portalEndpoint: 'https://portal.azure.com'
 		}
 	}
 };
@@ -106,7 +107,8 @@ const usGovAzureSettings: ProviderSettings = {
 			scopes: [
 				'openid', 'email', 'profile', 'offline_access',
 				'https://management.usgovcloudapi.net/user_impersonation'
-			]
+			],
+			portalEndpoint: 'https://portal.azure.us'
 		}
 	}
 };

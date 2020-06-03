@@ -74,7 +74,5 @@ export namespace cssStyles {
 	export const errorText = { ...text, 'color': 'red' };
 }
 
-export type AuthType = 'integrated' | 'basic';
-
 export const clusterEndpointsProperty = 'clusterEndpoints';
 export const controllerEndpointName = 'controller';
