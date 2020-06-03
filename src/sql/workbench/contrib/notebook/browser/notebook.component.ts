@@ -438,7 +438,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			let taskbar = <HTMLElement>this.toolbar.nativeElement;
 			this._actionBar = new Taskbar(taskbar, { actionViewItemProvider: action => this.actionItemProvider(action as Action) });
 			this._actionBar.context = this;
-			taskbar.classList.add('in-preview');
+			taskbar.parentNode.parentElement.classList.add('in-preview');
 
 			let buttonDropdownContainer = DOM.$('li.action-item');
 			buttonDropdownContainer.setAttribute('role', 'presentation');
@@ -460,8 +460,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				{ element: buttonDropdownContainer },
 				{ action: this._runAllCellsAction },
 				{ element: Taskbar.createTaskbarSeparator() },
-				{ element: attachToContainer },
 				{ element: kernelContainer },
+				{ element: attachToContainer },
 				{ element: spacerElement },
 				{ action: collapseCellsAction },
 				{ action: clearResultsButton },
