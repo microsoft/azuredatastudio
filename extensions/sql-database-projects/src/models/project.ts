@@ -156,10 +156,15 @@ export class Project {
 	 */
 	public async addMasterDatabaseReference(): Promise<void> {
 		const uri = this.getMasterDacpac();
-		this.addDatabaseReference(uri, DatabaseReferenceLocation.differentDatabaseSameServer, 'master');
+		this.addDatabaseReference(uri, DatabaseReferenceLocation.differentDatabaseSameServer, constants.master);
 	}
 
 	public getMasterDacpac(): Uri {
+		// check for invalid DSP
+		if (this.projFileXmlDoc.getElementsByTagName(constants.DSP).length !== 1 || this.projFileXmlDoc.getElementsByTagName(constants.DSP)[0].childNodes.length !== 1) {
+			throw new Error(constants.invalidDataSchemaProvider);
+		}
+
 		let dsp: string = this.projFileXmlDoc.getElementsByTagName(constants.DSP)[0].childNodes[0].nodeValue;
 
 		// get version from dsp, which is a string like Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider
@@ -169,8 +174,8 @@ export class Project {
 		version = version.substring(0, version.length - constants.databaseSchemaProvider.length);
 
 		// make sure version is valid
-		console.error(Object.values(SqlPlatforms));
-		if (!Object.values(SqlPlatforms).includes(version)) {
+		console.error(Object.values(TargetPlatform));
+		if (!Object.values(TargetPlatform).includes(version)) {
 			throw new Error(constants.invalidDataSchemaProvider);
 		}
 
@@ -366,7 +371,7 @@ export enum DatabaseReferenceLocation {
 	differentDatabaseSameServer
 }
 
-export enum SqlPlatforms {
+export enum TargetPlatform {
 	Sql90 = '90',
 	Sql100 = '100',
 	Sql110 = '110',

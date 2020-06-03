@@ -11,7 +11,7 @@ import * as testUtils from './testUtils';
 import * as constants from '../common/constants';
 
 import { promises as fs } from 'fs';
-import { Project, EntryType, SqlPlatforms } from '../models/project';
+import { Project, EntryType, TargetPlatform } from '../models/project';
 
 let projFilePath: string;
 const isWindows = os.platform() === 'win32';
@@ -94,22 +94,22 @@ describe('Project: sqlproj content operations', function (): void {
 			let uri = project.getMasterDacpac();
 			should.equal(uri.fsPath, '\\$(NETCoreTargetsPath)\\SystemDacpacs\\130\\master.dacpac');
 
-			project.changeDSP(SqlPlatforms.Sql150.toString());
+			project.changeDSP(TargetPlatform.Sql150.toString());
 			uri = project.getMasterDacpac();
 			should.equal(uri.fsPath, '\\$(NETCoreTargetsPath)\\SystemDacpacs\\150\\master.dacpac');
 
-			project.changeDSP(SqlPlatforms.SqlAzureV12.toString());
+			project.changeDSP(TargetPlatform.SqlAzureV12.toString());
 			uri = project.getMasterDacpac();
 			should.equal(uri.fsPath, '\\$(NETCoreTargetsPath)\\SystemDacpacs\\AzureV12\\master.dacpac');
 		} else {
 			let uri = project.getMasterDacpac();
 			should.equal(uri.fsPath, '/$(NETCoreTargetsPath)/SystemDacpacs/130/master.dacpac');
 
-			project.changeDSP(SqlPlatforms.Sql150.toString());
+			project.changeDSP(TargetPlatform.Sql150.toString());
 			uri = project.getMasterDacpac();
 			should.equal(uri.fsPath, '/$(NETCoreTargetsPath)/SystemDacpacs/150/master.dacpac');
 
-			project.changeDSP(SqlPlatforms.SqlAzureV12.toString());
+			project.changeDSP(TargetPlatform.SqlAzureV12.toString());
 			uri = project.getMasterDacpac();
 			should.equal(uri.fsPath, '/$(NETCoreTargetsPath)/SystemDacpacs/AzureV12/master.dacpac');
 		}

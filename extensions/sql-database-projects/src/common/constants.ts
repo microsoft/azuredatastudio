@@ -36,6 +36,7 @@ export const databaseReferenceLocation = localize('databaseReferenceLocation', "
 export const databaseReferenceSameDatabase = localize('databaseReferenceSameDatabase', "Same database");
 export const databaseReferenceDifferentDabaseSameServer = localize('databaseReferenceDifferentDabaseSameServer', "Different database, same server");
 export const databaseReferenceDatabaseName = localize('databaseReferenceDatabaseName', "Database name");
+export const dacpacFiles = localize('dacpacFiles', "dacpac Files");
 export function newObjectNamePrompt(objectType: string) { return localize('newObjectNamePrompt', 'New {0} name:', objectType); }
 
 // Deploy dialog strings
@@ -76,7 +77,7 @@ export const databaseReferenceTypeRequired = localize('databaseReferenceTypeRequ
 export const dacpacFileLocationRequired = localize('dacpacFileLocationRequired', "Dacpac file location is required for adding a reference to a database");
 export const databaseLocationRequired = localize('databaseLocation', "Database location is required for adding a reference to a database");
 export const databaseNameRequired = localize('databaseNameRequired', "Database name is required for adding a reference to a different database");
-export const invalidDataSchemaProvider = localize('invalidDataSchemaProvider', "Invalid value for DSP in .sqlproj file");
+export const invalidDataSchemaProvider = localize('invalidDataSchemaProvider', "Invalid DSP in .sqlproj file");
 export function projectAlreadyOpened(path: string) { return localize('projectAlreadyOpened', "Project '{0}' is already opened.", path); }
 export function projectAlreadyExists(name: string, path: string) { return localize('projectAlreadyExists', "A project named {0} already exists in {1}.", name, path); }
 export function noFileExist(fileName: string) { return localize('noFileExist', "File {0} doesn't exist", fileName); }
