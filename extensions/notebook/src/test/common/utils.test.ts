@@ -4,12 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as should from 'should';
+import * as azdata from 'azdata';
 import { promises as fs } from 'fs';
 import * as uuid from 'uuid';
 import * as os from 'os';
 import * as path from 'path';
 import * as utils from '../../common/utils';
 import { MockOutputChannel } from './stubs';
+import * as TypeMoq from 'typemoq';
+import { ApiWrapper } from '../../common/apiWrapper';
 
 describe('Utils Tests', function () {
 
@@ -136,5 +139,41 @@ describe('Utils Tests', function () {
 
 	describe('getClusterEndpoints', () => {
 
+	});
+
+	describe('getLinkBearerToken', () => {
+		describe('properly retrieves token for ADO with single account and tenant', () => {
+			let singleTenant: { displayName: string, id: string } = {
+				displayName: 'Microsoft',
+				id: 'tenantId'
+			};
+			let singleAccount: azdata.Account = {
+				displayInfo: {
+					accountType: 'any',
+					contextualDisplayName: 'joberume@microsoft.com',
+					displayName: 'joberume@microsoft.com',
+					userId: 'id'
+				},
+				isStale: false,
+				key: {
+					accountId: 'accountId',
+					providerId: 'providerId'
+				},
+				properties: {
+					tenants: [singleTenant]
+				}
+			};
+
+			let accounts: azdata.Account[] = [singleAccount];
+			let linkBearerToken: string = 'AAAAAAAAAAAAAAAAAAAAAMLheAAAAAAA0%2BuSeid';
+			let mockApiWrapper: TypeMoq.IMock<ApiWrapper> = TypeMoq.Mock.ofType(ApiWrapper);
+
+			mockApiWrapper.setup(api => api.getAllAccounts()).returns(() => Promise.resolve(accounts));
+			mockApiWrapper.setup(api => api.getBearerToken(singleAccount, azdata.AzureResource.AzureDevOps)).returns(() => Promise.resolve({ [singleTenant.id]: { token: linkBearerToken } }));
+
+			let retrievedBearerToken = utils.getLinkBearerToken(azdata.AzureResource.AzureDevOps);
+
+			should(retrievedBearerToken).be.equal(linkBearerToken);
+		});
 	});
 });

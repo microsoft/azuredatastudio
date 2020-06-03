@@ -12,6 +12,19 @@ import { CommandContext, BuiltInCommands } from './constants';
  * this API from our code
  */
 export class ApiWrapper {
+
+	public async getAllAccounts(): Promise<azdata.Account[]> {
+		return await azdata.accounts.getAllAccounts();
+	}
+
+	public async showQuickPick<T extends vscode.QuickPickItem>(items: T[] | Thenable<T[]>, options?: vscode.QuickPickOptions, token?: vscode.CancellationToken): Promise<T | undefined> {
+		return await vscode.window.showQuickPick(items, options);
+	}
+
+	public async getBearerToken(account: azdata.Account, resourceType: azdata.AzureResource): Promise<{ [key: string]: { token: string } }> {
+		return await azdata.accounts.getSecurityToken(account, resourceType);
+	}
+
 	public getWorkspaceFolders(): vscode.WorkspaceFolder[] {
 		return [].concat(vscode.workspace.workspaceFolders || []);
 	}

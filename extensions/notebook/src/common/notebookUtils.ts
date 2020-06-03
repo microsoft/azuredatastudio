@@ -20,3 +20,26 @@ export function getRandomToken(size: number = 24): Promise<string> {
 		});
 	});
 }
+
+/**
+ * Determines if the specified string content is a notebook.
+ * @param documentContent String content of a document to determine if it is a notebook.
+ * @returns True if the content provided is a notebook, false otherwise.
+ */
+export function isNotebookContent(documentContent: string): boolean {
+	let doc: any;
+
+	try {
+		doc = JSON.parse(documentContent);
+		// preliminary schema validation for notebook format
+		if (typeof (doc.metadata) === 'object'
+			&& typeof (doc.nbformat) === 'number'
+			&& typeof (doc.nbformat_minor) === 'number'
+			&& typeof (doc.cells) === 'object') {
+			return true;
+		}
+	}
+	catch { }
+
+	return false;
+}

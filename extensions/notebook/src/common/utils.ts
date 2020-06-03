@@ -8,8 +8,38 @@ import * as fs from 'fs-extra';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
+import { ApiWrapper } from './apiWrapper';
 
+const apiWrapper = new ApiWrapper();
 const localize = nls.loadMessageBundle();
+
+class TenantQuickPickItem implements vscode.QuickPickItem {
+	label: string;
+	description?: string;
+	detail?: string;
+	picked?: boolean;
+	alwaysShow?: boolean;
+	tenant: any;
+
+	constructor(tenant: any) {
+		this.tenant = tenant;
+		this.label = tenant.displayName;
+	}
+}
+
+class AccountQuickPickItem implements vscode.QuickPickItem {
+	account: azdata.Account;
+	label: string;
+	description?: string;
+	detail?: string;
+	picked?: boolean;
+	alwaysShow?: boolean;
+
+	constructor(account: azdata.Account) {
+		this.account = account;
+		this.label = account.key.accountId;
+	}
+}
 
 export function getKnoxUrl(host: string, port: string): string {
 	return `https://${host}:${port}/gateway`;
@@ -297,4 +327,35 @@ function decorate(decorator: (fn: Function, key: string) => Function): Function 
 
 export function getDropdownValue(dropdown: azdata.DropDownComponent): string {
 	return (typeof dropdown.value === 'string') ? dropdown.value : dropdown.value.name;
+}
+
+export async function getLinkBearerToken(resourceType: azdata.AzureResource): Promise<string> {
+	let accounts: azdata.Account[] = await apiWrapper.getAllAccounts();
+
+	// If no accounts have been loaded yet show an error message
+	if (!accounts.length) {
+		apiWrapper.showErrorMessage(localize('notebook.unavailableAccounts', "No accounts available for authorization. Please log in and try again."));
+		return '';
+	}
+
+	let accountItems = accounts.map(account => new AccountQuickPickItem(account));
+	let selectedAccountItem: AccountQuickPickItem = await apiWrapper.showQuickPick(accountItems, {
+		placeHolder: localize('notebook.selectAccount', "This link requires authentication. Please select an account to use:"),
+	});
+	let selectedAccount: azdata.Account = selectedAccountItem.account;
+	let tenants: Array<any> = selectedAccount.properties.tenants;
+	let selectedTenant: any = tenants[0];
+
+	// Allow the user to select any one tenant associated to this account
+	if (tenants.length > 1) {
+		let tenantItem: TenantQuickPickItem = await apiWrapper.showQuickPick(tenants.map((tenant: any) => new TenantQuickPickItem(tenant)), {
+			placeHolder: localize('notebook.selectTenant', "Please select the tenant for this account:"),
+		});
+		selectedTenant = tenantItem.tenant;
+	}
+
+	let bearerTokensByTenant: { [key: string]: { token: string } } = await apiWrapper.getBearerToken(selectedAccount, resourceType);
+	let bearerToken: string = bearerTokensByTenant[selectedTenant.id].token;
+
+	return bearerToken;
 }

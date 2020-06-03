@@ -5,7 +5,6 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-
 import * as request from 'request';
 import * as path from 'path';
 import * as querystring from 'querystring';
@@ -13,7 +12,8 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 import { IQuestion, QuestionTypes } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
-import { getErrorMessage, isEditorTitleFree } from '../common/utils';
+import { getErrorMessage, isEditorTitleFree, getLinkBearerToken as getResourceBearerToken } from '../common/utils';
+import { isNotebookContent } from '../common/notebookUtils';
 
 export class NotebookUriHandler implements vscode.UriHandler {
 	private prompter = new CodeAdapter();
@@ -34,17 +34,22 @@ export class NotebookUriHandler implements vscode.UriHandler {
 		}
 	}
 
-	private open(uri: vscode.Uri): void {
+	private async open(uri: vscode.Uri): Promise<any> {
 		const data = querystring.parse(uri.query);
+		let selectedBearerToken: string = undefined;
 
 		if (!data.url) {
 			console.warn('Failed to open URI:', uri);
 		}
 
-		this.openNotebook(data.url);
+		if (data.providerId && +data.providerId in azdata.AzureResource) {
+			selectedBearerToken = await getResourceBearerToken(+data.providerId);
+		}
+
+		this.openNotebook(data.url, selectedBearerToken);
 	}
 
-	private async openNotebook(url: string | string[]): Promise<void> {
+	private async openNotebook(url: string | string[], authToken?: string): Promise<void> {
 		try {
 			if (Array.isArray(url)) {
 				url = url[0];
@@ -69,9 +74,11 @@ export class NotebookUriHandler implements vscode.UriHandler {
 				return;
 			}
 
-			let contents = await this.download(url);
-			let untitledUri = this.getUntitledUri(path.basename(uri.fsPath));
-			if (path.extname(uri.fsPath) === '.ipynb') {
+			let contents = await this.download(url, authToken);
+			let candidateNotebookName = this.extractNotebookNameFromUrl(url);
+			let untitledUri = this.getUntitledUri(candidateNotebookName || path.basename(uri.fsPath));
+
+			if (isNotebookContent(contents)) {
 				await azdata.nb.showNotebookDocument(untitledUri, {
 					initialContent: contents,
 					preserveFocus: true
@@ -88,9 +95,18 @@ export class NotebookUriHandler implements vscode.UriHandler {
 		}
 	}
 
-	private download(url: string): Promise<string> {
+	private download(url: string, authToken?: string): Promise<string> {
 		return new Promise<string>((resolve, reject) => {
-			request.get(url, { timeout: 10000 }, (error, response, body) => {
+			let options: { timeout: number, auth: object } = {
+				timeout: 10000,
+				auth: undefined
+			};
+			if (authToken) {
+				options.auth = {
+					'bearer': authToken
+				};
+			}
+			request.get(url, options, (error, response, body) => {
 				if (error) {
 					return reject(error);
 				}
@@ -110,6 +126,17 @@ export class NotebookUriHandler implements vscode.UriHandler {
 				resolve(body);
 			});
 		});
+	}
+
+	private extractNotebookNameFromUrl(url: string): string | undefined {
+		let escapedUrl = decodeURI(url);
+		let nameMatches = escapedUrl.match(/(.+\/)+(.+\.ipynb)/);
+
+		if (nameMatches) {
+			return nameMatches[2];
+		}
+
+		return undefined;
 	}
 
 	private getUntitledUri(originalTitle: string): vscode.Uri {
