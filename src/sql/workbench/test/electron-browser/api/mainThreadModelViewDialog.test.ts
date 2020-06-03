@@ -73,7 +73,7 @@ suite('MainThreadModelViewDialog Tests', () => {
 		mockDialogService.setup(x => x.showDialog(It.isAny(), undefined, It.isAny())).callback((dialog) => {
 			openedDialog = dialog;
 		});
-		mockDialogService.setup(x => x.showWizard(It.isAny())).callback(wizard => {
+		mockDialogService.setup(x => x.showWizard(It.isAny(), It.isAny())).callback(wizard => {
 			openedWizard = wizard;
 			// The actual service will set the page to 0 when it opens the wizard
 			openedWizard.setCurrentPage(0);
@@ -243,7 +243,7 @@ suite('MainThreadModelViewDialog Tests', () => {
 		mainThreadModelViewDialog.$openWizard(wizardHandle);
 
 		// Then the opened wizard's content and buttons match what was set
-		mockDialogService.verify(x => x.showWizard(It.isAny()), Times.once());
+		mockDialogService.verify(x => x.showWizard(It.isAny(), It.isAny()), Times.once());
 		assert.notEqual(openedWizard, undefined);
 		assert.equal(openedWizard.title, wizardDetails.title);
 		assert.equal(openedWizard.doneButton.label, okButtonDetails.label);
