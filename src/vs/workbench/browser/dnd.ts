@@ -103,10 +103,6 @@ export function extractResources(e: DragEvent, externalOnly?: boolean): Array<ID
 			else {
 				try {
 					const rawResourcesData = e.dataTransfer.getData(DataTransfers.RESOURCES);
-					const rawResourcesInfo = e.dataTransfer.getData(DataTransfers.INFO);
-					const rawResourcesFiles = e.dataTransfer.getData(DataTransfers.FILES);
-					if (rawResourcesInfo) { }
-					if (rawResourcesFiles) { }
 					if (rawResourcesData) {
 						const uriStrArray: string[] = JSON.parse(rawResourcesData);
 						// for each element in uriStrArray, first check if it is a URI before you try to parse it

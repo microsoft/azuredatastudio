@@ -50,7 +50,6 @@ function _schemeFix(scheme: string, _strict: boolean): string {
 	if (!scheme && !_strict) {
 		return 'file';
 	}
-	//TODO: Add a check here to make the scheme into column, table, etc
 	return scheme;
 }
 

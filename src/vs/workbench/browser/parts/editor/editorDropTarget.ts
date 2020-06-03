@@ -163,9 +163,6 @@ class DropOverlay extends Themable {
 
 				// Handle drop if we have a valid operation
 				if (this.currentDropOperation) {
-					//TODO: need to find a way to check what type of resource we have
-					//i.e. column, table, etc. that was dragged over from TreeView
-					// e.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify());
 					this.handleDrop(e, this.currentDropOperation.splitDirection);
 				}
 			}

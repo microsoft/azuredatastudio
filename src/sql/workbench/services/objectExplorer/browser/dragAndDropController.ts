@@ -85,9 +85,6 @@ export class TreeDragAndDrop implements IDragAndDrop {
 				canDragOver = source.id !== targetElement.id && !source.isAncestorOf(targetElement);
 			}
 			//TODO: Change the filter used here?
-		} else if (targetElement.nodeTypeId === 'Table' || targetElement.nodeTypeId === 'Column') {
-			// Try to edit the text in the text window here, if possible
-
 		} else {
 			canDragOver = true;
 		}
