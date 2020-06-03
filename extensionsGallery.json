@@ -2816,7 +2816,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/Microsoft/vscode-mssql/master/images/sqlserver.png"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/datavirtualization/content/extension.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
