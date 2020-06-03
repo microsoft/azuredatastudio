@@ -150,7 +150,7 @@ function showPartsSplash(configuration) {
  * @returns {Promise<void>}
  */
 function getLazyEnv() {
-	// @ts-ignore
+	
 	const ipc = require('electron').ipcRenderer;
 
 	return new Promise(function (resolve) {
