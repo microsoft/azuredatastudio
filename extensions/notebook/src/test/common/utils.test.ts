@@ -162,7 +162,7 @@ describe('Utils Tests', function () {
 	});
 
 	describe('isEditorTitleFree', () => {
-		afterEach( async () => {
+		afterEach(async () => {
 			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
 		});
 
@@ -322,7 +322,7 @@ describe('Utils Tests', function () {
 	});
 
 	describe('getLinkBearerToken', () => {
-		describe('properly retrieves token for ADO with single account and tenant', () => {
+		it('properly retrieves token for ADO with single account and tenant', async () => {
 			let singleTenant: { displayName: string, id: string } = {
 				displayName: 'Microsoft',
 				id: 'tenantId'
@@ -343,7 +343,7 @@ describe('Utils Tests', function () {
 					tenants: [singleTenant]
 				}
 			};
-
+			let quickPickItem: utils.AccountQuickPickItem = new utils.AccountQuickPickItem(singleAccount);
 			let accounts: azdata.Account[] = [singleAccount];
 			let linkBearerToken: string = 'AAAAAAAAAAAAAAAAAAAAAMLheAAAAAAA0%2BuSeid';
 			let mockApiWrapper: TypeMoq.IMock<ApiWrapper> = TypeMoq.Mock.ofType(ApiWrapper);
@@ -351,9 +351,150 @@ describe('Utils Tests', function () {
 			mockApiWrapper.setup(api => api.getAllAccounts()).returns(() => Promise.resolve(accounts));
 			mockApiWrapper.setup(api => api.getBearerToken(singleAccount, azdata.AzureResource.AzureDevOps)).returns(() => Promise.resolve({ [singleTenant.id]: { token: linkBearerToken } }));
 
-			let retrievedBearerToken = utils.getLinkBearerToken(azdata.AzureResource.AzureDevOps);
+			let accountQuickPickSetup = mockApiWrapper.setup(api => api.showQuickPick(TypeMoq.It.is((items: utils.AccountQuickPickItem[]) => items.length === 1 && items[0].account.key.accountId === singleAccount.key.accountId), TypeMoq.It.isAny(), TypeMoq.It.isAny()));
+			accountQuickPickSetup.returns(() => Promise.resolve(quickPickItem));
+			accountQuickPickSetup.verifiable();
+
+			let retrievedBearerToken = await utils.getLinkBearerToken(azdata.AzureResource.AzureDevOps, mockApiWrapper.object);
 
 			should(retrievedBearerToken).be.equal(linkBearerToken);
+
+			// Verify that all the quick picks have taken place
+			mockApiWrapper.verifyAll();
+		});
+
+		it('properly returns undefined token when no accounts are available', async () => {
+			let accounts: azdata.Account[] = [];
+			let mockApiWrapper: TypeMoq.IMock<ApiWrapper> = TypeMoq.Mock.ofType(ApiWrapper);
+
+			mockApiWrapper.setup(api => api.getAllAccounts()).returns(() => Promise.resolve(accounts));
+
+			let retrievedBearerToken = await utils.getLinkBearerToken(azdata.AzureResource.AzureDevOps, mockApiWrapper.object);
+
+			should(retrievedBearerToken).be.equal('');
+		});
+
+		it('properly retrieves token for ADO with multiple tenants', async () => {
+			let firstTenant: { displayName: string, id: string } = {
+				displayName: 'Microsoft',
+				id: 'tenantId'
+			};
+			let secondTenant: { displayName: string, id: string } = {
+				displayName: 'Microsoft 2',
+				id: 'tenantId2'
+			};
+
+			let firstAccount: azdata.Account = {
+				displayInfo: {
+					accountType: 'any',
+					contextualDisplayName: 'joberume@microsoft.com',
+					displayName: 'joberume@microsoft.com',
+					userId: 'id'
+				},
+				isStale: false,
+				key: {
+					accountId: 'accountId',
+					providerId: 'providerId'
+				},
+				properties: {
+					tenants: [firstTenant, secondTenant]
+				}
+			};
+
+			let accounts: azdata.Account[] = [firstAccount];
+			let tenants: any[] = [firstTenant, secondTenant];
+			let accountQuickPickItems: utils.AccountQuickPickItem[] = accounts.map(account => new utils.AccountQuickPickItem(account));
+			let tenantQuickPickItems: utils.TenantQuickPickItem[] = tenants.map(tenant => new utils.TenantQuickPickItem(tenant));
+			let firstLinkBearerToken: string = 'AAAAAAAAAAAAAAAAAAAAAMLheAAAAAAA0%2BuSeid';
+			let secondLinkBearerToken: string = 'AAAAAAAAAAAAAAAAAAAAAMLheAAAAAAA0%2BuSeid';
+			let mockApiWrapper: TypeMoq.IMock<ApiWrapper> = TypeMoq.Mock.ofType(ApiWrapper);
+
+			mockApiWrapper.setup(api => api.getAllAccounts()).returns(() => Promise.resolve(accounts));
+			mockApiWrapper.setup(api => api.getBearerToken(firstAccount, azdata.AzureResource.AzureDevOps)).returns(() => Promise.resolve({ [firstTenant.id]: { token: firstLinkBearerToken }, [secondTenant.id]: { token: secondLinkBearerToken } }));
+
+			let accountQuickPickSetup = mockApiWrapper.setup(api => api.showQuickPick(TypeMoq.It.is((items: utils.AccountQuickPickItem[]) => items.length === 1 && items[0].account.key.accountId === firstAccount.key.accountId), TypeMoq.It.isAny(), TypeMoq.It.isAny()));
+			accountQuickPickSetup.verifiable();
+			accountQuickPickSetup.returns(() => Promise.resolve(accountQuickPickItems[0]));
+
+			let tenantQuickPickSetup = mockApiWrapper.setup(api => api.showQuickPick(TypeMoq.It.is((items: utils.TenantQuickPickItem[]) => items.length === 2 && items[0].tenant.id === firstTenant.id && items[1].tenant.id === secondTenant.id), TypeMoq.It.isAny()));
+			tenantQuickPickSetup.verifiable();
+			tenantQuickPickSetup.returns(() => Promise.resolve(tenantQuickPickItems[1]));
+
+			let firstRetrievedToken = await utils.getLinkBearerToken(azdata.AzureResource.AzureDevOps, mockApiWrapper.object);
+
+			should(firstRetrievedToken).be.equal(secondLinkBearerToken);
+
+			// Verify that all the quick picks have taken place
+			mockApiWrapper.verifyAll();
+
+		});
+
+		it('properly retrieves token for ADO with multiple accounts', async () => {
+			let firstTenant: { displayName: string, id: string } = {
+				displayName: 'Microsoft',
+				id: 'tenantId'
+			};
+
+			let secondTenant: { displayName: string, id: string } = {
+				displayName: 'Microsoft 2',
+				id: 'tenantId2'
+			};
+
+			let firstAccount: azdata.Account = {
+				displayInfo: {
+					accountType: 'any',
+					contextualDisplayName: 'joberume@microsoft.com',
+					displayName: 'joberume@microsoft.com',
+					userId: 'id'
+				},
+				isStale: false,
+				key: {
+					accountId: 'accountId',
+					providerId: 'providerId'
+				},
+				properties: {
+					tenants: [firstTenant]
+				}
+			};
+
+			let secondAccount: azdata.Account = {
+				displayInfo: {
+					accountType: 'any',
+					contextualDisplayName: 'joberume@microsoft2.com',
+					displayName: 'joberume@microsoft2.com',
+					userId: 'id2'
+				},
+				isStale: false,
+				key: {
+					accountId: 'accountId2',
+					providerId: 'providerId2'
+				},
+				properties: {
+					tenants: [secondTenant]
+				}
+			};
+
+			let accounts: azdata.Account[] = [firstAccount, secondAccount];
+			let accountQuickPickItems: utils.AccountQuickPickItem[] = accounts.map(account => new utils.AccountQuickPickItem(account));
+			let bearerToken: string = 'BBBBBBBBBBBBBBBBBBBBBMLheBBBBBBB0%2BuSeid';
+			let mockApiWrapper: TypeMoq.IMock<ApiWrapper> = TypeMoq.Mock.ofType(ApiWrapper);
+
+			mockApiWrapper.setup(api => api.getAllAccounts()).returns(() => Promise.resolve(accounts));
+
+			let bearerTokenFetchSetup = mockApiWrapper.setup(api => api.getBearerToken(TypeMoq.It.isValue(secondAccount), TypeMoq.It.isValue(azdata.AzureResource.AzureDevOps)));
+			bearerTokenFetchSetup.returns(() => Promise.resolve({ [secondTenant.id]: { token: bearerToken } }));
+			bearerTokenFetchSetup.verifiable();
+
+			let accountQuickPickSetup = mockApiWrapper.setup(api => api.showQuickPick(TypeMoq.It.is((items: utils.AccountQuickPickItem[]) => items.length === 2 && items[0].account.key.accountId === firstAccount.key.accountId && items[1].account.key.accountId === secondAccount.key.accountId), TypeMoq.It.isAny(), TypeMoq.It.isAny()));
+			accountQuickPickSetup.returns(() => Promise.resolve(accountQuickPickItems[1]));
+			accountQuickPickSetup.verifiable();
+
+			let retrievedToken = await utils.getLinkBearerToken(azdata.AzureResource.AzureDevOps, mockApiWrapper.object);
+
+			should(retrievedToken).be.equal(bearerToken);
+
+			// Verify all the picks have happened
+			mockApiWrapper.verifyAll();
 		});
 	});
 });
