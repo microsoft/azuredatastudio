@@ -49,6 +49,11 @@ let crashReporterDirectory = args['crash-reporter-directory'];
 if (crashReporterDirectory) {
 	crashReporterDirectory = path.normalize(crashReporterDirectory);
 
+	if (!path.isAbsolute(crashReporterDirectory)) {
+		console.error(`The path '${crashReporterDirectory}' specified for --crash-reporter-directory must be absolute.`);
+		app.exit(1);
+	}
+
 	if (!fs.existsSync(crashReporterDirectory)) {
 		try {
 			fs.mkdirSync(crashReporterDirectory);
