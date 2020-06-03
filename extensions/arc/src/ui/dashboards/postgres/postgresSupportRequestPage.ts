@@ -40,7 +40,7 @@ export class PostgresSupportRequestPage extends DashboardPage {
 
 		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: loc.clickTheNewSupportRequestButton,
-			CSSStyles: { 'margin-bottom': '20px' }
+			CSSStyles: { ...cssStyles.text, 'margin-bottom': '20px' }
 		}).component());
 
 		const supportRequestButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({

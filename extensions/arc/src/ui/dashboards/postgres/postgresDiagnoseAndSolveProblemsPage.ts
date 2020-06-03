@@ -39,7 +39,7 @@ export class PostgresDiagnoseAndSolveProblemsPage extends DashboardPage {
 
 		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: loc.clickTheTroubleshootButton('Postgres'),
-			CSSStyles: { 'margin-bottom': '20px' }
+			CSSStyles: { ...cssStyles.text, 'margin-bottom': '20px' }
 		}).component());
 
 		const troubleshootButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
