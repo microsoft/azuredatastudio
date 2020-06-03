@@ -84,7 +84,6 @@ export class TreeDragAndDrop implements IDragAndDrop {
 				// to avoid creating a circular structure.
 				canDragOver = source.id !== targetElement.id && !source.isAncestorOf(targetElement);
 			}
-			//TODO: Change the filter used here?
 		} else {
 			canDragOver = true;
 		}
