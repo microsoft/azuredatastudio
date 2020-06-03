@@ -10,6 +10,7 @@ import * as uuid from 'uuid';
 import * as os from 'os';
 import * as path from 'path';
 import * as utils from '../../common/utils';
+import { AccountQuickPickItem, TenantQuickPickItem } from '../../common/quickPickItemModels';
 import { MockOutputChannel } from './stubs';
 import * as TypeMoq from 'typemoq';
 import { ApiWrapper } from '../../common/apiWrapper';
@@ -343,7 +344,7 @@ describe('Utils Tests', function () {
 					tenants: [singleTenant]
 				}
 			};
-			let quickPickItem: utils.AccountQuickPickItem = new utils.AccountQuickPickItem(singleAccount);
+			let quickPickItem: AccountQuickPickItem = new AccountQuickPickItem(singleAccount);
 			let accounts: azdata.Account[] = [singleAccount];
 			let linkBearerToken: string = 'AAAAAAAAAAAAAAAAAAAAAMLheAAAAAAA0%2BuSeid';
 			let mockApiWrapper: TypeMoq.IMock<ApiWrapper> = TypeMoq.Mock.ofType(ApiWrapper);
@@ -351,7 +352,7 @@ describe('Utils Tests', function () {
 			mockApiWrapper.setup(api => api.getAllAccounts()).returns(() => Promise.resolve(accounts));
 			mockApiWrapper.setup(api => api.getBearerToken(singleAccount, azdata.AzureResource.AzureDevOps)).returns(() => Promise.resolve({ [singleTenant.id]: { token: linkBearerToken } }));
 
-			let accountQuickPickSetup = mockApiWrapper.setup(api => api.showQuickPick(TypeMoq.It.is((items: utils.AccountQuickPickItem[]) => items.length === 1 && items[0].account.key.accountId === singleAccount.key.accountId), TypeMoq.It.isAny(), TypeMoq.It.isAny()));
+			let accountQuickPickSetup = mockApiWrapper.setup(api => api.showQuickPick(TypeMoq.It.is((items: AccountQuickPickItem[]) => items.length === 1 && items[0].account.key.accountId === singleAccount.key.accountId), TypeMoq.It.isAny(), TypeMoq.It.isAny()));
 			accountQuickPickSetup.returns(() => Promise.resolve(quickPickItem));
 			accountQuickPickSetup.verifiable();
 
@@ -403,8 +404,8 @@ describe('Utils Tests', function () {
 
 			let accounts: azdata.Account[] = [firstAccount];
 			let tenants: any[] = [firstTenant, secondTenant];
-			let accountQuickPickItems: utils.AccountQuickPickItem[] = accounts.map(account => new utils.AccountQuickPickItem(account));
-			let tenantQuickPickItems: utils.TenantQuickPickItem[] = tenants.map(tenant => new utils.TenantQuickPickItem(tenant));
+			let accountQuickPickItems: AccountQuickPickItem[] = accounts.map(account => new AccountQuickPickItem(account));
+			let tenantQuickPickItems: TenantQuickPickItem[] = tenants.map(tenant => new TenantQuickPickItem(tenant));
 			let firstLinkBearerToken: string = 'AAAAAAAAAAAAAAAAAAAAAMLheAAAAAAA0%2BuSeid';
 			let secondLinkBearerToken: string = 'AAAAAAAAAAAAAAAAAAAAAMLheAAAAAAA0%2BuSeid';
 			let mockApiWrapper: TypeMoq.IMock<ApiWrapper> = TypeMoq.Mock.ofType(ApiWrapper);
@@ -412,11 +413,11 @@ describe('Utils Tests', function () {
 			mockApiWrapper.setup(api => api.getAllAccounts()).returns(() => Promise.resolve(accounts));
 			mockApiWrapper.setup(api => api.getBearerToken(firstAccount, azdata.AzureResource.AzureDevOps)).returns(() => Promise.resolve({ [firstTenant.id]: { token: firstLinkBearerToken }, [secondTenant.id]: { token: secondLinkBearerToken } }));
 
-			let accountQuickPickSetup = mockApiWrapper.setup(api => api.showQuickPick(TypeMoq.It.is((items: utils.AccountQuickPickItem[]) => items.length === 1 && items[0].account.key.accountId === firstAccount.key.accountId), TypeMoq.It.isAny(), TypeMoq.It.isAny()));
+			let accountQuickPickSetup = mockApiWrapper.setup(api => api.showQuickPick(TypeMoq.It.is((items: AccountQuickPickItem[]) => items.length === 1 && items[0].account.key.accountId === firstAccount.key.accountId), TypeMoq.It.isAny(), TypeMoq.It.isAny()));
 			accountQuickPickSetup.verifiable();
 			accountQuickPickSetup.returns(() => Promise.resolve(accountQuickPickItems[0]));
 
-			let tenantQuickPickSetup = mockApiWrapper.setup(api => api.showQuickPick(TypeMoq.It.is((items: utils.TenantQuickPickItem[]) => items.length === 2 && items[0].tenant.id === firstTenant.id && items[1].tenant.id === secondTenant.id), TypeMoq.It.isAny()));
+			let tenantQuickPickSetup = mockApiWrapper.setup(api => api.showQuickPick(TypeMoq.It.is((items: TenantQuickPickItem[]) => items.length === 2 && items[0].tenant.id === firstTenant.id && items[1].tenant.id === secondTenant.id), TypeMoq.It.isAny()));
 			tenantQuickPickSetup.verifiable();
 			tenantQuickPickSetup.returns(() => Promise.resolve(tenantQuickPickItems[1]));
 
@@ -475,7 +476,7 @@ describe('Utils Tests', function () {
 			};
 
 			let accounts: azdata.Account[] = [firstAccount, secondAccount];
-			let accountQuickPickItems: utils.AccountQuickPickItem[] = accounts.map(account => new utils.AccountQuickPickItem(account));
+			let accountQuickPickItems: AccountQuickPickItem[] = accounts.map(account => new AccountQuickPickItem(account));
 			let bearerToken: string = 'BBBBBBBBBBBBBBBBBBBBBMLheBBBBBBB0%2BuSeid';
 			let mockApiWrapper: TypeMoq.IMock<ApiWrapper> = TypeMoq.Mock.ofType(ApiWrapper);
 
@@ -485,7 +486,7 @@ describe('Utils Tests', function () {
 			bearerTokenFetchSetup.returns(() => Promise.resolve({ [secondTenant.id]: { token: bearerToken } }));
 			bearerTokenFetchSetup.verifiable();
 
-			let accountQuickPickSetup = mockApiWrapper.setup(api => api.showQuickPick(TypeMoq.It.is((items: utils.AccountQuickPickItem[]) => items.length === 2 && items[0].account.key.accountId === firstAccount.key.accountId && items[1].account.key.accountId === secondAccount.key.accountId), TypeMoq.It.isAny(), TypeMoq.It.isAny()));
+			let accountQuickPickSetup = mockApiWrapper.setup(api => api.showQuickPick(TypeMoq.It.is((items: AccountQuickPickItem[]) => items.length === 2 && items[0].account.key.accountId === firstAccount.key.accountId && items[1].account.key.accountId === secondAccount.key.accountId), TypeMoq.It.isAny(), TypeMoq.It.isAny()));
 			accountQuickPickSetup.returns(() => Promise.resolve(accountQuickPickItems[1]));
 			accountQuickPickSetup.verifiable();
 

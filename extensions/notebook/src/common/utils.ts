@@ -9,37 +9,9 @@ import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { ApiWrapper } from './apiWrapper';
+import { TenantQuickPickItem, AccountQuickPickItem } from './quickPickItemModels';
 
-const apiWrapper = new ApiWrapper();
 const localize = nls.loadMessageBundle();
-
-class TenantQuickPickItem implements vscode.QuickPickItem {
-	label: string;
-	description?: string;
-	detail?: string;
-	picked?: boolean;
-	alwaysShow?: boolean;
-	tenant: any;
-
-	constructor(tenant: any) {
-		this.tenant = tenant;
-		this.label = tenant.displayName;
-	}
-}
-
-class AccountQuickPickItem implements vscode.QuickPickItem {
-	account: azdata.Account;
-	label: string;
-	description?: string;
-	detail?: string;
-	picked?: boolean;
-	alwaysShow?: boolean;
-
-	constructor(account: azdata.Account) {
-		this.account = account;
-		this.label = account.key.accountId;
-	}
-}
 
 export function getKnoxUrl(host: string, port: string): string {
 	return `https://${host}:${port}/gateway`;
@@ -329,7 +301,11 @@ export function getDropdownValue(dropdown: azdata.DropDownComponent): string {
 	return (typeof dropdown.value === 'string') ? dropdown.value : dropdown.value.name;
 }
 
-export async function getLinkBearerToken(resourceType: azdata.AzureResource): Promise<string> {
+export async function getLinkBearerToken(resourceType: azdata.AzureResource, apiWrapper?: ApiWrapper): Promise<string> {
+	if (!apiWrapper) {
+		apiWrapper = new ApiWrapper();
+	}
+
 	let accounts: azdata.Account[] = await apiWrapper.getAllAccounts();
 
 	// If no accounts have been loaded yet show an error message
