@@ -362,6 +362,37 @@ declare module 'azdata' {
 		}
 
 		export function createModelViewDashboard(title: string, options?: ModelViewDashboardOptions): ModelViewDashboard;
+
+		export interface Dialog {
+			/**
+			 * Width of the dialog
+			 */
+			width?: DialogWidth;
+		}
+
+		export interface Wizard {
+			/**
+			 * Width of the wizard
+			 */
+			width?: DialogWidth;
+		}
+
+		export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
+
+		/**
+		 * Create a dialog with the given title
+		 * @param title The title of the dialog, displayed at the top
+		 * @param dialogName the name of the dialog
+		 * @param width width of the dialog, default is 'wide'
+		 */
+		export function createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth): Dialog;
+
+		/**
+		 * Create a wizard with the given title and width
+		 * @param title The title of the wizard
+		 * @param width The width of the wizard, default value is 'narrow'
+		 */
+		export function createWizard(title: string, width?: DialogWidth): Wizard;
 	}
 
 	export interface DashboardTab extends Tab {
