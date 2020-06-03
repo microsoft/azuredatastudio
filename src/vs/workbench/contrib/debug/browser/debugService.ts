@@ -46,6 +46,7 @@ import { IViewsService } from 'vs/workbench/common/views';
 import { generateUuid } from 'vs/base/common/uuid';
 import { DebugStorage } from 'vs/workbench/contrib/debug/common/debugStorage';
 import { DebugTelemetry } from 'vs/workbench/contrib/debug/common/debugTelemetry';
+import { DebugCompoundRoot } from 'vs/workbench/contrib/debug/common/debugCompoundRoot';
 
 export class DebugService implements IDebugService {
 	_serviceBrand: undefined;
@@ -305,6 +306,9 @@ export class DebugService implements IDebugService {
 						return false;
 					}
 				}
+				if (compound.stopAll) {
+					options = { ...options, compoundRoot: new DebugCompoundRoot() };
+				}
 
 				const values = await Promise.all(compound.configurations.map(configData => {
 					const name = typeof configData === 'string' ? configData : configData.name;
@@ -405,7 +409,7 @@ export class DebugService implements IDebugService {
 				const cfg = await this.configurationManager.resolveDebugConfigurationWithSubstitutedVariables(launch && launch.workspace ? launch.workspace.uri : undefined, type, resolvedConfig, initCancellationToken.token);
 				if (!cfg) {
 					if (launch && type && cfg === null && !initCancellationToken.token.isCancellationRequested) {	// show launch.json only for "config" being "null".
-						await launch.openConfigFile(false, true, type, initCancellationToken.token);
+						await launch.openConfigFile(true, type, initCancellationToken.token);
 					}
 					return false;
 				}
@@ -439,7 +443,7 @@ export class DebugService implements IDebugService {
 					await this.showError(nls.localize('noFolderWorkspaceDebugError', "The active file can not be debugged. Make sure it is saved and that you have a debug extension installed for that file type."));
 				}
 				if (launch && !initCancellationToken.token.isCancellationRequested) {
-					await launch.openConfigFile(false, true, undefined, initCancellationToken.token);
+					await launch.openConfigFile(true, undefined, initCancellationToken.token);
 				}
 
 				return false;
@@ -447,7 +451,7 @@ export class DebugService implements IDebugService {
 		}
 
 		if (launch && type && configByProviders === null && !initCancellationToken.token.isCancellationRequested) {	// show launch.json only for "config" being "null".
-			await launch.openConfigFile(false, true, type, initCancellationToken.token);
+			await launch.openConfigFile(true, type, initCancellationToken.token);
 		}
 
 		return false;

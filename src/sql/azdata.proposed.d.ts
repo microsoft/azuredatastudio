@@ -475,5 +475,10 @@ declare module 'azdata' {
 		getAssessmentItems(ownerUri: string, targetType: sqlAssessment.SqlAssessmentTargetType): Promise<SqlAssessmentResult>;
 		generateAssessmentScript(items: SqlAssessmentResultItem[]): Promise<ResultStatus>;
 	}
-}
 
+	export interface TreeItem2 extends vscode.TreeItem2 {
+		payload?: IConnectionProfile;
+		childProvider?: string;
+		type?: ExtensionNodeType;
+	}
+}
