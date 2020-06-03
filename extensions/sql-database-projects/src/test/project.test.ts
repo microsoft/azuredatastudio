@@ -11,8 +11,9 @@ import * as testUtils from './testUtils';
 import * as constants from '../common/constants';
 
 import { promises as fs } from 'fs';
-import { Project, EntryType, TargetPlatform } from '../models/project';
+import { Project, EntryType, TargetPlatform, DatabaseReferenceLocation } from '../models/project';
 import { exists } from '../common/utils';
+import { Uri } from 'vscode';
 
 let projFilePath: string;
 const isWindows = os.platform() === 'win32';
@@ -84,6 +85,19 @@ describe('Project: sqlproj content operations', function (): void {
 		list.push(nonexistentFile);
 
 		await testUtils.shouldThrowSpecificError(async () => await project.addToProject(list), `ENOENT: no such file or directory, stat \'${nonexistentFile}\'`);
+	});
+
+	it('Should add dacpac references to sqlproj', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project = new Project(projFilePath);
+		await project.readProjFile();
+
+		await project.addMasterDatabaseReference();
+		await project.addDatabaseReference(Uri.parse('testPath/testSameDb.dacpac'), DatabaseReferenceLocation.sameDatabase);
+		await project.addDatabaseReference(Uri.parse('testPath/testDifferentDbSameServer.dacpac'), DatabaseReferenceLocation.differentDatabaseSameServer, 'testDb');
+
+		let projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText).equal(baselines.dacpacReferencesProjectFileBaseline.trim());
 	});
 
 	it('Should choose correct master dacpac', async function(): Promise<void> {
