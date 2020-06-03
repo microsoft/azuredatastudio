@@ -393,6 +393,8 @@ import 'sql/workbench/contrib/query/common/resultsGrid.contribution';
 // data explorer
 import 'sql/workbench/contrib/dataExplorer/browser/dataExplorer.contribution';
 import 'sql/workbench/contrib/dataExplorer/browser/nodeActions.common.contribution';
+import 'sql/workbench/contrib/dataExplorer/browser/extensions.contribution';
+
 
 //editor replacement
 import 'sql/workbench/contrib/editorReplacement/common/editorReplacer.contribution';
@@ -468,5 +470,8 @@ import 'sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.cont
 
 // Extension
 import 'sql/workbench/contrib/extensions/browser/extensions.contribution';
+
+// Azure
+import 'sql/workbench/contrib/azure/browser/azure.contribution';
 
 //#endregion

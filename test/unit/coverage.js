@@ -56,6 +56,7 @@ exports.createReport = function (isSingle) {
 		let reports = [];
 		if (isSingle) {
 			reports.push(iReports.create('lcovonly'));
+			reports.push(iReports.create('json')); // {{SQL CARBON EDIT}} add json for code coverage merging
 		} else {
 			reports.push(iReports.create('json'));
 			reports.push(iReports.create('lcov'));

@@ -20,6 +20,7 @@ import { VIEWLET_ID as EXPLORER } from 'vs/workbench/contrib/files/common/files'
 import { VIEWLET_ID as SCM } from 'vs/workbench/contrib/scm/common/scm';
 import { VIEWLET_ID as DEBUG } from 'vs/workbench/contrib/debug/common/debug';
 import { VIEWLET_ID as REMOTE } from 'vs/workbench/contrib/remote/common/remote.contribution';
+import { VIEWLET_ID as NOTEBOOK } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet'; // {{SQL CARBON EDIT}}
 import { ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { URI } from 'vs/base/common/uri';
 import { ViewletRegistry, Extensions as ViewletExtensions, ShowViewletAction } from 'vs/workbench/browser/viewlet';
@@ -163,6 +164,13 @@ const viewsContribution: IJSONSchema = {
 			description: localize('views.remote', "Contributes views to Remote container in the Activity bar. To contribute to this container, enableProposedApi needs to be turned on"),
 			type: 'array',
 			items: remoteViewDescriptor,
+			default: []
+		},
+		// {{SQL CARBON EDIT}}
+		'notebooks': {
+			description: localize('views.notebooks', "Contributes views to Notebooks container in the Activity bar."),
+			type: 'array',
+			items: viewDescriptor,
 			default: []
 		}
 	},
@@ -479,6 +487,7 @@ class ViewsExtensionHandler implements IWorkbenchContribution {
 			case 'debug': return this.viewContainersRegistry.get(DEBUG);
 			case 'scm': return this.viewContainersRegistry.get(SCM);
 			case 'remote': return this.viewContainersRegistry.get(REMOTE);
+			case 'notebooks': return this.viewContainersRegistry.get(NOTEBOOK); // {{SQL CARBON EDIT}}
 			default: return this.viewContainersRegistry.get(`workbench.view.extension.${value}`);
 		}
 	}

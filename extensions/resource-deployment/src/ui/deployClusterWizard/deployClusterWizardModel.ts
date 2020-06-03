@@ -4,13 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 import { EOL } from 'os';
 import { delimiter } from 'path';
-import { BdcDeploymentType } from '../../interfaces';
+import { BdcDeploymentType, ITool } from '../../interfaces';
 import { BigDataClusterDeploymentProfile, DataResource, HdfsResource, SqlServerMasterResource } from '../../services/bigDataClusterDeploymentProfile';
 import { KubeCtlToolName } from '../../services/tools/kubeCtlTool';
-import { getRuntimeBinaryPathEnvironmentVariableName } from '../../utils';
+import { getRuntimeBinaryPathEnvironmentVariableName, setEnvironmentVariablesForInstallPaths } from '../../utils';
 import { Model } from '../model';
-import * as VariableNames from './constants';
 import { ToolsInstallPath } from './../../constants';
+import * as VariableNames from './constants';
 
 export class DeployClusterWizardModel extends Model {
 	constructor(public deploymentTarget: BdcDeploymentType) {
@@ -138,7 +138,7 @@ export class DeployClusterWizardModel extends Model {
 		return targetDeploymentProfile;
 	}
 
-	public getCodeCellContentForNotebook(): string[] {
+	public getCodeCellContentForNotebook(tools: ITool[]): string[] {
 		const profile = this.createTargetProfile();
 		const statements: string[] = [];
 		if (this.deploymentTarget === BdcDeploymentType.NewAKS) {
@@ -166,15 +166,12 @@ export class DeployClusterWizardModel extends Model {
 			statements.push(`os.environ["DOCKER_PASSWORD"] = os.environ["${VariableNames.DockerPassword_VariableName}"]`);
 		}
 		const kubeCtlEnvVarName: string = getRuntimeBinaryPathEnvironmentVariableName(KubeCtlToolName);
-		statements.push(`os.environ["${kubeCtlEnvVarName}"] = "${this.escapeForNotebookCodeCell(process.env[kubeCtlEnvVarName]!)}"`);
-		statements.push(`os.environ["PATH"] = os.environ["PATH"] + "${delimiter}" + "${this.escapeForNotebookCodeCell(process.env[ToolsInstallPath]!)}"`);
+		const env: NodeJS.ProcessEnv = {};
+		setEnvironmentVariablesForInstallPaths(tools, env);
+		statements.push(`os.environ["${kubeCtlEnvVarName}"] = "${this.escapeForNotebookCodeCell(env[kubeCtlEnvVarName]!)}"`);
+		statements.push(`os.environ["PATH"] = os.environ["PATH"] + "${delimiter}" + "${this.escapeForNotebookCodeCell(env[ToolsInstallPath]!)}"`);
 		statements.push(`print('Variables have been set successfully.')`);
 		return statements.map(line => line + EOL);
-	}
-
-	private escapeForNotebookCodeCell(original: string): string {
-		// Escape the \ character for the code cell string value
-		return original && original.replace(/\\/g, '\\\\');
 	}
 }
 
