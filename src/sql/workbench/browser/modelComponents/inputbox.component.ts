@@ -244,6 +244,7 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 		}
 
 		input.inputElement.required = this.required;
+		input.inputElement.readOnly = this.readOnly;
 	}
 
 	// CSS-bound properties
@@ -314,6 +315,14 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 
 	public set multiline(newValue: boolean) {
 		this.setPropertyFromUI<azdata.InputBoxProperties, boolean>((props, value) => props.multiline = value, newValue);
+	}
+	
+	public get readOnly(): boolean {	
+		return this.getPropertyOrDefault<azdata.InputBoxProperties, boolean>((props) => props.readOnly, false);	
+	}	
+
+	public set readOnly(newValue: boolean) {	
+		this.setPropertyFromUI<azdata.InputBoxProperties, boolean>((props, value) => props.readOnly = value, newValue);	
 	}
 
 	public get required(): boolean {
