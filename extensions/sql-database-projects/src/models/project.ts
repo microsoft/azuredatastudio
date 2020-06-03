@@ -142,19 +142,39 @@ export class Project {
 	}
 
 	/**
+	 * Set the compat level of the project
+	 * Just used in tests right now, but can be used later if this functionality is added to the UI
+	 * @param compatLevel compat level of project
+	 */
+	public changeDSP(compatLevel: string): void {
+		const newDSP = `${constants.MicrosoftDatatoolsSchemaSqlSql}${compatLevel}${constants.databaseSchemaProvider}`;
+		this.projFileXmlDoc.getElementsByTagName(constants.DSP)[0].childNodes[0].nodeValue = newDSP;
+	}
+
+	/**
 	 * Adds reference to the appropriate master dacpac to the project
 	 */
 	public async addMasterDatabaseReference(): Promise<void> {
+		const uri = this.getMasterDacpac();
+		this.addDatabaseReference(uri, DatabaseReferenceLocation.differentDatabaseSameServer, 'master');
+	}
+
+	public getMasterDacpac(): Uri {
 		let dsp: string = this.projFileXmlDoc.getElementsByTagName(constants.DSP)[0].childNodes[0].nodeValue;
 
 		// get version from dsp, which is a string like Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider
 		// remove part before the number
-		let version = dsp.substring(35);
+		let version: any = dsp.substring(constants.MicrosoftDatatoolsSchemaSqlSql.length);
 		// remove DatabaseSchemaProvider
-		version = version.substring(0, version.length - 22);
-		const uri = Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', version, 'master.dacpac'));
+		version = version.substring(0, version.length - constants.databaseSchemaProvider.length);
 
-		this.addDatabaseReference(uri, DatabaseReferenceLocation.differentDatabaseSameServer, 'master');
+		// make sure version is valid
+		console.error(Object.values(SqlPlatforms));
+		if (!Object.values(SqlPlatforms).includes(version)) {
+			throw new Error(constants.invalidDataSchemaProvider);
+		}
+
+		return Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', version, 'master.dacpac'));
 	}
 
 	/**
@@ -344,4 +364,15 @@ export enum EntryType {
 export enum DatabaseReferenceLocation {
 	sameDatabase,
 	differentDatabaseSameServer
+}
+
+export enum SqlPlatforms {
+	Sql90 = '90',
+	Sql100 = '100',
+	Sql110 = '110',
+	Sql120 = '120',
+	Sql130 = '130',
+	Sql140 = '140',
+	Sql150 = '150',
+	SqlAzureV12 = 'AzureV12'
 }

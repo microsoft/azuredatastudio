@@ -7,9 +7,10 @@ import * as should from 'should';
 import * as path from 'path';
 import * as baselines from './baselines/baselines';
 import * as testUtils from './testUtils';
+import * as constants from '../common/constants';
 
 import { promises as fs } from 'fs';
-import { Project, EntryType } from '../models/project';
+import { Project, EntryType, SqlPlatforms } from '../models/project';
 
 let projFilePath: string;
 
@@ -80,5 +81,31 @@ describe('Project: sqlproj content operations', function (): void {
 		list.push(nonexistentFile);
 
 		await testUtils.shouldThrowSpecificError(async () => await project.addToProject(list), `ENOENT: no such file or directory, stat \'${nonexistentFile}\'`);
+	});
+
+	it('Should choose correct master dacpac', async function(): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project = new Project(projFilePath);
+		await project.readProjFile();
+
+		let uri = project.getMasterDacpac();
+		should.equal(uri.fsPath, '/$(NETCoreTargetsPath)/SystemDacpacs/130/master.dacpac');
+
+		project.changeDSP(SqlPlatforms.Sql150.toString());
+		uri = project.getMasterDacpac();
+		should.equal(uri.fsPath, '/$(NETCoreTargetsPath)/SystemDacpacs/150/master.dacpac');
+
+		project.changeDSP(SqlPlatforms.SqlAzureV12.toString());
+		uri = project.getMasterDacpac();
+		should.equal(uri.fsPath, '/$(NETCoreTargetsPath)/SystemDacpacs/AzureV12/master.dacpac');
+	});
+
+	it('Should throw error when choosing correct master dacpac if invalid DSP', async function(): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project = new Project(projFilePath);
+		await project.readProjFile();
+
+		project.changeDSP('invalidPlatform');
+		await testUtils.shouldThrowSpecificError(async () => await project.getMasterDacpac(), constants.invalidDataSchemaProvider);
 	});
 });
