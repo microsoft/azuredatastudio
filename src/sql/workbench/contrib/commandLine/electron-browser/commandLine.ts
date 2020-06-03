@@ -169,7 +169,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 	}
 
 	public async handleURL(uri: URI): Promise<boolean> {
-		let key = uri.authority.toLowerCase();
+		let key = uri.authority;
 
 		let method = pathMappings[key];
 
