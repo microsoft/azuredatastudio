@@ -489,6 +489,7 @@ function getNodeCachedDir() {
 }
 
 //#region NLS Support
+
 /**
  * Resolve the NLS configuration
  *
@@ -584,4 +585,5 @@ function getLegacyUserDefinedLocaleSync(localeConfigPath) {
 		// ignore
 	}
 }
+
 //#endregion
