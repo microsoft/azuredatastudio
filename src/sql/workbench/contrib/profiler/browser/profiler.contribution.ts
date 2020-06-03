@@ -57,7 +57,7 @@ const profilerViewTemplateSchema: IJSONSchema = {
 				},
 				{
 					name: 'LoginName',
-					eventsMapped: ['server_principal_name']
+					eventsMapped: ['server_principal_name', 'username']
 				},
 				{
 					name: 'ClientProcessID',
@@ -159,7 +159,7 @@ const profilerViewTemplateSchema: IJSONSchema = {
 				},
 				{
 					name: 'LoginName',
-					eventsMapped: ['server_principal_name']
+					eventsMapped: ['server_principal_name', 'username']
 				}
 			]
 		},
@@ -184,7 +184,7 @@ const profilerViewTemplateSchema: IJSONSchema = {
 				},
 				{
 					name: 'LoginName',
-					eventsMapped: ['server_principal_name']
+					eventsMapped: ['server_principal_name', 'username']
 				},
 				{
 					name: 'ClientProcessID',

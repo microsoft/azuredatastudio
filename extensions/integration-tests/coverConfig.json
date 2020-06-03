@@ -1,8 +1,10 @@
 {
 	"enabled": true,
-	"relativeSourcePath": "..",
+	"relativeSourcePath": "../../../",
 	"relativeCoverageDir": "../../coverage",
 	"ignorePatterns": [
+		"**/coverage/**",
+		"**/generated/**",
 		"**/node_modules/**",
 		"**/test/**"
 	],
@@ -13,7 +15,7 @@
 	],
 	"verbose": false,
 	"remapOptions": {
-		"basePath": "..",
+		"basePath": "../../../",
 		"useAbsolutePaths": true
 	}
 }
