@@ -222,17 +222,29 @@ export default class TableComponent extends ComponentBase implements IComponent,
 	}
 
 	public setLayout(): void {
+
 		// TODO allow configuring the look and feel
 		this.layout();
 	}
 
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
-		this._tableData.clear();
-		this._tableData.push(TableComponent.transformData(this.data, this.columns));
 		this._tableColumns = this.transformColumns(this.columns);
 		this._table.columns = this._tableColumns;
-		this._table.setData(this._tableData);
+
+		if (this.properties['setData'] === true) {
+			this.properties['setData'] = false;
+			this._tableData.push(TableComponent.transformData(this.data, this.columns));
+			this._table.setData(this._tableData);
+
+		}
+		if (this.properties['appendData'] !== undefined) {
+			this.properties['appendData'] = undefined;
+			// 	this._tableData.push(TableComponent.transformData(this.appendData, this.columns));
+			// 	this.data.push(...this.appendData);
+			// 	this.properties['appentData'] = undefined;
+		}
+
 		this._table.setTableTitle(this.title);
 		if (this.selectedRows) {
 			this._table.setSelectedRows(this.selectedRows);
@@ -329,6 +341,13 @@ export default class TableComponent extends ComponentBase implements IComponent,
 
 	public get data(): any[][] {
 		return this.getPropertyOrDefault<azdata.TableComponentProperties, any[]>((props) => props.data, []);
+	}
+
+	public get setData(): boolean {
+		return this.properties['setData'];
+	}
+	public set setData(newVal: boolean) {
+		this.properties['setData'] = newVal;
 	}
 
 	public set data(newValue: any[][]) {

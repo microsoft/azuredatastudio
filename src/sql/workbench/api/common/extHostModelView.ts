@@ -1312,7 +1312,11 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 		return this.properties['data'];
 	}
 	public set data(v: any[][]) {
-		this.setProperty('data', v);
+		this.properties['setData'] = true;
+
+		this.setProperty('data', v).then(() => {
+			this.properties['setData'] = false;
+		});
 	}
 
 	public get columns(): string[] | azdata.TableColumn[] {
@@ -1390,7 +1394,9 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 		return emitter && emitter.event;
 	}
 
-
+	public appendData(v: any[][]): void {
+		this.setProperty('appendData', v);
+	}
 }
 
 class DropDownWrapper extends ComponentWrapper implements azdata.DropDownComponent {

@@ -29,7 +29,7 @@ export default class MainController {
 	private defaultRulesetPropItem: azdata.PropertiesContainerItem;
 	private toDispose: vscode.Disposable[] = [];
 	private lastInvokedResults!: azdata.SqlAssessmentResultItem[];
-	private tblResults!: azdata.DeclarativeTableComponent;
+	private tblResults!: azdata.TableComponent;
 	private btnExportAsScript!: azdata.ButtonComponent;
 	private isServerConnection: boolean = false;
 	private connectionProfile!: azdata.connection.ConnectionProfile;
@@ -81,6 +81,10 @@ export default class MainController {
 					'height': '32px'
 				}
 			});
+
+			this.tblResults = await this.createTable(view);
+			this.modelView = view;
+			rootContainer.addItem(this.tblResults, { flex: '1 1 auto' });
 
 			await view.initializeModel(rootContainer);
 		});
@@ -271,85 +275,47 @@ export default class MainController {
 			).component();
 	}
 
-	private async createTable(view: azdata.ModelView): Promise<azdata.DeclarativeTableComponent> {
-		const tableHeader = {
-			'border': 'none',
-			'border-right': '1px dotted silver',
-			'border-bottom': '2px solid #bbb',
-		};
-		const rowStyle = {
-			'border': 'none',
-			'border-right': '1px dotted silver'
-		};
-
-
-
-		let table = view.modelBuilder.declarativeTable()
-			.withProperties<azdata.DeclarativeTableProperties>({
-				columns: [
-					{
-						displayName: 'Target',
-						headerCssStyles: tableHeader,
-						valueType: azdata.DeclarativeDataType.string,
-						width: /*'8%'*/100,
-						rowCssStyles: rowStyle,
-						isReadOnly: true
-					},
-					{
-						displayName: 'Severity',
-						headerCssStyles: tableHeader,
-						valueType: azdata.DeclarativeDataType.string,
-						width: /*'7%'*/80,
-						rowCssStyles: rowStyle,
-						isReadOnly: true
-					},
-					{
-						displayName: 'Message',
-						headerCssStyles: tableHeader,
-						valueType: azdata.DeclarativeDataType.component,
-						width: 900,
-						rowCssStyles: rowStyle,
-						isReadOnly: true
-					},
-					{
-						displayName: 'Tags',
-						headerCssStyles: tableHeader,
-						valueType: azdata.DeclarativeDataType.string,
-						width: /*'14%',*/100,
-						rowCssStyles: rowStyle,
-						isReadOnly: true
-					},
-					{
-						displayName: 'Check ID',
-						headerCssStyles: tableHeader,
-						valueType: azdata.DeclarativeDataType.string,
-						width: /*'7%',*/60,
-						rowCssStyles: rowStyle,
-						isReadOnly: true
-					}
-				],
+	private async createTable(view: azdata.ModelView): Promise<azdata.TableComponent> {
+		return view.modelBuilder.table()
+			.withProperties<azdata.TableComponentProperties>({
 				data: [],
-			})
-			.component();
-
-
-		return table;
+				columns: [{
+					value: 'Target',
+					headerCssClass: 'no-borders align-with-header',
+					width: 125
+				},
+				{
+					value: 'Severity',
+					headerCssClass: 'no-borders align-with-header',
+					width: 100
+				},
+				{
+					value: 'Message',
+					headerCssClass: 'no-borders align-with-header',
+					width: 900
+				},
+				{
+					value: 'Tags',
+					headerCssClass: 'no-borders align-with-header',
+					width: 200,
+				},
+				{
+					value: 'Check ID',
+					headerCssClass: 'no-borders ',
+					width: 80
+				}],
+				height: '100%',
+				width: '100%',
+			}).component();
 	}
 
-	private transformItem(item: azdata.SqlAssessmentResultItem, assessmentType: AssessmentType): any[] {
+
+	private transformItem(item: azdata.SqlAssessmentResultItem, assessmentType: AssessmentType): string[] {
 		return [
 			item.targetName,
 			item.level,
-			this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-				value: `<span class='cls1'>${(assessmentType === AssessmentType.AvailableRules ? item.description : item.message)}</span>{0}`,
-				links: [
-					{ text: 'Show more', url: item.helpLink }
-				],
-				CSSStyles: {
-					'margin': '0px'
-				}
-			}).component(),
-			item.tags.slice(1).join(', '),
+			assessmentType === AssessmentType.AvailableRules ? item.description : item.message,
+			item.tags.join(','),
 			item.checkId
 		];
 	}
@@ -371,13 +337,17 @@ export default class MainController {
 		}
 
 		this.tblResults.data = result.items.map(item => this.transformItem(item, assessmentType));
+		//this.tblResults.data = [this.transformItem(result.items[0], assessmentType)];
 	}
 
 
 	private appendResults(results: azdata.SqlAssessmentResultItem[], assessmentType: AssessmentType): void {
 		this.lastInvokedResults.push(...results);
 
-		this.tblResults.data = this.lastInvokedResults.map(item => this.transformItem(item, assessmentType));
+		//this.tblResults.appendData([this.transformItem(results[0], assessmentType)]);
+
+		this.tblResults.appendData(results.map(item => this.transformItem(item, assessmentType)));
+		//this.tblResults.appendData = ;
 	}
 }
 
