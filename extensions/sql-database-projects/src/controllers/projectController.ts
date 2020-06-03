@@ -72,7 +72,7 @@ export class ProjectsController {
 			this.projects.push(newProject);
 
 			// Update for round tripping as needed
-			await newProject.updateProjectForRoundTrip();
+			await this.updateProjectForRoundTrip(newProject);
 
 			// Read datasources.json (if present)
 			const dataSourcesFilePath = path.join(path.dirname(projectFile.fsPath), constants.dataSourcesFileName);
@@ -408,6 +408,17 @@ export class ProjectsController {
 
 	public getDeployDialog(project: Project): DeployDatabaseDialog {
 		return new DeployDatabaseDialog(this.apiWrapper, project);
+	}
+
+	public async updateProjectForRoundTrip(project: Project) {
+		if (project.importedTargets.includes(constants.NetCoreTargets)) {
+			return;
+		}
+
+		const result = await this.apiWrapper.showWarningMessage(constants.updateProjectForRoundTrip, constants.yesString, constants.noString);
+		if (result === constants.yesString) {
+			await project.updateProjectForRoundTrip();
+		}
 	}
 
 	private static getProjectFromContext(context: Project | BaseProjectTreeItem) {
