@@ -1,4 +1,4 @@
-# Azure Arc Jupyter Book
+# Azure Arc Data Services Jupyter Book
 
 ## Chapters
 
