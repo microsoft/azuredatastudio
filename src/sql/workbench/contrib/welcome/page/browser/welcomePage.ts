@@ -674,38 +674,48 @@ class WelcomePage extends Disposable {
 	}
 
 	private addExtensionPack(container: HTMLElement, anchorSelector: string) {
-		const btnContainer = container.querySelector(anchorSelector);
-		if (btnContainer) {
-			extensionPacks.forEach((extension, i) => {
-				const a = document.createElement('a');
-				const classes = ['btn', 'btn_secondary', 'a_self_end', 'flex', 'flex_a_center', 'flex_j_center'];
-				const btn = document.createElement('button');
-				const description = document.querySelector('.extension_pack_body');
-				const header = document.querySelector('.extension_pack_header');
+		const btnContainer = container.querySelector(anchorSelector) as HTMLElement;
 
-				a.classList.add(...classes);
-				a.innerText = localize('welcomePage.install', "Install");
-				a.title = extension.title || (extension.isKeymap ? localize('welcomePage.installKeymap', "Install {0} keymap", extension.name) : localize('welcomePage.installExtensionPack', "Install additional support for {0}", extension.name));
-				a.classList.add('installExtension');
-				a.setAttribute('data-extension', extension.id);
-				a.href = 'javascript:void(0)';
-				a.addEventListener('click', e => {
+		if (btnContainer) {
+			extensionPacks.forEach((extension) => {
+
+				const installText = localize('welcomePage.install', "Install");
+				let dropdownBtn = new Button(btnContainer);
+				dropdownBtn.label = installText;
+				const classes = ['btn', 'btn_secondary'];
+				const getDropdownBtn = document.querySelector('.extensionPack .monaco-button:first-of-type') as HTMLAnchorElement;
+				getDropdownBtn.id = 'dropdown_btn';
+				getDropdownBtn.classList.add(...classes);
+				getDropdownBtn.title = extension.title || (extension.isKeymap ? localize('welcomePage.installKeymap', "Install {0} keymap", extension.name) : localize('welcomePage.installExtensionPack', "Install additional support for {0}", extension.name));
+				getDropdownBtn.setAttribute('aria-haspopup', 'true');
+				getDropdownBtn.setAttribute('aria-controls', 'dropdown');
+				getDropdownBtn.id = 'dropdown_btn';
+				getDropdownBtn.classList.add('installExtension');
+				getDropdownBtn.setAttribute('data-extension', extension.id);
+				getDropdownBtn.href = 'javascript:void(0)';
+				getDropdownBtn.addEventListener('click', e => {
 					this.installExtension(extension);
 					e.preventDefault();
 					e.stopPropagation();
 				});
-				btnContainer.appendChild(a);
-				btn.innerText = localize('welcomePage.installed', "Installed");
-				btn.title = extension.isKeymap ? localize('welcomePage.installedKeymap', "{0} keymap is already installed", extension.name) : localize('welcomePage.installedExtensionPack', "{0} support is already installed", extension.name);
-				btn.classList.add('enabledExtension');
-				btn.classList.add(...classes);
-				btn.setAttribute('disabled', 'true');
-				btn.setAttribute('data-extension', extension.id);
-				btnContainer.appendChild(btn);
 
+
+				const description = document.querySelector('.extension_pack_body');
+				const header = document.querySelector('.extension_pack_header');
+
+				const installedText = localize('welcomePage.installed', "Installed");
+				let installedButton = new Button(btnContainer);
+				installedButton.label = installedText;
+				installedButton.enabled = false;
+				const getInstalledButton = document.querySelector('.extensionPack .monaco-button:nth-of-type(2)') as HTMLAnchorElement;
+
+				getInstalledButton.innerText = localize('welcomePage.installed', "Installed");
+				getInstalledButton.title = extension.isKeymap ? localize('welcomePage.installedKeymap', "{0} keymap is already installed", extension.name) : localize('welcomePage.installedExtensionPack', "{0} support is already installed", extension.name);
+				getInstalledButton.classList.add('enabledExtension');
+				getInstalledButton.classList.add(...classes);
+				getInstalledButton.setAttribute('data-extension', extension.id);
 				description.innerHTML = extension.description;
 				header.innerHTML = extension.name;
-
 				this.addExtensionPackList(container, '.extension_pack_extension_list');
 			});
 		}
@@ -990,7 +1000,7 @@ registerThemingParticipant((theme, collector) => {
 	}
 	const buttonSecondaryHover = theme.getColor(buttonSecondaryHoverColor);
 	if (buttonSecondaryColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_secondary:hover { color: ${buttonSecondaryHover}; border: 1px solid ${buttonSecondaryHover} !important;}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_secondary:hover:not(.disabled) { color: ${buttonSecondaryHover}; border: 1px solid ${buttonSecondaryHover} !important;}`);
 	}
 	const selectBackgroundColor = theme.getColor(selectBackground);
 	if (selectBackgroundColor) {

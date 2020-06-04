@@ -171,7 +171,6 @@
 .ads_homepage.XS .btn {
 	margin: 0 8px 0 0;
 	width: 77px;
-	height: 25px;
 	line-height: 18px
 }
 
@@ -437,7 +436,6 @@
 
 .ads_homepage .monaco-text-button {
 	min-width: 77px;
-	height: 26px;
 	margin: 10px 0;
 }
 
@@ -1256,7 +1254,6 @@
 
 .ads_homepage .extension_pack .extension_pack_extensions .btn_secondary {
 	box-sizing: border-box !important;
-	line-height: 17px;
 }
 
 .ads_homepage.XS.SM .btn_secondary {
