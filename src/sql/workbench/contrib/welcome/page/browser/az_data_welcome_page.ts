@@ -40,27 +40,11 @@ export default () => `
 										<span class="icon xs"></span><h1 class="caption"></h1>
 									</div>
 									<div class="flex btn_container">
-										<div>
-											<button id="dropdown_btn" class="btn btn_primary dropdown" role="navigation" aria-haspopup="true" aria-controls="dropdown">
-												<div class="dropdown_text" style="pointer-events: none;">
-													<span>${escape(localize('welcomePage.new', "New"))}</span><i class="icon_arrow_down"></i>
-												</div>
-											</button>
-											<nav role="navigation" class="dropdown_nav">
-												<ul id="dropdown" class="dropdown-content" aria-hidden="true" aria-label="submenu" role="menu" aria-labelledby="dropdown_btn">
-													<li role="none"><a role="menuitem" tabIndex="-1" class="move" href="command:registeredServers.addConnection">${escape(localize('welcomePage.newConnection', "New connection"))}</a></li>
-													<li role="none"><a role="menuitem" tabIndex="-1" class="move" href="command:workbench.action.files.newUntitledFile">${escape(localize('welcomePage.newQuery', "New query"))}</a></li>
-													<li role="none"><a role="menuitem" tabIndex="-1" class="move" href="command:notebook.command.new">${escape(localize('welcomePage.newNotebook', "New notebook"))}</a></li>
-													<li role="none" id="dropdown_mac_only"><a role="menuitem" tabIndex="-1" class="move mac_only" href="command:workbench.action.files.openLocalFileFolder">${escape(localize('welcomePage.openFileMac', "Open file"))}</a></li>
-													<li role="none" id="dropdown_windows_linux_only"><a role="menuitem" tabIndex="-1" class="move windows_only linux_only" href="command:workbench.action.files.openFile">${escape(localize('welcomePage.openFileLinuxPC', "Open file"))}</a></li>
-												</ul>
-											</nav>
+										<div id="dropdown_btn_container">
+
 										</div>
-										<a class="windows_only linux_only btn btn_secondary"
-											href="command:workbench.action.files.openFile">
-											${escape(localize('welcomePage.openFileLinuxPC', "Open file"))}
-										</a>
-										<a class="mac_only btn btn_secondary" href="command:workbench.action.files.openLocalFileFolder">${escape(localize('welcomePage.openFileMac', "Open file"))}</a>
+										<div id="open_file_btn_container">
+										</div>
 									</div>
 								</div>
 							</div>
