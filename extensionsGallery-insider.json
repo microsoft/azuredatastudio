@@ -752,63 +752,6 @@
 					"flags": "preview"
 				},
 				{
-					"extensionId": "24",
-					"extensionName": "sql-vnext",
-					"displayName": "SQL Server 2019 (Deprecated)",
-					"shortDescription": "This has been replaced by the Data Virtualization extension",
-					"publisher": {
-						"displayName": "Microsoft",
-						"publisherId": "Microsoft",
-						"publisherName": "Microsoft"
-					},
-					"versions": [
-						{
-							"version": "0.17.0",
-							"lastUpdated": "10/31/2019",
-							"assetUri": "",
-							"fallbackAssetUri": "fallbackAssetUri",
-							"files": [
-								{
-									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-vnext/sql-vnext-0.17.0.vsix"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/Microsoft/vscode-mssql/master/images/sqlserver.png"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-vnext/README.md"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-vnext/package.json"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-vnext/LICENSE.txt"
-								}
-							],
-							"properties": [
-								{
-									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
-									"value": ""
-								},
-								{
-									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=0.33.1"
-								},
-								{
-									"key": "Microsoft.VisualStudio.Services.Links.Source",
-									"value": "https://docs.microsoft.com/sql/azure-data-studio/sql-server-2019-extension"
-								}
-							]
-						}
-					],
-					"statistics": [],
-					"flags": "preview"
-				},
-				{
 					"extensionId": "25",
 					"extensionName": "pastetheplan",
 					"displayName": "Paste the Plan",
@@ -3366,7 +3309,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 57
+							"count": 56
 						}
 					]
 				}
