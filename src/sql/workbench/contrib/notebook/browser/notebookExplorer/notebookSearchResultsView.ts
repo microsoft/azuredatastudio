@@ -29,7 +29,7 @@ import { IDragAndDropData } from 'vs/base/browser/dnd';
 import { fillResourceDataTransfers } from 'vs/workbench/browser/dnd';
 import { ElementsDragAndDropData } from 'vs/base/browser/ui/list/listView';
 import { URI } from 'vs/base/common/uri';
-import { NotebookSearchView } from 'sql/workbench/contrib/notebooksExplorer/browser/notebookSearchView';
+import { NotebookSearchView } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearchView';
 
 interface IFolderMatchTemplate {
 	label: IResourceLabel;
@@ -369,7 +369,7 @@ export class SearchDND implements ITreeDragAndDrop<RenderableMatch> {
 
 		if (resources.length) {
 			// Apply some datatransfer types to allow for dragging the element outside of the application
-			this.instantiationService.invokeFunction(fillResourceDataTransfers, resources, originalEvent);
+			this.instantiationService.invokeFunction(fillResourceDataTransfers, resources, undefined, originalEvent);
 		}
 	}
 

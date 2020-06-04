@@ -17,7 +17,7 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 import * as env from 'vs/base/common/platform';
 import { URI } from 'vs/base/common/uri';
-// import 'vs/css!./media/searchview';
+import 'vs/css!./media/searchview';
 import { ICodeEditor, isCodeEditor, getCodeEditor } from 'vs/editor/browser/editorBrowser';
 import * as nls from 'vs/nls';
 import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
@@ -37,7 +37,7 @@ import { OpenFileFolderAction, OpenFolderAction } from 'vs/workbench/browser/act
 import { ResourceLabels } from 'vs/workbench/browser/labels';
 import { IEditorPane } from 'vs/workbench/common/editor';
 import { CancelSearchAction, ClearSearchResultsAction, CollapseDeepestExpandedLevelAction, RefreshAction, appendKeyBindingLabel, ExpandAllAction, ToggleCollapseAndExpandAction } from 'vs/workbench/contrib/search/browser/searchActions';
-import { FileMatchRenderer, FolderMatchRenderer, MatchRenderer, SearchAccessibilityProvider, SearchDelegate, SearchDND } from 'sql/workbench/contrib/notebooksExplorer/browser/notebookSearchResultsView';
+import { FileMatchRenderer, FolderMatchRenderer, MatchRenderer, SearchAccessibilityProvider, SearchDelegate, SearchDND } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearchResultsView';
 //import { FileMatchRenderer, FolderMatchRenderer, MatchRenderer, SearchAccessibilityProvider, SearchDelegate, SearchDND } from 'vs/workbench/contrib/search/browser/searchResultsView';
 import * as Constants from 'vs/workbench/contrib/search/common/constants';
 import { IReplaceService } from 'vs/workbench/contrib/search/common/replace';
@@ -107,7 +107,7 @@ export class NotebookSearchView extends ViewPane {
 	//private viewletState: MementoObject;
 	private messagesElement!: HTMLElement;
 	private messageDisposables: IDisposable[] = [];
-	//private size!: dom.Dimension;
+	private size!: dom.Dimension;
 	private resultsElement!: HTMLElement;
 
 	private currentSelectedFileMatch: FileMatch | undefined;
@@ -345,7 +345,7 @@ export class NotebookSearchView extends ViewPane {
 		const matches = folderMatch.matches().sort((a, b) => searchMatchComparer(a, b, sortOrder));
 
 		return Iterable.map(matches, fileMatch => {
-			const children = this.createFileIterator(fileMatch);
+			//const children = this.createFileIterator(fileMatch);
 
 			let nodeExists = true;
 			try { this.tree.getNode(fileMatch); } catch (e) { nodeExists = false; }
@@ -353,7 +353,7 @@ export class NotebookSearchView extends ViewPane {
 			const collapsed = nodeExists ? undefined :
 				(collapseResults === 'alwaysCollapse' || (fileMatch.matches().length > 10 && collapseResults !== 'alwaysExpand'));
 
-			return <ITreeElement<RenderableMatch>>{ element: fileMatch, children, collapsed };
+			return <ITreeElement<RenderableMatch>>{ element: fileMatch, undefined, collapsed };
 		});
 	}
 
@@ -391,7 +391,7 @@ export class NotebookSearchView extends ViewPane {
 
 		this.treeLabels = this._register(this.instantiationService.createInstance(ResourceLabels, { onDidChangeVisibility: this.onDidChangeBodyVisibility }));
 		this.tree = this._register(<WorkbenchObjectTree<RenderableMatch>>this.instantiationService.createInstance(WorkbenchObjectTree,
-			'SearchView',
+			'NotebookSearchView',
 			this.resultsElement,
 			delegate,
 			[
@@ -556,22 +556,22 @@ export class NotebookSearchView extends ViewPane {
 		const actionsPosition = this.searchConfig.actionsPosition;
 		dom.toggleClass(this.getContainer(), NotebookSearchView.ACTIONS_RIGHT_CLASS_NAME, actionsPosition === 'right');
 
-		/* const messagesSize = this.messagesElement.style.display === 'none' ?
+		const messagesSize = this.messagesElement.style.display === 'none' ?
 			0 :
 			dom.getTotalHeight(this.messagesElement);
 
 		const searchResultContainerHeight = this.size.height -
 			messagesSize -
-			dom.getTotalHeight(this.searchWidgetsContainerElement);
+			51;
 
 		this.resultsElement.style.height = searchResultContainerHeight + 'px';
 
-		this.tree.layout(searchResultContainerHeight, this.size.width); */
+		this.tree.layout(searchResultContainerHeight, this.size.width);
 	}
 
 	protected layoutBody(height: number, width: number): void {
 		super.layoutBody(height, width);
-		//this.size = new dom.Dimension(width, height);
+		this.size = new dom.Dimension(width, height);
 		this.reLayout();
 	}
 

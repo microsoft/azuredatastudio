@@ -232,7 +232,10 @@ export class TreeView extends Disposable implements ITreeView {
 						children = node.children;
 					} else {
 						children = await (node instanceof Root ? dataProvider.getChildren() : dataProvider.getChildren(node));
-						node.children = children;
+						// {{SQL CARBON EDIT}}
+						if (node) {
+							node.children = children;
+						}
 					}
 					if (node instanceof Root) {
 						const oldEmpty = this._isEmpty;

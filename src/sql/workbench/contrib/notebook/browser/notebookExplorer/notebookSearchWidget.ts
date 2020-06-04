@@ -16,7 +16,7 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
-import * as Constants from 'sql/workbench/contrib/notebooksExplorer/common/constants';
+import * as Constants from 'sql/workbench/contrib/notebook/common/constants';
 import { IMessage } from 'vs/base/browser/ui/inputbox/inputBox';
 import { appendKeyBindingLabel } from 'vs/workbench/contrib/search/browser/searchActions';
 import { ContextScopedFindInput } from 'vs/platform/browser/contextScopedHistoryWidget';

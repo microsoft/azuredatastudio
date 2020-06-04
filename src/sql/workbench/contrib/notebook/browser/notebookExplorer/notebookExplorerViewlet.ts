@@ -26,8 +26,8 @@ import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editor
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { ViewPaneContainer, ViewPane } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
-import { NotebookSearchWidget, INotebookExplorerSearchOptions } from 'sql/workbench/contrib/notebooksExplorer/browser/notebookSearchWidget';
-import * as Constants from 'sql/workbench/contrib/notebooksExplorer/common/constants';
+import { NotebookSearchWidget, INotebookExplorerSearchOptions } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearchWidget';
+import * as Constants from 'sql/workbench/contrib/notebook/common/constants';
 import { IChangeEvent } from 'vs/workbench/contrib/search/common/searchModel';
 import { Delayer } from 'vs/base/common/async';
 import { ITextQuery, IPatternInfo } from 'vs/workbench/services/search/common/search';
@@ -35,8 +35,9 @@ import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { QueryBuilder, ITextQueryBuilderOptions } from 'vs/workbench/contrib/search/common/queryBuilder';
 import { IFileService } from 'vs/platform/files/common/files';
 import { getOutOfWorkspaceEditorResources } from 'vs/workbench/contrib/search/common/search';
-import { TreeViewPane, TreeView } from 'sql/workbench/browser/parts/views/treeView';
-import { NotebookSearchView } from 'sql/workbench/contrib/notebooksExplorer/browser/notebookSearchView';
+import { TreeViewPane } from 'sql/workbench/browser/parts/views/treeView';
+import { NotebookSearchView } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearchView';
+import * as path from 'vs/base/common/path';
 
 export const VIEWLET_ID = 'workbench.view.notebooks';
 
@@ -75,8 +76,9 @@ export class NotebookExplorerViewletViewsContribution implements IWorkbenchContr
 			ctorDescriptor: new SyncDescriptor(NotebookSearchView),
 			weight: 100,
 			canToggleVisibility: true,
-			hideByDefault: true,
+			hideByDefault: false,
 			order: 0,
+			collapsed: true
 		};
 	}
 }
@@ -170,11 +172,6 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 		}));
 
 		this.trackInputBox(this.searchWidget.searchInputFocusTracker);
-		let containerModel = this.viewDescriptorService.getViewContainerModel(this.viewContainer);
-		let viewDescriptors = containerModel.visibleViewDescriptors;
-		if (viewDescriptors.length === 1) {
-			this.toggleViewVisibility(NotebookSearchView.ID);
-		}
 	}
 
 	cancelSearch(focus: boolean = true): boolean {
@@ -256,33 +253,33 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 			return;
 		}
 
-		this.validateQuery(query).then(() => {
+		this.validateQuery(query).then(async () => {
 			// this.onQueryTriggered(query, options, excludePatternText, includePatternText, triggeredOnType);
 			if (this.views.length > 1) {
-				let booksViewPane = (<TreeViewPane>this.views[0]).getTreeView();
-				if (booksViewPane instanceof TreeView) {
-					let dataProvider = booksViewPane?.dataProvider;
-					if (dataProvider) {
-						let items = dataProvider.getChildren();
-						items.then(results => {
-							results.forEach(root => {
-								booksViewPane.collapse(root);
-								root.children?.forEach(bookItem => {
-									booksViewPane.collapse(bookItem);
-									if (bookItem.label.label.indexOf(query.contentPattern.pattern) > 0) {
-										booksViewPane.expand(bookItem);
-									}
-								});
+
+				this.views.forEach(async (v) => {
+					let booksViewPane = (<TreeViewPane>this.getView(v.id)).treeView;
+					if (booksViewPane) {
+						let dataProvider = booksViewPane.dataProvider;
+						if (dataProvider && !dataProvider.isTreeEmpty) {
+							let items = await dataProvider.getChildren();
+							items?.forEach(root => {
+								this.updateViewletsVisibility();
+								let searchView = this.getView(NotebookSearchView.ID);
+								if (searchView instanceof NotebookSearchView) {
+									let folderToSearch = path.join(root.tooltip, 'content');
+									let filesToIncludeFiltered = path.join(folderToSearch, '**', '*.md') + ',' + path.join(folderToSearch, '**', '*.ipynb');
+									searchView.doSearch(query, null, filesToIncludeFiltered, false);
+								}
 							});
-						});
+						}
 					}
-				}
+				});
 			}
 
 			if (!preserveFocus) {
 				this.searchWidget.focus(false, true); // focus back to input field
 			}
-			this.updateViewletsVisibility();
 		}, onQueryValidationError);
 	}
 
@@ -293,18 +290,20 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 			if (visibleViewDescriptors.length > 1) {
 				let allViews = containerModel.allViewDescriptors;
 				allViews.forEach(view => {
-					this.toggleViewVisibility(view.id);
+					this.getView(view.id).setExpanded(false);
+					//this.toggleViewVisibility(view.id);
 				});
-				this.getView(NotebookSearchView.ID)?.setVisible(true);
+				this.getView(NotebookSearchView.ID).setExpanded(true);
+				//this.getView(NotebookSearchView.ID)?.setVisible(true);
 			}
 		} else {
-			if (visibleViewDescriptors.length === 1) {
-				let allViews = containerModel.allViewDescriptors;
-				allViews.forEach(view => {
-					this.toggleViewVisibility(view.id);
-				});
-				this.getView(NotebookSearchView.ID)?.setVisible(false);
-			}
+			let allViews = containerModel.allViewDescriptors;
+			allViews.forEach(view => {
+				this.getView(view.id).setExpanded(true);
+				// this.toggleViewVisibility(view.id);
+			});
+			this.getView(NotebookSearchView.ID).setExpanded(false);
+			//this.getView(NotebookSearchView.ID)?.setVisible(false);
 		}
 	}
 
