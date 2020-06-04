@@ -787,7 +787,7 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 						if ('path' in f && 'scheme' in f) {
 							return { fileUri: URI.file((f as any).path).with({ scheme: (f as any).scheme }) };
 						}
-						return { fileUri: URI.revive(f.uri), openOnlyIfExists: f.openOnlyIfExists };
+						return { fileUri: URI.revive(f.uri), openOnlyIfExists: f.openOnlyIfExists, overrideId: f.openWith };
 					})
 			};
 		}
@@ -1398,9 +1398,10 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 		}
 
 		// If panel part becomes hidden, also hide the current active panel if any
+		let focusEditor = false;
 		if (hidden && this.panelService.getActivePanel()) {
 			this.panelService.hideActivePanel();
-			this.editorGroupService.activeGroup.focus(); // Pass focus to editor group if panel part is now hidden
+			focusEditor = true;
 		}
 
 		// If panel part becomes visible, show last active panel or default panel
@@ -1431,6 +1432,10 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 		if (hidden && this.state.editor.hidden) {
 			this.setEditorHidden(false, true);
 		}
+
+		if (focusEditor) {
+			this.editorGroupService.activeGroup.focus(); // Pass focus to editor group if panel part is now hidden
+		}
 	}
 
 	toggleMaximizedPanel(): void {
@@ -1450,7 +1455,6 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 		} else {
 			this.setEditorHidden(false);
 			this.workbenchGrid.resizeView(this.panelPartView, { width: this.state.panel.position === Position.BOTTOM ? size.width : this.state.panel.lastNonMaximizedWidth, height: this.state.panel.position === Position.BOTTOM ? this.state.panel.lastNonMaximizedHeight : size.height });
-			this.editorGroupService.activeGroup.focus();
 		}
 	}
 

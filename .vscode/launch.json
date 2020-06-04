@@ -251,6 +251,7 @@
 		},
 		{
 			"name": "Azure Data Studio",
+			"stopAll": true,
 			"configurations": [
 				"Launch azuredatastudio",
 				"Attach to Main Process",

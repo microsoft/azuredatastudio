@@ -135,14 +135,7 @@ export class NotebookContribution extends Disposable implements IWorkbenchContri
 					return null;
 				}
 
-				return data.notebook.scheme + ':' + data.notebook.fsPath;
-
-				// const documentUri = this._resourceMapping.get(data.notebook)?.resource;
-				// if (documentUri) {
-				// 	return documentUri.toString();
-				// }
-
-				// return null;
+				return data.notebook.toString();
 			}
 		}));
 
@@ -367,7 +360,7 @@ class CellContentProvider implements ITextModelContentProvider {
 			return null;
 		}
 
-		const editorModel = this._notebookService.modelManager.get(data.notebook);
+		const editorModel = await this._notebookService.modelManager.resolve(data.notebook, info.id);
 		if (!editorModel) {
 			return null;
 		}
