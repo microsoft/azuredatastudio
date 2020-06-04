@@ -625,7 +625,7 @@
                     "**/{vs,sql}/workbench/services/**",
                     "**/{vs,sql}/workbench/contrib/**",
                     "**/{vs,sql}/workbench/test/**",
-                    "*"
+                    "**"
                 ]
             },
             {
