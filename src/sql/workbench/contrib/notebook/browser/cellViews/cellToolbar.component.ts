@@ -17,6 +17,7 @@ import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/butto
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export const CELL_TOOLBAR_SELECTOR: string = 'cell-toolbar-component';
 
@@ -38,16 +39,21 @@ export class CellToolbarComponent {
 	private _actionBar: Taskbar;
 	private _editCellAction: EditCellAction;
 	public _cellToggleMoreActions: CellToggleMoreActions;
+	public previewFeaturesEnabled: boolean = false;
 
 	constructor(
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
-		@Inject(IContextMenuService) private contextMenuService: IContextMenuService
+		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
+		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
 	) {
 		this._cellToggleMoreActions = this.instantiationService.createInstance(CellToggleMoreActions);
+		this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
 	}
 
 	ngOnInit() {
-		this.initActionBar();
+		if (this.previewFeaturesEnabled) {
+			this.initActionBar();
+		}
 	}
 
 	protected initActionBar(): void {

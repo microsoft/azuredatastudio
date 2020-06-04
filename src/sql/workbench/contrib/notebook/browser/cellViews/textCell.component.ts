@@ -28,6 +28,8 @@ import { NotebookRange, ICellEditorProvider } from 'sql/workbench/services/noteb
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
+import { CellToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/cellToggleMoreActions'; // Remove after a11y
+
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
 
@@ -38,6 +40,10 @@ const USER_SELECT_CLASS = 'actionselect';
 export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	@ViewChild('preview', { read: ElementRef }) private output: ElementRef;
 	@ViewChildren(CodeComponent) private markdowncodeCell: QueryList<CodeComponent>;
+	// Remove after a11y
+	// \ /
+	@ViewChild('moreactions', { read: ElementRef }) private moreActionsElementRef: ElementRef;
+	// \ /
 
 	@Input() cellModel: ICellModel;
 
@@ -48,6 +54,17 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	@Input() set activeCellId(value: string) {
 		this._activeCellId = value;
 	}
+
+	// Remove after a11y
+	// \ /
+	@Input() set hover(value: boolean) {
+		this._hover = value;
+		if (!this.isActive()) {
+			// Only make a change if we're not active, since this has priority
+			this.updateMoreActions();
+		}
+	}
+	// \ /
 
 	@HostListener('document:keydown.escape', ['$event'])
 	handleKeyboardEvent() {
@@ -78,6 +95,12 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private markdownResult: IMarkdownRenderResult;
 	public previewFeaturesEnabled: boolean = false;
 
+	// Remove after a11y
+	// \ /
+	private _cellToggleMoreActions: CellToggleMoreActions;
+	private _hover: boolean;
+	// \ /
+
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
@@ -86,6 +109,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	) {
 		super();
 		this.isEditMode = true;
+		this._cellToggleMoreActions = this._instantiationService.createInstance(CellToggleMoreActions); // Remove after a11y
 		this.markdownRenderer = this._instantiationService.createInstance(NotebookMarkdownRenderer);
 		this._register(toDisposable(() => {
 			if (this.markdownResult) {
@@ -130,6 +154,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
+		if (!this.previewFeaturesEnabled) {
+			this._cellToggleMoreActions.onInit(this.moreActionsElementRef, this.model, this.cellModel); // Remove after a11y
+		}
 		this.setFocusAndScroll();
 		this._register(this.cellModel.onOutputsChanged(e => {
 			this.updatePreview();
@@ -182,7 +209,11 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		if (trustedChanged || contentChanged) {
 			this._lastTrustedMode = this.cellModel.trustedMode;
 			if ((!cellModelSourceJoined) && !this.isEditMode) {
-				this._content = localize('addContent', "Add content here...");
+				if (!this.previewFeaturesEnabled) {
+					this._content = localize('doubleClickEdit', "Double-click to edit");
+				} else {
+					this._content = localize('addContent', "Add content here...");
+				}
 			} else {
 				this._content = this.cellModel.source;
 			}
@@ -215,6 +246,12 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private updateTheme(theme: IColorTheme): void {
 		let outputElement = <HTMLElement>this.output.nativeElement;
 		outputElement.style.borderTopColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
+
+		// Remove after a11y
+		// \ /
+		let moreActionsEl = <HTMLElement>this.moreActionsElementRef.nativeElement;
+		moreActionsEl.style.borderRightColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
+		// \ /
 	}
 
 	public handleContentChanged(): void {
@@ -224,9 +261,23 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	public toggleEditMode(editMode?: boolean): void {
 		this.isEditMode = editMode !== undefined ? editMode : !this.isEditMode;
 		this.cellModel.isEditMode = this.isEditMode;
+		this.updateMoreActions(); // Remove after a11y
 		this.updatePreview();
 		this._changeRef.detectChanges();
 	}
+
+	// Remove after a11y
+	// \ /
+	private updateMoreActions(): void {
+		if (!this.isEditMode && (this.isActive() || this._hover)) {
+			this.toggleMoreActionsButton(true);
+		}
+		else {
+			this.toggleMoreActionsButton(false);
+		}
+	}
+	// \ /
+
 
 	private toggleUserSelect(userSelect: boolean): void {
 		if (!this.output) {
@@ -250,6 +301,13 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	protected isActive() {
 		return this.cellModel && this.cellModel.id === this.activeCellId;
 	}
+
+	// Remove after a11y
+	// \ /
+	protected toggleMoreActionsButton(isActiveOrHovered: boolean) {
+		this._cellToggleMoreActions.toggleVisible(!isActiveOrHovered);
+	}
+	// \ /
 
 	public deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void {
 		if (oldDecorationRange) {

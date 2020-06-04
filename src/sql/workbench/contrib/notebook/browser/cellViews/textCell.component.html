@@ -11,7 +11,10 @@
 		</code-component>
 	</div>
 	<div style="overflow: hidden; width: 100%; height: 100%; display: flex; flex-flow: row">
-		<div #preview link-handler [isTrusted]="isTrusted" [notebookUri]="notebookUri" class="notebook-preview" style="flex: 1 1 auto">
-		</div>
+		<div #preview link-handler [isTrusted]="isTrusted" [notebookUri]="notebookUri" class="notebook-preview" style="flex: 1 1 auto" (dblclick)="toggleEditMode()"></div>
+
+		<!-- Remove after a11y -->
+		<div #moreactions class="moreActions" style="flex: 0 0 auto; flex-flow:column;width: 20px; min-height: 20px; max-height: 20px; padding-top: 0px; orientation: portrait"></div>
+		<!-- / -->
 	</div>
 </div>

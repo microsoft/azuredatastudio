@@ -36,6 +36,12 @@ import { notebookConstants } from 'sql/workbench/services/notebook/browser/inter
 import { tryMatchCellMagic } from 'sql/workbench/services/notebook/browser/utils';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 
+// Remove after a11y
+// \ /
+import { CellToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/cellToggleMoreActions';
+import { CollapseComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/collapse.component';
+// \ /
+
 export const CODE_SELECTOR: string = 'code-component';
 const MARKDOWN_CLASS = 'markdown';
 const DEFAULT_OR_LOCAL_CONTEXT_ID = '-1';
@@ -48,9 +54,16 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 	@ViewChild('toolbar', { read: ElementRef }) private toolbarElement: ElementRef;
 	@ViewChild('editor', { read: ElementRef }) private codeElement: ElementRef;
 
+	// Remove after a11y
+	// \ /
+	@ViewChild('moreactions', { read: ElementRef }) private moreActionsElementRef: ElementRef;
+	@ViewChild(CollapseComponent) private collapseComponent: CollapseComponent;
+	// \ /
+
 	public get cellModel(): ICellModel {
 		return this._cellModel;
 	}
+
 
 	@Input() public set cellModel(value: ICellModel) {
 		this._cellModel = value;
@@ -79,6 +92,17 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		this._activeCellId = value;
 	}
 
+	// Remove after a11y
+	// \ /
+	@Input() set hover(value: boolean) {
+		this.cellModel.hover = value;
+		if (!this.isActive()) {
+			// Only make a change if we're not active, since this has priority
+			this.toggleActionsVisibility(this.cellModel.hover);
+		}
+	}
+	// \ /
+
 	protected _actionBar: Taskbar;
 	private readonly _minimumHeight = 30;
 	private readonly _maximumHeight = 4000;
@@ -89,6 +113,8 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 	private _model: NotebookModel;
 	private _activeCellId: string;
 	private _layoutEmitter = new Emitter<void>();
+	public previewFeaturesEnabled: boolean = false;
+	private _cellToggleMoreActions: CellToggleMoreActions; // Remove after a11y
 
 	constructor(
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
@@ -100,6 +126,11 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		@Inject(ILogService) private readonly logService: ILogService
 	) {
 		super();
+		this._cellToggleMoreActions = this._instantiationService.createInstance(CellToggleMoreActions); // remove after a11y
+		this._register(this._configurationService.onDidChangeConfiguration(e => {
+			this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
+		}));
+
 		this._register(Event.debounce(this._layoutEmitter.event, (l, e) => e, 250, /*leading=*/false)
 			(() => this.layout()));
 		// Handle disconnect on removal of the cell, if it was the active cell
@@ -107,6 +138,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	ngOnInit() {
+		this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
 		this.initActionBar();
@@ -120,6 +152,9 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 				let changedProp = changes[propName];
 				let isActive = this.cellModel.id === changedProp.currentValue;
 				this.updateConnectionState(isActive);
+				if (!this.previewFeaturesEnabled) {
+					this.toggleActionsVisibility(isActive); // Remove after a11y
+				}
 				if (this._editor) {
 					this._editor.toggleEditorSelected(isActive);
 				}
@@ -273,6 +308,9 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		this._actionBar.setContent([
 			{ action: runCellAction }
 		]);
+		if (!this.previewFeaturesEnabled) {
+			this._cellToggleMoreActions.onInit(this.moreActionsElementRef, this.model, this.cellModel); // Remove after a11y
+		}
 	}
 
 	/// Editor Functions
@@ -318,6 +356,12 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 	private updateTheme(theme: IColorTheme): void {
 		let toolbarEl = <HTMLElement>this.toolbarElement.nativeElement;
 		toolbarEl.style.borderRightColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
+
+		// Remove after a11y
+		// \ /
+		let moreActionsEl = <HTMLElement>this.moreActionsElementRef.nativeElement;
+		moreActionsEl.style.borderRightColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
+		// \ /
 	}
 
 	private setFocusAndScroll(): void {
@@ -334,6 +378,17 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 	protected isActive() {
 		return this.cellModel && this.cellModel.id === this.activeCellId;
 	}
+
+	// Remove after a11y
+	// \ /
+	protected toggleActionsVisibility(isActiveOrHovered: boolean) {
+		this._cellToggleMoreActions.toggleVisible(!isActiveOrHovered);
+
+		if (this.collapseComponent) {
+			this.collapseComponent.toggleIconVisibility(isActiveOrHovered);
+		}
+	}
+	// \ /
 
 	private onCellCollapse(isCollapsed: boolean): void {
 		let editorWidget = this._editor.getControl() as ICodeEditor;

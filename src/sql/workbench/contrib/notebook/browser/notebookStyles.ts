@@ -6,7 +6,7 @@ import 'vs/css!./notebook';
 
 import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import { SIDE_BAR_BACKGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND } from 'vs/workbench/common/theme';
-import { activeContrastBorder, contrastBorder, buttonBackground, textLinkForeground, textLinkActiveForeground, textPreformatForeground, textBlockQuoteBackground, textBlockQuoteBorder, buttonForeground } from 'vs/platform/theme/common/colorRegistry';
+import { activeContrastBorder, contrastBorder, buttonBackground, textLinkForeground, textLinkActiveForeground, textPreformatForeground, textBlockQuoteBackground, textBlockQuoteBorder, buttonForeground, editorBackground, lighten } from 'vs/platform/theme/common/colorRegistry';
 import { editorLineHighlight, editorLineHighlightBorder } from 'vs/editor/common/view/editorColorRegistry';
 import { cellBorder, notebookToolbarIcon, notebookToolbarLines, buttonMenuArrow, dropdownArrow, markdownEditorBackground, splitBorder, codeEditorBackground, codeEditorBackgroundActive, codeEditorLineNumber, codeEditorToolbarIcon, codeEditorToolbarBackground, codeEditorToolbarBorder, toolbarBackground, toolbarIcon, toolbarBottomBorder, notebookToolbarSelectBackground } from 'sql/platform/theme/common/colorRegistry';
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -34,6 +34,53 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 			`);
 		}
 
+		// Remove after a11y
+		// \ /
+		if (buttonBackgroundColor) {
+			let lighterBackgroundColor = lighten(buttonBackgroundColor, 0.825)(theme);
+			collector.addRule(`
+				.notebookEditor .hoverButton {
+					border-color: ${buttonBackgroundColor};
+				}
+				.notebookEditor .hoverButton:active,
+				.notebookEditor .hoverButton:hover {
+					background-color: ${buttonBackgroundColor};
+				}
+				.notebookEditor .hoverButton {
+					color: ${buttonBackgroundColor};
+				}
+				.vs-dark .notebookEditor .hoverButton {
+					border-color: ${lighterBackgroundColor};
+				}
+				.vs-dark .notebookEditor .hoverButton:active,
+				.vs-dark .notebookEditor .hoverButton:hover {
+					background-color: ${lighterBackgroundColor};
+				}
+				.vs-dark .notebookEditor .hoverButton {
+					color: ${lighterBackgroundColor};
+				}
+			`);
+		}
+
+		const backgroundColor = theme.getColor(editorBackground);
+		if (backgroundColor) {
+			collector.addRule(`
+				.notebookEditor .hoverButton {
+					background-color: ${backgroundColor};
+				}
+				.notebookEditor .hoverButton:active,
+				.notebookEditor .hoverButton:hover {
+					color: ${backgroundColor};
+				}
+				.hc-black .notebookEditor .hoverButton:active,
+				.hc-black .notebookEditor .hoverButton:hover {
+					color: ${backgroundColor};
+				}
+			`);
+		}
+		// \ /
+
+
 		const inactiveBorder = theme.getColor(SIDE_BAR_BACKGROUND);
 		const notebookLineHighlight = theme.getColor(EDITOR_GROUP_HEADER_TABS_BACKGROUND);
 		// Code editor style overrides - only applied if user chooses this as preferred option
@@ -57,6 +104,12 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 
 		// Inactive border
 		if (inactiveBorder) {
+
+			// Remove after a11y
+			collector.addRule(`.notebookEditor .hoverButtonsContainer .containerBackground {
+				background-color: ${inactiveBorder};
+			}`);
+
 			// Ensure there's always a line between editor and output
 			collector.addRule(`
 				.notebookEditor .notebook-cell.active code-component {
@@ -79,7 +132,19 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 					outline-width: 1px;
 					outline-style: solid;
 				}
-			`);
+
+				.hc-black .notebookEditor .hoverButton {
+					This conversation was marked as resolved by halerankin  Show conversation
+					color: ${hcOutline};
+				}
+				.hc-black .notebookEditor .hoverButton:not(:active) {
+					border-color: ${hcOutline};
+				}
+				.hc-black .notebookEditor .hoverButton:active,
+				.hc-black .notebookEditor .hoverButton:hover {
+					background-color: ${hcOutline};
+				}
+			`); // Remove above hoverButton references after a11y
 		}
 
 		// Styling for tables in notebooks

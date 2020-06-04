@@ -11,6 +11,11 @@
 			<div style="flex: 1 1 auto; overflow: hidden;">
 				<div #editor class="editor"></div>
 			</div>
+
+			<!-- Remove after a11y -->
+			<div #moreactions class="moreActions" style="flex: 0 0 auto; flex-flow:column;width: 20px; min-height: 20px; max-height: 20px; padding-top: 0px; orientation: portrait"></div>
+			<!-- / -->
+
 		</div>
 		<collapse-component *ngIf="cellModel.cellType === 'code' && cellModel.source && cellModel.source.length > 1" [cellModel]="cellModel" [activeCellId]="activeCellId"></collapse-component>
 	</div>
