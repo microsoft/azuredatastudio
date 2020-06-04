@@ -95,7 +95,10 @@ export class HorizontalFlexibleSash extends Disposable implements IHorizontalSas
 	}
 
 	public getHorizontalSashWidth?(): number {
-		return this.dimension.width;
+		if (this.dimension) {
+			return this.dimension.width;
+		}
+		return 0;
 	}
 
 	public setDimension(dimension: Dimension) {
