@@ -6,11 +6,10 @@
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
+import { IColumn, ICellValue, ResultSetSubset } from 'sql/workbench/services/query/common/query';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { resolveQueryFilePath } from '../common/insightsUtils';
-
-import { DbCellValue, IDbColumn, QueryExecuteSubsetResult } from 'azdata';
 
 import Severity from 'vs/base/common/severity';
 import * as types from 'vs/base/common/types';
@@ -27,8 +26,8 @@ export class InsightsDialogController {
 	private _queryRunner: QueryRunner;
 	private _connectionProfile: IConnectionProfile;
 	private _connectionUri: string;
-	private _columns: IDbColumn[];
-	private _rows: DbCellValue[][];
+	private _columns: IColumn[];
+	private _rows: ICellValue[][];
 
 	constructor(
 		private readonly _model: IInsightsDialogModel,
@@ -160,13 +159,13 @@ export class InsightsDialogController {
 			) {
 				let resultset = batch.resultSetSummaries[0];
 				this._columns = resultset.columnInfo;
-				let rows: QueryExecuteSubsetResult;
+				let rows: ResultSetSubset;
 				try {
 					rows = await this._queryRunner.getQueryRows(0, resultset.rowCount, batch.id, resultset.id);
 				} catch (e) {
 					return Promise.reject(e);
 				}
-				this._rows = rows.resultSubset.rows;
+				this._rows = rows.rows;
 				this.updateModel();
 			}
 		}

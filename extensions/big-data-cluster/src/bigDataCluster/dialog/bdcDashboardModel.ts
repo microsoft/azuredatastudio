@@ -8,9 +8,9 @@ import * as vscode from 'vscode';
 import { ClusterController } from '../controller/clusterControllerApi';
 import { EndpointModel, BdcStatusModel } from '../controller/apiGenerated';
 import { Endpoint, Service } from '../utils';
-import { AuthType } from '../constants';
 import { ConnectControllerDialog, ConnectControllerModel } from './connectControllerDialog';
 import { ControllerTreeDataProvider } from '../tree/controllerTreeDataProvider';
+import { AuthType } from 'bdc';
 
 export type BdcDashboardOptions = { url: string, auth: AuthType, username: string, password: string, rememberPassword: boolean };
 
@@ -34,8 +34,7 @@ export class BdcDashboardModel {
 	constructor(private _options: BdcDashboardOptions, private _treeDataProvider: ControllerTreeDataProvider) {
 		try {
 			this._clusterController = new ClusterController(_options.url, _options.auth, _options.username, _options.password);
-			// tslint:disable-next-line:no-floating-promises
-			this.refresh();
+			this.refresh().catch(e => console.log(`Unexpected error refreshing BdcModel ${e instanceof Error ? e.message : e}`));
 		} catch {
 			this.promptReconnect().then(async () => {
 				await this.refresh();

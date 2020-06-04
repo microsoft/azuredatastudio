@@ -43,6 +43,7 @@ import { WINDOW_ACTIVE_BORDER, WINDOW_INACTIVE_BORDER } from 'vs/workbench/commo
 import { LineNumbersType } from 'vs/editor/common/config/editorOptions';
 import { ActivitybarPart } from 'vs/workbench/browser/parts/activitybar/activitybarPart';
 import { URI } from 'vs/base/common/uri';
+import { IViewDescriptorService, ViewContainerLocation } from 'vs/workbench/common/views';
 
 export enum Settings {
 	ACTIVITYBAR_VISIBLE = 'workbench.activityBar.visible',
@@ -171,10 +172,12 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 	private panelService!: IPanelService;
 	private titleService!: ITitleService;
 	private viewletService!: IViewletService;
+	private viewDescriptorService!: IViewDescriptorService;
 	private contextService!: IWorkspaceContextService;
 	private backupFileService!: IBackupFileService;
 	private notificationService!: INotificationService;
 	private themeService!: IThemeService;
+	private activityBarService!: IActivityBarService;
 
 	protected readonly state = {
 		fullscreen: false,
@@ -255,10 +258,11 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 		this.editorGroupService = accessor.get(IEditorGroupsService);
 		this.panelService = accessor.get(IPanelService);
 		this.viewletService = accessor.get(IViewletService);
+		this.viewDescriptorService = accessor.get(IViewDescriptorService);
 		this.titleService = accessor.get(ITitleService);
 		this.notificationService = accessor.get(INotificationService);
+		this.activityBarService = accessor.get(IActivityBarService);
 		accessor.get(IStatusbarService); // not used, but called to ensure instantiated
-		accessor.get(IActivityBarService); // not used, but called to ensure instantiated
 
 		// Listeners
 		this.registerLayoutListeners();
@@ -489,11 +493,11 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 		if (!this.state.sideBar.hidden) {
 
 			// Only restore last viewlet if window was reloaded or we are in development mode
-			let viewletToRestore: string;
+			let viewletToRestore: string | undefined;
 			if (!this.environmentService.isBuilt || lifecycleService.startupKind === StartupKind.ReloadedWindow || isWeb) {
-				viewletToRestore = this.storageService.get(SidebarPart.activeViewletSettingsKey, StorageScope.WORKSPACE, this.viewletService.getDefaultViewletId());
+				viewletToRestore = this.storageService.get(SidebarPart.activeViewletSettingsKey, StorageScope.WORKSPACE, this.viewDescriptorService.getDefaultViewContainer(ViewContainerLocation.Sidebar)?.id);
 			} else {
-				viewletToRestore = this.viewletService.getDefaultViewletId();
+				viewletToRestore = this.viewDescriptorService.getDefaultViewContainer(ViewContainerLocation.Sidebar)?.id;
 			}
 
 			if (viewletToRestore) {
@@ -592,6 +596,10 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 						case 'remote':
 							viewletId = 'workbench.view.remote';
 							break;
+						// {{SQL CARBON EDIT}} add notebook view container to views
+						case 'notebooks':
+							viewletId = 'workbench.view.notebooks';
+							break;
 						default:
 							viewletId = `workbench.view.extension.${container.id}`;
 					}
@@ -639,7 +647,7 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 				}
 
 				if (sidebarState.length) {
-					storageService.store(ActivitybarPart.PINNED_VIEWLETS, JSON.stringify(sidebarState), StorageScope.GLOBAL);
+					storageService.store(ActivitybarPart.PINNED_VIEW_CONTAINERS, JSON.stringify(sidebarState), StorageScope.GLOBAL);
 				}
 			}
 		}
@@ -842,6 +850,9 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 				if (activeViewlet) {
 					activeViewlet.focus();
 				}
+				break;
+			case Parts.ACTIVITYBAR_PART:
+				this.activityBarService.focusActivityBar();
 				break;
 			default:
 				// Status Bar, Activity Bar and Title Bar simply pass focus to container
@@ -1344,7 +1355,7 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 			if (viewletToOpen) {
 				const viewlet = this.viewletService.openViewlet(viewletToOpen, true);
 				if (!viewlet) {
-					this.viewletService.openViewlet(this.viewletService.getDefaultViewletId(), true);
+					this.viewletService.openViewlet(this.viewDescriptorService.getDefaultViewContainer(ViewContainerLocation.Sidebar)?.id, true);
 				}
 			}
 		}

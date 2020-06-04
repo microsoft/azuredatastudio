@@ -236,8 +236,14 @@ export class BreakpointsView extends ViewPane {
 		if (this.isBodyVisible()) {
 			this.updateSize();
 			if (this.list) {
+				const lastFocusIndex = this.list.getFocus()[0];
+				// Check whether focused element was removed
+				const needsRefocus = lastFocusIndex && !this.elements.includes(this.list.element(lastFocusIndex));
 				this.list.splice(0, this.list.length, this.elements);
 				this.needsRefresh = false;
+				if (needsRefocus) {
+					this.list.focusNth(Math.min(lastFocusIndex, this.list.length - 1));
+				}
 			}
 		} else {
 			this.needsRefresh = true;
@@ -344,7 +350,7 @@ class BreakpointsRenderer implements IListRenderer<IBreakpoint, IBreakpointTempl
 
 		data.filePath = dom.append(data.breakpoint, $('span.file-path'));
 		const lineNumberContainer = dom.append(data.breakpoint, $('.line-number-container'));
-		data.lineNumber = dom.append(lineNumberContainer, $('span.line-number'));
+		data.lineNumber = dom.append(lineNumberContainer, $('span.line-number.monaco-count-badge'));
 
 		return data;
 	}
@@ -643,7 +649,7 @@ class BreakpointsAccessibilityProvider implements IListAccessibilityProvider<Bre
 		const { message } = getBreakpointMessageAndClassName(this.debugService.state, this.debugService.getModel().areBreakpointsActivated(), element as IBreakpoint | IDataBreakpoint | IFunctionBreakpoint);
 		const toString = element.toString();
 
-		return message ? `${toString} ${message}` : toString;
+		return message ? `${toString}, ${message}` : toString;
 	}
 }
 

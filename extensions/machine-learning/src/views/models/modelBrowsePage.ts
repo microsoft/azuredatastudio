@@ -46,7 +46,6 @@ export class ModelBrowsePage extends ModelViewBase implements IPageView, IDataCo
 			editable: false
 		});
 		this.registeredModelsComponent.registerComponent(modelBuilder);
-		this.refresh();
 		this._form = this._formBuilder.component();
 		return this._form;
 	}
@@ -173,6 +172,7 @@ export class ModelBrowsePage extends ModelViewBase implements IPageView, IDataCo
 							fileName: x.model?.name,
 							framework: x.model?.framework,
 							frameworkVersion: x.model?.frameworkVersion,
+							description: x.model?.description,
 							created: x.model?.createdTime
 						},
 						targetImportTable: this.importTable

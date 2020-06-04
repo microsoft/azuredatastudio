@@ -54,12 +54,12 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 			});
 		});
 	}));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('_notebook.command.new', (context?: azdata.ConnectedContext) => {
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('_notebook.command.new', async (context?: azdata.ConnectedContext) => {
 		let connectionProfile: azdata.IConnectionProfile = undefined;
 		if (context && context.connectionProfile) {
 			connectionProfile = context.connectionProfile;
 		}
-		newNotebook(connectionProfile);
+		return newNotebook(connectionProfile);
 	}));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.open', async () => {
 		await openNotebook();
@@ -145,10 +145,10 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	};
 }
 
-function newNotebook(connectionProfile: azdata.IConnectionProfile) {
-	let title = findNextUntitledEditorName();
-	let untitledUri = vscode.Uri.parse(`untitled:${title}`);
-	let options: azdata.nb.NotebookShowOptions = connectionProfile ? {
+async function newNotebook(connectionProfile: azdata.IConnectionProfile): Promise<azdata.nb.NotebookEditor> {
+	const title = findNextUntitledEditorName();
+	const untitledUri = vscode.Uri.parse(`untitled:${title}`);
+	const options: azdata.nb.NotebookShowOptions = connectionProfile ? {
 		viewColumn: null,
 		preserveFocus: true,
 		preview: null,
@@ -156,11 +156,7 @@ function newNotebook(connectionProfile: azdata.IConnectionProfile) {
 		connectionProfile: connectionProfile,
 		defaultKernel: null
 	} : null;
-	azdata.nb.showNotebookDocument(untitledUri, options).then(success => {
-
-	}, (err: Error) => {
-		vscode.window.showErrorMessage(err.message);
-	});
+	return azdata.nb.showNotebookDocument(untitledUri, options);
 }
 
 function findNextUntitledEditorName(): string {

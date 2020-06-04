@@ -4,13 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { InsightsDialogController } from 'sql/workbench/services/insights/browser/insightsDialogController';
-import QueryRunner, { IQueryMessage } from 'sql/workbench/services/query/common/queryRunner';
+import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
+import { IQueryMessage, BatchSummary, IColumn, ResultSetSubset } from 'sql/workbench/services/query/common/query';
 import { ConnectionManagementService } from 'sql/workbench/services/connection/browser/connectionManagementService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 
-import * as azdata from 'azdata';
 import { equal } from 'assert';
 import { Mock, MockBehavior, It } from 'typemoq';
 import { Emitter } from 'vs/base/common/event';
@@ -114,12 +114,12 @@ function getPrimedQueryRunner(data: string[][], columns: string[]): IPrimedQuery
 	querymock.setup(x => x.onQueryEnd).returns(x => emitter.event);
 	querymock.setup(x => x.onMessage).returns(x => new Emitter<[IQueryMessage]>().event);
 	querymock.setup(x => x.batchSets).returns(x => {
-		return <Array<azdata.BatchSummary>>[
+		return <Array<BatchSummary>>[
 			{
 				id: 0,
 				resultSetSummaries: [
 					{
-						columnInfo: <Array<azdata.IDbColumn>>columns.map(c => { return { columnName: c }; }),
+						columnInfo: <Array<IColumn>>columns.map(c => { return { columnName: c }; }),
 						id: 0,
 						rowCount: data.length
 					}
@@ -129,11 +129,9 @@ function getPrimedQueryRunner(data: string[][], columns: string[]): IPrimedQuery
 	});
 
 	querymock.setup(x => x.getQueryRows(It.isAnyNumber(), It.isAnyNumber(), It.isAnyNumber(), It.isAnyNumber()))
-		.returns(x => Promise.resolve(<azdata.QueryExecuteSubsetResult>{
-			resultSubset: <azdata.ResultSetSubset>{
-				rowCount: data.length,
-				rows: data.map(r => r.map(c => { return { displayValue: c }; }))
-			}
+		.returns(x => Promise.resolve(<ResultSetSubset>{
+			rowCount: data.length,
+			rows: data.map(r => r.map(c => { return { displayValue: c }; }))
 		}));
 
 	querymock.setup(x => x.runQuery(It.isAnyString())).returns(x => Promise.resolve());

@@ -366,6 +366,28 @@
               "displayName": "%onprem.serverProperties.osVersion%",
               "value": "osVersion"
             }
+          ],
+          "databasesListProperties": [
+            {
+              "displayName": "%databasesListProperties.name%",
+              "value": "name",
+              "widthWeight": 60
+            },
+            {
+              "displayName": "%databasesListProperties.status%",
+              "value": "state",
+              "widthWeight": 10
+            },
+            {
+              "displayName": "%databasesListProperties.size%",
+              "value": "sizeInMB",
+              "widthWeight": 10
+            },
+            {
+              "displayName": "%databasesListProperties.lastBackup%",
+              "value": "lastBackup",
+              "widthWeight": 20
+            }
           ]
         },
         {
@@ -404,6 +426,23 @@
               "displayName": "%cloud.serverProperties.serverEdition%",
               "value": "serverEdition"
             }
+          ],
+          "databasesListProperties": [
+            {
+              "displayName": "%databasesListProperties.name%",
+              "value": "name",
+              "widthWeight": 60
+            },
+            {
+              "displayName": "%databasesListProperties.status%",
+              "value": "state",
+              "widthWeight": 20
+            },
+            {
+              "displayName": "%databasesListProperties.size%",
+              "value": "sizeInMB",
+              "widthWeight": 20
+            }
           ]
         },
         {
@@ -434,6 +473,13 @@
               "displayName": "%cloud.serverProperties.serverEdition%",
               "value": "serverEdition"
             }
+          ],
+          "databasesListProperties": [
+            {
+              "displayName": "%databasesListProperties.name%",
+              "value": "name",
+              "widthWeight": 100
+            }
           ]
         }
       ]
@@ -444,7 +490,7 @@
         "description": "%tab.bigDataClusterDescription%",
         "provider": "MSSQL",
         "title": "%title.bigDataCluster%",
-        "group": "monitoring",
+        "group": "home",
         "when": "connectionProvider == 'MSSQL' && mssql:iscluster && dashboardContext == 'server'",
         "container": {
           "grid-container": [
@@ -1043,7 +1089,7 @@
     "figures": "^2.0.0",
     "find-remove": "1.2.1",
     "request": "^2.88.0",
-    "request-promise": "^4.2.2",
+    "request-light": "^0.3.0",
     "service-downloader": "0.2.1",
     "stream-meter": "^1.0.4",
     "through2": "^3.0.1",
@@ -1057,7 +1103,6 @@
     "@types/chai": "^4.2.11",
     "@types/mocha": "^7.0.2",
     "@types/request": "^2.48.2",
-    "@types/request-promise": "^4.1.44",
     "@types/stream-meter": "^0.0.22",
     "@types/through2": "^2.0.34",
     "chai": "^4.2.0",

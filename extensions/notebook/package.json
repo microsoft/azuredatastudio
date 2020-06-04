@@ -131,8 +131,8 @@
         "command": "jupyter.cmd.managePackages",
         "title": "%title.managePackages%",
         "icon": {
-          "dark": "resources/dark/manage_inverse.svg",
-          "light": "resources/light/manage.svg"
+          "dark": "resources/dark/packages_inverse.svg",
+          "light": "resources/light/packages.svg"
         }
       },
       {
@@ -249,18 +249,6 @@
         "path": "./syntaxes/notebook.tmLanguage.json"
       }
     ],
-    "notebookExplorer": {
-			"books-explorer": [
-        {
-          "id": "bookTreeView",
-          "name": "%title.SavedBooks%"
-        },
-        {
-          "id": "providedBooksView",
-          "name": "%title.ProvidedBooks%"
-        }
-      ]
-		},
     "menus": {
       "commandPalette": [
         {
@@ -351,7 +339,7 @@
           "when": "false"
         }
       ],
-      "notebookExplorer/action": [
+      "notebooks/title": [
         {
           "command": "notebook.command.createBook",
           "group": "secondary"
@@ -431,6 +419,18 @@
         {
           "command": "jupyter.cmd.managePackages",
           "when": "providerId == jupyter && notebook:pythonInstalled"
+        }
+      ]
+    },
+    "views": {
+      "notebooks": [
+        {
+          "id": "bookTreeView",
+          "name": "%title.SavedBooks%"
+        },
+        {
+          "id": "providedBooksView",
+          "name": "%title.ProvidedBooks%"
         }
       ]
     },

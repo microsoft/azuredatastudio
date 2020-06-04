@@ -7,49 +7,16 @@ import { Component, Inject, forwardRef, ChangeDetectorRef, OnInit, ElementRef, V
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
-import { IDashboardRegistry, Extensions as DashboardExtensions } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
+import { Property, PropertiesConfig, getFlavor } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
 
 import { DatabaseInfo, ServerInfo } from 'azdata';
 import * as types from 'vs/base/common/types';
 import * as nls from 'vs/nls';
-import { Registry } from 'vs/platform/registry/common/platform';
 import { ILogService } from 'vs/platform/log/common/log';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
 import { PropertiesContainer, PropertyItem } from 'sql/base/browser/ui/propertiesContainer/propertiesContainer.component';
 import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import { PROPERTIES_CONTAINER_PROPERTY_NAME, PROPERTIES_CONTAINER_PROPERTY_VALUE } from 'vs/workbench/common/theme';
-
-export interface PropertiesConfig {
-	properties: Array<Property>;
-}
-
-export interface FlavorProperties {
-	flavor: string;
-	condition?: ConditionProperties;
-	conditions?: Array<ConditionProperties>;
-	databaseProperties: Array<Property>;
-	serverProperties: Array<Property>;
-}
-
-export interface ConditionProperties {
-	field: string;
-	operator: '==' | '<=' | '>=' | '!=';
-	value: string | boolean;
-}
-
-export interface ProviderProperties {
-	provider: string;
-	flavors: Array<FlavorProperties>;
-}
-
-export interface Property {
-	displayName: string;
-	value: string;
-	ignore?: Array<string>;
-	default?: string;
-}
-
-const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
 
 @Component({
 	selector: 'properties-widget',
@@ -111,55 +78,10 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 			const config = <PropertiesConfig>this._config.widget['properties-widget'];
 			propertyArray = config.properties;
 		} else {
-			const providerProperties = dashboardRegistry.getProperties(provider as string);
-
-			if (!providerProperties) {
-				this.logService.error('No property definitions found for provider', provider);
+			const flavor = getFlavor(this._connection.serverInfo, this.logService, provider as string);
+			if (!flavor) {
 				return [];
 			}
-
-			let flavor: FlavorProperties;
-
-			// find correct flavor
-			if (providerProperties.flavors.length === 1) {
-				flavor = providerProperties.flavors[0];
-			} else if (providerProperties.flavors.length === 0) {
-				this.logService.error('No flavor definitions found for "', provider,
-					'. If there are not multiple flavors of this provider, add one flavor without a condition');
-				return [];
-			} else {
-				const flavorArray = providerProperties.flavors.filter((item) => {
-
-					// For backward compatibility we are supporting array of conditions and single condition.
-					// If nothing is specified, we return false.
-					if (item.conditions) {
-						let conditionResult = true;
-						for (let i = 0; i < item.conditions.length; i++) {
-							conditionResult = conditionResult && this.getConditionResult(item, item.conditions[i]);
-						}
-
-						return conditionResult;
-					}
-					else if (item.condition) {
-						return this.getConditionResult(item, item.condition);
-					}
-					else {
-						this.logService.error('No condition was specified.');
-						return false;
-					}
-				});
-
-				if (flavorArray.length === 0) {
-					this.logService.error('Could not determine flavor');
-					return [];
-				} else if (flavorArray.length > 1) {
-					this.logService.error('Multiple flavors matched correctly for this provider', provider);
-					return [];
-				}
-
-				flavor = flavorArray[0];
-			}
-
 			// determine what context we should be pulling from
 			if (this._config.context === 'database') {
 				if (!Array.isArray(flavor.databaseProperties)) {
@@ -208,31 +130,6 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 				value: propertyObject
 			};
 		});
-	}
-
-	private getConditionResult(item: FlavorProperties, conditionItem: ConditionProperties): boolean {
-		let condition = this._connection.serverInfo[conditionItem.field];
-
-		// If we need to compare strings, then we should ensure that condition is string
-		// Otherwise tripple equals/unequals would return false values
-		if (typeof conditionItem.value === 'string') {
-			condition = condition.toString();
-		}
-
-		switch (conditionItem.operator) {
-			case '==':
-				return condition === conditionItem.value;
-			case '!=':
-				return condition !== conditionItem.value;
-			case '>=':
-				return condition >= conditionItem.value;
-			case '<=':
-				return condition <= conditionItem.value;
-			default:
-				this.logService.error('Could not parse operator: "', conditionItem.operator,
-					'" on item "', item, '"');
-				return false;
-		}
 	}
 
 	private getValueOrDefault<T>(infoObject: ServerInfo | {}, propertyValue: string, defaultVal?: any): T {

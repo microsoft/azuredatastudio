@@ -93,4 +93,46 @@ describe('SchemaCompareResult.start', function (): void {
 		should(result.getComparisonResult() !== undefined);
 		should(result.getComparisonResult().operationId === 'Test Operation Id');
 	});
+
+	it('Should start with the source as undefined', async function (): Promise<void> {
+		let sc = new SchemaCompareTestService();
+
+		let result = new SchemaCompareMainWindow(sc, mockExtensionContext.object);
+		await result.start(undefined);
+		let promise = new Promise(resolve => setTimeout(resolve, 5000)); // to ensure comparison result view is initialized
+		await promise;
+
+		should.equal(result.sourceEndpointInfo, undefined);
+		should.equal(result.targetEndpointInfo, undefined);
+	});
+
+	it('Should start with the source as database', async function (): Promise<void> {
+		let sc = new SchemaCompareTestService();
+
+		let result = new SchemaCompareMainWindow(sc, mockExtensionContext.object);
+		await result.start({connectionProfile: mockConnectionProfile});
+		let promise = new Promise(resolve => setTimeout(resolve, 5000)); // to ensure comparison result view is initialized
+		await promise;
+
+		should.notEqual(result.sourceEndpointInfo, undefined);
+		should.equal(result.sourceEndpointInfo.endpointType, mssql.SchemaCompareEndpointType.Database);
+		should.equal(result.sourceEndpointInfo.serverName, mockConnectionProfile.serverName);
+		should.equal(result.sourceEndpointInfo.databaseName, mockConnectionProfile.databaseName);
+		should.equal(result.targetEndpointInfo, undefined);
+	});
+
+	it('Should start with the source as dacpac.', async function (): Promise<void> {
+		let sc = new SchemaCompareTestService();
+
+		let result = new SchemaCompareMainWindow(sc, mockExtensionContext.object);
+		const dacpacPath = 'C:\\users\\test\\test.dacpac';
+		await result.start(dacpacPath);
+		let promise = new Promise(resolve => setTimeout(resolve, 5000)); // to ensure comparison result view is initialized
+		await promise;
+
+		should.notEqual(result.sourceEndpointInfo, undefined);
+		should.equal(result.sourceEndpointInfo.endpointType, mssql.SchemaCompareEndpointType.Dacpac);
+		should.equal(result.sourceEndpointInfo.packageFilePath, dacpacPath);
+		should.equal(result.targetEndpointInfo, undefined);
+	});
 });

@@ -210,17 +210,17 @@ export function getHealthStatusIcon(healthStatus?: string): string {
 }
 
 /**
- * Returns the status dot string which will be a • for all non-healthy states
+ * Returns the status dot icon which will be a • for all non-healthy states
  * @param healthStatus The status to check
  */
-export function getHealthStatusDot(healthStatus?: string): string {
+export function getHealthStatusDotIcon(healthStatus?: string): constants.IconPath {
 	healthStatus = healthStatus || '';
 	switch (healthStatus.toLowerCase()) {
 		case 'healthy':
-			return '';
+			return constants.IconPathHelper.status_circle_blank;
 		default:
 			// Display status dot for all non-healthy status'
-			return '•';
+			return constants.IconPathHelper.status_circle_red;
 	}
 }
 

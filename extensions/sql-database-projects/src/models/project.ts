@@ -3,22 +3,25 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
 import * as path from 'path';
 import * as xmldom from 'xmldom';
 import * as constants from '../common/constants';
+import * as utils from '../common/utils';
 
+import { Uri, window } from 'vscode';
 import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
-import { getErrorMessage } from '../common/utils';
 
 /**
  * Class representing a Project, and providing functions for operating on it
  */
 export class Project {
 	public projectFilePath: string;
+	public projectFileName: string;
 	public files: ProjectEntry[] = [];
 	public dataSources: DataSource[] = [];
+	public importedTargets: string[] = [];
+	public sqlCmdVariables: Record<string, string> = {};
 
 	public get projectFolderPath() {
 		return path.dirname(this.projectFilePath);
@@ -28,6 +31,7 @@ export class Project {
 
 	constructor(projectFilePath: string) {
 		this.projectFilePath = projectFilePath;
+		this.projectFileName = path.basename(projectFilePath, '.sqlproj');
 	}
 
 	/**
@@ -35,17 +39,9 @@ export class Project {
 	 */
 	public async readProjFile() {
 		const projFileText = await fs.readFile(this.projectFilePath);
-
-		try {
-			this.projFileXmlDoc = new xmldom.DOMParser().parseFromString(projFileText.toString());
-		}
-		catch (err) {
-			vscode.window.showErrorMessage(err);
-			return;
-		}
+		this.projFileXmlDoc = new xmldom.DOMParser().parseFromString(projFileText.toString());
 
 		// find all folders and files to include
-
 		for (let ig = 0; ig < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
 			const itemGroup = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ItemGroup)[ig];
 
@@ -57,6 +53,45 @@ export class Project {
 				this.files.push(this.createProjectEntry(itemGroup.getElementsByTagName(constants.Folder)[f].getAttribute(constants.Include), EntryType.Folder));
 			}
 		}
+
+		// find all import statements to include
+		for (let i = 0; i < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Import).length; i++) {
+			const importTarget = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Import)[i];
+			this.importedTargets.push(importTarget.getAttribute(constants.Project));
+		}
+	}
+
+	public async updateProjectForRoundTrip() {
+		if (this.importedTargets.includes(constants.NetCoreTargets)) {
+			return;
+		}
+
+		window.showWarningMessage(constants.updateProjectForRoundTrip, constants.yesString, constants.noString).then(async (result) => {
+			if (result === constants.yesString) {
+				await fs.copyFile(this.projectFilePath, this.projectFilePath + '_backup');
+				await this.updateImportToSupportRoundTrip();
+				await this.updatePackageReferenceInProjFile();
+			}
+		});
+	}
+
+	private async updateImportToSupportRoundTrip(): Promise<void> {
+		// update an SSDT project to include Net core target information
+		for (let i = 0; i < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Import).length; i++) {
+			const importTarget = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Import)[i];
+
+			let condition = importTarget.getAttribute(constants.Condition);
+			let project = importTarget.getAttribute(constants.Project);
+
+			if (condition === constants.SqlDbPresentCondition && project === constants.SqlDbTargets) {
+				await this.updateImportedTargetsToProjFile(constants.RoundTripSqlDbPresentCondition, project, importTarget);
+			}
+			if (condition === constants.SqlDbNotPresentCondition && project === constants.MsBuildtargets) {
+				await this.updateImportedTargetsToProjFile(constants.RoundTripSqlDbNotPresentCondition, project, importTarget);
+			}
+		}
+
+		await this.updateImportedTargetsToProjFile(constants.NetCoreCondition, constants.NetCoreTargets, undefined);
 	}
 
 	/**
@@ -65,7 +100,12 @@ export class Project {
 	 */
 	public async addFolderItem(relativeFolderPath: string): Promise<ProjectEntry> {
 		const absoluteFolderPath = path.join(this.projectFolderPath, relativeFolderPath);
-		await fs.mkdir(absoluteFolderPath, { recursive: true });
+
+		//If folder doesn't exist, create it
+		let exists = await utils.exists(absoluteFolderPath);
+		if (!exists) {
+			await fs.mkdir(absoluteFolderPath, { recursive: true });
+		}
 
 		const folderEntry = this.createProjectEntry(relativeFolderPath, EntryType.Folder);
 		this.files.push(folderEntry);
@@ -75,14 +115,23 @@ export class Project {
 	}
 
 	/**
-	 * Writes a file to disk, adds that file to the project, and writes it to disk
+	 * Writes a file to disk if contents are provided, adds that file to the project, and writes it to disk
 	 * @param relativeFilePath Relative path of the file
 	 * @param contents Contents to be written to the new file
 	 */
-	public async addScriptItem(relativeFilePath: string, contents: string): Promise<ProjectEntry> {
+	public async addScriptItem(relativeFilePath: string, contents?: string): Promise<ProjectEntry> {
 		const absoluteFilePath = path.join(this.projectFolderPath, relativeFilePath);
-		await fs.mkdir(path.dirname(absoluteFilePath), { recursive: true });
-		await fs.writeFile(absoluteFilePath, contents);
+
+		if (contents) {
+			await fs.mkdir(path.dirname(absoluteFilePath), { recursive: true });
+			await fs.writeFile(absoluteFilePath, contents);
+		}
+
+		//Check that file actually exists
+		let exists = await utils.exists(absoluteFilePath);
+		if (!exists) {
+			throw new Error(constants.noFileExist(absoluteFilePath));
+		}
 
 		const fileEntry = this.createProjectEntry(relativeFilePath, EntryType.File);
 		this.files.push(fileEntry);
@@ -93,20 +142,23 @@ export class Project {
 	}
 
 	private createProjectEntry(relativePath: string, entryType: EntryType): ProjectEntry {
-		return new ProjectEntry(vscode.Uri.file(path.join(this.projectFolderPath, relativePath)), relativePath, entryType);
+		return new ProjectEntry(Uri.file(path.join(this.projectFolderPath, relativePath)), relativePath, entryType);
 	}
 
 	private findOrCreateItemGroup(containedTag?: string): any {
 		let outputItemGroup = undefined;
 
-		// find any ItemGroup node that contains files; that's where we'll add
-		for (let i = 0; i < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ItemGroup).length; i++) {
-			const currentItemGroup = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ItemGroup)[i];
+		// search for a particular item goup if a child type is provided
+		if (containedTag) {
+			// find any ItemGroup node that contains files; that's where we'll add
+			for (let ig = 0; ig < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
+				const currentItemGroup = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ItemGroup)[ig];
 
-			// if we're not hunting for a particular child type, or if we are and we find it, use the ItemGroup
-			if (!containedTag || currentItemGroup.getElementsByTagName(containedTag).length > 0) {
-				outputItemGroup = currentItemGroup;
-				break;
+				// if we find the tag, use the ItemGroup
+				if (currentItemGroup.getElementsByTagName(containedTag).length > 0) {
+					outputItemGroup = currentItemGroup;
+					break;
+				}
 			}
 		}
 
@@ -133,28 +185,73 @@ export class Project {
 		this.findOrCreateItemGroup(constants.Folder).appendChild(newFolderNode);
 	}
 
-	private async addToProjFile(entry: ProjectEntry) {
-		try {
-			switch (entry.type) {
-				case EntryType.File:
-					this.addFileToProjFile(entry.relativePath);
-					break;
-				case EntryType.Folder:
-					this.addFolderToProjFile(entry.relativePath);
-			}
+	private async updateImportedTargetsToProjFile(condition: string, project: string, oldImportNode?: any): Promise<any> {
+		const importNode = this.projFileXmlDoc.createElement(constants.Import);
+		importNode.setAttribute(constants.Condition, condition);
+		importNode.setAttribute(constants.Project, project);
 
-			await this.serializeToProjFile(this.projFileXmlDoc);
+		if (oldImportNode) {
+			this.projFileXmlDoc.documentElement.replaceChild(importNode, oldImportNode);
 		}
-		catch (err) {
-			vscode.window.showErrorMessage(getErrorMessage(err));
-			return;
+		else {
+			this.projFileXmlDoc.documentElement.appendChild(importNode, oldImportNode);
 		}
+
+		await this.serializeToProjFile(this.projFileXmlDoc);
+		return importNode;
+	}
+
+	private async updatePackageReferenceInProjFile(): Promise<void> {
+		const packageRefNode = this.projFileXmlDoc.createElement(constants.PackageReference);
+		packageRefNode.setAttribute(constants.Condition, constants.NetCoreCondition);
+		packageRefNode.setAttribute(constants.Include, constants.NETFrameworkAssembly);
+		packageRefNode.setAttribute(constants.Version, constants.VersionNumber);
+		packageRefNode.setAttribute(constants.PrivateAssets, constants.All);
+
+		this.findOrCreateItemGroup(constants.PackageReference).appendChild(packageRefNode);
+
+		await this.serializeToProjFile(this.projFileXmlDoc);
+	}
+
+	private async addToProjFile(entry: ProjectEntry) {
+		switch (entry.type) {
+			case EntryType.File:
+				this.addFileToProjFile(entry.relativePath);
+				break;
+			case EntryType.Folder:
+				this.addFolderToProjFile(entry.relativePath);
+		}
+
+		await this.serializeToProjFile(this.projFileXmlDoc);
 	}
 
 	private async serializeToProjFile(projFileContents: any) {
 		const xml = new xmldom.XMLSerializer().serializeToString(projFileContents); // TODO: how to get this to serialize with "pretty" formatting
 
 		await fs.writeFile(this.projectFilePath, xml);
+	}
+
+	/**
+	 * Adds the list of sql files and directories to the project, and saves the project file
+	 * @param absolutePath Absolute path of the folder
+	 */
+	public async addToProject(list: string[]): Promise<void> {
+
+		for (let i = 0; i < list.length; i++) {
+			let file: string = list[i];
+			const relativePath = utils.trimChars(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(file)), '/');
+
+			if (relativePath.length > 0) {
+				let fileStat = await fs.stat(file);
+
+				if (fileStat.isFile() && file.toLowerCase().endsWith(constants.sqlFileExtension)) {
+					await this.addScriptItem(relativePath);
+				}
+				else if (fileStat.isDirectory()) {
+					await this.addFolderItem(relativePath);
+				}
+			}
+		}
 	}
 }
 
@@ -165,11 +262,11 @@ export class ProjectEntry {
 	/**
 	 * Absolute file system URI
 	 */
-	fsUri: vscode.Uri;
+	fsUri: Uri;
 	relativePath: string;
 	type: EntryType;
 
-	constructor(uri: vscode.Uri, relativePath: string, type: EntryType) {
+	constructor(uri: Uri, relativePath: string, type: EntryType) {
 		this.fsUri = uri;
 		this.relativePath = relativePath;
 		this.type = type;

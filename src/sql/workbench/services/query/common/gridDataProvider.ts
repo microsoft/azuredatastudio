@@ -3,9 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
 import * as types from 'vs/base/common/types';
 import { SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
+import { ResultSetSubset } from 'sql/workbench/services/query/common/query';
 
 export interface IGridDataProvider {
 
@@ -14,7 +14,7 @@ export interface IGridDataProvider {
 	 * @param rowStart 0-indexed start row to retrieve data from
 	 * @param numberOfRows total number of rows of data to retrieve
 	 */
-	getRowData(rowStart: number, numberOfRows: number): Thenable<azdata.QueryExecuteSubsetResult>;
+	getRowData(rowStart: number, numberOfRows: number): Thenable<ResultSetSubset>;
 
 	/**
 	 * Sends a copy request to copy data to the clipboard
@@ -65,8 +65,8 @@ export async function getResultsString(provider: IGridDataProvider, selection: S
 				}
 			}
 			// Iterate over the rows to paste into the copy string
-			for (let rowIndex: number = 0; rowIndex < result.resultSubset.rows.length; rowIndex++) {
-				let row = result.resultSubset.rows[rowIndex];
+			for (let rowIndex: number = 0; rowIndex < result.rows.length; rowIndex++) {
+				let row = result.rows[rowIndex];
 				let cellObjects = row.slice(range.fromCell, (range.toCell + 1));
 				// Remove newlines if requested
 				let cells = provider.shouldRemoveNewLines()

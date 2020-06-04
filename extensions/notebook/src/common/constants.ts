@@ -34,6 +34,13 @@ export const localhostName = 'localhost';
 export const localhostTitle = localize('managePackages.localhost', "localhost");
 export const PackageNotFoundError = localize('managePackages.packageNotFound', "Could not find the specified package");
 
+export const python3DisplayName = 'Python 3';
+export const pysparkDisplayName = 'PySpark';
+export const sparkScalaDisplayName = 'Spark | Scala';
+export const sparkRDisplayName = 'Spark | R';
+export const powershellDisplayName = 'PowerShell';
+export const allKernelsName = 'All Kernels';
+
 export const visitedNotebooksMementoKey = 'notebooks.visited';
 
 export enum BuiltInCommands {

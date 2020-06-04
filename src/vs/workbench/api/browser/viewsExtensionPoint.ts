@@ -20,6 +20,7 @@ import { VIEWLET_ID as EXPLORER } from 'vs/workbench/contrib/files/common/files'
 import { VIEWLET_ID as SCM } from 'vs/workbench/contrib/scm/common/scm';
 import { VIEWLET_ID as DEBUG } from 'vs/workbench/contrib/debug/common/debug';
 import { VIEWLET_ID as REMOTE } from 'vs/workbench/contrib/remote/common/remote.contribution';
+import { VIEWLET_ID as NOTEBOOK } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet'; // {{SQL CARBON EDIT}}
 import { ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { URI } from 'vs/base/common/uri';
 import { ViewletRegistry, Extensions as ViewletExtensions, ShowViewletAction } from 'vs/workbench/browser/viewlet';
@@ -163,6 +164,13 @@ const viewsContribution: IJSONSchema = {
 			description: localize('views.remote', "Contributes views to Remote container in the Activity bar. To contribute to this container, enableProposedApi needs to be turned on"),
 			type: 'array',
 			items: remoteViewDescriptor,
+			default: []
+		},
+		// {{SQL CARBON EDIT}}
+		'notebooks': {
+			description: localize('views.notebooks', "Contributes views to Notebooks container in the Activity bar."),
+			type: 'array',
+			items: viewDescriptor,
 			default: []
 		}
 	},
@@ -368,6 +376,9 @@ class ViewsExtensionHandler implements IWorkbenchContribution {
 	}
 
 	private addViews(extensions: readonly IExtensionPointUser<ViewExtensionPointType>[]): void {
+		const viewIds: Set<string> = new Set<string>();
+		const allViewDescriptors: { views: IViewDescriptor[], viewContainer: ViewContainer }[] = [];
+
 		for (const extension of extensions) {
 			const { value, collector } = extension;
 
@@ -386,10 +397,9 @@ class ViewsExtensionHandler implements IWorkbenchContribution {
 					collector.warn(localize('ViewContainerDoesnotExist', "View container '{0}' does not exist and all views registered to it will be added to 'Explorer'.", entry.key));
 				}
 				const container = viewContainer || this.getDefaultViewContainer();
-				const viewIds: string[] = [];
 				const viewDescriptors = coalesce(entry.value.map((item, index) => {
 					// validate
-					if (viewIds.indexOf(item.id) !== -1) {
+					if (viewIds.has(item.id)) {
 						collector.error(localize('duplicateView1', "Cannot register multiple views with same id `{0}`", item.id));
 						return null;
 					}
@@ -409,6 +419,7 @@ class ViewsExtensionHandler implements IWorkbenchContribution {
 						name: item.name,
 						ctorDescriptor: new SyncDescriptor(TreeViewPane),
 						when: ContextKeyExpr.deserialize(item.when),
+						containerIcon: viewContainer?.icon,
 						canToggleVisibility: true,
 						canMoveView: true,
 						treeView: this.instantiationService.createInstance(CustomTreeView, item.id, item.name),
@@ -420,12 +431,16 @@ class ViewsExtensionHandler implements IWorkbenchContribution {
 						remoteAuthority: item.remoteName || (<any>item).remoteAuthority // TODO@roblou - delete after remote extensions are updated
 					};
 
-					viewIds.push(viewDescriptor.id);
+					viewIds.add(viewDescriptor.id);
 					return viewDescriptor;
 				}));
-				this.viewsRegistry.registerViews(viewDescriptors, container);
+
+				allViewDescriptors.push({ viewContainer: container, views: viewDescriptors });
+
 			});
 		}
+
+		this.viewsRegistry.registerViews2(allViewDescriptors);
 	}
 
 	private getDefaultViewContainer(): ViewContainer {
@@ -472,6 +487,7 @@ class ViewsExtensionHandler implements IWorkbenchContribution {
 			case 'debug': return this.viewContainersRegistry.get(DEBUG);
 			case 'scm': return this.viewContainersRegistry.get(SCM);
 			case 'remote': return this.viewContainersRegistry.get(REMOTE);
+			case 'notebooks': return this.viewContainersRegistry.get(NOTEBOOK); // {{SQL CARBON EDIT}}
 			default: return this.viewContainersRegistry.get(`workbench.view.extension.${value}`);
 		}
 	}

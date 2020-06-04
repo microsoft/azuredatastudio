@@ -54,8 +54,8 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		}
 	}
 
-	$doStartServer(managerHandle: number): Thenable<void> {
-		return this._withServerManager(managerHandle, (serverManager) => serverManager.startServer());
+	$doStartServer(managerHandle: number, kernelSpec: azdata.nb.IKernelSpec): Thenable<void> {
+		return this._withServerManager(managerHandle, (serverManager) => serverManager.startServer(kernelSpec));
 	}
 
 	$doStopServer(managerHandle: number): Thenable<void> {

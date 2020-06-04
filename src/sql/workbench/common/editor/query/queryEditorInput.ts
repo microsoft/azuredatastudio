@@ -14,8 +14,9 @@ import { IConnectionManagementService, IConnectableInput, INewConnectionParams, 
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 
-import { ISelectionData, ExecutionPlanOptions } from 'azdata';
+import { ExecutionPlanOptions } from 'azdata';
 import { startsWith } from 'vs/base/common/strings';
+import { IRange } from 'vs/editor/common/core/range';
 
 const MAX_SIZE = 13;
 
@@ -229,13 +230,13 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	}
 
 	// State update funtions
-	public runQuery(selection?: ISelectionData, executePlanOptions?: ExecutionPlanOptions): void {
-		this.queryModelService.runQuery(this.uri, selection, executePlanOptions);
+	public runQuery(range?: IRange, executePlanOptions?: ExecutionPlanOptions): void {
+		this.queryModelService.runQuery(this.uri, range, executePlanOptions);
 		this.state.executing = true;
 	}
 
-	public runQueryStatement(selection?: ISelectionData): void {
-		this.queryModelService.runQueryStatement(this.uri, selection);
+	public runQueryStatement(range?: IRange): void {
+		this.queryModelService.runQueryStatement(this.uri, range);
 		this.state.executing = true;
 	}
 
@@ -269,15 +270,15 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 
 		let isRunningQuery = this.queryModelService.isRunningQuery(this.uri);
 		if (!isRunningQuery && params && params.runQueryOnCompletion) {
-			let selection: ISelectionData | undefined = params ? params.querySelection : undefined;
+			let range: IRange | undefined = params ? params.queryRange : undefined;
 			if (params.runQueryOnCompletion === RunQueryOnConnectionMode.executeCurrentQuery) {
-				this.runQueryStatement(selection);
+				this.runQueryStatement(range);
 			} else if (params.runQueryOnCompletion === RunQueryOnConnectionMode.executeQuery) {
-				this.runQuery(selection);
+				this.runQuery(range);
 			} else if (params.runQueryOnCompletion === RunQueryOnConnectionMode.estimatedQueryPlan) {
-				this.runQuery(selection, { displayEstimatedQueryPlan: true });
+				this.runQuery(range, { displayEstimatedQueryPlan: true });
 			} else if (params.runQueryOnCompletion === RunQueryOnConnectionMode.actualQueryPlan) {
-				this.runQuery(selection, { displayActualQueryPlan: true });
+				this.runQuery(range, { displayActualQueryPlan: true });
 			}
 		}
 		this._onDidChangeLabel.fire();

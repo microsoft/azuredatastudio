@@ -6,6 +6,11 @@
 	"sqlDatabaseProjects.new": "New Database Project",
 	"sqlDatabaseProjects.open": "Open Database Project",
 	"sqlDatabaseProjects.close": "Close Database Project",
+	"sqlDatabaseProjects.build": "Build",
+	"sqlDatabaseProjects.deploy": "Deploy",
+	"sqlDatabaseProjects.import": "Import",
+	"sqlDatabaseProjects.properties": "Properties",
+	"sqlDatabaseProjects.schemaCompare": "Schema Compare",
 
 	"sqlDatabaseProjects.newScript": "Add Script",
 	"sqlDatabaseProjects.newTable": "Add Table",
@@ -14,6 +19,7 @@
 	"sqlDatabaseProjects.newItem": "Add Item...",
 	"sqlDatabaseProjects.newFolder": "Add Folder",
 
+	"sqlDatabaseProjects.importDatabase": "Import New Database Project",
 
 	"sqlDatabaseProjects.Settings": "Database Projects",
 	"sqlDatabaseProjects.netCoreInstallLocation": "Full Path to .Net Core SDK on the machine."

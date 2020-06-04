@@ -89,7 +89,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@IClipboardService private _clipboardService: IClipboardService,
 		@ICommandService private _commandService: ICommandService,
-		@ILogService private _logService: ILogService
+		@ILogService private _logService: ILogService,
 	) {
 		this.initializeConnectionProviders();
 	}
@@ -165,6 +165,10 @@ export class ConnectionDialogService implements IConnectionDialogService {
 					return;
 				}
 				profile = result.connection;
+
+				if (params.oldProfileId && params.isEditConnection) {
+					profile.id = params.oldProfileId;
+				}
 
 				profile.serverName = trim(profile.serverName);
 
@@ -410,32 +414,32 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		return this._dialogDeferredPromise.promise;
 	}
 
-	public showDialog(
+	public async showDialog(
 		connectionManagementService: IConnectionManagementService,
 		params?: INewConnectionParams,
 		model?: IConnectionProfile,
 		connectionResult?: IConnectionResult,
-		connectionOptions?: IConnectionCompletionOptions): Promise<void> {
+		connectionOptions?: IConnectionCompletionOptions,
+	): Promise<void> {
 
 		this._connectionManagementService = connectionManagementService;
 
 		this._options = connectionOptions;
 		this._params = params;
 		this._inputModel = model;
-		return new Promise<void>((resolve, reject) => {
-			this.updateModelServerCapabilities(model);
-			// If connecting from a query editor set "save connection" to false
-			if (params && (params.input && params.connectionType === ConnectionType.editor ||
-				params.connectionType === ConnectionType.temporary)) {
-				this._model.saveProfile = false;
-			}
 
-			resolve(this.showDialogWithModel().then(() => {
-				if (connectionResult && connectionResult.errorMessage) {
-					this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, connectionResult.callStack);
-				}
-			}));
-		});
+		this.updateModelServerCapabilities(model);
+
+		// If connecting from a query editor set "save connection" to false
+		if (params && (params.input && params.connectionType === ConnectionType.editor ||
+			params.connectionType === ConnectionType.temporary)) {
+			this._model.saveProfile = false;
+		}
+		await this.showDialogWithModel();
+
+		if (connectionResult && connectionResult.errorMessage) {
+			this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, connectionResult.callStack);
+		}
 	}
 
 	private async doShowDialog(params: INewConnectionParams): Promise<void> {

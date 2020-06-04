@@ -162,3 +162,26 @@
 .hc-black .slick-header-menu {
 	color: #FFFFFF;
 }
+
+.slick-icon-cell-content,
+.slick-button-cell-content {
+	background-position: 7px center !important;
+	background-repeat: no-repeat;
+	background-size: 16px !important;
+	width: 100%;
+	height: 100%;
+	padding-left: 30px;
+	color: inherit !important;
+	display: flex;
+	align-items: center;
+}
+
+.slick-button-cell {
+	padding: 5px !important;
+}
+
+.slick-button-cell-content {
+	cursor: pointer;
+	border-width: 0px;
+	padding: 0px;
+}

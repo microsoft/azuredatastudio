@@ -39,10 +39,7 @@ export class LocalModelsComponent extends ModelViewBase implements IDataComponen
 		}).component();
 		this._localBrowse = modelBuilder.button().withProperties({
 			label: constants.browseModels,
-			width: this.browseButtonMaxLength,
-			CSSStyles: {
-				'text-align': 'end'
-			}
+			width: this.browseButtonMaxLength
 		}).component();
 		this._localBrowse.onDidClick(async () => {
 
@@ -67,7 +64,11 @@ export class LocalModelsComponent extends ModelViewBase implements IDataComponen
 				justifyContent: 'space-between',
 				width: this.componentMaxLength
 			}).withItems([
-				this._localPath, this._localBrowse]
+				this._localPath, this._localBrowse], {
+				CSSStyles: {
+					'padding-right': '5px'
+				}
+			}
 			).component();
 
 		this._form = modelBuilder.formContainer().withFormItems([{
@@ -80,9 +81,9 @@ export class LocalModelsComponent extends ModelViewBase implements IDataComponen
 	public addComponents(formBuilder: azdata.FormBuilder) {
 		if (this._flex) {
 			formBuilder.addFormItem({
-				title: '',
+				title: constants.modelLocalSourceTitle,
 				component: this._flex
-			});
+			}, { info: constants.modelLocalSourceTooltip });
 		}
 	}
 

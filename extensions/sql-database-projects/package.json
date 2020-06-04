@@ -7,7 +7,7 @@
   "preview": true,
   "engines": {
     "vscode": "^1.30.1",
-    "azdata": ">=1.12.0"
+    "azdata": ">=1.18.0"
   },
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
   "icon": "images/extension.png",
@@ -15,6 +15,7 @@
   "activationEvents": [
     "onCommand:sqlDatabaseProjects.new",
     "onCommand:sqlDatabaseProjects.open",
+    "onCommand:sqlDatabaseProjects.importDatabase",
     "workspaceContains:**/*.sqlproj"
   ],
   "main": "./out/extension",
@@ -82,6 +83,36 @@
         "command": "sqlDatabaseProjects.newFolder",
         "title": "%sqlDatabaseProjects.newFolder%",
         "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.build",
+        "title": "%sqlDatabaseProjects.build%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.deploy",
+        "title": "%sqlDatabaseProjects.deploy%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.import",
+        "title": "%sqlDatabaseProjects.import%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.properties",
+        "title": "%sqlDatabaseProjects.properties%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.schemaCompare",
+        "title": "%sqlDatabaseProjects.schemaCompare%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.importDatabase",
+        "title": "%sqlDatabaseProjects.importDatabase%",
+        "category": "%sqlDatabaseProjects.displayName%"
       }
     ],
     "menus": {
@@ -119,36 +150,98 @@
         {
           "command": "sqlDatabaseProjects.newFolder",
           "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.build",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.deploy",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.import",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.properties",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.schemaCompare",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.importDatabase"
         }
       ],
       "view/item/context": [
         {
-          "command": "sqlDatabaseProjects.close",
-          "when": "view == sqlDatabaseProjectsView"
+          "command": "sqlDatabaseProjects.build",
+          "when": "view == sqlDatabaseProjectsView",
+          "group": "1_dbProjectsFirst@1"
         },
         {
-          "command": "sqlDatabaseProjects.newScript",
-          "when": "view == sqlDatabaseProjectsView"
+          "command": "sqlDatabaseProjects.deploy",
+          "when": "view == sqlDatabaseProjectsView",
+          "group": "1_dbProjectsFirst@2"
         },
         {
-          "command": "sqlDatabaseProjects.newTable",
-          "when": "view == sqlDatabaseProjectsView"
+          "command": "sqlDatabaseProjects.schemaCompare",
+          "when": "view == sqlDatabaseProjectsView",
+          "group": "1_dbProjectsFirst@3"
         },
         {
-          "command": "sqlDatabaseProjects.newView",
-          "when": "view == sqlDatabaseProjectsView"
-        },
-        {
-          "command": "sqlDatabaseProjects.newStoredProcedure",
-          "when": "view == sqlDatabaseProjectsView"
+          "command": "sqlDatabaseProjects.import",
+          "when": "view == sqlDatabaseProjectsView",
+          "group": "1_dbProjectsFirst@4"
         },
         {
           "command": "sqlDatabaseProjects.newItem",
-          "when": "view == sqlDatabaseProjectsView"
+          "when": "view == sqlDatabaseProjectsView",
+          "group": "2_dbProjects_newMain@1"
         },
         {
           "command": "sqlDatabaseProjects.newFolder",
-          "when": "view == sqlDatabaseProjectsView"
+          "when": "view == sqlDatabaseProjectsView",
+          "group": "2_dbProjects_newMain@2"
+        },
+        {
+          "command": "sqlDatabaseProjects.newTable",
+          "when": "view == sqlDatabaseProjectsView",
+          "group": "3_dbProjects_newItem@1"
+        },
+        {
+          "command": "sqlDatabaseProjects.newView",
+          "when": "view == sqlDatabaseProjectsView",
+          "group": "3_dbProjects_newItem@2"
+        },
+        {
+          "command": "sqlDatabaseProjects.newStoredProcedure",
+          "when": "view == sqlDatabaseProjectsView",
+          "group": "3_dbProjects_newItem@3"
+        },
+        {
+          "command": "sqlDatabaseProjects.newScript",
+          "when": "view == sqlDatabaseProjectsView",
+          "group": "3_dbProjects_newItem@9"
+        },
+        {
+          "command": "sqlDatabaseProjects.close",
+          "when": "view == sqlDatabaseProjectsView",
+          "group": "9_dbProjectsLast"
+        },
+        {
+          "command": "sqlDatabaseProjects.properties",
+          "when": "view == sqlDatabaseProjectsView",
+          "group": "9_dbProjectsLast"
+        }
+      ],
+      "objectExplorer/item/context": [
+        {
+          "command": "sqlDatabaseProjects.importDatabase",
+          "when": "connectionProvider == MSSQL && nodeType && nodeType == Database && mssql:engineedition != 11",
+          "group": "export"
         }
       ]
     },
@@ -163,6 +256,7 @@
     }
   },
   "dependencies": {
+    "promisify-child-process": "^3.1.1",
     "vscode-languageclient": "^5.3.0-next.1",
     "vscode-nls": "^3.2.1",
     "xmldom": "^0.3.0"

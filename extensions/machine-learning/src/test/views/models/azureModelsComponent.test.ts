@@ -71,21 +71,21 @@ describe('Azure Models Component', () => {
 				name: 'model'
 			}
 		];
-		parent.on(ListAccountsEventName, () => {
-			parent.sendCallbackRequest(ViewBase.getCallbackEventName(ListAccountsEventName), { data: accounts });
+		parent.on(ListAccountsEventName, (args) => {
+			parent.sendCallbackRequest(ViewBase.getCallbackEventName(ListAccountsEventName), { inputArgs: args, data: accounts });
 		});
-		parent.on(ListSubscriptionsEventName, () => {
+		parent.on(ListSubscriptionsEventName, (args) => {
 
-			parent.sendCallbackRequest(ViewBase.getCallbackEventName(ListSubscriptionsEventName), { data: subscriptions });
+			parent.sendCallbackRequest(ViewBase.getCallbackEventName(ListSubscriptionsEventName), { inputArgs: args, data: subscriptions });
 		});
-		parent.on(ListGroupsEventName, () => {
-			parent.sendCallbackRequest(ViewBase.getCallbackEventName(ListGroupsEventName), { data: groups });
+		parent.on(ListGroupsEventName, (args) => {
+			parent.sendCallbackRequest(ViewBase.getCallbackEventName(ListGroupsEventName), { inputArgs: args, data: groups });
 		});
-		parent.on(ListWorkspacesEventName, () => {
-			parent.sendCallbackRequest(ViewBase.getCallbackEventName(ListWorkspacesEventName), { data: workspaces });
+		parent.on(ListWorkspacesEventName, (args) => {
+			parent.sendCallbackRequest(ViewBase.getCallbackEventName(ListWorkspacesEventName), { inputArgs: args, data: workspaces });
 		});
-		parent.on(ListAzureModelsEventName, () => {
-			parent.sendCallbackRequest(ViewBase.getCallbackEventName(ListAzureModelsEventName), { data: models });
+		parent.on(ListAzureModelsEventName, (args) => {
+			parent.sendCallbackRequest(ViewBase.getCallbackEventName(ListAzureModelsEventName), { inputArgs: args, data: models });
 		});
 		await view.refresh();
 		testContext.onClick.fire(true);

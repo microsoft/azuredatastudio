@@ -7,6 +7,7 @@ import 'vs/css!./media/gridPanel';
 
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import QueryRunner, { QueryGridDataProvider } from 'sql/workbench/services/query/common/queryRunner';
+import { ResultSetSummary, IColumn } from 'sql/workbench/services/query/common/query';
 import { VirtualizedCollection, AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { ScrollableSplitView, IView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
@@ -20,8 +21,6 @@ import { hyperLinkFormatter, textFormatter } from 'sql/base/browser/ui/table/for
 import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugin';
 import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
 import { ITableStyles, ITableMouseEvent } from 'sql/base/browser/ui/table/interfaces';
-
-import * as azdata from 'azdata';
 
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -123,7 +122,7 @@ export class GridPanel extends Disposable {
 			}
 			this.reset();
 		}));
-		this.addResultSet(this.runner.batchSets.reduce<azdata.ResultSetSummary[]>((p, e) => {
+		this.addResultSet(this.runner.batchSets.reduce<ResultSetSummary[]>((p, e) => {
 			if (this.configurationService.getValue<boolean>('sql.results.streaming')) {
 				p = p.concat(e.resultSetSummaries);
 			} else {
@@ -141,8 +140,8 @@ export class GridPanel extends Disposable {
 		this.splitView.setScrollPosition(this.state.scrollPosition);
 	}
 
-	private onResultSet(resultSet: azdata.ResultSetSummary | azdata.ResultSetSummary[]) {
-		let resultsToAdd: azdata.ResultSetSummary[];
+	private onResultSet(resultSet: ResultSetSummary | ResultSetSummary[]) {
+		let resultsToAdd: ResultSetSummary[];
 		if (!Array.isArray(resultSet)) {
 			resultsToAdd = [resultSet];
 		} else {
@@ -170,8 +169,8 @@ export class GridPanel extends Disposable {
 		}
 	}
 
-	private updateResultSet(resultSet: azdata.ResultSetSummary | azdata.ResultSetSummary[]) {
-		let resultsToUpdate: azdata.ResultSetSummary[];
+	private updateResultSet(resultSet: ResultSetSummary | ResultSetSummary[]) {
+		let resultsToUpdate: ResultSetSummary[];
 		if (!Array.isArray(resultSet)) {
 			resultsToUpdate = [resultSet];
 		} else {
@@ -203,7 +202,7 @@ export class GridPanel extends Disposable {
 		}
 	}
 
-	private addResultSet(resultSet: azdata.ResultSetSummary[]) {
+	private addResultSet(resultSet: ResultSetSummary[]) {
 		let tables: GridTable<any>[] = [];
 
 		for (let set of resultSet) {
@@ -316,7 +315,7 @@ export class GridPanel extends Disposable {
 
 export interface IDataSet {
 	rowCount: number;
-	columnInfo: azdata.IDbColumn[];
+	columnInfo: IColumn[];
 }
 
 export abstract class GridTableBase<T> extends Disposable implements IView {
@@ -363,7 +362,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 
 	constructor(
 		state: GridTableState,
-		protected _resultSet: azdata.ResultSetSummary,
+		protected _resultSet: ResultSetSummary,
 		protected contextMenuService: IContextMenuService,
 		protected instantiationService: IInstantiationService,
 		protected editorService: IEditorService,
@@ -394,7 +393,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 
 	abstract get gridDataProvider(): IGridDataProvider;
 
-	public get resultSet(): azdata.ResultSetSummary {
+	public get resultSet(): ResultSetSummary {
 		return this._resultSet;
 	}
 
@@ -587,7 +586,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		// handle if a showplan link was clicked
 		if (column && (column.isXml || column.isJson)) {
 			this.gridDataProvider.getRowData(event.cell.row, 1).then(async d => {
-				let value = d.resultSubset.rows[0][event.cell.cell - 1];
+				let value = d.rows[0][event.cell.cell - 1];
 				let content = value.displayValue;
 
 				const input = this.untitledEditorService.create({ mode: column.isXml ? 'xml' : 'json', initialValue: content });
@@ -598,7 +597,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		}
 	}
 
-	public updateResult(resultSet: azdata.ResultSetSummary) {
+	public updateResult(resultSet: ResultSetSummary) {
 		this._resultSet = resultSet;
 		if (this.table && this.visible) {
 			this.dataProvider.length = resultSet.rowCount;
@@ -655,10 +654,10 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 
 	private loadData(offset: number, count: number): Thenable<T[]> {
 		return this.gridDataProvider.getRowData(offset, count).then(response => {
-			if (!response.resultSubset) {
+			if (!response) {
 				return [];
 			}
-			return response.resultSubset.rows.map(r => {
+			return response.rows.map(r => {
 				let dataWithSchema = {};
 				// skip the first column since its a number column
 				for (let i = 1; i < this.columns.length; i++) {
@@ -756,7 +755,7 @@ class GridTable<T> extends GridTableBase<T> {
 	private _gridDataProvider: IGridDataProvider;
 	constructor(
 		private _runner: QueryRunner,
-		resultSet: azdata.ResultSetSummary,
+		resultSet: ResultSetSummary,
 		state: GridTableState,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IInstantiationService instantiationService: IInstantiationService,

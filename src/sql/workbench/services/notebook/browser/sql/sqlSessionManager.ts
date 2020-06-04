@@ -3,9 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { nb, QueryExecuteSubsetResult, IDbColumn, BatchSummary, IResultMessage, ResultSetSummary } from 'azdata';
+import { nb, IResultMessage } from 'azdata';
 import { localize } from 'vs/nls';
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
+import { BatchSummary, ResultSetSummary, IColumn, ResultSetSubset } from 'sql/workbench/services/query/common/query';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import Severity from 'vs/base/common/severity';
@@ -343,7 +344,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		this._register(queryRunner.onMessage(messages => {
 			// TODO handle showing a messages output (should be updated with all messages, only changing 1 output in total)
 			for (const message of messages) {
-				if (this._future && isUndefinedOrNull(message.selection)) {
+				if (this._future && isUndefinedOrNull(message.range)) {
 					this._future.handleMessage(message);
 				}
 			}
@@ -383,7 +384,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	private doneDeferred = new Deferred<nb.IShellMessage>();
 	private configuredMaxRows: number = MAX_ROWS;
 	private _outputAddedPromises: Promise<void>[] = [];
-	private _querySubsetResultMap: Map<number, QueryExecuteSubsetResult> = new Map<number, QueryExecuteSubsetResult>();
+	private _querySubsetResultMap: Map<number, ResultSetSubset> = new Map<number, ResultSetSubset>();
 	private _errorOccurred: boolean = false;
 	private _stopOnError: boolean = true;
 	constructor(
@@ -508,11 +509,11 @@ export class SQLFuture extends Disposable implements FutureInternal {
 				this._querySubsetResultMap.set(resultSet.id, result);
 				deferred.resolve();
 			}, (err) => {
-				this._querySubsetResultMap.set(resultSet.id, { message: '', resultSubset: { rowCount: 0, rows: [] } });
+				this._querySubsetResultMap.set(resultSet.id, { rowCount: 0, rows: [] });
 				deferred.reject(err);
 			});
 		} else {
-			this._querySubsetResultMap.set(resultSet.id, { message: '', resultSubset: { rowCount: 0, rows: [] } });
+			this._querySubsetResultMap.set(resultSet.id, { rowCount: 0, rows: [] });
 			deferred.resolve();
 		}
 		return deferred;
@@ -525,7 +526,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		}
 	}
 
-	private sendIOPubMessage(subsetResult: QueryExecuteSubsetResult, resultSet: ResultSetSummary): void {
+	private sendIOPubMessage(subsetResult: ResultSetSubset, resultSet: ResultSetSummary): void {
 		let msg: nb.IIOPubMessage = {
 			channel: 'iopub',
 			type: 'iopub',
@@ -560,7 +561,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		// no-op
 	}
 
-	private convertToDataResource(columns: IDbColumn[], subsetResult: QueryExecuteSubsetResult): IDataResource {
+	private convertToDataResource(columns: IColumn[], subsetResult: ResultSetSubset): IDataResource {
 		let columnsResources: IDataResourceSchema[] = [];
 		columns.forEach(column => {
 			columnsResources.push({ name: escape(column.columnName) });
@@ -569,7 +570,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		columnsFields.fields = columnsResources;
 		return {
 			schema: columnsFields,
-			data: subsetResult.resultSubset.rows.map(row => {
+			data: subsetResult.rows.map(row => {
 				let rowObject: { [key: string]: any; } = {};
 				row.forEach((val, index) => {
 					rowObject[index] = val.displayValue;
@@ -579,9 +580,9 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		};
 	}
 
-	private convertToHtmlTable(columns: IDbColumn[], d: QueryExecuteSubsetResult): string[] {
+	private convertToHtmlTable(columns: IColumn[], d: ResultSetSubset): string[] {
 		// Adding 3 for <table>, column title rows, </table>
-		let htmlStringArr: string[] = new Array(d.resultSubset.rowCount + 3);
+		let htmlStringArr: string[] = new Array(d.rowCount + 3);
 		htmlStringArr[0] = '<table>';
 		if (columns.length > 0) {
 			let columnHeaders = '<tr>';
@@ -592,7 +593,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			htmlStringArr[1] = columnHeaders;
 		}
 		let i = 2;
-		for (const row of d.resultSubset.rows) {
+		for (const row of d.rows) {
 			let rowData = '<tr>';
 			for (let columnIndex = 0; columnIndex < columns.length; columnIndex++) {
 				rowData += `<td>${escape(row[columnIndex].displayValue)}</td>`;

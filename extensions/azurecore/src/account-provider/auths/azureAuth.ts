@@ -16,7 +16,8 @@ import {
 	AzureAccount,
 	Resource,
 	AzureAuthType,
-	Subscription
+	Subscription,
+	Deferred
 } from '../interfaces';
 
 import { SimpleTokenCache } from '../simpleTokenCache';
@@ -89,7 +90,7 @@ export interface TokenClaims { // https://docs.microsoft.com/en-us/azure/active-
 	ver: string;
 }
 
-export type TokenRefreshResponse = { accessToken: AccessToken, refreshToken: RefreshToken, tokenClaims: TokenClaims };
+export type TokenRefreshResponse = { accessToken: AccessToken, refreshToken: RefreshToken, tokenClaims: TokenClaims, expiresOn: string };
 
 export abstract class AzureAuth implements vscode.Disposable {
 	protected readonly memdb = new MemoryDatabase();
@@ -135,6 +136,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 	public abstract async login(): Promise<AzureAccount | azdata.PromptFailedResult>;
 
 	public abstract async autoOAuthCancelled(): Promise<void>;
+
+	public abstract async promptForConsent(resourceId: string, tenant: string): Promise<{ tokenRefreshResponse: TokenRefreshResponse, authCompleteDeferred: Deferred<void> } | undefined>;
 
 	public dispose() { }
 
@@ -225,7 +228,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 				} catch (ex) {
 					console.log(`Could not refresh access token for ${JSON.stringify(tenant)} - silently removing the tenant from the user's account.`);
 					azureAccount.properties.tenants = azureAccount.properties.tenants.filter(t => t.id !== tenant.id);
-					console.log(ex, ex?.data, ex?.response);
 					continue;
 				}
 
@@ -272,28 +274,40 @@ export abstract class AzureAuth implements vscode.Disposable {
 	}
 
 	protected async makePostRequest(uri: string, postData: { [key: string]: string }, validateStatus = false) {
-		const config: AxiosRequestConfig = {
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded'
+		try {
+			const config: AxiosRequestConfig = {
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded'
+				}
+			};
+
+			if (validateStatus) {
+				config.validateStatus = () => true;
 			}
-		};
 
-		if (validateStatus) {
-			config.validateStatus = () => true;
+			return await axios.post(uri, qs.stringify(postData), config);
+		} catch (ex) {
+			console.log('Unexpected error making Azure auth request', 'azureCore.postRequest', JSON.stringify(ex?.response?.data, undefined, 2));
+			throw ex;
 		}
-
-		return axios.post(uri, qs.stringify(postData), config);
 	}
 
 	protected async makeGetRequest(token: string, uri: string): Promise<AxiosResponse<any>> {
-		const config = {
-			headers: {
-				Authorization: `Bearer ${token}`,
-				'Content-Type': 'application/json',
-			},
-		};
+		try {
+			const config = {
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'Content-Type': 'application/json',
+				},
+			};
 
-		return axios.get(uri, config);
+			return await axios.get(uri, config);
+		} catch (ex) {
+			// Intercept and print error
+			console.log('Unexpected error making Azure auth request', 'azureCore.getRequest', JSON.stringify(ex?.response?.data, undefined, 2));
+			// rethrow error
+			throw ex;
+		}
 	}
 
 	protected async getTenants(token: AccessToken): Promise<Tenant[]> {
@@ -325,7 +339,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return tenants;
 		} catch (ex) {
 			console.log(ex);
-			throw new Error('Error retreiving tenant information');
+			throw new Error('Error retrieving tenant information');
 		}
 	}
 
@@ -357,38 +371,77 @@ export abstract class AzureAuth implements vscode.Disposable {
 				allSubs.push(...subscriptions);
 			} catch (ex) {
 				console.log(ex);
-				throw new Error('Error retreiving subscription information');
+				throw new Error('Error retrieving subscription information');
 			}
 		}
 		return allSubs;
 	}
 
-	protected async getToken(postData: { [key: string]: string }, tenant = this.commonTenant, resourceId: string = ''): Promise<TokenRefreshResponse | undefined> {
+	protected async getToken(postData: { [key: string]: string }, tenant = this.commonTenant, resourceId: string = '', resourceEndpoint: string = ''): Promise<TokenRefreshResponse | undefined> {
 		try {
-			const tokenUrl = `${this.loginEndpointUrl}${tenant}/oauth2/token`;
+			let refreshResponse: TokenRefreshResponse;
 
-			const tokenResponse = await this.makePostRequest(tokenUrl, postData);
-			const tokenClaims = this.getTokenClaims(tokenResponse.data.access_token);
+			try {
+				const tokenUrl = `${this.loginEndpointUrl}${tenant}/oauth2/token`;
+				const tokenResponse = await this.makePostRequest(tokenUrl, postData);
+				const tokenClaims = this.getTokenClaims(tokenResponse.data.access_token);
 
-			const accessToken: AccessToken = {
-				token: tokenResponse.data.access_token,
-				key: tokenClaims.email || tokenClaims.unique_name || tokenClaims.name,
-			};
+				const accessToken: AccessToken = {
+					token: tokenResponse.data.access_token,
+					key: tokenClaims.email || tokenClaims.unique_name || tokenClaims.name,
+				};
 
-			this.memdb.set(this.createMemdbString(accessToken.key, tenant, resourceId), tokenResponse.data.expires_on);
+				const refreshToken: RefreshToken = {
+					token: tokenResponse.data.refresh_token,
+					key: accessToken.key
+				};
+				const expiresOn = tokenResponse.data.expires_on;
 
-			const refreshToken: RefreshToken = {
-				token: tokenResponse.data.refresh_token,
-				key: accessToken.key
-			};
+				refreshResponse = { accessToken, refreshToken, tokenClaims, expiresOn };
+			} catch (ex) {
+				if (ex?.response?.data?.error === 'interaction_required') {
+					const shouldOpenLink = await this.openConsentDialog(tenant, resourceId);
+					if (shouldOpenLink === true) {
+						const { tokenRefreshResponse, authCompleteDeferred } = await this.promptForConsent(resourceEndpoint, tenant);
+						refreshResponse = tokenRefreshResponse;
+						authCompleteDeferred.resolve();
+					} else {
+						vscode.window.showInformationMessage(localize('azure.noConsentToReauth', "The authentication failed since Azure Data Studio was unable to open re-authentication page."));
+					}
+				} else {
+					return undefined;
+				}
+			}
 
-			return { accessToken, refreshToken, tokenClaims };
-
+			this.memdb.set(this.createMemdbString(refreshResponse.accessToken.key, tenant, resourceId), refreshResponse.expiresOn);
+			return refreshResponse;
 		} catch (err) {
 			const msg = localize('azure.noToken', "Retrieving the Azure token failed. Please sign in again.");
 			vscode.window.showErrorMessage(msg);
 			throw new Error(err);
 		}
+	}
+
+	private async openConsentDialog(tenantId: string, resourceId: string): Promise<boolean> {
+		interface ConsentMessageItem extends vscode.MessageItem {
+			booleanResult: boolean;
+		}
+
+		const openItem: ConsentMessageItem = {
+			title: localize('open', "Open"),
+			booleanResult: true
+		};
+
+		const closeItem: ConsentMessageItem = {
+			title: localize('cancel', "Cancel"),
+			isCloseAffordance: true,
+			booleanResult: false
+		};
+
+		const messageBody = localize('azurecore.consentDialog.body', "Your tenant {0} requires you to re-authenticate again to access {1} resources. Press Open to start the authentication process.", tenantId, resourceId);
+		const result = await vscode.window.showInformationMessage(messageBody, { modal: true }, openItem, closeItem);
+
+		return result.booleanResult;
 	}
 
 	protected getTokenClaims(accessToken: string): TokenClaims | undefined {
@@ -412,7 +465,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			postData.resource = resource.endpoint;
 		}
 
-		const getTokenResponse = await this.getToken(postData, tenant?.id, resource?.id);
+		const getTokenResponse = await this.getToken(postData, tenant?.id, resource?.id, resource?.endpoint);
 
 		const accessToken = getTokenResponse?.accessToken;
 		const refreshToken = getTokenResponse?.refreshToken;

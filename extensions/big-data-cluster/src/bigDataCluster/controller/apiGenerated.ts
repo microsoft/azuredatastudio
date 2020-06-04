@@ -859,21 +859,11 @@ export class BdcRouterApi {
      * @param connection
      * @param {*} [options] Override http request options.
      */
-    public getCluster (xRequestId: string, connection: string, options: any = {}) : Promise<{ response: http.IncomingMessage; body: any;  }> {
+    public getCluster (xRequestId?: string, connection?: string, options: any = {}) : Promise<{ response: http.IncomingMessage; body: any;  }> {
         const localVarPath = this.basePath + '/api/v1/bdc/';
         let localVarQueryParameters: any = {};
         let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
         let localVarFormParams: any = {};
-
-        // verify required parameter 'xRequestId' is not null or undefined
-        if (xRequestId === null || xRequestId === undefined) {
-            throw new Error('Required parameter xRequestId was null or undefined when calling getCluster.');
-        }
-
-        // verify required parameter 'connection' is not null or undefined
-        if (connection === null || connection === undefined) {
-            throw new Error('Required parameter connection was null or undefined when calling getCluster.');
-        }
 
         localVarHeaderParams['X-Request-Id'] = ObjectSerializer.serialize(xRequestId, "string");
         localVarHeaderParams['Connection'] = ObjectSerializer.serialize(connection, "string");

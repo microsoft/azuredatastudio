@@ -12,7 +12,7 @@ import { TestNotificationService } from 'vs/platform/notification/test/common/te
 import { URI } from 'vs/base/common/uri';
 
 import { ClientSession } from 'sql/workbench/services/notebook/browser/models/clientSession';
-import { SessionManager, EmptySession } from 'sql/workbench/services/notebook/browser/sessionManager';
+import { SessionManager, EmptySession } from 'sql/workbench/contrib/notebook/test/emptySessionClasses';
 import { NotebookManagerStub, ServerManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 

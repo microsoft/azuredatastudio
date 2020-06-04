@@ -6,6 +6,10 @@
 	margin-top: 5px;
 }
 
+.notebookEditor .taskbarSeparator {
+	margin: 0 16px 0 -8px;
+}
+
 .notebookEditor .editor-toolbar {
 	border-bottom-style: solid;
 	border-width: 0px 0px 1px 0px;
@@ -44,6 +48,52 @@
 	font-size: 13px;
 	height: 21px;
 }
+.notebookEditor .in-preview .actions-container .action-item .notebook-button {
+	display: flex;
+	background-size: 16px;
+}
+
+.notebookEditor
+	.in-preview
+	.actions-container
+	.action-item
+	.notebook-button.masked-pseudo {
+	padding-left: 30px;
+}
+.notebookEditor
+	.in-preview
+	.actions-container
+	.action-item
+	.notebook-button.masked-icon {
+	margin-right: 0;
+	padding-left: 18px;
+	width: 16px;
+}
+.notebookEditor .in-preview .actions-container .action-item:last-child {
+	margin-right: 8px;
+}
+.notebookEditor
+	.in-preview
+	.actions-container
+	.action-item:last-child
+	.notebook-button {
+	margin-right: 0;
+}
+.notebookEditor
+	.in-preview
+	.actions-container
+	.action-item:last-child
+	.notebook-button.fixed-width {
+	margin-left: 8px;
+	margin-right: -28px;
+}
+.notebookEditor
+	.in-preview
+	.actions-container
+	.action-item
+	.notebook-button.fixed-width {
+	width: 34px;
+}
 
 .notebookEditor .labelOnLeftContainer {
 	min-width: 100px;
@@ -54,67 +104,88 @@
 	vertical-align: bottom;
 }
 
-.notebookEditor .notebook-button.icon-add {
+.notebookEditor .in-preview .labelOnLeftContainer {
+	margin-right: 14px;
+}
+
+/* non-preview */
+.notebookEditor :not(.in-preview) .notebook-button.icon-add {
 	background-image: url("./media/light/add.svg");
 }
 
-.vs-dark .notebookEditor .notebook-button.icon-add,
-.hc-black .notebookEditor .notebook-button.icon-add {
+.vs-dark .notebookEditor :not(.in-preview) .notebook-button.icon-add,
+.hc-black .notebookEditor :not(.in-preview) .notebook-button.icon-add {
 	background-image: url("./media/dark/add_inverse.svg");
 }
 
-.notebookEditor .notebook-button.icon-run-cells {
+.notebookEditor :not(.in-preview) .notebook-button.icon-run-cells {
 	background-image: url("./media/light/run_cells.svg");
 }
 
-.vs-dark .notebookEditor .notebook-button.icon-run-cells,
-.hc-black .notebookEditor .notebook-button.icon-run-cells {
+.vs-dark .notebookEditor :not(.in-preview) .notebook-button.icon-run-cells,
+.hc-black .notebookEditor :not(.in-preview) .notebook-button.icon-run-cells {
 	background-image: url("./media/dark/run_cells_inverse.svg");
 }
 
-.notebookEditor .notebook-button.icon-trusted {
+.notebookEditor :not(.in-preview) .notebook-button.icon-trusted {
 	background-image: url("./media/light/trusted.svg");
 }
 
-.vs-dark .notebookEditor .notebook-button.icon-trusted,
-.hc-black .notebookEditor .notebook-button.icon-trusted {
+.vs-dark .notebookEditor :not(.in-preview) .notebook-button.icon-trusted,
+.hc-black .notebookEditor :not(.in-preview) .notebook-button.icon-trusted {
 	background-image: url("./media/dark/trusted_inverse.svg");
 }
-
-.notebookEditor .notebook-button.icon-notTrusted {
+.notebookEditor :not(.in-preview) .notebook-button.icon-notTrusted {
 	background-image: url("./media/light/nottrusted.svg");
 }
 
-.vs-dark .notebookEditor .notebook-button.icon-notTrusted,
-.hc-black .notebookEditor .notebook-button.icon-notTrusted {
+.vs-dark .notebookEditor :not(.in-preview) .notebook-button.icon-notTrusted,
+.hc-black .notebookEditor :not(.in-preview) .notebook-button.icon-notTrusted {
 	background-image: url("./media/dark/nottrusted_inverse.svg");
 }
 
-.notebookEditor .notebook-button.icon-show-cells {
+.notebookEditor :not(.in-preview) .notebook-button.icon-show-cells {
 	background-image: url("./media/light/show_code.svg");
 }
 
-.vs-dark .notebookEditor .notebook-button.icon-show-cells,
-.hc-black .notebookEditor .notebook-button.icon-show-cells {
+.vs-dark .notebookEditor :not(.in-preview) .notebook-button.icon-show-cells,
+.hc-black .notebookEditor :not(.in-preview) .notebook-button.icon-show-cells {
 	background-image: url("./media/dark/show_code_inverse.svg");
 }
 
-.notebookEditor .notebook-button.icon-hide-cells {
+.notebookEditor :not(.in-preview) .notebook-button.icon-hide-cells {
 	background-image: url("./media/light/hide_code.svg");
 }
 
-.vs-dark .notebookEditor .notebook-button.icon-hide-cells,
-.hc-black .notebookEditor .notebook-button.icon-hide-cells {
+.vs-dark .notebookEditor :not(.in-preview) .notebook-button.icon-hide-cells,
+.hc-black .notebookEditor :not(.in-preview) .notebook-button.icon-hide-cells {
 	background-image: url("./media/dark/hide_code_inverse.svg");
 }
 
-.notebookEditor .notebook-button.icon-clear-results {
+.notebookEditor :not(.in-preview) .notebook-button.icon-clear-results {
 	background-image: url("./media/light/clear_results.svg");
 }
 
-.vs-dark .notebookEditor .notebook-button.icon-clear-results,
-.hc-black .notebookEditor .notebook-button.icon-clear-results {
+.vs-dark .notebookEditor :not(.in-preview) .notebook-button.icon-clear-results,
+.hc-black
+	.notebookEditor
+	:not(.in-preview)
+	.notebook-button.icon-clear-results {
 	background-image: url("./media/dark/clear_results_inverse.svg");
+}
+/* non-preview */
+
+.notebookEditor .in-preview .carbon-taskbar.monaco-toolbar .monaco-select-box {
+	font-size: inherit;
+	border-radius: 0;
+	padding: 3px 22px 3px 6px;
+}
+.notebookEditor .in-preview .carbon-taskbar .action-item {
+	margin-right: 0;
+}
+.notebookEditor .in-preview .labelOnLeftContainer {
+	display: flex;
+	align-items: center;
 }
 
 .moreActions .action-label.codicon.toggle-more {
@@ -123,7 +194,7 @@
 }
 
 .moreActions.actionhidden {
-	visibility: hidden
+	visibility: hidden;
 }
 .moreActions .monaco-action-bar {
 	margin-left: -12px;
@@ -144,12 +215,13 @@
 }
 
 .monaco-workbench .notebook-action.new-notebook {
-	background: url('./media/light/new_notebook.svg') center center no-repeat;
+	background: url("./media/light/new_notebook.svg") center center no-repeat;
 }
 
 .vs-dark .monaco-workbench .notebook-action.new-notebook,
 .hc-black .monaco-workbench .notebook-action.new-notebook {
-	background: url('./media/dark/new_notebook_inverse.svg') center center no-repeat;
+	background: url("./media/dark/new_notebook_inverse.svg") center center
+		no-repeat;
 }
 
 .notebookEditor .book-nav {
@@ -209,7 +281,7 @@
 }
 
 .notebookEditor .hoverButton:active {
-	transform:scale(1.05);
+	transform: scale(1.05);
 }
 
 .notebookEditor .hoverButton .addCodeIcon,
