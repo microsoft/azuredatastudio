@@ -35,12 +35,15 @@ export interface ILanguageMagic {
 }
 
 /**
-		 * The valid navigation providers.
-		 */
+*  Valid navigation providers.
+*/
 export enum NavigationProviders {
 	NotebooksNavigator = 'BookNavigator.Notebooks',
 	ProvidedBooksNavigator = 'BookNavigator.ProvidedBooks'
 }
+
+export const unsavedBooksContextKey = 'unsavedBooks';
+
 export interface INotebookService {
 	_serviceBrand: undefined;
 

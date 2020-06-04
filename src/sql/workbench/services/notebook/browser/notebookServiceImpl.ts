@@ -10,7 +10,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 
 import {
 	INotebookService, INotebookManager, INotebookProvider,
-	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor, SQL_NOTEBOOK_PROVIDER, INavigationProvider, ILanguageMagic, NavigationProviders
+	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor, SQL_NOTEBOOK_PROVIDER, INavigationProvider, ILanguageMagic, NavigationProviders, unsavedBooksContextKey
 } from 'sql/workbench/services/notebook/browser/notebookService';
 import { RenderMimeRegistry } from 'sql/workbench/services/notebook/browser/outputs/registry';
 import { standardRendererFactories } from 'sql/workbench/services/notebook/browser/outputs/factories';
@@ -224,11 +224,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	getNavigationProvider(): INavigationProvider {
 		let provider;
 		if (this._navigationProviders.size > 0) {
-			let unsavedBooks = this.contextKeyService.getContextKeyValue('unsavedBooks');
-			let providerName = NavigationProviders.NotebooksNavigator;
-			if (unsavedBooks) {
-				providerName = NavigationProviders.ProvidedBooksNavigator;
-			}
+			const providerName = this.contextKeyService.getContextKeyValue(unsavedBooksContextKey) ? NavigationProviders.ProvidedBooksNavigator : NavigationProviders.NotebooksNavigator;
 			provider = this._navigationProviders.get(providerName);
 		}
 		return provider;

@@ -37,14 +37,13 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private _initializeDeferred: Deferred<void> = new Deferred<void>();
 	private _openAsUntitled: boolean;
 	private _bookTrustManager: IBookTrustManager;
-	providerId: string;
 
 	private _bookViewer: vscode.TreeView<BookTreeItem>;
 	public viewId: string;
 	public books: BookModel[];
 	public currentBook: BookModel;
 
-	constructor(private _apiWrapper: ApiWrapper, workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext, openAsUntitled: boolean, view: string, navProviderId: string) {
+	constructor(private _apiWrapper: ApiWrapper, workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext, openAsUntitled: boolean, view: string, public providerId: string) {
 		this._openAsUntitled = openAsUntitled;
 		this._extensionContext = extensionContext;
 		this.books = [];
@@ -52,7 +51,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		this.viewId = view;
 		this.prompter = new CodeAdapter();
 		this._bookTrustManager = new BookTrustManager(this.books, _apiWrapper);
-		this.providerId = navProviderId;
 
 		this._extensionContext.subscriptions.push(azdata.nb.registerNavigationProvider(this));
 	}
@@ -202,7 +200,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	async openNotebook(resource: string): Promise<void> {
 		try {
-			await vscode.commands.executeCommand('setContext', 'unsavedBooks', false);
+			await vscode.commands.executeCommand(constants.BuiltInCommands.SetContext, constants.unsavedBooksContextKey, false);
 			if (this._openAsUntitled) {
 				await this.openNotebookAsUntitled(resource);
 			} else {
@@ -259,7 +257,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	async openNotebookAsUntitled(resource: string): Promise<void> {
 		try {
-			await vscode.commands.executeCommand('setContext', 'unsavedBooks', true);
+			await vscode.commands.executeCommand(constants.BuiltInCommands.SetContext, constants.unsavedBooksContextKey, true);
 			let untitledFileName: vscode.Uri = this.getUntitledNotebookUri(resource);
 			vscode.workspace.openTextDocument(resource).then((document) => {
 				let initialContent = document.getText();
