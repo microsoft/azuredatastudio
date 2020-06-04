@@ -238,18 +238,13 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 		}
 	});
 
-	appContext.apiWrapper.registerCommand('azure.resource.openInAzurePortal', async (node?: TreeNode) => {
-		if (!node) {
-			return;
-		}
+	appContext.apiWrapper.registerCommand('azure.resource.openInAzurePortal', async (connectionProfile: azdata.IConnectionProfile) => {
 
-		const treeItem: azdata.TreeItem = await node.getTreeItem();
-		if (!treeItem.payload) {
-			return;
-		}
-		let connectionProfile = Object.assign({}, treeItem.payload, { saveProfile: true });
-
-		if (!connectionProfile.azureResourceId) {
+		if (
+			!connectionProfile.azureResourceId ||
+			!connectionProfile.azurePortalEndpoint ||
+			!connectionProfile.azureTenantId
+		) {
 			return;
 		}
 
