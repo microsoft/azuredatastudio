@@ -7,7 +7,7 @@ import 'vs/css!./cellToolbar';
 import * as DOM from 'vs/base/browser/dom';
 import { Component, Inject, ViewChild, ElementRef, Input } from '@angular/core';
 import { localize } from 'vs/nls';
-import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
+import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { DeleteCellAction, EditCellAction, CellToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/cellToolbarActions';
@@ -87,11 +87,14 @@ export class CellToolbarComponent {
 		dropdownMenuActionViewItem.render(buttonDropdownContainer);
 		dropdownMenuActionViewItem.setActionContext(context);
 
-		this._actionBar.setContent([
-			{ action: this._editCellAction },
-			{ element: buttonDropdownContainer },
+		let taskbarContent: ITaskbarContent[] = [];
+		if (this.cellModel?.cellType === CellTypes.Markdown) {
+			taskbarContent.push({ action: this._editCellAction });
+		}
+		taskbarContent.push({ element: buttonDropdownContainer },
 			{ action: deleteButton },
-			{ element: moreActionsContainer }
-		]);
+			{ element: moreActionsContainer });
+
+		this._actionBar.setContent(taskbarContent);
 	}
 }
