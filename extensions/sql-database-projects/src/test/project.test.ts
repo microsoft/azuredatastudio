@@ -10,6 +10,7 @@ import * as testUtils from './testUtils';
 
 import { promises as fs } from 'fs';
 import { Project, EntryType } from '../models/project';
+import { exists } from '../common/utils';
 
 let projFilePath: string;
 
@@ -80,5 +81,25 @@ describe('Project: sqlproj content operations', function (): void {
 		list.push(nonexistentFile);
 
 		await testUtils.shouldThrowSpecificError(async () => await project.addToProject(list), `ENOENT: no such file or directory, stat \'${nonexistentFile}\'`);
+	});
+});
+
+describe('Project: round trip updates', function (): void {
+	before(async function () : Promise<void> {
+		await baselines.loadBaselines();
+	});
+
+	it('Should update SSDT project to work in ADS', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.SSDTProjectFileBaseline);
+		const project: Project = new Project(projFilePath);
+		await project.readProjFile();
+
+		await project.updateProjectForRoundTrip();
+
+		should(await exists(projFilePath + '_backup')).equal(true);	// backup file should be generated before the project is updated
+		should(project.importedTargets.length).equal(3);	// additional target added by updateProjectForRoundTrip method
+
+		let projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText).equal(baselines.SSDTProjectAfterUpdateBaseline.trim());
 	});
 });

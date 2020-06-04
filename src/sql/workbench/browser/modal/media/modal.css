@@ -35,12 +35,20 @@
 .modal.flyout-dialog .modal-dialog {
 	margin: auto auto auto auto;
 	height: 100%;
-	width: 500px;
 	right: 0;
 	position: absolute;
 	overflow-y: hidden;
 }
-.modal.flyout-dialog.wide .modal-dialog {
+
+.modal.flyout-dialog .modal-dialog.narrow-dialog {
+	width: 500px;
+}
+
+.modal.flyout-dialog .modal-dialog.medium-dialog {
+	width: 800px;
+}
+
+.modal.flyout-dialog .modal-dialog.wide-dialog {
 	width: 1200px;
 	max-width: 95%;
 	min-width: 400px;

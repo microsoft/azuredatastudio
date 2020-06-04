@@ -84,6 +84,9 @@ export class EditorGroup extends Disposable {
 	private readonly _onDidChangeEditorPinned = this._register(new Emitter<EditorInput>());
 	readonly onDidChangeEditorPinned = this._onDidChangeEditorPinned.event;
 
+	private readonly _onDidChangeEditorSticky = this._register(new Emitter<EditorInput>());
+	readonly onDidChangeEditorSticky = this._onDidChangeEditorSticky.event;
+
 	//#endregion
 
 	private _id: GroupIdentifier;
@@ -123,6 +126,12 @@ export class EditorGroup extends Disposable {
 	private onConfigurationUpdated(): void {
 		this.editorOpenPositioning = this.configurationService.getValue('workbench.editor.openPositioning');
 		this.focusRecentEditorAfterClose = this.configurationService.getValue('workbench.editor.focusRecentEditorAfterClose');
+
+		if (this.configurationService.getValue('workbench.editor.showTabs') === false) {
+			// Disabling tabs disables sticky editors until we support
+			// an indication of sticky editors when tabs are disabled
+			this.sticky = -1;
+		}
 	}
 
 	get count(): number {
@@ -555,6 +564,9 @@ export class EditorGroup extends Disposable {
 
 		// Adjust sticky index
 		this.sticky++;
+
+		// Event
+		this._onDidChangeEditorSticky.fire(editor);
 	}
 
 	unstick(candidate: EditorInput): EditorInput | undefined {
@@ -580,6 +592,9 @@ export class EditorGroup extends Disposable {
 
 		// Adjust sticky index
 		this.sticky--;
+
+		// Event
+		this._onDidChangeEditorSticky.fire(editor);
 	}
 
 	isSticky(candidateOrIndex: EditorInput | number): boolean {
