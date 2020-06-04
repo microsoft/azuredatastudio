@@ -19,14 +19,14 @@ const msgRemoteBookDownloadComplete = localize('msgRemoteBookDownloadComplete', 
 const msgRemoteBookDownloadError = localize('msgRemoteBookDownloadError', "Error while downloading remote Book");
 const msgRemoteBookUnpackingError = localize('msgRemoteBookUnpackingError', "Error while decompressing remote Book");
 const msgRemoteBookDirectoryError = localize('msgRemoteBookDirectoryError', "Error while creating remote book directory");
-const msgTaskName = localize('msgTaskName', "Downloading selected Book");
+const msgTaskName = localize('msgTaskName', "Downloading Remote Book");
 
 export class RemoteBookController {
 	private _book: RemoteBook;
 	constructor() {
 	}
 
-	public async setRemoteBook(url: URL, remoteLocation: string, zipURL?: URL, tarURL?: URL): Promise<string[]> {
+	public async setRemoteBook(url: URL, remoteLocation: string, zipURL?: URL, tarURL?: URL): Promise<void> {
 		if (remoteLocation === 'GitHub') {
 			this._book = new GitHubRemoteBook(url, zipURL, tarURL);
 		} else {
@@ -105,7 +105,7 @@ export abstract class RemoteBook {
 		this.outputChannel = this.apiWrapper.createOutputChannel(msgTaskName);
 	}
 
-	public async abstract createLocalCopy(): Promise<string[]>;
+	public async abstract createLocalCopy(): Promise<void>;
 
 	public openRemoteBook(selectedBook: string) {
 		vscode.commands.executeCommand('bookTreeView.openBook', selectedBook, false, undefined);
@@ -132,20 +132,6 @@ export abstract class RemoteBook {
 			}
 		}
 	}
-
-	public loadBooks(dir: string, books: string[]): string[] {
-		fs.readdirSync(dir).forEach(file => {
-			let fullPath = path.join(dir, file);
-			if (fs.lstatSync(fullPath).isDirectory()) {
-				if (isBook(fullPath)) {
-					books.push(fullPath);
-				}
-				return this.loadBooks(fullPath, books);
-			}
-			return [];
-		});
-		return books;
-	}
 }
 
 class SharedRemoteBook extends RemoteBook {
@@ -153,11 +139,10 @@ class SharedRemoteBook extends RemoteBook {
 		super(remote_path);
 	}
 
-	public async createLocalCopy(): Promise<string[]> {
+	public async createLocalCopy(): Promise<void> {
 		//compress it
 		// copy it
 		// to local path
-		return [];
 	}
 }
 
@@ -168,14 +153,15 @@ export class GitHubRemoteBook extends RemoteBook {
 		this._tarURL = tarURL;
 	}
 
-	public async createLocalCopy(): Promise<string[]> {
+	public async createLocalCopy(): Promise<void> {
 		this.outputChannel.show(true);
 		this.outputChannel.appendLine(msgRemoteBookDownloadProgress);
+		this.setLocalPath();
+		let re = /\//g;
+		let fileName = this._zipURL.pathname.substring(1).replace(re, '-').concat('-', utils.generateGuid());
+		this._local_path = new URL(path.join(this._local_path.href, fileName));
+
 		return new Promise((resolve, reject) => {
-			this.setLocalPath();
-			let re = /\//g;
-			let fileName = this._zipURL.pathname.substring(1).replace(re, '-').concat('-', utils.generateGuid());
-			this._local_path = new URL(path.join(this._local_path.href, fileName));
 			fs.mkdir(this._local_path.href, (err) => {
 				if (err) {
 					this.outputChannel.appendLine(msgRemoteBookDirectoryError);
@@ -202,8 +188,6 @@ export class GitHubRemoteBook extends RemoteBook {
 				let remoteBookFullPath = new URL(this._local_path.href.concat('.zip'));
 				downloadRequest.pipe(fs.createWriteStream(remoteBookFullPath.href))
 					.on('close', async () => {
-						//unpack python zip/tar file
-						this.outputChannel.appendLine(msgRemoteBookDownloadComplete);
 						if (utils.getOSPlatform() === utils.Platform.Windows || utils.getOSPlatform() === utils.Platform.Mac) {
 							try {
 								let zippedFile = new zip(remoteBookFullPath.href);
@@ -219,7 +203,6 @@ export class GitHubRemoteBook extends RemoteBook {
 									reject(err);
 								}
 							});
-
 							this.outputChannel.appendLine(msgRemoteBookDownloadComplete);
 
 						} else {
@@ -237,8 +220,8 @@ export class GitHubRemoteBook extends RemoteBook {
 								reject(err);
 							});
 						}
-						let books = this.loadBooks(this._local_path.href, []);
-						resolve(books);
+						vscode.commands.executeCommand('notebook.command.openNotebookFolder', this._local_path.href);
+						resolve();
 					})
 					.on('error', (downloadError) => {
 						this.outputChannel.appendLine(msgRemoteBookDownloadError);
@@ -249,13 +232,4 @@ export class GitHubRemoteBook extends RemoteBook {
 		});
 
 	}
-}
-
-function isBook(fullPath: string) {
-	let contents: string[] = ['content', '_data', '_config.yml'];
-	let files = fs.readdirSync(fullPath);
-	if (files.includes(contents[0]) && files.includes(contents[1]) && files.includes(contents[2])) {
-		return true;
-	}
-	return false;
 }

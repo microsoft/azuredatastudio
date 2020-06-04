@@ -362,17 +362,23 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		dialog.showDialog();
 	}
 
-	public async openNotebookFolder(): Promise<void> {
+	public async openNotebookFolder(folderPath?: string): Promise<void> {
 		const allFilesFilter = loc.allFiles;
 		let filter: any = {};
 		filter[allFilesFilter] = '*';
-		let uris = await vscode.window.showOpenDialog({
-			filters: filter,
-			canSelectFiles: false,
-			canSelectMany: false,
-			canSelectFolders: true,
-			openLabel: loc.labelSelectFolder
-		});
+		let uris: vscode.Uri[];
+		if (folderPath === undefined) {
+			uris = await vscode.window.showOpenDialog({
+				filters: filter,
+				canSelectFiles: false,
+				canSelectMany: false,
+				canSelectFolders: true,
+				openLabel: loc.labelSelectFolder
+			});
+		} else {
+			uris = [vscode.Uri.file(folderPath)];
+		}
+
 		if (uris && uris.length > 0) {
 			await this.loadNotebooksInFolder(uris[0]?.fsPath);
 		}

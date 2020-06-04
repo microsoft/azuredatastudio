@@ -8,7 +8,7 @@ import * as loc from '../common/localizedConstants';
 import { RemoteBookController, IReleases } from '../book/remoteBookController';
 
 function getRemoteLocationCategory(name: string): azdata.CategoryValue {
-	if (name === 'GitHub') {
+	if (name === loc.onGitHub) {
 		return { name: name, displayName: loc.onGitHub };
 	}
 	return { name: name, displayName: loc.onSharedFile };
@@ -25,7 +25,7 @@ export class RemoteBookDialogModel {
 
 	public get remoteLocationCategories(): azdata.CategoryValue[] {
 		if (!this._remoteTypes) {
-			this._remoteTypes = [getRemoteLocationCategory('GitHub'), getRemoteLocationCategory('Shared File')];
+			this._remoteTypes = [getRemoteLocationCategory(loc.onGitHub), getRemoteLocationCategory(loc.onSharedFile)];
 		}
 		return this._remoteTypes;
 	}
@@ -33,7 +33,7 @@ export class RemoteBookDialogModel {
 	public async getReleases(url: string): Promise<IReleases[]> {
 		let remotePath: URL;
 		try {
-			url = 'https://api.github.com/'.concat(url);
+			url = loc.apiGitHub.concat(url);
 			remotePath = new URL(url);
 			return this._controller.getReleases(remotePath);
 		}
@@ -42,19 +42,18 @@ export class RemoteBookDialogModel {
 		}
 	}
 
-	public async downloadLocalCopy(url: URL, remoteLocation: string, release?: IReleases): Promise<string[]> {
+	public async downloadLocalCopy(url: URL, remoteLocation: string, release?: IReleases): Promise<void> {
 		if (release) {
-			return await this._controller.setRemoteBook(url, remoteLocation, release.zipURL, release.tarURL);
+			await this._controller.setRemoteBook(url, remoteLocation, release.zipURL, release.tarURL);
 		}
 		else {
-			return await this._controller.setRemoteBook(url, remoteLocation);
+			await this._controller.setRemoteBook(url, remoteLocation);
 		}
 	}
 
 	public openRemoteBook(book: string): void {
 		this._controller.openRemoteBook(book);
 	}
-
 }
 
 export class RemoteBookDialog {
@@ -64,8 +63,8 @@ export class RemoteBookDialog {
 	private formModel: azdata.FormContainer;
 	private urlInputBox: azdata.InputBoxComponent;
 	private remoteLocationDropdown: azdata.DropDownComponent;
-	private remoteBookDropdown: azdata.DropDownComponent;
 	private releaseDropdown: azdata.DropDownComponent;
+	private releaseDropdownComponent: azdata.FormComponent;
 	private releases: IReleases[];
 
 	constructor(private model: RemoteBookDialogModel) {
@@ -73,6 +72,24 @@ export class RemoteBookDialog {
 
 	public showDialog(): void {
 		this.createDialog();
+	}
+
+	private async createReleaseDropdown(): Promise<azdata.FormComponent> {
+		this.releaseDropdown = this.view.modelBuilder.dropDown()
+			.withProperties({
+				values: [],
+				value: '',
+			}).component();
+
+		this.releaseDropdown.updateCssStyles({
+			display: 'none'
+		});
+
+		return {
+			component: this.releaseDropdown,
+			title: '',
+			required: false
+		};
 	}
 
 	private createDialog(): void {
@@ -95,23 +112,7 @@ export class RemoteBookDialog {
 
 			this.urlInputBox.onTextChanged(async () => await this.validate());
 
-			this.remoteBookDropdown = this.view.modelBuilder.dropDown().withProperties({
-				values: [],
-				value: '',
-			}).component();
-
-			this.releaseDropdown = this.view.modelBuilder.dropDown().withProperties({
-				values: [],
-				value: '',
-			}).component();
-
-			this.releaseDropdown.updateCssStyles({
-				display: 'none'
-			});
-
-			this.remoteBookDropdown.updateCssStyles({
-				display: 'none'
-			});
+			this.releaseDropdownComponent = await this.createReleaseDropdown();
 
 			this.formModel = this.view.modelBuilder.formContainer()
 				.withFormItems([{
@@ -126,27 +127,15 @@ export class RemoteBookDialog {
 							title: loc.remoteBookUrl,
 							required: true
 						},
-						{
-							component: this.releaseDropdown,
-							title: ''
-						},
-						{
-							component: this.remoteBookDropdown,
-							title: ''
-						},
+						this.releaseDropdownComponent,
 					],
 					title: ''
 				}]).withLayout({ width: '100%' }).component();
 			await this.view.initializeModel(this.formModel);
 			this.urlInputBox.focus();
 		});
-		let downloadButton = azdata.window.createButton('Download');
-		downloadButton.onClick(async () => await this.download());
-		this.dialog.customButtons = [];
-		this.dialog.customButtons.push(downloadButton);
-		this.dialog.okButton.onClick(async () => await this.openRemoteBook());
+		this.dialog.registerCloseValidator(async () => await this.download());
 		this.dialog.okButton.label = loc.open;
-		this.dialog.okButton.enabled = false;
 		this.dialog.cancelButton.label = loc.cancel;
 		azdata.window.openDialog(this.dialog);
 	}
@@ -155,13 +144,9 @@ export class RemoteBookDialog {
 		return (<azdata.CategoryValue>this.remoteLocationDropdown.value).name;
 	}
 
-	private get remoteBookValue(): string {
-		return this.remoteBookDropdown.value.toString();
-	}
-
 	private onRemoteLocationChanged(): void {
 		let location = this.remoteLocationValue;
-		if (this.releases !== undefined && location === 'GitHub') {
+		if (this.releases !== undefined && location === loc.onGitHub) {
 			this.releaseDropdown.updateCssStyles({
 				display: 'block'
 			});
@@ -173,17 +158,22 @@ export class RemoteBookDialog {
 	}
 
 	private async validate(): Promise<void> {
-		let url = this.urlInputBox && this.urlInputBox.value;
-		let location = this.remoteLocationValue;
-
 		try {
-			if (location === 'GitHub') {
-				let releases = await this.model.getReleases(url);
-				if (releases !== undefined && releases !== []) {
-					this.releaseDropdown.updateCssStyles({
-						display: 'block'
-					});
-					await this.fillReleasesDropdown(releases);
+			let url = this.urlInputBox && this.urlInputBox.value;
+			url = url.trim().toLowerCase();
+			let location = this.remoteLocationValue;
+			if (location === loc.onGitHub && url.length > 0) {
+				//get the first group to extract /owner/repo/releases format
+				let re = /^(?:https:\/\/(?:github.com|api.github.com\/repos)|(?:\/)?(?:\/)?repos)([\w-.?!=&%*+:@\/]*\/releases)/g;
+				let groupsRe = re.exec(url);
+				if (groupsRe !== undefined) {
+					url = groupsRe.pop();
+					let releases = await this.model.getReleases(url);
+					if (releases !== undefined && releases !== []) {
+						await this.fillReleasesDropdown(releases);
+					}
+				} else {
+					throw new Error(loc.urlGithubError);
 				}
 			}
 		}
@@ -195,39 +185,28 @@ export class RemoteBookDialog {
 		}
 	}
 
-	private async download(): Promise<void> {
+	private async download(): Promise<boolean> {
 		let location = this.remoteLocationValue;
-		this.dialog.customButtons[0].enabled = false;
-		let books: string[] = [];
 		try {
-			if (location === 'GitHub') {
+			this.dialog.okButton.enabled = false;
+			if (location === loc.onGitHub) {
 				let selected_release = this.releases.filter(release =>
 					release.tag_name === this.releaseDropdown.value);
-				books = await this.model.downloadLocalCopy(selected_release[0].remote_path, location, selected_release[0]);
+				await this.model.downloadLocalCopy(selected_release[0].remote_path, location, selected_release[0]);
 			} else {
 				let url = this.urlInputBox && this.urlInputBox.value;
 				let newUrl = new URL(url);
-				books = await this.model.downloadLocalCopy(newUrl, location);
+				await this.model.downloadLocalCopy(newUrl, location);
 			}
-			if (books !== undefined && books.length > 0) {
-				this.remoteBookDropdown.updateCssStyles({
-					display: 'block'
-				});
-				this.remoteBookDropdown.updateProperties({
-					values: books
-				});
-				this.dialog.okButton.enabled = true;
-				this.dialog.message = {
-					text: 'No Books available to open',
-					level: azdata.window.MessageLevel.Information
-				};
-			}
+			return true;
 		}
 		catch (error) {
 			this.dialog.message = {
 				text: (typeof error === 'string') ? error : error.message,
 				level: azdata.window.MessageLevel.Error
 			};
+			this.dialog.okButton.enabled = true;
+			return false;
 		}
 	}
 
@@ -238,12 +217,13 @@ export class RemoteBookDialog {
 			versions.push(release.tag_name);
 		});
 
-		this.releaseDropdown.updateProperties({
+		this.releaseDropdownComponent.title = loc.releases;
+		this.releaseDropdownComponent.required = true;
+		this.releaseDropdownComponent.component.updateCssStyles({
+			display: 'block'
+		});
+		this.releaseDropdownComponent.component.updateProperties({
 			values: versions
 		});
-	}
-
-	private openRemoteBook(): void {
-		this.model.openRemoteBook(this.remoteBookValue);
 	}
 }
