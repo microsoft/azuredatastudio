@@ -161,10 +161,10 @@ export class DeployDatabaseDialog {
 			sqlCmdVariables: this.project.sqlCmdVariables
 		};
 
+		azdata.window.closeDialog(this.dialog);
 		await this.deploy!(this.project, profile);
 
 		this.dispose();
-		azdata.window.closeDialog(this.dialog);
 	}
 
 	public async generateScriptClick(): Promise<void> {
@@ -173,12 +173,13 @@ export class DeployDatabaseDialog {
 			connectionUri: await this.getConnectionUri()
 		};
 
+		azdata.window.closeDialog(this.dialog);
+
 		if (this.generateScript) {
 			await this.generateScript!(this.project, profile);
 		}
 
 		this.dispose();
-		azdata.window.closeDialog(this.dialog);
 	}
 
 	private getTargetDatabaseName(): string {

@@ -201,11 +201,11 @@ export class ProjectsController {
 
 		const dacFxService = await ProjectsController.getDaxFxService();
 
-		if (profile as IDeploymentProfile) {
+		if ((<IDeploymentProfile>profile).upgradeExisting) {
 			return await dacFxService.deployDacpac(dacpacPath, profile.databaseName, (<IDeploymentProfile>profile).upgradeExisting, profile.connectionUri, TaskExecutionMode.execute, profile.sqlCmdVariables);
 		}
 		else {
-			return await dacFxService.generateDeployScript(dacpacPath, profile.databaseName, profile.connectionUri, TaskExecutionMode.execute, profile.sqlCmdVariables);
+			return await dacFxService.generateDeployScript(dacpacPath, profile.databaseName, profile.connectionUri, TaskExecutionMode.script, profile.sqlCmdVariables);
 		}
 	}
 
