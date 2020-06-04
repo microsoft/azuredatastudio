@@ -86,6 +86,7 @@ declare module 'azdata' {
 
 	export namespace dataprotocol {
 		export function registerSerializationProvider(provider: SerializationProvider): vscode.Disposable;
+		export function registerSqlAssessmentServicesProvider(provider: SqlAssessmentServicesProvider): vscode.Disposable;
 	}
 
 	export interface HyperlinkComponent {
@@ -110,6 +111,8 @@ declare module 'azdata' {
 	 */
 	export interface IConnectionProfile extends ConnectionInfo {
 		azureAccount?: string;
+		azureResourceId?: string;
+		azurePortalEndpoint?: string;
 	}
 
 	/*
@@ -306,6 +309,7 @@ declare module 'azdata' {
 
 	export interface InputBoxProperties extends ComponentProperties {
 		validationErrorMessage?: string;
+		readOnly?: boolean;
 	}
 
 	export interface CheckBoxProperties {
@@ -359,6 +363,37 @@ declare module 'azdata' {
 		}
 
 		export function createModelViewDashboard(title: string, options?: ModelViewDashboardOptions): ModelViewDashboard;
+
+		export interface Dialog {
+			/**
+			 * Width of the dialog
+			 */
+			width?: DialogWidth;
+		}
+
+		export interface Wizard {
+			/**
+			 * Width of the wizard
+			 */
+			width?: DialogWidth;
+		}
+
+		export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
+
+		/**
+		 * Create a dialog with the given title
+		 * @param title The title of the dialog, displayed at the top
+		 * @param dialogName the name of the dialog
+		 * @param width width of the dialog, default is 'wide'
+		 */
+		export function createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth): Dialog;
+
+		/**
+		 * Create a wizard with the given title and width
+		 * @param title The title of the wizard
+		 * @param width The width of the wizard, default value is 'narrow'
+		 */
+		export function createWizard(title: string, width?: DialogWidth): Wizard;
 	}
 
 	export interface DashboardTab extends Tab {
@@ -399,5 +434,52 @@ declare module 'azdata' {
 	export interface TaskInfo {
 		targetLocation?: string;
 	}
-}
 
+	export namespace sqlAssessment {
+
+		export enum SqlAssessmentTargetType {
+			Server = 1,
+			Database = 2
+		}
+
+		export enum SqlAssessmentResultItemKind {
+			RealResult = 0,
+			Warning = 1,
+			Error = 2
+		}
+	}
+	// Assessment interfaces
+
+	export interface SqlAssessmentResultItem {
+		rulesetVersion: string;
+		rulesetName: string;
+		targetType: sqlAssessment.SqlAssessmentTargetType;
+		targetName: string;
+		checkId: string;
+		tags: string[];
+		displayName: string;
+		description: string;
+		message: string;
+		helpLink: string;
+		level: string;
+		timestamp: string;
+		kind: sqlAssessment.SqlAssessmentResultItemKind;
+	}
+
+	export interface SqlAssessmentResult extends ResultStatus {
+		items: SqlAssessmentResultItem[];
+		apiVersion: string;
+	}
+
+	export interface SqlAssessmentServicesProvider extends DataProvider {
+		assessmentInvoke(ownerUri: string, targetType: sqlAssessment.SqlAssessmentTargetType): Promise<SqlAssessmentResult>;
+		getAssessmentItems(ownerUri: string, targetType: sqlAssessment.SqlAssessmentTargetType): Promise<SqlAssessmentResult>;
+		generateAssessmentScript(items: SqlAssessmentResultItem[]): Promise<ResultStatus>;
+	}
+
+	export interface TreeItem2 extends vscode.TreeItem2 {
+		payload?: IConnectionProfile;
+		childProvider?: string;
+		type?: ExtensionNodeType;
+	}
+}

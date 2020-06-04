@@ -251,8 +251,7 @@ export class JupyterController implements vscode.Disposable {
 	}
 
 	public doConfigurePython(jupyterInstaller: JupyterServerInstallation): void {
-		let enablePreviewFeatures = this.apiWrapper.getConfiguration('workbench').get('enablePreviewFeatures');
-		if (enablePreviewFeatures) {
+		if (jupyterInstaller.previewFeaturesEnabled) {
 			let pythonWizard = new ConfigurePythonWizard(this.apiWrapper, jupyterInstaller);
 			pythonWizard.start().catch((err: any) => {
 				this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));

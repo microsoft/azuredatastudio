@@ -4,14 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import { EOL } from 'os';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DeployClusterWizard } from '../deployClusterWizard';
-import { SectionInfo, FieldType, LabelPosition } from '../../../interfaces';
-import { createSection, InputComponents, setModelValues, Validator, getInputBoxComponent, isValidSQLPassword, getInvalidSQLPasswordMessage, getPasswordMismatchMessage, InputComponent } from '../../modelViewUtils';
+import { FieldType, LabelPosition, SectionInfo } from '../../../interfaces';
+import { createSection, getInputBoxComponent, getInvalidSQLPasswordMessage, getPasswordMismatchMessage, InputComponentInfo, InputComponents, isValidSQLPassword, setModelValues, Validator } from '../../modelViewUtils';
 import { WizardPageBase } from '../../wizardPageBase';
 import * as VariableNames from '../constants';
-import { EOL } from 'os';
+import { DeployClusterWizard } from '../deployClusterWizard';
 import { AuthenticationMode } from '../deployClusterWizardModel';
 const localize = nls.loadMessageBundle();
 
@@ -174,7 +174,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					variableName: VariableNames.DomainServiceAccountPassword_VariableName
 				}, {
 					type: FieldType.Text,
-					label: localize('deployCluster.AppOwers', "App owners"),
+					label: localize('deployCluster.AppOwners', "App owners"),
 					required: false,
 					variableName: VariableNames.AppOwners_VariableName,
 					placeHolder: localize('deployCluster.AppOwnersPlaceHolder', "Use comma to separate the values."),
@@ -193,12 +193,13 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			const basicSettingsGroup = createSection({
 				view: view,
 				container: self.wizard.wizardObject,
+				inputComponents: this.wizard.inputComponents,
 				sectionInfo: basicSection,
 				onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 					self.wizard.registerDisposable(disposable);
 				},
-				onNewInputComponentCreated: (name: string, component: InputComponent): void => {
-					self.inputComponents[name] = { component: component };
+				onNewInputComponentCreated: (name: string, inputComponent: InputComponentInfo): void => {
+					self.inputComponents[name] = { component: inputComponent.component };
 				},
 				onNewValidatorCreated: (validator: Validator): void => {
 					self.validators.push(validator);
@@ -207,12 +208,13 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			const activeDirectorySettingsGroup = createSection({
 				view: view,
 				container: self.wizard.wizardObject,
+				inputComponents: this.wizard.inputComponents,
 				sectionInfo: activeDirectorySection,
 				onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 					self.wizard.registerDisposable(disposable);
 				},
-				onNewInputComponentCreated: (name: string, component: InputComponent): void => {
-					self.inputComponents[name] = { component: component };
+				onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo): void => {
+					this.inputComponents[name] = { component: inputComponentInfo.component };
 				},
 				onNewValidatorCreated: (validator: Validator): void => {
 					self.validators.push(validator);
@@ -221,12 +223,13 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			const dockerSettingsGroup = createSection({
 				view: view,
 				container: self.wizard.wizardObject,
+				inputComponents: this.wizard.inputComponents,
 				sectionInfo: dockerSection,
 				onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 					self.wizard.registerDisposable(disposable);
 				},
-				onNewInputComponentCreated: (name: string, component: InputComponent): void => {
-					self.inputComponents[name] = { component: component };
+				onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo): void => {
+					this.inputComponents[name] = { component: inputComponentInfo.component };
 				},
 				onNewValidatorCreated: (validator: Validator): void => {
 					self.validators.push(validator);
@@ -266,6 +269,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 
 	public onLeave() {
 		setModelValues(this.inputComponents, this.wizard.model);
+		Object.assign(this.wizard.inputComponents, this.inputComponents);
 		if (this.wizard.model.authenticationMode === AuthenticationMode.ActiveDirectory) {
 			const variableDNSPrefixMapping: { [s: string]: string } = {};
 			variableDNSPrefixMapping[VariableNames.AppServiceProxyDNSName_VariableName] = 'bdc-appproxy';

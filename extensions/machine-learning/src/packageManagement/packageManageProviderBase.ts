@@ -70,8 +70,17 @@ export abstract class SqlPackageManageProviderBase {
 	 * @param packages Packages to uninstall
 	 */
 	public async uninstallPackages(packages: nbExtensionApis.IPackageDetails[], databaseName: string): Promise<void> {
+		let allPackages = await this.listPackages(databaseName);
+
 		if (packages) {
-			await Promise.all(packages.map(x => this.executeScripts(ScriptMode.Uninstall, x, databaseName)));
+			await Promise.all(packages.map(x => {
+				const originalPackage = allPackages.find(p => p.name === x.name && p.version === x.version);
+				if (originalPackage && originalPackage.readonly) {
+					return Promise.reject(`Cannot uninstalled system package '${x.name}'`);
+				} else {
+					return this.executeScripts(ScriptMode.Uninstall, x, databaseName);
+				}
+			}));
 		}
 	}
 
