@@ -50,6 +50,7 @@
 		"Microsoft.profiler",
 		"Microsoft.schema-compare",
 		"Microsoft.datavirtualization",
+		"Redgate.sql-prompt",
 		"Redgate.sql-search",
 		"IDERA.sqldm-performance-insights",
 		"SentryOne.plan-explorer"
