@@ -10,7 +10,7 @@ import * as testUtils from './testUtils';
 import * as constants from '../common/constants';
 
 import { promises as fs } from 'fs';
-import { Project, EntryType, TargetPlatform, DatabaseReferenceLocation } from '../models/project';
+import { Project, EntryType, TargetPlatform } from '../models/project';
 import { exists } from '../common/utils';
 import { Uri } from 'vscode';
 
