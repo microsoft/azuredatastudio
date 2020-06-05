@@ -5,12 +5,11 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as azurecore from 'azurecore';
 import * as loc from '../../../localizedConstants';
 import { DashboardPage } from '../../components/dashboardPage';
-import { IconPathHelper } from '../../../constants';
+import { IconPathHelper, cssStyles } from '../../../constants';
 import { ControllerModel } from '../../../models/controllerModel';
-import { resourceTypeToDisplayName } from '../../../common/utils';
+import { resourceTypeToDisplayName, ResourceType } from '../../../common/utils';
 import { RegistrationResponse } from '../../../controller/generated/v1/model/registrationResponse';
 
 export class ControllerDashboardOverviewPage extends DashboardPage {
@@ -50,21 +49,21 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 
 		const rootContainer = this.modelView.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
-			.withProperties({ CSSStyles: { 'margin': '18px' } })
 			.component();
+
+		const contentContainer = this.modelView.modelBuilder.divContainer().component();
+		rootContainer.addItem(contentContainer, { CSSStyles: { 'margin': '10px 20px 0px 20px' } });
 
 		this._propertiesContainer = this.modelView.modelBuilder.propertiesContainer().component();
 
-		rootContainer.addItem(this._propertiesContainer);
+		contentContainer.addItem(this._propertiesContainer);
 
 		const arcResourcesTitle = this.modelView.modelBuilder.text()
 			.withProperties<azdata.TextComponentProperties>({ value: loc.arcResources })
 			.component();
 
-		rootContainer.addItem(arcResourcesTitle, {
-			CSSStyles: {
-				'font-size': '14px'
-			}
+		contentContainer.addItem(arcResourcesTitle, {
+			CSSStyles: cssStyles.title
 		});
 
 		this._arcResourcesTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
@@ -74,17 +73,23 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 					displayName: loc.name,
 					valueType: azdata.DeclarativeDataType.string,
 					width: '33%',
-					isReadOnly: true
+					isReadOnly: true,
+					headerCssStyles: cssStyles.tableHeader,
+					rowCssStyles: cssStyles.tableRow
 				}, {
 					displayName: loc.type,
 					valueType: azdata.DeclarativeDataType.string,
 					width: '33%',
-					isReadOnly: true
+					isReadOnly: true,
+					headerCssStyles: cssStyles.tableHeader,
+					rowCssStyles: cssStyles.tableRow
 				}, {
 					displayName: loc.computeAndStorage,
 					valueType: azdata.DeclarativeDataType.string,
 					width: '34%',
-					isReadOnly: true
+					isReadOnly: true,
+					headerCssStyles: cssStyles.tableHeader,
+					rowCssStyles: cssStyles.tableRow
 				}
 			],
 			width: '100%',
@@ -95,7 +100,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 			.withItems([this._arcResourcesTable])
 			.component();
 
-		rootContainer.addItem(arcResourcesTableContainer);
+		contentContainer.addItem(arcResourcesTableContainer);
 		this.initialized = true;
 		return rootContainer;
 	}
@@ -145,7 +150,6 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 	private handleRegistrationsUpdated(): void {
 		const reg = this._controllerModel.controllerRegistration;
 		if (reg) {
-
 			this._propertiesContainer.propertyItems = [
 				{
 					displayName: loc.name,
@@ -182,6 +186,8 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 			];
 		}
 
-		this._arcResourcesTable.data = this._controllerModel.registrations().map(r => [r.instanceName, resourceTypeToDisplayName(r.instanceType), r.vCores]);
+		this._arcResourcesTable.data = this._controllerModel.registrations()
+			.filter(r => r.instanceType !== ResourceType.dataControllers)
+			.map(r => [r.instanceName, resourceTypeToDisplayName(r.instanceType), r.vCores]);
 	}
 }

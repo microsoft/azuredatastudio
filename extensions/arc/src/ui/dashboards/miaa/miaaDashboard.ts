@@ -12,8 +12,8 @@ import { MiaaConnectionStringsPage } from './miaaConnectionStringsPage';
 
 export class MiaaDashboard extends Dashboard {
 
-	constructor(title: string, private _controllerModel: ControllerModel) {
-		super(title);
+	constructor(private _controllerModel: ControllerModel) {
+		super(loc.miaaDashboard);
 	}
 
 	protected async registerTabs(modelView: azdata.ModelView): Promise<(azdata.DashboardTab | azdata.DashboardTabGroup)[]> {
