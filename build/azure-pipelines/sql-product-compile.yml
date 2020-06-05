@@ -92,6 +92,11 @@ steps:
   condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'), eq(variables['VSCODE_STEP_ON_IT'], 'false'))
 
 - script: |
+    free -m
+    ps -e -o pid,uname,pcpu,pmem,comm
+  displayName: Check Process and Memory
+
+- script: |
     set -e
     yarn gulp compile-build
     yarn gulp compile-extensions-build
