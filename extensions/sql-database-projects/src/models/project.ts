@@ -181,7 +181,6 @@ export class Project {
 	 */
 	public async addDatabaseReference(uri: Uri, databaseLocation: DatabaseReferenceLocation, databaseName?: string): Promise<void> {
 		let databaseReferenceEntry = new DatabaseReferenceProjectEntry(uri, databaseLocation, databaseName);
-
 		await this.addToProjFile(databaseReferenceEntry);
 	}
 
