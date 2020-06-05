@@ -36,7 +36,7 @@ import { SqlInstanceArcResourceService } from './azureResource/providers/sqlinst
 import { PostgresServerArcProvider } from './azureResource/providers/postgresArcServer/postgresServerProvider';
 import { PostgresServerArcService } from './azureResource/providers/postgresArcServer/postgresServerService';
 import { azureResource } from './azureResource/azure-resource';
-import { azurecore } from './azurecore';
+import * as azurecore from './azurecore';
 import * as utils from './utils';
 import * as loc from './localizedConstants';
 

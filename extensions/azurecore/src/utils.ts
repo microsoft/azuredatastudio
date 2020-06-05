@@ -4,114 +4,119 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as loc from './localizedConstants';
+import { AzureRegion } from './azurecore';
 
+/**
+ *
+ * @param region The re
+ */
 export function getRegionDisplayName(region?: string): string {
 	region = (region ?? '').toLocaleLowerCase();
 
 	switch (region) {
-		case 'asiaeast':
+		case AzureRegion.asiaeast:
 			return loc.asiaEast;
-		case 'asiasoutheast':
+		case AzureRegion.asiasoutheast:
 			return loc.asiaSouthEast;
-		case 'australiacentral':
+		case AzureRegion.australiacentral:
 			return loc.australiaCentral;
-		case 'australiacentral2':
+		case AzureRegion.australiacentral2:
 			return loc.australiaCentral2;
-		case 'australiaeast':
+		case AzureRegion.australiaeast:
 			return loc.australiaEast;
-		case 'australiasoutheast':
+		case AzureRegion.australiasoutheast:
 			return loc.australiaSouthEast;
-		case 'brazilsouth':
+		case AzureRegion.brazilsouth:
 			return loc.brazilSouth;
-		case 'canadacentral':
+		case AzureRegion.canadacentral:
 			return loc.canadaCentral;
-		case 'canadaeast':
+		case AzureRegion.canadaeast:
 			return loc.canadaEast;
-		case 'chinaeast':
+		case AzureRegion.chinaeast:
 			return loc.chinaEast;
-		case 'chinaeast2':
+		case AzureRegion.chinaeast2:
 			return loc.chinaEast2;
-		case 'chinanorth':
+		case AzureRegion.chinanorth:
 			return loc.chinaNorth;
-		case 'chinanorth2':
+		case AzureRegion.chinanorth2:
 			return loc.chinaNorth2;
-		case 'europenorth':
+		case AzureRegion.europenorth:
 			return loc.europeNorth;
-		case 'europewest':
+		case AzureRegion.europewest:
 			return loc.europeWest;
-		case 'francecentral':
+		case AzureRegion.francecentral:
 			return loc.franceCentral;
-		case 'francesouth':
+		case AzureRegion.francesouth:
 			return loc.franceSouth;
-		case 'germanycentral':
+		case AzureRegion.germanycentral:
 			return loc.germanyCentral;
-		case 'germanynorth':
+		case AzureRegion.germanynorth:
 			return loc.germanyNorth;
-		case 'germanynortheast':
+		case AzureRegion.germanynortheast:
 			return loc.germanyNorthEast;
-		case 'germanywestcentral':
+		case AzureRegion.germanywestcentral:
 			return loc.germanyWestCentral;
-		case 'governmentusarizona':
+		case AzureRegion.governmentusarizona:
 			return loc.governmentUSArizona;
-		case 'governmentusdodcentral':
+		case AzureRegion.governmentusdodcentral:
 			return loc.governmentUSDodCentral;
-		case 'governmentusdodeast':
+		case AzureRegion.governmentusdodeast:
 			return loc.governmentUSDodEast;
-		case 'governmentusiowa':
+		case AzureRegion.governmentusiowa:
 			return loc.governmentUSIowa;
-		case 'governmentustexas':
+		case AzureRegion.governmentustexas:
 			return loc.governmentUSTexas;
-		case 'governmentusvirginia':
+		case AzureRegion.governmentusvirginia:
 			return loc.governmentUSVirginia;
-		case 'indiacentral':
+		case AzureRegion.indiacentral:
 			return loc.indiaCentral;
-		case 'indiasouth':
+		case AzureRegion.indiasouth:
 			return loc.indiaSouth;
-		case 'indiawest':
+		case AzureRegion.indiawest:
 			return loc.indiaWest;
-		case 'japaneast':
+		case AzureRegion.japaneast:
 			return loc.japanEast;
-		case 'japanwest':
+		case AzureRegion.japanwest:
 			return loc.japanWest;
-		case 'koreacentral':
+		case AzureRegion.koreacentral:
 			return loc.koreaCentral;
-		case 'koreasouth':
+		case AzureRegion.koreasouth:
 			return loc.koreaSouth;
-		case 'norwayeast':
+		case AzureRegion.norwayeast:
 			return loc.norwayEast;
-		case 'norwaywest':
+		case AzureRegion.norwaywest:
 			return loc.norwayWest;
-		case 'southafricanorth':
+		case AzureRegion.southafricanorth:
 			return loc.southAfricaNorth;
-		case 'southafricawest':
+		case AzureRegion.southafricawest:
 			return loc.southAfricaWest;
-		case 'switzerlandnorth':
+		case AzureRegion.switzerlandnorth:
 			return loc.switzerlandNorth;
-		case 'switzerlandwest':
+		case AzureRegion.switzerlandwest:
 			return loc.switzerlandWest;
-		case 'uaecentral':
+		case AzureRegion.uaecentral:
 			return loc.uaeCentral;
-		case 'uaenorth':
+		case AzureRegion.uaenorth:
 			return loc.uaeNorth;
-		case 'uksouth':
+		case AzureRegion.uksouth:
 			return loc.ukSouth;
-		case 'ukwest':
+		case AzureRegion.ukwest:
 			return loc.ukWest;
-		case 'uscentral':
+		case AzureRegion.uscentral:
 			return loc.usCentral;
-		case 'useast':
+		case AzureRegion.useast:
 			return loc.usEast;
-		case 'useast2':
+		case AzureRegion.useast2:
 			return loc.usEast2;
-		case 'usnorthcentral':
+		case AzureRegion.usnorthcentral:
 			return loc.usNorthCentral;
-		case 'ussouthcentral':
+		case AzureRegion.ussouthcentral:
 			return loc.usSouthCentral;
-		case 'uswest':
+		case AzureRegion.uswest:
 			return loc.usWest;
-		case 'uswest2':
+		case AzureRegion.uswest2:
 			return loc.usWest2;
-		case 'uswestcentral':
+		case AzureRegion.uswestcentral:
 			return loc.usWestCentral;
 	}
 	console.warn(`Unknown Azure region ${region}`);
