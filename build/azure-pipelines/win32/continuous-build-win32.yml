@@ -72,12 +72,13 @@ steps:
 #     .\scripts\test-integration.bat --tfs "Integration Tests"
 #   displayName: Run Integration Tests (Electron)
 
-# - task: PublishPipelineArtifact@0
-#   displayName: 'Publish Crash Reports'
-#   inputs:
-#     artifactName: crash-dump-windows
-#     targetPath: .build\crashes
-#   condition: succeededOrFailed()
+- task: PublishPipelineArtifact@0
+  displayName: 'Publish Crash Reports'
+  inputs:
+    artifactName: crash-dump-windows
+    targetPath: .build\crashes
+  continueOnError: true
+  condition: failed()
 
 - task: PublishTestResults@2
   displayName: Publish Tests Results

@@ -2,7 +2,7 @@
   "name": "machine-learning",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "publisher": "Microsoft",
   "preview": true,
   "engines": {
@@ -148,7 +148,7 @@
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.1",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "github:corivera/vscodetestcover#1.0.8"
+    "vscodetestcover": "^1.0.9"
   },
   "__metadata": {
     "id": "65",

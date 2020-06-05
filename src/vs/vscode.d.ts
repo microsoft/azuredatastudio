@@ -2216,7 +2216,7 @@ declare module 'vscode' {
 	}
 
 	/**
-	 * Metadata about the type of code actions that a [CodeActionProvider](#CodeActionProvider) providers.
+	 * Metadata about the type of code actions that a [CodeActionProvider](#CodeActionProvider) provides.
 	 */
 	export interface CodeActionProviderMetadata {
 		/**
@@ -2270,7 +2270,7 @@ declare module 'vscode' {
 	 * A code lens provider adds [commands](#Command) to source text. The commands will be shown
 	 * as dedicated horizontal lines in between the source text.
 	 */
-	export interface CodeLensProvider {
+	export interface CodeLensProvider<T = CodeLens> {
 
 		/**
 		 * An optional event to signal that the code lenses from this provider have changed.
@@ -2287,17 +2287,17 @@ declare module 'vscode' {
 		 * @return An array of code lenses or a thenable that resolves to such. The lack of a result can be
 		 * signaled by returning `undefined`, `null`, or an empty array.
 		 */
-		provideCodeLenses(document: TextDocument, token: CancellationToken): ProviderResult<CodeLens[]>;
+		provideCodeLenses(document: TextDocument, token: CancellationToken): ProviderResult<T[]>;
 
 		/**
 		 * This function will be called for each visible code lens, usually when scrolling and after
 		 * calls to [compute](#CodeLensProvider.provideCodeLenses)-lenses.
 		 *
-		 * @param codeLens code lens that must be resolved.
+		 * @param codeLens Code lens that must be resolved.
 		 * @param token A cancellation token.
 		 * @return The given, resolved code lens or thenable that resolves to such.
 		 */
-		resolveCodeLens?(codeLens: CodeLens, token: CancellationToken): ProviderResult<CodeLens>;
+		resolveCodeLens?(codeLens: T, token: CancellationToken): ProviderResult<T>;
 	}
 
 	/**
@@ -2645,7 +2645,6 @@ declare module 'vscode' {
 		TypeParameter = 25
 	}
 
-
 	/**
 	 * Symbol tags are extra annotations that tweak the rendering of a symbol.
 	 */
@@ -2798,7 +2797,7 @@ declare module 'vscode' {
 	 * The workspace symbol provider interface defines the contract between extensions and
 	 * the [symbol search](https://code.visualstudio.com/docs/editor/editingevolved#_open-symbol-by-name)-feature.
 	 */
-	export interface WorkspaceSymbolProvider {
+	export interface WorkspaceSymbolProvider<T = SymbolInformation> {
 
 		/**
 		 * Project-wide search for a symbol matching the given query string.
@@ -2817,7 +2816,7 @@ declare module 'vscode' {
 		 * @return An array of document highlights or a thenable that resolves to such. The lack of a result can be
 		 * signaled by returning `undefined`, `null`, or an empty array.
 		 */
-		provideWorkspaceSymbols(query: string, token: CancellationToken): ProviderResult<SymbolInformation[]>;
+		provideWorkspaceSymbols(query: string, token: CancellationToken): ProviderResult<T[]>;
 
 		/**
 		 * Given a symbol fill in its [location](#SymbolInformation.location). This method is called whenever a symbol
@@ -2831,7 +2830,7 @@ declare module 'vscode' {
 		 * @return The resolved symbol or a thenable that resolves to that. When no result is returned,
 		 * the given `symbol` is used.
 		 */
-		resolveWorkspaceSymbol?(symbol: SymbolInformation, token: CancellationToken): ProviderResult<SymbolInformation>;
+		resolveWorkspaceSymbol?(symbol: T, token: CancellationToken): ProviderResult<T>;
 	}
 
 	/**
@@ -3054,7 +3053,6 @@ declare module 'vscode' {
 		 * @param metadata Optional metadata for the entry.
 		 */
 		renameFile(oldUri: Uri, newUri: Uri, options?: { overwrite?: boolean, ignoreIfExists?: boolean }, metadata?: WorkspaceEditEntryMetadata): void;
-
 
 		/**
 		 * Get all text edits grouped by resource.
@@ -3858,7 +3856,7 @@ declare module 'vscode' {
 	 * Represents a collection of [completion items](#CompletionItem) to be presented
 	 * in the editor.
 	 */
-	export class CompletionList {
+	export class CompletionList<T = CompletionItem> {
 
 		/**
 		 * This list is not complete. Further typing should result in recomputing
@@ -3869,7 +3867,7 @@ declare module 'vscode' {
 		/**
 		 * The completion items.
 		 */
-		items: CompletionItem[];
+		items: T[];
 
 		/**
 		 * Creates a new completion list.
@@ -3877,7 +3875,7 @@ declare module 'vscode' {
 		 * @param items The completion items.
 		 * @param isIncomplete The list is not complete.
 		 */
-		constructor(items?: CompletionItem[], isIncomplete?: boolean);
+		constructor(items?: T[], isIncomplete?: boolean);
 	}
 
 	/**
@@ -3931,7 +3929,7 @@ declare module 'vscode' {
 	 * Providers are asked for completions either explicitly by a user gesture or -depending on the configuration-
 	 * implicitly when typing words or trigger characters.
 	 */
-	export interface CompletionItemProvider {
+	export interface CompletionItemProvider<T = CompletionItem> {
 
 		/**
 		 * Provide completion items for the given position and document.
@@ -3944,7 +3942,7 @@ declare module 'vscode' {
 		 * @return An array of completions, a [completion list](#CompletionList), or a thenable that resolves to either.
 		 * The lack of a result can be signaled by returning `undefined`, `null`, or an empty array.
 		 */
-		provideCompletionItems(document: TextDocument, position: Position, token: CancellationToken, context: CompletionContext): ProviderResult<CompletionItem[] | CompletionList>;
+		provideCompletionItems(document: TextDocument, position: Position, token: CancellationToken, context: CompletionContext): ProviderResult<T[] | CompletionList<T>>;
 
 		/**
 		 * Given a completion item fill in more data, like [doc-comment](#CompletionItem.documentation)
@@ -3952,18 +3950,21 @@ declare module 'vscode' {
 		 *
 		 * The editor will only resolve a completion item once.
 		 *
-		 * *Note* that accepting a completion item will not wait for it to be resolved. Because of that [`insertText`](#CompletionItem.insertText),
-		 * [`additionalTextEdits`](#CompletionItem.additionalTextEdits), and [`command`](#CompletionItem.command) should not
-		 * be changed when resolving an item.
+		 * *Note* that this function is called when completion items are already showing in the UI or when an item has been
+		 * selected for insertion. Because of that, no property that changes the presentation (label, sorting, filtering etc)
+		 * or the (primary) insert behaviour ([insertText](#CompletionItem.insertText)) can be changed.
+		 *
+		 * This function may fill in [additionalTextEdits](#CompletionItem.additionalTextEdits). However, that means an item might be
+		 * inserted *before* resolving is done and in that case the editor will do a best effort to still apply those additional
+		 * text edits.
 		 *
 		 * @param item A completion item currently active in the UI.
 		 * @param token A cancellation token.
 		 * @return The resolved completion item or a thenable that resolves to of such. It is OK to return the given
 		 * `item`. When no result is returned, the given `item` will be used.
 		 */
-		resolveCompletionItem?(item: CompletionItem, token: CancellationToken): ProviderResult<CompletionItem>;
+		resolveCompletionItem?(item: T, token: CancellationToken): ProviderResult<T>;
 	}
-
 
 	/**
 	 * A document link is a range in a text document that links to an internal or external resource, like another
@@ -4003,7 +4004,7 @@ declare module 'vscode' {
 	 * The document link provider defines the contract between extensions and feature of showing
 	 * links in the editor.
 	 */
-	export interface DocumentLinkProvider {
+	export interface DocumentLinkProvider<T = DocumentLink> {
 
 		/**
 		 * Provide links for the given document. Note that the editor ships with a default provider that detects
@@ -4014,7 +4015,7 @@ declare module 'vscode' {
 		 * @return An array of [document links](#DocumentLink) or a thenable that resolves to such. The lack of a result
 		 * can be signaled by returning `undefined`, `null`, or an empty array.
 		 */
-		provideDocumentLinks(document: TextDocument, token: CancellationToken): ProviderResult<DocumentLink[]>;
+		provideDocumentLinks(document: TextDocument, token: CancellationToken): ProviderResult<T[]>;
 
 		/**
 		 * Given a link fill in its [target](#DocumentLink.target). This method is called when an incomplete
@@ -4025,7 +4026,7 @@ declare module 'vscode' {
 		 * @param link The link that is to be resolved.
 		 * @param token A cancellation token.
 		 */
-		resolveDocumentLink?(link: DocumentLink, token: CancellationToken): ProviderResult<DocumentLink>;
+		resolveDocumentLink?(link: T, token: CancellationToken): ProviderResult<T>;
 	}
 
 	/**
@@ -5657,7 +5658,6 @@ declare module 'vscode' {
 		private constructor(id: string, label: string);
 	}
 
-
 	/**
 	 * A structure that defines a task kind in the system.
 	 * The value must be JSON-stringifyable.
@@ -6036,13 +6036,13 @@ declare module 'vscode' {
 	 * A task provider allows to add tasks to the task service.
 	 * A task provider is registered via #tasks.registerTaskProvider.
 	 */
-	export interface TaskProvider {
+	export interface TaskProvider<T = Task> {
 		/**
 		 * Provides tasks.
 		 * @param token A cancellation token.
 		 * @return an array of tasks
 		 */
-		provideTasks(token?: CancellationToken): ProviderResult<Task[]>;
+		provideTasks(token?: CancellationToken): ProviderResult<T[]>;
 
 		/**
 		 * Resolves a task that has no [`execution`](#Task.execution) set. Tasks are
@@ -6057,7 +6057,7 @@ declare module 'vscode' {
 		 * @param token A cancellation token.
 		 * @return The resolved task
 		 */
-		resolveTask(task: Task, token?: CancellationToken): ProviderResult<Task>;
+		resolveTask(task: T, token?: CancellationToken): ProviderResult<T>;
 	}
 
 	/**
@@ -6610,7 +6610,7 @@ declare module 'vscode' {
 		readonly enableCommandUris?: boolean;
 
 		/**
-		 * Root paths from which the webview can load local (filesystem) resources using the `vscode-resource:` scheme.
+		 * Root paths from which the webview can load local (filesystem) resources using uris from `asWebviewUri`
 		 *
 		 * Default to the root folders of the current workspace plus the extension's install directory.
 		 *
@@ -7889,7 +7889,7 @@ declare module 'vscode' {
 		 * In order to expand the revealed element, set the option `expand` to `true`. To expand recursively set `expand` to the number of levels to expand.
 		 * **NOTE:** You can expand only to 3 levels maximum.
 		 *
-		 * **NOTE:** [TreeDataProvider](#TreeDataProvider) is required to implement [getParent](#TreeDataProvider.getParent) method to access this API.
+		 * **NOTE:** The [TreeDataProvider](#TreeDataProvider) that the `TreeView` [is registered with](#window.createTreeView) with must implement [getParent](#TreeDataProvider.getParent) method to access this API.
 		 */
 		reveal(element: T, options?: { select?: boolean, focus?: boolean, expand?: boolean | number }): Thenable<void>;
 	}
@@ -8957,7 +8957,6 @@ declare module 'vscode' {
 		readonly files: ReadonlyArray<{ oldUri: Uri, newUri: Uri }>;
 	}
 
-
 	/**
 	 * An event describing a change to the set of [workspace folders](#workspace.workspaceFolders).
 	 */
@@ -9274,9 +9273,11 @@ declare module 'vscode' {
 		 * An event that is emitted when a [text document](#TextDocument) is disposed or when the language id
 		 * of a text document [has been changed](#languages.setTextDocumentLanguage).
 		 *
-		 * To add an event listener when a visible text document is closed, use the [TextEditor](#TextEditor) events in the
-		 * [window](#window) namespace. Note that this event is not emitted when a [TextEditor](#TextEditor) is closed
-		 * but the document remains open in another [visible text editor](#window.visibleTextEditors).
+		 * *Note 1:* There is no guarantee that this event fires when an editor tab is closed, use the
+		 * [`onDidChangeVisibleTextEditors`](#window.onDidChangeVisibleTextEditors)-event to know when editors change.
+		 *
+		 * *Note 2:* A document can be open but not shown in an editor which means this event can fire
+		 * for a document that has not been shown in an editor.
 		 */
 		export const onDidCloseTextDocument: Event<TextDocument>;
 
@@ -9592,7 +9593,7 @@ declare module 'vscode' {
 		 *
 		 * @param selector A selector that defines the documents this provider is applicable to.
 		 * @param provider A code action provider.
-		 * @param metadata Metadata about the kind of code actions the provider providers.
+		 * @param metadata Metadata about the kind of code actions the provider provides.
 		 * @return A [disposable](#Disposable) that unregisters this provider when being disposed.
 		 */
 		export function registerCodeActionsProvider(selector: DocumentSelector, provider: CodeActionProvider, metadata?: CodeActionProviderMetadata): Disposable;
@@ -9743,8 +9744,8 @@ declare module 'vscode' {
 		 * Register a rename provider.
 		 *
 		 * Multiple providers can be registered for a language. In that case providers are sorted
-		 * by their [score](#languages.match) and the best-matching provider is used. Failure
-		 * of the selected provider will cause a failure of the whole operation.
+		 * by their [score](#languages.match) and asked in sequence. The first provider producing a result
+		 * defines the result of the whole operation.
 		 *
 		 * @param selector A selector that defines the documents this provider is applicable to.
 		 * @param provider A rename provider.
@@ -10638,7 +10639,6 @@ declare module 'vscode' {
 		 * List of breakpoints.
 		 */
 		export let breakpoints: Breakpoint[];
-
 
 		/**
 		 * An [event](#Event) which fires when the [active debug session](#debug.activeDebugSession)
