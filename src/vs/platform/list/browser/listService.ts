@@ -38,7 +38,7 @@ export const IListService = createDecorator<IListService>('listService');
 
 export interface IListService {
 
-	_serviceBrand: undefined;
+	readonly _serviceBrand: undefined;
 
 	/**
 	 * Returns the currently focused list widget if any.
@@ -53,7 +53,7 @@ interface IRegisteredList {
 
 export class ListService implements IListService {
 
-	_serviceBrand: undefined;
+	declare readonly _serviceBrand: undefined;
 
 	private disposables = new DisposableStore();
 	private lists: IRegisteredList[] = [];

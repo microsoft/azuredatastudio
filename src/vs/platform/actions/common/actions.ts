@@ -156,7 +156,7 @@ export const IMenuService = createDecorator<IMenuService>('menuService');
 
 export interface IMenuService {
 
-	_serviceBrand: undefined;
+	readonly _serviceBrand: undefined;
 
 	createMenu(id: MenuId, scopedKeybindingService: IContextKeyService): IMenu;
 }
