@@ -7,6 +7,8 @@ import { isMacintosh, isLinux, isWeb } from 'vs/base/common/platform';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { URI, UriComponents } from 'vs/base/common/uri';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { ThemeType } from 'vs/platform/theme/common/themeService';
+import { IWorkspaceIdentifier, ISingleFolderWorkspaceIdentifier } from 'vs/platform/workspaces/common/workspaces';
 
 export interface IBaseOpenWindowsOptions {
 	forceReuseWindow?: boolean;
@@ -17,6 +19,26 @@ export interface IOpenWindowOptions extends IBaseOpenWindowsOptions {
 	preferNewWindow?: boolean;
 
 	noRecentEntry?: boolean;
+
+	addMode?: boolean;
+
+	diffMode?: boolean;
+	gotoLineMode?: boolean;
+
+	waitMarkerFileURI?: URI;
+}
+
+export interface IAddFoldersRequest {
+	foldersToAdd: UriComponents[];
+}
+
+export interface IOpenedWindow {
+	id: number;
+	workspace?: IWorkspaceIdentifier;
+	folderUri?: ISingleFolderWorkspaceIdentifier;
+	title: string;
+	filename?: string;
+	dirty: boolean;
 }
 
 export interface IOpenEmptyWindowOptions extends IBaseOpenWindowsOptions {
@@ -157,6 +179,7 @@ export interface IWindowConfiguration {
 	remoteAuthority?: string;
 
 	highContrast?: boolean;
+	defaultThemeType?: ThemeType;
 
 	filesToOpenOrCreate?: IPath[];
 	filesToDiff?: IPath[];

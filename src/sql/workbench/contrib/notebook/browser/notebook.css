@@ -52,6 +52,7 @@
 .notebookEditor .in-preview .actions-container .action-item .notebook-button {
 	display: flex;
 	background-size: 16px;
+	height: 100%;
 }
 
 .notebookEditor
@@ -219,8 +220,8 @@
 	background: url("./media/light/new_notebook.svg") center center no-repeat;
 }
 
-.vs-dark .monaco-workbench .notebook-action.new-notebook,
-.hc-black .monaco-workbench .notebook-action.new-notebook {
+.monaco-workbench.vs-dark .notebook-action.new-notebook,
+.monaco-workbench.hc-black .notebook-action.new-notebook {
 	background: url("./media/dark/new_notebook_inverse.svg") center center
 		no-repeat;
 }

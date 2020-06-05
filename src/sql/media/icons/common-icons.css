@@ -545,6 +545,13 @@ Includes non-masked style declarations. */
 	background-image: url("database_colored.svg");
 }
 
+.book.codicon {
+
+	-webkit-mask-image: url("book_image.svg");
+	-webkit-mask-repeat: no-repeat;
+	-webkit-mask-position: 50% 50%;
+}
+
 .small {
 	width: 16px;
 	height: 16px;

@@ -498,7 +498,7 @@ export class ExtHostTreeView<T> extends Disposable {
 		return node;
 	}
 
-	protected createTreeNode(element: T, extensionTreeItem: azdata.TreeItem, parent: TreeNode | Root): TreeNode { 	// {{SQL CARBON EDIT}} change to protected, change to azdata.TreeItem
+	protected createTreeNode(element: T, extensionTreeItem: azdata.TreeItem2, parent: TreeNode | Root): TreeNode { 	// {{SQL CARBON EDIT}} change to protected, change to azdata.TreeItem
 		const disposable = new DisposableStore();
 		const handle = this.createHandle(element, extensionTreeItem, parent);
 		const icon = this.getLightIconPath(extensionTreeItem);
@@ -515,10 +515,10 @@ export class ExtHostTreeView<T> extends Disposable {
 			iconDark: this.getDarkIconPath(extensionTreeItem) || icon,
 			themeIcon: extensionTreeItem.iconPath instanceof ThemeIcon ? { id: extensionTreeItem.iconPath.id } : undefined,
 			collapsibleState: isUndefinedOrNull(extensionTreeItem.collapsibleState) ? TreeItemCollapsibleState.None : extensionTreeItem.collapsibleState,
-			// {{SQL CARBON EDIT}}
-			payload: extensionTreeItem.payload,
-			childProvider: extensionTreeItem.childProvider,
-			type: extensionTreeItem.type
+			accessibilityInformation: extensionTreeItem.accessibilityInformation,
+			payload: extensionTreeItem.payload, // {{SQL CARBON EDIT}}
+			childProvider: extensionTreeItem.childProvider, // {{SQL CARBON EDIT}}
+			type: extensionTreeItem.type // {{SQL CARBON EDIT}}
 		};
 
 		return {
