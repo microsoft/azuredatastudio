@@ -8,6 +8,7 @@ jobs:
 - job: Compile
   pool:
    name: ads-build-linux
+  container: linux-x64
   steps:
   - script: |
       set -e
