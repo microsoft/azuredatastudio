@@ -66,7 +66,7 @@ export interface IExtension {
 	 * Converts a region value (@see AzureRegion) into the localized Display Name
 	 * @param region The region value
 	 */
-	getRegionDisplayName(region: string): string;
+	getRegionDisplayName(region?: string): string;
 	provideResources(): azureResource.IAzureResourceProvider[];
 }
 
