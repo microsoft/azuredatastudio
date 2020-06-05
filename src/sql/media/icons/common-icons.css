@@ -549,7 +549,6 @@ Includes non-masked style declarations. */
 
 .book.codicon {
 	-webkit-mask-image: url("book_image.svg");
-	-webkit-mask-image: url("book_image.svg");
 	-webkit-mask-repeat: no-repeat;
 	-webkit-mask-position: 50% 50%;
 }
