@@ -15,6 +15,9 @@ export const enum extension {
 	name = 'Microsoft.azurecore'
 }
 
+/**
+ * Enumeration of the Azure datacenter regions. See https://docs.microsoft.com/dotnet/api/microsoft.azure.management.resourcemanager.fluent.core.region
+ */
 export const enum AzureRegion {
 	asiaeast = 'asiaeast',
 	asiasoutheast = 'asiasoutheast',
@@ -71,6 +74,10 @@ export const enum AzureRegion {
 }
 
 export interface IExtension {
+	/**
+	 * Converts a region value (@see AzureRegion) into the localized Display Name
+	 * @param region The region value
+	 */
 	getRegionDisplayName(region: string): string;
 	provideResources(): azureResource.IAzureResourceProvider[];
 }

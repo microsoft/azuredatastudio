@@ -7,13 +7,13 @@ import * as loc from './localizedConstants';
 import { AzureRegion } from './azurecore';
 
 /**
- *
- * @param region The re
+ * Converts a region value (@see AzureRegion) into the localized Display Name
+ * @param region The region value
  */
 export function getRegionDisplayName(region?: string): string {
-	region = (region ?? '').toLocaleLowerCase();
+	region = (region ?? '');
 
-	switch (region) {
+	switch (region.toLocaleLowerCase()) {
 		case AzureRegion.asiaeast:
 			return loc.asiaEast;
 		case AzureRegion.asiasoutheast:

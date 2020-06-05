@@ -10,7 +10,6 @@ import { AzureRegion } from '../azurecore';
 import * as loc from '../localizedConstants';
 
 describe('Azurecore Utils Tests', function (): void {
-
 	describe('getRegionDisplayName', function(): void {
 		it('Returns expected name for valid regions', function(): void {
 			should(getRegionDisplayName(AzureRegion.asiaeast)).equal(loc.asiaEast);
