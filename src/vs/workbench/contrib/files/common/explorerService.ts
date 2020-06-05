@@ -126,10 +126,10 @@ export class ExplorerService implements IExplorerService {
 		await this.view.setEditable(stat, isEditing);
 	}
 
-	setToCopy(items: ExplorerItem[], cut: boolean): void {
+	async setToCopy(items: ExplorerItem[], cut: boolean): Promise<void> {
 		const previouslyCutItems = this.cutItems;
 		this.cutItems = cut ? items : undefined;
-		this.clipboardService.writeResources(items.map(s => s.resource));
+		await this.clipboardService.writeResources(items.map(s => s.resource));
 
 		this.view?.itemsCopied(items, cut, previouslyCutItems);
 	}
@@ -150,10 +150,11 @@ export class ExplorerService implements IExplorerService {
 		return !!this.editable && (this.editable.stat === stat || !stat);
 	}
 
-	async select(resource: URI, reveal?: boolean): Promise<void> {
+	async select(resource: URI, reveal?: boolean | string): Promise<void> {
 		if (!this.view) {
 			return;
 		}
+
 		const fileStat = this.findClosest(resource);
 		if (fileStat) {
 			await this.view.selectResource(fileStat.resource, reveal);
@@ -197,7 +198,7 @@ export class ExplorerService implements IExplorerService {
 
 			if (reveal && resource && autoReveal) {
 				// We did a top level refresh, reveal the active file #67118
-				this.select(resource, true);
+				this.select(resource, autoReveal);
 			}
 		}
 	}

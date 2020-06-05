@@ -63,6 +63,10 @@ export class ApiWrapper {
 		return vscode.window.showInformationMessage(message, ...items);
 	}
 
+	public showWarningMessage(message: string, ...items: string[]): Thenable<string | undefined> {
+		return vscode.window.showWarningMessage(message, ...items);
+	}
+
 	public showOpenDialog(options: vscode.OpenDialogOptions): Thenable<vscode.Uri[] | undefined> {
 		return vscode.window.showOpenDialog(options);
 	}
