@@ -36,6 +36,8 @@ import { SqlInstanceArcResourceService } from './azureResource/providers/sqlinst
 import { PostgresServerArcProvider } from './azureResource/providers/postgresArcServer/postgresServerProvider';
 import { PostgresServerArcService } from './azureResource/providers/postgresArcServer/postgresServerService';
 import { azureResource } from './azureResource/azure-resource';
+import { azurecore } from './azurecore';
+import * as utils from './utils';
 import * as loc from './localizedConstants';
 
 let extensionContext: vscode.ExtensionContext;
@@ -62,7 +64,7 @@ function pushDisposable(disposable: vscode.Disposable): void {
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
-export async function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext): Promise<azurecore.IExtension> {
 	extensionContext = context;
 	const apiWrapper = new ApiWrapper();
 	let appContext = new AppContext(extensionContext, apiWrapper);
@@ -82,7 +84,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	registerAzureResourceCommands(appContext, azureResourceTree);
 
 	return {
-		provideResources() {
+		provideResources(): azureResource.IAzureResourceProvider[] {
 			const arcFeaturedEnabled = apiWrapper.getExtensionConfiguration().get('enableArcFeatures');
 			const providers: azureResource.IAzureResourceProvider[] = [
 				new AzureResourceDatabaseServerProvider(new AzureResourceDatabaseServerService(), apiWrapper, extensionContext),
@@ -97,7 +99,8 @@ export async function activate(context: vscode.ExtensionContext) {
 				);
 			}
 			return providers;
-		}
+		},
+		getRegionDisplayName: utils.getRegionDisplayName
 	};
 }
 

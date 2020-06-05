@@ -19,7 +19,7 @@ import { AzureResourceAccountTreeNode } from './tree/accountTreeNode';
 import { IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService, IAzureTerminalService } from '../azureResource/interfaces';
 import { AzureResourceServiceNames } from './constants';
 import { AzureResourceGroupService } from './providers/resourceGroup/resourceGroupService';
-import { GetSubscriptionsResult, GetResourceGroupsResult } from '../azurecore';
+import { azurecore } from '../azurecore';
 import { isArray } from 'util';
 import { AzureAccount, Tenant } from '../account-provider/interfaces';
 
@@ -76,8 +76,8 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 	});
 
 	// Resource Management commands
-	appContext.apiWrapper.registerCommand('azure.accounts.getSubscriptions', async (account?: azdata.Account, ignoreErrors: boolean = false): Promise<GetSubscriptionsResult> => {
-		const result: GetSubscriptionsResult = { subscriptions: [], errors: [] };
+	appContext.apiWrapper.registerCommand('azure.accounts.getSubscriptions', async (account?: azdata.Account, ignoreErrors: boolean = false): Promise<azurecore.GetSubscriptionsResult> => {
+		const result: azurecore.GetSubscriptionsResult = { subscriptions: [], errors: [] };
 		if (!account?.properties?.tenants || !isArray(account.properties.tenants)) {
 			const error = new Error(localize('azure.accounts.getSubscriptions.invalidParamsError', "Invalid account"));
 			if (!ignoreErrors) {
@@ -110,8 +110,8 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 		return result;
 	});
 
-	appContext.apiWrapper.registerCommand('azure.accounts.getResourceGroups', async (account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, ignoreErrors: boolean = false): Promise<GetResourceGroupsResult> => {
-		const result: GetResourceGroupsResult = { resourceGroups: [], errors: [] };
+	appContext.apiWrapper.registerCommand('azure.accounts.getResourceGroups', async (account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, ignoreErrors: boolean = false): Promise<azurecore.GetResourceGroupsResult> => {
+		const result: azurecore.GetResourceGroupsResult = { resourceGroups: [], errors: [] };
 		if (!account?.properties?.tenants || !isArray(account.properties.tenants) || !subscription) {
 			const error = new Error(localize('azure.accounts.getResourceGroups.invalidParamsError', "Invalid account or subscription"));
 			if (!ignoreErrors) {
