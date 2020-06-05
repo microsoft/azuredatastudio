@@ -9517,10 +9517,10 @@ typescript@^2.6.2:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.6.2.tgz#3c5b6fd7f6de0914269027f03c0946758f7673a4"
   integrity sha1-PFtv1/beCRQmkCfwPAlGdY92c6Q=
 
-typescript@^4.0.0-dev.20200605:
-  version "4.0.0-dev.20200605"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.0.0-dev.20200605.tgz#a8c587deb99eb3438550cc0f8452535155edf084"
-  integrity sha512-4gCtCfq0DiLmGuGq9datahr0nJpnU8GFAwH4USv8i43gU6U/B/dx3KuD7d1mHHvof9zaQXrXe/WIvKiufnxv9A==
+typescript@^3.9.3:
+  version "3.9.5"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.9.5.tgz#586f0dba300cde8be52dd1ac4f7e1009c1b13f36"
+  integrity sha512-hSAifV3k+i6lEoCJ2k6R2Z/rp/H3+8sdmcn5NrS3/3kE7+RyZXm9aqvxWqjEXHAd8b0pShatpcdMTvEdvAJltQ==
 
 uc.micro@^1.0.1, uc.micro@^1.0.3:
   version "1.0.3"
