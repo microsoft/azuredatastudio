@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import * as mssql from '../../mssql';
 import * as os from 'os';
 import * as loc from './localizedConstants';
+import { ApiWrapper } from './common/apiWrapper';
 
 export interface IPackageInfo {
 	name: string;
@@ -83,14 +84,17 @@ function connectionInfoToConnectionProfile(details: azdata.ConnectionInfo): azda
 	};
 }
 
-export async function verifyConnectionAndGetOwnerUri(endpoint: mssql.SchemaCompareEndpointInfo, caller: string): Promise<string> {
+export async function verifyConnectionAndGetOwnerUri(endpoint: mssql.SchemaCompareEndpointInfo, caller: string, apiWrapper: ApiWrapper): Promise<string> {
 	let ownerUri = undefined;
+	console.log('>>>>>>>>>>>>>>>>>In verifyConnection');
 	if (endpoint.endpointType === mssql.SchemaCompareEndpointType.Database && endpoint.connectionDetails) {
 		let connectionProfile = await connectionInfoToConnectionProfile(endpoint.connectionDetails);
 		let connection = await azdata.connection.connect(connectionProfile, false, false);
+		console.log('>>>>>>>>>>>>>>>>>Before connection', connection);
 		if (connection) {
-			ownerUri = await azdata.connection.getUriForConnection(connection.connectionId);
+			ownerUri = await apiWrapper.getUriForConnection(connection.connectionId);
 			if (!ownerUri) {
+				console.log('>>>>>>>>>>>>>>>>>After !ownerUri');
 				let connectionList = await azdata.connection.getConnections(true);
 				let userConnection;
 				userConnection = connectionList.find(connection =>
@@ -99,18 +103,19 @@ export async function verifyConnectionAndGetOwnerUri(endpoint: mssql.SchemaCompa
 						&& endpoint.connectionDetails['userName'] === connection.options.user
 						&& (endpoint.connectionDetails['databaseName'].toLowerCase() === connection.options.database.toLowerCase()
 							|| connection.options.database.toLowerCase() === 'master')));
-
+				console.log('>>>>>>>>>>>>>>>>>Before if (userConnection === undefined) {');
 				if (userConnection === undefined) {
-					const getConnectionString = loc.getConnectionString(caller);
+					const getConnectionString = loc.getConnectionString(caller); console.log('>>>>>>>>>>>>>>>>>In userConnection === undefined) {');
 					// need only yes button - since the modal dialog has a default cancel
-					let result = await vscode.window.showWarningMessage(getConnectionString, { modal: true }, loc.YesButtonText);
+					let result = await apiWrapper.showWarningMessage(getConnectionString, { modal: true }, loc.YesButtonText);
 					if (result === loc.YesButtonText) {
-						userConnection = await azdata.connection.openConnectionDialog(undefined, connectionProfile);
+						userConnection = await apiWrapper.openConnectionDialog(undefined, connectionProfile);
 					}
 				}
+				const getConnectionString = loc.getConnectionString(caller); console.log('>>>>>>>>>>>>>>>>>After userConnection === undefined) {');
 
 				if (userConnection !== undefined) {
-					ownerUri = await azdata.connection.getUriForConnection(userConnection.connectionId);
+					ownerUri = await apiWrapper.getUriForConnection(userConnection.connectionId);
 				}
 			}
 			if (!ownerUri && connection.errorMessage) {
