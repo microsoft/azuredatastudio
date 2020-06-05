@@ -5,6 +5,11 @@
 
 import * as loc from '../localizedConstants';
 
+export enum ResourceType {
+	dataControllers = 'dataControllers',
+	postgresInstances = 'postgresInstances',
+	sqlManagedInstances = 'sqlManagedInstances'
+}
 /**
  * Converts the resource type name into the localized Display Name for that type.
  * @param resourceType The resource type name to convert
@@ -12,9 +17,11 @@ import * as loc from '../localizedConstants';
 export function resourceTypeToDisplayName(resourceType: string | undefined): string {
 	resourceType = resourceType || 'undefined';
 	switch (resourceType) {
-		case 'postgres':
+		case ResourceType.dataControllers:
+			return loc.dataControllersType;
+		case ResourceType.postgresInstances:
 			return loc.pgSqlType;
-		case 'sql':
+		case ResourceType.sqlManagedInstances:
 			return loc.miaaType;
 	}
 	return resourceType;

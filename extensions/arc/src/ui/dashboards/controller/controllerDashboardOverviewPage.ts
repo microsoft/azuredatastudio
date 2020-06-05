@@ -4,18 +4,27 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
+import * as azurecore from 'azurecore';
 import * as loc from '../../../localizedConstants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { IconPathHelper } from '../../../constants';
 import { ControllerModel } from '../../../models/controllerModel';
 import { resourceTypeToDisplayName } from '../../../common/utils';
+import { RegistrationResponse } from '../../../controller/generated/v1/model/registrationResponse';
 
 export class ControllerDashboardOverviewPage extends DashboardPage {
 
 	private _arcResourcesTable!: azdata.DeclarativeTableComponent;
+	private _propertiesContainer!: azdata.PropertiesContainerComponent;
 
 	constructor(modelView: azdata.ModelView, private _controllerModel: ControllerModel) {
 		super(modelView);
+		this._controllerModel.onRegistrationsUpdated((_: RegistrationResponse[]) => {
+			this.eventuallyRunOnInitialized(() => {
+				this.handleRegistrationsUpdated();
+			});
+		});
 		this.refresh().catch(e => {
 			console.log(e);
 		});
@@ -35,7 +44,6 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 
 	protected async refresh(): Promise<void> {
 		await this._controllerModel.refresh();
-		this.eventuallyRunOnInitialized(() => this._arcResourcesTable.data = this._controllerModel.registrations().map(r => [r.instanceName, resourceTypeToDisplayName(r.instanceType), r.vCores]));
 	}
 
 	public get container(): azdata.Component {
@@ -45,40 +53,9 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 			.withProperties({ CSSStyles: { 'margin': '18px' } })
 			.component();
 
-		const propertiesContainer = this.modelView.modelBuilder.propertiesContainer().withProperties<azdata.PropertiesContainerComponentProperties>({
-			propertyItems: [
-				{
-					displayName: loc.resourceGroup,
-					value: 'contosoRG123'
-				},
-				{
-					displayName: loc.region,
-					value: 'West US'
-				},
-				{
-					displayName: loc.subscription,
-					value: 'contososub5678'
-				},
-				{
-					displayName: loc.subscriptionId,
-					value: '88abe223-c630-4f2c-8782-00bb5be874f6'
-				},
-				{
-					displayName: loc.state,
-					value: 'Connected'
-				},
-				{
-					displayName: loc.adminUsername,
-					value: 'cloudsa'
-				},
-				{
-					displayName: loc.host,
-					value: 'plainscluster.sqlarcdm.database.windows.net'
-				}
-			]
-		}).component();
+		this._propertiesContainer = this.modelView.modelBuilder.propertiesContainer().component();
 
-		rootContainer.addItem(propertiesContainer);
+		rootContainer.addItem(this._propertiesContainer);
 
 		const arcResourcesTitle = this.modelView.modelBuilder.text()
 			.withProperties<azdata.TextComponentProperties>({ value: loc.arcResources })
@@ -145,6 +122,16 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 			iconPath: IconPathHelper.openInTab
 		}).component();
 
+		openInAzurePortalButton.onDidClick(async () => {
+			const r = this._controllerModel.controllerRegistration;
+			if (r) {
+				vscode.env.openExternal(vscode.Uri.parse(
+					`https://portal.azure.com/#resource/subscriptions/${r.subscriptionId}/resourceGroups/${r.resourceGroupName}/providers/Microsoft.AzureData/dataControllers/${r.instanceName}`));
+			} else {
+				vscode.window.showErrorMessage(loc.couldNotFindControllerResource);
+			}
+		});
+
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems(
 			[
 				{ component: createNewButton },
@@ -155,4 +142,46 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 		).component();
 	}
 
+	private handleRegistrationsUpdated(): void {
+		const reg = this._controllerModel.controllerRegistration;
+		if (reg) {
+
+			this._propertiesContainer.propertyItems = [
+				{
+					displayName: loc.name,
+					value: reg.instanceName || '-'
+				},
+				{
+					displayName: loc.resourceGroup,
+					value: reg.resourceGroupName || '-'
+				},
+				{
+					displayName: loc.region,
+					value: reg.location || '-'
+				},
+				{
+					displayName: loc.subscriptionId,
+					value: reg.subscriptionId || '-'
+				},
+				{
+					displayName: loc.type,
+					value: loc.dataControllersType
+				},
+				{
+					displayName: loc.coordinatorEndpoint,
+					value: '-'
+				},
+				{
+					displayName: loc.connectionMode,
+					value: reg.connectionMode || '-'
+				},
+				{
+					displayName: loc.namespace,
+					value: reg.instanceNamespace || '-'
+				}
+			];
+		}
+
+		this._arcResourcesTable.data = this._controllerModel.registrations().map(r => [r.instanceName, resourceTypeToDisplayName(r.instanceType), r.vCores]);
+	}
 }

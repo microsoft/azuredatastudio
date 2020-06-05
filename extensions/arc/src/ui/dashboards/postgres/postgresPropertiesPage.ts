@@ -79,7 +79,7 @@ export class PostgresPropertiesPage extends DashboardPage {
 	private refresh() {
 		const endpoint: { ip?: string, port?: number } = this._postgresModel.endpoint();
 		const connectionString = `postgresql://postgres:${this._postgresModel.password()}@${endpoint.ip}:${endpoint.port}`;
-		const registration = this._controllerModel.registration('postgresInstances', this._postgresModel.namespace(), this._postgresModel.name());
+		const registration = this._controllerModel.getRegistration('postgresInstances', this._postgresModel.namespace(), this._postgresModel.name());
 
 		this.keyValueContainer?.refresh([
 			new InputKeyValue(loc.coordinatorEndpoint, connectionString),

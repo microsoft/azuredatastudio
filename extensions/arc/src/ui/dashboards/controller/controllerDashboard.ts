@@ -7,11 +7,12 @@ import * as azdata from 'azdata';
 import { Dashboard } from '../../components/dashboard';
 import { ControllerModel } from '../../../models/controllerModel';
 import { ControllerDashboardOverviewPage } from './controllerDashboardOverviewPage';
+import * as loc from '../../../localizedConstants';
 
 export class ControllerDashboard extends Dashboard {
 
-	constructor(title: string, private _controllerModel: ControllerModel) {
-		super(title);
+	constructor(private _controllerModel: ControllerModel) {
+		super(loc.arcControllerDashboard);
 	}
 
 	protected async registerTabs(modelView: azdata.ModelView): Promise<(azdata.DashboardTab | azdata.DashboardTabGroup)[]> {

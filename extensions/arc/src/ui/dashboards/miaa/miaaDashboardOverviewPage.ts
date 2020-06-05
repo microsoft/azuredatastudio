@@ -68,10 +68,6 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 					value: 'Connected'
 				},
 				{
-					displayName: loc.adminUsername,
-					value: 'cloudsa'
-				},
-				{
 					displayName: loc.host,
 					value: 'plainscluster.sqlarcdm.database.windows.net'
 				}
