@@ -3291,8 +3291,6 @@ declare module 'azdata' {
 		valueType: DeclarativeDataType;
 		isReadOnly: boolean;
 		width: number | string;
-		showCheckAll?: boolean;
-		isChecked?: boolean;
 		categoryValues?: CategoryValue[];
 	}
 

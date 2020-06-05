@@ -119,15 +119,10 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 	}
 
 	public onHeaderCheckBoxChanged(e: boolean, colIdx: number): void {
-		this.data.forEach((row) => {
-			row[colIdx] = e;
+		this.data.forEach((row, rowidx) => {
+			this.onCellDataChanged(e, rowidx, colIdx);
 		});
-		this.data = this.data;
 		this._changeRef.detectChanges();
-		this.fireEvent({
-			eventType: ComponentEventType.onDidChange,
-			args: { column: colIdx, value: e }
-		});
 	}
 
 	public onSelectBoxChanged(e: ISelectData | string, rowIdx: number, colIdx: number): void {
@@ -225,27 +220,16 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
-		let dataChangedFlag: boolean = false;
 		if (this.columns) {
-			this.columns.forEach((cols, idx) => {
-				if (cols.showCheckAll) {
-					this.data.forEach((row) => {
-						if (row[idx] !== cols.isChecked) {
-							dataChangedFlag = true;
-						}
-						row[idx] = cols.isChecked;
+			this.columns.forEach((col, colidx) => {
+				if (col.showCheckAll) {
+					this.data.forEach((row, rowidx) => {
+						this.onCellDataChanged(col.isChecked, rowidx, colidx);
 					});
+					this._changeRef.detectChanges();
 				}
 			});
 
-			//Creating a data change event if a cell value was changed due to check all value
-			this._changeRef.detectChanges();
-			if (dataChangedFlag) {
-				this.fireEvent({
-					eventType: ComponentEventType.onDidChange,
-					args: this.data
-				});
-			}
 		}
 	}
 

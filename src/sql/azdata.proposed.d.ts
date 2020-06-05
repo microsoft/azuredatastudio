@@ -173,6 +173,11 @@ declare module 'azdata' {
 	export interface DeclarativeTableProperties extends ComponentProperties {
 	}
 
+	export interface DeclarativeTableColumn {
+		showCheckAll?: boolean;
+		isChecked?: boolean;
+	}
+
 	export interface ComponentProperties {
 		ariaHidden?: boolean;
 	}
