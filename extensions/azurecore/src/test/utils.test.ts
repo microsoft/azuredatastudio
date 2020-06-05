@@ -12,15 +12,15 @@ import * as loc from '../localizedConstants';
 describe('Azurecore Utils Tests', function (): void {
 	describe('getRegionDisplayName', function(): void {
 		it('Returns expected name for valid regions', function(): void {
-			should(getRegionDisplayName(AzureRegion.asiaeast)).equal(loc.asiaEast);
-			should(getRegionDisplayName(AzureRegion.governmentusdodcentral)).equal(loc.governmentUSDodCentral);
-			should(getRegionDisplayName(AzureRegion.uswestcentral)).equal(loc.usWestCentral);
+			should(getRegionDisplayName(AzureRegion.eastasia)).equal(loc.eastAsia);
+			should(getRegionDisplayName(AzureRegion.japaneast)).equal(loc.japanEast);
+			should(getRegionDisplayName(AzureRegion.westus2)).equal(loc.westUS2);
 		});
 
 		it('Returns expected name for region regardless of case', function(): void {
-			should(getRegionDisplayName(AzureRegion.asiaeast.toLocaleUpperCase())).equal(loc.asiaEast);
-			should(getRegionDisplayName(AzureRegion.governmentusdodcentral.toLocaleUpperCase())).equal(loc.governmentUSDodCentral);
-			should(getRegionDisplayName(AzureRegion.uswestcentral.toLocaleUpperCase())).equal(loc.usWestCentral);
+			should(getRegionDisplayName(AzureRegion.eastasia.toLocaleUpperCase())).equal(loc.eastAsia);
+			should(getRegionDisplayName(AzureRegion.japaneast.toLocaleUpperCase())).equal(loc.japanEast);
+			should(getRegionDisplayName(AzureRegion.westus2.toLocaleUpperCase())).equal(loc.westUS2);
 		});
 
 		it('Returns original name for unknown region', function(): void {

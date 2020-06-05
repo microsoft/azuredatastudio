@@ -930,9 +930,9 @@ async function handleSelectedSubscriptionChanged(context: AzureAccountFieldConte
  * Map of known Azure location friendly names to their internal names
  */
 const knownAzureLocationNameMappings = new Map<string, string>([
-	['East US', 'eastus'],
-	['East US 2', 'eastus2'],
-	['Central US', 'centralus']
+	['East US', azurecore.AzureRegion.eastus],
+	['East US 2', azurecore.AzureRegion.eastus2],
+	['Central US', azurecore.AzureRegion.centralus]
 ]);
 
 /**

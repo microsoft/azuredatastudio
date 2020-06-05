@@ -14,10 +14,6 @@ export function getRegionDisplayName(region?: string): string {
 	region = (region ?? '');
 
 	switch (region.toLocaleLowerCase()) {
-		case AzureRegion.asiaeast:
-			return loc.asiaEast;
-		case AzureRegion.asiasoutheast:
-			return loc.asiaSouthEast;
 		case AzureRegion.australiacentral:
 			return loc.australiaCentral;
 		case AzureRegion.australiacentral2:
@@ -32,48 +28,24 @@ export function getRegionDisplayName(region?: string): string {
 			return loc.canadaCentral;
 		case AzureRegion.canadaeast:
 			return loc.canadaEast;
-		case AzureRegion.chinaeast:
-			return loc.chinaEast;
-		case AzureRegion.chinaeast2:
-			return loc.chinaEast2;
-		case AzureRegion.chinanorth:
-			return loc.chinaNorth;
-		case AzureRegion.chinanorth2:
-			return loc.chinaNorth2;
-		case AzureRegion.europenorth:
-			return loc.europeNorth;
-		case AzureRegion.europewest:
-			return loc.europeWest;
+		case AzureRegion.centralindia:
+			return loc.centralIndia;
+		case AzureRegion.centralus:
+			return loc.centralUS;
+		case AzureRegion.eastasia:
+			return loc.eastAsia;
+		case AzureRegion.eastus:
+			return loc.eastUS;
+		case AzureRegion.eastus2:
+			return loc.eastUS2;
 		case AzureRegion.francecentral:
 			return loc.franceCentral;
 		case AzureRegion.francesouth:
 			return loc.franceSouth;
-		case AzureRegion.germanycentral:
-			return loc.germanyCentral;
 		case AzureRegion.germanynorth:
 			return loc.germanyNorth;
-		case AzureRegion.germanynortheast:
-			return loc.germanyNorthEast;
 		case AzureRegion.germanywestcentral:
 			return loc.germanyWestCentral;
-		case AzureRegion.governmentusarizona:
-			return loc.governmentUSArizona;
-		case AzureRegion.governmentusdodcentral:
-			return loc.governmentUSDodCentral;
-		case AzureRegion.governmentusdodeast:
-			return loc.governmentUSDodEast;
-		case AzureRegion.governmentusiowa:
-			return loc.governmentUSIowa;
-		case AzureRegion.governmentustexas:
-			return loc.governmentUSTexas;
-		case AzureRegion.governmentusvirginia:
-			return loc.governmentUSVirginia;
-		case AzureRegion.indiacentral:
-			return loc.indiaCentral;
-		case AzureRegion.indiasouth:
-			return loc.indiaSouth;
-		case AzureRegion.indiawest:
-			return loc.indiaWest;
 		case AzureRegion.japaneast:
 			return loc.japanEast;
 		case AzureRegion.japanwest:
@@ -82,6 +54,10 @@ export function getRegionDisplayName(region?: string): string {
 			return loc.koreaCentral;
 		case AzureRegion.koreasouth:
 			return loc.koreaSouth;
+		case AzureRegion.northcentralus:
+			return loc.northCentralUS;
+		case AzureRegion.northeurope:
+			return loc.northEurope;
 		case AzureRegion.norwayeast:
 			return loc.norwayEast;
 		case AzureRegion.norwaywest:
@@ -90,6 +66,12 @@ export function getRegionDisplayName(region?: string): string {
 			return loc.southAfricaNorth;
 		case AzureRegion.southafricawest:
 			return loc.southAfricaWest;
+		case AzureRegion.southcentralus:
+			return loc.southCentralUS;
+		case AzureRegion.southeastasia:
+			return loc.southEastAsia;
+		case AzureRegion.southindia:
+			return loc.southIndia;
 		case AzureRegion.switzerlandnorth:
 			return loc.switzerlandNorth;
 		case AzureRegion.switzerlandwest:
@@ -102,22 +84,16 @@ export function getRegionDisplayName(region?: string): string {
 			return loc.ukSouth;
 		case AzureRegion.ukwest:
 			return loc.ukWest;
-		case AzureRegion.uscentral:
-			return loc.usCentral;
-		case AzureRegion.useast:
-			return loc.usEast;
-		case AzureRegion.useast2:
-			return loc.usEast2;
-		case AzureRegion.usnorthcentral:
-			return loc.usNorthCentral;
-		case AzureRegion.ussouthcentral:
-			return loc.usSouthCentral;
-		case AzureRegion.uswest:
-			return loc.usWest;
-		case AzureRegion.uswest2:
-			return loc.usWest2;
-		case AzureRegion.uswestcentral:
-			return loc.usWestCentral;
+		case AzureRegion.westcentralus:
+			return loc.westCentralUS;
+		case AzureRegion.westeurope:
+			return loc.westEurope;
+		case AzureRegion.westindia:
+			return loc.westIndia;
+		case AzureRegion.westus:
+			return loc.westUS;
+		case AzureRegion.westus2:
+			return loc.westUS2;
 	}
 	console.warn(`Unknown Azure region ${region}`);
 	return region;
