@@ -127,7 +127,7 @@ const optimizeVSCodeTask = task.define('optimize-vscode', task.series(
 ));
 gulp.task(optimizeVSCodeTask);
 
-const sourceMappingURLBase = `https://ticino.blob.core.windows.net/sourcemaps/${commit}`;
+const sourceMappingURLBase = `https://sqlopsbuilds.blob.core.windows.net/sourcemaps/${commit}`;
 const minifyVSCodeTask = task.define('minify-vscode', task.series(
 	optimizeVSCodeTask,
 	util.rimraf('out-vscode-min'),
