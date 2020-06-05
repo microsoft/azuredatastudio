@@ -31,13 +31,13 @@ export function newObjectNamePrompt(objectType: string) { return localize('newOb
 
 // Deploy dialog strings
 
-export const deployDialogName = localize('deployDialogName', "Deploy Database");
-export const deployDialogOkButtonText = localize('deployDialogOkButtonText', "Deploy");
+export const deployDialogName = localize('deployDialogName', "Publish Database");
+export const deployDialogOkButtonText = localize('deployDialogOkButtonText', "Publish");
 export const cancelButtonText = localize('cancelButtonText', "Cancel");
 export const generateScriptButtonText = localize('generateScriptButtonText', "Generate Script");
 export const targetDatabaseSettings = localize('targetDatabaseSettings', "Target Database Settings");
 export const databaseNameLabel = localize('databaseNameLabel', "Database");
-export const deployScriptNameLabel = localize('deployScriptName', "Deploy script name");
+export const deployScriptNameLabel = localize('deployScriptName', "Publish script name");
 export const targetConnectionLabel = localize('targetConnectionLabel', "Target Connection");
 export const editConnectionButtonText = localize('editConnectionButtonText', "Edit");
 export const clearButtonText = localize('clearButtonText', "Clear");
