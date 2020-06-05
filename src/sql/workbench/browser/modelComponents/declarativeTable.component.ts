@@ -31,8 +31,11 @@ export enum DeclarativeDataType {
 	template: `
 	<table role=grid #container *ngIf="columns" class="declarative-table" [style.height]="getHeight()" [attr.aria-label]="ariaLabel">
 	<thead>
-		<ng-container *ngFor="let column of columns;">
-		<th class="declarative-table-header" aria-sort="none" [style.width]="getColumnWidth(column)" [attr.aria-label]="column.ariaLabel" [ngStyle]="column.headerCssStyles">{{column.displayName}}</th>
+		<ng-container *ngFor="let column of columns; let c = index;">
+		<th class="declarative-table-header" aria-sort="none" [style.width]="getColumnWidth(column)" [attr.aria-label]="column.ariaLabel" [ngStyle]="column.headerCssStyles">
+			<ng-container > {{column.displayName}} </ng-container>
+			<checkbox *ngIf="isCheckBox(c)" [checked]="isHeaderChecked(c)" (onChange)="onHeaderCheckBoxChanged($event,c)" label="" ></checkbox>
+		</th>
 		</ng-container>
 	</thead>
 		<ng-container *ngIf="data">
@@ -82,6 +85,11 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 		this.baseDestroy();
 	}
 
+	public isHeaderChecked(colIdx: number): boolean {
+		let column: azdata.DeclarativeTableColumn = this.columns[colIdx];
+		return column.isChecked;
+	}
+
 	public isCheckBox(colIdx: number): boolean {
 		let column: azdata.DeclarativeTableColumn = this.columns[colIdx];
 		return column.valueType === DeclarativeDataType.boolean;
@@ -108,6 +116,18 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 
 	public onCheckBoxChanged(e: boolean, rowIdx: number, colIdx: number): void {
 		this.onCellDataChanged(e, rowIdx, colIdx);
+	}
+
+	public onHeaderCheckBoxChanged(e: boolean, colIdx: number): void {
+		this.data.forEach((row) => {
+			row[colIdx] = e;
+		});
+		this.data = this.data;
+		this._changeRef.detectChanges();
+		this.fireEvent({
+			eventType: ComponentEventType.onDidChange,
+			args: { column: colIdx, value: e }
+		});
 	}
 
 	public onSelectBoxChanged(e: ISelectData | string, rowIdx: number, colIdx: number): void {
@@ -205,6 +225,28 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
+		let dataChangedFlag: boolean = false;
+		if (this.columns) {
+			this.columns.forEach((cols, idx) => {
+				if (cols.showCheckAll) {
+					this.data.forEach((row) => {
+						if (row[idx] !== cols.isChecked) {
+							dataChangedFlag = true;
+						}
+						row[idx] = cols.isChecked;
+					});
+				}
+			});
+
+			//Creating a data change event if a cell value was changed due to check all value
+			this._changeRef.detectChanges();
+			if (dataChangedFlag) {
+				this.fireEvent({
+					eventType: ComponentEventType.onDidChange,
+					args: this.data
+				});
+			}
+		}
 	}
 
 	public get data(): any[][] {

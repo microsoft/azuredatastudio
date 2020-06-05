@@ -11,7 +11,6 @@ import { FlatFileProvider } from '../../services/contracts';
 import { FlatFileWizard } from '../flatFileWizard';
 
 const localize = nls.loadMessageBundle();
-//const checkAllNullablesText = localize('flatFileImport.checkAllNullables', "Check all Allow Nulls");
 
 export class ModifyColumnsPage extends ImportPage {
 	private readonly categoryValues = [
@@ -50,12 +49,10 @@ export class ModifyColumnsPage extends ImportPage {
 		{ name: 'varchar(50)', displayName: 'varchar(50)' },
 		{ name: 'varchar(MAX)', displayName: 'varchar(MAX)' }
 	];
-
 	private table: azdata.DeclarativeTableComponent;
 	private loading: azdata.LoadingComponent;
 	private text: azdata.TextComponent;
 	private form: azdata.FormContainer;
-	private checkAllNullabales: azdata.CheckBoxComponent;
 
 	public constructor(instance: FlatFileWizard, wizardPage: azdata.window.WizardPage, model: ImportDataModel, view: azdata.ModelView, provider: FlatFileProvider) {
 		super(instance, wizardPage, model, view, provider);
@@ -66,49 +63,30 @@ export class ModifyColumnsPage extends ImportPage {
 		return [column.columnName, column.dataType, false, column.nullable];
 	}
 
-	private static convertRow(row: any[]): ColumnMetadata {
-		return {
-			columnName: row[0],
-			dataType: row[1],
-			primaryKey: row[2],
-			nullable: row[3]
-		};
-	}
-
 	async start(): Promise<boolean> {
 		this.loading = this.view.modelBuilder.loadingComponent().component();
 		this.table = this.view.modelBuilder.declarativeTable().component();
 		this.text = this.view.modelBuilder.text().component();
-		this.checkAllNullabales = this.view.modelBuilder.checkBox().component();
-		this.checkAllNullabales.label = localize('flatFileImport.checkAllNullableText', "Check all allow nulls");
 
 		this.table.onDataChanged((e) => {
 			this.model.proseColumns = [];
 			this.table.data.forEach((row) => {
-				this.model.proseColumns.push(ModifyColumnsPage.convertRow(row));
+				this.model.proseColumns.push({
+					columnName: row[0],
+					dataType: row[1],
+					primaryKey: row[2],
+					nullable: row[3]
+				});
 			});
 		});
 
-		this.checkAllNullabales.onChanged((e) => {
-			let data: any[][] = [];
-			this.model.proseColumns = [];
-			this.table.data.forEach((row) => {
-				row[3] = this.checkAllNullabales.checked;
-				data.push(row);
-				this.model.proseColumns.push(ModifyColumnsPage.convertRow(row));
-			});
-			this.table.updateProperties({
-				data: data
-			});
-		});
 
 		this.form = this.view.modelBuilder.formContainer()
 			.withFormItems(
 				[
 					{
 						component: this.text,
-						title: '',
-						actions: [this.checkAllNullabales]
+						title: ''
 					},
 					{
 						component: this.table,
@@ -175,12 +153,16 @@ export class ModifyColumnsPage extends ImportPage {
 				displayName: localize('flatFileImport.primaryKey', "Primary Key"),
 				valueType: azdata.DeclarativeDataType.boolean,
 				width: '100px',
-				isReadOnly: false
+				isReadOnly: false,
+				showCheckAll: true,
+				isChecked: false,
 			}, {
 				displayName: localize('flatFileImport.allowNulls', "Allow Nulls"),
 				valueType: azdata.DeclarativeDataType.boolean,
 				isReadOnly: false,
-				width: '100px'
+				width: '100px',
+				showCheckAll: true,
+				isChecked: true,
 			}],
 			data: data
 		});
