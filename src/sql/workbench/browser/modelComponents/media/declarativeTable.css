@@ -13,9 +13,14 @@
 	padding: 5px;
 	border: 1px solid;
 	vertical-align: top;
+	text-align: center;
+	height: auto;
 }
 
 .declarative-table-cell {
 	padding: 5px;
 	border: 1px solid;
+	vertical-align: top;
+	text-align: center;
+	height: auto;
 }

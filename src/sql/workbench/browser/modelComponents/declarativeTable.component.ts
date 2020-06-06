@@ -29,7 +29,7 @@ export enum DeclarativeDataType {
 @Component({
 	selector: 'modelview-declarativeTable',
 	template: `
-	<table role=grid #container *ngIf="columns" class="declarative-table" [style.height]="getHeight()" [attr.aria-label]="ariaLabel">
+	<table role=grid #container *ngIf="columns" class="declarative-table" [attr.aria-label]="ariaLabel">
 	<thead>
 		<ng-container *ngFor="let column of columns; let c = index;">
 		<th class="declarative-table-header" aria-sort="none" [style.width]="getColumnWidth(column)" [attr.aria-label]="column.ariaLabel" [ngStyle]="column.headerCssStyles">
@@ -120,7 +120,9 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 
 	public onHeaderCheckBoxChanged(e: boolean, colIdx: number): void {
 		this.data.forEach((row, rowidx) => {
-			this.onCellDataChanged(e, rowidx, colIdx);
+			if (row[rowidx][colIdx] !== e) {
+				this.onCellDataChanged(e, rowidx, colIdx);
+			}
 		});
 		this._changeRef.detectChanges();
 	}
