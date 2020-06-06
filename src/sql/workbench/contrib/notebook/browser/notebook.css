@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 .notebookEditor .scrollable {
-	padding-top: 6px;
+	padding-top: 16px;
 }
 
 .notebookEditor .taskbarSeparator {
@@ -20,7 +20,7 @@
 	border-color: transparent;
 	border-style: solid;
 	border-width: 1px 1px 1px 4px;
-	margin: 16px;
+	margin: 8px;
 	position: relative;
 }
 
