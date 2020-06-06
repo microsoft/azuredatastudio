@@ -12,46 +12,11 @@ import 'mocha';
 import { SchemaCompareDialog } from './../dialogs/schemaCompareDialog';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
 import { SchemaCompareTestService } from './testSchemaCompareService';
+import { mockConnectionProfile, mockDacpacEndpoint } from './testUtils';
 
 // Mock test data
-const mockConnectionProfile: azdata.IConnectionProfile = {
-	connectionName: 'My Connection',
-	serverName: 'My Server',
-	databaseName: 'My Server',
-	userName: 'My User',
-	password: 'My Pwd',
-	authenticationType: 'SqlLogin',
-	savePassword: false,
-	groupFullName: 'My groupName',
-	groupId: 'My GroupId',
-	providerName: 'My Server',
-	saveProfile: true,
-	id: 'My Id',
-	options: null
-};
-
 const mocksource: string = 'source.dacpac';
 const mocktarget: string = 'target.dacpac';
-
-const mockSourceEndpoint: mssql.SchemaCompareEndpointInfo = {
-	endpointType: mssql.SchemaCompareEndpointType.Dacpac,
-	serverDisplayName: '',
-	serverName: '',
-	databaseName: '',
-	ownerUri: '',
-	packageFilePath: mocksource,
-	connectionDetails: undefined
-};
-
-const mockTargetEndpoint: mssql.SchemaCompareEndpointInfo = {
-	endpointType: mssql.SchemaCompareEndpointType.Dacpac,
-	serverDisplayName: '',
-	serverName: '',
-	databaseName: '',
-	ownerUri: '',
-	packageFilePath: mocktarget,
-	connectionDetails: undefined
-};
 
 let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 
@@ -86,8 +51,13 @@ describe('SchemaCompareResult.start', function (): void {
 		await promise;
 
 		should(result.getComparisonResult() === undefined);
-		result.sourceEndpointInfo = mockSourceEndpoint;
-		result.targetEndpointInfo = mockTargetEndpoint;
+
+		let sourceEndpointInfo : mssql.SchemaCompareEndpointInfo = {...mockDacpacEndpoint};
+		let targetEndpointInfo : mssql.SchemaCompareEndpointInfo = {...mockDacpacEndpoint};
+		result.sourceEndpointInfo = sourceEndpointInfo;
+		result.sourceEndpointInfo.packageFilePath = mocksource;
+		result.targetEndpointInfo = targetEndpointInfo;
+		result.targetEndpointInfo.packageFilePath = mocktarget;
 		await result.execute();
 
 		should(result.getComparisonResult() !== undefined);
