@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 .notebookEditor .scrollable {
-	padding-top: 6px;
+	padding-top: 16px;
 }
 
 .notebookEditor .taskbarSeparator {
@@ -20,7 +20,7 @@
 	border-color: transparent;
 	border-style: solid;
 	border-width: 1px 1px 1px 4px;
-	margin: 16px;
+	margin: 8px;
 	position: relative;
 }
 
@@ -37,21 +37,23 @@
 	min-height: 21px;
 }
 
-.notebookEditor .actions-container .action-item .notebook-button {
+.notebookEditor .editor-toolbar .actions-container .action-item .notebook-button {
 	display: inline-block;
-	width: 100%;
-	padding: 0px;
 	text-align: center;
 	cursor: pointer;
-	padding-left: 18px;
+	padding: 0 18px;
 	background-size: 13px;
-	margin-right: 20px;
 	font-size: 13px;
 	height: 21px;
 }
-.notebookEditor .in-preview .actions-container .action-item .notebook-button {
+.notebookEditor .editor-toolbar .actions-container .action-item .notebook-button.masked-icon {
+	padding: 0;
+	width: 28px;
+}
+
+.notebookEditor .in-preview .actions-container .action-item .notebook-button,
+.notebookEditor .in-preview .actions-container .action-item .notebook-button:before {
 	display: flex;
-	background-size: 16px;
 	height: 100%;
 }
 
@@ -66,7 +68,7 @@
 	.in-preview
 	.actions-container
 	.action-item
-	.notebook-button.masked-icon {
+	.notebook-button.masked-icon:before {
 	margin-right: 0;
 	padding-left: 18px;
 	width: 16px;
@@ -174,6 +176,10 @@
 	:not(.in-preview)
 	.notebook-button.icon-clear-results {
 	background-image: url("./media/dark/clear_results_inverse.svg");
+}
+
+.notebookEditor .in-preview .notebook-button.masked-icon {
+	background-image: none;
 }
 /* non-preview */
 

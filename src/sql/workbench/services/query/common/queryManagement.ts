@@ -307,9 +307,11 @@ export class QueryManagementService implements IQueryManagementService {
 
 	public onMessage(messagesMap: Map<string, azdata.QueryExecuteMessageParams[]>): void {
 		for (const [uri, messages] of messagesMap) {
-			this._notify(uri, (runner: QueryRunner) => {
-				runner.handleMessage(messages.map(m => m.message));
-			});
+			if (messages) {
+				this._notify(uri, (runner: QueryRunner) => {
+					runner.handleMessage(messages.map(m => m.message));
+				});
+			}
 		}
 	}
 
