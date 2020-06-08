@@ -117,11 +117,6 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 			iconPath: IconPathHelper.delete
 		}).component();
 
-		const resetPasswordButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			label: loc.resetPassword,
-			iconPath: IconPathHelper.edit
-		}).component();
-
 		const openInAzurePortalButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: loc.openInAzurePortal,
 			iconPath: IconPathHelper.openInTab
@@ -131,7 +126,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 			const r = this._controllerModel.controllerRegistration;
 			if (r) {
 				vscode.env.openExternal(vscode.Uri.parse(
-					`https://portal.azure.com/#resource/subscriptions/${r.subscriptionId}/resourceGroups/${r.resourceGroupName}/providers/Microsoft.AzureData/dataControllers/${r.instanceName}`));
+					`https://portal.azure.com/#resource/subscriptions/${r.subscriptionId}/resourceGroups/${r.resourceGroupName}/providers/Microsoft.AzureData/${ResourceType.dataControllers}/${r.instanceName}`));
 			} else {
 				vscode.window.showErrorMessage(loc.couldNotFindControllerResource);
 			}
@@ -140,8 +135,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems(
 			[
 				{ component: createNewButton },
-				{ component: deleteButton },
-				{ component: resetPasswordButton, toolbarSeparatorAfter: true },
+				{ component: deleteButton, toolbarSeparatorAfter: true },
 				{ component: openInAzurePortalButton }
 			]
 		).component();

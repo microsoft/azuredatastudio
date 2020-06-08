@@ -11,6 +11,7 @@ import { DuskyObjectModelsDatabase, DuskyObjectModelsDatabaseServiceArcPayload }
 import { DashboardPage } from '../../components/dashboardPage';
 import { ControllerModel } from '../../../models/controllerModel';
 import { PostgresModel } from '../../../models/postgresModel';
+import { ResourceType } from '../../../common/utils';
 
 export class PostgresOverviewPage extends DashboardPage {
 	private propertiesLoading?: azdata.LoadingComponent;
@@ -249,7 +250,7 @@ export class PostgresOverviewPage extends DashboardPage {
 				vscode.window.showErrorMessage(loc.couldNotFindAzureResource(this._postgresModel.fullName()));
 			} else {
 				vscode.env.openExternal(vscode.Uri.parse(
-					`https://portal.azure.com/#resource/subscriptions/${r.subscriptionId}/resourceGroups/${r.resourceGroupName}/providers/Microsoft.AzureData/postgresInstances/${r.instanceName}`));
+					`https://portal.azure.com/#resource/subscriptions/${r.subscriptionId}/resourceGroups/${r.resourceGroupName}/providers/Microsoft.AzureData/${ResourceType.postgresInstances}/${r.instanceName}`));
 			}
 		});
 
