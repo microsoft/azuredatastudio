@@ -103,6 +103,14 @@ steps:
 
 - script: |
     set -e
+    AZURE_STORAGE_ACCOUNT="$(sourcemap-storage-account)" \
+    AZURE_STORAGE_ACCESS_KEY="$(sourcemap-storage-key)" \
+      node build/azure-pipelines/upload-sourcemaps
+  displayName: Upload sourcemaps
+  condition: and(succeeded(), ne(variables['CacheExists-Compilation'], 'true'))
+
+- script: |
+    set -e
 
     VERSION=$(node -p "require(\"./package.json\").version")
 

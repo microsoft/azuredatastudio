@@ -5,11 +5,11 @@
 
 /* Title Container */
 
-.vs .monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title.tabs {
+.monaco-workbench.vs > .part.editor > .content > .one-editor-silo > .container > .title.tabs {
 	background: #F3F3F3;
 }
 
-.vs-dark .monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title.tabs {
+.monaco-workbench.vs-dark > .part.editor > .content > .one-editor-silo > .container > .title.tabs {
 	background: #252526;
 }
 
@@ -51,56 +51,56 @@
 	padding-left: 10px;
 }
 
-.vs .monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab:not(.active) {
+.monaco-workbench.vs > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab:not(.active) {
 	background-color: #ECECEC;
 }
 
-.vs-dark .monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab:not(.active) {
+.monaco-workbench.vs-dark > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab:not(.active) {
 	background-color: #2D2D2D;
 }
 
-.vs .monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab  {
+.monaco-workbench.vs > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab  {
 	border-left-color: #F3F3F3;
 }
 
-.vs .monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab.active:last-child  {
+.monaco-workbench.vs > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab.active:last-child  {
 	border-right-color: #F3F3F3;
 }
 
-.vs-dark .monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab  {
+.monaco-workbench.vs-dark > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab  {
 	border-left-color: #252526;
 }
 
-.vs-dark .monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab.active:last-child  {
+.monaco-workbench.vs-dark > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab.active:last-child  {
 	border-right-color: #252526;
 }
 
-.vs-dark .monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab:first-child,
-.vs .monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab:first-child {
+.monaco-workbench.vs-dark > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab:first-child,
+.monaco-workbench.vs > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab:first-child {
 	border-left-color: transparent;
 }
 
-.hc-black .monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab  {
+.monaco-workbench.hc-black > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab  {
 	border-left-color: #6FC3DF;
 }
 
-.hc-black .monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab.active  {
+.monaco-workbench.hc-black > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab.active  {
 	outline: 2px solid #f38518;
 	outline-offset: -1px;
 }
 
-.vs .monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container.dropfeedback,
-.vs .monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab.dropfeedback {
+.monaco-workbench.vs > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container.dropfeedback,
+.monaco-workbench.vs > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab.dropfeedback {
 	background-color: #DDECFF;
 }
 
-.vs-dark .monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container.dropfeedback,
-.vs-dark .monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab.dropfeedback {
+.monaco-workbench.vs-dark > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container.dropfeedback,
+.monaco-workbench.vs-dark > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab.dropfeedback {
 	background-color: #383B3D;
 }
 
-.hc-black .monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container.dropfeedback,
-.hc-black .monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab.dropfeedback {
+.monaco-workbench.hc-black > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container.dropfeedback,
+.monaco-workbench.hc-black > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab.dropfeedback {
 	background: none !important;
 	outline: 2px dashed #f38518;
 	outline-offset: -2px;
@@ -117,20 +117,20 @@
 	height: 16px; /* tweak the icon size of the editor labels when icons are enabled */
 }
 
-.vs .monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab .tab-label {
+.monaco-workbench.vs > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab .tab-label {
 	opacity: 0.7 !important;
 }
 
-.vs-dark .monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab .tab-label {
+.monaco-workbench.vs-dark > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab .tab-label {
 	opacity: 0.5 !important;
 }
 
-.vs-dark .monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab.active .tab-label,
+.monaco-workbench.vs-dark > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab.active .tab-label,
 .monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab.dropfeedback .tab-label {
 	opacity: 1 !important;
 }
 
-.hc-black .monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab .tab-label {
+.monaco-workbench.hc-black > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab .tab-label {
 	opacity: 1 !important;
 }
 
@@ -172,21 +172,21 @@
 	margin-right: 0.5em;
 }
 
-.vs .monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab.dirty .close-editor-action {
+.monaco-workbench.vs > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab.dirty .close-editor-action {
 	background: url('close-dirty.svg') center center no-repeat;
 }
 
-.vs-dark .monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab.dirty .close-editor-action,
-.hc-black .monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab.dirty .close-editor-action {
+.monaco-workbench.vs-dark > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab.dirty .close-editor-action,
+.monaco-workbench.hc-black > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab.dirty .close-editor-action {
 	background: url('close-dirty-inverse.svg') center center no-repeat;
 }
 
-.vs .monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab.dirty .close-editor-action:hover {
+.monaco-workbench.vs > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab.dirty .close-editor-action:hover {
 	background: url('close.svg') center center no-repeat;
 }
 
-.vs-dark .monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab.dirty .close-editor-action:hover,
-.hc-black .monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab.dirty .close-editor-action:hover {
+.monaco-workbench.vs-dark > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab.dirty .close-editor-action:hover,
+.monaco-workbench.hc-black > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab.dirty .close-editor-action:hover {
 	background: url('close-inverse.svg') center center no-repeat;
 }
 
@@ -202,12 +202,12 @@
 	background-position-x: calc(100% - 6px); /* to the right of the tab label */
 }
 
-.vs .monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab.no-close-button.dirty {
+.monaco-workbench.vs > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab.no-close-button.dirty {
 	background-image: url('close-dirty.svg');
 }
 
-.vs-dark .monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab.no-close-button.dirty,
-.hc-black .monaco-workbench > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab.no-close-button.dirty {
+.monaco-workbench.vs-dark > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab.no-close-button.dirty,
+.monaco-workbench.hc-black > .part.editor > .content > .one-editor-silo > .container > .title .tabs-container > .tab.no-close-button.dirty {
 	background-image: url('close-dirty-inverse.svg');
 }
 

@@ -7,7 +7,7 @@ import 'vs/css!./cellToolbar';
 import * as DOM from 'vs/base/browser/dom';
 import { Component, Inject, ViewChild, ElementRef, Input } from '@angular/core';
 import { localize } from 'vs/nls';
-import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
+import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { DeleteCellAction, EditCellAction, CellToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/cellToolbarActions';
@@ -56,10 +56,13 @@ export class CellToolbarComponent {
 		this._actionBar = new Taskbar(taskbar);
 		this._actionBar.context = context;
 
+		let addCellsButton = new AddCellAction('notebook.AddCodeCell', localize('codeCellsPreview', "Add cell"), 'notebook-button masked-pseudo code');
+		addCellsButton.cellType = CellTypes.Code;
+
 		let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('codePreview', "Code cell"), 'notebook-button masked-pseudo code');
 		addCodeCellButton.cellType = CellTypes.Code;
 
-		let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('textPreview', "Markdown cell"), 'notebook-button masked-pseudo markdown');
+		let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('textPreview', "Text cell"), 'notebook-button masked-pseudo markdown');
 		addTextCellButton.cellType = CellTypes.Markdown;
 
 		let deleteButton = this.instantiationService.createInstance(DeleteCellAction, 'delete', 'codicon masked-icon delete', localize('delete', "Delete"));
@@ -74,24 +77,27 @@ export class CellToolbarComponent {
 		let buttonDropdownContainer = DOM.$('li.action-item');
 		buttonDropdownContainer.setAttribute('role', 'presentation');
 		let dropdownMenuActionViewItem = new DropdownMenuActionViewItem(
-			addCodeCellButton,
+			addCellsButton,
 			[addCodeCellButton, addTextCellButton],
 			this.contextMenuService,
 			undefined,
 			this._actionBar.actionRunner,
 			undefined,
 			'codicon masked-icon new',
-			localize('addCell', "Cell"),
+			'',
 			undefined
 		);
 		dropdownMenuActionViewItem.render(buttonDropdownContainer);
 		dropdownMenuActionViewItem.setActionContext(context);
 
-		this._actionBar.setContent([
-			{ action: this._editCellAction },
-			{ element: buttonDropdownContainer },
+		let taskbarContent: ITaskbarContent[] = [];
+		if (this.cellModel?.cellType === CellTypes.Markdown) {
+			taskbarContent.push({ action: this._editCellAction });
+		}
+		taskbarContent.push({ element: buttonDropdownContainer },
 			{ action: deleteButton },
-			{ element: moreActionsContainer }
-		]);
+			{ element: moreActionsContainer });
+
+		this._actionBar.setContent(taskbarContent);
 	}
 }

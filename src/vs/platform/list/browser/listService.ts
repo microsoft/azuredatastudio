@@ -129,6 +129,7 @@ export const keyboardNavigationSettingKey = 'workbench.list.keyboardNavigation';
 export const automaticKeyboardNavigationSettingKey = 'workbench.list.automaticKeyboardNavigation';
 const treeIndentKey = 'workbench.tree.indent';
 const treeRenderIndentGuidesKey = 'workbench.tree.renderIndentGuides';
+const listSmoothScrolling = 'workbench.list.smoothScrolling';
 
 function getHorizontalScrollingSetting(configurationService: IConfigurationService): boolean {
 	return getMigratedSettingValue<boolean>(configurationService, horizontalScrollingKey, 'workbench.tree.horizontalScrolling');
@@ -658,6 +659,7 @@ abstract class ResourceNavigator<T> extends Disposable {
 			onDidChangeFocus: Event<{ browserEvent?: UIEvent }>,
 			onDidChangeSelection: Event<{ browserEvent?: UIEvent }>,
 			onDidOpen: Event<{ browserEvent?: UIEvent }>,
+			readonly openOnSingleClick?: boolean
 		},
 		options?: IResourceNavigatorOptions
 	) {
@@ -711,7 +713,7 @@ abstract class ResourceNavigator<T> extends Disposable {
 			!!(<SelectionKeyboardEvent>browserEvent).preserveFocus :
 			!isDoubleClick;
 
-		if (this.options.openOnSingleClick || isDoubleClick || isKeyboardEvent) {
+		if (this.options.openOnSingleClick || this.treeOrList.openOnSingleClick || isDoubleClick || isKeyboardEvent) {
 			const sideBySide = browserEvent instanceof MouseEvent && (browserEvent.ctrlKey || browserEvent.metaKey || browserEvent.altKey);
 			this.open(preserveFocus, isDoubleClick || isMiddleClick, sideBySide, browserEvent);
 		}
@@ -738,8 +740,8 @@ export class ListResourceNavigator<T> extends ResourceNavigator<number> {
 }
 
 export class TreeResourceNavigator<T, TFilterData> extends ResourceNavigator<T> {
-	constructor(tree: WorkbenchObjectTree<T, TFilterData> | WorkbenchCompressibleObjectTree<T, TFilterData> | WorkbenchDataTree<any, T, TFilterData> | WorkbenchAsyncDataTree<any, T, TFilterData> | WorkbenchCompressibleAsyncDataTree<any, T, TFilterData>, options?: IResourceNavigatorOptions) {
-		super(tree, { openOnSingleClick: tree.openOnSingleClick, ...(options || {}) });
+	constructor(tree: WorkbenchObjectTree<T, TFilterData> | WorkbenchCompressibleObjectTree<T, TFilterData> | WorkbenchDataTree<any, T, TFilterData> | WorkbenchAsyncDataTree<any, T, TFilterData> | WorkbenchCompressibleAsyncDataTree<any, T, TFilterData>, options: IResourceNavigatorOptions = {}) {
+		super(tree, options);
 	}
 }
 
@@ -1003,6 +1005,7 @@ function workbenchTreeDataPreamble<T, TFilterData, TOptions extends IAbstractTre
 			...workbenchListOptions,
 			indent: configurationService.getValue<number>(treeIndentKey),
 			renderIndentGuides: configurationService.getValue<RenderIndentGuides>(treeRenderIndentGuidesKey),
+			smoothScrolling: configurationService.getValue<boolean>(listSmoothScrolling),
 			automaticKeyboardNavigation: getAutomaticKeyboardNavigation(),
 			simpleKeyboardNavigation: keyboardNavigation === 'simple',
 			filterOnType: keyboardNavigation === 'filter',
@@ -1078,25 +1081,33 @@ class WorkbenchTreeInternals<TInput, T, TFilterData> {
 				this.hasSelectionOrFocus.set(selection.length > 0 || focus.length > 0);
 			}),
 			configurationService.onDidChangeConfiguration(e => {
+				let options: any = {};
 				if (e.affectsConfiguration(openModeSettingKey)) {
-					tree.updateOptions({ openOnSingleClick: useSingleClickToOpen(configurationService) });
+					options = { ...options, openOnSingleClick: useSingleClickToOpen(configurationService) };
 				}
 				if (e.affectsConfiguration(multiSelectModifierSettingKey)) {
 					this._useAltAsMultipleSelectionModifier = useAltAsMultipleSelectionModifier(configurationService);
 				}
 				if (e.affectsConfiguration(treeIndentKey)) {
 					const indent = configurationService.getValue<number>(treeIndentKey);
-					tree.updateOptions({ indent });
+					options = { ...options, indent };
 				}
 				if (e.affectsConfiguration(treeRenderIndentGuidesKey)) {
 					const renderIndentGuides = configurationService.getValue<RenderIndentGuides>(treeRenderIndentGuidesKey);
-					tree.updateOptions({ renderIndentGuides });
+					options = { ...options, renderIndentGuides };
+				}
+				if (e.affectsConfiguration(listSmoothScrolling)) {
+					const smoothScrolling = configurationService.getValue<boolean>(listSmoothScrolling);
+					options = { ...options, smoothScrolling };
 				}
 				if (e.affectsConfiguration(keyboardNavigationSettingKey)) {
 					updateKeyboardNavigation();
 				}
 				if (e.affectsConfiguration(automaticKeyboardNavigationSettingKey)) {
-					tree.updateOptions({ automaticKeyboardNavigation: getAutomaticKeyboardNavigation() });
+					options = { ...options, automaticKeyboardNavigation: getAutomaticKeyboardNavigation() };
+				}
+				if (Object.keys(options).length > 0) {
+					tree.updateOptions(options);
 				}
 			}),
 			this.contextKeyService.onDidChangeContext(e => {
@@ -1180,6 +1191,11 @@ configurationRegistry.registerConfiguration({
 			enum: ['none', 'onHover', 'always'],
 			default: 'onHover',
 			description: localize('render tree indent guides', "Controls whether the tree should render indent guides.")
+		},
+		[listSmoothScrolling]: {
+			type: 'boolean',
+			default: false,
+			description: localize('list smoothScrolling setting', "Controls whether lists and trees have smooth scrolling."),
 		},
 		[keyboardNavigationSettingKey]: {
 			'type': 'string',
