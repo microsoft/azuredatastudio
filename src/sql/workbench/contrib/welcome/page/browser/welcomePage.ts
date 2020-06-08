@@ -361,24 +361,22 @@ class WelcomePage extends Disposable {
 		getDropdownBtn.appendChild(i);
 		nav.appendChild(dropdownUl);
 		dropdownButtonContainer.appendChild(nav);
+		const fileBtnWindowsClasses = ['windows_only', 'linux_only', 'btn_secondary'];
+		const fileBtnMacClasses = ['mac_only', 'btn_secondary'];
 
 		const fileBtnContainer = document.querySelector('#open_file_btn_container') as HTMLElement;
 		const openFileText = localize('welcomePage.openFile', "Open file");
-		let openFileMac = this._register(new Button(fileBtnContainer));
-		let openFileWindows = this._register(new Button(fileBtnContainer));
-		openFileWindows.label = openFileText;
-		openFileMac.label = openFileText;
-		dropdownBtn.label = newText;
+		let openFileButton = this._register(new Button(fileBtnContainer));
+		openFileButton.label = openFileText;
+		const getNewFileBtn = document.querySelector('#open_file_btn_container .monaco-button') as HTMLAnchorElement;
 
-		const getNewFileBtnWindows = document.querySelector('#open_file_btn_container .monaco-button:first-of-type') as HTMLAnchorElement;
-		const getNewFileBtnMac = document.querySelector('#open_file_btn_container .monaco-button:nth-of-type(2)') as HTMLAnchorElement;
-		const fileBtnWindowsClasses = ['windows_only', 'linux_only', 'btn_secondary'];
-		const fileBtnMacClasses = ['mac_only', 'btn_secondary'];
-		getNewFileBtnWindows.classList.add(...fileBtnWindowsClasses);
-		getNewFileBtnMac.classList.add(...fileBtnMacClasses);
-		getNewFileBtnMac.href = 'command:workbench.action.files.openLocalFileFolder';
-		getNewFileBtnWindows.href = 'command:workbench.action.files.openFile';
-
+		if (process.platform === 'win32' || process.platform === 'linux') {
+			getNewFileBtn.classList.add(...fileBtnWindowsClasses);
+			getNewFileBtn.href = 'command:workbench.action.files.openFile';
+		} else if (process.platform === 'darwin') {
+			getNewFileBtn.classList.add(...fileBtnMacClasses);
+			getNewFileBtn.href = 'command:workbench.action.files.openLocalFileFolder';
+		}
 	}
 
 	private createWidePreviewToolTip() {
