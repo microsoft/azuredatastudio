@@ -2999,6 +2999,10 @@ export class InstallVSIXAction extends Action {
 					canSelectFiles: true,
 					openLabel: mnemonicButtonLabel(localize({ key: 'installButton', comment: ['&& denotes a mnemonic'] }, "&&Install"))
 				});
+
+				if (!vsixPaths) {
+					return;
+				}
 			}
 
 			await Promise.all(vsixPaths.map(async vsix => {

@@ -113,6 +113,11 @@
         "command": "sqlDatabaseProjects.importDatabase",
         "title": "%sqlDatabaseProjects.importDatabase%",
         "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.addDatabaseReference",
+        "title": "%sqlDatabaseProjects.addDatabaseReference%",
+        "category": "%sqlDatabaseProjects.displayName%"
       }
     ],
     "menus": {
@@ -225,6 +230,11 @@
           "command": "sqlDatabaseProjects.newScript",
           "when": "view == sqlDatabaseProjectsView",
           "group": "3_dbProjects_newItem@9"
+        },
+        {
+          "command": "sqlDatabaseProjects.addDatabaseReference",
+          "when": "view == sqlDatabaseProjectsView",
+          "group": "4_dbProjects_addDatabaseReference"
         },
         {
           "command": "sqlDatabaseProjects.close",

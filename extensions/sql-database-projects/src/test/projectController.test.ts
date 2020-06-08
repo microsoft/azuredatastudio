@@ -227,6 +227,36 @@ describe('ProjectsController: import operations', function (): void {
 	});
 });
 
+describe('ProjectsController: add database reference operations', function (): void {
+	it('Should show error when no reference type is selected', async function (): Promise<void> {
+		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(undefined));
+		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
+
+		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+		await testUtils.shouldThrowSpecificError(async () => await projController.addDatabaseReference(new Project('FakePath')), constants.databaseReferenceTypeRequired);
+	});
+
+	it('Should show error when no file is selected', async function (): Promise<void> {
+		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({ label: constants.dacpac }));
+		testContext.apiWrapper.setup(x => x.showOpenDialog(TypeMoq.It.isAny())).returns(() => Promise.resolve(undefined));
+		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
+
+		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+		await testUtils.shouldThrowSpecificError(async () => await projController.addDatabaseReference(new Project('FakePath')), constants.dacpacFileLocationRequired);
+	});
+
+	it('Should show error when no database name is provided', async function (): Promise<void> {
+		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({ label: constants.dacpac }));
+		testContext.apiWrapper.setup(x => x.showOpenDialog(TypeMoq.It.isAny())).returns(() => Promise.resolve([vscode.Uri.file('FakePath')]));
+		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny())).returns(() => Promise.resolve({ label: constants.databaseReferenceDifferentDabaseSameServer }));
+		testContext.apiWrapper.setup(x => x.showInputBox(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(undefined));
+		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
+
+		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+		await testUtils.shouldThrowSpecificError(async () => await projController.addDatabaseReference(new Project('FakePath')), constants.databaseNameRequired);
+	});
+});
+
 describe('ProjectsController: round trip feature with SSDT', function (): void {
 	it('Should show warning message for SSDT project opened in Azure Data Studio', async function (): Promise<void> {
 		testContext.apiWrapper.setup(x => x.showWarningMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
