@@ -51,7 +51,7 @@ export class BookModel implements azdata.nb.NavigationProvider {
 	}
 
 	public getNotebook(uri: string): BookTreeItem | undefined {
-		return this._allNotebooks.get(uri);
+		return this._allNotebooks.get(this.openAsUntitled ? path.basename(uri) : uri);
 	}
 
 	public async loadTableOfContentFiles(folderPath: string): Promise<void> {
@@ -190,8 +190,8 @@ export class BookModel implements azdata.nb.NavigationProvider {
 						if (this.openAsUntitled) {
 							if (!this._allNotebooks.get(path.basename(pathToNotebook))) {
 								this._allNotebooks.set(path.basename(pathToNotebook), notebook);
-								notebooks.push(notebook);
 							}
+							notebooks.push(notebook);
 						} else {
 							// convert to URI to avoid casing issue with drive letters when getting navigation links
 							let uriToNotebook: vscode.Uri = vscode.Uri.file(pathToNotebook);
