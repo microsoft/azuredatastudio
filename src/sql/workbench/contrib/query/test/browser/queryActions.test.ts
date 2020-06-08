@@ -567,9 +567,6 @@ suite('SQL QueryAction Tests', () => {
 		let predefinedSelection: IRange = { startLineNumber: 1, startColumn: 1, endLineNumber: 1, endColumn: 1 };
 		let calledRunQueryStatementOnInput: boolean = undefined;
 
-		// setting up assert variables
-		let countCalledShowDialog: number = 0;
-
 		// mocking query editor
 		const contextkeyservice = new MockContextKeyService();
 		let queryEditor = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Loose, undefined, new TestThemeService(),
@@ -583,11 +580,6 @@ suite('SQL QueryAction Tests', () => {
 		// mocking isConnected in ConnectionManagementService
 		connectionManagementService.setup(x => x.isConnected(TypeMoq.It.isAnyString())).returns(() => isConnected);
 
-		// mocking showConnectionDialog in ConnectionManagementService
-		connectionManagementService.setup(x => x.showConnectionDialog(TypeMoq.It.isAny())).callback((params: INewConnectionParams) => {
-			countCalledShowDialog++;
-		});
-
 		// mocking QueryModelService
 		let queryModelService = TypeMoq.Mock.ofType(QueryModelService, TypeMoq.MockBehavior.Loose);
 		queryModelService.setup(x => x.runQueryStatement(TypeMoq.It.isAny(), TypeMoq.It.isAny()));
@@ -600,7 +592,8 @@ suite('SQL QueryAction Tests', () => {
 		//connection dialog should open and runQueryStatement should not be called
 		assert.equal(calledRunQueryStatementOnInput, false, 'runCurrent should not call runQueryStatement');
 		testQueryInput.verify(x => x.runQueryStatement(TypeMoq.It.isAny()), TypeMoq.Times.never());
-		assert.equal(countCalledShowDialog, 1, 'showDialog is called');
+		connectionManagementService.verify(x => x.showConnectionDialog(TypeMoq.It.isAny()), TypeMoq.Times.once());
+
 
 		// Calling runCurrent with an open connection
 		isConnected = true;
@@ -609,7 +602,8 @@ suite('SQL QueryAction Tests', () => {
 		//connection dialog should not open and runQueryStatement should be called
 		assert.equal(calledRunQueryStatementOnInput, true, 'runCurrent should call runQueryStatement');
 		testQueryInput.verify(x => x.runQueryStatement(TypeMoq.It.isAny()), TypeMoq.Times.once());
-		assert.equal(countCalledShowDialog, 1, 'showDialog is not called');
+		//show Dialog is not called
+		connectionManagementService.verify(x => x.showConnectionDialog(TypeMoq.It.isAny()), TypeMoq.Times.once());
 
 		// Calling runCurrent with empty Selection
 		isConnected = true;
@@ -621,7 +615,7 @@ suite('SQL QueryAction Tests', () => {
 
 		//connection dialog should not open and runQueryStatement should not be called
 		assert.equal(calledRunQueryStatementOnInput, false, 'runCurrent should not call runQueryStatemet');
-		assert.equal(countCalledShowDialog, 1, 'showDialog is not called');
+		connectionManagementService.verify(x => x.showConnectionDialog(TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 
 	test('runCurrent- calls appropriate run methods based on different selections', async () => {
