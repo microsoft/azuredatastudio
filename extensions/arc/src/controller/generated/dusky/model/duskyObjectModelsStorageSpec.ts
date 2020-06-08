@@ -10,11 +10,12 @@
  * Do not edit the class manually.
  */
 
+import { ResourceQuantity } from './resourceQuantity';
 
 export class DuskyObjectModelsStorageSpec {
     'storageClassName'?: string;
     'volumeClaimName'?: string;
-    'volumeSize'?: string;
+    'volumeSize'?: ResourceQuantity;
     'matchLabels'?: { [key: string]: string; };
 
     static discriminator: string | undefined = undefined;
@@ -33,7 +34,7 @@ export class DuskyObjectModelsStorageSpec {
         {
             "name": "volumeSize",
             "baseName": "volumeSize",
-            "type": "string"
+            "type": "ResourceQuantity"
         },
         {
             "name": "matchLabels",

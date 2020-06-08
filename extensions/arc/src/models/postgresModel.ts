@@ -93,7 +93,7 @@ export class PostgresModel {
 
 	/** Returns the number of nodes in the service */
 	public numNodes(): number {
-		let nodes = this._service?.spec.scale?.shards ?? 1;
+		let nodes = this._service?.spec?.scale?.shards ?? 1;
 		if (nodes > 1) { nodes++; } // for multiple shards there is an additional node for the coordinator
 		return nodes;
 	}
@@ -116,19 +116,22 @@ export class PostgresModel {
 	/** Returns the service's configuration e.g. '3 nodes, 1.5 vCores, 1GiB RAM, 2GiB storage per node' */
 	public configuration(): string {
 		const nodes = this.numNodes();
-		const cpuLimit = this._service?.spec.scheduling?.resources?.limits?.['cpu'];
-		const ramLimit = this._service?.spec.scheduling?.resources?.limits?.['memory'];
-		const cpuRequest = this._service?.spec.scheduling?.resources?.requests?.['cpu'];
-		const ramRequest = this._service?.spec.scheduling?.resources?.requests?.['memory'];
-		const storage = this._service?.spec.storage.volumeSize;
+
+		// TODO: Resource requests and limits can be configured per role. Figure out how
+		//       to display that in the UI. For now, only show the default configuration.
+		const cpuLimit = this._service?.spec?.scheduling?._default?.resources?.limits?.['cpu'];
+		const ramLimit = this._service?.spec?.scheduling?._default?.resources?.limits?.['memory'];
+		const cpuRequest = this._service?.spec?.scheduling?._default?.resources?.requests?.['cpu'];
+		const ramRequest = this._service?.spec?.scheduling?._default?.resources?.requests?.['memory'];
+		const storage = this._service?.spec?.storage?.volumeSize;
 
 		// Prefer limits if they're provided, otherwise use requests if they're provided
 		let configuration = `${nodes} ${nodes > 1 ? loc.nodes : loc.node}`;
 		if (cpuLimit || cpuRequest) {
-			configuration += `, ${this.formatCores(cpuLimit ?? cpuRequest!)} ${loc.vCores}`;
+			configuration += `, ${this.formatCores(/*cpuLimit ?? cpuRequest!*/'')} ${loc.vCores}`;
 		}
 		if (ramLimit || ramRequest) {
-			configuration += `, ${this.formatMemory(ramLimit ?? ramRequest!)} ${loc.ram}`;
+			configuration += `, ${this.formatMemory(/*ramLimit ?? ramRequest!*/'')} ${loc.ram}`;
 		}
 		if (storage) { configuration += `, ${storage} ${loc.storagePerNode}`; }
 		return configuration;

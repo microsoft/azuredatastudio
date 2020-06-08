@@ -10,27 +10,28 @@
  * Do not edit the class manually.
  */
 
+import { IntstrIntOrString } from './intstrIntOrString';
 
-export class DuskyObjectModelsResourceRequirements {
-    'limits'?: { [key: string]: string; };
-    'requests'?: { [key: string]: string; };
+export class V1TCPSocketAction {
+    'host'?: string;
+    'port'?: IntstrIntOrString;
 
     static discriminator: string | undefined = undefined;
 
     static attributeTypeMap: Array<{name: string, baseName: string, type: string}> = [
         {
-            "name": "limits",
-            "baseName": "limits",
-            "type": "{ [key: string]: string; }"
+            "name": "host",
+            "baseName": "host",
+            "type": "string"
         },
         {
-            "name": "requests",
-            "baseName": "requests",
-            "type": "{ [key: string]: string; }"
+            "name": "port",
+            "baseName": "port",
+            "type": "IntstrIntOrString"
         }    ];
 
     static getAttributeTypeMap() {
-        return DuskyObjectModelsResourceRequirements.attributeTypeMap;
+        return V1TCPSocketAction.attributeTypeMap;
     }
 }
 

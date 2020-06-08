@@ -158,7 +158,7 @@ export class PostgresOverviewPage extends DashboardPage {
 				if (name === undefined) { return; }
 				const db: DuskyObjectModelsDatabase = { name: name }; // TODO support other options (sharded, owner)
 				await this._postgresModel.createDatabase(db);
-				vscode.window.showInformationMessage(loc.databaseCreated(db.name));
+				vscode.window.showInformationMessage(loc.databaseCreated(db.name ?? ''));
 			} catch (error) {
 				vscode.window.showErrorMessage(loc.databaseCreationFailed(name ?? '', error));
 			} finally {
@@ -274,7 +274,7 @@ export class PostgresOverviewPage extends DashboardPage {
 			{ displayName: loc.dataController, value: this._controllerModel?.namespace() ?? '' },
 			{ displayName: loc.nodeConfiguration, value: this._postgresModel.configuration() },
 			{ displayName: loc.subscriptionId, value: registration?.subscriptionId ?? '' },
-			{ displayName: loc.postgresVersion, value: this._postgresModel.service()?.spec.engine.version?.toString() ?? '' }
+			{ displayName: loc.postgresVersion, value: this._postgresModel.service()?.spec?.engine?.version?.toString() ?? '' }
 		];
 
 		this.propertiesLoading!.loading = false;
