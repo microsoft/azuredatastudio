@@ -1279,8 +1279,8 @@ export class TreeView extends HeightMap {
 		}
 
 		e.dataTransfer.effectAllowed = 'copyMove';
-		// see if element.label is something that can be passed from sql directly
 
+		// {{SQL CARBON EDIT}}
 		e.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([`${element.nodeTypeId}:${item.uri}?${element.metadata.schema ? element.metadata.schema + '.' + element.metadata.name : element.metadata.name}`]));
 
 

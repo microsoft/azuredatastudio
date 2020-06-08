@@ -105,7 +105,6 @@ export function extractResources(e: DragEvent, externalOnly?: boolean): Array<ID
 					const rawResourcesData = e.dataTransfer.getData(DataTransfers.RESOURCES);
 					if (rawResourcesData) {
 						const uriStrArray: string[] = JSON.parse(rawResourcesData);
-						// for each element in uriStrArray, first check if it is a URI before you try to parse it
 						resources.push(...uriStrArray.map(uriStr => ({ resource: URI.parse(uriStr), isExternal: false })));
 					}
 				} catch (error) {
@@ -176,17 +175,19 @@ export class ResourcesDropHandler {
 
 	async handleDrop(event: DragEvent, resolveTargetGroup: () => IEditorGroup | undefined, afterDrop: (targetGroup: IEditorGroup | undefined) => void, targetIndex?: number): Promise<void> {
 
+		// {{SQL CARBON EDIT}}
 		const untitledOrFileResources = extractResources(event);
 		if (!untitledOrFileResources.length) {
 			return;
 		}
 
+		// {{SQL CARBON EDIT}}
 		const editor = this.editorService.activeTextEditorControl as ICodeEditor;
 
 		// Make the window active to handle the drop properly within
 		await this.hostService.focus();
 
-		//TODO: parameterize this
+		// {{SQL CARBON EDIT}}
 		if (untitledOrFileResources[0].resource.scheme === 'Column' || untitledOrFileResources[0].resource.scheme === 'Table') {
 			SnippetController2.get(editor).insert(`[${untitledOrFileResources[0].resource.query}]`);
 			return;
@@ -218,7 +219,6 @@ export class ResourcesDropHandler {
 
 		// Open in Editor
 		const targetGroup = resolveTargetGroup();
-		//TODO: only do this if trying to open file
 		await this.editorService.openEditors(editors, targetGroup);
 
 		// Finish with provided function
