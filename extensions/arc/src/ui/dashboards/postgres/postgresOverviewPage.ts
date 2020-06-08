@@ -245,7 +245,7 @@ export class PostgresOverviewPage extends DashboardPage {
 
 		openInAzurePortalButton.onDidClick(async () => {
 			const r = this._controllerModel.registration('postgresInstances', this._postgresModel.namespace(), this._postgresModel.name());
-			if (r === undefined) {
+			if (!r) {
 				vscode.window.showErrorMessage(loc.couldNotFindAzureResource(this._postgresModel.fullName()));
 			} else {
 				vscode.env.openExternal(vscode.Uri.parse(
