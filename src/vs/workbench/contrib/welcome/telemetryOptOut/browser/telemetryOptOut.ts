@@ -166,9 +166,10 @@ export class BrowserTelemetryOptOut extends AbstractTelemetryOptOut {
 		@IExperimentService experimentService: IExperimentService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IExtensionGalleryService galleryService: IExtensionGalleryService,
-		@IProductService productService: IProductService
+		@IProductService productService: IProductService,
+		@IEnvironmentService environmentService: IEnvironmentService // {{SQL CARBON EDIT}} add service
 	) {
-		super(storageService, openerService, notificationService, hostService, telemetryService, experimentService, configurationService, galleryService, productService);
+		super(storageService, openerService, notificationService, hostService, telemetryService, experimentService, configurationService, galleryService, productService, environmentService);
 
 		this.handleTelemetryOptOut();
 	}
