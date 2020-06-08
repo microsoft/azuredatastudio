@@ -2,12 +2,12 @@
 	"title.projectsView": "Projects",
 
 	"sqlDatabaseProjects.displayName": "Database Projects",
-	"sqlDatabaseProjects.description": "Design and deploy SQL database schemas",
+	"sqlDatabaseProjects.description": "Design and publish SQL database schemas",
 	"sqlDatabaseProjects.new": "New Database Project",
 	"sqlDatabaseProjects.open": "Open Database Project",
 	"sqlDatabaseProjects.close": "Close Database Project",
 	"sqlDatabaseProjects.build": "Build",
-	"sqlDatabaseProjects.deploy": "Deploy",
+	"sqlDatabaseProjects.deploy": "Publish",
 	"sqlDatabaseProjects.import": "Import",
 	"sqlDatabaseProjects.properties": "Properties",
 	"sqlDatabaseProjects.schemaCompare": "Schema Compare",
@@ -20,6 +20,8 @@
 	"sqlDatabaseProjects.newFolder": "Add Folder",
 
 	"sqlDatabaseProjects.importDatabase": "Import New Database Project",
+
+	"sqlDatabaseProjects.addDatabaseReference": "Add Database Reference",
 
 	"sqlDatabaseProjects.Settings": "Database Projects",
 	"sqlDatabaseProjects.netCoreInstallLocation": "Full Path to .Net Core SDK on the machine."

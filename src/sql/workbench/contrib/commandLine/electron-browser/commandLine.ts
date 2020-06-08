@@ -169,7 +169,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 	}
 
 	public async handleURL(uri: URI): Promise<boolean> {
-		let key = uri.authority.toLowerCase();
+		let key = uri.authority;
 
 		let method = pathMappings[key];
 
@@ -204,6 +204,29 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 			this._notificationService.error(localize('errConnectUrl', "Could not open URL due to error {0}", getErrorMessage(err)));
 		}
 		// Handled either way
+		return true;
+	}
+
+	@pathHandler({
+		path: 'openConnectionDialog'
+	})
+	public async handleOpenConnectionDialog(uri: URI): Promise<boolean> {
+		try {
+			let args = this.parseProtocolArgs(uri);
+			if (!args.server) {
+				this._notificationService.warn(localize('warnServerRequired', "Cannot connect as no server information was provided"));
+				return true;
+			}
+			let isOpenOk = await this.confirmConnect(args);
+			if (!isOpenOk) {
+				return false;
+			}
+
+			const connectionProfile = this.readProfileFromArgs(args);
+			await this._connectionManagementService.showConnectionDialog(undefined, undefined, connectionProfile);
+		} catch (err) {
+			this._notificationService.error(localize('errConnectUrl', "Could not open URL due to error {0}", getErrorMessage(err)));
+		}
 		return true;
 	}
 

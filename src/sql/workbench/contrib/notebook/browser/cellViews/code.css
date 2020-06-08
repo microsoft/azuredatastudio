@@ -57,9 +57,6 @@ code-component .editor {
 code-cell-component code-component .monaco-editor .margin-view-overlays .line-numbers {
 	left: 0!important;
 }
-code-cell-component code-component .monaco-scrollable-element.editor-scrollable.vs {
-	left: 40px!important;
-}
 
 code-cell-component .monaco-editor .margin,
 code-cell-component code-component .monaco-editor,
