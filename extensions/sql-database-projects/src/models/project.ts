@@ -133,6 +133,57 @@ export class Project {
 		return fileEntry;
 	}
 
+	/**
+	 * Set the compat level of the project
+	 * Just used in tests right now, but can be used later if this functionality is added to the UI
+	 * @param compatLevel compat level of project
+	 */
+	public changeDSP(compatLevel: string): void {
+		const newDSP = `${constants.MicrosoftDatatoolsSchemaSqlSql}${compatLevel}${constants.databaseSchemaProvider}`;
+		this.projFileXmlDoc.getElementsByTagName(constants.DSP)[0].childNodes[0].nodeValue = newDSP;
+	}
+
+	/**
+	 * Adds reference to the appropriate master dacpac to the project
+	 */
+	public async addMasterDatabaseReference(): Promise<void> {
+		const uri = this.getMasterDacpac();
+		this.addDatabaseReference(uri, DatabaseReferenceLocation.differentDatabaseSameServer, constants.master);
+	}
+
+	public getMasterDacpac(): Uri {
+		// check for invalid DSP
+		if (this.projFileXmlDoc.getElementsByTagName(constants.DSP).length !== 1 || this.projFileXmlDoc.getElementsByTagName(constants.DSP)[0].childNodes.length !== 1) {
+			throw new Error(constants.invalidDataSchemaProvider);
+		}
+
+		let dsp: string = this.projFileXmlDoc.getElementsByTagName(constants.DSP)[0].childNodes[0].nodeValue;
+
+		// get version from dsp, which is a string like Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider
+		// remove part before the number
+		let version: any = dsp.substring(constants.MicrosoftDatatoolsSchemaSqlSql.length);
+		// remove DatabaseSchemaProvider
+		version = version.substring(0, version.length - constants.databaseSchemaProvider.length);
+
+		// make sure version is valid
+		console.error(Object.values(TargetPlatform));
+		if (!Object.values(TargetPlatform).includes(version)) {
+			throw new Error(constants.invalidDataSchemaProvider);
+		}
+
+		return Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', version, 'master.dacpac'));
+	}
+
+	/**
+	 * Adds reference to a dacpac to the project
+	 * @param uri Uri of the dacpac
+	 * @param databaseName name of the database
+	 */
+	public async addDatabaseReference(uri: Uri, databaseLocation: DatabaseReferenceLocation, databaseName?: string): Promise<void> {
+		let databaseReferenceEntry = new DatabaseReferenceProjectEntry(uri, databaseLocation, databaseName);
+		await this.addToProjFile(databaseReferenceEntry);
+	}
+
 	public createProjectEntry(relativePath: string, entryType: EntryType): ProjectEntry {
 		return new ProjectEntry(Uri.file(path.join(this.projectFolderPath, relativePath)), relativePath, entryType);
 	}
@@ -177,6 +228,26 @@ export class Project {
 		this.findOrCreateItemGroup(constants.Folder).appendChild(newFolderNode);
 	}
 
+	private addDatabaseReferenceToProjFile(entry: DatabaseReferenceProjectEntry): void {
+		const referenceNode = this.projFileXmlDoc.createElement(constants.ArtifactReference);
+		referenceNode.setAttribute(constants.Condition, constants.NetCoreCondition);
+		referenceNode.setAttribute(constants.Include, entry.fsUri.fsPath);
+
+		let suppressMissingDependenciesErrorNode = this.projFileXmlDoc.createElement(constants.SuppressMissingDependenciesErrors);
+		let falseTextNode = this.projFileXmlDoc.createTextNode('False');
+		suppressMissingDependenciesErrorNode.appendChild(falseTextNode);
+		referenceNode.appendChild(suppressMissingDependenciesErrorNode);
+
+		if (entry.databaseLocation === DatabaseReferenceLocation.differentDatabaseSameServer) {
+			let databaseVariableLiteralValue = this.projFileXmlDoc.createElement(constants.DatabaseVariableLiteralValue);
+			let databaseTextNode = this.projFileXmlDoc.createTextNode(entry.name);
+			databaseVariableLiteralValue.appendChild(databaseTextNode);
+			referenceNode.appendChild(databaseVariableLiteralValue);
+		}
+
+		this.findOrCreateItemGroup().appendChild(referenceNode);
+	}
+
 	private async updateImportedTargetsToProjFile(condition: string, projectAttributeVal: string, oldImportNode?: any): Promise<any> {
 		const importNode = this.projFileXmlDoc.createElement(constants.Import);
 		importNode.setAttribute(constants.Condition, condition);
@@ -213,6 +284,8 @@ export class Project {
 				break;
 			case EntryType.Folder:
 				this.addFolderToProjFile(entry.relativePath);
+			case EntryType.DatabaseReference:
+				this.addDatabaseReferenceToProjFile(<DatabaseReferenceProjectEntry>entry);
 		}
 
 		await this.serializeToProjFile(this.projFileXmlDoc);
@@ -270,7 +343,33 @@ export class ProjectEntry {
 	}
 }
 
+/**
+ * Represents a database reference entry in a project file
+ */
+class DatabaseReferenceProjectEntry extends ProjectEntry {
+	constructor(uri: Uri, public databaseLocation: DatabaseReferenceLocation, public name?: string) {
+		super(uri, '', EntryType.DatabaseReference);
+	}
+}
+
 export enum EntryType {
 	File,
-	Folder
+	Folder,
+	DatabaseReference
+}
+
+export enum DatabaseReferenceLocation {
+	sameDatabase,
+	differentDatabaseSameServer
+}
+
+export enum TargetPlatform {
+	Sql90 = '90',
+	Sql100 = '100',
+	Sql110 = '110',
+	Sql120 = '120',
+	Sql130 = '130',
+	Sql140 = '140',
+	Sql150 = '150',
+	SqlAzureV12 = 'AzureV12'
 }
