@@ -176,11 +176,8 @@ export class ResourcesDropHandler {
 
 	async handleDrop(event: DragEvent, resolveTargetGroup: () => IEditorGroup | undefined, afterDrop: (targetGroup: IEditorGroup | undefined) => void, targetIndex?: number): Promise<void> {
 
-		const column = extractResources(event);
-
-		const untitledOrFileResources = extractResources(event).filter(r => this.fileService.canHandleResource(r.resource) || r.resource.scheme === Schemas.untitled);
-		//TODO: need to change this conditional
-		if (!untitledOrFileResources.length && !column.length) {
+		const untitledOrFileResources = extractResources(event);
+		if (!untitledOrFileResources.length) {
 			return;
 		}
 
@@ -190,8 +187,8 @@ export class ResourcesDropHandler {
 		await this.hostService.focus();
 
 		//TODO: parameterize this
-		if (column[0].resource.scheme === 'Column' || column[0].resource.scheme === 'Table') {
-			SnippetController2.get(editor).insert(`[${column[0].resource.query}]`);
+		if (untitledOrFileResources[0].resource.scheme === 'Column' || untitledOrFileResources[0].resource.scheme === 'Table') {
+			SnippetController2.get(editor).insert(`[${untitledOrFileResources[0].resource.query}]`);
 			return;
 		}
 
