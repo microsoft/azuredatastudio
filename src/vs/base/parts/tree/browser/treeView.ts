@@ -1280,9 +1280,7 @@ export class TreeView extends HeightMap {
 
 		e.dataTransfer.effectAllowed = 'copyMove';
 
-		// TODO: Figure out how to parse label
-
-		e.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([`${element.nodeTypeId}:${item.uri}?${element.label}`]));
+		e.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([`${element.nodeTypeId}:${item.uri}?${this.parseLabel(element.label)}`]));
 
 
 		if (e.dataTransfer.setDragImage) {
@@ -1558,6 +1556,22 @@ export class TreeView extends HeightMap {
 
 	private shouldBeRendered(item: ViewItem): boolean {
 		return item.top < this.lastRenderTop + this.lastRenderHeight && item.top + item.height > this.lastRenderTop;
+	}
+
+	private parseLabel(label) {
+		let arr = label.split(' ');
+		let columnArr = [];
+		for (let i of arr) {
+			if (i.substring(0, 1) === '(') {
+				break;
+			}
+			else {
+				columnArr.push(i);
+			}
+		}
+		let columnStr = columnArr.join(' ');
+
+		return columnStr;
 	}
 
 	// Searches event target & its parents
