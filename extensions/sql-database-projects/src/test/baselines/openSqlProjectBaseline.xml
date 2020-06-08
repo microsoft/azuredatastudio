@@ -73,4 +73,14 @@
     <Folder Include="Views\User" />
     <Build Include="Views\User\Profile.sql" />
   </ItemGroup>
+	  <ItemGroup>
+    <SqlCmdVariable Include="ProdDatabaseName">
+      <DefaultValue>MyProdDatabase</DefaultValue>
+      <Value>$(SqlCmdVar__1)</Value>
+    </SqlCmdVariable>
+    <SqlCmdVariable Include="BackupDatabaseName">
+      <DefaultValue>MyBackupDatabase</DefaultValue>
+      <Value>$(SqlCmdVar__2)</Value>
+    </SqlCmdVariable>
+  </ItemGroup>
 </Project>

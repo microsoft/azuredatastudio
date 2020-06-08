@@ -91,6 +91,8 @@ export const Condition = 'Condition';
 export const PackageReference = 'PackageReference';
 export const Version = 'Version';
 export const PrivateAssets = 'PrivateAssets';
+export const SqlCmdVariable = 'SqlCmdVariable';
+export const DefaultValue = 'DefaultValue';
 
 
 // SqlProj File targets

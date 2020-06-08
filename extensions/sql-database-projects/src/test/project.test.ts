@@ -27,11 +27,17 @@ describe('Project: sqlproj content operations', function (): void {
 		const project: Project = new Project(projFilePath);
 		await project.readProjFile();
 
+		// Files and folders
 		should(project.files.filter(f => f.type === EntryType.File).length).equal(4);
 		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(5);
 
 		should(project.files.find(f => f.type === EntryType.Folder && f.relativePath === 'Views\\User')).not.equal(undefined); // mixed ItemGroup folder
 		should(project.files.find(f => f.type === EntryType.File && f.relativePath === 'Views\\User\\Profile.sql')).not.equal(undefined); // mixed ItemGroup file
+
+		// SqlCmdVariables
+		should(Object.keys(project.sqlCmdVariables).length).equal(2);
+		should(project.sqlCmdVariables['ProdDatabaseName']).equal('MyProdDatabase');
+		should(project.sqlCmdVariables['BackupDatabaseName']).equal('MyBackupDatabase');
 	});
 
 	it('Should add Folder and Build entries to sqlproj', async function (): Promise<void> {

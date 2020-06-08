@@ -9,20 +9,26 @@ import * as os from 'os';
 import * as vscode from 'vscode';
 import * as baselines from './baselines/baselines';
 import * as templates from '../templates/templates';
+import * as testUtils from '../test/testUtils';
+
 import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
 import { Project } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProjectTreeViewProvider';
 import { ProjectsController } from '../controllers/projectController';
 import { createContext, TestContext } from './testContext';
+import { IDeploymentProfile, IGenerateScriptProfile } from '../models/IDeploymentProfile';
 
 
 let testContext: TestContext;
 
 describe('Deploy Database Dialog', () => {
 	before(async function (): Promise<void> {
-		testContext = createContext();
 		await templates.loadTemplates(path.join(__dirname, '..', '..', 'resources', 'templates'));
 		await baselines.loadBaselines();
+	});
+
+	beforeEach(async function (): Promise<void> {
+		testContext = createContext();
 	});
 
 	it('Should open dialog successfully ', async function (): Promise<void> {
@@ -46,5 +52,21 @@ describe('Deploy Database Dialog', () => {
 
 		const deployDatabaseDialog = new DeployDatabaseDialog(testContext.apiWrapper.object, project);
 		should.equal(deployDatabaseDialog.getDefaultDatabaseName(), project.projectFileName);
+	});
+
+	it('Should include all info in deployment profile', async function (): Promise<void> {
+		const proj = await testUtils.createTestProject(baselines.openProjectFileBaseline);
+		const dialog = new DeployDatabaseDialog(testContext.apiWrapper.object, proj);
+		let profile: IDeploymentProfile | IGenerateScriptProfile | undefined;
+
+		dialog.deploy = async (_, prof) => { profile = prof; };
+		dialog.deployClick();
+
+		should(profile).equal(undefined);
+
+		dialog.generateScript = async (_, prof) => { profile = prof; };
+		dialog.generateScriptClick();
+
+		should(profile).equal(undefined);
 	});
 });

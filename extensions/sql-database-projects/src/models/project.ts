@@ -59,6 +59,15 @@ export class Project {
 			const importTarget = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Import)[i];
 			this.importedTargets.push(importTarget.getAttribute(constants.Project));
 		}
+
+		// find all SQLCMD variables to include
+		for (let i = 0; i < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable).length; i++) {
+			const sqlCmdVar = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable)[i];
+			const varName = sqlCmdVar.getAttribute(constants.Include);
+
+			const varValue = sqlCmdVar.getElementsByTagName(constants.DefaultValue)[0].childNodes[0].nodeValue;
+			this.sqlCmdVariables[varName] = varValue;
+		}
 	}
 
 	public async updateProjectForRoundTrip() {
