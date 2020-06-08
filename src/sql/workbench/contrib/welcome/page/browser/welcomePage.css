@@ -144,22 +144,6 @@
 	justify-content: flex-start
 }
 
-/* .ads_homepage.SM .btn {
-	box-sizing: border-box;
-	width: 100%;
-	height: 34px;
-	padding-top: 1px;
-	font-size: 1.08em;
-	line-height: 29px;
-	border-radius: 2px;
-	display: flex;
-	align-content: center;
-	justify-content: center;
-	text-align: center;
-	text-decoration: none;
-	margin: 10px 0
-} */
-
 .ads_homepage .btn span {
 	display: block
 }
@@ -408,27 +392,6 @@
 	mask-size: 12px 12px
 }
 
-/*
-.ads_homepage .icon_arrow_down {
-	position: relative;
-	height: 20px;
-	width: 18px;
-	display: inline-block
-}
-.ads_homepage .icon_arrow_down {
-	font: normal normal normal 16px/1 codicon;
-	text-decoration: none;
-	text-rendering: auto;
-	text-align: center;
-	-webkit-font-smoothing: antialiased;
-	display: inline-block;
-	width: 11px;
-	height: 6px;
-	content: "";
-	transform: rotate(90deg);
-	margin: auto;
-} */
-
 .ads_homepage .codicon-chevron-right {
 	transform: rotate(90deg);
 }
@@ -472,7 +435,6 @@
 	mask: url(../../media/link_icon.svg) no-repeat;
 	mask-size: 11px 11px;
 	height: 11px;
-	width: 11px
 }
 
 .ads_homepage .icon_arrow_down_dark {
@@ -492,7 +454,6 @@
 	display: inline-block;
 	width: 11px;
 	height: 6px;
-	/* content: ""; */
 	transform: rotate(90deg);
 	top: 14px;
 	bottom: 5px;

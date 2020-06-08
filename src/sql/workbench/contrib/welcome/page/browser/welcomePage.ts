@@ -330,7 +330,7 @@ class WelcomePage extends Disposable {
 		const i = document.createElement('div');
 
 		const newText = localize('welcomePage.new', "New");
-		let dropdownBtn = new Button(dropdownButtonContainer);
+		let dropdownBtn = this._register(new Button(dropdownButtonContainer));
 		dropdownBtn.label = newText;
 
 		const iconClassList = ['twisties', 'codicon', 'codicon-chevron-right'];
@@ -364,8 +364,8 @@ class WelcomePage extends Disposable {
 
 		const fileBtnContainer = document.querySelector('#open_file_btn_container') as HTMLElement;
 		const openFileText = localize('welcomePage.openFile', "Open file");
-		let openFileMac = new Button(fileBtnContainer);
-		let openFileWindows = new Button(fileBtnContainer);
+		let openFileMac = this._register(new Button(fileBtnContainer));
+		let openFileWindows = this._register(new Button(fileBtnContainer));
 		openFileWindows.label = openFileText;
 		openFileMac.label = openFileText;
 		dropdownBtn.label = newText;
