@@ -346,7 +346,7 @@ export class ProjectsController {
 		return input.label;
 	}
 
-	private async getSystemDatabaseName(project: Project): Promise<SystemDatabase> {
+	public async getSystemDatabaseName(project: Project): Promise<SystemDatabase> {
 		let databaseReferenceOptions: QuickPickItem[] = [
 			{
 				label: constants.master

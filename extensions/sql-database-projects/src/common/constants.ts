@@ -16,7 +16,9 @@ export const sqlDatabaseProjectExtensionId = 'microsoft.sql-database-projects';
 export const mssqlExtensionId = 'microsoft.mssql';
 export const dacpac = 'dacpac';
 export const master = 'master';
+export const masterDacpac = 'master.dacpac';
 export const msdb = 'msdb';
+export const msdbDacpac = 'msdb.dacpac';
 export const MicrosoftDatatoolsSchemaSqlSql = 'Microsoft.Data.Tools.Schema.Sql.Sql';
 export const databaseSchemaProvider = 'DatabaseSchemaProvider';
 

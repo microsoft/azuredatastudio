@@ -150,10 +150,10 @@ export class Project {
 		let uri: Uri;
 		let dbName: string;
 		if (name === SystemDatabase.master) {
-			uri = this.getSystemDacpacUri('master.dacpac');
+			uri = this.getSystemDacpacUri(constants.masterDacpac);
 			dbName = constants.master;
 		} else {
-			uri = this.getSystemDacpacUri('msdb.dacpac');
+			uri = this.getSystemDacpacUri(constants.msdbDacpac);
 			dbName = constants.msdb;
 		}
 
