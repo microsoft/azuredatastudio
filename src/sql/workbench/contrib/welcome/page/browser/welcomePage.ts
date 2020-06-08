@@ -47,6 +47,7 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { joinPath } from 'vs/base/common/resources';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { addStandardDisposableListener, EventHelper } from 'vs/base/browser/dom';
+import { Button } from 'vs/base/browser/ui/button/button';
 
 const configurationKey = 'workbench.startupEditor';
 const oldConfigurationKey = 'workbench.welcome.enabled';
@@ -176,9 +177,9 @@ const extensionPackExtensions: ExtensionPackExtensions[] = [
 ];
 
 const extensions: ExtensionSuggestion[] = [
-	{ name: localize('welcomePage.powershell', "Powershell"), id: 'microsoft.powershell', description: localize('welcomePage.powershellDescription', "Write and execute PowerShell scripts using Azure Data Studio's rich query editor"), icon: 'https://raw.githubusercontent.com/PowerShell/vscode-powershell/master/images/PowerShell_icon.png', link: `command:azdata.extension.open?{"id":"microsoft.powershell"}` },
+	{ name: localize('welcomePage.powershell', "Powershell"), id: 'microsoft.powershell', description: localize('welcomePage.powershellDescription', "Write and execute PowerShell scripts using Azure Data Studio's rich query editor"), icon: require.toUrl('./../../media/icon_powershell.png'), link: `command:azdata.extension.open?{"id":"microsoft.powershell"}` },
 	{ name: localize('welcomePage.dataVirtualization', "Data Virtualization"), id: 'microsoft.datavirtualization', description: localize('welcomePage.dataVirtualizationDescription', "Virtualize data with SQL Server 2019 and create external tables using interactive wizards"), icon: require.toUrl('./../../media/defaultExtensionIcon.svg'), link: `command:azdata.extension.open?{"id":"microsoft.datavirtualization"}` },
-	{ name: localize('welcomePage.PostgreSQL', "PostgreSQL"), id: 'microsoft.azuredatastudio-postgresql', description: localize('welcomePage.PostgreSQLDescription', "Connect, query, and manage Postgres databases with Azure Data Studio"), icon: 'https://raw.githubusercontent.com/Microsoft/azuredatastudio-postgresql/master/images/extension-icon.png', link: `command:azdata.extension.open?{"id":"microsoft.azuredatastudio-postgresql"}` },
+	{ name: localize('welcomePage.PostgreSQL', "PostgreSQL"), id: 'microsoft.azuredatastudio-postgresql', description: localize('welcomePage.PostgreSQLDescription', "Connect, query, and manage Postgres databases with Azure Data Studio"), icon: require.toUrl('./../../media/icon_postgre_sql.png'), link: `command:azdata.extension.open?{"id":"microsoft.azuredatastudio-postgresql"}` },
 ];
 
 const extensionPackStrings = {
@@ -316,9 +317,68 @@ class WelcomePage extends Disposable {
 				}
 			}
 		}));
+		this.createButtons();
 		this.createDropDown();
 		this.createWidePreviewToolTip();
 		this.createPreviewModal();
+	}
+
+	private createButtons() {
+		const dropdownButtonContainer = document.querySelector('#dropdown_btn_container') as HTMLElement;
+		const nav = document.createElement('nav');
+		const dropdownUl = document.createElement('ul');
+		const i = document.createElement('div');
+
+		const newText = localize('welcomePage.new', "New");
+		let dropdownBtn = new Button(dropdownButtonContainer);
+		dropdownBtn.label = newText;
+
+		const iconClassList = ['twisties', 'codicon', 'codicon-chevron-right'];
+
+		i.classList.add(...iconClassList);
+
+		dropdownUl.classList.add('dropdown-content');
+		dropdownUl.setAttribute('aria-hidden', 'true');
+		dropdownUl.setAttribute('aria-label', 'submenu');
+		dropdownUl.setAttribute('role', 'menu');
+		dropdownUl.setAttribute('aria-labelledby', 'dropdown_btn');
+		dropdownUl.id = 'dropdown';
+		dropdownUl.innerHTML =
+			`<li role="none"><a role="menuitem" tabIndex="-1" class="move" href="command:registeredServers.addConnection">${(localize('welcomePage.newConnection', "New connection"))} </a></li>
+			<li role="none"><a role="menuitem" tabIndex="-1" class="move" href="command:workbench.action.files.newUntitledFile">${(localize('welcomePage.newQuery', "New query"))}</a></li>
+			<li role="none"><a role="menuitem" tabIndex="-1" class="move" href="command:notebook.command.new">${(localize('welcomePage.newNotebook', "New notebook"))}</a></li>
+			<li role="none" id="dropdown_mac_only"><a role="menuitem" tabIndex="-1" class="move mac_only" href="command:workbench.action.files.openLocalFileFolder">${(localize('welcomePage.openFileMac', "Open file"))}</a></li>
+			<li role="none" id="dropdown_windows_linux_only"><a role="menuitem" tabIndex="-1" class="move windows_only linux_only" href="command:workbench.action.files.openFile">${(localize('welcomePage.openFileLinuxPC', "Open file"))}</a></li`;
+		const getDropdownBtn = document.querySelector('#dropdown_btn_container .monaco-button') as HTMLElement;
+		getDropdownBtn.id = 'dropdown_btn';
+		getDropdownBtn.setAttribute('role', 'navigation');
+		getDropdownBtn.setAttribute('aria-haspopup', 'true');
+		getDropdownBtn.setAttribute('aria-controls', 'dropdown');
+		nav.setAttribute('role', 'navigation');
+		nav.classList.add('dropdown_nav');
+		dropdownUl.classList.add('dropdown');
+		getDropdownBtn.id = 'dropdown_btn';
+		getDropdownBtn.appendChild(i);
+		nav.appendChild(dropdownUl);
+		dropdownButtonContainer.appendChild(nav);
+
+		const fileBtnContainer = document.querySelector('#open_file_btn_container') as HTMLElement;
+		const openFileText = localize('welcomePage.openFile', "Open file");
+		let openFileMac = new Button(fileBtnContainer);
+		let openFileWindows = new Button(fileBtnContainer);
+		openFileWindows.label = openFileText;
+		openFileMac.label = openFileText;
+		dropdownBtn.label = newText;
+
+		const getNewFileBtnWindows = document.querySelector('#open_file_btn_container .monaco-button:first-of-type') as HTMLAnchorElement;
+		const getNewFileBtnMac = document.querySelector('#open_file_btn_container .monaco-button:nth-of-type(2)') as HTMLAnchorElement;
+		const fileBtnWindowsClasses = ['windows_only', 'linux_only', 'btn_secondary'];
+		const fileBtnMacClasses = ['mac_only', 'btn_secondary'];
+		getNewFileBtnWindows.classList.add(...fileBtnWindowsClasses);
+		getNewFileBtnMac.classList.add(...fileBtnMacClasses);
+		getNewFileBtnMac.href = 'command:workbench.action.files.openLocalFileFolder';
+		getNewFileBtnWindows.href = 'command:workbench.action.files.openFile';
+
 	}
 
 	private createWidePreviewToolTip() {
@@ -379,7 +439,7 @@ class WelcomePage extends Disposable {
 
 	private createDropDown() {
 		const dropdownBtn = document.querySelector('#dropdown_btn') as HTMLElement;
-		const dropdown = document.querySelector('#dropdown') as HTMLInputElement;
+		const dropdown = document.querySelector('.dropdown') as HTMLInputElement;
 
 		addStandardDisposableListener(dropdownBtn, 'click', () => {
 			dropdown.classList.toggle('show');
@@ -415,7 +475,7 @@ class WelcomePage extends Disposable {
 
 		window.addEventListener('click', (event) => {
 			const target = event.target as HTMLTextAreaElement;
-			if (!target.matches('.dropdown')) {
+			if (!target.matches('#dropdown_btn')) {
 				if (dropdown.classList.contains('show')) {
 					dropdown.classList.remove('show');
 				}
@@ -614,38 +674,48 @@ class WelcomePage extends Disposable {
 	}
 
 	private addExtensionPack(container: HTMLElement, anchorSelector: string) {
-		const btnContainer = container.querySelector(anchorSelector);
-		if (btnContainer) {
-			extensionPacks.forEach((extension, i) => {
-				const a = document.createElement('a');
-				const classes = ['btn', 'btn_secondary', 'a_self_end', 'flex', 'flex_a_center', 'flex_j_center'];
-				const btn = document.createElement('button');
-				const description = document.querySelector('.extension_pack_body');
-				const header = document.querySelector('.extension_pack_header');
+		const btnContainer = container.querySelector(anchorSelector) as HTMLElement;
 
-				a.classList.add(...classes);
-				a.innerText = localize('welcomePage.install', "Install");
-				a.title = extension.title || (extension.isKeymap ? localize('welcomePage.installKeymap', "Install {0} keymap", extension.name) : localize('welcomePage.installExtensionPack', "Install additional support for {0}", extension.name));
-				a.classList.add('installExtension');
-				a.setAttribute('data-extension', extension.id);
-				a.href = 'javascript:void(0)';
-				a.addEventListener('click', e => {
+		if (btnContainer) {
+			extensionPacks.forEach((extension) => {
+
+				const installText = localize('welcomePage.install', "Install");
+				let dropdownBtn = new Button(btnContainer);
+				dropdownBtn.label = installText;
+				const classes = ['btn', 'btn_secondary'];
+				const getDropdownBtn = document.querySelector('.extensionPack .monaco-button:first-of-type') as HTMLAnchorElement;
+				getDropdownBtn.id = 'dropdown_btn';
+				getDropdownBtn.classList.add(...classes);
+				getDropdownBtn.title = extension.title || (extension.isKeymap ? localize('welcomePage.installKeymap', "Install {0} keymap", extension.name) : localize('welcomePage.installExtensionPack', "Install additional support for {0}", extension.name));
+				getDropdownBtn.setAttribute('aria-haspopup', 'true');
+				getDropdownBtn.setAttribute('aria-controls', 'dropdown');
+				getDropdownBtn.id = 'dropdown_btn';
+				getDropdownBtn.classList.add('installExtension');
+				getDropdownBtn.setAttribute('data-extension', extension.id);
+				getDropdownBtn.href = 'javascript:void(0)';
+				getDropdownBtn.addEventListener('click', e => {
 					this.installExtension(extension);
 					e.preventDefault();
 					e.stopPropagation();
 				});
-				btnContainer.appendChild(a);
-				btn.innerText = localize('welcomePage.installed', "Installed");
-				btn.title = extension.isKeymap ? localize('welcomePage.installedKeymap', "{0} keymap is already installed", extension.name) : localize('welcomePage.installedExtensionPack', "{0} support is already installed", extension.name);
-				btn.classList.add('enabledExtension');
-				btn.classList.add(...classes);
-				btn.setAttribute('disabled', 'true');
-				btn.setAttribute('data-extension', extension.id);
-				btnContainer.appendChild(btn);
 
+
+				const description = document.querySelector('.extension_pack_body');
+				const header = document.querySelector('.extension_pack_header');
+
+				const installedText = localize('welcomePage.installed', "Installed");
+				let installedButton = new Button(btnContainer);
+				installedButton.label = installedText;
+				installedButton.enabled = false;
+				const getInstalledButton = document.querySelector('.extensionPack .monaco-button:nth-of-type(2)') as HTMLAnchorElement;
+
+				getInstalledButton.innerText = localize('welcomePage.installed', "Installed");
+				getInstalledButton.title = extension.isKeymap ? localize('welcomePage.installedKeymap', "{0} keymap is already installed", extension.name) : localize('welcomePage.installedExtensionPack', "{0} support is already installed", extension.name);
+				getInstalledButton.classList.add('enabledExtension');
+				getInstalledButton.classList.add(...classes);
+				getInstalledButton.setAttribute('data-extension', extension.id);
 				description.innerHTML = extension.description;
 				header.innerHTML = extension.name;
-
 				this.addExtensionPackList(container, '.extension_pack_extension_list');
 			});
 		}
@@ -914,23 +984,23 @@ registerThemingParticipant((theme, collector) => {
 	}
 	const buttonHoverBackgroundColor = theme.getColor(buttonHoverBackground);
 	if (buttonHoverBackgroundColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_primary:hover { background: ${buttonHoverBackgroundColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_primary:hover { background: ${buttonHoverBackgroundColor} !important;}`);
 	}
 	const buttonSecondaryBackgroundColor = theme.getColor(buttonSecondaryBackground);
 	if (buttonSecondaryBackgroundColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_secondary { background-color: ${buttonSecondaryBackgroundColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_secondary { background-color: ${buttonSecondaryBackgroundColor}  !important;}`);
 	}
 	const buttonSecondaryBorderColor = theme.getColor(buttonSecondaryBorder);
 	if (buttonSecondaryBorderColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_secondary { border: 1px solid ${buttonSecondaryBorderColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_secondary { border: 1px solid ${buttonSecondaryBorderColor}  !important;}`);
 	}
 	const buttonSecondaryColor = theme.getColor(buttonSecondary);
 	if (buttonSecondaryColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_secondary { color: ${buttonSecondaryColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_secondary { color: ${buttonSecondaryColor}  !important;}`);
 	}
 	const buttonSecondaryHover = theme.getColor(buttonSecondaryHoverColor);
 	if (buttonSecondaryColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_secondary:hover { color: ${buttonSecondaryHover}; border: 1px solid ${buttonSecondaryHover};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_secondary:hover:not(.disabled) { color: ${buttonSecondaryHover}; border: 1px solid ${buttonSecondaryHover} !important;}`);
 	}
 	const selectBackgroundColor = theme.getColor(selectBackground);
 	if (selectBackgroundColor) {

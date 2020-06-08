@@ -144,12 +144,7 @@
 	justify-content: flex-start
 }
 
-.ads_homepage.XS:not(.SM) .btn_container div {
-	width: 100%;
-	width: 100%;
-}
-
-.ads_homepage.XS:not(.SM) .btn {
+/* .ads_homepage.SM .btn {
 	box-sizing: border-box;
 	width: 100%;
 	height: 34px;
@@ -163,23 +158,7 @@
 	text-align: center;
 	text-decoration: none;
 	margin: 10px 0
-}
-
-.ads_homepage.SM .btn {
-	box-sizing: border-box;
-	width: 100%;
-	height: 34px;
-	padding-top: 1px;
-	font-size: 1.08em;
-	line-height: 29px;
-	border-radius: 2px;
-	display: flex;
-	align-content: center;
-	justify-content: center;
-	text-align: center;
-	text-decoration: none;
-	margin: 10px 0
-}
+} */
 
 .ads_homepage .btn span {
 	display: block
@@ -192,7 +171,6 @@
 .ads_homepage.XS .btn {
 	margin: 0 8px 0 0;
 	width: 77px;
-	height: 25px;
 	line-height: 18px
 }
 
@@ -201,19 +179,23 @@
 }
 
 .ads_homepage .btn_primary {
-	border: 1px solid
+	border: 1px solid;
 }
 
 .ads_homepage .btn_primary:hover {
-	cursor: pointer
+	cursor: pointer;
 }
 
 .ads_homepage .btn_secondary:hover {
-	cursor: pointer
+	cursor: pointer;
 }
 
 .ads_homepage .btn_secondary {
-	line-height: 1.6em
+	line-height: 1.41em;
+}
+
+.ads_homepage.XS:not(.SM) #dropdown_btn_container {
+	width: 100%;
 }
 
 .ads_homepage #dropdown_btn:focus {
@@ -426,15 +408,14 @@
 	mask-size: 12px 12px
 }
 
+/*
 .ads_homepage .icon_arrow_down {
 	position: relative;
 	height: 20px;
 	width: 18px;
 	display: inline-block
 }
-
-.ads_homepage .icon_arrow_down:before {
-	position: absolute;
+.ads_homepage .icon_arrow_down {
 	font: normal normal normal 16px/1 codicon;
 	text-decoration: none;
 	text-rendering: auto;
@@ -445,9 +426,16 @@
 	height: 6px;
 	content: "";
 	transform: rotate(90deg);
-	top: -1px;
-	bottom: 5px;
-	margin: auto
+	margin: auto;
+} */
+
+.ads_homepage .codicon-chevron-right {
+	transform: rotate(90deg);
+}
+
+.ads_homepage .monaco-text-button {
+	min-width: 77px;
+	margin: 10px 0;
 }
 
 .ads_homepage .icon_arrow_right {
@@ -504,7 +492,7 @@
 	display: inline-block;
 	width: 11px;
 	height: 6px;
-	content: "";
+	/* content: ""; */
 	transform: rotate(90deg);
 	top: 14px;
 	bottom: 5px;
@@ -553,6 +541,14 @@
 
 .ads_homepage.LG .extension_pack_container {
 	grid-template-columns: repeat(2, 1fr)
+}
+
+.ads_homepage .dropdown_btn_container {
+	margin: 10px 10px 10px 0;
+}
+
+.ads_homepage.XS:not(.SM) .dropdown_btn_container {
+	width: 100%;
 }
 
 .ads_homepage.XS.SM.MD.LG.XL .extension_pack_container {
@@ -1256,10 +1252,12 @@
 }
 
 .ads_homepage .extension_pack .extension_pack_extensions .btn_secondary {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	line-height: 1.25em
+	box-sizing: border-box !important;
+}
+
+.ads_homepage.XS.SM .btn_secondary {
+	margin: 0 0 0 15px;
+	max-width: 77px;
 }
 
 .ads_homepage .extension_pack .extension_pack_extension_container {
