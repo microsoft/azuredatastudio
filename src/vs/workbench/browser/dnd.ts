@@ -18,7 +18,7 @@ import { normalizeDriveLetter } from 'vs/base/common/labels';
 import { MIME_BINARY } from 'vs/base/common/mime';
 import { isWindows, isWeb } from 'vs/base/common/platform';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
-import { isCodeEditor } from 'vs/editor/browser/editorBrowser';
+import { ICodeEditor, isCodeEditor } from 'vs/editor/browser/editorBrowser';
 import { IEditorIdentifier, GroupIdentifier } from 'vs/workbench/common/editor';
 import { IEditorService, IResourceEditorInputType } from 'vs/workbench/services/editor/common/editorService';
 import { Disposable, IDisposable, DisposableStore } from 'vs/base/common/lifecycle';
@@ -181,7 +181,7 @@ export class ResourcesDropHandler {
 			return;
 		}
 
-		const editor = this.editorService.activeTextEditorControl;
+		const editor = this.editorService.activeTextEditorControl as ICodeEditor;
 
 		// Make the window active to handle the drop properly within
 		await this.hostService.focus();

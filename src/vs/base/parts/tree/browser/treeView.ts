@@ -1279,8 +1279,9 @@ export class TreeView extends HeightMap {
 		}
 
 		e.dataTransfer.effectAllowed = 'copyMove';
+		// see if element.label is something that can be passed from sql directly
 
-		e.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([`${element.nodeTypeId}:${item.uri}?${this.parseLabel(element.label)}`]));
+		e.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([`${element.nodeTypeId}:${item.uri}?${element.metadata.schema ? element.metadata.schema + '.' + element.metadata.name : element.metadata.name}`]));
 
 
 		if (e.dataTransfer.setDragImage) {
@@ -1433,7 +1434,6 @@ export class TreeView extends HeightMap {
 
 		// can be null
 		let currentDropTarget = item.id === this.inputItem.id ? this.inputItem : this.items[item.id];
-		console.log(currentDropTarget);
 		if (this.shouldInvalidateDropReaction || this.currentDropTarget !== currentDropTarget || !reactionEquals(this.currentDropElementReaction, reaction)) {
 			this.shouldInvalidateDropReaction = false;
 
@@ -1556,22 +1556,6 @@ export class TreeView extends HeightMap {
 
 	private shouldBeRendered(item: ViewItem): boolean {
 		return item.top < this.lastRenderTop + this.lastRenderHeight && item.top + item.height > this.lastRenderTop;
-	}
-
-	private parseLabel(label) {
-		let arr = label.split(' ');
-		let columnArr = [];
-		for (let i of arr) {
-			if (i.substring(0, 1) === '(') {
-				break;
-			}
-			else {
-				columnArr.push(i);
-			}
-		}
-		let columnStr = columnArr.join(' ');
-
-		return columnStr;
 	}
 
 	// Searches event target & its parents

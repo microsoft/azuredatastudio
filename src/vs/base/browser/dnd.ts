@@ -58,12 +58,6 @@ export const DataTransfers = {
 	RESOURCES: 'ResourceURLs',
 
 	/**
-	 * table/column info
-	 */
-
-	INFO: 'info',
-
-	/**
 	 * Browser specific transfer type to download
 	 */
 	DOWNLOAD_URL: 'DownloadURL',
