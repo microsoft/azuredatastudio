@@ -14,6 +14,11 @@ export class MiaaConnectionStringsPage extends DashboardPage {
 
 	constructor(modelView: azdata.ModelView, private _controllerModel: ControllerModel) {
 		super(modelView);
+		this.refresh().catch(err => console.error(err));
+	}
+
+	protected async refresh(): Promise<void> {
+		await this._controllerModel.refresh();
 	}
 
 	protected get title(): string {
