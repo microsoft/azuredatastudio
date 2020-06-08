@@ -144,14 +144,28 @@ export class Project {
 	}
 
 	/**
-	 * Adds reference to the appropriate master dacpac to the project
+	 * Adds reference to the appropriate system database dacpac to the project
 	 */
-	public async addMasterDatabaseReference(): Promise<void> {
-		const uri = this.getMasterDacpac();
-		this.addDatabaseReference(uri, DatabaseReferenceLocation.differentDatabaseSameServer, constants.master);
+	public async addSystemDatabaseReference(name: SystemDatabase): Promise<void> {
+		let uri: Uri;
+		let dbName: string;
+		if (name === SystemDatabase.master) {
+			uri = this.getSystemDacpacUri('master.dacpac');
+			dbName = constants.master;
+		} else {
+			uri = this.getSystemDacpacUri('msdb.dacpac');
+			dbName = constants.msdb;
+		}
+
+		this.addDatabaseReference(uri, DatabaseReferenceLocation.differentDatabaseSameServer, dbName);
 	}
 
-	public getMasterDacpac(): Uri {
+	public getSystemDacpacUri(dacpac: string): Uri {
+		let version = this.getProjectTargetPlatform();
+		return Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', version, dacpac));
+	}
+
+	public getProjectTargetPlatform(): string {
 		// check for invalid DSP
 		if (this.projFileXmlDoc.getElementsByTagName(constants.DSP).length !== 1 || this.projFileXmlDoc.getElementsByTagName(constants.DSP)[0].childNodes.length !== 1) {
 			throw new Error(constants.invalidDataSchemaProvider);
@@ -166,12 +180,11 @@ export class Project {
 		version = version.substring(0, version.length - constants.databaseSchemaProvider.length);
 
 		// make sure version is valid
-		console.error(Object.values(TargetPlatform));
 		if (!Object.values(TargetPlatform).includes(version)) {
 			throw new Error(constants.invalidDataSchemaProvider);
 		}
 
-		return Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', version, 'master.dacpac'));
+		return version;
 	}
 
 	/**
@@ -372,4 +385,9 @@ export enum TargetPlatform {
 	Sql140 = '140',
 	Sql150 = '150',
 	SqlAzureV12 = 'AzureV12'
+}
+
+export enum SystemDatabase {
+	master,
+	msdb
 }
