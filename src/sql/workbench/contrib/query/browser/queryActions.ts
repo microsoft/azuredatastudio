@@ -242,8 +242,8 @@ export class RunQueryAction extends QueryTaskbarAction {
 		if (this.isConnected(editor)) {
 			// if the selection isn't empty then execute the selection
 			// otherwise, either run the statement or the script depending on parameter
-			let selection = editor.getSelection();
-			if (runCurrentStatement && selection) {
+			let selection = editor.getSelection(false);
+			if (runCurrentStatement && selection && this.isCursorPosition(selection)) {
 				editor.input.runQueryStatement(selection);
 			} else {
 				// get the selection again this time with trimming
@@ -251,6 +251,11 @@ export class RunQueryAction extends QueryTaskbarAction {
 				editor.input.runQuery(selection);
 			}
 		}
+	}
+
+	protected isCursorPosition(selection: IRange) {
+		return selection.startLineNumber === selection.endLineNumber
+			&& selection.startColumn === selection.endColumn;
 	}
 }
 
