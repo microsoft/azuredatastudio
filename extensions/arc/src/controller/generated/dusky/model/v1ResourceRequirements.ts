@@ -10,11 +10,10 @@
  * Do not edit the class manually.
  */
 
-import { ResourceQuantity } from './resourceQuantity';
 
 export class V1ResourceRequirements {
-    'limits'?: { [key: string]: ResourceQuantity; };
-    'requests'?: { [key: string]: ResourceQuantity; };
+    'limits'?: { [key: string]: string; };
+    'requests'?: { [key: string]: string; };
 
     static discriminator: string | undefined = undefined;
 
@@ -22,12 +21,12 @@ export class V1ResourceRequirements {
         {
             "name": "limits",
             "baseName": "limits",
-            "type": "{ [key: string]: ResourceQuantity; }"
+            "type": "{ [key: string]: string; }"
         },
         {
             "name": "requests",
             "baseName": "requests",
-            "type": "{ [key: string]: ResourceQuantity; }"
+            "type": "{ [key: string]: string; }"
         }    ];
 
     static getAttributeTypeMap() {

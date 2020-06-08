@@ -10,11 +10,10 @@
  * Do not edit the class manually.
  */
 
-import { ResourceQuantity } from './resourceQuantity';
 
 export class V1EmptyDirVolumeSource {
     'medium'?: string;
-    'sizeLimit'?: ResourceQuantity;
+    'sizeLimit'?: string;
 
     static discriminator: string | undefined = undefined;
 
@@ -27,7 +26,7 @@ export class V1EmptyDirVolumeSource {
         {
             "name": "sizeLimit",
             "baseName": "sizeLimit",
-            "type": "ResourceQuantity"
+            "type": "string"
         }    ];
 
     static getAttributeTypeMap() {

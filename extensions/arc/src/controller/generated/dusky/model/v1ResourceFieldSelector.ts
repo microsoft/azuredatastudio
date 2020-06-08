@@ -10,11 +10,10 @@
  * Do not edit the class manually.
  */
 
-import { ResourceQuantity } from './resourceQuantity';
 
 export class V1ResourceFieldSelector {
     'containerName'?: string;
-    'divisor'?: ResourceQuantity;
+    'divisor'?: string;
     'resource'?: string;
 
     static discriminator: string | undefined = undefined;
@@ -28,7 +27,7 @@ export class V1ResourceFieldSelector {
         {
             "name": "divisor",
             "baseName": "divisor",
-            "type": "ResourceQuantity"
+            "type": "string"
         },
         {
             "name": "resource",

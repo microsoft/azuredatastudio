@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-import { ResourceQuantity } from './resourceQuantity';
 import { V1Affinity } from './v1Affinity';
 import { V1Container } from './v1Container';
 import { V1EphemeralContainer } from './v1EphemeralContainer';
@@ -41,7 +40,7 @@ export class V1PodSpec {
     'initContainers'?: Array<V1Container>;
     'nodeName'?: string;
     'nodeSelector'?: { [key: string]: string; };
-    'overhead'?: { [key: string]: ResourceQuantity; };
+    'overhead'?: { [key: string]: string; };
     'preemptionPolicy'?: string;
     'priority'?: number | null;
     'priorityClassName'?: string;
@@ -150,7 +149,7 @@ export class V1PodSpec {
         {
             "name": "overhead",
             "baseName": "overhead",
-            "type": "{ [key: string]: ResourceQuantity; }"
+            "type": "{ [key: string]: string; }"
         },
         {
             "name": "preemptionPolicy",

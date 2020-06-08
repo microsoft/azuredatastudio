@@ -36,7 +36,6 @@ export * from './duskyObjectModelsTINASpec';
 export * from './duskyObjectModelsUser';
 export * from './intstrIntOrString';
 export * from './logsRequest';
-export * from './resourceQuantity';
 export * from './v1Affinity';
 export * from './v1AWSElasticBlockStoreVolumeSource';
 export * from './v1AzureDiskVolumeSource';
@@ -179,7 +178,6 @@ import { DuskyObjectModelsTINASpec } from './duskyObjectModelsTINASpec';
 import { DuskyObjectModelsUser } from './duskyObjectModelsUser';
 import { IntstrIntOrString } from './intstrIntOrString';
 import { LogsRequest } from './logsRequest';
-import { ResourceQuantity } from './resourceQuantity';
 import { V1Affinity } from './v1Affinity';
 import { V1AWSElasticBlockStoreVolumeSource } from './v1AWSElasticBlockStoreVolumeSource';
 import { V1AzureDiskVolumeSource } from './v1AzureDiskVolumeSource';
@@ -298,7 +296,6 @@ let enumsMap: {[index: string]: any} = {
         "DuskyObjectModelsDockerSpec.ImagePullPolicyEnum": DuskyObjectModelsDockerSpec.ImagePullPolicyEnum,
         "DuskyObjectModelsDuskyValidationMessage.TypeEnum": DuskyObjectModelsDuskyValidationMessage.TypeEnum,
         "DuskyObjectModelsDuskyValidationMessage.CodeEnum": DuskyObjectModelsDuskyValidationMessage.CodeEnum,
-        "ResourceQuantity.FormatEnum": ResourceQuantity.FormatEnum,
 }
 
 let typeMap: {[index: string]: any} = {
@@ -340,7 +337,6 @@ let typeMap: {[index: string]: any} = {
     "DuskyObjectModelsUser": DuskyObjectModelsUser,
     "IntstrIntOrString": IntstrIntOrString,
     "LogsRequest": LogsRequest,
-    "ResourceQuantity": ResourceQuantity,
     "V1AWSElasticBlockStoreVolumeSource": V1AWSElasticBlockStoreVolumeSource,
     "V1Affinity": V1Affinity,
     "V1AzureDiskVolumeSource": V1AzureDiskVolumeSource,
