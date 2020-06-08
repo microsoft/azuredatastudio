@@ -282,6 +282,10 @@ export class JupyterSession implements nb.ISession {
 			// %_do_not_call_change_endpoint is a SparkMagic command that lets users change endpoint options,
 			// such as user/profile/host name/auth type
 
+			let credentials;
+			if (!this.isIntegratedAuth(connectionProfile)) {
+				credentials = await connection.getCredentials(connectionProfile.id);
+			}
 			//Update server info with bigdata endpoint - Unified Connection
 			if (connectionProfile.providerName === SQL_PROVIDER) {
 				const endpoints = await this.getClusterEndpoints(connectionProfile.id);
@@ -296,16 +300,16 @@ export class JupyterSession implements nb.ISession {
 				// as a default now we'll still fall back to root if it's empty for some reason. (but the calls below should
 				// get the actual correct value regardless)
 				connectionProfile.options[USER] = connectionProfile.userName || 'root';
-
-				try {
-					const bdcApi = <bdc.IExtension>await vscode.extensions.getExtension(bdc.constants.extensionName).activate();
-					const controllerEndpoint = endpoints.find(ep => ep.serviceName.toLowerCase() === CONTROLLER_ENDPOINT);
-					const controller = bdcApi.getClusterController(controllerEndpoint.endpoint, 'basic', connectionProfile.userName, connectionProfile.password);
-					connectionProfile.options[USER] = await controller.getKnoxUsername(connectionProfile.userName);
-				} catch (err) {
-					console.log(`Unexpected error getting Knox username for Spark kernel: ${err}`);
+				if (!this.isIntegratedAuth(connectionProfile)) {
+					try {
+						const bdcApi = <bdc.IExtension>await vscode.extensions.getExtension(bdc.constants.extensionName).activate();
+						const controllerEndpoint = endpoints.find(ep => ep.serviceName.toLowerCase() === CONTROLLER_ENDPOINT);
+						const controller = bdcApi.getClusterController(controllerEndpoint.endpoint, 'basic', connectionProfile.userName, credentials.password);
+						connectionProfile.options[USER] = await controller.getKnoxUsername(connectionProfile.userName);
+					} catch (err) {
+						console.log(`Unexpected error getting Knox username for Spark kernel: ${err}`);
+					}
 				}
-
 			}
 			else {
 				connectionProfile.options[KNOX_ENDPOINT_PORT] = this.getKnoxPortOrDefault(connectionProfile);
@@ -318,7 +322,7 @@ export class JupyterSession implements nb.ISession {
 			if (this.isIntegratedAuth(connectionProfile)) {
 				doNotCallChangeEndpointParams = `%_do_not_call_change_endpoint --server=${server} --auth=Kerberos`;
 			} else {
-				const credentials = await connection.getCredentials(connectionProfile.id);
+
 				doNotCallChangeEndpointParams = `%_do_not_call_change_endpoint --username=${connectionProfile.options[USER]} --password=${credentials.password} --server=${server} --auth=Basic_Access`;
 			}
 			let future = this.sessionImpl.kernel.requestExecute({

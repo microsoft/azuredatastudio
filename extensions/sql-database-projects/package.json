@@ -113,6 +113,11 @@
         "command": "sqlDatabaseProjects.importDatabase",
         "title": "%sqlDatabaseProjects.importDatabase%",
         "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.addDatabaseReference",
+        "title": "%sqlDatabaseProjects.addDatabaseReference%",
+        "category": "%sqlDatabaseProjects.displayName%"
       }
     ],
     "menus": {
@@ -227,6 +232,11 @@
           "group": "3_dbProjects_newItem@9"
         },
         {
+          "command": "sqlDatabaseProjects.addDatabaseReference",
+          "when": "view == sqlDatabaseProjectsView",
+          "group": "4_dbProjects_addDatabaseReference"
+        },
+        {
           "command": "sqlDatabaseProjects.close",
           "when": "view == sqlDatabaseProjectsView",
           "group": "9_dbProjectsLast"
@@ -269,6 +279,6 @@
     "tslint": "^5.8.0",
     "typemoq": "^2.1.0",
     "typescript": "^2.6.1",
-    "vscodetestcover": "github:corivera/vscodetestcover#1.0.8"
+    "vscodetestcover": "^1.0.9"
   }
 }

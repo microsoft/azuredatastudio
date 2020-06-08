@@ -7,7 +7,7 @@ import { localize } from 'vs/nls';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
-import { EditorInput, GroupIdentifier, IRevertOptions, ISaveOptions, IEditorInput, TextResourceEditorInput } from 'vs/workbench/common/editor';
+import { EditorInput, GroupIdentifier, IRevertOptions, ISaveOptions, IEditorInput } from 'vs/workbench/common/editor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
@@ -17,6 +17,7 @@ import { IQueryModelService } from 'sql/workbench/services/query/common/queryMod
 import { ExecutionPlanOptions } from 'azdata';
 import { startsWith } from 'vs/base/common/strings';
 import { IRange } from 'vs/editor/common/core/range';
+import { AbstractTextResourceEditorInput } from 'vs/workbench/common/editor/textResourceEditorInput';
 
 const MAX_SIZE = 13;
 
@@ -119,7 +120,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 
 	constructor(
 		private _description: string,
-		protected _text: TextResourceEditorInput,
+		protected _text: AbstractTextResourceEditorInput,
 		protected _results: QueryResultsInput,
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
@@ -168,7 +169,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 
 	// Getters for private properties
 	public get uri(): string { return this.resource!.toString(true); }
-	public get text(): TextResourceEditorInput { return this._text; }
+	public get text(): AbstractTextResourceEditorInput { return this._text; }
 	public get results(): QueryResultsInput { return this._results; }
 	// Description is shown beside the tab name in the combobox of open editors
 	public getDescription(): string { return this._description; }
