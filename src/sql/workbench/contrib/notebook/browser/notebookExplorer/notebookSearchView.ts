@@ -57,6 +57,7 @@ import { IViewDescriptorService } from 'vs/workbench/common/views';
 import { OpenSearchEditorAction, createEditorFromSearchResult } from 'vs/workbench/contrib/searchEditor/browser/searchEditorActions';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 
 const $ = dom.$;
 
@@ -127,6 +128,7 @@ export class NotebookSearchView extends ViewPane {
 	//private pauseSearching = false;
 
 	private treeAccessibilityProvider: SearchAccessibilityProvider;
+	private treeSelectionChangeListener: IDisposable;
 
 	constructor(
 		options: IViewPaneOptions,
@@ -154,6 +156,7 @@ export class NotebookSearchView extends ViewPane {
 		@IStorageService storageService: IStorageService,
 		@IOpenerService openerService: IOpenerService,
 		@ITelemetryService telemetryService: ITelemetryService,
+		@ICommandService private readonly commandService: ICommandService
 	) {
 
 		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService, telemetryService);
@@ -346,14 +349,13 @@ export class NotebookSearchView extends ViewPane {
 
 		return Iterable.map(matches, fileMatch => {
 			//const children = this.createFileIterator(fileMatch);
-
 			let nodeExists = true;
 			try { this.tree.getNode(fileMatch); } catch (e) { nodeExists = false; }
 
 			const collapsed = nodeExists ? undefined :
 				(collapseResults === 'alwaysCollapse' || (fileMatch.matches().length > 10 && collapseResults !== 'alwaysExpand'));
 
-			return <ITreeElement<RenderableMatch>>{ element: fileMatch, undefined, collapsed };
+			return <ITreeElement<RenderableMatch>>{ element: fileMatch, undefined, collapsed, collapsible: false };
 		});
 	}
 
@@ -448,6 +450,18 @@ export class NotebookSearchView extends ViewPane {
 			this.matchFocused.reset();
 			this.fileMatchOrFolderMatchFocus.reset();
 			this.fileMatchOrFolderMatchWithResourceFocus.reset();
+		}));
+
+		this.treeSelectionChangeListener = this._register(this.tree.onDidChangeSelection((e) => {
+			if (this.tree.getSelection().length) {
+				let element = this.tree.getSelection()[0] as Match;
+				const resource = element instanceof Match ? element.parent().resource : (<FileMatch>element).resource;
+				if (resource.fsPath.endsWith('.md')) {
+					this.commandService.executeCommand('markdown.showPreview', resource);
+				} else {
+					this.open(this.tree.getSelection()[0] as Match, true, false, false);
+				}
+			}
 		}));
 	}
 
@@ -1084,6 +1098,7 @@ export class NotebookSearchView extends ViewPane {
 	dispose(): void {
 		this.isDisposed = true;
 		this.saveState();
+		this.treeSelectionChangeListener.dispose();
 		super.dispose();
 	}
 }
