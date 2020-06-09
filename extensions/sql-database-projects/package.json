@@ -253,7 +253,7 @@
     "viewsWelcome": [
       {
         "view": "sqlDatabaseProjectsView",
-        "contents": "%sqlDatabseProjects.welcome%"
+        "contents": "%sqlDatabaseProjects.welcome%"
       }
     ]
   },
