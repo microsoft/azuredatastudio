@@ -68,6 +68,7 @@ describe('Project Tree tests', function (): void {
 		const tree = new ProjectRootTreeItem(proj);
 		should(tree.children.map(x => x.uri.path)).deepEqual([
 			'/TestProj.sqlproj/Data Sources',
+			'/TestProj.sqlproj/References',
 			'/TestProj.sqlproj/duplicateFolder',
 			'/TestProj.sqlproj/someFolder',
 			'/TestProj.sqlproj/duplicate.sql']);

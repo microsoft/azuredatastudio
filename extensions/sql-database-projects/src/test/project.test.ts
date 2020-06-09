@@ -34,6 +34,9 @@ describe('Project: sqlproj content operations', function (): void {
 
 		should(project.files.find(f => f.type === EntryType.Folder && f.relativePath === 'Views\\User')).not.equal(undefined); // mixed ItemGroup folder
 		should(project.files.find(f => f.type === EntryType.File && f.relativePath === 'Views\\User\\Profile.sql')).not.equal(undefined); // mixed ItemGroup file
+
+		should(project.databaseReferences.length).equal(1);
+		should(project.databaseReferences[0]).containEql(constants.master);
 	});
 
 	it('Should add Folder and Build entries to sqlproj', async function (): Promise<void> {
