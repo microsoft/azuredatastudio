@@ -191,7 +191,7 @@ export function sortPackageVersions(versions: string[], ascending: boolean = tru
 
 export function isEditorTitleFree(title: string): boolean {
 
-	let hasTextDoc = vscode.workspace.textDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title && !notebookLanguages.find(l => l === doc.languageId)) > -1;
+	let hasTextDoc = vscode.workspace.textDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title && !notebookLanguages.find(lang => lang === doc.languageId)) > -1;
 	let hasNotebookDoc = azdata.nb.notebookDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title) > -1;
 	return !hasTextDoc && !hasNotebookDoc;
 }
