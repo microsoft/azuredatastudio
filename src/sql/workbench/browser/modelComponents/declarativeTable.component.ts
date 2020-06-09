@@ -32,8 +32,8 @@ export enum DeclarativeDataType {
 	<table role=grid #container *ngIf="columns" class="declarative-table" [attr.aria-label]="ariaLabel">
 	<thead>
 		<ng-container *ngFor="let column of columns; let c = index;">
-		<th class="declarative-table-header" aria-sort="none" [style.width]="getColumnWidth(column)" [attr.aria-label]="column.ariaLabel" [ngStyle]="column.headerCssStyles">
-			<ng-container > {{column.displayName}} </ng-container>
+		<th class="declarative-table-header" aria-sort="none" [style.width]="getColumnWidth(column)" [attr.aria-label]="column.ariaLabel" [ngStyle]="column.headerCssStyles" role="columnheader">
+			{{column.displayName}}
 			<checkbox *ngIf="isCheckBox(c)" [checked]="isHeaderChecked(c)" (onChange)="onHeaderCheckBoxChanged($event,c)" label="" ></checkbox>
 		</th>
 		</ng-container>
