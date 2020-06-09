@@ -51,8 +51,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		this.viewId = view;
 		this.prompter = new CodeAdapter();
 		this._bookTrustManager = new BookTrustManager(this.books, _apiWrapper);
-		this._bookViewer = this._apiWrapper.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
-
 	}
 
 	private async initialize(workspaceFolders: vscode.WorkspaceFolder[]): Promise<void> {
@@ -64,11 +62,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				// no-op, not all workspace folders are going to be valid books
 			}
 		}));
-		this._bookViewer.onDidChangeVisibility(e => {
-			if (e.visible) {
-				this.revealActiveDocumentInViewlet();
-			}
-		});
 		this._initializeDeferred.resolve();
 	}
 
@@ -183,6 +176,14 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		this.books.push(book);
 		if (!this.currentBook) {
 			this.currentBook = book;
+		}
+		if (!this._bookViewer) {
+			this._bookViewer = this._apiWrapper.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
+			this._bookViewer.onDidChangeVisibility(e => {
+				if (e.visible) {
+					this.revealActiveDocumentInViewlet();
+				}
+			});
 		}
 	}
 
