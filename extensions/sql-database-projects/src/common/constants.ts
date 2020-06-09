@@ -77,6 +77,7 @@ export const dacpacFileLocationRequired = localize('dacpacFileLocationRequired',
 export const databaseLocationRequired = localize('databaseLocation', "Database location is required for adding a reference to a database");
 export const databaseNameRequired = localize('databaseNameRequired', "Database name is required for adding a reference to a different database");
 export const invalidDataSchemaProvider = localize('invalidDataSchemaProvider', "Invalid DSP in .sqlproj file");
+export const databaseSelectionRequired = localize('databaseSelectionRequired', "Database selection is required to import a project");
 export function projectAlreadyOpened(path: string) { return localize('projectAlreadyOpened', "Project '{0}' is already opened.", path); }
 export function projectAlreadyExists(name: string, path: string) { return localize('projectAlreadyExists', "A project named {0} already exists in {1}.", name, path); }
 export function noFileExist(fileName: string) { return localize('noFileExist', "File {0} doesn't exist", fileName); }
