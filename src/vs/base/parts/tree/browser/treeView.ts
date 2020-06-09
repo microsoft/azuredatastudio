@@ -1280,9 +1280,7 @@ export class TreeView extends HeightMap {
 
 		e.dataTransfer.effectAllowed = 'copyMove';
 
-		// {{SQL CARBON EDIT}}
-		e.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([`${element.nodeTypeId}:${item.uri}?${element.metadata.schema ? element.metadata.schema + '.' + element.metadata.name : element.metadata.name}`]));
-
+		e.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([item.uri]));
 
 		if (e.dataTransfer.setDragImage) {
 			let label: string;
@@ -1304,7 +1302,7 @@ export class TreeView extends HeightMap {
 		this.currentDragAndDropData = new dnd.ElementsDragAndDropData(elements);
 		StaticDND.CurrentDragAndDropData = new dnd.ExternalElementsDragAndDropData(elements);
 
-		this.context.dnd!.onDragStart(this.context.tree, this.currentDragAndDropData, new Mouse.DragMouseEvent(e));
+		this.context.dnd!.onDragStart(this.context.tree, this.currentDragAndDropData, new Mouse.DragMouseEvent(e), element, item);
 	}
 
 	private setupDragAndDropScrollInterval(): void {
