@@ -132,21 +132,23 @@ export class CellToggleMoreActions {
 	private removeDuplicatedAndStartingSeparators(actions: (Action | CellActionBase)[]): void {
 		let indexesToRemove: number[] = [];
 		for (let i = 0; i < actions.length; i++) {
-			// Never should have a separator at the beginning of the list
-			if (i === 0 && actions[i] instanceof Separator) {
-				indexesToRemove.push(0);
-			}
 			// Handle multiple separators in a row
 			if (i > 0 && actions[i] instanceof Separator && actions[i - 1] instanceof Separator) {
-				indexesToRemove.push(i);
-			}
-			if (i > 0 && actions[i] instanceof Separator && actions[i + 1] instanceof Separator) {
 				indexesToRemove.push(i);
 			}
 		}
 		if (indexesToRemove.length > 0) {
 			for (let i = indexesToRemove.length - 1; i >= 0; i--) {
 				actions.splice(indexesToRemove[i], 1);
+			}
+		}
+		for (let i = 0; i < indexesToRemove.length; i++) {
+			// Never should have a separator at the beginning of the list
+			if (i === 0 && actions[i] instanceof Separator) {
+				indexesToRemove.push(0);
+			}
+			if (i > 0 && actions[i] instanceof Separator && actions[i + 1] instanceof Separator) {
+				indexesToRemove.push(i);
 			}
 		}
 	}
