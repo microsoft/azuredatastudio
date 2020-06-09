@@ -5,20 +5,26 @@
 
 import * as vscode from 'vscode';
 import { Authentication } from '../controller/auth';
-import { EndpointsRouterApi, EndpointModel, RegistrationRouterApi, RegistrationResponse, TokenRouterApi } from '../controller/generated/v1/api';
-import { ResourceType } from '../common/utils';
+import { EndpointsRouterApi, EndpointModel, RegistrationRouterApi, RegistrationResponse, TokenRouterApi, SqlInstanceRouterApi } from '../controller/generated/v1/api';
+import { ResourceType, parseEndpoint } from '../common/utils';
+
+export interface Registration extends RegistrationResponse {
+	externalIp?: string;
+	externalPort?: string;
+}
 
 export class ControllerModel {
 	private _endpointsRouter: EndpointsRouterApi;
 	private _tokenRouter: TokenRouterApi;
 	private _registrationRouter: RegistrationRouterApi;
+	private _sqlInstanceRouter: SqlInstanceRouterApi;
 	private _endpoints: EndpointModel[] = [];
 	private _namespace: string = '';
-	private _registrations: RegistrationResponse[] = [];
-	private _controllerRegistration: RegistrationResponse | undefined = undefined;
+	private _registrations: Registration[] = [];
+	private _controllerRegistration: Registration | undefined = undefined;
 
 	private readonly _onEndpointsUpdated = new vscode.EventEmitter<EndpointModel[]>();
-	private readonly _onRegistrationsUpdated = new vscode.EventEmitter<RegistrationResponse[]>();
+	private readonly _onRegistrationsUpdated = new vscode.EventEmitter<Registration[]>();
 	public onEndpointsUpdated = this._onEndpointsUpdated.event;
 	public onRegistrationsUpdated = this._onRegistrationsUpdated.event;
 	public endpointsLastUpdated?: Date;
@@ -33,6 +39,9 @@ export class ControllerModel {
 
 		this._registrationRouter = new RegistrationRouterApi(controllerUrl);
 		this._registrationRouter.setDefaultAuthentication(auth);
+
+		this._sqlInstanceRouter = new SqlInstanceRouterApi(controllerUrl);
+		this._sqlInstanceRouter.setDefaultAuthentication(auth);
 	}
 
 	public async refresh(): Promise<void> {
@@ -44,7 +53,7 @@ export class ControllerModel {
 			}),
 			this._tokenRouter.apiV1TokenPost().then(async response => {
 				this._namespace = response.body.namespace!;
-				this._registrations = (await this._registrationRouter.apiV1RegistrationListResourcesNsGet(this._namespace)).body;
+				this._registrations = (await this._registrationRouter.apiV1RegistrationListResourcesNsGet(this._namespace)).body.map(this.mapRegistrationResponse);
 				this._controllerRegistration = this._registrations.find(r => r.instanceType === ResourceType.dataControllers);
 				this.registrationsLastUpdated = new Date();
 				this._onRegistrationsUpdated.fire(this._registrations);
@@ -64,15 +73,15 @@ export class ControllerModel {
 		return this._namespace;
 	}
 
-	public registrations(): RegistrationResponse[] {
+	public registrations(): Registration[] {
 		return this._registrations;
 	}
 
-	public get controllerRegistration(): RegistrationResponse | undefined {
+	public get controllerRegistration(): Registration | undefined {
 		return this._controllerRegistration;
 	}
 
-	public getRegistration(type: string, namespace: string, name: string): RegistrationResponse | undefined {
+	public getRegistration(type: string, namespace: string, name: string): Registration | undefined {
 		return this._registrations.find(r => {
 			// Resources deployed outside the controller's namespace are named in the format 'namespace_name'
 			let instanceName = r.instanceName!;
@@ -85,5 +94,18 @@ export class ControllerModel {
 			}
 			return r.instanceType === type && r.instanceNamespace === namespace && instanceName === name;
 		});
+	}
+
+	public miaaDelete(name: string): void {
+		this._sqlInstanceRouter.apiV1HybridSqlNsNameDelete(this._namespace, name);
+	}
+
+	/**
+	 * Maps a RegistrationResponse to a Registration,
+	 * @param response The RegistrationResponse to map
+	 */
+	private mapRegistrationResponse(response: RegistrationResponse): Registration {
+		const parsedEndpoint = parseEndpoint(response.externalEndpoint);
+		return { ...response, externalIp: parsedEndpoint.ip, externalPort: parsedEndpoint.port };
 	}
 }
