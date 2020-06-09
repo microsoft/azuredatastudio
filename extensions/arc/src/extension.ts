@@ -64,7 +64,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 		try {
 			const controllerModel = new ControllerModel(controllerUrl, auth);
 			const postgresModel = new PostgresModel(controllerUrl, auth, dbNamespace, dbName);
-			const postgresDashboard = new PostgresDashboard(loc.postgresDashboard, controllerModel, postgresModel);
+			const postgresDashboard = new PostgresDashboard(loc.postgresDashboard, context, controllerModel, postgresModel);
 
 			await Promise.all([
 				postgresDashboard.showDashboard(),

@@ -66,8 +66,13 @@ export class ButtonColumn<T extends Slick.SlickData> implements Slick.Plugin<T> 
 
 	private handleClick(args: Slick.OnClickEventArgs<T>): void {
 		if (this.isCurrentColumn(args.cell)) {
-			this._grid.setActiveCell(args.row, args.cell);
-			this.fireClickEvent();
+			// SlickGrid will automatically set active cell on mouse click event,
+			// during the process of setting active cell, blur event will be triggered and handled in a setTimeout block,
+			// on Windows platform, the context menu is html based which will respond the focus related events and hide the context menu.
+			// If we call the fireClickEvent directly the menu will be set to hidden immediately, to workaround the issue we need to wrap it in a setTimeout block.
+			setTimeout(() => {
+				this.fireClickEvent();
+			}, 0);
 		}
 	}
 

@@ -11,6 +11,7 @@ import { KeyValueContainer, InputKeyValue, LinkKeyValue, TextKeyValue } from '..
 import { DashboardPage } from '../../components/dashboardPage';
 import { ControllerModel } from '../../../models/controllerModel';
 import { PostgresModel } from '../../../models/postgresModel';
+import { ResourceType } from '../../../common/utils';
 
 export class PostgresPropertiesPage extends DashboardPage {
 	private keyValueContainer?: KeyValueContainer;
@@ -79,7 +80,7 @@ export class PostgresPropertiesPage extends DashboardPage {
 	private refresh() {
 		const endpoint: { ip?: string, port?: number } = this._postgresModel.endpoint();
 		const connectionString = `postgresql://postgres:${this._postgresModel.password()}@${endpoint.ip}:${endpoint.port}`;
-		const registration = this._controllerModel.getRegistration('postgresInstances', this._postgresModel.namespace(), this._postgresModel.name());
+		const registration = this._controllerModel.getRegistration(ResourceType.postgresInstances, this._postgresModel.namespace(), this._postgresModel.name());
 
 		this.keyValueContainer?.refresh([
 			new InputKeyValue(loc.coordinatorEndpoint, connectionString),

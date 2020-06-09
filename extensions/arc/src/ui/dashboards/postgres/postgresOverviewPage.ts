@@ -245,8 +245,8 @@ export class PostgresOverviewPage extends DashboardPage {
 		}).component();
 
 		openInAzurePortalButton.onDidClick(async () => {
-			const r = this._controllerModel.getRegistration('postgresInstances', this._postgresModel.namespace(), this._postgresModel.name());
-			if (r === undefined) {
+			const r = this._controllerModel.getRegistration(ResourceType.postgresInstances, this._postgresModel.namespace(), this._postgresModel.name());
+			if (!r) {
 				vscode.window.showErrorMessage(loc.couldNotFindAzureResource(this._postgresModel.fullName()));
 			} else {
 				vscode.env.openExternal(vscode.Uri.parse(
@@ -264,7 +264,7 @@ export class PostgresOverviewPage extends DashboardPage {
 	}
 
 	private refreshProperties() {
-		const registration = this._controllerModel.getRegistration('postgresInstances', this._postgresModel.namespace(), this._postgresModel.name());
+		const registration = this._controllerModel.getRegistration(ResourceType.postgresInstances, this._postgresModel.namespace(), this._postgresModel.name());
 		const endpoint: { ip?: string, port?: number } = this._postgresModel.endpoint();
 
 		this.properties!.propertyItems = [
