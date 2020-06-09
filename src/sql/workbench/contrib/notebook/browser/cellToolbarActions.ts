@@ -140,6 +140,9 @@ export class CellToggleMoreActions {
 			if (i > 0 && actions[i] instanceof Separator && actions[i - 1] instanceof Separator) {
 				indexesToRemove.push(i);
 			}
+			if (i > 0 && actions[i] instanceof Separator && actions[i + 1] instanceof Separator) {
+				indexesToRemove.push(i);
+			}
 		}
 		if (indexesToRemove.length > 0) {
 			for (let i = indexesToRemove.length - 1; i >= 0; i--) {
