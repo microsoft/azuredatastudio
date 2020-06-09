@@ -10,6 +10,7 @@ import * as vscode from 'vscode';
 import * as baselines from './baselines/baselines';
 import * as templates from '../templates/templates';
 import * as testUtils from '../test/testUtils';
+import * as TypeMoq from 'typemoq';
 
 import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
 import { Project } from '../models/project';
@@ -56,17 +57,40 @@ describe('Deploy Database Dialog', () => {
 
 	it('Should include all info in deployment profile', async function (): Promise<void> {
 		const proj = await testUtils.createTestProject(baselines.openProjectFileBaseline);
-		const dialog = new DeployDatabaseDialog(testContext.apiWrapper.object, proj);
+		const dialog = TypeMoq.Mock.ofType(DeployDatabaseDialog, undefined, undefined, testContext.apiWrapper.object, proj);
+		dialog.setup(x => x.getConnectionUri()).returns(async () => { return 'Mock|Connection|Uri'; });
+		dialog.setup(x => x.getTargetDatabaseName()).returns(() => 'MockDatabaseName');
+		dialog.callBase = true;
+
 		let profile: IDeploymentProfile | IGenerateScriptProfile | undefined;
 
-		dialog.deploy = async (_, prof) => { profile = prof; };
-		dialog.deployClick();
+		const expectedDeploy: IDeploymentProfile  = {
+			databaseName: 'MockDatabaseName',
+			connectionUri: 'Mock|Connection|Uri',
+			upgradeExisting: true,
+			sqlCmdVariables: {
+				'ProdDatabaseName': 'MyProdDatabase',
+				'BackupDatabaseName': 'MyBackupDatabase'
+			}
+		};
 
-		should(profile).equal(undefined);
+		dialog.object.deploy = async (_, prof) => { profile = prof; };
+		await dialog.object.deployClick();
 
-		dialog.generateScript = async (_, prof) => { profile = prof; };
-		dialog.generateScriptClick();
+		should(profile).deepEqual(expectedDeploy);
 
-		should(profile).equal(undefined);
+		const expectedGenScript: IGenerateScriptProfile = {
+			databaseName: 'MockDatabaseName',
+			connectionUri: 'Mock|Connection|Uri',
+			sqlCmdVariables: {
+				'ProdDatabaseName': 'MyProdDatabase',
+				'BackupDatabaseName': 'MyBackupDatabase'
+			}
+		};
+
+		dialog.object.generateScript = async (_, prof) => { profile = prof; };
+		await dialog.object.generateScriptClick();
+
+		should(profile).deepEqual(expectedGenScript);
 	});
 });
