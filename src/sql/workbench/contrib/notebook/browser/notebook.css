@@ -171,14 +171,13 @@
 }
 
 .vs-dark .notebookEditor :not(.in-preview) .notebook-button.icon-clear-results,
-.hc-black
-	.notebookEditor
-	:not(.in-preview)
-	.notebook-button.icon-clear-results {
+.hc-black .notebookEditor :not(.in-preview) .notebook-button.icon-clear-results {
 	background-image: url("./media/dark/clear_results_inverse.svg");
 }
 
-.notebookEditor .in-preview .notebook-button.masked-icon {
+.notebookEditor .in-preview .notebook-button.masked-icon,
+.vs-dark .notebookEditor .in-preview .notebook-button.icon-clear-results,
+.hc-black .notebookEditor .in-preview .notebook-button.icon-clear-results {
 	background-image: none;
 }
 /* non-preview */
