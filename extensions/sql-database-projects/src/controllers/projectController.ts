@@ -16,7 +16,7 @@ import { IConnectionProfile, TaskExecutionMode } from 'azdata';
 import { promises as fs } from 'fs';
 import { ApiWrapper } from '../common/apiWrapper';
 import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
-import { Project } from '../models/project';
+import { Project, DatabaseReferenceLocation } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { FolderNode } from '../models/tree/fileFolderTreeItem';
 import { IDeploymentProfile, IGenerateScriptProfile } from '../models/IDeploymentProfile';
@@ -292,6 +292,118 @@ export class ProjectsController {
 		this.refreshProjectsTree();
 	}
 
+	/**
+	 * Adds a database reference to the project
+	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
+	 */
+	public async addDatabaseReference(context: Project | BaseProjectTreeItem): Promise<void> {
+		const project = ProjectsController.getProjectFromContext(context);
+
+		try {
+			// choose if reference is to master or a dacpac
+			const databaseReferenceType = await this.getDatabaseReferenceType();
+
+			// if master is selected, we know which dacpac needs to be added
+			if (databaseReferenceType === constants.master) {
+				await project.addMasterDatabaseReference();
+			} else {
+				// get other information needed to add a reference to the dacpac
+				const dacpacFileLocation = await this.getDacpacFileLocation();
+				const databaseLocation = await this.getDatabaseLocation();
+
+				if (databaseLocation === DatabaseReferenceLocation.differentDatabaseSameServer) {
+					const databaseName = await this.getDatabaseName(dacpacFileLocation);
+					await project.addDatabaseReference(dacpacFileLocation, <DatabaseReferenceLocation>databaseLocation, databaseName);
+				} else {
+					await project.addDatabaseReference(dacpacFileLocation, <DatabaseReferenceLocation>databaseLocation);
+				}
+			}
+		} catch (err) {
+			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
+		}
+	}
+
+	private async getDatabaseReferenceType(): Promise<string> {
+		let databaseReferenceOptions: QuickPickItem[] = [
+			{
+				label: constants.master
+			},
+			{
+				label: constants.dacpac
+			}
+		];
+
+		let input = await this.apiWrapper.showQuickPick(databaseReferenceOptions, {
+			canPickMany: false,
+			placeHolder: constants.addDatabaseReferenceInput
+		});
+
+		if (!input) {
+			throw new Error(constants.databaseReferenceTypeRequired);
+		}
+
+		return input.label;
+	}
+
+	private async getDacpacFileLocation(): Promise<Uri> {
+		let fileUris = await this.apiWrapper.showOpenDialog(
+			{
+				canSelectFiles: true,
+				canSelectFolders: false,
+				canSelectMany: false,
+				defaultUri: this.apiWrapper.workspaceFolders() ? (this.apiWrapper.workspaceFolders() as WorkspaceFolder[])[0].uri : undefined,
+				openLabel: constants.selectString,
+				filters: {
+					[constants.dacpacFiles]: ['dacpac'],
+				}
+			}
+		);
+
+		if (!fileUris || fileUris.length === 0) {
+			throw new Error(constants.dacpacFileLocationRequired);
+		}
+
+		return fileUris[0];
+	}
+
+	private async getDatabaseLocation(): Promise<DatabaseReferenceLocation> {
+		let databaseReferenceOptions: QuickPickItem[] = [
+			{
+				label: constants.databaseReferenceSameDatabase
+			},
+			{
+				label: constants.databaseReferenceDifferentDabaseSameServer
+			}
+		];
+
+		let input = await this.apiWrapper.showQuickPick(databaseReferenceOptions, {
+			canPickMany: false,
+			placeHolder: constants.databaseReferenceLocation
+		});
+
+		if (input === undefined) {
+			throw new Error(constants.databaseLocationRequired);
+		}
+
+		const location = input?.label === constants.databaseReferenceSameDatabase ? DatabaseReferenceLocation.sameDatabase : DatabaseReferenceLocation.differentDatabaseSameServer;
+		return location;
+	}
+
+	private async getDatabaseName(dacpac: Uri): Promise<string | undefined> {
+		const dacpacName = path.parse(dacpac.toString()).name;
+		let databaseName = await this.apiWrapper.showInputBox({
+			prompt: constants.databaseReferenceDatabaseName,
+			value: `${dacpacName}`
+		});
+
+		if (!databaseName) {
+			throw new Error(constants.databaseNameRequired);
+		}
+
+		databaseName = databaseName?.trim();
+		return databaseName;
+	}
+
 	//#region Helper methods
 
 	public getDeployDialog(project: Project): DeployDatabaseDialog {
@@ -497,7 +609,7 @@ export class ProjectsController {
 				canSelectFiles: false,
 				canSelectFolders: true,
 				canSelectMany: false,
-				openLabel: constants.selectFileFolder,
+				openLabel: constants.selectString,
 				defaultUri: this.apiWrapper.workspaceFolders() ? (this.apiWrapper.workspaceFolders() as WorkspaceFolder[])[0].uri : undefined
 			});
 			if (selectionResult) {
@@ -508,7 +620,7 @@ export class ProjectsController {
 			selectionResult = await this.apiWrapper.showSaveDialog(
 				{
 					defaultUri: this.apiWrapper.workspaceFolders() ? (this.apiWrapper.workspaceFolders() as WorkspaceFolder[])[0].uri : undefined,
-					saveLabel: constants.selectFileFolder,
+					saveLabel: constants.selectString,
 					filters: {
 						'SQL files': ['sql'],
 						'All files': ['*']

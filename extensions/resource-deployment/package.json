@@ -80,12 +80,12 @@
             "displayName": "%version-display-name%",
             "values": [
               {
-                "name": "sql2017",
-                "displayName": "%sql-2017-display-name%"
-              },
-              {
                 "name": "sql2019",
                 "displayName": "%sql-2019-display-name%"
+              },
+              {
+                "name": "sql2017",
+                "displayName": "%sql-2017-display-name%"
               }
             ]
           }
@@ -323,12 +323,12 @@
             "displayName": "%version-display-name%",
             "values": [
               {
-                "name": "sql2017",
-                "displayName": "%sql-2017-display-name%"
-              },
-              {
                 "name": "sql2019",
                 "displayName": "%sql-2019-display-name%"
+              },
+              {
+                "name": "sql2017",
+                "displayName": "%sql-2017-display-name%"
               }
             ]
           }

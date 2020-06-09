@@ -129,6 +129,14 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	const providedBookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [], extensionContext, true, PROVIDED_BOOKS_VIEWID);
 	await providedBookTreeViewProvider.initialized;
 
+	azdata.nb.onDidChangeActiveNotebookEditor(e => {
+		if (e.document.uri.scheme === 'untitled') {
+			providedBookTreeViewProvider.revealActiveDocumentInViewlet(e.document.uri, false);
+		} else {
+			bookTreeViewProvider.revealActiveDocumentInViewlet(e.document.uri, false);
+		}
+
+	});
 
 	extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider(BOOKS_VIEWID, bookTreeViewProvider));
 	extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider(PROVIDED_BOOKS_VIEWID, providedBookTreeViewProvider));

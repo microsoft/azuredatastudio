@@ -150,7 +150,7 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 		//Notebook toolbar masked icons
 		const notebookToolbarIconColor = theme.getColor(notebookToolbarIcon);
 		if (notebookToolbarIconColor) {
-			collector.addRule(`.notebookEditor .notebook-button.masked-icon { background-color: ${notebookToolbarIconColor};}`);
+			collector.addRule(`.notebookEditor .notebook-button.masked-icon:before { background-color: ${notebookToolbarIconColor};}`);
 			collector.addRule(`.notebookEditor .notebook-button.masked-pseudo:before { background-color: ${notebookToolbarIconColor};}`);
 		}
 		const notebookToolbarLinesColor = theme.getColor(notebookToolbarLines);
@@ -172,7 +172,7 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 		if (cellBorderColor) {
 			collector.addRule(`.notebookEditor .notebook-cell.active { border-color: ${cellBorderColor};}`);
 			collector.addRule(`.notebookEditor .notebook-cell.active cell-toolbar-component { border-color: ${cellBorderColor};}`);
-			collector.addRule(`.notebookEditor .notebook-cell.active cell-toolbar-component .codicon { background-color: ${cellBorderColor};}`);
+			collector.addRule(`.notebookEditor .notebook-cell.active cell-toolbar-component .codicon:before { background-color: ${cellBorderColor};}`);
 		}
 		// Cell toolbar background
 		const notebookToolbarSelectBackgroundColor = theme.getColor(notebookToolbarSelectBackground);
