@@ -179,6 +179,11 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			this.currentBook = book;
 		}
 		this._bookViewer = this._apiWrapper.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
+		this._bookViewer.onDidChangeVisibility(e => {
+			if (e.visible) {
+				this.revealActiveDocumentInViewlet();
+			}
+		});
 	}
 
 	async showPreviewFile(urlToOpen?: string): Promise<void> {
