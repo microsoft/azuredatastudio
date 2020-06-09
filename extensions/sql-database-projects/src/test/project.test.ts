@@ -90,16 +90,33 @@ describe('Project: sqlproj content operations', function (): void {
 		const project = new Project(projFilePath);
 		await project.readProjFile();
 
-		let uri = project.getMasterDacpac();
-		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '130', 'master.dacpac')).fsPath);
+		let uri = project.getSystemDacpacUri(constants.masterDacpac);
+		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '130', constants.masterDacpac)).fsPath);
 
 		project.changeDSP(TargetPlatform.Sql150.toString());
-		uri = project.getMasterDacpac();
-		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '150', 'master.dacpac')).fsPath);
+		uri = project.getSystemDacpacUri(constants.masterDacpac);
+		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '150', constants.masterDacpac)).fsPath);
 
 		project.changeDSP(TargetPlatform.SqlAzureV12.toString());
-		uri = project.getMasterDacpac();
-		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', 'AzureV12', 'master.dacpac')).fsPath);
+		uri = project.getSystemDacpacUri(constants.masterDacpac);
+		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', 'AzureV12',constants.masterDacpac)).fsPath);
+	});
+
+	it('Should choose correct msdb dacpac', async function(): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project = new Project(projFilePath);
+		await project.readProjFile();
+
+		let uri = project.getSystemDacpacUri(constants.msdbDacpac);
+		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '130', constants.msdbDacpac)).fsPath);
+
+		project.changeDSP(TargetPlatform.Sql150.toString());
+		uri = project.getSystemDacpacUri(constants.msdbDacpac);
+		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '150', constants.msdbDacpac)).fsPath);
+
+		project.changeDSP(TargetPlatform.SqlAzureV12.toString());
+		uri = project.getSystemDacpacUri(constants.msdbDacpac);
+		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', 'AzureV12', constants.msdbDacpac)).fsPath);
 	});
 
 	it('Should throw error when choosing correct master dacpac if invalid DSP', async function(): Promise<void> {
@@ -108,7 +125,7 @@ describe('Project: sqlproj content operations', function (): void {
 		await project.readProjFile();
 
 		project.changeDSP('invalidPlatform');
-		await testUtils.shouldThrowSpecificError(async () => await project.getMasterDacpac(), constants.invalidDataSchemaProvider);
+		await testUtils.shouldThrowSpecificError(async () => await project.getSystemDacpacUri(constants.masterDacpac), constants.invalidDataSchemaProvider);
 	});
 });
 
