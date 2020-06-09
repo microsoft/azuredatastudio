@@ -11,7 +11,7 @@ import {
 
 import * as azdata from 'azdata';
 
-import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
+import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';
 import { find } from 'vs/base/common/arrays';
 import { localize } from 'vs/nls';
@@ -54,7 +54,7 @@ export enum DeclarativeDataType {
 	</table>
 	`
 })
-export default class DeclarativeTableComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
+export default class DeclarativeTableComponent extends ContainerBase<any> implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 
@@ -70,12 +70,6 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 	}
 
 	ngAfterViewInit(): void {
-	}
-
-	public validate(): Thenable<boolean> {
-		return super.validate().then(valid => {
-			return valid;
-		});
 	}
 
 	ngOnDestroy(): void {
@@ -205,6 +199,16 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
+		if (properties.data) {
+			this.clearContainer();
+			this.data.forEach(row => {
+				for (let i = 0; i < row.length; i++) {
+					if (this.isComponent(i)) {
+						this.addToContainer(this.getItemDescriptor(row[i] as string), undefined);
+					}
+				}
+			});
+		}
 	}
 
 	public get data(): any[][] {
@@ -222,18 +226,4 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 	public set columns(newValue: azdata.DeclarativeTableColumn[]) {
 		this.setPropertyFromUI<azdata.DeclarativeTableProperties, azdata.DeclarativeTableColumn[]>((props, value) => props.columns = value, newValue);
 	}
-
-	// IComponent container-related implementation
-	// This is needed for the component column type - in order to have the components in the cells registered we call addItem
-	// on the extension side to create and register the component with the ModelStore. That requires that these methods be implemented
-	// though which isn't done by default for non-Container components and so we just stub out the implementation here (we already have
-	// the component IDs in the data property so there's no need to store them here as well)
-	public addToContainer(componentDescriptor: IComponentDescriptor, config: any, index?: number): void {
-		this._changeRef.detectChanges();
-	}
-
-	public clearContainer(): void {
-		this._changeRef.detectChanges();
-	}
-
 }
