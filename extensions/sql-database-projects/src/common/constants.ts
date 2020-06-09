@@ -21,7 +21,6 @@ export const databaseSchemaProvider = 'DatabaseSchemaProvider';
 
 // UI Strings
 
-export const noOpenProjectMessage = localize('noProjectOpenMessage', "No open database project");
 export const projectNodeName = localize('projectNodeName', "Database Project");
 export const dataSourcesNodeName = localize('dataSourcesNodeName', "Data Sources");
 export const sqlConnectionStringFriendly = localize('sqlConnectionStringFriendly', "SQL connection string");

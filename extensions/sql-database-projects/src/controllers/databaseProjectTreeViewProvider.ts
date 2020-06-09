@@ -24,7 +24,7 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 	}
 
 	private initialize() {
-		this.roots = [new MessageTreeItem(constants.noOpenProjectMessage)];
+		this.roots = [];
 	}
 
 	public getTreeItem(element: BaseProjectTreeItem): vscode.TreeItem {
