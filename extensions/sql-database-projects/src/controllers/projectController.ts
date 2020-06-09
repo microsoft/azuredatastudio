@@ -230,11 +230,6 @@ export class ProjectsController {
 		}
 	}
 
-	public async import(treeNode: BaseProjectTreeItem) {
-		const project = ProjectsController.getProjectFromContext(treeNode);
-		await this.apiWrapper.showErrorMessage(`Import not yet implemented: ${project.projectFilePath}`); // TODO
-	}
-
 	public async addFolderPrompt(treeNode: BaseProjectTreeItem) {
 		const project = ProjectsController.getProjectFromContext(treeNode);
 		const newFolderName = await this.promptForNewObjectName(new templates.ProjectScriptType(templates.folder, constants.folderFriendlyName, ''), project);

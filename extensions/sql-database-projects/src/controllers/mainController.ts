@@ -53,7 +53,7 @@ export default class MainController implements Disposable {
 		this.apiWrapper.registerCommand('sqlDatabaseProjects.build', async (node: BaseProjectTreeItem) => { await this.projectsController.buildProject(node); });
 		this.apiWrapper.registerCommand('sqlDatabaseProjects.deploy', async (node: BaseProjectTreeItem) => { await this.projectsController.deployProject(node); });
 		this.apiWrapper.registerCommand('sqlDatabaseProjects.schemaCompare', async (node: BaseProjectTreeItem) => { await this.projectsController.schemaCompare(node); });
-		this.apiWrapper.registerCommand('sqlDatabaseProjects.import', async (node: BaseProjectTreeItem) => { await this.projectsController.import(node); });
+		this.apiWrapper.registerCommand('sqlDatabaseProjects.importDatabase', async (profile: azdata.IConnectionProfile) => { await this.projectsController.importNewDatabaseProject(profile); });
 
 		this.apiWrapper.registerCommand('sqlDatabaseProjects.newScript', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.script); });
 		this.apiWrapper.registerCommand('sqlDatabaseProjects.newTable', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.table); });
@@ -62,7 +62,6 @@ export default class MainController implements Disposable {
 		this.apiWrapper.registerCommand('sqlDatabaseProjects.newItem', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node); });
 		this.apiWrapper.registerCommand('sqlDatabaseProjects.newFolder', async (node: BaseProjectTreeItem) => { await this.projectsController.addFolderPrompt(node); });
 
-		this.apiWrapper.registerCommand('sqlDatabaseProjects.importDatabase', async (profile: azdata.IConnectionProfile) => { await this.projectsController.importNewDatabaseProject(profile); });
 
 		this.apiWrapper.registerCommand('sqlDatabaseProjects.addDatabaseReference', async (node: BaseProjectTreeItem) => { await this.projectsController.addDatabaseReference(node); });
 
