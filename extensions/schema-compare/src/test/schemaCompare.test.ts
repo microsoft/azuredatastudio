@@ -13,7 +13,7 @@ import { SchemaCompareDialog } from './../dialogs/schemaCompareDialog';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
 import { SchemaCompareTestService } from './testSchemaCompareService';
 import { createContext, TestContext } from './testContext';
-import { mockConnectionProfile, mockDacpacEndpoint } from './testUtils';
+import { mockIConnectionProfile, mockDacpacEndpoint } from './testUtils';
 
 // Mock test data
 const mocksource: string = 'source.dacpac';
@@ -85,14 +85,14 @@ describe('SchemaCompareResult.start', function (): void {
 		let sc = new SchemaCompareTestService();
 
 		let result = new SchemaCompareMainWindow(testContext.apiWrapper.object, sc, mockExtensionContext.object);
-		await result.start({connectionProfile: mockConnectionProfile});
+		await result.start({connectionProfile: mockIConnectionProfile});
 		let promise = new Promise(resolve => setTimeout(resolve, 5000)); // to ensure comparison result view is initialized
 		await promise;
 
 		should.notEqual(result.sourceEndpointInfo, undefined);
 		should.equal(result.sourceEndpointInfo.endpointType, mssql.SchemaCompareEndpointType.Database);
-		should.equal(result.sourceEndpointInfo.serverName, mockConnectionProfile.serverName);
-		should.equal(result.sourceEndpointInfo.databaseName, mockConnectionProfile.databaseName);
+		should.equal(result.sourceEndpointInfo.serverName, mockIConnectionProfile.serverName);
+		should.equal(result.sourceEndpointInfo.databaseName, mockIConnectionProfile.databaseName);
 		should.equal(result.targetEndpointInfo, undefined);
 	});
 
