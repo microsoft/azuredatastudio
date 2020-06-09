@@ -258,7 +258,7 @@ export class Project {
 			referenceNode.appendChild(databaseVariableLiteralValue);
 		}
 
-		this.findOrCreateItemGroup().appendChild(referenceNode);
+		this.findOrCreateItemGroup(constants.ArtifactReference).appendChild(referenceNode);
 	}
 
 	private async updateImportedTargetsToProjFile(condition: string, projectAttributeVal: string, oldImportNode?: any): Promise<any> {
