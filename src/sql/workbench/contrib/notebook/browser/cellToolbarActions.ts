@@ -142,14 +142,11 @@ export class CellToggleMoreActions {
 				actions.splice(indexesToRemove[i], 1);
 			}
 		}
-		for (let i = 0; i < indexesToRemove.length; i++) {
-			// Never should have a separator at the beginning of the list
-			if (i === 0 && actions[i] instanceof Separator) {
-				indexesToRemove.push(0);
-			}
-			if (i > 0 && actions[i] instanceof Separator && actions[i + 1] instanceof Separator) {
-				indexesToRemove.push(i);
-			}
+		if (actions[0] instanceof Separator) {
+			actions.splice(0, 1);
+		}
+		if (actions[actions.length - 1] instanceof Separator) {
+			actions.splice(actions.length - 1, 1);
 		}
 	}
 }
