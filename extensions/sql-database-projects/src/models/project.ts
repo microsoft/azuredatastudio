@@ -266,6 +266,7 @@ export class Project {
 		}
 
 		this.findOrCreateItemGroup(constants.ArtifactReference).appendChild(referenceNode);
+		this.databaseReferences.push(path.parse(entry.fsUri.fsPath.toString()).name);
 	}
 
 	private async updateImportedTargetsToProjFile(condition: string, projectAttributeVal: string, oldImportNode?: any): Promise<any> {
