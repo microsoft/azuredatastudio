@@ -9,10 +9,14 @@ export class QueryEditor {
 
 	public readonly commandBar: CommandBar;
 
-	constructor(code: Code) {
+	constructor(private code: Code) {
 		this.commandBar = new CommandBar(code);
 	}
 
+	private static readonly RESULT_SELECTOR = '.query-editor-view .monaco-table';
+	public async waitForResults(): Promise<void> {
+		await this.code.waitForElement(QueryEditor.RESULT_SELECTOR);
+	}
 }
 
 export class CommandBar {

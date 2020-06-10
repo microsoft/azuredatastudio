@@ -178,7 +178,7 @@ describe('ProjectsController: import operations', function (): void {
 			testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
 
 			const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
-			await testUtils.shouldThrowSpecificError(async () => await projController.importNewDatabaseProject(mockConnectionProfile), constants.projectNameRequired, `case: '${name}'`);
+			await testUtils.shouldThrowSpecificError(async () => await projController.importNewDatabaseProject({ connectionProfile: mockConnectionProfile }), constants.projectNameRequired, `case: '${name}'`);
 		}
 	});
 
@@ -188,7 +188,7 @@ describe('ProjectsController: import operations', function (): void {
 		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
 
 		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
-		await testUtils.shouldThrowSpecificError(async () => await projController.importNewDatabaseProject(mockConnectionProfile), constants.extractTargetRequired);
+		await testUtils.shouldThrowSpecificError(async () => await projController.importNewDatabaseProject({ connectionProfile: mockConnectionProfile }), constants.extractTargetRequired);
 	});
 
 	it('Should show error when no location provided with ExtractTarget = File', async function (): Promise<void> {
@@ -198,7 +198,7 @@ describe('ProjectsController: import operations', function (): void {
 		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
 
 		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
-		await testUtils.shouldThrowSpecificError(async () => await projController.importNewDatabaseProject(mockConnectionProfile), constants.projectLocationRequired);
+		await testUtils.shouldThrowSpecificError(async () => await projController.importNewDatabaseProject({ connectionProfile: mockConnectionProfile }), constants.projectLocationRequired);
 	});
 
 	it('Should show error when no location provided with ExtractTarget = SchemaObjectType', async function (): Promise<void> {
@@ -209,7 +209,7 @@ describe('ProjectsController: import operations', function (): void {
 		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
 
 		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
-		await testUtils.shouldThrowSpecificError(async () => await projController.importNewDatabaseProject(mockConnectionProfile), constants.projectLocationRequired);
+		await testUtils.shouldThrowSpecificError(async () => await projController.importNewDatabaseProject({ connectionProfile: mockConnectionProfile }), constants.projectLocationRequired);
 	});
 
 	it('Should show error when selected folder is not empty', async function (): Promise<void> {
@@ -223,7 +223,7 @@ describe('ProjectsController: import operations', function (): void {
 
 		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
 
-		await testUtils.shouldThrowSpecificError(async () => await projController.importNewDatabaseProject(mockConnectionProfile), constants.projectLocationNotEmpty);
+		await testUtils.shouldThrowSpecificError(async () => await projController.importNewDatabaseProject({ connectionProfile: mockConnectionProfile }), constants.projectLocationNotEmpty);
 	});
 });
 
@@ -316,7 +316,7 @@ describe('ProjectsController: round trip feature with SSDT', function (): void {
 
 		const project = await projController.openProject(vscode.Uri.file(sqlProjPath));
 
-		should(await exists(sqlProjPath+'_backup')).equal(false);	// backup file should not be generated
+		should(await exists(sqlProjPath + '_backup')).equal(false);	// backup file should not be generated
 		should(project.importedTargets.length).equal(2); // additional target should not be added by updateProjectForRoundTrip method
 	});
 
@@ -332,7 +332,7 @@ describe('ProjectsController: round trip feature with SSDT', function (): void {
 
 		const project = await projController.openProject(vscode.Uri.file(sqlProjPath));
 
-		should(await exists(sqlProjPath+'_backup')).equal(true);	// backup file should be generated before the project is updated
+		should(await exists(sqlProjPath + '_backup')).equal(true);	// backup file should be generated before the project is updated
 		should(project.importedTargets.length).equal(3); // additional target added by updateProjectForRoundTrip method
 	});
 });

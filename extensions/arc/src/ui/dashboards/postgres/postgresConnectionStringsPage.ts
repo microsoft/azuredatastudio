@@ -86,18 +86,17 @@ export class PostgresConnectionStringsPage extends DashboardPage {
 
 	private refresh() {
 		const endpoint: { ip?: string, port?: number } = this._postgresModel.endpoint();
-		const password = this._postgresModel.password();
 
 		this.keyValueContainer?.refresh([
-			new InputKeyValue('ADO.NET', `Server=${endpoint.ip};Database=postgres;Port=${endpoint.port};User Id=postgres;Password=${password};Ssl Mode=Require;`),
-			new InputKeyValue('C++ (libpq)', `host=${endpoint.ip} port=${endpoint.port} dbname=postgres user=postgres password=${password} sslmode=require`),
-			new InputKeyValue('JDBC', `jdbc:postgresql://${endpoint.ip}:${endpoint.port}/postgres?user=postgres&password=${password}&sslmode=require`),
-			new InputKeyValue('Node.js', `host=${endpoint.ip} port=${endpoint.port} dbname=postgres user=postgres password=${password} sslmode=require`),
-			new InputKeyValue('PHP', `host=${endpoint.ip} port=${endpoint.port} dbname=postgres user=postgres password=${password} sslmode=require`),
-			new InputKeyValue('psql', `psql "host=${endpoint.ip} port=${endpoint.port} dbname=postgres user=postgres password=${password} sslmode=require`),
-			new InputKeyValue('Python', `dbname='postgres' user='postgres' host='${endpoint.ip}' password='${password}' port='${endpoint.port}' sslmode='true'`),
-			new InputKeyValue('Ruby', `host=${endpoint.ip}; dbname=postgres user=postgres password=${password} port=${endpoint.port} sslmode=require`),
-			new InputKeyValue('Web App', `Database=postgres; Data Source=${endpoint.ip}; User Id=postgres; Password=${password}`)
+			new InputKeyValue('ADO.NET', `Server=${endpoint.ip};Database=postgres;Port=${endpoint.port};User Id=postgres;Password={your_password_here};Ssl Mode=Require;`),
+			new InputKeyValue('C++ (libpq)', `host=${endpoint.ip} port=${endpoint.port} dbname=postgres user=postgres password={your_password_here} sslmode=require`),
+			new InputKeyValue('JDBC', `jdbc:postgresql://${endpoint.ip}:${endpoint.port}/postgres?user=postgres&password={your_password_here}&sslmode=require`),
+			new InputKeyValue('Node.js', `host=${endpoint.ip} port=${endpoint.port} dbname=postgres user=postgres password={your_password_here} sslmode=require`),
+			new InputKeyValue('PHP', `host=${endpoint.ip} port=${endpoint.port} dbname=postgres user=postgres password={your_password_here} sslmode=require`),
+			new InputKeyValue('psql', `psql "host=${endpoint.ip} port=${endpoint.port} dbname=postgres user=postgres password={your_password_here} sslmode=require"`),
+			new InputKeyValue('Python', `dbname='postgres' user='postgres' host='${endpoint.ip}' password='{your_password_here}' port='${endpoint.port}' sslmode='true'`),
+			new InputKeyValue('Ruby', `host=${endpoint.ip}; dbname=postgres user=postgres password={your_password_here} port=${endpoint.port} sslmode=require`),
+			new InputKeyValue('Web App', `Database=postgres; Data Source=${endpoint.ip}; User Id=postgres; Password={your_password_here}`)
 		]);
 	}
 }
