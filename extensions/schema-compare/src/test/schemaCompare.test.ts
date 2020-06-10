@@ -13,7 +13,7 @@ import { SchemaCompareDialog } from './../dialogs/schemaCompareDialog';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
 import { SchemaCompareTestService } from './testSchemaCompareService';
 import { createContext, TestContext } from './testContext';
-import { mockIConnectionProfile, mockDacpacEndpoint } from './testUtils';
+import { mockIConnectionProfile, mockDacpacEndpoint, mockFilePath } from './testUtils';
 
 // Mock test data
 const mocksource: string = 'source.dacpac';
@@ -100,7 +100,7 @@ describe('SchemaCompareResult.start', function (): void {
 		let sc = new SchemaCompareTestService();
 
 		let result = new SchemaCompareMainWindow(testContext.apiWrapper.object, sc, mockExtensionContext.object);
-		const dacpacPath = 'C:\\users\\test\\test.dacpac';
+		const dacpacPath = mockFilePath;
 		await result.start(dacpacPath);
 		let promise = new Promise(resolve => setTimeout(resolve, 5000)); // to ensure comparison result view is initialized
 		await promise;

@@ -98,7 +98,7 @@ describe('utils: In-depth tests to verify verifyConnectionAndGetOwnerUri', funct
 		await shouldThrowSpecificError(async () => await verifyConnectionAndGetOwnerUri(testDatabaseEndpoint, 'test', testContext.apiWrapper.object), connection.errorMessage);
 	});
 
-	it('Should not throw an error for login failure with openConnectionDialog', async function (): Promise<void> {
+	it('Should throw an error for login failure with openConnectionDialog but no ownerUri', async function (): Promise<void> {
 		let getConnectionsResults: azdata.connection.ConnectionProfile[] = [];
 		let connection  = {...mockConnectionResult};
 		let testDatabaseEndpoint: mssql.SchemaCompareEndpointInfo = {...mockDatabaseEndpoint};
@@ -111,5 +111,20 @@ describe('utils: In-depth tests to verify verifyConnectionAndGetOwnerUri', funct
 		testContext.apiWrapper.setup(x => x.openConnectionDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => { return Promise.resolve(undefined); });
 
 		await shouldThrowSpecificError(async () => await verifyConnectionAndGetOwnerUri(testDatabaseEndpoint, 'test', testContext.apiWrapper.object), connection.errorMessage);
+	});
+
+	it('Should not throw an error and set ownerUri appropriately', async function (): Promise<void> {
+		let ownerUri = undefined;
+		let connection  = {...mockConnectionResult};
+		let testDatabaseEndpoint: mssql.SchemaCompareEndpointInfo = {...mockDatabaseEndpoint};
+		let expectedOwnerUri: string = 'providerName:MSSQL|authenticationType:SqlLogin|database:My Database|server:My Server|user:My User|databaseDisplayName:My Database';
+		testDatabaseEndpoint.connectionDetails = {...mockConnectionInfo};
+
+		testContext.apiWrapper.setup(x => x.connect(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => { return Promise.resolve(connection); });
+		testContext.apiWrapper.setup(x => x.getUriForConnection(TypeMoq.It.isAny())).returns(() => { return Promise.resolve(expectedOwnerUri); });
+
+		ownerUri = await verifyConnectionAndGetOwnerUri(testDatabaseEndpoint, 'test', testContext.apiWrapper.object);
+
+		should(ownerUri).equal(expectedOwnerUri);
 	});
 });
