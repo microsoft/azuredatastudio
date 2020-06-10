@@ -12,11 +12,11 @@ import { ProjectRootTreeItem } from './projectTreeItem';
 /**
  * Folder for containing references nodes in the tree
  */
-export class ReferencesTreeItem extends BaseProjectTreeItem {
+export class DatabaseReferencesTreeItem extends BaseProjectTreeItem {
 	private references: MessageTreeItem[] = [];
 
 	constructor(project: ProjectRootTreeItem) {
-		super(vscode.Uri.file(path.join(project.uri.path, constants.referencesNodeName)), project);
+		super(vscode.Uri.file(path.join(project.uri.path, constants.databaseReferencesNodeName)), project);
 
 		this.construct();
 	}

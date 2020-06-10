@@ -10,14 +10,14 @@ import { BaseProjectTreeItem } from './baseTreeItem';
 import * as fileTree from './fileFolderTreeItem';
 import { Project, ProjectEntry, EntryType } from '../project';
 import * as utils from '../../common/utils';
-import { ReferencesTreeItem } from './referenceTreeItem';
+import { DatabaseReferencesTreeItem } from './databaseReferencesTreeItem';
 
 /**
  * TreeNode root that represents an entire project
  */
 export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	dataSourceNode: DataSourcesTreeItem;
-	referencesNode: ReferencesTreeItem;
+	databaseReferencesNode: DatabaseReferencesTreeItem;
 	fileChildren: { [childName: string]: (fileTree.FolderNode | fileTree.FileNode) } = {};
 	project: Project;
 
@@ -26,7 +26,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 
 		this.project = project;
 		this.dataSourceNode = new DataSourcesTreeItem(this);
-		this.referencesNode = new ReferencesTreeItem(this);
+		this.databaseReferencesNode = new DatabaseReferencesTreeItem(this);
 
 		this.construct();
 	}
@@ -34,7 +34,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	public get children(): BaseProjectTreeItem[] {
 		const output: BaseProjectTreeItem[] = [];
 		output.push(this.dataSourceNode);
-		output.push(this.referencesNode);
+		output.push(this.databaseReferencesNode);
 
 		return output.concat(Object.values(this.fileChildren).sort(fileTree.sortFileFolderNodes));
 	}

@@ -63,8 +63,7 @@ export class Project {
 
 		// find all database references to include
 		for (let r = 0; r < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference).length; r++) {
-			const uri = this.createProjectEntry(this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference)[r].getAttribute(constants.Include), EntryType.DatabaseReference).fsUri;
-			this.databaseReferences.push(path.parse(uri.fsPath.toString()).name);
+			this.databaseReferences.push(path.parse(this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference)[r].getAttribute(constants.Include)).name);
 		}
 	}
 
