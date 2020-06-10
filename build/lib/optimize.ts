@@ -32,12 +32,11 @@ function log(prefix: string, message: string): void {
 	fancyLog(ansiColors.cyan('[' + prefix + ']'), message);
 }
 
-// {{SQL CARBON EDIT}}
 export function loaderConfig(emptyPaths?: string[]) {
 	const result: any = {
 		paths: {
 			'vs': 'out-build/vs',
-			'sql': 'out-build/sql',
+			'sql': 'out-build/sql', // {{SQL CARBON EDIT}}
 			'vscode': 'empty:'
 		},
 		nodeModules: emptyPaths || []
@@ -82,12 +81,7 @@ function loader(src: string, bundledFileHeader: string, bundleLoader: boolean): 
 					this.emit('data', data);
 				}
 			}))
-			.pipe(util.loadSourcemaps())
 			.pipe(concat('vs/loader.js'))
-			.pipe(es.mapSync<FileSourceMap, FileSourceMap>(function (f) {
-				f.sourceMap.sourceRoot = util.toFileUri(path.join(REPO_ROOT_PATH, 'src'));
-				return f;
-			}))
 	);
 }
 

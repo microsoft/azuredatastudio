@@ -31,10 +31,11 @@ import { TestConnectionManagementService } from 'sql/platform/connection/test/co
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { assign } from 'vs/base/common/objects';
 import { NotebookEditorContentManager } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
-import { SessionManager } from 'sql/workbench/services/notebook/browser/sessionManager';
+import { SessionManager } from 'sql/workbench/contrib/notebook/test/emptySessionClasses';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
+import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -153,7 +154,7 @@ suite('notebook model', function (): void {
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(emptyNotebook));
 		defaultModelOptions.contentManager = mockContentManager.object;
 		// When I initialize the model
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService());
 		await model.loadContents();
 
 		// Then I expect to have 0 code cell as the contents
@@ -169,7 +170,7 @@ suite('notebook model', function (): void {
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
 		defaultModelOptions.contentManager = mockContentManager.object;
 		// When I initialize the model
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService());
 		await model.loadContents(true);
 		await model.requestModelLoad();
 
@@ -186,7 +187,7 @@ suite('notebook model', function (): void {
 
 		// When I initalize the model
 		// Then it should throw
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService());
 		assert.equal(model.inErrorState, false);
 		await assert.rejects(async () => { await model.loadContents(); });
 		assert.equal(model.inErrorState, true);
@@ -199,7 +200,7 @@ suite('notebook model', function (): void {
 		defaultModelOptions.contentManager = mockContentManager.object;
 
 		// When I initalize the model
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService());
 		await model.loadContents();
 
 		// Then I expect all cells to be in the model
@@ -227,7 +228,7 @@ suite('notebook model', function (): void {
 		defaultModelOptions.providerId = 'jupyter';
 
 		// When I initalize the model
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService());
 		await model.loadContents();
 
 		// I expect the default provider to be jupyter
@@ -237,7 +238,7 @@ suite('notebook model', function (): void {
 		defaultModelOptions.providerId = 'SQL';
 
 		// When I initalize the model
-		model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
+		model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService());
 		await model.loadContents();
 
 		// I expect the default provider to be SQL
@@ -262,7 +263,7 @@ suite('notebook model', function (): void {
 		defaultModelOptions.contentManager = mockContentManager.object;
 
 		// When I initalize the model
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService());
 		await model.loadContents();
 
 		let activeCellChangeCount = 0;
@@ -319,7 +320,7 @@ suite('notebook model', function (): void {
 		defaultModelOptions.contentManager = mockContentManager.object;
 
 		// When I initalize the model
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService());
 		await model.loadContents();
 
 		// Count number of times onError event is fired
@@ -376,7 +377,7 @@ suite('notebook model', function (): void {
 		sessionReady.resolve();
 		let sessionFired = false;
 
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService());
 		model.onClientSessionReady((session) => sessionFired = true);
 		await model.loadContents();
 		await model.requestModelLoad();
@@ -401,26 +402,12 @@ suite('notebook model', function (): void {
 		assert.deepEqual(model.clientSession, mockClientSession.object);
 	});
 
-	test('Should sanitize kernel display name when IP is included', async function (): Promise<void> {
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
-		let displayName = 'PySpark (1.1.1.1)';
-		let sanitizedDisplayName = model.sanitizeDisplayName(displayName);
-		assert.equal(sanitizedDisplayName, 'PySpark');
-	});
-
-	test('Should sanitize kernel display name properly when IP is not included', async function (): Promise<void> {
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
-		let displayName = 'PySpark';
-		let sanitizedDisplayName = model.sanitizeDisplayName(displayName);
-		assert.equal(sanitizedDisplayName, 'PySpark');
-	});
-
 	test('Should notify on trust set', async function () {
 		// Given a notebook that's been loaded
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
 		defaultModelOptions.contentManager = mockContentManager.object;
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService());
 		await model.requestModelLoad();
 
 		let actualChanged: NotebookContentChange;
@@ -480,6 +467,24 @@ suite('notebook model', function (): void {
 
 	});
 
+	test('Should not delete custom metadata', async function (): Promise<void> {
+		expectedNotebookContent.metadata['custom-string'] = 'some_string';
+		expectedNotebookContent.metadata['custom-object'] = { prop1: 'value1', prop2: 'value2' };
+
+		// Given a notebook
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
+		defaultModelOptions.contentManager = mockContentManager.object;
+		// When I initialize the model
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
+		await model.loadContents();
+
+		let output = model.toJSON();
+		assert(output.metadata['custom-string'] === 'some_string', 'Custom metadata was not preserved');
+		assert(output.metadata['custom-object']['prop1'] === 'value1', 'Custom metadata for object was not preserved');
+		assert(output.metadata['custom-object']['prop2'] === 'value2', 'Custom metadata for object was not preserved');
+	});
+
 	async function loadModelAndStartClientSession(): Promise<NotebookModel> {
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
@@ -500,7 +505,7 @@ suite('notebook model', function (): void {
 		let options: INotebookModelOptions = assign({}, defaultModelOptions, <Partial<INotebookModelOptions>>{
 			factory: mockModelFactory.object
 		});
-		let model = new NotebookModel(options, undefined, logService, undefined, undefined);
+		let model = new NotebookModel(options, undefined, logService, undefined, new NullAdsTelemetryService());
 		model.onClientSessionReady((session) => actualSession = session);
 		await model.requestModelLoad();
 

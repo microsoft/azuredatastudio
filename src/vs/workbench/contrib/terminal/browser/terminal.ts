@@ -6,7 +6,6 @@
 import { Terminal as XTermTerminal } from 'xterm';
 import { SearchAddon as XTermSearchAddon } from 'xterm-addon-search';
 import { Unicode11Addon as XTermUnicode11Addon } from 'xterm-addon-unicode11';
-import { WebLinksAddon as XTermWebLinksAddon } from 'xterm-addon-web-links';
 import { WebglAddon as XTermWebglAddon } from 'xterm-addon-webgl';
 import { IWindowsShellHelper, ITerminalConfigHelper, ITerminalChildProcess, IShellLaunchConfig, IDefaultShellAndArgsRequest, ISpawnExtHostProcessRequest, IStartExtensionTerminalRequest, IAvailableShellsRequest, ITerminalProcessExtHostProxy, ICommandTracker, INavigationMode, TitleEventSource, ITerminalDimensions } from 'vs/workbench/contrib/terminal/common/terminal';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
@@ -33,9 +32,8 @@ export interface ITerminalInstanceService {
 	getXtermConstructor(): Promise<typeof XTermTerminal>;
 	getXtermSearchConstructor(): Promise<typeof XTermSearchAddon>;
 	getXtermUnicode11Constructor(): Promise<typeof XTermUnicode11Addon>;
-	getXtermWebLinksConstructor(): Promise<typeof XTermWebLinksAddon>;
 	getXtermWebglConstructor(): Promise<typeof XTermWebglAddon>;
-	createWindowsShellHelper(shellProcessId: number, instance: ITerminalInstance, xterm: XTermTerminal): IWindowsShellHelper;
+	createWindowsShellHelper(shellProcessId: number, xterm: XTermTerminal): IWindowsShellHelper;
 	createTerminalProcess(shellLaunchConfig: IShellLaunchConfig, cwd: string, cols: number, rows: number, env: IProcessEnvironment, windowsEnableConpty: boolean): ITerminalChildProcess;
 
 	getDefaultShellAndArgs(useAutomationShell: boolean, platformOverride?: Platform): Promise<{ shell: string, args: string[] | string | undefined }>;
@@ -111,6 +109,13 @@ export interface ITerminalService {
 	setActiveInstanceByIndex(terminalIndex: number): void;
 	getActiveOrCreateInstance(): ITerminalInstance;
 	splitInstance(instance: ITerminalInstance, shell?: IShellLaunchConfig): ITerminalInstance | null;
+
+	/**
+	 * Perform an action with the active terminal instance, if the terminal does
+	 * not exist the callback will not be called.
+	 * @param callback The callback that fires with the active terminal
+	 */
+	doWithActiveInstance<T>(callback: (terminal: ITerminalInstance) => T): T | void;
 
 	getActiveTab(): ITerminalTab | null;
 	setActiveTabToNext(): void;
@@ -312,6 +317,11 @@ export interface ITerminalInstance {
 	readonly navigationMode: INavigationMode | undefined;
 
 	/**
+	 * Shows the environment information hover if the widget exists.
+	 */
+	showEnvironmentInfoHover(): void;
+
+	/**
 	 * Dispose the terminal instance, removing it from the panel/service and freeing up resources.
 	 *
 	 * @param immediate Whether the kill should be immediate or not. Immediate should only be used
@@ -325,26 +335,6 @@ export interface ITerminalInstance {
 	 * Forces the terminal to redraw its viewport.
 	 */
 	forceRedraw(): void;
-
-	/**
-	 * Registers a link matcher, allowing custom link patterns to be matched and handled.
-	 * @param regex The regular expression the search for, specifically this searches the
-	 * textContent of the rows. You will want to use \s to match a space ' ' character for example.
-	 * @param handler The callback when the link is called.
-	 * @param matchIndex The index of the link from the regex.match(html) call. This defaults to 0
-	 * (for regular expressions without capture groups).
-	 * @param validationCallback A callback which can be used to validate the link after it has been
-	 * added to the DOM.
-	 * @return The ID of the new matcher, this can be used to deregister.
-	 */
-	registerLinkMatcher(regex: RegExp, handler: (url: string) => void, matchIndex?: number, validationCallback?: (uri: string, callback: (isValid: boolean) => void) => void): number;
-
-	/**
-	 * Deregisters a link matcher if it has been registered.
-	 * @param matcherId The link matcher's ID (returned after register)
-	 * @return Whether a link matcher was found and deregistered.
-	 */
-	deregisterLinkMatcher(matcherId: number): void;
 
 	/**
 	 * Check if anything is selected in terminal.
@@ -463,6 +453,12 @@ export interface ITerminalInstance {
 	 * @param shell The new launch configuration.
 	 */
 	reuseTerminal(shell: IShellLaunchConfig): void;
+
+	/**
+	 * Relaunches the terminal, killing it and reusing the launch config used initially. Any
+	 * environment variable changes will be recalculated when this happens.
+	 */
+	relaunch(): void;
 
 	/**
 	 * Sets the title of the terminal instance.

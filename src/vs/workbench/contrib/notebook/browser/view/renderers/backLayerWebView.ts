@@ -4,26 +4,53 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as DOM from 'vs/base/browser/dom';
+import { getPathFromAmdModule } from 'vs/base/common/amd';
+import { Emitter, Event } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
 import * as path from 'vs/base/common/path';
+import { isWeb } from 'vs/base/common/platform';
 import { URI } from 'vs/base/common/uri';
 import * as UUID from 'vs/base/common/uuid';
-import { INotebookEditor } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
-import { INotebookService } from 'vs/workbench/contrib/notebook/browser/notebookService';
-import { IOutput } from 'vs/workbench/contrib/notebook/common/notebookCommon';
-import { IWebviewService, WebviewElement } from 'vs/workbench/contrib/webview/browser/webview';
-import { WebviewResourceScheme } from 'vs/workbench/contrib/webview/common/resourceLoader';
-import { CodeCellViewModel } from 'vs/workbench/contrib/notebook/browser/viewModel/codeCellViewModel';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { IOpenerService, matchesScheme } from 'vs/platform/opener/common/opener';
 import { CELL_MARGIN, CELL_RUN_GUTTER } from 'vs/workbench/contrib/notebook/browser/constants';
-import { Emitter, Event } from 'vs/base/common/event';
-import { IOpenerService } from 'vs/platform/opener/common/opener';
-import { getPathFromAmdModule } from 'vs/base/common/amd';
+import { INotebookEditor } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
+import { CodeCellViewModel } from 'vs/workbench/contrib/notebook/browser/viewModel/codeCellViewModel';
+import { IProcessedOutput } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import { INotebookService } from 'vs/workbench/contrib/notebook/common/notebookService';
+import { IWebviewService, WebviewElement } from 'vs/workbench/contrib/webview/browser/webview';
+import { asWebviewUri } from 'vs/workbench/contrib/webview/common/webviewUri';
+import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
+import { dirname, joinPath } from 'vs/base/common/resources';
+import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
+import { Schemas } from 'vs/base/common/network';
+import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { IFileService } from 'vs/platform/files/common/files';
+import { VSBuffer } from 'vs/base/common/buffer';
+import { getExtensionForMimeType } from 'vs/base/common/mime';
 
-export interface IDimentionMessage {
+export interface WebviewIntialized {
+	__vscode_notebook_message: boolean;
+	type: 'initialized'
+}
+
+export interface IDimensionMessage {
 	__vscode_notebook_message: boolean;
 	type: 'dimension';
 	id: string;
 	data: DOM.Dimension;
+}
+
+export interface IMouseEnterMessage {
+	__vscode_notebook_message: boolean;
+	type: 'mouseenter';
+	id: string;
+}
+
+export interface IMouseLeaveMessage {
+	__vscode_notebook_message: boolean;
+	type: 'mouseleave';
+	id: string;
 }
 
 export interface IWheelMessage {
@@ -40,8 +67,27 @@ export interface IScrollAckMessage {
 	version: number;
 }
 
+export interface IBlurOutputMessage {
+	__vscode_notebook_message: boolean;
+	type: 'focus-editor';
+	id: string;
+	focusNext?: boolean;
+}
+
+export interface IClickedDataUrlMessage {
+	__vscode_notebook_message: string;
+	type: 'clicked-data-url';
+	data: string;
+	downloadName?: string;
+}
+
 export interface IClearMessage {
 	type: 'clear';
+}
+
+export interface IFocusOutputMessage {
+	type: 'focus-output';
+	id: string;
 }
 
 export interface ICreationRequestMessage {
@@ -51,6 +97,7 @@ export interface ICreationRequestMessage {
 	outputId: string;
 	top: number;
 	left: number;
+	initiallyHidden?: boolean;
 }
 
 export interface IContentWidgetTopRequest {
@@ -77,51 +124,114 @@ export interface IScrollRequestMessage {
 export interface IUpdatePreloadResourceMessage {
 	type: 'preload';
 	resources: string[];
+	source: string;
 }
 
-type IMessage = IDimentionMessage | IScrollAckMessage | IWheelMessage;
+interface ICachedInset {
+	outputId: string;
+	cell: CodeCellViewModel;
+	preloads: ReadonlySet<string>;
+	cachedCreation: ICreationRequestMessage;
+}
+
+function html(strings: TemplateStringsArray, ...values: any[]): string {
+	let str = '';
+	strings.forEach((string, i) => {
+		str += string + (values[i] || '');
+	});
+	return str;
+}
+
+type IMessage = IDimensionMessage | IScrollAckMessage | IWheelMessage | IMouseEnterMessage | IMouseLeaveMessage | IBlurOutputMessage | WebviewIntialized | IClickedDataUrlMessage;
 
 let version = 0;
 export class BackLayerWebView extends Disposable {
 	element: HTMLElement;
-	webview: WebviewElement;
-	insetMapping: Map<IOutput, { outputId: string, cell: CodeCellViewModel, cacheOffset: number | undefined }> = new Map();
-	reversedInsetMapping: Map<string, IOutput> = new Map();
+	webview!: WebviewElement;
+	insetMapping: Map<IProcessedOutput, ICachedInset> = new Map();
+	hiddenInsetMapping: Set<IProcessedOutput> = new Set();
+	reversedInsetMapping: Map<string, IProcessedOutput> = new Map();
 	preloadsCache: Map<string, boolean> = new Map();
 	localResourceRootsCache: URI[] | undefined = undefined;
 	rendererRootsCache: URI[] = [];
+	kernelRootsCache: URI[] = [];
 	private readonly _onMessage = this._register(new Emitter<any>());
 	public readonly onMessage: Event<any> = this._onMessage.event;
-
+	private _loaded!: Promise<void>;
+	private _initalized: Promise<void>;
+	private _disposed = false;
 
 	constructor(
 		public notebookEditor: INotebookEditor,
-		@IWebviewService webviewService: IWebviewService,
-		@IOpenerService openerService: IOpenerService,
+		public id: string,
+		public documentUri: URI,
+		@IWebviewService readonly webviewService: IWebviewService,
+		@IOpenerService readonly openerService: IOpenerService,
 		@INotebookService private readonly notebookService: INotebookService,
+		@IEnvironmentService private readonly environmentService: IEnvironmentService,
+		@IWorkspaceContextService private readonly contextService: IWorkspaceContextService,
+		@IWorkbenchEnvironmentService private readonly workbenchEnvironmentService: IWorkbenchEnvironmentService,
+		@IFileDialogService private readonly fileDialogService: IFileDialogService,
+		@IFileService private readonly fileService: IFileService,
 	) {
 		super();
 		this.element = document.createElement('div');
 
-		this.element.style.width = `calc(100% - ${CELL_MARGIN * 2}px)`;
+		this.element.style.width = `calc(100% - ${CELL_MARGIN * 2 + CELL_RUN_GUTTER}px)`;
 		this.element.style.height = '1400px';
 		this.element.style.position = 'absolute';
-		this.element.style.margin = `0px 0 0px ${CELL_MARGIN}px`;
+		this.element.style.margin = `0px 0 0px ${CELL_MARGIN + CELL_RUN_GUTTER}px`;
 
 		const pathsPath = getPathFromAmdModule(require, 'vs/loader.js');
-		const loader = URI.file(pathsPath).with({ scheme: WebviewResourceScheme });
+		const loader = asWebviewUri(this.workbenchEnvironmentService, this.id, URI.file(pathsPath));
 
-		const outputNodePadding = 8;
-		let content = /* html */`
+		let coreDependencies = '';
+		let resolveFunc: () => void;
+
+		this._initalized = new Promise<void>((resolve, reject) => {
+			resolveFunc = resolve;
+		});
+
+		const baseUrl = asWebviewUri(this.workbenchEnvironmentService, this.id, dirname(documentUri));
+
+		if (!isWeb) {
+			coreDependencies = `<script src="${loader}"></script>`;
+			const htmlContent = this.generateContent(8, coreDependencies, baseUrl.toString());
+			this.initialize(htmlContent);
+			resolveFunc!();
+		} else {
+			fetch(pathsPath).then(async response => {
+				if (response.status !== 200) {
+					throw new Error(response.statusText);
+				}
+
+				const loaderJs = await response.text();
+
+				coreDependencies = `
+<script>
+${loaderJs}
+</script>
+`;
+
+				const htmlContent = this.generateContent(8, coreDependencies, baseUrl.toString());
+				this.initialize(htmlContent);
+				resolveFunc!();
+			});
+		}
+	}
+
+	generateContent(outputNodePadding: number, coreDependencies: string, baseUrl: string) {
+		return html`
 		<html lang="en">
 			<head>
 				<meta charset="UTF-8">
+				<base href="${baseUrl}/"/>
 				<style>
 					#container > div > div {
 						width: 100%;
 						padding: ${outputNodePadding}px;
 						box-sizing: border-box;
-						background-color: var(--vscode-list-inactiveSelectionBackground);
+						background-color: var(--vscode-notebook-outputContainerBackgroundColor);
 					}
 					body {
 						padding: 0px;
@@ -134,11 +244,55 @@ export class BackLayerWebView extends Disposable {
 				<script>
 					self.require = {};
 				</script>
-				<script src="${loader}"></script>
+				${coreDependencies}
 				<div id="__vscode_preloads"></div>
 				<div id='container' class="widgetarea" style="position: absolute;width:100%;top: 0px"></div>
 <script>
 (function () {
+
+		const handleInnerClick = (event) => {
+			if (!event || !event.view || !event.view.document) {
+				return;
+			}
+
+			/** @type {any} */
+			let node = event.target;
+			while (node) {
+				if (node.tagName && node.tagName.toLowerCase() === 'a' && node.href) {
+					if (node.href.startsWith('blob:')) {
+						handleBlobUrlClick(node.href, node.download);
+					}
+					event.preventDefault();
+					break;
+				}
+				node = node.parentNode;
+			}
+		};
+
+		const handleBlobUrlClick = async (url, downloadName) => {
+			try {
+				const response = await fetch(url);
+				const blob = await response.blob();
+				const reader = new FileReader();
+				reader.addEventListener('load', () => {
+					const data = reader.result;
+
+					vscode.postMessage({
+						__vscode_notebook_message: true,
+						type: 'clicked-data-url',
+						data,
+						downloadName
+					});
+				});
+				reader.readAsDataURL(blob);
+			} catch (e) {
+				console.error(e.message);
+			}
+		};
+
+		document.body.addEventListener('click', handleInnerClick);
+
+
 	// eslint-disable-next-line no-undef
 	const vscode = acquireVsCodeApi();
 
@@ -228,6 +382,34 @@ export class BackLayerWebView extends Disposable {
 		});
 	};
 
+	function focusFirstFocusableInCell(cellId) {
+		const cellOutputContainer = document.getElementById(cellId);
+		if (cellOutputContainer) {
+			const focusableElement = cellOutputContainer.querySelector('[tabindex="0"], [href], button, input, option, select, textarea');
+			focusableElement && focusableElement.focus();
+		}
+	}
+
+	function createFocusSink(cellId, outputId, focusNext) {
+		const element = document.createElement('div');
+		element.tabIndex = 0;
+		element.addEventListener('focus', () => {
+			vscode.postMessage({
+				__vscode_notebook_message: true,
+				type: 'focus-editor',
+				id: outputId,
+				focusNext
+			});
+
+			setTimeout(() => { // Wait a tick to prevent the focus indicator blinking before webview blurs
+				// Move focus off the focus sink - single use
+				focusFirstFocusableInCell(cellId);
+			}, 50);
+		});
+
+		return element;
+	}
+
 	window.addEventListener('wheel', handleWheel);
 
 	window.addEventListener('message', event => {
@@ -239,11 +421,36 @@ export class BackLayerWebView extends Disposable {
 					let cellOutputContainer = document.getElementById(id);
 					let outputId = event.data.outputId;
 					if (!cellOutputContainer) {
+						const container = document.getElementById('container');
+
+						const upperWrapperElement = createFocusSink(id, outputId);
+						container.appendChild(upperWrapperElement);
+
 						let newElement = document.createElement('div');
 
 						newElement.id = id;
-						document.getElementById('container').appendChild(newElement);
+						container.appendChild(newElement);
 						cellOutputContainer = newElement;
+
+						cellOutputContainer.addEventListener('mouseenter', () => {
+							vscode.postMessage({
+								__vscode_notebook_message: true,
+								type: 'mouseenter',
+								id: outputId,
+								data: { }
+							});
+						});
+						cellOutputContainer.addEventListener('mouseleave', () => {
+							vscode.postMessage({
+								__vscode_notebook_message: true,
+								type: 'mouseleave',
+								id: outputId,
+								data: { }
+							});
+						});
+
+						const lowerWrapperElement = createFocusSink(id, outputId, true);
+						container.appendChild(lowerWrapperElement);
 					}
 
 					let outputNode = document.createElement('div');
@@ -270,6 +477,9 @@ export class BackLayerWebView extends Disposable {
 							height: outputNode.clientHeight
 						}
 					});
+
+					// don't hide until after this step so that the height is right
+					cellOutputContainer.style.display = event.data.initiallyHidden ? 'none' : 'block';
 				}
 				break;
 			case 'view-scroll':
@@ -280,6 +490,7 @@ export class BackLayerWebView extends Disposable {
 					for (let i = 0; i < event.data.widgets.length; i++) {
 						let widget = document.getElementById(event.data.widgets[i].id);
 						widget.style.top = event.data.widgets[i].top + 'px';
+						widget.parentNode.style.display = 'block';
 					}
 					break;
 				}
@@ -292,9 +503,23 @@ export class BackLayerWebView extends Disposable {
 				observers = [];
 				break;
 			case 'clearOutput':
-				let output = document.getElementById(id);
-				output.parentNode.removeChild(output);
-				// @TODO remove observer
+				{
+					let output = document.getElementById(id);
+					if (output && output.parentNode) {
+						document.getElementById(id).parentNode.removeChild(output);
+					}
+					// @TODO remove observer
+				}
+				break;
+			case 'hideOutput':
+				document.getElementById(id).parentNode.style.display = 'none';
+				break;
+			case 'showOutput':
+				{
+					let output = document.getElementById(id);
+					output.parentNode.style.display = 'block';
+					output.style.top = event.data.top + 'px';
+				}
 				break;
 			case 'preload':
 				let resources = event.data.resources;
@@ -305,45 +530,113 @@ export class BackLayerWebView extends Disposable {
 					preloadsContainer.appendChild(scriptTag)
 				}
 				break;
+			case 'focus-output':
+				{
+					focusFirstFocusableInCell(id);
+					break;
+				}
 		}
+	});
+
+	vscode.postMessage({
+		__vscode_notebook_message: true,
+		type: 'initialized'
 	});
 }());
 
 </script>
 </body>
 `;
+	}
 
-		this.webview = this._createInset(webviewService, content);
+	private resolveOutputId(id: string): { cell: CodeCellViewModel, output: IProcessedOutput } | undefined {
+		const output = this.reversedInsetMapping.get(id);
+		if (!output) {
+			return undefined; // {{SQL CARBON EDIT}} strict-null-checks
+		}
+
+		return { cell: this.insetMapping.get(output)!.cell, output };
+	}
+
+	async initialize(content: string) {
+		this.webview = this._createInset(this.webviewService, content);
 		this.webview.mountTo(this.element);
 
 		this._register(this.webview.onDidClickLink(link => {
-			openerService.open(link, { fromUserGesture: true });
+			if (!link) {
+				return;
+			}
+
+			if (matchesScheme(link, Schemas.http) || matchesScheme(link, Schemas.https) || matchesScheme(link, Schemas.mailto)
+				|| matchesScheme(link, Schemas.command)) {
+				this.openerService.open(link, { fromUserGesture: true });
+			}
+		}));
+
+		this._register(this.webview.onDidReload(() => {
+			this.preloadsCache.clear();
+			for (const [output, inset] of this.insetMapping.entries()) {
+				this.updateRendererPreloads(inset.preloads);
+				this.webview.sendMessage({ ...inset.cachedCreation, initiallyHidden: this.hiddenInsetMapping.has(output) });
+			}
 		}));
 
 		this._register(this.webview.onMessage((data: IMessage) => {
 			if (data.__vscode_notebook_message) {
 				if (data.type === 'dimension') {
-					let output = this.reversedInsetMapping.get(data.id);
-
-					if (!output) {
-						return;
-					}
-
-					let cell = this.insetMapping.get(output)!.cell;
 					let height = data.data.height;
 					let outputHeight = height;
 
-					if (cell) {
+					const info = this.resolveOutputId(data.id);
+					if (info) {
+						const { cell, output } = info;
 						let outputIndex = cell.outputs.indexOf(output);
 						cell.updateOutputHeight(outputIndex, outputHeight);
 						this.notebookEditor.layoutNotebookCell(cell, cell.layoutInfo.totalHeight);
+					}
+				} else if (data.type === 'mouseenter') {
+					const info = this.resolveOutputId(data.id);
+					if (info) {
+						const { cell } = info;
+						cell.outputIsHovered = true;
+					}
+				} else if (data.type === 'mouseleave') {
+					const info = this.resolveOutputId(data.id);
+					if (info) {
+						const { cell } = info;
+						cell.outputIsHovered = false;
 					}
 				} else if (data.type === 'scroll-ack') {
 					// const date = new Date();
 					// const top = data.data.top;
 					// console.log('ack top ', top, ' version: ', data.version, ' - ', date.getMinutes() + ':' + date.getSeconds() + ':' + date.getMilliseconds());
 				} else if (data.type === 'did-scroll-wheel') {
-					this.notebookEditor.triggerScroll(data.payload);
+					this.notebookEditor.triggerScroll({
+						...data.payload,
+						preventDefault: () => { },
+						stopPropagation: () => { }
+					});
+				} else if (data.type === 'focus-editor') {
+					const info = this.resolveOutputId(data.id);
+					if (info) {
+						if (data.focusNext) {
+							const idx = this.notebookEditor.viewModel?.getCellIndex(info.cell);
+							if (typeof idx !== 'number') {
+								return;
+							}
+
+							const newCell = this.notebookEditor.viewModel?.viewCells[idx + 1];
+							if (!newCell) {
+								return;
+							}
+
+							this.notebookEditor.focusNotebookCell(newCell, 'editor');
+						} else {
+							this.notebookEditor.focusNotebookCell(info.cell, 'editor');
+						}
+					}
+				} else if (data.type === 'clicked-data-url') {
+					this._onDidClickDataLink(data);
 				}
 				return;
 			}
@@ -352,45 +645,113 @@ export class BackLayerWebView extends Disposable {
 		}));
 	}
 
+	private async _onDidClickDataLink(event: IClickedDataUrlMessage): Promise<void> {
+		const [splitStart, splitData] = event.data.split(';base64,');
+		if (!splitData || !splitStart) {
+			return;
+		}
+
+		const defaultDir = dirname(this.documentUri);
+		let defaultName: string;
+		if (event.downloadName) {
+			defaultName = event.downloadName;
+		} else {
+			const mimeType = splitStart.replace(/^data:/, '');
+			const candidateExtension = mimeType && getExtensionForMimeType(mimeType);
+			defaultName = candidateExtension ? `download${candidateExtension}` : 'download';
+		}
+
+		const defaultUri = joinPath(defaultDir, defaultName);
+		const newFileUri = await this.fileDialogService.showSaveDialog({
+			defaultUri
+		});
+		if (!newFileUri) {
+			return;
+		}
+
+		const decoded = atob(splitData);
+		const typedArray = new Uint8Array(decoded.length);
+		for (let i = 0; i < decoded.length; i++) {
+			typedArray[i] = decoded.charCodeAt(i);
+		}
+
+		const buff = VSBuffer.wrap(typedArray);
+		await this.fileService.writeFile(newFileUri, buff);
+		await this.openerService.open(newFileUri);
+	}
+
+	async waitForInitialization() {
+		await this._initalized;
+	}
+
 	private _createInset(webviewService: IWebviewService, content: string) {
 		const rootPath = URI.file(path.dirname(getPathFromAmdModule(require, '')));
-		this.localResourceRootsCache = [...this.notebookService.getNotebookProviderResourceRoots(), rootPath];
-		const webview = webviewService.createWebviewElement('' + UUID.generateUuid(), {
+		const workspaceFolders = this.contextService.getWorkspace().folders.map(x => x.uri);
+
+		this.localResourceRootsCache = [...this.notebookService.getNotebookProviderResourceRoots(), ...workspaceFolders, rootPath];
+
+		const webview = webviewService.createWebviewElement(this.id, {
 			enableFindWidget: false,
 		}, {
 			allowMultipleAPIAcquire: true,
 			allowScripts: true,
 			localResourceRoots: this.localResourceRootsCache
+		}, undefined);
+
+		let resolveFunc: () => void;
+		this._loaded = new Promise<void>((resolve, reject) => {
+			resolveFunc = resolve;
 		});
+
+		let dispose = webview.onMessage((data: IMessage) => {
+			if (data.__vscode_notebook_message && data.type === 'initialized') {
+				resolveFunc();
+				dispose.dispose();
+			}
+		});
+
 		webview.html = content;
 		return webview;
 	}
 
-	shouldUpdateInset(cell: CodeCellViewModel, output: IOutput, cellTop: number) {
+	shouldUpdateInset(cell: CodeCellViewModel, output: IProcessedOutput, cellTop: number) {
+		if (this._disposed) {
+			return undefined; // {{SQL CARBON EDIT}} strict-null-checks
+		}
+
 		let outputCache = this.insetMapping.get(output)!;
 		let outputIndex = cell.outputs.indexOf(output);
 		let outputOffset = cellTop + cell.getOutputOffset(outputIndex);
 
-		if (outputOffset === outputCache.cacheOffset) {
+		if (this.hiddenInsetMapping.has(output)) {
+			return true;
+		}
+
+		if (outputOffset === outputCache.cachedCreation.top) {
 			return false;
 		}
 
 		return true;
 	}
 
-	updateViewScrollTop(top: number, items: { cell: CodeCellViewModel, output: IOutput, cellTop: number }[]) {
+	updateViewScrollTop(top: number, items: { cell: CodeCellViewModel, output: IProcessedOutput, cellTop: number }[]) {
+		if (this._disposed) {
+			return;
+		}
+
 		let widgets: IContentWidgetTopRequest[] = items.map(item => {
 			let outputCache = this.insetMapping.get(item.output)!;
 			let id = outputCache.outputId;
 			let outputIndex = item.cell.outputs.indexOf(item.output);
 
 			let outputOffset = item.cellTop + item.cell.getOutputOffset(outputIndex);
-			outputCache.cacheOffset = outputOffset;
+			outputCache.cachedCreation.top = outputOffset;
+			this.hiddenInsetMapping.delete(item.output);
 
 			return {
 				id: id,
 				top: outputOffset,
-				left: CELL_RUN_GUTTER
+				left: 0
 			};
 		});
 
@@ -404,9 +765,28 @@ export class BackLayerWebView extends Disposable {
 		this.webview.sendMessage(message);
 	}
 
-	createInset(cell: CodeCellViewModel, output: IOutput, cellTop: number, offset: number, shadowContent: string, preloads: Set<number>) {
+	createInset(cell: CodeCellViewModel, output: IProcessedOutput, cellTop: number, offset: number, shadowContent: string, preloads: Set<string>) {
+		if (this._disposed) {
+			return;
+		}
+
 		this.updateRendererPreloads(preloads);
 		let initialTop = cellTop + offset;
+
+		if (this.insetMapping.has(output)) {
+			let outputCache = this.insetMapping.get(output);
+
+			if (outputCache) {
+				this.hiddenInsetMapping.delete(output);
+				this.webview.sendMessage({
+					type: 'showOutput',
+					id: outputCache.outputId,
+					top: initialTop
+				});
+				return;
+			}
+		}
+
 		let outputId = UUID.generateUuid();
 
 		let message: ICreationRequestMessage = {
@@ -415,15 +795,20 @@ export class BackLayerWebView extends Disposable {
 			id: cell.id,
 			outputId: outputId,
 			top: initialTop,
-			left: CELL_RUN_GUTTER
+			left: 0
 		};
 
 		this.webview.sendMessage(message);
-		this.insetMapping.set(output, { outputId: outputId, cell: cell, cacheOffset: initialTop });
+		this.insetMapping.set(output, { outputId: outputId, cell: cell, preloads, cachedCreation: message });
+		this.hiddenInsetMapping.delete(output);
 		this.reversedInsetMapping.set(outputId, output);
 	}
 
-	removeInset(output: IOutput) {
+	removeInset(output: IProcessedOutput) {
+		if (this._disposed) {
+			return;
+		}
+
 		let outputCache = this.insetMapping.get(output);
 		if (!outputCache) {
 			return;
@@ -439,7 +824,30 @@ export class BackLayerWebView extends Disposable {
 		this.reversedInsetMapping.delete(id);
 	}
 
+	hideInset(output: IProcessedOutput) {
+		if (this._disposed) {
+			return;
+		}
+
+		let outputCache = this.insetMapping.get(output);
+		if (!outputCache) {
+			return;
+		}
+
+		let id = outputCache.outputId;
+		this.hiddenInsetMapping.add(output);
+
+		this.webview.sendMessage({
+			type: 'hideOutput',
+			id: id
+		});
+	}
+
 	clearInsets() {
+		if (this._disposed) {
+			return;
+		}
+
 		this.webview.sendMessage({
 			type: 'clear'
 		});
@@ -448,14 +856,69 @@ export class BackLayerWebView extends Disposable {
 		this.reversedInsetMapping = new Map();
 	}
 
-	updateRendererPreloads(preloads: Set<number>) {
+	focusOutput(cellId: string) {
+		if (this._disposed) {
+			return;
+		}
+
+		this.webview.focus();
+		setTimeout(() => { // Need this, or focus decoration is not shown. No clue.
+			this.webview.sendMessage({
+				type: 'focus-output',
+				id: cellId
+			});
+		}, 50);
+	}
+
+	async updateKernelPreloads(extensionLocations: URI[], preloads: URI[]) {
+		if (this._disposed) {
+			return;
+		}
+
+		await this._loaded;
+
+		let resources: string[] = [];
+		preloads = preloads.map(preload => {
+			if (this.environmentService.isExtensionDevelopment && (preload.scheme === 'http' || preload.scheme === 'https')) {
+				return preload;
+			}
+			return asWebviewUri(this.workbenchEnvironmentService, this.id, preload);
+		});
+
+		preloads.forEach(e => {
+			if (!this.preloadsCache.has(e.toString())) {
+				resources.push(e.toString());
+				this.preloadsCache.set(e.toString(), true);
+			}
+		});
+
+		if (!resources.length) {
+			return;
+		}
+
+		this.kernelRootsCache = [...extensionLocations, ...this.kernelRootsCache];
+		this._updatePreloads(resources, 'kernel');
+	}
+
+	async updateRendererPreloads(preloads: ReadonlySet<string>) {
+		if (this._disposed) {
+			return;
+		}
+
+		await this._loaded;
+
 		let resources: string[] = [];
 		let extensionLocations: URI[] = [];
 		preloads.forEach(preload => {
 			let rendererInfo = this.notebookService.getRendererInfo(preload);
 
 			if (rendererInfo) {
-				let preloadResources = rendererInfo.preloads.map(preloadResource => preloadResource.with({ scheme: WebviewResourceScheme }));
+				let preloadResources = rendererInfo.preloads.map(preloadResource => {
+					if (this.environmentService.isExtensionDevelopment && (preloadResource.scheme === 'http' || preloadResource.scheme === 'https')) {
+						return preloadResource;
+					}
+					return asWebviewUri(this.workbenchEnvironmentService, this.id, preloadResource);
+				});
 				extensionLocations.push(rendererInfo.extensionLocation);
 				preloadResources.forEach(e => {
 					if (!this.preloadsCache.has(e.toString())) {
@@ -466,19 +929,23 @@ export class BackLayerWebView extends Disposable {
 			}
 		});
 
-		this.rendererRootsCache = extensionLocations;
-		const mixedResourceRoots = [...(this.localResourceRootsCache || []), ...this.rendererRootsCache];
+		if (!resources.length) {
+			return;
+		}
 
-		this.webview.contentOptions = {
-			allowMultipleAPIAcquire: true,
-			allowScripts: true,
-			enableCommandUris: true,
-			localResourceRoots: mixedResourceRoots
-		};
+		this.rendererRootsCache = extensionLocations;
+		this._updatePreloads(resources, 'renderer');
+	}
+
+	private _updatePreloads(resources: string[], source: string) {
+		const mixedResourceRoots = [...(this.localResourceRootsCache || []), ...this.rendererRootsCache, ...this.kernelRootsCache];
+
+		this.webview.localResourcesRoot = mixedResourceRoots;
 
 		let message: IUpdatePreloadResourceMessage = {
 			type: 'preload',
-			resources: resources
+			resources: resources,
+			source: source
 		};
 
 		this.webview.sendMessage(message);
@@ -486,5 +953,10 @@ export class BackLayerWebView extends Disposable {
 
 	clearPreloadsCache() {
 		this.preloadsCache.clear();
+	}
+
+	dispose() {
+		this._disposed = true;
+		super.dispose();
 	}
 }

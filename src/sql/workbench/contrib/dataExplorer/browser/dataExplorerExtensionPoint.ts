@@ -7,16 +7,17 @@ import { localize } from 'vs/nls';
 import { forEach } from 'vs/base/common/collections';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { IViewContainersRegistry, ViewContainer, Extensions as ViewContainerExtensions, ITreeViewDescriptor, IViewsRegistry } from 'vs/workbench/common/views';
+import { IViewContainersRegistry, ViewContainer, Extensions as ViewContainerExtensions, IViewsRegistry } from 'vs/workbench/common/views';
 import { IExtensionPoint, ExtensionsRegistry, ExtensionMessageCollector } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { coalesce } from 'vs/base/common/arrays';
 
-import { CustomTreeViewPane, CustomTreeView } from 'sql/workbench/browser/parts/views/customView';
+import { CustomTreeView, TreeViewPane } from 'sql/workbench/browser/parts/views/treeView';
 import { VIEWLET_ID } from 'sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
+import { ICustomViewDescriptor } from 'vs/workbench/api/browser/viewsExtensionPoint';
 
 interface IUserFriendlyViewDescriptor {
 	id: string;
@@ -103,14 +104,15 @@ export class DataExplorerContainerExtensionHandler implements IWorkbenchContribu
 							return null;
 						}
 
-						const viewDescriptor = <ITreeViewDescriptor>{
+						const viewDescriptor = <ICustomViewDescriptor>{
 							id: item.id,
 							name: item.name,
-							ctorDescriptor: new SyncDescriptor(CustomTreeViewPane),
+							ctorDescriptor: new SyncDescriptor(TreeViewPane),
 							when: ContextKeyExpr.deserialize(item.when),
 							canToggleVisibility: true,
+							canMoveView: true,
+							treeView: this.instantiationService.createInstance(CustomTreeView, item.id, item.name),
 							collapsed: this.showCollapsed(container),
-							treeView: this.instantiationService.createInstance(CustomTreeView, item.id, item.name, container),
 							extensionId: extension.description.identifier,
 							originalContainerId: entry.key
 						};

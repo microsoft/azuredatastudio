@@ -31,7 +31,8 @@ import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/n
 import { Deferred } from 'sql/base/common/promise';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction, RunAllCellsAction, ClearAllOutputsAction, CollapseCellsAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { AddCellAction, KernelsDropdown, AttachToDropdown, TrustedAction, RunAllCellsAction, ClearAllOutputsAction, CollapseCellsAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/buttonMenu';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
@@ -45,7 +46,6 @@ import { toErrorMessage } from 'vs/base/common/errorMessage';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { LabeledMenuItemActionItem, fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
@@ -56,10 +56,10 @@ import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellVi
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
-
 
 @Component({
 	selector: NOTEBOOK_SELECTOR,
@@ -85,6 +85,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private _scrollTop: number;
 	private _navProvider: INavigationProvider;
 	private navigationResult: nb.NavigationResult;
+	public previewFeaturesEnabled: boolean = false;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -104,12 +105,16 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService,
 		@Inject(ITextFileService) private textFileService: ITextFileService,
 		@Inject(ILogService) private readonly logService: ILogService,
-		@Inject(ITelemetryService) private telemetryService: ITelemetryService,
-		@Inject(ICommandService) private commandService: ICommandService
+		@Inject(ICommandService) private commandService: ICommandService,
+		@Inject(IAdsTelemetryService) private adstelemetryService: IAdsTelemetryService,
+		@Inject(IConfigurationService) private _configurationService: IConfigurationService
 	) {
 		super();
 		this.updateProfile();
 		this.isLoading = true;
+		this._register(this._configurationService.onDidChangeConfiguration(e => {
+			this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
+		}));
 	}
 
 	private updateProfile(): void {
@@ -240,10 +245,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private async doLoad(): Promise<void> {
 		try {
 			await this.createModelAndLoadContents();
-			await this.setNotebookManager();
-			await this.loadModel();
 			this._modelReadyDeferred.resolve(this._model);
 			this.notebookService.addNotebookEditor(this);
+			await this.setNotebookManager();
+			await this.loadModel();
 		} catch (error) {
 			if (error) {
 				// Offer to create a file from the error if we have a file not found and the name is valid
@@ -310,7 +315,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			layoutChanged: this._notebookParams.input.layoutChanged,
 			capabilitiesService: this.capabilitiesService,
 			editorLoadedTimestamp: this._notebookParams.input.editorOpenedTimestamp
-		}, this.profile, this.logService, this.notificationService, this.telemetryService);
+		}, this.profile, this.logService, this.notificationService, this.adstelemetryService);
 		let trusted = await this.notebookService.isNotebookTrustCached(this._notebookParams.notebookUri, this.isDirty());
 		this._register(model.onError((errInfo: INotification) => this.handleModelError(errInfo)));
 		this._register(model.contentChanged((change) => this.handleContentChanged(change)));
@@ -397,44 +402,114 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	protected initActionBar(): void {
-		let kernelContainer = document.createElement('div');
-		let kernelDropdown = new KernelsDropdown(kernelContainer, this.contextViewService, this.modelReady);
-		kernelDropdown.render(kernelContainer);
-		attachSelectBoxStyler(kernelDropdown, this.themeService);
+		this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
 
-		let attachToContainer = document.createElement('div');
-		let attachToDropdown = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelReady,
-			this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService);
-		attachToDropdown.render(attachToContainer);
-		attachSelectBoxStyler(attachToDropdown, this.themeService);
+		if (this.previewFeaturesEnabled) {
+			let kernelContainer = document.createElement('li');
+			let kernelDropdown = this.instantiationService.createInstance(KernelsDropdown, kernelContainer, this.contextViewService, this.modelReady);
+			kernelDropdown.render(kernelContainer);
+			attachSelectBoxStyler(kernelDropdown, this.themeService);
 
-		let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('code', "Code"), 'notebook-button icon-add');
-		addCodeCellButton.cellType = CellTypes.Code;
+			let attachToContainer = document.createElement('li');
+			let attachToDropdown = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelReady,
+				this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService);
+			attachToDropdown.render(attachToContainer);
+			attachSelectBoxStyler(attachToDropdown, this.themeService);
 
-		let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('text', "Text"), 'notebook-button icon-add');
-		addTextCellButton.cellType = CellTypes.Markdown;
+			let spacerElement = document.createElement('li');
+			spacerElement.style.marginLeft = 'auto';
 
-		this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAll', "Run Cells"), 'notebook-button icon-run-cells');
-		let clearResultsButton = new ClearAllOutputsAction('notebook.ClearAllOutputs', localize('clearResults', "Clear Results"), 'notebook-button icon-clear-results');
+			let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('codePreview', "Code cell"), 'notebook-button masked-pseudo code');
+			addCodeCellButton.cellType = CellTypes.Code;
 
-		this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted');
-		this._trustedAction.enabled = false;
+			let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('textPreview', "Text cell"), 'notebook-button masked-pseudo markdown');
+			addTextCellButton.cellType = CellTypes.Markdown;
 
-		let collapseCellsAction = this.instantiationService.createInstance(CollapseCellsAction, 'notebook.collapseCells');
 
-		let taskbar = <HTMLElement>this.toolbar.nativeElement;
-		this._actionBar = new Taskbar(taskbar, { actionViewItemProvider: action => this.actionItemProvider(action as Action) });
-		this._actionBar.context = this;
-		this._actionBar.setContent([
-			{ action: addCodeCellButton },
-			{ action: addTextCellButton },
-			{ element: kernelContainer },
-			{ element: attachToContainer },
-			{ action: this._trustedAction },
-			{ action: this._runAllCellsAction },
-			{ action: clearResultsButton },
-			{ action: collapseCellsAction }
-		]);
+			this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAllPreview', "Run all"), 'notebook-button masked-pseudo start-outline');
+
+			let collapseCellsAction = this.instantiationService.createInstance(CollapseCellsAction, 'notebook.collapseCells', true);
+
+			let clearResultsButton = new ClearAllOutputsAction('notebook.ClearAllOutputs', true);
+
+			this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted', true);
+			this._trustedAction.enabled = false;
+
+			let taskbar = <HTMLElement>this.toolbar.nativeElement;
+			this._actionBar = new Taskbar(taskbar, { actionViewItemProvider: action => this.actionItemProvider(action as Action) });
+			this._actionBar.context = this;
+			taskbar.classList.add('in-preview');
+
+			let buttonDropdownContainer = DOM.$('li.action-item');
+			buttonDropdownContainer.setAttribute('role', 'presentation');
+			let dropdownMenuActionViewItem = new DropdownMenuActionViewItem(
+				addCodeCellButton,
+				[addCodeCellButton, addTextCellButton],
+				this.contextMenuService,
+				undefined,
+				this._actionBar.actionRunner,
+				undefined,
+				'codicon notebook-button masked-pseudo masked-pseudo-after add-new dropdown-arrow',
+				localize('addCell', "Cell"),
+				undefined
+			);
+			dropdownMenuActionViewItem.render(buttonDropdownContainer);
+			dropdownMenuActionViewItem.setActionContext(this);
+
+			this._actionBar.setContent([
+				{ element: buttonDropdownContainer },
+				{ action: this._runAllCellsAction },
+				{ element: Taskbar.createTaskbarSeparator() },
+				{ element: kernelContainer },
+				{ element: attachToContainer },
+				{ element: spacerElement },
+				{ action: collapseCellsAction },
+				{ action: clearResultsButton },
+				{ action: this._trustedAction },
+			]);
+		} else {
+			let kernelContainer = document.createElement('div');
+			let kernelDropdown = this.instantiationService.createInstance(KernelsDropdown, kernelContainer, this.contextViewService, this.modelReady);
+			kernelDropdown.render(kernelContainer);
+			attachSelectBoxStyler(kernelDropdown, this.themeService);
+
+			let attachToContainer = document.createElement('div');
+			let attachToDropdown = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelReady,
+				this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService);
+			attachToDropdown.render(attachToContainer);
+			attachSelectBoxStyler(attachToDropdown, this.themeService);
+
+			let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('code', "Code"), 'notebook-button icon-add');
+			addCodeCellButton.cellType = CellTypes.Code;
+
+			let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('text', "Text"), 'notebook-button icon-add');
+			addTextCellButton.cellType = CellTypes.Markdown;
+
+			this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAll', "Run Cells"), 'notebook-button icon-run-cells');
+
+			let clearResultsButton = new ClearAllOutputsAction('notebook.ClearAllOutputs', false);
+
+			this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted', false);
+			this._trustedAction.enabled = false;
+
+			let collapseCellsAction = this.instantiationService.createInstance(CollapseCellsAction, 'notebook.collapseCells', false);
+
+			let taskbar = <HTMLElement>this.toolbar.nativeElement;
+			this._actionBar = new Taskbar(taskbar, { actionViewItemProvider: action => this.actionItemProvider(action as Action) });
+			this._actionBar.context = this;
+
+			this._actionBar.setContent([
+				{ action: addCodeCellButton },
+				{ action: addTextCellButton },
+				{ element: kernelContainer },
+				{ element: attachToContainer },
+				{ action: this._trustedAction },
+				{ action: this._runAllCellsAction },
+				{ action: clearResultsButton },
+				{ action: collapseCellsAction }
+			]);
+		}
+
 	}
 
 	protected initNavSection(): void {
@@ -480,7 +555,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		// Check extensions to create ActionItem; otherwise, return undefined
 		// This is similar behavior that exists in MenuItemActionItem
 		if (action instanceof MenuItemAction) {
-			return new LabeledMenuItemActionItem(action, this.keybindingService, this.contextMenuService, this.notificationService, 'notebook-button');
+
+			if (action.item.id.includes('jupyter.cmd') && this.previewFeaturesEnabled) {
+				action.tooltip = action.label;
+				action.label = '';
+			}
+			return new LabeledMenuItemActionItem(action, this.keybindingService, this.contextMenuService, this.notificationService, 'notebook-button fixed-width');
 		}
 		return undefined;
 	}
@@ -538,7 +618,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	isActive(): boolean {
-		return this.editorService.activeEditor.matches(this.notebookParams.input);
+		return this.editorService.activeEditor ? this.editorService.activeEditor.matches(this.notebookParams.input) : false;
 	}
 
 	isVisible(): boolean {
@@ -666,10 +746,17 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	navigateToSection(id: string): void {
 		id = id.toLowerCase();
+		let chromeHeight: number = 0;
+		let elBody: HTMLElement = document.body;
+		let tabBar = elBody.querySelector('.title.tabs') as HTMLElement;
+		let actionBar = elBody.querySelector('.editor-toolbar.actionbar-container') as HTMLElement;
 		let section = find(this.getSectionElements(), s => s.relativeUri && s.relativeUri.toLowerCase() === id);
 		if (section) {
 			// Scroll this section to the top of the header instead of just bringing header into view.
-			let scrollTop = section.headerEl.offsetTop;
+			if (tabBar && actionBar) {
+				chromeHeight = tabBar.scrollHeight + actionBar.scrollHeight;
+			}
+			let scrollTop: number = section.headerEl.getBoundingClientRect().top - (chromeHeight + 10);
 			(<HTMLElement>this.container.nativeElement).scrollTo({
 				top: scrollTop,
 				behavior: 'smooth'

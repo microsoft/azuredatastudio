@@ -88,7 +88,7 @@ export class TaskService implements ITaskService {
 				serverName = connectionProfile.serverName;
 			}
 		}
-		let node: TaskNode = new TaskNode(taskInfo.name, serverName, databaseName, taskInfo.taskId, taskInfo.taskExecutionMode, taskInfo.isCancelable);
+		let node: TaskNode = new TaskNode(taskInfo.name, serverName, databaseName, taskInfo.taskId, taskInfo.taskExecutionMode, taskInfo.isCancelable, taskInfo.targetLocation);
 		node.providerName = taskInfo.providerName;
 		this.handleNewTask(node);
 	}

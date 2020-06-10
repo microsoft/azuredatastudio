@@ -333,6 +333,7 @@ declare module 'azdata' {
 		saveProfile: boolean;
 		id: string;
 		azureTenantId?: string;
+
 	}
 
 	/**
@@ -599,6 +600,7 @@ declare module 'azdata' {
 	// List Databases Request ----------------------------------------------------------------------
 	export interface ListDatabasesResult {
 		databaseNames: Array<string>;
+		databases?: Array<DatabaseInfo>;
 	}
 
 	/**
@@ -725,7 +727,7 @@ declare module 'azdata' {
 	export interface MetadataProvider extends DataProvider {
 		getMetadata(connectionUri: string): Thenable<ProviderMetadata>;
 
-		getDatabases(connectionUri: string): Thenable<string[]>;
+		getDatabases(connectionUri: string): Thenable<string[] | DatabaseInfo[]>;
 
 		getTableInfo(connectionUri: string, metadata: ObjectMetadata): Thenable<ColumnMetadata[]>;
 
@@ -1797,8 +1799,9 @@ declare module 'azdata' {
 		deleteJobSchedule(ownerUri: string, scheduleInfo: AgentJobScheduleInfo): Thenable<ResultStatus>;
 
 		registerOnUpdated(handler: () => any): void;
-	}
 
+
+	}
 	// DacFx interfaces  -----------------------------------------------------------------------
 
 	// Security service interfaces ------------------------------------------------------------------------
@@ -3656,6 +3659,7 @@ declare module 'azdata' {
 		export function createWebViewDialog(title: string): ModalDialog;
 
 		/**
+		 * @deprecated please use the method createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth) instead.
 		 * Create a dialog with the given title
 		 * @param title The title of the dialog, displayed at the top
 		 * @param isWide Indicates whether the dialog is wide or normal
@@ -4101,7 +4105,8 @@ declare module 'azdata' {
 		CapabilitiesProvider = 'CapabilitiesProvider',
 		ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
 		IconProvider = 'IconProvider',
-		SerializationProvider = 'SerializationProvider'
+		SerializationProvider = 'SerializationProvider',
+		SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider'
 	}
 
 	/**
@@ -4589,7 +4594,7 @@ declare module 'azdata' {
 			 * Starts the server. Some server types may not support or require this.
 			 * Should no-op if server is already started
 			 */
-			startServer(): Thenable<void>;
+			startServer(kernelSpec: IKernelSpec): Thenable<void>;
 
 			/**
 			 * Stops the server. Some server types may not support or require this

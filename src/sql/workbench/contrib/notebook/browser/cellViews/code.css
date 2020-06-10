@@ -9,14 +9,20 @@ code-component {
 	display: block;
 }
 
+.notebook-cell:not(.active) code-component .toolbar {
+	border-right-color: transparent!important;
+}
+
 code-component .toolbar {
+	border-right-style: solid;
 	border-right-width: 1px;
-	flex: 0 0 auto;
+	box-sizing: border-box;
 	display: flex;
+	flex: 0 0 auto;
 	flex-flow:column;
-	width: 40px;
 	min-height: 40px;
-	orientation: portrait
+	orientation: portrait;
+	width: 52px;
 }
 
 code-component .toolbar.markdown {
@@ -29,36 +35,34 @@ code-component .toolbar .carbon-taskbar {
 	margin-top: 5px;
 }
 
-code-component .toolbarIconRun {
+code-component .toolbar .codicon {
 	height: 20px;
-	background-image: url('./media/light/execute_cell.svg');
 	padding-bottom: 10px;
 }
 
-.vs-dark code-component .toolbarIconRun,
-.hc-black code-component .toolbarIconRun {
-	background-image: url('./media/dark/execute_cell_inverse.svg');
+.notebook-cell:not(.active):hover code-component .toolbarIconRun {
+	background-image: url('./media/execute_cell_grey.svg');
 }
-
-code-component .toolbarIconRunError {
-	height: 20px;
-	background-image: url('./media/light/execute_cell_error.svg');
-	padding-bottom: 10px;
+.vs-dark .notebook-cell:not(.active):hover code-component .toolbarIconRun {
+	background-image: url('./media/execute_cell_dark.svg');
 }
-
-code-component .toolbarIconStop {
-	height: 20px;
-	background-image: url('./media/light/stop_cell_solidanimation.svg');
-	padding-bottom: 10px;
-}
-
-.vs-dark code-component .toolbarIconStop,
-.hc-black code-component .toolbarIconStop {
-	background-image: url('./media/dark/stop_cell_solidanimation_inverse.svg');
+.hc-black .notebook-cell:not(.active):hover code-component .toolbarIconRun {
+	background-image: url('./media/execute_cell_hc.svg');
 }
 
 code-component .editor {
-	padding: 5px 0px 5px 0px
+	margin: 14px 0px 5px 0px
+}
+
+code-cell-component code-component .monaco-editor .margin-view-overlays .line-numbers {
+	left: 0!important;
+}
+
+code-cell-component .monaco-editor .margin,
+code-cell-component code-component .monaco-editor,
+code-cell-component code-component .monaco-editor-background,
+code-cell-component code-component .monaco-editor .inputarea.ime-input {
+	background-color: transparent;
 }
 
 /* overview ruler */
@@ -84,7 +88,7 @@ code-component .carbon-taskbar .codicon.hideIcon {
 	padding-left: 0px;
 	padding-top: 6px;
 	font-family: monospace;
-	font-size: 12px;
+	font-size: 14px;
 }
 
 code-component .carbon-taskbar .codicon.hideIcon.execCountTen {
@@ -95,10 +99,6 @@ code-component .carbon-taskbar .codicon.hideIcon.execCountHundred {
 	margin-left: -6px;
 }
 
-code-component .carbon-taskbar.monaco-toolbar .monaco-action-bar.animated .actions-container {
-	padding-left: 10px
-}
-
 code-component .hide-component-button {
 	height: 16px;
 	width: 100%;
@@ -106,23 +106,5 @@ code-component .hide-component-button {
 	border-width: 0px;
 	background-repeat: no-repeat;
 	background-position: center;
-	background-color: inherit;
-}
-
-code-component .hide-component-button.icon-hide-cell {
-	background-image: url("./media/light/chevron_up.svg");
-}
-
-code-component .hide-component-button.icon-show-cell {
-	background-image: url("./media/light/chevron_down.svg");
-}
-
-.vs-dark code-component .hide-component-button.icon-hide-cell,
-.hc-black code-component .hide-component-button.icon-hide-cell {
-	background-image: url("./media/dark/chevron_up_inverse.svg");
-}
-
-.vs-dark code-component .hide-component-button.icon-show-cell,
-.hc-black code-component .hide-component-button.icon-show-cell {
-	background-image: url("./media/dark/chevron_down_inverse.svg");
+	background-color: transparent;
 }

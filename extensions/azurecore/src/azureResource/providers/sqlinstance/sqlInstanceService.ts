@@ -27,7 +27,8 @@ export class SqlInstanceResourceService extends ResourceServiceBase<SqlInstanceG
 			name: resource.name,
 			fullName: resource.properties.fullyQualifiedDomainName,
 			loginName: resource.properties.administratorLogin,
-			defaultDatabaseName: 'master'
+			defaultDatabaseName: 'master',
+			tenant: resource.tenantId
 		};
 	}
 }

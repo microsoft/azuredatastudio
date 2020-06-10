@@ -17,7 +17,7 @@ import { azureResource } from '../../azure-resource';
 
 export class SqlInstanceArcTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
 	private static readonly containerId = 'azure.resource.providers.sqlInstanceArcContainer';
-	private static readonly containerLabel = localize('azure.resource.providers.sqlInstanceArcContainerLabel', "Azure SQL DB managed instance – Azure Arc");
+	private static readonly containerLabel = localize('azure.resource.providers.sqlInstanceArcContainerLabel', "SQL managed instance – Azure Arc");
 
 	public constructor(
 		databaseServerService: IAzureResourceService<azureResource.AzureResourceDatabaseServer>,
@@ -45,14 +45,17 @@ export class SqlInstanceArcTreeDataProvider extends ResourceTreeDataProviderBase
 				databaseName: databaseServer.defaultDatabaseName,
 				userName: databaseServer.loginName,
 				password: '',
-				authenticationType: 'AzureMFA',
+				authenticationType: 'SqlLogin',
 				savePassword: true,
 				groupFullName: '',
 				groupId: '',
 				providerName: 'MSSQL',
 				saveProfile: false,
 				options: {},
-				azureAccount: account.key.accountId
+				azureAccount: account.key.accountId,
+				azureTenantId: databaseServer.tenant,
+				azureResourceId: databaseServer.id,
+				azurePortalEndpoint: account.properties.providerSettings.settings.portalEndpoint
 			},
 			childProvider: 'MSSQL',
 			type: ExtensionNodeType.Server

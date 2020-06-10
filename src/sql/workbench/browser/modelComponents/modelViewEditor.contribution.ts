@@ -10,7 +10,7 @@ import { ModelViewInput } from 'sql/workbench/browser/modelComponents/modelViewI
 import { ModelViewEditor } from 'sql/workbench/browser/modelComponents/modelViewEditor';
 
 // Model View editor registration
-const viewModelEditorDescriptor = new EditorDescriptor(
+const viewModelEditorDescriptor = EditorDescriptor.create(
 	ModelViewEditor,
 	ModelViewEditor.ID,
 	'ViewModel'

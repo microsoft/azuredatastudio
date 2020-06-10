@@ -8,7 +8,7 @@ import * as assert from 'assert';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import {
-	RefreshAction, AddServerAction, DeleteConnectionAction, DisconnectConnectionAction,
+	RefreshAction, EditConnectionAction, AddServerAction, DeleteConnectionAction, DisconnectConnectionAction,
 	ActiveConnectionsFilterAction, RecentConnectionsFilterAction
 }
 	from 'sql/workbench/services/objectExplorer/browser/connectionTreeAction';
@@ -31,9 +31,10 @@ import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/t
 import { UNSAVED_GROUP_ID, mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { $ } from 'vs/base/browser/dom';
 import { OEManageConnectionAction } from 'sql/workbench/contrib/dashboard/browser/dashboardActions';
-import { IViewsService, IView } from 'vs/workbench/common/views';
+import { IViewsService, IView, ViewContainerLocation, ViewContainer } from 'vs/workbench/common/views';
 import { ConsoleLogService } from 'vs/platform/log/common/log';
 import { IProgressIndicator } from 'vs/platform/progress/common/progress';
+import { IPaneComposite } from 'vs/workbench/common/panecomposite';
 
 suite('SQL Connection Tree Action tests', () => {
 	let errorMessageService: TypeMoq.Mock<TestErrorMessageService>;
@@ -68,7 +69,7 @@ suite('SQL Connection Tree Action tests', () => {
 		connectionManagementService.setup(x => x.deleteConnectionGroup(TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
 		connectionManagementService.setup(x => x.deleteConnection(TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
 		connectionManagementService.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => profileToReturn);
-
+		connectionManagementService.setup(x => x.showEditConnectionDialog(TypeMoq.It.isAny())).returns(() => new Promise<void>((resolve, reject) => resolve()));
 		return connectionManagementService;
 	}
 
@@ -110,6 +111,22 @@ suite('SQL Connection Tree Action tests', () => {
 		});
 
 		const viewsService = new class implements IViewsService {
+			getViewProgressIndicator(id: string): IProgressIndicator {
+				throw new Error('Method not implemented.');
+			}
+			onDidChangeViewContainerVisibility: Event<{ id: string; visible: boolean; location: ViewContainerLocation; }>;
+			isViewContainerVisible(id: string): boolean {
+				throw new Error('Method not implemented.');
+			}
+			openViewContainer(id: string, focus?: boolean): Promise<IPaneComposite> {
+				throw new Error('Method not implemented.');
+			}
+			closeViewContainer(id: string): void {
+				throw new Error('Method not implemented.');
+			}
+			getVisibleViewContainer(location: ViewContainerLocation): ViewContainer {
+				throw new Error('Method not implemented.');
+			}
 			getProgressIndicator(id: string): IProgressIndicator {
 				throw new Error('Method not implemented.');
 			}
@@ -527,4 +544,32 @@ suite('SQL Connection Tree Action tests', () => {
 		});
 	});
 
+	test('EditConnectionAction - test if show connection dialog is called', () => {
+		let connectionManagementService = createConnectionManagementService(true, undefined);
+
+		let connection: ConnectionProfile = new ConnectionProfile(capabilitiesService, {
+			connectionName: 'Test',
+			savePassword: false,
+			groupFullName: 'testGroup',
+			serverName: 'testServerName',
+			databaseName: 'testDatabaseName',
+			authenticationType: 'integrated',
+			password: 'test',
+			userName: 'testUsername',
+			groupId: undefined,
+			providerName: mssqlProviderName,
+			options: {},
+			saveProfile: true,
+			id: 'testId'
+		});
+
+		let connectionAction: EditConnectionAction = new EditConnectionAction(EditConnectionAction.ID,
+			EditConnectionAction.LABEL,
+			connection,
+			connectionManagementService.object);
+
+		return connectionAction.run().then((value) => {
+			connectionManagementService.verify(x => x.showEditConnectionDialog(TypeMoq.It.isAny()), TypeMoq.Times.once());
+		});
+	});
 });

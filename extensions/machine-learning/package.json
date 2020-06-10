@@ -1,0 +1,158 @@
+{
+  "name": "machine-learning",
+  "displayName": "%displayName%",
+  "description": "%description%",
+  "version": "0.2.1",
+  "publisher": "Microsoft",
+  "preview": true,
+  "engines": {
+    "vscode": "^1.25.0",
+    "azdata": ">=1.18.0"
+  },
+  "activationEvents": [
+    "onCommand:ml.command.managePackages",
+    "onCommand:ml.command.predictModel",
+    "onCommand:ml.command.importModel",
+    "onDashboardOpen"
+  ],
+  "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
+  "icon": "images/extensionIcon.png",
+  "aiKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e",
+  "main": "./out/main",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/azuredatastudio.git"
+  },
+  "extensionDependencies": [
+    "Microsoft.mssql",
+    "Microsoft.notebook"
+  ],
+  "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "%ml.configuration.title%",
+      "properties": {
+        "machineLearning.enablePython": {
+          "type": "boolean",
+          "default": true,
+          "description": "%ml.enablePython.description%"
+        },
+        "machineLearning.enableR": {
+          "type": "boolean",
+          "default": false,
+          "description": "%ml.enableR.description%"
+        },
+        "machineLearning.pythonPath": {
+          "type": "string",
+          "default": "",
+          "description": "%ml.pythonPath.description%"
+        },
+        "machineLearning.rPath": {
+          "type": "string",
+          "default": "",
+          "description": "%ml.rPath.description%"
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "ml.command.managePackages",
+        "title": "%ml.command.managePackages%",
+        "icon": {
+          "light": "./images/installPackages.svg",
+          "dark": "./images/installPackages.svg"
+        }
+      },
+      {
+        "command": "ml.command.predictModel",
+        "title": "%ml.command.predictModel%",
+        "icon": {
+          "light": "./images/makePredictions.svg",
+          "dark": "./images/makePredictions.svg"
+        }
+      },
+      {
+        "command": "ml.command.manageModels",
+        "title": "%ml.command.manageModels%"
+      },
+      {
+        "command": "ml.command.importModel",
+        "title": "%ml.command.importModel%",
+        "icon": {
+          "light": "./images/registerModel.svg",
+          "dark": "./images/registerModel.svg"
+        }
+      },
+      {
+        "command": "ml.command.dependencies",
+        "title": "%ml.command.dependencies%"
+      },
+      {
+        "command": "ml.command.enableExternalScript",
+        "title": "%ml.command.enableExternalScript%"
+      }
+    ],
+    "dashboard.tabs": [
+      {
+        "id": "mls-dashboard",
+        "description": "%description%",
+        "provider": "MSSQL",
+        "title": "%displayName%",
+        "icon": {
+          "light": "./images/extensionIcon.svg",
+          "dark": "./images/extensionIcon.svg"
+        },
+        "when": "connectionProvider == 'MSSQL' && !mssql:iscloud",
+        "container": {
+          "grid-container": [
+            {
+              "name": "%title.tasks%",
+              "row": 0,
+              "col": 0,
+              "widget": {
+                "tasks-widget": [
+                  "ml.command.managePackages"
+                ]
+              }
+            },
+            {
+              "name": "",
+              "row": 0,
+              "col": 1,
+              "rowspan": 5,
+              "colspan": 5,
+              "widget": {
+                "modelview": {
+                  "id": "mls.dashboard"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "dependencies": {
+    "request": "^2.88.0",
+    "vscode-nls": "^4.0.0",
+    "vscode-languageclient": "^5.3.0-next.1",
+    "@azure/arm-machinelearningservices": "^3.0.0",
+    "polly-js": "^1.6.3"
+  },
+  "devDependencies": {
+    "@types/mocha": "^5.2.5",
+    "@types/node": "^10.14.8",
+    "@types/request": "^2.48.1",
+    "mocha": "^5.2.0",
+    "mocha-junit-reporter": "^1.17.0",
+    "mocha-multi-reporters": "^1.1.7",
+    "should": "^13.2.1",
+    "typemoq": "^2.1.0",
+    "vscodetestcover": "^1.0.9"
+  },
+  "__metadata": {
+    "id": "65",
+    "publisherDisplayName": "Microsoft",
+    "publisherId": "Microsoft"
+  }
+}

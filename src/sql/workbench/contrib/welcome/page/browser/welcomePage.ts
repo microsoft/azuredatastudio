@@ -46,6 +46,7 @@ import { IProductService } from 'vs/platform/product/common/productService';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { joinPath } from 'vs/base/common/resources';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { addStandardDisposableListener, EventHelper } from 'vs/base/browser/dom';
 
 const configurationKey = 'workbench.startupEditor';
 const oldConfigurationKey = 'workbench.welcome.enabled';
@@ -245,6 +246,42 @@ class WelcomePage extends Disposable {
 		if (prodName) {
 			prodName.innerHTML = this.productService.nameLong;
 		}
+
+		const welcomeContainerContainer = document.querySelector('.welcomePageContainer').parentElement as HTMLElement;
+		const adsHomepage = document.querySelector('.ads_homepage') as HTMLElement;
+		adsHomepage.classList.add('responsive-container');
+
+		const observer = new MutationObserver(parseMutations);
+		observer.observe(welcomeContainerContainer, {
+			attributes: true,
+			attributeFilter: ['style']
+		});
+		const defaultBreakpoints = { SM: 480, MD: 640, LG: 1024, XL: 1365 };
+		const startingWidth = parseInt(welcomeContainerContainer.style.width);
+		adsHomepage.classList.add('XS');
+		Object.keys(defaultBreakpoints).forEach(function (breakpoint) {
+			let minWidth = defaultBreakpoints[breakpoint];
+			if (startingWidth >= minWidth) {
+				adsHomepage.classList.add(breakpoint);
+			}
+			else {
+				adsHomepage.classList.remove(breakpoint);
+			}
+		});
+
+		function parseMutations() {
+			const width = parseInt(welcomeContainerContainer.style.width);
+			Object.keys(defaultBreakpoints).forEach(function (breakpoint) {
+				let minWidth = defaultBreakpoints[breakpoint];
+				if (width >= minWidth) {
+					adsHomepage.classList.add(breakpoint);
+				}
+				else {
+					adsHomepage.classList.remove(breakpoint);
+				}
+			});
+		}
+
 		recentlyOpened.then(async ({ workspaces }) => {
 			// Filter out the current workspace
 			workspaces = workspaces.filter(recent => !this.contextService.isCurrentWorkspace(isRecentWorkspace(recent) ? recent.workspace : recent.folderUri));
@@ -279,38 +316,27 @@ class WelcomePage extends Disposable {
 				}
 			}
 		}));
-		this.addVideoImageSource();
 		this.createDropDown();
 		this.createWidePreviewToolTip();
 		this.createPreviewModal();
 	}
 
-	private addVideoImageSource() {
-		const videoIntroduction = document.querySelector('#video_introduction') as HTMLImageElement;
-		const videoOverview = document.querySelector('#video_overview') as HTMLImageElement;
-
-		videoIntroduction.src = require.toUrl('./../../media/video_introduction.png');
-		videoOverview.src = require.toUrl('./../../media/video_overview.png');
-	}
-
 	private createWidePreviewToolTip() {
-		const previewLink = document.querySelector('#preview_link_wide');
-		const tooltip = document.querySelector('#tooltip_text_wide');
+		const previewLink = document.querySelector('#tool_tip_container_wide') as HTMLElement;
+		const tooltip = document.querySelector('#tooltip_text_wide') as HTMLElement;
 		const previewModalBody = document.querySelector('.preview_tooltip_body') as HTMLElement;
 		const previewModalHeader = document.querySelector('.preview_tooltip_header') as HTMLElement;
 
-		previewLink.addEventListener('mouseover', () => {
+		addStandardDisposableListener(previewLink, 'mouseover', () => {
 			tooltip.setAttribute('aria-hidden', 'true');
 			tooltip.classList.toggle('show');
 		});
-		previewLink.addEventListener('mouseout', () => {
+		addStandardDisposableListener(previewLink, 'mouseout', () => {
 			tooltip.setAttribute('aria-hidden', 'false');
 			tooltip.classList.remove('show');
 		});
 
-		previewLink.addEventListener('keydown', (e: KeyboardEvent) => {
-			let event = new StandardKeyboardEvent(e);
-
+		addStandardDisposableListener(previewLink, 'keydown', event => {
 			if (event.equals(KeyCode.Escape)) {
 				if (tooltip.classList.contains('show')) {
 					tooltip.setAttribute('aria-hidden', 'true');
@@ -324,9 +350,7 @@ class WelcomePage extends Disposable {
 			}
 		});
 
-		tooltip.addEventListener('keydown', (e: KeyboardEvent) => {
-			let event = new StandardKeyboardEvent(e);
-
+		addStandardDisposableListener(tooltip, 'keydown', event => {
 			if (event.equals(KeyCode.Escape)) {
 				if (tooltip.classList.contains('show')) {
 					tooltip.setAttribute('aria-hidden', 'true');
@@ -334,8 +358,8 @@ class WelcomePage extends Disposable {
 				}
 			}
 			else if (event.equals(KeyCode.Tab)) {
-				e.preventDefault();
-				if (e.target === previewModalBody) {
+				EventHelper.stop(event);
+				if (event.target === previewModalBody) {
 					previewModalHeader.focus();
 				} else {
 					previewModalBody.focus();
@@ -354,15 +378,14 @@ class WelcomePage extends Disposable {
 	}
 
 	private createDropDown() {
-		const dropdownBtn = document.querySelector('#dropdown_btn');
+		const dropdownBtn = document.querySelector('#dropdown_btn') as HTMLElement;
 		const dropdown = document.querySelector('#dropdown') as HTMLInputElement;
 
-		dropdownBtn.addEventListener('click', () => {
+		addStandardDisposableListener(dropdownBtn, 'click', () => {
 			dropdown.classList.toggle('show');
 		});
 
-		dropdownBtn.addEventListener('keydown', (e: KeyboardEvent) => {
-			let event = new StandardKeyboardEvent(e);
+		addStandardDisposableListener(dropdownBtn, 'keydown', event => {
 			if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
 				const dropdownFirstElement = document.querySelector('#dropdown').firstElementChild.children[0] as HTMLInputElement;
 				dropdown.classList.toggle('show');
@@ -370,8 +393,7 @@ class WelcomePage extends Disposable {
 			}
 		});
 
-		dropdown.addEventListener('keydown', (e: KeyboardEvent) => {
-			let event = new StandardKeyboardEvent(e);
+		addStandardDisposableListener(dropdown, 'keydown', event => {
 			if (event.equals(KeyCode.Escape)) {
 				if (dropdown.classList.contains('show')) {
 					dropdown.classList.remove('show');
@@ -400,16 +422,15 @@ class WelcomePage extends Disposable {
 			}
 		});
 
-		dropdown.addEventListener('keydown', function (e: KeyboardEvent) {
+		addStandardDisposableListener(dropdown, 'keydown', event => {
 			const dropdownLastElement = document.querySelector('#dropdown').lastElementChild.children[0] as HTMLInputElement;
 			const dropdownFirstElement = document.querySelector('#dropdown').firstElementChild.children[0] as HTMLInputElement;
-			let event = new StandardKeyboardEvent(e);
 			if (event.equals(KeyCode.Tab)) {
-				e.preventDefault();
+				EventHelper.stop(event);
 				return;
 			}
 			else if (event.equals(KeyCode.UpArrow) || event.equals(KeyCode.LeftArrow)) {
-				if (e.target === dropdownFirstElement) {
+				if (event.target === dropdownFirstElement) {
 					dropdownLastElement.focus();
 				} else {
 					const movePrev = <HTMLElement>document.querySelector('.move:focus').parentElement.previousElementSibling.children[0] as HTMLElement;
@@ -417,7 +438,7 @@ class WelcomePage extends Disposable {
 				}
 			}
 			else if (event.equals(KeyCode.DownArrow) || event.equals(KeyCode.RightArrow)) {
-				if (e.target === dropdownLastElement) {
+				if (event.target === dropdownLastElement) {
 					dropdownFirstElement.focus();
 				} else {
 					const moveNext = <HTMLElement>document.querySelector('.move:focus').parentElement.nextElementSibling.children[0] as HTMLElement;
@@ -625,40 +646,47 @@ class WelcomePage extends Disposable {
 				description.innerHTML = extension.description;
 				header.innerHTML = extension.name;
 
-				const extensionListContainer = document.querySelector('.extension_pack_extension_list');
-				extensionPackExtensions.forEach((j) => {
-					const outerContainerElem = document.createElement('div');
-					const flexContainerElem = document.createElement('div');
-					const iconContainerElem = document.createElement('img');
-					const descriptionContainerElem = document.createElement('div');
-					const pElem = document.createElement('p');
-					const anchorElem = document.createElement('a');
-
-					const outerContainerClasses = ['extension_pack_extension_container', 'flex', 'flex_j_center'];
-					const flexContainerClasses = ['flex', 'flex_a_center'];
-
-					anchorElem.href = j.link;
-
-					outerContainerElem.classList.add(...outerContainerClasses);
-					flexContainerElem.classList.add(...flexContainerClasses);
-					iconContainerElem.classList.add('icon');
-					pElem.classList.add('extension_pack_extension_list_header');
-					descriptionContainerElem.classList.add('description');
-
-					outerContainerElem.appendChild(flexContainerElem);
-					flexContainerElem.appendChild(iconContainerElem);
-					flexContainerElem.appendChild(descriptionContainerElem);
-					descriptionContainerElem.appendChild(anchorElem);
-					anchorElem.appendChild(pElem);
-
-					pElem.innerText = j.name;
-					iconContainerElem.src = j.icon;
-
-					extensionListContainer.appendChild(outerContainerElem);
-				});
+				this.addExtensionPackList(container, '.extension_pack_extension_list');
 			});
 		}
 	}
+
+	private addExtensionPackList(container: HTMLElement, listSelector: string) {
+		const list = container.querySelector(listSelector);
+		if (list) {
+			extensionPackExtensions.forEach((j) => {
+				const outerContainerElem = document.createElement('div');
+				const flexContainerElem = document.createElement('div');
+				const iconContainerElem = document.createElement('img');
+				const descriptionContainerElem = document.createElement('div');
+				const pElem = document.createElement('p');
+				const anchorElem = document.createElement('a');
+
+				const outerContainerClasses = ['extension_pack_extension_container', 'flex', 'flex_j_center'];
+				const flexContainerClasses = ['flex', 'flex_a_center'];
+
+				anchorElem.href = j.link;
+
+				outerContainerElem.classList.add(...outerContainerClasses);
+				flexContainerElem.classList.add(...flexContainerClasses);
+				iconContainerElem.classList.add('icon');
+				pElem.classList.add('extension_pack_extension_list_header');
+				descriptionContainerElem.classList.add('description');
+
+				outerContainerElem.appendChild(flexContainerElem);
+				flexContainerElem.appendChild(iconContainerElem);
+				flexContainerElem.appendChild(descriptionContainerElem);
+				descriptionContainerElem.appendChild(anchorElem);
+				anchorElem.appendChild(pElem);
+
+				pElem.innerText = j.name;
+				iconContainerElem.src = j.icon;
+
+				list.appendChild(outerContainerElem);
+			});
+		}
+	}
+
 
 	private installExtension(extensionSuggestion: ExtensionSuggestion): void {
 		/* __GDPR__FRAGMENT__

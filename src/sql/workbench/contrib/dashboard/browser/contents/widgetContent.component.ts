@@ -76,7 +76,7 @@ export class WidgetContent extends AngularDisposable implements AfterViewInit {
 	@Input() private widgets: WidgetConfig[];
 	@Input() private originalConfig: WidgetConfig[];
 	@Input() private context: string;
-	@Input() private scrollContent = true;
+	@Input() private scrollContent = false;
 
 	private _scrollableElement: ScrollableElement;
 
@@ -104,7 +104,7 @@ export class WidgetContent extends AngularDisposable implements AfterViewInit {
 		'auto_resize': false,       //  Automatically set col_width/row_height so that max_cols/max_rows fills the screen. Only has effect is max_cols or max_rows is set
 		'maintain_ratio': false,    //  Attempts to maintain aspect ratio based on the colWidth/rowHeight values set in the config
 		'prefer_new': false,        //  When adding new items, will use that items position ahead of existing items
-		'limit_to_screen': true,   //  When resizing the screen, with this true and auto_resize false, the grid will re-arrange to fit the screen size. Please note, at present this only works with cascade direction up.
+		'limit_to_screen': false,   //  When resizing the screen, with this true and auto_resize false, the grid will re-arrange to fit the screen size. Please note, at present this only works with cascade direction up.
 	};
 
 	private _editDispose: Array<IDisposable> = [];

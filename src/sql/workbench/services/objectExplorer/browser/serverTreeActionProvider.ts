@@ -9,7 +9,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 import {
-	DisconnectConnectionAction, AddServerAction,
+	DisconnectConnectionAction, AddServerAction, EditConnectionAction,
 	DeleteConnectionAction, RefreshAction, EditServerGroupAction
 } from 'sql/workbench/services/objectExplorer/browser/connectionTreeAction';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
@@ -129,6 +129,7 @@ export class ServerTreeActionProvider {
 		if (this._connectionManagementService.isProfileConnected(context.profile)) {
 			actions.push(this._instantiationService.createInstance(DisconnectConnectionAction, DisconnectConnectionAction.ID, DisconnectConnectionAction.LABEL, context.profile));
 		}
+		actions.push(this._instantiationService.createInstance(EditConnectionAction, EditConnectionAction.ID, EditConnectionAction.LABEL, context.profile));
 		actions.push(this._instantiationService.createInstance(DeleteConnectionAction, DeleteConnectionAction.ID, DeleteConnectionAction.DELETE_CONNECTION_LABEL, context.profile));
 
 		// Contribute refresh action for scriptable objects via contribution

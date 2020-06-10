@@ -88,6 +88,7 @@ export class OutputViewPane extends ViewPane {
 	}
 
 	renderBody(container: HTMLElement): void {
+		super.renderBody(container);
 		this.editor.create(container);
 		addClass(container, 'output-view');
 		const codeEditor = <ICodeEditor>this.editor.getControl();
@@ -117,6 +118,7 @@ export class OutputViewPane extends ViewPane {
 	}
 
 	layoutBody(height: number, width: number): void {
+		super.layoutBody(height, width);
 		this.editor.layout({ height, width });
 	}
 
@@ -278,7 +280,7 @@ class SwitchOutputActionViewItem extends SelectActionViewItem {
 		@IThemeService private readonly themeService: IThemeService,
 		@IContextViewService contextViewService: IContextViewService
 	) {
-		super(null, action, [], 0, contextViewService, { ariaLabel: nls.localize('outputChannels', 'Output Channels.') });
+		super(null, action, [], 0, contextViewService, { ariaLabel: nls.localize('outputChannels', 'Output Channels.'), optionsAsChildren: true });
 
 		let outputChannelRegistry = Registry.as<IOutputChannelRegistry>(Extensions.OutputChannels);
 		this._register(outputChannelRegistry.onDidRegisterChannel(() => this.updateOtions()));

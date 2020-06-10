@@ -1,0 +1,15 @@
+name: Copycat
+description: Copy all new issues to a different repo
+inputs:
+  token:
+    description: GitHub token with issue, comment, and label read/write permissions to both repos
+    default: ${{ github.token }}
+  owner:
+    description: account/organization that owns the destination repo (the microsoft part of microsoft/vscode)
+    required: true
+  repo:
+    description: name of the destination repo (the vscode part of microsoft/vscode)
+    required: true
+runs:
+  using: 'node12'
+  main: 'index.js'

@@ -9,16 +9,56 @@ import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
 import { IExtensionPointUser, ExtensionsRegistry } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 
-import { ProviderProperties } from 'sql/workbench/contrib/dashboard/browser/widgets/properties/propertiesWidget.component';
 import { DATABASE_DASHBOARD_TABS } from 'sql/workbench/contrib/dashboard/browser/pages/databaseDashboardPage.contribution';
 import { SERVER_DASHBOARD_TABS } from 'sql/workbench/contrib/dashboard/browser/pages/serverDashboardPage.contribution';
 import { DASHBOARD_CONFIG_ID, DASHBOARD_TABS_KEY_PROPERTY } from 'sql/workbench/contrib/dashboard/browser/pages/dashboardPageContribution';
 import { find } from 'vs/base/common/arrays';
 import { IDashboardTab, IDashboardTabGroup } from 'sql/workbench/services/dashboard/browser/common/interfaces';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export const Extensions = {
 	DashboardContributions: 'dashboard.contributions'
 };
+
+export interface ServerInfo {
+	[key: string]: any;
+}
+
+export interface PropertiesConfig {
+	properties: Array<Property>;
+}
+
+export interface FlavorProperties {
+	flavor: string;
+	condition?: ConditionProperties;
+	conditions?: Array<ConditionProperties>;
+	databaseProperties: Array<Property>;
+	serverProperties: Array<Property>;
+	databasesListProperties?: Array<ObjectListViewProperty>;
+	objectsListProperties?: Array<ObjectListViewProperty>;
+}
+
+export interface ConditionProperties {
+	field: string;
+	operator: '==' | '<=' | '>=' | '!=';
+	value: string | boolean;
+}
+
+export interface ProviderProperties {
+	provider: string;
+	flavors: Array<FlavorProperties>;
+}
+
+export interface Property {
+	displayName: string;
+	value: string;
+	ignore?: Array<string>;
+	default?: string;
+}
+
+export interface ObjectListViewProperty extends Property {
+	widthWeight?: number;
+}
 
 export interface IDashboardRegistry {
 	registerDashboardProvider(id: string, properties: ProviderProperties): void;
@@ -27,6 +67,84 @@ export interface IDashboardRegistry {
 	registerTabGroup(tabGroup: IDashboardTabGroup): void;
 	tabs: Array<IDashboardTab>;
 	tabGroups: Array<IDashboardTabGroup>;
+}
+
+export function getFlavor(serverInfo: ServerInfo, logService: ILogService, provider: string): FlavorProperties | undefined {
+	const dashboardRegistry = Registry.as<IDashboardRegistry>(Extensions.DashboardContributions);
+	const providerProperties = dashboardRegistry.getProperties(provider);
+
+	if (!providerProperties) {
+		logService.error('No property definitions found for provider', provider);
+		return undefined;
+	}
+
+	let flavor: FlavorProperties;
+
+	// find correct flavor
+	if (providerProperties.flavors.length === 1) {
+		flavor = providerProperties.flavors[0];
+	} else if (providerProperties.flavors.length === 0) {
+		logService.error('No flavor definitions found for "', provider,
+			'. If there are not multiple flavors of this provider, add one flavor without a condition');
+		return undefined;
+	} else {
+		const flavorArray = providerProperties.flavors.filter((item) => {
+
+			// For backward compatibility we are supporting array of conditions and single condition.
+			// If nothing is specified, we return false.
+			if (item.conditions) {
+				let conditionResult = true;
+				for (let i = 0; i < item.conditions.length; i++) {
+					conditionResult = conditionResult && getConditionResult(logService, serverInfo, item, item.conditions[i]);
+				}
+
+				return conditionResult;
+			}
+			else if (item.condition) {
+				return getConditionResult(logService, serverInfo, item, item.condition);
+			}
+			else {
+				logService.error('No condition was specified.');
+				return false;
+			}
+		});
+
+		if (flavorArray.length === 0) {
+			logService.error('Could not determine flavor');
+			return undefined;
+		} else if (flavorArray.length > 1) {
+			logService.error('Multiple flavors matched correctly for this provider', provider);
+			return undefined;
+		}
+
+		flavor = flavorArray[0];
+	}
+	return flavor;
+}
+
+function getConditionResult(logService: ILogService, serverInfo: ServerInfo, item: FlavorProperties, conditionItem: ConditionProperties): boolean {
+	let condition = serverInfo[conditionItem.field];
+
+	// If we need to compare strings, then we should ensure that condition is string
+	// Otherwise tripple equals/unequals would return false values
+	if (typeof conditionItem.value === 'string') {
+		condition = condition.toString();
+	}
+
+	switch (conditionItem.operator) {
+		case '==':
+			return condition === conditionItem.value;
+		case '!=':
+			return condition !== conditionItem.value;
+		case '>=':
+			return condition >= conditionItem.value;
+		case '<=':
+			return condition <= conditionItem.value;
+		default:
+			logService.error('Could not parse operator: "', conditionItem.operator,
+				'" on item "', item, '"');
+			return false;
+	}
 }
 
 class DashboardRegistry implements IDashboardRegistry {

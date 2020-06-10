@@ -20,10 +20,10 @@ export class CollapseComponent extends CellView implements OnInit, OnChanges {
 	@ViewChild('collapseCellButton', { read: ElementRef }) private collapseCellButtonElement: ElementRef;
 
 	private readonly expandButtonTitle = localize('expandCellContents', "Expand code cell contents");
-	private readonly expandButtonClass = 'icon-show-cell';
+	private readonly expandButtonClass = 'arrow-down';
 
 	private readonly collapseButtonTitle = localize('collapseCellContents', "Collapse code cell contents");
-	private readonly collapseButtonClass = 'icon-hide-cell';
+	private readonly collapseButtonClass = 'arrow-up';
 
 	@Input() cellModel: ICellModel;
 	@Input() activeCellId: string;

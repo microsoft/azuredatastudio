@@ -141,7 +141,7 @@ export class RestoreDialog extends Modal {
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super(localize('RestoreDialogTitle', "Restore database"), TelemetryKeys.Restore, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { hasErrors: true, isWide: true, hasSpinner: true });
+		super(localize('RestoreDialogTitle', "Restore database"), TelemetryKeys.Restore, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { hasErrors: true, width: 'wide', hasSpinner: true });
 		this._restoreTitle = localize('restoreDialog.restoreTitle', "Restore database");
 		this._databaseTitle = localize('restoreDialog.database', "Database");
 		this._backupFileTitle = localize('restoreDialog.backupFile', "Backup file");
@@ -379,8 +379,8 @@ export class RestoreDialog extends Modal {
 			}
 		});
 
-		this._restorePlanTable.grid.onKeyDown.subscribe((e: KeyboardEvent) => {
-			let event = new StandardKeyboardEvent(e);
+		this._restorePlanTable.grid.onKeyDown.subscribe(e => {
+			let event = new StandardKeyboardEvent(<unknown>e as KeyboardEvent);
 			if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
 				this._destinationRestoreToInputBox.isEnabled() ? this._destinationRestoreToInputBox.focus() : this._databaseDropdown.focus();
 				e.stopImmediatePropagation();
@@ -390,8 +390,8 @@ export class RestoreDialog extends Modal {
 			}
 		});
 
-		this._fileListTable.grid.onKeyDown.subscribe((e: KeyboardEvent) => {
-			let event = new StandardKeyboardEvent(e);
+		this._fileListTable.grid.onKeyDown.subscribe(e => {
+			let event = new StandardKeyboardEvent(<unknown>e as KeyboardEvent);
 			if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
 				if ((<InputBox>this._optionsMap[this._relocatedLogFileFolderOption]).isEnabled()) {
 					(<InputBox>this._optionsMap[this._relocatedLogFileFolderOption]).focus();

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-"use strict";
+'use strict';
 
 let del = require('del');
 let gulp = require('gulp');
@@ -24,11 +24,10 @@ gulp.task('clean', function (done) {
 
 gulp.task('lint', () => {
 	return gulp.src([
-		config.paths.project.root + '/src/**/*.ts',
-		config.paths.project.root + '/test/**/*.ts'
+		config.paths.project.root + '/src/**/*.ts'
 	])
 		.pipe((tslint({
-			formatter: "verbose"
+			formatter: 'verbose'
 		})))
 		.pipe(tslint.report());
 });
@@ -55,69 +54,20 @@ gulp.task('compile:src', function (done) {
 				process.exit(1);
 			}
 		})
-		// TODO: Reinstate localization code
-		// .pipe(nls.rewriteLocalizeCalls())
-		// .pipe(nls.createAdditionalLanguageFiles(nls.coreLanguages, config.paths.project.root + '/localization/i18n', undefined, false))
-		.pipe(srcmap.write('.', { sourceRoot: function (file) { return file.cwd + '/src'; } }))
+		.pipe(srcmap.write('.', {
+			sourceRoot: function (file) {
+				return file.cwd + '/src';
+			}
+		}))
 		.pipe(gulp.dest('out/src/'));
 });
 
-gulp.task('compile:test', function (done) {
-	let srcFiles = [
-		config.paths.project.root + '/test/**/*.ts',
-		config.paths.project.root + '/typings/**/*.ts'
-	];
-
-	return gulp.src(srcFiles)
-		.pipe(srcmap.init())
-		.pipe(tsProject())
-		.on('error', function () {
-			if (process.env.BUILDMACHINE) {
-				done('Failed to compile test source, see above.');
-				process.exit(1);
-			}
-		})
-		.pipe(srcmap.write('.', { sourceRoot: function (file) { return file.cwd + '/test'; } }))
-		.pipe(gulp.dest('out/test/'));
-});
-
 // COMPOSED GULP TASKS /////////////////////////////////////////////////////
-gulp.task("compile", gulp.series("compile:src", "compile:test"));
+gulp.task('compile', gulp.series('compile:src'));
 
-gulp.task("build", gulp.series("clean", "lint", "compile"));
+gulp.task('build', gulp.series('clean', 'lint', 'compile'));
 
-gulp.task("watch", function () {
-	gulp.watch([config.paths.project.root + '/src/**/*',
-	config.paths.project.root + '/test/**/*.ts'],
+gulp.task('watch', function () {
+	gulp.watch([config.paths.project.root + '/src/**/*'],
 		gulp.series('build'));
-});
-
-gulp.task('test', (done) => {
-	let workspace = process.env['WORKSPACE'];
-	if (!workspace) {
-		workspace = process.cwd();
-	}
-	process.env.JUNIT_REPORT_PATH = workspace + '/test-reports/ext_xunit.xml';
-
-	let azuredatastudioPath = 'azuredatastudio';
-	if (process.env['SQLOPS_DEV']) {
-		let suffix = os.platform === 'win32' ? 'bat' : 'sh';
-		azuredatastudioPath = `${process.env['SQLOPS_DEV']}/scripts/sql-cli.${suffix}`;
-	}
-	console.log(`Using SQLOPS Path of ${azuredatastudioPath}`);
-
-	cproc.exec(`${azuredatastudioPath} --extensionDevelopmentPath="${workspace}" --extensionTestsPath="${workspace}/out/test" --verbose`, (error, stdout, stderr) => {
-		if (error) {
-			console.error(`exec error: ${error}`);
-			process.exit(1);
-		}
-		console.log(`stdout: ${stdout}`);
-		console.log(`stderr: ${stderr}`);
-		done();
-	});
-});
-
-gulp.task('copytypings', function () {
-	return gulp.src(config.paths.project.root + '/../../src/sql/azdata.proposed.d.ts')
-		.pipe(gulp.dest('typings/'));
 });

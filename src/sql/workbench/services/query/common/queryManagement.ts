@@ -13,10 +13,23 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { keys } from 'vs/base/common/map';
 import { assign } from 'vs/base/common/objects';
 import { IAdsTelemetryService, ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
+import EditQueryRunner from 'sql/workbench/services/editData/common/editQueryRunner';
+import { IRange, Range } from 'vs/editor/common/core/range';
+import { ResultSetSubset } from 'sql/workbench/services/query/common/query';
+import { isUndefined } from 'vs/base/common/types';
 
 export const SERVICE_ID = 'queryManagementService';
 
 export const IQueryManagementService = createDecorator<IQueryManagementService>(SERVICE_ID);
+
+export interface QueryCancelResult {
+	messages: string;
+}
+
+export interface ExecutionPlanOptions {
+	displayEstimatedQueryPlan?: boolean;
+	displayActualQueryPlan?: boolean;
+}
 
 export interface IQueryManagementService {
 	_serviceBrand: undefined;
@@ -28,13 +41,13 @@ export interface IQueryManagementService {
 	getRegisteredProviders(): string[];
 	registerRunner(runner: QueryRunner, uri: string): void;
 
-	cancelQuery(ownerUri: string): Promise<azdata.QueryCancelResult>;
-	runQuery(ownerUri: string, selection: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Promise<void>;
+	cancelQuery(ownerUri: string): Promise<QueryCancelResult>;
+	runQuery(ownerUri: string, range: IRange, runOptions?: ExecutionPlanOptions): Promise<void>;
 	runQueryStatement(ownerUri: string, line: number, column: number): Promise<void>;
 	runQueryString(ownerUri: string, queryString: string): Promise<void>;
 	runQueryAndReturn(ownerUri: string, queryString: string): Promise<azdata.SimpleExecuteResult>;
 	parseSyntax(ownerUri: string, query: string): Promise<azdata.SyntaxParseResult>;
-	getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Promise<azdata.QueryExecuteSubsetResult>;
+	getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Promise<ResultSetSubset>;
 	disposeQuery(ownerUri: string): Promise<void>;
 	saveResults(requestParams: azdata.SaveResultsRequestParams): Promise<azdata.SaveResultRequestResult>;
 	setQueryExecutionOptions(uri: string, options: azdata.QueryExecutionOptions): Promise<void>;
@@ -67,7 +80,7 @@ export interface IQueryManagementService {
  */
 export interface IQueryRequestHandler {
 	cancelQuery(ownerUri: string): Promise<azdata.QueryCancelResult>;
-	runQuery(ownerUri: string, selection: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Promise<void>;
+	runQuery(ownerUri: string, selection: azdata.ISelectionData, runOptions?: ExecutionPlanOptions): Promise<void>;
 	runQueryStatement(ownerUri: string, line: number, column: number): Promise<void>;
 	runQueryString(ownerUri: string, queryString: string): Promise<void>;
 	runQueryAndReturn(ownerUri: string, queryString: string): Promise<azdata.SimpleExecuteResult>;
@@ -129,7 +142,7 @@ export class QueryManagementService implements IQueryManagementService {
 	// Handles logic to run the given handlerCallback at the appropriate time. If the given runner is
 	// undefined, the handlerCallback is put on the _handlerCallbackQueue to be run once the runner is set
 	// public for testing only
-	private enqueueOrRun(handlerCallback: (runnerParam: QueryRunner) => void, runner: QueryRunner): void {
+	private enqueueOrRun(handlerCallback: (runnerParam: QueryRunner) => void, runner?: QueryRunner): void {
 		if (runner === undefined) {
 			this._handlerCallbackQueue.push(handlerCallback);
 		} else {
@@ -137,9 +150,9 @@ export class QueryManagementService implements IQueryManagementService {
 		}
 	}
 
-	private _notify(ownerUri: string, sendNotification: (runner: QueryRunner) => void): void {
+	private _notify(ownerUri: string, sendNotification: (runner: QueryRunner | EditQueryRunner) => void): void {
 		let runner = this._queryRunners.get(ownerUri);
-		this.enqueueOrRun(sendNotification, runner!);
+		this.enqueueOrRun(sendNotification, runner);
 	}
 
 	public addQueryRequestHandler(queryType: string, handler: IQueryRequestHandler): IDisposable {
@@ -165,7 +178,7 @@ export class QueryManagementService implements IQueryManagementService {
 		return Array.from(keys(this._requestHandlers));
 	}
 
-	private addTelemetry(eventName: string, ownerUri: string, runOptions?: azdata.ExecutionPlanOptions): void {
+	private addTelemetry(eventName: string, ownerUri: string, runOptions?: ExecutionPlanOptions): void {
 		const providerId: string = this._connectionService.getProviderIdFromUri(ownerUri);
 		const data: ITelemetryEventProperties = {
 			provider: providerId,
@@ -197,51 +210,59 @@ export class QueryManagementService implements IQueryManagementService {
 		}
 	}
 
-	public cancelQuery(ownerUri: string): Promise<azdata.QueryCancelResult> {
+	public cancelQuery(ownerUri: string): Promise<QueryCancelResult> {
 		this.addTelemetry(TelemetryKeys.CancelQuery, ownerUri);
 		return this._runAction(ownerUri, (runner) => {
 			return runner.cancelQuery(ownerUri);
 		});
 	}
-	public runQuery(ownerUri: string, selection: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Promise<void> {
+
+	public runQuery(ownerUri: string, range?: IRange, runOptions?: ExecutionPlanOptions): Promise<void> {
 		this.addTelemetry(TelemetryKeys.RunQuery, ownerUri, runOptions);
 		return this._runAction(ownerUri, (runner) => {
-			return runner.runQuery(ownerUri, selection, runOptions);
+			return runner.runQuery(ownerUri, rangeToSelectionData(range), runOptions);
 		});
 	}
+
 	public runQueryStatement(ownerUri: string, line: number, column: number): Promise<void> {
 		this.addTelemetry(TelemetryKeys.RunQueryStatement, ownerUri);
 		return this._runAction(ownerUri, (runner) => {
-			return runner.runQueryStatement(ownerUri, line, column);
+			return runner.runQueryStatement(ownerUri, line - 1, column - 1); // we are taking in a vscode IRange which is 1 indexed, but our api expected a 0 index
 		});
 	}
+
 	public runQueryString(ownerUri: string, queryString: string): Promise<void> {
 		this.addTelemetry(TelemetryKeys.RunQueryString, ownerUri);
 		return this._runAction(ownerUri, (runner) => {
 			return runner.runQueryString(ownerUri, queryString);
 		});
 	}
+
 	public runQueryAndReturn(ownerUri: string, queryString: string): Promise<azdata.SimpleExecuteResult> {
 		return this._runAction(ownerUri, (runner) => {
 			return runner.runQueryAndReturn(ownerUri, queryString);
 		});
 	}
+
 	public parseSyntax(ownerUri: string, query: string): Promise<azdata.SyntaxParseResult> {
 		return this._runAction(ownerUri, (runner) => {
 			return runner.parseSyntax(ownerUri, query);
 		});
 	}
-	public getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Promise<azdata.QueryExecuteSubsetResult> {
+
+	public async getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Promise<ResultSetSubset> {
 		return this._runAction(rowData.ownerUri, (runner) => {
-			return runner.getQueryRows(rowData);
+			return runner.getQueryRows(rowData).then(r => r.resultSubset);
 		});
 	}
+
 	public disposeQuery(ownerUri: string): Promise<void> {
 		this._queryRunners.delete(ownerUri);
 		return this._runAction(ownerUri, (runner) => {
 			return runner.disposeQuery(ownerUri);
 		});
 	}
+
 	public setQueryExecutionOptions(ownerUri: string, options: azdata.QueryExecutionOptions): Promise<void> {
 		return this._runAction(ownerUri, (runner) => {
 			return runner.setQueryExecutionOptions(ownerUri, options);
@@ -256,38 +277,41 @@ export class QueryManagementService implements IQueryManagementService {
 
 	public onQueryComplete(result: azdata.QueryExecuteCompleteNotificationResult): void {
 		this._notify(result.ownerUri, (runner: QueryRunner) => {
-			runner.handleQueryComplete(result);
+			runner.handleQueryComplete(result.batchSummaries.map(s => ({ ...s, range: selectionDataToRange(s.selection) })));
 		});
 	}
+
 	public onBatchStart(batchInfo: azdata.QueryExecuteBatchNotificationParams): void {
 		this._notify(batchInfo.ownerUri, (runner: QueryRunner) => {
-			runner.handleBatchStart(batchInfo);
+			runner.handleBatchStart({ ...batchInfo.batchSummary, range: selectionDataToRange(batchInfo.batchSummary.selection) });
 		});
 	}
 
 	public onBatchComplete(batchInfo: azdata.QueryExecuteBatchNotificationParams): void {
 		this._notify(batchInfo.ownerUri, (runner: QueryRunner) => {
-			runner.handleBatchComplete(batchInfo);
+			runner.handleBatchComplete({ range: selectionDataToRange(batchInfo.batchSummary.selection), ...batchInfo.batchSummary });
 		});
 	}
 
 	public onResultSetAvailable(resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void {
 		this._notify(resultSetInfo.ownerUri, (runner: QueryRunner) => {
-			runner.handleResultSetAvailable(resultSetInfo);
+			runner.handleResultSetAvailable(resultSetInfo.resultSetSummary);
 		});
 	}
 
 	public onResultSetUpdated(resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void {
 		this._notify(resultSetInfo.ownerUri, (runner: QueryRunner) => {
-			runner.handleResultSetUpdated(resultSetInfo);
+			runner.handleResultSetUpdated(resultSetInfo.resultSetSummary);
 		});
 	}
 
 	public onMessage(messagesMap: Map<string, azdata.QueryExecuteMessageParams[]>): void {
 		for (const [uri, messages] of messagesMap) {
-			this._notify(uri, (runner: QueryRunner) => {
-				runner.handleMessage(messages);
-			});
+			if (messages) {
+				this._notify(uri, (runner: QueryRunner) => {
+					runner.handleMessage(messages.map(m => m.message));
+				});
+			}
 		}
 	}
 
@@ -299,8 +323,8 @@ export class QueryManagementService implements IQueryManagementService {
 	}
 
 	public onEditSessionReady(ownerUri: string, success: boolean, message: string): void {
-		this._notify(ownerUri, (runner: QueryRunner) => {
-			runner.handleEditSessionReady(ownerUri, success, message);
+		this._notify(ownerUri, runner => {
+			(runner as EditQueryRunner).handleEditSessionReady(ownerUri, success, message);
 		});
 	}
 
@@ -351,4 +375,12 @@ export class QueryManagementService implements IQueryManagementService {
 			return runner.getEditRows(rowData);
 		});
 	}
+}
+
+function selectionDataToRange(selection?: azdata.ISelectionData): IRange | undefined {
+	return isUndefined(selection) ? undefined : new Range(selection.startLine + 1, selection.startColumn + 1, selection.endLine + 1, selection.endColumn + 1);
+}
+
+function rangeToSelectionData(range?: IRange): azdata.ISelectionData | undefined {
+	return isUndefined(range) ? undefined : { startLine: range.startLineNumber - 1, startColumn: range.startColumn - 1, endLine: range.endLineNumber - 1, endColumn: range.endColumn - 1 };
 }

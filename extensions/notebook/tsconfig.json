@@ -1,6 +1,7 @@
 {
 	"extends": "../shared.tsconfig.json",
 	"compilerOptions": {
+		"experimentalDecorators": true,
 		"lib": [
 			"dom"
 		],

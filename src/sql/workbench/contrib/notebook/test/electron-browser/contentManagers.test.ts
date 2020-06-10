@@ -131,4 +131,12 @@ suite('Local Content Manager', function (): void {
 		let displayOutput = <nb.IDisplayData>notebook.cells[0].outputs[0];
 		assert.equal(displayOutput.data['text/html'], '<div></div>');
 	});
+	test('Should create a new empty notebook if content is undefined', async function (): Promise<void> {
+		// verify that when loading content from an empty string or undefined, a new notebook is created.
+		let content = await contentManager.loadFromContentString('');
+		assert.equal(content.cells.length, 0);
+
+		content = await contentManager.loadFromContentString(undefined);
+		assert.equal(content.cells.length, 0);
+	});
 });

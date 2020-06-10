@@ -80,7 +80,7 @@ export class SimpleWebServer {
 				reject(new Error('Server closed'));
 			});
 
-			this.server.listen(0);
+			this.server.listen(0, '127.0.0.1');
 		});
 
 		const clearPortTimeout = () => {

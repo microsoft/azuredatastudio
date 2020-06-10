@@ -19,6 +19,7 @@ import { KeybindingsEditor } from './keybindings';
 import { Editors } from './editors';
 import { Code } from './code';
 import { Terminal } from './terminal';
+import { Notebook } from './notebook';
 
 // {{SQL CARBON EDIT}}
 import { ConnectionDialog } from './sql/connectionDialog';
@@ -48,6 +49,7 @@ export class Workbench {
 	readonly settingsEditor: SettingsEditor;
 	readonly keybindingsEditor: KeybindingsEditor;
 	readonly terminal: Terminal;
+	readonly notebook: Notebook;
 
 	// {{SQL CARBON EDIT}}
 	readonly connectionDialog: ConnectionDialog;
@@ -75,8 +77,9 @@ export class Workbench {
 		// {{SQL CARBON EDIT}}
 		this.connectionDialog = new ConnectionDialog(code);
 		this.profiler = new Profiler(code, this.quickaccess);
-		this.queryEditors = new QueryEditors(code);
+		this.queryEditors = new QueryEditors(code, this.editors);
 		this.queryEditor = new QueryEditor(code);
 		// {{END}}
+		this.notebook = new Notebook(this.quickaccess, code);
 	}
 }

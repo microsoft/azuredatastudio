@@ -6,6 +6,7 @@
 import * as glob from 'vs/base/common/glob';
 import { URI } from 'vs/base/common/uri';
 import { basename } from 'vs/base/common/resources';
+import { INotebookKernelInfoDto } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 
 export interface NotebookSelector {
 	readonly filenamePattern?: string;
@@ -17,15 +18,22 @@ export class NotebookProviderInfo {
 	readonly id: string;
 	readonly displayName: string;
 	readonly selector: readonly NotebookSelector[];
+	readonly providerDisplayName: string;
+	readonly providerExtensionLocation: URI;
+	kernel?: INotebookKernelInfoDto;
 
 	constructor(descriptor: {
 		readonly id: string;
 		readonly displayName: string;
 		readonly selector: readonly NotebookSelector[];
+		readonly providerDisplayName: string;
+		readonly providerExtensionLocation: URI;
 	}) {
 		this.id = descriptor.id;
 		this.displayName = descriptor.displayName;
 		this.selector = descriptor.selector;
+		this.providerDisplayName = descriptor.providerDisplayName;
+		this.providerExtensionLocation = descriptor.providerExtensionLocation;
 	}
 
 	matches(resource: URI): boolean {

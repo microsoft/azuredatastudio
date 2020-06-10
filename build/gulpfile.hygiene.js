@@ -35,7 +35,7 @@ const all = [
 	'test/**/*',
 	'!test/**/out/**',
 	'!**/node_modules/**',
-	'!build/actions/**/dist/*' // {{ SQL CARBON EDIT }}
+	'!build/actions/**/*.js' // {{ SQL CARBON EDIT }}
 ];
 
 const indentationFilter = [
@@ -60,6 +60,7 @@ const indentationFilter = [
 	// except specific folders
 	'!test/automation/out/**',
 	'!test/smoke/out/**',
+	'!extensions/typescript-language-features/test-workspace/**',
 	'!extensions/vscode-api-tests/testWorkspace/**',
 	'!extensions/vscode-api-tests/testWorkspace2/**',
 	'!build/monaco/**',
@@ -67,7 +68,6 @@ const indentationFilter = [
 
 	// except multiple specific files
 	'!**/package.json',
-	'!**/package-lock.json', // {{SQL CARBON EDIT}}
 	'!**/yarn.lock',
 	'!**/yarn-error.log',
 
@@ -86,7 +86,7 @@ const indentationFilter = [
 	'!src/typings/**/*.d.ts',
 	'!extensions/**/*.d.ts',
 	'!**/*.{svg,exe,png,bmp,scpt,bat,cmd,cur,ttf,woff,eot,md,ps1,template,yaml,yml,d.ts.recipe,ico,icns,plist}',
-	'!build/{lib,download}/**/*.js',
+	'!build/{lib,download,darwin}/**/*.js',
 	'!build/**/*.sh',
 	'!build/azure-pipelines/**/*.js',
 	'!build/azure-pipelines/**/*.config',
@@ -96,7 +96,7 @@ const indentationFilter = [
 	'!**/*.dockerfile',
 	'!extensions/markdown-language-features/media/*.js',
 	// {{SQL CARBON EDIT}}
-	'!build/actions/**/dist/*',
+	'!build/actions/**/*.js',
 	'!**/*.{xlf,docx,sql,vsix,bacpac,ipynb,jpg}',
 	'!extensions/mssql/sqltoolsservice/**',
 	'!extensions/import/flatfileimportservice/**',
@@ -104,6 +104,12 @@ const indentationFilter = [
 	'!extensions/resource-deployment/notebooks/**',
 	'!extensions/mssql/notebooks/**',
 	'!extensions/integration-tests/testData/**',
+	'!extensions/arc/src/controller/generated/**',
+	'!extensions/sql-database-projects/resources/templates/*.xml',
+	'!extensions/sql-database-projects/src/test/baselines/*.xml',
+	'!extensions/sql-database-projects/src/test/baselines/*.json',
+	'!extensions/sql-database-projects/src/test/baselines/*.sqlproj',
+	'!extensions/sql-database-projects/BuildDirectory/SystemDacpacs/**',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts',
 	'!**/*.patch',
@@ -420,7 +426,7 @@ function createGitIndexVinyls(paths) {
 				return e(err);
 			}
 
-			cp.exec(`git show ":${relativePath}"`, { maxBuffer: 2000 * 1024, encoding: 'buffer' }, (err, out) => {
+			cp.exec(`git show :${relativePath}`, { maxBuffer: 2000 * 1024, encoding: 'buffer' }, (err, out) => {
 				if (err) {
 					return e(err);
 				}

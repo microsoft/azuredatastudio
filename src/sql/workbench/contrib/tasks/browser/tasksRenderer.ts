@@ -103,11 +103,18 @@ export class TaskHistoryRenderer implements IRenderer {
 			templateData.label.textContent = element.taskName + ' ' + taskStatus;
 			templateData.label.title = templateData.label.textContent;
 
+			let description: string;
 			// Determine the target name and set hover text equal to that
-			let description = element.serverName;
-			if (element.databaseName) {
-				description += ' | ' + element.databaseName;
+			// show target location if there is one, otherwise show server and database name
+			if (element.targetLocation) {
+				description = element.targetLocation;
+			} else {
+				description = element.serverName;
+				if (element.databaseName) {
+					description += ' | ' + element.databaseName;
+				}
 			}
+
 			templateData.description.textContent = description;
 			templateData.description.title = templateData.description.textContent;
 

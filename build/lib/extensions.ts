@@ -221,6 +221,7 @@ const excludedExtensions = [
 	'vscode-test-resolver',
 	'ms-vscode.node-debug',
 	'ms-vscode.node-debug2',
+	'vscode-notebook-tests',
 	'integration-tests', // {{SQL CARBON EDIT}}
 ];
 
@@ -232,6 +233,7 @@ const externalExtensions = [
 	// Any extension not included here will be installed by default.
 	'admin-tool-ext-win',
 	'agent',
+	'arc',
 	'import',
 	'profiler',
 	'admin-pack',
@@ -241,7 +243,8 @@ const externalExtensions = [
 	'query-history',
 	'liveshare',
 	'sql-database-projects',
-	'machine-learning-services'
+	'machine-learning',
+	'sql-assessment'
 ];
 
 // extensions that require a rebuild since they have native parts

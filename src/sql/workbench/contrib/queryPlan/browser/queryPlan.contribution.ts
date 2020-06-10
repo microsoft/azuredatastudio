@@ -12,7 +12,7 @@ import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensio
 
 // Query Plan editor registration
 
-const queryPlanEditorDescriptor = new EditorDescriptor(
+const queryPlanEditorDescriptor = EditorDescriptor.create(
 	QueryPlanEditor,
 	QueryPlanEditor.ID,
 	'QueryPlan'

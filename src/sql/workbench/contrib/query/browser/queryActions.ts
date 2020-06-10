@@ -14,7 +14,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import Severity from 'vs/base/common/severity';
 import { append, $ } from 'vs/base/browser/dom';
 
-import { ISelectionData, QueryExecutionOptions } from 'azdata';
+import { QueryExecutionOptions } from 'azdata';
 import {
 	IConnectionManagementService,
 	IConnectionParams,
@@ -43,6 +43,7 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IRange } from 'vs/editor/common/core/range';
 
 /**
  * Action class that query-based Actions will extend. This base class automatically handles activating and
@@ -101,12 +102,12 @@ export abstract class QueryTaskbarAction extends Action {
 	 * Connects the given editor to it's current URI.
 	 * Public for testing only.
 	 */
-	protected connectEditor(editor: QueryEditor, runQueryOnCompletion?: RunQueryOnConnectionMode, selection?: ISelectionData): void {
+	protected connectEditor(editor: QueryEditor, runQueryOnCompletion?: RunQueryOnConnectionMode, range?: IRange): void {
 		let params: INewConnectionParams = {
 			input: editor.input,
 			connectionType: ConnectionType.editor,
 			runQueryOnCompletion: runQueryOnCompletion ? runQueryOnCompletion : RunQueryOnConnectionMode.none,
-			querySelection: selection
+			queryRange: range
 		};
 		this.connectionManagementService.showConnectionDialog(params);
 	}
@@ -241,7 +242,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 		if (this.isConnected(editor)) {
 			// if the selection isn't empty then execute the selection
 			// otherwise, either run the statement or the script depending on parameter
-			let selection: ISelectionData = editor.getSelection(false);
+			let selection = editor.getSelection(false);
 			if (runCurrentStatement && selection && this.isCursorPosition(selection)) {
 				editor.input.runQueryStatement(selection);
 			} else {
@@ -252,8 +253,8 @@ export class RunQueryAction extends QueryTaskbarAction {
 		}
 	}
 
-	protected isCursorPosition(selection: ISelectionData) {
-		return selection.startLine === selection.endLine
+	protected isCursorPosition(selection: IRange) {
+		return selection.startLineNumber === selection.endLineNumber
 			&& selection.startColumn === selection.endColumn;
 	}
 }

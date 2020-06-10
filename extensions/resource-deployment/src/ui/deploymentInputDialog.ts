@@ -4,16 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import { EOL } from 'os';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DialogBase } from './dialogBase';
-import { INotebookService } from '../services/notebookService';
 import { DialogInfo, instanceOfNotebookBasedDialogInfo, NotebookBasedDialogInfo } from '../interfaces';
-import { Validator, initializeDialog, InputComponents, setModelValues, InputValueTransformer } from './modelViewUtils';
-import { Model } from './model';
-import { EOL } from 'os';
-import { getDateTimeString, getErrorMessage } from '../utils';
+import { INotebookService } from '../services/notebookService';
 import { IPlatformService } from '../services/platformService';
+import { DialogBase } from './dialogBase';
+import { Model } from './model';
+import { initializeDialog, InputComponentInfo, InputComponents, setModelValues, Validator } from './modelViewUtils';
 
 const localize = nls.loadMessageBundle();
 
@@ -43,11 +42,12 @@ export class DeploymentInputDialog extends DialogBase {
 		initializeDialog({
 			dialogInfo: this.dialogInfo,
 			container: this._dialogObject,
+			inputComponents: this.inputComponents,
 			onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 				this._toDispose.push(disposable);
 			},
-			onNewInputComponentCreated: (name: string, component: azdata.DropDownComponent | azdata.InputBoxComponent | azdata.CheckBoxComponent, inputValueTransformer?: InputValueTransformer): void => {
-				this.inputComponents[name] = { component: component, inputValueTransformer: inputValueTransformer };
+			onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo): void => {
+				this.inputComponents[name] = inputComponentInfo;
 			},
 			onNewValidatorCreated: (validator: Validator): void => {
 				validators.push(validator);
@@ -88,39 +88,6 @@ export class DeploymentInputDialog extends DialogBase {
 	}
 
 	private executeNotebook(notebookDialogInfo: NotebookBasedDialogInfo): void {
-		azdata.tasks.startBackgroundOperation({
-			displayName: notebookDialogInfo.taskName!,
-			description: notebookDialogInfo.taskName!,
-			isCancelable: false,
-			operation: async op => {
-				op.updateStatus(azdata.TaskStatus.InProgress);
-				const notebook = await this.notebookService.getNotebook(notebookDialogInfo.notebook);
-				const result = await this.notebookService.executeNotebook(notebook);
-				if (result.succeeded) {
-					op.updateStatus(azdata.TaskStatus.Succeeded);
-				} else {
-					op.updateStatus(azdata.TaskStatus.Failed, result.errorMessage);
-					if (result.outputNotebook) {
-						const viewErrorDetail = localize('resourceDeployment.ViewErrorDetail', "View error detail");
-						const taskFailedMessage = localize('resourceDeployment.DeployFailed', "The task \"{0}\" has failed.", notebookDialogInfo.taskName);
-						const selectedOption = await vscode.window.showErrorMessage(taskFailedMessage, viewErrorDetail);
-						this.platformService.logToOutputChannel(taskFailedMessage);
-						if (selectedOption === viewErrorDetail) {
-							try {
-								this.notebookService.launchNotebookWithContent(`deploy-${getDateTimeString()}`, result.outputNotebook);
-							} catch (error) {
-								const launchNotebookError = localize('resourceDeployment.FailedToOpenNotebook', "An error occurred launching the output notebook. {1}{2}.", EOL, getErrorMessage(error));
-								this.platformService.logToOutputChannel(launchNotebookError);
-								vscode.window.showErrorMessage(launchNotebookError);
-							}
-						}
-					} else {
-						const errorMessage = localize('resourceDeployment.TaskFailedWithNoOutputNotebook', "The task \"{0}\" failed and no output Notebook was generated.", notebookDialogInfo.taskName);
-						this.platformService.logToOutputChannel(errorMessage);
-						vscode.window.showErrorMessage(errorMessage);
-					}
-				}
-			}
-		});
+		this.notebookService.backgroundExecuteNotebook(notebookDialogInfo.taskName, notebookDialogInfo.notebook, 'deploy', this.platformService);
 	}
 }

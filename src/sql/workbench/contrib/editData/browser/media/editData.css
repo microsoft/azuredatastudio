@@ -4,12 +4,182 @@
  *--------------------------------------------------------------------------------------------*/
 
 .editDataGridPanel.slickgridContainer {
-	height: 447px;
-	width: 632px;
+	height: 100%;
+	width: 100%;
 }
 
 
 #workbench\.editor\.editDataEditor .monaco-toolbar .monaco-select-box {
 	margin-top: 4px;
 	margin-bottom: 4px;
+}
+
+.editDataGrid {
+	width: 100%;
+	height: 100%
+}
+
+.editDataGrid .slick-header-column {
+	border-top-style: none;
+	color: var(--color-content, #101010);
+	letter-spacing: .03em;
+	border-color: var(--border-color-default, #000000);
+	font-size: .95em;
+	border-bottom-width: 1px;
+	border-left-style: none;
+	border-right-color: #ACACAC;
+	border-right-style: dotted;
+	padding: .5em .8em .4em;
+	background-color: var( --color-bg-content-header, #F5F5F5);
+	border-bottom-color: #ACACAC
+}
+
+.editDataGrid .slick-cell {
+	border-top-style: none;
+	color: var(--color-content, #101010);
+	letter-spacing: .03em;
+	border-color: var(--border-color-default, #000000);
+	font-size: .95em;
+	border-bottom-width: 1px;
+	border-left-style: none;
+	border-right-color: #ACACAC;
+	border-right-style: dotted;
+	padding: .5em .8em .4em;
+	/* background-color: var(--background-color, white); */
+}
+
+.editDataGrid .slick-cell.selected {
+	background-color: var(--color-cell-bg-grid-selected, rgb(173, 214, 255));
+	color: var(--color-content, #101010);
+}
+
+.editDataGrid .slick-cell.selected .grid-cell-value-container.missing-value {
+	color: black
+}
+
+.editDataGrid .slick-cell.editable {
+	padding: 0
+}
+
+.editDataGrid .slick-cell.editable input {
+	padding: .5em .8em .4em;
+	height: 100%;
+	padding: .4em .65em .1em;
+	letter-spacing: .03em
+}
+
+.editDataGrid .slick-cell.editable input:focus {
+	outline-offset: 0
+}
+
+.editDataGrid .slick-cell .grid-cell-value-container {
+	display: block;
+	white-space: pre;
+	width: 100%;
+	overflow-x: hidden;
+	text-overflow: ellipsis
+}
+
+.editDataGrid .slick-cell .grid-cell-value-container.override-cell {
+	color: black
+}
+
+.editDataGrid .slick-cell .grid-cell-value-container.highlighted {
+	color: black
+}
+
+.editDataGrid .slick-cell .grid-cell-value-container.blurred {
+	color: #ABABAB
+}
+
+.editDataGrid .slick-cell .grid-cell-value-container.context {
+	color: darkblue;
+	font-style: italic
+}
+
+.editDataGrid .slick-cell .grid-cell-value-container.loading-cell {
+	font-style: italic
+}
+
+.editDataGrid .slick-cell .grid-cell-value-container.right-justified {
+	text-align: right
+}
+
+.editDataGrid input.editor-text {
+	width: 100%;
+}
+
+.editDataGrid .slick-cell.dirtyCell {
+	color: var(--color-grid-dirty-text);
+	background-color: var(--color-grid-dirty-background);
+}
+
+.editDataGrid .slick-cell.dirtyRowHeader {
+	background-color: var(--color-grid-dirty-background);
+}
+
+.editDataGrid .slick-cell.dirtyRowHeader > .row-number {
+	color: var(--color-grid-dirty-text);
+	font-weight: 500;
+}
+
+.slickgridContainer .editDataGrid .slick-cell.active,
+slick-grid.active .editDataGrid .slick-cell.active {
+	border-color: var(--color-cell-border-active);
+}
+
+slick-grid.active .editDataGrid .slick-cell.selected {
+	background-color: var(--color-cell-bg-grid-selected);
+}
+
+.editDataGrid .slick-cell.selected .grid-cell-value-container.missing-value {
+	color: var(--color-content) !important;
+}
+
+.hc-black .slickgridContainer {
+	--color-content: #E5E5E5;
+	--color-content-disabled: grey;
+	--color-error: #E81123;
+	--color-success: #7CD300;
+	--color-bg-header: hsla(0,0%,50%,.2); /* used for pane toolbars */
+	--color-resize-handle: #4d4d4d;
+	--color-bg-content-header: #333334; /* used for color of grid headers */
+	--color-cell-border-active: orange;
+	--color-cell-bg-grid-selected: rgb(38, 79, 120);
+	--color-grid-link: #FF6000;
+	--color-grid-link-hover: #ff8033;
+	--color-grid-dirty-background: #FFF;
+	--color-grid-dirty-text: #000;
+}
+
+.vs-dark .slickgridContainer {
+	--color-content: #E5E5E5;
+	--color-content-disabled: grey;
+	--color-error: #E81123;
+	--color-success: #7CD300;
+	--color-bg-header: hsla(0,0%,50%,.2); /* used for pane toolbars */
+	--color-resize-handle: #4d4d4d;
+	--color-bg-content-header: #333334; /* used for color of grid headers */
+	--color-cell-border-active: white;
+	--color-cell-bg-grid-selected: rgb(38, 79, 120);
+	--color-grid-link: #FF6000;
+	--color-grid-link-hover: #ff8033;
+	--color-grid-dirty-background: #4d4d4d;
+	--color-grid-dirty-text: #E5E5E5;
+}
+
+.vs .slickgridContainer {
+	--color-content: #101010;
+	--color-content-disabled: #a9a9a9;
+	--color-error: #E81123;
+	--color-success: #7CD300;
+	--color-bg-header: hsla(0,0%,50%,.2);
+	--color-resize-handle: grey;
+	--color-bg-content-header: #F5F5F5; /* used for color of grid headers */
+	--color-cell-border-active: grey;
+	--color-cell-bg-grid-selected: rgb(173, 214, 255);
+	--color-grid-link: #0078D7;
+	--color-grid-link-hover: #0b93ff;
+	--color-grid-dirty-background: #CCC;
+	--color-grid-dirty-text: #101010;
 }

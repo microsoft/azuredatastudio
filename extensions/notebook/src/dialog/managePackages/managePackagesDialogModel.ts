@@ -132,8 +132,8 @@ export class ManagePackagesDialogModel {
 	/**
 	 * Returns the default location
 	 */
-	public get defaultLocation(): string {
-		return this.options.defaultLocation || this.targetLocationTypes[0];
+	public get defaultLocation(): string | undefined {
+		return this.options.defaultLocation || (this.targetLocationTypes.length > 0 ? this.targetLocationTypes[0] : undefined);
 	}
 
 	/**
@@ -169,7 +169,10 @@ export class ManagePackagesDialogModel {
 	 */
 	public getPackageTypes(targetLocation?: string): ProviderPackageType[] {
 		targetLocation = targetLocation || this.defaultLocation;
-		let providers = this._packageTypes.get(targetLocation);
+		if (!this._packageTypes.has(targetLocation)) {
+			return [];
+		}
+		const providers = this._packageTypes.get(targetLocation);
 		return providers.map(x => {
 			return {
 				providerId: x.providerId,
@@ -181,7 +184,7 @@ export class ManagePackagesDialogModel {
 	/**
 	 * Returns a map of providerId to package types for given location
 	 */
-	public getDefaultPackageType(): ProviderPackageType {
+	public getDefaultPackageType(): ProviderPackageType | undefined {
 		let defaultProviderId = this.defaultProviderId;
 		let packageTypes = this.getPackageTypes();
 		return packageTypes.find(x => x.providerId === defaultProviderId);
@@ -191,12 +194,8 @@ export class ManagePackagesDialogModel {
 	 * returns the list of packages for current provider
 	 */
 	public async listPackages(): Promise<IPackageDetails[]> {
-		let provider = this.currentPackageManageProvider;
-		if (provider) {
-			return await provider.listPackages(this._currentLocation);
-		} else {
-			throw new Error('Current Provider is not set');
-		}
+		const provider = this.currentPackageManageProvider;
+		return await provider?.listPackages(this._currentLocation) ?? [];
 	}
 
 	/**

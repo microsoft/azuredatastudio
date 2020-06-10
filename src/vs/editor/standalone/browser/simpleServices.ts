@@ -108,12 +108,11 @@ function withTypedEditor<T>(widget: IEditor, codeEditorCallback: (editor: ICodeE
 export class SimpleEditorModelResolverService implements ITextModelService {
 	public _serviceBrand: undefined;
 
-	private readonly modelService: IModelService | undefined;
 	private editor?: IEditor;
 
-	constructor(modelService: IModelService | undefined) {
-		this.modelService = modelService;
-	}
+	constructor(
+		@IModelService private readonly modelService: IModelService
+	) { }
 
 	public setEditor(editor: IEditor): void {
 		this.editor = editor;
@@ -141,12 +140,12 @@ export class SimpleEditorModelResolverService implements ITextModelService {
 		};
 	}
 
-	public hasTextModelContentProvider(scheme: string): boolean {
+	public canHandleResource(resource: URI): boolean {
 		return false;
 	}
 
 	private findModel(editor: ICodeEditor, resource: URI): ITextModel | null {
-		let model = this.modelService ? this.modelService.getModel(resource) : editor.getModel();
+		let model = this.modelService.getModel(resource);
 		if (model && model.uri.toString() !== resource.toString()) {
 			return null;
 		}
@@ -548,6 +547,7 @@ export class StandaloneTelemetryService implements ITelemetryService {
 	_serviceBrand: undefined;
 
 	public isOptedIn = false;
+	public sendErrorTelemetry = false;
 
 	public setEnabled(value: boolean): void {
 	}
@@ -558,6 +558,14 @@ export class StandaloneTelemetryService implements ITelemetryService {
 
 	publicLog2<E extends ClassifiedEvent<T> = never, T extends GDPRClassification<T> = never>(eventName: string, data?: StrictPropertyCheck<T, E>) {
 		return this.publicLog(eventName, data as any);
+	}
+
+	public publicLogError(eventName: string, data?: any): Promise<void> {
+		return Promise.resolve(undefined);
+	}
+
+	publicLogError2<E extends ClassifiedEvent<T> = never, T extends GDPRClassification<T> = never>(eventName: string, data?: StrictPropertyCheck<T, E>) {
+		return this.publicLogError(eventName, data as any);
 	}
 
 	public getTelemetryInfo(): Promise<ITelemetryInfo> {

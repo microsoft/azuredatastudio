@@ -1,0 +1,96 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import * as vscode from 'vscode';
+import * as azdata from 'azdata';
+import * as loc from '../../localizedConstants';
+import { IconPathHelper, cssStyles } from '../../constants';
+
+/** A container with a single vertical column of KeyValue pairs */
+export class KeyValueContainer {
+	public container: azdata.DivContainer;
+
+	constructor(private modelBuilder: azdata.ModelBuilder, pairs: KeyValue[]) {
+		this.container = modelBuilder.divContainer().component();
+		this.refresh(pairs);
+	}
+
+	public refresh(pairs: KeyValue[]) {
+		this.container.clearItems();
+		this.container.addItems(
+			pairs.map(p => p.getComponent(this.modelBuilder)),
+			{ CSSStyles: { 'margin-bottom': '15px', 'min-height': '30px' } }
+		);
+	}
+}
+
+/** A key value pair in the KeyValueContainer */
+export abstract class KeyValue {
+	constructor(protected key: string, protected value: string) { }
+
+	/** Returns a component representing the entire KeyValue pair */
+	public getComponent(modelBuilder: azdata.ModelBuilder) {
+		const container = modelBuilder.flexContainer().withLayout({ flexWrap: 'wrap', alignItems: 'center' }).component();
+		const key = modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			value: this.key,
+			CSSStyles: { ...cssStyles.text, 'font-weight': 'bold', 'margin-block-start': '0px', 'margin-block-end': '0px' }
+		}).component();
+
+		container.addItem(key, { flex: `0 0 200px` });
+		container.addItem(this.getValueComponent(modelBuilder), { flex: '1 1 250px' });
+		return container;
+	}
+
+	/** Returns a component representing the value of the KeyValue pair */
+	protected abstract getValueComponent(modelBuilder: azdata.ModelBuilder): azdata.Component;
+}
+
+/** Implementation of KeyValue where the value is text */
+export class TextKeyValue extends KeyValue {
+	getValueComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
+		return modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			value: this.value,
+			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
+		}).component();
+	}
+}
+
+/** Implementation of KeyValue where the value is a readonly copyable input field */
+export class InputKeyValue extends KeyValue {
+	getValueComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
+		const container = modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
+		container.addItem(modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+			value: this.value, readOnly: true
+		}).component());
+
+		const copy = modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			iconPath: IconPathHelper.copy, width: '17px', height: '17px'
+		}).component();
+
+		copy.onDidClick(async () => {
+			vscode.env.clipboard.writeText(this.value);
+			vscode.window.showInformationMessage(loc.copiedToClipboard(this.key));
+		});
+
+		container.addItem(copy, { CSSStyles: { 'margin-left': '10px' } });
+		return container;
+	}
+}
+
+/** Implementation of KeyValue where the value is a clickable link */
+export class LinkKeyValue extends KeyValue {
+	constructor(key: string, value: string, private onClick: (e: any) => any) {
+		super(key, value);
+	}
+
+	getValueComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
+		const link = modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
+			label: this.value, url: ''
+		}).component();
+
+		link.onDidClick(this.onClick);
+		return link;
+	}
+}

@@ -28,6 +28,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { IBootstrapParams, ISelector } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { startsWith } from 'vs/base/common/strings';
 import { PanelModule } from 'sql/base/browser/ui/panel/panel.module';
+import { PropertiesContainerModule } from 'sql/base/browser/ui/propertiesContainer/propertiesContainer.module';
 
 export const DialogModule = (params, selector: string, instantiationService: IInstantiationService): any => {
 
@@ -52,7 +53,8 @@ export const DialogModule = (params, selector: string, instantiationService: IIn
 			FormsModule,
 			CommonModule,
 			BrowserModule,
-			PanelModule
+			PanelModule,
+			PropertiesContainerModule
 		],
 		providers: [
 			{ provide: APP_BASE_HREF, useValue: '/' },

@@ -6,7 +6,6 @@
 import 'vs/css!./media/table';
 import 'vs/css!./media/slick.grid';
 import 'vs/css!./media/slickColorTheme';
-import 'vs/css!./media/slickGrid';
 
 import { TableDataView } from './tableDataView';
 import { IDisposableDataProvider, ITableSorter, ITableMouseEvent, ITableConfiguration, ITableStyles } from 'sql/base/browser/ui/table/interfaces';
@@ -49,6 +48,9 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 	private _onClick = new Emitter<ITableMouseEvent>();
 	public readonly onClick: Event<ITableMouseEvent> = this._onClick.event;
+
+	private _onDoubleClick = new Emitter<ITableMouseEvent>();
+	public readonly onDoubleClick: Event<ITableMouseEvent> = this._onDoubleClick.event;
 
 	private _onHeaderClick = new Emitter<ITableMouseEvent>();
 	public readonly onHeaderClick: Event<ITableMouseEvent> = this._onHeaderClick.event;
@@ -116,6 +118,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this.mapMouseEvent(this._grid.onContextMenu, this._onContextMenu);
 		this.mapMouseEvent(this._grid.onClick, this._onClick);
 		this.mapMouseEvent(this._grid.onHeaderClick, this._onHeaderClick);
+		this.mapMouseEvent(this._grid.onDblClick, this._onDoubleClick);
 		this._grid.onColumnsResized.subscribe(() => this._onColumnResize.fire());
 	}
 
@@ -228,10 +231,6 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 	setActiveCell(row: number, cell: number): void {
 		this._grid.setActiveCell(row, cell);
-	}
-
-	setActive(): void {
-		this._grid.setActiveCell(0, 1);
 	}
 
 	get activeCell(): Slick.Cell | null {

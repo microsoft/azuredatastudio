@@ -79,7 +79,7 @@ export enum PageName {
 export class DataTierApplicationWizard {
 	public wizard: azdata.window.Wizard;
 	private connection: azdata.connection.ConnectionProfile;
-	private model: DacFxDataModel;
+	public model: DacFxDataModel;
 	public pages: Map<string, Page> = new Map<string, Page>();
 	public selectedOperation: Operation;
 
@@ -98,9 +98,15 @@ export class DataTierApplicationWizard {
 
 		this.connection = await azdata.connection.getCurrentConnection();
 		if (!this.connection || (profile && this.connection.connectionId !== profile.id)) {
-			// @TODO: remove cast once azdata update complete - karlb 3/1/2019
-			this.connection = <azdata.connection.ConnectionProfile><any>await azdata.connection.openConnectionDialog(undefined, profile);
-
+			// check if there are any active connections
+			const connections = await azdata.connection.getConnections(true);
+			if (connections.length > 0) {
+				// set connection to the first one in the list
+				this.connection = connections[0];
+			} else {
+				// @TODO: remove cast once azdata update complete - karlb 3/1/2019
+				this.connection = <azdata.connection.ConnectionProfile><any>await azdata.connection.openConnectionDialog(undefined, profile);
+			}
 			// don't open the wizard if connection dialog is cancelled
 			if (!this.connection) {
 				return;
@@ -331,7 +337,7 @@ export class DataTierApplicationWizard {
 		return page;
 	}
 
-	private isSummaryPage(idx: number): boolean {
+	public isSummaryPage(idx: number): boolean {
 		return this.selectedOperation === Operation.import && idx === ImportOperationPath.summary
 			|| this.selectedOperation === Operation.export && idx === ExportOperationPath.summary
 			|| this.selectedOperation === Operation.extract && idx === ExtractOperationPath.summary

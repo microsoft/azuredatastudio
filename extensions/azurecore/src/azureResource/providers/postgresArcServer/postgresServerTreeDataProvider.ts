@@ -17,7 +17,7 @@ import { azureResource } from '../../azure-resource';
 
 export class PostgresServerArcTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
 	private static readonly containerId = 'azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainer';
-	private static readonly containerLabel = localize('azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel', "PostgreSQL Hyperscale - Azure Arc");
+	private static readonly containerLabel = localize('azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel', "PostgreSQL Hyperscale – Azure Arc");
 
 	public constructor(
 		databaseServerService: IAzureResourceService<azureResource.AzureResourceDatabaseServer>,
@@ -45,7 +45,7 @@ export class PostgresServerArcTreeDataProvider extends ResourceTreeDataProviderB
 				databaseName: databaseServer.defaultDatabaseName,
 				userName: `${databaseServer.loginName}@${databaseServer.fullName}`,
 				password: '',
-				authenticationType: 'AzureMFA',
+				authenticationType: 'SqlLogin',
 				savePassword: true,
 				groupFullName: '',
 				groupId: '',
@@ -55,7 +55,10 @@ export class PostgresServerArcTreeDataProvider extends ResourceTreeDataProviderB
 					// Set default for SSL or will get error complaining about it not being set correctly
 					'sslmode': 'require'
 				},
-				azureAccount: account.key.accountId
+				azureAccount: account.key.accountId,
+				azureTenantId: databaseServer.tenant,
+				azureResourceId: databaseServer.id,
+				azurePortalEndpoint: account.properties.providerSettings.settings.portalEndpoint
 			},
 			childProvider: 'PGSQL',
 			type: ExtensionNodeType.Server

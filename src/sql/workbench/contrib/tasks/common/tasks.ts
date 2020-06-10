@@ -6,4 +6,5 @@
 /**
  * Tasks panel id
  */
-export const TASKS_PANEL_ID = 'workbench.panel.tasks';
+export const TASKS_CONTAINER_ID = 'workbench.panel.tasks';
+export const TASKS_VIEW_ID = 'workbench.panel.tasks.view';

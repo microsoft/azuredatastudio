@@ -17,7 +17,7 @@ jobs:
   - template: sql-product-compile.yml
 
 - job: macOS
-  condition: eq(variables['VSCODE_BUILD_MACOS'], 'true')
+  condition: and(succeeded(), eq(variables['VSCODE_BUILD_MACOS'], 'true'))
   pool:
     vmImage: macOS-latest
   dependsOn:
@@ -27,7 +27,7 @@ jobs:
   timeoutInMinutes: 180
 
 - job: Linux
-  condition: eq(variables['VSCODE_BUILD_LINUX'], 'true')
+  condition: and(succeeded(), eq(variables['VSCODE_BUILD_LINUX'], 'true'))
   pool:
     vmImage: 'Ubuntu-16.04'
   container: linux-x64
@@ -38,7 +38,7 @@ jobs:
   timeoutInMinutes: 70
 
 - job: Docker
-  condition: eq(variables['VSCODE_BUILD_DOCKER'], 'true')
+  condition: and(succeeded(), eq(variables['VSCODE_BUILD_DOCKER'], 'true'))
   pool:
     vmImage: 'Ubuntu-16.04'
   container: linux-x64
@@ -48,7 +48,7 @@ jobs:
   - template: docker/sql-product-build-docker.yml
 
 - job: Windows
-  condition: eq(variables['VSCODE_BUILD_WIN32'], 'true')
+  condition: and(succeeded(), eq(variables['VSCODE_BUILD_WIN32'], 'true'))
   pool:
     vmImage: VS2017-Win2016
   dependsOn:

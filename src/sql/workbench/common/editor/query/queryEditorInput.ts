@@ -7,15 +7,17 @@ import { localize } from 'vs/nls';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
-import { EditorInput, GroupIdentifier, IRevertOptions, ISaveOptions, IEditorInput, TextResourceEditorInput } from 'vs/workbench/common/editor';
+import { EditorInput, GroupIdentifier, IRevertOptions, ISaveOptions, IEditorInput } from 'vs/workbench/common/editor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 
-import { ISelectionData, ExecutionPlanOptions } from 'azdata';
+import { ExecutionPlanOptions } from 'azdata';
 import { startsWith } from 'vs/base/common/strings';
+import { IRange } from 'vs/editor/common/core/range';
+import { AbstractTextResourceEditorInput } from 'vs/workbench/common/editor/textResourceEditorInput';
 
 const MAX_SIZE = 13;
 
@@ -118,7 +120,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 
 	constructor(
 		private _description: string,
-		protected _text: TextResourceEditorInput,
+		protected _text: AbstractTextResourceEditorInput,
 		protected _results: QueryResultsInput,
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
@@ -167,7 +169,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 
 	// Getters for private properties
 	public get uri(): string { return this.resource!.toString(true); }
-	public get text(): TextResourceEditorInput { return this._text; }
+	public get text(): AbstractTextResourceEditorInput { return this._text; }
 	public get results(): QueryResultsInput { return this._results; }
 	// Description is shown beside the tab name in the combobox of open editors
 	public getDescription(): string { return this._description; }
@@ -229,13 +231,13 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	}
 
 	// State update funtions
-	public runQuery(selection?: ISelectionData, executePlanOptions?: ExecutionPlanOptions): void {
-		this.queryModelService.runQuery(this.uri, selection, executePlanOptions);
+	public runQuery(range?: IRange, executePlanOptions?: ExecutionPlanOptions): void {
+		this.queryModelService.runQuery(this.uri, range, executePlanOptions);
 		this.state.executing = true;
 	}
 
-	public runQueryStatement(selection?: ISelectionData): void {
-		this.queryModelService.runQueryStatement(this.uri, selection);
+	public runQueryStatement(range?: IRange): void {
+		this.queryModelService.runQueryStatement(this.uri, range);
 		this.state.executing = true;
 	}
 
@@ -269,15 +271,15 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 
 		let isRunningQuery = this.queryModelService.isRunningQuery(this.uri);
 		if (!isRunningQuery && params && params.runQueryOnCompletion) {
-			let selection: ISelectionData | undefined = params ? params.querySelection : undefined;
+			let range: IRange | undefined = params ? params.queryRange : undefined;
 			if (params.runQueryOnCompletion === RunQueryOnConnectionMode.executeCurrentQuery) {
-				this.runQueryStatement(selection);
+				this.runQueryStatement(range);
 			} else if (params.runQueryOnCompletion === RunQueryOnConnectionMode.executeQuery) {
-				this.runQuery(selection);
+				this.runQuery(range);
 			} else if (params.runQueryOnCompletion === RunQueryOnConnectionMode.estimatedQueryPlan) {
-				this.runQuery(selection, { displayEstimatedQueryPlan: true });
+				this.runQuery(range, { displayEstimatedQueryPlan: true });
 			} else if (params.runQueryOnCompletion === RunQueryOnConnectionMode.actualQueryPlan) {
-				this.runQuery(selection, { displayActualQueryPlan: true });
+				this.runQuery(range, { displayActualQueryPlan: true });
 			}
 		}
 		this._onDidChangeLabel.fire();

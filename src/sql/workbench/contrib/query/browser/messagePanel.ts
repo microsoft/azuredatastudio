@@ -4,31 +4,35 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/messagePanel';
-import { IMessagesActionContext, CopyMessagesAction, CopyAllMessagesAction } from './actions';
-import QueryRunner, { IQueryMessage } from 'sql/workbench/services/query/common/queryRunner';
-import { IExpandableTree } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
+import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
+import { IQueryMessage } from 'sql/workbench/services/query/common/query';
 
-import { ISelectionData } from 'azdata';
-
-import { IDataSource, ITree, IRenderer, ContextMenuEvent } from 'vs/base/parts/tree/browser/tree';
+import { ITreeRenderer, IDataSource, ITreeNode, ITreeContextMenuEvent } from 'vs/base/browser/ui/tree/tree';
 import { generateUuid } from 'vs/base/common/uuid';
-import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { OpenMode, ClickBehavior, ICancelableEvent, IControllerOptions } from 'vs/base/parts/tree/browser/treeDefaults';
-import { WorkbenchTreeController } from 'vs/platform/list/browser/listService';
+import { WorkbenchDataTree, horizontalScrollingKey } from 'vs/platform/list/browser/listService';
 import { isArray, isString } from 'vs/base/common/types';
-import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { ScrollbarVisibility } from 'vs/base/common/scrollable';
-import { $, Dimension, createStyleSheet } from 'vs/base/browser/dom';
-import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
-import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
+import { Disposable, DisposableStore, dispose } from 'vs/base/common/lifecycle';
+import { $, Dimension, createStyleSheet, addStandardDisposableGenericMouseDownListner } from 'vs/base/browser/dom';
 import { resultsErrorColor } from 'sql/platform/theme/common/colors';
-import { MessagePanelState } from 'sql/workbench/common/editor/query/messagePanelState';
+import { CachedListVirtualDelegate, IIdentityProvider } from 'vs/base/browser/ui/list/list';
+import { FuzzyScore } from 'vs/base/common/filters';
+import { IListAccessibilityProvider } from 'vs/base/browser/ui/list/listWidget';
+import { localize } from 'vs/nls';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IAction, Action } from 'vs/base/common/actions';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
+import { removeAnsiEscapeCodes } from 'vs/base/common/strings';
+import { URI } from 'vs/base/common/uri';
+import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
+import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IDataTreeViewState } from 'vs/base/browser/ui/tree/dataTree';
+import { IRange } from 'vs/editor/common/core/range';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export interface IResultMessageIntern {
 	id?: string;
@@ -36,7 +40,7 @@ export interface IResultMessageIntern {
 	isError: boolean;
 	time?: string | Date;
 	message: string;
-	selection?: ISelectionData;
+	range?: IRange;
 }
 
 export interface IMessagePanelMessage {
@@ -45,7 +49,7 @@ export interface IMessagePanelMessage {
 }
 
 export interface IMessagePanelBatchMessage extends IMessagePanelMessage {
-	selection: ISelectionData;
+	range: IRange;
 	time: string;
 }
 
@@ -55,6 +59,7 @@ interface IMessageTemplate {
 
 interface IBatchTemplate extends IMessageTemplate {
 	timeStamp: HTMLElement;
+	disposable: DisposableStore;
 }
 
 const TemplateIds = {
@@ -64,93 +69,106 @@ const TemplateIds = {
 	ERROR: 'error'
 };
 
+export class AccessibilityProvider implements IListAccessibilityProvider<IResultMessageIntern> {
+
+	getWidgetAriaLabel(): string {
+		return localize('messagePanel', "Message Panel");
+	}
+
+	getAriaLabel(element: IResultMessageIntern): string {
+		return element.message;
+	}
+}
+
+class IdentityProvider implements IIdentityProvider<IResultMessageIntern> {
+	getId(element: IResultMessageIntern): { toString(): string; } {
+		return () => element.id;
+	}
+}
+
 export class MessagePanel extends Disposable {
-	private ds = new MessageDataSource();
-	private renderer = new MessageRenderer();
 	private model = new Model();
-	private controller: MessageController;
 	private container = $('.message-tree');
 	private styleElement = createStyleSheet(this.container);
 
 	private queryRunnerDisposables = this._register(new DisposableStore());
-	private _state: MessagePanelState | undefined;
+	private _treeStates = new Map<string, IDataTreeViewState>();
+	private currenturi: string;
 
-	private tree: ITree;
+	private tree: WorkbenchDataTree<Model, IResultMessageIntern, FuzzyScore>;
 
 	constructor(
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IThemeService private readonly themeService: IThemeService,
-		@IContextMenuService private readonly contextMenuService: IContextMenuService
+		@IContextMenuService private readonly contextMenuService: IContextMenuService,
+		@IClipboardService private readonly clipboardService: IClipboardService,
+		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService,
+		@IConfigurationService private configurationService: IConfigurationService
 	) {
 		super();
-		this.controller = instantiationService.createInstance(MessageController, { openMode: OpenMode.SINGLE_CLICK, clickBehavior: ClickBehavior.ON_MOUSE_UP /* do not change, to preserve focus behaviour in input field */ });
-		this.controller.toFocusOnClick = this.model;
-		this.tree = this._register(new Tree(this.container, {
-			dataSource: this.ds,
-			renderer: this.renderer,
-			controller: this.controller
-		}, { keyboardSupport: false, horizontalScrollMode: ScrollbarVisibility.Auto }));
+		const horizontalScrollEnabled = this.configurationService.getValue(horizontalScrollingKey) || false;
+		this.tree = <WorkbenchDataTree<Model, IResultMessageIntern, FuzzyScore>>instantiationService.createInstance(
+			WorkbenchDataTree,
+			'MessagePanel',
+			this.container,
+			new MessagePanelDelegate(),
+			[
+				new MessageRenderer(),
+				new ErrorMessageRenderer(),
+				instantiationService.createInstance(BatchMessageRenderer)
+			],
+			new MessageDataSource(),
+			{
+				accessibilityProvider: new AccessibilityProvider(),
+				mouseSupport: false,
+				setRowLineHeight: false,
+				supportDynamicHeights: !horizontalScrollEnabled,
+				identityProvider: new IdentityProvider()
+			});
+		this._register(this.tree.onContextMenu(e => this.onContextMenu(e)));
 		this.tree.setInput(this.model);
-		this.tree.onDidScroll(e => {
-			// convert to old VS Code tree interface with expandable methods
-			let expandableTree: IExpandableTree = <IExpandableTree>this.tree;
-
-			if (this.state) {
-				this.state.scrollPosition = expandableTree.getScrollPosition();
-			}
-		});
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
 		this._register(attachListStyler(this.tree, this.themeService));
 		this._register(this.themeService.onDidColorThemeChange(this.applyStyles, this));
 		this.applyStyles(this.themeService.getColorTheme());
-		this.controller.onKeyDown = (tree, event) => {
-			if (event.ctrlKey && event.code === 'KeyC') {
-				let context: IMessagesActionContext = {
-					selection: document.getSelection(),
-					tree: this.tree,
-				};
-				let copyMessageAction = instantiationService.createInstance(CopyMessagesAction);
-				copyMessageAction.run(context);
-				event.preventDefault();
-				event.stopPropagation();
-				return true;
-			}
-			return false;
-		};
-		this.controller.onContextMenu = (tree, element, event) => {
-			if (event.target && event.target.tagName && event.target.tagName.toLowerCase() === 'input') {
-				return false; // allow context menu on input fields
-			}
+	}
 
-			// Prevent native context menu from showing up
-			if (event) {
-				event.preventDefault();
-				event.stopPropagation();
+	private onContextMenu(event: ITreeContextMenuEvent<IResultMessageIntern>): void {
+		// Prevent native context menu from showing up
+		const actions: IAction[] = [];
+		actions.push(new Action('messagePanel.copy', localize('copy', "Copy"), undefined, true, async () => {
+			const nativeSelection = window.getSelection();
+			if (nativeSelection) {
+				await this.clipboardService.writeText(nativeSelection.toString());
 			}
+			return Promise.resolve();
+		}));
+		actions.push(new Action('workbench.queryEditor.messages.action.copyAll', localize('copyAll', "Copy All"), undefined, true, async () => {
+			await this.clipboardService.writeText(this.getVisibleContent());
+			return Promise.resolve();
+		}));
 
-			const selection = document.getSelection();
+		this.contextMenuService.showContextMenu({
+			getAnchor: () => event.anchor,
+			getActions: () => actions
+		});
+	}
 
-			this.contextMenuService.showContextMenu({
-				getAnchor: () => {
-					return { x: event.posx, y: event.posy };
-				},
-				getActions: () => {
-					return [
-						instantiationService.createInstance(CopyMessagesAction),
-						instantiationService.createInstance(CopyAllMessagesAction, this.tree)
-					];
-				},
-				getActionsContext: () => {
-					return <IMessagesActionContext>{
-						selection,
-						tree
-					};
+	getVisibleContent(): string {
+		let text = '';
+		const lineDelimiter = this.textResourcePropertiesService.getEOL(URI.parse(`queryEditor:messagePanel`));
+		const traverseAndAppend = (node: ITreeNode<IResultMessageIntern, FuzzyScore>) => {
+			node.children.forEach(child => {
+				text += child.element.message.trimRight() + lineDelimiter;
+				if (!child.collapsed && child.children.length) {
+					traverseAndAppend(child);
 				}
 			});
-
-			return true;
 		};
+		traverseAndAppend(this.tree.getNode());
+
+		return removeAnsiEscapeCodes(text);
 	}
 
 	public render(container: HTMLElement): void {
@@ -158,55 +176,36 @@ export class MessagePanel extends Disposable {
 	}
 
 	public layout(size: Dimension): void {
-		// convert to old VS Code tree interface with expandable methods
-		let expandableTree: IExpandableTree = <IExpandableTree>this.tree;
-
-		const previousScrollPosition = expandableTree.getScrollPosition();
 		this.tree.layout(size.height);
-		if (this.state && this.state.scrollPosition) {
-			expandableTree.setScrollPosition(this.state.scrollPosition);
-		} else {
-			if (previousScrollPosition === 1) {
-				expandableTree.setScrollPosition(1);
-			}
-		}
+		this.tree.updateChildren();
 	}
 
 	public focus(): void {
-		this.tree.refresh();
 		this.tree.domFocus();
 	}
 
 	public set queryRunner(runner: QueryRunner) {
+		if (this.currenturi) {
+			this._treeStates.set(this.currenturi, this.tree.getViewState());
+		}
 		this.queryRunnerDisposables.clear();
 		this.reset();
+		this.currenturi = runner.uri;
 		this.queryRunnerDisposables.add(runner.onQueryStart(() => this.reset()));
 		this.queryRunnerDisposables.add(runner.onMessage(e => this.onMessage(e)));
-		this.onMessage(runner.messages);
+		this.onMessage(runner.messages, true);
 	}
 
-	private onMessage(message: IQueryMessage | IQueryMessage[]) {
+	private onMessage(message: IQueryMessage | IQueryMessage[], setInput: boolean = false) {
 		if (isArray(message)) {
 			this.model.messages.push(...message);
 		} else {
 			this.model.messages.push(message);
 		}
-		// convert to old VS Code tree interface with expandable methods
-		let expandableTree: IExpandableTree = <IExpandableTree>this.tree;
-		if (this.state && this.state.scrollPosition) {
-			const previousScroll = this.state.scrollPosition;
-			this.tree.refresh(this.model, false).then(() => {
-				// Restore the previous scroll position when switching between tabs
-				expandableTree.setScrollPosition(previousScroll);
-			});
+		if (setInput) {
+			this.tree.setInput(this.model, this._treeStates.get(this.currenturi));
 		} else {
-			const previousScrollPosition = expandableTree.getScrollPosition();
-			this.tree.refresh(this.model).then(() => {
-				// Scroll to the end if the user was already at the end otherwise leave the current scroll position
-				if (previousScrollPosition === 1) {
-					expandableTree.setScrollPosition(1);
-				}
-			});
+			this.tree.updateChildren();
 		}
 	}
 
@@ -214,7 +213,7 @@ export class MessagePanel extends Disposable {
 		const errorColor = theme.getColor(resultsErrorColor);
 		const content: string[] = [];
 		if (errorColor) {
-			content.push(`.message-tree .monaco-tree-rows .error-message { color: ${errorColor}; }`);
+			content.push(`.message-tree .monaco-list-rows .error-message { color: ${errorColor}; }`);
 		}
 
 		const newStyles = content.join('\n');
@@ -225,22 +224,8 @@ export class MessagePanel extends Disposable {
 
 	private reset() {
 		this.model.messages = [];
-		this._state = undefined;
 		this.model.totalExecuteMessage = undefined;
-		this.tree.refresh(this.model);
-	}
-
-	public set state(val: MessagePanelState) {
-		this._state = val;
-		// convert to old VS Code tree interface with expandable methods
-		let expandableTree: IExpandableTree = <IExpandableTree>this.tree;
-		if (this.state.scrollPosition) {
-			expandableTree.setScrollPosition(this.state.scrollPosition);
-		}
-	}
-
-	public get state(): MessagePanelState {
-		return this._state;
+		this.tree.updateChildren();
 	}
 
 	public clear() {
@@ -260,51 +245,31 @@ export class MessagePanel extends Disposable {
 	}
 }
 
-class MessageDataSource implements IDataSource {
-	getId(tree: ITree, element: Model | IResultMessageIntern): string {
-		if (element instanceof Model) {
-			return element.uuid;
-		} else {
-			if (!element.id) {
-				element.id = generateUuid();
-			}
-			return element.id;
-		}
-	}
-
-	hasChildren(tree: ITree, element: any): boolean {
+class MessageDataSource implements IDataSource<Model, IMessagePanelMessage | IMessagePanelBatchMessage> {
+	hasChildren(element: Model | IMessagePanelMessage | IMessagePanelBatchMessage): boolean {
 		return element instanceof Model;
 	}
 
-	getChildren(tree: ITree, element: any): Promise<(IMessagePanelMessage | IMessagePanelBatchMessage)[]> {
-		if (element instanceof Model) {
-			let messages = element.messages;
-			if (element.totalExecuteMessage) {
-				messages = messages.concat(element.totalExecuteMessage);
-			}
-			return Promise.resolve(messages);
-		} else {
-			return Promise.resolve(undefined);
+	getChildren(element: Model): (IMessagePanelMessage | IMessagePanelBatchMessage)[] {
+		let messages = element.messages;
+		if (element.totalExecuteMessage) {
+			messages = messages.concat(element.totalExecuteMessage);
 		}
-	}
-
-	getParent(tree: ITree, element: any): Promise<void> {
-		return Promise.resolve(null);
+		return messages || [];
 	}
 }
 
-class MessageRenderer implements IRenderer {
-
-	getHeight(tree: ITree, element: IResultMessageIntern): number {
+class MessagePanelDelegate extends CachedListVirtualDelegate<IResultMessageIntern> {
+	protected estimateHeight(element: IResultMessageIntern): number {
 		const lineHeight = 22;
 		let lines = element.message.split('\n').length;
 		return lineHeight * lines;
 	}
 
-	getTemplateId(tree: ITree, element: IResultMessageIntern): string {
+	getTemplateId(element: IResultMessageIntern): string {
 		if (element instanceof Model) {
 			return TemplateIds.MODEL;
-		} else if (element.selection) {
+		} else if (element.range) {
 			return TemplateIds.BATCH;
 		} else if (element.isError) {
 			return TemplateIds.ERROR;
@@ -313,92 +278,85 @@ class MessageRenderer implements IRenderer {
 		}
 	}
 
-	renderTemplate(tree: ITree, templateId: string, container: HTMLElement): IMessageTemplate | IBatchTemplate {
-
-		if (templateId === TemplateIds.MESSAGE) {
-			container.append($('.time-stamp'));
-			const message = $('.message');
-			message.style.whiteSpace = 'pre';
-			container.append(message);
-			return { message };
-		} else if (templateId === TemplateIds.BATCH) {
-			const timeStamp = $('.time-stamp');
-			container.append(timeStamp);
-			const message = $('.batch-start');
-			message.style.whiteSpace = 'pre';
-			container.append(message);
-			return { message, timeStamp };
-		} else if (templateId === TemplateIds.ERROR) {
-			container.append($('.time-stamp'));
-			const message = $('.error-message');
-			container.append(message);
-			return { message };
-		} else {
-			return undefined;
-		}
+	hasDynamicHeight(element: IResultMessageIntern): boolean {
+		// Empty elements should not have dynamic height since they will be invisible
+		return element.message.toString().length > 0;
 	}
 
-	renderElement(tree: ITree, element: IResultMessageIntern, templateId: string, templateData: IMessageTemplate | IBatchTemplate): void {
-		if (templateId === TemplateIds.MESSAGE || templateId === TemplateIds.ERROR) {
-			let data: IMessageTemplate = templateData;
-			data.message.innerText = element.message;
-		} else if (templateId === TemplateIds.BATCH) {
-			let data = templateData as IBatchTemplate;
-			if (isString(element.time)) {
-				element.time = new Date(element.time!);
-			}
-			data.timeStamp.innerText = (element.time as Date).toLocaleTimeString();
-			data.message.innerText = element.message;
-		}
+}
+
+class ErrorMessageRenderer implements ITreeRenderer<IResultMessageIntern, void, IMessageTemplate> {
+	public readonly templateId = TemplateIds.ERROR;
+
+	renderTemplate(container: HTMLElement): IMessageTemplate {
+		container.append($('.time-stamp'));
+		const message = $('.error-message');
+		container.append(message);
+		return { message };
 	}
 
-	disposeTemplate(tree: ITree, templateId: string, templateData: any): void {
+	renderElement(node: ITreeNode<IResultMessageIntern, void>, index: number, templateData: IMessageTemplate): void {
+		let data: IMessageTemplate = templateData;
+		data.message.innerText = node.element.message;
+	}
+
+	disposeTemplate(templateData: IMessageTemplate | IBatchTemplate): void {
 	}
 }
 
-export class MessageController extends WorkbenchTreeController {
+class BatchMessageRenderer implements ITreeRenderer<IResultMessageIntern, void, IBatchTemplate> {
+	public readonly templateId = TemplateIds.BATCH;
 
-	private lastSelectedString: string = null;
-	public toFocusOnClick: { focus(): void };
+	constructor(@IEditorService private readonly editorService: IEditorService) { }
 
-	constructor(
-		options: IControllerOptions,
-		@IConfigurationService configurationService: IConfigurationService,
-		@IEditorService private workbenchEditorService: IEditorService
-	) {
-		super(options, configurationService);
+	renderTemplate(container: HTMLElement): IBatchTemplate {
+		const timeStamp = $('.time-stamp');
+		container.append(timeStamp);
+		const message = $('.batch-start');
+		message.style.whiteSpace = 'pre';
+		container.append(message);
+		return { message, timeStamp, disposable: new DisposableStore() };
 	}
 
-	protected onLeftClick(tree: ITree, element: any, eventish: ICancelableEvent, origin: string = 'mouse'): boolean {
-		// input and output are one element in the tree => we only expand if the user clicked on the output.
-		// if ((element.reference > 0 || (element instanceof RawObjectReplElement && element.hasChildren)) && mouseEvent.target.className.indexOf('input expression') === -1) {
-		super.onLeftClick(tree, element, eventish, origin);
-		tree.clearFocus();
-		tree.deselect(element);
-		// }
-
-		const selection = window.getSelection();
-		if (selection.type !== 'Range' || this.lastSelectedString === selection.toString()) {
-			// only focus the input if the user is not currently selecting.
-			this.toFocusOnClick.focus();
+	renderElement(node: ITreeNode<IResultMessageIntern, void>, index: number, templateData: IBatchTemplate): void {
+		if (isString(node.element.time)) {
+			node.element.time = new Date(node.element.time!);
 		}
-		this.lastSelectedString = selection.toString();
-
-		if (element.selection) {
-			let selection: ISelectionData = element.selection;
-			// this is a batch statement
-			let editor = this.workbenchEditorService.activeEditorPane as QueryEditor;
-			const codeEditor = <ICodeEditor>editor.getControl();
-			codeEditor.focus();
-			codeEditor.setSelection({ endColumn: selection.endColumn + 1, endLineNumber: selection.endLine + 1, startColumn: selection.startColumn + 1, startLineNumber: selection.startLine + 1 });
-			codeEditor.revealRangeInCenterIfOutsideViewport({ endColumn: selection.endColumn + 1, endLineNumber: selection.endLine + 1, startColumn: selection.startColumn + 1, startLineNumber: selection.startLine + 1 });
+		templateData.timeStamp.innerText = (node.element.time as Date).toLocaleTimeString();
+		templateData.message.innerText = node.element.message;
+		if (node.element.range) {
+			templateData.disposable.add(addStandardDisposableGenericMouseDownListner(templateData.message, () => {
+				let editor = this.editorService.activeEditorPane as QueryEditor;
+				const codeEditor = <ICodeEditor>editor.getControl();
+				codeEditor.focus();
+				codeEditor.setSelection(node.element.range);
+				codeEditor.revealRangeInCenterIfOutsideViewport(node.element.range);
+			}));
 		}
-
-		return true;
 	}
 
-	public onContextMenu(tree: ITree, element: any, event: ContextMenuEvent): boolean {
-		return true;
+	disposeTemplate(templateData: IBatchTemplate): void {
+		dispose(templateData.disposable);
+	}
+}
+
+class MessageRenderer implements ITreeRenderer<IResultMessageIntern, void, IMessageTemplate> {
+	public readonly templateId = TemplateIds.MESSAGE;
+
+	renderTemplate(container: HTMLElement): IMessageTemplate {
+		container.append($('.time-stamp'));
+		const message = $('.message');
+		message.style.whiteSpace = 'pre';
+		container.append(message);
+		return { message };
+	}
+
+	renderElement(node: ITreeNode<IResultMessageIntern, void>, index: number, templateData: IMessageTemplate): void {
+		let data: IMessageTemplate = templateData;
+		data.message.innerText = node.element.message;
+	}
+
+	disposeTemplate(templateData: IMessageTemplate | IBatchTemplate): void {
 	}
 }
 
@@ -407,8 +365,4 @@ export class Model {
 	public totalExecuteMessage: IMessagePanelMessage;
 
 	public uuid = generateUuid();
-
-	public focus() {
-
-	}
 }

@@ -11,12 +11,6 @@ BUILD="$ROOT/$BUILDNAME"
 TARBALL_FILENAME="azuredatastudio-$PLATFORM_LINUX.tar.gz"
 TARBALL_PATH="$REPO/.build/linux/archive/$TARBALL_FILENAME"
 
-# create version
-PACKAGEJSON="$BUILD/resources/app/package.json"
-VERSION=$(node -p "require(\"$PACKAGEJSON\").version")
-COMMIT_ID=$(git rev-parse HEAD)
-echo -e "{  \"version\": \"$VERSION\", \"quality\": \"$VSCODE_QUALITY\", \"commit\": \"$COMMIT_ID\" }" > "$REPO/.build/version.json"
-
 rm -rf $ROOT/code-*.tar.*
 (cd $ROOT && tar -czf $TARBALL_PATH $BUILDNAME)
 

@@ -41,3 +41,9 @@ Special thank to Adam Machanic for partnering with us and make this sp_whoisacti
 * Changed CPU usage, CPU delta, memory usage, memory delta to show only top 10 data
 * Added details option on each chart to display details of data entries
 * Improved "Get plans" and "Find leader of block" tasks. The tasks will open new editor, configure current dashboard connection, and run the query.
+
+## How to produce an extension installation package
+Run the following commands sequentially in the context of this directory:
+- `yarn install` - to install the dependencies
+- `yarn build` - to build the code
+- `vsce package` - to produce an extension installation package

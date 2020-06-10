@@ -12,7 +12,6 @@ import { ContextKeyExpr, IContextKeyService } from 'vs/platform/contextkey/commo
 import { WidgetConfig } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/browser/insightRegistry';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
-import { DashboardServiceInterface } from 'sql/workbench/contrib/dashboard/browser/services/dashboardServiceInterface.service';
 import { WIDGETS_CONTAINER } from 'sql/workbench/contrib/dashboard/browser/containers/dashboardWidgetContainer.contribution';
 import { GRID_CONTAINER } from 'sql/workbench/contrib/dashboard/browser/containers/dashboardGridContainer.contribution';
 import { WEBVIEW_CONTAINER } from 'sql/workbench/contrib/dashboard/browser/containers/dashboardWebviewContainer.contribution';
@@ -111,7 +110,7 @@ export function addProvider<T extends { connectionManagementService: SingleConne
  * Adds the edition to the passed widgets and returns the new widgets
  * @param widgets Array of widgets to add edition onto
  */
-export function addEdition<T extends { connectionManagementService: SingleConnectionManagementService }>(config: WidgetConfig[], collection: DashboardServiceInterface): Array<WidgetConfig> {
+export function addEdition<T extends { connectionManagementService: SingleConnectionManagementService }>(config: WidgetConfig[], collection: T): Array<WidgetConfig> {
 	const connectionInfo: ConnectionManagementInfo = collection.connectionManagementService.connectionInfo;
 	if (connectionInfo.serverInfo) {
 		const edition = connectionInfo.serverInfo.engineEditionId;

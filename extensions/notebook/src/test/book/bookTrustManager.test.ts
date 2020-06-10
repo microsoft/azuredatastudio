@@ -53,6 +53,7 @@ describe('BookTrustManagerTests', function () {
 
 			// Mock Book Data
 			let bookTreeItemFormat1: BookTreeItemFormat = {
+				contentPath: undefined,
 				root: '/temp/SubFolder/',
 				tableOfContents: {
 					sections: [
@@ -72,6 +73,7 @@ describe('BookTrustManagerTests', function () {
 			};
 
 			let bookTreeItemFormat2: BookTreeItemFormat = {
+				contentPath: undefined,
 				root: '/temp/SubFolder2/',
 				tableOfContents: {
 					sections: [
@@ -88,6 +90,7 @@ describe('BookTrustManagerTests', function () {
 			};
 
 			let bookTreeItemFormat3: BookTreeItemFormat = {
+				contentPath: undefined,
 				root: '/temp2/SubFolder3/',
 				tableOfContents: {
 					sections: [
@@ -127,8 +130,8 @@ describe('BookTrustManagerTests', function () {
 			let isNotebook1Trusted = bookTrustManager.isNotebookTrustedByDefault(notebookUri1);
 			let isNotebook2Trusted = bookTrustManager.isNotebookTrustedByDefault(notebookUri2);
 
-			should(isNotebook1Trusted).be.true("Notebook 1 should be trusted");
-			should(isNotebook2Trusted).be.true("Notebook 2 should be trusted");
+			should(isNotebook1Trusted).be.true('Notebook 1 should be trusted');
+			should(isNotebook2Trusted).be.true('Notebook 2 should be trusted');
 
 		});
 
@@ -136,42 +139,42 @@ describe('BookTrustManagerTests', function () {
 			let notebookUri = path.join(path.sep,'temp','SubFolder2','content', 'sample', 'notebook.ipynb');
 			let isNotebookTrusted = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
 
-			should(isNotebookTrusted).be.false("Notebook should be trusted");
+			should(isNotebookTrusted).be.false('Notebook should be trusted');
 		});
 
 		it('should trust notebook after book has been trusted within a workspace', async () => {
 			let notebookUri = path.join(path.sep,'temp','SubFolder2','content', 'sample', 'notebook.ipynb');
 			let isNotebookTrustedBeforeChange = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
 
-			should(isNotebookTrustedBeforeChange).be.false("Notebook should NOT be trusted");
+			should(isNotebookTrustedBeforeChange).be.false('Notebook should NOT be trusted');
 
 			// add another book subfolder
 			bookTrustManager.setBookAsTrusted('/SubFolder2/');
 
 			let isNotebookTrustedAfterChange = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
 
-			should(isNotebookTrustedAfterChange).be.true("Notebook should be trusted");
+			should(isNotebookTrustedAfterChange).be.true('Notebook should be trusted');
 		});
 
 		it('should NOT trust a notebook when untrusting a book within a workspace', async () => {
 			let notebookUri = path.join(path.sep,'temp','SubFolder','content', 'sample', 'notebook.ipynb');
 			let isNotebookTrusted = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
 
-			should(isNotebookTrusted).be.true("Notebook should be trusted");
+			should(isNotebookTrusted).be.true('Notebook should be trusted');
 
 			// remove trusted subfolders
 			trustedSubFolders = [];
 
 			let isNotebookTrustedAfterChange = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
 
-			should(isNotebookTrustedAfterChange).be.false("Notebook should not be trusted after book removal");
+			should(isNotebookTrustedAfterChange).be.false('Notebook should not be trusted after book removal');
 		});
 
 		it('should NOT trust an unknown book within a workspace', async () => {
 			let notebookUri = path.join(path.sep, 'randomfolder', 'randomsubfolder', 'content', 'randomnotebook.ipynb');
 			let isNotebookTrusted = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
 
-			should(isNotebookTrusted).be.false("Random notebooks should not be trusted");
+			should(isNotebookTrusted).be.false('Random notebooks should not be trusted');
 		});
 
 		it('should NOT trust notebook inside trusted subfolder when absent in table of contents ', async () => {
@@ -180,7 +183,7 @@ describe('BookTrustManagerTests', function () {
 			let notebookUri = path.join(path.sep, 'temp', 'SubFolder', 'content', 'sample', 'notInToc.ipynb');
 			let isNotebookTrusted = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
 
-			should(isNotebookTrusted).be.false("Notebook should NOT be trusted");
+			should(isNotebookTrusted).be.false('Notebook should NOT be trusted');
 		});
 	});
 
@@ -206,6 +209,7 @@ describe('BookTrustManagerTests', function () {
 			apiWrapperMock.setup(api => api.getWorkspaceFolders()).returns(() => []);
 			apiWrapperMock.setup(api => api.getConfiguration(TypeMoq.It.isValue(constants.notebookConfigKey))).returns(() => workspaceConfigurtionMock.object);
 			let bookTreeItemFormat1: BookTreeItemFormat = {
+				contentPath: undefined,
 				root: '/temp/SubFolder/',
 				tableOfContents: {
 					sections: [
@@ -225,6 +229,7 @@ describe('BookTrustManagerTests', function () {
 			};
 
 			let bookTreeItemFormat2: BookTreeItemFormat = {
+				contentPath: undefined,
 				root: '/temp/SubFolder2/',
 				tableOfContents: {
 					sections: [
@@ -269,8 +274,8 @@ describe('BookTrustManagerTests', function () {
 			let isNotebook1Trusted = bookTrustManager.isNotebookTrustedByDefault(notebookUri1);
 			let isNotebook2Trusted = bookTrustManager.isNotebookTrustedByDefault(notebookUri2);
 
-			should(isNotebook1Trusted).be.true("Notebook 1 should be trusted");
-			should(isNotebook2Trusted).be.true("Notebook 2 should be trusted");
+			should(isNotebook1Trusted).be.true('Notebook 1 should be trusted');
+			should(isNotebook2Trusted).be.true('Notebook 2 should be trusted');
 
 		});
 
@@ -278,20 +283,20 @@ describe('BookTrustManagerTests', function () {
 			let notebookUri = path.join(path.sep,'temp','SubFolder2','content', 'sample', 'notebook.ipynb');
 			let isNotebookTrusted = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
 
-			should(isNotebookTrusted).be.false("Notebook should be trusted");
+			should(isNotebookTrusted).be.false('Notebook should be trusted');
 		});
 
 		it('should trust notebook after book has been added to a folder', async () => {
 			let notebookUri = path.join(path.sep,'temp','SubFolder2','content', 'sample','notebook.ipynb');
 			let isNotebookTrustedBeforeChange = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
 
-			should(isNotebookTrustedBeforeChange).be.false("Notebook should NOT be trusted");
+			should(isNotebookTrustedBeforeChange).be.false('Notebook should NOT be trusted');
 
 			bookTrustManager.setBookAsTrusted('/temp/SubFolder2/');
 
 			let isNotebookTrustedAfterChange = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
 
-			should(isNotebookTrustedAfterChange).be.true("Notebook should be trusted");
+			should(isNotebookTrustedAfterChange).be.true('Notebook should be trusted');
 		});
 
 		it('should NOT trust a notebook when untrusting a book in folder', async () => {
@@ -299,20 +304,20 @@ describe('BookTrustManagerTests', function () {
 			let notebookUri = path.join(path.sep,'temp','SubFolder','content', 'sample', 'notebook.ipynb');
 			let isNotebookTrusted = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
 
-			should(isNotebookTrusted).be.true("Notebook should be trusted");
+			should(isNotebookTrusted).be.true('Notebook should be trusted');
 
 			trustedFolders = [];
 
 			let isNotebookTrustedAfterChange = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
 
-			should(isNotebookTrustedAfterChange).be.false("Notebook should not be trusted after book removal");
+			should(isNotebookTrustedAfterChange).be.false('Notebook should not be trusted after book removal');
 		});
 
 		it('should NOT trust an unknown book', async () => {
 			let notebookUri = path.join(path.sep, 'randomfolder', 'randomsubfolder', 'content', 'randomnotebook.ipynb');
 			let isNotebookTrusted = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
 
-			should(isNotebookTrusted).be.false("Random notebooks should not be trusted");
+			should(isNotebookTrusted).be.false('Random notebooks should not be trusted');
 		});
 
 		it('should NOT trust notebook inside trusted subfolder when absent in table of contents ', async () => {
@@ -321,7 +326,7 @@ describe('BookTrustManagerTests', function () {
 			let notebookUri =  path.join(path.sep, 'temp', 'SubFolder', 'content', 'sample', 'notInToc.ipynb');
 			let isNotebookTrusted = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
 
-			should(isNotebookTrusted).be.false("Notebook should NOT be trusted");
+			should(isNotebookTrusted).be.false('Notebook should NOT be trusted');
 		});
 
 	});

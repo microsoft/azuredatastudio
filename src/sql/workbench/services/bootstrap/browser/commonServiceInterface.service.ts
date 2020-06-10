@@ -36,8 +36,8 @@ export class SingleConnectionMetadataService {
 		return Observable.fromPromise(this._metadataService.getMetadata(this._uri));
 	}
 
-	get databaseNames(): Observable<string[]> {
-		return Observable.fromPromise(this._metadataService.getDatabaseNames(this._uri));
+	get databases(): Observable<string[] | DatabaseInfo[]> {
+		return Observable.fromPromise(this._metadataService.getDatabases(this._uri));
 	}
 }
 

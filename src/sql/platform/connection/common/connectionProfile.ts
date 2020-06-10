@@ -43,6 +43,8 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 			this._id = model.id;
 			this.azureTenantId = model.azureTenantId;
 			this.azureAccount = model.azureAccount;
+			this.azureResourceId = model.azureResourceId;
+			this.azurePortalEndpoint = model.azurePortalEndpoint;
 			if (this.capabilitiesService && model.providerName) {
 				let capabilities = this.capabilitiesService.getCapabilities(model.providerName);
 				if (capabilities && capabilities.connection && capabilities.connection.connectionOptions) {
@@ -69,18 +71,23 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		this.options['databaseDisplayName'] = this.databaseName;
 	}
 
-	public matches(other: interfaces.IConnectionProfile): boolean {
-		return other
-			&& this.providerName === other.providerName
-			&& this.nullCheckEqualsIgnoreCase(this.serverName, other.serverName)
-			&& this.nullCheckEqualsIgnoreCase(this.databaseName, other.databaseName)
-			&& this.nullCheckEqualsIgnoreCase(this.userName, other.userName)
-			&& this.nullCheckEqualsIgnoreCase(this.options['databaseDisplayName'], other.options['databaseDisplayName'])
-			&& this.authenticationType === other.authenticationType
-			&& this.groupId === other.groupId;
+	public static matchesProfile(a: interfaces.IConnectionProfile, b: interfaces.IConnectionProfile): boolean {
+		return a && b
+			&& a.providerName === b.providerName
+			&& ConnectionProfile.nullCheckEqualsIgnoreCase(a.serverName, b.serverName)
+			&& ConnectionProfile.nullCheckEqualsIgnoreCase(a.databaseName, b.databaseName)
+			&& ConnectionProfile.nullCheckEqualsIgnoreCase(a.userName, b.userName)
+			&& ConnectionProfile.nullCheckEqualsIgnoreCase(a.options['databaseDisplayName'], b.options['databaseDisplayName'])
+			&& a.authenticationType === b.authenticationType
+			&& a.groupId === b.groupId;
 	}
 
-	private nullCheckEqualsIgnoreCase(a: string, b: string) {
+	public matches(other: interfaces.IConnectionProfile): boolean {
+		return ConnectionProfile.matchesProfile(this, other);
+
+	}
+
+	private static nullCheckEqualsIgnoreCase(a: string, b: string) {
 		let bothNull: boolean = !a && !b;
 		return bothNull ? bothNull : equalsIgnoreCase(a, b);
 	}
@@ -118,6 +125,22 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 
 	public set azureAccount(value: string | undefined) {
 		this.options['azureAccount'] = value;
+	}
+
+	public get azurePortalEndpoint() {
+		return this.options['azurePortalEndpoint'];
+	}
+
+	public set azurePortalEndpoint(value: string | undefined) {
+		this.options['azurePortalEndpoint'] = value;
+	}
+
+	public get azureResourceId() {
+		return this.options['azureResourceId'];
+	}
+
+	public set azureResourceId(value: string | undefined) {
+		this.options['azureResourceId'] = value;
 	}
 
 	public get registeredServerDescription(): string {
@@ -205,7 +228,9 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 			saveProfile: this.saveProfile,
 			id: this.id,
 			azureTenantId: this.azureTenantId,
-			azureAccount: this.azureAccount
+			azureAccount: this.azureAccount,
+			azurePortalEndpoint: this.azurePortalEndpoint,
+			azureResourceId: this.azureResourceId
 		};
 
 		return result;

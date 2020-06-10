@@ -5,3 +5,4 @@
 
 export const DeploymentConfigurationKey: string = 'deployment';
 export const AzdataInstallLocationKey: string = 'azdataInstallLocation';
+export const ToolsInstallPath = 'AZDATA_NB_VAR_TOOLS_INSTALLATION_PATH';

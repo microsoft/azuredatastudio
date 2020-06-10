@@ -2,7 +2,7 @@
   "name": "schema-compare",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "publisher": "Microsoft",
   "preview": false,
   "engines": {
@@ -75,10 +75,7 @@
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.1",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "github:corivera/vscodetestcover#1.0.5"
-  },
-  "resolutions": {
-      "esprima": "^4.0.0"
+    "vscodetestcover": "^1.0.9"
   },
   "__metadata": {
     "id": "37",

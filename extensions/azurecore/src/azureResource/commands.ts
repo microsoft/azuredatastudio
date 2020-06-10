@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-import { window, QuickPickItem } from 'vscode';
+import { window, QuickPickItem, env, Uri } from 'vscode';
 import * as azdata from 'azdata';
 import { TokenCredentials } from '@azure/ms-rest-js';
 import * as nls from 'vscode-nls';
@@ -26,6 +26,12 @@ import { AzureAccount, Tenant } from '../account-provider/interfaces';
 export function registerAzureResourceCommands(appContext: AppContext, tree: AzureResourceTreeProvider): void {
 	appContext.apiWrapper.registerCommand('azure.resource.startterminal', async (node?: TreeNode) => {
 		try {
+			const enablePreviewFeatures = appContext.apiWrapper.getConfiguration('workbench').get('enablePreviewFeatures');
+			if (!enablePreviewFeatures) {
+				const msg = localize('azure.cloudTerminalPreview', "You must enable preview features in order to use Azure Cloud Shell.");
+				appContext.apiWrapper.showInformationMessage(msg);
+				return;
+			}
 			if (!node || !(node instanceof AzureResourceAccountTreeNode)) {
 				return;
 			}
@@ -230,5 +236,19 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 		if (conn) {
 			appContext.apiWrapper.executeCommand('workbench.view.connections');
 		}
+	});
+
+	appContext.apiWrapper.registerCommand('azure.resource.openInAzurePortal', async (connectionProfile: azdata.IConnectionProfile) => {
+
+		if (
+			!connectionProfile.azureResourceId ||
+			!connectionProfile.azurePortalEndpoint ||
+			!connectionProfile.azureTenantId
+		) {
+			return;
+		}
+
+		const urlToOpen = `${connectionProfile.azurePortalEndpoint}//${connectionProfile.azureTenantId}/#resource/${connectionProfile.azureResourceId}`;
+		env.openExternal(Uri.parse(urlToOpen));
 	});
 }

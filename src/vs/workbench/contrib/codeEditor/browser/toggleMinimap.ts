@@ -30,7 +30,7 @@ export class ToggleMinimapAction extends Action {
 }
 
 const registry = Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions);
-registry.registerWorkbenchAction(SyncActionDescriptor.create(ToggleMinimapAction, ToggleMinimapAction.ID, ToggleMinimapAction.LABEL), 'View: Toggle Minimap', nls.localize('view', "View"));
+registry.registerWorkbenchAction(SyncActionDescriptor.from(ToggleMinimapAction), 'View: Toggle Minimap', nls.localize('view', "View"));
 
 /* {{SQL CARBON EDIT}} - Disable unused menu item
 MenuRegistry.appendMenuItem(MenuId.MenubarViewMenu, {

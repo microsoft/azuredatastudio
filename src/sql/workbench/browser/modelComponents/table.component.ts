@@ -26,6 +26,7 @@ import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { slickGridDataItemColumnValueWithNoData, textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
+import { convertSizeToNumber } from 'sql/base/browser/dom';
 
 export enum ColumnSizingMode {
 	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
@@ -182,8 +183,8 @@ export default class TableComponent extends ComponentBase implements IComponent,
 	}
 
 	private layoutTable(): void {
-		let width: number = this.convertSizeToNumber(this.width);
-		let height: number = this.convertSizeToNumber(this.height);
+		let width: number = convertSizeToNumber(this.width);
+		let height: number = convertSizeToNumber(this.height);
 		let forceFit: boolean = true;
 
 		// convert the tri-state viewmodel columnSizingMode to be either true or false for SlickGrid

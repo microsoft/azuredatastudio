@@ -6,7 +6,7 @@
 import 'vs/workbench/browser/parts/editor/editor.contribution';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Part } from 'vs/workbench/browser/part';
-import { Dimension, isAncestor, toggleClass, addClass, $ } from 'vs/base/browser/dom';
+import { Dimension, isAncestor, toggleClass, addClass, $, EventHelper } from 'vs/base/browser/dom';
 import { Event, Emitter, Relay } from 'vs/base/common/event';
 import { contrastBorder, editorBackground } from 'vs/platform/theme/common/colorRegistry';
 import { GroupDirection, IAddGroupOptions, GroupsArrangement, GroupOrientation, IMergeGroupOptions, MergeGroupMode, ICopyEditorOptions, GroupsOrder, GroupChangeKind, GroupLocation, IFindGroupScope, EditorGroupLayout, GroupLayoutArgument, IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
@@ -25,7 +25,7 @@ import { EditorDropTarget, EditorDropTargetDelegate } from 'vs/workbench/browser
 import { Color } from 'vs/base/common/color';
 import { CenteredViewLayout } from 'vs/base/browser/ui/centered/centeredViewLayout';
 import { onUnexpectedError } from 'vs/base/common/errors';
-import { Parts, IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { Parts, IWorkbenchLayoutService, Position } from 'vs/workbench/services/layout/browser/layoutService';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { MementoObject } from 'vs/workbench/common/memento';
 import { assertIsDefined } from 'vs/base/common/types';
@@ -830,14 +830,73 @@ export class EditorPart extends Part implements IEditorGroupsService, IEditorGro
 		addClass(overlay, 'drop-block-overlay');
 		parent.appendChild(overlay);
 
-		CompositeDragAndDropObserver.INSTANCE.registerTarget(this.element, {
+		this._register(CompositeDragAndDropObserver.INSTANCE.registerTarget(this.element, {
 			onDragStart: e => {
 				toggleClass(overlay, 'visible', true);
 			},
 			onDragEnd: e => {
 				toggleClass(overlay, 'visible', false);
 			}
-		});
+		}));
+
+		let panelOpenerTimeout: any;
+		this._register(CompositeDragAndDropObserver.INSTANCE.registerTarget(overlay, {
+			onDragOver: e => {
+				EventHelper.stop(e.eventData, true);
+				if (e.eventData.dataTransfer) {
+					e.eventData.dataTransfer.dropEffect = 'none';
+				}
+
+				if (!this.layoutService.isVisible(Parts.PANEL_PART)) {
+					const boundingRect = overlay.getBoundingClientRect();
+
+					let openPanel = false;
+					const proximity = 100;
+					switch (this.layoutService.getPanelPosition()) {
+						case Position.BOTTOM:
+							if (e.eventData.clientY > boundingRect.bottom - proximity) {
+								openPanel = true;
+							}
+							break;
+						case Position.LEFT:
+							if (e.eventData.clientX < boundingRect.left + proximity) {
+								openPanel = true;
+							}
+							break;
+						case Position.RIGHT:
+							if (e.eventData.clientX > boundingRect.right - proximity) {
+								openPanel = true;
+							}
+							break;
+					}
+
+					if (!panelOpenerTimeout && openPanel) {
+						panelOpenerTimeout = setTimeout(() => this.layoutService.setPanelHidden(false), 200);
+					} else if (panelOpenerTimeout && !openPanel) {
+						clearTimeout(panelOpenerTimeout);
+						panelOpenerTimeout = undefined;
+					}
+				}
+			},
+			onDragLeave: () => {
+				if (panelOpenerTimeout) {
+					clearTimeout(panelOpenerTimeout);
+					panelOpenerTimeout = undefined;
+				}
+			},
+			onDragEnd: () => {
+				if (panelOpenerTimeout) {
+					clearTimeout(panelOpenerTimeout);
+					panelOpenerTimeout = undefined;
+				}
+			},
+			onDrop: () => {
+				if (panelOpenerTimeout) {
+					clearTimeout(panelOpenerTimeout);
+					panelOpenerTimeout = undefined;
+				}
+			}
+		}));
 
 		return this.container;
 	}
@@ -849,7 +908,11 @@ export class EditorPart extends Part implements IEditorGroupsService, IEditorGro
 	}
 
 	isLayoutCentered(): boolean {
-		return this.centeredLayoutWidget.isActive();
+		if (this.centeredLayoutWidget) {
+			return this.centeredLayoutWidget.isActive();
+		}
+
+		return false;
 	}
 
 	private doCreateGridControl(options?: IEditorPartCreationOptions): void {

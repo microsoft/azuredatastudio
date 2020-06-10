@@ -14,26 +14,22 @@ import { IInstantiationService, IConstructorSignature0, ServicesAccessor, Brande
 import { RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ITextModel } from 'vs/editor/common/model';
-import { IEditorGroup, IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
+import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { ICompositeControl, IComposite } from 'vs/workbench/common/composite';
 import { ActionRunner, IAction } from 'vs/base/common/actions';
-import { IFileService, FileSystemProviderCapabilities } from 'vs/platform/files/common/files';
+import { IFileService } from 'vs/platform/files/common/files';
 import { IPathData } from 'vs/platform/windows/common/windows';
 import { coalesce, firstOrDefault } from 'vs/base/common/arrays';
-import { ITextFileSaveOptions, ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
-import { IEditorService, IResourceEditorInputType } from 'vs/workbench/services/editor/common/editorService';
-import { isEqual, dirname } from 'vs/base/common/resources';
+import { IResourceEditorInputType } from 'vs/workbench/services/editor/common/editorService';
 import { IRange } from 'vs/editor/common/core/range';
-import { createMemoizer } from 'vs/base/common/decorators';
-import { ILabelService } from 'vs/platform/label/common/label';
-import { Schemas } from 'vs/base/common/network';
-import { IFilesConfigurationService, AutoSaveMode } from 'vs/workbench/services/filesConfiguration/common/filesConfigurationService';
 
 export const DirtyWorkingCopiesContext = new RawContextKey<boolean>('dirtyWorkingCopies', false);
 export const ActiveEditorContext = new RawContextKey<string | null>('activeEditor', null);
 export const ActiveEditorIsReadonlyContext = new RawContextKey<boolean>('activeEditorIsReadonly', false);
+export const ActiveEditorAvailableEditorIdsContext = new RawContextKey<string>('activeEditorAvailableEditorIds', '');
 export const EditorsVisibleContext = new RawContextKey<boolean>('editorIsOpen', false);
 export const EditorPinnedContext = new RawContextKey<boolean>('editorPinned', false);
+export const EditorStickyContext = new RawContextKey<boolean>('editorSticky', false);
 export const EditorGroupActiveEditorDirtyContext = new RawContextKey<boolean>('groupActiveEditorDirty', false);
 export const EditorGroupEditorsCountContext = new RawContextKey<number>('groupEditorsCount', 0);
 export const NoEditorsVisibleContext = EditorsVisibleContext.toNegated();
@@ -68,6 +64,11 @@ export interface IEditorPane extends IComposite {
 	 * The assigned input of this editor.
 	 */
 	readonly input: IEditorInput | undefined;
+
+	/**
+	 * The assigned options of the editor.
+	 */
+	readonly options: EditorOptions | undefined;
 
 	/**
 	 * The assigned group this editor is showing in.
@@ -397,6 +398,11 @@ export interface IEditorInput extends IDisposable {
 	getTitle(verbosity?: Verbosity): string | undefined;
 
 	/**
+	 * Returns the aria label to be read out by a screen reader.
+	 */
+	getAriaLabel(): string;
+
+	/**
 	 * Resolves the input.
 	 */
 	resolve(): Promise<IEditorModel | null>;
@@ -505,6 +511,10 @@ export abstract class EditorInput extends Disposable implements IEditorInput {
 		return this.getName();
 	}
 
+	getAriaLabel(): string {
+		return this.getTitle(Verbosity.SHORT);
+	}
+
 	/**
 	 * Returns the preferred editor for this input. A list of candidate editors is passed in that whee registered
 	 * for the input. This allows subclasses to decide late which editor to use for the input on a case by case basis.
@@ -585,164 +595,6 @@ export abstract class EditorInput extends Disposable implements IEditorInput {
 		}
 
 		super.dispose();
-	}
-}
-
-export abstract class TextResourceEditorInput extends EditorInput {
-
-	private static readonly MEMOIZER = createMemoizer();
-
-	constructor(
-		public readonly resource: URI,
-		@IEditorService protected readonly editorService: IEditorService,
-		@IEditorGroupsService protected readonly editorGroupService: IEditorGroupsService,
-		@ITextFileService protected readonly textFileService: ITextFileService,
-		@ILabelService protected readonly labelService: ILabelService,
-		@IFileService protected readonly fileService: IFileService,
-		@IFilesConfigurationService protected readonly filesConfigurationService: IFilesConfigurationService
-	) {
-		super();
-
-		this.registerListeners();
-	}
-
-	protected registerListeners(): void {
-
-		// Clear label memoizer on certain events that have impact
-		this._register(this.labelService.onDidChangeFormatters(e => this.onLabelEvent(e.scheme)));
-		this._register(this.fileService.onDidChangeFileSystemProviderRegistrations(e => this.onLabelEvent(e.scheme)));
-		this._register(this.fileService.onDidChangeFileSystemProviderCapabilities(e => this.onLabelEvent(e.scheme)));
-	}
-
-	private onLabelEvent(scheme: string): void {
-		if (scheme === this.resource.scheme) {
-
-			// Clear any cached labels from before
-			TextResourceEditorInput.MEMOIZER.clear();
-
-			// Trigger recompute of label
-			this._onDidChangeLabel.fire();
-		}
-	}
-
-	getName(): string {
-		return this.basename;
-	}
-
-	@TextResourceEditorInput.MEMOIZER
-	private get basename(): string {
-		return this.labelService.getUriBasenameLabel(this.resource);
-	}
-
-	getDescription(verbosity: Verbosity = Verbosity.MEDIUM): string | undefined {
-		switch (verbosity) {
-			case Verbosity.SHORT:
-				return this.shortDescription;
-			case Verbosity.LONG:
-				return this.longDescription;
-			case Verbosity.MEDIUM:
-			default:
-				return this.mediumDescription;
-		}
-	}
-
-	@TextResourceEditorInput.MEMOIZER
-	private get shortDescription(): string {
-		return this.labelService.getUriBasenameLabel(dirname(this.resource));
-	}
-
-	@TextResourceEditorInput.MEMOIZER
-	private get mediumDescription(): string {
-		return this.labelService.getUriLabel(dirname(this.resource), { relative: true });
-	}
-
-	@TextResourceEditorInput.MEMOIZER
-	private get longDescription(): string {
-		return this.labelService.getUriLabel(dirname(this.resource));
-	}
-
-	@TextResourceEditorInput.MEMOIZER
-	private get shortTitle(): string {
-		return this.getName();
-	}
-
-	@TextResourceEditorInput.MEMOIZER
-	private get mediumTitle(): string {
-		return this.labelService.getUriLabel(this.resource, { relative: true });
-	}
-
-	@TextResourceEditorInput.MEMOIZER
-	private get longTitle(): string {
-		return this.labelService.getUriLabel(this.resource);
-	}
-
-	getTitle(verbosity: Verbosity): string {
-		switch (verbosity) {
-			case Verbosity.SHORT:
-				return this.shortTitle;
-			case Verbosity.LONG:
-				return this.longTitle;
-			default:
-			case Verbosity.MEDIUM:
-				return this.mediumTitle;
-		}
-	}
-
-	isUntitled(): boolean {
-		return this.resource.scheme === Schemas.untitled;
-	}
-
-	isReadonly(): boolean {
-		if (this.isUntitled()) {
-			return false; // untitled is never readonly
-		}
-
-		return this.fileService.hasCapability(this.resource, FileSystemProviderCapabilities.Readonly);
-	}
-
-	isSaving(): boolean {
-		if (this.isUntitled()) {
-			return false; // untitled is never saving automatically
-		}
-
-		if (this.filesConfigurationService.getAutoSaveMode() === AutoSaveMode.AFTER_SHORT_DELAY) {
-			return true; // a short auto save is configured, treat this as being saved
-		}
-
-		return false;
-	}
-
-	async save(group: GroupIdentifier, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
-		return this.doSave(group, options, false);
-	}
-
-	saveAs(group: GroupIdentifier, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
-		return this.doSave(group, options, true);
-	}
-
-	private async doSave(group: GroupIdentifier, options: ISaveOptions | undefined, saveAs: boolean): Promise<IEditorInput | undefined> {
-
-		// Save / Save As
-		let target: URI | undefined;
-		if (saveAs) {
-			target = await this.textFileService.saveAs(this.resource, undefined, options);
-		} else {
-			target = await this.textFileService.save(this.resource, options);
-		}
-
-		if (!target) {
-			return undefined; // save cancelled
-		}
-
-		if (!isEqual(target, this.resource)) {
-			return this.editorService.createEditorInput({ resource: target });
-		}
-
-		return this;
-	}
-
-	async revert(group: GroupIdentifier, options?: IRevertOptions): Promise<void> {
-		await this.textFileService.revert(this.resource, options);
 	}
 }
 
@@ -1041,6 +893,12 @@ export class EditorOptions implements IEditorOptions {
 	pinned: boolean | undefined;
 
 	/**
+	 * An editor that is sticky moves to the beginning of the editors list within the group and will remain
+	 * there unless explicitly closed. Operations such as "Close All" will not close sticky editors.
+	 */
+	sticky: boolean | undefined;
+
+	/**
 	 * The index in the document stack where to insert the editor into when opening.
 	 */
 	index: number | undefined;
@@ -1103,6 +961,10 @@ export class EditorOptions implements IEditorOptions {
 
 		if (typeof options.pinned === 'boolean') {
 			this.pinned = options.pinned;
+		}
+
+		if (typeof options.sticky === 'boolean') {
+			this.sticky = options.sticky;
 		}
 
 		if (typeof options.inactive === 'boolean') {
@@ -1285,6 +1147,7 @@ export class EditorCommandsContextActionRunner extends ActionRunner {
 export interface IEditorCloseEvent extends IEditorIdentifier {
 	replaced: boolean;
 	index: number;
+	sticky: boolean;
 }
 
 export type GroupIdentifier = number;
@@ -1298,6 +1161,7 @@ export interface IWorkbenchEditorConfiguration {
 
 interface IEditorPartConfiguration {
 	showTabs?: boolean;
+	scrollToSwitchTabs?: boolean;
 	highlightModifiedTabs?: boolean;
 	tabCloseButton?: 'left' | 'right' | 'off';
 	tabSizing?: 'fit' | 'shrink';
@@ -1470,10 +1334,13 @@ export async function pathsToEditors(paths: IPathData[] | undefined, fileService
 	const editors = await Promise.all(paths.map(async path => {
 		const resource = URI.revive(path.fileUri);
 		if (!resource || !fileService.canHandleResource(resource)) {
-			return undefined; // {{SQL CARBON EDIT}} @anthonydresser revert after strictnullchecks
+			return undefined; // {{SQL CARBON EDIT}} @anthonydresser strict-null-checks
 		}
 
 		const exists = (typeof path.exists === 'boolean') ? path.exists : await fileService.exists(resource);
+		if (!exists && path.openOnlyIfExists) {
+			return undefined; // {{SQL CARBON EDIT}} @anthonydresser strict-null-checks
+		}
 
 		const options: ITextEditorOptions = (exists && typeof path.lineNumber === 'number') ? {
 			selection: {

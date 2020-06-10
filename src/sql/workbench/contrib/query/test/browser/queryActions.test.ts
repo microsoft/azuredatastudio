@@ -5,8 +5,6 @@
 
 import { Emitter, Event } from 'vs/base/common/event';
 
-import { ISelectionData } from 'azdata';
-
 import {
 	IConnectionParams,
 	INewConnectionParams,
@@ -34,6 +32,7 @@ import { TestConfigurationService } from 'vs/platform/configuration/test/common/
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
+import { IRange } from 'vs/editor/common/core/range';
 
 suite('SQL QueryAction Tests', () => {
 
@@ -222,9 +221,9 @@ suite('SQL QueryAction Tests', () => {
 		let countCalledShowDialog: number = 0;
 		let countCalledRunQuery: number = 0;
 		let showDialogConnectionParams: INewConnectionParams = undefined;
-		let runQuerySelection: ISelectionData = undefined;
-		let selectionToReturnInGetSelection: ISelectionData = undefined;
-		let predefinedSelection: ISelectionData = { startLine: 1, startColumn: 2, endLine: 3, endColumn: 4 };
+		let runQuerySelection: IRange = undefined;
+		let selectionToReturnInGetSelection: IRange = undefined;
+		let predefinedSelection: IRange = { startLineNumber: 1, startColumn: 2, endLineNumber: 3, endColumn: 4 };
 
 		// ... Mock "getSelection" in QueryEditor
 		const workbenchinstantiationService = workbenchInstantiationService();
@@ -234,11 +233,11 @@ suite('SQL QueryAction Tests', () => {
 
 		let queryInput = TypeMoq.Mock.ofType(UntitledQueryEditorInput, TypeMoq.MockBehavior.Loose, undefined, fileInput, undefined, connectionManagementService.object, queryModelService.object, configurationService.object);
 		queryInput.setup(x => x.uri).returns(() => testUri);
-		queryInput.setup(x => x.runQuery(TypeMoq.It.isAny())).callback((selection: ISelectionData) => {
+		queryInput.setup(x => x.runQuery(TypeMoq.It.isAny())).callback((selection: IRange) => {
 			runQuerySelection = selection;
 			countCalledRunQuery++;
 		});
-		queryInput.setup(x => x.runQuery(undefined)).callback((selection: ISelectionData) => {
+		queryInput.setup(x => x.runQuery(undefined)).callback((selection: IRange) => {
 			runQuerySelection = selection;
 			countCalledRunQuery++;
 		});
@@ -277,7 +276,7 @@ suite('SQL QueryAction Tests', () => {
 		assert.equal(countCalledShowDialog, 1, 'run should call showDialog');
 		assert.equal(countCalledRunQuery, 0, 'run should not call runQuery');
 		assert.equal(showDialogConnectionParams.connectionType, ConnectionType.editor, 'connectionType should be queryEditor');
-		assert.equal(showDialogConnectionParams.querySelection, undefined, 'querySelection should be undefined');
+		assert.equal(showDialogConnectionParams.queryRange, undefined, 'querySelection should be undefined');
 
 		////// If I call run on RunQueryAction while disconnected and with a defined selection
 		isConnected = false;
@@ -288,11 +287,11 @@ suite('SQL QueryAction Tests', () => {
 		assert.equal(countCalledShowDialog, 2, 'run should call showDialog again');
 		assert.equal(countCalledRunQuery, 0, 'run should not call runQuery');
 		assert.equal(showDialogConnectionParams.connectionType, ConnectionType.editor, 'connectionType should be queryEditor');
-		assert.notEqual(showDialogConnectionParams.querySelection, undefined, 'There should not be an undefined selection in runQuery');
-		assert.equal(showDialogConnectionParams.querySelection.startLine, selectionToReturnInGetSelection.startLine, 'startLine should match');
-		assert.equal(showDialogConnectionParams.querySelection.startColumn, selectionToReturnInGetSelection.startColumn, 'startColumn should match');
-		assert.equal(showDialogConnectionParams.querySelection.endLine, selectionToReturnInGetSelection.endLine, 'endLine should match');
-		assert.equal(showDialogConnectionParams.querySelection.endColumn, selectionToReturnInGetSelection.endColumn, 'endColumn should match');
+		assert.notEqual(showDialogConnectionParams.queryRange, undefined, 'There should not be an undefined selection in runQuery');
+		assert.equal(showDialogConnectionParams.queryRange.startLineNumber, selectionToReturnInGetSelection.startLineNumber, 'startLine should match');
+		assert.equal(showDialogConnectionParams.queryRange.startColumn, selectionToReturnInGetSelection.startColumn, 'startColumn should match');
+		assert.equal(showDialogConnectionParams.queryRange.endLineNumber, selectionToReturnInGetSelection.endLineNumber, 'endLine should match');
+		assert.equal(showDialogConnectionParams.queryRange.endColumn, selectionToReturnInGetSelection.endColumn, 'endColumn should match');
 
 		////// If I call run on RunQueryAction while connected and with an undefined selection
 		isConnected = true;
@@ -313,9 +312,9 @@ suite('SQL QueryAction Tests', () => {
 		assert.equal(countCalledShowDialog, 2, 'run should not call showDialog');
 		assert.equal(countCalledRunQuery, 2, 'run should call runQuery again');
 		assert.notEqual(runQuerySelection, undefined, 'There should not be an undefined selection in runQuery');
-		assert.equal(runQuerySelection.startLine, selectionToReturnInGetSelection.startLine, 'startLine should match');
+		assert.equal(runQuerySelection.startLineNumber, selectionToReturnInGetSelection.startLineNumber, 'startLine should match');
 		assert.equal(runQuerySelection.startColumn, selectionToReturnInGetSelection.startColumn, 'startColumn should match');
-		assert.equal(runQuerySelection.endLine, selectionToReturnInGetSelection.endLine, 'endLine should match');
+		assert.equal(runQuerySelection.endLineNumber, selectionToReturnInGetSelection.endLineNumber, 'endLine should match');
 		assert.equal(runQuerySelection.endColumn, selectionToReturnInGetSelection.endColumn, 'endColumn should match');
 	});
 
@@ -560,6 +559,124 @@ suite('SQL QueryAction Tests', () => {
 		// Then:
 		// ... The connection should have changed to the provided database
 		assert.equal(listItem.currentDatabaseName, eventParams.connectionProfile.databaseName);
+	});
+
+	test('runCurrent - opens connection dialog when there are no active connections', async () => {
+		// setting up environment
+		let isConnected = false;
+		let predefinedSelection: IRange = { startLineNumber: 1, startColumn: 1, endLineNumber: 1, endColumn: 1 };
+		let calledRunQueryStatementOnInput: boolean = undefined;
+
+		// mocking query editor
+		const contextkeyservice = new MockContextKeyService();
+		let queryEditor = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Loose, undefined, new TestThemeService(),
+			new TestStorageService(), contextkeyservice, undefined, new TestFileService(), undefined);
+		queryEditor.setup(x => x.input).returns(() => testQueryInput.object);
+		queryEditor.setup(x => x.getSelection(false)).returns(() => { return predefinedSelection; });
+
+		// Mocking runQueryStatment in unititledQueryEditorInput
+		testQueryInput.setup(x => x.runQueryStatement(TypeMoq.It.isAny())).callback(() => { calledRunQueryStatementOnInput = true; });
+
+		// mocking isConnected in ConnectionManagementService
+		connectionManagementService.setup(x => x.isConnected(TypeMoq.It.isAnyString())).returns(() => isConnected);
+
+		// mocking QueryModelService
+		let queryModelService = TypeMoq.Mock.ofType(QueryModelService, TypeMoq.MockBehavior.Loose);
+		queryModelService.setup(x => x.runQueryStatement(TypeMoq.It.isAny(), TypeMoq.It.isAny()));
+
+		// Calling runCurrent with no open connection
+		let queryAction: RunQueryAction = new RunQueryAction(queryEditor.object, queryModelService.object, connectionManagementService.object);
+		calledRunQueryStatementOnInput = false;
+		await queryAction.runCurrent();
+
+		//connection dialog should open and runQueryStatement should not be called
+		assert.equal(calledRunQueryStatementOnInput, false, 'runCurrent should not call runQueryStatement');
+		testQueryInput.verify(x => x.runQueryStatement(TypeMoq.It.isAny()), TypeMoq.Times.never());
+		connectionManagementService.verify(x => x.showConnectionDialog(TypeMoq.It.isAny()), TypeMoq.Times.once());
+
+
+		// Calling runCurrent with an open connection
+		isConnected = true;
+		await queryAction.runCurrent();
+
+		//connection dialog should not open and runQueryStatement should be called
+		assert.equal(calledRunQueryStatementOnInput, true, 'runCurrent should call runQueryStatement');
+		testQueryInput.verify(x => x.runQueryStatement(TypeMoq.It.isAny()), TypeMoq.Times.once());
+		//show Dialog is not called
+		connectionManagementService.verify(x => x.showConnectionDialog(TypeMoq.It.isAny()), TypeMoq.Times.once());
+
+		// Calling runCurrent with empty Selection
+		isConnected = true;
+		calledRunQueryStatementOnInput = false;
+		await queryAction.runCurrent();
+
+		// Selection is empty
+		queryEditor.setup(x => x.isSelectionEmpty()).returns(() => true);
+
+		//connection dialog should not open and runQueryStatement should not be called
+		assert.equal(calledRunQueryStatementOnInput, false, 'runCurrent should not call runQueryStatemet');
+		connectionManagementService.verify(x => x.showConnectionDialog(TypeMoq.It.isAny()), TypeMoq.Times.once());
+	});
+
+	test('runCurrent- calls appropriate run methods based on different selections', async () => {
+		// setting up environment
+		let calledRunQueryStatementOnInput: boolean = undefined;
+		let predefinedCursorSelection: IRange = { startLineNumber: 1, startColumn: 1, endLineNumber: 1, endColumn: 1 };
+		let predefinedRangeSelection: IRange = { startLineNumber: 1, startColumn: 2, endLineNumber: 3, endColumn: 4 };
+
+		// mocking query editor
+		const contextkeyservice = new MockContextKeyService();
+		let queryEditor = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Loose, undefined, new TestThemeService(),
+			new TestStorageService(), contextkeyservice, undefined, new TestFileService(), undefined);
+		queryEditor.setup(x => x.input).returns(() => testQueryInput.object);
+
+		// mocking isConnected in ConnectionManagementService
+		connectionManagementService.setup(x => x.isConnected(TypeMoq.It.isAnyString())).returns(() => true);
+
+		// Mocking runQuery and runQueryStatement in unititledQueryEditorInput
+		testQueryInput.setup(x => x.runQuery(TypeMoq.It.isAny())).callback(() => { calledRunQueryOnInput = true; });
+		testQueryInput.setup(x => x.runQueryStatement(TypeMoq.It.isAny())).callback(() => { calledRunQueryStatementOnInput = true; });
+
+		// mocking QueryModelService
+		let queryModelService = TypeMoq.Mock.ofType(QueryModelService, TypeMoq.MockBehavior.Loose);
+		queryModelService.setup(x => x.runQuery(TypeMoq.It.isAny(), undefined, TypeMoq.It.isAny()));
+		queryModelService.setup(x => x.runQueryStatement(TypeMoq.It.isAny(), TypeMoq.It.isAny()));
+
+		let queryAction: RunQueryAction = new RunQueryAction(queryEditor.object, queryModelService.object, connectionManagementService.object);
+
+		// setting up queryEditor with only a cursor. This case should call runQueryStatement
+		queryEditor.setup(x => x.getSelection(false)).returns(() => { return predefinedCursorSelection; });
+		calledRunQueryOnInput = false;
+		calledRunQueryStatementOnInput = false;
+		await queryAction.runCurrent();
+
+		assert.equal(calledRunQueryStatementOnInput, true, 'runCurrent should call runQueryStatement');
+		assert.equal(calledRunQueryOnInput, false, 'run should not call runQuery');
+
+		// checking if runQuery statement is called with predefinedCursorSelection only
+		testQueryInput.verify(x => x.runQueryStatement(TypeMoq.It.isValue(predefinedCursorSelection)), TypeMoq.Times.once());
+		testQueryInput.verify(x => x.runQueryStatement(TypeMoq.It.isAny()), TypeMoq.Times.once());
+
+		// checking if runQuery is not called at all
+		testQueryInput.verify(x => x.runQuery(TypeMoq.It.isAny()), TypeMoq.Times.never());
+
+		// setting up queryEditor with a selection range. This case should call runQuery
+		queryEditor.setup(x => x.getSelection()).returns(() => { return predefinedRangeSelection; });
+		queryEditor.setup(x => x.getSelection(false)).returns(() => { return predefinedRangeSelection; });
+
+		calledRunQueryOnInput = false;
+		calledRunQueryStatementOnInput = false;
+		await queryAction.runCurrent();
+
+		assert.equal(calledRunQueryStatementOnInput, false, 'runCurrent should not call runQueryStatement');
+		assert.equal(calledRunQueryOnInput, true, 'run should call runQuery');
+
+		// checking if runQuery is called with predefinedRangeSelection only
+		testQueryInput.verify(x => x.runQuery(TypeMoq.It.isValue(predefinedRangeSelection)), TypeMoq.Times.once());
+		testQueryInput.verify(x => x.runQuery(TypeMoq.It.isAny()), TypeMoq.Times.once());
+
+		// checking if runQueryStatement is never called
+		testQueryInput.verify(x => x.runQueryStatement(TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 });
 

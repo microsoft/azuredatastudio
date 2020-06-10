@@ -44,6 +44,11 @@ export class TaskNode {
 	public databaseName?: string;
 
 	/**
+	 * Target Location
+	 */
+	public targetLocation?: string;
+
+	/**
 	 * Provider Name
 	 */
 	public providerName?: string;
@@ -99,7 +104,7 @@ export class TaskNode {
 	 */
 	public script?: string;
 
-	constructor(taskName: string, serverName?: string, databaseName?: string, taskId: string | undefined = undefined, taskExecutionMode: TaskExecutionMode = TaskExecutionMode.execute, isCancelable: boolean = true) {
+	constructor(taskName: string, serverName?: string, databaseName?: string, taskId: string | undefined = undefined, taskExecutionMode: TaskExecutionMode = TaskExecutionMode.execute, isCancelable: boolean = true, targetLocation?: string) {
 		this.id = taskId || generateUuid();
 
 		this.taskName = taskName;
@@ -111,5 +116,6 @@ export class TaskNode {
 		this.hasChildren = false;
 		this.taskExecutionMode = taskExecutionMode;
 		this.isCancelable = isCancelable;
+		this.targetLocation = targetLocation;
 	}
 }

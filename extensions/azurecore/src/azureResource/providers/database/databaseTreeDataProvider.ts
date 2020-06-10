@@ -44,14 +44,17 @@ export class AzureResourceDatabaseTreeDataProvider extends ResourceTreeDataProvi
 				databaseName: database.name,
 				userName: database.loginName,
 				password: '',
-				authenticationType: 'AzureMFA',
+				authenticationType: 'SqlLogin',
 				savePassword: true,
 				groupFullName: '',
 				groupId: '',
 				providerName: 'MSSQL',
 				saveProfile: false,
 				options: {},
-				azureAccount: account.key.accountId
+				azureAccount: account.key.accountId,
+				azureResourceId: database.id,
+				azureTenantId: database.tenant,
+				azurePortalEndpoint: account.properties.providerSettings.settings.portalEndpoint
 			},
 			childProvider: 'MSSQL',
 			type: ExtensionNodeType.Database

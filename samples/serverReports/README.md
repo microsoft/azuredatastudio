@@ -54,3 +54,9 @@ We would like to thank all our users who raised issues, and in particular the fo
 ## What's new in Server Reports v1.1?
 * Fixed DB Space Usage where it threw an error when database names contain special characters
 * Changed DB Space Usage and DB Buffer Usage to show only top 10 data
+
+## How to produce an extension installation package
+Run the following commands sequentially in the context of this directory:
+- `yarn install` - to install the dependencies
+- `yarn build` - to build the code
+- `vsce package` - to produce an extension installation package

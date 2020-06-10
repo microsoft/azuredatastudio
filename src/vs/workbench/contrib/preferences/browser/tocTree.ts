@@ -5,7 +5,7 @@
 
 import * as DOM from 'vs/base/browser/dom';
 import { IListVirtualDelegate } from 'vs/base/browser/ui/list/list';
-import { DefaultStyleController, IAccessibilityProvider } from 'vs/base/browser/ui/list/listWidget';
+import { DefaultStyleController, IListAccessibilityProvider } from 'vs/base/browser/ui/list/listWidget';
 import { IObjectTreeOptions, ObjectTree } from 'vs/base/browser/ui/tree/objectTree';
 import { ITreeElement, ITreeNode, ITreeRenderer } from 'vs/base/browser/ui/tree/tree';
 import { Iterable } from 'vs/base/common/iterator';
@@ -155,7 +155,15 @@ export function createTOCIterator(model: TOCTreeModel | SettingsTreeGroupElement
 	});
 }
 
-class SettingsAccessibilityProvider implements IAccessibilityProvider<SettingsTreeGroupElement> {
+class SettingsAccessibilityProvider implements IListAccessibilityProvider<SettingsTreeGroupElement> {
+	getWidgetAriaLabel(): string {
+		return localize({
+			key: 'settingsTOC',
+			comment: ['A label for the table of contents for the full settings list']
+		},
+			"Settings Table of Contents");
+	}
+
 	getAriaLabel(element: SettingsTreeElement): string {
 		if (!element) {
 			return '';

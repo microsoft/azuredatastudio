@@ -41,4 +41,27 @@ export const gradientOne = registerColor('gradientOne', { light: '#f0f0f0', dark
 export const gradientTwo = registerColor('gradientTwo', { light: gradientTwoColorOne, dark: gradientTwoColorTwo, hc: gradientTwoColorTwo }, nls.localize('gradientTwo', "The bottom color for the banner image gradient"));
 export const gradientBackground = registerColor('gradientBackground', { light: '#fff', dark: 'transparent', hc: 'transparent' }, nls.localize('gradientBackground', "The background color for the banner image gradient"));
 
+// --- Notebook Colors
+export const notebookToolbarIcon = registerColor('notebook.notebookToolbarIcon', { light: '#0078D4', dark: '#3AA0F3', hc: '#FFFFFF' }, nls.localize('notebook.notebookToolbarIcon', "Notebook: Main toolbar icons"));
+export const notebookToolbarSelectBorder = registerColor('notebook.notebookToolbarSelectBorder', { light: '#A5A5A5', dark: '#8A8886', hc: '#2B56F2' }, nls.localize('notebook.notebookToolbarSelectBorder', "Notebook: Main toolbar select box border"));
+export const notebookToolbarSelectBackground = registerColor('notebook.notebookToolbarSelectBackground', { light: '#FFFFFF', dark: '#1B1A19', hc: '#000000' }, nls.localize('notebook.notebookToolbarSelectBackground', "Notebook: Main toolbar select box background"));
+export const notebookToolbarLines = registerColor('notebook.notebookToolbarLines', { light: '#D6D6D6', dark: '#323130', hc: '#2B56F2' }, nls.localize('notebook.notebookToolbarLines', "Notebook: Main toolbar bottom border and separator"));
+export const dropdownArrow = registerColor('notebook.dropdownArrow', { light: '#A5A5A5', dark: '#FFFFFF', hc: '#FFFFFF' }, nls.localize('notebook.dropdownArrow', "Notebook: Main toolbar dropdown arrow"));
+export const buttonMenuArrow = registerColor('notebook.buttonMenuArrow', { light: '#000000', dark: '#FFFFFF', hc: '#FFFFFF' }, nls.localize('notebook.buttonMenuArrow', "Notebook: Main toolbar custom buttonMenu dropdown arrow"));
 
+export const toolbarBackground = registerColor('notebook.toolbarBackground', { light: '#F5F5F5', dark: '#252423', hc: '#000000' }, nls.localize('notebook.toolbarBackground', "Notebook: Markdown toolbar background"));
+export const toolbarIcon = registerColor('notebook.toolbarIcon', { light: '#323130', dark: '#FFFFFF', hc: '#FFFFFF' }, nls.localize('notebook.toolbarIcon', "Notebook: Markdown toolbar icons"));
+export const toolbarBottomBorder = registerColor('notebook.toolbarBottomBorder', { light: '#D4D4D4', dark: '#323130', hc: '#E86E58' }, nls.localize('notebook.toolbarBottomBorder', "Notebook: Markdown toolbar bottom border"));
+// Notebook: All cells
+export const cellBorder = registerColor('notebook.cellBorder', { light: '#0078D4', dark: '#3AA0F3', hc: '#E86E58' }, nls.localize('notebook.cellBorder', "Notebook: Active cell border"));
+// Notebook: Markdown cell
+export const markdownEditorBackground = registerColor('notebook.markdownEditorBackground', { light: '#FFFFFF', dark: '#1B1A19', hc: '#000000' }, nls.localize('notebook.markdownEditorBackground', "Notebook: Markdown editor background"));
+export const splitBorder = registerColor('notebook.splitBorder', { light: '#E6E6E6', dark: '#323130', hc: '#872412' }, nls.localize('notebook.splitBorder', "Notebook: Border between Markdown editor and preview"));
+
+// Notebook: Code cell
+export const codeEditorBackground = registerColor('notebook.codeEditorBackground', { light: '#F5F5F5', dark: '#333333', hc: '#000000' }, nls.localize('notebook.codeEditorBackground', "Notebook: Code editor background"));
+export const codeEditorBackgroundActive = registerColor('notebook.codeEditorBackgroundActive', { light: '#FFFFFF', dark: null, hc: null }, nls.localize('notebook.codeEditorBackgroundActive', "Notebook: Code editor background of active cell"));
+export const codeEditorLineNumber = registerColor('notebook.codeEditorLineNumber', { light: '#A19F9D', dark: '#A19F9D', hc: '#FFFFFF' }, nls.localize('notebook.codeEditorLineNumber', "Notebook: Code editor line numbers"));
+export const codeEditorToolbarIcon = registerColor('notebook.codeEditorToolbarIcon', { light: '#999999', dark: '#A19F9D', hc: '#FFFFFF' }, nls.localize('notebook.codeEditorToolbarIcon', "Notebook: Code editor toolbar icons"));
+export const codeEditorToolbarBackground = registerColor('notebook.codeEditorToolbarBackground', { light: '#EEEEEE', dark: '#333333', hc: '#000000' }, nls.localize('notebook.codeEditorToolbarBackground', "Notebook: Code editor toolbar background"));
+export const codeEditorToolbarBorder = registerColor('notebook.codeEditorToolbarBorder', { light: '#C8C6C4', dark: '#333333', hc: '#000000' }, nls.localize('notebook.codeEditorToolbarBorder', "Notebook: Code editor toolbar right border"));

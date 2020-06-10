@@ -91,13 +91,13 @@ export class Insight {
 
 	private findctor(type: ChartType | InsightType): IInsightCtor {
 		if (find(Graph.types, x => x === type as ChartType)) {
-			return Graph;
+			return Graph as IInsightCtor;
 		} else if (find(ImageInsight.types, x => x === type as InsightType)) {
-			return ImageInsight;
+			return ImageInsight as IInsightCtor;
 		} else if (find(TableInsight.types, x => x === type as InsightType)) {
-			return TableInsight;
+			return TableInsight as IInsightCtor;
 		} else if (find(CountInsight.types, x => x === type as InsightType)) {
-			return CountInsight;
+			return CountInsight as IInsightCtor;
 		}
 		return undefined;
 	}

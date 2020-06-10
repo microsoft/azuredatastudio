@@ -1,0 +1,70 @@
+{
+  "name": "arc",
+  "displayName": "%arc.displayName%",
+  "description": "%arc.description%",
+  "version": "0.1.0",
+  "publisher": "Microsoft",
+  "preview": true,
+  "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
+  "icon": "images/extension.png",
+  "engines": {
+    "vscode": "*",
+    "azdata": ">=1.19.0"
+  },
+  "activationEvents": [
+    "onCommand:arc.manageArcController",
+    "onCommand:arc.manageMiaa",
+    "onCommand:arc.managePostgres"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/azuredatastudio.git"
+  },
+  "main": "./out/extension",
+  "contributes": {
+    "commands": [
+      {
+        "command": "arc.manageArcController",
+        "title": "%arc.manageArcController%"
+      },
+      {
+        "command": "arc.manageMiaa",
+        "title": "%arc.manageMiaa%"
+      },
+      {
+        "command": "arc.managePostgres",
+        "title": "%arc.managePostgres%"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "arc.manageMiaa",
+          "when": "false"
+        },
+        {
+          "command": "arc.managePostgres",
+          "when": "false"
+        }
+      ]
+    },
+    "configuration": {
+      "type": "object",
+      "title": "%arc.configuration.title%",
+      "properties": {
+        "arc.ignoreSslVerification": {
+          "type": "boolean",
+          "default": true,
+          "description": "%arc.ignoreSslVerification.desc%"
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "request": "^2.88.0",
+    "vscode-nls": "^4.1.2"
+  },
+  "devDependencies": {
+    "@types/request": "^2.48.3"
+  }
+}

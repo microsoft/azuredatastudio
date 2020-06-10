@@ -4,13 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 import * as assert from 'assert';
 import { Emitter } from 'vs/base/common/event';
-import { TelemetryService } from 'vs/platform/telemetry/common/telemetryService';
+import { TelemetryService, ITelemetryServiceConfig } from 'vs/platform/telemetry/common/telemetryService';
 import ErrorTelemetry from 'vs/platform/telemetry/browser/errorTelemetry';
 import { NullAppender, ITelemetryAppender } from 'vs/platform/telemetry/common/telemetryUtils';
 import * as Errors from 'vs/base/common/errors';
 import * as sinon from 'sinon';
 import { ITelemetryData } from 'vs/platform/telemetry/common/telemetry';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 class TestTelemetryAppender implements ITelemetryAppender {
 
@@ -207,6 +208,10 @@ suite('TelemetryService', () => {
 	class JoinableTelemetryService extends TelemetryService {
 
 		private readonly promises: Promise<void>[] = [];
+
+		constructor(config: ITelemetryServiceConfig, configurationService: IConfigurationService) {
+			super({ ...config, sendErrorTelemetry: true }, configurationService);
+		}
 
 		join(): Promise<any> {
 			return Promise.all(this.promises);
@@ -695,6 +700,39 @@ suite('TelemetryService', () => {
 			this.clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT);
 			await service.join();
 
+			assert.notEqual(testAppender.events[0].data.msg.indexOf(settings.noSuchFilePrefix), -1);
+			assert.equal(testAppender.events[0].data.msg.indexOf(settings.personalInfo), -1);
+			assert.equal(testAppender.events[0].data.msg.indexOf(settings.filePrefix), -1);
+			assert.notEqual(testAppender.events[0].data.callstack.indexOf(settings.noSuchFilePrefix), -1);
+			assert.equal(testAppender.events[0].data.callstack.indexOf(settings.personalInfo), -1);
+			assert.equal(testAppender.events[0].data.callstack.indexOf(settings.filePrefix), -1);
+			assert.notEqual(testAppender.events[0].data.callstack.indexOf(settings.stack[4].replace(settings.randomUserFile, settings.anonymizedRandomUserFile)), -1);
+			assert.equal(testAppender.events[0].data.callstack.split('\n').length, settings.stack.length);
+			errorTelemetry.dispose();
+			service.dispose();
+		} finally {
+			Errors.setUnexpectedErrorHandler(origErrorHandler);
+		}
+	}));
+	test.skip('Uncaught Error Telemetry removes PII but preserves No Such File error message', sinon.test(async function (this: any) { // {{SQL CARBON EDIT}} skip tests
+		let origErrorHandler = Errors.errorHandler.getUnexpectedErrorHandler();
+		Errors.setUnexpectedErrorHandler(() => { });
+		try {
+			let errorStub = sinon.stub();
+			window.onerror = errorStub;
+			let settings = new ErrorTestingSettings();
+			let testAppender = new TestTelemetryAppender();
+			let service = new JoinableTelemetryService({ appender: testAppender }, undefined!);
+			const errorTelemetry = new ErrorTelemetry(service);
+			let noSuchFileError: any = new Error('noSuchFileMessage');
+			noSuchFileError.stack = settings.stack;
+			(<any>window.onerror)(settings.noSuchFileMessage, 'test.js', 2, 42, noSuchFileError);
+			this.clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT);
+			await service.join();
+			assert.equal(errorStub.callCount, 1);
+			// Test that no file information remains, but this particular
+			// error message does (ENOENT: no such file or directory)
+			Errors.onUnexpectedError(noSuchFileError);
 			assert.notEqual(testAppender.events[0].data.msg.indexOf(settings.noSuchFilePrefix), -1);
 			assert.equal(testAppender.events[0].data.msg.indexOf(settings.personalInfo), -1);
 			assert.equal(testAppender.events[0].data.msg.indexOf(settings.filePrefix), -1);

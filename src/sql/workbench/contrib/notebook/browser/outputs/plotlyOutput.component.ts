@@ -42,7 +42,7 @@ declare class PlotlyHTMLElement extends HTMLDivElement {
 export class PlotlyOutputComponent extends AngularDisposable implements IMimeComponent, OnInit {
 	public static readonly SELECTOR: string = 'plotly-output';
 
-	private static Plotly?: Promise<typeof import('plotly.js-dist')>;
+	private static Plotly?: Promise<typeof import('plotly.js-dist-min')>;
 
 	@ViewChild('output', { read: ElementRef }) private output: ElementRef;
 
@@ -79,7 +79,7 @@ export class PlotlyOutputComponent extends AngularDisposable implements IMimeCom
 
 	ngOnInit() {
 		if (!PlotlyOutputComponent.Plotly) {
-			PlotlyOutputComponent.Plotly = import('plotly.js-dist');
+			PlotlyOutputComponent.Plotly = import('plotly.js-dist-min');
 		}
 		this._plotDiv = this.output.nativeElement;
 		this.renderPlotly();

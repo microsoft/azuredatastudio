@@ -17,7 +17,6 @@ import {
 import { IWorkbenchExtensionEnablementService, EnablementState, IExtensionManagementServerService, IExtensionManagementServer, IExtensionRecommendationsService, ExtensionRecommendationReason } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { getGalleryExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { ExtensionManagementService } from 'vs/platform/extensionManagement/node/extensionManagementService';
-import { ExtensionRecommendationsService } from 'vs/workbench/contrib/extensions/browser/extensionRecommendationsService';
 import { TestExtensionEnablementService } from 'vs/workbench/services/extensionManagement/test/browser/extensionEnablementService.test';
 import { ExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionGalleryService';
 import { IURLService } from 'vs/platform/url/common/url';
@@ -31,7 +30,7 @@ import { TestMenuService } from 'vs/workbench/test/browser/workbenchTestServices
 import { TestSharedProcessService } from 'vs/workbench/test/electron-browser/workbenchTestServices';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService, NullLogService } from 'vs/platform/log/common/log';
-import { URLService } from 'vs/platform/url/node/urlService';
+import { NativeURLService } from 'vs/platform/url/common/urlService';
 import { URI } from 'vs/base/common/uri';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { SinonStub } from 'sinon';
@@ -48,7 +47,6 @@ import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKe
 import { IMenuService } from 'vs/platform/actions/common/actions';
 import { TestContextService } from 'vs/workbench/test/common/workbenchTestServices';
 import { IViewDescriptorService, ViewContainerLocation } from 'vs/workbench/common/views';
-
 
 suite('ExtensionsListView Tests', () => {
 
@@ -69,6 +67,7 @@ suite('ExtensionsListView Tests', () => {
 
 	const workspaceRecommendationA = aGalleryExtension('workspace-recommendation-A');
 	const workspaceRecommendationB = aGalleryExtension('workspace-recommendation-B');
+	const configBasedRecommendationA = aGalleryExtension('configbased-recommendation-A');
 	const fileBasedRecommendationA = aGalleryExtension('filebased-recommendation-A');
 	const fileBasedRecommendationB = aGalleryExtension('filebased-recommendation-B');
 	const otherRecommendationA = aGalleryExtension('other-recommendation-A');
@@ -110,27 +109,40 @@ suite('ExtensionsListView Tests', () => {
 
 		instantiationService.stub(IWorkbenchExtensionEnablementService, new TestExtensionEnablementService(instantiationService));
 
-		instantiationService.stub(IExtensionRecommendationsService, ExtensionRecommendationsService);
-		instantiationService.stub(IURLService, URLService);
-
-		instantiationService.stubPromise(IExtensionRecommendationsService, 'getWorkspaceRecommendations', [
-			{ extensionId: workspaceRecommendationA.identifier.id },
-			{ extensionId: workspaceRecommendationB.identifier.id }]);
-		instantiationService.stub(IExtensionRecommendationsService, 'getFileBasedRecommendations', [
-			{ extensionId: fileBasedRecommendationA.identifier.id },
-			{ extensionId: fileBasedRecommendationB.identifier.id }]);
-		instantiationService.stubPromise(IExtensionRecommendationsService, 'getOtherRecommendations', [
-			{ extensionId: otherRecommendationA.identifier.id }
-		]);
 		const reasons: { [key: string]: any } = {};
 		reasons[workspaceRecommendationA.identifier.id] = { reasonId: ExtensionRecommendationReason.Workspace };
 		reasons[workspaceRecommendationB.identifier.id] = { reasonId: ExtensionRecommendationReason.Workspace };
 		reasons[fileBasedRecommendationA.identifier.id] = { reasonId: ExtensionRecommendationReason.File };
 		reasons[fileBasedRecommendationB.identifier.id] = { reasonId: ExtensionRecommendationReason.File };
 		reasons[otherRecommendationA.identifier.id] = { reasonId: ExtensionRecommendationReason.Executable };
-
-		instantiationService.stub(IExtensionRecommendationsService, 'getAllRecommendationsWithReason', reasons);
-
+		reasons[configBasedRecommendationA.identifier.id] = { reasonId: ExtensionRecommendationReason.WorkspaceConfig };
+		instantiationService.stub(IExtensionRecommendationsService, <Partial<IExtensionRecommendationsService>>{
+			getWorkspaceRecommendations() {
+				return Promise.resolve([
+					{ extensionId: workspaceRecommendationA.identifier.id },
+					{ extensionId: workspaceRecommendationB.identifier.id }]);
+			},
+			getConfigBasedRecommendations() {
+				return Promise.resolve([
+					{ extensionId: configBasedRecommendationA.identifier.id }
+				]);
+			},
+			getFileBasedRecommendations() {
+				return [
+					{ extensionId: fileBasedRecommendationA.identifier.id },
+					{ extensionId: fileBasedRecommendationB.identifier.id }
+				];
+			},
+			getOtherRecommendations() {
+				return Promise.resolve([
+					{ extensionId: otherRecommendationA.identifier.id }
+				]);
+			},
+			getAllRecommendationsWithReason() {
+				return reasons;
+			}
+		});
+		instantiationService.stub(IURLService, NativeURLService);
 	});
 
 	setup(async () => {
@@ -140,7 +152,7 @@ suite('ExtensionsListView Tests', () => {
 		instantiationService.stubPromise(IExperimentService, 'getExperimentsByType', []);
 
 		instantiationService.stub(IViewDescriptorService, {
-			getViewLocation(): ViewContainerLocation {
+			getViewLocationById(): ViewContainerLocation {
 				return ViewContainerLocation.Sidebar;
 			}
 		});
@@ -336,6 +348,7 @@ suite('ExtensionsListView Tests', () => {
 
 	test('Test @recommended query', () => {
 		const allRecommendedExtensions = [
+			configBasedRecommendationA,
 			fileBasedRecommendationA,
 			fileBasedRecommendationB,
 			otherRecommendationA
@@ -360,6 +373,7 @@ suite('ExtensionsListView Tests', () => {
 		const allRecommendedExtensions = [
 			workspaceRecommendationA,
 			workspaceRecommendationB,
+			configBasedRecommendationA,
 			fileBasedRecommendationA,
 			fileBasedRecommendationB,
 			otherRecommendationA

@@ -96,7 +96,9 @@ export interface IGalleryMetadata {
 
 export interface ILocalExtension extends IExtension {
 	readonly manifest: IExtensionManifest;
-	metadata: IGalleryMetadata;
+	isMachineScoped: boolean;
+	publisherId: string | null;
+	publisherDisplayName: string | null;
 	readmeUrl: URI | null;
 	changelogUrl: URI | null;
 }
@@ -155,7 +157,7 @@ export interface IExtensionGalleryService {
 	isEnabled(): boolean;
 	query(token: CancellationToken): Promise<IPager<IGalleryExtension>>;
 	query(options: IQueryOptions, token: CancellationToken): Promise<IPager<IGalleryExtension>>;
-	download(extension: IGalleryExtension, location: URI, operation: InstallOperation): Promise<URI>;
+	download(extension: IGalleryExtension, location: URI, operation: InstallOperation): Promise<void>;
 	reportStatistic(publisher: string, name: string, version: string, type: StatisticType): Promise<void>;
 	getReadme(extension: IGalleryExtension, token: CancellationToken): Promise<string>;
 	getManifest(extension: IGalleryExtension, token: CancellationToken): Promise<IExtensionManifest | null>;
@@ -191,6 +193,12 @@ export const INSTALL_ERROR_NOT_SUPPORTED = 'notsupported';
 export const INSTALL_ERROR_MALICIOUS = 'malicious';
 export const INSTALL_ERROR_INCOMPATIBLE = 'incompatible';
 
+export class ExtensionManagementError extends Error {
+	constructor(message: string, readonly code: string) {
+		super(message);
+	}
+}
+
 export interface IExtensionManagementService {
 	_serviceBrand: undefined;
 
@@ -200,10 +208,10 @@ export interface IExtensionManagementService {
 	onDidUninstallExtension: Event<DidUninstallExtensionEvent>;
 
 	zip(extension: ILocalExtension): Promise<URI>;
-	unzip(zipLocation: URI, type: ExtensionType): Promise<IExtensionIdentifier>;
+	unzip(zipLocation: URI): Promise<IExtensionIdentifier>;
 	getManifest(vsix: URI): Promise<IExtensionManifest>;
-	install(vsix: URI): Promise<ILocalExtension>;
-	installFromGallery(extension: IGalleryExtension): Promise<ILocalExtension>;
+	install(vsix: URI, isMachineScoped?: boolean): Promise<ILocalExtension>;
+	installFromGallery(extension: IGalleryExtension, isMachineScoped?: boolean): Promise<ILocalExtension>;
 	uninstall(extension: ILocalExtension, force?: boolean): Promise<void>;
 	reinstallFromGallery(extension: ILocalExtension): Promise<void>;
 	getInstalled(type?: ExtensionType): Promise<ILocalExtension[]>;
@@ -226,6 +234,13 @@ export interface IGlobalExtensionEnablementService {
 
 }
 
+export type IConfigBasedExtensionTip = {
+	readonly extensionId: string,
+	readonly extensionName: string,
+	readonly isExtensionPack: boolean,
+	readonly configName: string,
+	readonly important: boolean,
+};
 export type IExecutableBasedExtensionTip = { extensionId: string } & Omit<Omit<IExeBasedExtensionTip, 'recommendations'>, 'important'>;
 export type IWorkspaceTips = { readonly remoteSet: string[]; readonly recommendations: string[]; };
 
@@ -233,13 +248,14 @@ export const IExtensionTipsService = createDecorator<IExtensionTipsService>('IEx
 export interface IExtensionTipsService {
 	_serviceBrand: undefined;
 
+	getConfigBasedTips(folder: URI): Promise<IConfigBasedExtensionTip[]>;
 	getImportantExecutableBasedTips(): Promise<IExecutableBasedExtensionTip[]>;
 	getOtherExecutableBasedTips(): Promise<IExecutableBasedExtensionTip[]>;
 	getAllWorkspacesTips(): Promise<IWorkspaceTips[]>;
 }
 
 
-
+export const DefaultIconPath = require.toUrl('./media/defaultIcon.png');
 export const ExtensionsLabel = localize('extensions', "Extensions");
 export const ExtensionsChannelId = 'extensions';
 export const PreferencesLabel = localize('preferences', "Preferences");

@@ -9,8 +9,8 @@ import { Gesture, EventType as TouchEventType, GestureEvent } from 'vs/base/brow
 import * as DOM from 'vs/base/browser/dom';
 import { Event, Emitter } from 'vs/base/common/event';
 import { domEvent } from 'vs/base/browser/event';
-import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
-import { ScrollEvent, ScrollbarVisibility, INewScrollDimensions } from 'vs/base/common/scrollable';
+import { SmoothScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
+import { ScrollEvent, ScrollbarVisibility, INewScrollDimensions, Scrollable } from 'vs/base/common/scrollable';
 import { RangeMap, shift } from './rangeMap';
 import { IListVirtualDelegate, IListRenderer, IListMouseEvent, IListTouchEvent, IListGestureEvent, IListDragEvent, IListDragAndDrop, ListDragOverEffect } from './list';
 import { RowCache, IRow } from './rowCache';
@@ -41,14 +41,19 @@ export interface IListViewDragAndDrop<T> extends IListDragAndDrop<T> {
 	getDragElements(element: T): T[];
 }
 
-export interface IAriaProvider<T> {
-	getSetSize(element: T, index: number, listLength: number): number;
-	getPosInSet(element: T, index: number): number;
-	getRole?(element: T): string;
-	isChecked?(element: T): boolean;
+export interface IListViewAccessibilityProvider<T> {
+	getSetSize?(element: T, index: number, listLength: number): number;
+	getPosInSet?(element: T, index: number): number;
+	getRole?(element: T): string | undefined;
+	isChecked?(element: T): boolean | undefined;
 }
 
-export interface IListViewOptions<T> {
+export interface IListViewOptionsUpdate {
+	readonly additionalScrollHeight?: number;
+	readonly smoothScrolling?: boolean;
+}
+
+export interface IListViewOptions<T> extends IListViewOptionsUpdate {
 	readonly dnd?: IListViewDragAndDrop<T>;
 	readonly useShadows?: boolean;
 	readonly verticalScrollMode?: ScrollbarVisibility;
@@ -57,8 +62,8 @@ export interface IListViewOptions<T> {
 	readonly supportDynamicHeights?: boolean;
 	readonly mouseSupport?: boolean;
 	readonly horizontalScrolling?: boolean;
-	readonly ariaProvider?: IAriaProvider<T>;
-	readonly additionalScrollHeight?: number;
+	readonly accessibilityProvider?: IListViewAccessibilityProvider<T>;
+	readonly transformOptimization?: boolean;
 }
 
 const DefaultOptions = {
@@ -74,7 +79,8 @@ const DefaultOptions = {
 		onDragOver() { return false; },
 		drop() { }
 	},
-	horizontalScrolling: false
+	horizontalScrolling: false,
+	transformOptimization: true
 };
 
 export class ElementsDragAndDropData<T, TContext = void> implements IDragAndDropData {
@@ -152,6 +158,40 @@ function equalsDragFeedback(f1: number[] | undefined, f2: number[] | undefined):
 	return f1 === f2;
 }
 
+class ListViewAccessibilityProvider<T> implements Required<IListViewAccessibilityProvider<T>> {
+
+	readonly getSetSize: (element: any, index: number, listLength: number) => number;
+	readonly getPosInSet: (element: any, index: number) => number;
+	readonly getRole: (element: T) => string | undefined;
+	readonly isChecked: (element: T) => boolean | undefined;
+
+	constructor(accessibilityProvider?: IListViewAccessibilityProvider<T>) {
+		if (accessibilityProvider?.getSetSize) {
+			this.getSetSize = accessibilityProvider.getSetSize.bind(accessibilityProvider);
+		} else {
+			this.getSetSize = (e, i, l) => l;
+		}
+
+		if (accessibilityProvider?.getPosInSet) {
+			this.getPosInSet = accessibilityProvider.getPosInSet.bind(accessibilityProvider);
+		} else {
+			this.getPosInSet = (e, i) => i + 1;
+		}
+
+		if (accessibilityProvider?.getRole) {
+			this.getRole = accessibilityProvider.getRole.bind(accessibilityProvider);
+		} else {
+			this.getRole = _ => 'listitem';
+		}
+
+		if (accessibilityProvider?.isChecked) {
+			this.isChecked = accessibilityProvider.isChecked.bind(accessibilityProvider);
+		} else {
+			this.isChecked = _ => undefined;
+		}
+	}
+}
+
 export class ListView<T> implements ISpliceable<T>, IDisposable {
 
 	private static InstanceCount = 0;
@@ -168,7 +208,8 @@ export class ListView<T> implements ISpliceable<T>, IDisposable {
 	private lastRenderHeight: number;
 	private renderWidth = 0;
 	private rowsContainer: HTMLElement;
-	private scrollableElement: ScrollableElement;
+	private scrollable: Scrollable;
+	private scrollableElement: SmoothScrollableElement;
 	private _scrollHeight: number = 0;
 	private scrollableElementUpdateDisposable: IDisposable | null = null;
 	private scrollableElementWidthDelayer = new Delayer<void>(50);
@@ -181,7 +222,7 @@ export class ListView<T> implements ISpliceable<T>, IDisposable {
 	private supportDynamicHeights: boolean;
 	private horizontalScrolling: boolean;
 	private additionalScrollHeight: number;
-	private ariaProvider: IAriaProvider<T>;
+	private accessibilityProvider: ListViewAccessibilityProvider<T>;
 	private scrollWidth: number | undefined;
 
 	private dnd: IListViewDragAndDrop<T>;
@@ -237,19 +278,25 @@ export class ListView<T> implements ISpliceable<T>, IDisposable {
 
 		this.additionalScrollHeight = typeof options.additionalScrollHeight === 'undefined' ? 0 : options.additionalScrollHeight;
 
-		this.ariaProvider = options.ariaProvider || { getSetSize: (e, i, length) => length, getPosInSet: (_, index) => index + 1 };
+		this.accessibilityProvider = new ListViewAccessibilityProvider(options.accessibilityProvider);
 
 		this.rowsContainer = document.createElement('div');
 		this.rowsContainer.className = 'monaco-list-rows';
-		this.rowsContainer.style.transform = 'translate3d(0px, 0px, 0px)';
+
+		const transformOptimization = getOrDefault(options, o => o.transformOptimization, DefaultOptions.transformOptimization);
+		if (transformOptimization) {
+			this.rowsContainer.style.transform = 'translate3d(0px, 0px, 0px)';
+		}
+
 		this.disposables.add(Gesture.addTarget(this.rowsContainer));
 
-		this.scrollableElement = this.disposables.add(new ScrollableElement(this.rowsContainer, {
+		this.scrollable = new Scrollable(getOrDefault(options, o => o.smoothScrolling, false) ? 125 : 0, cb => DOM.scheduleAtNextAnimationFrame(cb));
+		this.scrollableElement = this.disposables.add(new SmoothScrollableElement(this.rowsContainer, {
 			alwaysConsumeMouseWheel: true,
 			horizontal: this.horizontalScrolling ? ScrollbarVisibility.Auto : ScrollbarVisibility.Hidden,
 			vertical: getOrDefault(options, o => o.verticalScrollMode, DefaultOptions.verticalScrollMode),
-			useShadows: getOrDefault(options, o => o.useShadows, DefaultOptions.useShadows)
-		}));
+			useShadows: getOrDefault(options, o => o.useShadows, DefaultOptions.useShadows),
+		}, this.scrollable));
 
 		this.domNode.appendChild(this.scrollableElement.getDomNode());
 		container.appendChild(this.domNode);
@@ -278,6 +325,10 @@ export class ListView<T> implements ISpliceable<T>, IDisposable {
 	updateOptions(options: IListViewOptions<T>) {
 		if (options.additionalScrollHeight !== undefined) {
 			this.additionalScrollHeight = options.additionalScrollHeight;
+		}
+
+		if (options.smoothScrolling !== undefined) {
+			this.scrollable.setSmoothScrollDuration(options.smoothScrolling ? 125 : 0);
 		}
 	}
 
@@ -611,11 +662,11 @@ export class ListView<T> implements ISpliceable<T>, IDisposable {
 
 		if (!item.row) {
 			item.row = this.cache.alloc(item.templateId);
-			const role = this.ariaProvider.getRole ? this.ariaProvider.getRole(item.element) : 'listitem';
+			const role = this.accessibilityProvider.getRole(item.element) || 'listitem';
 			item.row!.domNode!.setAttribute('role', role);
-			const checked = this.ariaProvider.isChecked ? this.ariaProvider.isChecked(item.element) : undefined;
+			const checked = this.accessibilityProvider.isChecked(item.element);
 			if (typeof checked !== 'undefined') {
-				item.row!.domNode!.setAttribute('aria-checked', String(checked));
+				item.row!.domNode!.setAttribute('aria-checked', String(!!checked));
 			}
 		}
 
@@ -687,8 +738,8 @@ export class ListView<T> implements ISpliceable<T>, IDisposable {
 
 		item.row!.domNode!.setAttribute('data-index', `${index}`);
 		item.row!.domNode!.setAttribute('data-last-element', index === this.length - 1 ? 'true' : 'false');
-		item.row!.domNode!.setAttribute('aria-setsize', String(this.ariaProvider.getSetSize(item.element, index, this.length)));
-		item.row!.domNode!.setAttribute('aria-posinset', String(this.ariaProvider.getPosInSet(item.element, index)));
+		item.row!.domNode!.setAttribute('aria-setsize', String(this.accessibilityProvider.getSetSize(item.element, index, this.length)));
+		item.row!.domNode!.setAttribute('aria-posinset', String(this.accessibilityProvider.getPosInSet(item.element, index)));
 		item.row!.domNode!.setAttribute('id', this.getElementDomId(index));
 
 		DOM.toggleClass(item.row!.domNode!, 'drop-target', item.dropTarget);

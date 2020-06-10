@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-import { QUERY_HISTORY_PANEL_ID } from 'sql/workbench/contrib/queryHistory/common/constants';
+import { QUERY_HISTORY_VIEW_ID } from 'sql/workbench/contrib/queryHistory/common/constants';
 import { RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { Action } from 'vs/base/common/actions';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
@@ -30,7 +30,7 @@ export class ToggleQueryHistoryAction extends ToggleViewAction {
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService
 	) {
-		super(id, label, QUERY_HISTORY_PANEL_ID, viewsService, viewDescriptorService, contextKeyService, layoutService);
+		super(id, label, QUERY_HISTORY_VIEW_ID, viewsService, viewDescriptorService, contextKeyService, layoutService);
 	}
 }
 

@@ -60,15 +60,16 @@ export const DeleteAgentAlert = 'DeleteAgentAlert';
 export const DeleteAgentOperator = 'DeleteAgentOperator';
 export const DeleteAgentProxy = 'DeleteAgentProxy';
 
-// Notebook Events:
-export const NotebookMarkdownRendered = 'NotebookMarkdownRendered';
-
 export enum TelemetryView {
 	Shell = 'Shell',
 	ExtensionRecommendationDialog = 'ExtensionRecommendationDialog',
-	ResultsPanel = 'ResultsPanel'
+	ResultsPanel = 'ResultsPanel',
+	Notebook = 'Notebook',
+	SqlAssessment = 'SqlAssessment'
 }
 
 export enum TelemetryAction {
-	Click = 'Click'
+	Click = 'Click',
+	Open = 'Open'
 }
+

@@ -70,7 +70,7 @@ describe('Manage Package Dialog', () => {
 			displayName: 'dl2',
 			name: 'nl2'
 		};
-		testContext.onClick.fire();
+		testContext.onClick.fire(undefined);
 		testContext.dialog.verify(x => x.changeLocation('nl2'), TypeMoq.Times.once());
 		testContext.dialog.verify(x => x.resetPages(), TypeMoq.Times.once());
 
@@ -100,7 +100,7 @@ describe('Manage Package Dialog', () => {
 			displayName: 'dl2',
 			name: 'nl2'
 		};
-		testContext.onClick.fire();
+		testContext.onClick.fire(undefined);
 		testContext.dialog.verify(x => x.changeLocation('nl2'), TypeMoq.Times.once());
 		testContext.dialog.verify(x => x.showErrorMessage(TypeMoq.It.isAny()), TypeMoq.Times.once());
 
@@ -139,7 +139,8 @@ describe('Manage Package Dialog', () => {
 			removeItem: () => true,
 			insertItem: () => { },
 			items: components,
-			setLayout: () => { }
+			setLayout: () => { },
+			setItemLayout: () => { }
 		};
 		let form: azdata.FormContainer = Object.assign({}, componentBase, container, {
 		});
@@ -281,7 +282,8 @@ describe('Manage Package Dialog', () => {
 				fileBrowserTree: undefined!,
 				hyperlink: undefined!,
 				tabbedPanel: undefined!,
-				separator: undefined!
+				separator: undefined!,
+				propertiesContainer: undefined!
 			}
 		};
 

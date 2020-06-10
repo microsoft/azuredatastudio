@@ -48,7 +48,7 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 		dashboardHelper.filterConfigs
 	];
 
-	private readonly _gridModifiers: Array<(item: Array<WidgetConfig>, originalConfig: Array<WidgetConfig>) => Array<WidgetConfig>> = [
+	private readonly _gridModifiers: Array<(item: Array<WidgetConfig>, originalConfig?: Array<WidgetConfig>) => Array<WidgetConfig>> = [
 		dashboardHelper.validateGridConfig
 	];
 
@@ -149,10 +149,12 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 	}
 
 	public layout() {
-		const activeTabId = this._panel.getActiveTab;
-		const localtab = this._tabs.find(i => i.id === activeTabId);
-		this._cd.detectChanges();
-		localtab.layout();
+		if (this._tabs) {
+			const activeTabId = this._panel.getActiveTab;
+			const localtab = this._tabs.find(i => i.id === activeTabId);
+			this._cd.detectChanges();
+			localtab.layout();
+		}
 	}
 
 	public refresh(): void {

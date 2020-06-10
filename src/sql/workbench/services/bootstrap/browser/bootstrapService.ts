@@ -46,6 +46,7 @@ export function bootstrapAngular<T>(accessor: ServicesAccessor, moduleType: IMod
 	let selector = document.createElement(uniqueSelectorString);
 	container.appendChild(selector);
 	const instantiationService = accessor.get(IInstantiationService);
+	const logService = accessor.get(ILogService);
 
 	if (!platform) {
 		instantiationService.invokeFunction((accessor) => {
@@ -67,7 +68,6 @@ export function bootstrapAngular<T>(accessor: ServicesAccessor, moduleType: IMod
 			callbackSetModule(moduleRef);
 		}
 	}).catch((e) => {
-		const logService = accessor.get(ILogService);
 		logService.error(e);
 	});
 

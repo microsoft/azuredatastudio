@@ -26,6 +26,7 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { values } from 'vs/base/common/collections';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IComponentDescriptor, IComponent, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
+import { convertSizeToNumber } from 'sql/base/browser/dom';
 
 class Root implements ITreeComponentItem {
 	label = {
@@ -143,8 +144,8 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 	}
 
 	private layoutTree(): void {
-		let width: number = this.convertSizeToNumber(this.width);
-		let height: number = this.convertSizeToNumber(this.height);
+		let width: number = convertSizeToNumber(this.width);
+		let height: number = convertSizeToNumber(this.height);
 		this._tree.layout(
 			height && height > 0 ? height : DOM.getContentHeight(this._inputContainer.nativeElement),
 			width && width > 0 ? width : DOM.getContentWidth(this._inputContainer.nativeElement));

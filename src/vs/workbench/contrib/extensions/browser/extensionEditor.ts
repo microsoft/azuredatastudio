@@ -215,7 +215,7 @@ export class ExtensionEditor extends BaseEditor {
 
 		const details = append(header, $('.details'));
 		const title = append(details, $('.title'));
-		const name = append(title, $('span.name.clickable', { title: localize('name', "Extension name") }));
+		const name = append(title, $('span.name.clickable', { title: localize('name', "Extension name"), role: 'heading', tabIndex: 0 }));
 		const identifier = append(title, $('span.identifier', { title: localize('extension id', "Extension identifier") }));
 
 		const preview = append(title, $('span.preview', { title: localize('preview', "Preview") }));
@@ -316,10 +316,10 @@ export class ExtensionEditor extends BaseEditor {
 	}
 
 	async setInput(input: ExtensionsInput, options: EditorOptions | undefined, token: CancellationToken): Promise<void> {
+		await super.setInput(input, options, token);
 		if (this.template) {
 			await this.updateTemplate(input, this.template, !!options?.preserveFocus);
 		}
-		return super.setInput(input, options, token);
 	}
 
 	private async updateTemplate(input: ExtensionsInput, template: IExtensionEditorTemplate, preserveFocus: boolean): Promise<void> {
@@ -346,7 +346,7 @@ export class ExtensionEditor extends BaseEditor {
 		template.builtin.style.display = extension.type === ExtensionType.System ? 'inherit' : 'none';
 
 		template.publisher.textContent = extension.publisherDisplayName;
-		template.version.textContent = extension.version;
+		template.version.textContent = `v${extension.version}`;
 		template.description.textContent = extension.description;
 
 		const extRecommendations = this.extensionRecommendationsService.getAllRecommendationsWithReason();
@@ -399,8 +399,8 @@ export class ExtensionEditor extends BaseEditor {
 			}
 			this.transientDisposables.add(this.onClick(template.publisher, () => {
 				this.viewletService.openViewlet(VIEWLET_ID, true)
-					.then(viewlet => viewlet?.getViewPaneContainer())
-					.then((viewlet: IExtensionsViewPaneContainer) => {
+					.then(viewlet => viewlet?.getViewPaneContainer() as IExtensionsViewPaneContainer)
+					.then(viewlet => {
 						viewlet.search(`publisher:"${extension.publisherDisplayName}"`);
 					});
 			}));
@@ -434,7 +434,7 @@ export class ExtensionEditor extends BaseEditor {
 
 			this.instantiationService.createInstance(EnableDropDownAction),
 			this.instantiationService.createInstance(DisableDropDownAction, runningExtensions),
-			this.instantiationService.createInstance(RemoteInstallAction),
+			this.instantiationService.createInstance(RemoteInstallAction, false),
 			this.instantiationService.createInstance(LocalInstallAction),
 			combinedInstallAction,
 			systemDisabledWarningAction,
@@ -499,7 +499,7 @@ export class ExtensionEditor extends BaseEditor {
 			ignoreAction.enabled = true;
 			template.subtext.textContent = extRecommendations[extension.identifier.id.toLowerCase()].reasonText;
 			show(template.subtextContainer);
-		} else if (this.extensionRecommendationsService.getAllIgnoredRecommendations().global.indexOf(extension.identifier.id.toLowerCase()) !== -1) {
+		} else if (this.extensionRecommendationsService.getIgnoredRecommendations().indexOf(extension.identifier.id.toLowerCase()) !== -1) {
 			undoIgnoreAction.enabled = true;
 			template.subtext.textContent = localize('recommendationHasBeenIgnored', "You have chosen not to receive recommendations for this extension.");
 			show(template.subtextContainer);
@@ -610,7 +610,7 @@ export class ExtensionEditor extends BaseEditor {
 
 			const webview = this.contentDisposables.add(this.webviewService.createWebviewOverlay('extensionEditor', {
 				enableFindWidget: true,
-			}, {}));
+			}, {}, undefined));
 
 			webview.claim(this);
 			webview.layoutWebviewOverElement(template.content);

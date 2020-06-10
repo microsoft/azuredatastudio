@@ -26,6 +26,7 @@
 }
 
 .carbon-taskbar.monaco-toolbar .monaco-action-bar.animated .actions-container {
+	box-sizing: border-box;
 	justify-content: flex-start;
 	padding-left: 15px;
 	flex-wrap: wrap;
@@ -74,7 +75,7 @@
 }
 
 .taskbarSeparator {
-	width: 1px;
+	min-width: 1px;
 	background-color:#A5A5A5;
 	margin: 6px 8px;
 }

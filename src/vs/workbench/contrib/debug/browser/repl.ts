@@ -59,6 +59,7 @@ import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { ReplGroup } from 'vs/workbench/contrib/debug/common/replModel';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { EDITOR_FONT_DEFAULTS, EditorOption } from 'vs/editor/common/config/editorOptions';
+import { MOUSE_CURSOR_TEXT_CSS_CLASS_NAME } from 'vs/base/browser/ui/mouseCursor/mouseCursor';
 
 const $ = dom.$;
 
@@ -86,7 +87,7 @@ export class Repl extends ViewPane implements IHistoryNavigationWidget {
 	private replInputContainer!: HTMLElement;
 	private dimension!: dom.Dimension;
 	private replInputLineCount = 1;
-	private model!: ITextModel;
+	private model: ITextModel | undefined;
 	private historyNavigationEnablement!: IContextKey<boolean>;
 	private scopedInstantiationService!: IInstantiationService;
 	private replElementsChangeListener: IDisposable | undefined;
@@ -270,7 +271,7 @@ export class Repl extends ViewPane implements IHistoryNavigationWidget {
 		if (isCodeEditor(activeEditorControl)) {
 			this.modelChangeListener.dispose();
 			this.modelChangeListener = activeEditorControl.onDidChangeModelLanguage(() => this.setMode());
-			if (activeEditorControl.hasModel()) {
+			if (this.model && activeEditorControl.hasModel()) {
 				this.model.setMode(activeEditorControl.getModel().getLanguageIdentifier());
 			}
 		}
@@ -396,21 +397,24 @@ export class Repl extends ViewPane implements IHistoryNavigationWidget {
 
 	getVisibleContent(): string {
 		let text = '';
-		const lineDelimiter = this.textResourcePropertiesService.getEOL(this.model.uri);
-		const traverseAndAppend = (node: ITreeNode<IReplElement, FuzzyScore>) => {
-			node.children.forEach(child => {
-				text += child.element.toString().trimRight() + lineDelimiter;
-				if (!child.collapsed && child.children.length) {
-					traverseAndAppend(child);
-				}
-			});
-		};
-		traverseAndAppend(this.tree.getNode());
+		if (this.model) {
+			const lineDelimiter = this.textResourcePropertiesService.getEOL(this.model.uri);
+			const traverseAndAppend = (node: ITreeNode<IReplElement, FuzzyScore>) => {
+				node.children.forEach(child => {
+					text += child.element.toString().trimRight() + lineDelimiter;
+					if (!child.collapsed && child.children.length) {
+						traverseAndAppend(child);
+					}
+				});
+			};
+			traverseAndAppend(this.tree.getNode());
+		}
 
 		return removeAnsiEscapeCodes(text);
 	}
 
 	protected layoutBody(height: number, width: number): void {
+		super.layoutBody(height, width);
 		this.dimension = new dom.Dimension(width, height);
 		const replInputHeight = Math.min(this.replInput.getContentHeight(), height);
 		if (this.tree) {
@@ -506,7 +510,7 @@ export class Repl extends ViewPane implements IHistoryNavigationWidget {
 		super.renderBody(parent);
 
 		this.container = dom.append(parent, $('.repl'));
-		const treeContainer = dom.append(this.container, $('.repl-tree'));
+		const treeContainer = dom.append(this.container, $(`.repl-tree.${MOUSE_CURSOR_TEXT_CSS_CLASS_NAME}`));
 		this.createReplInput(this.container);
 
 		this.replDelegate = new ReplDelegate(this.configurationService);
@@ -529,7 +533,6 @@ export class Repl extends ViewPane implements IHistoryNavigationWidget {
 			// https://github.com/microsoft/TypeScript/issues/32526
 			new ReplDataSource() as IAsyncDataSource<IDebugSession, IReplElement>,
 			{
-				ariaLabel: localize('replAriaLabel', "Read Eval Print Loop Panel"),
 				accessibilityProvider: new ReplAccessibilityProvider(),
 				identityProvider: { getId: (element: IReplElement) => element.getId() },
 				mouseSupport: false,

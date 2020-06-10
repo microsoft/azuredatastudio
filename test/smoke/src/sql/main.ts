@@ -20,11 +20,14 @@ const PLATFORM = '${PLATFORM}';
 const RUNTIME = '${RUNTIME}';
 const VERSION = '${VERSION}';
 
-const sqliteUrl = `https://github.com/anthonydresser/azuredatastudio-sqlite/releases/download/1.0.5/azuredatastudio-sqlite-${PLATFORM}-${RUNTIME}-${VERSION}.zip`;
+const sqliteUrl = `https://github.com/anthonydresser/azuredatastudio-sqlite/releases/download/1.0.9/azuredatastudio-sqlite-${PLATFORM}-${RUNTIME}-${VERSION}.zip`;
 
 export async function setup(app: ApplicationOptions): Promise<void> {
 	const requestUrl = sqliteUrl.replace(PLATFORM, process.platform).replace(RUNTIME, getRuntime(app.web || app.remote || false)).replace(VERSION, getVersion(app.web || app.remote || false));
 	const zip = await fetch(requestUrl);
+	if (!zip) {
+		throw new Error('Could not get extension for current platform');
+	}
 	return new Promise<void>((resolve, reject) => {
 		yazl.fromBuffer(zip, (e, zipFile) => {
 			if (e || !zipFile) {
@@ -76,15 +79,21 @@ function getVersion(remote: boolean) {
 	return target;
 }
 
-function fetch(url: string): Promise<Buffer> {
+function fetch(url: string): Promise<Buffer | undefined> {
 	return new Promise<Buffer>((resolve, reject) => {
 		const buffers: Buffer[] = [];
-		const req = request(url, res => {
+		const req = request(url, async res => {
 			if (res.headers.location) {
-				resolve(fetch(res.headers.location));
+				resolve(await fetch(res.headers.location));
 			} else {
 				res.on('data', chunk => buffers.push(chunk));
-				res.on('end', () => resolve(Buffer.concat(buffers)));
+				res.on('end', () => {
+					if (buffers.length > 0) {
+						resolve(Buffer.concat(buffers));
+					} else {
+						resolve(undefined);
+					}
+				});
 				res.on('error', e => reject(e));
 			}
 		});

@@ -6,12 +6,14 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DeployClusterWizard } from '../deployClusterWizard';
-import { SectionInfo, FieldType, LabelPosition } from '../../../interfaces';
+import { FieldType, LabelPosition, SectionInfo } from '../../../interfaces';
+import { createSection, getDropdownComponent, InputComponentInfo, InputComponents, setModelValues, Validator } from '../../modelViewUtils';
 import { WizardPageBase } from '../../wizardPageBase';
-import { createSection, InputComponents, setModelValues, Validator, getDropdownComponent, MissingRequiredInformationErrorMessage } from '../../modelViewUtils';
-import { SubscriptionId_VariableName, ResourceGroup_VariableName, Location_VariableName, AksName_VariableName, VMCount_VariableName, VMSize_VariableName } from '../constants';
+import { AksName_VariableName, Location_VariableName, ResourceGroup_VariableName, SubscriptionId_VariableName, VMCount_VariableName, VMSize_VariableName } from '../constants';
+import { DeployClusterWizard } from '../deployClusterWizard';
+import { AzureRegion } from '../../../../../azurecore/src/azurecore';
 const localize = nls.loadMessageBundle();
+const MissingRequiredInformationErrorMessage = localize('deployCluster.MissingRequiredInfoError', "Please fill out the required fields marked with red asterisks.");
 
 export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 	private inputComponents: InputComponents = {};
@@ -28,7 +30,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			labelPosition: LabelPosition.Left,
 			spaceBetweenFields: '5px',
 			rows: [{
-				fields: [{
+				items: [{
 					type: FieldType.Text,
 					label: localize('deployCluster.SubscriptionField', "Subscription id"),
 					required: false,
@@ -37,9 +39,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					description: localize('deployCluster.SubscriptionDescription', "The default subscription will be used if you leave this field blank.")
 				}, {
 					type: FieldType.ReadonlyText,
-					label: '',
-					labelWidth: '0px',
-					defaultValue: localize('deployCluster.SubscriptionHelpText', "{0}"),
+					label: '{0}',
 					links: [
 						{
 							text: localize('deployCluster.SubscriptionHelpLink', "View available Azure subscriptions"),
@@ -48,7 +48,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					]
 				}]
 			}, {
-				fields: [{
+				items: [{
 					type: FieldType.DateTimeText,
 					label: localize('deployCluster.ResourceGroupName', "New resource group name"),
 					required: true,
@@ -56,31 +56,29 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					defaultValue: 'mssql-'
 				}]
 			}, {
-				fields: [{
+				items: [{
 					type: FieldType.Options,
 					label: localize('deployCluster.Location', "Location"),
 					required: true,
 					variableName: Location_VariableName,
-					defaultValue: 'eastus',
+					defaultValue: AzureRegion.eastus,
 					editable: true,
 					// The options are not localized because this is an editable dropdown,
 					// It would cause confusion to user about what value to type in, if they type in the localized value, we don't know how to process.
 					options: [
-						'centralus',
-						'eastus',
-						'eastus2',
-						'northcentralus',
-						'southcentralus',
-						'westus',
-						'westus2',
-						'canadacentral',
-						'canadaeast'
+						AzureRegion.centralus,
+						AzureRegion.eastus,
+						AzureRegion.eastus2,
+						AzureRegion.northcentralus,
+						AzureRegion.southcentralus,
+						AzureRegion.westus,
+						AzureRegion.westus2,
+						AzureRegion.canadacentral,
+						AzureRegion.canadaeast
 					]
 				}, {
 					type: FieldType.ReadonlyText,
-					label: '',
-					labelWidth: '0px',
-					defaultValue: localize('deployCluster.LocationHelpText', "{0}"),
+					label: '{0}',
 					links: [
 						{
 							text: localize('deployCluster.AzureLocationHelpLink', "View available Azure locations"),
@@ -89,7 +87,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					]
 				}]
 			}, {
-				fields: [{
+				items: [{
 					type: FieldType.DateTimeText,
 					label: localize('deployCluster.AksName', "AKS cluster name"),
 					required: true,
@@ -97,7 +95,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					defaultValue: 'mssql-',
 				}]
 			}, {
-				fields: [
+				items: [
 					{
 						type: FieldType.Number,
 						label: localize('deployCluster.VMCount', "VM count"),
@@ -109,7 +107,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					}
 				]
 			}, {
-				fields: [{
+				items: [{
 					type: FieldType.Text,
 					label: localize('deployCluster.VMSize', "VM size"),
 					required: true,
@@ -117,9 +115,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					defaultValue: 'Standard_E8s_v3'
 				}, {
 					type: FieldType.ReadonlyText,
-					label: '',
-					labelWidth: '0px',
-					defaultValue: localize('deployCluster.VMSizeHelpText', "{0}"),
+					label: '{0}',
 					links: [
 						{
 							text: localize('deployCluster.VMSizeHelpLink', "View available VM sizes"),
@@ -136,13 +132,14 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 					self.wizard.registerDisposable(disposable);
 				},
-				onNewInputComponentCreated: (name: string, component: azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent): void => {
-					self.inputComponents[name] = { component: component };
+				onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo): void => {
+					this.inputComponents[name] = { component: inputComponentInfo.component };
 				},
 				onNewValidatorCreated: (validator: Validator): void => {
 					self.validators.push(validator);
 				},
-				container: this.wizard.wizardObject
+				container: this.wizard.wizardObject,
+				inputComponents: this.wizard.inputComponents
 			});
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[{
@@ -183,5 +180,6 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			return true;
 		});
 		setModelValues(this.inputComponents, this.wizard.model);
+		Object.assign(this.wizard.inputComponents, this.inputComponents);
 	}
 }

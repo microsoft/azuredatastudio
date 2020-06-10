@@ -3,22 +3,84 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-/* Disable repl hover highlight in tree. */
-.monaco-workbench .message-tree .monaco-tree .monaco-tree-rows > .monaco-tree-row:hover:not(.highlighted):not(.selected):not(.focused)  {
-	background-color: inherit;
+/* Debug repl */
+
+.message-tree {
+	height: 100%;
+	box-sizing: border-box;
+	overflow: hidden;
 }
 
-/* Disable repl hover highlight in tree. */
-.monaco-workbench .message-tree .monaco-tree .monaco-tree-row > .content {
-	line-height: 18px;
+.message-tree .monaco-tl-contents {
 	user-select: text;
+	-webkit-user-select: text;
+	white-space: pre;
+}
+
+.message-tree.word-wrap .monaco-tl-contents {
+	/* Wrap words but also do not trim whitespace #6275 */
 	word-wrap: break-word;
-	/* white-space: pre-wrap; */
+	white-space: pre-wrap;
+	/* Break on all #7533 */
 	word-break: break-all;
 }
 
-.monaco-workbench .message-tree .monaco-tree .monaco-tree-rows>.monaco-tree-row {
-	cursor: default;
+.monaco-workbench.mac .message-tree .monaco-tl-twistie.collapsible + .monaco-tl-contents,
+.monaco-workbench.mac .message-tree .monaco-tl-twistie {
+	cursor: pointer;
+}
+
+.message-tree .output.expression.value-and-source {
+	display: flex;
+}
+
+.message-tree .output.expression.value-and-source .value {
+	flex: 1;
+}
+
+.message-tree .monaco-tl-contents .arrow {
+	position:absolute;
+	left: 2px;
+	opacity: 0.25;
+}
+
+.vs-dark .message-tree .monaco-tl-contents .arrow {
+	opacity: 0.4;
+}
+
+.message-tree .output.expression.value-and-source .source {
+	margin-left: 4px;
+	margin-right: 8px;
+	cursor: pointer;
+	text-decoration: underline;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	max-width: 150px;
+}
+
+.message-tree .monaco-list-row {
+	cursor: text;
+}
+
+.message-tree .output.expression > .value,
+.message-tree .evaluation-result.expression > .value {
+	margin-left: 0px;
+}
+
+.message-tree .output.expression > .annotation,
+.message-tree .evaluation-result.expression > .annotation {
+	font-size: inherit;
+	padding-left: 6px;
+}
+
+.message-tree .output.expression .name:not(:empty) {
+	margin-right: 6px;
+}
+
+/* Only show 'stale expansion' info when the element gets expanded. */
+.message-tree .evaluation-result > .annotation::before  {
+	content: '';
 }
 
 .message-tree .time-stamp {

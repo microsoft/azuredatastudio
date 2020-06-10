@@ -29,6 +29,7 @@ import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServic
 import { NotebookEditorContentManager } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookMarkdownRenderer } from 'sql/workbench/contrib/notebook/browser/outputs/notebookMarkdown';
+import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -109,6 +110,20 @@ suite('Notebook Find Model', function (): void {
 		await initNotebookModel(expectedNotebookContent);
 	});
 
+	test('Should set notebook model on initialize', async function (): Promise<void> {
+		//initialize find
+		let notebookFindModel = new NotebookFindModel(model);
+		assert.equal(notebookFindModel.notebookModel, model, 'Failed to set notebook model');
+	});
+
+	test('Should have no decorations on initialize', async function (): Promise<void> {
+		//initialize find
+		let notebookFindModel = new NotebookFindModel(model);
+		assert.equal(notebookFindModel.findDecorations, undefined, 'findDecorations should be undefined on initialize');
+		assert.equal(notebookFindModel.getPosition(), undefined, 'currentMatch should be undefined on initialize');
+		assert.equal(notebookFindModel.getLastPosition(), undefined, 'previousMatch should be undefined on initialize');
+	});
+
 	test('Should find results in the notebook', async function (): Promise<void> {
 		// Need to set rendered text content for 2nd cell
 		setRenderedTextContent(1);
@@ -118,7 +133,9 @@ suite('Notebook Find Model', function (): void {
 		await notebookFindModel.find('markdown', false, false, max_find_count);
 
 		assert(notebookFindModel.findMatches, 'Find in notebook failed.');
-		assert.equal(notebookFindModel.findMatches.length, 2, 'Find couldnt find all occurrences');
+		assert.equal(notebookFindModel.findMatches.length, 2, 'Find could not find all occurrences');
+		assert.equal(notebookFindModel.findArray.length, 2, 'Find could not find all occurrences');
+		assert.equal(notebookFindModel.getFindCount(), 2, 'Find count do not match find results');
 	});
 
 	test('Should not find results in the notebook', async function (): Promise<void> {
@@ -141,6 +158,19 @@ suite('Notebook Find Model', function (): void {
 
 		let expectedFindRange2 = new NotebookRange(model.cells[1], 1, 6, 1, 14);
 		assert.deepEqual(notebookFindModel.findMatches[1].range, expectedFindRange2, 'Find in markdown range is wrong :\n' + JSON.stringify(expectedFindRange2) + '\n ' + JSON.stringify(notebookFindModel.findMatches[1].range));
+	});
+
+	test('Should set selection when find matches results', async function (): Promise<void> {
+		// Need to set rendered text content for 2nd cell
+		setRenderedTextContent(1);
+
+		//initialize find
+		let notebookFindModel = new NotebookFindModel(model);
+		await notebookFindModel.find('markdown', false, false, max_find_count);
+
+		notebookFindModel.setSelection(notebookFindModel.findMatches[0].range);
+		let expectedFindRange1 = new NotebookRange(model.cells[0], 2, 13, 2, 21);
+		assert.deepEqual(notebookFindModel.currentMatch, expectedFindRange1, 'Find failed to set selection on finding results');
 	});
 
 	test('Should ignore hyperlink markdown data and find correctly', async function (): Promise<void> {
@@ -244,7 +274,7 @@ suite('Notebook Find Model', function (): void {
 		await notebookFindModel.find('insert', false, false, max_find_count);
 
 		assert(notebookFindModel.findMatches, 'Find in notebook failed.');
-		assert.equal(notebookFindModel.findMatches.length, 3, 'Find couldnt find all occurances');
+		assert.equal(notebookFindModel.findMatches.length, 3, 'Find couldnt find all occurrences');
 
 		await notebookFindModel.find('insert', true, false, max_find_count);
 		assert.equal(notebookFindModel.findMatches.length, 2, 'Find failed to apply match case while searching');
@@ -358,13 +388,45 @@ suite('Notebook Find Model', function (): void {
 		assert.equal(notebookFindModel.findMatches.length, 2, 'Find failed on markdown edit');
 	});
 
+	test('Find next/previous should return the correct find index', async function (): Promise<void> {
+		// Need to set rendered text content for 2nd cell
+		setRenderedTextContent(1);
+
+		//initialize find
+		let notebookFindModel = new NotebookFindModel(model);
+		await notebookFindModel.find('insert', false, false, max_find_count);
+
+		assert.equal(notebookFindModel.getFindIndex(), 1, 'Failed to get the correct find index');
+
+		notebookFindModel.findNext();
+		assert.equal(notebookFindModel.getFindIndex(), 2, 'Failed to get the correct find index');
+
+		notebookFindModel.findPrevious();
+		assert.equal(notebookFindModel.getFindIndex(), 1, 'Failed to get the correct find index');
+	});
+
+	test('Should clear results on clear', async function (): Promise<void> {
+		// Need to set rendered text content for 2nd cell
+		setRenderedTextContent(1);
+
+		//initialize find
+		let notebookFindModel = new NotebookFindModel(model);
+		await notebookFindModel.find('insert', false, false, max_find_count);
+
+		assert.equal(notebookFindModel.findMatches.length, 3, 'Failed to find all occurrences');
+
+		notebookFindModel.clearFind();
+		assert.equal(notebookFindModel.findMatches.length, 0, 'Failed to clear find results');
+		assert.equal(notebookFindModel.findDecorations, undefined, 'Failed to clear find decorations on clear');
+	});
+
 
 	async function initNotebookModel(contents: nb.INotebookContents): Promise<void> {
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(contents));
 		defaultModelOptions.contentManager = mockContentManager.object;
 		// Initialize the model
-		model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
+		model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService());
 		await model.loadContents();
 		await model.requestModelLoad();
 	}

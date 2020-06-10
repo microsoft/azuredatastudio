@@ -16,6 +16,7 @@ import { ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';
 import { find } from 'vs/base/common/arrays';
 import { localize } from 'vs/nls';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
+import { convertSize } from 'sql/base/browser/dom';
 
 export enum DeclarativeDataType {
 	string = 'string',
@@ -161,7 +162,7 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 
 	public getColumnWidth(col: number | azdata.DeclarativeTableColumn): string {
 		let column = typeof col === 'number' ? this.columns[col] : col;
-		return this.convertSize(column.width, '30px');
+		return convertSize(column.width, '30px');
 	}
 
 	public getOptions(colIdx: number): string[] {

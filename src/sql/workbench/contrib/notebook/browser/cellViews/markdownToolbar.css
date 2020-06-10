@@ -1,0 +1,89 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+/* Resets */
+.markdown-toolbar .carbon-taskbar li a.action-label {
+	margin: 0;
+	padding: 0;
+}
+.markdown-toolbar .carbon-taskbar.monaco-toolbar .monaco-action-bar.animated .actions-container {
+	padding: 0;
+}
+
+
+.markdown-toolbar {
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	display: block;
+	list-style: none;
+	margin: 0;
+	padding: 10px 16px 4px 16px;
+}
+.markdown-toolbar .carbon-taskbar li.action-item {
+	display: inline-block;
+	margin-right: 14px;
+}
+.markdown-toolbar .carbon-taskbar li:nth-child(1) {
+	margin-right: 9px;
+}
+.markdown-toolbar .carbon-taskbar li:nth-child(2) {
+	margin-right: 9px;
+}
+.markdown-toolbar .carbon-taskbar li a {
+	display: inline-block;
+	height: 20px;
+	width: 20px;
+	-webkit-mask-position: center;
+	-webkit-mask-repeat: no-repeat;
+	mask-position: center;
+	mask-repeat: no-repeat;
+}
+
+.markdown-toolbar li a.codicon.bold {
+	-webkit-mask-size: 50% 100%;
+	mask-size: 50% 100%;
+}
+.markdown-toolbar li a.codicon.italic {
+	-webkit-mask-size: 60% 100%;
+	mask-size: 60% 100%;
+}
+.markdown-toolbar li a.codicon.highlight {
+	-webkit-mask-size: 65% 100%;
+	mask-size: 65% 100%;
+}
+.markdown-toolbar li a.codicon.code {
+	-webkit-mask-size: 88% 100%;
+	mask-size: 88% 100%;
+}
+.markdown-toolbar li a.codicon.insert-link {
+	-webkit-mask-size: 80% 100%;
+	mask-size: 80% 100%;
+}
+.markdown-toolbar li a.codicon.list {
+	-webkit-mask-size: 80% 100%;
+	mask-size: 80% 100%;
+}
+.markdown-toolbar li a.codicon.ordered-list {
+	-webkit-mask-size: 86% 100%;
+	mask-size: 86% 100%;
+}
+.markdown-toolbar li a.codicon.insertimage {
+	-webkit-mask-size: 86% 100%;
+	mask-size: 86% 100%;
+}
+.markdown-toolbar li a.codicon.split-toggle-on {
+	-webkit-mask-size: 75% 100%;
+	mask-size: 75% 100%;
+}
+.markdown-toolbar li a.codicon.split-toggle-off {
+	-webkit-mask-size: 75% 100%;
+	mask-size: 75% 100%;
+}
+
+text-cell-component .offscreen {
+	height: 1px;
+	margin-top: -1px;
+	position: absolute;
+	text-indent: -999999px;
+}

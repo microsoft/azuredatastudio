@@ -7,12 +7,14 @@ import { localize } from 'vs/nls';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { WelcomePageContribution, WelcomePageAction, WelcomeInputFactory } from 'sql/workbench/contrib/welcome/page/browser/welcomePage'; // {{SQL CARBON EDIT}} use our welcome page
+import { WelcomePageContribution as WelcomePageContribution2, WelcomePageAction as WelcomePageAction2, WelcomeInputFactory as WelcomeInputFactory2 } from 'vs/workbench/contrib/welcome/page/browser/welcomePage'; // {{SQL CARBON EDIT}} use our welcome pag
 import { IWorkbenchActionRegistry, Extensions as ActionExtensions } from 'vs/workbench/common/actions';
 import { SyncActionDescriptor, MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
 import { IConfigurationRegistry, Extensions as ConfigurationExtensions, ConfigurationScope } from 'vs/platform/configuration/common/configurationRegistry';
 import { IEditorInputFactoryRegistry, Extensions as EditorExtensions } from 'vs/workbench/common/editor';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 import { workbenchConfigurationNodeBase } from 'vs/workbench/common/configuration';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration)
 	.registerConfiguration({
@@ -35,13 +37,33 @@ Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration)
 		}
 	});
 
+class WelcomeContributions {
+	constructor(
+		@IConfigurationService configurationService: IConfigurationService,
+	) {
+		const previewFeaturesEnabled: boolean = configurationService.getValue('workbench')['enablePreviewFeatures'];
+		if (previewFeaturesEnabled) {
+			Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
+				.registerWorkbenchContribution(WelcomePageContribution, LifecyclePhase.Restored);
+
+			Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions)
+				.registerWorkbenchAction(SyncActionDescriptor.create(WelcomePageAction, WelcomePageAction.ID, WelcomePageAction.LABEL), 'Help: Welcome', localize('help', "Help"));
+
+			Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories).registerEditorInputFactory(WelcomeInputFactory.ID, WelcomeInputFactory);
+		} else {
+			Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
+				.registerWorkbenchContribution(WelcomePageContribution2, LifecyclePhase.Restored);
+
+			Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions)
+				.registerWorkbenchAction(SyncActionDescriptor.create(WelcomePageAction2, WelcomePageAction2.ID, WelcomePageAction2.LABEL), 'Help: Welcome', localize('help', "Help"));
+
+			Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories).registerEditorInputFactory(WelcomeInputFactory2.ID, WelcomeInputFactory2);
+		}
+	}
+}
+
 Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
-	.registerWorkbenchContribution(WelcomePageContribution, LifecyclePhase.Restored);
-
-Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions)
-	.registerWorkbenchAction(SyncActionDescriptor.create(WelcomePageAction, WelcomePageAction.ID, WelcomePageAction.LABEL), 'Help: Welcome', localize('help', "Help"));
-
-Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories).registerEditorInputFactory(WelcomeInputFactory.ID, WelcomeInputFactory);
+	.registerWorkbenchContribution(WelcomeContributions, LifecyclePhase.Starting);
 
 MenuRegistry.appendMenuItem(MenuId.MenubarHelpMenu, {
 	group: '1_welcome',

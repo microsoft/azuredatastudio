@@ -33,11 +33,13 @@
 	"title.saveJupyterBook": "Save Book",
 	"title.trustBook": "Trust Book",
 	"title.searchJupyterBook": "Search Book",
-	"title.SavedBooks": "Saved Books",
-	"title.UnsavedBooks": "Unsaved Books",
+	"title.SavedBooks": "Notebooks",
+	"title.ProvidedBooks": "Provided Books",
 	"title.PreviewLocalizedBook": "Get localized SQL Server 2019 guide",
 	"title.openJupyterBook": "Open Jupyter Book",
 	"title.closeJupyterBook": "Close Jupyter Book",
+	"title.closeJupyterNotebook": "Close Jupyter Notebook",
 	"title.revealInBooksViewlet": "Reveal in Books",
-	"title.createJupyterBook": "Create Book (Preview)"
+	"title.createJupyterBook": "Create Book (Preview)",
+	"title.openNotebookFolder": "Open Notebooks in Folder"
 }

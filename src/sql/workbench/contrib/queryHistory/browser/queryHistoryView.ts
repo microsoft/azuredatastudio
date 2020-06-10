@@ -9,7 +9,6 @@ import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
-import { Disposable } from 'vs/base/common/lifecycle';
 import { DefaultFilter, DefaultDragAndDrop, DefaultAccessibilityProvider } from 'vs/base/parts/tree/browser/treeDefaults';
 import { localize } from 'vs/nls';
 import { hide, $, append, show } from 'vs/base/browser/dom';
@@ -22,21 +21,38 @@ import { IQueryHistoryService } from 'sql/workbench/services/queryHistory/common
 import { QueryHistoryNode } from 'sql/workbench/contrib/queryHistory/browser/queryHistoryNode';
 import { QueryHistoryInfo } from 'sql/workbench/services/queryHistory/common/queryHistoryInfo';
 import { IAction } from 'vs/base/common/actions';
+import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { IViewDescriptorService } from 'vs/workbench/common/views';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
+import { IOpenerService } from 'vs/platform/opener/common/opener';
+
 /**
  * QueryHistoryView implements the dynamic tree view for displaying Query History
  */
-export class QueryHistoryView extends Disposable {
+export class QueryHistoryView extends ViewPane {
 	private _messages: HTMLElement;
 	private _tree: ITree;
 	private _actionProvider: QueryHistoryActionProvider;
 
 	constructor(
-		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IThemeService private _themeService: IThemeService,
-		@IQueryHistoryService private readonly _queryHistoryService: IQueryHistoryService
+		options: IViewPaneOptions,
+		@IInstantiationService instantiationService: IInstantiationService,
+		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
+		@IConfigurationService configurationService: IConfigurationService,
+		@ITelemetryService telemetryService: ITelemetryService,
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IContextMenuService contextMenuService: IContextMenuService,
+		@IKeybindingService keybindingService: IKeybindingService,
+		@IOpenerService openerService: IOpenerService,
+		@IThemeService themeService: IThemeService,
+		@IQueryHistoryService private readonly queryHistoryService: IQueryHistoryService
 	) {
-		super();
-		this._actionProvider = this._instantiationService.createInstance(QueryHistoryActionProvider);
+		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService, telemetryService);
+		this._actionProvider = this.instantiationService.createInstance(QueryHistoryActionProvider);
 	}
 
 	/**
@@ -49,12 +65,12 @@ export class QueryHistoryView extends Disposable {
 		const noQueriesMessage = localize('noQueriesMessage', "No queries to display.");
 		append(this._messages, $('span')).innerText = noQueriesMessage;
 
-		this._tree = this._register(this.createQueryHistoryTree(container, this._instantiationService));
+		this._tree = this._register(this.createQueryHistoryTree(container, this.instantiationService));
 
 		// Theme styler
-		this._register(attachListStyler(this._tree, this._themeService));
+		this._register(attachListStyler(this._tree, this.themeService));
 
-		this._queryHistoryService.onInfosUpdated((nodes: QueryHistoryInfo[]) => {
+		this.queryHistoryService.onInfosUpdated((nodes: QueryHistoryInfo[]) => {
 			this.refreshTree();
 		});
 
@@ -97,7 +113,7 @@ export class QueryHistoryView extends Disposable {
 			targetsToExpand = expandableTree.getExpandedElements();
 		}
 
-		const nodes: QueryHistoryNode[] = this._queryHistoryService.getQueryHistoryInfos().map(i => new QueryHistoryNode(i));
+		const nodes: QueryHistoryNode[] = this.queryHistoryService.getQueryHistoryInfos().map(i => new QueryHistoryNode(i));
 
 		if (nodes.length > 0) {
 			hide(this._messages);

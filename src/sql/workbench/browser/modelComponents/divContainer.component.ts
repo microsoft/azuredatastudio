@@ -16,6 +16,7 @@ import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBa
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { IComponentDescriptor, IComponent, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
+import { convertSize } from 'sql/base/browser/dom';
 
 class DivItem {
 	constructor(public descriptor: IComponentDescriptor, public config: azdata.DivItemLayout) { }
@@ -23,7 +24,7 @@ class DivItem {
 
 @Component({
 	template: `
-		<div #divContainer *ngIf="items" class="divContainer" [style.height]="height" [style.width]="width" [style.display]="display" (keyup)="onKey($event)" [attr.role]="ariaRole" [attr.aria-selected]="ariaSelected">
+		<div #divContainer *ngIf="items" class="divContainer" [ngStyle]="CSSStyles" [style.height]="height" [style.width]="width" [style.display]="display" (keyup)="onKey($event)" [attr.role]="ariaRole" [attr.aria-selected]="ariaSelected">
 			<div *ngFor="let item of items" [style.order]="getItemOrder(item)" [ngStyle]="getItemStyles(item)">
 				<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore">
 				</model-component-wrapper>
@@ -67,8 +68,8 @@ export default class DivContainer extends ContainerBase<azdata.DivItemLayout> im
 	/// IComponent implementation
 
 	public setLayout(layout: azdata.DivLayout): void {
-		this._height = this.convertSize(layout.height);
-		this._width = this.convertSize(layout.width);
+		this._height = convertSize(layout.height);
+		this._width = convertSize(layout.width);
 		this.layout();
 	}
 

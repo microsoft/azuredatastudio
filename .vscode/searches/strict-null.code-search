@@ -1,0 +1,167 @@
+# Query: strict-null
+
+76 results - 44 files
+
+src\vs\base\browser\ui\tree\compressedObjectTreeModel.ts:
+  455: 			return null; // {{SQL CARBON EDIT}} strict-null-check
+  465: 			return null; // {{SQL CARBON EDIT}} strict-null-check
+
+src\vs\platform\actions\common\menuService.ts:
+  97: 				const toggledExpression: ContextKeyExpression = (item.command.toggled as { condition: ContextKeyExpression }).condition || item.command.toggled as ContextKeyExpression; // {{SQL CARBON EDIT}} strict-null-checks
+
+src\vs\platform\clipboard\browser\clipboardService.ts:
+  57: 		return undefined; // {{SQL CARBON EDIT}} strict-null-checks
+
+src\vs\platform\dialogs\electron-main\dialogs.ts:
+  123: 		return undefined; // {{SQL CARBON EDIT}} strict-null-check
+
+src\vs\platform\driver\electron-main\driver.ts:
+  214: 	const driver = instantiationService.createInstance(Driver as any, windowServer, { verbose }) as Driver; // {{SQL CARBON EDIT}} strict-null-check...i guess?
+
+src\vs\platform\extensionManagement\node\extensionManagementService.ts:
+  558: 						return undefined; // {{SQL CARBON EDIT}} strict-null-checks
+
+src\vs\platform\quickinput\browser\pickerQuickAccess.ts:
+  216: 									active: activePick as T || additionalActivePick as T // {{SQL CARBON EDIT}} strict-null-checks
+
+src\vs\workbench\api\browser\mainThreadLanguageFeatures.ts:
+   90: 			return undefined; // {{SQL CARBON EDIT}} strict-null-checks
+  600: 					return undefined; // {{SQL CARBON EDIT}} strict-null-check
+  610: 					return undefined; // {{SQL CARBON EDIT}} strict-null-check
+
+src\vs\workbench\api\common\extHost.api.impl.ts:
+  538: 					alignment = alignmentOrOptions as number; // {{SQL CARBON EDIT}} strict-null-check
+
+src\vs\workbench\api\common\extHostComments.ts:
+  410: 		return undefined; // {{SQL CARBON EDIT}} @anthonydresser strict-null-check
+
+src\vs\workbench\api\common\extHostTask.ts:
+  583: 			return undefined; // {{SQL CARBON EDIT}} strict-null-check
+
+src\vs\workbench\api\common\extHostTerminalService.ts:
+  279: 				this._onProcessExit.fire(e === void 0 ? undefined : e as number); // {{SQL CARBON EDIT}} strict-null-checks
+  283: 			this._pty.onDidOverrideDimensions(e => this._onProcessOverrideDimensions.fire(e ? { cols: e.columns, rows: e.rows } : undefined)); // {{SQL CARBONEDIT}} strict-null-checks
+
+src\vs\workbench\browser\actions\workspaceCommands.ts:
+   87: 		return undefined; // {{SQL CARBON EDIT}} @anthonydresser strict-null-check
+  120: 	return undefined; // {{SQL CARBON EDIT}} @anthonydresser strict-null-check
+
+src\vs\workbench\browser\parts\editor\editorGroupView.ts:
+  827: 			return undefined; // {{SQL CARBON EDIT}} strict-null-checks
+
+src\vs\workbench\browser\parts\panel\panelPart.ts:
+  151: 				(id: string, focus?: boolean) => <unknown>this.openPanel(id, focus) as Promise<IPaneComposite | undefined>,  // {{SQL CARBON EDIT}} strict-null-checks
+
+src\vs\workbench\browser\parts\sidebar\sidebarPart.ts:
+  59: 			return undefined; // {{SQL CARBON EDIT}} strict-null-check
+  64: 			return undefined; // {{SQL CARBON EDIT}} strict-null-check
+
+src\vs\workbench\common\editor\editorGroup.ts:
+  388: 			return undefined; // {{SQL CARBON EDIT}} strict-null-check
+  406: 			return undefined; // not found {{SQL CARBON EDIT}} strict-null-check
+  433: 			return undefined; // not found {{SQL CARBON EDIT}} strict-null-check
+  456: 			return undefined; // not found {{SQL CARBON EDIT}} strict-null-check
+
+src\vs\workbench\contrib\callHierarchy\browser\callHierarchyPeek.ts:
+  377: 		const root = <ITreeNode<callHTree.Call, FuzzyScore>>this._tree.getNode(model).children[0]; // {{SQL CARBON EDIT}} strict-null-checks
+
+src\vs\workbench\contrib\customEditor\browser\customEditorInput.ts:
+  230: 			return undefined; // {{SQL CARBON EDIT}} strict-null-checks
+
+src\vs\workbench\contrib\customEditor\browser\customEditors.ts:
+  169: 			return undefined; // {{SQL CARBON EDIT}} strict-nulls
+  468: 			return undefined; // {{SQL CARBON EDIT}} Strict-null-checks
+  493: 			return undefined; // {{SQL CARBON EDIT}} Strict-null-checks
+  505: 			return undefined; // {{SQL CARBON EDIT}} strict-null-check
+
+src\vs\workbench\contrib\extensions\browser\extensionsActions.ts:
+  2203: 				return (<IExtensionsConfigContent>json.parse(content.value.toString()) || {}) as IExtensionsConfigContent; // {{SQL CARBON EDIT}} strict-null-check
+
+src\vs\workbench\contrib\extensions\test\electron-browser\extensionRecommendationsService.test.ts:
+  508: 		instantiationService.stub(IStorageService, <any>{ // {{SQL CARBON EDIT}} strict-null-checks?
+
+src\vs\workbench\contrib\files\common\explorerService.ts:
+  393: 		const configSortOrder = configuration?.explorer?.sortOrder || SortOrder.Default; // {{SQL CARBON EDIT}} strict-null-checks?
+
+src\vs\workbench\contrib\notebook\browser\notebookEditor.ts:
+  475: 		return undefined; // {{SQL CARBON EDIT}} strict-null-check
+
+src\vs\workbench\contrib\notebook\browser\notebookService.ts:
+  204: 		return undefined; // {{SQL CARBON EDIT}} strict-null-check
+
+src\vs\workbench\contrib\notebook\browser\contrib\notebookActions.ts:
+  412: 		return undefined; // {{SQL CARBON EDIT}} strict-null-check
+  417: 		return undefined; // {{SQL CARBON EDIT}} strict-null-check
+  479: 		return undefined; // {{SQL CARBON EDIT}} strict-null-check
+  484: 		return undefined; // {{SQL CARBON EDIT}} strict-null-check
+
+src\vs\workbench\contrib\notebook\test\testNotebookEditor.ts:
+  186: 		return undefined; // {{SQL CARBON EDIT}} strict-null-check
+
+src\vs\workbench\contrib\remote\browser\remote.ts:
+  544: 					return undefined; // {{SQL CARBON EDIT}} strict-null-check
+  563: 				return undefined; // {{SQL CARBON EDIT}} strict-null-check;
+
+src\vs\workbench\contrib\remote\browser\tunnelView.ts:
+  589: 		const node: ITunnelItem | null = treeEvent.element as ITunnelItem | null; // {{SQL CARBON EDIT}} strict-null-check
+
+src\vs\workbench\contrib\search\browser\anythingQuickAccess.ts:
+  631: 			return undefined; // {{SQL CARBON EDIT}} strict-null
+  636: 			return undefined; // {{SQL CARBON EDIT}} strict-null
+  641: 			return undefined; // {{SQL CARBON EDIT}} strict-null
+  651: 				return undefined; // {{SQL CARBON EDIT}} strict-null
+  663: 		return undefined; // {{SQL CARBON EDIT}} strict-null
+  668: 			return undefined; // {{SQL CARBON EDIT}} strict-null
+  698: 		return undefined; // {{SQL CARBON EDIT}} strict-null
+
+src\vs\workbench\contrib\searchEditor\browser\searchEditor.ts:
+  335: 			return undefined; // {{SQL CARBON EDIT}} strict-null-checks
+
+src\vs\workbench\contrib\searchEditor\browser\searchEditorInput.ts:
+  121: 		if ((await this.headerModel).isDisposed() || (await this.contentsModel).isDisposed()) { return undefined; } // {{SQL CARBON EDIT}} strict-null-check
+
+src\vs\workbench\contrib\tasks\browser\abstractTaskService.ts:
+  565: 			return undefined; // {{SQL CARBON EDIT}} strict-null-checks
+  586: 		return undefined; // {{SQL CARBON EDIT}} strict-null-checks
+
+src\vs\workbench\contrib\tasks\browser\taskQuickPick.ts:
+  204: 				return undefined; // {{SQL CARBON EDIT}} strict-null-checks
+  207: 		return undefined; // {{SQL CARBON EDIT}} strict-null-checks
+
+src\vs\workbench\contrib\webview\browser\webviewWorkbenchService.ts:
+  148: 			return undefined; // {{SQL CARBON EDIT}} strict-null-checks
+
+src\vs\workbench\electron-browser\desktop.main.ts:
+  283: 		return undefined; // {{SQL CARBON EDIT}} @anthonydresser strict-null-check
+
+src\vs\workbench\services\dialogs\browser\simpleFileDialog.ts:
+  496: 				return undefined; // {{SQL CARBON EDIT}} @anthonydresser strict-null-check
+  502: 				return undefined; // {{SQL CARBON EDIT}} @anthonydresser strict-null-check
+
+src\vs\workbench\services\dialogs\electron-browser\fileDialogService.ts:
+  127: 		return undefined; // {{SQL CARBON EDIT}} strict-null-check
+  151: 		return undefined; // {{SQL CARBON EDIT}} strict-null-check
+
+src\vs\workbench\services\extensions\common\abstractExtensionService.ts:
+  235: 					result.push(new ExtensionPointContribution<T>(desc, desc.contributes[extPoint.name])); // {{SQL CARBON EDIT}} strict-null-checks
+  376: 					value: desc.contributes[extensionPoint.name], // {{SQL CARBON EDIT}} strict-null-checks
+
+src\vs\workbench\services\textfile\browser\textFileService.ts:
+  221: 			return undefined; // user canceled // {{SQL CARBON EDIT}} strict-null-check
+
+src\vs\workbench\services\textfile\common\textFileEditorModel.ts:
+  611: 		if ((this.saveSequentializer as TaskSequentializer).hasPending()) { // {{SQL CARBON EDIT}} strict-null-check
+  619: 			(this.saveSequentializer as TaskSequentializer).cancelPending(); // {{SQL CARBON EDIT}} strict-null-check
+  622: 			return (this.saveSequentializer as TaskSequentializer).setNext(() => this.doSave(options)); // {{SQL CARBON EDIT}} strict-null-check
+  633: 		return (this.saveSequentializer as TaskSequentializer).setPending(versionId, (async () => { // {{SQL CARBON EDIT}} strict-null-checks
+  667: 				return undefined; // {{SQL CARBON EDIT}} @anthonydresser strict-null-check
+  672: 				return undefined; // {{SQL CARBON EDIT}} @anthonydresser strict-null-check
+
+src\vs\workbench\services\textfile\common\textfiles.ts:
+  421: 	isDirty(): boolean; // {{SQL CARBON EDIT}} strict-null-check
+
+src\vs\workbench\services\themes\browser\workbenchThemeService.ts:
+  248: Theme(), initializeFileIconTheme(), initializeProductIconTheme()]) as Promise<[IWorkbenchColorTheme | null, IWorkbenchFileIconTheme | null, IWorkbenchProductIconTheme | null]>; // {{SQL CARBON EDIT}} strict-null-checks maybe?
+
+src\vs\workbench\services\workspaces\browser\abstractWorkspaceEditingService.ts:
+  56: 			return undefined; // canceled  {{SQL CARBON EDIT}} strict-null-checks

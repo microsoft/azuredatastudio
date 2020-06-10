@@ -74,8 +74,8 @@ export class SqlFlavorStatusbarItem extends Disposable implements IWorkbenchCont
 		this.statusItem = this._register(
 			this.statusbarService.addEntry({
 				text: nls.localize('changeProvider', "Change SQL language provider"),
+				ariaLabel: nls.localize('changeProvider', "Change SQL language provider"),
 				command: 'sql.action.editor.changeProvider'
-
 			},
 				SqlFlavorStatusbarItem.ID,
 				nls.localize('status.query.flavor', "SQL Language Flavor"),
@@ -161,6 +161,7 @@ export class SqlFlavorStatusbarItem extends Disposable implements IWorkbenchCont
 	private updateFlavorElement(text: string): void {
 		const props: IStatusbarEntry = {
 			text,
+			ariaLabel: text,
 			command: 'sql.action.editor.changeProvider'
 		};
 

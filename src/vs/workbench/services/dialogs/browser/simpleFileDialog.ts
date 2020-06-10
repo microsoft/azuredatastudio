@@ -35,7 +35,7 @@ import { ICommandHandler } from 'vs/platform/commands/common/commands';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { normalizeDriveLetter } from 'vs/base/common/labels';
 import { SaveReason } from 'vs/workbench/common/editor';
-import { IRemotePathService } from 'vs/workbench/services/path/common/remotePathService';
+import { IPathService } from 'vs/workbench/services/path/common/pathService';
 
 export namespace OpenLocalFileCommand {
 	export const ID = 'workbench.action.files.openLocalFile';
@@ -108,7 +108,7 @@ export class SimpleFileDialog {
 	private remoteAuthority: string | undefined;
 	private requiresTrailing: boolean = false;
 	private trailing: string | undefined;
-	private scheme: string = REMOTE_HOST_SCHEME;
+	protected scheme: string = REMOTE_HOST_SCHEME;
 	private contextKey: IContextKey<boolean>;
 	private userEnteredPathSegment: string = '';
 	private autoCompletePathSegment: string = '';
@@ -133,9 +133,9 @@ export class SimpleFileDialog {
 		@IFileDialogService private readonly fileDialogService: IFileDialogService,
 		@IModelService private readonly modelService: IModelService,
 		@IModeService private readonly modeService: IModeService,
-		@IWorkbenchEnvironmentService private readonly environmentService: IWorkbenchEnvironmentService,
+		@IWorkbenchEnvironmentService protected readonly environmentService: IWorkbenchEnvironmentService,
 		@IRemoteAgentService private readonly remoteAgentService: IRemoteAgentService,
-		@IRemotePathService private readonly remotePathService: IRemotePathService,
+		@IPathService protected readonly pathService: IPathService,
 		@IKeybindingService private readonly keybindingService: IKeybindingService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 	) {
@@ -231,11 +231,8 @@ export class SimpleFileDialog {
 		return this.remoteAgentEnvironment;
 	}
 
-	private async getUserHome(): Promise<URI> {
-		if (this.scheme !== Schemas.file) {
-			return this.remotePathService.userHome;
-		}
-		return this.environmentService.userHome!;
+	protected async getUserHome(): Promise<URI> {
+		return (await this.pathService.userHome) ?? URI.from({ scheme: this.scheme, authority: this.remoteAuthority, path: '/' });
 	}
 
 	private async pickResource(isSave: boolean = false): Promise<URI | undefined> {
@@ -406,7 +403,7 @@ export class SimpleFileDialog {
 					this.filePickBox.validationMessage = undefined;
 					const filePickBoxUri = this.filePickBoxValue();
 					let updated: UpdateResult = UpdateResult.NotUpdated;
-					if (!resources.isEqual(this.currentFolder, filePickBoxUri, true)) {
+					if (!resources.extUriIgnorePathCase.isEqual(this.currentFolder, filePickBoxUri)) {
 						updated = await this.tryUpdateItems(value, filePickBoxUri);
 					}
 					if (updated === UpdateResult.NotUpdated) {
@@ -451,7 +448,7 @@ export class SimpleFileDialog {
 
 	private filePickBoxValue(): URI {
 		// The file pick box can't render everything, so we use the current folder to create the uri so that it is an existing path.
-		const directUri = this.remoteUriFrom(this.filePickBox.value);
+		const directUri = this.remoteUriFrom(this.filePickBox.value.trimRight());
 		const currentPath = this.pathFromUri(this.currentFolder);
 		if (equalsIgnoreCase(this.filePickBox.value, currentPath)) {
 			return this.currentFolder;
@@ -544,7 +541,7 @@ export class SimpleFileDialog {
 			value = this.pathFromUri(valueUri);
 			await this.updateItems(valueUri, true);
 			return UpdateResult.Updated;
-		} else if (!resources.isEqual(this.currentFolder, valueUri, true) && (this.endsWithSlash(value) || (!resources.isEqual(this.currentFolder, resources.dirname(valueUri), true) && resources.isEqualOrParent(this.currentFolder, resources.dirname(valueUri), true)))) {
+		} else if (!resources.extUriIgnorePathCase.isEqual(this.currentFolder, valueUri) && (this.endsWithSlash(value) || (!resources.extUriIgnorePathCase.isEqual(this.currentFolder, resources.dirname(valueUri)) && resources.extUriIgnorePathCase.isEqualOrParent(this.currentFolder, resources.dirname(valueUri))))) {
 			let stat: IFileStat | undefined;
 			try {
 				stat = await this.fileService.resolve(valueUri);
@@ -563,7 +560,7 @@ export class SimpleFileDialog {
 				return UpdateResult.InvalidPath;
 			} else {
 				const inputUriDirname = resources.dirname(valueUri);
-				if (!resources.isEqual(resources.removeTrailingPathSeparator(this.currentFolder), inputUriDirname, true)) {
+				if (!resources.extUriIgnorePathCase.isEqual(resources.removeTrailingPathSeparator(this.currentFolder), inputUriDirname)) {
 					let statWithoutTrailing: IFileStat | undefined;
 					try {
 						statWithoutTrailing = await this.fileService.resolve(inputUriDirname);
@@ -868,7 +865,7 @@ export class SimpleFileDialog {
 	private createBackItem(currFolder: URI): FileQuickPickItem | null {
 		const fileRepresentationCurr = this.currentFolder.with({ scheme: Schemas.file });
 		const fileRepresentationParent = resources.dirname(fileRepresentationCurr);
-		if (!resources.isEqual(fileRepresentationCurr, fileRepresentationParent, true)) {
+		if (!resources.extUriIgnorePathCase.isEqual(fileRepresentationCurr, fileRepresentationParent)) {
 			const parentFolder = resources.dirname(currFolder);
 			return { label: '..', uri: resources.addTrailingPathSeparator(parentFolder, this.separator), isFolder: true };
 		}

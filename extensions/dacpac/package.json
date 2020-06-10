@@ -2,7 +2,7 @@
   "name": "dacpac",
   "displayName": "SQL Server Dacpac",
   "description": "SQL Server Dacpac for Azure Data Studio.",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "publisher": "Microsoft",
   "preview": false,
   "engines": {
@@ -62,10 +62,7 @@
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.1",
-    "vscodetestcover": "github:corivera/vscodetestcover#1.0.5"
-  },
-  "resolutions": {
-      "esprima": "^4.0.0"
+    "vscodetestcover": "^1.0.9"
   },
   "__metadata": {
     "id": "33",

@@ -15,6 +15,6 @@ module.exports = withDefaults({
 		extension: './src/extension.ts'
 	},
 	externals: {
-		kerberos: "commonjs kerberos"
+		'ads-kerberos': 'commonjs ads-kerberos'
 	}
 });

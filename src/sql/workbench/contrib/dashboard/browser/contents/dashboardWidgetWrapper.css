@@ -24,7 +24,7 @@ dashboard-widget-wrapper .widgetHeader {
 	line-height: 20px;
 }
 
-dashboard-widget-wrapper .icon {
+dashboard-widget-wrapper .widgetHeader .icon {
 	display: inline-block;
 	padding: 10px;
 	margin-left: 5px;
@@ -40,13 +40,21 @@ dashboard-widget-wrapper .noTitle {
 }
 
 dashboard-widget-wrapper .actionbar {
-	flex: 0 0 auto;
 	align-self: end;
 }
 
 dashboard-widget-wrapper .bottomActionbar {
-	flex: 0 0 auto;
 	align-self: center;
+}
+
+dashboard-widget-wrapper .bottomActionbar.collapsed {
 	margin-top: -27px;
-	display: none;
+}
+
+dashboard-widget-wrapper .bottomActionbar .actions-container .action-item a.action-label.codicon-chevron-up {
+	padding-left: 5px;
+}
+
+dashboard-widget-wrapper .bottomActionbar .actions-container .action-item a.action-label.codicon-chevron-down {
+	padding-left: 5px;
 }

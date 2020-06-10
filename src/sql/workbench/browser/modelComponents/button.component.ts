@@ -19,6 +19,7 @@ import { focusBorder, foreground } from 'vs/platform/theme/common/colorRegistry'
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Color } from 'vs/base/common/color';
 import { IComponentDescriptor, IComponent, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
+import { convertSize } from 'sql/base/browser/dom';
 
 @Component({
 	selector: 'modelview-button',
@@ -116,10 +117,10 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 		}
 
 		if (this.width) {
-			this._button.setWidth(this.convertSize(this.width.toString()));
+			this._button.setWidth(convertSize(this.width.toString()));
 		}
 		if (this.height) {
-			this._button.setHeight(this.convertSize(this.height.toString()));
+			this._button.setHeight(convertSize(this.height.toString()));
 		}
 		this.updateIcon();
 		this._changeRef.detectChanges();

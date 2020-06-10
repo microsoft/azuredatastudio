@@ -1,7 +1,28 @@
 {
+	"title.projectsView": "Projects",
+
 	"sqlDatabaseProjects.displayName": "Database Projects",
-	"sqlDatabaseProjects.description": "Design and deploy SQL database schemas",
+	"sqlDatabaseProjects.description": "Design and publish SQL database schemas",
 	"sqlDatabaseProjects.new": "New Database Project",
 	"sqlDatabaseProjects.open": "Open Database Project",
-	"title.projectsView": "Projects"
+	"sqlDatabaseProjects.close": "Close Database Project",
+	"sqlDatabaseProjects.build": "Build",
+	"sqlDatabaseProjects.deploy": "Publish",
+	"sqlDatabaseProjects.importDatabase": "Import New Database Project",
+	"sqlDatabaseProjects.properties": "Properties",
+	"sqlDatabaseProjects.schemaCompare": "Schema Compare",
+
+	"sqlDatabaseProjects.newScript": "Add Script",
+	"sqlDatabaseProjects.newTable": "Add Table",
+	"sqlDatabaseProjects.newView": "Add View",
+	"sqlDatabaseProjects.newStoredProcedure": "Add Stored Procedure",
+	"sqlDatabaseProjects.newItem": "Add Item...",
+	"sqlDatabaseProjects.newFolder": "Add Folder",
+
+
+	"sqlDatabaseProjects.addDatabaseReference": "Add Database Reference",
+
+	"sqlDatabaseProjects.Settings": "Database Projects",
+	"sqlDatabaseProjects.netCoreInstallLocation": "Full Path to .Net Core SDK on the machine.",
+	"sqlDatabaseProjects.welcome": "No database projects currently open.\n[New Project](command:sqlDatabaseProjects.new)\n[Open Project](command:sqlDatabaseProjects.open)\n[Import Project from Database](command:sqlDatabaseProjects.importDatabase)"
 }

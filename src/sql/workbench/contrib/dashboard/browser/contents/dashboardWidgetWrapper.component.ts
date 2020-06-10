@@ -122,23 +122,36 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 			this.loadWidget();
 		}
 		this._changeref.detectChanges();
-		this._actionbar = new ActionBar(this._actionbarRef.nativeElement);
-		this._bottomActionbar = new ActionBar(this._bottomActionbarRef.nativeElement);
-		if (this._actions) {
-			if (this.collapsable) {
-				this._collapseAction = this.instantiationService.createInstance(CollapseWidgetAction, this._bootstrap.getUnderlyingUri(), this.guid, this.collapsed);
-				if (this.bottomCollapse) {
-					this._bottomActionbar.push(this._collapseAction, { icon: true, label: false });
-					this._bottomActionbarRef.nativeElement.style.display = 'block';
-				} else {
-					this._actionbar.push(this._collapseAction, { icon: true, label: false });
-				}
+		this._collapseAction = this.collapsable ? this.instantiationService.createInstance(CollapseWidgetAction, this._bootstrap.getUnderlyingUri(), this.guid, this.collapsed) : undefined;
+
+		// top action bar
+		if (this.showActionBar) {
+			this._actionbar = new ActionBar(this._actionbarRef.nativeElement);
+			if (this.collapsable && !this.bottomCollapse) {
+				this._actionbar.push(this._collapseAction, { icon: true, label: false });
 			}
-			if (this.toggleMore) {
+
+			if (this._actions && this.toggleMore) {
+				this._actionbar.context = { target: this._actionbarRef.nativeElement };
 				this._actionbar.push(this.instantiationService.createInstance(ToggleMoreWidgetAction, this._actions as Array<IAction>, this._component.actionsContext), { icon: true, label: false });
 			}
 		}
+
+		// bottom action bar
+		if (this.showBottomActionBar) {
+			this._bottomActionbar = new ActionBar(this._bottomActionbarRef.nativeElement);
+			this._bottomActionbar.push(this._collapseAction, { icon: true, label: false });
+		}
+
 		this.layout();
+	}
+
+	private get showActionBar(): boolean {
+		return !this._config.hideHeader && ((this.collapsable && !this.bottomCollapse) || (this._actions && this.toggleMore));
+	}
+
+	private get showBottomActionBar(): boolean {
+		return this.collapsable && this.bottomCollapse;
 	}
 
 	public refresh(): void {
@@ -163,6 +176,10 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 
 	public disableEdit(): void {
 		this._actionbar.pull(this._actionbar.length() - 1);
+	}
+
+	public get component(): IDashboardWidget {
+		return this._component;
 	}
 
 	private loadWidget(): void {
@@ -237,50 +254,52 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 	}
 
 	private updateTheme(theme: IColorTheme): void {
-		const el = <HTMLElement>this._ref.nativeElement;
-		const headerEl: HTMLElement = this.header.nativeElement;
-		let borderColor = theme.getColor(themeColors.DASHBOARD_BORDER);
-		let backgroundColor = theme.getColor(colors.editorBackground, true);
-		const foregroundColor = theme.getColor(themeColors.SIDE_BAR_FOREGROUND, true);
-		const border = theme.getColor(colors.contrastBorder, true);
+		if (!this._config.hideHeader) {
+			const el = <HTMLElement>this._ref.nativeElement;
+			const headerEl: HTMLElement = this.header.nativeElement;
+			let borderColor = theme.getColor(themeColors.DASHBOARD_BORDER);
+			let backgroundColor = theme.getColor(colors.editorBackground, true);
+			const foregroundColor = theme.getColor(themeColors.SIDE_BAR_FOREGROUND, true);
+			const border = theme.getColor(colors.contrastBorder, true);
 
-		if (this._config.background_color) {
-			backgroundColor = theme.getColor(this._config.background_color);
-		}
+			if (this._config.background_color) {
+				backgroundColor = theme.getColor(this._config.background_color);
+			}
 
-		if (this._config.border === 'none') {
-			borderColor = undefined;
-		}
+			if (this._config.border === 'none') {
+				borderColor = undefined;
+			}
 
-		if (backgroundColor) {
-			el.style.backgroundColor = backgroundColor.toString();
-		}
+			if (backgroundColor) {
+				el.style.backgroundColor = backgroundColor.toString();
+			}
 
-		if (foregroundColor) {
-			el.style.color = foregroundColor.toString();
-		}
+			if (foregroundColor) {
+				el.style.color = foregroundColor.toString();
+			}
 
-		let borderString = undefined;
-		if (border) {
-			borderString = border.toString();
-			el.style.borderColor = borderString;
-			el.style.borderWidth = '1px';
-			el.style.borderStyle = 'solid';
-		} else if (borderColor) {
-			borderString = borderColor;
-			el.style.border = '1px solid ' + borderColor;
-		} else {
-			el.style.border = 'none';
-		}
+			let borderString = undefined;
+			if (border) {
+				borderString = border.toString();
+				el.style.borderColor = borderString;
+				el.style.borderWidth = '1px';
+				el.style.borderStyle = 'solid';
+			} else if (borderColor) {
+				borderString = borderColor;
+				el.style.border = '1px solid ' + borderColor;
+			} else {
+				el.style.border = 'none';
+			}
 
-		if (this._config.fontSize) {
-			headerEl.style.fontSize = this._config.fontSize;
-		}
-		if (this._config.fontWeight) {
-			headerEl.style.fontWeight = this._config.fontWeight;
-		}
-		if (this._config.padding) {
-			headerEl.style.padding = this._config.padding;
+			if (this._config.fontSize) {
+				headerEl.style.fontSize = this._config.fontSize;
+			}
+			if (this._config.fontWeight) {
+				headerEl.style.fontWeight = this._config.fontWeight;
+			}
+			if (this._config.padding) {
+				headerEl.style.padding = this._config.padding;
+			}
 		}
 	}
 }

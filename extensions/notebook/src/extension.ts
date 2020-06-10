@@ -24,23 +24,25 @@ const JUPYTER_NOTEBOOK_PROVIDER = 'jupyter';
 const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', "This sample code loads the file into a data frame and shows the first 10 results.");
 const noNotebookVisible = localize('noNotebookVisible', "No notebook editor is active");
 const BOOKS_VIEWID = 'bookTreeView';
-const READONLY_BOOKS_VIEWID = 'unsavedBookTreeView';
+const PROVIDED_BOOKS_VIEWID = 'providedBooksView';
 let controller: JupyterController;
 type ChooseCellType = { label: string, id: CellType };
 
 export async function activate(extensionContext: vscode.ExtensionContext): Promise<IExtensionApi> {
 	const createBookPath: string = path.posix.join(extensionContext.extensionPath, 'resources', 'notebooks', 'JupyterBooksCreate.ipynb');
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openBook', (bookPath: string, openAsUntitled: boolean, urlToOpen?: string) => openAsUntitled ? untitledBookTreeViewProvider.openBook(bookPath, urlToOpen) : bookTreeViewProvider.openBook(bookPath, urlToOpen)));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openBook', (bookPath: string, openAsUntitled: boolean, urlToOpen?: string) => openAsUntitled ? providedBookTreeViewProvider.openBook(bookPath, urlToOpen, true) : bookTreeViewProvider.openBook(bookPath, urlToOpen, true)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openNotebook', (resource) => bookTreeViewProvider.openNotebook(resource)));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openUntitledNotebook', (resource) => untitledBookTreeViewProvider.openNotebookAsUntitled(resource)));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openUntitledNotebook', (resource) => providedBookTreeViewProvider.openNotebookAsUntitled(resource)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openMarkdown', (resource) => bookTreeViewProvider.openMarkdown(resource)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openExternalLink', (resource) => bookTreeViewProvider.openExternalLink(resource)));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.saveBook', () => untitledBookTreeViewProvider.saveJupyterBooks()));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.saveBook', () => providedBookTreeViewProvider.saveJupyterBooks()));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.trustBook', (resource) => bookTreeViewProvider.trustBook(resource)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.searchBook', (item) => bookTreeViewProvider.searchJupyterBooks(item)));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.searchUntitledBook', () => untitledBookTreeViewProvider.searchJupyterBooks()));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.searchUntitledBook', () => providedBookTreeViewProvider.searchJupyterBooks()));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openBook', () => bookTreeViewProvider.openNewBook()));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.closeBook', (book: any) => bookTreeViewProvider.closeBook(book)));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.closeNotebook', (book: any) => bookTreeViewProvider.closeBook(book)));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openNotebookFolder', () => bookTreeViewProvider.openNotebookFolder()));
 
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.createBook', async () => {
 		let untitledFileName: vscode.Uri = vscode.Uri.parse(`untitled:${createBookPath}`);
@@ -52,12 +54,12 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 			});
 		});
 	}));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('_notebook.command.new', (context?: azdata.ConnectedContext) => {
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('_notebook.command.new', async (context?: azdata.ConnectedContext) => {
 		let connectionProfile: azdata.IConnectionProfile = undefined;
 		if (context && context.connectionProfile) {
 			connectionProfile = context.connectionProfile;
 		}
-		newNotebook(connectionProfile);
+		return newNotebook(connectionProfile);
 	}));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.open', async () => {
 		await openNotebook();
@@ -112,7 +114,7 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	}));
 
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.revealInBooksViewlet', (uri: vscode.Uri, shouldReveal: boolean) => bookTreeViewProvider.revealActiveDocumentInViewlet(uri, shouldReveal)));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.revealInUntitledBooksViewlet', (uri: vscode.Uri, shouldReveal: boolean) => untitledBookTreeViewProvider.revealActiveDocumentInViewlet(uri, shouldReveal)));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.revealInUntitledBooksViewlet', (uri: vscode.Uri, shouldReveal: boolean) => providedBookTreeViewProvider.revealActiveDocumentInViewlet(uri, shouldReveal)));
 
 	let appContext = new AppContext(extensionContext, new ApiWrapper());
 	controller = new JupyterController(appContext);
@@ -124,9 +126,20 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	let workspaceFolders = vscode.workspace.workspaceFolders?.slice() ?? [];
 	const bookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, workspaceFolders, extensionContext, false, BOOKS_VIEWID);
 	await bookTreeViewProvider.initialized;
-	const untitledBookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [], extensionContext, true, READONLY_BOOKS_VIEWID);
-	await untitledBookTreeViewProvider.initialized;
+	const providedBookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [], extensionContext, true, PROVIDED_BOOKS_VIEWID);
+	await providedBookTreeViewProvider.initialized;
 
+	azdata.nb.onDidChangeActiveNotebookEditor(e => {
+		if (e.document.uri.scheme === 'untitled') {
+			providedBookTreeViewProvider.revealActiveDocumentInViewlet(e.document.uri, false);
+		} else {
+			bookTreeViewProvider.revealActiveDocumentInViewlet(e.document.uri, false);
+		}
+
+	});
+
+	extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider(BOOKS_VIEWID, bookTreeViewProvider));
+	extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider(PROVIDED_BOOKS_VIEWID, providedBookTreeViewProvider));
 	return {
 		getJupyterController() {
 			return controller;
@@ -140,10 +153,10 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	};
 }
 
-function newNotebook(connectionProfile: azdata.IConnectionProfile) {
-	let title = findNextUntitledEditorName();
-	let untitledUri = vscode.Uri.parse(`untitled:${title}`);
-	let options: azdata.nb.NotebookShowOptions = connectionProfile ? {
+async function newNotebook(connectionProfile: azdata.IConnectionProfile): Promise<azdata.nb.NotebookEditor> {
+	const title = findNextUntitledEditorName();
+	const untitledUri = vscode.Uri.parse(`untitled:${title}`);
+	const options: azdata.nb.NotebookShowOptions = connectionProfile ? {
 		viewColumn: null,
 		preserveFocus: true,
 		preview: null,
@@ -151,11 +164,7 @@ function newNotebook(connectionProfile: azdata.IConnectionProfile) {
 		connectionProfile: connectionProfile,
 		defaultKernel: null
 	} : null;
-	azdata.nb.showNotebookDocument(untitledUri, options).then(success => {
-
-	}, (err: Error) => {
-		vscode.window.showErrorMessage(err.message);
-	});
+	return azdata.nb.showNotebookDocument(untitledUri, options);
 }
 
 function findNextUntitledEditorName(): string {

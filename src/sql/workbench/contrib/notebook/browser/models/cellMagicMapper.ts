@@ -36,6 +36,7 @@ export class CellMagicMapper implements ICellMagicMapper {
 		if (kernelId === undefined || !searchText) {
 			return undefined;
 		}
+		kernelId = kernelId.toLowerCase();
 		searchText = searchText.toLowerCase();
 		let kernelMagics = this.kernelToMagicMap.get(kernelId) || [];
 		if (kernelMagics) {
@@ -45,7 +46,7 @@ export class CellMagicMapper implements ICellMagicMapper {
 	}
 
 	toLanguageMagic(magic: string, kernelId: string): ILanguageMagic {
-		let languageMagic = this.findMagicForKernel(magic, kernelId.toLowerCase());
+		let languageMagic = this.findMagicForKernel(magic, kernelId);
 		if (!languageMagic) {
 			languageMagic = this.findMagicForKernel(magic, defaultKernel);
 		}

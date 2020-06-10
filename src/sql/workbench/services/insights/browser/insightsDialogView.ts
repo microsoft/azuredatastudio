@@ -52,16 +52,16 @@ const labelDisplay = nls.localize("insights.item", "Item");
 const valueDisplay = nls.localize("insights.value", "Value");
 const iconClass = 'codicon';
 
-class InsightTableView<T> extends ViewPane {
-	private _table: Table<T>;
-	public get table(): Table<T> {
+class InsightTableView extends ViewPane {
+	private _table: Table<ListResource>;
+	public get table(): Table<ListResource> {
 		return this._table;
 	}
 
 	constructor(
-		private columns: Slick.Column<T>[],
-		private data: IDisposableDataProvider<T> | Array<T>,
-		private tableOptions: Slick.GridOptions<T>,
+		private columns: Slick.Column<ListResource>[],
+		private data: IDisposableDataProvider<ListResource> | Array<ListResource>,
+		private tableOptions: Slick.GridOptions<ListResource>,
 		options: IViewPaneOptions,
 		@IKeybindingService keybindingService: IKeybindingService,
 		@IContextMenuService contextMenuService: IContextMenuService,
@@ -220,14 +220,14 @@ export class InsightsDialogView extends Modal {
 		const itemsHeaderTitle = nls.localize("insights.dialog.items", "Items");
 		const itemsDetailHeaderTitle = nls.localize("insights.dialog.itemDetails", "Item Details");
 
-		this._topTableData = new TableDataView();
-		this._bottomTableData = new TableDataView();
-		let topTableView = this._instantiationService.createInstance(InsightTableView, this._topColumns, this._topTableData, { forceFitColumns: true }, { id: 'insights.top', title: itemsHeaderTitle }) as InsightTableView<ListResource>;
+		this._topTableData = new TableDataView<ListResource>();
+		this._bottomTableData = new TableDataView<ListResource>();
+		let topTableView = this._instantiationService.createInstance(InsightTableView, this._topColumns, this._topTableData, { forceFitColumns: true }, { id: 'insights.top', title: itemsHeaderTitle });
 		topTableView.render();
 		attachPanelStyler(topTableView, this._themeService);
 		this._topTable = topTableView.table;
 		this._topTable.setSelectionModel(new RowSelectionModel<ListResource>());
-		let bottomTableView = this._instantiationService.createInstance(InsightTableView, this._bottomColumns, this._bottomTableData, { forceFitColumns: true }, { id: 'insights.bottom', title: itemsDetailHeaderTitle }) as InsightTableView<ListResource>;
+		let bottomTableView = this._instantiationService.createInstance(InsightTableView, this._bottomColumns, this._bottomTableData, { forceFitColumns: true }, { id: 'insights.bottom', title: itemsDetailHeaderTitle });
 		bottomTableView.render();
 		attachPanelStyler(bottomTableView, this._themeService);
 		this._bottomTable = bottomTableView.table;
@@ -275,8 +275,8 @@ export class InsightsDialogView extends Modal {
 		this._register(attachTableStyler(this._topTable, this._themeService));
 		this._register(attachTableStyler(this._bottomTable, this._themeService));
 
-		this._topTable.grid.onKeyDown.subscribe((e: KeyboardEvent) => {
-			let event = new StandardKeyboardEvent(e);
+		this._topTable.grid.onKeyDown.subscribe(e => {
+			let event = new StandardKeyboardEvent(<unknown>e as KeyboardEvent);
 			if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
 				topTableView.focus();
 				e.stopImmediatePropagation();
@@ -286,8 +286,8 @@ export class InsightsDialogView extends Modal {
 			}
 		});
 
-		this._bottomTable.grid.onKeyDown.subscribe((e: KeyboardEvent) => {
-			let event = new StandardKeyboardEvent(e);
+		this._bottomTable.grid.onKeyDown.subscribe(e => {
+			let event = new StandardKeyboardEvent(<unknown>e as KeyboardEvent);
 			if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
 				bottomTableView.focus();
 				e.stopImmediatePropagation();

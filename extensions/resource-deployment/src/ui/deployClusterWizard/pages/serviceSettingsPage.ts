@@ -5,11 +5,11 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DeployClusterWizard } from '../deployClusterWizard';
-import { SectionInfo, FieldType } from '../../../interfaces';
-import { Validator, InputComponents, createSection, createGroupContainer, createLabel, createFlexContainer, createTextInput, createNumberInput, setModelValues, getInputBoxComponent, getCheckboxComponent, getDropdownComponent } from '../../modelViewUtils';
+import { FieldType, SectionInfo } from '../../../interfaces';
+import { createFlexContainer, createGroupContainer, createLabel, createNumberInput, createSection, createTextInput, getCheckboxComponent, getDropdownComponent, getInputBoxComponent, InputComponentInfo, InputComponents, setModelValues, Validator } from '../../modelViewUtils';
 import { WizardPageBase } from '../../wizardPageBase';
 import * as VariableNames from '../constants';
+import { DeployClusterWizard } from '../deployClusterWizard';
 import { AuthenticationMode } from '../deployClusterWizardModel';
 const localize = nls.loadMessageBundle();
 
@@ -59,7 +59,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			inputWidth: NumberInputWidth,
 			spaceBetweenFields: '40px',
 			rows: [{
-				fields: [{
+				items: [{
 					type: FieldType.Options,
 					label: localize('deployCluster.MasterSqlServerInstances', "SQL Server master instances"),
 					options: ['1', '3', '4', '5', '6', '7', '8', '9'],
@@ -75,7 +75,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					variableName: VariableNames.ComputePoolScale_VariableName,
 				}]
 			}, {
-				fields: [{
+				items: [{
 					type: FieldType.Number,
 					label: localize('deployCluster.DataPoolInstances', "Data pool instances"),
 					min: 1,
@@ -93,7 +93,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					variableName: VariableNames.SparkPoolScale_VariableName
 				}]
 			}, {
-				fields: [
+				items: [
 					{
 						type: FieldType.Number,
 						label: localize('deployCluster.StoragePoolInstances', "Storage pool (HDFS) instances"),
@@ -119,12 +119,13 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				return createSection({
 					view: view,
 					container: this.wizard.wizardObject,
+					inputComponents: this.inputComponents,
 					sectionInfo: sectionInfo,
 					onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 						this.wizard.registerDisposable(disposable);
 					},
-					onNewInputComponentCreated: (name: string, component: azdata.DropDownComponent | azdata.InputBoxComponent | azdata.CheckBoxComponent): void => {
-						this.inputComponents[name] = { component: component };
+					onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo): void => {
+						this.inputComponents[name] = { component: inputComponentInfo.component };
 					},
 					onNewValidatorCreated: (validator: Validator): void => {
 					}
@@ -400,6 +401,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 
 	public onLeave(): void {
 		setModelValues(this.inputComponents, this.wizard.model);
+		Object.assign(this.wizard.inputComponents, this.inputComponents);
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			return true;
 		});

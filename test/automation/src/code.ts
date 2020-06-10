@@ -132,7 +132,7 @@ export async function spawn(options: SpawnOptions): Promise<Code> {
 
 	const args = [
 		options.workspacePath,
-		'--skip-getting-started',
+		'--skip-release-notes',
 		'--disable-telemetry',
 		'--disable-updates',
 		'--disable-crash-reporter',
@@ -148,17 +148,16 @@ export async function spawn(options: SpawnOptions): Promise<Code> {
 
 		if (codePath) {
 			// running against a build: copy the test resolver extension
-			const testResolverExtPath = path.join(options.extensionsPath, 'vscode-test-resolver');
-			if (!fs.existsSync(testResolverExtPath)) {
-				const orig = path.join(repoPath, 'extensions', 'vscode-test-resolver');
-				await new Promise((c, e) => ncp(orig, testResolverExtPath, err => err ? e(err) : c()));
-			}
+			copyExtension(options, 'vscode-test-resolver');
 		}
 		args.push('--enable-proposed-api=vscode.vscode-test-resolver');
 		const remoteDataDir = `${options.userDataDir}-server`;
 		mkdirp.sync(remoteDataDir);
 		env['TESTRESOLVER_DATA_FOLDER'] = remoteDataDir;
 	}
+
+	copyExtension(options, 'vscode-notebook-tests');
+	args.push('--enable-proposed-api=vscode.vscode-notebook-tests');
 
 	if (!codePath) {
 		args.unshift(repoPath);
@@ -183,6 +182,14 @@ export async function spawn(options: SpawnOptions): Promise<Code> {
 	child.once('exit', () => instances.delete(child!));
 	connectDriver = connectElectronDriver;
 	return connect(connectDriver, child, outPath, handle, options.logger);
+}
+
+async function copyExtension(options: SpawnOptions, extId: string): Promise<void> {
+	const testResolverExtPath = path.join(options.extensionsPath, extId);
+	if (!fs.existsSync(testResolverExtPath)) {
+		const orig = path.join(repoPath, 'extensions', extId);
+		await new Promise((c, e) => ncp(orig, testResolverExtPath, err => err ? e(err) : c()));
+	}
 }
 
 async function poll<T>(
@@ -256,9 +263,7 @@ export class Code {
 	}
 
 	async waitForWindowIds(fn: (windowIds: number[]) => boolean): Promise<void> {
-		// {{SQL CARBON EDIT}}
-		await poll(() => this.driver.getWindowIds(), fn, `get window ids`, 600, 100);
-		// {{END}}
+		await poll(() => this.driver.getWindowIds(), fn, `get window ids`, 600, 100); // {{SQL CARBON EDIT}}
 	}
 
 	async dispatchKeybinding(keybinding: string): Promise<void> {

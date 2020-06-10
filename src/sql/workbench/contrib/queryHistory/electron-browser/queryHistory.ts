@@ -10,12 +10,14 @@ import { localize } from 'vs/nls';
 import { SyncActionDescriptor, MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
 import { IWorkbenchActionRegistry, Extensions as ActionExtensions } from 'vs/workbench/common/actions';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { QueryHistoryPanel } from 'sql/workbench/contrib/queryHistory/browser/queryHistoryPanel';
-import { PanelRegistry, Extensions as PanelExtensions, PanelDescriptor } from 'vs/workbench/browser/panel';
-import { QUERY_HISTORY_PANEL_ID } from 'sql/workbench/contrib/queryHistory/common/constants';
 import { ToggleQueryHistoryAction } from 'sql/workbench/contrib/queryHistory/browser/queryHistoryActions';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { IConfigurationRegistry, ConfigurationScope, Extensions } from 'vs/platform/configuration/common/configurationRegistry';
+import { ViewContainer, IViewContainersRegistry, Extensions as ViewContainerExtensions, IViewsRegistry, ViewContainerLocation } from 'vs/workbench/common/views';
+import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
+import { ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { QUERY_HISTORY_CONTAINER_ID, QUERY_HISTORY_VIEW_ID } from 'sql/workbench/contrib/queryHistory/common/constants';
+import { QueryHistoryView } from 'sql/workbench/contrib/queryHistory/browser/queryHistoryView';
 
 export class QueryHistoryWorkbenchContribution implements IWorkbenchContribution {
 
@@ -82,16 +84,6 @@ export class QueryHistoryWorkbenchContribution implements IWorkbenchContribution
 						localize('viewCategory', "View")
 					);
 
-					// Register Output Panel
-					Registry.as<PanelRegistry>(PanelExtensions.Panels).registerPanel(PanelDescriptor.create(
-						QueryHistoryPanel,
-						QUERY_HISTORY_PANEL_ID,
-						localize('queryHistory', "Query History"),
-						'output',
-						20,
-						ToggleQueryHistoryAction.ID
-					));
-
 					MenuRegistry.appendMenuItem(MenuId.MenubarViewMenu, {
 						group: '4_panels',
 						command: {
@@ -100,6 +92,27 @@ export class QueryHistoryWorkbenchContribution implements IWorkbenchContribution
 						},
 						order: 2
 					});
+
+					// markers view container
+					const VIEW_CONTAINER: ViewContainer = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
+						id: QUERY_HISTORY_CONTAINER_ID,
+						name: localize('queryHistory', "Query History"),
+						hideIfEmpty: true,
+						order: 20,
+						ctorDescriptor: new SyncDescriptor(ViewPaneContainer, [QUERY_HISTORY_CONTAINER_ID, { mergeViewWithContainerWhenSingleView: true, donotShowContainerTitleWhenMergedWithContainer: true }]),
+						storageId: `${QUERY_HISTORY_CONTAINER_ID}.storage`,
+						focusCommand: {
+							id: ToggleQueryHistoryAction.ID
+						}
+					}, ViewContainerLocation.Panel);
+
+					Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).registerViews([{
+						id: QUERY_HISTORY_VIEW_ID,
+						name: localize('queryHistory', "Query History"),
+						canToggleVisibility: false,
+						canMoveView: false,
+						ctorDescriptor: new SyncDescriptor(QueryHistoryView),
+					}], VIEW_CONTAINER);
 				}
 			}
 		});

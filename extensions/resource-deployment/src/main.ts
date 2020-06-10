@@ -49,7 +49,13 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 		if (typeof resourceType === 'string') {
 			openDialog(resourceType);
 		} else {
-			openDialog('sql-image');
+			let defaultDeploymentType: string;
+			if (platformService.platform() === 'win32') {
+				defaultDeploymentType = 'sql-windows-setup';
+			} else {
+				defaultDeploymentType = 'sql-image';
+			}
+			openDialog(defaultDeploymentType);
 		}
 	});
 	vscode.commands.registerCommand('azdata.openNotebookInputDialog', (dialogInfo: NotebookBasedDialogInfo) => {

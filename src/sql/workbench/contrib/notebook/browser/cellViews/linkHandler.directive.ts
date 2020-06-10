@@ -9,8 +9,10 @@ import { URI } from 'vs/base/common/uri';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
+import { relative, resolve } from 'vs/base/common/path';
+import { IFileService } from 'vs/platform/files/common/files';
 
-const knownSchemes = new Set(['http', 'https', 'file', 'mailto', 'data', 'azuredatastudio', 'azuredatastudio-insiders', 'vscode', 'vscode-insiders', 'vscode-resource']);
+const knownSchemes = new Set(['http', 'https', 'file', 'mailto', 'data', 'azuredatastudio', 'azuredatastudio-insiders', 'vscode', 'vscode-insiders', 'vscode-resource', 'onenote']);
 @Directive({
 	selector: '[link-handler]',
 })
@@ -21,16 +23,16 @@ export class LinkHandlerDirective {
 
 	constructor(
 		@Inject(IOpenerService) private readonly openerService: IOpenerService,
-		@Inject(INotebookService) private readonly notebookService: INotebookService
+		@Inject(INotebookService) private readonly notebookService: INotebookService,
+		@Inject(IFileService) private readonly fileService: IFileService
 	) {
 		this.workbenchFilePath = URI.parse(require.toUrl('vs/code/electron-browser/workbench/workbench.html'));
 	}
 
 	@HostListener('click', ['$event'])
-	onclick(event: MouseEvent): void {
+	async onclick(event: MouseEvent): Promise<void> {
 		// Note: this logic is taken from the VSCode handling of links in markdown
 		// Untrusted cells will not support commands or raw HTML tags
-		// Finally, we should consider supporting relative paths - created #5238 to track
 		let target: HTMLElement = event.target as HTMLElement;
 		if (target.tagName !== 'A') {
 			target = target.parentElement;
@@ -41,16 +43,18 @@ export class LinkHandlerDirective {
 		try {
 			const href = target['href'];
 			if (href) {
-				this.handleLink(href);
+				await this.handleLink(href);
 			}
-		} catch (err) {
-			onUnexpectedError(err);
-		} finally {
+		}
+		catch (e) {
+			onUnexpectedError(e);
+		}
+		finally {
 			event.preventDefault();
 		}
 	}
 
-	private handleLink(content: string): void {
+	private async handleLink(content: string): Promise<void> {
 		let uri: URI | undefined;
 		try {
 			uri = URI.parse(content);
@@ -61,7 +65,24 @@ export class LinkHandlerDirective {
 			if (uri.fragment && uri.fragment.length > 0 && uri.fsPath === this.workbenchFilePath.fsPath) {
 				this.notebookService.navigateTo(this.notebookUri, uri.fragment);
 			} else {
-				this.openerService.open(uri).catch(onUnexpectedError);
+				if (uri.scheme === 'file') {
+					let exists = await this.fileService.exists(uri);
+					if (!exists) {
+						let relPath = relative(this.workbenchFilePath.fsPath, uri.fsPath);
+						let path = resolve(this.notebookUri.fsPath, relPath);
+						try {
+							uri = URI.file(path);
+						} catch (error) {
+							onUnexpectedError(error);
+						}
+					}
+				}
+				if (this.forceOpenExternal(uri)) {
+					this.openerService.open(uri, { openExternal: true }).catch(onUnexpectedError);
+				}
+				else {
+					this.openerService.open(uri).catch(onUnexpectedError);
+				}
 			}
 		}
 	}
@@ -71,5 +92,12 @@ export class LinkHandlerDirective {
 			return true;
 		}
 		return !!this.isTrusted && link.scheme === 'command';
+	}
+
+	private forceOpenExternal(link: URI): boolean {
+		if (link.scheme.toLowerCase() === 'onenote') {
+			return true;
+		}
+		return false;
 	}
 }

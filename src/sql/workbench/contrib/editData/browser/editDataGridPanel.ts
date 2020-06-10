@@ -54,6 +54,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	//main dataset to work on.
 	private dataSet: IGridDataSet;
 	private oldDataRows: VirtualizedCollection<any>;
+	private oldGridData: {}[];
 	private firstRender = true;
 	private firstLoad = true;
 	private enableEditing = true;
@@ -158,6 +159,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	handleStart(self: EditDataGridPanel, event: any): void {
 		self.dataSet = undefined;
 		self.oldDataRows = undefined;
+		self.oldGridData = undefined;
 		self.placeHolderDataSets = [];
 		self.renderedDataSets = self.placeHolderDataSets;
 
@@ -220,30 +222,38 @@ export class EditDataGridPanel extends GridParentComponent {
 		// Setup a function for generating a promise to lookup result subsets
 		this.loadDataFunction = (offset: number, count: number): Promise<{}[]> => {
 			return self.dataService.getEditRows(offset, count).then(result => {
-				let gridData = result.subset.map(r => {
-					let dataWithSchema = {};
-					// skip the first column since its a number column
-					for (let i = 1; i < this.dataSet.columnDefinitions.length; i++) {
-						dataWithSchema[this.dataSet.columnDefinitions[i].field] = {
-							displayValue: r.cells[i - 1].displayValue,
-							ariaLabel: escape(r.cells[i - 1].displayValue),
-							isNull: r.cells[i - 1].isNull
-						};
-					}
-					return dataWithSchema;
-				});
-
-				// should add null row?
-				if (offset + count > this.dataSet.totalRows - 1) {
-					gridData.push(this.dataSet.columnDefinitions.reduce((p, c) => {
-						if (c.id !== 'rowNumber') {
-							p[c.field] = { displayValue: 'NULL', ariaLabel: 'NULL', isNull: true };
+				if (this.dataSet) {
+					let gridData = result.subset.map(r => {
+						let dataWithSchema = {};
+						// skip the first column since its a number column
+						for (let i = 1; i < this.dataSet.columnDefinitions.length; i++) {
+							dataWithSchema[this.dataSet.columnDefinitions[i].field] = {
+								displayValue: r.cells[i - 1].displayValue,
+								ariaLabel: escape(r.cells[i - 1].displayValue),
+								isNull: r.cells[i - 1].isNull
+							};
 						}
-						return p;
-					}, {}));
-				}
+						return dataWithSchema;
+					});
 
-				return gridData;
+					// should add null row?
+					if (offset + count > this.dataSet.totalRows - 1) {
+						gridData.push(this.dataSet.columnDefinitions.reduce((p, c) => {
+							if (c.id !== 'rowNumber') {
+								p[c.field] = { displayValue: 'NULL', ariaLabel: 'NULL', isNull: true };
+							}
+							return p;
+						}, {}));
+					}
+					if (gridData && gridData !== this.oldGridData) {
+						this.oldGridData = gridData;
+					}
+					return gridData;
+				}
+				else {
+					this.logService.error('Grid data is nonexistent, using last known good grid');
+					return this.oldGridData;
+				}
 			});
 		};
 	}
@@ -290,11 +300,6 @@ export class EditDataGridPanel extends GridParentComponent {
 		// Skip processing if the cell hasn't moved (eg, we reset focus to the previous cell after a failed update)
 		if (this.currentCell.row === row && this.currentCell.column === column && this.currentCell.isDirty === false) {
 			return;
-		}
-
-		if (this.isNullRow(row)) {
-			self.addRow(row);
-			self.refreshGrid();
 		}
 
 		let cellSelectTasks: Promise<void> = this.submitCurrentCellChange(
@@ -436,16 +441,21 @@ export class EditDataGridPanel extends GridParentComponent {
 			clearTimeout(this.refreshGridTimeoutHandle);
 
 			this.refreshGridTimeoutHandle = setTimeout(() => {
+				try {
+					if (this.dataSet) {
+						this.placeHolderDataSets[0].dataRows = this.dataSet.dataRows;
+						this.onResize();
+					}
 
-				if (this.dataSet) {
-					this.placeHolderDataSets[0].dataRows = this.dataSet.dataRows;
-					this.onResize();
+
+					if (this.placeHolderDataSets[0].dataRows && this.oldDataRows !== this.placeHolderDataSets[0].dataRows) {
+						this.detectChange();
+						this.oldDataRows = this.placeHolderDataSets[0].dataRows;
+					}
 				}
-
-
-				if (this.oldDataRows !== this.placeHolderDataSets[0].dataRows) {
-					this.detectChange();
-					this.oldDataRows = this.placeHolderDataSets[0].dataRows;
+				catch {
+					this.logService.error('data set is empty, refresh cancelled.');
+					reject();
 				}
 
 				if (this.firstRender) {
@@ -458,7 +468,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	private setActive() {
 		if (this.firstRender && this.table) {
-			this.table.setActive();
+			this.table.setActiveCell(0, 1);
 			this.firstRender = false;
 		}
 	}
@@ -549,7 +559,15 @@ export class EditDataGridPanel extends GridParentComponent {
 	private submitCurrentCellChange(resultHandler, errorHandler): Promise<void> {
 		let self = this;
 		let updateCellPromise: Promise<void> = Promise.resolve();
+		let refreshGrid = false;
 		if (this.currentCell && this.currentCell.isEditable && this.currentEditCellValue !== undefined && !this.removingNewRow) {
+			if (this.isNullRow(this.currentCell.row)) {
+				refreshGrid = true;
+				// We've entered the "new row", so we need to add a row and jump to it
+				updateCellPromise = updateCellPromise.then(() => {
+					return self.addRow(this.currentCell.row);
+				});
+			}
 			// We're exiting a read/write cell after having changed the value, update the cell value in the service
 			updateCellPromise = updateCellPromise.then(() => {
 				// Use the mapped row ID if we're on that row
@@ -562,6 +580,9 @@ export class EditDataGridPanel extends GridParentComponent {
 				result => {
 					self.currentEditCellValue = undefined;
 					let refreshPromise: Thenable<void> = Promise.resolve();
+					if (refreshGrid) {
+						refreshPromise = self.refreshGrid();
+					}
 					return refreshPromise.then(() => {
 						return resultHandler(result);
 					});
@@ -577,7 +598,10 @@ export class EditDataGridPanel extends GridParentComponent {
 	// Checks if input row is our NULL new row
 	private isNullRow(row: number): boolean {
 		// Null row is always at index (totalRows - 1)
-		return (row === this.dataSet.totalRows - 1);
+		if (this.dataSet) {
+			return (row === this.dataSet.totalRows - 1);
+		}
+		return false;
 	}
 
 	// Adds CSS classes to slickgrid cells to indicate a dirty state
@@ -782,7 +806,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	private createNewTable(): void {
 		let newGridContainer = document.createElement('div');
-		newGridContainer.className = 'grid';
+		newGridContainer.className = 'editDataGrid';
 
 		if (this.placeHolderDataSets) {
 			let dataSet = this.placeHolderDataSets[0];

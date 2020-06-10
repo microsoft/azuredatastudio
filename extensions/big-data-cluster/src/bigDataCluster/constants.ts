@@ -26,6 +26,8 @@ export class IconPathHelper {
 	public static status_ok: IconPath;
 	public static status_warning: IconPath;
 	public static notebook: IconPath;
+	public static status_circle_red: IconPath;
+	public static status_circle_blank: IconPath;
 
 	public static setExtensionContext(extensionContext: vscode.ExtensionContext) {
 		IconPathHelper.extensionContext = extensionContext;
@@ -53,26 +55,24 @@ export class IconPathHelper {
 			light: IconPathHelper.extensionContext.asAbsolutePath('resources/light/notebook.svg'),
 			dark: IconPathHelper.extensionContext.asAbsolutePath('resources/dark/notebook_inverse.svg')
 		};
+		IconPathHelper.status_circle_red = {
+			light: IconPathHelper.extensionContext.asAbsolutePath('resources/status_circle_red.svg'),
+			dark: IconPathHelper.extensionContext.asAbsolutePath('resources/status_circle_red.svg')
+		};
+		IconPathHelper.status_circle_blank = {
+			light: IconPathHelper.extensionContext.asAbsolutePath('resources/status_circle_blank.svg'),
+			dark: IconPathHelper.extensionContext.asAbsolutePath('resources/status_circle_blank.svg')
+		};
 	}
 }
 
 export namespace cssStyles {
 	export const title = { 'font-size': '14px', 'font-weight': '600' };
 	export const tableHeader = { 'text-align': 'left', 'font-weight': 'bold', 'text-transform': 'uppercase', 'font-size': '10px', 'user-select': 'text' };
-	export const hyperlink = { 'user-select': 'text', 'color': '#0078d4', 'text-decoration': 'underline', 'cursor': 'pointer' };
 	export const text = { 'margin-block-start': '0px', 'margin-block-end': '0px' };
-	export const overflowEllipsisText = { ...text, 'overflow': 'hidden', 'text-overflow': 'ellipsis' };
-	export const nonSelectableText = { ...cssStyles.text, 'user-select': 'none' };
-	export const tabHeaderText = { 'margin-block-start': '2px', 'margin-block-end': '0px', 'user-select': 'none' };
-	export const selectedResourceHeaderTab = { 'font-weight': 'bold', 'color': '' };
-	export const unselectedResourceHeaderTab = { 'font-weight': '', 'color': '#0078d4' };
-	export const selectedTabDiv = { 'border-bottom': '2px solid #000' };
-	export const unselectedTabDiv = { 'border-bottom': '1px solid #ccc' };
 	export const lastUpdatedText = { ...text, 'color': '#595959' };
 	export const errorText = { ...text, 'color': 'red' };
 }
-
-export type AuthType = 'integrated' | 'basic';
 
 export const clusterEndpointsProperty = 'clusterEndpoints';
 export const controllerEndpointName = 'controller';

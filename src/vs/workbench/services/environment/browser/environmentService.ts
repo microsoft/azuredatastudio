@@ -14,6 +14,8 @@ import { IWorkbenchConstructionOptions } from 'vs/workbench/workbench.web.api';
 import product from 'vs/platform/product/common/product';
 import { memoize } from 'vs/base/common/decorators';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { LIGHT } from 'vs/platform/theme/common/themeService';
+import { parseLineAndColumnAware } from 'vs/base/common/extpath';
 
 export class BrowserEnvironmentConfiguration implements IEnvironmentConfiguration {
 
@@ -37,7 +39,20 @@ export class BrowserEnvironmentConfiguration implements IEnvironmentConfiguratio
 		if (this.payload) {
 			const fileToOpen = this.payload.get('openFile');
 			if (fileToOpen) {
-				return [{ fileUri: URI.parse(fileToOpen) }];
+				const fileUri = URI.parse(fileToOpen);
+
+				// Support: --goto parameter to open on line/col
+				if (this.payload.has('gotoLineMode')) {
+					const pathColumnAware = parseLineAndColumnAware(fileUri.path);
+
+					return [{
+						fileUri: fileUri.with({ path: pathColumnAware.path }),
+						lineNumber: pathColumnAware.line,
+						columnNumber: pathColumnAware.column
+					}];
+				}
+
+				return [{ fileUri }];
 			}
 		}
 
@@ -62,6 +77,10 @@ export class BrowserEnvironmentConfiguration implements IEnvironmentConfiguratio
 
 	get highContrast() {
 		return false; // could investigate to detect high contrast theme automatically
+	}
+
+	get defaultThemeType() {
+		return LIGHT;
 	}
 }
 
@@ -114,13 +133,22 @@ export class BrowserWorkbenchEnvironmentService implements IWorkbenchEnvironment
 	@memoize
 	get snippetsHome(): URI { return joinPath(this.userRoamingDataHome, 'snippets'); }
 
+	/*
+	 * In Web every workspace can potentially have scoped user-data and/or extensions and if Sync state is shared then it can make
+	 * Sync error prone - say removing extensions from another workspace. Hence scope Sync state per workspace.
+	 * Sync scoped to a workspace is capable of handling opening same workspace in multiple windows.
+	 */
 	@memoize
-	get userDataSyncHome(): URI { return joinPath(this.userRoamingDataHome, 'sync'); }
+	get userDataSyncHome(): URI { return joinPath(this.userRoamingDataHome, 'sync', this.options.workspaceId); }
 
 	@memoize
 	get userDataSyncLogResource(): URI { return joinPath(this.options.logsPath, 'userDataSync.log'); }
 
-	get sync(): 'on' | 'off' { return 'on'; }
+	@memoize
+	get sync(): 'on' | 'off' | undefined { return undefined; }
+
+	@memoize
+	get enableSyncByDefault(): boolean { return !!this.options.enableSyncByDefault; }
 
 	@memoize
 	get keybindingsResource(): URI { return joinPath(this.userRoamingDataHome, 'keybindings.json'); }
@@ -250,4 +278,6 @@ export class BrowserWorkbenchEnvironmentService implements IWorkbenchEnvironment
 
 		return extensionHostDebugEnvironment;
 	}
+
+	get skipReleaseNotes(): boolean { return false; }
 }

@@ -32,7 +32,7 @@ export class ProsePreviewPage extends ImportPage {
 		this.table = this.view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
 			data: undefined,
 			columns: undefined,
-			forceFitColumns: azdata.ColumnSizingMode.AutoFit
+			forceFitColumns: azdata.ColumnSizingMode.DataFit
 		}).component();
 		this.refresh = this.view.modelBuilder.button().withProperties({
 			label: localize('flatFileImport.refresh', "Refresh"),

@@ -52,3 +52,5 @@ export class MessageTreeItem extends BaseProjectTreeItem {
 		return new vscode.TreeItem(this.message, vscode.TreeItemCollapsibleState.None);
 	}
 }
+
+export const SpacerTreeItem = new MessageTreeItem('');

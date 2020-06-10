@@ -53,7 +53,7 @@ const languageAssociationRegistry = new class implements ILanguageAssociationReg
 		}
 	}
 
-	registerLanguageAssociation<Services extends BrandedService[]>(languages: string[], contribution: ILanguageAssociationSignature<Services>, isDefault?: boolean): IDisposable {
+	registerLanguageAssociation(languages: string[], contribution: ILanguageAssociationSignature<BrandedService[]>, isDefault?: boolean): IDisposable {
 		for (const language of languages) {
 			this.associationContructors.set(language, contribution);
 		}

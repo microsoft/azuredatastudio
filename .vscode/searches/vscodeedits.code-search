@@ -1,0 +1,1160 @@
+# Query: {{SQL CARBON EDIT}}
+
+697 results - 230 files
+
+.github\workflows\ci.yml:
+   24:         sudo apt-get install -y libxkbfile-dev pkg-config libsecret-1-dev libxss1 dbus xvfb libgtk-3-0 libkrb5-dev # {{SQL CARBON EDIT}} add kerberos dep
+   40:     - run: yarn strict-vscode # {{SQL CARBON EDIT}} add step
+   42:     # - run: yarn monaco-compile-check {{SQL CARBON EDIT}} remove step
+   48:     # - run: yarn download-builtin-extensions {{SQL CARBON EDIT}} remove step
+   54:     # {{SQL CARBON EDIT}} Add coveralls. We merge first to get around issue where parallel builds weren't being combined correctly
+   68:     # - run: DISPLAY=:10 ./scripts/test-integration.sh --tfs "Integration Tests" {{SQL CARBON EDIT}} remove step
+   90:     - run: yarn strict-vscode # {{SQL CARBON EDIT}} add step
+   92:     # - run: yarn monaco-compile-check {{SQL CARBON EDIT}} remove step
+   98:     # - run: yarn download-builtin-extensions {{SQL CARBON EDIT}} remove step
+  102:     # - run: yarn test-browser --browser chromium {{SQL CARBON EDIT}} disable for now @TODO @anthonydresser
+  104:     # - run: .\scripts\test-integration.bat --tfs "Integration Tests" {{SQL CARBON EDIT}} remove step
+  123:     - run: yarn strict-vscode # {{SQL CARBON EDIT}} add step
+  125:     # - run: yarn monaco-compile-check {{SQL CARBON EDIT}} remove step
+  131:     # - run: yarn download-builtin-extensions {{SQL CARBON EDIT}} remove step
+
+build\gulpfile.extensions.js:
+   27: // {{SQL CARBON EDIT}}
+   32: // {{SQL CARBON EDIT}}
+   61: 		headerId = 'microsoft.' + relativeDirname; // {{SQL CARBON EDIT}}
+   64: 		headerId = 'microsoft.' + relativeDirname.substr(0, index); // {{SQL CARBON EDIT}}
+  117: 		const pipeline = createPipeline(sqlLocalizedExtensions.includes(name), true); // {{SQL CARBON EDIT}}
+
+build\gulpfile.hygiene.js:
+   97: 	// {{SQL CARBON EDIT}}
+  143: 	// {{SQL CARBON EDIT}}
+  203: 	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts', // {{SQL CARBON EDIT}},
+  204: 	'!extensions/big-data-cluster/src/bigDataCluster/controller/tokenApiGenerated.ts', // {{SQL CARBON EDIT}},
+  205: 	'!src/vs/workbench/services/themes/common/textMateScopeMatcher.ts', // {{SQL CARBON EDIT}} skip this because we have no plans on touching this and its not ours
+  206: 	'!src/vs/workbench/contrib/extensions/browser/extensionRecommendationsService.ts' // {{SQL CARBON EDIT}} skip this because known issue
+  264: 		// if (product.extensionsGallery) { // {{SQL CARBON EDIT}} @todo we need to research on what the point of this is
+
+build\gulpfile.vscode.js:
+   40: const nodeModules = [ // {{SQL CARBON EDIT}}
+   93: 	'out-build/sql/workbench/electron-browser/splashscreen/*', // {{SQL CARBON EDIT}} STart
+  111: 	'out-build/sql/setup.js', // {{SQL CARBON EDIT}} end
+  197: 		const extensions = gulp.src(['.build/extensions/**', '!.build/extensions/node_modules/**'], { base: '.build', dot: true }); // {{SQL CARBON EDIT}} - don't package the node_modules directory
+  209: 		// {{SQL CARBON EDIT}}
+  235: 		// {{SQL CARBON EDIT}}
+  253: 			dataApi, // {{SQL CARBON EDIT}}
+  261: 				// {{SQL CARBON EDIT}} remove unused icons
+  462: 	// {{SQL CARBON EDIT}} - Replace function body with our own
+  472: 	// {{SQL CARBON EDIT}} - End
+
+build\gulpfile.vscode.linux.js:
+   30: 	// {{SQL CARBON EDIT}}
+  123: 	// {{SQL CARBON EDIT}}
+  202: 	// {{SQL CARBON EDIT}}
+
+build\gulpfile.vscode.win32.js:
+  23: // {{SQL CARBON EDIT}}
+
+build\azure-pipelines\common\publish.ts:
+   16: // {{SQL CARBON EDIT}}
+  218: 	// {{SQL CARBON EDIT}}
+
+build\azure-pipelines\darwin\continuous-build-darwin.yml:
+   5: - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3 # {{SQL CARBON EDIT}} update version
+  12:     vstsFeed: 'npm-cache' # {{SQL CARBON EDIT}} update build cache
+  21:     vstsFeed: 'npm-cache' # {{SQL CARBON EDIT}} update build cache
+  29: - script: | # {{SQL CARBON EDIT}} add step
+  32: # - script: | {{SQL CARBON EDIT}} remove step
+  41: # - script: | {{SQL CARBON EDIT}} remove step
+  47: # - script: | {{SQL CARBON EDIT}} disable for now @TODO @anthonydresser
+  50: # - script: | {{SQL CARBON EDIT}} remove step
+
+build\azure-pipelines\linux\continuous-build-linux.yml:
+   5:     sudo apt-get install -y libxkbfile-dev pkg-config libsecret-1-dev libxss1 dbus xvfb libgtk-3-0 libkrb5-dev #{{SQL CARBON EDIT}} add kerberos dep
+  20:     vstsFeed: 'npm-cache' # {{SQL CARBON EDIT}} update build cache
+  29:     vstsFeed: 'npm-cache' # {{SQL CARBON EDIT}} update build cache
+  37: - script: | # {{SQL CARBON EDIT}} add strict null check
+  40: # - script: | {{SQL CARBON EDIT}} remove monaco editor checks
+  49: # - script: | {{SQL CARBON EDIT}} remove step
+  55: # - script: | {{SQL CARBON EDIT}} disable for now @TODO @anthonydresser
+  58: # - script: | {{SQL CARBON EDIT}} remove step
+
+build\azure-pipelines\win32\continuous-build-win32.yml:
+   5: - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3 # {{SQL CARBON EDIT}} update version
+  16:     vstsFeed: 'npm-cache' # {{SQL CARBON EDIT}} update build cache
+  27:     vstsFeed: 'npm-cache' # {{SQL CARBON EDIT}} update build cache
+  34: - script: | # {{SQL CARBON EDIT}} add step
+  37: # - powershell: | {{SQL CARBON EDIT}} remove step
+  46: # - powershell: | {{SQL CARBON EDIT}} remove step
+  52: # - powershell: | {{SQL CARBON EDIT}} disable for now @TODO @anthonydresser
+  55: # - powershell: | {{SQL CARBON EDIT}} remove step
+
+build\lib\extensions.ts:
+  191: 	// {{SQL CARBON EDIT}}
+  224: 	'integration-tests', // {{SQL CARBON EDIT}}
+  227: // {{SQL CARBON EDIT}}
+  271: 		.filter(({ name }) => externalExtensions.indexOf(name) === -1); // {{SQL CARBON EDIT}} Remove external Extensions with separate package
+  309: // {{SQL CARBON EDIT}} - End
+
+build\lib\i18n.ts:
+  612: // {{SQL CARBON EDIT}}
+  638: 	// {{SQL CARBON EDIT}}
+
+build\lib\optimize.ts:
+  39: 			'sql': 'out-build/sql', // {{SQL CARBON EDIT}}
+
+build\lib\stats.ts:
+  129: 				name: 'adsworkbench/packagemetrics', // {{SQL CARBON EDIT}}
+
+build\npm\update-distro.js:
+  11: const vscodePath = path.join(rootPath, 'azuredatastudio'); // {{SQL CARBON EDIT}} replace vscode
+  12: const distroPath = path.join(rootPath, 'azuredatastudio-release'); // {{SQL CARBON EDIT}} replace vscode
+
+extensions\git\src\autofetch.ts:
+  56: 		// {{SQL CARBON EDIT}}
+
+extensions\git\src\main.ts:
+    9: import { ExtensionContext, workspace, window, Disposable, commands, OutputChannel } from 'vscode'; // {{SQL CARBON EDIT}} - remove unused imports
+   95: /* {{SQL CARBON EDIT}} - Comment out function that is unused due to our edit below
+  176: 		// console.warn(err.message); {{SQL CARBON EDIT}} turn-off Git missing prompt
+  177: 		// outputChannel.appendLine(err.message); {{SQL CARBON EDIT}} turn-off Git missing prompt
+  180: 		// warnAboutMissingGit(); {{SQL CARBON EDIT}} turn-off Git missing prompt
+  186: // {{SQL CARBON EDIT}} - Rename info to _info to prevent error due to unused variable
+  188: 	return; /* {{SQL CARBON EDIT}} return immediately
+
+extensions\markdown-language-features\src\commandManager.ts:
+  11: 	// {{SQL CARBON EDIT}}
+  30: 	// {{SQL CARBON EDIT}}
+
+extensions\markdown-language-features\src\markdownEngine.ts:
+  139: 	public async renderText(document: vscode.Uri, text: string): Promise<string> {	// {{SQL CARBON EDIT}} - Add renderText method
+
+extensions\theme-seti\icons\vs-seti-icon-theme.json:
+  1364: 		// {{SQL CARBON EDIT}}
+  1576: 		// {{SQL CARBON EDIT}}
+  1700: 		// {{SQL CARBON EDIT}}
+  1903: 			// {{SQL CARBON EDIT}}
+  1969: 			// {{SQL CARBON EDIT}}
+
+src\bootstrap-window.js:
+  122: 	// {{SQL CARBON EDIT}} - End
+
+src\main.js:
+  33: if (args['nogpu']) { // {{SQL CARBON EDIT}}
+  34: 	app.disableHardwareAcceleration(); // {{SQL CARBON EDIT}}
+  35: 	app.commandLine.appendSwitch('headless'); // {{SQL CARBON EDIT}}
+  36: 	app.commandLine.appendSwitch('disable-gpu'); // {{SQL CARBON EDIT}}
+  37: } // {{SQL CARBON EDIT}}
+
+src\paths.js:
+  32: 	// {{SQL CARBON EDIT}} hard-code Azure Data Studio
+
+src\sql\workbench\services\connection\test\browser\connectionManagementService.test.ts:
+  695: 	test.skip('ensureDefaultLanguageFlavor should not send event if uri is connected', () => { // {{SQL CARBON EDIT}} this test is broken regardless of my changes
+
+src\vs\base\browser\markdownRenderer.ts:
+  136: 			// {{SQL CARBON EDIT}} - Promise.all not returning the strValue properly in original code? @todo anthonydresser 4/12/19 investigate a better way to do this.
+
+src\vs\base\browser\ui\button\button.ts:
+  129: 	// {{SQL CARBON EDIT}} -- removed 'private' access modifier @todo anthonydresser 4/12/19 things needs investigation whether we need this
+  154: 		this._element.setAttribute('aria-label', value); // {{SQL CARBON EDIT}}
+  162: 	// {{SQL CARBON EDIT}} from addClass to addClasses to support multiple classes @todo anthonydresser 4/12/19 invesitgate a better way to do this.
+
+src\vs\base\browser\ui\contextview\contextview.ts:
+  277: 	// {{SQL CARBON EDIT}} @todo anthonydresser 4/12/19 investigate a better way to do this
+
+src\vs\base\browser\ui\inputbox\inputBox.ts:
+   39: 	// {{SQL CARBON EDIT}} Candidate for addition to vscode
+   85: // {{SQL CARBON EDIT}}
+  115: 	// {{SQL CARBON EDIT}} - Add showValidationMessage and set inputBackground, inputForeground, and inputBorder as protected
+  120: 	// {{SQL CARBON EDIT}} - End
+  164: 			// {{SQL CARBON EDIT}} Candidate for addition to vscode
+  214: 		// {{SQL CARBON EDIT}} Canidate for addition to vscode
+  219: 		// {{SQL CARBON EDIT}} Canidate for addition to vscode
+  244: 			// {{SQL CARBON EDIT}} Candidate for addition to vscode
+  431: 			// {{SQL CARBON EDIT}}
+  449: 		// {{SQL CARBON EDIT}} Canidate for addition to vscode
+  470: 		// {{SQL CARBON EDIT}} Candidate for addition to vscode
+
+src\vs\base\browser\ui\selectBox\selectBox.ts:
+   77: 	protected selectElement: HTMLSelectElement; // {{SQL CARBON EDIT}}
+   81: 	protected selectBoxDelegate: ISelectBoxDelegate; // {{SQL CARBON EDIT}} Make protected so we can hook into keyboard events
+   93: 		// {{SQL CARBON EDIT}}
+  139: 	// {{SQL CARBON EDIT}}
+
+src\vs\base\browser\ui\selectBox\selectBoxCustom.ts:
+   60: 		// {{SQL CARBON EDIT}}
+   93: 	public selectElement: HTMLSelectElement; // {{SQL CARBON EDIT}}
+  100: 	public selectDropDownContainer!: HTMLElement; // {{SQL CARBON EDIT}} Make public so we can hook into keyboard events
+  379: 		// {{SQL CARBON EDIT}}
+  817: 				// {{SQL CARBON EDIT}} - Update the selection before firing the handler instead of after
+
+src\vs\base\browser\ui\selectBox\selectBoxNative.ts:
+  17: 	// {{SQL CARBON EDIT}}
+
+src\vs\base\browser\ui\tree\compressedObjectTreeModel.ts:
+  455: 			return null; // {{SQL CARBON EDIT}} strict-null-check
+  465: 			return null; // {{SQL CARBON EDIT}} strict-null-check
+
+src\vs\base\browser\ui\tree\media\tree.css:
+  29: 	/* border-left: 1px solid transparent; {{SQL CARBON EDIT}} Remove indent guide from all custom tree views */
+
+src\vs\base\common\collections.ts:
+  58: export function forEach<T>(from: IStringDictionary<T>, callback: (entry: { key: string; value: T; }, remove: () => void) => any): void; // {{SQL CARBON EDIT}} @anthonydresser add hard typings
+
+src\vs\base\common\uri.ts:
+  386: 			// {{SQL CARBON EDIT}} @todo chlafren change back to data when we enable strict null checks
+
+src\vs\base\parts\ipc\electron-main\ipc.electron-main.ts:
+  21: 	// {{SQL CARBON EDIT}} cast message as null since typescript isn't saying its always null
+
+src\vs\base\parts\storage\test\node\storage.test.ts:
+  208: 	test.skip('conflicting updates', async () => { // {{SQL CARBON EDIT}} test is disabled due to failures
+  250: 	test.skip('corrupt DB recovers', async () => { // {{SQL CARBON EDIT}} test is disabled due to failures
+
+src\vs\base\parts\tree\browser\tree.css:
+  63: /* {{SQL CARBON EDIT}} lower css settings
+  80: /* {{SQL CARBON EDIT}} -- Display a high-contrast arrow when an expandable item is selected and expanded */
+  85: /* {{SQL CARBON EDIT}} -- Display a high-contrast arrow when an expandable item is selected and collapsed */
+
+src\vs\base\parts\tree\browser\tree.ts:
+  210: 	// {{SQL CARBON EDIT}} @todo anthonydresser 4/12/19 we need to refactor our code to not need these methods
+  230: 	// {{SQL CARBON EDIT}} END
+  478: // {{SQL CARBON EDIT}} @todo anthonydresser 4/12/19 refactor to not need this
+  485: // {{SQL CARBON EDIT}} END
+  517: 	// {{SQL CARBON EDIT}}
+
+src\vs\base\parts\tree\browser\treeDefaults.ts:
+  452: 	// {{SQL CARBON EDIT}}
+
+src\vs\base\parts\tree\browser\treeImpl.ts:
+  279: 	// {{SQL CARBON EDIT}} @todo anthonydresser 4/12/19 we need to refactor our code to not need these methods
+  295: 	// {{SQL CARBON EDIT}} end
+
+src\vs\base\parts\tree\browser\treeView.ts:
+   158: 		value ? this.addClass('loading') : this.removeClass('loading'); // {{SQL CARBON EDIT}} Use old icons - codicon font icons aren't working currently #7715
+  1489: 			// {{SQL CARBON EDIT}}
+  1500: 			// {{SQL CARBON EDIT}}
+
+src\vs\base\test\browser\dom.test.ts:
+  11: 	test.skip('hasClass', () => { //{{SQL CARBON EDIT}} skip test
+  24: 	test.skip('removeClass', () => { //{{SQL CARBON EDIT}} skip test
+  57: 	test.skip('removeClass should consider hyphens', function () { //{{SQL CARBON EDIT}} skip test
+
+src\vs\code\electron-browser\issue\issueReporterMain.ts:
+  631: 		const url = 'https://ads-probot.westus.cloudapp.azure.com:7890/duplicate_candidates'; // {{SQL CARBON EDIT}} use our server
+
+src\vs\code\electron-browser\issue\issueReporterModel.ts:
+  63: 	// {{SQL CARBON EDIT}}
+
+src\vs\code\electron-browser\issue\test\testReporterModel.test.ts:
+   27: 	test('serializes model skeleton when no data is provided', () => {	// {{SQL CARBON EDIT}} modify test for ads
+   42: 	test('serializes GPU information when data is provided', () => { // {{SQL CARBON EDIT}} modify test for ads
+   84: 	test.skip('serializes Linux environment information when data is provided', () => { //{{SQL CARBON EDIT}} skip test
+  133: 	test.skip('serializes remote information when data is provided', () => {  //{{SQL CARBON EDIT}} skip test
+
+src\vs\code\electron-browser\workbench\workbench.html:
+  6: 		<!-- {{SQL CARBON EDIT}} @anthonydresser add 'unsafe-eval' under script src; since its required by angular -->
+
+src\vs\code\electron-main\main.ts:
+  195: 		['VSCODE_NLS_CONFIG', 'VSCODE_LOGS', 'VSCODE_PORTABLE', 'ADS_LOGS'].forEach(key => { // {{SQL CARBON EDIT}} add ads logs
+
+src\vs\code\node\cliProcessMain.ts:
+  295: const eventPrefix = 'adsworkbench'; // {{SQL CARBON EDIT}}
+
+src\vs\editor\browser\controller\coreCommands.ts:
+  1636: 				menuId: MenuId.MenubarEditMenu, // {{SQL CARBON EDIT}} - Put this in the edit menu since we disabled the selection menu
+  1637: 				group: '4_find_global', // {{SQL CARBON EDIT}} - Put this in the edit menu since we disabled the selection menu
+
+src\vs\editor\browser\widget\diffEditorWidget.ts:
+    73: 	// {{SQL CARBON EDIT}}
+   221: 	private _options: IDiffEditorOptions; // {{SQL CARBON EDIT}}
+   245: 		this._options = options; // {{SQL CARBON EDIT}}
+  1031: 		// {{SQL CARBON EDIT}}
+  1314: 	// {{SQL CARBON EDIT}}
+  1325: 		// {{SQL CARBON EDIT}}
+  1335: 		// {{SQL CARBON EDIT}}
+
+src\vs\editor\common\config\editorOptions.ts:
+   642: 	// {{SQL CARBON EDIT}}
+  2121: 			enabled: false, // {{SQL CARBON EDIT}} disable minimap by default
+  3302: 		// {{SQL CARBON EDIT}} - change default font size
+
+src\vs\editor\common\model\wordHelper.ts:
+  8: // {{SQL CARBON EDIT}}
+
+src\vs\editor\contrib\comment\comment.ts:
+   61: 			/*menuOpts: { {{SQL CARBON EDIT}} - Remove from menu
+  117: 			/*menuOpts: { {{SQL CARBON EDIT}} - Remove from menu
+
+src\vs\editor\contrib\gotoSymbol\goToCommands.ts:
+  253: 			/*menuOpts: { {{SQL CARBON EDIT}} remove entry
+  370: 			/*menuOpts: { {{SQL CARBON EDIT}} remove entry
+  460: 			/*menuOpts: { {{SQL CARBON EDIT}} remove entry
+  543: 			/*menuOpts: { {{SQL CARBON EDIT}} remove entry
+  635: 			/*menuOpts: { {{SQL CARBON EDIT}} remove entry
+
+src\vs\editor\contrib\toggleTabFocusMode\toggleTabFocusMode.ts:
+  26: 				primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_M, // {{SQL CARBON EDIT}} We use Ctrl+M already so move this to an unused binding
+
+src\vs\editor\test\browser\services\decorationRenderOptions.test.ts:
+  53: suite.skip('Decoration Render Options', () => { // {{SQL CARBON EDIT}} skip suite
+
+src\vs\editor\test\common\config\commonEditorConfig.test.ts:
+   92: 		assertWrapping(config, true, 88); // {{SQL CARBON EDIT}} modify expected value
+   99: 		assertWrapping(config, true, 88); // {{SQL CARBON EDIT}} modify expected value
+  117: 		assertWrapping(config, true, 88); // {{SQL CARBON EDIT}} modify expected value
+
+src\vs\platform\actions\browser\menuEntryActionViewItem.ts:
+  104: // {{SQL CARBON EDIT}} add export modifier
+  301: // {{SQL CARBON EDIT}} - This is here to use the 'ids' generator above
+  369: // {{SQL CARBON EDIT}} - End
+
+src\vs\platform\actions\common\actions.ts:
+  121: 	static readonly ObjectExplorerItemContext = new MenuId('ObjectExplorerItemContext'); // {{SQL CARBON EDIT}}
+  122: 	static readonly NotebookToolbar = new MenuId('NotebookToolbar'); // {{SQL CARBON EDIT}}
+  123: 	static readonly DataExplorerContext = new MenuId('DataExplorerContext'); // {{SQL CARBON EDIT}}
+  124: 	static readonly DataExplorerAction = new MenuId('DataExplorerAction'); // {{SQL CARBON EDIT}}
+  125: 	static readonly ExplorerWidgetContext = new MenuId('ExplorerWidgetContext'); // {{SQL CARBON EDIT}}
+  126: 	static readonly DashboardToolbar = new MenuId('DashboardToolbar'); // {{SQL CARBON EDIT}}
+
+src\vs\platform\actions\common\menuService.ts:
+  97: 				const toggledExpression: ContextKeyExpression = (item.command.toggled as { condition: ContextKeyExpression }).condition || item.command.toggled as ContextKeyExpression; // {{SQL CARBON EDIT}} strict-null-checks
+
+src\vs\platform\clipboard\browser\clipboardService.ts:
+  57: 		return undefined; // {{SQL CARBON EDIT}} strict-null-checks
+
+src\vs\platform\contextkey\common\contextkey.ts:
+    31: 	GreaterThanEquals = 10, 	// {{SQL CARBON EDIT}} add value
+    32: 	LessThanEquals = 11	// {{SQL CARBON EDIT}} add value
+    98: 	// {{SQL CARBON EDIT}}
+   144: 		// {{SQL CARBON EDIT}}
+   941: // {{SQL CARBON EDIT}}
+  1014: // {{SQL CARBON EDIT}}
+
+src\vs\platform\contextkey\test\common\contextkey.test.ts:
+  31: 			ContextKeyExpr.greaterThanEquals('e1', 'ee1'), // {{SQL CARBON EDIT}} add test case
+  32: 			ContextKeyExpr.greaterThanEquals('e2', 'ee2'), // {{SQL CARBON EDIT}} add test case
+  33: 			ContextKeyExpr.lessThanEquals('f1', 'ff1'), // {{SQL CARBON EDIT}} add test case
+  34: 			ContextKeyExpr.lessThanEquals('f2', 'ff2'), // {{SQL CARBON EDIT}} add test case
+  37: 			ContextKeyExpr.lessThanEquals('f1', 'ff1'), // {{SQL CARBON EDIT}}
+  38: 			ContextKeyExpr.lessThanEquals('f2', 'ff2'), // {{SQL CARBON EDIT}}
+  39: 			ContextKeyExpr.greaterThanEquals('e2', 'ee2'), // {{SQL CARBON EDIT}}
+  40: 			ContextKeyExpr.greaterThanEquals('e1', 'ee1'), // {{SQL CARBON EDIT}}
+  92: 			// {{SQL CARBON EDIT}}
+
+src\vs\platform\dialogs\electron-main\dialogs.ts:
+  123: 		return undefined; // {{SQL CARBON EDIT}} strict-null-check
+
+src\vs\platform\driver\browser\baseDriver.ts:
+  56: 		const inputElement = element as HTMLInputElement | HTMLSelectElement; // {{SQL CARBON EDIT}} handle select element
+  59: 		const event = new Event(inputElement.tagName === 'INPUT' ? 'input' : 'change', { bubbles: true, cancelable: true }); // {{SQL CARBON EDIT}} handle select element
+
+src\vs\platform\driver\electron-main\driver.ts:
+  214: 	const driver = instantiationService.createInstance(Driver as any, windowServer, { verbose }) as Driver; // {{SQL CARBON EDIT}} strict-null-check...i guess?
+
+src\vs\platform\environment\node\argv.ts:
+   76: 	// {{SQL CARBON EDIT}} Start
+   83: 	// {{SQL CARBON EDIT}} End
+  199: 	// {{SQL CARBON EDIT}} Start
+  206: 	// {{SQL CARBON EDIT}} - End
+
+src\vs\platform\environment\node\environmentService.ts:
+  259: 		// {{SQL CARBON EDIT}} Note we keep the VSCODE_LOGS var above in case merges come in that use that so we don't
+
+src\vs\platform\extensionManagement\common\extensionGalleryService.ts:
+   18: import { IConfigurationService } from 'vs/platform/configuration/common/configuration'; // {{SQL CARBON EDIT}}
+   21: import { IExtensionManifest, ExtensionsPolicy, ExtensionsPolicyKey } from 'vs/platform/extensions/common/extensions'; // {{SQL CARBON EDIT}} add imports
+  117: 	// {{SQL CARBON EDIT}}
+  125: 	// {{SQL CARBON EDIT}}
+  166: 	// {{SQL CARBON EDIT}}
+  239: 	// {{SQL CARBON EDIT}} - Use the extension VSIX download URL if present
+  244: 	// {{SQL CARBON EDIT}} - End
+  264: 	// {{SQL CARBON EDIT}}
+  284: 	// {{SQL CARBON EDIT}} - End
+  298: // {{SQL CARBON EDIT}}
+  322: 		// {{SQL CARBON EDIT}} - Add downloadPage
+  349: 			// {{SQL CARBON EDIT}}
+  388: 		@IConfigurationService private configurationService: IConfigurationService, // {{SQL CARBON EDIT}}
+  400: 		// {{SQL CARBON EDIT}}
+  410: 		// {{SQL CARBON EDIT}}
+  418: 		const { id, uuid } = <IExtensionIdentifier>arg1; // {{SQL CARBON EDIT}} @anthonydresser remove extension ? extension.identifier
+  526: 			// {{SQL CARBON EDIT}}
+  542: 	// {{SQL CARBON EDIT}}
+  597: 		// {{SQL CARBON EDIT}}
+  605: 	// {{SQL CARBON EDIT}}
+  659: 				// {{SQL CARBON EDIT}}
+  666: 				// {{SQL CARBON EDIT}}
+  676: 						// const resultCount = r.resultMetadata && r.resultMetadata.filter(m => m.metadataType === 'ResultCount')[0]; {{SQL CARBON EDIT}} comment out for no unused
+  677: 						// const total = resultCount && resultCount.metadataItems.filter(i => i.name === 'TotalCount')[0].count || 0; {{SQL CARBON EDIT}} comment out for no unused
+  679: 						// {{SQL CARBON EDIT}}
+  683: 						// {{SQL CARBON EDIT}} - End
+  722: 		// {{SQL Carbon Edit}} - Don't append install or update on to the URL
+
+src\vs\platform\extensionManagement\common\extensionManagement.ts:
+  22: 	// {{SQL CARBON EDIT}}
+  39: 	// {{SQL CARBON EDIT}}
+
+src\vs\platform\extensionManagement\common\extensionManagementUtil.ts:
+   76: 		// {{SQL CARBON EDIT}}
+  105: 		// {{SQL CARBON EDIT}}
+
+src\vs\platform\extensionManagement\node\extensionManagementService.ts:
+  198: 		// {{SQL CARBON EDIT}}
+  209: 						// let operation: InstallOperation = InstallOperation.Install; {{SQL CARBON EDIT}} comment out for no unused
+  219: 									// operation = InstallOperation.Update; {{SQL CARBON EDIT}} comment out for no unused
+  221: 										// {{SQL CARBON EDIT}} - Update VS Code product name
+  242: 								// {{SQL CARBON EDIT}}
+  263: 								// {{SQL CARBON EDIT}} - End
+  281: ithVersion: ExtensionIdentifierWithVersion, zipPath: string, metadata: IGalleryMetadata | null, type: ExtensionType, operation: InstallOperation, token: CancellationToken): Promise<ILocalExtension> { {{SQL CARBON EDIT}} comment out for no unused
+  558: 						return undefined; // {{SQL CARBON EDIT}} strict-null-checks
+  608: 	/*private getMetadata(extensionName: string): Promise<IGalleryMetadata | null> { {{SQL CARBON EDIT}} comment out function for no unused
+
+src\vs\platform\extensionManagement\test\node\extensionGalleryService.test.ts:
+   13: import { resolveMarketplaceHeaders, ExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionGalleryService'; // {{SQL CARBON EDIT}} add imports
+   67: 	test('sortByField', () => { // {{SQL CARBON EDIT}} add test
+  123: 	test('isMatchingExtension', () => { // {{SQL CARBON EDIT}} add test
+
+src\vs\platform\extensions\common\extensions.ts:
+   14: export const ExtensionsPolicyKey = 'extensions.extensionsPolicy'; // {{SQL CARBON EDIT}} start
+   19: } // {{SQL CARBON EDIT}} - End
+  156: 	readonly engines: { vscode: string; azdata?: string }; // {{SQL CARBON EDIT}} add field
+
+src\vs\platform\extensions\common\extensionValidator.ts:
+  210: 		// {{SQL CARBON EDIT}}
+  223: 	// {{SQL CARBON EDIT}}
+  227: // {{SQL CARBON EDIT}}
+
+src\vs\platform\extensions\test\common\extensionValidator.test.ts:
+  203: 	test.skip('isValidExtensionVersion', () => { // {{SQL CARBON EDIT}} skip test
+
+src\vs\platform\files\test\electron-browser\diskFileService.test.ts:
+  1130: 	test.skip('readFile - small file - buffered / readonly', () => { // {{SQL CARBON EDIT}} test is disabled due to failures
+
+src\vs\platform\instantiation\common\instantiationService.ts:
+  246: // {{SQL CARBON EDIT}} - Export trace
+
+src\vs\platform\launch\electron-main\launchMainService.ts:
+  188: 		// {{SQL CARBON EDIT}}
+  194: 		// {{SQL CARBON EDIT}}
+
+src\vs\platform\menubar\electron-main\menubar.ts:
+   76: 		@IElectronMainService private readonly electronMainService: any // {{SQL CARBON EDIT}} remove interface, naster work around
+  259: 			// {{SQL CARBON EDIT}} - Use long name
+  294: 		menubar.append(selectionMenuItem);  {{SQL CARBON EDIT}} - Disable unused menus */
+  308: 		menubar.append(gotoMenuItem);  {{SQL CARBON EDIT}} - Disable unused menus */
+  315: 		menubar.append(debugMenuItem); {{SQL CARBON EDIT}} - Disable unused menus */
+  322: 		menubar.append(terminalMenuItem);  {{SQL CARBON EDIT}} - Disable unused menus */
+
+src\vs\platform\product\common\productService.ts:
+  65: 	readonly recommendedExtensions: string[]; // {{SQL CARBON EDIT}}
+  66: 	readonly recommendedExtensionsByScenario: { [area: string]: Array<string> }; // {{SQL CARBON EDIT}}
+  67: 	readonly vscodeVersion: string; // {{SQL CARBON EDIT}} add vscode version
+  69: 	readonly disabledFeatures?: string[]; // {{SQL CARBON EDIT}}
+
+src\vs\platform\quickinput\browser\pickerQuickAccess.ts:
+   90: 	return !!candidate.picks && isThenable(candidate.additionalPicks); // {{SQL CARBON EDIT}} workaround since we use zone promise
+  216: 									active: activePick as T || additionalActivePick as T // {{SQL CARBON EDIT}} strict-null-checks
+  231: 			else if (!(isThenable(providedPicks))) { // {{SQL CARBON EDIT}} workaround since we use zone promise
+
+src\vs\platform\telemetry\browser\workbenchCommonProperties.ts:
+  12: import product from 'vs/platform/product/common/product'; // {{SQL CARBON EDIT}}
+  58: 	result['quality'] = product.quality || 'dev'; // {{SQL CARBON EDIT}} Add quality
+
+src\vs\platform\telemetry\common\errorTelemetry.ts:
+   12: /*type ErrorEventFragment = { {{SQL CARBON EDIT}} comment out for no unused
+   48: 	// private _telemetryService: ITelemetryService; {{SQL CARBON EDIT}} comment out for no unused
+   55: 		// this._telemetryService = telemetryService; {{SQL CARBON EDIT}} comment out for no unused
+  121: 		/*for (let error of this._buffer) { {{SQL CARBON EDIT}} don't log errors
+
+src\vs\platform\telemetry\node\commonProperties.ts:
+  11: import product from 'vs/platform/product/common/product'; // {{SQL CARBON EDIT}}
+  12: const productObject = product; // {{SQL CARBON EDIT}}
+  40: 	result['common.product'] = productObject.nameShort || 'desktop'; // {{SQL CARBON EDIT}}
+  41: 	result['common.application.name'] = productObject.nameLong; // {{SQL CARBON EDIT}}
+  42: 	result['quality'] = productObject.quality || 'dev'; // {{SQL CARBON EDIT}} Add quality
+
+src\vs\platform\telemetry\node\workbenchCommonProperties.ts:
+  42: 	result['common.application.name'] = product.nameLong; // {{SQL CARBON EDIT}}
+  48: // {{SQL CARBON EDIT}}
+
+src\vs\platform\telemetry\test\browser\telemetryService.test.ts:
+  712: 	test.skip('Uncaught Error Telemetry removes PII but preserves No Such File error message', sinon.test(async function (this: any) { // {{SQL CARBON EDIT}} skip tests
+
+src\vs\platform\telemetry\test\electron-browser\commonProperties.test.ts:
+  31: 	test.skip('default', async function () { // {{SQL CARBON EDIT}} skip test
+  59: 	test.skip('lastSessionDate when aviablale', async function () { // {{SQL CARBON EDIT}} skip test
+  69: 	test.skip('values chance on ask', async function () { // {{SQL CARBON EDIT}} skip test
+
+src\vs\platform\theme\common\colorRegistry.ts:
+  183: // {{SQL CARBON EDIT}} -- Update contrastBorder color for HC
+
+src\vs\platform\update\common\update.config.contribution.ts:
+  29: 				localize('default', "Enable automatic update checks. Azure Data Studio will check for updates automatically and periodically.") // {{SQL CARBON EDIT}} Change product name to ADS
+  44: 			description: localize('enableWindowsBackgroundUpdates', "Enable to download and install new Azure Data Studio Versions in the background on Windows"), // {{SQL CARBON EDIT}} Change product name to ADS
+  51: 			description: localize('showReleaseNotes', "Show Release Notes after an update. The Release Notes are opened in a new web browser window."), // {{SQL CARBON EDIT}} Update text to be correct for ADS
+
+src\vs\platform\update\electron-main\updateService.win32.ts:
+   59: 		// {{SQL CARBON EDIT}}
+  189: 		// {{SQL CARBON EDIT}}
+
+src\vs\platform\userDataSync\test\common\userDataSyncService.test.ts:
+  15: suite.skip('UserDataSyncService', () => { // {{SQL CARBON EDIT}} skip failing tests
+
+src\vs\workbench\workbench.common.main.ts:
+   11: import 'sql/workbench/api/browser/extensionHost.contribution'; // {{SQL CARBON EDIT}} @anthonydresser add our extension contributions
+  277: /* {{SQL CARBON EDIT}} // Debug
+  316: // import 'vs/workbench/contrib/tasks/browser/task.contribution'; {{SQL CARBON EDIT}}
+  323: // import 'vs/workbench/contrib/emmet/browser/emmet.contribution'; {{SQL CARBON EDIT}}
+
+src\vs\workbench\workbench.desktop.main.ts:
+   81: // {{SQL CARBON EDIT}} - SQL-specific services
+   92: // {{SQL CARBON EDIT}} - End
+  117: // import 'vs/workbench/contrib/debug/node/debugHelperService'; {{SQL CARBON EDIT}}
+  167: // {{SQL CARBON EDIT}}
+
+src\vs\workbench\api\browser\extensionHost.contribution.ts:
+  23: // import './mainThreadDebugService'; {{SQL CARBON EDIT}} @anthonydresser comment out debug service
+  60: // import './mainThreadTask'; {{SQL CARBON EDIT}} @anthonydresser comment out task
+
+src\vs\workbench\api\browser\mainThreadLanguageFeatures.ts:
+   90: 			return undefined; // {{SQL CARBON EDIT}} strict-null-checks
+  434: 						// {{SQL CARBON EDIT}} @todo anthonydresser 4/12/19 required because of strict null checks
+  600: 					return undefined; // {{SQL CARBON EDIT}} strict-null-check
+  610: 					return undefined; // {{SQL CARBON EDIT}} strict-null-check
+
+src\vs\workbench\api\browser\mainThreadTreeViews.ts:
+  161: // {{SQL CARBON EDIT}}
+  164: // {{SQL CARBON EDIT}}
+  169: 	// {{SQL CARBON EDIT}}
+
+src\vs\workbench\api\common\extHost.api.impl.ts:
+  112: 	// const extHostDebugService = rpcProtocol.set(ExtHostContext.ExtHostDebugService, accessor.get(IExtHostDebugService)); {{SQL CARBON EDIT}} remove debug service
+  114: 	// const extHostTask = rpcProtocol.set(ExtHostContext.ExtHostTask, accessor.get(IExtHostTask)); {{SQL CARBON EDIT}} remove tasks service
+  142: 	// {{SQL CARBON EDIT}} filter out the services we don't expose
+  538: 					alignment = alignmentOrOptions as number; // {{SQL CARBON EDIT}} strict-null-check
+  737: 				throw new Error('Tasks api is not allowed in Azure Data Studio'); // {{SQL CARBON EDIT}} disable task
+  824: 		// {{SQL CARBON EDIT}} -- no-op debug extensibility API
+  889: 		const tasks: typeof vscode.tasks = { // {{SQL CARBON EDIT}} disable tasks api
+  938: 			// {{SQL CARBON EDIT}} - Expose the VS Code version here for extensions that rely on it
+
+src\vs\workbench\api\common\extHost.protocol.ts:
+   59: // {{SQL CARBON EDIT}}
+   91: 	vscodeVersion: string; // {{SQL CARBON EDIT}} add vscodeVersion
+  973: 	// {{SQL CARBON EDIT}}
+
+src\vs\workbench\api\common\extHostComments.ts:
+  410: 		return undefined; // {{SQL CARBON EDIT}} @anthonydresser strict-null-check
+
+src\vs\workbench\api\common\extHostRequireInterceptor.ts:
+  23: import { AzdataNodeModuleFactory } from 'sql/workbench/api/common/extHostRequireInterceptor'; // {{SQL CARBON EDIT}}
+  24: import { IExtensionApiFactory as sqlIApiFactory } from 'sql/workbench/api/common/sqlExtHost.api.impl'; // {{SQL CARBON EDIT}}
+  31: export interface INodeModuleFactory { //{{SQL CARBON EDIT}} export interface
+  43: 		private _apiFactory: sqlIApiFactory, // {{SQL CARBON EDIT}} replace with ours
+  62: 		this.register(new VSCodeNodeModuleFactory(this._apiFactory.vscode, extensionPaths, this._extensionRegistry, configProvider, this._logService)); // {{SQL CARBON EDIT}} // add node module
+  63: 		this.register(new AzdataNodeModuleFactory(this._apiFactory.azdata, extensionPaths, this._logService)); // {{SQL CARBON EDIT}} // add node module
+
+src\vs\workbench\api\common\extHostTask.ts:
+  583: 			return undefined; // {{SQL CARBON EDIT}} strict-null-check
+
+src\vs\workbench\api\common\extHostTerminalService.ts:
+  279: 				this._onProcessExit.fire(e === void 0 ? undefined : e as number); // {{SQL CARBON EDIT}} strict-null-checks
+
+src\vs\workbench\api\common\extHostTreeViews.ts:
+   23: // {{SQL CARBON EDIT}}
+  161: export interface TreeNode extends IDisposable { // {{SQL CARBON EDIT}} export interface
+  167: // {{SQL CARBON EDIT}}
+  177: 	// {{SQL CARBON EDIT}}
+  221: 		// {{SQL CARBON EDIT}}
+  337: 	// {{SQL CARBON EDIT}}
+  361: 	// {{SQL CARBON EDIT}}
+  423: 	// {{SQL CARBON EDIT}}
+  456: 	// {{SQL CARBON EDIT}}
+  469: 	// {{SQL CARBON EDIT}}
+  501: 	protected createTreeNode(element: T, extensionTreeItem: azdata.TreeItem, parent: TreeNode | Root): TreeNode { 	// {{SQL CARBON EDIT}} change to protected, change to azdata.TreeItem
+  518: 			// {{SQL CARBON EDIT}}
+  590: 	// {{SQL CARBON EDIT}}
+  660: 	// {{SQL CARBON EDIT}}
+
+src\vs\workbench\api\common\menusExtensionPoint.ts:
+  51: 			// {{SQL CARBON EDIT}}
+
+src\vs\workbench\api\node\extHost.services.ts:
+  44: // registerSingleton(IExtHostDebugService, ExtHostDebugService); {{SQL CARBON EDIT}} remove debug service
+
+src\vs\workbench\api\node\extHostExtensionService.ts:
+  6: import { createApiFactoryAndRegisterActors } from 'sql/workbench/api/common/sqlExtHost.api.impl';  // {{SQL CARBON EDIT}} replace with ours
+
+src\vs\workbench\api\worker\extHostExtensionService.ts:
+  6: import { createApiFactoryAndRegisterActors } from 'sql/workbench/api/common/sqlExtHost.api.impl'; // {{SQL CARBON EDIT}} replace with ours
+
+src\vs\workbench\browser\labels.ts:
+  367: 		/*const resource = toResource(label); {{SQL CARBON EDIT}} we don't want to special case untitled files
+
+src\vs\workbench\browser\workbench.contribution.ts:
+   62: 				'default': 'name', // {{SQL CARBON EDIT}} change default from content to name
+  231: 				'default': true, // {{SQL CARBON EDIT}} - change the default value from false to true.
+
+src\vs\workbench\browser\actions\workspaceCommands.ts:
+   87: 		return undefined; // {{SQL CARBON EDIT}} @anthonydresser strict-null-check
+  120: 	return undefined; // {{SQL CARBON EDIT}} @anthonydresser strict-null-check
+
+src\vs\workbench\browser\media\part.css:
+  95: 	/* {{SQL CARBON EDIT}} */
+
+src\vs\workbench\browser\parts\editor\breadcrumbsControl.ts:
+  538: /* {{SQL CARBON EDIT}} - Disable unused menu item
+
+src\vs\workbench\browser\parts\editor\editorGroupView.ts:
+   827: 			return undefined; // {{SQL CARBON EDIT}} strict-null-checks
+  1512: 			await this.openEditor(replacement, options); // {{SQL CARBON EDIT}} use this.openEditor to allow us to override the open, we could potentially add this to vscode but i don't think they would care
+  1525: 			const openEditorResult = this.openEditor(activeReplacement.replacement, activeReplacement.options); // {{SQL CARBON EDIT}} use this.openEditor to allow us to override the open, we could potentially add this to vscode but i don't think they would care
+
+src\vs\workbench\browser\parts\editor\editorStatus.ts:
+    57: // {{SQL CARBON EDIT}}
+    58: import { setMode } from 'sql/workbench/browser/parts/editor/editorStatusModeSelect'; // {{SQL CARBON EDIT}}
+   349: 		nls.localize('screenReaderDetectedExplanation.question', "Are you using a screen reader to operate Azure Data Studio? (Certain features like word wrap are disabled when using a screen reader)"), // {{SQL CARBON EDIT}} change vscode to ads
+  1168: 					return this.instantiationService.invokeFunction(setMode, modeSupport, activeEditor, languageSelection.languageIdentifier.language); // {{SQL CARBON EDIT}} @anthonydresser use custom setMode
+
+src\vs\workbench\browser\parts\editor\tabsTitleControl.ts:
+    49: // {{SQL CARBON EDIT}} -- Display the editor's tab color
+    52: // {{SQL CARBON EDIT}} -- End
+   840: 		// {{SQL CARBON EDIT}} -- Display the editor's tab color
+  1012: 		this.setEditorTabColor(editor, tabContainer, this.group.isActive(editor)); // {{SQL CARBON EDIT}} -- Display the editor's tab color
+  1076: 		// {{SQL CARBON EDIT}} - Override the editor's tab color if query tab coloring is set
+  1296: 	// {{SQL CARBON EDIT}} -- Display the editor's tab color
+
+src\vs\workbench\browser\parts\editor\textDiffEditor.ts:
+  44: 	private reverseColor?: boolean; // {{SQL CARBON EDIT}} add property
+  70: 	// {{SQL CARBON EDIT}}
+  76: 		if (this.reverseColor) { (configuration as IDiffEditorOptions).reverse = true; } // {{SQL CARBON EDIT}}
+
+src\vs\workbench\browser\parts\editor\titleControl.ts:
+  76: 		// {{SQL CARBON EDIT}} -- need to make the notification service protected
+
+src\vs\workbench\browser\parts\panel\panelPart.ts:
+  151: 				(id: string, focus?: boolean) => <unknown>this.openPanel(id, focus) as Promise<IPaneComposite | undefined>,  // {{SQL CARBON EDIT}} strict-null-checks
+
+src\vs\workbench\browser\parts\sidebar\sidebarPart.ts:
+  59: 			return undefined; // {{SQL CARBON EDIT}} strict-null-check
+  64: 			return undefined; // {{SQL CARBON EDIT}} strict-null-check
+
+src\vs\workbench\browser\parts\titlebar\menubarControl.ts:
+  52: 		// 'Selection': IMenu; {{SQL CARBON EDIT}} - Disable unusued menus
+  54: 		// 'Go': IMenu; {{SQL CARBON EDIT}} - Disable unusued menus
+  55: 		// 'Run': IMenu; {{SQL CARBON EDIT}} - Disable unusued menus
+  56: 		// 'Terminal': IMenu; {{SQL CARBON EDIT}} - Disable unusued menus
+  65: 		// 'Selection': nls.localize({ key: 'mSelection', comment: ['&& denotes a mnemonic'] }, "&&Selection"), {{SQL CARBON EDIT}} - Disable unused menus
+  67: 		// 'Go': nls.localize({ key: 'mGoto', comment: ['&& denotes a mnemonic'] }, "&&Go"), {{SQL CARBON EDIT}} - Disable unusued menus
+  68: 		// 'Run': nls.localize({ key: 'mRun', comment: ['&& denotes a mnemonic'] }, "&&Run"), {{SQL CARBON EDIT}} - Disable unusued menus
+  69: 		// 'Terminal': nls.localize({ key: 'mTerminal', comment: ['&& denotes a mnemonic'] }, "&&Terminal"), {{SQL CARBON EDIT}} - Disable unusued menus
+  97: 		// {{SQL CARBON EDIT}} - Disable unusued menus
+
+src\vs\workbench\common\editor.ts:
+  1473: 			return undefined; // {{SQL CARBON EDIT}} @anthonydresser revert after strictnullchecks
+
+src\vs\workbench\common\theme.ts:
+  595: // {{SQL CARBON EDIT}}
+
+src\vs\workbench\common\editor\editorGroup.ts:
+  388: 			return undefined; // {{SQL CARBON EDIT}} strict-null-check
+  406: 			return undefined; // not found {{SQL CARBON EDIT}} strict-null-check
+  433: 			return undefined; // not found {{SQL CARBON EDIT}} strict-null-check
+  456: 			return undefined; // not found {{SQL CARBON EDIT}} strict-null-check
+  655: 				const editor = doHandleUpgrade(factory.deserialize(this.instantiationService, e.value)); // {{SQL CARBON EDIT}} handle upgrade path to new serialization
+
+src\vs\workbench\contrib\backup\common\backupRestorer.ts:
+  21: 	// {{SQL CARBON EDIT}}
+  98: 		if (resource.scheme === Schemas.untitled && !BackupRestorer.UNTITLED_REGEX.test(resource.path) && BackupRestorer.SQLQUERY_REGEX.test(resource.path)) { // {{SQL CARBON EDIT}} @anthonydresser add sql regex test
+
+src\vs\workbench\contrib\backup\test\electron-browser\backupRestorer.test.ts:
+  54: suite.skip('BackupRestorer', () => { // {{SQL CARBON EDIT}} TODO @anthonydresser these tests are failing due to tabColorMode, should investigate and fix
+
+src\vs\workbench\contrib\backup\test\electron-browser\backupTracker.test.ts:
+   88: suite.skip('BackupTracker', () => { // {{SQL CARBON EDIT}} skip failing tests
+  192: 	test.skip('Track backups (file)', async function () { // {{SQL CARBON EDIT}} tabcolorfailure
+
+src\vs\workbench\contrib\callHierarchy\browser\callHierarchyPeek.ts:
+  377: 		const root = <ITreeNode<callHTree.Call, FuzzyScore>>this._tree.getNode(model).children[0]; // {{SQL CARBON EDIT}} strict-null-checks
+
+src\vs\workbench\contrib\codeEditor\browser\toggleMinimap.ts:
+  35: /* {{SQL CARBON EDIT}} - Disable unused menu item
+
+src\vs\workbench\contrib\codeEditor\browser\toggleRenderControlCharacter.ts:
+  36: /* {{SQL CARBON EDIT}} - Disable unused menu item
+
+src\vs\workbench\contrib\codeEditor\browser\toggleRenderWhitespace.ts:
+  44: /* {{SQL CARBON EDIT}} - Disable unused menu item
+
+src\vs\workbench\contrib\codeEditor\browser\toggleWordWrap.ts:
+  309: // {{SQL CARBON EDIT}} - Disable unused menu item
+  318: // {{SQL CARBON EDIT}} - End
+
+src\vs\workbench\contrib\customEditor\browser\customEditorInput.ts:
+  230: 			return undefined; // {{SQL CARBON EDIT}} strict-null-checks
+
+src\vs\workbench\contrib\customEditor\browser\customEditors.ts:
+  169: 			return undefined; // {{SQL CARBON EDIT}} strict-nulls
+  468: 			return undefined; // {{SQL CARBON EDIT}} Strict-null-checks
+  493: 			return undefined; // {{SQL CARBON EDIT}} Strict-null-checks
+  505: 			return undefined; // {{SQL CARBON EDIT}} strict-null-check
+
+src\vs\workbench\contrib\debug\browser\debug.contribution.ts:
+   77: 	order: 13 // {{SQL CARBON EDIT}}
+  370: }); {{SQL CARBON EDIT}} - Disable unusued menus */
+
+src\vs\workbench\contrib\debug\browser\debugANSIHandling.ts:
+  305: 		// {{SQL CARBON EDIT}} @todo anthonydresser 4/12/19 this is necessary because we don't use strict null checks
+  330: 		// {{SQL CARBON EDIT}} @todo anthonydresser 4/12/19 this is necessary because we don't use strict null checks
+
+src\vs\workbench\contrib\debug\test\browser\baseDebugView.test.ts:
+  42: 	test.skip('render expression value', () => { // {{SQL CARBON EDIT}} skip test
+  80: 	test.skip('render variable', () => { // {{SQL CARBON EDIT}} skip test
+
+src\vs\workbench\contrib\emmet\browser\actions\expandAbbreviation.ts:
+  32: 			/*menuOpts: { {{SQL CARBON EDIT}} - Remove from menu
+
+src\vs\workbench\contrib\emmet\browser\actions\showEmmetCommands.ts:
+  24: 			/*menuOpts: { {{SQL CARBON EDIT}} - Remove from menu
+
+src\vs\workbench\contrib\extensions\browser\extensionEditor.ts:
+   53: import { renderDashboardContributions } from 'sql/workbench/contrib/extensions/browser/contributionRenders'; // {{SQL CARBON EDIT}}
+  155: 	// installCount: HTMLElement; // {{SQL CARBON EDIT}} remove install count widget
+  156: 	// rating: HTMLElement; // {{SQL CARBON EDIT}} remove rating widget
+  230: 		// {{SQL CARBON EDIT}} remove rating and install count widgets
+  291: 			// installCount, // {{SQL CARBON EDIT}} remove install count widget
+  297: 			// rating, // {{SQL CARBON EDIT}} remove rating widget
+  369: 		toggleClass(template.publisher, 'clickable', !!extension.publisher); // {{SQL CARBON EDIT}} !!extension.url -> !!extension.publisher, for ADS we don't have marketplace website, but still want to make it clickable and filter extensions by publisher
+  370: 		// toggleClass(template.rating, 'clickable', !!extension.url); // {{SQL CARBON EDIT}} remove rating widget
+  373: 			// this.transientDisposables.add(this.onClick(template.rating, () => this.openerService.open(URI.parse(`${extension.url}#review-details`)))); // {{SQL CARBON EDIT}} remove rating widget
+  390: 		// {{SQL CARBON EDIT}}
+  408: 		// {{SQL CARBON EDIT}} - End
+  420: 			// this.instantiationService.createInstance(InstallCountWidget, template.installCount, false), {{SQL CARBON EDIT}} Remove the widgets
+  421: 			// this.instantiationService.createInstance(RatingsWidget, template.rating, false) {{SQL CARBON EDIT}} Remove the widgets
+  927: 					renderDashboardContributions(content, manifest, layout), // {{SQL CARBON EDIT}}
+
+src\vs\workbench\contrib\extensions\browser\extensionRecommendationsService.ts:
+    17: // {{SQL CARBON EDIT}}
+    21: // {{SQL CARBON EDIT}} - End
+   108: 	private recommendations: { [id: string]: string } = Object.create(null); // {{SQL CARBON EDIT}} add our recommendations
+   170: 			// this.promptWorkspaceRecommendations(); // {{SQL CARBON EDIT}} disable workspace recommandations
+   241: 		// {{SQL CARBON EDIT}}
+   602: 	/*private promptFiletypeBasedRecommendations(model: ITextModel): void { {{SQL CARBON EDIT}} comment out for no unused
+   672: 	/*private async promptRecommendedExtensionForFileType(recommendationsToSuggest: string[], installed: ILocalExtension[]): Promise<boolean> { {{SQL CARBON EDIT}} comment out for no unused
+   740: 	/*private async promptRecommendedExtensionForFileExtension(fileExtension: string, installed: ILocalExtension[]): Promise<void> { {{SQL CARBON EDIT}} no unused
+   921: 		const otherRecommendations = Object.keys(this.experimentalRecommendations).concat(Object.keys(this.recommendations)) // {{SQL CARBON EDIT}} add our recommendations
+   947: 		/* // {{SQL CARBON EDIT}} disable experiements
+  1081: 	// {{SQL CARBON EDIT}}
+  1174: 	// {{SQL CARBON EDIT}} - End
+
+src\vs\workbench\contrib\extensions\browser\extensions.contribution.ts:
+   41: import { ExtensionType, ExtensionsPolicy } from 'vs/platform/extensions/common/extensions'; // {{SQL CARBON EDIT}}
+   86: 		order: 14, // {{SQL CARBON EDIT}}
+  133: if (InstallVSIXAction.AVAILABLE) { // {{SQL CARBON EDIT}} add disable logic
+  195: 			'extensions.extensionsPolicy': { // {{SQL CARBON EDIT}}
+
+src\vs\workbench\contrib\extensions\browser\extensionsActions.ts:
+    21: t { ExtensionType, ExtensionIdentifier, IExtensionDescription, IExtensionManifest, isLanguagePackExtension, ExtensionsPolicy, ExtensionsPolicyKey } from 'vs/platform/extensions/common/extensions'; // {{SQL CARBON EDIT}}
+    63: import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage'; // {{SQL CARBON EDIT}}
+    87: 			const downloadUrl = (extension.assets.downloadPage && extension.assets.downloadPage.uri) || extension.assets.download.uri; // {{SQL CARBON EDIT}} Use the URI directly since we don't have a marketplace hosting the packages
+   240: 		// {{SQL CARBON EDIT}} Add extension object check since ADS third party extensions will be directed to a download page
+   263: 				// {{SQL CARBON EDIT}}
+   447: 			alert(localize('uninstallExtensionComplete', "Please reload Azure Data Studio to complete the uninstallation of the extension {0}.", this.extension!.displayName)); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+   572: 			// {{SQL CARBON EDIT}}
+  1240: 				// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+  1261: 							this.tooltip = localize('postUpdateTooltip', "Please reload Azure Data Studio to enable the updated extension."); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+  1270: 								this.tooltip = localize('postEnableTooltip', "Please reload Azure Data Studio to enable this extension."); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+  1278: 								this.tooltip = localize('postEnableTooltip', "Please reload Azure Data Studio to enable this extension."); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+  1287: 						// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+  1299: 					this.tooltip = localize('postEnableTooltip', "Please reload Azure Data Studio to enable this extension."); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+  1310: 						this.tooltip = localize('postEnableTooltip', "Please reload Azure Data Studio to enable this extension."); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+  1311: 						alert(localize('installExtensionComplete', "Installing extension {0} is completed. Please reload Azure Data Studio to enable it.", this.extension.displayName)); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+  2203: 				return (<IExtensionsConfigContent>json.parse(content.value.toString()) || {}) as IExtensionsConfigContent; // {{SQL CARBON EDIT}} strict-null-check
+  2904: 	static readonly AVAILABLE = !(product.disabledFeatures && product.disabledFeatures.indexOf(InstallVSIXAction.ID) >= 0);  // {{SQL CARBON EDIT}} add available logic
+  2914: 		@IConfigurationService private readonly configurationService: IConfigurationService, // {{SQL CARBON EDIT}}
+  2921: 		// {{SQL CARBON EDIT}} - Replace run body
+  2997: 		// {{SQL CARBON EDIT}} - End
+  3000: 	get enabled(): boolean { // {{SQL CARBON EDIT}} add enabled logic
+  3054: 						// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+
+src\vs\workbench\contrib\extensions\browser\extensionsList.ts:
+   35: 	// {{SQL CARBON EDIT}}
+   78: 		// const installCount = append(header, $('span.install-count')); {{SQL CARBON EDIT}} no unused
+  118: 			// {{SQL CARBON EDIT}}
+  145: 		// {{SQL CARBON EDIT}}
+  188: 		// {{SQL CARBON EDIT}}
+
+src\vs\workbench\contrib\extensions\browser\extensionsViewlet.ts:
+   79: 	// {{SQL CARBON EDIT}}
+  107: 		// {{SQL CARBON EDIT}}
+  171: 	/* // {{SQL CARBON EDIT}}
+  479: 				// this.instantiationService.createInstance(ShowPopularExtensionsAction, ShowPopularExtensionsAction.ID, ShowPopularExtensionsAction.LABEL), // {{SQL CARBON EDIT}}
+  481: 				// {{SQL CARBON EDIT}}
+
+src\vs\workbench\contrib\extensions\browser\extensionsViews.ts:
+   457: 		// {{SQL CARBON EDIT}}
+   470: 		// {{SQL CARBON EDIT}} - End
+   480: 		} else if (ExtensionsListView.isAllMarketplaceExtensionsQuery(query.value)) { // {{SQL CARBON EDIT}} add if
+   661: 	// {{SQL CARBON EDIT}}
+   697: 	// {{SQL CARBON EDIT}}
+   720: 	// {{SQL CARBON EDIT}} - End
+   940: 	// {{SQL CARBON EDIT}}
+  1031: 	// {{SQL CARBON EDIT}}
+  1057: 	// private readonly recommendedExtensionsQuery = '@recommended'; {{SQL CARBON EDIT}} no unused
+  1068: 		// {{SQL CARBON EDIT}}
+
+src\vs\workbench\contrib\extensions\browser\extensionsWorkbenchService.ts:
+   15: // {{SQL CARBON EDIT}}
+   37: import { IExtensionManifest, ExtensionType, IExtension as IPlatformExtension, isLanguagePackExtension, ExtensionsPolicyKey, ExtensionsPolicy } from 'vs/platform/extensions/common/extensions'; // {{SQL CARBON EDIT}}
+   42: import { isEngineValid } from 'vs/platform/extensions/common/extensionValidator'; // {{SQL CARBON EDIT}}
+   43: import { IOpenerService } from 'vs/platform/opener/common/opener'; // {{SQL CARBON EDIT}}
+  121: 		// {{SQL CARBON EDIT}} - ADS doesn't have a marketplace website.
+  132: 	// {{SQL CARBON EDIT}}
+  263: 			// {{SQL CARBON EDIT}}
+  295: 				// {{SQL CARBON EDIT}}
+  525: 		@IOpenerService private readonly openerService: IOpenerService // {{SQL CARBON EDIT}}
+  544: 				// {{SQL CARBON EDIT}}
+  781: 		// {{SQL CARBON EDIT}} - Add && !e.downloadPage condition
+  807: 		let extensionPolicy = this.configurationService.getValue<string>(ExtensionsPolicyKey); // {{SQL CARBON EDIT}} add line
+  810: 				// {{SQL CARBON EDIT}} - Wrap async call in try/catch.
+  820: 				// {{SQL CARBON EDIT}} - End
+  834: 		// {{SQL CARBON EDIT}}
+  844: 			// {{SQL CARBON EDIT}} remove extensionservice install from gallery
+  857: 	// {{SQL CARBON EDIT}}
+  866: 	// {{SQL CARBON EDIT}} - End
+  899: eturn Promise.reject(new Error(nls.localize('incompatible', "Unable to install extension '{0}' as it is not compatible with Azure Data Studio '{1}'.", extension.gallery!.identifier.id, version))); // {{SQL CARBON EDIT}} Change vscode to ads
+
+src\vs\workbench\contrib\extensions\common\extensions.ts:
+   45: 	readonly downloadPage?: string; // {{SQL CARBON EDIT}}
+  106: 	// {{SQL CARBON EDIT}}
+
+src\vs\workbench\contrib\extensions\test\electron-browser\extensionRecommendationsService.test.ts:
+  175: suite.skip('ExtensionRecommendationsService Test', () => { // {{SQL CARBON EDIT}} skip suite
+  508: 		instantiationService.stub(IStorageService, <any>{ // {{SQL CARBON EDIT}} strict-null-checks?
+
+src\vs\workbench\contrib\extensions\test\electron-browser\extensionsActions.test.ts:
+  1113: 		assert.equal(testObject.tooltip, 'Please reload Azure Data Studio to enable this extension.'); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+  1168: 		assert.equal(testObject.tooltip, 'Please reload Azure Data Studio to complete the uninstallation of this extension.'); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+  1222: 				if (testObject.enabled && testObject.tooltip === 'Please reload Azure Data Studio to enable the updated extension.') { // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+  1263: 		assert.equal('Please reload Azure Data Studio to disable this extension.', testObject.tooltip); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+  1293: 		assert.equal('Please reload Azure Data Studio to enable this extension.', testObject.tooltip); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+  1328: 		assert.equal('Please reload Azure Data Studio to enable this extension.', testObject.tooltip); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+  1464: 		assert.equal(testObject.tooltip, 'Please reload Azure Data Studio to enable this extension.'); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+  1500: 		assert.equal(testObject.tooltip, 'Please reload Azure Data Studio to enable this extension.'); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+
+src\vs\workbench\contrib\feedback\browser\feedbackStatusbarItem.ts:
+  22: 	private static VIA_NAME: string = 'azuredatastudio'; // {{SQL CARBON EDIT}}
+  23: 	private static HASHTAGS: string[] = ['HappyAzureDataStudio']; // {{SQL CARBON EDIT}}
+
+src\vs\workbench\contrib\files\browser\explorerViewlet.ts:
+  258: 	order: 10 // {{SQL CARBON EDIT}}
+
+src\vs\workbench\contrib\files\browser\fileActions.contribution.ts:
+   46: enchAction(SyncActionDescriptor.create(GlobalNewUntitledPlainFileAction, GlobalNewUntitledPlainFileAction.ID, GlobalNewUntitledPlainFileAction.LABEL), 'File: New Plain Text File', category.value); // {{SQL CARBON EDIT}} -- Add 'New File' command for plain untitled files
+  560: // {{SQL CARBON EDIT}} - Use "New Query" instead of "New File"
+  567: // {{SQL CARBON EDIT}} - Use "New Query"
+  577: // {{SQL CARBON EDIT}} - Use "New File"
+  587: // {{SQL CARBON EDIT}} - Add "New Notebook" item
+  596: // {{SQL CARBON EDIT}} - End
+
+src\vs\workbench\contrib\files\browser\fileActions.ts:
+  131: // {{SQL CARBON EDIT}}
+  133: 	// {{SQL CARBON EDIT}} - Use different command name to reserve original name for SQL files
+  146: 		// {{SQL CARBON EDIT}} - set as plain text
+
+src\vs\workbench\contrib\files\browser\files.contribution.ts:
+   78: // {{SQL CARBON EDIT}}
+  321: xMemoryForLargeFilesMB', "Controls the memory available to Azure Data Studio after restart when trying to open large files. Same effect as specifying `--max-memory=NEWSIZE` on the command line."), // {{SQL CARBON EDIT}} Change product name to ADS
+  436: 	// {{SQL CARBON EDIT}} - Change the order
+
+src\vs\workbench\contrib\files\common\explorerService.ts:
+  393: 		const configSortOrder = configuration?.explorer?.sortOrder || SortOrder.Default; // {{SQL CARBON EDIT}} strict-null-checks?
+
+src\vs\workbench\contrib\files\test\browser\editorAutoSave.test.ts:
+  97: 	test.skip('editor auto saves on focus change if configured', async function () { // {{SQL CARBON EDIT}} skip failing test
+
+src\vs\workbench\contrib\files\test\browser\fileEditorInput.test.ts:
+  30: 	test.skip('Basics', async function () { // {{SQL CARBON EDIT}} skip test
+
+src\vs\workbench\contrib\files\test\browser\textFileEditor.test.ts:
+  78: 	test.skip('text file editor preserves viewstate', async function () { // {{SQL CARBON EDIT}} skip failing test
+  82: 	test.skip('text file editor resets viewstate if configured as such', async function () { // {{SQL CARBON EDIT}} skip failing test
+
+src\vs\workbench\contrib\files\test\browser\textFileEditorTracker.test.ts:
+   72: 	test.skip('file change event updates model', async function () { // {{SQL CARBON EDIT}} tabcolormode failure
+   95: 	test.skip('dirty text file model opens as editor', async function () { // {{SQL CARBON EDIT}} tabcolormode failure
+  114: 	test.skip('dirty untitled text file model opens as editor', async function () { // {{SQL CARBON EDIT}} tabcolormode failure
+  138: 	test.skip('non-dirty files reload on window focus', async function () { // {{SQL CARBON EDIT}} skip failing test
+
+src\vs\workbench\contrib\localizations\browser\localizations.contribution.ts:
+  65: 					// {{SQL CARBON EDIT}} - Update 'VS Code' to 'Azure Data Studio'
+
+src\vs\workbench\contrib\notebook\browser\notebookEditor.ts:
+  475: 		return undefined; // {{SQL CARBON EDIT}} strict-null-check
+
+src\vs\workbench\contrib\notebook\browser\notebookService.ts:
+  204: 		return undefined; // {{SQL CARBON EDIT}} strict-null-check
+
+src\vs\workbench\contrib\notebook\browser\contrib\notebookActions.ts:
+  412: 		return undefined; // {{SQL CARBON EDIT}} strict-null-check
+  417: 		return undefined; // {{SQL CARBON EDIT}} strict-null-check
+  479: 		return undefined; // {{SQL CARBON EDIT}} strict-null-check
+  484: 		return undefined; // {{SQL CARBON EDIT}} strict-null-check
+
+src\vs\workbench\contrib\notebook\browser\view\output\transforms\errorTransform.ts:
+  366: 		// {{SQL CARBON EDIT}} @todo anthonydresser 4/12/19 this is necessary because we don't use strict null checks
+  391: 		// {{SQL CARBON EDIT}} @todo anthonydresser 4/12/19 this is necessary because we don't use strict null checks
+
+src\vs\workbench\contrib\notebook\electron-browser\notebook.contribution.ts:
+  27: 	return undefined; // {{SQL CARBON EDIT}} struct-null-checks
+
+src\vs\workbench\contrib\notebook\test\testNotebookEditor.ts:
+  186: 		return undefined; // {{SQL CARBON EDIT}} strict-null-check
+
+src\vs\workbench\contrib\preferences\browser\settingsEditor2.ts:
+   46: // {{SQL CARBON EDIT}}
+   49: // {{SQL CARBON EDIT}} END
+  293: 		// {{SQL CARBON EDIT}} - return if options is undefined to avoid nullref @todo anthonydresser 8/17/19 investigate
+
+src\vs\workbench\contrib\remote\browser\remote.ts:
+  544: 					return undefined; // {{SQL CARBON EDIT}} strict-null-check
+  563: 				return undefined; // {{SQL CARBON EDIT}} strict-null-check;
+
+src\vs\workbench\contrib\remote\browser\tunnelView.ts:
+  589: 		const node: ITunnelItem | null = treeEvent.element as ITunnelItem | null; // {{SQL CARBON EDIT}} strict-null-check
+
+src\vs\workbench\contrib\scm\browser\scm.contribution.ts:
+   48: 	order: 12 // {{SQL CARBON EDIT}}
+  154: 	// {{SQL CARBON EDIT}} - Change the order
+
+src\vs\workbench\contrib\search\browser\anythingQuickAccess.ts:
+  631: 			return undefined; // {{SQL CARBON EDIT}} strict-null
+  636: 			return undefined; // {{SQL CARBON EDIT}} strict-null
+  641: 			return undefined; // {{SQL CARBON EDIT}} strict-null
+  651: 				return undefined; // {{SQL CARBON EDIT}} strict-null
+  663: 		return undefined; // {{SQL CARBON EDIT}} strict-null
+  668: 			return undefined; // {{SQL CARBON EDIT}} strict-null
+  698: 		return undefined; // {{SQL CARBON EDIT}} strict-null
+
+src\vs\workbench\contrib\searchEditor\browser\searchEditor.ts:
+  335: 			return undefined; // {{SQL CARBON EDIT}} strict-null-checks
+
+src\vs\workbench\contrib\searchEditor\browser\searchEditorInput.ts:
+  121: 		if ((await this.headerModel).isDisposed() || (await this.contentsModel).isDisposed()) { return undefined; } // {{SQL CARBON EDIT}} strict-null-check
+
+src\vs\workbench\contrib\snippets\browser\configureSnippets.ts:
+  266: /* {{SQL CARBON EDIT}} - Disable unused menu item
+
+src\vs\workbench\contrib\tasks\browser\abstractTaskService.ts:
+  565: 			return undefined; // {{SQL CARBON EDIT}} strict-null-checks
+  586: 		return undefined; // {{SQL CARBON EDIT}} strict-null-checks
+
+src\vs\workbench\contrib\tasks\browser\taskQuickPick.ts:
+  204: 				return undefined; // {{SQL CARBON EDIT}} strict-null-checks
+  207: 		return undefined; // {{SQL CARBON EDIT}} strict-null-checks
+
+src\vs\workbench\contrib\telemetry\browser\telemetry.contribution.ts:
+  185: 			if (isEqualOrParent(resource, folder.toResource('.azuredatastudio'))) { // {{SQL CARBON EDIT}}
+  188: 					return `.azuredatastudio/${filename}`; // {{SQL CARBON EDIT}}
+
+src\vs\workbench\contrib\terminal\browser\terminal.contribution.ts:
+  219: ale', "Controls whether to detect and set the `$LANG` environment variable to a UTF-8 compliant option since Azure Data Studio's terminal only supports UTF-8 encoded data coming from the shell."), // {{SQL CARBON EDIT}} Change product name to ADS
+  233: 				nls.localize('terminal.integrated.rendererType.auto', "Let Azure Data Studio guess which renderer to use."), // {{SQL CARBON EDIT}} Change product name to ADS
+  287: 			markdownDescription: nls.localize('terminal.integrated.inheritEnv', "Whether new shells should inherit their environment from Azure Data Studio. This is not supported on Windows."), // {{SQL CARBON EDIT}} Change product name to ADS
+  292: ntegrated.env.osx', "Object with environment variables that will be added to the Azure Data Studio process to be used by the terminal on macOS. Set to `null` to delete the environment variable."), // {{SQL CARBON EDIT}} Change product name to ADS
+  300: egrated.env.linux', "Object with environment variables that will be added to the Azure Data Studio process to be used by the terminal on Linux. Set to `null` to delete the environment variable."), // {{SQL CARBON EDIT}} Change product name to ADS
+  308: ted.env.windows', "Object with environment variables that will be added to the Azure Data Studio process to be used by the terminal on Windows. Set to `null` to delete the environment variable."), // {{SQL CARBON EDIT}} Change product name to ADS
+
+src\vs\workbench\contrib\terminal\test\browser\terminalCommandTracker.test.ts:
+  23: suite.skip('Workbench - TerminalCommandTracker', () => { // {{SQL CARBON EDIT}} skip suite
+
+src\vs\workbench\contrib\terminal\test\browser\terminalConfigHelper.test.ts:
+  13: suite.skip('Workbench - TerminalConfigHelper', () => { // {{SQL CARBON EDIT}} skip suite
+
+src\vs\workbench\contrib\themes\browser\themes.contribution.ts:
+  37: 		// @IExtensionGalleryService private readonly extensionGalleryService: IExtensionGalleryService, {{SQL CARBON EDIT}} no unused
+  51: 				// {{SQL CARBON EDIT}}
+
+src\vs\workbench\contrib\update\browser\update.ts:
+   36: /*let releaseNotesManager: ReleaseNotesManager | undefined = undefined; {{SQL CARBON EDIT}} comment out for no unused
+   69: 		/*private */version: string, // {{SQL CARBON EDIT}} no unused
+   82: 		// return showReleaseNotes(this.instantiationService, this.version) // {{SQL CARBON EDIT}} just open release notes in browser
+  140: 			if (shouldShowReleaseNotes && releaseNotesUrl && lastVersion && productService.version !== lastVersion && productService.quality === 'stable') { // {{SQL CARBON EDIT}} Only show release notes for stable build) {
+  141: 				/*showReleaseNotes(instantiationService, productService.version) {{SQL CARBON EDIT}} Prompt user to open release notes in browser until we can get ADS release notes from the web
+  250: 			badge = new NumberBadge(1, () => nls.localize('updateIsReady', "New {0} update available.", this.productService.nameLong)); // {{SQL CARBON EDIT}} change to namelong
+  374: 					const action = this.instantiationService.createInstance(OpenLatestReleaseNotesInBrowserAction); // {{SQL CARBON EDIT}} change action
+
+src\vs\workbench\contrib\watermark\browser\watermark.ts:
+  31: // {{SQL CARBON EDIT}}
+  43: // {{SQL CARBON EDIT}}
+  58: // const startDebugging: WatermarkEntry = { text: nls.localize('watermark.startDebugging', "Start Debugging"), id: StartAction.ID }; {{SQL CARBON EDIT}} no unused
+  60: // {{SQL CARBON EDIT}} - Replace noFolderEntries and folderEntries
+  74: // {{SQL CARBON EDIT}} - End
+
+src\vs\workbench\contrib\webview\browser\webviewWorkbenchService.ts:
+  148: 			return undefined; // {{SQL CARBON EDIT}} strict-null-checks
+
+src\vs\workbench\contrib\welcome\overlay\browser\welcomeOverlay.ts:
+  261: 	.registerWorkbenchAction(SyncActionDescriptor.create(WelcomeOverlayAction, WelcomeOverlayAction.ID, WelcomeOverlayAction.LABEL), 'Help: User Interface Overview', localize('help', "Help")); {{SQL CARBON EDIT}} remove interface overview
+
+src\vs\workbench\contrib\welcome\page\browser\welcomePage.contribution.ts:
+  9: import { WelcomePageContribution, WelcomePageAction, WelcomeInputFactory } from 'sql/workbench/contrib/welcome/page/browser/welcomePage'; // {{SQL CARBON EDIT}} use our welcome page
+
+src\vs\workbench\contrib\welcome\page\browser\welcomePage.css:
+  221: .file-icons-enabled .show-file-icons .az_data_welcome_page-name-file-icon.file-icon::before { /* {{SQL CARBON EDIT}} We use azdata welcome page */
+
+src\vs\workbench\contrib\welcome\page\browser\welcomePage.ts:
+   45: import 'sql/workbench/contrib/welcome/page/browser/az_data_welcome_page'; // {{SQL CARBON EDIT}}
+  277: 		// {{SQL CARBON EDIT}} - Redirect to ADS welcome page
+
+src\vs\workbench\contrib\welcome\telemetryOptOut\browser\telemetryOptOut.contribution.ts:
+  11: // {{SQL CARBON EDIT}}
+
+src\vs\workbench\contrib\welcome\telemetryOptOut\electron-browser\telemetryOptOut.ts:
+  38: 		return this.electronService ? this.electronService.getWindowCount() : Promise.resolve(0); // {{SQL CARBON EDIT}} Tests run without UI context so electronService is undefined in that case
+
+src\vs\workbench\contrib\welcome\walkThrough\browser\walkThrough.contribution.ts:
+  51: /*MenuRegistry.appendMenuItem(MenuId.MenubarHelpMenu, { {{SQL CARBON EDIT}} remove menu item
+
+src\vs\workbench\electron-browser\desktop.contribution.ts:
+   28: import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/extensionsActions'; // {{SQL CARBON EDIT}} add import
+  104: 			when: undefined, // {{SQL CARBON EDIT}} allow this toggle in all circumstances
+  120: 		MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, { // {{SQL CARBON EDIT}} - Add install VSIX menu item
+
+src\vs\workbench\electron-browser\desktop.main.ts:
+  283: 		return undefined; // {{SQL CARBON EDIT}} @anthonydresser strict-null-check
+
+src\vs\workbench\services\configuration\test\electron-browser\configurationEditingService.test.ts:
+  97: 		workspaceSettingsDir = path.join(workspaceDir, '.azuredatastudio'); // {{SQL CARBON EDIT}} .vscode to .azuredatastudio
+
+src\vs\workbench\services\configuration\test\electron-browser\configurationService.test.ts:
+    71: 	const workspaceSettingsDir = path.join(folderDir, '.azuredatastudio'); 	// {{SQL CARBON EDIT}} .vscode to .azuredatastudio
+   100: suite.skip('WorkspaceContextService - Folder', () => { // {{SQL CARBON EDIT}} skip suite
+   162: suite.skip('WorkspaceContextService - Workspace', () => { // {{SQL CARBON EDIT}} skip suite
+   222: suite.skip('WorkspaceContextService - Workspace Editing', () => { // {{SQL CARBON EDIT}} skip suite
+   461: suite.skip('WorkspaceService - Initialization', () => { // {{SQL CARBON EDIT}} skip suite
+   720: suite.skip('WorkspaceConfigurationService - Folder', () => { // {{SQL CARBON EDIT}} skip suite
+  1145: suite.skip('WorkspaceConfigurationService-Multiroot', () => { // {{SQL CARBON EDIT}} skip suite
+
+src\vs\workbench\services\dialogs\browser\simpleFileDialog.ts:
+  312: 					return undefined; // {{SQL CARBON EDIT}} @todo anthonydresser return to return; when we do strict null checks
+  496: 				return undefined; // {{SQL CARBON EDIT}} @anthonydresser strict-null-check
+  502: 				return undefined; // {{SQL CARBON EDIT}} @anthonydresser strict-null-check
+
+src\vs\workbench\services\dialogs\electron-browser\fileDialogService.ts:
+  127: 		return undefined; // {{SQL CARBON EDIT}} strict-null-check
+  151: 		return undefined; // {{SQL CARBON EDIT}} strict-null-check
+
+src\vs\workbench\services\editor\test\browser\editorGroupsService.test.ts:
+  18: suite.skip('EditorGroupsService', () => { // {{SQL CARBON EDIT}} skip suite
+
+src\vs\workbench\services\editor\test\browser\editorService.test.ts:
+  43: suite.skip('EditorService', () => { // {{SQL CARBON EDIT}} skip suite
+
+src\vs\workbench\services\editor\test\browser\editorsObserver.test.ts:
+  26: suite.skip('EditorsObserver', function () { //{{SQL CARBON EDIT}} disable failing tests due to tabcolormode
+
+src\vs\workbench\services\extensionManagement\common\extensionManagement.ts:
+  109: 	// {{SQL CARBON EDIT}}
+  112: 	// {{SQL CARBON EDIT}} - End
+
+src\vs\workbench\services\extensions\browser\extensionUrlHandler.ts:
+  149: 			// {{SQL CARBON EDIT}} - Begin
+  159: 			// {{SQL CARBON EDIT}} - End
+
+src\vs\workbench\services\extensions\browser\webWorkerExtensionHostStarter.ts:
+  135: 			vscodeVersion: this._productService.vscodeVersion, // {{SQL CARBON EDIT}} add vscode version
+
+src\vs\workbench\services\extensions\common\abstractExtensionService.ts:
+  235: 					result.push(new ExtensionPointContribution<T>(desc, desc.contributes[extPoint.name])); // {{SQL CARBON EDIT}} strict-null-checks
+  376: 					value: desc.contributes[extensionPoint.name], // {{SQL CARBON EDIT}} strict-null-checks
+
+src\vs\workbench\services\extensions\common\extensionHostProcessManager.ts:
+  207: 		// {{SQL CARBON EDIT}} filter out services we don't expose
+
+src\vs\workbench\services\extensions\common\remoteExtensionHostClient.ts:
+  201: 				vscodeVersion: this._productService.vscodeVersion, // {{SQL CARBON EDIT}} add vscode version
+
+src\vs\workbench\services\extensions\electron-browser\extensionHost.ts:
+  409: 					vscodeVersion: product.vscodeVersion, // {{SQL CARBON EDIT}} add vscode version
+
+src\vs\workbench\services\extensions\node\extensionPoints.ts:
+  58: 				// {{SQL CARBON EDIT}}
+
+src\vs\workbench\services\extensions\worker\extHost.services.ts:
+  57: // registerSingleton(IExtHostTask, WorkerExtHostTask); {{SQL CARBON EDIT}} disable
+  58: // registerSingleton(IExtHostDebugService, WorkerExtHostDebugService); {{SQL CARBON EDIT}} disable
+
+src\vs\workbench\services\history\test\browser\history.test.ts:
+  43: suite.skip('HistoryService', function () { // {{SQL CARBON EDIT}} TODO @anthonydresser these tests are failing due to tabColorMode, should investigate and fix
+
+src\vs\workbench\services\search\node\ripgrepFileSearch.ts:
+  147: 				// {{SQL CARBON EDIT}} @todo anthonydresser 4/12/19 cast value because we aren't using strict null checks
+
+src\vs\workbench\services\textfile\browser\textFileService.ts:
+  221: 			return undefined; // user canceled // {{SQL CARBON EDIT}} strict-null-check
+
+src\vs\workbench\services\textfile\common\textFileEditorModel.ts:
+  611: 		if ((this.saveSequentializer as TaskSequentializer).hasPending()) { // {{SQL CARBON EDIT}} strict-null-check
+  619: 			(this.saveSequentializer as TaskSequentializer).cancelPending(); // {{SQL CARBON EDIT}} strict-null-check
+  622: 			return (this.saveSequentializer as TaskSequentializer).setNext(() => this.doSave(options)); // {{SQL CARBON EDIT}} strict-null-check
+  633: 		return (this.saveSequentializer as TaskSequentializer).setPending(versionId, (async () => { // {{SQL CARBON EDIT}} strict-null-checks
+  667: 				return undefined; // {{SQL CARBON EDIT}} @anthonydresser strict-null-check
+  672: 				return undefined; // {{SQL CARBON EDIT}} @anthonydresser strict-null-check
+
+src\vs\workbench\services\textfile\common\textfiles.ts:
+  421: 	isDirty(): boolean; // {{SQL CARBON EDIT}} strict-null-check
+
+src\vs\workbench\services\themes\browser\workbenchThemeService.ts:
+   42: // {{SQL CARBON EDIT}}
+   58: 		// {{SQL CARBON EDIT}}
+  248: all([initializeColorTheme(), initializeFileIconTheme(), initializeProductIconTheme()]) as Promise<[IWorkbenchColorTheme | null, IWorkbenchFileIconTheme | null, IWorkbenchProductIconTheme | null]>; // {{SQL CARBON EDIT}} strict-null-checks maybe?
+
+src\vs\workbench\services\themes\common\themeConfiguration.ts:
+  18: const DEFAULT_THEME_SETTING_VALUE = 'Default Light Azure Data Studio'; // {{SQL CARBON EDIT}} replace default theme
+  19: const DEFAULT_THEME_DARK_SETTING_VALUE = 'Default Dark Azure Data Studio'; // {{SQL CARBON EDIT}} replace default theme
+  20: const DEFAULT_THEME_LIGHT_SETTING_VALUE = 'Default Light Azure Data Studio'; // {{SQL CARBON EDIT}} replace default theme
+  21: const DEFAULT_THEME_HC_SETTING_VALUE = 'Default High Contrast Azure Data Studio'; // {{SQL CARBON EDIT}} replace default theme
+
+src\vs\workbench\services\untitled\common\untitledTextEditorModel.ts:
+  241: 	// {{SQL CARBON EDIT}}
+
+src\vs\workbench\services\workingCopy\common\workingCopyService.ts:
+   14: import { Schemas } from 'vs/base/common/network'; // {{SQL CARBON EDIT}} @chlafreniere need to block working copies of notebook editors from being tracked
+  200: 		// {{SQL CARBON EDIT}} @chlafreniere need to block working copies of notebook editors from being tracked
+
+src\vs\workbench\services\workspaces\browser\abstractWorkspaceEditingService.ts:
+  56: 			return undefined; // canceled  {{SQL CARBON EDIT}} strict-null-checks
+
+test\automation\src\application.ts:
+  69: 		//{{SQL CARBON EDIT}}
+  80: 		//{{SQL CARBON EDIT}}
+
+test\automation\src\code.ts:
+  259: 		await poll(() => this.driver.getWindowIds(), fn, `get window ids`, 600, 100); // {{SQL CARBON EDIT}}
+
+test\automation\src\index.ts:
+  29: // {{SQL CARBON EDIT}}
+
+test\automation\src\workbench.ts:
+  23: // {{SQL CARBON EDIT}}
+  52: 	// {{SQL CARBON EDIT}}
+  75: 		// {{SQL CARBON EDIT}}
+
+test\smoke\src\main.ts:
+  24: import { main as sqlMain, setup as sqlSetup } from './sql/main'; //{{SQL CARBON EDIT}}
+
+test\unit\coverage.js:
+  44: 			if (fixedPath.includes('\\vs\\') || fixedPath.includes('/vs/')) { return; } // {{SQL CARBON EDIT}} skip vscode files
+  63: 			reports.push(iReports.create('cobertura')); // {{SQL CARBON EDIT}} add covertura
+
+test\unit\electron\index.js:
+  32: // {{SQL CARBON EDIT}}
+
+test\unit\electron\renderer.js:
+  16: require('reflect-metadata'); // {{SQL CARBON EDIT}}
+  40: 			'sql': `../${outdir}/sql`, // {{SQL CARBON EDIT}}
+  44: 		nodeModules: [ // {{SQL CARBON EDIT}}
+
+test\unit\node\all.js:
+  49: 			'sql': `../${out}/sql`, // {{SQL CARBON EDIT}}
+  54: 		nodeModules: [ // {{SQL CARBON EDIT}}
