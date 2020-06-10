@@ -581,6 +581,10 @@ suite('SQL ConnectionManagementService tests', () => {
 		});
 	});
 
+	test('hasRegisteredServers should return true as there is one registered server', () => {
+		assert(connectionManagementService.hasRegisteredServers());
+	});
+
 	test('failed firewall rule connection and failed during open firewall rule should open the firewall rule dialog and connection dialog with error', () => {
 		handleFirewallRuleResult.canHandleFirewallRule = true;
 		resolveHandleFirewallRuleDialog = true;
