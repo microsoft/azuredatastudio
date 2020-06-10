@@ -2740,7 +2740,7 @@
 					"extensionId": "58",
 					"extensionName": "datavirtualization",
 					"displayName": "Data Virtualization",
-					"shortDescription": "Support for Data Virtualization in SQL Server, including Create External Data wizards.",
+					"shortDescription": "Support for Data Virtualization in SQL Server, including Virtualize Data wizards.",
 					"publisher": {
 						"displayName": "Microsoft",
 						"publisherId": "Microsoft",
@@ -2748,14 +2748,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.5.0",
-							"lastUpdated": "6/4/2020",
+							"version": "1.5.2",
+							"lastUpdated": "6/10/2020",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/datavirtualization/datavirtualization-1.5.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/datavirtualization/datavirtualization-1.5.2.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -2763,15 +2763,15 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/datavirtualization/content/1.5.0/README.md"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/datavirtualization/content/1.5.2/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/datavirtualization/content/1.5.0/package.json"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/datavirtualization/content/1.5.2/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/datavirtualization/content/1.5.0/LICENSE.txt"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/datavirtualization/content/1.5.2/LICENSE.txt"
 								}
 							],
 							"properties": [
@@ -2782,6 +2782,10 @@
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
 									"value": ">=0.33.1"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.19.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
