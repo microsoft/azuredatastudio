@@ -36,7 +36,7 @@ const compilations = glob.sync('**/tsconfig.json', {
 	ignore: ['**/out/**', '**/node_modules/**']
 });
 
-const getBaseUrl = out => `https://ticino.blob.core.windows.net/sourcemaps/${commit}/${out}`;
+const getBaseUrl = out => `https://sqlopsbuilds.blob.core.windows.net/sourcemaps/${commit}/${out}`;
 
 const tasks = compilations.map(function (tsconfigFile) {
 	const absolutePath = path.join(extensionsPath, tsconfigFile);
