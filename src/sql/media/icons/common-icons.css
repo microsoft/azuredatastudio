@@ -128,13 +128,13 @@
 	background-position: 2px center;
 }
 
-.vs .codicon.close,
-.vs .codicon.remove {
-	background: url("close.svg") center center no-repeat !important;
+.vs .codicon:not(.masked-icon).close,
+.vs .codicon:not(.masked-icon).remove {
+	background: url('close.svg') center center no-repeat !important;
 }
 
-.vs-dark .codicon.close,
-.hc-black .codicon.close,
+.vs-dark .codicon:not(.masked-icon).close,
+.hc-black .codicon:not(.masked-icon).close,
 .vs-dark .codicon.remove,
 .hc-black .codicon.remove {
 	background: url("close_inverse.svg") center center no-repeat !important;
@@ -188,12 +188,12 @@
 	background: url("ellipsis.svg") center center no-repeat;
 }
 
-.hc-black .codicon.new,
-.vs-dark .codicon.new {
+.hc-black .codicon:not(.masked-icon).new,
+.vs-dark .codicon:not(.masked-icon).new {
 	background: url("new_inverse.svg") center center no-repeat;
 }
 
-.vs .codicon.new {
+.vs .codicon:not(.masked-icon).new {
 	background: url("new.svg") center center no-repeat;
 }
 
@@ -310,8 +310,10 @@
 
 /* Icons as masked elements for easy theme switching.
 Includes non-masked style declarations. */
-.masked-icon {
-	display: inline-block;
+.masked-icon:before {
+	content: "";
+	display: block;
+	position: absolute;
 	height: 20px;
 	width: 20px;
 	-webkit-mask-position: center;
@@ -378,7 +380,7 @@ Includes non-masked style declarations. */
 .codicon:not(.masked-icon).icon-expand-cells {
 	background-image: url("action-expand.svg");
 }
-.codicon.masked-icon.icon-expand-cells {
+.codicon.masked-icon.icon-expand-cells:before {
 	background-image: none;
 	-webkit-mask-image: url("action-expand.svg");
 	mask-image: url("action-expand.svg");
@@ -387,7 +389,7 @@ Includes non-masked style declarations. */
 .codicon:not(.masked-icon).icon-collapse-cells {
 	background-image: url("action-collapse.svg");
 }
-.codicon.masked-icon.icon-collapse-cells {
+.codicon.masked-icon.icon-collapse-cells:before {
 	-webkit-mask-image: url("action-collapse.svg");
 	mask-image: url("action-collapse.svg");
 }
@@ -395,7 +397,7 @@ Includes non-masked style declarations. */
 .codicon:not(.masked-icon).icon-clear-results {
 	background-image: url("clear.svg");
 }
-.codicon.masked-icon.icon-clear-results {
+.codicon.masked-icon.icon-clear-results:before {
 	-webkit-mask-image: url("clear.svg");
 	mask-image: url("clear.svg");
 }
@@ -403,7 +405,7 @@ Includes non-masked style declarations. */
 .codicon:not(.masked-icon).icon-shield {
 	background-image: url("shield.svg");
 }
-.codicon.masked-icon.icon-shield {
+.codicon.masked-icon.icon-shield:before {
 	-webkit-mask-image: url("shield.svg");
 	mask-image: url("shield.svg");
 }
@@ -411,7 +413,7 @@ Includes non-masked style declarations. */
 .codicon:not(.masked-icon).icon-shield-x {
 	background-image: url("shield-x.svg");
 }
-.codicon.masked-icon.icon-shield-x {
+.codicon.masked-icon.icon-shield-x:before {
 	-webkit-mask-image: url("shield-x.svg");
 	mask-image: url("shield-x.svg");
 }
@@ -419,7 +421,7 @@ Includes non-masked style declarations. */
 .codicon:not(.masked-icon).packages {
 	background-image: url("packages.svg");
 }
-.codicon.masked-icon.packages {
+.codicon.masked-icon.packages:before {
 	background-image: none;
 	-webkit-mask-image: url("packages.svg");
 	mask-image: url("packages.svg");
@@ -446,11 +448,11 @@ Includes non-masked style declarations. */
 	mask-image: url("chevron_down.svg");
 }
 
-.vs .codicon.new-blue {
-	background-image: url("new-blue.svg");
+.vs .codicon:not(.masked-icon).new-blue {
+	background-image: url('new-blue.svg');
 }
-.vs .codicon.start-outline {
-	background-image: url("start-outline.svg");
+.vs .codicon:not(.masked-icon).start-outline {
+	background-image: url('start-outline.svg');
 }
 
 /* Masked element inside pseudo element */
@@ -504,28 +506,51 @@ Includes non-masked style declarations. */
 	mask-image: url("markdown.svg");
 }
 
-.cell-tool-close {
-	background-image: url("close-blue.svg");
+.codicon.masked-icon.new:before {
+	background-image: none;
+	-webkit-mask-image: url('new.svg');
+	mask-image: url('new.svg');
 }
-.cell-tool-edit {
-	background-image: url("edit.svg");
+.codicon.masked-icon.close:before {
+	background-image: none;
+	-webkit-mask-image: url('close-blue.svg');
+	mask-image: url('close-blue.svg');
 }
-.cell-tool-move-up {
-	background-image: url("down-arrow-blue.svg");
+.codicon.masked-icon.edit:before {
+	background-image: none;
+	-webkit-mask-image: url('edit.svg');
+	mask-image: url('edit.svg');
+}
+.codicon.masked-icon.move-up {
 	transform: scale(-1);
+	background-image: none;
+	-webkit-mask-image: url('down-arrow-blue.svg');
+	mask-image: url('down-arrow-blue.svg');
 }
-.cell-tool-move-down {
-	background-image: url("down-arrow-blue.svg");
+.codicon.masked-icon.move-down {
+	background-image: none;
+	-webkit-mask-image: url('down-arrow-blue.svg');
+	mask-image: url('down-arrow-blue.svg');
 }
-.cell-tool-delete {
-	background-image: url("garbage-can-blue.svg");
+.codicon.masked-icon.delete:before {
+	background-image: none;
+	-webkit-mask-image: url('garbage-can-blue.svg');
+	mask-image: url('garbage-can-blue.svg');
 }
-.cell-tool-more {
-	background-image: url("ellipsis-blue.svg");
+.codicon.masked-icon.more:before {
+	background-image: none;
+	-webkit-mask-image: url('ellipsis-blue.svg');
+	mask-image: url('ellipsis-blue.svg');
 }
 
 .database-colored.codicon {
 	background-image: url("database_colored.svg");
+}
+
+.book.codicon {
+	-webkit-mask-image: url("book_image.svg");
+	-webkit-mask-repeat: no-repeat;
+	-webkit-mask-position: 50% 50%;
 }
 
 .small {

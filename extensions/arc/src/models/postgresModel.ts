@@ -3,14 +3,21 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as vscode from 'vscode';
 import * as loc from '../localizedConstants';
 import { DuskyObjectModelsDatabaseService, DatabaseRouterApi, DuskyObjectModelsDatabase, V1Status } from '../controller/generated/dusky/api';
 import { Authentication } from '../controller/auth';
 
 export class PostgresModel {
 	private _databaseRouter: DatabaseRouterApi;
-	private _service!: DuskyObjectModelsDatabaseService;
-	private _password!: string;
+	private _service?: DuskyObjectModelsDatabaseService;
+	private _password?: string;
+	private readonly _onServiceUpdated = new vscode.EventEmitter<DuskyObjectModelsDatabaseService>();
+	private readonly _onPasswordUpdated = new vscode.EventEmitter<string>();
+	public onServiceUpdated = this._onServiceUpdated.event;
+	public onPasswordUpdated = this._onPasswordUpdated.event;
+	public serviceLastUpdated?: Date;
+	public passwordLastUpdated?: Date;
 
 	constructor(controllerUrl: string, auth: Authentication, private _namespace: string, private _name: string) {
 		this._databaseRouter = new DatabaseRouterApi(controllerUrl);
@@ -33,23 +40,27 @@ export class PostgresModel {
 	}
 
 	/** Returns the service's spec */
-	public service(): DuskyObjectModelsDatabaseService {
+	public service(): DuskyObjectModelsDatabaseService | undefined {
 		return this._service;
 	}
 
 	/** Returns the service's password */
-	public password(): string {
+	public password(): string | undefined {
 		return this._password;
 	}
 
-	/** Refreshes the service's model */
+	/** Refreshes the model */
 	public async refresh() {
 		await Promise.all([
 			this._databaseRouter.getDuskyDatabaseService(this._namespace, this._name).then(response => {
 				this._service = response.body;
+				this.serviceLastUpdated = new Date();
+				this._onServiceUpdated.fire(this._service);
 			}),
 			this._databaseRouter.getDuskyPassword(this._namespace, this._name).then(async response => {
 				this._password = response.body;
+				this.passwordLastUpdated = new Date();
+				this._onPasswordUpdated.fire(this._password!);
 			})
 		]);
 	}
@@ -82,7 +93,7 @@ export class PostgresModel {
 
 	/** Returns the number of nodes in the service */
 	public numNodes(): number {
-		let nodes = this._service.spec.scale?.shards ?? 1;
+		let nodes = this._service?.spec.scale?.shards ?? 1;
 		if (nodes > 1) { nodes++; } // for multiple shards there is an additional node for the coordinator
 		return nodes;
 	}
@@ -92,10 +103,10 @@ export class PostgresModel {
 	 * internal IP. If either field is not available it will be set to undefined.
 	 */
 	public endpoint(): { ip?: string, port?: number } {
-		const externalIp = this._service.status?.externalIP;
-		const internalIp = this._service.status?.internalIP;
-		const externalPort = this._service.status?.externalPort;
-		const internalPort = this._service.status?.internalPort;
+		const externalIp = this._service?.status?.externalIP;
+		const internalIp = this._service?.status?.internalIP;
+		const externalPort = this._service?.status?.externalPort;
+		const internalPort = this._service?.status?.internalPort;
 
 		return externalIp ? { ip: externalIp, port: externalPort ?? undefined }
 			: internalIp ? { ip: internalIp, port: internalPort ?? undefined }
@@ -105,26 +116,22 @@ export class PostgresModel {
 	/** Returns the service's configuration e.g. '3 nodes, 1.5 vCores, 1GiB RAM, 2GiB storage per node' */
 	public configuration(): string {
 		const nodes = this.numNodes();
-		const cpuLimit = this._service.spec.scheduling?.resources?.limits?.['cpu'];
-		const ramLimit = this._service.spec.scheduling?.resources?.limits?.['memory'];
-		const cpuRequest = this._service.spec.scheduling?.resources?.requests?.['cpu'];
-		const ramRequest = this._service.spec.scheduling?.resources?.requests?.['memory'];
-		const storage = this._service.spec.storage.volumeSize;
+		const cpuLimit = this._service?.spec.scheduling?.resources?.limits?.['cpu'];
+		const ramLimit = this._service?.spec.scheduling?.resources?.limits?.['memory'];
+		const cpuRequest = this._service?.spec.scheduling?.resources?.requests?.['cpu'];
+		const ramRequest = this._service?.spec.scheduling?.resources?.requests?.['memory'];
+		const storage = this._service?.spec.storage.volumeSize;
 
 		// Prefer limits if they're provided, otherwise use requests if they're provided
-		let nodeConfiguration = `${nodes} ${nodes > 1 ? loc.nodes : loc.node}`;
-		if (cpuLimit) {
-			nodeConfiguration += `, ${this.formatCores(cpuLimit)} ${loc.vCores}`;
-		} else if (cpuRequest) {
-			nodeConfiguration += `, ${this.formatCores(cpuRequest)} ${loc.vCores}`;
+		let configuration = `${nodes} ${nodes > 1 ? loc.nodes : loc.node}`;
+		if (cpuLimit || cpuRequest) {
+			configuration += `, ${this.formatCores(cpuLimit ?? cpuRequest!)} ${loc.vCores}`;
 		}
-		if (ramLimit) {
-			nodeConfiguration += `, ${this.formatMemory(ramLimit)} ${loc.ram}`;
-		} else if (ramRequest) {
-			nodeConfiguration += `, ${this.formatMemory(ramRequest)} ${loc.ram}`;
+		if (ramLimit || ramRequest) {
+			configuration += `, ${this.formatMemory(ramLimit ?? ramRequest!)} ${loc.ram}`;
 		}
-		if (storage) { nodeConfiguration += `, ${storage} ${loc.storagePerNode}`; }
-		return nodeConfiguration;
+		if (storage) { configuration += `, ${storage} ${loc.storagePerNode}`; }
+		return configuration;
 	}
 
 	/**

@@ -95,11 +95,6 @@
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
-        "command": "sqlDatabaseProjects.import",
-        "title": "%sqlDatabaseProjects.import%",
-        "category": "%sqlDatabaseProjects.displayName%"
-      },
-      {
         "command": "sqlDatabaseProjects.properties",
         "title": "%sqlDatabaseProjects.properties%",
         "category": "%sqlDatabaseProjects.displayName%"
@@ -112,6 +107,11 @@
       {
         "command": "sqlDatabaseProjects.importDatabase",
         "title": "%sqlDatabaseProjects.importDatabase%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.addDatabaseReference",
+        "title": "%sqlDatabaseProjects.addDatabaseReference%",
         "category": "%sqlDatabaseProjects.displayName%"
       }
     ],
@@ -160,10 +160,6 @@
           "when": "false"
         },
         {
-          "command": "sqlDatabaseProjects.import",
-          "when": "false"
-        },
-        {
           "command": "sqlDatabaseProjects.properties",
           "when": "false"
         },
@@ -190,11 +186,6 @@
           "command": "sqlDatabaseProjects.schemaCompare",
           "when": "view == sqlDatabaseProjectsView",
           "group": "1_dbProjectsFirst@3"
-        },
-        {
-          "command": "sqlDatabaseProjects.import",
-          "when": "view == sqlDatabaseProjectsView",
-          "group": "1_dbProjectsFirst@4"
         },
         {
           "command": "sqlDatabaseProjects.newItem",
@@ -227,6 +218,11 @@
           "group": "3_dbProjects_newItem@9"
         },
         {
+          "command": "sqlDatabaseProjects.addDatabaseReference",
+          "when": "view == sqlDatabaseProjectsView",
+          "group": "4_dbProjects_addDatabaseReference"
+        },
+        {
           "command": "sqlDatabaseProjects.close",
           "when": "view == sqlDatabaseProjectsView",
           "group": "9_dbProjectsLast"
@@ -253,7 +249,13 @@
           "when": ""
         }
       ]
-    }
+    },
+    "viewsWelcome": [
+      {
+        "view": "sqlDatabaseProjectsView",
+        "contents": "%sqlDatabaseProjects.welcome%"
+      }
+    ]
   },
   "dependencies": {
     "promisify-child-process": "^3.1.1",
@@ -269,6 +271,6 @@
     "tslint": "^5.8.0",
     "typemoq": "^2.1.0",
     "typescript": "^2.6.1",
-    "vscodetestcover": "github:corivera/vscodetestcover#1.0.6"
+    "vscodetestcover": "^1.0.9"
   }
 }

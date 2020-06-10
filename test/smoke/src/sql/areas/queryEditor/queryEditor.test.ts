@@ -8,15 +8,32 @@ import { Application } from '../../../../../automation';
 export function setup() {
 	describe('Query Editor', () => {
 
-		it('can open and connect file', async function () {
+		it('can open, connect and execute file', async function () {
 			const app = this.app as Application;
 			await app.workbench.quickaccess.openFile('test.sql');
 			await app.workbench.queryEditor.commandBar.clickButton(3);
 			await app.workbench.connectionDialog.waitForConnectionDialog();
-			await app.code.waitForSetValue('.modal .modal-body select[aria-label="Connection type"]', 'Sqlite');
-			await app.code.waitForSetValue('.modal .modal-body input[aria-label="File"]', 'chinook.db');
-			await app.code.waitAndClick('.modal .modal-footer a[aria-label="Connect"]');
-			await app.workbench.queryEditor.commandBar.waitForButton(3, 'Disconnect');
+			await app.workbench.connectionDialog.setProvider('Sqlite');
+			await app.workbench.connectionDialog.setTarget('File', 'chinook.db');
+			await app.workbench.connectionDialog.connect();
+			await app.workbench.queryEditor.commandBar.clickButton(1);
+			await app.workbench.queryEditor.waitForResults();
+			await app.workbench.quickaccess.runCommand('workbench.action.closeActiveEditor');
+		});
+
+		it('can new file, connect and execute', async function () {
+			const app = this.app as Application;
+			await app.workbench.queryEditors.newUntitledQuery();
+			const untitled = 'SQLQuery_1';
+			await app.workbench.editor.waitForTypeInEditor(untitled, 'select * from employees');
+			await app.workbench.queryEditor.commandBar.clickButton(3);
+			await app.workbench.connectionDialog.waitForConnectionDialog();
+			await app.workbench.connectionDialog.setProvider('Sqlite');
+			await app.workbench.connectionDialog.setTarget('File', 'chinook.db');
+			await app.workbench.connectionDialog.connect();
+			await app.workbench.queryEditor.commandBar.clickButton(1);
+			await app.workbench.queryEditor.waitForResults();
+			await app.workbench.quickaccess.runCommand('workbench.action.closeActiveEditor');
 		});
 	});
 }

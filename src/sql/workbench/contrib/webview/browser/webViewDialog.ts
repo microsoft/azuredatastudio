@@ -94,7 +94,7 @@ export class WebViewDialog extends Modal {
 			{},
 			{
 				allowScripts: true
-			});
+			}, undefined);
 
 		this._webview.mountTo(this._body);
 

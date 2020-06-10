@@ -47,6 +47,10 @@ export class ApiWrapper {
 		return vscode.window.registerTreeDataProvider(viewId, treeDataProvider);
 	}
 
+	public createTreeView<T>(viewId: string, options: vscode.TreeViewOptions<T>): vscode.TreeView<T> {
+		return vscode.window.createTreeView(viewId, options);
+	}
+
 	public getUriForConnection(connectionId: string): Thenable<string> {
 		return azdata.connection.getUriForConnection(connectionId);
 	}
@@ -61,6 +65,10 @@ export class ApiWrapper {
 
 	public showInformationMessage(message: string, ...items: string[]): Thenable<string | undefined> {
 		return vscode.window.showInformationMessage(message, ...items);
+	}
+
+	public showWarningMessage(message: string, ...items: string[]): Thenable<string | undefined> {
+		return vscode.window.showWarningMessage(message, ...items);
 	}
 
 	public showOpenDialog(options: vscode.OpenDialogOptions): Thenable<vscode.Uri[] | undefined> {

@@ -483,40 +483,10 @@ export interface ListRegisteredServersResult {
 
 // SqlAssessment interfaces  -----------------------------------------------------------------------
 
-export const enum SqlAssessmentTargetType {
-	Server = 1,
-	Database = 2
-}
 
-export const enum SqlAssessmentResultItemKind {
-	RealResult = 0,
-	Warning = 1,
-	Error = 2
-}
-
-export interface SqlAssessmentResultItem {
-	rulesetVersion: string;
-	rulesetName: string;
-	targetType: SqlAssessmentTargetType;
-	targetName: string;
-	checkId: string;
-	tags: string[];
-	displayName: string;
-	description: string;
-	message: string;
-	helpLink: string;
-	level: string;
-	timestamp: string;
-	kind: SqlAssessmentResultItemKind;
-}
-
-export interface SqlAssessmentResult extends azdata.ResultStatus {
-	items: SqlAssessmentResultItem[];
-	apiVersion: string;
-}
 
 export interface ISqlAssessmentService {
-	assessmentInvoke(ownerUri: string, targetType: SqlAssessmentTargetType): Promise<SqlAssessmentResult>;
-	getAssessmentItems(ownerUri: string, targetType: SqlAssessmentTargetType): Promise<SqlAssessmentResult>;
-	generateAssessmentScript(items: SqlAssessmentResultItem[], targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Promise<azdata.ResultStatus>;
+	assessmentInvoke(ownerUri: string, targetType: azdata.sqlAssessment.SqlAssessmentTargetType): Promise<azdata.SqlAssessmentResult>;
+	getAssessmentItems(ownerUri: string, targetType: azdata.sqlAssessment.SqlAssessmentTargetType): Promise<azdata.SqlAssessmentResult>;
+	generateAssessmentScript(items: azdata.SqlAssessmentResultItem[], targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Promise<azdata.ResultStatus>;
 }

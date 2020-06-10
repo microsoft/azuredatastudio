@@ -54,7 +54,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	private async initialize(workspaceFolders: vscode.WorkspaceFolder[]): Promise<void> {
-		await vscode.commands.executeCommand('setContext', 'unsavedBooks', this._openAsUntitled);
+		await vscode.commands.executeCommand('setContext', 'providedBooks', this._openAsUntitled);
 		await Promise.all(workspaceFolders.map(async (workspaceFolder) => {
 			try {
 				await this.loadNotebooksInFolder(workspaceFolder.uri.fsPath);
@@ -183,9 +183,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				this.revealActiveDocumentInViewlet();
 			}
 		});
-		azdata.nb.onDidChangeActiveNotebookEditor(e => {
-			this.revealActiveDocumentInViewlet(e.document.uri, false);
-		});
 	}
 
 	async showPreviewFile(urlToOpen?: string): Promise<void> {
@@ -235,10 +232,12 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (!uri) {
 			let openDocument = azdata.nb.activeNotebookEditor;
 			if (openDocument) {
-				bookItem = this.currentBook?.getNotebook(openDocument.document.uri.fsPath);
+				let book = this.books.find(b => openDocument.document.uri.fsPath.replace(/\\/g, '/').toLowerCase().indexOf(b.bookPath.toLowerCase()) > -1);
+				bookItem = book?.getNotebook(openDocument.document.uri.fsPath);
 			}
 		} else if (uri.fsPath) {
-			bookItem = this.currentBook?.getNotebook(uri.fsPath);
+			let book = this.books.find(b => uri.fsPath.replace(/\\/g, '/').toLowerCase().indexOf(b.bookPath.toLowerCase()) > -1);
+			bookItem = book?.getNotebook(uri.fsPath);
 		}
 		if (bookItem) {
 			// Select + focus item in viewlet if books viewlet is already open, or if we pass in variable

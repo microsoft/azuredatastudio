@@ -333,6 +333,7 @@ declare module 'azdata' {
 		saveProfile: boolean;
 		id: string;
 		azureTenantId?: string;
+
 	}
 
 	/**
@@ -1798,8 +1799,9 @@ declare module 'azdata' {
 		deleteJobSchedule(ownerUri: string, scheduleInfo: AgentJobScheduleInfo): Thenable<ResultStatus>;
 
 		registerOnUpdated(handler: () => any): void;
-	}
 
+
+	}
 	// DacFx interfaces  -----------------------------------------------------------------------
 
 	// Security service interfaces ------------------------------------------------------------------------
@@ -3657,6 +3659,7 @@ declare module 'azdata' {
 		export function createWebViewDialog(title: string): ModalDialog;
 
 		/**
+		 * @deprecated please use the method createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth) instead.
 		 * Create a dialog with the given title
 		 * @param title The title of the dialog, displayed at the top
 		 * @param isWide Indicates whether the dialog is wide or normal
@@ -4102,7 +4105,8 @@ declare module 'azdata' {
 		CapabilitiesProvider = 'CapabilitiesProvider',
 		ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
 		IconProvider = 'IconProvider',
-		SerializationProvider = 'SerializationProvider'
+		SerializationProvider = 'SerializationProvider',
+		SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider'
 	}
 
 	/**

@@ -29,54 +29,10 @@
 	color: var(--color-grid-link-hover);
 }
 
-.grid .slick-cell.dirtyCell {
-	color: var(--color-grid-dirty-text);
-	background-color: var(--color-grid-dirty-background);
-}
-
-.grid .slick-cell.dirtyRowHeader {
-	background-color: var(--color-grid-dirty-background);
-}
-
-.slick-cell.dirtyRowHeader > .row-number {
-	color: var(--color-grid-dirty-text);
-	font-weight: 500;
-}
-
 /*
  * vs theme
  *
  */
-
-.vs .slickgridContainer {
-	--color-content: #101010;
-	--color-content-disabled: #a9a9a9;
-	--color-error: #E81123;
-	--color-success: #7CD300;
-	--color-bg-header: hsla(0,0%,50%,.2);
-	--color-resize-handle: grey;
-	--color-bg-content-header: #F5F5F5; /* used for color of grid headers */
-	--color-cell-border-active: grey;
-	--color-cell-bg-grid-selected: rgb(173, 214, 255);
-	--color-grid-link: #0078D7;
-	--color-grid-link-hover: #0b93ff;
-	--color-grid-dirty-background: #CCC;
-	--color-grid-dirty-text: #101010;
-}
-/* grid styling */
-.vs .slickgridContainer .grid .slick-cell.active,
-.vs slick-grid.active .grid .slick-cell.active {
-	border-color: var(--color-cell-border-active);
-}
-
-.vs slick-grid.active .grid .slick-cell.selected {
-	background-color: var(--color-cell-bg-grid-selected);
-}
-
-.vs .grid .slick-cell.selected .grid-cell-value-container.missing-value {
-	color: var(--color-content) !important;
-}
-
 .vs .boxRow.content.horzBox.slickgrid {
 	border: solid 1px #EEEEF2;
 }
@@ -169,11 +125,11 @@
 	background: transparent;
 }
 
-.vs .monaco-workbench input {
+.monaco-workbench.vs input {
 	color: var(--color-content);
 }
 
-.vs .monaco-workbench .input {
+.monaco-workbench.vs .input {
 	background-color: white;
 }
 
@@ -181,37 +137,6 @@
  * vs-dark theme
  *
  */
-
-.vs-dark .slickgridContainer {
-	--color-content: #E5E5E5;
-	--color-content-disabled: grey;
-	--color-error: #E81123;
-	--color-success: #7CD300;
-	--color-bg-header: hsla(0,0%,50%,.2); /* used for pane toolbars */
-	--color-resize-handle: #4d4d4d;
-	--color-bg-content-header: #333334; /* used for color of grid headers */
-	--color-cell-border-active: white;
-	--color-cell-bg-grid-selected: rgb(38, 79, 120);
-	--color-grid-link: #FF6000;
-	--color-grid-link-hover: #ff8033;
-	--color-grid-dirty-background: #4d4d4d;
-	--color-grid-dirty-text: #E5E5E5;
-}
-
-/* grid styling */
-.vs-dark .slickgridContainer .grid .slick-cell.active,
-.vs-dark slick-grid.active .grid .slick-cell.active {
-	border-color: var(--color-cell-border-active);
-}
-
-.vs-dark slick-grid.active .grid .slick-cell.selected {
-	background-color: var(--color-cell-bg-grid-selected);
-}
-
-.vs-dark .grid .slick-cell.selected .grid-cell-value-container.missing-value {
-	color: var(--color-content) !important;
-}
-
 .vs-dark .boxRow.content.horzBox.slickgrid {
 	border: solid 1px #2D2D30;
 }
@@ -323,7 +248,7 @@
 	background: transparent;
 }
 
-.vs-dark .monaco-workbench input, .vs-dark .monaco-workbench .input {
+.monaco-workbench.vs-dark input, .monaco-workbench.vs-dark .input {
 	color: var(--color-content);
 	background-color: #3C3C3C;
 }
@@ -332,36 +257,6 @@
  * hc-black theme
  *
  */
-
-.hc-black .slickgridContainer {
-	--color-content: #E5E5E5;
-	--color-content-disabled: grey;
-	--color-error: #E81123;
-	--color-success: #7CD300;
-	--color-bg-header: hsla(0,0%,50%,.2); /* used for pane toolbars */
-	--color-resize-handle: #4d4d4d;
-	--color-bg-content-header: #333334; /* used for color of grid headers */
-	--color-cell-border-active: orange;
-	--color-cell-bg-grid-selected: rgb(38, 79, 120);
-	--color-grid-link: #FF6000;
-	--color-grid-link-hover: #ff8033;
-	--color-grid-dirty-background: #FFF;
-	--color-grid-dirty-text: #000;
-}
-
-/* grid styling */
-
-.hc-black slick-grid.active .grid .slick-cell.active {
-	border-color: var(--color-cell-border-active);
-}
-
-.hc-black slick-grid.active .grid .slick-cell.selected {
-	background-color: var(--color-cell-bg-grid-selected);
-}
-
-.hc-black .grid .slick-cell.selected .grid-cell-value-container.missing-value {
-	color: var(--color-content) !important;
-}
 
 .hc-black .boxRow.content.horzBox.slickgrid {
 	border: solid 1px #2D2D30;
@@ -404,7 +299,7 @@
 	background: transparent;
 }
 
-.hc-black .monaco-workbench input {
+.monaco-workbench.hc-black input {
 	color: #000;
 	background-color: #FFF;
 }
