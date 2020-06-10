@@ -72,8 +72,8 @@ expressly granted herein, whether by implication, estoppel or otherwise.
     vscode-ripgrep: https://github.com/roblourens/vscode-ripgrep
     vscode-textmate: https://github.com/Microsoft/vscode-textmate
     winreg: https://github.com/fresc81/node-winreg
-		xmldom: https://github.com/xmldom/xmldom
-		xml-formatter: https://github.com/chrisbottin/xml-formatter
+    xmldom: https://github.com/xmldom/xmldom
+    xml-formatter: https://github.com/chrisbottin/xml-formatter
     xterm: https://github.com/sourcelair/xterm.js
     yargs: https://github.com/yargs/yargs
     yauzl: https://github.com/thejoshwolfe/yauzl
