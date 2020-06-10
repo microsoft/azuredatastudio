@@ -382,7 +382,7 @@ function packagePkgTask(platform, arch, pkgTarget) {
 		vscodeWebPatchProductTask,
 		optimizeTask,
 		util.rimraf(`out-vscode-${type}-min`),
-		common.minifyTask(`out-vscode-${type}`, `https://ticino.blob.core.windows.net/sourcemaps/${commit}/core`)
+		common.minifyTask(`out-vscode-${type}`, `https://sqlopsbuilds.blob.core.windows.net/sourcemaps/${commit}/core`)
 	));
 	gulp.task(minifyTask);
 
