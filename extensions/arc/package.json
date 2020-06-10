@@ -39,6 +39,10 @@
     "menus": {
       "commandPalette": [
         {
+          "command": "arc.manageArcController",
+          "when": "false"
+        },
+        {
           "command": "arc.manageMiaa",
           "when": "false"
         },
@@ -65,6 +69,13 @@
     "vscode-nls": "^4.1.2"
   },
   "devDependencies": {
-    "@types/request": "^2.48.3"
+    "@types/mocha": "^5.2.5",
+    "@types/node": "^12.11.7",
+    "@types/request": "^2.48.3",
+    "mocha": "^5.2.0",
+    "mocha-junit-reporter": "^1.17.0",
+    "mocha-multi-reporters": "^1.1.7",
+    "should": "^13.2.3",
+    "vscodetestcover": "^1.0.9"
   }
 }
