@@ -5,19 +5,23 @@
 
 import * as vscode from 'vscode';
 import * as loc from '../localizedConstants';
-import { DuskyObjectModelsDatabaseService, DatabaseRouterApi, DuskyObjectModelsDatabase, V1Status } from '../controller/generated/dusky/api';
+import { DuskyObjectModelsDatabaseService, DatabaseRouterApi, DuskyObjectModelsDatabase, V1Status, V1Pod } from '../controller/generated/dusky/api';
 import { Authentication } from '../controller/auth';
 
 export class PostgresModel {
 	private _databaseRouter: DatabaseRouterApi;
 	private _service?: DuskyObjectModelsDatabaseService;
 	private _password?: string;
+	private _pods?: V1Pod[];
 	private readonly _onServiceUpdated = new vscode.EventEmitter<DuskyObjectModelsDatabaseService>();
 	private readonly _onPasswordUpdated = new vscode.EventEmitter<string>();
+	private readonly _onPodsUpdated = new vscode.EventEmitter<V1Pod[]>();
 	public onServiceUpdated = this._onServiceUpdated.event;
 	public onPasswordUpdated = this._onPasswordUpdated.event;
+	public onPodsUpdated = this._onPodsUpdated.event;
 	public serviceLastUpdated?: Date;
 	public passwordLastUpdated?: Date;
+	public podsLastUpdated?: Date;
 
 	constructor(controllerUrl: string, auth: Authentication, private _namespace: string, private _name: string) {
 		this._databaseRouter = new DatabaseRouterApi(controllerUrl);
@@ -49,6 +53,11 @@ export class PostgresModel {
 		return this._password;
 	}
 
+	/** Returns the service's pods */
+	public pods(): V1Pod[] | undefined {
+		return this._pods;
+	}
+
 	/** Refreshes the model */
 	public async refresh() {
 		await Promise.all([
@@ -57,10 +66,15 @@ export class PostgresModel {
 				this.serviceLastUpdated = new Date();
 				this._onServiceUpdated.fire(this._service);
 			}),
-			this._databaseRouter.getDuskyPassword(this._namespace, this._name).then(async response => {
+			this._databaseRouter.getDuskyPassword(this._namespace, this._name).then(response => {
 				this._password = response.body;
 				this.passwordLastUpdated = new Date();
 				this._onPasswordUpdated.fire(this._password!);
+			}),
+			this._databaseRouter.getDuskyPods(this._namespace, this._name).then(response => {
+				this._pods = response.body.items;
+				this.podsLastUpdated = new Date();
+				this._onPodsUpdated.fire(this._pods!);
 			})
 		]);
 	}
@@ -128,10 +142,10 @@ export class PostgresModel {
 		// Prefer limits if they're provided, otherwise use requests if they're provided
 		let configuration = `${nodes} ${nodes > 1 ? loc.nodes : loc.node}`;
 		if (cpuLimit || cpuRequest) {
-			configuration += `, ${this.formatCores(/*cpuLimit ?? cpuRequest!*/'')} ${loc.vCores}`;
+			configuration += `, ${this.formatCores(cpuLimit ?? cpuRequest!)} ${loc.vCores}`;
 		}
 		if (ramLimit || ramRequest) {
-			configuration += `, ${this.formatMemory(/*ramLimit ?? ramRequest!*/'')} ${loc.ram}`;
+			configuration += `, ${this.formatMemory(ramLimit ?? ramRequest!)} ${loc.ram}`;
 		}
 		if (storage) { configuration += `, ${storage} ${loc.storagePerNode}`; }
 		return configuration;
