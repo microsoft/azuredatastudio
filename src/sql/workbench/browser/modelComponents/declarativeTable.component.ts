@@ -13,7 +13,7 @@ import * as azdata from 'azdata';
 
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';
-import { find } from 'vs/base/common/arrays';
+import { find, equals as arrayEquals } from 'vs/base/common/arrays';
 import { localize } from 'vs/nls';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSize } from 'sql/base/browser/dom';
@@ -198,10 +198,16 @@ export default class DeclarativeTableComponent extends ContainerBase<any> implem
 	}
 
 	public setProperties(properties: { [key: string]: any; }): void {
+		// check whether the data property is changed before actually setting the properties.
+		const isDataPropertyUnchanged = arrayEquals(this.data, (properties.data as any[][]) ?? [], (a, b) => {
+			return arrayEquals(a, b);
+		});
 		super.setProperties(properties);
-		if (properties.data) {
+		// if the data property is changed, we need reset the child components
+		// so that the events can be passed upwards through the control hierarchy.
+		if (!isDataPropertyUnchanged) {
 			this.clearContainer();
-			this.data.forEach(row => {
+			this.data?.forEach(row => {
 				for (let i = 0; i < row.length; i++) {
 					if (this.isComponent(i)) {
 						this.addToContainer(this.getItemDescriptor(row[i] as string), undefined);
