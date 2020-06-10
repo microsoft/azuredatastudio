@@ -74,7 +74,7 @@
     ]
   },
   "dependencies": {
-    "ads-extension-telemetry": "github:Charles-Gagnon/ads-extension-telemetry#0.1.0",
+    "ads-extension-telemetry": "^1.0.0",
     "service-downloader": "0.2.1",
     "vscode-nls": "^3.2.1"
   },
