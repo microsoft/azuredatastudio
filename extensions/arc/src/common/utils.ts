@@ -28,7 +28,7 @@ export function resourceTypeToDisplayName(resourceType: string | undefined): str
 }
 
 export function parseEndpoint(endpoint?: string): { ip: string, port: string } {
-	endpoint = endpoint ?? '';
+	endpoint = endpoint || '';
 	const separatorIndex = endpoint.indexOf(':');
 	return {
 		ip: endpoint.substr(0, separatorIndex),

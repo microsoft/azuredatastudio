@@ -54,12 +54,6 @@ jobs:
       # {{SQL CARBON EDIT}} Add coveralls. We merge first to get around issue where parallel builds weren't being combined correctly
     - run: node test/combineCoverage
       name: Combine code coverage files
-    - run: |
-        echo $TF_BUILD
-        echo $SYSTEM_PULLREQUEST_PULLREQUESTNUMBER
-        echo $BUILD_SOURCEVERSION
-        echo $BUILD_SOURCEBRANCHNAME
-      name: Print Env Vars
     - name: Upload Code Coverage
       uses: coverallsapp/github-action@v1.1.1
       with:
