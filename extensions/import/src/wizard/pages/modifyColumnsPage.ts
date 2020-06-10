@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
-import { ColumnMetadata, ImportDataModel } from '../api/models';
+import { ColumnMetadata, ImportDataModel, ColumnMetadataArray } from '../api/models';
 import { ImportPage } from '../api/importPage';
 import { FlatFileProvider } from '../../services/contracts';
 import { FlatFileWizard } from '../flatFileWizard';
@@ -59,7 +59,7 @@ export class ModifyColumnsPage extends ImportPage {
 	}
 
 
-	private static convertMetadata(column: ColumnMetadata): any[] {
+	private static convertMetadata(column: ColumnMetadata): ColumnMetadataArray {
 		return [column.columnName, column.dataType, false, column.nullable];
 	}
 
@@ -130,7 +130,7 @@ export class ModifyColumnsPage extends ImportPage {
 	}
 
 	private async populateTable() {
-		let data: any[][] = [];
+		let data: ColumnMetadataArray[] = [];
 
 		this.model.proseColumns.forEach((column) => {
 			data.push(ModifyColumnsPage.convertMetadata(column));
