@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as loc from '../../../localizedConstants';
 import { IconPathHelper, cssStyles } from '../../../constants';
-import { KeyValueContainer, KeyValue, InputKeyValue } from '../../components/keyValueContainer';
+import { KeyValueContainer, KeyValue, InputKeyValue, MultilineInputKeyValue } from '../../components/keyValueContainer';
 import { DashboardPage } from '../../components/dashboardPage';
 import { ControllerModel, Registration } from '../../../models/controllerModel';
 import { ResourceType } from '../../../common/utils';
@@ -80,18 +80,20 @@ export class MiaaConnectionStringsPage extends DashboardPage {
 		const ip = this._instanceRegistration.externalIp;
 		const port = this._instanceRegistration.externalPort;
 		const username = this._miaaModel.connectionProfile.userName;
-		const password = this._miaaModel.connectionProfile.password;
 
 		const pairs: KeyValue[] = [
-			new InputKeyValue('ADO.NET', `Server=${ip};Database=master;Port=${port};User Id=${username};Password=${password};Ssl Mode=Require;`),
-			new InputKeyValue('C++ (libpq)', `host=${ip} port=${port} dbname=master user=${username} password=${password} sslmode=require`),
-			new InputKeyValue('JDBC', `jdbc:sqlserver://${ip}:${port}/master?user=${username}&password=${password}&sslmode=require`),
-			new InputKeyValue('Node.js', `host=${ip} port=${port} dbname=master user=${username} password=${password} sslmode=require`),
-			new InputKeyValue('PHP', `host=${ip} port=${port} dbname=master user=${username} password=${password} sslmode=require`),
-			new InputKeyValue('psql', `psql "host=${ip} port=${port} dbname=master user=${username} password=${password} sslmode=require`),
-			new InputKeyValue('Python', `dbname='master' user='${username}' host='${ip}' password='${password}' port='${port}' sslmode='true'`),
-			new InputKeyValue('Ruby', `host=${ip}; dbname=master user=${username} password=${password} port=${port} sslmode=require`),
-			new InputKeyValue('Web App', `Database=master; Data Source=${ip}; User Id=${username}; Password=${password}`)
+			new InputKeyValue('ADO.NET', `Server=tcp:${ip},${port};Persist Security Info=False;User ID=${username};Password={your_password_here};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;`),
+			new InputKeyValue('C++ (libpq)', `host=${ip} port=${port} user=${username} password={your_password_here} sslmode=require`),
+			new InputKeyValue('JDBC', `jdbc:sqlserver://${ip}:${port};user=${username};password={your_password_here};encrypt=true;trustServerCertificate=false;loginTimeout=30;`),
+			new InputKeyValue('Node.js', `host=${ip} port=${port} dbname=master user=${username} password={your_password_here} sslmode=require`),
+			new InputKeyValue('ODBC', `Driver={ODBC Driver 13 for SQL Server};Server=${ip},${port};Uid=${username};Pwd={your_password_here};Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;`),
+			new MultilineInputKeyValue('PHP',
+				`$connectionInfo = array("UID" => "${username}", "pwd" => "{your_password_here}", "LoginTimeout" => 30, "Encrypt" => 1, "TrustServerCertificate" => 0);
+$serverName = "${ip},${port}";
+$conn = sqlsrv_connect($serverName, $connectionInfo);`),
+			new InputKeyValue('Python', `dbname='master' user='${username}' host='${ip}' password='{your_password_here}' port='${port}' sslmode='true'`),
+			new InputKeyValue('Ruby', `host=${ip}; user=${username} password={your_password_here} port=${port} sslmode=require`),
+			new InputKeyValue('Web App', `Database=master; Data Source=${ip}; User Id=${username}; Password={your_password_here}`)
 		];
 		this._keyValueContainer.refresh(pairs);
 	}
