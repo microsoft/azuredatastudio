@@ -203,7 +203,7 @@ export default class DeclarativeTableComponent extends ContainerBase<any> implem
 			return arrayEquals(a, b);
 		});
 		super.setProperties(properties);
-		// if the data property is changed, we need reset the child components
+		// if the data property is changed, we need add child components to the container,
 		// so that the events can be passed upwards through the control hierarchy.
 		if (!isDataPropertyUnchanged) {
 			this.clearContainer();
