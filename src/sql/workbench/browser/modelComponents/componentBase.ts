@@ -333,6 +333,7 @@ export abstract class ContainerBase<T> extends ComponentBase {
 		this.items = [];
 		this.onItemsUpdated();
 		this._changeRef.detectChanges();
+		this.validate();
 	}
 
 	public setProperties(properties: { [key: string]: any; }): void {

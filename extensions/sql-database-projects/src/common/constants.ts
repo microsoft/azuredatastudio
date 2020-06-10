@@ -16,12 +16,14 @@ export const sqlDatabaseProjectExtensionId = 'microsoft.sql-database-projects';
 export const mssqlExtensionId = 'microsoft.mssql';
 export const dacpac = 'dacpac';
 export const master = 'master';
+export const masterDacpac = 'master.dacpac';
+export const msdb = 'msdb';
+export const msdbDacpac = 'msdb.dacpac';
 export const MicrosoftDatatoolsSchemaSqlSql = 'Microsoft.Data.Tools.Schema.Sql.Sql';
 export const databaseSchemaProvider = 'DatabaseSchemaProvider';
 
 // UI Strings
 
-export const noOpenProjectMessage = localize('noProjectOpenMessage', "No open database project");
 export const projectNodeName = localize('projectNodeName', "Database Project");
 export const dataSourcesNodeName = localize('dataSourcesNodeName', "Data Sources");
 export const sqlConnectionStringFriendly = localize('sqlConnectionStringFriendly', "SQL connection string");
@@ -32,11 +34,13 @@ export const noString = localize('noString', "No");
 export const extractTargetInput = localize('extractTargetInput', "Target for extraction:");
 export const selectString = localize('selectString', "Select");
 export const addDatabaseReferenceInput = localize('addDatabaseReferenceInput', "Add database reference for:");
+export const systemDatabaseReferenceInput = localize('systemDatabaseReferenceInput', "System Database:");
 export const databaseReferenceLocation = localize('databaseReferenceLocation', "Database location");
 export const databaseReferenceSameDatabase = localize('databaseReferenceSameDatabase', "Same database");
 export const databaseReferenceDifferentDabaseSameServer = localize('databaseReferenceDifferentDabaseSameServer', "Different database, same server");
 export const databaseReferenceDatabaseName = localize('databaseReferenceDatabaseName', "Database name");
 export const dacpacFiles = localize('dacpacFiles', "dacpac Files");
+export const systemDatabase = localize('systemDatabase', "System Database");
 export function newObjectNamePrompt(objectType: string) { return localize('newObjectNamePrompt', 'New {0} name:', objectType); }
 
 // Deploy dialog strings
@@ -74,10 +78,12 @@ export const schemaCompareNotInstalled = localize('schemaCompareNotInstalled', "
 export const buildDacpacNotFound = localize('buildDacpacNotFound', "Dacpac created from build not found");
 export const updateProjectForRoundTrip = localize('updateProjectForRoundTrip', "To build this project, Azure Data Studio needs to update targets and references. If the project is created in SSDT, it will continue to work in both tools. Do you want Azure Data Studio to update the project?");
 export const databaseReferenceTypeRequired = localize('databaseReferenceTypeRequired', "Database reference type is required for adding a reference to a database");
+export const systemDatabaseReferenceRequired = localize('systemDatabaseReferenceRequired', "System database selection is required for adding a reference to a system database");
 export const dacpacFileLocationRequired = localize('dacpacFileLocationRequired', "Dacpac file location is required for adding a reference to a database");
 export const databaseLocationRequired = localize('databaseLocation', "Database location is required for adding a reference to a database");
 export const databaseNameRequired = localize('databaseNameRequired', "Database name is required for adding a reference to a different database");
 export const invalidDataSchemaProvider = localize('invalidDataSchemaProvider', "Invalid DSP in .sqlproj file");
+export const databaseSelectionRequired = localize('databaseSelectionRequired', "Database selection is required to import a project");
 export function projectAlreadyOpened(path: string) { return localize('projectAlreadyOpened', "Project '{0}' is already opened.", path); }
 export function projectAlreadyExists(name: string, path: string) { return localize('projectAlreadyExists', "A project named {0} already exists in {1}.", name, path); }
 export function noFileExist(fileName: string) { return localize('noFileExist', "File {0} doesn't exist", fileName); }

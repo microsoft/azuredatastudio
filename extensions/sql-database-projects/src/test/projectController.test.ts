@@ -18,7 +18,7 @@ import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProje
 import { ProjectsController } from '../controllers/projectController';
 import { promises as fs } from 'fs';
 import { createContext, TestContext } from './testContext';
-import { Project } from '../models/project';
+import { Project, SystemDatabase } from '../models/project';
 import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
 import { ApiWrapper } from '../common/apiWrapper';
 import { IDeploymentProfile, IGenerateScriptProfile } from '../models/IDeploymentProfile';
@@ -254,6 +254,24 @@ describe('ProjectsController: add database reference operations', function (): v
 
 		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
 		await testUtils.shouldThrowSpecificError(async () => await projController.addDatabaseReference(new Project('FakePath')), constants.databaseNameRequired);
+	});
+
+	it('Should return the correct system database', async function (): Promise<void> {
+		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+		const projFilePath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
+		const project: Project = new Project(projFilePath);
+		await project.readProjFile();
+
+		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({ label: constants.master }));
+		let systemDb = await projController.getSystemDatabaseName(project);
+		should.equal(systemDb, SystemDatabase.master);
+
+		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({ label: constants.msdb }));
+		systemDb = await projController.getSystemDatabaseName(project);
+		should.equal(systemDb, SystemDatabase.msdb);
+
+		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(undefined));
+		await testUtils.shouldThrowSpecificError(async () => await projController.getSystemDatabaseName(project), constants.systemDatabaseReferenceRequired);
 	});
 });
 

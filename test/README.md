@@ -25,6 +25,8 @@ Code coverage is enabled by default. Reports can be found in the coverage folder
 
 These are the group of tests that have dependencies on outside resources such as SQL instances. See the [README](../extensions/integration-tests/readme.md) for more information.
 
+Code coverage for this is also enabled by default (confined to the extensions), follow the instructions for running the tests in the above readme. 
+
 ## Code Coverage
 
 To generate a report combining the code coverage for extensions + core run `node ./test/combineCoverage`. Currently this will combine coverage from the Core Unit Tests, Extension Unit Tests and Extension Integration tests - see above docs for instructions on how to run those to generate coverage.
