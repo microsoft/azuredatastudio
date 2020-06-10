@@ -148,19 +148,19 @@ export class Project {
 	 */
 	public async addSystemDatabaseReference(name: SystemDatabase): Promise<void> {
 		let uri: Uri;
-		let vsUri: Uri;
+		let ssdtUri: Uri;
 		let dbName: string;
 		if (name === SystemDatabase.master) {
 			uri = this.getSystemDacpacUri(constants.masterDacpac);
-			vsUri = this.getSystemDacpacVsUri(constants.masterDacpac);
+			ssdtUri = this.getSystemDacpacSsdtUri(constants.masterDacpac);
 			dbName = constants.master;
 		} else {
 			uri = this.getSystemDacpacUri(constants.msdbDacpac);
-			vsUri = this.getSystemDacpacVsUri(constants.msdbDacpac);
+			ssdtUri = this.getSystemDacpacSsdtUri(constants.msdbDacpac);
 			dbName = constants.msdb;
 		}
 
-		let systemDatabaseReferenceProjectEntry = new SystemDatabaseReferenceProjectEntry(uri, vsUri, dbName);
+		let systemDatabaseReferenceProjectEntry = new SystemDatabaseReferenceProjectEntry(uri, ssdtUri, dbName);
 		await this.addToProjFile(systemDatabaseReferenceProjectEntry);
 	}
 
@@ -169,7 +169,7 @@ export class Project {
 		return Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', version, dacpac));
 	}
 
-	public getSystemDacpacVsUri(dacpac: string): Uri {
+	public getSystemDacpacSsdtUri(dacpac: string): Uri {
 		let version = this.getProjectTargetPlatform();
 		return Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', version, 'SqlSchemas', dacpac));
 	}
@@ -253,24 +253,26 @@ export class Project {
 	private addDatabaseReferenceToProjFile(entry: DatabaseReferenceProjectEntry): void {
 		let referenceNode = this.projFileXmlDoc.createElement(constants.ArtifactReference);
 
-		if ((<SystemDatabaseReferenceProjectEntry>entry).vsUri) {
+		// if it's a system database reference, we'll add an additional node with the SSDT location of the dacpac
+		if ((<SystemDatabaseReferenceProjectEntry>entry).ssdtUri) {
 			referenceNode.setAttribute(constants.Condition, constants.NetCoreCondition);
 		}
 
-		referenceNode.setAttribute(constants.Include, (<SystemDatabaseReferenceProjectEntry>entry).vsUri ? entry.fsUri.fsPath.substring(1) : entry.fsUri.fsPath); // need to remove the leading slash for system database path for build to work on Windows
-		referenceNode = this.addDatabaseReferenceChildren(referenceNode, entry.name);
+		referenceNode.setAttribute(constants.Include, (<SystemDatabaseReferenceProjectEntry>entry).ssdtUri ? entry.fsUri.fsPath.substring(1) : entry.fsUri.fsPath); // need to remove the leading slash for system database path for build to work on Windows
+		this.addDatabaseReferenceChildren(referenceNode, entry.name);
 		this.findOrCreateItemGroup().appendChild(referenceNode);
 
-		// add a reference to the dacpac in VS if it's a system db
-		if ((<SystemDatabaseReferenceProjectEntry>entry).vsUri) {
-			let vsReferenceNode = this.projFileXmlDoc.createElement(constants.ArtifactReference);
-			referenceNode.setAttribute(constants.Condition, constants.NotNetCoreCondition);
-			referenceNode.setAttribute(constants.Include, (<SystemDatabaseReferenceProjectEntry>entry).vsUri.fsPath.substring(1)); // need to remove the leading slash for system database path for build to work on Windows
-			vsReferenceNode = this.addDatabaseReferenceChildren(vsReferenceNode, entry.name);
+		// add a reference to the dacpac in SSDT if it's a system db
+		if ((<SystemDatabaseReferenceProjectEntry>entry).ssdtUri) {
+			let ssdtReferenceNode = this.projFileXmlDoc.createElement(constants.ArtifactReference);
+			ssdtReferenceNode.setAttribute(constants.Condition, constants.NotNetCoreCondition);
+			ssdtReferenceNode.setAttribute(constants.Include, (<SystemDatabaseReferenceProjectEntry>entry).ssdtUri.fsPath.substring(1)); // need to remove the leading slash for system database path for build to work on Windows
+			this.addDatabaseReferenceChildren(ssdtReferenceNode, entry.name);
+			this.findOrCreateItemGroup().appendChild(ssdtReferenceNode);
 		}
 	}
 
-	private addDatabaseReferenceChildren(referenceNode: any, name?: string): any {
+	private addDatabaseReferenceChildren(referenceNode: any, name?: string): void {
 		let suppressMissingDependenciesErrorNode = this.projFileXmlDoc.createElement(constants.SuppressMissingDependenciesErrors);
 		let falseTextNode = this.projFileXmlDoc.createTextNode('False');
 		suppressMissingDependenciesErrorNode.appendChild(falseTextNode);
@@ -282,8 +284,6 @@ export class Project {
 			databaseVariableLiteralValue.appendChild(databaseTextNode);
 			referenceNode.appendChild(databaseVariableLiteralValue);
 		}
-
-		return referenceNode;
 	}
 
 	private async updateImportedTargetsToProjFile(condition: string, projectAttributeVal: string, oldImportNode?: any): Promise<any> {
@@ -391,7 +391,7 @@ class DatabaseReferenceProjectEntry extends ProjectEntry {
 }
 
 class SystemDatabaseReferenceProjectEntry extends DatabaseReferenceProjectEntry {
-	constructor(uri: Uri, public vsUri: Uri, public name: string) {
+	constructor(uri: Uri, public ssdtUri: Uri, public name: string) {
 		super(uri, DatabaseReferenceLocation.differentDatabaseSameServer, name);
 	}
 }
