@@ -38,6 +38,18 @@
     ],
     "menus": {
       "commandPalette": [
+        {
+          "command": "arc.manageArcController",
+          "when": "false"
+        },
+        {
+          "command": "arc.manageMiaa",
+          "when": "false"
+        },
+        {
+          "command": "arc.managePostgres",
+          "when": "false"
+        }
       ]
     },
     "configuration": {

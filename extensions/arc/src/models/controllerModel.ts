@@ -53,7 +53,7 @@ export class ControllerModel {
 			}),
 			this._tokenRouter.apiV1TokenPost().then(async response => {
 				this._namespace = response.body.namespace!;
-				this._registrations = (await this._registrationRouter.apiV1RegistrationListResourcesNsGet(this._namespace)).body.map(this.mapRegistrationResponse);
+				this._registrations = (await this._registrationRouter.apiV1RegistrationListResourcesNsGet(this._namespace)).body.map(mapRegistrationResponse);
 				this._controllerRegistration = this._registrations.find(r => r.instanceType === ResourceType.dataControllers);
 				this.registrationsLastUpdated = new Date();
 				this._onRegistrationsUpdated.fire(this._registrations);
@@ -99,13 +99,13 @@ export class ControllerModel {
 	public miaaDelete(name: string): void {
 		this._sqlInstanceRouter.apiV1HybridSqlNsNameDelete(this._namespace, name);
 	}
+}
 
-	/**
-	 * Maps a RegistrationResponse to a Registration,
-	 * @param response The RegistrationResponse to map
-	 */
-	private mapRegistrationResponse(response: RegistrationResponse): Registration {
-		const parsedEndpoint = parseEndpoint(response.externalEndpoint);
-		return { ...response, externalIp: parsedEndpoint.ip, externalPort: parsedEndpoint.port };
-	}
+/**
+ * Maps a RegistrationResponse to a Registration,
+ * @param response The RegistrationResponse to map
+ */
+function mapRegistrationResponse(response: RegistrationResponse): Registration {
+	const parsedEndpoint = parseEndpoint(response.externalEndpoint);
+	return { ...response, externalIp: parsedEndpoint.ip, externalPort: parsedEndpoint.port };
 }
