@@ -41,6 +41,7 @@ jobs:
   condition: and(succeeded(), eq(variables['VSCODE_BUILD_WEB'], 'true'))
   pool:
     vmImage: 'Ubuntu-16.04'
+  container: linux-x64
   variables:
     VSCODE_ARCH: x64
   dependsOn:
