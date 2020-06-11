@@ -77,7 +77,7 @@ export class Workbench {
 		// {{SQL CARBON EDIT}}
 		this.connectionDialog = new ConnectionDialog(code);
 		this.profiler = new Profiler(code, this.quickaccess);
-		this.queryEditors = new QueryEditors(code);
+		this.queryEditors = new QueryEditors(code, this.editors);
 		this.queryEditor = new QueryEditor(code);
 		// {{END}}
 		this.notebook = new Notebook(this.quickaccess, code);

@@ -95,11 +95,6 @@
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
-        "command": "sqlDatabaseProjects.import",
-        "title": "%sqlDatabaseProjects.import%",
-        "category": "%sqlDatabaseProjects.displayName%"
-      },
-      {
         "command": "sqlDatabaseProjects.properties",
         "title": "%sqlDatabaseProjects.properties%",
         "category": "%sqlDatabaseProjects.displayName%"
@@ -165,10 +160,6 @@
           "when": "false"
         },
         {
-          "command": "sqlDatabaseProjects.import",
-          "when": "false"
-        },
-        {
           "command": "sqlDatabaseProjects.properties",
           "when": "false"
         },
@@ -195,11 +186,6 @@
           "command": "sqlDatabaseProjects.schemaCompare",
           "when": "view == sqlDatabaseProjectsView",
           "group": "1_dbProjectsFirst@3"
-        },
-        {
-          "command": "sqlDatabaseProjects.import",
-          "when": "view == sqlDatabaseProjectsView",
-          "group": "1_dbProjectsFirst@4"
         },
         {
           "command": "sqlDatabaseProjects.newItem",
@@ -263,7 +249,13 @@
           "when": ""
         }
       ]
-    }
+    },
+    "viewsWelcome": [
+      {
+        "view": "sqlDatabaseProjectsView",
+        "contents": "%sqlDatabaseProjects.welcome%"
+      }
+    ]
   },
   "dependencies": {
     "promisify-child-process": "^3.1.1",

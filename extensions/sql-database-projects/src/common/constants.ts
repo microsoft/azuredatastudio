@@ -24,7 +24,6 @@ export const databaseSchemaProvider = 'DatabaseSchemaProvider';
 
 // UI Strings
 
-export const noOpenProjectMessage = localize('noProjectOpenMessage', "No open database project");
 export const projectNodeName = localize('projectNodeName', "Database Project");
 export const dataSourcesNodeName = localize('dataSourcesNodeName', "Data Sources");
 export const databaseReferencesNodeName = localize('databaseReferencesNodeName', "Database References");
@@ -86,6 +85,7 @@ export const databaseLocationRequired = localize('databaseLocation', "Database l
 export const databaseNameRequired = localize('databaseNameRequired', "Database name is required for adding a reference to a different database");
 export const invalidDataSchemaProvider = localize('invalidDataSchemaProvider', "Invalid DSP in .sqlproj file");
 export const invalidDatabaseReference = localize('invalidDatabaseReference', "Invalid database reference in .sqlproj file");
+export const databaseSelectionRequired = localize('databaseSelectionRequired', "Database selection is required to import a project");
 export function projectAlreadyOpened(path: string) { return localize('projectAlreadyOpened', "Project '{0}' is already opened.", path); }
 export function projectAlreadyExists(name: string, path: string) { return localize('projectAlreadyExists', "A project named {0} already exists in {1}.", name, path); }
 export function noFileExist(fileName: string) { return localize('noFileExist', "File {0} doesn't exist", fileName); }

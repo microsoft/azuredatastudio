@@ -520,6 +520,19 @@ export class ProjectsController {
 				model.serverId = profile.id;
 				model.database = profile.databaseName;
 			}
+			else {
+				const connectionId = (await this.apiWrapper.openConnectionDialog()).connectionId;
+
+				const databaseList = await this.apiWrapper.listDatabases(connectionId);
+				const database = (await this.apiWrapper.showQuickPick(databaseList.map(dbName => { return { label: dbName }; })))?.label;
+
+				if (!database) {
+					throw new Error(constants.databaseSelectionRequired);
+				}
+
+				model.serverId = connectionId;
+				model.database = database;
+			}
 
 			// Get project name
 			let newProjName = await this.getProjectName(model.database);
