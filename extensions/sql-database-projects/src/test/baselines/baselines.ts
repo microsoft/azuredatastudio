@@ -12,6 +12,8 @@ export let openProjectFileBaseline: string;
 export let openDataSourcesBaseline: string;
 export let SSDTProjectFileBaseline: string;
 export let SSDTProjectAfterUpdateBaseline: string;
+export let SSDTProjectBaselineWithCleanTarget: string;
+export let SSDTProjectBaselineWithCleanTargetAfterUpdate: string;
 
 const baselineFolderPath = __dirname;
 
@@ -21,6 +23,8 @@ export async function loadBaselines() {
 	openDataSourcesBaseline = await loadBaseline(baselineFolderPath, 'openDataSourcesBaseline.json');
 	SSDTProjectFileBaseline = await loadBaseline(baselineFolderPath, 'SSDTProjectBaseline.xml');
 	SSDTProjectAfterUpdateBaseline = await loadBaseline(baselineFolderPath, 'SSDTProjectAfterUpdateBaseline.xml');
+	SSDTProjectBaselineWithCleanTarget = await loadBaseline(baselineFolderPath, 'SSDTProjectBaselineWithCleanTarget.xml');
+	SSDTProjectBaselineWithCleanTargetAfterUpdate = await loadBaseline(baselineFolderPath, 'SSDTProjectBaselineWithCleanTargetAfterUpdate.xml');
 }
 
 async function loadBaseline(baselineFolderPath: string, fileName: string): Promise<string> {

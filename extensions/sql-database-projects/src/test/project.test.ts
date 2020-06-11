@@ -135,16 +135,24 @@ describe('Project: round trip updates', function (): void {
 	});
 
 	it('Should update SSDT project to work in ADS', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.SSDTProjectFileBaseline);
-		const project: Project = new Project(projFilePath);
-		await project.readProjFile();
+		await testUpdateInRoundTrip(baselines.SSDTProjectFileBaseline, baselines.SSDTProjectAfterUpdateBaseline);
+	});
 
-		await project.updateProjectForRoundTrip();
-
-		should(await exists(projFilePath + '_backup')).equal(true);	// backup file should be generated before the project is updated
-		should(project.importedTargets.length).equal(3);	// additional target added by updateProjectForRoundTrip method
-
-		let projFileText = (await fs.readFile(projFilePath)).toString();
-		should(projFileText).equal(baselines.SSDTProjectAfterUpdateBaseline.trim());
+	it('Should update SSDT project to work in ADS handling pre-exsiting targets', async function (): Promise<void> {
+		await testUpdateInRoundTrip(baselines.SSDTProjectBaselineWithCleanTarget, baselines.SSDTProjectBaselineWithCleanTargetAfterUpdate);
 	});
 });
+
+async function testUpdateInRoundTrip(fileBeforeupdate: string, fileAfterUpdate:string) : Promise<void> {
+	projFilePath = await testUtils.createTestSqlProjFile(fileBeforeupdate);
+	const project: Project = new Project(projFilePath);
+	await project.readProjFile();
+
+	await project.updateProjectForRoundTrip();
+
+	should(await exists(projFilePath + '_backup')).equal(true);	// backup file should be generated before the project is updated
+	should(project.importedTargets.length).equal(3);	// additional target added by updateProjectForRoundTrip method
+
+	let projFileText = (await fs.readFile(projFilePath)).toString();
+	should(projFileText).equal(fileAfterUpdate.trim());
+}
