@@ -5,8 +5,8 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { BaseProjectTreeItem, MessageTreeItem } from './baseTreeItem';
 import * as constants from '../../common/constants';
+import { BaseProjectTreeItem, MessageTreeItem } from './baseTreeItem';
 import { ProjectRootTreeItem } from './projectTreeItem';
 
 /**
