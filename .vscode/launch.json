@@ -195,7 +195,8 @@
 				"${workspaceFolder}/out/**/*.js"
 			],
 			"env": {
-				"MOCHA_COLORS": "true"
+				"MOCHA_COLORS": "true",
+				"ADS_TEST_GREP": "NotebookEditor"
 			},
 			"presentation": {
 				"hidden": true

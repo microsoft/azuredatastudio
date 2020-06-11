@@ -152,6 +152,30 @@ suite('Test class NotebookEditor', () => {
 		setupPromise.resolve();
 	});
 
+	[undefined, new NotebookModelStub()].forEach(async (notebookModel) => {
+		test(`NotebookEditor-setInput-setNotebookModel-getNotebookModel for notebookModel='${notebookModel}'`, async () => {
+			const untitledUri = URI.from({ scheme: Schemas.untitled, path: `NotebookEditor.Test-TestPath-${notebookModel}` });
+			const untitledTextEditorService = instantiationService.get(IUntitledTextEditorService);
+			const untitledTextInput = instantiationService.createInstance(UntitledTextEditorInput, untitledTextEditorService.create({ associatedResource: untitledUri }));
+			const untitledNotebookInput = new UntitledNotebookInput(
+				testTitle, untitledUri, untitledTextInput,
+				undefined, instantiationService, notebookService, extensionService
+			);
+			const testNotebookEditor = new TestNotebookEditor(cellTextEditorGuid, queryTextEditor);
+			testNotebookEditor.id = untitledNotebookInput.notebookUri.toString();
+			testNotebookEditor.model = notebookModel;
+			notebookService.addNotebookEditor(testNotebookEditor);
+			testNotebookEditor.model = notebookModel;
+			await notebookEditor.setInput(untitledNotebookInput, EditorOptions.create({ pinned: true }));
+			await notebookEditor.setNotebookModel();
+			const result = await notebookEditor.getNotebookModel();
+			assert.strictEqual(result, notebookModel, `getNotebookModel() should return the model set in the INotebookEditor object`);
+			notebookService.removeNotebookEditor(testNotebookEditor);
+			console.log(`notebookEditor=`, notebookEditor);
+			notebookEditor.setInput(untitledNotebookInput, EditorOptions.create({pinned: true}));
+		});
+	});
+
 	test('NotebookEditor-dispose', async () => {
 		await setupPromise;
 		const mockNotebookEditor = TypeMoq.Mock.ofInstance(notebookEditor);
@@ -198,6 +222,95 @@ suite('Test class NotebookEditor', () => {
 		assert.strictEqual(result, queryTextEditor, `notebookEditor.getCellEditor() should return ${queryTextEditor} when ${cellTextEditorGuid} is passed in for a notebookEditor of an empty document.`);
 
 	});
+
+
+	// test('NotebookEditor-updateDecorations', () => {
+	// 	notebookEditor.updateDecorations(newDecorationRange1, oldDecorationRange1);
+	// });
+
+	// test('NotebookEditor-changeDecorations', () => {
+	// 	const result = notebookEditor.changeDecorations(callback1);
+
+	// 	// Expect result
+	// 	expect(result).to.be.not.undefined;
+	// });
+
+	// test('NotebookEditor-deltaDecorations', () => {
+	// 	const result = notebookEditor.deltaDecorations(oldDecorations1, newDecorations1);
+
+	// 	// Expect result
+	// 	expect(result).to.be.not.undefined;
+	// });
+
+
+
+	// test('NotebookEditor-createEditor', () => {
+	// 	notebookEditor.createEditor(parent1);
+	// });
+
+	// test('NotebookEditor-focus', () => {
+	// 	notebookEditor.focus();
+	// });
+
+	// test('NotebookEditor-layout', () => {
+	// 	notebookEditor.layout(dimension1);
+	// });
+
+	// test('NotebookEditor-setInput', async () => {
+	// 	const notebookEditor = new NotebookEditor(telemetryService13, themeService13, _instantiationService13, storageService13, _contextViewService13, _keybindingService13, _contextKeyService13, _themeService13, _notebookService13);
+	// 	await notebookEditor.setInput(input1, options1);
+	// });
+
+	// test('NotebookEditor-setFindInput', async () => {
+	// 	await notebookEditor.setFindInput(parentElement1);
+	// });
+
+	// test('NotebookEditor-getConfiguration', () => {
+	// 	notebookEditor.getConfiguration();
+	// });
+
+	// test('NotebookEditor-layoutOverlayWidget', () => {
+	// 	notebookEditor.layoutOverlayWidget(widget1);
+	// });
+
+	// test('NotebookEditor-addOverlayWidget', () => {
+	// 	notebookEditor.addOverlayWidget(widget2);
+	// });
+
+	// test('NotebookEditor-getAction', () => {
+	// 	const result = notebookEditor.getAction(id1);
+
+	// 	// Expect result
+	// 	expect(result).to.be.not.undefined;
+	// });
+
+	// test('NotebookEditor-_onFindStateChange', async () => {
+	// 	await notebookEditor._onFindStateChange(e1);
+	// });
+
+	// test('NotebookEditor-toggleSearch', () => {
+	// 	notebookEditor.toggleSearch();
+	// });
+
+	// test('NotebookEditor-findNext', () => {
+	// 	notebookEditor.findNext();
+	// });
+
+	// test('NotebookEditor-findPrevious', () => {
+	// 	notebookEditor.findPrevious();
+	// });
+
+
+	// test('NotebookEditor-onDidChangeConfiguration', () => {
+	// 	const onDidChangeConfiguration1 = undefined;
+
+	// 	// Property call
+	// 	notebookEditor.onDidChangeConfiguration = onDidChangeConfiguration1;
+	// 	const result = notebookEditor.onDidChangeConfiguration;
+
+	// 	// Expect result
+	// 	expect(result).equals(onDidChangeConfiguration1);
+	// });
 
 });
 
