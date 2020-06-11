@@ -10,21 +10,26 @@
  * Do not edit the class manually.
  */
 
+import { V1ManagedFieldsEntry } from './v1ManagedFieldsEntry';
+import { V1OwnerReference } from './v1OwnerReference';
 
-export class DuskyObjectModelsObjectMeta {
+export class V1ObjectMeta {
     'annotations'?: { [key: string]: string; };
+    'clusterName'?: string;
     'creationTimestamp'?: Date | null;
+    'deletionGracePeriodSeconds'?: number | null;
     'deletionTimestamp'?: Date | null;
-    'finalizers'?: Array<object>;
+    'finalizers'?: Array<string>;
     'generateName'?: string;
     'generation'?: number | null;
     'labels'?: { [key: string]: string; };
+    'managedFields'?: Array<V1ManagedFieldsEntry>;
     'name'?: string;
     'namespace'?: string;
-    'ownerReferences'?: Array<object>;
+    'ownerReferences'?: Array<V1OwnerReference>;
     'resourceVersion'?: string;
     'selfLink'?: string;
-    'uid'?: string | null;
+    'uid'?: string;
 
     static discriminator: string | undefined = undefined;
 
@@ -35,9 +40,19 @@ export class DuskyObjectModelsObjectMeta {
             "type": "{ [key: string]: string; }"
         },
         {
+            "name": "clusterName",
+            "baseName": "clusterName",
+            "type": "string"
+        },
+        {
             "name": "creationTimestamp",
             "baseName": "creationTimestamp",
             "type": "Date"
+        },
+        {
+            "name": "deletionGracePeriodSeconds",
+            "baseName": "deletionGracePeriodSeconds",
+            "type": "number"
         },
         {
             "name": "deletionTimestamp",
@@ -47,7 +62,7 @@ export class DuskyObjectModelsObjectMeta {
         {
             "name": "finalizers",
             "baseName": "finalizers",
-            "type": "Array<object>"
+            "type": "Array<string>"
         },
         {
             "name": "generateName",
@@ -65,6 +80,11 @@ export class DuskyObjectModelsObjectMeta {
             "type": "{ [key: string]: string; }"
         },
         {
+            "name": "managedFields",
+            "baseName": "managedFields",
+            "type": "Array<V1ManagedFieldsEntry>"
+        },
+        {
             "name": "name",
             "baseName": "name",
             "type": "string"
@@ -77,7 +97,7 @@ export class DuskyObjectModelsObjectMeta {
         {
             "name": "ownerReferences",
             "baseName": "ownerReferences",
-            "type": "Array<object>"
+            "type": "Array<V1OwnerReference>"
         },
         {
             "name": "resourceVersion",
@@ -96,7 +116,7 @@ export class DuskyObjectModelsObjectMeta {
         }    ];
 
     static getAttributeTypeMap() {
-        return DuskyObjectModelsObjectMeta.attributeTypeMap;
+        return V1ObjectMeta.attributeTypeMap;
     }
 }
 

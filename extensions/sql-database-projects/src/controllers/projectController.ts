@@ -321,6 +321,8 @@ export class ProjectsController {
 					await project.addDatabaseReference(dacpacFileLocation, databaseLocation);
 				}
 			}
+
+			this.refreshProjectsTree();
 		} catch (err) {
 			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
 		}
