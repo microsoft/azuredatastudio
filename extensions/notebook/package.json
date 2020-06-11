@@ -49,6 +49,11 @@
           "items": {
             "type": "string"
           }
+        },
+        "notebook.usingSAW": {
+          "type": "boolean",
+          "default": true,
+          "description": "%notebook.usingSAW.description%"
         }
       }
     },
