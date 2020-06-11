@@ -45,7 +45,7 @@ export enum DeclarativeDataType {
 							<editable-select-box *ngIf="isEditableSelectBox(c)" [options]="getOptions(c)" (onDidSelect)="onSelectBoxChanged($event,r,c)" [selectedOption]="getSelectedOptionDisplayName(r,c)"></editable-select-box>
 							<input-box *ngIf="isInputBox(c)" [value]="cellData" (onDidChange)="onInputBoxChanged($event,r,c)"></input-box>
 							<ng-container *ngIf="isLabel(c)" >{{cellData}}</ng-container>
-							<model-component-wrapper *ngIf="isComponent(c)" [descriptor]="getItemDescriptor(cellData)" [modelStore]="modelStore"></model-component-wrapper>
+							<model-component-wrapper *ngIf="isComponent(c) && getItemDescriptor(cellData)" [descriptor]="getItemDescriptor(cellData)" [modelStore]="modelStore"></model-component-wrapper>
 						</td>
 					</ng-container>
 				</tr>
@@ -57,6 +57,9 @@ export enum DeclarativeDataType {
 export default class DeclarativeTableComponent extends ContainerBase<any> implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
+
+	public data: any[][] = [];
+	public columns: azdata.DeclarativeTableColumn[] = [];
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
@@ -198,15 +201,21 @@ export default class DeclarativeTableComponent extends ContainerBase<any> implem
 	}
 
 	public setProperties(properties: { [key: string]: any; }): void {
+		const newData = properties.data ?? [];
+		this.columns = properties.columns ?? [];
+
 		// check whether the data property is changed before actually setting the properties.
-		const isDataPropertyUnchanged = arrayEquals(this.data, (properties.data as any[][]) ?? [], (a, b) => {
+		const isDataPropertyChanged = !arrayEquals(this.data, newData ?? [], (a, b) => {
 			return arrayEquals(a, b);
 		});
-		super.setProperties(properties);
+
+		// the angular is using reference compare to determine whether the data is changed or not
+		// so we are only updating it when the actual data has changed by doing the deep comparison.
 		// if the data property is changed, we need add child components to the container,
 		// so that the events can be passed upwards through the control hierarchy.
-		if (!isDataPropertyUnchanged) {
+		if (isDataPropertyChanged) {
 			this.clearContainer();
+			this.data = newData;
 			this.data?.forEach(row => {
 				for (let i = 0; i < row.length; i++) {
 					if (this.isComponent(i)) {
@@ -215,21 +224,6 @@ export default class DeclarativeTableComponent extends ContainerBase<any> implem
 				}
 			});
 		}
-	}
-
-	public get data(): any[][] {
-		return this.getPropertyOrDefault<azdata.DeclarativeTableProperties, any[]>((props) => props.data, []);
-	}
-
-	public set data(newValue: any[][]) {
-		this.setPropertyFromUI<azdata.DeclarativeTableProperties, any[][]>((props, value) => props.data = value, newValue);
-	}
-
-	public get columns(): azdata.DeclarativeTableColumn[] {
-		return this.getPropertyOrDefault<azdata.DeclarativeTableProperties, azdata.DeclarativeTableColumn[]>((props) => props.columns, []);
-	}
-
-	public set columns(newValue: azdata.DeclarativeTableColumn[]) {
-		this.setPropertyFromUI<azdata.DeclarativeTableProperties, azdata.DeclarativeTableColumn[]>((props, value) => props.columns = value, newValue);
+		super.setProperties(properties);
 	}
 }
