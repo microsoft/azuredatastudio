@@ -328,7 +328,7 @@ export class PostgresOverviewPage extends DashboardPage {
 
 			return [
 				name,
-				role ? PostgresModel.getPodRoleName(role) : '',
+				PostgresModel.getPodRoleName(role),
 				PostgresModel.getPodStatus(pod),
 				role === PodRole.Router ? `${endpoint.ip}:${endpoint.port}` : internalDns
 			];

@@ -58,6 +58,7 @@ export const ram = localize('arc.ram', "RAM");
 export const refresh = localize('arc.refresh', "Refresh");
 export const troubleshoot = localize('arc.troubleshoot', "Troubleshoot");
 export const clickTheNewSupportRequestButton = localize('arc.clickTheNewSupportRequestButton', "Click the new support request button to file a support request in the Azure Portal.");
+export const running = localize('arc.running', "Running");
 
 // Postgres constants
 export const coordinatorEndpoint = localize('arc.coordinatorEndpoint', "Coordinator endpoint");

@@ -173,11 +173,12 @@ export class PostgresModel {
 	}
 
 	/** Given a PodRole, returns its localized name */
-	public static getPodRoleName(role: PodRole): string {
+	public static getPodRoleName(role?: PodRole): string {
 		switch (role) {
 			case PodRole.Monitor: return loc.monitor;
 			case PodRole.Router: return loc.coordinator;
 			case PodRole.Shard: return loc.worker;
+			default: return '';
 		}
 	}
 
@@ -197,7 +198,7 @@ export class PostgresModel {
 			if (tReason) { return tReason; }
 		}
 
-		return 'Running';
+		return loc.running;
 	}
 
 	/**
