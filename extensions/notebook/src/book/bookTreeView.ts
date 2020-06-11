@@ -234,12 +234,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (!uri) {
 			let openDocument = azdata.nb.activeNotebookEditor;
 			if (openDocument) {
-				let book = this.getBookFromItemPath(openDocument.document.uri.fsPath.replace(/\\/g, '/'));
-				bookItem = book?.getNotebook(openDocument.document.uri.fsPath);
+				bookItem = this.currentBook?.getNotebook(openDocument.document.uri.fsPath);
 			}
 		} else if (uri.fsPath) {
-			let book = this.getBookFromItemPath(uri.fsPath.replace(/\\/g, '/'));
-			bookItem = book?.getNotebook(uri.fsPath);
+			bookItem = this.currentBook?.getNotebook(uri.fsPath);
 		}
 		if (bookItem) {
 			// Select + focus item in viewlet if books viewlet is already open, or if we pass in variable
@@ -501,14 +499,14 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	getNavigation(uri: vscode.Uri): Thenable<azdata.nb.NavigationResult> {
 		let result: azdata.nb.NavigationResult;
-		let book = this.getBookFromItemPath(uri.scheme === 'untitled' ? vscode.Uri.file(uri.path).path : uri.path);
-		let notebook = book?.getNotebook(uri.fsPath);
+		//let book = this.getBookFromItemPath(uri.scheme === 'untitled' ? vscode.Uri.file(uri.path).path : uri.path);
+		let notebook = this.currentBook?.getNotebook(uri.fsPath);
 		if (notebook) {
 			result = {
 				hasNavigation: true,
 				previous: notebook.previousUri ?
-					book.openAsUntitled ? this.getUntitledNotebookUri(notebook.previousUri) : vscode.Uri.file(notebook.previousUri) : undefined,
-				next: notebook.nextUri ? book.openAsUntitled ? this.getUntitledNotebookUri(notebook.nextUri) : vscode.Uri.file(notebook.nextUri) : undefined
+					this.currentBook?.openAsUntitled ? this.getUntitledNotebookUri(notebook.previousUri) : vscode.Uri.file(notebook.previousUri) : undefined,
+				next: notebook.nextUri ? this.currentBook?.openAsUntitled ? this.getUntitledNotebookUri(notebook.nextUri) : vscode.Uri.file(notebook.nextUri) : undefined
 			};
 		} else {
 			result = {

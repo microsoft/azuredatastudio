@@ -114,9 +114,6 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 		await vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(urlToOpen));
 	}));
 
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.revealInBooksViewlet', (uri: vscode.Uri, shouldReveal: boolean) => bookTreeViewProvider.revealActiveDocumentInViewlet(uri, shouldReveal)));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.revealInProvidedBooksViewlet', (uri: vscode.Uri, shouldReveal: boolean) => providedBookTreeViewProvider.revealActiveDocumentInViewlet(uri, shouldReveal)));
-
 	let appContext = new AppContext(extensionContext, new ApiWrapper());
 	controller = new JupyterController(appContext);
 	let result = await controller.activate();
