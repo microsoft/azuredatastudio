@@ -205,6 +205,11 @@
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.2.tgz#26520bf09abe4a5644cd5414e37125a8954241dd"
   integrity sha512-tsAQNx32a8CoFhjhijUIhI4kccIAgmGhy8LZMZgGfmXcpMbPRUqn5LWmgRttILi6yeGmBJd2xsPkFMs0PzgPCw==
 
+"@types/xml-formatter@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@types/xml-formatter/-/xml-formatter-1.1.0.tgz#f7cde70ec33d7b044029b6b6c2f6e69d270ced63"
+  integrity sha512-1Z8XdMUQ3mLsAwqBzKUea2IgDeLOwvgEWevUHhcu3aF6K0KqeGPRlwEYmVy3wGiaepZdcqsiCuUbNhrU4bIJog==
+
 "@types/xmldom@^0.1.29":
   version "0.1.29"
   resolved "https://registry.yarnpkg.com/@types/xmldom/-/xmldom-0.1.29.tgz#c4428b0ca86d3b881475726fd94980b38a27c381"
