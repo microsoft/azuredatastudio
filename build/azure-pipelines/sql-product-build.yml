@@ -88,6 +88,7 @@ jobs:
   - Docker
   - Windows
   - Windows_Test
+  - LinuxWeb
   steps:
   - template: sql-release.yml
 
