@@ -109,6 +109,7 @@ const indentationFilter = [
 	'!extensions/sql-database-projects/src/test/baselines/*.xml',
 	'!extensions/sql-database-projects/src/test/baselines/*.json',
 	'!extensions/sql-database-projects/src/test/baselines/*.sqlproj',
+	'!extensions/sql-database-projects/BuildDirectory/SystemDacpacs/**',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts',
 	'!resources/linux/snap/electron-launch'

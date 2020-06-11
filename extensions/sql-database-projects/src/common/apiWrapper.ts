@@ -199,6 +199,10 @@ export class ApiWrapper {
 		return azdata.window.createButton(label, position);
 	}
 
+	public createTreeView<T>(viewId: string, options: vscode.TreeViewOptions<T>): vscode.TreeView<T> {
+		return vscode.window.createTreeView(viewId, options);
+	}
+
 	//#endregion
 
 	//#region vscode.workspace

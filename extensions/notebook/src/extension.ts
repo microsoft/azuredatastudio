@@ -5,7 +5,6 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import * as os from 'os';
 import * as nls from 'vscode-nls';
 import * as path from 'path';
 
@@ -14,15 +13,12 @@ import { AppContext } from './common/appContext';
 import { ApiWrapper } from './common/apiWrapper';
 import { IExtensionApi, IPackageManageProvider } from './types';
 import { CellType } from './contracts/content';
-import { getErrorMessage, isEditorTitleFree } from './common/utils';
 import { NotebookUriHandler } from './protocol/notebookUriHandler';
 import { BookTreeViewProvider } from './book/bookTreeView';
+import { newNotebook, openNotebook, runActiveCell, runAllCells, clearActiveCellOutput, addCell, analyzeNotebook } from './common/notebookUtils';
 
 const localize = nls.loadMessageBundle();
 
-const JUPYTER_NOTEBOOK_PROVIDER = 'jupyter';
-const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', "This sample code loads the file into a data frame and shows the first 10 results.");
-const noNotebookVisible = localize('noNotebookVisible', "No notebook editor is active");
 const BOOKS_VIEWID = 'bookTreeView';
 const PROVIDED_BOOKS_VIEWID = 'providedBooksView';
 let controller: JupyterController;
@@ -129,6 +125,14 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	const providedBookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [], extensionContext, true, PROVIDED_BOOKS_VIEWID);
 	await providedBookTreeViewProvider.initialized;
 
+	azdata.nb.onDidChangeActiveNotebookEditor(e => {
+		if (e.document.uri.scheme === 'untitled') {
+			providedBookTreeViewProvider.revealActiveDocumentInViewlet(e.document.uri, false);
+		} else {
+			bookTreeViewProvider.revealActiveDocumentInViewlet(e.document.uri, false);
+		}
+
+	});
 
 	extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider(BOOKS_VIEWID, bookTreeViewProvider));
 	extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider(PROVIDED_BOOKS_VIEWID, providedBookTreeViewProvider));
@@ -143,140 +147,6 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 			return controller.packageManageProviders;
 		}
 	};
-}
-
-async function newNotebook(connectionProfile: azdata.IConnectionProfile): Promise<azdata.nb.NotebookEditor> {
-	const title = findNextUntitledEditorName();
-	const untitledUri = vscode.Uri.parse(`untitled:${title}`);
-	const options: azdata.nb.NotebookShowOptions = connectionProfile ? {
-		viewColumn: null,
-		preserveFocus: true,
-		preview: null,
-		providerId: null,
-		connectionProfile: connectionProfile,
-		defaultKernel: null
-	} : null;
-	return azdata.nb.showNotebookDocument(untitledUri, options);
-}
-
-function findNextUntitledEditorName(): string {
-	let nextVal = 0;
-	// Note: this will go forever if it's coded wrong, or you have infinite Untitled notebooks!
-	while (true) {
-		let title = `Notebook-${nextVal}`;
-		if (isEditorTitleFree(title)) {
-			return title;
-		}
-		nextVal++;
-	}
-}
-
-async function openNotebook(): Promise<void> {
-	try {
-		let filter: { [key: string]: Array<string> } = {};
-		// TODO support querying valid notebook file types
-		filter[localize('notebookFiles', "Notebooks")] = ['ipynb'];
-		let file = await vscode.window.showOpenDialog({
-			filters: filter
-		});
-		if (file) {
-			let doc = await vscode.workspace.openTextDocument(file[0]);
-			vscode.window.showTextDocument(doc);
-		}
-	} catch (err) {
-		vscode.window.showErrorMessage(getErrorMessage(err));
-	}
-}
-
-async function runActiveCell(): Promise<void> {
-	try {
-		let notebook = azdata.nb.activeNotebookEditor;
-		if (notebook) {
-			await notebook.runCell();
-		} else {
-			throw new Error(noNotebookVisible);
-		}
-	} catch (err) {
-		vscode.window.showErrorMessage(getErrorMessage(err));
-	}
-}
-
-async function clearActiveCellOutput(): Promise<void> {
-	try {
-		let notebook = azdata.nb.activeNotebookEditor;
-		if (notebook) {
-			await notebook.clearOutput();
-		} else {
-			throw new Error(noNotebookVisible);
-		}
-	} catch (err) {
-		vscode.window.showErrorMessage(getErrorMessage(err));
-	}
-}
-
-async function runAllCells(startCell?: azdata.nb.NotebookCell, endCell?: azdata.nb.NotebookCell): Promise<void> {
-	try {
-		let notebook = azdata.nb.activeNotebookEditor;
-		if (notebook) {
-			await notebook.runAllCells(startCell, endCell);
-		} else {
-			throw new Error(noNotebookVisible);
-		}
-	} catch (err) {
-		vscode.window.showErrorMessage(getErrorMessage(err));
-	}
-}
-
-async function addCell(cellType: azdata.nb.CellType): Promise<void> {
-	try {
-		let notebook = azdata.nb.activeNotebookEditor;
-		if (notebook) {
-			await notebook.edit((editBuilder: azdata.nb.NotebookEditorEdit) => {
-				// TODO should prompt and handle cell placement
-				editBuilder.insertCell({
-					cell_type: cellType,
-					source: ''
-				});
-			});
-		} else {
-			throw new Error(noNotebookVisible);
-		}
-	} catch (err) {
-		vscode.window.showErrorMessage(getErrorMessage(err));
-	}
-}
-
-async function analyzeNotebook(oeContext?: azdata.ObjectExplorerContext): Promise<void> {
-	// Ensure we get a unique ID for the notebook. For now we're using a different prefix to the built-in untitled files
-	// to handle this. We should look into improving this in the future
-	let title = findNextUntitledEditorName();
-	let untitledUri = vscode.Uri.parse(`untitled:${title}`);
-
-	let editor = await azdata.nb.showNotebookDocument(untitledUri, {
-		connectionProfile: oeContext ? oeContext.connectionProfile : undefined,
-		providerId: JUPYTER_NOTEBOOK_PROVIDER,
-		preview: false,
-		defaultKernel: {
-			name: 'pysparkkernel',
-			display_name: 'PySpark',
-			language: 'python'
-		}
-	});
-	if (oeContext && oeContext.nodeInfo && oeContext.nodeInfo.nodePath) {
-		// Get the file path after '/HDFS'
-		let hdfsPath: string = oeContext.nodeInfo.nodePath.substring(oeContext.nodeInfo.nodePath.indexOf('/HDFS') + '/HDFS'.length);
-		if (hdfsPath.length > 0) {
-			let analyzeCommand = '#' + msgSampleCodeDataFrame + os.EOL + 'df = (spark.read.option("inferSchema", "true")'
-				+ os.EOL + '.option("header", "true")' + os.EOL + '.csv("{0}"))' + os.EOL + 'df.show(10)';
-
-			editor.edit(editBuilder => {
-				editBuilder.insertCell({
-					cell_type: 'code',
-					source: analyzeCommand.replace('{0}', hdfsPath)
-				}, 0);
-			});
-		}
-	}
 }
 
 // this method is called when your extension is deactivated
