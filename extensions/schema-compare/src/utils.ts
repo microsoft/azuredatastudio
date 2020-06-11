@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import * as mssql from '../../mssql';
 import * as os from 'os';
 import * as loc from './localizedConstants';
+import { ApiWrapper } from './common/apiWrapper';
 
 export interface IPackageInfo {
 	name: string;
@@ -83,15 +84,19 @@ function connectionInfoToConnectionProfile(details: azdata.ConnectionInfo): azda
 	};
 }
 
-export async function verifyConnectionAndGetOwnerUri(endpoint: mssql.SchemaCompareEndpointInfo, caller: string): Promise<string | undefined> {
+export async function verifyConnectionAndGetOwnerUri(endpoint: mssql.SchemaCompareEndpointInfo, caller: string, apiWrapper: ApiWrapper): Promise<string> {
 	let ownerUri = undefined;
+
 	if (endpoint.endpointType === mssql.SchemaCompareEndpointType.Database && endpoint.connectionDetails) {
 		let connectionProfile = await connectionInfoToConnectionProfile(endpoint.connectionDetails);
-		let connection = await azdata.connection.connect(connectionProfile, false, false);
+		let connection = await apiWrapper.connect(connectionProfile, false, false);
+
 		if (connection) {
-			ownerUri = await azdata.connection.getUriForConnection(connection.connectionId);
+			ownerUri = await apiWrapper.getUriForConnection(connection.connectionId);
+
 			if (!ownerUri) {
-				let connectionList = await azdata.connection.getConnections(true);
+				let connectionList = await apiWrapper.getConnections(true);
+
 				let userConnection;
 				userConnection = connectionList.find(connection =>
 					(endpoint.connectionDetails['authenticationType'] === 'SqlLogin'
@@ -103,18 +108,18 @@ export async function verifyConnectionAndGetOwnerUri(endpoint: mssql.SchemaCompa
 				if (userConnection === undefined) {
 					const getConnectionString = loc.getConnectionString(caller);
 					// need only yes button - since the modal dialog has a default cancel
-					let result = await vscode.window.showWarningMessage(getConnectionString, { modal: true }, loc.YesButtonText);
+					let result = await apiWrapper.showWarningMessage(getConnectionString, { modal: true }, loc.YesButtonText);
 					if (result === loc.YesButtonText) {
-						userConnection = await azdata.connection.openConnectionDialog(undefined, connectionProfile);
+						userConnection = await apiWrapper.openConnectionDialog(undefined, connectionProfile);
 					}
 				}
 
 				if (userConnection !== undefined) {
-					ownerUri = await azdata.connection.getUriForConnection(userConnection.connectionId);
+					ownerUri = await apiWrapper.getUriForConnection(userConnection.connectionId);
 				}
 			}
 			if (!ownerUri && connection.errorMessage) {
-				vscode.window.showErrorMessage(connection.errorMessage);
+				apiWrapper.showErrorMessage(connection.errorMessage);
 			}
 		}
 	}
