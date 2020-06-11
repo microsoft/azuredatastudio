@@ -35,6 +35,7 @@ describe('Project: sqlproj content operations', function (): void {
 		should(project.files.find(f => f.type === EntryType.Folder && f.relativePath === 'Views\\User')).not.equal(undefined); // mixed ItemGroup folder
 		should(project.files.find(f => f.type === EntryType.File && f.relativePath === 'Views\\User\\Profile.sql')).not.equal(undefined); // mixed ItemGroup file
 
+		// should only have one database reference even though there are two master.dacpac references (1 for ADS and 1 for SSDT)
 		should(project.databaseReferences.length).equal(1);
 		should(project.databaseReferences[0]).containEql(constants.master);
 	});
@@ -152,12 +153,18 @@ describe('Project: sqlproj content operations', function (): void {
 		await project.addSystemDatabaseReference(SystemDatabase.master);
 		should(project.databaseReferences.length).equal(1);
 		should(project.databaseReferences[0]).equal(constants.master);
+		// make sure reference to SSDT master dacpac was added
+		let projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText).containEql(project.getSystemDacpacSsdtUri(constants.master).fsPath.substring(1));
 
 		await project.addSystemDatabaseReference(SystemDatabase.msdb);
 		should(project.databaseReferences.length).equal(2);
 		should(project.databaseReferences[1]).equal(constants.msdb);
+		// make sure reference to SSDT msdb dacpac was added
+		projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText).containEql(project.getSystemDacpacSsdtUri(constants.msdb).fsPath.substring(1));
 
-		await project.addDatabaseReference(Uri.parse('test.dacpac'), DatabaseReferenceLocation.sameDatabase, false);
+		await project.addDatabaseReference(Uri.parse('test.dacpac'), DatabaseReferenceLocation.sameDatabase);
 		should(project.databaseReferences.length).equal(3);
 		should(project.databaseReferences[2]).equal('test');
 	});
