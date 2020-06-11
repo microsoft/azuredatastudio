@@ -393,6 +393,7 @@ export class TabsTitleControl extends TitleControl {
 
 	closeEditors(editors: IEditorInput[]): void {
 		this.handleClosedEditors();
+		this.updateBreadcrumbsControl();
 	}
 
 	private handleClosedEditors(): void {
@@ -430,9 +431,6 @@ export class TabsTitleControl extends TitleControl {
 
 			this.clearEditorActionsToolbar();
 		}
-
-		// Update Breadcrumbs
-		this.updateBreadcrumbsControl();
 	}
 
 	moveEditor(editor: IEditorInput, fromIndex: number, targetIndex: number): void {
