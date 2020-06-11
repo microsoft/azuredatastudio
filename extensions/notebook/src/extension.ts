@@ -134,8 +134,6 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 
 	});
 
-	extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider(BOOKS_VIEWID, bookTreeViewProvider));
-	extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider(PROVIDED_BOOKS_VIEWID, providedBookTreeViewProvider));
 	return {
 		getJupyterController() {
 			return controller;
