@@ -71,7 +71,7 @@ suite('Editor Replacer Contribution', () => {
 		const editorService = new MockEditorService(instantiationService);
 		instantiationService.stub(IEditorService, editorService);
 		const contrib = instantiationService.createInstance(EditorReplacementContribution);
-		const input = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.sql'), undefined, undefined);
+		const input = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.sql'), undefined, undefined, undefined);
 		const response = editorService.fireOpenEditor(input, undefined, undefined as IEditorGroup, OpenEditorContext.NEW_EDITOR);
 		assert(response?.override);
 		const newinput = <any>(await response.override) as EditorInput; // our test service returns this so we are fine to cast this
@@ -86,7 +86,7 @@ suite('Editor Replacer Contribution', () => {
 		const editorService = new MockEditorService(instantiationService);
 		instantiationService.stub(IEditorService, editorService);
 		const contrib = instantiationService.createInstance(EditorReplacementContribution);
-		const input = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.other'), undefined, 'sql');
+		const input = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.other'), undefined, 'sql', undefined);
 		const response = editorService.fireOpenEditor(input, undefined, undefined as IEditorGroup, OpenEditorContext.NEW_EDITOR);
 		assert(response?.override);
 		const newinput = <any>(await response.override) as EditorInput; // our test service returns this so we are fine to cast this
@@ -101,7 +101,7 @@ suite('Editor Replacer Contribution', () => {
 		const editorService = new MockEditorService(instantiationService);
 		instantiationService.stub(IEditorService, editorService);
 		const contrib = instantiationService.createInstance(EditorReplacementContribution);
-		const input = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.notebook'), undefined, undefined);
+		const input = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.notebook'), undefined, undefined, undefined);
 		const response = editorService.fireOpenEditor(input, undefined, undefined as IEditorGroup, OpenEditorContext.NEW_EDITOR);
 		assert(response?.override);
 		const newinput = <any>(await response.override) as EditorInput; // our test service returns this so we are fine to cast this
@@ -116,7 +116,7 @@ suite('Editor Replacer Contribution', () => {
 		const editorService = new MockEditorService(instantiationService);
 		instantiationService.stub(IEditorService, editorService);
 		const contrib = instantiationService.createInstance(EditorReplacementContribution);
-		const input = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.iynb'), undefined, 'notebook');
+		const input = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.iynb'), undefined, 'notebook', undefined);
 		const response = editorService.fireOpenEditor(input, undefined, undefined as IEditorGroup, OpenEditorContext.NEW_EDITOR);
 		assert(response?.override);
 		const newinput = <any>(await response.override) as EditorInput; // our test service returns this so we are fine to cast this

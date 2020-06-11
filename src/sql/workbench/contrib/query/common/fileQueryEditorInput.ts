@@ -15,9 +15,7 @@ import { BinaryEditorModel } from 'vs/workbench/common/editor/binaryEditorModel'
 import { ITextFileEditorModel } from 'vs/workbench/services/textfile/common/textfiles';
 import { URI } from 'vs/base/common/uri';
 
-type PublicPart<T> = { [K in keyof T]: T[K] };
-
-export class FileQueryEditorInput extends QueryEditorInput implements PublicPart<FileEditorInput> {
+export class FileQueryEditorInput extends QueryEditorInput {
 
 	public static readonly ID = 'workbench.editorInput.fileQueryInput';
 

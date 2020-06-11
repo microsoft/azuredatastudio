@@ -38,9 +38,9 @@ suite('Files - FileEditorInput', () => {
 	});
 
 	test.skip('Basics', async function () { // {{SQL CARBON EDIT}} skip test
-		let input = instantiationService.createInstance(FileEditorInput, toResource.call(this, '/foo/bar/file.js'), undefined, undefined);
-		const otherInput = instantiationService.createInstance(FileEditorInput, toResource.call(this, 'foo/bar/otherfile.js'), undefined, undefined);
-		const otherInputSame = instantiationService.createInstance(FileEditorInput, toResource.call(this, 'foo/bar/file.js'), undefined, undefined);
+		let input = instantiationService.createInstance(FileEditorInput, toResource.call(this, '/foo/bar/file.js'), undefined, undefined, undefined);
+		const otherInput = instantiationService.createInstance(FileEditorInput, toResource.call(this, 'foo/bar/otherfile.js'), undefined, undefined, undefined);
+		const otherInputSame = instantiationService.createInstance(FileEditorInput, toResource.call(this, 'foo/bar/file.js'), undefined, undefined, undefined);
 
 		assert(input.matches(input));
 		assert(input.matches(otherInputSame));
