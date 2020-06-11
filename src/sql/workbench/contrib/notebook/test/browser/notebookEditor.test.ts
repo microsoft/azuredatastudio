@@ -71,7 +71,7 @@ suite('Test class NotebookEditor', () => {
 
 	let notebookEditor: NotebookEditor;
 	//let notebookModel: INotebookModel;
-	let setupPromise: DeferredPromise <void>;
+	let setupPromise: DeferredPromise<void>;
 
 	const installEvent: Emitter<InstallExtensionEvent> = new Emitter<InstallExtensionEvent>();
 	const didInstallEvent = new Emitter<DidInstallExtensionEvent>();
@@ -130,7 +130,7 @@ suite('Test class NotebookEditor', () => {
 	notebookService.addNotebookEditor(testNotebookEditor);
 
 	setup(async () => {
-		setupPromise = new DeferredPromise <void>();
+		setupPromise = new DeferredPromise<void>();
 		// Create notebookEditor
 		notebookEditor = new NotebookEditor(
 			instantiationService.get(ITelemetryService),
