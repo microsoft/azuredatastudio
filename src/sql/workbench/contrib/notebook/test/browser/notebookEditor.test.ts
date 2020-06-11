@@ -43,7 +43,7 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
-import { NotebookEditor } from '../../../../../../sql/workbench/contrib/notebook/browser/notebookEditor';
+import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
 
 class TestNotebookEditor extends NotebookEditorStub {
 	constructor(private _cellGuid?: string, private _editor?: QueryTextEditor) {
@@ -152,7 +152,7 @@ suite('Test class NotebookEditor', () => {
 		setupPromise.resolve();
 	});
 
-	test('NotebookEditor-dispose', async () => {
+	test('NotebookEditor-dispose: Tests dispose() disposes all objects in its disposable store', async () => {
 		await setupPromise;
 		const mockNotebookEditor = TypeMoq.Mock.ofInstance(notebookEditor);
 		mockNotebookEditor.setup(x => x.dispose()).callback(() => notebookEditor.dispose());
@@ -162,7 +162,7 @@ suite('Test class NotebookEditor', () => {
 		assert.ok(isDisposed, 'notebookEditor\'s disposable store must be disposed');
 	});
 
-	test('NotebookEditor-setSelection-getPosition-getLastPosition', async () => {
+	test('NotebookEditor-setSelection-getPosition-getLastPosition: Tests getPosition and getLastPosition currently return the ranges set by setSelection', async () => {
 		await setupPromise;
 		let currentPosition = notebookEditor.getPosition();
 		let lastPosition = notebookEditor.getLastPosition();
@@ -184,7 +184,7 @@ suite('Test class NotebookEditor', () => {
 
 	// NotebookEditor-getCellEditor tests.
 	['', undefined, null, 'unknown string', /*unknown guid*/generateUuid()].forEach(input => {
-		test(`NotebookEditor-getCellEditor:'${input}'`, async () => {
+		test(`NotebookEditor-getCellEditor: Test getCellEditor() returns undefined for input:'${input}'`, async () => {
 			await setupPromise;
 			const inputGuid = <string>input;
 			const result = notebookEditor.getCellEditor(inputGuid);
@@ -192,7 +192,7 @@ suite('Test class NotebookEditor', () => {
 		});
 	});
 
-	test(`NotebookEditor-getCellEditor:'Positive -> for an existing Guid:${cellTextEditorGuid}'`, async () => {
+	test('NotebookEditor-getCellEditor: Positive Tests getCellEditor() returns text editor object for valid guild input', async () => {
 		await setupPromise;
 		const result = notebookEditor.getCellEditor(cellTextEditorGuid);
 		assert.strictEqual(result, queryTextEditor, `notebookEditor.getCellEditor() should return ${queryTextEditor} when ${cellTextEditorGuid} is passed in for a notebookEditor of an empty document.`);
