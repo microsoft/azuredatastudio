@@ -101,7 +101,6 @@ export * from './v1PodCondition';
 export * from './v1PodDNSConfig';
 export * from './v1PodDNSConfigOption';
 export * from './v1PodIP';
-export * from './v1PodList';
 export * from './v1PodReadinessGate';
 export * from './v1PodSecurityContext';
 export * from './v1PodSpec';
@@ -243,7 +242,6 @@ import { V1PodCondition } from './v1PodCondition';
 import { V1PodDNSConfig } from './v1PodDNSConfig';
 import { V1PodDNSConfigOption } from './v1PodDNSConfigOption';
 import { V1PodIP } from './v1PodIP';
-import { V1PodList } from './v1PodList';
 import { V1PodReadinessGate } from './v1PodReadinessGate';
 import { V1PodSecurityContext } from './v1PodSecurityContext';
 import { V1PodSpec } from './v1PodSpec';
@@ -402,7 +400,6 @@ let typeMap: {[index: string]: any} = {
     "V1PodDNSConfig": V1PodDNSConfig,
     "V1PodDNSConfigOption": V1PodDNSConfigOption,
     "V1PodIP": V1PodIP,
-    "V1PodList": V1PodList,
     "V1PodReadinessGate": V1PodReadinessGate,
     "V1PodSecurityContext": V1PodSecurityContext,
     "V1PodSpec": V1PodSpec,

@@ -70,6 +70,7 @@ export const fullyQualifiedDomain = localize('arc.fullyQualifiedDomain', "Fully 
 export const postgresArcProductName = localize('arc.postgresArcProductName', "Azure Database for PostgreSQL - Azure Arc");
 export const coordinator = localize('arc.coordinator', "Coordinator");
 export const worker = localize('arc.worker', "Worker");
+export const monitor = localize('arc.monitor', "Monitor");
 export const newDatabase = localize('arc.newDatabase', "New Database");
 export const databaseName = localize('arc.databaseName', "Database name");
 export const newPassword = localize('arc.newPassword', "New password");

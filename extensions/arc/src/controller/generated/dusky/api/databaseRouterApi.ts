@@ -24,7 +24,7 @@ import { DuskyObjectModelsRestoreStatus } from '../model/duskyObjectModelsRestor
 import { DuskyObjectModelsRole } from '../model/duskyObjectModelsRole';
 import { DuskyObjectModelsUser } from '../model/duskyObjectModelsUser';
 import { Authentication, HttpBasicAuth, HttpBearerAuth, Interceptor, ObjectSerializer, VoidAuth } from '../model/models';
-import { V1PodList } from '../model/v1PodList';
+import { V1Pod } from '../model/v1Pod';
 import { V1Status } from '../model/v1Status';
 import { HttpError } from './apis';
 
@@ -1550,7 +1550,7 @@ export class DatabaseRouterApi {
      * @param ns The namespace of the database service.
      * @param serviceName The name of the database service.
      */
-    public async getDuskyPods (ns: string, serviceName: string, options: {headers: {[name: string]: string}} = {headers: {}}) : Promise<{ response: http.IncomingMessage; body: V1PodList;  }> {
+    public async getDuskyPods (ns: string, serviceName: string, options: {headers: {[name: string]: string}} = {headers: {}}) : Promise<{ response: http.IncomingMessage; body: Array<V1Pod>;  }> {
         const localVarPath = this.basePath + '/dusky/databases/{ns}/{serviceName}/pods'
             .replace('{' + 'ns' + '}', encodeURIComponent(String(ns)))
             .replace('{' + 'serviceName' + '}', encodeURIComponent(String(serviceName)));
@@ -1610,12 +1610,12 @@ export class DatabaseRouterApi {
                     localVarRequestOptions.form = localVarFormParams;
                 }
             }
-            return new Promise<{ response: http.IncomingMessage; body: V1PodList;  }>((resolve, reject) => {
+            return new Promise<{ response: http.IncomingMessage; body: Array<V1Pod>;  }>((resolve, reject) => {
                 localVarRequest(localVarRequestOptions, (error, response, body) => {
                     if (error) {
                         reject(error);
                     } else {
-                        body = ObjectSerializer.deserialize(body, "V1PodList");
+                        body = ObjectSerializer.deserialize(body, "Array<V1Pod>");
                         if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
                             resolve({ response: response, body: body });
                         } else {
