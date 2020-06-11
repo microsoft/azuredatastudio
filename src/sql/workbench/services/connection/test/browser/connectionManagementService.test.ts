@@ -480,6 +480,30 @@ suite('SQL ConnectionManagementService tests', () => {
 		});
 	});
 
+	test('changeGroupIdForconnection should change the groupId for a connection profile', () => {
+		let profile = <ConnectionProfile>assign({}, connectionProfile);
+		profile.options = { password: profile.password };
+		profile.id = 'test_id';
+		let newGroupId = 'new_group_id';
+		connectionStore.setup(x => x.changeGroupIdForConnection(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve());
+		connectionManagementService.changeGroupIdForConnection(profile, newGroupId).then(() => {
+			assert.equal(profile.groupId, newGroupId);
+		});
+	});
+
+	test('changeGroupIdForConnectionGroup should call changeGroupIdForConnectionGroup in ConnectionStore', () => {
+		let sourceProfileGroup = createConnectionGroup('original_id');
+		let targetProfileGroup = createConnectionGroup('new_id');
+		let called = false;
+		connectionStore.setup(x => x.changeGroupIdForConnectionGroup(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+			called = true;
+			return Promise.resolve();
+		});
+		connectionManagementService.changeGroupIdForConnectionGroup(sourceProfileGroup, targetProfileGroup).then(() => {
+			assert.ok(called, 'expected changeGroupIdForConnectionGroup to be called on ConnectionStore');
+		});
+	});
+
 	/* alma1  6/10/20 commented these two tests below out since saveProfile for connectionStore ONLY works with connectionProfile
 	and these two tests cannot work without changing connectionProfile itself. saveProfile needs to be altered to accept different
 	connection profiles*/
