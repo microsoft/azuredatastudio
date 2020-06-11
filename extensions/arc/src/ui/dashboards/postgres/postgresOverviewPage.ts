@@ -29,8 +29,13 @@ export class PostgresOverviewPage extends DashboardPage {
 		this._controllerModel.onEndpointsUpdated(() => this.eventuallyRunOnInitialized(() => this.refreshEndpoints()));
 		this._controllerModel.onRegistrationsUpdated(() => this.eventuallyRunOnInitialized(() => this.refreshProperties()));
 		this._postgresModel.onPasswordUpdated(() => this.eventuallyRunOnInitialized(() => this.refreshProperties()));
-		this._postgresModel.onPodsUpdated(() => this.eventuallyRunOnInitialized(() => this.refreshNodes()));
+
 		this._postgresModel.onServiceUpdated(() => this.eventuallyRunOnInitialized(() => {
+			this.refreshProperties();
+			this.refreshNodes();
+		}));
+
+		this._postgresModel.onPodsUpdated(() => this.eventuallyRunOnInitialized(() => {
 			this.refreshProperties();
 			this.refreshNodes();
 		}));

@@ -128,7 +128,6 @@ export class PostgresModel {
 
 	/** Returns the service's configuration e.g. '3 nodes, 1.5 vCores, 1GiB RAM, 2GiB storage per node' */
 	public configuration(): string {
-		const nodes = this.pods.length;
 
 		// TODO: Resource requests and limits can be configured per role. Figure out how
 		//       to display that in the UI. For now, only show the default configuration.
@@ -137,17 +136,28 @@ export class PostgresModel {
 		const cpuRequest = this._service?.spec?.scheduling?._default?.resources?.requests?.['cpu'];
 		const ramRequest = this._service?.spec?.scheduling?._default?.resources?.requests?.['memory'];
 		const storage = this._service?.spec?.storage?.volumeSize;
+		const nodes = this.pods()?.length;
+
+		let configuration: string[] = [];
+
+		if (nodes) {
+			configuration.push(`${nodes} ${nodes > 1 ? loc.nodes : loc.node}`);
+		}
 
 		// Prefer limits if they're provided, otherwise use requests if they're provided
-		let configuration = `${nodes} ${nodes > 1 ? loc.nodes : loc.node}`;
 		if (cpuLimit || cpuRequest) {
-			configuration += `, ${this.formatCores(cpuLimit ?? cpuRequest!)} ${loc.vCores}`;
+			configuration.push(`${this.formatCores(cpuLimit ?? cpuRequest!)} ${loc.vCores}`);
 		}
+
 		if (ramLimit || ramRequest) {
-			configuration += `, ${this.formatMemory(ramLimit ?? ramRequest!)} ${loc.ram}`;
+			configuration.push(`${this.formatMemory(ramLimit ?? ramRequest!)} ${loc.ram}`);
 		}
-		if (storage) { configuration += `, ${storage} ${loc.storagePerNode}`; }
-		return configuration;
+
+		if (storage) {
+			configuration.push(`${this.formatMemory(storage)} ${loc.storagePerNode}`);
+		}
+
+		return configuration.join(', ');
 	}
 
 	/** Given a V1Pod, returns its PodRole or undefined if the role isn't known */
