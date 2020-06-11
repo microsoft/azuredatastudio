@@ -73,4 +73,7 @@
     <Folder Include="Views\User" />
     <Build Include="Views\User\Profile.sql" />
   </ItemGroup>
+  <Target Name="AfterClean">
+    <Delete Files="$(BaseIntermediateOutputPath)\project.assets.json" />
+  </Target>
 </Project>
