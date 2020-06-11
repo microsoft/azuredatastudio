@@ -9,7 +9,7 @@ import { ConnectionStatusManager } from 'sql/platform/connection/common/connecti
 import { ConnectionStore } from 'sql/platform/connection/common/connectionStore';
 import {
 	INewConnectionParams, ConnectionType,
-	IConnectionCompletionOptions, IConnectionResult,
+	IConnectionCompletionOptions, IConnectionResult, IConnectionParams,
 	RunQueryOnConnectionMode
 } from 'sql/platform/connection/common/connectionManagement';
 import * as Constants from 'sql/platform/connection/common/constants';
@@ -444,6 +444,39 @@ suite('SQL ConnectionManagementService tests', () => {
 			assert.equal(result.errorMessage, connectionResult.errorMessage);
 			verifyShowFirewallRuleDialog(connectionProfile, false);
 			verifyShowConnectionDialog(connectionProfile, ConnectionType.default, uri, true, connectionResult, false);
+		});
+	});
+
+	test('Accessors for event emitters should return emitter function', () => {
+		let onAddConnectionProfile1 = connectionManagementService.onAddConnectionProfile;
+		assert.equal(typeof (onAddConnectionProfile1), 'function');
+		let onDeleteConnectionProfile1 = connectionManagementService.onDeleteConnectionProfile;
+		assert.equal(typeof (onDeleteConnectionProfile1), 'function');
+		let onConnect1 = connectionManagementService.onConnect;
+		assert.equal(typeof (onConnect1), 'function');
+	});
+
+	test('onConnectionChangedNotification should call onConnectionChanged event', () => {
+		let uri = 'Test Uri';
+		let options: IConnectionCompletionOptions = {
+			params: undefined,
+			saveTheConnection: true,
+			showDashboard: false,
+			showConnectionDialogOnError: false,
+			showFirewallRuleOnError: true
+		};
+
+		return connect(uri, options).then(result => {
+			let saveConnection = connectionManagementService.getConnectionProfile(uri);
+			let changedConnectionInfo: azdata.ChangedConnectionInfo = { connectionUri: uri, connection: saveConnection };
+			let called = false;
+			connectionManagementService.onConnectionChanged((params: IConnectionParams) => {
+				assert.equal(uri, params.connectionUri);
+				assert.equal(saveConnection, params.connectionProfile);
+				called = true;
+			});
+			connectionManagementService.onConnectionChangedNotification(0, changedConnectionInfo);
+			assert.ok(called, 'expected onConnectionChanged event to be sent');
 		});
 	});
 
