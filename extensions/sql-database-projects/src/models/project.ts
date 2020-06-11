@@ -22,6 +22,7 @@ export class Project {
 	public files: ProjectEntry[] = [];
 	public dataSources: DataSource[] = [];
 	public importedTargets: string[] = [];
+	public databaseReferences: string[] = [];
 	public sqlCmdVariables: Record<string, string> = {};
 
 	public get projectFolderPath() {
@@ -59,6 +60,16 @@ export class Project {
 		for (let i = 0; i < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Import).length; i++) {
 			const importTarget = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Import)[i];
 			this.importedTargets.push(importTarget.getAttribute(constants.Project));
+		}
+
+		// find all database references to include
+		for (let r = 0; r < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference).length; r++) {
+			const filepath = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference)[r].getAttribute(constants.Include);
+			if (!filepath) {
+				throw new Error(constants.invalidDatabaseReference);
+			}
+
+			this.databaseReferences.push(path.parse(filepath).name);
 		}
 	}
 
@@ -259,7 +270,8 @@ export class Project {
 			referenceNode.appendChild(databaseVariableLiteralValue);
 		}
 
-		this.findOrCreateItemGroup().appendChild(referenceNode);
+		this.findOrCreateItemGroup(constants.ArtifactReference).appendChild(referenceNode);
+		this.databaseReferences.push(path.parse(entry.fsUri.fsPath.toString()).name);
 	}
 
 	private async updateImportedTargetsToProjFile(condition: string, projectAttributeVal: string, oldImportNode?: any): Promise<any> {
