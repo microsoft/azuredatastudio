@@ -46,7 +46,7 @@ jobs:
   dependsOn:
   - Compile
   steps:
-  - template: web/product-build-web.yml
+  - template: web/sql-product-build-web.yml
 
 - job: Docker
   condition: and(succeeded(), eq(variables['VSCODE_BUILD_DOCKER'], 'true'))
