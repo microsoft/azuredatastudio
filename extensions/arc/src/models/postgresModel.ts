@@ -35,32 +35,32 @@ export class PostgresModel {
 	}
 
 	/** Returns the service's Kubernetes namespace */
-	public namespace(): string {
+	public get namespace(): string {
 		return this._namespace;
 	}
 
 	/** Returns the service's name */
-	public name(): string {
+	public get name(): string {
 		return this._name;
 	}
 
 	/** Returns the service's fully qualified name in the format namespace.name */
-	public fullName(): string {
+	public get fullName(): string {
 		return `${this._namespace}.${this._name}`;
 	}
 
 	/** Returns the service's spec */
-	public service(): DuskyObjectModelsDatabaseService | undefined {
+	public get service(): DuskyObjectModelsDatabaseService | undefined {
 		return this._service;
 	}
 
 	/** Returns the service's password */
-	public password(): string | undefined {
+	public get password(): string | undefined {
 		return this._password;
 	}
 
 	/** Returns the service's pods */
-	public pods(): V1Pod[] | undefined {
+	public get pods(): V1Pod[] | undefined {
 		return this._pods;
 	}
 
@@ -95,7 +95,7 @@ export class PostgresModel {
 		service.status = undefined; // can't update the status
 		func(service);
 
-		return await this._databaseRouter.updateDuskyDatabaseService(this.namespace(), this.name(), service).then(r => {
+		return await this._databaseRouter.updateDuskyDatabaseService(this.namespace, this.name, service).then(r => {
 			this._service = r.body;
 			return this._service;
 		});
@@ -108,14 +108,14 @@ export class PostgresModel {
 
 	/** Creates a SQL database in the service */
 	public async createDatabase(db: DuskyObjectModelsDatabase): Promise<DuskyObjectModelsDatabase> {
-		return await (await this._databaseRouter.createDuskyDatabase(this.namespace(), this.name(), db)).body;
+		return await (await this._databaseRouter.createDuskyDatabase(this.namespace, this.name, db)).body;
 	}
 
 	/**
 	 * Returns the IP address and port of the service, preferring external IP over
 	 * internal IP. If either field is not available it will be set to undefined.
 	 */
-	public endpoint(): { ip?: string, port?: number } {
+	public get endpoint(): { ip?: string, port?: number } {
 		const externalIp = this._service?.status?.externalIP;
 		const internalIp = this._service?.status?.internalIP;
 		const externalPort = this._service?.status?.externalPort;
@@ -127,7 +127,7 @@ export class PostgresModel {
 	}
 
 	/** Returns the service's configuration e.g. '3 nodes, 1.5 vCores, 1GiB RAM, 2GiB storage per node' */
-	public configuration(): string {
+	public get configuration(): string {
 
 		// TODO: Resource requests and limits can be configured per role. Figure out how
 		//       to display that in the UI. For now, only show the default configuration.
@@ -136,7 +136,7 @@ export class PostgresModel {
 		const cpuRequest = this._service?.spec?.scheduling?._default?.resources?.requests?.['cpu'];
 		const ramRequest = this._service?.spec?.scheduling?._default?.resources?.requests?.['memory'];
 		const storage = this._service?.spec?.storage?.volumeSize;
-		const nodes = this.pods()?.length;
+		const nodes = this.pods?.length;
 
 		let configuration: string[] = [];
 
