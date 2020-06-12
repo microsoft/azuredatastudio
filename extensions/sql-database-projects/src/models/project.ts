@@ -64,7 +64,6 @@ export class Project {
 		}
 
 		// find all database references to include
-		this.databaseReferences = [];
 		for (let r = 0; r < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference).length; r++) {
 			const filepath = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference)[r].getAttribute(constants.Include);
 			if (!filepath) {
