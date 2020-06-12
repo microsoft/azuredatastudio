@@ -220,7 +220,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		this._kibanaLink.label = kibanaUrl;
 		this._kibanaLink.url = kibanaUrl;
 
-		const grafanaUrl = `${endpoints.find(e => e.name === 'metricsui')?.endpoint}/d/wZx3OUdmz/azure-sql-db-managed-instance-metrics?&var-hostname=${this._miaaModel.name}-0`;
+		const grafanaUrl = `${endpoints.find(e => e.name === 'metricsui')?.endpoint}/d/wZx3OUdmz/azure-sql-db-managed-instance-metrics?var-hostname=${this._miaaModel.name}-0`;
 		this._grafanaLink.label = grafanaUrl;
 		this._grafanaLink.url = grafanaUrl;
 
