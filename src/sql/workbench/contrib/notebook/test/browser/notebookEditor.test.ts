@@ -15,7 +15,6 @@ import { ICellModel } from 'sql/workbench/services/notebook/browser/models/model
 import { INotebookService, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookService } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
 import * as TypeMoq from 'typemoq';
-import * as dom from 'vs/base/browser/dom';
 import { Emitter } from 'vs/base/common/event';
 import { DisposableStore } from 'vs/base/common/lifecycle';
 import { Schemas } from 'vs/base/common/network';
@@ -193,7 +192,7 @@ suite('Test class NotebookEditor', () => {
 			await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 			const inputGuid = <string>input;
 			const result = notebookEditor.getCellEditor(inputGuid);
-			assert.strictEqual(result, undefined, `notebookEditor.getCellEditor() should return undefined when invalid guid is passed in for a notebookEditor of an empty document.`);
+			assert.strictEqual(result, undefined, `notebookEditor.getCellEditor() should return undefined when invalid guid:'${inputGuid}' is passed in for a notebookEditor of an empty document.`);
 		});
 	});
 
@@ -288,14 +287,21 @@ suite('Test class NotebookEditor', () => {
 
 });
 
-async function setupNotebookEditor(notebookEditor: NotebookEditor, untitledNotebookInput: UntitledNotebookInput) {
-	let div = dom.$('div', undefined, dom.$('span', { id: 'demospan' }));
-	let parentHtmlElement = div.firstChild as HTMLElement;
-	notebookEditor.create(parentHtmlElement); // adds notebookEditor to new htmlElement as parent
-	assert.notStrictEqual(notebookEditor, undefined);
-	assert.strictEqual(notebookEditor['parent'], parentHtmlElement, 'parent of notebookEditor was not one that was expected');
+async function setupNotebookEditor(notebookEditor: NotebookEditor, untitledNotebookInput: UntitledNotebookInput): Promise<void> {
+	createEditor(notebookEditor);
+	await setInputDocument(notebookEditor, untitledNotebookInput);
+}
+
+async function setInputDocument(notebookEditor: NotebookEditor, untitledNotebookInput: UntitledNotebookInput): Promise<void> {
 	const editorOptions = EditorOptions.create({ pinned: true });
 	await notebookEditor.setInput(untitledNotebookInput, editorOptions);
 	assert.strictEqual(notebookEditor.options, editorOptions, 'NotebookEditor options must be the ones that we set');
+}
+
+function createEditor(notebookEditor: NotebookEditor) {
+	let parentHtmlElement = document.createElement('div');
+	notebookEditor.create(parentHtmlElement); // adds notebookEditor to new htmlElement as parent
+	assert.notStrictEqual(notebookEditor['_overlay'], undefined), `The overlay must be defined for notebookEditor once create() has been called on it`;
+	assert.strictEqual(notebookEditor['parent'], parentHtmlElement, 'parent of notebookEditor was not the one that was expected');
 }
 
