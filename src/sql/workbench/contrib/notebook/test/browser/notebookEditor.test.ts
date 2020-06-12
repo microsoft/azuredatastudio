@@ -51,7 +51,6 @@ import { workbenchInstantiationService } from 'vs/workbench/test/browser/workben
 suite('Test class NotebookEditor', () => {
 
 	let notebookEditor: NotebookEditor;
-	//let notebookModel: INotebookModel;
 	let setupPromise: DeferredPromise<void>;
 
 	const installEvent: Emitter<InstallExtensionEvent> = new Emitter<InstallExtensionEvent>();
