@@ -102,7 +102,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(none));
 
 		connectionStore.setup(x => x.addRecentConnection(TypeMoq.It.isAny())).returns(() => Promise.resolve());
-		connectionStore.setup(x => x.saveProfile(TypeMoq.It.isAny(), TypeMoq.It.is(x => true), TypeMoq.It.is(x => true))).returns(() => Promise.resolve(connectionProfile));
+		connectionStore.setup(x => x.saveProfile(TypeMoq.It.is(profile => true), TypeMoq.It.is(x => true), TypeMoq.It.is(x => true))).returns(profile => Promise.resolve(profile));
 		workbenchEditorService.setup(x => x.openEditor(undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(undefined));
 		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is<IConnectionProfile>(
 			c => c.serverName === connectionProfile.serverName))).returns(() => Promise.resolve({ profile: connectionProfile, savedCred: true }));
@@ -204,7 +204,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 		if (options) {
 			if (options.saveTheConnection) {
-				connectionStore.verify(x => x.saveProfile(TypeMoq.It.isAny(), TypeMoq.It.is(x => true), TypeMoq.It.is(x => true)), TypeMoq.Times.once());
+				connectionStore.verify(x => x.saveProfile(TypeMoq.It.is(profile => true), TypeMoq.It.is(x => true), TypeMoq.It.is(x => true)), TypeMoq.Times.once());
 			}
 			if (options.showDashboard) {
 				workbenchEditorService.verify(x => x.openEditor(undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
@@ -504,83 +504,80 @@ suite('SQL ConnectionManagementService tests', () => {
 		});
 	});
 
-	/* alma1  6/10/20 commented these two tests below out since saveProfile for connectionStore ONLY works with connectionProfile
-	and these two tests cannot work without changing connectionProfile itself. saveProfile needs to be altered to accept different
-	connection profiles*/
-	// test('Edit Connection - Changing connection profile name for same URI should persist after edit', () => {
-	// 	let profile = connectionProfile;
-	// 	let uri1 = 'test_uri1';
-	// 	let newname = 'connection renamed';
-	// 	let options: IConnectionCompletionOptions = {
-	// 		params: {
-	// 			connectionType: ConnectionType.editor,
-	// 			input: {
-	// 				onConnectSuccess: undefined,
-	// 				onConnectReject: undefined,
-	// 				onConnectStart: undefined,
-	// 				onDisconnect: undefined,
-	// 				onConnectCanceled: undefined,
-	// 				uri: uri1,
-	// 			},
-	// 			queryRange: undefined,
-	// 			runQueryOnCompletion: RunQueryOnConnectionMode.none,
-	// 			isEditConnection: false
-	// 		},
-	// 		saveTheConnection: true,
-	// 		showDashboard: false,
-	// 		showConnectionDialogOnError: true,
-	// 		showFirewallRuleOnError: true
-	// 	};
+	test('Edit Connection - Changing connection profile name for same URI should persist after edit', () => {
+		let profile = assign({}, connectionProfile);
+		let uri1 = 'test_uri1';
+		let newname = 'connection renamed';
+		let options: IConnectionCompletionOptions = {
+			params: {
+				connectionType: ConnectionType.editor,
+				input: {
+					onConnectSuccess: undefined,
+					onConnectReject: undefined,
+					onConnectStart: undefined,
+					onDisconnect: undefined,
+					onConnectCanceled: undefined,
+					uri: uri1,
+				},
+				queryRange: undefined,
+				runQueryOnCompletion: RunQueryOnConnectionMode.none,
+				isEditConnection: false
+			},
+			saveTheConnection: true,
+			showDashboard: false,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		};
 
-	// 	return connect(uri1, options, true, profile).then(result => {
-	// 		assert.equal(result.connected, true);
-	// 		let newProfile = connectionProfile;
-	// 		newProfile.connectionName = newname;
-	// 		options.params.isEditConnection = true;
-	// 		return connect(uri1, options, true, profile).then(result => {
-	// 			assert.equal(result.connected, true);
-	// 			assert.equal(connectionManagementService.getConnectionProfile(uri1).connectionName, newname);
-	// 		});
-	// 	});
-	// });
+		return connect(uri1, options, true, profile).then(result => {
+			assert.equal(result.connected, true);
+			let newProfile = assign({}, connectionProfile);
+			newProfile.connectionName = newname;
+			options.params.isEditConnection = true;
+			return connect(uri1, options, true, newProfile).then(result => {
+				assert.equal(result.connected, true);
+				assert.equal(connectionManagementService.getConnectionProfile(uri1).connectionName, newname);
+			});
+		});
+	});
 
-	// test('Edit Connection - Connecting a different URI with same profile via edit should not change profile ID.', () => {
-	// 	let uri1 = 'test_uri1';
-	// 	let uri2 = 'test_uri2';
-	// 	connectionProfile.id = '0451';
-	// 	let options: IConnectionCompletionOptions = {
-	// 		params: {
-	// 			connectionType: ConnectionType.editor,
-	// 			input: {
-	// 				onConnectSuccess: undefined,
-	// 				onConnectReject: undefined,
-	// 				onConnectStart: undefined,
-	// 				onDisconnect: undefined,
-	// 				onConnectCanceled: undefined,
-	// 				uri: uri1
-	// 			},
-	// 			queryRange: undefined,
-	// 			runQueryOnCompletion: RunQueryOnConnectionMode.none,
-	// 			isEditConnection: false
-	// 		},
-	// 		saveTheConnection: true,
-	// 		showDashboard: false,
-	// 		showConnectionDialogOnError: true,
-	// 		showFirewallRuleOnError: true
-	// 	};
+	test('Edit Connection - Connecting a different URI with same profile via edit should not change profile ID.', () => {
+		let uri1 = 'test_uri1';
+		let uri2 = 'test_uri2';
+		let profile = assign({}, connectionProfile);
+		profile.id = '0451';
+		let options: IConnectionCompletionOptions = {
+			params: {
+				connectionType: ConnectionType.editor,
+				input: {
+					onConnectSuccess: undefined,
+					onConnectReject: undefined,
+					onConnectStart: undefined,
+					onDisconnect: undefined,
+					onConnectCanceled: undefined,
+					uri: uri1
+				},
+				queryRange: undefined,
+				runQueryOnCompletion: RunQueryOnConnectionMode.none,
+				isEditConnection: false
+			},
+			saveTheConnection: true,
+			showDashboard: false,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		};
 
-	// 	return connect(uri1, options, true, connectionProfile).then(result => {
-	// 		assert.equal(result.connected, true);
-	// 		options.params.isEditConnection = true;
-	// 		return connect(uri2, options, true, connectionProfile).then(result => {
-	// 			assert.equal(result.connected, true);
-	// 			let uri1info = connectionManagementService.getConnectionInfo(uri1);
-	// 			let uri2info = connectionManagementService.getConnectionInfo(uri2);
-	// 			assert.equal(uri1info.connectionProfile.id, uri2info.connectionProfile.id);
-	// 			connectionProfile.id = undefined;
-	// 		});
-	// 	});
-	// });
+		return connect(uri1, options, true, profile).then(result => {
+			assert.equal(result.connected, true);
+			options.params.isEditConnection = true;
+			return connect(uri2, options, true, profile).then(result => {
+				assert.equal(result.connected, true);
+				let uri1info = connectionManagementService.getConnectionInfo(uri1);
+				let uri2info = connectionManagementService.getConnectionInfo(uri2);
+				assert.equal(uri1info.connectionProfile.id, uri2info.connectionProfile.id);
+			});
+		});
+	});
 
 
 	test('failed firewall rule should open the firewall rule dialog', () => {
@@ -644,6 +641,16 @@ suite('SQL ConnectionManagementService tests', () => {
 	test('hasRegisteredServers should return true as there is one registered server', () => {
 		assert(connectionManagementService.hasRegisteredServers());
 	});
+
+	// test('connectIfNotConnected should connect connectionProfile when it is not connected then refuse once connected', () => {
+	// 	try{
+	// 	connectionManagementService.connectIfNotConnected(connectionProfile, 'connection').then(result => {
+	// 		console.log(result);
+	// 	});
+	// 	} catch {
+	// 		console.log('something bad happened');
+	// 	}
+	// });
 
 	test('getAdvancedProperties should return a list of properties for connectionManagementService', () => {
 		let propertyNames = ['connectionName', 'serverName', 'databaseName', 'userName', 'authenticationType', 'password'];
