@@ -165,7 +165,7 @@ suite('Test class NotebookEditor', () => {
 
 	// NotebookEditor-getCellEditor tests.
 	['', undefined, null, 'unknown string', /*unknown guid*/generateUuid()].forEach(input => {
-		test(`NotebookEditor: Negative Test getCellEditor() returns undefined for invalid or unknown guid:'${input}'`, async () => {
+		test(`NotebookEditor: Negative Test for getCellEditor() - returns undefined for invalid or unknown guid:'${input}'`, async () => {
 			await setupPromise;
 			const inputGuid = <string>input;
 			const result = notebookEditor.getCellEditor(inputGuid);
@@ -173,7 +173,7 @@ suite('Test class NotebookEditor', () => {
 		});
 	});
 
-	test('NotebookEditor: Positive Test for getCellEditor() - verify that it returns a valid text editor object for valid guid input', async () => {
+	test('NotebookEditor: Positive Test for getCellEditor() - returns a valid text editor object for valid guid input', async () => {
 		await setupPromise;
 		const result = notebookEditor.getCellEditor(cellTextEditorGuid);
 		assert.strictEqual(result, queryTextEditor, 'notebookEditor.getCellEditor() should return an expected QueryTextEditor when a guid corresponding to that editor is passed in.');
