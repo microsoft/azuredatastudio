@@ -132,7 +132,7 @@ export class PerFolderServerInstance implements IServerInstance {
 
 	constructor(private options: IInstanceOptions, fsUtils?: ServerInstanceUtils) {
 		this.utils = fsUtils || new ServerInstanceUtils();
-		this.notebookScriptPath = path.join(this.options.install.extensionPath, 'resources', 'pythonScripts', 'notebook.py');
+		this.notebookScriptPath = path.join(this.options.install.extensionPath, 'resources', 'pythonScripts', 'startNotebook.py');
 	}
 
 	public get isStarted(): boolean {
