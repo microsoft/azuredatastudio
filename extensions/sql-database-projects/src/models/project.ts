@@ -8,6 +8,7 @@ import * as xmldom from 'xmldom';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
 import * as xmlFormat from 'xml-formatter';
+import * as os from 'os';
 
 import { Uri } from 'vscode';
 import { promises as fs } from 'fs';
@@ -354,7 +355,7 @@ export class Project {
 
 	private async serializeToProjFile(projFileContents: any) {
 		let xml = new xmldom.XMLSerializer().serializeToString(projFileContents);
-		xml = xmlFormat(xml, { collapseContent: true, indentation: '  ' });
+		xml = xmlFormat(xml, <any>{ collapseContent: true, indentation: '  ', lineSeparator: os.EOL }); // TODO: replace <any>
 
 		await fs.writeFile(this.projectFilePath, xml);
 	}
