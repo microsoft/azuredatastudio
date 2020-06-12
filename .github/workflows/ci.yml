@@ -16,6 +16,7 @@ jobs:
     env:
       CHILD_CONCURRENCY: "1"
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      NODE_COVERALLS_DEBUG: "1"
     steps:
     - uses: actions/checkout@v1
     # TODO: rename azure-pipelines/linux/xvfb.init to github-actions
