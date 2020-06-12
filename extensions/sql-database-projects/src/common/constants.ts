@@ -138,3 +138,12 @@ export const dataSourceSetting = 'Data Source';
 export const integratedSecuritySetting = 'Integrated Security';
 export const userIdSetting = 'User ID';
 export const passwordSetting = 'Password';
+
+// Tree Items types
+export enum DatabaseProjectItemType {
+	project = 'databaseProject.itemType.project',
+	folder = 'databaseProject.itemType.folder',
+	file = 'databaseProject.itemType.file',
+	referencesRoot = 'databaseProject.itemType.referencesRoot',
+	reference = 'databaseProject.itemType.reference'
+}

@@ -10,6 +10,7 @@ import { BaseProjectTreeItem } from './baseTreeItem';
 import * as fileTree from './fileFolderTreeItem';
 import { Project, ProjectEntry, EntryType } from '../project';
 import * as utils from '../../common/utils';
+import { DatabaseProjectItemType } from '../../common/constants';
 
 /**
  * TreeNode root that represents an entire project
@@ -36,7 +37,9 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	}
 
 	public get treeItem(): vscode.TreeItem {
-		return new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.Expanded);
+		const projectItem = new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.Expanded);
+		projectItem.contextValue = DatabaseProjectItemType.project;
+		return projectItem;
 	}
 
 	/**
