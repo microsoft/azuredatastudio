@@ -34,7 +34,14 @@ export async function resolveQueryFilePath(services: ServicesAccessor, filePath?
 	// Resolve the path using each folder in our workspace, or undefined if there aren't any
 	// (so that non-folder vars such as environment vars still resolve)
 	let resolvedFileUris = (workspaceFolders.length > 0 ? workspaceFolders : [undefined])
-		.map(f => URI.file(configurationResolverService.resolve(f, filePath)).with({ scheme: f.uri.scheme })); // ensure we maintain the correct scheme
+		.map(f => {
+			const uri = URI.file(configurationResolverService.resolve(f, filePath));
+			if (f) {
+				return uri.with({ scheme: f.uri.scheme }); // ensure we maintain the correct scheme
+			} else {
+				return uri;
+			}
+		});
 
 	// Just need a single query file so use the first we find that exists
 	for (const uri of resolvedFileUris) {
