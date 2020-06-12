@@ -1302,7 +1302,7 @@ export class TreeView extends HeightMap {
 		this.currentDragAndDropData = new dnd.ElementsDragAndDropData(elements);
 		StaticDND.CurrentDragAndDropData = new dnd.ExternalElementsDragAndDropData(elements);
 
-		this.context.dnd!.onDragStart(this.context.tree, this.currentDragAndDropData, new Mouse.DragMouseEvent(e), element, item);
+		this.context.dnd!.onDragStart(this.context.tree, this.currentDragAndDropData, new Mouse.DragMouseEvent(e));
 	}
 
 	private setupDragAndDropScrollInterval(): void {

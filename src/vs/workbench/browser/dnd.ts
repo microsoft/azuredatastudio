@@ -18,7 +18,7 @@ import { normalizeDriveLetter } from 'vs/base/common/labels';
 import { MIME_BINARY } from 'vs/base/common/mime';
 import { isWindows, isWeb } from 'vs/base/common/platform';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
-import { ICodeEditor, isCodeEditor } from 'vs/editor/browser/editorBrowser';
+import { isCodeEditor } from 'vs/editor/browser/editorBrowser';
 import { IEditorIdentifier, GroupIdentifier } from 'vs/workbench/common/editor';
 import { IEditorService, IResourceEditorInputType } from 'vs/workbench/services/editor/common/editorService';
 import { Disposable, IDisposable, DisposableStore } from 'vs/base/common/lifecycle';
@@ -30,7 +30,6 @@ import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { isStandalone } from 'vs/base/browser/browser';
 import { IBackupFileService } from 'vs/workbench/services/backup/common/backup';
 import { Emitter } from 'vs/base/common/event';
-import { SnippetController2 } from 'vs/editor/contrib/snippet/snippetController2';
 
 export interface IDraggedResource {
 	resource: URI;
@@ -175,23 +174,12 @@ export class ResourcesDropHandler {
 
 	async handleDrop(event: DragEvent, resolveTargetGroup: () => IEditorGroup | undefined, afterDrop: (targetGroup: IEditorGroup | undefined) => void, targetIndex?: number): Promise<void> {
 
-		// {{SQL CARBON EDIT}}
-		const untitledOrFileResources = extractResources(event);
-		if (!untitledOrFileResources.length) {
-			return;
-		}
-
-		// {{SQL CARBON EDIT}}
-		const editor = this.editorService.activeTextEditorControl as ICodeEditor;
+		const untitledOrFileResources = extractResources(event).filter(r => this.fileService.canHandleResource(r.resource) || r.resource.scheme === Schemas.untitled);
 
 		// Make the window active to handle the drop properly within
 		await this.hostService.focus();
 
-		// {{SQL CARBON EDIT}}
-		if (untitledOrFileResources[0].resource.scheme === 'Column' || untitledOrFileResources[0].resource.scheme === 'Table') {
-			SnippetController2.get(editor).insert(`[${untitledOrFileResources[0].resource.query}]`);
-			return;
-		}
+
 
 		// Check for special things being dropped
 		const isWorkspaceOpening = await this.doHandleDrop(untitledOrFileResources);

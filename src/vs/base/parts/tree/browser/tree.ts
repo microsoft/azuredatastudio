@@ -503,7 +503,7 @@ export interface IDragAndDrop {
 	 * Sent when the drag operation is starting.
 	 */
 	// {{SQL CARBON EDIT}}
-	onDragStart(tree: ITree, data: IDragAndDropData, originalEvent: Mouse.DragMouseEvent, element: any, item: ViewItem): void;
+	onDragStart(tree: ITree, data: IDragAndDropData, originalEvent: Mouse.DragMouseEvent): void;
 
 	/**
 	 * Returns a DragOverReaction indicating whether sources can be

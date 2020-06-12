@@ -7,7 +7,7 @@ import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectio
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ITree, IDragAndDrop, IDragOverReaction, DRAG_OVER_ACCEPT_BUBBLE_DOWN, DRAG_OVER_REJECT } from 'vs/base/parts/tree/browser/tree';
-import { ViewItem } from 'vs/base/parts/tree/browser/treeView';
+import { ElementsDragAndDropData } from 'vs/base/browser/ui/list/listView.ts';
 import { DragMouseEvent } from 'vs/base/browser/mouseEvent';
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 import { UNSAVED_GROUP_ID } from 'sql/platform/connection/common/constants';
@@ -17,7 +17,7 @@ import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode'
 /**
  * Implements drag and drop for the server tree
  */
-export class TreeDragAndDrop implements IDragAndDrop {
+export class ServerTreeDragAndDrop implements IDragAndDrop {
 
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
@@ -59,10 +59,10 @@ export class TreeDragAndDrop implements IDragAndDrop {
 	/**
 	 * Called when the drag operation starts.
 	 */
-	public onDragStart(tree: ITree, data: IDragAndDropData, originalEvent: DragMouseEvent, element: any, item: ViewItem): void {
+	public onDragStart(tree: ITree, data: ElementsDragAndDropData<any>, originalEvent: DragMouseEvent): void {
 		TreeUpdateUtils.isInDragAndDrop = true;
-		if (element.nodeTypeId === 'Column' || element.nodeTypeId === 'Table') {
-			originalEvent.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([`${element.nodeTypeId}:${item.uri}?${element.metadata.schema ? element.metadata.schema + '.' + element.metadata.name : element.metadata.name}`]));
+		if (data.elements[0].nodeTypeId === 'Column' || data.elements[0].nodeTypeId === 'Table') {
+			originalEvent.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([`${data.elements[0].nodeTypeId}:${data.elements[0].id}?${data.elements[0].metadata.schema ? data.elements[0].metadata.schema + '.' + data.elements[0].metadata.name : data.elements[0].metadata.name}`]));
 		}
 
 		return;
