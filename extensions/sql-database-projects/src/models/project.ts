@@ -7,6 +7,8 @@ import * as path from 'path';
 import * as xmldom from 'xmldom';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
+import * as xmlFormat from 'xml-formatter';
+import * as os from 'os';
 
 import { Uri } from 'vscode';
 import { promises as fs } from 'fs';
@@ -21,6 +23,7 @@ export class Project {
 	public files: ProjectEntry[] = [];
 	public dataSources: DataSource[] = [];
 	public importedTargets: string[] = [];
+	public databaseReferences: string[] = [];
 	public sqlCmdVariables: Record<string, string> = {};
 
 	public get projectFolderPath() {
@@ -58,6 +61,16 @@ export class Project {
 		for (let i = 0; i < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Import).length; i++) {
 			const importTarget = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Import)[i];
 			this.importedTargets.push(importTarget.getAttribute(constants.Project));
+		}
+
+		// find all database references to include
+		for (let r = 0; r < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference).length; r++) {
+			const filepath = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference)[r].getAttribute(constants.Include);
+			if (!filepath) {
+				throw new Error(constants.invalidDatabaseReference);
+			}
+
+			this.databaseReferences.push(path.parse(filepath).name);
 		}
 	}
 
@@ -258,7 +271,8 @@ export class Project {
 			referenceNode.appendChild(databaseVariableLiteralValue);
 		}
 
-		this.findOrCreateItemGroup().appendChild(referenceNode);
+		this.findOrCreateItemGroup(constants.ArtifactReference).appendChild(referenceNode);
+		this.databaseReferences.push(path.parse(entry.fsUri.fsPath.toString()).name);
 	}
 
 	private async updateImportedTargetsToProjFile(condition: string, projectAttributeVal: string, oldImportNode?: any): Promise<any> {
@@ -305,7 +319,8 @@ export class Project {
 	}
 
 	private async serializeToProjFile(projFileContents: any) {
-		const xml = new xmldom.XMLSerializer().serializeToString(projFileContents); // TODO: how to get this to serialize with "pretty" formatting
+		let xml = new xmldom.XMLSerializer().serializeToString(projFileContents);
+		xml = xmlFormat(xml, <any>{ collapseContent: true, indentation: '  ', lineSeparator: os.EOL }); // TODO: replace <any>
 
 		await fs.writeFile(this.projectFilePath, xml);
 	}
