@@ -106,22 +106,4 @@ describe('AzureResourceTreeProvider.getChildren', function (): void {
 		should(children.length).equal(1);
 		should(children[0]).instanceof(AzureResourceAccountNotSignedInTreeNode);
 	});
-
-	xit('Should handle errors.', async function (): Promise<void> {
-		const mockAccountError = 'Test account error';
-		mockAccountService.setup((o) => o.getAccounts()).returns(() => { throw new Error(mockAccountError); });
-
-		const treeProvider = new AzureResourceTreeProvider(mockAppContext);
-		treeProvider.isSystemInitialized = true;
-
-		const children = await treeProvider.getChildren(undefined);
-
-		mockAccountService.verify((o) => o.getAccounts(), TypeMoq.Times.once());
-
-		should(children).Array();
-		should(children.length).equal(1);
-		should(children[0]).instanceof(AzureResourceMessageTreeNode);
-		should(children[0].nodePathValue).startWith('message_');
-		should(children[0].getNodeInfo().label).equal(`Error: ${mockAccountError}`);
-	});
 });
