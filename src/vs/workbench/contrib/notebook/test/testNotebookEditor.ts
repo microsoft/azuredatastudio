@@ -13,7 +13,7 @@ import { Range } from 'vs/editor/common/core/range';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { EditorModel } from 'vs/workbench/common/editor';
-import { ICellRange, ICellViewModel, INotebookEditor as IVsNotebookEditor, INotebookEditorContribution, INotebookEditorMouseEvent, NotebookLayoutInfo } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
+import { ICellRange, ICellViewModel, INotebookEditor, INotebookEditorContribution, INotebookEditorMouseEvent, NotebookLayoutInfo } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
 import { OutputRenderer } from 'vs/workbench/contrib/notebook/browser/view/output/outputRenderer';
 import { NotebookEventDispatcher } from 'vs/workbench/contrib/notebook/browser/viewModel/eventDispatcher';
 import { CellViewModel, IModelDecorationsChangeAccessor, NotebookViewModel } from 'vs/workbench/contrib/notebook/browser/viewModel/notebookViewModel';
@@ -36,7 +36,7 @@ export class TestCell extends NotebookCellTextModel {
 	}
 }
 
-export class TestVsNotebookEditor implements IVsNotebookEditor {
+export class TestNotebookEditor implements INotebookEditor {
 
 	get viewModel() {
 		return undefined;
@@ -277,16 +277,16 @@ export class NotebookEditorTestModel extends EditorModel implements INotebookEdi
 	}
 }
 
-export function withTestNotebook(instantiationService: IInstantiationService, bulkEditService: IBulkEditService, undoRedoService: IUndoRedoService, cells: [string[], string, CellKind, IProcessedOutput[], NotebookCellMetadata][], callback: (editor: TestVsNotebookEditor, viewModel: NotebookViewModel, textModel: NotebookTextModel) => void) {
+export function withTestNotebook(instantiationService: IInstantiationService, blukEditService: IBulkEditService, undoRedoService: IUndoRedoService, cells: [string[], string, CellKind, IProcessedOutput[], NotebookCellMetadata][], callback: (editor: TestNotebookEditor, viewModel: NotebookViewModel, textModel: NotebookTextModel) => void) {
 	const viewType = 'notebook';
-	const editor = new TestVsNotebookEditor();
+	const editor = new TestNotebookEditor();
 	const notebook = new NotebookTextModel(0, viewType, URI.parse('test'));
 	notebook.cells = cells.map((cell, index) => {
 		return new NotebookCellTextModel(notebook.uri, index, cell[0], cell[1], cell[2], cell[3], cell[4]);
 	});
 	const model = new NotebookEditorTestModel(notebook);
 	const eventDispatcher = new NotebookEventDispatcher();
-	const viewModel = new NotebookViewModel(viewType, model.notebook, eventDispatcher, null, instantiationService, bulkEditService, undoRedoService);
+	const viewModel = new NotebookViewModel(viewType, model.notebook, eventDispatcher, null, instantiationService, blukEditService, undoRedoService);
 
 	callback(editor, viewModel, notebook);
 

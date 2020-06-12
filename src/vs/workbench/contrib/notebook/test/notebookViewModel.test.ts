@@ -18,7 +18,7 @@ import { reduceCellRanges, ICellRange } from 'vs/workbench/contrib/notebook/brow
 
 suite('NotebookViewModel', () => {
 	const instantiationService = new TestInstantiationService();
-	const bulkEditService = instantiationService.get(IBulkEditService);
+	const blukEditService = instantiationService.get(IBulkEditService);
 	const undoRedoService = instantiationService.stub(IUndoRedoService, () => { });
 	instantiationService.spy(IUndoRedoService, 'pushElement');
 
@@ -26,14 +26,14 @@ suite('NotebookViewModel', () => {
 		const notebook = new NotebookTextModel(0, 'notebook', URI.parse('test'));
 		const model = new NotebookEditorTestModel(notebook);
 		const eventDispatcher = new NotebookEventDispatcher();
-		const viewModel = new NotebookViewModel('notebook', model.notebook, eventDispatcher, null, instantiationService, bulkEditService, undoRedoService);
+		const viewModel = new NotebookViewModel('notebook', model.notebook, eventDispatcher, null, instantiationService, blukEditService, undoRedoService);
 		assert.equal(viewModel.viewType, 'notebook');
 	});
 
 	test('insert/delete', function () {
 		withTestNotebook(
 			instantiationService,
-			bulkEditService,
+			blukEditService,
 			undoRedoService,
 			[
 				[['var a = 1;'], 'javascript', CellKind.Code, [], { editable: true }],
@@ -59,7 +59,7 @@ suite('NotebookViewModel', () => {
 	test('move cells down', function () {
 		withTestNotebook(
 			instantiationService,
-			bulkEditService,
+			blukEditService,
 			undoRedoService,
 			[
 				[['//a'], 'javascript', CellKind.Code, [], { editable: true }],
@@ -90,7 +90,7 @@ suite('NotebookViewModel', () => {
 	test('move cells up', function () {
 		withTestNotebook(
 			instantiationService,
-			bulkEditService,
+			blukEditService,
 			undoRedoService,
 			[
 				[['//a'], 'javascript', CellKind.Code, [], { editable: true }],
@@ -115,7 +115,7 @@ suite('NotebookViewModel', () => {
 	test('index', function () {
 		withTestNotebook(
 			instantiationService,
-			bulkEditService,
+			blukEditService,
 			undoRedoService,
 			[
 				[['var a = 1;'], 'javascript', CellKind.Code, [], { editable: true }],
@@ -144,7 +144,7 @@ suite('NotebookViewModel', () => {
 	test('metadata', function () {
 		withTestNotebook(
 			instantiationService,
-			bulkEditService,
+			blukEditService,
 			undoRedoService,
 			[
 				[['var a = 1;'], 'javascript', CellKind.Code, [], {}],

@@ -1,13 +1,16 @@
 /*---------------------------------------------------------------------------------------------
-*  Copyright (c) Microsoft Corporation. All rights reserved.
-*  Licensed under the Source EULA. See License.txt in the project root for license information.
-*--------------------------------------------------------------------------------------------*/
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import * as assert from 'assert';
 import { Deferred as DeferredPromise } from 'sql/base/common/promise';
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/untitledNotebookInput';
+import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
 import { NBTestQueryManagementService } from 'sql/workbench/contrib/notebook/test/nbTestQueryManagementService';
-import { CellEditorProviderStub, NotebookEditorStub, NotebookModelStub } from 'sql/workbench/contrib/notebook/test/stubs';
+import { NotebookModelStub } from 'sql/workbench/contrib/notebook/test/stubs';
+import { TestNotebookEditor } from 'sql/workbench/contrib/notebook/test/testCommon';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookService, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookService } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
@@ -43,29 +46,7 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
-import { NotebookEditor } from '../../../../../../sql/workbench/contrib/notebook/browser/notebookEditor';
 
-class TestNotebookEditor extends NotebookEditorStub {
-	constructor(private _cellGuid?: string, private _editor?: QueryTextEditor) {
-		super();
-	}
-	cellEditors: CellEditorProviderStub[] = [new TestCellEditorProvider(this._cellGuid, this._editor)];
-}
-
-class TestCellEditorProvider extends CellEditorProviderStub {
-	constructor(private _cellGuid: string, private _editor: QueryTextEditor) {
-		super();
-		let div = dom.$('div', undefined, dom.$('span', { id: 'demospan' }));
-		let firstChild = div.firstChild as HTMLElement;
-		this._editor.create(firstChild);
-	}
-	cellGuid(): string {
-		return this._cellGuid;
-	}
-	getEditor(): QueryTextEditor {
-		return this._editor;
-	}
-}
 
 suite('Test class NotebookEditor', () => {
 
@@ -124,7 +105,7 @@ suite('Test class NotebookEditor', () => {
 		instantiationService.get(IEditorService),
 		instantiationService.get(IConfigurationService)
 	);
-	const testNotebookEditor = new TestNotebookEditor(cellTextEditorGuid, queryTextEditor);
+	const testNotebookEditor = new TestNotebookEditor({ cellGuid: cellTextEditorGuid, editor: queryTextEditor });
 	testNotebookEditor.id = untitledNotebookInput.notebookUri.toString();
 	testNotebookEditor.model = new NotebookModelStub();
 	notebookService.addNotebookEditor(testNotebookEditor);
@@ -176,7 +157,7 @@ suite('Test class NotebookEditor', () => {
 	// 	});
 	// });
 
-	test('NotebookEditor-dispose', async () => {
+	test('NotebookEditor-dispose: Tests dispose() disposes all objects in its disposable store', async () => {
 		await setupPromise;
 		const mockNotebookEditor = TypeMoq.Mock.ofInstance(notebookEditor);
 		mockNotebookEditor.setup(x => x.dispose()).callback(() => notebookEditor.dispose());
@@ -186,7 +167,7 @@ suite('Test class NotebookEditor', () => {
 		assert.ok(isDisposed, 'notebookEditor\'s disposable store must be disposed');
 	});
 
-	test('NotebookEditor-setSelection-getPosition-getLastPosition', async () => {
+	test('NotebookEditor-setSelection-getPosition-getLastPosition: Tests getPosition and getLastPosition currently return the ranges set by setSelection', async () => {
 		await setupPromise;
 		let currentPosition = notebookEditor.getPosition();
 		let lastPosition = notebookEditor.getLastPosition();
@@ -208,7 +189,7 @@ suite('Test class NotebookEditor', () => {
 
 	// NotebookEditor-getCellEditor tests.
 	['', undefined, null, 'unknown string', /*unknown guid*/generateUuid()].forEach(input => {
-		test(`NotebookEditor-getCellEditor:'${input}'`, async () => {
+		test(`NotebookEditor-getCellEditor: Test getCellEditor() returns undefined for input:'${input}'`, async () => {
 			await setupPromise;
 			const inputGuid = <string>input;
 			const result = notebookEditor.getCellEditor(inputGuid);
@@ -216,10 +197,10 @@ suite('Test class NotebookEditor', () => {
 		});
 	});
 
-	test(`NotebookEditor-getCellEditor:'Positive -> for an existing Guid:${cellTextEditorGuid}'`, async () => {
+	test('NotebookEditor-getCellEditor: Positive Tests getCellEditor() returns text editor object for valid guid input', async () => {
 		await setupPromise;
 		const result = notebookEditor.getCellEditor(cellTextEditorGuid);
-		assert.strictEqual(result, queryTextEditor, `notebookEditor.getCellEditor() should return ${queryTextEditor} when ${cellTextEditorGuid} is passed in for a notebookEditor of an empty document.`);
+		assert.strictEqual(result, queryTextEditor, 'notebookEditor.getCellEditor() should return an expected QueryTextEditor when a guid corresponding to that editor is passed in.');
 
 	});
 
