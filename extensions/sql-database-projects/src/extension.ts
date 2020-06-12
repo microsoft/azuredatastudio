@@ -15,7 +15,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 	controllers.push(mainController);
 	context.subscriptions.push(mainController);
 
+	console.log(`Sql-database-projects activate start time:${new Date().getTime()}`);
 	await mainController.activate();
+	console.log(`Sql-database-projects activate end time:${new Date().getTime()}`);
 }
 
 export function deactivate(): void {

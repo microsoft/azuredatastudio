@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as should from 'should';
+/*import * as should from 'should';
 import * as os from 'os';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -65,3 +65,4 @@ describe('NetCoreTool: Net core tests', function (): void {
 		}
 	});
 });
+*/

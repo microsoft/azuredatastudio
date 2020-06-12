@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as should from 'should';
+/*import * as should from 'should';
 import * as path from 'path';
 import * as os from 'os';
 import * as azdata from 'azdata';
@@ -336,3 +336,4 @@ describe('ProjectsController: round trip feature with SSDT', function (): void {
 		should(project.importedTargets.length).equal(3); // additional target added by updateProjectForRoundTrip method
 	});
 });
+*/

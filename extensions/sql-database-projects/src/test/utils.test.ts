@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as should from 'should';
+/*import * as should from 'should';
 import * as path from 'path';
 import {createDummyFileStructure} from './testUtils';
 import {toPascalCase, exists} from '../common/utils';
@@ -28,3 +28,4 @@ describe('Tests to verify exists function', function (): void {
 		should(await exists(path.join(testFolderPath, 'folder4','file2.sql'))).equal(false);
 	});
 });
+*/
