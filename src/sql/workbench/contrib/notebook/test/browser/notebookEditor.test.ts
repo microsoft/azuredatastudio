@@ -165,7 +165,7 @@ suite('Test class NotebookEditor', () => {
 
 	// NotebookEditor-getCellEditor tests.
 	['', undefined, null, 'unknown string', /*unknown guid*/generateUuid()].forEach(input => {
-		test(`NotebookEditor: Test getCellEditor() returns undefined for invalid or unknown guid:'${input}'`, async () => {
+		test(`NotebookEditor: Negative Test getCellEditor() returns undefined for invalid or unknown guid:'${input}'`, async () => {
 			await setupPromise;
 			const inputGuid = <string>input;
 			const result = notebookEditor.getCellEditor(inputGuid);
