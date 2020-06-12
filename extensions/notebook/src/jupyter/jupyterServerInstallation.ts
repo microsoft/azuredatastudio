@@ -112,6 +112,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	private readonly _requiredKernelPackages: Map<string, PythonPkgDetails[]>;
 	private readonly _requiredPackagesSet: Set<string>;
 
+	public readonly runningOnSAW: boolean;
+
 	constructor(extensionPath: string, outputChannel: OutputChannel, apiWrapper: ApiWrapper, pythonInstallationPath?: string) {
 		this.extensionPath = extensionPath;
 		this.outputChannel = outputChannel;
@@ -167,6 +169,12 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		allPackages.forEach(pkg => {
 			this._requiredPackagesSet.add(pkg.name);
 		});
+
+		let notebookConfig = apiWrapper.getConfiguration(constants.notebookConfigKey);
+		if (notebookConfig) {
+			this.runningOnSAW = !!notebookConfig[constants.runningOnSawConfigKey];
+		}
+		this.apiWrapper.setCommandContext('notebook:runningOnSAW', this.runningOnSAW);
 	}
 
 	private async installDependencies(backgroundOperation: azdata.BackgroundOperation, forceInstall: boolean, specificPackages?: PythonPkgDetails[]): Promise<void> {

@@ -50,10 +50,10 @@
             "type": "string"
           }
         },
-        "notebook.usingSAW": {
+        "notebook.runningOnSAW": {
           "type": "boolean",
           "default": true,
-          "description": "%notebook.usingSAW.description%"
+          "description": "%notebook.runningOnSAW.description%"
         }
       }
     },
@@ -308,8 +308,16 @@
           "when": "false"
         },
         {
+          "command": "jupyter.cmd.configurePython",
+          "when": "notebook:runningOnSAW == false"
+        },
+        {
+          "command": "jupyter.reinstallDependencies",
+          "when": "notebook:runningOnSAW == false"
+        },
+        {
           "command": "jupyter.cmd.managePackages",
-          "when": "false"
+          "when": "notebook:runningOnSAW == false"
         },
         {
           "command": "books.sqlserver2019",
@@ -423,7 +431,7 @@
       "notebook/toolbar": [
         {
           "command": "jupyter.cmd.managePackages",
-          "when": "providerId == jupyter && notebook:pythonInstalled"
+          "when": "providerId == jupyter && notebook:pythonInstalled && notebook:runningOnSAW == false"
         }
       ]
     },
