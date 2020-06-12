@@ -20,7 +20,8 @@ import { URI } from 'vs/base/common/uri';
  * @param configurationResolverService The resolver service to use to resolve the vars
  */
 export async function resolveQueryFilePath(services: ServicesAccessor, filePath: undefined): Promise<undefined>;
-export async function resolveQueryFilePath(services: ServicesAccessor, filePath?: string): Promise<URI> {
+export async function resolveQueryFilePath(services: ServicesAccessor, filePath: string): Promise<URI>;
+export async function resolveQueryFilePath(services: ServicesAccessor, filePath?: string): Promise<URI | undefined> {
 	if (!filePath) {
 		return undefined;
 	}
