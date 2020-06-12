@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ok, equal, fail } from 'assert';
+import { ok, fail } from 'assert';
 import * as os from 'os';
 
 import { resolveQueryFilePath } from 'sql/workbench/services/insights/common/insightsUtils';
