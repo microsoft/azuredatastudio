@@ -127,8 +127,8 @@ suite('Test class NotebookEditor', () => {
 		let div = dom.$('div', undefined, dom.$('span', { id: 'demospan' }));
 		let parentHtmlElement = div.firstChild as HTMLElement;
 		notebookEditor.create(parentHtmlElement); // adds notebookEditor to new htmlElement as parent
-		assert.notStrictEqual(notebookEditor, undefined);
-		assert.strictEqual(notebookEditor['parent'], parentHtmlElement, 'parent of notebookEditor was not one that was expected');
+		assert.notStrictEqual(notebookEditor['_overlay'], undefined), `The overlay must be defined for notebookEditor once create() has been called on it`;
+		assert.strictEqual(notebookEditor['parent'], parentHtmlElement, 'parent of notebookEditor was not the one that was expected');
 		await notebookEditor.setInput(untitledNotebookInput, EditorOptions.create({ pinned: true }));
 		setupPromise.resolve();
 	});
@@ -169,7 +169,7 @@ suite('Test class NotebookEditor', () => {
 			await setupPromise;
 			const inputGuid = <string>input;
 			const result = notebookEditor.getCellEditor(inputGuid);
-			assert.strictEqual(result, undefined, `notebookEditor.getCellEditor() should return undefined when invalid guid is passed in for a notebookEditor of an empty document.`);
+			assert.strictEqual(result, undefined, `notebookEditor.getCellEditor() should return undefined when invalid guid:'${inputGuid}' is passed in for a notebookEditor of an empty document.`);
 		});
 	});
 
