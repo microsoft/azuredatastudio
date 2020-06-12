@@ -189,46 +189,41 @@
         },
         {
           "command": "sqlDatabaseProjects.newItem",
-          "when": "view == sqlDatabaseProjectsView && (viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder)",
+          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
           "group": "2_dbProjects_newMain@1"
         },
         {
           "command": "sqlDatabaseProjects.newFolder",
-          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project",
+          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
           "group": "2_dbProjects_newMain@2"
         },
         {
           "command": "sqlDatabaseProjects.newTable",
-          "when": "view == sqlDatabaseProjectsView && (viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder)",
+          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
           "group": "3_dbProjects_newItem@1"
         },
         {
           "command": "sqlDatabaseProjects.newView",
-          "when": "view == sqlDatabaseProjectsView && (viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder)",
+          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
           "group": "3_dbProjects_newItem@2"
         },
         {
           "command": "sqlDatabaseProjects.newStoredProcedure",
-          "when": "view == sqlDatabaseProjectsView && (viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder)",
+          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
           "group": "3_dbProjects_newItem@3"
         },
         {
           "command": "sqlDatabaseProjects.newScript",
-          "when": "view == sqlDatabaseProjectsView && (viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder)",
+          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
           "group": "3_dbProjects_newItem@9"
         },
         {
           "command": "sqlDatabaseProjects.addDatabaseReference",
-          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project",
+          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.referencesRoot",
           "group": "4_dbProjects_addDatabaseReference"
         },
         {
           "command": "sqlDatabaseProjects.close",
-          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project",
-          "group": "9_dbProjectsLast"
-        },
-        {
-          "command": "sqlDatabaseProjects.properties",
           "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project",
           "group": "9_dbProjectsLast"
         }

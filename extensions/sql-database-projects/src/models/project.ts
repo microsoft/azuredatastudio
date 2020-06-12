@@ -311,8 +311,10 @@ export class Project {
 				break;
 			case EntryType.Folder:
 				this.addFolderToProjFile(entry.relativePath);
+				break;
 			case EntryType.DatabaseReference:
 				this.addDatabaseReferenceToProjFile(<DatabaseReferenceProjectEntry>entry);
+				break; // not required but adding so that we dont miss when we add new items
 		}
 
 		await this.serializeToProjFile(this.projFileXmlDoc);

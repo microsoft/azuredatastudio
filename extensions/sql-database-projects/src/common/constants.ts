@@ -147,5 +147,7 @@ export enum DatabaseProjectItemType {
 	folder = 'databaseProject.itemType.folder',
 	file = 'databaseProject.itemType.file',
 	referencesRoot = 'databaseProject.itemType.referencesRoot',
-	reference = 'databaseProject.itemType.reference'
+	reference = 'databaseProject.itemType.reference',
+	dataSourceRoot = 'databaseProject.itemType.dataSourceRoot',
+	dataSource = 'databaseProject.itemType.dataSource'
 }
