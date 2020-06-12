@@ -12,6 +12,7 @@ export let openProjectFileBaseline: string;
 export let openDataSourcesBaseline: string;
 export let SSDTProjectFileBaseline: string;
 export let SSDTProjectAfterUpdateBaseline: string;
+export let SSDTProjectAfterUpdateBaselineNonWindows: string;
 
 const baselineFolderPath = __dirname;
 
@@ -21,6 +22,7 @@ export async function loadBaselines() {
 	openDataSourcesBaseline = await loadBaseline(baselineFolderPath, 'openDataSourcesBaseline.json');
 	SSDTProjectFileBaseline = await loadBaseline(baselineFolderPath, 'SSDTProjectBaseline.xml');
 	SSDTProjectAfterUpdateBaseline = await loadBaseline(baselineFolderPath, 'SSDTProjectAfterUpdateBaseline.xml');
+	SSDTProjectAfterUpdateBaselineNonWindows = await loadBaseline(baselineFolderPath, 'SSDTProjectAfterUpdateBaselineNonWindows.xml');
 }
 
 async function loadBaseline(baselineFolderPath: string, fileName: string): Promise<string> {

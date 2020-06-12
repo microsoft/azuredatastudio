@@ -5,6 +5,7 @@
 
 import * as should from 'should';
 import * as path from 'path';
+import * as os from 'os';
 import * as baselines from './baselines/baselines';
 import * as testUtils from './testUtils';
 import * as constants from '../common/constants';
@@ -15,6 +16,7 @@ import { exists } from '../common/utils';
 import { Uri } from 'vscode';
 
 let projFilePath: string;
+const isWindows = os.platform() === 'win32';
 
 describe('Project: sqlproj content operations', function (): void {
 	before(async function() : Promise<void> {
@@ -167,6 +169,6 @@ describe('Project: round trip updates', function (): void {
 		should(project.importedTargets.length).equal(3);	// additional target added by updateProjectForRoundTrip method
 
 		let projFileText = (await fs.readFile(projFilePath)).toString();
-		should(projFileText).equal(baselines.SSDTProjectAfterUpdateBaseline.trim());
+		should(projFileText).equal(isWindows ? baselines.SSDTProjectAfterUpdateBaseline.trim() : baselines.SSDTProjectAfterUpdateBaselineNonWindows.trim());
 	});
 });

@@ -63,6 +63,7 @@ export class Project {
 		}
 
 		// find all database references to include
+		this.databaseReferences = [];
 		for (let r = 0; r < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference).length; r++) {
 			const filepath = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference)[r].getAttribute(constants.Include);
 			if (!filepath) {
@@ -77,6 +78,7 @@ export class Project {
 		await fs.copyFile(this.projectFilePath, this.projectFilePath + '_backup');
 		await this.updateImportToSupportRoundTrip();
 		await this.updatePackageReferenceInProjFile();
+		await this.updateSystemDatabaseReferencesInProjFile();
 	}
 
 	private async updateImportToSupportRoundTrip(): Promise<void> {
@@ -301,6 +303,20 @@ export class Project {
 		this.findOrCreateItemGroup(constants.PackageReference).appendChild(packageRefNode);
 
 		await this.serializeToProjFile(this.projFileXmlDoc);
+	}
+
+	private async updateSystemDatabaseReferencesInProjFile(): Promise<void> {
+		// find all system database references
+		for (let r = 0; r < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference).length; r++) {
+			const currentNode = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference)[r];
+			if (!currentNode.getAttribute(constants.Condition) && currentNode.getAttribute(constants.Include).includes(constants.DacpacRootPath)) {
+				// get name of system database
+				const name = currentNode.getAttribute(constants.Include).includes(constants.master) ? SystemDatabase.master : SystemDatabase.msdb;
+				this.projFileXmlDoc.documentElement.removeChild(currentNode);
+
+				await this.addSystemDatabaseReference(name);
+			}
+		}
 	}
 
 	private async addToProjFile(entry: ProjectEntry) {
