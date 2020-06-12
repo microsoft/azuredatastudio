@@ -193,6 +193,7 @@ async function testUpdateInRoundTrip(fileBeforeupdate: string, fileAfterUpdate: 
 }
 
 async function testUpdateTargetsImportsRoundTrip(project: Project): Promise<void> {
+	should(project.importedTargets.length).equal(2);
 	await project.updateProjectForRoundTrip();
 	should(await exists(projFilePath + '_backup')).equal(true);	// backup file should be generated before the project is updated
 	should(project.importedTargets.length).equal(3);	// additional target added by updateProjectForRoundTrip method
