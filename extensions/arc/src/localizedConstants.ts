@@ -6,8 +6,13 @@
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
+export const arcControllerDashboard = localize('arc.controllerDashboard', "Azure Arc Controller Dashboard (Preview)");
 export const miaaDashboard = localize('arc.miaaDashboard', "Managed Instance Dashboard (Preview)");
 export const postgresDashboard = localize('arc.postgresDashboard', "Postgres Dashboard (Preview)");
+
+export const dataControllersType = localize('arc.dataControllersType', "Azure Arc Data Controller");
+export const pgSqlType = localize('arc.pgSqlType', "PostgreSQL Server group - Azure Arc");
+export const miaaType = localize('arc.miaaType', "SQL instance - Azure Arc");
 
 export const overview = localize('arc.overview', "Overview");
 export const connectionStrings = localize('arc.connectionStrings', "Connection Strings");
@@ -30,7 +35,8 @@ export const region = localize('arc.region', "Region");
 export const subscription = localize('arc.subscription', "Subscription");
 export const subscriptionId = localize('arc.subscriptionId', "Subscription ID");
 export const state = localize('arc.state', "State");
-export const adminUsername = localize('arc.adminUsername', "Data controller admin username");
+export const connectionMode = localize('arc.connectionMode', "Connection Mode");
+export const namespace = localize('arc.namespace', "Namespace");
 export const host = localize('arc.host', "Host");
 export const name = localize('arc.name', "Name");
 export const type = localize('arc.type', "Type");
@@ -46,12 +52,13 @@ export const description = localize('arc.description', "Description");
 export const yes = localize('arc.yes', "Yes");
 export const no = localize('arc.no', "No");
 export const feedback = localize('arc.feedback', "Feedback");
-export const selectConnectionString = localize('arc.selectConnectionString', "Select from available client connection strings below");
+export const selectConnectionString = localize('arc.selectConnectionString', "Select from available client connection strings below.");
 export const vCores = localize('arc.vCores', "vCores");
 export const ram = localize('arc.ram', "RAM");
 export const refresh = localize('arc.refresh', "Refresh");
 export const troubleshoot = localize('arc.troubleshoot', "Troubleshoot");
 export const clickTheNewSupportRequestButton = localize('arc.clickTheNewSupportRequestButton', "Click the new support request button to file a support request in the Azure Portal.");
+export const running = localize('arc.running', "Running");
 
 // Postgres constants
 export const coordinatorEndpoint = localize('arc.coordinatorEndpoint', "Coordinator endpoint");
@@ -64,6 +71,7 @@ export const fullyQualifiedDomain = localize('arc.fullyQualifiedDomain', "Fully 
 export const postgresArcProductName = localize('arc.postgresArcProductName', "Azure Database for PostgreSQL - Azure Arc");
 export const coordinator = localize('arc.coordinator', "Coordinator");
 export const worker = localize('arc.worker', "Worker");
+export const monitor = localize('arc.monitor', "Monitor");
 export const newDatabase = localize('arc.newDatabase', "New Database");
 export const databaseName = localize('arc.databaseName', "Database name");
 export const newPassword = localize('arc.newPassword', "New password");
@@ -84,5 +92,7 @@ export function copiedToClipboard(name: string): string { return localize('arc.c
 export function refreshFailed(error: any): string { return localize('arc.refreshFailed', "Refresh failed. {0}", (error instanceof Error ? error.message : error)); }
 export function failedToManagePostgres(name: string, error: any): string { return localize('arc.failedToManagePostgres', "Failed to manage Postgres {0}. {1}", name, (error instanceof Error ? error.message : error)); }
 export function clickTheTroubleshootButton(resourceType: string): string { return localize('arc.clickTheTroubleshootButton', "Click the troubleshoot button to open the Azure Arc {0} troubleshooting notebook.", resourceType); }
+
+export const couldNotFindControllerResource = localize('arc.couldNotFindControllerResource', "Could not find Azure resource for Azure Arc Data Controller", name);
 
 export const arcResources = localize('arc.arcResources', "Azure Arc Resources");

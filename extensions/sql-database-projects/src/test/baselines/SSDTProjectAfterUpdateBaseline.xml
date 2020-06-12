@@ -69,4 +69,11 @@
     <Folder Include="Views\User"/>
     <Build Include="Views\User\Profile.sql"/>
   </ItemGroup>
-<Import Condition="'$(NetCoreBuild)' == 'true'" Project="$(NETCoreTargetsPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets"/><ItemGroup><PackageReference Condition="'$(NetCoreBuild)' == 'true'" Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="All"/></ItemGroup></Project>
+  <Import Condition="'$(NetCoreBuild)' == 'true'" Project="$(NETCoreTargetsPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets"/>
+  <ItemGroup>
+    <PackageReference Condition="'$(NetCoreBuild)' == 'true'" Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="All"/>
+  </ItemGroup>
+  <Target Name="AfterClean">
+    <Delete Files="$(BaseIntermediateOutputPath)\project.assets.json"/>
+  </Target>
+</Project>

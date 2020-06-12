@@ -24,9 +24,9 @@ export const databaseSchemaProvider = 'DatabaseSchemaProvider';
 
 // UI Strings
 
-export const noOpenProjectMessage = localize('noProjectOpenMessage', "No open database project");
 export const projectNodeName = localize('projectNodeName', "Database Project");
 export const dataSourcesNodeName = localize('dataSourcesNodeName', "Data Sources");
+export const databaseReferencesNodeName = localize('databaseReferencesNodeName', "Database References");
 export const sqlConnectionStringFriendly = localize('sqlConnectionStringFriendly', "SQL connection string");
 export const newDatabaseProjectName = localize('newDatabaseProjectName', "New database project name:");
 export const sqlDatabaseProject = localize('sqlDatabaseProject', "SQL database project");
@@ -84,6 +84,8 @@ export const dacpacFileLocationRequired = localize('dacpacFileLocationRequired',
 export const databaseLocationRequired = localize('databaseLocation', "Database location is required for adding a reference to a database");
 export const databaseNameRequired = localize('databaseNameRequired', "Database name is required for adding a reference to a different database");
 export const invalidDataSchemaProvider = localize('invalidDataSchemaProvider', "Invalid DSP in .sqlproj file");
+export const invalidDatabaseReference = localize('invalidDatabaseReference', "Invalid database reference in .sqlproj file");
+export const databaseSelectionRequired = localize('databaseSelectionRequired', "Database selection is required to import a project");
 export function projectAlreadyOpened(path: string) { return localize('projectAlreadyOpened', "Project '{0}' is already opened.", path); }
 export function projectAlreadyExists(name: string, path: string) { return localize('projectAlreadyExists', "A project named {0} already exists in {1}.", name, path); }
 export function noFileExist(fileName: string) { return localize('noFileExist', "File {0} doesn't exist", fileName); }
@@ -109,6 +111,11 @@ export const Include = 'Include';
 export const Import = 'Import';
 export const Project = 'Project';
 export const Condition = 'Condition';
+export const Target = 'Target';
+export const Name = 'Name';
+export const AfterCleanTarget = 'AfterClean';
+export const Delete = 'Delete';
+export const Files = 'Files';
 export const PackageReference = 'PackageReference';
 export const Version = 'Version';
 export const PrivateAssets = 'PrivateAssets';
@@ -126,6 +133,7 @@ export const SqlDbPresentCondition = '\'$(SQLDBExtensionsRefPath)\' != \'\'';
 export const SqlDbNotPresentCondition = '\'$(SQLDBExtensionsRefPath)\' == \'\'';
 export const RoundTripSqlDbPresentCondition = '\'$(NetCoreBuild)\' != \'true\' AND \'$(SQLDBExtensionsRefPath)\' != \'\'';
 export const RoundTripSqlDbNotPresentCondition = '\'$(NetCoreBuild)\' != \'true\' AND \'$(SQLDBExtensionsRefPath)\' == \'\'';
+export const ProjJsonToClean = '$(BaseIntermediateOutputPath)\\project.assets.json';
 
 // SqlProj Reference Assembly Information
 export const NETFrameworkAssembly = 'Microsoft.NETFramework.ReferenceAssemblies';
