@@ -195,6 +195,8 @@ import { INotebookService } from 'sql/workbench/services/notebook/browser/notebo
 import { IScriptingService, ScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import { IAssessmentService } from 'sql/workbench/services/assessment/common/interfaces';
 import { AssessmentService } from 'sql/workbench/services/assessment/common/assessmentService';
+import { IOnboardingService } from 'sql/workbench/contrib/onboarding/common/interfaces';
+import { OnboardingService } from 'sql/workbench/contrib/onboarding/common/onboardingService';
 
 registerSingleton(IDashboardService, DashboardService);
 registerSingleton(IDashboardViewService, DashboardViewService);
@@ -232,7 +234,8 @@ registerSingleton(IQueryEditorService, QueryEditorService);
 registerSingleton(IAdsTelemetryService, AdsTelemetryService);
 registerSingleton(IObjectExplorerService, ObjectExplorerService);
 registerSingleton(IOEShimService, OEShimService);
-registerSingleton(IAssessmentService, AssessmentService);
+registerSingleton(IOnboardingService, OnboardingService);
+registerSingleton(IAssessmentService, AssessmentService, false);
 
 //#endregion
 
