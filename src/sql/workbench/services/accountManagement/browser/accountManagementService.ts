@@ -120,7 +120,7 @@ export class AccountManagementService implements IAccountManagementService {
 	 * @return Promise to return an account
 	 */
 	public addAccount(providerId: string): Thenable<void> {
-		const closeAction: Action = new Action('closeAddingAccount', localize('close', "Close"), undefined, true);
+		const closeAction: Action = new Action('closeAddingAccount', localize('accountManagementService.close', "Close"), undefined, true);
 
 		const loginNotification: INotification = {
 			severity: Severity.Info,
