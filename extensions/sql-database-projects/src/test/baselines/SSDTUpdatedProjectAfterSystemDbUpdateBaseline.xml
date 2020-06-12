@@ -73,6 +73,9 @@
   <ItemGroup>
     <PackageReference Condition="'$(NetCoreBuild)' == 'true'" Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="All"/>
   </ItemGroup>
+  <Target Name="AfterClean">
+    <Delete Files="$(BaseIntermediateOutputPath)\project.assets.json"/>
+  </Target>
   <ItemGroup>
     <ArtifactReference Condition="'$(NetCoreBuild)' == 'true'" Include="$(NETCoreTargetsPath)/SystemDacpacs/130/master.dacpac">
       <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
