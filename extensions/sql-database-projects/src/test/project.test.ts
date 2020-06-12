@@ -10,7 +10,7 @@ import * as testUtils from './testUtils';
 import * as constants from '../common/constants';
 
 import { promises as fs } from 'fs';
-import { Project, EntryType, TargetPlatform } from '../models/project';
+import { Project, EntryType, TargetPlatform, SystemDatabase, DatabaseReferenceLocation } from '../models/project';
 import { exists } from '../common/utils';
 import { Uri } from 'vscode';
 
@@ -34,6 +34,9 @@ describe('Project: sqlproj content operations', function (): void {
 
 		should(project.files.find(f => f.type === EntryType.Folder && f.relativePath === 'Views\\User')).not.equal(undefined); // mixed ItemGroup folder
 		should(project.files.find(f => f.type === EntryType.File && f.relativePath === 'Views\\User\\Profile.sql')).not.equal(undefined); // mixed ItemGroup file
+
+		should(project.databaseReferences.length).equal(1);
+		should(project.databaseReferences[0]).containEql(constants.master);
 	});
 
 	it('Should add Folder and Build entries to sqlproj', async function (): Promise<void> {
@@ -126,6 +129,25 @@ describe('Project: sqlproj content operations', function (): void {
 
 		project.changeDSP('invalidPlatform');
 		await testUtils.shouldThrowSpecificError(async () => await project.getSystemDacpacUri(constants.masterDacpac), constants.invalidDataSchemaProvider);
+	});
+
+	it('Should add database references correctly', async function(): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project = new Project(projFilePath);
+		await project.readProjFile();
+
+		should(project.databaseReferences.length).equal(0);
+		await project.addSystemDatabaseReference(SystemDatabase.master);
+		should(project.databaseReferences.length).equal(1);
+		should(project.databaseReferences[0]).equal(constants.master);
+
+		await project.addSystemDatabaseReference(SystemDatabase.msdb);
+		should(project.databaseReferences.length).equal(2);
+		should(project.databaseReferences[1]).equal(constants.msdb);
+
+		await project.addDatabaseReference(Uri.parse('test.dacpac'), DatabaseReferenceLocation.sameDatabase, false);
+		should(project.databaseReferences.length).equal(3);
+		should(project.databaseReferences[2]).equal('test');
 	});
 });
 

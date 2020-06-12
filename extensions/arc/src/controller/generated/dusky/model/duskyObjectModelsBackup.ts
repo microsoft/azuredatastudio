@@ -16,9 +16,9 @@ export class DuskyObjectModelsBackup {
     'error'?: DuskyObjectModelsError;
     'id'?: string;
     'name'?: string;
-    'timestamp': Date;
+    'timestamp'?: Date;
     'size'?: number | null;
-    'state': string;
+    'state'?: string;
     'tiers'?: number | null;
 
     static discriminator: string | undefined = undefined;
