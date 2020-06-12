@@ -235,10 +235,13 @@ export class JupyterSession implements nb.ISession {
 	}
 
 	public async changeKernel(kernelInfo: nb.IKernelSpec): Promise<nb.IKernel> {
+		let SAW = true;
 		if (this._installation) {
 			try {
 				if (this._installation.previewFeaturesEnabled) {
-					await this._installation.promptForPythonInstall(kernelInfo.display_name);
+					if (!SAW) {
+						await this._installation.promptForPythonInstall(kernelInfo.display_name);
+					}
 				} else {
 					await this._installation.promptForPackageUpgrade(kernelInfo.display_name);
 				}
