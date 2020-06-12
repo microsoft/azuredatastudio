@@ -71,7 +71,7 @@ suite('Insights Utils tests', function () {
 		instantiationService.set(IFileService, fileService);
 
 		const resolvedPath = await instantiationService.invokeFunction(resolveQueryFilePath, queryFilePath);
-		equal(resolvedPath, queryFilePath);
+		equal(resolvedPath.fsPath, queryFilePath);
 	});
 
 	test('resolveQueryFilePath resolves path correctly with workspaceRoot var and non-empty workspace containing file', async () => {
@@ -101,7 +101,7 @@ suite('Insights Utils tests', function () {
 		instantiationService.set(IFileService, fileService);
 
 		const resolvedPath = await instantiationService.invokeFunction(resolveQueryFilePath, path.join('${workspaceRoot}', 'test.sql'));
-		equal(resolvedPath, queryFilePath);
+		equal(resolvedPath.fsPath, queryFilePath);
 	});
 
 	test('resolveQueryFilePath throws with workspaceRoot var and non-empty workspace not containing file', async () => {
@@ -198,7 +198,7 @@ suite('Insights Utils tests', function () {
 		instantiationService.set(IFileService, fileService);
 
 		const resolvedPath = await instantiationService.invokeFunction(resolveQueryFilePath, path.join('${env:TEST_PATH}', 'test.sql'));
-		equal(resolvedPath, queryFilePath);
+		equal(resolvedPath.fsPath, queryFilePath);
 	});
 
 	test('resolveQueryFilePath resolves path correctly with env var and non-empty workspace', async () => {
@@ -227,7 +227,7 @@ suite('Insights Utils tests', function () {
 		instantiationService.set(IFileService, fileService);
 
 		const resolvedPath = await instantiationService.invokeFunction(resolveQueryFilePath, path.join('${env:TEST_PATH}', 'test.sql'));
-		equal(resolvedPath, queryFilePath);
+		equal(resolvedPath.fsPath, queryFilePath);
 	});
 
 	test('resolveQueryFilePath throws if invalid param var specified', async () => {
