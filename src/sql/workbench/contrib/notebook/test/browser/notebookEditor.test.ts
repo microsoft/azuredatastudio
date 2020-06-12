@@ -133,7 +133,7 @@ suite('Test class NotebookEditor', () => {
 		setupPromise.resolve();
 	});
 
-	test('NotebookEditor-dispose: Tests that dispose() disposes all objects in its disposable store', async () => {
+	test('NotebookEditor: Tests that dispose() disposes all objects in its disposable store', async () => {
 		await setupPromise;
 		const mockNotebookEditor = TypeMoq.Mock.ofInstance(notebookEditor);
 		mockNotebookEditor.setup(x => x.dispose()).callback(() => notebookEditor.dispose());
@@ -143,7 +143,7 @@ suite('Test class NotebookEditor', () => {
 		assert.ok(isDisposed, 'notebookEditor\'s disposable store must be disposed');
 	});
 
-	test('NotebookEditor-setSelection-getPosition-getLastPosition: Tests that getPosition and getLastPosition correctly return the range set by setSelection', async () => {
+	test('NotebookEditor: Tests that getPosition and getLastPosition correctly return the range set by setSelection', async () => {
 		await setupPromise;
 		let currentPosition = notebookEditor.getPosition();
 		let lastPosition = notebookEditor.getLastPosition();
@@ -165,7 +165,7 @@ suite('Test class NotebookEditor', () => {
 
 	// NotebookEditor-getCellEditor tests.
 	['', undefined, null, 'unknown string', /*unknown guid*/generateUuid()].forEach(input => {
-		test(`NotebookEditor-getCellEditor: Test getCellEditor() returns undefined for invalid or unknown guid:'${input}'`, async () => {
+		test(`NotebookEditor: Test getCellEditor() returns undefined for invalid or unknown guid:'${input}'`, async () => {
 			await setupPromise;
 			const inputGuid = <string>input;
 			const result = notebookEditor.getCellEditor(inputGuid);
@@ -173,7 +173,7 @@ suite('Test class NotebookEditor', () => {
 		});
 	});
 
-	test('NotebookEditor-getCellEditor: Positive Tests getCellEditor() returns a valid text editor object for valid guid input', async () => {
+	test('NotebookEditor: Positive Test for getCellEditor() - verify that it returns a valid text editor object for valid guid input', async () => {
 		await setupPromise;
 		const result = notebookEditor.getCellEditor(cellTextEditorGuid);
 		assert.strictEqual(result, queryTextEditor, 'notebookEditor.getCellEditor() should return an expected QueryTextEditor when a guid corresponding to that editor is passed in.');
