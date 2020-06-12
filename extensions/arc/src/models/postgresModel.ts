@@ -25,27 +25,27 @@ export class PostgresModel {
 	}
 
 	/** Returns the service's Kubernetes namespace */
-	public namespace(): string {
+	public get namespace(): string {
 		return this._namespace;
 	}
 
 	/** Returns the service's name */
-	public name(): string {
+	public get name(): string {
 		return this._name;
 	}
 
 	/** Returns the service's fully qualified name in the format namespace.name */
-	public fullName(): string {
+	public get fullName(): string {
 		return `${this._namespace}.${this._name}`;
 	}
 
 	/** Returns the service's spec */
-	public service(): DuskyObjectModelsDatabaseService | undefined {
+	public get service(): DuskyObjectModelsDatabaseService | undefined {
 		return this._service;
 	}
 
 	/** Returns the service's password */
-	public password(): string | undefined {
+	public get password(): string | undefined {
 		return this._password;
 	}
 
@@ -75,7 +75,7 @@ export class PostgresModel {
 		service.status = undefined; // can't update the status
 		func(service);
 
-		return await this._databaseRouter.updateDuskyDatabaseService(this.namespace(), this.name(), service).then(r => {
+		return await this._databaseRouter.updateDuskyDatabaseService(this.namespace, this.name, service).then(r => {
 			this._service = r.body;
 			return this._service;
 		});
@@ -88,11 +88,11 @@ export class PostgresModel {
 
 	/** Creates a SQL database in the service */
 	public async createDatabase(db: DuskyObjectModelsDatabase): Promise<DuskyObjectModelsDatabase> {
-		return await (await this._databaseRouter.createDuskyDatabase(this.namespace(), this.name(), db)).body;
+		return (await this._databaseRouter.createDuskyDatabase(this.namespace, this.name, db)).body;
 	}
 
 	/** Returns the number of nodes in the service */
-	public numNodes(): number {
+	public get numNodes(): number {
 		let nodes = this._service?.spec.scale?.shards ?? 1;
 		if (nodes > 1) { nodes++; } // for multiple shards there is an additional node for the coordinator
 		return nodes;
@@ -102,7 +102,7 @@ export class PostgresModel {
 	 * Returns the IP address and port of the service, preferring external IP over
 	 * internal IP. If either field is not available it will be set to undefined.
 	 */
-	public endpoint(): { ip?: string, port?: number } {
+	public get endpoint(): { ip?: string, port?: number } {
 		const externalIp = this._service?.status?.externalIP;
 		const internalIp = this._service?.status?.internalIP;
 		const externalPort = this._service?.status?.externalPort;
@@ -114,8 +114,8 @@ export class PostgresModel {
 	}
 
 	/** Returns the service's configuration e.g. '3 nodes, 1.5 vCores, 1GiB RAM, 2GiB storage per node' */
-	public configuration(): string {
-		const nodes = this.numNodes();
+	public get configuration(): string {
+		const nodes = this.numNodes;
 		const cpuLimit = this._service?.spec.scheduling?.resources?.limits?.['cpu'];
 		const ramLimit = this._service?.spec.scheduling?.resources?.limits?.['memory'];
 		const cpuRequest = this._service?.spec.scheduling?.resources?.requests?.['cpu'];
