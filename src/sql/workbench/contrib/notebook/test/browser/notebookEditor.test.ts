@@ -127,7 +127,7 @@ suite('Test class NotebookEditor', () => {
 		let div = dom.$('div', undefined, dom.$('span', { id: 'demospan' }));
 		let parentHtmlElement = div.firstChild as HTMLElement;
 		notebookEditor.create(parentHtmlElement); // adds notebookEditor to new htmlElement as parent
-		assert.notStrictEqual(notebookEditor['_overlay'], undefined), `The overlay must be defined for notebookEditor once create() has been called on it`;
+		assert.notStrictEqual(notebookEditor['_overlay'], undefined, `The overlay must be defined for notebookEditor once create() has been called on it`);
 		assert.strictEqual(notebookEditor['parent'], parentHtmlElement, 'parent of notebookEditor was not the one that was expected');
 		await notebookEditor.setInput(untitledNotebookInput, EditorOptions.create({ pinned: true }));
 		setupPromise.resolve();
