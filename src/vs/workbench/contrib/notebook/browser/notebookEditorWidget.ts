@@ -993,8 +993,7 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 			if (!above.hasModel()) {
 				return null;
 			}
-
-			const insertContent = cell.getText();
+			const insertContent = (cell.textModel?.getEOL() ?? '') + cell.getText();
 			const aboveCellLineCount = above.textModel.getLineCount();
 			const aboveCellLastLineEndColumn = above.textModel.getLineLength(aboveCellLineCount);
 			above.textModel.applyEdits([
@@ -1018,7 +1017,7 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 				return null;
 			}
 
-			const insertContent = below.getText();
+			const insertContent = (cell.textModel?.getEOL() ?? '') + below.getText();
 
 			const cellLineCount = cell.textModel.getLineCount();
 			const cellLastLineEndColumn = cell.textModel.getLineLength(cellLineCount);
