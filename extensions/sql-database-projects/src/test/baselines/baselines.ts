@@ -11,9 +11,12 @@ export let newProjectFileBaseline: string;
 export let openProjectFileBaseline: string;
 export let openDataSourcesBaseline: string;
 export let SSDTProjectFileBaseline: string;
+export let SSDTProjectAfterUpdateBaselineWindows: string;
 export let SSDTProjectAfterUpdateBaseline: string;
-export let SSDTProjectAfterUpdateBaselineNonWindows: string;
+export let SSDTUpdatedProjectBaselineWindows: string;
 export let SSDTUpdatedProjectBaseline: string;
+export let SSDTUpdatedProjectAfterSystemDbUpdateBaselineWindows: string;
+export let SSDTUpdatedProjectAfterSystemDbUpdateBaseline: string;
 
 const baselineFolderPath = __dirname;
 
@@ -22,9 +25,12 @@ export async function loadBaselines() {
 	openProjectFileBaseline = await loadBaseline(baselineFolderPath, 'openSqlProjectBaseline.xml');
 	openDataSourcesBaseline = await loadBaseline(baselineFolderPath, 'openDataSourcesBaseline.json');
 	SSDTProjectFileBaseline = await loadBaseline(baselineFolderPath, 'SSDTProjectBaseline.xml');
+	SSDTProjectAfterUpdateBaselineWindows = await loadBaseline(baselineFolderPath, 'SSDTProjectAfterUpdateBaselineWindows.xml');
 	SSDTProjectAfterUpdateBaseline = await loadBaseline(baselineFolderPath, 'SSDTProjectAfterUpdateBaseline.xml');
-	SSDTProjectAfterUpdateBaselineNonWindows = await loadBaseline(baselineFolderPath, 'SSDTProjectAfterUpdateBaselineNonWindows.xml');
+	SSDTUpdatedProjectBaselineWindows = await loadBaseline(baselineFolderPath, 'SSDTUpdatedProjectBaselineWindows.xml');
 	SSDTUpdatedProjectBaseline = await loadBaseline(baselineFolderPath, 'SSDTUpdatedProjectBaseline.xml');
+	SSDTUpdatedProjectAfterSystemDbUpdateBaselineWindows = await loadBaseline(baselineFolderPath, 'SSDTUpdatedProjectAfterSystemDbUpdateBaselineWindows.xml');
+	SSDTUpdatedProjectAfterSystemDbUpdateBaseline = await loadBaseline(baselineFolderPath, 'SSDTUpdatedProjectAfterSystemDbUpdateBaseline.xml');
 }
 
 async function loadBaseline(baselineFolderPath: string, fileName: string): Promise<string> {

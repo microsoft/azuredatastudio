@@ -164,16 +164,19 @@ describe('Project: round trip updates', function (): void {
 		await project.readProjFile();
 
 		await project.updateProjectForRoundTrip();
+		// updating system db refs is separate from updating for roundtrip because new db refs could be added even after project is updated for roundtrip
+		should(project.containsSSDTOnlySystemDatabaseReferences()).equal(true);
+		await project.updateSystemDatabaseReferencesInProjFile();
 
 		should(await exists(projFilePath + '_backup')).equal(true);	// backup file should be generated before the project is updated
 		should(project.importedTargets.length).equal(3);	// additional target added by updateProjectForRoundTrip method
 
 		let projFileText = (await fs.readFile(projFilePath)).toString();
-		should(projFileText).equal(isWindows ? baselines.SSDTProjectAfterUpdateBaseline.trim() : baselines.SSDTProjectAfterUpdateBaselineNonWindows.trim());
+		should(projFileText).equal(isWindows ? baselines.SSDTProjectAfterUpdateBaselineWindows.trim() : baselines.SSDTProjectAfterUpdateBaseline.trim());
 	});
 
 	it('Should update SSDT project with new system database references', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.SSDTUpdatedProjectBaseline);
+		projFilePath = await testUtils.createTestSqlProjFile(isWindows ? baselines.SSDTUpdatedProjectBaselineWindows : baselines.SSDTUpdatedProjectBaseline);
 		const project: Project = new Project(projFilePath);
 		await project.readProjFile();
 
@@ -181,6 +184,6 @@ describe('Project: round trip updates', function (): void {
 		await project.updateSystemDatabaseReferencesInProjFile();
 
 		let projFileText = (await fs.readFile(projFilePath)).toString();
-		should(projFileText).equal(isWindows ? baselines.SSDTProjectAfterUpdateBaseline.trim() : baselines.SSDTProjectAfterUpdateBaselineNonWindows.trim());
+		should(projFileText).equal(isWindows ? baselines.SSDTUpdatedProjectAfterSystemDbUpdateBaselineWindows.trim() : baselines.SSDTUpdatedProjectAfterSystemDbUpdateBaseline.trim());
 	});
 });

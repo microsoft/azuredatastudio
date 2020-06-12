@@ -74,9 +74,13 @@
     <PackageReference Condition="'$(NetCoreBuild)' == 'true'" Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="All"/>
   </ItemGroup>
   <ItemGroup>
-    <ArtifactReference Condition="'$(NetCoreBuild)' == 'true'" Include="$(NETCoreTargetsPath)/SystemDacpacs/130/master.dacpac">
+    <ArtifactReference Condition="'$(NetCoreBuild)' == 'true'" Include="$(NETCoreTargetsPath)\SystemDacpacs\130\master.dacpac">
       <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
       <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
+    </ArtifactReference>
+    <ArtifactReference Condition="'$(NetCoreBuild)' == 'true'" Include="$(NETCoreTargetsPath)\SystemDacpacs\130\msdb.dacpac">
+      <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
+      <DatabaseVariableLiteralValue>msdb</DatabaseVariableLiteralValue>
     </ArtifactReference>
   </ItemGroup>
 </Project>
