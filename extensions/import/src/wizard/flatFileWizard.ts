@@ -17,7 +17,11 @@ import * as constants from '../common/constants';
 
 export class FlatFileWizard {
 	private readonly provider: FlatFileProvider;
-	private wizard: azdata.window.Wizard;
+	public wizard: azdata.window.Wizard;
+	public page1: azdata.window.WizardPage;
+	public page2: azdata.window.WizardPage;
+	public page3: azdata.window.WizardPage;
+	public page4: azdata.window.WizardPage;
 
 	private importAnotherFileButton: azdata.window.Button;
 
@@ -48,15 +52,15 @@ export class FlatFileWizard {
 		model.serverId = connectionId;
 
 		this.wizard = this._apiWrapper.createWizard(constants.wizardNameText);
-		let page1 = this._apiWrapper.createWizardPage(constants.page1NameText);
-		let page2 = this._apiWrapper.createWizardPage(constants.page2NameText);
-		let page3 = this._apiWrapper.createWizardPage(constants.page3NameText);
-		let page4 = this._apiWrapper.createWizardPage(constants.page4NameText);
+		this.page1 = this._apiWrapper.createWizardPage(constants.page1NameText);
+		this.page2 = this._apiWrapper.createWizardPage(constants.page2NameText);
+		this.page3 = this._apiWrapper.createWizardPage(constants.page3NameText);
+		this.page4 = this._apiWrapper.createWizardPage(constants.page4NameText);
 
 		let fileConfigPage: FileConfigPage;
 
-		page1.registerContent(async (view) => {
-			fileConfigPage = new FileConfigPage(this, page1, model, view, this.provider, this._apiWrapper);
+		this.page1.registerContent(async (view) => {
+			fileConfigPage = new FileConfigPage(this, this.page1, model, view, this.provider, this._apiWrapper);
 			pages.set(0, fileConfigPage);
 			await fileConfigPage.start().then(() => {
 				fileConfigPage.setupNavigationValidator();
@@ -65,23 +69,23 @@ export class FlatFileWizard {
 		});
 
 		let prosePreviewPage: ProsePreviewPage;
-		page2.registerContent(async (view) => {
-			prosePreviewPage = new ProsePreviewPage(this, page2, model, view, this.provider, this._apiWrapper);
+		this.page2.registerContent(async (view) => {
+			prosePreviewPage = new ProsePreviewPage(this, this.page2, model, view, this.provider, this._apiWrapper);
 			pages.set(1, prosePreviewPage);
 			await prosePreviewPage.start();
 		});
 
 		let modifyColumnsPage: ModifyColumnsPage;
-		page3.registerContent(async (view) => {
-			modifyColumnsPage = new ModifyColumnsPage(this, page3, model, view, this.provider, this._apiWrapper);
+		this.page3.registerContent(async (view) => {
+			modifyColumnsPage = new ModifyColumnsPage(this, this.page3, model, view, this.provider, this._apiWrapper);
 			pages.set(2, modifyColumnsPage);
 			await modifyColumnsPage.start();
 		});
 
 		let summaryPage: SummaryPage;
 
-		page4.registerContent(async (view) => {
-			summaryPage = new SummaryPage(this, page4, model, view, this.provider, this._apiWrapper);
+		this.page4.registerContent(async (view) => {
+			summaryPage = new SummaryPage(this, this.page4, model, view, this.provider, this._apiWrapper);
 			pages.set(3, summaryPage);
 			await summaryPage.start();
 		});
@@ -114,7 +118,7 @@ export class FlatFileWizard {
 		//not needed for this wizard
 		this.wizard.generateScriptButton.hidden = true;
 
-		this.wizard.pages = [page1, page2, page3, page4];
+		this.wizard.pages = [this.page1, this.page2, this.page3, this.page4];
 
 		this.wizard.open();
 	}

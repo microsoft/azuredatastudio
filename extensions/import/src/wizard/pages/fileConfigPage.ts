@@ -270,9 +270,22 @@ export class FileConfigPage extends ImportPage {
 
 	}
 
-	private async populateSchemaDropdown(): Promise<boolean> {
+	public async populateSchemaDropdown(): Promise<boolean> {
 		this.schemaLoader.loading = true;
 
+		let values = await this.getSchemaValues();
+
+		this.model.schema = values[0].name;
+
+		this.schemaDropdown.updateProperties({
+			values: values
+		});
+
+		this.schemaLoader.loading = false;
+		return true;
+	}
+
+	public async getSchemaValues(): Promise<{ displayName: string, name: string }[]> {
 		let connectionUri = await this._apiWrapper.getUriForConnection(this.model.server.connectionId);
 		let queryProvider = this._apiWrapper.getProvider<azdata.QueryProvider>(this.model.server.providerName, azdata.DataProviderType.QueryProvider);
 
@@ -300,15 +313,7 @@ export class FileConfigPage extends ImportPage {
 			values[0] = values[idx];
 			values[idx] = tmp;
 		}
-
-		this.model.schema = values[0].name;
-
-		this.schemaDropdown.updateProperties({
-			values: values
-		});
-
-		this.schemaLoader.loading = false;
-		return true;
+		return values;
 	}
 
 	protected deleteServerValues() {
