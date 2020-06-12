@@ -521,7 +521,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 				// so ignore those events
 				return;
 			}
-			if ((!this.scrolled) && (this.state.scrollPositionY || this.state.scrollPositionX) && isInDOM(this.container)) {
+			if (!this.scrolled && (this.state.scrollPositionY || this.state.scrollPositionX) && isInDOM(this.container)) {
 				this.scrolled = true;
 				this.restoreScrollState();
 			}
