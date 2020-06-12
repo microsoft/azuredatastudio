@@ -24,6 +24,14 @@
   "scripts": {
     "vscode:prepublish": "node ../../node_modules/gulp/bin/gulp.js --gulpfile ../../build/gulpfile.extensions.js compile-extension:vscode-colorize-tests ./tsconfig.json"
   },
+  "contributes": {
+    "commands":[
+      {
+        "command": "onboarding.showDevelopers",
+        "title": "Show Developers"
+      }
+    ]
+  },
   "devDependencies": {
     "@types/chai": "3.4.34",
     "@types/node": "^10.14.8",
