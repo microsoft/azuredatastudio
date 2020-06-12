@@ -39,6 +39,15 @@ cell-toolbar-component .monaco-action-bar .action-label {
 }
 cell-toolbar-component ul.actions-container li a.masked-icon {
 	display: flex;
+}
+cell-toolbar-component ul.actions-container li a.masked-icon,
+cell-toolbar-component ul.actions-container li a.masked-icon:before {
 	height: 24px;
 	width: 29px;
+}
+cell-toolbar-component .codicon.masked-icon,
+.vs cell-toolbar-component .codicon.masked-icon,
+.vs-dark cell-toolbar-component .codicon.masked-icon,
+.hc-black cell-toolbar-component .codicon.masked-icon {
+	background-image: none;
 }

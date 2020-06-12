@@ -37,6 +37,18 @@ jobs:
   - template: linux/sql-product-build-linux.yml
   timeoutInMinutes: 70
 
+- job: LinuxWeb
+  condition: and(succeeded(), eq(variables['VSCODE_BUILD_WEB'], 'true'))
+  pool:
+    vmImage: 'Ubuntu-16.04'
+  container: linux-x64
+  variables:
+    VSCODE_ARCH: x64
+  dependsOn:
+  - Compile
+  steps:
+  - template: web/sql-product-build-web.yml
+
 - job: Docker
   condition: and(succeeded(), eq(variables['VSCODE_BUILD_DOCKER'], 'true'))
   pool:
@@ -77,6 +89,7 @@ jobs:
   - Docker
   - Windows
   - Windows_Test
+  - LinuxWeb
   steps:
   - template: sql-release.yml
 

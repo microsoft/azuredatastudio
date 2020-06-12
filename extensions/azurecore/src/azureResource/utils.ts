@@ -3,7 +3,17 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
+import { azureResource } from './azure-resource';
+import { GetResourceGroupsResult, GetSubscriptionsResult } from '../azurecore';
+import { isArray } from 'util';
+import { AzureResourceGroupService } from './providers/resourceGroup/resourceGroupService';
+import { TokenCredentials } from '@azure/ms-rest-js';
+import { AppContext } from '../appContext';
+import { IAzureResourceSubscriptionService } from './interfaces';
+import { AzureResourceServiceNames } from './constants';
+
 const localize = nls.loadMessageBundle();
 
 function getErrorMessage(error: Error | string): string {
@@ -91,4 +101,74 @@ export function equals(one: any, other: any): boolean {
 		}
 	}
 	return true;
+}
+
+export async function getResourceGroups(appContext: AppContext, account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, ignoreErrors: boolean = false): Promise<GetResourceGroupsResult> {
+	const result: GetResourceGroupsResult = { resourceGroups: [], errors: [] };
+	if (!account?.properties?.tenants || !isArray(account.properties.tenants) || !subscription) {
+		const error = new Error(localize('azure.accounts.getResourceGroups.invalidParamsError', "Invalid account or subscription"));
+		if (!ignoreErrors) {
+			throw error;
+		}
+		result.errors.push(error);
+		return result;
+	}
+	const service = appContext.getService<AzureResourceGroupService>(AzureResourceServiceNames.resourceGroupService);
+	await Promise.all(account.properties.tenants.map(async (tenant: { id: string | number; }) => {
+		try {
+			const tokens = await azdata.accounts.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
+			const token = tokens[tenant.id].token;
+			const tokenType = tokens[tenant.id].tokenType;
+
+			result.resourceGroups.push(...await service.getResources(subscription, new TokenCredentials(token, tokenType), account));
+		} catch (err) {
+			const error = new Error(localize('azure.accounts.getResourceGroups.queryError', "Error fetching resource groups for account {0} ({1}) subscription {2} ({3}) tenant {4} : {5}",
+				account.displayInfo.displayName,
+				account.displayInfo.userId,
+				subscription.id,
+				subscription.name,
+				tenant.id,
+				err instanceof Error ? err.message : err));
+			console.warn(error);
+			if (!ignoreErrors) {
+				throw error;
+			}
+			result.errors.push(error);
+		}
+	}));
+	return result;
+}
+
+export async function getSubscriptions(appContext: AppContext, account?: azdata.Account, ignoreErrors: boolean = false): Promise<GetSubscriptionsResult> {
+	const result: GetSubscriptionsResult = { subscriptions: [], errors: [] };
+	if (!account?.properties?.tenants || !isArray(account.properties.tenants)) {
+		const error = new Error(localize('azure.accounts.getSubscriptions.invalidParamsError', "Invalid account"));
+		if (!ignoreErrors) {
+			throw error;
+		}
+		result.errors.push(error);
+		return result;
+	}
+
+	const subscriptionService = appContext.getService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService);
+	const tokens = await appContext.apiWrapper.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
+	await Promise.all(account.properties.tenants.map(async (tenant: { id: string | number; }) => {
+		try {
+			const token = tokens[tenant.id].token;
+			const tokenType = tokens[tenant.id].tokenType;
+
+			result.subscriptions.push(...await subscriptionService.getSubscriptions(account, new TokenCredentials(token, tokenType)));
+		} catch (err) {
+			const error = new Error(localize('azure.accounts.getSubscriptions.queryError', "Error fetching subscriptions for account {0} tenant {1} : {2}",
+				account.displayInfo.displayName,
+				tenant.id,
+				err instanceof Error ? err.message : err));
+			console.warn(error);
+			if (!ignoreErrors) {
+				throw error;
+			}
+			result.errors.push(error);
+		}
+	}));
+	return result;
 }

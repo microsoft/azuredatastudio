@@ -64,7 +64,7 @@
     }
   },
   "dependencies": {
-    "ads-extension-telemetry": "github:Charles-Gagnon/ads-extension-telemetry#0.1.0",
+    "ads-extension-telemetry": "^1.0.0",
     "vscode-nls": "^4.0.0"
   },
   "devDependencies": {
@@ -75,7 +75,7 @@
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.1",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "github:corivera/vscodetestcover#1.0.8"
+    "vscodetestcover": "^1.0.9"
   },
   "__metadata": {
     "id": "37",

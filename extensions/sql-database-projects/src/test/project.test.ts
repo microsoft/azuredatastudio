@@ -7,9 +7,12 @@ import * as should from 'should';
 import * as path from 'path';
 import * as baselines from './baselines/baselines';
 import * as testUtils from './testUtils';
+import * as constants from '../common/constants';
 
 import { promises as fs } from 'fs';
-import { Project, EntryType } from '../models/project';
+import { Project, EntryType, TargetPlatform, SystemDatabase, DatabaseReferenceLocation } from '../models/project';
+import { exists } from '../common/utils';
+import { Uri } from 'vscode';
 
 let projFilePath: string;
 
@@ -31,6 +34,9 @@ describe('Project: sqlproj content operations', function (): void {
 
 		should(project.files.find(f => f.type === EntryType.Folder && f.relativePath === 'Views\\User')).not.equal(undefined); // mixed ItemGroup folder
 		should(project.files.find(f => f.type === EntryType.File && f.relativePath === 'Views\\User\\Profile.sql')).not.equal(undefined); // mixed ItemGroup file
+
+		should(project.databaseReferences.length).equal(1);
+		should(project.databaseReferences[0]).containEql(constants.master);
 	});
 
 	it('Should add Folder and Build entries to sqlproj', async function (): Promise<void> {
@@ -81,4 +87,94 @@ describe('Project: sqlproj content operations', function (): void {
 
 		await testUtils.shouldThrowSpecificError(async () => await project.addToProject(list), `ENOENT: no such file or directory, stat \'${nonexistentFile}\'`);
 	});
+
+	it('Should choose correct master dacpac', async function(): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project = new Project(projFilePath);
+		await project.readProjFile();
+
+		let uri = project.getSystemDacpacUri(constants.masterDacpac);
+		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '130', constants.masterDacpac)).fsPath);
+
+		project.changeDSP(TargetPlatform.Sql150.toString());
+		uri = project.getSystemDacpacUri(constants.masterDacpac);
+		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '150', constants.masterDacpac)).fsPath);
+
+		project.changeDSP(TargetPlatform.SqlAzureV12.toString());
+		uri = project.getSystemDacpacUri(constants.masterDacpac);
+		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', 'AzureV12',constants.masterDacpac)).fsPath);
+	});
+
+	it('Should choose correct msdb dacpac', async function(): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project = new Project(projFilePath);
+		await project.readProjFile();
+
+		let uri = project.getSystemDacpacUri(constants.msdbDacpac);
+		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '130', constants.msdbDacpac)).fsPath);
+
+		project.changeDSP(TargetPlatform.Sql150.toString());
+		uri = project.getSystemDacpacUri(constants.msdbDacpac);
+		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '150', constants.msdbDacpac)).fsPath);
+
+		project.changeDSP(TargetPlatform.SqlAzureV12.toString());
+		uri = project.getSystemDacpacUri(constants.msdbDacpac);
+		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', 'AzureV12', constants.msdbDacpac)).fsPath);
+	});
+
+	it('Should throw error when choosing correct master dacpac if invalid DSP', async function(): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project = new Project(projFilePath);
+		await project.readProjFile();
+
+		project.changeDSP('invalidPlatform');
+		await testUtils.shouldThrowSpecificError(async () => await project.getSystemDacpacUri(constants.masterDacpac), constants.invalidDataSchemaProvider);
+	});
+
+	it('Should add database references correctly', async function(): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project = new Project(projFilePath);
+		await project.readProjFile();
+
+		should(project.databaseReferences.length).equal(0);
+		await project.addSystemDatabaseReference(SystemDatabase.master);
+		should(project.databaseReferences.length).equal(1);
+		should(project.databaseReferences[0]).equal(constants.master);
+
+		await project.addSystemDatabaseReference(SystemDatabase.msdb);
+		should(project.databaseReferences.length).equal(2);
+		should(project.databaseReferences[1]).equal(constants.msdb);
+
+		await project.addDatabaseReference(Uri.parse('test.dacpac'), DatabaseReferenceLocation.sameDatabase, false);
+		should(project.databaseReferences.length).equal(3);
+		should(project.databaseReferences[2]).equal('test');
+	});
 });
+
+describe('Project: round trip updates', function (): void {
+	before(async function () : Promise<void> {
+		await baselines.loadBaselines();
+	});
+
+	it('Should update SSDT project to work in ADS', async function (): Promise<void> {
+		await testUpdateInRoundTrip(baselines.SSDTProjectFileBaseline, baselines.SSDTProjectAfterUpdateBaseline);
+	});
+
+	it('Should update SSDT project to work in ADS handling pre-exsiting targets', async function (): Promise<void> {
+		await testUpdateInRoundTrip(baselines.SSDTProjectBaselineWithCleanTarget, baselines.SSDTProjectBaselineWithCleanTargetAfterUpdate);
+	});
+});
+
+async function testUpdateInRoundTrip(fileBeforeupdate: string, fileAfterUpdate:string) : Promise<void> {
+	projFilePath = await testUtils.createTestSqlProjFile(fileBeforeupdate);
+	const project: Project = new Project(projFilePath);
+	await project.readProjFile();
+
+	await project.updateProjectForRoundTrip();
+
+	should(await exists(projFilePath + '_backup')).equal(true);	// backup file should be generated before the project is updated
+	should(project.importedTargets.length).equal(3);	// additional target added by updateProjectForRoundTrip method
+
+	let projFileText = (await fs.readFile(projFilePath)).toString();
+	should(projFileText).equal(fileAfterUpdate.trim());
+}

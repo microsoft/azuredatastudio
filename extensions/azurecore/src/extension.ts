@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { promises as fs } from 'fs';
 import * as path from 'path';
@@ -36,7 +37,11 @@ import { SqlInstanceArcResourceService } from './azureResource/providers/sqlinst
 import { PostgresServerArcProvider } from './azureResource/providers/postgresArcServer/postgresServerProvider';
 import { PostgresServerArcService } from './azureResource/providers/postgresArcServer/postgresServerService';
 import { azureResource } from './azureResource/azure-resource';
+import * as azurecore from './azurecore';
+import * as azureResourceUtils from './azureResource/utils';
+import * as utils from './utils';
 import * as loc from './localizedConstants';
+import { AzureResourceGroupService } from './azureResource/providers/resourceGroup/resourceGroupService';
 
 let extensionContext: vscode.ExtensionContext;
 
@@ -62,7 +67,7 @@ function pushDisposable(disposable: vscode.Disposable): void {
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
-export async function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext): Promise<azurecore.IExtension> {
 	extensionContext = context;
 	const apiWrapper = new ApiWrapper();
 	let appContext = new AppContext(extensionContext, apiWrapper);
@@ -82,7 +87,9 @@ export async function activate(context: vscode.ExtensionContext) {
 	registerAzureResourceCommands(appContext, azureResourceTree);
 
 	return {
-		provideResources() {
+		getSubscriptions(account?: azdata.Account, ignoreErrors?: boolean): Thenable<azurecore.GetSubscriptionsResult> { return azureResourceUtils.getSubscriptions(appContext, account, ignoreErrors); },
+		getResourceGroups(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, ignoreErrors?: boolean): Thenable<azurecore.GetResourceGroupsResult> { return azureResourceUtils.getResourceGroups(appContext, account, subscription, ignoreErrors); },
+		provideResources(): azureResource.IAzureResourceProvider[] {
 			const arcFeaturedEnabled = apiWrapper.getExtensionConfiguration().get('enableArcFeatures');
 			const providers: azureResource.IAzureResourceProvider[] = [
 				new AzureResourceDatabaseServerProvider(new AzureResourceDatabaseServerService(), apiWrapper, extensionContext),
@@ -97,7 +104,8 @@ export async function activate(context: vscode.ExtensionContext) {
 				);
 			}
 			return providers;
-		}
+		},
+		getRegionDisplayName: utils.getRegionDisplayName
 	};
 }
 
@@ -141,6 +149,7 @@ async function initAzureAccountProvider(extensionContext: vscode.ExtensionContex
 
 function registerAzureServices(appContext: AppContext): void {
 	appContext.registerService<AzureResourceService>(AzureResourceServiceNames.resourceService, new AzureResourceService());
+	appContext.registerService<AzureResourceGroupService>(AzureResourceServiceNames.resourceGroupService, new AzureResourceGroupService());
 	appContext.registerService<IAzureResourceAccountService>(AzureResourceServiceNames.accountService, new AzureResourceAccountService(appContext.apiWrapper));
 	appContext.registerService<IAzureResourceCacheService>(AzureResourceServiceNames.cacheService, new AzureResourceCacheService(extensionContext));
 	appContext.registerService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService, new AzureResourceSubscriptionService());
