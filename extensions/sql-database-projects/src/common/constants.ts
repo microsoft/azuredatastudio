@@ -147,7 +147,7 @@ export const integratedSecuritySetting = 'Integrated Security';
 export const userIdSetting = 'User ID';
 export const passwordSetting = 'Password';
 
-// Tree Items types
+// Tree item types
 export enum DatabaseProjectItemType {
 	project = 'databaseProject.itemType.project',
 	folder = 'databaseProject.itemType.folder',
