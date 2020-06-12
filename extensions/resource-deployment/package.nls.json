@@ -61,6 +61,7 @@
 	"docker-repository-field": "Repository",
 	"docker-imagetag-field": "Image tag",
 	"docker-username-field": "Username",
-	"docker-PASSWORD-field": "Password",
-	"edge-agreement": "I accept {0}."
+	"docker-password-field": "Password",
+	"edge-agreement": "I accept {0} and {1}.",
+	"edge-eula": "Microsoft SQL Server License Agreement"
 }

@@ -442,7 +442,7 @@
                           "required": false
                         },
                         {
-                          "label": "%docker-PASSWORD-field%",
+                          "label": "%docker-password-field%",
                           "variableName": "AZDATA_NB_VAR_DOCKER_PASSWORD",
                           "type": "password",
                           "defaultValue": "",
@@ -468,6 +468,10 @@
             {
               "text": "%microsoft-privacy-statement%",
               "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
+            },
+            {
+              "text": "%edge-eula%",
+              "url": "https://go.microsoft.com/fwlink/?LinkId=746388"
             }
           ]
         }
