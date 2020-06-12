@@ -176,6 +176,7 @@ export class ResourcesDropHandler {
 		if (!untitledOrFileResources.length) {
 			return;
 		}
+
 		// Make the window active to handle the drop properly within
 		await this.hostService.focus();
 
