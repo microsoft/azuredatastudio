@@ -11,6 +11,7 @@ import { createSection, getDropdownComponent, InputComponentInfo, InputComponent
 import { WizardPageBase } from '../../wizardPageBase';
 import { AksName_VariableName, Location_VariableName, ResourceGroup_VariableName, SubscriptionId_VariableName, VMCount_VariableName, VMSize_VariableName } from '../constants';
 import { DeployClusterWizard } from '../deployClusterWizard';
+import { AzureRegion } from '../../../../../azurecore/src/azurecore';
 const localize = nls.loadMessageBundle();
 const MissingRequiredInformationErrorMessage = localize('deployCluster.MissingRequiredInfoError', "Please fill out the required fields marked with red asterisks.");
 
@@ -60,20 +61,20 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					label: localize('deployCluster.Location', "Location"),
 					required: true,
 					variableName: Location_VariableName,
-					defaultValue: 'eastus',
+					defaultValue: AzureRegion.eastus,
 					editable: true,
 					// The options are not localized because this is an editable dropdown,
 					// It would cause confusion to user about what value to type in, if they type in the localized value, we don't know how to process.
 					options: [
-						'centralus',
-						'eastus',
-						'eastus2',
-						'northcentralus',
-						'southcentralus',
-						'westus',
-						'westus2',
-						'canadacentral',
-						'canadaeast'
+						AzureRegion.centralus,
+						AzureRegion.eastus,
+						AzureRegion.eastus2,
+						AzureRegion.northcentralus,
+						AzureRegion.southcentralus,
+						AzureRegion.westus,
+						AzureRegion.westus2,
+						AzureRegion.canadacentral,
+						AzureRegion.canadaeast
 					]
 				}, {
 					type: FieldType.ReadonlyText,

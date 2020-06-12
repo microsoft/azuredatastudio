@@ -16,6 +16,7 @@ import { assert, getDateTimeString, getErrorMessage } from '../utils';
 import { WizardInfoBase } from './../interfaces';
 import { Model } from './model';
 import { RadioGroupLoadingComponentBuilder } from './radioGroupLoadingComponentBuilder';
+import { apiService } from '../services/apiService';
 
 const localize = nls.loadMessageBundle();
 
@@ -839,16 +840,24 @@ async function handleSelectedAccountChanged(
 	}
 
 	try {
-		const response = await vscode.commands.executeCommand<azurecore.GetSubscriptionsResult>('azure.accounts.getSubscriptions', selectedAccount, true /*ignoreErrors*/);
+		const response = await (await apiService.getAzurecoreApi()).getSubscriptions(selectedAccount, true);
 		if (!response) {
 			return;
 		}
 		if (response.errors.length > 0) {
-			context.container.message = {
-				text: response.errors.join(EOL) || '',
-				description: '',
-				level: azdata.window.MessageLevel.Warning
-			};
+			// If we got back some subscriptions then don't display the errors to the user - it's normal for users
+			// to not necessarily have access to all subscriptions on an account so displaying the errors
+			// in that case is usually just distracting and causes confusion
+			const errMsg = response.errors.join(EOL);
+			if (response.subscriptions.length === 0) {
+				context.container.message = {
+					text: errMsg || '',
+					description: '',
+					level: azdata.window.MessageLevel.Error
+				};
+			} else {
+				console.log(errMsg);
+			}
 		}
 		subscriptionDropdown.values = response.subscriptions.map(subscription => {
 			const displayName = `${subscription.name} (${subscription.id})`;
@@ -906,17 +915,24 @@ async function handleSelectedSubscriptionChanged(context: AzureAccountFieldConte
 		return;
 	}
 	try {
-		const response = await vscode.commands.executeCommand<azurecore.GetResourceGroupsResult>('azure.accounts.getResourceGroups', selectedAccount, selectedSubscription, true /*ignoreErrors*/);
-		//.then(response => {
+		const response = await (await apiService.getAzurecoreApi()).getResourceGroups(selectedAccount, selectedSubscription, true);
 		if (!response) {
 			return;
 		}
 		if (response.errors.length > 0) {
-			context.container.message = {
-				text: response.errors.join(EOL) || '',
-				description: '',
-				level: azdata.window.MessageLevel.Warning
-			};
+			// If we got back some RG's then don't display the errors to the user - it's normal for users
+			// to not necessarily have access to all RG's on a subscription so displaying the errors
+			// in that case is usually just distracting and causes confusion
+			const errMsg = response.errors.join(EOL);
+			if (response.resourceGroups.length === 0) {
+				context.container.message = {
+					text: errMsg || '',
+					description: '',
+					level: azdata.window.MessageLevel.Error
+				};
+			} else {
+				console.log(errMsg);
+			}
 		}
 		resourceGroupDropdown.values = (response.resourceGroups.length !== 0)
 			? response.resourceGroups.map(resourceGroup => resourceGroup.name).sort((a: string, b: string) => a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase()))
@@ -930,9 +946,9 @@ async function handleSelectedSubscriptionChanged(context: AzureAccountFieldConte
  * Map of known Azure location friendly names to their internal names
  */
 const knownAzureLocationNameMappings = new Map<string, string>([
-	['East US', 'eastus'],
-	['East US 2', 'eastus2'],
-	['Central US', 'centralus']
+	['East US', azurecore.AzureRegion.eastus],
+	['East US 2', azurecore.AzureRegion.eastus2],
+	['Central US', azurecore.AzureRegion.centralus]
 ]);
 
 /**

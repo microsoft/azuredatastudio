@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
   "version": "1.19.0",
-  "distro": "a04ebf32a5868f2bc7a4eed0716a42564d2a7896",
+  "distro": "0f99951432d928e5c599f8c5d95af1d071b0cba3",
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -21,7 +21,7 @@
     "watch-client": "gulp watch-client --max_old_space_size=4095",
     "mocha": "mocha test/unit/node/all.js --delay",
     "precommit": "node build/gulpfile.hygiene.js",
-    "gulp": "gulp --max_old_space_size=4095",
+    "gulp": "gulp --max_old_space_size=8192",
     "electron": "node build/lib/electron",
     "7z": "7z",
     "update-grammars": "node build/npm/update-all-grammars.js",

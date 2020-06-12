@@ -7,6 +7,8 @@ import * as path from 'path';
 import * as xmldom from 'xmldom';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
+import * as xmlFormat from 'xml-formatter';
+import * as os from 'os';
 
 import { Uri } from 'vscode';
 import { promises as fs } from 'fs';
@@ -21,6 +23,7 @@ export class Project {
 	public files: ProjectEntry[] = [];
 	public dataSources: DataSource[] = [];
 	public importedTargets: string[] = [];
+	public databaseReferences: string[] = [];
 	public sqlCmdVariables: Record<string, string> = {};
 
 	public get projectFolderPath() {
@@ -58,6 +61,16 @@ export class Project {
 		for (let i = 0; i < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Import).length; i++) {
 			const importTarget = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Import)[i];
 			this.importedTargets.push(importTarget.getAttribute(constants.Project));
+		}
+
+		// find all database references to include
+		for (let r = 0; r < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference).length; r++) {
+			const filepath = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference)[r].getAttribute(constants.Include);
+			if (!filepath) {
+				throw new Error(constants.invalidDatabaseReference);
+			}
+
+			this.databaseReferences.push(path.parse(filepath).name);
 		}
 	}
 
@@ -144,14 +157,28 @@ export class Project {
 	}
 
 	/**
-	 * Adds reference to the appropriate master dacpac to the project
+	 * Adds reference to the appropriate system database dacpac to the project
 	 */
-	public async addMasterDatabaseReference(): Promise<void> {
-		const uri = this.getMasterDacpac();
-		this.addDatabaseReference(uri, DatabaseReferenceLocation.differentDatabaseSameServer, constants.master);
+	public async addSystemDatabaseReference(name: SystemDatabase): Promise<void> {
+		let uri: Uri;
+		let dbName: string;
+		if (name === SystemDatabase.master) {
+			uri = this.getSystemDacpacUri(constants.masterDacpac);
+			dbName = constants.master;
+		} else {
+			uri = this.getSystemDacpacUri(constants.msdbDacpac);
+			dbName = constants.msdb;
+		}
+
+		this.addDatabaseReference(uri, DatabaseReferenceLocation.differentDatabaseSameServer, true, dbName);
 	}
 
-	public getMasterDacpac(): Uri {
+	public getSystemDacpacUri(dacpac: string): Uri {
+		let version = this.getProjectTargetPlatform();
+		return Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', version, dacpac));
+	}
+
+	public getProjectTargetPlatform(): string {
 		// check for invalid DSP
 		if (this.projFileXmlDoc.getElementsByTagName(constants.DSP).length !== 1 || this.projFileXmlDoc.getElementsByTagName(constants.DSP)[0].childNodes.length !== 1) {
 			throw new Error(constants.invalidDataSchemaProvider);
@@ -166,12 +193,11 @@ export class Project {
 		version = version.substring(0, version.length - constants.databaseSchemaProvider.length);
 
 		// make sure version is valid
-		console.error(Object.values(TargetPlatform));
 		if (!Object.values(TargetPlatform).includes(version)) {
 			throw new Error(constants.invalidDataSchemaProvider);
 		}
 
-		return Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', version, 'master.dacpac'));
+		return version;
 	}
 
 	/**
@@ -179,8 +205,8 @@ export class Project {
 	 * @param uri Uri of the dacpac
 	 * @param databaseName name of the database
 	 */
-	public async addDatabaseReference(uri: Uri, databaseLocation: DatabaseReferenceLocation, databaseName?: string): Promise<void> {
-		let databaseReferenceEntry = new DatabaseReferenceProjectEntry(uri, databaseLocation, databaseName);
+	public async addDatabaseReference(uri: Uri, databaseLocation: DatabaseReferenceLocation, isSystemDatabase: boolean, databaseName?: string): Promise<void> {
+		let databaseReferenceEntry = new DatabaseReferenceProjectEntry(uri, databaseLocation, isSystemDatabase, databaseName);
 		await this.addToProjFile(databaseReferenceEntry);
 	}
 
@@ -231,7 +257,7 @@ export class Project {
 	private addDatabaseReferenceToProjFile(entry: DatabaseReferenceProjectEntry): void {
 		const referenceNode = this.projFileXmlDoc.createElement(constants.ArtifactReference);
 		referenceNode.setAttribute(constants.Condition, constants.NetCoreCondition);
-		referenceNode.setAttribute(constants.Include, entry.fsUri.fsPath);
+		referenceNode.setAttribute(constants.Include, entry.isSystemDatabase ? entry.fsUri.fsPath.substring(1) : entry.fsUri.fsPath); // need to remove the leading slash for system database path for build to work on Windows
 
 		let suppressMissingDependenciesErrorNode = this.projFileXmlDoc.createElement(constants.SuppressMissingDependenciesErrors);
 		let falseTextNode = this.projFileXmlDoc.createTextNode('False');
@@ -245,7 +271,8 @@ export class Project {
 			referenceNode.appendChild(databaseVariableLiteralValue);
 		}
 
-		this.findOrCreateItemGroup().appendChild(referenceNode);
+		this.findOrCreateItemGroup(constants.ArtifactReference).appendChild(referenceNode);
+		this.databaseReferences.push(path.parse(entry.fsUri.fsPath.toString()).name);
 	}
 
 	private async updateImportedTargetsToProjFile(condition: string, projectAttributeVal: string, oldImportNode?: any): Promise<any> {
@@ -292,7 +319,8 @@ export class Project {
 	}
 
 	private async serializeToProjFile(projFileContents: any) {
-		const xml = new xmldom.XMLSerializer().serializeToString(projFileContents); // TODO: how to get this to serialize with "pretty" formatting
+		let xml = new xmldom.XMLSerializer().serializeToString(projFileContents);
+		xml = xmlFormat(xml, <any>{ collapseContent: true, indentation: '  ', lineSeparator: os.EOL }); // TODO: replace <any>
 
 		await fs.writeFile(this.projectFilePath, xml);
 	}
@@ -347,7 +375,7 @@ export class ProjectEntry {
  * Represents a database reference entry in a project file
  */
 class DatabaseReferenceProjectEntry extends ProjectEntry {
-	constructor(uri: Uri, public databaseLocation: DatabaseReferenceLocation, public name?: string) {
+	constructor(uri: Uri, public databaseLocation: DatabaseReferenceLocation, public isSystemDatabase: boolean, public name?: string) {
 		super(uri, '', EntryType.DatabaseReference);
 	}
 }
@@ -372,4 +400,9 @@ export enum TargetPlatform {
 	Sql140 = '140',
 	Sql150 = '150',
 	SqlAzureV12 = 'AzureV12'
+}
+
+export enum SystemDatabase {
+	master,
+	msdb
 }

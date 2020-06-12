@@ -10,7 +10,7 @@ import * as testUtils from './testUtils';
 import * as constants from '../common/constants';
 
 import { promises as fs } from 'fs';
-import { Project, EntryType, TargetPlatform } from '../models/project';
+import { Project, EntryType, TargetPlatform, SystemDatabase, DatabaseReferenceLocation } from '../models/project';
 import { exists } from '../common/utils';
 import { Uri } from 'vscode';
 
@@ -34,6 +34,9 @@ describe('Project: sqlproj content operations', function (): void {
 
 		should(project.files.find(f => f.type === EntryType.Folder && f.relativePath === 'Views\\User')).not.equal(undefined); // mixed ItemGroup folder
 		should(project.files.find(f => f.type === EntryType.File && f.relativePath === 'Views\\User\\Profile.sql')).not.equal(undefined); // mixed ItemGroup file
+
+		should(project.databaseReferences.length).equal(1);
+		should(project.databaseReferences[0]).containEql(constants.master);
 	});
 
 	it('Should add Folder and Build entries to sqlproj', async function (): Promise<void> {
@@ -90,16 +93,33 @@ describe('Project: sqlproj content operations', function (): void {
 		const project = new Project(projFilePath);
 		await project.readProjFile();
 
-		let uri = project.getMasterDacpac();
-		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '130', 'master.dacpac')).fsPath);
+		let uri = project.getSystemDacpacUri(constants.masterDacpac);
+		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '130', constants.masterDacpac)).fsPath);
 
 		project.changeDSP(TargetPlatform.Sql150.toString());
-		uri = project.getMasterDacpac();
-		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '150', 'master.dacpac')).fsPath);
+		uri = project.getSystemDacpacUri(constants.masterDacpac);
+		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '150', constants.masterDacpac)).fsPath);
 
 		project.changeDSP(TargetPlatform.SqlAzureV12.toString());
-		uri = project.getMasterDacpac();
-		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', 'AzureV12', 'master.dacpac')).fsPath);
+		uri = project.getSystemDacpacUri(constants.masterDacpac);
+		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', 'AzureV12',constants.masterDacpac)).fsPath);
+	});
+
+	it('Should choose correct msdb dacpac', async function(): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project = new Project(projFilePath);
+		await project.readProjFile();
+
+		let uri = project.getSystemDacpacUri(constants.msdbDacpac);
+		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '130', constants.msdbDacpac)).fsPath);
+
+		project.changeDSP(TargetPlatform.Sql150.toString());
+		uri = project.getSystemDacpacUri(constants.msdbDacpac);
+		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '150', constants.msdbDacpac)).fsPath);
+
+		project.changeDSP(TargetPlatform.SqlAzureV12.toString());
+		uri = project.getSystemDacpacUri(constants.msdbDacpac);
+		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', 'AzureV12', constants.msdbDacpac)).fsPath);
 	});
 
 	it('Should throw error when choosing correct master dacpac if invalid DSP', async function(): Promise<void> {
@@ -108,7 +128,26 @@ describe('Project: sqlproj content operations', function (): void {
 		await project.readProjFile();
 
 		project.changeDSP('invalidPlatform');
-		await testUtils.shouldThrowSpecificError(async () => await project.getMasterDacpac(), constants.invalidDataSchemaProvider);
+		await testUtils.shouldThrowSpecificError(async () => await project.getSystemDacpacUri(constants.masterDacpac), constants.invalidDataSchemaProvider);
+	});
+
+	it('Should add database references correctly', async function(): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project = new Project(projFilePath);
+		await project.readProjFile();
+
+		should(project.databaseReferences.length).equal(0);
+		await project.addSystemDatabaseReference(SystemDatabase.master);
+		should(project.databaseReferences.length).equal(1);
+		should(project.databaseReferences[0]).equal(constants.master);
+
+		await project.addSystemDatabaseReference(SystemDatabase.msdb);
+		should(project.databaseReferences.length).equal(2);
+		should(project.databaseReferences[1]).equal(constants.msdb);
+
+		await project.addDatabaseReference(Uri.parse('test.dacpac'), DatabaseReferenceLocation.sameDatabase, false);
+		should(project.databaseReferences.length).equal(3);
+		should(project.databaseReferences[2]).equal('test');
 	});
 });
 
