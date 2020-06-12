@@ -185,7 +185,7 @@ async function testUpdateInRoundTrip(fileBeforeupdate: string, fileAfterUpdate: 
 	}
 
 	if (testReferences) {
-		testAddReferencesInRoundTrip(project);
+		await testAddReferencesInRoundTrip(project);
 	}
 
 	let projFileText = (await fs.readFile(projFilePath)).toString();
