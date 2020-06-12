@@ -112,6 +112,11 @@ export const Include = 'Include';
 export const Import = 'Import';
 export const Project = 'Project';
 export const Condition = 'Condition';
+export const Target = 'Target';
+export const Name = 'Name';
+export const AfterCleanTarget = 'AfterClean';
+export const Delete = 'Delete';
+export const Files = 'Files';
 export const PackageReference = 'PackageReference';
 export const Version = 'Version';
 export const PrivateAssets = 'PrivateAssets';
@@ -130,6 +135,7 @@ export const SqlDbNotPresentCondition = '\'$(SQLDBExtensionsRefPath)\' == \'\'';
 export const RoundTripSqlDbPresentCondition = '\'$(NetCoreBuild)\' != \'true\' AND \'$(SQLDBExtensionsRefPath)\' != \'\'';
 export const RoundTripSqlDbNotPresentCondition = '\'$(NetCoreBuild)\' != \'true\' AND \'$(SQLDBExtensionsRefPath)\' == \'\'';
 export const DacpacRootPath = '$(DacPacRootPath)';
+export const ProjJsonToClean = '$(BaseIntermediateOutputPath)\\project.assets.json';
 
 // SqlProj Reference Assembly Information
 export const NETFrameworkAssembly = 'Microsoft.NETFramework.ReferenceAssemblies';

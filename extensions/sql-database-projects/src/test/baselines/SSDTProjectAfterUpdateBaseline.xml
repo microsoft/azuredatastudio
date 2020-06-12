@@ -79,4 +79,7 @@
       <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
     </ArtifactReference>
   </ItemGroup>
+  <Target Name="AfterClean">
+    <Delete Files="$(BaseIntermediateOutputPath)\project.assets.json"/>
+  </Target>
 </Project>

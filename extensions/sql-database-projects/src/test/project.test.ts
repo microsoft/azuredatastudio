@@ -159,31 +159,34 @@ describe('Project: round trip updates', function (): void {
 	});
 
 	it('Should update SSDT project to work in ADS', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.SSDTProjectFileBaseline);
-		const project: Project = new Project(projFilePath);
-		await project.readProjFile();
-
-		await project.updateProjectForRoundTrip();
-		// updating system db refs is separate from updating for roundtrip because new db refs could be added even after project is updated for roundtrip
-		should(project.containsSSDTOnlySystemDatabaseReferences()).equal(true);
-		await project.updateSystemDatabaseReferencesInProjFile();
-
-		should(await exists(projFilePath + '_backup')).equal(true);	// backup file should be generated before the project is updated
-		should(project.importedTargets.length).equal(3);	// additional target added by updateProjectForRoundTrip method
-
-		let projFileText = (await fs.readFile(projFilePath)).toString();
-		should(projFileText).equal(isWindows ? baselines.SSDTProjectAfterUpdateBaselineWindows.trim() : baselines.SSDTProjectAfterUpdateBaseline.trim());
+		const fileBeforeUpdate = baselines.SSDTProjectFileBaseline;
+		const fileAfterUpdate = isWindows ? baselines.SSDTProjectAfterUpdateBaselineWindows : baselines.SSDTProjectAfterUpdateBaseline;
+		await testUpdateInRoundTrip(fileBeforeUpdate, fileAfterUpdate);
 	});
 
 	it('Should update SSDT project with new system database references', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(isWindows ? baselines.SSDTUpdatedProjectBaselineWindows : baselines.SSDTUpdatedProjectBaseline);
-		const project: Project = new Project(projFilePath);
-		await project.readProjFile();
+		const fileBeforeUpdate = isWindows ? baselines.SSDTUpdatedProjectBaselineWindows : baselines.SSDTUpdatedProjectBaseline;
+		const fileAfterUpdate = isWindows ? baselines.SSDTUpdatedProjectAfterSystemDbUpdateBaselineWindows : baselines.SSDTUpdatedProjectAfterSystemDbUpdateBaseline;
+		await testUpdateInRoundTrip(fileBeforeUpdate, fileAfterUpdate);
+	});
 
-		should(project.containsSSDTOnlySystemDatabaseReferences()).equal(true);
-		await project.updateSystemDatabaseReferencesInProjFile();
-
-		let projFileText = (await fs.readFile(projFilePath)).toString();
-		should(projFileText).equal(isWindows ? baselines.SSDTUpdatedProjectAfterSystemDbUpdateBaselineWindows.trim() : baselines.SSDTUpdatedProjectAfterSystemDbUpdateBaseline.trim());
+	it('Should update SSDT project to work in ADS handling pre-exsiting targets', async function (): Promise<void> {
+		await testUpdateInRoundTrip(baselines.SSDTProjectBaselineWithCleanTarget, baselines.SSDTProjectBaselineWithCleanTargetAfterUpdate);
 	});
 });
+
+async function testUpdateInRoundTrip(fileBeforeupdate: string, fileAfterUpdate:string) : Promise<void> {
+	projFilePath = await testUtils.createTestSqlProjFile(fileBeforeupdate);
+	const project: Project = new Project(projFilePath);
+	await project.readProjFile();
+
+	await project.updateProjectForRoundTrip();
+	// updating system db refs is separate from updating for roundtrip because new db refs could be added even after project is updated for roundtrip
+	should(project.containsSSDTOnlySystemDatabaseReferences()).equal(true);
+	await project.updateSystemDatabaseReferencesInProjFile();
+	should(await exists(projFilePath + '_backup')).equal(true);	// backup file should be generated before the project is updated
+	should(project.importedTargets.length).equal(3);	// additional target added by updateProjectForRoundTrip method
+
+	let projFileText = (await fs.readFile(projFilePath)).toString();
+	should(projFileText).equal(fileAfterUpdate.trim());
+}
