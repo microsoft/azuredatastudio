@@ -314,6 +314,11 @@ export class Project {
 				const name = currentNode.getAttribute(constants.Include).includes(constants.master) ? SystemDatabase.master : SystemDatabase.msdb;
 				this.projFileXmlDoc.documentElement.removeChild(currentNode);
 
+				// delete ItemGroup if there aren't any other children
+				if (this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference).length === 0) {
+					this.projFileXmlDoc.documentElement.removeChild(currentNode.parentNode);
+				}
+
 				await this.addSystemDatabaseReference(name);
 			}
 		}
