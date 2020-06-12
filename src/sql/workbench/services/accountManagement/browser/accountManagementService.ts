@@ -25,6 +25,7 @@ import { values } from 'vs/base/common/collections';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
 import { INotificationService, Severity, INotification } from 'vs/platform/notification/common/notification';
+import { Action } from 'vs/base/common/actions';
 
 export class AccountManagementService implements IAccountManagementService {
 	// CONSTANTS ///////////////////////////////////////////////////////////
@@ -119,11 +120,16 @@ export class AccountManagementService implements IAccountManagementService {
 	 * @return Promise to return an account
 	 */
 	public addAccount(providerId: string): Thenable<void> {
+		const closeAction: Action = new Action('closeAddingAccount', localize('close', "Close"), undefined, true);
+
 		const loginNotification: INotification = {
 			severity: Severity.Info,
 			message: localize('loggingIn', "Adding account..."),
 			progress: {
 				infinite: true
+			},
+			actions: {
+				primary: [closeAction]
 			}
 		};
 
