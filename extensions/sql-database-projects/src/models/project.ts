@@ -78,7 +78,6 @@ export class Project {
 		await fs.copyFile(this.projectFilePath, this.projectFilePath + '_backup');
 		await this.updateImportToSupportRoundTrip();
 		await this.updatePackageReferenceInProjFile();
-		await this.updateSystemDatabaseReferencesInProjFile();
 	}
 
 	private async updateImportToSupportRoundTrip(): Promise<void> {

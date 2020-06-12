@@ -452,7 +452,9 @@ export class ProjectsController {
 			if (result === constants.yesString) {
 				await project.updateProjectForRoundTrip();
 			}
-		} else {
+		}
+
+		if (project.containsSSDTOnlySystemDatabaseReferences()) {
 			const result = await this.apiWrapper.showWarningMessage(constants.updateProjectDatabaseReferencesForRoundTrip, constants.yesString, constants.noString);
 			if (result === constants.yesString) {
 				await project.updateSystemDatabaseReferencesInProjFile();
