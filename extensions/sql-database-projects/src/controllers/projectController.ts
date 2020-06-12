@@ -316,9 +316,9 @@ export class ProjectsController {
 
 				if (databaseLocation === DatabaseReferenceLocation.differentDatabaseSameServer) {
 					const databaseName = await this.getDatabaseName(dacpacFileLocation);
-					await project.addDatabaseReference(dacpacFileLocation, <DatabaseReferenceLocation>databaseLocation, false, databaseName);
+					await project.addDatabaseReference(dacpacFileLocation, databaseLocation, false, databaseName);
 				} else {
-					await project.addDatabaseReference(dacpacFileLocation, <DatabaseReferenceLocation>databaseLocation, false);
+					await project.addDatabaseReference(dacpacFileLocation, databaseLocation, false);
 				}
 			}
 
@@ -443,13 +443,20 @@ export class ProjectsController {
 	}
 
 	public async updateProjectForRoundTrip(project: Project) {
-		if (project.importedTargets.includes(constants.NetCoreTargets)) {
+		if (project.importedTargets.includes(constants.NetCoreTargets) && !project.containsSSDTOnlySystemDatabaseReferences()) {
 			return;
 		}
 
-		const result = await this.apiWrapper.showWarningMessage(constants.updateProjectForRoundTrip, constants.yesString, constants.noString);
-		if (result === constants.yesString) {
-			await project.updateProjectForRoundTrip();
+		if (!project.importedTargets.includes(constants.NetCoreTargets)) {
+			const result = await this.apiWrapper.showWarningMessage(constants.updateProjectForRoundTrip, constants.yesString, constants.noString);
+			if (result === constants.yesString) {
+				await project.updateProjectForRoundTrip();
+			}
+		} else {
+			const result = await this.apiWrapper.showWarningMessage(constants.updateProjectDatabaseReferencesForRoundTrip, constants.yesString, constants.noString);
+			if (result === constants.yesString) {
+				await project.updateSystemDatabaseReferencesInProjFile();
+			}
 		}
 	}
 

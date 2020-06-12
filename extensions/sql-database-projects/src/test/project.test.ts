@@ -171,4 +171,16 @@ describe('Project: round trip updates', function (): void {
 		let projFileText = (await fs.readFile(projFilePath)).toString();
 		should(projFileText).equal(isWindows ? baselines.SSDTProjectAfterUpdateBaseline.trim() : baselines.SSDTProjectAfterUpdateBaselineNonWindows.trim());
 	});
+
+	it('Should update SSDT project with new system database references', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.SSDTUpdatedProjectBaseline);
+		const project: Project = new Project(projFilePath);
+		await project.readProjFile();
+
+		should(project.containsSSDTOnlySystemDatabaseReferences()).equal(true);
+		await project.updateSystemDatabaseReferencesInProjFile();
+
+		let projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText).equal(isWindows ? baselines.SSDTProjectAfterUpdateBaseline.trim() : baselines.SSDTProjectAfterUpdateBaselineNonWindows.trim());
+	});
 });
