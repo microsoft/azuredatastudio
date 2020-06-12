@@ -1279,9 +1279,7 @@ export class TreeView extends HeightMap {
 		}
 
 		e.dataTransfer.effectAllowed = 'copyMove';
-
 		e.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([item.uri]));
-
 		if (e.dataTransfer.setDragImage) {
 			let label: string;
 
@@ -1357,11 +1355,11 @@ export class TreeView extends HeightMap {
 
 		let event = new Mouse.DragMouseEvent(e);
 
-		// viewItem is what you are dragging onto
 		let viewItem = this.getItemAround(event.target);
 
 		if (!viewItem || (event.posx === 0 && event.posy === 0 && event.browserEvent.type === DOM.EventType.DRAG_LEAVE)) {
 			// dragging outside of tree
+
 			if (this.currentDropTarget) {
 				// clear previously hovered element feedback
 
@@ -1369,6 +1367,7 @@ export class TreeView extends HeightMap {
 				this.currentDropTargets = [];
 				this.currentDropDisposable.dispose();
 			}
+
 			this.cancelDragAndDropScrollInterval();
 			this.currentDropTarget = null;
 			this.currentDropElement = null;
@@ -1432,6 +1431,7 @@ export class TreeView extends HeightMap {
 
 		// can be null
 		let currentDropTarget = item.id === this.inputItem.id ? this.inputItem : this.items[item.id];
+
 		if (this.shouldInvalidateDropReaction || this.currentDropTarget !== currentDropTarget || !reactionEquals(this.currentDropElementReaction, reaction)) {
 			this.shouldInvalidateDropReaction = false;
 
@@ -1556,7 +1556,6 @@ export class TreeView extends HeightMap {
 		return item.top < this.lastRenderTop + this.lastRenderHeight && item.top + item.height > this.lastRenderTop;
 	}
 
-	// Searches event target & its parents
 	private getItemAround(element: HTMLElement): ViewItem | undefined {
 		let candidate: ViewItem = this.inputItem;
 		let el: HTMLElement | null = element;

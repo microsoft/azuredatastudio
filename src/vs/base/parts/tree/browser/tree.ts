@@ -13,8 +13,6 @@ import { IAction } from 'vs/base/common/actions';
 import { Color } from 'vs/base/common/color';
 import { IItemCollapseEvent, IItemExpandEvent } from 'vs/base/parts/tree/browser/treeModel';
 import { IDragAndDropData } from 'vs/base/browser/dnd';
-// {{SQL CARBON EDIT}}
-import { ViewItem } from 'vs/base/parts/tree/browser/treeView';
 
 export interface ITree {
 
@@ -502,7 +500,6 @@ export interface IDragAndDrop {
 	/**
 	 * Sent when the drag operation is starting.
 	 */
-	// {{SQL CARBON EDIT}}
 	onDragStart(tree: ITree, data: IDragAndDropData, originalEvent: Mouse.DragMouseEvent): void;
 
 	/**

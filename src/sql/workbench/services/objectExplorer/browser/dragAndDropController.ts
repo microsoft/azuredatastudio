@@ -59,12 +59,13 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 	/**
 	 * Called when the drag operation starts.
 	 */
-	public onDragStart(tree: ITree, data: ElementsDragAndDropData<any>, originalEvent: DragMouseEvent): void {
+	public onDragStart(tree: ITree, dragAndDropData: IDragAndDropData, originalEvent: DragMouseEvent): void {
 		TreeUpdateUtils.isInDragAndDrop = true;
-		if (data.elements[0].nodeTypeId === 'Column' || data.elements[0].nodeTypeId === 'Table') {
-			originalEvent.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([`${data.elements[0].nodeTypeId}:${data.elements[0].id}?${data.elements[0].metadata.schema ? data.elements[0].metadata.schema + '.' + data.elements[0].metadata.name : data.elements[0].metadata.name}`]));
+		const data = dragAndDropData.getData();
+		const element = data.elements[0];
+		if (element.nodeTypeId === 'Column' || element.nodeTypeId === 'Table') {
+			originalEvent.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([`${element.nodeTypeId}:${element.id}?${element.metadata.schema ? element.metadata.schema + '.' + element.metadata.name : element.metadata.name}`]));
 		}
-
 		return;
 	}
 

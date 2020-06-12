@@ -79,7 +79,6 @@ export function extractResources(e: DragEvent, externalOnly?: boolean): Array<ID
 
 			// Data Transfer: Code Editors
 			const rawEditorsData = e.dataTransfer.getData(CodeDataTransfers.EDITORS);
-
 			if (rawEditorsData) {
 				try {
 					const draggedEditors: ISerializedDraggedEditor[] = JSON.parse(rawEditorsData);
@@ -173,13 +172,12 @@ export class ResourcesDropHandler {
 	}
 
 	async handleDrop(event: DragEvent, resolveTargetGroup: () => IEditorGroup | undefined, afterDrop: (targetGroup: IEditorGroup | undefined) => void, targetIndex?: number): Promise<void> {
-
 		const untitledOrFileResources = extractResources(event).filter(r => this.fileService.canHandleResource(r.resource) || r.resource.scheme === Schemas.untitled);
-
+		if (!untitledOrFileResources.length) {
+			return;
+		}
 		// Make the window active to handle the drop properly within
 		await this.hostService.focus();
-
-
 
 		// Check for special things being dropped
 		const isWorkspaceOpening = await this.doHandleDrop(untitledOrFileResources);
