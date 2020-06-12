@@ -170,8 +170,10 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 
 	/**
 	 * Sets focus on this editor. Specifically, it sets the focus on the hosted text editor.
+	 * An implementation provided here for IFindNotebookController interface.
 	 */
 	public focus(): void {
+		//no-op
 	}
 
 	/**
@@ -312,9 +314,9 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 					this.notebookFindModel.findExpression = this._findState.searchString;
 					this.notebookInput.notebookFindModel.find(this._findState.searchString, this._findState.matchCase, this._findState.wholeWord, NOTEBOOK_MAX_MATCHES).then(findRange => {
 						if (findRange) {
-							this.updatePosition(findRange);
+							this.setSelection(findRange);
 						} else if (this.notebookFindModel.findMatches.length > 0) {
-							this.updatePosition(this.notebookFindModel.findMatches[0].range);
+							this.setSelection(this.notebookFindModel.findMatches[0].range);
 						} else {
 							this.notebookInput.notebookFindModel.clearFind();
 							this._updateFinderMatchState();
@@ -388,6 +390,7 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 		this._previousMatch = this._currentMatch;
 		this._currentMatch = range;
 	}
+
 	public toggleSearch(): void {
 		// reveal only when the model is loaded
 		let isRevealed: boolean = !this._findState.isRevealed && this._notebookModel ? !this._findState.isRevealed : false;
@@ -401,7 +404,7 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 
 	public findNext(): void {
 		this.notebookFindModel.findNext().then(p => {
-			this.updatePosition(p);
+			this.setSelection(p);
 			this._updateFinderMatchState();
 			this._setCurrentFindMatch(p);
 		}, er => { onUnexpectedError(er); });
@@ -410,7 +413,7 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 
 	public findPrevious(): void {
 		this.notebookFindModel.findPrevious().then(p => {
-			this.updatePosition(p);
+			this.setSelection(p);
 			this._updateFinderMatchState();
 			this._setCurrentFindMatch(p);
 		}, er => { onUnexpectedError(er); });
@@ -423,12 +426,7 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 			this._findState.changeMatchInfo(0, 0, undefined);
 		}
 	}
-
-	private updatePosition(range: NotebookRange): void {
-		this._previousMatch = this._currentMatch;
-		this._currentMatch = range;
-	}
-
+	
 	private _setCurrentFindMatch(match: NotebookRange): void {
 		if (match) {
 			this._notebookModel.updateActiveCell(match.cell);

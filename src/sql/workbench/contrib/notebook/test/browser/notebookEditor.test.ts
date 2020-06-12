@@ -124,41 +124,39 @@ suite('Test class NotebookEditor', () => {
 			workbenchThemeService,
 			notebookService
 		);
-		let div = dom.$('div', undefined, dom.$('span', { id: 'demospan' }));
-		let parentHtmlElement = div.firstChild as HTMLElement;
-		notebookEditor.create(parentHtmlElement); // adds notebookEditor to new htmlElement as parent
-		assert.notStrictEqual(notebookEditor, undefined);
-		assert.strictEqual(notebookEditor['parent'], parentHtmlElement, 'parent of notebookEditor was not one that was expected');
-		await notebookEditor.setInput(untitledNotebookInput, EditorOptions.create({ pinned: true }));
 		setupPromise.resolve();
 	});
 
-	// [undefined, new NotebookModelStub()].forEach(async (notebookModel) => {
-	// 	test(`NotebookEditor-setInput-setNotebookModel-getNotebookModel for notebookModel='${notebookModel}'`, async () => {
-	// 		const untitledUri = URI.from({ scheme: Schemas.untitled, path: `NotebookEditor.Test-TestPath-${notebookModel}` });
-	// 		const untitledTextEditorService = instantiationService.get(IUntitledTextEditorService);
-	// 		const untitledTextInput = instantiationService.createInstance(UntitledTextEditorInput, untitledTextEditorService.create({ associatedResource: untitledUri }));
-	// 		const untitledNotebookInput = new UntitledNotebookInput(
-	// 			testTitle, untitledUri, untitledTextInput,
-	// 			undefined, instantiationService, notebookService, extensionService
-	// 		);
-	// 		const testNotebookEditor = new TestNotebookEditor(cellTextEditorGuid, queryTextEditor);
-	// 		testNotebookEditor.id = untitledNotebookInput.notebookUri.toString();
-	// 		testNotebookEditor.model = notebookModel;
-	// 		notebookService.addNotebookEditor(testNotebookEditor);
-	// 		testNotebookEditor.model = notebookModel;
-	// 		await notebookEditor.setInput(untitledNotebookInput, EditorOptions.create({ pinned: true }));
-	// 		await notebookEditor.setNotebookModel();
-	// 		const result = await notebookEditor.getNotebookModel();
-	// 		assert.strictEqual(result, notebookModel, `getNotebookModel() should return the model set in the INotebookEditor object`);
-	// 		notebookService.removeNotebookEditor(testNotebookEditor);
-	// 		console.log(`notebookEditor=`, notebookEditor);
-	// 		notebookEditor.setInput(untitledNotebookInput, EditorOptions.create({pinned: true}));
-	// 	});
-	// });
+	[undefined, new NotebookModelStub()].forEach(async (notebookModel) => {
+		test(`NotebookEditor-setInput-setNotebookModel-getNotebookModel for notebookModel='${notebookModel}'`, async () => {
+			await setupPromise;
+
+			const untitledUri = URI.from({ scheme: Schemas.untitled, path: `NotebookEditor.Test-TestPath-${notebookModel}` });
+			const untitledTextEditorService = instantiationService.get(IUntitledTextEditorService);
+			const untitledTextInput = instantiationService.createInstance(UntitledTextEditorInput, untitledTextEditorService.create({ associatedResource: untitledUri }));
+			const untitledNotebookInput = new UntitledNotebookInput(
+				testTitle, untitledUri, untitledTextInput,
+				undefined, instantiationService, notebookService, extensionService
+			);
+			const testNotebookEditor = new TestNotebookEditor({ cellGuid: cellTextEditorGuid, editor: queryTextEditor });
+			testNotebookEditor.id = untitledNotebookInput.notebookUri.toString();
+			testNotebookEditor.model = notebookModel;
+			notebookService.addNotebookEditor(testNotebookEditor);
+			testNotebookEditor.model = notebookModel;
+			notebookEditor.clearInput();
+			await notebookEditor.setInput(untitledNotebookInput, EditorOptions.create({ pinned: true }));
+			await notebookEditor.setNotebookModel();
+			const result = await notebookEditor.getNotebookModel();
+			assert.strictEqual(result, notebookModel, `getNotebookModel() should return the model set in the INotebookEditor object`);
+			notebookService.removeNotebookEditor(testNotebookEditor);
+			console.log(`notebookEditor=`, notebookEditor);
+			notebookEditor.setInput(untitledNotebookInput, EditorOptions.create({ pinned: true }));
+		});
+	});
 
 	test('NotebookEditor-dispose: Tests that dispose() disposes all objects in its disposable store', async () => {
 		await setupPromise;
+		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 		const mockNotebookEditor = TypeMoq.Mock.ofInstance(notebookEditor);
 		mockNotebookEditor.setup(x => x.dispose()).callback(() => notebookEditor.dispose());
 		mockNotebookEditor.object.dispose();
@@ -169,6 +167,7 @@ suite('Test class NotebookEditor', () => {
 
 	test('NotebookEditor-setSelection-getPosition-getLastPosition: Tests that getPosition and getLastPosition correctly return the range set by setSelection', async () => {
 		await setupPromise;
+		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 		let currentPosition = notebookEditor.getPosition();
 		let lastPosition = notebookEditor.getLastPosition();
 		assert.strictEqual(currentPosition, undefined, 'notebookEditor.getPosition() should return an undefined range with no selected range');
@@ -191,6 +190,7 @@ suite('Test class NotebookEditor', () => {
 	['', undefined, null, 'unknown string', /*unknown guid*/generateUuid()].forEach(input => {
 		test(`NotebookEditor-getCellEditor: Test getCellEditor() returns undefined for invalid or unknown guid:'${input}'`, async () => {
 			await setupPromise;
+			await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 			const inputGuid = <string>input;
 			const result = notebookEditor.getCellEditor(inputGuid);
 			assert.strictEqual(result, undefined, `notebookEditor.getCellEditor() should return undefined when invalid guid is passed in for a notebookEditor of an empty document.`);
@@ -199,14 +199,19 @@ suite('Test class NotebookEditor', () => {
 
 	test('NotebookEditor-getCellEditor: Positive Tests getCellEditor() returns a valid text editor object for valid guid input', async () => {
 		await setupPromise;
+		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 		const result = notebookEditor.getCellEditor(cellTextEditorGuid);
 		assert.strictEqual(result, queryTextEditor, 'notebookEditor.getCellEditor() should return an expected QueryTextEditor when a guid corresponding to that editor is passed in.');
 
 	});
 
-	// test('NotebookEditor-createEditor', () => {
-	// 	notebookEditor.createEditor(parent1);
-	// });
+	test('NotebookEditor-createEditor', () => {
+		const parent = document.createElement(undefined);
+		console.log(notebookEditor["_overlay"]);
+		notebookEditor.createEditor(undefined && parent);
+		console.log(notebookEditor["_overlay"]);
+		console.log(parent, JSON.stringify(parent, undefined, '\t'));
+	});
 
 	// test('NotebookEditor-focus', () => {
 	// 	notebookEditor.focus();
@@ -282,4 +287,15 @@ suite('Test class NotebookEditor', () => {
 	// });
 
 });
+
+async function setupNotebookEditor(notebookEditor: NotebookEditor, untitledNotebookInput: UntitledNotebookInput) {
+	let div = dom.$('div', undefined, dom.$('span', { id: 'demospan' }));
+	let parentHtmlElement = div.firstChild as HTMLElement;
+	notebookEditor.create(parentHtmlElement); // adds notebookEditor to new htmlElement as parent
+	assert.notStrictEqual(notebookEditor, undefined);
+	assert.strictEqual(notebookEditor['parent'], parentHtmlElement, 'parent of notebookEditor was not one that was expected');
+	const editorOptions = EditorOptions.create({ pinned: true });
+	await notebookEditor.setInput(untitledNotebookInput, editorOptions);
+	assert.strictEqual(notebookEditor.options, editorOptions, 'NotebookEditor options must be the ones that we set');
+}
 
