@@ -24,6 +24,7 @@ import { DuskyObjectModelsRestoreStatus } from '../model/duskyObjectModelsRestor
 import { DuskyObjectModelsRole } from '../model/duskyObjectModelsRole';
 import { DuskyObjectModelsUser } from '../model/duskyObjectModelsUser';
 import { Authentication, HttpBasicAuth, HttpBearerAuth, Interceptor, ObjectSerializer, VoidAuth } from '../model/models';
+import { V1Pod } from '../model/v1Pod';
 import { V1Status } from '../model/v1Status';
 import { HttpError } from './apis';
 
@@ -1533,6 +1534,88 @@ export class DatabaseRouterApi {
                     if (error) {
                         reject(error);
                     } else {
+                        if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
+                            resolve({ response: response, body: body });
+                        } else {
+                            reject(new HttpError(response, body, response.statusCode));
+                        }
+                    }
+                });
+            });
+        });
+    }
+    /**
+     *
+     * @summary Returns a list of pods associated with the service.
+     * @param ns The namespace of the database service.
+     * @param serviceName The name of the database service.
+     */
+    public async getDuskyPods (ns: string, serviceName: string, options: {headers: {[name: string]: string}} = {headers: {}}) : Promise<{ response: http.IncomingMessage; body: Array<V1Pod>;  }> {
+        const localVarPath = this.basePath + '/dusky/databases/{ns}/{serviceName}/pods'
+            .replace('{' + 'ns' + '}', encodeURIComponent(String(ns)))
+            .replace('{' + 'serviceName' + '}', encodeURIComponent(String(serviceName)));
+        let localVarQueryParameters: any = {};
+        let localVarHeaderParams: any = (<any>Object).assign({}, this._defaultHeaders);
+        const produces = ['application/json'];
+        // give precedence to 'application/json'
+        if (produces.indexOf('application/json') >= 0) {
+            localVarHeaderParams.Accept = 'application/json';
+        } else {
+            localVarHeaderParams.Accept = produces.join(',');
+        }
+        let localVarFormParams: any = {};
+
+        // verify required parameter 'ns' is not null or undefined
+        if (ns === null || ns === undefined) {
+            throw new Error('Required parameter ns was null or undefined when calling getDuskyPods.');
+        }
+
+        // verify required parameter 'serviceName' is not null or undefined
+        if (serviceName === null || serviceName === undefined) {
+            throw new Error('Required parameter serviceName was null or undefined when calling getDuskyPods.');
+        }
+
+        (<any>Object).assign(localVarHeaderParams, options.headers);
+
+        let localVarUseFormData = false;
+
+        let localVarRequestOptions: localVarRequest.Options = {
+            method: 'GET',
+            qs: localVarQueryParameters,
+            headers: localVarHeaderParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        let authenticationPromise = Promise.resolve();
+        if (this.authentications.BasicAuth.username && this.authentications.BasicAuth.password) {
+            authenticationPromise = authenticationPromise.then(() => this.authentications.BasicAuth.applyToRequest(localVarRequestOptions));
+        }
+        if (this.authentications.BearerAuth.accessToken) {
+            authenticationPromise = authenticationPromise.then(() => this.authentications.BearerAuth.applyToRequest(localVarRequestOptions));
+        }
+        authenticationPromise = authenticationPromise.then(() => this.authentications.default.applyToRequest(localVarRequestOptions));
+
+        let interceptorPromise = authenticationPromise;
+        for (const interceptor of this.interceptors) {
+            interceptorPromise = interceptorPromise.then(() => interceptor(localVarRequestOptions));
+        }
+
+        return interceptorPromise.then(() => {
+            if (Object.keys(localVarFormParams).length) {
+                if (localVarUseFormData) {
+                    (<any>localVarRequestOptions).formData = localVarFormParams;
+                } else {
+                    localVarRequestOptions.form = localVarFormParams;
+                }
+            }
+            return new Promise<{ response: http.IncomingMessage; body: Array<V1Pod>;  }>((resolve, reject) => {
+                localVarRequest(localVarRequestOptions, (error, response, body) => {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        body = ObjectSerializer.deserialize(body, "Array<V1Pod>");
                         if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
                             resolve({ response: response, body: body });
                         } else {
