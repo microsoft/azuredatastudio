@@ -150,8 +150,9 @@ describe('BookTreeViewProviderTests', function () {
 			should(bookTreeViewProvider.books.length).equal(1, 'Expected book was not initialized');
 		});
 
-		describe('BookTreeViewProvider.getChildren', function (): void {
+		describe('getChildren', function (): void {
 			let bookTreeViewProvider: BookTreeViewProvider;
+			let providedbookTreeViewProvider: BookTreeViewProvider;
 			let book: BookTreeItem;
 			let notebook1: BookTreeItem;
 
@@ -162,11 +163,14 @@ describe('BookTreeViewProviderTests', function () {
 					index: 0
 				};
 				bookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [folder], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
+				providedbookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [], mockExtensionContext, true, 'providedBooksView', NavigationProviders.ProvidedBooksNavigator);
 				let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 				await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
+				await Promise.race([providedbookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('ProvidedBooksTreeViewProvider did not initialize in time'); })]);
+				await providedbookTreeViewProvider.openBook(bookFolderPath, undefined, false, false);
 			});
 
-			it('should return all book nodes when element is undefined', async function (): Promise<void> {
+			it('bookTreeViewProvider should return all book nodes when element is undefined', async function (): Promise<void> {
 				const children = await bookTreeViewProvider.getChildren();
 				should(children).be.Array();
 				should(children.length).equal(1);
@@ -174,7 +178,7 @@ describe('BookTreeViewProviderTests', function () {
 				should(book.title).equal(expectedBook.title);
 			});
 
-			it('should return all page nodes when element is a book', async function (): Promise<void> {
+			it('bookTreeViewProvider should return all page nodes when element is a book', async function (): Promise<void> {
 				const children = await bookTreeViewProvider.getChildren(book);
 				should(children).be.Array();
 				should(children.length).equal(3);
@@ -186,7 +190,7 @@ describe('BookTreeViewProviderTests', function () {
 				equalBookItems(externalLink, expectedExternalLink);
 			});
 
-			it('should return all sections when element is a notebook', async function (): Promise<void> {
+			it('bookTreeViewProvider should return all sections when element is a notebook', async function (): Promise<void> {
 				const children = await bookTreeViewProvider.getChildren(notebook1);
 				should(children).be.Array();
 				should(children.length).equal(2);
@@ -196,7 +200,7 @@ describe('BookTreeViewProviderTests', function () {
 				equalBookItems(notebook3, expectedNotebook3);
 			});
 
-			it('should set notebooks trusted to true on trustBook', async () => {
+			it('bookTreeViewProvider should set notebooks trusted to true on trustBook', async () => {
 				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb');
 				let bookTrustManager: BookTrustManager = new BookTrustManager(bookTreeViewProvider.books, appContext.apiWrapper);
 				let isTrusted = bookTrustManager.isNotebookTrustedByDefault(vscode.Uri.file(notebook1Path).fsPath);
@@ -208,7 +212,7 @@ describe('BookTreeViewProviderTests', function () {
 
 			});
 
-			it('getNavigation should get previous and next urls correctly from the bookModel', async () => {
+			it('bookTreeViewProvider getNavigation should get previous and next urls correctly from the bookModel', async () => {
 				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb');
 				let notebook2Path = path.join(rootFolderPath, 'Book', 'content', 'notebook2.ipynb');
 				let notebook3Path = path.join(rootFolderPath, 'Book', 'content', 'notebook3.ipynb');
@@ -219,21 +223,7 @@ describe('BookTreeViewProviderTests', function () {
 
 			});
 
-		});
-
-		describe('ProvidedBooksTreeViewProvider.getChildren', function (): void {
-			let providedbookTreeViewProvider: BookTreeViewProvider;
-			let book: BookTreeItem;
-			let notebook1: BookTreeItem;
-
-			this.beforeAll(async () => {
-				providedbookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [], mockExtensionContext, true, 'unsavedBookTreeView', 'BookNavigator.ProvidedBooks');
-				let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
-				await Promise.race([providedbookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('ProvidedBooksTreeViewProvider did not initialize in time'); })]);
-				await providedbookTreeViewProvider.openBook(bookFolderPath, undefined, true, false);
-			});
-
-			it('should return all book nodes when element is undefined', async function (): Promise<void> {
+			it('providedBookTreeViewProvider should return all book nodes when element is undefined', async function (): Promise<void> {
 				const children = await providedbookTreeViewProvider.getChildren();
 				should(children).be.Array();
 				should(children.length).equal(1);
@@ -241,7 +231,7 @@ describe('BookTreeViewProviderTests', function () {
 				should(book.title).equal(expectedBook.title);
 			});
 
-			it('should return all page nodes when element is a book', async function (): Promise<void> {
+			it('providedBookTreeViewProvider should return all page nodes when element is a book', async function (): Promise<void> {
 				const children = await providedbookTreeViewProvider.getChildren(book);
 				should(children).be.Array();
 				should(children.length).equal(3);
@@ -253,7 +243,7 @@ describe('BookTreeViewProviderTests', function () {
 				equalBookItems(externalLink, expectedExternalLink);
 			});
 
-			it('should return all sections when element is a notebook', async function (): Promise<void> {
+			it('providedBookTreeViewProvider should return all sections when element is a notebook', async function (): Promise<void> {
 				const children = await providedbookTreeViewProvider.getChildren(notebook1);
 				should(children).be.Array();
 				should(children.length).equal(2);
@@ -263,7 +253,7 @@ describe('BookTreeViewProviderTests', function () {
 				equalBookItems(notebook3, expectedNotebook3);
 			});
 
-			it('getNavigation should get previous and next urls correctly from the bookModel', async () => {
+			it('providedBookTreeViewProvider getNavigation should get previous and next urls correctly from the bookModel', async () => {
 				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb');
 				let notebook2Path = path.join(rootFolderPath, 'Book', 'content', 'notebook2.ipynb');
 				let notebook3Path = path.join(rootFolderPath, 'Book', 'content', 'notebook3.ipynb');
@@ -271,7 +261,6 @@ describe('BookTreeViewProviderTests', function () {
 				should(result.hasNavigation).be.true('getNavigation failed to get previous and next urls');
 				should(result.next.fsPath).equal(notebook3Path, 'getNavigation failed to get the next url');
 				should(result.previous.fsPath).equal(notebook1Path, 'getNavigation failed to get the previous url');
-
 			});
 
 		});

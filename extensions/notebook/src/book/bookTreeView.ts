@@ -499,7 +499,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	getNavigation(uri: vscode.Uri): Thenable<azdata.nb.NavigationResult> {
 		let result: azdata.nb.NavigationResult;
-		//let book = this.getBookFromItemPath(uri.scheme === 'untitled' ? vscode.Uri.file(uri.path).path : uri.path);
 		let notebook = this.currentBook?.getNotebook(uri.fsPath);
 		if (notebook) {
 			result = {
