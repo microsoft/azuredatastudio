@@ -111,6 +111,11 @@ export const Include = 'Include';
 export const Import = 'Import';
 export const Project = 'Project';
 export const Condition = 'Condition';
+export const Target = 'Target';
+export const Name = 'Name';
+export const AfterCleanTarget = 'AfterClean';
+export const Delete = 'Delete';
+export const Files = 'Files';
 export const PackageReference = 'PackageReference';
 export const Version = 'Version';
 export const PrivateAssets = 'PrivateAssets';
@@ -129,6 +134,7 @@ export const SqlDbPresentCondition = '\'$(SQLDBExtensionsRefPath)\' != \'\'';
 export const SqlDbNotPresentCondition = '\'$(SQLDBExtensionsRefPath)\' == \'\'';
 export const RoundTripSqlDbPresentCondition = '\'$(NetCoreBuild)\' != \'true\' AND \'$(SQLDBExtensionsRefPath)\' != \'\'';
 export const RoundTripSqlDbNotPresentCondition = '\'$(NetCoreBuild)\' != \'true\' AND \'$(SQLDBExtensionsRefPath)\' == \'\'';
+export const ProjJsonToClean = '$(BaseIntermediateOutputPath)\\project.assets.json';
 
 // SqlProj Reference Assembly Information
 export const NETFrameworkAssembly = 'Microsoft.NETFramework.ReferenceAssemblies';
@@ -141,3 +147,14 @@ export const dataSourceSetting = 'Data Source';
 export const integratedSecuritySetting = 'Integrated Security';
 export const userIdSetting = 'User ID';
 export const passwordSetting = 'Password';
+
+// Tree item types
+export enum DatabaseProjectItemType {
+	project = 'databaseProject.itemType.project',
+	folder = 'databaseProject.itemType.folder',
+	file = 'databaseProject.itemType.file',
+	referencesRoot = 'databaseProject.itemType.referencesRoot',
+	reference = 'databaseProject.itemType.reference',
+	dataSourceRoot = 'databaseProject.itemType.dataSourceRoot',
+	dataSource = 'databaseProject.itemType.dataSource'
+}

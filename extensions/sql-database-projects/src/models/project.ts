@@ -80,6 +80,7 @@ export class Project {
 		await fs.copyFile(this.projectFilePath, this.projectFilePath + '_backup');
 		await this.updateImportToSupportRoundTrip();
 		await this.updatePackageReferenceInProjFile();
+		await this.updateAfterCleanTargetInProjFile();
 	}
 
 	private async updateImportToSupportRoundTrip(): Promise<void> {
@@ -99,6 +100,30 @@ export class Project {
 		}
 
 		await this.updateImportedTargetsToProjFile(constants.NetCoreCondition, constants.NetCoreTargets, undefined);
+	}
+
+	private async updateAfterCleanTargetInProjFile(): Promise<void> {
+		// Search if clean target already present, update it
+		for (let i = 0; i < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Target).length; i++) {
+			const afterCleanNode = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Target)[i];
+			const name = afterCleanNode.getAttribute(constants.Name);
+			if (name === constants.AfterCleanTarget) {
+				return await this.createCleanFileNode(afterCleanNode);
+			}
+		}
+
+		// If clean target not found, create new
+		const afterCleanNode = this.projFileXmlDoc.createElement(constants.Target);
+		afterCleanNode.setAttribute(constants.Name, constants.AfterCleanTarget);
+		this.projFileXmlDoc.documentElement.appendChild(afterCleanNode);
+		await this.createCleanFileNode(afterCleanNode);
+	}
+
+	private async createCleanFileNode(parentNode: any): Promise<void> {
+		const deleteFileNode = this.projFileXmlDoc.createElement(constants.Delete);
+		deleteFileNode.setAttribute(constants.Files, constants.ProjJsonToClean);
+		parentNode.appendChild(deleteFileNode);
+		await this.serializeToProjFile(this.projFileXmlDoc);
 	}
 
 	/**
@@ -338,8 +363,10 @@ export class Project {
 				break;
 			case EntryType.Folder:
 				this.addFolderToProjFile(entry.relativePath);
+				break;
 			case EntryType.DatabaseReference:
 				this.addDatabaseReferenceToProjFile(<DatabaseReferenceProjectEntry>entry);
+				break; // not required but adding so that we dont miss when we add new items
 		}
 
 		await this.serializeToProjFile(this.projFileXmlDoc);
