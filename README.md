@@ -1,7 +1,7 @@
 # Azure Data Studio
 
 [![Join the chat at https://gitter.im/Microsoft/sqlopsstudio](https://badges.gitter.im/Microsoft/sqlopsstudio.svg)](https://gitter.im/Microsoft/sqlopsstudio?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Build Status](https://dev.azure.com/azuredatastudio/azuredatastudio/_apis/build/status/Azure%20Data%20Studio%20CI?branchName=master)](https://dev.azure.com/azuredatastudio/azuredatastudio/_build/latest?definitionId=4&branchName=master)
+[![Build Status](https://dev.azure.com/azuredatastudio/azuredatastudio/_apis/build/status/Azure%20Data%20Studio%20CI?branchName=main)](https://dev.azure.com/azuredatastudio/azuredatastudio/_build/latest?definitionId=4&branchName=main)
 [![Twitter Follow](https://img.shields.io/twitter/follow/azuredatastudio?style=social)](https://twitter.com/azuredatastudio)
 
 Azure Data Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux.
@@ -21,14 +21,14 @@ Azure Data Studio is a data management tool that enables you to work with SQL Se
 
 Go to our [download page](https://aka.ms/azuredatastudio) for more specific instructions.
 
-## Try out the latest insiders build from `master`:
+## Try out the latest insiders build from `main`:
 - [Windows User Installer - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/win32-x64-user/insider)
 - [Windows System Installer - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/win32-x64/insider)
 - [Windows ZIP - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/win32-x64-archive/insider)
 - [macOS ZIP - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/darwin/insider)
 - [Linux TAR.GZ - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/linux-x64/insider)
 
-See the [change log](https://github.com/Microsoft/azuredatastudio/blob/master/CHANGELOG.md) for additional details of what's in this release.
+See the [change log](https://github.com/Microsoft/azuredatastudio/blob/main/CHANGELOG.md) for additional details of what's in this release.
 
 ## **Feature Highlights**
 
@@ -47,7 +47,7 @@ See the [change log](https://github.com/Microsoft/azuredatastudio/blob/master/CH
 
 Here are some of these features in action.
 
-<img src='https://github.com/Microsoft/azuredatastudio/blob/master/docs/overview_screen.jpg' width='800px'>
+<img src='https://github.com/Microsoft/azuredatastudio/blob/main/docs/overview_screen.jpg' width='800px'>
 
 ## Contributing
 If you are interested in fixing issues and contributing directly to the code base,
@@ -121,7 +121,7 @@ We would like to thank all our users who raised issues, and in particular the fo
 * olljanat for `Implemented npm version check (#314)`
 * Adam Machanic for helping with the `whoisactive` extension
 
-And of course, we'd like to thank the authors of all upstream dependencies.  Please see a full list in the [ThirdPartyNotices.txt](https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/ThirdPartyNotices.txt)
+And of course, we'd like to thank the authors of all upstream dependencies.  Please see a full list in the [ThirdPartyNotices.txt](https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/ThirdPartyNotices.txt)
 
 ## License
 
