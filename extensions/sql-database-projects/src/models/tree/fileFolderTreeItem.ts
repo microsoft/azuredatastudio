@@ -8,6 +8,7 @@ import * as path from 'path';
 import { BaseProjectTreeItem } from './baseTreeItem';
 import { ProjectRootTreeItem } from './projectTreeItem';
 import { Project } from '../project';
+import { DatabaseProjectItemType } from '../../common/constants';
 
 /**
  * Node representing a folder in a project
@@ -26,7 +27,9 @@ export class FolderNode extends BaseProjectTreeItem {
 	}
 
 	public get treeItem(): vscode.TreeItem {
-		return new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.Expanded);
+		const folderItem = new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.Expanded);
+		folderItem.contextValue = DatabaseProjectItemType.folder;
+		return folderItem;
 	}
 
 	public get project(): Project {
@@ -58,7 +61,7 @@ export class FileNode extends BaseProjectTreeItem {
 			arguments: [this.fileSystemUri]
 		};
 
-		treeItem.contextValue = 'File';
+		treeItem.contextValue = DatabaseProjectItemType.file;
 
 		return treeItem;
 	}

@@ -58,6 +58,7 @@ export const ram = localize('arc.ram', "RAM");
 export const refresh = localize('arc.refresh', "Refresh");
 export const troubleshoot = localize('arc.troubleshoot', "Troubleshoot");
 export const clickTheNewSupportRequestButton = localize('arc.clickTheNewSupportRequestButton', "Click the new support request button to file a support request in the Azure Portal.");
+export const running = localize('arc.running', "Running");
 
 // Postgres constants
 export const coordinatorEndpoint = localize('arc.coordinatorEndpoint', "Coordinator endpoint");
@@ -70,6 +71,7 @@ export const fullyQualifiedDomain = localize('arc.fullyQualifiedDomain', "Fully 
 export const postgresArcProductName = localize('arc.postgresArcProductName', "Azure Database for PostgreSQL - Azure Arc");
 export const coordinator = localize('arc.coordinator', "Coordinator");
 export const worker = localize('arc.worker', "Worker");
+export const monitor = localize('arc.monitor', "Monitor");
 export const newDatabase = localize('arc.newDatabase', "New Database");
 export const databaseName = localize('arc.databaseName', "Database name");
 export const newPassword = localize('arc.newPassword', "New password");
