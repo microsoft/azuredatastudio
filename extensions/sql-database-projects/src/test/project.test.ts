@@ -5,6 +5,7 @@
 
 import * as should from 'should';
 import * as path from 'path';
+import * as os from 'os';
 import * as baselines from './baselines/baselines';
 import * as testUtils from './testUtils';
 import * as constants from '../common/constants';
@@ -15,9 +16,10 @@ import { exists } from '../common/utils';
 import { Uri } from 'vscode';
 
 let projFilePath: string;
+const isWindows = os.platform() === 'win32';
 
 describe('Project: sqlproj content operations', function (): void {
-	before(async function() : Promise<void> {
+	before(async function (): Promise<void> {
 		await baselines.loadBaselines();
 	});
 
@@ -88,7 +90,7 @@ describe('Project: sqlproj content operations', function (): void {
 		await testUtils.shouldThrowSpecificError(async () => await project.addToProject(list), `ENOENT: no such file or directory, stat \'${nonexistentFile}\'`);
 	});
 
-	it('Should choose correct master dacpac', async function(): Promise<void> {
+	it('Should choose correct master dacpac', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const project = new Project(projFilePath);
 		await project.readProjFile();
@@ -102,10 +104,10 @@ describe('Project: sqlproj content operations', function (): void {
 
 		project.changeDSP(TargetPlatform.SqlAzureV12.toString());
 		uri = project.getSystemDacpacUri(constants.masterDacpac);
-		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', 'AzureV12',constants.masterDacpac)).fsPath);
+		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', 'AzureV12', constants.masterDacpac)).fsPath);
 	});
 
-	it('Should choose correct msdb dacpac', async function(): Promise<void> {
+	it('Should choose correct msdb dacpac', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const project = new Project(projFilePath);
 		await project.readProjFile();
@@ -122,7 +124,7 @@ describe('Project: sqlproj content operations', function (): void {
 		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', 'AzureV12', constants.msdbDacpac)).fsPath);
 	});
 
-	it('Should throw error when choosing correct master dacpac if invalid DSP', async function(): Promise<void> {
+	it('Should throw error when choosing correct master dacpac if invalid DSP', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const project = new Project(projFilePath);
 		await project.readProjFile();
@@ -131,7 +133,7 @@ describe('Project: sqlproj content operations', function (): void {
 		await testUtils.shouldThrowSpecificError(async () => await project.getSystemDacpacUri(constants.masterDacpac), constants.invalidDataSchemaProvider);
 	});
 
-	it('Should add database references correctly', async function(): Promise<void> {
+	it('Should add database references correctly', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const project = new Project(projFilePath);
 		await project.readProjFile();
@@ -152,29 +154,53 @@ describe('Project: sqlproj content operations', function (): void {
 });
 
 describe('Project: round trip updates', function (): void {
-	before(async function () : Promise<void> {
+	before(async function (): Promise<void> {
 		await baselines.loadBaselines();
 	});
 
 	it('Should update SSDT project to work in ADS', async function (): Promise<void> {
-		await testUpdateInRoundTrip(baselines.SSDTProjectFileBaseline, baselines.SSDTProjectAfterUpdateBaseline);
+		const fileBeforeUpdate = baselines.SSDTProjectFileBaseline;
+		const fileAfterUpdate = isWindows ? baselines.SSDTProjectAfterUpdateBaselineWindows : baselines.SSDTProjectAfterUpdateBaseline;
+		await testUpdateInRoundTrip(fileBeforeUpdate, fileAfterUpdate, true, true);
+	});
+
+	it('Should update SSDT project with new system database references', async function (): Promise<void> {
+		const fileBeforeUpdate = isWindows ? baselines.SSDTUpdatedProjectBaselineWindows : baselines.SSDTUpdatedProjectBaseline;
+		const fileAfterUpdate = isWindows ? baselines.SSDTUpdatedProjectAfterSystemDbUpdateBaselineWindows : baselines.SSDTUpdatedProjectAfterSystemDbUpdateBaseline;
+		await testUpdateInRoundTrip(fileBeforeUpdate, fileAfterUpdate, false, true);
 	});
 
 	it('Should update SSDT project to work in ADS handling pre-exsiting targets', async function (): Promise<void> {
-		await testUpdateInRoundTrip(baselines.SSDTProjectBaselineWithCleanTarget, baselines.SSDTProjectBaselineWithCleanTargetAfterUpdate);
+		await testUpdateInRoundTrip(baselines.SSDTProjectBaselineWithCleanTarget, baselines.SSDTProjectBaselineWithCleanTargetAfterUpdate, true, false);
 	});
 });
 
-async function testUpdateInRoundTrip(fileBeforeupdate: string, fileAfterUpdate:string) : Promise<void> {
+async function testUpdateInRoundTrip(fileBeforeupdate: string, fileAfterUpdate: string, testTargets: boolean, testReferences: boolean): Promise<void> {
 	projFilePath = await testUtils.createTestSqlProjFile(fileBeforeupdate);
 	const project: Project = new Project(projFilePath);
 	await project.readProjFile();
 
-	await project.updateProjectForRoundTrip();
+	if (testTargets) {
+		await testUpdateTargetsImportsRoundTrip(project);
+	}
 
-	should(await exists(projFilePath + '_backup')).equal(true);	// backup file should be generated before the project is updated
-	should(project.importedTargets.length).equal(3);	// additional target added by updateProjectForRoundTrip method
+	if (testReferences) {
+		await testAddReferencesInRoundTrip(project);
+	}
 
 	let projFileText = (await fs.readFile(projFilePath)).toString();
 	should(projFileText).equal(fileAfterUpdate.trim());
+}
+
+async function testUpdateTargetsImportsRoundTrip(project: Project): Promise<void> {
+	should(project.importedTargets.length).equal(2);
+	await project.updateProjectForRoundTrip();
+	should(await exists(projFilePath + '_backup')).equal(true);	// backup file should be generated before the project is updated
+	should(project.importedTargets.length).equal(3);	// additional target added by updateProjectForRoundTrip method
+}
+
+async function testAddReferencesInRoundTrip(project: Project): Promise<void> {
+	// updating system db refs is separate from updating for roundtrip because new db refs could be added even after project is updated for roundtrip
+	should(project.containsSSDTOnlySystemDatabaseReferences()).equal(true);
+	await project.updateSystemDatabaseReferencesInProjFile();
 }
