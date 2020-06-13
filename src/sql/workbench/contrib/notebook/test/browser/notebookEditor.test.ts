@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import { Deferred as DeferredPromise } from 'sql/base/common/promise';
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/untitledNotebookInput';
 import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
@@ -51,7 +50,6 @@ import { workbenchInstantiationService } from 'vs/workbench/test/browser/workben
 suite('Test class NotebookEditor', () => {
 
 	let notebookEditor: NotebookEditor;
-	let setupPromise: DeferredPromise<void>;
 
 	const installEvent: Emitter<InstallExtensionEvent> = new Emitter<InstallExtensionEvent>();
 	const didInstallEvent = new Emitter<DidInstallExtensionEvent>();
@@ -110,7 +108,6 @@ suite('Test class NotebookEditor', () => {
 	notebookService.addNotebookEditor(testNotebookEditor);
 
 	setup(async () => {
-		setupPromise = new DeferredPromise<void>();
 		// Create notebookEditor
 		notebookEditor = new NotebookEditor(
 			instantiationService.get(ITelemetryService),
@@ -129,11 +126,9 @@ suite('Test class NotebookEditor', () => {
 		assert.notStrictEqual(notebookEditor['_overlay'], undefined, `The overlay must be defined for notebookEditor once create() has been called on it`);
 		assert.strictEqual(notebookEditor['parent'], parentHtmlElement, 'parent of notebookEditor was not the one that was expected');
 		await notebookEditor.setInput(untitledNotebookInput, EditorOptions.create({ pinned: true }));
-		setupPromise.resolve();
 	});
 
 	test('NotebookEditor: Tests that dispose() disposes all objects in its disposable store', async () => {
-		await setupPromise;
 		const mockNotebookEditor = TypeMoq.Mock.ofInstance(notebookEditor);
 		mockNotebookEditor.setup(x => x.dispose()).callback(() => notebookEditor.dispose());
 		mockNotebookEditor.object.dispose();
@@ -143,7 +138,6 @@ suite('Test class NotebookEditor', () => {
 	});
 
 	test('NotebookEditor: Tests that getPosition and getLastPosition correctly return the range set by setSelection', async () => {
-		await setupPromise;
 		let currentPosition = notebookEditor.getPosition();
 		let lastPosition = notebookEditor.getLastPosition();
 		assert.strictEqual(currentPosition, undefined, 'notebookEditor.getPosition() should return an undefined range with no selected range');
@@ -165,14 +159,12 @@ suite('Test class NotebookEditor', () => {
 	// NotebookEditor-getCellEditor tests.
 	['', undefined, null, 'unknown string', /*unknown guid*/generateUuid()].forEach(input => {
 		test(`NotebookEditor: Negative Test for getCellEditor() - returns undefined for invalid or unknown guid:'${input}'`, async () => {
-			await setupPromise;
 			const result = notebookEditor.getCellEditor(input);
 			assert.strictEqual(result, undefined, `notebookEditor.getCellEditor() should return undefined when invalid guid:'${input}' is passed in for a notebookEditor of an empty document.`);
 		});
 	});
 
 	test('NotebookEditor: Positive Test for getCellEditor() - returns a valid text editor object for valid guid input', async () => {
-		await setupPromise;
 		const result = notebookEditor.getCellEditor(cellTextEditorGuid);
 		assert.strictEqual(result, queryTextEditor, 'notebookEditor.getCellEditor() should return an expected QueryTextEditor when a guid corresponding to that editor is passed in.');
 
