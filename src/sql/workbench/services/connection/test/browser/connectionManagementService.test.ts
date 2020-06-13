@@ -504,6 +504,38 @@ suite('SQL ConnectionManagementService tests', () => {
 		});
 	});
 
+	test('connectIfNotConnected should not try to connect with already connected profile', () => {
+		let profile = <ConnectionProfile>assign({}, connectionProfile);
+		let uri1 = 'connection:connectionId'; //must use default connection uri for test to work.
+		let options: IConnectionCompletionOptions = {
+			params: {
+				connectionType: ConnectionType.editor,
+				input: {
+					onConnectSuccess: undefined,
+					onConnectReject: undefined,
+					onConnectStart: undefined,
+					onDisconnect: undefined,
+					onConnectCanceled: undefined,
+					uri: uri1,
+				},
+				queryRange: undefined,
+				runQueryOnCompletion: RunQueryOnConnectionMode.none,
+				isEditConnection: false
+			},
+			saveTheConnection: true,
+			showDashboard: false,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		};
+
+		return connect(uri1, options, true, profile).then(result => {
+			assert.equal(result.connected, true);
+			return connectionManagementService.connectIfNotConnected(profile, undefined, true).then(result => {
+				assert.equal(result, uri1);
+			});
+		});
+	});
+
 	test('Edit Connection - Changing connection profile name for same URI should persist after edit', () => {
 		let profile = assign({}, connectionProfile);
 		let uri1 = 'test_uri1';
@@ -642,15 +674,6 @@ suite('SQL ConnectionManagementService tests', () => {
 		assert(connectionManagementService.hasRegisteredServers());
 	});
 
-	// test('connectIfNotConnected should connect connectionProfile when it is not connected then refuse once connected', () => {
-	// 	try{
-	// 	connectionManagementService.connectIfNotConnected(connectionProfile, 'connection').then(result => {
-	// 		console.log(result);
-	// 	});
-	// 	} catch {
-	// 		console.log('something bad happened');
-	// 	}
-	// });
 
 	test('getAdvancedProperties should return a list of properties for connectionManagementService', () => {
 		let propertyNames = ['connectionName', 'serverName', 'databaseName', 'userName', 'authenticationType', 'password'];
