@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import { Deferred as DeferredPromise } from 'sql/base/common/promise';
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/untitledNotebookInput';
 import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
@@ -50,8 +49,6 @@ import { workbenchInstantiationService } from 'vs/workbench/test/browser/workben
 suite('Test class NotebookEditor', () => {
 
 	let notebookEditor: NotebookEditor;
-	//let notebookModel: INotebookModel;
-	let setupPromise: DeferredPromise<void>;
 
 	const installEvent: Emitter<InstallExtensionEvent> = new Emitter<InstallExtensionEvent>();
 	const didInstallEvent = new Emitter<DidInstallExtensionEvent>();
@@ -110,7 +107,6 @@ suite('Test class NotebookEditor', () => {
 	notebookService.addNotebookEditor(testNotebookEditor);
 
 	setup(async () => {
-		setupPromise = new DeferredPromise<void>();
 		// Create notebookEditor
 		notebookEditor = new NotebookEditor(
 			instantiationService.get(ITelemetryService),
@@ -123,13 +119,10 @@ suite('Test class NotebookEditor', () => {
 			workbenchThemeService,
 			notebookService
 		);
-		setupPromise.resolve();
 	});
 
 	[undefined, new NotebookModelStub()].forEach(async (notebookModel) => {
-		test(`NotebookEditor-setInput-setNotebookModel-getNotebookModel for notebookModel='${notebookModel}'`, async () => {
-			await setupPromise;
-
+		test(`NotebookEditor: Tests that notebookModel='${notebookModel}' set indirectly by setInput -> setNotebookModel is returned by getNotebookModel()`, async () => {
 			const untitledUri = URI.from({ scheme: Schemas.untitled, path: `NotebookEditor.Test-TestPath-${notebookModel}` });
 			const untitledTextEditorService = instantiationService.get(IUntitledTextEditorService);
 			const untitledTextInput = instantiationService.createInstance(UntitledTextEditorInput, untitledTextEditorService.create({ associatedResource: untitledUri }));
@@ -153,8 +146,7 @@ suite('Test class NotebookEditor', () => {
 		});
 	});
 
-	test('NotebookEditor-dispose: Tests that dispose() disposes all objects in its disposable store', async () => {
-		await setupPromise;
+	test('NotebookEditor: Tests that dispose() disposes all objects in its disposable store', async () => {
 		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 		const mockNotebookEditor = TypeMoq.Mock.ofInstance(notebookEditor);
 		mockNotebookEditor.setup(x => x.dispose()).callback(() => notebookEditor.dispose());
@@ -164,8 +156,7 @@ suite('Test class NotebookEditor', () => {
 		assert.ok(isDisposed, 'notebookEditor\'s disposable store must be disposed');
 	});
 
-	test('NotebookEditor-setSelection-getPosition-getLastPosition: Tests that getPosition and getLastPosition correctly return the range set by setSelection', async () => {
-		await setupPromise;
+	test('NotebookEditor: Tests that getPosition and getLastPosition correctly return the range set by setSelection', async () => {
 		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 		let currentPosition = notebookEditor.getPosition();
 		let lastPosition = notebookEditor.getLastPosition();
@@ -187,8 +178,7 @@ suite('Test class NotebookEditor', () => {
 
 	// NotebookEditor-getCellEditor tests.
 	['', undefined, null, 'unknown string', /*unknown guid*/generateUuid()].forEach(input => {
-		test(`NotebookEditor-getCellEditor: Test getCellEditor() returns undefined for invalid or unknown guid:'${input}'`, async () => {
-			await setupPromise;
+		test(`NotebookEditor: Negative Test -> getCellEditor() returns undefined for invalid or unknown guid:'${input}'`, async () => {
 			await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 			const inputGuid = <string>input;
 			const result = notebookEditor.getCellEditor(inputGuid);
@@ -196,8 +186,7 @@ suite('Test class NotebookEditor', () => {
 		});
 	});
 
-	test('NotebookEditor-getCellEditor: Positive Tests getCellEditor() returns a valid text editor object for valid guid input', async () => {
-		await setupPromise;
+	test('NotebookEditor: Positive Test -> getCellEditor() returns a valid text editor object for valid guid input', async () => {
 		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 		const result = notebookEditor.getCellEditor(cellTextEditorGuid);
 		assert.strictEqual(result, queryTextEditor, 'notebookEditor.getCellEditor() should return an expected QueryTextEditor when a guid corresponding to that editor is passed in.');
