@@ -308,7 +308,7 @@ export class NotebookContribution extends Disposable implements IWorkbenchContri
 
 			if (!associatedEditors.length) {
 				// there is no notebook editor contribution which is enabled by default
-				return;
+				return undefined;
 			}
 
 		} else {
