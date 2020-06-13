@@ -443,13 +443,21 @@ export class ProjectsController {
 	}
 
 	public async updateProjectForRoundTrip(project: Project) {
-		if (project.importedTargets.includes(constants.NetCoreTargets)) {
+		if (project.importedTargets.includes(constants.NetCoreTargets) && !project.containsSSDTOnlySystemDatabaseReferences()) {
 			return;
 		}
 
-		const result = await this.apiWrapper.showWarningMessage(constants.updateProjectForRoundTrip, constants.yesString, constants.noString);
-		if (result === constants.yesString) {
-			await project.updateProjectForRoundTrip();
+		if (!project.importedTargets.includes(constants.NetCoreTargets)) {
+			const result = await this.apiWrapper.showWarningMessage(constants.updateProjectForRoundTrip, constants.yesString, constants.noString);
+			if (result === constants.yesString) {
+				await project.updateProjectForRoundTrip();
+				await project.updateSystemDatabaseReferencesInProjFile();
+			}
+		} else if (project.containsSSDTOnlySystemDatabaseReferences()) {
+			const result = await this.apiWrapper.showWarningMessage(constants.updateProjectDatabaseReferencesForRoundTrip, constants.yesString, constants.noString);
+			if (result === constants.yesString) {
+				await project.updateSystemDatabaseReferencesInProjFile();
+			}
 		}
 	}
 
