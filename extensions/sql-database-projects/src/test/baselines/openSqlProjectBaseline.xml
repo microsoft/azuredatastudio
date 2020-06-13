@@ -74,6 +74,16 @@
     <Build Include="Views\User\Profile.sql" />
   </ItemGroup>
   <ItemGroup>
+    <SqlCmdVariable Include="ProdDatabaseName">
+      <DefaultValue>MyProdDatabase</DefaultValue>
+      <Value>$(SqlCmdVar__1)</Value>
+    </SqlCmdVariable>
+    <SqlCmdVariable Include="BackupDatabaseName">
+      <DefaultValue>MyBackupDatabase</DefaultValue>
+      <Value>$(SqlCmdVar__2)</Value>
+    </SqlCmdVariable>
+  </ItemGroup>
+  <ItemGroup>
     <ArtifactReference Condition="'$(NetCoreBuild)' == 'true'" Include="$(NETCoreTargetsPath)\SystemDacpacs\130\master.dacpac">
       <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
       <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
