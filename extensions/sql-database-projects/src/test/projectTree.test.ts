@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-/*import * as should from 'should';
+import * as should from 'should';
 import * as vscode from 'vscode';
 import * as os from 'os';
 import * as path from 'path';
@@ -12,7 +12,7 @@ import { Project, EntryType } from '../models/project';
 import { FolderNode, FileNode, sortFileFolderNodes } from '../models/tree/fileFolderTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 
-describe('Project Tree tests', function (): void {
+describe.skip('Project Tree tests', function (): void {
 	it('Should correctly order tree nodes by type, then by name', async function (): Promise<void> {
 		const root = os.platform() === 'win32' ? 'Z:\\' : '/';
 
@@ -80,4 +80,3 @@ describe('Project Tree tests', function (): void {
 			'/TestProj.sqlproj/someFolder/bNestedTest.sql']);
 	});
 });
-*/

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-/*import * as should from 'should';
+import * as should from 'should';
 import * as os from 'os';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -13,7 +13,7 @@ import { getSafePath } from '../common/utils';
 import { isNullOrUndefined } from 'util';
 import { generateTestFolderPath } from './testUtils';
 
-describe('NetCoreTool: Net core tests', function (): void {
+describe.skip('NetCoreTool: Net core tests', function (): void {
 
 	it('Should override dotnet default value with settings', async function (): Promise<void> {
 		try {
@@ -65,4 +65,3 @@ describe('NetCoreTool: Net core tests', function (): void {
 		}
 	});
 });
-*/

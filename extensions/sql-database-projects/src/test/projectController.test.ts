@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-/*import * as should from 'should';
+import * as should from 'should';
 import * as path from 'path';
 import * as os from 'os';
 import * as azdata from 'azdata';
@@ -47,7 +47,7 @@ beforeEach(async function (): Promise<void> {
 	testContext = createContext();
 });
 
-describe('ProjectsController: project controller operations', function (): void {
+describe.skip('ProjectsController: project controller operations', function (): void {
 	before(async function (): Promise<void> {
 		await templates.loadTemplates(path.join(__dirname, '..', '..', 'resources', 'templates'));
 		await baselines.loadBaselines();
@@ -150,7 +150,7 @@ describe('ProjectsController: project controller operations', function (): void 
 	});
 });
 
-describe('ProjectsController: import operations', function (): void {
+describe.skip('ProjectsController: import operations', function (): void {
 	it('Should create list of all files and folders correctly', async function (): Promise<void> {
 		const testFolderPath = await testUtils.createDummyFileStructure();
 
@@ -227,7 +227,7 @@ describe('ProjectsController: import operations', function (): void {
 	});
 });
 
-describe('ProjectsController: add database reference operations', function (): void {
+describe.skip('ProjectsController: add database reference operations', function (): void {
 	it('Should show error when no reference type is selected', async function (): Promise<void> {
 		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(undefined));
 		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
@@ -275,7 +275,7 @@ describe('ProjectsController: add database reference operations', function (): v
 	});
 });
 
-describe('ProjectsController: round trip feature with SSDT', function (): void {
+describe.skip('ProjectsController: round trip feature with SSDT', function (): void {
 	it('Should show warning message for SSDT project opened in Azure Data Studio', async function (): Promise<void> {
 		testContext.apiWrapper.setup(x => x.showWarningMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
 
@@ -336,4 +336,3 @@ describe('ProjectsController: round trip feature with SSDT', function (): void {
 		should(project.importedTargets.length).equal(3); // additional target added by updateProjectForRoundTrip method
 	});
 });
-*/

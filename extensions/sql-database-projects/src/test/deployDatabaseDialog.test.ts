@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-/*import * as should from 'should';
+import * as should from 'should';
 import * as path from 'path';
 import * as os from 'os';
 import * as vscode from 'vscode';
@@ -18,7 +18,7 @@ import { createContext, TestContext } from './testContext';
 
 let testContext: TestContext;
 
-describe('Deploy Database Dialog', () => {
+describe.skip('Deploy Database Dialog', () => {
 	before(async function (): Promise<void> {
 		testContext = createContext();
 		await templates.loadTemplates(path.join(__dirname, '..', '..', 'resources', 'templates'));
@@ -48,4 +48,3 @@ describe('Deploy Database Dialog', () => {
 		should.equal(deployDatabaseDialog.getDefaultDatabaseName(), project.projectFileName);
 	});
 });
-*/
