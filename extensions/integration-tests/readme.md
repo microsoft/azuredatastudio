@@ -35,3 +35,9 @@ The integration test suite has been added to ADS windows pipeline to run the tes
 1. Run the script to start the tests
 1. Wait for the Window to reload (it does this after installing and activating the extensions)
 1. Run the debug target - it should now attach to the Extension Host process and hit breakpoints set in the integration tests
+
+## Code Coverage
+
+Code coverage for these tests is enabled by default. After running the tests you can find the results in the `coverage` folder at the root of this extension.
+
+This code coverage covers extension code only - it will not instrument code from the core.

@@ -408,6 +408,12 @@
 	background: url("ServerLevelServerTrigger.svg") center center no-repeat;
 }
 
+.vs .icon.serverlevelservertrigger_disabled,
+.vs-dark .icon.serverlevelservertrigger_disabled,
+.hc-black .icon.serverlevelservertrigger_disabled {
+	background: url("ServerLevelServerTrigger_Disabled.svg") center center no-repeat;
+}
+
 .vs .icon.service,
 .vs-dark .icon.service,
 .hc-black .icon.service {

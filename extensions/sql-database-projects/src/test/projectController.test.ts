@@ -18,10 +18,11 @@ import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProje
 import { ProjectsController } from '../controllers/projectController';
 import { promises as fs } from 'fs';
 import { createContext, TestContext } from './testContext';
-import { Project } from '../models/project';
+import { Project, SystemDatabase } from '../models/project';
 import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
 import { ApiWrapper } from '../common/apiWrapper';
 import { IDeploymentProfile, IGenerateScriptProfile } from '../models/IDeploymentProfile';
+import { exists } from '../common/utils';
 
 let testContext: TestContext;
 
@@ -42,9 +43,12 @@ const mockConnectionProfile: azdata.IConnectionProfile = {
 	options: undefined as any
 };
 
+beforeEach(async function (): Promise<void> {
+	testContext = createContext();
+});
+
 describe('ProjectsController: project controller operations', function (): void {
 	before(async function (): Promise<void> {
-		testContext = createContext();
 		await templates.loadTemplates(path.join(__dirname, '..', '..', 'resources', 'templates'));
 		await baselines.loadBaselines();
 	});
@@ -157,8 +161,10 @@ describe('ProjectsController: import operations', function (): void {
 	});
 
 	it('Should error out for inaccessible path', async function (): Promise<void> {
+		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
+
 		let testFolderPath = await testUtils.generateTestFolderPath();
-		testFolderPath += '_nonExistant';	// Modify folder path to point to a non-existant location
+		testFolderPath += '_nonexistentFolder';	// Modify folder path to point to a nonexistent location
 
 		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
 
@@ -172,7 +178,7 @@ describe('ProjectsController: import operations', function (): void {
 			testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
 
 			const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
-			await testUtils.shouldThrowSpecificError(async () => await projController.importNewDatabaseProject(mockConnectionProfile), constants.projectNameRequired, `case: '${name}'`);
+			await testUtils.shouldThrowSpecificError(async () => await projController.importNewDatabaseProject({ connectionProfile: mockConnectionProfile }), constants.projectNameRequired, `case: '${name}'`);
 		}
 	});
 
@@ -182,27 +188,151 @@ describe('ProjectsController: import operations', function (): void {
 		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
 
 		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
-		await testUtils.shouldThrowSpecificError(async () => await projController.importNewDatabaseProject(mockConnectionProfile), constants.extractTargetRequired);
+		await testUtils.shouldThrowSpecificError(async () => await projController.importNewDatabaseProject({ connectionProfile: mockConnectionProfile }), constants.extractTargetRequired);
 	});
 
 	it('Should show error when no location provided with ExtractTarget = File', async function (): Promise<void> {
 		testContext.apiWrapper.setup(x => x.showInputBox(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('MyProjectName'));
-		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({label: 'File'}));
+		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({ label: 'File' }));
 		testContext.apiWrapper.setup(x => x.showSaveDialog(TypeMoq.It.isAny())).returns(() => Promise.resolve(undefined));
 		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
 
 		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
-		await testUtils.shouldThrowSpecificError(async () => await projController.importNewDatabaseProject(mockConnectionProfile), constants.projectLocationRequired);
+		await testUtils.shouldThrowSpecificError(async () => await projController.importNewDatabaseProject({ connectionProfile: mockConnectionProfile }), constants.projectLocationRequired);
 	});
 
 	it('Should show error when no location provided with ExtractTarget = SchemaObjectType', async function (): Promise<void> {
 		testContext.apiWrapper.setup(x => x.showInputBox(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('MyProjectName'));
-		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny())).returns(() => Promise.resolve({label: 'SchemaObjectType'}));
+		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({ label: 'SchemaObjectType' }));
 		testContext.apiWrapper.setup(x => x.showOpenDialog(TypeMoq.It.isAny())).returns(() => Promise.resolve(undefined));
 		testContext.apiWrapper.setup(x => x.workspaceFolders()).returns(() => undefined);
 		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
 
 		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
-		await testUtils.shouldThrowSpecificError(async () => await projController.importNewDatabaseProject(mockConnectionProfile), constants.projectLocationRequired);
+		await testUtils.shouldThrowSpecificError(async () => await projController.importNewDatabaseProject({ connectionProfile: mockConnectionProfile }), constants.projectLocationRequired);
+	});
+
+	it('Should show error when selected folder is not empty', async function (): Promise<void> {
+		const testFolderPath = await testUtils.createDummyFileStructure();
+
+		testContext.apiWrapper.setup(x => x.showInputBox(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('MyProjectName'));
+		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({ label: 'ObjectType' }));
+		testContext.apiWrapper.setup(x => x.showOpenDialog(TypeMoq.It.isAny())).returns(() => Promise.resolve([vscode.Uri.file(testFolderPath)]));
+		testContext.apiWrapper.setup(x => x.workspaceFolders()).returns(() => undefined);
+		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
+
+		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+
+		await testUtils.shouldThrowSpecificError(async () => await projController.importNewDatabaseProject({ connectionProfile: mockConnectionProfile }), constants.projectLocationNotEmpty);
+	});
+});
+
+describe('ProjectsController: add database reference operations', function (): void {
+	it('Should show error when no reference type is selected', async function (): Promise<void> {
+		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(undefined));
+		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
+
+		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+		await testUtils.shouldThrowSpecificError(async () => await projController.addDatabaseReference(new Project('FakePath')), constants.databaseReferenceTypeRequired);
+	});
+
+	it('Should show error when no file is selected', async function (): Promise<void> {
+		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({ label: constants.dacpac }));
+		testContext.apiWrapper.setup(x => x.showOpenDialog(TypeMoq.It.isAny())).returns(() => Promise.resolve(undefined));
+		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
+
+		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+		await testUtils.shouldThrowSpecificError(async () => await projController.addDatabaseReference(new Project('FakePath')), constants.dacpacFileLocationRequired);
+	});
+
+	it('Should show error when no database name is provided', async function (): Promise<void> {
+		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({ label: constants.dacpac }));
+		testContext.apiWrapper.setup(x => x.showOpenDialog(TypeMoq.It.isAny())).returns(() => Promise.resolve([vscode.Uri.file('FakePath')]));
+		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny())).returns(() => Promise.resolve({ label: constants.databaseReferenceDifferentDabaseSameServer }));
+		testContext.apiWrapper.setup(x => x.showInputBox(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(undefined));
+		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
+
+		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+		await testUtils.shouldThrowSpecificError(async () => await projController.addDatabaseReference(new Project('FakePath')), constants.databaseNameRequired);
+	});
+
+	it('Should return the correct system database', async function (): Promise<void> {
+		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+		const projFilePath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
+		const project: Project = new Project(projFilePath);
+		await project.readProjFile();
+
+		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({ label: constants.master }));
+		let systemDb = await projController.getSystemDatabaseName(project);
+		should.equal(systemDb, SystemDatabase.master);
+
+		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({ label: constants.msdb }));
+		systemDb = await projController.getSystemDatabaseName(project);
+		should.equal(systemDb, SystemDatabase.msdb);
+
+		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(undefined));
+		await testUtils.shouldThrowSpecificError(async () => await projController.getSystemDatabaseName(project), constants.systemDatabaseReferenceRequired);
+	});
+});
+
+describe('ProjectsController: round trip feature with SSDT', function (): void {
+	it('Should show warning message for SSDT project opened in Azure Data Studio', async function (): Promise<void> {
+		testContext.apiWrapper.setup(x => x.showWarningMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
+
+		// setup test files
+		const folderPath = await testUtils.generateTestFolderPath();
+		const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.SSDTProjectFileBaseline, folderPath);
+		await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, folderPath);
+
+		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+
+		await testUtils.shouldThrowSpecificError(async () => await projController.openProject(vscode.Uri.file(sqlProjPath)), constants.updateProjectForRoundTrip);
+	});
+
+	it('Should not show warning message for non-SSDT projects that have the additional information for Build', async function (): Promise<void> {
+		testContext.apiWrapper.setup(x => x.showWarningMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
+
+		// setup test files
+		const folderPath = await testUtils.generateTestFolderPath();
+		const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline, folderPath);
+		await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, folderPath);
+
+		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+
+		const project = await projController.openProject(vscode.Uri.file(sqlProjPath));	// no error thrown
+
+		should(project.importedTargets.length).equal(3); // additional target should exist by default
+	});
+
+	it('Should not update project and no backup file should be created when update to project is rejected', async function (): Promise<void> {
+		testContext.apiWrapper.setup(x => x.showWarningMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(constants.noString));
+
+		// setup test files
+		const folderPath = await testUtils.generateTestFolderPath();
+		const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.SSDTProjectFileBaseline, folderPath);
+		await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, folderPath);
+
+		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+
+		const project = await projController.openProject(vscode.Uri.file(sqlProjPath));
+
+		should(await exists(sqlProjPath + '_backup')).equal(false);	// backup file should not be generated
+		should(project.importedTargets.length).equal(2); // additional target should not be added by updateProjectForRoundTrip method
+	});
+
+	it('Should load Project and associated import targets when update to project is accepted', async function (): Promise<void> {
+		testContext.apiWrapper.setup(x => x.showWarningMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(constants.yesString));
+
+		// setup test files
+		const folderPath = await testUtils.generateTestFolderPath();
+		const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.SSDTProjectFileBaseline, folderPath);
+		await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, folderPath);
+
+		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+
+		const project = await projController.openProject(vscode.Uri.file(sqlProjPath));
+
+		should(await exists(sqlProjPath + '_backup')).equal(true);	// backup file should be generated before the project is updated
+		should(project.importedTargets.length).equal(3); // additional target added by updateProjectForRoundTrip method
 	});
 });

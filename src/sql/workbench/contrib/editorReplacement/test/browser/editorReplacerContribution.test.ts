@@ -15,7 +15,7 @@ import { IDisposable, toDisposable, dispose } from 'vs/base/common/lifecycle';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IEditorInput, EditorInput, IUntitledTextResourceEditorInput } from 'vs/workbench/common/editor';
 import { ITextEditorOptions, IEditorOptions } from 'vs/platform/editor/common/editor';
-import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsService';
+import { IEditorGroup, OpenEditorContext } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
 import { Registry } from 'vs/platform/registry/common/platform';
@@ -72,7 +72,7 @@ suite('Editor Replacer Contribution', () => {
 		instantiationService.stub(IEditorService, editorService);
 		const contrib = instantiationService.createInstance(EditorReplacementContribution);
 		const input = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.sql'), undefined, undefined);
-		const response = editorService.fireOpenEditor(input, undefined, undefined as IEditorGroup);
+		const response = editorService.fireOpenEditor(input, undefined, undefined as IEditorGroup, OpenEditorContext.NEW_EDITOR);
 		assert(response?.override);
 		const newinput = <any>(await response.override) as EditorInput; // our test service returns this so we are fine to cast this
 
@@ -87,7 +87,7 @@ suite('Editor Replacer Contribution', () => {
 		instantiationService.stub(IEditorService, editorService);
 		const contrib = instantiationService.createInstance(EditorReplacementContribution);
 		const input = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.other'), undefined, 'sql');
-		const response = editorService.fireOpenEditor(input, undefined, undefined as IEditorGroup);
+		const response = editorService.fireOpenEditor(input, undefined, undefined as IEditorGroup, OpenEditorContext.NEW_EDITOR);
 		assert(response?.override);
 		const newinput = <any>(await response.override) as EditorInput; // our test service returns this so we are fine to cast this
 
@@ -102,7 +102,7 @@ suite('Editor Replacer Contribution', () => {
 		instantiationService.stub(IEditorService, editorService);
 		const contrib = instantiationService.createInstance(EditorReplacementContribution);
 		const input = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.notebook'), undefined, undefined);
-		const response = editorService.fireOpenEditor(input, undefined, undefined as IEditorGroup);
+		const response = editorService.fireOpenEditor(input, undefined, undefined as IEditorGroup, OpenEditorContext.NEW_EDITOR);
 		assert(response?.override);
 		const newinput = <any>(await response.override) as EditorInput; // our test service returns this so we are fine to cast this
 
@@ -117,7 +117,7 @@ suite('Editor Replacer Contribution', () => {
 		instantiationService.stub(IEditorService, editorService);
 		const contrib = instantiationService.createInstance(EditorReplacementContribution);
 		const input = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.iynb'), undefined, 'notebook');
-		const response = editorService.fireOpenEditor(input, undefined, undefined as IEditorGroup);
+		const response = editorService.fireOpenEditor(input, undefined, undefined as IEditorGroup, OpenEditorContext.NEW_EDITOR);
 		assert(response?.override);
 		const newinput = <any>(await response.override) as EditorInput; // our test service returns this so we are fine to cast this
 
@@ -135,7 +135,7 @@ suite('Editor Replacer Contribution', () => {
 		const service = accessor.untitledTextEditorService;
 
 		const input = instantiationService.createInstance(UntitledTextEditorInput, service.create());
-		const response = editorService.fireOpenEditor(input, undefined, undefined as IEditorGroup);
+		const response = editorService.fireOpenEditor(input, undefined, undefined as IEditorGroup, OpenEditorContext.NEW_EDITOR);
 		assert(response?.override);
 		const newinput = <any>(await response.override) as EditorInput; // our test service returns this so we are fine to cast this
 
@@ -153,7 +153,7 @@ suite('Editor Replacer Contribution', () => {
 		const service = accessor.untitledTextEditorService;
 		const untitled = instantiationService.createInstance(UntitledTextEditorInput, service.create());
 		const input = instantiationService.createInstance(UntitledQueryEditorInput, '', untitled, undefined);
-		const response = editorService.fireOpenEditor(input, undefined, undefined as IEditorGroup);
+		const response = editorService.fireOpenEditor(input, undefined, undefined as IEditorGroup, OpenEditorContext.NEW_EDITOR);
 		assert(response === undefined);
 
 		contrib.dispose();
@@ -167,7 +167,7 @@ suite('Editor Replacer Contribution', () => {
 		const accessor = instantiationService.createInstance(ServiceAccessor);
 		const service = accessor.untitledTextEditorService;
 		const input = instantiationService.createInstance(UntitledTextEditorInput, service.create({ associatedResource: URI.file('/test/file.unknown') }));
-		const response = editorService.fireOpenEditor(input, undefined, undefined as IEditorGroup);
+		const response = editorService.fireOpenEditor(input, undefined, undefined as IEditorGroup, OpenEditorContext.NEW_EDITOR);
 		assert(response === undefined);
 
 		contrib.dispose();
@@ -191,10 +191,10 @@ class MockEditorService extends TestEditorService {
 		});
 	}
 
-	fireOpenEditor(editor: IEditorInput, options: IEditorOptions | ITextEditorOptions | undefined, group: IEditorGroup) {
+	fireOpenEditor(editor: IEditorInput, options: IEditorOptions | ITextEditorOptions | undefined, group: IEditorGroup, context: OpenEditorContext, id?: string) {
 		for (const handler of this.overridenOpens) {
 			let response: IOpenEditorOverride | undefined;
-			if (response = handler.open(editor, options, group)) {
+			if (response = handler.open(editor, options, group, context, id)) {
 				return response;
 			}
 		}

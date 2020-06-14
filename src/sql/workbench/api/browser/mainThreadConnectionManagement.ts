@@ -128,7 +128,7 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 		return Promise.resolve(this._connectionManagementService.getServerInfo(connectionId));
 	}
 
-	public async $openConnectionDialog(providers: string[], initialConnectionProfile?: IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Promise<azdata.connection.Connection> {
+	public async $openConnectionDialog(providers: string[], initialConnectionProfile?: IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Promise<azdata.connection.Connection | undefined> {
 		// Here we default to ConnectionType.editor which saves the connecton in the connection store by default
 		let connectionType = ConnectionType.editor;
 
@@ -139,9 +139,12 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 		}
 		let connectionProfile = await this._connectionDialogService.openDialogAndWait(this._connectionManagementService,
 			{ connectionType: connectionType, providers: providers }, initialConnectionProfile, undefined);
-		if (connectionProfile) {
-			connectionProfile.options.savePassword = connectionProfile.savePassword;
+
+		if (!connectionProfile) {
+			return undefined;
 		}
+
+		connectionProfile.options.savePassword = connectionProfile.savePassword;
 		const connection = connectionProfile ? {
 			connectionId: connectionProfile.id,
 			options: connectionProfile.options,

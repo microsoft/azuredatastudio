@@ -152,12 +152,12 @@ export class NotebookSearchWidget extends Widget {
 		this._register(this.searchInput.inputBox.onDidHeightChange(() => this._onDidHeightChange.fire()));
 
 		this.searchInputFocusTracker = this._register(trackFocus(this.searchInput.inputBox.inputElement));
-		this._register(this.searchInputFocusTracker.onDidFocus(() => {
+		this._register(this.searchInputFocusTracker.onDidFocus(async () => {
 			this.searchInputBoxFocused.set(true);
 
 			const useGlobalFindBuffer = this.searchConfiguration.globalFindClipboard;
 			if (!this.ignoreGlobalFindBufferOnNextFocus && useGlobalFindBuffer) {
-				const globalBufferText = this.clipboardServce.readFindText();
+				const globalBufferText = await this.clipboardServce.readFindText();
 				if (this.previousGlobalFindBufferValue !== globalBufferText) {
 					this.searchInput.inputBox.addToHistory();
 					this.searchInput.setValue(globalBufferText);

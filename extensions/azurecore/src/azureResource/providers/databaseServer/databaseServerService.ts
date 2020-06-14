@@ -29,7 +29,8 @@ export class AzureResourceDatabaseServerService extends ResourceServiceBase<DbSe
 			name: resource.name,
 			fullName: resource.properties.fullyQualifiedDomainName,
 			loginName: resource.properties.administratorLogin,
-			defaultDatabaseName: 'master'
+			defaultDatabaseName: 'master',
+			tenant: resource.tenantId
 		};
 	}
 }

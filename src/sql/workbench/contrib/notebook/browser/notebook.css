@@ -2,8 +2,9 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 .notebookEditor .scrollable {
-	margin-top: 5px;
+	padding-top: 16px;
 }
 
 .notebookEditor .taskbarSeparator {
@@ -19,7 +20,7 @@
 	border-color: transparent;
 	border-style: solid;
 	border-width: 1px 1px 1px 4px;
-	margin: 1px 20px;
+	margin: 8px;
 	position: relative;
 }
 
@@ -36,21 +37,24 @@
 	min-height: 21px;
 }
 
-.notebookEditor .actions-container .action-item .notebook-button {
+.notebookEditor .editor-toolbar .actions-container .action-item .notebook-button {
 	display: inline-block;
-	width: 100%;
-	padding: 0px;
 	text-align: center;
 	cursor: pointer;
-	padding-left: 18px;
+	padding: 0 18px;
 	background-size: 13px;
-	margin-right: 20px;
 	font-size: 13px;
 	height: 21px;
 }
-.notebookEditor .in-preview .actions-container .action-item .notebook-button {
+.notebookEditor .editor-toolbar .actions-container .action-item .notebook-button.masked-icon {
+	padding: 0;
+	width: 28px;
+}
+
+.notebookEditor .in-preview .actions-container .action-item .notebook-button,
+.notebookEditor .in-preview .actions-container .action-item .notebook-button:before {
 	display: flex;
-	background-size: 16px;
+	height: 100%;
 }
 
 .notebookEditor
@@ -64,7 +68,7 @@
 	.in-preview
 	.actions-container
 	.action-item
-	.notebook-button.masked-icon {
+	.notebook-button.masked-icon:before {
 	margin-right: 0;
 	padding-left: 18px;
 	width: 16px;
@@ -167,11 +171,14 @@
 }
 
 .vs-dark .notebookEditor :not(.in-preview) .notebook-button.icon-clear-results,
-.hc-black
-	.notebookEditor
-	:not(.in-preview)
-	.notebook-button.icon-clear-results {
+.hc-black .notebookEditor :not(.in-preview) .notebook-button.icon-clear-results {
 	background-image: url("./media/dark/clear_results_inverse.svg");
+}
+
+.notebookEditor .in-preview .notebook-button.masked-icon,
+.vs-dark .notebookEditor .in-preview .notebook-button.icon-clear-results,
+.hc-black .notebookEditor .in-preview .notebook-button.icon-clear-results {
+	background-image: none;
 }
 /* non-preview */
 
@@ -218,8 +225,8 @@
 	background: url("./media/light/new_notebook.svg") center center no-repeat;
 }
 
-.vs-dark .monaco-workbench .notebook-action.new-notebook,
-.hc-black .monaco-workbench .notebook-action.new-notebook {
+.monaco-workbench.vs-dark .notebook-action.new-notebook,
+.monaco-workbench.hc-black .notebook-action.new-notebook {
 	background: url("./media/dark/new_notebook_inverse.svg") center center
 		no-repeat;
 }
@@ -236,54 +243,6 @@
 	margin-right: 10px;
 }
 
-.notebookEditor .hoverButtonsContainer {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: center;
-	width: 100%;
-	padding: 0px 20px;
-	margin: 1px 0px;
-	box-sizing: border-box;
-}
-
-.notebookEditor .hoverButtonsContainer .containerBackground {
-	position: absolute;
-	width: auto;
-	left: 20px;
-	right: 20px;
-	height: 1px;
-	z-index: 0;
-	visibility: hidden;
-}
-
-.notebookEditor .hoverButtonsContainer:hover .containerBackground {
-	visibility: visible;
-}
-
-.notebookEditor .hoverButtonsContainer .hoverButton {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: center;
-	margin: 3px 2px;
-	padding: 4px 12px;
-	font-size: 12px;
-	box-sizing: border-box;
-	border-width: 1px;
-	border-style: solid;
-	z-index: 1;
-	visibility: hidden;
-}
-
-.notebookEditor .hoverButtonsContainer:hover .hoverButton {
-	visibility: visible;
-}
-
-.notebookEditor .hoverButton:active {
-	transform: scale(1.05);
-}
-
 .notebookEditor .hoverButton .addCodeIcon,
 .notebookEditor .hoverButton .addTextIcon {
 	display: inline-block;
@@ -293,24 +252,6 @@
 	height: 10px;
 	background-size: contain;
 	margin-right: 4px;
-}
-
-.notebookEditor .hoverButton .addCodeIcon {
-	background-image: url("./media/light/add_code.svg");
-}
-
-.vs-dark .notebookEditor .hoverButton .addCodeIcon,
-.hc-black .notebookEditor .hoverButton .addCodeIcon {
-	background-image: url("./media/dark/add_code_inverse.svg");
-}
-
-.notebookEditor .hoverButton .addTextIcon {
-	background-image: url("./media/light/add_text.svg");
-}
-
-.vs-dark .notebookEditor .hoverButton .addTextIcon,
-.hc-black .notebookEditor .hoverButton .addTextIcon {
-	background-image: url("./media/dark/add_text_inverse.svg");
 }
 
 .monaco-workbench.mac .notebookEditor .select-container {
