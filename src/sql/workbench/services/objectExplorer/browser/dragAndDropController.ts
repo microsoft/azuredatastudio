@@ -28,27 +28,38 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 	 * Returns null, otherwise.
 	 */
 	public getDragURI(tree: ITree, element: any): string {
-		if (element instanceof ConnectionProfile) {
-			return (<ConnectionProfile>element).id;
-		} else if (element instanceof ConnectionProfileGroup) {
-			return (<ConnectionProfileGroup>element).id;
-
-		} else if (element.nodeTypeId === 'Table' || element.nodeTypeId === 'Column') {
-			return (<TreeNode>element).id;
+		if (element) {
+			if (element instanceof ConnectionProfile) {
+				return (<ConnectionProfile>element).id;
+			} else if (element instanceof ConnectionProfileGroup) {
+				return (<ConnectionProfileGroup>element).id;
+			} else if (element.nodeTypeId === 'Table' || element.nodeTypeId === 'Column') {
+				return (<TreeNode>element).id;
+			}
+			else {
+				return undefined;
+			}
 		}
-		return null;
+		else {
+			return undefined;
+		}
 	}
 
 	/**
 	 * Returns a label(name) to display when dragging the element.
 	 */
 	public getDragLabel(tree: ITree, elements: any[]): string {
-		if (elements[0] instanceof ConnectionProfile) {
-			return (<ConnectionProfile>elements[0]).serverName;
-		} else if (elements[0] instanceof ConnectionProfileGroup) {
-			return (<ConnectionProfileGroup>elements[0]).name;
-		} else if (elements[0].label) {
-			return elements[0].label;
+		if (elements) {
+			if (elements[0] instanceof ConnectionProfile) {
+				return (<ConnectionProfile>elements[0]).serverName;
+			} else if (elements[0] instanceof ConnectionProfileGroup) {
+				return (<ConnectionProfileGroup>elements[0]).name;
+			} else if (elements[0].label) {
+				return elements[0].label;
+			}
+			else {
+				return undefined;
+			}
 		}
 		else {
 			return undefined;
