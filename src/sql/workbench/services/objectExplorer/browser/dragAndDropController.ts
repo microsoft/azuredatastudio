@@ -72,7 +72,7 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 	public onDragStart(tree: ITree, dragAndDropData: IDragAndDropData, originalEvent: DragMouseEvent): void {
 		TreeUpdateUtils.isInDragAndDrop = true;
 		const data = dragAndDropData.getData();
-		const element = data.elements[0];
+		const element = data[0];
 		if (element.nodeTypeId === 'Column' || element.nodeTypeId === 'Table') {
 			const schema = element.metadata.schema;
 			const name = element.metadata.name;
