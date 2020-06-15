@@ -78,17 +78,17 @@ export class PostgresPropertiesPage extends DashboardPage {
 	}
 
 	private refresh() {
-		const endpoint: { ip?: string, port?: number } = this._postgresModel.endpoint();
-		const connectionString = `postgresql://postgres:${this._postgresModel.password()}@${endpoint.ip}:${endpoint.port}`;
-		const registration = this._controllerModel.getRegistration(ResourceType.postgresInstances, this._postgresModel.namespace(), this._postgresModel.name());
+		const endpoint: { ip?: string, port?: number } = this._postgresModel.endpoint;
+		const connectionString = `postgresql://postgres:${this._postgresModel.password}@${endpoint.ip}:${endpoint.port}`;
+		const registration = this._controllerModel.getRegistration(ResourceType.postgresInstances, this._postgresModel.namespace, this._postgresModel.name);
 
 		this.keyValueContainer?.refresh([
 			new InputKeyValue(loc.coordinatorEndpoint, connectionString),
 			new InputKeyValue(loc.postgresAdminUsername, 'postgres'),
-			new TextKeyValue(loc.status, this._postgresModel.service()?.status?.state ?? 'Unknown'),
-			new LinkKeyValue(loc.dataController, this._controllerModel.namespace() ?? '', _ => vscode.window.showInformationMessage('TODO: Go to data controller')),
-			new LinkKeyValue(loc.nodeConfiguration, this._postgresModel.configuration(), _ => vscode.window.showInformationMessage('TODO: Go to configuration')),
-			new TextKeyValue(loc.postgresVersion, this._postgresModel.service()?.spec?.engine?.version?.toString() ?? ''),
+			new TextKeyValue(loc.status, this._postgresModel.service?.status?.state ?? 'Unknown'),
+			new LinkKeyValue(loc.dataController, this._controllerModel.namespace ?? '', _ => vscode.window.showInformationMessage('TODO: Go to data controller')),
+			new LinkKeyValue(loc.nodeConfiguration, this._postgresModel.configuration, _ => vscode.window.showInformationMessage('TODO: Go to configuration')),
+			new TextKeyValue(loc.postgresVersion, this._postgresModel.service?.spec?.engine?.version?.toString() ?? ''),
 			new TextKeyValue(loc.resourceGroup, registration?.resourceGroupName ?? ''),
 			new TextKeyValue(loc.subscriptionId, registration?.subscriptionId ?? '')
 		]);
