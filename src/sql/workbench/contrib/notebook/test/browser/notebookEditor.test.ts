@@ -13,7 +13,6 @@ import { TestNotebookEditor } from 'sql/workbench/contrib/notebook/test/testComm
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookService, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookService } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
-import * as TypeMoq from 'typemoq';
 import { Emitter } from 'vs/base/common/event';
 import { DisposableStore } from 'vs/base/common/lifecycle';
 import { Schemas } from 'vs/base/common/network';
