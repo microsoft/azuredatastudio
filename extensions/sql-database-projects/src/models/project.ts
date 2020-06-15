@@ -63,6 +63,15 @@ export class Project {
 			this.importedTargets.push(importTarget.getAttribute(constants.Project));
 		}
 
+		// find all SQLCMD variables to include
+		for (let i = 0; i < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable).length; i++) {
+			const sqlCmdVar = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable)[i];
+			const varName = sqlCmdVar.getAttribute(constants.Include);
+
+			const varValue = sqlCmdVar.getElementsByTagName(constants.DefaultValue)[0].childNodes[0].nodeValue;
+			this.sqlCmdVariables[varName] = varValue;
+		}
+
 		// find all database references to include
 		for (let r = 0; r < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference).length; r++) {
 			const filepath = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference)[r].getAttribute(constants.Include);
@@ -78,6 +87,7 @@ export class Project {
 		await fs.copyFile(this.projectFilePath, this.projectFilePath + '_backup');
 		await this.updateImportToSupportRoundTrip();
 		await this.updatePackageReferenceInProjFile();
+		await this.updateAfterCleanTargetInProjFile();
 	}
 
 	private async updateImportToSupportRoundTrip(): Promise<void> {
@@ -97,6 +107,30 @@ export class Project {
 		}
 
 		await this.updateImportedTargetsToProjFile(constants.NetCoreCondition, constants.NetCoreTargets, undefined);
+	}
+
+	private async updateAfterCleanTargetInProjFile(): Promise<void> {
+		// Search if clean target already present, update it
+		for (let i = 0; i < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Target).length; i++) {
+			const afterCleanNode = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Target)[i];
+			const name = afterCleanNode.getAttribute(constants.Name);
+			if (name === constants.AfterCleanTarget) {
+				return await this.createCleanFileNode(afterCleanNode);
+			}
+		}
+
+		// If clean target not found, create new
+		const afterCleanNode = this.projFileXmlDoc.createElement(constants.Target);
+		afterCleanNode.setAttribute(constants.Name, constants.AfterCleanTarget);
+		this.projFileXmlDoc.documentElement.appendChild(afterCleanNode);
+		await this.createCleanFileNode(afterCleanNode);
+	}
+
+	private async createCleanFileNode(parentNode: any): Promise<void> {
+		const deleteFileNode = this.projFileXmlDoc.createElement(constants.Delete);
+		deleteFileNode.setAttribute(constants.Files, constants.ProjJsonToClean);
+		parentNode.appendChild(deleteFileNode);
+		await this.serializeToProjFile(this.projFileXmlDoc);
 	}
 
 	/**
@@ -170,7 +204,7 @@ export class Project {
 			dbName = constants.msdb;
 		}
 
-		this.addDatabaseReference(uri, DatabaseReferenceLocation.differentDatabaseSameServer, true, dbName);
+		await this.addDatabaseReference(uri, DatabaseReferenceLocation.differentDatabaseSameServer, true, dbName);
 	}
 
 	public getSystemDacpacUri(dacpac: string): Uri {
@@ -304,6 +338,39 @@ export class Project {
 		await this.serializeToProjFile(this.projFileXmlDoc);
 	}
 
+	public containsSSDTOnlySystemDatabaseReferences(): boolean {
+		for (let r = 0; r < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference).length; r++) {
+			const currentNode = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference)[r];
+			if (!currentNode.getAttribute(constants.NetCoreCondition) && currentNode.getAttribute(constants.Include).includes(constants.DacpacRootPath)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public async updateSystemDatabaseReferencesInProjFile(): Promise<void> {
+		// find all system database references
+		for (let r = 0; r < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference).length; r++) {
+			const currentNode = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference)[r];
+			if (!currentNode.getAttribute(constants.Condition) && currentNode.getAttribute(constants.Include).includes(constants.DacpacRootPath)) {
+				// get name of system database
+				const name = currentNode.getAttribute(constants.Include).includes(constants.master) ? SystemDatabase.master : SystemDatabase.msdb;
+				this.projFileXmlDoc.documentElement.removeChild(currentNode);
+
+				// delete ItemGroup if there aren't any other children
+				if (this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference).length === 0) {
+					this.projFileXmlDoc.documentElement.removeChild(currentNode.parentNode);
+				}
+
+				// remove from database references because it'll get added again later
+				this.databaseReferences.splice(this.databaseReferences.findIndex(n => n === (name ? constants.master : constants.msdb)), 1);
+
+				await this.addSystemDatabaseReference(name);
+			}
+		}
+	}
+
 	private async addToProjFile(entry: ProjectEntry) {
 		switch (entry.type) {
 			case EntryType.File:
@@ -311,8 +378,10 @@ export class Project {
 				break;
 			case EntryType.Folder:
 				this.addFolderToProjFile(entry.relativePath);
+				break;
 			case EntryType.DatabaseReference:
 				this.addDatabaseReferenceToProjFile(<DatabaseReferenceProjectEntry>entry);
+				break; // not required but adding so that we dont miss when we add new items
 		}
 
 		await this.serializeToProjFile(this.projFileXmlDoc);

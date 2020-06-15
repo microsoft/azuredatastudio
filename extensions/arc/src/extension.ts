@@ -56,11 +56,12 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 			groupId: undefined,
 			options: connection.options
 		};
+		const instanceNamespace = '';
 		const instanceName = '';
 
 		try {
 			const controllerModel = new ControllerModel(controllerUrl, auth);
-			const miaaModel = new MiaaModel(connectionProfile, instanceName);
+			const miaaModel = new MiaaModel(connectionProfile, controllerUrl, auth, instanceNamespace, instanceName);
 			const miaaDashboard = new MiaaDashboard(controllerModel, miaaModel);
 
 			await Promise.all([
