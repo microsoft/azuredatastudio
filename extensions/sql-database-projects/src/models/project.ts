@@ -359,7 +359,8 @@ export class Project {
 	public containsSSDTOnlySystemDatabaseReferences(): boolean {
 		for (let r = 0; r < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference).length; r++) {
 			const currentNode = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference)[r];
-			if (!currentNode.getAttribute(constants.NetCoreCondition) && currentNode.getAttribute(constants.Include).includes(constants.DacpacRootPath)) {
+			if (currentNode.getAttribute(constants.Condition) !== constants.NetCoreCondition && currentNode.getAttribute(constants.Condition) !== constants.NotNetCoreCondition
+				&& currentNode.getAttribute(constants.Include).includes(constants.DacpacRootPath)) {
 				return true;
 			}
 		}
