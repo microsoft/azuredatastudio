@@ -54,10 +54,6 @@ jobs:
       # {{SQL CARBON EDIT}} Add coveralls. We merge first to get around issue where parallel builds weren't being combined correctly
     - run: node test/combineCoverage
       name: Combine code coverage files
-    - name: Dump GitHub context
-      env:
-        GITHUB_CONTEXT: ${{ toJson(github) }}
-      run: echo "$GITHUB_CONTEXT"
     - name: Upload Code Coverage
       uses: coverallsapp/github-action@v1.1.1
       with:
