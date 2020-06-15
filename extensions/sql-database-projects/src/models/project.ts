@@ -393,7 +393,7 @@ export class Project {
 				}
 
 				// remove from database references because it'll get added again later
-				this.databaseReferences.splice(this.databaseReferences.findIndex(n => n === (name ? constants.master : constants.msdb)), 1);
+				this.databaseReferences.splice(this.databaseReferences.findIndex(n => n === (name === SystemDatabase.master ? constants.master : constants.msdb)), 1);
 
 				await this.addSystemDatabaseReference(name);
 			}
