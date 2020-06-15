@@ -10,12 +10,15 @@ import { BaseProjectTreeItem } from './baseTreeItem';
 import * as fileTree from './fileFolderTreeItem';
 import { Project, ProjectEntry, EntryType } from '../project';
 import * as utils from '../../common/utils';
+import { DatabaseReferencesTreeItem } from './databaseReferencesTreeItem';
+import { DatabaseProjectItemType } from '../../common/constants';
 
 /**
  * TreeNode root that represents an entire project
  */
 export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	dataSourceNode: DataSourcesTreeItem;
+	databaseReferencesNode: DatabaseReferencesTreeItem;
 	fileChildren: { [childName: string]: (fileTree.FolderNode | fileTree.FileNode) } = {};
 	project: Project;
 
@@ -24,6 +27,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 
 		this.project = project;
 		this.dataSourceNode = new DataSourcesTreeItem(this);
+		this.databaseReferencesNode = new DatabaseReferencesTreeItem(this);
 
 		this.construct();
 	}
@@ -31,19 +35,15 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	public get children(): BaseProjectTreeItem[] {
 		const output: BaseProjectTreeItem[] = [];
 		output.push(this.dataSourceNode);
+		output.push(this.databaseReferencesNode);
 
-		// sort children so that folders come first, then alphabetical
-		const sortedChildren = Object.values(this.fileChildren).sort((a: (fileTree.FolderNode | fileTree.FileNode), b: (fileTree.FolderNode | fileTree.FileNode)) => {
-			if (a instanceof fileTree.FolderNode && !(b instanceof fileTree.FolderNode)) { return -1; }
-			else if (!(a instanceof fileTree.FolderNode) && b instanceof fileTree.FolderNode) { return 1; }
-			else { return a.uri.fsPath.localeCompare(b.uri.fsPath); }
-		});
-
-		return output.concat(sortedChildren);
+		return output.concat(Object.values(this.fileChildren).sort(fileTree.sortFileFolderNodes));
 	}
 
 	public get treeItem(): vscode.TreeItem {
-		return new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.Expanded);
+		const projectItem = new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.Expanded);
+		projectItem.contextValue = DatabaseProjectItemType.project;
+		return projectItem;
 	}
 
 	/**
@@ -52,6 +52,10 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	private construct() {
 		for (const entry of this.project.files) {
 			const parentNode = this.getEntryParentNode(entry);
+
+			if (Object.keys(parentNode.fileChildren).includes(path.basename(entry.fsUri.path))) {
+				continue; // ignore duplicate entries
+			}
 
 			let newNode: fileTree.FolderNode | fileTree.FileNode;
 

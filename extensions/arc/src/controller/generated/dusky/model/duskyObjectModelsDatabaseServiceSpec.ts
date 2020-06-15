@@ -16,18 +16,20 @@ import { DuskyObjectModelsEngineSpec } from './duskyObjectModelsEngineSpec';
 import { DuskyObjectModelsMonitoringSpec } from './duskyObjectModelsMonitoringSpec';
 import { DuskyObjectModelsScaleSpec } from './duskyObjectModelsScaleSpec';
 import { DuskyObjectModelsSchedulingSpec } from './duskyObjectModelsSchedulingSpec';
+import { DuskyObjectModelsSecuritySpec } from './duskyObjectModelsSecuritySpec';
 import { DuskyObjectModelsServiceSpec } from './duskyObjectModelsServiceSpec';
 import { DuskyObjectModelsStorageSpec } from './duskyObjectModelsStorageSpec';
 
 export class DuskyObjectModelsDatabaseServiceSpec {
     'backups'?: DuskyObjectModelsBackupSpec;
     'docker'?: DuskyObjectModelsDockerSpec;
-    'engine': DuskyObjectModelsEngineSpec;
+    'engine'?: DuskyObjectModelsEngineSpec;
     'monitoring'?: DuskyObjectModelsMonitoringSpec;
     'scale'?: DuskyObjectModelsScaleSpec;
     'scheduling'?: DuskyObjectModelsSchedulingSpec;
+    'security'?: DuskyObjectModelsSecuritySpec;
     'service'?: DuskyObjectModelsServiceSpec;
-    'storage': DuskyObjectModelsStorageSpec;
+    'storage'?: DuskyObjectModelsStorageSpec;
 
     static discriminator: string | undefined = undefined;
 
@@ -61,6 +63,11 @@ export class DuskyObjectModelsDatabaseServiceSpec {
             "name": "scheduling",
             "baseName": "scheduling",
             "type": "DuskyObjectModelsSchedulingSpec"
+        },
+        {
+            "name": "security",
+            "baseName": "security",
+            "type": "DuskyObjectModelsSecuritySpec"
         },
         {
             "name": "service",

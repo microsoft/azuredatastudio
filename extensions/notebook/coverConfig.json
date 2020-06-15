@@ -3,13 +3,15 @@
 	"relativeSourcePath": "..",
 	"relativeCoverageDir": "../../coverage",
 	"ignorePatterns": [
+		"**/integrationTest/**",
 		"**/node_modules/**",
-		"**/test/**"
+		"**/test/**",
+		"extension.js"
 	],
-	"includePid": false,
 	"reports": [
 		"cobertura",
-		"lcov"
+		"lcov",
+		"json"
 	],
 	"verbose": false,
 	"remapOptions": {

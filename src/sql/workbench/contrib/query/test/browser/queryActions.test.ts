@@ -560,6 +560,124 @@ suite('SQL QueryAction Tests', () => {
 		// ... The connection should have changed to the provided database
 		assert.equal(listItem.currentDatabaseName, eventParams.connectionProfile.databaseName);
 	});
+
+	test('runCurrent - opens connection dialog when there are no active connections', async () => {
+		// setting up environment
+		let isConnected = false;
+		let predefinedSelection: IRange = { startLineNumber: 1, startColumn: 1, endLineNumber: 1, endColumn: 1 };
+		let calledRunQueryStatementOnInput: boolean = undefined;
+
+		// mocking query editor
+		const contextkeyservice = new MockContextKeyService();
+		let queryEditor = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Loose, undefined, new TestThemeService(),
+			new TestStorageService(), contextkeyservice, undefined, new TestFileService(), undefined);
+		queryEditor.setup(x => x.input).returns(() => testQueryInput.object);
+		queryEditor.setup(x => x.getSelection(false)).returns(() => { return predefinedSelection; });
+
+		// Mocking runQueryStatment in unititledQueryEditorInput
+		testQueryInput.setup(x => x.runQueryStatement(TypeMoq.It.isAny())).callback(() => { calledRunQueryStatementOnInput = true; });
+
+		// mocking isConnected in ConnectionManagementService
+		connectionManagementService.setup(x => x.isConnected(TypeMoq.It.isAnyString())).returns(() => isConnected);
+
+		// mocking QueryModelService
+		let queryModelService = TypeMoq.Mock.ofType(QueryModelService, TypeMoq.MockBehavior.Loose);
+		queryModelService.setup(x => x.runQueryStatement(TypeMoq.It.isAny(), TypeMoq.It.isAny()));
+
+		// Calling runCurrent with no open connection
+		let queryAction: RunQueryAction = new RunQueryAction(queryEditor.object, queryModelService.object, connectionManagementService.object);
+		calledRunQueryStatementOnInput = false;
+		await queryAction.runCurrent();
+
+		//connection dialog should open and runQueryStatement should not be called
+		assert.equal(calledRunQueryStatementOnInput, false, 'runCurrent should not call runQueryStatement');
+		testQueryInput.verify(x => x.runQueryStatement(TypeMoq.It.isAny()), TypeMoq.Times.never());
+		connectionManagementService.verify(x => x.showConnectionDialog(TypeMoq.It.isAny()), TypeMoq.Times.once());
+
+
+		// Calling runCurrent with an open connection
+		isConnected = true;
+		await queryAction.runCurrent();
+
+		//connection dialog should not open and runQueryStatement should be called
+		assert.equal(calledRunQueryStatementOnInput, true, 'runCurrent should call runQueryStatement');
+		testQueryInput.verify(x => x.runQueryStatement(TypeMoq.It.isAny()), TypeMoq.Times.once());
+		//show Dialog is not called
+		connectionManagementService.verify(x => x.showConnectionDialog(TypeMoq.It.isAny()), TypeMoq.Times.once());
+
+		// Calling runCurrent with empty Selection
+		isConnected = true;
+		calledRunQueryStatementOnInput = false;
+		await queryAction.runCurrent();
+
+		// Selection is empty
+		queryEditor.setup(x => x.isSelectionEmpty()).returns(() => true);
+
+		//connection dialog should not open and runQueryStatement should not be called
+		assert.equal(calledRunQueryStatementOnInput, false, 'runCurrent should not call runQueryStatemet');
+		connectionManagementService.verify(x => x.showConnectionDialog(TypeMoq.It.isAny()), TypeMoq.Times.once());
+	});
+
+	test('runCurrent- calls appropriate run methods based on different selections', async () => {
+		// setting up environment
+		let calledRunQueryStatementOnInput: boolean = undefined;
+		let predefinedCursorSelection: IRange = { startLineNumber: 1, startColumn: 1, endLineNumber: 1, endColumn: 1 };
+		let predefinedRangeSelection: IRange = { startLineNumber: 1, startColumn: 2, endLineNumber: 3, endColumn: 4 };
+
+		// mocking query editor
+		const contextkeyservice = new MockContextKeyService();
+		let queryEditor = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Loose, undefined, new TestThemeService(),
+			new TestStorageService(), contextkeyservice, undefined, new TestFileService(), undefined);
+		queryEditor.setup(x => x.input).returns(() => testQueryInput.object);
+
+		// mocking isConnected in ConnectionManagementService
+		connectionManagementService.setup(x => x.isConnected(TypeMoq.It.isAnyString())).returns(() => true);
+
+		// Mocking runQuery and runQueryStatement in unititledQueryEditorInput
+		testQueryInput.setup(x => x.runQuery(TypeMoq.It.isAny())).callback(() => { calledRunQueryOnInput = true; });
+		testQueryInput.setup(x => x.runQueryStatement(TypeMoq.It.isAny())).callback(() => { calledRunQueryStatementOnInput = true; });
+
+		// mocking QueryModelService
+		let queryModelService = TypeMoq.Mock.ofType(QueryModelService, TypeMoq.MockBehavior.Loose);
+		queryModelService.setup(x => x.runQuery(TypeMoq.It.isAny(), undefined, TypeMoq.It.isAny()));
+		queryModelService.setup(x => x.runQueryStatement(TypeMoq.It.isAny(), TypeMoq.It.isAny()));
+
+		let queryAction: RunQueryAction = new RunQueryAction(queryEditor.object, queryModelService.object, connectionManagementService.object);
+
+		// setting up queryEditor with only a cursor. This case should call runQueryStatement
+		queryEditor.setup(x => x.getSelection(false)).returns(() => { return predefinedCursorSelection; });
+		calledRunQueryOnInput = false;
+		calledRunQueryStatementOnInput = false;
+		await queryAction.runCurrent();
+
+		assert.equal(calledRunQueryStatementOnInput, true, 'runCurrent should call runQueryStatement');
+		assert.equal(calledRunQueryOnInput, false, 'run should not call runQuery');
+
+		// checking if runQuery statement is called with predefinedCursorSelection only
+		testQueryInput.verify(x => x.runQueryStatement(TypeMoq.It.isValue(predefinedCursorSelection)), TypeMoq.Times.once());
+		testQueryInput.verify(x => x.runQueryStatement(TypeMoq.It.isAny()), TypeMoq.Times.once());
+
+		// checking if runQuery is not called at all
+		testQueryInput.verify(x => x.runQuery(TypeMoq.It.isAny()), TypeMoq.Times.never());
+
+		// setting up queryEditor with a selection range. This case should call runQuery
+		queryEditor.setup(x => x.getSelection()).returns(() => { return predefinedRangeSelection; });
+		queryEditor.setup(x => x.getSelection(false)).returns(() => { return predefinedRangeSelection; });
+
+		calledRunQueryOnInput = false;
+		calledRunQueryStatementOnInput = false;
+		await queryAction.runCurrent();
+
+		assert.equal(calledRunQueryStatementOnInput, false, 'runCurrent should not call runQueryStatement');
+		assert.equal(calledRunQueryOnInput, true, 'run should call runQuery');
+
+		// checking if runQuery is called with predefinedRangeSelection only
+		testQueryInput.verify(x => x.runQuery(TypeMoq.It.isValue(predefinedRangeSelection)), TypeMoq.Times.once());
+		testQueryInput.verify(x => x.runQuery(TypeMoq.It.isAny()), TypeMoq.Times.once());
+
+		// checking if runQueryStatement is never called
+		testQueryInput.verify(x => x.runQueryStatement(TypeMoq.It.isAny()), TypeMoq.Times.once());
+	});
 });
 
 class ServiceAccessor {

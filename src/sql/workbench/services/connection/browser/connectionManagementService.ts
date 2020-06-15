@@ -813,7 +813,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		const accounts = await this._accountManagementService.getAccounts();
 		const azureAccounts = accounts.filter(a => a.key.providerId.startsWith('azure'));
 		if (azureAccounts && azureAccounts.length > 0) {
-			let accountName = (connection.authenticationType === Constants.azureMFA) ? connection.azureAccount : connection.userName;
+			let accountName = (connection.authenticationType === Constants.azureMFA || connection.authenticationType === Constants.azureMFAAndUser) ? connection.azureAccount : connection.userName;
 			let account = find(azureAccounts, account => account.key.accountId === accountName);
 			if (account) {
 				this._logService.debug(`Getting security token for Azure account ${account.key.accountId}`);
@@ -942,6 +942,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				serverVersion: connection.serverInfo ? connection.serverInfo.serverVersion : '',
 				serverEdition: connection.serverInfo ? connection.serverInfo.serverEdition : '',
 				serverEngineEdition: connection.serverInfo ? connection.serverInfo.engineEditionId : '',
+				isBigDataCluster: connection.serverInfo?.options['isBigDataCluster'] ?? false,
 				extensionConnectionTime: connection.extensionTimer.elapsed() - connection.serviceTimer.elapsed(),
 				serviceConnectionTime: connection.serviceTimer.elapsed()
 			})

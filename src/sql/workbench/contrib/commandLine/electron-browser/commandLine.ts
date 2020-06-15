@@ -32,8 +32,6 @@ import { find } from 'vs/base/common/arrays';
 import { INativeEnvironmentService } from 'vs/platform/environment/node/environmentService';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 
-const connectAuthority = 'connect';
-
 export interface SqlArgs {
 	_?: string[];
 	authenticationType?: string
@@ -43,6 +41,25 @@ export interface SqlArgs {
 	command?: string;
 	provider?: string;
 }
+
+//#region decorators
+
+type PathHandler = (uri: URI) => Promise<boolean>;
+
+const pathMappings: { [key: string]: PathHandler } = {};
+
+interface PathHandlerOptions {
+	path: string
+}
+
+function pathHandler({ path }: PathHandlerOptions) {
+	return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+		const method: PathHandler = descriptor.value;
+
+		pathMappings[path] = method;
+	};
+}
+//#endregion
 
 export class CommandLineWorkbenchContribution implements IWorkbenchContribution, IURLHandler {
 
@@ -152,27 +169,65 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 	}
 
 	public async handleURL(uri: URI): Promise<boolean> {
-		// Catch file URLs
-		let authority = uri.authority.toLowerCase();
-		if (authority === connectAuthority) {
-			try {
-				let args = this.parseProtocolArgs(uri);
-				if (!args.server) {
-					this._notificationService.warn(localize('warnServerRequired', "Cannot connect as no server information was provided"));
-					return true;
-				}
-				let isOpenOk = await this.confirmConnect(args);
-				if (isOpenOk) {
-					await this.processCommandLine(args);
-				}
-			} catch (err) {
-				this._notificationService.error(localize('errConnectUrl', "Could not open URL due to error {0}", getErrorMessage(err)));
-			}
-			// Handled either way
-			return true;
+		let key = uri.authority;
+
+		let method = pathMappings[key];
+
+		if (!method) {
+			return false;
+		}
+		method = method.bind(this);
+		const result = await method(uri);
+
+		if (typeof result !== 'boolean') {
+			throw new Error('Invalid URL Handler used in commandLine code.');
 		}
 
-		return false;
+		return result;
+	}
+
+	@pathHandler({
+		path: 'connect'
+	})
+	public async handleConnect(uri: URI): Promise<boolean> {
+		try {
+			let args = this.parseProtocolArgs(uri);
+			if (!args.server) {
+				this._notificationService.warn(localize('warnServerRequired', "Cannot connect as no server information was provided"));
+				return true;
+			}
+			let isOpenOk = await this.confirmConnect(args);
+			if (isOpenOk) {
+				await this.processCommandLine(args);
+			}
+		} catch (err) {
+			this._notificationService.error(localize('errConnectUrl', "Could not open URL due to error {0}", getErrorMessage(err)));
+		}
+		// Handled either way
+		return true;
+	}
+
+	@pathHandler({
+		path: 'openConnectionDialog'
+	})
+	public async handleOpenConnectionDialog(uri: URI): Promise<boolean> {
+		try {
+			let args = this.parseProtocolArgs(uri);
+			if (!args.server) {
+				this._notificationService.warn(localize('warnServerRequired', "Cannot connect as no server information was provided"));
+				return true;
+			}
+			let isOpenOk = await this.confirmConnect(args);
+			if (!isOpenOk) {
+				return false;
+			}
+
+			const connectionProfile = this.readProfileFromArgs(args);
+			await this._connectionManagementService.showConnectionDialog(undefined, undefined, connectionProfile);
+		} catch (err) {
+			this._notificationService.error(localize('errConnectUrl', "Could not open URL due to error {0}", getErrorMessage(err)));
+		}
+		return true;
 	}
 
 	private async confirmConnect(args: SqlArgs): Promise<boolean> {

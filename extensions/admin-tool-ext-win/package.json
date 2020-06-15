@@ -5,7 +5,7 @@
   "version": "0.1.0",
   "publisher": "Microsoft",
   "preview": true,
-  "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/admin-tool-ext-win/license/Azure%20Data%20Studio%20Extension%20-%20Standalone%20(free)%20Use%20Terms.txt",
+  "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/admin-tool-ext-win/license/Azure%20Data%20Studio%20Extension%20-%20Standalone%20(free)%20Use%20Terms.txt",
   "icon": "images/extension.png",
   "aiKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e",
   "engines": {
@@ -74,7 +74,7 @@
     ]
   },
   "dependencies": {
-    "ads-extension-telemetry": "github:Charles-Gagnon/ads-extension-telemetry#0.1.0",
+    "ads-extension-telemetry": "^1.0.0",
     "service-downloader": "0.2.1",
     "vscode-nls": "^3.2.1"
   },
@@ -85,7 +85,7 @@
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.3",
-    "vscodetestcover": "github:corivera/vscodetestcover#1.0.6"
+    "vscodetestcover": "^1.0.9"
   },
   "__metadata": {
     "id": "41",

@@ -205,6 +205,11 @@
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.2.tgz#26520bf09abe4a5644cd5414e37125a8954241dd"
   integrity sha512-tsAQNx32a8CoFhjhijUIhI4kccIAgmGhy8LZMZgGfmXcpMbPRUqn5LWmgRttILi6yeGmBJd2xsPkFMs0PzgPCw==
 
+"@types/xml-formatter@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@types/xml-formatter/-/xml-formatter-1.1.0.tgz#f7cde70ec33d7b044029b6b6c2f6e69d270ced63"
+  integrity sha512-1Z8XdMUQ3mLsAwqBzKUea2IgDeLOwvgEWevUHhcu3aF6K0KqeGPRlwEYmVy3wGiaepZdcqsiCuUbNhrU4bIJog==
+
 "@types/xmldom@^0.1.29":
   version "0.1.29"
   resolved "https://registry.yarnpkg.com/@types/xmldom/-/xmldom-0.1.29.tgz#c4428b0ca86d3b881475726fd94980b38a27c381"
@@ -901,9 +906,10 @@ vscode-nls@^3.2.1:
   resolved "https://registry.yarnpkg.com/vscode-nls/-/vscode-nls-3.2.5.tgz#25520c1955108036dec607c85e00a522f247f1a4"
   integrity sha512-ITtoh3V4AkWXMmp3TB97vsMaHRgHhsSFPsUdzlueSL+dRZbSNTZeOmdQv60kjCV306ghPxhDeoNUEm3+EZMuyw==
 
-"vscodetestcover@github:corivera/vscodetestcover#1.0.6":
-  version "1.0.5"
-  resolved "https://codeload.github.com/corivera/vscodetestcover/tar.gz/14e0f2c46346b31bc1af2c590febeaf69a9112eb"
+vscodetestcover@^1.0.9:
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/vscodetestcover/-/vscodetestcover-1.0.9.tgz#0191f403dd59ba1153fc57979e281e992ce63731"
+  integrity sha512-8z2961KF9Tuz5XdHAC6RMV3CrzAoUcfIK7wLYjLIXD4dbHIT7ceZMhoxToW1olyi3pFnThlS4lRXtx8Q5iyMMQ==
   dependencies:
     decache "^4.4.0"
     glob "^7.1.2"
@@ -919,6 +925,18 @@ wrappy@1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/wrappy/-/wrappy-1.0.2.tgz#b5243d8f3ec1aa35f1364605bc0d1036e30ab69f"
   integrity sha1-tSQ9jz7BqjXxNkYFvA0QNuMKtp8=
+
+xml-formatter@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/xml-formatter/-/xml-formatter-2.1.0.tgz#ff438be6e2195e480b7525ecd3b06652ed76f390"
+  integrity sha512-t55v5mfpohwKvNbfd8A0FZSZI22//hqXqx3AwRx3mjZel0IEoRM2p1bvVnvNPxHqdqZ0sDjUrBqfHJNbIfE8fw==
+  dependencies:
+    xml-parser-xo "^3.0.0"
+
+xml-parser-xo@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/xml-parser-xo/-/xml-parser-xo-3.0.0.tgz#4d46f1962e5100f228b5f73f34c61bb798430195"
+  integrity sha512-MPPexqXBx48m3OFMQXxo7+RYhG6o6kCGflk4q4oL3uQ0b7d5NDKjHFDwUoozOTPT3WFztT13z3R9Sn0QCTIJcQ==
 
 xml@^1.0.0:
   version "1.0.1"

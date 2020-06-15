@@ -102,7 +102,7 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 			{},
 			{
 				allowScripts: true
-			});
+			}, undefined);
 
 		this._webview.mountTo(this._el.nativeElement);
 

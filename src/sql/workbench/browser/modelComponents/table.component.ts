@@ -328,7 +328,7 @@ export default class TableComponent extends ComponentBase implements IComponent,
 		let name = col.value;
 		if (!this._buttonsColumns[col.value]) {
 			this._buttonsColumns[col.value] = new ButtonColumn({
-				width: col.width,
+				//width: col.width,
 				title: col.title,
 				iconCssClass: col.options ? col.options.iconClass : ''
 			}, index);

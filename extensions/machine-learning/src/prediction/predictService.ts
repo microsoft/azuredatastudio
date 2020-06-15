@@ -43,9 +43,9 @@ export class PredictService {
 			let connection = await this.getCurrentConnection();
 			if (connection) {
 				const serverInfo = await this._apiWrapper.getServerInfo(connection.connectionId);
-				// Right now only Azure SQL Edge support Onnx
+				// Right now only Azure SQL Edge and MI support Onnx
 				//
-				return serverInfo && serverInfo.engineEditionId === 9;
+				return serverInfo && (serverInfo.engineEditionId === 9 || serverInfo.engineEditionId === 8);
 			}
 			return false;
 		} catch (error) {
@@ -83,7 +83,7 @@ export class PredictService {
 			language: 'sql',
 			content: query
 		});
-		await this._apiWrapper.showTextDocument(document.uri);
+		await this._apiWrapper.executeCommand('vscode.open', document.uri);
 		await this._apiWrapper.connect(document.uri.toString(), connection.connectionId);
 		this._apiWrapper.runQuery(document.uri.toString(), undefined, false);
 		return query;
