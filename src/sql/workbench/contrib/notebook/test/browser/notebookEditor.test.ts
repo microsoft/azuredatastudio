@@ -13,7 +13,6 @@ import { TestNotebookEditor } from 'sql/workbench/contrib/notebook/test/testComm
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookService, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookService } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
-import * as TypeMoq from 'typemoq';
 import * as dom from 'vs/base/browser/dom';
 import { Emitter } from 'vs/base/common/event';
 import { DisposableStore } from 'vs/base/common/lifecycle';
@@ -129,11 +128,10 @@ suite('Test class NotebookEditor', () => {
 	});
 
 	test('NotebookEditor: Tests that dispose() disposes all objects in its disposable store', async () => {
-		const mockNotebookEditor = TypeMoq.Mock.ofInstance(notebookEditor);
-		mockNotebookEditor.setup(x => x.dispose()).callback(() => notebookEditor.dispose());
-		mockNotebookEditor.object.dispose();
-		mockNotebookEditor.verify(x => x.dispose(), TypeMoq.Times.exactly(1));
-		const isDisposed = (<DisposableStore>mockNotebookEditor.object['_toDispose'])['_isDisposed'];
+		let isDisposed = (<DisposableStore>notebookEditor['_toDispose'])['_isDisposed'];
+		assert.ok(!isDisposed, 'initially notebookEditor\'s disposable store must not be disposed');
+		notebookEditor.dispose();
+		isDisposed = (<DisposableStore>notebookEditor['_toDispose'])['_isDisposed'];
 		assert.ok(isDisposed, 'notebookEditor\'s disposable store must be disposed');
 	});
 
