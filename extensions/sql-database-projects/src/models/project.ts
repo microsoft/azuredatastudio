@@ -292,19 +292,20 @@ export class Project {
 
 	private addDatabaseReferenceToProjFile(entry: DatabaseReferenceProjectEntry): void {
 		let referenceNode = this.projFileXmlDoc.createElement(constants.ArtifactReference);
+		const isSystemDatabaseProjectEntry = (<SystemDatabaseReferenceProjectEntry>entry).ssdtUri;
 
-		// if it's a system database reference, we'll add an additional node with the SSDT location of the dacpac
-		if ((<SystemDatabaseReferenceProjectEntry>entry).ssdtUri) {
+		// if it's a system database reference, we'll add an additional node with the SSDT location of the dacpac later
+		if (isSystemDatabaseProjectEntry) {
 			referenceNode.setAttribute(constants.Condition, constants.NetCoreCondition);
 		}
 
-		referenceNode.setAttribute(constants.Include, (<SystemDatabaseReferenceProjectEntry>entry).ssdtUri ? entry.fsUri.fsPath.substring(1) : entry.fsUri.fsPath); // need to remove the leading slash for system database path for build to work on Windows
+		referenceNode.setAttribute(constants.Include, isSystemDatabaseProjectEntry ? entry.fsUri.fsPath.substring(1) : entry.fsUri.fsPath); // need to remove the leading slash for system database path for build to work on Windows
 		this.addDatabaseReferenceChildren(referenceNode, entry.name);
 		this.findOrCreateItemGroup(constants.ArtifactReference).appendChild(referenceNode);
 		this.databaseReferences.push(path.parse(entry.fsUri.fsPath.toString()).name);
 
-		// add a reference to the dacpac in SSDT if it's a system db
-		if ((<SystemDatabaseReferenceProjectEntry>entry).ssdtUri) {
+		// add a reference to the system dacpac in SSDT if it's a system db
+		if (isSystemDatabaseProjectEntry) {
 			let ssdtReferenceNode = this.projFileXmlDoc.createElement(constants.ArtifactReference);
 			ssdtReferenceNode.setAttribute(constants.Condition, constants.NotNetCoreCondition);
 			ssdtReferenceNode.setAttribute(constants.Include, (<SystemDatabaseReferenceProjectEntry>entry).ssdtUri.fsPath.substring(1)); // need to remove the leading slash for system database path for build to work on Windows
