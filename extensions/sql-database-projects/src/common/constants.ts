@@ -132,6 +132,7 @@ export const NetCoreTargets = '$(NETCoreTargetsPath)\\Microsoft.Data.Tools.Schem
 export const SqlDbTargets = '$(SQLDBExtensionsRefPath)\\Microsoft.Data.Tools.Schema.SqlTasks.targets';
 export const MsBuildtargets = '$(MSBuildExtensionsPath)\\Microsoft\\VisualStudio\\v$(VisualStudioVersion)\\SSDT\\Microsoft.Data.Tools.Schema.SqlTasks.targets';
 export const NetCoreCondition = '\'$(NetCoreBuild)\' == \'true\'';
+export const NotNetCoreCondition = '\'$(NetCoreBuild)\' != \'true\'';
 export const SqlDbPresentCondition = '\'$(SQLDBExtensionsRefPath)\' != \'\'';
 export const SqlDbNotPresentCondition = '\'$(SQLDBExtensionsRefPath)\' == \'\'';
 export const RoundTripSqlDbPresentCondition = '\'$(NetCoreBuild)\' != \'true\' AND \'$(SQLDBExtensionsRefPath)\' != \'\'';

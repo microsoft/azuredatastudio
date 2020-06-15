@@ -316,9 +316,9 @@ export class ProjectsController {
 
 				if (databaseLocation === DatabaseReferenceLocation.differentDatabaseSameServer) {
 					const databaseName = await this.getDatabaseName(dacpacFileLocation);
-					await project.addDatabaseReference(dacpacFileLocation, <DatabaseReferenceLocation>databaseLocation, false, databaseName);
+					await project.addDatabaseReference(dacpacFileLocation, databaseLocation, databaseName);
 				} else {
-					await project.addDatabaseReference(dacpacFileLocation, <DatabaseReferenceLocation>databaseLocation, false);
+					await project.addDatabaseReference(dacpacFileLocation, databaseLocation);
 				}
 			}
 
