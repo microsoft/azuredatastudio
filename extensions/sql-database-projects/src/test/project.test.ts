@@ -31,12 +31,19 @@ describe('Project: sqlproj content operations', function (): void {
 		const project: Project = new Project(projFilePath);
 		await project.readProjFile();
 
+		// Files and folders
 		should(project.files.filter(f => f.type === EntryType.File).length).equal(4);
 		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(5);
 
 		should(project.files.find(f => f.type === EntryType.Folder && f.relativePath === 'Views\\User')).not.equal(undefined); // mixed ItemGroup folder
 		should(project.files.find(f => f.type === EntryType.File && f.relativePath === 'Views\\User\\Profile.sql')).not.equal(undefined); // mixed ItemGroup file
 
+		// SqlCmdVariables
+		should(Object.keys(project.sqlCmdVariables).length).equal(2);
+		should(project.sqlCmdVariables['ProdDatabaseName']).equal('MyProdDatabase');
+		should(project.sqlCmdVariables['BackupDatabaseName']).equal('MyBackupDatabase');
+
+		// Database references
 		// should only have one database reference even though there are two master.dacpac references (1 for ADS and 1 for SSDT)
 		should(project.databaseReferences.length).equal(1);
 		should(project.databaseReferences[0]).containEql(constants.master);

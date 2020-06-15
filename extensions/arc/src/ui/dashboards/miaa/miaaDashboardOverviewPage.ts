@@ -6,16 +6,48 @@
 import * as azdata from 'azdata';
 import * as loc from '../../../localizedConstants';
 import { DashboardPage } from '../../components/dashboardPage';
-import { IconPathHelper } from '../../../constants';
-import { ControllerModel } from '../../../models/controllerModel';
-import { resourceTypeToDisplayName } from '../../../common/utils';
+import { IconPathHelper, cssStyles } from '../../../constants';
+import { ControllerModel, Registration } from '../../../models/controllerModel';
+import { ResourceType, getAzurecoreApi } from '../../../common/utils';
+import { MiaaModel, DatabaseModel } from '../../../models/miaaModel';
+import { HybridSqlNsNameGetResponse } from '../../../controller/generated/v1/model/hybridSqlNsNameGetResponse';
+import { EndpointModel } from '../../../controller/generated/v1/api';
 
 export class MiaaDashboardOverviewPage extends DashboardPage {
 
-	private _arcResourcesTable!: azdata.DeclarativeTableComponent;
+	private _propertiesLoading!: azdata.LoadingComponent;
+	private _kibanaLoading!: azdata.LoadingComponent;
+	private _grafanaLoading!: azdata.LoadingComponent;
+	private _databasesTableLoading!: azdata.LoadingComponent;
 
-	constructor(modelView: azdata.ModelView, private _controllerModel: ControllerModel) {
+	private _propertiesContainer!: azdata.PropertiesContainerComponent;
+	private _kibanaLink!: azdata.HyperlinkComponent;
+	private _grafanaLink!: azdata.HyperlinkComponent;
+	private _databasesTable!: azdata.DeclarativeTableComponent;
+
+	private _instanceProperties = {
+		resourceGroup: '-',
+		status: '-',
+		dataController: '-',
+		region: '-',
+		subscriptionId: '-',
+		miaaAdmin: '-',
+		host: '-',
+		computeAndStorage: '-'
+	};
+
+	constructor(modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _miaaModel: MiaaModel) {
 		super(modelView);
+		this._instanceProperties.miaaAdmin = this._miaaModel.connectionProfile.userName;
+		this._controllerModel.onRegistrationsUpdated((_: Registration[]) => {
+			this.eventuallyRunOnInitialized(() => {
+				this.handleRegistrationsUpdated().catch(e => console.log(e));
+			});
+		});
+		this._controllerModel.onEndpointsUpdated(endpoints => this.eventuallyRunOnInitialized(() => this.handleEndpointsUpdated(endpoints)));
+		this._miaaModel.onStatusUpdated(status => this.eventuallyRunOnInitialized(() => this.handleMiaaStatusUpdated(status)));
+		this._miaaModel.onDatabasesUpdated(databases => this.eventuallyRunOnInitialized(() => this.handleDatabasesUpdated(databases)));
+
 		this.refresh().catch(e => {
 			console.log(e);
 		});
@@ -34,8 +66,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 	}
 
 	protected async refresh(): Promise<void> {
-		await this._controllerModel.refresh();
-		this.eventuallyRunOnInitialized(() => this._arcResourcesTable.data = this._controllerModel.registrations().map(r => [r.instanceName, resourceTypeToDisplayName(r.instanceType), r.vCores]));
+		await Promise.all([this._controllerModel.refresh(), this._miaaModel.refresh()]);
 	}
 
 	public get container(): azdata.Component {
@@ -45,76 +76,90 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 			.withProperties({ CSSStyles: { 'margin': '18px' } })
 			.component();
 
-		const propertiesContainer = this.modelView.modelBuilder.propertiesContainer().withProperties<azdata.PropertiesContainerComponentProperties>({
-			propertyItems: [
-				{
-					displayName: loc.resourceGroup,
-					value: 'contosoRG123'
-				},
-				{
-					displayName: loc.region,
-					value: 'West US'
-				},
-				{
-					displayName: loc.subscription,
-					value: 'contososub5678'
-				},
-				{
-					displayName: loc.subscriptionId,
-					value: '88abe223-c630-4f2c-8782-00bb5be874f6'
-				},
-				{
-					displayName: loc.state,
-					value: 'Connected'
-				},
-				{
-					displayName: loc.host,
-					value: 'plainscluster.sqlarcdm.database.windows.net'
-				}
-			]
-		}).component();
+		// Properties
+		this._propertiesContainer = this.modelView.modelBuilder.propertiesContainer().component();
+		this._propertiesLoading = this.modelView.modelBuilder.loadingComponent().withItem(this._propertiesContainer).component();
+		rootContainer.addItem(this._propertiesLoading, { CSSStyles: cssStyles.text });
 
-		rootContainer.addItem(propertiesContainer);
+		// Service endpoints
+		const titleCSS = { ...cssStyles.title, 'margin-block-start': '2em', 'margin-block-end': '0' };
+		rootContainer.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.serviceEndpoints, CSSStyles: titleCSS }).component());
 
-		const arcResourcesTitle = this.modelView.modelBuilder.text()
-			.withProperties<azdata.TextComponentProperties>({ value: loc.arcResources })
-			.component();
+		this._kibanaLink = this.modelView.modelBuilder.hyperlink().component();
+		this._grafanaLink = this.modelView.modelBuilder.hyperlink().component();
+		this._kibanaLoading = this.modelView.modelBuilder.loadingComponent().withItem(this._kibanaLink).component();
+		this._grafanaLoading = this.modelView.modelBuilder.loadingComponent().withItem(this._grafanaLink).component();
 
-		rootContainer.addItem(arcResourcesTitle, {
-			CSSStyles: {
-				'font-size': '14px'
-			}
-		});
-
-		this._arcResourcesTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
-			data: [],
+		const endpointsTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
+			width: '100%',
 			columns: [
 				{
 					displayName: loc.name,
 					valueType: azdata.DeclarativeDataType.string,
-					width: '33%',
-					isReadOnly: true
-				}, {
-					displayName: loc.type,
+					isReadOnly: true,
+					width: '20%',
+					headerCssStyles: cssStyles.tableHeader,
+					rowCssStyles: cssStyles.tableRow
+				},
+				{
+					displayName: loc.endpoint,
+					valueType: azdata.DeclarativeDataType.component,
+					isReadOnly: true,
+					width: '50%',
+					headerCssStyles: cssStyles.tableHeader,
+					rowCssStyles: {
+						...cssStyles.tableRow,
+						'overflow': 'hidden',
+						'text-overflow': 'ellipsis',
+						'white-space': 'nowrap',
+						'max-width': '0'
+					}
+				},
+				{
+					displayName: loc.description,
 					valueType: azdata.DeclarativeDataType.string,
-					width: '33%',
-					isReadOnly: true
-				}, {
-					displayName: loc.computeAndStorage,
-					valueType: azdata.DeclarativeDataType.string,
-					width: '34%',
-					isReadOnly: true
+					isReadOnly: true,
+					width: '30%',
+					headerCssStyles: cssStyles.tableHeader,
+					rowCssStyles: cssStyles.tableRow
 				}
 			],
-			width: '100%',
-			ariaLabel: loc.arcResources
+			data: [
+				[loc.kibanaDashboard, this._kibanaLoading, loc.kibanaDashboardDescription],
+				[loc.grafanaDashboard, this._grafanaLoading, loc.grafanaDashboardDescription]]
 		}).component();
 
-		const arcResourcesTableContainer = this.modelView.modelBuilder.divContainer()
-			.withItems([this._arcResourcesTable])
-			.component();
+		rootContainer.addItem(endpointsTable);
 
-		rootContainer.addItem(arcResourcesTableContainer);
+		// Databases
+		rootContainer.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.databases, CSSStyles: titleCSS }).component());
+		this._databasesTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
+			width: '100%',
+			columns: [
+				{
+					displayName: loc.name,
+					valueType: azdata.DeclarativeDataType.string,
+					isReadOnly: true,
+					width: '80%',
+					headerCssStyles: cssStyles.tableHeader,
+					rowCssStyles: cssStyles.tableRow
+				},
+				{
+					displayName: loc.status,
+					valueType: azdata.DeclarativeDataType.string,
+					isReadOnly: true,
+					width: '20%',
+					headerCssStyles: cssStyles.tableHeader,
+					rowCssStyles: cssStyles.tableRow
+				}
+			],
+			data: []
+		}).component();
+
+		this._databasesTableLoading = this.modelView.modelBuilder.loadingComponent().withItem(this._databasesTable).component();
+		this._databasesTableLoading.loading = false;
+		rootContainer.addItem(this._databasesTableLoading, { CSSStyles: { 'margin-bottom': '20px' } });
+
 		this.initialized = true;
 		return rootContainer;
 	}
@@ -149,6 +194,82 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 				{ component: openInAzurePortalButton }
 			]
 		).component();
+	}
+
+	private async handleRegistrationsUpdated(): Promise<void> {
+		const reg = this._controllerModel.getRegistration(ResourceType.sqlManagedInstances, this._miaaModel.namespace, this._miaaModel.name);
+		if (reg) {
+			this._instanceProperties.resourceGroup = reg.resourceGroupName || '-';
+			this._instanceProperties.dataController = this._controllerModel.controllerRegistration?.instanceName || '-';
+			this._instanceProperties.region = (await getAzurecoreApi()).getRegionDisplayName(reg.location);
+			this._instanceProperties.subscriptionId = reg.subscriptionId || '-';
+			this._instanceProperties.computeAndStorage = reg.vCores || '-';
+			this._instanceProperties.host = reg.externalEndpoint || '-';
+			this.refreshDisplayedProperties();
+		}
+	}
+
+	private async handleMiaaStatusUpdated(status: HybridSqlNsNameGetResponse): Promise<void> {
+		this._instanceProperties.status = status.status || '-';
+		this.refreshDisplayedProperties();
+	}
+
+	private handleEndpointsUpdated(endpoints: EndpointModel[]): void {
+		const kibanaQuery = `kubernetes_namespace:"${this._miaaModel.namespace}" and instance_name :"${this._miaaModel.name}"`;
+		const kibanaUrl = `${endpoints.find(e => e.name === 'logsui')?.endpoint}/app/kibana#/discover?_a=(query:(language:kuery,query:'${kibanaQuery}'))`;
+		this._kibanaLink.label = kibanaUrl;
+		this._kibanaLink.url = kibanaUrl;
+
+		const grafanaUrl = `${endpoints.find(e => e.name === 'metricsui')?.endpoint}/d/wZx3OUdmz/azure-sql-db-managed-instance-metrics?var-hostname=${this._miaaModel.name}-0`;
+		this._grafanaLink.label = grafanaUrl;
+		this._grafanaLink.url = grafanaUrl;
+
+		this._kibanaLoading!.loading = false;
+		this._grafanaLoading!.loading = false;
+	}
+
+	private handleDatabasesUpdated(databases: DatabaseModel[]): void {
+		this._databasesTable.data = databases.map(d => [d.name, d.status]);
+		this._databasesTableLoading.loading = false;
+	}
+
+	private refreshDisplayedProperties(): void {
+		this._propertiesContainer.propertyItems = [
+			{
+				displayName: loc.resourceGroup,
+				value: this._instanceProperties.resourceGroup
+			},
+			{
+				displayName: loc.status,
+				value: this._instanceProperties.status
+			},
+			{
+				displayName: loc.dataController,
+				value: this._instanceProperties.dataController
+			},
+			{
+				displayName: loc.region,
+				value: this._instanceProperties.region
+			},
+			{
+				displayName: loc.subscriptionId,
+				value: this._instanceProperties.subscriptionId
+			},
+			{
+				displayName: loc.miaaAdmin,
+				value: this._instanceProperties.miaaAdmin
+			},
+			{
+				displayName: loc.host,
+				value: this._instanceProperties.host
+			},
+			{
+				displayName: loc.computeAndStorage,
+				value: this._instanceProperties.computeAndStorage
+			}
+		];
+
+		this._propertiesLoading.loading = false;
 	}
 
 }

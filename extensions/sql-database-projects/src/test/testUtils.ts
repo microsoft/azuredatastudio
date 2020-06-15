@@ -32,7 +32,10 @@ export async function createTestSqlProjFile(contents: string, folderPath?: strin
 }
 
 export async function createTestProject(contents: string, folderPath?: string): Promise<Project> {
-	return new Project(await createTestSqlProjFile(contents, folderPath));
+	const proj = new Project(await createTestSqlProjFile(contents, folderPath));
+	await proj.readProjFile();
+
+	return proj;
 }
 
 export async function createTestDataSources(contents: string, folderPath?: string): Promise<string> {

@@ -61,19 +61,19 @@ export class ControllerModel {
 		]);
 	}
 
-	public endpoints(): EndpointModel[] {
+	public get endpoints(): EndpointModel[] {
 		return this._endpoints;
 	}
 
-	public endpoint(name: string): EndpointModel | undefined {
+	public getEndpoint(name: string): EndpointModel | undefined {
 		return this._endpoints.find(e => e.name === name);
 	}
 
-	public namespace(): string {
+	public get namespace(): string {
 		return this._namespace;
 	}
 
-	public registrations(): Registration[] {
+	public get registrations(): Registration[] {
 		return this._registrations;
 	}
 
