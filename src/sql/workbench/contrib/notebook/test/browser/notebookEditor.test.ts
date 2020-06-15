@@ -292,4 +292,3 @@ function createEditor(notebookEditor: NotebookEditor) {
 	let parentHtmlElement = document.createElement('div');
 	notebookEditor.create(parentHtmlElement); // adds notebookEditor to new htmlElement as parent
 }
-
