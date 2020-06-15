@@ -80,7 +80,22 @@ jobs:
   - template: win32/sql-product-test-win32.yml
 
 - job: Release
-  condition: and(succeeded(), or(eq(variables['VSCODE_RELEASE'], 'true'), and(eq(variables['VSCODE_QUALITY'], 'insider'), eq(variables['Build.Reason'], 'Schedule'))))
+  condition: |
+    and(
+      succeeded('macOS'),
+      succeeded('Linux'),
+      succeeded('Docker'),
+      succeeded('Windows'),
+      succeeded('Windows_Test'),
+      in(dependencies.LinuxWeb.result, 'Succeeded', 'Skipped')
+      or(
+        eq(variables['VSCODE_RELEASE'], 'true'),
+        and(
+          eq(variables['VSCODE_QUALITY'], 'insider'),
+          eq(variables['Build.Reason'], 'Schedule')
+        )
+      )
+    )
   pool:
     vmImage: 'Ubuntu-16.04'
   dependsOn:
