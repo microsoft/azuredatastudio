@@ -3,6 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as vscode from 'vscode';
+import * as azurecore from '../../../azurecore/src/azurecore';
 import * as loc from '../localizedConstants';
 
 export enum ResourceType {
@@ -34,4 +36,16 @@ export function parseEndpoint(endpoint?: string): { ip: string, port: string } {
 		ip: endpoint.substr(0, separatorIndex),
 		port: endpoint.substr(separatorIndex + 1)
 	};
+}
+
+let azurecoreApi: azurecore.IExtension;
+
+export async function getAzurecoreApi(): Promise<azurecore.IExtension> {
+	if (!azurecoreApi) {
+		azurecoreApi = await vscode.extensions.getExtension(azurecore.extension.name)?.activate();
+		if (!azurecoreApi) {
+			throw new Error('Unable to retrieve azurecore API');
+		}
+	}
+	return azurecoreApi;
 }
