@@ -17,6 +17,7 @@ import http = require('http');
 import { CreateSqlInstanceMessage } from '../model/createSqlInstanceMessage';
 import { Authentication, HttpBasicAuth, HttpBearerAuth, Interceptor, ObjectSerializer, VoidAuth } from '../model/models';
 import { HttpError } from './apis';
+import { HybridSqlNsNameGetResponse } from '../model/hybridSqlNsNameGetResponse';
 
 
 
@@ -307,7 +308,7 @@ export class SqlInstanceRouterApi {
      * @param ns
      * @param name
      */
-    public async apiV1HybridSqlNsNameGet (ns: string, name: string, options: {headers: {[name: string]: string}} = {headers: {}}) : Promise<{ response: http.IncomingMessage; body?: any;  }> {
+    public async apiV1HybridSqlNsNameGet (ns: string, name: string, options: {headers: {[name: string]: string}} = {headers: {}}) : Promise<{ response: http.IncomingMessage; body: HybridSqlNsNameGetResponse;  }> {
         const localVarPath = this.basePath + '/api/v1/hybrid/sql/{ns}/{name}'
             .replace('{' + 'ns' + '}', encodeURIComponent(String(ns)))
             .replace('{' + 'name' + '}', encodeURIComponent(String(name)));
@@ -360,11 +361,12 @@ export class SqlInstanceRouterApi {
                     localVarRequestOptions.form = localVarFormParams;
                 }
             }
-            return new Promise<{ response: http.IncomingMessage; body?: any;  }>((resolve, reject) => {
+            return new Promise<{ response: http.IncomingMessage; body: HybridSqlNsNameGetResponse;  }>((resolve, reject) => {
                 localVarRequest(localVarRequestOptions, (error, response, body) => {
                     if (error) {
                         reject(error);
                     } else {
+                        body = ObjectSerializer.deserialize(body, "HybridSqlNsNameGetResponse");
                         if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
                             resolve({ response: response, body: body });
                         } else {

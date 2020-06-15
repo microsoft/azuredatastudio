@@ -9,7 +9,7 @@ import * as loc from '../../../localizedConstants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { IconPathHelper, cssStyles } from '../../../constants';
 import { ControllerModel } from '../../../models/controllerModel';
-import { resourceTypeToDisplayName, ResourceType } from '../../../common/utils';
+import { resourceTypeToDisplayName, ResourceType, getAzurecoreApi } from '../../../common/utils';
 import { RegistrationResponse } from '../../../controller/generated/v1/model/registrationResponse';
 
 export class ControllerDashboardOverviewPage extends DashboardPage {
@@ -21,7 +21,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 		super(modelView);
 		this._controllerModel.onRegistrationsUpdated((_: RegistrationResponse[]) => {
 			this.eventuallyRunOnInitialized(() => {
-				this.handleRegistrationsUpdated();
+				this.handleRegistrationsUpdated().catch(e => console.log(e));
 			});
 		});
 		this.refresh().catch(e => {
@@ -141,7 +141,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 		).component();
 	}
 
-	private handleRegistrationsUpdated(): void {
+	private async handleRegistrationsUpdated(): Promise<void> {
 		const reg = this._controllerModel.controllerRegistration;
 		if (reg) {
 			this._propertiesContainer.propertyItems = [
@@ -155,7 +155,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 				},
 				{
 					displayName: loc.region,
-					value: reg.location || '-'
+					value: (await getAzurecoreApi()).getRegionDisplayName(reg.location) || '-'
 				},
 				{
 					displayName: loc.subscriptionId,
@@ -180,7 +180,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 			];
 		}
 
-		this._arcResourcesTable.data = this._controllerModel.registrations()
+		this._arcResourcesTable.data = this._controllerModel.registrations
 			.filter(r => r.instanceType !== ResourceType.dataControllers)
 			.map(r => [r.instanceName, resourceTypeToDisplayName(r.instanceType), r.vCores]);
 	}
