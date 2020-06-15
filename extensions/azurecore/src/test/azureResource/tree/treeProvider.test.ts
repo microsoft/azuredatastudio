@@ -15,7 +15,6 @@ import { IAzureResourceCacheService, IAzureResourceAccountService } from '../../
 import { AzureResourceTreeProvider } from '../../../azureResource/tree/treeProvider';
 import { AzureResourceAccountTreeNode } from '../../../azureResource/tree/accountTreeNode';
 import { AzureResourceAccountNotSignedInTreeNode } from '../../../azureResource/tree/accountNotSignedInTreeNode';
-import { AzureResourceMessageTreeNode } from '../../../azureResource/messageTreeNode';
 import { AzureResourceServiceNames } from '../../../azureResource/constants';
 import { generateGuid } from '../../../azureResource/utils';
 
