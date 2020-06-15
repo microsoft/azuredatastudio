@@ -126,7 +126,7 @@ suite('Test class NotebookEditor', () => {
 		let parentHtmlElement = document.createElement('div');
 		notebookEditor.create(parentHtmlElement);
 		assert.notStrictEqual(notebookEditor['_overlay'], undefined), `The overlay must be defined for notebookEditor once create() has been called on it`;
-		assert.strictEqual(notebookEditor['parent'], parentHtmlElement, 'parent of notebookEditor was not the one that was expected');
+		assert.strictEqual(notebookEditor.getContainer(), parentHtmlElement, 'parent of notebookEditor was not the one that was expected');
 	});
 
 	[undefined, new NotebookModelStub()].forEach(async (notebookModel) => {
