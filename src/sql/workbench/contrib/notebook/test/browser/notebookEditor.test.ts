@@ -129,7 +129,7 @@ suite('Test class NotebookEditor', () => {
 		assert.strictEqual(notebookEditor.getContainer(), parentHtmlElement, 'parent of notebookEditor was not the one that was expected');
 	});
 
-	[undefined, new NotebookModelStub()].forEach(async (notebookModel) => {
+	[new NotebookModelStub(), undefined].forEach(async (notebookModel) => {
 		test(`NotebookEditor: Tests that notebookModel='${notebookModel}' set indirectly by setInput -> setNotebookModel is returned by getNotebookModel()`, async () => {
 			createEditor(notebookEditor);
 			const untitledUri = URI.from({ scheme: Schemas.untitled, path: `NotebookEditor.Test-TestPath-${notebookModel}` });
@@ -146,7 +146,6 @@ suite('Test class NotebookEditor', () => {
 			testNotebookEditor.model = notebookModel;
 			notebookEditor.clearInput();
 			await notebookEditor.setInput(untitledNotebookInput, EditorOptions.create({ pinned: true }));
-			await notebookEditor.setNotebookModel();
 			const result = await notebookEditor.getNotebookModel();
 			assert.strictEqual(result, notebookModel, `getNotebookModel() should return the model set in the INotebookEditor object`);
 			notebookService.removeNotebookEditor(testNotebookEditor);
@@ -184,7 +183,7 @@ suite('Test class NotebookEditor', () => {
 		assert.strictEqual(currentPosition, selectedRange, 'notebookEditor.getPosition() should return the range that was selected');
 	});
 
-	// NotebookEditor-getCellEditor tests.
+	// NotebookEditor: getCellEditor() tests.
 	['', undefined, null, 'unknown string', /*unknown guid*/generateUuid()].forEach(input => {
 		test(`NotebookEditor: Negative Test -> getCellEditor() returns undefined for invalid or unknown guid:'${input}'`, async () => {
 			await setupNotebookEditor(notebookEditor, untitledNotebookInput);
