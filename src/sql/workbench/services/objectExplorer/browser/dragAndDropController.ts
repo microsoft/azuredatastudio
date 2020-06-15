@@ -74,7 +74,9 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 		const data = dragAndDropData.getData();
 		const element = data.elements[0];
 		if (element.nodeTypeId === 'Column' || element.nodeTypeId === 'Table') {
-			originalEvent.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([`${element.nodeTypeId}:${element.id}?${element.metadata.schema ? element.metadata.schema + '.' + element.metadata.name : element.metadata.name}`]));
+			const schema = element.metadata.schema;
+			const name = element.metadata.name;
+			originalEvent.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([`${element.nodeTypeId}:${element.id}?${schema ? schema + '.' + name : name}`]));
 		}
 		return;
 	}
