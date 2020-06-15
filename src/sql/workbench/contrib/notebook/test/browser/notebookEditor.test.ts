@@ -121,8 +121,18 @@ suite('Test class NotebookEditor', () => {
 		);
 	});
 
+	test('NotebookEditor: Verifies that create() calls createEditor() and sets the provided parent object as the \'_overlay\' field', () => {
+		assert.strictEqual(notebookEditor['_overlay'], undefined), `The overlay must be undefined for notebookEditor when create() has not been called on it`;
+		console.log(notebookEditor["_overlay"]);
+		let parentHtmlElement = document.createElement('div');
+		notebookEditor.create(parentHtmlElement);
+		assert.notStrictEqual(notebookEditor['_overlay'], undefined), `The overlay must be defined for notebookEditor once create() has been called on it`;
+		assert.strictEqual(notebookEditor['parent'], parentHtmlElement, 'parent of notebookEditor was not the one that was expected');
+	});
+
 	[undefined, new NotebookModelStub()].forEach(async (notebookModel) => {
 		test(`NotebookEditor: Tests that notebookModel='${notebookModel}' set indirectly by setInput -> setNotebookModel is returned by getNotebookModel()`, async () => {
+			createEditor(notebookEditor);
 			const untitledUri = URI.from({ scheme: Schemas.untitled, path: `NotebookEditor.Test-TestPath-${notebookModel}` });
 			const untitledTextEditorService = instantiationService.get(IUntitledTextEditorService);
 			const untitledTextInput = instantiationService.createInstance(UntitledTextEditorInput, untitledTextEditorService.create({ associatedResource: untitledUri }));
@@ -148,11 +158,10 @@ suite('Test class NotebookEditor', () => {
 
 	test('NotebookEditor: Tests that dispose() disposes all objects in its disposable store', async () => {
 		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
-		const mockNotebookEditor = TypeMoq.Mock.ofInstance(notebookEditor);
-		mockNotebookEditor.setup(x => x.dispose()).callback(() => notebookEditor.dispose());
-		mockNotebookEditor.object.dispose();
-		mockNotebookEditor.verify(x => x.dispose(), TypeMoq.Times.exactly(1));
-		const isDisposed = (<DisposableStore>mockNotebookEditor.object['_toDispose'])['_isDisposed'];
+		let isDisposed = (<DisposableStore>notebookEditor['_toDispose'])['_isDisposed'];
+		assert.ok(!isDisposed, 'initially notebookEditor\'s disposable store must not be disposed');
+		notebookEditor.dispose();
+		isDisposed = (<DisposableStore>notebookEditor['_toDispose'])['_isDisposed'];
 		assert.ok(isDisposed, 'notebookEditor\'s disposable store must be disposed');
 	});
 
@@ -193,13 +202,6 @@ suite('Test class NotebookEditor', () => {
 
 	});
 
-	test('NotebookEditor-createEditor', () => {
-		const parent = document.createElement(undefined);
-		console.log(notebookEditor["_overlay"]);
-		notebookEditor.createEditor(undefined && parent);
-		console.log(notebookEditor["_overlay"]);
-		console.log(parent, JSON.stringify(parent, undefined, '\t'));
-	});
 
 	// test('NotebookEditor-focus', () => {
 	// 	notebookEditor.focus();
@@ -290,7 +292,5 @@ async function setInputDocument(notebookEditor: NotebookEditor, untitledNotebook
 function createEditor(notebookEditor: NotebookEditor) {
 	let parentHtmlElement = document.createElement('div');
 	notebookEditor.create(parentHtmlElement); // adds notebookEditor to new htmlElement as parent
-	assert.notStrictEqual(notebookEditor['_overlay'], undefined), `The overlay must be defined for notebookEditor once create() has been called on it`;
-	assert.strictEqual(notebookEditor['parent'], parentHtmlElement, 'parent of notebookEditor was not the one that was expected');
 }
 
