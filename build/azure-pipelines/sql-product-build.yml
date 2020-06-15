@@ -87,7 +87,7 @@ jobs:
       succeeded('Docker'),
       succeeded('Windows'),
       succeeded('Windows_Test'),
-      in(dependencies.LinuxWeb.result, 'Succeeded', 'Skipped')
+      in(dependencies.LinuxWeb.result, 'Succeeded', 'Skipped'),
       or(
         eq(variables['VSCODE_RELEASE'], 'true'),
         and(
