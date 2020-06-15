@@ -452,9 +452,12 @@ export class FindWidget extends Widget implements IOverlayWidget, IVerticalSashL
 		let findPart = document.createElement('div');
 		findPart.className = 'find-part';
 		findPart.appendChild(this._findInput.domNode);
-		findPart.appendChild(this._matchesCount);
-		findPart.appendChild(this._prevBtn.domNode);
-		findPart.appendChild(this._nextBtn.domNode);
+		let actionsContainer = document.createElement('div');
+		findPart.appendChild(actionsContainer);
+		actionsContainer.className = 'find-actions';
+		actionsContainer.appendChild(this._matchesCount);
+		actionsContainer.appendChild(this._prevBtn.domNode);
+		actionsContainer.appendChild(this._nextBtn.domNode);
 
 		// Close button
 		this._closeBtn = this._register(new SimpleButton({
@@ -466,7 +469,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IVerticalSashL
 			onKeyDown: () => { }
 		}));
 
-		findPart.appendChild(this._closeBtn.domNode);
+		actionsContainer.appendChild(this._closeBtn.domNode);
 
 		return findPart;
 	}

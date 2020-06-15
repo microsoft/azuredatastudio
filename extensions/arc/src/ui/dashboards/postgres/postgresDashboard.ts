@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as loc from '../../../localizedConstants';
 import { ControllerModel } from '../../../models/controllerModel';
@@ -14,9 +15,11 @@ import { PostgresBackupPage } from './postgresBackupPage';
 import { PostgresPropertiesPage } from './postgresPropertiesPage';
 import { PostgresNetworkingPage } from './postgresNetworkingPage';
 import { Dashboard } from '../../components/dashboard';
+import { PostgresDiagnoseAndSolveProblemsPage } from './postgresDiagnoseAndSolveProblemsPage';
+import { PostgresSupportRequestPage } from './postgresSupportRequestPage';
 
 export class PostgresDashboard extends Dashboard {
-	constructor(title: string, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
+	constructor(title: string, private _context: vscode.ExtensionContext, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
 		super(title);
 	}
 
@@ -27,6 +30,8 @@ export class PostgresDashboard extends Dashboard {
 		const backupPage = new PostgresBackupPage(modelView);
 		const propertiesPage = new PostgresPropertiesPage(modelView, this._controllerModel, this._postgresModel);
 		const networkingPage = new PostgresNetworkingPage(modelView);
+		const diagnoseAndSolveProblemsPage = new PostgresDiagnoseAndSolveProblemsPage(modelView, this._context, this._postgresModel);
+		const supportRequestPage = new PostgresSupportRequestPage(modelView, this._controllerModel, this._postgresModel);
 
 		return [
 			overviewPage.tab,
@@ -42,6 +47,13 @@ export class PostgresDashboard extends Dashboard {
 				title: loc.security,
 				tabs: [
 					networkingPage.tab
+				]
+			},
+			{
+				title: loc.supportAndTroubleshooting,
+				tabs: [
+					diagnoseAndSolveProblemsPage.tab,
+					supportRequestPage.tab
 				]
 			}
 		];

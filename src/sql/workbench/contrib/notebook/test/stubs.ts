@@ -39,6 +39,9 @@ export class NotebookModelStub implements INotebookModel {
 	get clientSession(): IClientSession {
 		throw new Error('method not implemented.');
 	}
+	get sessionLoadFinished(): Promise<void> {
+		throw new Error('method not implemented.');
+	}
 	get notebookManagers(): INotebookManager[] {
 		throw new Error('method not implemented.');
 	}

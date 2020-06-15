@@ -56,6 +56,9 @@ export class CellToolbarComponent {
 		this._actionBar = new Taskbar(taskbar);
 		this._actionBar.context = context;
 
+		let addCellsButton = new AddCellAction('notebook.AddCodeCell', localize('codeCellsPreview', "Add cell"), 'notebook-button masked-pseudo code');
+		addCellsButton.cellType = CellTypes.Code;
+
 		let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('codePreview', "Code cell"), 'notebook-button masked-pseudo code');
 		addCodeCellButton.cellType = CellTypes.Code;
 
@@ -74,14 +77,14 @@ export class CellToolbarComponent {
 		let buttonDropdownContainer = DOM.$('li.action-item');
 		buttonDropdownContainer.setAttribute('role', 'presentation');
 		let dropdownMenuActionViewItem = new DropdownMenuActionViewItem(
-			addCodeCellButton,
+			addCellsButton,
 			[addCodeCellButton, addTextCellButton],
 			this.contextMenuService,
 			undefined,
 			this._actionBar.actionRunner,
 			undefined,
 			'codicon masked-icon new',
-			localize('addCell', "Cell"),
+			'',
 			undefined
 		);
 		dropdownMenuActionViewItem.render(buttonDropdownContainer);
