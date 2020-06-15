@@ -10,7 +10,8 @@
   },
   "activationEvents": [
 		"onFileSystem:memfs",
-		"onDebug"
+    "onDebug",
+    "onCommand:integration-tests.onboarding.showDevelopers"
   ],
   "main": "./out/main",
   "extensionDependencies": [
@@ -27,7 +28,7 @@
   "contributes": {
     "commands":[
       {
-        "command": "onboarding.showDevelopers",
+        "command": "integration-tests.onboarding.showDevelopers",
         "title": "Show Developers"
       }
     ]

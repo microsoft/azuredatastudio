@@ -479,7 +479,4 @@ import 'sql/workbench/contrib/extensions/browser/extensions.contribution';
 // Azure
 import 'sql/workbench/contrib/azure/browser/azure.contribution';
 
-// Onboarding
-import 'sql/workbench/contrib/onboarding/common/onboarding.contribution';
-
 //#endregion
