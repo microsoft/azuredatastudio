@@ -136,10 +136,10 @@ export class DeployDatabaseDialog {
 			};
 
 			if (dataSource.integratedSecurity) {
-				connId = (await azdata.connection.connect(connProfile, false, false)).connectionId;
+				connId = (await this.apiWrapper.connectionConnect(connProfile, false, false)).connectionId;
 			}
 			else {
-				connId = (await azdata.connection.openConnectionDialog(undefined, connProfile)).connectionId;
+				connId = (await this.apiWrapper.openConnectionDialog(undefined, connProfile)).connectionId;
 			}
 		}
 		else {
@@ -150,7 +150,7 @@ export class DeployDatabaseDialog {
 			connId = this.connection?.connectionId;
 		}
 
-		return await azdata.connection.getUriForConnection(connId);
+		return await this.apiWrapper.getUriForConnection(connId);
 	}
 
 	public async deployClick(): Promise<void> {
@@ -161,7 +161,7 @@ export class DeployDatabaseDialog {
 			sqlCmdVariables: this.project.sqlCmdVariables
 		};
 
-		azdata.window.closeDialog(this.dialog);
+		this.apiWrapper.closeDialog(this.dialog);
 		await this.deploy!(this.project, profile);
 
 		this.dispose();
@@ -170,10 +170,11 @@ export class DeployDatabaseDialog {
 	public async generateScriptClick(): Promise<void> {
 		const profile: IGenerateScriptProfile = {
 			databaseName: this.getTargetDatabaseName(),
-			connectionUri: await this.getConnectionUri()
+			connectionUri: await this.getConnectionUri(),
+			sqlCmdVariables: this.project.sqlCmdVariables
 		};
 
-		azdata.window.closeDialog(this.dialog);
+		this.apiWrapper.closeDialog(this.dialog);
 
 		if (this.generateScript) {
 			await this.generateScript!(this.project, profile);
@@ -182,7 +183,7 @@ export class DeployDatabaseDialog {
 		this.dispose();
 	}
 
-	private getTargetDatabaseName(): string {
+	public getTargetDatabaseName(): string {
 		return this.targetDatabaseTextBox?.value ?? '';
 	}
 

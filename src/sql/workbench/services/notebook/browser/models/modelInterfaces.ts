@@ -234,6 +234,10 @@ export interface INotebookModel {
 	 */
 	readonly clientSession: IClientSession;
 	/**
+	 * Promise indicating when client session is ready to use.
+	 */
+	readonly sessionLoadFinished: Promise<void>;
+	/**
 	 * LanguageInfo saved in the notebook
 	 */
 	readonly languageInfo: nb.ILanguageInfo;

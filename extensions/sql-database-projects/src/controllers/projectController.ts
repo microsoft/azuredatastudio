@@ -16,7 +16,7 @@ import { IConnectionProfile, TaskExecutionMode } from 'azdata';
 import { promises as fs } from 'fs';
 import { ApiWrapper } from '../common/apiWrapper';
 import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
-import { Project } from '../models/project';
+import { Project, DatabaseReferenceLocation, SystemDatabase, TargetPlatform } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { FolderNode } from '../models/tree/fileFolderTreeItem';
 import { IDeploymentProfile, IGenerateScriptProfile } from '../models/IDeploymentProfile';
@@ -91,6 +91,13 @@ export class ProjectsController {
 		this.refreshProjectsTree();
 
 		return newProject;
+	}
+
+	public async focusProject(project?: Project) {
+		if (project && this.projects.includes(project)) {
+			await this.apiWrapper.executeCommand('sqlDatabaseProjectsView.focus');
+			this.projectTreeViewProvider.focus(project);
+		}
 	}
 
 	public async createNewProject(newProjName: string, folderUri: Uri, projectGuid?: string): Promise<string> {
@@ -230,11 +237,6 @@ export class ProjectsController {
 		}
 	}
 
-	public async import(treeNode: BaseProjectTreeItem) {
-		const project = ProjectsController.getProjectFromContext(treeNode);
-		await this.apiWrapper.showErrorMessage(`Import not yet implemented: ${project.projectFilePath}`); // TODO
-	}
-
 	public async addFolderPrompt(treeNode: BaseProjectTreeItem) {
 		const project = ProjectsController.getProjectFromContext(treeNode);
 		const newFolderName = await this.promptForNewObjectName(new templates.ProjectScriptType(templates.folder, constants.folderFriendlyName, ''), project);
@@ -292,6 +294,148 @@ export class ProjectsController {
 		this.refreshProjectsTree();
 	}
 
+	/**
+	 * Adds a database reference to the project
+	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
+	 */
+	public async addDatabaseReference(context: Project | BaseProjectTreeItem): Promise<void> {
+		const project = ProjectsController.getProjectFromContext(context);
+
+		try {
+			// choose if reference is to master or a dacpac
+			const databaseReferenceType = await this.getDatabaseReferenceType();
+
+			// if master is selected, we know which dacpac needs to be added
+			if (databaseReferenceType === constants.systemDatabase) {
+				const systemDatabase = await this.getSystemDatabaseName(project);
+				await project.addSystemDatabaseReference(systemDatabase);
+			} else {
+				// get other information needed to add a reference to the dacpac
+				const dacpacFileLocation = await this.getDacpacFileLocation();
+				const databaseLocation = await this.getDatabaseLocation();
+
+				if (databaseLocation === DatabaseReferenceLocation.differentDatabaseSameServer) {
+					const databaseName = await this.getDatabaseName(dacpacFileLocation);
+					await project.addDatabaseReference(dacpacFileLocation, databaseLocation, databaseName);
+				} else {
+					await project.addDatabaseReference(dacpacFileLocation, databaseLocation);
+				}
+			}
+
+			this.refreshProjectsTree();
+		} catch (err) {
+			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
+		}
+	}
+
+	private async getDatabaseReferenceType(): Promise<string> {
+		let databaseReferenceOptions: QuickPickItem[] = [
+			{
+				label: constants.systemDatabase
+			},
+			{
+				label: constants.dacpac
+			}
+		];
+
+		let input = await this.apiWrapper.showQuickPick(databaseReferenceOptions, {
+			canPickMany: false,
+			placeHolder: constants.addDatabaseReferenceInput
+		});
+
+		if (!input) {
+			throw new Error(constants.databaseReferenceTypeRequired);
+		}
+
+		return input.label;
+	}
+
+	public async getSystemDatabaseName(project: Project): Promise<SystemDatabase> {
+		let databaseReferenceOptions: QuickPickItem[] = [
+			{
+				label: constants.master
+			}
+		];
+
+		// Azure dbs can only reference master
+		if (project.getProjectTargetPlatform() !== TargetPlatform.SqlAzureV12) {
+			databaseReferenceOptions.push(
+				{
+					label: constants.msdb
+				});
+		}
+
+		let input = await this.apiWrapper.showQuickPick(databaseReferenceOptions, {
+			canPickMany: false,
+			placeHolder: constants.systemDatabaseReferenceInput
+		});
+
+		if (!input) {
+			throw new Error(constants.systemDatabaseReferenceRequired);
+		}
+
+		return input.label === constants.master ? SystemDatabase.master : SystemDatabase.msdb;
+	}
+
+	private async getDacpacFileLocation(): Promise<Uri> {
+		let fileUris = await this.apiWrapper.showOpenDialog(
+			{
+				canSelectFiles: true,
+				canSelectFolders: false,
+				canSelectMany: false,
+				defaultUri: this.apiWrapper.workspaceFolders() ? (this.apiWrapper.workspaceFolders() as WorkspaceFolder[])[0].uri : undefined,
+				openLabel: constants.selectString,
+				filters: {
+					[constants.dacpacFiles]: ['dacpac'],
+				}
+			}
+		);
+
+		if (!fileUris || fileUris.length === 0) {
+			throw new Error(constants.dacpacFileLocationRequired);
+		}
+
+		return fileUris[0];
+	}
+
+	private async getDatabaseLocation(): Promise<DatabaseReferenceLocation> {
+		let databaseReferenceOptions: QuickPickItem[] = [
+			{
+				label: constants.databaseReferenceSameDatabase
+			},
+			{
+				label: constants.databaseReferenceDifferentDabaseSameServer
+			}
+		];
+
+		let input = await this.apiWrapper.showQuickPick(databaseReferenceOptions, {
+			canPickMany: false,
+			placeHolder: constants.databaseReferenceLocation
+		});
+
+		if (input === undefined) {
+			throw new Error(constants.databaseLocationRequired);
+		}
+
+		const location = input?.label === constants.databaseReferenceSameDatabase ? DatabaseReferenceLocation.sameDatabase : DatabaseReferenceLocation.differentDatabaseSameServer;
+		return location;
+	}
+
+	private async getDatabaseName(dacpac: Uri): Promise<string | undefined> {
+		const dacpacName = path.parse(dacpac.toString()).name;
+		let databaseName = await this.apiWrapper.showInputBox({
+			prompt: constants.databaseReferenceDatabaseName,
+			value: `${dacpacName}`
+		});
+
+		if (!databaseName) {
+			throw new Error(constants.databaseNameRequired);
+		}
+
+		databaseName = databaseName?.trim();
+		return databaseName;
+	}
+
 	//#region Helper methods
 
 	public getDeployDialog(project: Project): DeployDatabaseDialog {
@@ -299,13 +443,21 @@ export class ProjectsController {
 	}
 
 	public async updateProjectForRoundTrip(project: Project) {
-		if (project.importedTargets.includes(constants.NetCoreTargets)) {
+		if (project.importedTargets.includes(constants.NetCoreTargets) && !project.containsSSDTOnlySystemDatabaseReferences()) {
 			return;
 		}
 
-		const result = await this.apiWrapper.showWarningMessage(constants.updateProjectForRoundTrip, constants.yesString, constants.noString);
-		if (result === constants.yesString) {
-			await project.updateProjectForRoundTrip();
+		if (!project.importedTargets.includes(constants.NetCoreTargets)) {
+			const result = await this.apiWrapper.showWarningMessage(constants.updateProjectForRoundTrip, constants.yesString, constants.noString);
+			if (result === constants.yesString) {
+				await project.updateProjectForRoundTrip();
+				await project.updateSystemDatabaseReferencesInProjFile();
+			}
+		} else if (project.containsSSDTOnlySystemDatabaseReferences()) {
+			const result = await this.apiWrapper.showWarningMessage(constants.updateProjectDatabaseReferencesForRoundTrip, constants.yesString, constants.noString);
+			if (result === constants.yesString) {
+				await project.updateSystemDatabaseReferencesInProjFile();
+			}
 		}
 	}
 
@@ -376,6 +528,19 @@ export class ProjectsController {
 				model.serverId = profile.id;
 				model.database = profile.databaseName;
 			}
+			else {
+				const connectionId = (await this.apiWrapper.openConnectionDialog()).connectionId;
+
+				const databaseList = await this.apiWrapper.listDatabases(connectionId);
+				const database = (await this.apiWrapper.showQuickPick(databaseList.map(dbName => { return { label: dbName }; })))?.label;
+
+				if (!database) {
+					throw new Error(constants.databaseSelectionRequired);
+				}
+
+				model.serverId = connectionId;
+				model.database = database;
+			}
 
 			// Get project name
 			let newProjName = await this.getProjectName(model.database);
@@ -430,6 +595,8 @@ export class ProjectsController {
 
 			//Refresh project to show the added files
 			this.refreshProjectsTree();
+
+			this.focusProject(project);
 		}
 		catch (err) {
 			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
@@ -497,7 +664,7 @@ export class ProjectsController {
 				canSelectFiles: false,
 				canSelectFolders: true,
 				canSelectMany: false,
-				openLabel: constants.selectFileFolder,
+				openLabel: constants.selectString,
 				defaultUri: this.apiWrapper.workspaceFolders() ? (this.apiWrapper.workspaceFolders() as WorkspaceFolder[])[0].uri : undefined
 			});
 			if (selectionResult) {
@@ -508,7 +675,7 @@ export class ProjectsController {
 			selectionResult = await this.apiWrapper.showSaveDialog(
 				{
 					defaultUri: this.apiWrapper.workspaceFolders() ? (this.apiWrapper.workspaceFolders() as WorkspaceFolder[])[0].uri : undefined,
-					saveLabel: constants.selectFileFolder,
+					saveLabel: constants.selectString,
 					filters: {
 						'SQL files': ['sql'],
 						'All files': ['*']

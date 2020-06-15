@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as yaml from 'js-yaml';
 import { BookTreeItem, BookTreeItemType } from './bookTreeItem';
@@ -17,11 +16,10 @@ import { ApiWrapper } from '../common/apiWrapper';
 
 const fsPromises = fileServices.promises;
 
-export class BookModel implements azdata.nb.NavigationProvider {
+export class BookModel {
 	private _bookItems: BookTreeItem[];
 	private _allNotebooks = new Map<string, BookTreeItem>();
 	private _tableOfContentsPath: string;
-	readonly providerId: string = 'BookNavigator';
 
 	private _errorMessage: string;
 	private apiWrapper: ApiWrapper = new ApiWrapper();
@@ -32,7 +30,6 @@ export class BookModel implements azdata.nb.NavigationProvider {
 		public readonly isNotebook: boolean,
 		private _extensionContext: vscode.ExtensionContext) {
 		this._bookItems = [];
-		this._extensionContext.subscriptions.push(azdata.nb.registerNavigationProvider(this));
 	}
 
 	public async initializeContents(): Promise<void> {
@@ -51,7 +48,7 @@ export class BookModel implements azdata.nb.NavigationProvider {
 	}
 
 	public getNotebook(uri: string): BookTreeItem | undefined {
-		return this._allNotebooks.get(uri);
+		return this._allNotebooks.get(this.openAsUntitled ? path.basename(uri) : uri);
 	}
 
 	public async loadTableOfContentFiles(folderPath: string): Promise<void> {
@@ -190,8 +187,8 @@ export class BookModel implements azdata.nb.NavigationProvider {
 						if (this.openAsUntitled) {
 							if (!this._allNotebooks.get(path.basename(pathToNotebook))) {
 								this._allNotebooks.set(path.basename(pathToNotebook), notebook);
-								notebooks.push(notebook);
 							}
+							notebooks.push(notebook);
 						} else {
 							// convert to URI to avoid casing issue with drive letters when getting navigation links
 							let uriToNotebook: vscode.Uri = vscode.Uri.file(pathToNotebook);
@@ -249,30 +246,6 @@ export class BookModel implements azdata.nb.NavigationProvider {
 
 	public get tableOfContentsPath(): string {
 		return this._tableOfContentsPath;
-	}
-
-	getNavigation(uri: vscode.Uri): Thenable<azdata.nb.NavigationResult> {
-		let notebook = !this.openAsUntitled ? this._allNotebooks.get(uri.fsPath) : this._allNotebooks.get(path.basename(uri.fsPath));
-		let result: azdata.nb.NavigationResult;
-		if (notebook) {
-			result = {
-				hasNavigation: true,
-				previous: notebook.previousUri ?
-					this.openAsUntitled ? this.getUntitledUri(notebook.previousUri) : vscode.Uri.file(notebook.previousUri) : undefined,
-				next: notebook.nextUri ? this.openAsUntitled ? this.getUntitledUri(notebook.nextUri) : vscode.Uri.file(notebook.nextUri) : undefined
-			};
-		} else {
-			result = {
-				hasNavigation: false,
-				previous: undefined,
-				next: undefined
-			};
-		}
-		return Promise.resolve(result);
-	}
-
-	getUntitledUri(resource: string): vscode.Uri {
-		return vscode.Uri.parse(`untitled:${resource}`);
 	}
 
 	public get errorMessage(): string {

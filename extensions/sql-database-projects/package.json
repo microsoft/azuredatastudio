@@ -95,11 +95,6 @@
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
-        "command": "sqlDatabaseProjects.import",
-        "title": "%sqlDatabaseProjects.import%",
-        "category": "%sqlDatabaseProjects.displayName%"
-      },
-      {
         "command": "sqlDatabaseProjects.properties",
         "title": "%sqlDatabaseProjects.properties%",
         "category": "%sqlDatabaseProjects.displayName%"
@@ -112,6 +107,11 @@
       {
         "command": "sqlDatabaseProjects.importDatabase",
         "title": "%sqlDatabaseProjects.importDatabase%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.addDatabaseReference",
+        "title": "%sqlDatabaseProjects.addDatabaseReference%",
         "category": "%sqlDatabaseProjects.displayName%"
       }
     ],
@@ -160,10 +160,6 @@
           "when": "false"
         },
         {
-          "command": "sqlDatabaseProjects.import",
-          "when": "false"
-        },
-        {
           "command": "sqlDatabaseProjects.properties",
           "when": "false"
         },
@@ -178,62 +174,57 @@
       "view/item/context": [
         {
           "command": "sqlDatabaseProjects.build",
-          "when": "view == sqlDatabaseProjectsView",
+          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project",
           "group": "1_dbProjectsFirst@1"
         },
         {
           "command": "sqlDatabaseProjects.deploy",
-          "when": "view == sqlDatabaseProjectsView",
+          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project",
           "group": "1_dbProjectsFirst@2"
         },
         {
           "command": "sqlDatabaseProjects.schemaCompare",
-          "when": "view == sqlDatabaseProjectsView",
+          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project",
           "group": "1_dbProjectsFirst@3"
         },
         {
-          "command": "sqlDatabaseProjects.import",
-          "when": "view == sqlDatabaseProjectsView",
-          "group": "1_dbProjectsFirst@4"
-        },
-        {
           "command": "sqlDatabaseProjects.newItem",
-          "when": "view == sqlDatabaseProjectsView",
+          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
           "group": "2_dbProjects_newMain@1"
         },
         {
           "command": "sqlDatabaseProjects.newFolder",
-          "when": "view == sqlDatabaseProjectsView",
+          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
           "group": "2_dbProjects_newMain@2"
         },
         {
           "command": "sqlDatabaseProjects.newTable",
-          "when": "view == sqlDatabaseProjectsView",
+          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
           "group": "3_dbProjects_newItem@1"
         },
         {
           "command": "sqlDatabaseProjects.newView",
-          "when": "view == sqlDatabaseProjectsView",
+          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
           "group": "3_dbProjects_newItem@2"
         },
         {
           "command": "sqlDatabaseProjects.newStoredProcedure",
-          "when": "view == sqlDatabaseProjectsView",
+          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
           "group": "3_dbProjects_newItem@3"
         },
         {
           "command": "sqlDatabaseProjects.newScript",
-          "when": "view == sqlDatabaseProjectsView",
+          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
           "group": "3_dbProjects_newItem@9"
         },
         {
-          "command": "sqlDatabaseProjects.close",
-          "when": "view == sqlDatabaseProjectsView",
-          "group": "9_dbProjectsLast"
+          "command": "sqlDatabaseProjects.addDatabaseReference",
+          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.referencesRoot",
+          "group": "4_dbProjects_addDatabaseReference"
         },
         {
-          "command": "sqlDatabaseProjects.properties",
-          "when": "view == sqlDatabaseProjectsView",
+          "command": "sqlDatabaseProjects.close",
+          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project",
           "group": "9_dbProjectsLast"
         }
       ],
@@ -253,12 +244,20 @@
           "when": ""
         }
       ]
-    }
+    },
+    "viewsWelcome": [
+      {
+        "view": "sqlDatabaseProjectsView",
+        "contents": "%sqlDatabaseProjects.welcome%"
+      }
+    ]
   },
   "dependencies": {
+    "@types/xml-formatter": "^1.1.0",
     "promisify-child-process": "^3.1.1",
     "vscode-languageclient": "^5.3.0-next.1",
     "vscode-nls": "^3.2.1",
+    "xml-formatter": "^2.1.0",
     "xmldom": "^0.3.0"
   },
   "devDependencies": {

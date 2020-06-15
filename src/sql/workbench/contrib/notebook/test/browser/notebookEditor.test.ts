@@ -75,7 +75,8 @@ suite('Test class NotebookEditor', () => {
 		instantiationService,
 		instantiationService.get(IFileService),
 		instantiationService.get(ILogService),
-		queryManagementService
+		queryManagementService,
+		instantiationService.get(IContextKeyService)
 	);
 
 	instantiationService.stub(INotebookService, notebookService);

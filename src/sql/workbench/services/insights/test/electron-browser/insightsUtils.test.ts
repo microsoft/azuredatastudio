@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { equal, fail } from 'assert';
+import { ok, fail } from 'assert';
 import * as os from 'os';
 
 import { resolveQueryFilePath } from 'sql/workbench/services/insights/common/insightsUtils';
@@ -23,6 +23,7 @@ import { getRandomTestPath } from 'vs/base/test/node/testUtils';
 import { IProcessEnvironment } from 'vs/base/common/platform';
 import { NativeWorkbenchEnvironmentService } from 'vs/workbench/services/environment/electron-browser/environmentService';
 import { TestWindowConfiguration } from 'vs/workbench/test/electron-browser/workbenchTestServices';
+import { isEqual } from 'vs/base/common/resources';
 
 class MockWorkbenchEnvironmentService extends NativeWorkbenchEnvironmentService {
 
@@ -71,7 +72,7 @@ suite('Insights Utils tests', function () {
 		instantiationService.set(IFileService, fileService);
 
 		const resolvedPath = await instantiationService.invokeFunction(resolveQueryFilePath, queryFilePath);
-		equal(resolvedPath, queryFilePath);
+		ok(isEqual(resolvedPath, URI.file(queryFilePath)));
 	});
 
 	test('resolveQueryFilePath resolves path correctly with workspaceRoot var and non-empty workspace containing file', async () => {
@@ -101,7 +102,7 @@ suite('Insights Utils tests', function () {
 		instantiationService.set(IFileService, fileService);
 
 		const resolvedPath = await instantiationService.invokeFunction(resolveQueryFilePath, path.join('${workspaceRoot}', 'test.sql'));
-		equal(resolvedPath, queryFilePath);
+		ok(isEqual(resolvedPath, URI.file(queryFilePath)));
 	});
 
 	test('resolveQueryFilePath throws with workspaceRoot var and non-empty workspace not containing file', async () => {
@@ -198,7 +199,7 @@ suite('Insights Utils tests', function () {
 		instantiationService.set(IFileService, fileService);
 
 		const resolvedPath = await instantiationService.invokeFunction(resolveQueryFilePath, path.join('${env:TEST_PATH}', 'test.sql'));
-		equal(resolvedPath, queryFilePath);
+		ok(isEqual(resolvedPath, URI.file(queryFilePath)));
 	});
 
 	test('resolveQueryFilePath resolves path correctly with env var and non-empty workspace', async () => {
@@ -227,7 +228,7 @@ suite('Insights Utils tests', function () {
 		instantiationService.set(IFileService, fileService);
 
 		const resolvedPath = await instantiationService.invokeFunction(resolveQueryFilePath, path.join('${env:TEST_PATH}', 'test.sql'));
-		equal(resolvedPath, queryFilePath);
+		ok(isEqual(resolvedPath, URI.file(queryFilePath)));
 	});
 
 	test('resolveQueryFilePath throws if invalid param var specified', async () => {
