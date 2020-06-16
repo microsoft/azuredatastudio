@@ -27,7 +27,7 @@ out-vscode-web-min/
 src/vs/server
 resources/server
 build/node_modules
-coverage/
+lcov-report/
 test_data/
 test-results/
 yarn-error.log
