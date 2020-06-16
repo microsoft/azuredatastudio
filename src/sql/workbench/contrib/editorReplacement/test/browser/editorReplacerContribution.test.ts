@@ -191,10 +191,10 @@ class MockEditorService extends TestEditorService {
 		});
 	}
 
-	fireOpenEditor(editor: IEditorInput, options: IEditorOptions | ITextEditorOptions | undefined, group: IEditorGroup, context: OpenEditorContext, id?: string) {
+	fireOpenEditor(editor: IEditorInput, options: IEditorOptions | ITextEditorOptions | undefined, group: IEditorGroup, context: OpenEditorContext) {
 		for (const handler of this.overridenOpens) {
 			let response: IOpenEditorOverride | undefined;
-			if (response = handler.open(editor, options, group, context, id)) {
+			if (response = handler.open(editor, options, group, context)) {
 				return response;
 			}
 		}
