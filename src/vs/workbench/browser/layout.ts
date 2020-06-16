@@ -929,7 +929,7 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 			// Restoring views could mean that panel already
 			// restored, as such we need to test again
 			await restoreDefaultViewsPromise;
-			if (this.state.panel.panelToRestore) {
+			if (!this.state.panel.panelToRestore) {
 				return;
 			}
 
