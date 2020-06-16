@@ -160,7 +160,7 @@ describe('Utils Tests', function () {
 	});
 
 	describe('isEditorTitleFree', () => {
-		afterEach( async () => {
+		afterEach(async () => {
 			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
 		});
 
@@ -316,6 +316,19 @@ describe('Utils Tests', function () {
 				}
 				new UnsupportedTest();
 			}).throw();
+		});
+	});
+
+	describe('getRandomToken', function (): void {
+		it('Should have default length and be hex only', async function (): Promise<void> {
+
+			let token = await utils.getRandomToken();
+			should(token).have.length(48);
+			let validChars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'];
+			for (let i = 0; i < token.length; i++) {
+				let char = token.charAt(i);
+				should(validChars.indexOf(char)).be.greaterThan(-1);
+			}
 		});
 	});
 });
