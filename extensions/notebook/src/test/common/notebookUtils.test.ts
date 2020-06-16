@@ -67,6 +67,7 @@ describe('notebookUtils Tests', function (): void {
 				apiWrapperMock.setup(x => x.showOpenDialog(TypeMoq.It.isAny())).returns(() => Promise.resolve([notebookUri]));
 				await notebookUtils.openNotebook();
 				should(azdata.nb.notebookDocuments.find(doc => doc.fileName === notebookUri.fsPath)).not.be.undefined();
+				await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
 			} finally {
 				tryDeleteFile(notebookPath);
 			}
@@ -76,7 +77,6 @@ describe('notebookUtils Tests', function (): void {
 			apiWrapperMock.setup(x => x.showOpenDialog(TypeMoq.It.isAny())).throws(new Error('Unexpected error'));
 			apiWrapperMock.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns(() => Promise.resolve(''));
 			await notebookUtils.openNotebook();
-			console.log(azdata.nb.notebookDocuments.map(doc => doc.fileName));
 			apiWrapperMock.verify(x => x.showErrorMessage(TypeMoq.It.isAny()), TypeMoq.Times.once());
 		});
 	});
