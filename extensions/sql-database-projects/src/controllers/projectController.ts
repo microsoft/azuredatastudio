@@ -230,8 +230,12 @@ export class ProjectsController {
 			targetDbName = profileXmlDoc.documentElement.getElementsByTagName(constants.targetDatabaseName)[targetDatabaseNameCount - 1].textContent;
 		}
 
+		// find all SQLCMD variables to include from the profile
+		let sqlCmdVariables = utils.readSqlCmdVariables(profileXmlDoc);
+
 		return {
-			databaseName: targetDbName
+			databaseName: targetDbName,
+			sqlCmdVariables: sqlCmdVariables
 		};
 	}
 

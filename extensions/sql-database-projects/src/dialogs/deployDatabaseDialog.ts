@@ -32,6 +32,7 @@ export class DeployDatabaseDialog {
 
 	private connection: azdata.connection.Connection | undefined;
 	private connectionIsDataSource: boolean | undefined;
+	private profileSqlCmdVars: Record<string, string> | undefined;
 
 	private toDispose: vscode.Disposable[] = [];
 
@@ -162,11 +163,12 @@ export class DeployDatabaseDialog {
 	}
 
 	public async deployClick(): Promise<void> {
+		const sqlCmdVars = this.getSqlCmdVariablesForDeploy();
 		const profile: IDeploymentProfile = {
 			databaseName: this.getTargetDatabaseName(),
 			upgradeExisting: true,
 			connectionUri: await this.getConnectionUri(),
-			sqlCmdVariables: this.project.sqlCmdVariables
+			sqlCmdVariables: sqlCmdVars
 		};
 
 		this.apiWrapper.closeDialog(this.dialog);
@@ -176,10 +178,11 @@ export class DeployDatabaseDialog {
 	}
 
 	public async generateScriptClick(): Promise<void> {
+		const sqlCmdVars = this.getSqlCmdVariablesForDeploy();
 		const profile: IGenerateScriptProfile = {
 			databaseName: this.getTargetDatabaseName(),
 			connectionUri: await this.getConnectionUri(),
-			sqlCmdVariables: this.project.sqlCmdVariables
+			sqlCmdVariables: sqlCmdVars
 		};
 
 		this.apiWrapper.closeDialog(this.dialog);
@@ -189,6 +192,18 @@ export class DeployDatabaseDialog {
 		}
 
 		this.dispose();
+	}
+
+	private getSqlCmdVariablesForDeploy(): Record<string, string> {
+		// get SQLCMD variables from project
+		let sqlCmdVariables = { ...this.project.sqlCmdVariables };
+
+		// update with SQLCMD variables loaded from profile if there are any
+		for (const key in this.profileSqlCmdVars) {
+			sqlCmdVariables[key] = this.profileSqlCmdVars[key];
+		}
+
+		return sqlCmdVariables;
 	}
 
 	public getTargetDatabaseName(): string {
@@ -374,6 +389,7 @@ export class DeployDatabaseDialog {
 			if (this.readPublishProfile) {
 				let result = await this.readPublishProfile(fileUris[0]);
 				(<azdata.InputBoxComponent>this.targetDatabaseTextBox).value = result.databaseName;
+				this.profileSqlCmdVars = result.sqlCmdVariables;
 			}
 		});
 
