@@ -63,7 +63,7 @@ export const selectConnectionRadioButtonsTitle = localize('selectconnectionRadio
 export const dataSourceDropdownTitle = localize('dataSourceDropdownTitle', "Data source");
 export const noDataSourcesText = localize('noDataSourcesText', "No data sources in this project");
 export const loadProfileButtonText = localize('loadProfileButtonText', "Load Profile...");
-export const profileWarningText = localize('profileWarningText', "⚠Warning: Only database name and SQLCMD variables can be loaded from a profile at this time");
+export const profileWarningText = localize('profileWarningText', "⚠Warning: Only database name and SQLCMD variables are able to be loaded from a profile at this time");
 
 // Error messages
 

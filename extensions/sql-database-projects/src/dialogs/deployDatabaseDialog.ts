@@ -377,7 +377,7 @@ export class DeployDatabaseDialog {
 					canSelectMany: false,
 					defaultUri: vscode.Uri.parse(this.project.projectFolderPath),
 					filters: {
-						[constants.publishSettingsFiles]: ['*.publish.xml']
+						[constants.publishSettingsFiles]: ['publish.xml']
 					}
 				}
 			);
