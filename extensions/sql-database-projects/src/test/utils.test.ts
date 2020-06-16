@@ -28,3 +28,4 @@ describe('Tests to verify exists function', function (): void {
 		should(await exists(path.join(testFolderPath, 'folder4','file2.sql'))).equal(false);
 	});
 });
+

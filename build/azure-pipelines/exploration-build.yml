@@ -3,10 +3,10 @@ pool:
 
 trigger:
   branches:
-    include: ['master']
+    include: ['main']
 pr:
   branches:
-    include: ['master']
+    include: ['main']
 
 steps:
 - task: NodeTool@0
@@ -32,9 +32,9 @@ steps:
     git config user.name "VSCode"
 
     git checkout origin/electron-8.0.x
-    git merge origin/master
+    git merge origin/main
 
-    # Push master branch into exploration branch
+    # Push main branch into exploration branch
     git push origin HEAD:electron-8.0.x
 
   displayName: Sync & Merge Exploration

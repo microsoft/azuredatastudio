@@ -22,7 +22,7 @@ import { IDeploymentProfile, IGenerateScriptProfile } from '../models/IDeploymen
 
 let testContext: TestContext;
 
-describe('Deploy Database Dialog', () => {
+describe.skip('Deploy Database Dialog', () => {
 	before(async function (): Promise<void> {
 		await templates.loadTemplates(path.join(__dirname, '..', '..', 'resources', 'templates'));
 		await baselines.loadBaselines();

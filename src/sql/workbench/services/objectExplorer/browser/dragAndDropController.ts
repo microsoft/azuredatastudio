@@ -10,7 +10,8 @@ import { ITree, IDragAndDrop, IDragOverReaction, DRAG_OVER_ACCEPT_BUBBLE_DOWN, D
 import { DragMouseEvent } from 'vs/base/browser/mouseEvent';
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 import { UNSAVED_GROUP_ID } from 'sql/platform/connection/common/constants';
-import { IDragAndDropData } from 'vs/base/browser/dnd';
+import { DataTransfers, IDragAndDropData } from 'vs/base/browser/dnd';
+import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 
 /**
  * Implements drag and drop for the server tree
@@ -27,24 +28,40 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 	 * Returns null, otherwise.
 	 */
 	public getDragURI(tree: ITree, element: any): string {
-		if (element instanceof ConnectionProfile) {
-			return (<ConnectionProfile>element).id;
+		if (element) {
+			if (element instanceof ConnectionProfile) {
+				return (<ConnectionProfile>element).id;
+			} else if (element instanceof ConnectionProfileGroup) {
+				return (<ConnectionProfileGroup>element).id;
+			} else if (element.nodeTypeId === 'Table' || element.nodeTypeId === 'Column') {
+				return (<TreeNode>element).id;
+			}
+			else {
+				return undefined;
+			}
 		}
-		else if (element instanceof ConnectionProfileGroup) {
-			return (<ConnectionProfileGroup>element).id;
+		else {
+			return undefined;
 		}
-		return null;
 	}
 
 	/**
 	 * Returns a label(name) to display when dragging the element.
 	 */
 	public getDragLabel(tree: ITree, elements: any[]): string {
-		if (elements[0] instanceof ConnectionProfile) {
-			return (<ConnectionProfile>elements[0]).serverName;
-		} else if (elements[0] instanceof ConnectionProfileGroup) {
-			return (<ConnectionProfileGroup>elements[0]).name;
-		} else {
+		if (elements) {
+			if (elements[0] instanceof ConnectionProfile) {
+				return (<ConnectionProfile>elements[0]).serverName;
+			} else if (elements[0] instanceof ConnectionProfileGroup) {
+				return (<ConnectionProfileGroup>elements[0]).name;
+			} else if (elements[0].label) {
+				return elements[0].label;
+			}
+			else {
+				return undefined;
+			}
+		}
+		else {
 			return undefined;
 		}
 	}
@@ -52,8 +69,15 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 	/**
 	 * Called when the drag operation starts.
 	 */
-	public onDragStart(tree: ITree, data: IDragAndDropData, originalEvent: DragMouseEvent): void {
+	public onDragStart(tree: ITree, dragAndDropData: IDragAndDropData, originalEvent: DragMouseEvent): void {
 		TreeUpdateUtils.isInDragAndDrop = true;
+		const data = dragAndDropData.getData();
+		const element = data[0];
+		if (element.nodeTypeId === 'Column' || element.nodeTypeId === 'Table') {
+			const schema = element.metadata.schema;
+			const name = element.metadata.name;
+			originalEvent.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([`${element.nodeTypeId}:${element.id}?${schema ? schema + '.' + name : name}`]));
+		}
 		return;
 	}
 
@@ -78,9 +102,8 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 				// to avoid creating a circular structure.
 				canDragOver = source.id !== targetElement.id && !source.isAncestorOf(targetElement);
 			}
-
 		} else {
-			canDragOver = false;
+			canDragOver = true;
 		}
 
 		if (canDragOver) {
