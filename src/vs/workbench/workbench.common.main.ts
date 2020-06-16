@@ -388,6 +388,9 @@ import 'vs/workbench/contrib/welcome/common/viewsWelcome.contribution';
 // Timeline
 import 'vs/workbench/contrib/timeline/browser/timeline.contribution';
 
+// Hover
+import 'vs/workbench/contrib/hover/browser/hover.contribution';
+
 //#endregion
 
 //#region -- contributions
