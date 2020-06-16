@@ -17,7 +17,7 @@ jobs:
       CHILD_CONCURRENCY: "1"
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2.2.0
     # TODO: rename azure-pipelines/linux/xvfb.init to github-actions
     - run: |
         sudo apt-get update
@@ -72,7 +72,7 @@ jobs:
       CHILD_CONCURRENCY: "1"
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2.2.0
     - uses: actions/setup-node@v1
       with:
         node-version: 10
@@ -108,7 +108,7 @@ jobs:
       CHILD_CONCURRENCY: "1"
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2.2.0
     - uses: actions/setup-node@v1
       with:
         node-version: 10
@@ -141,7 +141,7 @@ jobs:
   #     CHILD_CONCURRENCY: "1"
   #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   #   steps:
-  #   - uses: actions/checkout@v1
+  #   - uses: actions/checkout@v2.2.0
   #   # TODO: rename azure-pipelines/linux/xvfb.init to github-actions
   #   - run: |
   #       sudo apt-get update
