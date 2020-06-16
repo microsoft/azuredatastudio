@@ -4,7 +4,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.packageRebuildExtensionsStream = exports.cleanRebuildExtensions = exports.packageExternalExtensionsStream = exports.packageMarketplaceExtensionsStream = exports.packageLocalWebExtensionsStream = exports.packageLocalExtensionsStream = exports.fromMarketplace = void 0;
+exports.packageRebuildExtensionsStream = exports.cleanRebuildExtensions = exports.packageExternalExtensionsStream = exports.packageMarketplaceWebExtensionsStream = exports.packageMarketplaceExtensionsStream = exports.packageLocalWebExtensionsStream = exports.packageLocalExtensionsStream = exports.fromMarketplace = void 0;
 const es = require("event-stream");
 const fs = require("fs");
 const glob = require("glob");
@@ -274,6 +274,21 @@ function packageMarketplaceExtensionsStream() {
         .pipe(util2.setExecutableBit(['**/*.sh']));
 }
 exports.packageMarketplaceExtensionsStream = packageMarketplaceExtensionsStream;
+function packageMarketplaceWebExtensionsStream(builtInExtensions) {
+    const extensions = builtInExtensions
+        .map(extension => {
+        const input = fromMarketplace(extension.name, extension.version, extension.metadata);
+        return updateExtensionPackageJSON(input, (data) => {
+            if (data.main) {
+                data.browser = data.main;
+            }
+            data.extensionKind = ['web'];
+            return data;
+        }).pipe(rename(p => p.dirname = `extensions/${extension.name}/${p.dirname}`));
+    });
+    return es.merge(extensions);
+}
+exports.packageMarketplaceWebExtensionsStream = packageMarketplaceWebExtensionsStream;
 function packageExternalExtensionsStream() {
     const extenalExtensionDescriptions = glob.sync('extensions/*/package.json')
         .map(manifestPath => {
