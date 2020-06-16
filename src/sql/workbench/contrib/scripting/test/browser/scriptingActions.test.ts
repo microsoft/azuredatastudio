@@ -21,7 +21,7 @@ import { ServerTreeView } from 'sql/workbench/contrib/objectExplorer/browser/ser
 import { createObjectExplorerServiceMock } from 'sql/workbench/services/objectExplorer/test/browser/testObjectExplorerService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
-import { TestTree } from 'sql/workbench/contrib/objectExplorer/test/browser/treeMock';
+import { TestTree } from 'sql/workbench/test/treeMock';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 
 const connection: azdata.IConnectionProfile = {
