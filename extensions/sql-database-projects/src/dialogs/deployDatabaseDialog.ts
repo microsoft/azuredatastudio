@@ -6,6 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
+import * as utils from '../common/utils';
 
 import { Project } from '../models/project';
 import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStringSource';
@@ -154,7 +155,7 @@ export class DeployDatabaseDialog {
 			return await this.apiWrapper.getUriForConnection(connId);
 		}
 		catch (err) {
-			throw new Error(constants.unableToCreateDeploymentConnection);
+			throw new Error(constants.unableToCreateDeploymentConnection + ': ' + utils.getErrorMessage(err));
 		}
 	}
 
