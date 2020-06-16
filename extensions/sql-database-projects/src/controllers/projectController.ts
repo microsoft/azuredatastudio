@@ -226,11 +226,11 @@ export class ProjectsController {
 		let targetDbName: string = '';
 		let targetDatabaseNameCount = profileXmlDoc.documentElement.getElementsByTagName(constants.targetDatabaseName).length;
 		if (targetDatabaseNameCount > 0) {
-			// if there are more than one TargetDatabaseName nodes, SSDT uses the name in the last one so we'll do the same here
+			// if there is more than one TargetDatabaseName nodes, SSDT uses the name in the last one so we'll do the same here
 			targetDbName = profileXmlDoc.documentElement.getElementsByTagName(constants.targetDatabaseName)[targetDatabaseNameCount - 1].textContent;
 		}
 
-		// find all SQLCMD variables to include from the profile
+		// get all SQLCMD variables to include from the profile
 		let sqlCmdVariables = utils.readSqlCmdVariables(profileXmlDoc);
 
 		return {

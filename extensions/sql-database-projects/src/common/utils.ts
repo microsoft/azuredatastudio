@@ -97,6 +97,10 @@ export function getSafeNonWindowsPath(filePath: string): string {
 	return '"' + filePath + '"';
 }
 
+/**
+ * Read SQLCMD variables from xmlDoc and return them
+ * @param xmlDoc xml doc to read SQLCMD variables from. Format must be the same that sqlproj and publish profiles use
+ */
 export function readSqlCmdVariables(xmlDoc: any): Record<string, string> {
 	let sqlCmdVariables: Record<string, string> = {};
 	for (let i = 0; i < xmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable).length; i++) {
