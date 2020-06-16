@@ -82,7 +82,7 @@ export class FileQueryEditorInput extends QueryEditorInput {
 		return this.text.isResolved();
 	}
 
-	public move(group: GroupIdentifier, target: URI): IMoveResult {
-		return this.text.move(group, target);
+	public rename(group: GroupIdentifier, target: URI): IMoveResult {
+		return this.text.rename(group, target);
 	}
 }
