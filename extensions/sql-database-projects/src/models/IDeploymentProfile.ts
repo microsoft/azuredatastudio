@@ -18,5 +18,5 @@ export interface IGenerateScriptProfile {
 
 export interface PublishSettings {
 	databaseName: string;
-	sqlCmdVariables?: Record<string, string>;
+	sqlCmdVariables: Record<string, string>;
 }
