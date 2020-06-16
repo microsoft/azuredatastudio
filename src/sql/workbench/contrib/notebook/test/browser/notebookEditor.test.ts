@@ -201,7 +201,6 @@ suite('Test class NotebookEditor', () => {
 
 	});
 
-
 	// test('NotebookEditor-focus', () => {
 	// 	notebookEditor.focus();
 	// });
