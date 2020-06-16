@@ -4,7 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/editordroptarget';
-import { LocalSelectionTransfer, DraggedEditorIdentifier, ResourcesDropHandler, DraggedEditorGroupIdentifier, DragAndDropObserver, containsDragType } from 'vs/workbench/browser/dnd';
+// {{SQL CARBON EDIT}}
+import { LocalSelectionTransfer, DraggedEditorIdentifier, ResourcesDropHandler, DraggedEditorGroupIdentifier, DragAndDropObserver, containsDragType, extractResources } from 'vs/workbench/browser/dnd';
 import { addDisposableListener, EventType, EventHelper, isAncestor, toggleClass, addClass, removeClass } from 'vs/base/browser/dom';
 import { IEditorGroupsAccessor, EDITOR_TITLE_HEIGHT, IEditorGroupView, getActiveTextEditorOptions } from 'vs/workbench/browser/parts/editor/editor';
 import { EDITOR_DRAG_AND_DROP_BACKGROUND } from 'vs/workbench/common/theme';
@@ -25,6 +26,9 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { assertIsDefined, assertAllDefined } from 'vs/base/common/types';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { localize } from 'vs/nls';
+// {{SQL CARBON EDIT}}
+import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
+import { SnippetController2 } from 'vs/editor/contrib/snippet/snippetController2';
 
 interface IDropOperation {
 	splitDirection?: GroupDirection;
@@ -346,6 +350,20 @@ class DropOverlay extends Themable {
 		// Check for URI transfer
 		else {
 			const dropHandler = this.instantiationService.createInstance(ResourcesDropHandler, { allowWorkspaceOpen: true /* open workspace instead of file if dropped */ });
+
+			// {{SQL CARBON EDIT}}
+			const untitledOrFileResources = extractResources(event);
+			if (!untitledOrFileResources.length) {
+				return;
+			}
+
+			// {{SQL CARBON EDIT}}
+			const editor = this.editorService.activeTextEditorControl as ICodeEditor;
+			if (untitledOrFileResources[0].resource.scheme === 'Column' || untitledOrFileResources[0].resource.scheme === 'Table') {
+				SnippetController2.get(editor).insert(`[${untitledOrFileResources[0].resource.query}]`);
+				return;
+			}
+
 			dropHandler.handleDrop(event, () => ensureTargetGroup(), targetGroup => {
 				if (targetGroup) {
 					targetGroup.focus();
