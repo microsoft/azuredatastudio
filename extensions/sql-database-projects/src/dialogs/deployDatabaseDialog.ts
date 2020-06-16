@@ -106,7 +106,7 @@ export class DeployDatabaseDialog {
 								component: this.targetDatabaseTextBox
 							},
 							{
-								title: '',
+								title: constants.profileWarningText,
 								component: <azdata.ButtonComponent>this.loadProfileButton
 							}
 						]
