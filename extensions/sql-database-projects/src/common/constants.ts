@@ -41,6 +41,7 @@ export const databaseReferenceSameDatabase = localize('databaseReferenceSameData
 export const databaseReferenceDifferentDabaseSameServer = localize('databaseReferenceDifferentDabaseSameServer', "Different database, same server");
 export const databaseReferenceDatabaseName = localize('databaseReferenceDatabaseName', "Database name");
 export const dacpacFiles = localize('dacpacFiles', "dacpac Files");
+export const publishSettingsFiles = localize('publishSettingsFiles', "Publish Settings File");
 export const systemDatabase = localize('systemDatabase', "System Database");
 export function newObjectNamePrompt(objectType: string) { return localize('newObjectNamePrompt', 'New {0} name:', objectType); }
 
@@ -61,6 +62,7 @@ export const connectionRadioButtonLabel = localize('connectionRadioButtonLabel',
 export const selectConnectionRadioButtonsTitle = localize('selectconnectionRadioButtonsTitle', "Specify connection from:");
 export const dataSourceDropdownTitle = localize('dataSourceDropdownTitle', "Data source");
 export const noDataSourcesText = localize('noDataSourcesText', "No data sources in this project");
+export const loadProfileButtonText = localize('loadProfileButtonText', "Load Profile...");
 
 // Error messages
 
@@ -144,6 +146,9 @@ export const ProjJsonToClean = '$(BaseIntermediateOutputPath)\\project.assets.js
 export const NETFrameworkAssembly = 'Microsoft.NETFramework.ReferenceAssemblies';
 export const VersionNumber = '1.0.0';
 export const All = 'All';
+
+// Profile XML names
+export const targetDatabaseName = 'TargetDatabaseName';
 
 // SQL connection string components
 export const initialCatalogSetting = 'Initial Catalog';

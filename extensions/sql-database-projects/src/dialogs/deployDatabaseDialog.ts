@@ -27,6 +27,7 @@ export class DeployDatabaseDialog {
 	private targetDatabaseTextBox: azdata.InputBoxComponent | undefined;
 	private connectionsRadioButton: azdata.RadioButtonComponent | undefined;
 	private dataSourcesRadioButton: azdata.RadioButtonComponent | undefined;
+	private loadProfileButton: azdata.ButtonComponent | undefined;
 	private formBuilder: azdata.FormBuilder | undefined;
 
 	private connection: azdata.connection.Connection | undefined;
@@ -36,6 +37,7 @@ export class DeployDatabaseDialog {
 
 	public deploy: ((proj: Project, profile: IDeploymentProfile) => any) | undefined;
 	public generateScript: ((proj: Project, profile: IGenerateScriptProfile) => any) | undefined;
+	public readPublishProfile: ((profileUri: vscode.Uri) => any) | undefined;
 
 	constructor(private apiWrapper: ApiWrapper, private project: Project) {
 		this.dialog = azdata.window.createModelViewDialog(constants.deployDialogName);
@@ -86,6 +88,8 @@ export class DeployDatabaseDialog {
 				this.tryEnableGenerateScriptAndOkButtons();
 			});
 
+			this.loadProfileButton = this.createLoadProfileButton(view);
+
 			this.formBuilder = <azdata.FormBuilder>view.modelBuilder.formContainer()
 				.withFormItems([
 					{
@@ -99,6 +103,10 @@ export class DeployDatabaseDialog {
 							{
 								title: constants.databaseNameLabel,
 								component: this.targetDatabaseTextBox
+							},
+							{
+								title: '',
+								component: <azdata.ButtonComponent>this.loadProfileButton
 							}
 						]
 					}
@@ -336,6 +344,40 @@ export class DeployDatabaseDialog {
 		});
 
 		return clearButton;
+	}
+
+	private createLoadProfileButton(view: azdata.ModelView): azdata.ButtonComponent {
+		let loadProfileButton: azdata.ButtonComponent = view.modelBuilder.button().withProperties({
+			label: constants.loadProfileButtonText,
+			title: constants.loadProfileButtonText,
+			ariaLabel: constants.loadProfileButtonText,
+			width: '120px'
+		}).component();
+
+		loadProfileButton.onDidClick(async () => {
+			let fileUris = await this.apiWrapper.showOpenDialog(
+				{
+					canSelectFiles: true,
+					canSelectFolders: false,
+					canSelectMany: false,
+					defaultUri: vscode.Uri.parse(this.project.projectFolderPath),
+					filters: {
+						[constants.publishSettingsFiles]: ['*.publish.xml']
+					}
+				}
+			);
+
+			if (!fileUris || fileUris.length === 0) {
+				return;
+			}
+
+			if (this.readPublishProfile) {
+				let result = await this.readPublishProfile(fileUris[0]);
+				(<azdata.InputBoxComponent>this.targetDatabaseTextBox).value = result.databaseName;
+			}
+		});
+
+		return loadProfileButton;
 	}
 
 	// only enable Generate Script and Ok buttons if all fields are filled
