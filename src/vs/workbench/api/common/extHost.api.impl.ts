@@ -962,10 +962,6 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 				checkProposedApiEnabled(extension);
 				return extHostNotebook.registerNotebookOutputRenderer(type, extension, outputFilter, renderer);
 			},
-			get activeNotebookDocument(): vscode.NotebookDocument | undefined {
-				checkProposedApiEnabled(extension);
-				return extHostNotebook.activeNotebookDocument;
-			},
 			get activeNotebookEditor(): vscode.NotebookEditor | undefined {
 				checkProposedApiEnabled(extension);
 				return extHostNotebook.activeNotebookEditor;
