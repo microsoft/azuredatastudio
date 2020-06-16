@@ -17,7 +17,7 @@ describe('Tests for conversion within PascalCase and camelCase', function (): vo
 });
 
 describe('Tests to verify exists function', function (): void {
-	it('Should determine existance of files/folders', async () => {
+	it('Should determine existence of files/folders', async () => {
 		let testFolderPath = await createDummyFileStructure();
 
 		should(await exists(testFolderPath)).equal(true);
@@ -28,3 +28,4 @@ describe('Tests to verify exists function', function (): void {
 		should(await exists(path.join(testFolderPath, 'folder4','file2.sql'))).equal(false);
 	});
 });
+

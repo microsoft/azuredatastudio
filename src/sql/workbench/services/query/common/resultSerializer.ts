@@ -13,15 +13,12 @@ import * as nls from 'vs/nls';
 
 import Severity from 'vs/base/common/severity';
 import { INotificationService, INotification } from 'vs/platform/notification/common/notification';
-import { getBaseLabel } from 'vs/base/common/labels';
-import { ShowFileInFolderAction, OpenFileInFolderAction } from 'sql/workbench/common/workspaceActions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { getRootPath, resolveCurrentDirectory, resolveFilePath } from 'sql/platform/common/pathUtilities';
+import { getRootPath, resolveCurrentDirectory } from 'sql/platform/common/pathUtilities';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IFileDialogService, FileFilter } from 'vs/platform/dialogs/common/dialogs';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
-let prevSavePath: string;
+let prevSavePath: URI;
 
 export interface ISaveRequest {
 	format: SaveFormat;
@@ -56,7 +53,6 @@ export enum SaveFormat {
 }
 
 const msgSaveFailed = nls.localize('msgSaveFailed', "Failed to save results. ");
-const msgSaveSucceeded = nls.localize('msgSaveSucceeded', "Successfully saved results to ");
 
 /**
  *  Handles save results request from the context menu of slickGrid
@@ -70,8 +66,7 @@ export class ResultSerializer {
 		@IEditorService private _editorService: IEditorService,
 		@IWorkspaceContextService private _contextService: IWorkspaceContextService,
 		@IFileDialogService private readonly fileDialogService: IFileDialogService,
-		@INotificationService private _notificationService: INotificationService,
-		@IInstantiationService private readonly _instantiationService: IInstantiationService
+		@INotificationService private _notificationService: INotificationService
 	) { }
 
 	/**
@@ -81,9 +76,6 @@ export class ResultSerializer {
 		const self = this;
 		return this.promptForFilepath(saveRequest.format, uri).then(filePath => {
 			if (filePath) {
-				if (!path.isAbsolute(filePath)) {
-					filePath = resolveFilePath(uri, filePath, this.rootPath)!;
-				}
 				let saveResultsParams = this.getParameters(uri, filePath, saveRequest.batchIndex, saveRequest.resultSetNumber, saveRequest.format, saveRequest.selection ? saveRequest.selection[0] : undefined);
 				let sendRequest = () => this.sendSaveRequestToService(saveResultsParams);
 				return self.doSave(filePath, saveRequest.format, sendRequest);
@@ -103,14 +95,11 @@ export class ResultSerializer {
 	/**
 	 * Handle save request by getting filename from user and sending request to service
 	 */
-	public handleSerialization(uri: string, format: SaveFormat, sendRequest: ((filePath: string) => Promise<SaveResultsResponse | undefined>)): Thenable<void> {
+	public handleSerialization(uri: string, format: SaveFormat, sendRequest: ((filePath: URI) => Promise<SaveResultsResponse | undefined>)): Thenable<void> {
 		const self = this;
 		return this.promptForFilepath(format, uri).then(filePath => {
 			if (filePath) {
-				if (!path.isAbsolute(filePath)) {
-					filePath = resolveFilePath(uri, filePath, this.rootPath)!;
-				}
-				return self.doSave(filePath, format, () => sendRequest(filePath!));
+				return self.doSave(filePath, format, () => sendRequest(filePath));
 			}
 			return Promise.resolve();
 		});
@@ -120,8 +109,8 @@ export class ResultSerializer {
 		return getRootPath(this._contextService);
 	}
 
-	private promptForFilepath(format: SaveFormat, resourceUri: string): Promise<string | undefined> {
-		let filepathPlaceHolder = prevSavePath ? path.dirname(prevSavePath) : resolveCurrentDirectory(resourceUri, this.rootPath);
+	private promptForFilepath(format: SaveFormat, resourceUri: string): Promise<URI | undefined> {
+		let filepathPlaceHolder = prevSavePath ? path.dirname(prevSavePath.fsPath) : resolveCurrentDirectory(resourceUri, this.rootPath);
 		if (filepathPlaceHolder) {
 			filepathPlaceHolder = path.join(filepathPlaceHolder, this.getResultsDefaultFilename(format));
 		}
@@ -132,8 +121,8 @@ export class ResultSerializer {
 			filters: this.getResultsFileExtension(format)
 		}).then(filePath => {
 			if (filePath) {
-				prevSavePath = filePath.fsPath;
-				return filePath.fsPath;
+				prevSavePath = filePath;
+				return filePath;
 			}
 			return undefined;
 		});
@@ -271,9 +260,9 @@ export class ResultSerializer {
 	}
 
 
-	private getParameters(uri: string, filePath: string, batchIndex: number, resultSetNo: number, format: string, selection?: Slick.Range): SaveResultsRequestParams {
+	private getParameters(uri: string, filePath: URI, batchIndex: number, resultSetNo: number, format: string, selection?: Slick.Range): SaveResultsRequestParams {
 		let saveResultsParams = this.getBasicSaveParameters(format);
-		saveResultsParams.filePath = filePath;
+		saveResultsParams.filePath = filePath.fsPath;
 		saveResultsParams.ownerUri = uri;
 		saveResultsParams.resultSetIndex = resultSetNo;
 		saveResultsParams.batchIndex = batchIndex;
@@ -293,35 +282,10 @@ export class ResultSerializer {
 		return !!(selection && !((selection.fromCell === selection.toCell) && (selection.fromRow === selection.toRow)));
 	}
 
-
-	private promptFileSavedNotification(savedFilePath: string) {
-		let label = getBaseLabel(path.dirname(savedFilePath));
-
-		this._notificationService.prompt(
-			Severity.Info,
-			msgSaveSucceeded + savedFilePath,
-			[{
-				label: nls.localize('openLocation', "Open file location"),
-				run: () => {
-					let action = this._instantiationService.createInstance(ShowFileInFolderAction, savedFilePath, label || path.sep);
-					action.run();
-					action.dispose();
-				}
-			}, {
-				label: nls.localize('openFile', "Open file"),
-				run: () => {
-					let action = this._instantiationService.createInstance(OpenFileInFolderAction, savedFilePath, label || path.sep);
-					action.run();
-					action.dispose();
-				}
-			}]
-		);
-	}
-
 	/**
 	 * Send request to sql tools service to save a result set
 	 */
-	private async doSave(filePath: string, format: string, sendRequest: () => Promise<SaveResultsResponse | undefined>): Promise<void> {
+	private async doSave(filePath: URI, format: string, sendRequest: () => Promise<SaveResultsResponse | undefined>): Promise<void> {
 
 		const saveNotification: INotification = {
 			severity: Severity.Info,
@@ -341,7 +305,6 @@ export class ResultSerializer {
 					message: msgSaveFailed + (result ? result.messages : '')
 				});
 			} else {
-				this.promptFileSavedNotification(filePath);
 				this.openSavedFile(filePath, format);
 			}
 			// TODO telemetry for save results
@@ -360,10 +323,9 @@ export class ResultSerializer {
 	/**
 	 * Open the saved file in a new vscode editor pane
 	 */
-	private openSavedFile(filePath: string, format: string): void {
+	private openSavedFile(filePath: URI, format: string): void {
 		if (format !== SaveFormat.EXCEL) {
-			let uri = URI.file(filePath);
-			this._editorService.openEditor({ resource: uri }).then((result) => {
+			this._editorService.openEditor({ resource: filePath }).then((result) => {
 
 			}, (error: any) => {
 				this._notificationService.notify({
