@@ -136,16 +136,18 @@ class MockEditorService extends TestEditorService {
 		group: {}
 	};
 
-	activeTextEditorControl: ICodeEditor = <any>{
-		getModel: () => {
-			return <any>{
-				getLanguageIdentifier: () => {
-					return { language: this.mode };
-				}
-			};
-		},
-		getEditorType: () => EditorType.ICodeEditor
-	};
+	get activeTextEditorControl(): ICodeEditor {
+		return {
+			getModel: () => {
+				return <any>{
+					getLanguageIdentifier: () => {
+						return { language: this.mode };
+					}
+				};
+			},
+			getEditorType: () => EditorType.ICodeEditor
+		} as any;
+	}
 
 	openEditor(_editor: any, _options?: any, _group?: any): Promise<any> {
 		return Promise.resolve(_editor);
