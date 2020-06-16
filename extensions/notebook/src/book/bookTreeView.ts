@@ -228,7 +228,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	async revealActiveDocumentInViewlet(uri?: vscode.Uri, shouldReveal: boolean = true): Promise<void> {
+	async revealActiveDocumentInViewlet(uri?: vscode.Uri, shouldReveal: boolean = true): Promise<BookTreeItem> {
 		let bookItem: BookTreeItem;
 		// If no uri is passed in, try to use the current active notebook editor
 		if (!uri) {
@@ -246,6 +246,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				await this._bookViewer.reveal(bookItem, { select: true, focus: true, expand: 3 });
 			}
 		}
+		return bookItem;
 	}
 
 	openMarkdown(resource: string): void {

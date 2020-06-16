@@ -116,7 +116,7 @@ describe('BookTreeViewProviderTests', function () {
 			await fs.writeFile(notebook2File, '');
 			await fs.writeFile(notebook3File, '');
 			await fs.writeFile(markdownFile, '');
-			appContext = new AppContext(undefined, new ApiWrapper());
+			// appContext = new AppContext(undefined, new ApiWrapper());
 		});
 
 		it('should initialize correctly with empty workspace array', async () => {
@@ -223,6 +223,21 @@ describe('BookTreeViewProviderTests', function () {
 
 			});
 
+			/* it('should highlight correct bookItem on opening a notebook', async () => {
+				let notebook2Path = path.join(rootFolderPath, 'Book', 'content', 'notebook2.ipynb');
+				const result = await bookTreeViewProvider.getNavigation(vscode.Uri.file(notebook2Path));
+				await bookTreeViewProvider.openNotebook(result.next.fsPath);
+				//let openedTreeItem: BookTreeItem = bookTreeViewProvider.currentBook.getNotebook(result.next.fsPath);
+				let currentSelection = bookTreeViewProvider.getCurrentSelection();
+				should(currentSelection);
+				//should(currentSelection.length).equal(1, 'only one active item must be selected');
+				//should(currentSelection[0]).equal(openedTreeItem, 'Highlighted the wronf item on the view');
+
+				//let bookTreeViewProviderMock = TypeMoq.Mock.ofInstance(new BookTreeViewProvider(appContext.apiWrapper, [], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator));
+				//bookTreeViewProviderMock.setup(x => x.revealActiveDocumentInViewlet(TypeMoq.It.isAny())).returns(() => Promise.resolve());
+			}); */
+
+
 			it('providedBookTreeViewProvider should return all book nodes when element is undefined', async function (): Promise<void> {
 				const children = await providedbookTreeViewProvider.getChildren();
 				should(children).be.Array();
@@ -262,6 +277,26 @@ describe('BookTreeViewProviderTests', function () {
 				should(result.next.fsPath).equal(notebook3Path, 'getNavigation failed to get the next url');
 				should(result.previous.fsPath).equal(notebook1Path, 'getNavigation failed to get the previous url');
 			});
+
+			it('revealActiveDocumentInViewlet should return correct bookItem for highlight', async () => {
+				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb');
+
+				let currentSelection = await bookTreeViewProvider.revealActiveDocumentInViewlet(vscode.Uri.parse(notebook1Path), false);
+				equalBookItems(currentSelection, expectedNotebook1);
+			});
+
+			/* it('revealActiveDocumentInViewlet should return correct bookItem for highlight on openNotebook', async () => {
+				let notebook2Path = path.join(rootFolderPath, 'Book', 'content', 'notebook2.ipynb');
+
+				await bookTreeViewProvider.openNotebook(notebook2Path);
+				await should(bookTreeViewProvider.revealActiveDocumentInViewlet()).resolvedWith(expectedNotebook2);
+				//let currentSelection = await bookTreeViewProvider.revealActiveDocumentInViewlet();
+				//should(currentSelection);
+				//equalBookItems(currentSelection, expectedNotebook2);
+				await fs.unlink(notebook2Path);
+				//let bookTreeViewProviderMock = TypeMoq.Mock.ofInstance(new BookTreeViewProvider(appContext.apiWrapper, [], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator));
+				//bookTreeViewProviderMock.setup(x => x.revealActiveDocumentInViewlet(TypeMoq.It.isAny())).returns(() => Promise.resolve());
+			}); */
 
 		});
 
