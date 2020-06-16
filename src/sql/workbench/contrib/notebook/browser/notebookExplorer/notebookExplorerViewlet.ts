@@ -204,7 +204,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 
 		if (contentPattern.length === 0) {
 			this.clearSearchResults(false);
-			this.updateViewletsVisibility();
+			this.updateViewletsState();
 			return;
 		}
 
@@ -264,7 +264,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 						if (dataProvider && !dataProvider.isTreeEmpty) {
 							let items = await dataProvider.getChildren();
 							items?.forEach(root => {
-								this.updateViewletsVisibility();
+								this.updateViewletsState();
 								let searchView = this.getView(NotebookSearchView.ID);
 								if (searchView instanceof NotebookSearchView) {
 									let folderToSearch = path.join(root.tooltip, 'content');
@@ -283,7 +283,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 		}, onQueryValidationError);
 	}
 
-	updateViewletsVisibility(): void {
+	updateViewletsState(): void {
 		let containerModel = this.viewDescriptorService.getViewContainerModel(this.viewContainer);
 		let visibleViewDescriptors = containerModel.visibleViewDescriptors;
 		if (this.searchWidget.searchInput.getValue().length > 0) {
@@ -291,19 +291,15 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 				let allViews = containerModel.allViewDescriptors;
 				allViews.forEach(view => {
 					this.getView(view.id).setExpanded(false);
-					//this.toggleViewVisibility(view.id);
 				});
 				this.getView(NotebookSearchView.ID).setExpanded(true);
-				//this.getView(NotebookSearchView.ID)?.setVisible(true);
 			}
 		} else {
 			let allViews = containerModel.allViewDescriptors;
 			allViews.forEach(view => {
 				this.getView(view.id).setExpanded(true);
-				// this.toggleViewVisibility(view.id);
 			});
 			this.getView(NotebookSearchView.ID).setExpanded(false);
-			//this.getView(NotebookSearchView.ID)?.setVisible(false);
 		}
 	}
 
