@@ -19,11 +19,41 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     # TODO: rename azure-pipelines/linux/xvfb.init to github-actions
-
+    - run: |
+        sudo apt-get update
+        sudo apt-get install -y libxkbfile-dev pkg-config libsecret-1-dev libxss1 dbus xvfb libgtk-3-0 libkrb5-dev # {{SQL CARBON EDIT}} add kerberos dep
+        sudo cp build/azure-pipelines/linux/xvfb.init /etc/init.d/xvfb
+        sudo chmod +x /etc/init.d/xvfb
+        sudo update-rc.d xvfb defaults
+        sudo service xvfb start
+      name: Setup Build Environment
+    - uses: actions/setup-node@v1
+      with:
+        node-version: 10
+    # TODO: cache node modules
+    - run: yarn --frozen-lockfile
+      name: Install Dependencies
+    - run: yarn electron x64
+      name: Download Electron
+    - run: yarn gulp hygiene
+      name: Run Hygiene Checks
+    - run: yarn strict-vscode # {{SQL CARBON EDIT}} add step
+      name: Run Strict Compile Options
+    # - run: yarn monaco-compile-check {{SQL CARBON EDIT}} remove step
+    #   name: Run Monaco Editor Checks
+    - run: yarn valid-layers-check
+      name: Run Valid Layers Checks
+    - run: yarn compile
+      name: Compile Sources
     # - run: yarn download-builtin-extensions {{SQL CARBON EDIT}} remove step
     #   name: Download Built-in Extensions
-
+    - run: DISPLAY=:10 ./scripts/test.sh --tfs "Unit Tests" --coverage --runGlob "**/sql/**/*.test.js"
+      name: Run Unit Tests (Electron)
+    - run: DISPLAY=:10 ./scripts/test-extensions-unit.sh
+      name: Run Extension Unit Tests (Electron)
       # {{SQL CARBON EDIT}} Add coveralls. We merge first to get around issue where parallel builds weren't being combined correctly
+    - run: node test/combineCoverage
+      name: Combine code coverage files
     - name: Dump GitHub context
       env:
         GITHUB_CONTEXT: ${{ toJson(github) }}

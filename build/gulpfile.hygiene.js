@@ -177,6 +177,7 @@ const copyrightFilter = [
 	'!**/*.xlf',
 	'!**/*.dacpac',
 	'!**/*.bacpac',
+	'!**/lcov.info',
 	'!**/lcov.info'
 ];
 
