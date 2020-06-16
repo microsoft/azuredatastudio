@@ -253,7 +253,7 @@ export class NotebookContribution extends Disposable implements IWorkbenchContri
 
 	private onEditorOpening(originalInput: IEditorInput, options: IEditorOptions | ITextEditorOptions | undefined, group: IEditorGroup, context: OpenEditorContext, id: string | undefined): IOpenEditorOverride | undefined {
 		if (id === undefined && originalInput.isUntitled()) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} strict-null-checks
 		}
 
 		if (originalInput instanceof NotebookEditorInput) {
