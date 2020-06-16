@@ -504,6 +504,70 @@ suite('SQL ConnectionManagementService tests', () => {
 		});
 	});
 
+	test('deleteConnection should delete the connection properly', () => {
+		let profile = <ConnectionProfile>assign({}, connectionProfile);
+		let uri1 = 'connection:connectionId';
+		let options: IConnectionCompletionOptions = {
+			params: {
+				connectionType: ConnectionType.editor,
+				input: {
+					onConnectSuccess: undefined,
+					onConnectReject: undefined,
+					onConnectStart: undefined,
+					onDisconnect: undefined,
+					onConnectCanceled: undefined,
+					uri: uri1,
+				},
+				queryRange: undefined,
+				runQueryOnCompletion: RunQueryOnConnectionMode.none,
+				isEditConnection: false
+			},
+			saveTheConnection: true,
+			showDashboard: false,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		};
+
+		connectionStore.setup(x => x.deleteConnectionFromConfiguration(TypeMoq.It.isAny())).returns(() => Promise.resolve());
+		return connect(uri1, options, true, profile).then(() => {
+			assert(connectionManagementService.deleteConnection(profile));
+		});
+	});
+
+	test('deleteConnectionGroup should do something', () => {
+		let profile = <ConnectionProfile>assign({}, connectionProfile);
+		let profileGroup = createConnectionGroup('original_id');
+		profileGroup.addConnections([profile]);
+		let uri1 = 'connection:connectionId';
+		let options: IConnectionCompletionOptions = {
+			params: {
+				connectionType: ConnectionType.editor,
+				input: {
+					onConnectSuccess: undefined,
+					onConnectReject: undefined,
+					onConnectStart: undefined,
+					onDisconnect: undefined,
+					onConnectCanceled: undefined,
+					uri: uri1,
+				},
+				queryRange: undefined,
+				runQueryOnCompletion: RunQueryOnConnectionMode.none,
+				isEditConnection: false
+			},
+			saveTheConnection: true,
+			showDashboard: false,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		};
+
+		connectionStore.setup(x => x.deleteGroupFromConfiguration(TypeMoq.It.isAny())).returns(() => Promise.resolve());
+		return connect(uri1, options, true, profile).then(() => {
+			return connectionManagementService.deleteConnectionGroup(profileGroup).then(result => {
+				assert(result);
+			});
+		});
+	});
+
 	test('connectIfNotConnected should not try to connect with already connected profile', () => {
 		let profile = <ConnectionProfile>assign({}, connectionProfile);
 		let uri1 = 'connection:connectionId'; //must use default connection uri for test to work.
