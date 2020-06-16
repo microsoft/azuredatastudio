@@ -534,7 +534,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		});
 	});
 
-	test('deleteConnectionGroup should do something', () => {
+	test('deleteConnectionGroup should delete connections in connection group', () => {
 		let profile = <ConnectionProfile>assign({}, connectionProfile);
 		let profileGroup = createConnectionGroup('original_id');
 		profileGroup.addConnections([profile]);
@@ -916,6 +916,35 @@ suite('SQL ConnectionManagementService tests', () => {
 		});
 	});
 
+	test('disconnect editor should disconnect uri from connection', () => {
+		let uri = 'editor to remove';
+		let options: IConnectionCompletionOptions = {
+			params: {
+				connectionType: ConnectionType.editor,
+				input: {
+					onConnectSuccess: undefined,
+					onConnectReject: undefined,
+					onConnectStart: undefined,
+					onDisconnect: () => { },
+					onConnectCanceled: undefined,
+					uri: uri
+				},
+				queryRange: undefined,
+				runQueryOnCompletion: RunQueryOnConnectionMode.none
+			},
+			saveTheConnection: true,
+			showDashboard: false,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		};
+
+		return connect(uri, options, false, connectionProfileWithEmptySavedPassword).then(() => {
+			return connectionManagementService.disconnectEditor(options.params.input).then(result => {
+				assert(result);
+			});
+		});
+	});
+
 	test('doChangeLanguageFlavor should throw on unknown provider', () => {
 		// given a provider that will never exist
 		let invalidProvider = 'notaprovider';
@@ -1214,6 +1243,20 @@ suite('SQL ConnectionManagementService tests', () => {
 		verifyConnections(connections, ['1', '2'], 'parameter is true');
 	});
 });
+
+test('isRecent should evaluate whether a profile was recently connected or not', () => {
+	const connectionStatusManagerMock = TypeMoq.Mock.ofType(ConnectionStatusManager, TypeMoq.MockBehavior.Loose);
+	const connectionStoreMock = TypeMoq.Mock.ofType(ConnectionStore, TypeMoq.MockBehavior.Loose, new TestStorageService());
+	connectionStoreMock.setup(x => x.getRecentlyUsedConnections()).returns(() => {
+		return [createConnectionProfile('1')];
+	});
+	let profile1 = createConnectionProfile('1');
+	let profile2 = createConnectionProfile('2');
+	const connectionManagementService = new ConnectionManagementService(connectionStoreMock.object, connectionStatusManagerMock.object, undefined, undefined, undefined, undefined, undefined, new TestCapabilitiesService(), undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, getBasicExtensionService());
+	assert(connectionManagementService.isRecent(profile1));
+	assert(!connectionManagementService.isRecent(profile2));
+});
+
 
 function createConnectionProfile(id: string): ConnectionProfile {
 
