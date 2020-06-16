@@ -178,6 +178,7 @@ const copyrightFilter = [
 	'!**/*.dacpac',
 	'!**/*.bacpac',
 	'!**/lcov.info',
+	'!**/lcov.info',
 	'!**/lcov.info'
 ];
 
