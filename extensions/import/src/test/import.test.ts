@@ -314,7 +314,7 @@ describe('import extension tests', function (): void {
 
 });
 
-export class ImportTestUtils {
+class ImportTestUtils {
 
 	public static getTestServer(): azdata.connection.Connection {
 		return {
@@ -505,7 +505,7 @@ class TestExtensionContext implements vscode.ExtensionContext {
 	logPath: string;
 }
 
-export class TestImportDataModel implements ImportDataModel {
+class TestImportDataModel implements ImportDataModel {
 	server: azdata.connection.Connection;
 	serverId: string;
 	ownerUri: string;
