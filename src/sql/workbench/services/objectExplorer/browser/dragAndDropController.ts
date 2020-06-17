@@ -81,14 +81,31 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 		return;
 	}
 
+
+	public canDragToConnectionProfileGroup(source: any, targetConnectionProfileGroup: ConnectionProfileGroup) {
+		let canDragOver: boolean = true;
+
+		if (source instanceof ConnectionProfile) {
+			if (!this._connectionManagementService.canChangeConnectionConfig(source, targetConnectionProfileGroup.id)) {
+				canDragOver = false;
+			}
+		} else if (source instanceof ConnectionProfileGroup) {
+			// Dropping a group to itself or its descendants nodes is not allowed
+			// to avoid creating a circular structure.
+			canDragOver = source.id !== targetConnectionProfileGroup.id && !source.isAncestorOf(targetConnectionProfileGroup);
+		}
+
+		return canDragOver;
+	}
+
 	/**
 	 * Returns a DragOverReaction indicating whether sources can be
 	 * dropped into target or some parent of the target.
 	 * Returns DRAG_OVER_ACCEPT_BUBBLE_DOWN when element is a connection group or connection
 	 */
 	public onDragOver(tree: ITree, data: IDragAndDropData, targetElement: any, originalEvent: DragMouseEvent): IDragOverReaction {
-
 		let canDragOver: boolean = true;
+
 		if (targetElement instanceof ConnectionProfile || targetElement instanceof ConnectionProfileGroup) {
 			let targetConnectionProfileGroup = this.getTargetGroup(targetElement);
 			// Verify if the connection can be moved to the target group
