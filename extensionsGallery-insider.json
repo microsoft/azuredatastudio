@@ -25,19 +25,19 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/extensions/agent/images/extension.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/agent/images/extension.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/agent/README.md"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/agent/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/agent/package.json"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/agent/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt"
 								}
 							],
 							"properties": [
@@ -86,19 +86,19 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/samples/sp_whoIsActive/images/extension.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/samples/sp_whoIsActive/images/extension.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/samples/sp_whoIsActive/README.md"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/samples/sp_whoIsActive/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/samples/sp_whoIsActive/package.json"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/samples/sp_whoIsActive/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/samples/sp_whoIsActive/LICENSE.txt"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/samples/sp_whoIsActive/LICENSE.txt"
 								}
 							],
 							"properties": [
@@ -143,19 +143,19 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/samples/serverReports/images/extension.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/samples/serverReports/images/extension.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/samples/serverReports/README.md"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/samples/serverReports/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/samples/serverReports/package.json"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/samples/serverReports/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/samples/serverReports/LICENSE.txt"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/samples/serverReports/LICENSE.txt"
 								}
 							],
 							"properties": [
@@ -485,19 +485,19 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/extensions/profiler/images/extension.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/profiler/images/extension.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/profiler/README.md"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/profiler/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/profiler/package.json"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/profiler/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt"
 								}
 							],
 							"properties": [
@@ -554,7 +554,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt"
 								}
 							],
 							"properties": [
@@ -717,19 +717,19 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/extensions/import/images/extension.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/import/images/extension.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/import/README.md"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/import/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/import/package.json"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/import/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/import/Microsoft_SQL_Server_Import_Extension_and_Tools_Import_Flat_File_Preview.docx"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/import/Microsoft_SQL_Server_Import_Extension_and_Tools_Import_Flat_File_Preview.docx"
 								}
 							],
 							"properties": [
@@ -1165,19 +1165,19 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/extensions/admin-pack/images/extension.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/admin-pack/images/extension.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/admin-pack/README.md"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/admin-pack/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/admin-pack/package.json"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/admin-pack/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt"
 								}
 							],
 							"properties": [
@@ -1226,19 +1226,19 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/extensions/dacpac/images/extension.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/dacpac/images/extension.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/dacpac/README.md"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/dacpac/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/dacpac/package.json"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/dacpac/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt"
 								}
 							],
 							"properties": [
@@ -1458,19 +1458,19 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/extensions/schema-compare/images/extension.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/schema-compare/images/extension.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/schema-compare/README.md"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/schema-compare/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/schema-compare/package.json"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/schema-compare/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt"
 								}
 							],
 							"properties": [
@@ -1531,7 +1531,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt"
 								}
 							],
 							"properties": [
@@ -1588,7 +1588,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt"
 								}
 							],
 							"properties": [
@@ -1633,19 +1633,19 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/extensions/cms/images/extension.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/cms/images/extension.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/cms/README.md"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/cms/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/cms/package.json"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/cms/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt"
 								}
 							],
 							"properties": [
@@ -1694,19 +1694,19 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/extensions/admin-tool-ext-win/images/extension.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/admin-tool-ext-win/images/extension.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/extensions/admin-tool-ext-win/README.md"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/admin-tool-ext-win/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/extensions/admin-tool-ext-win/package.json"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/admin-tool-ext-win/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt"
 								}
 							],
 							"properties": [
@@ -1755,19 +1755,19 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-de/languagepack.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-de/languagepack.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-de/README.md"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-de/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-de/package.json"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-de/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt"
 								}
 							],
 							"properties": [
@@ -1820,19 +1820,19 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-es/languagepack.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-es/languagepack.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-es/README.md"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-es/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-es/package.json"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-es/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt"
 								}
 							],
 							"properties": [
@@ -1885,19 +1885,19 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-fr/languagepack.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-fr/languagepack.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-fr/README.md"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-fr/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-fr/package.json"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-fr/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt"
 								}
 							],
 							"properties": [
@@ -1950,19 +1950,19 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-it/languagepack.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-it/languagepack.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-it/README.md"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-it/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-it/package.json"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-it/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt"
 								}
 							],
 							"properties": [
@@ -2015,19 +2015,19 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-ko/languagepack.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-ko/languagepack.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-ko/README.md"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-ko/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-ko/package.json"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-ko/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt"
 								}
 							],
 							"properties": [
@@ -2080,19 +2080,19 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-pt-BR/languagepack.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-pt-BR/languagepack.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-pt-BR/README.md"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-pt-BR/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-pt-BR/package.json"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-pt-BR/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt"
 								}
 							],
 							"properties": [
@@ -2145,19 +2145,19 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-ru/languagepack.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-ru/languagepack.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-ru/README.md"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-ru/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-ru/package.json"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-ru/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt"
 								}
 							],
 							"properties": [
@@ -2210,19 +2210,19 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-zh-hans/languagepack.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-zh-hans/languagepack.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-zh-hans/README.md"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-zh-hans/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-zh-hans/package.json"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-zh-hans/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt"
 								}
 							],
 							"properties": [
@@ -2275,19 +2275,19 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-zh-hant/languagepack.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-zh-hant/languagepack.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-zh-hant/README.md"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-zh-hant/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-zh-hant/package.json"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-zh-hant/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt"
 								}
 							],
 							"properties": [
@@ -2340,19 +2340,19 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-ja/languagepack.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-ja/languagepack.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-ja/README.md"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-ja/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-ja/package.json"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-ja/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt"
 								}
 							],
 							"properties": [
@@ -2580,19 +2580,19 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/extensions/query-history/images/extension.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/query-history/images/extension.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/query-history/README.md"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/query-history/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/query-history/package.json"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/query-history/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt"
 								}
 							],
 							"properties": [
@@ -3158,19 +3158,19 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/extensions/machine-learning/images/extensionIcon.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/machine-learning/images/extensionIcon.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/machine-learning/README.md"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/machine-learning/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/machine-learning/package.json"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/machine-learning/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt"
 								}
 							],
 							"properties": [
@@ -3268,19 +3268,19 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/extensions/sql-assessment/images/extension.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/sql-assessment/images/extension.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/sql-assessment/README.md"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/sql-assessment/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/sql-assessment/package.json"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/sql-assessment/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt"
 								}
 							],
 							"properties": [
