@@ -155,7 +155,9 @@ describe.skip('ProjectsController: project controller operations', function (): 
 
 			should(holler).equal(generateHoller, 'executionCallback() is supposed to have been setup and called for GenerateScript scenario');
 
+			dialog = await projController.object.deployProject(proj);
 			await projController.object.readPublishProfile(vscode.Uri.parse('test'));
+
 			should(holler).equal(profileHoller, 'executionCallback() is supposed to have been setup and called for ReadPublishProfile scenario');
 		});
 
