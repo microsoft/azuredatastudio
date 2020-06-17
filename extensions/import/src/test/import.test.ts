@@ -226,19 +226,21 @@ describe('import extension tests', function (): void {
 		it('FlatFileWizard- getConnection returns active connection', async () => {
 			let testConnectionProfile = ImportTestUtils.getTestConnectionProfile();
 			testConnectionProfile.providerId = 'MSSQL';
+
+			//mocking an active connection
 			mockApiWrapper.setup(x => x.getCurrentConnection()).returns(async () => { return testConnectionProfile; })
 
 			let testFlatFileWizard = new FlatFileWizard(TypeMoq.It.isAny(), mockApiWrapper.object);
 
+			//getConnectionID should return the connectionId of active connection
 			let connectionId = await testFlatFileWizard.getConnectionId();
-
 			should(connectionId).equals(testConnectionProfile.connectionId);
 		});
 
 		it('FlatFileWizard- should initialize all pages', async () => {
 			let testConnectionProfile = ImportTestUtils.getTestConnectionProfile();
 			testConnectionProfile.providerId = 'MSSQL';
-			mockApiWrapper.setup(x => x.getCurrentConnection()).returns(async () => { return testConnectionProfile; })
+			mockApiWrapper.setup(x => x.getCurrentConnection()).returns(async () => { return testConnectionProfile; });
 			let onClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
 			let mockWizard = TypeMoq.Mock.ofType(TestWizard);
 			let mockWizardPage = TypeMoq.Mock.ofType(TestWizardPage);
@@ -249,7 +251,7 @@ describe('import extension tests', function (): void {
 				connectionProfile: ImportTestUtils.getTestConnectionProfile()
 			};
 
-
+			// Mocking wizard component creation
 			mockApiWrapper.setup(x => x.createWizard(TypeMoq.It.isAnyString())).returns(() => { return mockWizard.object; });
 			mockApiWrapper.setup(x => x.createWizardPage(TypeMoq.It.isAnyString())).returns(() => { return mockWizardPage.object; });
 			mockApiWrapper.setup(x => x.createButton(TypeMoq.It.isAnyString())).returns(() => { return mockButton.object; });
@@ -258,6 +260,7 @@ describe('import extension tests', function (): void {
 
 			await testFlatFileWizard.start(testProvider);
 
+			// asserting all wizard pages are getting created
 			should.notEqual(testFlatFileWizard.wizard, undefined);
 			should.notEqual(testFlatFileWizard.page1, undefined);
 			should.notEqual(testFlatFileWizard.page2, undefined);
