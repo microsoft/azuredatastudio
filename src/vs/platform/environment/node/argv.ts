@@ -62,6 +62,7 @@ export interface ParsedArgs {
 	'install-source'?: string;
 	'disable-updates'?: boolean;
 	'disable-crash-reporter'?: boolean;
+	'crash-reporter-directory'?: string;
 	'skip-add-to-recently-opened'?: boolean;
 	'max-memory'?: string;
 	'file-write'?: boolean;
@@ -71,6 +72,7 @@ export interface ParsedArgs {
 	remote?: string;
 	'disable-user-env-probe'?: boolean;
 	'force'?: boolean;
+	'donot-sync'?: boolean;
 	'force-user-env'?: boolean;
 	'sync'?: 'on' | 'off';
 
@@ -186,6 +188,7 @@ export const OPTIONS: OptionDescriptions<Required<ParsedArgs>> = {
 	'disable-telemetry': { type: 'boolean' },
 	'disable-updates': { type: 'boolean' },
 	'disable-crash-reporter': { type: 'boolean' },
+	'crash-reporter-directory': { type: 'string' },
 	'disable-user-env-probe': { type: 'boolean' },
 	'skip-add-to-recently-opened': { type: 'boolean' },
 	'unity-launch': { type: 'boolean' },
@@ -194,6 +197,7 @@ export const OPTIONS: OptionDescriptions<Required<ParsedArgs>> = {
 	'file-chmod': { type: 'boolean' },
 	'driver-verbose': { type: 'boolean' },
 	'force': { type: 'boolean' },
+	'donot-sync': { type: 'boolean' },
 	'trace': { type: 'boolean' },
 	'trace-category-filter': { type: 'string' },
 	'trace-options': { type: 'string' },

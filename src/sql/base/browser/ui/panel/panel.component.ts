@@ -52,18 +52,18 @@ let idPool = 0;
 @Component({
 	selector: 'panel',
 	template: `
-		<div #rootContainer class="tabbedPanel fullsize" [ngClass]="options.layout === NavigationBarLayout.vertical ? 'vertical' : 'horizontal'">
-			<div *ngIf="!options.alwaysShowTabs ? _tabs.length !== 1 : true" class="composite title">
+		<div #rootContainer class="tabbedPanel fullsize" [ngClass]="_options.layout === NavigationBarLayout.vertical ? 'vertical' : 'horizontal'">
+			<div *ngIf="!_options.alwaysShowTabs ? _tabs && _tabs.length !== 1 : true" class="composite title">
 				<div class="tabContainer">
-					<div *ngIf="options.layout === NavigationBarLayout.vertical" class="vertical-tab-action-container">
+					<div *ngIf="_options.layout === NavigationBarLayout.vertical" class="vertical-tab-action-container">
 						<button [attr.aria-expanded]="_tabExpanded" [title]="toggleTabPanelButtonAriaLabel" [attr.aria-label]="toggleTabPanelButtonAriaLabel" [ngClass]="toggleTabPanelButtonCssClass" tabindex="0" (click)="toggleTabPanel()"></button>
 					</div>
 					<div [style.display]="_tabExpanded ? 'flex': 'none'" [attr.aria-hidden]="_tabExpanded ? 'false': 'true'" class="tabList" role="tablist" (keydown)="onKey($event)">
 						<div role="presentation" *ngFor="let tab of _tabs">
 							<ng-container *ngIf="tab.type!=='group-header'">
-								<tab-header role="presentation" [active]="_activeTab === tab" [tab]="tab" [showIcon]="options.showIcon" (onSelectTab)='selectTab($event)' (onCloseTab)='closeTab($event)'></tab-header>
+								<tab-header role="presentation" [active]="_activeTab === tab" [tab]="tab" [showIcon]="_options.showIcon" (onSelectTab)='selectTab($event)' (onCloseTab)='closeTab($event)'></tab-header>
 							</ng-container>
-							<ng-container *ngIf="tab.type==='group-header' && options.layout === NavigationBarLayout.vertical">
+							<ng-container *ngIf="tab.type==='group-header' && _options.layout === NavigationBarLayout.vertical">
 								<div class="tab-group-header">
 									<span>{{tab.title}}</span>
 								</div>
@@ -85,7 +85,16 @@ let idPool = 0;
 	`
 })
 export class PanelComponent extends Disposable implements IThemable {
-	@Input() public options?: IPanelOptions;
+	private _options: IPanelOptions = defaultOptions;
+
+	@Input() public set options(newOptions: IPanelOptions) {
+		// Refresh for the case when the options are set
+		// manually through code which doesn't trigger
+		// Angular's change detection
+		this._options = newOptions;
+		this._cd.detectChanges();
+	}
+
 	@Input() public actions?: Array<Action>;
 	@ContentChildren(TabComponent) private readonly _tabs!: QueryList<TabComponent>;
 	@ViewChildren(TabHeaderComponent) private readonly _tabHeaders!: QueryList<TabHeaderComponent>;
@@ -127,7 +136,7 @@ export class PanelComponent extends Disposable implements IThemable {
 	}
 
 	ngOnInit(): void {
-		this.options = mixin(this.options || {}, defaultOptions, false);
+		this._options = mixin(this._options || {}, defaultOptions, false);
 		const rootContainerElement = this._rootContainer.nativeElement as HTMLElement;
 		this._styleElement = createStyleSheet(rootContainerElement);
 	}
@@ -247,6 +256,31 @@ export class PanelComponent extends Disposable implements IThemable {
 			nextTabIndex = 0;
 		}
 		this.selectTab(nextTabIndex);
+	}
+
+	/**
+	 * Updates the specified tab with new config values
+	 * @param tabId The id of the tab to update
+	 * @param config The values to update the tab with
+	 */
+	public updateTab(tabId: string, config: { title?: string, iconClass?: string }): void {
+		// First find the tab and update it with the new values. Then manually refresh the
+		// tab header since it won't detect changes made to the corresponding tab by itself.
+		let tabHeader: TabHeaderComponent;
+		const tabHeaders = this._tabHeaders.toArray();
+		const tab = this._tabs.find((item, i) => {
+			if (item.identifier === tabId) {
+				tabHeader = tabHeaders?.length > i ? tabHeaders[i] : undefined;
+				return true;
+			}
+			return false;
+		});
+
+		if (tab) {
+			tab.title = config.title;
+			tab.iconClass = config.iconClass;
+			tabHeader?.refresh();
+		}
 	}
 
 	private findAndRemoveTabFromMRU(tab: TabComponent): void {

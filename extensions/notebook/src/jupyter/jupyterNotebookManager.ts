@@ -20,8 +20,8 @@ export class JupyterNotebookManager implements nb.NotebookManager, vscode.Dispos
 		this._sessionManager = sessionManager || new JupyterSessionManager(pythonEnvVarPath);
 		this._serverManager.onServerStarted(() => {
 			this.setServerSettings(this._serverManager.serverSettings);
+			this._sessionManager.installation = this._serverManager.instanceOptions.install;
 		});
-
 	}
 	public get contentManager(): nb.ContentManager {
 		return undefined;

@@ -102,7 +102,7 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 			{},
 			{
 				allowScripts: true,
-			});
+			}, undefined);
 
 		this._webview.mountTo(this._el.nativeElement);
 		this._onMessageDisposable = this._webview.onMessage(e => {

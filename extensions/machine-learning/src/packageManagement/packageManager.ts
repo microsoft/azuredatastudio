@@ -45,12 +45,12 @@ export class PackageManager {
 	public init(): void {
 	}
 
-	private get pythonExecutable(): string {
-		return this._config.pythonExecutable;
+	private async getPythonExecutable(): Promise<string> {
+		return await this._config.getPythonExecutable(true);
 	}
 
-	private get _rExecutable(): string {
-		return this._config.rExecutable;
+	private async getRExecutable(): Promise<string> {
+		return await this._config.getRExecutable(true);
 	}
 	/**
 	 * Returns packageManageProviders
@@ -96,7 +96,10 @@ export class PackageManager {
 					defaultProviderId: defaultProvider.providerId
 				});
 			} else {
-				this._apiWrapper.showInfoMessage(constants.managePackageCommandError);
+				const result = await this._apiWrapper.showInfoMessage(constants.managePackageCommandError, constants.learnMoreTitle);
+				if (result === constants.learnMoreTitle) {
+					await this._apiWrapper.openExternal(vscode.Uri.parse(constants.managePackagesDocs));
+				}
 			}
 		} catch (err) {
 			this._apiWrapper.showErrorMessage(err);
@@ -123,7 +126,8 @@ export class PackageManager {
 		if (!this._config.rEnabled) {
 			return;
 		}
-		if (!this._rExecutable) {
+		let rExecutable = await this.getRExecutable();
+		if (!rExecutable) {
 			throw new Error(constants.rConfigError);
 		}
 
@@ -139,7 +143,8 @@ export class PackageManager {
 		if (!this._config.pythonEnabled) {
 			return;
 		}
-		if (!this.pythonExecutable) {
+		let pythonExecutable = await this.getPythonExecutable();
+		if (!pythonExecutable) {
 			throw new Error(constants.pythonConfigError);
 		}
 		if (!requiredPackages || requiredPackages.length === 0) {
@@ -158,7 +163,8 @@ export class PackageManager {
 		});
 
 		if (fileContent) {
-			let confirmed = await utils.promptConfirm(constants.confirmInstallPythonPackages(fileContent), this._apiWrapper);
+			this._apiWrapper.showInfoMessage(constants.confirmInstallPythonPackagesDetails(fileContent));
+			let confirmed = await utils.promptConfirm(constants.confirmInstallPythonPackages, this._apiWrapper);
 			if (confirmed) {
 				this._outputChannel.appendLine(constants.installDependenciesPackages);
 				let result = await utils.execCommandOnTempFile<string>(fileContent, async (tempFilePath) => {
@@ -176,7 +182,8 @@ export class PackageManager {
 
 	private async getInstalledPipPackages(): Promise<nbExtensionApis.IPackageDetails[]> {
 		try {
-			let cmd = `"${this.pythonExecutable}" -m pip list --format=json`;
+			let pythonExecutable = await this.getPythonExecutable();
+			let cmd = `"${pythonExecutable}" -m pip list --format=json`;
 			let packagesInfo = await this._processService.executeBufferedCommand(cmd, undefined);
 			let packagesResult: nbExtensionApis.IPackageDetails[] = [];
 			if (packagesInfo && packagesInfo.indexOf(']') > 0) {
@@ -195,23 +202,25 @@ export class PackageManager {
 	}
 
 	private async installPipPackage(requirementFilePath: string): Promise<string> {
-		let cmd = `"${this.pythonExecutable}" -m pip install -r "${requirementFilePath}"`;
+		let pythonExecutable = await this.getPythonExecutable();
+		let cmd = `"${pythonExecutable}" -m pip install -r "${requirementFilePath}"`;
 		return await this._processService.executeBufferedCommand(cmd, this._outputChannel);
 	}
 
 	private async installRPackage(model: PackageConfigModel): Promise<string> {
 		let output = '';
 		let cmd = '';
+		let rExecutable = await this.getRExecutable();
 		if (model.downloadUrl) {
 			const packageFile = utils.getPackageFilePath(this._rootFolder, model.fileName || model.name);
 			const packageExist = await utils.exists(packageFile);
 			if (!packageExist) {
 				await this._httpClient.download(model.downloadUrl, packageFile, this._outputChannel);
 			}
-			cmd = `"${this._rExecutable}" CMD INSTALL ${packageFile}`;
+			cmd = `"${rExecutable}" CMD INSTALL ${packageFile}`;
 			output = await this._processService.executeBufferedCommand(cmd, this._outputChannel);
 		} else if (model.repository) {
-			cmd = `"${this._rExecutable}" -e "install.packages('${model.name}', repos='${model.repository}')"`;
+			cmd = `"${rExecutable}" -e "install.packages('${model.name}', repos='${model.repository}')"`;
 			output = await this._processService.executeBufferedCommand(cmd, this._outputChannel);
 		}
 		return output;

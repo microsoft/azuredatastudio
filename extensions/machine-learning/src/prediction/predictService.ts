@@ -36,6 +36,25 @@ export class PredictService {
 	}
 
 	/**
+	 * Returns true if server supports ONNX
+	 */
+	public async serverSupportOnnxModel(): Promise<boolean> {
+		try {
+			let connection = await this.getCurrentConnection();
+			if (connection) {
+				const serverInfo = await this._apiWrapper.getServerInfo(connection.connectionId);
+				// Right now only Azure SQL Edge and MI support Onnx
+				//
+				return serverInfo && (serverInfo.engineEditionId === 9 || serverInfo.engineEditionId === 8);
+			}
+			return false;
+		} catch (error) {
+			console.log(error);
+			return false;
+		}
+	}
+
+	/**
 	 * Generates prediction script given model info and predict parameters
 	 * @param predictParams predict parameters
 	 * @param registeredModel model parameters
@@ -64,7 +83,7 @@ export class PredictService {
 			language: 'sql',
 			content: query
 		});
-		await this._apiWrapper.showTextDocument(document.uri);
+		await this._apiWrapper.executeCommand('vscode.open', document.uri);
 		await this._apiWrapper.connect(document.uri.toString(), connection.connectionId);
 		this._apiWrapper.runQuery(document.uri.toString(), undefined, false);
 		return query;
@@ -157,8 +176,9 @@ AS (
 	FROM [${utils.doubleEscapeSingleBrackets(sourceTable.databaseName)}].[${sourceTable.schema}].[${utils.doubleEscapeSingleBrackets(sourceTable.tableName)}] as pi
 )
 SELECT
-${this.getPredictColumnNames(columns, 'predict_input')}, ${this.getInputColumnNames(outputColumns, 'p')}
-FROM PREDICT(MODEL = @model, DATA = predict_input)
+${this.getPredictColumnNames(columns, 'predict_input')},
+${this.getPredictInputColumnNames(outputColumns, 'p')}
+FROM PREDICT(MODEL = @model, DATA = predict_input, runtime=onnx)
 WITH (
 	${this.getOutputParameters(outputColumns)}
 ) AS p
@@ -178,33 +198,44 @@ AS (
 	FROM [${utils.doubleEscapeSingleBrackets(databaseNameTable.databaseName)}].[${databaseNameTable.schema}].[${utils.doubleEscapeSingleBrackets(databaseNameTable.tableName)}] as pi
 )
 SELECT
-${this.getPredictColumnNames(columns, 'predict_input')}, ${this.getOutputColumnNames(outputColumns, 'p')}
-FROM PREDICT(MODEL = ${modelBytes}, DATA = predict_input)
+${this.getPredictColumnNames(columns, 'predict_input')},
+${this.getPredictInputColumnNames(outputColumns, 'p')}
+FROM PREDICT(MODEL = ${modelBytes}, DATA = predict_input, runtime=onnx)
 WITH (
 	${this.getOutputParameters(outputColumns)}
 ) AS p
 `;
 	}
 
+	private getEscapedColumnName(tableName: string, columnName: string): string {
+		return `[${utils.doubleEscapeSingleBrackets(tableName)}].[${utils.doubleEscapeSingleBrackets(columnName)}]`;
+	}
 	private getInputColumnNames(columns: PredictColumn[], tableName: string) {
+
+		return columns.map(c => {
+			const column = this.getEscapedColumnName(tableName, c.columnName);
+			let columnName = c.dataType !== c.paramType ? `cast(${column} as ${c.paramType})`
+				: `${column}`;
+			return `${columnName} AS ${c.paramName}`;
+		}).join(',\n');
+	}
+
+	private getPredictInputColumnNames(columns: PredictColumn[], tableName: string) {
 		return columns.map(c => {
 			return this.getColumnName(tableName, c.paramName || '', c.columnName);
 		}).join(',\n');
 	}
 
-	private getOutputColumnNames(columns: PredictColumn[], tableName: string) {
-		return columns.map(c => {
-			return this.getColumnName(tableName, c.columnName, c.paramName || '');
-		}).join(',\n');
-	}
-
 	private getColumnName(tableName: string, columnName: string, displayName: string) {
-		return columnName && columnName !== displayName ? `${tableName}.${columnName} AS ${displayName}` : `${tableName}.${columnName}`;
+		const column = this.getEscapedColumnName(tableName, columnName);
+		return columnName && columnName !== displayName ?
+			`${column} AS [${utils.doubleEscapeSingleBrackets(displayName)}]` : column;
 	}
 
 	private getPredictColumnNames(columns: PredictColumn[], tableName: string) {
 		return columns.map(c => {
-			return c.paramName ? `${tableName}.${c.paramName}` : `${tableName}.${c.columnName}`;
+			return c.paramName ? `${this.getEscapedColumnName(tableName, c.paramName)}`
+				: `${this.getEscapedColumnName(tableName, c.columnName)}`;
 		}).join(',\n');
 	}
 

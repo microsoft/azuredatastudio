@@ -51,6 +51,7 @@ import { values } from 'vs/base/common/collections';
 import { assign } from 'vs/base/common/objects';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
+import { toErrorMessage } from 'vs/base/common/errorMessage';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -235,7 +236,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 		let params = {
 			connectionType: ConnectionType.default,
-			isEditConnection: true
+			isEditConnection: true,
+			oldProfileId: model.id
 		};
 
 		try {
@@ -807,39 +809,47 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			connection.options['azureAccountToken'] = undefined;
 			return true;
 		}
-		if (connection.options['azureAccountToken']) {
-			return true;
-		}
 		let azureResource = this.getAzureResourceForConnection(connection);
-		let accounts = (await this._accountManagementService.getAccounts()).filter(a => a.key.providerId.startsWith('azure'));
-		if (accounts && accounts.length > 0) {
-			let accountName = (connection.authenticationType === Constants.azureMFA) ? connection.azureAccount : connection.userName;
-			let account = find(accounts, account => account.key.accountId === accountName);
+		const accounts = await this._accountManagementService.getAccounts();
+		const azureAccounts = accounts.filter(a => a.key.providerId.startsWith('azure'));
+		if (azureAccounts && azureAccounts.length > 0) {
+			let accountName = (connection.authenticationType === Constants.azureMFA || connection.authenticationType === Constants.azureMFAAndUser) ? connection.azureAccount : connection.userName;
+			let account = find(azureAccounts, account => account.key.accountId === accountName);
 			if (account) {
+				this._logService.debug(`Getting security token for Azure account ${account.key.accountId}`);
 				if (account.isStale) {
+					this._logService.debug(`Account is stale - refreshing`);
 					try {
 						account = await this._accountManagementService.refreshAccount(account);
-					} catch {
+					} catch (err) {
+						this._logService.info(`Exception refreshing stale account : ${toErrorMessage(err, true)}`);
 						// refreshAccount throws an error if the user cancels the dialog
 						return false;
 					}
 				}
-				let tokensByTenant = await this._accountManagementService.getSecurityToken(account, azureResource);
+				const tokensByTenant = await this._accountManagementService.getSecurityToken(account, azureResource);
+				this._logService.debug(`Got tokens for tenants [${Object.keys(tokensByTenant).join(',')}]`);
 				let token: string;
-				let tenantId = connection.azureTenantId;
+				const tenantId = connection.azureTenantId;
 				if (tenantId && tokensByTenant[tenantId]) {
 					token = tokensByTenant[tenantId].token;
 				} else {
-					let tokens = values(tokensByTenant);
+					this._logService.debug(`No security token found for specific tenant ${tenantId} - falling back to first one`);
+					const tokens = values(tokensByTenant);
 					if (tokens.length === 0) {
+						this._logService.info(`No security tokens found for account`);
 						return false;
 					}
-					token = values(tokensByTenant)[0].token;
+					token = tokens[0].token;
 				}
 				connection.options['azureAccountToken'] = token;
 				connection.options['password'] = '';
 				return true;
+			} else {
+				this._logService.info(`Could not find Azure account with name ${accountName}`);
 			}
+		} else {
+			this._logService.info(`Could not find any Azure accounts from accounts : [${accounts.map(a => `${a.key.accountId} (${a.key.providerId})`).join(',')}]`);
 		}
 		return false;
 	}
@@ -932,6 +942,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				serverVersion: connection.serverInfo ? connection.serverInfo.serverVersion : '',
 				serverEdition: connection.serverInfo ? connection.serverInfo.serverEdition : '',
 				serverEngineEdition: connection.serverInfo ? connection.serverInfo.engineEditionId : '',
+				isBigDataCluster: connection.serverInfo?.options['isBigDataCluster'] ?? false,
 				extensionConnectionTime: connection.extensionTimer.elapsed() - connection.serviceTimer.elapsed(),
 				serviceConnectionTime: connection.serviceTimer.elapsed()
 			})

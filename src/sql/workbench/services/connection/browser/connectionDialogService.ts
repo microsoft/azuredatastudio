@@ -166,6 +166,10 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				}
 				profile = result.connection;
 
+				if (params.oldProfileId && params.isEditConnection) {
+					profile.id = params.oldProfileId;
+				}
+
 				profile.serverName = trim(profile.serverName);
 
 				// append the port to the server name for SQL Server connections

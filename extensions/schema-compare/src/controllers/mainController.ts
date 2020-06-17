@@ -3,22 +3,22 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
-import * as vscode from 'vscode';
+import { Disposable, ExtensionContext } from 'vscode';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
+import { ApiWrapper } from '../common/apiWrapper';
 
 /**
  * The main controller class that initializes the extension
  */
-export default class MainController implements vscode.Disposable {
-	protected _context: vscode.ExtensionContext;
+export default class MainController implements Disposable {
+	protected schemaCompareMainWindow: SchemaCompareMainWindow;
 
-	public constructor(context: vscode.ExtensionContext) {
-		this._context = context;
+	public constructor(private context: ExtensionContext, private apiWrapper: ApiWrapper) {
+		this.schemaCompareMainWindow = new SchemaCompareMainWindow(this.apiWrapper, null, this.extensionContext);
 	}
 
-	public get extensionContext(): vscode.ExtensionContext {
-		return this._context;
+	public get extensionContext(): ExtensionContext {
+		return this.context;
 	}
 
 	public deactivate(): void {
@@ -30,7 +30,7 @@ export default class MainController implements vscode.Disposable {
 	}
 
 	private initializeSchemaCompareDialog(): void {
-		azdata.tasks.registerTask('schemaCompare.start', (profile: azdata.IConnectionProfile) => new SchemaCompareMainWindow(null, this.extensionContext).start(profile));
+		this.apiWrapper.registerCommand('schemaCompare.start', (context: any) => this.schemaCompareMainWindow.start(context));
 	}
 
 	public dispose(): void {

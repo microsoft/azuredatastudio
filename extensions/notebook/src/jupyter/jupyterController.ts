@@ -22,7 +22,7 @@ import { ApiWrapper } from '../common/apiWrapper';
 import { LocalJupyterServerManager, ServerInstanceFactory } from './jupyterServerManager';
 import { NotebookCompletionItemProvider } from '../intellisense/completionItemProvider';
 import { JupyterNotebookProvider } from './jupyterNotebookProvider';
-import { ConfigurePythonDialog } from '../dialog/configurePythonDialog';
+import { ConfigurePythonWizard } from '../dialog/configurePython/configurePythonWizard';
 import CodeAdapter from '../prompts/adapter';
 import { ManagePackagesDialog } from '../dialog/managePackages/managePackagesDialog';
 import { IPackageManageProvider } from '../types';
@@ -30,6 +30,7 @@ import { LocalPipPackageManageProvider } from './localPipPackageManageProvider';
 import { LocalCondaPackageManageProvider } from './localCondaPackageManageProvider';
 import { ManagePackagesDialogModel, ManagePackageDialogOptions } from '../dialog/managePackages/managePackagesDialogModel';
 import { PiPyClient } from './pipyClient';
+import { ConfigurePythonDialog } from '../dialog/configurePython/configurePythonDialog';
 
 let untitledCounter = 0;
 
@@ -250,10 +251,20 @@ export class JupyterController implements vscode.Disposable {
 	}
 
 	public doConfigurePython(jupyterInstaller: JupyterServerInstallation): void {
-		let pythonDialog = new ConfigurePythonDialog(this.apiWrapper, jupyterInstaller);
-		pythonDialog.showDialog().catch((err: any) => {
-			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
-		});
+		if (jupyterInstaller.previewFeaturesEnabled) {
+			let pythonWizard = new ConfigurePythonWizard(this.apiWrapper, jupyterInstaller);
+			pythonWizard.start().catch((err: any) => {
+				this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
+			});
+			pythonWizard.setupComplete.catch((err: any) => {
+				this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
+			});
+		} else {
+			let pythonDialog = new ConfigurePythonDialog(this.apiWrapper, jupyterInstaller);
+			pythonDialog.showDialog().catch((err: any) => {
+				this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
+			});
+		}
 	}
 
 	public get jupyterInstallation() {

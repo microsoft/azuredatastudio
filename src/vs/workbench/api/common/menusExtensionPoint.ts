@@ -37,7 +37,6 @@ namespace schema {
 			case 'debug/callstack/context': return MenuId.DebugCallStackContext;
 			case 'debug/toolbar': return MenuId.DebugToolBar;
 			case 'debug/toolBar': return MenuId.DebugToolBar;
-			case 'menuBar/file': return MenuId.MenubarFileMenu;
 			case 'menuBar/webNavigation': return MenuId.MenubarWebNavigationMenu;
 			case 'scm/title': return MenuId.SCMTitle;
 			case 'scm/sourceControl': return MenuId.SCMSourceControl;
@@ -53,6 +52,7 @@ namespace schema {
 			case 'notebook/toolbar': return MenuId.NotebookToolbar;
 			case 'dataExplorer/context': return MenuId.DataExplorerContext;
 			case 'dataExplorer/action': return MenuId.DataExplorerAction;
+			case 'notebooks/title': return MenuId.NotebookTitle;
 			case 'comments/commentThread/title': return MenuId.CommentThreadTitle;
 			case 'comments/commentThread/context': return MenuId.CommentThreadActions;
 			case 'comments/comment/title': return MenuId.CommentTitle;
@@ -70,7 +70,6 @@ namespace schema {
 	export function isProposedAPI(menuId: MenuId): boolean {
 		switch (menuId) {
 			case MenuId.StatusBarWindowIndicatorMenu:
-			case MenuId.MenubarFileMenu:
 			case MenuId.MenubarWebNavigationMenu:
 				return true;
 		}

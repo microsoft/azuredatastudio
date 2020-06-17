@@ -21,7 +21,12 @@ export class ModelConfigRecent {
 	}
 
 	public storeModelTable(connection: azdata.connection.ConnectionProfile, table: DatabaseTable): void {
-		this._memento.update(this.getKey(connection), table);
+		if (connection && table?.databaseName && table?.tableName && table?.schema) {
+			const current = this.getModelTable(connection);
+			if (!current || current.databaseName !== table.databaseName || current.tableName !== table.tableName || current.schema !== table.schema) {
+				this._memento.update(this.getKey(connection), table);
+			}
+		}
 	}
 
 	private getKey(connection: azdata.connection.ConnectionProfile): string {

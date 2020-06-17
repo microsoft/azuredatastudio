@@ -46,7 +46,7 @@ export class ExplorerTable extends Disposable {
 	private _actionsColumn: ButtonColumn<Slick.SlickData>;
 	private _filterStr: string;
 	private _explorerView: ExplorerView;
-	private _displayProperties: ObjectListViewProperty[];
+	private _propertiesToDisplay: ObjectListViewProperty[];
 
 	constructor(private parentElement: HTMLElement,
 		private readonly router: Router,
@@ -60,17 +60,19 @@ export class ExplorerTable extends Disposable {
 		private readonly logService: ILogService) {
 		super();
 		this._explorerView = new ExplorerView(this.context);
-		this._table = new Table<Slick.SlickData>(parentElement, undefined, { forceFitColumns: true, rowHeight: 35 });
+		const connectionInfo = this.bootStrapService.connectionManagementService.connectionInfo;
+		this._propertiesToDisplay = this._explorerView.getPropertyList(getFlavor(connectionInfo.serverInfo, this.logService, connectionInfo.providerId));
+		const explorerFilter = new ExplorerFilter(this.context, this.propertiesToFilter);
+		this._view = new TableDataView<Slick.SlickData>(undefined, undefined, undefined, (data: Slick.SlickData[]): Slick.SlickData[] => {
+			return explorerFilter.filter(this._filterStr, data);
+		});
+		this._table = new Table<Slick.SlickData>(parentElement, { dataProvider: this._view }, { forceFitColumns: true });
 		this._table.setSelectionModel(new RowSelectionModel());
 		this._actionsColumn = new ButtonColumn<Slick.SlickData>({
 			id: 'actions',
 			iconCssClass: 'toggle-more',
-			title: ShowActionsText,
-			width: 40
+			title: ShowActionsText
 		});
-		const connectionInfo = this.bootStrapService.connectionManagementService.connectionInfo;
-		this._displayProperties = this._explorerView.getPropertyList(getFlavor(connectionInfo.serverInfo, this.logService, connectionInfo.providerId));
-		const explorerFilter = new ExplorerFilter(this.context, this._displayProperties.map(p => p.value));
 		this._table.registerPlugin(this._actionsColumn);
 		this._register(this._actionsColumn.onClick((args) => {
 			this.showContextMenu(args.item, args.position);
@@ -86,9 +88,6 @@ export class ExplorerTable extends Disposable {
 			}
 		}));
 		this._register(attachTableStyler(this._table, themeService));
-		this._view = new TableDataView<Slick.SlickData>(undefined, undefined, undefined, (data: Slick.SlickData[]): Slick.SlickData[] => {
-			return explorerFilter.filter(this._filterStr, data);
-		});
 		this._register(this._view);
 		this._register(this._view.onRowCountChange(() => {
 			this._table.updateRowCount();
@@ -174,20 +173,19 @@ export class ExplorerTable extends Disposable {
 		items.forEach(item => {
 			item[IconClassProperty] = this._explorerView.getIconClass(item);
 		});
-		this._table.setData(this._view);
 		this._view.push(items);
 	}
 
 	private get columnDefinitions(): Slick.Column<Slick.SlickData>[] {
 		const totalWidth = DOM.getContentWidth(this.parentElement);
 		let totalColumnWidthWeight: number = 0;
-		this._displayProperties.forEach(p => {
+		this._propertiesToDisplay.forEach(p => {
 			if (p.widthWeight) {
 				totalColumnWidthWeight += p.widthWeight;
 			}
 		});
 
-		const columns: Slick.Column<Slick.SlickData>[] = this._displayProperties.map(property => {
+		const columns: Slick.Column<Slick.SlickData>[] = this._propertiesToDisplay.map(property => {
 			const columnWidth = property.widthWeight ? totalWidth * (property.widthWeight / totalColumnWidthWeight) : undefined;
 			if (property.value === NameProperty) {
 				const nameColumn = new TextWithIconColumn({
@@ -209,6 +207,15 @@ export class ExplorerTable extends Disposable {
 		});
 		columns.push(this._actionsColumn.definition);
 		return columns;
+	}
+
+	private get propertiesToFilter(): string[] {
+		const properties = this._propertiesToDisplay.map(p => p.value);
+		if (this.context === 'database') {
+			// for objects in databases, we also support filter by full name: schema.objectName even though the full name is not being displayed.
+			properties.push('fullName');
+		}
+		return properties;
 	}
 }
 

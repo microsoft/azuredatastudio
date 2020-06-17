@@ -6,6 +6,7 @@
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
 import * as vscode from 'vscode';
+import * as azdata from 'azdata';
 import 'mocha';
 
 import { JupyterServerInstanceStub } from '../common';
@@ -18,6 +19,10 @@ import { IServerInstance } from '../../jupyter/common';
 import { MockExtensionContext } from '../common/stubs';
 
 describe('Local Jupyter Server Manager', function (): void {
+	const pythonKernelSpec: azdata.nb.IKernelSpec = {
+		name: 'python3',
+		display_name: 'Python 3'
+	};
 	let expectedPath = 'my/notebook.ipynb';
 	let serverManager: LocalJupyterServerManager;
 	let deferredInstall: Deferred<void>;
@@ -33,7 +38,7 @@ describe('Local Jupyter Server Manager', function (): void {
 
 		deferredInstall = new Deferred<void>();
 		let mockInstall = TypeMoq.Mock.ofType(JupyterServerInstallation, undefined, undefined, '/root');
-		mockInstall.setup(j => j.promptForPythonInstall()).returns(() => deferredInstall.promise);
+		mockInstall.setup(j => j.promptForPythonInstall(TypeMoq.It.isAny())).returns(() => deferredInstall.promise);
 		mockInstall.object.execOptions = { env: Object.assign({}, process.env) };
 
 		serverManager = new LocalJupyterServerManager({
@@ -53,7 +58,7 @@ describe('Local Jupyter Server Manager', function (): void {
 	it('Should show error message on install failure', async function (): Promise<void> {
 		let error = 'Error!!';
 		deferredInstall.reject(error);
-		await testUtils.assertThrowsAsync(() => serverManager.startServer(), undefined);
+		await testUtils.assertThrowsAsync(() => serverManager.startServer(pythonKernelSpec), undefined);
 	});
 
 	it('Should configure and start install', async function (): Promise<void> {
@@ -65,7 +70,7 @@ describe('Local Jupyter Server Manager', function (): void {
 		// When I start the server
 		let notified = false;
 		serverManager.onServerStarted(() => notified = true);
-		await serverManager.startServer();
+		await serverManager.startServer(pythonKernelSpec);
 
 		// Then I expect the port to be included in settings
 		should(serverManager.serverSettings.baseUrl.indexOf('1234') > -1).be.true();
@@ -89,7 +94,7 @@ describe('Local Jupyter Server Manager', function (): void {
 		deferredInstall.resolve();
 
 		// When I start and then the server
-		await serverManager.startServer();
+		await serverManager.startServer(pythonKernelSpec);
 		await serverManager.stopServer();
 
 		// Then I expect stop to have been called on the server instance
@@ -104,7 +109,7 @@ describe('Local Jupyter Server Manager', function (): void {
 		deferredInstall.resolve();
 
 		// When I start and then dispose the extension
-		await serverManager.startServer();
+		await serverManager.startServer(pythonKernelSpec);
 		should(mockExtensionContext.subscriptions).have.length(1);
 		mockExtensionContext.subscriptions[0].dispose();
 

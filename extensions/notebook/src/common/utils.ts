@@ -8,6 +8,8 @@ import * as fs from 'fs-extra';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
+import * as crypto from 'crypto';
+import { notebookLanguages } from './constants';
 
 const localize = nls.loadMessageBundle();
 
@@ -75,7 +77,7 @@ export function executeStreamedCommand(cmd: string, options: childProcess.SpawnO
 			if (code === 0) {
 				resolve();
 			} else {
-				reject(localize('executeCommandProcessExited', "Process exited with  with error code: {0}. StdErr Output: {1}", code, stdErrLog));
+				reject(new Error(localize('executeCommandProcessExited', "Process exited with error code: {0}. StdErr Output: {1}", code, stdErrLog)));
 			}
 		});
 
@@ -189,12 +191,13 @@ export function sortPackageVersions(versions: string[], ascending: boolean = tru
 }
 
 export function isEditorTitleFree(title: string): boolean {
-	let hasTextDoc = vscode.workspace.textDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title) > -1;
+
+	let hasTextDoc = vscode.workspace.textDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title && !notebookLanguages.find(lang => lang === doc.languageId)) > -1;
 	let hasNotebookDoc = azdata.nb.notebookDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title) > -1;
 	return !hasTextDoc && !hasNotebookDoc;
 }
 
-export function getClusterEndpoints(serverInfo: azdata.ServerInfo): IEndpoint[] | undefined {
+export function getClusterEndpoints(serverInfo: azdata.ServerInfo): IEndpoint[] {
 	let endpoints: RawEndpoint[] = serverInfo.options['clusterEndpoints'];
 	if (!endpoints || endpoints.length === 0) { return []; }
 
@@ -293,4 +296,24 @@ function decorate(decorator: (fn: Function, key: string) => Function): Function 
 
 		descriptor[fnKey] = decorator(fn, key);
 	};
+}
+
+export function getDropdownValue(dropdown: azdata.DropDownComponent): string {
+	return (typeof dropdown.value === 'string') ? dropdown.value : dropdown.value.name;
+}
+
+/**
+ * Creates a random token per https://nodejs.org/api/crypto.html#crypto_crypto_randombytes_size_callback.
+ * Defaults to 24 bytes, which creates a 48-char hex string
+ */
+export async function getRandomToken(size: number = 24): Promise<string> {
+	return new Promise((resolve, reject) => {
+		crypto.randomBytes(size, (err, buffer) => {
+			if (err) {
+				reject(err);
+			}
+			let token = buffer.toString('hex');
+			resolve(token);
+		});
+	});
 }

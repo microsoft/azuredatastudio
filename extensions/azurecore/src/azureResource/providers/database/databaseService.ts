@@ -50,7 +50,8 @@ export class AzureResourceDatabaseService implements IAzureResourceService<azure
 						id: db.id,
 						serverName: server.name,
 						serverFullName: server.properties.fullyQualifiedDomainName,
-						loginName: server.properties.administratorLogin
+						loginName: server.properties.administratorLogin,
+						tenant: db.tenantId
 					});
 				}
 			}
