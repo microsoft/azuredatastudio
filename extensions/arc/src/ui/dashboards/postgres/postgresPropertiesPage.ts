@@ -88,7 +88,7 @@ export class PostgresPropertiesPage extends DashboardPage {
 			new TextKeyValue(loc.status, this._postgresModel.service()?.status?.state ?? 'Unknown'),
 			new LinkKeyValue(loc.dataController, this._controllerModel.namespace() ?? '', _ => vscode.window.showInformationMessage('TODO: Go to data controller')),
 			new LinkKeyValue(loc.nodeConfiguration, this._postgresModel.configuration(), _ => vscode.window.showInformationMessage('TODO: Go to configuration')),
-			new TextKeyValue(loc.postgresVersion, this._postgresModel.service()?.spec.engine.version?.toString() ?? ''),
+			new TextKeyValue(loc.postgresVersion, this._postgresModel.service()?.spec?.engine?.version?.toString() ?? ''),
 			new TextKeyValue(loc.resourceGroup, registration?.resourceGroupName ?? ''),
 			new TextKeyValue(loc.subscriptionId, registration?.subscriptionId ?? '')
 		]);
