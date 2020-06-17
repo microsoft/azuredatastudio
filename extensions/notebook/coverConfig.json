@@ -6,7 +6,6 @@
 		"**/integrationTest/**",
 		"**/node_modules/**",
 		"**/test/**",
-		"**/integrationTest/**",
 		"extension.js"
 	],
 	"reports": [
