@@ -1549,7 +1549,7 @@ suite.skip('Disk File Service', function () { // {{SQL CARBON EDIT}} Disable occ
 		assert.equal(error!.fileOperationResult, FileOperationResult.FILE_EXCEEDS_MEMORY_LIMIT);
 	}
 
-	test('readFile - FILE_TOO_LARGE - default', async () => {
+	(isWindows ? test.skip /* flaky test */ : test)('readFile - FILE_TOO_LARGE - default', async () => {
 		return testFileTooLarge();
 	});
 
@@ -1559,13 +1559,13 @@ suite.skip('Disk File Service', function () { // {{SQL CARBON EDIT}} Disable occ
 		return testFileTooLarge();
 	});
 
-	test('readFile - FILE_TOO_LARGE - unbuffered', async () => {
+	(isWindows ? test.skip /* flaky test */ : test)('readFile - FILE_TOO_LARGE - unbuffered', async () => {
 		setCapabilities(fileProvider, FileSystemProviderCapabilities.FileReadWrite);
 
 		return testFileTooLarge();
 	});
 
-	test('readFile - FILE_TOO_LARGE - streamed', async () => {
+	(isWindows ? test.skip /* flaky test */ : test)('readFile - FILE_TOO_LARGE - streamed', async () => {
 		setCapabilities(fileProvider, FileSystemProviderCapabilities.FileReadStream);
 
 		return testFileTooLarge();
