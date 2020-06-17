@@ -329,6 +329,39 @@ export class Project {
 		await this.serializeToProjFile(this.projFileXmlDoc);
 	}
 
+	public containsSSDTOnlySystemDatabaseReferences(): boolean {
+		for (let r = 0; r < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference).length; r++) {
+			const currentNode = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference)[r];
+			if (!currentNode.getAttribute(constants.NetCoreCondition) && currentNode.getAttribute(constants.Include).includes(constants.DacpacRootPath)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public async updateSystemDatabaseReferencesInProjFile(): Promise<void> {
+		// find all system database references
+		for (let r = 0; r < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference).length; r++) {
+			const currentNode = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference)[r];
+			if (!currentNode.getAttribute(constants.Condition) && currentNode.getAttribute(constants.Include).includes(constants.DacpacRootPath)) {
+				// get name of system database
+				const name = currentNode.getAttribute(constants.Include).includes(constants.master) ? SystemDatabase.master : SystemDatabase.msdb;
+				this.projFileXmlDoc.documentElement.removeChild(currentNode);
+
+				// delete ItemGroup if there aren't any other children
+				if (this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference).length === 0) {
+					this.projFileXmlDoc.documentElement.removeChild(currentNode.parentNode);
+				}
+
+				// remove from database references because it'll get added again later
+				this.databaseReferences.splice(this.databaseReferences.findIndex(n => n === (name ? constants.master : constants.msdb)), 1);
+
+				await this.addSystemDatabaseReference(name);
+			}
+		}
+	}
+
 	private async addToProjFile(entry: ProjectEntry) {
 		switch (entry.type) {
 			case EntryType.File:
