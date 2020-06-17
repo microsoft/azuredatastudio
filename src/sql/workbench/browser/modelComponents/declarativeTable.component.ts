@@ -29,7 +29,7 @@ export enum DeclarativeDataType {
 @Component({
 	selector: 'modelview-declarativeTable',
 	template: `
-	<table role=grid #container *ngIf="columns" class="declarative-table" [style.height]="getHeight()" [attr.aria-label]="ariaLabel">
+	<table role=grid #container *ngIf="columns" class="declarative-table" [style.height]="getHeight()" [style.width]="getWidth()" [attr.aria-label]="ariaLabel">
 	<thead>
 		<ng-container *ngFor="let column of columns;">
 		<th class="declarative-table-header" aria-sort="none" [style.width]="getColumnWidth(column)" [attr.aria-label]="column.ariaLabel" [ngStyle]="column.headerCssStyles">{{column.displayName}}</th>

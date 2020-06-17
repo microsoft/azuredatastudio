@@ -8,6 +8,7 @@ import * as fs from 'fs-extra';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
+import * as crypto from 'crypto';
 import { notebookLanguages } from './constants';
 
 const localize = nls.loadMessageBundle();
@@ -299,4 +300,20 @@ function decorate(decorator: (fn: Function, key: string) => Function): Function 
 
 export function getDropdownValue(dropdown: azdata.DropDownComponent): string {
 	return (typeof dropdown.value === 'string') ? dropdown.value : dropdown.value.name;
+}
+
+/**
+ * Creates a random token per https://nodejs.org/api/crypto.html#crypto_crypto_randombytes_size_callback.
+ * Defaults to 24 bytes, which creates a 48-char hex string
+ */
+export async function getRandomToken(size: number = 24): Promise<string> {
+	return new Promise((resolve, reject) => {
+		crypto.randomBytes(size, (err, buffer) => {
+			if (err) {
+				reject(err);
+			}
+			let token = buffer.toString('hex');
+			resolve(token);
+		});
+	});
 }

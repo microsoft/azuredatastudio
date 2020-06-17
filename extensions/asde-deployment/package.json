@@ -1,0 +1,276 @@
+{
+  "name": "asde-deployment",
+  "displayName": "%extension-displayName%",
+  "description": "%extension-description%",
+  "version": "0.1.0",
+  "publisher": "Microsoft",
+  "preview": true,
+  "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
+  "icon": "images/extension.png",
+  "aiKey": "AIF-444c3af9-8e69-4462-ab49-4191e6ad1916",
+  "engines": {
+    "vscode": "*",
+    "azdata": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/azuredatastudio.git"
+  },
+  "forceReload": true,
+  "contributes": {
+    "resourceDeploymentTypes": [
+      {
+        "name": "sql-edge",
+        "enabled": false,
+        "displayName": "%resource-type-sql-edge-display-name%",
+        "description": "%resource-type-sql-edge-description%",
+        "platforms": "*",
+        "icon": {
+          "light": "./images/sqldb_edge.svg",
+          "dark": "./images/sqldb_edge_inverse.svg"
+        },
+        "options": [
+          {
+            "name": "type",
+            "displayName": "%sql-edge-type-display-name%",
+            "values": [
+              {
+                "name": "local",
+                "displayName": "%sql-edge-local-display-name%"
+              },
+              {
+                "name": "remote",
+                "displayName": "%sql-edge-remote-display-name%"
+              }
+            ]
+          }
+        ],
+        "providers": [
+          {
+            "dialog": {
+              "notebook": "%sql-edge-local-notebook%",
+              "title": "%sql-edge-local-title%",
+              "name": "sql-edge-local-dialog",
+              "tabs": [
+                {
+                  "title": "",
+                  "sections": [
+                    {
+                      "title": "",
+                      "fields": [
+                        {
+                          "label": "%docker-container-name-field%",
+                          "variableName": "AZDATA_NB_VAR_DOCKER_CONTAINER_NAME",
+                          "type": "datetime_text",
+                          "defaultValue": "SQLEDGE-",
+                          "required": true
+                        },
+                        {
+                          "label": "%docker-sql-password-field%",
+                          "variableName": "AZDATA_NB_VAR_SA_PASSWORD",
+                          "type": "sql_password",
+                          "userName": "sa",
+                          "confirmationRequired": true,
+                          "confirmationLabel": "%docker-confirm-sql-password-field%",
+                          "defaultValue": "",
+                          "required": true
+                        },
+                        {
+                          "label": "%docker-sql-port-field%",
+                          "variableName": "AZDATA_NB_VAR_DOCKER_PORT",
+                          "type": "number",
+                          "defaultValue": "1433",
+                          "required": true,
+                          "min": 1,
+                          "max": 65535
+                        }
+                      ]
+                    },
+                    {
+                      "title": "%docker-settings-section-title%",
+                      "collapsible": true,
+                      "collapsed": true,
+                      "fields": [
+                        {
+                          "label": "%docker-registry-field%",
+                          "variableName": "AZDATA_NB_VAR_DOCKER_REGISTRY",
+                          "type": "text",
+                          "defaultValue": "mcr.microsoft.com",
+                          "required": true
+                        },
+                        {
+                          "label": "%docker-repository-field%",
+                          "variableName": "AZDATA_NB_VAR_DOCKER_REPOSITORY",
+                          "type": "text",
+                          "defaultValue": "azure-sql-edge-developer",
+                          "required": true
+                        },
+                        {
+                          "label": "%docker-imagetag-field%",
+                          "variableName": "AZDATA_NB_VAR_DOCKER_IMAGETAG",
+                          "type": "text",
+                          "defaultValue": "latest",
+                          "required": true
+                        },
+                        {
+                          "label": "%docker-username-field%",
+                          "variableName": "AZDATA_NB_VAR_DOCKER_USERNAME",
+                          "type": "text",
+                          "defaultValue": "",
+                          "required": false
+                        },
+                        {
+                          "label": "%docker-password-field%",
+                          "variableName": "AZDATA_NB_VAR_DOCKER_PASSWORD",
+                          "type": "password",
+                          "defaultValue": "",
+                          "required": false
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "requiredTools": [
+              {
+                "name": "docker"
+              }
+            ],
+            "when": "type=local"
+          },
+          {
+            "dialog": {
+              "notebook": "%sql-edge-remote-notebook%",
+              "title": "%sql-edge-remote-title%",
+              "name": "sql-edge-remote-dialog",
+              "tabs": [
+                {
+                  "title": "",
+                  "sections": [
+                    {
+                      "title": "",
+                      "fields": [
+                        {
+                          "label": "%docker-container-name-field%",
+                          "variableName": "AZDATA_NB_VAR_DOCKER_CONTAINER_NAME",
+                          "type": "datetime_text",
+                          "defaultValue": "SQLEDGE-",
+                          "required": true
+                        },
+                        {
+                          "label": "%docker-sql-password-field%",
+                          "variableName": "AZDATA_NB_VAR_SA_PASSWORD",
+                          "type": "sql_password",
+                          "userName": "sa",
+                          "confirmationRequired": true,
+                          "confirmationLabel": "%docker-confirm-sql-password-field%",
+                          "defaultValue": "",
+                          "required": true
+                        },
+                        {
+                          "label": "%docker-sql-port-field%",
+                          "variableName": "AZDATA_NB_VAR_DOCKER_PORT",
+                          "type": "number",
+                          "defaultValue": "1433",
+                          "required": true,
+                          "min": 1,
+                          "max": 65535
+                        }
+                      ]
+                    },
+                    {
+                      "title": "%remote-info-section-title%",
+                      "collapsible": true,
+                      "collapsed": false,
+                      "fields": [
+                        {
+                          "label": "%edge-remote-target-field%",
+                          "variableName": "AZDATA_NB_VAR_SSH_TARGET",
+                          "type": "text",
+                          "defaultValue": "",
+                          "required": true
+                        },
+                        {
+                          "label": "%edge-remote-username-field%",
+                          "variableName": "AZDATA_NB_VAR_SSH_USERNAME",
+                          "type": "text",
+                          "defaultValue": "",
+                          "required": true
+                        },
+                        {
+                          "label": "%edge-remote-password-field%",
+                          "variableName": "AZDATA_NB_VAR_SSH_PASSWORD",
+                          "type": "password",
+                          "defaultValue": "",
+                          "required": true
+                        }
+                      ]
+                    },
+                    {
+                      "title": "%docker-settings-section-title%",
+                      "collapsible": true,
+                      "collapsed": true,
+                      "fields": [
+                        {
+                          "label": "%docker-registry-field%",
+                          "variableName": "AZDATA_NB_VAR_DOCKER_REGISTRY",
+                          "type": "text",
+                          "defaultValue": "mcr.microsoft.com",
+                          "required": true
+                        },
+                        {
+                          "label": "%docker-repository-field%",
+                          "variableName": "AZDATA_NB_VAR_DOCKER_REPOSITORY",
+                          "type": "text",
+                          "defaultValue": "azure-sql-edge-developer",
+                          "required": true
+                        },
+                        {
+                          "label": "%docker-imagetag-field%",
+                          "variableName": "AZDATA_NB_VAR_DOCKER_IMAGETAG",
+                          "type": "text",
+                          "defaultValue": "latest",
+                          "required": true
+                        },
+                        {
+                          "label": "%docker-username-field%",
+                          "variableName": "AZDATA_NB_VAR_DOCKER_USERNAME",
+                          "type": "text",
+                          "defaultValue": "",
+                          "required": false
+                        },
+                        {
+                          "label": "%docker-password-field%",
+                          "variableName": "AZDATA_NB_VAR_DOCKER_PASSWORD",
+                          "type": "password",
+                          "defaultValue": "",
+                          "required": false
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "requiredTools": [],
+            "when": "type=remote"
+          }
+        ],
+        "agreement": {
+          "template": "%edge-agreement%",
+          "links": [
+            {
+              "text": "%microsoft-privacy-statement%",
+              "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
+            },
+            {
+              "text": "%edge-eula%",
+              "url": "https://go.microsoft.com/fwlink/?LinkId=746388"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

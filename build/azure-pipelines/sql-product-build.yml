@@ -101,4 +101,4 @@ schedules:
   displayName: Mon-Fri at 7:00
   branches:
     include:
-    - master
+    - main

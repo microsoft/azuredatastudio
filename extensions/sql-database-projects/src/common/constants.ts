@@ -87,6 +87,7 @@ export const databaseNameRequired = localize('databaseNameRequired', "Database n
 export const invalidDataSchemaProvider = localize('invalidDataSchemaProvider', "Invalid DSP in .sqlproj file");
 export const invalidDatabaseReference = localize('invalidDatabaseReference', "Invalid database reference in .sqlproj file");
 export const databaseSelectionRequired = localize('databaseSelectionRequired', "Database selection is required to import a project");
+export const unableToCreateDeploymentConnection = localize('unableToCreateDeploymentConnection', "Unable to construct connection");
 export function projectAlreadyOpened(path: string) { return localize('projectAlreadyOpened', "Project '{0}' is already opened.", path); }
 export function projectAlreadyExists(name: string, path: string) { return localize('projectAlreadyExists', "A project named {0} already exists in {1}.", name, path); }
 export function noFileExist(fileName: string) { return localize('noFileExist', "File {0} doesn't exist", fileName); }
@@ -132,6 +133,7 @@ export const NetCoreTargets = '$(NETCoreTargetsPath)\\Microsoft.Data.Tools.Schem
 export const SqlDbTargets = '$(SQLDBExtensionsRefPath)\\Microsoft.Data.Tools.Schema.SqlTasks.targets';
 export const MsBuildtargets = '$(MSBuildExtensionsPath)\\Microsoft\\VisualStudio\\v$(VisualStudioVersion)\\SSDT\\Microsoft.Data.Tools.Schema.SqlTasks.targets';
 export const NetCoreCondition = '\'$(NetCoreBuild)\' == \'true\'';
+export const NotNetCoreCondition = '\'$(NetCoreBuild)\' != \'true\'';
 export const SqlDbPresentCondition = '\'$(SQLDBExtensionsRefPath)\' != \'\'';
 export const SqlDbNotPresentCondition = '\'$(SQLDBExtensionsRefPath)\' == \'\'';
 export const RoundTripSqlDbPresentCondition = '\'$(NetCoreBuild)\' != \'true\' AND \'$(SQLDBExtensionsRefPath)\' != \'\'';

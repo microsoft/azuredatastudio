@@ -5,7 +5,7 @@
   "version": "0.9.0",
   "publisher": "Microsoft",
   "preview": true,
-  "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
+  "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",
   "engines": {
     "vscode": "^1.25.0",
