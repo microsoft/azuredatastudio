@@ -179,7 +179,7 @@ export class MessagePanel extends Disposable {
 	}
 
 	public layout(size: Dimension): void {
-		this.tree.layout(size.height);
+		this.tree.layout(size.height, size.width);
 		this.tree.updateChildren();
 	}
 
