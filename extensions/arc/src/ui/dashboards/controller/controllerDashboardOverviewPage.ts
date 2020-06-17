@@ -160,7 +160,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 				vscode.env.openExternal(vscode.Uri.parse(
 					`https://portal.azure.com/#resource/subscriptions/${r.subscriptionId}/resourceGroups/${r.resourceGroupName}/providers/Microsoft.AzureData/${ResourceType.dataControllers}/${r.instanceName}`));
 			} else {
-				vscode.window.showErrorMessage(loc.couldNotFindControllerResource);
+				vscode.window.showErrorMessage(loc.couldNotFindRegistration(this._controllerModel.namespace, 'controller'));
 			}
 		});
 

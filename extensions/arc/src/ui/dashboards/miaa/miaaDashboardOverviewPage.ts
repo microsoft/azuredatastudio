@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import * as loc from '../../../localizedConstants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { IconPathHelper, cssStyles, ResourceType } from '../../../constants';
@@ -165,8 +166,8 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 
 	public get toolbarContainer(): azdata.ToolbarContainer {
 
-		const createNewButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			label: loc.createNew,
+		const createDatabaseButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			label: loc.newDatabase,
 			iconPath: IconPathHelper.add
 		}).component();
 
@@ -185,9 +186,19 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 			iconPath: IconPathHelper.openInTab
 		}).component();
 
+		openInAzurePortalButton.onDidClick(async () => {
+			const r = this._controllerModel.getRegistration(ResourceType.sqlManagedInstances, this._miaaModel.namespace, this._miaaModel.name);
+			if (r) {
+				vscode.env.openExternal(vscode.Uri.parse(
+					`https://portal.azure.com/#resource/subscriptions/${r.subscriptionId}/resourceGroups/${r.resourceGroupName}/providers/Microsoft.AzureData/${ResourceType.sqlManagedInstances}/${r.instanceName}`));
+			} else {
+				vscode.window.showErrorMessage(loc.couldNotFindRegistration(this._miaaModel.namespace, this._miaaModel.name));
+			}
+		});
+
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems(
 			[
-				{ component: createNewButton },
+				{ component: createDatabaseButton },
 				{ component: deleteButton },
 				{ component: resetPasswordButton, toolbarSeparatorAfter: true },
 				{ component: openInAzurePortalButton }

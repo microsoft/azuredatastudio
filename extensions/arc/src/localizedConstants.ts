@@ -105,6 +105,6 @@ export function numVCores(vCores: string): string {
 		return '-';
 	}
 }
-export const couldNotFindControllerResource = localize('arc.couldNotFindControllerResource', "Could not find Azure resource for Azure Arc Data Controller", name);
+export function couldNotFindRegistration(namespace: string, name: string) { return localize('arc.couldNotFindRegistration', "Could not find controller registration for {0} ({1})", name, namespace); }
 
 export const arcResources = localize('arc.arcResources', "Azure Arc Resources");
