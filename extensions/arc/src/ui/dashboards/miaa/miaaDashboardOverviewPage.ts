@@ -33,7 +33,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		subscriptionId: '-',
 		miaaAdmin: '-',
 		host: '-',
-		computeAndStorage: '-'
+		vCores: '-'
 	};
 
 	constructor(modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _miaaModel: MiaaModel) {
@@ -157,7 +157,6 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		}).component();
 
 		this._databasesTableLoading = this.modelView.modelBuilder.loadingComponent().withItem(this._databasesTable).component();
-		this._databasesTableLoading.loading = false;
 		rootContainer.addItem(this._databasesTableLoading, { CSSStyles: { 'margin-bottom': '20px' } });
 
 		this.initialized = true;
@@ -203,7 +202,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 			this._instanceProperties.dataController = this._controllerModel.controllerRegistration?.instanceName || '-';
 			this._instanceProperties.region = (await getAzurecoreApi()).getRegionDisplayName(reg.location);
 			this._instanceProperties.subscriptionId = reg.subscriptionId || '-';
-			this._instanceProperties.computeAndStorage = reg.vCores || '-';
+			this._instanceProperties.vCores = reg.vCores || '-';
 			this._instanceProperties.host = reg.externalEndpoint || '-';
 			this.refreshDisplayedProperties();
 		}
@@ -264,8 +263,8 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 				value: this._instanceProperties.host
 			},
 			{
-				displayName: loc.computeAndStorage,
-				value: this._instanceProperties.computeAndStorage
+				displayName: loc.compute,
+				value: loc.numVCores(this._instanceProperties.vCores)
 			}
 		];
 

@@ -21,6 +21,7 @@ export const properties = localize('arc.properties', "Properties");
 export const settings = localize('arc.settings', "Settings");
 export const security = localize('arc.security', "Security");
 export const computeAndStorage = localize('arc.computeAndStorage', "Compute + Storage");
+export const compute = localize('arc.compute', "Compute");
 export const backup = localize('arc.backup', "Backup");
 export const newSupportRequest = localize('arc.newSupportRequest', "New support request");
 export const diagnoseAndSolveProblems = localize('arc.diagnoseAndSolveProblems', "Diagnose and solve problems");
@@ -96,7 +97,14 @@ export function copiedToClipboard(name: string): string { return localize('arc.c
 export function refreshFailed(error: any): string { return localize('arc.refreshFailed', "Refresh failed. {0}", (error instanceof Error ? error.message : error)); }
 export function failedToManagePostgres(name: string, error: any): string { return localize('arc.failedToManagePostgres', "Failed to manage Postgres {0}. {1}", name, (error instanceof Error ? error.message : error)); }
 export function clickTheTroubleshootButton(resourceType: string): string { return localize('arc.clickTheTroubleshootButton', "Click the troubleshoot button to open the Azure Arc {0} troubleshooting notebook.", resourceType); }
-
+export function numVCores(vCores: string): string {
+	const numCores = +vCores;
+	if (numCores && numCores > 0) {
+		return numCores > 1 ? localize('arc.numVCores', "{0} vCores", numCores) : localize('arc.vCore', "{0} vCore", numCores);
+	} else {
+		return '-';
+	}
+}
 export const couldNotFindControllerResource = localize('arc.couldNotFindControllerResource', "Could not find Azure resource for Azure Arc Data Controller", name);
 
 export const arcResources = localize('arc.arcResources', "Azure Arc Resources");

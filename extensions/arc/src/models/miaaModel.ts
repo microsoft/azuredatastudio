@@ -15,7 +15,7 @@ export class MiaaModel {
 
 	private _sqlInstanceRouter: SqlInstanceRouterApi;
 	private _status: HybridSqlNsNameGetResponse | undefined;
-
+	private _databases: DatabaseModel[] = [];
 	private readonly _onPasswordUpdated = new vscode.EventEmitter<string>();
 	private readonly _onStatusUpdated = new vscode.EventEmitter<HybridSqlNsNameGetResponse>();
 	private readonly _onDatabasesUpdated = new vscode.EventEmitter<DatabaseModel[]>();
@@ -58,19 +58,26 @@ export class MiaaModel {
 	}
 
 	public get databases(): DatabaseModel[] {
-		return [
-			{ name: 'contosoMI54', status: 'online' },
-			{ name: 'contosoMI56', status: 'online' },
-			{ name: 'contosoMI58', status: 'online' },
-		];
+		return this._databases;
 	}
 
 	/** Refreshes the model */
 	public async refresh(): Promise<void> {
-		this._sqlInstanceRouter.apiV1HybridSqlNsNameGet(this._namespace, this._name).then(response => {
+		const instanceRefresh = this._sqlInstanceRouter.apiV1HybridSqlNsNameGet(this._namespace, this._name).then(response => {
 			this._status = response.body;
 			this._onStatusUpdated.fire(this._status);
-			this._onDatabasesUpdated.fire(this.databases);
 		});
+		const provider = azdata.dataprotocol.getProvider<azdata.MetadataProvider>(this.connectionProfile.providerName, azdata.DataProviderType.MetadataProvider);
+		const databasesRefresh = azdata.connection.getUriForConnection(this.connectionProfile.id).then(ownerUri => {
+			provider.getDatabases(ownerUri).then(databases => {
+				if (databases.length > 0 && typeof (databases[0]) === 'object') {
+					this._databases = (<azdata.DatabaseInfo[]>databases).map(db => { return { name: db.options['name'], status: db.options['state'] }; });
+				} else {
+					this._databases = (<string[]>databases).map(db => { return { name: db, status: '-' }; });
+				}
+				this._onDatabasesUpdated.fire(this._databases);
+			});
+		});
+		await Promise.all([instanceRefresh, databasesRefresh]);
 	}
 }
