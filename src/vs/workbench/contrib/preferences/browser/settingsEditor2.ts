@@ -43,10 +43,8 @@ import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { IEditorMemento, IEditorPane } from 'vs/workbench/common/editor';
 import { attachSuggestEnabledInputBoxStyler, SuggestEnabledInput } from 'vs/workbench/contrib/codeEditor/browser/suggestEnabledInput/suggestEnabledInput';
 import { SettingsTarget, SettingsTargetsWidget } from 'vs/workbench/contrib/preferences/browser/preferencesWidgets';
-// {{SQL CARBON EDIT}}
 import { commonlyUsedData } from 'vs/workbench/contrib/preferences/browser/settingsLayout';
-import { tocData } from 'sql/workbench/contrib/preferences/browser/sqlSettingsLayout';
-// {{SQL CARBON EDIT}} END
+import { tocData } from 'sql/workbench/contrib/preferences/browser/sqlSettingsLayout'; // {{SQL CARBON EDIT}}
 import { AbstractSettingRenderer, ISettingLinkClickEvent, ISettingOverrideClickEvent, resolveExtensionsSettings, resolveSettingsTree, SettingsTree, SettingTreeRenderers } from 'vs/workbench/contrib/preferences/browser/settingsTree';
 import { ISettingsEditorViewState, parseQuery, SearchResultIdx, SearchResultModel, SettingsTreeElement, SettingsTreeGroupChild, SettingsTreeGroupElement, SettingsTreeModel, SettingsTreeSettingElement } from 'vs/workbench/contrib/preferences/browser/settingsTreeModels';
 import { settingsTextInputBorder } from 'vs/workbench/contrib/preferences/browser/settingsWidgets';
