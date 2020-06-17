@@ -177,13 +177,16 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		}).component();
 
 		deleteButton.onDidClick(async () => {
-			if (await promptForResourceDeletion(this._miaaModel.namespace, this._miaaModel.name)) {
-				try {
+			deleteButton.enabled = false;
+			try {
+				if (await promptForResourceDeletion(this._miaaModel.namespace, this._miaaModel.name)) {
 					await this._controllerModel.miaaDelete(this._miaaModel.namespace, this._miaaModel.name);
 					vscode.window.showInformationMessage(loc.resourceDeleted(this._miaaModel.name));
-				} catch (error) {
-					vscode.window.showErrorMessage(loc.resourceDeletionFailed(this._miaaModel.name, getErrorText(error)));
 				}
+			} catch (error) {
+				vscode.window.showErrorMessage(loc.resourceDeletionFailed(this._miaaModel.name, getErrorText(error)));
+			} finally {
+				deleteButton.enabled = true;
 			}
 		});
 
