@@ -28,6 +28,7 @@ export class DeployDatabaseDialog {
 	private connectionsRadioButton: azdata.RadioButtonComponent | undefined;
 	private dataSourcesRadioButton: azdata.RadioButtonComponent | undefined;
 	private loadProfileButton: azdata.ButtonComponent | undefined;
+	private sqlCmdVariablesTable: azdata.TableComponent | undefined;
 	private formBuilder: azdata.FormBuilder | undefined;
 
 	private connection: azdata.connection.Connection | undefined;
@@ -90,6 +91,19 @@ export class DeployDatabaseDialog {
 			});
 
 			this.loadProfileButton = this.createLoadProfileButton(view);
+			this.sqlCmdVariablesTable = view.modelBuilder.table().withProperties({
+				title: constants.sqlCmdTableLabel,
+				data: this.convertSqlCmdVarsToTableFormat(this.project.sqlCmdVariables),
+				columns: [
+					{
+						value: constants.sqlCmdVariableColumn
+					},
+					{
+						value: constants.sqlCmdValueColumn,
+					}],
+				width: 400,
+				height: 400
+			}).component();
 
 			this.formBuilder = <azdata.FormBuilder>view.modelBuilder.formContainer()
 				.withFormItems([
@@ -117,6 +131,15 @@ export class DeployDatabaseDialog {
 				.withLayout({
 					width: '100%'
 				});
+
+			// add SQLCMD variables table if the project has any
+			if (Object.keys(this.project.sqlCmdVariables).length > 0) {
+				this.formBuilder.insertFormItem({
+					title: constants.sqlCmdTableLabel,
+					component: <azdata.TableComponent>this.sqlCmdVariablesTable
+				},
+					6);
+			}
 
 			let formModel = this.formBuilder.component();
 			await view.initializeModel(formModel);
@@ -370,7 +393,7 @@ export class DeployDatabaseDialog {
 		}).component();
 
 		loadProfileButton.onDidClick(async () => {
-			let fileUris = await this.apiWrapper.showOpenDialog(
+			const fileUris = await this.apiWrapper.showOpenDialog(
 				{
 					canSelectFiles: true,
 					canSelectFolders: false,
@@ -387,13 +410,36 @@ export class DeployDatabaseDialog {
 			}
 
 			if (this.readPublishProfile) {
-				let result = await this.readPublishProfile(fileUris[0]);
+				const result = await this.readPublishProfile(fileUris[0]);
 				(<azdata.InputBoxComponent>this.targetDatabaseTextBox).value = result.databaseName;
 				this.profileSqlCmdVars = result.sqlCmdVariables;
+				const data = this.convertSqlCmdVarsToTableFormat(this.getSqlCmdVariablesForDeploy());
+
+				(<azdata.TableComponent>this.sqlCmdVariablesTable).updateProperties({
+					data: data
+				});
+
+				// add SQLCMD Variables table if it wasn't there before
+				if (Object.keys(this.project.sqlCmdVariables).length === 0) {
+					this.formBuilder?.insertFormItem({
+						title: constants.sqlCmdTableLabel,
+						component: <azdata.TableComponent>this.sqlCmdVariablesTable
+					},
+						6);
+				}
 			}
 		});
 
 		return loadProfileButton;
+	}
+
+	private convertSqlCmdVarsToTableFormat(sqlCmdVars: Record<string, string>): string[][] {
+		let data = [];
+		for (let key in sqlCmdVars) {
+			data.push([key, sqlCmdVars[key]]);
+		}
+
+		return data;
 	}
 
 	// only enable Generate Script and Ok buttons if all fields are filled

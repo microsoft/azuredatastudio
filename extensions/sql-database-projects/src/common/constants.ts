@@ -64,6 +64,9 @@ export const dataSourceDropdownTitle = localize('dataSourceDropdownTitle', "Data
 export const noDataSourcesText = localize('noDataSourcesText', "No data sources in this project");
 export const loadProfileButtonText = localize('loadProfileButtonText', "Load Profile...");
 export const profileWarningText = localize('profileWarningText', "⚠Warning: Only database name and SQLCMD variables are able to be loaded from a profile at this time");
+export const sqlCmdTableLabel = localize('sqlCmdTableLabel', "SQLCMD Variables");
+export const sqlCmdVariableColumn = localize('sqlCmdVariableColumn', "Variable");
+export const sqlCmdValueColumn = localize('sqlCmdValueColumn', "Value");
 
 // Error messages
 

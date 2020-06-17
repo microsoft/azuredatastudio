@@ -167,7 +167,7 @@ describe.skip('ProjectsController: project controller operations', function (): 
 			let result = await projController.readPublishProfile(vscode.Uri.parse(profilePath));
 			should(result.databaseName).equal('targetDb');
 			should(Object.keys(result.sqlCmdVariables).length).equal(1);
-			should(result.sqlCmdVariables['ProdDatabaseName']).equal('prodName');
+			should(result.sqlCmdVariables['ProdDatabaseName']).equal('MyProdDatabase');
 		});
 	});
 });

@@ -8,7 +8,7 @@
   </PropertyGroup>
   <ItemGroup>
     <SqlCmdVariable Include="ProdDatabaseName">
-      <DefaultValue>prodName</DefaultValue>
+      <DefaultValue>MyProdDatabase</DefaultValue>
       <Value>$(SqlCmdVar__1)</Value>
     </SqlCmdVariable>
   </ItemGroup>
