@@ -41,6 +41,7 @@ export const name = localize('arc.name', "Name");
 export const type = localize('arc.type', "Type");
 export const status = localize('arc.status', "Status");
 export const miaaAdmin = localize('arc.miaaAdmin', "Managed instance admin");
+export const controllerEndpoint = localize('arc.controllerEndpoint', "Controller endpoint");
 export const dataController = localize('arc.dataController', "Data controller");
 export const kibanaDashboard = localize('arc.kibanaDashboard', "Kibana Dashboard");
 export const grafanaDashboard = localize('arc.grafanaDashboard', "Grafana Dashboard");
@@ -60,6 +61,8 @@ export const refresh = localize('arc.refresh', "Refresh");
 export const troubleshoot = localize('arc.troubleshoot', "Troubleshoot");
 export const clickTheNewSupportRequestButton = localize('arc.clickTheNewSupportRequestButton', "Click the new support request button to file a support request in the Azure Portal.");
 export const running = localize('arc.running', "Running");
+export const connected = localize('arc.connected', "Connected");
+export const disconnected = localize('arc.disconnected', "Disconnected");
 
 // Postgres constants
 export const coordinatorEndpoint = localize('arc.coordinatorEndpoint', "Coordinator endpoint");

@@ -6,12 +6,11 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as loc from '../../../localizedConstants';
-import { IconPathHelper, cssStyles } from '../../../constants';
+import { IconPathHelper, cssStyles, ResourceType } from '../../../constants';
 import { DuskyObjectModelsDatabase, DuskyObjectModelsDatabaseServiceArcPayload, V1Pod } from '../../../controller/generated/dusky/api';
 import { DashboardPage } from '../../components/dashboardPage';
 import { ControllerModel } from '../../../models/controllerModel';
 import { PostgresModel, PodRole } from '../../../models/postgresModel';
-import { ResourceType } from '../../../common/utils';
 
 export class PostgresOverviewPage extends DashboardPage {
 	private propertiesLoading?: azdata.LoadingComponent;
