@@ -5,11 +5,10 @@
 
 import * as azdata from 'azdata';
 import * as loc from '../../../localizedConstants';
-import { IconPathHelper, cssStyles } from '../../../constants';
+import { IconPathHelper, cssStyles, ResourceType } from '../../../constants';
 import { KeyValueContainer, KeyValue, InputKeyValue, MultilineInputKeyValue } from '../../components/keyValueContainer';
 import { DashboardPage } from '../../components/dashboardPage';
 import { ControllerModel, Registration } from '../../../models/controllerModel';
-import { ResourceType } from '../../../common/utils';
 import { MiaaModel } from '../../../models/miaaModel';
 
 export class MiaaConnectionStringsPage extends DashboardPage {
