@@ -36,6 +36,7 @@ import { assign } from 'vs/base/common/objects';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
+import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 
 suite('SQL ConnectionManagementService tests', () => {
 
@@ -76,6 +77,10 @@ suite('SQL ConnectionManagementService tests', () => {
 	let connectionManagementService: ConnectionManagementService;
 	let configResult: { [key: string]: any } = {};
 	configResult['defaultEngine'] = 'MSSQL';
+	let queryEditorConfiguration: Partial<IQueryEditorConfiguration> = {
+		tabColorMode: 'fill'
+	};
+
 	let handleFirewallRuleResult: IHandleFirewallRuleResult;
 	let resolveHandleFirewallRuleDialog: boolean;
 	let isFirewallRuleAdded: boolean;
@@ -142,6 +147,8 @@ suite('SQL ConnectionManagementService tests', () => {
 		workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(TestConfigurationService);
 		workspaceConfigurationServiceMock.setup(x => x.getValue(Constants.sqlConfigSectionName))
 			.returns(() => configResult);
+		workspaceConfigurationServiceMock.setup(x => x.getValue('queryEditor'))
+			.returns(() => queryEditorConfiguration);
 
 		connectionManagementService = createConnectionManagementService();
 
