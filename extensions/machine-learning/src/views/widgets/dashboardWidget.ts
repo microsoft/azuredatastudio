@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import { ApiWrapper } from '../../common/apiWrapper';
 import * as path from 'path';
 import * as constants from '../../common/constants';
-import * as utils from '../../common/utils';
+import { PredictService } from '../../prediction/predictService';
 
 interface IActionMetadata {
 	title?: string,
@@ -25,53 +25,56 @@ export class DashboardWidget {
 	/**
 	 * Creates new instance of dashboard
 	 */
-	constructor(private _apiWrapper: ApiWrapper, private _root: string) {
+	constructor(private _apiWrapper: ApiWrapper, private _root: string, private _predictService: PredictService) {
 	}
 
-	public register(): void {
-		this._apiWrapper.registerWidget('mls.dashboard', async (view) => {
-			const container = view.modelBuilder.flexContainer().withLayout({
-				flexFlow: 'column',
-				width: '100%',
-				height: '100%'
-			}).component();
-			const header = this.createHeader(view);
-			const tasksContainer = this.createTasks(view);
-			const footerContainer = this.createFooter(view);
-			container.addItem(header, {
-				CSSStyles: {
-					'background-image': `url(${vscode.Uri.file(this.asAbsolutePath('images/background.svg'))})`,
-					'background-repeat': 'no-repeat',
-					'background-position': 'bottom',
-					'width': `${maxWidth}px`,
-					'height': '330px',
-					'background-size': `${maxWidth}px ${headerMaxHeight}px`,
-					'margin-bottom': '-60px'
-				}
-			});
-			container.addItem(tasksContainer, {
-				CSSStyles: {
-					'width': `${maxWidth}px`,
-					'height': '150px',
-				}
-			});
-			container.addItem(footerContainer, {
-				CSSStyles: {
-					'width': `${maxWidth}px`,
-					'height': '500px',
-				}
-			});
-			const mainContainer = view.modelBuilder.flexContainer()
-				.withLayout({
+	public register(): Promise<void> {
+		return new Promise<void>(resolve => {
+			this._apiWrapper.registerWidget('mls.dashboard', async (view) => {
+				const container = view.modelBuilder.flexContainer().withLayout({
 					flexFlow: 'column',
 					width: '100%',
-					height: '100%',
-					position: 'absolute'
+					height: '100%'
 				}).component();
-			mainContainer.addItem(container, {
-				CSSStyles: { 'padding-top': '25px', 'padding-left': '5px' }
+				const header = this.createHeader(view);
+				const tasksContainer = await this.createTasks(view);
+				const footerContainer = this.createFooter(view);
+				container.addItem(header, {
+					CSSStyles: {
+						'background-image': `url(${vscode.Uri.file(this.asAbsolutePath('images/background.svg'))})`,
+						'background-repeat': 'no-repeat',
+						'background-position': 'bottom',
+						'width': `${maxWidth}px`,
+						'height': '330px',
+						'background-size': `${maxWidth}px ${headerMaxHeight}px`,
+						'margin-bottom': '-60px'
+					}
+				});
+				container.addItem(tasksContainer, {
+					CSSStyles: {
+						'width': `${maxWidth}px`,
+						'height': '150px',
+					}
+				});
+				container.addItem(footerContainer, {
+					CSSStyles: {
+						'width': `${maxWidth}px`,
+						'height': '500px',
+					}
+				});
+				const mainContainer = view.modelBuilder.flexContainer()
+					.withLayout({
+						flexFlow: 'column',
+						width: '100%',
+						height: '100%',
+						position: 'absolute'
+					}).component();
+				mainContainer.addItem(container, {
+					CSSStyles: { 'padding-top': '25px', 'padding-left': '5px' }
+				});
+				await view.initializeModel(mainContainer);
+				resolve();
 			});
-			await view.initializeModel(mainContainer);
 		});
 	}
 
@@ -178,12 +181,12 @@ export class DashboardWidget {
 		});
 		const videosContainer = this.createVideoLinkContainers(view, [
 			{
-				iconPath: { light: 'images/video1.svg', dark: 'images/video1.svg' },
+				iconPath: { light: 'images/aiMlSqlServer.svg', dark: 'images/aiMlSqlServer.svg' },
 				description: 'Artificial intelligence and machine learning with SQL Server 2019',
 				link: 'https://www.youtube.com/watch?v=sE99cSoFOHs'
 			},
 			{
-				iconPath: { light: 'images/video2.svg', dark: 'images/video2.svg' },
+				iconPath: { light: 'images/sqlServerMl.svg', dark: 'images/sqlServerMl.svg' },
 				description: 'SQL Server Machine Learning Services',
 				link: 'https://www.youtube.com/watch?v=R4GCBoxADyQ'
 			}
@@ -195,7 +198,7 @@ export class DashboardWidget {
 
 		const moreVideosContainer = this.createVideoLinkContainers(view, [
 			{
-				iconPath: { light: 'images/video2.svg', dark: 'images/video2.svg' },
+				iconPath: { light: 'images/notebooksIntro.svg', dark: 'images/notebooksIntro.svg' },
 				description: 'Introduction to Azure Data Studio Notebooks',
 				link: 'https://www.youtube.com/watch?v=Nt4kIHQ0IOc'
 			}
@@ -312,7 +315,7 @@ export class DashboardWidget {
 				'background-position': 'top',
 				'width': `${maxWidth}px`,
 				'height': '110px',
-				'background-size': `{maxWidth}px 120px`
+				'background-size': `${maxWidth}px 120px`
 			}
 		});
 		videosContainer.addItem(descriptionComponent);
@@ -326,6 +329,11 @@ export class DashboardWidget {
 			width: maxWidth,
 			height: '500px',
 		}).component();
+		const moreLinksContainer = view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'column',
+			width: maxWidth,
+			height: '300px',
+		}).component();
 		const titleComponent = view.modelBuilder.text().withProperties({
 			value: constants.dashboardLinksTitle,
 			CSSStyles: {
@@ -336,6 +344,10 @@ export class DashboardWidget {
 		}).component();
 
 		const links = [{
+			title: constants.sqlMlExtDocTitle,
+			description: constants.sqlMlExtDocDesc,
+			link: constants.mlExtDocLink
+		}, {
 			title: constants.sqlMlDocTitle,
 			description: constants.sqlMlDocDesc,
 			link: constants.mlDocLink
@@ -343,18 +355,22 @@ export class DashboardWidget {
 			title: constants.sqlMlsDocTitle,
 			description: constants.sqlMlsDocDesc,
 			link: constants.mlsDocLink
-		},
-		{
-			title: constants.sqlMlsAzureDocTitle,
-			description: constants.sqlMlsAzureDocDesc,
-			link: constants.mlsAzureDocLink
 		}];
 
-		const moreLink = {
+		const moreLinks = [{
+			title: constants.onnxOnEdgeOdbcDocTitle,
+			description: constants.onnxOnEdgeOdbcDocDesc,
+			link: constants.onnxOnEdgeDocs
+		},
+		{
+			title: constants.sqlMlsMIDocTitle,
+			description: constants.sqlMlsMIDocDesc,
+			link: constants.mlsMIDocLink
+		}, {
 			title: constants.mlsInstallOdbcDocTitle,
 			description: constants.mlsInstallOdbcDocDesc,
-			link: utils.isWindows() ? constants.odbcDriverWindowsDocuments : constants.odbcDriverLinuxDocuments
-		};
+			link: constants.odbcDriverDocuments
+		}];
 		const styles = {
 			'padding': '10px'
 		};
@@ -368,8 +384,10 @@ export class DashboardWidget {
 		linksContainer.addItems(links.map(l => this.createLink(view, l)), {
 			CSSStyles: styles
 		});
+		moreLinksContainer.addItems(moreLinks.map(l => this.createLink(view, l)));
 
-		this.addShowMorePanel(view, linksContainer, this.createLink(view, moreLink), { 'padding-left': '10px' }, styles);
+		this.addShowMorePanel(view, linksContainer, moreLinksContainer, { 'padding-left': '10px' }, styles);
+
 		return linksContainer;
 	}
 
@@ -445,7 +463,7 @@ export class DashboardWidget {
 		return path.join(this._root || '', filePath);
 	}
 
-	private createTasks(view: azdata.ModelView): azdata.Component {
+	private async createTasks(view: azdata.ModelView): Promise<azdata.Component> {
 		const tasksContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row',
 			width: '100%',
@@ -458,7 +476,7 @@ export class DashboardWidget {
 				dark: this.asAbsolutePath('images/makePredictions.svg'),
 				light: this.asAbsolutePath('images/makePredictions.svg'),
 			},
-			link: '',
+			link: 'https://go.microsoft.com/fwlink/?linkid=2129795',
 			command: constants.mlsPredictModelCommand
 		};
 		const predictionButton = this.createTaskButton(view, predictionMetadata);
@@ -469,7 +487,7 @@ export class DashboardWidget {
 				dark: this.asAbsolutePath('images/manageModels.svg'),
 				light: this.asAbsolutePath('images/manageModels.svg'),
 			},
-			link: '',
+			link: 'https://go.microsoft.com/fwlink/?linkid=2129796',
 			command: constants.mlManageModelsCommand
 		};
 		const importModelsButton = this.createTaskButton(view, importMetadata);
@@ -480,7 +498,7 @@ export class DashboardWidget {
 				dark: this.asAbsolutePath('images/createNotebook.svg'),
 				light: this.asAbsolutePath('images/createNotebook.svg'),
 			},
-			link: '',
+			link: 'https://go.microsoft.com/fwlink/?linkid=2129920',
 			command: constants.notebookCommandNew
 		};
 		const notebookModelsButton = this.createTaskButton(view, notebookMetadata);
@@ -489,12 +507,15 @@ export class DashboardWidget {
 				'padding': '10px'
 			}
 		});
+		if (!await this._predictService.serverSupportOnnxModel()) {
+			console.log(constants.onnxNotSupportedError);
+		}
 
 		return tasksContainer;
 	}
 
 	private createTaskButton(view: azdata.ModelView, taskMetaData: IActionMetadata): azdata.Component {
-		const maxHeight = 106;
+		const maxHeight = 116;
 		const maxWidth = 250;
 		const mainContainer = view.modelBuilder.divContainer().withLayout({
 			width: maxWidth,
@@ -506,7 +527,7 @@ export class DashboardWidget {
 		const iconContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row',
 			width: maxWidth,
-			height: maxHeight - 20,
+			height: maxHeight - 23,
 			alignItems: 'flex-start'
 		}).component();
 		const labelsContainer = view.modelBuilder.flexContainer().withLayout({
@@ -545,7 +566,7 @@ export class DashboardWidget {
 			CSSStyles: {
 				'padding': '0px',
 				'padding-bottom': '5px',
-				'width': '180px',
+				'width': '200px',
 				'margin': '0px',
 				'color': '#006ab1'
 			}
@@ -571,7 +592,7 @@ export class DashboardWidget {
 			}
 		});
 		mainContainer.onDidClick(async () => {
-			if (taskMetaData.command) {
+			if (mainContainer.enabled && taskMetaData.command) {
 				await this._apiWrapper.executeCommand(taskMetaData.command);
 			}
 		});

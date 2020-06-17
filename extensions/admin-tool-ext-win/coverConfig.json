@@ -4,12 +4,13 @@
 	"relativeCoverageDir": "../../coverage",
 	"ignorePatterns": [
 		"**/node_modules/**",
-		"**/test/**"
+		"**/test/**",
+		"main.js"
 	],
-	"includePid": false,
 	"reports": [
 		"cobertura",
-		"lcov"
+		"lcov",
+		"json"
 	],
 	"verbose": false,
 	"remapOptions": {

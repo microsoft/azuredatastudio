@@ -39,6 +39,40 @@ if (args['nogpu']) { // {{SQL CARBON EDIT}}
 const userDataPath = getUserDataPath(args);
 app.setPath('userData', userDataPath);
 
+// Set temp directory based on crash-reporter-directory CLI argument
+// The crash reporter will store crashes in temp folder so we need
+// to change that location accordingly.
+
+// If a crash-reporter-directory is specified we setup the crash reporter
+// right from the beginning as early as possible to monitor all processes.
+let crashReporterDirectory = args['crash-reporter-directory'];
+if (crashReporterDirectory) {
+	crashReporterDirectory = path.normalize(crashReporterDirectory);
+
+	if (!fs.existsSync(crashReporterDirectory)) {
+		try {
+			fs.mkdirSync(crashReporterDirectory);
+		} catch (error) {
+			console.error(`The path '${crashReporterDirectory}' specified for --crash-reporter-directory does not seem to exist or cannot be created.`);
+			app.exit(1);
+		}
+	}
+
+	// Crashes are stored in the temp directory by default, so we
+	// need to change that directory to the provided one
+	console.log(`Found --crash-reporter-directory argument. Setting temp directory to be '${crashReporterDirectory}'`);
+	app.setPath('temp', crashReporterDirectory);
+
+	// Start crash reporter
+	const { crashReporter } = require('electron');
+	crashReporter.start({
+		companyName: 'Microsoft',
+		productName: product.nameShort,
+		submitURL: '',
+		uploadToServer: false
+	});
+}
+
 // Set logs path before app 'ready' event if running portable
 // to ensure that no 'logs' folder is created on disk at a
 // location outside of the portable directory
@@ -52,7 +86,15 @@ setCurrentWorkingDirectory();
 
 // Register custom schemes with privileges
 protocol.registerSchemesAsPrivileged([
-	{ scheme: 'vscode-resource', privileges: { secure: true, supportFetchAPI: true, corsEnabled: true } }
+	{
+		scheme: 'vscode-webview-resource',
+		privileges: {
+			secure: true,
+			standard: true,
+			supportFetchAPI: true,
+			corsEnabled: true,
+		}
+	},
 ]);
 
 // Global app listeners
@@ -336,7 +378,8 @@ function parseCLIArgs() {
 			'user-data-dir',
 			'locale',
 			'js-flags',
-			'max-memory'
+			'max-memory',
+			'crash-reporter-directory'
 		]
 	});
 }

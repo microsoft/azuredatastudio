@@ -1,13 +1,44 @@
-# Machine Learning Services for Azure Data Studio #
-Machine Learning Services for Azure Data Studio (Preview) provides support for new features that help you create, build, and deploy machine learning jobs in SQL Server through Azure Data Studio.
+# Machine Learning extension for Azure Data Studio
 
-## Features ##
-* Enable Machine Learning Services on SQL Server.
-* Deploy an MLFlow container to track models.
-* Follow along with machine learning notebooks.
+The Machine Learning extension for Azure Data Studio enables you to manage packages, import machine learning models, make predictions, and create notebooks to run experiments for SQL databases.
 
-## Prerequisites ##
-In order to use Machine Learning Services for Azure Data Studio (Preview), your SQL Server must have Machine Learning Services installed. Follow the instructions [here](https://docs.microsoft.com/sql/advanced-analytics/install/sql-machine-learning-services-windows-install?view=sql-server-ver15) to do so.
+For more information, see the [Machine Learning extension documentation](https://go.microsoft.com/fwlink/?linkid=2129918).
+
+## Installation
+
+Find the **Machine Learning** extension in Azure Data Studio and install the latest available version.
+
+The following prerequisites need to be installed on the computer you run Azure Data Studio on:
+
+- Python 3. Specify the local path to a preexisting Python installation under **Settings**. If you have used a Python kernel notebook in Azure Data Studio, the extension will use the path from the notebook by default.
+- [Microsoft ODBC driver 17 for SQL Server](https://go.microsoft.com/fwlink/?linkid=2129818) for Windows, macOS, or Linux.
+- R 3.5 (optional). Enable R and specify the local path to a preexisting R installation under **Settings**. This is only required if you want to manage R packages in your database.
+
+For more information on how to install and configure the prerequisites, see the [Machine Learning extension documentation](https://go.microsoft.com/fwlink/?linkid=2129918).
+
+## Manage packages
+
+You can install and uninstall Python and R packages in your SQL database with Azure Data Studio. The packages you install can be used in Python or R scripts running in-database using the `sp_execute_external_script` T-SQL statement. This feature is currently limited to work with [SQL Server Machine Learning Services](https://go.microsoft.com/fwlink/?linkid=2128672).
+
+Click on **Manage packages in database** to install or uninstall a Python or R package. For more information, see [how to manage packages with the Machine Learning extension](https://go.microsoft.com/fwlink/?linkid=2129919).
+
+## Make predictions
+
+With the extension, you can use an ONNX model to make predictions. The model can either be an existing model stored in your database or an imported model. This feature is currently limited to work with [Azure SQL Edge](https://go.microsoft.com/fwlink/?linkid=2129794).
+
+Click on **Make predictions** and choose between importing an ONNX model or use an existing model stored in your database. A T-SQL script will then be generated, which you can use to make predictions. For more information, see [how to make predictions with the Machine Learning extension](https://go.microsoft.com/fwlink/?linkid=2129795).
+
+## Import models
+
+The Machine Learning extension can import ONNX models into your database. You can then use these models to make predictions. This feature is currently limited to work with [Azure SQL Edge](https://go.microsoft.com/fwlink/?linkid=2129794).
+
+Click on **Import models** and choose between importing a model from a file or from Azure Machine Learning. For more information, see [how to import models with the Machine Learning extension](https://go.microsoft.com/fwlink/?linkid=2129796).
+
+## Create notebook
+
+You can run experiments and create models in Python with a notebook in Azure Data Studio. You can also run T-SQL code, and run Python and R with SQL Server Machine Learning Services, in a notebook.
+
+Click on **Create notebook** to create a new notebook in Azure Data Studio. For more information, see [how to create a notebook with the Machine Learning extension](https://go.microsoft.com/fwlink/?linkid=2129920).
 
 ## Code of Conduct
 
@@ -21,8 +52,4 @@ The [Microsoft Enterprise and Developer Privacy Statement](https://privacy.micro
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-Licensed under the [Source EULA](https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt).
-
-
-
-
+Licensed under the [Source EULA](https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt).

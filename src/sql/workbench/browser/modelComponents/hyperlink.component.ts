@@ -12,10 +12,14 @@ import * as azdata from 'azdata';
 
 import { TitledComponent } from 'sql/workbench/browser/modelComponents/titledComponent';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
+import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
+import { textLinkForeground, textLinkActiveForeground } from 'vs/platform/theme/common/colorRegistry';
+import { IOpenerService } from 'vs/platform/opener/common/opener';
+import * as DOM from 'vs/base/browser/dom';
 
 @Component({
 	selector: 'modelview-hyperlink',
-	template: `<a [href]="getUrl()" [title]="title" [attr.aria-label]="ariaLabel" target="blank" (click)="onClick()">{{getLabel()}}</a>`
+	template: `<a [href]="url" [title]="title" [attr.aria-label]="ariaLabel" target="blank">{{label}}</a>`
 })
 export default class HyperlinkComponent extends TitledComponent implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
@@ -23,7 +27,9 @@ export default class HyperlinkComponent extends TitledComponent implements IComp
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(IOpenerService) private openerService: IOpenerService
+	) {
 		super(changeRef, el);
 	}
 
@@ -32,6 +38,7 @@ export default class HyperlinkComponent extends TitledComponent implements IComp
 	}
 
 	ngAfterViewInit(): void {
+		this._register(DOM.addDisposableListener(this._el.nativeElement, 'click', (e: MouseEvent) => this.onClick(e)));
 	}
 
 	ngOnDestroy(): void {
@@ -50,10 +57,6 @@ export default class HyperlinkComponent extends TitledComponent implements IComp
 		return this.getPropertyOrDefault<azdata.HyperlinkComponentProperties, string>((props) => props.label, '');
 	}
 
-	public getLabel(): string {
-		return this.label;
-	}
-
 	public set url(newValue: string) {
 		this.setPropertyFromUI<azdata.HyperlinkComponentProperties, string>((properties, value) => { properties.url = value; }, newValue);
 	}
@@ -62,17 +65,35 @@ export default class HyperlinkComponent extends TitledComponent implements IComp
 		return this.getPropertyOrDefault<azdata.HyperlinkComponentProperties, string>((props) => props.url, '');
 	}
 
-	public getUrl(): string {
-		return this.url;
-	}
-
-	public onClick(): boolean {
+	public onClick(e: MouseEvent): void {
 		this.fireEvent({
 			eventType: ComponentEventType.onDidClick,
 			args: undefined
 		});
-		// If we don't have a URL then return false since that just defaults to the URL for the workbench. We assume
-		// if a blank url is specified then the caller is handling the click themselves.
-		return !!this.url;
+		if (this.url) {
+			this.openerService.open(this.url);
+		}
+		DOM.EventHelper.stop(e, true);
 	}
 }
+
+registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+	const linkForeground = theme.getColor(textLinkForeground);
+	if (linkForeground) {
+		collector.addRule(`
+		modelview-hyperlink a:link,
+		modelview-hyperlink a:visited {
+			color: ${linkForeground};
+		}
+		`);
+	}
+
+	const activeForeground = theme.getColor(textLinkActiveForeground);
+	if (activeForeground) {
+		collector.addRule(`
+		modelview-hyperlink a:hover {
+			color: ${activeForeground};
+		}
+		`);
+	}
+});

@@ -44,6 +44,15 @@ export async function exists(path: string): Promise<boolean> {
 	return promisify(fs.exists)(path);
 }
 
+export async function isDirectory(path: string): Promise<boolean> {
+	try {
+		const stat = await fs.promises.lstat(path);
+		return stat.isDirectory();
+	} catch {
+		return false;
+	}
+}
+
 export async function createFolder(dirPath: string): Promise<void> {
 	let folderExists = await exists(dirPath);
 	if (!folderExists) {
@@ -258,4 +267,19 @@ export function getFileName(filePath: string) {
 	} else {
 		return '';
 	}
+}
+
+export function getDefaultPythonLocation(): string {
+
+	return path.join(getUserHome() || '', 'azuredatastudio-python',
+		constants.adsPythonBundleVersion,
+		getPythonExeName());
+}
+
+export function getPythonExeName(): string {
+	return process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3';
+}
+
+export function getUserHome(): string | undefined {
+	return process.env.HOME || process.env.USERPROFILE;
 }

@@ -1,5 +1,33 @@
 # Change Log
 
+## Version 1.19.0
+* Release date: June 15, 2020
+* Release status: General Availability
+* Address issues in https://github.com/microsoft/azuredatastudio/milestone/55?closed=1
+* Bug fixes
+
+## Version 1.18.1
+* Release date: May 27, 2020
+* Release status: General Availability
+* Hotfix for https://github.com/microsoft/azuredatastudio/issues/10538
+* Hotfix for https://github.com/microsoft/azuredatastudio/issues/10537
+
+## Version 1.18.0
+* Release date: May 20, 2020
+* Release status: General Availability
+* Announcing Redgate SQL Prompt extension - This extension lets you manage formatting styles directly within Azure Data Studio, so you can create and edit your styles without leaving the IDE.
+* Announcing the new machine learning extension. This extension enables you to:
+    * Manage Python and R packages with SQL Server machine learning services with Azure Data Studio.
+    * Use ONNX model to make predictions in Azure SQL Edge.
+    * View ONNX models in an Azure SQL Edge database.
+    * Import ONNX models from a file or Azure Machine Learning into Azure SQL Edge database.
+    * Create a notebook to run experiments.
+* New notebook features:
+    * Added new Python dependencies wizard
+    * Improvements to the notebook markdown toolbar
+* Added support for parameterization for Always Encrypted - Allows you to run queries that insert, update or filter by encrypted database columns.
+* Bug fixes
+
 ## Version 1.17.1
 * Release date: April 29, 2020
 * Release status: General Availability

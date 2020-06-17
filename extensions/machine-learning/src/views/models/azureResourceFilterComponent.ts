@@ -144,6 +144,9 @@ export class AzureResourceFilterComponent extends ModelViewBase implements IData
 			let values = this._azureAccounts.map(a => { return { displayName: a.displayInfo.displayName, name: a.key.accountId }; });
 			this._accounts.values = values;
 			this._accounts.value = values[0];
+		} else {
+			this._accounts.values = [];
+			this._accounts.value = undefined;
 		}
 		await this.onAccountSelected();
 	}
@@ -161,6 +164,9 @@ export class AzureResourceFilterComponent extends ModelViewBase implements IData
 			let values = this._azureSubscriptions.map(s => { return { displayName: s.name, name: s.id }; });
 			this._subscriptions.values = values;
 			this._subscriptions.value = values[0];
+		} else {
+			this._subscriptions.values = [];
+			this._subscriptions.value = undefined;
 		}
 		await this.onSubscriptionSelected();
 	}
@@ -171,6 +177,9 @@ export class AzureResourceFilterComponent extends ModelViewBase implements IData
 			let values = this._azureGroups.map(s => { return { displayName: s.name, name: s.id }; });
 			this._groups.values = values;
 			this._groups.value = values[0];
+		} else {
+			this._groups.values = [];
+			this._groups.value = undefined;
 		}
 		await this.onGroupSelected();
 	}
@@ -181,6 +190,9 @@ export class AzureResourceFilterComponent extends ModelViewBase implements IData
 			let values = this._azureWorkspaces.map(s => { return { displayName: s.name || '', name: s.id || '' }; });
 			this._workspaces.values = values;
 			this._workspaces.value = values[0];
+		} else {
+			this._workspaces.values = [];
+			this._workspaces.value = undefined;
 		}
 		this.onWorkspaceSelectedChanged();
 	}

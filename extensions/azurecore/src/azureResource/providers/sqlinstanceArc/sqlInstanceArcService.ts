@@ -26,7 +26,8 @@ export class SqlInstanceArcResourceService extends ResourceServiceBase<SqlInstan
 			name: resource.name,
 			fullName: resource.name,
 			loginName: resource.properties.admin,
-			defaultDatabaseName: 'master'
+			defaultDatabaseName: 'master',
+			tenant: resource.tenantId
 		};
 	}
 }

@@ -24,6 +24,7 @@ export namespace azureResource {
 	export interface AzureResource {
 		name: string;
 		id: string;
+		tenant?: string;
 	}
 
 	export interface AzureResourceSubscription extends AzureResource {

@@ -373,12 +373,14 @@ export class CellModel implements ICellModel {
 
 	private async getOrStartKernel(notificationService: INotificationService): Promise<nb.IKernel> {
 		let model = this._options.notebook;
+		if (model) {
+			await model.sessionLoadFinished;
+		}
 		let clientSession = model && model.clientSession;
 		if (!clientSession) {
 			this.sendNotification(notificationService, Severity.Error, localize('notebookNotReady', "The session for this notebook is not yet ready"));
 			return undefined;
 		} else if (!clientSession.isReady || clientSession.status === 'dead') {
-
 			this.sendNotification(notificationService, Severity.Info, localize('sessionNotReady', "The session for this notebook will start momentarily"));
 			await clientSession.kernelChangeCompleted;
 		}

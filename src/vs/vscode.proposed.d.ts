@@ -28,6 +28,41 @@ declare module 'vscode' {
 		scopes: string[];
 	}
 
+	export class AuthenticationSession2 {
+		/**
+		 * The identifier of the authentication session.
+		 */
+		readonly id: string;
+
+		/**
+		 * The access token.
+		 */
+		readonly accessToken: string;
+
+		/**
+		 * The account associated with the session.
+		 */
+		readonly account: {
+			/**
+			 * The human-readable name of the account.
+			 */
+			readonly displayName: string;
+
+			/**
+			 * The unique identifier of the account.
+			 */
+			readonly id: string;
+		};
+
+		/**
+		 * The permissions granted by the session's access token. Available scopes
+		 * are defined by the authentication provider.
+		 */
+		readonly scopes: string[];
+
+		constructor(id: string, accessToken: string, account: { displayName: string, id: string }, scopes: string[]);
+	}
+
 	/**
 	 * An [event](#Event) which fires when an [AuthenticationProvider](#AuthenticationProvider) is added or removed.
 	 */
@@ -41,6 +76,22 @@ declare module 'vscode' {
 		 * The ids of the [authenticationProvider](#AuthenticationProvider)s that have been removed.
 		 */
 		readonly removed: string[];
+	}
+
+	/**
+	 * Options to be used when getting a session from an [AuthenticationProvider](#AuthenticationProvider).
+	 */
+	export interface AuthenticationGetSessionOptions {
+		/**
+		 *  Whether login should be performed if there is no matching session. Defaults to false.
+		 */
+		createIfNone?: boolean;
+
+		/**
+		 * Whether the existing user session preference should be cleared. Set to allow the user to switch accounts.
+		 * Defaults to false.
+		 */
+		clearSessionPreference?: boolean;
 	}
 
 	/**
@@ -75,7 +126,16 @@ declare module 'vscode' {
 		 * another provider with the same id will fail.
 		 */
 		readonly id: string;
+
+		/**
+		 * The human-readable name of the provider.
+		 */
 		readonly displayName: string;
+
+		/**
+		 * Whether it is possible to be signed into multiple accounts at once with this provider
+		*/
+		readonly supportsMultipleAccounts: boolean;
 
 		/**
 		 * An [event](#Event) which fires when the array of sessions has changed, or data
@@ -86,16 +146,30 @@ declare module 'vscode' {
 		/**
 		 * Returns an array of current sessions.
 		 */
-		getSessions(): Thenable<ReadonlyArray<AuthenticationSession>>;
+		getSessions(): Thenable<ReadonlyArray<AuthenticationSession2>>;
 
 		/**
 		 * Prompts a user to login.
 		 */
-		login(scopes: string[]): Thenable<AuthenticationSession>;
+		login(scopes: string[]): Thenable<AuthenticationSession2>;
+
+		/**
+		 * Removes the session corresponding to session id.
+		 * @param sessionId The session id to log out of
+		 */
 		logout(sessionId: string): Thenable<void>;
 	}
 
 	export namespace authentication {
+		/**
+		 * Register an authentication provider.
+		 *
+		 * There can only be one provider per id and an error is being thrown when an id
+		 * has already been used by another provider.
+		 *
+		 * @param provider The authentication provider provider.
+		 * @return A [disposable](#Disposable) that unregisters this provider when being disposed.
+		 */
 		export function registerAuthenticationProvider(provider: AuthenticationProvider): Disposable;
 
 		/**
@@ -104,11 +178,53 @@ declare module 'vscode' {
 		export const onDidChangeAuthenticationProviders: Event<AuthenticationProvidersChangeEvent>;
 
 		/**
+		 * The ids of the currently registered authentication providers.
+		 * @returns An array of the ids of authentication providers that are currently registered.
+		 */
+		export function getProviderIds(): Thenable<ReadonlyArray<string>>;
+
+		/**
 		 * An array of the ids of authentication providers that are currently registered.
 		 */
 		export const providerIds: string[];
 
 		/**
+		 * Returns whether a provider has any sessions matching the requested scopes. This request
+		 * is transparent to the user, not UI is shown. Rejects if a provider with providerId is not
+		 * registered.
+		 * @param providerId The id of the provider
+		 * @param scopes A list of scopes representing the permissions requested. These are dependent on the authentication
+		 * provider
+		 * @returns A thenable that resolve to whether the provider has sessions with the requested scopes.
+		 */
+		export function hasSessions(providerId: string, scopes: string[]): Thenable<boolean>;
+
+		/**
+		 * Get an authentication session matching the desired scopes. Rejects if a provider with providerId is not
+		 * registered, or if the user does not consent to sharing authentication information with
+		 * the extension. If there are multiple sessions with the same scopes, the user will be shown a
+		 * quickpick to select which account they would like to use.
+		 * @param providerId The id of the provider to use
+		 * @param scopes A list of scopes representing the permissions requested. These are dependent on the authentication provider
+		 * @param options The [getSessionOptions](#GetSessionOptions) to use
+		 * @returns A thenable that resolves to an authentication session
+		 */
+		export function getSession(providerId: string, scopes: string[], options: AuthenticationGetSessionOptions & { createIfNone: true }): Thenable<AuthenticationSession2>;
+
+		/**
+		 * Get an authentication session matching the desired scopes. Rejects if a provider with providerId is not
+		 * registered, or if the user does not consent to sharing authentication information with
+		 * the extension. If there are multiple sessions with the same scopes, the user will be shown a
+		 * quickpick to select which account they would like to use.
+		 * @param providerId The id of the provider to use
+		 * @param scopes A list of scopes representing the permissions requested. These are dependent on the authentication provider
+		 * @param options The [getSessionOptions](#GetSessionOptions) to use
+		 * @returns A thenable that resolves to an authentication session if available, or undefined if there are no sessions
+		 */
+		export function getSession(providerId: string, scopes: string[], options: AuthenticationGetSessionOptions): Thenable<AuthenticationSession2 | undefined>;
+
+		/**
+		 * @deprecated
 		 * Get existing authentication sessions. Rejects if a provider with providerId is not
 		 * registered, or if the user does not consent to sharing authentication information with
 		 * the extension.
@@ -116,9 +232,10 @@ declare module 'vscode' {
 		 * @param scopes A list of scopes representing the permissions requested. These are dependent on the authentication
 		 * provider
 		 */
-		export function getSessions(providerId: string, scopes: string[]): Thenable<readonly AuthenticationSession[]>;
+		export function getSessions(providerId: string, scopes: string[]): Thenable<ReadonlyArray<AuthenticationSession>>;
 
 		/**
+		 * @deprecated
 		* Prompt a user to login to create a new authenticaiton session. Rejects if a provider with
 		* providerId is not registered, or if the user does not consent to sharing authentication
 		* information with the extension.
@@ -129,6 +246,7 @@ declare module 'vscode' {
 		export function login(providerId: string, scopes: string[]): Thenable<AuthenticationSession>;
 
 		/**
+		 * @deprecated
 		* Logout of a specific session.
 		* @param providerId The id of the provider to use
 		* @param sessionId The session id to remove
@@ -899,8 +1017,6 @@ declare module 'vscode' {
 
 	//#endregion
 
-
-
 	//#region Terminal link handlers https://github.com/microsoft/vscode/issues/91606
 
 	export namespace window {
@@ -926,103 +1042,6 @@ declare module 'vscode' {
 		 * considered by any other extension or by the default built-in link handler.
 		 */
 		handleLink(terminal: Terminal, link: string): ProviderResult<boolean>;
-	}
-
-	//#endregion
-
-	//#region Contribute to terminal environment https://github.com/microsoft/vscode/issues/46696
-
-	export enum EnvironmentVariableMutatorType {
-		/**
-		 * Replace the variable's existing value.
-		 */
-		Replace = 1,
-		/**
-		 * Append to the end of the variable's existing value.
-		 */
-		Append = 2,
-		/**
-		 * Prepend to the start of the variable's existing value.
-		 */
-		Prepend = 3
-	}
-
-	export interface EnvironmentVariableMutator {
-		/**
-		 * The type of mutation that will occur to the variable.
-		 */
-		readonly type: EnvironmentVariableMutatorType;
-
-		/**
-		 * The value to use for the variable.
-		 */
-		readonly value: string;
-	}
-
-	/**
-	 * A collection of mutations that an extension can apply to a process environment.
-	 */
-	export interface EnvironmentVariableCollection {
-		/**
-		 * Whether the collection should be cached for the workspace and applied to the terminal
-		 * across window reloads. When true the collection will be active immediately such when the
-		 * window reloads. Additionally, this API will return the cached version if it exists. The
-		 * collection will be invalidated when the extension is uninstalled or when the collection
-		 * is cleared. Defaults to true.
-		 */
-		persistent: boolean;
-
-		/**
-		 * Replace an environment variable with a value.
-		 *
-		 * Note that an extension can only make a single change to any one variable, so this will
-		 * overwrite any previous calls to replace, append or prepend.
-		 */
-		replace(variable: string, value: string): void;
-
-		/**
-		 * Append a value to an environment variable.
-		 *
-		 * Note that an extension can only make a single change to any one variable, so this will
-		 * overwrite any previous calls to replace, append or prepend.
-		 */
-		append(variable: string, value: string): void;
-
-		/**
-		 * Prepend a value to an environment variable.
-		 *
-		 * Note that an extension can only make a single change to any one variable, so this will
-		 * overwrite any previous calls to replace, append or prepend.
-		 */
-		prepend(variable: string, value: string): void;
-
-		/**
-		 * Gets the mutator that this collection applies to a variable, if any.
-		 */
-		get(variable: string): EnvironmentVariableMutator | undefined;
-
-		/**
-		 * Iterate over each mutator in this collection.
-		 */
-		forEach(callback: (variable: string, mutator: EnvironmentVariableMutator, collection: EnvironmentVariableCollection) => any, thisArg?: any): void;
-
-		/**
-		 * Deletes this collection's mutator for a variable.
-		 */
-		delete(variable: string): void;
-
-		/**
-		 * Clears all mutators from this collection.
-		 */
-		clear(): void;
-	}
-
-	export interface ExtensionContext {
-		/**
-		 * Gets the extension's environment variable collection for this workspace, enabling changes
-		 * to be applied to terminal environment variables.
-		 */
-		readonly environmentVariableCollection: EnvironmentVariableCollection;
 	}
 
 	//#endregion
@@ -1068,6 +1087,11 @@ declare module 'vscode' {
 		 * Label describing this item. When `falsy`, it is derived from [resourceUri](#TreeItem.resourceUri).
 		 */
 		label?: string | TreeItemLabel | /* for compilation */ any;
+
+		/**
+		 * Accessibility information used when screen reader interacts with this tree item.
+		 */
+		accessibilityInformation?: AccessibilityInformation;
 
 		/**
 		 * @param label Label describing this item
@@ -1129,6 +1153,11 @@ declare module 'vscode' {
 			 * status bar item.
 			 */
 			name: string;
+
+			/**
+			 * Accessibility information used when screen reader interacts with this status bar item.
+			 */
+			accessibilityInformation?: AccessibilityInformation;
 
 			/**
 			 * The alignment of the status bar item.
@@ -1502,7 +1531,6 @@ declare module 'vscode' {
 
 	export interface CustomTextEditorProvider {
 
-
 		/**
 		 * Handle when the underlying resource for a custom editor is renamed.
 		 *
@@ -1519,7 +1547,6 @@ declare module 'vscode' {
 	}
 
 	//#endregion
-
 
 	//#region allow QuickPicks to skip sorting: https://github.com/microsoft/vscode/issues/73904
 
@@ -1622,6 +1649,18 @@ declare module 'vscode' {
 		runnable?: boolean;
 
 		/**
+		 * Controls if the cell has a margin to support the breakpoint UI.
+		 * This metadata is ignored for markdown cell.
+		 */
+		breakpointMargin?: boolean;
+
+		/**
+		 * Whether the [execution order](#NotebookCellMetadata.executionOrder) indicator will be displayed.
+		 * Defaults to true.
+		 */
+		hasExecutionOrder?: boolean;
+
+		/**
 		 * The order in which this cell was executed.
 		 */
 		executionOrder?: number;
@@ -1635,9 +1674,25 @@ declare module 'vscode' {
 		 * The cell's current run state
 		 */
 		runState?: NotebookCellRunState;
+
+		/**
+		 * If the cell is running, the time at which the cell started running
+		 */
+		runStartTime?: number;
+
+		/**
+		 * The total duration of the cell's last run
+		 */
+		lastRunDuration?: number;
+
+		/**
+		 * Additional attributes of a cell metadata.
+		 */
+		custom?: { [key: string]: any };
 	}
 
 	export interface NotebookCell {
+		readonly notebook: NotebookDocument;
 		readonly uri: Uri;
 		readonly cellKind: CellKind;
 		readonly document: TextDocument;
@@ -1674,12 +1729,17 @@ declare module 'vscode' {
 		cellRunnable?: boolean;
 
 		/**
-		 * Whether the [execution order](#NotebookCellMetadata.executionOrder) indicator will be displayed.
+		 * Default value for [cell hasExecutionOrder metadata](#NotebookCellMetadata.hasExecutionOrder).
 		 * Defaults to true.
 		 */
-		hasExecutionOrder?: boolean;
+		cellHasExecutionOrder?: boolean;
 
 		displayOrder?: GlobPattern[];
+
+		/**
+		 * Additional attributes of the document metadata.
+		 */
+		custom?: { [key: string]: any };
 	}
 
 	export interface NotebookDocument {
@@ -1720,7 +1780,27 @@ declare module 'vscode' {
 		 * The primary selected cell on this notebook editor.
 		 */
 		readonly selection?: NotebookCell;
+
+		/**
+		 * The column in which this editor shows.
+		 */
 		viewColumn?: ViewColumn;
+
+		/**
+		 * Whether the panel is active (focused by the user).
+		 */
+		readonly active: boolean;
+
+		/**
+		 * Whether the panel is visible.
+		 */
+		readonly visible: boolean;
+
+		/**
+		 * Fired when the panel is disposed.
+		 */
+		readonly onDidDispose: Event<void>;
+
 		/**
 		 * Fired when the output hosting webview posts a message.
 		 */
@@ -1734,13 +1814,12 @@ declare module 'vscode' {
 		 */
 		postMessage(message: any): Thenable<boolean>;
 
-		edit(callback: (editBuilder: NotebookEditorCellEdit) => void): Thenable<boolean>;
-	}
+		/**
+		 * Convert a uri for the local file system to one that can be used inside outputs webview.
+		 */
+		asWebviewUri(localResource: Uri): Uri;
 
-	export interface NotebookProvider {
-		resolveNotebook(editor: NotebookEditor): Promise<void>;
-		executeCell(document: NotebookDocument, cell: NotebookCell | undefined, token: CancellationToken): Promise<void>;
-		save(document: NotebookDocument): Promise<boolean>;
+		edit(callback: (editBuilder: NotebookEditorCellEdit) => void): Thenable<boolean>;
 	}
 
 	export interface NotebookOutputSelector {
@@ -1758,17 +1837,48 @@ declare module 'vscode' {
 		preloads?: Uri[];
 	}
 
-	export interface NotebookDocumentChangeEvent {
+	export interface NotebookCellsChangeData {
+		readonly start: number;
+		readonly deletedCount: number;
+		readonly items: NotebookCell[];
+	}
+
+	export interface NotebookCellsChangeEvent {
 
 		/**
 		 * The affected document.
 		 */
 		readonly document: NotebookDocument;
+		readonly changes: ReadonlyArray<NotebookCellsChangeData>;
+	}
+
+	export interface NotebookCellMoveEvent {
 
 		/**
-		 * An array of content changes.
+		 * The affected document.
 		 */
-		// readonly contentChanges: ReadonlyArray<TextDocumentContentChangeEvent>;
+		readonly document: NotebookDocument;
+		readonly index: number;
+		readonly newIndex: number;
+	}
+
+	export interface NotebookCellOutputsChangeEvent {
+
+		/**
+		 * The affected document.
+		 */
+		readonly document: NotebookDocument;
+		readonly cells: NotebookCell[];
+	}
+
+	export interface NotebookCellLanguageChangeEvent {
+
+		/**
+		 * The affected document.
+		 */
+		readonly document: NotebookDocument;
+		readonly cell: NotebookCell;
+		readonly language: string;
 	}
 
 	export interface NotebookCellData {
@@ -1785,18 +1895,31 @@ declare module 'vscode' {
 		readonly metadata: NotebookDocumentMetadata;
 	}
 
+	interface NotebookDocumentEditEvent {
+
+		/**
+		 * The document that the edit is for.
+		 */
+		readonly document: NotebookDocument;
+	}
+
 	export interface NotebookContentProvider {
 		openNotebook(uri: Uri): NotebookData | Promise<NotebookData>;
 		saveNotebook(document: NotebookDocument, cancellation: CancellationToken): Promise<void>;
 		saveNotebookAs(targetResource: Uri, document: NotebookDocument, cancellation: CancellationToken): Promise<void>;
-		readonly onDidChangeNotebook: Event<void>;
+		readonly onDidChangeNotebook: Event<NotebookDocumentEditEvent>;
+
 		// revert?(document: NotebookDocument, cancellation: CancellationToken): Thenable<void>;
 		// backup?(document: NotebookDocument, cancellation: CancellationToken): Thenable<CustomDocumentBackup>;
 
-		/**
-		 * Responsible for filling in outputs for the cell
-		 */
-		executeCell(document: NotebookDocument, cell: NotebookCell | undefined, token: CancellationToken): Promise<void>;
+		kernel?: NotebookKernel;
+	}
+
+	export interface NotebookKernel {
+		label: string;
+		preloads?: Uri[];
+		executeCell(document: NotebookDocument, cell: NotebookCell, token: CancellationToken): Promise<void>;
+		executeAllCells(document: NotebookDocument, token: CancellationToken): Promise<void>;
 	}
 
 	export namespace notebook {
@@ -1805,28 +1928,31 @@ declare module 'vscode' {
 			provider: NotebookContentProvider
 		): Disposable;
 
-		export function registerNotebookProvider(
-			notebookType: string,
-			provider: NotebookProvider
+		export function registerNotebookKernel(
+			id: string,
+			selectors: GlobPattern[],
+			kernel: NotebookKernel
 		): Disposable;
 
 		export function registerNotebookOutputRenderer(
-			type: string,
+			id: string,
 			outputSelector: NotebookOutputSelector,
 			renderer: NotebookOutputRenderer
 		): Disposable;
 
 		export const onDidOpenNotebookDocument: Event<NotebookDocument>;
 		export const onDidCloseNotebookDocument: Event<NotebookDocument>;
-		// export const onDidChangeVisibleNotebookEditors: Event<NotebookEditor[]>;
+		export let visibleNotebookEditors: NotebookEditor[];
+		export const onDidChangeVisibleNotebookEditors: Event<NotebookEditor[]>;
 
 		// remove activeNotebookDocument, now that there is activeNotebookEditor.document
 		export let activeNotebookDocument: NotebookDocument | undefined;
 
 		export let activeNotebookEditor: NotebookEditor | undefined;
-
-		export const onDidChangeNotebookDocument: Event<NotebookDocumentChangeEvent>;
-
+		export const onDidChangeActiveNotebookEditor: Event<NotebookEditor | undefined>;
+		export const onDidChangeNotebookCells: Event<NotebookCellsChangeEvent>;
+		export const onDidChangeCellOutputs: Event<NotebookCellOutputsChangeEvent>;
+		export const onDidChangeCellLanguage: Event<NotebookCellLanguageChangeEvent>;
 		/**
 		 * Create a document that is the concatenation of all  notebook cells. By default all code-cells are included
 		 * but a selector can be provided to narrow to down the set of cells.
@@ -1835,6 +1961,43 @@ declare module 'vscode' {
 		 * @param selector
 		 */
 		export function createConcatTextDocument(notebook: NotebookDocument, selector?: DocumentSelector): NotebookConcatTextDocument;
+	}
+
+	//#endregion
+
+	//#region @connor4312 extension mode: https://github.com/microsoft/vscode/issues/95926
+
+	/**
+	 * The ExtensionMode is provided on the `ExtensionContext` and indicates the
+	 * mode the specific extension is running in.
+	 */
+	export enum ExtensionMode {
+		/**
+		 * The extension is installed normally (for example, from the marketplace
+		 * or VSIX) in VS Code.
+		 */
+		Release = 1,
+
+		/**
+		 * The extension is running from an `--extensionDevelopmentPath` provided
+		 * when launching VS Code.
+		 */
+		Development = 2,
+
+		/**
+		 * The extension is running from an `--extensionDevelopmentPath` and
+		 * the extension host is running unit tests.
+		 */
+		Test = 3,
+	}
+
+	export interface ExtensionContext {
+		/**
+		 * The mode the extension is running in. This is specific to the current
+		 * extension. One extension may be in `ExtensionMode.Development` while
+		 * other extensions in the host run in `ExtensionMode.Release`.
+		 */
+		readonly extensionMode: ExtensionMode;
 	}
 
 	//#endregion
@@ -1871,7 +2034,6 @@ declare module 'vscode' {
 	}
 
 	//#endregion
-
 
 	//#region @eamodio - timeline: https://github.com/microsoft/vscode/issues/84297
 
@@ -1932,6 +2094,11 @@ declare module 'vscode' {
 		 * This will show the `extension.copyCommitId` action only for items where `contextValue` is `commit`.
 		 */
 		contextValue?: string;
+
+		/**
+		 * Accessibility information used when screen reader interacts with this timeline item.
+		 */
+		accessibilityInformation?: AccessibilityInformation;
 
 		/**
 		 * @param label A human-readable string describing the timeline item
@@ -2077,6 +2244,45 @@ declare module 'vscode' {
 		 * systems do not present title on save dialogs.
 		 */
 		title?: string;
+	}
+
+	//#endregion
+
+	//#region Accessibility information: https://github.com/microsoft/vscode/issues/95360
+
+	/**
+	 * Accessibility information which controls screen reader behavior.
+	 */
+	export interface AccessibilityInformation {
+		label: string;
+		role?: string;
+	}
+
+	export interface StatusBarItem {
+		/**
+		 * Accessibility information used when screen reader interacts with this StatusBar item
+		 */
+		accessibilityInformation?: AccessibilityInformation;
+	}
+
+	//#endregion
+
+	//#region https://github.com/microsoft/vscode/issues/91555
+
+	export enum StandardTokenType {
+		Other = 0,
+		Comment = 1,
+		String = 2,
+		RegEx = 4
+	}
+
+	export interface TokenInformation {
+		type: StandardTokenType;
+		range: Range;
+	}
+
+	export namespace languages {
+		export function getTokenInformationAtPosition(document: TextDocument, position: Position): Promise<TokenInformation>;
 	}
 
 	//#endregion

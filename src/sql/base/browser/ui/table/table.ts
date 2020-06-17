@@ -6,7 +6,6 @@
 import 'vs/css!./media/table';
 import 'vs/css!./media/slick.grid';
 import 'vs/css!./media/slickColorTheme';
-import 'vs/css!./media/slickGrid';
 
 import { TableDataView } from './tableDataView';
 import { IDisposableDataProvider, ITableSorter, ITableMouseEvent, ITableConfiguration, ITableStyles } from 'sql/base/browser/ui/table/interfaces';

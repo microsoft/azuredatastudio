@@ -14,7 +14,6 @@ import { SelectBox, ISelectBoxOptionsWithLabel } from 'sql/base/browser/ui/selec
 import { IConnectionManagementService, ConnectionType } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { noKernel } from 'sql/workbench/services/notebook/browser/sessionManager';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { ICommandService } from 'vs/platform/commands/common/commands';
@@ -29,15 +28,18 @@ import { find, firstIndex } from 'vs/base/common/arrays';
 import { INotebookEditor } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookComponent } from 'sql/workbench/contrib/notebook/browser/notebook.component';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 
 const msgLoading = localize('loading', "Loading kernels...");
 const msgChanging = localize('changing', "Changing kernel...");
-const kernelLabel: string = localize('Kernel', "Kernel: ");
-const attachToLabel: string = localize('AttachTo', "Attach To: ");
+const attachToLabel: string = localize('AttachTo', "Attach to ");
+const kernelLabel: string = localize('Kernel', "Kernel ");
 const msgLoadingContexts = localize('loadingContexts', "Loading contexts...");
 const msgChangeConnection = localize('changeConnection', "Change Connection");
 const msgSelectConnection = localize('selectConnection', "Select Connection");
 const msgLocalHost = localize('localhost', "localhost");
+
+export const noKernel: string = localize('noKernel', "No Kernel");
 
 // Action to add a cell to notebook based on cell type(code/markdown).
 export class AddCellAction extends Action {
@@ -48,28 +50,76 @@ export class AddCellAction extends Action {
 	) {
 		super(id, label, cssClass);
 	}
-	public async run(context: INotebookEditor): Promise<any> {
-		//Add Cell after current selected cell.
+	public async run(context: INotebookEditor | CellContext): Promise<void> {
 		let index = 0;
-		if (context && context.cells) {
-			let notebookcomponent = context as NotebookComponent;
-			let id = notebookcomponent.activeCellId;
-			if (id) {
-				index = context.cells.findIndex(cell => cell.id === id);
-				index = index + 1;
+		if (context instanceof CellContext) {
+			if (context?.model?.cells) {
+				let activeCellId = context.model.activeCell.id;
+				if (activeCellId) {
+					index = context.model.cells.findIndex(cell => cell.id === activeCellId) + 1;
+				}
 			}
+			if (context?.model) {
+				context.model.addCell(this.cellType, index);
+			}
+		} else {
+			//Add Cell after current selected cell.
+			if (context?.cells) {
+				let notebookcomponent = context as NotebookComponent;
+				let id = notebookcomponent.activeCellId;
+				if (id) {
+					index = context.cells.findIndex(cell => cell.id === id) + 1;
+				}
+			}
+			context.addCell(this.cellType, index);
 		}
-		context.addCell(this.cellType, index);
 	}
 }
 
-// Action to clear outputs of all code cells.
-export class ClearAllOutputsAction extends Action {
-	constructor(
-		id: string, label: string, cssClass: string
-	) {
-		super(id, label, cssClass);
+export interface ITooltipState {
+	label: string;
+	baseClass: string;
+	iconClass: string;
+	maskedIconClass: string;
+	shouldToggleTooltip?: boolean;
+}
+export abstract class TooltipFromLabelAction extends Action {
+
+	constructor(id: string, protected state: ITooltipState) {
+		super(id, '');
+		this.updateLabelAndIcon();
 	}
+
+	private updateLabelAndIcon() {
+		if (this.state.shouldToggleTooltip) {
+			this.tooltip = this.state.label;
+		} else {
+			this.label = this.state.label;
+		}
+		let classes = this.state.baseClass ? `${this.state.baseClass} ${this.state.iconClass} ` : '';
+		if (this.state.shouldToggleTooltip) {
+			classes += this.state.maskedIconClass;
+		}
+		this.class = classes;
+	}
+}
+// Action to clear outputs of all code cells.
+export class ClearAllOutputsAction extends TooltipFromLabelAction {
+	private static readonly label = localize('clearResults', "Clear Results");
+	private static readonly baseClass = 'notebook-button';
+	private static readonly iconClass = 'icon-clear-results';
+	private static readonly maskedIconClass = 'masked-icon';
+
+	constructor(id: string, toggleTooltip: boolean) {
+		super(id, {
+			label: ClearAllOutputsAction.label,
+			baseClass: ClearAllOutputsAction.baseClass,
+			iconClass: ClearAllOutputsAction.iconClass,
+			maskedIconClass: ClearAllOutputsAction.maskedIconClass,
+			shouldToggleTooltip: toggleTooltip
+		});
+	}
+
 	public run(context: INotebookEditor): Promise<boolean> {
 		return context.clearAllOutputs();
 	}
@@ -82,6 +132,7 @@ export interface IToggleableState {
 	toggleOnLabel: string;
 	toggleOffLabel: string;
 	toggleOffClass: string;
+	maskedIconClass?: string;
 	isOn: boolean;
 }
 
@@ -98,7 +149,16 @@ export abstract class ToggleableAction extends Action {
 		} else {
 			this.label = this.state.isOn ? this.state.toggleOnLabel : this.state.toggleOffLabel;
 		}
-		let classes = this.state.baseClass ? `${this.state.baseClass} ` : '';
+
+		let classes: string = '';
+
+		if (this.state.shouldToggleTooltip && this.state.maskedIconClass) {
+			//mask
+			classes = this.state.baseClass ? `${this.state.baseClass} ${this.state.maskedIconClass} ` : '';
+		} else {
+			//no mask
+			classes = this.state.baseClass ? `${this.state.baseClass} ` : '';
+		}
 		classes += this.state.isOn ? this.state.toggleOnClass : this.state.toggleOffClass;
 		this.class = classes;
 	}
@@ -114,20 +174,23 @@ export class TrustedAction extends ToggleableAction {
 	private static readonly trustedLabel = localize('trustLabel', "Trusted");
 	private static readonly notTrustedLabel = localize('untrustLabel', "Not Trusted");
 	private static readonly baseClass = 'notebook-button';
+	private static readonly previewTrustedCssClass = 'icon-shield';
 	private static readonly trustedCssClass = 'icon-trusted';
+	private static readonly previewNotTrustedCssClass = 'icon-shield-x';
 	private static readonly notTrustedCssClass = 'icon-notTrusted';
-
-	// Properties
+	private static readonly maskedIconClass = 'masked-icon';
 
 	constructor(
-		id: string
+		id: string, toggleTooltip: boolean
 	) {
 		super(id, {
 			baseClass: TrustedAction.baseClass,
 			toggleOnLabel: TrustedAction.trustedLabel,
-			toggleOnClass: TrustedAction.trustedCssClass,
+			toggleOnClass: toggleTooltip === true ? TrustedAction.previewTrustedCssClass : TrustedAction.trustedCssClass,
 			toggleOffLabel: TrustedAction.notTrustedLabel,
-			toggleOffClass: TrustedAction.notTrustedCssClass,
+			toggleOffClass: toggleTooltip === true ? TrustedAction.previewNotTrustedCssClass : TrustedAction.notTrustedCssClass,
+			maskedIconClass: TrustedAction.maskedIconClass,
+			shouldToggleTooltip: toggleTooltip,
 			isOn: false
 		});
 	}
@@ -176,16 +239,21 @@ export class CollapseCellsAction extends ToggleableAction {
 	private static readonly collapseCells = localize('collapseAllCells', "Collapse Cells");
 	private static readonly expandCells = localize('expandAllCells', "Expand Cells");
 	private static readonly baseClass = 'notebook-button';
+	private static readonly previewCollapseCssClass = 'icon-collapse-cells';
 	private static readonly collapseCssClass = 'icon-hide-cells';
+	private static readonly previewExpandCssClass = 'icon-expand-cells';
 	private static readonly expandCssClass = 'icon-show-cells';
+	private static readonly maskedIconClass = 'masked-icon';
 
-	constructor(id: string) {
+	constructor(id: string, toggleTooltip: boolean) {
 		super(id, {
 			baseClass: CollapseCellsAction.baseClass,
 			toggleOnLabel: CollapseCellsAction.expandCells,
-			toggleOnClass: CollapseCellsAction.expandCssClass,
+			toggleOnClass: toggleTooltip === true ? CollapseCellsAction.previewExpandCssClass : CollapseCellsAction.expandCssClass,
 			toggleOffLabel: CollapseCellsAction.collapseCells,
-			toggleOffClass: CollapseCellsAction.collapseCssClass,
+			toggleOffClass: toggleTooltip === true ? CollapseCellsAction.previewCollapseCssClass : CollapseCellsAction.collapseCssClass,
+			maskedIconClass: CollapseCellsAction.maskedIconClass,
+			shouldToggleTooltip: toggleTooltip,
 			isOn: false
 		});
 	}

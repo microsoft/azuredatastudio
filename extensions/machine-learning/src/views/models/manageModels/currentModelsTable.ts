@@ -25,6 +25,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 	private _downloadedFile: ModelArtifact | undefined;
 	private _onModelSelectionChanged: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
 	public readonly onModelSelectionChanged: vscode.Event<void> = this._onModelSelectionChanged.event;
+	public isEmpty: boolean = false;
 
 	/**
 	 * Creates new view
@@ -56,6 +57,32 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 			{ // Created
 				displayName: constants.modelCreated,
 				ariaLabel: constants.modelCreated,
+				valueType: azdata.DeclarativeDataType.string,
+				isReadOnly: true,
+				width: 150,
+				headerCssStyles: {
+					...constants.cssStyles.tableHeader
+				},
+				rowCssStyles: {
+					...constants.cssStyles.tableRow
+				},
+			},
+			{ // Version
+				displayName: constants.modelVersion,
+				ariaLabel: constants.modelVersion,
+				valueType: azdata.DeclarativeDataType.string,
+				isReadOnly: true,
+				width: 150,
+				headerCssStyles: {
+					...constants.cssStyles.tableHeader
+				},
+				rowCssStyles: {
+					...constants.cssStyles.tableRow
+				},
+			},
+			{ // Format
+				displayName: constants.modelFramework,
+				ariaLabel: constants.modelFramework,
 				valueType: azdata.DeclarativeDataType.string,
 				isReadOnly: true,
 				width: 150,
@@ -113,16 +140,15 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 
 	public addComponents(formBuilder: azdata.FormBuilder) {
 		if (this.component) {
-			formBuilder.addFormItem({ title: constants.modelSourcesTitle, component: this.component });
+			formBuilder.addFormItem({ title: '', component: this.component });
 		}
 	}
 
 	public removeComponents(formBuilder: azdata.FormBuilder) {
 		if (this.component) {
-			formBuilder.removeFormItem({ title: constants.modelSourcesTitle, component: this.component });
+			formBuilder.removeFormItem({ title: '', component: this.component });
 		}
 	}
-
 
 	/**
 	 * Returns the component
@@ -150,6 +176,8 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 				tableData = tableData.concat(models.map(model => this.createTableRow(model)));
 			}
 
+			this.isEmpty = models === undefined || models.length === 0;
+
 			this._table.data = tableData;
 		}
 		this.onModelSelected();
@@ -169,7 +197,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 	}
 
 	private createTableRow(model: ImportedModel): any[] {
-		let row: any[] = [model.modelName, model.created];
+		let row: any[] = [model.modelName, model.created, model.version, model.framework];
 		if (this._modelBuilder) {
 			const selectButton = this.createSelectButton(model);
 			if (selectButton) {
@@ -249,7 +277,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 					if (confirm) {
 						await this.sendDataRequest(DeleteModelEventName, model);
 						if (this.parent) {
-							await this.parent?.refresh();
+							await this.parent.refresh();
 						}
 					}
 				} catch (error) {
@@ -259,7 +287,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 
 			editButton = this._modelBuilder.button().withProperties({
 				label: '',
-				title: constants.deleteTitle,
+				title: constants.editTitle,
 				iconPath: {
 					dark: this.asAbsolutePath('images/dark/edit_inverse.svg'),
 					light: this.asAbsolutePath('images/light/edit.svg')

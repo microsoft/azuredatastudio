@@ -53,7 +53,7 @@ describe('ModelPythonClient', () => {
 		testContext.apiWrapper.setup(x => x.startBackgroundOperation(TypeMoq.It.isAny())).returns((operationInfo: azdata.BackgroundOperationInfo) => {
 			operationInfo.operation(testContext.op);
 		});
-		testContext.config.setup(x => x.pythonExecutable).returns(() => 'pythonPath');
+		testContext.config.setup(x => x.getPythonExecutable(true)).returns(() => Promise.resolve('pythonPath'));
 		testContext.processService.setup(x => x.execScripts(TypeMoq.It.isAny(), TypeMoq.It.isAny(),
 			TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(''));
 
@@ -108,7 +108,7 @@ describe('ModelPythonClient', () => {
 			testContext.config.object,
 			testContext.packageManager.object);
 		testContext.packageManager.setup(x => x.installRequiredPythonPackages(TypeMoq.It.isAny())).returns(() => Promise.resolve());
-		testContext.config.setup(x => x.pythonExecutable).returns(() => 'pythonPath');
+		testContext.config.setup(x => x.getPythonExecutable(true)).returns(() => Promise.resolve('pythonPath'));
 		testContext.processService.setup(x => x.execScripts(TypeMoq.It.isAny(), TypeMoq.It.isAny(),
 			TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(parametersJson));
 		testContext.apiWrapper.setup(x => x.startBackgroundOperation(TypeMoq.It.isAny())).returns((operationInfo: azdata.BackgroundOperationInfo) => {

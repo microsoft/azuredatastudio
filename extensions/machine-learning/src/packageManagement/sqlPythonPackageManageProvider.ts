@@ -67,13 +67,14 @@ export class SqlPythonPackageManageProvider extends SqlPackageManageProviderBase
 			let port = '1433';
 			let server = connection.serverName;
 			let database = databaseName ? `, database="${databaseName}"` : '';
+			const auth = connection.userName ? `, uid="${connection.userName}", pwd="${credentials[azdata.ConnectionOptionSpecialType.password]}"` : '';
 			let index = connection.serverName.indexOf(',');
 			if (index > 0) {
 				port = connection.serverName.substring(index + 1);
 				server = connection.serverName.substring(0, index);
 			}
 
-			let pythonConnectionParts = `server="${server}", port=${port}, uid="${connection.userName}", pwd="${credentials[azdata.ConnectionOptionSpecialType.password]}"${database})`;
+			let pythonConnectionParts = `server="${server}", port=${port}${auth}${database})`;
 			let pythonCommandScript = scriptMode === ScriptMode.Install ?
 				`pkgmanager.install(package="${packageDetails.name}", version="${packageDetails.version}")` :
 				`pkgmanager.uninstall(package_name="${packageDetails.name}")`;
@@ -84,7 +85,7 @@ export class SqlPythonPackageManageProvider extends SqlPackageManageProviderBase
 				'pkgmanager = sqlmlutils.SQLPackageManager(connection)',
 				pythonCommandScript
 			];
-			let pythonExecutable = this._config.pythonExecutable;
+			let pythonExecutable = await this._config.getPythonExecutable(true);
 			await this._processService.execScripts(pythonExecutable, scripts, [], this._outputChannel);
 		}
 	}

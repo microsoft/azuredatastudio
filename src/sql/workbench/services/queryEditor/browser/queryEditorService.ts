@@ -62,7 +62,6 @@ export class QueryEditorService implements IQueryEditorService {
 
 		const queryResultsInput: QueryResultsInput = this._instantiationService.createInstance(QueryResultsInput, docUri.toString());
 		let queryInput = this._instantiationService.createInstance(UntitledQueryEditorInput, options.description, fileInput, queryResultsInput);
-
 		if (options.open) {
 			await this._editorService.openEditor(queryInput, { pinned: true });
 		}
@@ -88,6 +87,8 @@ export class QueryEditorService implements IQueryEditorService {
 		// Create an EditDataInput for editing
 		const resultsInput: EditDataResultsInput = this._instantiationService.createInstance(EditDataResultsInput, docUri.toString());
 		let editDataInput: EditDataInput = this._instantiationService.createInstance(EditDataInput, docUri, schemaName, tableName, fileInput, sqlContent, resultsInput);
+		// Determine whether to show edit data upon opening.
+		editDataInput.queryPaneEnabled = this._configurationService.getValue('editor.showEditDataSqlPaneOnStartup');
 		if (sqlContent) {
 			//Setting the value of the textEditorModel to sqlContent marks editor as dirty, editDataInput handles it.
 			m.textEditorModel.setValue(sqlContent);

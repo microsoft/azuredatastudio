@@ -14,6 +14,7 @@ import { TelemetryReporter, TelemetryViews } from './telemetry';
 import { getTelemetryErrorType, getEndpointName, verifyConnectionAndGetOwnerUri, getRootPath } from './utils';
 import { SchemaCompareDialog } from './dialogs/schemaCompareDialog';
 import { isNullOrUndefined } from 'util';
+import { ApiWrapper } from './common/apiWrapper';
 
 // Do not localize this, this is used to decide the icon for the editor.
 // TODO : In future icon should be decided based on language id (scmp) and not resource name
@@ -68,7 +69,7 @@ export class SchemaCompareMainWindow {
 	public sourceEndpointInfo: mssql.SchemaCompareEndpointInfo;
 	public targetEndpointInfo: mssql.SchemaCompareEndpointInfo;
 
-	constructor(private schemaCompareService?: mssql.ISchemaCompareService, private extensionContext?: vscode.ExtensionContext) {
+	constructor(private apiWrapper: ApiWrapper, private schemaCompareService?: mssql.ISchemaCompareService, private extensionContext?: vscode.ExtensionContext) {
 		this.SchemaCompareActionMap = new Map<Number, string>();
 		this.SchemaCompareActionMap[mssql.SchemaUpdateAction.Delete] = loc.deleteAction;
 		this.SchemaCompareActionMap[mssql.SchemaUpdateAction.Change] = loc.changeAction;
@@ -77,9 +78,14 @@ export class SchemaCompareMainWindow {
 		this.editor = azdata.workspace.createModelViewEditor(loc.SchemaCompareLabel, { retainContextWhenHidden: true, supportsSave: true, resourceName: schemaCompareResourceName });
 	}
 
+	// schema compare can get started with three contexts for the source:
+	// 1. undefined
+	// 2. connection profile
+	// 3. dacpac
 	public async start(context: any) {
 		// if schema compare was launched from a db, set that as the source
 		let profile = context ? <azdata.IConnectionProfile>context.connectionProfile : undefined;
+		let sourceDacpac = context as string;
 		if (profile) {
 			let ownerUri = await azdata.connection.getUriForConnection((profile.id));
 			this.sourceEndpointInfo = {
@@ -89,6 +95,16 @@ export class SchemaCompareMainWindow {
 				databaseName: profile.databaseName,
 				ownerUri: ownerUri,
 				packageFilePath: '',
+				connectionDetails: undefined
+			};
+		} else if (sourceDacpac) {
+			this.sourceEndpointInfo = {
+				endpointType: mssql.SchemaCompareEndpointType.Dacpac,
+				serverDisplayName: '',
+				serverName: '',
+				databaseName: '',
+				ownerUri: '',
+				packageFilePath: sourceDacpac,
 				connectionDetails: undefined
 			};
 		}
@@ -934,8 +950,8 @@ export class SchemaCompareMainWindow {
 				return;
 			}
 
-			this.sourceEndpointInfo = await this.constructEndpointInfo(result.sourceEndpointInfo, loc.sourceTitle);
-			this.targetEndpointInfo = await this.constructEndpointInfo(result.targetEndpointInfo, loc.targetTitle);
+			this.sourceEndpointInfo = await this.constructEndpointInfo(result.sourceEndpointInfo, loc.sourceTitle, this.apiWrapper);
+			this.targetEndpointInfo = await this.constructEndpointInfo(result.targetEndpointInfo, loc.targetTitle, this.apiWrapper);
 
 			this.updateSourceAndTarget();
 			this.setDeploymentOptions(result.deploymentOptions);
@@ -953,12 +969,12 @@ export class SchemaCompareMainWindow {
 		});
 	}
 
-	private async constructEndpointInfo(endpoint: mssql.SchemaCompareEndpointInfo, caller: string): Promise<mssql.SchemaCompareEndpointInfo> {
+	private async constructEndpointInfo(endpoint: mssql.SchemaCompareEndpointInfo, caller: string, apiWrapper: ApiWrapper): Promise<mssql.SchemaCompareEndpointInfo> {
 		let ownerUri;
 		let endpointInfo;
 		if (endpoint && endpoint.endpointType === mssql.SchemaCompareEndpointType.Database) {
 			// only set endpoint info if able to connect to the database
-			ownerUri = await verifyConnectionAndGetOwnerUri(endpoint, caller);
+			ownerUri = await verifyConnectionAndGetOwnerUri(endpoint, caller, apiWrapper);
 		}
 		if (ownerUri) {
 			endpointInfo = endpoint;

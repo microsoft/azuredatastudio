@@ -20,10 +20,7 @@
 			"port": 5870,
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
-			],
-			"presentation": {
-				"hidden": true
-			}
+			]
 		},
 		{
 			"type": "pwa-chrome",
@@ -69,7 +66,7 @@
 			}
 		},
 		{
-			"type": "chrome",
+			"type": "pwa-chrome",
 			"request": "attach",
 			"name": "Attach to azuredatastudio",
 			"timeout": 50000,
@@ -111,38 +108,30 @@
 		{
 			"type": "chrome",
 			"request": "launch",
-			"name": "Launch azuredatastudio with new notebook command",
-			"windows": {
-				"runtimeExecutable": "${workspaceFolder}/scripts/sql.bat"
-			},
-			"osx": {
-				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
-			},
-			"linux": {
-				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
-			},
-			"urlFilter": "*index.html*",
-			"runtimeArgs": [
-				"--inspect=5875",
-				"--command=notebook.command.new"
-			],
-			"skipFiles": [
-				"**/winjs*.js"
-			],
-			"webRoot": "${workspaceFolder}",
-			"timeout": 45000
-		},
-		{
-			"type": "chrome",
-			"request": "launch",
 			"name": "Launch ADS (Web) (TBD)",
-			"runtimeExecutable": "yarn",
-			"runtimeArgs": [
-				"web"
-			],
+			"program": "${workspaceFolder}/scripts/code-web.js",
 			"presentation": {
 				"group": "0_vscode",
 				"order": 2
+			}
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Main Process",
+			"runtimeExecutable": "${workspaceFolder}/scripts/code.sh",
+			"windows": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/code.bat",
+			},
+			"runtimeArgs": [
+				"--no-cached-data"
+			],
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js"
+			],
+			"presentation": {
+				"group": "1_vscode",
+				"order": 1
 			}
 		},
 		{
