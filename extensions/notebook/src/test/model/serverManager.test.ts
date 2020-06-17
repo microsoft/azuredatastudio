@@ -64,7 +64,7 @@ describe('Local Jupyter Server Manager', function (): void {
 	it('Should configure and start install', async function (): Promise<void> {
 		// Given an install and instance that start with no issues
 		let expectedUri = vscode.Uri.parse('http://localhost:1234?token=abcdefghijk');
-		let mockServerInstance = initInstallAndInstance(expectedUri);
+		let mockServerInstance = initInstallAndInstance(expectedUri, mockFactory);
 		deferredInstall.resolve();
 
 		// When I start the server
@@ -89,7 +89,7 @@ describe('Local Jupyter Server Manager', function (): void {
 	it('Should call stop on server instance', async function (): Promise<void> {
 		// Given an install and instance that start with no issues
 		let expectedUri = vscode.Uri.parse('http://localhost:1234?token=abcdefghijk');
-		let mockServerInstance = initInstallAndInstance(expectedUri);
+		let mockServerInstance = initInstallAndInstance(expectedUri, mockFactory);
 		mockServerInstance.setup(s => s.stop()).returns(() => Promise.resolve());
 		deferredInstall.resolve();
 
@@ -104,7 +104,7 @@ describe('Local Jupyter Server Manager', function (): void {
 	it('Should call stop when extension is disposed', async function (): Promise<void> {
 		// Given an install and instance that start with no issues
 		let expectedUri = vscode.Uri.parse('http://localhost:1234?token=abcdefghijk');
-		let mockServerInstance = initInstallAndInstance(expectedUri);
+		let mockServerInstance = initInstallAndInstance(expectedUri, mockFactory);
 		mockServerInstance.setup(s => s.stop()).returns(() => Promise.resolve());
 		deferredInstall.resolve();
 
@@ -116,13 +116,13 @@ describe('Local Jupyter Server Manager', function (): void {
 		// Then I expect stop to have been called on the server instance
 		mockServerInstance.verify(s => s.stop(), TypeMoq.Times.once());
 	});
-
-	function initInstallAndInstance(uri: vscode.Uri): TypeMoq.IMock<IServerInstance> {
-		let mockServerInstance = TypeMoq.Mock.ofType(JupyterServerInstanceStub);
-		mockFactory.setup(f => f.createInstance(TypeMoq.It.isAny())).returns(() => mockServerInstance.object);
-		mockServerInstance.setup(s => s.configure()).returns(() => Promise.resolve());
-		mockServerInstance.setup(s => s.start()).returns(() => Promise.resolve());
-		mockServerInstance.setup(s => s.uri).returns(() => uri);
-		return mockServerInstance;
-	}
 });
+
+export function initInstallAndInstance(uri: vscode.Uri, mockFactory: TypeMoq.IMock<ServerInstanceFactory>): TypeMoq.IMock<IServerInstance> {
+	let mockServerInstance = TypeMoq.Mock.ofType(JupyterServerInstanceStub);
+	mockFactory.setup(f => f.createInstance(TypeMoq.It.isAny())).returns(() => mockServerInstance.object);
+	mockServerInstance.setup(s => s.configure()).returns(() => Promise.resolve());
+	mockServerInstance.setup(s => s.start()).returns(() => Promise.resolve());
+	mockServerInstance.setup(s => s.uri).returns(() => uri);
+	return mockServerInstance;
+}
