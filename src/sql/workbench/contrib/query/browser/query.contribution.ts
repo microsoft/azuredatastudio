@@ -362,6 +362,11 @@ const registryProperties: { [path: string]: IConfigurationPropertySchema; } = {
 		'description': localize('sql.showBatchTime', "[Optional] Should execution time be shown for individual batches"),
 		'default': false
 	},
+	'sql.messages.wordwrap': {
+		'type': 'boolean',
+		'description': localize('queryEditor.messages.wordwrap', "Word wrap messages"),
+		'default': true
+	},
 	'sql.chart.defaultChartType': {
 		'enum': Constants.allChartTypes,
 		'default': Constants.chartTypeHorizontalBar,
