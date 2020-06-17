@@ -58,6 +58,10 @@ export class NotebookEditorInput extends EditorInput {
 		return this._textModel.object.isDirty();
 	}
 
+	isUntitled(): boolean {
+		return this._textModel?.object.isUntitled() || false;
+	}
+
 	isReadonly() {
 		return false;
 	}
