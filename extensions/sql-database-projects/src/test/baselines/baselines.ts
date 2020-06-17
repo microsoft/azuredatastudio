@@ -12,6 +12,7 @@ export let openProjectFileBaseline: string;
 export let openDataSourcesBaseline: string;
 export let SSDTProjectFileBaseline: string;
 export let SSDTProjectAfterUpdateBaseline: string;
+export let dacpacReferencesProjectFileBaseline: string;
 
 const baselineFolderPath = __dirname;
 
@@ -21,6 +22,7 @@ export async function loadBaselines() {
 	openDataSourcesBaseline = await loadBaseline(baselineFolderPath, 'openDataSourcesBaseline.json');
 	SSDTProjectFileBaseline = await loadBaseline(baselineFolderPath, 'SSDTProjectBaseline.xml');
 	SSDTProjectAfterUpdateBaseline = await loadBaseline(baselineFolderPath, 'SSDTProjectAfterUpdateBaseline.xml');
+	dacpacReferencesProjectFileBaseline = await loadBaseline(baselineFolderPath, 'dacpacReferencesSqlProjectBaseline.xml');
 }
 
 async function loadBaseline(baselineFolderPath: string, fileName: string): Promise<string> {
