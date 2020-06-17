@@ -27,7 +27,7 @@ const webpackGulp = require('webpack-stream');
 const util = require('./util');
 const root = path.dirname(path.dirname(__dirname));
 const commit = util.getVersion(root);
-const sourceMappingURLBase = `https://ticino.blob.core.windows.net/sourcemaps/${commit}`;
+const sourceMappingURLBase = `https://sqlopsbuilds.blob.core.windows.net/sourcemaps/${commit}`;
 function minimizeLanguageJSON(input) {
     const tmLanguageJsonFilter = filter('**/*.tmLanguage.json', { restore: true });
     return input
