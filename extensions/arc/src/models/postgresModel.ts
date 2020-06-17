@@ -108,7 +108,7 @@ export class PostgresModel {
 
 	/** Creates a SQL database in the service */
 	public async createDatabase(db: DuskyObjectModelsDatabase): Promise<DuskyObjectModelsDatabase> {
-		return await (await this._databaseRouter.createDuskyDatabase(this.namespace, this.name, db)).body;
+		return (await this._databaseRouter.createDuskyDatabase(this.namespace, this.name, db)).body;
 	}
 
 	/**
