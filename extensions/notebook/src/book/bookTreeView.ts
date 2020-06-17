@@ -234,7 +234,18 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (!uri) {
 			let openDocument = azdata.nb.activeNotebookEditor;
 			if (openDocument) {
-				bookItem = this.currentBook?.getNotebook(openDocument.document.uri.fsPath);
+				let notebookPath = openDocument.document.uri.fsPath;
+				bookItem = this.currentBook?.getNotebook(notebookPath);
+				// if the node is not expanded getNotebook returns undefined, try getChildren of the book to get the item.
+				if (!bookItem) {
+					let allNodes = this.currentBook?.getAllNotebooks();
+					let book = Array.from(allNodes.keys()).filter(x => x.indexOf(notebookPath.substring(0, notebookPath.lastIndexOf('/'))) > -1);
+					let bookNode = book.length > 0 ? this.currentBook?.getNotebook(book[0]) : undefined;
+					if (bookNode) {
+						let bookItems = await this.getChildren(bookNode);
+						bookItem = bookItems.find(x => x.tooltip === notebookPath);
+					}
+				}
 			}
 		} else if (uri.fsPath) {
 			bookItem = this.currentBook?.getNotebook(uri.fsPath);
