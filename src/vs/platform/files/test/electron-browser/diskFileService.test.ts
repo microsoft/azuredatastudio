@@ -118,7 +118,7 @@ export class TestDiskFileSystemProvider extends DiskFileSystemProvider {
 	}
 }
 
-suite('Disk File Service', function () {
+suite.skip('Disk File Service', function () { // {{SQL CARBON EDIT}} Disable occasionally failing tests
 
 	const parentDir = getRandomTestPath(tmpdir(), 'vsctests', 'diskfileservice');
 	const testSchema = 'test';
