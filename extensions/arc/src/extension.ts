@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as loc from './localizedConstants';
 import { IconPathHelper } from './constants';
@@ -12,6 +13,7 @@ import { ControllerModel } from './models/controllerModel';
 import { PostgresModel } from './models/postgresModel';
 import { ControllerDashboard } from './ui/dashboards/controller/controllerDashboard';
 import { MiaaDashboard } from './ui/dashboards/miaa/miaaDashboard';
+import { MiaaModel } from './models/miaaModel';
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
 	IconPathHelper.setExtensionContext(context);
@@ -38,10 +40,28 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 		// Controller information
 		const controllerUrl = '';
 		const auth = new BasicAuth('', '');
+		const connection = await azdata.connection.openConnectionDialog(['MSSQL']);
+		const connectionProfile: azdata.IConnectionProfile = {
+			serverName: connection.options['serverName'],
+			databaseName: connection.options['databaseName'],
+			authenticationType: connection.options['authenticationType'],
+			providerName: 'MSSQL',
+			connectionName: '',
+			userName: connection.options['user'],
+			password: connection.options['password'],
+			savePassword: false,
+			groupFullName: undefined,
+			saveProfile: true,
+			id: connection.connectionId,
+			groupId: undefined,
+			options: connection.options
+		};
+		const instanceName = '';
 
 		try {
 			const controllerModel = new ControllerModel(controllerUrl, auth);
-			const miaaDashboard = new MiaaDashboard(controllerModel);
+			const miaaModel = new MiaaModel(connectionProfile, instanceName);
+			const miaaDashboard = new MiaaDashboard(controllerModel, miaaModel);
 
 			await Promise.all([
 				miaaDashboard.showDashboard(),
