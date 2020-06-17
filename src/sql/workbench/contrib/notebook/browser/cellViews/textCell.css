@@ -7,10 +7,30 @@ text-cell-component {
 	display: block;
 }
 
-.notebookEditor .notebook-cell.active text-cell-component code-component {
+text-cell-component .notebook-text {
+	display: flex;
+}
+
+text-cell-component code-component {
+	flex-direction: column;
+	display: none;
+}
+text-cell-component .notebook-preview {
+	flex-direction: column;
+	width: 100%;
+}
+
+text-cell-component .edit-mode code-component {
+	display: block;
+	width: 50%;
+}
+text-cell-component .edit-mode .notebook-preview {
 	border-color: transparent;
-	border-bottom-width: 1px;
+	border-left-width: 1px;
 	border-style: solid;
+	border-top-width: 0;
+	flex-direction: column;
+	width: 50%;
 }
 
 text-cell-component .notebook-preview {

@@ -7,7 +7,7 @@ import { Component, Input, Inject, ViewChild, ElementRef } from '@angular/core';
 import { localize } from 'vs/nls';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { TransformMarkdownAction, MarkdownButtonType } from 'sql/workbench/contrib/notebook/browser/markdownToolbarActions';
+import { TransformMarkdownAction, MarkdownButtonType, TogglePreviewAction } from 'sql/workbench/contrib/notebook/browser/markdownToolbarActions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export const MARKDOWN_TOOLBAR_SELECTOR: string = 'markdown-toolbar-component';
@@ -28,10 +28,10 @@ export class MarkdownToolbarComponent {
 	public buttonList = localize('buttonList', "List");
 	public buttonOrderedList = localize('buttonOrderedList', "Ordered list");
 	public buttonImage = localize('buttonImage', "Image");
-	public buttonPreview = localize('buttonPreview', "Markdown preview toggle - off");
 
 	@Input() public cellModel: ICellModel;
 	private _actionBar: Taskbar;
+	private _togglePreviewAction: TogglePreviewAction;
 
 	constructor(
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService
@@ -51,6 +51,8 @@ export class MarkdownToolbarComponent {
 		let listButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.listText', '', 'list', this.buttonList, this.cellModel, MarkdownButtonType.UNORDERED_LIST);
 		let orderedListButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.orderedText', '', 'ordered-list', this.buttonOrderedList, this.cellModel, MarkdownButtonType.ORDERED_LIST);
 		let imageButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.imageText', '', 'insert-image', this.buttonImage, this.cellModel, MarkdownButtonType.IMAGE);
+		this._togglePreviewAction = this._instantiationService.createInstance(TogglePreviewAction, 'notebook.togglePreview', true, this.cellModel.isEditMode);
+		this._togglePreviewAction.enabled = true;
 
 		let taskbar = <HTMLElement>this.mdtoolbar.nativeElement;
 		this._actionBar = new Taskbar(taskbar);
@@ -64,7 +66,8 @@ export class MarkdownToolbarComponent {
 			{ action: linkButton },
 			{ action: listButton },
 			{ action: orderedListButton },
-			{ action: imageButton }
+			{ action: imageButton },
+			{ action: this._togglePreviewAction }
 		]);
 	}
 }

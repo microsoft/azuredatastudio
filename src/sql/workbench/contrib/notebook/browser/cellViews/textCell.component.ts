@@ -171,7 +171,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	/**
 	 * Updates the preview of markdown component with latest changes
-	 * If content is empty and in non-edit mode, default it to 'Double-click to edit'
+	 * If content is empty and in non-edit mode, default it to 'Add content here...'
 	 * Sanitizes the data to be shown in markdown cell
 	 */
 	private updatePreview(): void {

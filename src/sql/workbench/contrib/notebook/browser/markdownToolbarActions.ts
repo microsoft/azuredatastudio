@@ -3,17 +3,18 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
-
 import { INotebookEditor, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
 import { IRange } from 'vs/editor/common/core/range';
 import { IIdentifiedSingleEditOperation } from 'vs/editor/common/model';
+import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { TextModel } from 'vs/editor/common/model/textModel';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import { Selection } from 'vs/editor/common/core/selection';
-
+import { ToggleableAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 
 
 // Action to decorate markdown
@@ -389,4 +390,49 @@ export enum MarkdownLineType {
 	BEGIN_AND_END_LINES,
 	EVERY_LINE,
 	WRAPPED_ABOVE_AND_BELOW
+}
+
+export class TogglePreviewAction extends ToggleableAction {
+
+	private static readonly previewShowLabel = localize('previewShowLabel', "Show Preview");
+	private static readonly previewHideLabel = localize('previewHideLabel', "Hide Preview");
+	private static readonly baseClass = 'codicon';
+	private static readonly previewShowCssClass = 'split-toggle-on';
+	private static readonly previewHideCssClass = 'split-toggle-off';
+	private static readonly maskedIconClass = 'masked-icon';
+
+	constructor(
+		id: string, toggleTooltip: boolean, isEditMode: boolean
+	) {
+		super(id, {
+			baseClass: TogglePreviewAction.baseClass,
+			toggleOnLabel: TogglePreviewAction.previewShowLabel,
+			toggleOnClass: TogglePreviewAction.previewShowCssClass,
+			toggleOffLabel: TogglePreviewAction.previewHideLabel,
+			toggleOffClass: TogglePreviewAction.previewHideCssClass,
+			maskedIconClass: TogglePreviewAction.maskedIconClass,
+			shouldToggleTooltip: toggleTooltip,
+			isOn: isEditMode
+		});
+	}
+
+	public get previewMode(): boolean {
+		return this.state.isOn;
+	}
+	public set previewMode(value: boolean) {
+		this.toggle(value);
+	}
+
+	public run(context: CellContext): Promise<boolean> {
+		let self = this;
+		return new Promise<boolean>((resolve, reject) => {
+			try {
+				self.previewMode = !self.previewMode;
+				context.cell.isEditMode = self.previewMode;
+				resolve(true);
+			} catch (e) {
+				reject(e);
+			}
+		});
+	}
 }
