@@ -16,7 +16,7 @@ import { IConnectionProfile, TaskExecutionMode } from 'azdata';
 import { promises as fs } from 'fs';
 import { ApiWrapper } from '../common/apiWrapper';
 import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
-import { Project, DatabaseReferenceLocation } from '../models/project';
+import { Project, DatabaseReferenceLocation, SystemDatabase, TargetPlatform } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { FolderNode } from '../models/tree/fileFolderTreeItem';
 import { IDeploymentProfile, IGenerateScriptProfile } from '../models/IDeploymentProfile';
@@ -306,8 +306,9 @@ export class ProjectsController {
 			const databaseReferenceType = await this.getDatabaseReferenceType();
 
 			// if master is selected, we know which dacpac needs to be added
-			if (databaseReferenceType === constants.master) {
-				await project.addMasterDatabaseReference();
+			if (databaseReferenceType === constants.systemDatabase) {
+				const systemDatabase = await this.getSystemDatabaseName(project);
+				await project.addSystemDatabaseReference(systemDatabase);
 			} else {
 				// get other information needed to add a reference to the dacpac
 				const dacpacFileLocation = await this.getDacpacFileLocation();
@@ -315,9 +316,9 @@ export class ProjectsController {
 
 				if (databaseLocation === DatabaseReferenceLocation.differentDatabaseSameServer) {
 					const databaseName = await this.getDatabaseName(dacpacFileLocation);
-					await project.addDatabaseReference(dacpacFileLocation, <DatabaseReferenceLocation>databaseLocation, databaseName);
+					await project.addDatabaseReference(dacpacFileLocation, <DatabaseReferenceLocation>databaseLocation, false, databaseName);
 				} else {
-					await project.addDatabaseReference(dacpacFileLocation, <DatabaseReferenceLocation>databaseLocation);
+					await project.addDatabaseReference(dacpacFileLocation, <DatabaseReferenceLocation>databaseLocation, false);
 				}
 			}
 		} catch (err) {
@@ -328,7 +329,7 @@ export class ProjectsController {
 	private async getDatabaseReferenceType(): Promise<string> {
 		let databaseReferenceOptions: QuickPickItem[] = [
 			{
-				label: constants.master
+				label: constants.systemDatabase
 			},
 			{
 				label: constants.dacpac
@@ -345,6 +346,33 @@ export class ProjectsController {
 		}
 
 		return input.label;
+	}
+
+	public async getSystemDatabaseName(project: Project): Promise<SystemDatabase> {
+		let databaseReferenceOptions: QuickPickItem[] = [
+			{
+				label: constants.master
+			}
+		];
+
+		// Azure dbs can only reference master
+		if (project.getProjectTargetPlatform() !== TargetPlatform.SqlAzureV12) {
+			databaseReferenceOptions.push(
+				{
+					label: constants.msdb
+				});
+		}
+
+		let input = await this.apiWrapper.showQuickPick(databaseReferenceOptions, {
+			canPickMany: false,
+			placeHolder: constants.systemDatabaseReferenceInput
+		});
+
+		if (!input) {
+			throw new Error(constants.systemDatabaseReferenceRequired);
+		}
+
+		return input.label === constants.master ? SystemDatabase.master : SystemDatabase.msdb;
 	}
 
 	private async getDacpacFileLocation(): Promise<Uri> {
