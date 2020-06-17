@@ -106,5 +106,5 @@ export function numVCores(vCores: string): string {
 	}
 }
 export function couldNotFindRegistration(namespace: string, name: string) { return localize('arc.couldNotFindRegistration', "Could not find controller registration for {0} ({1})", name, namespace); }
-export function resourceDeletionWarning(namespace: string, name: string): string { return localize('arc.resourceDeletionWarning', "Warning! Deleting a resource is permanent and can't be undone. To delete the resource '{0}.{1}' type the name '{1}' below to proceed.", namespace, name); }
+export function resourceDeletionWarning(namespace: string, name: string): string { return localize('arc.resourceDeletionWarning', "Warning! Deleting a resource is permanent and cannot be undone. To delete the resource '{0}.{1}' type the name '{1}' below to proceed.", namespace, name); }
 export function invalidResourceDeletionName(name: string): string { return localize('arc.invalidResourceDeletionName', "The value '{0}' does not match the instance name. Try again or press escape to exit", name); }
