@@ -1553,7 +1553,7 @@ suite.skip('Disk File Service', function () { // {{SQL CARBON EDIT}} Disable occ
 		return testFileTooLarge();
 	});
 
-	test('readFile - FILE_TOO_LARGE - buffered', async () => {
+	(isWindows ? test.skip /* flaky test */ : test)('readFile - FILE_TOO_LARGE - buffered', async () => {
 		setCapabilities(fileProvider, FileSystemProviderCapabilities.FileOpenReadWriteClose);
 
 		return testFileTooLarge();
