@@ -95,7 +95,7 @@ export default class MainController implements Disposable {
 					await this.projectsController.openProject(file);
 				}
 
-				this.projectsController.focusProject(this.projectsController.projects[prevCount]); // focus the first of the newly-opened projects
+				await this.projectsController.focusProject(this.projectsController.projects[prevCount]); // focus the first of the newly-opened projects
 			}
 		}
 		catch (err) {
