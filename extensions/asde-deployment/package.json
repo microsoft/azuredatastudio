@@ -1,7 +1,7 @@
 {
   "name": "asde-deployment",
-  "displayName": "extension-displayName",
-  "description": "extension-description",
+  "displayName": "%extension-displayName%",
+  "description": "%extension-description%",
   "version": "0.1.0",
   "publisher": "Microsoft",
   "preview": true,
