@@ -18,7 +18,7 @@ import { ApiWrapper } from '../common/apiWrapper';
 import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
 import { Project, DatabaseReferenceLocation, SystemDatabase, TargetPlatform } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
-import { FolderNode } from '../models/tree/fileFolderTreeItem';
+import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
 import { IDeploymentProfile, IGenerateScriptProfile } from '../models/IDeploymentProfile';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
@@ -294,9 +294,25 @@ export class ProjectsController {
 		this.refreshProjectsTree();
 	}
 
+	public async delete(context: BaseProjectTreeItem): Promise<void> {
+		const project = ProjectsController.getProjectFromContext(context);
+
+		const response = await this.apiWrapper.showWarningMessage(`Are you sure you want to delete ${context.uri.path}?`, constants.yesString, constants.noString);
+
+		if (response === constants.noString) {
+			return;
+		}
+
+		// if ((FileNode)context) {
+		// 	const fileEntry: FileEnry;
+		// 	await project.deleteFile(fileENtry)
+		// }
+
+	}
+
 	/**
 	 * Adds a database reference to the project
-	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
+	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project
 	 */
 	public async addDatabaseReference(context: Project | BaseProjectTreeItem): Promise<void> {
 		const project = ProjectsController.getProjectFromContext(context);
