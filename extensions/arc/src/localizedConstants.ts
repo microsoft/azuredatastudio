@@ -100,7 +100,7 @@ export function clickTheTroubleshootButton(resourceType: string): string { retur
 export function numVCores(vCores: string): string {
 	const numCores = +vCores;
 	if (numCores && numCores > 0) {
-		return numCores > 1 ? localize('arc.numVCores', "{0} vCores", numCores) : localize('arc.vCore', "{0} vCore", numCores);
+		return localize('arc.numVCores', "{0} vCores", numCores);
 	} else {
 		return '-';
 	}
