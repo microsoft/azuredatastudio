@@ -751,16 +751,6 @@ export class NotebookService extends Disposable implements INotebookService, ICu
 		return undefined; // {{SQL CARBON EDIT}} strict-null-check
 	}
 
-	async revert(viewType: string, uri: URI, token: CancellationToken): Promise<void> {
-		let provider = this._notebookProviders.get(viewType);
-
-		if (provider) {
-			return provider.controller.revert(uri, token);
-		}
-
-		return;
-	}
-
 	onDidReceiveMessage(viewType: string, editorId: string, message: any): void {
 		let provider = this._notebookProviders.get(viewType);
 
