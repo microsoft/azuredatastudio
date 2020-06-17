@@ -12,7 +12,6 @@ import { SyncActionDescriptor, MenuId, MenuRegistry } from 'vs/platform/actions/
 import { KeyMod, KeyCode, KeyChord } from 'vs/base/common/keyCodes';
 import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { ContextKeyExpr, ContextKeyEqualsExpr } from 'vs/platform/contextkey/common/contextkey';
-// import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { QueryResultsEditor } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
