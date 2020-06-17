@@ -209,7 +209,8 @@ const externalExtensions = [
     'liveshare',
     'sql-database-projects',
     'machine-learning',
-    'sql-assessment'
+    'sql-assessment',
+    'asde-deployment'
 ];
 // extensions that require a rebuild since they have native parts
 const rebuildExtensions = [
