@@ -236,7 +236,7 @@ export class InstallAction extends ExtensionAction {
 
 		const extension = await this.install(this.extension);
 
-		alert(localize('installExtensionComplete', "Installing extension {0} is completed. Please reload Azure Data Studio to enable it.", this.extension.displayName));
+		alert(localize('installExtensionComplete', "Installing extension {0} is completed.", this.extension.displayName));
 
 		// {{SQL CARBON EDIT}} Add extension object check since ADS third party extensions will be directed to a download page
 		// and the extension object will be undefined.
@@ -827,7 +827,7 @@ export class MenuItemExtensionAction extends ExtensionAction {
 
 	constructor(
 		private readonly action: IAction,
-		@IConfigurationService private readonly configurationService: IConfigurationService
+		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
 	) {
 		super(action.id, action.label);
 	}
@@ -837,7 +837,7 @@ export class MenuItemExtensionAction extends ExtensionAction {
 			return;
 		}
 		if (this.action.id === TOGGLE_IGNORE_EXTENSION_ACTION_ID) {
-			this.checked = !this.configurationService.getValue<string[]>('sync.ignoredExtensions').some(id => areSameExtensions({ id }, this.extension!.identifier));
+			this.checked = !this.extensionsWorkbenchService.isExtensionIgnoredToSync(this.extension);
 		}
 	}
 
@@ -1380,7 +1380,7 @@ export class ReloadAction extends ExtensionAction {
 						this.enabled = true;
 						this.label = localize('reloadRequired', "Reload Required");
 						this.tooltip = localize('postEnableTooltip', "Please reload Azure Data Studio to enable this extension."); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
-						alert(localize('installExtensionComplete', "Installing extension {0} is completed. Please reload Azure Data Studio to enable it.", this.extension.displayName)); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+						alert(localize('installExtensionCompletedAndReloadRequired', "Installing extension {0} is completed. Please reload Azure Data Studio to enable it.", this.extension.displayName)); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
 						return;
 					}
 				}
@@ -2681,7 +2681,8 @@ export class SyncIgnoredIconAction extends ExtensionAction {
 	private static readonly DISABLE_CLASS = `${SyncIgnoredIconAction.ENABLE_CLASS} hide`;
 
 	constructor(
-		@IConfigurationService private readonly configurationService: IConfigurationService
+		@IConfigurationService private readonly configurationService: IConfigurationService,
+		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
 	) {
 		super('extensions.syncignore', '', SyncIgnoredIconAction.DISABLE_CLASS, false);
 		this._register(Event.filter(this.configurationService.onDidChangeConfiguration, e => e.affectedKeys.includes('sync.ignoredExtensions'))(() => this.update()));
@@ -2691,11 +2692,8 @@ export class SyncIgnoredIconAction extends ExtensionAction {
 
 	update(): void {
 		this.class = SyncIgnoredIconAction.DISABLE_CLASS;
-		if (this.extension) {
-			const ignoredExtensions = this.configurationService.getValue<string[]>('sync.ignoredExtensions') || [];
-			if (ignoredExtensions.some(id => areSameExtensions({ id }, this.extension!.identifier))) {
-				this.class = SyncIgnoredIconAction.ENABLE_CLASS;
-			}
+		if (this.extension && this.extensionsWorkbenchService.isExtensionIgnoredToSync(this.extension)) {
+			this.class = SyncIgnoredIconAction.ENABLE_CLASS;
 		}
 	}
 
@@ -3001,6 +2999,10 @@ export class InstallVSIXAction extends Action {
 					canSelectFiles: true,
 					openLabel: mnemonicButtonLabel(localize({ key: 'installButton', comment: ['&& denotes a mnemonic'] }, "&&Install"))
 				});
+
+				if (!vsixPaths) {
+					return;
+				}
 			}
 
 			await Promise.all(vsixPaths.map(async vsix => {

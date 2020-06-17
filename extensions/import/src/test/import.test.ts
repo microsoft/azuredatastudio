@@ -170,17 +170,16 @@ describe('import extension tests', function (): void {
 
 	describe('import extension flat file wizard', () => {
 		let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
-
 		this.beforeEach(() => {
 			mockApiWrapper = TypeMoq.Mock.ofType(ApiWrapper);
 		});
-
 		it('FlatFileWizard opens connectionDialog when there are no active connections', async () => {
 			let testConnection: azdata.connection.Connection = {
 				providerName: 'MSSQL',
 				connectionId: 'testConnectionId',
 				options: {}
 			};
+
 			// There is no current connection.
 			mockApiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return undefined; });
 

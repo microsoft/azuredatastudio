@@ -286,7 +286,6 @@ export class FileConfigPage extends ImportPage {
 	}
 
 	public async getSchemaValues(): Promise<{ displayName: string, name: string }[]> {
-
 		let connectionUri = await this._apiWrapper.getUriForConnection(this.model.server.connectionId);
 		let queryProvider = this._apiWrapper.getProvider<azdata.QueryProvider>(this.model.server.providerName, azdata.DataProviderType.QueryProvider);
 

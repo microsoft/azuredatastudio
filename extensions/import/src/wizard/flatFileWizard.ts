@@ -23,7 +23,6 @@ export class FlatFileWizard {
 	public page3: azdata.window.WizardPage;
 	public page4: azdata.window.WizardPage;
 
-
 	private importAnotherFileButton: azdata.window.Button;
 
 	constructor(

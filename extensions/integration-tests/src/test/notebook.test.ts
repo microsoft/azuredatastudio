@@ -107,7 +107,7 @@ suite('Notebook integration test suite', function () {
 		await verifyClearOutputs(notebook);
 	});
 
-	test('Clear all outputs - SQL notebook ', async function () {
+	test('Clear all outputs - SQL notebook', async function () {
 		let notebook = await openNotebook(sqlNotebookContent, sqlKernelMetadata, this.test.title + this.invocationCount++);
 		await runCell(notebook);
 		await verifyClearAllOutputs(notebook);

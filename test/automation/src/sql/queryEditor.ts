@@ -9,23 +9,27 @@ export class QueryEditor {
 
 	public readonly commandBar: CommandBar;
 
-	constructor(code: Code) {
+	constructor(private code: Code) {
 		this.commandBar = new CommandBar(code);
 	}
 
+	private static readonly RESULT_SELECTOR = '.query-editor-view .monaco-table';
+	public async waitForResults(): Promise<void> {
+		await this.code.waitForElement(QueryEditor.RESULT_SELECTOR);
+	}
 }
 
 export class CommandBar {
 
-	private static readonly COMMAND_BAR_BUTTON = '.query-editor .carbon-taskbar ul>:nth-child(${INDEX})';
+	private static readonly COMMAND_BAR_BUTTON = '.query-editor .carbon-taskbar li .${CLASS}';
 
 	constructor(private code: Code) { }
 
-	public async clickButton(index: number): Promise<void> {
-		await this.code.waitAndClick(CommandBar.COMMAND_BAR_BUTTON.replace('${INDEX}', '' + index));
+	public async run(): Promise<void> {
+		await this.code.waitAndClick(CommandBar.COMMAND_BAR_BUTTON.replace('${CLASS}', 'start'));
 	}
 
-	public async waitForButton(index: number, label: string): Promise<void> {
-		await this.code.waitForTextContent(CommandBar.COMMAND_BAR_BUTTON.replace('${INDEX}', '' + index), label);
+	public async connect(): Promise<void> {
+		await this.code.waitAndClick(CommandBar.COMMAND_BAR_BUTTON.replace('${CLASS}', 'connect'));
 	}
 }

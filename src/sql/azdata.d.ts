@@ -2132,7 +2132,7 @@ declare module 'azdata' {
 		 * AzureResource.ResourceManagement if not given)
 		 * @return Promise to return the security token
 		 */
-		export function getSecurityToken(account: Account, resource?: AzureResource): Thenable<{}>;
+		export function getSecurityToken(account: Account, resource?: AzureResource): Thenable<{ [key: string]: any }>;
 
 		/**
 		 * An [event](#Event) which fires when the accounts have changed.
@@ -3659,6 +3659,7 @@ declare module 'azdata' {
 		export function createWebViewDialog(title: string): ModalDialog;
 
 		/**
+		 * @deprecated please use the method createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth) instead.
 		 * Create a dialog with the given title
 		 * @param title The title of the dialog, displayed at the top
 		 * @param isWide Indicates whether the dialog is wide or normal

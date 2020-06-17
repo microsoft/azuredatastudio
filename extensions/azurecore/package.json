@@ -114,16 +114,6 @@
         "category": "Azure Accounts"
       },
       {
-        "command": "azure.accounts.getSubscriptions",
-        "title": "%azure.accounts.getSubscriptions.title%",
-        "category": "Azure Accounts"
-      },
-      {
-        "command": "azure.accounts.getResourceGroups",
-        "title": "%azure.accounts.getResourceGroups.title%",
-        "category": "Azure Accounts"
-      },
-      {
         "command": "azure.resource.signin",
         "title": "%azure.resource.signin.title%",
         "icon": "$(add)"
@@ -197,14 +187,6 @@
         },
         {
           "command": "azure.resource.connectsqlserver",
-          "when": "false"
-        },
-        {
-          "command": "azure.accounts.getSubscriptions",
-          "when": "false"
-        },
-        {
-          "command": "azure.accounts.getResourceGroups",
           "when": "false"
         }
       ],
@@ -285,6 +267,6 @@
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.1",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "github:corivera/vscodetestcover#1.0.8"
+    "vscodetestcover": "^1.0.9"
   }
 }

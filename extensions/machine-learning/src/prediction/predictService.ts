@@ -83,7 +83,7 @@ export class PredictService {
 			language: 'sql',
 			content: query
 		});
-		await this._apiWrapper.showTextDocument(document.uri);
+		await this._apiWrapper.executeCommand('vscode.open', document.uri);
 		await this._apiWrapper.connect(document.uri.toString(), connection.connectionId);
 		this._apiWrapper.runQuery(document.uri.toString(), undefined, false);
 		return query;
