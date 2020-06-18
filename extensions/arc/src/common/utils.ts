@@ -145,7 +145,8 @@ export function getErrorMessage(error: any): string {
 		return error.body.reason;
 	} else if (error.message) {
 		if (error.response?.statusMessage) {
-			// Some Http errors just have a status message as additional detail, but it's not
+			// Some Http errors just have a status message as additional detail, but it's not enough on its
+			// own to be useful so append to the message as well
 			return `${error.message} (${error.response.statusMessage})`;
 		}
 		return error.message;
