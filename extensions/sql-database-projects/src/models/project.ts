@@ -300,6 +300,11 @@ export class Project {
 	}
 
 	private addDatabaseReferenceToProjFile(entry: DatabaseReferenceProjectEntry): void {
+		// check if reference to this database already exists
+		if (this.databaseReferenceExists(entry)) {
+			throw new Error(constants.databaseReferenceAlreadyExists);
+		}
+
 		let referenceNode = this.projFileXmlDoc.createElement(constants.ArtifactReference);
 		const isSystemDatabaseProjectEntry = (<SystemDatabaseReferenceProjectEntry>entry).ssdtUri;
 
@@ -321,6 +326,23 @@ export class Project {
 			this.addDatabaseReferenceChildren(ssdtReferenceNode, entry.name);
 			this.findOrCreateItemGroup(constants.ArtifactReference).appendChild(ssdtReferenceNode);
 		}
+	}
+
+	private databaseReferenceExists(entry: DatabaseReferenceProjectEntry): boolean {
+		const isSystemDatabaseProjectEntry = (<SystemDatabaseReferenceProjectEntry>entry).ssdtUri;
+		const entryFsPath = isSystemDatabaseProjectEntry ? entry.fsUri.fsPath.substring(1) : entry.fsUri.fsPath;
+
+		for (let r = 0; r < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference).length; r++) {
+			if (this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference)[r].getAttribute(constants.Condition) !== constants.NotNetCoreCondition) {
+				const filepath = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference)[r].getAttribute(constants.Include);
+
+				if (filepath === entryFsPath) {
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	private addDatabaseReferenceChildren(referenceNode: any, name?: string): void {
