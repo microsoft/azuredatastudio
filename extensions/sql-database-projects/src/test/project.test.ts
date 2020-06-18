@@ -177,6 +177,29 @@ describe('Project: sqlproj content operations', function (): void {
 		should(project.databaseReferences.length).equal(3);
 		should(project.databaseReferences[2]).equal('test');
 	});
+
+	it('Should not allow adding duplicate database references', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project = new Project(projFilePath);
+		await project.readProjFile();
+
+		should(project.databaseReferences.length).equal(0);
+		await project.addSystemDatabaseReference(SystemDatabase.master);
+		should(project.databaseReferences.length).equal(1);
+		should(project.databaseReferences[0]).equal(constants.master);
+
+		// try to add reference to master again
+		await testUtils.shouldThrowSpecificError(async () => await project.addSystemDatabaseReference(SystemDatabase.master), constants.databaseReferenceAlreadyExists);
+		should(project.databaseReferences.length).equal(1);
+
+		await project.addDatabaseReference(Uri.parse('test.dacpac'), DatabaseReferenceLocation.sameDatabase);
+		should(project.databaseReferences.length).equal(2);
+		should(project.databaseReferences[1]).equal('test');
+
+		// try to add reference to test.dacpac again
+		await testUtils.shouldThrowSpecificError(async () => await project.addDatabaseReference(Uri.parse('test.dacpac'), DatabaseReferenceLocation.sameDatabase), constants.databaseReferenceAlreadyExists);
+		should(project.databaseReferences.length).equal(2);
+	});
 });
 
 describe('Project: round trip updates', function (): void {
