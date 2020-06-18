@@ -204,7 +204,7 @@ export class Project {
 			dbName = constants.msdb;
 		}
 
-		this.addDatabaseReference(uri, DatabaseReferenceLocation.differentDatabaseSameServer, true, dbName);
+		await this.addDatabaseReference(uri, DatabaseReferenceLocation.differentDatabaseSameServer, true, dbName);
 	}
 
 	public getSystemDacpacUri(dacpac: string): Uri {
