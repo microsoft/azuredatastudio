@@ -9,7 +9,7 @@ import * as loc from '../../../localizedConstants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { IconPathHelper, cssStyles, ResourceType } from '../../../constants';
 import { ControllerModel, Registration } from '../../../models/controllerModel';
-import { getAzurecoreApi, promptForResourceDeletion, getErrorText } from '../../../common/utils';
+import { getAzurecoreApi, promptForResourceDeletion, getDatabaseStateDisplayText } from '../../../common/utils';
 import { MiaaModel, DatabaseModel } from '../../../models/miaaModel';
 import { HybridSqlNsNameGetResponse } from '../../../controller/generated/v1/model/hybridSqlNsNameGetResponse';
 import { EndpointModel } from '../../../controller/generated/v1/api';
@@ -39,7 +39,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 
 	constructor(modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _miaaModel: MiaaModel) {
 		super(modelView);
-		this._instanceProperties.miaaAdmin = this._miaaModel.connectionProfile.userName;
+		this._instanceProperties.miaaAdmin = this._miaaModel.username || this._instanceProperties.miaaAdmin;
 		this._controllerModel.onRegistrationsUpdated((_: Registration[]) => {
 			this.eventuallyRunOnInitialized(() => {
 				this.handleRegistrationsUpdated().catch(e => console.log(e));
@@ -184,7 +184,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 					vscode.window.showInformationMessage(loc.resourceDeleted(this._miaaModel.name));
 				}
 			} catch (error) {
-				vscode.window.showErrorMessage(loc.resourceDeletionFailed(this._miaaModel.name, getErrorText(error)));
+				vscode.window.showErrorMessage(loc.resourceDeletionFailed(this._miaaModel.name, error));
 			} finally {
 				deleteButton.enabled = true;
 			}
@@ -253,7 +253,10 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 	}
 
 	private handleDatabasesUpdated(databases: DatabaseModel[]): void {
-		this._databasesTable.data = databases.map(d => [d.name, d.status]);
+		// If we were able to get the databases it means we have a good connection so update the username too
+		this._instanceProperties.miaaAdmin = this._miaaModel.username || this._instanceProperties.miaaAdmin;
+		this.refreshDisplayedProperties();
+		this._databasesTable.data = databases.map(d => [d.name, getDatabaseStateDisplayText(d.status)]);
 		this._databasesTableLoading.loading = false;
 	}
 
