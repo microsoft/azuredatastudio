@@ -161,6 +161,7 @@ export class WebWorkerExtensionHostStarter implements IExtensionHostStarter {
 			autoStart: this._autoStart,
 			remote: {
 				authority: this._environmentService.configuration.remoteAuthority,
+				connectionData: null,
 				isRemote: false
 			},
 			uiKind: platform.isWeb ? UIKind.Web : UIKind.Desktop
