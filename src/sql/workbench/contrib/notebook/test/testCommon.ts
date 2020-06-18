@@ -3,7 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
+'use strict';
+ import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import { CellEditorProviderStub, NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import * as dom from 'vs/base/browser/dom';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
@@ -12,14 +13,22 @@ import { NullTelemetryService } from 'vs/platform/telemetry/common/telemetryUtil
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
 import { TestEditorGroupsService, TestEditorService, TestTextResourceConfigurationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
+import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 
 // Typically you will pass in either editor or the instantiationService parameter.
 // Leave both undefined when you want the underlying object(s) to have an undefined editor.
 export class TestNotebookEditor extends NotebookEditorStub {
 	cellEditors: CellEditorProviderStub[];
+	private _model: INotebookModel | undefined;
+
+	get model(): INotebookModel | undefined {
+		return this._model;
+	}
+	
 	// Normally one needs to provide either the editor or the instantiationService as the constructor parameter
-	constructor({ cellGuid, instantiationService, editor }: { cellGuid?: string; instantiationService?: IInstantiationService; editor?: QueryTextEditor; } = {}) {
+	constructor({ cellGuid, instantiationService, editor, model }: { cellGuid?: string; instantiationService?: IInstantiationService; editor?: QueryTextEditor; model?: INotebookModel } = {}) {
 		super();
+		this._model = model;
 		this.cellEditors = [new TestCellEditorProvider({ cellGuid: cellGuid, instantiationService: instantiationService, editor: editor })];
 	}
 }

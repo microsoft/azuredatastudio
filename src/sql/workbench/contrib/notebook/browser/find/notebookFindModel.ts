@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+'use strict';
 
 import { Disposable } from 'vs/base/common/lifecycle';
 import { ICellModel, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
@@ -59,7 +60,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 	private _decorations: { [decorationId: string]: NotebookIntervalNode; };
 	//#endregion
 
-	constructor(private _notebookModel: INotebookModel) {
+	constructor(private _notebookModel: INotebookModel | undefined) {
 		super();
 
 		this._isDisposed = false;
@@ -76,11 +77,11 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 		this.id = '$model' + MODEL_ID;
 	}
 
-	public set notebookModel(model: INotebookModel) {
+	public set notebookModel(model: INotebookModel | undefined) {
 		this._notebookModel = model;
 	}
 
-	public get notebookModel(): INotebookModel {
+	public get notebookModel(): INotebookModel | undefined {
 		return this._notebookModel;
 	}
 

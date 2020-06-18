@@ -111,7 +111,7 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 	}
 
 	public changeDecorations(callback: (changeAccessor: IModelDecorationsChangeAccessor) => any): any {
-		if (!this.notebookInput.notebookFindModel) {
+		if (!this.notebookInput?.notebookFindModel) {
 			// callback will not be called
 			return null;
 		}
@@ -123,11 +123,8 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 	}
 
 	async setNotebookModel(): Promise<void> {
-		let notebookEditorModel = await this.notebookInput.resolve();
-		if (notebookEditorModel && !this.notebookInput.notebookFindModel.notebookModel) {
-			this._notebookModel = notebookEditorModel.getNotebookModel();
-			this.notebookInput.notebookFindModel.notebookModel = this._notebookModel;
-		}
+		await this.notebookInput.resolve();
+		this._notebookModel = this.notebookInput.notebookFindModel.notebookModel;
 		if (!this.notebookInput.notebookFindModel.findDecorations) {
 			this.notebookInput.notebookFindModel.setNotebookFindDecorations(this);
 		}
@@ -339,17 +336,16 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 			}
 		}
 		if (e.searchScope) {
-			await this.notebookInput.notebookFindModel.find(this._findState.searchString, this._findState.matchCase, this._findState.wholeWord, NOTEBOOK_MAX_MATCHES).then(findRange => {
-				this._findDecorations.set(this.notebookFindModel.findMatches, this._currentMatch);
-				this._findState.changeMatchInfo(
-					this.notebookFindModel.getIndexByRange(this._currentMatch),
-					this._findDecorations.getCount(),
-					this._currentMatch
-				);
-				if (this._finder.getDomNode().style.visibility === 'visible') {
-					this._setCurrentFindMatch(this._currentMatch);
-				}
-			});
+			await this.notebookInput.notebookFindModel.find(this._findState.searchString, this._findState.matchCase, this._findState.wholeWord, NOTEBOOK_MAX_MATCHES);
+			this._findDecorations.set(this.notebookFindModel.findMatches, this._currentMatch);
+			this._findState.changeMatchInfo(
+				this.notebookFindModel.getIndexByRange(this._currentMatch),
+				this._findDecorations.getCount(),
+				this._currentMatch
+			);
+			if (this._finder.getDomNode().style.visibility === 'visible') {
+				this._setCurrentFindMatch(this._currentMatch);
+			}
 		}
 	}
 
@@ -402,21 +398,26 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 		}
 	}
 
-	public findNext(): void {
-		this.notebookFindModel.findNext().then(p => {
+	public async findNext(): Promise<void> {
+		try {
+			const p = await this.notebookFindModel.findNext();
 			this.setSelection(p);
 			this._updateFinderMatchState();
 			this._setCurrentFindMatch(p);
-		}, er => { onUnexpectedError(er); });
+		} catch (er) {
+			onUnexpectedError(er);
+		}
 	}
 
-
-	public findPrevious(): void {
-		this.notebookFindModel.findPrevious().then(p => {
+	public async findPrevious(): Promise<void> {
+		try {
+			const p = await this.notebookFindModel.findPrevious();
 			this.setSelection(p);
 			this._updateFinderMatchState();
 			this._setCurrentFindMatch(p);
-		}, er => { onUnexpectedError(er); });
+		} catch (er) {
+			onUnexpectedError(er);
+		}
 	}
 
 	private _updateFinderMatchState(): void {
@@ -426,7 +427,7 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 			this._findState.changeMatchInfo(0, 0, undefined);
 		}
 	}
-	
+
 	private _setCurrentFindMatch(match: NotebookRange): void {
 		if (match) {
 			this._notebookModel.updateActiveCell(match.cell);

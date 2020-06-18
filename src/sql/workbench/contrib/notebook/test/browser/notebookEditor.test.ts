@@ -5,20 +5,26 @@
 
 import * as assert from 'assert';
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
+import { ACTION_IDS } from 'sql/workbench/contrib/notebook/browser/find/notebookFindWidget';
 import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/untitledNotebookInput';
+import { NotebookFindNextAction, NotebookFindPreviousAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
 import { NBTestQueryManagementService } from 'sql/workbench/contrib/notebook/test/nbTestQueryManagementService';
-import { NotebookModelStub } from 'sql/workbench/contrib/notebook/test/stubs';
+import * as stubs from 'sql/workbench/contrib/notebook/test/stubs';
 import { TestNotebookEditor } from 'sql/workbench/contrib/notebook/test/testCommon';
-import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
+import { ICellModel, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookService, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookService } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
-import { Emitter } from 'vs/base/common/event';
+import * as DOM from 'vs/base/browser/dom';
+import { Emitter, Event } from 'vs/base/common/event';
 import { DisposableStore } from 'vs/base/common/lifecycle';
 import { Schemas } from 'vs/base/common/network';
 import { URI } from 'vs/base/common/uri';
 import { generateUuid } from 'vs/base/common/uuid';
+import { IOverlayWidget, IOverlayWidgetPosition } from 'vs/editor/browser/editorBrowser';
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfigurationService';
+import { INewFindReplaceState } from 'vs/editor/contrib/find/findState';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ContextViewService } from 'vs/platform/contextview/browser/contextViewService';
@@ -43,7 +49,18 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
+import TypeMoq = require('typemoq');
 
+class NotebookModelStub extends stubs.NotebookModelStub {
+	private _cells:Array<ICellModel> = [new CellModel(undefined, undefined)];
+	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
+	get cells(): ReadonlyArray<ICellModel> {
+		return this._cells;
+	}
+	public get contentChanged(): Event<NotebookContentChange> {
+		return this._contentChangedEmitter.event;
+	}
+}
 
 suite('Test class NotebookEditor', () => {
 
@@ -101,9 +118,8 @@ suite('Test class NotebookEditor', () => {
 		instantiationService.get(IEditorService),
 		instantiationService.get(IConfigurationService)
 	);
-	const testNotebookEditor = new TestNotebookEditor({ cellGuid: cellTextEditorGuid, editor: queryTextEditor });
+	const testNotebookEditor = new TestNotebookEditor({ cellGuid: cellTextEditorGuid, editor: queryTextEditor, model: new NotebookModelStub() });
 	testNotebookEditor.id = untitledNotebookInput.notebookUri.toString();
-	testNotebookEditor.model = new NotebookModelStub();
 	notebookService.addNotebookEditor(testNotebookEditor);
 
 	setup(async () => {
@@ -123,7 +139,6 @@ suite('Test class NotebookEditor', () => {
 
 	test('NotebookEditor: Verifies that create() calls createEditor() and sets the provided parent object as the \'_overlay\' field', () => {
 		assert.strictEqual(notebookEditor['_overlay'], undefined), `The overlay must be undefined for notebookEditor when create() has not been called on it`;
-		console.log(notebookEditor["_overlay"]);
 		let parentHtmlElement = document.createElement('div');
 		notebookEditor.create(parentHtmlElement);
 		assert.notStrictEqual(notebookEditor['_overlay'], undefined), `The overlay must be defined for notebookEditor once create() has been called on it`;
@@ -140,18 +155,13 @@ suite('Test class NotebookEditor', () => {
 				testTitle, untitledUri, untitledTextInput,
 				undefined, instantiationService, notebookService, extensionService
 			);
-			const testNotebookEditor = new TestNotebookEditor({ cellGuid: cellTextEditorGuid, editor: queryTextEditor });
+			const testNotebookEditor = new TestNotebookEditor({ cellGuid: cellTextEditorGuid, editor: queryTextEditor, model: notebookModel });
 			testNotebookEditor.id = untitledNotebookInput.notebookUri.toString();
-			testNotebookEditor.model = notebookModel;
 			notebookService.addNotebookEditor(testNotebookEditor);
-			testNotebookEditor.model = notebookModel;
 			notebookEditor.clearInput();
 			await notebookEditor.setInput(untitledNotebookInput, EditorOptions.create({ pinned: true }));
 			const result = await notebookEditor.getNotebookModel();
 			assert.strictEqual(result, notebookModel, `getNotebookModel() should return the model set in the INotebookEditor object`);
-			notebookService.removeNotebookEditor(testNotebookEditor);
-			console.log(`notebookEditor=`, notebookEditor);
-			notebookEditor.setInput(untitledNotebookInput, EditorOptions.create({ pinned: true }));
 		});
 	});
 
@@ -184,7 +194,6 @@ suite('Test class NotebookEditor', () => {
 		assert.strictEqual(currentPosition, selectedRange, 'notebookEditor.getPosition() should return the range that was selected');
 	});
 
-	// NotebookEditor: getCellEditor() tests.
 	['', undefined, null, 'unknown string', /*unknown guid*/generateUuid()].forEach(input => {
 		test(`NotebookEditor: Negative Test -> getCellEditor() returns undefined for invalid or unknown guid:'${input}'`, async () => {
 			await setupNotebookEditor(notebookEditor, untitledNotebookInput);
@@ -201,81 +210,201 @@ suite('Test class NotebookEditor', () => {
 
 	});
 
-	// test('NotebookEditor-focus', () => {
-	// 	notebookEditor.focus();
-	// });
+	test('NotebookEditor: Positive Test -> verifies that domNode passed in via addOverlayWidget() call gets attached to the root HtmlElement of notebookEditor', async () => {
+		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
+		const domNode: HTMLElement = document.createElement('div');
+		const widget: IOverlayWidget = {
+			getId(): string { return ''},
+			getDomNode(): HTMLElement { return domNode;},
+			getPosition(): IOverlayWidgetPosition | null { return null;}
+		}
+		notebookEditor.addOverlayWidget(widget);
+		const rootElement: HTMLElement = notebookEditor['_overlay'];
+		assert.ok(domNode.parentElement === rootElement, `parent of the passed in domNode must be the root element of notebookEditor:${notebookEditor}`);
+	});
 
-	// test('NotebookEditor-layout', () => {
-	// 	notebookEditor.layout(dimension1);
-	// });
-
-	// test('NotebookEditor-getConfiguration', () => {
-	// 	notebookEditor.getConfiguration();
-	// });
-
-	// test('NotebookEditor-updateDecorations', () => {
-	// 	notebookEditor.updateDecorations(newDecorationRange1, oldDecorationRange1);
-	// });
-
-	// test('NotebookEditor-changeDecorations', () => {
-	// 	const result = notebookEditor.changeDecorations(callback1);
-
-	// 	// Expect result
-	// 	expect(result).to.be.not.undefined;
-	// });
-
-	// test('NotebookEditor-deltaDecorations', () => {
-	// 	const result = notebookEditor.deltaDecorations(oldDecorations1, newDecorations1);
-
-	// 	// Expect result
-	// 	expect(result).to.be.not.undefined;
-	// });
-
-	// test('NotebookEditor-layoutOverlayWidget', () => {
-	// 	notebookEditor.layoutOverlayWidget(widget1);
-	// });
-
-	// test('NotebookEditor-addOverlayWidget', () => {
-	// 	notebookEditor.addOverlayWidget(widget2);
-	// });
-
-	// test('NotebookEditor-getAction', () => {
-	// 	const result = notebookEditor.getAction(id1);
-
-	// 	// Expect result
-	// 	expect(result).to.be.not.undefined;
-	// });
-
-	// test('NotebookEditor-_onFindStateChange', async () => {
-	// 	await notebookEditor._onFindStateChange(e1);
-	// });
-
-	// test('NotebookEditor-toggleSearch', () => {
-	// 	notebookEditor.toggleSearch();
-	// });
-
-	// test('NotebookEditor-findNext', () => {
-	// 	notebookEditor.findNext();
-	// });
-
-	// test('NotebookEditor-findPrevious', () => {
-	// 	notebookEditor.findPrevious();
-	// });
+	test('NotebookEditor: Noop methods do not throw', async () => {
+		assert.doesNotThrow(() => {
+			notebookEditor.focus();
+			notebookEditor.layoutOverlayWidget(undefined);
+			assert.strictEqual(notebookEditor.deltaDecorations(undefined, undefined), undefined, 'deltaDecorations is not implemented and returns undefined');
+		});
+	});
 
 
-	// test('NotebookEditor-onDidChangeConfiguration', () => {
-	// 	const onDidChangeConfiguration1 = undefined;
+	test('NotebookEditor: Tests that getConfiguration returns the information set by layout() call', async () => {
+		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
+		const dimension: DOM.Dimension = new DOM.Dimension(Math.random(), Math.random());
+		notebookEditor.layout(dimension);
+		const config = notebookEditor.getConfiguration();
+		assert.ok(config.layoutInfo.width === dimension.width && config.layoutInfo.height === dimension.height, `width and height returned by getConfiguration() must be same as the dimension set by layout() call`);
+	});
 
-	// 	// Property call
-	// 	notebookEditor.onDidChangeConfiguration = onDidChangeConfiguration1;
-	// 	const result = notebookEditor.onDidChangeConfiguration;
+	test('NotebookEditor: Tests setInput call with various states of input on a notebookEditor object', async () => {
+		createEditor(notebookEditor);
+		const editorOptions = EditorOptions.create({ pinned: true });
+		for (const input of [
+			untitledNotebookInput /* set to a known input */,
+			untitledNotebookInput /* tries to set the same input that was previously set */
+		]) {
+			await notebookEditor.setInput(input, editorOptions);
+			assert.strictEqual(notebookEditor.input, input, `notebookEditor.input should be the one that we set`);
+		}
+	});
 
-	// 	// Expect result
-	// 	expect(result).equals(onDidChangeConfiguration1);
-	// });
+	test('NotebookEditor: Tests setInput call with various states of findState.isRevealed on a notebookEditor object', async () => {
+		createEditor(notebookEditor);
+		const editorOptions = EditorOptions.create({ pinned: true });
+		for (const isRevealed of [true, false]) {
+			notebookEditor['_findState']['_isRevealed'] = isRevealed;
+			notebookEditor.clearInput();
+			await notebookEditor.setInput(untitledNotebookInput, editorOptions);
+			assert.strictEqual(notebookEditor.input, untitledNotebookInput, `notebookEditor.input should be the one that we set`);
+		}
+	});
 
+	test('NotebookEditor: Verifies that call updateDecorations calls deltaDecorations() on the underlying INotebookEditor object with arguments passed to it', async () => {
+		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
+
+		const newRange = {} as NotebookRange;
+		const oldRange = {} as NotebookRange;
+		const iNotebookEditorMock = TypeMoq.Mock.ofType(TestNotebookEditor);
+		iNotebookEditorMock.object.id = untitledNotebookInput.notebookUri.toString();
+		iNotebookEditorMock
+			.setup(x => x.deltaDecorations(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
+			.callback((newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange) => {
+				//Verify the parameters passed into the INotebookEditor.deltaDecorations() call
+				assert.strictEqual(newDecorationRange, newRange, 'newDecorationsRange passed to INotebookEditor.deltaDecorations() must be the one that was provided to NotebookEditor.updateDecorations() call');
+				assert.strictEqual(oldDecorationRange, oldRange, 'oldDecorationsRange passed to INotebookEditor.deltaDecorations() must be the one that was provided to NotebookEditor.updateDecorations() call');
+			});
+		notebookService.addNotebookEditor(iNotebookEditorMock.object);
+		notebookEditor.updateDecorations(newRange, oldRange);
+		// Ensure that INotebookEditor.deltaDecorations() was called exactly once.
+		iNotebookEditorMock.verify(x => x.deltaDecorations(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.exactly(1));
+	});
+
+	test('NotebookEditor: Negative Test -> verifies that changeDecorations call returns null when no input is set on the notebookEditor object', async () => {
+		const returnObject = {};
+		let changeDecorationsCalled = false;
+		const result = notebookEditor.changeDecorations(() => {
+			changeDecorationsCalled = true;
+			return returnObject;
+		});
+		assert.notEqual(changeDecorationsCalled, true, `changeDecorations callback should not have been called` );
+		assert.notStrictEqual(result, returnObject, 'object returned by the callback given to changeDecorations() call must not be returned by it');
+		assert.strictEqual(result, null, 'return value of changeDecorations() call must be null when no input is set on notebookEditor object');
+	});
+
+	test('NotebookEditor: Positive Test -> verifies that changeDecorations calls the callback provided to it and returns the object returned by that callback', async () => {
+		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
+		const returnObject = {};
+		let changeDecorationsCalled = false;
+		const result = notebookEditor.changeDecorations(() => {
+			changeDecorationsCalled = true;
+			return returnObject;
+		});
+		assert.ok(changeDecorationsCalled, `changeDecorations callback should have been called` );
+		assert.strictEqual(result, returnObject, 'object returned by the callback given to changeDecorations() call must be returned by it');
+	});
+
+
+	test('NotebookEditor: Verifies getAction called for findNext and findPrevious returns objects of correct type', () => {
+		assert.ok(notebookEditor.getAction(ACTION_IDS.FIND_NEXT) instanceof NotebookFindNextAction, `getAction called for '${ACTION_IDS.FIND_NEXT}' should return an instance of ${NotebookFindNextAction}`);
+		assert.ok(notebookEditor.getAction(ACTION_IDS.FIND_PREVIOUS) instanceof NotebookFindPreviousAction, `getAction called for '${ACTION_IDS.FIND_PREVIOUS}' should return an instance of ${NotebookFindPreviousAction}`);
+	});
+
+	test('NotebookEditor: Verifies toggleSearch changes isRevealed state with and without a notebookModel', async () => {
+		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
+		const notebookModel = await notebookEditor.getNotebookModel();
+		for (const model of [notebookModel, undefined]) {
+			notebookEditor['_notebookModel'] = model;
+			for (let i:number = 1; i <= 2; i++) { //Do it twice so that two toggles return back to original state verifying both transitions
+				let isRevealed = notebookEditor['_findState']['_isRevealed'];
+				notebookEditor.toggleSearch();
+				assert.strictEqual(notebookEditor['_findState']['_isRevealed'], !isRevealed && !!model, 'new isRevealed state should be false if model is undefined and should be opposite of previous state otherwise');
+			}
+		}
+	});
+
+	[ACTION_IDS.FIND_NEXT, ACTION_IDS.FIND_PREVIOUS].forEach(action => {
+		test(`NotebookEditor: Tests ${action} returns the range that is as expected given the findArray`, async () => {
+			await setupNotebookEditor(notebookEditor, untitledNotebookInput);
+			notebookEditor.notebookFindModel.find(undefined); //clear out any existing finds.
+			action === ACTION_IDS.FIND_NEXT ? await notebookEditor.findNext() : await notebookEditor.findPrevious();
+			let result = notebookEditor.getPosition();
+			assert.strictEqual(result, undefined, 'the notebook cell range returned by find operation must be undefined with no pending finds');
+			const notebookModel = await notebookEditor.getNotebookModel();
+			for (const model of [notebookModel, undefined]) {
+				for (const range of [{} as NotebookRange, new NotebookRange(<ICellModel>{}, 0, 0, 0, 0)]) {
+					notebookEditor.notebookFindModel.find(undefined); //clear out any existing finds.
+					notebookEditor.notebookFindModel.findArray.push(range);
+					notebookEditor['_notebookModel'] = model;
+					action === ACTION_IDS.FIND_NEXT ? await notebookEditor.findNext() : await notebookEditor.findPrevious();
+					result = notebookEditor.getPosition();
+					assert.strictEqual(result, range, 'the notebook cell range returned by find operation must be the one that we set')
+				}
+			}
+		});
+	});
+
+	test(`NotebookEditorDebug: Verifies visibility and decorations are set correctly when FindStateChange callbacks happen`, async () => {
+		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
+		notebookEditor.notebookFindModel.find(undefined); //clear out any existing finds.
+		await notebookEditor.findNext();
+		let currentPosition = new NotebookRange(<ICellModel>{}, 0, 0, 0, 0);
+		notebookEditor.setSelection(currentPosition);
+		const findState = notebookEditor['_findState'];
+		const finder = notebookEditor['_finder'];
+		const newState: INewFindReplaceState = {};
+		const findDecorations = notebookEditor.notebookInput.notebookFindModel.findDecorations;
+		const findDecorationsMock = TypeMoq.Mock.ofInstance(findDecorations);
+		findDecorationsMock.callBase = true; //forward to base object by default.
+		let clearDecorationsCalled = false;
+		findDecorationsMock.setup(x => x.clearDecorations()).callback(() => {
+			findDecorations.clearDecorations();
+			clearDecorationsCalled = true;
+		});
+		notebookEditor.notebookInput.notebookFindModel['_findDecorations'] = findDecorationsMock.object;
+		for (const newStateIsRevealed of [true, false]) {
+			newState.isRevealed = newStateIsRevealed;
+			clearDecorationsCalled = false;
+			findState.change(newState, false);
+			if (newStateIsRevealed) {
+				assert.strictEqual(finder.getDomNode().style.visibility, 'visible', 'finder node should be visible when newState.isRevealed');
+				assert.ok(!clearDecorationsCalled, 'decorations are not cleared when finder isRevealed');
+				assert.strictEqual(findDecorations.getStartPosition(), currentPosition, 'when finder isRevealed, decorations startPosition is set to currentPosition');
+			} else {
+				assert.strictEqual(finder.getDomNode().style.visibility, 'hidden', 'finder node should be hidden when newState.isNotRevealed');
+				assert.ok(clearDecorationsCalled, 'decorations are cleared when finder isNotRevealed');
+			}
+		}
+	});
 });
 
+/*
+	FindReplaceState.change
+	FindReplaceState.changeMatchInfo
+
+	e: INewFindReplaceState {
+		searchString?: string;
+		matchCase?: boolean;
+		isRevealed?: boolean; => this._finder.getDomNode().style.visibility = 'hidden' if not revealed
+		searchScope?: Range | null;
+		wholeWord?: boolean;
+	}
+	notebookModel: undefined/defined,
+	notebookEditor._findState.isRevealed: true/false,  => this._finder.getDomNode().style.visibility = 'visible' if revealed
+	this._curreentMatch: defined|undefined
+	this.notebookFindModel.findMatches.length: 0,1
+	_findState.searchString: undefined, '', 'noMatch'
+
+	for e.searchScope = true,
+	_findState:
+		searchString: undefined, '', 'noMatch'
+		matchCase: T, F
+		wholeWord: T, F
+
+*/
 async function setupNotebookEditor(notebookEditor: NotebookEditor, untitledNotebookInput: UntitledNotebookInput): Promise<void> {
 	createEditor(notebookEditor);
 	await setInputDocument(notebookEditor, untitledNotebookInput);
@@ -291,3 +420,4 @@ function createEditor(notebookEditor: NotebookEditor) {
 	let parentHtmlElement = document.createElement('div');
 	notebookEditor.create(parentHtmlElement); // adds notebookEditor to new htmlElement as parent
 }
+
