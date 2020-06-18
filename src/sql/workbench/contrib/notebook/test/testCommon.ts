@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
- import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
+import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import { CellEditorProviderStub, NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import * as dom from 'vs/base/browser/dom';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
@@ -24,7 +24,7 @@ export class TestNotebookEditor extends NotebookEditorStub {
 	get model(): INotebookModel | undefined {
 		return this._model;
 	}
-	
+
 	// Normally one needs to provide either the editor or the instantiationService as the constructor parameter
 	constructor({ cellGuid, instantiationService, editor, model }: { cellGuid?: string; instantiationService?: IInstantiationService; editor?: QueryTextEditor; model?: INotebookModel } = {}) {
 		super();

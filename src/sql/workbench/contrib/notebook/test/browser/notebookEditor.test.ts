@@ -52,7 +52,7 @@ import { workbenchInstantiationService } from 'vs/workbench/test/browser/workben
 import TypeMoq = require('typemoq');
 
 class NotebookModelStub extends stubs.NotebookModelStub {
-	private _cells:Array<ICellModel> = [new CellModel(undefined, undefined)];
+	private _cells: Array<ICellModel> = [new CellModel(undefined, undefined)];
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
 	get cells(): ReadonlyArray<ICellModel> {
 		return this._cells;
@@ -214,9 +214,9 @@ suite('Test class NotebookEditor', () => {
 		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 		const domNode: HTMLElement = document.createElement('div');
 		const widget: IOverlayWidget = {
-			getId(): string { return ''},
-			getDomNode(): HTMLElement { return domNode;},
-			getPosition(): IOverlayWidgetPosition | null { return null;}
+			getId(): string { return '' },
+			getDomNode(): HTMLElement { return domNode; },
+			getPosition(): IOverlayWidgetPosition | null { return null; }
 		}
 		notebookEditor.addOverlayWidget(widget);
 		const rootElement: HTMLElement = notebookEditor['_overlay'];
@@ -290,7 +290,7 @@ suite('Test class NotebookEditor', () => {
 			changeDecorationsCalled = true;
 			return returnObject;
 		});
-		assert.notEqual(changeDecorationsCalled, true, `changeDecorations callback should not have been called` );
+		assert.notEqual(changeDecorationsCalled, true, `changeDecorations callback should not have been called`);
 		assert.notStrictEqual(result, returnObject, 'object returned by the callback given to changeDecorations() call must not be returned by it');
 		assert.strictEqual(result, null, 'return value of changeDecorations() call must be null when no input is set on notebookEditor object');
 	});
@@ -303,7 +303,7 @@ suite('Test class NotebookEditor', () => {
 			changeDecorationsCalled = true;
 			return returnObject;
 		});
-		assert.ok(changeDecorationsCalled, `changeDecorations callback should have been called` );
+		assert.ok(changeDecorationsCalled, `changeDecorations callback should have been called`);
 		assert.strictEqual(result, returnObject, 'object returned by the callback given to changeDecorations() call must be returned by it');
 	});
 
@@ -318,7 +318,7 @@ suite('Test class NotebookEditor', () => {
 		const notebookModel = await notebookEditor.getNotebookModel();
 		for (const model of [notebookModel, undefined]) {
 			notebookEditor['_notebookModel'] = model;
-			for (let i:number = 1; i <= 2; i++) { //Do it twice so that two toggles return back to original state verifying both transitions
+			for (let i: number = 1; i <= 2; i++) { //Do it twice so that two toggles return back to original state verifying both transitions
 				let isRevealed = notebookEditor['_findState']['_isRevealed'];
 				notebookEditor.toggleSearch();
 				assert.strictEqual(notebookEditor['_findState']['_isRevealed'], !isRevealed && !!model, 'new isRevealed state should be false if model is undefined and should be opposite of previous state otherwise');
