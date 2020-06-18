@@ -6,9 +6,9 @@
 import * as azdata from 'azdata';
 import * as loc from '../../../localizedConstants';
 import { DashboardPage } from '../../components/dashboardPage';
-import { IconPathHelper, cssStyles } from '../../../constants';
+import { IconPathHelper, cssStyles, ResourceType } from '../../../constants';
 import { ControllerModel, Registration } from '../../../models/controllerModel';
-import { ResourceType, getAzurecoreApi } from '../../../common/utils';
+import { getAzurecoreApi } from '../../../common/utils';
 import { MiaaModel, DatabaseModel } from '../../../models/miaaModel';
 import { HybridSqlNsNameGetResponse } from '../../../controller/generated/v1/model/hybridSqlNsNameGetResponse';
 import { EndpointModel } from '../../../controller/generated/v1/api';
