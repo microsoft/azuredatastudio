@@ -5,5 +5,9 @@
 	"arc.ignoreSslVerification.desc" : "Ignore SSL verification errors against the controller endpoint if true",
 	"arc.manageMiaa": "Manage MIAA",
 	"arc.managePostgres": "Manage Postgres",
-	"arc.manageArcController": "Manage Arc Controller"
+	"arc.manageArcController": "Manage Arc Controller",
+	"arc.view.title" : "Azure Arc Controllers",
+	"command.addController.title": "Connect to Controller",
+	"command.removeController.title": "Remove Controller",
+	"arc.openDashboard": "Manage"
 }

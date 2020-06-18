@@ -11,7 +11,7 @@ import { DuskyObjectModelsDatabase, DuskyObjectModelsDatabaseServiceArcPayload, 
 import { DashboardPage } from '../../components/dashboardPage';
 import { ControllerModel } from '../../../models/controllerModel';
 import { PostgresModel, PodRole } from '../../../models/postgresModel';
-import { promptForResourceDeletion, getErrorText } from '../../../common/utils';
+import { promptForResourceDeletion } from '../../../common/utils';
 
 export class PostgresOverviewPage extends DashboardPage {
 	private propertiesLoading?: azdata.LoadingComponent;
@@ -226,7 +226,7 @@ export class PostgresOverviewPage extends DashboardPage {
 					vscode.window.showInformationMessage(loc.resourceDeleted(this._postgresModel.fullName));
 				}
 			} catch (error) {
-				vscode.window.showErrorMessage(loc.resourceDeletionFailed(this._postgresModel.fullName, getErrorText(error)));
+				vscode.window.showErrorMessage(loc.resourceDeletionFailed(this._postgresModel.fullName, error));
 			} finally {
 				deleteButton.enabled = true;
 			}
