@@ -85,7 +85,7 @@ export class PostgresConnectionStringsPage extends DashboardPage {
 	}
 
 	private refresh() {
-		const endpoint: { ip?: string, port?: number } = this._postgresModel.endpoint();
+		const endpoint: { ip?: string, port?: number } = this._postgresModel.endpoint;
 
 		this.keyValueContainer?.refresh([
 			new InputKeyValue('ADO.NET', `Server=${endpoint.ip};Database=postgres;Port=${endpoint.port};User Id=postgres;Password={your_password_here};Ssl Mode=Require;`),

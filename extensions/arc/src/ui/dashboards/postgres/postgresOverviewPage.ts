@@ -6,12 +6,12 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as loc from '../../../localizedConstants';
-import { IconPathHelper, cssStyles } from '../../../constants';
+import { IconPathHelper, cssStyles, ResourceType } from '../../../constants';
 import { DuskyObjectModelsDatabase, DuskyObjectModelsDatabaseServiceArcPayload, V1Pod } from '../../../controller/generated/dusky/api';
 import { DashboardPage } from '../../components/dashboardPage';
 import { ControllerModel } from '../../../models/controllerModel';
 import { PostgresModel, PodRole } from '../../../models/postgresModel';
-import { ResourceType } from '../../../common/utils';
+import { promptForResourceDeletion, getErrorText } from '../../../common/utils';
 
 export class PostgresOverviewPage extends DashboardPage {
 	private propertiesLoading?: azdata.LoadingComponent;
@@ -204,9 +204,9 @@ export class PostgresOverviewPage extends DashboardPage {
 					s.arc = s.arc ?? new DuskyObjectModelsDatabaseServiceArcPayload();
 					s.arc.servicePassword = password;
 				});
-				vscode.window.showInformationMessage(loc.passwordReset(this._postgresModel.fullName()));
+				vscode.window.showInformationMessage(loc.passwordReset(this._postgresModel.fullName));
 			} catch (error) {
-				vscode.window.showErrorMessage(loc.passwordResetFailed(this._postgresModel.fullName(), error));
+				vscode.window.showErrorMessage(loc.passwordResetFailed(this._postgresModel.fullName, error));
 			} finally {
 				resetPasswordButton.enabled = true;
 			}
@@ -221,14 +221,12 @@ export class PostgresOverviewPage extends DashboardPage {
 		deleteButton.onDidClick(async () => {
 			deleteButton.enabled = false;
 			try {
-				const response = await vscode.window.showQuickPick([loc.yes, loc.no], {
-					placeHolder: loc.deleteServicePrompt(this._postgresModel.fullName())
-				});
-				if (response !== loc.yes) { return; }
-				await this._postgresModel.delete();
-				vscode.window.showInformationMessage(loc.serviceDeleted(this._postgresModel.fullName()));
+				if (await promptForResourceDeletion(this._postgresModel.namespace, this._postgresModel.name)) {
+					await this._postgresModel.delete();
+					vscode.window.showInformationMessage(loc.resourceDeleted(this._postgresModel.fullName));
+				}
 			} catch (error) {
-				vscode.window.showErrorMessage(loc.serviceDeletionFailed(this._postgresModel.fullName(), error));
+				vscode.window.showErrorMessage(loc.resourceDeletionFailed(this._postgresModel.fullName, getErrorText(error)));
 			} finally {
 				deleteButton.enabled = true;
 			}
@@ -267,9 +265,9 @@ export class PostgresOverviewPage extends DashboardPage {
 		}).component();
 
 		openInAzurePortalButton.onDidClick(async () => {
-			const r = this._controllerModel.getRegistration(ResourceType.postgresInstances, this._postgresModel.namespace(), this._postgresModel.name());
+			const r = this._controllerModel.getRegistration(ResourceType.postgresInstances, this._postgresModel.namespace, this._postgresModel.name);
 			if (!r) {
-				vscode.window.showErrorMessage(loc.couldNotFindAzureResource(this._postgresModel.fullName()));
+				vscode.window.showErrorMessage(loc.couldNotFindAzureResource(this._postgresModel.fullName));
 			} else {
 				vscode.env.openExternal(vscode.Uri.parse(
 					`https://portal.azure.com/#resource/subscriptions/${r.subscriptionId}/resourceGroups/${r.resourceGroupName}/providers/Microsoft.AzureData/${ResourceType.postgresInstances}/${r.instanceName}`));
@@ -286,30 +284,30 @@ export class PostgresOverviewPage extends DashboardPage {
 	}
 
 	private refreshProperties() {
-		const registration = this._controllerModel.getRegistration(ResourceType.postgresInstances, this._postgresModel.namespace(), this._postgresModel.name());
-		const endpoint: { ip?: string, port?: number } = this._postgresModel.endpoint();
+		const registration = this._controllerModel.getRegistration(ResourceType.postgresInstances, this._postgresModel.namespace, this._postgresModel.name);
+		const endpoint: { ip?: string, port?: number } = this._postgresModel.endpoint;
 
 		this.properties!.propertyItems = [
-			{ displayName: loc.name, value: this._postgresModel.name() },
-			{ displayName: loc.coordinatorEndpoint, value: `postgresql://postgres:${this._postgresModel.password()}@${endpoint.ip}:${endpoint.port}` },
-			{ displayName: loc.status, value: this._postgresModel.service()?.status?.state ?? '' },
+			{ displayName: loc.name, value: this._postgresModel.name },
+			{ displayName: loc.coordinatorEndpoint, value: `postgresql://postgres:${this._postgresModel.password}@${endpoint.ip}:${endpoint.port}` },
+			{ displayName: loc.status, value: this._postgresModel.service?.status?.state ?? '' },
 			{ displayName: loc.postgresAdminUsername, value: 'postgres' },
-			{ displayName: loc.dataController, value: this._controllerModel?.namespace() ?? '' },
-			{ displayName: loc.nodeConfiguration, value: this._postgresModel.configuration() },
+			{ displayName: loc.dataController, value: this._controllerModel?.namespace ?? '' },
+			{ displayName: loc.nodeConfiguration, value: this._postgresModel.configuration },
 			{ displayName: loc.subscriptionId, value: registration?.subscriptionId ?? '' },
-			{ displayName: loc.postgresVersion, value: this._postgresModel.service()?.spec?.engine?.version?.toString() ?? '' }
+			{ displayName: loc.postgresVersion, value: this._postgresModel.service?.spec?.engine?.version?.toString() ?? '' }
 		];
 
 		this.propertiesLoading!.loading = false;
 	}
 
 	private refreshEndpoints() {
-		const kibanaQuery = `kubernetes_namespace:"${this._postgresModel.namespace()}" and cluster_name:"${this._postgresModel.name()}"`;
-		const kibanaUrl = `${this._controllerModel.endpoint('logsui')?.endpoint}/app/kibana#/discover?_a=(query:(language:kuery,query:'${kibanaQuery}'))`;
+		const kibanaQuery = `kubernetes_namespace:"${this._postgresModel.namespace}" and cluster_name:"${this._postgresModel.name}"`;
+		const kibanaUrl = `${this._controllerModel.getEndpoint('logsui')?.endpoint}/app/kibana#/discover?_a=(query:(language:kuery,query:'${kibanaQuery}'))`;
 		this.kibanaLink!.label = kibanaUrl;
 		this.kibanaLink!.url = kibanaUrl;
 
-		const grafanaUrl = `${this._controllerModel.endpoint('metricsui')?.endpoint}/d/postgres-metrics?var-Namespace=${this._postgresModel.namespace()}&var-Name=${this._postgresModel.name()}`;
+		const grafanaUrl = `${this._controllerModel.getEndpoint('metricsui')?.endpoint}/d/postgres-metrics?var-Namespace=${this._postgresModel.namespace}&var-Name=${this._postgresModel.name}`;
 		this.grafanaLink!.label = grafanaUrl;
 		this.grafanaLink!.url = grafanaUrl;
 
@@ -318,9 +316,9 @@ export class PostgresOverviewPage extends DashboardPage {
 	}
 
 	private refreshNodes() {
-		const endpoint: { ip?: string, port?: number } = this._postgresModel.endpoint();
+		const endpoint: { ip?: string, port?: number } = this._postgresModel.endpoint;
 
-		this.nodesTable!.data = this._postgresModel.pods()?.map((pod: V1Pod) => {
+		this.nodesTable!.data = this._postgresModel.pods?.map((pod: V1Pod) => {
 			const name = pod.metadata?.name;
 			const role: PodRole | undefined = PostgresModel.getPodRole(pod);
 			const service = pod.metadata?.annotations?.['arcdata.microsoft.com/serviceHost'];

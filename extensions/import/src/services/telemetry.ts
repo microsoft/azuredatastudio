@@ -6,10 +6,8 @@
 import { ErrorAction, CloseAction } from 'vscode-languageclient';
 import TelemetryReporter from 'vscode-extension-telemetry';
 import * as vscode from 'vscode';
-import * as nls from 'vscode-nls';
-const localize = nls.loadMessageBundle();
 
-import * as constants from '../constants';
+import * as constants from '../common/constants';
 import { IMessage, ITelemetryEventProperties, ITelemetryEventMeasures } from './contracts';
 
 
@@ -33,12 +31,11 @@ export class LanguageClientErrorHandler {
 	showOnErrorPrompt(): void {
 		// TODO add telemetry
 		// Telemetry.sendTelemetryEvent('SqlToolsServiceCrash');
-		let crashButtonText = localize('import.serviceCrashButton', "Give Feedback");
 		vscode.window.showErrorMessage(
-			localize('serviceCrashMessage', "service component could not start"),
-			crashButtonText
+			constants.serviceCrashMessageText,
+			constants.crashButtonText
 		).then(action => {
-			if (action && action === crashButtonText) {
+			if (action && action === constants.crashButtonText) {
 				vscode.env.openExternal(vscode.Uri.parse(constants.serviceCrashLink));
 			}
 		});
@@ -71,21 +68,7 @@ export class LanguageClientErrorHandler {
 	}
 }
 
-/**
- * Filters error paths to only include source files. Exported to support testing
- */
-function FilterErrorPath(line: string): string | undefined {
-	if (line) {
-		let values: string[] = line.split('/out/');
-		if (values.length <= 1) {
-			// Didn't match expected format
-			return line;
-		} else {
-			return values[1];
-		}
-	}
-	return undefined;
-}
+
 
 export class Telemetry {
 	private static reporter: TelemetryReporter;
@@ -111,25 +94,6 @@ export class Telemetry {
 			let packageInfo = vscode.extensions.getExtension('Microsoft.import').packageJSON;
 			this.reporter = new TelemetryReporter(packageInfo.name, packageInfo.version, packageInfo.aiKey);
 		}
-	}
-
-	/**
-	 * Send a telemetry event for an exception
-	 */
-	public static sendTelemetryEventForException(
-		err: any, methodName: string): void {
-		let stackArray: string[];
-		let firstLine: string = '';
-		if (err !== undefined && err.stack !== undefined) {
-			stackArray = err.stack.split('\n');
-			if (stackArray !== undefined && stackArray.length >= 2) {
-				firstLine = stackArray[1]; // The fist line is the error message and we don't want to send that telemetry event
-				firstLine = FilterErrorPath(firstLine);
-			}
-		}
-
-		// Only adding the method name and the fist line of the stack trace. We don't add the error message because it might have PII
-		this.sendTelemetryEvent('Exception', { methodName: methodName, errorLine: firstLine });
 	}
 
 	/**

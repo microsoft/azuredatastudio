@@ -5,9 +5,10 @@
 
 import * as should from 'should';
 import 'mocha';
-import { resourceTypeToDisplayName, ResourceType, parseEndpoint } from '../../common/utils';
+import { resourceTypeToDisplayName, parseEndpoint } from '../../common/utils';
 
 import * as loc from '../../localizedConstants';
+import { ResourceType } from '../../constants';
 
 describe('resourceTypeToDisplayName Method Tests', () => {
 	it('Display Name should be correct for valid ResourceType', function (): void {
