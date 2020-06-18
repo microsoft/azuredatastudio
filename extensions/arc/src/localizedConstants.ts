@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vscode-nls';
+import { getErrorMessage } from './common/utils';
 const localize = nls.loadMessageBundle();
 
 export const arcControllerDashboard = localize('arc.controllerDashboard', "Azure Arc Controller Dashboard (Preview)");
@@ -64,6 +65,16 @@ export const clickTheNewSupportRequestButton = localize('arc.clickTheNewSupportR
 export const running = localize('arc.running', "Running");
 export const connected = localize('arc.connected', "Connected");
 export const disconnected = localize('arc.disconnected', "Disconnected");
+export const loading = localize('arc.loading', "Loading...");
+
+// Database States - see https://docs.microsoft.com/sql/relational-databases/databases/database-states
+export const online = localize('arc.online', "Online");
+export const offline = localize('arc.offline', "Offline");
+export const restoring = localize('arc.restoring', "Restoring");
+export const recovering = localize('arc.recovering', "Recovering");
+export const recoveryPending = localize('arc.recoveringPending', "Recovery Pending");
+export const suspect = localize('arc.suspect', "Suspect");
+export const emergecy = localize('arc.emergecy', "Emergecy");
 
 // Postgres constants
 export const coordinatorEndpoint = localize('arc.coordinatorEndpoint', "Coordinator endpoint");
@@ -87,15 +98,16 @@ export const storagePerNode = localize('arc.storagePerNode', "storage per node")
 export const arcResources = localize('arc.arcResources', "Azure Arc Resources");
 
 export function databaseCreated(name: string): string { return localize('arc.databaseCreated', "Database {0} created", name); }
-export function databaseCreationFailed(name: string, error: any): string { return localize('arc.databaseCreationFailed', "Failed to create database {0}. {1}", name, (error instanceof Error ? error.message : error)); }
+export function databaseCreationFailed(name: string, error: any): string { return localize('arc.databaseCreationFailed', "Failed to create database {0}. {1}", name, getErrorMessage(error)); }
 export function passwordReset(name: string): string { return localize('arc.passwordReset', "Password reset for service {0}", name); }
-export function passwordResetFailed(name: string, error: any): string { return localize('arc.passwordResetFailed', "Failed to reset password for service {0}. {1}", name, (error instanceof Error ? error.message : error)); }
+export function passwordResetFailed(name: string, error: any): string { return localize('arc.passwordResetFailed', "Failed to reset password for service {0}. {1}", name, getErrorMessage(error)); }
 export function resourceDeleted(name: string): string { return localize('arc.resourceDeleted', "Resource '{0}' deleted", name); }
-export function resourceDeletionFailed(name: string, error: any): string { return localize('arc.resourceDeletionFailed', "Failed to delete resource {0}. {1}", name, (error instanceof Error ? error.message : error)); }
+export function resourceDeletionFailed(name: string, error: any): string { return localize('arc.resourceDeletionFailed', "Failed to delete resource {0}. {1}", name, getErrorMessage(error)); }
 export function couldNotFindAzureResource(name: string): string { return localize('arc.couldNotFindAzureResource', "Could not find Azure resource for {0}", name); }
 export function copiedToClipboard(name: string): string { return localize('arc.copiedToClipboard', "{0} copied to clipboard", name); }
-export function refreshFailed(error: any): string { return localize('arc.refreshFailed', "Refresh failed. {0}", (error instanceof Error ? error.message : error)); }
-export function failedToManagePostgres(name: string, error: any): string { return localize('arc.failedToManagePostgres', "Failed to manage Postgres {0}. {1}", name, (error instanceof Error ? error.message : error)); }
+export function refreshFailed(error: any): string { return localize('arc.refreshFailed', "Refresh failed. {0}", getErrorMessage(error)); }
+export function failedToManagePostgres(name: string, error: any): string { return localize('arc.failedToManagePostgres', "Failed to manage Postgres {0}. {1}", name, getErrorMessage(error)); }
+export function openDashboardFailed(error: any): string { return localize('arc.openDashboardFailed', "Error opening dashboard. {0}", getErrorMessage(error)); }
 export function clickTheTroubleshootButton(resourceType: string): string { return localize('arc.clickTheTroubleshootButton', "Click the troubleshoot button to open the Azure Arc {0} troubleshooting notebook.", resourceType); }
 export function numVCores(vCores: string): string {
 	const numCores = +vCores;

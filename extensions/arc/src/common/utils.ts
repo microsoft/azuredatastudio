@@ -46,16 +46,26 @@ export async function getAzurecoreApi(): Promise<azurecore.IExtension> {
 	return azurecoreApi;
 }
 
-export function getResourceTypeIcon(resourceType: string): IconPath | undefined {
+/**
+ * Gets the IconPath for the specified resource type, or undefined if the type is unknown.
+ * @param resourceType The resource type
+ */
+export function getResourceTypeIcon(resourceType: string | undefined): IconPath | undefined {
 	switch (resourceType) {
 		case ResourceType.sqlManagedInstances:
 			return IconPathHelper.miaa;
 		case ResourceType.postgresInstances:
 			return IconPathHelper.postgres;
+		case ResourceType.dataControllers:
+			return IconPathHelper.controller;
 	}
 	return undefined;
 }
 
+/**
+ * Returns the text to display for known connection modes
+ * @param connectionMode The string repsenting the connection mode
+ */
 export function getConnectionModeDisplayText(connectionMode: string | undefined): string {
 	connectionMode = connectionMode ?? '';
 	switch (connectionMode) {
@@ -65,6 +75,30 @@ export function getConnectionModeDisplayText(connectionMode: string | undefined)
 			return loc.disconnected;
 	}
 	return connectionMode;
+}
+
+/**
+ * Gets the display text for the database state returned from querying the database.
+ * @param state The state value returned from the database
+ */
+export function getDatabaseStateDisplayText(state: string): string {
+	switch (state.toUpperCase()) {
+		case 'ONLINE':
+			return loc.online;
+		case 'OFFLINE':
+			return loc.offline;
+		case 'RESTORING':
+			return loc.restoring;
+		case 'RECOVERING':
+			return loc.recovering;
+		case 'RECOVERY PENDING	':
+			return loc.recoveryPending;
+		case 'SUSPECT':
+			return loc.suspect;
+		case 'EMERGENCY':
+			return loc.emergecy;
+	}
+	return state;
 }
 
 /**
@@ -79,12 +113,10 @@ export async function promptForResourceDeletion(namespace: string, name: string)
 	inputBox.placeholder = name;
 	return new Promise(resolve => {
 		let valueAccepted = false;
-		inputBox.show();
 		inputBox.onDidAccept(() => {
 			if (inputBox.value === name) {
 				valueAccepted = true;
 				inputBox.hide();
-				inputBox.dispose();
 				resolve(true);
 			} else {
 				inputBox.validationMessage = loc.invalidResourceDeletionName(inputBox.value);
@@ -94,10 +126,12 @@ export async function promptForResourceDeletion(namespace: string, name: string)
 			if (!valueAccepted) {
 				resolve(false);
 			}
+			inputBox.dispose();
 		});
 		inputBox.onDidChangeValue(() => {
 			inputBox.validationMessage = '';
 		});
+		inputBox.show();
 	});
 }
 
@@ -105,13 +139,35 @@ export async function promptForResourceDeletion(namespace: string, name: string)
  * Gets the message to display for a given error object that may be a variety of types.
  * @param error The error object
  */
-export function getErrorText(error: any): string {
+export function getErrorMessage(error: any): string {
 	if (error?.body?.reason) {
-		// For HTTP Errors pull out the reason message since that's usually the most helpful
+		// For HTTP Errors with a body pull out the reason message since that's usually the most helpful
 		return error.body.reason;
-	} else if (error instanceof Error) {
+	} else if (error.message) {
+		if (error.response?.statusMessage) {
+			// Some Http errors just have a status message as additional detail, but it's not enough on its
+			// own to be useful so append to the message as well
+			return `${error.message} (${error.response.statusMessage})`;
+		}
 		return error.message;
 	} else {
 		return error;
 	}
+}
+
+/**
+ * Parses an instance name from the controller. An instance name will either be just its name
+ * e.g. myinstance or namespace_name e.g. mynamespace_my-instance.
+ * @param instanceName The instance name in one of the formats described
+ */
+export function parseInstanceName(instanceName: string | undefined): string {
+	instanceName = instanceName ?? '';
+	const parts: string[] = instanceName.split('_');
+	if (parts.length === 2) {
+		instanceName = parts[1];
+	}
+	else if (parts.length > 2) {
+		throw new Error(`Cannot parse resource '${instanceName}'. Acceptable formats are 'namespace_name' or 'name'.`);
+	}
+	return instanceName;
 }
