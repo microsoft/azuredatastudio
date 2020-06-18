@@ -40,6 +40,7 @@ import { coalesce } from 'vs/base/common/arrays';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { Layout } from 'vs/workbench/browser/layout';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
+import { ILanguageAssociationRegistry, Extensions as LanguageExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 
 export class Workbench extends Layout {
 
@@ -141,6 +142,7 @@ export class Workbench extends Layout {
 				// Registries
 				Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).start(accessor);
 				Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories).start(accessor);
+				Registry.as<ILanguageAssociationRegistry>(LanguageExtensions.LanguageAssociations).start(accessor);
 
 				// Context Keys
 				this._register(instantiationService.createInstance(WorkbenchContextKeysHandler));
