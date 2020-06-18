@@ -66,3 +66,52 @@ export function getConnectionModeDisplayText(connectionMode: string | undefined)
 	}
 	return connectionMode;
 }
+
+/**
+ * Opens an input box prompting the user to enter in the name of a resource to delete
+ * @param namespace The namespace of the resource to delete
+ * @param name The name of the resource to delete
+ * @returns Promise resolving to true if the user confirmed the name, false if the input box was closed for any other reason
+ */
+export async function promptForResourceDeletion(namespace: string, name: string): Promise<boolean> {
+	const inputBox = vscode.window.createInputBox();
+	inputBox.title = loc.resourceDeletionWarning(namespace, name);
+	inputBox.placeholder = name;
+	return new Promise(resolve => {
+		let valueAccepted = false;
+		inputBox.show();
+		inputBox.onDidAccept(() => {
+			if (inputBox.value === name) {
+				valueAccepted = true;
+				inputBox.hide();
+				inputBox.dispose();
+				resolve(true);
+			} else {
+				inputBox.validationMessage = loc.invalidResourceDeletionName(inputBox.value);
+			}
+		});
+		inputBox.onDidHide(() => {
+			if (!valueAccepted) {
+				resolve(false);
+			}
+		});
+		inputBox.onDidChangeValue(() => {
+			inputBox.validationMessage = '';
+		});
+	});
+}
+
+/**
+ * Gets the message to display for a given error object that may be a variety of types.
+ * @param error The error object
+ */
+export function getErrorText(error: any): string {
+	if (error?.body?.reason) {
+		// For HTTP Errors pull out the reason message since that's usually the most helpful
+		return error.body.reason;
+	} else if (error instanceof Error) {
+		return error.message;
+	} else {
+		return error;
+	}
+}

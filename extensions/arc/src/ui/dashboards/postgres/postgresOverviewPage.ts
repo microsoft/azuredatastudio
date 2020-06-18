@@ -11,6 +11,7 @@ import { DuskyObjectModelsDatabase, DuskyObjectModelsDatabaseServiceArcPayload, 
 import { DashboardPage } from '../../components/dashboardPage';
 import { ControllerModel } from '../../../models/controllerModel';
 import { PostgresModel, PodRole } from '../../../models/postgresModel';
+import { promptForResourceDeletion, getErrorText } from '../../../common/utils';
 
 export class PostgresOverviewPage extends DashboardPage {
 	private propertiesLoading?: azdata.LoadingComponent;
@@ -220,14 +221,12 @@ export class PostgresOverviewPage extends DashboardPage {
 		deleteButton.onDidClick(async () => {
 			deleteButton.enabled = false;
 			try {
-				const response = await vscode.window.showQuickPick([loc.yes, loc.no], {
-					placeHolder: loc.deleteServicePrompt(this._postgresModel.fullName)
-				});
-				if (response !== loc.yes) { return; }
-				await this._postgresModel.delete();
-				vscode.window.showInformationMessage(loc.serviceDeleted(this._postgresModel.fullName));
+				if (await promptForResourceDeletion(this._postgresModel.namespace, this._postgresModel.name)) {
+					await this._postgresModel.delete();
+					vscode.window.showInformationMessage(loc.resourceDeleted(this._postgresModel.fullName));
+				}
 			} catch (error) {
-				vscode.window.showErrorMessage(loc.serviceDeletionFailed(this._postgresModel.fullName, error));
+				vscode.window.showErrorMessage(loc.resourceDeletionFailed(this._postgresModel.fullName, getErrorText(error)));
 			} finally {
 				deleteButton.enabled = true;
 			}

@@ -97,8 +97,8 @@ export class ControllerModel {
 		});
 	}
 
-	public miaaDelete(name: string): void {
-		this._sqlInstanceRouter.apiV1HybridSqlNsNameDelete(this._namespace, name);
+	public async miaaDelete(namespace: string, name: string): Promise<void> {
+		await this._sqlInstanceRouter.apiV1HybridSqlNsNameDelete(namespace, name);
 	}
 }
 

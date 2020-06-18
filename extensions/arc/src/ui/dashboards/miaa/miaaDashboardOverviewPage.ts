@@ -9,7 +9,7 @@ import * as loc from '../../../localizedConstants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { IconPathHelper, cssStyles, ResourceType } from '../../../constants';
 import { ControllerModel, Registration } from '../../../models/controllerModel';
-import { getAzurecoreApi } from '../../../common/utils';
+import { getAzurecoreApi, promptForResourceDeletion, getErrorText } from '../../../common/utils';
 import { MiaaModel, DatabaseModel } from '../../../models/miaaModel';
 import { HybridSqlNsNameGetResponse } from '../../../controller/generated/v1/model/hybridSqlNsNameGetResponse';
 import { EndpointModel } from '../../../controller/generated/v1/api';
@@ -175,6 +175,20 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 			label: loc.deleteText,
 			iconPath: IconPathHelper.delete
 		}).component();
+
+		deleteButton.onDidClick(async () => {
+			deleteButton.enabled = false;
+			try {
+				if (await promptForResourceDeletion(this._miaaModel.namespace, this._miaaModel.name)) {
+					await this._controllerModel.miaaDelete(this._miaaModel.namespace, this._miaaModel.name);
+					vscode.window.showInformationMessage(loc.resourceDeleted(this._miaaModel.name));
+				}
+			} catch (error) {
+				vscode.window.showErrorMessage(loc.resourceDeletionFailed(this._miaaModel.name, getErrorText(error)));
+			} finally {
+				deleteButton.enabled = true;
+			}
+		});
 
 		const resetPasswordButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: loc.resetPassword,
