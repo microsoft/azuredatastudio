@@ -217,7 +217,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 	}
 
-	async function connect(uri: string, options?: IConnectionCompletionOptions, fromDialog?: boolean, connection?: IConnectionProfile, error?: string, errorCode?: number, errorCallStack?: string): Promise<IConnectionResult> {
+	async function connect(uri: string, options?: IConnectionCompletionOptions, fromDialog?: boolean, connection?: IConnectionProfile, error?: string, errorCode?: number, errorCallStack?: string, serverInfo?: azdata.ServerInfo): Promise<IConnectionResult> {
 		let connectionToUse = connection ? connection : connectionProfile;
 		let id = connectionToUse.getOptionsKey();
 		let defaultUri = 'connection:' + (id ? id : connectionToUse.serverName + ':' + connectionToUse.databaseName);
@@ -233,7 +233,7 @@ suite('SQL ConnectionManagementService tests', () => {
 				errorNumber: errorCode,
 				messages: errorCallStack,
 				ownerUri: uri ? uri : defaultUri,
-				serverInfo: undefined
+				serverInfo: serverInfo
 			};
 			connectionManagementService.onConnectionComplete(0, info);
 		});
@@ -942,6 +942,65 @@ suite('SQL ConnectionManagementService tests', () => {
 			return connectionManagementService.disconnectEditor(options.params.input).then(result => {
 				assert(result);
 			});
+		});
+	});
+
+	test('registerIconProvider should register icon provider for connectionManagementService', () => {
+		let profile = <ConnectionProfile>assign({}, connectionProfile);
+		let serverInfo: azdata.ServerInfo = {
+			serverMajorVersion: 0,
+			serverMinorVersion: 0,
+			serverReleaseVersion: 0,
+			engineEditionId: 0,
+			serverVersion: 'test_version',
+			serverLevel: 'test_level',
+			serverEdition: 'test_edition',
+			azureVersion: 0,
+			osVersion: 'test_version',
+			options: { isBigDataCluster: 'test' },
+			isCloud: true
+		};
+		let uri: string = 'Editor Uri';
+		let options: IConnectionCompletionOptions = {
+			params: {
+				connectionType: ConnectionType.editor,
+				input: {
+					onConnectSuccess: undefined,
+					onConnectReject: undefined,
+					onConnectStart: undefined,
+					onDisconnect: undefined,
+					onConnectCanceled: undefined,
+					uri: uri
+				},
+				queryRange: undefined,
+				runQueryOnCompletion: RunQueryOnConnectionMode.none
+			},
+			saveTheConnection: true,
+			showDashboard: false,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		};
+
+		let called = false;
+		let mockIconProvider: azdata.IconProvider = {
+			providerId: Constants.mssqlProviderName,
+			handle: 0,
+			getConnectionIconId(connection: azdata.IConnectionProfile, serverInfo: azdata.ServerInfo): Thenable<string> {
+				let iconName: string = undefined;
+				if (connection.providerName === 'MSSQL') {
+					if (serverInfo.isCloud) {
+						iconName = 'mssql:cloud';
+					} else if (serverInfo.options['isBigDataCluster']) {
+						iconName = 'mssql:cluster';
+					}
+				}
+				called = true;
+				return Promise.resolve(iconName);
+			}
+		};
+		connectionManagementService.registerIconProvider('MSSQL', mockIconProvider);
+		return connect(uri, options, true, profile, undefined, undefined, undefined, serverInfo).then(() => {
+			assert(called);
 		});
 	});
 
