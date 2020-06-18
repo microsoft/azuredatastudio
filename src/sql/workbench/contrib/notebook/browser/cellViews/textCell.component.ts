@@ -233,7 +233,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	public togglePreview(showPreview?: boolean): void {
 		this.showPreview = showPreview !== undefined ? showPreview : !this.showPreview;
-		//this.cellModel.showPreview = this.showPreview;
+		this.cellModel.showPreview = this.showPreview;
 		this.updatePreview();
 	}
 
