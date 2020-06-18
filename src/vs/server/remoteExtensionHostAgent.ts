@@ -29,6 +29,7 @@ const serverOptions: OptionDescriptions<ServerParsedArgs> = {
 	'disable-telemetry': OPTIONS['disable-telemetry'],
 
 	'extensions-dir': OPTIONS['extensions-dir'],
+	'extensions-download-dir': OPTIONS['extensions-download-dir'],
 	'install-extension': OPTIONS['install-extension'],
 	'uninstall-extension': OPTIONS['uninstall-extension'],
 	'locate-extension': OPTIONS['locate-extension'],
@@ -57,6 +58,7 @@ export interface ServerParsedArgs {
 	'remote-auto-shutdown-without-delay'?: boolean;
 
 	'extensions-dir'?: string;
+	'extensions-download-dir'?: string;
 	'install-extension'?: string[];
 	'uninstall-extension'?: string[];
 	'list-extensions'?: boolean;

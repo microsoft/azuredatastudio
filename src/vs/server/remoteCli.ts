@@ -125,7 +125,7 @@ export function main(desc: ProductDescription, args: string[]): void {
 		}
 	}
 
-	delete parsedArgs['_'];
+	parsedArgs['_'] = [];
 
 	if (hasReadStdinArg && fileURIs.length === 0 && folderURIs.length === 0 && hasStdinWithoutTty()) {
 		const stdinFilePath = getStdinFilePath();
