@@ -163,6 +163,7 @@ steps:
   - script: |
       set -e
       shopt -s globstar
+      mkdir -p $(Build.ArtifactStagingDirectory)/test-results/coverage
       cp $(Build.SourcesDirectory)/extensions/*/coverage/** $(Build.ArtifactStagingDirectory)/test-results/coverage
     displayName: Copy Coverage
 
