@@ -9,7 +9,7 @@
 		"vscode": "^1.25.0",
 		"azdata": "*"
 	},
-	"license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/import/Microsoft_SQL_Server_Import_Extension_and_Tools_Import_Flat_File_Preview.docx",
+	"license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/import/Microsoft_SQL_Server_Import_Extension_and_Tools_Import_Flat_File_Preview.docx",
 	"icon": "images/extension.png",
 	"aiKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e",
 	"activationEvents": [
