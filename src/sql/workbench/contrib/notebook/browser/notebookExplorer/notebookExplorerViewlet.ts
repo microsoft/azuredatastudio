@@ -6,7 +6,7 @@
 import { localize } from 'vs/nls';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IAction } from 'vs/base/common/actions';
-import { append, $, addClass, toggleClass, Dimension, IFocusTracker } from 'vs/base/browser/dom';
+import { append, $, addClass, toggleClass, Dimension, IFocusTracker, getTotalHeight } from 'vs/base/browser/dom';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
@@ -30,7 +30,7 @@ import { NotebookSearchWidget, INotebookExplorerSearchOptions } from 'sql/workbe
 import * as Constants from 'sql/workbench/contrib/notebook/common/constants';
 import { IChangeEvent } from 'vs/workbench/contrib/search/common/searchModel';
 import { Delayer } from 'vs/base/common/async';
-import { ITextQuery, IPatternInfo } from 'vs/workbench/services/search/common/search';
+import { ITextQuery, IPatternInfo, IFolderQuery } from 'vs/workbench/services/search/common/search';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { QueryBuilder, ITextQueryBuilderOptions } from 'vs/workbench/contrib/search/common/queryBuilder';
 import { IFileService } from 'vs/platform/files/common/files';
@@ -38,6 +38,7 @@ import { getOutOfWorkspaceEditorResources } from 'vs/workbench/contrib/search/co
 import { TreeViewPane } from 'sql/workbench/browser/parts/views/treeView';
 import { NotebookSearchView } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearchView';
 import * as path from 'vs/base/common/path';
+import { URI } from 'vs/base/common/uri';
 
 export const VIEWLET_ID = 'workbench.view.notebooks';
 
@@ -103,6 +104,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 	private root: HTMLElement;
 	private static readonly MAX_TEXT_RESULTS = 10000;
 	private notebookSourcesBox: HTMLElement;
+	private searchWidgetsContainerElement!: HTMLElement;
 	searchWidget!: NotebookSearchWidget;
 	private inputBoxFocused: IContextKey<boolean>;
 	private triggerQueryDelayer: Delayer<void>;
@@ -135,8 +137,8 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 		addClass(parent, 'notebookExplorer-viewlet');
 		this.root = parent;
 
-		const header = append(this.root, $('.header'));
-		this.createSearchWidget(header);
+		this.searchWidgetsContainerElement = append(this.root, $('.header'));
+		this.createSearchWidget(this.searchWidgetsContainerElement);
 
 		this.notebookSourcesBox = append(this.root, $('.notebookSources'));
 
@@ -238,16 +240,15 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 			isSmartCase: this.searchConfig.smartCase,
 			expandPatterns: true
 		};
-		const folderResources = this.contextService.getWorkspace().folders;
 
 		const onQueryValidationError = (err: Error) => {
 			this.searchWidget.searchInput.showMessage({ content: err.message, type: MessageType.ERROR });
-			// this.viewModel.searchResult.clear();
+			this.searchView.clearSearchResults();
 		};
 
 		let query: ITextQuery;
 		try {
-			query = this.queryBuilder.text(content, folderResources.map(folder => folder.uri), options);
+			query = this.queryBuilder.text(content, [], options);
 		} catch (err) {
 			onQueryValidationError(err);
 			return;
@@ -265,12 +266,10 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 							let items = await dataProvider.getChildren();
 							items?.forEach(root => {
 								this.updateViewletsState();
-								let searchView = this.getView(NotebookSearchView.ID);
-								if (searchView instanceof NotebookSearchView) {
-									let folderToSearch = path.join(root.tooltip, 'content');
-									let filesToIncludeFiltered = path.join(folderToSearch, '**', '*.md') + ',' + path.join(folderToSearch, '**', '*.ipynb');
-									searchView.doSearch(query, null, filesToIncludeFiltered, false);
-								}
+								let folderToSearch: IFolderQuery = { folder: URI.file(path.join(root.tooltip, 'content')) };
+								query.folderQueries.push(folderToSearch);
+								let filesToIncludeFiltered = path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb');
+								this.searchView.doSearch(query, null, filesToIncludeFiltered, false);
 							});
 						}
 					}
@@ -286,25 +285,30 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 	updateViewletsState(): void {
 		let containerModel = this.viewDescriptorService.getViewContainerModel(this.viewContainer);
 		let visibleViewDescriptors = containerModel.visibleViewDescriptors;
+		if (!this.searchView) {
+			this.searchView = <NotebookSearchView>this.getView(NotebookSearchView.ID);
+		}
 		if (this.searchWidget.searchInput.getValue().length > 0) {
 			if (visibleViewDescriptors.length > 1) {
 				let allViews = containerModel.allViewDescriptors;
-				allViews.forEach(view => {
-					this.getView(view.id).setExpanded(false);
+				allViews.forEach(v => {
+					let view = this.getView(v.id);
+					if (view !== this.searchView) {
+						view.setExpanded(false);
+					}
 				});
-				this.getView(NotebookSearchView.ID).setExpanded(true);
+				this.searchView.setExpanded(true);
 			}
 		} else {
 			let allViews = containerModel.allViewDescriptors;
 			allViews.forEach(view => {
 				this.getView(view.id).setExpanded(true);
 			});
-			this.getView(NotebookSearchView.ID).setExpanded(false);
+			this.searchView.setExpanded(false);
 		}
 	}
 
 	showSearchResultsView(): void {
-		this.searchView = <NotebookSearchView>this.getView(NotebookSearchView.ID);
 		if (!this.searchView) {
 			this.toggleViewVisibility(NotebookSearchView.ID);
 		} else {
@@ -313,16 +317,14 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 	}
 
 	clearSearchResults(clearInput = true): void {
-		// this.viewModel.searchResult.clear();
-		/* this.showEmptyStage(true);
-		if (this.contextService.getWorkbenchState() === WorkbenchState.EMPTY) {
-			this.showSearchWithoutFolderMessage();
-		} */
+		if (!this.searchView) {
+			this.searchView = <NotebookSearchView>this.getView(NotebookSearchView.ID);
+		}
+		this.searchView.clearSearchResults(clearInput);
+
 		if (clearInput) {
 			this.searchWidget.clear();
 		}
-		// this.viewModel.cancelSearch();
-		// this.updateActions();
 	}
 
 	private validateQuery(query: ITextQuery): Promise<void> {
@@ -350,29 +352,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 
 
 	refreshTree(event?: IChangeEvent): void {
-		// const collapseResults = this.searchConfig.collapseResults;
-		if (!event || event.added || event.removed) {
-			// Refresh whole tree
-			if (this.searchConfig.sortOrder === Constants.SearchSortOrder.Modified) {
-				// Ensure all matches have retrieved their file stat
-				// this.retrieveFileStats()
-				// .then(() => this.tree.setChildren(null, this.createResultIterator(collapseResults)));
-			} else {
-				// this.tree.setChildren(null, this.createResultIterator(collapseResults));
-			}
-		} else {
-			// If updated counts affect our search order, re-sort the view.
-			if (this.searchConfig.sortOrder === Constants.SearchSortOrder.CountAscending ||
-				this.searchConfig.sortOrder === Constants.SearchSortOrder.CountDescending) {
-				// this.tree.setChildren(null, this.createResultIterator(collapseResults));
-			} else {
-				// FileMatch modified, refresh those elements
-				event.elements.forEach(element => {
-					// this.tree.setChildren(element, this.createIterator(element, collapseResults));
-					// this.tree.rerender(element);
-				});
-			}
-		}
+		this.searchView.refreshTree(event);
 	}
 
 	private get searchConfig(): Constants.ISearchConfigurationProperties {
@@ -404,7 +384,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 
 	layout(dimension: Dimension): void {
 		toggleClass(this.root, 'narrow', dimension.width <= 300);
-		super.layout(new Dimension(dimension.width, dimension.height));
+		super.layout(new Dimension(dimension.width, dimension.height - getTotalHeight(this.searchWidgetsContainerElement)));
 	}
 
 	getOptimalWidth(): number {

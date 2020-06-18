@@ -8,14 +8,13 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import * as aria from 'vs/base/browser/ui/aria/aria';
 import { IIdentityProvider } from 'vs/base/browser/ui/list/list';
 import { ITreeContextMenuEvent, ITreeElement } from 'vs/base/browser/ui/tree/tree';
-import { IAction, ActionRunner } from 'vs/base/common/actions';
+import { IAction } from 'vs/base/common/actions';
 import { Delayer } from 'vs/base/common/async';
 import * as errors from 'vs/base/common/errors';
 import { Event } from 'vs/base/common/event';
 import { Iterable } from 'vs/base/common/iterator';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
-import * as env from 'vs/base/common/platform';
 import { URI } from 'vs/base/common/uri';
 import 'vs/css!./media/searchview';
 import { ICodeEditor, isCodeEditor, getCodeEditor } from 'vs/editor/browser/editorBrowser';
@@ -33,7 +32,7 @@ import { ISearchComplete, ISearchConfiguration, ISearchConfigurationProperties, 
 import { diffInserted, diffInsertedOutline, diffRemoved, diffRemovedOutline, editorFindMatchHighlight, editorFindMatchHighlightBorder, listActiveSelectionForeground, foreground } from 'vs/platform/theme/common/colorRegistry';
 import { ICssStyleCollector, IColorTheme, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
-import { OpenFileFolderAction, OpenFolderAction } from 'vs/workbench/browser/actions/workspaceActions';
+// import { OpenFileFolderAction, OpenFolderAction } from 'vs/workbench/browser/actions/workspaceActions';
 import { ResourceLabels } from 'vs/workbench/browser/labels';
 import { IEditorPane } from 'vs/workbench/common/editor';
 import { CancelSearchAction, ClearSearchResultsAction, CollapseDeepestExpandedLevelAction, RefreshAction, appendKeyBindingLabel, ExpandAllAction, ToggleCollapseAndExpandAction } from 'vs/workbench/contrib/search/browser/searchActions';
@@ -224,6 +223,12 @@ export class NotebookSearchView extends ViewPane {
 
 	private onDidChangeWorkbenchState(): void {
 		if (this.contextService.getWorkbenchState() !== WorkbenchState.EMPTY && this.searchWithoutFolderMessageElement) {
+			dom.hide(this.searchWithoutFolderMessageElement);
+		}
+	}
+
+	public onDidNotebooksOpenState(): void {
+		if (this.contextKeyService.getContextKeyValue('bookOpened') && this.searchWithoutFolderMessageElement) {
 			dom.hide(this.searchWithoutFolderMessageElement);
 		}
 	}
@@ -604,7 +609,7 @@ export class NotebookSearchView extends ViewPane {
 	clearSearchResults(clearInput = true): void {
 		this.viewModel.searchResult.clear();
 		this.showEmptyStage(true);
-		if (this.contextService.getWorkbenchState() === WorkbenchState.EMPTY) {
+		if (this.contextService.getWorkbenchState() === WorkbenchState.EMPTY && !this.contextKeyService.getContextKeyValue('bookOpened')) {
 			this.showSearchWithoutFolderMessage();
 		}
 		this.viewModel.cancelSearch();
@@ -766,7 +771,7 @@ export class NotebookSearchView extends ViewPane {
 					this.addClickEvents(learnMoreLink, this.onLearnMore);
 				}
 
-				if (this.contextService.getWorkbenchState() === WorkbenchState.EMPTY) {
+				if (this.contextService.getWorkbenchState() === WorkbenchState.EMPTY && !this.contextKeyService.getContextKeyValue('bookOpened')) {
 					this.showSearchWithoutFolderMessage();
 				}
 				this.reLayout();
@@ -905,25 +910,15 @@ export class NotebookSearchView extends ViewPane {
 		this.searchWithoutFolderMessageElement = this.clearMessage();
 
 		const textEl = dom.append(this.searchWithoutFolderMessageElement,
-			$('p', undefined, nls.localize('searchWithoutFolder', "You have not opened or specified a folder. Only open files are currently searched - ")));
+			$('p', undefined, nls.localize('searchWithoutFolder', "You have not opened any folder that contains notebooks/books. ")));
 
 		const openFolderLink = dom.append(textEl,
-			$('a.pointer.prominent', { tabindex: 0 }, nls.localize('openFolder', "Open Folder")));
+			$('a.pointer.prominent', { tabindex: 0 }, nls.localize('openNotebookFolder', "Open Notebooks")));
 
-		const actionRunner = new ActionRunner();
-		this.messageDisposables.push(dom.addDisposableListener(openFolderLink, dom.EventType.CLICK, (e: MouseEvent) => {
+		this.messageDisposables.push(dom.addDisposableListener(openFolderLink, dom.EventType.CLICK, async (e: MouseEvent) => {
 			dom.EventHelper.stop(e, false);
-
-			const action = env.isMacintosh ?
-				this.instantiationService.createInstance(OpenFileFolderAction, OpenFileFolderAction.ID, OpenFileFolderAction.LABEL) :
-				this.instantiationService.createInstance(OpenFolderAction, OpenFolderAction.ID, OpenFolderAction.LABEL);
-
-			actionRunner.run(action).then(() => {
-				action.dispose();
-			}, err => {
-				action.dispose();
-				errors.onUnexpectedError(err);
-			});
+			this.commandService.executeCommand('notebook.command.openNotebookFolder');
+			this.setExpanded(false);
 		}));
 	}
 
