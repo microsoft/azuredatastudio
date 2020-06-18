@@ -4,11 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import * as loc from '../../../localizedConstants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { IconPathHelper, cssStyles, ResourceType } from '../../../constants';
 import { ControllerModel, Registration } from '../../../models/controllerModel';
-import { getAzurecoreApi } from '../../../common/utils';
+import { getAzurecoreApi, promptForResourceDeletion, getErrorText } from '../../../common/utils';
 import { MiaaModel, DatabaseModel } from '../../../models/miaaModel';
 import { HybridSqlNsNameGetResponse } from '../../../controller/generated/v1/model/hybridSqlNsNameGetResponse';
 import { EndpointModel } from '../../../controller/generated/v1/api';
@@ -33,7 +34,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		subscriptionId: '-',
 		miaaAdmin: '-',
 		host: '-',
-		computeAndStorage: '-'
+		vCores: '-'
 	};
 
 	constructor(modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _miaaModel: MiaaModel) {
@@ -157,7 +158,6 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		}).component();
 
 		this._databasesTableLoading = this.modelView.modelBuilder.loadingComponent().withItem(this._databasesTable).component();
-		this._databasesTableLoading.loading = false;
 		rootContainer.addItem(this._databasesTableLoading, { CSSStyles: { 'margin-bottom': '20px' } });
 
 		this.initialized = true;
@@ -166,8 +166,8 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 
 	public get toolbarContainer(): azdata.ToolbarContainer {
 
-		const createNewButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			label: loc.createNew,
+		const createDatabaseButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			label: loc.newDatabase,
 			iconPath: IconPathHelper.add
 		}).component();
 
@@ -175,6 +175,20 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 			label: loc.deleteText,
 			iconPath: IconPathHelper.delete
 		}).component();
+
+		deleteButton.onDidClick(async () => {
+			deleteButton.enabled = false;
+			try {
+				if (await promptForResourceDeletion(this._miaaModel.namespace, this._miaaModel.name)) {
+					await this._controllerModel.miaaDelete(this._miaaModel.namespace, this._miaaModel.name);
+					vscode.window.showInformationMessage(loc.resourceDeleted(this._miaaModel.name));
+				}
+			} catch (error) {
+				vscode.window.showErrorMessage(loc.resourceDeletionFailed(this._miaaModel.name, getErrorText(error)));
+			} finally {
+				deleteButton.enabled = true;
+			}
+		});
 
 		const resetPasswordButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: loc.resetPassword,
@@ -186,9 +200,19 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 			iconPath: IconPathHelper.openInTab
 		}).component();
 
+		openInAzurePortalButton.onDidClick(async () => {
+			const r = this._controllerModel.getRegistration(ResourceType.sqlManagedInstances, this._miaaModel.namespace, this._miaaModel.name);
+			if (r) {
+				vscode.env.openExternal(vscode.Uri.parse(
+					`https://portal.azure.com/#resource/subscriptions/${r.subscriptionId}/resourceGroups/${r.resourceGroupName}/providers/Microsoft.AzureData/${ResourceType.sqlManagedInstances}/${r.instanceName}`));
+			} else {
+				vscode.window.showErrorMessage(loc.couldNotFindRegistration(this._miaaModel.namespace, this._miaaModel.name));
+			}
+		});
+
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems(
 			[
-				{ component: createNewButton },
+				{ component: createDatabaseButton },
 				{ component: deleteButton },
 				{ component: resetPasswordButton, toolbarSeparatorAfter: true },
 				{ component: openInAzurePortalButton }
@@ -203,7 +227,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 			this._instanceProperties.dataController = this._controllerModel.controllerRegistration?.instanceName || '-';
 			this._instanceProperties.region = (await getAzurecoreApi()).getRegionDisplayName(reg.location);
 			this._instanceProperties.subscriptionId = reg.subscriptionId || '-';
-			this._instanceProperties.computeAndStorage = reg.vCores || '-';
+			this._instanceProperties.vCores = reg.vCores || '-';
 			this._instanceProperties.host = reg.externalEndpoint || '-';
 			this.refreshDisplayedProperties();
 		}
@@ -264,8 +288,8 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 				value: this._instanceProperties.host
 			},
 			{
-				displayName: loc.computeAndStorage,
-				value: this._instanceProperties.computeAndStorage
+				displayName: loc.compute,
+				value: loc.numVCores(this._instanceProperties.vCores)
 			}
 		];
 
