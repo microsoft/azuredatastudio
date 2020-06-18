@@ -88,7 +88,7 @@ function fetch(url: string): Promise<Buffer | undefined> {
 			if (res.headers.location) {
 				resolve(fetch(res.headers.location));
 			} else if (res.statusCode === 404) {
-				reject(res.statusMessage);
+				reject(`${url}: ${res.statusMessage}`);
 			} else {
 				res.on('data', chunk => buffers.push(chunk));
 				res.on('end', () => {
