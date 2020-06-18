@@ -12,7 +12,7 @@ import { TestInstantiationService } from 'vs/platform/instantiation/test/common/
 import * as TypeMoq from 'typemoq';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
-import { TestTree } from 'sql/workbench/contrib/objectExplorer/test/browser/treeMock';
+import { TestTree } from 'sql/workbench/test/treeMock';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
 
