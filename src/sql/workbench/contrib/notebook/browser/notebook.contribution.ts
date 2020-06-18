@@ -504,7 +504,7 @@ configurationRegistry.registerConfiguration({
 		},
 		'notebookExplorerSearch.searchOnType': {
 			type: 'boolean',
-			default: false,
+			default: true,
 			description: localize('search.searchOnType', "Search all files as you type.")
 		},
 		'notebookExplorerSearch.seedWithNearestWord': {
@@ -519,7 +519,7 @@ configurationRegistry.registerConfiguration({
 		},
 		'notebookExplorerSearch.searchOnTypeDebouncePeriod': {
 			type: 'number',
-			default: 300,
+			default: 1000,
 			markdownDescription: localize('search.searchOnTypeDebouncePeriod', "When `#search.searchOnType#` is enabled, controls the timeout in milliseconds between a character being typed and the search starting. Has no effect when `search.searchOnType` is disabled.")
 		},
 		'notebookExplorerSearch.searchEditor.doubleClickBehaviour': {

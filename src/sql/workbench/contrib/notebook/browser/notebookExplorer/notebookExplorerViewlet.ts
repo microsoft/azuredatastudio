@@ -257,7 +257,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 		this.validateQuery(query).then(async () => {
 			// this.onQueryTriggered(query, options, excludePatternText, includePatternText, triggeredOnType);
 			if (this.views.length > 1) {
-
+				let filesToIncludeFiltered: string = '';
 				this.views.forEach(async (v) => {
 					let booksViewPane = (<TreeViewPane>this.getView(v.id)).treeView;
 					if (booksViewPane) {
@@ -268,7 +268,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 								this.updateViewletsState();
 								let folderToSearch: IFolderQuery = { folder: URI.file(path.join(root.tooltip, 'content')) };
 								query.folderQueries.push(folderToSearch);
-								let filesToIncludeFiltered = path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb');
+								filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
 								this.searchView.doSearch(query, null, filesToIncludeFiltered, false);
 							});
 						}
