@@ -69,6 +69,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private _content: string | string[];
 	private _lastTrustedMode: boolean;
 	private isEditMode: boolean;
+	private showPreview: boolean;
 	private _sanitizer: ISanitizer;
 	private _model: NotebookModel;
 	private _activeCellId: string;
@@ -86,6 +87,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	) {
 		super();
 		this.isEditMode = true;
+		this.showPreview = true;
 		this.markdownRenderer = this._instantiationService.createInstance(NotebookMarkdownRenderer);
 		this._register(toDisposable(() => {
 			if (this.markdownResult) {
@@ -131,6 +133,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
 		this.setFocusAndScroll();
+		this.togglePreview();
 		this._register(this.cellModel.onOutputsChanged(e => {
 			this.updatePreview();
 		}));
@@ -226,6 +229,12 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this.cellModel.isEditMode = this.isEditMode;
 		this.updatePreview();
 		this._changeRef.detectChanges();
+	}
+
+	public togglePreview(showPreview?: boolean): void {
+		this.showPreview = showPreview !== undefined ? showPreview : !this.showPreview;
+		//this.cellModel.showPreview = this.showPreview;
+		this.updatePreview();
 	}
 
 	private toggleUserSelect(userSelect: boolean): void {

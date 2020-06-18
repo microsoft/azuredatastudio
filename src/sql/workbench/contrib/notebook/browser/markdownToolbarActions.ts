@@ -402,7 +402,7 @@ export class TogglePreviewAction extends ToggleableAction {
 	private static readonly maskedIconClass = 'masked-icon';
 
 	constructor(
-		id: string, toggleTooltip: boolean, isEditMode: boolean
+		id: string, toggleTooltip: boolean, showPreview: boolean
 	) {
 		super(id, {
 			baseClass: TogglePreviewAction.baseClass,
@@ -412,7 +412,7 @@ export class TogglePreviewAction extends ToggleableAction {
 			toggleOffClass: TogglePreviewAction.previewHideCssClass,
 			maskedIconClass: TogglePreviewAction.maskedIconClass,
 			shouldToggleTooltip: toggleTooltip,
-			isOn: isEditMode
+			isOn: showPreview
 		});
 	}
 
@@ -428,7 +428,7 @@ export class TogglePreviewAction extends ToggleableAction {
 		return new Promise<boolean>((resolve, reject) => {
 			try {
 				self.previewMode = !self.previewMode;
-				context.cell.isEditMode = self.previewMode;
+				context.cell.showPreview = self.previewMode;
 				resolve(true);
 			} catch (e) {
 				reject(e);

@@ -461,6 +461,7 @@ export interface ICellModel {
 	readonly onCellModeChanged: Event<boolean>;
 	modelContentChangedEvent: IModelContentChangedEvent;
 	isEditMode: boolean;
+	showPreview?: boolean;
 	sendChangeToNotebook(change: NotebookChangeType): void;
 }
 
