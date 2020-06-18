@@ -1,6 +1,0 @@
-{
-  "resolution": "main",
-  "tree": {
-    "src": "npm:@angular/platform-browser-dynamic/platform-browser-dynamic.d.ts"
-  }
-}

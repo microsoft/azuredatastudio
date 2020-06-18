@@ -1,6 +1,0 @@
-{
-  "resolution": "main",
-  "tree": {
-    "src": "npm:ng2-charts/ng2-charts.d.ts"
-  }
-}
