@@ -24,7 +24,7 @@ import { INotificationService, Severity } from 'vs/platform/notification/common/
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { IExtensionService, toExtension, ExtensionHostKind } from 'vs/workbench/services/extensions/common/extensions';
-import { ExtensionHostProcessManager } from 'vs/workbench/services/extensions/common/extensionHostProcessManager';
+import { ExtensionHostManager } from 'vs/workbench/services/extensions/common/extensionHostManager';
 import { ExtensionIdentifier, IExtension, ExtensionType, IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { Schemas } from 'vs/base/common/network';
 import { IFileService } from 'vs/platform/files/common/files';
@@ -225,8 +225,8 @@ export class ExtensionService extends AbstractExtensionService implements IExten
 		this._rehandleExtensionPoints((<IExtensionDescription[]>[]).concat(toAdd).concat(toRemove));
 
 		// Update the extension host
-		if (this._extensionHostProcessManagers.length > 0) {
-			await this._extensionHostProcessManagers[0].deltaExtensions(toAdd, toRemove.map(e => e.identifier));
+		if (this._extensionHostManagers.length > 0) {
+			await this._extensionHostManagers[0].deltaExtensions(toAdd, toRemove.map(e => e.identifier));
 		}
 
 		for (let i = 0; i < toAdd.length; i++) {
@@ -338,7 +338,7 @@ export class ExtensionService extends AbstractExtensionService implements IExten
 
 		if (shouldActivate) {
 			await Promise.all(
-				this._extensionHostProcessManagers.map(extHostManager => extHostManager.activate(extensionDescription.identifier, { startup: false, extensionId: extensionDescription.identifier, activationEvent: shouldActivateReason! }))
+				this._extensionHostManagers.map(extHostManager => extHostManager.activate(extensionDescription.identifier, { startup: false, extensionId: extensionDescription.identifier, activationEvent: shouldActivateReason! }))
 			).then(() => { });
 		}
 	}
@@ -357,7 +357,7 @@ export class ExtensionService extends AbstractExtensionService implements IExten
 		};
 	}
 
-	protected _createExtensionHosts(isInitialStart: boolean, initialActivationEvents: string[]): ExtensionHostProcessManager[] {
+	protected _createExtensionHosts(isInitialStart: boolean, initialActivationEvents: string[]): ExtensionHostManager[] {
 		let autoStart: boolean;
 		let extensions: Promise<IExtensionDescription[]>;
 		if (isInitialStart) {
@@ -369,23 +369,23 @@ export class ExtensionService extends AbstractExtensionService implements IExten
 			extensions = this.getExtensions().then((extensions) => extensions.filter(ext => ext.extensionLocation.scheme === Schemas.file));
 		}
 
-		const result: ExtensionHostProcessManager[] = [];
+		const result: ExtensionHostManager[] = [];
 
 		const localProcessExtHost = this._instantiationService.createInstance(LocalProcessExtensionHost, autoStart, extensions, this._environmentService.extHostLogsPath);
-		const localProcessExtHostManager = this._instantiationService.createInstance(ExtensionHostProcessManager, localProcessExtHost, null, initialActivationEvents);
+		const localProcessExtHostManager = this._instantiationService.createInstance(ExtensionHostManager, localProcessExtHost, null, initialActivationEvents);
 		result.push(localProcessExtHostManager);
 
 		const remoteAgentConnection = this._remoteAgentService.getConnection();
 		if (remoteAgentConnection) {
 			const remoteExtHost = this._instantiationService.createInstance(RemoteExtensionHost, this.getExtensions(), this._createProvider(remoteAgentConnection.remoteAuthority), this._remoteAgentService.socketFactory);
-			const remoteExtHostManager = this._instantiationService.createInstance(ExtensionHostProcessManager, remoteExtHost, remoteAgentConnection.remoteAuthority, initialActivationEvents);
+			const remoteExtHostManager = this._instantiationService.createInstance(ExtensionHostManager, remoteExtHost, remoteAgentConnection.remoteAuthority, initialActivationEvents);
 			result.push(remoteExtHostManager);
 		}
 
 		return result;
 	}
 
-	protected _onExtensionHostCrashed(extensionHost: ExtensionHostProcessManager, code: number, signal: string | null): void {
+	protected _onExtensionHostCrashed(extensionHost: ExtensionHostManager, code: number, signal: string | null): void {
 		super._onExtensionHostCrashed(extensionHost, code, signal);
 
 		if (extensionHost.kind === ExtensionHostKind.LocalProcess) {
@@ -437,7 +437,7 @@ export class ExtensionService extends AbstractExtensionService implements IExten
 			return;
 		}
 
-		const extensionHost = this._extensionHostProcessManagers[0];
+		const extensionHost = this._extensionHostManagers[0];
 		this._remoteAuthorityResolverService._clearResolvedAuthority(remoteAuthority);
 		try {
 			const result = await extensionHost.resolveAuthority(remoteAuthority);
@@ -451,7 +451,7 @@ export class ExtensionService extends AbstractExtensionService implements IExten
 		this._extensionScanner.startScanningExtensions(this.createLogger());
 
 		const remoteAuthority = this._environmentService.configuration.remoteAuthority;
-		const extensionHost = this._extensionHostProcessManagers[0];
+		const extensionHost = this._extensionHostManagers[0];
 
 		const allExtensions = flatten(await Promise.all([this._extensionScanner.scannedExtensions, this._staticExtensions.getExtensions()]));
 
@@ -560,7 +560,7 @@ export class ExtensionService extends AbstractExtensionService implements IExten
 		}
 	}
 
-	private async _startLocalExtensionHost(extensionHost: ExtensionHostProcessManager, allExtensions: IExtensionDescription[], localExtensions: ExtensionIdentifier[]): Promise<void> {
+	private async _startLocalExtensionHost(extensionHost: ExtensionHostManager, allExtensions: IExtensionDescription[], localExtensions: ExtensionIdentifier[]): Promise<void> {
 		this._registerAndHandleExtensions(allExtensions);
 		extensionHost.start(localExtensions.filter(id => this._registry.containsExtension(id)));
 	}
@@ -575,8 +575,8 @@ export class ExtensionService extends AbstractExtensionService implements IExten
 	}
 
 	public async getInspectPort(tryEnableInspector: boolean): Promise<number> {
-		if (this._extensionHostProcessManagers.length > 0) {
-			return this._extensionHostProcessManagers[0].getInspectPort(tryEnableInspector);
+		if (this._extensionHostManagers.length > 0) {
+			return this._extensionHostManagers[0].getInspectPort(tryEnableInspector);
 		}
 		return 0;
 	}
