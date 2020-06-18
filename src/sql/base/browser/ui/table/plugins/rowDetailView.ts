@@ -3,6 +3,7 @@
 import { escape } from 'sql/base/common/strings';
 import { mixin } from 'vs/base/common/objects';
 import * as nls from 'vs/nls';
+import { DataProvider } from 'azdata';
 
 export interface IRowDetailViewOptions<T> {
 	columnId?: string;
@@ -39,9 +40,18 @@ export interface IExtendedItem<T extends Slick.SlickData> {
 
 export type ExtendedItem<T extends Slick.SlickData> = T & IExtendedItem<T>;
 
-interface AugmentedDataView<T extends Slick.SlickData> extends Slick.Data.DataView<T> {
+export interface IAugmentedDataView<T extends Slick.SlickData> extends Slick.DataProvider<T> {
 	getItem(row: number): ExtendedItem<T>;
 	getItemByIdx(row: number): ExtendedItem<T>;
+	beginUpdate();
+	endUpdate();
+	deleteItem(id: string): void;
+	updateItem(id: string, item: T): void;
+	getIdxById(id: string): number;
+	insertItem(insertBefore: number, item: T): void;
+
+	onRowCountChanged: Slick.Event<Slick.Data.OnRowCountChangedEventData>;
+	onRowsChanged: Slick.Event<Slick.Data.OnRowsChangedEventData>;
 }
 
 export class RowDetailView<T extends Slick.SlickData> {
@@ -55,7 +65,7 @@ export class RowDetailView<T extends Slick.SlickData> {
 	private _expandedRows: Array<ExtendedItem<T>> = [];
 	private _handler = new Slick.EventHandler();
 
-	private _dataView!: AugmentedDataView<T>;
+	private _dataView!: IAugmentedDataView<T>;
 	private _options: IRowDetailViewOptions<T>;
 
 	constructor(options: IRowDetailViewOptions<T>) {
@@ -65,7 +75,7 @@ export class RowDetailView<T extends Slick.SlickData> {
 
 	public init(grid: Slick.Grid<T>): void {
 		this._grid = grid;
-		this._dataView = this._grid.getData() as AugmentedDataView<T>; // this is a bad assumption but the code is written with this assumption
+		this._dataView = this._grid.getData() as IAugmentedDataView<T>; // this is a bad assumption but the code is written with this assumption
 
 		// Update the minRowBuffer so that the view doesn't disappear when it's at top of screen + the original default 3
 		this._grid.getOptions().minRowBuffer = this._options.panelRows + 3;

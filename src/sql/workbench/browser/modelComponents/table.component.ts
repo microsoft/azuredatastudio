@@ -14,7 +14,7 @@ import * as azdata from 'azdata';
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 
 import { Table } from 'sql/base/browser/ui/table/table';
-import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
+import { TableDataView, SlickTableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { getContentHeight, getContentWidth, Dimension } from 'vs/base/browser/dom';
@@ -27,6 +27,7 @@ import { slickGridDataItemColumnValueWithNoData, textFormatter } from 'sql/base/
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSizeToNumber } from 'sql/base/browser/dom';
+import { RowDetailView, ExtendedItem } from 'sql/base/browser/ui/table/plugins/rowDetailView';
 
 export enum ColumnSizingMode {
 	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
@@ -44,11 +45,13 @@ export default class TableComponent extends ComponentBase implements IComponent,
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	private _table: Table<Slick.SlickData>;
-	private _tableData: TableDataView<Slick.SlickData>;
+	//private _tableData: TableDataView<Slick.SlickData>;
+	private _tableData: SlickTableDataView<Slick.SlickData>;
 	private _tableColumns;
 	private _checkboxColumns: CheckboxSelectColumn<{}>[] = [];
 	private _onCheckBoxChanged = new Emitter<ICheckboxCellActionEventArgs>();
 	public readonly onCheckBoxChanged: vsEvent<ICheckboxCellActionEventArgs> = this._onCheckBoxChanged.event;
+	private rowDetail: RowDetailView<Slick.SlickData>;
 
 	@ViewChild('table', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
@@ -124,7 +127,8 @@ export default class TableComponent extends ComponentBase implements IComponent,
 
 	ngAfterViewInit(): void {
 		if (this._inputContainer) {
-			this._tableData = new TableDataView<Slick.SlickData>();
+			//this._tableData = new TableDataView<Slick.SlickData>();
+			this._tableData = new SlickTableDataView<Slick.SlickData>();
 
 			let options = <Slick.GridOptions<any>>{
 				syncColumnCellResize: true,
@@ -161,6 +165,22 @@ export default class TableComponent extends ComponentBase implements IComponent,
 					}
 				}
 			});
+
+			const rowDetail = new RowDetailView({
+				cssClass: '_detail_selector',
+				process: (item) => {
+					(<any>rowDetail).onAsyncResponse.notify({
+						'itemDetail': item,
+					}, undefined, this);
+				},
+				useRowClick: true,
+				panelRows: 2,
+				postTemplate: (itemDetail) => 'DETAILS DATA',
+				preTemplate: () => '',
+				loadOnce: true
+			});
+			this.rowDetail = rowDetail;
+			this._table.registerPlugin(this.rowDetail);
 		}
 	}
 
@@ -233,16 +253,16 @@ export default class TableComponent extends ComponentBase implements IComponent,
 		this._table.columns = this._tableColumns;
 
 		if (this.properties['setData'] === true) {
-			this.properties['setData'] = false;
 			this._tableData.push(TableComponent.transformData(this.data, this.columns));
 			this._table.setData(this._tableData);
 
+			let columnDef = this.rowDetail.getColumnDefinition();
+			this._table.columns.unshift(columnDef);
 		}
 		if (this.properties['appendData'] !== undefined) {
 			this.properties['appendData'] = undefined;
-			// 	this._tableData.push(TableComponent.transformData(this.appendData, this.columns));
-			// 	this.data.push(...this.appendData);
-			// 	this.properties['appentData'] = undefined;
+			this._tableData.push(TableComponent.transformData(this.properties['appendData'], this.columns));
+			this.data.push(...this.properties['appendData']);
 		}
 
 		this._table.setTableTitle(this.title);

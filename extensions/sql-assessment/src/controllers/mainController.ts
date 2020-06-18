@@ -35,7 +35,6 @@ export default class MainController {
 	private connectionProfile!: azdata.connection.ConnectionProfile;
 	private invokeAssessmentLabel: string = localize('invokeAssessmentLabelServer', "Invoke assessment");
 	private getItemsLabel: string = localize('getAssessmentItemsServer', "View applicable rules");
-	private modelView!: azdata.ModelView;
 
 	public constructor(context: vscode.ExtensionContext) {
 		this.apiVersionPropItem = { displayName: localize('propApiVersion', "API Version"), value: '' };
@@ -49,13 +48,13 @@ export default class MainController {
 	}
 
 	public async activate(): Promise<boolean> {
-		console.log('activating sql-assessment');
 		this.sqlAssessment = ((await vscode.extensions.getExtension(mssql.extension.name)?.activate() as mssql.IExtension)).sqlAssessment;
-		console.log('sql-assessment loaded');
 		this.registerModelView();
 		//TelemetryReporter.sendViewEvent(SqlAssessmentTelemetryView);
 		return true;
 	}
+
+
 
 	private registerModelView(): void {
 		azdata.ui.registerModelViewProvider(tabName, async (view) => {
@@ -83,11 +82,26 @@ export default class MainController {
 			});
 
 			this.tblResults = await this.createTable(view);
-			this.modelView = view;
 			rootContainer.addItem(this.tblResults, { flex: '1 1 auto' });
+			this.toDispose.push(this.tblResults.onRowSelected(() => {
+
+				if (this.tblResults.selectedRows !== undefined) {
+					this.displayDetails(this.tblResults.selectedRows[0]);
+				}
+			}));
 
 			await view.initializeModel(rootContainer);
 		});
+	}
+
+	private displayDetails(rowIndex: number) {
+		let tableRow = this.tblResults.data[rowIndex];
+		console.log(tableRow);
+
+
+		//this.tblResults.expandRow(rowIndex, 3, 'bla bla bla');
+
+
 	}
 
 	private async createPropertiesSection(view: azdata.ModelView): Promise<azdata.FlexContainer> {
@@ -306,7 +320,8 @@ export default class MainController {
 				}],
 				height: '100%',
 				width: '100%',
-			}).component();
+			})
+			.component();
 	}
 
 

@@ -8,7 +8,7 @@ import * as types from 'vs/base/common/types';
 import { compare as stringCompare } from 'vs/base/common/strings';
 
 import { IDisposableDataProvider } from 'sql/base/browser/ui/table/interfaces';
-
+import { generateUuid } from 'vs/base/common/uuid';
 export interface IFindPosition {
 	col: number;
 	row: number;
@@ -43,9 +43,9 @@ function defaultSort<T extends { [key: string]: any }>(args: Slick.OnSortEventAr
 
 export class TableDataView<T extends Slick.SlickData> implements IDisposableDataProvider<T> {
 	//The data exposed publicly, when filter is enabled, _data holds the filtered data.
-	private _data: Array<T>;
+	protected _data: Array<T>;
 	//Used when filtering is enabled, _allData holds the complete set of data.
-	private _allData!: Array<T>;
+	protected _allData!: Array<T>;
 	private _findArray?: Array<IFindPosition>;
 	private _findIndex?: number;
 	private _filterEnabled: boolean;
@@ -80,6 +80,8 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 		this._filterFn = _filterFn ? _filterFn : (dataToFilter) => dataToFilter;
 		this._filterEnabled = false;
 	}
+
+
 
 	public get filterEnabled(): boolean {
 		return this._filterEnabled;
@@ -147,6 +149,8 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 
 		this._onRowCountChange.fire(this.getLength());
 	}
+
+
 
 	clear() {
 		this._data = new Array<T>();
@@ -255,3 +259,164 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 		this._findArray = [];
 	}
 }
+
+export class SlickTableDataView<T extends Slick.SlickData> extends Slick.Data.DataView<T>
+	implements IDisposableDataProvider<T>
+{
+	push(items: Array<T>): void;
+	push(item: T): void;
+	push(input: T | Array<T>): void {
+		let inputArray = new Array();
+		if (Array.isArray(input)) {
+			inputArray.push(...input);
+		} else {
+			inputArray.push(input);
+		}
+		if (inputArray.length > 0 && inputArray[0]['id'] === undefined) {
+			inputArray.forEach(item => item.id = generateUuid());
+		}
+
+		this.beginUpdate();
+		inputArray.forEach(item => this.addItem(item));
+		this.endUpdate();
+	}
+
+
+
+	dispose(): void {
+
+	}
+
+}
+
+
+
+
+
+
+
+// export class AumentedTableDataView<T extends Slick.SlickData> extends TableDataView<T> implements IAugmentedDataView<T>
+// {
+// 	private idProperty: string = 'id';  // property holding a unique row id
+// 	private idxById = {};       // indexes by id
+// 	private suspend: boolean;
+// 	public onRowCountChanged = new Slick.Event();
+// 	public onRowsChanged = new Slick.Event<Slick.Data.OnRowsChangedEventData>();
+
+
+// 	getItemByIdx(row: number): T {
+// 		return this.getItem(row);
+// 	}
+// 	beginUpdate() {
+// 		this.suspend = true;
+// 	}
+// 	endUpdate() {
+// 		this.suspend = false;
+// 		this.refresh();
+// 	}
+
+// 	updateItem(id: string, item: T): void {
+// 		if (this.idxById[id] === undefined || id !== item[this.idProperty]) {
+// 			throw new Error('Invalid or non-matching id');
+// 		}
+// 		this._data[this.idxById[id]] = item;
+// 	}
+
+// 	getIdxById(id: string): number {
+// 		return this.idxById[id];
+// 	}
+
+// 	insertItem(insertBefore: number, item: T): void {
+// 		this._data.splice(insertBefore, 0, item);
+// 		this.updateIdxById(insertBefore);
+// 	}
+
+// 	getItemMetadata?(index: number): Slick.RowMetadata<T> {
+// 		throw new Error('Method not implemented.');
+// 	}
+
+// 	deleteItem(id: string): void {
+// 		let idx = this.idxById[id];
+// 		if (idx === undefined) {
+// 			throw new Error("Invalid id");
+// 		}
+// 		delete this.idxById[id];
+// 		this._data.splice(idx, 1);
+// 		this.updateIdxById(idx);
+// 	}
+
+// 	updateIdxById(startingIndex: number) {
+// 		startingIndex = startingIndex || 0;
+// 		let id;
+// 		for (let i = startingIndex, l = this._data.length; i < l; i++) {
+// 			id = this._data[i][this.idProperty];
+// 			if (id === undefined) {
+// 				return;
+// 			}
+// 			this.idxById[id] = i;
+// 		}
+// 	}
+
+// 	push(input: T | Array<T>): void {
+// 		let inputArray = new Array();
+// 		if (Array.isArray(input)) {
+// 			inputArray.push(...input);
+// 		} else {
+// 			inputArray.push(input);
+// 		}
+
+// 		super.push(inputArray);
+
+// 		this.updateIdxById(this._data.length - 1);
+
+// 	}
+
+// 	recalc(_items) {
+// 		this.rowsById = null;
+
+// 		if (refreshHints.isFilterNarrowing != prevRefreshHints.isFilterNarrowing ||
+// 			refreshHints.isFilterExpanding != prevRefreshHints.isFilterExpanding) {
+// 			filterCache = [];
+// 		}
+
+// 		var filteredItems = getFilteredAndPagedItems(_items);
+// 		totalRows = filteredItems.totalRows;
+// 		var newRows = filteredItems.rows;
+
+// 		groups = [];
+// 		if (groupingInfos.length) {
+// 			groups = extractGroups(newRows);
+// 			if (groups.length) {
+// 				addTotals(groups);
+// 				newRows = flattenGroupedRows(groups);
+// 			}
+// 		}
+
+// 		var diff = getRowDiffs(rows, newRows);
+
+// 		rows = newRows;
+
+// 		return diff;
+// 	}
+
+
+// 	refresh() {
+// 		if (this.suspend) {
+// 			return;
+// 		}
+
+// 		var countBefore = rows.length;
+// 		var totalRowsBefore = totalRows;
+
+// 		var diff = recalc(items, filter); // pass as direct refs to avoid closure perf hit
+
+// 		if (countBefore !== rows.length) {
+// 			this.onRowCountChanged.notify({ previous: countBefore, current: rows.length, dataView: self }, null, self);
+// 		}
+// 		if (diff.length > 0) {
+// 			this.onRowsChanged.notify({ rows: diff, dataView: self }, null, self);
+// 		}
+// 	}
+
+
+// }
