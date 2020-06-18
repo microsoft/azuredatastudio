@@ -6,6 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
+import * as utils from '../common/utils';
 
 import { Project } from '../models/project';
 import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStringSource';
@@ -115,42 +116,47 @@ export class DeployDatabaseDialog {
 	}
 
 	public async getConnectionUri(): Promise<string> {
-		// if target connection is a data source, have to check if already connected or if connection dialog needs to be opened
-		let connId: string;
+		try {
+			// if target connection is a data source, have to check if already connected or if connection dialog needs to be opened
+			let connId: string;
 
-		if (this.dataSourcesRadioButton?.checked) {
-			const dataSource = (this.dataSourcesDropDown!.value! as DataSourceDropdownValue).dataSource;
+			if (this.connectionIsDataSource) {
+				const dataSource = (this.dataSourcesDropDown!.value! as DataSourceDropdownValue).dataSource;
 
-			const connProfile: azdata.IConnectionProfile = {
-				serverName: dataSource.server,
-				databaseName: dataSource.database,
-				connectionName: dataSource.name,
-				userName: dataSource.username,
-				password: dataSource.password,
-				authenticationType: dataSource.integratedSecurity ? 'Integrated' : 'SqlAuth',
-				savePassword: false,
-				providerName: 'MSSQL',
-				saveProfile: true,
-				id: dataSource.name + '-dataSource',
-				options: []
-			};
+				const connProfile: azdata.IConnectionProfile = {
+					serverName: dataSource.server,
+					databaseName: dataSource.database,
+					connectionName: dataSource.name,
+					userName: dataSource.username,
+					password: dataSource.password,
+					authenticationType: dataSource.integratedSecurity ? 'Integrated' : 'SqlAuth',
+					savePassword: false,
+					providerName: 'MSSQL',
+					saveProfile: true,
+					id: dataSource.name + '-dataSource',
+					options: []
+				};
 
-			if (dataSource.integratedSecurity) {
-				connId = (await this.apiWrapper.connectionConnect(connProfile, false, false)).connectionId;
+				if (dataSource.integratedSecurity) {
+					connId = (await this.apiWrapper.connectionConnect(connProfile, false, false)).connectionId;
+				}
+				else {
+					connId = (await this.apiWrapper.openConnectionDialog(undefined, connProfile)).connectionId;
+				}
 			}
 			else {
-				connId = (await this.apiWrapper.openConnectionDialog(undefined, connProfile)).connectionId;
-			}
-		}
-		else {
-			if (!this.connection) {
-				throw new Error('Connection not defined.');
+				if (!this.connection) {
+					throw new Error('Connection not defined.');
+				}
+
+				connId = this.connection?.connectionId;
 			}
 
-			connId = this.connection?.connectionId;
+			return await this.apiWrapper.getUriForConnection(connId);
 		}
-
-		return await this.apiWrapper.getUriForConnection(connId);
+		catch (err) {
+			throw new Error(constants.unableToCreateDeploymentConnection + ': ' + utils.getErrorMessage(err));
+		}
 	}
 
 	public async deployClick(): Promise<void> {

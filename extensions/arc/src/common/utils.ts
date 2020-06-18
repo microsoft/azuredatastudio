@@ -6,12 +6,8 @@
 import * as vscode from 'vscode';
 import * as azurecore from '../../../azurecore/src/azurecore';
 import * as loc from '../localizedConstants';
+import { IconPathHelper, IconPath, ResourceType, Connectionmode } from '../constants';
 
-export enum ResourceType {
-	dataControllers = 'dataControllers',
-	postgresInstances = 'postgresInstances',
-	sqlManagedInstances = 'sqlManagedInstances'
-}
 /**
  * Converts the resource type name into the localized Display Name for that type.
  * @param resourceType The resource type name to convert
@@ -48,4 +44,25 @@ export async function getAzurecoreApi(): Promise<azurecore.IExtension> {
 		}
 	}
 	return azurecoreApi;
+}
+
+export function getResourceTypeIcon(resourceType: string): IconPath | undefined {
+	switch (resourceType) {
+		case ResourceType.sqlManagedInstances:
+			return IconPathHelper.miaa;
+		case ResourceType.postgresInstances:
+			return IconPathHelper.postgres;
+	}
+	return undefined;
+}
+
+export function getConnectionModeDisplayText(connectionMode: string | undefined): string {
+	connectionMode = connectionMode ?? '';
+	switch (connectionMode) {
+		case Connectionmode.connected:
+			return loc.connected;
+		case Connectionmode.disconnected:
+			return loc.disconnected;
+	}
+	return connectionMode;
 }

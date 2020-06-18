@@ -6,7 +6,8 @@
 import * as vscode from 'vscode';
 import { Authentication } from '../controller/auth';
 import { EndpointsRouterApi, EndpointModel, RegistrationRouterApi, RegistrationResponse, TokenRouterApi, SqlInstanceRouterApi } from '../controller/generated/v1/api';
-import { ResourceType, parseEndpoint } from '../common/utils';
+import { parseEndpoint } from '../common/utils';
+import { ResourceType } from '../constants';
 
 export interface Registration extends RegistrationResponse {
 	externalIp?: string;
