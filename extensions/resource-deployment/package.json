@@ -291,7 +291,7 @@
           "template": "%bdc-agreement%",
           "links": [
             {
-              "text": "%bdc-agreement-privacy-statement%",
+              "text": "%microsoft-privacy-statement%",
               "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
             },
             {
