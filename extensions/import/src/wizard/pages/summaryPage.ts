@@ -4,25 +4,16 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as nls from 'vscode-nls';
 
-import { ImportDataModel } from '../api/models';
 import { ImportPage } from '../api/importPage';
-import { FlatFileProvider, InsertDataResponse } from '../../services/contracts';
-import { FlatFileWizard } from '../flatFileWizard';
-
-const localize = nls.loadMessageBundle();
-
+import { InsertDataResponse } from '../../services/contracts';
+import * as constants from '../../common/constants';
 
 export class SummaryPage extends ImportPage {
 	private table: azdata.TableComponent;
 	private statusText: azdata.TextComponent;
 	private loading: azdata.LoadingComponent;
 	private form: azdata.FormContainer;
-
-	public constructor(instance: FlatFileWizard, wizardPage: azdata.window.WizardPage, model: ImportDataModel, view: azdata.ModelView, provider: FlatFileProvider) {
-		super(instance, wizardPage, model, view, provider);
-	}
 
 	async start(): Promise<boolean> {
 		this.table = this.view.modelBuilder.table().component();
@@ -33,11 +24,11 @@ export class SummaryPage extends ImportPage {
 			[
 				{
 					component: this.table,
-					title: localize('flatFileImport.importInformation', "Import information")
+					title: constants.importInformationText
 				},
 				{
 					component: this.loading,
-					title: localize('flatFileImport.importStatus', "Import status")
+					title: constants.importStatusText
 				}
 			]
 		).component();
@@ -70,11 +61,11 @@ export class SummaryPage extends ImportPage {
 	private populateTable() {
 		this.table.updateProperties({
 			data: [
-				[localize('flatFileImport.serverName', "Server name"), this.model.server.providerName],
-				[localize('flatFileImport.databaseName', "Database name"), this.model.database],
-				[localize('flatFileImport.tableName', "Table name"), this.model.table],
-				[localize('flatFileImport.tableSchema', "Table schema"), this.model.schema],
-				[localize('flatFileImport.fileImport', "File to be imported"), this.model.filePath]],
+				[constants.serverNameText, this.model.server.providerName],
+				[constants.databaseText, this.model.database],
+				[constants.tableNameText, this.model.table],
+				[constants.tableSchemaText, this.model.schema],
+				[constants.fileImportText, this.model.filePath]],
 			columns: ['Object type', 'Name'],
 			width: 600,
 			height: 200
@@ -96,9 +87,11 @@ export class SummaryPage extends ImportPage {
 
 		let result: InsertDataResponse;
 		let err;
+		let includePasswordInConnectionString = (this.model.server.options.connectionId === 'Integrated') ? false : true;
+
 		try {
 			result = await this.provider.sendInsertDataRequest({
-				connectionString: await this.getConnectionString(),
+				connectionString: await this._apiWrapper.getConnectionString(this.model.server.connectionId, includePasswordInConnectionString),
 				//TODO check what SSMS uses as batch size
 				batchSize: 500
 			});
@@ -118,7 +111,7 @@ export class SummaryPage extends ImportPage {
 			// TODO: When sql statements are in, implement this.
 			//let rows = await this.getCountRowsInserted();
 			//if (rows < 0) {
-			updateText = localize('flatFileImport.success.norows', "✔ You have successfully inserted the data into a table.");
+			updateText = constants.updateText;
 			//} else {
 			//updateText = localize('flatFileImport.success.rows', '✔ You have successfully inserted {0} rows.', rows);
 			//}
@@ -127,25 +120,6 @@ export class SummaryPage extends ImportPage {
 			value: updateText
 		});
 		return true;
-	}
-
-	/**
-	 * Gets the connection string to send to the middleware
-	 */
-	private async getConnectionString(): Promise<string> {
-		let options = this.model.server.options;
-		let connectionString: string;
-
-		if (options.authenticationType === 'Integrated') {
-			connectionString = `Data Source=${options.server + (options.port ? `,${options.port}` : '')};Initial Catalog=${this.model.database};Integrated Security=True`;
-		} else {
-			let credentials = await azdata.connection.getCredentials(this.model.server.connectionId);
-			connectionString = `Data Source=${options.server + (options.port ? `,${options.port}` : '')};Initial Catalog=${this.model.database};Integrated Security=False;User Id=${options.user};Password=${credentials.password}`;
-		}
-
-		// TODO: Fix this, it's returning undefined string.
-		//await azdata.connection.getConnectionString(this.model.server.connectionId, true);
-		return connectionString;
 	}
 
 	// private async getCountRowsInserted(): Promise<Number> {
