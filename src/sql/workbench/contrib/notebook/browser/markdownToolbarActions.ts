@@ -9,7 +9,6 @@ import { INotebookEditor, INotebookService } from 'sql/workbench/services/notebo
 import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
 import { IRange } from 'vs/editor/common/core/range';
 import { IIdentifiedSingleEditOperation } from 'vs/editor/common/model';
-import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { TextModel } from 'vs/editor/common/model/textModel';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
@@ -423,12 +422,12 @@ export class TogglePreviewAction extends ToggleableAction {
 		this.toggle(value);
 	}
 
-	public run(context: CellContext): Promise<boolean> {
+	public run(context: any): Promise<boolean> {
 		let self = this;
 		return new Promise<boolean>((resolve, reject) => {
 			try {
 				self.previewMode = !self.previewMode;
-				context.cell.showPreview = self.previewMode;
+				context.cellModel.showPreview = self.previewMode;
 				resolve(true);
 			} catch (e) {
 				reject(e);

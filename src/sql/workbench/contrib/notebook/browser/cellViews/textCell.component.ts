@@ -133,7 +133,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
 		this.setFocusAndScroll();
-		this.togglePreview();
 		this._register(this.cellModel.onOutputsChanged(e => {
 			this.updatePreview();
 		}));
@@ -141,6 +140,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			if (mode !== this.isEditMode) {
 				this.toggleEditMode(mode);
 			}
+		}));
+		this._register(this.cellModel.onCellPreviewChanged(preview => {
+			this.togglePreview(preview);
 		}));
 	}
 
@@ -216,8 +218,10 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	private updateTheme(theme: IColorTheme): void {
-		let outputElement = <HTMLElement>this.output.nativeElement;
-		outputElement.style.borderTopColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
+		let outputElement = <HTMLElement>this.output?.nativeElement;
+		if (outputElement) {
+			outputElement.style.borderTopColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
+		}
 	}
 
 	public handleContentChanged(): void {
@@ -233,8 +237,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	public togglePreview(showPreview?: boolean): void {
 		this.showPreview = showPreview !== undefined ? showPreview : !this.showPreview;
-		this.cellModel.showPreview = this.showPreview;
-		this.updatePreview();
+		this._changeRef.detectChanges();
 	}
 
 	private toggleUserSelect(userSelect: boolean): void {
