@@ -6,6 +6,7 @@
 import * as vscode from 'vscode';
 import * as loc from '../../localizedConstants';
 import { TreeNode } from './treeNode';
+import { refreshActionId } from '../../constants';
 
 /**
  * A placeholder TreeNode to display when credentials weren't entered
@@ -17,7 +18,7 @@ export class RefreshTreeNode extends TreeNode {
 	}
 
 	public command: vscode.Command = {
-		command: 'arc.refresh',
+		command: refreshActionId,
 		title: loc.refreshToEnterCredentials,
 		arguments: [this._parent]
 	};

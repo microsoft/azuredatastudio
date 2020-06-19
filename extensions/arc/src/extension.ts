@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as loc from './localizedConstants';
-import { IconPathHelper } from './constants';
+import { IconPathHelper, refreshActionId } from './constants';
 import { AzureArcTreeDataProvider } from './ui/tree/azureArcTreeDataProvider';
 import { ControllerTreeNode } from './ui/tree/controllerTreeNode';
 import { TreeNode } from './ui/tree/treeNode';
@@ -34,7 +34,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 		await treeDataProvider.removeController(controllerNode);
 	});
 
-	vscode.commands.registerCommand('arc.refresh', async (treeNode: TreeNode) => {
+	vscode.commands.registerCommand(refreshActionId, async (treeNode: TreeNode) => {
 		treeDataProvider.refreshNode(treeNode);
 	});
 

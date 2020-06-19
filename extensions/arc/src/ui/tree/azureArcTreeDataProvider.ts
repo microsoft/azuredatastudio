@@ -85,6 +85,8 @@ export class AzureArcTreeDataProvider implements vscode.TreeDataProvider<TreeNod
 		const provider = await this._credentialsProvider;
 		if (model.info.rememberPassword) {
 			provider.saveCredential(getCredentialId(model.info), password);
+		} else {
+			provider.deleteCredential(getCredentialId(model.info));
 		}
 	}
 
