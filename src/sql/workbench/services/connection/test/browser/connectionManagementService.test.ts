@@ -1029,6 +1029,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		assert.ok(called, 'expected onLanguageFlavorChanged event to be sent');
 	});
 
+
 	test('getUniqueConnectionProvidersByNameMap should return non CMS providers', () => {
 		let nameToDisplayNameMap: { [providerDisplayName: string]: string } = { 'MSSQL': 'SQL Server', 'MSSQL-CMS': 'SQL Server' };
 		let providerNames = Object.keys(connectionManagementService.getUniqueConnectionProvidersByNameMap(nameToDisplayNameMap));
@@ -1044,21 +1045,21 @@ suite('SQL ConnectionManagementService tests', () => {
 		assert.equal(providerNames[1], expectedNames[1]);
 	});
 
-	test.skip('ensureDefaultLanguageFlavor should not send event if uri is connected', () => { // {{SQL CARBON EDIT}} this test is broken regardless of my changes
+	test('ensureDefaultLanguageFlavor should not send event if uri is connected', () => {
 		let uri: string = 'Editor Uri';
 		let options: IConnectionCompletionOptions = {
 			params: undefined,
-			saveTheConnection: false,
+			saveTheConnection: true,
 			showDashboard: false,
 			showConnectionDialogOnError: false,
 			showFirewallRuleOnError: true
 		};
-		let connectionManagementService = createConnectionManagementService();
 		let called = false;
 		connectionManagementService.onLanguageFlavorChanged((changeParams: azdata.DidChangeLanguageFlavorParams) => {
 			called = true;
 		});
 		return connect(uri, options).then(() => {
+			called = false; //onLanguageFlavorChanged is called when connecting, must set back to false.
 			connectionManagementService.ensureDefaultLanguageFlavor(uri);
 			assert.equal(called, false, 'do not expect flavor change to be called');
 		});
