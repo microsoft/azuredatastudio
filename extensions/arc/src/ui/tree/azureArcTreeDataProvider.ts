@@ -47,16 +47,17 @@ export class AzureArcTreeDataProvider implements vscode.TreeDataProvider<TreeNod
 		return element;
 	}
 
-	public async addOrUpdateController(model: ControllerModel, password: string): Promise<void> {
+	public async addOrUpdateController(model: ControllerModel, password: string, refreshTree = true): Promise<void> {
 		const controllerNode = this._controllerNodes.find(node => model.equals(node.model));
 		if (controllerNode) {
-			// TODO: Check if auth is persisted correctly
 			controllerNode.model.info = model.info;
 		} else {
 			this._controllerNodes.push(new ControllerTreeNode(model, this._context));
 		}
 		await this.updatePassword(model, password);
-		this._onDidChangeTreeData.fire(undefined);
+		if (refreshTree) {
+			this._onDidChangeTreeData.fire(undefined);
+		}
 		await this.saveControllers();
 	}
 

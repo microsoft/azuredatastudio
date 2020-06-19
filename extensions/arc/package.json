@@ -61,6 +61,10 @@
       {
         "command": "arc.removeController",
         "title": "%command.removeController.title%"
+      },
+      {
+        "command": "arc.refresh",
+        "title": "%command.refresh.title%"
       }
     ],
     "menus": {
@@ -84,6 +88,10 @@
         {
           "command": "arc.removeController",
           "when": "false"
+        },
+        {
+          "command": "arc.refresh",
+          "when": "false"
         }
       ],
       "view/title": [
@@ -105,9 +113,14 @@
           "group": "navigation@1"
         },
         {
-          "command": "arc.removeController",
+          "command": "arc.refresh",
           "when": "view == azureArc && viewItem == dataControllers",
           "group": "navigation@2"
+        },
+        {
+          "command": "arc.removeController",
+          "when": "view == azureArc && viewItem == dataControllers",
+          "group": "navigation@3"
         }
       ]
     },

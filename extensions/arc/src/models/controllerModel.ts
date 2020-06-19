@@ -69,9 +69,8 @@ export class ControllerModel {
 				dialog.showDialog(this.info);
 				const model = await dialog.waitForClose();
 				if (model) {
+					this._treeDataProvider.addOrUpdateController(model.controllerModel, model.password, false);
 					this.setAuthentication(new BasicAuth(this.info.username, model.password));
-				} else {
-					throw new Error('Must enter password');
 				}
 			}
 

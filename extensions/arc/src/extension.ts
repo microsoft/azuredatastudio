@@ -28,11 +28,14 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 		if (model) {
 			await treeDataProvider.addOrUpdateController(model.controllerModel, model.password);
 		}
-
 	});
 
 	vscode.commands.registerCommand('arc.removeController', async (controllerNode: ControllerTreeNode) => {
 		await treeDataProvider.removeController(controllerNode);
+	});
+
+	vscode.commands.registerCommand('arc.refresh', async (treeNode: TreeNode) => {
+		treeDataProvider.refreshNode(treeNode);
 	});
 
 	vscode.commands.registerCommand('arc.openDashboard', async (treeNode: TreeNode) => {

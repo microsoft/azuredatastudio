@@ -32,7 +32,9 @@ export class ConnectToControllerDialog {
 
 			this.urlInputBox = this.modelBuilder.inputBox()
 				.withProperties<azdata.InputBoxProperties>({
-					value: controllerInfo?.url
+					value: controllerInfo?.url,
+					// If we have a model then we're editing an existing connection so don't let them modify the URL
+					readOnly: !!controllerInfo
 				}).component();
 			this.usernameInputBox = this.modelBuilder.inputBox()
 				.withProperties<azdata.InputBoxProperties>({

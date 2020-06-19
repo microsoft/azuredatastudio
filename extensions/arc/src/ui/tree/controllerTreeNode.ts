@@ -14,6 +14,7 @@ import { PostgresModel } from '../../models/postgresModel';
 import { parseInstanceName } from '../../common/utils';
 import { MiaaModel } from '../../models/miaaModel';
 import { Deferred } from '../../common/promise';
+import { RefreshTreeNode } from './refreshTreeNode';
 
 /**
  * The TreeNode for displaying an Azure Arc Controller
@@ -31,8 +32,16 @@ export class ControllerTreeNode extends TreeNode {
 	public async getChildren(): Promise<TreeNode[]> {
 		// First reset our deferred promise so we're sure we'll get the refreshed children
 		this._childrenRefreshPromise = new Deferred();
-		await this.model.refresh();
-		await this._childrenRefreshPromise.promise;
+		try {
+			await this.model.refresh();
+			await this._childrenRefreshPromise.promise;
+		} catch (err) {
+			// Couldn't get the children and TreeView doesn't have a way to collapse a node
+			// in a way that will refetch its children when expanded again so instead we
+			// display a tempory node that will prompt the user to re-enter credentials
+			return [new RefreshTreeNode(this)];
+		}
+
 		return this._children;
 	}
 
