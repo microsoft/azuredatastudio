@@ -169,6 +169,10 @@
         },
         {
           "command": "sqlDatabaseProjects.importDatabase"
+        },
+        {
+          "command": "sqlDatabaseProjects.addDatabaseReference",
+          "when": "false"
         }
       ],
       "view/item/context": [

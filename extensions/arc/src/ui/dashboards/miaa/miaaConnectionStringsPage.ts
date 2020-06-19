@@ -78,7 +78,7 @@ export class MiaaConnectionStringsPage extends DashboardPage {
 
 		const ip = this._instanceRegistration.externalIp;
 		const port = this._instanceRegistration.externalPort;
-		const username = this._miaaModel.connectionProfile.userName;
+		const username = this._miaaModel.username;
 
 		const pairs: KeyValue[] = [
 			new InputKeyValue('ADO.NET', `Server=tcp:${ip},${port};Persist Security Info=False;User ID=${username};Password={your_password_here};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;`),

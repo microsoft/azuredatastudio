@@ -9,7 +9,7 @@ import * as loc from '../../../localizedConstants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { IconPathHelper, cssStyles, ResourceType } from '../../../constants';
 import { ControllerModel, Registration } from '../../../models/controllerModel';
-import { getAzurecoreApi } from '../../../common/utils';
+import { getAzurecoreApi, promptForResourceDeletion, getDatabaseStateDisplayText } from '../../../common/utils';
 import { MiaaModel, DatabaseModel } from '../../../models/miaaModel';
 import { HybridSqlNsNameGetResponse } from '../../../controller/generated/v1/model/hybridSqlNsNameGetResponse';
 import { EndpointModel } from '../../../controller/generated/v1/api';
@@ -39,7 +39,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 
 	constructor(modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _miaaModel: MiaaModel) {
 		super(modelView);
-		this._instanceProperties.miaaAdmin = this._miaaModel.connectionProfile.userName;
+		this._instanceProperties.miaaAdmin = this._miaaModel.username || this._instanceProperties.miaaAdmin;
 		this._controllerModel.onRegistrationsUpdated((_: Registration[]) => {
 			this.eventuallyRunOnInitialized(() => {
 				this.handleRegistrationsUpdated().catch(e => console.log(e));
@@ -176,6 +176,20 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 			iconPath: IconPathHelper.delete
 		}).component();
 
+		deleteButton.onDidClick(async () => {
+			deleteButton.enabled = false;
+			try {
+				if (await promptForResourceDeletion(this._miaaModel.namespace, this._miaaModel.name)) {
+					await this._controllerModel.miaaDelete(this._miaaModel.namespace, this._miaaModel.name);
+					vscode.window.showInformationMessage(loc.resourceDeleted(this._miaaModel.name));
+				}
+			} catch (error) {
+				vscode.window.showErrorMessage(loc.resourceDeletionFailed(this._miaaModel.name, error));
+			} finally {
+				deleteButton.enabled = true;
+			}
+		});
+
 		const resetPasswordButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: loc.resetPassword,
 			iconPath: IconPathHelper.edit
@@ -239,7 +253,10 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 	}
 
 	private handleDatabasesUpdated(databases: DatabaseModel[]): void {
-		this._databasesTable.data = databases.map(d => [d.name, d.status]);
+		// If we were able to get the databases it means we have a good connection so update the username too
+		this._instanceProperties.miaaAdmin = this._miaaModel.username || this._instanceProperties.miaaAdmin;
+		this.refreshDisplayedProperties();
+		this._databasesTable.data = databases.map(d => [d.name, getDatabaseStateDisplayText(d.status)]);
 		this._databasesTableLoading.loading = false;
 	}
 
