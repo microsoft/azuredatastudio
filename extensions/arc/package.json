@@ -14,7 +14,8 @@
   "activationEvents": [
     "onCommand:arc.manageArcController",
     "onCommand:arc.manageMiaa",
-    "onCommand:arc.managePostgres"
+    "onCommand:arc.managePostgres",
+    "onView:azureArc"
   ],
   "repository": {
     "type": "git",
@@ -22,6 +23,14 @@
   },
   "main": "./out/extension",
   "contributes": {
+    "dataExplorer": {
+      "azureArc": [
+        {
+          "id": "azureArc",
+          "name": "%arc.view.title%"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "arc.manageArcController",
@@ -34,6 +43,19 @@
       {
         "command": "arc.managePostgres",
         "title": "%arc.managePostgres%"
+      },
+      {
+        "command": "arc.openDashboard",
+        "title": "%arc.openDashboard%"
+      },
+      {
+        "command": "arc.addController",
+        "title": "%command.addController.title%",
+        "icon": "$(add)"
+      },
+      {
+        "command": "arc.removeController",
+        "title": "%command.removeController.title%"
       }
     ],
     "menus": {
@@ -49,6 +71,33 @@
         {
           "command": "arc.managePostgres",
           "when": "false"
+        },
+        {
+          "command": "arc.openDashboard",
+          "when": "false"
+        },
+        {
+          "command": "arc.removeController",
+          "when": "false"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "arc.addController",
+          "when": "view == azureArc",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "arc.openDashboard",
+          "when": "view == azureArc && viewItem != loading",
+          "group": "navigation@1"
+        },
+        {
+          "command": "arc.removeController",
+          "when": "view == azureArc && viewItem == dataControllers",
+          "group": "navigation@2"
         }
       ]
     },
