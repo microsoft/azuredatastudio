@@ -405,10 +405,10 @@ export class TogglePreviewAction extends ToggleableAction {
 	) {
 		super(id, {
 			baseClass: TogglePreviewAction.baseClass,
-			toggleOnLabel: TogglePreviewAction.previewShowLabel,
-			toggleOnClass: TogglePreviewAction.previewShowCssClass,
-			toggleOffLabel: TogglePreviewAction.previewHideLabel,
-			toggleOffClass: TogglePreviewAction.previewHideCssClass,
+			toggleOffLabel: TogglePreviewAction.previewShowLabel,
+			toggleOffClass: TogglePreviewAction.previewShowCssClass,
+			toggleOnLabel: TogglePreviewAction.previewHideLabel,
+			toggleOnClass: TogglePreviewAction.previewHideCssClass,
 			maskedIconClass: TogglePreviewAction.maskedIconClass,
 			shouldToggleTooltip: toggleTooltip,
 			isOn: showPreview

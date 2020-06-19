@@ -183,7 +183,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		let trustedChanged = this.cellModel && this._lastTrustedMode !== this.cellModel.trustedMode;
 		let cellModelSourceJoined = Array.isArray(this.cellModel.source) ? this.cellModel.source.join('') : this.cellModel.source;
 		let contentJoined = Array.isArray(this._content) ? this._content.join('') : this._content;
-		let contentChanged = contentJoined !== cellModelSourceJoined || cellModelSourceJoined.length === 0;
+		let contentChanged = contentJoined !== cellModelSourceJoined || cellModelSourceJoined.length === 0 || this.doShowPreview === true;
 		if (trustedChanged || contentChanged) {
 			this._lastTrustedMode = this.cellModel.trustedMode;
 			if ((!cellModelSourceJoined) && !this.isEditMode) {
@@ -238,6 +238,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	public togglePreview(showPreview?: boolean): void {
 		this.doShowPreview = showPreview !== undefined ? showPreview : !this.doShowPreview;
 		this._changeRef.detectChanges();
+		this.updatePreview();
 	}
 
 	private toggleUserSelect(userSelect: boolean): void {
