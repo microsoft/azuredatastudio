@@ -60,10 +60,10 @@ export class PostgresOverviewPage extends DashboardPage {
 		// Properties
 		this.properties = this.modelView.modelBuilder.propertiesContainer().component();
 		this.propertiesLoading = this.modelView.modelBuilder.loadingComponent().withItem(this.properties).component();
-		content.addItem(this.propertiesLoading, { CSSStyles: { ...cssStyles.text, 'font-size': '20px' } });
+		content.addItem(this.propertiesLoading);
 
 		// Service endpoints
-		const titleCSS = { ...cssStyles.title, 'margin-block-start': '2em', 'margin-block-end': '1em' };
+		const titleCSS = { ...cssStyles.title, 'margin-block-start': '2em', 'margin-block-end': '0' };
 		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: loc.serviceEndpoints,
 			CSSStyles: titleCSS

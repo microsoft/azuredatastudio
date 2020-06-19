@@ -169,9 +169,10 @@ export async function promptForResourceDeletion(namespace: string, name: string)
 }
 
 /**
- *
- * @param validate
- * @returns
+ * Opens an input box prompting the user to enter and confirm a password
+ * @param validate A function that accepts the password and returns an error message if it's invalid
+ * @returns Promise resolving to the password if it passed validation,
+ * or false if the input box was closed for any other reason
  */
 export async function promptAndConfirmPassword(validate: (input: string) => string): Promise<string | false> {
 	const title = loc.resetPassword;
