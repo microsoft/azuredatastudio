@@ -35,10 +35,10 @@ import { IProductService } from 'vs/platform/product/common/productService';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { badgeBackground, badgeForeground, contrastBorder, editorForeground } from 'vs/platform/theme/common/colorRegistry';
-import { attachStylerCallback } from 'vs/platform/theme/common/styler';
+import { attachStylerCallback, attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IStorageKeysSyncRegistryService } from 'vs/platform/userDataSync/common/storageKeys';
-import { getUserDataSyncStore, IUserDataSyncService, SyncStatus, IUserDataSyncEnablementService } from 'vs/platform/userDataSync/common/userDataSync';
+import { getUserDataSyncStore, IUserDataSyncService, SyncStatus, IUserDataAutoSyncService } from 'vs/platform/userDataSync/common/userDataSync';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { IEditorMemento, IEditorPane } from 'vs/workbench/common/editor';
 import { attachSuggestEnabledInputBoxStyler, SuggestEnabledInput } from 'vs/workbench/contrib/codeEditor/browser/suggestEnabledInput/suggestEnabledInput';
@@ -170,7 +170,7 @@ export class SettingsEditor2 extends BaseEditor {
 		@IKeybindingService private readonly keybindingService: IKeybindingService,
 		@IStorageKeysSyncRegistryService storageKeysSyncRegistryService: IStorageKeysSyncRegistryService,
 		@IProductService private readonly productService: IProductService,
-		@IUserDataSyncEnablementService private readonly userDataSyncEnablementService: IUserDataSyncEnablementService
+		@IUserDataAutoSyncService private readonly userDataAutoSyncService: IUserDataAutoSyncService
 	) {
 		super(SettingsEditor2.ID, telemetryService, themeService, storageService);
 		this.delayedFilterLogging = new Delayer<void>(1000);
@@ -475,7 +475,7 @@ export class SettingsEditor2 extends BaseEditor {
 		this.settingsTargetsWidget.settingsTarget = ConfigurationTarget.USER_LOCAL;
 		this.settingsTargetsWidget.onDidTargetChange(target => this.onDidSettingsTargetChange(target));
 
-		if (syncAllowed(this.productService, this.configurationService) && this.userDataSyncEnablementService.canToggleEnablement()) {
+		if (syncAllowed(this.productService, this.configurationService) && this.userDataAutoSyncService.canToggleEnablement()) {
 			const syncControls = this._register(this.instantiationService.createInstance(SyncControls, headerControlsContainer));
 			this._register(syncControls.onDidChangeLastSyncedLabel(lastSyncedLabel => this.updateInputAriaLabel(lastSyncedLabel)));
 		}
@@ -1408,13 +1408,15 @@ class SyncControls extends Disposable {
 		container: HTMLElement,
 		@ICommandService private readonly commandService: ICommandService,
 		@IUserDataSyncService private readonly userDataSyncService: IUserDataSyncService,
-		@IUserDataSyncEnablementService private readonly userDataSyncEnablementService: IUserDataSyncEnablementService
+		@IUserDataAutoSyncService private readonly userDataAutoSyncService: IUserDataAutoSyncService,
+		@IThemeService themeService: IThemeService,
 	) {
 		super();
 
 		const headerRightControlsContainer = DOM.append(container, $('.settings-right-controls'));
 		const turnOnSyncButtonContainer = DOM.append(headerRightControlsContainer, $('.turn-on-sync'));
 		this.turnOnSyncButton = this._register(new Button(turnOnSyncButtonContainer, { title: true }));
+		this._register(attachButtonStyler(this.turnOnSyncButton, themeService));
 		this.lastSyncedLabel = DOM.append(headerRightControlsContainer, $('.last-synced-label'));
 		DOM.hide(this.lastSyncedLabel);
 
@@ -1423,7 +1425,7 @@ class SyncControls extends Disposable {
 		DOM.hide(this.turnOnSyncButton.element);
 
 		this._register(this.turnOnSyncButton.onDidClick(async () => {
-			await this.commandService.executeCommand('workbench.userData.actions.syncStart');
+			await this.commandService.executeCommand('workbench.userDataSync.actions.turnOn');
 		}));
 
 		this.updateLastSyncedTime();
@@ -1439,7 +1441,7 @@ class SyncControls extends Disposable {
 			this.update();
 		}));
 
-		this._register(this.userDataSyncEnablementService.onDidChangeEnablement(() => {
+		this._register(this.userDataAutoSyncService.onDidChangeEnablement(() => {
 			this.update();
 		}));
 	}
@@ -1463,7 +1465,7 @@ class SyncControls extends Disposable {
 			return;
 		}
 
-		if (this.userDataSyncEnablementService.isEnabled()) {
+		if (this.userDataAutoSyncService.isEnabled()) {
 			DOM.show(this.lastSyncedLabel);
 			DOM.hide(this.turnOnSyncButton.element);
 		} else {

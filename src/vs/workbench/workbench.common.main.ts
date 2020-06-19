@@ -85,6 +85,7 @@ import 'vs/workbench/services/filesConfiguration/common/filesConfigurationServic
 import 'vs/workbench/services/views/browser/viewDescriptorService';
 import 'vs/workbench/services/quickinput/browser/quickInputService';
 import 'vs/workbench/services/userDataSync/browser/userDataSyncWorkbenchService';
+import 'vs/workbench/services/authentication/browser/authenticationService';
 
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { ExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionGalleryService';
@@ -111,10 +112,10 @@ import { IDownloadService } from 'vs/platform/download/common/download';
 import { DownloadService } from 'vs/platform/download/common/downloadService';
 import { OpenerService } from 'vs/editor/browser/services/openerService';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
-import { IUserDataSyncEnablementService } from 'vs/platform/userDataSync/common/userDataSync';
-import { UserDataSyncEnablementService } from 'vs/platform/userDataSync/common/userDataSyncEnablementService';
+import { IUserDataSyncResourceEnablementService } from 'vs/platform/userDataSync/common/userDataSync';
+import { UserDataSyncResourceEnablementService } from 'vs/platform/userDataSync/common/userDataSyncResourceEnablementService';
 
-registerSingleton(IUserDataSyncEnablementService, UserDataSyncEnablementService);
+registerSingleton(IUserDataSyncResourceEnablementService, UserDataSyncResourceEnablementService);
 registerSingleton(IGlobalExtensionEnablementService, GlobalExtensionEnablementService);
 registerSingleton(IExtensionGalleryService, ExtensionGalleryService, true);
 registerSingleton(IContextViewService, ContextViewService, true);
@@ -387,6 +388,9 @@ import 'vs/workbench/contrib/welcome/common/viewsWelcome.contribution';
 // Timeline
 import 'vs/workbench/contrib/timeline/browser/timeline.contribution';
 
+// Hover
+import 'vs/workbench/contrib/hover/browser/hover.contribution';
+
 //#endregion
 
 //#region -- contributions
@@ -400,9 +404,11 @@ import 'sql/workbench/contrib/dataExplorer/browser/dataExplorer.contribution';
 import 'sql/workbench/contrib/dataExplorer/browser/nodeActions.common.contribution';
 import 'sql/workbench/contrib/dataExplorer/browser/extensions.contribution';
 
-
 //editor replacement
 import 'sql/workbench/contrib/editorReplacement/common/editorReplacer.contribution';
+
+//configurationUpgrader replacement
+import 'sql/workbench/contrib/configuration/common/configurationUpgrader.contribution';
 
 // tasks
 import 'sql/workbench/contrib/tasks/browser/tasks.contribution';

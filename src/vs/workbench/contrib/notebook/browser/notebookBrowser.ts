@@ -34,6 +34,7 @@ export const NOTEBOOK_IS_ACTIVE_EDITOR = ContextKeyExpr.equals('activeEditor', '
 
 // Editor keys
 export const NOTEBOOK_EDITOR_FOCUSED = new RawContextKey<boolean>('notebookEditorFocused', false);
+export const NOTEBOOK_OUTPUT_FOCUSED = new RawContextKey<boolean>('notebookOutputFocused', false);
 export const NOTEBOOK_EDITOR_EDITABLE = new RawContextKey<boolean>('notebookEditable', true);
 export const NOTEBOOK_EDITOR_RUNNABLE = new RawContextKey<boolean>('notebookRunnable', true);
 export const NOTEBOOK_EDITOR_EXECUTING_NOTEBOOK = new RawContextKey<boolean>('notebookExecuting', false);
@@ -94,7 +95,6 @@ export interface MarkdownCellLayoutChangeEvent {
 	font?: BareFontInfo;
 	outerWidth?: number;
 	totalHeight?: number;
-	editorHeight?: boolean;
 }
 
 export interface ICellViewModel {
@@ -110,6 +110,7 @@ export interface ICellViewModel {
 	currentTokenSource: CancellationTokenSource | undefined;
 	focusMode: CellFocusMode;
 	getText(): string;
+	getTextLength(): number;
 	metadata: NotebookCellMetadata | undefined;
 	textModel: ITextModel | undefined;
 	hasModel(): this is IEditableCellViewModel;
@@ -158,6 +159,8 @@ export interface INotebookEditor extends IEditor {
 	isNotebookEditor: boolean;
 	activeKernel: INotebookKernelInfo | undefined;
 	readonly onDidChangeKernel: Event<void>;
+
+	isDisposed: boolean;
 
 	getId(): string;
 	getDomNode(): HTMLElement;
@@ -218,19 +221,6 @@ export interface INotebookEditor extends IEditor {
 	 * Move a cell above or below another cell
 	 */
 	moveCell(cell: ICellViewModel, relativeToCell: ICellViewModel, direction: 'above' | 'below'): Promise<boolean>;
-
-	/**
-	 * Switch the cell into editing mode.
-	 *
-	 * For code cell, the monaco editor will be focused.
-	 * For markdown cell, it will switch from preview mode to editing mode, which focuses the monaco editor.
-	 */
-	editNotebookCell(cell: ICellViewModel): void;
-
-	/**
-	 * Quit cell editing mode.
-	 */
-	saveNotebookCell(cell: ICellViewModel): void;
 
 	/**
 	 * Focus the container of a cell (the monaco editor inside is not focused).
@@ -305,32 +295,32 @@ export interface INotebookEditor extends IEditor {
 	/**
 	 * Reveal a line in notebook cell into viewport with minimal scrolling.
 	 */
-	revealLineInView(cell: ICellViewModel, line: number): void;
+	revealLineInViewAsync(cell: ICellViewModel, line: number): Promise<void>;
 
 	/**
 	 * Reveal a line in notebook cell into viewport center.
 	 */
-	revealLineInCenter(cell: ICellViewModel, line: number): void;
+	revealLineInCenterAsync(cell: ICellViewModel, line: number): Promise<void>;
 
 	/**
 	 * Reveal a line in notebook cell into viewport center.
 	 */
-	revealLineInCenterIfOutsideViewport(cell: ICellViewModel, line: number): void;
+	revealLineInCenterIfOutsideViewportAsync(cell: ICellViewModel, line: number): Promise<void>;
 
 	/**
 	 * Reveal a range in notebook cell into viewport with minimal scrolling.
 	 */
-	revealRangeInView(cell: ICellViewModel, range: Range): void;
+	revealRangeInViewAsync(cell: ICellViewModel, range: Range): Promise<void>;
 
 	/**
 	 * Reveal a range in notebook cell into viewport center.
 	 */
-	revealRangeInCenter(cell: ICellViewModel, range: Range): void;
+	revealRangeInCenterAsync(cell: ICellViewModel, range: Range): Promise<void>;
 
 	/**
 	 * Reveal a range in notebook cell into viewport center.
 	 */
-	revealRangeInCenterIfOutsideViewport(cell: ICellViewModel, range: Range): void;
+	revealRangeInCenterIfOutsideViewportAsync(cell: ICellViewModel, range: Range): Promise<void>;
 
 	/**
 	 * Set hidden areas on cell text models.
@@ -391,12 +381,12 @@ export interface INotebookCellList {
 	revealElementInView(element: ICellViewModel): void;
 	revealElementInCenterIfOutsideViewport(element: ICellViewModel): void;
 	revealElementInCenter(element: ICellViewModel): void;
-	revealElementLineInView(element: ICellViewModel, line: number): void;
-	revealElementLineInCenter(element: ICellViewModel, line: number): void;
-	revealElementLineInCenterIfOutsideViewport(element: ICellViewModel, line: number): void;
-	revealElementRangeInView(element: ICellViewModel, range: Range): void;
-	revealElementRangeInCenter(element: ICellViewModel, range: Range): void;
-	revealElementRangeInCenterIfOutsideViewport(element: ICellViewModel, range: Range): void;
+	revealElementLineInViewAsync(element: ICellViewModel, line: number): Promise<void>;
+	revealElementLineInCenterAsync(element: ICellViewModel, line: number): Promise<void>;
+	revealElementLineInCenterIfOutsideViewportAsync(element: ICellViewModel, line: number): Promise<void>;
+	revealElementRangeInViewAsync(element: ICellViewModel, range: Range): Promise<void>;
+	revealElementRangeInCenterAsync(element: ICellViewModel, range: Range): Promise<void>;
+	revealElementRangeInCenterIfOutsideViewportAsync(element: ICellViewModel, range: Range): Promise<void>;
 	setHiddenAreas(_ranges: ICellRange[], triggerViewUpdate: boolean): boolean;
 	domElementOfElement(element: ICellViewModel): HTMLElement | null;
 	focusView(): void;
@@ -421,6 +411,7 @@ export interface BaseCellRenderTemplate {
 	container: HTMLElement;
 	cellContainer: HTMLElement;
 	toolbar: ToolBar;
+	betweenCellToolbar: ToolBar;
 	focusIndicator: HTMLElement;
 	disposables: DisposableStore;
 	elementDisposables: DisposableStore;
@@ -445,6 +436,7 @@ export interface CodeCellRenderTemplate extends BaseCellRenderTemplate {
 	runButtonContainer: HTMLElement;
 	executionOrderLabel: HTMLElement;
 	outputContainer: HTMLElement;
+	focusSinkElement: HTMLElement;
 	editor: ICodeEditor;
 	progressBar: ProgressBar;
 	timer: TimerRenderer;

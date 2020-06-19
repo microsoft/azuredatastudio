@@ -15,6 +15,10 @@ const defaults: ICellSelectionModelOptions = {
 	selectActiveCell: true
 };
 
+interface EventTargetWithClassName extends EventTarget {
+	className: string | undefined;
+}
+
 export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slick.Range>> {
 	private grid!: Slick.Grid<T>;
 	private selector: ICellRangeSelector<T>;
@@ -110,6 +114,9 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 	}
 
 	private handleHeaderClick(e: MouseEvent, args: Slick.OnHeaderClickEventArgs<T>) {
+		if ((e.target as EventTargetWithClassName).className === 'slick-resizable-handle') {
+			return;
+		}
 		if (!isUndefinedOrNull(args.column)) {
 			let columnIndex = this.grid.getColumnIndex(args.column.id!);
 			if (this.grid.canCellBeSelected(0, columnIndex)) {
