@@ -28,15 +28,19 @@ export class DeployDatabaseDialog {
 	private targetDatabaseTextBox: azdata.InputBoxComponent | undefined;
 	private connectionsRadioButton: azdata.RadioButtonComponent | undefined;
 	private dataSourcesRadioButton: azdata.RadioButtonComponent | undefined;
+	private loadProfileButton: azdata.ButtonComponent | undefined;
+	private sqlCmdVariablesTable: azdata.TableComponent | undefined;
 	private formBuilder: azdata.FormBuilder | undefined;
 
 	private connection: azdata.connection.Connection | undefined;
 	private connectionIsDataSource: boolean | undefined;
+	private profileSqlCmdVars: Record<string, string> | undefined;
 
 	private toDispose: vscode.Disposable[] = [];
 
 	public deploy: ((proj: Project, profile: IDeploymentProfile) => any) | undefined;
 	public generateScript: ((proj: Project, profile: IGenerateScriptProfile) => any) | undefined;
+	public readPublishProfile: ((profileUri: vscode.Uri) => any) | undefined;
 
 	constructor(private apiWrapper: ApiWrapper, private project: Project) {
 		this.dialog = azdata.window.createModelViewDialog(constants.deployDialogName);
@@ -87,6 +91,21 @@ export class DeployDatabaseDialog {
 				this.tryEnableGenerateScriptAndOkButtons();
 			});
 
+			this.loadProfileButton = this.createLoadProfileButton(view);
+			this.sqlCmdVariablesTable = view.modelBuilder.table().withProperties({
+				title: constants.sqlCmdTableLabel,
+				data: this.convertSqlCmdVarsToTableFormat(this.project.sqlCmdVariables),
+				columns: [
+					{
+						value: constants.sqlCmdVariableColumn
+					},
+					{
+						value: constants.sqlCmdValueColumn,
+					}],
+				width: 400,
+				height: 400
+			}).component();
+
 			this.formBuilder = <azdata.FormBuilder>view.modelBuilder.formContainer()
 				.withFormItems([
 					{
@@ -100,6 +119,10 @@ export class DeployDatabaseDialog {
 							{
 								title: constants.databaseNameLabel,
 								component: this.targetDatabaseTextBox
+							},
+							{
+								title: constants.profileWarningText,
+								component: <azdata.ButtonComponent>this.loadProfileButton
 							}
 						]
 					}
@@ -109,6 +132,15 @@ export class DeployDatabaseDialog {
 				.withLayout({
 					width: '100%'
 				});
+
+			// add SQLCMD variables table if the project has any
+			if (Object.keys(this.project.sqlCmdVariables).length > 0) {
+				this.formBuilder.insertFormItem({
+					title: constants.sqlCmdTableLabel,
+					component: <azdata.TableComponent>this.sqlCmdVariablesTable
+				},
+					6);
+			}
 
 			let formModel = this.formBuilder.component();
 			await view.initializeModel(formModel);
@@ -160,11 +192,12 @@ export class DeployDatabaseDialog {
 	}
 
 	public async deployClick(): Promise<void> {
+		const sqlCmdVars = this.getSqlCmdVariablesForDeploy();
 		const profile: IDeploymentProfile = {
 			databaseName: this.getTargetDatabaseName(),
 			upgradeExisting: true,
 			connectionUri: await this.getConnectionUri(),
-			sqlCmdVariables: this.project.sqlCmdVariables
+			sqlCmdVariables: sqlCmdVars
 		};
 
 		this.apiWrapper.closeDialog(this.dialog);
@@ -174,10 +207,11 @@ export class DeployDatabaseDialog {
 	}
 
 	public async generateScriptClick(): Promise<void> {
+		const sqlCmdVars = this.getSqlCmdVariablesForDeploy();
 		const profile: IGenerateScriptProfile = {
 			databaseName: this.getTargetDatabaseName(),
 			connectionUri: await this.getConnectionUri(),
-			sqlCmdVariables: this.project.sqlCmdVariables
+			sqlCmdVariables: sqlCmdVars
 		};
 
 		this.apiWrapper.closeDialog(this.dialog);
@@ -187,6 +221,18 @@ export class DeployDatabaseDialog {
 		}
 
 		this.dispose();
+	}
+
+	private getSqlCmdVariablesForDeploy(): Record<string, string> {
+		// get SQLCMD variables from project
+		let sqlCmdVariables = { ...this.project.sqlCmdVariables };
+
+		// update with SQLCMD variables loaded from profile if there are any
+		for (const key in this.profileSqlCmdVars) {
+			sqlCmdVariables[key] = this.profileSqlCmdVars[key];
+		}
+
+		return sqlCmdVariables;
 	}
 
 	public getTargetDatabaseName(): string {
@@ -342,6 +388,64 @@ export class DeployDatabaseDialog {
 		});
 
 		return clearButton;
+	}
+
+	private createLoadProfileButton(view: azdata.ModelView): azdata.ButtonComponent {
+		let loadProfileButton: azdata.ButtonComponent = view.modelBuilder.button().withProperties({
+			label: constants.loadProfileButtonText,
+			title: constants.loadProfileButtonText,
+			ariaLabel: constants.loadProfileButtonText,
+			width: '120px'
+		}).component();
+
+		loadProfileButton.onDidClick(async () => {
+			const fileUris = await this.apiWrapper.showOpenDialog(
+				{
+					canSelectFiles: true,
+					canSelectFolders: false,
+					canSelectMany: false,
+					defaultUri: vscode.Uri.parse(this.project.projectFolderPath),
+					filters: {
+						[constants.publishSettingsFiles]: ['publish.xml']
+					}
+				}
+			);
+
+			if (!fileUris || fileUris.length === 0) {
+				return;
+			}
+
+			if (this.readPublishProfile) {
+				const result = await this.readPublishProfile(fileUris[0]);
+				(<azdata.InputBoxComponent>this.targetDatabaseTextBox).value = result.databaseName;
+				this.profileSqlCmdVars = result.sqlCmdVariables;
+				const data = this.convertSqlCmdVarsToTableFormat(this.getSqlCmdVariablesForDeploy());
+
+				(<azdata.TableComponent>this.sqlCmdVariablesTable).updateProperties({
+					data: data
+				});
+
+				// add SQLCMD Variables table if it wasn't there before
+				if (Object.keys(this.project.sqlCmdVariables).length === 0) {
+					this.formBuilder?.insertFormItem({
+						title: constants.sqlCmdTableLabel,
+						component: <azdata.TableComponent>this.sqlCmdVariablesTable
+					},
+						6);
+				}
+			}
+		});
+
+		return loadProfileButton;
+	}
+
+	private convertSqlCmdVarsToTableFormat(sqlCmdVars: Record<string, string>): string[][] {
+		let data = [];
+		for (let key in sqlCmdVars) {
+			data.push([key, sqlCmdVars[key]]);
+		}
+
+		return data;
 	}
 
 	// only enable Generate Script and Ok buttons if all fields are filled

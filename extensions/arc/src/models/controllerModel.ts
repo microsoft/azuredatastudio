@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 import { Authentication } from '../controller/auth';
 import { EndpointsRouterApi, EndpointModel, RegistrationRouterApi, RegistrationResponse, TokenRouterApi, SqlInstanceRouterApi } from '../controller/generated/v1/api';
-import { parseEndpoint } from '../common/utils';
+import { parseEndpoint, parseInstanceName } from '../common/utils';
 import { ResourceType } from '../constants';
 
 export interface Registration extends RegistrationResponse {
@@ -31,7 +31,7 @@ export class ControllerModel {
 	public endpointsLastUpdated?: Date;
 	public registrationsLastUpdated?: Date;
 
-	constructor(controllerUrl: string, auth: Authentication) {
+	constructor(public readonly controllerUrl: string, public readonly auth: Authentication) {
 		this._endpointsRouter = new EndpointsRouterApi(controllerUrl);
 		this._endpointsRouter.setDefaultAuthentication(auth);
 
@@ -84,16 +84,7 @@ export class ControllerModel {
 
 	public getRegistration(type: string, namespace: string, name: string): Registration | undefined {
 		return this._registrations.find(r => {
-			// Resources deployed outside the controller's namespace are named in the format 'namespace_name'
-			let instanceName = r.instanceName!;
-			const parts: string[] = instanceName.split('_');
-			if (parts.length === 2) {
-				instanceName = parts[1];
-			}
-			else if (parts.length > 2) {
-				throw new Error(`Cannot parse resource '${instanceName}'. Acceptable formats are 'namespace_name' or 'name'.`);
-			}
-			return r.instanceType === type && r.instanceNamespace === namespace && instanceName === name;
+			return r.instanceType === type && r.instanceNamespace === namespace && parseInstanceName(r.instanceName) === name;
 		});
 	}
 

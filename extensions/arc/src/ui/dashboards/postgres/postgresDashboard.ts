@@ -19,8 +19,8 @@ import { PostgresDiagnoseAndSolveProblemsPage } from './postgresDiagnoseAndSolve
 import { PostgresSupportRequestPage } from './postgresSupportRequestPage';
 
 export class PostgresDashboard extends Dashboard {
-	constructor(title: string, private _context: vscode.ExtensionContext, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
-		super(title);
+	constructor(private _context: vscode.ExtensionContext, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
+		super(loc.postgresDashboard);
 	}
 
 	protected async registerTabs(modelView: azdata.ModelView): Promise<(azdata.DashboardTab | azdata.DashboardTabGroup)[]> {
