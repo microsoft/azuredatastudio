@@ -82,11 +82,13 @@ function getVersion(remote: boolean) {
 }
 
 function fetch(url: string): Promise<Buffer | undefined> {
-	return new Promise<Buffer>((resolve, reject) => {
+	return new Promise<Buffer | undefined>((resolve, reject) => {
 		const buffers: Buffer[] = [];
-		const req = request(url, async res => {
+		const req = request(url, res => {
 			if (res.headers.location) {
-				resolve(await fetch(res.headers.location));
+				resolve(fetch(res.headers.location));
+			} else if (res.statusCode === 404) {
+				reject(`${url}: ${res.statusMessage}`);
 			} else {
 				res.on('data', chunk => buffers.push(chunk));
 				res.on('end', () => {
