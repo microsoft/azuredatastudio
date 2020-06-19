@@ -164,7 +164,7 @@ steps:
       set -e
       shopt -s globstar
       mkdir -p $(Build.ArtifactStagingDirectory)/test-results/coverage
-      cp --parents $(Build.SourcesDirectory)/extensions/*/coverage/** $(Build.ArtifactStagingDirectory)/test-results/coverage
+      cp --parents -r $(Build.SourcesDirectory)/extensions/*/coverage/** $(Build.ArtifactStagingDirectory)/test-results/coverage
     displayName: Copy Coverage
 
   - task: PublishTestResults@2
