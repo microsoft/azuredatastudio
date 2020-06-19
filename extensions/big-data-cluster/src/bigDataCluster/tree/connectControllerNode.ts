@@ -11,12 +11,12 @@ import { BdcItemType } from '../constants';
 
 const localize = nls.loadMessageBundle();
 
-export class AddControllerNode extends TreeNode {
+export class ConnectControllerNode extends TreeNode {
 	private readonly nodeType: string;
 
 	constructor() {
-		super(localize('textBigDataClusterControllerWithDots', "Add SQL Server Big Data Cluster controller..."));
-		this.nodeType = BdcItemType.addController;
+		super(localize('textBigDataClusterControllerWithDots', "Connect to SQL Server Big Data Cluster controller..."));
+		this.nodeType = BdcItemType.connectController;
 	}
 
 	public async getChildren(): Promise<TreeNode[]> {
@@ -27,7 +27,7 @@ export class AddControllerNode extends TreeNode {
 		let item = new vscode.TreeItem(this.label, vscode.TreeItemCollapsibleState.None);
 		item.command = {
 			title: localize('textConnectToController', "Connect to Controller"),
-			command: 'bigDataClusters.command.addController',
+			command: 'bigDataClusters.command.connectController',
 			arguments: [this]
 		};
 		item.contextValue = this.nodeType;
