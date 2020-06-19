@@ -16,7 +16,7 @@
 			"request": "attach",
 			"restart": true,
 			"name": "Attach to Extension Host",
-			"timeout": 300000,
+			"timeout": 30000,
 			"port": 5870,
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
@@ -69,7 +69,7 @@
 			"type": "pwa-chrome",
 			"request": "attach",
 			"name": "Attach to azuredatastudio",
-			"timeout": 500000,
+			"timeout": 50000,
 			"port": 9222
 		},
 		{
@@ -86,7 +86,7 @@
 				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
 			},
 			"port": 9222,
-			"timeout": 200000,
+			"timeout": 20000,
 			"env": {
 				"VSCODE_EXTHOST_WILL_SEND_SOCKET": null
 			},
@@ -109,7 +109,7 @@
 			"type": "chrome",
 			"request": "launch",
 			"name": "Launch ADS (Web) (TBD)",
-			"program": "${workspaceFolder}/resources/serverless/code-web.js",
+			"program": "${workspaceFolder}/scripts/code-web.js",
 			"presentation": {
 				"group": "0_vscode",
 				"order": 2
@@ -139,18 +139,6 @@
 			"request": "launch",
 			"name": "Launch ADS (Web, Chrome) (TBD)",
 			"url": "http://localhost:8080",
-			"preLaunchTask": "Run web",
-			"presentation": {
-				"group": "0_vscode",
-				"order": 3
-			}
-		},
-		{
-			"type": "pwa-msedge",
-			"request": "launch",
-			"name": "VS Code (Web, Edge)",
-			"url": "http://localhost:8080",
-			"pauseForSourceMap": false,
 			"preLaunchTask": "Run web",
 			"presentation": {
 				"group": "0_vscode",
@@ -227,7 +215,7 @@
 				"runtimeExecutable": "${workspaceFolder}/scripts/test-extensions-unit.sh"
 			},
 			"webRoot": "${workspaceFolder}",
-			"timeout": 450000
+			"timeout": 45000
 		},
 		{
 			"type": "chrome",
@@ -243,7 +231,7 @@
 				"runtimeExecutable": "${workspaceFolder}/scripts/sql-test-integration.sh"
 			},
 			"webRoot": "${workspaceFolder}",
-			"timeout": 450000
+			"timeout": 45000
 		},
 	],
 	"compounds": [
@@ -263,7 +251,6 @@
 		},
 		{
 			"name": "Azure Data Studio",
-			"stopAll": true,
 			"configurations": [
 				"Launch azuredatastudio",
 				"Attach to Main Process",

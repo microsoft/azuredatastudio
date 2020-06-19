@@ -56,6 +56,7 @@ export class PostgresOverviewPage extends DashboardPage {
 		const root = this.modelView.modelBuilder.divContainer().component();
 		const content = this.modelView.modelBuilder.divContainer().component();
 		root.addItem(content, { CSSStyles: { 'margin': '10px 20px 0px 20px' } });
+
 		// Properties
 		this.properties = this.modelView.modelBuilder.propertiesContainer().component();
 		this.propertiesLoading = this.modelView.modelBuilder.loadingComponent().withItem(this.properties).component();
