@@ -110,13 +110,12 @@ export function getDatabaseStateDisplayText(state: string): string {
 
 /**
  * Opens an input box prompting and validating the user's input.
- * Used because vscode.window.showInputBox doens't let you set the title.
  * @param options Options for the input box
  * @param title An optional title for the input box
  * @returns Promise resolving to the user's input if it passed validation,
- * false if the input box was closed for any other reason
+ * or undefined if the input box was closed for any other reason
  */
-async function promptInputBox(title: string, options: vscode.InputBoxOptions): Promise<string | false> {
+async function promptInputBox(title: string, options: vscode.InputBoxOptions): Promise<string> {
 	const inputBox = vscode.window.createInputBox();
 	inputBox.title = title;
 	inputBox.prompt = options.prompt;
@@ -141,7 +140,7 @@ async function promptInputBox(title: string, options: vscode.InputBoxOptions): P
 		});
 		inputBox.onDidHide(() => {
 			if (!valueAccepted) {
-				resolve(false);
+				resolve(undefined);
 			}
 			inputBox.dispose();
 		});
@@ -165,7 +164,7 @@ export async function promptForResourceDeletion(namespace: string, name: string)
 		validateInput: input => input !== name ? loc.invalidResourceDeletionName(name) : ''
 	};
 
-	return await promptInputBox(title, options) !== false;
+	return await promptInputBox(title, options) !== undefined;
 }
 
 /**
