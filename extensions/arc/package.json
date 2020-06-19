@@ -49,13 +49,22 @@
         "title": "%arc.openDashboard%"
       },
       {
-        "command": "arc.addController",
-        "title": "%command.addController.title%",
+        "command": "arc.createController",
+        "title": "%command.createController.title%",
         "icon": "$(add)"
+      },
+      {
+        "command": "arc.connectToController",
+        "title": "%command.connectToController.title%",
+        "icon": "$(debug-disconnect)"
       },
       {
         "command": "arc.removeController",
         "title": "%command.removeController.title%"
+      },
+      {
+        "command": "arc.refresh",
+        "title": "%command.refresh.title%"
       }
     ],
     "menus": {
@@ -79,13 +88,22 @@
         {
           "command": "arc.removeController",
           "when": "false"
+        },
+        {
+          "command": "arc.refresh",
+          "when": "false"
         }
       ],
       "view/title": [
         {
-          "command": "arc.addController",
+          "command": "arc.createController",
           "when": "view == azureArc",
-          "group": "navigation"
+          "group": "navigation@1"
+        },
+        {
+          "command": "arc.connectToController",
+          "when": "view == azureArc",
+          "group": "navigation@2"
         }
       ],
       "view/item/context": [
@@ -95,9 +113,14 @@
           "group": "navigation@1"
         },
         {
-          "command": "arc.removeController",
+          "command": "arc.refresh",
           "when": "view == azureArc && viewItem == dataControllers",
           "group": "navigation@2"
+        },
+        {
+          "command": "arc.removeController",
+          "when": "view == azureArc && viewItem == dataControllers",
+          "group": "navigation@3"
         }
       ]
     },
@@ -125,6 +148,7 @@
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.3",
+    "typemoq": "2.1.0",
     "vscodetestcover": "^1.0.9"
   }
 }

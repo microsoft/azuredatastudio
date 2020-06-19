@@ -66,6 +66,14 @@ export const running = localize('arc.running', "Running");
 export const connected = localize('arc.connected', "Connected");
 export const disconnected = localize('arc.disconnected', "Disconnected");
 export const loading = localize('arc.loading', "Loading...");
+export const refreshToEnterCredentials = localize('arc.refreshToEnterCredentials', "Refresh node to enter credentials");
+export const connectToController = localize('arc.connectToController', "Connect to Existing Controller");
+export const controllerUrl = localize('arc.controllerUrl', "Controller URL");
+export const username = localize('arc.username', "Username");
+export const password = localize('arc.password', "Password");
+export const rememberPassword = localize('arc.rememberPassword', "Remember Password");
+export const connect = localize('arc.connect', "Connect");
+export const cancel = localize('arc.cancel', "Cancel");
 
 // Database States - see https://docs.microsoft.com/sql/relational-databases/databases/database-states
 export const online = localize('arc.online', "Online");
@@ -98,16 +106,10 @@ export const storagePerNode = localize('arc.storagePerNode', "storage per node")
 export const arcResources = localize('arc.arcResources', "Azure Arc Resources");
 
 export function databaseCreated(name: string): string { return localize('arc.databaseCreated', "Database {0} created", name); }
-export function databaseCreationFailed(name: string, error: any): string { return localize('arc.databaseCreationFailed', "Failed to create database {0}. {1}", name, getErrorMessage(error)); }
 export function passwordReset(name: string): string { return localize('arc.passwordReset', "Password reset for service {0}", name); }
-export function passwordResetFailed(name: string, error: any): string { return localize('arc.passwordResetFailed', "Failed to reset password for service {0}. {1}", name, getErrorMessage(error)); }
 export function resourceDeleted(name: string): string { return localize('arc.resourceDeleted', "Resource '{0}' deleted", name); }
-export function resourceDeletionFailed(name: string, error: any): string { return localize('arc.resourceDeletionFailed', "Failed to delete resource {0}. {1}", name, getErrorMessage(error)); }
 export function couldNotFindAzureResource(name: string): string { return localize('arc.couldNotFindAzureResource', "Could not find Azure resource for {0}", name); }
 export function copiedToClipboard(name: string): string { return localize('arc.copiedToClipboard', "{0} copied to clipboard", name); }
-export function refreshFailed(error: any): string { return localize('arc.refreshFailed', "Refresh failed. {0}", getErrorMessage(error)); }
-export function failedToManagePostgres(name: string, error: any): string { return localize('arc.failedToManagePostgres', "Failed to manage Postgres {0}. {1}", name, getErrorMessage(error)); }
-export function openDashboardFailed(error: any): string { return localize('arc.openDashboardFailed', "Error opening dashboard. {0}", getErrorMessage(error)); }
 export function clickTheTroubleshootButton(resourceType: string): string { return localize('arc.clickTheTroubleshootButton', "Click the troubleshoot button to open the Azure Arc {0} troubleshooting notebook.", resourceType); }
 export function numVCores(vCores: string): string {
 	const numCores = +vCores;
@@ -120,3 +122,11 @@ export function numVCores(vCores: string): string {
 export function couldNotFindRegistration(namespace: string, name: string) { return localize('arc.couldNotFindRegistration', "Could not find controller registration for {0} ({1})", name, namespace); }
 export function resourceDeletionWarning(namespace: string, name: string): string { return localize('arc.resourceDeletionWarning', "Warning! Deleting a resource is permanent and cannot be undone. To delete the resource '{0}.{1}' type the name '{1}' below to proceed.", namespace, name); }
 export function invalidResourceDeletionName(name: string): string { return localize('arc.invalidResourceDeletionName', "The value '{0}' does not match the instance name. Try again or press escape to exit", name); }
+
+// Errors
+export function refreshFailed(error: any): string { return localize('arc.refreshFailed', "Refresh failed. {0}", getErrorMessage(error)); }
+export function openDashboardFailed(error: any): string { return localize('arc.openDashboardFailed', "Error opening dashboard. {0}", getErrorMessage(error)); }
+export function resourceDeletionFailed(name: string, error: any): string { return localize('arc.resourceDeletionFailed', "Failed to delete resource {0}. {1}", name, getErrorMessage(error)); }
+export function passwordResetFailed(name: string, error: any): string { return localize('arc.passwordResetFailed', "Failed to reset password for service {0}. {1}", name, getErrorMessage(error)); }
+export function databaseCreationFailed(name: string, error: any): string { return localize('arc.databaseCreationFailed', "Failed to create database {0}. {1}", name, getErrorMessage(error)); }
+export function connectToControllerFailed(url: string, error: any): string { return localize('arc.connectToControllerFailed', "Could not connect to controller {0}. {1}", url, getErrorMessage(error)); }

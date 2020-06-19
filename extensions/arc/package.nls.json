@@ -7,7 +7,9 @@
 	"arc.managePostgres": "Manage Postgres",
 	"arc.manageArcController": "Manage Arc Controller",
 	"arc.view.title" : "Azure Arc Controllers",
-	"command.addController.title": "Connect to Controller",
+	"command.createController.title" : "Create New Controller",
+	"command.connectToController.title": "Connect to Existing Controller",
 	"command.removeController.title": "Remove Controller",
+	"command.refresh.title": "Refresh",
 	"arc.openDashboard": "Manage"
 }
