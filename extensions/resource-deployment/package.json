@@ -5,7 +5,7 @@
   "version": "0.0.1",
   "publisher": "Microsoft",
   "preview": true,
-  "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
+  "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",
   "aiKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e",
   "engines": {
@@ -80,12 +80,12 @@
             "displayName": "%version-display-name%",
             "values": [
               {
-                "name": "sql2017",
-                "displayName": "%sql-2017-display-name%"
-              },
-              {
                 "name": "sql2019",
                 "displayName": "%sql-2019-display-name%"
+              },
+              {
+                "name": "sql2017",
+                "displayName": "%sql-2017-display-name%"
               }
             ]
           }
@@ -291,7 +291,7 @@
           "template": "%bdc-agreement%",
           "links": [
             {
-              "text": "%bdc-agreement-privacy-statement%",
+              "text": "%microsoft-privacy-statement%",
               "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
             },
             {
@@ -323,12 +323,12 @@
             "displayName": "%version-display-name%",
             "values": [
               {
-                "name": "sql2017",
-                "displayName": "%sql-2017-display-name%"
-              },
-              {
                 "name": "sql2019",
                 "displayName": "%sql-2019-display-name%"
+              },
+              {
+                "name": "sql2017",
+                "displayName": "%sql-2017-display-name%"
               }
             ]
           }

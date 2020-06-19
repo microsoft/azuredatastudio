@@ -5,18 +5,27 @@
 
 import * as vscode from 'vscode';
 import { Authentication } from '../controller/auth';
-import { EndpointsRouterApi, EndpointModel, RegistrationRouterApi, RegistrationResponse, TokenRouterApi } from '../controller/generated/v1/api';
+import { EndpointsRouterApi, EndpointModel, RegistrationRouterApi, RegistrationResponse, TokenRouterApi, SqlInstanceRouterApi } from '../controller/generated/v1/api';
+import { parseEndpoint } from '../common/utils';
+import { ResourceType } from '../constants';
+
+export interface Registration extends RegistrationResponse {
+	externalIp?: string;
+	externalPort?: string;
+}
 
 export class ControllerModel {
 	private _endpointsRouter: EndpointsRouterApi;
 	private _tokenRouter: TokenRouterApi;
 	private _registrationRouter: RegistrationRouterApi;
-	private _endpoints?: EndpointModel[];
-	private _namespace?: string;
-	private _registrations?: RegistrationResponse[];
+	private _sqlInstanceRouter: SqlInstanceRouterApi;
+	private _endpoints: EndpointModel[] = [];
+	private _namespace: string = '';
+	private _registrations: Registration[] = [];
+	private _controllerRegistration: Registration | undefined = undefined;
 
 	private readonly _onEndpointsUpdated = new vscode.EventEmitter<EndpointModel[]>();
-	private readonly _onRegistrationsUpdated = new vscode.EventEmitter<RegistrationResponse[]>();
+	private readonly _onRegistrationsUpdated = new vscode.EventEmitter<Registration[]>();
 	public onEndpointsUpdated = this._onEndpointsUpdated.event;
 	public onRegistrationsUpdated = this._onRegistrationsUpdated.event;
 	public endpointsLastUpdated?: Date;
@@ -31,6 +40,9 @@ export class ControllerModel {
 
 		this._registrationRouter = new RegistrationRouterApi(controllerUrl);
 		this._registrationRouter.setDefaultAuthentication(auth);
+
+		this._sqlInstanceRouter = new SqlInstanceRouterApi(controllerUrl);
+		this._sqlInstanceRouter.setDefaultAuthentication(auth);
 	}
 
 	public async refresh(): Promise<void> {
@@ -42,31 +54,36 @@ export class ControllerModel {
 			}),
 			this._tokenRouter.apiV1TokenPost().then(async response => {
 				this._namespace = response.body.namespace!;
-				this._registrations = (await this._registrationRouter.apiV1RegistrationListResourcesNsGet(this._namespace)).body;
+				this._registrations = (await this._registrationRouter.apiV1RegistrationListResourcesNsGet(this._namespace)).body.map(mapRegistrationResponse);
+				this._controllerRegistration = this._registrations.find(r => r.instanceType === ResourceType.dataControllers);
 				this.registrationsLastUpdated = new Date();
 				this._onRegistrationsUpdated.fire(this._registrations);
 			})
 		]);
 	}
 
-	public endpoints(): EndpointModel[] | undefined {
+	public get endpoints(): EndpointModel[] {
 		return this._endpoints;
 	}
 
-	public endpoint(name: string): EndpointModel | undefined {
-		return this._endpoints?.find(e => e.name === name);
+	public getEndpoint(name: string): EndpointModel | undefined {
+		return this._endpoints.find(e => e.name === name);
 	}
 
-	public namespace(): string | undefined {
+	public get namespace(): string {
 		return this._namespace;
 	}
 
-	public registrations(): RegistrationResponse[] | undefined {
+	public get registrations(): Registration[] {
 		return this._registrations;
 	}
 
-	public registration(type: string, namespace: string, name: string): RegistrationResponse | undefined {
-		return this._registrations?.find(r => {
+	public get controllerRegistration(): Registration | undefined {
+		return this._controllerRegistration;
+	}
+
+	public getRegistration(type: string, namespace: string, name: string): Registration | undefined {
+		return this._registrations.find(r => {
 			// Resources deployed outside the controller's namespace are named in the format 'namespace_name'
 			let instanceName = r.instanceName!;
 			const parts: string[] = instanceName.split('_');
@@ -79,4 +96,17 @@ export class ControllerModel {
 			return r.instanceType === type && r.instanceNamespace === namespace && instanceName === name;
 		});
 	}
+
+	public async miaaDelete(namespace: string, name: string): Promise<void> {
+		await this._sqlInstanceRouter.apiV1HybridSqlNsNameDelete(namespace, name);
+	}
+}
+
+/**
+ * Maps a RegistrationResponse to a Registration,
+ * @param response The RegistrationResponse to map
+ */
+function mapRegistrationResponse(response: RegistrationResponse): Registration {
+	const parsedEndpoint = parseEndpoint(response.externalEndpoint);
+	return { ...response, externalIp: parsedEndpoint.ip, externalPort: parsedEndpoint.port };
 }

@@ -140,3 +140,10 @@ import 'vs/workbench/contrib/welcome/telemetryOptOut/browser/telemetryOptOut.con
 import 'vs/workbench/contrib/issue/browser/issue.web.contribution';
 
 //#endregion
+
+//#region
+
+// Getting Started
+import 'sql/workbench/contrib/welcome/gettingStarted/browser/gettingStarted.contribution';
+
+//#endregion
