@@ -4550,7 +4550,6 @@ declare module 'azdata' {
 
 		export interface NotebookProvider {
 			readonly providerId: string;
-			readonly standardKernels: IStandardKernel[];
 			getNotebookManager(notebookUri: vscode.Uri): Thenable<NotebookManager>;
 			handleNotebookClosed(notebookUri: vscode.Uri): void;
 		}
