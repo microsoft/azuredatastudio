@@ -525,17 +525,23 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 		const editor = event.editor;
 		const editorsToClose = [editor];
 
-		// Include both sides of side by side editors when being closed and not opened multiple times
-		if (editor instanceof SideBySideEditorInput && !this.accessor.groups.some(groupView => groupView.group.contains(editor))) {
+		// Include both sides of side by side editors when being closed
+		if (editor instanceof SideBySideEditorInput) {
 			editorsToClose.push(editor.master, editor.details);
 		}
 
-		// Dispose the editor when it is no longer open in any group including diff editors
-		editorsToClose.forEach(editorToClose => {
-			if (!this.accessor.groups.some(groupView => groupView.group.contains(editorToClose, true /* include side by side editor master & details */))) {
-				editorToClose.dispose();
+		// For each editor to close, we call dispose() to free up any resources.
+		// However, certain editors might be shared across multiple editor groups
+		// (including being visible in side by side / diff editors) and as such we
+		// only dispose when they are not opened elsewhere.
+		for (const editor of editorsToClose) {
+			if (!this.accessor.groups.some(groupView => groupView.group.contains(editor, {
+				strictEquals: true,		// only if this input is not shared across editor groups
+				supportSideBySide: true // include side by side editor master & details
+			}))) {
+				editor.dispose();
 			}
-		});
+		}
 
 		/* __GDPR__
 			"editorClosed" : {
@@ -1162,12 +1168,13 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 
 	private doMoveOrCopyEditorAcrossGroups(editor: EditorInput, target: IEditorGroupView, moveOptions: IMoveEditorOptions = Object.create(null), keepCopy?: boolean): void {
 
-		// When moving an editor, try to preserve as much view state as possible by checking
-		// for the editor to be a text editor and creating the options accordingly if so
+		// When moving/copying an editor, try to preserve as much view state as possible
+		// by checking for the editor to be a text editor and creating the options accordingly
+		// if so
 		const options = getActiveTextEditorOptions(this, editor, EditorOptions.create({
 			...moveOptions,
-			pinned: true, 							// always pin moved editor
-			sticky: this._group.isSticky(editor)	// preserve sticky state
+			pinned: true, 										// always pin moved editor
+			sticky: !keepCopy && this._group.isSticky(editor)	// preserve sticky state only if editor is moved (https://github.com/microsoft/vscode/issues/99035)
 		}));
 
 		// A move to another group is an open first...
@@ -1509,7 +1516,9 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 		}
 
 		// Forward to title control
-		this.titleAreaControl.closeEditors(editors);
+		if (editors.length) {
+			this.titleAreaControl.closeEditors(editors);
+		}
 	}
 
 	//#endregion
@@ -1557,7 +1566,9 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 		}
 
 		// Forward to title control
-		this.titleAreaControl.closeEditors(editorsToClose);
+		if (editorsToClose.length) {
+			this.titleAreaControl.closeEditors(editorsToClose);
+		}
 	}
 
 	//#endregion

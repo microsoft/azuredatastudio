@@ -12,7 +12,7 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { IExtensionManifest, IExtension, ExtensionType } from 'vs/platform/extensions/common/extensions';
 import { IExeBasedExtensionTip } from 'vs/platform/product/common/productService';
 
-export const EXTENSION_IDENTIFIER_PATTERN = '^([a-z0-9A-Z][a-z0-9\-A-Z]*)\\.([a-z0-9A-Z][a-z0-9\-A-Z]*)$';
+export const EXTENSION_IDENTIFIER_PATTERN = '^([a-z0-9A-Z][a-z0-9-A-Z]*)\\.([a-z0-9A-Z][a-z0-9-A-Z]*)$';
 export const EXTENSION_IDENTIFIER_REGEX = new RegExp(EXTENSION_IDENTIFIER_PATTERN);
 
 export interface IGalleryExtensionProperties {
@@ -153,7 +153,7 @@ export interface ITranslation {
 }
 
 export interface IExtensionGalleryService {
-	_serviceBrand: undefined;
+	readonly _serviceBrand: undefined;
 	isEnabled(): boolean;
 	query(token: CancellationToken): Promise<IPager<IGalleryExtension>>;
 	query(options: IQueryOptions, token: CancellationToken): Promise<IPager<IGalleryExtension>>;
@@ -200,7 +200,7 @@ export class ExtensionManagementError extends Error {
 }
 
 export interface IExtensionManagementService {
-	_serviceBrand: undefined;
+	readonly _serviceBrand: undefined;
 
 	onInstallExtension: Event<InstallExtensionEvent>;
 	onDidInstallExtension: Event<DidInstallExtensionEvent>;
@@ -225,7 +225,7 @@ export const ENABLED_EXTENSIONS_STORAGE_PATH = 'extensionsIdentifiers/enabled';
 export const IGlobalExtensionEnablementService = createDecorator<IGlobalExtensionEnablementService>('IGlobalExtensionEnablementService');
 
 export interface IGlobalExtensionEnablementService {
-	_serviceBrand: undefined;
+	readonly _serviceBrand: undefined;
 	readonly onDidChangeEnablement: Event<{ readonly extensions: IExtensionIdentifier[], readonly source?: string }>;
 
 	getDisabledExtensions(): IExtensionIdentifier[];
@@ -246,7 +246,7 @@ export type IWorkspaceTips = { readonly remoteSet: string[]; readonly recommenda
 
 export const IExtensionTipsService = createDecorator<IExtensionTipsService>('IExtensionTipsService');
 export interface IExtensionTipsService {
-	_serviceBrand: undefined;
+	readonly _serviceBrand: undefined;
 
 	getConfigBasedTips(folder: URI): Promise<IConfigBasedExtensionTip[]>;
 	getImportantExecutableBasedTips(): Promise<IExecutableBasedExtensionTip[]>;
