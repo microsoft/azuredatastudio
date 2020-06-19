@@ -282,10 +282,10 @@ export class DeployDatabaseDialog {
 	}
 
 	private createTargetConnectionComponent(view: azdata.ModelView): azdata.FormComponent {
-		// TODO: make this not editable
 		this.targetConnectionTextBox = view.modelBuilder.inputBox().withProperties({
 			value: '',
-			ariaLabel: constants.targetConnectionLabel
+			ariaLabel: constants.targetConnectionLabel,
+			enabled: false
 		}).component();
 
 		this.targetConnectionTextBox.onTextChanged(() => {
