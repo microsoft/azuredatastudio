@@ -28,8 +28,8 @@ let throttleTimers: { [key: string]: any } = {};
 
 export function activate(extensionContext: vscode.ExtensionContext): IExtension {
 	IconPathHelper.setExtensionContext(extensionContext);
-	let treeDataProvider = new ControllerTreeDataProvider(extensionContext.globalState);
-	registerTreeDataProvider(treeDataProvider);
+	const treeDataProvider = new ControllerTreeDataProvider(extensionContext.globalState);
+	vscode.window.registerTreeDataProvider('sqlBigDataCluster', treeDataProvider);
 	registerCommands(extensionContext, treeDataProvider);
 	return {
 		getClusterController(url: string, authType: AuthType, username?: string, password?: string): IClusterController {
@@ -41,13 +41,13 @@ export function activate(extensionContext: vscode.ExtensionContext): IExtension 
 export function deactivate() {
 }
 
-function registerTreeDataProvider(treeDataProvider: ControllerTreeDataProvider): void {
-	vscode.window.registerTreeDataProvider('sqlBigDataCluster', treeDataProvider);
-}
-
 function registerCommands(context: vscode.ExtensionContext, treeDataProvider: ControllerTreeDataProvider): void {
-	vscode.commands.registerCommand(commands.AddControllerCommand, (node?: TreeNode) => {
-		runThrottledAction(commands.AddControllerCommand, () => addBdcController(treeDataProvider, node));
+	vscode.commands.registerCommand(commands.ConnectControllerCommand, (node?: TreeNode) => {
+		runThrottledAction(commands.ConnectControllerCommand, () => addBdcController(treeDataProvider, node));
+	});
+
+	vscode.commands.registerCommand(commands.CreateControllerCommand, () => {
+		runThrottledAction(commands.CreateControllerCommand, () => vscode.commands.executeCommand('azdata.resource.deploy'));
 	});
 
 	vscode.commands.registerCommand(commands.DeleteControllerCommand, async (node: TreeNode) => {

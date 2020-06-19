@@ -1,7 +1,8 @@
 {
 	"description": "Support for managing SQL Server Big Data Clusters",
 	"text.sqlServerBigDataClusters": "SQL Server Big Data Clusters",
-	"command.addController.title": "Connect to Controller",
+	"command.connectController.title": "Connect to Existing Controller",
+	"command.createController.title": "Create New Controller",
 	"command.deleteController.title" : "Delete",
 	"command.refreshController.title" : "Refresh",
 	"command.manageController.title" : "Manage",

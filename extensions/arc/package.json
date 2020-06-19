@@ -56,7 +56,7 @@
       {
         "command": "arc.connectToController",
         "title": "%command.connectToController.title%",
-        "icon": "$(debug-disconnect)"
+        "icon": "$(disconnect)"
       },
       {
         "command": "arc.removeController",
