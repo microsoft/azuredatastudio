@@ -8,7 +8,6 @@ import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import { TreeNode } from './treeNode';
 import { IControllerTreeChangeHandler } from './controllerTreeChangeHandler';
-import { ConnectControllerNode } from './connectControllerNode';
 import { ControllerRootNode, ControllerNode } from './controllerTreeNode';
 import { showErrorMessage } from '../utils';
 import { LoadingControllerNode } from './loadingControllerNode';
@@ -79,12 +78,12 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 		this.notifyNodeChanged();
 	}
 
-	public deleteController(url: string, auth: AuthType, username: string): ControllerNode[] {
-		let deleted = this.root.deleteControllerNode(url, auth, username);
-		if (deleted) {
+	public removeController(url: string, auth: AuthType, username: string): ControllerNode[] {
+		let removed = this.root.removeControllerNode(url, auth, username);
+		if (removed) {
 			this.notifyNodeChanged();
 		}
-		return deleted;
+		return removed;
 	}
 
 	private removeNonControllerNodes(): void {
@@ -95,8 +94,7 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 	private removePlaceholderNodes(nodes: TreeNode[]): void {
 		if (nodes.length > 0) {
 			for (let i = 0; i < nodes.length; ++i) {
-				if (nodes[i] instanceof ConnectControllerNode ||
-					nodes[i] instanceof LoadingControllerNode
+				if (nodes[i] instanceof LoadingControllerNode
 				) {
 					nodes.splice(i--, 1);
 				}
@@ -142,11 +140,7 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 			}
 
 			this.root.clearChildren();
-			if (treeNodes.length === 0) {
-				this.root.addChild(new ConnectControllerNode());
-			} else {
-				treeNodes.forEach(node => this.root.addChild(node));
-			}
+			treeNodes.forEach(node => this.root.addChild(node));
 			this.notifyNodeChanged();
 		} catch (err) {
 			// Reset so we can try again if the tree refreshes

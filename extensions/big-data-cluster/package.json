@@ -17,7 +17,7 @@
 		"onCommand:bigDataClusters.command.deletemount",
 		"onCommand:bigDataClusters.command.createController",
 		"onCommand:bigDataClusters.command.connectController",
-		"onCommand:bigDataClusters.command.deleteController",
+		"onCommand:bigDataClusters.command.removeController",
 		"onCommand:bigDataClusters.command.manageController",
 		"onCommand:bigDataClusters.command.refreshController",
 		"onView:sqlBigDataCluster"
@@ -47,7 +47,7 @@
 					"when": "false"
 				},
 				{
-					"command": "bigDataClusters.command.deleteController",
+					"command": "bigDataClusters.command.removeController",
 					"when": "false"
 				},
 				{
@@ -95,7 +95,7 @@
 					"group": "navigation@2"
 				},
 				{
-					"command": "bigDataClusters.command.deleteController",
+					"command": "bigDataClusters.command.removeController",
 					"when": "view == sqlBigDataCluster && viewItem == bigDataClusters.itemType.controllerNode",
 					"group": "navigation@3"
 				}
@@ -130,8 +130,8 @@
 				"icon": "$(disconnect)"
 			},
 			{
-				"command": "bigDataClusters.command.deleteController",
-				"title": "%command.deleteController.title%",
+				"command": "bigDataClusters.command.removeController",
+				"title": "%command.removeController.title%",
 				"when": "viewItem == bigDataClusters.itemType.controllerNode"
 			},
 			{
@@ -166,7 +166,13 @@
 					"description": "%bdc.ignoreSslVerification.desc%"
 				}
 			}
-		}
+		},
+		"viewsWelcome": [
+			{
+			  "view": "sqlBigDataCluster",
+			  "contents": "%bdc.view.welcome%"
+			}
+		  ]
 	},
 	"dependencies": {
 		"ads-kerberos": "^1.1.3",
