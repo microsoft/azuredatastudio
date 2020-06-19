@@ -22,7 +22,7 @@ text-cell-component .notebook-preview {
 
 text-cell-component .edit-mode code-component {
 	display: block;
-	width: 50%;
+	width: 100%;
 }
 text-cell-component .edit-mode .notebook-preview {
 	border-color: transparent;
@@ -31,6 +31,9 @@ text-cell-component .edit-mode .notebook-preview {
 	border-top-width: 0;
 	flex-direction: column;
 	width: 50%;
+}
+text-cell-component .edit-mode .notebook-preview.hide-preview {
+	display: none;
 }
 
 text-cell-component .notebook-preview {
