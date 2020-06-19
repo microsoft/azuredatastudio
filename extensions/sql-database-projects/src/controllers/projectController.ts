@@ -94,10 +94,10 @@ export class ProjectsController {
 		return newProject;
 	}
 
-	public async focusProject(project?: Project) {
+	public async focusProject(project?: Project): Promise<void> {
 		if (project && this.projects.includes(project)) {
 			await this.apiWrapper.executeCommand('sqlDatabaseProjectsView.focus');
-			this.projectTreeViewProvider.focus(project);
+			await this.projectTreeViewProvider.focus(project);
 		}
 	}
 
@@ -619,7 +619,7 @@ export class ProjectsController {
 			//Refresh project to show the added files
 			this.refreshProjectsTree();
 
-			this.focusProject(project);
+			await this.focusProject(project);
 		}
 		catch (err) {
 			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
