@@ -195,7 +195,7 @@ suite('Test class NotebookEditor', () => {
 	});
 
 	['', undefined, null, 'unknown string', /*unknown guid*/generateUuid()].forEach(input => {
-		test(`NotebookEditor: Negative Test -> getCellEditor() returns undefined for invalid or unknown guid:'${input}'`, async () => {
+		test(`NotebookEditor: getCellEditor() returns undefined for invalid or unknown guid:'${input}'`, async () => {
 			await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 			const inputGuid = <string>input;
 			const result = notebookEditor.getCellEditor(inputGuid);
@@ -203,14 +203,14 @@ suite('Test class NotebookEditor', () => {
 		});
 	});
 
-	test('NotebookEditor: Positive Test -> getCellEditor() returns a valid text editor object for valid guid input', async () => {
+	test('NotebookEditor: getCellEditor() returns a valid text editor object for valid guid input', async () => {
 		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 		const result = notebookEditor.getCellEditor(cellTextEditorGuid);
 		assert.strictEqual(result, queryTextEditor, 'notebookEditor.getCellEditor() should return an expected QueryTextEditor when a guid corresponding to that editor is passed in.');
 
 	});
 
-	test('NotebookEditor: Positive Test -> verifies that domNode passed in via addOverlayWidget() call gets attached to the root HtmlElement of notebookEditor', async () => {
+	test('NotebookEditor: Verifies that domNode passed in via addOverlayWidget() call gets attached to the root HtmlElement of notebookEditor', async () => {
 		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 		const domNode: HTMLElement = document.createElement('div');
 		const widget: IOverlayWidget = {
@@ -381,30 +381,6 @@ suite('Test class NotebookEditor', () => {
 	});
 });
 
-/*
-	FindReplaceState.change
-	FindReplaceState.changeMatchInfo
-
-	e: INewFindReplaceState {
-		searchString?: string;
-		matchCase?: boolean;
-		isRevealed?: boolean; => this._finder.getDomNode().style.visibility = 'hidden' if not revealed
-		searchScope?: Range | null;
-		wholeWord?: boolean;
-	}
-	notebookModel: undefined/defined,
-	notebookEditor._findState.isRevealed: true/false,  => this._finder.getDomNode().style.visibility = 'visible' if revealed
-	this._curreentMatch: defined|undefined
-	this.notebookFindModel.findMatches.length: 0,1
-	_findState.searchString: undefined, '', 'noMatch'
-
-	for e.searchScope = true,
-	_findState:
-		searchString: undefined, '', 'noMatch'
-		matchCase: T, F
-		wholeWord: T, F
-
-*/
 async function setupNotebookEditor(notebookEditor: NotebookEditor, untitledNotebookInput: UntitledNotebookInput): Promise<void> {
 	createEditor(notebookEditor);
 	await setInputDocument(notebookEditor, untitledNotebookInput);
