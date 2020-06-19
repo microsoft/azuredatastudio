@@ -174,7 +174,7 @@ export class ControllerNode extends ControllerTreeNode {
 		}
 
 		if (!this._password) {
-			vscode.commands.executeCommand('bigDataClusters.command.addController', this);
+			vscode.commands.executeCommand('bigDataClusters.command.connectController', this);
 			return this.children as ControllerTreeNode[];
 		}
 		return undefined;
