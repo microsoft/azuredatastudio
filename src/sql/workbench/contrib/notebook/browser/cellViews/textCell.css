@@ -10,19 +10,22 @@ text-cell-component {
 text-cell-component .notebook-text {
 	display: flex;
 }
-
 text-cell-component code-component {
 	flex-direction: column;
-	display: none;
 }
 text-cell-component .notebook-preview {
 	flex-direction: column;
 	width: 100%;
+	user-select: none;
+	padding-left: 8px;
+	padding-right: 8px;
 }
-
 text-cell-component .edit-mode code-component {
 	display: block;
 	width: 100%;
+}
+text-cell-component .show-preview.edit-mode code-component {
+	width: 50%;
 }
 text-cell-component .edit-mode .notebook-preview {
 	border-color: transparent;
@@ -31,15 +34,6 @@ text-cell-component .edit-mode .notebook-preview {
 	border-top-width: 0;
 	flex-direction: column;
 	width: 50%;
-}
-text-cell-component .edit-mode .notebook-preview.hide-preview {
-	display: none;
-}
-
-text-cell-component .notebook-preview {
-	user-select: none;
-	padding-left: 8px;
-	padding-right: 8px;
 }
 
 .notebook-preview.actionselect {
