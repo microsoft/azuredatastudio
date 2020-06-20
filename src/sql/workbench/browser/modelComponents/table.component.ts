@@ -114,7 +114,9 @@ export default class TableComponent extends ComponentBase implements IComponent,
 				let object: { [key: string]: string } = {};
 				if (row.forEach) {
 					row.forEach((val, index) => {
-						let columnName: string = (columns[index].value) ? columns[index].value : <string>columns[index];
+						let columnName: string = index < columns.length
+							? (columns[index].value) ? columns[index].value : <string>columns[index]
+							: '__detailsData__';
 						object[columnName] = val;
 					});
 				}
@@ -174,13 +176,14 @@ export default class TableComponent extends ComponentBase implements IComponent,
 					}, undefined, this);
 				},
 				useRowClick: true,
-				panelRows: 2,
-				postTemplate: (itemDetail) => 'DETAILS DATA',
+				panelRows: 3,
+				postTemplate: (itemDetail) => itemDetail.__detailsData__,
 				preTemplate: () => '',
-				loadOnce: true
+				loadOnce: true,
+				width: 29
 			});
 			this.rowDetail = rowDetail;
-			this._table.registerPlugin(this.rowDetail);
+			this._table.registerPlugin(<any>this.rowDetail);
 		}
 	}
 
@@ -250,14 +253,14 @@ export default class TableComponent extends ComponentBase implements IComponent,
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this._tableColumns = this.transformColumns(this.columns);
+		this._tableColumns.unshift(this.rowDetail.getColumnDefinition());
 		this._table.columns = this._tableColumns;
 
-		if (this.properties['setData'] === true) {
-			this._tableData.push(TableComponent.transformData(this.data, this.columns));
-			this._table.setData(this._tableData);
 
-			let columnDef = this.rowDetail.getColumnDefinition();
-			this._table.columns.unshift(columnDef);
+		if (this.properties['setData'] === true) {
+			this._table.setData(this._tableData);
+			this._tableData.setData(TableComponent.transformData(this.data, this.columns));
+
 		}
 		if (this.properties['appendData'] !== undefined) {
 			this.properties['appendData'] = undefined;

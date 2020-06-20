@@ -358,6 +358,7 @@ export class RowDetailView<T extends Slick.SlickData> {
 			resizable: false,
 			sortable: false,
 			cssClass: this._options.cssClass,
+			headerCssClass: 'no-borders',
 			formatter: (row, cell, value, columnDef, dataContext) => this.detailSelectionFormatter(row, cell, value, columnDef, dataContext as ExtendedItem<T>)
 		};
 	}

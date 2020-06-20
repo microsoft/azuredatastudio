@@ -281,6 +281,14 @@ export class SlickTableDataView<T extends Slick.SlickData> extends Slick.Data.Da
 		this.endUpdate();
 	}
 
+	public setData(data: T[], objectIdProperty?: string): void {
+		let inputArray = new Array();
+		inputArray.push(...data);
+		inputArray.forEach(item => item.id = generateUuid());
+		this.setItems(inputArray);
+
+	}
+
 
 
 	dispose(): void {

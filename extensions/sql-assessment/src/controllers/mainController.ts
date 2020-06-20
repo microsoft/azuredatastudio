@@ -215,10 +215,10 @@ export default class MainController {
 		this.toDispose.push(btnInvokeAssessment.onDidClick(async () => {
 			btnInvokeAssessmentLoading.loading = true;
 			if (this.isServerConnection) {
-				TelemetryReporter.sendActionEvent(SqlAssessmentTelemetryView, SqlTelemetryActions.InvokeServerAssessment);
+				//TelemetryReporter.sendActionEvent(SqlAssessmentTelemetryView, SqlTelemetryActions.InvokeServerAssessment);
 				await this.performServerAssessment(AssessmentType.InvokeAssessment);
 			} else {
-				TelemetryReporter.sendActionEvent(SqlAssessmentTelemetryView, SqlTelemetryActions.InvokeDatabaseAssessment);
+				//TelemetryReporter.sendActionEvent(SqlAssessmentTelemetryView, SqlTelemetryActions.InvokeDatabaseAssessment);
 				let assessmentResult = await this.sqlAssessment.assessmentInvoke(this.connectionUri, azdata.sqlAssessment.SqlAssessmentTargetType.Database);
 				this.displayResults(assessmentResult, AssessmentType.InvokeAssessment);
 			}
@@ -240,11 +240,11 @@ export default class MainController {
 		this.toDispose.push(btnGetAssessmentItems.onDidClick(async () => {
 			btnGetAssessmentItemsLoading.loading = true;
 			if (this.isServerConnection) {
-				TelemetryReporter.sendActionEvent(SqlAssessmentTelemetryView, SqlTelemetryActions.GetServerAssessmentRules);
+				//TelemetryReporter.sendActionEvent(SqlAssessmentTelemetryView, SqlTelemetryActions.GetServerAssessmentRules);
 				await this.performServerAssessment(AssessmentType.AvailableRules);
 			} else {
-				TelemetryReporter.sendActionEvent(SqlAssessmentTelemetryView, SqlTelemetryActions.GetDatabaseAssessmentRules);
-				let assessmentResult = await this.sqlAssessment.assessmentInvoke(this.connectionUri, azdata.sqlAssessment.SqlAssessmentTargetType.Database);
+				//TelemetryReporter.sendActionEvent(SqlAssessmentTelemetryView, SqlTelemetryActions.GetDatabaseAssessmentRules);
+				let assessmentResult = await this.sqlAssessment.getAssessmentItems(this.connectionUri, azdata.sqlAssessment.SqlAssessmentTargetType.Database);
 				this.displayResults(assessmentResult, AssessmentType.AvailableRules);
 			}
 			btnGetAssessmentItemsLoading.loading = false;
@@ -329,9 +329,11 @@ export default class MainController {
 		return [
 			item.targetName,
 			item.level,
-			assessmentType === AssessmentType.AvailableRules ? item.description : item.message,
+			//assessmentType === AssessmentType.AvailableRules ? item.description : item.message,
+			item.displayName,
 			item.tags.join(','),
-			item.checkId
+			item.checkId,
+			item.description
 		];
 	}
 
