@@ -325,15 +325,14 @@ export default class MainController {
 	}
 
 
-	private transformItem(item: azdata.SqlAssessmentResultItem, assessmentType: AssessmentType): string[] {
+	private transformItem(item: azdata.SqlAssessmentResultItem, assessmentType: AssessmentType): any[] {
 		return [
 			item.targetName,
 			item.level,
-			//assessmentType === AssessmentType.AvailableRules ? item.description : item.message,
-			item.displayName,
-			item.tags.join(','),
+			assessmentType === AssessmentType.AvailableRules ? item.displayName : item.message,
+			item.tags,
 			item.checkId,
-			item.description
+			assessmentType === AssessmentType.AvailableRules ? item.description : item.message,
 		];
 	}
 
