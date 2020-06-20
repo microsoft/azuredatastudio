@@ -39,7 +39,12 @@ suite('Connection Utilities tests', () => {
 	test('getUriPrefix - test if getUriPrefix finds the correct prefix from fake uri name', () => {
 		let testUri = 'test://testpath';
 		assert.equal('test://', ConnectionUtils.getUriPrefix(testUri));
+		let badTestUri = '://>test#%</';
+		assert.equal('connection:', ConnectionUtils.getUriPrefix(badTestUri));
+		assert.equal('', ConnectionUtils.getUriPrefix(undefined));
+
 	});
+
 
 	test('isMaster - test if isMaster recognizes Connection Profile as server connection', () => {
 		assert(ConnectionUtils.isMaster(connection));
