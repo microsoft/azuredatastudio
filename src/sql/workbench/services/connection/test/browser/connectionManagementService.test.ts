@@ -504,6 +504,38 @@ suite('SQL ConnectionManagementService tests', () => {
 		});
 	});
 
+	test('findExistingConnection should find connection for connectionProfile with same info', () => {
+		let profile = <ConnectionProfile>assign({}, connectionProfile);
+		let uri1 = 'connection:connectionId';
+		let options: IConnectionCompletionOptions = {
+			params: {
+				connectionType: ConnectionType.editor,
+				input: {
+					onConnectSuccess: undefined,
+					onConnectReject: undefined,
+					onConnectStart: undefined,
+					onDisconnect: undefined,
+					onConnectCanceled: undefined,
+					uri: uri1,
+				},
+				queryRange: undefined,
+				runQueryOnCompletion: RunQueryOnConnectionMode.none,
+				isEditConnection: false
+			},
+			saveTheConnection: true,
+			showDashboard: false,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		};
+		let connectionInfoString = 'providerName:' + profile.providerName + '|authenticationType:'
+			+ profile.authenticationType + '|databaseName:' + profile.databaseName + '|serverName:'
+			+ profile.serverName + '|userName:' + profile.userName;
+		return connect(uri1, options, true, profile).then(() => {
+			let returnedProfile = connectionManagementService.findExistingConnection(profile);
+			assert.equal(returnedProfile.getConnectionInfoId(), connectionInfoString);
+		});
+	});
+
 	test('deleteConnection should delete the connection properly', () => {
 		let profile = <ConnectionProfile>assign({}, connectionProfile);
 		let uri1 = 'connection:connectionId';

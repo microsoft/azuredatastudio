@@ -40,7 +40,7 @@ suite('Connection Utilities tests', () => {
 		let testUri = 'test://testpath';
 		assert.equal('test://', ConnectionUtils.getUriPrefix(testUri));
 		let badTestUri = '://>test#%</';
-		assert.equal('connection:', ConnectionUtils.getUriPrefix(badTestUri));
+		assert.equal(ConnectionUtils.uriPrefixes.default, ConnectionUtils.getUriPrefix(badTestUri));
 		assert.equal('', ConnectionUtils.getUriPrefix(undefined));
 
 	});
