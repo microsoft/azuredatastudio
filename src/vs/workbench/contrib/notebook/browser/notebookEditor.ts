@@ -16,8 +16,8 @@ import { EditorOptions, IEditorMemento, IEditorInput } from 'vs/workbench/common
 import { NotebookEditorInput } from 'vs/workbench/contrib/notebook/browser/notebookEditorInput';
 import { INotebookEditorViewState, NotebookViewModel } from 'vs/workbench/contrib/notebook/browser/viewModel/notebookViewModel';
 import { IEditorGroup, IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
-import { NotebookEditorWidget } from 'vs/workbench/contrib/notebook/browser/notebookEditorWidget';
-import { EditorPart } from 'vs/workbench/browser/parts/editor/editorPart';
+import { NotebookEditorWidget, NotebookEditorOptions } from 'vs/workbench/contrib/notebook/browser/notebookEditorWidget';
+import { IEditorDropService } from 'vs/workbench/services/editor/browser/editorDropService';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IEditorOptions, ITextEditorOptions } from 'vs/platform/editor/common/editor';
@@ -49,12 +49,13 @@ export class NotebookEditor extends BaseEditor {
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IStorageService storageService: IStorageService,
 		@IEditorService private readonly _editorService: IEditorService,
-		@IEditorGroupsService private readonly _editorGroupService: IEditorGroupsService,
+		@IEditorGroupsService editorGroupService: IEditorGroupsService,
+		@IEditorDropService private readonly _editorDropService: IEditorDropService,
 		@INotificationService private readonly _notificationService: INotificationService,
 		@INotebookEditorWidgetService private readonly _notebookWidgetService: INotebookEditorWidgetService,
 	) {
 		super(NotebookEditor.ID, telemetryService, themeService, storageService);
-		this._editorMemento = this.getEditorMemento<INotebookEditorViewState>(_editorGroupService, NOTEBOOK_EDITOR_VIEW_STATE_PREFERENCE_KEY);
+		this._editorMemento = this.getEditorMemento<INotebookEditorViewState>(editorGroupService, NOTEBOOK_EDITOR_VIEW_STATE_PREFERENCE_KEY);
 	}
 
 	set viewModel(newModel: NotebookViewModel | undefined) {
@@ -97,18 +98,17 @@ export class NotebookEditor extends BaseEditor {
 		return this._widget.value;
 	}
 
-	onWillHide() {
-		this._saveEditorViewState(this.input);
-		if (this.input && this._widget.value) {
-			// the widget is not transfered to other editor inputs
-			this._widget.value.onWillHide();
-		}
-		super.onWillHide();
-	}
-
 	setEditorVisible(visible: boolean, group: IEditorGroup | undefined): void {
 		super.setEditorVisible(visible, group);
 		this._groupListener.value = group?.onWillCloseEditor(e => this._saveEditorViewState(e.editor));
+
+		if (!visible) {
+			this._saveEditorViewState(this.input);
+			if (this.input && this._widget.value) {
+				// the widget is not transfered to other editor inputs
+				this._widget.value.onWillHide();
+			}
+		}
 	}
 
 	focus() {
@@ -157,14 +157,13 @@ export class NotebookEditor extends BaseEditor {
 
 		const viewState = this._loadTextEditorViewState(input);
 
-		await this._widget.value!.setModel(model.notebook, viewState, options);
+		await this._widget.value!.setModel(model.notebook, viewState);
+		await this._widget.value!.setOptions(options instanceof NotebookEditorOptions ? options : undefined);
 		this._widgetDisposableStore.add(this._widget.value!.onDidFocus(() => this._onDidFocusWidget.fire()));
 
-		if (this._editorGroupService instanceof EditorPart) {
-			this._widgetDisposableStore.add(this._editorGroupService.createEditorDropTarget(this._widget.value!.getDomNode(), {
-				groupContainsPredicate: (group) => this.group?.id === group.group.id
-			}));
-		}
+		this._widgetDisposableStore.add(this._editorDropService.createEditorDropTarget(this._widget.value!.getDomNode(), {
+			containsGroup: (group) => this.group?.id === group.group.id
+		}));
 	}
 
 	clearInput(): void {
@@ -174,6 +173,12 @@ export class NotebookEditor extends BaseEditor {
 		super.clearInput();
 	}
 
+	setOptions(options: EditorOptions | undefined): void {
+		if (options instanceof NotebookEditorOptions) {
+			this._widget.value?.setOptions(options);
+		}
+		super.setOptions(options);
+	}
 
 	protected saveState(): void {
 		this._saveEditorViewState(this.input);
