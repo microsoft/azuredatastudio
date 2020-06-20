@@ -239,18 +239,12 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			let openDocument = azdata.nb.activeNotebookEditor;
 			if (openDocument) {
 				notebookPath = openDocument.document.uri.fsPath;
-				bookItem = this.currentBook?.getNotebook(notebookPath);
-
 			}
 		} else if (uri.fsPath) {
 			notebookPath = uri.fsPath;
-			bookItem = this.currentBook?.getNotebook(uri.fsPath);
 		}
-		// if the node is not expanded getNotebook returns undefined, try to expand the parent node or getChildren of
-		// the root node.
-		if (!bookItem) {
-			bookItem = await this.findAndExpandParentNode(notebookPath);
-		}
+		bookItem = await this.findAndExpandParentNode(notebookPath);
+
 		if (bookItem) {
 			// Select + focus item in viewlet if books viewlet is already open, or if we pass in variable
 			if (shouldReveal || this._bookViewer.visible) {
@@ -261,19 +255,23 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	async findAndExpandParentNode(notebookPath: string): Promise<BookTreeItem> {
-		let bookItem: BookTreeItem;
-		// get the parent node and expand it if it's not already
-		let allNodes = this.currentBook?.getAllNotebooks();
-		let book = allNodes ? Array.from(allNodes?.keys())?.filter(x => x.indexOf(notebookPath.substring(0, notebookPath.lastIndexOf(path.sep))) > -1) : undefined;
-		let bookNode = book?.length > 0 ? this.currentBook?.getNotebook(book.find(x => x.substring(0, x.lastIndexOf(path.sep)) === notebookPath.substring(0, notebookPath.lastIndexOf(path.sep)))) : undefined;
-		if (bookNode) {
-			if (this._bookViewer.visible) {
-				await this._bookViewer.reveal(bookNode, { select: true, focus: false, expand: 3 });
-			} else {
-				await this.getChildren(bookNode);
-			}
+		let bookItem: BookTreeItem = this.currentBook?.getNotebook(notebookPath);
+		// if the node is not expanded getNotebook returns undefined, try to expand the parent node or getChildren of
+		// the root node.
+		if (!bookItem) {
+			// get the parent node and expand it if it's not already
+			let allNodes = this.currentBook?.getAllNotebooks();
+			let book = allNodes ? Array.from(allNodes?.keys())?.filter(x => x.indexOf(notebookPath.substring(0, notebookPath.lastIndexOf(path.sep))) > -1) : undefined;
+			let bookNode = book?.length > 0 ? this.currentBook?.getNotebook(book.find(x => x.substring(0, x.lastIndexOf(path.sep)) === notebookPath.substring(0, notebookPath.lastIndexOf(path.sep)))) : undefined;
+			if (bookNode) {
+				if (this._bookViewer.visible) {
+					await this._bookViewer.reveal(bookNode, { select: true, focus: false, expand: 3 });
+				} else {
+					await this.getChildren(bookNode);
+				}
 
-			bookItem = this.currentBook?.getNotebook(notebookPath);
+				bookItem = this.currentBook?.getNotebook(notebookPath);
+			}
 		}
 		return bookItem;
 	}
