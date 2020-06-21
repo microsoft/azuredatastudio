@@ -14,7 +14,14 @@ import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 export type ControllerInfo = {
 	url: string,
 	username: string,
-	rememberPassword: boolean
+	rememberPassword: boolean,
+	resources: ResourceInfo[]
+};
+
+export type ResourceInfo = {
+	namespace: string,
+	name: string,
+	connectionId?: string
 };
 
 export interface Registration extends RegistrationResponse {

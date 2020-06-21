@@ -115,7 +115,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 					headerCssStyles: cssStyles.tableHeader,
 					rowCssStyles: cssStyles.tableRow
 				}, {
-					displayName: loc.computeAndStorage,
+					displayName: loc.compute,
 					valueType: azdata.DeclarativeDataType.string,
 					width: '34%',
 					isReadOnly: true,
@@ -140,12 +140,12 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 
 	public get toolbarContainer(): azdata.ToolbarContainer {
 
-		const createNewButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			label: loc.createNew,
+		const newInstance = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			label: loc.newInstance,
 			iconPath: IconPathHelper.add
 		}).component();
 
-		createNewButton.onDidClick(async () => {
+		newInstance.onDidClick(async () => {
 			await vscode.commands.executeCommand('azdata.resource.deploy');
 		});
 
@@ -166,7 +166,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems(
 			[
-				{ component: createNewButton, toolbarSeparatorAfter: true },
+				{ component: newInstance, toolbarSeparatorAfter: true },
 				{ component: openInAzurePortalButton }
 			]
 		).component();
@@ -196,7 +196,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 						iconWidth: iconSize
 					})
 					.component();
-				return [imageComponent, r.instanceName, resourceTypeToDisplayName(r.instanceType), r.vCores];
+				return [imageComponent, r.instanceName, resourceTypeToDisplayName(r.instanceType), loc.numVCores(r.vCores)];
 			});
 		this._arcResourcesLoadingComponent.loading = false;
 	}

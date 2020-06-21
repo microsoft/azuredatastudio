@@ -8,10 +8,13 @@ import * as vscode from 'vscode';
 import { SqlInstanceRouterApi } from '../controller/generated/v1/api/sqlInstanceRouterApi';
 import { HybridSqlNsNameGetResponse } from '../controller/generated/v1/model/hybridSqlNsNameGetResponse';
 import { Authentication } from '../controller/generated/v1/api';
+import { ResourceModel } from './resourceModel';
+import { ResourceInfo } from './controllerModel';
+import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 
 export type DatabaseModel = { name: string, status: string };
 
-export class MiaaModel {
+export class MiaaModel extends ResourceModel {
 
 	private _sqlInstanceRouter: SqlInstanceRouterApi;
 	private _status: HybridSqlNsNameGetResponse | undefined;
@@ -26,23 +29,10 @@ export class MiaaModel {
 	public onDatabasesUpdated = this._onDatabasesUpdated.event;
 	public passwordLastUpdated?: Date;
 
-	constructor(controllerUrl: string, auth: Authentication, private _namespace: string, private _name: string) {
+	constructor(controllerUrl: string, auth: Authentication, info: ResourceInfo, private _treeDataProvider: AzureArcTreeDataProvider) {
+		super(info);
 		this._sqlInstanceRouter = new SqlInstanceRouterApi(controllerUrl);
 		this._sqlInstanceRouter.setDefaultAuthentication(auth);
-	}
-
-	/**
-	 * The name of this instance
-	 */
-	public get name(): string {
-		return this._name;
-	}
-
-	/**
-	 * The namespace of this instance
-	 */
-	public get namespace(): string {
-		return this._namespace;
 	}
 
 	/**
@@ -72,7 +62,7 @@ export class MiaaModel {
 
 	/** Refreshes the model */
 	public async refresh(): Promise<void> {
-		const instanceRefresh = this._sqlInstanceRouter.apiV1HybridSqlNsNameGet(this._namespace, this._name).then(response => {
+		const instanceRefresh = this._sqlInstanceRouter.apiV1HybridSqlNsNameGet(this.info.namespace, this.info.name).then(response => {
 			this._status = response.body;
 			this._onStatusUpdated.fire(this._status);
 		});
@@ -99,21 +89,65 @@ export class MiaaModel {
 		if (this._connectionProfile) {
 			return;
 		}
-		const connection = await azdata.connection.openConnectionDialog(['MSSQL']);
-		this._connectionProfile = {
-			serverName: connection.options['serverName'],
-			databaseName: connection.options['databaseName'],
-			authenticationType: connection.options['authenticationType'],
-			providerName: 'MSSQL',
-			connectionName: '',
-			userName: connection.options['user'],
-			password: connection.options['password'],
-			savePassword: false,
-			groupFullName: undefined,
-			saveProfile: true,
-			id: connection.connectionId,
-			groupId: undefined,
-			options: connection.options
-		};
+		let connection: azdata.connection.ConnectionProfile | azdata.connection.Connection | undefined;
+
+		if (this.info.connectionId) {
+			try {
+				const connections = await azdata.connection.getConnections();
+				const existingConnection = connections.find(conn => conn.connectionId === this.info.connectionId);
+				if (existingConnection) {
+					const credentials = await azdata.connection.getCredentials(this.info.connectionId);
+					if (credentials) {
+						existingConnection.password = credentials.password;
+					} else {
+						// We need the pass
+						const connectionProfile = {
+							serverName: existingConnection.options['serverName'],
+							databaseName: existingConnection.options['databaseName'],
+							authenticationType: existingConnection.options['authenticationType'],
+							providerName: 'MSSQL',
+							connectionName: '',
+							userName: existingConnection.options['user'],
+							password: '',
+							savePassword: false,
+							groupFullName: undefined,
+							saveProfile: true,
+							id: '',
+							groupId: undefined,
+							options: existingConnection.options
+						};
+						connection = await azdata.connection.openConnectionDialog(['MSSQL'], connectionProfile);
+					}
+				}
+			} catch (err) {
+				// ignore - the connection may not necessarily exist anymore and in that case we'll just reprompt for a connection
+			}
+		}
+
+		if (!connection) {
+			// Weren't able to load the existing connection so prompt user for new one
+			connection = await azdata.connection.openConnectionDialog(['MSSQL']);
+		}
+
+		if (connection) {
+			this._connectionProfile = {
+				serverName: connection.options['serverName'],
+				databaseName: connection.options['databaseName'],
+				authenticationType: connection.options['authenticationType'],
+				providerName: 'MSSQL',
+				connectionName: '',
+				userName: connection.options['user'],
+				password: connection.options['password'],
+				savePassword: false,
+				groupFullName: undefined,
+				saveProfile: true,
+				id: connection.connectionId,
+				groupId: undefined,
+				options: connection.options
+			};
+			this.info.connectionId = connection.connectionId;
+			await this._treeDataProvider.saveControllers();
+		}
+
 	}
 }

@@ -7,6 +7,8 @@ import * as vscode from 'vscode';
 import * as loc from '../localizedConstants';
 import { DuskyObjectModelsDatabaseService, DatabaseRouterApi, DuskyObjectModelsDatabase, V1Status, V1Pod } from '../controller/generated/dusky/api';
 import { Authentication } from '../controller/auth';
+import { ResourceInfo } from './controllerModel';
+import { ResourceModel } from './resourceModel';
 
 export enum PodRole {
 	Monitor,
@@ -14,7 +16,7 @@ export enum PodRole {
 	Shard
 }
 
-export class PostgresModel {
+export class PostgresModel extends ResourceModel {
 	private _databaseRouter: DatabaseRouterApi;
 	private _service?: DuskyObjectModelsDatabaseService;
 	private _password?: string;
@@ -29,24 +31,25 @@ export class PostgresModel {
 	public passwordLastUpdated?: Date;
 	public podsLastUpdated?: Date;
 
-	constructor(controllerUrl: string, auth: Authentication, private _namespace: string, private _name: string) {
+	constructor(controllerUrl: string, auth: Authentication, info: ResourceInfo) {
+		super(info);
 		this._databaseRouter = new DatabaseRouterApi(controllerUrl);
 		this._databaseRouter.setDefaultAuthentication(auth);
 	}
 
 	/** Returns the service's Kubernetes namespace */
 	public get namespace(): string {
-		return this._namespace;
+		return this.info.namespace;
 	}
 
 	/** Returns the service's name */
 	public get name(): string {
-		return this._name;
+		return this.info.name;
 	}
 
 	/** Returns the service's fully qualified name in the format namespace.name */
 	public get fullName(): string {
-		return `${this._namespace}.${this._name}`;
+		return `${this.info.namespace}.${this.info.name}`;
 	}
 
 	/** Returns the service's spec */
@@ -67,17 +70,17 @@ export class PostgresModel {
 	/** Refreshes the model */
 	public async refresh() {
 		await Promise.all([
-			this._databaseRouter.getDuskyDatabaseService(this._namespace, this._name).then(response => {
+			this._databaseRouter.getDuskyDatabaseService(this.info.namespace, this.info.name).then(response => {
 				this._service = response.body;
 				this.serviceLastUpdated = new Date();
 				this._onServiceUpdated.fire(this._service);
 			}),
-			this._databaseRouter.getDuskyPassword(this._namespace, this._name).then(response => {
+			this._databaseRouter.getDuskyPassword(this.info.namespace, this.info.name).then(response => {
 				this._password = response.body;
 				this.passwordLastUpdated = new Date();
 				this._onPasswordUpdated.fire(this._password!);
 			}),
-			this._databaseRouter.getDuskyPods(this._namespace, this._name).then(response => {
+			this._databaseRouter.getDuskyPods(this.info.namespace, this.info.name).then(response => {
 				this._pods = response.body;
 				this.podsLastUpdated = new Date();
 				this._onPodsUpdated.fire(this._pods!);
@@ -91,7 +94,7 @@ export class PostgresModel {
 	 */
 	public async update(func: (service: DuskyObjectModelsDatabaseService) => void): Promise<DuskyObjectModelsDatabaseService> {
 		// Get the latest spec of the service in case it has changed
-		const service = (await this._databaseRouter.getDuskyDatabaseService(this._namespace, this._name)).body;
+		const service = (await this._databaseRouter.getDuskyDatabaseService(this.info.namespace, this.info.name)).body;
 		service.status = undefined; // can't update the status
 		func(service);
 
@@ -103,7 +106,7 @@ export class PostgresModel {
 
 	/** Deletes the service */
 	public async delete(): Promise<V1Status> {
-		return (await this._databaseRouter.deleteDuskyDatabaseService(this._namespace, this._name)).body;
+		return (await this._databaseRouter.deleteDuskyDatabaseService(this.info.namespace, this.info.name)).body;
 	}
 
 	/** Creates a SQL database in the service */
