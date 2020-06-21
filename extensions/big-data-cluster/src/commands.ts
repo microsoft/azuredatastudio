@@ -6,7 +6,7 @@
 export const ManageControllerCommand = 'bigDataClusters.command.manageController';
 export const CreateControllerCommand = 'bigDataClusters.command.createController';
 export const ConnectControllerCommand = 'bigDataClusters.command.connectController';
-export const DeleteControllerCommand = 'bigDataClusters.command.deleteController';
+export const RemoveControllerCommand = 'bigDataClusters.command.removeController';
 export const RefreshControllerCommand = 'bigDataClusters.command.refreshController';
 export const MountHdfsCommand = 'bigDataClusters.command.mount';
 export const RefreshMountCommand = 'bigDataClusters.command.refreshmount';
