@@ -79,6 +79,20 @@ describe.skip('ProjectsController: project controller operations', function (): 
 			should(project.dataSources.length).equal(2); // detailed datasources tests in their own test file
 		});
 
+		it('Should not keep failed to load project in project list.', async function (): Promise<void> {
+			const folderPath = await testUtils.generateTestFolderPath();
+			const sqlProjPath = await testUtils.createTestSqlProjFile('empty file with no valid xml', folderPath);
+			const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+
+			try {
+				await projController.openProject(vscode.Uri.file(sqlProjPath));
+				should.fail(null, null, 'The given project not expected to open');
+			}
+			catch {
+				should(projController.projects.length).equal(0, 'The added project should be removed');
+			}
+		});
+
 		it('Should return silently when no SQL object name provided in prompts', async function (): Promise<void> {
 			for (const name of ['', '    ', undefined]) {
 				testContext.apiWrapper.reset();
