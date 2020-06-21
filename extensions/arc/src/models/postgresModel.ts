@@ -17,16 +17,12 @@ export enum PodRole {
 export class PostgresModel {
 	private _databaseRouter: DatabaseRouterApi;
 	private _service?: DuskyObjectModelsDatabaseService;
-	private _password?: string;
 	private _pods?: V1Pod[];
 	private readonly _onServiceUpdated = new vscode.EventEmitter<DuskyObjectModelsDatabaseService>();
-	private readonly _onPasswordUpdated = new vscode.EventEmitter<string>();
 	private readonly _onPodsUpdated = new vscode.EventEmitter<V1Pod[]>();
 	public onServiceUpdated = this._onServiceUpdated.event;
-	public onPasswordUpdated = this._onPasswordUpdated.event;
 	public onPodsUpdated = this._onPodsUpdated.event;
 	public serviceLastUpdated?: Date;
-	public passwordLastUpdated?: Date;
 	public podsLastUpdated?: Date;
 
 	constructor(controllerUrl: string, auth: Authentication, private _namespace: string, private _name: string) {
@@ -54,11 +50,6 @@ export class PostgresModel {
 		return this._service;
 	}
 
-	/** Returns the service's password */
-	public get password(): string | undefined {
-		return this._password;
-	}
-
 	/** Returns the service's pods */
 	public get pods(): V1Pod[] | undefined {
 		return this._pods;
@@ -71,11 +62,6 @@ export class PostgresModel {
 				this._service = response.body;
 				this.serviceLastUpdated = new Date();
 				this._onServiceUpdated.fire(this._service);
-			}),
-			this._databaseRouter.getDuskyPassword(this._namespace, this._name).then(response => {
-				this._password = response.body;
-				this.passwordLastUpdated = new Date();
-				this._onPasswordUpdated.fire(this._password!);
 			}),
 			this._databaseRouter.getDuskyPods(this._namespace, this._name).then(response => {
 				this._pods = response.body;
