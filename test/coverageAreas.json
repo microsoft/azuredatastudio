@@ -1,0 +1,28 @@
+{
+	"areas": [
+		{
+			"name":  "Connection",
+			"paths": [
+				"src/sql/platform/connection",
+				"src/sql/workbench/services/connection"
+			]
+		},
+		{
+			"name":  "Object Explorer",
+			"paths": [
+				"src/sql/workbench/contrib/objectExplorer",
+				"src/sql/workbench/services/objectExplorer",
+				"src/sql/workbench/contrib/dataExplorer"
+			]
+		},
+		{
+			"name":  "Query Editor",
+			"paths": [
+				"src/sql/platform/query",
+				"src/sql/workbench/contrib/query",
+				"src/sql/workbench/common/editor/query",
+				"src/sql/workbench/services/query"
+			]
+		}
+	]
+}
