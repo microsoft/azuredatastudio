@@ -95,7 +95,6 @@ export class HideGuidedTourAction extends Action {
 export class GuidedTour extends Disposable {
 	private _overlayVisible: IContextKey<boolean>;
 	private _overlay!: HTMLElement;
-	private _container: HTMLDivElement;
 
 	constructor(
 		@ILayoutService private readonly layoutService: ILayoutService,
