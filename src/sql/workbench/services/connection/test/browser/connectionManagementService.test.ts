@@ -830,13 +830,13 @@ suite('SQL ConnectionManagementService tests', () => {
 		});
 	});
 
-	test('getActiveConnectionCredentials returns the credentials dictionary for a connection profile', () => {
+	test('getConnectionCredentials returns the credentials dictionary for an active connection profile', async () => {
 		let profile = assign({}, connectionProfile);
 		profile.options = { password: profile.password };
 		profile.id = 'test_id';
 		connectionStatusManager.addConnection(profile, 'test_uri');
 		(connectionManagementService as any)._connectionStatusManager = connectionStatusManager;
-		let credentials = connectionManagementService.getActiveConnectionCredentials(profile.id);
+		let credentials = await connectionManagementService.getConnectionCredentials(profile.id);
 		assert.equal(credentials['password'], profile.options['password']);
 	});
 
