@@ -10,6 +10,9 @@ import * as os from 'os';
 import * as path from 'path';
 import * as utils from '../../common/utils';
 import { MockOutputChannel } from './stubs';
+import * as vscode from 'vscode';
+import * as azdata from 'azdata';
+import { sleep } from './testUtils';
 
 describe('Utils Tests', function () {
 
@@ -129,12 +132,190 @@ describe('Utils Tests', function () {
 
 		it('different lengths', () => {
 			const random = ['1.0.0', '42', '100.0', '0.1', '1.0.1'];
-			const randomSorted = ['0.1', '1.0.0', '1.0.1', '42', '100.0']
+			const randomSorted = ['0.1', '1.0.0', '1.0.1', '42', '100.0'];
 			should(utils.sortPackageVersions(random)).deepEqual(randomSorted);
 		});
 	});
 
-	describe('getClusterEndpoints', () => {
+	describe('executeBufferedCommand', () => {
 
+		it('runs successfully', async () => {
+			await utils.executeBufferedCommand('echo hello', {}, new MockOutputChannel());
+		});
+
+		it('errors correctly with invalid command', async () => {
+			await should(utils.executeBufferedCommand('invalidcommand', {}, new MockOutputChannel())).be.rejected();
+		});
+	});
+
+	describe('executeStreamedCommand', () => {
+
+		it('runs successfully', async () => {
+			await utils.executeStreamedCommand('echo hello', {}, new MockOutputChannel());
+		});
+
+		it('errors correctly with invalid command', async () => {
+			await should(utils.executeStreamedCommand('invalidcommand', {}, new MockOutputChannel())).be.rejected();
+		});
+	});
+
+	describe('isEditorTitleFree', () => {
+		afterEach( async () => {
+			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+		});
+
+		it('title is free', () => {
+			should(utils.isEditorTitleFree('MyTitle')).be.true();
+		});
+
+		it('title is not free with text document sharing name', async () => {
+			const editorTitle = 'Untitled-1';
+			should(utils.isEditorTitleFree(editorTitle)).be.true('Title should be free before opening text document');
+			await vscode.workspace.openTextDocument();
+			should(utils.isEditorTitleFree(editorTitle)).be.false('Title should not be free after opening text document');
+		});
+
+		it('title is not free with notebook document sharing name', async () => {
+			const editorTitle = 'MyUntitledNotebook';
+			should(utils.isEditorTitleFree(editorTitle)).be.true('Title should be free before opening notebook');
+			await azdata.nb.showNotebookDocument(vscode.Uri.parse(`untitled:${editorTitle}`));
+			should(utils.isEditorTitleFree('MyUntitledNotebook')).be.false('Title should not be free after opening notebook');
+		});
+
+		it('title is not free with notebook document sharing name created through command', async () => {
+			const editorTitle = 'Notebook-0';
+			should(utils.isEditorTitleFree(editorTitle)).be.true('Title should be free before opening notebook');
+			await vscode.commands.executeCommand('_notebook.command.new');
+			should(utils.isEditorTitleFree(editorTitle)).be.false('Title should not be free after opening notebook');
+		});
+	});
+
+	describe('getClusterEndpoints', () => {
+		const baseServerInfo: azdata.ServerInfo = {
+			serverMajorVersion: -1,
+			serverMinorVersion: -1,
+			serverReleaseVersion: -1,
+			engineEditionId: -1,
+			serverVersion: '',
+			serverLevel: '',
+			serverEdition: '',
+			isCloud: false,
+			azureVersion: -1,
+			osVersion: '',
+			options: {}
+		};
+		it('empty endpoints does not error', () => {
+			const serverInfo = Object.assign({}, baseServerInfo);
+			serverInfo.options['clusterEndpoints'] = [];
+			should(utils.getClusterEndpoints(serverInfo).length).equal(0);
+		});
+
+		it('endpoints without endpoint field are created successfully', () => {
+			const serverInfo = Object.assign({}, baseServerInfo);
+			const ipAddress = 'localhost';
+			const port = '123';
+			serverInfo.options['clusterEndpoints'] = [{ ipAddress: ipAddress, port: port }];
+			const endpoints = utils.getClusterEndpoints(serverInfo);
+			should(endpoints.length).equal(1);
+			should(endpoints[0].endpoint).equal('https://localhost:123');
+		});
+
+		it('endpoints with endpoint field are created successfully', () => {
+			const endpoint = 'https://myActualEndpoint:8080';
+			const serverInfo = Object.assign({}, baseServerInfo);
+			serverInfo.options['clusterEndpoints'] = [{ endpoint: endpoint, ipAddress: 'localhost', port: '123' }];
+			const endpoints = utils.getClusterEndpoints(serverInfo);
+			should(endpoints.length).equal(1);
+			should(endpoints[0].endpoint).equal(endpoint);
+		});
+	});
+
+	describe('getHostAndPortFromEndpoint', () => {
+		it('valid endpoint is parsed correctly', () => {
+			const host = 'localhost';
+			const port = '123';
+			const hostAndIp = utils.getHostAndPortFromEndpoint(`https://${host}:${port}`);
+			should(hostAndIp).deepEqual({ host: host, port: port });
+		});
+
+		it('invalid endpoint is returned as is', () => {
+			const host = 'localhost';
+			const hostAndIp = utils.getHostAndPortFromEndpoint(`https://${host}`);
+			should(hostAndIp).deepEqual({ host: host, port: undefined });
+		});
+	});
+
+	describe('exists', () => {
+		it('runs as expected', async () => {
+			const filename = path.join(os.tmpdir(), `NotebookUtilsTest_${uuid.v4()}`);
+			try {
+				should(await utils.exists(filename)).be.false();
+				await fs.writeFile(filename, '');
+				should(await utils.exists(filename)).be.true();
+			} finally {
+				try {
+					await fs.unlink(filename);
+				} catch { /* no-op */ }
+			}
+		});
+	});
+
+	describe('getIgnoreSslVerificationConfigSetting', () => {
+		it('runs as expected', async () => {
+			should(utils.getIgnoreSslVerificationConfigSetting()).be.true();
+		});
+	});
+
+	describe('debounce', () => {
+		class DebounceTest {
+			public fnCalled = 0;
+			public getterCalled = 0;
+
+			@utils.debounce(100)
+			fn(): void {
+				this.fnCalled++;
+			}
+
+			@utils.debounce(100)
+			get getter(): number {
+				this.getterCalled++;
+				return -1;
+			}
+		}
+
+		it('decorates function correctly', async () => {
+			const debounceTestObj = new DebounceTest();
+			debounceTestObj.fn();
+			debounceTestObj.fn();
+			await sleep(500);
+			should(debounceTestObj.fnCalled).equal(1);
+			debounceTestObj.fn();
+			debounceTestObj.fn();
+			await sleep(500);
+			should(debounceTestObj.fnCalled).equal(2);
+		});
+
+		it('decorates getter correctly', async () => {
+			const debounceTestObj = new DebounceTest();
+			let getterValue = debounceTestObj.getter;
+			getterValue = debounceTestObj.getter;
+			await sleep(500);
+			should(debounceTestObj.getterCalled).equal(1);
+			getterValue = debounceTestObj.getter;
+			getterValue = debounceTestObj.getter;
+			await sleep(500);
+			should(debounceTestObj.getterCalled).equal(2);
+			should(getterValue).be.undefined();
+		});
+
+		it('decorating setter not supported', async () => {
+			should(() => {
+				class UnsupportedTest {
+					@utils.debounce(100)
+					set setter(value: number) { }
+				}
+				new UnsupportedTest();
+			}).throw();
+		});
 	});
 });

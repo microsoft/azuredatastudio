@@ -27,6 +27,9 @@ export class IconPathHelper {
 	public static backup: IconPath;
 	public static properties: IconPath;
 	public static networking: IconPath;
+	public static refresh: IconPath;
+	public static support: IconPath;
+	public static wrench: IconPath;
 
 	public static setExtensionContext(context: vscode.ExtensionContext) {
 		IconPathHelper.context = context;
@@ -85,6 +88,18 @@ export class IconPathHelper {
 		IconPathHelper.networking = {
 			light: context.asAbsolutePath('images/security.svg'),
 			dark: context.asAbsolutePath('images/security.svg')
+		};
+		IconPathHelper.refresh = {
+			light: context.asAbsolutePath('images/refresh.svg'),
+			dark: context.asAbsolutePath('images/refresh.svg')
+		};
+		IconPathHelper.support = {
+			light: context.asAbsolutePath('images/support.svg'),
+			dark: context.asAbsolutePath('images/support.svg')
+		};
+		IconPathHelper.wrench = {
+			light: context.asAbsolutePath('images/wrench.svg'),
+			dark: context.asAbsolutePath('images/wrench.svg')
 		};
 	}
 }

@@ -3,7 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { setup as setupQueryEditorTest } from './areas/queryEditor/queryEditor.test';
+import { setup as setupQueryEditorTests } from './areas/queryEditor/queryEditor.test';
+import { setup as setupNotebookTests } from './areas/notebook/notebook.test';
 import { ApplicationOptions } from '../../../automation';
 import * as yazl from 'yauzl';
 import * as fs from 'fs';
@@ -12,7 +13,8 @@ import { request } from 'https';
 import * as mkdirp from 'mkdirp';
 
 export function main(): void {
-	setupQueryEditorTest();
+	setupQueryEditorTests();
+	setupNotebookTests();
 }
 
 /* eslint-disable no-sync */
@@ -20,7 +22,7 @@ const PLATFORM = '${PLATFORM}';
 const RUNTIME = '${RUNTIME}';
 const VERSION = '${VERSION}';
 
-const sqliteUrl = `https://github.com/anthonydresser/azuredatastudio-sqlite/releases/download/1.0.7/azuredatastudio-sqlite-${PLATFORM}-${RUNTIME}-${VERSION}.zip`;
+const sqliteUrl = `https://github.com/anthonydresser/azuredatastudio-sqlite/releases/download/1.0.9/azuredatastudio-sqlite-${PLATFORM}-${RUNTIME}-${VERSION}.zip`;
 
 export async function setup(app: ApplicationOptions): Promise<void> {
 	const requestUrl = sqliteUrl.replace(PLATFORM, process.platform).replace(RUNTIME, getRuntime(app.web || app.remote || false)).replace(VERSION, getVersion(app.web || app.remote || false));

@@ -25,6 +25,27 @@ export class SqlConnectionDataSource extends DataSource {
 		return constants.sqlConnectionStringFriendly;
 	}
 
+	public get server(): string {
+		return this.getSetting(constants.dataSourceSetting);
+	}
+
+	public get database(): string {
+		return this.getSetting(constants.initialCatalogSetting);
+	}
+
+	public get integratedSecurity(): boolean {
+		return this.getSetting(constants.integratedSecuritySetting).toLowerCase() === 'true';
+	}
+
+	public get username(): string {
+		return this.getSetting(constants.userIdSetting);
+	}
+
+	public get password(): string {
+		// TODO: secure password storage; https://github.com/microsoft/azuredatastudio/issues/10561
+		return this.getSetting(constants.passwordSetting);
+	}
+
 	constructor(name: string, connectionString: string) {
 		super(name);
 
@@ -38,12 +59,12 @@ export class SqlConnectionDataSource extends DataSource {
 				throw new Error(constants.invalidSqlConnectionString);
 			}
 
-			this.connectionStringComponents[split[0]] = split[1];
+			this.connectionStringComponents[split[0].toLocaleLowerCase()] = split[1];
 		}
 	}
 
 	public getSetting(settingName: string): string {
-		return this.connectionStringComponents[settingName];
+		return this.connectionStringComponents[settingName.toLocaleLowerCase()];
 	}
 
 	public static fromJson(json: DataSourceJson): SqlConnectionDataSource {

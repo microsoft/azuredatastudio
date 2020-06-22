@@ -27,7 +27,7 @@ const webpackGulp = require('webpack-stream');
 const util = require('./util');
 const root = path.dirname(path.dirname(__dirname));
 const commit = util.getVersion(root);
-const sourceMappingURLBase = `https://ticino.blob.core.windows.net/sourcemaps/${commit}`;
+const sourceMappingURLBase = `https://sqlopsbuilds.blob.core.windows.net/sourcemaps/${commit}`;
 function fromLocal(extensionPath) {
     const webpackFilename = path.join(extensionPath, 'extension.webpack.config.js');
     const input = fs.existsSync(webpackFilename)
@@ -208,7 +208,8 @@ const externalExtensions = [
     'query-history',
     'liveshare',
     'sql-database-projects',
-    'machine-learning'
+    'machine-learning',
+    'sql-assessment'
 ];
 // extensions that require a rebuild since they have native parts
 const rebuildExtensions = [

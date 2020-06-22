@@ -38,6 +38,7 @@ export interface IJupyterServerInstallation {
 export interface IPackageDetails {
 	name: string;
 	version: string;
+	readonly?: boolean;
 }
 
 export interface IPackageTarget {

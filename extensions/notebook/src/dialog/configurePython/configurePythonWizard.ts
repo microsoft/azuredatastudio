@@ -55,6 +55,7 @@ export class ConfigurePythonWizard {
 			kernelName: kernelName,
 			pythonPathsPromise: this.pythonPathsPromise,
 			installation: this.jupyterInstallation,
+			pythonLocation: JupyterServerInstallation.getPythonPathSetting(this.apiWrapper),
 			useExistingPython: JupyterServerInstallation.getExistingPythonSetting(this.apiWrapper)
 		};
 
@@ -62,13 +63,13 @@ export class ConfigurePythonWizard {
 
 		let wizardTitle: string;
 		if (kernelName) {
-			wizardTitle = localize('configurePython.wizardNameWithKernel', 'Configure Python to run {0} kernel', kernelName);
+			wizardTitle = localize('configurePython.wizardNameWithKernel', "Configure Python to run {0} kernel", kernelName);
 		} else {
-			wizardTitle = localize('configurePython.wizardNameWithoutKernel', 'Configure Python to run kernels');
+			wizardTitle = localize('configurePython.wizardNameWithoutKernel', "Configure Python to run kernels");
 		}
-		this._wizard = azdata.window.createWizard(wizardTitle);
-		let page0 = azdata.window.createWizardPage(localize('configurePython.page0Name', 'Configure Python Runtime'));
-		let page1 = azdata.window.createWizardPage(localize('configurePython.page1Name', 'Install Dependencies'));
+		this._wizard = azdata.window.createWizard(wizardTitle, 600);
+		let page0 = azdata.window.createWizardPage(localize('configurePython.page0Name', "Configure Python Runtime"));
+		let page1 = azdata.window.createWizardPage(localize('configurePython.page1Name', "Install Dependencies"));
 
 		page0.registerContent(async (view) => {
 			let configurePathPage = new ConfigurePathPage(this.apiWrapper, this, page0, this.model, view);

@@ -4,44 +4,50 @@
  *--------------------------------------------------------------------------------------------*/
 
 cell-toolbar-component {
+	border-width: 1px;
+	border-style: solid;
 	position: absolute;
-	left: 25px;
-	top: -21px;
+	left: 20px;
+	top: -20px;
 }
 
-cell-toolbar-component ul {
-	display: inline-block;
+cell-toolbar-component .carbon-taskbar .monaco-action-bar.animated {
+	padding: 0;
+}
+
+cell-toolbar-component .carbon-taskbar.monaco-toolbar .monaco-action-bar.animated ul.actions-container {
+	display: flex;
 	list-style: none;
 	margin: 0;
-	padding: 5px 10px 0 10px;
+	padding: 0;
 }
 
-cell-toolbar-component li {
-	display: inline-block;
-	margin-right: 4px;
+cell-toolbar-component ul.actions-container li.action-item {
+	display: inline-flex;
+	margin-right: 0;
 	text-align: center;
 }
 
-cell-toolbar-component li:last-child {
+cell-toolbar-component ul.actions-container li:last-child {
 	margin-right: 0;
 }
-
-cell-toolbar-component li a {
-	background: 50% 50% no-repeat;
-	display: block;
-	height: 16px;
-	width: 16px;
+cell-toolbar-component .carbon-taskbar .action-label {
+	padding: 0;
 }
-
-cell-toolbar-component li div {
-	background: 50% 50% no-repeat;
-	height: 16px;
-	width: 16px;
+cell-toolbar-component .monaco-action-bar .action-label {
+	margin-right: 0;
 }
-
-cell-toolbar-component .offscreen {
-	height: 1px;
-	text-indent: -999999px;
-	margin-top: -1px;
-	position: absolute;
+cell-toolbar-component ul.actions-container li a.masked-icon {
+	display: flex;
+}
+cell-toolbar-component ul.actions-container li a.masked-icon,
+cell-toolbar-component ul.actions-container li a.masked-icon:before {
+	height: 24px;
+	width: 29px;
+}
+cell-toolbar-component .codicon.masked-icon,
+.vs cell-toolbar-component .codicon.masked-icon,
+.vs-dark cell-toolbar-component .codicon.masked-icon,
+.hc-black cell-toolbar-component .codicon.masked-icon {
+	background-image: none;
 }

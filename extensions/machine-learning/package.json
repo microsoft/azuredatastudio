@@ -2,17 +2,17 @@
   "name": "machine-learning",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "publisher": "Microsoft",
   "preview": true,
   "engines": {
     "vscode": "^1.25.0",
-    "azdata": ">=1.13.0"
+    "azdata": ">=1.18.0"
   },
   "activationEvents": [
     "onCommand:ml.command.managePackages",
-		"onCommand:ml.command.predictModel",
-		"onCommand:ml.command.importModel",
+    "onCommand:ml.command.predictModel",
+    "onCommand:ml.command.importModel",
     "onDashboardOpen"
   ],
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
@@ -123,7 +123,7 @@
               "colspan": 5,
               "widget": {
                 "modelview": {
-                  "id":"mls.dashboard"
+                  "id": "mls.dashboard"
                 }
               }
             }
@@ -148,6 +148,11 @@
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.1",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "github:corivera/vscodetestcover#1.0.6"
+    "vscodetestcover": "^1.0.9"
+  },
+  "__metadata": {
+    "id": "65",
+    "publisherDisplayName": "Microsoft",
+    "publisherId": "Microsoft"
   }
 }
