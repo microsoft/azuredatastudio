@@ -3343,7 +3343,7 @@
 							"properties": [
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.46.0"
+									"value": ">=1.20.0"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
