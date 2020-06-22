@@ -23,7 +23,7 @@ export class Project {
 	public files: ProjectEntry[] = [];
 	public dataSources: DataSource[] = [];
 	public importedTargets: string[] = [];
-	public databaseReferences: string[] = [];
+	public databaseReferences: DatabaseReferenceProjectEntry[] = [];
 	public sqlCmdVariables: Record<string, string> = {};
 
 	public get projectFolderPath() {
@@ -73,14 +73,17 @@ export class Project {
 		}
 
 		// find all database references to include
-		for (let r = 0; r < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference).length; r++) {
-			if (this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference)[r].getAttribute(constants.Condition) !== constants.NotNetCoreCondition) {
-				const filepath = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference)[r].getAttribute(constants.Include);
+		const references = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference);
+		for (let r = 0; r < references.length; r++) {
+			if (references[r].getAttribute(constants.Condition) !== constants.NotNetCoreCondition) {
+				const filepath = references[r].getAttribute(constants.Include);
 				if (!filepath) {
 					throw new Error(constants.invalidDatabaseReference);
 				}
 
-				this.databaseReferences.push(path.parse(filepath).name);
+				let nameNodes = references[r].getElementsByTagName(constants.DatabaseVariableLiteralValue);
+				let name = nameNodes.length === 1 ? nameNodes[0].childNodes[0].nodeValue : undefined;
+				this.databaseReferences.push(new DatabaseReferenceProjectEntry(Uri.parse(filepath), name ? DatabaseReferenceLocation.differentDatabaseSameServer : DatabaseReferenceLocation.sameDatabase, name));
 			}
 		}
 	}
@@ -316,7 +319,7 @@ export class Project {
 		referenceNode.setAttribute(constants.Include, isSystemDatabaseProjectEntry ? entry.fsUri.fsPath.substring(1) : entry.fsUri.fsPath); // need to remove the leading slash for system database path for build to work on Windows
 		this.addDatabaseReferenceChildren(referenceNode, entry.name);
 		this.findOrCreateItemGroup(constants.ArtifactReference).appendChild(referenceNode);
-		this.databaseReferences.push(path.parse(entry.fsUri.fsPath.toString()).name);
+		this.databaseReferences.push(entry);
 
 		// add a reference to the system dacpac in SSDT if it's a system db
 		if (isSystemDatabaseProjectEntry) {
@@ -329,20 +332,8 @@ export class Project {
 	}
 
 	private databaseReferenceExists(entry: DatabaseReferenceProjectEntry): boolean {
-		const isSystemDatabaseProjectEntry = (<SystemDatabaseReferenceProjectEntry>entry).ssdtUri;
-		const entryFsPath = isSystemDatabaseProjectEntry ? entry.fsUri.fsPath.substring(1) : entry.fsUri.fsPath;
-
-		const elements = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference);
-		for (let r = 0; r < elements.length; r++) {
-			if (elements[r].getAttribute[constants.Condition] !== constants.NotNetCoreCondition) {
-				const filepath = elements[r].getAttribute(constants.Include);
-				if (filepath === entryFsPath) {
-					return true;
-				}
-			}
-		}
-
-		return false;
+		const found = this.databaseReferences.find(reference => reference.fsUri.fsPath === entry.fsUri.fsPath) !== undefined;
+		return found;
 	}
 
 	private addDatabaseReferenceChildren(referenceNode: any, name?: string): void {
@@ -415,7 +406,7 @@ export class Project {
 				}
 
 				// remove from database references because it'll get added again later
-				this.databaseReferences.splice(this.databaseReferences.findIndex(n => n === (name === SystemDatabase.master ? constants.master : constants.msdb)), 1);
+				this.databaseReferences.splice(this.databaseReferences.findIndex(n => n.databaseName() === (name === SystemDatabase.master ? constants.master : constants.msdb)), 1);
 
 				await this.addSystemDatabaseReference(name);
 			}
@@ -497,6 +488,10 @@ export class ProjectEntry {
 class DatabaseReferenceProjectEntry extends ProjectEntry {
 	constructor(uri: Uri, public databaseLocation: DatabaseReferenceLocation, public name?: string) {
 		super(uri, '', EntryType.DatabaseReference);
+	}
+
+	public databaseName(): string {
+		return path.parse(this.fsUri.fsPath).name;
 	}
 }
 
