@@ -281,6 +281,14 @@ export class SchemaCompareMainWindow {
 		return this.deploymentOptions;
 	}
 
+	// only for test
+	public verifyButtonsState(generateScriptButtonState: boolean, applyButtonState: boolean): boolean {
+		if (this.generateScriptButton.enabled === generateScriptButtonState && this.applyButton.enabled === applyButtonState) {
+			return true;
+		}
+		return false;
+	}
+
 	public setDeploymentOptions(deploymentOptions: mssql.DeploymentOptions): void {
 		this.deploymentOptions = deploymentOptions;
 	}
@@ -298,7 +306,7 @@ export class SchemaCompareMainWindow {
 				.withAdditionalProperties({
 					operationId: this.comparisonResult.operationId
 				}).send();
-			vscode.window.showErrorMessage(loc.compareErrorMessage(this.comparisonResult.errorMessage));
+			this.apiWrapper.showErrorMessage(loc.compareErrorMessage(this.comparisonResult.errorMessage));
 			return;
 		}
 		TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaComparisonFinished')
