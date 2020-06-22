@@ -19,6 +19,8 @@ import { equals, coalesce } from 'vs/base/common/arrays';
 import { ILogService } from 'vs/platform/log/common/log';
 import { checkProposedApiEnabled } from 'vs/workbench/services/extensions/common/extensions';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
+import { MarkdownString } from 'vs/workbench/api/common/extHostTypeConverters';
+import { IMarkdownString } from 'vs/base/common/htmlContent';
 
 // {{SQL CARBON EDIT}}
 import * as azdata from 'azdata';
@@ -498,7 +500,18 @@ export class ExtHostTreeView<T> extends Disposable {
 		return node;
 	}
 
-	protected createTreeNode(element: T, extensionTreeItem: azdata.TreeItem2, parent: TreeNode | Root): TreeNode { 	// {{SQL CARBON EDIT}} change to protected, change to azdata.TreeItem
+	private getTooltip(tooltip?: string | vscode.MarkdownString): string | IMarkdownString | undefined {
+		if (typeof tooltip === 'string') {
+			return tooltip;
+		} else if (tooltip === undefined) {
+			return undefined;
+		} else {
+			checkProposedApiEnabled(this.extension);
+			return MarkdownString.from(tooltip);
+		}
+	}
+
+	protected createTreeNode(element: T, extensionTreeItem: azdata.TreeItem2, parent: TreeNode | Root): TreeNode { // {{SQL CARBON EDIT}} change to protected, change to azdata.TreeItem
 		const disposable = new DisposableStore();
 		const handle = this.createHandle(element, extensionTreeItem, parent);
 		const icon = this.getLightIconPath(extensionTreeItem);
@@ -508,7 +521,7 @@ export class ExtHostTreeView<T> extends Disposable {
 			label: toTreeItemLabel(extensionTreeItem.label, this.extension),
 			description: extensionTreeItem.description,
 			resourceUri: extensionTreeItem.resourceUri,
-			tooltip: typeof extensionTreeItem.tooltip === 'string' ? extensionTreeItem.tooltip : undefined,
+			tooltip: this.getTooltip(extensionTreeItem.tooltip),
 			command: extensionTreeItem.command ? this.commands.toInternal(extensionTreeItem.command, disposable) : undefined,
 			contextValue: extensionTreeItem.contextValue,
 			icon,

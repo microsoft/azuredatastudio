@@ -454,6 +454,8 @@ export interface MainThreadTerminalServiceShape extends IDisposable {
 	$stopSendingDataEvents(): void;
 	$startHandlingLinks(): void;
 	$stopHandlingLinks(): void;
+	$startLinkProvider(): void;
+	$stopLinkProvider(): void;
 	$setEnvironmentVariableCollection(extensionIdentifier: string, persistent: boolean, collection: ISerializableEnvironmentVariableCollection | undefined): void;
 
 	// Process
@@ -1385,6 +1387,17 @@ export interface IShellAndArgsDto {
 	args: string[] | string | undefined;
 }
 
+export interface ITerminalLinkDto {
+	/** The ID of the link to enable activation and disposal. */
+	id: number;
+	/** The startIndex of the link in the line. */
+	startIndex: number;
+	/** The length of the link in the line. */
+	length: number;
+	/** The descriptive label for what the link does when activated. */
+	label?: string;
+}
+
 export interface ITerminalDimensionsDto {
 	columns: number;
 	rows: number;
@@ -1411,6 +1424,8 @@ export interface ExtHostTerminalServiceShape {
 	$getAvailableShells(): Promise<IShellDefinitionDto[]>;
 	$getDefaultShellAndArgs(useAutomationShell: boolean): Promise<IShellAndArgsDto>;
 	$handleLink(id: number, link: string): Promise<boolean>;
+	$provideLinks(id: number, line: string): Promise<ITerminalLinkDto[]>;
+	$activateLink(id: number, linkId: number): void;
 	$initEnvironmentVariableCollections(collections: [string, ISerializableEnvironmentVariableCollection][]): void;
 }
 
