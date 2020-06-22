@@ -381,7 +381,6 @@ class WelcomePage extends Disposable {
 			guidedTourNotificationContainer.classList.remove('show');
 		});
 
-
 		adsHomepage.prepend(guidedTourNotificationContainer);
 
 		setTimeout(function () {
