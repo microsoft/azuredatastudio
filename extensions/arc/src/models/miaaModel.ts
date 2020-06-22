@@ -98,9 +98,10 @@ export class MiaaModel extends ResourceModel {
 				if (existingConnection) {
 					const credentials = await azdata.connection.getCredentials(this.info.connectionId);
 					if (credentials) {
-						existingConnection.password = credentials.password;
+						existingConnection.options['password'] = credentials.password;
+						connection = existingConnection;
 					} else {
-						// We need the pass
+						// We need the password so prompt the user for it
 						const connectionProfile = {
 							serverName: existingConnection.options['serverName'],
 							databaseName: existingConnection.options['databaseName'],
