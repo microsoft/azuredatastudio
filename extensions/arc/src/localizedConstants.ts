@@ -7,6 +7,7 @@ import * as nls from 'vscode-nls';
 import { getErrorMessage } from './common/utils';
 const localize = nls.loadMessageBundle();
 
+export const arcDeploymentDeprecation = localize('arc.arcDeploymentDeprecation', "The Arc Deployment extension has been replaced by the Arc extension and has been uninstalled.");
 export const arcControllerDashboard = localize('arc.controllerDashboard', "Azure Arc Controller Dashboard (Preview)");
 export const miaaDashboard = localize('arc.miaaDashboard', "Managed Instance Dashboard (Preview)");
 export const postgresDashboard = localize('arc.postgresDashboard', "Postgres Dashboard (Preview)");
