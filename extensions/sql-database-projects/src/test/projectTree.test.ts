@@ -11,8 +11,9 @@ import * as path from 'path';
 import { Project, EntryType } from '../models/project';
 import { FolderNode, FileNode, sortFileFolderNodes } from '../models/tree/fileFolderTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
+import { DatabaseProjectItemType } from '../common/constants';
 
-describe('Project Tree tests', function (): void {
+describe.skip('Project Tree tests', function (): void {
 	it('Should correctly order tree nodes by type, then by name', async function (): Promise<void> {
 		const root = os.platform() === 'win32' ? 'Z:\\' : '/';
 
@@ -78,5 +79,18 @@ describe('Project Tree tests', function (): void {
 			'/TestProj.sqlproj/someFolder/bNestedFolder',
 			'/TestProj.sqlproj/someFolder/aNestedTest.sql',
 			'/TestProj.sqlproj/someFolder/bNestedTest.sql']);
+
+		should(tree.children.map(x => x.treeItem.contextValue)).deepEqual([
+			DatabaseProjectItemType.dataSourceRoot,
+			DatabaseProjectItemType.referencesRoot,
+			DatabaseProjectItemType.folder,
+			DatabaseProjectItemType.folder,
+			DatabaseProjectItemType.file]);
+
+		should(tree.children.find(x => x.uri.path === '/TestProj.sqlproj/someFolder')?.children.map(y => y.treeItem.contextValue)).deepEqual([
+			DatabaseProjectItemType.folder,
+			DatabaseProjectItemType.folder,
+			DatabaseProjectItemType.file,
+			DatabaseProjectItemType.file]);
 	});
 });

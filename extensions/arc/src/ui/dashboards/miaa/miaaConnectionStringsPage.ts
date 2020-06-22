@@ -5,11 +5,10 @@
 
 import * as azdata from 'azdata';
 import * as loc from '../../../localizedConstants';
-import { IconPathHelper, cssStyles } from '../../../constants';
+import { IconPathHelper, cssStyles, ResourceType } from '../../../constants';
 import { KeyValueContainer, KeyValue, InputKeyValue, MultilineInputKeyValue } from '../../components/keyValueContainer';
 import { DashboardPage } from '../../components/dashboardPage';
 import { ControllerModel, Registration } from '../../../models/controllerModel';
-import { ResourceType } from '../../../common/utils';
 import { MiaaModel } from '../../../models/miaaModel';
 
 export class MiaaConnectionStringsPage extends DashboardPage {
@@ -79,7 +78,7 @@ export class MiaaConnectionStringsPage extends DashboardPage {
 
 		const ip = this._instanceRegistration.externalIp;
 		const port = this._instanceRegistration.externalPort;
-		const username = this._miaaModel.connectionProfile.userName;
+		const username = this._miaaModel.username;
 
 		const pairs: KeyValue[] = [
 			new InputKeyValue('ADO.NET', `Server=tcp:${ip},${port};Persist Security Info=False;User ID=${username};Password={your_password_here};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;`),

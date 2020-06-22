@@ -5,6 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as os from 'os';
+import * as constants from '../common/constants';
 import { promises as fs } from 'fs';
 
 /**
@@ -94,4 +95,21 @@ export function getSafeWindowsPath(filePath: string): string {
 export function getSafeNonWindowsPath(filePath: string): string {
 	filePath = filePath.split('\\').join('/').split('"').join('');
 	return '"' + filePath + '"';
+}
+
+/**
+ * Read SQLCMD variables from xmlDoc and return them
+ * @param xmlDoc xml doc to read SQLCMD variables from. Format must be the same that sqlproj and publish profiles use
+ */
+export function readSqlCmdVariables(xmlDoc: any): Record<string, string> {
+	let sqlCmdVariables: Record<string, string> = {};
+	for (let i = 0; i < xmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable).length; i++) {
+		const sqlCmdVar = xmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable)[i];
+		const varName = sqlCmdVar.getAttribute(constants.Include);
+
+		const varValue = sqlCmdVar.getElementsByTagName(constants.DefaultValue)[0].childNodes[0].nodeValue;
+		sqlCmdVariables[varName] = varValue;
+	}
+
+	return sqlCmdVariables;
 }

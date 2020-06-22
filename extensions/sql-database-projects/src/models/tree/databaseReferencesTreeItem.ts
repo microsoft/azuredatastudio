@@ -32,6 +32,8 @@ export class DatabaseReferencesTreeItem extends BaseProjectTreeItem {
 	}
 
 	public get treeItem(): vscode.TreeItem {
-		return new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.Collapsed);
+		const refFolderItem = new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.Collapsed);
+		refFolderItem.contextValue = constants.DatabaseProjectItemType.referencesRoot;
+		return refFolderItem;
 	}
 }

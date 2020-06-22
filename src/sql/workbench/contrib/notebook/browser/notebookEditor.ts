@@ -28,7 +28,7 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookFindModel } from 'sql/workbench/contrib/notebook/browser/models/notebookFindModel';
-import { IDisposable, DisposableStore, dispose } from 'vs/base/common/lifecycle';
+import { IDisposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IModelDecorationsChangeAccessor, IModelDeltaDecoration } from 'vs/editor/common/model';
 import { NotebookFindDecorations } from 'sql/workbench/contrib/notebook/browser/find/notebookFindDecorations';
 import { TimeoutTimer } from 'vs/base/common/async';
@@ -66,12 +66,12 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 	) {
 		super(NotebookEditor.ID, telemetryService, themeService, storageService);
 		this._startSearchingTimer = new TimeoutTimer();
+		this._toDispose.add(this._startSearchingTimer);
 		this._actionMap[ACTION_IDS.FIND_NEXT] = this._instantiationService.createInstance(NotebookFindNextAction, this);
 		this._actionMap[ACTION_IDS.FIND_PREVIOUS] = this._instantiationService.createInstance(NotebookFindPreviousAction, this);
 	}
 
 	public dispose(): void {
-		dispose(this._startSearchingTimer);
 		this._toDispose.dispose();
 	}
 
@@ -192,7 +192,7 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 
 		const parentElement = this.getContainer();
 
-		super.setInput(input, options, CancellationToken.None);
+		await super.setInput(input, options, CancellationToken.None);
 		DOM.clearNode(parentElement);
 		await this.setFindInput(parentElement);
 		if (!input.hasBootstrapped) {
@@ -271,6 +271,7 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 		}
 		if (this._findCountChangeListener === undefined && this._notebookModel) {
 			this._findCountChangeListener = this.notebookInput.notebookFindModel.onFindCountChange(() => this._updateFinderMatchState());
+			this._toDispose.add(this._findCountChangeListener);
 			this.registerModelChanges();
 		}
 		if (e.isRevealed) {

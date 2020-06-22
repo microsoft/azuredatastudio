@@ -41,6 +41,7 @@ export const databaseReferenceSameDatabase = localize('databaseReferenceSameData
 export const databaseReferenceDifferentDabaseSameServer = localize('databaseReferenceDifferentDabaseSameServer', "Different database, same server");
 export const databaseReferenceDatabaseName = localize('databaseReferenceDatabaseName', "Database name");
 export const dacpacFiles = localize('dacpacFiles', "dacpac Files");
+export const publishSettingsFiles = localize('publishSettingsFiles', "Publish Settings File");
 export const systemDatabase = localize('systemDatabase', "System Database");
 export function newObjectNamePrompt(objectType: string) { return localize('newObjectNamePrompt', 'New {0} name:', objectType); }
 
@@ -61,6 +62,11 @@ export const connectionRadioButtonLabel = localize('connectionRadioButtonLabel',
 export const selectConnectionRadioButtonsTitle = localize('selectconnectionRadioButtonsTitle', "Specify connection from:");
 export const dataSourceDropdownTitle = localize('dataSourceDropdownTitle', "Data source");
 export const noDataSourcesText = localize('noDataSourcesText', "No data sources in this project");
+export const loadProfileButtonText = localize('loadProfileButtonText', "Load Profile...");
+export const profileWarningText = localize('profileWarningText', "⚠Warning: Only database name and SQLCMD variables are able to be loaded from a profile at this time");
+export const sqlCmdTableLabel = localize('sqlCmdTableLabel', "SQLCMD Variables");
+export const sqlCmdVariableColumn = localize('sqlCmdVariableColumn', "Variable");
+export const sqlCmdValueColumn = localize('sqlCmdValueColumn', "Value");
 
 // Error messages
 
@@ -77,7 +83,8 @@ export const projectLocationNotEmpty = localize('projectLocationNotEmpty', "Curr
 export const extractTargetRequired = localize('extractTargetRequired', "Target information for extract is required to import database to project.");
 export const schemaCompareNotInstalled = localize('schemaCompareNotInstalled', "Schema compare extension installation is required to run schema compare");
 export const buildDacpacNotFound = localize('buildDacpacNotFound', "Dacpac created from build not found");
-export const updateProjectForRoundTrip = localize('updateProjectForRoundTrip', "To build this project, Azure Data Studio needs to update targets and references. If the project is created in SSDT, it will continue to work in both tools. Do you want Azure Data Studio to update the project?");
+export const updateProjectForRoundTrip = localize('updateProjectForRoundTrip', "To build this project, Azure Data Studio needs to update targets, references, and system database references. If the project is created in SSDT, it will continue to work in both tools. Do you want Azure Data Studio to update the project?");
+export const updateProjectDatabaseReferencesForRoundTrip = localize('updateProjectDatabaseReferencesForRoundTrip', "To build this project, Azure Data Studio needs to update system database references. If the project is created in SSDT, it will continue to work in both tools. Do you want Azure Data Studio to update the project?");
 export const databaseReferenceTypeRequired = localize('databaseReferenceTypeRequired', "Database reference type is required for adding a reference to a database");
 export const systemDatabaseReferenceRequired = localize('systemDatabaseReferenceRequired', "System database selection is required for adding a reference to a system database");
 export const dacpacFileLocationRequired = localize('dacpacFileLocationRequired', "Dacpac file location is required for adding a reference to a database");
@@ -86,6 +93,7 @@ export const databaseNameRequired = localize('databaseNameRequired', "Database n
 export const invalidDataSchemaProvider = localize('invalidDataSchemaProvider', "Invalid DSP in .sqlproj file");
 export const invalidDatabaseReference = localize('invalidDatabaseReference', "Invalid database reference in .sqlproj file");
 export const databaseSelectionRequired = localize('databaseSelectionRequired', "Database selection is required to import a project");
+export const unableToCreateDeploymentConnection = localize('unableToCreateDeploymentConnection', "Unable to construct connection");
 export function projectAlreadyOpened(path: string) { return localize('projectAlreadyOpened', "Project '{0}' is already opened.", path); }
 export function projectAlreadyExists(name: string, path: string) { return localize('projectAlreadyExists', "A project named {0} already exists in {1}.", name, path); }
 export function noFileExist(fileName: string) { return localize('noFileExist', "File {0} doesn't exist", fileName); }
@@ -111,9 +119,16 @@ export const Include = 'Include';
 export const Import = 'Import';
 export const Project = 'Project';
 export const Condition = 'Condition';
+export const Target = 'Target';
+export const Name = 'Name';
+export const AfterCleanTarget = 'AfterClean';
+export const Delete = 'Delete';
+export const Files = 'Files';
 export const PackageReference = 'PackageReference';
 export const Version = 'Version';
 export const PrivateAssets = 'PrivateAssets';
+export const SqlCmdVariable = 'SqlCmdVariable';
+export const DefaultValue = 'DefaultValue';
 export const ArtifactReference = 'ArtifactReference';
 export const SuppressMissingDependenciesErrors = 'SuppressMissingDependenciesErrors';
 export const DatabaseVariableLiteralValue = 'DatabaseVariableLiteralValue';
@@ -124,15 +139,21 @@ export const NetCoreTargets = '$(NETCoreTargetsPath)\\Microsoft.Data.Tools.Schem
 export const SqlDbTargets = '$(SQLDBExtensionsRefPath)\\Microsoft.Data.Tools.Schema.SqlTasks.targets';
 export const MsBuildtargets = '$(MSBuildExtensionsPath)\\Microsoft\\VisualStudio\\v$(VisualStudioVersion)\\SSDT\\Microsoft.Data.Tools.Schema.SqlTasks.targets';
 export const NetCoreCondition = '\'$(NetCoreBuild)\' == \'true\'';
+export const NotNetCoreCondition = '\'$(NetCoreBuild)\' != \'true\'';
 export const SqlDbPresentCondition = '\'$(SQLDBExtensionsRefPath)\' != \'\'';
 export const SqlDbNotPresentCondition = '\'$(SQLDBExtensionsRefPath)\' == \'\'';
 export const RoundTripSqlDbPresentCondition = '\'$(NetCoreBuild)\' != \'true\' AND \'$(SQLDBExtensionsRefPath)\' != \'\'';
 export const RoundTripSqlDbNotPresentCondition = '\'$(NetCoreBuild)\' != \'true\' AND \'$(SQLDBExtensionsRefPath)\' == \'\'';
+export const DacpacRootPath = '$(DacPacRootPath)';
+export const ProjJsonToClean = '$(BaseIntermediateOutputPath)\\project.assets.json';
 
 // SqlProj Reference Assembly Information
 export const NETFrameworkAssembly = 'Microsoft.NETFramework.ReferenceAssemblies';
 export const VersionNumber = '1.0.0';
 export const All = 'All';
+
+// Profile XML names
+export const targetDatabaseName = 'TargetDatabaseName';
 
 // SQL connection string components
 export const initialCatalogSetting = 'Initial Catalog';
@@ -140,3 +161,14 @@ export const dataSourceSetting = 'Data Source';
 export const integratedSecuritySetting = 'Integrated Security';
 export const userIdSetting = 'User ID';
 export const passwordSetting = 'Password';
+
+// Tree item types
+export enum DatabaseProjectItemType {
+	project = 'databaseProject.itemType.project',
+	folder = 'databaseProject.itemType.folder',
+	file = 'databaseProject.itemType.file',
+	referencesRoot = 'databaseProject.itemType.referencesRoot',
+	reference = 'databaseProject.itemType.reference',
+	dataSourceRoot = 'databaseProject.itemType.dataSourceRoot',
+	dataSource = 'databaseProject.itemType.dataSource'
+}
