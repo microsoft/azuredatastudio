@@ -332,10 +332,10 @@ export class Project {
 		const isSystemDatabaseProjectEntry = (<SystemDatabaseReferenceProjectEntry>entry).ssdtUri;
 		const entryFsPath = isSystemDatabaseProjectEntry ? entry.fsUri.fsPath.substring(1) : entry.fsUri.fsPath;
 
-		for (let r = 0; r < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference).length; r++) {
-			if (this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference)[r].getAttribute(constants.Condition) !== constants.NotNetCoreCondition) {
-				const filepath = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference)[r].getAttribute(constants.Include);
-
+		const elements = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference);
+		for (let r = 0; r < elements.length; r++) {
+			if (elements[r].getAttribute[constants.Condition] !== constants.NotNetCoreCondition) {
+				const filepath = elements[r].getAttribute(constants.Include);
 				if (filepath === entryFsPath) {
 					return true;
 				}

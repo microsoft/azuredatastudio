@@ -183,22 +183,22 @@ describe('Project: sqlproj content operations', function (): void {
 		const project = new Project(projFilePath);
 		await project.readProjFile();
 
-		should(project.databaseReferences.length).equal(0);
+		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
 		await project.addSystemDatabaseReference(SystemDatabase.master);
-		should(project.databaseReferences.length).equal(1);
-		should(project.databaseReferences[0]).equal(constants.master);
+		should(project.databaseReferences.length).equal(1, 'There should be one database reference after adding a reference to master');
+		should(project.databaseReferences[0]).equal(constants.master, 'project.databaseReferences[0] should be master');
 
 		// try to add reference to master again
 		await testUtils.shouldThrowSpecificError(async () => await project.addSystemDatabaseReference(SystemDatabase.master), constants.databaseReferenceAlreadyExists);
-		should(project.databaseReferences.length).equal(1);
+		should(project.databaseReferences.length).equal(1, 'There should only be one database reference after trying to add a reference to master again');
 
 		await project.addDatabaseReference(Uri.parse('test.dacpac'), DatabaseReferenceLocation.sameDatabase);
-		should(project.databaseReferences.length).equal(2);
-		should(project.databaseReferences[1]).equal('test');
+		should(project.databaseReferences.length).equal(2, 'There should be two database references after adding a reference to test.dacpac');
+		should(project.databaseReferences[1]).equal('test', 'project.databaseReferences[1] should be test');
 
 		// try to add reference to test.dacpac again
 		await testUtils.shouldThrowSpecificError(async () => await project.addDatabaseReference(Uri.parse('test.dacpac'), DatabaseReferenceLocation.sameDatabase), constants.databaseReferenceAlreadyExists);
-		should(project.databaseReferences.length).equal(2);
+		should(project.databaseReferences.length).equal(2, 'There should be two database references after trying to add a reference to test.dacpac again');
 	});
 });
 
