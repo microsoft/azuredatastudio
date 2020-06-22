@@ -133,6 +133,8 @@ export class MarkdownTextTransformer {
 				return '![';
 			case MarkdownButtonType.HIGHLIGHT:
 				return '<mark>';
+			case MarkdownButtonType.HEADING:
+				return '## ';
 			default:
 				return '';
 		}
@@ -153,6 +155,7 @@ export class MarkdownTextTransformer {
 				return ']()';
 			case MarkdownButtonType.HIGHLIGHT:
 				return '</mark>';
+			case MarkdownButtonType.HEADING:
 			case MarkdownButtonType.UNORDERED_LIST:
 			case MarkdownButtonType.ORDERED_LIST:
 			default:
@@ -162,6 +165,7 @@ export class MarkdownTextTransformer {
 
 	private getMarkdownLineType(type: MarkdownButtonType): MarkdownLineType {
 		switch (type) {
+			case MarkdownButtonType.HEADING:
 			case MarkdownButtonType.UNORDERED_LIST:
 			case MarkdownButtonType.ORDERED_LIST:
 				return MarkdownLineType.EVERY_LINE;
@@ -380,7 +384,12 @@ export enum MarkdownButtonType {
 	LINK,
 	UNORDERED_LIST,
 	ORDERED_LIST,
-	IMAGE
+	IMAGE,
+	HEADING,
+	PARAGRAPH,
+	HEADING1,
+	HEADING2,
+	HEADING3
 }
 
 // If ALL_LINES, we need to insert markdown at each line (e.g. lists)
