@@ -1084,7 +1084,7 @@ suite.skip('EditorService', () => { // {{SQL CARBON EDIT}} skip suite
 		const editor = await service.openEditor(input1, { pinned: true });
 		await service.openEditor(input2, { pinned: true });
 
-		const whenClosed = service.whenClosed([input1, input2]);
+		const whenClosed = service.whenClosed([{ resource: input1.resource }, { resource: input2.resource }]);
 
 		editor?.group?.closeAllEditors();
 
