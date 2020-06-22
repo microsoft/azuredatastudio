@@ -77,7 +77,8 @@ export class DeployDatabaseDialog {
 	private initializeDeployTab(): void {
 		this.deployTab.registerContent(async view => {
 
-			let selectConnectionRadioButtons = this.createRadioButtons(view);
+			// TODO : enable using this when data source creation is enabled
+			this.createRadioButtons(view);
 			this.targetConnectionFormComponent = this.createTargetConnectionComponent(view);
 
 			this.targetDatabaseTextBox = view.modelBuilder.inputBox().withProperties({
@@ -111,10 +112,11 @@ export class DeployDatabaseDialog {
 					{
 						title: constants.targetDatabaseSettings,
 						components: [
+							/* TODO : enable using this when data source creation is enabled
 							{
 								title: constants.selectConnectionRadioButtonsTitle,
 								component: selectConnectionRadioButtons
-							},
+							},*/
 							this.targetConnectionFormComponent,
 							{
 								title: constants.databaseNameLabel,
