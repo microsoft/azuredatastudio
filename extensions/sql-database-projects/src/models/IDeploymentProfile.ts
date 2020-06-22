@@ -15,3 +15,8 @@ export interface IGenerateScriptProfile {
 	connectionUri: string;
 	sqlCmdVariables?: Record<string, string>;
 }
+
+export interface PublishSettings {
+	databaseName: string;
+	sqlCmdVariables: Record<string, string>;
+}

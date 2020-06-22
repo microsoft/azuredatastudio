@@ -11,7 +11,7 @@ import { ISerializableCommandAction } from 'vs/platform/actions/common/actions';
 
 export interface ICommonElectronService {
 
-	_serviceBrand: undefined;
+	readonly _serviceBrand: undefined;
 
 	// Properties
 	readonly windowId: number;
@@ -24,6 +24,8 @@ export interface ICommonElectronService {
 
 	readonly onWindowFocus: Event<number>;
 	readonly onWindowBlur: Event<number>;
+
+	readonly onOSResume: Event<unknown>;
 
 	// Window
 	getWindows(): Promise<IOpenedWindow[]>;
@@ -80,11 +82,13 @@ export interface ICommonElectronService {
 	toggleWindowTabsBar(): Promise<void>;
 
 	// Lifecycle
+	notifyReady(): Promise<void>
 	relaunch(options?: { addArgs?: string[], removeArgs?: string[] }): Promise<void>;
 	reload(options?: { disableExtensions?: boolean }): Promise<void>;
 	closeWindow(): Promise<void>;
 	closeWindowById(windowId: number): Promise<void>;
 	quit(): Promise<void>;
+	exit(code: number): Promise<void>;
 
 	// Development
 	openDevTools(options?: OpenDevToolsOptions): Promise<void>;

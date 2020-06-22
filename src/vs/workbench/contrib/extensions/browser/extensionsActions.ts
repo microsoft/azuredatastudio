@@ -947,7 +947,7 @@ export class EnableGloballyAction extends ExtensionAction {
 		this.enabled = false;
 		if (this.extension && this.extension.local) {
 			this.enabled = this.extension.state === ExtensionState.Installed
-				&& this.extension.enablementState === EnablementState.DisabledGlobally
+				&& this.extensionEnablementService.isDisabledGlobally(this.extension.local)
 				&& this.extensionEnablementService.canChangeEnablement(this.extension.local);
 		}
 	}
@@ -2216,7 +2216,7 @@ export abstract class AbstractConfigureRecommendedExtensionsAction extends Actio
 
 				return this.jsonEditingService.write(workspaceConfigurationFile,
 					[{
-						key: 'extensions',
+						path: ['extensions'],
 						value: {
 							recommendations: shouldRecommend ? insertInto : removeFrom,
 							unwantedRecommendations: shouldRecommend ? removeFrom : insertInto
@@ -2245,7 +2245,7 @@ export abstract class AbstractConfigureRecommendedExtensionsAction extends Actio
 					removeFrom = removeFrom.filter(x => x.toLowerCase() !== extensionIdLowerCase);
 					removeFromPromise = this.jsonEditingService.write(extensionsFileResource,
 						[{
-							key: shouldRecommend ? 'unwantedRecommendations' : 'recommendations',
+							path: shouldRecommend ? ['unwantedRecommendations'] : ['recommendations'],
 							value: removeFrom
 						}],
 						true);
@@ -2254,7 +2254,7 @@ export abstract class AbstractConfigureRecommendedExtensionsAction extends Actio
 				return removeFromPromise.then(() =>
 					this.jsonEditingService.write(extensionsFileResource,
 						[{
-							key: shouldRecommend ? 'recommendations' : 'unwantedRecommendations',
+							path: shouldRecommend ? ['recommendations'] : ['unwantedRecommendations'],
 							value: insertInto
 						}],
 						true)
@@ -2281,7 +2281,7 @@ export abstract class AbstractConfigureRecommendedExtensionsAction extends Actio
 			.then(content => {
 				const workspaceRecommendations = <IExtensionsConfigContent>json.parse(content.value.toString())['extensions'];
 				if (!workspaceRecommendations || !workspaceRecommendations.recommendations) {
-					return this.jsonEditingService.write(workspaceConfigurationFile, [{ key: 'extensions', value: { recommendations: [] } }], true)
+					return this.jsonEditingService.write(workspaceConfigurationFile, [{ path: ['extensions'], value: { recommendations: [] } }], true)
 						.then(() => this.fileService.readFile(workspaceConfigurationFile));
 				}
 				return content;

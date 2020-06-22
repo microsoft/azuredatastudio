@@ -20,7 +20,7 @@
     "html-query-plan": "git://github.com/anthonydresser/html-query-plan.git#2.6",
     "http-proxy-agent": "^2.1.0",
     "https-proxy-agent": "^2.2.3",
-    "iconv-lite": "0.5.0",
+    "iconv-lite": "0.6.0",
     "jquery": "3.5.0",
     "jschardet": "2.1.1",
     "minimist": "^1.2.5",
