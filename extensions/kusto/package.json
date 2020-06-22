@@ -227,7 +227,7 @@
           "description": "%kusto.connectionOptions.authType.description%",
           "groupName": "Security",
           "valueType": "category",
-          "defaultValue": "%kusto.connectionOptions.authType.categoryValues.azureMFA%",
+          "defaultValue": "AzureMFA",
           "objectType": null,
           "categoryValues": [
             {
