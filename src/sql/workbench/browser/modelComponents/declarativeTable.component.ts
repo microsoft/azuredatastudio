@@ -55,7 +55,8 @@ export enum DeclarativeDataType {
 			</ng-container>
 		</ng-container>
 	</table>
-	`
+	`,
+	templateUrl: decodeURI(require.toUrl('./declarativeTable.component.html'))
 })
 export default class DeclarativeTableComponent extends ContainerBase<any> implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
@@ -116,12 +117,20 @@ export default class DeclarativeTableComponent extends ContainerBase<any> implem
 	}
 
 	public onHeaderCheckBoxChanged(e: boolean, colIdx: number): void {
-		this.data.forEach((row, rowidx) => {
+		this.data.forEach((row, rowIdx) => {
 			if (row[colIdx] !== e) {
-				this.onCellDataChanged(e, rowidx, colIdx);
+				this.onCellDataChanged(e, rowIdx, colIdx);
 			}
 		});
 		this._changeRef.detectChanges();
+	}
+
+	public trackByFnRows(index: number, item: any): any {
+		return index;
+	}
+
+	public trackByFnCols(index: number, item: any): any {
+		return index;
 	}
 
 	public onSelectBoxChanged(e: ISelectData | string, rowIdx: number, colIdx: number): void {

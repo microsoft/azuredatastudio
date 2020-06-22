@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { ColumnMetadata } from '../api/models';
+import { ColumnMetadata, ColumnMetadataArray } from '../api/models';
 import { ImportPage } from '../api/importPage';
 import * as constants from '../../common/constants';
 
@@ -121,7 +121,7 @@ export class ModifyColumnsPage extends ImportPage {
 	}
 
 	private async populateTable() {
-		let data: any[][] = [];
+		let data: ColumnMetadataArray[] = [];
 
 		this.model.proseColumns.forEach((column) => {
 			data.push(ModifyColumnsPage.convertMetadata(column));
