@@ -3248,7 +3248,7 @@
 				{
 					"extensionId": "67",
 					"extensionName": "sql-assessment",
-					"displayName": "SQL Server Assessment",
+					"displayName": "SQL Assessment",
 					"shortDescription": "Provides a mechanism to evaluate the configuration of SQL Server for best practices",
 					"publisher": {
 						"displayName": "Microsoft",
