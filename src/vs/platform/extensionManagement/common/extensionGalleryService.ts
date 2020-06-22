@@ -850,14 +850,14 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			// {{SQL CARBON EDIT}}
 			const vsCodeEngine = getEngine(version);
 			const azDataEngine = getAzureDataStudioEngine(version);
-			// We always require an azdata engine version, the VS Code version is optional
-			if (!azDataEngine) {
+			// Require at least one engine version
+			if (!vsCodeEngine && !azDataEngine) {
 				return null;
 			}
-			if (isEngineValid(azDataEngine, this.productService.version)) {
-				if (vsCodeEngine && isEngineValid(vsCodeEngine, this.productService.vscodeVersion)) {
-					return Promise.resolve(version);
-				}
+			const vsCodeEngineValid = !vsCodeEngine || (vsCodeEngine && isEngineValid(vsCodeEngine, this.productService.vscodeVersion));
+			const azDataEngineValid = !azDataEngine || (azDataEngine && isEngineValid(azDataEngine, this.productService.version));
+			if (vsCodeEngineValid && azDataEngineValid) {
+				return Promise.resolve(version);
 			}
 		}
 		return null;
