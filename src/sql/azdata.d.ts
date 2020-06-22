@@ -4550,6 +4550,10 @@ declare module 'azdata' {
 
 		export interface NotebookProvider {
 			readonly providerId: string;
+			/**
+			 * @deprecated standardKernels will be removed in an upcoming release.
+			 */
+			readonly standardKernels?: IStandardKernel[];
 			getNotebookManager(notebookUri: vscode.Uri): Thenable<NotebookManager>;
 			handleNotebookClosed(notebookUri: vscode.Uri): void;
 		}
