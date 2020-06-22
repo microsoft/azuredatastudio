@@ -21,6 +21,6 @@
 	padding: 5px;
 	border: 1px solid;
 	vertical-align: top;
-	text-align: center;
+	text-align: center !important;
 	height: auto;
 }

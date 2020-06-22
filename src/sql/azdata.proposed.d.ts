@@ -100,6 +100,8 @@ declare module 'azdata' {
 		headerCssStyles?: { [key: string]: string };
 		rowCssStyles?: { [key: string]: string };
 		ariaLabel?: string;
+		showCheckAll?: boolean;
+		isChecked?: boolean;
 	}
 
 	export enum DeclarativeDataType {
@@ -171,11 +173,6 @@ declare module 'azdata' {
 	}
 
 	export interface DeclarativeTableProperties extends ComponentProperties {
-	}
-
-	export interface DeclarativeTableColumn {
-		showCheckAll?: boolean;
-		isChecked?: boolean;
 	}
 
 	export interface ComponentProperties {

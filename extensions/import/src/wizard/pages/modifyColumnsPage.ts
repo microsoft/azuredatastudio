@@ -128,7 +128,6 @@ export class ModifyColumnsPage extends ImportPage {
 		});
 
 		this.table.updateProperties({
-			height: 400,
 			columns: [{
 				displayName: constants.columnNameText,
 				valueType: azdata.DeclarativeDataType.string,
@@ -145,15 +144,13 @@ export class ModifyColumnsPage extends ImportPage {
 				valueType: azdata.DeclarativeDataType.boolean,
 				width: '100px',
 				isReadOnly: false,
-				showCheckAll: true,
-				isChecked: false,
+				showCheckAll: true
 			}, {
 				displayName: constants.allowNullsText,
 				valueType: azdata.DeclarativeDataType.boolean,
 				isReadOnly: false,
 				width: '100px',
-				showCheckAll: true,
-				isChecked: true,
+				showCheckAll: true
 			}],
 			data: data
 		});
