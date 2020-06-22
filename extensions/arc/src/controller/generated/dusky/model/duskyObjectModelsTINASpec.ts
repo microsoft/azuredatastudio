@@ -12,7 +12,7 @@
 
 
 export class DuskyObjectModelsTINASpec {
-    'namespace': string;
+    'namespace'?: string;
 
     static discriminator: string | undefined = undefined;
 

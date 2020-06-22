@@ -10,6 +10,7 @@ import * as path from 'path';
 import * as utils from '../common/utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as templates from '../templates/templates';
+import * as xmldom from 'xmldom';
 
 import { Uri, QuickPickItem, WorkspaceFolder, extensions, Extension } from 'vscode';
 import { IConnectionProfile, TaskExecutionMode } from 'azdata';
@@ -19,7 +20,7 @@ import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
 import { Project, DatabaseReferenceLocation, SystemDatabase, TargetPlatform } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { FolderNode } from '../models/tree/fileFolderTreeItem';
-import { IDeploymentProfile, IGenerateScriptProfile } from '../models/IDeploymentProfile';
+import { IDeploymentProfile, IGenerateScriptProfile, PublishSettings } from '../models/IDeploymentProfile';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { ImportDataModel } from '../models/api/import';
@@ -93,10 +94,10 @@ export class ProjectsController {
 		return newProject;
 	}
 
-	public async focusProject(project?: Project) {
+	public async focusProject(project?: Project): Promise<void> {
 		if (project && this.projects.includes(project)) {
 			await this.apiWrapper.executeCommand('sqlDatabaseProjectsView.focus');
-			this.projectTreeViewProvider.focus(project);
+			await this.projectTreeViewProvider.focus(project);
 		}
 	}
 
@@ -193,6 +194,7 @@ export class ProjectsController {
 
 		deployDatabaseDialog.deploy = async (proj, prof) => await this.executionCallback(proj, prof);
 		deployDatabaseDialog.generateScript = async (proj, prof) => await this.executionCallback(proj, prof);
+		deployDatabaseDialog.readPublishProfile = async (profileUri) => await this.readPublishProfile(profileUri);
 
 		deployDatabaseDialog.openDialog();
 
@@ -214,6 +216,27 @@ export class ProjectsController {
 		else {
 			return await dacFxService.generateDeployScript(dacpacPath, profile.databaseName, profile.connectionUri, TaskExecutionMode.script, profile.sqlCmdVariables);
 		}
+	}
+
+	public async readPublishProfile(profileUri: Uri): Promise<PublishSettings> {
+		const profileText = await fs.readFile(profileUri.fsPath);
+		const profileXmlDoc = new xmldom.DOMParser().parseFromString(profileText.toString());
+
+		// read target database name
+		let targetDbName: string = '';
+		let targetDatabaseNameCount = profileXmlDoc.documentElement.getElementsByTagName(constants.targetDatabaseName).length;
+		if (targetDatabaseNameCount > 0) {
+			// if there is more than one TargetDatabaseName nodes, SSDT uses the name in the last one so we'll do the same here
+			targetDbName = profileXmlDoc.documentElement.getElementsByTagName(constants.targetDatabaseName)[targetDatabaseNameCount - 1].textContent;
+		}
+
+		// get all SQLCMD variables to include from the profile
+		let sqlCmdVariables = utils.readSqlCmdVariables(profileXmlDoc);
+
+		return {
+			databaseName: targetDbName,
+			sqlCmdVariables: sqlCmdVariables
+		};
 	}
 
 	public async schemaCompare(treeNode: BaseProjectTreeItem): Promise<void> {
@@ -316,11 +339,13 @@ export class ProjectsController {
 
 				if (databaseLocation === DatabaseReferenceLocation.differentDatabaseSameServer) {
 					const databaseName = await this.getDatabaseName(dacpacFileLocation);
-					await project.addDatabaseReference(dacpacFileLocation, <DatabaseReferenceLocation>databaseLocation, false, databaseName);
+					await project.addDatabaseReference(dacpacFileLocation, databaseLocation, databaseName);
 				} else {
-					await project.addDatabaseReference(dacpacFileLocation, <DatabaseReferenceLocation>databaseLocation, false);
+					await project.addDatabaseReference(dacpacFileLocation, databaseLocation);
 				}
 			}
+
+			this.refreshProjectsTree();
 		} catch (err) {
 			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
 		}
@@ -441,13 +466,21 @@ export class ProjectsController {
 	}
 
 	public async updateProjectForRoundTrip(project: Project) {
-		if (project.importedTargets.includes(constants.NetCoreTargets)) {
+		if (project.importedTargets.includes(constants.NetCoreTargets) && !project.containsSSDTOnlySystemDatabaseReferences()) {
 			return;
 		}
 
-		const result = await this.apiWrapper.showWarningMessage(constants.updateProjectForRoundTrip, constants.yesString, constants.noString);
-		if (result === constants.yesString) {
-			await project.updateProjectForRoundTrip();
+		if (!project.importedTargets.includes(constants.NetCoreTargets)) {
+			const result = await this.apiWrapper.showWarningMessage(constants.updateProjectForRoundTrip, constants.yesString, constants.noString);
+			if (result === constants.yesString) {
+				await project.updateProjectForRoundTrip();
+				await project.updateSystemDatabaseReferencesInProjFile();
+			}
+		} else if (project.containsSSDTOnlySystemDatabaseReferences()) {
+			const result = await this.apiWrapper.showWarningMessage(constants.updateProjectDatabaseReferencesForRoundTrip, constants.yesString, constants.noString);
+			if (result === constants.yesString) {
+				await project.updateSystemDatabaseReferencesInProjFile();
+			}
 		}
 	}
 
@@ -518,6 +551,19 @@ export class ProjectsController {
 				model.serverId = profile.id;
 				model.database = profile.databaseName;
 			}
+			else {
+				const connectionId = (await this.apiWrapper.openConnectionDialog()).connectionId;
+
+				const databaseList = await this.apiWrapper.listDatabases(connectionId);
+				const database = (await this.apiWrapper.showQuickPick(databaseList.map(dbName => { return { label: dbName }; })))?.label;
+
+				if (!database) {
+					throw new Error(constants.databaseSelectionRequired);
+				}
+
+				model.serverId = connectionId;
+				model.database = database;
+			}
 
 			// Get project name
 			let newProjName = await this.getProjectName(model.database);
@@ -573,7 +619,7 @@ export class ProjectsController {
 			//Refresh project to show the added files
 			this.refreshProjectsTree();
 
-			this.focusProject(project);
+			await this.focusProject(project);
 		}
 		catch (err) {
 			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));

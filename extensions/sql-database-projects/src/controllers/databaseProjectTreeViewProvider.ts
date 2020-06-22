@@ -4,9 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as constants from '../common/constants';
 
-import { BaseProjectTreeItem, MessageTreeItem, SpacerTreeItem } from '../models/tree/baseTreeItem';
+import { BaseProjectTreeItem, SpacerTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { Project } from '../models/project';
 
@@ -25,7 +24,7 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 	}
 
 	private initialize() {
-		this.roots = [new MessageTreeItem(constants.noOpenProjectMessage)];
+		this.roots = [];
 	}
 
 	public getTreeItem(element: BaseProjectTreeItem): vscode.TreeItem {
@@ -68,7 +67,7 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 		this.treeView = value;
 	}
 
-	public async focus(project: Project) {
+	public async focus(project: Project): Promise<void> {
 		const projNode = this.roots.find(x => x instanceof ProjectRootTreeItem ? (<ProjectRootTreeItem>x).project === project : false);
 
 		if (projNode) {

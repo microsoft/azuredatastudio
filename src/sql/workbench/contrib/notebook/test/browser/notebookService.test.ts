@@ -16,6 +16,7 @@ import { INotebookService } from 'sql/workbench/services/notebook/browser/notebo
 import { Emitter } from 'vs/base/common/event';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { NotebookProviderRegistration, INotebookProviderRegistry, Extensions } from 'sql/workbench/services/notebook/common/notebookRegistry';
+import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 
 suite('Notebook Service Tests', function (): void {
 	let notebookService: INotebookService;
@@ -31,6 +32,7 @@ suite('Notebook Service Tests', function (): void {
 		const extensionService = new TestExtensionService();
 		const fileService = new TestFileService();
 		const logService = new NullLogService();
+		const contextService = new MockContextKeyService();
 		const queryManagementService = new NBTestQueryManagementService();
 
 		const instantiationService = new TestInstantiationService();
@@ -47,7 +49,7 @@ suite('Notebook Service Tests', function (): void {
 		instantiationService.stub(IExtensionManagementService, 'onDidUninstallExtension', didUninstallEvent.event);
 		const extensionManagementService = instantiationService.get(IExtensionManagementService);
 
-		notebookService = new NotebookService(lifecycleService, storageService, extensionService, extensionManagementService, instantiationService, fileService, logService, queryManagementService);
+		notebookService = new NotebookService(lifecycleService, storageService, extensionService, extensionManagementService, instantiationService, fileService, logService, queryManagementService, contextService);
 	});
 
 	test('Validate default properties on create', async function (): Promise<void> {

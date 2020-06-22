@@ -55,7 +55,6 @@ import { CodeCellComponent } from 'sql/workbench/contrib/notebook/browser/cellVi
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
-import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
@@ -105,7 +104,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService,
 		@Inject(ITextFileService) private textFileService: ITextFileService,
 		@Inject(ILogService) private readonly logService: ILogService,
-		@Inject(ICommandService) private commandService: ICommandService,
 		@Inject(IAdsTelemetryService) private adstelemetryService: IAdsTelemetryService,
 		@Inject(IConfigurationService) private _configurationService: IConfigurationService
 	) {
@@ -517,8 +515,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._navProvider = this.notebookService.getNavigationProvider(this._notebookParams.notebookUri);
 
 		if (this.contextKeyService.getContextKeyValue('bookOpened') && this._navProvider) {
-			// If there's a book opened but the current notebook isn't part of the book, this is a no-op
-			this.commandService.executeCommand('notebook.command.revealInBooksViewlet', this._notebookParams.notebookUri, false);
 			this._navProvider.getNavigation(this._notebookParams.notebookUri).then(result => {
 				this.navigationResult = result;
 				this.addButton(localize('previousButtonLabel', "< Previous"),

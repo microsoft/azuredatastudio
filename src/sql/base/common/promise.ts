@@ -35,6 +35,6 @@ export class Deferred<T> implements Promise<T> {
 	}
 
 	get [Symbol.toStringTag](): string {
-		return this.toString();
+		return this.promise[Symbol.toStringTag]; // symbol tag same as that of underlying promise object
 	}
 }

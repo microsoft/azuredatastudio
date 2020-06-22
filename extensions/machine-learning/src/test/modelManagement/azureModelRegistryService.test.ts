@@ -18,6 +18,7 @@ import { Workspace, WorkspacesListByResourceGroupResponse } from '@azure/arm-mac
 import { WorkspaceModel, AssetsQueryByIdResponse, Asset, GetArtifactContentInformation2Response } from '../../modelManagement/interfaces';
 import { AzureMachineLearningWorkspaces, Workspaces } from '@azure/arm-machinelearningservices';
 import { WorkspaceModels } from '../../modelManagement/workspacesModels';
+import { AzurecoreApiStub } from '../stubs';
 
 interface TestContext {
 
@@ -129,7 +130,9 @@ describe('AzureModelRegistryService', () => {
 			testContext.config.object,
 			testContext.httpClient.object,
 			testContext.outputChannel);
-		testContext.apiWrapper.setup(x => x.executeCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({ subscriptions: expected, errors: [] }));
+		const azurecoreApi = TypeMoq.Mock.ofType(AzurecoreApiStub);
+		azurecoreApi.setup(x => x.getSubscriptions(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({ subscriptions: expected, errors: [] }));
+		testContext.apiWrapper.setup(x => x.getAzurecoreApi()).returns(() => Promise.resolve(azurecoreApi.object));
 		let actual = await service.getSubscriptions(testContext.accounts[0]);
 		should.deepEqual(actual, expected);
 	});
@@ -142,7 +145,9 @@ describe('AzureModelRegistryService', () => {
 			testContext.config.object,
 			testContext.httpClient.object,
 			testContext.outputChannel);
-		testContext.apiWrapper.setup(x => x.executeCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({ resourceGroups: expected, errors: [] }));
+		const azurecoreApi = TypeMoq.Mock.ofType(AzurecoreApiStub);
+		azurecoreApi.setup(x => x.getResourceGroups(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({ resourceGroups: expected, errors: [] }));
+		testContext.apiWrapper.setup(x => x.getAzurecoreApi()).returns(() => Promise.resolve(azurecoreApi.object));
 		let actual = await service.getGroups(testContext.accounts[0], testContext.subscriptions[0]);
 		should.deepEqual(actual, expected);
 	});
@@ -188,15 +193,15 @@ describe('AzureModelRegistryService', () => {
 	it('downloadModel should download model artifact successfully', async function (): Promise<void> {
 		let testContext = createContext();
 		const asset: Asset =
-			{
-				id: '1',
-				name: 'asset',
-				artifacts: [
-					{
-						id: '/1/2/3/4/5/'
-					}
-				]
-			};
+		{
+			id: '1',
+			name: 'asset',
+			artifacts: [
+				{
+					id: '/1/2/3/4/5/'
+				}
+			]
+		};
 		const assetResponse: AssetsQueryByIdResponse = Object.assign(asset, {
 			_response: undefined!
 		});
