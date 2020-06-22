@@ -268,7 +268,7 @@ class WelcomePage extends Disposable {
 			prodName.innerHTML = this.productService.nameLong;
 		}
 		const welcomeContainerContainer = document.querySelector('.welcomePageContainer').parentElement as HTMLElement;
-		const adsHomepage = document.querySelector('.ads_homepage') as HTMLElement;
+		const adsHomepage = document.querySelector('.ads-homepage') as HTMLElement;
 		adsHomepage.classList.add('responsive-container');
 		const observer = new MutationObserver(parseMutations);
 		observer.observe(welcomeContainerContainer, {
@@ -322,7 +322,7 @@ class WelcomePage extends Disposable {
 			await updateEntries();
 			this._register(this.labelService.onDidChangeFormatters(updateEntries));
 		}).then(undefined, onUnexpectedError);
-		this.addExtensionList(container, '.extension_list');
+		this.addExtensionList(container, '.extension-list');
 		this.addExtensionPack(container, '.extensionPack');
 		this.updateInstalledExtensions(container, installedExtensions);
 		this._register(this.instantiationService.invokeFunction(onExtensionChanged)(ids => {
@@ -341,7 +341,7 @@ class WelcomePage extends Disposable {
 
 	private enableGuidedTour(): void {
 		const guidedTour = this.instantiationService.createInstance(GuidedTour);
-		const adsHomepage = document.querySelector('.ads_homepage');
+		const adsHomepage = document.querySelector('.ads-homepage');
 		const guidedTourNotificationContainer = document.createElement('div');
 		const p = document.createElement('p');
 		const b = document.createElement('b');
@@ -351,14 +351,14 @@ class WelcomePage extends Disposable {
 		let startTourBtn = new Button(containerRight);
 		startTourBtn.label = localize('welcomePage.startTour', "Start Tour");
 		const removeTourBtn = document.createElement('a');
-		const removeBtnClasses = ['btn_remove_tour', 'codicon', 'codicon-close'];
-		const flexClassesLeft = ['flex', 'flex_a_center'];
-		const flexClassesRight = ['flex', 'flex_a_start'];
+		const removeBtnClasses = ['btn-remove-tour', 'codicon', 'codicon-close'];
+		const flexClassesLeft = ['flex', 'flex-a-center'];
+		const flexClassesRight = ['flex', 'flex-a-start'];
 		guidedTourNotificationContainer.id = 'guidedTourBanner';
-		guidedTourNotificationContainer.classList.add('guided_tour_banner');
+		guidedTourNotificationContainer.classList.add('guided-tour-banner');
 		containerLeft.classList.add(...flexClassesLeft);
 		containerRight.classList.add(...flexClassesRight);
-		icon.classList.add('diamond_icon');
+		icon.classList.add('diamond-icon');
 		removeTourBtn.classList.add(...removeBtnClasses);
 		p.appendChild(b);
 		p.innerText = localize('WelcomePage.TakeATour', "Would you like to take a quick tour of Azure Data Studio?");
@@ -391,10 +391,10 @@ class WelcomePage extends Disposable {
 	}
 
 	private createWidePreviewToolTip(): void {
-		const previewLink = document.querySelector('#tool_tip_container_wide') as HTMLElement;
-		const tooltip = document.querySelector('#tooltip_text_wide') as HTMLElement;
-		const previewModalBody = document.querySelector('.preview_tooltip_body') as HTMLElement;
-		const previewModalHeader = document.querySelector('.preview_tooltip_header') as HTMLElement;
+		const previewLink = document.querySelector('#tool-tip-container-wide') as HTMLElement;
+		const tooltip = document.querySelector('#tooltip-text-wide') as HTMLElement;
+		const previewModalBody = document.querySelector('.preview-tooltip-body') as HTMLElement;
+		const previewModalHeader = document.querySelector('.preview-tooltip-header') as HTMLElement;
 		addStandardDisposableListener(previewLink, 'mouseover', () => {
 			tooltip.setAttribute('aria-hidden', 'true');
 			tooltip.classList.toggle('show');
@@ -443,7 +443,7 @@ class WelcomePage extends Disposable {
 	}
 
 	private createDropDown(): void {
-		const dropdownBtn = document.querySelector('#dropdown_btn') as HTMLElement;
+		const dropdownBtn = document.querySelector('#dropdown-btn') as HTMLElement;
 		const dropdown = document.querySelector('#dropdown') as HTMLInputElement;
 		addStandardDisposableListener(dropdownBtn, 'click', () => {
 			dropdown.classList.toggle('show');
@@ -467,10 +467,10 @@ class WelcomePage extends Disposable {
 
 		const body = document.querySelector('body');
 		if (body.classList.contains('windows') || body.classList.contains('linux')) {
-			const macOnly = document.querySelector('#dropdown_mac_only');
+			const macOnly = document.querySelector('#dropdown-mac-only');
 			macOnly.remove();
 		} else if (body.classList.contains('mac')) {
-			const windowsLinuxOnly = document.querySelector('#dropdown_windows_linux_only');
+			const windowsLinuxOnly = document.querySelector('#dropdown-windows-linux-only');
 			windowsLinuxOnly.remove();
 		}
 		window.addEventListener('click', (event) => {
@@ -509,10 +509,10 @@ class WelcomePage extends Disposable {
 	}
 
 	private createPreviewModal(): void {
-		const modal = document.querySelector('#preview_modal') as HTMLElement;
-		const btn = document.querySelector('#tool_tip_container_narrow') as HTMLElement;
-		const span = document.querySelector('.close_icon') as HTMLElement;
-		const previewModalHeader = document.querySelector('.preview_modal_header') as HTMLElement;
+		const modal = document.querySelector('#preview-modal') as HTMLElement;
+		const btn = document.querySelector('#tool-tip-container-narrow') as HTMLElement;
+		const span = document.querySelector('.close-icon') as HTMLElement;
+		const previewModalHeader = document.querySelector('.preview-modal-header') as HTMLElement;
 		btn.addEventListener('click', function () {
 			modal.classList.toggle('show');
 		});
@@ -551,8 +551,8 @@ class WelcomePage extends Disposable {
 		});
 
 		modal.addEventListener('keydown', function (e: KeyboardEvent) {
-			const previewModalBody = document.querySelector('.preview_modal_body') as HTMLElement;
-			const previewModalHeader = document.querySelector('.preview_modal_header') as HTMLElement;
+			const previewModalBody = document.querySelector('.preview-modal-body') as HTMLElement;
+			const previewModalHeader = document.querySelector('.preview-modal-header') as HTMLElement;
 			let event = new StandardKeyboardEvent(e);
 
 			if (event.equals(KeyCode.Tab)) {
@@ -594,7 +594,7 @@ class WelcomePage extends Disposable {
 			e.preventDefault();
 			e.stopPropagation();
 		});
-		icon.classList.add('themed_icon');
+		icon.classList.add('themed-icon');
 		li.appendChild(icon);
 		li.appendChild(a);
 		span.classList.add('path');
@@ -632,7 +632,7 @@ class WelcomePage extends Disposable {
 		const list = container.querySelector(listSelector);
 		if (list) {
 			extensions.forEach((extension, i) => {
-				const flexDivContainerClasses = ['flex', 'flex_a_center', 'extension_inner'];
+				const flexDivContainerClasses = ['flex', 'flex-a-center', 'extension-inner'];
 				const outerAnchorContainerElm = document.createElement('a');
 				const flexDivContainerElm = document.createElement('div');
 				const descriptionContainerElm = document.createElement('div');
@@ -645,9 +645,9 @@ class WelcomePage extends Disposable {
 				outerAnchorContainerElm.href = extension.link;
 				flexDivContainerElm.classList.add(...flexDivContainerClasses);
 				descriptionContainerElm.classList.add('description');
-				imgContainerElm.classList.add('img_container');
+				imgContainerElm.classList.add('img-container');
 				iconElm.classList.add('icon');
-				pElm.classList.add('extension_header');
+				pElm.classList.add('extension-header');
 				iconElm.src = extension.icon;
 				imgContainerElm.appendChild(iconElm);
 				flexDivContainerElm.appendChild(imgContainerElm);
@@ -667,10 +667,10 @@ class WelcomePage extends Disposable {
 		if (btnContainer) {
 			extensionPacks.forEach((extension, i) => {
 				const a = document.createElement('a');
-				const classes = ['btn', 'btn_secondary', 'a_self_end', 'flex', 'flex_a_center', 'flex_j_center'];
+				const classes = ['btn', 'btn-secondary', 'a-self-end', 'flex', 'flex-a-center', 'flex-j-center'];
 				const btn = document.createElement('button');
-				const description = document.querySelector('.extension_pack_body');
-				const header = document.querySelector('.extension_pack_header');
+				const description = document.querySelector('.extension-pack-body');
+				const header = document.querySelector('.extension-pack-header');
 				a.classList.add(...classes);
 				a.innerText = localize('welcomePage.install', "Install");
 				a.title = extension.title || (extension.isKeymap ? localize('welcomePage.installKeymap', "Install {0} keymap", extension.name) : localize('welcomePage.installExtensionPack', "Install additional support for {0}", extension.name));
@@ -692,7 +692,7 @@ class WelcomePage extends Disposable {
 				btnContainer.appendChild(btn);
 				description.innerHTML = extension.description;
 				header.innerHTML = extension.name;
-				this.addExtensionPackList(container, '.extension_pack_extension_list');
+				this.addExtensionPackList(container, '.extension-pack-extension-list');
 			});
 		}
 	}
@@ -707,13 +707,13 @@ class WelcomePage extends Disposable {
 				const descriptionContainerElem = document.createElement('div');
 				const pElem = document.createElement('p');
 				const anchorElem = document.createElement('a');
-				const outerContainerClasses = ['extension_pack_extension_container', 'flex', 'flex_j_center'];
-				const flexContainerClasses = ['flex', 'flex_a_center'];
+				const outerContainerClasses = ['extension-pack-extension-container', 'flex', 'flex-j-center'];
+				const flexContainerClasses = ['flex', 'flex-a-center'];
 				anchorElem.href = j.link;
 				outerContainerElem.classList.add(...outerContainerClasses);
 				flexContainerElem.classList.add(...flexContainerClasses);
 				iconContainerElem.classList.add('icon');
-				pElem.classList.add('extension_pack_extension_list_header');
+				pElem.classList.add('extension-pack-extension-list-header');
 				descriptionContainerElem.classList.add('description');
 				outerContainerElem.appendChild(flexContainerElem);
 				flexContainerElem.appendChild(iconContainerElem);
@@ -923,98 +923,98 @@ registerThemingParticipant((theme, collector) => {
 	}
 	const tileBackgroundColor = theme.getColor(inputBackground);
 	if (tileBackgroundColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tile:not(.extension):not(.extension_pack) { background-color: ${tileBackgroundColor};  }`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tool_tip .tool_tip_text { background-color: ${tileBackgroundColor};  }`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .modal_content { background-color: ${tileBackgroundColor};  }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tile:not(.extension):not(.extension-pack) { background-color: ${tileBackgroundColor};  }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tool-tip .tool-tip-text { background-color: ${tileBackgroundColor};  }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .modal-content { background-color: ${tileBackgroundColor};  }`);
 	}
 	const tileBorderColor = theme.getColor(tileBorder);
 	if (tileBorderColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tile:not(.extension):not(.extension_pack) { border-color: ${tileBorderColor}; }`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tool_tip .tool_tip_text:after { border-color: transparent transparent ${tileBorderColor}; transparent }`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tool_tip .tool_tip_text { border: 1px solid ${tileBorderColor};  }`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .modal_content { border: 1px solid ${tileBorderColor};  }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tile:not(.extension):not(.extension-pack) { border-color: ${tileBorderColor}; }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tool-tip .tool-tip-text:after { border-color: transparent transparent ${tileBorderColor}; transparent }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tool-tip .tool-tip-text { border: 1px solid ${tileBorderColor};  }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .modal-content { border: 1px solid ${tileBorderColor};  }`);
 	}
 	const tileBoxShadowColor = theme.getColor(tileBoxShadow);
 	if (tileBoxShadowColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .tile:not(.extension):not(.extension_pack) { box-shadow: 0px 1px 4px ${tileBoxShadowColor}; }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .tile:not(.extension):not(.extension-pack) { box-shadow: 0px 1px 4px ${tileBoxShadowColor}; }`);
 	}
 	const buttonPrimaryBackgroundColor = theme.getColor(buttonBackground);
 	if (buttonPrimaryBackgroundColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_primary { background-color: ${buttonPrimaryBackgroundColor};}`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_primary { border-color: ${buttonPrimaryBackgroundColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-primary { background-color: ${buttonPrimaryBackgroundColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-primary { border-color: ${buttonPrimaryBackgroundColor};}`);
 	}
 	const buttonForegroundColor = theme.getColor(buttonForeground);
 	if (buttonForegroundColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_primary { color: ${buttonForegroundColor};}`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .icon_arrow_down:before { color: ${buttonForegroundColor};}`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .extension_pack_body { color: ${buttonForegroundColor};}`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .extension_pack_header { color: ${buttonForegroundColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-primary { color: ${buttonForegroundColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .icon-arrow-down:before { color: ${buttonForegroundColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .extension-pack-body { color: ${buttonForegroundColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .extension-pack-header { color: ${buttonForegroundColor};}`);
 	}
 	const buttonHoverBackgroundColor = theme.getColor(buttonHoverBackground);
 	if (buttonHoverBackgroundColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_primary:hover { background: ${buttonHoverBackgroundColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-primary:hover { background: ${buttonHoverBackgroundColor};}`);
 	}
 	const buttonSecondaryBackgroundColor = theme.getColor(buttonSecondaryBackground);
 	if (buttonSecondaryBackgroundColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_secondary { background-color: ${buttonSecondaryBackgroundColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary { background-color: ${buttonSecondaryBackgroundColor};}`);
 	}
 	const buttonSecondaryBorderColor = theme.getColor(buttonSecondaryBorder);
 	if (buttonSecondaryBorderColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_secondary { border: 1px solid ${buttonSecondaryBorderColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary { border: 1px solid ${buttonSecondaryBorderColor};}`);
 	}
 	const buttonSecondaryColor = theme.getColor(buttonSecondary);
 	if (buttonSecondaryColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_secondary { color: ${buttonSecondaryColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary { color: ${buttonSecondaryColor};}`);
 	}
 	const buttonSecondaryHover = theme.getColor(buttonSecondaryHoverColor);
 	if (buttonSecondaryColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_secondary:hover { color: ${buttonSecondaryHover}; border: 1px solid ${buttonSecondaryHover};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary:hover { color: ${buttonSecondaryHover}; border: 1px solid ${buttonSecondaryHover};}`);
 	}
 	const selectBackgroundColor = theme.getColor(selectBackground);
 	if (selectBackgroundColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content { background: ${selectBackgroundColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .dropdown-content { background: ${selectBackgroundColor};}`);
 	}
 	const menuForegroundColor = theme.getColor(menuForeground);
 	if (menuForegroundColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content a { color: ${menuForegroundColor};}`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .icon_arrow_down_dark:before { color: ${menuForegroundColor};}`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage_section .history .moreRecent_list li.moreRecent a { color: ${menuForegroundColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .dropdown-content a { color: ${menuForegroundColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .icon-arrow-down-dark:before { color: ${menuForegroundColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .ads-homepage-section .history .moreRecent-list li.moreRecent a { color: ${menuForegroundColor};}`);
 	}
 	const hoverShadowColor = theme.getColor(hoverShadow);
 	if (hoverShadowColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .tile:hover:not(.no_hover) { box-shadow: 0px 3px 8px ${hoverShadowColor}; }`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content { box-shadow: 0px 4px 4px ${hoverShadowColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .tile:hover:not(.no-hover) { box-shadow: 0px 3px 8px ${hoverShadowColor}; }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .dropdown-content { box-shadow: 0px 4px 4px ${hoverShadowColor};}`);
 	}
 	const menuBorderColor = theme.getColor(menuBorder);
 	if (menuBorderColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content a { border-color: ${menuBorderColor};}`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage .dropdown-content { border-color: ${menuBorderColor};}`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_primary { border-color: ${menuBorderColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .dropdown-content a { border-color: ${menuBorderColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .ads-homepage .dropdown-content { border-color: ${menuBorderColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-primary { border-color: ${menuBorderColor};}`);
 	}
 	const buttonDropdownBackgroundHoverColor = theme.getColor(buttonDropdownBackgroundHover);
 	if (buttonDropdownBackgroundHoverColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content a:hover, .monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content a:focus { background: ${buttonDropdownBackgroundHoverColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .dropdown-content a:hover, .monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .dropdown-content a:focus { background: ${buttonDropdownBackgroundHoverColor};}`);
 	}
 	const buttonDropdownHoverColor = theme.getColor(menuSelectionForeground);
 	if (buttonDropdownHoverColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content a:hover, .monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .dropdown-content a:focus { color: ${buttonDropdownHoverColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .dropdown-content a:hover, .monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .dropdown-content a:focus { color: ${buttonDropdownHoverColor};}`);
 	}
 	const editorWidgetBorderColor = theme.getColor(editorWidgetBorder);
 	if (editorWidgetBorderColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .tile.extension_pack { border-color: ${editorWidgetBorderColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .tile.extension-pack { border-color: ${editorWidgetBorderColor};}`);
 	}
 	const extensionPackHeaderTextShadow = theme.getColor(extensionPackHeaderShadow);
 	if (extensionPackHeaderTextShadow) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .extension_pack_header { text-shadow: 0px 4px 4px ${extensionPackHeaderTextShadow};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .extension-pack-header { text-shadow: 0px 4px 4px ${extensionPackHeaderTextShadow};}`);
 	}
 	const extensionPackGradientColorOne = theme.getColor(extensionPackGradientColorOneColor);
 	const extensionPackGradientColorTwo = theme.getColor(extensionPackGradientColorTwoColor);
 	if (extensionPackGradientColorOne && extensionPackGradientColorTwo) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .extension_pack_description:before { background-image: linear-gradient(0.49deg, ${extensionPackGradientColorOne} 82.75%, ${extensionPackGradientColorTwo});}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .extension-pack-description:before { background-image: linear-gradient(0.49deg, ${extensionPackGradientColorOne} 82.75%, ${extensionPackGradientColorTwo});}`);
 	}
 	const selectBorderColor = theme.getColor(selectBorder);
 	if (selectBorderColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage_section .history .list li:not(.moreRecent), .monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage_section .history .list_header_container, .monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage_section .pinned .list li:not(.moreRecent), .monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage_section .pinned .list_header_container { border-color: ${selectBorderColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .ads-homepage-section .history .list li:not(.moreRecent), .monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .ads-homepage-section .history .list-header-container, .monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .ads-homepage-section .pinned .list li:not(.moreRecent), .monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .ads-homepage-section .pinned .list-header-container { border-color: ${selectBorderColor};}`);
 	}
 	const descriptionColor = theme.getColor(descriptionForeground);
 	if (descriptionColor) {
@@ -1031,9 +1031,9 @@ registerThemingParticipant((theme, collector) => {
 	const foregroundColor = theme.getColor(foreground);
 	if (foregroundColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage h1, h2, h3, h4, h5, h6, h7, p { color: ${foregroundColor}; }`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads_homepage .resources .label { color: ${foregroundColor}; }`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .ads_homepage_section .history .list li a { color: ${foregroundColor};}`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads_homepage .resources .label { color: ${foregroundColor}; }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads-homepage .resources .label { color: ${foregroundColor}; }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .ads-homepage-section .history .list li a { color: ${foregroundColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads-homepage .resources .label { color: ${foregroundColor}; }`);
 	}
 	const link = theme.getColor(textLinkForeground);
 	if (link) {
@@ -1042,7 +1042,7 @@ registerThemingParticipant((theme, collector) => {
 	const activeLink = theme.getColor(textLinkActiveForeground);
 	if (activeLink) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage a:hover, .monaco-workbench .part.editor > .content .welcomePage a:active { color: ${activeLink}; }`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads_homepage .themed_icon_alt { background-color: ${activeLink}; }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads-homepage .themed-icon-alt { background-color: ${activeLink}; }`);
 	}
 	const focusColor = theme.getColor(focusBorder);
 	if (focusColor) {
@@ -1054,17 +1054,17 @@ registerThemingParticipant((theme, collector) => {
 	}
 	const focusBorderColor = theme.getColor(focusBorder);
 	if (focusBorderColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads_homepage #dropdown_btn:focus { outline-color: ${focusBorderColor}; }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads-homepage #dropdown-btn:focus { outline-color: ${focusBorderColor}; }`);
 	}
 	const iconForegroundColor = theme.getColor(iconForeground);
 	if (iconForegroundColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .entity { color: ${iconForegroundColor}; }`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads_homepage .themed_icon { background-color: ${iconForegroundColor}; }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads-homepage .themed-icon { background-color: ${iconForegroundColor}; }`);
 	}
 	const gradientOneColor = theme.getColor(gradientOne);
 	const gradientTwoColor = theme.getColor(gradientTwo);
 	const gradientBackgroundColor = theme.getColor(gradientBackground);
 	if (gradientTwoColor && gradientOneColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads_homepage .gradient { background-image: linear-gradient(0deg, ${gradientOneColor} 0%, ${gradientTwoColor} 100%); background-color: ${gradientBackgroundColor}}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .gradient { background-image: linear-gradient(0deg, ${gradientOneColor} 0%, ${gradientTwoColor} 100%); background-color: ${gradientBackgroundColor}}`);
 	}
 });

@@ -3,11 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.ads_tour:focus {
+.ads-tour:focus {
 	outline: 0 none !important;
 }
 
-.monaco-workbench>.ads_tour {
+.monaco-workbench>.ads-tour {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -37,25 +37,25 @@
 }
 
 
-.guided_tour .ads_tour_hide {
+.guided-tour .ads-tour-hide {
 	display: none;
 }
 
-.guided_tour p {
+.guided-tour p {
 	font-size: 1.2em;
 	font-family: Segoe UI, Frutiger, Frutiger Linotype, Dejavu Sans, Helvetica Neue, Arial, sans-serif;
 	font-weight: 400;
 }
 
-.ads_tour_popup .ads_tour_popup_text_container {
+.ads-tour-popup .ads-tour-popup-text-container {
 	padding: 20px 15px 15px 20px;
 }
 
-.ads_tour_popup .ads_tour_popup_text_container p {
+.ads-tour-popup .ads-tour-popup-text-container p {
 	font-size: 1em;
 }
 
-.ads_tour_popup {
+.ads-tour-popup {
 	position: absolute;
 	width: 400px;
 	left: 45px;
@@ -65,23 +65,23 @@
 	align-items: center;
 }
 
-.ads_tour_btn_container {
+.ads-tour-btn-container {
 	display: flex;
 	justify-content: flex-end;
 	align-items: center;
 }
 
-.ads_tour_btn_container p {
+.ads-tour-btn-container p {
 	font-size: 1.5em;
 	margin: 0;
 	margin-left: 15px;
 }
 
-.ads_tour_btn_container:first-of-type(p) {
+.ads-tour-btn-container:first-of-type(p) {
 	margin-bottom: 20px;
 }
 
-.ads_tour_popup .ads_tour_btn_exit {
+.ads-tour-popup .ads-tour-btn-exit {
 	background: none;
 	position: absolute;
 	top: 2px;
@@ -91,11 +91,11 @@
 	transform: scaleX(1.4);
 }
 
-.ads_tour_popup .ads_tour_btn_exit:hover {
+.ads-tour-popup .ads-tour-btn-exit:hover {
 	cursor: pointer;
 }
 
-.ads_tour_popup .monaco-button {
+.ads-tour-popup .monaco-button {
 	box-sizing: border-box;
 	width: 77px;
 	height: 34px;
@@ -113,25 +113,25 @@
 	cursor: pointer;
 }
 
-.ads_tour_popup .flex.column {
+.ads-tour-popup .flex.column {
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
 	height: 100%;
 }
 
-.ads_tour_popup h1,
-.ads_tour_popup p {
+.ads-tour-popup h1,
+.ads-tour-popup p {
 	font-family: Segoe UI, Frutiger, Frutiger Linotype, Dejavu Sans, Helvetica Neue, Arial, sans-serif;
 	font-weight: 400;
 }
 
-.ads_tour_popup h1 {
+.ads-tour-popup h1 {
 	margin: 0;
 	font-size: 20px;
 }
 
-.ads_tour_popup.arrow_left:after {
+.ads-tour-popup.arrow-left:after {
 	content: " ";
 	position: absolute;
 	left: -10px;
@@ -141,7 +141,7 @@
 	border-bottom: 10px solid transparent;
 }
 
-.ads_tour_popup.arrow_top:after {
+.ads-tour-popup.arrow-top:after {
 	content: " ";
 	position: absolute;
 	left: 0;
@@ -153,7 +153,7 @@
 	bottom: 509px;
 }
 
-.ads_tour_popup.arrow_bottom_left:after {
+.ads-tour-popup.arrow-bottom-left:after {
 	content: " ";
 	position: absolute;
 	left: -10px;
@@ -163,7 +163,7 @@
 	bottom: 3px;
 }
 
-.ads_tour_popup.arrow_center_left:after {
+.ads-tour-popup.arrow-center-left:after {
 	content: " ";
 	position: absolute;
 	left: -10px;
@@ -173,17 +173,17 @@
 	bottom: 145px;
 }
 
-.ads_tour_popup {
+.ads-tour-popup {
 	max-height: 361px;
 	display: none;
 	z-index: 1;
 }
 
-.ads_tour_popup.ads_tour_show {
+.ads-tour-popup.ads-tour-show {
 	display: block;
 }
 
-.tour_overlay {
+.tour-overlay {
 	width: 100%;
 	height: 100%;
 	position: absolute;
@@ -194,19 +194,19 @@
 	opacity: .6;
 }
 
-.ads_tour_popup .ads_tour_img {
+.ads-tour-popup .ads-tour-img {
 	width: 400px;
 	height: 178px;
 }
 
-.ads_tour_btn_container .ads_tour_docs_link {
+.ads-tour-btn-container .ads-tour-docs-link {
 	align-self: center;
 	justify-self: flex-start;
 	margin-right: auto;
 	text-decoration: underline;
 }
 
-.ads_tour_btn {
+.ads-tour-btn {
 	box-sizing: border-box;
 	width: 100%;
 	height: 34px;
@@ -222,7 +222,7 @@
 	margin: 10px 0;
 }
 
-.monaco-workbench .activitybar>.content :not(.monaco-menu)>.monaco-action-bar .action-label.codicon.subject_element_focused {
+.monaco-workbench .activitybar>.content :not(.monaco-menu)>.monaco-action-bar .action-label.codicon.subject-element-focused {
 	z-index: 1!important;
 	pointer-events: none!important;
 }
