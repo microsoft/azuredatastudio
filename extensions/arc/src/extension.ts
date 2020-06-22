@@ -5,39 +5,56 @@
 
 import * as vscode from 'vscode';
 import * as loc from './localizedConstants';
-import { IconPathHelper } from './constants';
-import { BasicAuth } from './controller/auth';
-import { PostgresDashboard } from './ui/dashboards/postgres/postgresDashboard';
-import { ControllerModel } from './models/controllerModel';
-import { PostgresModel } from './models/postgresModel';
+import { IconPathHelper, refreshActionId } from './constants';
+import { AzureArcTreeDataProvider } from './ui/tree/azureArcTreeDataProvider';
+import { ControllerTreeNode } from './ui/tree/controllerTreeNode';
+import { TreeNode } from './ui/tree/treeNode';
+import { ConnectToControllerDialog } from './ui/dialogs/connectControllerDialog';
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
 	IconPathHelper.setExtensionContext(context);
 
-	vscode.commands.registerCommand('arc.managePostgres', async () => {
-		// Controller information
-		const controllerUrl = '';
-		const auth = new BasicAuth('', '');
+	const treeDataProvider = new AzureArcTreeDataProvider(context);
+	vscode.window.registerTreeDataProvider('azureArc', treeDataProvider);
 
-		// Postgres information
-		const dbNamespace = '';
-		const dbName = '';
+	vscode.commands.registerCommand('arc.createController', async () => {
+		await vscode.commands.executeCommand('azdata.resource.deploy');
+	});
 
-		try {
-			const controllerModel = new ControllerModel(controllerUrl, auth);
-			const postgresModel = new PostgresModel(controllerUrl, auth, dbNamespace, dbName);
-			const postgresDashboard = new PostgresDashboard(loc.postgresDashboard, context, controllerModel, postgresModel);
-
-			await Promise.all([
-				postgresDashboard.showDashboard(),
-				controllerModel.refresh(),
-				postgresModel.refresh()
-			]);
-		} catch (error) {
-			vscode.window.showErrorMessage(loc.failedToManagePostgres(`${dbNamespace}.${dbName}`, error));
+	vscode.commands.registerCommand('arc.connectToController', async () => {
+		const dialog = new ConnectToControllerDialog(treeDataProvider);
+		dialog.showDialog();
+		const model = await dialog.waitForClose();
+		if (model) {
+			await treeDataProvider.addOrUpdateController(model.controllerModel, model.password);
 		}
 	});
+
+	vscode.commands.registerCommand('arc.removeController', async (controllerNode: ControllerTreeNode) => {
+		await treeDataProvider.removeController(controllerNode);
+	});
+
+	vscode.commands.registerCommand(refreshActionId, async (treeNode: TreeNode) => {
+		treeDataProvider.refreshNode(treeNode);
+	});
+
+	vscode.commands.registerCommand('arc.openDashboard', async (treeNode: TreeNode) => {
+		await treeNode.openDashboard().catch(err => vscode.window.showErrorMessage(loc.openDashboardFailed(err)));
+	});
+
+	await checkArcDeploymentExtension();
 }
 
 export function deactivate(): void {
+}
+
+async function checkArcDeploymentExtension(): Promise<void> {
+	const version = vscode.extensions.getExtension('Microsoft.arcdeployment')?.packageJSON.version;
+	if (version && version !== '0.3.2') {
+		// If we have an older verison of the deployment extension installed then uninstall it now since it's replaced
+		// by this extension. (the latest version of the Arc Deployment extension will uninstall itself so don't do
+		// anything here if that's already updated)
+		await vscode.commands.executeCommand('workbench.extensions.uninstallExtension', 'Microsoft.arcdeployment');
+		vscode.window.showInformationMessage(loc.arcDeploymentDeprecation);
+	}
 }

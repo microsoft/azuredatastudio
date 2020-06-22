@@ -36,7 +36,7 @@ suite('Query Input Factory', () => {
 		instantiationService.stub(IConnectionManagementService, connectionManagementService);
 		instantiationService.stub(IEditorService, editorService);
 		const queryEditorLanguageAssociation = instantiationService.createInstance(QueryEditorLanguageAssociation);
-		const input = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.sql'), undefined, undefined);
+		const input = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.sql'), undefined, undefined, undefined);
 		queryEditorLanguageAssociation.convertInput(input);
 		assert(connectionManagementService.numberConnects === 1, 'Convert input should have called connect when active OE connection exists');
 	});
@@ -49,7 +49,7 @@ suite('Query Input Factory', () => {
 		instantiationService.stub(IConnectionManagementService, connectionManagementService);
 		instantiationService.stub(IEditorService, editorService);
 		const queryEditorLanguageAssociation = instantiationService.createInstance(QueryEditorLanguageAssociation);
-		const input = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.sql'), undefined, undefined);
+		const input = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.sql'), undefined, undefined, undefined);
 		const response = queryEditorLanguageAssociation.convertInput(input);
 		assert(isThenable(response));
 		await response;
@@ -64,7 +64,7 @@ suite('Query Input Factory', () => {
 		instantiationService.stub(IConnectionManagementService, connectionManagementService);
 		instantiationService.stub(IEditorService, editorService);
 		const queryEditorLanguageAssociation = instantiationService.createInstance(QueryEditorLanguageAssociation);
-		const input = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.sql'), undefined, undefined);
+		const input = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.sql'), undefined, undefined, undefined);
 		queryEditorLanguageAssociation.convertInput(input);
 		assert(connectionManagementService.numberConnects === 1, 'Convert input should have called connect when active editor connection exists');
 	});
@@ -77,7 +77,7 @@ suite('Query Input Factory', () => {
 		instantiationService.stub(IConnectionManagementService, connectionManagementService);
 		instantiationService.stub(IEditorService, editorService);
 		const queryEditorLanguageAssociation = instantiationService.createInstance(QueryEditorLanguageAssociation);
-		const input = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.sql'), undefined, undefined);
+		const input = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.sql'), undefined, undefined, undefined);
 		const response = queryEditorLanguageAssociation.convertInput(input);
 		assert(isThenable(response));
 		await response;
@@ -115,7 +115,7 @@ suite('Query Input Factory', () => {
 		instantiationService.stub(IConnectionManagementService, connectionManagementService);
 		instantiationService.stub(IEditorService, editorService);
 		const queryEditorLanguageAssociation = instantiationService.createInstance(QueryEditorLanguageAssociation);
-		const input = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.sql'), undefined, undefined);
+		const input = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.sql'), undefined, undefined, undefined);
 		queryEditorLanguageAssociation.syncConvertinput(input);
 		assert(connectionManagementService.numberConnects === 0, 'Convert input should not have been called connect when no global connections exist');
 	});
@@ -127,7 +127,7 @@ suite('Query Input Factory', () => {
 		instantiationService.stub(IConnectionManagementService, connectionManagementService);
 		instantiationService.stub(IEditorService, editorService);
 		const queryEditorLanguageAssociation = instantiationService.createInstance(QueryEditorLanguageAssociation);
-		const input = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.sql'), undefined, undefined);
+		const input = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.sql'), undefined, undefined, undefined);
 		const response = queryEditorLanguageAssociation.convertInput(input);
 		assert(isThenable(response));
 		await response;

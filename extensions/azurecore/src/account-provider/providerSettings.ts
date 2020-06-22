@@ -108,6 +108,55 @@ const usGovAzureSettings: ProviderSettings = {
 	}
 };
 
+const usNatAzureSettings: ProviderSettings = {
+	configKey: 'enableUsNatCloud',
+	metadata: {
+		displayName: localize('usNatCloudDisplayName', "Azure (US National)"),
+		id: 'azure_usNatCloud',
+		settings: {
+			host: 'https://login.microsoftonline.eaglex.ic.gov/',
+			clientId: 'a69788c6-1d43-44ed-9ca3-b83e194da255',
+			signInResourceId: 'https://management.core.eaglex.ic.gov/',
+			microsoftResource: {
+				id: 'marm',
+				endpoint: 'https://management.azure.eaglex.ic.gov/',
+				azureResourceId: AzureResource.MicrosoftResourceManagement
+			},
+			graphResource: {
+				id: 'graph',
+				endpoint: 'https://graph.eaglex.ic.gov',
+				azureResourceId: AzureResource.Graph
+			},
+			armResource: {
+				id: 'arm',
+				endpoint: 'https://management.core.eaglex.ic.gov/',
+				azureResourceId: AzureResource.ResourceManagement
+			},
+			sqlResource: {
+				id: 'sql',
+				endpoint: 'https://database.cloudapi.eaglex.ic.gov/',
+				azureResourceId: AzureResource.Sql
+			},
+			ossRdbmsResource: {
+				id: 'ossrdbms',
+				endpoint: 'https://ossrdbms-aad.database.cloudapi.eaglex.ic.gov',
+				azureResourceId: AzureResource.OssRdbms
+			},
+			azureKeyVaultResource: {
+				id: 'vault',
+				endpoint: 'https://vault.cloudapi.eaglex.ic.gov',
+				azureResourceId: AzureResource.AzureKeyVault
+			},
+			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
+			scopes: [
+				'openid', 'email', 'profile', 'offline_access',
+				'https://management.core.eaglex.ic.gov/user_impersonation'
+			],
+			portalEndpoint: 'https://portal.azure.eaglex.ic.gov/'
+		}
+	}
+};
+
 
 const germanyAzureSettings: ProviderSettings = {
 	configKey: 'enableGermanyCloud',
@@ -161,5 +210,5 @@ const chinaAzureSettings: ProviderSettings = {
 		}
 	}
 };
-const allSettings = [publicAzureSettings, usGovAzureSettings, germanyAzureSettings, chinaAzureSettings];
+const allSettings = [publicAzureSettings, usGovAzureSettings, usNatAzureSettings, germanyAzureSettings, chinaAzureSettings];
 export default allSettings;

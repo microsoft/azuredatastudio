@@ -40,6 +40,7 @@ import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { ToggleableAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
+import { URI } from 'vs/base/common/uri';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
@@ -308,7 +309,7 @@ class DataResourceDataProvider implements IGridDataProvider {
 		return serializer.handleSerialization(this.documentUri, format, (filePath) => this.doSerialize(serializer, filePath, format, selection));
 	}
 
-	private doSerialize(serializer: ResultSerializer, filePath: string, format: SaveFormat, selection: Slick.Range[]): Promise<SaveResultsResponse | undefined> {
+	private doSerialize(serializer: ResultSerializer, filePath: URI, format: SaveFormat, selection: Slick.Range[]): Promise<SaveResultsResponse | undefined> {
 		if (!this.canSerialize) {
 			return Promise.resolve(undefined);
 		}
@@ -346,7 +347,7 @@ class DataResourceDataProvider implements IGridDataProvider {
 		let serializeRequestParams: SerializeDataParams = <SerializeDataParams>assign(serializer.getBasicSaveParameters(format), <Partial<SerializeDataParams>>{
 			saveFormat: format,
 			columns: columns,
-			filePath: filePath,
+			filePath: filePath.fsPath,
 			getRowRange: (rowStart, numberOfRows) => getRows(rowStart, numberOfRows),
 			rowCount: rowLength
 		});

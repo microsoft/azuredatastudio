@@ -313,9 +313,9 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		if (types.isStringArray(this.insightConfig.query)) {
 			this.insightConfig.query = this.insightConfig.query.join(' ');
 		} else if (this.insightConfig.queryFile) {
-			const filePath = await this.instantiationService.invokeFunction(resolveQueryFilePath, this.insightConfig.queryFile);
+			const fileUri: URI = await this.instantiationService.invokeFunction(resolveQueryFilePath, this.insightConfig.queryFile);
 
-			this.insightConfig.query = (await this.fileService.readFile(URI.file(filePath))).value.toString();
+			this.insightConfig.query = (await this.fileService.readFile(fileUri)).value.toString();
 		}
 	}
 }

@@ -22,6 +22,8 @@ export class RegistrationResponse {
     'isDeleted'?: boolean;
     'externalEndpoint'?: string;
     'vCores'?: string;
+    'connectionMode'?: string;
+    'billingMode'?: string;
 
     static discriminator: string | undefined = undefined;
 
@@ -74,6 +76,16 @@ export class RegistrationResponse {
         {
             "name": "vCores",
             "baseName": "vCores",
+            "type": "string"
+        },
+        {
+            "name": "connectionMode",
+            "baseName": "connectionMode",
+            "type": "string"
+        },
+        {
+            "name": "billingMode",
+            "baseName": "billingMode",
             "type": "string"
         }    ];
 

@@ -1,7 +1,8 @@
+#define RootLicenseFileName FileExists(RepoDir + '\LICENSE.rtf') ? 'LICENSE.rtf' : 'LICENSE.txt'
 #define LocalizedLanguageFile(Language = "") \
     DirExists(RepoDir + "\licenses") && Language != "" \
       ? ('; LicenseFile: "' + RepoDir + '\licenses\LICENSE-' + Language + '.txt"') \
-      : '; LicenseFile: "' + RepoDir + '\LICENSE.txt"'
+      : '; LicenseFile: "' + RepoDir + '\' + RootLicenseFileName + '"'
 
 [Setup]
 AppId={#AppId}
@@ -56,6 +57,9 @@ Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl,{#RepoDir}\build\
 Name: "korean"; MessagesFile: "{#RepoDir}\build\win32\i18n\Default.ko.isl,{#RepoDir}\build\win32\i18n\messages.ko.isl" {#LocalizedLanguageFile("kor")}
 Name: "simplifiedChinese"; MessagesFile: "{#RepoDir}\build\win32\i18n\Default.zh-cn.isl,{#RepoDir}\build\win32\i18n\messages.zh-cn.isl" {#LocalizedLanguageFile("chs")}
 Name: "traditionalChinese"; MessagesFile: "{#RepoDir}\build\win32\i18n\Default.zh-tw.isl,{#RepoDir}\build\win32\i18n\messages.zh-tw.isl" {#LocalizedLanguageFile("cht")}
+Name: "brazilianPortuguese"; MessagesFile: "compiler:Languages\BrazilianPortuguese.isl,{#RepoDir}\build\win32\i18n\messages.pt-br.isl" {#LocalizedLanguageFile("ptb")}
+Name: "hungarian"; MessagesFile: "compiler:Languages\Hungarian.isl,{#RepoDir}\build\win32\i18n\messages.hu.isl" {#LocalizedLanguageFile("hun")}
+Name: "turkish"; MessagesFile: "compiler:Languages\Turkish.isl,{#RepoDir}\build\win32\i18n\messages.tr.isl" {#LocalizedLanguageFile("trk")}
 
 [InstallDelete]
 Type: filesandordirs; Name: "{app}\resources\app\out"; Check: IsNotUpdate
