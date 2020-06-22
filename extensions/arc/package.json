@@ -134,7 +134,13 @@
           "description": "%arc.ignoreSslVerification.desc%"
         }
       }
-    }
+    },
+    "viewsWelcome": [
+      {
+        "view": "azureArc",
+        "contents": "%arc.view.welcome%"
+      }
+    ]
   },
   "dependencies": {
     "request": "^2.88.0",
