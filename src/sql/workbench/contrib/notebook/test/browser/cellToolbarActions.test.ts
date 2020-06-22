@@ -3,98 +3,115 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { nb } from 'azdata';
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
-
-import { URI } from 'vs/base/common/uri';
-import { CellToggleMoreActions, RunCellsAction } from 'sql/workbench/contrib/notebook/browser/cellToolbarActions';
-import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
+import { CellToggleMoreActions, RunCellsAction, removeDuplicatedAndStartingSeparators, AddCellFromContextAction, CollapseCellAction } from 'sql/workbench/contrib/notebook/browser/cellToolbarActions';
 import { NotebookService } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
-import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
-import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
-import { NotebookManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
-import { Memento } from 'vs/workbench/common/memento';
-import { NullLogService } from 'vs/platform/log/common/log';
-import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
-import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
 import { TestLifecycleService, TestEnvironmentService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { Separator } from 'vs/base/browser/ui/actionbar/actionbar';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
-import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
-import { INotebookModelOptions } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
-import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
-import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
-import { SessionManager } from 'sql/workbench/contrib/notebook/test/emptySessionClasses';
-import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
+import * as DOM from 'vs/base/browser/dom';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { ContextMenuService } from 'vs/platform/contextview/browser/contextMenuService';
+import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 
-let defaultUri = URI.file('/some/path.ipynb');
-let notificationService: TypeMoq.Mock<INotificationService>;
-let capabilitiesService: TypeMoq.Mock<ICapabilitiesService>;
-let instantiationService: TestInstantiationService;
-
-
-suite('CellToggleMoreActions', function (): void {
-	let notebookManagers = [new NotebookManagerStub()];
-	let mockSessionManager: TypeMoq.Mock<nb.SessionManager>;
-	let mockNotebookService: TypeMoq.Mock<INotebookService>;
-	let memento: TypeMoq.Mock<Memento>;
-	let queryConnectionService: TypeMoq.Mock<TestConnectionManagementService>;
-	let defaultModelOptions: INotebookModelOptions;
-	let cellModel: CellModel;
-	const logService = new NullLogService();
-	setup(() => {
-		mockSessionManager = TypeMoq.Mock.ofType(SessionManager);
-		notebookManagers[0].sessionManager = mockSessionManager.object;
-		notificationService = TypeMoq.Mock.ofType(TestNotificationService, TypeMoq.MockBehavior.Loose);
-		capabilitiesService = TypeMoq.Mock.ofType(TestCapabilitiesService);
-		memento = TypeMoq.Mock.ofType(Memento, TypeMoq.MockBehavior.Loose, '');
-		memento.setup(x => x.getMemento(TypeMoq.It.isAny())).returns(() => void 0);
-		queryConnectionService = TypeMoq.Mock.ofType(TestConnectionManagementService, TypeMoq.MockBehavior.Loose, memento.object, undefined, new TestStorageService());
-		queryConnectionService.callBase = true;
-		let serviceCollection = new ServiceCollection();
-		instantiationService = new TestInstantiationService(serviceCollection);
-		defaultModelOptions = {
-			notebookUri: defaultUri,
-			factory: new ModelFactory(instantiationService),
-			notebookManagers,
-			contentManager: undefined,
-			notificationService: notificationService.object,
-			connectionService: queryConnectionService.object,
-			providerId: 'SQL',
-			cellMagicMapper: undefined,
-			defaultKernel: undefined,
-			layoutChanged: undefined,
-			capabilitiesService: capabilitiesService.object
-		};
-
-		mockNotebookService = TypeMoq.Mock.ofType(NotebookService, undefined, new TestLifecycleService(), undefined, undefined, undefined, instantiationService, new MockContextKeyService(),
-			undefined, undefined, undefined, undefined, undefined, undefined, TestEnvironmentService);
-		cellModel = new CellModel(undefined, undefined, mockNotebookService.object);
+suite('CellToolbarActions', function (): void {
+	suite('removeDuplicatedAndStartingSeparators', function (): void {
+		test('Empty actions array is unchanged', function (): void {
+			const actions = [];
+			removeDuplicatedAndStartingSeparators(actions);
+			assert(actions.length === 0);
+		});
+		test('Array with only non-separator actions is unchanged', function (): void {
+			const actions = [
+				TypeMoq.Mock.ofType(RunCellsAction).object,
+				TypeMoq.Mock.ofType(AddCellFromContextAction).object,
+				TypeMoq.Mock.ofType(CollapseCellAction).object
+			];
+			removeDuplicatedAndStartingSeparators(actions);
+			assert(actions.length === 3);
+		});
+		test('Array with only separators is cleared', function (): void {
+			const actions = [new Separator(), new Separator(), new Separator()];
+			removeDuplicatedAndStartingSeparators(actions);
+			assert(actions.length === 0);
+		});
+		test('Array with separators not on the ends is unchanged', function (): void {
+			const actions = [
+				TypeMoq.Mock.ofType(RunCellsAction).object,
+				new Separator(),
+				TypeMoq.Mock.ofType(AddCellFromContextAction).object,
+				new Separator(),
+				TypeMoq.Mock.ofType(CollapseCellAction).object
+			];
+			removeDuplicatedAndStartingSeparators(actions);
+			assert(actions.length === 5);
+		});
+		test('Duplicate separators are removed', function (): void {
+			const actions = [
+				TypeMoq.Mock.ofType(RunCellsAction).object,
+				new Separator(),
+				new Separator(),
+				new Separator(),
+				TypeMoq.Mock.ofType(AddCellFromContextAction).object,
+				new Separator(),
+				new Separator(),
+				TypeMoq.Mock.ofType(CollapseCellAction).object
+			];
+			removeDuplicatedAndStartingSeparators(actions);
+			assert(actions.length === 5);
+		});
+		test('Starting and ending separators are removed', function (): void {
+			const actions = [
+				new Separator(),
+				new Separator(),
+				TypeMoq.Mock.ofType(RunCellsAction).object,
+				new Separator(),
+				TypeMoq.Mock.ofType(AddCellFromContextAction).object,
+				new Separator(),
+				TypeMoq.Mock.ofType(CollapseCellAction).object,
+				new Separator(),
+				new Separator()
+			];
+			removeDuplicatedAndStartingSeparators(actions);
+			assert(actions.length === 5);
+		});
 	});
 
-	test('Remove Duplicated And Starting Separators', async function (): Promise<void> {
-		let testContainer = HTMLElement;
-		let testInstantiationService = new TestInstantiationService();
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService());
-		let context = new CellContext(model, cellModel);
+	suite('CellToggleMoreActions', function (): void {
+		const instantiationService: TestInstantiationService = new TestInstantiationService();
+		const contextMock = TypeMoq.Mock.ofType(CellContext);
+		const cellModelMock = TypeMoq.Mock.ofType(CellModel);
 
-		let _actions = testInstantiationService.createInstance(CellToggleMoreActions);
+		suiteSetup(function (): void {
+			contextMock.setup(x => x.cell).returns(() => cellModelMock.object);
+			const mockNotebookService = TypeMoq.Mock.ofType(NotebookService, undefined, new TestLifecycleService(), undefined, undefined, undefined, instantiationService, new MockContextKeyService(),
+				undefined, instantiationService, undefined, undefined, undefined, undefined, TestEnvironmentService);
+			instantiationService.stub(INotificationService, new TestNotificationService());
+			instantiationService.stub(INotebookService, mockNotebookService.object);
+			instantiationService.stub(IContextMenuService, TypeMoq.Mock.ofType(ContextMenuService).object);
+		});
 
-		_actions.push(
-			testInstantiationService.createInstance(RunCellsAction, 'runAllBefore', 'hiyo', false),
-			new Separator(),
-			new Separator(),
-			testInstantiationService.createInstance(RunCellsAction, 'runAllBefore', 'hiyo', false),
-			new Separator()
-		);
+		test('CellToggleMoreActions with Code CellType', function (): void {
+			const testContainer = DOM.$('div');
+			cellModelMock.setup(x => x.cellType).returns(() => 'code');
+			const action = new CellToggleMoreActions(instantiationService);
+			action.onInit(testContainer, contextMock.object);
+			assert(action['_moreActions']['viewItems'][0]['_action']['_actions'].length === 13, 'Unexpected number of valid elements');
+		});
 
-		_actions.onInit(testContainer, context);
-
+		test('CellToggleMoreActions with Markdown CellType', function (): void {
+			const testContainer = DOM.$('div');
+			cellModelMock.setup(x => x.cellType).returns(() => 'markdown');
+			const action = new CellToggleMoreActions(instantiationService);
+			action.onInit(testContainer, contextMock.object);
+			// Markdown elements don't show the code-cell related actions such as Run Cell
+			assert(action['_moreActions']['viewItems'][0]['_action']['_actions'].length === 5, 'Unexpected number of valid elements');
+		});
 	});
 });
