@@ -182,6 +182,7 @@ export const All = 'All';
 
 // Profile XML names
 export const targetDatabaseName = 'TargetDatabaseName';
+export const targetConnectionString = 'TargetConnectionString';
 
 // SQL connection string components
 export const initialCatalogSetting = 'Initial Catalog';

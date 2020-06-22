@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import { DataSource } from './dataSources';
 import * as constants from '../../common/constants';
 
@@ -69,6 +70,24 @@ export class SqlConnectionDataSource extends DataSource {
 
 	public static fromJson(json: DataSourceJson): SqlConnectionDataSource {
 		return new SqlConnectionDataSource(json.name, (json.data as unknown as SqlConnectionDataSourceJson).connectionString);
+	}
+
+	public getConnectionProfile(): azdata.IConnectionProfile {
+		const connProfile: azdata.IConnectionProfile = {
+			serverName: this.server,
+			databaseName: this.database,
+			connectionName: this.name,
+			userName: this.username,
+			password: this.password,
+			authenticationType: this.integratedSecurity ? 'Integrated' : 'SqlAuth',
+			savePassword: false,
+			providerName: 'MSSQL',
+			saveProfile: true,
+			id: this.name + '-dataSource',
+			options: []
+		};
+
+		return connProfile;
 	}
 }
 

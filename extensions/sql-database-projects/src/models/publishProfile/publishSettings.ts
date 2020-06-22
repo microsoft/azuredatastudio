@@ -3,15 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-export interface IPublishSettings {
+export interface PublishSettings {
 	databaseName: string;
-	connectionUri: string;
-	upgradeExisting: boolean;
-	sqlCmdVariables?: Record<string, string>;
-}
-
-export interface IGenerateScriptSettings {
-	databaseName: string;
-	connectionUri: string;
-	sqlCmdVariables?: Record<string, string>;
+	connectionId: string;
+	connectionString: string;
+	sqlCmdVariables: Record<string, string>;
 }
