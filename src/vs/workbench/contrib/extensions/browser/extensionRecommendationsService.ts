@@ -38,7 +38,7 @@ const ignoredRecommendationsStorageKey = 'extensionsAssistant/ignored_recommenda
 
 export class ExtensionRecommendationsService extends Disposable implements IExtensionRecommendationsService {
 
-	_serviceBrand: undefined;
+	declare readonly _serviceBrand: undefined;
 
 	// Recommendations
 	private readonly fileBasedRecommendations: FileBasedRecommendations;

@@ -13,6 +13,8 @@ import { ControllerDashboard } from '../dashboards/controller/controllerDashboar
 import { PostgresModel } from '../../models/postgresModel';
 import { parseInstanceName } from '../../common/utils';
 import { MiaaModel } from '../../models/miaaModel';
+import { Deferred } from '../../common/promise';
+import { RefreshTreeNode } from './refreshTreeNode';
 
 /**
  * The TreeNode for displaying an Azure Arc Controller
@@ -20,19 +22,31 @@ import { MiaaModel } from '../../models/miaaModel';
 export class ControllerTreeNode extends TreeNode {
 
 	private _children: TreeNode[] = [];
+	private _childrenRefreshPromise = new Deferred();
 
-	constructor(private _model: ControllerModel, private _context: vscode.ExtensionContext) {
-		super(_model.controllerUrl, vscode.TreeItemCollapsibleState.Collapsed, ResourceType.dataControllers);
-		_model.onRegistrationsUpdated(registrations => this.refreshChildren(registrations));
-		_model.refresh().catch(err => console.log(`Error refreshing Arc Controller model for tree node : ${err}`));
+	constructor(public model: ControllerModel, private _context: vscode.ExtensionContext) {
+		super(model.info.url, vscode.TreeItemCollapsibleState.Collapsed, ResourceType.dataControllers);
+		model.onRegistrationsUpdated(registrations => this.refreshChildren(registrations));
 	}
 
 	public async getChildren(): Promise<TreeNode[]> {
+		// First reset our deferred promise so we're sure we'll get the refreshed children
+		this._childrenRefreshPromise = new Deferred();
+		try {
+			await this.model.refresh();
+			await this._childrenRefreshPromise.promise;
+		} catch (err) {
+			// Couldn't get the children and TreeView doesn't have a way to collapse a node
+			// in a way that will refetch its children when expanded again so instead we
+			// display a tempory node that will prompt the user to re-enter credentials
+			return [new RefreshTreeNode(this)];
+		}
+
 		return this._children;
 	}
 
 	public async openDashboard(): Promise<void> {
-		const controllerDashboard = new ControllerDashboard(this._model);
+		const controllerDashboard = new ControllerDashboard(this.model);
 		await controllerDashboard.showDashboard();
 	}
 
@@ -44,13 +58,14 @@ export class ControllerTreeNode extends TreeNode {
 			}
 			switch (registration.instanceType) {
 				case ResourceType.postgresInstances:
-					const postgresModel = new PostgresModel(this._model.controllerUrl, this._model.auth, registration.instanceNamespace, parseInstanceName(registration.instanceName));
-					return new PostgresTreeNode(postgresModel, this._model, this._context);
+					const postgresModel = new PostgresModel(this.model.info.url, this.model.auth!, registration.instanceNamespace, parseInstanceName(registration.instanceName));
+					return new PostgresTreeNode(postgresModel, this.model, this._context);
 				case ResourceType.sqlManagedInstances:
-					const miaaModel = new MiaaModel(this._model.controllerUrl, this._model.auth, registration.instanceNamespace, parseInstanceName(registration.instanceName));
-					return new MiaaTreeNode(miaaModel, this._model);
+					const miaaModel = new MiaaModel(this.model.info.url, this.model.auth!, registration.instanceNamespace, parseInstanceName(registration.instanceName));
+					return new MiaaTreeNode(miaaModel, this.model);
 			}
 			return undefined;
 		}).filter(item => item); // filter out invalid nodes (controllers or ones without required properties)
+		this._childrenRefreshPromise.resolve();
 	}
 }
