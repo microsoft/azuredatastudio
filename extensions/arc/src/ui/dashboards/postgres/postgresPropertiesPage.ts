@@ -18,7 +18,6 @@ export class PostgresPropertiesPage extends DashboardPage {
 	constructor(protected modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
 		super(modelView);
 		this._postgresModel.onServiceUpdated(() => this.eventuallyRunOnInitialized(() => this.refresh()));
-		this._postgresModel.onPasswordUpdated(() => this.eventuallyRunOnInitialized(() => this.refresh()));
 		this._controllerModel.onRegistrationsUpdated(() => this.eventuallyRunOnInitialized(() => this.refresh()));
 	}
 
@@ -78,7 +77,7 @@ export class PostgresPropertiesPage extends DashboardPage {
 
 	private refresh() {
 		const endpoint: { ip?: string, port?: number } = this._postgresModel.endpoint;
-		const connectionString = `postgresql://postgres:${this._postgresModel.password}@${endpoint.ip}:${endpoint.port}`;
+		const connectionString = `postgresql://postgres@${endpoint.ip}:${endpoint.port}`;
 		const registration = this._controllerModel.getRegistration(ResourceType.postgresInstances, this._postgresModel.namespace, this._postgresModel.name);
 
 		this.keyValueContainer?.refresh([
@@ -86,7 +85,7 @@ export class PostgresPropertiesPage extends DashboardPage {
 			new InputKeyValue(loc.postgresAdminUsername, 'postgres'),
 			new TextKeyValue(loc.status, this._postgresModel.service?.status?.state ?? 'Unknown'),
 			new LinkKeyValue(loc.dataController, this._controllerModel.namespace ?? '', _ => vscode.window.showInformationMessage('TODO: Go to data controller')),
-			new LinkKeyValue(loc.nodeConfiguration, this._postgresModel.configuration, _ => vscode.window.showInformationMessage('TODO: Go to configuration')),
+			new TextKeyValue(loc.nodeConfiguration, this._postgresModel.configuration),
 			new TextKeyValue(loc.postgresVersion, this._postgresModel.service?.spec?.engine?.version?.toString() ?? ''),
 			new TextKeyValue(loc.resourceGroup, registration?.resourceGroupName ?? ''),
 			new TextKeyValue(loc.subscriptionId, registration?.subscriptionId ?? '')
