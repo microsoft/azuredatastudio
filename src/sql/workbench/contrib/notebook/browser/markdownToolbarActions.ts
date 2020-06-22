@@ -421,17 +421,9 @@ export class TogglePreviewAction extends ToggleableAction {
 	public set previewMode(value: boolean) {
 		this.toggle(value);
 	}
-
-	public run(context: any): Promise<boolean> {
-		let self = this;
-		return new Promise<boolean>((resolve, reject) => {
-			try {
-				self.previewMode = !self.previewMode;
-				context.cellModel.showPreview = self.previewMode;
-				resolve(true);
-			} catch (e) {
-				reject(e);
-			}
-		});
+	public async run(context: any): Promise<boolean> {
+		this.previewMode = !this.previewMode;
+		context.cellModel.showPreview = this.previewMode;
+		return true;
 	}
 }

@@ -69,7 +69,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private _content: string | string[];
 	private _lastTrustedMode: boolean;
 	private isEditMode: boolean;
-	private doShowPreview: boolean;
+	private showPreview: boolean;
 	private _sanitizer: ISanitizer;
 	private _model: NotebookModel;
 	private _activeCellId: string;
@@ -87,7 +87,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	) {
 		super();
 		this.isEditMode = true;
-		this.doShowPreview = true;
+		this.showPreview = true;
 		this.markdownRenderer = this._instantiationService.createInstance(NotebookMarkdownRenderer);
 		this._register(toDisposable(() => {
 			if (this.markdownResult) {
@@ -183,7 +183,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		let trustedChanged = this.cellModel && this._lastTrustedMode !== this.cellModel.trustedMode;
 		let cellModelSourceJoined = Array.isArray(this.cellModel.source) ? this.cellModel.source.join('') : this.cellModel.source;
 		let contentJoined = Array.isArray(this._content) ? this._content.join('') : this._content;
-		let contentChanged = contentJoined !== cellModelSourceJoined || cellModelSourceJoined.length === 0 || this.doShowPreview === true;
+		let contentChanged = contentJoined !== cellModelSourceJoined || cellModelSourceJoined.length === 0 || this.showPreview === true;
 		if (trustedChanged || contentChanged) {
 			this._lastTrustedMode = this.cellModel.trustedMode;
 			if ((!cellModelSourceJoined) && !this.isEditMode) {
@@ -238,10 +238,17 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this._changeRef.detectChanges();
 	}
 
-	public togglePreview(showPreview?: boolean): void {
-		this.doShowPreview = showPreview !== undefined ? showPreview : !this.doShowPreview;
+	public togglePreview(showPreview: boolean): void {
+		this.showPreview = showPreview !== undefined ? showPreview : !this.showPreview;
 		this._changeRef.detectChanges();
 		this.updatePreview();
+	}
+
+	public get previewMode(): boolean {
+		return this.showPreview;
+	}
+	public set previewMode(value: boolean) {
+		this.togglePreview(value);
 	}
 
 	private toggleUserSelect(userSelect: boolean): void {
