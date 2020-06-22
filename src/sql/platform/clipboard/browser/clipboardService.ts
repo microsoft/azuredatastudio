@@ -70,11 +70,6 @@ export class BrowserClipboardService implements IClipboardService {
 		return this._vsClipboardService.hasResources();
 	}
 
-	readTextSync(): string | undefined {
-		// eslint-disable-next-line no-sync
-		return this._vsClipboardService.readTextSync();
-	}
-
 	readFindTextSync(): string {
 		// eslint-disable-next-line no-sync
 		return this._vsClipboardService.readFindTextSync();
