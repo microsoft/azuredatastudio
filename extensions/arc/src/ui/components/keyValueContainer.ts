@@ -58,11 +58,15 @@ export class TextKeyValue extends KeyValue {
 }
 
 /** Implementation of KeyValue where the value is a readonly copyable input field */
-export class InputKeyValue extends KeyValue {
+export abstract class BaseInputKeyValue extends KeyValue {
+	constructor(key: string, value: string, private multiline: boolean) { super(key, value); }
+
 	getValueComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
 		const container = modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
 		container.addItem(modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
-			value: this.value, readOnly: true
+			value: this.value,
+			readOnly: true,
+			multiline: this.multiline
 		}).component());
 
 		const copy = modelBuilder.button().withProperties<azdata.ButtonProperties>({
@@ -77,6 +81,16 @@ export class InputKeyValue extends KeyValue {
 		container.addItem(copy, { CSSStyles: { 'margin-left': '10px' } });
 		return container;
 	}
+}
+
+/** Implementation of KeyValue where the value is a single line readonly copyable input field */
+export class InputKeyValue extends BaseInputKeyValue {
+	constructor(key: string, value: string) { super(key, value, false); }
+}
+
+/** Implementation of KeyValue where the value is a multi line readonly copyable input field */
+export class MultilineInputKeyValue extends BaseInputKeyValue {
+	constructor(key: string, value: string) { super(key, value, true); }
 }
 
 /** Implementation of KeyValue where the value is a clickable link */

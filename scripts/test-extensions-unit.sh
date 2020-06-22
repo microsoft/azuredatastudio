@@ -49,6 +49,11 @@ echo *** starting agent tests ***
 echo ****************************
 "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_NO_SANDBOX --extensionDevelopmentPath=$ROOT/extensions/agent --extensionTestsPath=$ROOT/extensions/agent/out/test --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR --disable-telemetry --disable-crash-reporter --disable-updates --nogpu
 
+echo **************************
+echo *** starting arc tests ***
+echo **************************
+"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_NO_SANDBOX --extensionDevelopmentPath=$ROOT/extensions/arc --extensionTestsPath=$ROOT/extensions/arc/out/test --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR --disable-telemetry --disable-crash-reporter --disable-updates --nogpu
+
 echo ********************************
 echo *** starting azurecore tests ***
 echo ********************************
@@ -63,6 +68,11 @@ echo *****************************
 echo *** starting dacpac tests ***
 echo *****************************
 "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_NO_SANDBOX --extensionDevelopmentPath=$ROOT/extensions/dacpac --extensionTestsPath=$ROOT/extensions/dacpac/out/test --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR --disable-telemetry --disable-crash-reporter --disable-updates --nogpu
+
+echo *****************************
+echo *** starting import tests ***
+echo *****************************
+"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_NO_SANDBOX --extensionDevelopmentPath=$ROOT/extensions/import --extensionTestsPath=$ROOT/extensions/import/out/test --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR --disable-telemetry --disable-crash-reporter --disable-updates --nogpu
 
 echo *************************************
 echo *** starting schema compare tests ***
@@ -89,10 +99,12 @@ echo ************************************************
 # echo ******************************************
 # "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_NO_SANDBOX --extensionDevelopmentPath=$ROOT/extensions/mssql --extensionTestsPath=$ROOT/extensions/mssql/out/test --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR --disable-telemetry --disable-crash-reporter --disable-updates --nogpu
 
-# echo ********************************************
-# echo *** starting sql-database-projects tests ***
-# echo ********************************************
-# "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_NO_SANDBOX --extensionDevelopmentPath=$ROOT/extensions/sql-database-projects --extensionTestsPath=$ROOT/extensions/sql-database-projects/out/test --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR --disable-telemetry --disable-crash-reporter --disable-updates --nogpu
+if [[ "$RUN_DBPROJECT_TESTS" == "true" ]]; then
+	echo ********************************************
+	echo *** starting sql-database-projects tests ***
+	echo ********************************************
+	"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_NO_SANDBOX --extensionDevelopmentPath=$ROOT/extensions/sql-database-projects --extensionTestsPath=$ROOT/extensions/sql-database-projects/out/test --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR --disable-telemetry --disable-crash-reporter --disable-updates --nogpu
+fi
 
 rm -r $VSCODEUSERDATADIR
 rm -r $VSCODEEXTDIR

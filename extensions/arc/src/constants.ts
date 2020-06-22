@@ -5,6 +5,8 @@
 
 import * as vscode from 'vscode';
 
+export const refreshActionId = 'arc.refresh';
+
 export interface IconPath {
 	dark: string;
 	light: string;
@@ -30,6 +32,8 @@ export class IconPathHelper {
 	public static refresh: IconPath;
 	public static support: IconPath;
 	public static wrench: IconPath;
+	public static miaa: IconPath;
+	public static controller: IconPath;
 
 	public static setExtensionContext(context: vscode.ExtensionContext) {
 		IconPathHelper.context = context;
@@ -56,14 +60,6 @@ export class IconPathHelper {
 		IconPathHelper.copy = {
 			light: IconPathHelper.context.asAbsolutePath('images/copy.svg'),
 			dark: IconPathHelper.context.asAbsolutePath('images/copy.svg')
-		};
-		IconPathHelper.collapseUp = {
-			light: IconPathHelper.context.asAbsolutePath('images/collapse-up.svg'),
-			dark: IconPathHelper.context.asAbsolutePath('images/collapse-up-inverse.svg')
-		};
-		IconPathHelper.collapseDown = {
-			light: IconPathHelper.context.asAbsolutePath('images/collapse-down.svg'),
-			dark: IconPathHelper.context.asAbsolutePath('images/collapse-down-inverse.svg')
 		};
 		IconPathHelper.postgres = {
 			light: IconPathHelper.context.asAbsolutePath('images/postgres.svg'),
@@ -101,7 +97,33 @@ export class IconPathHelper {
 			light: context.asAbsolutePath('images/wrench.svg'),
 			dark: context.asAbsolutePath('images/wrench.svg')
 		};
+		IconPathHelper.miaa = {
+			light: context.asAbsolutePath('images/miaa.svg'),
+			dark: context.asAbsolutePath('images/miaa.svg'),
+		};
+		IconPathHelper.controller = {
+			light: context.asAbsolutePath('images/data_controller.svg'),
+			dark: context.asAbsolutePath('images/data_controller.svg'),
+		};
 	}
+}
+
+export const enum ResourceType {
+	dataControllers = 'dataControllers',
+	postgresInstances = 'postgresInstances',
+	sqlManagedInstances = 'sqlManagedInstances'
+}
+
+export const enum Endpoints {
+	mgmtproxy = 'mgmtproxy',
+	logsui = 'logsui',
+	metricsui = 'metricsui',
+	controller = 'controller'
+}
+
+export const enum Connectionmode {
+	connected = 'connected',
+	disconnected = 'disconnected'
 }
 
 export namespace cssStyles {
@@ -110,3 +132,5 @@ export namespace cssStyles {
 	export const tableHeader = { ...text, 'text-align': 'left', 'border': 'none' };
 	export const tableRow = { ...text, 'border-top': 'solid 1px #ccc', 'border-bottom': 'solid 1px #ccc', 'border-left': 'none', 'border-right': 'none' };
 }
+
+export const iconSize = '20px';

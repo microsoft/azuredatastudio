@@ -6,6 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
+import * as utils from '../common/utils';
 
 import { Project } from '../models/project';
 import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStringSource';
@@ -27,15 +28,19 @@ export class DeployDatabaseDialog {
 	private targetDatabaseTextBox: azdata.InputBoxComponent | undefined;
 	private connectionsRadioButton: azdata.RadioButtonComponent | undefined;
 	private dataSourcesRadioButton: azdata.RadioButtonComponent | undefined;
+	private loadProfileButton: azdata.ButtonComponent | undefined;
+	private sqlCmdVariablesTable: azdata.TableComponent | undefined;
 	private formBuilder: azdata.FormBuilder | undefined;
 
 	private connection: azdata.connection.Connection | undefined;
 	private connectionIsDataSource: boolean | undefined;
+	private profileSqlCmdVars: Record<string, string> | undefined;
 
 	private toDispose: vscode.Disposable[] = [];
 
 	public deploy: ((proj: Project, profile: IDeploymentProfile) => any) | undefined;
 	public generateScript: ((proj: Project, profile: IGenerateScriptProfile) => any) | undefined;
+	public readPublishProfile: ((profileUri: vscode.Uri) => any) | undefined;
 
 	constructor(private apiWrapper: ApiWrapper, private project: Project) {
 		this.dialog = azdata.window.createModelViewDialog(constants.deployDialogName);
@@ -72,7 +77,8 @@ export class DeployDatabaseDialog {
 	private initializeDeployTab(): void {
 		this.deployTab.registerContent(async view => {
 
-			let selectConnectionRadioButtons = this.createRadioButtons(view);
+			// TODO : enable using this when data source creation is enabled
+			this.createRadioButtons(view);
 			this.targetConnectionFormComponent = this.createTargetConnectionComponent(view);
 
 			this.targetDatabaseTextBox = view.modelBuilder.inputBox().withProperties({
@@ -86,19 +92,39 @@ export class DeployDatabaseDialog {
 				this.tryEnableGenerateScriptAndOkButtons();
 			});
 
+			this.loadProfileButton = this.createLoadProfileButton(view);
+			this.sqlCmdVariablesTable = view.modelBuilder.table().withProperties({
+				title: constants.sqlCmdTableLabel,
+				data: this.convertSqlCmdVarsToTableFormat(this.project.sqlCmdVariables),
+				columns: [
+					{
+						value: constants.sqlCmdVariableColumn
+					},
+					{
+						value: constants.sqlCmdValueColumn,
+					}],
+				width: 400,
+				height: 400
+			}).component();
+
 			this.formBuilder = <azdata.FormBuilder>view.modelBuilder.formContainer()
 				.withFormItems([
 					{
 						title: constants.targetDatabaseSettings,
 						components: [
+							/* TODO : enable using this when data source creation is enabled
 							{
 								title: constants.selectConnectionRadioButtonsTitle,
 								component: selectConnectionRadioButtons
-							},
+							},*/
 							this.targetConnectionFormComponent,
 							{
 								title: constants.databaseNameLabel,
 								component: this.targetDatabaseTextBox
+							},
+							{
+								title: constants.profileWarningText,
+								component: <azdata.ButtonComponent>this.loadProfileButton
 							}
 						]
 					}
@@ -109,71 +135,88 @@ export class DeployDatabaseDialog {
 					width: '100%'
 				});
 
+			// add SQLCMD variables table if the project has any
+			if (Object.keys(this.project.sqlCmdVariables).length > 0) {
+				this.formBuilder.insertFormItem({
+					title: constants.sqlCmdTableLabel,
+					component: <azdata.TableComponent>this.sqlCmdVariablesTable
+				},
+					6);
+			}
+
 			let formModel = this.formBuilder.component();
 			await view.initializeModel(formModel);
 		});
 	}
 
 	public async getConnectionUri(): Promise<string> {
-		// if target connection is a data source, have to check if already connected or if connection dialog needs to be opened
-		let connId: string;
+		try {
+			// if target connection is a data source, have to check if already connected or if connection dialog needs to be opened
+			let connId: string;
 
-		if (this.dataSourcesRadioButton?.checked) {
-			const dataSource = (this.dataSourcesDropDown!.value! as DataSourceDropdownValue).dataSource;
+			if (this.connectionIsDataSource) {
+				const dataSource = (this.dataSourcesDropDown!.value! as DataSourceDropdownValue).dataSource;
 
-			const connProfile: azdata.IConnectionProfile = {
-				serverName: dataSource.server,
-				databaseName: dataSource.database,
-				connectionName: dataSource.name,
-				userName: dataSource.username,
-				password: dataSource.password,
-				authenticationType: dataSource.integratedSecurity ? 'Integrated' : 'SqlAuth',
-				savePassword: false,
-				providerName: 'MSSQL',
-				saveProfile: true,
-				id: dataSource.name + '-dataSource',
-				options: []
-			};
+				const connProfile: azdata.IConnectionProfile = {
+					serverName: dataSource.server,
+					databaseName: dataSource.database,
+					connectionName: dataSource.name,
+					userName: dataSource.username,
+					password: dataSource.password,
+					authenticationType: dataSource.integratedSecurity ? 'Integrated' : 'SqlAuth',
+					savePassword: false,
+					providerName: 'MSSQL',
+					saveProfile: true,
+					id: dataSource.name + '-dataSource',
+					options: []
+				};
 
-			if (dataSource.integratedSecurity) {
-				connId = (await azdata.connection.connect(connProfile, false, false)).connectionId;
+				if (dataSource.integratedSecurity) {
+					connId = (await this.apiWrapper.connectionConnect(connProfile, false, false)).connectionId;
+				}
+				else {
+					connId = (await this.apiWrapper.openConnectionDialog(undefined, connProfile)).connectionId;
+				}
 			}
 			else {
-				connId = (await azdata.connection.openConnectionDialog(undefined, connProfile)).connectionId;
-			}
-		}
-		else {
-			if (!this.connection) {
-				throw new Error('Connection not defined.');
+				if (!this.connection) {
+					throw new Error('Connection not defined.');
+				}
+
+				connId = this.connection?.connectionId;
 			}
 
-			connId = this.connection?.connectionId;
+			return await this.apiWrapper.getUriForConnection(connId);
 		}
-
-		return await azdata.connection.getUriForConnection(connId);
+		catch (err) {
+			throw new Error(constants.unableToCreateDeploymentConnection + ': ' + utils.getErrorMessage(err));
+		}
 	}
 
 	public async deployClick(): Promise<void> {
+		const sqlCmdVars = this.getSqlCmdVariablesForDeploy();
 		const profile: IDeploymentProfile = {
 			databaseName: this.getTargetDatabaseName(),
 			upgradeExisting: true,
 			connectionUri: await this.getConnectionUri(),
-			sqlCmdVariables: this.project.sqlCmdVariables
+			sqlCmdVariables: sqlCmdVars
 		};
 
-		azdata.window.closeDialog(this.dialog);
+		this.apiWrapper.closeDialog(this.dialog);
 		await this.deploy!(this.project, profile);
 
 		this.dispose();
 	}
 
 	public async generateScriptClick(): Promise<void> {
+		const sqlCmdVars = this.getSqlCmdVariablesForDeploy();
 		const profile: IGenerateScriptProfile = {
 			databaseName: this.getTargetDatabaseName(),
-			connectionUri: await this.getConnectionUri()
+			connectionUri: await this.getConnectionUri(),
+			sqlCmdVariables: sqlCmdVars
 		};
 
-		azdata.window.closeDialog(this.dialog);
+		this.apiWrapper.closeDialog(this.dialog);
 
 		if (this.generateScript) {
 			await this.generateScript!(this.project, profile);
@@ -182,7 +225,19 @@ export class DeployDatabaseDialog {
 		this.dispose();
 	}
 
-	private getTargetDatabaseName(): string {
+	private getSqlCmdVariablesForDeploy(): Record<string, string> {
+		// get SQLCMD variables from project
+		let sqlCmdVariables = { ...this.project.sqlCmdVariables };
+
+		// update with SQLCMD variables loaded from profile if there are any
+		for (const key in this.profileSqlCmdVars) {
+			sqlCmdVariables[key] = this.profileSqlCmdVars[key];
+		}
+
+		return sqlCmdVariables;
+	}
+
+	public getTargetDatabaseName(): string {
 		return this.targetDatabaseTextBox?.value ?? '';
 	}
 
@@ -229,10 +284,10 @@ export class DeployDatabaseDialog {
 	}
 
 	private createTargetConnectionComponent(view: azdata.ModelView): azdata.FormComponent {
-		// TODO: make this not editable
 		this.targetConnectionTextBox = view.modelBuilder.inputBox().withProperties({
 			value: '',
-			ariaLabel: constants.targetConnectionLabel
+			ariaLabel: constants.targetConnectionLabel,
+			enabled: false
 		}).component();
 
 		this.targetConnectionTextBox.onTextChanged(() => {
@@ -335,6 +390,64 @@ export class DeployDatabaseDialog {
 		});
 
 		return clearButton;
+	}
+
+	private createLoadProfileButton(view: azdata.ModelView): azdata.ButtonComponent {
+		let loadProfileButton: azdata.ButtonComponent = view.modelBuilder.button().withProperties({
+			label: constants.loadProfileButtonText,
+			title: constants.loadProfileButtonText,
+			ariaLabel: constants.loadProfileButtonText,
+			width: '120px'
+		}).component();
+
+		loadProfileButton.onDidClick(async () => {
+			const fileUris = await this.apiWrapper.showOpenDialog(
+				{
+					canSelectFiles: true,
+					canSelectFolders: false,
+					canSelectMany: false,
+					defaultUri: vscode.Uri.parse(this.project.projectFolderPath),
+					filters: {
+						[constants.publishSettingsFiles]: ['publish.xml']
+					}
+				}
+			);
+
+			if (!fileUris || fileUris.length === 0) {
+				return;
+			}
+
+			if (this.readPublishProfile) {
+				const result = await this.readPublishProfile(fileUris[0]);
+				(<azdata.InputBoxComponent>this.targetDatabaseTextBox).value = result.databaseName;
+				this.profileSqlCmdVars = result.sqlCmdVariables;
+				const data = this.convertSqlCmdVarsToTableFormat(this.getSqlCmdVariablesForDeploy());
+
+				(<azdata.TableComponent>this.sqlCmdVariablesTable).updateProperties({
+					data: data
+				});
+
+				// add SQLCMD Variables table if it wasn't there before
+				if (Object.keys(this.project.sqlCmdVariables).length === 0) {
+					this.formBuilder?.insertFormItem({
+						title: constants.sqlCmdTableLabel,
+						component: <azdata.TableComponent>this.sqlCmdVariablesTable
+					},
+						6);
+				}
+			}
+		});
+
+		return loadProfileButton;
+	}
+
+	private convertSqlCmdVarsToTableFormat(sqlCmdVars: Record<string, string>): string[][] {
+		let data = [];
+		for (let key in sqlCmdVars) {
+			data.push([key, sqlCmdVars[key]]);
+		}
+
+		return data;
 	}
 
 	// only enable Generate Script and Ok buttons if all fields are filled
