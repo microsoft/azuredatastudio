@@ -1305,7 +1305,7 @@ declare module 'azdata' {
 
 	// Admin Services interfaces  -----------------------------------------------------------------------
 	export interface DatabaseInfo {
-		options: {};
+		options: { [key: string]: any };
 	}
 
 	export interface LoginInfo {

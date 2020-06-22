@@ -28,8 +28,8 @@ let throttleTimers: { [key: string]: any } = {};
 
 export function activate(extensionContext: vscode.ExtensionContext): IExtension {
 	IconPathHelper.setExtensionContext(extensionContext);
-	let treeDataProvider = new ControllerTreeDataProvider(extensionContext.globalState);
-	registerTreeDataProvider(treeDataProvider);
+	const treeDataProvider = new ControllerTreeDataProvider(extensionContext.globalState);
+	vscode.window.registerTreeDataProvider('sqlBigDataCluster', treeDataProvider);
 	registerCommands(extensionContext, treeDataProvider);
 	return {
 		getClusterController(url: string, authType: AuthType, username?: string, password?: string): IClusterController {
@@ -41,16 +41,16 @@ export function activate(extensionContext: vscode.ExtensionContext): IExtension 
 export function deactivate() {
 }
 
-function registerTreeDataProvider(treeDataProvider: ControllerTreeDataProvider): void {
-	vscode.window.registerTreeDataProvider('sqlBigDataCluster', treeDataProvider);
-}
-
 function registerCommands(context: vscode.ExtensionContext, treeDataProvider: ControllerTreeDataProvider): void {
-	vscode.commands.registerCommand(commands.AddControllerCommand, (node?: TreeNode) => {
-		runThrottledAction(commands.AddControllerCommand, () => addBdcController(treeDataProvider, node));
+	vscode.commands.registerCommand(commands.ConnectControllerCommand, (node?: TreeNode) => {
+		runThrottledAction(commands.ConnectControllerCommand, () => addBdcController(treeDataProvider, node));
 	});
 
-	vscode.commands.registerCommand(commands.DeleteControllerCommand, async (node: TreeNode) => {
+	vscode.commands.registerCommand(commands.CreateControllerCommand, () => {
+		runThrottledAction(commands.CreateControllerCommand, () => vscode.commands.executeCommand('azdata.resource.deploy'));
+	});
+
+	vscode.commands.registerCommand(commands.RemoveControllerCommand, async (node: TreeNode) => {
 		await deleteBdcController(treeDataProvider, node);
 	});
 
@@ -180,20 +180,20 @@ async function deleteBdcController(treeDataProvider: ControllerTreeDataProvider,
 
 	let options = {
 		ignoreFocusOut: false,
-		placeHolder: localize('textConfirmDeleteController', "Are you sure you want to delete \'{0}\'?", controllerNode.label)
+		placeHolder: localize('textConfirmRemoveController', "Are you sure you want to remove \'{0}\'?", controllerNode.label)
 	};
 
 	let result = await vscode.window.showQuickPick(Object.keys(choices), options);
 	let remove: boolean = !!(result && choices[result]);
 	if (remove) {
-		await deleteControllerInternal(treeDataProvider, controllerNode);
+		await removeControllerInternal(treeDataProvider, controllerNode);
 	}
 	return remove;
 }
 
-async function deleteControllerInternal(treeDataProvider: ControllerTreeDataProvider, controllerNode: ControllerNode): Promise<void> {
-	const deleted = treeDataProvider.deleteController(controllerNode.url, controllerNode.auth, controllerNode.username);
-	if (deleted) {
+async function removeControllerInternal(treeDataProvider: ControllerTreeDataProvider, controllerNode: ControllerNode): Promise<void> {
+	const removed = treeDataProvider.removeController(controllerNode.url, controllerNode.auth, controllerNode.username);
+	if (removed) {
 		await treeDataProvider.saveControllers();
 	}
 }
