@@ -14,6 +14,8 @@
 		"ansi_up": "^3.0.0",
 		"chart.js": "^2.6.0",
 		"html-query-plan": "git://github.com/anthonydresser/html-query-plan.git#2.6",
+		"iconv-lite-umd": "0.6.3",
+		"jschardet": "2.1.1",
 		"jquery": "3.5.0",
 		"ng2-charts": "^1.6.0",
 		"reflect-metadata": "^0.1.8",
