@@ -34,10 +34,10 @@ export class MarkdownToolbarComponent {
 	public buttonPreview = localize('buttonPreview', "Markdown preview toggle - off");
 
 	public dropdownHeading = localize('dropdownHeading', "Heading");
-	public optionParagraph = localize('optionParagraph', "Paragraph");
 	public optionHeading1 = localize('optionHeading1', "Heading 1");
 	public optionHeading2 = localize('optionHeading2', "Heading 2");
 	public optionHeading3 = localize('optionHeading3', "Heading 3");
+	public optionParagraph = localize('optionParagraph', "Paragraph");
 
 	@Input() public cellModel: ICellModel;
 	private _actionBar: Taskbar;
@@ -62,7 +62,7 @@ export class MarkdownToolbarComponent {
 		let orderedListButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.orderedText', '', 'ordered-list', this.buttonOrderedList, this.cellModel, MarkdownButtonType.ORDERED_LIST);
 		let imageButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.imageText', '', 'insert-image', this.buttonImage, this.cellModel, MarkdownButtonType.IMAGE);
 
-		let headingDropdown = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading', '', 'heading', this.dropdownHeading, this.cellModel, MarkdownButtonType.HEADING);
+		let headingDropdown = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading', '', 'heading', this.dropdownHeading, this.cellModel, null);
 		let heading1 = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading1', this.optionHeading1, 'heading 1', this.optionHeading1, this.cellModel, MarkdownButtonType.HEADING1);
 		let heading2 = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading2', this.optionHeading2, 'heading 2', this.optionHeading2, this.cellModel, MarkdownButtonType.HEADING2);
 		let heading3 = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading3', this.optionHeading3, 'heading 3', this.optionHeading3, this.cellModel, MarkdownButtonType.HEADING3);
@@ -82,7 +82,7 @@ export class MarkdownToolbarComponent {
 			this._actionBar.actionRunner,
 			undefined,
 			'notebook-button masked-pseudo-after dropdown-arrow',
-			localize('paragraph', "Paragraph"),
+			this.optionParagraph,
 			undefined
 		);
 		dropdownMenuActionViewItem.render(buttonDropdownContainer);

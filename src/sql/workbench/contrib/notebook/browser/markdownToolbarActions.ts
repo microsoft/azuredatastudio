@@ -14,8 +14,6 @@ import { ICellModel } from 'sql/workbench/services/notebook/browser/models/model
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import { Selection } from 'vs/editor/common/core/selection';
 
-
-
 // Action to decorate markdown
 export class TransformMarkdownAction extends Action {
 
@@ -133,8 +131,12 @@ export class MarkdownTextTransformer {
 				return '![';
 			case MarkdownButtonType.HIGHLIGHT:
 				return '<mark>';
-			case MarkdownButtonType.HEADING:
+			case MarkdownButtonType.HEADING1:
+				return '# ';
+			case MarkdownButtonType.HEADING2:
 				return '## ';
+			case MarkdownButtonType.HEADING3:
+				return '### ';
 			default:
 				return '';
 		}
@@ -155,7 +157,6 @@ export class MarkdownTextTransformer {
 				return ']()';
 			case MarkdownButtonType.HIGHLIGHT:
 				return '</mark>';
-			case MarkdownButtonType.HEADING:
 			case MarkdownButtonType.UNORDERED_LIST:
 			case MarkdownButtonType.ORDERED_LIST:
 			default:
@@ -165,12 +166,16 @@ export class MarkdownTextTransformer {
 
 	private getMarkdownLineType(type: MarkdownButtonType): MarkdownLineType {
 		switch (type) {
-			case MarkdownButtonType.HEADING:
 			case MarkdownButtonType.UNORDERED_LIST:
 			case MarkdownButtonType.ORDERED_LIST:
 				return MarkdownLineType.EVERY_LINE;
 			case MarkdownButtonType.CODE:
 				return MarkdownLineType.WRAPPED_ABOVE_AND_BELOW;
+			case MarkdownButtonType.HEADING1:
+			case MarkdownButtonType.HEADING2:
+			case MarkdownButtonType.HEADING3:
+			case MarkdownButtonType.PARAGRAPH:
+				return MarkdownLineType.ENTIRE_LINE;
 			default:
 				return MarkdownLineType.BEGIN_AND_END_LINES;
 		}
@@ -385,11 +390,10 @@ export enum MarkdownButtonType {
 	UNORDERED_LIST,
 	ORDERED_LIST,
 	IMAGE,
-	HEADING,
-	PARAGRAPH,
 	HEADING1,
 	HEADING2,
-	HEADING3
+	HEADING3,
+	PARAGRAPH
 }
 
 // If ALL_LINES, we need to insert markdown at each line (e.g. lists)
@@ -397,5 +401,6 @@ export enum MarkdownButtonType {
 export enum MarkdownLineType {
 	BEGIN_AND_END_LINES,
 	EVERY_LINE,
+	ENTIRE_LINE,
 	WRAPPED_ABOVE_AND_BELOW
 }
