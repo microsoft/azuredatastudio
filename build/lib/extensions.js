@@ -4,7 +4,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.packageRebuildExtensionsStream = exports.cleanRebuildExtensions = exports.packageExternalExtensionsStream = exports.packageMarketplaceWebExtensionsStream = exports.packageMarketplaceExtensionsStream = exports.packageLocalWebExtensionsStream = exports.packageLocalExtensionsStream = exports.fromMarketplace = void 0;
+exports.packageRebuildExtensionsStream = exports.cleanRebuildExtensions = exports.packageExternalExtensionsStream = exports.scanBuiltinExtensions = exports.packageMarketplaceWebExtensionsStream = exports.packageMarketplaceExtensionsStream = exports.packageLocalWebExtensionsStream = exports.packageLocalExtensionsStream = exports.fromMarketplace = void 0;
 const es = require("event-stream");
 const fs = require("fs");
 const glob = require("glob");
@@ -291,6 +291,34 @@ function packageMarketplaceWebExtensionsStream(builtInExtensions) {
     return es.merge(extensions);
 }
 exports.packageMarketplaceWebExtensionsStream = packageMarketplaceWebExtensionsStream;
+function scanBuiltinExtensions(extensionsRoot, forWeb) {
+    const scannedExtensions = [];
+    const extensionsFolders = fs.readdirSync(extensionsRoot);
+    for (const extensionFolder of extensionsFolders) {
+        const packageJSONPath = path.join(extensionsRoot, extensionFolder, 'package.json');
+        if (!fs.existsSync(packageJSONPath)) {
+            continue;
+        }
+        const packageJSON = JSON.parse(fs.readFileSync(packageJSONPath).toString('utf8'));
+        const extensionKind = packageJSON['extensionKind'] || [];
+        if (forWeb && extensionKind.indexOf('web') === -1) {
+            continue;
+        }
+        const children = fs.readdirSync(path.join(extensionsRoot, extensionFolder));
+        const packageNLS = children.filter(child => child === 'package.nls.json')[0];
+        const readme = children.filter(child => /^readme(\.txt|\.md|)$/i.test(child))[0];
+        const changelog = children.filter(child => /^changelog(\.txt|\.md|)$/i.test(child))[0];
+        scannedExtensions.push({
+            extensionPath: extensionFolder,
+            packageJSON: packageJSON,
+            packagsNLSPath: packageNLS ? path.join(extensionFolder, packageNLS) : undefined,
+            readmePath: readme ? path.join(extensionFolder, readme) : undefined,
+            changelogPath: changelog ? path.join(extensionFolder, changelog) : undefined,
+        });
+    }
+    return scannedExtensions;
+}
+exports.scanBuiltinExtensions = scanBuiltinExtensions;
 function packageExternalExtensionsStream() {
     const extenalExtensionDescriptions = glob.sync('extensions/*/package.json')
         .map(manifestPath => {
