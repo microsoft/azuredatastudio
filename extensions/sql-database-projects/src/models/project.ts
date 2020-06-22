@@ -406,7 +406,7 @@ export class Project {
 				}
 
 				// remove from database references because it'll get added again later
-				this.databaseReferences.splice(this.databaseReferences.findIndex(n => n.databaseName() === (name === SystemDatabase.master ? constants.master : constants.msdb)), 1);
+				this.databaseReferences.splice(this.databaseReferences.findIndex(n => n.databaseName === (name === SystemDatabase.master ? constants.master : constants.msdb)), 1);
 
 				await this.addSystemDatabaseReference(name);
 			}
@@ -490,7 +490,7 @@ class DatabaseReferenceProjectEntry extends ProjectEntry {
 		super(uri, '', EntryType.DatabaseReference);
 	}
 
-	public databaseName(): string {
+	public get databaseName(): string {
 		return path.parse(this.fsUri.fsPath).name;
 	}
 }
