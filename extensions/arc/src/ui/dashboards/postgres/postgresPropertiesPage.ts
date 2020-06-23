@@ -13,12 +13,27 @@ import { ControllerModel } from '../../../models/controllerModel';
 import { PostgresModel } from '../../../models/postgresModel';
 
 export class PostgresPropertiesPage extends DashboardPage {
+	private disposables: vscode.Disposable[] = [];
 	private keyValueContainer?: KeyValueContainer;
 
 	constructor(protected modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
 		super(modelView);
-		this._postgresModel.onServiceUpdated(() => this.eventuallyRunOnInitialized(() => this.refresh()));
-		this._controllerModel.onRegistrationsUpdated(() => this.eventuallyRunOnInitialized(() => this.refresh()));
+
+		modelView.onClosed(() =>
+			this.disposables.forEach(d => {
+				try { d.dispose(); }
+				catch { }
+			}));
+
+		this._postgresModel.onServiceUpdated(
+			() => this.eventuallyRunOnInitialized(() => this.refresh()),
+			this,
+			this.disposables);
+
+		this._controllerModel.onRegistrationsUpdated(
+			() => this.eventuallyRunOnInitialized(() => this.refresh()),
+			this,
+			this.disposables);
 	}
 
 	protected get title(): string {
