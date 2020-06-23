@@ -571,8 +571,12 @@ export class ProjectsController {
 				model.database = profile.databaseName;
 			}
 			else {
-				const connectionId = (await this.apiWrapper.openConnectionDialog()).connectionId;
+				const connection = await this.apiWrapper.openConnectionDialog();
+				if (!connection) {
+					return;
+				}
 
+				const connectionId = connection.connectionId;
 				const databaseList = await this.apiWrapper.listDatabases(connectionId);
 				const database = (await this.apiWrapper.showQuickPick(databaseList.map(dbName => { return { label: dbName }; })))?.label;
 
