@@ -14,8 +14,6 @@ import { ICellModel } from 'sql/workbench/services/notebook/browser/models/model
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import { Selection } from 'vs/editor/common/core/selection';
 
-
-
 // Action to decorate markdown
 export class TransformMarkdownAction extends Action {
 
@@ -133,6 +131,12 @@ export class MarkdownTextTransformer {
 				return '![';
 			case MarkdownButtonType.HIGHLIGHT:
 				return '<mark>';
+			case MarkdownButtonType.HEADING1:
+				return '# ';
+			case MarkdownButtonType.HEADING2:
+				return '## ';
+			case MarkdownButtonType.HEADING3:
+				return '### ';
 			default:
 				return '';
 		}
@@ -167,6 +171,11 @@ export class MarkdownTextTransformer {
 				return MarkdownLineType.EVERY_LINE;
 			case MarkdownButtonType.CODE:
 				return MarkdownLineType.WRAPPED_ABOVE_AND_BELOW;
+			case MarkdownButtonType.HEADING1:
+			case MarkdownButtonType.HEADING2:
+			case MarkdownButtonType.HEADING3:
+			case MarkdownButtonType.PARAGRAPH:
+				return MarkdownLineType.ENTIRE_LINE;
 			default:
 				return MarkdownLineType.BEGIN_AND_END_LINES;
 		}
@@ -380,13 +389,18 @@ export enum MarkdownButtonType {
 	LINK,
 	UNORDERED_LIST,
 	ORDERED_LIST,
-	IMAGE
+	IMAGE,
+	HEADING1,
+	HEADING2,
+	HEADING3,
+	PARAGRAPH
 }
 
 // If ALL_LINES, we need to insert markdown at each line (e.g. lists)
 // WRAPPED_ABOVE_AND_BELOW puts text above and below the highlighted text
 export enum MarkdownLineType {
 	BEGIN_AND_END_LINES,
+	ENTIRE_LINE,
 	EVERY_LINE,
 	WRAPPED_ABOVE_AND_BELOW
 }
