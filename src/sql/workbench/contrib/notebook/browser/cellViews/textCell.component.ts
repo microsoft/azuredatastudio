@@ -142,7 +142,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			}
 		}));
 		this._register(this.cellModel.onCellPreviewChanged(preview => {
-			this.togglePreview(preview);
+			this.previewMode = preview;
 		}));
 	}
 
@@ -231,24 +231,20 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	public toggleEditMode(editMode?: boolean): void {
 		this.isEditMode = editMode !== undefined ? editMode : !this.isEditMode;
 		this.cellModel.isEditMode = this.isEditMode;
-		if (this.isEditMode === false) {
-			this.togglePreview(true);
+		if (!this.isEditMode) {
+			this.previewMode = true;
 		}
 		this.updatePreview();
 		this._changeRef.detectChanges();
-	}
-
-	public togglePreview(showPreview: boolean): void {
-		this.showPreview = showPreview !== undefined ? showPreview : !this.showPreview;
-		this._changeRef.detectChanges();
-		this.updatePreview();
 	}
 
 	public get previewMode(): boolean {
 		return this.showPreview;
 	}
 	public set previewMode(value: boolean) {
-		this.togglePreview(value);
+		this.showPreview = value;
+		this._changeRef.detectChanges();
+		this.updatePreview();
 	}
 
 	private toggleUserSelect(userSelect: boolean): void {
