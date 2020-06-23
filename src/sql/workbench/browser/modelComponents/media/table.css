@@ -21,3 +21,7 @@
 .display-none {
 	display: none;
 }
+
+.button-icon {
+	background-color: transparent;
+}

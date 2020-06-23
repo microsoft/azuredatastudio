@@ -94,13 +94,6 @@
 	content: url("help.svg");
 }
 
-.vs .codicon.delete,
-.vs-dark .codicon.delete,
-.hc-black .codicon.delete {
-	background-image: url("garbage-can-blue.svg");
-	background-size: 11px !important;
-}
-
 .vs-dark .codicon.help,
 .hc-black .codicon.help {
 	content: url("help_inverse.svg");

@@ -69,19 +69,21 @@ export class InstalledPackagesTab {
 					columns: [
 						{
 							value: localize('managePackages.pkgNameColumn', "Name"),
-							type: azdata.ColumnType.text,
-							width: 100
+							type: azdata.ColumnType.text
 						},
 						{
 							value: localize('managePackages.newPkgVersionColumn', "Version"),
-							type: azdata.ColumnType.text,
-							width: 100
+							type: azdata.ColumnType.text
 						},
 						{
 							value: localize('managePackages.deleteColumn', "Delete"),
 							type: azdata.ColumnType.button,
-							options: { iconClass: 'delete small' },
-							width: 30
+							options: {
+								icon: {
+									dark: this.dialog.extensionContext.asAbsolutePath('resources/dark/delete_inverse.svg'),
+									light: this.dialog.extensionContext.asAbsolutePath('resources/light/delete.svg')
+								}
+							}
 						}
 					],
 					data: [[]],
@@ -235,7 +237,6 @@ export class InstalledPackagesTab {
 	}
 
 	private async doUninstallPackage(rowNums: number[]): Promise<void> {
-		//let rowNums = this.installedPackagesTable.selectedRows;
 		if (!rowNums || rowNums.length === 0) {
 			return;
 		}

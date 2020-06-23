@@ -3182,7 +3182,7 @@ declare module 'azdata' {
 		headerCssClass?: string;
 		toolTip?: string;
 		type?: ColumnType;
-		options?: CheckboxColumnOption | TextColumnOption | ButtonColumnOption;
+		options?: CheckboxColumnOption | TextColumnOption;
 	}
 
 	export enum ColumnType {
@@ -3196,10 +3196,6 @@ declare module 'azdata' {
 	}
 
 	export interface TextColumnOption {
-	}
-
-	export interface ButtonColumnOption {
-		iconClass?: string;
 	}
 
 	export enum ActionOnCellCheckboxCheck {

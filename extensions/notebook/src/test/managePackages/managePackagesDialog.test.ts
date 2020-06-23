@@ -110,7 +110,19 @@ describe('Manage Package Dialog', () => {
 		let packageManageProviders = new Map<string, IPackageManageProvider>();
 		packageManageProviders.set(LocalCondaPackageManageProvider.ProviderId, new LocalCondaPackageManageProvider(undefined));
 		let model = TypeMoq.Mock.ofInstance(new ManagePackagesDialogModel(undefined, packageManageProviders));
-		let dialog = TypeMoq.Mock.ofInstance(new ManagePackagesDialog(model.object));
+		let extensionContext: vscode.ExtensionContext = {
+			asAbsolutePath: () => {return '';},
+			environmentVariableCollection: undefined!,
+			extensionPath: '',
+			extensionUri: undefined!,
+			globalState: undefined!,
+			globalStoragePath: undefined!,
+			logPath: undefined!,
+			storagePath: undefined!,
+			subscriptions: undefined!,
+			workspaceState: undefined!
+		};
+		let dialog = TypeMoq.Mock.ofInstance(new ManagePackagesDialog(model.object, extensionContext));
 		dialog.setup(x => x.model).returns(() => model.object);
 
 		let onClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();

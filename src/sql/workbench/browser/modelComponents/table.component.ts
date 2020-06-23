@@ -28,6 +28,7 @@ import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSizeToNumber } from 'sql/base/browser/dom';
 import { ButtonColumn, ButtonClickEventArgs } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
+import { createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
 
 export enum ColumnSizingMode {
 	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
@@ -49,6 +50,7 @@ export default class TableComponent extends ComponentBase implements IComponent,
 	private _tableColumns;
 	private _checkboxColumns: CheckboxSelectColumn<{}>[] = [];
 	private _buttonsColumns: ButtonColumn<{}>[] = [];
+	private _pluginsRegisterStatus: boolean[] = [];
 	private _onCheckBoxChanged = new Emitter<ICheckboxCellActionEventArgs>();
 	private _onButtonClicked = new Emitter<ButtonClickEventArgs<{}>>();
 	public readonly onCheckBoxChanged: vsEvent<ICheckboxCellActionEventArgs> = this._onCheckBoxChanged.event;
@@ -245,8 +247,8 @@ export default class TableComponent extends ComponentBase implements IComponent,
 			this._table.setSelectedRows(this.selectedRows);
 		}
 
-		Object.keys(this._checkboxColumns).forEach(col => this.registerPlugins(this._checkboxColumns[col]));
-		Object.keys(this._buttonsColumns).forEach(col => this.registerPlugins(this._buttonsColumns[col]));
+		Object.keys(this._checkboxColumns).forEach(col => this.registerPlugins(col, this._checkboxColumns[col]));
+		Object.keys(this._buttonsColumns).forEach(col => this.registerPlugins(col, this._buttonsColumns[col]));
 
 		if (this.ariaRowCount === -1) {
 			this._table.removeAriaRowCount();
@@ -289,7 +291,6 @@ export default class TableComponent extends ComponentBase implements IComponent,
 				this._checkboxColumns[checkInfo.columnName].reactiveCheckboxCheck(checkInfo.row, checkInfo.checked);
 			}
 
-
 			const buttonInfo: azdata.ButtonCell = cellInfo as azdata.ButtonCell;
 			if (buttonInfo) {
 				this._buttonsColumns[checkInfo.columnName].reactiveButton(checkInfo.row);
@@ -328,9 +329,8 @@ export default class TableComponent extends ComponentBase implements IComponent,
 		let name = col.value;
 		if (!this._buttonsColumns[col.value]) {
 			this._buttonsColumns[col.value] = new ButtonColumn({
-				//width: col.width,
 				title: col.title,
-				iconCssClass: col.options ? col.options.iconClass : ''
+				iconCssClass: 'button-icon ' + (col.options ? createIconCssClass(col.options.icon) : '')
 			}, index);
 
 			this._register(this._buttonsColumns[col.value].onClick((state) => {
@@ -346,10 +346,13 @@ export default class TableComponent extends ComponentBase implements IComponent,
 		}
 	}
 
-	private registerPlugins(plugin: CheckboxSelectColumn<{}> | ButtonColumn<{}>): void {
-		this._tableColumns.splice(plugin.index, 0, plugin.getColumnDefinition());
-		this._table.registerPlugin(plugin);
+	private registerPlugins(col: string, plugin: CheckboxSelectColumn<{}> | ButtonColumn<{}>): void {
 
+		this._tableColumns.splice(plugin.index, 0, plugin.getColumnDefinition());
+		if (!(col in this._pluginsRegisterStatus) || !this._pluginsRegisterStatus[col]) {
+			this._table.registerPlugin(plugin);
+			this._pluginsRegisterStatus[col] = true;
+		}
 
 		this._table.columns = this._tableColumns;
 		this._table.autosizeColumns();

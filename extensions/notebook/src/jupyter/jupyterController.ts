@@ -215,7 +215,7 @@ export class JupyterController implements vscode.Disposable {
 			let model = new ManagePackagesDialogModel(this._jupyterInstallation, this._packageManageProviders, options);
 
 			await model.init();
-			let packagesDialog = new ManagePackagesDialog(model);
+			let packagesDialog = new ManagePackagesDialog(model, this.extensionContext);
 			packagesDialog.showDialog();
 		} catch (error) {
 			let message = utils.getErrorMessage(error);
