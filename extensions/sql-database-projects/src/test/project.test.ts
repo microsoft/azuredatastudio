@@ -46,7 +46,7 @@ describe('Project: sqlproj content operations', function (): void {
 		// Database references
 		// should only have one database reference even though there are two master.dacpac references (1 for ADS and 1 for SSDT)
 		should(project.databaseReferences.length).equal(1);
-		should(project.databaseReferences[0]).containEql(constants.master);
+		should(project.databaseReferences[0].databaseName).containEql(constants.master);
 	});
 
 	it('Should add Folder and Build entries to sqlproj', async function (): Promise<void> {
@@ -158,24 +158,47 @@ describe('Project: sqlproj content operations', function (): void {
 		const project = new Project(projFilePath);
 		await project.readProjFile();
 
-		should(project.databaseReferences.length).equal(0);
+		should(project.databaseReferences.length).equal(0, 'There should be no datbase references to start with');
 		await project.addSystemDatabaseReference(SystemDatabase.master);
-		should(project.databaseReferences.length).equal(1);
-		should(project.databaseReferences[0]).equal(constants.master);
+		should(project.databaseReferences.length).equal(1, 'There should be one database reference after adding a reference to master');
+		should(project.databaseReferences[0].databaseName).equal(constants.master, 'The database reference should be master');
 		// make sure reference to SSDT master dacpac was added
 		let projFileText = (await fs.readFile(projFilePath)).toString();
 		should(projFileText).containEql(project.getSystemDacpacSsdtUri(constants.master).fsPath.substring(1));
 
 		await project.addSystemDatabaseReference(SystemDatabase.msdb);
-		should(project.databaseReferences.length).equal(2);
-		should(project.databaseReferences[1]).equal(constants.msdb);
+		should(project.databaseReferences.length).equal(2, 'There should be two database references after adding a reference to msdb');
+		should(project.databaseReferences[1].databaseName).equal(constants.msdb, 'The database reference should be msdb');
 		// make sure reference to SSDT msdb dacpac was added
 		projFileText = (await fs.readFile(projFilePath)).toString();
 		should(projFileText).containEql(project.getSystemDacpacSsdtUri(constants.msdb).fsPath.substring(1));
 
 		await project.addDatabaseReference(Uri.parse('test.dacpac'), DatabaseReferenceLocation.sameDatabase);
-		should(project.databaseReferences.length).equal(3);
-		should(project.databaseReferences[2]).equal('test');
+		should(project.databaseReferences.length).equal(3, 'There should be three database references after adding a reference to test');
+		should(project.databaseReferences[2].databaseName).equal('test', 'The database reference should be test');
+	});
+
+	it('Should not allow adding duplicate database references', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project = new Project(projFilePath);
+		await project.readProjFile();
+
+		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
+		await project.addSystemDatabaseReference(SystemDatabase.master);
+		should(project.databaseReferences.length).equal(1, 'There should be one database reference after adding a reference to master');
+		should(project.databaseReferences[0].databaseName).equal(constants.master, 'project.databaseReferences[0].databaseName should be master');
+
+		// try to add reference to master again
+		await testUtils.shouldThrowSpecificError(async () => await project.addSystemDatabaseReference(SystemDatabase.master), constants.databaseReferenceAlreadyExists);
+		should(project.databaseReferences.length).equal(1, 'There should only be one database reference after trying to add a reference to master again');
+
+		await project.addDatabaseReference(Uri.parse('test.dacpac'), DatabaseReferenceLocation.sameDatabase);
+		should(project.databaseReferences.length).equal(2, 'There should be two database references after adding a reference to test.dacpac');
+		should(project.databaseReferences[1].databaseName).equal('test', 'project.databaseReferences[1].databaseName should be test');
+
+		// try to add reference to test.dacpac again
+		await testUtils.shouldThrowSpecificError(async () => await project.addDatabaseReference(Uri.parse('test.dacpac'), DatabaseReferenceLocation.sameDatabase), constants.databaseReferenceAlreadyExists);
+		should(project.databaseReferences.length).equal(2, 'There should be two database references after trying to add a reference to test.dacpac again');
 	});
 });
 
