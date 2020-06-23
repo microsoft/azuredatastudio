@@ -340,9 +340,9 @@ export class ProjectsController {
 		const project = this.getProjectFromContext(context);
 
 		const confirmationPrompt = context instanceof FolderNode ? constants.deleteConfirmationContents(context.friendlyName) : constants.deleteConfirmation(context.friendlyName);
-		const response = await this.apiWrapper.showQuickPick([constants.yesString, constants.noString].map(x => { return { label: x }; }), { placeHolder: confirmationPrompt });
+		const response = await this.apiWrapper.showWarningMessageOptions(confirmationPrompt, { modal: true }, constants.yesString);
 
-		if (response && response.label === constants.noString) {
+		if (response !== constants.yesString) {
 			return;
 		}
 
