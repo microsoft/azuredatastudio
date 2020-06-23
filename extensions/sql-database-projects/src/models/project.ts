@@ -64,13 +64,7 @@ export class Project {
 		}
 
 		// find all SQLCMD variables to include
-		for (let i = 0; i < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable).length; i++) {
-			const sqlCmdVar = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable)[i];
-			const varName = sqlCmdVar.getAttribute(constants.Include);
-
-			const varValue = sqlCmdVar.getElementsByTagName(constants.DefaultValue)[0].childNodes[0].nodeValue;
-			this.sqlCmdVariables[varName] = varValue;
-		}
+		this.sqlCmdVariables = utils.readSqlCmdVariables(this.projFileXmlDoc);
 
 		// find all database references to include
 		const references = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference);
@@ -259,7 +253,8 @@ export class Project {
 	}
 
 	public createProjectEntry(relativePath: string, entryType: EntryType): ProjectEntry {
-		return new ProjectEntry(Uri.file(path.join(this.projectFolderPath, relativePath)), relativePath, entryType);
+		let platformSafeRelativePath = utils.getPlatformSafeFileEntryPath(relativePath);
+		return new ProjectEntry(Uri.file(path.join(this.projectFolderPath, platformSafeRelativePath)), relativePath, entryType);
 	}
 
 	private findOrCreateItemGroup(containedTag?: string): any {
@@ -491,7 +486,7 @@ class DatabaseReferenceProjectEntry extends ProjectEntry {
 	}
 
 	public get databaseName(): string {
-		return path.parse(this.fsUri.fsPath).name;
+		return path.parse(utils.getPlatformSafeFileEntryPath(this.fsUri.fsPath)).name;
 	}
 }
 

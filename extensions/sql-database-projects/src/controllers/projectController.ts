@@ -6,10 +6,12 @@
 import * as constants from '../common/constants';
 import * as dataSources from '../models/dataSources/dataSources';
 import * as mssql from '../../../mssql';
+import * as os from 'os';
 import * as path from 'path';
 import * as utils from '../common/utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as templates from '../templates/templates';
+import * as xmldom from 'xmldom';
 
 import { Uri, QuickPickItem, WorkspaceFolder, extensions, Extension } from 'vscode';
 import { IConnectionProfile, TaskExecutionMode } from 'azdata';
@@ -19,7 +21,7 @@ import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
 import { Project, DatabaseReferenceLocation, SystemDatabase, TargetPlatform } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { FolderNode } from '../models/tree/fileFolderTreeItem';
-import { IDeploymentProfile, IGenerateScriptProfile } from '../models/IDeploymentProfile';
+import { IDeploymentProfile, IGenerateScriptProfile, PublishSettings } from '../models/IDeploymentProfile';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { ImportDataModel } from '../models/api/import';
@@ -84,22 +86,36 @@ export class ProjectsController {
 				// TODO: prompt to create new datasources.json; for now, swallow
 			}
 			else {
+				this.projects = this.projects.filter((e) => { return e !== newProject; });
 				throw err;
 			}
 		}
 
-		this.refreshProjectsTree();
+		try {
+			this.refreshProjectsTree();
+		}
+		catch (err) {
+			// if the project didnt load - remove it from the list of open projects
+			this.projects = this.projects.filter((e) => { return e !== newProject; });
+			throw err;
+		}
 
 		return newProject;
 	}
 
-	public async focusProject(project?: Project) {
+	public async focusProject(project?: Project): Promise<void> {
 		if (project && this.projects.includes(project)) {
 			await this.apiWrapper.executeCommand('sqlDatabaseProjectsView.focus');
-			this.projectTreeViewProvider.focus(project);
+			await this.projectTreeViewProvider.focus(project);
 		}
 	}
 
+	/**
+	 * Creates a new folder with the project name in the specified location, and places the new .sqlproj inside it
+	 * @param newProjName
+	 * @param folderUri
+	 * @param projectGuid
+	 */
 	public async createNewProject(newProjName: string, folderUri: Uri, projectGuid?: string): Promise<string> {
 		if (projectGuid && !UUID.isUUID(projectGuid)) {
 			throw new Error(`Specified GUID is invalid: '${projectGuid}'`);
@@ -118,7 +134,7 @@ export class ProjectsController {
 			newProjFileName += constants.sqlprojExtension;
 		}
 
-		const newProjFilePath = path.join(folderUri.fsPath, newProjFileName);
+		const newProjFilePath = path.join(folderUri.fsPath, path.parse(newProjFileName).name, newProjFileName);
 
 		let fileExists = false;
 		try {
@@ -193,6 +209,7 @@ export class ProjectsController {
 
 		deployDatabaseDialog.deploy = async (proj, prof) => await this.executionCallback(proj, prof);
 		deployDatabaseDialog.generateScript = async (proj, prof) => await this.executionCallback(proj, prof);
+		deployDatabaseDialog.readPublishProfile = async (profileUri) => await this.readPublishProfile(profileUri);
 
 		deployDatabaseDialog.openDialog();
 
@@ -206,14 +223,39 @@ export class ProjectsController {
 			return undefined; // buildProject() handles displaying the error
 		}
 
-		const dacFxService = await ProjectsController.getDaxFxService();
+		// copy dacpac to temp location before deployment
+		const tempPath = path.join(os.tmpdir(), `${path.parse(dacpacPath).name}_${new Date().getTime()}${constants.sqlprojExtension}`);
+		await fs.copyFile(dacpacPath, tempPath);
+
+		const dacFxService = await this.getDaxFxService();
 
 		if ((<IDeploymentProfile>profile).upgradeExisting) {
-			return await dacFxService.deployDacpac(dacpacPath, profile.databaseName, (<IDeploymentProfile>profile).upgradeExisting, profile.connectionUri, TaskExecutionMode.execute, profile.sqlCmdVariables);
+			return await dacFxService.deployDacpac(tempPath, profile.databaseName, (<IDeploymentProfile>profile).upgradeExisting, profile.connectionUri, TaskExecutionMode.execute, profile.sqlCmdVariables);
 		}
 		else {
-			return await dacFxService.generateDeployScript(dacpacPath, profile.databaseName, profile.connectionUri, TaskExecutionMode.script, profile.sqlCmdVariables);
+			return await dacFxService.generateDeployScript(tempPath, profile.databaseName, profile.connectionUri, TaskExecutionMode.script, profile.sqlCmdVariables);
 		}
+	}
+
+	public async readPublishProfile(profileUri: Uri): Promise<PublishSettings> {
+		const profileText = await fs.readFile(profileUri.fsPath);
+		const profileXmlDoc = new xmldom.DOMParser().parseFromString(profileText.toString());
+
+		// read target database name
+		let targetDbName: string = '';
+		let targetDatabaseNameCount = profileXmlDoc.documentElement.getElementsByTagName(constants.targetDatabaseName).length;
+		if (targetDatabaseNameCount > 0) {
+			// if there is more than one TargetDatabaseName nodes, SSDT uses the name in the last one so we'll do the same here
+			targetDbName = profileXmlDoc.documentElement.getElementsByTagName(constants.targetDatabaseName)[targetDatabaseNameCount - 1].textContent;
+		}
+
+		// get all SQLCMD variables to include from the profile
+		let sqlCmdVariables = utils.readSqlCmdVariables(profileXmlDoc);
+
+		return {
+			databaseName: targetDbName,
+			sqlCmdVariables: sqlCmdVariables
+		};
 	}
 
 	public async schemaCompare(treeNode: BaseProjectTreeItem): Promise<void> {
@@ -474,7 +516,7 @@ export class ProjectsController {
 		}
 	}
 
-	private static async getDaxFxService(): Promise<mssql.IDacFxService> {
+	public async getDaxFxService(): Promise<mssql.IDacFxService> {
 		const ext: Extension<any> = extensions.getExtension(mssql.extension.name)!;
 
 		await ext.activate();
@@ -529,8 +571,12 @@ export class ProjectsController {
 				model.database = profile.databaseName;
 			}
 			else {
-				const connectionId = (await this.apiWrapper.openConnectionDialog()).connectionId;
+				const connection = await this.apiWrapper.openConnectionDialog();
+				if (!connection) {
+					return;
+				}
 
+				const connectionId = connection.connectionId;
 				const databaseList = await this.apiWrapper.listDatabases(connectionId);
 				const database = (await this.apiWrapper.showQuickPick(databaseList.map(dbName => { return { label: dbName }; })))?.label;
 
@@ -596,7 +642,7 @@ export class ProjectsController {
 			//Refresh project to show the added files
 			this.refreshProjectsTree();
 
-			this.focusProject(project);
+			await this.focusProject(project);
 		}
 		catch (err) {
 			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));

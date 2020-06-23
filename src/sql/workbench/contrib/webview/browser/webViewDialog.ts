@@ -145,7 +145,7 @@ export class WebViewDialog extends Modal {
 	}
 
 	public sendMessage(message: any): void {
-		this._webview.sendMessage(message);
+		this._webview.postMessage(message);
 	}
 
 	public open() {

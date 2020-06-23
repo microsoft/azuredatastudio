@@ -5,6 +5,8 @@
 
 import * as vscode from 'vscode';
 
+export const refreshActionId = 'arc.refresh';
+
 export interface IconPath {
 	dark: string;
 	light: string;
@@ -31,6 +33,7 @@ export class IconPathHelper {
 	public static support: IconPath;
 	public static wrench: IconPath;
 	public static miaa: IconPath;
+	public static controller: IconPath;
 
 	public static setExtensionContext(context: vscode.ExtensionContext) {
 		IconPathHelper.context = context;
@@ -57,14 +60,6 @@ export class IconPathHelper {
 		IconPathHelper.copy = {
 			light: IconPathHelper.context.asAbsolutePath('images/copy.svg'),
 			dark: IconPathHelper.context.asAbsolutePath('images/copy.svg')
-		};
-		IconPathHelper.collapseUp = {
-			light: IconPathHelper.context.asAbsolutePath('images/collapse-up.svg'),
-			dark: IconPathHelper.context.asAbsolutePath('images/collapse-up-inverse.svg')
-		};
-		IconPathHelper.collapseDown = {
-			light: IconPathHelper.context.asAbsolutePath('images/collapse-down.svg'),
-			dark: IconPathHelper.context.asAbsolutePath('images/collapse-down-inverse.svg')
 		};
 		IconPathHelper.postgres = {
 			light: IconPathHelper.context.asAbsolutePath('images/postgres.svg'),
@@ -105,6 +100,10 @@ export class IconPathHelper {
 		IconPathHelper.miaa = {
 			light: context.asAbsolutePath('images/miaa.svg'),
 			dark: context.asAbsolutePath('images/miaa.svg'),
+		};
+		IconPathHelper.controller = {
+			light: context.asAbsolutePath('images/data_controller.svg'),
+			dark: context.asAbsolutePath('images/data_controller.svg'),
 		};
 	}
 }
