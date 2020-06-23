@@ -74,7 +74,8 @@ export class Project {
 					throw new Error(constants.invalidDatabaseReference);
 				}
 
-				this.databaseReferences.push(path.parse(filepath).name);
+				const platformSafeFilePath = utils.getPlatformSafeFileEntryPath(filepath);
+				this.databaseReferences.push(path.parse(platformSafeFilePath).name);
 			}
 		}
 	}
