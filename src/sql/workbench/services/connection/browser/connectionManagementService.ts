@@ -769,7 +769,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * @param uri document identifier
 	 */
 	public ensureDefaultLanguageFlavor(uri: string): void {
-		if (!this.getProviderIdFromUri(uri)) {
+		if (this.getProviderIdFromUri(uri) === '') {
 			// Lookup the default settings and use this
 			let defaultProvider = this.getDefaultProviderId();
 			if (defaultProvider) {
