@@ -1243,7 +1243,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			profile.password = test_password;
 			return { profile: profile, savedCred: true };
 		});
-		const connectionManagementService = new ConnectionManagementService(connectionStoreMock.object, undefined /*connectionStatusManagerMock.object*/, undefined, undefined, undefined, undefined, undefined, new TestCapabilitiesService(), undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, getBasicExtensionService());
+		const connectionManagementService = new ConnectionManagementService(connectionStoreMock.object, undefined, undefined, undefined, undefined, undefined, undefined, new TestCapabilitiesService(), undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, getBasicExtensionService());
 		assert.equal(profile.password, '', 'Profile should not have password initially');
 		assert.equal(profile.options['password'], '', 'Profile options should not have password initially');
 		let credentials = await connectionManagementService.getConnectionCredentials(profile.id);
