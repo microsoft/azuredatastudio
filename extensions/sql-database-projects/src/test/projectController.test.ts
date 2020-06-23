@@ -47,7 +47,7 @@ beforeEach(async function (): Promise<void> {
 	testContext = createContext();
 });
 
-describe.skip('ProjectsController: project controller operations', function (): void {
+describe('ProjectsController: project controller operations', function (): void {
 	before(async function (): Promise<void> {
 		await templates.loadTemplates(path.join(__dirname, '..', '..', 'resources', 'templates'));
 		await baselines.loadBaselines();
@@ -180,7 +180,7 @@ describe.skip('ProjectsController: project controller operations', function (): 
 			let profilePath = await testUtils.createTestFile(baselines.publishProfileBaseline, 'publishProfile.publish.xml');
 			const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
 
-			let result = await projController.readPublishProfile(vscode.Uri.parse(profilePath));
+			let result = await projController.readPublishProfile(vscode.Uri.file(profilePath));
 			should(result.databaseName).equal('targetDb');
 			should(Object.keys(result.sqlCmdVariables).length).equal(1);
 			should(result.sqlCmdVariables['ProdDatabaseName']).equal('MyProdDatabase');
@@ -188,7 +188,7 @@ describe.skip('ProjectsController: project controller operations', function (): 
 	});
 });
 
-describe.skip('ProjectsController: import operations', function (): void {
+describe('ProjectsController: import operations', function (): void {
 	it('Should create list of all files and folders correctly', async function (): Promise<void> {
 		const testFolderPath = await testUtils.createDummyFileStructure();
 
@@ -265,7 +265,7 @@ describe.skip('ProjectsController: import operations', function (): void {
 	});
 });
 
-describe.skip('ProjectsController: add database reference operations', function (): void {
+describe('ProjectsController: add database reference operations', function (): void {
 	it('Should show error when no reference type is selected', async function (): Promise<void> {
 		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(undefined));
 		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
@@ -313,7 +313,7 @@ describe.skip('ProjectsController: add database reference operations', function 
 	});
 });
 
-describe.skip('ProjectsController: round trip feature with SSDT', function (): void {
+describe('ProjectsController: round trip feature with SSDT', function (): void {
 	it('Should show warning message for SSDT project opened in Azure Data Studio', async function (): Promise<void> {
 		testContext.apiWrapper.setup(x => x.showWarningMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
 
