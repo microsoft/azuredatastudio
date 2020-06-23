@@ -479,9 +479,9 @@
 	width: 11px;
 	height: 11px;
 	margin-left: 4px;
-	-webkit-mask: url(../../media/link-icon.svg) no-repeat;
+	-webkit-mask: url(../../media/link_icon.svg) no-repeat;
 	-webkit-mask-size: 11px 11px;
-	mask: url(../../media/link-icon.svg) no-repeat;
+	mask: url(../../media/link_icon.svg) no-repeat;
 	mask-size: 11px 11px;
 	height: 11px;
 	width: 11px
