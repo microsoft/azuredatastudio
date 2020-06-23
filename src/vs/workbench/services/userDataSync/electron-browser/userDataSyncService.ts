@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { SyncStatus, SyncResource, IUserDataSyncService, UserDataSyncError, SyncResourceConflicts, ISyncResourceHandle } from 'vs/platform/userDataSync/common/userDataSync';
+import { SyncStatus, SyncResource, IUserDataSyncService, UserDataSyncError, SyncResourceConflicts, ISyncResourceHandle, ISyncTask } from 'vs/platform/userDataSync/common/userDataSync';
 import { ISharedProcessService } from 'vs/platform/ipc/electron-browser/sharedProcessService';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { Emitter, Event } from 'vs/base/common/event';
@@ -14,7 +14,7 @@ import { URI } from 'vs/base/common/uri';
 
 export class UserDataSyncService extends Disposable implements IUserDataSyncService {
 
-	_serviceBrand: undefined;
+	declare readonly _serviceBrand: undefined;
 
 	private readonly channel: IChannel;
 
@@ -73,6 +73,10 @@ export class UserDataSyncService extends Disposable implements IUserDataSyncServ
 		return this.channel.call('sync');
 	}
 
+	createSyncTask(): Promise<ISyncTask> {
+		throw new Error('not supported');
+	}
+
 	stop(): Promise<void> {
 		return this.channel.call('stop');
 	}
@@ -89,8 +93,12 @@ export class UserDataSyncService extends Disposable implements IUserDataSyncServ
 		return this.channel.call('resetLocal');
 	}
 
-	isFirstTimeSyncWithMerge(): Promise<boolean> {
-		return this.channel.call('isFirstTimeSyncWithMerge');
+	hasPreviouslySynced(): Promise<boolean> {
+		return this.channel.call('hasPreviouslySynced');
+	}
+
+	isFirstTimeSyncingWithAnotherMachine(): Promise<boolean> {
+		return this.channel.call('isFirstTimeSyncingWithAnotherMachine');
 	}
 
 	acceptConflict(conflict: URI, content: string): Promise<void> {

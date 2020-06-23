@@ -29,15 +29,7 @@ steps:
     yarn electron x64
   displayName: Download Electron
 
-- script: |
-    yarn gulp hygiene
-  displayName: Run Hygiene Checks
-
-- script: | # {{SQL CARBON EDIT}} add step
-    yarn strict-vscode
-  displayName: Run Strict Null Check.
-
-# - script: | {{SQL CARBON EDIT}} remove step
+# - script: | {{SQL CARBON EDIT}} remove editor checks
 #     yarn monaco-compile-check
 #   displayName: Run Monaco Editor Checks
 

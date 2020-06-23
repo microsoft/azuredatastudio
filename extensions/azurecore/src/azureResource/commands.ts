@@ -79,6 +79,11 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 			return;
 		}
 
+		const account = node.account;
+		if (!account) {
+			return;
+		}
+
 		const subscriptionService = appContext.getService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService);
 		const subscriptionFilterService = appContext.getService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService);
 
@@ -87,17 +92,17 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 		const subscriptions = (await accountNode.getCachedSubscriptions()) || <azureResource.AzureResourceSubscription[]>[];
 		if (subscriptions.length === 0) {
 			try {
-				const tokens = await this.servicePool.apiWrapper.getSecurityToken(this.account, azdata.AzureResource.ResourceManagement);
+				const tokens = await this.servicePool.apiWrapper.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
 
-				for (const tenant of this.account.properties.tenants) {
+				for (const tenant of account.properties.tenants) {
 					const token = tokens[tenant.id].token;
 					const tokenType = tokens[tenant.id].tokenType;
 
-					subscriptions.push(...await subscriptionService.getSubscriptions(accountNode.account, new TokenCredentials(token, tokenType)));
+					subscriptions.push(...await subscriptionService.getSubscriptions(account, new TokenCredentials(token, tokenType)));
 				}
 			} catch (error) {
-				this.account.isStale = true;
-				throw new AzureResourceCredentialError(localize('azure.resource.selectsubscriptions.credentialError', "Failed to get credential for account {0}. Please refresh the account.", this.account.key.accountId), error);
+				account.isStale = true;
+				throw new AzureResourceCredentialError(localize('azure.resource.selectsubscriptions.credentialError', "Failed to get credential for account {0}. Please refresh the account.", account.key.accountId), error);
 			}
 		}
 

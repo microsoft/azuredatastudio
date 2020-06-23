@@ -85,7 +85,7 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 
 	public sendMessage(message: string): void {
 		if (this._webview) {
-			this._webview.sendMessage(message);
+			this._webview.postMessage(message);
 		}
 	}
 

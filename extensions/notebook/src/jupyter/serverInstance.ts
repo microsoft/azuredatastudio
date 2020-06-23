@@ -16,7 +16,6 @@ import { IServerInstance } from './common';
 import { JupyterServerInstallation } from './jupyterServerInstallation';
 import * as utils from '../common/utils';
 import * as constants from '../common/constants';
-import * as notebookUtils from '../common/notebookUtils';
 import * as ports from '../common/ports';
 
 const NotebookConfigFilename = 'jupyter_notebook_config.py';
@@ -241,7 +240,7 @@ export class PerFolderServerInstance implements IServerInstance {
 		let notebookDirectory = this.getNotebookDirectory();
 		// Find a port in a given range. If run into trouble, try another port inside the given range
 		let port = await ports.strictFindFreePort(new ports.StrictPortFindOptions(defaultPort, defaultPort + 1000));
-		let token = await notebookUtils.getRandomToken();
+		let token = await utils.getRandomToken();
 		this._uri = vscode.Uri.parse(`http://localhost:${port}/?token=${token}`);
 		this._port = port.toString();
 		let startCommand = `"${this.options.install.pythonExecutable}" -m jupyter notebook --no-browser --no-mathjax --notebook-dir "${notebookDirectory}" --port=${port} --NotebookApp.token=${token}`;

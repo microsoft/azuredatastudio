@@ -22,6 +22,7 @@ if "%INTEGRATION_TEST_ELECTRON_PATH%"=="" (
 	call yarn gulp compile-extension:azurecore
 	call yarn gulp compile-extension:cms
 	call yarn gulp compile-extension:dacpac
+	call yarn gulp compile-extension:import
 	call yarn gulp compile-extension:schema-compare
 	call yarn gulp compile-extension:mssql
 	call yarn gulp compile-extension:notebook
@@ -51,6 +52,11 @@ echo *** starting agent tests ***
 echo ****************************
 call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\agent --extensionTestsPath=%~dp0\..\extensions\agent\out\test --user-data-dir=%VSCODEUSERDATADIR% --extensions-dir=%VSCODEEXTENSIONSDIR% --remote-debugging-port=9222 --disable-telemetry --disable-crash-reporter --disable-updates --nogpu
 
+echo **************************
+echo *** starting arc tests ***
+echo **************************
+call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\arc --extensionTestsPath=%~dp0\..\extensions\arc\out\test --user-data-dir=%VSCODEUSERDATADIR% --extensions-dir=%VSCODEEXTENSIONSDIR% --remote-debugging-port=9222 --disable-telemetry --disable-crash-reporter --disable-updates --nogpu
+
 echo ********************************
 echo *** starting azurecore tests ***
 echo ********************************
@@ -65,6 +71,11 @@ echo *****************************
 echo *** starting dacpac tests ***
 echo *****************************
 call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\dacpac --extensionTestsPath=%~dp0\..\extensions\dacpac\out\test --user-data-dir=%VSCODEUSERDATADIR% --extensions-dir=%VSCODEEXTENSIONSDIR% --remote-debugging-port=9222 --disable-telemetry --disable-crash-reporter --disable-updates --nogpu
+
+echo *****************************
+echo *** starting import tests ***
+echo *****************************
+call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\import --extensionTestsPath=%~dp0\..\extensions\import\out\test --user-data-dir=%VSCODEUSERDATADIR% --extensions-dir=%VSCODEEXTENSIONSDIR% --remote-debugging-port=9222 --disable-telemetry --disable-crash-reporter --disable-updates --nogpu
 
 echo *************************************
 echo *** starting schema compare tests ***
