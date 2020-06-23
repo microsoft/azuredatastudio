@@ -6,6 +6,7 @@
 import * as constants from '../common/constants';
 import * as dataSources from '../models/dataSources/dataSources';
 import * as mssql from '../../../mssql';
+import * as os from 'os';
 import * as path from 'path';
 import * as utils from '../common/utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
@@ -85,12 +86,20 @@ export class ProjectsController {
 				// TODO: prompt to create new datasources.json; for now, swallow
 			}
 			else {
+				this.projects = this.projects.filter((e) => { return e !== newProject; });
 				throw err;
 			}
 		}
 
-		this.refreshProjectsTree();
-		this.focusProject(newProject);
+		try {
+			this.refreshProjectsTree();
+			this.focusProject(newProject);
+		}
+		catch (err) {
+			// if the project didnt load - remove it from the list of open projects
+			this.projects = this.projects.filter((e) => { return e !== newProject; });
+			throw err;
+		}
 
 		return newProject;
 	}
@@ -102,6 +111,12 @@ export class ProjectsController {
 		}
 	}
 
+	/**
+	 * Creates a new folder with the project name in the specified location, and places the new .sqlproj inside it
+	 * @param newProjName
+	 * @param folderUri
+	 * @param projectGuid
+	 */
 	public async createNewProject(newProjName: string, folderUri: Uri, projectGuid?: string): Promise<string> {
 		if (projectGuid && !UUID.isUUID(projectGuid)) {
 			throw new Error(`Specified GUID is invalid: '${projectGuid}'`);
@@ -120,7 +135,7 @@ export class ProjectsController {
 			newProjFileName += constants.sqlprojExtension;
 		}
 
-		const newProjFilePath = path.join(folderUri.fsPath, newProjFileName);
+		const newProjFilePath = path.join(folderUri.fsPath, path.parse(newProjFileName).name, newProjFileName);
 
 		let fileExists = false;
 		try {
@@ -209,13 +224,17 @@ export class ProjectsController {
 			return undefined; // buildProject() handles displaying the error
 		}
 
-		const dacFxService = await ProjectsController.getDaxFxService();
+		// copy dacpac to temp location before deployment
+		const tempPath = path.join(os.tmpdir(), `${path.parse(dacpacPath).name}_${new Date().getTime()}${constants.sqlprojExtension}`);
+		await fs.copyFile(dacpacPath, tempPath);
+
+		const dacFxService = await this.getDaxFxService();
 
 		if ((<IDeploymentProfile>profile).upgradeExisting) {
-			return await dacFxService.deployDacpac(dacpacPath, profile.databaseName, (<IDeploymentProfile>profile).upgradeExisting, profile.connectionUri, TaskExecutionMode.execute, profile.sqlCmdVariables);
+			return await dacFxService.deployDacpac(tempPath, profile.databaseName, (<IDeploymentProfile>profile).upgradeExisting, profile.connectionUri, TaskExecutionMode.execute, profile.sqlCmdVariables);
 		}
 		else {
-			return await dacFxService.generateDeployScript(dacpacPath, profile.databaseName, profile.connectionUri, TaskExecutionMode.script, profile.sqlCmdVariables);
+			return await dacFxService.generateDeployScript(tempPath, profile.databaseName, profile.connectionUri, TaskExecutionMode.script, profile.sqlCmdVariables);
 		}
 	}
 
@@ -498,7 +517,7 @@ export class ProjectsController {
 		}
 	}
 
-	private static async getDaxFxService(): Promise<mssql.IDacFxService> {
+	public async getDaxFxService(): Promise<mssql.IDacFxService> {
 		const ext: Extension<any> = extensions.getExtension(mssql.extension.name)!;
 
 		await ext.activate();
@@ -553,8 +572,12 @@ export class ProjectsController {
 				model.database = profile.databaseName;
 			}
 			else {
-				const connectionId = (await this.apiWrapper.openConnectionDialog()).connectionId;
+				const connection = await this.apiWrapper.openConnectionDialog();
+				if (!connection) {
+					return;
+				}
 
+				const connectionId = connection.connectionId;
 				const databaseList = await this.apiWrapper.listDatabases(connectionId);
 				const database = (await this.apiWrapper.showQuickPick(databaseList.map(dbName => { return { label: dbName }; })))?.label;
 
