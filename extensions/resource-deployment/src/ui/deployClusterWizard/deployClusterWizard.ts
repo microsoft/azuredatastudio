@@ -94,14 +94,9 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, WizardP
 					new SummaryPage(this));
 				break;
 			case BdcDeploymentType.ExistingAKS:
-				pages.push(
-					new DeploymentProfilePage(this),
-					new TargetClusterContextPage(this),
-					new ClusterSettingsPage(this),
-					new ServiceSettingsPage(this),
-					new SummaryPage(this));
-				break;
 			case BdcDeploymentType.ExistingKubeAdm:
+			case BdcDeploymentType.ExistingARO:
+			case BdcDeploymentType.ExistingOpenShift:
 				pages.push(
 					new DeploymentProfilePage(this),
 					new TargetClusterContextPage(this),
@@ -171,6 +166,11 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, WizardP
 				return localize('deployCluster.ExistingAKSWizardTitle', "Deploy SQL Server 2019 Big Data Cluster on an existing AKS cluster");
 			case BdcDeploymentType.ExistingKubeAdm:
 				return localize('deployCluster.ExistingKubeAdm', "Deploy SQL Server 2019 Big Data Cluster on an existing kubeadm cluster");
+			case BdcDeploymentType.ExistingARO:
+				return localize('deployCluster.ExistingARO', "Deploy SQL Server 2019 Big Data Cluster on an existing Azure Red Hat OpenShift cluster");
+			case BdcDeploymentType.ExistingOpenShift:
+				return localize('deployCluster.ExistingOpenShift', "Deploy SQL Server 2019 Big Data Cluster on an existing OpenShift cluster");
+
 			default:
 				throw new Error(`Unknown deployment type: ${type}`);
 		}

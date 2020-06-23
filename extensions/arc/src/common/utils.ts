@@ -107,24 +107,40 @@ export function getDatabaseStateDisplayText(state: string): string {
  * @param name The name of the resource to delete
  * @returns Promise resolving to true if the user confirmed the name, false if the input box was closed for any other reason
  */
-export async function promptForResourceDeletion(namespace: string, name: string): Promise<boolean> {
+
+/**
+ * Opens an input box prompting and validating the user's input.
+ * @param options Options for the input box
+ * @param title An optional title for the input box
+ * @returns Promise resolving to the user's input if it passed validation,
+ * or undefined if the input box was closed for any other reason
+ */
+async function promptInputBox(title: string, options: vscode.InputBoxOptions): Promise<string> {
 	const inputBox = vscode.window.createInputBox();
-	inputBox.title = loc.resourceDeletionWarning(namespace, name);
-	inputBox.placeholder = name;
+	inputBox.title = title;
+	inputBox.prompt = options.prompt;
+	inputBox.placeholder = options.placeHolder;
+	inputBox.password = options.password ?? false;
+	inputBox.value = options.value ?? '';
+	inputBox.ignoreFocusOut = options.ignoreFocusOut ?? false;
+
 	return new Promise(resolve => {
 		let valueAccepted = false;
-		inputBox.onDidAccept(() => {
-			if (inputBox.value === name) {
-				valueAccepted = true;
-				inputBox.hide();
-				resolve(true);
-			} else {
-				inputBox.validationMessage = loc.invalidResourceDeletionName(inputBox.value);
+		inputBox.onDidAccept(async () => {
+			if (options.validateInput) {
+				const errorMessage = await options.validateInput(inputBox.value);
+				if (errorMessage) {
+					inputBox.validationMessage = errorMessage;
+					return;
+				}
 			}
+			valueAccepted = true;
+			inputBox.hide();
+			resolve(inputBox.value);
 		});
 		inputBox.onDidHide(() => {
 			if (!valueAccepted) {
-				resolve(false);
+				resolve(undefined);
 			}
 			inputBox.dispose();
 		});
@@ -133,6 +149,46 @@ export async function promptForResourceDeletion(namespace: string, name: string)
 		});
 		inputBox.show();
 	});
+}
+
+/**
+ * Opens an input box prompting the user to enter in the name of a resource to delete
+ * @param namespace The namespace of the resource to delete
+ * @param name The name of the resource to delete
+ * @returns Promise resolving to true if the user confirmed the name, false if the input box was closed for any other reason
+ */
+export async function promptForResourceDeletion(namespace: string, name: string): Promise<boolean> {
+	const title = loc.resourceDeletionWarning(namespace, name);
+	const options: vscode.InputBoxOptions = {
+		placeHolder: name,
+		validateInput: input => input !== name ? loc.invalidResourceDeletionName(name) : ''
+	};
+
+	return await promptInputBox(title, options) !== undefined;
+}
+
+/**
+ * Opens an input box prompting the user to enter and confirm a password
+ * @param validate A function that accepts the password and returns an error message if it's invalid
+ * @returns Promise resolving to the password if it passed validation,
+ * or false if the input box was closed for any other reason
+ */
+export async function promptAndConfirmPassword(validate: (input: string) => string): Promise<string | false> {
+	const title = loc.resetPassword;
+	const options: vscode.InputBoxOptions = {
+		prompt: loc.enterNewPassword,
+		password: true,
+		validateInput: input => validate(input)
+	};
+
+	const password = await promptInputBox(title, options);
+	if (password) {
+		options.prompt = loc.confirmNewPassword;
+		options.validateInput = input => input !== password ? loc.thePasswordsDoNotMatch : '';
+		return promptInputBox(title, options);
+	}
+
+	return false;
 }
 
 /**
