@@ -17,7 +17,6 @@ export class PostgresConnectionStringsPage extends DashboardPage {
 	constructor(protected modelView: azdata.ModelView, private _postgresModel: PostgresModel) {
 		super(modelView);
 		this._postgresModel.onServiceUpdated(() => this.eventuallyRunOnInitialized(() => this.refresh()));
-		this._postgresModel.onPasswordUpdated(() => this.eventuallyRunOnInitialized(() => this.refresh()));
 	}
 
 	protected get title(): string {
@@ -43,18 +42,19 @@ export class PostgresConnectionStringsPage extends DashboardPage {
 		}).component());
 
 		const info = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: `${loc.selectConnectionString}.&nbsp;`,
+			value: loc.selectConnectionString,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
 		const link = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
 			label: loc.learnAboutPostgresClients,
-			url: 'http://example.com', // TODO link to documentation
+			url: 'https://docs.microsoft.com/azure/postgresql/concepts-connection-libraries',
 		}).component();
 
-		content.addItem(
-			this.modelView.modelBuilder.flexContainer().withItems([info, link]).withLayout({ flexWrap: 'wrap' }).component(),
-			{ CSSStyles: { display: 'inline-flex', 'margin-bottom': '25px' } });
+		const infoAndLink = this.modelView.modelBuilder.flexContainer().withLayout({ flexWrap: 'wrap' }).component();
+		infoAndLink.addItem(info, { CSSStyles: { 'margin-right': '5px' } });
+		infoAndLink.addItem(link);
+		content.addItem(infoAndLink, { CSSStyles: { 'margin-bottom': '25px' } });
 
 		this.keyValueContainer = new KeyValueContainer(this.modelView.modelBuilder, []);
 		content.addItem(this.keyValueContainer.container);
