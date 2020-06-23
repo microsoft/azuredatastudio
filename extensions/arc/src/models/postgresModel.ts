@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import * as loc from '../localizedConstants';
 import { DuskyObjectModelsDatabaseService, DatabaseRouterApi, DuskyObjectModelsDatabase, V1Status, V1Pod } from '../controller/generated/dusky/api';
 import { Authentication } from '../controller/auth';
-import { ResourceInfo } from './controllerModel';
+import { ResourceInfo, Registration } from './controllerModel';
 import { ResourceModel } from './resourceModel';
 
 export enum PodRole {
@@ -27,8 +27,8 @@ export class PostgresModel extends ResourceModel {
 	public serviceLastUpdated?: Date;
 	public podsLastUpdated?: Date;
 
-	constructor(controllerUrl: string, auth: Authentication, info: ResourceInfo) {
-		super(info);
+	constructor(controllerUrl: string, auth: Authentication, info: ResourceInfo, registration: Registration) {
+		super(info, registration);
 		this._databaseRouter = new DatabaseRouterApi(controllerUrl);
 		this._databaseRouter.setDefaultAuthentication(auth);
 	}

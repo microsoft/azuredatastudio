@@ -21,6 +21,7 @@ export type ControllerInfo = {
 export type ResourceInfo = {
 	namespace: string,
 	name: string,
+	resourceType: ResourceType | string,
 	connectionId?: string
 };
 

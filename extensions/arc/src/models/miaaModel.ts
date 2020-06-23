@@ -9,7 +9,7 @@ import { SqlInstanceRouterApi } from '../controller/generated/v1/api/sqlInstance
 import { HybridSqlNsNameGetResponse } from '../controller/generated/v1/model/hybridSqlNsNameGetResponse';
 import { Authentication } from '../controller/generated/v1/api';
 import { ResourceModel } from './resourceModel';
-import { ResourceInfo } from './controllerModel';
+import { ResourceInfo, Registration } from './controllerModel';
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 import { Deferred } from '../common/promise';
 
@@ -35,10 +35,10 @@ export class MiaaModel extends ResourceModel {
 
 	private _refreshPromise: Deferred<void> | undefined = undefined;
 
-	constructor(controllerUrl: string, auth: Authentication, info: ResourceInfo, private _treeDataProvider: AzureArcTreeDataProvider) {
-		super(info);
+	constructor(controllerUrl: string, controllerAuth: Authentication, info: ResourceInfo, registration: Registration, private _treeDataProvider: AzureArcTreeDataProvider) {
+		super(info, registration);
 		this._sqlInstanceRouter = new SqlInstanceRouterApi(controllerUrl);
-		this._sqlInstanceRouter.setDefaultAuthentication(auth);
+		this._sqlInstanceRouter.setDefaultAuthentication(controllerAuth);
 	}
 
 	/**
