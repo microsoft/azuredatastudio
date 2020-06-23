@@ -74,7 +74,8 @@ export class Project {
 					throw new Error(constants.invalidDatabaseReference);
 				}
 
-				this.databaseReferences.push(path.parse(filepath).name);
+				const platformSafeFilePath = utils.getPlatformSafeFileEntryPath(filepath);
+				this.databaseReferences.push(path.parse(platformSafeFilePath).name);
 			}
 		}
 	}
@@ -250,7 +251,8 @@ export class Project {
 	}
 
 	public createProjectEntry(relativePath: string, entryType: EntryType): ProjectEntry {
-		return new ProjectEntry(Uri.file(path.join(this.projectFolderPath, relativePath)), relativePath, entryType);
+		let platformSafeRelativePath = utils.getPlatformSafeFileEntryPath(relativePath);
+		return new ProjectEntry(Uri.file(path.join(this.projectFolderPath, platformSafeRelativePath)), relativePath, entryType);
 	}
 
 	private findOrCreateItemGroup(containedTag?: string): any {
