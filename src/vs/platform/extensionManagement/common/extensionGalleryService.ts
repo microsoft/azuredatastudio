@@ -847,11 +847,16 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 
 	private getLastValidExtensionVersionFromProperties(extension: IRawGalleryExtension, versions: IRawGalleryExtensionVersion[]): Promise<IRawGalleryExtensionVersion> | null {
 		for (const version of versions) {
-			const engine = getEngine(version);
-			if (!engine) {
+			// {{SQL CARBON EDIT}}
+			const vsCodeEngine = getEngine(version);
+			const azDataEngine = getAzureDataStudioEngine(version);
+			// Require at least one engine version
+			if (!vsCodeEngine && !azDataEngine) {
 				return null;
 			}
-			if (isEngineValid(engine, this.productService.version)) {
+			const vsCodeEngineValid = !vsCodeEngine || (vsCodeEngine && isEngineValid(vsCodeEngine, this.productService.vscodeVersion));
+			const azDataEngineValid = !azDataEngine || (azDataEngine && isEngineValid(azDataEngine, this.productService.version));
+			if (vsCodeEngineValid && azDataEngineValid) {
 				return Promise.resolve(version);
 			}
 		}
