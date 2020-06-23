@@ -29,7 +29,7 @@ import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServic
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IEditor } from 'vs/editor/common/editorCommon';
-import { TestNotebookEditor } from 'sql/workbench/contrib/notebook/test/testCommon';
+import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/testCommon';
 
 
 
@@ -37,7 +37,7 @@ suite('MarkdownTextTransformer', () => {
 	let markdownTextTransformer: MarkdownTextTransformer;
 	let widget: IEditor;
 	let textModel: TextModel;
-	let notebookEditor: TestNotebookEditor;
+	let notebookEditor: NotebookEditorStub;
 	let mockNotebookService: TypeMoq.Mock<INotebookService>;
 	let cellModel: CellModel;
 
@@ -58,7 +58,7 @@ suite('MarkdownTextTransformer', () => {
 			undefined, undefined, undefined, undefined, undefined, undefined, TestEnvironmentService);
 
 		cellModel = new CellModel(undefined, undefined, mockNotebookService.object);
-		notebookEditor = new TestNotebookEditor({ cellGuid: cellModel.cellGuid, instantiationService: instantiationService });
+		notebookEditor = new NotebookEditorStub({ cellGuid: cellModel.cellGuid, instantiationService: instantiationService });
 		markdownTextTransformer = new MarkdownTextTransformer(mockNotebookService.object, cellModel, notebookEditor);
 		mockNotebookService.setup(s => s.findNotebookEditor(TypeMoq.It.isAny())).returns(() => notebookEditor);
 

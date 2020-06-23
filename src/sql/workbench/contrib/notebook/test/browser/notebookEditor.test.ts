@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
+import { nb } from 'azdata';
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import { ACTION_IDS } from 'sql/workbench/contrib/notebook/browser/find/notebookFindWidget';
 import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/untitledNotebookInput';
@@ -11,12 +12,13 @@ import { NotebookFindNextAction, NotebookFindPreviousAction } from 'sql/workbenc
 import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
 import { NBTestQueryManagementService } from 'sql/workbench/contrib/notebook/test/nbTestQueryManagementService';
 import * as stubs from 'sql/workbench/contrib/notebook/test/stubs';
-import { TestNotebookEditor } from 'sql/workbench/contrib/notebook/test/testCommon';
+import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/testCommon';
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 import { ICellModel, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookService, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookService } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
 import * as DOM from 'vs/base/browser/dom';
+import { errorHandler, onUnexpectedError } from 'vs/base/common/errors';
 import { Emitter, Event } from 'vs/base/common/event';
 import { DisposableStore } from 'vs/base/common/lifecycle';
 import { Schemas } from 'vs/base/common/network';
@@ -40,6 +42,7 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { EditorOptions } from 'vs/workbench/common/editor';
+import { ICell } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ExtensionManagementService } from 'vs/workbench/services/extensionManagement/common/extensionManagementService';
@@ -54,11 +57,27 @@ import TypeMoq = require('typemoq');
 class NotebookModelStub extends stubs.NotebookModelStub {
 	private _cells: Array<ICellModel> = [new CellModel(undefined, undefined)];
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
+	private _kernelChangedEmitter = new Emitter<nb.IKernelChangedArgs>();
+	private _onActiveCellChanged = new Emitter<ICellModel>();
 	get cells(): ReadonlyArray<ICellModel> {
 		return this._cells;
 	}
 	public get contentChanged(): Event<NotebookContentChange> {
 		return this._contentChangedEmitter.event;
+	}
+
+	get kernelChanged(): Event<nb.IKernelChangedArgs> {
+		return this._kernelChangedEmitter.event;
+	}
+
+	get onActiveCellChanged(): Event<ICellModel> {
+		return this._onActiveCellChanged.event;
+	}
+
+	updateActiveCell(cell: ICellModel) {
+		// do nothing. When relevant a mock is used to intercept this call to do any verifications or run
+		// any code relevant for testing in the context of the test.
+		//console.log(`NotebookModelStub::updateActiveCell called with cell:'${JSON.stringify(cell)}'`);
 	}
 }
 
@@ -118,9 +137,9 @@ suite('Test class NotebookEditor', () => {
 		instantiationService.get(IEditorService),
 		instantiationService.get(IConfigurationService)
 	);
-	const testNotebookEditor = new TestNotebookEditor({ cellGuid: cellTextEditorGuid, editor: queryTextEditor, model: new NotebookModelStub() });
-	testNotebookEditor.id = untitledNotebookInput.notebookUri.toString();
-	notebookService.addNotebookEditor(testNotebookEditor);
+	const notebookEditorStub = new NotebookEditorStub({ cellGuid: cellTextEditorGuid, editor: queryTextEditor, model: new NotebookModelStub() });
+	notebookEditorStub.id = untitledNotebookInput.notebookUri.toString();
+	notebookService.addNotebookEditor(notebookEditorStub);
 
 	setup(async () => {
 		// Create notebookEditor
@@ -138,14 +157,14 @@ suite('Test class NotebookEditor', () => {
 	});
 
 	test('NotebookEditor: Verifies that create() calls createEditor() and sets the provided parent object as the \'_overlay\' field', () => {
-		assert.strictEqual(notebookEditor['_overlay'], undefined), `The overlay must be undefined for notebookEditor when create() has not been called on it`;
+		assert.strictEqual(notebookEditor['_overlay'], undefined, `The overlay must be undefined for notebookEditor when create() has not been called on it`);
 		let parentHtmlElement = document.createElement('div');
 		notebookEditor.create(parentHtmlElement);
-		assert.notStrictEqual(notebookEditor['_overlay'], undefined), `The overlay must be defined for notebookEditor once create() has been called on it`;
+		assert.notStrictEqual(notebookEditor['_overlay'], undefined, `The overlay must be defined for notebookEditor once create() has been called on it`);
 		assert.strictEqual(notebookEditor.getContainer(), parentHtmlElement, 'parent of notebookEditor was not the one that was expected');
 	});
 
-	[new NotebookModelStub(), undefined].forEach(async (notebookModel) => {
+	for (const notebookModel of [new NotebookModelStub(), undefined]) {
 		test(`NotebookEditor: Tests that notebookModel='${notebookModel}' set indirectly by setInput -> setNotebookModel is returned by getNotebookModel()`, async () => {
 			createEditor(notebookEditor);
 			const untitledUri = URI.from({ scheme: Schemas.untitled, path: `NotebookEditor.Test-TestPath-${notebookModel}` });
@@ -155,7 +174,7 @@ suite('Test class NotebookEditor', () => {
 				testTitle, untitledUri, untitledTextInput,
 				undefined, instantiationService, notebookService, extensionService
 			);
-			const testNotebookEditor = new TestNotebookEditor({ cellGuid: cellTextEditorGuid, editor: queryTextEditor, model: notebookModel });
+			const testNotebookEditor = new NotebookEditorStub({ cellGuid: cellTextEditorGuid, editor: queryTextEditor, model: notebookModel });
 			testNotebookEditor.id = untitledNotebookInput.notebookUri.toString();
 			notebookService.addNotebookEditor(testNotebookEditor);
 			notebookEditor.clearInput();
@@ -163,7 +182,7 @@ suite('Test class NotebookEditor', () => {
 			const result = await notebookEditor.getNotebookModel();
 			assert.strictEqual(result, notebookModel, `getNotebookModel() should return the model set in the INotebookEditor object`);
 		});
-	});
+	}
 
 	test('NotebookEditor: Tests that dispose() disposes all objects in its disposable store', async () => {
 		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
@@ -194,14 +213,14 @@ suite('Test class NotebookEditor', () => {
 		assert.strictEqual(currentPosition, selectedRange, 'notebookEditor.getPosition() should return the range that was selected');
 	});
 
-	['', undefined, null, 'unknown string', /*unknown guid*/generateUuid()].forEach(input => {
+	for (const input of ['', undefined, null, 'unknown string', /*unknown guid*/generateUuid()]) {
 		test(`NotebookEditor: getCellEditor() returns undefined for invalid or unknown guid:'${input}'`, async () => {
 			await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 			const inputGuid = <string>input;
 			const result = notebookEditor.getCellEditor(inputGuid);
 			assert.strictEqual(result, undefined, `notebookEditor.getCellEditor() should return undefined when invalid guid:'${inputGuid}' is passed in for a notebookEditor of an empty document.`);
 		});
-	});
+	}
 
 	test('NotebookEditor: getCellEditor() returns a valid text editor object for valid guid input', async () => {
 		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
@@ -214,10 +233,10 @@ suite('Test class NotebookEditor', () => {
 		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 		const domNode: HTMLElement = document.createElement('div');
 		const widget: IOverlayWidget = {
-			getId(): string { return '' },
+			getId(): string { return ''; },
 			getDomNode(): HTMLElement { return domNode; },
 			getPosition(): IOverlayWidgetPosition | null { return null; }
-		}
+		};
 		notebookEditor.addOverlayWidget(widget);
 		const rootElement: HTMLElement = notebookEditor['_overlay'];
 		assert.ok(domNode.parentElement === rootElement, `parent of the passed in domNode must be the root element of notebookEditor:${notebookEditor}`);
@@ -268,7 +287,8 @@ suite('Test class NotebookEditor', () => {
 
 		const newRange = {} as NotebookRange;
 		const oldRange = {} as NotebookRange;
-		const iNotebookEditorMock = TypeMoq.Mock.ofType(TestNotebookEditor);
+		const iNotebookEditorMock = TypeMoq.Mock.ofInstance(notebookEditorStub);
+		iNotebookEditorMock.callBase = true; //by default forward all call call to the underlying object
 		iNotebookEditorMock.object.id = untitledNotebookInput.notebookUri.toString();
 		iNotebookEditorMock
 			.setup(x => x.deltaDecorations(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
@@ -326,33 +346,60 @@ suite('Test class NotebookEditor', () => {
 		}
 	});
 
-	[ACTION_IDS.FIND_NEXT, ACTION_IDS.FIND_PREVIOUS].forEach(action => {
-		test(`NotebookEditor: Tests ${action} returns the range that is as expected given the findArray`, async () => {
+	for (const action of [ACTION_IDS.FIND_NEXT, ACTION_IDS.FIND_PREVIOUS]) {
+		test(`NotebookEditor: Tests that ${action} raises 'no search running' error when findArray is empty`, async () => {
 			await setupNotebookEditor(notebookEditor, untitledNotebookInput);
-			notebookEditor.notebookFindModel.find(undefined); //clear out any existing finds.
+			let unexpectedErrorCalled = false;
+			const onUnexpectedErrorVerifier = (error: any) => {
+				//console.log(`Verifies that: ${onUnexpectedError} is passed an instance of ${Error}`);
+				unexpectedErrorCalled = true;
+				assert.ok(error instanceof Error, `${onUnexpectedError} must be passed an instance of ${Error}`);
+				assert.strictEqual((error as Error).message, 'no search running', `Error text must be 'no search running' when findArray is empty`);
+			};
+			errorHandler.setUnexpectedErrorHandler(onUnexpectedErrorVerifier);
+			notebookEditor.notebookFindModel['_findArray'] = []; //empty out the findArray.
 			action === ACTION_IDS.FIND_NEXT ? await notebookEditor.findNext() : await notebookEditor.findPrevious();
 			let result = notebookEditor.getPosition();
 			assert.strictEqual(result, undefined, 'the notebook cell range returned by find operation must be undefined with no pending finds');
-			const notebookModel = await notebookEditor.getNotebookModel();
-			for (const model of [notebookModel, undefined]) {
-				for (const range of [{} as NotebookRange, new NotebookRange(<ICellModel>{}, 0, 0, 0, 0)]) {
-					notebookEditor.notebookFindModel.find(undefined); //clear out any existing finds.
-					notebookEditor.notebookFindModel.findArray.push(range);
-					notebookEditor['_notebookModel'] = model;
-					action === ACTION_IDS.FIND_NEXT ? await notebookEditor.findNext() : await notebookEditor.findPrevious();
-					result = notebookEditor.getPosition();
-					assert.strictEqual(result, range, 'the notebook cell range returned by find operation must be the one that we set')
-				}
-			}
+			assert.strictEqual(unexpectedErrorCalled, true, `${onUnexpectedError} must be have been raised with no pending finds`);
 		});
-	});
+	}
+
+	for (const action of [ACTION_IDS.FIND_NEXT, ACTION_IDS.FIND_PREVIOUS]) {
+		for (const range of [<NotebookRange>{}, new NotebookRange(<ICellModel>undefined, 0, 0, 0, 0)]) {
+			test(`NotebookEditor: Tests ${action} returns the NotebookRange with cell: '${JSON.stringify(range.cell)}' that is as expected given the findArray`, async () => {
+				await setupNotebookEditor(notebookEditor, untitledNotebookInput);
+				const notebookModel = await notebookEditor.getNotebookModel();
+				const mockModel = TypeMoq.Mock.ofInstance(notebookModel);
+				mockModel.callBase = true; //forward calls to the base object
+				let updateActiveCellCalled = false;
+				mockModel.setup(x => x.updateActiveCell(TypeMoq.It.isAny())).callback((cell: ICell) => {
+					updateActiveCellCalled = true;
+					assert.strictEqual(cell, range.cell, `updateActiveCell must get called with cell property of the range object that was set in findArray\n\tactual cell:${JSON.stringify(cell, undefined, '\t')}, expected cell:${JSON.stringify(range.cell, undefined, '\t')}`);
+				});
+				//a method call with value undefined needs a separate setup as TypeMoq.It.isAny() does not seem to match undefined parameter value.
+				mockModel.setup(x => x.updateActiveCell(undefined)).callback((cell: ICell) => {
+					updateActiveCellCalled = true;
+					assert.strictEqual(cell, range.cell, `updateActiveCell must get called with cell property of the range object that was set in findArray\n\tactual cell:${JSON.stringify(cell, undefined, '\t')}, expected cell:${JSON.stringify(range.cell, undefined, '\t')}`);
+				});
+				notebookEditor.notebookFindModel['_findArray'] = [range]; //set the findArray to have the expected range
+				notebookEditor['_notebookModel'] = mockModel.object;
+				action === ACTION_IDS.FIND_NEXT ? await notebookEditor.findNext() : await notebookEditor.findPrevious();
+				const result = notebookEditor.getPosition();
+				assert.strictEqual(result, range, 'the notebook cell range returned by find operation must be the one that we set');
+				mockModel.verify(x => x.updateActiveCell(TypeMoq.It.isAny()), TypeMoq.Times.atMostOnce());
+				mockModel.verify(x => x.updateActiveCell(undefined), TypeMoq.Times.atMostOnce());
+				assert.strictEqual(updateActiveCellCalled, true, 'the updateActiveCell should have gotten called');
+			});
+		}
+	}
 
 	test(`NotebookEditorDebug: Verifies visibility and decorations are set correctly when FindStateChange callbacks happen`, async () => {
 		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
-		notebookEditor.notebookFindModel.find(undefined); //clear out any existing finds.
-		await notebookEditor.findNext();
 		let currentPosition = new NotebookRange(<ICellModel>{}, 0, 0, 0, 0);
 		notebookEditor.setSelection(currentPosition);
+		notebookEditor.notebookFindModel['_findArray'] = [currentPosition]; //set some pending finds.
+		await notebookEditor.findNext();
 		const findState = notebookEditor['_findState'];
 		const finder = notebookEditor['_finder'];
 		const newState: INewFindReplaceState = {};
