@@ -357,9 +357,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	public async openRemoteBook(): Promise<void> {
-		let model = new RemoteBookDialogModel();
+		let model = new RemoteBookDialogModel(this._apiWrapper);
 		let dialog = new RemoteBookDialog(model);
-		dialog.showDialog();
+		await dialog.createDialog();
 	}
 
 	public async openNotebookFolder(folderPath?: string): Promise<void> {

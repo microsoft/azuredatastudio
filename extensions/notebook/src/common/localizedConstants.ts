@@ -42,14 +42,19 @@ export function closeBookError(resource: string, error: string): string { return
 
 // Remote Book dialog constants
 export const url = localize('url', "URL");
-export const remoteBookUrl = localize('remoteBookUrl', "Remote Book URL");
+export const repoUrl = localize('repoUrl', "Repository URL");
 export const location = localize('location', "Location");
-export const openRemoteBook = localize('openRemoteBook', "Open Remote Book");
+export const addRemoteBook = localize('addRemoteBook', "Add Remote Book");
 export const onGitHub = localize('onGitHub', "GitHub");
 export const onSharedFile = localize('onsharedFile', "Shared File");
 export const releases = localize('releases', "Releases");
-export const apiGitHub = localize('apiGithub', "https://api.github.com/repos");
+export const book = localize('book', "Book");
+export const version = localize('version', "Version");
+export const language = localize('language', "Language");
 export const booksNotFound = localize('booksNotFound', "No books are currently available on the provided link");
 export const urlGithubError = localize('urlGithubError', "The url provided is not a Github release url");
-export const open = localize('open', "Open");
-export const cancel = localize('cancel', "Cancel");
+export const search = localize('search', "Search");
+export const add = localize('add', "Add");
+export const close = localize('close', "Close");
+export const invalidTextPlaceholder = localize('invalidTextPlaceholder', "N/A");
+export function apiGitHub(url: string): string { return localize('apiGithub', "https://api.github.com/{0}/releases", url); }

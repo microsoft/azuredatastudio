@@ -42,5 +42,5 @@
 	"title.revealInBooksViewlet": "Reveal in Books",
 	"title.createJupyterBook": "Create Book (Preview)",
 	"title.openNotebookFolder": "Open Notebooks in Folder",
-	"title.openRemoteJupyterBook": "Open Remote Jupyter Book"
+	"title.openRemoteJupyterBook": "Add Remote Jupyter Book"
 }
