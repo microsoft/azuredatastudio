@@ -32,7 +32,7 @@ describe('JupyterController tests', function () {
 	it('should activate new JupyterController successfully', async () => {
 		should(controller.extensionContext).deepEqual(appContext.extensionContext, 'Extension context should be passed through');
 		await should(controller.activate()).not.be.rejected();
-		// On activation, local pip and local conda packge providers should exist
+		// On activation, local pip and local conda package providers should exist
 		should(controller.packageManageProviders.size).equal(2, 'Local pip and conda package providers should be default providers');
 	});
 
