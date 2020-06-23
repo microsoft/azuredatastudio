@@ -43,6 +43,8 @@ export const databaseReferenceDatabaseName = localize('databaseReferenceDatabase
 export const dacpacFiles = localize('dacpacFiles', "dacpac Files");
 export const systemDatabase = localize('systemDatabase', "System Database");
 export function newObjectNamePrompt(objectType: string) { return localize('newObjectNamePrompt', 'New {0} name:', objectType); }
+export function deleteConfirmation(toDelete: string) { return localize('deleteConfirmation', "Are you sure you want to delete {0}?", toDelete); }
+export function deleteConfirmationContents(toDelete: string) { return localize('deleteConfirmationContents', "Are you sure you want to delete {0} and all of its contents?", toDelete); }
 
 // Deploy dialog strings
 

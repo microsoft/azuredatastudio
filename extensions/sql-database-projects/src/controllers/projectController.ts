@@ -297,20 +297,21 @@ export class ProjectsController {
 	public async delete(context: BaseProjectTreeItem): Promise<void> {
 		const project = ProjectsController.getProjectFromContext(context);
 
-		const response = await this.apiWrapper.showWarningMessage(`Are you sure you want to delete ${context.uri.path}?`, constants.yesString, constants.noString);
+		const confirmationPrompt = context instanceof FolderNode ? constants.deleteConfirmationContents(context.friendlyName) : constants.deleteConfirmation(context.friendlyName);
+		const response = await this.apiWrapper.showQuickPick([constants.yesString, constants.noString].map(x => { return { label: x }; }), { placeHolder: confirmationPrompt });
 
-		if (response === constants.noString) {
+		if (response && response.label === constants.noString) {
 			return;
 		}
 
-		if (context instanceof FileNode) {
+		if (context instanceof FileNode || FolderNode) {
 			const fileEntry: ProjectEntry | undefined = project.files.find(x => x.relativePath === utils.trimUri(context.root.uri, context.uri));
 
 			if (undefined) {
 				this.apiWrapper.showErrorMessage('unable to find file to delete');
 			}
 
-			await project.deleteFile(fileEntry!);
+			await project.deleteFileFolder(fileEntry!);
 		}
 
 		this.refreshProjectsTree();

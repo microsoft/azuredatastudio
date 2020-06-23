@@ -182,11 +182,20 @@ export class Project {
 		return fileEntry;
 	}
 
-	public async deleteFile(fileEntry: ProjectEntry): Promise<void> {
-		this.files = this.files.filter(x => x !== fileEntry);
+	public async deleteFileFolder(entry: ProjectEntry): Promise<void> {
+		// compile a list of folder contents to delete; if entry is a file, contents will contain only itself
+		const toDeleteFiles: ProjectEntry[] = this.files.filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath) && x.type === EntryType.File);
+		const toDeleteFolders: ProjectEntry[] = this.files.filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath) && x.type === EntryType.Folder).sort(x => -x.relativePath.length);
 
-		await fs.unlink(fileEntry.fsUri.fsPath);
-		await this.removeFromProjFile(fileEntry);
+		await Promise.all(toDeleteFiles.map(x => fs.unlink(x.fsUri.fsPath)));
+
+		for (const folder of toDeleteFolders) {
+			await fs.rmdir(folder.fsUri.fsPath); // TODO: replace .sort() and iteration with rmdir recursive flag once that's unbugged
+		}
+
+		await this.removeFromProjFile(toDeleteFiles.concat(toDeleteFolders));
+
+		this.files = this.files.filter(x => !x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
 	}
 
 	/**
@@ -319,8 +328,16 @@ export class Project {
 		this.findOrCreateItemGroup(constants.Folder).appendChild(newFolderNode);
 	}
 
-
 	private removeFolderFromProjFile(path: string) {
+		const folderNodes = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Folder);
+
+		for (let i = 0; i < folderNodes.length; i++) {
+			if (folderNodes[i].getAttribute(constants.Include) === path) {
+				folderNodes[i].parentNode.removeChild(folderNodes[i]);
+				return;
+			}
+		}
+
 		throw new Error(`unable to find folder with path ${path}`);
 	}
 
@@ -445,17 +462,23 @@ export class Project {
 		await this.serializeToProjFile(this.projFileXmlDoc);
 	}
 
-	private async removeFromProjFile(entry: ProjectEntry) {
-		switch (entry.type) {
-			case EntryType.File:
-				this.removeFileFromProjFile(entry.relativePath);
-				break;
-			case EntryType.Folder:
-				this.removeFolderFromProjFile(entry.relativePath);
-				break;
-			case EntryType.DatabaseReference:
-				this.removeDatabaseReferenceFromProjFile(<DatabaseReferenceProjectEntry>entry);
-				break; // not required but adding so that we dont miss when we add new items
+	private async removeFromProjFile(entries: ProjectEntry | ProjectEntry[]) {
+		if (entries instanceof ProjectEntry) {
+			entries = [entries];
+		}
+
+		for (const entry of entries) {
+			switch (entry.type) {
+				case EntryType.File:
+					this.removeFileFromProjFile(entry.relativePath);
+					break;
+				case EntryType.Folder:
+					this.removeFolderFromProjFile(entry.relativePath);
+					break;
+				case EntryType.DatabaseReference:
+					this.removeDatabaseReferenceFromProjFile(<DatabaseReferenceProjectEntry>entry);
+					break; // not required but adding so that we dont miss when we add new items
+			}
 		}
 
 		await this.serializeToProjFile(this.projFileXmlDoc);
