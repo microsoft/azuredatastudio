@@ -88,14 +88,11 @@ export default class MainController implements Disposable {
 			filter[constants.sqlDatabaseProject] = ['sqlproj'];
 
 			let files: Uri[] | undefined = await this.apiWrapper.showOpenDialog({ filters: filter });
-			const prevCount = this.projectsController.projects.length;
 
 			if (files) {
 				for (const file of files) {
 					await this.projectsController.openProject(file);
 				}
-
-				await this.projectsController.focusProject(this.projectsController.projects[prevCount]); // focus the first of the newly-opened projects
 			}
 		}
 		catch (err) {
@@ -139,7 +136,6 @@ export default class MainController implements Disposable {
 			const newProjFolderUri = (selectionResult as Uri[])[0];
 			const newProjFilePath = await this.projectsController.createNewProject(<string>newProjName, newProjFolderUri);
 			const proj = await this.projectsController.openProject(Uri.file(newProjFilePath));
-			await this.projectsController.focusProject(proj);
 
 			return proj;
 		}

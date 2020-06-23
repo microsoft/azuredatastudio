@@ -90,6 +90,7 @@ export class ProjectsController {
 		}
 
 		this.refreshProjectsTree();
+		this.focusProject(newProject);
 
 		return newProject;
 	}
@@ -618,8 +619,6 @@ export class ProjectsController {
 
 			//Refresh project to show the added files
 			this.refreshProjectsTree();
-
-			await this.focusProject(project);
 		}
 		catch (err) {
 			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
