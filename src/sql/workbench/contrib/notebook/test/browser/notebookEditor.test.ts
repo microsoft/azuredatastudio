@@ -75,9 +75,9 @@ class NotebookModelStub extends stubs.NotebookModelStub {
 	}
 
 	updateActiveCell(cell: ICellModel) {
-		// do nothing. When relevant a mock is used to intercept this call to do any verifications or run
+		// do nothing.
+		// When relevant a mock is used to intercept this call to do any verifications or run
 		// any code relevant for testing in the context of the test.
-		//console.log(`NotebookModelStub::updateActiveCell called with cell:'${JSON.stringify(cell)}'`);
 	}
 }
 
@@ -156,7 +156,7 @@ suite('Test class NotebookEditor', () => {
 		);
 	});
 
-	test('NotebookEditor: Verifies that create() calls createEditor() and sets the provided parent object as the \'_overlay\' field', () => {
+	test('Verifies that create() calls createEditor() and sets the provided parent object as the \'_overlay\' field', () => {
 		assert.strictEqual(notebookEditor['_overlay'], undefined, `The overlay must be undefined for notebookEditor when create() has not been called on it`);
 		let parentHtmlElement = document.createElement('div');
 		notebookEditor.create(parentHtmlElement);
@@ -165,7 +165,7 @@ suite('Test class NotebookEditor', () => {
 	});
 
 	for (const notebookModel of [new NotebookModelStub(), undefined]) {
-		test(`NotebookEditor: Tests that notebookModel='${notebookModel}' set indirectly by setInput -> setNotebookModel is returned by getNotebookModel()`, async () => {
+		test(`Tests that notebookModel='${notebookModel}' set indirectly by setInput -> setNotebookModel is returned by getNotebookModel()`, async () => {
 			createEditor(notebookEditor);
 			const untitledUri = URI.from({ scheme: Schemas.untitled, path: `NotebookEditor.Test-TestPath-${notebookModel}` });
 			const untitledTextEditorService = instantiationService.get(IUntitledTextEditorService);
@@ -184,7 +184,7 @@ suite('Test class NotebookEditor', () => {
 		});
 	}
 
-	test('NotebookEditor: Tests that dispose() disposes all objects in its disposable store', async () => {
+	test('Tests that dispose() disposes all objects in its disposable store', async () => {
 		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 		let isDisposed = (<DisposableStore>notebookEditor['_toDispose'])['_isDisposed'];
 		assert.ok(!isDisposed, 'initially notebookEditor\'s disposable store must not be disposed');
@@ -193,7 +193,7 @@ suite('Test class NotebookEditor', () => {
 		assert.ok(isDisposed, 'notebookEditor\'s disposable store must be disposed');
 	});
 
-	test('NotebookEditor: Tests that getPosition and getLastPosition correctly return the range set by setSelection', async () => {
+	test('Tests that getPosition and getLastPosition correctly return the range set by setSelection', async () => {
 		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 		let currentPosition = notebookEditor.getPosition();
 		let lastPosition = notebookEditor.getLastPosition();
@@ -214,7 +214,7 @@ suite('Test class NotebookEditor', () => {
 	});
 
 	for (const input of ['', undefined, null, 'unknown string', /*unknown guid*/generateUuid()]) {
-		test(`NotebookEditor: getCellEditor() returns undefined for invalid or unknown guid:'${input}'`, async () => {
+		test(`Verifies that getCellEditor() returns undefined for invalid or unknown guid:'${input}'`, async () => {
 			await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 			const inputGuid = <string>input;
 			const result = notebookEditor.getCellEditor(inputGuid);
@@ -222,14 +222,14 @@ suite('Test class NotebookEditor', () => {
 		});
 	}
 
-	test('NotebookEditor: getCellEditor() returns a valid text editor object for valid guid input', async () => {
+	test('Verifies that getCellEditor() returns a valid text editor object for valid guid input', async () => {
 		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 		const result = notebookEditor.getCellEditor(cellTextEditorGuid);
 		assert.strictEqual(result, queryTextEditor, 'notebookEditor.getCellEditor() should return an expected QueryTextEditor when a guid corresponding to that editor is passed in.');
 
 	});
 
-	test('NotebookEditor: Verifies that domNode passed in via addOverlayWidget() call gets attached to the root HtmlElement of notebookEditor', async () => {
+	test('Verifies that domNode passed in via addOverlayWidget() call gets attached to the root HtmlElement of notebookEditor', async () => {
 		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 		const domNode: HTMLElement = document.createElement('div');
 		const widget: IOverlayWidget = {
@@ -242,16 +242,15 @@ suite('Test class NotebookEditor', () => {
 		assert.ok(domNode.parentElement === rootElement, `parent of the passed in domNode must be the root element of notebookEditor:${notebookEditor}`);
 	});
 
-	test('NotebookEditor: Noop methods do not throw', async () => {
-		assert.doesNotThrow(() => {
-			notebookEditor.focus();
-			notebookEditor.layoutOverlayWidget(undefined);
-			assert.strictEqual(notebookEditor.deltaDecorations(undefined, undefined), undefined, 'deltaDecorations is not implemented and returns undefined');
-		});
+	test('Noop methods do not throw', async () => {
+		// Just calling the no-op methods, test will fail if they throw
+		notebookEditor.focus();
+		notebookEditor.layoutOverlayWidget(undefined);
+		assert.strictEqual(notebookEditor.deltaDecorations(undefined, undefined), undefined, 'deltaDecorations is not implemented and returns undefined');
 	});
 
 
-	test('NotebookEditor: Tests that getConfiguration returns the information set by layout() call', async () => {
+	test('Tests that getConfiguration returns the information set by layout() call', async () => {
 		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 		const dimension: DOM.Dimension = new DOM.Dimension(Math.random(), Math.random());
 		notebookEditor.layout(dimension);
@@ -259,7 +258,7 @@ suite('Test class NotebookEditor', () => {
 		assert.ok(config.layoutInfo.width === dimension.width && config.layoutInfo.height === dimension.height, `width and height returned by getConfiguration() must be same as the dimension set by layout() call`);
 	});
 
-	test('NotebookEditor: Tests setInput call with various states of input on a notebookEditor object', async () => {
+	test('Tests setInput call with various states of input on a notebookEditor object', async () => {
 		createEditor(notebookEditor);
 		const editorOptions = EditorOptions.create({ pinned: true });
 		for (const input of [
@@ -271,7 +270,7 @@ suite('Test class NotebookEditor', () => {
 		}
 	});
 
-	test('NotebookEditor: Tests setInput call with various states of findState.isRevealed on a notebookEditor object', async () => {
+	test('Tests setInput call with various states of findState.isRevealed on a notebookEditor object', async () => {
 		createEditor(notebookEditor);
 		const editorOptions = EditorOptions.create({ pinned: true });
 		for (const isRevealed of [true, false]) {
@@ -282,7 +281,7 @@ suite('Test class NotebookEditor', () => {
 		}
 	});
 
-	test('NotebookEditor: Verifies that call updateDecorations calls deltaDecorations() on the underlying INotebookEditor object with arguments passed to it', async () => {
+	test('Verifies that call updateDecorations calls deltaDecorations() on the underlying INotebookEditor object with arguments passed to it', async () => {
 		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 
 		const newRange = {} as NotebookRange;
@@ -303,7 +302,7 @@ suite('Test class NotebookEditor', () => {
 		iNotebookEditorMock.verify(x => x.deltaDecorations(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.exactly(1));
 	});
 
-	test('NotebookEditor: Negative Test -> verifies that changeDecorations call returns null when no input is set on the notebookEditor object', async () => {
+	test('Verifies that changeDecorations call returns null when no input is set on the notebookEditor object', async () => {
 		const returnObject = {};
 		let changeDecorationsCalled = false;
 		const result = notebookEditor.changeDecorations(() => {
@@ -315,7 +314,7 @@ suite('Test class NotebookEditor', () => {
 		assert.strictEqual(result, null, 'return value of changeDecorations() call must be null when no input is set on notebookEditor object');
 	});
 
-	test('NotebookEditor: Positive Test -> verifies that changeDecorations calls the callback provided to it and returns the object returned by that callback', async () => {
+	test('Verifies that changeDecorations calls the callback provided to it and returns the object returned by that callback', async () => {
 		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 		const returnObject = {};
 		let changeDecorationsCalled = false;
@@ -328,12 +327,12 @@ suite('Test class NotebookEditor', () => {
 	});
 
 
-	test('NotebookEditor: Verifies getAction called for findNext and findPrevious returns objects of correct type', () => {
+	test('Verifies getAction called for findNext and findPrevious returns objects of correct type', () => {
 		assert.ok(notebookEditor.getAction(ACTION_IDS.FIND_NEXT) instanceof NotebookFindNextAction, `getAction called for '${ACTION_IDS.FIND_NEXT}' should return an instance of ${NotebookFindNextAction}`);
 		assert.ok(notebookEditor.getAction(ACTION_IDS.FIND_PREVIOUS) instanceof NotebookFindPreviousAction, `getAction called for '${ACTION_IDS.FIND_PREVIOUS}' should return an instance of ${NotebookFindPreviousAction}`);
 	});
 
-	test('NotebookEditor: Verifies toggleSearch changes isRevealed state with and without a notebookModel', async () => {
+	test('Verifies toggleSearch changes isRevealed state with and without a notebookModel', async () => {
 		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 		const notebookModel = await notebookEditor.getNotebookModel();
 		for (const model of [notebookModel, undefined]) {
@@ -347,7 +346,7 @@ suite('Test class NotebookEditor', () => {
 	});
 
 	for (const action of [ACTION_IDS.FIND_NEXT, ACTION_IDS.FIND_PREVIOUS]) {
-		test(`NotebookEditor: Tests that ${action} raises 'no search running' error when findArray is empty`, async () => {
+		test(`Tests that ${action} raises 'no search running' error when findArray is empty`, async () => {
 			await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 			let unexpectedErrorCalled = false;
 			const onUnexpectedErrorVerifier = (error: any) => {
@@ -367,7 +366,7 @@ suite('Test class NotebookEditor', () => {
 
 	for (const action of [ACTION_IDS.FIND_NEXT, ACTION_IDS.FIND_PREVIOUS]) {
 		for (const range of [<NotebookRange>{}, new NotebookRange(<ICellModel>{}, 0, 0, 0, 0)]) {
-			test(`NotebookEditor: Tests ${action} returns the NotebookRange with cell: '${JSON.stringify(range.cell)}' that is as expected given the findArray`, async () => {
+			test(`Tests ${action} returns the NotebookRange with cell: '${JSON.stringify(range.cell)}' that is as expected given the findArray`, async () => {
 				await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 				const notebookModel = await notebookEditor.getNotebookModel();
 				const mockModel = TypeMoq.Mock.ofInstance(notebookModel);
@@ -394,7 +393,7 @@ suite('Test class NotebookEditor', () => {
 		}
 	}
 
-	test(`NotebookEditor: Verifies visibility and decorations are set correctly when FindStateChange callbacks happen`, async () => {
+	test(`Verifies visibility and decorations are set correctly when FindStateChange callbacks happen`, async () => {
 		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 		let currentPosition = new NotebookRange(<ICellModel>{}, 0, 0, 0, 0);
 		notebookEditor.setSelection(currentPosition);
