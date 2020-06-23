@@ -54,6 +54,7 @@ export class MarkdownTextTransformer {
 		let editorControl = this.getEditorControl();
 		if (editorControl) {
 			let selections = editorControl.getSelections();
+			let cursorPosition = editorControl.getPosition();
 			// TODO: Support replacement for multiple selections
 			let selection = selections[0];
 			let nothingSelected = this.editorHasNoSelection(selection);
@@ -62,6 +63,12 @@ export class MarkdownTextTransformer {
 				endColumn: selection.startColumn,
 				startLineNumber: selection.startLineNumber,
 				endLineNumber: selection.startLineNumber
+			};
+			let singleLineStartEndRange: IRange = {
+				startColumn: 0,
+				endColumn: 0,
+				startLineNumber: cursorPosition.lineNumber,
+				endLineNumber: cursorPosition.lineNumber
 			};
 
 			// Get text to insert before selection
@@ -85,7 +92,11 @@ export class MarkdownTextTransformer {
 					if (isUndo) {
 						this.handleUndoOperation(markdownLineType, startRange, endRange, editorModel, beginInsertedCode, endInsertedCode, selections, selection);
 					} else {
-						this.handleTransformOperation(markdownLineType, startRange, endRange, editorModel, beginInsertedCode, endInsertedCode, selections, selection);
+						if (markdownLineType === MarkdownLineType.BEGIN_LINE) {
+							this.handleHeadingTransformOperation(singleLineStartEndRange, editorModel, beginInsertedCode);
+						} else {
+							this.handleTransformOperation(markdownLineType, startRange, endRange, editorModel, beginInsertedCode, endInsertedCode, selections, selection);
+						}
 					}
 				}
 
@@ -159,6 +170,10 @@ export class MarkdownTextTransformer {
 				return '</mark>';
 			case MarkdownButtonType.UNORDERED_LIST:
 			case MarkdownButtonType.ORDERED_LIST:
+			case MarkdownButtonType.HEADING1:
+			case MarkdownButtonType.HEADING2:
+			case MarkdownButtonType.HEADING3:
+			case MarkdownButtonType.PARAGRAPH:
 			default:
 				return '';
 		}
@@ -175,7 +190,7 @@ export class MarkdownTextTransformer {
 			case MarkdownButtonType.HEADING2:
 			case MarkdownButtonType.HEADING3:
 			case MarkdownButtonType.PARAGRAPH:
-				return MarkdownLineType.ENTIRE_LINE;
+				return MarkdownLineType.BEGIN_LINE;
 			default:
 				return MarkdownLineType.BEGIN_AND_END_LINES;
 		}
@@ -322,6 +337,16 @@ export class MarkdownTextTransformer {
 	}
 
 	/**
+	 * Similar to above, this method transforms a given line without a selection range because it is only adding characters to the beginning.
+	 * @param singleLineStartEndRange Single line selection
+	 * @param editorModel
+	 * @param beginInsertedCode Heading character
+	 */
+	handleHeadingTransformOperation(singleLineStartEndRange: IRange, editorModel: TextModel, beginInsertedCode: string): void {
+		editorModel.pushEditOperations(null, [{ range: singleLineStartEndRange, text: beginInsertedCode }, { range: singleLineStartEndRange, text: null }], null);
+	}
+
+	/**
 	 * Gets the extended selected text (current selection + potential beginning + ending transformed text)
 	 * @param selection Current selection in editor
 	 * @param type Markdown Button Type
@@ -399,8 +424,8 @@ export enum MarkdownButtonType {
 // If ALL_LINES, we need to insert markdown at each line (e.g. lists)
 // WRAPPED_ABOVE_AND_BELOW puts text above and below the highlighted text
 export enum MarkdownLineType {
+	BEGIN_LINE,
 	BEGIN_AND_END_LINES,
-	ENTIRE_LINE,
 	EVERY_LINE,
 	WRAPPED_ABOVE_AND_BELOW
 }
