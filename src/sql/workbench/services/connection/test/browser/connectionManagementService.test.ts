@@ -561,6 +561,8 @@ suite('SQL ConnectionManagementService tests', () => {
 		};
 
 		connectionStore.setup(x => x.deleteConnectionFromConfiguration(TypeMoq.It.isAny())).returns(() => Promise.resolve());
+		//deleteConnection should work for profile not connected.
+		assert(connectionManagementService.deleteConnection(profile));
 		return connect(uri1, options, true, profile).then(() => {
 			assert(connectionManagementService.deleteConnection(profile));
 		});
@@ -639,7 +641,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		});
 	});
 
-	test('disconnect should disconnect the profile', () => {
+	test('disconnect should disconnect the profile when given ConnectionProfile', () => {
 		let profile = <ConnectionProfile>assign({}, connectionProfile);
 		let uri = 'connection:connectionId'; //must use default connection uri for test to work.
 		let options: IConnectionCompletionOptions = {
@@ -666,6 +668,38 @@ suite('SQL ConnectionManagementService tests', () => {
 		return connect(uri, options, true, profile).then(result => {
 			assert.equal(result.connected, true);
 			return connectionManagementService.disconnect(profile).then(() => {
+				assert(!connectionManagementService.isProfileConnected(profile));
+			});
+		});
+	});
+
+	test('disconnect should disconnect the profile when given uri string', () => {
+		let profile = <ConnectionProfile>assign({}, connectionProfile);
+		let uri = 'connection:connectionId'; //must use default connection uri for test to work.
+		let options: IConnectionCompletionOptions = {
+			params: {
+				connectionType: ConnectionType.editor,
+				input: {
+					onConnectSuccess: undefined,
+					onConnectReject: undefined,
+					onConnectStart: undefined,
+					onDisconnect: undefined,
+					onConnectCanceled: undefined,
+					uri: uri,
+				},
+				queryRange: undefined,
+				runQueryOnCompletion: RunQueryOnConnectionMode.none,
+				isEditConnection: false
+			},
+			saveTheConnection: true,
+			showDashboard: false,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		};
+
+		return connect(uri, options, true, profile).then(result => {
+			assert.equal(result.connected, true);
+			return connectionManagementService.disconnect(uri).then(() => {
 				assert(!connectionManagementService.isProfileConnected(profile));
 			});
 		});
@@ -835,6 +869,44 @@ suite('SQL ConnectionManagementService tests', () => {
 				assert.equal(result, testConnectionString);
 			});
 		});
+	});
+
+	test('getConnectionString should get connection string of connectionId', () => {
+		let profile = <ConnectionProfile>assign({}, connectionProfile);
+		let uri = 'connection:connectionId'; //must use default connection uri for test to work.
+		let options: IConnectionCompletionOptions = {
+			params: {
+				connectionType: ConnectionType.editor,
+				input: {
+					onConnectSuccess: undefined,
+					onConnectReject: undefined,
+					onConnectStart: undefined,
+					onDisconnect: undefined,
+					onConnectCanceled: undefined,
+					uri: uri,
+				},
+				queryRange: undefined,
+				runQueryOnCompletion: RunQueryOnConnectionMode.none,
+				isEditConnection: false
+			},
+			saveTheConnection: true,
+			showDashboard: false,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		};
+
+		let cacheRebuilt = false;
+		mssqlConnectionProvider.setup(x => x.rebuildIntelliSenseCache(uri)).returns(() => {
+			cacheRebuilt = true;
+			return Promise.resolve();
+		});
+		assert.rejects(async () => await connectionManagementService.rebuildIntelliSenseCache(uri));
+		return connect(uri, options, true, profile).then(() => {
+			return connectionManagementService.rebuildIntelliSenseCache(uri).then(() => {
+				assert(cacheRebuilt);
+			});
+		});
+
 	});
 
 	test('buildConnectionInfo should get connection string of connectionId', () => {
