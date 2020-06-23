@@ -91,7 +91,7 @@ export function getDatabaseStateDisplayText(state: string): string {
 			return loc.restoring;
 		case 'RECOVERING':
 			return loc.recovering;
-		case 'RECOVERY PENDING	':
+		case 'RECOVERY PENDING':
 			return loc.recoveryPending;
 		case 'SUSPECT':
 			return loc.suspect;

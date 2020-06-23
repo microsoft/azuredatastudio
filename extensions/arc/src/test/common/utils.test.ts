@@ -3,12 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as vscode from 'vscode';
 import * as should from 'should';
+import * as TypeMoq from 'typemoq';
 import 'mocha';
-import { resourceTypeToDisplayName, parseEndpoint, parseInstanceName } from '../../common/utils';
+import { resourceTypeToDisplayName, parseEndpoint, parseInstanceName, getAzurecoreApi, getResourceTypeIcon, getConnectionModeDisplayText, getDatabaseStateDisplayText, promptForResourceDeletion } from '../../common/utils';
 
 import * as loc from '../../localizedConstants';
-import { ResourceType } from '../../constants';
+import { ResourceType, IconPathHelper, Connectionmode as ConnectionMode } from '../../constants';
+import { MockInputBox } from '../stubs';
+import { mock } from 'sinon';
 
 describe('resourceTypeToDisplayName Method Tests', () => {
 	it('Display Name should be correct for valid ResourceType', function (): void {
@@ -32,15 +36,15 @@ describe('resourceTypeToDisplayName Method Tests', () => {
 
 describe('parseEndpoint Method Tests', () => {
 	it('Should parse valid endpoint correctly', function (): void {
-		should(parseEndpoint('127.0.0.1:1337')).deepEqual({ ip: '127.0.0.1', port: '1337'});
+		should(parseEndpoint('127.0.0.1:1337')).deepEqual({ ip: '127.0.0.1', port: '1337' });
 	});
 
 	it('Should parse empty endpoint correctly', function (): void {
-		should(parseEndpoint('')).deepEqual({ ip: '', port: ''});
+		should(parseEndpoint('')).deepEqual({ ip: '', port: '' });
 	});
 
 	it('Should parse undefined endpoint correctly', function (): void {
-		should(parseEndpoint('')).deepEqual({ ip: '', port: ''});
+		should(parseEndpoint('')).deepEqual({ ip: '', port: '' });
 	});
 });
 
@@ -59,5 +63,84 @@ describe('parseInstanceName Method Tests', () => {
 
 	it('Should return empty string when empty string value passed in', function (): void {
 		should(parseInstanceName('')).equal('');
+	});
+});
+
+describe('getAzurecoreApi Method Tests', () => {
+	it('Should get azurecore API correctly', function (): void {
+		should(getAzurecoreApi()).not.be.undefined();
+	});
+});
+
+describe('getResourceTypeIcon Method Tests', () => {
+	it('Correct icons should be returned for valid ResourceTypes', function (): void {
+		should(getResourceTypeIcon(ResourceType.sqlManagedInstances)).equal(IconPathHelper.miaa, 'Unexpected MIAA icon');
+		should(getResourceTypeIcon(ResourceType.postgresInstances)).equal(IconPathHelper.postgres, 'Unexpected Postgres icon');
+		should(getResourceTypeIcon(ResourceType.dataControllers)).equal(IconPathHelper.controller, 'Unexpected controller icon');
+	});
+	it('Undefined should be returned for undefined resource types', function (): void {
+		should(getResourceTypeIcon(undefined)).be.undefined();
+	});
+	it('Undefined should be returned for empty resource types', function (): void {
+		should(getResourceTypeIcon('')).be.undefined();
+	});
+	it('Undefined should be returned for unknown resource types', function (): void {
+		should(getResourceTypeIcon('UnknownType')).be.undefined();
+	});
+});
+
+describe('getConnectionModeDisplayText Method Tests', () => {
+	it('Display Name should be correct for valid ResourceType', function (): void {
+		should(getConnectionModeDisplayText(ConnectionMode.connected)).equal(loc.connected);
+		should(getConnectionModeDisplayText(ConnectionMode.disconnected)).equal(loc.disconnected);
+	});
+
+	it('Display Name should be correct for unknown value', function (): void {
+		should(getConnectionModeDisplayText('UnknownMode')).equal('UnknownMode');
+	});
+
+	it('Display Name should be correct for empty value', function (): void {
+		should(getConnectionModeDisplayText('')).equal('');
+	});
+
+	it('Display Name should be correct for undefined value', function (): void {
+		should(getConnectionModeDisplayText(undefined)).equal('');
+	});
+});
+
+describe('promptForResourceDeletion Method Tests', function (): void {
+	let mockInputBox: MockInputBox;
+	before(function (): void {
+		vscode.window.createInputBox = () => {
+			return mockInputBox;
+		};
+	});
+
+	beforeEach(function (): void {
+		mockInputBox = new MockInputBox();
+	});
+
+	it('Resolves as true when value entered is correct', function (done): void {
+		promptForResourceDeletion('mynamespace', 'myname').then((value: boolean) => {
+			value ? done() : done(new Error('Expected return value to be true'));
+		});
+		mockInputBox.value = 'myname';
+		mockInputBox.triggerAccept();
+	});
+
+	it('Resolves as false when input box is closed early', function (done): void {
+		promptForResourceDeletion('mynamespace', 'myname').then((value: boolean) => {
+			!value ? done() : done(new Error('Expected return value to be false'));
+		});
+		mockInputBox.hide();
+	});
+
+	it('Validation message is set when value entered is incorrect', async function (): Promise<void> {
+		promptForResourceDeletion('mynamespace', 'myname');
+		mockInputBox.value = 'wrong value';
+		await mockInputBox.triggerAccept();
+		should(mockInputBox.validationMessage).not.be.equal('', 'Validation message should not be empty after incorrect value entered');
+		mockInputBox.value = 'new value';
+		should(mockInputBox.validationMessage).be.equal('', 'Validation message should be empty after new value entered');
 	});
 });
