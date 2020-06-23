@@ -1168,9 +1168,11 @@ suite('SQL ConnectionManagementService tests', () => {
 		});
 	});
 
-	test('getFormattedUri should return formatted uri when given default type uri', () => {
+	test('getFormattedUri should return formatted uri when given default type uri or already formatted uri', () => {
 		let testUri = 'connection:';
-		assert.equal('connection:connectionId', connectionManagementService.getFormattedUri(testUri, connectionProfile));
+		let formattedUri = 'connection:connectionId';
+		assert.equal(formattedUri, connectionManagementService.getFormattedUri(testUri, connectionProfile));
+		assert.equal(formattedUri, connectionManagementService.getFormattedUri(formattedUri, connectionProfile));
 	});
 
 	test('failed firewall rule connection and failed during open firewall rule should open the firewall rule dialog and connection dialog with error', () => {
