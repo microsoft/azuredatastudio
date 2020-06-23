@@ -4552,8 +4552,9 @@ declare module 'azdata' {
 			readonly providerId: string;
 			/**
 			 * @deprecated standardKernels will be removed in an upcoming release.
+			 * Until that point, notebook providers can safetly return an empty array.
 			 */
-			readonly standardKernels?: IStandardKernel[];
+			readonly standardKernels: IStandardKernel[];
 			getNotebookManager(notebookUri: vscode.Uri): Thenable<NotebookManager>;
 			handleNotebookClosed(notebookUri: vscode.Uri): void;
 		}

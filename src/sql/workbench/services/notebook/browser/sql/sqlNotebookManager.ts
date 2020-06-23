@@ -43,4 +43,8 @@ export class SqlNotebookManager implements nb.NotebookProvider {
 	handleNotebookClosed(notebookUri: vscode.Uri): void {
 		throw new Error('Method not implemented.');
 	}
+
+	public get standardKernels(): nb.IStandardKernel[] {
+		return [];
+	}
 }
