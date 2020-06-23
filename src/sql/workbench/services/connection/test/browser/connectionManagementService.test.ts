@@ -295,8 +295,6 @@ suite('SQL ConnectionManagementService tests', () => {
 	});
 
 	test('showConnectionDialog should not be called when using showEditConnectionDialog', () => {
-		// showEditConnectionDialog should throw error if not given a connectionProfile.
-		assert.throws(async () => await connectionManagementService.showEditConnectionDialog(undefined));
 		return connectionManagementService.showEditConnectionDialog(connectionProfile).then(() => {
 			verifyShowConnectionDialog(connectionProfile, ConnectionType.default, undefined, false, undefined, false);
 		});
