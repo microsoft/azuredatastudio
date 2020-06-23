@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
+import './onboarding/developers';
 
 export function activate(context: vscode.ExtensionContext) {
 }

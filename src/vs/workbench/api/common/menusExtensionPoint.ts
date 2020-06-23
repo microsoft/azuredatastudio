@@ -52,6 +52,7 @@ namespace schema {
 			case 'notebook/toolbar': return MenuId.NotebookToolbar;
 			case 'dataExplorer/context': return MenuId.DataExplorerContext;
 			case 'dataExplorer/action': return MenuId.DataExplorerAction;
+			case 'notebooks/title': return MenuId.NotebookTitle;
 			case 'comments/commentThread/title': return MenuId.CommentThreadTitle;
 			case 'comments/commentThread/context': return MenuId.CommentThreadActions;
 			case 'comments/comment/title': return MenuId.CommentTitle;
@@ -70,6 +71,7 @@ namespace schema {
 		switch (menuId) {
 			case MenuId.StatusBarWindowIndicatorMenu:
 			case MenuId.MenubarWebNavigationMenu:
+			case MenuId.NotebookCellTitle:
 				return true;
 		}
 		return false;

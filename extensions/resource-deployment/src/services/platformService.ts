@@ -124,7 +124,8 @@ export class PlatformService implements IPlatformService {
 	}
 
 	isNotebookNameUsed(title: string): boolean {
-		return (azdata.nb.notebookDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title) > -1);
+		return (azdata.nb.notebookDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title) > -1)
+			&& (vscode.workspace.textDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title) > -1);
 	}
 
 	async makeDirectory(path: string): Promise<void> {

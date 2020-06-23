@@ -4,9 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as constants from '../common/constants';
 
-import { BaseProjectTreeItem, MessageTreeItem, SpacerTreeItem } from '../models/tree/baseTreeItem';
+import { BaseProjectTreeItem, SpacerTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { Project } from '../models/project';
 
@@ -15,6 +14,7 @@ import { Project } from '../models/project';
  */
 export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvider<BaseProjectTreeItem> {
 	private _onDidChangeTreeData: vscode.EventEmitter<BaseProjectTreeItem | undefined> = new vscode.EventEmitter<BaseProjectTreeItem | undefined>();
+	private treeView: vscode.TreeView<BaseProjectTreeItem> | undefined;
 	readonly onDidChangeTreeData: vscode.Event<BaseProjectTreeItem | undefined> = this._onDidChangeTreeData.event;
 
 	private roots: BaseProjectTreeItem[] = [];
@@ -24,7 +24,7 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 	}
 
 	private initialize() {
-		this.roots = [new MessageTreeItem(constants.noOpenProjectMessage)];
+		this.roots = [];
 	}
 
 	public getTreeItem(element: BaseProjectTreeItem): vscode.TreeItem {
@@ -57,5 +57,21 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 
 		this.roots = newRoots;
 		this._onDidChangeTreeData.fire(undefined);
+	}
+
+	public setTreeView(value: vscode.TreeView<BaseProjectTreeItem>) {
+		if (this.treeView) {
+			throw new Error('TreeView should not be set multiple times.');
+		}
+
+		this.treeView = value;
+	}
+
+	public async focus(project: Project): Promise<void> {
+		const projNode = this.roots.find(x => x instanceof ProjectRootTreeItem ? (<ProjectRootTreeItem>x).project === project : false);
+
+		if (projNode) {
+			this.treeView?.reveal(projNode, { focus: true, expand: true });
+		}
 	}
 }

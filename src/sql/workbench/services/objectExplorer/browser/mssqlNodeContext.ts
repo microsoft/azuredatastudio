@@ -34,6 +34,7 @@ export class MssqlNodeContext extends Disposable {
 	static NodeType = new RawContextKey<string>('nodeType', undefined);
 	static NodeLabel = new RawContextKey<string>('nodeLabel', undefined);
 	static EngineEdition = new RawContextKey<number>('engineEdition', DatabaseEngineEdition.Unknown);
+	static CanOpenInAzurePortal = new RawContextKey<boolean>('canOpenInAzurePortal', false);
 
 	// Scripting context keys
 	static CanScriptAsSelect = new RawContextKey<boolean>('canScriptAsSelect', false);
@@ -48,6 +49,7 @@ export class MssqlNodeContext extends Disposable {
 	private nodeLabelKey: IContextKey<string>;
 	private isDatabaseOrServerKey: IContextKey<boolean>;
 	private engineEditionKey: IContextKey<number>;
+	private canOpenInAzurePortal: IContextKey<boolean>;
 
 	private canScriptAsSelectKey: IContextKey<boolean>;
 	private canEditDataKey: IContextKey<boolean>;
@@ -71,6 +73,7 @@ export class MssqlNodeContext extends Disposable {
 				this.setNodeProvider();
 				this.setIsCloud();
 				this.setEngineEdition();
+				this.setCanOpenInPortal();
 				if (node.type) {
 					this.setIsDatabaseOrServer();
 					this.nodeTypeKey.set(node.type);
@@ -98,6 +101,7 @@ export class MssqlNodeContext extends Disposable {
 		this.canScriptAsExecuteKey = MssqlNodeContext.CanScriptAsExecute.bindTo(this.contextKeyService);
 		this.canScriptAsAlterKey = MssqlNodeContext.CanScriptAsAlter.bindTo(this.contextKeyService);
 		this.nodeProviderKey = MssqlNodeContext.NodeProvider.bindTo(this.contextKeyService);
+		this.canOpenInAzurePortal = MssqlNodeContext.CanOpenInAzurePortal.bindTo(this.contextKeyService);
 	}
 
 	/**
@@ -118,6 +122,16 @@ export class MssqlNodeContext extends Disposable {
 		let serverInfo: azdata.ServerInfo = this.getServerInfo();
 		if (serverInfo && serverInfo.isCloud) {
 			this.isCloudKey.set(true);
+		}
+	}
+
+	private setCanOpenInPortal(): void {
+		const connectionProfile = this.nodeContextValue.node.payload;
+		if (connectionProfile &&
+			connectionProfile.azureResourceId &&
+			connectionProfile.azureTenantId &&
+			connectionProfile.azurePortalEndpoint) {
+			this.canOpenInAzurePortal.set(true);
 		}
 	}
 

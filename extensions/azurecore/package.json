@@ -45,6 +45,11 @@
             "default": false,
             "description": "%config.enableUsGovCloudDescription%"
           },
+          "accounts.azure.cloud.enableUsNatCloud": {
+            "type": "boolean",
+            "default": false,
+            "description": "%config.enableUsNatCloudDescription%"
+          },
           "accounts.azure.cloud.enableGermanyCloud": {
             "type": "boolean",
             "default": false,
@@ -114,16 +119,6 @@
         "category": "Azure Accounts"
       },
       {
-        "command": "azure.accounts.getSubscriptions",
-        "title": "%azure.accounts.getSubscriptions.title%",
-        "category": "Azure Accounts"
-      },
-      {
-        "command": "azure.accounts.getResourceGroups",
-        "title": "%azure.accounts.getResourceGroups.title%",
-        "category": "Azure Accounts"
-      },
-      {
         "command": "azure.resource.signin",
         "title": "%azure.resource.signin.title%",
         "icon": "$(add)"
@@ -146,10 +141,11 @@
       {
         "command": "azure.resource.startterminal",
         "title": "%azure.resource.startterminal.title%",
-        "icon": {
-          "dark": "resources/dark/console.svg",
-          "light": "resources/light/console.svg"
-        }
+        "icon": "$(console)"
+      },
+      {
+        "command": "azure.resource.openInAzurePortal",
+        "title": "%azure.openInAzurePortal.title%"
       },
       {
         "command": "azure.resource.connectsqlserver",
@@ -196,14 +192,6 @@
         },
         {
           "command": "azure.resource.connectsqlserver",
-          "when": "false"
-        },
-        {
-          "command": "azure.accounts.getSubscriptions",
-          "when": "false"
-        },
-        {
-          "command": "azure.accounts.getResourceGroups",
           "when": "false"
         }
       ],
@@ -284,6 +272,6 @@
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.1",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "github:corivera/vscodetestcover#1.0.6"
+    "vscodetestcover": "^1.0.9"
   }
 }

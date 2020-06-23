@@ -53,7 +53,7 @@ export default class MainController implements Disposable {
 		this.apiWrapper.registerCommand('sqlDatabaseProjects.build', async (node: BaseProjectTreeItem) => { await this.projectsController.buildProject(node); });
 		this.apiWrapper.registerCommand('sqlDatabaseProjects.deploy', async (node: BaseProjectTreeItem) => { await this.projectsController.deployProject(node); });
 		this.apiWrapper.registerCommand('sqlDatabaseProjects.schemaCompare', async (node: BaseProjectTreeItem) => { await this.projectsController.schemaCompare(node); });
-		this.apiWrapper.registerCommand('sqlDatabaseProjects.import', async (node: BaseProjectTreeItem) => { await this.projectsController.import(node); });
+		this.apiWrapper.registerCommand('sqlDatabaseProjects.importDatabase', async (profile: azdata.IConnectionProfile) => { await this.projectsController.importNewDatabaseProject(profile); });
 
 		this.apiWrapper.registerCommand('sqlDatabaseProjects.newScript', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.script); });
 		this.apiWrapper.registerCommand('sqlDatabaseProjects.newTable', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.table); });
@@ -62,10 +62,14 @@ export default class MainController implements Disposable {
 		this.apiWrapper.registerCommand('sqlDatabaseProjects.newItem', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node); });
 		this.apiWrapper.registerCommand('sqlDatabaseProjects.newFolder', async (node: BaseProjectTreeItem) => { await this.projectsController.addFolderPrompt(node); });
 
-		this.apiWrapper.registerCommand('sqlDatabaseProjects.importDatabase', async (profile: azdata.IConnectionProfile) => { await this.projectsController.importNewDatabaseProject(profile); });
+
+		this.apiWrapper.registerCommand('sqlDatabaseProjects.addDatabaseReference', async (node: BaseProjectTreeItem) => { await this.projectsController.addDatabaseReference(node); });
 
 		// init view
-		this.extensionContext.subscriptions.push(this.apiWrapper.registerTreeDataProvider(SQL_DATABASE_PROJECTS_VIEW_ID, this.dbProjectTreeViewProvider));
+		const treeView = this.apiWrapper.createTreeView(SQL_DATABASE_PROJECTS_VIEW_ID, { treeDataProvider: this.dbProjectTreeViewProvider });
+		this.dbProjectTreeViewProvider.setTreeView(treeView);
+
+		this.extensionContext.subscriptions.push(treeView);
 
 		await templates.loadTemplates(path.join(this.context.extensionPath, 'resources', 'templates'));
 
@@ -84,11 +88,14 @@ export default class MainController implements Disposable {
 			filter[constants.sqlDatabaseProject] = ['sqlproj'];
 
 			let files: Uri[] | undefined = await this.apiWrapper.showOpenDialog({ filters: filter });
+			const prevCount = this.projectsController.projects.length;
 
 			if (files) {
 				for (const file of files) {
 					await this.projectsController.openProject(file);
 				}
+
+				await this.projectsController.focusProject(this.projectsController.projects[prevCount]); // focus the first of the newly-opened projects
 			}
 		}
 		catch (err) {

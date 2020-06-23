@@ -41,7 +41,7 @@ export class BookTreeItem extends vscode.TreeItem {
 			this.collapsibleState = book.treeItemCollapsibleState;
 			this._sections = book.page;
 			if (book.isUntitled) {
-				this.contextValue = 'unsavedBook';
+				this.contextValue = 'providedBook';
 			} else {
 				this.contextValue = 'savedBook';
 			}

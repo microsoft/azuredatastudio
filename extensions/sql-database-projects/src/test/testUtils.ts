@@ -32,7 +32,10 @@ export async function createTestSqlProjFile(contents: string, folderPath?: strin
 }
 
 export async function createTestProject(contents: string, folderPath?: string): Promise<Project> {
-	return new Project(await createTestSqlProjFile(contents, folderPath));
+	const proj = new Project(await createTestSqlProjFile(contents, folderPath));
+	await proj.readProjFile();
+
+	return proj;
 }
 
 export async function createTestDataSources(contents: string, folderPath?: string): Promise<string> {
@@ -46,7 +49,7 @@ export async function generateTestFolderPath(): Promise<string> {
 	return folderPath;
 }
 
-async function createTestFile(contents: string, fileName: string, folderPath?: string): Promise<string> {
+export async function createTestFile(contents: string, fileName: string, folderPath?: string): Promise<string> {
 	folderPath = folderPath ?? await generateTestFolderPath();
 	const filePath = path.join(folderPath, fileName);
 
@@ -79,7 +82,7 @@ export async function createDummyFileStructure(createList?: boolean, list?: stri
 	testFolderPath = testFolderPath ?? await generateTestFolderPath();
 
 	let filePath = path.join(testFolderPath, 'file1.sql');
-	await fs.open(filePath, 'w');
+	await fs.writeFile(filePath, '');
 	if (createList) {
 		list?.push(testFolderPath);
 		list?.push(filePath);
@@ -88,13 +91,14 @@ export async function createDummyFileStructure(createList?: boolean, list?: stri
 	for (let dirCount = 1; dirCount <= 2; dirCount++) {
 		let dirName = path.join(testFolderPath, `folder${dirCount}`);
 		await fs.mkdir(dirName, { recursive: true });
+
 		if (createList) {
 			list?.push(dirName);
 		}
 
 		for (let fileCount = 1; fileCount <= 5; fileCount++) {
 			let fileName = path.join(dirName, `file${fileCount}.sql`);
-			await fs.open(fileName, 'w');
+			await fs.writeFile(fileName, '');
 			if (createList) {
 				list?.push(fileName);
 			}
@@ -102,7 +106,8 @@ export async function createDummyFileStructure(createList?: boolean, list?: stri
 	}
 
 	filePath = path.join(testFolderPath, 'file2.txt');
-	await fs.open(filePath, 'w');
+	//await touchFile(filePath);
+	await fs.writeFile(filePath, '');
 	if (createList) {
 		list?.push(filePath);
 	}

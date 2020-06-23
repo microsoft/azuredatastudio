@@ -5,9 +5,7 @@
 
 import * as should from 'should';
 import 'mocha';
-
-import { buildSsmsMinCommandArgs, buildUrn, LaunchSsmsDialogParams } from '../main';
-import { doubleEscapeSingleQuotes, backEscapeDoubleQuotes, getTelemetryErrorType } from '../utils';
+import { doubleEscapeSingleQuotes, backEscapeDoubleQuotes, getTelemetryErrorType,buildSsmsMinCommandArgs, buildUrn, LaunchSsmsDialogParams } from '../utils';
 import { ExtHostObjectExplorerNodeStub } from './stubs';
 
 describe('buildSsmsMinCommandArgs Method Tests', () => {

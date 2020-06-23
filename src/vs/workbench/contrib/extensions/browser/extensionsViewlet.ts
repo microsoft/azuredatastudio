@@ -456,8 +456,8 @@ export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IE
 				}
 			},
 			onDragOver: (e: DragEvent) => {
-				if (e.dataTransfer) {
-					e.dataTransfer.dropEffect = this.isSupportedDragElement(e) ? 'copy' : 'none';
+				if (this.isSupportedDragElement(e)) {
+					e.dataTransfer!.dropEffect = 'copy';
 				}
 			},
 			onDrop: async (e: DragEvent) => {
@@ -469,7 +469,7 @@ export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IE
 						for (let index = 0; index < e.dataTransfer.files.length; index++) {
 							const path = e.dataTransfer.files.item(index)!.path;
 							if (path.indexOf('.vsix') !== -1) {
-								vsixPaths.push(URI.parse(path));
+								vsixPaths.push(URI.file(path));
 							}
 						}
 
@@ -482,7 +482,7 @@ export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IE
 						}
 					}
 				}
-			},
+			}
 		}));
 
 		super.create(append(this.root, $('.extensions')));

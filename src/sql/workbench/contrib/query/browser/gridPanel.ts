@@ -482,6 +482,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.table.registerPlugin(new AdditionalKeyBindings());
 		this._register(this.table.onContextMenu(this.contextMenu, this));
 		this._register(this.table.onClick(this.onTableClick, this));
+		//This listener is used for correcting auto-scroling when clicking on the header for reszing.
+		this._register(this.table.onHeaderClick(this.onHeaderClick, this));
 
 		if (this.styles) {
 			this.table.style(this.styles);
@@ -578,6 +580,11 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 
 	public set state(val: GridTableState) {
 		this._state = val;
+	}
+
+	private onHeaderClick(event: ITableMouseEvent) {
+		//header clicks must be accounted for as they force the table to scroll to the top;
+		this.scrolled = false;
 	}
 
 	private onTableClick(event: ITableMouseEvent) {

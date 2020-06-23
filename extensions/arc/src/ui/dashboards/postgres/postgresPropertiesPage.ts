@@ -6,12 +6,21 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as loc from '../../../localizedConstants';
-import { IconPathHelper, cssStyles } from '../../../constants';
-import { PostgresDashboardPage } from './postgresDashboardPage';
-import { KeyValueContainer, KeyValue, InputKeyValue, LinkKeyValue, TextKeyValue } from '../../components/keyValueContainer';
+import { IconPathHelper, cssStyles, ResourceType } from '../../../constants';
+import { KeyValueContainer, InputKeyValue, LinkKeyValue, TextKeyValue } from '../../components/keyValueContainer';
+import { DashboardPage } from '../../components/dashboardPage';
+import { ControllerModel } from '../../../models/controllerModel';
+import { PostgresModel } from '../../../models/postgresModel';
 
+export class PostgresPropertiesPage extends DashboardPage {
+	private keyValueContainer?: KeyValueContainer;
 
-export class PostgresPropertiesPage extends PostgresDashboardPage {
+	constructor(protected modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
+		super(modelView);
+		this._postgresModel.onServiceUpdated(() => this.eventuallyRunOnInitialized(() => this.refresh()));
+		this._controllerModel.onRegistrationsUpdated(() => this.eventuallyRunOnInitialized(() => this.refresh()));
+	}
+
 	protected get title(): string {
 		return loc.properties;
 	}
@@ -34,27 +43,52 @@ export class PostgresPropertiesPage extends PostgresDashboardPage {
 			CSSStyles: { ...cssStyles.title, 'margin-bottom': '25px' }
 		}).component());
 
-		const endpoint: { ip?: string, port?: number } = this.databaseModel.endpoint();
-		const connectionString = `postgresql://postgres:${this.databaseModel.password()}@${endpoint.ip}:${endpoint.port}`;
-		const registration = this.controllerModel.registration('postgresInstances', this.databaseModel.namespace(), this.databaseModel.name());
-
-		const pairs: KeyValue[] = [
-			new InputKeyValue(loc.coordinatorEndpoint, connectionString),
-			new InputKeyValue(loc.postgresAdminUsername, 'postgres'),
-			new TextKeyValue(loc.status, this.databaseModel.service().status?.state ?? 'Unknown'),
-			new LinkKeyValue(loc.dataController, this.controllerModel.namespace(), _ => vscode.window.showInformationMessage('goto data controller')),
-			new LinkKeyValue(loc.nodeConfiguration, this.databaseModel.configuration(), _ => vscode.window.showInformationMessage('goto configuration')),
-			new TextKeyValue(loc.postgresVersion, this.databaseModel.service().spec.engine.version?.toString() ?? ''),
-			new TextKeyValue(loc.resourceGroup, registration?.resourceGroupName ?? ''),
-			new TextKeyValue(loc.subscriptionId, registration?.subscriptionId ?? '')
-		];
-
-		const keyValueContainer = new KeyValueContainer(this.modelView.modelBuilder, pairs);
-		content.addItem(keyValueContainer.container);
+		this.keyValueContainer = new KeyValueContainer(this.modelView.modelBuilder, []);
+		content.addItem(this.keyValueContainer.container);
+		this.initialized = true;
 		return root;
 	}
 
 	protected get toolbarContainer(): azdata.ToolbarContainer {
-		return this.modelView.modelBuilder.toolbarContainer().component();
+		const refreshButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			label: loc.refresh,
+			iconPath: IconPathHelper.refresh
+		}).component();
+
+		refreshButton.onDidClick(async () => {
+			refreshButton.enabled = false;
+			try {
+				await Promise.all([
+					this._postgresModel.refresh(),
+					this._controllerModel.refresh()
+				]);
+			} catch (error) {
+				vscode.window.showErrorMessage(loc.refreshFailed(error));
+			}
+			finally {
+				refreshButton.enabled = true;
+			}
+		});
+
+		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems([
+			{ component: refreshButton }
+		]).component();
+	}
+
+	private refresh() {
+		const endpoint: { ip?: string, port?: number } = this._postgresModel.endpoint;
+		const connectionString = `postgresql://postgres@${endpoint.ip}:${endpoint.port}`;
+		const registration = this._controllerModel.getRegistration(ResourceType.postgresInstances, this._postgresModel.namespace, this._postgresModel.name);
+
+		this.keyValueContainer?.refresh([
+			new InputKeyValue(loc.coordinatorEndpoint, connectionString),
+			new InputKeyValue(loc.postgresAdminUsername, 'postgres'),
+			new TextKeyValue(loc.status, this._postgresModel.service?.status?.state ?? 'Unknown'),
+			new LinkKeyValue(loc.dataController, this._controllerModel.namespace ?? '', _ => vscode.window.showInformationMessage('TODO: Go to data controller')),
+			new TextKeyValue(loc.nodeConfiguration, this._postgresModel.configuration),
+			new TextKeyValue(loc.postgresVersion, this._postgresModel.service?.spec?.engine?.version?.toString() ?? ''),
+			new TextKeyValue(loc.resourceGroup, registration?.resourceGroupName ?? ''),
+			new TextKeyValue(loc.subscriptionId, registration?.subscriptionId ?? '')
+		]);
 	}
 }

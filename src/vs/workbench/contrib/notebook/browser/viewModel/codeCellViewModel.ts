@@ -67,13 +67,12 @@ export class CodeCellViewModel extends BaseCellViewModel implements ICellViewMod
 
 	constructor(
 		readonly viewType: string,
-		readonly notebookHandle: number,
 		readonly model: NotebookCellTextModel,
 		initialNotebookLayoutInfo: NotebookLayoutInfo | null,
 		readonly eventDispatcher: NotebookEventDispatcher,
 		@ITextModelService private readonly _modelService: ITextModelService,
 	) {
-		super(viewType, notebookHandle, model, UUID.generateUuid());
+		super(viewType, model, UUID.generateUuid());
 		this._register(this.model.onDidChangeOutputs((splices) => {
 			this._outputCollection = new Array(this.model.outputs.length);
 			this._outputsTop = null;
@@ -202,15 +201,18 @@ export class CodeCellViewModel extends BaseCellViewModel implements ICellViewMod
 		this.layoutChange({ outputHeight: true });
 	}
 
-	getOutputOffset(index: number): number {
+	getOutputOffsetInContainer(index: number) {
 		this._ensureOutputsTop();
 
 		if (index >= this._outputCollection.length) {
 			throw new Error('Output index out of range!');
 		}
 
-		const offset = this._outputsTop!.getAccumulatedValue(index - 1);
-		return this.layoutInfo.outputContainerOffset + offset;
+		return this._outputsTop!.getAccumulatedValue(index - 1);
+	}
+
+	getOutputOffset(index: number): number {
+		return this.layoutInfo.outputContainerOffset + this.getOutputOffsetInContainer(index);
 	}
 
 	spliceOutputHeights(start: number, deleteCnt: number, heights: number[]) {

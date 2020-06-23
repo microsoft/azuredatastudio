@@ -94,7 +94,7 @@ export class WebViewDialog extends Modal {
 			{},
 			{
 				allowScripts: true
-			});
+			}, undefined);
 
 		this._webview.mountTo(this._body);
 
@@ -145,7 +145,7 @@ export class WebViewDialog extends Modal {
 	}
 
 	public sendMessage(message: any): void {
-		this._webview.sendMessage(message);
+		this._webview.postMessage(message);
 	}
 
 	public open() {

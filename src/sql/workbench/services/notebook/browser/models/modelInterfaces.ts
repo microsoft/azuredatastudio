@@ -15,13 +15,23 @@ import { CellType, NotebookChangeType } from 'sql/workbench/services/notebook/co
 import { INotebookManager, ILanguageMagic } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
 import type { FutureInternal } from 'sql/workbench/services/notebook/browser/interfaces';
+
+export interface ICellRange {
+	readonly start: number;
+	readonly end: number;
+}
+
+export interface ISingleNotebookEditOperation {
+	range: ICellRange;
+	cell: Partial<nb.ICellContents>;
+	forceMoveMarkers: boolean;
+}
 
 export interface IClientSessionOptions {
 	notebookUri: URI;
@@ -223,6 +233,10 @@ export interface INotebookModel {
 	 * Client Session in the notebook, used for sending requests to the notebook service
 	 */
 	readonly clientSession: IClientSession;
+	/**
+	 * Promise indicating when client session is ready to use.
+	 */
+	readonly sessionLoadFinished: Promise<void>;
 	/**
 	 * LanguageInfo saved in the notebook
 	 */
