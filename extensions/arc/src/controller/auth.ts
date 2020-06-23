@@ -20,21 +20,6 @@ class SslAuth implements Authentication {
 	}
 }
 
-export class KerberosAuth extends SslAuth implements Authentication {
-
-	constructor(public kerberosToken: string) {
-		super();
-	}
-
-	applyToRequest(requestOptions: request.Options): void {
-		super.applyToRequest(requestOptions);
-		if (requestOptions && requestOptions.headers) {
-			requestOptions.headers['Authorization'] = `Negotiate ${this.kerberosToken}`;
-		}
-		requestOptions.auth = undefined;
-	}
-}
-
 export class BasicAuth extends SslAuth implements Authentication {
 	constructor(public username: string, public password: string) {
 		super();
@@ -45,20 +30,6 @@ export class BasicAuth extends SslAuth implements Authentication {
 		requestOptions.auth = {
 			username: this.username, password: this.password
 		};
-	}
-}
-
-export class OAuthWithSsl extends SslAuth implements Authentication {
-	constructor(public accessToken: string) {
-		super();
-	}
-
-	applyToRequest(requestOptions: request.Options): void {
-		super.applyToRequest(requestOptions);
-		if (requestOptions && requestOptions.headers) {
-			requestOptions.headers['Authorization'] = `Bearer ${this.accessToken}`;
-		}
-		requestOptions.auth = undefined;
 	}
 }
 

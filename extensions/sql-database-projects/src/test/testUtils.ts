@@ -49,7 +49,7 @@ export async function generateTestFolderPath(): Promise<string> {
 	return folderPath;
 }
 
-async function createTestFile(contents: string, fileName: string, folderPath?: string): Promise<string> {
+export async function createTestFile(contents: string, fileName: string, folderPath?: string): Promise<string> {
 	folderPath = folderPath ?? await generateTestFolderPath();
 	const filePath = path.join(folderPath, fileName);
 

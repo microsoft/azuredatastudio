@@ -148,7 +148,7 @@ export default () => `
 						</div>
 						<p>
 						${escape(localize('welcomePage.gettingStartedBody',
-		"Discover the capabilities offered by Aure Data Studio and learn how to make the most of them."))}
+		"Discover the capabilities offered by Azure Data Studio and learn how to make the most of them."))}
 						</p>
 						<div class="link_header">
 							<a class="link"

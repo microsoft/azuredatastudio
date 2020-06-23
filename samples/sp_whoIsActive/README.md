@@ -4,11 +4,11 @@ Welcome to **sp_whoisactive** for Azure Data Studio! Sp_whoisactive is a procedu
 
 ## Tasks and insights:
 
-<img src="https://github.com/Microsoft/azuredatastudio/raw/master/samples/sp_whoIsActive/images/insights_section.png" alt="insights" style="width:480px;"/>
+<img src="https://github.com/Microsoft/azuredatastudio/raw/main/samples/sp_whoIsActive/images/insights_section.png" alt="insights" style="width:480px;"/>
 
 Details:
 
-<img src="https://github.com/Microsoft/azuredatastudio/raw/master/samples/sp_whoIsActive/images/insights_details_section.png" alt="insights" style="width:240px;"/>
+<img src="https://github.com/Microsoft/azuredatastudio/raw/main/samples/sp_whoIsActive/images/insights_details_section.png" alt="insights" style="width:240px;"/>
 
 
 ## Why use sp_whoisactive?
@@ -31,7 +31,7 @@ See [sp_whoisactive extension project] in the Azure Data Studio for the extensio
 
 [Adam Machanic’s blog]:http://sqlblog.com/blogs/adam_machanic/default.aspx
 [sp_whoisactive Documentation]:http://whoisactive.com/
-[sp_whoisactive extension project]:https://github.com/Microsoft/azuredatastudio/tree/master/samples/sp_whoIsActive
+[sp_whoisactive extension project]:https://github.com/Microsoft/azuredatastudio/tree/main/samples/sp_whoIsActive
 [extension authoring guide]:https://github.com/Microsoft/azuredatastudio/wiki/Getting-started-with-Extensibility
 
 ## Contributions and "thank you"

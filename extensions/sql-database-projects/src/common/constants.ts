@@ -41,6 +41,7 @@ export const databaseReferenceSameDatabase = localize('databaseReferenceSameData
 export const databaseReferenceDifferentDabaseSameServer = localize('databaseReferenceDifferentDabaseSameServer', "Different database, same server");
 export const databaseReferenceDatabaseName = localize('databaseReferenceDatabaseName', "Database name");
 export const dacpacFiles = localize('dacpacFiles', "dacpac Files");
+export const publishSettingsFiles = localize('publishSettingsFiles', "Publish Settings File");
 export const systemDatabase = localize('systemDatabase', "System Database");
 export function newObjectNamePrompt(objectType: string) { return localize('newObjectNamePrompt', 'New {0} name:', objectType); }
 
@@ -61,6 +62,11 @@ export const connectionRadioButtonLabel = localize('connectionRadioButtonLabel',
 export const selectConnectionRadioButtonsTitle = localize('selectconnectionRadioButtonsTitle', "Specify connection from:");
 export const dataSourceDropdownTitle = localize('dataSourceDropdownTitle', "Data source");
 export const noDataSourcesText = localize('noDataSourcesText', "No data sources in this project");
+export const loadProfileButtonText = localize('loadProfileButtonText', "Load Profile...");
+export const profileWarningText = localize('profileWarningText', "⚠Warning: Only database name and SQLCMD variables are able to be loaded from a profile at this time");
+export const sqlCmdTableLabel = localize('sqlCmdTableLabel', "SQLCMD Variables");
+export const sqlCmdVariableColumn = localize('sqlCmdVariableColumn', "Variable");
+export const sqlCmdValueColumn = localize('sqlCmdValueColumn', "Value");
 
 // Error messages
 
@@ -87,6 +93,7 @@ export const databaseNameRequired = localize('databaseNameRequired', "Database n
 export const invalidDataSchemaProvider = localize('invalidDataSchemaProvider', "Invalid DSP in .sqlproj file");
 export const invalidDatabaseReference = localize('invalidDatabaseReference', "Invalid database reference in .sqlproj file");
 export const databaseSelectionRequired = localize('databaseSelectionRequired', "Database selection is required to import a project");
+export const unableToCreateDeploymentConnection = localize('unableToCreateDeploymentConnection', "Unable to construct connection");
 export function projectAlreadyOpened(path: string) { return localize('projectAlreadyOpened', "Project '{0}' is already opened.", path); }
 export function projectAlreadyExists(name: string, path: string) { return localize('projectAlreadyExists', "A project named {0} already exists in {1}.", name, path); }
 export function noFileExist(fileName: string) { return localize('noFileExist', "File {0} doesn't exist", fileName); }
@@ -132,6 +139,7 @@ export const NetCoreTargets = '$(NETCoreTargetsPath)\\Microsoft.Data.Tools.Schem
 export const SqlDbTargets = '$(SQLDBExtensionsRefPath)\\Microsoft.Data.Tools.Schema.SqlTasks.targets';
 export const MsBuildtargets = '$(MSBuildExtensionsPath)\\Microsoft\\VisualStudio\\v$(VisualStudioVersion)\\SSDT\\Microsoft.Data.Tools.Schema.SqlTasks.targets';
 export const NetCoreCondition = '\'$(NetCoreBuild)\' == \'true\'';
+export const NotNetCoreCondition = '\'$(NetCoreBuild)\' != \'true\'';
 export const SqlDbPresentCondition = '\'$(SQLDBExtensionsRefPath)\' != \'\'';
 export const SqlDbNotPresentCondition = '\'$(SQLDBExtensionsRefPath)\' == \'\'';
 export const RoundTripSqlDbPresentCondition = '\'$(NetCoreBuild)\' != \'true\' AND \'$(SQLDBExtensionsRefPath)\' != \'\'';
@@ -143,6 +151,9 @@ export const ProjJsonToClean = '$(BaseIntermediateOutputPath)\\project.assets.js
 export const NETFrameworkAssembly = 'Microsoft.NETFramework.ReferenceAssemblies';
 export const VersionNumber = '1.0.0';
 export const All = 'All';
+
+// Profile XML names
+export const targetDatabaseName = 'TargetDatabaseName';
 
 // SQL connection string components
 export const initialCatalogSetting = 'Initial Catalog';

@@ -5,9 +5,10 @@
 
 import * as should from 'should';
 import 'mocha';
-import { resourceTypeToDisplayName, ResourceType, parseEndpoint } from '../../common/utils';
+import { resourceTypeToDisplayName, parseEndpoint, parseInstanceName } from '../../common/utils';
 
 import * as loc from '../../localizedConstants';
+import { ResourceType } from '../../constants';
 
 describe('resourceTypeToDisplayName Method Tests', () => {
 	it('Display Name should be correct for valid ResourceType', function (): void {
@@ -43,3 +44,20 @@ describe('parseEndpoint Method Tests', () => {
 	});
 });
 
+describe('parseInstanceName Method Tests', () => {
+	it('Should parse valid instanceName with namespace correctly', function (): void {
+		should(parseInstanceName('mynamespace_myinstance')).equal('myinstance');
+	});
+
+	it('Should parse valid instanceName without namespace correctly', function (): void {
+		should(parseInstanceName('myinstance')).equal('myinstance');
+	});
+
+	it('Should return empty string when undefined value passed in', function (): void {
+		should(parseInstanceName(undefined)).equal('');
+	});
+
+	it('Should return empty string when empty string value passed in', function (): void {
+		should(parseInstanceName('')).equal('');
+	});
+});
