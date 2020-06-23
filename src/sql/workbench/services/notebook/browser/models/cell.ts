@@ -26,7 +26,6 @@ import { firstIndex, find } from 'vs/base/common/arrays';
 import { HideInputTag } from 'sql/platform/notebooks/common/outputRegistry';
 import { FutureInternal, notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Disposable } from 'vs/base/common/lifecycle';
 
 let modelId = 0;
@@ -59,13 +58,11 @@ export class CellModel extends Disposable implements ICellModel {
 	private _isCollapsed: boolean;
 	private _onCollapseStateChanged = new Emitter<boolean>();
 	private _modelContentChangedEvent: IModelContentChangedEvent;
-	private _isCommandExecutionSettingEnabled: boolean;
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
 		@optional(INotebookService) private _notebookService?: INotebookService,
 		@optional(ICommandService) private _commandService?: ICommandService,
-		@optional(IConfigurationService) private _configurationService?: IConfigurationService
 	) {
 		super();
 		this.id = `${modelId++}`;
@@ -87,15 +84,6 @@ export class CellModel extends Disposable implements ICellModel {
 		// if the fromJson() method was already called and _cellGuid was previously set, don't generate another UUID unnecessarily
 		this._cellGuid = this._cellGuid || generateUuid();
 		this.createUri();
-		if (this._configurationService) {
-			const previewFeaturesKey = 'workbench.enablePreviewFeatures';
-			this._isCommandExecutionSettingEnabled = this._configurationService.getValue(previewFeaturesKey);
-			this._register(this._configurationService.onDidChangeConfiguration(e => {
-				if (e.affectsConfiguration(previewFeaturesKey)) {
-					this._isCommandExecutionSettingEnabled = this._configurationService.getValue(previewFeaturesKey);
-				}
-			}));
-		}
 	}
 
 	public equals(other: ICellModel) {
@@ -714,10 +702,6 @@ export class CellModel extends Disposable implements ICellModel {
 
 	// Run ADS commands via a notebook. Configured by a setting (turned off by default).
 	private checkForAdsCommandMagic(): boolean {
-		if (!this._isCommandExecutionSettingEnabled) {
-			return false;
-		}
-
 		let executeCommandMagic = '%%ADS_EXECUTE_COMMAND';
 		if (this._source && this._source.length) {
 			// Magics aren't allowed to have spaces before the %%, so using startsWith() is fine
@@ -728,7 +712,7 @@ export class CellModel extends Disposable implements ICellModel {
 					// Similar to the markdown renderer, we should not allow downloadResource here
 					if (commandName && commandName !== '_workbench.downloadResource') {
 						let args = commandNamePlusArgs.replace(commandName + ' ', '');
-						this._commandService.executeCommand(commandName, [args]);
+						this._commandService.executeCommand(commandName, args);
 					}
 					return true;
 				}
