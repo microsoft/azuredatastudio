@@ -29,7 +29,7 @@ export const newSupportRequest = localize('arc.newSupportRequest', "New support 
 export const diagnoseAndSolveProblems = localize('arc.diagnoseAndSolveProblems', "Diagnose and solve problems");
 export const supportAndTroubleshooting = localize('arc.supportAndTroubleshooting', "Support + troubleshooting");
 
-export const createNew = localize('arc.createNew', "Create New");
+export const newInstance = localize('arc.createNew', "New Instance");
 export const deleteText = localize('arc.delete', "Delete");
 export const resetPassword = localize('arc.resetPassword', "Reset Password");
 export const openInAzurePortal = localize('arc.openInAzurePortal', "Open in Azure Portal");
@@ -116,10 +116,9 @@ export function resourceDeleted(name: string): string { return localize('arc.res
 export function couldNotFindAzureResource(name: string): string { return localize('arc.couldNotFindAzureResource', "Could not find Azure resource for {0}", name); }
 export function copiedToClipboard(name: string): string { return localize('arc.copiedToClipboard', "{0} copied to clipboard", name); }
 export function clickTheTroubleshootButton(resourceType: string): string { return localize('arc.clickTheTroubleshootButton', "Click the troubleshoot button to open the Azure Arc {0} troubleshooting notebook.", resourceType); }
-export function numVCores(vCores: string): string {
-	const numCores = +vCores;
-	if (numCores && numCores > 0) {
-		return localize('arc.numVCores', "{0} vCores", numCores);
+export function numVCores(vCores: string | undefined): string {
+	if (vCores && +vCores > 0) {
+		return localize('arc.numVCores', "{0} vCores", vCores);
 	} else {
 		return '-';
 	}
