@@ -29,7 +29,7 @@ export class MockInputBox implements vscode.InputBox {
 		return new vscode.Disposable(() => { });
 	};
 	buttons: readonly vscode.QuickInputButton[] = [];
-	onDidTriggerButton: vscode.Event<vscode.QuickInputButton> = (listener) => { return new vscode.Disposable(() => { }); };
+	onDidTriggerButton: vscode.Event<vscode.QuickInputButton> = (_) => { return new vscode.Disposable(() => { }); };
 	prompt: string | undefined;
 	validationMessage: string | undefined;
 	title: string | undefined;
