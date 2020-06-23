@@ -35,31 +35,23 @@ export class PostgresOverviewPage extends DashboardPage {
 				catch { }
 			}));
 
-		this._controllerModel.onEndpointsUpdated(
-			() => this.eventuallyRunOnInitialized(() => this.refreshEndpoints()),
-			this,
-			this.disposables);
+		this.disposables.push(this._controllerModel.onEndpointsUpdated(
+			() => this.eventuallyRunOnInitialized(() => this.refreshEndpoints())));
 
-		this._controllerModel.onRegistrationsUpdated(
-			() => this.eventuallyRunOnInitialized(() => this.refreshProperties()),
-			this,
-			this.disposables);
+		this.disposables.push(this._controllerModel.onRegistrationsUpdated(
+			() => this.eventuallyRunOnInitialized(() => this.refreshProperties())));
 
-		this._postgresModel.onServiceUpdated(
+		this.disposables.push(this._postgresModel.onServiceUpdated(
 			() => this.eventuallyRunOnInitialized(() => {
 				this.refreshProperties();
 				this.refreshNodes();
-			}),
-			this,
-			this.disposables);
+			})));
 
-		this._postgresModel.onPodsUpdated(
+		this.disposables.push(this._postgresModel.onPodsUpdated(
 			() => this.eventuallyRunOnInitialized(() => {
 				this.refreshProperties();
 				this.refreshNodes();
-			}),
-			this,
-			this.disposables);
+			})));
 	}
 
 	protected get title(): string {

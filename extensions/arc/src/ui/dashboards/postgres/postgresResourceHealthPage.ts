@@ -31,10 +31,8 @@ export class PostgresResourceHealthPage extends DashboardPage {
 			});
 		});
 
-		this._postgresModel.onServiceUpdated(
-			() => this.eventuallyRunOnInitialized(() => this.refresh()),
-			this,
-			this.disposables);
+		this.disposables.push(this._postgresModel.onServiceUpdated(
+			() => this.eventuallyRunOnInitialized(() => this.refresh())));
 
 		// Keep the last updated timestamps up to date with the current time
 		this.interval = setInterval(() => this.refresh(), 60 * 1000);

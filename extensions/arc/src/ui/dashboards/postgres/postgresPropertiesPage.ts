@@ -25,15 +25,11 @@ export class PostgresPropertiesPage extends DashboardPage {
 				catch { }
 			}));
 
-		this._postgresModel.onServiceUpdated(
-			() => this.eventuallyRunOnInitialized(() => this.refresh()),
-			this,
-			this.disposables);
+		this.disposables.push(this._postgresModel.onServiceUpdated(
+			() => this.eventuallyRunOnInitialized(() => this.refresh())));
 
-		this._controllerModel.onRegistrationsUpdated(
-			() => this.eventuallyRunOnInitialized(() => this.refresh()),
-			this,
-			this.disposables);
+		this.disposables.push(this._controllerModel.onRegistrationsUpdated(
+			() => this.eventuallyRunOnInitialized(() => this.refresh())));
 	}
 
 	protected get title(): string {

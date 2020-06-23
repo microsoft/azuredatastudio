@@ -24,10 +24,8 @@ export class PostgresConnectionStringsPage extends DashboardPage {
 				catch { }
 			}));
 
-		this._postgresModel.onServiceUpdated(
-			() => this.eventuallyRunOnInitialized(() => this.refresh()),
-			this,
-			this.disposables);
+		this.disposables.push(this._postgresModel.onServiceUpdated(
+			() => this.eventuallyRunOnInitialized(() => this.refresh())));
 	}
 
 	protected get title(): string {
