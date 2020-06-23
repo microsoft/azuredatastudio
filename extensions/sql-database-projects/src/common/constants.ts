@@ -106,6 +106,11 @@ export function mssqlNotFound(mssqlConfigDir: string) { return localize('mssqlNo
 export function projBuildFailed(errorMessage: string) { return localize('projBuildFailed', "Build failed. Check output pane for more details. {0}", errorMessage); }
 export function unexpectedProjectContext(uri: string) { return localize('unexpectedProjectContext', "Unable to establish project context.  Command invoked from unexpected location: {0}", uri); }
 export function unableToDelete(uri: string) { return localize('unableToDelete', "Unable to locate deletion target: '{0}'", uri); }
+export function unableToFindObject(path: string, objType: string) { return localize('unableToFindFile', "Unable to find {1} with path '{0}'", path, objType); }
+
+// Project tree object types
+export const fileObject = localize('fileObject', "file");
+export const folderObject = localize('folderObject', "folder");
 
 // Project script types
 

@@ -316,7 +316,7 @@ export class Project {
 			}
 		}
 
-		throw new Error(`unable to find file with path ${path}`);
+		throw new Error(constants.unableToFindObject(path, constants.fileObject));
 	}
 
 	private addFolderToProjFile(path: string) {
@@ -336,7 +336,7 @@ export class Project {
 			}
 		}
 
-		throw new Error(`unable to find folder with path ${path}`);
+		throw new Error(constants.unableToFindObject(path, constants.folderObject));
 	}
 
 	private addDatabaseReferenceToProjFile(entry: DatabaseReferenceProjectEntry): void {
@@ -366,10 +366,6 @@ export class Project {
 			this.addDatabaseReferenceChildren(ssdtReferenceNode, entry.name);
 			this.findOrCreateItemGroup(constants.ArtifactReference).appendChild(ssdtReferenceNode);
 		}
-	}
-
-	private removeDatabaseReferenceFromProjFile(entry: DatabaseReferenceProjectEntry) {
-		throw new Error(`unable to find db reference with path ${entry.fsUri}`);
 	}
 
 	private databaseReferenceExists(entry: DatabaseReferenceProjectEntry): boolean {
@@ -484,7 +480,6 @@ export class Project {
 					this.removeFolderFromProjFile(entry.relativePath);
 					break;
 				case EntryType.DatabaseReference:
-					this.removeDatabaseReferenceFromProjFile(<DatabaseReferenceProjectEntry>entry);
 					break; // not required but adding so that we dont miss when we add new items
 			}
 		}

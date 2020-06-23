@@ -48,7 +48,7 @@ beforeEach(async function (): Promise<void> {
 	testContext = createContext();
 });
 
-describe('ProjectsController: project controller operations', function (): void {
+describe.skip('ProjectsController: project controller operations', function (): void {
 	before(async function (): Promise<void> {
 		await templates.loadTemplates(path.join(__dirname, '..', '..', 'resources', 'templates'));
 		await baselines.loadBaselines();
@@ -139,7 +139,7 @@ describe('ProjectsController: project controller operations', function (): void 
 		});
 	});
 
-	describe.skip('Deployment and deployment script generation', function (): void {
+	describe('Deployment and deployment script generation', function (): void {
 		it('Deploy dialog should open from ProjectController', async function (): Promise<void> {
 			let opened = false;
 
