@@ -735,10 +735,9 @@ suite('SQL ConnectionManagementService tests', () => {
 		});
 	});
 
-
-	test('connectIfNotConnected should not try to connect with already connected profile', () => {
+	test('getConnection should grab connection that is connected', () => {
 		let profile = <ConnectionProfile>assign({}, connectionProfile);
-		let uri1 = 'connection:connectionId'; //must use default connection uri for test to work.
+		let uri = 'connection:connectionId'; //must use default connection uri for test to work.
 		let options: IConnectionCompletionOptions = {
 			params: {
 				connectionType: ConnectionType.editor,
@@ -748,7 +747,7 @@ suite('SQL ConnectionManagementService tests', () => {
 					onConnectStart: undefined,
 					onDisconnect: undefined,
 					onConnectCanceled: undefined,
-					uri: uri1,
+					uri: uri,
 				},
 				queryRange: undefined,
 				runQueryOnCompletion: RunQueryOnConnectionMode.none,
@@ -760,11 +759,164 @@ suite('SQL ConnectionManagementService tests', () => {
 			showFirewallRuleOnError: true
 		};
 
-		return connect(uri1, options, true, profile).then(result => {
+		return connect(uri, options, true, profile).then(result => {
+			assert.equal(result.connected, true);
+			let returnedProfile = connectionManagementService.getConnection(uri);
+			assert.equal(returnedProfile.groupFullName, profile.groupFullName);
+			assert.equal(returnedProfile.groupId, profile.groupId);
+		});
+	});
+
+	test('connectIfNotConnected should not try to connect with already connected profile', () => {
+		let profile = <ConnectionProfile>assign({}, connectionProfile);
+		let uri = 'connection:connectionId'; //must use default connection uri for test to work.
+		let options: IConnectionCompletionOptions = {
+			params: {
+				connectionType: ConnectionType.editor,
+				input: {
+					onConnectSuccess: undefined,
+					onConnectReject: undefined,
+					onConnectStart: undefined,
+					onDisconnect: undefined,
+					onConnectCanceled: undefined,
+					uri: uri,
+				},
+				queryRange: undefined,
+				runQueryOnCompletion: RunQueryOnConnectionMode.none,
+				isEditConnection: false
+			},
+			saveTheConnection: true,
+			showDashboard: false,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		};
+
+		return connect(uri, options, true, profile).then(result => {
 			assert.equal(result.connected, true);
 			return connectionManagementService.connectIfNotConnected(profile, undefined, true).then(result => {
-				assert.equal(result, uri1);
+				assert.equal(result, uri);
 			});
+		});
+	});
+
+	test('getConnectionString should get connection string of connectionId', () => {
+		let profile = <ConnectionProfile>assign({}, connectionProfile);
+		let uri = 'connection:connectionId'; //must use default connection uri for test to work.
+		let options: IConnectionCompletionOptions = {
+			params: {
+				connectionType: ConnectionType.editor,
+				input: {
+					onConnectSuccess: undefined,
+					onConnectReject: undefined,
+					onConnectStart: undefined,
+					onDisconnect: undefined,
+					onConnectCanceled: undefined,
+					uri: uri,
+				},
+				queryRange: undefined,
+				runQueryOnCompletion: RunQueryOnConnectionMode.none,
+				isEditConnection: false
+			},
+			saveTheConnection: true,
+			showDashboard: false,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		};
+
+		return connect(uri, options, true, profile).then(result => {
+			assert.equal(result.connected, true);
+			let currentConnections = connectionManagementService.getConnections(true);
+			let profileId = currentConnections[0].id;
+			let testConnectionString = 'test_connection_string';
+			mssqlConnectionProvider.setup(x => x.getConnectionString(uri, false)).returns(() => {
+				return Promise.resolve(testConnectionString);
+			});
+			return connectionManagementService.getConnectionString(profileId, false).then(result => {
+				assert.equal(result, testConnectionString);
+			});
+		});
+	});
+
+	test('buildConnectionInfo should get connection string of connectionId', () => {
+		let profile = <ConnectionProfile>assign({}, connectionProfile);
+		let uri = 'connection:connectionId'; //must use default connection uri for test to work.
+		let options: IConnectionCompletionOptions = {
+			params: {
+				connectionType: ConnectionType.editor,
+				input: {
+					onConnectSuccess: undefined,
+					onConnectReject: undefined,
+					onConnectStart: undefined,
+					onDisconnect: undefined,
+					onConnectCanceled: undefined,
+					uri: uri,
+				},
+				queryRange: undefined,
+				runQueryOnCompletion: RunQueryOnConnectionMode.none,
+				isEditConnection: false
+			},
+			saveTheConnection: true,
+			showDashboard: false,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		};
+
+		let providerName = 'MSSQL';
+		let testConnectionString = 'test_connection_string';
+		mssqlConnectionProvider.setup(x => x.buildConnectionInfo('test_connection_string')).returns(() => {
+			let ConnectionInfo: azdata.ConnectionInfo = { options: options };
+			return Promise.resolve(ConnectionInfo);
+		});
+		return connect(uri, options, true, profile).then(result => {
+			assert.equal(result.connected, true);
+			return connectionManagementService.buildConnectionInfo(testConnectionString, providerName).then(result => {
+				assert.equal(result.options, options);
+			});
+		});
+	});
+
+	test('removeConnectionProfileCredentials should return connection profile without password', () => {
+		let profile = assign({}, connectionProfile);
+		connectionStore.setup(x => x.getProfileWithoutPassword(TypeMoq.It.isAny())).returns(() => {
+			let profileWithoutPass = assign({}, connectionProfile);
+			profileWithoutPass.password = undefined;
+			return <ConnectionProfile>profileWithoutPass;
+		});
+		let clearedProfile = connectionManagementService.removeConnectionProfileCredentials(profile);
+		assert.equal(clearedProfile.password, undefined);
+	});
+
+	test('getConnectionProfileById should return profile when given profileId', () => {
+		let profile = <ConnectionProfile>assign({}, connectionProfile);
+		let uri = 'connection:connectionId'; //must use default connection uri for test to work.
+		let options: IConnectionCompletionOptions = {
+			params: {
+				connectionType: ConnectionType.editor,
+				input: {
+					onConnectSuccess: undefined,
+					onConnectReject: undefined,
+					onConnectStart: undefined,
+					onDisconnect: undefined,
+					onConnectCanceled: undefined,
+					uri: uri,
+				},
+				queryRange: undefined,
+				runQueryOnCompletion: RunQueryOnConnectionMode.none,
+				isEditConnection: false
+			},
+			saveTheConnection: true,
+			showDashboard: false,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		};
+
+		return connect(uri, options, true, profile).then(result => {
+			assert.equal(result.connected, true);
+			let currentConnections = connectionManagementService.getConnections(true);
+			let profileId = currentConnections[0].id;
+			let returnedProfile = connectionManagementService.getConnectionProfileById(profileId);
+			assert.equal(returnedProfile.groupFullName, profile.groupFullName);
+			assert.equal(returnedProfile.groupId, profile.groupId);
 		});
 	});
 
@@ -1182,6 +1334,15 @@ suite('SQL ConnectionManagementService tests', () => {
 		return connect(uri, options, true, profile, undefined, undefined, undefined, serverInfo).then(() => {
 			assert(called);
 		});
+	});
+
+	test('getProviderProperties should return properties of a provider in ConnectionManagementService', () => {
+		let mssqlId = 'MSSQL';
+		let pgsqlId = 'PGSQL';
+		let mssqlProperties = connectionManagementService.getProviderProperties('MSSQL');
+		let pgsqlProperties = connectionManagementService.getProviderProperties('PGSQL');
+		assert.equal(mssqlProperties.providerId, mssqlId);
+		assert.equal(pgsqlProperties.providerId, pgsqlId);
 	});
 
 	test('doChangeLanguageFlavor should throw on unknown provider', () => {
