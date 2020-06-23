@@ -39,13 +39,13 @@ describe('JupyterController tests', function () {
 	it('should create new packageManageProvider successfully', async () => {
 		should(controller.packageManageProviders.size).equal(0, 'No package manage providers should exist before activate');
 		let mockProvider = TypeMoq.Mock.ofType(LocalPipPackageManageProvider);
-		should(controller.registerPackageManager('provider1', mockProvider.object)).not.throw();
+		controller.registerPackageManager('provider1', mockProvider.object);
 		should(controller.packageManageProviders.size).equal(1, 'Package manage providers should equal 1 after one provider added');
 	});
 
 	it('should throw when same packageManageProvider added twice', async () => {
 		let mockProvider = TypeMoq.Mock.ofType(LocalPipPackageManageProvider);
-		should(controller.registerPackageManager('provider1', mockProvider.object)).not.throw();
+		controller.registerPackageManager('provider1', mockProvider.object);
 		should(controller.packageManageProviders.size).equal(1, 'Package manage providers should equal 1 after one provider added');
 		should.throws(() => controller.registerPackageManager('provider1', mockProvider.object));
 		should(controller.packageManageProviders.size).equal(1, 'Package manage providers should still equal 1');
