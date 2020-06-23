@@ -609,6 +609,133 @@ suite('SQL ConnectionManagementService tests', () => {
 		assert(connectionManagementService.canChangeConnectionConfig(profile, newGroupId));
 	});
 
+	test('isProfileConnecting should return false for already connected profile', () => {
+		let profile = <ConnectionProfile>assign({}, connectionProfile);
+		let uri = 'Editor Uri';
+		let options: IConnectionCompletionOptions = {
+			params: {
+				connectionType: ConnectionType.editor,
+				input: {
+					onConnectSuccess: undefined,
+					onConnectReject: undefined,
+					onConnectStart: undefined,
+					onDisconnect: undefined,
+					onConnectCanceled: undefined,
+					uri: uri,
+				},
+				queryRange: undefined,
+				runQueryOnCompletion: RunQueryOnConnectionMode.none,
+				isEditConnection: false
+			},
+			saveTheConnection: true,
+			showDashboard: false,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		};
+
+		return connect(uri, options, true, profile).then(result => {
+			assert.equal(result.connected, true);
+			assert(!connectionManagementService.isProfileConnecting(profile));
+		});
+	});
+
+	test('disconnect should disconnect the profile', () => {
+		let profile = <ConnectionProfile>assign({}, connectionProfile);
+		let uri = 'connection:connectionId'; //must use default connection uri for test to work.
+		let options: IConnectionCompletionOptions = {
+			params: {
+				connectionType: ConnectionType.editor,
+				input: {
+					onConnectSuccess: undefined,
+					onConnectReject: undefined,
+					onConnectStart: undefined,
+					onDisconnect: undefined,
+					onConnectCanceled: undefined,
+					uri: uri,
+				},
+				queryRange: undefined,
+				runQueryOnCompletion: RunQueryOnConnectionMode.none,
+				isEditConnection: false
+			},
+			saveTheConnection: true,
+			showDashboard: false,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		};
+
+		return connect(uri, options, true, profile).then(result => {
+			assert.equal(result.connected, true);
+			return connectionManagementService.disconnect(profile).then(() => {
+				assert(!connectionManagementService.isProfileConnected(profile));
+			});
+		});
+	});
+
+	test('cancelConnection should disconnect the profile', () => {
+		let profile = <ConnectionProfile>assign({}, connectionProfile);
+		let uri = 'connection:connectionId'; //must use default connection uri for test to work.
+		let options: IConnectionCompletionOptions = {
+			params: {
+				connectionType: ConnectionType.editor,
+				input: {
+					onConnectSuccess: undefined,
+					onConnectReject: undefined,
+					onConnectStart: undefined,
+					onDisconnect: undefined,
+					onConnectCanceled: undefined,
+					uri: uri,
+				},
+				queryRange: undefined,
+				runQueryOnCompletion: RunQueryOnConnectionMode.none,
+				isEditConnection: false
+			},
+			saveTheConnection: true,
+			showDashboard: false,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		};
+
+		return connect(uri, options, true, profile).then(result => {
+			assert.equal(result.connected, true);
+			return connectionManagementService.cancelConnection(profile).then(() => {
+				assert(!connectionManagementService.isConnected(undefined, profile));
+			});
+		});
+	});
+
+	test('cancelEditorConnection should not delete editor connection when already connected', () => {
+		let uri = 'connection:connectionId'; //must use default connection uri for test to work.
+		let options: IConnectionCompletionOptions = {
+			params: {
+				connectionType: ConnectionType.editor,
+				input: {
+					onConnectSuccess: undefined,
+					onConnectReject: undefined,
+					onConnectStart: undefined,
+					onDisconnect: undefined,
+					onConnectCanceled: undefined,
+					uri: uri,
+				},
+				queryRange: undefined,
+				runQueryOnCompletion: RunQueryOnConnectionMode.none,
+				isEditConnection: false
+			},
+			saveTheConnection: true,
+			showDashboard: false,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		};
+
+		return connect(uri, options).then(result => {
+			assert.equal(result.connected, true);
+			return connectionManagementService.cancelEditorConnection(options.params.input).then(result => {
+				assert.equal(result, false);
+				assert(connectionManagementService.isConnected(uri));
+			});
+		});
+	});
+
+
 	test('connectIfNotConnected should not try to connect with already connected profile', () => {
 		let profile = <ConnectionProfile>assign({}, connectionProfile);
 		let uri1 = 'connection:connectionId'; //must use default connection uri for test to work.
