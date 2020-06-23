@@ -98,6 +98,7 @@ export function cannotResolvePath(path: string) { return localize('cannotResolve
 export function mssqlNotFound(mssqlConfigDir: string) { return localize('mssqlNotFound', "Could not get mssql extension's install location at {0}", mssqlConfigDir); }
 export function projBuildFailed(errorMessage: string) { return localize('projBuildFailed', "Build failed. Check output pane for more details. {0}", errorMessage); }
 export function unexpectedProjectContext(uri: string) { return localize('unexpectedProjectContext', "Unable to establish project context.  Command invoked from unexpected location: {0}", uri); }
+export function unableToDelete(uri: string) { return localize('unableToDelete', "Unable to locate deletion target: '{0}'", uri); }
 
 // Project script types
 

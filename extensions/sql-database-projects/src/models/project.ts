@@ -27,7 +27,7 @@ export class Project {
 	public sqlCmdVariables: Record<string, string> = {};
 
 	public get projectFolderPath() {
-		return path.dirname(this.projectFilePath);
+		return Uri.file(path.dirname(this.projectFilePath)).fsPath;
 	}
 
 	private projFileXmlDoc: any = undefined;

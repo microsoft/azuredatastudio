@@ -138,7 +138,7 @@ export class ProjectsController {
 	}
 
 	public closeProject(treeNode: BaseProjectTreeItem) {
-		const project = ProjectsController.getProjectFromContext(treeNode);
+		const project = this.getProjectFromContext(treeNode);
 		this.projects = this.projects.filter((e) => { return e !== project; });
 		this.refreshProjectsTree();
 	}
@@ -156,7 +156,7 @@ export class ProjectsController {
 	 */
 	public async buildProject(project: Project): Promise<string>;
 	public async buildProject(context: Project | BaseProjectTreeItem): Promise<string | undefined> {
-		const project: Project = ProjectsController.getProjectFromContext(context);
+		const project: Project = this.getProjectFromContext(context);
 
 		// Check mssql extension for project dlls (tracking issue #10273)
 		await this.buildHelper.createBuildDirFolder();
@@ -188,7 +188,7 @@ export class ProjectsController {
 	 */
 	public async deployProject(project: Project): Promise<DeployDatabaseDialog>;
 	public async deployProject(context: Project | BaseProjectTreeItem): Promise<DeployDatabaseDialog> {
-		const project: Project = ProjectsController.getProjectFromContext(context);
+		const project: Project = this.getProjectFromContext(context);
 		let deployDatabaseDialog = this.getDeployDialog(project);
 
 		deployDatabaseDialog.deploy = async (proj, prof) => await this.executionCallback(proj, prof);
@@ -223,7 +223,7 @@ export class ProjectsController {
 			await this.buildProject(treeNode);
 
 			// start schema compare with the dacpac produced from build
-			const project = ProjectsController.getProjectFromContext(treeNode);
+			const project = this.getProjectFromContext(treeNode);
 			const dacpacPath = path.join(project.projectFolderPath, 'bin', 'Debug', `${project.projectFileName}.dacpac`);
 
 			// check that dacpac exists
@@ -238,7 +238,7 @@ export class ProjectsController {
 	}
 
 	public async addFolderPrompt(treeNode: BaseProjectTreeItem) {
-		const project = ProjectsController.getProjectFromContext(treeNode);
+		const project = this.getProjectFromContext(treeNode);
 		const newFolderName = await this.promptForNewObjectName(new templates.ProjectScriptType(templates.folder, constants.folderFriendlyName, ''), project);
 
 		if (!newFolderName) {
@@ -253,7 +253,7 @@ export class ProjectsController {
 	}
 
 	public async addItemPromptFromNode(treeNode: BaseProjectTreeItem, itemTypeName?: string) {
-		await this.addItemPrompt(ProjectsController.getProjectFromContext(treeNode), this.getRelativePath(treeNode), itemTypeName);
+		await this.addItemPrompt(this.getProjectFromContext(treeNode), this.getRelativePath(treeNode), itemTypeName);
 	}
 
 	public async addItemPrompt(project: Project, relativePath: string, itemTypeName?: string) {
@@ -295,7 +295,7 @@ export class ProjectsController {
 	}
 
 	public async delete(context: BaseProjectTreeItem): Promise<void> {
-		const project = ProjectsController.getProjectFromContext(context);
+		const project = this.getProjectFromContext(context);
 
 		const confirmationPrompt = context instanceof FolderNode ? constants.deleteConfirmationContents(context.friendlyName) : constants.deleteConfirmation(context.friendlyName);
 		const response = await this.apiWrapper.showQuickPick([constants.yesString, constants.noString].map(x => { return { label: x }; }), { placeHolder: confirmationPrompt });
@@ -304,17 +304,22 @@ export class ProjectsController {
 			return;
 		}
 
+		let success = false;
+
 		if (context instanceof FileNode || FolderNode) {
 			const fileEntry: ProjectEntry | undefined = project.files.find(x => x.relativePath === utils.trimUri(context.root.uri, context.uri));
 
-			if (undefined) {
-				this.apiWrapper.showErrorMessage('unable to find file to delete');
+			if (fileEntry) {
+				await project.deleteFileFolder(fileEntry);
+				success = true;
 			}
-
-			await project.deleteFileFolder(fileEntry!);
 		}
 
-		this.refreshProjectsTree();
+		if (success) {
+			this.refreshProjectsTree();
+		} else {
+			this.apiWrapper.showErrorMessage(constants.unableToDelete(context.uri.path));
+		}
 	}
 
 	/**
@@ -322,7 +327,7 @@ export class ProjectsController {
 	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project
 	 */
 	public async addDatabaseReference(context: Project | BaseProjectTreeItem): Promise<void> {
-		const project = ProjectsController.getProjectFromContext(context);
+		const project = this.getProjectFromContext(context);
 
 		try {
 			// choose if reference is to master or a dacpac
@@ -484,7 +489,7 @@ export class ProjectsController {
 		}
 	}
 
-	private static getProjectFromContext(context: Project | BaseProjectTreeItem) {
+	private getProjectFromContext(context: Project | BaseProjectTreeItem) {
 		if (context instanceof Project) {
 			return context;
 		}

@@ -233,7 +233,7 @@
         },
         {
           "command": "sqlDatabaseProjects.delete",
-          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.folder || viewItem == databaseProject.itemType.file || viewItem == databaseProject.itemType.reference || viewItem == databaseProject.itemType.dataSource",
+          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.folder || viewItem == databaseProject.itemType.file",
           "group": "9_dbProjectsLast@1"
         },
         {

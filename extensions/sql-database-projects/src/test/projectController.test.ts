@@ -23,6 +23,7 @@ import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
 import { ApiWrapper } from '../common/apiWrapper';
 import { IDeploymentProfile, IGenerateScriptProfile } from '../models/IDeploymentProfile';
 import { exists } from '../common/utils';
+import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 
 let testContext: TestContext;
 
@@ -47,7 +48,7 @@ beforeEach(async function (): Promise<void> {
 	testContext = createContext();
 });
 
-describe.skip('ProjectsController: project controller operations', function (): void {
+describe('ProjectsController: project controller operations', function (): void {
 	before(async function (): Promise<void> {
 		await templates.loadTemplates(path.join(__dirname, '..', '..', 'resources', 'templates'));
 		await baselines.loadBaselines();
@@ -93,9 +94,38 @@ describe.skip('ProjectsController: project controller operations', function (): 
 				should(project.files.length).equal(0, 'Expected to return without throwing an exception or adding a file when an empty/undefined name is provided.');
 			}
 		});
+
+		it('Should find correct ProjectEntry from node', async function (): Promise<void> {
+			let proj = await testUtils.createTestProject(templates.newSqlProjectTemplate);
+			await proj.addFolderItem('UpperFolder');
+			await proj.addFolderItem('UpperFolder/LowerFolder');
+			const scriptEntry = await proj.addScriptItem('UpperFolder/LowerFolder/someScript.sql', 'not a real script');
+			await proj.addScriptItem('UpperFolder/LowerFolder/someOtherScript.sql', 'Also not a real script');
+
+			const projTreeRoot = new ProjectRootTreeItem(proj);
+
+			testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({ label: constants.yesString }));
+
+			// confirm setup
+			should(proj.files.length).equal(5, 'number of file/folder entries');
+			should(path.parse(scriptEntry.fsUri.fsPath).base).equal('someScript.sql');
+			should((await fs.readFile(scriptEntry.fsUri.fsPath)).toString()).equal('not a real script');
+			const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+
+			await projController.delete(projTreeRoot.children.find(x => x.friendlyName === 'UpperFolder')!.children[0] /* LowerFolder */);
+
+			proj = new Project(proj.projectFilePath);
+			await proj.readProjFile(); // reload edited sqlproj from disk
+
+			// confirm result
+			should(proj.files.length).equal(2, 'number of file/folder entries'); // lowerEntry and the contained scripts should be deleted
+			should(proj.files[1].relativePath).equal('UpperFolder');
+
+			should(await exists(scriptEntry.fsUri.fsPath)).equal(false, 'script is supposed to be deleted');
+		});
 	});
 
-	describe('Deployment and deployment script generation', function (): void {
+	describe.skip('Deployment and deployment script generation', function (): void {
 		it('Deploy dialog should open from ProjectController', async function (): Promise<void> {
 			let opened = false;
 
