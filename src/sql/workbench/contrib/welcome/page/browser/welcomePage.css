@@ -652,7 +652,7 @@
 .ads-homepage-section.hero {
 	background-size: 1128px 467px;
 	background-repeat: no-repeat;
-	background-image: url(../../media/homeBanner-icon.svg);
+	background-image: url(../../media/homeBanner_icon.svg);
 	background-repeat: no-repeat;
 	background-position: 160px 0;
 	background-size: cover;
@@ -662,7 +662,7 @@
 .hc-black .ads-homepage-section.hero, .vs-dark .ads-homepage-section.hero {
 	background-size: 1128px 467px;
 	background-repeat: no-repeat;
-	background-image: url(../../media/homeBanner-icon-dark.svg);
+	background-image: url(../../media/homeBanner_icon_dark.svg);
 	background-repeat: no-repeat;
 	background-position: 160px 0;
 	background-size: cover;
@@ -672,21 +672,21 @@
 .ads-homepage.LG .ads-homepage-section.hero {
 	background-size: contain;
 	background-repeat: no-repeat;
-	background-image: url(../../media/homeBanner-icon.svg);
+	background-image: url(../../media/homeBanner_icon.svg);
 	background-position: 94% -54px
 }
 
 .ads-homepage.XL .ads-homepage-section.hero {
 	background-size: 597px;
 	background-repeat: no-repeat;
-	background-image: url(../../media/homeBanner-icon.svg);
+	background-image: url(../../media/homeBanner_icon.svg);
 	background-position: 94% -54px
 }
 
 .hc-black .ads-homepage.LG .ads-homepage-section.hero, .vs-dark .ads-homepage.LG .ads-homepage-section.hero {
 	background-size: 597px;
 	background-repeat: no-repeat;
-	background-image: url(../../media/homeBanner-icon-dark.svg);
+	background-image: url(../../media/homeBanner_icon_dark.svg);
 	background-position: 94% 0
 }
 
@@ -996,45 +996,45 @@
 }
 
 .ads-homepage .ads-homepage-section .history .list li:not(.moreRecent) i, .ads-homepage .ads-homepage-section .pinned .list li i, .ads-homepage .icon-document {
-	-webkit-mask: url(../../media/icon-file-document.svg) no-repeat;
+	-webkit-mask: url(../../media/icon_file_document.svg) no-repeat;
 	-webkit-mask-size: 13px 16px;
-	mask: url(../../media/icon-file-document.svg) no-repeat;
+	mask: url(../../media/icon_file_document.svg) no-repeat;
 	mask-size: 13px 16px;
 	height: 16px;
 	width: 16px
 }
 
 .ads-homepage .ads-homepage-section .history .list li:not(.moreRecent) i[title$=".ipynb"], .ads-homepage .ads-homepage-section .pinned .list li:not(.moreRecent) i[title$=".ipynb"] {
-	-webkit-mask: url(../../media/icon-file-ipynb.svg) no-repeat;
+	-webkit-mask: url(../../media/icon_file_ipynb.svg) no-repeat;
 	-webkit-mask-size: 13px 16px;
-	mask: url(../../media/icon-file-ipynb.svg) no-repeat;
+	mask: url(../../media/icon_file_ipynb.svg) no-repeat;
 	mask-size: 13px 16px;
 	height: 16px;
 	width: 16px
 }
 
 .ads-homepage .ads-homepage-section .history .list li:not(.moreRecent) i[title$=".sql"], .ads-homepage .ads-homepage-section .pinned .list li:not(.moreRecent) i[title$=".sql"] {
-	-webkit-mask: url(../../media/icon-file-sql.svg) no-repeat;
+	-webkit-mask: url(../../media/icon_file_sql.svg) no-repeat;
 	-webkit-mask-size: 13px 16px;
-	mask: url(../../media/icon-file-sql.svg) no-repeat;
+	mask: url(../../media/icon_file_sql.svg) no-repeat;
 	mask-size: 13px 16px;
 	height: 16px;
 	width: 16px
 }
 
 .ads-homepage .ads-homepage-section .history .list li:not(.moreRecent) i[title$=".csv"], .ads-homepage .ads-homepage-section .pinned .list li:not(.moreRecent) a[title$=".csv"] {
-	-webkit-mask: url(../../media/icon-file-csv.svg) no-repeat;
+	-webkit-mask: url(../../media/icon_file_csv.svg) no-repeat;
 	-webkit-mask-size: 13px 16px;
-	mask: url(../../media/icon-file-csv.svg) no-repeat;
+	mask: url(../../media/icon_file_csv.svg) no-repeat;
 	mask-size: 13px 16px;
 	height: 16px;
 	width: 16px
 }
 
 .ads-homepage.XS:not(.SM) .ads-homepage-section .history .list li:not(.moreRecent) i, .ads-homepage.XS:not(.SM) .ads-homepage-section .pinned .list li i, .ads-homepage.XS:not(.SM) .icon-document {
-	-webkit-mask: url(../../media/icon-file-document.svg) no-repeat;
+	-webkit-mask: url(../../media/icon_file_document.svg) no-repeat;
 	-webkit-mask-size: 20px 23px;
-	mask: url(../../media/icon-file-document.svg) no-repeat;
+	mask: url(../../media/icon_file_document.svg) no-repeat;
 	mask-size: 20px 23px;
 	min-height: 29px;
 	min-width: 21px;
@@ -1046,9 +1046,9 @@
 }
 
 .ads-homepage.XS:not(.SM) .ads-homepage-section .history .list li:not(.moreRecent) i[title$=".ipynb"], .ads-homepage.XS:not(.SM) .ads-homepage-section .pinned .list li:not(.moreRecent) i[title$=".ipynb"] {
-	-webkit-mask: url(../../media/icon-file-ipynb.svg) no-repeat;
+	-webkit-mask: url(../../media/icon_file_ipynb.svg) no-repeat;
 	-webkit-mask-size: 20px 23px;
-	mask: url(../../media/icon-file-ipynb.svg) no-repeat;
+	mask: url(../../media/icon_file_ipynb.svg) no-repeat;
 	mask-size: 20px 23px;
 	min-height: 29px;
 	min-width: 21px;
@@ -1060,9 +1060,9 @@
 }
 
 .ads-homepage.XS:not(.SM) .ads-homepage-section .history .list li:not(.moreRecent) i[title$=".sql"], .ads-homepage.XS:not(.SM) .ads-homepage-section .pinned .list li:not(.moreRecent) i[title$=".sql"] {
-	-webkit-mask: url(../../media/icon-file-sql.svg) no-repeat;
+	-webkit-mask: url(../../media/icon_file_sql.svg) no-repeat;
 	-webkit-mask-size: 20px 23px;
-	mask: url(../../media/icon-file-sql.svg) no-repeat;
+	mask: url(../../media/icon_file_sql.svg) no-repeat;
 	mask-size: 20px 23px;
 	min-height: 29px;
 	min-width: 21px;
@@ -1074,9 +1074,9 @@
 }
 
 .ads-homepage.XS:not(.SM) .ads-homepage-section .history .list li:not(.moreRecent) i[title$=".csv"], .ads-homepage.XS:not(.SM) .ads-homepage-section .pinned .list li:not(.moreRecent) a[title$=".csv"] {
-	-webkit-mask: url(../../media/icon-file-csv.svg) no-repeat;
+	-webkit-mask: url(../../media/icon_file_csv.svg) no-repeat;
 	-webkit-mask-size: 20px 23px;
-	mask: url(../../media/icon-file-csv.svg) no-repeat;
+	mask: url(../../media/icon_file_csv.svg) no-repeat;
 	mask-size: 20px 23px;
 	min-height: 29px;
 	min-width: 21px;
@@ -1195,7 +1195,7 @@
 }
 
 .ads-homepage .extension-pack-description {
-	background: url(../../media/extension-pack-img.svg);
+	background: url(../../media/extension_pack_img.svg);
 	background-size: cover;
 	background-position: center;
 	position: relative;

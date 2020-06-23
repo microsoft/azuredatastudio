@@ -165,7 +165,7 @@ export default () => `
 							<div class="flex flex-container-video">
 								<div class="videos-container-video">
 									<a href="https://www.youtube.com/watch?v=Orv7fptVoUA" class="video overview ads-welcome-page-link">
-									<img src="${require.toUrl('./../../media/video-overview.png')}" class="video-overview" id="video-overview" />
+									<img src="${require.toUrl('./../../media/video_overview.png')}" class="video-overview" id="video-overview" />
 										<h4>${escape(localize('welcomePage.videoDescriptionOverview',
 					"Overview of Azure Data Studio"))}</h4>
 									</a>
