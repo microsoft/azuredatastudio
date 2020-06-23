@@ -295,6 +295,8 @@ suite('SQL ConnectionManagementService tests', () => {
 	});
 
 	test('showConnectionDialog should not be called when using showEditConnectionDialog', () => {
+		// showEditConnectionDialog should throw error if not given a connectionProfile.
+		assert.throws(async () => await connectionManagementService.showEditConnectionDialog(undefined));
 		return connectionManagementService.showEditConnectionDialog(connectionProfile).then(() => {
 			verifyShowConnectionDialog(connectionProfile, ConnectionType.default, undefined, false, undefined, false);
 		});
@@ -561,7 +563,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		};
 
 		connectionStore.setup(x => x.deleteConnectionFromConfiguration(TypeMoq.It.isAny())).returns(() => Promise.resolve());
-		//deleteConnection should work for profile not connected.
+		// deleteConnection should work for profile not connected.
 		assert(connectionManagementService.deleteConnection(profile));
 		return connect(uri1, options, true, profile).then(() => {
 			assert(connectionManagementService.deleteConnection(profile));
@@ -643,7 +645,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 	test('disconnect should disconnect the profile when given ConnectionProfile', () => {
 		let profile = <ConnectionProfile>assign({}, connectionProfile);
-		let uri = 'connection:connectionId'; //must use default connection uri for test to work.
+		let uri = 'connection:connectionId'; // must use default connection uri for test to work.
 		let options: IConnectionCompletionOptions = {
 			params: {
 				connectionType: ConnectionType.editor,
@@ -675,7 +677,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 	test('disconnect should disconnect the profile when given uri string', () => {
 		let profile = <ConnectionProfile>assign({}, connectionProfile);
-		let uri = 'connection:connectionId'; //must use default connection uri for test to work.
+		let uri = 'connection:connectionId'; // must use default connection uri for test to work.
 		let options: IConnectionCompletionOptions = {
 			params: {
 				connectionType: ConnectionType.editor,
@@ -707,7 +709,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 	test('cancelConnection should disconnect the profile', () => {
 		let profile = <ConnectionProfile>assign({}, connectionProfile);
-		let uri = 'connection:connectionId'; //must use default connection uri for test to work.
+		let uri = 'connection:connectionId'; // must use default connection uri for test to work.
 		let options: IConnectionCompletionOptions = {
 			params: {
 				connectionType: ConnectionType.editor,
@@ -738,7 +740,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	});
 
 	test('cancelEditorConnection should not delete editor connection when already connected', () => {
-		let uri = 'connection:connectionId'; //must use default connection uri for test to work.
+		let uri = 'connection:connectionId'; // must use default connection uri for test to work.
 		let options: IConnectionCompletionOptions = {
 			params: {
 				connectionType: ConnectionType.editor,
@@ -771,7 +773,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 	test('getConnection should grab connection that is connected', () => {
 		let profile = <ConnectionProfile>assign({}, connectionProfile);
-		let uri = 'connection:connectionId'; //must use default connection uri for test to work.
+		let uri = 'connection:connectionId'; // must use default connection uri for test to work.
 		let options: IConnectionCompletionOptions = {
 			params: {
 				connectionType: ConnectionType.editor,
@@ -803,7 +805,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 	test('connectIfNotConnected should not try to connect with already connected profile', () => {
 		let profile = <ConnectionProfile>assign({}, connectionProfile);
-		let uri = 'connection:connectionId'; //must use default connection uri for test to work.
+		let uri = 'connection:connectionId'; // must use default connection uri for test to work.
 		let options: IConnectionCompletionOptions = {
 			params: {
 				connectionType: ConnectionType.editor,
@@ -835,7 +837,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 	test('getConnectionString should get connection string of connectionId', () => {
 		let profile = <ConnectionProfile>assign({}, connectionProfile);
-		let uri = 'connection:connectionId'; //must use default connection uri for test to work.
+		let uri = 'connection:connectionId'; // must use default connection uri for test to work.
 		let options: IConnectionCompletionOptions = {
 			params: {
 				connectionType: ConnectionType.editor,
@@ -873,7 +875,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 	test('getConnectionString should get connection string of connectionId', () => {
 		let profile = <ConnectionProfile>assign({}, connectionProfile);
-		let uri = 'connection:connectionId'; //must use default connection uri for test to work.
+		let uri = 'connection:connectionId'; // must use default connection uri for test to work.
 		let options: IConnectionCompletionOptions = {
 			params: {
 				connectionType: ConnectionType.editor,
@@ -911,7 +913,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 	test('buildConnectionInfo should get connection string of connectionId', () => {
 		let profile = <ConnectionProfile>assign({}, connectionProfile);
-		let uri = 'connection:connectionId'; //must use default connection uri for test to work.
+		let uri = 'connection:connectionId'; // must use default connection uri for test to work.
 		let options: IConnectionCompletionOptions = {
 			params: {
 				connectionType: ConnectionType.editor,
@@ -960,7 +962,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 	test('getConnectionProfileById should return profile when given profileId', () => {
 		let profile = <ConnectionProfile>assign({}, connectionProfile);
-		let uri = 'connection:connectionId'; //must use default connection uri for test to work.
+		let uri = 'connection:connectionId'; // must use default connection uri for test to work.
 		let options: IConnectionCompletionOptions = {
 			params: {
 				connectionType: ConnectionType.editor,
@@ -1130,6 +1132,10 @@ suite('SQL ConnectionManagementService tests', () => {
 		assert(connectionManagementService.hasRegisteredServers());
 	});
 
+	test('getConnectionIconId should return undefined as there is no mementoObj service', () => {
+		let connectionId = 'connection:connectionId';
+		assert.equal(connectionManagementService.getConnectionIconId(connectionId), undefined);
+	});
 
 	test('getAdvancedProperties should return a list of properties for connectionManagementService', () => {
 		let propertyNames = ['connectionName', 'serverName', 'databaseName', 'userName', 'authenticationType', 'password'];
@@ -1472,7 +1478,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			called = true;
 		});
 		return connect(uri, options).then(() => {
-			called = false; //onLanguageFlavorChanged is called when connecting, must set back to false.
+			called = false; // onLanguageFlavorChanged is called when connecting, must set back to false.
 			connectionManagementService.ensureDefaultLanguageFlavor(uri);
 			assert.equal(called, false, 'do not expect flavor change to be called');
 		});
