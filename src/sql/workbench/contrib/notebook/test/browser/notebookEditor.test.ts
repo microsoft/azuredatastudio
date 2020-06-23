@@ -366,7 +366,7 @@ suite('Test class NotebookEditor', () => {
 	}
 
 	for (const action of [ACTION_IDS.FIND_NEXT, ACTION_IDS.FIND_PREVIOUS]) {
-		for (const range of [<NotebookRange>{}, new NotebookRange(<ICellModel>undefined, 0, 0, 0, 0)]) {
+		for (const range of [<NotebookRange>{}, new NotebookRange(<ICellModel>{}, 0, 0, 0, 0)]) {
 			test(`NotebookEditor: Tests ${action} returns the NotebookRange with cell: '${JSON.stringify(range.cell)}' that is as expected given the findArray`, async () => {
 				await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 				const notebookModel = await notebookEditor.getNotebookModel();
@@ -394,7 +394,7 @@ suite('Test class NotebookEditor', () => {
 		}
 	}
 
-	test(`NotebookEditorDebug: Verifies visibility and decorations are set correctly when FindStateChange callbacks happen`, async () => {
+	test(`NotebookEditor: Verifies visibility and decorations are set correctly when FindStateChange callbacks happen`, async () => {
 		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 		let currentPosition = new NotebookRange(<ICellModel>{}, 0, 0, 0, 0);
 		notebookEditor.setSelection(currentPosition);
