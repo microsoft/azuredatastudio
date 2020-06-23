@@ -19,19 +19,19 @@ describe('JupyterController tests', function () {
 	let controller: JupyterController;
 	let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
 
-	this.beforeAll(async () => {
+	this.beforeAll(() => {
 		mockExtensionContext = new MockExtensionContext();
 		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
 		appContext = new AppContext(mockExtensionContext, mockApiWrapper.object);
 	});
 
-	this.beforeEach(async () => {
+	this.beforeEach(() => {
 		controller = new JupyterController(appContext);
 	});
 
 	it('should activate new JupyterController successfully', async () => {
 		should(controller.extensionContext).deepEqual(appContext.extensionContext, 'Extension context should be passed through');
-		should(await controller.activate()).not.throw();
+		await should(controller.activate()).not.be.rejected();
 		// On activation, local pip and local conda packge providers should exist
 		should(controller.packageManageProviders.size).equal(2, 'Local pip and conda package providers should be default providers');
 	});
