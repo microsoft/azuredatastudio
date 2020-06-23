@@ -15,6 +15,8 @@ export class MiaaModel {
 
 	private _sqlInstanceRouter: SqlInstanceRouterApi;
 	private _status: HybridSqlNsNameGetResponse | undefined;
+	private _databases: DatabaseModel[] = [];
+	private _connectionProfile: azdata.IConnectionProfile | undefined = undefined;
 
 	private readonly _onPasswordUpdated = new vscode.EventEmitter<string>();
 	private readonly _onStatusUpdated = new vscode.EventEmitter<HybridSqlNsNameGetResponse>();
@@ -24,7 +26,7 @@ export class MiaaModel {
 	public onDatabasesUpdated = this._onDatabasesUpdated.event;
 	public passwordLastUpdated?: Date;
 
-	constructor(public connectionProfile: azdata.IConnectionProfile, controllerUrl: string, auth: Authentication, private _namespace: string, private _name: string) {
+	constructor(controllerUrl: string, auth: Authentication, private _namespace: string, private _name: string) {
 		this._sqlInstanceRouter = new SqlInstanceRouterApi(controllerUrl);
 		this._sqlInstanceRouter.setDefaultAuthentication(auth);
 	}
@@ -44,6 +46,13 @@ export class MiaaModel {
 	}
 
 	/**
+	 * The username used to connect to this instance
+	 */
+	public get username(): string | undefined {
+		return this._connectionProfile?.userName;
+	}
+
+	/**
 	 * The status of this instance
 	 */
 	public get status(): string {
@@ -58,19 +67,53 @@ export class MiaaModel {
 	}
 
 	public get databases(): DatabaseModel[] {
-		return [
-			{ name: 'contosoMI54', status: 'online' },
-			{ name: 'contosoMI56', status: 'online' },
-			{ name: 'contosoMI58', status: 'online' },
-		];
+		return this._databases;
 	}
 
 	/** Refreshes the model */
 	public async refresh(): Promise<void> {
-		this._sqlInstanceRouter.apiV1HybridSqlNsNameGet(this._namespace, this._name).then(response => {
+		const instanceRefresh = this._sqlInstanceRouter.apiV1HybridSqlNsNameGet(this._namespace, this._name).then(response => {
 			this._status = response.body;
 			this._onStatusUpdated.fire(this._status);
-			this._onDatabasesUpdated.fire(this.databases);
 		});
+		const promises: Thenable<any>[] = [instanceRefresh];
+		await this.getConnection();
+		if (this._connectionProfile) {
+			const provider = azdata.dataprotocol.getProvider<azdata.MetadataProvider>(this._connectionProfile.providerName, azdata.DataProviderType.MetadataProvider);
+			const databasesRefresh = azdata.connection.getUriForConnection(this._connectionProfile.id).then(ownerUri => {
+				provider.getDatabases(ownerUri).then(databases => {
+					if (databases.length > 0 && typeof (databases[0]) === 'object') {
+						this._databases = (<azdata.DatabaseInfo[]>databases).map(db => { return { name: db.options['name'], status: db.options['state'] }; });
+					} else {
+						this._databases = (<string[]>databases).map(db => { return { name: db, status: '-' }; });
+					}
+					this._onDatabasesUpdated.fire(this._databases);
+				});
+			});
+			promises.push(databasesRefresh);
+		}
+		await Promise.all(promises);
+	}
+
+	private async getConnection(): Promise<void> {
+		if (this._connectionProfile) {
+			return;
+		}
+		const connection = await azdata.connection.openConnectionDialog(['MSSQL']);
+		this._connectionProfile = {
+			serverName: connection.options['serverName'],
+			databaseName: connection.options['databaseName'],
+			authenticationType: connection.options['authenticationType'],
+			providerName: 'MSSQL',
+			connectionName: '',
+			userName: connection.options['user'],
+			password: connection.options['password'],
+			savePassword: false,
+			groupFullName: undefined,
+			saveProfile: true,
+			id: connection.connectionId,
+			groupId: undefined,
+			options: connection.options
+		};
 	}
 }

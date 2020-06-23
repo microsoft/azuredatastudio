@@ -403,7 +403,7 @@ suite.skip('EditorService', () => { // {{SQL CARBON EDIT}} skip suite
 
 		const ed = instantiationService.createInstance(MyEditor, 'my.editor');
 
-		const inp = instantiationService.createInstance(ResourceEditorInput, 'name', 'description', URI.parse('my://resource-delegate'), undefined);
+		const inp = instantiationService.createInstance(ResourceEditorInput, URI.parse('my://resource-delegate'), 'name', 'description', undefined);
 		const delegate = instantiationService.createInstance(DelegatingEditorService, async (delegate, group, input) => {
 			assert.strictEqual(input, inp);
 
@@ -1084,7 +1084,7 @@ suite.skip('EditorService', () => { // {{SQL CARBON EDIT}} skip suite
 		const editor = await service.openEditor(input1, { pinned: true });
 		await service.openEditor(input2, { pinned: true });
 
-		const whenClosed = service.whenClosed([input1.resource, input2.resource]);
+		const whenClosed = service.whenClosed([input1, input2]);
 
 		editor?.group?.closeAllEditors();
 

@@ -80,6 +80,20 @@ describe('ProjectsController: project controller operations', function (): void 
 			should(project.dataSources.length).equal(2); // detailed datasources tests in their own test file
 		});
 
+		it('Should not keep failed to load project in project list.', async function (): Promise<void> {
+			const folderPath = await testUtils.generateTestFolderPath();
+			const sqlProjPath = await testUtils.createTestSqlProjFile('empty file with no valid xml', folderPath);
+			const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+
+			try {
+				await projController.openProject(vscode.Uri.file(sqlProjPath));
+				should.fail(null, null, 'The given project not expected to open');
+			}
+			catch {
+				should(projController.projects.length).equal(0, 'The added project should be removed');
+			}
+		});
+
 		it('Should return silently when no SQL object name provided in prompts', async function (): Promise<void> {
 			for (const name of ['', '    ', undefined]) {
 				testContext.apiWrapper.reset();
@@ -147,6 +161,7 @@ describe('ProjectsController: project controller operations', function (): void 
 
 			const deployHoller = 'hello from callback for deploy()';
 			const generateHoller = 'hello from callback for generateScript()';
+			const profileHoller = 'hello from callback for readPublishProfile()';
 
 			let holler = 'nothing';
 
@@ -160,6 +175,13 @@ describe('ProjectsController: project controller operations', function (): void 
 			projController.setup(x => x.executionCallback(TypeMoq.It.isAny(), TypeMoq.It.is((_): _ is IDeploymentProfile => true))).returns(async () => {
 				holler = deployHoller;
 				return undefined;
+			});
+			projController.setup(x => x.readPublishProfile(TypeMoq.It.isAny())).returns(async () => {
+				holler = profileHoller;
+				return {
+					databaseName: '',
+					sqlCmdVariables: {}
+				};
 			});
 
 			projController.setup(x => x.executionCallback(TypeMoq.It.isAny(), TypeMoq.It.is((_): _ is IGenerateScriptProfile => true))).returns(async () => {
@@ -176,6 +198,22 @@ describe('ProjectsController: project controller operations', function (): void 
 			await dialog.generateScriptClick();
 
 			should(holler).equal(generateHoller, 'executionCallback() is supposed to have been setup and called for GenerateScript scenario');
+
+			dialog = await projController.object.deployProject(proj);
+			await projController.object.readPublishProfile(vscode.Uri.parse('test'));
+
+			should(holler).equal(profileHoller, 'executionCallback() is supposed to have been setup and called for ReadPublishProfile scenario');
+		});
+
+		it('Should read database name and SQLCMD variables from publish profile', async function (): Promise<void> {
+			await baselines.loadBaselines();
+			let profilePath = await testUtils.createTestFile(baselines.publishProfileBaseline, 'publishProfile.publish.xml');
+			const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+
+			let result = await projController.readPublishProfile(vscode.Uri.file(profilePath));
+			should(result.databaseName).equal('targetDb');
+			should(Object.keys(result.sqlCmdVariables).length).equal(1);
+			should(result.sqlCmdVariables['ProdDatabaseName']).equal('MyProdDatabase');
 		});
 	});
 });
