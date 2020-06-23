@@ -16,7 +16,7 @@ import { IConnectionProfile, TaskExecutionMode } from 'azdata';
 import { promises as fs } from 'fs';
 import { ApiWrapper } from '../common/apiWrapper';
 import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
-import { Project, DatabaseReferenceLocation, SystemDatabase, TargetPlatform } from '../models/project';
+import { Project, DatabaseReferenceLocation, SystemDatabase, TargetPlatform, ProjectEntry } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
 import { IDeploymentProfile, IGenerateScriptProfile } from '../models/IDeploymentProfile';
@@ -303,11 +303,17 @@ export class ProjectsController {
 			return;
 		}
 
-		// if ((FileNode)context) {
-		// 	const fileEntry: FileEnry;
-		// 	await project.deleteFile(fileENtry)
-		// }
+		if (context instanceof FileNode) {
+			const fileEntry: ProjectEntry | undefined = project.files.find(x => x.relativePath === utils.trimUri(context.root.uri, context.uri));
 
+			if (undefined) {
+				this.apiWrapper.showErrorMessage('unable to find file to delete');
+			}
+
+			await project.deleteFile(fileEntry!);
+		}
+
+		this.refreshProjectsTree();
 	}
 
 	/**

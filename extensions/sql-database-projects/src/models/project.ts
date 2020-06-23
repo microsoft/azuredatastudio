@@ -182,6 +182,13 @@ export class Project {
 		return fileEntry;
 	}
 
+	public async deleteFile(fileEntry: ProjectEntry): Promise<void> {
+		this.files = this.files.filter(x => x !== fileEntry);
+
+		await fs.unlink(fileEntry.fsUri.fsPath);
+		await this.removeFromProjFile(fileEntry);
+	}
+
 	/**
 	 * Set the compat level of the project
 	 * Just used in tests right now, but can be used later if this functionality is added to the UI
@@ -292,11 +299,29 @@ export class Project {
 		this.findOrCreateItemGroup(constants.Build).appendChild(newFileNode);
 	}
 
+	private removeFileFromProjFile(path: string) {
+		const fileNodes = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Build);
+
+		for (let i = 0; i < fileNodes.length; i++) {
+			if (fileNodes[i].getAttribute(constants.Include) === path) {
+				fileNodes[i].parentNode.removeChild(fileNodes[i]);
+				return;
+			}
+		}
+
+		throw new Error(`unable to find file with path ${path}`);
+	}
+
 	private addFolderToProjFile(path: string) {
 		const newFolderNode = this.projFileXmlDoc.createElement(constants.Folder);
 		newFolderNode.setAttribute(constants.Include, path);
 
 		this.findOrCreateItemGroup(constants.Folder).appendChild(newFolderNode);
+	}
+
+
+	private removeFolderFromProjFile(path: string) {
+		throw new Error(`unable to find folder with path ${path}`);
 	}
 
 	private addDatabaseReferenceToProjFile(entry: DatabaseReferenceProjectEntry): void {
@@ -321,6 +346,10 @@ export class Project {
 			this.addDatabaseReferenceChildren(ssdtReferenceNode, entry.name);
 			this.findOrCreateItemGroup(constants.ArtifactReference).appendChild(ssdtReferenceNode);
 		}
+	}
+
+	private removeDatabaseReferenceFromProjFile(entry: DatabaseReferenceProjectEntry) {
+		throw new Error(`unable to find db reference with path ${entry.fsUri}`);
 	}
 
 	private addDatabaseReferenceChildren(referenceNode: any, name?: string): void {
@@ -410,6 +439,22 @@ export class Project {
 				break;
 			case EntryType.DatabaseReference:
 				this.addDatabaseReferenceToProjFile(<DatabaseReferenceProjectEntry>entry);
+				break; // not required but adding so that we dont miss when we add new items
+		}
+
+		await this.serializeToProjFile(this.projFileXmlDoc);
+	}
+
+	private async removeFromProjFile(entry: ProjectEntry) {
+		switch (entry.type) {
+			case EntryType.File:
+				this.removeFileFromProjFile(entry.relativePath);
+				break;
+			case EntryType.Folder:
+				this.removeFolderFromProjFile(entry.relativePath);
+				break;
+			case EntryType.DatabaseReference:
+				this.removeDatabaseReferenceFromProjFile(<DatabaseReferenceProjectEntry>entry);
 				break; // not required but adding so that we dont miss when we add new items
 		}
 
