@@ -27,7 +27,7 @@ export class Project {
 	public sqlCmdVariables: Record<string, string> = {};
 
 	public get projectFolderPath() {
-		return path.dirname(this.projectFilePath);
+		return Uri.file(path.dirname(this.projectFilePath)).fsPath;
 	}
 
 	private projFileXmlDoc: any = undefined;
@@ -179,6 +179,26 @@ export class Project {
 		return fileEntry;
 	}
 
+	public async exclude(entry: ProjectEntry): Promise<void> {
+		const toExclude: ProjectEntry[] = this.files.filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
+		await this.removeFromProjFile(toExclude);
+		this.files = this.files.filter(x => !x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
+	}
+
+	public async deleteFileFolder(entry: ProjectEntry): Promise<void> {
+		// compile a list of folder contents to delete; if entry is a file, contents will contain only itself
+		const toDeleteFiles: ProjectEntry[] = this.files.filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath) && x.type === EntryType.File);
+		const toDeleteFolders: ProjectEntry[] = this.files.filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath) && x.type === EntryType.Folder).sort(x => -x.relativePath.length);
+
+		await Promise.all(toDeleteFiles.map(x => fs.unlink(x.fsUri.fsPath)));
+
+		for (const folder of toDeleteFolders) {
+			await fs.rmdir(folder.fsUri.fsPath); // TODO: replace .sort() and iteration with rmdir recursive flag once that's unbugged
+		}
+
+		await this.exclude(entry);
+	}
+
 	/**
 	 * Set the compat level of the project
 	 * Just used in tests right now, but can be used later if this functionality is added to the UI
@@ -290,11 +310,37 @@ export class Project {
 		this.findOrCreateItemGroup(constants.Build).appendChild(newFileNode);
 	}
 
+	private removeFileFromProjFile(path: string) {
+		const fileNodes = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Build);
+
+		for (let i = 0; i < fileNodes.length; i++) {
+			if (fileNodes[i].getAttribute(constants.Include) === path) {
+				fileNodes[i].parentNode.removeChild(fileNodes[i]);
+				return;
+			}
+		}
+
+		throw new Error(constants.unableToFindObject(path, constants.fileObject));
+	}
+
 	private addFolderToProjFile(path: string) {
 		const newFolderNode = this.projFileXmlDoc.createElement(constants.Folder);
 		newFolderNode.setAttribute(constants.Include, path);
 
 		this.findOrCreateItemGroup(constants.Folder).appendChild(newFolderNode);
+	}
+
+	private removeFolderFromProjFile(path: string) {
+		const folderNodes = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Folder);
+
+		for (let i = 0; i < folderNodes.length; i++) {
+			if (folderNodes[i].getAttribute(constants.Include) === path) {
+				folderNodes[i].parentNode.removeChild(folderNodes[i]);
+				return;
+			}
+		}
+
+		throw new Error(constants.unableToFindObject(path, constants.folderObject));
 	}
 
 	private addDatabaseReferenceToProjFile(entry: DatabaseReferenceProjectEntry): void {
@@ -419,6 +465,27 @@ export class Project {
 			case EntryType.DatabaseReference:
 				this.addDatabaseReferenceToProjFile(<DatabaseReferenceProjectEntry>entry);
 				break; // not required but adding so that we dont miss when we add new items
+		}
+
+		await this.serializeToProjFile(this.projFileXmlDoc);
+	}
+
+	private async removeFromProjFile(entries: ProjectEntry | ProjectEntry[]) {
+		if (entries instanceof ProjectEntry) {
+			entries = [entries];
+		}
+
+		for (const entry of entries) {
+			switch (entry.type) {
+				case EntryType.File:
+					this.removeFileFromProjFile(entry.relativePath);
+					break;
+				case EntryType.Folder:
+					this.removeFolderFromProjFile(entry.relativePath);
+					break;
+				case EntryType.DatabaseReference:
+					break; // not required but adding so that we dont miss when we add new items
+			}
 		}
 
 		await this.serializeToProjFile(this.projFileXmlDoc);

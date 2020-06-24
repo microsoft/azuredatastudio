@@ -85,6 +85,16 @@
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
+        "command": "sqlDatabaseProjects.delete",
+        "title": "%sqlDatabaseProjects.delete%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.exclude",
+        "title": "%sqlDatabaseProjects.exclude%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
         "command": "sqlDatabaseProjects.build",
         "title": "%sqlDatabaseProjects.build%",
         "category": "%sqlDatabaseProjects.displayName%"
@@ -149,6 +159,10 @@
         },
         {
           "command": "sqlDatabaseProjects.newFolder",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.delete",
           "when": "false"
         },
         {
@@ -227,9 +241,19 @@
           "group": "4_dbProjects_addDatabaseReference"
         },
         {
+          "command": "sqlDatabaseProjects.exclude",
+          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.folder || viewItem == databaseProject.itemType.file",
+          "group": "9_dbProjectsLast@1"
+        },
+        {
+          "command": "sqlDatabaseProjects.delete",
+          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.folder || viewItem == databaseProject.itemType.file",
+          "group": "9_dbProjectsLast@2"
+        },
+        {
           "command": "sqlDatabaseProjects.close",
           "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project",
-          "group": "9_dbProjectsLast"
+          "group": "9_dbProjectsLast@9"
         }
       ],
       "objectExplorer/item/context": [
