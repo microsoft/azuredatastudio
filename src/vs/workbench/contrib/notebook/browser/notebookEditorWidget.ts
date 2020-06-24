@@ -529,9 +529,9 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 			this._onDidFocusEmitter.fire();
 		});
 
-		this._localStore.add(this._webview.onMessage(message => {
+		this._localStore.add(this._webview.onMessage(({ message, forRenderer }) => {
 			if (this.viewModel) {
-				this.notebookService.onDidReceiveMessage(this.viewModel.viewType, this.getId(), message);
+				this.notebookService.onDidReceiveMessage(this.viewModel.viewType, this.getId(), forRenderer, message);
 			}
 		}));
 	}
@@ -1214,8 +1214,12 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 		return this._outputRenderer;
 	}
 
-	postMessage(message: any) {
-		this._webview?.webview.postMessage(message);
+	postMessage(forRendererId: string | undefined, message: any) {
+		if (forRendererId === undefined) {
+			this._webview?.webview.postMessage(message);
+		} else {
+			this._webview?.postRendererMessage(forRendererId, message);
+		}
 	}
 
 	//#endregion
