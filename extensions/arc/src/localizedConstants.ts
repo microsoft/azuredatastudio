@@ -28,6 +28,7 @@ export const backup = localize('arc.backup', "Backup");
 export const newSupportRequest = localize('arc.newSupportRequest', "New support request");
 export const diagnoseAndSolveProblems = localize('arc.diagnoseAndSolveProblems', "Diagnose and solve problems");
 export const supportAndTroubleshooting = localize('arc.supportAndTroubleshooting', "Support + troubleshooting");
+export const resourceHealth = localize('arc.resourceHealth', "Resource health");
 
 export const newInstance = localize('arc.createNew', "New Instance");
 export const deleteText = localize('arc.delete', "Delete");
@@ -64,6 +65,9 @@ export const refresh = localize('arc.refresh', "Refresh");
 export const troubleshoot = localize('arc.troubleshoot', "Troubleshoot");
 export const clickTheNewSupportRequestButton = localize('arc.clickTheNewSupportRequestButton', "Click the new support request button to file a support request in the Azure Portal.");
 export const running = localize('arc.running', "Running");
+export const pending = localize('arc.pending', "Pending");
+export const failed = localize('arc.failed', "Failed");
+export const unknown = localize('arc.unknown', "Unknown");
 export const connected = localize('arc.connected', "Connected");
 export const disconnected = localize('arc.disconnected', "Disconnected");
 export const loading = localize('arc.loading', "Loading...");
@@ -109,7 +113,10 @@ export const arcResources = localize('arc.arcResources', "Azure Arc Resources");
 export const enterANonEmptyPassword = localize('arc.enterANonEmptyPassword', "Enter a non empty password or press escape to exit.");
 export const thePasswordsDoNotMatch = localize('arc.thePasswordsDoNotMatch', "The passwords do not match. Confirm the password or press escape to exit.");
 export const passwordReset = localize('arc.passwordReset', "Password reset successfully");
-export const passwordResetFailed = localize('arc.passwordResetFailed', "Failed to reset password");
+export const podOverview = localize('arc.podOverview', "Pod overview");
+export const condition = localize('arc.condition', "Condition");
+export const details = localize('arc.details', "Details");
+export const lastUpdated = localize('arc.lastUpdated', "Last updated");
 
 export function databaseCreated(name: string): string { return localize('arc.databaseCreated', "Database {0} created", name); }
 export function resourceDeleted(name: string): string { return localize('arc.resourceDeleted', "Resource '{0}' deleted", name); }
@@ -126,6 +133,7 @@ export function numVCores(vCores: string | undefined): string {
 export function couldNotFindRegistration(namespace: string, name: string) { return localize('arc.couldNotFindRegistration', "Could not find controller registration for {0} ({1})", name, namespace); }
 export function resourceDeletionWarning(namespace: string, name: string): string { return localize('arc.resourceDeletionWarning', "Warning! Deleting a resource is permanent and cannot be undone. To delete the resource '{0}.{1}' type the name '{1}' below to proceed.", namespace, name); }
 export function invalidResourceDeletionName(name: string): string { return localize('arc.invalidResourceDeletionName', "The value '{0}' does not match the instance name. Try again or press escape to exit", name); }
+export function updated(when: string): string { return localize('arc.updated', "Updated {0}", when); }
 
 // Errors
 export function refreshFailed(error: any): string { return localize('arc.refreshFailed', "Refresh failed. {0}", getErrorMessage(error)); }
@@ -133,3 +141,4 @@ export function openDashboardFailed(error: any): string { return localize('arc.o
 export function resourceDeletionFailed(name: string, error: any): string { return localize('arc.resourceDeletionFailed', "Failed to delete resource {0}. {1}", name, getErrorMessage(error)); }
 export function databaseCreationFailed(name: string, error: any): string { return localize('arc.databaseCreationFailed', "Failed to create database {0}. {1}", name, getErrorMessage(error)); }
 export function connectToControllerFailed(url: string, error: any): string { return localize('arc.connectToControllerFailed', "Could not connect to controller {0}. {1}", url, getErrorMessage(error)); }
+export function passwordResetFailed(error: any): string { return localize('arc.passwordResetFailed', "Failed to reset password. {0}", getErrorMessage(error)); }
