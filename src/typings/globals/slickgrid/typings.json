@@ -1,8 +1,0 @@
-{
-  "resolution": "main",
-  "tree": {
-    "src": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/5607f54defce88bc52a0440288f434cafffdb5ce/slickgrid/index.d.ts",
-    "raw": "registry:dt/slickgrid#2.1.0+20160818215330",
-    "typings": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/5607f54defce88bc52a0440288f434cafffdb5ce/slickgrid/index.d.ts"
-  }
-}

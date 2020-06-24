@@ -1,4 +1,0 @@
---delay
---ui tdd
---timeout 10000
-test/all.js
