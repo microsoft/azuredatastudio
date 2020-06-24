@@ -14,6 +14,8 @@ import { fromNow } from '../../../common/date';
 export class PostgresResourceHealthPage extends DashboardPage {
 	private interval: NodeJS.Timeout;
 	private podsUpdated?: azdata.TextComponent;
+	private podsLoading?: azdata.LoadingComponent;
+	private conditionsLoading?: azdata.LoadingComponent;
 	private podsTable?: azdata.DeclarativeTableComponent;
 	private conditionsTable?: azdata.DeclarativeTableComponent;
 
@@ -27,10 +29,10 @@ export class PostgresResourceHealthPage extends DashboardPage {
 			}));
 
 		this.disposables.push(this._postgresModel.onServiceUpdated(
-			() => this.eventuallyRunOnInitialized(() => this.refresh())));
+			() => this.eventuallyRunOnInitialized(() => this.handleServiceUpdated())));
 
 		// Keep the last updated timestamps up to date with the current time
-		this.interval = setInterval(() => this.refresh(), 60 * 1000);
+		this.interval = setInterval(() => this.handleServiceUpdated(), 60 * 1000);
 	}
 
 	protected get title(): string {
@@ -61,7 +63,10 @@ export class PostgresResourceHealthPage extends DashboardPage {
 			CSSStyles: titleCSS
 		}).component());
 
-		this.podsUpdated = this.modelView.modelBuilder.text().component();
+		this.podsUpdated = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			value: this.getPodsLastUpdated()
+		}).component();
+
 		content.addItem(this.podsUpdated);
 
 		// Pod overview
@@ -84,9 +89,16 @@ export class PostgresResourceHealthPage extends DashboardPage {
 					rowCssStyles: cssStyles.tableRow
 				}
 			],
-			data: []
+			data: this.getPodsTable()
 		}).component();
-		content.addItem(this.podsTable, { CSSStyles: { 'margin-bottom': '30px' } });
+
+		this.podsLoading = this.modelView.modelBuilder.loadingComponent()
+			.withItem(this.podsTable)
+			.withProperties<azdata.LoadingComponentProperties>({
+				loading: !this._postgresModel.serviceLastUpdated
+			}).component();
+
+		content.addItem(this.podsLoading, { CSSStyles: { 'margin-bottom': '30px' } });
 
 		// Conditions table
 		this.conditionsTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
@@ -125,10 +137,16 @@ export class PostgresResourceHealthPage extends DashboardPage {
 					rowCssStyles: { ...cssStyles.tableRow, 'white-space': 'nowrap' }
 				}
 			],
-			data: []
+			data: this.getConditionsTable()
 		}).component();
-		content.addItem(this.conditionsTable);
 
+		this.conditionsLoading = this.modelView.modelBuilder.loadingComponent()
+			.withItem(this.conditionsTable)
+			.withProperties<azdata.LoadingComponentProperties>({
+				loading: !this._postgresModel.serviceLastUpdated
+			}).component();
+
+		content.addItem(this.conditionsLoading);
 		this.initialized = true;
 		return root;
 	}
@@ -143,6 +161,8 @@ export class PostgresResourceHealthPage extends DashboardPage {
 			refreshButton.onDidClick(async () => {
 				refreshButton.enabled = false;
 				try {
+					this.podsLoading!.loading = true;
+					this.conditionsLoading!.loading = true;
 					await this._postgresModel.refresh();
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.refreshFailed(error));
@@ -156,17 +176,22 @@ export class PostgresResourceHealthPage extends DashboardPage {
 		]).component();
 	}
 
-	private refresh() {
-		this.podsUpdated!.value = loc.updated(fromNow(this._postgresModel.serviceLastUpdated!, true));
+	private getPodsLastUpdated(): string {
+		return this._postgresModel.serviceLastUpdated
+			? loc.updated(fromNow(this._postgresModel.serviceLastUpdated!, true)) : '';
+	}
 
-		this.podsTable!.data = [
-			[this._postgresModel.service?.status?.podsRunning, loc.running],
-			[this._postgresModel.service?.status?.podsPending, loc.pending],
-			[this._postgresModel.service?.status?.podsFailed, loc.failed],
-			[this._postgresModel.service?.status?.podsUnknown, loc.unknown]
+	private getPodsTable(): (string | number)[][] {
+		return [
+			[this._postgresModel.service?.status?.podsRunning ?? 0, loc.running],
+			[this._postgresModel.service?.status?.podsPending ?? 0, loc.pending],
+			[this._postgresModel.service?.status?.podsFailed ?? 0, loc.failed],
+			[this._postgresModel.service?.status?.podsUnknown ?? 0, loc.unknown]
 		];
+	}
 
-		this.conditionsTable!.data = this._postgresModel.service?.status?.conditions?.map(c => {
+	private getConditionsTable(): (string | azdata.ImageComponent)[][] {
+		return this._postgresModel.service?.status?.conditions?.map(c => {
 			const healthy = c.type === 'Ready' ? c.status === 'True' : c.status === 'False';
 
 			const image = this.modelView.modelBuilder.image().withProperties<azdata.ImageComponentProperties>({
@@ -178,11 +203,20 @@ export class PostgresResourceHealthPage extends DashboardPage {
 			}).component();
 
 			return [
-				c.type,
+				c.type ?? '',
 				image,
-				c.message,
-				fromNow(c.lastTransitionTime!, true)
+				c.message ?? '',
+				c.lastTransitionTime ? fromNow(c.lastTransitionTime!, true) : ''
 			];
 		}) ?? [];
+	}
+
+	private handleServiceUpdated() {
+		this.podsUpdated!.value = this.getPodsLastUpdated();
+		this.podsTable!.data = this.getPodsTable();
+		this.podsLoading!.loading = false;
+
+		this.conditionsTable!.data = this.getConditionsTable();
+		this.conditionsLoading!.loading = false;
 	}
 }

@@ -29,26 +29,10 @@ export class PostgresOverviewPage extends DashboardPage {
 		super(modelView);
 
 		this.disposables.push(
-			this._controllerModel.onEndpointsUpdated(
-				() => this.eventuallyRunOnInitialized(() => this.refreshEndpoints())));
-
-		this.disposables.push(
-			this._controllerModel.onRegistrationsUpdated(
-				() => this.eventuallyRunOnInitialized(() => this.refreshProperties())));
-
-		this.disposables.push(
-			this._postgresModel.onServiceUpdated(
-				() => this.eventuallyRunOnInitialized(() => {
-					this.refreshProperties();
-					this.refreshNodes();
-				})));
-
-		this.disposables.push(
-			this._postgresModel.onPodsUpdated(
-				() => this.eventuallyRunOnInitialized(() => {
-					this.refreshProperties();
-					this.refreshNodes();
-				})));
+			this._controllerModel.onEndpointsUpdated(() => this.eventuallyRunOnInitialized(() => this.handleEndpointsUpdated())),
+			this._controllerModel.onRegistrationsUpdated(() => this.eventuallyRunOnInitialized(() => this.handleRegistrationsUpdated())),
+			this._postgresModel.onServiceUpdated(() => this.eventuallyRunOnInitialized(() => this.hadleServiceUpdated())),
+			this._postgresModel.onPodsUpdated(() => this.eventuallyRunOnInitialized(() => this.handlePodsUpdated())));
 	}
 
 	protected get title(): string {
@@ -69,13 +53,17 @@ export class PostgresOverviewPage extends DashboardPage {
 		root.addItem(content, { CSSStyles: { 'margin': '10px 20px 0px 20px' } });
 
 		// Properties
-		this.properties = this.modelView.modelBuilder.propertiesContainer().component();
-		this.propertiesLoading = this.modelView.modelBuilder.loadingComponent().component();
+		this.properties = this.modelView.modelBuilder.propertiesContainer()
+			.withProperties<azdata.PropertiesContainerComponentProperties>({
+				propertyItems: this.getProperties()
+			}).component();
 
-		// Refresh in case the models already have data. Do this before
-		// configuring the loading component so the UI loads correctly initially.
-		this.refreshProperties();
-		this.propertiesLoading.component = this.properties;
+		this.propertiesLoading = this.modelView.modelBuilder.loadingComponent()
+			.withItem(this.properties)
+			.withProperties<azdata.LoadingComponentProperties>({
+				loading: !this._controllerModel.registrationsLastUpdated && !this._postgresModel.serviceLastUpdated && !this._postgresModel.podsLastUpdated
+			}).component();
+
 		content.addItem(this.propertiesLoading, { CSSStyles: cssStyles.text });
 
 		// Service endpoints
@@ -85,15 +73,29 @@ export class PostgresOverviewPage extends DashboardPage {
 			CSSStyles: titleCSS
 		}).component());
 
-		this.kibanaLink = this.modelView.modelBuilder.hyperlink().component();
-		this.grafanaLink = this.modelView.modelBuilder.hyperlink().component();
-		this.kibanaLoading = this.modelView.modelBuilder.loadingComponent().component();
-		this.grafanaLoading = this.modelView.modelBuilder.loadingComponent().component();
+		this.kibanaLink = this.modelView.modelBuilder.hyperlink()
+			.withProperties<azdata.HyperlinkComponentProperties>({
+				label: this.getKibanaLink(),
+				url: this.getKibanaLink()
+			}).component();
 
-		// Refresh before configuring the loading components
-		this.refreshEndpoints();
-		this.kibanaLoading.component = this.kibanaLink;
-		this.grafanaLoading.component = this.grafanaLink;
+		this.grafanaLink = this.modelView.modelBuilder.hyperlink()
+			.withProperties<azdata.HyperlinkComponentProperties>({
+				label: this.getGrafanaLink(),
+				url: this.getGrafanaLink()
+			}).component();
+
+		this.kibanaLoading = this.modelView.modelBuilder.loadingComponent()
+			.withItem(this.kibanaLink)
+			.withProperties<azdata.LoadingComponentProperties>({
+				loading: !this._controllerModel.endpointsLastUpdated
+			}).component();
+
+		this.grafanaLoading = this.modelView.modelBuilder.loadingComponent()
+			.withItem(this.grafanaLink)
+			.withProperties<azdata.LoadingComponentProperties>({
+				loading: !this._controllerModel.endpointsLastUpdated
+			}).component();
 
 		const endpointsTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
 			width: '100%',
@@ -141,7 +143,6 @@ export class PostgresOverviewPage extends DashboardPage {
 			CSSStyles: titleCSS
 		}).component());
 
-		this.nodesTableLoading = this.modelView.modelBuilder.loadingComponent().component();
 		this.nodesTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
 			width: '100%',
 			columns: [
@@ -178,14 +179,16 @@ export class PostgresOverviewPage extends DashboardPage {
 					rowCssStyles: cssStyles.tableRow
 				}
 			],
-			data: []
+			data: this.getNodes()
 		}).component();
 
-		// Refresh before configuring the loading component
-		this.refreshNodes();
-		this.nodesTableLoading.component = this.nodesTable;
-		content.addItem(this.nodesTableLoading, { CSSStyles: { 'margin-bottom': '20px' } });
+		this.nodesTableLoading = this.modelView.modelBuilder.loadingComponent()
+			.withItem(this.nodesTable)
+			.withProperties<azdata.LoadingComponentProperties>({
+				loading: !this._postgresModel.serviceLastUpdated && !this._postgresModel.podsLastUpdated
+			}).component();
 
+		content.addItem(this.nodesTableLoading, { CSSStyles: { 'margin-bottom': '20px' } });
 		this.initialized = true;
 		return root;
 	}
@@ -314,11 +317,11 @@ export class PostgresOverviewPage extends DashboardPage {
 		]).component();
 	}
 
-	private refreshProperties() {
+	private getProperties(): azdata.PropertiesContainerItem[] {
 		const registration = this._controllerModel.getRegistration(ResourceType.postgresInstances, this._postgresModel.namespace, this._postgresModel.name);
 		const endpoint: { ip?: string, port?: number } = this._postgresModel.endpoint;
 
-		this.properties!.propertyItems = [
+		return [
 			{ displayName: loc.name, value: this._postgresModel.name },
 			{ displayName: loc.coordinatorEndpoint, value: `postgresql://postgres@${endpoint.ip}:${endpoint.port}` },
 			{ displayName: loc.status, value: this._postgresModel.service?.status?.state ?? '' },
@@ -328,36 +331,24 @@ export class PostgresOverviewPage extends DashboardPage {
 			{ displayName: loc.subscriptionId, value: registration?.subscriptionId ?? '' },
 			{ displayName: loc.postgresVersion, value: this._postgresModel.service?.spec?.engine?.version?.toString() ?? '' }
 		];
-
-		if (this._controllerModel.registrationsLastUpdated ||
-			this._postgresModel.serviceLastUpdated ||
-			this._postgresModel.podsLastUpdated) {
-
-			this.propertiesLoading!.loading = false;
-		}
 	}
 
-	private refreshEndpoints() {
+	private getKibanaLink(): string {
 		const kibanaQuery = `kubernetes_namespace:"${this._postgresModel.namespace}" and cluster_name:"${this._postgresModel.name}"`;
-		const kibanaUrl = `${this._controllerModel.getEndpoint('logsui')?.endpoint}/app/kibana#/discover?_a=(query:(language:kuery,query:'${kibanaQuery}'))`;
-		this.kibanaLink!.label = kibanaUrl;
-		this.kibanaLink!.url = kibanaUrl;
+		return `${this._controllerModel.getEndpoint('logsui')?.endpoint}/app/kibana#/discover?_a=(query:(language:kuery,query:'${kibanaQuery}'))`;
 
-		const grafanaUrl = `${this._controllerModel.getEndpoint('metricsui')?.endpoint}/d/postgres-metrics?var-Namespace=${this._postgresModel.namespace}&var-Name=${this._postgresModel.name}`;
-		this.grafanaLink!.label = grafanaUrl;
-		this.grafanaLink!.url = grafanaUrl;
-
-		if (this._controllerModel.endpointsLastUpdated) {
-			this.kibanaLoading!.loading = false;
-			this.grafanaLoading!.loading = false;
-		}
 	}
 
-	private refreshNodes() {
+	private getGrafanaLink(): string {
+		const grafanaQuery = `var-Namespace=${this._postgresModel.namespace}&var-Name=${this._postgresModel.name}`;
+		return `${this._controllerModel.getEndpoint('metricsui')?.endpoint}/d/postgres-metrics?${grafanaQuery}`;
+	}
+
+	private getNodes(): string[][] {
 		const endpoint: { ip?: string, port?: number } = this._postgresModel.endpoint;
 
-		this.nodesTable!.data = this._postgresModel.pods?.map((pod: V1Pod) => {
-			const name = pod.metadata?.name;
+		return this._postgresModel.pods?.map((pod: V1Pod) => {
+			const name = pod.metadata?.name ?? '';
 			const role: PodRole | undefined = PostgresModel.getPodRole(pod);
 			const service = pod.metadata?.annotations?.['arcdata.microsoft.com/serviceHost'];
 			const internalDns = service ? `${name}.${service}` : '';
@@ -369,9 +360,37 @@ export class PostgresOverviewPage extends DashboardPage {
 				role === PodRole.Router ? `${endpoint.ip}:${endpoint.port}` : internalDns
 			];
 		}) ?? [];
+	}
 
-		if (this._postgresModel.serviceLastUpdated || this._postgresModel.podsLastUpdated) {
-			this.nodesTableLoading!.loading = false;
-		}
+	private handleEndpointsUpdated() {
+		this.kibanaLink!.label = this.getKibanaLink();
+		this.kibanaLink!.url = this.getKibanaLink();
+		this.kibanaLoading!.loading = false;
+
+		this.grafanaLink!.label = this.getGrafanaLink();
+		this.grafanaLink!.url = this.getGrafanaLink();
+		this.grafanaLoading!.loading = false;
+	}
+
+	private handleRegistrationsUpdated() {
+		this.properties!.propertyItems = this.getProperties();
+		this.propertiesLoading!.loading = false;
+	}
+
+	private hadleServiceUpdated() {
+		this.properties!.propertyItems = this.getProperties();
+		this.propertiesLoading!.loading = false;
+
+		this.nodesTable!.data = this.getNodes();
+		this.nodesTableLoading!.loading = false;
+
+	}
+
+	private handlePodsUpdated() {
+		this.properties!.propertyItems = this.getProperties();
+		this.propertiesLoading!.loading = false;
+
+		this.nodesTable!.data = this.getNodes();
+		this.nodesTableLoading!.loading = false;
 	}
 }

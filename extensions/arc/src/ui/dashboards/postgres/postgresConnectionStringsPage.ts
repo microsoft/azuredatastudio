@@ -7,18 +7,19 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as loc from '../../../localizedConstants';
 import { IconPathHelper, cssStyles } from '../../../constants';
-import { KeyValueContainer, InputKeyValue } from '../../components/keyValueContainer';
+import { KeyValueContainer, InputKeyValue, KeyValue } from '../../components/keyValueContainer';
 import { DashboardPage } from '../../components/dashboardPage';
 import { PostgresModel } from '../../../models/postgresModel';
 
 export class PostgresConnectionStringsPage extends DashboardPage {
+	private loading?: azdata.LoadingComponent;
 	private keyValueContainer?: KeyValueContainer;
 
 	constructor(protected modelView: azdata.ModelView, private _postgresModel: PostgresModel) {
 		super(modelView);
 
 		this.disposables.push(this._postgresModel.onServiceUpdated(
-			() => this.eventuallyRunOnInitialized(() => this.refresh())));
+			() => this.eventuallyRunOnInitialized(() => this.handleServiceUpdated())));
 	}
 
 	protected get title(): string {
@@ -58,8 +59,14 @@ export class PostgresConnectionStringsPage extends DashboardPage {
 		infoAndLink.addItem(link);
 		content.addItem(infoAndLink, { CSSStyles: { 'margin-bottom': '25px' } });
 
-		this.keyValueContainer = new KeyValueContainer(this.modelView.modelBuilder, []);
-		content.addItem(this.keyValueContainer.container);
+		this.keyValueContainer = new KeyValueContainer(this.modelView.modelBuilder, this.getConnectionStrings());
+		this.loading = this.modelView.modelBuilder.loadingComponent()
+			.withItem(this.keyValueContainer.container)
+			.withProperties<azdata.LoadingComponentProperties>({
+				loading: !this._postgresModel.serviceLastUpdated
+			}).component();
+
+		content.addItem(this.loading);
 		this.initialized = true;
 		return root;
 	}
@@ -74,6 +81,7 @@ export class PostgresConnectionStringsPage extends DashboardPage {
 			refreshButton.onDidClick(async () => {
 				refreshButton.enabled = false;
 				try {
+					this.loading!.loading = true;
 					await this._postgresModel.refresh();
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.refreshFailed(error));
@@ -87,10 +95,10 @@ export class PostgresConnectionStringsPage extends DashboardPage {
 		]).component();
 	}
 
-	private refresh() {
+	private getConnectionStrings(): KeyValue[] {
 		const endpoint: { ip?: string, port?: number } = this._postgresModel.endpoint;
 
-		this.keyValueContainer?.refresh([
+		return [
 			new InputKeyValue('ADO.NET', `Server=${endpoint.ip};Database=postgres;Port=${endpoint.port};User Id=postgres;Password={your_password_here};Ssl Mode=Require;`),
 			new InputKeyValue('C++ (libpq)', `host=${endpoint.ip} port=${endpoint.port} dbname=postgres user=postgres password={your_password_here} sslmode=require`),
 			new InputKeyValue('JDBC', `jdbc:postgresql://${endpoint.ip}:${endpoint.port}/postgres?user=postgres&password={your_password_here}&sslmode=require`),
@@ -100,6 +108,11 @@ export class PostgresConnectionStringsPage extends DashboardPage {
 			new InputKeyValue('Python', `dbname='postgres' user='postgres' host='${endpoint.ip}' password='{your_password_here}' port='${endpoint.port}' sslmode='true'`),
 			new InputKeyValue('Ruby', `host=${endpoint.ip}; dbname=postgres user=postgres password={your_password_here} port=${endpoint.port} sslmode=require`),
 			new InputKeyValue('Web App', `Database=postgres; Data Source=${endpoint.ip}; User Id=postgres; Password={your_password_here}`)
-		]);
+		];
+	}
+
+	private handleServiceUpdated() {
+		this.keyValueContainer?.refresh(this.getConnectionStrings());
+		this.loading!.loading = false;
 	}
 }
