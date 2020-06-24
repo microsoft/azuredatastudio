@@ -52,7 +52,7 @@ export class ControllerModel {
 		return this._auth;
 	}
 
-	constructor(private _treeDataProvider: AzureArcTreeDataProvider, public info: ControllerInfo, password?: string) {
+	constructor(public treeDataProvider: AzureArcTreeDataProvider, public info: ControllerInfo, password?: string) {
 		this._endpointsRouter = new EndpointsRouterApi(this.info.url);
 		this._tokenRouter = new TokenRouterApi(this.info.url);
 		this._registrationRouter = new RegistrationRouterApi(this.info.url);
@@ -68,17 +68,17 @@ export class ControllerModel {
 			let password = '';
 			if (this.info.rememberPassword) {
 				// It should be in the credentials store, get it from there
-				password = await this._treeDataProvider.getPassword(this.info);
+				password = await this.treeDataProvider.getPassword(this.info);
 			}
 			if (password) {
 				this.setAuthentication(new BasicAuth(this.info.username, password));
 			} else {
 				// No password yet so prompt for it from the user
-				const dialog = new ConnectToControllerDialog(this._treeDataProvider);
+				const dialog = new ConnectToControllerDialog(this.treeDataProvider);
 				dialog.showDialog(this.info);
 				const model = await dialog.waitForClose();
 				if (model) {
-					this._treeDataProvider.addOrUpdateController(model.controllerModel, model.password, false);
+					this.treeDataProvider.addOrUpdateController(model.controllerModel, model.password, false);
 					this.setAuthentication(new BasicAuth(this.info.username, model.password));
 				}
 			}
