@@ -14,6 +14,8 @@ import { PostgresModel, PodRole } from '../../../models/postgresModel';
 import { promptForResourceDeletion, promptAndConfirmPassword } from '../../../common/utils';
 
 export class PostgresOverviewPage extends DashboardPage {
+	private disposables: vscode.Disposable[] = [];
+
 	private propertiesLoading?: azdata.LoadingComponent;
 	private kibanaLoading?: azdata.LoadingComponent;
 	private grafanaLoading?: azdata.LoadingComponent;
@@ -26,18 +28,30 @@ export class PostgresOverviewPage extends DashboardPage {
 
 	constructor(protected modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
 		super(modelView);
-		this._controllerModel.onEndpointsUpdated(() => this.eventuallyRunOnInitialized(() => this.refreshEndpoints()));
-		this._controllerModel.onRegistrationsUpdated(() => this.eventuallyRunOnInitialized(() => this.refreshProperties()));
 
-		this._postgresModel.onServiceUpdated(() => this.eventuallyRunOnInitialized(() => {
-			this.refreshProperties();
-			this.refreshNodes();
-		}));
+		modelView.onClosed(() =>
+			this.disposables.forEach(d => {
+				try { d.dispose(); }
+				catch { }
+			}));
 
-		this._postgresModel.onPodsUpdated(() => this.eventuallyRunOnInitialized(() => {
-			this.refreshProperties();
-			this.refreshNodes();
-		}));
+		this.disposables.push(this._controllerModel.onEndpointsUpdated(
+			() => this.eventuallyRunOnInitialized(() => this.refreshEndpoints())));
+
+		this.disposables.push(this._controllerModel.onRegistrationsUpdated(
+			() => this.eventuallyRunOnInitialized(() => this.refreshProperties())));
+
+		this.disposables.push(this._postgresModel.onServiceUpdated(
+			() => this.eventuallyRunOnInitialized(() => {
+				this.refreshProperties();
+				this.refreshNodes();
+			})));
+
+		this.disposables.push(this._postgresModel.onPodsUpdated(
+			() => this.eventuallyRunOnInitialized(() => {
+				this.refreshProperties();
+				this.refreshNodes();
+			})));
 	}
 
 	protected get title(): string {
@@ -207,7 +221,7 @@ export class PostgresOverviewPage extends DashboardPage {
 					vscode.window.showInformationMessage(loc.passwordReset);
 				}
 			} catch (error) {
-				vscode.window.showErrorMessage(loc.passwordResetFailed);
+				vscode.window.showErrorMessage(loc.passwordResetFailed(error));
 			} finally {
 				resetPasswordButton.enabled = true;
 			}
