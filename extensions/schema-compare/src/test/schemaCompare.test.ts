@@ -53,8 +53,6 @@ describe('SchemaCompareMainWindow.start', function (): void {
 
 		let result = new SchemaCompareMainWindow(testContext.apiWrapper.object, sc, mockExtensionContext.object);
 		await result.start(null);
-		let promise = new Promise(resolve => setTimeout(resolve, 5000)); // to ensure comparison result view is initialized
-		await promise;
 
 		should(result.getComparisonResult() === undefined);
 
@@ -71,8 +69,6 @@ describe('SchemaCompareMainWindow.start', function (): void {
 
 		let result = new SchemaCompareMainWindow(testContext.apiWrapper.object, sc, mockExtensionContext.object);
 		await result.start(undefined);
-		let promise = new Promise(resolve => setTimeout(resolve, 5000)); // to ensure comparison result view is initialized
-		await promise;
 
 		should.equal(result.sourceEndpointInfo, undefined);
 		should.equal(result.targetEndpointInfo, undefined);
@@ -83,8 +79,6 @@ describe('SchemaCompareMainWindow.start', function (): void {
 
 		let result = new SchemaCompareMainWindow(testContext.apiWrapper.object, sc, mockExtensionContext.object);
 		await result.start({connectionProfile: mockIConnectionProfile});
-		let promise = new Promise(resolve => setTimeout(resolve, 5000)); // to ensure comparison result view is initialized
-		await promise;
 
 		should.notEqual(result.sourceEndpointInfo, undefined);
 		should.equal(result.sourceEndpointInfo.endpointType, mssql.SchemaCompareEndpointType.Database);
@@ -99,8 +93,6 @@ describe('SchemaCompareMainWindow.start', function (): void {
 		let result = new SchemaCompareMainWindow(testContext.apiWrapper.object, sc, mockExtensionContext.object);
 		const dacpacPath = mockFilePath;
 		await result.start(dacpacPath);
-		let promise = new Promise(resolve => setTimeout(resolve, 5000)); // to ensure comparison result view is initialized
-		await promise;
 
 		should.notEqual(result.sourceEndpointInfo, undefined);
 		should.equal(result.sourceEndpointInfo.endpointType, mssql.SchemaCompareEndpointType.Dacpac);
@@ -127,8 +119,6 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 		let result = new SchemaCompareMainWindow(testContext.apiWrapper.object, sc, mockExtensionContext.object);
 
 		await result.start(null);
-		let promise = new Promise(resolve => setTimeout(resolve, 5000)); // to ensure comparison result view is initialized
-		await promise;
 
 		should(result.getComparisonResult() === undefined);
 
@@ -145,8 +135,6 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 		let result = new SchemaCompareMainWindow(testContext.apiWrapper.object, sc, mockExtensionContext.object);
 
 		await result.start(null);
-		let promise = new Promise(resolve => setTimeout(resolve, 5000)); // to ensure comparison result view is initialized
-		await promise;
 
 		should(result.getComparisonResult() === undefined);
 
@@ -163,8 +151,6 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 		let result = new SchemaCompareMainWindow(testContext.apiWrapper.object, sc, mockExtensionContext.object);
 
 		await result.start(null);
-		let promise = new Promise(resolve => setTimeout(resolve, 5000)); // to ensure comparison result view is initialized
-		await promise;
 
 		should(result.getComparisonResult() === undefined);
 
@@ -183,8 +169,6 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 		let result = new SchemaCompareMainWindow(testContext.apiWrapper.object, sc, mockExtensionContext.object);
 
 		await result.start(null);
-		let promise = new Promise(resolve => setTimeout(resolve, 5000)); // to ensure comparison result view is initialized
-		await promise;
 
 		should(result.getComparisonResult() === undefined);
 
