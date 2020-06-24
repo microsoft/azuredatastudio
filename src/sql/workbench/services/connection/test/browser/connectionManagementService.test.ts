@@ -772,6 +772,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	test('getConnection should grab connection that is connected', () => {
 		let profile = <ConnectionProfile>assign({}, connectionProfile);
 		let uri = 'connection:connectionId'; // must use default connection uri for test to work.
+		let badString = 'bad_string';
 		let options: IConnectionCompletionOptions = {
 			params: {
 				connectionType: ConnectionType.editor,
@@ -795,6 +796,8 @@ suite('SQL ConnectionManagementService tests', () => {
 
 		return connect(uri, options, true, profile).then(result => {
 			assert.equal(result.connected, true);
+			// invalid uri check.
+			assert.equal(connectionManagementService.getConnection(badString), undefined);
 			let returnedProfile = connectionManagementService.getConnection(uri);
 			assert.equal(returnedProfile.groupFullName, profile.groupFullName);
 			assert.equal(returnedProfile.groupId, profile.groupId);
@@ -833,9 +836,15 @@ suite('SQL ConnectionManagementService tests', () => {
 		});
 	});
 
+	test('getServerInfo should return undefined when given an invalid string', () => {
+		let badString = 'bad_string';
+		assert.equal(connectionManagementService.getServerInfo(badString), undefined);
+	});
+
 	test('getConnectionString should get connection string of connectionId', () => {
 		let profile = <ConnectionProfile>assign({}, connectionProfile);
 		let uri = 'connection:connectionId'; // must use default connection uri for test to work.
+		let badString = 'bad_string';
 		let options: IConnectionCompletionOptions = {
 			params: {
 				connectionType: ConnectionType.editor,
@@ -857,21 +866,25 @@ suite('SQL ConnectionManagementService tests', () => {
 			showFirewallRuleOnError: true
 		};
 
-		return connect(uri, options, true, profile).then(result => {
-			assert.equal(result.connected, true);
-			let currentConnections = connectionManagementService.getConnections(true);
-			let profileId = currentConnections[0].id;
-			let testConnectionString = 'test_connection_string';
-			mssqlConnectionProvider.setup(x => x.getConnectionString(uri, false)).returns(() => {
-				return Promise.resolve(testConnectionString);
-			});
-			return connectionManagementService.getConnectionString(profileId, false).then(result => {
-				assert.equal(result, testConnectionString);
+		return connectionManagementService.getConnectionString(badString).then(result => {
+			// test for invalid profile id
+			assert.equal(result, undefined);
+			return connect(uri, options, true, profile).then(result => {
+				assert.equal(result.connected, true);
+				let currentConnections = connectionManagementService.getConnections(true);
+				let profileId = currentConnections[0].id;
+				let testConnectionString = 'test_connection_string';
+				mssqlConnectionProvider.setup(x => x.getConnectionString(uri, false)).returns(() => {
+					return Promise.resolve(testConnectionString);
+				});
+				return connectionManagementService.getConnectionString(profileId, false).then(result => {
+					assert.equal(result, testConnectionString);
+				});
 			});
 		});
 	});
 
-	test('getConnectionString should get connection string of connectionId', () => {
+	test('rebuildIntellisenseCache should call rebuildIntelliSenseCache on provider', () => {
 		let profile = <ConnectionProfile>assign({}, connectionProfile);
 		let uri = 'connection:connectionId'; // must use default connection uri for test to work.
 		let options: IConnectionCompletionOptions = {
@@ -961,6 +974,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	test('getConnectionProfileById should return profile when given profileId', () => {
 		let profile = <ConnectionProfile>assign({}, connectionProfile);
 		let uri = 'connection:connectionId'; // must use default connection uri for test to work.
+		let badString = 'bad_string';
 		let options: IConnectionCompletionOptions = {
 			params: {
 				connectionType: ConnectionType.editor,
@@ -981,9 +995,9 @@ suite('SQL ConnectionManagementService tests', () => {
 			showConnectionDialogOnError: true,
 			showFirewallRuleOnError: true
 		};
-
 		return connect(uri, options, true, profile).then(result => {
 			assert.equal(result.connected, true);
+			assert.equal(connectionManagementService.getConnectionProfileById(badString), undefined);
 			let currentConnections = connectionManagementService.getConnections(true);
 			let profileId = currentConnections[0].id;
 			let returnedProfile = connectionManagementService.getConnectionProfileById(profileId);
@@ -1169,8 +1183,11 @@ suite('SQL ConnectionManagementService tests', () => {
 	test('getFormattedUri should return formatted uri when given default type uri or already formatted uri', () => {
 		let testUri = 'connection:';
 		let formattedUri = 'connection:connectionId';
+		let badUri = 'bad_uri';
 		assert.equal(formattedUri, connectionManagementService.getFormattedUri(testUri, connectionProfile));
 		assert.equal(formattedUri, connectionManagementService.getFormattedUri(formattedUri, connectionProfile));
+		// test for invalid URI
+		assert.equal(badUri, connectionManagementService.getFormattedUri(badUri, connectionProfile));
 	});
 
 	test('failed firewall rule connection and failed during open firewall rule should open the firewall rule dialog and connection dialog with error', () => {
@@ -1464,6 +1481,16 @@ suite('SQL ConnectionManagementService tests', () => {
 		assert.equal(providerNames[1], expectedNames[1]);
 	});
 
+	test('ensureDefaultLanguageFlavor should send event if uri is not connected', () => {
+		let uri: string = 'Test Uri';
+		let called = false;
+		connectionManagementService.onLanguageFlavorChanged((changeParams: azdata.DidChangeLanguageFlavorParams) => {
+			called = true;
+		});
+		connectionManagementService.ensureDefaultLanguageFlavor(uri);
+		assert(called);
+	});
+
 	test('ensureDefaultLanguageFlavor should not send event if uri is connected', () => {
 		let uri: string = 'Editor Uri';
 		let options: IConnectionCompletionOptions = {
@@ -1545,6 +1572,16 @@ suite('SQL ConnectionManagementService tests', () => {
 		});
 	});
 
+	test('list and change database tests for invalid uris', () => {
+		let badString = 'bad_string';
+		return connectionManagementService.listDatabases(badString).then(result => {
+			assert(!result);
+			return connectionManagementService.changeDatabase(badString, badString).then(result => {
+				assert(!result);
+			});
+		});
+	});
+
 	test('getTabColorForUri returns undefined when there is no connection for the given URI', () => {
 		let connectionManagementService = createConnectionManagementService();
 		let color = connectionManagementService.getTabColorForUri('invalidUri');
@@ -1577,6 +1614,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 	test('getConnectionCredentials returns the credentials dictionary for a recently used connection profile', async () => {
 		const test_password = 'test_password';
+		let badString = 'bad_string';
 		const profile = createConnectionProfile('test_id', '');
 		const connectionStoreMock = TypeMoq.Mock.ofType(ConnectionStore, TypeMoq.MockBehavior.Loose, new TestStorageService());
 		connectionStoreMock.setup(x => x.getRecentlyUsedConnections(undefined)).returns(() => {
@@ -1589,6 +1627,9 @@ suite('SQL ConnectionManagementService tests', () => {
 		const connectionManagementService = new ConnectionManagementService(connectionStoreMock.object, undefined, undefined, undefined, undefined, undefined, undefined, new TestCapabilitiesService(), undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, getBasicExtensionService());
 		assert.equal(profile.password, '', 'Profile should not have password initially');
 		assert.equal(profile.options['password'], '', 'Profile options should not have password initially');
+		// Check for invalid profile id
+		let badCredentials = await connectionManagementService.getConnectionCredentials(badString);
+		assert.equal(badCredentials, undefined);
 		let credentials = await connectionManagementService.getConnectionCredentials(profile.id);
 		assert.equal(credentials['password'], test_password);
 	});
