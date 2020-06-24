@@ -19,6 +19,7 @@ if "%INTEGRATION_TEST_ELECTRON_PATH%"=="" (
 	:: Run from a build: need to compile all test extensions
 	call yarn gulp compile-extension:admin-tool-ext-win
 	call yarn gulp compile-extension:agent
+	call yarn gulp compile-extension:arc
 	call yarn gulp compile-extension:azurecore
 	call yarn gulp compile-extension:cms
 	call yarn gulp compile-extension:dacpac

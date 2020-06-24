@@ -8,23 +8,25 @@ import { TreeNode } from './treeNode';
 import { MiaaTreeNode } from './miaaTreeNode';
 import { ResourceType } from '../../constants';
 import { PostgresTreeNode } from './postgresTreeNode';
-import { ControllerModel, Registration } from '../../models/controllerModel';
+import { ControllerModel, Registration, ResourceInfo } from '../../models/controllerModel';
 import { ControllerDashboard } from '../dashboards/controller/controllerDashboard';
 import { PostgresModel } from '../../models/postgresModel';
 import { parseInstanceName } from '../../common/utils';
 import { MiaaModel } from '../../models/miaaModel';
 import { Deferred } from '../../common/promise';
 import { RefreshTreeNode } from './refreshTreeNode';
+import { ResourceTreeNode } from './resourceTreeNode';
+import { AzureArcTreeDataProvider } from './azureArcTreeDataProvider';
 
 /**
  * The TreeNode for displaying an Azure Arc Controller
  */
 export class ControllerTreeNode extends TreeNode {
 
-	private _children: TreeNode[] = [];
+	private _children: ResourceTreeNode[] = [];
 	private _childrenRefreshPromise = new Deferred();
 
-	constructor(public model: ControllerModel, private _context: vscode.ExtensionContext) {
+	constructor(public model: ControllerModel, private _context: vscode.ExtensionContext, private _treeDataProvider: AzureArcTreeDataProvider) {
 		super(model.info.url, vscode.TreeItemCollapsibleState.Collapsed, ResourceType.dataControllers);
 		model.onRegistrationsUpdated(registrations => this.refreshChildren(registrations));
 	}
@@ -51,21 +53,52 @@ export class ControllerTreeNode extends TreeNode {
 	}
 
 	private refreshChildren(registrations: Registration[]): void {
-		this._children = <TreeNode[]>registrations.map(registration => {
+		const newChildren: ResourceTreeNode[] = [];
+		registrations.forEach(registration => {
 			if (!registration.instanceNamespace || !registration.instanceName) {
 				console.warn('Registration is missing required namespace and name values, skipping');
-				return undefined;
+				return;
 			}
-			switch (registration.instanceType) {
-				case ResourceType.postgresInstances:
-					const postgresModel = new PostgresModel(this.model.info.url, this.model.auth!, registration.instanceNamespace, parseInstanceName(registration.instanceName));
-					return new PostgresTreeNode(postgresModel, this.model, this._context);
-				case ResourceType.sqlManagedInstances:
-					const miaaModel = new MiaaModel(this.model.info.url, this.model.auth!, registration.instanceNamespace, parseInstanceName(registration.instanceName));
-					return new MiaaTreeNode(miaaModel, this.model);
+
+			const resourceInfo: ResourceInfo = {
+				namespace: registration.instanceNamespace,
+				name: parseInstanceName(registration.instanceName),
+				resourceType: registration.instanceType ?? ''
+			};
+
+			let node = this._children.find(n =>
+				n.model?.info?.name === resourceInfo.name &&
+				n.model?.info?.namespace === resourceInfo.namespace &&
+				n.model?.info?.resourceType === resourceInfo.resourceType);
+
+			// If we don't have this child already then create a new node for it
+			if (!node) {
+				// If we had a stored connectionId copy that over
+				resourceInfo.connectionId = this.model.info.resources.find(info =>
+					info.namespace === resourceInfo.namespace &&
+					info.name === resourceInfo.name &&
+					info.resourceType === resourceInfo.resourceType)?.connectionId;
+
+				switch (registration.instanceType) {
+					case ResourceType.postgresInstances:
+						const postgresModel = new PostgresModel(this.model.info.url, this.model.auth!, resourceInfo, registration);
+						node = new PostgresTreeNode(postgresModel, this.model, this._context);
+						break;
+					case ResourceType.sqlManagedInstances:
+						const miaaModel = new MiaaModel(this.model.info.url, this.model.auth!, resourceInfo, registration, this._treeDataProvider);
+						node = new MiaaTreeNode(miaaModel, this.model);
+						break;
+				}
 			}
-			return undefined;
-		}).filter(item => item); // filter out invalid nodes (controllers or ones without required properties)
+			if (node) {
+				newChildren.push(node);
+			}
+		});
+		this._children = newChildren;
+
+		// Update our model info too
+		this.model.info.resources = <ResourceInfo[]>this._children.map(c => c.model?.info).filter(c => c);
+		this._treeDataProvider.saveControllers();
 		this._childrenRefreshPromise.resolve();
 	}
 }

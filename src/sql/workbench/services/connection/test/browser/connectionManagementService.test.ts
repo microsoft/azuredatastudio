@@ -1199,14 +1199,55 @@ suite('SQL ConnectionManagementService tests', () => {
 		});
 	});
 
-	test('getActiveConnectionCredentials returns the credentials dictionary for a connection profile', () => {
+	test('getConnectionCredentials returns the credentials dictionary for an active connection profile', async () => {
 		let profile = assign({}, connectionProfile);
 		profile.options = { password: profile.password };
 		profile.id = 'test_id';
 		connectionStatusManager.addConnection(profile, 'test_uri');
 		(connectionManagementService as any)._connectionStatusManager = connectionStatusManager;
-		let credentials = connectionManagementService.getActiveConnectionCredentials(profile.id);
+		let credentials = await connectionManagementService.getConnectionCredentials(profile.id);
 		assert.equal(credentials['password'], profile.options['password']);
+	});
+
+	test('getConnectionCredentials returns the credentials dictionary for a recently used connection profile', async () => {
+		const test_password = 'test_password';
+		const profile = createConnectionProfile('test_id', '');
+		const connectionStoreMock = TypeMoq.Mock.ofType(ConnectionStore, TypeMoq.MockBehavior.Loose, new TestStorageService());
+		connectionStoreMock.setup(x => x.getRecentlyUsedConnections(undefined)).returns(() => {
+			return [profile];
+		});
+		connectionStoreMock.setup(x => x.addSavedPassword(TypeMoq.It.isAny())).returns(async () => {
+			profile.password = test_password;
+			return { profile: profile, savedCred: true };
+		});
+		const connectionManagementService = new ConnectionManagementService(connectionStoreMock.object, undefined, undefined, undefined, undefined, undefined, undefined, new TestCapabilitiesService(), undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, getBasicExtensionService());
+		assert.equal(profile.password, '', 'Profile should not have password initially');
+		assert.equal(profile.options['password'], '', 'Profile options should not have password initially');
+		let credentials = await connectionManagementService.getConnectionCredentials(profile.id);
+		assert.equal(credentials['password'], test_password);
+	});
+
+	test('getConnectionCredentials returns the credentials dictionary for a saved connection profile', async () => {
+		const test_password = 'test_password';
+		const profile = createConnectionProfile('test_id', '');
+		const connectionStoreMock = TypeMoq.Mock.ofType(ConnectionStore, TypeMoq.MockBehavior.Loose, new TestStorageService());
+		const group1 = createConnectionGroup('group1');
+		group1.connections = [profile];
+		connectionStoreMock.setup(x => x.getRecentlyUsedConnections(undefined)).returns(() => {
+			return [];
+		});
+		connectionStoreMock.setup(x => x.getConnectionProfileGroups(TypeMoq.It.isAny(), undefined)).returns(() => {
+			return [group1];
+		});
+		connectionStoreMock.setup(x => x.addSavedPassword(TypeMoq.It.isAny())).returns(async () => {
+			profile.password = test_password;
+			return { profile: profile, savedCred: true };
+		});
+		const connectionManagementService = new ConnectionManagementService(connectionStoreMock.object, undefined, undefined, undefined, undefined, undefined, undefined, new TestCapabilitiesService(), undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, getBasicExtensionService());
+		assert.equal(profile.password, '', 'Profile should not have password initially');
+		assert.equal(profile.options['password'], '', 'Profile options should not have password initially');
+		let credentials = await connectionManagementService.getConnectionCredentials(profile.id);
+		assert.equal(credentials['password'], test_password);
 	});
 
 	test('getConnectionUriFromId returns a URI of an active connection with the given id', () => {
@@ -1428,8 +1469,7 @@ test('clearRecentConnection and ConnectionsList should call connectionStore func
 	assert(called);
 });
 
-function createConnectionProfile(id: string): ConnectionProfile {
-
+function createConnectionProfile(id: string, password?: string): ConnectionProfile {
 	const capabilitiesService = new TestCapabilitiesService();
 	return new ConnectionProfile(capabilitiesService, {
 		connectionName: 'newName',
@@ -1438,7 +1478,7 @@ function createConnectionProfile(id: string): ConnectionProfile {
 		serverName: 'testServerName',
 		databaseName: 'testDatabaseName',
 		authenticationType: Constants.integrated,
-		password: 'test',
+		password: password ?? 'test',
 		userName: 'testUsername',
 		groupId: undefined,
 		providerName: Constants.mssqlProviderName,
