@@ -19,8 +19,9 @@ export class MiaaDashboard extends Dashboard {
 
 	public async showDashboard(): Promise<void> {
 		await super.showDashboard();
-		// Kick off the model refresh but don't wait on it since that's all handled with callbacks anyways
-		this._miaaModel.refresh().catch(err => console.log(`Error refreshing MIAA dashboard ${err}`));
+		// Kick off the model refreshes but don't wait on it since that's all handled with callbacks anyways
+		this._controllerModel.refresh().catch(err => console.log(`Error refreshing controller model for MIAA dashboard ${err}`));
+		this._miaaModel.refresh().catch(err => console.log(`Error refreshing MIAA model for MIAA dashboard ${err}`));
 	}
 
 	protected async registerTabs(modelView: azdata.ModelView): Promise<(azdata.DashboardTab | azdata.DashboardTabGroup)[]> {
