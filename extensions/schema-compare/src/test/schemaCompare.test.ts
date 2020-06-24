@@ -13,7 +13,7 @@ import { SchemaCompareDialog } from './../dialogs/schemaCompareDialog';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
 import { SchemaCompareTestService, testStateScmp } from './testSchemaCompareService';
 import { createContext, TestContext } from './testContext';
-import { mockIConnectionProfile, mockFilePath, setEndpointInfo, shouldThrowSpecificError } from './testUtils';
+import { mockIConnectionProfile, mockFilePath, setDacpacEndpointInfo, setDatabaseEndpointInfo, shouldThrowSpecificError } from './testUtils';
 
 // Mock test data
 const mocksource: string = 'source.dacpac';
@@ -56,8 +56,8 @@ describe('SchemaCompareMainWindow.start', function (): void {
 
 		should(result.getComparisonResult() === undefined);
 
-		result.sourceEndpointInfo = await setEndpointInfo(mocksource);
-		result.targetEndpointInfo = await setEndpointInfo(mocktarget);
+		result.sourceEndpointInfo = await setDacpacEndpointInfo(mocksource);
+		result.targetEndpointInfo = await setDacpacEndpointInfo(mocktarget);
 		await result.execute();
 
 		should(result.getComparisonResult() !== undefined);
@@ -122,8 +122,8 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 
 		should(result.getComparisonResult() === undefined);
 
-		result.sourceEndpointInfo = await setEndpointInfo(mocksource);
-		result.targetEndpointInfo = await setEndpointInfo(mocktarget);
+		result.sourceEndpointInfo = await setDacpacEndpointInfo(mocksource);
+		result.targetEndpointInfo = await setDacpacEndpointInfo(mocktarget);
 
 		await shouldThrowSpecificError(async () => await result.execute(), loc.compareErrorMessage('Test failure'));
 	});
@@ -138,8 +138,8 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 
 		should(result.getComparisonResult() === undefined);
 
-		result.sourceEndpointInfo = await setEndpointInfo(mocksource);
-		result.targetEndpointInfo = await setEndpointInfo(mocktarget);
+		result.sourceEndpointInfo = await setDacpacEndpointInfo(mocksource);
+		result.targetEndpointInfo = await setDacpacEndpointInfo(mocktarget);
 
 		await result.execute();
 		testContext.apiWrapper.verify(x => x.showErrorMessage(TypeMoq.It.isAny()), TypeMoq.Times.once());
@@ -154,8 +154,8 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 
 		should(result.getComparisonResult() === undefined);
 
-		result.sourceEndpointInfo = await setEndpointInfo(mocksource);
-		result.targetEndpointInfo = await setEndpointInfo(mocktarget);
+		result.sourceEndpointInfo = await setDacpacEndpointInfo(mocksource);
+		result.targetEndpointInfo = await setDacpacEndpointInfo(mocktarget);
 
 		await result.execute();
 
@@ -172,8 +172,8 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 
 		should(result.getComparisonResult() === undefined);
 
-		result.sourceEndpointInfo = await setEndpointInfo(mocksource);
-		result.targetEndpointInfo = await setEndpointInfo();
+		result.sourceEndpointInfo = await setDacpacEndpointInfo(mocksource);
+		result.targetEndpointInfo = await setDatabaseEndpointInfo();
 
 		await result.execute();
 
