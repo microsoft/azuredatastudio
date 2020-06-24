@@ -20,10 +20,11 @@ export class PostgresResourceHealthPage extends DashboardPage {
 	constructor(protected modelView: azdata.ModelView, private _postgresModel: PostgresModel) {
 		super(modelView);
 
-		modelView.onClosed(() => {
-			try { clearInterval(this.interval); }
-			catch { }
-		});
+		this.disposables.push(
+			modelView.onClosed(() => {
+				try { clearInterval(this.interval); }
+				catch { }
+			}));
 
 		this.disposables.push(this._postgresModel.onServiceUpdated(
 			() => this.eventuallyRunOnInitialized(() => this.refresh())));
