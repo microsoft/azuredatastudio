@@ -21,8 +21,6 @@ export class PostgresTreeNode extends ResourceTreeNode {
 
 	public async openDashboard(): Promise<void> {
 		const postgresDashboard = new PostgresDashboard(this._context, this._controllerModel, this._model);
-		await Promise.all([
-			postgresDashboard.showDashboard(),
-			this._model.refresh()]);
+		await postgresDashboard.showDashboard();
 	}
 }

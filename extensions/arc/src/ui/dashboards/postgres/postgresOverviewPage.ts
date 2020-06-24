@@ -73,7 +73,12 @@ export class PostgresOverviewPage extends DashboardPage {
 
 		// Properties
 		this.properties = this.modelView.modelBuilder.propertiesContainer().component();
-		this.propertiesLoading = this.modelView.modelBuilder.loadingComponent().withItem(this.properties).component();
+		this.propertiesLoading = this.modelView.modelBuilder.loadingComponent().component();
+
+		// Refresh in case the models already have data. Do this before
+		// configuring the loading component so the UI loads correctly initially.
+		this.refreshProperties();
+		this.propertiesLoading.component = this.properties;
 		content.addItem(this.propertiesLoading, { CSSStyles: cssStyles.text });
 
 		// Service endpoints
@@ -85,8 +90,13 @@ export class PostgresOverviewPage extends DashboardPage {
 
 		this.kibanaLink = this.modelView.modelBuilder.hyperlink().component();
 		this.grafanaLink = this.modelView.modelBuilder.hyperlink().component();
-		this.kibanaLoading = this.modelView.modelBuilder.loadingComponent().withItem(this.kibanaLink).component();
-		this.grafanaLoading = this.modelView.modelBuilder.loadingComponent().withItem(this.grafanaLink).component();
+		this.kibanaLoading = this.modelView.modelBuilder.loadingComponent().component();
+		this.grafanaLoading = this.modelView.modelBuilder.loadingComponent().component();
+
+		// Refresh before configuring the loading components
+		this.refreshEndpoints();
+		this.kibanaLoading.component = this.kibanaLink;
+		this.grafanaLoading.component = this.grafanaLink;
 
 		const endpointsTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
 			width: '100%',
@@ -134,6 +144,7 @@ export class PostgresOverviewPage extends DashboardPage {
 			CSSStyles: titleCSS
 		}).component());
 
+		this.nodesTableLoading = this.modelView.modelBuilder.loadingComponent().component();
 		this.nodesTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
 			width: '100%',
 			columns: [
@@ -173,8 +184,11 @@ export class PostgresOverviewPage extends DashboardPage {
 			data: []
 		}).component();
 
-		this.nodesTableLoading = this.modelView.modelBuilder.loadingComponent().withItem(this.nodesTable).component();
+		// Refresh before configuring the loading component
+		this.refreshNodes();
+		this.nodesTableLoading.component = this.nodesTable;
 		content.addItem(this.nodesTableLoading, { CSSStyles: { 'margin-bottom': '20px' } });
+
 		this.initialized = true;
 		return root;
 	}
@@ -313,7 +327,12 @@ export class PostgresOverviewPage extends DashboardPage {
 			{ displayName: loc.postgresVersion, value: this._postgresModel.service?.spec?.engine?.version?.toString() ?? '' }
 		];
 
-		this.propertiesLoading!.loading = false;
+		if (this._controllerModel.registrationsLastUpdated ||
+			this._postgresModel.serviceLastUpdated ||
+			this._postgresModel.podsLastUpdated) {
+
+			this.propertiesLoading!.loading = false;
+		}
 	}
 
 	private refreshEndpoints() {
@@ -326,8 +345,10 @@ export class PostgresOverviewPage extends DashboardPage {
 		this.grafanaLink!.label = grafanaUrl;
 		this.grafanaLink!.url = grafanaUrl;
 
-		this.kibanaLoading!.loading = false;
-		this.grafanaLoading!.loading = false;
+		if (this._controllerModel.endpointsLastUpdated) {
+			this.kibanaLoading!.loading = false;
+			this.grafanaLoading!.loading = false;
+		}
 	}
 
 	private refreshNodes() {
@@ -347,6 +368,8 @@ export class PostgresOverviewPage extends DashboardPage {
 			];
 		}) ?? [];
 
-		this.nodesTableLoading!.loading = false;
+		if (this._postgresModel.serviceLastUpdated || this._postgresModel.podsLastUpdated) {
+			this.nodesTableLoading!.loading = false;
+		}
 	}
 }
