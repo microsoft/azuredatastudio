@@ -9,7 +9,6 @@ import { ControllerTreeNode } from './controllerTreeNode';
 import { TreeNode } from './treeNode';
 import { LoadingControllerNode as LoadingTreeNode } from './loadingTreeNode';
 import { ControllerModel, ControllerInfo } from '../../models/controllerModel';
-import { ResourceType } from '../../constants';
 
 const mementoToken = 'arcControllers';
 
