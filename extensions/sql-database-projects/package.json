@@ -134,7 +134,59 @@
           "command": "sqlDatabaseProjects.open"
         },
         {
+          "command": "sqlDatabaseProjects.close",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.newScript",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.newTable",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.newView",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.newStoredProcedure",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.newItem",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.newFolder",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.delete",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.build",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.deploy",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.properties",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.schemaCompare",
+          "when": "false"
+        },
+        {
           "command": "sqlDatabaseProjects.importDatabase"
+        },
+        {
+          "command": "sqlDatabaseProjects.addDatabaseReference",
+          "when": "false"
         }
       ],
       "view/item/context": [
