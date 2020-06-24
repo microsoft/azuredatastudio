@@ -3301,63 +3301,6 @@
 					],
 					"statistics": [],
 					"flags": "preview"
-				},
-				{
-					"extensionId": "68",
-					"extensionName": "arc",
-					"displayName": "Azure Arc",
-					"shortDescription": "Provides deployment and management capabilities for Azure Arc",
-					"publisher": {
-						"displayName": "Microsoft",
-						"publisherId": "Microsoft",
-						"publisherName": "Microsoft"
-					},
-					"versions": [
-						{
-							"version": "0.1.0",
-							"lastUpdated": "06/22/2020",
-							"assetUri": "",
-							"fallbackAssetUri": "fallbackAssetUri",
-							"files": [
-								{
-									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/arc/arc-0.1.0.vsix"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/arc/images/extension.png"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/arc/README.md"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/arc/package.json"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt"
-								}
-							],
-							"properties": [
-								{
-									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.20.0"
-								},
-								{
-									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.20.0"
-								},
-								{
-									"key": "Microsoft.VisualStudio.Services.Links.Source",
-									"value": "https://github.com/Microsoft/azuredatastudio"
-								}
-							]
-						}
-					],
-					"statistics": [],
-					"flags": "preview"
 				}
 			],
 			"resultMetadata": [
@@ -3366,7 +3309,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 57
+							"count": 56
 						}
 					]
 				}
