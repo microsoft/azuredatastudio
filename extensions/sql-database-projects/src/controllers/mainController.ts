@@ -88,14 +88,11 @@ export default class MainController implements Disposable {
 			filter[constants.sqlDatabaseProject] = ['sqlproj'];
 
 			let files: Uri[] | undefined = await this.apiWrapper.showOpenDialog({ filters: filter });
-			const prevCount = this.projectsController.projects.length;
 
 			if (files) {
 				for (const file of files) {
 					await this.projectsController.openProject(file);
 				}
-
-				await this.projectsController.focusProject(this.projectsController.projects[prevCount]); // focus the first of the newly-opened projects
 			}
 		}
 		catch (err) {
@@ -137,8 +134,10 @@ export default class MainController implements Disposable {
 			// TODO: what if the selected folder is outside the workspace?
 
 			const newProjFolderUri = (selectionResult as Uri[])[0];
-			const newProjFilePath = await this.projectsController.createNewProject(newProjName as string, newProjFolderUri as Uri);
-			return this.projectsController.openProject(Uri.file(newProjFilePath));
+			const newProjFilePath = await this.projectsController.createNewProject(<string>newProjName, newProjFolderUri);
+			const proj = await this.projectsController.openProject(Uri.file(newProjFilePath));
+
+			return proj;
 		}
 		catch (err) {
 			this.apiWrapper.showErrorMessage(getErrorMessage(err));
