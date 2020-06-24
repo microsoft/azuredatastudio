@@ -35,7 +35,7 @@ export class CellModel implements ICellModel {
 	public id: string;
 
 	private _cellType: nb.CellType;
-	private _source: string[];
+	private _source: string | string[];
 	private _language: string;
 	private _cellGuid: string;
 	private _future: FutureInternal;
@@ -71,7 +71,7 @@ export class CellModel implements ICellModel {
 			this.fromJSON(cellData);
 		} else {
 			this._cellType = CellTypes.Code;
-			this._source = [''];
+			this._source = '';
 		}
 
 		this._isEditMode = this._cellType !== CellTypes.Markdown;
@@ -696,7 +696,7 @@ export class CellModel implements ICellModel {
 	}
 
 
-	private getMultilineSource(source: string | string[]): string[] {
+	private getMultilineSource(source: string | string[]): string | string[] {
 		if (source === undefined) {
 			return [];
 		}
