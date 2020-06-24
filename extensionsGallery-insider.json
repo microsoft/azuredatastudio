@@ -3301,6 +3301,63 @@
 					],
 					"statistics": [],
 					"flags": "preview"
+				},
+				{
+					"extensionId": "69",
+					"extensionName": "code-settings-sync",
+					"displayName": "Settings Sync",
+					"shortDescription": "Synchronize Settings, Snippets, Themes, File Icons, Launch, Keybindings, Workspaces and Extensions Across Multiple Machines Using GitHub Gist.",
+					"publisher": {
+						"displayName": "Shan Khan",
+						"publisherId": "Shan",
+						"publisherName": "Shan"
+					},
+					"versions": [
+						{
+							"version": "3.4.3",
+							"lastUpdated": "9/23/2019",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/shanalikhan/code-settings-sync/releases/tag/v3.4.3"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/shanalikhan/code-settings-sync/master/images/logo-128.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/shanalikhan/code-settings-sync/master/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/shanalikhan/code-settings-sync/master/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/shanalikhan/code-settings-sync/master/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": ">=1.35.1"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/shanalikhan/code-settings-sync"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
 				}
 			],
 			"resultMetadata": [
@@ -3309,7 +3366,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 56
+							"count": 57
 						}
 					]
 				}
