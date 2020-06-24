@@ -7,13 +7,15 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as loc from '../../../localizedConstants';
 import { IconPathHelper, cssStyles, ResourceType } from '../../../constants';
-import { DuskyObjectModelsDatabase, DuskyObjectModelsDatabaseServiceArcPayload, V1Pod } from '../../../controller/generated/dusky/api';
+import { DuskyObjectModelsDatabase, V1Pod, DuskyObjectModelsDatabaseServiceArcPayload } from '../../../controller/generated/dusky/api';
 import { DashboardPage } from '../../components/dashboardPage';
 import { ControllerModel } from '../../../models/controllerModel';
 import { PostgresModel, PodRole } from '../../../models/postgresModel';
-import { promptForResourceDeletion } from '../../../common/utils';
+import { promptForResourceDeletion, promptAndConfirmPassword } from '../../../common/utils';
 
 export class PostgresOverviewPage extends DashboardPage {
+	private disposables: vscode.Disposable[] = [];
+
 	private propertiesLoading?: azdata.LoadingComponent;
 	private kibanaLoading?: azdata.LoadingComponent;
 	private grafanaLoading?: azdata.LoadingComponent;
@@ -26,19 +28,30 @@ export class PostgresOverviewPage extends DashboardPage {
 
 	constructor(protected modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
 		super(modelView);
-		this._controllerModel.onEndpointsUpdated(() => this.eventuallyRunOnInitialized(() => this.refreshEndpoints()));
-		this._controllerModel.onRegistrationsUpdated(() => this.eventuallyRunOnInitialized(() => this.refreshProperties()));
-		this._postgresModel.onPasswordUpdated(() => this.eventuallyRunOnInitialized(() => this.refreshProperties()));
 
-		this._postgresModel.onServiceUpdated(() => this.eventuallyRunOnInitialized(() => {
-			this.refreshProperties();
-			this.refreshNodes();
-		}));
+		modelView.onClosed(() =>
+			this.disposables.forEach(d => {
+				try { d.dispose(); }
+				catch { }
+			}));
 
-		this._postgresModel.onPodsUpdated(() => this.eventuallyRunOnInitialized(() => {
-			this.refreshProperties();
-			this.refreshNodes();
-		}));
+		this.disposables.push(this._controllerModel.onEndpointsUpdated(
+			() => this.eventuallyRunOnInitialized(() => this.refreshEndpoints())));
+
+		this.disposables.push(this._controllerModel.onRegistrationsUpdated(
+			() => this.eventuallyRunOnInitialized(() => this.refreshProperties())));
+
+		this.disposables.push(this._postgresModel.onServiceUpdated(
+			() => this.eventuallyRunOnInitialized(() => {
+				this.refreshProperties();
+				this.refreshNodes();
+			})));
+
+		this.disposables.push(this._postgresModel.onPodsUpdated(
+			() => this.eventuallyRunOnInitialized(() => {
+				this.refreshProperties();
+				this.refreshNodes();
+			})));
 	}
 
 	protected get title(): string {
@@ -178,10 +191,11 @@ export class PostgresOverviewPage extends DashboardPage {
 			let name;
 			try {
 				name = await vscode.window.showInputBox({ prompt: loc.databaseName });
-				if (name === undefined) { return; }
-				const db: DuskyObjectModelsDatabase = { name: name }; // TODO support other options (sharded, owner)
-				await this._postgresModel.createDatabase(db);
-				vscode.window.showInformationMessage(loc.databaseCreated(db.name ?? ''));
+				if (name) {
+					const db: DuskyObjectModelsDatabase = { name: name }; // TODO support other options (sharded, owner)
+					await this._postgresModel.createDatabase(db);
+					vscode.window.showInformationMessage(loc.databaseCreated(db.name ?? ''));
+				}
 			} catch (error) {
 				vscode.window.showErrorMessage(loc.databaseCreationFailed(name ?? '', error));
 			} finally {
@@ -198,15 +212,16 @@ export class PostgresOverviewPage extends DashboardPage {
 		resetPasswordButton.onDidClick(async () => {
 			resetPasswordButton.enabled = false;
 			try {
-				const password = await vscode.window.showInputBox({ prompt: loc.newPassword, password: true });
-				if (password === undefined) { return; }
-				await this._postgresModel.update(s => {
-					s.arc = s.arc ?? new DuskyObjectModelsDatabaseServiceArcPayload();
-					s.arc.servicePassword = password;
-				});
-				vscode.window.showInformationMessage(loc.passwordReset(this._postgresModel.fullName));
+				const password = await promptAndConfirmPassword(input => !input ? loc.enterANonEmptyPassword : '');
+				if (password) {
+					await this._postgresModel.update(s => {
+						s.arc = s.arc ?? new DuskyObjectModelsDatabaseServiceArcPayload();
+						s.arc.servicePassword = password;
+					});
+					vscode.window.showInformationMessage(loc.passwordReset);
+				}
 			} catch (error) {
-				vscode.window.showErrorMessage(loc.passwordResetFailed(this._postgresModel.fullName, error));
+				vscode.window.showErrorMessage(loc.passwordResetFailed(error));
 			} finally {
 				resetPasswordButton.enabled = true;
 			}
@@ -289,7 +304,7 @@ export class PostgresOverviewPage extends DashboardPage {
 
 		this.properties!.propertyItems = [
 			{ displayName: loc.name, value: this._postgresModel.name },
-			{ displayName: loc.coordinatorEndpoint, value: `postgresql://postgres:${this._postgresModel.password}@${endpoint.ip}:${endpoint.port}` },
+			{ displayName: loc.coordinatorEndpoint, value: `postgresql://postgres@${endpoint.ip}:${endpoint.port}` },
 			{ displayName: loc.status, value: this._postgresModel.service?.status?.state ?? '' },
 			{ displayName: loc.postgresAdminUsername, value: 'postgres' },
 			{ displayName: loc.dataController, value: this._controllerModel?.namespace ?? '' },

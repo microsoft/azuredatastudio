@@ -144,6 +144,7 @@ const copyrightFilter = [
 	'!extensions/*/server/bin/*',
 	'!src/vs/editor/test/node/classification/typescript-test.ts',
 	'!scripts/code-web.js',
+	'!resources/serverless/code-web.js',
 	// {{SQL CARBON EDIT}}
 	'!extensions/notebook/src/intellisense/text.ts',
 	'!extensions/mssql/src/hdfs/webhdfs.ts',
@@ -176,7 +177,8 @@ const copyrightFilter = [
 	'!**/*.gif',
 	'!**/*.xlf',
 	'!**/*.dacpac',
-	'!**/*.bacpac'
+	'!**/*.bacpac',
+	'!**/*.py'
 ];
 
 const jsHygieneFilter = [

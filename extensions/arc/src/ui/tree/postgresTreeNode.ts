@@ -5,18 +5,18 @@
 
 import * as vscode from 'vscode';
 import { ResourceType } from '../../constants';
-import { TreeNode } from './treeNode';
 import { PostgresModel } from '../../models/postgresModel';
 import { ControllerModel } from '../../models/controllerModel';
 import { PostgresDashboard } from '../dashboards/postgres/postgresDashboard';
+import { ResourceTreeNode } from './resourceTreeNode';
 
 /**
  * The TreeNode for displaying an Postgres Server group
  */
-export class PostgresTreeNode extends TreeNode {
+export class PostgresTreeNode extends ResourceTreeNode {
 
 	constructor(private _model: PostgresModel, private _controllerModel: ControllerModel, private _context: vscode.ExtensionContext) {
-		super(_model.name, vscode.TreeItemCollapsibleState.None, ResourceType.postgresInstances);
+		super(_model.name, vscode.TreeItemCollapsibleState.None, ResourceType.postgresInstances, _model);
 	}
 
 	public async openDashboard(): Promise<void> {

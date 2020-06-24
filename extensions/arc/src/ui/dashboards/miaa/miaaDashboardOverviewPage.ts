@@ -34,7 +34,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		subscriptionId: '-',
 		miaaAdmin: '-',
 		host: '-',
-		vCores: '-'
+		vCores: ''
 	};
 
 	constructor(modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _miaaModel: MiaaModel) {
@@ -166,11 +166,6 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 
 	public get toolbarContainer(): azdata.ToolbarContainer {
 
-		const createDatabaseButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			label: loc.newDatabase,
-			iconPath: IconPathHelper.add
-		}).component();
-
 		const deleteButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: loc.deleteText,
 			iconPath: IconPathHelper.delete
@@ -179,21 +174,16 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		deleteButton.onDidClick(async () => {
 			deleteButton.enabled = false;
 			try {
-				if (await promptForResourceDeletion(this._miaaModel.namespace, this._miaaModel.name)) {
-					await this._controllerModel.miaaDelete(this._miaaModel.namespace, this._miaaModel.name);
-					vscode.window.showInformationMessage(loc.resourceDeleted(this._miaaModel.name));
+				if (await promptForResourceDeletion(this._miaaModel.info.namespace, this._miaaModel.info.name)) {
+					await this._controllerModel.miaaDelete(this._miaaModel.info.namespace, this._miaaModel.info.name);
+					vscode.window.showInformationMessage(loc.resourceDeleted(this._miaaModel.info.name));
 				}
 			} catch (error) {
-				vscode.window.showErrorMessage(loc.resourceDeletionFailed(this._miaaModel.name, error));
+				vscode.window.showErrorMessage(loc.resourceDeletionFailed(this._miaaModel.info.name, error));
 			} finally {
 				deleteButton.enabled = true;
 			}
 		});
-
-		const resetPasswordButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			label: loc.resetPassword,
-			iconPath: IconPathHelper.edit
-		}).component();
 
 		const openInAzurePortalButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: loc.openInAzurePortal,
@@ -201,33 +191,31 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		}).component();
 
 		openInAzurePortalButton.onDidClick(async () => {
-			const r = this._controllerModel.getRegistration(ResourceType.sqlManagedInstances, this._miaaModel.namespace, this._miaaModel.name);
+			const r = this._controllerModel.getRegistration(ResourceType.sqlManagedInstances, this._miaaModel.info.namespace, this._miaaModel.info.name);
 			if (r) {
 				vscode.env.openExternal(vscode.Uri.parse(
 					`https://portal.azure.com/#resource/subscriptions/${r.subscriptionId}/resourceGroups/${r.resourceGroupName}/providers/Microsoft.AzureData/${ResourceType.sqlManagedInstances}/${r.instanceName}`));
 			} else {
-				vscode.window.showErrorMessage(loc.couldNotFindRegistration(this._miaaModel.namespace, this._miaaModel.name));
+				vscode.window.showErrorMessage(loc.couldNotFindRegistration(this._miaaModel.info.namespace, this._miaaModel.info.name));
 			}
 		});
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems(
 			[
-				{ component: createDatabaseButton },
-				{ component: deleteButton },
-				{ component: resetPasswordButton, toolbarSeparatorAfter: true },
+				{ component: deleteButton, toolbarSeparatorAfter: true },
 				{ component: openInAzurePortalButton }
 			]
 		).component();
 	}
 
 	private async handleRegistrationsUpdated(): Promise<void> {
-		const reg = this._controllerModel.getRegistration(ResourceType.sqlManagedInstances, this._miaaModel.namespace, this._miaaModel.name);
+		const reg = this._controllerModel.getRegistration(ResourceType.sqlManagedInstances, this._miaaModel.info.namespace, this._miaaModel.info.name);
 		if (reg) {
 			this._instanceProperties.resourceGroup = reg.resourceGroupName || '-';
 			this._instanceProperties.dataController = this._controllerModel.controllerRegistration?.instanceName || '-';
 			this._instanceProperties.region = (await getAzurecoreApi()).getRegionDisplayName(reg.location);
 			this._instanceProperties.subscriptionId = reg.subscriptionId || '-';
-			this._instanceProperties.vCores = reg.vCores || '-';
+			this._instanceProperties.vCores = reg.vCores || '';
 			this._instanceProperties.host = reg.externalEndpoint || '-';
 			this.refreshDisplayedProperties();
 		}
@@ -239,12 +227,12 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 	}
 
 	private handleEndpointsUpdated(endpoints: EndpointModel[]): void {
-		const kibanaQuery = `kubernetes_namespace:"${this._miaaModel.namespace}" and instance_name :"${this._miaaModel.name}"`;
+		const kibanaQuery = `kubernetes_namespace:"${this._miaaModel.info.namespace}" and instance_name :"${this._miaaModel.info.name}"`;
 		const kibanaUrl = `${endpoints.find(e => e.name === 'logsui')?.endpoint}/app/kibana#/discover?_a=(query:(language:kuery,query:'${kibanaQuery}'))`;
 		this._kibanaLink.label = kibanaUrl;
 		this._kibanaLink.url = kibanaUrl;
 
-		const grafanaUrl = `${endpoints.find(e => e.name === 'metricsui')?.endpoint}/d/wZx3OUdmz/azure-sql-db-managed-instance-metrics?var-hostname=${this._miaaModel.name}-0`;
+		const grafanaUrl = `${endpoints.find(e => e.name === 'metricsui')?.endpoint}/d/wZx3OUdmz/azure-sql-db-managed-instance-metrics?var-hostname=${this._miaaModel.info.name}-0`;
 		this._grafanaLink.label = grafanaUrl;
 		this._grafanaLink.url = grafanaUrl;
 

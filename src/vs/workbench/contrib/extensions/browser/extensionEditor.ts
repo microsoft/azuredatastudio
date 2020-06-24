@@ -639,7 +639,7 @@ export class ExtensionEditor extends BaseEditor {
 				if (!link) {
 					return;
 				}
-				// Whitelist supported schemes for links
+				// Only allow links with specific schemes
 				if (matchesScheme(link, Schemas.http) || matchesScheme(link, Schemas.https) || matchesScheme(link, Schemas.mailto)
 					|| (matchesScheme(link, Schemas.command) && URI.parse(link).path === ShowCurrentReleaseNotesActionId)
 				) {

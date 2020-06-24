@@ -259,8 +259,8 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined!;
 	}
 
-	getActiveConnectionCredentials(profileId: string): { [name: string]: string } {
-		return undefined!;
+	getConnectionCredentials(profileId: string): Promise<{ [name: string]: string }> {
+		return Promise.resolve(undefined);
 	}
 
 	getServerInfo(profileId: string): azdata.ServerInfo {
