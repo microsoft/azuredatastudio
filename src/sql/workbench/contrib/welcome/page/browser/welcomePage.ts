@@ -666,7 +666,6 @@ class WelcomePage extends Disposable {
 			e.stopPropagation();
 		});
 		icon.classList.add('themed-icon');
-
 		li.appendChild(icon);
 		li.appendChild(a);
 		span.classList.add('path');
