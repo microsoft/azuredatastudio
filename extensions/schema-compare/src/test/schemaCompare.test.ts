@@ -13,7 +13,7 @@ import { SchemaCompareDialog } from './../dialogs/schemaCompareDialog';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
 import { SchemaCompareTestService } from './testSchemaCompareService';
 import { createContext, TestContext } from './testContext';
-import { mockIConnectionProfile, mockDacpacEndpoint, mockFilePath } from './testUtils';
+import { mockIConnectionProfile, mockDacpacEndpoint, mockFilePath, setEndpointInfo } from './testUtils';
 
 // Mock test data
 const mocksource: string = 'source.dacpac';
@@ -110,4 +110,66 @@ describe('SchemaCompareResult.start', function (): void {
 		should.equal(result.sourceEndpointInfo.packageFilePath, dacpacPath);
 		should.equal(result.targetEndpointInfo, undefined);
 	});
+});
+
+describe('SchemaCompareMainWindow.updateSourceAndTarget', function (): void {
+	before(() => {
+		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
+		mockExtensionContext.setup(x => x.extensionPath).returns(() => '');
+		testContext = createContext();
+	});
+
+	it('Should set buttons appropriately when source and target endpoints are empty', async function (): Promise<void> {
+		let sc = new SchemaCompareTestService();
+		let endpointInfo: mssql.SchemaCompareEndpointInfo;
+
+		let result = new SchemaCompareMainWindow(testContext.apiWrapper.object, sc, mockExtensionContext.object);
+
+		await result.start(null);
+
+		should(result.getComparisonResult() === undefined);
+
+		result.sourceEndpointInfo = {...endpointInfo};
+		result.targetEndpointInfo = {...endpointInfo};
+
+		result.updateSourceAndTarget();
+
+		should(result.verifyButtonsState(false, false, false, true, false, false, true, true, false, false)).equal(true);
+	});
+
+	it('Should set buttons appropriately when source endpoint is empty and target endpoint is populated', async function (): Promise<void> {
+		let sc = new SchemaCompareTestService();
+		let endpointInfo: mssql.SchemaCompareEndpointInfo;
+
+		let result = new SchemaCompareMainWindow(testContext.apiWrapper.object, sc, mockExtensionContext.object);
+
+		await result.start(null);
+
+		should(result.getComparisonResult() === undefined);
+
+		result.sourceEndpointInfo = {...endpointInfo};
+		result.targetEndpointInfo = await setEndpointInfo(mocktarget);
+
+		result.updateSourceAndTarget();
+
+		should(result.verifyButtonsState(false, false, true, true, false, false, true, true, false, false)).equal(true);
+	});
+
+	it('Should set buttons appropriately when source and target endpoints are populated', async function (): Promise<void> {
+		let sc = new SchemaCompareTestService();
+
+		let result = new SchemaCompareMainWindow(testContext.apiWrapper.object, sc, mockExtensionContext.object);
+
+		await result.start(null);
+
+		should(result.getComparisonResult() === undefined);
+
+		result.sourceEndpointInfo = await setEndpointInfo(mocksource);
+		result.targetEndpointInfo = await setEndpointInfo(mocktarget);
+
+		result.updateSourceAndTarget();
+
+		should(result.verifyButtonsState(true, true, true, true, true, false, true, true, false, false)).equal(true);
+	});
+
 });

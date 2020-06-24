@@ -99,3 +99,20 @@ export async function shouldThrowSpecificError(block: Function, expectedMessage:
 		throw new AssertionError({ message: `Operation succeeded, but expected failure with exception: "${expectedMessage}".${details ? '  ' + details : ''}` });
 	}
 }
+
+export async function setEndpointInfo(path?: string): Promise<mssql.SchemaCompareEndpointInfo> {
+	let endpointInfo: mssql.SchemaCompareEndpointInfo;
+	if (path) {
+		endpointInfo = { ...mockDacpacEndpoint };
+		endpointInfo.packageFilePath = path;
+	}
+	else {
+		let dbName = 'My Database';
+		let serverName = 'My Server';
+		endpointInfo = { ...mockDatabaseEndpoint };
+		endpointInfo.databaseName = dbName;
+		endpointInfo.serverName = serverName;
+	}
+
+	return endpointInfo;
+}
