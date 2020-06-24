@@ -10,6 +10,7 @@ import { parseEndpoint, parseInstanceName } from '../common/utils';
 import { ResourceType } from '../constants';
 import { ConnectToControllerDialog } from '../ui/dialogs/connectControllerDialog';
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
+import * as loc from '../localizedConstants';
 
 export type ControllerInfo = {
 	url: string,
@@ -61,7 +62,7 @@ export class ControllerModel {
 		}
 	}
 
-	public async refresh(): Promise<void> {
+	public async refresh(showErrors: boolean = true): Promise<void> {
 		// We haven't gotten our password yet, fetch it now
 		if (!this._auth) {
 			let password = '';
@@ -88,6 +89,15 @@ export class ControllerModel {
 				this._endpoints = response.body;
 				this.endpointsLastUpdated = new Date();
 				this._onEndpointsUpdated.fire(this._endpoints);
+			}).catch(err => {
+				// If an error occurs show a message so the user knows something failed but still
+				// fire the event so callers can know to update (e.g. so dashboards don't show the
+				// loading icon forever)
+				if (showErrors) {
+					vscode.window.showErrorMessage(loc.fetchEndpointsFailed(this.info.url, err));
+				}
+				this._onEndpointsUpdated.fire(this._endpoints);
+				throw err;
 			}),
 			this._tokenRouter.apiV1TokenPost().then(async response => {
 				this._namespace = response.body.namespace!;
@@ -95,7 +105,16 @@ export class ControllerModel {
 				this._controllerRegistration = this._registrations.find(r => r.instanceType === ResourceType.dataControllers);
 				this.registrationsLastUpdated = new Date();
 				this._onRegistrationsUpdated.fire(this._registrations);
-			})
+			}).catch(err => {
+				// If an error occurs show a message so the user knows something failed but still
+				// fire the event so callers can know to update (e.g. so dashboards don't show the
+				// loading icon forever)
+				if (showErrors) {
+					vscode.window.showErrorMessage(loc.fetchRegistrationsFailed(this.info.url, err));
+				}
+				this._onRegistrationsUpdated.fire(this._registrations);
+				throw err;
+			}),
 		]);
 	}
 

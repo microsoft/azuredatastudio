@@ -82,12 +82,12 @@ export class SchemaCompareMainWindow {
 	// 1. undefined
 	// 2. connection profile
 	// 3. dacpac
-	public async start(context: any) {
+	public async start(context: any): Promise<void> {
 		// if schema compare was launched from a db, set that as the source
 		let profile = context ? <azdata.IConnectionProfile>context.connectionProfile : undefined;
 		let sourceDacpac = context as string;
 		if (profile) {
-			let ownerUri = await azdata.connection.getUriForConnection((profile.id));
+			let ownerUri = await this.apiWrapper.getUriForConnection((profile.id));
 			this.sourceEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Database,
 				serverDisplayName: `${profile.serverName} ${profile.userName}`,
@@ -323,7 +323,7 @@ export class SchemaCompareMainWindow {
 				.withAdditionalProperties({
 					operationId: this.comparisonResult.operationId
 				}).send();
-			vscode.window.showErrorMessage(loc.compareErrorMessage(this.comparisonResult.errorMessage));
+			this.apiWrapper.showErrorMessage(loc.compareErrorMessage(this.comparisonResult.errorMessage));
 			return;
 		}
 		TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaComparisonFinished')

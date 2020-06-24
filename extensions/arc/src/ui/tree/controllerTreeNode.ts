@@ -35,7 +35,7 @@ export class ControllerTreeNode extends TreeNode {
 		// First reset our deferred promise so we're sure we'll get the refreshed children
 		this._childrenRefreshPromise = new Deferred();
 		try {
-			await this.model.refresh();
+			await this.model.refresh(false);
 			await this._childrenRefreshPromise.promise;
 		} catch (err) {
 			// Couldn't get the children and TreeView doesn't have a way to collapse a node

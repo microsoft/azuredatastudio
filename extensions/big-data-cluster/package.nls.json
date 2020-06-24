@@ -3,13 +3,14 @@
 	"text.sqlServerBigDataClusters": "SQL Server Big Data Clusters",
 	"command.connectController.title": "Connect to Existing Controller",
 	"command.createController.title": "Create New Controller",
-	"command.removeController.title" : "Remove Controller",
-	"command.refreshController.title" : "Refresh",
-	"command.manageController.title" : "Manage",
-	"command.mount.title" : "Mount HDFS",
-	"command.refreshmount.title" : "Refresh Mount",
-	"command.deletemount.title" : "Delete Mount",
-	"bdc.configuration.title" : "Big Data Cluster",
-	"bdc.view.welcome" : "No SQL Big Data Cluster controllers registered. [Learn More](https://docs.microsoft.com/sql/big-data-cluster/big-data-cluster-overview)\n[Connect Controller](command:bigDataClusters.command.connectController)",
-	"bdc.ignoreSslVerification.desc" : "Ignore SSL verification errors against SQL Server Big Data Cluster endpoints such as HDFS, Spark, and Controller if true"
+	"command.removeController.title": "Remove Controller",
+	"command.refreshController.title": "Refresh",
+	"command.manageController.title": "Manage",
+	"command.mount.title": "Mount HDFS",
+	"command.refreshmount.title": "Refresh Mount",
+	"command.deletemount.title": "Delete Mount",
+	"bdc.configuration.title": "Big Data Cluster",
+	"bdc.view.welcome.connect": "No SQL Big Data Cluster controllers registered. [Learn More](https://docs.microsoft.com/sql/big-data-cluster/big-data-cluster-overview)\n[Connect Controller](command:bigDataClusters.command.connectController)",
+	"bdc.view.welcome.loading": "Loading controllers...",
+	"bdc.ignoreSslVerification.desc": "Ignore SSL verification errors against SQL Server Big Data Cluster endpoints such as HDFS, Spark, and Controller if true"
 }
