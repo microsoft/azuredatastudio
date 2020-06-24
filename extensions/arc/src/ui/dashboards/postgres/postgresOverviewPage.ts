@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as loc from '../../../localizedConstants';
 import { IconPathHelper, cssStyles, ResourceType } from '../../../constants';
-import { DuskyObjectModelsDatabase, V1Pod, DuskyObjectModelsDatabaseServiceArcPayload } from '../../../controller/generated/dusky/api';
+import { V1Pod, DuskyObjectModelsDatabaseServiceArcPayload } from '../../../controller/generated/dusky/api';
 import { DashboardPage } from '../../components/dashboardPage';
 import { ControllerModel } from '../../../models/controllerModel';
 import { PostgresModel, PodRole } from '../../../models/postgresModel';
@@ -194,30 +194,6 @@ export class PostgresOverviewPage extends DashboardPage {
 	}
 
 	protected get toolbarContainer(): azdata.ToolbarContainer {
-		// New database
-		const newDatabaseButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			label: loc.newDatabase,
-			iconPath: IconPathHelper.add
-		}).component();
-
-		this.disposables.push(
-			newDatabaseButton.onDidClick(async () => {
-				newDatabaseButton.enabled = false;
-				let name;
-				try {
-					name = await vscode.window.showInputBox({ prompt: loc.databaseName });
-					if (name) {
-						const db: DuskyObjectModelsDatabase = { name: name }; // TODO support other options (sharded, owner)
-						await this._postgresModel.createDatabase(db);
-						vscode.window.showInformationMessage(loc.databaseCreated(db.name ?? ''));
-					}
-				} catch (error) {
-					vscode.window.showErrorMessage(loc.databaseCreationFailed(name ?? '', error));
-				} finally {
-					newDatabaseButton.enabled = true;
-				}
-			}));
-
 		// Reset password
 		const resetPasswordButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: loc.resetPassword,
@@ -309,7 +285,6 @@ export class PostgresOverviewPage extends DashboardPage {
 			}));
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems([
-			{ component: newDatabaseButton },
 			{ component: resetPasswordButton },
 			{ component: deleteButton },
 			{ component: refreshButton, toolbarSeparatorAfter: true },
