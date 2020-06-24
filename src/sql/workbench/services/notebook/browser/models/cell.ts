@@ -26,13 +26,12 @@ import { firstIndex, find } from 'vs/base/common/arrays';
 import { HideInputTag } from 'sql/platform/notebooks/common/outputRegistry';
 import { FutureInternal, notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { Disposable } from 'vs/base/common/lifecycle';
 import { tryMatchCellMagic, extractCellMagicCommandPlusArgs } from 'sql/workbench/services/notebook/browser/utils';
 
 let modelId = 0;
 const ADS_EXECUTE_COMMAND = 'ADS_EXECUTE_COMMAND';
 
-export class CellModel extends Disposable implements ICellModel {
+export class CellModel implements ICellModel {
 	public id: string;
 
 	private _cellType: nb.CellType;
@@ -66,7 +65,6 @@ export class CellModel extends Disposable implements ICellModel {
 		@optional(INotebookService) private _notebookService?: INotebookService,
 		@optional(ICommandService) private _commandService?: ICommandService,
 	) {
-		super();
 		this.id = `${modelId++}`;
 		if (cellData) {
 			// Read in contents if available
@@ -567,7 +565,7 @@ export class CellModel extends Disposable implements ICellModel {
 							let host = hostAndIp.host ? hostAndIp.host : model.context.serverName;
 							let port = hostAndIp.port ? ':' + hostAndIp.port : defaultPort;
 							let html = result.data['text/html'];
-							// CTP 3.2 and later spark link
+							// BDC Spark UI Link
 							html = notebookUtils.rewriteUrlUsingRegex(/(https?:\/\/sparkhead.*\/proxy)(.*)/g, html, host, port, yarnUi);
 							// Driver link
 							html = notebookUtils.rewriteUrlUsingRegex(/(https?:\/\/storage.*\/containerlogs)(.*)/g, html, host, port, driverLog);
