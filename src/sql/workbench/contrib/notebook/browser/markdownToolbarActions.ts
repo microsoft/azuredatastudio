@@ -337,7 +337,7 @@ export class MarkdownTextTransformer {
 	}
 
 	/**
-	 * Similar to above, this method transforms a given line without a selection range because it is only adding characters to the beginning.
+	 * This method transforms the beginning of a given line using a user-selected heading character.
 	 * @param singleLineStartEndRange Single line selection
 	 * @param editorModel
 	 * @param beginInsertedCode Heading character
