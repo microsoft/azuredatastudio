@@ -44,7 +44,7 @@ describe('AzureArcTreeDataProvider tests', function (): void {
 			treeDataProvider['_loading'] = false;
 			let children = await treeDataProvider.getChildren();
 			should(children.length).equal(0, 'There initially shouldn\'t be any children');
-			const controllerModel = new ControllerModel(treeDataProvider, { url: '127.0.0.1', username: 'sa', rememberPassword: true });
+			const controllerModel = new ControllerModel(treeDataProvider, { url: '127.0.0.1', username: 'sa', rememberPassword: true, resources: [] });
 			await treeDataProvider.addOrUpdateController(controllerModel, '');
 			should(children.length).equal(1, 'Controller node should be added correctly');
 			await treeDataProvider.addOrUpdateController(controllerModel, '');
@@ -55,11 +55,11 @@ describe('AzureArcTreeDataProvider tests', function (): void {
 			treeDataProvider['_loading'] = false;
 			let children = await treeDataProvider.getChildren();
 			should(children.length).equal(0, 'There initially shouldn\'t be any children');
-			const controllerModel = new ControllerModel(treeDataProvider, { url: '127.0.0.1', username: 'sa', rememberPassword: true });
+			const controllerModel = new ControllerModel(treeDataProvider, { url: '127.0.0.1', username: 'sa', rememberPassword: true, resources: [] });
 			await treeDataProvider.addOrUpdateController(controllerModel, '');
 			should(children.length).equal(1, 'Controller node should be added correctly');
 			should((<ControllerTreeNode>children[0]).model.info.rememberPassword).be.true('Info was not set correctly initially');
-			const controllerModel2 = new ControllerModel(treeDataProvider, { url: '127.0.0.1', username: 'sa', rememberPassword: false });
+			const controllerModel2 = new ControllerModel(treeDataProvider, { url: '127.0.0.1', username: 'sa', rememberPassword: false, resources: [] });
 			await treeDataProvider.addOrUpdateController(controllerModel2, '');
 			should(children.length).equal(1, 'Shouldn\'t add duplicate controller node');
 			should((<ControllerTreeNode>children[0]).model.info.rememberPassword).be.false('Info was not updated correctly');
@@ -84,8 +84,8 @@ describe('AzureArcTreeDataProvider tests', function (): void {
 	describe('removeController', function (): void {
 		it('removing a controller should work as expected', async function (): Promise<void> {
 			treeDataProvider['_loading'] = false;
-			const controllerModel = new ControllerModel(treeDataProvider, { url: '127.0.0.1', username: 'sa', rememberPassword: true });
-			const controllerModel2 = new ControllerModel(treeDataProvider, { url: '127.0.0.2', username: 'cloudsa', rememberPassword: true });
+			const controllerModel = new ControllerModel(treeDataProvider, { url: '127.0.0.1', username: 'sa', rememberPassword: true, resources: [] });
+			const controllerModel2 = new ControllerModel(treeDataProvider, { url: '127.0.0.2', username: 'cloudsa', rememberPassword: true, resources: [] });
 			await treeDataProvider.addOrUpdateController(controllerModel, '');
 			await treeDataProvider.addOrUpdateController(controllerModel2, '');
 			const children = <ControllerTreeNode[]>(await treeDataProvider.getChildren());
