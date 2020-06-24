@@ -50,10 +50,6 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 			this._miaaModel.onStatusUpdated(status => this.eventuallyRunOnInitialized(() => this.handleMiaaStatusUpdated(status))),
 			this._miaaModel.onDatabasesUpdated(databases => this.eventuallyRunOnInitialized(() => this.handleDatabasesUpdated(databases)))
 		);
-
-		this.refresh().catch(e => {
-			console.log(e);
-		});
 	}
 
 	public get title(): string {
@@ -173,19 +169,20 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 			iconPath: IconPathHelper.delete
 		}).component();
 
-		deleteButton.onDidClick(async () => {
-			deleteButton.enabled = false;
-			try {
-				if (await promptForResourceDeletion(this._miaaModel.info.namespace, this._miaaModel.info.name)) {
-					await this._controllerModel.miaaDelete(this._miaaModel.info.namespace, this._miaaModel.info.name);
-					vscode.window.showInformationMessage(loc.resourceDeleted(this._miaaModel.info.name));
+		this.disposables.push(
+			deleteButton.onDidClick(async () => {
+				deleteButton.enabled = false;
+				try {
+					if (await promptForResourceDeletion(this._miaaModel.info.namespace, this._miaaModel.info.name)) {
+						await this._controllerModel.miaaDelete(this._miaaModel.info.namespace, this._miaaModel.info.name);
+						vscode.window.showInformationMessage(loc.resourceDeleted(this._miaaModel.info.name));
+					}
+				} catch (error) {
+					vscode.window.showErrorMessage(loc.resourceDeletionFailed(this._miaaModel.info.name, error));
+				} finally {
+					deleteButton.enabled = true;
 				}
-			} catch (error) {
-				vscode.window.showErrorMessage(loc.resourceDeletionFailed(this._miaaModel.info.name, error));
-			} finally {
-				deleteButton.enabled = true;
-			}
-		});
+			}));
 
 		// Refresh
 		const refreshButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
@@ -193,37 +190,39 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 			iconPath: IconPathHelper.refresh
 		}).component();
 
-		refreshButton.onDidClick(async () => {
-			refreshButton.enabled = false;
-			try {
-				this._propertiesLoading!.loading = true;
-				this._kibanaLoading!.loading = true;
-				this._grafanaLoading!.loading = true;
-				this._databasesTableLoading!.loading = true;
+		this.disposables.push(
+			refreshButton.onDidClick(async () => {
+				refreshButton.enabled = false;
+				try {
+					this._propertiesLoading!.loading = true;
+					this._kibanaLoading!.loading = true;
+					this._grafanaLoading!.loading = true;
+					this._databasesTableLoading!.loading = true;
 
-				await Promise.all([
-					this._miaaModel.refresh(),
-					this._controllerModel.refresh()
-				]);
-			} finally {
-				refreshButton.enabled = true;
-			}
-		});
+					await Promise.all([
+						this._miaaModel.refresh(),
+						this._controllerModel.refresh()
+					]);
+				} finally {
+					refreshButton.enabled = true;
+				}
+			}));
 
 		const openInAzurePortalButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: loc.openInAzurePortal,
 			iconPath: IconPathHelper.openInTab
 		}).component();
 
-		openInAzurePortalButton.onDidClick(async () => {
-			const r = this._controllerModel.getRegistration(ResourceType.sqlManagedInstances, this._miaaModel.info.namespace, this._miaaModel.info.name);
-			if (r) {
-				vscode.env.openExternal(vscode.Uri.parse(
-					`https://portal.azure.com/#resource/subscriptions/${r.subscriptionId}/resourceGroups/${r.resourceGroupName}/providers/Microsoft.AzureData/${ResourceType.sqlManagedInstances}/${r.instanceName}`));
-			} else {
-				vscode.window.showErrorMessage(loc.couldNotFindRegistration(this._miaaModel.info.namespace, this._miaaModel.info.name));
-			}
-		});
+		this.disposables.push(
+			openInAzurePortalButton.onDidClick(async () => {
+				const r = this._controllerModel.getRegistration(ResourceType.sqlManagedInstances, this._miaaModel.info.namespace, this._miaaModel.info.name);
+				if (r) {
+					vscode.env.openExternal(vscode.Uri.parse(
+						`https://portal.azure.com/#resource/subscriptions/${r.subscriptionId}/resourceGroups/${r.resourceGroupName}/providers/Microsoft.AzureData/${ResourceType.sqlManagedInstances}/${r.instanceName}`));
+				} else {
+					vscode.window.showErrorMessage(loc.couldNotFindRegistration(this._miaaModel.info.namespace, this._miaaModel.info.name));
+				}
+			}));
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems(
 			[

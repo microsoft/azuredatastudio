@@ -12,7 +12,6 @@ import { PostgresModel } from '../../../models/postgresModel';
 import { fromNow } from '../../../common/date';
 
 export class PostgresResourceHealthPage extends DashboardPage {
-	private disposables: vscode.Disposable[] = [];
 	private interval: NodeJS.Timeout;
 	private podsUpdated?: azdata.TextComponent;
 	private podsTable?: azdata.DeclarativeTableComponent;
@@ -24,11 +23,6 @@ export class PostgresResourceHealthPage extends DashboardPage {
 		modelView.onClosed(() => {
 			try { clearInterval(this.interval); }
 			catch { }
-
-			this.disposables.forEach(d => {
-				try { d.dispose(); }
-				catch { }
-			});
 		});
 
 		this.disposables.push(this._postgresModel.onServiceUpdated(
@@ -144,16 +138,17 @@ export class PostgresResourceHealthPage extends DashboardPage {
 			iconPath: IconPathHelper.refresh
 		}).component();
 
-		refreshButton.onDidClick(async () => {
-			refreshButton.enabled = false;
-			try {
-				await this._postgresModel.refresh();
-			} catch (error) {
-				vscode.window.showErrorMessage(loc.refreshFailed(error));
-			} finally {
-				refreshButton.enabled = true;
-			}
-		});
+		this.disposables.push(
+			refreshButton.onDidClick(async () => {
+				refreshButton.enabled = false;
+				try {
+					await this._postgresModel.refresh();
+				} catch (error) {
+					vscode.window.showErrorMessage(loc.refreshFailed(error));
+				} finally {
+					refreshButton.enabled = true;
+				}
+			}));
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems([
 			{ component: refreshButton }

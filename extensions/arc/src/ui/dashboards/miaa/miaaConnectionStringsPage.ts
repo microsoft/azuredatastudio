@@ -22,7 +22,6 @@ export class MiaaConnectionStringsPage extends DashboardPage {
 			this._instanceRegistration = this._controllerModel.getRegistration(ResourceType.sqlManagedInstances, this._miaaModel.info.namespace, this._miaaModel.info.name);
 			this.eventuallyRunOnInitialized(() => this.updateConnectionStrings());
 		}));
-		this.refresh().catch(err => console.error(err));
 	}
 
 	protected async refresh(): Promise<void> {

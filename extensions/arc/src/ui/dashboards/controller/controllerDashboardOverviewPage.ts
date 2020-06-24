@@ -145,9 +145,10 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 			iconPath: IconPathHelper.add
 		}).component();
 
-		newInstance.onDidClick(async () => {
-			await vscode.commands.executeCommand('azdata.resource.deploy');
-		});
+		this.disposables.push(
+			newInstance.onDidClick(async () => {
+				await vscode.commands.executeCommand('azdata.resource.deploy');
+			}));
 
 		// Refresh
 		const refreshButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
@@ -155,31 +156,33 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 			iconPath: IconPathHelper.refresh
 		}).component();
 
-		refreshButton.onDidClick(async () => {
-			refreshButton.enabled = false;
-			try {
-				this._propertiesLoadingComponent!.loading = true;
-				this._arcResourcesLoadingComponent!.loading = true;
-				await this._controllerModel.refresh();
-			} finally {
-				refreshButton.enabled = true;
-			}
-		});
+		this.disposables.push(
+			refreshButton.onDidClick(async () => {
+				refreshButton.enabled = false;
+				try {
+					this._propertiesLoadingComponent!.loading = true;
+					this._arcResourcesLoadingComponent!.loading = true;
+					await this._controllerModel.refresh();
+				} finally {
+					refreshButton.enabled = true;
+				}
+			}));
 
 		const openInAzurePortalButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: loc.openInAzurePortal,
 			iconPath: IconPathHelper.openInTab
 		}).component();
 
-		openInAzurePortalButton.onDidClick(async () => {
-			const r = this._controllerModel.controllerRegistration;
-			if (r) {
-				vscode.env.openExternal(vscode.Uri.parse(
-					`https://portal.azure.com/#resource/subscriptions/${r.subscriptionId}/resourceGroups/${r.resourceGroupName}/providers/Microsoft.AzureData/${ResourceType.dataControllers}/${r.instanceName}`));
-			} else {
-				vscode.window.showErrorMessage(loc.couldNotFindRegistration(this._controllerModel.namespace, 'controller'));
-			}
-		});
+		this.disposables.push(
+			openInAzurePortalButton.onDidClick(async () => {
+				const r = this._controllerModel.controllerRegistration;
+				if (r) {
+					vscode.env.openExternal(vscode.Uri.parse(
+						`https://portal.azure.com/#resource/subscriptions/${r.subscriptionId}/resourceGroups/${r.resourceGroupName}/providers/Microsoft.AzureData/${ResourceType.dataControllers}/${r.instanceName}`));
+				} else {
+					vscode.window.showErrorMessage(loc.couldNotFindRegistration(this._controllerModel.namespace, 'controller'));
+				}
+			}));
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems(
 			[
