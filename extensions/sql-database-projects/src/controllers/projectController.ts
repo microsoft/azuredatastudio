@@ -93,6 +93,7 @@ export class ProjectsController {
 
 		try {
 			this.refreshProjectsTree();
+			this.focusProject(newProject);
 		}
 		catch (err) {
 			// if the project didnt load - remove it from the list of open projects
@@ -641,8 +642,6 @@ export class ProjectsController {
 
 			//Refresh project to show the added files
 			this.refreshProjectsTree();
-
-			await this.focusProject(project);
 		}
 		catch (err) {
 			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));

@@ -16,7 +16,9 @@ export class PostgresConnectionStringsPage extends DashboardPage {
 
 	constructor(protected modelView: azdata.ModelView, private _postgresModel: PostgresModel) {
 		super(modelView);
-		this._postgresModel.onServiceUpdated(() => this.eventuallyRunOnInitialized(() => this.refresh()));
+
+		this.disposables.push(this._postgresModel.onServiceUpdated(
+			() => this.eventuallyRunOnInitialized(() => this.refresh())));
 	}
 
 	protected get title(): string {
@@ -68,16 +70,17 @@ export class PostgresConnectionStringsPage extends DashboardPage {
 			iconPath: IconPathHelper.refresh
 		}).component();
 
-		refreshButton.onDidClick(async () => {
-			refreshButton.enabled = false;
-			try {
-				await this._postgresModel.refresh();
-			} catch (error) {
-				vscode.window.showErrorMessage(loc.refreshFailed(error));
-			} finally {
-				refreshButton.enabled = true;
-			}
-		});
+		this.disposables.push(
+			refreshButton.onDidClick(async () => {
+				refreshButton.enabled = false;
+				try {
+					await this._postgresModel.refresh();
+				} catch (error) {
+					vscode.window.showErrorMessage(loc.refreshFailed(error));
+				} finally {
+					refreshButton.enabled = true;
+				}
+			}));
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems([
 			{ component: refreshButton }

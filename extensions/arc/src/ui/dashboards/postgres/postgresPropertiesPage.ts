@@ -17,8 +17,12 @@ export class PostgresPropertiesPage extends DashboardPage {
 
 	constructor(protected modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
 		super(modelView);
-		this._postgresModel.onServiceUpdated(() => this.eventuallyRunOnInitialized(() => this.refresh()));
-		this._controllerModel.onRegistrationsUpdated(() => this.eventuallyRunOnInitialized(() => this.refresh()));
+
+		this.disposables.push(this._postgresModel.onServiceUpdated(
+			() => this.eventuallyRunOnInitialized(() => this.refresh())));
+
+		this.disposables.push(this._controllerModel.onRegistrationsUpdated(
+			() => this.eventuallyRunOnInitialized(() => this.refresh())));
 	}
 
 	protected get title(): string {
@@ -55,20 +59,21 @@ export class PostgresPropertiesPage extends DashboardPage {
 			iconPath: IconPathHelper.refresh
 		}).component();
 
-		refreshButton.onDidClick(async () => {
-			refreshButton.enabled = false;
-			try {
-				await Promise.all([
-					this._postgresModel.refresh(),
-					this._controllerModel.refresh()
-				]);
-			} catch (error) {
-				vscode.window.showErrorMessage(loc.refreshFailed(error));
-			}
-			finally {
-				refreshButton.enabled = true;
-			}
-		});
+		this.disposables.push(
+			refreshButton.onDidClick(async () => {
+				refreshButton.enabled = false;
+				try {
+					await Promise.all([
+						this._postgresModel.refresh(),
+						this._controllerModel.refresh()
+					]);
+				} catch (error) {
+					vscode.window.showErrorMessage(loc.refreshFailed(error));
+				}
+				finally {
+					refreshButton.enabled = true;
+				}
+			}));
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems([
 			{ component: refreshButton }
