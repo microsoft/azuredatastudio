@@ -3377,10 +3377,6 @@
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
-									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://github.com/shanalikhan/code-settings-sync/releases/download/v3.4.3/code-settings-sync-3.4.3.vsix"
-								},
-								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
 									"source": "https://github.com/shanalikhan/code-settings-sync/releases/tag/v3.4.3"
 								},
