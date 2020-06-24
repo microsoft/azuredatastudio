@@ -3028,7 +3028,7 @@
 				{
 					"extensionId": "63",
 					"extensionName": "arcdeployment",
-					"displayName": "Azure Arc deployment (deprecated)",
+					"displayName": "Azure Arc deployment",
 					"shortDescription": "Provides a notebook-based experience to deploy resources on Azure Arc",
 					"publisher": {
 						"displayName": "Microsoft",
@@ -3037,14 +3037,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.3.2",
+							"version": "0.3.1",
 							"lastUpdated": "6/3/2020",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/arcdeployment/arcdeployment-0.3.2.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/arcdeployment/arcdeployment-0.3.1.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -3052,15 +3052,15 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/arcdeployment/content/0.3.2/README.md"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/arcdeployment/content/0.3.1/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/arcdeployment/content/0.3.2/package.json"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/arcdeployment/content/0.3.1/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/arcdeployment/content/0.3.2/LICENSE.txt"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/arcdeployment/content/0.3.1/LICENSE.txt"
 								}
 							],
 							"properties": [
