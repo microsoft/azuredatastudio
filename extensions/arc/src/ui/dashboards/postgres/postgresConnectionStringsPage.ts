@@ -12,17 +12,10 @@ import { DashboardPage } from '../../components/dashboardPage';
 import { PostgresModel } from '../../../models/postgresModel';
 
 export class PostgresConnectionStringsPage extends DashboardPage {
-	private disposables: vscode.Disposable[] = [];
 	private keyValueContainer?: KeyValueContainer;
 
 	constructor(protected modelView: azdata.ModelView, private _postgresModel: PostgresModel) {
 		super(modelView);
-
-		modelView.onClosed(() =>
-			this.disposables.forEach(d => {
-				try { d.dispose(); }
-				catch { }
-			}));
 
 		this.disposables.push(this._postgresModel.onServiceUpdated(
 			() => this.eventuallyRunOnInitialized(() => this.refresh())));
@@ -77,16 +70,17 @@ export class PostgresConnectionStringsPage extends DashboardPage {
 			iconPath: IconPathHelper.refresh
 		}).component();
 
-		refreshButton.onDidClick(async () => {
-			refreshButton.enabled = false;
-			try {
-				await this._postgresModel.refresh();
-			} catch (error) {
-				vscode.window.showErrorMessage(loc.refreshFailed(error));
-			} finally {
-				refreshButton.enabled = true;
-			}
-		});
+		this.disposables.push(
+			refreshButton.onDidClick(async () => {
+				refreshButton.enabled = false;
+				try {
+					await this._postgresModel.refresh();
+				} catch (error) {
+					vscode.window.showErrorMessage(loc.refreshFailed(error));
+				} finally {
+					refreshButton.enabled = true;
+				}
+			}));
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems([
 			{ component: refreshButton }

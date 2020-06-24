@@ -12,6 +12,8 @@ import { ResourceModel } from './resourceModel';
 import { ResourceInfo, Registration } from './controllerModel';
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 import { Deferred } from '../common/promise';
+import * as loc from '../localizedConstants';
+import { UserCancelledError } from '../common/utils';
 
 export type DatabaseModel = { name: string, status: string };
 
@@ -26,7 +28,7 @@ export class MiaaModel extends ResourceModel {
 	private _activeConnectionId: string | undefined = undefined;
 
 	private readonly _onPasswordUpdated = new vscode.EventEmitter<string>();
-	private readonly _onStatusUpdated = new vscode.EventEmitter<HybridSqlNsNameGetResponse>();
+	private readonly _onStatusUpdated = new vscode.EventEmitter<HybridSqlNsNameGetResponse | undefined>();
 	private readonly _onDatabasesUpdated = new vscode.EventEmitter<DatabaseModel[]>();
 	public onPasswordUpdated = this._onPasswordUpdated.event;
 	public onStatusUpdated = this._onStatusUpdated.event;
@@ -77,36 +79,61 @@ export class MiaaModel extends ResourceModel {
 			const instanceRefresh = this._sqlInstanceRouter.apiV1HybridSqlNsNameGet(this.info.namespace, this.info.name).then(response => {
 				this._status = response.body;
 				this._onStatusUpdated.fire(this._status);
+			}).catch(err => {
+				// If an error occurs show a message so the user knows something failed but still
+				// fire the event so callers can know to update (e.g. so dashboards don't show the
+				// loading icon forever)
+				vscode.window.showErrorMessage(loc.fetchStatusFailed(this.info.name, err));
+				this._onStatusUpdated.fire(undefined);
+				throw err;
 			});
 			const promises: Thenable<any>[] = [instanceRefresh];
-			await this.getConnectionProfile();
-			if (this._connectionProfile) {
-				// We haven't connected yet so do so now and then store the ID for the active connection
-				if (!this._activeConnectionId) {
-					const result = await azdata.connection.connect(this._connectionProfile, false, false);
-					if (!result.connected) {
-						throw new Error(result.errorMessage);
+			try {
+				await this.getConnectionProfile();
+				if (this._connectionProfile) {
+					// We haven't connected yet so do so now and then store the ID for the active connection
+					if (!this._activeConnectionId) {
+						const result = await azdata.connection.connect(this._connectionProfile, false, false);
+						if (!result.connected) {
+							throw new Error(result.errorMessage);
+						}
+						this._activeConnectionId = result.connectionId;
 					}
-					this._activeConnectionId = result.connectionId;
-				}
 
-				const provider = azdata.dataprotocol.getProvider<azdata.MetadataProvider>(this._connectionProfile.providerName, azdata.DataProviderType.MetadataProvider);
-				const databasesRefresh = azdata.connection.getUriForConnection(this._activeConnectionId).then(ownerUri => {
-					provider.getDatabases(ownerUri).then(databases => {
-						if (!databases) {
-							throw new Error('Could not fetch databases');
-						}
-						if (databases.length > 0 && typeof (databases[0]) === 'object') {
-							this._databases = (<azdata.DatabaseInfo[]>databases).map(db => { return { name: db.options['name'], status: db.options['state'] }; });
-						} else {
-							this._databases = (<string[]>databases).map(db => { return { name: db, status: '-' }; });
-						}
-						this._onDatabasesUpdated.fire(this._databases);
+					const provider = azdata.dataprotocol.getProvider<azdata.MetadataProvider>(this._connectionProfile.providerName, azdata.DataProviderType.MetadataProvider);
+					const databasesRefresh = azdata.connection.getUriForConnection(this._activeConnectionId).then(ownerUri => {
+						provider.getDatabases(ownerUri).then(databases => {
+							if (!databases) {
+								throw new Error('Could not fetch databases');
+							}
+							if (databases.length > 0 && typeof (databases[0]) === 'object') {
+								this._databases = (<azdata.DatabaseInfo[]>databases).map(db => { return { name: db.options['name'], status: db.options['state'] }; });
+							} else {
+								this._databases = (<string[]>databases).map(db => { return { name: db, status: '-' }; });
+							}
+							this._onDatabasesUpdated.fire(this._databases);
+						});
 					});
-				});
-				promises.push(databasesRefresh);
+					promises.push(databasesRefresh);
+				}
+			} catch (err) {
+				// If an error occurs show a message so the user knows something failed but still
+				// fire the event so callers can know to update (e.g. so dashboards don't show the
+				// loading icon forever)
+				if (err instanceof UserCancelledError) {
+					vscode.window.showErrorMessage(loc.connectionRequired);
+				} else {
+					vscode.window.showErrorMessage(loc.fetchStatusFailed(this.info.name, err));
+				}
+				this._onDatabasesUpdated.fire(this._databases);
+				throw err;
 			}
+
 			await Promise.all(promises);
+			this._refreshPromise.resolve();
+		} catch (err) {
+			this._refreshPromise.reject(err);
+			throw err;
 		} finally {
 			this._refreshPromise = undefined;
 		}
@@ -133,7 +160,7 @@ export class MiaaModel extends ResourceModel {
 						connection = existingConnection;
 					} else {
 						// We need the password so prompt the user for it
-						const connectionProfile = {
+						const connectionProfile: azdata.IConnectionProfile = {
 							serverName: existingConnection.options['serverName'],
 							databaseName: existingConnection.options['databaseName'],
 							authenticationType: existingConnection.options['authenticationType'],
@@ -162,7 +189,8 @@ export class MiaaModel extends ResourceModel {
 		}
 
 		if (connection) {
-			this._connectionProfile = {
+			const profile = {
+				// The option name might be different here based on where it came from
 				serverName: connection.options['serverName'] || connection.options['server'],
 				databaseName: connection.options['databaseName'] || connection.options['database'],
 				authenticationType: connection.options['authenticationType'],
@@ -177,9 +205,15 @@ export class MiaaModel extends ResourceModel {
 				groupId: undefined,
 				options: connection.options
 			};
-			this.info.connectionId = connection.connectionId;
-			await this._treeDataProvider.saveControllers();
+			this.updateConnectionProfile(profile);
+		} else {
+			throw new UserCancelledError();
 		}
+	}
 
+	private async updateConnectionProfile(connectionProfile: azdata.IConnectionProfile): Promise<void> {
+		this._connectionProfile = connectionProfile;
+		this.info.connectionId = connectionProfile.id;
+		await this._treeDataProvider.saveControllers();
 	}
 }

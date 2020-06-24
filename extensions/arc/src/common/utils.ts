@@ -8,6 +8,8 @@ import * as azurecore from '../../../azurecore/src/azurecore';
 import * as loc from '../localizedConstants';
 import { IconPathHelper, IconPath, ResourceType, Connectionmode } from '../constants';
 
+export class UserCancelledError extends Error { }
+
 /**
  * Converts the resource type name into the localized Display Name for that type.
  * @param resourceType The resource type name to convert
