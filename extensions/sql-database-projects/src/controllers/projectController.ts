@@ -336,6 +336,20 @@ export class ProjectsController {
 		this.refreshProjectsTree();
 	}
 
+	public async exclude(context: FileNode | FolderNode): Promise<void> {
+		const project = this.getProjectFromContext(context);
+
+		const fileEntry = this.getProjectEntry(project, context);
+
+		if (fileEntry) {
+			await project.exclude(fileEntry);
+		} else {
+			this.apiWrapper.showErrorMessage(constants.unableToPerformAction(constants.excludeAction, context.uri.path));
+		}
+
+		this.refreshProjectsTree();
+	}
+
 	public async delete(context: BaseProjectTreeItem): Promise<void> {
 		const project = this.getProjectFromContext(context);
 
@@ -349,7 +363,7 @@ export class ProjectsController {
 		let success = false;
 
 		if (context instanceof FileNode || FolderNode) {
-			const fileEntry: ProjectEntry | undefined = project.files.find(x => x.relativePath === utils.trimUri(context.root.uri, context.uri));
+			const fileEntry = this.getProjectEntry(project, context);
 
 			if (fileEntry) {
 				await project.deleteFileFolder(fileEntry);
@@ -360,8 +374,12 @@ export class ProjectsController {
 		if (success) {
 			this.refreshProjectsTree();
 		} else {
-			this.apiWrapper.showErrorMessage(constants.unableToDelete(context.uri.path));
+			this.apiWrapper.showErrorMessage(constants.unableToPerformAction(constants.deleteAction, context.uri.path));
 		}
+	}
+
+	private getProjectEntry(project: Project, context: BaseProjectTreeItem): ProjectEntry | undefined {
+		return project.files.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(context.root.uri, context.uri)));
 	}
 
 	/**

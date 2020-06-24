@@ -16,6 +16,7 @@ import { ProjectsController } from './projectController';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { NetCoreTool } from '../tools/netcoreTool';
 import { Project } from '../models/project';
+import { FileNode, FolderNode } from '../models/tree/fileFolderTreeItem';
 
 const SQL_DATABASE_PROJECTS_VIEW_ID = 'sqlDatabaseProjectsView';
 
@@ -64,6 +65,7 @@ export default class MainController implements Disposable {
 
 		this.apiWrapper.registerCommand('sqlDatabaseProjects.addDatabaseReference', async (node: BaseProjectTreeItem) => { await this.projectsController.addDatabaseReference(node); });
 		this.apiWrapper.registerCommand('sqlDatabaseProjects.delete', async (node: BaseProjectTreeItem) => { await this.projectsController.delete(node); });
+		this.apiWrapper.registerCommand('sqlDatabaseProjects.exclude', async (node: FileNode | FolderNode) => { await this.projectsController.exclude(node); });
 
 		// init view
 		const treeView = this.apiWrapper.createTreeView(SQL_DATABASE_PROJECTS_VIEW_ID, { treeDataProvider: this.dbProjectTreeViewProvider });

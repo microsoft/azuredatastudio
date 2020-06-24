@@ -179,6 +179,12 @@ export class Project {
 		return fileEntry;
 	}
 
+	public async exclude(entry: ProjectEntry): Promise<void> {
+		const toExclude: ProjectEntry[] = this.files.filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
+		await this.removeFromProjFile(toExclude);
+		this.files = this.files.filter(x => !x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
+	}
+
 	public async deleteFileFolder(entry: ProjectEntry): Promise<void> {
 		// compile a list of folder contents to delete; if entry is a file, contents will contain only itself
 		const toDeleteFiles: ProjectEntry[] = this.files.filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath) && x.type === EntryType.File);
@@ -190,9 +196,7 @@ export class Project {
 			await fs.rmdir(folder.fsUri.fsPath); // TODO: replace .sort() and iteration with rmdir recursive flag once that's unbugged
 		}
 
-		await this.removeFromProjFile(toDeleteFiles.concat(toDeleteFolders));
-
-		this.files = this.files.filter(x => !x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
+		await this.exclude(entry);
 	}
 
 	/**
