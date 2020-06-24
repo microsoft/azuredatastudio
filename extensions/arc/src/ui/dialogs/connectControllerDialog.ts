@@ -96,7 +96,7 @@ export class ConnectToControllerDialog {
 		const controllerModel = new ControllerModel(this._treeDataProvider, controllerInfo, this.passwordInputBox.value);
 		try {
 			// Validate that we can connect to the controller
-			await controllerModel.refresh();
+			await controllerModel.refresh(false);
 		} catch (err) {
 			vscode.window.showErrorMessage(loc.connectToControllerFailed(this.urlInputBox.value, err));
 			return false;

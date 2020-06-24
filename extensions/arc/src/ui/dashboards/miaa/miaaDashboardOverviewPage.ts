@@ -199,10 +199,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 					this._grafanaLoading!.loading = true;
 					this._databasesTableLoading!.loading = true;
 
-					await Promise.all([
-						this._miaaModel.refresh(),
-						this._controllerModel.refresh()
-					]);
+					await this.refresh();
 				} finally {
 					refreshButton.enabled = true;
 				}
