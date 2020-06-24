@@ -9,7 +9,7 @@ import * as loc from '../../../localizedConstants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { IconPathHelper, cssStyles, iconSize, ResourceType, Endpoints } from '../../../constants';
 import { ControllerModel } from '../../../models/controllerModel';
-import { resourceTypeToDisplayName, getAzurecoreApi, getResourceTypeIcon, getConnectionModeDisplayText } from '../../../common/utils';
+import { resourceTypeToDisplayName, getAzurecoreApi, getResourceTypeIcon, getConnectionModeDisplayText, parseInstanceName } from '../../../common/utils';
 import { RegistrationResponse } from '../../../controller/generated/v1/model/registrationResponse';
 import { EndpointModel } from '../../../controller/generated/v1/api';
 
@@ -102,7 +102,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 				},
 				{
 					displayName: loc.name,
-					valueType: azdata.DeclarativeDataType.string,
+					valueType: azdata.DeclarativeDataType.component,
 					width: '33%',
 					isReadOnly: true,
 					headerCssStyles: cssStyles.tableHeader,
@@ -215,9 +215,16 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 						iconPath: iconPath,
 						iconHeight: iconSize,
 						iconWidth: iconSize
-					})
-					.component();
-				return [imageComponent, r.instanceName, resourceTypeToDisplayName(r.instanceType), loc.numVCores(r.vCores)];
+					}).component();
+				const nameLink = this.modelView.modelBuilder.hyperlink()
+					.withProperties<azdata.HyperlinkComponentProperties>({
+						label: r.instanceName || '',
+						url: ''
+					}).component();
+				nameLink.onDidClick(async () => {
+					await this._controllerModel.treeDataProvider.openResourceDashboard(this._controllerModel, r.instanceType || '', r.instanceNamespace || '', parseInstanceName(r.instanceName));
+				});
+				return [imageComponent, nameLink, resourceTypeToDisplayName(r.instanceType), loc.numVCores(r.vCores)];
 			});
 		this._arcResourcesLoadingComponent.loading = false;
 	}
