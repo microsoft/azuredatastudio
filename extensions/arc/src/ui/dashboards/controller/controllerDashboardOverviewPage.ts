@@ -162,7 +162,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 				try {
 					this._propertiesLoadingComponent!.loading = true;
 					this._arcResourcesLoadingComponent!.loading = true;
-					await this._controllerModel.refresh();
+					await this.refresh();
 				} finally {
 					refreshButton.enabled = true;
 				}

@@ -184,8 +184,24 @@ export class MiaaModel extends ResourceModel {
 		}
 
 		if (!connection) {
+			// We need the password so prompt the user for it
+			const connectionProfile: azdata.IConnectionProfile = {
+				serverName: (this.registration.externalIp && this.registration.externalPort) ? `${this.registration.externalIp},${this.registration.externalPort}` : '',
+				databaseName: '',
+				authenticationType: 'SqlLogin',
+				providerName: 'MSSQL',
+				connectionName: '',
+				userName: 'sa',
+				password: '',
+				savePassword: true,
+				groupFullName: undefined,
+				saveProfile: true,
+				id: '',
+				groupId: undefined,
+				options: {}
+			};
 			// Weren't able to load the existing connection so prompt user for new one
-			connection = await azdata.connection.openConnectionDialog(['MSSQL']);
+			connection = await azdata.connection.openConnectionDialog(['MSSQL'], connectionProfile);
 		}
 
 		if (connection) {
