@@ -62,7 +62,7 @@ export class ControllerModel {
 		}
 	}
 
-	public async refresh(): Promise<void> {
+	public async refresh(showErrors: boolean = true): Promise<void> {
 		// We haven't gotten our password yet, fetch it now
 		if (!this._auth) {
 			let password = '';
@@ -93,7 +93,9 @@ export class ControllerModel {
 				// If an error occurs show a message so the user knows something failed but still
 				// fire the event so callers can know to update (e.g. so dashboards don't show the
 				// loading icon forever)
-				vscode.window.showErrorMessage(loc.fetchEndpointsFailed(this.info.url, err));
+				if (showErrors) {
+					vscode.window.showErrorMessage(loc.fetchEndpointsFailed(this.info.url, err));
+				}
 				this._onEndpointsUpdated.fire(this._endpoints);
 				throw err;
 			}),
@@ -107,7 +109,9 @@ export class ControllerModel {
 				// If an error occurs show a message so the user knows something failed but still
 				// fire the event so callers can know to update (e.g. so dashboards don't show the
 				// loading icon forever)
-				vscode.window.showErrorMessage(loc.fetchRegistrationsFailed(this.info.url, err));
+				if (showErrors) {
+					vscode.window.showErrorMessage(loc.fetchRegistrationsFailed(this.info.url, err));
+				}
 				this._onRegistrationsUpdated.fire(this._registrations);
 				throw err;
 			}),
