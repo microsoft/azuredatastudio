@@ -383,7 +383,6 @@ export class PostgresOverviewPage extends DashboardPage {
 
 		this.nodesTable!.data = this.getNodes();
 		this.nodesTableLoading!.loading = false;
-
 	}
 
 	private handlePodsUpdated() {
