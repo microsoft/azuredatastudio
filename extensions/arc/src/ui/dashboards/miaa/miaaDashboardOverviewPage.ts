@@ -40,14 +40,16 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 	constructor(modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _miaaModel: MiaaModel) {
 		super(modelView);
 		this._instanceProperties.miaaAdmin = this._miaaModel.username || this._instanceProperties.miaaAdmin;
-		this._controllerModel.onRegistrationsUpdated((_: Registration[]) => {
-			this.eventuallyRunOnInitialized(() => {
-				this.handleRegistrationsUpdated().catch(e => console.log(e));
-			});
-		});
-		this._controllerModel.onEndpointsUpdated(endpoints => this.eventuallyRunOnInitialized(() => this.handleEndpointsUpdated(endpoints)));
-		this._miaaModel.onStatusUpdated(status => this.eventuallyRunOnInitialized(() => this.handleMiaaStatusUpdated(status)));
-		this._miaaModel.onDatabasesUpdated(databases => this.eventuallyRunOnInitialized(() => this.handleDatabasesUpdated(databases)));
+		this.disposables.push(
+			this._controllerModel.onRegistrationsUpdated((_: Registration[]) => {
+				this.eventuallyRunOnInitialized(() => {
+					this.handleRegistrationsUpdated().catch(e => console.log(e));
+				});
+			}),
+			this._controllerModel.onEndpointsUpdated(endpoints => this.eventuallyRunOnInitialized(() => this.handleEndpointsUpdated(endpoints))),
+			this._miaaModel.onStatusUpdated(status => this.eventuallyRunOnInitialized(() => this.handleMiaaStatusUpdated(status))),
+			this._miaaModel.onDatabasesUpdated(databases => this.eventuallyRunOnInitialized(() => this.handleDatabasesUpdated(databases)))
+		);
 
 		this.refresh().catch(e => {
 			console.log(e);
@@ -185,6 +187,29 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 			}
 		});
 
+		// Refresh
+		const refreshButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			label: loc.refresh,
+			iconPath: IconPathHelper.refresh
+		}).component();
+
+		refreshButton.onDidClick(async () => {
+			refreshButton.enabled = false;
+			try {
+				this._propertiesLoading!.loading = true;
+				this._kibanaLoading!.loading = true;
+				this._grafanaLoading!.loading = true;
+				this._databasesTableLoading!.loading = true;
+
+				await Promise.all([
+					this._miaaModel.refresh(),
+					this._controllerModel.refresh()
+				]);
+			} finally {
+				refreshButton.enabled = true;
+			}
+		});
+
 		const openInAzurePortalButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: loc.openInAzurePortal,
 			iconPath: IconPathHelper.openInTab
@@ -202,7 +227,8 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems(
 			[
-				{ component: deleteButton, toolbarSeparatorAfter: true },
+				{ component: deleteButton },
+				{ component: refreshButton, toolbarSeparatorAfter: true },
 				{ component: openInAzurePortalButton }
 			]
 		).component();
@@ -221,8 +247,8 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		}
 	}
 
-	private async handleMiaaStatusUpdated(status: HybridSqlNsNameGetResponse): Promise<void> {
-		this._instanceProperties.status = status.status || '-';
+	private async handleMiaaStatusUpdated(status: HybridSqlNsNameGetResponse | undefined): Promise<void> {
+		this._instanceProperties.status = status?.status || '-';
 		this.refreshDisplayedProperties();
 	}
 

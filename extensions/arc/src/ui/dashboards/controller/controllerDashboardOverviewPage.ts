@@ -149,6 +149,23 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 			await vscode.commands.executeCommand('azdata.resource.deploy');
 		});
 
+		// Refresh
+		const refreshButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			label: loc.refresh,
+			iconPath: IconPathHelper.refresh
+		}).component();
+
+		refreshButton.onDidClick(async () => {
+			refreshButton.enabled = false;
+			try {
+				this._propertiesLoadingComponent!.loading = true;
+				this._arcResourcesLoadingComponent!.loading = true;
+				await this._controllerModel.refresh();
+			} finally {
+				refreshButton.enabled = true;
+			}
+		});
+
 		const openInAzurePortalButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: loc.openInAzurePortal,
 			iconPath: IconPathHelper.openInTab
@@ -166,7 +183,8 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems(
 			[
-				{ component: newInstance, toolbarSeparatorAfter: true },
+				{ component: newInstance },
+				{ component: refreshButton, toolbarSeparatorAfter: true },
 				{ component: openInAzurePortalButton }
 			]
 		).component();
