@@ -250,7 +250,7 @@ export class MainThreadNotebooks extends Disposable implements MainThreadNoteboo
 
 	private _emitDelta(delta: INotebookDocumentsAndEditorsDelta) {
 		if (this._isDeltaEmpty(delta)) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} strict-null-checks
 		}
 
 		return this._proxy.$acceptDocumentAndEditorsDelta(delta);

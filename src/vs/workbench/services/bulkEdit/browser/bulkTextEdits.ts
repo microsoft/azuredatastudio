@@ -214,7 +214,7 @@ export class BulkTextEdits {
 
 			const validation = this._validateTasks(tasks);
 			if (!validation.canApply) {
-				throw new Error(`${validation.reason.toString()} has changed in the meantime`);
+				throw new Error(`${(validation as { canApply: false, reason: URI }).reason.toString()} has changed in the meantime`); // {{SQL CARBON EDIT}} strict-null-checks
 			}
 			if (tasks.length === 1) {
 				// This edit touches a single model => keep things simple
