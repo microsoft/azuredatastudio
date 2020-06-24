@@ -27,8 +27,10 @@ import { HideInputTag } from 'sql/platform/notebooks/common/outputRegistry';
 import { FutureInternal, notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { Disposable } from 'vs/base/common/lifecycle';
+import { tryMatchCellMagic, extractCellMagicCommandPlusArgs } from 'sql/workbench/services/notebook/browser/utils';
 
 let modelId = 0;
+const ADS_EXECUTE_COMMAND = 'ADS_EXECUTE_COMMAND';
 
 export class CellModel extends Disposable implements ICellModel {
 	public id: string;
@@ -340,7 +342,7 @@ export class CellModel extends Disposable implements ICellModel {
 
 					// requestExecute expects a string for the code parameter
 					content = Array.isArray(content) ? content.join('') : content;
-					if (!this.checkForAdsCommandMagic()) {
+					if (tryMatchCellMagic(this.source[0]) !== ADS_EXECUTE_COMMAND) {
 						const future = kernel.requestExecute({
 							code: content,
 							stop_on_error: true
@@ -353,6 +355,27 @@ export class CellModel extends Disposable implements ICellModel {
 							this.executionCount = result.content.execution_count;
 							if (result.content.status !== 'ok') {
 								// TODO track error state
+								return false;
+							}
+						}
+					} else {
+						let result = extractCellMagicCommandPlusArgs(this._source[0], ADS_EXECUTE_COMMAND);
+						// Similar to the markdown renderer, we should not allow downloadResource here
+						if (result?.commandId !== '_workbench.downloadResource') {
+							try {
+								// Need to reset outputs here (kernels do this on their own)
+								this._outputs = [];
+								let commandExecuted = this._commandService?.executeCommand(result.commandId, result.args);
+								// This will ensure that the run button turns into a stop button
+								this.fireExecutionStateChanged();
+								await commandExecuted;
+								// For save files, if we output a message after saving the file, the file becomes dirty again.
+								// Special casing this to avoid this particular issue.
+								if (result?.commandId !== 'workbench.action.files.saveFiles') {
+									this.handleIOPub(this.toIOPubMessage(false));
+								}
+							} catch (error) {
+								this.handleIOPub(this.toIOPubMessage(true, error?.message));
 								return false;
 							}
 						}
@@ -700,25 +723,30 @@ export class CellModel extends Disposable implements ICellModel {
 		return source;
 	}
 
-	// Run ADS commands via a notebook. Configured by a setting (turned off by default).
-	private checkForAdsCommandMagic(): boolean {
-		let executeCommandMagic = '%%ADS_EXECUTE_COMMAND';
-		if (this._source && this._source.length) {
-			// Magics aren't allowed to have spaces before the %%, so using startsWith() is fine
-			if (this._source[0].startsWith(executeCommandMagic)) {
-				let commandNamePlusArgs = this._source[0].replace(executeCommandMagic + ' ', '');
-				if (commandNamePlusArgs) {
-					let commandName = commandNamePlusArgs.split(' ')[0];
-					// Similar to the markdown renderer, we should not allow downloadResource here
-					if (commandName && commandName !== '_workbench.downloadResource') {
-						let args = commandNamePlusArgs.replace(commandName + ' ', '');
-						this._commandService.executeCommand(commandName, args);
-					}
-					return true;
+	// Create an iopub message to display either a display result or an error result,
+	// in order to be displayed as part of a cell's outputs
+	private toIOPubMessage(isError: boolean, message?: string): nb.IIOPubMessage {
+		return {
+			channel: 'iopub',
+			type: 'iopub',
+			header: <nb.IHeader>{
+				msg_id: undefined,
+				msg_type: isError ? 'error' : 'display_data'
+			},
+			content: isError ? <nb.IErrorResult>{
+				output_type: 'error',
+				evalue: message,
+				ename: '',
+				traceback: []
+			} : <nb.IDisplayResult>{
+				output_type: 'execute_result',
+				data: {
+					'text/html': localize('commandSuccessful', "Command executed successfully"),
 				}
-			}
-		}
-		return false;
+			},
+			metadata: undefined,
+			parent_header: undefined
+		};
 	}
 
 	// Dispose and set current future to undefined
