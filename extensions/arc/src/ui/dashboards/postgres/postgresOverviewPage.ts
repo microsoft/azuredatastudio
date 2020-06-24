@@ -14,7 +14,6 @@ import { PostgresModel, PodRole } from '../../../models/postgresModel';
 import { promptForResourceDeletion, promptAndConfirmPassword } from '../../../common/utils';
 
 export class PostgresOverviewPage extends DashboardPage {
-	private disposables: vscode.Disposable[] = [];
 
 	private propertiesLoading?: azdata.LoadingComponent;
 	private kibanaLoading?: azdata.LoadingComponent;
@@ -29,29 +28,27 @@ export class PostgresOverviewPage extends DashboardPage {
 	constructor(protected modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
 		super(modelView);
 
-		modelView.onClosed(() =>
-			this.disposables.forEach(d => {
-				try { d.dispose(); }
-				catch { }
-			}));
+		this.disposables.push(
+			this._controllerModel.onEndpointsUpdated(
+				() => this.eventuallyRunOnInitialized(() => this.refreshEndpoints())));
 
-		this.disposables.push(this._controllerModel.onEndpointsUpdated(
-			() => this.eventuallyRunOnInitialized(() => this.refreshEndpoints())));
+		this.disposables.push(
+			this._controllerModel.onRegistrationsUpdated(
+				() => this.eventuallyRunOnInitialized(() => this.refreshProperties())));
 
-		this.disposables.push(this._controllerModel.onRegistrationsUpdated(
-			() => this.eventuallyRunOnInitialized(() => this.refreshProperties())));
+		this.disposables.push(
+			this._postgresModel.onServiceUpdated(
+				() => this.eventuallyRunOnInitialized(() => {
+					this.refreshProperties();
+					this.refreshNodes();
+				})));
 
-		this.disposables.push(this._postgresModel.onServiceUpdated(
-			() => this.eventuallyRunOnInitialized(() => {
-				this.refreshProperties();
-				this.refreshNodes();
-			})));
-
-		this.disposables.push(this._postgresModel.onPodsUpdated(
-			() => this.eventuallyRunOnInitialized(() => {
-				this.refreshProperties();
-				this.refreshNodes();
-			})));
+		this.disposables.push(
+			this._postgresModel.onPodsUpdated(
+				() => this.eventuallyRunOnInitialized(() => {
+					this.refreshProperties();
+					this.refreshNodes();
+				})));
 	}
 
 	protected get title(): string {
@@ -186,22 +183,23 @@ export class PostgresOverviewPage extends DashboardPage {
 			iconPath: IconPathHelper.add
 		}).component();
 
-		newDatabaseButton.onDidClick(async () => {
-			newDatabaseButton.enabled = false;
-			let name;
-			try {
-				name = await vscode.window.showInputBox({ prompt: loc.databaseName });
-				if (name) {
-					const db: DuskyObjectModelsDatabase = { name: name }; // TODO support other options (sharded, owner)
-					await this._postgresModel.createDatabase(db);
-					vscode.window.showInformationMessage(loc.databaseCreated(db.name ?? ''));
+		this.disposables.push(
+			newDatabaseButton.onDidClick(async () => {
+				newDatabaseButton.enabled = false;
+				let name;
+				try {
+					name = await vscode.window.showInputBox({ prompt: loc.databaseName });
+					if (name) {
+						const db: DuskyObjectModelsDatabase = { name: name }; // TODO support other options (sharded, owner)
+						await this._postgresModel.createDatabase(db);
+						vscode.window.showInformationMessage(loc.databaseCreated(db.name ?? ''));
+					}
+				} catch (error) {
+					vscode.window.showErrorMessage(loc.databaseCreationFailed(name ?? '', error));
+				} finally {
+					newDatabaseButton.enabled = true;
 				}
-			} catch (error) {
-				vscode.window.showErrorMessage(loc.databaseCreationFailed(name ?? '', error));
-			} finally {
-				newDatabaseButton.enabled = true;
-			}
-		});
+			}));
 
 		// Reset password
 		const resetPasswordButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
@@ -209,23 +207,24 @@ export class PostgresOverviewPage extends DashboardPage {
 			iconPath: IconPathHelper.edit
 		}).component();
 
-		resetPasswordButton.onDidClick(async () => {
-			resetPasswordButton.enabled = false;
-			try {
-				const password = await promptAndConfirmPassword(input => !input ? loc.enterANonEmptyPassword : '');
-				if (password) {
-					await this._postgresModel.update(s => {
-						s.arc = s.arc ?? new DuskyObjectModelsDatabaseServiceArcPayload();
-						s.arc.servicePassword = password;
-					});
-					vscode.window.showInformationMessage(loc.passwordReset);
+		this.disposables.push(
+			resetPasswordButton.onDidClick(async () => {
+				resetPasswordButton.enabled = false;
+				try {
+					const password = await promptAndConfirmPassword(input => !input ? loc.enterANonEmptyPassword : '');
+					if (password) {
+						await this._postgresModel.update(s => {
+							s.arc = s.arc ?? new DuskyObjectModelsDatabaseServiceArcPayload();
+							s.arc.servicePassword = password;
+						});
+						vscode.window.showInformationMessage(loc.passwordReset);
+					}
+				} catch (error) {
+					vscode.window.showErrorMessage(loc.passwordResetFailed(error));
+				} finally {
+					resetPasswordButton.enabled = true;
 				}
-			} catch (error) {
-				vscode.window.showErrorMessage(loc.passwordResetFailed(error));
-			} finally {
-				resetPasswordButton.enabled = true;
-			}
-		});
+			}));
 
 		// Delete service
 		const deleteButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
@@ -233,19 +232,20 @@ export class PostgresOverviewPage extends DashboardPage {
 			iconPath: IconPathHelper.delete
 		}).component();
 
-		deleteButton.onDidClick(async () => {
-			deleteButton.enabled = false;
-			try {
-				if (await promptForResourceDeletion(this._postgresModel.namespace, this._postgresModel.name)) {
-					await this._postgresModel.delete();
-					vscode.window.showInformationMessage(loc.resourceDeleted(this._postgresModel.fullName));
+		this.disposables.push(
+			deleteButton.onDidClick(async () => {
+				deleteButton.enabled = false;
+				try {
+					if (await promptForResourceDeletion(this._postgresModel.namespace, this._postgresModel.name)) {
+						await this._postgresModel.delete();
+						vscode.window.showInformationMessage(loc.resourceDeleted(this._postgresModel.fullName));
+					}
+				} catch (error) {
+					vscode.window.showErrorMessage(loc.resourceDeletionFailed(this._postgresModel.fullName, error));
+				} finally {
+					deleteButton.enabled = true;
 				}
-			} catch (error) {
-				vscode.window.showErrorMessage(loc.resourceDeletionFailed(this._postgresModel.fullName, error));
-			} finally {
-				deleteButton.enabled = true;
-			}
-		});
+			}));
 
 		// Refresh
 		const refreshButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
@@ -253,25 +253,26 @@ export class PostgresOverviewPage extends DashboardPage {
 			iconPath: IconPathHelper.refresh
 		}).component();
 
-		refreshButton.onDidClick(async () => {
-			refreshButton.enabled = false;
-			try {
-				this.propertiesLoading!.loading = true;
-				this.kibanaLoading!.loading = true;
-				this.grafanaLoading!.loading = true;
-				this.nodesTableLoading!.loading = true;
+		this.disposables.push(
+			refreshButton.onDidClick(async () => {
+				refreshButton.enabled = false;
+				try {
+					this.propertiesLoading!.loading = true;
+					this.kibanaLoading!.loading = true;
+					this.grafanaLoading!.loading = true;
+					this.nodesTableLoading!.loading = true;
 
-				await Promise.all([
-					this._postgresModel.refresh(),
-					this._controllerModel.refresh()
-				]);
-			} catch (error) {
-				vscode.window.showErrorMessage(loc.refreshFailed(error));
-			}
-			finally {
-				refreshButton.enabled = true;
-			}
-		});
+					await Promise.all([
+						this._postgresModel.refresh(),
+						this._controllerModel.refresh()
+					]);
+				} catch (error) {
+					vscode.window.showErrorMessage(loc.refreshFailed(error));
+				}
+				finally {
+					refreshButton.enabled = true;
+				}
+			}));
 
 		// Open in Azure portal
 		const openInAzurePortalButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
@@ -279,15 +280,16 @@ export class PostgresOverviewPage extends DashboardPage {
 			iconPath: IconPathHelper.openInTab
 		}).component();
 
-		openInAzurePortalButton.onDidClick(async () => {
-			const r = this._controllerModel.getRegistration(ResourceType.postgresInstances, this._postgresModel.namespace, this._postgresModel.name);
-			if (!r) {
-				vscode.window.showErrorMessage(loc.couldNotFindAzureResource(this._postgresModel.fullName));
-			} else {
-				vscode.env.openExternal(vscode.Uri.parse(
-					`https://portal.azure.com/#resource/subscriptions/${r.subscriptionId}/resourceGroups/${r.resourceGroupName}/providers/Microsoft.AzureData/${ResourceType.postgresInstances}/${r.instanceName}`));
-			}
-		});
+		this.disposables.push(
+			openInAzurePortalButton.onDidClick(async () => {
+				const r = this._controllerModel.getRegistration(ResourceType.postgresInstances, this._postgresModel.namespace, this._postgresModel.name);
+				if (!r) {
+					vscode.window.showErrorMessage(loc.couldNotFindAzureResource(this._postgresModel.fullName));
+				} else {
+					vscode.env.openExternal(vscode.Uri.parse(
+						`https://portal.azure.com/#resource/subscriptions/${r.subscriptionId}/resourceGroups/${r.resourceGroupName}/providers/Microsoft.AzureData/${ResourceType.postgresInstances}/${r.instanceName}`));
+				}
+			}));
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems([
 			{ component: newDatabaseButton },
