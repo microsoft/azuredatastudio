@@ -177,7 +177,8 @@ const copyrightFilter = [
 	'!**/*.gif',
 	'!**/*.xlf',
 	'!**/*.dacpac',
-	'!**/*.bacpac'
+	'!**/*.bacpac',
+	'!**/*.py'
 ];
 
 const jsHygieneFilter = [

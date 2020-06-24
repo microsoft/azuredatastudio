@@ -8,6 +8,8 @@ import * as azurecore from '../../../azurecore/src/azurecore';
 import * as loc from '../localizedConstants';
 import { IconPathHelper, IconPath, ResourceType, Connectionmode } from '../constants';
 
+export class UserCancelledError extends Error { }
+
 /**
  * Converts the resource type name into the localized Display Name for that type.
  * @param resourceType The resource type name to convert
@@ -91,7 +93,7 @@ export function getDatabaseStateDisplayText(state: string): string {
 			return loc.restoring;
 		case 'RECOVERING':
 			return loc.recovering;
-		case 'RECOVERY PENDING	':
+		case 'RECOVERY PENDING':
 			return loc.recoveryPending;
 		case 'SUSPECT':
 			return loc.suspect;
