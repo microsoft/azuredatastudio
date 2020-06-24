@@ -115,7 +115,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 					headerCssStyles: cssStyles.tableHeader,
 					rowCssStyles: cssStyles.tableRow
 				}, {
-					displayName: loc.computeAndStorage,
+					displayName: loc.compute,
 					valueType: azdata.DeclarativeDataType.string,
 					width: '34%',
 					isReadOnly: true,
@@ -140,33 +140,54 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 
 	public get toolbarContainer(): azdata.ToolbarContainer {
 
-		const createNewButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			label: loc.createNew,
+		const newInstance = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			label: loc.newInstance,
 			iconPath: IconPathHelper.add
 		}).component();
 
-		createNewButton.onDidClick(async () => {
-			await vscode.commands.executeCommand('azdata.resource.deploy');
-		});
+		this.disposables.push(
+			newInstance.onDidClick(async () => {
+				await vscode.commands.executeCommand('azdata.resource.deploy');
+			}));
+
+		// Refresh
+		const refreshButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			label: loc.refresh,
+			iconPath: IconPathHelper.refresh
+		}).component();
+
+		this.disposables.push(
+			refreshButton.onDidClick(async () => {
+				refreshButton.enabled = false;
+				try {
+					this._propertiesLoadingComponent!.loading = true;
+					this._arcResourcesLoadingComponent!.loading = true;
+					await this.refresh();
+				} finally {
+					refreshButton.enabled = true;
+				}
+			}));
 
 		const openInAzurePortalButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: loc.openInAzurePortal,
 			iconPath: IconPathHelper.openInTab
 		}).component();
 
-		openInAzurePortalButton.onDidClick(async () => {
-			const r = this._controllerModel.controllerRegistration;
-			if (r) {
-				vscode.env.openExternal(vscode.Uri.parse(
-					`https://portal.azure.com/#resource/subscriptions/${r.subscriptionId}/resourceGroups/${r.resourceGroupName}/providers/Microsoft.AzureData/${ResourceType.dataControllers}/${r.instanceName}`));
-			} else {
-				vscode.window.showErrorMessage(loc.couldNotFindRegistration(this._controllerModel.namespace, 'controller'));
-			}
-		});
+		this.disposables.push(
+			openInAzurePortalButton.onDidClick(async () => {
+				const r = this._controllerModel.controllerRegistration;
+				if (r) {
+					vscode.env.openExternal(vscode.Uri.parse(
+						`https://portal.azure.com/#resource/subscriptions/${r.subscriptionId}/resourceGroups/${r.resourceGroupName}/providers/Microsoft.AzureData/${ResourceType.dataControllers}/${r.instanceName}`));
+				} else {
+					vscode.window.showErrorMessage(loc.couldNotFindRegistration(this._controllerModel.namespace, 'controller'));
+				}
+			}));
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems(
 			[
-				{ component: createNewButton, toolbarSeparatorAfter: true },
+				{ component: newInstance },
+				{ component: refreshButton, toolbarSeparatorAfter: true },
 				{ component: openInAzurePortalButton }
 			]
 		).component();
@@ -196,7 +217,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 						iconWidth: iconSize
 					})
 					.component();
-				return [imageComponent, r.instanceName, resourceTypeToDisplayName(r.instanceType), r.vCores];
+				return [imageComponent, r.instanceName, resourceTypeToDisplayName(r.instanceType), loc.numVCores(r.vCores)];
 			});
 		this._arcResourcesLoadingComponent.loading = false;
 	}
