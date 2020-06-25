@@ -136,7 +136,7 @@ export default class MainController implements Disposable {
 			// TODO: what if the selected folder is outside the workspace?
 
 			const newProjFolderUri = (selectionResult as Uri[])[0];
-			const newProjFilePath = await this.projectsController.createNewProject(<string>newProjName, newProjFolderUri);
+			const newProjFilePath = await this.projectsController.createNewProject(<string>newProjName, newProjFolderUri, true);
 			const proj = await this.projectsController.openProject(Uri.file(newProjFilePath));
 
 			return proj;
