@@ -155,6 +155,30 @@ export class SchemaCompareMainWindow {
 				this.createSaveScmpButton(view);
 				this.createSourceAndTargetButtons(view);
 
+				this.sourceName = getEndpointName(this.sourceEndpointInfo);
+				this.targetName = ' ';
+				this.sourceNameComponent = view.modelBuilder.table().withProperties({
+					columns: [
+						{
+							value: this.sourceName,
+							headerCssClass: 'no-borders',
+							toolTip: this.sourceName
+						},
+					]
+				}).component();
+
+				this.targetNameComponent = view.modelBuilder.table().withProperties({
+					columns: [
+						{
+							value: this.targetName,
+							headerCssClass: 'no-borders',
+							toolTip: this.targetName
+						},
+					]
+				}).component();
+
+				this.resetButtons(ResetButtonState.noSourceTarget);
+
 				let toolBar = view.modelBuilder.toolbarContainer();
 				toolBar.addToolbarItems([{
 					component: this.compareButton
@@ -189,30 +213,6 @@ export class SchemaCompareMainWindow {
 				let arrowLabel = view.modelBuilder.text().withProperties({
 					value: '➔'
 				}).component();
-
-				this.sourceName = getEndpointName(this.sourceEndpointInfo);
-				this.targetName = ' ';
-				this.sourceNameComponent = view.modelBuilder.table().withProperties({
-					columns: [
-						{
-							value: this.sourceName,
-							headerCssClass: 'no-borders',
-							toolTip: this.sourceName
-						},
-					]
-				}).component();
-
-				this.targetNameComponent = view.modelBuilder.table().withProperties({
-					columns: [
-						{
-							value: this.targetName,
-							headerCssClass: 'no-borders',
-							toolTip: this.targetName
-						},
-					]
-				}).component();
-
-				this.resetButtons(ResetButtonState.noSourceTarget);		// Reset button based on populated sourceName
 
 				sourceTargetLabels.addItem(sourceLabel, { CSSStyles: { 'width': '55%', 'margin-left': '15px', 'font-size': 'larger', 'font-weight': 'bold' } });
 				sourceTargetLabels.addItem(targetLabel, { CSSStyles: { 'width': '45%', 'font-size': 'larger', 'font-weight': 'bold' } });

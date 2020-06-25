@@ -14,7 +14,7 @@ import { SchemaCompareDialog } from './../dialogs/schemaCompareDialog';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
 import { SchemaCompareTestService, testStateScmp } from './testSchemaCompareService';
 import { createContext, TestContext } from './testContext';
-import { mockIConnectionProfile, mockFilePath, setDacpacEndpointInfo, setDatabaseEndpointInfo, shouldThrowSpecificError  } from './testUtils';
+import { mockIConnectionProfile, mockFilePath, setDacpacEndpointInfo, setDatabaseEndpointInfo, shouldThrowSpecificError } from './testUtils';
 
 // Mock test data
 const mocksource: string = 'source.dacpac';
