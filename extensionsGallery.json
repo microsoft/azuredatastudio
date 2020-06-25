@@ -3299,10 +3299,10 @@
 					"flags": ""
 				},
 				{
-					"extensionId": "70",
+					"extensionId": "71",
 					"extensionName": "vscode-wakatime",
 					"displayName": "WakaTime",
-					"shortDescription": "Automatic time tracking and quantified-self metrics generated from your SQLOps usage.",
+					"shortDescription": "Automatic time tracking and quantified-self metrics generated from your Azure Data Studio usage.",
 					"publisher": {
 						"displayName": "WakaTime",
 						"publisherId": "wakaTime",
