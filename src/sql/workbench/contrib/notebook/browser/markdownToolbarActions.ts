@@ -80,9 +80,11 @@ export class MarkdownTextTransformer {
 
 				let editorModel = editorControl.getModel() as TextModel;
 				let isUndo = false;
+				let isReplace = false;
 				if (editorModel) {
 					let markdownLineType = this.getMarkdownLineType(type);
 					isUndo = this.isUndoOperation(selection, type, markdownLineType, editorModel);
+					isReplace = this.isReplaceOperation(selection, type, markdownLineType, editorModel);
 					if (isUndo) {
 						if (this.isIdenticalRanges(startRange, endRange)) {
 							// Single line
@@ -92,12 +94,23 @@ export class MarkdownTextTransformer {
 							this.handleUndoOperation(markdownLineType, startRange, endRange, editorModel, beginInsertedCode, endInsertedCode, selections, selection);
 						}
 					} else {
-						if (this.isIdenticalRanges(startRange, endRange)) {
-							// Single line
-							let customStartRange: IRange = this.getCustomStartRange(startRange);
-							this.handleTransformOperation(markdownLineType, customStartRange, endRange, editorModel, beginInsertedCode, endInsertedCode, selections, selection);
+						if (isReplace) {
+							//TODO: Determine course of action in the case we need to replace characters.
+							if (this.isIdenticalRanges(startRange, endRange)) {
+								// Single line
+								let customStartRange: IRange = this.getCustomStartRange(startRange);
+								this.handleTransformOperation(markdownLineType, customStartRange, endRange, editorModel, beginInsertedCode, endInsertedCode, selections, selection);
+							} else {
+								this.handleTransformOperation(markdownLineType, startRange, endRange, editorModel, beginInsertedCode, endInsertedCode, selections, selection);
+							}
 						} else {
-							this.handleTransformOperation(markdownLineType, startRange, endRange, editorModel, beginInsertedCode, endInsertedCode, selections, selection);
+							if (this.isIdenticalRanges(startRange, endRange)) {
+								// Single line
+								let customStartRange: IRange = this.getCustomStartRange(startRange);
+								this.handleTransformOperation(markdownLineType, customStartRange, endRange, editorModel, beginInsertedCode, endInsertedCode, selections, selection);
+							} else {
+								this.handleTransformOperation(markdownLineType, startRange, endRange, editorModel, beginInsertedCode, endInsertedCode, selections, selection);
+							}
 						}
 					}
 				}
@@ -349,6 +362,28 @@ export class MarkdownTextTransformer {
 		}
 	}
 
+	private isReplaceOperation(selection: Selection, type: MarkdownButtonType, lineType: MarkdownLineType, editorModel: TextModel): boolean {
+		let relatedTypes: MarkdownButtonType[] = [
+			MarkdownButtonType.UNORDERED_LIST,
+			MarkdownButtonType.ORDERED_LIST,
+			MarkdownButtonType.HEADING1,
+			MarkdownButtonType.HEADING2,
+			MarkdownButtonType.HEADING3
+		];
+
+		for (let selectedType of relatedTypes) {
+			// look for a match using existing type from relatedTypes and check against string.
+			let selectedText = this.getExtendedSelectedText(selection, selectedType, lineType, editorModel);
+			// Type to add to the line matches a type from our relatedTypes, and type from selected text matches one in the relatedTypes.
+			//console.log('------------------------------');
+			//console.log('type is in array: ', relatedTypes.indexOf(type) > -1); // true
+			//console.log('line string: //' + selectedText + '//');
+			//console.log('selectedType: ', selectedType + ', char: ' + this.getStartTextToInsert(selectedType)); // selectedType: 6, char: -
+			//console.log('type of selectedText is in array: ', selectedText.startsWith(this.getStartTextToInsert(selectedType))); // false - why?
+		}
+
+	}
+
 	handleTransformOperation(markdownLineType: MarkdownLineType, startRange: IRange, endRange: IRange, editorModel: TextModel, beginInsertedCode: string, endInsertedCode: string, selections: Selection[], selection: Selection): void {
 		// If the markdown we're inserting only needs to be added to the begin and end lines, add those edit operations directly
 		if (markdownLineType === MarkdownLineType.BEGIN_AND_END_LINES || markdownLineType === MarkdownLineType.WRAPPED_ABOVE_AND_BELOW) {
@@ -359,7 +394,6 @@ export class MarkdownTextTransformer {
 				editorModel.pushEditOperations(null, [{ range: startRange, text: beginInsertedCode }, { range: endRange, text: null }], null);
 			} else {
 				// Otherwise, add an operation per line (plus the operation at the last column + line)
-				// Multi-line
 				let operations: IIdentifiedSingleEditOperation[] = [];
 				for (let i = 0; i < selection.endLineNumber - selection.startLineNumber + 1; i++) {
 					operations.push({ range: this.transformRangeByLineOffset(startRange, i), text: beginInsertedCode });
@@ -390,6 +424,13 @@ export class MarkdownTextTransformer {
 				startColumn: 1,
 				startLineNumber: selection.startLineNumber - 1,
 				endColumn: this.getEndTextToInsert(type).length + 1,
+				endLineNumber: selection.endLineNumber + 1
+			});
+		} else if (lineType === MarkdownLineType.EVERY_LINE) {
+			return editorModel.getValueInRange({
+				startColumn: 1,
+				startLineNumber: selection.startLineNumber - 1,
+				endColumn: selection.endColumn,
 				endLineNumber: selection.endLineNumber + 1
 			});
 		}
