@@ -4,12 +4,21 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import { InitializingComponent } from './initializingComponent';
 
 export abstract class DashboardPage extends InitializingComponent {
 
+	protected disposables: vscode.Disposable[] = [];
+
 	constructor(protected modelView: azdata.ModelView) {
 		super();
+		this.disposables.push(modelView.onClosed(() => {
+			// Clean up best we can
+			this.disposables.forEach(d => {
+				try { d.dispose(); } catch { }
+			});
+		}));
 	}
 
 	public get tab(): azdata.DashboardTab {

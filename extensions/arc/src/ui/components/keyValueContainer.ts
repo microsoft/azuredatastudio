@@ -11,24 +11,37 @@ import { IconPathHelper, cssStyles } from '../../constants';
 /** A container with a single vertical column of KeyValue pairs */
 export class KeyValueContainer {
 	public container: azdata.DivContainer;
+	private keyToComponent: Map<string, (azdata.TextComponent | azdata.InputBoxComponent)>;
 
 	constructor(private modelBuilder: azdata.ModelBuilder, pairs: KeyValue[]) {
 		this.container = modelBuilder.divContainer().component();
+		this.keyToComponent = new Map<string, azdata.Component>();
 		this.refresh(pairs);
 	}
 
+	// TODO: Support removing KeyValues, and handle race conditions when
+	// adding/removing KeyValues concurrently. For now this should only be used
+	// when the set of keys won't change (though their values can be refreshed).
 	public refresh(pairs: KeyValue[]) {
-		this.container.clearItems();
-		this.container.addItems(
-			pairs.map(p => p.getComponent(this.modelBuilder)),
-			{ CSSStyles: { 'margin-bottom': '15px', 'min-height': '30px' } }
-		);
+		pairs.forEach(p => {
+			let component = this.keyToComponent.get(p.key);
+			if (component) {
+				component.value = p.value;
+			} else {
+				component = p.getComponent(this.modelBuilder);
+				this.keyToComponent.set(p.key, component);
+				this.container.addItem(
+					component,
+					{ CSSStyles: { 'margin-bottom': '15px', 'min-height': '30px' } }
+				);
+			}
+		});
 	}
 }
 
 /** A key value pair in the KeyValueContainer */
 export abstract class KeyValue {
-	constructor(protected key: string, protected value: string) { }
+	constructor(public key: string, public value: string) { }
 
 	/** Returns a component representing the entire KeyValue pair */
 	public getComponent(modelBuilder: azdata.ModelBuilder) {

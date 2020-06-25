@@ -5,11 +5,10 @@
 
 import * as azdata from 'azdata';
 import * as loc from '../../../localizedConstants';
-import { IconPathHelper, cssStyles } from '../../../constants';
+import { IconPathHelper, cssStyles, ResourceType } from '../../../constants';
 import { KeyValueContainer, KeyValue, InputKeyValue, MultilineInputKeyValue } from '../../components/keyValueContainer';
 import { DashboardPage } from '../../components/dashboardPage';
 import { ControllerModel, Registration } from '../../../models/controllerModel';
-import { ResourceType } from '../../../common/utils';
 import { MiaaModel } from '../../../models/miaaModel';
 
 export class MiaaConnectionStringsPage extends DashboardPage {
@@ -19,15 +18,10 @@ export class MiaaConnectionStringsPage extends DashboardPage {
 
 	constructor(modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _miaaModel: MiaaModel) {
 		super(modelView);
-		this._controllerModel.onRegistrationsUpdated(registrations => {
-			this._instanceRegistration = registrations.find(reg => reg.instanceType === ResourceType.sqlManagedInstances && reg.instanceName === this._miaaModel.name);
+		this.disposables.push(this._controllerModel.onRegistrationsUpdated(_ => {
+			this._instanceRegistration = this._controllerModel.getRegistration(ResourceType.sqlManagedInstances, this._miaaModel.info.namespace, this._miaaModel.info.name);
 			this.eventuallyRunOnInitialized(() => this.updateConnectionStrings());
-		});
-		this.refresh().catch(err => console.error(err));
-	}
-
-	protected async refresh(): Promise<void> {
-		await this._controllerModel.refresh();
+		}));
 	}
 
 	protected get title(): string {
@@ -79,7 +73,7 @@ export class MiaaConnectionStringsPage extends DashboardPage {
 
 		const ip = this._instanceRegistration.externalIp;
 		const port = this._instanceRegistration.externalPort;
-		const username = this._miaaModel.connectionProfile.userName;
+		const username = this._miaaModel.username;
 
 		const pairs: KeyValue[] = [
 			new InputKeyValue('ADO.NET', `Server=tcp:${ip},${port};Persist Security Info=False;User ID=${username};Password={your_password_here};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;`),

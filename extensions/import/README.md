@@ -22,13 +22,13 @@ This wizard was created to improve the current import experience leveraging an i
 
  PROSE analyzes data patterns in your input file to infer column names, types, delimiters, and more. This framework learns the structure of the file and does all of the hard work so users don't have to.
 
- Please note that the PROSE binary components used by this extension are licensed under the [MICROSOFT SQL TOOLS IMPORT FLAT FILE  EULA](https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/import/Microsoft_SQL_Server_Import_Extension_and_Tools_Import_Flat_File_Preview.docx).
+ Please note that the PROSE binary components used by this extension are licensed under the [MICROSOFT SQL TOOLS IMPORT FLAT FILE  EULA](https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/import/Microsoft_SQL_Server_Import_Extension_and_Tools_Import_Flat_File_Preview.docx).
 
 ## License
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-Licensed under the [MICROSOFT SQL SERVER IMPORT EXTENSION EULA](https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/import/Microsoft_SQL_Server_Import_Extension_and_Tools_Import_Flat_File_Preview.docx).
+Licensed under the [MICROSOFT SQL SERVER IMPORT EXTENSION EULA](https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/import/Microsoft_SQL_Server_Import_Extension_and_Tools_Import_Flat_File_Preview.docx).
 
 > Note: Microsoft SQL Server Import for Azure Data Studio extension contains the Microsoft SQL Tools Import Flat File component which is also licensed under the above EULA.
 

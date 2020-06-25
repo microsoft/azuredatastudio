@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
+import { promises as fs } from 'fs';
 
 export async function assertThrowsAsync(fn: () => Promise<any>, msg: string): Promise<void> {
 	let f = () => {
@@ -20,4 +21,12 @@ export async function assertThrowsAsync(fn: () => Promise<any>, msg: string): Pr
 
 export async function sleep(ms: number): Promise<{}> {
 	return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+export async function tryDeleteFile(path: string): Promise<void> {
+	try {
+		await fs.unlink(path);
+	} catch {
+		console.warn(`Could not delete file ${path}`);
+	}
 }

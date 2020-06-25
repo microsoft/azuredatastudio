@@ -11,6 +11,8 @@
 	"sqlDatabaseProjects.importDatabase": "Import New Database Project",
 	"sqlDatabaseProjects.properties": "Properties",
 	"sqlDatabaseProjects.schemaCompare": "Schema Compare",
+	"sqlDatabaseProjects.delete": "Delete",
+	"sqlDatabaseProjects.exclude": "Exclude from project",
 
 	"sqlDatabaseProjects.newScript": "Add Script",
 	"sqlDatabaseProjects.newTable": "Add Table",

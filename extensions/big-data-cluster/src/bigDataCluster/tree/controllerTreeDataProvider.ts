@@ -8,10 +8,8 @@ import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import { TreeNode } from './treeNode';
 import { IControllerTreeChangeHandler } from './controllerTreeChangeHandler';
-import { AddControllerNode } from './addControllerNode';
 import { ControllerRootNode, ControllerNode } from './controllerTreeNode';
 import { showErrorMessage } from '../utils';
-import { LoadingControllerNode } from './loadingControllerNode';
 import { AuthType } from 'bdc';
 
 const localize = nls.loadMessageBundle();
@@ -36,7 +34,6 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 
 	constructor(private memento: vscode.Memento) {
 		this.root = new ControllerRootNode(this);
-		this.root.addChild(new LoadingControllerNode());
 	}
 
 	public async getChildren(element?: TreeNode): Promise<TreeNode[]> {
@@ -46,6 +43,11 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 
 		if (!this.initialized) {
 			this.loadSavedControllers().catch(err => { vscode.window.showErrorMessage(localize('bdc.controllerTreeDataProvider.error', "Unexpected error loading saved controllers: {0}", err)); });
+		} else {
+			// We set the context here since VS Code takes a bit of time to process the _onDidChangeTreeData
+			// and so if we set it as soon as we finished loading the controllers it would briefly flash
+			// the "connect to controller" welcome view
+			await vscode.commands.executeCommand('setContext', 'bdc.loaded', true);
 		}
 
 		return this.root.getChildren();
@@ -79,29 +81,16 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 		this.notifyNodeChanged();
 	}
 
-	public deleteController(url: string, auth: AuthType, username: string): ControllerNode[] {
-		let deleted = this.root.deleteControllerNode(url, auth, username);
-		if (deleted) {
+	public removeController(url: string, auth: AuthType, username: string): ControllerNode[] {
+		let removed = this.root.removeControllerNode(url, auth, username);
+		if (removed) {
 			this.notifyNodeChanged();
 		}
-		return deleted;
+		return removed;
 	}
 
 	private removeNonControllerNodes(): void {
-		this.removePlaceholderNodes(this.root.children);
 		this.removeDefectiveControllerNodes(this.root.children);
-	}
-
-	private removePlaceholderNodes(nodes: TreeNode[]): void {
-		if (nodes.length > 0) {
-			for (let i = 0; i < nodes.length; ++i) {
-				if (nodes[i] instanceof AddControllerNode ||
-					nodes[i] instanceof LoadingControllerNode
-				) {
-					nodes.splice(i--, 1);
-				}
-			}
-		}
 	}
 
 	private removeDefectiveControllerNodes(nodes: TreeNode[]): void {
@@ -142,11 +131,7 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 			}
 
 			this.root.clearChildren();
-			if (treeNodes.length === 0) {
-				this.root.addChild(new AddControllerNode());
-			} else {
-				treeNodes.forEach(node => this.root.addChild(node));
-			}
+			treeNodes.forEach(node => this.root.addChild(node));
 			this.notifyNodeChanged();
 		} catch (err) {
 			// Reset so we can try again if the tree refreshes

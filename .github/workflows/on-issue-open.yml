@@ -8,10 +8,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Actions
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.2.0
         with:
           repository: 'microsoft/azuredatastudio'
-          ref: master
+          ref: main
           path: ./actions
       - name: Install Actions
         run: npm install --production --prefix ./actions/build/actions
