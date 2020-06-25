@@ -3297,6 +3297,63 @@
 					],
 					"statistics": [],
 					"flags": ""
+				},
+				{
+					"extensionId": "71",
+					"extensionName": "vscode-wakatime",
+					"displayName": "WakaTime",
+					"shortDescription": "Automatic time tracking and quantified-self metrics generated from your Azure Data Studio usage.",
+					"publisher": {
+						"displayName": "WakaTime",
+						"publisherId": "wakaTime",
+						"publisherName": "wakatime"
+					},
+					"versions": [
+						{
+							"version": "4.0.0",
+							"lastUpdated": "02/23/2020",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/wakatime/vscode-wakatime/releases/tag/4.0.0"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/wakatime/vscode-wakatime/master/images/wakatime-logo.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/wakatime/vscode-wakatime/master/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/wakatime/vscode-wakatime/master/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/wakatime/vscode-wakatime/master/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/wakatime/vscode-wakatime"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": ""
 				}
 			],
 			"resultMetadata": [
@@ -3305,7 +3362,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 56
+							"count": 57
 						}
 					]
 				}
