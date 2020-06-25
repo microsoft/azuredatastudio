@@ -4,5 +4,6 @@
 	"arc.configuration.title": "Azure Arc",
 	"arc.ignoreSslVerification.desc" : "Ignore SSL verification errors against the controller endpoint if true",
 	"arc.manageMiaa": "Manage MIAA",
-	"arc.managePostgres": "Manage Postgres"
+	"arc.managePostgres": "Manage Postgres",
+	"arc.manageArcController": "Manage Arc Controller"
 }

@@ -1280,7 +1280,7 @@
 
 .file-icons-enabled .show-file-icons .az_data_welcome_page-name-file-icon.file-icon::before {
 	content: " ";
-	background-image: url(../../media/code-icon.svg)
+	background-image: url('../../../../../../vs/workbench/browser/media/code-icon.svg');
 }
 
 .monaco-workbench .part.editor>.content .welcomePage .linux_only, .monaco-workbench .part.editor>.content .welcomePage .mac_only, .monaco-workbench .part.editor>.content .welcomePage .windows_only {

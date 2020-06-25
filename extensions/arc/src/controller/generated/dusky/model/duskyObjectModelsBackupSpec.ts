@@ -17,7 +17,7 @@ export class DuskyObjectModelsBackupSpec {
     'deltaMinutes'?: number | null;
     'fullMinutes'?: number | null;
     'copySchedule'?: DuskyObjectModelsBackupCopySchedule;
-    'tiers': Array<DuskyObjectModelsBackupTier>;
+    'tiers'?: Array<DuskyObjectModelsBackupTier>;
 
     static discriminator: string | undefined = undefined;
 

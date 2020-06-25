@@ -14,7 +14,6 @@ export interface ButtonColumnDefinition<T extends Slick.SlickData> extends TextW
 export interface ButtonColumnOptions {
 	iconCssClass?: string;
 	title?: string;
-	width?: number;
 	id?: string;
 }
 
@@ -38,10 +37,9 @@ export class ButtonColumn<T extends Slick.SlickData> implements Slick.Plugin<T> 
 			formatter: (row: number, cell: number, value: any, columnDef: Slick.Column<T>, dataContext: T): string => {
 				return this.formatter(row, cell, value, columnDef, dataContext);
 			},
-			width: options.width,
+			width: 30,
 			selectable: false,
-			iconCssClassField: options.iconCssClass,
-			cssClass: 'slick-button-cell'
+			iconCssClassField: options.iconCssClass
 		};
 	}
 

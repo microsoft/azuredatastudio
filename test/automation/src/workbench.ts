@@ -26,6 +26,7 @@ import { ConnectionDialog } from './sql/connectionDialog';
 import { Profiler } from './sql/profiler';
 import { QueryEditors } from './sql/queryEditors';
 import { QueryEditor } from './sql/queryEditor';
+import { Notebook as SqlNotebook } from './sql/notebook';
 // {{END}}
 
 export interface Commands {
@@ -56,6 +57,7 @@ export class Workbench {
 	readonly profiler: Profiler;
 	readonly queryEditors: QueryEditors;
 	readonly queryEditor: QueryEditor;
+	readonly sqlNotebbok: SqlNotebook;
 	// {{END}}
 
 	constructor(code: Code, userDataPath: string) {
@@ -77,8 +79,9 @@ export class Workbench {
 		// {{SQL CARBON EDIT}}
 		this.connectionDialog = new ConnectionDialog(code);
 		this.profiler = new Profiler(code, this.quickaccess);
-		this.queryEditors = new QueryEditors(code);
+		this.queryEditors = new QueryEditors(code, this.editors);
 		this.queryEditor = new QueryEditor(code);
+		this.sqlNotebbok = new SqlNotebook(code, this.quickaccess, this.quickinput, this.editors);
 		// {{END}}
 		this.notebook = new Notebook(this.quickaccess, code);
 	}
