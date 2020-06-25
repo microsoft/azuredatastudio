@@ -3377,7 +3377,7 @@
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
-									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
 									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-database-projects/sql-database-projects-0.1.0.vsix"
 								},
 								{
@@ -3400,7 +3400,7 @@
 							"properties": [
 								{
 									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
-									"value": ">=1.20.0"
+									"value": ""
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
