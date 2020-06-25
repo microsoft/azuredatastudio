@@ -122,6 +122,7 @@ function isWelcomePageEnabled(configurationService: IConfigurationService, conte
 
 export class WelcomePageAction extends Action {
 
+
 	public static readonly ID = 'workbench.action.showWelcomePage';
 	public static readonly LABEL = localize('welcomePage', "Welcome");
 
@@ -213,6 +214,7 @@ class WelcomePage extends Disposable {
 		@IHostService private readonly hostService: IHostService,
 		@IFileService fileService: IFileService,
 		@IProductService private readonly productService: IProductService,
+		@ICommandService private readonly commandService: ICommandService,
 	) {
 		super();
 		this._register(lifecycleService.onShutdown(() => this.dispose()));
@@ -323,7 +325,7 @@ class WelcomePage extends Disposable {
 		this.createPreviewModal();
 	}
 
-	private createButtons() {
+	private createButtons(): void {
 		const dropdownButtonContainer = document.querySelector('#dropdown_btn_container') as HTMLElement;
 		const nav = document.createElement('nav');
 		const dropdownUl = document.createElement('ul');
@@ -372,14 +374,20 @@ class WelcomePage extends Disposable {
 
 		if (process.platform === 'win32' || process.platform === 'linux') {
 			getNewFileBtn.classList.add(...fileBtnWindowsClasses);
-			getNewFileBtn.href = 'command:workbench.action.files.openFile';
+			openFileButton.onDidClick(async () => {
+				await this.commandService.executeCommand('workbench.action.files.openFile');
+			}
+			);
 		} else if (process.platform === 'darwin') {
 			getNewFileBtn.classList.add(...fileBtnMacClasses);
-			getNewFileBtn.href = 'command:workbench.action.files.openLocalFileFolder';
+			openFileButton.onDidClick(async () => {
+				await this.commandService.executeCommand('workbench.action.files.openLocalFileFolder');
+			}
+			);
 		}
 	}
 
-	private createWidePreviewToolTip() {
+	private createWidePreviewToolTip(): void {
 		const previewLink = document.querySelector('#tool_tip_container_wide') as HTMLElement;
 		const tooltip = document.querySelector('#tooltip_text_wide') as HTMLElement;
 		const previewModalBody = document.querySelector('.preview_tooltip_body') as HTMLElement;
@@ -435,7 +443,7 @@ class WelcomePage extends Disposable {
 		});
 	}
 
-	private createDropDown() {
+	private createDropDown(): void {
 		const dropdownBtn = document.querySelector('#dropdown_btn') as HTMLElement;
 		const dropdown = document.querySelector('.dropdown') as HTMLInputElement;
 
@@ -506,7 +514,7 @@ class WelcomePage extends Disposable {
 		});
 	}
 
-	private createPreviewModal() {
+	private createPreviewModal(): void {
 		const modal = document.querySelector('#preview_modal') as HTMLElement;
 		const btn = document.querySelector('#tool_tip_container_narrow') as HTMLElement;
 		const span = document.querySelector('.close_icon') as HTMLElement;
@@ -634,7 +642,7 @@ class WelcomePage extends Disposable {
 		return result;
 	}
 
-	private addExtensionList(container: HTMLElement, listSelector: string) {
+	private addExtensionList(container: HTMLElement, listSelector: string): void {
 		const list = container.querySelector(listSelector);
 		if (list) {
 			extensions.forEach((extension, i) => {
@@ -671,14 +679,13 @@ class WelcomePage extends Disposable {
 		}
 	}
 
-	private addExtensionPack(container: HTMLElement, anchorSelector: string) {
+	private addExtensionPack(container: HTMLElement, anchorSelector: string): void {
 		const btnContainer = container.querySelector(anchorSelector) as HTMLElement;
 
 		if (btnContainer) {
 			extensionPacks.forEach((extension) => {
-
 				const installText = localize('welcomePage.install', "Install");
-				let dropdownBtn = new Button(btnContainer);
+				let dropdownBtn = this._register(new Button(btnContainer));
 				dropdownBtn.label = installText;
 				const classes = ['btn', 'btn_secondary'];
 				const getDropdownBtn = document.querySelector('.extensionPack .monaco-button:first-of-type') as HTMLAnchorElement;
@@ -719,7 +726,7 @@ class WelcomePage extends Disposable {
 		}
 	}
 
-	private addExtensionPackList(container: HTMLElement, listSelector: string) {
+	private addExtensionPackList(container: HTMLElement, listSelector: string): void {
 		const list = container.querySelector(listSelector);
 		if (list) {
 			extensionPackExtensions.forEach((j) => {
@@ -982,23 +989,23 @@ registerThemingParticipant((theme, collector) => {
 	}
 	const buttonHoverBackgroundColor = theme.getColor(buttonHoverBackground);
 	if (buttonHoverBackgroundColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_primary:hover { background: ${buttonHoverBackgroundColor} !important;}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_primary:hover { background: ${buttonHoverBackgroundColor}}`);
 	}
 	const buttonSecondaryBackgroundColor = theme.getColor(buttonSecondaryBackground);
 	if (buttonSecondaryBackgroundColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_secondary { background-color: ${buttonSecondaryBackgroundColor}  !important;}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_secondary { background-color: ${buttonSecondaryBackgroundColor}}`);
 	}
 	const buttonSecondaryBorderColor = theme.getColor(buttonSecondaryBorder);
 	if (buttonSecondaryBorderColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_secondary { border: 1px solid ${buttonSecondaryBorderColor}  !important;}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_secondary { border: 1px solid ${buttonSecondaryBorderColor}}`);
 	}
 	const buttonSecondaryColor = theme.getColor(buttonSecondary);
 	if (buttonSecondaryColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_secondary { color: ${buttonSecondaryColor}  !important;}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_secondary { color: ${buttonSecondaryColor}}`);
 	}
 	const buttonSecondaryHover = theme.getColor(buttonSecondaryHoverColor);
 	if (buttonSecondaryColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_secondary:hover:not(.disabled) { color: ${buttonSecondaryHover}; border: 1px solid ${buttonSecondaryHover} !important;}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_secondary:hover:not(.disabled) { color: ${buttonSecondaryHover}; border: 1px solid ${buttonSecondaryHover}}`);
 	}
 	const selectBackgroundColor = theme.getColor(selectBackground);
 	if (selectBackgroundColor) {
