@@ -33,6 +33,7 @@ export interface ITreeItem extends vsITreeItem {
 export interface ITreeView extends vsITreeView {
 
 	collapse(element: ITreeItem): boolean
+	root: ITreeItem;
 
 }
 

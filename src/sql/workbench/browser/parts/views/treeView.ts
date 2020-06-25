@@ -142,7 +142,7 @@ export class TreeView extends Disposable implements ITreeView {
 	private tree: Tree | undefined;
 	private treeLabels: ResourceLabels | undefined;
 
-	private root: ITreeItem;
+	public root: ITreeItem;
 	private elementsToRefresh: ITreeItem[] = [];
 
 	private readonly _onDidExpandItem: Emitter<ITreeItem> = this._register(new Emitter<ITreeItem>());
@@ -251,9 +251,7 @@ export class TreeView extends Disposable implements ITreeView {
 						children = node.children;
 					} else {
 						children = await (node instanceof Root ? dataProvider.getChildren() : dataProvider.getChildren(node));
-						if (node) {
-							node.children = children;
-						}
+						node.children = children;
 					}
 					if (node instanceof Root) {
 						const oldEmpty = this._isEmpty;

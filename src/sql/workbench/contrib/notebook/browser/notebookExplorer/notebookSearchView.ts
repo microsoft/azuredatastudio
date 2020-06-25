@@ -730,7 +730,7 @@ export class NotebookSearchView extends ViewPane {
 				let message: string;
 
 				if (!completed) {
-					message = SEARCH_CANCELLED_MESSAGE;
+					message = nls.localize('searchInProgress', "Search in progress... - ");
 				} else if (hasIncludes && hasExcludes) {
 					message = nls.localize('noResultsIncludesExcludes', "No results found in '{0}' excluding '{1}' - ", includePatternText, excludePatternText);
 				} else if (hasIncludes) {

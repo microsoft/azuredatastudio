@@ -235,10 +235,7 @@ export class TreeView extends Disposable implements ITreeView {
 						children = node.children;
 					} else {
 						children = await (node instanceof Root ? dataProvider.getChildren() : dataProvider.getChildren(node));
-						// {{SQL CARBON EDIT}}
-						if (node) {
-							node.children = children;
-						}
+						node.children = children;
 					}
 					if (node instanceof Root) {
 						const oldEmpty = this._isEmpty;

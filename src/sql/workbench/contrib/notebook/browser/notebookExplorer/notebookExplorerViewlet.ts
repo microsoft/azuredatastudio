@@ -259,11 +259,12 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 			if (this.views.length > 1) {
 				let filesToIncludeFiltered: string = '';
 				this.views.forEach(async (v) => {
-					let booksViewPane = (<TreeViewPane>this.getView(v.id)).treeView;
-					if (booksViewPane) {
-						let dataProvider = booksViewPane.dataProvider;
-						if (dataProvider && !dataProvider.isTreeEmpty) {
-							let items = await dataProvider.getChildren();
+					let booksViewPane = (<TreeViewPane>this.getView(v.id));
+					if (booksViewPane?.treeView?.root) {
+						let root = booksViewPane.treeView.root;
+						if (root.children) {
+							// let root = new Root();
+							let items = root.children;
 							items?.forEach(root => {
 								this.updateViewletsState();
 								let folderToSearch: IFolderQuery = { folder: URI.file(path.join(root.tooltip, 'content')) };
