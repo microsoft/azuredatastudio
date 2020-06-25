@@ -624,11 +624,18 @@ export class ProjectsController {
 				}
 
 				const connectionId = connection.connectionId;
-				const databaseList = await this.apiWrapper.listDatabases(connectionId);
-				const database = (await this.apiWrapper.showQuickPick(databaseList.map(dbName => { return { label: dbName }; })))?.label;
+				let database;
 
-				if (!database) {
-					throw new Error(constants.databaseSelectionRequired);
+				// use database that was connected to if it isn't master
+				if (connection.options['database'] && connection.options['database'] !== constants.master) {
+					database = connection.options['database'];
+				} else {
+					const databaseList = await this.apiWrapper.listDatabases(connectionId);
+					database = (await this.apiWrapper.showQuickPick(databaseList.map(dbName => { return { label: dbName }; })))?.label;
+
+					if (!database) {
+						throw new Error(constants.databaseSelectionRequired);
+					}
 				}
 
 				model.serverId = connectionId;
