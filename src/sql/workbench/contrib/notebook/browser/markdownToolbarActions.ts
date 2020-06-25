@@ -82,7 +82,23 @@ export class MarkdownTextTransformer {
 					let markdownLineType = this.getMarkdownLineType(type);
 					isUndo = this.isUndoOperation(selection, type, markdownLineType, editorModel);
 					if (isUndo) {
-						this.handleUndoOperation(markdownLineType, startRange, endRange, editorModel, beginInsertedCode, endInsertedCode, selections, selection);
+						if (
+							startRange.startColumn === endRange.startColumn &&
+							startRange.startLineNumber === endRange.startLineNumber &&
+							startRange.endColumn === endRange.endColumn &&
+							startRange.endLineNumber === endRange.endLineNumber
+						) {
+							// Single line
+							let customStartRange: IRange = {
+								startColumn: 1,
+								startLineNumber: startRange.startLineNumber,
+								endColumn: 1,
+								endLineNumber: startRange.endLineNumber
+							};
+							this.handleUndoOperation(markdownLineType, customStartRange, endRange, editorModel, beginInsertedCode, endInsertedCode, selections, selection);
+						} else {
+							this.handleUndoOperation(markdownLineType, startRange, endRange, editorModel, beginInsertedCode, endInsertedCode, selections, selection);
+						}
 					} else {
 						this.handleTransformOperation(markdownLineType, startRange, endRange, editorModel, beginInsertedCode, endInsertedCode, selections, selection);
 					}
@@ -321,7 +337,7 @@ export class MarkdownTextTransformer {
 				startRange.endColumn === endRange.endColumn &&
 				startRange.endLineNumber === endRange.endLineNumber
 			) {
-				//single line
+				// Single line
 				let customStartRange: IRange = {
 					startColumn: 1,
 					startLineNumber: startRange.startLineNumber,
@@ -332,7 +348,7 @@ export class MarkdownTextTransformer {
 				editorModel.pushEditOperations(null, [{ range: customStartRange, text: beginInsertedCode }, { range: endRange, text: null }], null);
 			} else {
 				// Otherwise, add an operation per line (plus the operation at the last column + line)
-				//multi-line
+				// Multi-line
 				let operations: IIdentifiedSingleEditOperation[] = [];
 				for (let i = 0; i < selection.endLineNumber - selection.startLineNumber + 1; i++) {
 					operations.push({ range: this.transformRangeByLineOffset(startRange, i), text: beginInsertedCode });
