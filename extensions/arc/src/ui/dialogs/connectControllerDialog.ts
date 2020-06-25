@@ -87,11 +87,16 @@ export class ConnectToControllerDialog {
 		if (!this.urlInputBox.value || !this.usernameInputBox.value || !this.passwordInputBox.value) {
 			return false;
 		}
-		const controllerInfo: ControllerInfo = { url: this.urlInputBox.value, username: this.usernameInputBox.value, rememberPassword: this.rememberPwCheckBox.checked ?? false };
+		const controllerInfo: ControllerInfo = {
+			url: this.urlInputBox.value,
+			username: this.usernameInputBox.value,
+			rememberPassword: this.rememberPwCheckBox.checked ?? false,
+			resources: []
+		};
 		const controllerModel = new ControllerModel(this._treeDataProvider, controllerInfo, this.passwordInputBox.value);
 		try {
 			// Validate that we can connect to the controller
-			await controllerModel.refresh();
+			await controllerModel.refresh(false);
 		} catch (err) {
 			vscode.window.showErrorMessage(loc.connectToControllerFailed(this.urlInputBox.value, err));
 			return false;

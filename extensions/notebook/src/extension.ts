@@ -15,7 +15,7 @@ import { IExtensionApi, IPackageManageProvider } from './types';
 import { CellType } from './contracts/content';
 import { NotebookUriHandler } from './protocol/notebookUriHandler';
 import { BookTreeViewProvider } from './book/bookTreeView';
-import { NavigationProviders } from './common/constants';
+import { NavigationProviders, BuiltInCommands, unsavedBooksContextKey } from './common/constants';
 
 const localize = nls.loadMessageBundle();
 
@@ -128,7 +128,14 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 		} else {
 			bookTreeViewProvider.revealActiveDocumentInViewlet(e.document.uri, false);
 		}
+	});
 
+	azdata.nb.onDidOpenNotebookDocument(async e => {
+		if (e.uri.scheme === 'untitled') {
+			await vscode.commands.executeCommand(BuiltInCommands.SetContext, unsavedBooksContextKey, true);
+		} else {
+			await vscode.commands.executeCommand(BuiltInCommands.SetContext, unsavedBooksContextKey, false);
+		}
 	});
 
 	return {
