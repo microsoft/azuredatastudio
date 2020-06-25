@@ -24,7 +24,7 @@ describe('import extension wizard pages', function () {
 		mockImportModel = TypeMoq.Mock.ofType(TestImportDataModel, TypeMoq.MockBehavior.Loose);
 	});
 
-	it('BasePage- getDatabaseValue returns active database first', async function () {
+	it('getDatabaseValue returns active database first', async function () {
 		// setting up the environment
 		let databases: string[] = ['testdb1', 'testdb2', 'testdb3'];
 		let activeDatabase: string = 'testdb2';
@@ -50,7 +50,7 @@ describe('import extension wizard pages', function () {
 		should(expectedDatabaseValues).deepEqual(actualDatabaseValues);
 	});
 
-	it('BasePage- getServerValue returns null on no active connection', async function () {
+	it('getServerValue returns null on no active connection', async function () {
 
 		let importPage = new FileConfigPage(mockFlatFileWizard.object, TypeMoq.It.isAny(), mockImportModel.object, TypeMoq.It.isAny(), TypeMoq.It.isAny(), mockApiWrapper.object);
 
@@ -68,7 +68,7 @@ describe('import extension wizard pages', function () {
 		should(serverValues).undefined();
 	});
 
-	it('BasePage- getServerValue return active server value first', async function () {
+	it('getServerValue return active server value first', async function () {
 		// settign up the enviornment
 		let testActiveConnections: azdata.connection.Connection[] = [
 			{

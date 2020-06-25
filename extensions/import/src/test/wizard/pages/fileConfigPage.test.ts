@@ -24,7 +24,7 @@ describe('import extension wizard pages', function () {
 		mockImportModel = TypeMoq.Mock.ofType(TestImportDataModel, TypeMoq.MockBehavior.Loose);
 	});
 
-	it('FileConfigPage - get schema returns active schema first', async function () {
+	it('get schema returns active schema first', async function () {
 		mockApiWrapper.setup(x => x.getUriForConnection(TypeMoq.It.isAny()));
 		let mockQueryProvider = TypeMoq.Mock.ofType(TestQueryProvider);
 		let schemaQueryResult: azdata.SimpleExecuteResult = {

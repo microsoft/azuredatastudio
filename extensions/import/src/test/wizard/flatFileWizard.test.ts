@@ -16,7 +16,7 @@ describe('import extension flat file wizard', function () {
 	this.beforeEach(function () {
 		mockApiWrapper = TypeMoq.Mock.ofType(ApiWrapper);
 	});
-	it('FlatFileWizard opens connectionDialog when there are no active connections', async function () {
+	it('opens connectionDialog when there are no active connections', async function () {
 		let testConnection: azdata.connection.Connection = {
 			providerName: 'MSSQL',
 			connectionId: 'testConnectionId',
@@ -39,7 +39,7 @@ describe('import extension flat file wizard', function () {
 
 	});
 
-	it('FlatFileWizard- shows error message when an invalid connection is selected', async function () {
+	it('shows error message when an invalid connection is selected', async function () {
 		// The active connection doesn't have a valid Provider
 		let testConnectionProfile: azdata.connection.ConnectionProfile = ImportTestUtils.getTestConnectionProfile();
 		mockApiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(testConnectionProfile); });
@@ -53,7 +53,7 @@ describe('import extension flat file wizard', function () {
 
 	});
 
-	it('FlatFileWizard- shows error message when no connection is selected', async function () {
+	it('shows error message when no connection is selected', async function () {
 		// The active connection doesn't have a valid Provider
 		mockApiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return undefined; });
 		mockApiWrapper.setup(x => x.openConnectionDialog(TypeMoq.It.isAny())).returns(() => { return undefined; });
@@ -66,7 +66,7 @@ describe('import extension flat file wizard', function () {
 
 	});
 
-	it('FlatFileWizard- getConnection returns active connection', async function () {
+	it('getConnection returns active connection', async function () {
 		let testConnectionProfile = ImportTestUtils.getTestConnectionProfile();
 		testConnectionProfile.providerId = 'MSSQL';
 
@@ -80,7 +80,7 @@ describe('import extension flat file wizard', function () {
 		should(connectionId).equals(testConnectionProfile.connectionId);
 	});
 
-	it('FlatFileWizard- should initialize all pages', async function () {
+	it('should initialize all pages', async function () {
 		let testConnectionProfile = ImportTestUtils.getTestConnectionProfile();
 		testConnectionProfile.providerId = 'MSSQL';
 		mockApiWrapper.setup(x => x.getCurrentConnection()).returns(async () => { return testConnectionProfile; });

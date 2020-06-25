@@ -5,7 +5,7 @@
 	"ignorePatterns": [
 		"**/node_modules/**",
 		"**/test/**",
-		"**/common/apiWrapper**"
+		"**/apiWrapper.js"
 	],
 	"includePid": false,
 	"reports": [
