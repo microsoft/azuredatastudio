@@ -3400,7 +3400,7 @@
 							"properties": [
 								{
 									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
-									"value": ""
+									"value": "microsoft.schema-compare"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
