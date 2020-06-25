@@ -183,7 +183,7 @@ function getLazyEnv() {
 
 		ipc.once('vscode:acceptShellEnv', function (event, shellEnv) {
 			clearTimeout(handle);
-			bootstrapWindow.assign(process.env, shellEnv);
+			Object.assign(process.env, shellEnv);
 			// @ts-ignore
 			resolve(process.env);
 		});
