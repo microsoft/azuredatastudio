@@ -63,6 +63,7 @@ export class MarkdownTextTransformer {
 				startLineNumber: selection.startLineNumber,
 				endLineNumber: selection.startLineNumber
 			};
+
 			// Get text to insert before selection
 			let beginInsertedCode = this.getStartTextToInsert(type);
 			// Get text to insert after selection
@@ -76,31 +77,28 @@ export class MarkdownTextTransformer {
 					startLineNumber: selection.endLineNumber,
 					endLineNumber: selection.endLineNumber
 				};
+
 				let editorModel = editorControl.getModel() as TextModel;
 				let isUndo = false;
 				if (editorModel) {
 					let markdownLineType = this.getMarkdownLineType(type);
 					isUndo = this.isUndoOperation(selection, type, markdownLineType, editorModel);
 					if (isUndo) {
-						if (
-							startRange.startColumn === endRange.startColumn &&
-							startRange.startLineNumber === endRange.startLineNumber &&
-							startRange.endColumn === endRange.endColumn &&
-							startRange.endLineNumber === endRange.endLineNumber
-						) {
+						if (this.isIdenticalRanges(startRange, endRange)) {
 							// Single line
-							let customStartRange: IRange = {
-								startColumn: 1,
-								startLineNumber: startRange.startLineNumber,
-								endColumn: 1,
-								endLineNumber: startRange.endLineNumber
-							};
+							let customStartRange: IRange = this.getCustomStartRange(startRange);
 							this.handleUndoOperation(markdownLineType, customStartRange, endRange, editorModel, beginInsertedCode, endInsertedCode, selections, selection);
 						} else {
 							this.handleUndoOperation(markdownLineType, startRange, endRange, editorModel, beginInsertedCode, endInsertedCode, selections, selection);
 						}
 					} else {
-						this.handleTransformOperation(markdownLineType, startRange, endRange, editorModel, beginInsertedCode, endInsertedCode, selections, selection);
+						if (this.isIdenticalRanges(startRange, endRange)) {
+							// Single line
+							let customStartRange: IRange = this.getCustomStartRange(startRange);
+							this.handleTransformOperation(markdownLineType, customStartRange, endRange, editorModel, beginInsertedCode, endInsertedCode, selections, selection);
+						} else {
+							this.handleTransformOperation(markdownLineType, startRange, endRange, editorModel, beginInsertedCode, endInsertedCode, selections, selection);
+						}
 					}
 				}
 
@@ -113,6 +111,32 @@ export class MarkdownTextTransformer {
 			// Always give focus back to the editor after pressing the button
 			editorControl.focus();
 		}
+	}
+
+	private getCustomStartRange(range: IRange): IRange {
+		return {
+			startColumn: 1,
+			startLineNumber: range.startLineNumber,
+			endColumn: 1,
+			endLineNumber: range.endLineNumber
+		};
+	}
+
+	private isIdenticalRanges(startRange: IRange, endRange: IRange): boolean {
+		// This is the case then a user has set their cursor on a line but not selected a block of text.
+		// Used for headings, paragraph and list items.
+		if (
+			startRange.startColumn === endRange.startColumn &&
+			startRange.startLineNumber === endRange.startLineNumber &&
+			startRange.endColumn === endRange.endColumn &&
+			startRange.endLineNumber === endRange.endLineNumber
+		) {
+			// Single line
+			return true;
+		} else {
+			return false;
+		}
+
 	}
 
 	// For items like lists (where we need to insert a character at the beginning of each line), create
@@ -330,22 +354,9 @@ export class MarkdownTextTransformer {
 		if (markdownLineType === MarkdownLineType.BEGIN_AND_END_LINES || markdownLineType === MarkdownLineType.WRAPPED_ABOVE_AND_BELOW) {
 			editorModel.pushEditOperations(selections, [{ range: startRange, text: beginInsertedCode }, { range: endRange, text: endInsertedCode }], null);
 		} else {
-			// Otherwise, single line operation is made at column 1.
-			if (
-				startRange.startColumn === endRange.startColumn &&
-				startRange.startLineNumber === endRange.startLineNumber &&
-				startRange.endColumn === endRange.endColumn &&
-				startRange.endLineNumber === endRange.endLineNumber
-			) {
-				// Single line
-				let customStartRange: IRange = {
-					startColumn: 1,
-					startLineNumber: startRange.startLineNumber,
-					endColumn: 1,
-					endLineNumber: startRange.endLineNumber
-				};
-
-				editorModel.pushEditOperations(null, [{ range: customStartRange, text: beginInsertedCode }, { range: endRange, text: null }], null);
+			if (this.isIdenticalRanges(startRange, endRange)) {
+				// Otherwise, single line operation is made at column 1.
+				editorModel.pushEditOperations(null, [{ range: startRange, text: beginInsertedCode }, { range: endRange, text: null }], null);
 			} else {
 				// Otherwise, add an operation per line (plus the operation at the last column + line)
 				// Multi-line
