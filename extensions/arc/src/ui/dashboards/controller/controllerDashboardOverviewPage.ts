@@ -147,7 +147,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 
 		this.disposables.push(
 			newInstance.onDidClick(async () => {
-				await vscode.commands.executeCommand('azdata.resource.deploy');
+				await vscode.commands.executeCommand('azdata.resource.deploy', 'arc.sql', ['arc.sql', 'arc.postgres']);
 			}));
 
 		// Refresh
