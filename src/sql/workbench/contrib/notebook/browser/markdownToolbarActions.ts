@@ -54,7 +54,6 @@ export class MarkdownTextTransformer {
 		let editorControl = this.getEditorControl();
 		if (editorControl) {
 			let selections = editorControl.getSelections();
-			let cursorPosition = editorControl.getPosition();
 			// TODO: Support replacement for multiple selections
 			let selection = selections[0];
 			let nothingSelected = this.editorHasNoSelection(selection);
@@ -64,13 +63,6 @@ export class MarkdownTextTransformer {
 				startLineNumber: selection.startLineNumber,
 				endLineNumber: selection.startLineNumber
 			};
-			let singleLineStartEndRange: IRange = {
-				startColumn: 0,
-				endColumn: 0,
-				startLineNumber: cursorPosition.lineNumber,
-				endLineNumber: cursorPosition.lineNumber
-			};
-
 			// Get text to insert before selection
 			let beginInsertedCode = this.getStartTextToInsert(type);
 			// Get text to insert after selection
@@ -92,11 +84,7 @@ export class MarkdownTextTransformer {
 					if (isUndo) {
 						this.handleUndoOperation(markdownLineType, startRange, endRange, editorModel, beginInsertedCode, endInsertedCode, selections, selection);
 					} else {
-						if (markdownLineType === MarkdownLineType.BEGIN_LINE) {
-							this.handleHeadingTransformOperation(singleLineStartEndRange, editorModel, beginInsertedCode);
-						} else {
-							this.handleTransformOperation(markdownLineType, startRange, endRange, editorModel, beginInsertedCode, endInsertedCode, selections, selection);
-						}
+						this.handleTransformOperation(markdownLineType, startRange, endRange, editorModel, beginInsertedCode, endInsertedCode, selections, selection);
 					}
 				}
 
@@ -181,16 +169,15 @@ export class MarkdownTextTransformer {
 
 	private getMarkdownLineType(type: MarkdownButtonType): MarkdownLineType {
 		switch (type) {
-			case MarkdownButtonType.UNORDERED_LIST:
-			case MarkdownButtonType.ORDERED_LIST:
-				return MarkdownLineType.EVERY_LINE;
 			case MarkdownButtonType.CODE:
 				return MarkdownLineType.WRAPPED_ABOVE_AND_BELOW;
+			case MarkdownButtonType.UNORDERED_LIST:
+			case MarkdownButtonType.ORDERED_LIST:
 			case MarkdownButtonType.HEADING1:
 			case MarkdownButtonType.HEADING2:
 			case MarkdownButtonType.HEADING3:
 			case MarkdownButtonType.PARAGRAPH:
-				return MarkdownLineType.BEGIN_LINE;
+				return MarkdownLineType.EVERY_LINE;
 			default:
 				return MarkdownLineType.BEGIN_AND_END_LINES;
 		}
@@ -326,24 +313,34 @@ export class MarkdownTextTransformer {
 		// If the markdown we're inserting only needs to be added to the begin and end lines, add those edit operations directly
 		if (markdownLineType === MarkdownLineType.BEGIN_AND_END_LINES || markdownLineType === MarkdownLineType.WRAPPED_ABOVE_AND_BELOW) {
 			editorModel.pushEditOperations(selections, [{ range: startRange, text: beginInsertedCode }, { range: endRange, text: endInsertedCode }], null);
-		} else { // Otherwise, add an operation per line (plus the operation at the last column + line)
-			let operations: IIdentifiedSingleEditOperation[] = [];
-			for (let i = 0; i < selection.endLineNumber - selection.startLineNumber + 1; i++) {
-				operations.push({ range: this.transformRangeByLineOffset(startRange, i), text: beginInsertedCode });
-			}
-			operations.push({ range: endRange, text: endInsertedCode });
-			editorModel.pushEditOperations(selections, operations, null);
-		}
-	}
+		} else {
+			// Otherwise, single line operation is made at column 1.
+			if (
+				startRange.startColumn === endRange.startColumn &&
+				startRange.startLineNumber === endRange.startLineNumber &&
+				startRange.endColumn === endRange.endColumn &&
+				startRange.endLineNumber === endRange.endLineNumber
+			) {
+				//single line
+				let customStartRange: IRange = {
+					startColumn: 1,
+					startLineNumber: startRange.startLineNumber,
+					endColumn: 1,
+					endLineNumber: startRange.endLineNumber
+				};
 
-	/**
-	 * This method transforms the beginning of a given line using a user-selected heading character.
-	 * @param singleLineStartEndRange Single line selection
-	 * @param editorModel
-	 * @param beginInsertedCode Heading character
-	 */
-	handleHeadingTransformOperation(singleLineStartEndRange: IRange, editorModel: TextModel, beginInsertedCode: string): void {
-		editorModel.pushEditOperations(null, [{ range: singleLineStartEndRange, text: beginInsertedCode }, { range: singleLineStartEndRange, text: null }], null);
+				editorModel.pushEditOperations(null, [{ range: customStartRange, text: beginInsertedCode }, { range: endRange, text: null }], null);
+			} else {
+				// Otherwise, add an operation per line (plus the operation at the last column + line)
+				//multi-line
+				let operations: IIdentifiedSingleEditOperation[] = [];
+				for (let i = 0; i < selection.endLineNumber - selection.startLineNumber + 1; i++) {
+					operations.push({ range: this.transformRangeByLineOffset(startRange, i), text: beginInsertedCode });
+				}
+				operations.push({ range: endRange, text: endInsertedCode });
+				editorModel.pushEditOperations(selections, operations, null);
+			}
+		}
 	}
 
 	/**
@@ -421,10 +418,9 @@ export enum MarkdownButtonType {
 	PARAGRAPH
 }
 
-// If ALL_LINES, we need to insert markdown at each line (e.g. lists)
+// If EVERY_LINE, we need to insert markdown at each line (e.g. lists)
 // WRAPPED_ABOVE_AND_BELOW puts text above and below the highlighted text
 export enum MarkdownLineType {
-	BEGIN_LINE,
 	BEGIN_AND_END_LINES,
 	EVERY_LINE,
 	WRAPPED_ABOVE_AND_BELOW
