@@ -64,46 +64,46 @@ export class NotebookUtils {
 
 	public async runActiveCell(): Promise<void> {
 		try {
-			let notebook = azdata.nb.activeNotebookEditor;
+			let notebook = this._apiWrapper.getActiveNotebookEditor();
 			if (notebook) {
 				await notebook.runCell();
 			} else {
 				throw new Error(noNotebookVisible);
 			}
 		} catch (err) {
-			vscode.window.showErrorMessage(getErrorMessage(err));
+			this._apiWrapper.showErrorMessage(getErrorMessage(err));
 		}
 	}
 
 	public async clearActiveCellOutput(): Promise<void> {
 		try {
-			let notebook = azdata.nb.activeNotebookEditor;
+			let notebook = this._apiWrapper.getActiveNotebookEditor();
 			if (notebook) {
 				await notebook.clearOutput();
 			} else {
 				throw new Error(noNotebookVisible);
 			}
 		} catch (err) {
-			vscode.window.showErrorMessage(getErrorMessage(err));
+			this._apiWrapper.showErrorMessage(getErrorMessage(err));
 		}
 	}
 
 	public async runAllCells(startCell?: azdata.nb.NotebookCell, endCell?: azdata.nb.NotebookCell): Promise<void> {
 		try {
-			let notebook = azdata.nb.activeNotebookEditor;
+			let notebook = this._apiWrapper.getActiveNotebookEditor();
 			if (notebook) {
 				await notebook.runAllCells(startCell, endCell);
 			} else {
 				throw new Error(noNotebookVisible);
 			}
 		} catch (err) {
-			vscode.window.showErrorMessage(getErrorMessage(err));
+			this._apiWrapper.showErrorMessage(getErrorMessage(err));
 		}
 	}
 
 	public async addCell(cellType: azdata.nb.CellType): Promise<void> {
 		try {
-			let notebook = azdata.nb.activeNotebookEditor;
+			let notebook = this._apiWrapper.getActiveNotebookEditor();
 			if (notebook) {
 				await notebook.edit((editBuilder: azdata.nb.NotebookEditorEdit) => {
 					// TODO should prompt and handle cell placement
@@ -116,7 +116,7 @@ export class NotebookUtils {
 				throw new Error(noNotebookVisible);
 			}
 		} catch (err) {
-			vscode.window.showErrorMessage(getErrorMessage(err));
+			this._apiWrapper.showErrorMessage(getErrorMessage(err));
 		}
 	}
 

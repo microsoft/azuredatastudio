@@ -69,6 +69,10 @@ export class ApiWrapper {
 		return azdata.nb.notebookDocuments;
 	}
 
+	public getActiveNotebookEditor(): azdata.nb.NotebookEditor {
+		return azdata.nb.activeNotebookEditor;
+	}
+
 	/**
 	 * Get the configuration for a extensionName
 	 * @param extensionName The string name of the extension to get the configuration for

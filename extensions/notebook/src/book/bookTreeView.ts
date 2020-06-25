@@ -232,7 +232,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		let bookItem: BookTreeItem;
 		// If no uri is passed in, try to use the current active notebook editor
 		if (!uri) {
-			let openDocument = azdata.nb.activeNotebookEditor;
+			let openDocument = this._apiWrapper.getActiveNotebookEditor();
 			if (openDocument) {
 				bookItem = this.currentBook?.getNotebook(openDocument.document.uri.fsPath);
 			}

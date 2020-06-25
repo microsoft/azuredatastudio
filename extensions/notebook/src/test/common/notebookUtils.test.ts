@@ -18,7 +18,7 @@ import { tryDeleteFile } from './testUtils';
 describe('notebookUtils Tests', function (): void {
 	let notebookUtils: NotebookUtils;
 	let apiWrapperMock: TypeMoq.IMock<ApiWrapper>;
-	before(function (): void {
+	beforeEach(function (): void {
 		apiWrapperMock = TypeMoq.Mock.ofInstance(new ApiWrapper());
 		notebookUtils = new NotebookUtils(apiWrapperMock.object);
 	});
@@ -78,6 +78,84 @@ describe('notebookUtils Tests', function (): void {
 			apiWrapperMock.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns(() => Promise.resolve(''));
 			await notebookUtils.openNotebook();
 			apiWrapperMock.verify(x => x.showErrorMessage(TypeMoq.It.isAny()), TypeMoq.Times.once());
+		});
+	});
+
+	describe('runActiveCell', function () {
+		it('shows error when no notebook visible', async function (): Promise<void> {
+			apiWrapperMock.setup(x => x.getActiveNotebookEditor()).returns(() => undefined);
+			await notebookUtils.runActiveCell();
+			apiWrapperMock.verify(x => x.showErrorMessage(TypeMoq.It.isAny()), TypeMoq.Times.once());
+		});
+
+		it('does not show error when notebook visible', async function (): Promise<void> {
+			let mockNotebookEditor = TypeMoq.Mock.ofType<azdata.nb.NotebookEditor>();
+			apiWrapperMock.setup(x => x.getActiveNotebookEditor()).returns(() => mockNotebookEditor.object);
+			await notebookUtils.runActiveCell();
+			apiWrapperMock.verify(x => x.showErrorMessage(TypeMoq.It.isAny()), TypeMoq.Times.never());
+			mockNotebookEditor.verify(x => x.runCell(TypeMoq.It.isAny()), TypeMoq.Times.once());
+		});
+	});
+
+	describe('clearActiveCellOutput', function () {
+		it('shows error when no notebook visible', async function (): Promise<void> {
+			apiWrapperMock.setup(x => x.getActiveNotebookEditor()).returns(() => undefined);
+			await notebookUtils.clearActiveCellOutput();
+			apiWrapperMock.verify(x => x.showErrorMessage(TypeMoq.It.isAny()), TypeMoq.Times.once());
+		});
+
+		it('does not show error when notebook visible', async function (): Promise<void> {
+			let mockNotebookEditor = TypeMoq.Mock.ofType<azdata.nb.NotebookEditor>();
+			apiWrapperMock.setup(x => x.getActiveNotebookEditor()).returns(() => mockNotebookEditor.object);
+			await notebookUtils.clearActiveCellOutput();
+			apiWrapperMock.verify(x => x.showErrorMessage(TypeMoq.It.isAny()), TypeMoq.Times.never());
+			mockNotebookEditor.verify(x => x.clearOutput(TypeMoq.It.isAny()), TypeMoq.Times.once());
+		});
+	});
+
+	describe('runAllCells', function () {
+		it('shows error when no notebook visible', async function (): Promise<void> {
+			apiWrapperMock.setup(x => x.getActiveNotebookEditor()).returns(() => undefined);
+			await notebookUtils.runAllCells();
+			apiWrapperMock.verify(x => x.showErrorMessage(TypeMoq.It.isAny()), TypeMoq.Times.once());
+		});
+
+		it('does not show error when notebook visible', async function (): Promise<void> {
+			let mockNotebookEditor = TypeMoq.Mock.ofType<azdata.nb.NotebookEditor>();
+			apiWrapperMock.setup(x => x.getActiveNotebookEditor()).returns(() => mockNotebookEditor.object);
+			await notebookUtils.runAllCells();
+			apiWrapperMock.verify(x => x.showErrorMessage(TypeMoq.It.isAny()), TypeMoq.Times.never());
+			mockNotebookEditor.verify(x => x.runAllCells(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+		});
+	});
+
+	describe('addCell', function () {
+		it('shows error when no notebook visible for code cell', async function (): Promise<void> {
+			apiWrapperMock.setup(x => x.getActiveNotebookEditor()).returns(() => undefined);
+			await notebookUtils.addCell('code');
+			apiWrapperMock.verify(x => x.showErrorMessage(TypeMoq.It.isAny()), TypeMoq.Times.once());
+		});
+
+		it('shows error when no notebook visible for markdown cell', async function (): Promise<void> {
+			apiWrapperMock.setup(x => x.getActiveNotebookEditor()).returns(() => undefined);
+			await notebookUtils.addCell('markdown');
+			apiWrapperMock.verify(x => x.showErrorMessage(TypeMoq.It.isAny()), TypeMoq.Times.once());
+		});
+
+		it('does not show error when notebook visible for code cell', async function (): Promise<void> {
+			let mockNotebookEditor = TypeMoq.Mock.ofType<azdata.nb.NotebookEditor>();
+			apiWrapperMock.setup(x => x.getActiveNotebookEditor()).returns(() => mockNotebookEditor.object);
+			await notebookUtils.addCell('code');
+			apiWrapperMock.verify(x => x.showErrorMessage(TypeMoq.It.isAny()), TypeMoq.Times.never());
+			mockNotebookEditor.verify(x => x.edit(TypeMoq.It.isAny()), TypeMoq.Times.once());
+		});
+
+		it('does not show error when notebook visible for markdown cell', async function (): Promise<void> {
+			let mockNotebookEditor = TypeMoq.Mock.ofType<azdata.nb.NotebookEditor>();
+			apiWrapperMock.setup(x => x.getActiveNotebookEditor()).returns(() => mockNotebookEditor.object);
+			await notebookUtils.addCell('markdown');
+			apiWrapperMock.verify(x => x.showErrorMessage(TypeMoq.It.isAny()), TypeMoq.Times.never());
+			mockNotebookEditor.verify(x => x.edit(TypeMoq.It.isAny()), TypeMoq.Times.once());
 		});
 	});
 });
