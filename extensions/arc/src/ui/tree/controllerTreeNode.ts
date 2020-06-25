@@ -67,7 +67,7 @@ export class ControllerTreeNode extends TreeNode {
 
 	private refreshChildren(registrations: Registration[]): void {
 		const newChildren: ResourceTreeNode[] = [];
-		registrations.forEach(registration => {
+		registrations.filter(r => !r.isDeleted).forEach(registration => {
 			if (!registration.instanceNamespace || !registration.instanceName) {
 				console.warn('Registration is missing required namespace and name values, skipping');
 				return;
