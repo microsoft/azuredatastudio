@@ -166,7 +166,7 @@ export default () => `
 			<div class="ads_homepage_section content extensions">
 				<div class="flex flex_j_between">
 					<h2>Extend your data studio</h2>
-					<a class="link_show_all flex" href="command:extensions.listView.focus">${escape(localize('welcomePage.showAll', "Show All"))} <span class="icon_arrow_right"></span></a>
+					<a class="link_show_all flex" href="command:workbench.view.extensions">${escape(localize('welcomePage.showAll', "Show All"))} <span class="icon_arrow_right"></span></a>
 				</div>
 				<div class="row ads_grid grip_gap_50">
 					<div
