@@ -173,6 +173,11 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		this._proxy.$registerSqlAssessmentServicesProvider(provider.providerId, provider.handle);
 		return rt;
 	}
+	$registerDiagramServiceProvider(provider: azdata.DiagramServicesProvider): vscode.Disposable {
+		let rt = this.registerProvider(provider, DataProviderType.DiagramServicesProvider);
+		this._proxy.$registerDiagramServicesProvider(provider.providerId, provider.handle);
+		return rt;
+	}
 	$registerCapabilitiesServiceProvider(provider: azdata.CapabilitiesProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.CapabilitiesProvider);
 		this._proxy.$registerCapabilitiesServiceProvider(provider.providerId, provider.handle);
@@ -855,5 +860,10 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	public $generateAssessmentScript(handle: number, items: azdata.SqlAssessmentResultItem[]): Thenable<azdata.ResultStatus> {
 		return this._resolveProvider<azdata.SqlAssessmentServicesProvider>(handle).generateAssessmentScript(items);
+	}
+
+	// Diagram methods
+	public $getDiagramModel(handle: number, ownerUri: string): Thenable<azdata.ObjectMetadata[]> {
+		return this._resolveProvider<azdata.DiagramServicesProvider>(handle).getDiagramModel(ownerUri);
 	}
 }

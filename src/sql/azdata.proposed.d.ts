@@ -6,6 +6,7 @@
 // This is the place for API experiments and proposal.
 
 import * as vscode from 'vscode';
+import { ObjectMetadata } from 'azdata';
 
 declare module 'azdata' {
 	/**
@@ -87,6 +88,7 @@ declare module 'azdata' {
 	export namespace dataprotocol {
 		export function registerSerializationProvider(provider: SerializationProvider): vscode.Disposable;
 		export function registerSqlAssessmentServicesProvider(provider: SqlAssessmentServicesProvider): vscode.Disposable;
+		export function registerDiagramServicesProvider(provider: DiagramServicesProvider): vscode.Disposable;
 	}
 
 	export interface HyperlinkComponent {
@@ -475,6 +477,10 @@ declare module 'azdata' {
 		assessmentInvoke(ownerUri: string, targetType: sqlAssessment.SqlAssessmentTargetType): Promise<SqlAssessmentResult>;
 		getAssessmentItems(ownerUri: string, targetType: sqlAssessment.SqlAssessmentTargetType): Promise<SqlAssessmentResult>;
 		generateAssessmentScript(items: SqlAssessmentResultItem[]): Promise<ResultStatus>;
+	}
+
+	export interface DiagramServicesProvider extends DataProvider {
+		getDiagramModel(ownerUri: string): Promise<ObjectMetadata[]>;
 	}
 
 	export interface TreeItem2 extends vscode.TreeItem2 {

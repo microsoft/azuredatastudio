@@ -706,6 +706,22 @@ export namespace GenerateSqlAssessmentScriptRequest {
 
 // ------------------------------- <Sql Assessment> -----------------------------
 
+
+// ------------------------------- <Diagrams> -----------------------------
+export class DiagramSchemaParams {
+	public ownerUri: string;
+}
+
+export class DiagramSchemaResult {
+	public metadata: azdata.ObjectMetadata[];
+}
+
+export namespace DiagramSchemaRequest {
+	export const type = new RequestType<DiagramSchemaParams, DiagramSchemaResult, void, void>('diagram/schema');
+}
+// ------------------------------- <Diagrams> -----------------------------
+
+
 // ------------------------------- <Serialization> -----------------------------
 export namespace SerializeDataStartRequest {
 	export const type = new RequestType<azdata.SerializeDataStartRequestParams, azdata.SerializeDataResult, void, void>('serialize/start');

@@ -28,6 +28,7 @@ import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { assign } from 'vs/base/common/objects';
 import { serializableToMap } from 'sql/base/common/map';
 import { IAssessmentService } from 'sql/workbench/services/assessment/common/interfaces';
+import { IDiagramService } from 'sql/workbench/services/diagrams/common/interfaces';
 
 /**
  * Main thread class for handling data protocol management registration.
@@ -55,7 +56,8 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		@IProfilerService private _profilerService: IProfilerService,
 		@ISerializationService private _serializationService: ISerializationService,
 		@IFileBrowserService private _fileBrowserService: IFileBrowserService,
-		@IAssessmentService private _assessmentService: IAssessmentService
+		@IAssessmentService private _assessmentService: IAssessmentService,
+		@IDiagramService private _diagramService: IDiagramService
 	) {
 		super();
 		if (extHostContext) {
@@ -463,9 +465,21 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 				return self._proxy.$generateAssessmentScript(handle, items);
 			}
 		});
+		return undefined;
+	}
+
+	public $registerDiagramServicesProvider(providerId: string, handle: number): Promise<any> {
+		const self = this;
+		this._diagramService.registerProvider(providerId, <azdata.DiagramServicesProvider>{
+			providerId: providerId,
+			getDiagramModel(connectionUri: string): Thenable<azdata.ObjectMetadata[]> {
+				return self._proxy.$getDiagramModel(handle, connectionUri);
+			}
+		});
 
 		return undefined;
 	}
+
 	public $registerCapabilitiesServiceProvider(providerId: string, handle: number): Promise<any> {
 		const self = this;
 		this._capabilitiesService.registerProvider(<azdata.CapabilitiesProvider>{

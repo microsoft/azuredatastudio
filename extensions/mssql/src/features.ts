@@ -791,6 +791,46 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 	}
 }
 
+export class DiagramServicesFeature extends SqlOpsFeature<undefined> {
+	private static readonly messagesTypes: RPCMessageType[] = [
+		contracts.DiagramSchemaRequest.type
+	];
+	constructor(client: SqlOpsDataClient) {
+		super(client, DiagramServicesFeature.messagesTypes);
+	}
+
+	public fillClientCapabilities(capabilities: ClientCapabilities): void {
+	}
+
+	public initialize(capabilities: ServerCapabilities): void {
+		this.register(this.messages, {
+			id: UUID.generateUuid(),
+			registerOptions: undefined
+		});
+	}
+
+	protected registerProvider(options: undefined): Disposable {
+		const client = this._client;
+
+		let getDiagramModel = async(ownerUri: string): Promise<azdata.ObjectMetadata[]> => {
+			let params: contracts.DiagramSchemaParams = { ownerUri: ownerUri };
+			try {
+				let result = await client.sendRequest(contracts.DiagramSchemaRequest.type, params);
+				return result.metadata;
+			}
+			catch (e) {
+				client.logFailedRequest(contracts.DiagramSchemaRequest.type, e);
+			}
+
+			return undefined;
+		};
+
+		return azdata.dataprotocol.registerDiagramServicesProvider({
+			providerId: client.providerId,
+			getDiagramModel
+		});
+	}
+}
 
 export class SerializationFeature extends SqlOpsFeature<undefined> {
 	private static readonly messageTypes: RPCMessageType[] = [
@@ -918,6 +958,4 @@ export class SqlAssessmentServicesFeature extends SqlOpsFeature<undefined> {
 			generateAssessmentScript
 		});
 	}
-
-
 }
