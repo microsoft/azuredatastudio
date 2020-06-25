@@ -11,11 +11,10 @@ import { IconPathHelper, cssStyles } from '../../constants';
 /** A container with a single vertical column of KeyValue pairs */
 export class KeyValueContainer {
 	public container: azdata.DivContainer;
-	private keyToComponent: Map<string, (azdata.TextComponent | azdata.InputBoxComponent)>;
+	private pairs: KeyValue[] = [];
 
 	constructor(private modelBuilder: azdata.ModelBuilder, pairs: KeyValue[]) {
 		this.container = modelBuilder.divContainer().component();
-		this.keyToComponent = new Map<string, azdata.Component>();
 		this.refresh(pairs);
 	}
 
@@ -23,15 +22,14 @@ export class KeyValueContainer {
 	// adding/removing KeyValues concurrently. For now this should only be used
 	// when the set of keys won't change (though their values can be refreshed).
 	public refresh(pairs: KeyValue[]) {
-		pairs.forEach(p => {
-			let component = this.keyToComponent.get(p.key);
-			if (component) {
-				component.value = p.value;
+		pairs.forEach(newPair => {
+			const pair = this.pairs.find(oldPair => oldPair.key === newPair.key);
+			if (pair) {
+				pair.refresh(newPair.value);
 			} else {
-				component = p.getComponent(this.modelBuilder);
-				this.keyToComponent.set(p.key, component);
+				this.pairs.push(newPair);
 				this.container.addItem(
-					component,
+					newPair.getComponent(this.modelBuilder),
 					{ CSSStyles: { 'margin-bottom': '15px', 'min-height': '30px' } }
 				);
 			}
@@ -56,31 +54,52 @@ export abstract class KeyValue {
 		return container;
 	}
 
+	/** Refreshes the value of the KeyValue pair */
+	public abstract refresh(value: string): void;
+
 	/** Returns a component representing the value of the KeyValue pair */
 	protected abstract getValueComponent(modelBuilder: azdata.ModelBuilder): azdata.Component;
 }
 
 /** Implementation of KeyValue where the value is text */
 export class TextKeyValue extends KeyValue {
-	getValueComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
-		return modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+	private text?: azdata.TextComponent;
+
+	public refresh(value: string) {
+		if (this.text) {
+			this.text.value = value;
+		}
+	}
+
+	protected getValueComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
+		this.text = modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: this.value,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
+		return this.text;
 	}
 }
 
 /** Implementation of KeyValue where the value is a readonly copyable input field */
 export abstract class BaseInputKeyValue extends KeyValue {
+	private input?: azdata.InputBoxComponent;
+
 	constructor(key: string, value: string, private multiline: boolean) { super(key, value); }
 
-	getValueComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
+	public refresh(value: string) {
+		if (this.input) {
+			this.input.value = value;
+		}
+	}
+
+	protected getValueComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
 		const container = modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
-		container.addItem(modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+		this.input = modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			value: this.value,
 			readOnly: true,
 			multiline: this.multiline
-		}).component());
+		}).component();
+		container.addItem(this.input);
 
 		const copy = modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			iconPath: IconPathHelper.copy, width: '17px', height: '17px'
@@ -108,16 +127,24 @@ export class MultilineInputKeyValue extends BaseInputKeyValue {
 
 /** Implementation of KeyValue where the value is a clickable link */
 export class LinkKeyValue extends KeyValue {
+	private link?: azdata.HyperlinkComponent;
+
 	constructor(key: string, value: string, private onClick: (e: any) => any) {
 		super(key, value);
 	}
 
-	getValueComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
-		const link = modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
+	public refresh(value: string): void {
+		if (this.link) {
+			this.link.label = value;
+		}
+	}
+
+	protected getValueComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
+		this.link = modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
 			label: this.value, url: ''
 		}).component();
 
-		link.onDidClick(this.onClick);
-		return link;
+		this.link.onDidClick(this.onClick);
+		return this.link;
 	}
 }
