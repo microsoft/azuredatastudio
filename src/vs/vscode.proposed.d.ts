@@ -1074,33 +1074,29 @@ declare module 'vscode' {
 		terminal: Terminal;
 	}
 
-	export interface TerminalLinkProvider<T = TerminalLink> {
+	export interface TerminalLinkProvider<T extends TerminalLink = TerminalLink> {
+		/**
+		 * Provide terminal links for the given context.
+		 * @param context Information about what links are being provided for.
+		 */
 		provideTerminalLinks(context: TerminalLinkContext): ProviderResult<T[]>
 
 		/**
 		 * Handle an activated terminal link.
-		 *
-		 * @returns Whether the link was handled, if not VS Code will attempt to open it.
 		 */
-		handleTerminalLink(link: T): ProviderResult<boolean>;
+		handleTerminalLink(link: T): void;
 	}
 
 	export interface TerminalLink {
 		/**
-		 * The start index of the link on [TerminalLinkContext.line](#TerminalLinkContext.line].
+		 * The 0-based start index of the link on [TerminalLinkContext.line](#TerminalLinkContext.line].
 		 */
 		startIndex: number;
 
 		/**
-		 * The length of the link on [TerminalLinkContext.line](#TerminalLinkContext.line]
+		 * The 0-based end index of the link on [TerminalLinkContext.line](#TerminalLinkContext.line].
 		 */
-		length: number;
-
-		/**
-		 * The uri this link points to. If set, and {@link TerminalLinkProvider.handlerTerminalLink}
-		 * is not implemented or returns false, then VS Code will try to open the Uri.
-		 */
-		target?: Uri;
+		endIndex: number;
 
 		/**
 		 * The tooltip text when you hover over this link.
@@ -1519,17 +1515,22 @@ declare module 'vscode' {
 		metadata: NotebookDocumentMetadata;
 	}
 
-	export interface NotebookConcatTextDocument extends TextDocument {
+	export interface NotebookConcatTextDocument {
 		isClosed: boolean;
 		dispose(): void;
 		onDidChange: Event<void>;
 		version: number;
 		getText(): string;
 		getText(range: Range): string;
+
 		offsetAt(position: Position): number;
 		positionAt(offset: number): Position;
+		validateRange(range: Range): Range;
+		validatePosition(position: Position): Position;
+
 		locationAt(positionOrRange: Position | Range): Location;
 		positionAt(location: Location): Position;
+		contains(uri: Uri): boolean
 	}
 
 	export interface NotebookEditorCellEdit {
