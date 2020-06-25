@@ -149,6 +149,9 @@ export interface IExtensionIdentifier {
 	uuid?: string;
 }
 
+export const EXTENSION_CATEGORIES = ['Programming Languages', 'Snippets', 'Linters', 'Themes', 'Debuggers', 'Other', 'Keymaps', 'Formatters', 'Extension Packs',
+	'SCM Providers', 'Azure', 'Language Packs', 'Data Science', 'Machine Learning', 'Visualization', 'Testing', 'Notebooks'];
+
 export interface IExtensionManifest {
 	readonly name: string;
 	readonly displayName?: string;
