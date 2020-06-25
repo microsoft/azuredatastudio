@@ -6,6 +6,7 @@
 import * as constants from '../common/constants';
 import * as dataSources from '../models/dataSources/dataSources';
 import * as mssql from '../../../mssql';
+import * as os from 'os';
 import * as path from 'path';
 import * as utils from '../common/utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
@@ -17,9 +18,9 @@ import { IConnectionProfile, TaskExecutionMode } from 'azdata';
 import { promises as fs } from 'fs';
 import { ApiWrapper } from '../common/apiWrapper';
 import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
-import { Project, DatabaseReferenceLocation, SystemDatabase, TargetPlatform } from '../models/project';
+import { Project, DatabaseReferenceLocation, SystemDatabase, TargetPlatform, ProjectEntry } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
-import { FolderNode } from '../models/tree/fileFolderTreeItem';
+import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
 import { IDeploymentProfile, IGenerateScriptProfile, PublishSettings } from '../models/IDeploymentProfile';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
@@ -85,11 +86,20 @@ export class ProjectsController {
 				// TODO: prompt to create new datasources.json; for now, swallow
 			}
 			else {
+				this.projects = this.projects.filter((e) => { return e !== newProject; });
 				throw err;
 			}
 		}
 
-		this.refreshProjectsTree();
+		try {
+			this.refreshProjectsTree();
+			this.focusProject(newProject);
+		}
+		catch (err) {
+			// if the project didnt load - remove it from the list of open projects
+			this.projects = this.projects.filter((e) => { return e !== newProject; });
+			throw err;
+		}
 
 		return newProject;
 	}
@@ -101,6 +111,12 @@ export class ProjectsController {
 		}
 	}
 
+	/**
+	 * Creates a new folder with the project name in the specified location, and places the new .sqlproj inside it
+	 * @param newProjName
+	 * @param folderUri
+	 * @param projectGuid
+	 */
 	public async createNewProject(newProjName: string, folderUri: Uri, projectGuid?: string): Promise<string> {
 		if (projectGuid && !UUID.isUUID(projectGuid)) {
 			throw new Error(`Specified GUID is invalid: '${projectGuid}'`);
@@ -119,7 +135,7 @@ export class ProjectsController {
 			newProjFileName += constants.sqlprojExtension;
 		}
 
-		const newProjFilePath = path.join(folderUri.fsPath, newProjFileName);
+		const newProjFilePath = path.join(folderUri.fsPath, path.parse(newProjFileName).name, newProjFileName);
 
 		let fileExists = false;
 		try {
@@ -139,7 +155,7 @@ export class ProjectsController {
 	}
 
 	public closeProject(treeNode: BaseProjectTreeItem) {
-		const project = ProjectsController.getProjectFromContext(treeNode);
+		const project = this.getProjectFromContext(treeNode);
 		this.projects = this.projects.filter((e) => { return e !== project; });
 		this.refreshProjectsTree();
 	}
@@ -157,7 +173,7 @@ export class ProjectsController {
 	 */
 	public async buildProject(project: Project): Promise<string>;
 	public async buildProject(context: Project | BaseProjectTreeItem): Promise<string | undefined> {
-		const project: Project = ProjectsController.getProjectFromContext(context);
+		const project: Project = this.getProjectFromContext(context);
 
 		// Check mssql extension for project dlls (tracking issue #10273)
 		await this.buildHelper.createBuildDirFolder();
@@ -189,7 +205,7 @@ export class ProjectsController {
 	 */
 	public async deployProject(project: Project): Promise<DeployDatabaseDialog>;
 	public async deployProject(context: Project | BaseProjectTreeItem): Promise<DeployDatabaseDialog> {
-		const project: Project = ProjectsController.getProjectFromContext(context);
+		const project: Project = this.getProjectFromContext(context);
 		let deployDatabaseDialog = this.getDeployDialog(project);
 
 		deployDatabaseDialog.deploy = async (proj, prof) => await this.executionCallback(proj, prof);
@@ -208,13 +224,17 @@ export class ProjectsController {
 			return undefined; // buildProject() handles displaying the error
 		}
 
-		const dacFxService = await ProjectsController.getDaxFxService();
+		// copy dacpac to temp location before deployment
+		const tempPath = path.join(os.tmpdir(), `${path.parse(dacpacPath).name}_${new Date().getTime()}${constants.sqlprojExtension}`);
+		await fs.copyFile(dacpacPath, tempPath);
+
+		const dacFxService = await this.getDaxFxService();
 
 		if ((<IDeploymentProfile>profile).upgradeExisting) {
-			return await dacFxService.deployDacpac(dacpacPath, profile.databaseName, (<IDeploymentProfile>profile).upgradeExisting, profile.connectionUri, TaskExecutionMode.execute, profile.sqlCmdVariables);
+			return await dacFxService.deployDacpac(tempPath, profile.databaseName, (<IDeploymentProfile>profile).upgradeExisting, profile.connectionUri, TaskExecutionMode.execute, profile.sqlCmdVariables);
 		}
 		else {
-			return await dacFxService.generateDeployScript(dacpacPath, profile.databaseName, profile.connectionUri, TaskExecutionMode.script, profile.sqlCmdVariables);
+			return await dacFxService.generateDeployScript(tempPath, profile.databaseName, profile.connectionUri, TaskExecutionMode.script, profile.sqlCmdVariables);
 		}
 	}
 
@@ -246,7 +266,7 @@ export class ProjectsController {
 			await this.buildProject(treeNode);
 
 			// start schema compare with the dacpac produced from build
-			const project = ProjectsController.getProjectFromContext(treeNode);
+			const project = this.getProjectFromContext(treeNode);
 			const dacpacPath = path.join(project.projectFolderPath, 'bin', 'Debug', `${project.projectFileName}.dacpac`);
 
 			// check that dacpac exists
@@ -261,7 +281,7 @@ export class ProjectsController {
 	}
 
 	public async addFolderPrompt(treeNode: BaseProjectTreeItem) {
-		const project = ProjectsController.getProjectFromContext(treeNode);
+		const project = this.getProjectFromContext(treeNode);
 		const newFolderName = await this.promptForNewObjectName(new templates.ProjectScriptType(templates.folder, constants.folderFriendlyName, ''), project);
 
 		if (!newFolderName) {
@@ -276,7 +296,7 @@ export class ProjectsController {
 	}
 
 	public async addItemPromptFromNode(treeNode: BaseProjectTreeItem, itemTypeName?: string) {
-		await this.addItemPrompt(ProjectsController.getProjectFromContext(treeNode), this.getRelativePath(treeNode), itemTypeName);
+		await this.addItemPrompt(this.getProjectFromContext(treeNode), this.getRelativePath(treeNode), itemTypeName);
 	}
 
 	public async addItemPrompt(project: Project, relativePath: string, itemTypeName?: string) {
@@ -317,12 +337,58 @@ export class ProjectsController {
 		this.refreshProjectsTree();
 	}
 
+	public async exclude(context: FileNode | FolderNode): Promise<void> {
+		const project = this.getProjectFromContext(context);
+
+		const fileEntry = this.getProjectEntry(project, context);
+
+		if (fileEntry) {
+			await project.exclude(fileEntry);
+		} else {
+			this.apiWrapper.showErrorMessage(constants.unableToPerformAction(constants.excludeAction, context.uri.path));
+		}
+
+		this.refreshProjectsTree();
+	}
+
+	public async delete(context: BaseProjectTreeItem): Promise<void> {
+		const project = this.getProjectFromContext(context);
+
+		const confirmationPrompt = context instanceof FolderNode ? constants.deleteConfirmationContents(context.friendlyName) : constants.deleteConfirmation(context.friendlyName);
+		const response = await this.apiWrapper.showWarningMessageOptions(confirmationPrompt, { modal: true }, constants.yesString);
+
+		if (response !== constants.yesString) {
+			return;
+		}
+
+		let success = false;
+
+		if (context instanceof FileNode || FolderNode) {
+			const fileEntry = this.getProjectEntry(project, context);
+
+			if (fileEntry) {
+				await project.deleteFileFolder(fileEntry);
+				success = true;
+			}
+		}
+
+		if (success) {
+			this.refreshProjectsTree();
+		} else {
+			this.apiWrapper.showErrorMessage(constants.unableToPerformAction(constants.deleteAction, context.uri.path));
+		}
+	}
+
+	private getProjectEntry(project: Project, context: BaseProjectTreeItem): ProjectEntry | undefined {
+		return project.files.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(context.root.uri, context.uri)));
+	}
+
 	/**
 	 * Adds a database reference to the project
-	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
+	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project
 	 */
 	public async addDatabaseReference(context: Project | BaseProjectTreeItem): Promise<void> {
-		const project = ProjectsController.getProjectFromContext(context);
+		const project = this.getProjectFromContext(context);
 
 		try {
 			// choose if reference is to master or a dacpac
@@ -484,7 +550,7 @@ export class ProjectsController {
 		}
 	}
 
-	private static getProjectFromContext(context: Project | BaseProjectTreeItem) {
+	private getProjectFromContext(context: Project | BaseProjectTreeItem) {
 		if (context instanceof Project) {
 			return context;
 		}
@@ -497,7 +563,7 @@ export class ProjectsController {
 		}
 	}
 
-	private static async getDaxFxService(): Promise<mssql.IDacFxService> {
+	public async getDaxFxService(): Promise<mssql.IDacFxService> {
 		const ext: Extension<any> = extensions.getExtension(mssql.extension.name)!;
 
 		await ext.activate();
@@ -552,8 +618,12 @@ export class ProjectsController {
 				model.database = profile.databaseName;
 			}
 			else {
-				const connectionId = (await this.apiWrapper.openConnectionDialog()).connectionId;
+				const connection = await this.apiWrapper.openConnectionDialog();
+				if (!connection) {
+					return;
+				}
 
+				const connectionId = connection.connectionId;
 				const databaseList = await this.apiWrapper.listDatabases(connectionId);
 				const database = (await this.apiWrapper.showQuickPick(databaseList.map(dbName => { return { label: dbName }; })))?.label;
 
@@ -618,8 +688,6 @@ export class ProjectsController {
 
 			//Refresh project to show the added files
 			this.refreshProjectsTree();
-
-			await this.focusProject(project);
 		}
 		catch (err) {
 			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));

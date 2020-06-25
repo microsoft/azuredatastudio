@@ -17,12 +17,14 @@ import * as constants from '../common/constants';
 import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProjectTreeViewProvider';
 import { ProjectsController } from '../controllers/projectController';
 import { promises as fs } from 'fs';
-import { createContext, TestContext } from './testContext';
-import { Project, SystemDatabase } from '../models/project';
+import { createContext, TestContext, mockDacFxResult } from './testContext';
+import { Project, SystemDatabase, ProjectEntry } from '../models/project';
 import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
 import { ApiWrapper } from '../common/apiWrapper';
 import { IDeploymentProfile, IGenerateScriptProfile } from '../models/IDeploymentProfile';
 import { exists } from '../common/utils';
+import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
+import { FolderNode } from '../models/tree/fileFolderTreeItem';
 
 let testContext: TestContext;
 
@@ -47,7 +49,7 @@ beforeEach(async function (): Promise<void> {
 	testContext = createContext();
 });
 
-describe.skip('ProjectsController: project controller operations', function (): void {
+describe('ProjectsController: project controller operations', function (): void {
 	before(async function (): Promise<void> {
 		await templates.loadTemplates(path.join(__dirname, '..', '..', 'resources', 'templates'));
 		await baselines.loadBaselines();
@@ -79,6 +81,20 @@ describe.skip('ProjectsController: project controller operations', function (): 
 			should(project.dataSources.length).equal(2); // detailed datasources tests in their own test file
 		});
 
+		it('Should not keep failed to load project in project list.', async function (): Promise<void> {
+			const folderPath = await testUtils.generateTestFolderPath();
+			const sqlProjPath = await testUtils.createTestSqlProjFile('empty file with no valid xml', folderPath);
+			const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+
+			try {
+				await projController.openProject(vscode.Uri.file(sqlProjPath));
+				should.fail(null, null, 'The given project not expected to open');
+			}
+			catch {
+				should(projController.projects.length).equal(0, 'The added project should be removed');
+			}
+		});
+
 		it('Should return silently when no SQL object name provided in prompts', async function (): Promise<void> {
 			for (const name of ['', '    ', undefined]) {
 				testContext.apiWrapper.reset();
@@ -92,6 +108,44 @@ describe.skip('ProjectsController: project controller operations', function (): 
 				await projController.addItemPrompt(new Project('FakePath'), '', templates.script);
 				should(project.files.length).equal(0, 'Expected to return without throwing an exception or adding a file when an empty/undefined name is provided.');
 			}
+		});
+
+		it('Should delete nested ProjectEntry from node', async function (): Promise<void> {
+			let proj = await testUtils.createTestProject(templates.newSqlProjectTemplate);
+			const setupResult = await setupDeleteExcludeTest(proj);
+			const scriptEntry = setupResult[0], projTreeRoot = setupResult[1];
+
+			const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+
+			await projController.delete(projTreeRoot.children.find(x => x.friendlyName === 'UpperFolder')!.children[0] /* LowerFolder */);
+
+			proj = new Project(proj.projectFilePath);
+			await proj.readProjFile(); // reload edited sqlproj from disk
+
+			// confirm result
+			should(proj.files.length).equal(2, 'number of file/folder entries'); // lowerEntry and the contained scripts should be deleted
+			should(proj.files[1].relativePath).equal('UpperFolder');
+
+			should(await exists(scriptEntry.fsUri.fsPath)).equal(false, 'script is supposed to be deleted');
+		});
+
+		it('Should exclude nested ProjectEntry from node', async function (): Promise<void> {
+			let proj = await testUtils.createTestProject(templates.newSqlProjectTemplate);
+			const setupResult = await setupDeleteExcludeTest(proj);
+			const scriptEntry = setupResult[0], projTreeRoot = setupResult[1];
+
+			const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+
+			await projController.exclude(<FolderNode>projTreeRoot.children.find(x => x.friendlyName === 'UpperFolder')!.children[0] /* LowerFolder */);
+
+			proj = new Project(proj.projectFilePath);
+			await proj.readProjFile(); // reload edited sqlproj from disk
+
+			// confirm result
+			should(proj.files.length).equal(2, 'number of file/folder entries'); // LowerFolder and the contained scripts should be deleted
+			should(proj.files[1].relativePath).equal('UpperFolder'); // UpperFolder should still be there
+
+			should(await exists(scriptEntry.fsUri.fsPath)).equal(true, 'script is supposed to still exist on disk');
 		});
 	});
 
@@ -166,15 +220,45 @@ describe.skip('ProjectsController: project controller operations', function (): 
 			let profilePath = await testUtils.createTestFile(baselines.publishProfileBaseline, 'publishProfile.publish.xml');
 			const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
 
-			let result = await projController.readPublishProfile(vscode.Uri.parse(profilePath));
+			let result = await projController.readPublishProfile(vscode.Uri.file(profilePath));
 			should(result.databaseName).equal('targetDb');
 			should(Object.keys(result.sqlCmdVariables).length).equal(1);
 			should(result.sqlCmdVariables['ProdDatabaseName']).equal('MyProdDatabase');
 		});
+
+		it('Should copy dacpac to temp folder before deploying', async function (): Promise<void> {
+			const fakeDacpacContents = 'SwiftFlewHiawathasArrow';
+			let postCopyContents = '';
+			let builtDacpacPath = '';
+			let deployedDacpacPath = '';
+
+			testContext.dacFxService.setup(x => x.generateDeployScript(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(async (p) => {
+				deployedDacpacPath = p;
+				postCopyContents = (await fs.readFile(deployedDacpacPath)).toString();
+				return Promise.resolve(mockDacFxResult);
+			});
+
+			let projController = TypeMoq.Mock.ofType(ProjectsController);
+			projController.callBase = true;
+
+			projController.setup(x => x.buildProject(TypeMoq.It.isAny())).returns(async () => {
+				builtDacpacPath = await testUtils.createTestFile(fakeDacpacContents, 'output.dacpac');
+				return builtDacpacPath;
+			});
+
+			projController.setup(x => x.getDaxFxService()).returns(() => Promise.resolve(testContext.dacFxService.object));
+
+			await projController.object.executionCallback(new Project(''), { connectionUri: '', databaseName: '' });
+
+			should(builtDacpacPath).not.equal('', 'built dacpac path should be set');
+			should(deployedDacpacPath).not.equal('', 'deployed dacpac path should be set');
+			should(builtDacpacPath).not.equal(deployedDacpacPath, 'built and deployed dacpac paths should be different');
+			should(postCopyContents).equal(fakeDacpacContents, 'contents of built and deployed dacpacs should match');
+		});
 	});
 });
 
-describe.skip('ProjectsController: import operations', function (): void {
+describe('ProjectsController: import operations', function (): void {
 	it('Should create list of all files and folders correctly', async function (): Promise<void> {
 		const testFolderPath = await testUtils.createDummyFileStructure();
 
@@ -251,7 +335,7 @@ describe.skip('ProjectsController: import operations', function (): void {
 	});
 });
 
-describe.skip('ProjectsController: add database reference operations', function (): void {
+describe('ProjectsController: add database reference operations', function (): void {
 	it('Should show error when no reference type is selected', async function (): Promise<void> {
 		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(undefined));
 		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
@@ -299,7 +383,7 @@ describe.skip('ProjectsController: add database reference operations', function 
 	});
 });
 
-describe.skip('ProjectsController: round trip feature with SSDT', function (): void {
+describe('ProjectsController: round trip feature with SSDT', function (): void {
 	it('Should show warning message for SSDT project opened in Azure Data Studio', async function (): Promise<void> {
 		testContext.apiWrapper.setup(x => x.showWarningMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
 
@@ -360,3 +444,21 @@ describe.skip('ProjectsController: round trip feature with SSDT', function (): v
 		should(project.importedTargets.length).equal(3); // additional target added by updateProjectForRoundTrip method
 	});
 });
+
+async function setupDeleteExcludeTest(proj: Project): Promise<[ProjectEntry, ProjectRootTreeItem]> {
+	await proj.addFolderItem('UpperFolder');
+	await proj.addFolderItem('UpperFolder/LowerFolder');
+	const scriptEntry = await proj.addScriptItem('UpperFolder/LowerFolder/someScript.sql', 'not a real script');
+	await proj.addScriptItem('UpperFolder/LowerFolder/someOtherScript.sql', 'Also not a real script');
+
+	const projTreeRoot = new ProjectRootTreeItem(proj);
+
+	testContext.apiWrapper.setup(x => x.showWarningMessageOptions(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(constants.yesString));
+
+	// confirm setup
+	should(proj.files.length).equal(5, 'number of file/folder entries');
+	should(path.parse(scriptEntry.fsUri.fsPath).base).equal('someScript.sql');
+	should((await fs.readFile(scriptEntry.fsUri.fsPath)).toString()).equal('not a real script');
+
+	return [scriptEntry, projTreeRoot];
+}

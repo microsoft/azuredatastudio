@@ -26,8 +26,9 @@ const endpointNotFoundError = localize('mount.error.endpointNotFound', "Controll
 
 let throttleTimers: { [key: string]: any } = {};
 
-export function activate(extensionContext: vscode.ExtensionContext): IExtension {
+export async function activate(extensionContext: vscode.ExtensionContext): Promise<IExtension> {
 	IconPathHelper.setExtensionContext(extensionContext);
+	await vscode.commands.executeCommand('setContext', 'bdc.loaded', false);
 	const treeDataProvider = new ControllerTreeDataProvider(extensionContext.globalState);
 	vscode.window.registerTreeDataProvider('sqlBigDataCluster', treeDataProvider);
 	registerCommands(extensionContext, treeDataProvider);
