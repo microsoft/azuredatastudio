@@ -230,10 +230,8 @@ export class PostgresOverviewPage extends DashboardPage {
 				deleteButton.enabled = false;
 				try {
 					if (await promptForResourceDeletion(this._postgresModel.namespace, this._postgresModel.name)) {
-						await Promise.all([
-							this._postgresModel.delete(),
-							this._controllerModel.deleteRegistration(ResourceType.postgresInstances, this._postgresModel.namespace, this._postgresModel.name)
-						]);
+						await this._postgresModel.delete();
+						await this._controllerModel.deleteRegistration(ResourceType.postgresInstances, this._postgresModel.namespace, this._postgresModel.name);
 						vscode.window.showInformationMessage(loc.resourceDeleted(this._postgresModel.fullName));
 					}
 				} catch (error) {
