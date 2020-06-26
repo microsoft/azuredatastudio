@@ -128,6 +128,10 @@ export class ConnectionDialogWidget extends Modal {
 		this.refresh();
 	}
 
+	public getDisplayNameFromProviderName(providerName: string): string {
+		return this.providerNameToDisplayNameMap[providerName];
+	}
+
 	public refresh(): void {
 		let filteredProviderMap = this.providerNameToDisplayNameMap;
 		if (this._newConnectionParams && this._newConnectionParams.providers) {
