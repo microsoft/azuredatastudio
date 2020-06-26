@@ -8,8 +8,6 @@ import * as nls from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
-import * as azdata from 'azdata';
-
 import { IDiagramService } from 'sql/workbench/services/diagrams/common/interfaces';
 import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
 
@@ -18,7 +16,7 @@ import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorI
  */
 export class GetDiagramModelAction extends Action {
 	public static ID = 'getDiagramModel';
-	public static LABEL = nls.localize('getDiagramModel', "getDiagramModel");
+	public static LABEL = nls.localize('diagram.getDiagramModel', "Get Diagram Model");
 
 	constructor(
 		id: string,
@@ -33,7 +31,9 @@ export class GetDiagramModelAction extends Action {
 	public run(): Promise<void> {
 		const editor = this._editorService.activeEditor;
 		if (editor instanceof QueryEditorInput) {
-			this._diagramService.getDiagramModel(editor.uri);
+			this._diagramService.getDiagramModel(editor.uri).then(model => {
+				model = model;
+			});
 		}
 		return Promise.resolve(null);
 	}
