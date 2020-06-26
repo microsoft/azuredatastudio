@@ -589,3 +589,5 @@ export enum SystemDatabase {
 	master,
 	msdb
 }
+
+export const reservedProjectFolders = ['Properties', 'Data Sources', 'Database References'];

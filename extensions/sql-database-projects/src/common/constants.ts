@@ -102,6 +102,8 @@ export function projectAlreadyOpened(path: string) { return localize('projectAlr
 export function projectAlreadyExists(name: string, path: string) { return localize('projectAlreadyExists', "A project named {0} already exists in {1}.", name, path); }
 export function noFileExist(fileName: string) { return localize('noFileExist', "File {0} doesn't exist", fileName); }
 export function cannotResolvePath(path: string) { return localize('cannotResolvePath', "Cannot resolve path {0}", path); }
+export function fileAlreadyExists(filename: string) { return localize('fileAlreadyExists', "A file with the name '{0} already exists on disk at this location. Please choose another name.", filename); }
+export function folderAlreadyExists(filename: string) { return localize('folderAlreadyExists', "A folder with the name '{0} already exists on disk at this location. Please choose another name.", filename); }
 
 export function mssqlNotFound(mssqlConfigDir: string) { return localize('mssqlNotFound', "Could not get mssql extension's install location at {0}", mssqlConfigDir); }
 export function projBuildFailed(errorMessage: string) { return localize('projBuildFailed', "Build failed. Check output pane for more details. {0}", errorMessage); }
