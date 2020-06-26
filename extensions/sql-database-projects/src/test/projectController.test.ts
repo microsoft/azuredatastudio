@@ -144,8 +144,8 @@ describe('ProjectsController: project controller operations', function (): void 
 			await verifyFolderNotAdded(folderName, projController, project, projectRoot);
 
 			// reserved folder names
-			for (let folder in reservedProjectFolders) {
-				await verifyFolderNotAdded(folder, projController, project, projectRoot);
+			for (let i in reservedProjectFolders) {
+				await verifyFolderNotAdded(reservedProjectFolders[i], projController, project, projectRoot);
 			}
 		});
 
@@ -161,8 +161,8 @@ describe('ProjectsController: project controller operations', function (): void 
 
 			// make sure it's ok to add these folders if they aren't where the reserved folders are at the root of the project
 			let node = projectRoot.children.find(c => c.friendlyName === 'Tables');
-			for (let folder in reservedProjectFolders) {
-				await verfiyFolderAdded(folder, projController, project, <BaseProjectTreeItem>node);
+			for (let i in reservedProjectFolders) {
+				await verfiyFolderAdded(reservedProjectFolders[i], projController, project, <BaseProjectTreeItem>node);
 			}
 		});
 
