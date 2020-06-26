@@ -38,7 +38,7 @@ export const enum SearchSortOrder {
 	CountAscending = 'countAscending'
 }
 
-export interface ISearchConfigurationProperties {
+export interface INotebookSearchConfigurationProperties {
 	exclude: glob.IExpression;
 	useRipgrep: boolean;
 	/**

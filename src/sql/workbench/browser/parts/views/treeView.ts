@@ -104,10 +104,6 @@ export class TreeViewPane extends ViewPane {
 	private updateTreeVisibility(): void {
 		this.treeView.setVisibility(this.isBodyVisible());
 	}
-
-	getTreeView(): ITreeView {
-		return this.treeView;
-	}
 }
 
 class Root implements ITreeItem {

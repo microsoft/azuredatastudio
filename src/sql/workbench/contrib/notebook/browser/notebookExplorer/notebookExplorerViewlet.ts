@@ -359,8 +359,8 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 		this.searchView.refreshTree(event);
 	}
 
-	private get searchConfig(): Constants.ISearchConfigurationProperties {
-		return this.configurationService.getValue<Constants.ISearchConfigurationProperties>('notebookExplorerSearch');
+	private get searchConfig(): Constants.INotebookSearchConfigurationProperties {
+		return this.configurationService.getValue<Constants.INotebookSearchConfigurationProperties>('notebookExplorerSearch');
 	}
 
 	private trackInputBox(inputFocusTracker: IFocusTracker, contextKey?: IContextKey<boolean>): void {

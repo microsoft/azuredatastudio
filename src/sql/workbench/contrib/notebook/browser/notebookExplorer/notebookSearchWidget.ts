@@ -270,7 +270,7 @@ export class NotebookSearchWidget extends Widget {
 		this.searchInput.setFocusInputOnOptionClick(!this.accessibilityService.isScreenReaderOptimized());
 	}
 
-	private get searchConfiguration(): Constants.ISearchConfigurationProperties {
-		return this.configurationService.getValue<Constants.ISearchConfigurationProperties>('notebookExplorerSearch');
+	private get searchConfiguration(): Constants.INotebookSearchConfigurationProperties {
+		return this.configurationService.getValue<Constants.INotebookSearchConfigurationProperties>('notebookExplorerSearch');
 	}
 }
