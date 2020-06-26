@@ -1357,10 +1357,15 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this._connectionStore.getProfileWithoutPassword(originalProfile);
 	}
 
-	public getActiveConnectionCredentials(profileId: string): { [name: string]: string } {
+	public async getConnectionCredentials(profileId: string): Promise<{ [name: string]: string }> {
 		let profile = find(this.getActiveConnections(), connectionProfile => connectionProfile.id === profileId);
 		if (!profile) {
-			return undefined;
+			// Couldn't find an active profile so try all profiles now - fetching the password if we found one
+			profile = find(this.getConnections(), connectionProfile => connectionProfile.id === profileId);
+			if (!profile) {
+				return undefined;
+			}
+			await this.addSavedPassword(profile);
 		}
 
 		// Find the password option for the connection provider

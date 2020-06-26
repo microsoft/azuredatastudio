@@ -231,6 +231,14 @@
               {
                 "name": "existing-kubeadm",
                 "displayName": "%bdc-deployment-target-existing-kubeadm%"
+              },
+              {
+                "name": "existing-aro",
+                "displayName": "%bdc-deployment-target-existing-aro%"
+              },
+              {
+                "name": "existing-openshift",
+                "displayName": "%bdc-deployment-target-existing-openshift%"
               }
             ]
           }
@@ -251,7 +259,7 @@
               },
               {
                 "name": "azdata",
-                "version": "15.0.4013"
+                "version": "20.0.0"
               }
             ],
             "when": "target=new-aks&&version=bdc2019"
@@ -263,10 +271,12 @@
             },
             "requiredTools": [
               {
-                "name": "kubectl"
+                "name": "kubectl",
+                "version": "1.13.0"
               },
               {
-                "name": "azdata"
+                "name": "azdata",
+                "version": "20.0.0"
               }
             ],
             "when": "target=existing-aks&&version=bdc2019"
@@ -278,13 +288,49 @@
             },
             "requiredTools": [
               {
-                "name": "kubectl"
+                "name": "kubectl",
+                "version": "1.13.0"
               },
               {
-                "name": "azdata"
+                "name": "azdata",
+                "version": "20.0.0"
               }
             ],
             "when": "target=existing-kubeadm&&version=bdc2019"
+          },
+          {
+            "bdcWizard": {
+              "type": "existing-aro",
+              "notebook": "%bdc-2019-existing-aro-notebook%"
+            },
+            "requiredTools": [
+              {
+                "name": "kubectl",
+                "version": "1.13.0"
+              },
+              {
+                "name": "azdata",
+                "version": "20.0.0"
+              }
+            ],
+            "when": "target=existing-aro&&version=bdc2019"
+          },
+          {
+            "bdcWizard": {
+              "type": "existing-openshift",
+              "notebook": "%bdc-2019-existing-openshift-notebook%"
+            },
+            "requiredTools": [
+              {
+                "name": "kubectl",
+                "version": "1.13.0"
+              },
+              {
+                "name": "azdata",
+                "version": "20.0.0"
+              }
+            ],
+            "when": "target=existing-openshift&&version=bdc2019"
           }
         ],
         "agreement": {

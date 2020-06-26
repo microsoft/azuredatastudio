@@ -4,15 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as loc from '../../localizedConstants';
+import { ResourceModel } from '../../models/resourceModel';
 import { TreeNode } from './treeNode';
 
 /**
- * A placeholder TreeNode to display while we're loading the initial set of stored nodes
+ * A TreeNode belonging to a child of a Controller
  */
-export class LoadingControllerNode extends TreeNode {
-
-	constructor() {
-		super(loc.loading, vscode.TreeItemCollapsibleState.None, 'loading');
+export abstract class ResourceTreeNode extends TreeNode {
+	constructor(label: string, collapsibleState: vscode.TreeItemCollapsibleState, resourceType?: string, public model?: ResourceModel) {
+		super(label, collapsibleState, resourceType);
 	}
 }
