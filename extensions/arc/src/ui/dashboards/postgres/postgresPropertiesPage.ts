@@ -49,6 +49,8 @@ export class PostgresPropertiesPage extends DashboardPage {
 		}).component());
 
 		this.keyValueContainer = new KeyValueContainer(this.modelView.modelBuilder, this.getProperties());
+		this.disposables.push(this.keyValueContainer);
+
 		this.loading = this.modelView.modelBuilder.loadingComponent()
 			.withItem(this.keyValueContainer.container)
 			.withProperties<azdata.LoadingComponentProperties>({
@@ -94,15 +96,15 @@ export class PostgresPropertiesPage extends DashboardPage {
 		const registration = this._controllerModel.getRegistration(ResourceType.postgresInstances, this._postgresModel.namespace, this._postgresModel.name);
 
 		return [
-			new InputKeyValue(loc.coordinatorEndpoint, connectionString),
-			new InputKeyValue(loc.postgresAdminUsername, 'postgres'),
-			new TextKeyValue(loc.status, this._postgresModel.service?.status?.state ?? 'Unknown'),
+			new InputKeyValue(this.modelView.modelBuilder, loc.coordinatorEndpoint, connectionString),
+			new InputKeyValue(this.modelView.modelBuilder, loc.postgresAdminUsername, 'postgres'),
+			new TextKeyValue(this.modelView.modelBuilder, loc.status, this._postgresModel.service?.status?.state ?? 'Unknown'),
 			// TODO: Make this a LinkKeyValue that opens the controller dashboard
-			new TextKeyValue(loc.dataController, this._controllerModel.namespace ?? ''),
-			new TextKeyValue(loc.nodeConfiguration, this._postgresModel.configuration),
-			new TextKeyValue(loc.postgresVersion, this._postgresModel.service?.spec?.engine?.version?.toString() ?? ''),
-			new TextKeyValue(loc.resourceGroup, registration?.resourceGroupName ?? ''),
-			new TextKeyValue(loc.subscriptionId, registration?.subscriptionId ?? '')
+			new TextKeyValue(this.modelView.modelBuilder, loc.dataController, this._controllerModel.namespace ?? ''),
+			new TextKeyValue(this.modelView.modelBuilder, loc.nodeConfiguration, this._postgresModel.configuration),
+			new TextKeyValue(this.modelView.modelBuilder, loc.postgresVersion, this._postgresModel.service?.spec?.engine?.version?.toString() ?? ''),
+			new TextKeyValue(this.modelView.modelBuilder, loc.resourceGroup, registration?.resourceGroupName ?? ''),
+			new TextKeyValue(this.modelView.modelBuilder, loc.subscriptionId, registration?.subscriptionId ?? '')
 		];
 	}
 
