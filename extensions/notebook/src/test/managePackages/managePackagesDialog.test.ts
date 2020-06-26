@@ -120,7 +120,8 @@ describe('Manage Package Dialog', () => {
 			logPath: undefined!,
 			storagePath: undefined!,
 			subscriptions: undefined!,
-			workspaceState: undefined!
+			workspaceState: undefined!,
+			extensionMode: undefined!
 		};
 		let dialog = TypeMoq.Mock.ofInstance(new ManagePackagesDialog(model.object, extensionContext));
 		dialog.setup(x => x.model).returns(() => model.object);
