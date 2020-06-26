@@ -109,10 +109,6 @@ export default class DeclarativeTableComponent extends ContainerBase<any> implem
 		this._changeRef.detectChanges();
 	}
 
-	public trackByFnRows(index: number, item: any): any {
-		return index;
-	}
-
 	public trackByFnCols(index: number, item: any): any {
 		return index;
 	}
