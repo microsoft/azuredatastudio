@@ -49,15 +49,16 @@ export class PostgresSupportRequestPage extends DashboardPage {
 			width: '205px'
 		}).component();
 
-		supportRequestButton.onDidClick(() => {
-			const r = this._controllerModel.getRegistration(ResourceType.postgresInstances, this._postgresModel.namespace, this._postgresModel.name);
-			if (!r) {
-				vscode.window.showErrorMessage(loc.couldNotFindAzureResource(this._postgresModel.fullName));
-			} else {
-				vscode.env.openExternal(vscode.Uri.parse(
-					`https://portal.azure.com/#resource/subscriptions/${r.subscriptionId}/resourceGroups/${r.resourceGroupName}/providers/Microsoft.AzureData/${ResourceType.postgresInstances}/${r.instanceName}/supportrequest`));
-			}
-		});
+		this.disposables.push(
+			supportRequestButton.onDidClick(() => {
+				const r = this._controllerModel.getRegistration(ResourceType.postgresInstances, this._postgresModel.namespace, this._postgresModel.name);
+				if (!r) {
+					vscode.window.showErrorMessage(loc.couldNotFindAzureResource(this._postgresModel.fullName));
+				} else {
+					vscode.env.openExternal(vscode.Uri.parse(
+						`https://portal.azure.com/#resource/subscriptions/${r.subscriptionId}/resourceGroups/${r.resourceGroupName}/providers/Microsoft.AzureData/${ResourceType.postgresInstances}/${r.instanceName}/supportrequest`));
+				}
+			}));
 
 		content.addItem(supportRequestButton);
 		return root;

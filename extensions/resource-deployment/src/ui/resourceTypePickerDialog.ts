@@ -33,9 +33,10 @@ export class ResourceTypePickerDialog extends DialogBase {
 	constructor(
 		private toolsService: IToolsService,
 		private resourceTypeService: IResourceTypeService,
-		resourceType: ResourceType) {
+		defaultResourceType: ResourceType,
+		private _resourceTypeNameFilters?: string[]) {
 		super(localize('resourceTypePickerDialog.title', "Select the deployment options"), 'ResourceTypePickerDialog', true);
-		this._selectedResourceType = resourceType;
+		this._selectedResourceType = defaultResourceType;
 		this._installToolButton = azdata.window.createButton(localize('deploymentDialog.InstallToolsButton', "Install tools"));
 		this._toDispose.push(this._installToolButton.onClick(() => {
 			this.installTools().catch(error => console.log(error));
@@ -61,9 +62,12 @@ export class ResourceTypePickerDialog extends DialogBase {
 		tab.registerContent((view: azdata.ModelView) => {
 			const tableWidth = 1126;
 			this._view = view;
-			const resourceTypes = this.resourceTypeService.getResourceTypes().sort((a: ResourceType, b: ResourceType) => {
-				return (a.displayIndex || Number.MAX_VALUE) - (b.displayIndex || Number.MAX_VALUE);
-			});
+			const resourceTypes = this.resourceTypeService
+				.getResourceTypes()
+				.filter(rt => !this._resourceTypeNameFilters || this._resourceTypeNameFilters.find(rtn => rt.name === rtn))
+				.sort((a: ResourceType, b: ResourceType) => {
+					return (a.displayIndex || Number.MAX_VALUE) - (b.displayIndex || Number.MAX_VALUE);
+				});
 			this._cardGroup = view.modelBuilder.radioCardGroup().withProperties<azdata.RadioCardGroupComponentProperties>({
 				cards: resourceTypes.map((resourceType) => {
 					return <azdata.RadioCard>{

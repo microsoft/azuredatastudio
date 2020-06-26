@@ -8,8 +8,8 @@ import { Component, Input, Inject, ViewChild, ElementRef } from '@angular/core';
 import { localize } from 'vs/nls';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { TransformMarkdownAction, MarkdownButtonType } from 'sql/workbench/contrib/notebook/browser/markdownToolbarActions';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { TransformMarkdownAction, MarkdownButtonType, TogglePreviewAction } from 'sql/workbench/contrib/notebook/browser/markdownToolbarActions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/buttonMenu';
 
@@ -60,6 +60,7 @@ export class MarkdownToolbarComponent {
 		let listButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.listText', '', 'list', this.buttonList, this.cellModel, MarkdownButtonType.UNORDERED_LIST);
 		let orderedListButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.orderedText', '', 'ordered-list', this.buttonOrderedList, this.cellModel, MarkdownButtonType.ORDERED_LIST);
 		let imageButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.imageText', '', 'insert-image', this.buttonImage, this.cellModel, MarkdownButtonType.IMAGE);
+		let togglePreviewAction = this._instantiationService.createInstance(TogglePreviewAction, 'notebook.togglePreview', true, this.cellModel.showPreview);
 
 		let headingDropdown = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading', '', 'heading', this.dropdownHeading, this.cellModel, null);
 		let heading1 = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading1', this.optionHeading1, 'heading 1', this.optionHeading1, this.cellModel, MarkdownButtonType.HEADING1);
@@ -97,7 +98,8 @@ export class MarkdownToolbarComponent {
 			{ action: listButton },
 			{ action: orderedListButton },
 			{ action: imageButton },
-			{ element: buttonDropdownContainer }
+			{ element: buttonDropdownContainer },
+			{ action: togglePreviewAction }
 		]);
 	}
 }

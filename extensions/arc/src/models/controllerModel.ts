@@ -10,11 +10,20 @@ import { parseEndpoint, parseInstanceName } from '../common/utils';
 import { ResourceType } from '../constants';
 import { ConnectToControllerDialog } from '../ui/dialogs/connectControllerDialog';
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
+import * as loc from '../localizedConstants';
 
 export type ControllerInfo = {
 	url: string,
 	username: string,
-	rememberPassword: boolean
+	rememberPassword: boolean,
+	resources: ResourceInfo[]
+};
+
+export type ResourceInfo = {
+	namespace: string,
+	name: string,
+	resourceType: ResourceType | string,
+	connectionId?: string
 };
 
 export interface Registration extends RegistrationResponse {
@@ -43,7 +52,7 @@ export class ControllerModel {
 		return this._auth;
 	}
 
-	constructor(private _treeDataProvider: AzureArcTreeDataProvider, public info: ControllerInfo, password?: string) {
+	constructor(public treeDataProvider: AzureArcTreeDataProvider, public info: ControllerInfo, password?: string) {
 		this._endpointsRouter = new EndpointsRouterApi(this.info.url);
 		this._tokenRouter = new TokenRouterApi(this.info.url);
 		this._registrationRouter = new RegistrationRouterApi(this.info.url);
@@ -53,23 +62,23 @@ export class ControllerModel {
 		}
 	}
 
-	public async refresh(): Promise<void> {
+	public async refresh(showErrors: boolean = true): Promise<void> {
 		// We haven't gotten our password yet, fetch it now
 		if (!this._auth) {
 			let password = '';
 			if (this.info.rememberPassword) {
 				// It should be in the credentials store, get it from there
-				password = await this._treeDataProvider.getPassword(this.info);
+				password = await this.treeDataProvider.getPassword(this.info);
 			}
 			if (password) {
 				this.setAuthentication(new BasicAuth(this.info.username, password));
 			} else {
 				// No password yet so prompt for it from the user
-				const dialog = new ConnectToControllerDialog(this._treeDataProvider);
+				const dialog = new ConnectToControllerDialog(this.treeDataProvider);
 				dialog.showDialog(this.info);
 				const model = await dialog.waitForClose();
 				if (model) {
-					this._treeDataProvider.addOrUpdateController(model.controllerModel, model.password, false);
+					this.treeDataProvider.addOrUpdateController(model.controllerModel, model.password, false);
 					this.setAuthentication(new BasicAuth(this.info.username, model.password));
 				}
 			}
@@ -80,6 +89,15 @@ export class ControllerModel {
 				this._endpoints = response.body;
 				this.endpointsLastUpdated = new Date();
 				this._onEndpointsUpdated.fire(this._endpoints);
+			}).catch(err => {
+				// If an error occurs show a message so the user knows something failed but still
+				// fire the event so callers can know to update (e.g. so dashboards don't show the
+				// loading icon forever)
+				if (showErrors) {
+					vscode.window.showErrorMessage(loc.fetchEndpointsFailed(this.info.url, err));
+				}
+				this._onEndpointsUpdated.fire(this._endpoints);
+				throw err;
 			}),
 			this._tokenRouter.apiV1TokenPost().then(async response => {
 				this._namespace = response.body.namespace!;
@@ -87,7 +105,16 @@ export class ControllerModel {
 				this._controllerRegistration = this._registrations.find(r => r.instanceType === ResourceType.dataControllers);
 				this.registrationsLastUpdated = new Date();
 				this._onRegistrationsUpdated.fire(this._registrations);
-			})
+			}).catch(err => {
+				// If an error occurs show a message so the user knows something failed but still
+				// fire the event so callers can know to update (e.g. so dashboards don't show the
+				// loading icon forever)
+				if (showErrors) {
+					vscode.window.showErrorMessage(loc.fetchRegistrationsFailed(this.info.url, err));
+				}
+				this._onRegistrationsUpdated.fire(this._registrations);
+				throw err;
+			}),
 		]);
 	}
 
@@ -111,10 +138,17 @@ export class ControllerModel {
 		return this._controllerRegistration;
 	}
 
-	public getRegistration(type: string, namespace: string, name: string): Registration | undefined {
+	public getRegistration(type: ResourceType, namespace: string, name: string): Registration | undefined {
 		return this._registrations.find(r => {
 			return r.instanceType === type && r.instanceNamespace === namespace && parseInstanceName(r.instanceName) === name;
 		});
+	}
+
+	public async deleteRegistration(type: ResourceType, namespace: string, name: string) {
+		const r = this.getRegistration(type, namespace, name);
+		if (r && !r.isDeleted && r.customObjectName) {
+			await this._registrationRouter.apiV1RegistrationNsNameIsDeletedDelete(this._namespace, r.customObjectName, true);
+		}
 	}
 
 	/**
@@ -124,6 +158,7 @@ export class ControllerModel {
 	 */
 	public async miaaDelete(namespace: string, name: string): Promise<void> {
 		await this._sqlInstanceRouter.apiV1HybridSqlNsNameDelete(namespace, name);
+		await this.deleteRegistration(ResourceType.sqlManagedInstances, namespace, name);
 	}
 
 	/**

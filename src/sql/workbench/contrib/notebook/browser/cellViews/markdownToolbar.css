@@ -19,6 +19,11 @@
 	margin: 0;
 	padding: 10px 16px 4px 16px;
 }
+
+.markdown-toolbar ul {
+	position: relative;
+}
+
 .markdown-toolbar .carbon-taskbar li.action-item {
 	display: inline-block;
 	margin-right: 14px;
@@ -41,6 +46,11 @@
 	right: -6px;
 	top: -3px;
 	width: 26px;
+}
+.markdown-toolbar .carbon-taskbar li:last-child {
+	margin-right: 0;
+	position: absolute;
+	right: 0;
 }
 .markdown-toolbar .carbon-taskbar li a {
 	display: flex;
