@@ -126,6 +126,11 @@ export class MarkdownTextTransformer {
 		}
 	}
 
+	/**
+	 * Given the user's cursor placement, redefine the range as column 1 of that line.
+	 * Used by handleTransformOperation to add headings, paragraph or list items to beginning of line.
+	 * @param range Line selection
+	 */
 	private getCustomStartRange(range: IRange): IRange {
 		return {
 			startColumn: 1,
@@ -135,9 +140,13 @@ export class MarkdownTextTransformer {
 		};
 	}
 
+	/**
+	 * Used to determine if start and end range are identical. This is an indicator that the user made no selection but instead placed their cursor on a given line to add heading, paragraph or list items.
+	 * Used by transformText and handleTransformOperation.
+	 * @param startRange User selected start range
+	 * @param endRange User selected end range
+	 */
 	private isIdenticalRanges(startRange: IRange, endRange: IRange): boolean {
-		// This is the case then a user has set their cursor on a line but not selected a block of text.
-		// Used for headings, paragraph and list items.
 		if (
 			startRange.startColumn === endRange.startColumn &&
 			startRange.startLineNumber === endRange.startLineNumber &&
@@ -381,6 +390,7 @@ export class MarkdownTextTransformer {
 			//console.log('selectedType: ', selectedType + ', char: ' + this.getStartTextToInsert(selectedType)); // selectedType: 6, char: -
 			//console.log('type of selectedText is in array: ', selectedText.startsWith(this.getStartTextToInsert(selectedType))); // false - why?
 		}
+		//TODO: return a boolean to decide whether or not to replace a line's preceeding MarkdownButtonType.
 
 	}
 
