@@ -12,7 +12,6 @@ import { ConnectToControllerDialog } from '../ui/dialogs/connectControllerDialog
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 import * as loc from '../localizedConstants';
 
-
 export type ControllerInfo = {
 	url: string,
 	username: string,

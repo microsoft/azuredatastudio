@@ -349,25 +349,22 @@ export class PostgresOverviewPage extends DashboardPage {
 	}
 
 	private handleRegistrationsUpdated() {
-		this.refreshProperties();
-	}
-
-	private hadleServiceUpdated() {
-		this.refreshProperties();
-		this.refreshNodes();
-	}
-
-	private handlePodsUpdated() {
-		this.refreshProperties();
-		this.refreshNodes();
-	}
-
-	private refreshProperties() {
 		this.properties!.propertyItems = this.getProperties();
 		this.propertiesLoading!.loading = false;
 	}
 
-	private refreshNodes() {
+	private hadleServiceUpdated() {
+		this.properties!.propertyItems = this.getProperties();
+		this.propertiesLoading!.loading = false;
+
+		this.nodesTable!.data = this.getNodes();
+		this.nodesTableLoading!.loading = false;
+	}
+
+	private handlePodsUpdated() {
+		this.properties!.propertyItems = this.getProperties();
+		this.propertiesLoading!.loading = false;
+
 		this.nodesTable!.data = this.getNodes();
 		this.nodesTableLoading!.loading = false;
 	}
