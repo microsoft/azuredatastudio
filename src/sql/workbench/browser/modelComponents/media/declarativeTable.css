@@ -13,14 +13,16 @@
 	padding: 5px;
 	border: 1px solid;
 	vertical-align: top;
-	text-align: center;
-	height: auto;
 }
 
 .declarative-table-cell {
 	padding: 5px;
 	border: 1px solid;
-	vertical-align: top;
-	text-align: center !important;
-	height: auto;
+}
+
+.declarative-table-cell>checkbox {
+	float: left;
+	margin: 0 auto;
+	width: 100%;
+	text-align: center;
 }

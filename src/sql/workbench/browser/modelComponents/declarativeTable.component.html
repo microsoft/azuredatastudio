@@ -8,7 +8,7 @@
 		</ng-container>
 	</thead>
 		<ng-container *ngIf="data">
-			<ng-container *ngFor="let row of data;let r = index;trackBy:trackByFnRows">
+			<ng-container *ngFor="let row of data;let r = index;">
 				<tr class="declarative-table-row">
 					<ng-container *ngFor="let cellData of row;let c = index;trackBy:trackByFnCols">
 						<td class="declarative-table-cell" [style.width]="getColumnWidth(c)" [attr.aria-label]="getAriaLabel(r, c)" [ngStyle]="columns[c].rowCssStyles">
