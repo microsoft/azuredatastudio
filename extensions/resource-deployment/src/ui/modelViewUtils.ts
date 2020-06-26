@@ -920,8 +920,8 @@ async function handleSelectedSubscriptionChanged(context: AzureAccountFieldConte
 			return;
 		}
 		if (response.errors.length > 0) {
-			// If we got back some RG's then don't display the errors to the user - it's normal for users
-			// to not necessarily have access to all RG's on a subscription so displaying the errors
+			// If we got back some Resource Groups then don't display the errors to the user - it's normal for users
+			// to not necessarily have access to all Resource Groups on a subscription so displaying the errors
 			// in that case is usually just distracting and causes confusion
 			const errMsg = response.errors.join(EOL);
 			if (response.resourceGroups.length === 0) {
@@ -948,7 +948,10 @@ async function handleSelectedSubscriptionChanged(context: AzureAccountFieldConte
 const knownAzureLocationNameMappings = new Map<string, string>([
 	['East US', azurecore.AzureRegion.eastus],
 	['East US 2', azurecore.AzureRegion.eastus2],
-	['Central US', azurecore.AzureRegion.centralus]
+	['Central US', azurecore.AzureRegion.centralus],
+	['West Europe', azurecore.AzureRegion.westeurope],
+	['Southeast Asia', azurecore.AzureRegion.southeastasia],
+	['West US 2', azurecore.AzureRegion.westus2]
 ]);
 
 /**
