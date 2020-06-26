@@ -32,12 +32,9 @@ import { ISearchComplete, ISearchConfiguration, ISearchConfigurationProperties, 
 import { diffInserted, diffInsertedOutline, diffRemoved, diffRemovedOutline, editorFindMatchHighlight, editorFindMatchHighlightBorder, listActiveSelectionForeground, foreground } from 'vs/platform/theme/common/colorRegistry';
 import { ICssStyleCollector, IColorTheme, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
-// import { OpenFileFolderAction, OpenFolderAction } from 'vs/workbench/browser/actions/workspaceActions';
 import { ResourceLabels } from 'vs/workbench/browser/labels';
 import { IEditorPane } from 'vs/workbench/common/editor';
-import { CancelSearchAction, ClearSearchResultsAction, CollapseDeepestExpandedLevelAction, RefreshAction, appendKeyBindingLabel, ExpandAllAction, ToggleCollapseAndExpandAction } from 'vs/workbench/contrib/search/browser/searchActions';
 import { FileMatchRenderer, FolderMatchRenderer, MatchRenderer, SearchAccessibilityProvider, SearchDelegate, SearchDND } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearchResultsView';
-//import { FileMatchRenderer, FolderMatchRenderer, MatchRenderer, SearchAccessibilityProvider, SearchDelegate, SearchDND } from 'vs/workbench/contrib/search/browser/searchResultsView';
 import * as Constants from 'vs/workbench/contrib/search/common/constants';
 import { IReplaceService } from 'vs/workbench/contrib/search/common/replace';
 import { FileMatch, FileMatchOrMatch, IChangeEvent, ISearchWorkbenchService, Match, RenderableMatch, searchMatchComparer, SearchModel, SearchResult, FolderMatch, FolderMatchWithResource } from 'vs/workbench/contrib/search/common/searchModel';
@@ -53,10 +50,14 @@ import { MultiCursorSelectionController } from 'vs/editor/contrib/multicursor/mu
 import { Selection } from 'vs/editor/common/core/selection';
 import { Color, RGBA } from 'vs/base/common/color';
 import { IViewDescriptorService } from 'vs/workbench/common/views';
-import { OpenSearchEditorAction, createEditorFromSearchResult } from 'vs/workbench/contrib/searchEditor/browser/searchEditorActions';
+import { createEditorFromSearchResult } from 'vs/workbench/contrib/searchEditor/browser/searchEditorActions';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { ICommandService } from 'vs/platform/commands/common/commands';
+import { NotebookSearchWidget } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearchWidget';
+import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
+import { CollapseDeepestExpandedLevelAction, ClearSearchResultsAction, ToggleCollapseAndExpandAction, CancelSearchAction, ExpandAllAction } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearchActions';
+import { appendKeyBindingLabel } from 'vs/workbench/contrib/search/browser/searchActions';
 
 const $ = dom.$;
 
@@ -74,7 +75,6 @@ export enum SearchViewPosition {
 const SEARCH_CANCELLED_MESSAGE = nls.localize('searchCanceled', "Search was canceled before any results could be found - ");
 export class NotebookSearchView extends ViewPane {
 
-	//private static readonly MAX_TEXT_RESULTS = 10000;
 	static readonly ID = 'notebookExplorer.searchResults';
 	private static readonly ACTIONS_RIGHT_CLASS_NAME = 'actions-right';
 
@@ -82,7 +82,6 @@ export class NotebookSearchView extends ViewPane {
 
 	private container!: HTMLElement;
 	private viewModel: SearchModel;
-
 	private viewletVisible: IContextKey<boolean>;
 
 	private firstMatchFocused: IContextKey<boolean>;
@@ -96,15 +95,13 @@ export class NotebookSearchView extends ViewPane {
 
 	private state: SearchUIState = SearchUIState.Idle;
 
-	private actions: Array<CollapseDeepestExpandedLevelAction | ClearSearchResultsAction | OpenSearchEditorAction> = [];
+	private actions: Array<CollapseDeepestExpandedLevelAction | ClearSearchResultsAction> = [];
 	private toggleCollapseAction: ToggleCollapseAndExpandAction;
 	private cancelAction: CancelSearchAction;
-	private refreshAction: RefreshAction;
 	private contextMenu: IMenu | null = null;
 
 	private tree!: WorkbenchObjectTree<RenderableMatch>;
 	private treeLabels!: ResourceLabels;
-	//private viewletState: MementoObject;
 	private messagesElement!: HTMLElement;
 	private messageDisposables: IDisposable[] = [];
 	private size!: dom.Dimension;
@@ -112,19 +109,13 @@ export class NotebookSearchView extends ViewPane {
 
 	private currentSelectedFileMatch: FileMatch | undefined;
 
-	//private delayedRefresh: Delayer<void>;
 	private changedWhileHidden: boolean = false;
 	private updatedActionsWhileHidden = false;
 
 	private searchWithoutFolderMessageElement: HTMLElement | undefined;
 
-	//private currentSearchQ = Promise.resolve();
-	//private addToSearchHistoryDelayer: Delayer<void>;
-
+	private currentSearchQ = Promise.resolve();
 	private toggleCollapseStateDelayer: Delayer<void>;
-
-	//private triggerQueryDelayer: Delayer<void>;
-	//private pauseSearching = false;
 
 	private treeAccessibilityProvider: SearchAccessibilityProvider;
 	private treeSelectionChangeListener: IDisposable;
@@ -134,9 +125,6 @@ export class NotebookSearchView extends ViewPane {
 		@IFileService private readonly fileService: IFileService,
 		@IEditorService private readonly editorService: IEditorService,
 		@IProgressService private readonly progressService: IProgressService,
-		//@INotificationService private readonly notificationService: INotificationService,
-		//@IDialogService private readonly dialogService: IDialogService,
-		//@IContextViewService private readonly contextViewService: IContextViewService,
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
 		@IConfigurationService configurationService: IConfigurationService,
@@ -147,10 +135,8 @@ export class NotebookSearchView extends ViewPane {
 		@ITextFileService private readonly textFileService: ITextFileService,
 		@IPreferencesService private readonly preferencesService: IPreferencesService,
 		@IThemeService themeService: IThemeService,
-		//@ISearchHistoryService private readonly searchHistoryService: ISearchHistoryService,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IMenuService private readonly menuService: IMenuService,
-		//@IAccessibilityService private readonly accessibilityService: IAccessibilityService,
 		@IKeybindingService keybindingService: IKeybindingService,
 		@IStorageService storageService: IStorageService,
 		@IOpenerService openerService: IOpenerService,
@@ -203,10 +189,8 @@ export class NotebookSearchView extends ViewPane {
 
 		this.actions = [
 			this._register(this.instantiationService.createInstance(ClearSearchResultsAction, ClearSearchResultsAction.ID, ClearSearchResultsAction.LABEL)),
-			this._register(this.instantiationService.createInstance(OpenSearchEditorAction, OpenSearchEditorAction.ID, OpenSearchEditorAction.LABEL))
 		];
 
-		this.refreshAction = this._register(this.instantiationService.createInstance(RefreshAction, RefreshAction.ID, RefreshAction.LABEL));
 		this.cancelAction = this._register(this.instantiationService.createInstance(CancelSearchAction, CancelSearchAction.ID, CancelSearchAction.LABEL));
 		this.toggleCollapseAction = this._register(this.instantiationService.createInstance(ToggleCollapseAndExpandAction, ToggleCollapseAndExpandAction.ID, ToggleCollapseAndExpandAction.LABEL, collapseDeepestExpandedLevelAction, expandAllAction));
 
@@ -219,6 +203,10 @@ export class NotebookSearchView extends ViewPane {
 
 	get searchResult(): SearchResult {
 		return this.viewModel && this.viewModel.searchResult;
+	}
+
+	get searchViewModel(): SearchModel {
+		return this.viewModel;
 	}
 
 	private onDidChangeWorkbenchState(): void {
@@ -245,11 +233,10 @@ export class NotebookSearchView extends ViewPane {
 		this.createSearchResultsView(this.container);
 
 		this._register(this.viewModel.searchResult.onChange((event) => this.onSearchResultsChanged(event)));
-
-		//this._register(this.searchWidget.searchInput.onInput(() => this.updateActions()));
-		//this._register(this.searchWidget.replaceInput.onInput(() => this.updateActions()));
-
 		this._register(this.onDidChangeBodyVisibility(visible => this.onVisibilityChanged(visible)));
+
+		// initialize as collapsed viewpane
+		this.setExpanded(false);
 	}
 
 	private onVisibilityChanged(visible: boolean): void {
@@ -278,7 +265,7 @@ export class NotebookSearchView extends ViewPane {
 	/**
 	 * Warning: a bit expensive due to updating the view title
 	 */
-	protected updateActions(): void {
+	public updateActions(): void {
 		if (!this.isVisible()) {
 			this.updatedActionsWhileHidden = true;
 		}
@@ -287,7 +274,6 @@ export class NotebookSearchView extends ViewPane {
 			action.update();
 		}
 
-		this.refreshAction.update();
 		this.cancelAction.update();
 		this.toggleCollapseAction.update();
 
@@ -566,7 +552,7 @@ export class NotebookSearchView extends ViewPane {
 		super.focus();
 	}
 
-	private reLayout(): void {
+	public reLayout(searchWidgetHeight?: number): void {
 		if (this.isDisposed) {
 			return;
 		}
@@ -578,9 +564,10 @@ export class NotebookSearchView extends ViewPane {
 			0 :
 			dom.getTotalHeight(this.messagesElement);
 
+		searchWidgetHeight = searchWidgetHeight ?? 51; //default height
 		const searchResultContainerHeight = this.size.height -
 			messagesSize -
-			51;
+			searchWidgetHeight;
 
 		this.resultsElement.style.height = searchResultContainerHeight + 'px';
 
@@ -678,7 +665,7 @@ export class NotebookSearchView extends ViewPane {
 		}
 	}
 
-	public doSearch(query: ITextQuery, excludePatternText: string, includePatternText: string, triggeredOnType: boolean): Thenable<void> {
+	public doSearch(query: ITextQuery, excludePatternText: string, includePatternText: string, triggeredOnType: boolean, searchWidget: NotebookSearchWidget): Thenable<void> {
 		let progressComplete: () => void;
 		this.progressService.withProgress({ location: this.getProgressLocation(), delay: triggeredOnType ? 300 : 0 }, _progress => {
 			return new Promise(resolve => progressComplete = resolve);
@@ -718,10 +705,10 @@ export class NotebookSearchView extends ViewPane {
 			}
 
 			if (completed && completed.limitHit) {
-				/* this.searchWidget.searchInput.showMessage({
+				searchWidget.searchInput.showMessage({
 					content: nls.localize('searchMaxResultsWarning', "The result set only contains a subset of all matches. Please be more specific in your search to narrow down the results."),
 					type: MessageType.WARNING
-				}); */
+				});
 			}
 
 			if (!hasResults) {
@@ -751,7 +738,7 @@ export class NotebookSearchView extends ViewPane {
 					const searchAgainLink = dom.append(p, $('a.pointer.prominent', undefined, nls.localize('rerunSearch.message', "Search again")));
 					this.messageDisposables.push(dom.addDisposableListener(searchAgainLink, dom.EventType.CLICK, (e: MouseEvent) => {
 						dom.EventHelper.stop(e, false);
-						// this.triggerQueryChange({ preserveFocus: false });
+						this.triggerQueryChange(query, excludePatternText, includePatternText, triggeredOnType, searchWidget);
 					}));
 				} else if (hasIncludes || hasExcludes) {
 					const searchAgainLink = dom.append(p, $('a.pointer.prominent', { tabindex: 0 }, nls.localize('rerunSearchInAll.message', "Search again in all files")));
@@ -822,6 +809,14 @@ export class NotebookSearchView extends ViewPane {
 
 		return this.viewModel.search(query)
 			.then(onComplete, onError);
+	}
+
+	triggerQueryChange(query: ITextQuery, excludePatternText: string, includePatternText: string, triggeredOnType: boolean, searchWidget: NotebookSearchWidget) {
+		this.viewModel.cancelSearch(true);
+
+		this.currentSearchQ = this.currentSearchQ
+			.then(() => this.doSearch(query, excludePatternText, includePatternText, triggeredOnType, searchWidget))
+			.then(() => undefined, () => undefined);
 	}
 
 	private addClickEvents = (element: HTMLElement, handler: (event: any) => void): void => {
@@ -1060,9 +1055,7 @@ export class NotebookSearchView extends ViewPane {
 
 	getActions(): IAction[] {
 		return [
-			this.state === SearchUIState.SlowSearch ?
-				this.cancelAction :
-				this.refreshAction,
+			this.cancelAction,
 			...this.actions,
 			this.toggleCollapseAction
 		];

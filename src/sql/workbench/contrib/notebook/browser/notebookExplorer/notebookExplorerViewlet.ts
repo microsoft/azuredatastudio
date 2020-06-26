@@ -162,16 +162,16 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 		this._register(this.searchWidget.onSearchCancel(({ focus }) => this.cancelSearch(focus)));
 		this._register(this.searchWidget.searchInput.onDidOptionChange(() => this.triggerQueryChange()));
 
-		// this._register(this.searchWidget.onDidHeightChange(() => this.reLayout()));
+		this._register(this.searchWidget.onDidHeightChange(() => this.searchView?.reLayout(getTotalHeight(this.searchWidgetsContainerElement))));
 
 		this._register(this.searchWidget.onPreserveCaseChange((state) => {
-			// this.viewModel.preserveCase = state;
+			if (this.searchView && this.searchView.searchViewModel) {
+				this.searchView.searchViewModel.preserveCase = state;
+			}
 			this.refreshTree();
 		}));
 
-		this._register(this.searchWidget.onBlur(() => {
-			// this.toggleQueryDetailsButton.focus();
-		}));
+		this._register(this.searchWidget.searchInput.onInput(() => this.searchView?.updateActions()));
 
 		this.trackInputBox(this.searchWidget.searchInputFocusTracker);
 	}
@@ -191,6 +191,11 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 			this.triggerQueryDelayer.trigger(() => {
 				this._onQueryChanged(options.preserveFocus, options.triggeredOnType);
 			}, options.delay);
+		}
+
+		// initialize search view
+		if (!this.searchView) {
+			this.searchView = <NotebookSearchView>this.getView(NotebookSearchView.ID);
 		}
 	}
 
@@ -255,7 +260,6 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 		}
 
 		this.validateQuery(query).then(async () => {
-			// this.onQueryTriggered(query, options, excludePatternText, includePatternText, triggeredOnType);
 			if (this.views.length > 1) {
 				let filesToIncludeFiltered: string = '';
 				this.views.forEach(async (v) => {
@@ -263,14 +267,13 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 					if (booksViewPane?.treeView?.root) {
 						let root = booksViewPane.treeView.root;
 						if (root.children) {
-							// let root = new Root();
 							let items = root.children;
 							items?.forEach(root => {
 								this.updateViewletsState();
 								let folderToSearch: IFolderQuery = { folder: URI.file(path.join(root.tooltip, 'content')) };
 								query.folderQueries.push(folderToSearch);
 								filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
-								this.searchView.doSearch(query, null, filesToIncludeFiltered, false);
+								this.searchView.doSearch(query, null, filesToIncludeFiltered, false, this.searchWidget);
 							});
 						}
 					}
@@ -381,6 +384,8 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 	}
 
 	focus(): void {
+		super.focus();
+		this.searchWidget.focus(undefined, this.searchConfig.seedOnFocus);
 	}
 
 	layout(dimension: Dimension): void {
