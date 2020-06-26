@@ -716,9 +716,9 @@ export class ProjectsController {
 			switch (inputTarget) {
 				case 'File': return mssql.ExtractTarget['file'];
 				case 'Flat': return mssql.ExtractTarget['flat'];
-				case 'ObjectType': return mssql.ExtractTarget['objectType'];
+				case 'Object Type': return mssql.ExtractTarget['objectType'];
 				case 'Schema': return mssql.ExtractTarget['schema'];
-				case 'SchemaObjectType': return mssql.ExtractTarget['schemaObjectType'];
+				case 'Schema/Object Type': return mssql.ExtractTarget['schemaObjectType'];
 				default: throw new Error(`Invalid input: ${inputTarget}`);
 			}
 		} else {
