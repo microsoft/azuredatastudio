@@ -80,49 +80,12 @@ export class MarkdownTextTransformer {
 
 				let editorModel = editorControl.getModel() as TextModel;
 				let isUndo = false;
-				let isReplace = false;
 				if (editorModel) {
 					let markdownLineType = this.getMarkdownLineType(type);
 					isUndo = this.isUndoOperation(selection, type, markdownLineType, editorModel);
-					let realHeadingUndoType = this.getHeadingOverwriteType(selection, type, markdownLineType, editorModel);
-					isReplace = !!realHeadingUndoType && realHeadingUndoType !== type;
 					if (isUndo) {
-						if (!isReplace) {
-							if (this.isIdenticalRanges(startRange, endRange)) {
-								// Single line
-								startRange = this.getCustomStartRange(startRange);
-								this.handleUndoOperation(markdownLineType, startRange, endRange, editorModel, beginInsertedCode, endInsertedCode, selections, selection);
-							} else {
-								this.handleUndoOperation(markdownLineType, startRange, endRange, editorModel, beginInsertedCode, endInsertedCode, selections, selection);
-							}
-						} else {
-							let beginUndoCode = this.getStartTextToInsert(realHeadingUndoType);
-							endRange = {
-								startColumn: 1,
-								endColumn: beginUndoCode.length,
-								startLineNumber: selection.endLineNumber,
-								endLineNumber: selection.endLineNumber
-							};
-							if (this.isIdenticalRanges(startRange, endRange)) {
-								// Single line
-								startRange = this.getCustomStartRange(startRange);
-								this.handleUndoOperation(markdownLineType, startRange, endRange, editorModel, beginUndoCode, endInsertedCode, selections, selection);
-							} else {
-								this.handleUndoOperation(markdownLineType, startRange, endRange, editorModel, beginUndoCode, endInsertedCode, selections, selection);
-							}
-						}
-					}
-					if (!isUndo || (isUndo && isReplace)) {
-						if (this.isIdenticalRanges(startRange, endRange)) {
-							// Single line
-							startRange = this.getCustomStartRange(startRange);
-						}
-						endRange = {
-							startColumn: 1,
-							endColumn: 1,
-							startLineNumber: selection.endLineNumber,
-							endLineNumber: selection.endLineNumber
-						};
+						this.handleUndoOperation(markdownLineType, startRange, endRange, editorModel, beginInsertedCode, endInsertedCode, selections, selection);
+					} else {
 						this.handleTransformOperation(markdownLineType, startRange, endRange, editorModel, beginInsertedCode, endInsertedCode, selections, selection);
 					}
 				}
@@ -136,48 +99,6 @@ export class MarkdownTextTransformer {
 			// Always give focus back to the editor after pressing the button
 			editorControl.focus();
 		}
-	}
-
-	/**
-	 * Given the user's cursor placement, redefine the range as column 1 of that line.
-	 * Used by handleTransformOperation to add headings, paragraph or list items to beginning of line.
-	 * @param range Line selection
-	 */
-	private getCustomStartRange(range: IRange): IRange {
-		return {
-			startColumn: 1,
-			startLineNumber: range.startLineNumber,
-			endColumn: 1,
-			endLineNumber: range.endLineNumber
-		};
-	}
-
-	/**
-	 * Used to determine if start and end range are identical. This is an indicator that the user made no selection but instead placed their cursor on a given line to add heading, paragraph or list items.
-	 * Used by transformText and handleTransformOperation.
-	 * @param startRange User selected start range
-	 * @param endRange User selected end range
-	 */
-	private isIdenticalRanges(startRange: IRange, endRange: IRange): boolean {
-		if (
-			startRange.startColumn === endRange.startColumn &&
-			startRange.startLineNumber === endRange.startLineNumber &&
-			startRange.endColumn === endRange.endColumn &&
-			startRange.endLineNumber === endRange.endLineNumber
-		) {
-			// Single line
-			return true;
-		} else {
-			return false;
-		}
-
-	}
-
-	private isParagraphOrHeading(type: MarkdownButtonType): boolean {
-		return type === MarkdownButtonType.HEADING1 ||
-			type === MarkdownButtonType.HEADING2 ||
-			type === MarkdownButtonType.HEADING3 ||
-			type === MarkdownButtonType.PARAGRAPH;
 	}
 
 	// For items like lists (where we need to insert a character at the beginning of each line), create
@@ -367,16 +288,7 @@ export class MarkdownTextTransformer {
 			let selectedText = this.getExtendedSelectedText(selection, type, lineType, editorModel);
 			return selectedText && selectedText.startsWith(this.getStartTextToInsert(type)) && selectedText.endsWith(this.getEndTextToInsert(type));
 		} else {
-			if (!this.isParagraphOrHeading(type)) {
-				return this.everyLineMatchesBeginString(selection, type, editorModel);
-			} else {
-				let typeToUndo = this.getHeadingOverwriteType(selection, type, lineType, editorModel);
-				if (!typeToUndo) {
-					return false;
-				} else {
-					return this.everyLineMatchesBeginString(selection, typeToUndo, editorModel);
-				}
-			}
+			return this.everyLineMatchesBeginString(selection, type, editorModel);
 		}
 	}
 
@@ -399,45 +311,17 @@ export class MarkdownTextTransformer {
 		}
 	}
 
-	private getHeadingOverwriteType(selection: Selection, type: MarkdownButtonType, lineType: MarkdownLineType, editorModel: TextModel): MarkdownButtonType {
-		if (!this.isParagraphOrHeading(type)) {
-			return undefined;
-		}
-
-		let relatedTypes: MarkdownButtonType[] = [
-			MarkdownButtonType.HEADING1,
-			MarkdownButtonType.HEADING2,
-			MarkdownButtonType.HEADING3
-		];
-
-		for (let selectedType of relatedTypes) {
-			// look for a match using existing type from relatedTypes and check against string.
-			let selectedText = this.getExtendedSelectedText(selection, selectedType, lineType, editorModel);
-			if (selectedText.startsWith(this.getStartTextToInsert(selectedType))) {
-				return selectedType;
-			}
-		}
-		return undefined;
-	}
-
 	handleTransformOperation(markdownLineType: MarkdownLineType, startRange: IRange, endRange: IRange, editorModel: TextModel, beginInsertedCode: string, endInsertedCode: string, selections: Selection[], selection: Selection): void {
 		// If the markdown we're inserting only needs to be added to the begin and end lines, add those edit operations directly
 		if (markdownLineType === MarkdownLineType.BEGIN_AND_END_LINES || markdownLineType === MarkdownLineType.WRAPPED_ABOVE_AND_BELOW) {
 			editorModel.pushEditOperations(selections, [{ range: startRange, text: beginInsertedCode }, { range: endRange, text: endInsertedCode }], null);
 		} else {
-			if (this.isIdenticalRanges(startRange, endRange)) {
-				startRange = this.getCustomStartRange(startRange);
-				// Otherwise, single line operation is made at column 1.
-				editorModel.pushEditOperations(null, [{ range: startRange, text: beginInsertedCode }, { range: endRange, text: null }], null);
-			} else {
-				// Otherwise, add an operation per line (plus the operation at the last column + line)
-				let operations: IIdentifiedSingleEditOperation[] = [];
-				for (let i = 0; i < selection.endLineNumber - selection.startLineNumber + 1; i++) {
-					operations.push({ range: this.transformRangeByLineOffset(startRange, i), text: beginInsertedCode });
-				}
-				operations.push({ range: endRange, text: endInsertedCode });
-				editorModel.pushEditOperations(selections, operations, null);
+			let operations: IIdentifiedSingleEditOperation[] = [];
+			for (let i = 0; i < selection.endLineNumber - selection.startLineNumber + 1; i++) {
+				operations.push({ range: this.transformRangeByLineOffset(startRange, i), text: beginInsertedCode });
 			}
+			operations.push({ range: endRange, text: endInsertedCode });
+			editorModel.pushEditOperations(selections, operations, null);
 		}
 	}
 
@@ -461,13 +345,6 @@ export class MarkdownTextTransformer {
 				startColumn: 1,
 				startLineNumber: selection.startLineNumber - 1,
 				endColumn: this.getEndTextToInsert(type).length + 1,
-				endLineNumber: selection.endLineNumber + 1
-			});
-		} else if (lineType === MarkdownLineType.EVERY_LINE) {
-			return editorModel.getValueInRange({
-				startColumn: 1,
-				startLineNumber: selection.startLineNumber - 1,
-				endColumn: selection.endColumn,
 				endLineNumber: selection.endLineNumber + 1
 			});
 		}
