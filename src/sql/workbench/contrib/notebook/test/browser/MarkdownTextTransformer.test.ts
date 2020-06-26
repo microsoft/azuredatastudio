@@ -95,6 +95,9 @@ suite('MarkdownTextTransformer', () => {
 		testWithNoSelection(MarkdownButtonType.ORDERED_LIST, '1. ');
 		testWithNoSelection(MarkdownButtonType.IMAGE, '![]()', true);
 		testWithNoSelection(MarkdownButtonType.IMAGE, '');
+		testWithNoSelection(MarkdownButtonType.HEADING1, '# ', true);
+		testWithNoSelection(MarkdownButtonType.HEADING2, '## ', true);
+		testWithNoSelection(MarkdownButtonType.HEADING3, '### ', true);
 	});
 
 	test('Transform text with one word selected', () => {
@@ -128,6 +131,9 @@ suite('MarkdownTextTransformer', () => {
 		testWithMultipleLinesSelected(MarkdownButtonType.UNORDERED_LIST, '- Multi\n- Lines\n- Selected');
 		testWithMultipleLinesSelected(MarkdownButtonType.ORDERED_LIST, '1. Multi\n1. Lines\n1. Selected');
 		testWithMultipleLinesSelected(MarkdownButtonType.IMAGE, '![Multi\nLines\nSelected]()');
+		testWithMultipleLinesSelected(MarkdownButtonType.HEADING1, '- Multi\n- Lines\n- Selected');
+		testWithMultipleLinesSelected(MarkdownButtonType.HEADING2, '- Multi\n- Lines\n- Selected');
+		testWithMultipleLinesSelected(MarkdownButtonType.HEADING3, '- Multi\n- Lines\n- Selected');
 	});
 
 	test('Ensure notebook editor returns expected object', () => {
