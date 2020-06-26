@@ -161,7 +161,7 @@
         "providers": [
           {
             "notebookWizard": {
-              "notebook": "./notesbooks/arcDeployment/deploy.arc.control.plane.ipynb",
+              "notebook": "./notebooks/arcDeployment/deploy.arc.control.plane.ipynb",
               "type": "new-arc-control-plane",
               "runNotebook": false,
               "codeCellInsertionPosition": 5,
@@ -293,7 +293,10 @@
                           "locations": [
                             "East US",
                             "East US 2",
-                            "Central US"
+                            "Central US",
+                            "West Europe",
+                            "Southeast Asia",
+                            "West US 2"
                           ]
                         },
                         {
@@ -591,7 +594,7 @@
         "providers": [
           {
             "dialog": {
-              "notebook": "./notesbooks/arcDeployment/deploy.sql.existing.arc.ipynb",
+              "notebook": "./notebooks/arcDeployment/deploy.sql.existing.arc.ipynb",
               "runNotebook": true,
               "taskName": "%arc.sql.new.dialog.title%",
               "actionText": "%arc.deploy.action%",
@@ -699,7 +702,7 @@
         "providers": [
           {
             "dialog": {
-              "notebook": "./notesbooks/arcDeployment/deploy.postgres.existing.arc.ipynb",
+              "notebook": "./notebooks/arcDeployment/deploy.postgres.existing.arc.ipynb",
               "runNotebook": true,
               "taskName": "%arc.postgres.new.dialog.title%",
               "actionText": "%arc.deploy.action%",

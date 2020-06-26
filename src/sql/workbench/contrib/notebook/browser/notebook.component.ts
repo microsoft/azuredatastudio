@@ -417,12 +417,13 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			let spacerElement = document.createElement('li');
 			spacerElement.style.marginLeft = 'auto';
 
+			let addCellsButton = new AddCellAction('notebook.AddCodeCell', localize('codeCellsPreview', "Add cell"), 'notebook-button masked-pseudo code');
+
 			let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('codePreview', "Code cell"), 'notebook-button masked-pseudo code');
 			addCodeCellButton.cellType = CellTypes.Code;
 
 			let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('textPreview', "Text cell"), 'notebook-button masked-pseudo markdown');
 			addTextCellButton.cellType = CellTypes.Markdown;
-
 
 			this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAllPreview', "Run all"), 'notebook-button masked-pseudo start-outline');
 
@@ -441,7 +442,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			let buttonDropdownContainer = DOM.$('li.action-item');
 			buttonDropdownContainer.setAttribute('role', 'presentation');
 			let dropdownMenuActionViewItem = new DropdownMenuActionViewItem(
-				addCodeCellButton,
+				addCellsButton,
 				[addCodeCellButton, addTextCellButton],
 				this.contextMenuService,
 				undefined,

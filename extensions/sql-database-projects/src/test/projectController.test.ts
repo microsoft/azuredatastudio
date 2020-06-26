@@ -60,7 +60,7 @@ describe('ProjectsController: project controller operations', function (): void 
 			const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
 			const projFileDir = path.join(os.tmpdir(), `TestProject_${new Date().getTime()}`);
 
-			const projFilePath = await projController.createNewProject('TestProjectName', vscode.Uri.file(projFileDir), 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575');
+			const projFilePath = await projController.createNewProject('TestProjectName', vscode.Uri.file(projFileDir), false, 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575');
 
 			let projFileText = (await fs.readFile(projFilePath)).toString();
 

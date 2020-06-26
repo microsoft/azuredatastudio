@@ -56,6 +56,8 @@ export class CellModel implements ICellModel {
 	private _isCollapsed: boolean;
 	private _onCollapseStateChanged = new Emitter<boolean>();
 	private _modelContentChangedEvent: IModelContentChangedEvent;
+	private _showPreview: boolean = true;
+	private _onCellPreviewChanged = new Emitter<boolean>();
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -273,6 +275,21 @@ export class CellModel implements ICellModel {
 
 	public set stdInVisible(val: boolean) {
 		this._stdInVisible = val;
+	}
+
+	public get showPreview(): boolean {
+		return this._showPreview;
+	}
+
+	public set showPreview(val: boolean) {
+		if (val !== this._showPreview) {
+			this._showPreview = val;
+			this._onCellPreviewChanged.fire(this._showPreview);
+		}
+	}
+
+	public get onCellPreviewChanged(): Event<boolean> {
+		return this._onCellPreviewChanged.event;
 	}
 
 	private notifyExecutionComplete(): void {

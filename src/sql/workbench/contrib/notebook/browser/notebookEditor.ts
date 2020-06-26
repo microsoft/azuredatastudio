@@ -123,8 +123,11 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 	}
 
 	async setNotebookModel(): Promise<void> {
-		await this.notebookInput.resolve();
-		this._notebookModel = this.notebookInput.notebookFindModel.notebookModel;
+		let notebookEditorModel = await this.notebookInput.resolve();
+		if (notebookEditorModel && !this.notebookInput.notebookFindModel.notebookModel) {
+			this._notebookModel = notebookEditorModel.getNotebookModel();
+			this.notebookInput.notebookFindModel.notebookModel = this._notebookModel;
+		}
 		if (!this.notebookInput.notebookFindModel.findDecorations) {
 			this.notebookInput.notebookFindModel.setNotebookFindDecorations(this);
 		}
