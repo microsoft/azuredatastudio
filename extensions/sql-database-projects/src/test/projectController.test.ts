@@ -110,6 +110,21 @@ describe('ProjectsController: project controller operations', function (): void 
 			}
 		});
 
+		it('Should show error if trying to add a file that already exists', async function (): Promise<void> {
+			const tableName = 'table1';
+			testContext.apiWrapper.reset();
+			testContext.apiWrapper.setup(x => x.showInputBox(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(tableName));
+			testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
+
+			const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+			const project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
+
+			should(project.files.length).equal(1, 'There should only be the properties folder');
+			await projController.addItemPrompt(project, '', templates.script);
+			should(project.files.length).equal(2, 'File should be successfully added');
+			await testUtils.shouldThrowSpecificError(async () => await projController.addItemPrompt(project, '', templates.script), constants.fileAlreadyExists(tableName));
+		});
+
 		it('Should delete nested ProjectEntry from node', async function (): Promise<void> {
 			let proj = await testUtils.createTestProject(templates.newSqlProjectTemplate);
 			const setupResult = await setupDeleteExcludeTest(proj);
