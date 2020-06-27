@@ -33,7 +33,7 @@ jobs:
   dependsOn:
   - macOS
   steps:
-  - template: darwin/sql-product-build-darwin-sign.yml
+  - template: darwin/sql-product-build-darwin-signing.yml
   timeoutInMinutes: 60
 
 - job: Linux
