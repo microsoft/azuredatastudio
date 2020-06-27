@@ -29,9 +29,6 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 		instanceNamespace: '-',
 	};
 
-	private _endpointsRetrieved = false;
-	private _registrationsRetrieved = false;
-
 	constructor(modelView: azdata.ModelView, private _controllerModel: ControllerModel) {
 		super(modelView);
 
@@ -196,7 +193,6 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 		this.controllerProperties.subscriptionId = reg?.subscriptionId || this.controllerProperties.subscriptionId;
 		this.controllerProperties.connectionMode = getConnectionModeDisplayText(reg?.connectionMode) || this.controllerProperties.connectionMode;
 		this.controllerProperties.instanceNamespace = reg?.instanceNamespace || this.controllerProperties.instanceNamespace;
-		this._registrationsRetrieved = true;
 		this.refreshDisplayedProperties();
 
 		this._arcResourcesTable.data = this._controllerModel.registrations
@@ -221,55 +217,51 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 				});
 				return [imageComponent, nameLink, resourceTypeToDisplayName(r.instanceType), loc.numVCores(r.vCores)];
 			});
-		this._arcResourcesLoadingComponent.loading = false;
+		this._arcResourcesLoadingComponent.loading = !this._controllerModel.registrationsLastUpdated;
 	}
 
 	private handleEndpointsUpdated(): void {
 		const controllerEndpoint = this._controllerModel.getEndpoint(Endpoints.controller);
 		this.controllerProperties.controllerEndpoint = controllerEndpoint?.endpoint || this.controllerProperties.controllerEndpoint;
-		this._endpointsRetrieved = true;
 		this.refreshDisplayedProperties();
 	}
 
 	private refreshDisplayedProperties(): void {
-		// Only update once we've retrieved all the necessary properties
-		if (this._endpointsRetrieved && this._registrationsRetrieved) {
-			this._propertiesContainer.propertyItems = [
-				{
-					displayName: loc.name,
-					value: this.controllerProperties.instanceName
-				},
-				{
-					displayName: loc.resourceGroup,
-					value: this.controllerProperties.resourceGroupName
-				},
-				{
-					displayName: loc.region,
-					value: this.controllerProperties.location
-				},
-				{
-					displayName: loc.subscriptionId,
-					value: this.controllerProperties.subscriptionId
-				},
-				{
-					displayName: loc.type,
-					value: loc.dataControllersType
-				},
-				{
-					displayName: loc.controllerEndpoint,
-					value: this.controllerProperties.controllerEndpoint
-				},
-				{
-					displayName: loc.connectionMode,
-					value: this.controllerProperties.connectionMode
-				},
-				{
-					displayName: loc.namespace,
-					value: this.controllerProperties.instanceNamespace
-				}
-			];
-			this._propertiesLoadingComponent.loading = false;
-		}
+		this._propertiesContainer.propertyItems = [
+			{
+				displayName: loc.name,
+				value: this.controllerProperties.instanceName
+			},
+			{
+				displayName: loc.resourceGroup,
+				value: this.controllerProperties.resourceGroupName
+			},
+			{
+				displayName: loc.region,
+				value: this.controllerProperties.location
+			},
+			{
+				displayName: loc.subscriptionId,
+				value: this.controllerProperties.subscriptionId
+			},
+			{
+				displayName: loc.type,
+				value: loc.dataControllersType
+			},
+			{
+				displayName: loc.controllerEndpoint,
+				value: this.controllerProperties.controllerEndpoint
+			},
+			{
+				displayName: loc.connectionMode,
+				value: this.controllerProperties.connectionMode
+			},
+			{
+				displayName: loc.namespace,
+				value: this.controllerProperties.instanceNamespace
+			}
+		];
 
+		this._propertiesLoadingComponent.loading = !this._controllerModel.registrationsLastUpdated && !this._controllerModel.endpointsLastUpdated;
 	}
 }
