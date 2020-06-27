@@ -31,7 +31,7 @@ export class ButtonColumn<T extends Slick.SlickData> implements Slick.Plugin<T> 
 	private _onClick = new Emitter<ButtonClickEventArgs<T>>();
 	public onClick = this._onClick.event;
 
-	constructor(private options: ButtonColumnOptions, columnIndex?: number) {
+	constructor(private options: ButtonColumnOptions) {
 		this._definition = {
 			id: options.id,
 			resizable: false,
