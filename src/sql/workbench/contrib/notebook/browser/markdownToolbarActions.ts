@@ -349,13 +349,6 @@ export class MarkdownTextTransformer {
 				endColumn: this.getEndTextToInsert(type).length + 1,
 				endLineNumber: selection.endLineNumber + 1
 			});
-		} else if (lineType === MarkdownLineType.EVERY_LINE) {
-			return editorModel.getValueInRange({
-				startColumn: 1,
-				startLineNumber: selection.startLineNumber - 1,
-				endColumn: selection.endColumn,
-				endLineNumber: selection.endLineNumber + 1
-			});
 		}
 		return '';
 	}
