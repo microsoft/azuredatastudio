@@ -212,7 +212,7 @@ export class InstalledPackagesTab {
 			await this.installedPackagesLoader.updateProperties({ loading: false });
 		}
 
-		let packageData: any[][];
+		let packageData: string[][];
 		let packageCount: number;
 		if (pythonPackages) {
 			packageCount = pythonPackages.length;

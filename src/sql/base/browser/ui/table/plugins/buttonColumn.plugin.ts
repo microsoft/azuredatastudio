@@ -30,7 +30,6 @@ export class ButtonColumn<T extends Slick.SlickData> implements Slick.Plugin<T> 
 	private _grid: Slick.Grid<T>;
 	private _onClick = new Emitter<ButtonClickEventArgs<T>>();
 	public onClick = this._onClick.event;
-	public index: number;
 
 	constructor(private options: ButtonColumnOptions, columnIndex?: number) {
 		this._definition = {
@@ -44,7 +43,6 @@ export class ButtonColumn<T extends Slick.SlickData> implements Slick.Plugin<T> 
 			selectable: false,
 			iconCssClassField: options.iconCssClass
 		};
-		this.index = columnIndex ? columnIndex : 0;
 	}
 
 	public init(grid: Slick.Grid<T>): void {
@@ -58,15 +56,13 @@ export class ButtonColumn<T extends Slick.SlickData> implements Slick.Plugin<T> 
 		this._handler.unsubscribeAll();
 	}
 
-	public getColumnDefinition(): Slick.Column<T> {
-		return this._definition;
-	}
-
 	private handleActiveCellChanged(args: Slick.OnActiveCellChangedEventArgs<T>): void {
 		if (this.isCurrentColumn(args.cell)) {
 			const cellElement = this._grid.getActiveCellNode();
-			const button = cellElement.children[0] as HTMLButtonElement;
-			button.focus();
+			if (cellElement && cellElement.children) {
+				const button = cellElement.children[0] as HTMLButtonElement;
+				button.focus();
+			}
 		}
 	}
 
@@ -91,17 +87,6 @@ export class ButtonColumn<T extends Slick.SlickData> implements Slick.Plugin<T> 
 		}
 	}
 
-	// This call is to handle reactive changes in check box UI
-	// This DOES NOT fire UI change Events
-	reactiveButton(row: number) {
-
-		// update row to call formatter
-		this._grid.updateRow(row);
-
-		// ensure that grid reflects the change
-		this._grid.scrollRowIntoView(row);
-	}
-
 	public get definition(): ButtonColumnDefinition<T> {
 		return this._definition;
 	}
@@ -123,7 +108,7 @@ export class ButtonColumn<T extends Slick.SlickData> implements Slick.Plugin<T> 
 	}
 
 	private isCurrentColumn(columnIndex: number): boolean {
-		return this._grid.getColumns()[columnIndex].id === this.definition.id;
+		return this._grid?.getColumns()[columnIndex]?.id === this.definition.id;
 	}
 
 	private formatter(row: number, cell: number, value: any, columnDef: Slick.Column<T>, dataContext: T): string {

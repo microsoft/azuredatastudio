@@ -443,9 +443,6 @@ declare module 'azdata' {
 		columnName: string;
 	}
 
-	export interface IButtonCellActionEventArgs extends ICellActionEventArgs {
-	}
-
 	export namespace sqlAssessment {
 
 		export enum SqlAssessmentTargetType {

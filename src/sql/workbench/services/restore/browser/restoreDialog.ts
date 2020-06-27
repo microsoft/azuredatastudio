@@ -830,7 +830,7 @@ export class RestoreDialog extends Modal {
 					});
 
 					const checkboxSelectColumn = new CheckboxSelectColumn({ title: this._restoreLabel, toolTip: this._restoreLabel, width: 15 });
-					this._restorePlanColumn.unshift(checkboxSelectColumn.getColumnDefinition());
+					this._restorePlanColumn.unshift(checkboxSelectColumn.definition);
 					this._restorePlanTable.columns = this._restorePlanColumn;
 					this._restorePlanTable.registerPlugin(checkboxSelectColumn);
 					this._restorePlanTable.autosizeColumns();
