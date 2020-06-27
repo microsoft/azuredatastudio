@@ -14,11 +14,13 @@ import { ConnectToControllerDialog } from './ui/dialogs/connectControllerDialog'
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
 	IconPathHelper.setExtensionContext(context);
 
+	await vscode.commands.executeCommand('setContext', 'arc.loaded', false);
+
 	const treeDataProvider = new AzureArcTreeDataProvider(context);
 	vscode.window.registerTreeDataProvider('azureArc', treeDataProvider);
 
 	vscode.commands.registerCommand('arc.createController', async () => {
-		await vscode.commands.executeCommand('azdata.resource.deploy');
+		await vscode.commands.executeCommand('azdata.resource.deploy', 'arc.control.create', ['arc.control.create']);
 	});
 
 	vscode.commands.registerCommand('arc.connectToController', async () => {

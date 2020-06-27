@@ -57,7 +57,6 @@ export class CellToolbarComponent {
 		this._actionBar.context = context;
 
 		let addCellsButton = new AddCellAction('notebook.AddCodeCell', localize('codeCellsPreview', "Add cell"), 'notebook-button masked-pseudo code');
-		addCellsButton.cellType = CellTypes.Code;
 
 		let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('codePreview', "Code cell"), 'notebook-button masked-pseudo code');
 		addCodeCellButton.cellType = CellTypes.Code;
