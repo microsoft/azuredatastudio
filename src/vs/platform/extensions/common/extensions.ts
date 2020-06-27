@@ -261,6 +261,7 @@ export function isLanguagePackExtension(manifest: IExtensionManifest): boolean {
 }
 
 export interface IScannedExtension {
+	readonly identifier: IExtensionIdentifier;
 	readonly location: URI;
 	readonly type: ExtensionType;
 	readonly packageJSON: IExtensionManifest

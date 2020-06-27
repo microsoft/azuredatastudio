@@ -176,13 +176,14 @@ declare module 'vscode' {
 		export function getProviderIds(): Thenable<ReadonlyArray<string>>;
 
 		/**
+		 * @deprecated
 		 * An array of the ids of authentication providers that are currently registered.
 		 */
 		export const providerIds: string[];
 
 		/**
 		 * Returns whether a provider has any sessions matching the requested scopes. This request
-		 * is transparent to the user, not UI is shown. Rejects if a provider with providerId is not
+		 * is transparent to the user, no UI is shown. Rejects if a provider with providerId is not
 		 * registered.
 		 * @param providerId The id of the provider
 		 * @param scopes A list of scopes representing the permissions requested. These are dependent on the authentication
@@ -2007,21 +2008,6 @@ declare module 'vscode' {
 		 * @return A [disposable](#Disposable) that unregisters this provider when being disposed.
 		*/
 		export function registerTimelineProvider(scheme: string | string[], provider: TimelineProvider): Disposable;
-	}
-
-	//#endregion
-
-	/**
-	 * Options to configure the behaviour of a file save dialog.
-	 */
-	export interface SaveDialogOptions {
-		/**
-		 * Dialog title.
-		 *
-		 * Depending on the underlying operating system this parameter might be ignored, since some
-		 * systems do not present title on save dialogs.
-		 */
-		title?: string;
 	}
 
 	//#endregion
