@@ -63,6 +63,51 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 	}
 
 	public get container(): azdata.Component {
+		// Loaded components
+		this._propertiesContainer = this.modelView.modelBuilder.propertiesContainer().component();
+		this._propertiesLoading = this.modelView.modelBuilder.loadingComponent().component();
+
+		this._kibanaLink = this.modelView.modelBuilder.hyperlink().component();
+		this._kibanaLoading = this.modelView.modelBuilder.loadingComponent().component();
+
+		this._grafanaLink = this.modelView.modelBuilder.hyperlink().component();
+		this._grafanaLoading = this.modelView.modelBuilder.loadingComponent().component();
+
+		this._databasesTableLoading = this.modelView.modelBuilder.loadingComponent().component();
+		this._databasesTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
+			width: '100%',
+			columns: [
+				{
+					displayName: loc.name,
+					valueType: azdata.DeclarativeDataType.string,
+					isReadOnly: true,
+					width: '80%',
+					headerCssStyles: cssStyles.tableHeader,
+					rowCssStyles: cssStyles.tableRow
+				},
+				{
+					displayName: loc.status,
+					valueType: azdata.DeclarativeDataType.string,
+					isReadOnly: true,
+					width: '20%',
+					headerCssStyles: cssStyles.tableHeader,
+					rowCssStyles: cssStyles.tableRow
+				}
+			],
+			data: []
+		}).component();
+
+		// Update loaded components with data from the model
+		this.handleRegistrationsUpdated();
+		this.handleMiaaStatusUpdated();
+		this.handleEndpointsUpdated();
+		this.handleDatabasesUpdated();
+
+		// Assign the loading component after it has data
+		this._propertiesLoading.component = this._propertiesContainer;
+		this._kibanaLoading.component = this._kibanaLink;
+		this._grafanaLoading.component = this._grafanaLink;
+		this._databasesTableLoading.component = this._databasesTable;
 
 		const rootContainer = this.modelView.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
@@ -70,24 +115,11 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 			.component();
 
 		// Properties
-		this._propertiesContainer = this.modelView.modelBuilder.propertiesContainer().component();
-		this.handleRegistrationsUpdated();
-		this.handleMiaaStatusUpdated();
-		this._propertiesLoading = this.modelView.modelBuilder.loadingComponent().withItem(this._propertiesContainer).component();
-		this._propertiesLoading.loading = !this._controllerModel.registrationsLastUpdated && !this._miaaModel.statusLastUpdated && !this._miaaModel.username;
 		rootContainer.addItem(this._propertiesLoading, { CSSStyles: cssStyles.text });
 
 		// Service endpoints
 		const titleCSS = { ...cssStyles.title, 'margin-block-start': '2em', 'margin-block-end': '0' };
 		rootContainer.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.serviceEndpoints, CSSStyles: titleCSS }).component());
-
-		this._kibanaLink = this.modelView.modelBuilder.hyperlink().component();
-		this._grafanaLink = this.modelView.modelBuilder.hyperlink().component();
-		this.handleEndpointsUpdated();
-		this._kibanaLoading = this.modelView.modelBuilder.loadingComponent().withItem(this._kibanaLink).component();
-		this._grafanaLoading = this.modelView.modelBuilder.loadingComponent().withItem(this._grafanaLink).component();
-		this._kibanaLoading.loading = !this._controllerModel.endpointsLastUpdated;
-		this._grafanaLoading.loading = !this._controllerModel.endpointsLastUpdated;
 
 		const endpointsTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
 			width: '100%',
@@ -132,32 +164,6 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 
 		// Databases
 		rootContainer.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.databases, CSSStyles: titleCSS }).component());
-		this._databasesTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
-			width: '100%',
-			columns: [
-				{
-					displayName: loc.name,
-					valueType: azdata.DeclarativeDataType.string,
-					isReadOnly: true,
-					width: '80%',
-					headerCssStyles: cssStyles.tableHeader,
-					rowCssStyles: cssStyles.tableRow
-				},
-				{
-					displayName: loc.status,
-					valueType: azdata.DeclarativeDataType.string,
-					isReadOnly: true,
-					width: '20%',
-					headerCssStyles: cssStyles.tableHeader,
-					rowCssStyles: cssStyles.tableRow
-				}
-			],
-			data: []
-		}).component();
-
-		this.handleDatabasesUpdated();
-		this._databasesTableLoading = this.modelView.modelBuilder.loadingComponent().withItem(this._databasesTable).component();
-		this._databasesTableLoading.loading = !this._miaaModel.databasesLastUpdated;
 		rootContainer.addItem(this._databasesTableLoading, { CSSStyles: { 'margin-bottom': '20px' } });
 
 		this.initialized = true;
@@ -260,13 +266,8 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		this._grafanaLink.label = grafanaUrl;
 		this._grafanaLink.url = grafanaUrl;
 
-		if (this._kibanaLoading) {
-			this._kibanaLoading!.loading = false;
-		}
-
-		if (this._grafanaLoading) {
-			this._grafanaLoading!.loading = false;
-		}
+		this._kibanaLoading!.loading = !this._controllerModel.endpointsLastUpdated;
+		this._grafanaLoading!.loading = !this._controllerModel.endpointsLastUpdated;
 	}
 
 	private handleDatabasesUpdated(): void {
@@ -274,10 +275,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		this._instanceProperties.miaaAdmin = this._miaaModel.username || this._instanceProperties.miaaAdmin;
 		this.refreshDisplayedProperties();
 		this._databasesTable.data = this._miaaModel.databases.map(d => [d.name, getDatabaseStateDisplayText(d.status)]);
-
-		if (this._databasesTableLoading) {
-			this._databasesTableLoading.loading = false;
-		}
+		this._databasesTableLoading.loading = !this._miaaModel.databasesLastUpdated;
 	}
 
 	private refreshDisplayedProperties(): void {
@@ -316,9 +314,9 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 			}
 		];
 
-		if (this._propertiesLoading) {
-			this._propertiesLoading.loading = false;
-		}
+		this._propertiesLoading.loading =
+			!this._controllerModel.registrationsLastUpdated &&
+			!this._miaaModel.statusLastUpdated &&
+			!this._miaaModel.databasesLastUpdated;
 	}
-
 }
