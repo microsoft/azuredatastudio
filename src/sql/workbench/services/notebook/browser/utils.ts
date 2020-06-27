@@ -16,7 +16,7 @@ export function tryMatchCellMagic(input: string): string {
 
 /**
  * When a cell is formatted in the following way, extract the commandId and args:
- * %%ADS_EXECUTE_COMMAND commandId arg1 arg2
+ * %%ads_execute_command commandId arg1 arg2
  * Extract the commandId and the two args
  * @param input cell source
  * @param magicName magic name

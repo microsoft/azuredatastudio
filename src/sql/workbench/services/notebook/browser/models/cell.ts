@@ -27,11 +27,13 @@ import { HideInputTag } from 'sql/platform/notebooks/common/outputRegistry';
 import { FutureInternal, notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { tryMatchCellMagic, extractCellMagicCommandPlusArgs } from 'sql/workbench/services/notebook/browser/utils';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { Disposable } from 'vs/base/common/lifecycle';
 
 let modelId = 0;
-const ADS_EXECUTE_COMMAND = 'ADS_EXECUTE_COMMAND';
+const ads_execute_command = 'ads_execute_command';
 
-export class CellModel implements ICellModel {
+export class CellModel extends Disposable implements ICellModel {
 	public id: string;
 
 	private _cellType: nb.CellType;
@@ -61,12 +63,15 @@ export class CellModel implements ICellModel {
 	private _modelContentChangedEvent: IModelContentChangedEvent;
 	private _showPreview: boolean = true;
 	private _onCellPreviewChanged = new Emitter<boolean>();
+	private _isCommandExecutionSettingEnabled: boolean = false;
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
 		@optional(INotebookService) private _notebookService?: INotebookService,
 		@optional(ICommandService) private _commandService?: ICommandService,
+		@optional(IConfigurationService) private _configurationService?: IConfigurationService
 	) {
+		super();
 		this.id = `${modelId++}`;
 		if (cellData) {
 			// Read in contents if available
@@ -86,6 +91,15 @@ export class CellModel implements ICellModel {
 		// if the fromJson() method was already called and _cellGuid was previously set, don't generate another UUID unnecessarily
 		this._cellGuid = this._cellGuid || generateUuid();
 		this.createUri();
+		if (this._configurationService) {
+			const allowADSCommandsKey = 'notebook.allowAzureDataStudioCommands';
+			this._isCommandExecutionSettingEnabled = this._configurationService.getValue(allowADSCommandsKey);
+			this._register(this._configurationService.onDidChangeConfiguration(e => {
+				if (e.affectsConfiguration(allowADSCommandsKey)) {
+					this._isCommandExecutionSettingEnabled = this._configurationService.getValue(allowADSCommandsKey);
+				}
+			}));
+		}
 	}
 
 	public equals(other: ICellModel) {
@@ -357,7 +371,7 @@ export class CellModel implements ICellModel {
 
 					// requestExecute expects a string for the code parameter
 					content = Array.isArray(content) ? content.join('') : content;
-					if (tryMatchCellMagic(this.source[0]) !== ADS_EXECUTE_COMMAND) {
+					if (tryMatchCellMagic(this.source[0]) !== ads_execute_command || !this._isCommandExecutionSettingEnabled) {
 						const future = kernel.requestExecute({
 							code: content,
 							stop_on_error: true
@@ -374,7 +388,7 @@ export class CellModel implements ICellModel {
 							}
 						}
 					} else {
-						let result = extractCellMagicCommandPlusArgs(this._source[0], ADS_EXECUTE_COMMAND);
+						let result = extractCellMagicCommandPlusArgs(this._source[0], ads_execute_command);
 						// Similar to the markdown renderer, we should not allow downloadResource here
 						if (result?.commandId !== '_workbench.downloadResource') {
 							try {
