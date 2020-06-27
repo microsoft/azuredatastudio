@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as loc from '../../../localizedConstants';
 import { DashboardPage } from '../../components/dashboardPage';
-import { IconPathHelper, cssStyles, ResourceType } from '../../../constants';
+import { IconPathHelper, cssStyles, ResourceType, Endpoints } from '../../../constants';
 import { ControllerModel } from '../../../models/controllerModel';
 import { promptForResourceDeletion, getDatabaseStateDisplayText } from '../../../common/utils';
 import { MiaaModel } from '../../../models/miaaModel';
@@ -63,7 +63,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 	}
 
 	public get container(): azdata.Component {
-		// Loaded components
+		// Create loaded components
 		this._propertiesContainer = this.modelView.modelBuilder.propertiesContainer().component();
 		this._propertiesLoading = this.modelView.modelBuilder.loadingComponent().component();
 
@@ -97,7 +97,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 			data: []
 		}).component();
 
-		// Update loaded components with data from the model
+		// Update loaded components with data
 		this.handleRegistrationsUpdated();
 		this.handleMiaaStatusUpdated();
 		this.handleEndpointsUpdated();
@@ -109,6 +109,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		this._grafanaLoading.component = this._grafanaLink;
 		this._databasesTableLoading.component = this._databasesTable;
 
+		// Assemble the container
 		const rootContainer = this.modelView.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
 			.withProperties({ CSSStyles: { 'margin': '18px' } })
@@ -258,11 +259,11 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 
 	private handleEndpointsUpdated(): void {
 		const kibanaQuery = `kubernetes_namespace:"${this._miaaModel.info.namespace}" and instance_name :"${this._miaaModel.info.name}"`;
-		const kibanaUrl = `${this._controllerModel.getEndpoint('logsui')?.endpoint}/app/kibana#/discover?_a=(query:(language:kuery,query:'${kibanaQuery}'))`;
+		const kibanaUrl = `${this._controllerModel.getEndpoint(Endpoints.logsui)?.endpoint}/app/kibana#/discover?_a=(query:(language:kuery,query:'${kibanaQuery}'))`;
 		this._kibanaLink.label = kibanaUrl;
 		this._kibanaLink.url = kibanaUrl;
 
-		const grafanaUrl = `${this._controllerModel.getEndpoint('metricsui')?.endpoint}/d/wZx3OUdmz/azure-sql-db-managed-instance-metrics?var-hostname=${this._miaaModel.info.name}-0`;
+		const grafanaUrl = `${this._controllerModel.getEndpoint(Endpoints.metricsui)?.endpoint}/d/wZx3OUdmz/azure-sql-db-managed-instance-metrics?var-hostname=${this._miaaModel.info.name}-0`;
 		this._grafanaLink.label = grafanaUrl;
 		this._grafanaLink.url = grafanaUrl;
 
