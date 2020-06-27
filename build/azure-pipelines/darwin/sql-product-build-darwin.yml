@@ -171,7 +171,7 @@ steps:
       pushd ../azuredatastudio-darwin
       ditto -c -k --keepParent *.app $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin.zip
       popd
-    displayName: 'Archive-Unsigned'
+    displayName: 'Archive (no signing)'
     condition: and(succeeded(), eq(variables['signed'], false))
 
   - script: |
@@ -180,7 +180,7 @@ steps:
       pushd ../azuredatastudio-darwin
       ditto -c -k --keepParent *.app $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin-unsigned.zip
       popd
-    displayName: 'Archive-Signed'
+    displayName: 'Archive'
     condition: and(succeeded(), eq(variables['signed'], true))
 
   - script: |
