@@ -26,7 +26,7 @@ jobs:
   - template: darwin/sql-product-build-darwin.yml
   timeoutInMinutes: 180
 
-- job: macOS-Sign
+- job: macOS_Sign
   condition: and(succeeded(), eq(variables['VSCODE_BUILD_MACOS'], 'true'), eq(variables['signed'], true))
   pool:
     vmImage: macOS-latest
