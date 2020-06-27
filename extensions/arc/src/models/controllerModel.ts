@@ -138,10 +138,17 @@ export class ControllerModel {
 		return this._controllerRegistration;
 	}
 
-	public getRegistration(type: string, namespace: string, name: string): Registration | undefined {
+	public getRegistration(type: ResourceType, namespace: string, name: string): Registration | undefined {
 		return this._registrations.find(r => {
 			return r.instanceType === type && r.instanceNamespace === namespace && parseInstanceName(r.instanceName) === name;
 		});
+	}
+
+	public async deleteRegistration(type: ResourceType, namespace: string, name: string) {
+		const r = this.getRegistration(type, namespace, name);
+		if (r && !r.isDeleted && r.customObjectName) {
+			await this._registrationRouter.apiV1RegistrationNsNameIsDeletedDelete(this._namespace, r.customObjectName, true);
+		}
 	}
 
 	/**
@@ -151,6 +158,7 @@ export class ControllerModel {
 	 */
 	public async miaaDelete(namespace: string, name: string): Promise<void> {
 		await this._sqlInstanceRouter.apiV1HybridSqlNsNameDelete(namespace, name);
+		await this.deleteRegistration(ResourceType.sqlManagedInstances, namespace, name);
 	}
 
 	/**
