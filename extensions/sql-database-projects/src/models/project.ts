@@ -23,7 +23,7 @@ export class Project {
 	public files: ProjectEntry[] = [];
 	public dataSources: DataSource[] = [];
 	public importedTargets: string[] = [];
-	public databaseReferences: string[] = [];
+	public databaseReferences: DatabaseReferenceProjectEntry[] = [];
 	public sqlCmdVariables: Record<string, string> = {};
 
 	public get projectFolderPath() {
@@ -67,15 +67,17 @@ export class Project {
 		this.sqlCmdVariables = utils.readSqlCmdVariables(this.projFileXmlDoc);
 
 		// find all database references to include
-		for (let r = 0; r < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference).length; r++) {
-			if (this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference)[r].getAttribute(constants.Condition) !== constants.NotNetCoreCondition) {
-				const filepath = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference)[r].getAttribute(constants.Include);
+		const references = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference);
+		for (let r = 0; r < references.length; r++) {
+			if (references[r].getAttribute(constants.Condition) !== constants.NotNetCoreCondition) {
+				const filepath = references[r].getAttribute(constants.Include);
 				if (!filepath) {
 					throw new Error(constants.invalidDatabaseReference);
 				}
 
-				const platformSafeFilePath = utils.getPlatformSafeFileEntryPath(filepath);
-				this.databaseReferences.push(path.parse(platformSafeFilePath).name);
+				let nameNodes = references[r].getElementsByTagName(constants.DatabaseVariableLiteralValue);
+				let name = nameNodes.length === 1 ? nameNodes[0].childNodes[0].nodeValue : undefined;
+				this.databaseReferences.push(new DatabaseReferenceProjectEntry(Uri.parse(filepath), name ? DatabaseReferenceLocation.differentDatabaseSameServer : DatabaseReferenceLocation.sameDatabase, name));
 			}
 		}
 	}
@@ -296,6 +298,11 @@ export class Project {
 	}
 
 	private addDatabaseReferenceToProjFile(entry: DatabaseReferenceProjectEntry): void {
+		// check if reference to this database already exists
+		if (this.databaseReferenceExists(entry)) {
+			throw new Error(constants.databaseReferenceAlreadyExists);
+		}
+
 		let referenceNode = this.projFileXmlDoc.createElement(constants.ArtifactReference);
 		const isSystemDatabaseProjectEntry = (<SystemDatabaseReferenceProjectEntry>entry).ssdtUri;
 
@@ -307,7 +314,7 @@ export class Project {
 		referenceNode.setAttribute(constants.Include, isSystemDatabaseProjectEntry ? entry.fsUri.fsPath.substring(1) : entry.fsUri.fsPath); // need to remove the leading slash for system database path for build to work on Windows
 		this.addDatabaseReferenceChildren(referenceNode, entry.name);
 		this.findOrCreateItemGroup(constants.ArtifactReference).appendChild(referenceNode);
-		this.databaseReferences.push(path.parse(entry.fsUri.fsPath.toString()).name);
+		this.databaseReferences.push(entry);
 
 		// add a reference to the system dacpac in SSDT if it's a system db
 		if (isSystemDatabaseProjectEntry) {
@@ -317,6 +324,11 @@ export class Project {
 			this.addDatabaseReferenceChildren(ssdtReferenceNode, entry.name);
 			this.findOrCreateItemGroup(constants.ArtifactReference).appendChild(ssdtReferenceNode);
 		}
+	}
+
+	private databaseReferenceExists(entry: DatabaseReferenceProjectEntry): boolean {
+		const found = this.databaseReferences.find(reference => reference.fsUri.fsPath === entry.fsUri.fsPath) !== undefined;
+		return found;
 	}
 
 	private addDatabaseReferenceChildren(referenceNode: any, name?: string): void {
@@ -389,7 +401,7 @@ export class Project {
 				}
 
 				// remove from database references because it'll get added again later
-				this.databaseReferences.splice(this.databaseReferences.findIndex(n => n === (name === SystemDatabase.master ? constants.master : constants.msdb)), 1);
+				this.databaseReferences.splice(this.databaseReferences.findIndex(n => n.databaseName === (name === SystemDatabase.master ? constants.master : constants.msdb)), 1);
 
 				await this.addSystemDatabaseReference(name);
 			}
@@ -471,6 +483,10 @@ export class ProjectEntry {
 class DatabaseReferenceProjectEntry extends ProjectEntry {
 	constructor(uri: Uri, public databaseLocation: DatabaseReferenceLocation, public name?: string) {
 		super(uri, '', EntryType.DatabaseReference);
+	}
+
+	public get databaseName(): string {
+		return path.parse(utils.getPlatformSafeFileEntryPath(this.fsUri.fsPath)).name;
 	}
 }
 
