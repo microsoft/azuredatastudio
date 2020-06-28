@@ -17,7 +17,7 @@ import * as constants from '../common/constants';
 import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProjectTreeViewProvider';
 import { ProjectsController } from '../controllers/projectController';
 import { promises as fs } from 'fs';
-import { createContext, TestContext } from './testContext';
+import { createContext, TestContext, mockDacFxResult } from './testContext';
 import { Project, SystemDatabase } from '../models/project';
 import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
 import { ApiWrapper } from '../common/apiWrapper';
@@ -184,6 +184,36 @@ describe.skip('ProjectsController: project controller operations', function (): 
 			should(result.databaseName).equal('targetDb');
 			should(Object.keys(result.sqlCmdVariables).length).equal(1);
 			should(result.sqlCmdVariables['ProdDatabaseName']).equal('MyProdDatabase');
+		});
+
+		it('Should copy dacpac to temp folder before deploying', async function (): Promise<void> {
+			const fakeDacpacContents = 'SwiftFlewHiawathasArrow';
+			let postCopyContents = '';
+			let builtDacpacPath = '';
+			let deployedDacpacPath = '';
+
+			testContext.dacFxService.setup(x => x.generateDeployScript(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(async (p) => {
+				deployedDacpacPath = p;
+				postCopyContents = (await fs.readFile(deployedDacpacPath)).toString();
+				return Promise.resolve(mockDacFxResult);
+			});
+
+			let projController = TypeMoq.Mock.ofType(ProjectsController);
+			projController.callBase = true;
+
+			projController.setup(x => x.buildProject(TypeMoq.It.isAny())).returns(async () => {
+				builtDacpacPath = await testUtils.createTestFile(fakeDacpacContents, 'output.dacpac');
+				return builtDacpacPath;
+			});
+
+			projController.setup(x => x.getDaxFxService()).returns(() => Promise.resolve(testContext.dacFxService.object));
+
+			await projController.object.executionCallback(new Project(''), { connectionUri: '', databaseName: '' });
+
+			should(builtDacpacPath).not.equal('', 'built dacpac path should be set');
+			should(deployedDacpacPath).not.equal('', 'deployed dacpac path should be set');
+			should(builtDacpacPath).not.equal(deployedDacpacPath, 'built and deployed dacpac paths should be different');
+			should(postCopyContents).equal(fakeDacpacContents, 'contents of built and deployed dacpacs should match');
 		});
 	});
 });
