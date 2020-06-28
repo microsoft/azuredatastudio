@@ -98,15 +98,19 @@ export const worker = localize('arc.worker', "Worker");
 export const monitor = localize('arc.monitor', "Monitor");
 export const newDatabase = localize('arc.newDatabase', "New Database");
 export const databaseName = localize('arc.databaseName', "Database name");
-export const newPassword = localize('arc.newPassword', "New password");
+export const enterNewPassword = localize('arc.enterNewPassword', "Enter a new password");
+export const confirmNewPassword = localize('arc.confirmNewPassword', "Confirm the new password");
 export const learnAboutPostgresClients = localize('arc.learnAboutPostgresClients', "Learn more about Azure PostgreSQL Hyperscale client interfaces");
 export const node = localize('arc.node', "node");
 export const nodes = localize('arc.nodes', "nodes");
 export const storagePerNode = localize('arc.storagePerNode', "storage per node");
 export const arcResources = localize('arc.arcResources', "Azure Arc Resources");
+export const enterANonEmptyPassword = localize('arc.enterANonEmptyPassword', "Enter a non empty password or press escape to exit.");
+export const thePasswordsDoNotMatch = localize('arc.thePasswordsDoNotMatch', "The passwords do not match. Confirm the password or press escape to exit.");
+export const passwordReset = localize('arc.passwordReset', "Password reset successfully");
+export const passwordResetFailed = localize('arc.passwordResetFailed', "Failed to reset password");
 
 export function databaseCreated(name: string): string { return localize('arc.databaseCreated', "Database {0} created", name); }
-export function passwordReset(name: string): string { return localize('arc.passwordReset', "Password reset for service {0}", name); }
 export function resourceDeleted(name: string): string { return localize('arc.resourceDeleted', "Resource '{0}' deleted", name); }
 export function couldNotFindAzureResource(name: string): string { return localize('arc.couldNotFindAzureResource', "Could not find Azure resource for {0}", name); }
 export function copiedToClipboard(name: string): string { return localize('arc.copiedToClipboard', "{0} copied to clipboard", name); }
@@ -127,6 +131,5 @@ export function invalidResourceDeletionName(name: string): string { return local
 export function refreshFailed(error: any): string { return localize('arc.refreshFailed', "Refresh failed. {0}", getErrorMessage(error)); }
 export function openDashboardFailed(error: any): string { return localize('arc.openDashboardFailed', "Error opening dashboard. {0}", getErrorMessage(error)); }
 export function resourceDeletionFailed(name: string, error: any): string { return localize('arc.resourceDeletionFailed', "Failed to delete resource {0}. {1}", name, getErrorMessage(error)); }
-export function passwordResetFailed(name: string, error: any): string { return localize('arc.passwordResetFailed', "Failed to reset password for service {0}. {1}", name, getErrorMessage(error)); }
 export function databaseCreationFailed(name: string, error: any): string { return localize('arc.databaseCreationFailed', "Failed to create database {0}. {1}", name, getErrorMessage(error)); }
 export function connectToControllerFailed(url: string, error: any): string { return localize('arc.connectToControllerFailed', "Could not connect to controller {0}. {1}", url, getErrorMessage(error)); }
