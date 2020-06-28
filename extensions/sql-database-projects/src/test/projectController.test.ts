@@ -166,7 +166,7 @@ describe.skip('ProjectsController: project controller operations', function (): 
 			let profilePath = await testUtils.createTestFile(baselines.publishProfileBaseline, 'publishProfile.publish.xml');
 			const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
 
-			let result = await projController.readPublishProfile(vscode.Uri.parse(profilePath));
+			let result = await projController.readPublishProfile(vscode.Uri.file(profilePath));
 			should(result.databaseName).equal('targetDb');
 			should(Object.keys(result.sqlCmdVariables).length).equal(1);
 			should(result.sqlCmdVariables['ProdDatabaseName']).equal('MyProdDatabase');
