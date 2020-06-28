@@ -8,7 +8,6 @@ import * as vscode from 'vscode';
 export enum BdcItemType {
 	controllerRoot = 'bigDataClusters.itemType.controllerRootNode',
 	controller = 'bigDataClusters.itemType.controllerNode',
-	connectController = 'bigDataClusters.itemType.connectControllerNode',
 	loadingController = 'bigDataClusters.itemType.loadingControllerNode'
 }
 
