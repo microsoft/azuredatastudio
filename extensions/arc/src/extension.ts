@@ -41,7 +41,20 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 	vscode.commands.registerCommand('arc.openDashboard', async (treeNode: TreeNode) => {
 		await treeNode.openDashboard().catch(err => vscode.window.showErrorMessage(loc.openDashboardFailed(err)));
 	});
+
+	await checkArcDeploymentExtension();
 }
 
 export function deactivate(): void {
+}
+
+async function checkArcDeploymentExtension(): Promise<void> {
+	const version = vscode.extensions.getExtension('Microsoft.arcdeployment')?.packageJSON.version;
+	if (version && version !== '0.3.2') {
+		// If we have an older verison of the deployment extension installed then uninstall it now since it's replaced
+		// by this extension. (the latest version of the Arc Deployment extension will uninstall itself so don't do
+		// anything here if that's already updated)
+		await vscode.commands.executeCommand('workbench.extensions.uninstallExtension', 'Microsoft.arcdeployment');
+		vscode.window.showInformationMessage(loc.arcDeploymentDeprecation);
+	}
 }
