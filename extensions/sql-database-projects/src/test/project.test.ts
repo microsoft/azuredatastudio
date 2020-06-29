@@ -81,7 +81,7 @@ describe('Project: sqlproj content operations', function (): void {
 		await project.addToProject(list);
 
 		should(project.files.filter(f => f.type === EntryType.File).length).equal(11);	// txt file shouldn't be added to the project
-		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(2);	// 2folders + default Properties folder
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(2);	// 2 folders
 	});
 
 	it('Should throw error while adding Folder and Build entries to sqlproj when a file/folder does not exist on disk', async function (): Promise<void> {
