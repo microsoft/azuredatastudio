@@ -4,3 +4,5 @@ out/**
 extension.webpack.config.js
 tsconfig.json
 yarn.lock
+coverConfig.json
+*.vsix
