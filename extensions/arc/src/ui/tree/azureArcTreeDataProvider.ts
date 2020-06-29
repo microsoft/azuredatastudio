@@ -7,7 +7,6 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { ControllerTreeNode } from './controllerTreeNode';
 import { TreeNode } from './treeNode';
-import { LoadingControllerNode as LoadingTreeNode } from './loadingTreeNode';
 import { ControllerModel, ControllerInfo } from '../../models/controllerModel';
 
 const mementoToken = 'arcControllers';
@@ -23,7 +22,6 @@ export class AzureArcTreeDataProvider implements vscode.TreeDataProvider<TreeNod
 	readonly onDidChangeTreeData: vscode.Event<TreeNode | undefined> = this._onDidChangeTreeData.event;
 
 	private _loading: boolean = true;
-	private _loadingNode = new LoadingTreeNode();
 
 	private _controllerNodes: ControllerTreeNode[] = [];
 
@@ -33,8 +31,13 @@ export class AzureArcTreeDataProvider implements vscode.TreeDataProvider<TreeNod
 
 	public async getChildren(element?: TreeNode): Promise<TreeNode[]> {
 		if (this._loading) {
-			return [this._loadingNode];
+			return [];
 		}
+
+		// We set the context here since VS Code takes a bit of time to process the _onDidChangeTreeData
+		// and so if we set it as soon as we finished loading the controllers it would briefly flash
+		// the "connect to controller" welcome view
+		await vscode.commands.executeCommand('setContext', 'arc.loaded', true);
 
 		if (element) {
 			return element.getChildren();
@@ -106,6 +109,28 @@ export class AzureArcTreeDataProvider implements vscode.TreeDataProvider<TreeNod
 	public async saveControllers(): Promise<void> {
 		const controllerInfo = this._controllerNodes.map(node => node.model.info);
 		await this._context.globalState.update(mementoToken, controllerInfo);
+	}
+
+	/**
+	 * Opens the dashboard for the specified resource
+	 * @param controllerModel The model for the controller containing the resource we want to open the dashboard for
+	 * @param resourceType The resourceType for the resource
+	 * @param namespace The namespace of the resource
+	 * @param name The name of the resource
+	 */
+	public async openResourceDashboard(controllerModel: ControllerModel, resourceType: string, namespace: string, name: string): Promise<void> {
+		const controllerNode = this._controllerNodes.find(n => n.model === controllerModel);
+		if (controllerNode) {
+			const resourceNode = controllerNode.getResourceNode(resourceType, namespace, name);
+			if (resourceNode) {
+
+			} else {
+				console.log(`Couldn't find resource node for ${namespace}.${name} (${resourceType})`);
+			}
+			await resourceNode?.openDashboard();
+		} else {
+			console.log('Couldn\'t find controller node for opening dashboard');
+		}
 	}
 }
 

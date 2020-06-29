@@ -35,7 +35,7 @@ export class ControllerTreeNode extends TreeNode {
 		// First reset our deferred promise so we're sure we'll get the refreshed children
 		this._childrenRefreshPromise = new Deferred();
 		try {
-			await this.model.refresh();
+			await this.model.refresh(false);
 			await this._childrenRefreshPromise.promise;
 		} catch (err) {
 			// Couldn't get the children and TreeView doesn't have a way to collapse a node
@@ -52,9 +52,22 @@ export class ControllerTreeNode extends TreeNode {
 		await controllerDashboard.showDashboard();
 	}
 
+	/**
+	 * Finds and returns the ResourceTreeNode specified if it exists, otherwise undefined
+	 * @param resourceType The resourceType of the node
+	 * @param namespace The namespace of the node
+	 * @param name The name of the node
+	 */
+	public getResourceNode(resourceType: string, namespace: string, name: string): ResourceTreeNode | undefined {
+		return this._children.find(c =>
+			c.model?.info.resourceType === resourceType &&
+			c.model?.info.namespace === namespace &&
+			c.model.info.name === name);
+	}
+
 	private refreshChildren(registrations: Registration[]): void {
 		const newChildren: ResourceTreeNode[] = [];
-		registrations.forEach(registration => {
+		registrations.filter(r => !r.isDeleted).forEach(registration => {
 			if (!registration.instanceNamespace || !registration.instanceName) {
 				console.warn('Registration is missing required namespace and name values, skipping');
 				return;

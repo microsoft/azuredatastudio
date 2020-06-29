@@ -21,8 +21,6 @@ export class MiaaTreeNode extends TreeNode {
 
 	public async openDashboard(): Promise<void> {
 		const miaaDashboard = new MiaaDashboard(this._controllerModel, this.model);
-		await Promise.all([
-			miaaDashboard.showDashboard(),
-			this.model.refresh()]);
+		await miaaDashboard.showDashboard();
 	}
 }

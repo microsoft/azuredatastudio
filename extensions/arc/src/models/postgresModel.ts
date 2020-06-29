@@ -172,10 +172,10 @@ export class PostgresModel extends ResourceModel {
 	}
 
 	/** Given a V1Pod returns its status */
-	public static getPodStatus(pod: V1Pod) {
+	public static getPodStatus(pod: V1Pod): string {
 		const phase = pod.status?.phase;
 		if (phase !== 'Running') {
-			return phase;
+			return phase ?? '';
 		}
 
 		// Pods can be in the running phase while some

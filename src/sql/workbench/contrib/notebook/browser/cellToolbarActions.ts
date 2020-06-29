@@ -118,37 +118,38 @@ export class CellToggleMoreActions {
 	}
 
 	public onInit(elementRef: HTMLElement, context: CellContext) {
-		this._moreActionsElement = <HTMLElement>elementRef;
+		this._moreActionsElement = elementRef;
 		if (this._moreActionsElement.childNodes.length > 0) {
 			this._moreActionsElement.removeChild(this._moreActionsElement.childNodes[0]);
 		}
 		this._moreActions = new ActionBar(this._moreActionsElement, { orientation: ActionsOrientation.VERTICAL });
 		this._moreActions.context = { target: this._moreActionsElement };
 		let validActions = this._actions.filter(a => a instanceof Separator || a instanceof CellActionBase && a.canRun(context));
-		this.removeDuplicatedAndStartingSeparators(validActions);
+		removeDuplicatedAndStartingSeparators(validActions);
 		this._moreActions.push(this.instantiationService.createInstance(ToggleMoreActions, validActions, context), { icon: true, label: false });
-	}
-
-	private removeDuplicatedAndStartingSeparators(actions: (Action | CellActionBase)[]): void {
-		let indexesToRemove: number[] = [];
-		for (let i = 0; i < actions.length; i++) {
-			// Never should have a separator at the beginning of the list
-			if (i === 0 && actions[i] instanceof Separator) {
-				indexesToRemove.push(0);
-			}
-			// Handle multiple separators in a row
-			if (i > 0 && actions[i] instanceof Separator && actions[i - 1] instanceof Separator) {
-				indexesToRemove.push(i);
-			}
-		}
-		if (indexesToRemove.length > 0) {
-			for (let i = indexesToRemove.length - 1; i >= 0; i--) {
-				actions.splice(indexesToRemove[i], 1);
-			}
-		}
 	}
 }
 
+export function removeDuplicatedAndStartingSeparators(actions: (Action | CellActionBase)[]): void {
+	let indexesToRemove: number[] = [];
+	for (let i = 0; i < actions.length; i++) {
+		// Handle multiple separators in a row
+		if (i > 0 && actions[i] instanceof Separator && actions[i - 1] instanceof Separator) {
+			indexesToRemove.push(i);
+		}
+	}
+	if (indexesToRemove.length > 0) {
+		for (let i = indexesToRemove.length - 1; i >= 0; i--) {
+			actions.splice(indexesToRemove[i], 1);
+		}
+	}
+	if (actions[0] instanceof Separator) {
+		actions.splice(0, 1);
+	}
+	if (actions[actions.length - 1] instanceof Separator) {
+		actions.splice(actions.length - 1, 1);
+	}
+}
 
 export class AddCellFromContextAction extends CellActionBase {
 	constructor(

@@ -10,7 +10,6 @@ import * as TypeMoq from 'typemoq';
 import { AzureArcTreeDataProvider } from '../../../ui/tree/azureArcTreeDataProvider';
 import { ControllerModel } from '../../../models/controllerModel';
 import { ControllerTreeNode } from '../../../ui/tree/controllerTreeNode';
-import { LoadingControllerNode } from '../../../ui/tree/loadingTreeNode';
 
 describe('AzureArcTreeDataProvider tests', function (): void {
 	let treeDataProvider: AzureArcTreeDataProvider;
@@ -67,11 +66,10 @@ describe('AzureArcTreeDataProvider tests', function (): void {
 	});
 
 	describe('getChildren', function (): void {
-		it('should return a loading node before loading stored controllers is completed', async function (): Promise<void> {
+		it('should return an empty array before loading stored controllers is completed', async function (): Promise<void> {
 			treeDataProvider['_loading'] = true;
 			let children = await treeDataProvider.getChildren();
-			should(children.length).equal(1, 'While loading we should return the loading node');
-			should(children[0] instanceof LoadingControllerNode).be.true('Node returned was not a LoadingControllerNode');
+			should(children.length).equal(0, 'While loading we should return an empty array');
 		});
 
 		it('should return no children after loading', async function (): Promise<void> {
