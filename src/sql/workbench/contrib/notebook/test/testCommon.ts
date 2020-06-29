@@ -4,7 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
-import { CellEditorProviderStub, NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/stubs';
+import * as stubs from 'sql/workbench/contrib/notebook/test/stubs';
+import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import * as dom from 'vs/base/browser/dom';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -15,18 +16,29 @@ import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServic
 
 // Typically you will pass in either editor or the instantiationService parameter.
 // Leave both undefined when you want the underlying object(s) to have an undefined editor.
-export class TestNotebookEditor extends NotebookEditorStub {
+export class NotebookEditorStub extends stubs.NotebookEditorStub {
 	cellEditors: CellEditorProviderStub[];
+	private _model: INotebookModel | undefined;
+
+	get model(): INotebookModel | undefined {
+		return this._model;
+	}
+
+	get modelReady(): Promise<INotebookModel> {
+		return Promise.resolve(this._model);
+	}
+
 	// Normally one needs to provide either the editor or the instantiationService as the constructor parameter
-	constructor({ cellGuid, instantiationService, editor }: { cellGuid?: string; instantiationService?: IInstantiationService; editor?: QueryTextEditor; } = {}) {
+	constructor({ cellGuid, instantiationService, editor, model }: { cellGuid?: string; instantiationService?: IInstantiationService; editor?: QueryTextEditor; model?: INotebookModel } = {}) {
 		super();
-		this.cellEditors = [new TestCellEditorProvider({ cellGuid: cellGuid, instantiationService: instantiationService, editor: editor })];
+		this._model = model;
+		this.cellEditors = [new CellEditorProviderStub({ cellGuid: cellGuid, instantiationService: instantiationService, editor: editor })];
 	}
 }
 
 // Typically you will pass in either editor or the instantiationService parameter.
 // Leave both undefined when you want the underlying object to have an undefined editor.
-class TestCellEditorProvider extends CellEditorProviderStub {
+class CellEditorProviderStub extends stubs.CellEditorProviderStub {
 	private _editor: QueryTextEditor;
 	private _cellGuid: string;
 	constructor({ cellGuid, instantiationService, editor }: { cellGuid: string; instantiationService?: IInstantiationService; editor?: QueryTextEditor; }) {

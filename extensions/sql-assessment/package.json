@@ -24,20 +24,27 @@
     "Microsoft.mssql"
   ],
   "contributes": {
-    "dashboard.tabs": [{
-      "id": "data-management-asmt",
-      "description": "%dashboard.tabName%",
-      "provider": "MSSQL",
-      "title": "%displayName%",
-      "when": "connectionProvider == 'MSSQL' && !mssql:iscloud && mssql:engineedition != 11",
-      "container": {
-        "controlhost-container": {
-          "type": "assessment"
+    "dashboard.tabs": [
+      {
+        "id": "data-management-asmt",
+        "description": "%dashboard.tabName%",
+        "provider": "MSSQL",
+        "title": "%displayName%",
+        "when": "connectionProvider == 'MSSQL' && !mssql:iscloud && mssql:engineedition != 11",
+        "container": {
+          "controlhost-container": {
+            "type": "assessment"
+          }
         }
       }
-    }]
+    ]
   },
   "dependencies": {
     "vscode-nls": "^3.2.1"
+  },
+  "__metadata": {
+    "id": "67",
+    "publisherDisplayName": "Microsoft",
+    "publisherId": "Microsoft"
   }
 }

@@ -36,7 +36,7 @@ describe.skip('Deploy Database Dialog', () => {
 		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
 		const projFileDir = path.join(os.tmpdir(), `TestProject_${new Date().getTime()}`);
 
-		const projFilePath = await projController.createNewProject('TestProjectName', vscode.Uri.file(projFileDir), 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575');
+		const projFilePath = await projController.createNewProject('TestProjectName', vscode.Uri.file(projFileDir), true, 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575');
 		const project = new Project(projFilePath);
 		const deployDatabaseDialog = new DeployDatabaseDialog(testContext.apiWrapper.object, project);
 		deployDatabaseDialog.openDialog();
@@ -48,7 +48,7 @@ describe.skip('Deploy Database Dialog', () => {
 		const projFolder = `TestProject_${new Date().getTime()}`;
 		const projFileDir = path.join(os.tmpdir(), projFolder);
 
-		const projFilePath = await projController.createNewProject('TestProjectName', vscode.Uri.file(projFileDir), 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575');
+		const projFilePath = await projController.createNewProject('TestProjectName', vscode.Uri.file(projFileDir), true, 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575');
 		const project = new Project(projFilePath);
 
 		const deployDatabaseDialog = new DeployDatabaseDialog(testContext.apiWrapper.object, project);
