@@ -114,11 +114,22 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 	public readonly runningOnSAW: boolean;
 
-	constructor(extensionPath: string, outputChannel: OutputChannel, apiWrapper: ApiWrapper, pythonInstallationPath?: string) {
+	constructor(extensionPath: string, outputChannel: OutputChannel, apiWrapper: ApiWrapper) {
 		this.extensionPath = extensionPath;
 		this.outputChannel = outputChannel;
 		this.apiWrapper = apiWrapper;
-		this._pythonInstallationPath = pythonInstallationPath || JupyterServerInstallation.getPythonInstallPath(this.apiWrapper);
+
+		let notebookConfig = apiWrapper.getConfiguration(constants.notebookConfigKey);
+		if (notebookConfig) {
+			this.runningOnSAW = !!notebookConfig[constants.runningOnSawConfigKey];
+		}
+		this.apiWrapper.setCommandContext('notebook:runningOnSAW', this.runningOnSAW);
+
+		if (this.runningOnSAW) {
+			this._pythonInstallationPath = JupyterServerInstallation.DefaultPythonLocation;
+		} else {
+			this._pythonInstallationPath = JupyterServerInstallation.getPythonInstallPath(this.apiWrapper);
+		}
 		this._usingConda = false;
 		this._installInProgress = false;
 		this._usingExistingPython = JupyterServerInstallation.getExistingPythonSetting(this.apiWrapper);
@@ -169,12 +180,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		allPackages.forEach(pkg => {
 			this._requiredPackagesSet.add(pkg.name);
 		});
-
-		let notebookConfig = apiWrapper.getConfiguration(constants.notebookConfigKey);
-		if (notebookConfig) {
-			this.runningOnSAW = !!notebookConfig[constants.runningOnSawConfigKey];
-		}
-		this.apiWrapper.setCommandContext('notebook:runningOnSAW', this.runningOnSAW);
 	}
 
 	private async installDependencies(backgroundOperation: azdata.BackgroundOperation, forceInstall: boolean, specificPackages?: PythonPkgDetails[]): Promise<void> {
@@ -841,22 +846,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			}
 		}
 		return path;
-	}
-
-	/**
-	 * Returns the folder containing the python executable under the path defined in
-	 * "notebook.pythonPath" in the user's settings.
-	 * @param apiWrapper An ApiWrapper to use when retrieving user settings info.
-	 */
-	public static getPythonBinPath(apiWrapper: ApiWrapper): string {
-		let pythonBinPathSuffix = process.platform === constants.winPlatform ? '' : 'bin';
-
-		let useExistingInstall = JupyterServerInstallation.getExistingPythonSetting(apiWrapper);
-
-		return path.join(
-			JupyterServerInstallation.getPythonInstallPath(apiWrapper),
-			useExistingInstall ? '' : constants.pythonBundleVersion,
-			pythonBinPathSuffix);
 	}
 
 	public static getPythonExePath(pythonInstallPath: string, useExistingInstall: boolean): string {
