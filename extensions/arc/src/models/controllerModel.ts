@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 import { Authentication, BasicAuth } from '../controller/auth';
 import { EndpointsRouterApi, EndpointModel, RegistrationRouterApi, RegistrationResponse, TokenRouterApi, SqlInstanceRouterApi } from '../controller/generated/v1/api';
-import { parseEndpoint, parseInstanceName } from '../common/utils';
+import { getAzurecoreApi, parseEndpoint, parseInstanceName } from '../common/utils';
 import { ResourceType } from '../constants';
 import { ConnectToControllerDialog } from '../ui/dialogs/connectControllerDialog';
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
@@ -29,6 +29,7 @@ export type ResourceInfo = {
 export interface Registration extends RegistrationResponse {
 	externalIp?: string;
 	externalPort?: string;
+	region?: string
 }
 
 export class ControllerModel {
@@ -101,7 +102,9 @@ export class ControllerModel {
 			}),
 			this._tokenRouter.apiV1TokenPost().then(async response => {
 				this._namespace = response.body.namespace!;
-				this._registrations = (await this._registrationRouter.apiV1RegistrationListResourcesNsGet(this._namespace)).body.map(mapRegistrationResponse);
+				const registrationResponse = await this._registrationRouter.apiV1RegistrationListResourcesNsGet(this._namespace);
+				this._registrations = await Promise.all(registrationResponse.body.map(mapRegistrationResponse));
+
 				this._controllerRegistration = this._registrations.find(r => r.instanceType === ResourceType.dataControllers);
 				this.registrationsLastUpdated = new Date();
 				this._onRegistrationsUpdated.fire(this._registrations);
@@ -183,7 +186,12 @@ export class ControllerModel {
  * Maps a RegistrationResponse to a Registration,
  * @param response The RegistrationResponse to map
  */
-function mapRegistrationResponse(response: RegistrationResponse): Registration {
+async function mapRegistrationResponse(response: RegistrationResponse): Promise<Registration> {
 	const parsedEndpoint = parseEndpoint(response.externalEndpoint);
-	return { ...response, externalIp: parsedEndpoint.ip, externalPort: parsedEndpoint.port };
+	return {
+		...response,
+		externalIp: parsedEndpoint.ip,
+		externalPort: parsedEndpoint.port,
+		region: (await getAzurecoreApi()).getRegionDisplayName(response.location)
+	};
 }

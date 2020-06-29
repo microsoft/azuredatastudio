@@ -32,7 +32,7 @@ export const newDatabaseProjectName = localize('newDatabaseProjectName', "New da
 export const sqlDatabaseProject = localize('sqlDatabaseProject', "SQL database project");
 export const yesString = localize('yesString', "Yes");
 export const noString = localize('noString', "No");
-export const extractTargetInput = localize('extractTargetInput', "Target for extraction:");
+export const extractTargetInput = localize('extractTargetInput', "Select folder structure for SQL files");
 export const selectString = localize('selectString', "Select");
 export const addDatabaseReferenceInput = localize('addDatabaseReferenceInput', "Add database reference for:");
 export const systemDatabaseReferenceInput = localize('systemDatabaseReferenceInput', "System Database:");
@@ -43,6 +43,11 @@ export const databaseReferenceDatabaseName = localize('databaseReferenceDatabase
 export const dacpacFiles = localize('dacpacFiles', "dacpac Files");
 export const publishSettingsFiles = localize('publishSettingsFiles', "Publish Settings File");
 export const systemDatabase = localize('systemDatabase', "System Database");
+export const file = localize('file', "File");
+export const flat = localize('flat', "Flat");
+export const objectType = localize('objectType', "Object Type");
+export const schema = localize('schema', "Schema");
+export const schemaObjectType = localize('schemaObjectType', "Schema/Object Type");
 export function newObjectNamePrompt(objectType: string) { return localize('newObjectNamePrompt', 'New {0} name:', objectType); }
 export function deleteConfirmation(toDelete: string) { return localize('deleteConfirmation', "Are you sure you want to delete {0}?", toDelete); }
 export function deleteConfirmationContents(toDelete: string) { return localize('deleteConfirmationContents', "Are you sure you want to delete {0} and all of its contents?", toDelete); }
@@ -104,6 +109,7 @@ export function noFileExist(fileName: string) { return localize('noFileExist', "
 export function cannotResolvePath(path: string) { return localize('cannotResolvePath', "Cannot resolve path {0}", path); }
 export function fileAlreadyExists(filename: string) { return localize('fileAlreadyExists', "A file with the name '{0}' already exists on disk at this location. Please choose another name.", filename); }
 export function folderAlreadyExists(filename: string) { return localize('folderAlreadyExists', "A folder with the name '{0}' already exists on disk at this location. Please choose another name.", filename); }
+export function invalidInput(input: string) { return localize('invalidInput', "Invalid input: {0}", input); }
 
 export function mssqlNotFound(mssqlConfigDir: string) { return localize('mssqlNotFound', "Could not get mssql extension's install location at {0}", mssqlConfigDir); }
 export function projBuildFailed(errorMessage: string) { return localize('projBuildFailed', "Build failed. Check output pane for more details. {0}", errorMessage); }
