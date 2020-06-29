@@ -28,15 +28,6 @@ import { ImportDataModel } from '../models/api/import';
 import { NetCoreTool, DotNetCommandOptions } from '../tools/netcoreTool';
 import { BuildHelper } from '../tools/buildHelper';
 
-export enum ExtractTarget {
-	dacpac = 'dacpac',
-	file = 'File',
-	flat = 'Flat',
-	objectType = 'Object Type',
-	schema = 'Schema',
-	schemaObjectType = 'Schema/Object Type'
-}
-
 /**
  * Controller for managing project lifecycle
  */
@@ -714,12 +705,12 @@ export class ProjectsController {
 	private mapExtractTargetEnum(inputTarget: any): mssql.ExtractTarget {
 		if (inputTarget) {
 			switch (inputTarget) {
-				case 'File': return mssql.ExtractTarget['file'];
-				case 'Flat': return mssql.ExtractTarget['flat'];
-				case 'Object Type': return mssql.ExtractTarget['objectType'];
-				case 'Schema': return mssql.ExtractTarget['schema'];
-				case 'Schema/Object Type': return mssql.ExtractTarget['schemaObjectType'];
-				default: throw new Error(`Invalid input: ${inputTarget}`);
+				case constants.file: return mssql.ExtractTarget['file'];
+				case constants.flat: return mssql.ExtractTarget['flat'];
+				case constants.objectType: return mssql.ExtractTarget['objectType'];
+				case constants.schema: return mssql.ExtractTarget['schema'];
+				case constants.schemaObjectType: return mssql.ExtractTarget['schemaObjectType'];
+				default: throw new Error(constants.invalidInput(inputTarget));
 			}
 		} else {
 			throw new Error(constants.extractTargetRequired);
@@ -731,7 +722,7 @@ export class ProjectsController {
 
 		let extractTargetOptions: QuickPickItem[] = [];
 
-		let keys: string[] = Object.values(ExtractTarget).filter(k => k !== 'dacpac'); //Do not present the option to create Dacpac
+		let keys = [constants.file, constants.flat, constants.objectType, constants.schema, constants.schemaObjectType];
 
 		// TODO: Create a wrapper class to handle the mapping
 		keys.forEach((targetOption: string) => {

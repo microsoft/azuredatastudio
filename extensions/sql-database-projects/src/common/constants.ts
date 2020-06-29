@@ -43,6 +43,11 @@ export const databaseReferenceDatabaseName = localize('databaseReferenceDatabase
 export const dacpacFiles = localize('dacpacFiles', "dacpac Files");
 export const publishSettingsFiles = localize('publishSettingsFiles', "Publish Settings File");
 export const systemDatabase = localize('systemDatabase', "System Database");
+export const file = localize('file', "File");
+export const flat = localize('flat', "Flat");
+export const objectType = localize('objectType', "Object Type");
+export const schema = localize('schema', "Schema");
+export const schemaObjectType = localize('schemaObjectType', "Schema/Object Type");
 export function newObjectNamePrompt(objectType: string) { return localize('newObjectNamePrompt', 'New {0} name:', objectType); }
 export function deleteConfirmation(toDelete: string) { return localize('deleteConfirmation', "Are you sure you want to delete {0}?", toDelete); }
 export function deleteConfirmationContents(toDelete: string) { return localize('deleteConfirmationContents', "Are you sure you want to delete {0} and all of its contents?", toDelete); }
@@ -102,6 +107,7 @@ export function projectAlreadyOpened(path: string) { return localize('projectAlr
 export function projectAlreadyExists(name: string, path: string) { return localize('projectAlreadyExists', "A project named {0} already exists in {1}.", name, path); }
 export function noFileExist(fileName: string) { return localize('noFileExist', "File {0} doesn't exist", fileName); }
 export function cannotResolvePath(path: string) { return localize('cannotResolvePath', "Cannot resolve path {0}", path); }
+export function invalidInput(input: string) { return localize('invalidInput', "Invalid input: {0}", input); }
 
 export function mssqlNotFound(mssqlConfigDir: string) { return localize('mssqlNotFound', "Could not get mssql extension's install location at {0}", mssqlConfigDir); }
 export function projBuildFailed(errorMessage: string) { return localize('projBuildFailed', "Build failed. Check output pane for more details. {0}", errorMessage); }
