@@ -16,6 +16,7 @@ import { ProjectsController } from './projectController';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { NetCoreTool } from '../tools/netcoreTool';
 import { Project } from '../models/project';
+import { FileNode, FolderNode } from '../models/tree/fileFolderTreeItem';
 
 const SQL_DATABASE_PROJECTS_VIEW_ID = 'sqlDatabaseProjectsView';
 
@@ -62,8 +63,9 @@ export default class MainController implements Disposable {
 		this.apiWrapper.registerCommand('sqlDatabaseProjects.newItem', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node); });
 		this.apiWrapper.registerCommand('sqlDatabaseProjects.newFolder', async (node: BaseProjectTreeItem) => { await this.projectsController.addFolderPrompt(node); });
 
-
 		this.apiWrapper.registerCommand('sqlDatabaseProjects.addDatabaseReference', async (node: BaseProjectTreeItem) => { await this.projectsController.addDatabaseReference(node); });
+		this.apiWrapper.registerCommand('sqlDatabaseProjects.delete', async (node: BaseProjectTreeItem) => { await this.projectsController.delete(node); });
+		this.apiWrapper.registerCommand('sqlDatabaseProjects.exclude', async (node: FileNode | FolderNode) => { await this.projectsController.exclude(node); });
 
 		// init view
 		const treeView = this.apiWrapper.createTreeView(SQL_DATABASE_PROJECTS_VIEW_ID, { treeDataProvider: this.dbProjectTreeViewProvider });
@@ -88,14 +90,11 @@ export default class MainController implements Disposable {
 			filter[constants.sqlDatabaseProject] = ['sqlproj'];
 
 			let files: Uri[] | undefined = await this.apiWrapper.showOpenDialog({ filters: filter });
-			const prevCount = this.projectsController.projects.length;
 
 			if (files) {
 				for (const file of files) {
 					await this.projectsController.openProject(file);
 				}
-
-				this.projectsController.focusProject(this.projectsController.projects[prevCount]); // focus the first of the newly-opened projects
 			}
 		}
 		catch (err) {
@@ -137,8 +136,10 @@ export default class MainController implements Disposable {
 			// TODO: what if the selected folder is outside the workspace?
 
 			const newProjFolderUri = (selectionResult as Uri[])[0];
-			const newProjFilePath = await this.projectsController.createNewProject(newProjName as string, newProjFolderUri as Uri);
-			return this.projectsController.openProject(Uri.file(newProjFilePath));
+			const newProjFilePath = await this.projectsController.createNewProject(<string>newProjName, newProjFolderUri, true);
+			const proj = await this.projectsController.openProject(Uri.file(newProjFilePath));
+
+			return proj;
 		}
 		catch (err) {
 			this.apiWrapper.showErrorMessage(getErrorMessage(err));

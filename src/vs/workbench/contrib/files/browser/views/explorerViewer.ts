@@ -9,7 +9,7 @@ import * as glob from 'vs/base/common/glob';
 import { IListVirtualDelegate, ListDragOverEffect } from 'vs/base/browser/ui/list/list';
 import { IProgressService, ProgressLocation, IProgressStep, IProgress } from 'vs/platform/progress/common/progress';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
-import { IFileService, FileKind, FileOperationError, FileOperationResult, FileSystemProviderCapabilities } from 'vs/platform/files/common/files';
+import { IFileService, FileKind, FileOperationError, FileOperationResult, FileSystemProviderCapabilities, BinarySize } from 'vs/platform/files/common/files';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
 import { IDisposable, Disposable, dispose, toDisposable, DisposableStore } from 'vs/base/common/lifecycle';
@@ -734,6 +734,14 @@ interface IWebkitDataTransferItemEntryReader {
 	readEntries(resolve: (file: IWebkitDataTransferItemEntry[]) => void, reject: () => void): void
 }
 
+interface IUploadOperation {
+	filesTotal: number;
+	filesUploaded: number;
+
+	startTime: number;
+	bytesUploaded: number;
+}
+
 export class FileDragAndDrop implements ITreeDragAndDrop<ExplorerItem> {
 	private static readonly CONFIRM_DND_SETTING_KEY = 'explorer.confirmDragAndDrop';
 
@@ -974,6 +982,7 @@ export class FileDragAndDrop implements ITreeDragAndDrop<ExplorerItem> {
 
 		const results: { isFile: boolean, resource: URI }[] = [];
 		const cts = new CancellationTokenSource();
+		const operation: IUploadOperation = { filesTotal: entries.length, filesUploaded: 0, startTime: Date.now(), bytesUploaded: 0 };
 
 		// Start upload and report progress globally
 		const uploadPromise = this.progressService.withProgress({
@@ -983,7 +992,19 @@ export class FileDragAndDrop implements ITreeDragAndDrop<ExplorerItem> {
 			title: localize('uploadingFiles', "Uploading")
 		}, async progress => {
 			for (let entry of entries) {
-				const result = await this.doUploadWebFileEntry(entry, target.resource, target, progress, cts.token);
+
+				// Confirm overwrite as needed
+				if (target && entry.name && target.getChild(entry.name)) {
+					const { confirmed } = await this.dialogService.confirm(getFileOverwriteConfirm(entry.name));
+					if (!confirmed) {
+						continue;
+					}
+
+					await this.workingCopyFileService.delete(joinPath(target.resource, entry.name), { recursive: true });
+				}
+
+				// Upload entry
+				const result = await this.doUploadWebFileEntry(entry, target.resource, target, progress, operation, cts.token);
 				if (result) {
 					results.push(result);
 				}
@@ -1002,29 +1023,37 @@ export class FileDragAndDrop implements ITreeDragAndDrop<ExplorerItem> {
 		}
 	}
 
-	private async doUploadWebFileEntry(entry: IWebkitDataTransferItemEntry, parentResource: URI, target: ExplorerItem | undefined, progress: IProgress<IProgressStep>, token: CancellationToken): Promise<{ isFile: boolean, resource: URI } | undefined> {
+	private async doUploadWebFileEntry(entry: IWebkitDataTransferItemEntry, parentResource: URI, target: ExplorerItem | undefined, progress: IProgress<IProgressStep>, operation: IUploadOperation, token: CancellationToken): Promise<{ isFile: boolean, resource: URI } | undefined> {
 		if (token.isCancellationRequested || !entry.name || (!entry.isFile && !entry.isDirectory)) {
 			return undefined;
 		}
 
-		const resource = joinPath(parentResource, entry.name);
-
-		// Confirm overwrite as needed
-		if (target && target.getChild(entry.name)) {
-			const { confirmed } = await this.dialogService.confirm(getFileOverwriteConfirm(resource.path));
-			if (!confirmed) {
-				return undefined;
-			}
-		}
-
-		if (token.isCancellationRequested) {
-			return undefined;
-		}
-
 		// Report progress
-		progress.report({ message: entry.name });
+		let fileBytesUploaded = 0;
+		const reportProgress = (fileSize: number, bytesUploaded: number): void => {
+			fileBytesUploaded += bytesUploaded;
+			operation.bytesUploaded += bytesUploaded;
+
+			const bytesUploadedPerSecond = operation.bytesUploaded / ((Date.now() - operation.startTime) / 1000);
+
+			let message: string;
+			if (operation.filesTotal === 1 && entry.name) {
+				message = entry.name;
+			} else {
+				message = localize('uploadProgress', "{0} of {1} files ({2}/s)", operation.filesUploaded, operation.filesTotal, BinarySize.formatSize(bytesUploadedPerSecond));
+			}
+
+			if (fileSize > BinarySize.MB) {
+				message = localize('uploadProgressDetail', "{0} ({1} of {2}, {3}/s)", message, BinarySize.formatSize(fileBytesUploaded), BinarySize.formatSize(fileSize), BinarySize.formatSize(bytesUploadedPerSecond));
+			}
+
+			progress.report({ message });
+		};
+		operation.filesUploaded++;
+		reportProgress(0, 0);
 
 		// Handle file upload
+		const resource = joinPath(parentResource, entry.name);
 		if (entry.isFile) {
 			const file = await new Promise<File>((resolve, reject) => entry.file(resolve, reject));
 
@@ -1034,12 +1063,12 @@ export class FileDragAndDrop implements ITreeDragAndDrop<ExplorerItem> {
 
 			// Chrome/Edge/Firefox support stream method
 			if (typeof file.stream === 'function') {
-				await this.doUploadWebFileEntryBuffered(resource, file);
+				await this.doUploadWebFileEntryBuffered(resource, file, reportProgress, token);
 			}
 
 			// Fallback to unbuffered upload for other browsers
 			else {
-				await this.doUploadWebFileEntryUnbuffered(resource, file);
+				await this.doUploadWebFileEntryUnbuffered(resource, file, reportProgress);
 			}
 
 			return { isFile: true, resource };
@@ -1056,50 +1085,88 @@ export class FileDragAndDrop implements ITreeDragAndDrop<ExplorerItem> {
 			}
 
 			// Recursive upload files in this directory
-			const folderTarget = target && target.getChild(entry.name) || undefined;
 			const dirReader = entry.createReader();
-			const childEntries = await new Promise<IWebkitDataTransferItemEntry[]>((resolve, reject) => {
-				dirReader.readEntries(resolve, reject);
-			});
+			const childEntries: IWebkitDataTransferItemEntry[] = [];
+			let done = false;
+			do {
+				const childEntriesChunk = await new Promise<IWebkitDataTransferItemEntry[]>((resolve, reject) => dirReader.readEntries(resolve, reject));
+				if (childEntriesChunk.length > 0) {
+					childEntries.push(...childEntriesChunk);
+				} else {
+					done = true; // an empty array is a signal that all entries have been read
+				}
+			} while (!done);
 
+			// Update operation total based on new counts
+			operation.filesTotal += childEntries.length;
+
+			// Upload all entries as files to target
+			const folderTarget = target && target.getChild(entry.name) || undefined;
 			for (let childEntry of childEntries) {
-				await this.doUploadWebFileEntry(childEntry, resource, folderTarget, progress, token);
+				await this.doUploadWebFileEntry(childEntry, resource, folderTarget, progress, operation, token);
 			}
 
 			return { isFile: false, resource };
 		}
 	}
 
-	private async doUploadWebFileEntryBuffered(resource: URI, file: File): Promise<void> {
-		const writeableStream = newWriteableBufferStream();
+	private async doUploadWebFileEntryBuffered(resource: URI, file: File, progressReporter: (fileSize: number, bytesUploaded: number) => void, token: CancellationToken): Promise<void> {
+		const writeableStream = newWriteableBufferStream({
+			// Set a highWaterMark to prevent the stream
+			// for file upload to produce large buffers
+			// in-memory
+			highWaterMark: 10
+		});
+		const writeFilePromise = this.fileService.writeFile(resource, writeableStream);
 
 		// Read the file in chunks using File.stream() web APIs
-		(async () => {
-			try {
-				const reader: ReadableStreamDefaultReader<Uint8Array> = file.stream().getReader();
+		try {
+			const reader: ReadableStreamDefaultReader<Uint8Array> = file.stream().getReader();
 
-				let res = await reader.read();
-				while (!res.done) {
-					writeableStream.write(VSBuffer.wrap(res.value));
-
-					res = await reader.read();
+			let res = await reader.read();
+			while (!res.done) {
+				if (token.isCancellationRequested) {
+					return undefined;
 				}
-				writeableStream.end(res.value instanceof Uint8Array ? VSBuffer.wrap(res.value) : undefined);
-			} catch (error) {
-				writeableStream.end(error);
-			}
-		})();
 
-		await this.fileService.writeFile(resource, writeableStream);
+				// Write buffer into stream but make sure to wait
+				// in case the highWaterMark is reached
+				const buffer = VSBuffer.wrap(res.value);
+				await writeableStream.write(buffer);
+
+				if (token.isCancellationRequested) {
+					return undefined;
+				}
+
+				// Report progress
+				progressReporter(file.size, buffer.byteLength);
+
+				res = await reader.read();
+			}
+			writeableStream.end(res.value instanceof Uint8Array ? VSBuffer.wrap(res.value) : undefined);
+		} catch (error) {
+			writeableStream.end(error);
+		}
+
+		if (token.isCancellationRequested) {
+			return undefined;
+		}
+
+		// Wait for file being written to target
+		await writeFilePromise;
 	}
 
-	private doUploadWebFileEntryUnbuffered(resource: URI, file: File): Promise<void> {
+	private doUploadWebFileEntryUnbuffered(resource: URI, file: File, progressReporter: (fileSize: number, bytesUploaded: number) => void): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
 			const reader = new FileReader();
 			reader.onload = async event => {
 				try {
 					if (event.target?.result instanceof ArrayBuffer) {
-						await this.fileService.writeFile(resource, VSBuffer.wrap(new Uint8Array(event.target.result)));
+						const buffer = VSBuffer.wrap(new Uint8Array(event.target.result));
+						await this.fileService.writeFile(resource, buffer);
+
+						// Report progress
+						progressReporter(file.size, buffer.byteLength);
 					} else {
 						throw new Error('Could not read from dropped file.');
 					}

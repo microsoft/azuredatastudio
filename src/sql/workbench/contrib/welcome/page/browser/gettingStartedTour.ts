@@ -318,7 +318,6 @@ Registry.as<IWorkbenchActionRegistry>(Extensions.WorkbenchActions)
 Registry.as<IWorkbenchActionRegistry>(Extensions.WorkbenchActions)
 	.registerWorkbenchAction(SyncActionDescriptor.create(HideGuidedTourAction, HideGuidedTourAction.ID, HideGuidedTourAction.LABEL, { primary: KeyCode.Escape }, IS_OVERLAY_VISIBLE), 'Help: Hide Getting Started Guided Tour', localize('help', "Help"));
 
-// theming
 registerThemingParticipant((theme, collector) => {
 	const bodyTag = theme.getColor(buttonForeground);
 	if (bodyTag) {

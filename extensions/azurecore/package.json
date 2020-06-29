@@ -45,6 +45,11 @@
             "default": false,
             "description": "%config.enableUsGovCloudDescription%"
           },
+          "accounts.azure.cloud.enableUsNatCloud": {
+            "type": "boolean",
+            "default": false,
+            "description": "%config.enableUsNatCloudDescription%"
+          },
           "accounts.azure.cloud.enableGermanyCloud": {
             "type": "boolean",
             "default": false,
