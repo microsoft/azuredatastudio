@@ -158,7 +158,6 @@ export class ControllerModel {
 	 * @param name The name of the resource
 	 */
 	public async miaaDelete(namespace: string, name: string): Promise<void> {
-		await this._registrationRouter.apiV1RegistrationNsNameIsDeletedDelete(namespace, name, true);
 		await this._sqlInstanceRouter.apiV1HybridSqlNsNameDelete(namespace, name);
 		await this.deleteRegistration(ResourceType.sqlManagedInstances, namespace, name);
 	}
