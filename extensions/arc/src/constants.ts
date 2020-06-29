@@ -19,7 +19,6 @@ export class IconPathHelper {
 	public static edit: IconPath;
 	public static delete: IconPath;
 	public static openInTab: IconPath;
-	public static heart: IconPath;
 	public static copy: IconPath;
 	public static collapseUp: IconPath;
 	public static collapseDown: IconPath;
@@ -34,6 +33,9 @@ export class IconPathHelper {
 	public static wrench: IconPath;
 	public static miaa: IconPath;
 	public static controller: IconPath;
+	public static health: IconPath;
+	public static success: IconPath;
+	public static fail: IconPath;
 
 	public static setExtensionContext(context: vscode.ExtensionContext) {
 		IconPathHelper.context = context;
@@ -52,10 +54,6 @@ export class IconPathHelper {
 		IconPathHelper.openInTab = {
 			light: IconPathHelper.context.asAbsolutePath('images/open-in-tab.svg'),
 			dark: IconPathHelper.context.asAbsolutePath('images/open-in-tab.svg')
-		};
-		IconPathHelper.heart = {
-			light: IconPathHelper.context.asAbsolutePath('images/heart.svg'),
-			dark: IconPathHelper.context.asAbsolutePath('images/heart.svg')
 		};
 		IconPathHelper.copy = {
 			light: IconPathHelper.context.asAbsolutePath('images/copy.svg'),
@@ -104,6 +102,18 @@ export class IconPathHelper {
 		IconPathHelper.controller = {
 			light: context.asAbsolutePath('images/data_controller.svg'),
 			dark: context.asAbsolutePath('images/data_controller.svg'),
+		};
+		IconPathHelper.health = {
+			light: context.asAbsolutePath('images/health.svg'),
+			dark: context.asAbsolutePath('images/health.svg'),
+		};
+		IconPathHelper.success = {
+			light: context.asAbsolutePath('images/success.svg'),
+			dark: context.asAbsolutePath('images/success.svg'),
+		};
+		IconPathHelper.fail = {
+			light: context.asAbsolutePath('images/fail.svg'),
+			dark: context.asAbsolutePath('images/fail.svg'),
 		};
 	}
 }

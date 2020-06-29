@@ -12,11 +12,20 @@ import { DashboardPage } from '../../components/dashboardPage';
 import { PostgresModel } from '../../../models/postgresModel';
 
 export class PostgresConnectionStringsPage extends DashboardPage {
+	private disposables: vscode.Disposable[] = [];
 	private keyValueContainer?: KeyValueContainer;
 
 	constructor(protected modelView: azdata.ModelView, private _postgresModel: PostgresModel) {
 		super(modelView);
-		this._postgresModel.onServiceUpdated(() => this.eventuallyRunOnInitialized(() => this.refresh()));
+
+		modelView.onClosed(() =>
+			this.disposables.forEach(d => {
+				try { d.dispose(); }
+				catch { }
+			}));
+
+		this.disposables.push(this._postgresModel.onServiceUpdated(
+			() => this.eventuallyRunOnInitialized(() => this.refresh())));
 	}
 
 	protected get title(): string {
