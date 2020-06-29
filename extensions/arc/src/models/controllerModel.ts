@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 import { Authentication, BasicAuth } from '../controller/auth';
 import { EndpointsRouterApi, EndpointModel, RegistrationRouterApi, RegistrationResponse, TokenRouterApi, SqlInstanceRouterApi } from '../controller/generated/v1/api';
-import { parseEndpoint, parseInstanceName } from '../common/utils';
+import { parseEndpoint, parseInstanceName, UserCancelledError } from '../common/utils';
 import { ResourceType } from '../constants';
 import { ConnectToControllerDialog } from '../ui/dialogs/connectControllerDialog';
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
@@ -62,27 +62,28 @@ export class ControllerModel {
 		}
 	}
 
-	public async refresh(showErrors: boolean = true): Promise<void> {
-		// We haven't gotten our password yet, fetch it now
-		if (!this._auth) {
+	public async refresh(showErrors: boolean = true, promptReconnect: boolean = false): Promise<void> {
+		// We haven't gotten our password yet or we want to prompt for a reconnect
+		if (!this._auth || promptReconnect) {
 			let password = '';
 			if (this.info.rememberPassword) {
 				// It should be in the credentials store, get it from there
 				password = await this.treeDataProvider.getPassword(this.info);
 			}
-			if (password) {
+			if (password && !promptReconnect) {
 				this.setAuthentication(new BasicAuth(this.info.username, password));
 			} else {
-				// No password yet so prompt for it from the user
+				// No password yet or we want to reprompt for credentials so prompt for it from the user
 				const dialog = new ConnectToControllerDialog(this.treeDataProvider);
-				dialog.showDialog(this.info);
+				dialog.showDialog(this.info, password);
 				const model = await dialog.waitForClose();
 				if (model) {
 					this.treeDataProvider.addOrUpdateController(model.controllerModel, model.password, false);
 					this.setAuthentication(new BasicAuth(this.info.username, model.password));
+				} else {
+					throw new UserCancelledError();
 				}
 			}
-
 		}
 		await Promise.all([
 			this._endpointsRouter.apiV1BdcEndpointsGet().then(response => {
@@ -157,6 +158,7 @@ export class ControllerModel {
 	 * @param name The name of the resource
 	 */
 	public async miaaDelete(namespace: string, name: string): Promise<void> {
+		await this._registrationRouter.apiV1RegistrationNsNameIsDeletedDelete(namespace, name, true);
 		await this._sqlInstanceRouter.apiV1HybridSqlNsNameDelete(namespace, name);
 		await this.deleteRegistration(ResourceType.sqlManagedInstances, namespace, name);
 	}
