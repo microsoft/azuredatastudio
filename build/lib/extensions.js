@@ -4,7 +4,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.packageRebuildExtensionsStream = exports.cleanRebuildExtensions = exports.packageExternalExtensionsStream = exports.scanBuiltinExtensions = exports.packageMarketplaceWebExtensionsStream = exports.packageMarketplaceExtensionsStream = exports.packageLocalWebExtensionsStream = exports.packageLocalExtensionsStream = exports.fromMarketplace = void 0;
+exports.translatePackageJSON = exports.packageRebuildExtensionsStream = exports.cleanRebuildExtensions = exports.packageExternalExtensionsStream = exports.scanBuiltinExtensions = exports.packageMarketplaceWebExtensionsStream = exports.packageMarketplaceExtensionsStream = exports.packageLocalWebExtensionsStream = exports.packageLocalExtensionsStream = exports.fromMarketplace = void 0;
 const es = require("event-stream");
 const fs = require("fs");
 const glob = require("glob");
@@ -299,7 +299,7 @@ function scanBuiltinExtensions(extensionsRoot, forWeb) {
         if (!fs.existsSync(packageJSONPath)) {
             continue;
         }
-        const packageJSON = JSON.parse(fs.readFileSync(packageJSONPath).toString('utf8'));
+        let packageJSON = JSON.parse(fs.readFileSync(packageJSONPath).toString('utf8'));
         const extensionKind = packageJSON['extensionKind'] || [];
         if (forWeb && extensionKind.indexOf('web') === -1) {
             continue;
@@ -308,6 +308,10 @@ function scanBuiltinExtensions(extensionsRoot, forWeb) {
         const packageNLS = children.filter(child => child === 'package.nls.json')[0];
         const readme = children.filter(child => /^readme(\.txt|\.md|)$/i.test(child))[0];
         const changelog = children.filter(child => /^changelog(\.txt|\.md|)$/i.test(child))[0];
+        if (packageNLS) {
+            // temporary
+            packageJSON = translatePackageJSON(packageJSON, path.join(extensionsRoot, extensionFolder, packageNLS));
+        }
         scannedExtensions.push({
             extensionPath: extensionFolder,
             packageJSON,
@@ -334,6 +338,7 @@ function packageExternalExtensionsStream() {
     return es.merge(builtExtensions);
 }
 exports.packageExternalExtensionsStream = packageExternalExtensionsStream;
+// {{SQL CARBON EDIT}} start
 function cleanRebuildExtensions(root) {
     return Promise.all(rebuildExtensions.map(async (e) => {
         await util2.rimraf(path.join(root, e))();
@@ -355,3 +360,28 @@ function packageRebuildExtensionsStream() {
     return es.merge(builtExtensions);
 }
 exports.packageRebuildExtensionsStream = packageRebuildExtensionsStream;
+// {{SQL CARBON EDIT}} end
+function translatePackageJSON(packageJSON, packageNLSPath) {
+    const CharCode_PC = '%'.charCodeAt(0);
+    const packageNls = JSON.parse(fs.readFileSync(packageNLSPath).toString());
+    const translate = (obj) => {
+        for (let key in obj) {
+            const val = obj[key];
+            if (Array.isArray(val)) {
+                val.forEach(translate);
+            }
+            else if (val && typeof val === 'object') {
+                translate(val);
+            }
+            else if (typeof val === 'string' && val.charCodeAt(0) === CharCode_PC && val.charCodeAt(val.length - 1) === CharCode_PC) {
+                const translated = packageNls[val.substr(1, val.length - 2)];
+                if (translated) {
+                    obj[key] = translated;
+                }
+            }
+        }
+    };
+    translate(packageJSON);
+    return packageJSON;
+}
+exports.translatePackageJSON = translatePackageJSON;
