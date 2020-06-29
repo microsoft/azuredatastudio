@@ -286,17 +286,17 @@
                         {
                           "type": "azure_locations",
                           "label": "%arc.control.plane.arc.data.controller.location%",
-                          "defaultValue": "East US",
+                          "defaultValue": "eastus",
                           "required": true,
                           "locationVariableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_LOCATION",
                           "displayLocationVariableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_DISPLAY_LOCATION",
                           "locations": [
-                            "East US",
-                            "East US 2",
-                            "Central US",
-                            "West Europe",
-                            "Southeast Asia",
-                            "West US 2"
+                            "eastus",
+                            "eastus2",
+                            "centralus",
+                            "westus2",
+                            "southeastasia",
+                            "westeurope"
                           ]
                         },
                         {
