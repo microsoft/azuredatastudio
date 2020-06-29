@@ -45,6 +45,11 @@
             "default": false,
             "description": "%config.enableUsGovCloudDescription%"
           },
+          "accounts.azure.cloud.enableUsNatCloud": {
+            "type": "boolean",
+            "default": false,
+            "description": "%config.enableUsNatCloudDescription%"
+          },
           "accounts.azure.cloud.enableGermanyCloud": {
             "type": "boolean",
             "default": false,
@@ -111,16 +116,6 @@
       {
         "command": "accounts.clearTokenCache",
         "title": "%accounts.clearTokenCache%",
-        "category": "Azure Accounts"
-      },
-      {
-        "command": "azure.accounts.getSubscriptions",
-        "title": "%azure.accounts.getSubscriptions.title%",
-        "category": "Azure Accounts"
-      },
-      {
-        "command": "azure.accounts.getResourceGroups",
-        "title": "%azure.accounts.getResourceGroups.title%",
         "category": "Azure Accounts"
       },
       {
@@ -197,14 +192,6 @@
         },
         {
           "command": "azure.resource.connectsqlserver",
-          "when": "false"
-        },
-        {
-          "command": "azure.accounts.getSubscriptions",
-          "when": "false"
-        },
-        {
-          "command": "azure.accounts.getResourceGroups",
           "when": "false"
         }
       ],

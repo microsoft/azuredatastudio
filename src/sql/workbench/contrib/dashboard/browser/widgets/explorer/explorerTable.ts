@@ -66,13 +66,12 @@ export class ExplorerTable extends Disposable {
 		this._view = new TableDataView<Slick.SlickData>(undefined, undefined, undefined, (data: Slick.SlickData[]): Slick.SlickData[] => {
 			return explorerFilter.filter(this._filterStr, data);
 		});
-		this._table = new Table<Slick.SlickData>(parentElement, { dataProvider: this._view }, { forceFitColumns: true, rowHeight: 35 });
+		this._table = new Table<Slick.SlickData>(parentElement, { dataProvider: this._view }, { forceFitColumns: true });
 		this._table.setSelectionModel(new RowSelectionModel());
 		this._actionsColumn = new ButtonColumn<Slick.SlickData>({
 			id: 'actions',
 			iconCssClass: 'toggle-more',
-			title: ShowActionsText,
-			width: 40
+			title: ShowActionsText
 		});
 		this._table.registerPlugin(this._actionsColumn);
 		this._register(this._actionsColumn.onClick((args) => {

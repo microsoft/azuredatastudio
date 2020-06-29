@@ -128,7 +128,7 @@ export class ControllerRootNode extends ControllerTreeNode {
 		}
 	}
 
-	public deleteControllerNode(url: string, auth: AuthType, username: string): ControllerNode[] | undefined {
+	public removeControllerNode(url: string, auth: AuthType, username: string): ControllerNode[] | undefined {
 		if (!url || (auth === 'basic' && !username)) {
 			return undefined;
 		}
@@ -174,7 +174,7 @@ export class ControllerNode extends ControllerTreeNode {
 		}
 
 		if (!this._password) {
-			vscode.commands.executeCommand('bigDataClusters.command.addController', this);
+			vscode.commands.executeCommand('bigDataClusters.command.connectController', this);
 			return this.children as ControllerTreeNode[];
 		}
 		return undefined;

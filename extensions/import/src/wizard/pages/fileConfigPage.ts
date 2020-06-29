@@ -5,13 +5,8 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as nls from 'vscode-nls';
-import { ImportDataModel } from '../api/models';
 import { ImportPage } from '../api/importPage';
-import { FlatFileProvider } from '../../services/contracts';
-import { FlatFileWizard } from '../flatFileWizard';
-
-const localize = nls.loadMessageBundle();
+import * as constants from '../../common/constants';
 
 export class FileConfigPage extends ImportPage {
 
@@ -27,10 +22,6 @@ export class FileConfigPage extends ImportPage {
 	private schemaLoader: azdata.LoadingComponent;
 
 	private tableNames: string[] = [];
-
-	public constructor(instance: FlatFileWizard, wizardPage: azdata.window.WizardPage, model: ImportDataModel, view: azdata.ModelView, provider: FlatFileProvider) {
-		super(instance, wizardPage, model, view, provider);
-	}
 
 	async start(): Promise<boolean> {
 		let schemaComponent = await this.createSchemaDropdown();
@@ -96,7 +87,7 @@ export class FileConfigPage extends ImportPage {
 
 		return {
 			component: this.serverDropdown,
-			title: localize('flatFileImport.serverDropdownTitle', "Server the database is in")
+			title: constants.serverDropDownTitleText
 		};
 	}
 
@@ -124,8 +115,8 @@ export class FileConfigPage extends ImportPage {
 		this.databaseDropdown.onValueChanged(async (db) => {
 			this.model.database = (<azdata.CategoryValue>this.databaseDropdown.value).name;
 			//this.populateTableNames();
-			let connectionProvider = azdata.dataprotocol.getProvider<azdata.ConnectionProvider>(this.model.server.providerName, azdata.DataProviderType.ConnectionProvider);
-			let connectionUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
+			let connectionProvider = this._apiWrapper.getProvider<azdata.ConnectionProvider>(this.model.server.providerName, azdata.DataProviderType.ConnectionProvider);
+			let connectionUri = await this._apiWrapper.getUriForConnection(this.model.server.connectionId);
 			connectionProvider.changeDatabase(connectionUri, this.model.database);
 			this.populateSchemaDropdown();
 		});
@@ -134,7 +125,7 @@ export class FileConfigPage extends ImportPage {
 
 		return {
 			component: this.databaseLoader,
-			title: localize('flatFileImport.databaseDropdownTitle', "Database the table is created in")
+			title: constants.databaseDropdownTitleText
 		};
 	}
 
@@ -178,7 +169,7 @@ export class FileConfigPage extends ImportPage {
 			required: true
 		}).component();
 		this.fileButton = this.view.modelBuilder.button().withProperties({
-			label: localize('flatFileImport.browseFiles', "Browse"),
+			label: constants.browseFilesText,
 		}).component();
 
 		this.fileButton.onDidClick(async (click) => {
@@ -187,7 +178,7 @@ export class FileConfigPage extends ImportPage {
 					canSelectFiles: true,
 					canSelectFolders: false,
 					canSelectMany: false,
-					openLabel: localize('flatFileImport.openFile', "Open"),
+					openLabel: constants.openFileText,
 					filters: {
 						'CSV/TXT Files': ['csv', 'txt'],
 						'All Files': ['*']
@@ -227,7 +218,7 @@ export class FileConfigPage extends ImportPage {
 
 		return {
 			component: this.fileTextBox,
-			title: localize('flatFileImport.fileTextboxTitle', "Location of the file to be imported"),
+			title: constants.fileTextboxTitleText,
 			actions: [this.fileButton]
 		};
 	}
@@ -256,7 +247,7 @@ export class FileConfigPage extends ImportPage {
 
 		return {
 			component: this.tableNameTextBox,
-			title: localize('flatFileImport.tableTextboxTitle', "New table name"),
+			title: constants.tableTextboxTitleText,
 		};
 	}
 
@@ -274,20 +265,31 @@ export class FileConfigPage extends ImportPage {
 
 		return {
 			component: this.schemaLoader,
-			title: localize('flatFileImport.schemaTextboxTitle', "Table schema"),
+			title: constants.schemaTextboxTitleText,
 		};
 
 	}
 
-	private async populateSchemaDropdown(): Promise<boolean> {
+	public async populateSchemaDropdown(): Promise<boolean> {
 		this.schemaLoader.loading = true;
 
-		let connectionUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
-		let queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(this.model.server.providerName, azdata.DataProviderType.QueryProvider);
+		let values = await this.getSchemaValues();
 
-		const query = `SELECT name FROM sys.schemas`;
+		this.model.schema = values[0].name;
 
-		let results = await queryProvider.runQueryAndReturn(connectionUri, query);
+		this.schemaDropdown.updateProperties({
+			values: values
+		});
+
+		this.schemaLoader.loading = false;
+		return true;
+	}
+
+	public async getSchemaValues(): Promise<{ displayName: string, name: string }[]> {
+		let connectionUri = await this._apiWrapper.getUriForConnection(this.model.server.connectionId);
+		let queryProvider = this._apiWrapper.getProvider<azdata.QueryProvider>(this.model.server.providerName, azdata.DataProviderType.QueryProvider);
+
+		let results = await queryProvider.runQueryAndReturn(connectionUri, constants.selectSchemaQuery);
 
 		let idx = -1;
 		let count = -1;
@@ -311,15 +313,7 @@ export class FileConfigPage extends ImportPage {
 			values[0] = values[idx];
 			values[idx] = tmp;
 		}
-
-		this.model.schema = values[0].name;
-
-		this.schemaDropdown.updateProperties({
-			values: values
-		});
-
-		this.schemaLoader.loading = false;
-		return true;
+		return values;
 	}
 
 	protected deleteServerValues() {

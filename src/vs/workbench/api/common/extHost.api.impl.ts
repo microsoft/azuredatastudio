@@ -135,7 +135,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	const extHostWindow = rpcProtocol.set(ExtHostContext.ExtHostWindow, new ExtHostWindow(rpcProtocol));
 	const extHostProgress = rpcProtocol.set(ExtHostContext.ExtHostProgress, new ExtHostProgress(rpcProtocol.getProxy(MainContext.MainThreadProgress)));
 	const extHostLabelService = rpcProtocol.set(ExtHostContext.ExtHosLabelService, new ExtHostLabelService(rpcProtocol));
-	const extHostNotebook = rpcProtocol.set(ExtHostContext.ExtHostNotebook, new ExtHostNotebookController(rpcProtocol, extHostCommands, extHostDocumentsAndEditors, initData.environment));
+	const extHostNotebook = rpcProtocol.set(ExtHostContext.ExtHostNotebook, new ExtHostNotebookController(rpcProtocol, extHostCommands, extHostDocumentsAndEditors, initData.environment, extensionStoragePaths));
 	const extHostTheming = rpcProtocol.set(ExtHostContext.ExtHostTheming, new ExtHostTheming(rpcProtocol));
 	const extHostAuthentication = rpcProtocol.set(ExtHostContext.ExtHostAuthentication, new ExtHostAuthentication(rpcProtocol));
 	const extHostTimeline = rpcProtocol.set(ExtHostContext.ExtHostTimeline, new ExtHostTimeline(rpcProtocol, extHostCommands));
@@ -458,16 +458,12 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			get terminals() {
 				return extHostTerminalService.terminals;
 			},
-			showTextDocument(documentOrUri: vscode.TextDocument | vscode.Uri, columnOrOptions?: vscode.ViewColumn | vscode.TextDocumentShowOptions, preserveFocus?: boolean): Thenable<vscode.TextEditor> {
-				let documentPromise: Promise<vscode.TextDocument>;
-				if (URI.isUri(documentOrUri)) {
-					documentPromise = Promise.resolve(workspace.openTextDocument(documentOrUri));
-				} else {
-					documentPromise = Promise.resolve(<vscode.TextDocument>documentOrUri);
-				}
-				return documentPromise.then(document => {
-					return extHostEditors.showTextDocument(document, columnOrOptions, preserveFocus);
-				});
+			async showTextDocument(documentOrUri: vscode.TextDocument | vscode.Uri, columnOrOptions?: vscode.ViewColumn | vscode.TextDocumentShowOptions, preserveFocus?: boolean): Promise<vscode.TextEditor> {
+				const document = await (URI.isUri(documentOrUri)
+					? Promise.resolve(workspace.openTextDocument(documentOrUri))
+					: Promise.resolve(<vscode.TextDocument>documentOrUri));
+
+				return extHostEditors.showTextDocument(document, columnOrOptions, preserveFocus);
 			},
 			createTextEditorDecorationType(options: vscode.DecorationRenderOptions): vscode.TextEditorDecorationType {
 				return extHostEditors.createTextEditorDecorationType(options);
@@ -602,11 +598,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			registerWebviewPanelSerializer: (viewType: string, serializer: vscode.WebviewPanelSerializer) => {
 				return extHostWebviews.registerWebviewPanelSerializer(extension, viewType, serializer);
 			},
-			registerCustomEditorProvider: (viewType: string, provider: vscode.CustomTextEditorProvider, options: { webviewOptions?: vscode.WebviewPanelOptions } = {}) => {
-				return extHostWebviews.registerCustomEditorProvider(extension, viewType, provider, options);
-			},
-			registerCustomEditorProvider2: (viewType: string, provider: vscode.CustomReadonlyEditorProvider, options: { webviewOptions?: vscode.WebviewPanelOptions, supportsMultipleEditorsPerDocument?: boolean } = {}) => {
-				checkProposedApiEnabled(extension);
+			registerCustomEditorProvider: (viewType: string, provider: vscode.CustomTextEditorProvider | vscode.CustomReadonlyEditorProvider, options: { webviewOptions?: vscode.WebviewPanelOptions, supportsMultipleEditorsPerDocument?: boolean } = {}) => {
 				return extHostWebviews.registerCustomEditorProvider(extension, viewType, provider, options);
 			},
 			registerDecorationProvider(provider: vscode.DecorationProvider) {
@@ -946,10 +938,16 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 				checkProposedApiEnabled(extension);
 				return extHostNotebook.onDidCloseNotebookDocument;
 			},
+			get notebookDocuments(): vscode.NotebookDocument[] {
+				checkProposedApiEnabled(extension);
+				return extHostNotebook.notebookDocuments;
+			},
 			get visibleNotebookEditors() {
+				checkProposedApiEnabled(extension);
 				return extHostNotebook.visibleNotebookEditors;
 			},
 			get onDidChangeVisibleNotebookEditors() {
+				checkProposedApiEnabled(extension);
 				return extHostNotebook.onDidChangeVisibleNotebookEditors;
 			},
 			registerNotebookContentProvider: (viewType: string, provider: vscode.NotebookContentProvider) => {
@@ -963,10 +961,6 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			registerNotebookOutputRenderer: (type: string, outputFilter: vscode.NotebookOutputSelector, renderer: vscode.NotebookOutputRenderer) => {
 				checkProposedApiEnabled(extension);
 				return extHostNotebook.registerNotebookOutputRenderer(type, extension, outputFilter, renderer);
-			},
-			get activeNotebookDocument(): vscode.NotebookDocument | undefined {
-				checkProposedApiEnabled(extension);
-				return extHostNotebook.activeNotebookDocument;
 			},
 			get activeNotebookEditor(): vscode.NotebookEditor | undefined {
 				checkProposedApiEnabled(extension);

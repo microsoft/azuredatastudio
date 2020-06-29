@@ -58,9 +58,9 @@ export class InsightsDialogController {
 					this._errorMessageService.showDialog(Severity.Error, nls.localize("insightsError", "Insights error"), e);
 				}).then(() => undefined);
 			} else if (types.isString(input.queryFile)) {
-				let filePath: string;
+				let fileUri: URI;
 				try {
-					filePath = await this._instantiationService.invokeFunction(resolveQueryFilePath, input.queryFile);
+					fileUri = await this._instantiationService.invokeFunction(resolveQueryFilePath, input.queryFile);
 				}
 				catch (e) {
 					this._notificationService.notify({
@@ -71,7 +71,7 @@ export class InsightsDialogController {
 				}
 
 				try {
-					let buffer = await this.fileService.readFile(URI.file(filePath));
+					let buffer = await this.fileService.readFile(fileUri);
 					this.createQuery(buffer.value.toString(), connectionProfile).catch(e => {
 						this._errorMessageService.showDialog(Severity.Error, nls.localize("insightsError", "Insights error"), e);
 					});

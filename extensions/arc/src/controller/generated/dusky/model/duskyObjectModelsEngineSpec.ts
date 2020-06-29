@@ -10,12 +10,13 @@
  * Do not edit the class manually.
  */
 
+import { DuskyObjectModelsEngineSettings } from './duskyObjectModelsEngineSettings';
 import { DuskyObjectModelsPluginSpec } from './duskyObjectModelsPluginSpec';
 
 export class DuskyObjectModelsEngineSpec {
-    'type': string;
+    'type'?: string;
     'version'?: number | null;
-    'settings'?: { [key: string]: string; };
+    'settings'?: DuskyObjectModelsEngineSettings;
     'plugins'?: Array<DuskyObjectModelsPluginSpec>;
 
     static discriminator: string | undefined = undefined;
@@ -34,7 +35,7 @@ export class DuskyObjectModelsEngineSpec {
         {
             "name": "settings",
             "baseName": "settings",
-            "type": "{ [key: string]: string; }"
+            "type": "DuskyObjectModelsEngineSettings"
         },
         {
             "name": "plugins",

@@ -6,21 +6,24 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as loc from '../../../localizedConstants';
-import { IconPathHelper, cssStyles } from '../../../constants';
-import { KeyValueContainer, InputKeyValue, LinkKeyValue, TextKeyValue } from '../../components/keyValueContainer';
+import { IconPathHelper, cssStyles, ResourceType } from '../../../constants';
+import { KeyValueContainer, InputKeyValue, TextKeyValue, KeyValue } from '../../components/keyValueContainer';
 import { DashboardPage } from '../../components/dashboardPage';
 import { ControllerModel } from '../../../models/controllerModel';
 import { PostgresModel } from '../../../models/postgresModel';
-import { ResourceType } from '../../../common/utils';
 
 export class PostgresPropertiesPage extends DashboardPage {
+	private loading?: azdata.LoadingComponent;
 	private keyValueContainer?: KeyValueContainer;
 
 	constructor(protected modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
 		super(modelView);
-		this._postgresModel.onServiceUpdated(() => this.eventuallyRunOnInitialized(() => this.refresh()));
-		this._postgresModel.onPasswordUpdated(() => this.eventuallyRunOnInitialized(() => this.refresh()));
-		this._controllerModel.onRegistrationsUpdated(() => this.eventuallyRunOnInitialized(() => this.refresh()));
+
+		this.disposables.push(this._postgresModel.onServiceUpdated(
+			() => this.eventuallyRunOnInitialized(() => this.handleServiceUpdated())));
+
+		this.disposables.push(this._controllerModel.onRegistrationsUpdated(
+			() => this.eventuallyRunOnInitialized(() => this.handleRegistrationsUpdated())));
 	}
 
 	protected get title(): string {
@@ -45,8 +48,16 @@ export class PostgresPropertiesPage extends DashboardPage {
 			CSSStyles: { ...cssStyles.title, 'margin-bottom': '25px' }
 		}).component());
 
-		this.keyValueContainer = new KeyValueContainer(this.modelView.modelBuilder, []);
-		content.addItem(this.keyValueContainer.container);
+		this.keyValueContainer = new KeyValueContainer(this.modelView.modelBuilder, this.getProperties());
+		this.disposables.push(this.keyValueContainer);
+
+		this.loading = this.modelView.modelBuilder.loadingComponent()
+			.withItem(this.keyValueContainer.container)
+			.withProperties<azdata.LoadingComponentProperties>({
+				loading: !this._postgresModel.serviceLastUpdated && !this._controllerModel.registrationsLastUpdated
+			}).component();
+
+		content.addItem(this.loading);
 		this.initialized = true;
 		return root;
 	}
@@ -57,40 +68,53 @@ export class PostgresPropertiesPage extends DashboardPage {
 			iconPath: IconPathHelper.refresh
 		}).component();
 
-		refreshButton.onDidClick(async () => {
-			refreshButton.enabled = false;
-			try {
-				await Promise.all([
-					this._postgresModel.refresh(),
-					this._controllerModel.refresh()
-				]);
-			} catch (error) {
-				vscode.window.showErrorMessage(loc.refreshFailed(error));
-			}
-			finally {
-				refreshButton.enabled = true;
-			}
-		});
+		this.disposables.push(
+			refreshButton.onDidClick(async () => {
+				refreshButton.enabled = false;
+				try {
+					this.loading!.loading = true;
+					await Promise.all([
+						this._postgresModel.refresh(),
+						this._controllerModel.refresh()
+					]);
+				} catch (error) {
+					vscode.window.showErrorMessage(loc.refreshFailed(error));
+				}
+				finally {
+					refreshButton.enabled = true;
+				}
+			}));
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems([
 			{ component: refreshButton }
 		]).component();
 	}
 
-	private refresh() {
-		const endpoint: { ip?: string, port?: number } = this._postgresModel.endpoint();
-		const connectionString = `postgresql://postgres:${this._postgresModel.password()}@${endpoint.ip}:${endpoint.port}`;
-		const registration = this._controllerModel.getRegistration(ResourceType.postgresInstances, this._postgresModel.namespace(), this._postgresModel.name());
+	private getProperties(): KeyValue[] {
+		const endpoint: { ip?: string, port?: number } = this._postgresModel.endpoint;
+		const connectionString = `postgresql://postgres@${endpoint.ip}:${endpoint.port}`;
+		const registration = this._controllerModel.getRegistration(ResourceType.postgresInstances, this._postgresModel.namespace, this._postgresModel.name);
 
-		this.keyValueContainer?.refresh([
-			new InputKeyValue(loc.coordinatorEndpoint, connectionString),
-			new InputKeyValue(loc.postgresAdminUsername, 'postgres'),
-			new TextKeyValue(loc.status, this._postgresModel.service()?.status?.state ?? 'Unknown'),
-			new LinkKeyValue(loc.dataController, this._controllerModel.namespace() ?? '', _ => vscode.window.showInformationMessage('TODO: Go to data controller')),
-			new LinkKeyValue(loc.nodeConfiguration, this._postgresModel.configuration(), _ => vscode.window.showInformationMessage('TODO: Go to configuration')),
-			new TextKeyValue(loc.postgresVersion, this._postgresModel.service()?.spec.engine.version?.toString() ?? ''),
-			new TextKeyValue(loc.resourceGroup, registration?.resourceGroupName ?? ''),
-			new TextKeyValue(loc.subscriptionId, registration?.subscriptionId ?? '')
-		]);
+		return [
+			new InputKeyValue(this.modelView.modelBuilder, loc.coordinatorEndpoint, connectionString),
+			new InputKeyValue(this.modelView.modelBuilder, loc.postgresAdminUsername, 'postgres'),
+			new TextKeyValue(this.modelView.modelBuilder, loc.status, this._postgresModel.service?.status?.state ?? 'Unknown'),
+			// TODO: Make this a LinkKeyValue that opens the controller dashboard
+			new TextKeyValue(this.modelView.modelBuilder, loc.dataController, this._controllerModel.namespace ?? ''),
+			new TextKeyValue(this.modelView.modelBuilder, loc.nodeConfiguration, this._postgresModel.configuration),
+			new TextKeyValue(this.modelView.modelBuilder, loc.postgresVersion, this._postgresModel.service?.spec?.engine?.version?.toString() ?? ''),
+			new TextKeyValue(this.modelView.modelBuilder, loc.resourceGroup, registration?.resourceGroupName ?? ''),
+			new TextKeyValue(this.modelView.modelBuilder, loc.subscriptionId, registration?.subscriptionId ?? '')
+		];
+	}
+
+	private handleRegistrationsUpdated() {
+		this.keyValueContainer?.refresh(this.getProperties());
+		this.loading!.loading = false;
+	}
+
+	private handleServiceUpdated() {
+		this.keyValueContainer?.refresh(this.getProperties());
+		this.loading!.loading = false;
 	}
 }

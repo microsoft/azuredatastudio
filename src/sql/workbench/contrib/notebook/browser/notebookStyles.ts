@@ -8,7 +8,7 @@ import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/
 import { SIDE_BAR_BACKGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND } from 'vs/workbench/common/theme';
 import { activeContrastBorder, contrastBorder, buttonBackground, textLinkForeground, textLinkActiveForeground, textPreformatForeground, textBlockQuoteBackground, textBlockQuoteBorder, buttonForeground } from 'vs/platform/theme/common/colorRegistry';
 import { editorLineHighlight, editorLineHighlightBorder } from 'vs/editor/common/view/editorColorRegistry';
-import { cellBorder, notebookToolbarIcon, notebookToolbarLines, buttonMenuArrow, dropdownArrow, markdownEditorBackground, splitBorder, codeEditorBackground, codeEditorBackgroundActive, codeEditorLineNumber, codeEditorToolbarIcon, codeEditorToolbarBackground, codeEditorToolbarBorder, toolbarBackground, toolbarIcon, toolbarBottomBorder, notebookToolbarSelectBackground } from 'sql/platform/theme/common/colorRegistry';
+import { cellBorder, notebookToolbarIcon, notebookToolbarLines, buttonMenuArrow, dropdownArrow, markdownEditorBackground, codeEditorBackground, codeEditorBackgroundActive, codeEditorLineNumber, codeEditorToolbarIcon, codeEditorToolbarBackground, codeEditorToolbarBorder, toolbarBackground, toolbarIcon, toolbarBottomBorder, notebookToolbarSelectBackground, splitBorder } from 'sql/platform/theme/common/colorRegistry';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { BareResultsGridInfo, getBareResultsGridInfoStyles } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
@@ -201,7 +201,7 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 		}
 		const splitBorderColor = theme.getColor(splitBorder);
 		if (splitBorderColor) {
-			collector.addRule(`.notebookEditor .notebook-cell.active text-cell-component code-component { border-bottom-color: ${splitBorderColor}; }`);
+			collector.addRule(`.notebookEditor .notebook-cell.active text-cell-component .notebook-preview { border-left-color: ${splitBorderColor}; }`);
 		}
 
 		// Code editor colors
