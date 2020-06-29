@@ -20,7 +20,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 	vscode.window.registerTreeDataProvider('azureArc', treeDataProvider);
 
 	vscode.commands.registerCommand('arc.createController', async () => {
-		await vscode.commands.executeCommand('azdata.resource.deploy');
+		await vscode.commands.executeCommand('azdata.resource.deploy', 'arc.control.create', ['arc.control.create']);
 	});
 
 	vscode.commands.registerCommand('arc.connectToController', async () => {
