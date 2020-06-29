@@ -1,186 +1,192 @@
 {
-	"name": "big-data-cluster",
-	"displayName": "%text.sqlServerBigDataClusters%",
-	"description": "%description%",
-	"version": "1.0.0",
-	"publisher": "Microsoft",
-	"preview": true,
-	"license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
-	"icon": "images/extension.png",
-	"engines": {
-		"vscode": "*",
-		"azdata": "*"
-	},
-	"activationEvents": [
-		"onCommand:bigDataClusters.command.mount",
-		"onCommand:bigDataClusters.command.refreshmount",
-		"onCommand:bigDataClusters.command.deletemount",
-		"onCommand:bigDataClusters.command.createController",
-		"onCommand:bigDataClusters.command.connectController",
-		"onCommand:bigDataClusters.command.removeController",
-		"onCommand:bigDataClusters.command.manageController",
-		"onCommand:bigDataClusters.command.refreshController",
-		"onView:sqlBigDataCluster"
-	],
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/Microsoft/azuredatastudio.git"
-	},
-	"main": "./out/extension",
-	"contributes": {
-		"dataExplorer": {
-			"sqlBigDataCluster": [
-				{
-					"id": "sqlBigDataCluster",
-					"name": "%text.sqlServerBigDataClusters%"
-				}
-			]
-		},
-		"menus": {
-			"commandPalette": [
-				{
-					"command": "bigDataClusters.command.createController",
-					"when": "false"
-				},
-				{
-					"command": "bigDataClusters.command.connectController",
-					"when": "false"
-				},
-				{
-					"command": "bigDataClusters.command.removeController",
-					"when": "false"
-				},
-				{
-					"command": "bigDataClusters.command.refreshController",
-					"when": "false"
-				},
-				{
-					"command": "bigDataClusters.command.manageController",
-					"when": "false"
-				},
-				{
-					"command": "bigDataClusters.command.mount",
-					"when": "false"
-				},
-				{
-					"command": "bigDataClusters.command.refreshmount",
-					"when": "false"
-				},
-				{
-					"command": "bigDataClusters.command.deletemount",
-					"when": "false"
-				}
-			],
-			"view/title": [
-				{
-					"command": "bigDataClusters.command.createController",
-					"when": "view == sqlBigDataCluster",
-					"group": "navigation@1"
-				},
-				{
-					"command": "bigDataClusters.command.connectController",
-					"when": "view == sqlBigDataCluster",
-					"group": "navigation@2"
-				}
-			],
-			"view/item/context": [
-				{
-					"command": "bigDataClusters.command.manageController",
-					"when": "view == sqlBigDataCluster && viewItem == bigDataClusters.itemType.controllerNode",
-					"group": "navigation@1"
-				},
-				{
-					"command": "bigDataClusters.command.refreshController",
-					"when": "view == sqlBigDataCluster && viewItem == bigDataClusters.itemType.controllerNode",
-					"group": "navigation@2"
-				},
-				{
-					"command": "bigDataClusters.command.removeController",
-					"when": "view == sqlBigDataCluster && viewItem == bigDataClusters.itemType.controllerNode",
-					"group": "navigation@3"
-				}
-			],
-			"objectExplorer/item/context": [
-				{
-					"command": "bigDataClusters.command.mount",
-					"when": "nodeType=~/^mssqlCluster/ && nodeType!=mssqlCluster:message && nodeSubType=~/^(?!:mount).*$/",
-					"group": "1mssqlCluster@10"
-				},
-				{
-					"command": "bigDataClusters.command.refreshmount",
-					"when": "nodeType == mssqlCluster:folder && nodeSubType==:mount:",
-					"group": "1mssqlCluster@11"
-				},
-				{
-					"command": "bigDataClusters.command.deletemount",
-					"when": "nodeType == mssqlCluster:folder && nodeSubType==:mount:",
-					"group": "1mssqlCluster@12"
-				}
-			]
-		},
-		"commands": [
-			{
-				"command": "bigDataClusters.command.createController",
-				"title": "%command.createController.title%",
-				"icon": "$(add)"
-			},
-			{
-				"command": "bigDataClusters.command.connectController",
-				"title": "%command.connectController.title%",
-				"icon": "$(disconnect)"
-			},
-			{
-				"command": "bigDataClusters.command.removeController",
-				"title": "%command.removeController.title%",
-				"when": "viewItem == bigDataClusters.itemType.controllerNode"
-			},
-			{
-				"command": "bigDataClusters.command.refreshController",
-				"title": "%command.refreshController.title%",
-				"icon": "$(refresh)"
-			},
-			{
-				"command": "bigDataClusters.command.manageController",
-				"title": "%command.manageController.title%"
-			},
-			{
-				"command": "bigDataClusters.command.mount",
-				"title": "%command.mount.title%"
-			},
-			{
-				"command": "bigDataClusters.command.refreshmount",
-				"title": "%command.refreshmount.title%"
-			},
-			{
-				"command": "bigDataClusters.command.deletemount",
-				"title": "%command.deletemount.title%"
-			}
-		],
-		"configuration": {
-			"type": "object",
-			"title": "%bdc.configuration.title%",
-			"properties": {
-				"bigDataCluster.ignoreSslVerification": {
-					"type": "boolean",
-					"default": true,
-					"description": "%bdc.ignoreSslVerification.desc%"
-				}
-			}
-		},
-		"viewsWelcome": [
-			{
-			  "view": "sqlBigDataCluster",
-			  "contents": "%bdc.view.welcome%"
-			}
-		  ]
-	},
-	"dependencies": {
-		"ads-kerberos": "^1.1.3",
-		"request": "^2.88.0",
-		"vscode-nls": "^4.0.0"
-	},
-	"devDependencies": {
-		"@types/request": "^2.48.3",
-		"vscode": "^1.1.36"
-	}
+  "name": "big-data-cluster",
+  "displayName": "%text.sqlServerBigDataClusters%",
+  "description": "%description%",
+  "version": "1.0.0",
+  "publisher": "Microsoft",
+  "preview": true,
+  "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
+  "icon": "images/extension.png",
+  "engines": {
+    "vscode": "*",
+    "azdata": "*"
+  },
+  "activationEvents": [
+    "onCommand:bigDataClusters.command.mount",
+    "onCommand:bigDataClusters.command.refreshmount",
+    "onCommand:bigDataClusters.command.deletemount",
+    "onCommand:bigDataClusters.command.createController",
+    "onCommand:bigDataClusters.command.connectController",
+    "onCommand:bigDataClusters.command.removeController",
+    "onCommand:bigDataClusters.command.manageController",
+    "onCommand:bigDataClusters.command.refreshController",
+    "onView:sqlBigDataCluster"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/azuredatastudio.git"
+  },
+  "main": "./out/extension",
+  "contributes": {
+    "dataExplorer": {
+      "sqlBigDataCluster": [
+        {
+          "id": "sqlBigDataCluster",
+          "name": "%text.sqlServerBigDataClusters%"
+        }
+      ]
+    },
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "bigDataClusters.command.createController",
+          "when": "false"
+        },
+        {
+          "command": "bigDataClusters.command.connectController",
+          "when": "false"
+        },
+        {
+          "command": "bigDataClusters.command.removeController",
+          "when": "false"
+        },
+        {
+          "command": "bigDataClusters.command.refreshController",
+          "when": "false"
+        },
+        {
+          "command": "bigDataClusters.command.manageController",
+          "when": "false"
+        },
+        {
+          "command": "bigDataClusters.command.mount",
+          "when": "false"
+        },
+        {
+          "command": "bigDataClusters.command.refreshmount",
+          "when": "false"
+        },
+        {
+          "command": "bigDataClusters.command.deletemount",
+          "when": "false"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "bigDataClusters.command.createController",
+          "when": "view == sqlBigDataCluster",
+          "group": "navigation@1"
+        },
+        {
+          "command": "bigDataClusters.command.connectController",
+          "when": "view == sqlBigDataCluster",
+          "group": "navigation@2"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "bigDataClusters.command.manageController",
+          "when": "view == sqlBigDataCluster && viewItem == bigDataClusters.itemType.controllerNode",
+          "group": "navigation@1"
+        },
+        {
+          "command": "bigDataClusters.command.refreshController",
+          "when": "view == sqlBigDataCluster && viewItem == bigDataClusters.itemType.controllerNode",
+          "group": "navigation@2"
+        },
+        {
+          "command": "bigDataClusters.command.removeController",
+          "when": "view == sqlBigDataCluster && viewItem == bigDataClusters.itemType.controllerNode",
+          "group": "navigation@3"
+        }
+      ],
+      "objectExplorer/item/context": [
+        {
+          "command": "bigDataClusters.command.mount",
+          "when": "nodeType=~/^mssqlCluster/ && nodeType!=mssqlCluster:message && nodeSubType=~/^(?!:mount).*$/",
+          "group": "1mssqlCluster@10"
+        },
+        {
+          "command": "bigDataClusters.command.refreshmount",
+          "when": "nodeType == mssqlCluster:folder && nodeSubType==:mount:",
+          "group": "1mssqlCluster@11"
+        },
+        {
+          "command": "bigDataClusters.command.deletemount",
+          "when": "nodeType == mssqlCluster:folder && nodeSubType==:mount:",
+          "group": "1mssqlCluster@12"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "bigDataClusters.command.createController",
+        "title": "%command.createController.title%",
+        "icon": "$(add)"
+      },
+      {
+        "command": "bigDataClusters.command.connectController",
+        "title": "%command.connectController.title%",
+        "icon": "$(disconnect)"
+      },
+      {
+        "command": "bigDataClusters.command.removeController",
+        "title": "%command.removeController.title%",
+        "when": "viewItem == bigDataClusters.itemType.controllerNode"
+      },
+      {
+        "command": "bigDataClusters.command.refreshController",
+        "title": "%command.refreshController.title%",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "bigDataClusters.command.manageController",
+        "title": "%command.manageController.title%"
+      },
+      {
+        "command": "bigDataClusters.command.mount",
+        "title": "%command.mount.title%"
+      },
+      {
+        "command": "bigDataClusters.command.refreshmount",
+        "title": "%command.refreshmount.title%"
+      },
+      {
+        "command": "bigDataClusters.command.deletemount",
+        "title": "%command.deletemount.title%"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "%bdc.configuration.title%",
+      "properties": {
+        "bigDataCluster.ignoreSslVerification": {
+          "type": "boolean",
+          "default": true,
+          "description": "%bdc.ignoreSslVerification.desc%"
+        }
+      }
+    },
+    "viewsWelcome": [
+      {
+        "view": "sqlBigDataCluster",
+        "contents": "%bdc.view.welcome.connect%",
+        "when": "bdc.loaded"
+      },
+      {
+        "view": "sqlBigDataCluster",
+        "contents": "%bdc.view.welcome.loading%",
+        "when": "!bdc.loaded"
+      }
+    ]
+  },
+  "dependencies": {
+    "ads-kerberos": "^1.1.3",
+    "request": "^2.88.0",
+    "vscode-nls": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/request": "^2.48.3",
+    "vscode": "^1.1.36"
+  }
 }

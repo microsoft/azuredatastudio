@@ -24,10 +24,6 @@ export class MiaaConnectionStringsPage extends DashboardPage {
 		}));
 	}
 
-	protected async refresh(): Promise<void> {
-		await this._controllerModel.refresh();
-	}
-
 	protected get title(): string {
 		return loc.connectionStrings;
 	}
