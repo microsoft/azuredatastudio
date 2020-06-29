@@ -258,12 +258,15 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 	}
 
 	private handleEndpointsUpdated(): void {
+		const kibanaEndpoint = this._controllerModel.getEndpoint(Endpoints.logsui);
 		const kibanaQuery = `kubernetes_namespace:"${this._miaaModel.info.namespace}" and instance_name :"${this._miaaModel.info.name}"`;
-		const kibanaUrl = `${this._controllerModel.getEndpoint(Endpoints.logsui)?.endpoint}/app/kibana#/discover?_a=(query:(language:kuery,query:'${kibanaQuery}'))`;
+		const kibanaUrl = kibanaEndpoint ? `${kibanaEndpoint.endpoint}/app/kibana#/discover?_a=(query:(language:kuery,query:'${kibanaQuery}'))` : '';
 		this._kibanaLink.label = kibanaUrl;
 		this._kibanaLink.url = kibanaUrl;
 
-		const grafanaUrl = `${this._controllerModel.getEndpoint(Endpoints.metricsui)?.endpoint}/d/wZx3OUdmz/azure-sql-db-managed-instance-metrics?var-hostname=${this._miaaModel.info.name}-0`;
+		const grafanaEndpoint = this._controllerModel.getEndpoint(Endpoints.metricsui);
+		const grafanaQuery = `var-hostname=${this._miaaModel.info.name}-0`;
+		const grafanaUrl = grafanaEndpoint ? `${grafanaEndpoint.endpoint}/d/wZx3OUdmz/azure-sql-db-managed-instance-metrics?${grafanaQuery}` : '';
 		this._grafanaLink.label = grafanaUrl;
 		this._grafanaLink.url = grafanaUrl;
 
