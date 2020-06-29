@@ -149,6 +149,7 @@ export const ArtifactReference = 'ArtifactReference';
 export const SuppressMissingDependenciesErrors = 'SuppressMissingDependenciesErrors';
 export const DatabaseVariableLiteralValue = 'DatabaseVariableLiteralValue';
 export const DSP = 'DSP';
+export const Properties = 'Properties';
 
 // SqlProj File targets
 export const NetCoreTargets = '$(NETCoreTargetsPath)\\Microsoft.Data.Tools.Schema.SqlTasks.targets';

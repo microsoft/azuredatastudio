@@ -78,7 +78,7 @@ describe('ProjectsController: project controller operations', function (): void 
 
 			const project = await projController.openProject(vscode.Uri.file(sqlProjPath));
 
-			should(project.files.length).equal(9); // detailed sqlproj tests in their own test file
+			should(project.files.length).equal(8); // detailed sqlproj tests in their own test file
 			should(project.dataSources.length).equal(2); // detailed datasources tests in their own test file
 		});
 
@@ -120,9 +120,9 @@ describe('ProjectsController: project controller operations', function (): void 
 			const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
 			const project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
 
-			should(project.files.length).equal(1, 'There should only be the properties folder');
+			should(project.files.length).equal(0, 'There should be no files');
 			await projController.addItemPrompt(project, '', templates.script);
-			should(project.files.length).equal(2, 'File should be successfully added');
+			should(project.files.length).equal(1, 'File should be successfully added');
 			await testUtils.shouldThrowSpecificError(async () => await projController.addItemPrompt(project, '', templates.script), constants.fileAlreadyExists(tableName));
 		});
 
@@ -136,9 +136,9 @@ describe('ProjectsController: project controller operations', function (): void 
 			const project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
 			const projectRoot = new ProjectRootTreeItem(project);
 
-			should(project.files.length).equal(1, 'There should only be the properties folder');
+			should(project.files.length).equal(0, 'There should be no other folders');
 			await projController.addFolderPrompt(projectRoot);
-			should(project.files.length).equal(2, 'Folder should be successfully added');
+			should(project.files.length).equal(1, 'Folder should be successfully added');
 			projController.refreshProjectsTree();
 
 			await verifyFolderNotAdded(folderName, projController, project, projectRoot);
@@ -193,8 +193,8 @@ describe('ProjectsController: project controller operations', function (): void 
 			await proj.readProjFile(); // reload edited sqlproj from disk
 
 			// confirm result
-			should(proj.files.length).equal(2, 'number of file/folder entries'); // lowerEntry and the contained scripts should be deleted
-			should(proj.files[1].relativePath).equal('UpperFolder');
+			should(proj.files.length).equal(1, 'number of file/folder entries'); // lowerEntry and the contained scripts should be deleted
+			should(proj.files[0].relativePath).equal('UpperFolder');
 
 			should(await exists(scriptEntry.fsUri.fsPath)).equal(false, 'script is supposed to be deleted');
 		});
@@ -212,8 +212,8 @@ describe('ProjectsController: project controller operations', function (): void 
 			await proj.readProjFile(); // reload edited sqlproj from disk
 
 			// confirm result
-			should(proj.files.length).equal(2, 'number of file/folder entries'); // LowerFolder and the contained scripts should be deleted
-			should(proj.files[1].relativePath).equal('UpperFolder'); // UpperFolder should still be there
+			should(proj.files.length).equal(1, 'number of file/folder entries'); // LowerFolder and the contained scripts should be deleted
+			should(proj.files[0].relativePath).equal('UpperFolder'); // UpperFolder should still be there
 
 			should(await exists(scriptEntry.fsUri.fsPath)).equal(true, 'script is supposed to still exist on disk');
 		});
@@ -526,7 +526,7 @@ async function setupDeleteExcludeTest(proj: Project): Promise<[ProjectEntry, Pro
 	testContext.apiWrapper.setup(x => x.showWarningMessageOptions(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(constants.yesString));
 
 	// confirm setup
-	should(proj.files.length).equal(5, 'number of file/folder entries');
+	should(proj.files.length).equal(4, 'number of file/folder entries');
 	should(path.parse(scriptEntry.fsUri.fsPath).base).equal('someScript.sql');
 	should((await fs.readFile(scriptEntry.fsUri.fsPath)).toString()).equal('not a real script');
 
