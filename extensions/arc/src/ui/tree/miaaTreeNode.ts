@@ -15,14 +15,14 @@ import { MiaaDashboard } from '../dashboards/miaa/miaaDashboard';
  */
 export class MiaaTreeNode extends TreeNode {
 
-	constructor(private _model: MiaaModel, private _controllerModel: ControllerModel) {
-		super(_model.name, vscode.TreeItemCollapsibleState.None, ResourceType.sqlManagedInstances);
+	constructor(public model: MiaaModel, private _controllerModel: ControllerModel) {
+		super(model.info.name, vscode.TreeItemCollapsibleState.None, ResourceType.sqlManagedInstances);
 	}
 
 	public async openDashboard(): Promise<void> {
-		const miaaDashboard = new MiaaDashboard(this._controllerModel, this._model);
+		const miaaDashboard = new MiaaDashboard(this._controllerModel, this.model);
 		await Promise.all([
 			miaaDashboard.showDashboard(),
-			this._model.refresh()]);
+			this.model.refresh()]);
 	}
 }
