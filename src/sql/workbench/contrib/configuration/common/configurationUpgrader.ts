@@ -32,13 +32,15 @@ export class ConfigurationUpgraderContribution implements IWorkbenchContribution
 	private readonly globalStorage: { [key: string]: boolean };
 	private readonly workspaceStorage: { [key: string]: boolean };
 
+	public readonly processingPromise: Promise<void>;
+
 	constructor(
 		@IStorageService private readonly storageService: IStorageService,
 		@IConfigurationService private readonly configurationService: IConfigurationService
 	) {
 		this.globalStorage = JSON.parse(this.storageService.get(ConfigurationUpgraderContribution.STORAGE_KEY, StorageScope.GLOBAL, '{}'));
 		this.workspaceStorage = JSON.parse(this.storageService.get(ConfigurationUpgraderContribution.STORAGE_KEY, StorageScope.WORKSPACE, '{}'));
-		void (async () => {
+		this.processingPromise = (async () => {
 			await this.processSettings();
 			this.storageService.store(ConfigurationUpgraderContribution.STORAGE_KEY, JSON.stringify(this.globalStorage), StorageScope.GLOBAL);
 			this.storageService.store(ConfigurationUpgraderContribution.STORAGE_KEY, JSON.stringify(this.workspaceStorage), StorageScope.WORKSPACE);
