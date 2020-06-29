@@ -213,6 +213,19 @@ configurationRegistry.registerConfiguration({
 	}
 });
 
+configurationRegistry.registerConfiguration({
+	'id': 'notebook',
+	'title': 'Notebook',
+	'type': 'object',
+	'properties': {
+		'notebook.allowAzureDataStudioCommands': {
+			'type': 'boolean',
+			'default': false,
+			'description': localize('notebook.allowADSCommands', "Allow notebooks to run Azure Data Studio commands.")
+		}
+	}
+});
+
 /* *************** Output components *************** */
 // Note: most existing types use the same component to render. In order to
 // preserve correct rank order, we register it once for each different rank of
