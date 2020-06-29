@@ -160,12 +160,12 @@ steps:
       ./build/azure-pipelines/linux/createDrop.sh
     displayName: Create Drop
 
-  - task: CopyFiles@2
-    displayName: 'Copy Extension Unit Test Coverage Files to: $(Build.ArtifactStagingDirectory)'
-    inputs:
-      SourceFolder: '$(Build.SourcesDirectory)/extensions'
-      Contents: '*/coverage/**'
-      TargetFolder: '$(Build.ArtifactStagingDirectory)/test-results/coverage'
+  - script: |
+      set -e
+      shopt -s globstar
+      mkdir -p $(Build.ArtifactStagingDirectory)/test-results/coverage
+      cp --parents -r $(Build.SourcesDirectory)/extensions/*/coverage/** $(Build.ArtifactStagingDirectory)/test-results/coverage
+    displayName: Copy Coverage
 
   - task: PublishTestResults@2
     displayName: 'Publish Test Results test-results.xml'

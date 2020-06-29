@@ -69,6 +69,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private _content: string | string[];
 	private _lastTrustedMode: boolean;
 	private isEditMode: boolean;
+	private showPreview: boolean;
 	private _sanitizer: ISanitizer;
 	private _model: NotebookModel;
 	private _activeCellId: string;
@@ -86,6 +87,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	) {
 		super();
 		this.isEditMode = true;
+		this.showPreview = true;
 		this.markdownRenderer = this._instantiationService.createInstance(NotebookMarkdownRenderer);
 		this._register(toDisposable(() => {
 			if (this.markdownResult) {
@@ -139,6 +141,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				this.toggleEditMode(mode);
 			}
 		}));
+		this._register(this.cellModel.onCellPreviewChanged(preview => {
+			this.previewMode = preview;
+		}));
 	}
 
 	ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
@@ -171,14 +176,14 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	/**
 	 * Updates the preview of markdown component with latest changes
-	 * If content is empty and in non-edit mode, default it to 'Double-click to edit'
+	 * If content is empty and in non-edit mode, default it to 'Add content here...'
 	 * Sanitizes the data to be shown in markdown cell
 	 */
 	private updatePreview(): void {
 		let trustedChanged = this.cellModel && this._lastTrustedMode !== this.cellModel.trustedMode;
 		let cellModelSourceJoined = Array.isArray(this.cellModel.source) ? this.cellModel.source.join('') : this.cellModel.source;
 		let contentJoined = Array.isArray(this._content) ? this._content.join('') : this._content;
-		let contentChanged = contentJoined !== cellModelSourceJoined || cellModelSourceJoined.length === 0;
+		let contentChanged = contentJoined !== cellModelSourceJoined || cellModelSourceJoined.length === 0 || this.showPreview === true;
 		if (trustedChanged || contentChanged) {
 			this._lastTrustedMode = this.cellModel.trustedMode;
 			if ((!cellModelSourceJoined) && !this.isEditMode) {
@@ -213,8 +218,10 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	private updateTheme(theme: IColorTheme): void {
-		let outputElement = <HTMLElement>this.output.nativeElement;
-		outputElement.style.borderTopColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
+		let outputElement = <HTMLElement>this.output?.nativeElement;
+		if (outputElement) {
+			outputElement.style.borderTopColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
+		}
 	}
 
 	public handleContentChanged(): void {
@@ -224,8 +231,20 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	public toggleEditMode(editMode?: boolean): void {
 		this.isEditMode = editMode !== undefined ? editMode : !this.isEditMode;
 		this.cellModel.isEditMode = this.isEditMode;
+		if (!this.isEditMode) {
+			this.previewMode = true;
+		}
 		this.updatePreview();
 		this._changeRef.detectChanges();
+	}
+
+	public get previewMode(): boolean {
+		return this.showPreview;
+	}
+	public set previewMode(value: boolean) {
+		this.showPreview = value;
+		this._changeRef.detectChanges();
+		this.updatePreview();
 	}
 
 	private toggleUserSelect(userSelect: boolean): void {

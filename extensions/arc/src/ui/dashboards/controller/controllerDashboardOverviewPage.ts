@@ -9,7 +9,7 @@ import * as loc from '../../../localizedConstants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { IconPathHelper, cssStyles, iconSize, ResourceType, Endpoints } from '../../../constants';
 import { ControllerModel } from '../../../models/controllerModel';
-import { resourceTypeToDisplayName, getAzurecoreApi, getResourceTypeIcon, getConnectionModeDisplayText } from '../../../common/utils';
+import { resourceTypeToDisplayName, getAzurecoreApi, getResourceTypeIcon, getConnectionModeDisplayText, parseInstanceName } from '../../../common/utils';
 import { RegistrationResponse } from '../../../controller/generated/v1/model/registrationResponse';
 import { EndpointModel } from '../../../controller/generated/v1/api';
 
@@ -102,7 +102,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 				},
 				{
 					displayName: loc.name,
-					valueType: azdata.DeclarativeDataType.string,
+					valueType: azdata.DeclarativeDataType.component,
 					width: '33%',
 					isReadOnly: true,
 					headerCssStyles: cssStyles.tableHeader,
@@ -115,7 +115,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 					headerCssStyles: cssStyles.tableHeader,
 					rowCssStyles: cssStyles.tableRow
 				}, {
-					displayName: loc.computeAndStorage,
+					displayName: loc.compute,
 					valueType: azdata.DeclarativeDataType.string,
 					width: '34%',
 					isReadOnly: true,
@@ -140,33 +140,54 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 
 	public get toolbarContainer(): azdata.ToolbarContainer {
 
-		const createNewButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			label: loc.createNew,
+		const newInstance = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			label: loc.newInstance,
 			iconPath: IconPathHelper.add
 		}).component();
 
-		createNewButton.onDidClick(async () => {
-			await vscode.commands.executeCommand('azdata.resource.deploy');
-		});
+		this.disposables.push(
+			newInstance.onDidClick(async () => {
+				await vscode.commands.executeCommand('azdata.resource.deploy', 'arc.sql', ['arc.sql', 'arc.postgres']);
+			}));
+
+		// Refresh
+		const refreshButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			label: loc.refresh,
+			iconPath: IconPathHelper.refresh
+		}).component();
+
+		this.disposables.push(
+			refreshButton.onDidClick(async () => {
+				refreshButton.enabled = false;
+				try {
+					this._propertiesLoadingComponent!.loading = true;
+					this._arcResourcesLoadingComponent!.loading = true;
+					await this.refresh();
+				} finally {
+					refreshButton.enabled = true;
+				}
+			}));
 
 		const openInAzurePortalButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: loc.openInAzurePortal,
 			iconPath: IconPathHelper.openInTab
 		}).component();
 
-		openInAzurePortalButton.onDidClick(async () => {
-			const r = this._controllerModel.controllerRegistration;
-			if (r) {
-				vscode.env.openExternal(vscode.Uri.parse(
-					`https://portal.azure.com/#resource/subscriptions/${r.subscriptionId}/resourceGroups/${r.resourceGroupName}/providers/Microsoft.AzureData/${ResourceType.dataControllers}/${r.instanceName}`));
-			} else {
-				vscode.window.showErrorMessage(loc.couldNotFindControllerResource);
-			}
-		});
+		this.disposables.push(
+			openInAzurePortalButton.onDidClick(async () => {
+				const r = this._controllerModel.controllerRegistration;
+				if (r) {
+					vscode.env.openExternal(vscode.Uri.parse(
+						`https://portal.azure.com/#resource/subscriptions/${r.subscriptionId}/resourceGroups/${r.resourceGroupName}/providers/Microsoft.AzureData/${ResourceType.dataControllers}/${r.instanceName}`));
+				} else {
+					vscode.window.showErrorMessage(loc.couldNotFindRegistration(this._controllerModel.namespace, 'controller'));
+				}
+			}));
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems(
 			[
-				{ component: createNewButton, toolbarSeparatorAfter: true },
+				{ component: newInstance },
+				{ component: refreshButton, toolbarSeparatorAfter: true },
 				{ component: openInAzurePortalButton }
 			]
 		).component();
@@ -194,9 +215,16 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 						iconPath: iconPath,
 						iconHeight: iconSize,
 						iconWidth: iconSize
-					})
-					.component();
-				return [imageComponent, r.instanceName, resourceTypeToDisplayName(r.instanceType), r.vCores];
+					}).component();
+				const nameLink = this.modelView.modelBuilder.hyperlink()
+					.withProperties<azdata.HyperlinkComponentProperties>({
+						label: r.instanceName || '',
+						url: ''
+					}).component();
+				nameLink.onDidClick(async () => {
+					await this._controllerModel.treeDataProvider.openResourceDashboard(this._controllerModel, r.instanceType || '', r.instanceNamespace || '', parseInstanceName(r.instanceName));
+				});
+				return [imageComponent, nameLink, resourceTypeToDisplayName(r.instanceType), loc.numVCores(r.vCores)];
 			});
 		this._arcResourcesLoadingComponent.loading = false;
 	}

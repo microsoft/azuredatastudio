@@ -59,7 +59,7 @@ export interface IWorkspaceProvider {
 
 export class BrowserHostService extends Disposable implements IHostService {
 
-	_serviceBrand: undefined;
+	declare readonly _serviceBrand: undefined;
 
 	private workspaceProvider: IWorkspaceProvider;
 
@@ -224,7 +224,7 @@ export class BrowserHostService extends Disposable implements IHostService {
 				(async () => {
 
 					// Wait for the resources to be closed in the editor...
-					await this.editorService.whenClosed(fileOpenables.map(openable => openable.fileUri), { waitForSaved: true });
+					await this.editorService.whenClosed(fileOpenables.map(openable => ({ resource: openable.fileUri })), { waitForSaved: true });
 
 					// ...before deleting the wait marker file
 					await this.fileService.del(waitMarkerFileURI);

@@ -30,3 +30,5 @@ export interface ColumnMetadata {
 	primaryKey: boolean;
 	nullable: boolean;
 }
+
+export type ColumnMetadataArray = (string | number | boolean)[];
