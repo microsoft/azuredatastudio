@@ -6,3 +6,4 @@ tsconfig.json
 yarn.lock
 coverConfig.json
 *.vsix
+coverage
