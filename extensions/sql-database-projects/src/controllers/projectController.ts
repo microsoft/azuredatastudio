@@ -607,72 +607,30 @@ export class ProjectsController {
 	 * prompting the user for a name, file path location and extract target
 	 */
 	public async importNewDatabaseProject(context: any): Promise<void> {
-		let model = <ImportDataModel>{};
-
-		// TODO: Refactor code
 		try {
-			let profile = context ? <IConnectionProfile>context.connectionProfile : undefined;
-			//TODO: Prompt for new connection addition and get database information if context information isn't provided.
-			if (profile) {
-				model.serverId = profile.id;
-				model.database = profile.databaseName;
-			}
-			else {
-				const connection = await this.apiWrapper.openConnectionDialog();
-				if (!connection) {
-					return;
-				}
+			const model: ImportDataModel | undefined = await this.getModelFromContext(context);
 
-				const connectionId = connection.connectionId;
-				let database;
-
-				// use database that was connected to if it isn't master
-				if (connection.options['database'] && connection.options['database'] !== constants.master) {
-					database = connection.options['database'];
-				} else {
-					const databaseList = await this.apiWrapper.listDatabases(connectionId);
-					database = (await this.apiWrapper.showQuickPick(databaseList.map(dbName => { return { label: dbName }; })))?.label;
-
-					if (!database) {
-						throw new Error(constants.databaseSelectionRequired);
-					}
-				}
-
-				model.serverId = connectionId;
-				model.database = database;
+			if (!model) {
+				return; // cancelled by user
 			}
 
-			// Get project name
-			let newProjName = await this.getProjectName(model.database);
-			if (!newProjName) {
-				throw new Error(constants.projectNameRequired);
-			}
-			model.projName = newProjName;
-
-			// Get extractTarget
-			let extractTarget: mssql.ExtractTarget = await this.getExtractTarget();
-			model.extractTarget = extractTarget;
+			model.projName = await this.getProjectName(model.database);
+			model.extractTarget = await this.getExtractTarget();
 
 			// Get folder location for project creation
 			let newProjUri = await this.getFolderLocation(model.extractTarget);
-			if (!newProjUri) {
-				throw new Error(constants.projectLocationRequired);
-			}
 
 			// Set project folder/file location
 			let newProjFolderUri;
-			if (extractTarget === mssql.ExtractTarget['file']) {
+			if (model.extractTarget === mssql.ExtractTarget['file']) {
 				// Get folder info, if extractTarget = File
 				newProjFolderUri = Uri.file(path.dirname(newProjUri.fsPath));
 			} else {
 				newProjFolderUri = newProjUri;
 			}
 
-			// Check folder is empty
-			let isEmpty: boolean = await this.isDirEmpty(newProjFolderUri.fsPath);
-			if (!isEmpty) {
-				throw new Error(constants.projectLocationNotEmpty);
-			}
+			await this.validateEmptyDir(newProjFolderUri.fsPath);
+
 			// TODO: what if the selected folder is outside the workspace?
 			model.filePath = newProjUri.fsPath;
 
@@ -684,7 +642,7 @@ export class ProjectsController {
 			// TODO: Check for success
 
 			// Create and open new project
-			const newProjFilePath = await this.createNewProject(newProjName as string, newProjFolderUri as Uri, false);
+			const newProjFilePath = await this.createNewProject(model.projName, newProjFolderUri as Uri, false);
 			const project = await this.openProject(Uri.file(newProjFilePath));
 
 			//Create a list of all the files and directories to be added to project
@@ -701,11 +659,52 @@ export class ProjectsController {
 		}
 	}
 
-	private async getProjectName(dbName: string): Promise<string | undefined> {
+	private async getModelFromContext(context: any): Promise<ImportDataModel | undefined> {
+		let model = <ImportDataModel>{};
+
+		let profile = context ? <IConnectionProfile>context.connectionProfile : undefined;
+		//TODO: Prompt for new connection addition and get database information if context information isn't provided.
+		if (profile) {
+			model.serverId = profile.id;
+			model.database = profile.databaseName;
+		}
+		else {
+			const connection = await this.apiWrapper.openConnectionDialog();
+			if (!connection) {
+				return undefined;
+			}
+
+			const connectionId = connection.connectionId;
+			let database;
+
+			// use database that was connected to if it isn't master
+			if (connection.options['database'] && connection.options['database'] !== constants.master) {
+				database = connection.options['database'];
+			} else {
+				const databaseList = await this.apiWrapper.listDatabases(connectionId);
+				database = (await this.apiWrapper.showQuickPick(databaseList.map(dbName => { return { label: dbName }; })))?.label;
+
+				if (!database) {
+					throw new Error(constants.databaseSelectionRequired);
+				}
+			}
+
+			model.serverId = connectionId;
+			model.database = database;
+		}
+
+		return model;
+	}
+
+	private async getProjectName(dbName: string): Promise<string> {
 		let projName = await this.apiWrapper.showInputBox({
 			prompt: constants.newDatabaseProjectName,
 			value: `DatabaseProject${dbName}`
 		});
+
+		if (!projName) {
+			throw new Error(constants.projectNameRequired);
+		}
 
 		projName = projName?.trim();
 
@@ -753,7 +752,7 @@ export class ProjectsController {
 		return extractTarget;
 	}
 
-	private async getFolderLocation(extractTarget: mssql.ExtractTarget): Promise<Uri | undefined> {
+	private async getFolderLocation(extractTarget: mssql.ExtractTarget): Promise<Uri> {
 		let selectionResult;
 		let projUri;
 
@@ -785,11 +784,17 @@ export class ProjectsController {
 			}
 		}
 
+		if (!projUri) {
+			throw new Error(constants.projectLocationRequired);
+		}
+
 		return projUri;
 	}
 
-	private async isDirEmpty(newProjFolderUri: string): Promise<boolean> {
-		return (await fs.readdir(newProjFolderUri)).length === 0;
+	private async validateEmptyDir(newProjFolderUri: string): Promise<void> {
+		if (!((await fs.readdir(newProjFolderUri)).length === 0)) {
+			throw new Error(constants.projectLocationNotEmpty);
+		}
 	}
 
 	private async importApiCall(model: ImportDataModel): Promise<void> {
