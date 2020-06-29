@@ -117,7 +117,7 @@ export class ProjectsController {
 	 * @param folderUri
 	 * @param projectGuid
 	 */
-	public async createNewProject(newProjName: string, folderUri: Uri, projectGuid?: string): Promise<string> {
+	public async createNewProject(newProjName: string, folderUri: Uri, makeOwnFolder: boolean, projectGuid?: string): Promise<string> {
 		if (projectGuid && !UUID.isUUID(projectGuid)) {
 			throw new Error(`Specified GUID is invalid: '${projectGuid}'`);
 		}
@@ -135,7 +135,7 @@ export class ProjectsController {
 			newProjFileName += constants.sqlprojExtension;
 		}
 
-		const newProjFilePath = path.join(folderUri.fsPath, path.parse(newProjFileName).name, newProjFileName);
+		const newProjFilePath = makeOwnFolder ? path.join(folderUri.fsPath, path.parse(newProjFileName).name, newProjFileName) : path.join(folderUri.fsPath, newProjFileName);
 
 		let fileExists = false;
 		try {
@@ -677,7 +677,7 @@ export class ProjectsController {
 			// TODO: Check for success
 
 			// Create and open new project
-			const newProjFilePath = await this.createNewProject(newProjName as string, newProjFolderUri as Uri);
+			const newProjFilePath = await this.createNewProject(newProjName as string, newProjFolderUri as Uri, false);
 			const project = await this.openProject(Uri.file(newProjFilePath));
 
 			//Create a list of all the files and directories to be added to project
