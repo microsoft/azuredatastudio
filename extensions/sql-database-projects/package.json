@@ -24,7 +24,8 @@
     "url": "https://github.com/Microsoft/azuredatastudio.git"
   },
   "extensionDependencies": [
-    "Microsoft.mssql"
+    "Microsoft.mssql",
+    "Microsoft.schema-compare"
   ],
   "contributes": {
     "configuration": [
