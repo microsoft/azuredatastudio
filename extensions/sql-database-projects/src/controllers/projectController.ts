@@ -28,16 +28,6 @@ import { ImportDataModel } from '../models/api/import';
 import { NetCoreTool, DotNetCommandOptions } from '../tools/netcoreTool';
 import { BuildHelper } from '../tools/buildHelper';
 
-// TODO: use string enums
-export enum ExtractTarget {
-	dacpac = 0,
-	file = 1,
-	flat = 2,
-	objectType = 3,
-	schema = 4,
-	schemaObjectType = 5
-}
-
 /**
  * Controller for managing project lifecycle
  */
@@ -715,12 +705,12 @@ export class ProjectsController {
 	private mapExtractTargetEnum(inputTarget: any): mssql.ExtractTarget {
 		if (inputTarget) {
 			switch (inputTarget) {
-				case 'File': return mssql.ExtractTarget['file'];
-				case 'Flat': return mssql.ExtractTarget['flat'];
-				case 'ObjectType': return mssql.ExtractTarget['objectType'];
-				case 'Schema': return mssql.ExtractTarget['schema'];
-				case 'SchemaObjectType': return mssql.ExtractTarget['schemaObjectType'];
-				default: throw new Error(`Invalid input: ${inputTarget}`);
+				case constants.file: return mssql.ExtractTarget['file'];
+				case constants.flat: return mssql.ExtractTarget['flat'];
+				case constants.objectType: return mssql.ExtractTarget['objectType'];
+				case constants.schema: return mssql.ExtractTarget['schema'];
+				case constants.schemaObjectType: return mssql.ExtractTarget['schemaObjectType'];
+				default: throw new Error(constants.invalidInput(inputTarget));
 			}
 		} else {
 			throw new Error(constants.extractTargetRequired);
@@ -732,14 +722,11 @@ export class ProjectsController {
 
 		let extractTargetOptions: QuickPickItem[] = [];
 
-		let keys: string[] = Object.keys(ExtractTarget).filter(k => typeof ExtractTarget[k as any] === 'number');
+		let keys = [constants.file, constants.flat, constants.objectType, constants.schema, constants.schemaObjectType];
 
 		// TODO: Create a wrapper class to handle the mapping
 		keys.forEach((targetOption: string) => {
-			if (targetOption !== 'dacpac') {		//Do not present the option to create Dacpac
-				let pascalCaseTargetOption: string = utils.toPascalCase(targetOption);	// for better readability
-				extractTargetOptions.push({ label: pascalCaseTargetOption });
-			}
+			extractTargetOptions.push({ label: targetOption });
 		});
 
 		let input = await this.apiWrapper.showQuickPick(extractTargetOptions, {
