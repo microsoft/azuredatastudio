@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
-
 import { INotebookEditor, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
 import { IRange } from 'vs/editor/common/core/range';
@@ -13,7 +13,7 @@ import { TextModel } from 'vs/editor/common/model/textModel';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import { Selection } from 'vs/editor/common/core/selection';
-
+import { ToggleableAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 
 
 // Action to decorate markdown
@@ -389,4 +389,41 @@ export enum MarkdownLineType {
 	BEGIN_AND_END_LINES,
 	EVERY_LINE,
 	WRAPPED_ABOVE_AND_BELOW
+}
+
+export class TogglePreviewAction extends ToggleableAction {
+
+	private static readonly previewShowLabel = localize('previewShowLabel', "Show Preview");
+	private static readonly previewHideLabel = localize('previewHideLabel', "Hide Preview");
+	private static readonly baseClass = 'codicon';
+	private static readonly previewShowCssClass = 'split-toggle-on';
+	private static readonly previewHideCssClass = 'split-toggle-off';
+	private static readonly maskedIconClass = 'masked-icon';
+
+	constructor(
+		id: string, toggleTooltip: boolean, showPreview: boolean
+	) {
+		super(id, {
+			baseClass: TogglePreviewAction.baseClass,
+			toggleOffLabel: TogglePreviewAction.previewShowLabel,
+			toggleOffClass: TogglePreviewAction.previewShowCssClass,
+			toggleOnLabel: TogglePreviewAction.previewHideLabel,
+			toggleOnClass: TogglePreviewAction.previewHideCssClass,
+			maskedIconClass: TogglePreviewAction.maskedIconClass,
+			shouldToggleTooltip: toggleTooltip,
+			isOn: showPreview
+		});
+	}
+
+	public get previewMode(): boolean {
+		return this.state.isOn;
+	}
+	public set previewMode(value: boolean) {
+		this.toggle(value);
+	}
+	public async run(context: any): Promise<boolean> {
+		this.previewMode = !this.previewMode;
+		context.cellModel.showPreview = this.previewMode;
+		return true;
+	}
 }
