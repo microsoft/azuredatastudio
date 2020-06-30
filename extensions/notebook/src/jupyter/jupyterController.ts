@@ -42,6 +42,7 @@ export class JupyterController implements vscode.Disposable {
 
 	private outputChannel: vscode.OutputChannel;
 	private prompter: IPrompter;
+	private _notebookProvider: JupyterNotebookProvider;
 
 	constructor(private appContext: AppContext) {
 		this.prompter = new CodeAdapter();
@@ -54,6 +55,10 @@ export class JupyterController implements vscode.Disposable {
 
 	public get extensionContext(): vscode.ExtensionContext {
 		return this.appContext && this.appContext.extensionContext;
+	}
+
+	public get notebookProvider(): JupyterNotebookProvider {
+		return this._notebookProvider;
 	}
 
 	public dispose(): void {
@@ -89,8 +94,8 @@ export class JupyterController implements vscode.Disposable {
 		let supportedFileFilter: vscode.DocumentFilter[] = [
 			{ scheme: 'untitled', language: '*' }
 		];
-		let notebookProvider = this.registerNotebookProvider();
-		this.extensionContext.subscriptions.push(this.apiWrapper.registerCompletionItemProvider(supportedFileFilter, new NotebookCompletionItemProvider(notebookProvider)));
+		this._notebookProvider = this.registerNotebookProvider();
+		this.extensionContext.subscriptions.push(this.apiWrapper.registerCompletionItemProvider(supportedFileFilter, new NotebookCompletionItemProvider(this._notebookProvider)));
 
 		this.registerDefaultPackageManageProviders();
 		return true;

@@ -126,7 +126,7 @@ export class NotebookUtils {
 		let title = this.findNextUntitledEditorName();
 		let untitledUri = vscode.Uri.parse(`untitled:${title}`);
 
-		let editor = await azdata.nb.showNotebookDocument(untitledUri, {
+		let editor = await this._apiWrapper.showNotebookDocument(untitledUri, {
 			connectionProfile: oeContext ? oeContext.connectionProfile : undefined,
 			providerId: JUPYTER_NOTEBOOK_PROVIDER,
 			preview: false,
@@ -142,8 +142,7 @@ export class NotebookUtils {
 			if (hdfsPath.length > 0) {
 				let analyzeCommand = '#' + msgSampleCodeDataFrame + os.EOL + 'df = (spark.read.option("inferSchema", "true")'
 					+ os.EOL + '.option("header", "true")' + os.EOL + '.csv("{0}"))' + os.EOL + 'df.show(10)';
-
-				editor.edit(editBuilder => {
+				await editor.edit(editBuilder => {
 					editBuilder.insertCell({
 						cell_type: 'code',
 						source: analyzeCommand.replace('{0}', hdfsPath)

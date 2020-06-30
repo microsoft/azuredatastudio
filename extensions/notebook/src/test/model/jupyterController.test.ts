@@ -13,8 +13,9 @@ import { AppContext } from '../../common/appContext';
 import { JupyterController } from '../../jupyter/jupyterController';
 import { LocalPipPackageManageProvider } from '../../jupyter/localPipPackageManageProvider';
 import { MockExtensionContext } from '../common/stubs';
+import { NotebookUtils } from '../../common/notebookUtils';
 
-describe('JupyterController tests', function () {
+describe('Jupyter Controller', function () {
 	let mockExtensionContext: vscode.ExtensionContext;
 	let appContext: AppContext;
 	let controller: JupyterController;
@@ -71,5 +72,28 @@ describe('JupyterController tests', function () {
 		await controller.activate();
 		await controller.doManagePackages();
 		mockApiWrapper.verify(x => x.showErrorMessage(TypeMoq.It.isAny()), TypeMoq.Times.never());
+	});
+
+	it('Returns expected values from notebook provider', async () =>  {
+		await controller.activate();
+		should(controller.notebookProvider.standardKernels).deepEqual([], 'Notebook provider standard kernels should return empty array');
+		should(controller.notebookProvider.providerId).equal('jupyter', 'Notebook provider should be jupyter');
+		should(controller.notebookProvider.getNotebookManager(undefined)).be.rejected();
+		should(controller.notebookProvider.notebookManagerCount).equal(0);
+		controller.notebookProvider.handleNotebookClosed(undefined);
+	});
+
+	it('Returns notebook manager for real notebook editor', async () =>  {
+		await controller.activate();
+		let notebookUtils = new NotebookUtils(mockApiWrapper.object);
+		const notebookEditor = await notebookUtils.newNotebook(undefined);
+		let notebookManager = await controller.notebookProvider.getNotebookManager(notebookEditor.document.uri);
+		should(controller.notebookProvider.notebookManagerCount).equal(1);
+
+		// Session manager should not be immediately ready
+		should(notebookManager.sessionManager.isReady).equal(false);
+		// Session manager should not immediately have specs
+		should(notebookManager.sessionManager.specs).equal(undefined);
+		controller.notebookProvider.handleNotebookClosed(notebookEditor.document.uri);
 	});
 });
