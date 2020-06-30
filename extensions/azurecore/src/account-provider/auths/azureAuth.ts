@@ -126,7 +126,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 			this.metadata.settings.graphResource,
 			this.metadata.settings.ossRdbmsResource,
 			this.metadata.settings.microsoftResource,
-			this.metadata.settings.azureKeyVaultResource
+			this.metadata.settings.azureKeyVaultResource,
+			this.metadata.settings.azureDevOpsResource,
 		];
 
 		this.scopes = [...this.metadata.settings.scopes];
