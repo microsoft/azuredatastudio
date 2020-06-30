@@ -920,13 +920,13 @@ suite('SQL ConnectionManagementService tests', () => {
 			cacheRebuilt = true;
 			return Promise.resolve();
 		});
-		assert.rejects(async () => await connectionManagementService.rebuildIntelliSenseCache(uri));
-		return connect(uri, options, true, profile).then(() => {
-			return connectionManagementService.rebuildIntelliSenseCache(uri).then(() => {
-				assert(cacheRebuilt);
+		return assert.rejects(async () => await connectionManagementService.rebuildIntelliSenseCache(uri)).then(() => {
+			return connect(uri, options, true, profile).then(() => {
+				return connectionManagementService.rebuildIntelliSenseCache(uri).then(() => {
+					assert(cacheRebuilt);
+				});
 			});
 		});
-
 	});
 
 	test('buildConnectionInfo should get connection string of connectionId', () => {
