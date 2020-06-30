@@ -8,7 +8,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import * as aria from 'vs/base/browser/ui/aria/aria';
 import { IIdentityProvider } from 'vs/base/browser/ui/list/list';
 import { ITreeContextMenuEvent, ITreeElement } from 'vs/base/browser/ui/tree/tree';
-import { IAction } from 'vs/base/common/actions';
+import { IAction, Action } from 'vs/base/common/actions';
 import { Delayer } from 'vs/base/common/async';
 import * as errors from 'vs/base/common/errors';
 import { Event } from 'vs/base/common/event';
@@ -56,8 +56,8 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { NotebookSearchWidget } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearchWidget';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
-import { CollapseDeepestExpandedLevelAction, ClearSearchResultsAction, ToggleCollapseAndExpandAction, CancelSearchAction, ExpandAllAction } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearchActions';
 import { appendKeyBindingLabel } from 'vs/workbench/contrib/search/browser/searchActions';
+import { searchCollapseAllIcon, searchExpandAllIcon, searchClearIcon, searchStopIcon } from 'vs/workbench/contrib/search/browser/searchIcons';
 
 const $ = dom.$;
 
@@ -1135,6 +1135,200 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 	}
 });
 
+class ToggleCollapseAndExpandAction extends Action {
+	static readonly ID: string = 'notebookSearch.action.collapseOrExpandSearchResults';
+	static LABEL: string = nls.localize('ToggleCollapseAndExpandAction.label', "Toggle Collapse and Expand");
+
+	// Cache to keep from crawling the tree too often.
+	private action: CollapseDeepestExpandedLevelAction | ExpandAllAction | undefined;
+
+	constructor(id: string, label: string,
+		private collapseAction: CollapseDeepestExpandedLevelAction,
+		private expandAction: ExpandAllAction,
+		@IViewsService private readonly viewsService: IViewsService
+	) {
+		super(id, label, collapseAction.class);
+		this.update();
+	}
+
+	update(): void {
+		const searchView = getSearchView(this.viewsService);
+		this.enabled = !!searchView && searchView.hasSearchResults();
+		this.onTreeCollapseStateChange();
+	}
+
+	onTreeCollapseStateChange() {
+		this.action = undefined;
+		this.determineAction();
+	}
+
+	private determineAction(): CollapseDeepestExpandedLevelAction | ExpandAllAction {
+		if (this.action !== undefined) { return this.action; }
+		this.action = this.isSomeCollapsible() ? this.collapseAction : this.expandAction;
+		this.class = this.action.class;
+		return this.action;
+	}
+
+	private isSomeCollapsible(): boolean {
+		const searchView = getSearchView(this.viewsService);
+		if (searchView) {
+			const viewer = searchView.getControl();
+			const navigator = viewer.navigate();
+			let node = navigator.first();
+			do {
+				if (!viewer.isCollapsed(node)) {
+					return true;
+				}
+			} while (node = navigator.next());
+		}
+		return false;
+	}
+
+
+	async run(): Promise<void> {
+		await this.determineAction().run();
+	}
+}
+
+class CancelSearchAction extends Action {
+
+	static readonly ID: string = 'notebookSearch.action.cancelSearch';
+	static LABEL: string = nls.localize('CancelSearchAction.label', "Cancel Search");
+
+	constructor(id: string, label: string,
+		@IViewsService private readonly viewsService: IViewsService
+	) {
+		super(id, label, 'search-action ' + searchStopIcon.classNames);
+		this.update();
+	}
+
+	update(): void {
+		const searchView = getSearchView(this.viewsService);
+		this.enabled = !!searchView && searchView.isSlowSearch();
+	}
+
+	run(): Promise<void> {
+		const searchView = getSearchView(this.viewsService);
+		if (searchView) {
+			searchView.cancelSearch();
+		}
+
+		return Promise.resolve(undefined);
+	}
+}
+
+class ExpandAllAction extends Action {
+
+	static readonly ID: string = 'notebookSearch.action.expandSearchResults';
+	static LABEL: string = nls.localize('ExpandAllAction.label', "Expand All");
+
+	constructor(id: string, label: string,
+		@IViewsService private readonly viewsService: IViewsService
+	) {
+		super(id, label, 'search-action ' + searchExpandAllIcon.classNames);
+		this.update();
+	}
+
+	update(): void {
+		const searchView = getSearchView(this.viewsService);
+		this.enabled = !!searchView && searchView.hasSearchResults();
+	}
+
+	run(): Promise<void> {
+		const searchView = getSearchView(this.viewsService);
+		if (searchView) {
+			const viewer = searchView.getControl();
+			viewer.expandAll();
+			viewer.domFocus();
+			viewer.focusFirst();
+		}
+		return Promise.resolve(undefined);
+	}
+}
+
+class CollapseDeepestExpandedLevelAction extends Action {
+
+	static readonly ID: string = 'notebookSearch.action.collapseSearchResults';
+	static LABEL: string = nls.localize('CollapseDeepestExpandedLevelAction.label', "Collapse All");
+
+	constructor(id: string, label: string,
+		@IViewsService private readonly viewsService: IViewsService
+	) {
+		super(id, label, 'search-action ' + searchCollapseAllIcon.classNames);
+		this.update();
+	}
+
+	update(): void {
+		const searchView = getSearchView(this.viewsService);
+		this.enabled = !!searchView && searchView.hasSearchResults();
+	}
+
+	run(): Promise<void> {
+		const searchView = getSearchView(this.viewsService);
+		if (searchView) {
+			const viewer = searchView.getControl();
+
+			/**
+			 * one level to collapse so collapse everything. If FolderMatch, check if there are visible grandchildren,
+			 * i.e. if Matches are returned by the navigator, and if so, collapse to them, otherwise collapse all levels.
+			 */
+			const navigator = viewer.navigate();
+			let node = navigator.first();
+			let collapseFileMatchLevel = false;
+			if (node instanceof FolderMatch) {
+				while (node = navigator.next()) {
+					if (node instanceof Match) {
+						collapseFileMatchLevel = true;
+						break;
+					}
+				}
+			}
+
+			if (collapseFileMatchLevel) {
+				node = navigator.first();
+				do {
+					if (node instanceof FileMatch) {
+						viewer.collapse(node);
+					}
+				} while (node = navigator.next());
+			} else {
+				viewer.collapseAll();
+			}
+
+			viewer.domFocus();
+			viewer.focusFirst();
+		}
+		return Promise.resolve(undefined);
+	}
+}
+
+class ClearSearchResultsAction extends Action {
+
+	static readonly ID: string = 'notebookSearch.action.clearSearchResults';
+	static LABEL: string = nls.localize('ClearSearchResultsAction.label', "Clear Search Results");
+
+	constructor(id: string, label: string,
+		@IViewsService private readonly viewsService: IViewsService
+	) {
+		super(id, label, 'search-action ' + searchClearIcon.classNames);
+		this.update();
+	}
+
+	update(): void {
+		const searchView = getSearchView(this.viewsService);
+		this.enabled = !!searchView && searchView.hasSearchResults();
+	}
+
+	run(): Promise<void> {
+		const searchView = getSearchView(this.viewsService);
+		if (searchView) {
+			searchView.clearSearchResults();
+		}
+		return Promise.resolve();
+	}
+}
+
 export function getSearchView(viewsService: IViewsService): NotebookSearchView | undefined {
 	return viewsService.getActiveViewWithId(NotebookSearchView.ID) as NotebookSearchView ?? undefined;
 }
+
