@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as constants from '../common/constants';
-import { IPrompter, QuestionTypes, IQuestion } from '../prompts/question';
+import { IPrompter, IQuestion, confirm } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
 import { BookTreeItem, BookTreeItemType } from './bookTreeItem';
 import { BookModel } from './bookModel';
@@ -511,10 +511,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	//Confirmation message dialog
 	private async confirmReplace(): Promise<boolean> {
 		return await this.prompter.promptSingle<boolean>(<IQuestion>{
-			type: QuestionTypes.confirm,
+			type: confirm,
 			message: loc.confirmReplace,
 			default: false
-		});
+		}, this._apiWrapper);
 	}
 
 	getNavigation(uri: vscode.Uri): Thenable<azdata.nb.NavigationResult> {

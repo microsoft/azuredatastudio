@@ -15,7 +15,7 @@ import * as localizedConstants from '../common/localizedConstants';
 import { JupyterServerInstallation } from './jupyterServerInstallation';
 import { IServerInstance } from './common';
 import * as utils from '../common/utils';
-import { IPrompter, QuestionTypes, IQuestion } from '../prompts/question';
+import { IPrompter, IQuestion, confirm } from '../prompts/question';
 
 import { AppContext } from '../common/appContext';
 import { ApiWrapper } from '../common/apiWrapper';
@@ -202,10 +202,10 @@ export class JupyterController implements vscode.Disposable {
 	//Confirmation message dialog
 	private async confirmReinstall(): Promise<boolean> {
 		return await this.prompter.promptSingle<boolean>(<IQuestion>{
-			type: QuestionTypes.confirm,
+			type: confirm,
 			message: localize('confirmReinstall', "Are you sure you want to reinstall?"),
 			default: true
-		});
+		}, this.apiWrapper);
 	}
 
 	public async doManagePackages(options?: ManagePackageDialogOptions): Promise<void> {

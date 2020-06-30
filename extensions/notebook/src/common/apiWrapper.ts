@@ -103,4 +103,8 @@ export class ApiWrapper {
 	public createTreeView<T>(viewId: string, options: vscode.TreeViewOptions<T>): vscode.TreeView<T> {
 		return vscode.window.createTreeView(viewId, options);
 	}
+
+	public showQuickPick(items: string[] | Thenable<string[]>, options?: vscode.QuickPickOptions, token?: vscode.CancellationToken): Thenable<string | undefined> {
+		return vscode.window.showQuickPick(items, options, token);
+	}
 }
