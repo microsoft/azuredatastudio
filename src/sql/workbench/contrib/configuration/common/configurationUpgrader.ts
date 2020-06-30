@@ -7,6 +7,8 @@ import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { deepFreeze } from 'vs/base/common/objects';
 import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import { localize } from 'vs/nls';
 
 const settingsToMove: { [key: string]: string } = deepFreeze({
 	'sql.saveAsCsv.includeHeaders': 'queryEditor.results.saveAsCsv.includeHeaders', // June 19, 2020
@@ -36,7 +38,8 @@ export class ConfigurationUpgraderContribution implements IWorkbenchContribution
 
 	constructor(
 		@IStorageService private readonly storageService: IStorageService,
-		@IConfigurationService private readonly configurationService: IConfigurationService
+		@IConfigurationService private readonly configurationService: IConfigurationService,
+		@INotificationService private readonly notificationService: INotificationService
 	) {
 		this.globalStorage = JSON.parse(this.storageService.get(ConfigurationUpgraderContribution.STORAGE_KEY, StorageScope.GLOBAL, '{}'));
 		this.workspaceStorage = JSON.parse(this.storageService.get(ConfigurationUpgraderContribution.STORAGE_KEY, StorageScope.WORKSPACE, '{}'));
@@ -52,14 +55,14 @@ export class ConfigurationUpgraderContribution implements IWorkbenchContribution
 			const toKey = settingsToMove[key];
 			const value = this.configurationService.inspect(key);
 			if (this.globalStorage[key] !== true && value.userValue) {
-				await this.configurationService.updateValue(key, undefined, ConfigurationTarget.USER); // writing undefined will result in the key being deleted
 				await this.configurationService.updateValue(toKey, value.userValue, ConfigurationTarget.USER); // update to new settings key
 				this.globalStorage[key] = true; // don't proccess again
+				this.notificationService.info(localize('workbench.configuration.upgradeUser', "{0} was replaced with {1} in your user settings.", key, toKey));
 			}
 			if (this.workspaceStorage[key] !== true && value.workspaceValue) {
-				await this.configurationService.updateValue(key, undefined, ConfigurationTarget.WORKSPACE); // writing undefined will result in the key being deleted
 				await this.configurationService.updateValue(toKey, value.workspaceValue, ConfigurationTarget.WORKSPACE); // update to new settings key
 				this.workspaceStorage[key] = true; // don't proccess again
+				this.notificationService.info(localize('workbench.configuration.upgradeWorkspace', "{0} was replaced with {1} in your workspace settings.", key, toKey));
 			}
 		}
 	}
