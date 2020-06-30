@@ -42,6 +42,7 @@ suite('ConnectionDialogWidget tests', () => {
 		let providerNameToDisplayMap = { 'MSSQL': 'Mock SQL Server' };
 		connectionDialogWidget = new TestConnectionDialogWidget(providerDisplayNames, providerNameToDisplayMap['MSSQL'], providerNameToDisplayMap, cmInstantiationService, mockConnectionManagementService.object, new TestThemeService(), new TestLayoutService(), undefined, new MockContextKeyService(), undefined, undefined, undefined, new NullLogService(), undefined);
 		element = DOM.createStyleSheet();
+		connectionDialogWidget.render();
 		connectionDialogWidget.renderBody(element);
 	});
 
@@ -58,15 +59,6 @@ suite('ConnectionDialogWidget tests', () => {
 		});
 		connectionDialogWidget.updateConnectionProviders(providerDisplayNames, providerNameToDisplayMap);
 		assert.equal(connectionDialogWidget.getDisplayNameFromProviderName('PGSQL'), providerNameToDisplayMap['PGSQL']);
-	});
-
-	test('render should create connect button and call onInitDialog', () => {
-		let called = false;
-		connectionDialogWidget.onInitDialog(e => {
-			called = true;
-		});
-		connectionDialogWidget.render();
-		assert(called);
 	});
 
 	test('setting newConnectionParams test for connectionDialogWidget', () => {
