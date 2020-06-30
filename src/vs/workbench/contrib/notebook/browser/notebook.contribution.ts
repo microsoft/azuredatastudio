@@ -35,7 +35,7 @@ import { NotebookProviderInfo } from 'vs/workbench/contrib/notebook/common/noteb
 import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IEditorService, IOpenEditorOverride } from 'vs/workbench/services/editor/common/editorService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { CustomEditorsAssociations, customEditorsAssociationsSettingId } from 'vs/workbench/services/editor/common/editorAssociationsSetting';
+import { CustomEditorsAssociations, customEditorsAssociationsSettingId } from 'vs/workbench/services/editor/common/editorOpenWith';
 import { CustomEditorInfo } from 'vs/workbench/contrib/customEditor/common/customEditor';
 import { NotebookEditorOptions } from 'vs/workbench/contrib/notebook/browser/notebookEditorWidget';
 import { INotebookEditor } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
@@ -148,15 +148,11 @@ export class NotebookContribution extends Disposable implements IWorkbenchContri
 	) {
 		super();
 
-		this._register(undoRedoService.registerUriComparisonKeyComputer({
-			getComparisonKey: (uri: URI): string | null => {
-				if (uri.scheme !== CellUri.scheme) {
-					return null;
-				}
-
+		this._register(undoRedoService.registerUriComparisonKeyComputer(CellUri.scheme, {
+			getComparisonKey: (uri: URI): string => {
 				const data = CellUri.parse(uri);
 				if (!data) {
-					return null;
+					return uri.toString();
 				}
 
 				return data.notebook.toString();
@@ -189,7 +185,7 @@ export class NotebookContribution extends Disposable implements IWorkbenchContri
 
 		this._register(this.editorService.onDidVisibleEditorsChange(() => {
 			const visibleNotebookEditors = editorService.visibleEditorPanes
-				.filter(pane => (pane as any).isNotebookEditor)
+				.filter(pane => (pane as unknown as { isNotebookEditor?: boolean }).isNotebookEditor)
 				.map(pane => pane.getControl() as INotebookEditor)
 				.filter(control => !!control)
 				.map(editor => editor.getId());
@@ -198,8 +194,8 @@ export class NotebookContribution extends Disposable implements IWorkbenchContri
 		}));
 
 		this._register(this.editorService.onDidActiveEditorChange(() => {
-			const activeEditorPane = editorService.activeEditorPane as any | undefined;
-			const notebookEditor = activeEditorPane?.isNotebookEditor ? activeEditorPane.getControl() : undefined;
+			const activeEditorPane = editorService.activeEditorPane as { isNotebookEditor?: boolean } | undefined;
+			const notebookEditor = activeEditorPane?.isNotebookEditor ? (editorService.activeEditorPane?.getControl() as INotebookEditor) : undefined;
 			if (notebookEditor) {
 				this.notebookService.updateActiveNotebookEditor(notebookEditor);
 			} else {
@@ -229,7 +225,7 @@ export class NotebookContribution extends Disposable implements IWorkbenchContri
 
 	private onEditorOpening2(originalInput: IEditorInput, options: IEditorOptions | ITextEditorOptions | undefined, group: IEditorGroup): IOpenEditorOverride | undefined {
 
-		const id = typeof options?.override === 'string' ? options.override : undefined;
+		let id = typeof options?.override === 'string' ? options.override : undefined;
 		if (id === undefined && originalInput.isUntitled()) {
 			return undefined;
 		}
@@ -249,6 +245,11 @@ export class NotebookContribution extends Disposable implements IWorkbenchContri
 		if (data) {
 			notebookUri = data.notebook;
 			cellOptions = { resource: originalInput.resource, options };
+		}
+
+		if (id === undefined) {
+			const exitingNotebookEditor = <NotebookEditorInput | undefined>group.editors.find(editor => editor instanceof NotebookEditorInput && isEqual(editor.resource, notebookUri));
+			id = exitingNotebookEditor?.viewType;
 		}
 
 		if (id === undefined) {

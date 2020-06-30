@@ -8,10 +8,10 @@ import ConfirmPrompt from './confirm';
 
 export default class PromptFactory {
 
-	public static createPrompt(question: any, ignoreFocusOut?: boolean): Prompt {
+	public static createPrompt(question: any): Prompt {
 		switch (question.type) {
 			case 'confirm':
-				return new ConfirmPrompt(question, ignoreFocusOut);
+				return new ConfirmPrompt(question);
 			default:
 				throw new Error(`Could not find a prompt for question type ${question.type}`);
 		}

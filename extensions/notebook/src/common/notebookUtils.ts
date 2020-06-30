@@ -64,46 +64,46 @@ export class NotebookUtils {
 
 	public async runActiveCell(): Promise<void> {
 		try {
-			let notebook = azdata.nb.activeNotebookEditor;
+			let notebook = this._apiWrapper.getActiveNotebookEditor();
 			if (notebook) {
 				await notebook.runCell();
 			} else {
 				throw new Error(noNotebookVisible);
 			}
 		} catch (err) {
-			vscode.window.showErrorMessage(getErrorMessage(err));
+			this._apiWrapper.showErrorMessage(getErrorMessage(err));
 		}
 	}
 
 	public async clearActiveCellOutput(): Promise<void> {
 		try {
-			let notebook = azdata.nb.activeNotebookEditor;
+			let notebook = this._apiWrapper.getActiveNotebookEditor();
 			if (notebook) {
 				await notebook.clearOutput();
 			} else {
 				throw new Error(noNotebookVisible);
 			}
 		} catch (err) {
-			vscode.window.showErrorMessage(getErrorMessage(err));
+			this._apiWrapper.showErrorMessage(getErrorMessage(err));
 		}
 	}
 
 	public async runAllCells(startCell?: azdata.nb.NotebookCell, endCell?: azdata.nb.NotebookCell): Promise<void> {
 		try {
-			let notebook = azdata.nb.activeNotebookEditor;
+			let notebook = this._apiWrapper.getActiveNotebookEditor();
 			if (notebook) {
 				await notebook.runAllCells(startCell, endCell);
 			} else {
 				throw new Error(noNotebookVisible);
 			}
 		} catch (err) {
-			vscode.window.showErrorMessage(getErrorMessage(err));
+			this._apiWrapper.showErrorMessage(getErrorMessage(err));
 		}
 	}
 
 	public async addCell(cellType: azdata.nb.CellType): Promise<void> {
 		try {
-			let notebook = azdata.nb.activeNotebookEditor;
+			let notebook = this._apiWrapper.getActiveNotebookEditor();
 			if (notebook) {
 				await notebook.edit((editBuilder: azdata.nb.NotebookEditorEdit) => {
 					// TODO should prompt and handle cell placement
@@ -116,7 +116,7 @@ export class NotebookUtils {
 				throw new Error(noNotebookVisible);
 			}
 		} catch (err) {
-			vscode.window.showErrorMessage(getErrorMessage(err));
+			this._apiWrapper.showErrorMessage(getErrorMessage(err));
 		}
 	}
 
@@ -126,7 +126,7 @@ export class NotebookUtils {
 		let title = this.findNextUntitledEditorName();
 		let untitledUri = vscode.Uri.parse(`untitled:${title}`);
 
-		let editor = await azdata.nb.showNotebookDocument(untitledUri, {
+		let editor = await this._apiWrapper.showNotebookDocument(untitledUri, {
 			connectionProfile: oeContext ? oeContext.connectionProfile : undefined,
 			providerId: JUPYTER_NOTEBOOK_PROVIDER,
 			preview: false,
@@ -142,8 +142,7 @@ export class NotebookUtils {
 			if (hdfsPath.length > 0) {
 				let analyzeCommand = '#' + msgSampleCodeDataFrame + os.EOL + 'df = (spark.read.option("inferSchema", "true")'
 					+ os.EOL + '.option("header", "true")' + os.EOL + '.csv("{0}"))' + os.EOL + 'df.show(10)';
-
-				editor.edit(editBuilder => {
+				await editor.edit(editBuilder => {
 					editBuilder.insertCell({
 						cell_type: 'code',
 						source: analyzeCommand.replace('{0}', hdfsPath)
