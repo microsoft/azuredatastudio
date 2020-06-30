@@ -173,7 +173,7 @@ export class NotebookSearchView extends ViewPane {
 					// so that updated files are re-retrieved next time.
 					this.removeFileStats();
 				}
-				this.refreshTree();
+				this.refreshTree().catch(errors.onUnexpectedError);
 			}
 		});
 
@@ -244,7 +244,7 @@ export class NotebookSearchView extends ViewPane {
 		if (visible) {
 			if (this.changedWhileHidden) {
 				// Render if results changed while viewlet was hidden - #37818
-				this.refreshAndUpdateCount();
+				this.refreshAndUpdateCount().catch(errors.onUnexpectedError);
 				this.changedWhileHidden = false;
 			}
 
@@ -798,7 +798,7 @@ export class NotebookSearchView extends ViewPane {
 			const fileCount = this.viewModel.searchResult.fileCount();
 			if (visibleMatches !== fileCount) {
 				visibleMatches = fileCount;
-				this.refreshAndUpdateCount();
+				this.refreshAndUpdateCount().catch(errors.onUnexpectedError);
 			}
 
 			if (fileCount > 0 && !updatedActionsForFileCount) {
