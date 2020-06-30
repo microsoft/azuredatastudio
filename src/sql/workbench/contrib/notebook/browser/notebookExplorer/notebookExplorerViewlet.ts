@@ -39,6 +39,7 @@ import { TreeViewPane } from 'sql/workbench/browser/parts/views/treeView';
 import { NotebookSearchView } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearchView';
 import * as path from 'vs/base/common/path';
 import { URI } from 'vs/base/common/uri';
+import { isMarkdownString } from 'vs/base/common/htmlContent';
 
 export const VIEWLET_ID = 'workbench.view.notebooks';
 
@@ -270,7 +271,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 							let items = root.children;
 							items?.forEach(root => {
 								this.updateViewletsState();
-								let folderToSearch: IFolderQuery = { folder: URI.file(path.join(root.tooltip, 'content')) };
+								let folderToSearch: IFolderQuery = { folder: URI.file(path.join(isMarkdownString(root.tooltip) ? root.tooltip.value : root.tooltip, 'content')) };
 								query.folderQueries.push(folderToSearch);
 								filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
 								this.searchView.doSearch(query, null, filesToIncludeFiltered, false, this.searchWidget);
