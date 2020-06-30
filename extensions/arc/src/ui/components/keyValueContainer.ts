@@ -9,115 +9,160 @@ import * as loc from '../../localizedConstants';
 import { IconPathHelper, cssStyles } from '../../constants';
 
 /** A container with a single vertical column of KeyValue pairs */
-export class KeyValueContainer {
+export class KeyValueContainer extends vscode.Disposable {
 	public container: azdata.DivContainer;
-	private keyToComponent: Map<string, (azdata.TextComponent | azdata.InputBoxComponent)>;
+	private pairs: KeyValue[] = [];
 
-	constructor(private modelBuilder: azdata.ModelBuilder, pairs: KeyValue[]) {
+	constructor(modelBuilder: azdata.ModelBuilder, pairs: KeyValue[]) {
+		super(() => this.pairs.forEach(d => {
+			try { d.dispose(); } catch { }
+		}));
+
 		this.container = modelBuilder.divContainer().component();
-		this.keyToComponent = new Map<string, azdata.Component>();
 		this.refresh(pairs);
 	}
 
-	// TODO: Support removing KeyValues, and handle race conditions when
-	// adding/removing KeyValues concurrently. For now this should only be used
-	// when the set of keys won't change (though their values can be refreshed).
+	// TODO: Support adding/removing KeyValues concurrently. For now this should only
+	// be used when the set of keys won't change (though their values can be refreshed).
 	public refresh(pairs: KeyValue[]) {
-		pairs.forEach(p => {
-			let component = this.keyToComponent.get(p.key);
-			if (component) {
-				component.value = p.value;
-			} else {
-				component = p.getComponent(this.modelBuilder);
-				this.keyToComponent.set(p.key, component);
+		pairs.forEach(newPair => {
+			const pair = this.pairs.find(oldPair => oldPair.key === newPair.key);
+			if (!pair) {
+				this.pairs.push(newPair);
 				this.container.addItem(
-					component,
-					{ CSSStyles: { 'margin-bottom': '15px', 'min-height': '30px' } }
-				);
+					newPair.container,
+					{ CSSStyles: { 'margin-bottom': '15px', 'min-height': '30px' } });
+			} else if (pair.value !== newPair.value) {
+				pair.setValue(newPair.value);
 			}
 		});
 	}
 }
 
 /** A key value pair in the KeyValueContainer */
-export abstract class KeyValue {
-	constructor(public key: string, public value: string) { }
+export abstract class KeyValue extends vscode.Disposable {
+	readonly container: azdata.FlexContainer;
+	protected disposables: vscode.Disposable[] = [];
+	protected valueFlex = { flex: '1 1 250px' };
+	private keyFlex = { flex: `0 0 200px` };
 
-	/** Returns a component representing the entire KeyValue pair */
-	public getComponent(modelBuilder: azdata.ModelBuilder) {
-		const container = modelBuilder.flexContainer().withLayout({ flexWrap: 'wrap', alignItems: 'center' }).component();
-		const key = modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: this.key,
+	constructor(modelBuilder: azdata.ModelBuilder, readonly key: string, private _value: string) {
+		super(() => this.disposables.forEach(d => {
+			try { d.dispose(); } catch { }
+		}));
+
+		this.container = modelBuilder.flexContainer().withLayout({
+			flexWrap: 'wrap',
+			alignItems: 'center'
+		}).component();
+
+		const keyComponent = modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			value: key,
 			CSSStyles: { ...cssStyles.text, 'font-weight': 'bold', 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
-		container.addItem(key, { flex: `0 0 200px` });
-		container.addItem(this.getValueComponent(modelBuilder), { flex: '1 1 250px' });
-		return container;
+		this.container.addItem(keyComponent, this.keyFlex);
 	}
 
-	/** Returns a component representing the value of the KeyValue pair */
-	protected abstract getValueComponent(modelBuilder: azdata.ModelBuilder): azdata.Component;
+	get value(): string {
+		return this._value;
+	}
+
+	public setValue(newValue: string) {
+		this._value = newValue;
+	}
 }
 
 /** Implementation of KeyValue where the value is text */
 export class TextKeyValue extends KeyValue {
-	getValueComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
-		return modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: this.value,
+	private text: azdata.TextComponent;
+
+	constructor(modelBuilder: azdata.ModelBuilder, key: string, value: string) {
+		super(modelBuilder, key, value);
+
+		this.text = modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			value: value,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
+
+		this.container.addItem(this.text, this.valueFlex);
+	}
+
+	public setValue(newValue: string) {
+		super.setValue(newValue);
+		this.text.value = newValue;
 	}
 }
 
 /** Implementation of KeyValue where the value is a readonly copyable input field */
 export abstract class BaseInputKeyValue extends KeyValue {
-	constructor(key: string, value: string, private multiline: boolean) { super(key, value); }
+	private input: azdata.InputBoxComponent;
 
-	getValueComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
-		const container = modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
-		container.addItem(modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
-			value: this.value,
+	constructor(modelBuilder: azdata.ModelBuilder, key: string, value: string, multiline: boolean) {
+		super(modelBuilder, key, value);
+
+		this.input = modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+			value: value,
 			readOnly: true,
-			multiline: this.multiline
-		}).component());
-
-		const copy = modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			iconPath: IconPathHelper.copy, width: '17px', height: '17px'
+			multiline: multiline
 		}).component();
 
-		copy.onDidClick(async () => {
-			vscode.env.clipboard.writeText(this.value);
-			vscode.window.showInformationMessage(loc.copiedToClipboard(this.key));
-		});
+		const inputContainer = modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
+		inputContainer.addItem(this.input);
 
-		container.addItem(copy, { CSSStyles: { 'margin-left': '10px' } });
-		return container;
+		const copy = modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			iconPath: IconPathHelper.copy,
+			width: '17px',
+			height: '17px'
+		}).component();
+
+		this.disposables.push(copy.onDidClick(async () => {
+			vscode.env.clipboard.writeText(value);
+			vscode.window.showInformationMessage(loc.copiedToClipboard(key));
+		}));
+
+		inputContainer.addItem(copy, { CSSStyles: { 'margin-left': '10px' } });
+		this.container.addItem(inputContainer, this.valueFlex);
+	}
+
+	public setValue(newValue: string) {
+		super.setValue(newValue);
+		this.input.value = newValue;
 	}
 }
 
 /** Implementation of KeyValue where the value is a single line readonly copyable input field */
 export class InputKeyValue extends BaseInputKeyValue {
-	constructor(key: string, value: string) { super(key, value, false); }
+	constructor(modelBuilder: azdata.ModelBuilder, key: string, value: string) {
+		super(modelBuilder, key, value, false);
+	}
 }
 
 /** Implementation of KeyValue where the value is a multi line readonly copyable input field */
 export class MultilineInputKeyValue extends BaseInputKeyValue {
-	constructor(key: string, value: string) { super(key, value, true); }
+	constructor(modelBuilder: azdata.ModelBuilder, key: string, value: string) {
+		super(modelBuilder, key, value, true);
+	}
 }
 
 /** Implementation of KeyValue where the value is a clickable link */
 export class LinkKeyValue extends KeyValue {
-	constructor(key: string, value: string, private onClick: (e: any) => any) {
-		super(key, value);
-	}
+	private link: azdata.HyperlinkComponent;
 
-	getValueComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
-		const link = modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
-			label: this.value, url: ''
+	constructor(modelBuilder: azdata.ModelBuilder, key: string, value: string, onClick: (e: any) => any) {
+		super(modelBuilder, key, value);
+
+		this.link = modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
+			label: value,
+			url: ''
 		}).component();
 
-		link.onDidClick(this.onClick);
-		return link;
+		this.disposables.push(this.link.onDidClick(onClick));
+		this.container.addItem(this.link, this.valueFlex);
+	}
+
+	public setValue(newValue: string) {
+		super.setValue(newValue);
+		this.link.label = newValue;
 	}
 }

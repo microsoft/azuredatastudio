@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { ColumnMetadata } from '../api/models';
+import { ColumnMetadata, ColumnMetadataArray } from '../api/models';
 import { ImportPage } from '../api/importPage';
 import * as constants from '../../common/constants';
 
@@ -121,14 +121,13 @@ export class ModifyColumnsPage extends ImportPage {
 	}
 
 	private async populateTable() {
-		let data: any[][] = [];
+		let data: ColumnMetadataArray[] = [];
 
 		this.model.proseColumns.forEach((column) => {
 			data.push(ModifyColumnsPage.convertMetadata(column));
 		});
 
 		this.table.updateProperties({
-			height: 400,
 			columns: [{
 				displayName: constants.columnNameText,
 				valueType: azdata.DeclarativeDataType.string,
@@ -144,17 +143,16 @@ export class ModifyColumnsPage extends ImportPage {
 				displayName: constants.primaryKeyText,
 				valueType: azdata.DeclarativeDataType.boolean,
 				width: '100px',
-				isReadOnly: false
+				isReadOnly: false,
+				showCheckAll: true
 			}, {
 				displayName: constants.allowNullsText,
 				valueType: azdata.DeclarativeDataType.boolean,
 				isReadOnly: false,
-				width: '100px'
+				width: '100px',
+				showCheckAll: true
 			}],
 			data: data
 		});
-
-
 	}
-
 }
