@@ -65,13 +65,6 @@ export async function exists(path: string): Promise<boolean> {
 }
 
 /**
- * Convert camelCase input to PascalCase
- */
-export function toPascalCase(input: string): string {
-	return input.charAt(0).toUpperCase() + input.substr(1);
-}
-
-/**
  * get quoted path to be used in any commandline argument
  * @param filePath
  */

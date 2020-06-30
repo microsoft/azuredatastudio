@@ -63,7 +63,7 @@ export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
 		});
 	}
 
-	public onEnter(): void {
+	public async onEnter(): Promise<void> {
 		if (this.pageInfo.isSummaryPage) {
 			setModelValues(this.wizard.inputComponents, this.wizard.model);
 		}
