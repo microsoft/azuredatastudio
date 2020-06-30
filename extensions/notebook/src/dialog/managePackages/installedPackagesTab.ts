@@ -10,7 +10,7 @@ import { JupyterServerInstallation, PythonPkgDetails } from '../../jupyter/jupyt
 import * as utils from '../../common/utils';
 import { ManagePackagesDialog } from './managePackagesDialog';
 import CodeAdapter from '../../prompts/adapter';
-import { QuestionTypes, IQuestion } from '../../prompts/question';
+import { IQuestion, confirm } from '../../prompts/question';
 
 const localize = nls.loadMessageBundle();
 
@@ -222,10 +222,10 @@ export class InstalledPackagesTab {
 
 		this.uninstallPackageButton.updateProperties({ enabled: false });
 		let doUninstall = await this.prompter.promptSingle<boolean>(<IQuestion>{
-			type: QuestionTypes.confirm,
+			type: confirm,
 			message: localize('managePackages.confirmUninstall', "Are you sure you want to uninstall the specified packages?"),
 			default: false
-		});
+		}, this.jupyterInstallation?.apiWrapper);
 
 		if (doUninstall) {
 			try {

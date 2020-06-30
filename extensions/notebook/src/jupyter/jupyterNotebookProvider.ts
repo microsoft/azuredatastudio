@@ -31,8 +31,12 @@ export class JupyterNotebookProvider implements nb.NotebookProvider {
 		return Promise.resolve(this.doGetNotebookManager(notebookUri));
 	}
 
+	public get notebookManagerCount(): number {
+		return this.managerTracker.size;
+	}
+
 	private doGetNotebookManager(notebookUri: vscode.Uri): nb.NotebookManager {
-		let baseFolder = this.transformToBaseFolder(notebookUri.fsPath.toString());
+		let baseFolder = this.transformToBaseFolder(notebookUri?.fsPath?.toString());
 		let manager = this.managerTracker.get(baseFolder);
 		if (!manager) {
 			let baseFolderUri = vscode.Uri.file(baseFolder);
