@@ -119,6 +119,40 @@ suite('ConnectionDialogWidget tests', () => {
 			});
 		});
 	});
+
+	test('get set tests for connectButtonState and databaseDropdownExpanded', () => {
+		connectionDialogWidget.connectButtonState = true;
+		assert(connectionDialogWidget.connectButtonState);
+		connectionDialogWidget.databaseDropdownExpanded = true;
+		assert(connectionDialogWidget.databaseDropdownExpanded);
+	});
+
+	test('close/resetConnection should fire onRecentConnect', () => {
+		let called = false;
+		connectionDialogWidget.onResetConnection(() => {
+			called = true;
+		});
+		connectionDialogWidget.close();
+		assert(called);
+	});
+
+	test('updateProvider should call onShowUiComponent and onInitDialog', () => {
+		let returnedDisplayName: string;
+		let returnedContainer: HTMLElement;
+		let called = false;
+		connectionDialogWidget.onInitDialog(() => {
+			called = true;
+		});
+		connectionDialogWidget.onShowUiComponent(e => {
+			returnedDisplayName = e.selectedProviderDisplayName;
+			returnedContainer = e.container;
+		});
+		let providerDisplayName = 'Mock SQL Server';
+		connectionDialogWidget.updateProvider(providerDisplayName);
+		assert.equal(returnedDisplayName, providerDisplayName);
+		assert.equal(returnedContainer.className, 'connection-provider-info');
+		assert(called);
+	});
 });
 
 // Copy of function in connectionManagementService.
