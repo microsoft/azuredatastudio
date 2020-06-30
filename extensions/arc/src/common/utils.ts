@@ -104,13 +104,6 @@ export function getDatabaseStateDisplayText(state: string): string {
 }
 
 /**
- * Opens an input box prompting the user to enter in the name of a resource to delete
- * @param namespace The namespace of the resource to delete
- * @param name The name of the resource to delete
- * @returns Promise resolving to true if the user confirmed the name, false if the input box was closed for any other reason
- */
-
-/**
  * Opens an input box prompting and validating the user's input.
  * @param options Options for the input box
  * @param title An optional title for the input box
@@ -173,7 +166,7 @@ export async function promptForResourceDeletion(namespace: string, name: string)
  * Opens an input box prompting the user to enter and confirm a password
  * @param validate A function that accepts the password and returns an error message if it's invalid
  * @returns Promise resolving to the password if it passed validation,
- * or false if the input box was closed for any other reason
+ * or undefined if the input box was closed for any other reason
  */
 export async function promptAndConfirmPassword(validate: (input: string) => string): Promise<string | undefined> {
 	const title = loc.resetPassword;
