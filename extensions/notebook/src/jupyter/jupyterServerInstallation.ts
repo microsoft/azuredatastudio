@@ -124,7 +124,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		this.apiWrapper.setCommandContext('notebook:runningOnSAW', this.runningOnSAW);
 
 		if (this.runningOnSAW) {
-			this._pythonInstallationPath = JupyterServerInstallation.DefaultPythonLocation;
+			this._pythonInstallationPath = `${vscode.env.appRoot}\\spython`;
+			this._usingExistingPython = true;
 		} else {
 			this._pythonInstallationPath = JupyterServerInstallation.getPythonInstallPath(this.apiWrapper);
 			this._usingExistingPython = JupyterServerInstallation.getExistingPythonSetting(this.apiWrapper);
