@@ -187,10 +187,10 @@
                       ]
                     },
                     {
-                      "title": "%arc.control.plane.docker.account.title%",
+                      "title": "%arc.control.plane.container.registry.title%",
                       "fields": [
                         {
-                          "label": "%arc.control.plane.docker.account.name%",
+                          "label": "%arc.control.plane.container.registry.name%",
                           "variableName": "AZDATA_NB_VAR_ARC_DOCKER_USERNAME",
                           "type": "text",
                           "required": true,
@@ -198,7 +198,7 @@
                           "enabled": true
                         },
                         {
-                          "label": "%arc.control.plane.docker.account.password%",
+                          "label": "%arc.control.plane.container.registry.password%",
                           "variableName": "AZDATA_NB_VAR_ARC_DOCKER_PASSWORD",
                           "type": "password",
                           "userName": "docker",
@@ -654,7 +654,7 @@
               },
               {
                 "name": "azdata",
-                "version": "15.0.2100"
+                "version": "20.0.0"
               }
             ],
             "when": "resourceType=sql.managed.instance"
@@ -892,7 +892,7 @@
               },
               {
                 "name": "azdata",
-                "version": "15.0.4003"
+                "version": "20.0.0"
               }
             ],
             "when": "resourceType=postgres"
