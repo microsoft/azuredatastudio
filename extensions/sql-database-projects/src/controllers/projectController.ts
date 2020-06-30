@@ -83,7 +83,7 @@ export class ProjectsController {
 
 		try {
 			this.refreshProjectsTree();
-			this.focusProject(newProject);
+			await this.focusProject(newProject);
 		}
 		catch (err) {
 			// if the project didnt load - remove it from the list of open projects
