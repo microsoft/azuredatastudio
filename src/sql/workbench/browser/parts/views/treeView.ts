@@ -442,7 +442,14 @@ export class TreeView extends Disposable implements ITreeView {
 			identityProvider: new TreeViewIdentityProvider(),
 			accessibilityProvider: {
 				getAriaLabel(element: ITreeItem): string {
-					return element.tooltip ? element.tooltip : element.label ? element.label.label : '';
+					if (element.accessibilityInformation) {
+						return element.accessibilityInformation.label;
+					}
+
+					return isString(element.tooltip) ? element.tooltip : element.label ? element.label.label : '';
+				},
+				getRole(element: ITreeItem): string | undefined {
+					return element.accessibilityInformation?.role ?? 'treeitem';
 				},
 				getWidgetAriaLabel(): string {
 					return widgetAriaLabel;
@@ -842,7 +849,7 @@ class TreeRenderer extends Disposable implements ITreeRenderer<ITreeItem, FuzzyS
 		}) : undefined;
 		const icon = this.themeService.getColorTheme().type === LIGHT ? node.icon : node.iconDark;
 		const iconUrl = icon ? URI.revive(icon) : null;
-		const title = node.tooltip ? node.tooltip : resource ? undefined : label;
+		const title = node.tooltip ? isString(node.tooltip) ? node.tooltip : undefined : resource ? undefined : label;
 		const sqlIcon = node.sqlIcon;
 
 		// reset

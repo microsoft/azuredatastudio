@@ -18,7 +18,7 @@ import { IConnectionProfile, TaskExecutionMode } from 'azdata';
 import { promises as fs } from 'fs';
 import { ApiWrapper } from '../common/apiWrapper';
 import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
-import { Project, DatabaseReferenceLocation, SystemDatabase, TargetPlatform, ProjectEntry } from '../models/project';
+import { Project, DatabaseReferenceLocation, SystemDatabase, TargetPlatform, ProjectEntry, reservedProjectFolders } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
 import { IDeploymentProfile, IGenerateScriptProfile, PublishSettings } from '../models/IDeploymentProfile';
@@ -27,16 +27,6 @@ import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { ImportDataModel } from '../models/api/import';
 import { NetCoreTool, DotNetCommandOptions } from '../tools/netcoreTool';
 import { BuildHelper } from '../tools/buildHelper';
-
-// TODO: use string enums
-export enum ExtractTarget {
-	dacpac = 0,
-	file = 1,
-	flat = 2,
-	objectType = 3,
-	schema = 4,
-	schemaObjectType = 5
-}
 
 /**
  * Controller for managing project lifecycle
@@ -117,7 +107,7 @@ export class ProjectsController {
 	 * @param folderUri
 	 * @param projectGuid
 	 */
-	public async createNewProject(newProjName: string, folderUri: Uri, projectGuid?: string): Promise<string> {
+	public async createNewProject(newProjName: string, folderUri: Uri, makeOwnFolder: boolean, projectGuid?: string): Promise<string> {
 		if (projectGuid && !UUID.isUUID(projectGuid)) {
 			throw new Error(`Specified GUID is invalid: '${projectGuid}'`);
 		}
@@ -135,7 +125,7 @@ export class ProjectsController {
 			newProjFileName += constants.sqlprojExtension;
 		}
 
-		const newProjFilePath = path.join(folderUri.fsPath, path.parse(newProjFileName).name, newProjFileName);
+		const newProjFilePath = makeOwnFolder ? path.join(folderUri.fsPath, path.parse(newProjFileName).name, newProjFileName) : path.join(folderUri.fsPath, newProjFileName);
 
 		let fileExists = false;
 		try {
@@ -290,9 +280,26 @@ export class ProjectsController {
 
 		const relativeFolderPath = path.join(this.getRelativePath(treeNode), newFolderName);
 
-		await project.addFolderItem(relativeFolderPath);
+		try {
+			// check if folder already exists or is a reserved folder
+			const absoluteFolderPath = path.join(project.projectFolderPath, relativeFolderPath);
+			const folderExists = await utils.exists(absoluteFolderPath);
 
-		this.refreshProjectsTree();
+			if (folderExists || this.isReservedFolder(absoluteFolderPath, project.projectFolderPath)) {
+				throw new Error(constants.folderAlreadyExists(path.parse(absoluteFolderPath).name));
+			}
+
+			await project.addFolderItem(relativeFolderPath);
+			this.refreshProjectsTree();
+		} catch (err) {
+			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
+		}
+	}
+
+	public isReservedFolder(absoluteFolderPath: string, projectFolderPath: string): boolean {
+		const sameName = reservedProjectFolders.find(f => f === path.parse(absoluteFolderPath).name) !== undefined;
+		const sameLocation = path.parse(absoluteFolderPath).dir === projectFolderPath;
+		return sameName && sameLocation;
 	}
 
 	public async addItemPromptFromNode(treeNode: BaseProjectTreeItem, itemTypeName?: string) {
@@ -325,16 +332,26 @@ export class ProjectsController {
 			return; // user cancelled
 		}
 
-		// TODO: file already exists?
-
 		const newFileText = this.macroExpansion(itemType.templateScript, { 'OBJECT_NAME': itemObjectName });
 		const relativeFilePath = path.join(relativePath, itemObjectName + constants.sqlFileExtension);
 
-		const newEntry = await project.addScriptItem(relativeFilePath, newFileText);
+		try {
+			// check if file already exists
+			const absoluteFilePath = path.join(project.projectFolderPath, relativeFilePath);
+			const fileExists = await utils.exists(absoluteFilePath);
 
-		this.apiWrapper.executeCommand('vscode.open', newEntry.fsUri);
+			if (fileExists) {
+				throw new Error(constants.fileAlreadyExists(path.parse(absoluteFilePath).name));
+			}
 
-		this.refreshProjectsTree();
+			const newEntry = await project.addScriptItem(relativeFilePath, newFileText);
+
+			this.apiWrapper.executeCommand('vscode.open', newEntry.fsUri);
+
+			this.refreshProjectsTree();
+		} catch (err) {
+			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
+		}
 	}
 
 	public async exclude(context: FileNode | FolderNode): Promise<void> {
@@ -624,11 +641,18 @@ export class ProjectsController {
 				}
 
 				const connectionId = connection.connectionId;
-				const databaseList = await this.apiWrapper.listDatabases(connectionId);
-				const database = (await this.apiWrapper.showQuickPick(databaseList.map(dbName => { return { label: dbName }; })))?.label;
+				let database;
 
-				if (!database) {
-					throw new Error(constants.databaseSelectionRequired);
+				// use database that was connected to if it isn't master
+				if (connection.options['database'] && connection.options['database'] !== constants.master) {
+					database = connection.options['database'];
+				} else {
+					const databaseList = await this.apiWrapper.listDatabases(connectionId);
+					database = (await this.apiWrapper.showQuickPick(databaseList.map(dbName => { return { label: dbName }; })))?.label;
+
+					if (!database) {
+						throw new Error(constants.databaseSelectionRequired);
+					}
 				}
 
 				model.serverId = connectionId;
@@ -677,7 +701,7 @@ export class ProjectsController {
 			// TODO: Check for success
 
 			// Create and open new project
-			const newProjFilePath = await this.createNewProject(newProjName as string, newProjFolderUri as Uri);
+			const newProjFilePath = await this.createNewProject(newProjName as string, newProjFolderUri as Uri, false);
 			const project = await this.openProject(Uri.file(newProjFilePath));
 
 			//Create a list of all the files and directories to be added to project
@@ -708,12 +732,12 @@ export class ProjectsController {
 	private mapExtractTargetEnum(inputTarget: any): mssql.ExtractTarget {
 		if (inputTarget) {
 			switch (inputTarget) {
-				case 'File': return mssql.ExtractTarget['file'];
-				case 'Flat': return mssql.ExtractTarget['flat'];
-				case 'ObjectType': return mssql.ExtractTarget['objectType'];
-				case 'Schema': return mssql.ExtractTarget['schema'];
-				case 'SchemaObjectType': return mssql.ExtractTarget['schemaObjectType'];
-				default: throw new Error(`Invalid input: ${inputTarget}`);
+				case constants.file: return mssql.ExtractTarget['file'];
+				case constants.flat: return mssql.ExtractTarget['flat'];
+				case constants.objectType: return mssql.ExtractTarget['objectType'];
+				case constants.schema: return mssql.ExtractTarget['schema'];
+				case constants.schemaObjectType: return mssql.ExtractTarget['schemaObjectType'];
+				default: throw new Error(constants.invalidInput(inputTarget));
 			}
 		} else {
 			throw new Error(constants.extractTargetRequired);
@@ -725,14 +749,11 @@ export class ProjectsController {
 
 		let extractTargetOptions: QuickPickItem[] = [];
 
-		let keys: string[] = Object.keys(ExtractTarget).filter(k => typeof ExtractTarget[k as any] === 'number');
+		let keys = [constants.file, constants.flat, constants.objectType, constants.schema, constants.schemaObjectType];
 
 		// TODO: Create a wrapper class to handle the mapping
 		keys.forEach((targetOption: string) => {
-			if (targetOption !== 'dacpac') {		//Do not present the option to create Dacpac
-				let pascalCaseTargetOption: string = utils.toPascalCase(targetOption);	// for better readability
-				extractTargetOptions.push({ label: pascalCaseTargetOption });
-			}
+			extractTargetOptions.push({ label: targetOption });
 		});
 
 		let input = await this.apiWrapper.showQuickPick(extractTargetOptions, {

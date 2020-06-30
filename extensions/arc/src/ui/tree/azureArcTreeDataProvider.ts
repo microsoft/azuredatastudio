@@ -110,6 +110,28 @@ export class AzureArcTreeDataProvider implements vscode.TreeDataProvider<TreeNod
 		const controllerInfo = this._controllerNodes.map(node => node.model.info);
 		await this._context.globalState.update(mementoToken, controllerInfo);
 	}
+
+	/**
+	 * Opens the dashboard for the specified resource
+	 * @param controllerModel The model for the controller containing the resource we want to open the dashboard for
+	 * @param resourceType The resourceType for the resource
+	 * @param namespace The namespace of the resource
+	 * @param name The name of the resource
+	 */
+	public async openResourceDashboard(controllerModel: ControllerModel, resourceType: string, namespace: string, name: string): Promise<void> {
+		const controllerNode = this._controllerNodes.find(n => n.model === controllerModel);
+		if (controllerNode) {
+			const resourceNode = controllerNode.getResourceNode(resourceType, namespace, name);
+			if (resourceNode) {
+
+			} else {
+				console.log(`Couldn't find resource node for ${namespace}.${name} (${resourceType})`);
+			}
+			await resourceNode?.openDashboard();
+		} else {
+			console.log('Couldn\'t find controller node for opening dashboard');
+		}
+	}
 }
 
 function getCredentialId(info: ControllerInfo): string {

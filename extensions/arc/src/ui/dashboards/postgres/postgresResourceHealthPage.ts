@@ -57,14 +57,14 @@ export class PostgresResourceHealthPage extends DashboardPage {
 			CSSStyles: { ...cssStyles.title, 'margin-bottom': '30px' }
 		}).component());
 
-		const titleCSS = { ...cssStyles.title, 'margin-block-start': '2em', 'margin-block-end': '0' };
 		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: loc.podOverview,
-			CSSStyles: titleCSS
+			CSSStyles: { ...cssStyles.title, 'margin-block-end': '0' }
 		}).component());
 
 		this.podsUpdated = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: this.getPodsLastUpdated()
+			value: this.getPodsLastUpdated(),
+			CSSStyles: { ...cssStyles.text, 'font-size': '12px', 'margin-block-start': '0' }
 		}).component();
 
 		content.addItem(this.podsUpdated);
@@ -75,18 +75,18 @@ export class PostgresResourceHealthPage extends DashboardPage {
 				{
 					displayName: '',
 					valueType: azdata.DeclarativeDataType.string,
-					width: '50%',
+					width: '35%',
 					isReadOnly: true,
 					headerCssStyles: cssStyles.tableHeader,
-					rowCssStyles: { ...cssStyles.tableRow, 'font-size': '20px', 'font-weight': 'bold' }
+					rowCssStyles: { ...cssStyles.tableRow, 'font-size': '20px', 'font-weight': 'bold', 'padding': '7px' }
 				},
 				{
 					displayName: '',
 					valueType: azdata.DeclarativeDataType.string,
-					width: '50%',
+					width: '65%',
 					isReadOnly: true,
 					headerCssStyles: cssStyles.tableHeader,
-					rowCssStyles: cssStyles.tableRow
+					rowCssStyles: { ...cssStyles.tableRow, 'padding': '7px' }
 				}
 			],
 			data: this.getPodsTable()

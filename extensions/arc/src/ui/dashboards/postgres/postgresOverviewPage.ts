@@ -6,8 +6,8 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as loc from '../../../localizedConstants';
-import { IconPathHelper, cssStyles, ResourceType } from '../../../constants';
-import { DuskyObjectModelsDatabase, V1Pod, DuskyObjectModelsDatabaseServiceArcPayload } from '../../../controller/generated/dusky/api';
+import { IconPathHelper, cssStyles, ResourceType, Endpoints } from '../../../constants';
+import { V1Pod, DuskyObjectModelsDatabaseServiceArcPayload } from '../../../controller/generated/dusky/api';
 import { DashboardPage } from '../../components/dashboardPage';
 import { ControllerModel } from '../../../models/controllerModel';
 import { PostgresModel, PodRole } from '../../../models/postgresModel';
@@ -194,30 +194,6 @@ export class PostgresOverviewPage extends DashboardPage {
 	}
 
 	protected get toolbarContainer(): azdata.ToolbarContainer {
-		// New database
-		const newDatabaseButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			label: loc.newDatabase,
-			iconPath: IconPathHelper.add
-		}).component();
-
-		this.disposables.push(
-			newDatabaseButton.onDidClick(async () => {
-				newDatabaseButton.enabled = false;
-				let name;
-				try {
-					name = await vscode.window.showInputBox({ prompt: loc.databaseName });
-					if (name) {
-						const db: DuskyObjectModelsDatabase = { name: name }; // TODO support other options (sharded, owner)
-						await this._postgresModel.createDatabase(db);
-						vscode.window.showInformationMessage(loc.databaseCreated(db.name ?? ''));
-					}
-				} catch (error) {
-					vscode.window.showErrorMessage(loc.databaseCreationFailed(name ?? '', error));
-				} finally {
-					newDatabaseButton.enabled = true;
-				}
-			}));
-
 		// Reset password
 		const resetPasswordButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: loc.resetPassword,
@@ -255,6 +231,7 @@ export class PostgresOverviewPage extends DashboardPage {
 				try {
 					if (await promptForResourceDeletion(this._postgresModel.namespace, this._postgresModel.name)) {
 						await this._postgresModel.delete();
+						await this._controllerModel.deleteRegistration(ResourceType.postgresInstances, this._postgresModel.namespace, this._postgresModel.name);
 						vscode.window.showInformationMessage(loc.resourceDeleted(this._postgresModel.fullName));
 					}
 				} catch (error) {
@@ -309,7 +286,6 @@ export class PostgresOverviewPage extends DashboardPage {
 			}));
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems([
-			{ component: newDatabaseButton },
 			{ component: resetPasswordButton },
 			{ component: deleteButton },
 			{ component: refreshButton, toolbarSeparatorAfter: true },
@@ -335,13 +311,13 @@ export class PostgresOverviewPage extends DashboardPage {
 
 	private getKibanaLink(): string {
 		const kibanaQuery = `kubernetes_namespace:"${this._postgresModel.namespace}" and cluster_name:"${this._postgresModel.name}"`;
-		return `${this._controllerModel.getEndpoint('logsui')?.endpoint}/app/kibana#/discover?_a=(query:(language:kuery,query:'${kibanaQuery}'))`;
+		return `${this._controllerModel.getEndpoint(Endpoints.logsui)?.endpoint}/app/kibana#/discover?_a=(query:(language:kuery,query:'${kibanaQuery}'))`;
 
 	}
 
 	private getGrafanaLink(): string {
 		const grafanaQuery = `var-Namespace=${this._postgresModel.namespace}&var-Name=${this._postgresModel.name}`;
-		return `${this._controllerModel.getEndpoint('metricsui')?.endpoint}/d/postgres-metrics?${grafanaQuery}`;
+		return `${this._controllerModel.getEndpoint(Endpoints.metricsui)?.endpoint}/d/postgres-metrics?${grafanaQuery}`;
 	}
 
 	private getNodes(): string[][] {
@@ -383,7 +359,6 @@ export class PostgresOverviewPage extends DashboardPage {
 
 		this.nodesTable!.data = this.getNodes();
 		this.nodesTableLoading!.loading = false;
-
 	}
 
 	private handlePodsUpdated() {

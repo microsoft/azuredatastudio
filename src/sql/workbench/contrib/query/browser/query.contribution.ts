@@ -7,12 +7,11 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/browser/editor';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IWorkbenchActionRegistry, Extensions as ActionExtensions } from 'vs/workbench/common/actions';
-import { IConfigurationRegistry, Extensions as ConfigExtensions, IConfigurationPropertySchema } from 'vs/platform/configuration/common/configurationRegistry';
+import { IConfigurationRegistry, Extensions as ConfigExtensions, IConfigurationNode } from 'vs/platform/configuration/common/configurationRegistry';
 import { SyncActionDescriptor, MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
 import { KeyMod, KeyCode, KeyChord } from 'vs/base/common/keyCodes';
 import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { ContextKeyExpr, ContextKeyEqualsExpr } from 'vs/platform/contextkey/common/contextkey';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { QueryResultsEditor } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
@@ -24,7 +23,6 @@ import {
 } from 'sql/workbench/contrib/query/browser/keyboardQueryActions';
 import * as gridActions from 'sql/workbench/contrib/editData/browser/gridActions';
 import * as gridCommands from 'sql/workbench/contrib/editData/browser/gridCommands';
-import * as Constants from 'sql/platform/query/common/constants';
 import { localize } from 'vs/nls';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
 
@@ -42,6 +40,7 @@ import { MssqlNodeContext } from 'sql/workbench/services/objectExplorer/browser/
 import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
 import { ManageActionContext } from 'sql/workbench/browser/actions';
 import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerContext';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export const QueryEditorVisibleCondition = ContextKeyExpr.has(queryContext.queryEditorVisibleId);
 export const ResultsGridFocusCondition = ContextKeyExpr.and(ContextKeyExpr.has(queryContext.resultsVisibleId), ContextKeyExpr.has(queryContext.resultsGridFocussedId));
@@ -305,228 +304,104 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	handler: gridCommands.goToNextQueryOutputTab
 });
 
+export const queryEditorConfigurationBaseNode = Object.freeze<IConfigurationNode>({
+	id: 'queryEditor',
+	order: 5,
+	type: 'object',
+	title: localize('queryEditorConfigurationTitle', "Query Editor"),
+});
+
 // Intellisense and other configuration options
-const registryProperties: { [path: string]: IConfigurationPropertySchema; } = {
-	'sql.saveAsCsv.includeHeaders': {
-		'type': 'boolean',
-		'description': localize('sql.saveAsCsv.includeHeaders', "[Optional] When true, column headers are included when saving results as CSV"),
-		'default': true
-	},
-	'sql.saveAsCsv.delimiter': {
-		'type': 'string',
-		'description': localize('sql.saveAsCsv.delimiter', "[Optional] The custom delimiter to use between values when saving as CSV"),
-		'default': ','
-	},
-	'sql.saveAsCsv.lineSeperator': {
-		'type': 'string',
-		'description': localize('sql.saveAsCsv.lineSeperator', "[Optional] Character(s) used for seperating rows when saving results as CSV"),
-		'default': null
-	},
-	'sql.saveAsCsv.textIdentifier': {
-		'type': 'string',
-		'description': localize('sql.saveAsCsv.textIdentifier', "[Optional] Character used for enclosing text fields when saving results as CSV"),
-		'default': '\"'
-	},
-	'sql.saveAsCsv.encoding': {
-		'type': 'string',
-		'description': localize('sql.saveAsCsv.encoding', "[Optional] File encoding used when saving results as CSV"),
-		'default': 'utf-8'
-	},
-	'sql.results.streaming': {
-		'type': 'boolean',
-		'description': localize('sql.results.streaming', "Enable results streaming; contains few minor visual issues"),
-		'default': true
-	},
-	'sql.saveAsXml.formatted': {
-		'type': 'string',
-		'description': localize('sql.saveAsXml.formatted', "[Optional] When true, XML output will be formatted when saving results as XML"),
-		'default': true
-	},
-	'sql.saveAsXml.encoding': {
-		'type': 'string',
-		'description': localize('sql.saveAsXml.encoding', "[Optional] File encoding used when saving results as XML"),
-		'default': 'utf-8'
-	},
-	'sql.copyIncludeHeaders': {
-		'type': 'boolean',
-		'description': localize('sql.copyIncludeHeaders', "[Optional] Configuration options for copying results from the Results View"),
-		'default': false
-	},
-	'sql.copyRemoveNewLine': {
-		'type': 'boolean',
-		'description': localize('sql.copyRemoveNewLine', "[Optional] Configuration options for copying multi-line results from the Results View"),
-		'default': true
-	},
-	'sql.showBatchTime': {
-		'type': 'boolean',
-		'description': localize('sql.showBatchTime', "[Optional] Should execution time be shown for individual batches"),
-		'default': false
-	},
-	'sql.chart.defaultChartType': {
-		'enum': Constants.allChartTypes,
-		'default': Constants.chartTypeHorizontalBar,
-		'description': localize('defaultChartType', "[Optional] the default chart type to use when opening Chart Viewer from a Query Results")
-	},
-	'sql.tabColorMode': {
-		'type': 'string',
-		'enum': [Constants.tabColorModeOff, Constants.tabColorModeBorder, Constants.tabColorModeFill],
-		'enumDescriptions': [
-			localize('tabColorMode.off', "Tab coloring will be disabled"),
-			localize('tabColorMode.border', "The top border of each editor tab will be colored to match the relevant server group"),
-			localize('tabColorMode.fill', "Each editor tab's background color will match the relevant server group"),
-		],
-		'default': Constants.tabColorModeOff,
-		'description': localize('tabColorMode', "Controls how to color tabs based on the server group of their active connection")
-	},
-	'sql.showConnectionInfoInTitle': {
-		'type': 'boolean',
-		'description': localize('showConnectionInfoInTitle', "Controls whether to show the connection info for a tab in the title."),
-		'default': true
-	},
-	'sql.promptToSaveGeneratedFiles': {
-		'type': 'boolean',
-		'default': false,
-		'description': localize('sql.promptToSaveGeneratedFiles', "Prompt to save generated SQL files")
-	},
-	'mssql.intelliSense.enableIntelliSense': {
-		'type': 'boolean',
-		'default': true,
-		'description': localize('mssql.intelliSense.enableIntelliSense', "Should IntelliSense be enabled")
-	},
-	'mssql.intelliSense.enableErrorChecking': {
-		'type': 'boolean',
-		'default': true,
-		'description': localize('mssql.intelliSense.enableErrorChecking', "Should IntelliSense error checking be enabled")
-	},
-	'mssql.intelliSense.enableSuggestions': {
-		'type': 'boolean',
-		'default': true,
-		'description': localize('mssql.intelliSense.enableSuggestions', "Should IntelliSense suggestions be enabled")
-	},
-	'mssql.intelliSense.enableQuickInfo': {
-		'type': 'boolean',
-		'default': true,
-		'description': localize('mssql.intelliSense.enableQuickInfo', "Should IntelliSense quick info be enabled")
-	},
-	'mssql.intelliSense.lowerCaseSuggestions': {
-		'type': 'boolean',
-		'default': false,
-		'description': localize('mssql.intelliSense.lowerCaseSuggestions', "Should IntelliSense suggestions be lowercase")
-	},
-	'mssql.query.rowCount': {
-		'type': 'number',
-		'default': 0,
-		'description': localize('mssql.query.setRowCount', "Maximum number of rows to return before the server stops processing your query.")
-	},
-	'mssql.query.textSize': {
-		'type': 'number',
-		'default': 2147483647,
-		'description': localize('mssql.query.textSize', "Maximum size of text and ntext data returned from a SELECT statement")
-	},
-	'mssql.query.executionTimeout': {
-		'type': 'number',
-		'default': 0,
-		'description': localize('mssql.query.executionTimeout', "An execution time-out of 0 indicates an unlimited wait (no time-out)")
-	},
-	'mssql.query.noCount': {
-		'type': 'boolean',
-		'default': false,
-		'description': localize('mssql.query.noCount', "Enable SET NOCOUNT option")
-	},
-	'mssql.query.noExec': {
-		'type': 'boolean',
-		'default': false,
-		'description': localize('mssql.query.noExec', "Enable SET NOEXEC option")
-	},
-	'mssql.query.parseOnly': {
-		'type': 'boolean',
-		'default': false,
-		'description': localize('mssql.query.parseOnly', "Enable SET PARSEONLY option")
-	},
-	'mssql.query.arithAbort': {
-		'type': 'boolean',
-		'default': true,
-		'description': localize('mssql.query.arithAbort', "Enable SET ARITHABORT option")
-	},
-	'mssql.query.statisticsTime': {
-		'type': 'boolean',
-		'default': false,
-		'description': localize('mssql.query.statisticsTime', "Enable SET STATISTICS TIME option")
-	},
-	'mssql.query.statisticsIO': {
-		'type': 'boolean',
-		'default': false,
-		'description': localize('mssql.query.statisticsIO', "Enable SET STATISTICS IO option")
-	},
-	'mssql.query.xactAbortOn': {
-		'type': 'boolean',
-		'default': false,
-		'description': localize('mssql.query.xactAbortOn', "Enable SET XACT_ABORT ON option")
-	},
-	'mssql.query.transactionIsolationLevel': {
-		'enum': ['READ COMMITTED', 'READ UNCOMMITTED', 'REPEATABLE READ', 'SERIALIZABLE'],
-		'default': 'READ COMMITTED',
-		'description': localize('mssql.query.transactionIsolationLevel', "Enable SET TRANSACTION ISOLATION LEVEL option")
-	},
-	'mssql.query.deadlockPriority': {
-		'enum': ['Normal', 'Low'],
-		'default': 'Normal',
-		'description': localize('mssql.query.deadlockPriority', "Enable SET DEADLOCK_PRIORITY option")
-	},
-	'mssql.query.lockTimeout': {
-		'type': 'number',
-		'default': -1,
-		'description': localize('mssql.query.lockTimeout', "Enable SET LOCK TIMEOUT option (in milliseconds)")
-	},
-	'mssql.query.queryGovernorCostLimit': {
-		'type': 'number',
-		'default': -1,
-		'description': localize('mssql.query.queryGovernorCostLimit', "Enable SET QUERY_GOVERNOR_COST_LIMIT")
-	},
-	'mssql.query.ansiDefaults': {
-		'type': 'boolean',
-		'default': false,
-		'description': localize('mssql.query.ansiDefaults', "Enable SET ANSI_DEFAULTS")
-	},
-	'mssql.query.quotedIdentifier': {
-		'type': 'boolean',
-		'default': true,
-		'description': localize('mssql.query.quotedIdentifier', "Enable SET QUOTED_IDENTIFIER")
-	},
-	'mssql.query.ansiNullDefaultOn': {
-		'type': 'boolean',
-		'default': true,
-		'description': localize('mssql.query.ansiNullDefaultOn', "Enable SET ANSI_NULL_DFLT_ON")
-	},
-	'mssql.query.implicitTransactions': {
-		'type': 'boolean',
-		'default': false,
-		'description': localize('mssql.query.implicitTransactions', "Enable SET IMPLICIT_TRANSACTIONS")
-	},
-	'mssql.query.cursorCloseOnCommit': {
-		'type': 'boolean',
-		'default': false,
-		'description': localize('mssql.query.cursorCloseOnCommit', "Enable SET CURSOR_CLOSE_ON_COMMIT")
-	},
-	'mssql.query.ansiPadding': {
-		'type': 'boolean',
-		'default': true,
-		'description': localize('mssql.query.ansiPadding', "Enable SET ANSI_PADDING")
-	},
-	'mssql.query.ansiWarnings': {
-		'type': 'boolean',
-		'default': true,
-		'description': localize('mssql.query.ansiWarnings', "Enable SET ANSI_WARNINGS")
-	},
-	'mssql.query.ansiNulls': {
-		'type': 'boolean',
-		'default': true,
-		'description': localize('mssql.query.ansiNulls', "Enable SET ANSI_NULLS")
-	},
-	'mssql.query.alwaysEncryptedParameterization': {
-		'type': 'boolean',
-		'default': false,
-		'description': localize('mssql.query.alwaysEncryptedParameterization', "Enable Parameterization for Always Encrypted")
+const queryEditorConfiguration: IConfigurationNode = {
+	...queryEditorConfigurationBaseNode,
+	properties: {
+		'queryEditor.results.saveAsCsv.includeHeaders': {
+			'type': 'boolean',
+			'description': localize('queryEditor.results.saveAsCsv.includeHeaders', "When true, column headers are included when saving results as CSV"),
+			'default': true
+		},
+		'queryEditor.results.saveAsCsv.delimiter': {
+			'type': 'string',
+			'description': localize('queryEditor.results.saveAsCsv.delimiter', "The custom delimiter to use between values when saving as CSV"),
+			'default': ','
+		},
+		'queryEditor.results.saveAsCsv.lineSeperator': {
+			'type': 'string',
+			'description': localize('queryEditor.results.saveAsCsv.lineSeperator', "Character(s) used for seperating rows when saving results as CSV"),
+			'default': null
+		},
+		'queryEditor.results.saveAsCsv.textIdentifier': {
+			'type': 'string',
+			'description': localize('queryEditor.results.saveAsCsv.textIdentifier', "Character used for enclosing text fields when saving results as CSV"),
+			'default': '\"'
+		},
+		'queryEditor.results.saveAsCsv.encoding': {
+			'type': 'string',
+			'description': localize('queryEditor.results.saveAsCsv.encoding', "File encoding used when saving results as CSV"),
+			'default': 'utf-8'
+		},
+		'queryEditor.results.saveAsXml.formatted': {
+			'type': 'string',
+			'description': localize('queryEditor.results.saveAsXml.formatted', "When true, XML output will be formatted when saving results as XML"),
+			'default': true
+		},
+		'queryEditor.results.saveAsXml.encoding': {
+			'type': 'string',
+			'description': localize('queryEditor.results.saveAsXml.encoding', "File encoding used when saving results as XML"),
+			'default': 'utf-8'
+		},
+		'queryEditor.results.streaming': {
+			'type': 'boolean',
+			'description': localize('queryEditor.results.streaming', "Enable results streaming; contains few minor visual issues"),
+			'default': true
+		},
+		'queryEditor.results.copyIncludeHeaders': {
+			'type': 'boolean',
+			'description': localize('queryEditor.results.copyIncludeHeaders', "Configuration options for copying results from the Results View"),
+			'default': false
+		},
+		'queryEditor.results.copyRemoveNewLine': {
+			'type': 'boolean',
+			'description': localize('queryEditor.results.copyRemoveNewLine', "Configuration options for copying multi-line results from the Results View"),
+			'default': true
+		},
+		'queryEditor.messages.showBatchTime': {
+			'type': 'boolean',
+			'description': localize('queryEditor.messages.showBatchTime', "Should execution time be shown for individual batches"),
+			'default': false
+		},
+		'queryEditor.messages.wordwrap': {
+			'type': 'boolean',
+			'description': localize('queryEditor.messages.wordwrap', "Word wrap messages"),
+			'default': true
+		},
+		'queryEditor.chart.defaultChartType': {
+			'type': 'string',
+			'enum': ['bar', 'doughnut', 'horizontalBar', 'line', 'pie', 'scatter', 'timeSeries'],
+			'default': 'horizontalBar',
+			'description': localize('queryEditor.chart.defaultChartType', "The default chart type to use when opening Chart Viewer from a Query Results")
+		},
+		'queryEditor.tabColorMode': {
+			'type': 'string',
+			'enum': ['off', 'border', 'fill'],
+			'enumDescriptions': [
+				localize('queryEditor.tabColorMode.off', "Tab coloring will be disabled"),
+				localize('queryEditor.tabColorMode.border', "The top border of each editor tab will be colored to match the relevant server group"),
+				localize('queryEditor.tabColorMode.fill', "Each editor tab's background color will match the relevant server group"),
+			],
+			'default': 'off',
+			'description': localize('queryEditor.tabColorMode', "Controls how to color tabs based on the server group of their active connection")
+		},
+		'queryEditor.showConnectionInfoInTitle': {
+			'type': 'boolean',
+			'description': localize('queryEditor.showConnectionInfoInTitle', "Controls whether to show the connection info for a tab in the title."),
+			'default': true
+		},
+		'queryEditor.promptToSaveGeneratedFiles': {
+			'type': 'boolean',
+			'default': false,
+			'description': localize('queryEditor.promptToSaveGeneratedFiles', "Prompt to save generated SQL files")
+		}
 	}
 };
 
@@ -537,6 +412,10 @@ const initialShortcuts = [
 	{ name: 'sp_who', primary: KeyMod.WinCtrl + KeyMod.Shift + KeyCode.KEY_1 },
 	{ name: 'sp_lock', primary: KeyMod.WinCtrl + KeyMod.Shift + KeyCode.KEY_2 }
 ];
+
+const shortCutConfiguration: IConfigurationNode = {
+	...queryEditorConfigurationBaseNode
+};
 
 for (let i = 0; i < 9; i++) {
 	const queryIndex = i + 1;
@@ -553,7 +432,7 @@ for (let i = 0; i < 9; i++) {
 			accessor.get(IInstantiationService).createInstance(RunQueryShortcutAction).run(queryIndex);
 		}
 	});
-	registryProperties[settingKey] = {
+	shortCutConfiguration[settingKey] = {
 		'type': 'string',
 		'default': defaultVal,
 		'description': localize('queryShortcutDescription',
@@ -564,12 +443,8 @@ for (let i = 0; i < 9; i++) {
 
 // Register the query-related configuration options
 const configurationRegistry = <IConfigurationRegistry>Registry.as(ConfigExtensions.Configuration);
-configurationRegistry.registerConfiguration({
-	'id': 'sqlEditor',
-	'title': 'SQL Editor',
-	'type': 'object',
-	'properties': registryProperties
-});
+configurationRegistry.registerConfiguration(queryEditorConfiguration);
+configurationRegistry.registerConfiguration(shortCutConfiguration);
 
 const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
 

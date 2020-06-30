@@ -11,7 +11,7 @@ import * as path from 'path';
 import * as querystring from 'querystring';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
-import { IQuestion, QuestionTypes } from '../prompts/question';
+import { IQuestion, confirm } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
 import { getErrorMessage, isEditorTitleFree } from '../common/utils';
 
@@ -61,7 +61,7 @@ export class NotebookUriHandler implements vscode.UriHandler {
 			}
 
 			let doOpen = await this.prompter.promptSingle<boolean>(<IQuestion>{
-				type: QuestionTypes.confirm,
+				type: confirm,
 				message: localize('notebook.confirmOpen', "Download and open '{0}'?", url),
 				default: true
 			});
