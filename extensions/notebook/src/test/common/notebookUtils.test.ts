@@ -190,5 +190,13 @@ describe('notebookUtils Tests', function (): void {
 			should(notebookEditor.document.cells.length).equal(1, 'One cell should exist');
 			should(notebookEditor.document.cells[0].contents.cell_type).equal(CellTypes.Code, 'Cell was created with incorrect type');
 		});
+
+		it('does not create new cell when oeContext does not exist', async function (): Promise<void> {
+			const notebookEditor = await notebookUtils.newNotebook(undefined);
+			apiWrapperMock.setup(x => x.getActiveNotebookEditor()).returns(() => notebookEditor);
+			apiWrapperMock.setup(x => x.showNotebookDocument(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(notebookEditor));
+			await notebookUtils.analyzeNotebook();
+			should(notebookEditor.document.cells.length).equal(0, 'No cells should exist');
+		});
 	});
 });

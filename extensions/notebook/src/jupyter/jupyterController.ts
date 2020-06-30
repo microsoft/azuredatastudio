@@ -94,23 +94,22 @@ export class JupyterController implements vscode.Disposable {
 		let supportedFileFilter: vscode.DocumentFilter[] = [
 			{ scheme: 'untitled', language: '*' }
 		];
-		this._notebookProvider = this.registerNotebookProvider();
+		this.registerNotebookProvider();
 		this.extensionContext.subscriptions.push(this.apiWrapper.registerCompletionItemProvider(supportedFileFilter, new NotebookCompletionItemProvider(this._notebookProvider)));
 
 		this.registerDefaultPackageManageProviders();
 		return true;
 	}
 
-	private registerNotebookProvider(): JupyterNotebookProvider {
-		let notebookProvider = new JupyterNotebookProvider((documentUri: vscode.Uri) => new LocalJupyterServerManager({
+	private registerNotebookProvider(): void {
+		this._notebookProvider = new JupyterNotebookProvider((documentUri: vscode.Uri) => new LocalJupyterServerManager({
 			documentPath: documentUri.fsPath,
 			jupyterInstallation: this._jupyterInstallation,
 			extensionContext: this.extensionContext,
 			apiWrapper: this.apiWrapper,
 			factory: this._serverInstanceFactory
 		}));
-		azdata.nb.registerNotebookProvider(notebookProvider);
-		return notebookProvider;
+		azdata.nb.registerNotebookProvider(this._notebookProvider);
 	}
 
 	private saveProfileAndCreateNotebook(profile: azdata.IConnectionProfile): Promise<void> {
