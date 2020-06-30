@@ -123,7 +123,7 @@ export class MiaaModel extends ResourceModel {
 				// fire the event so callers can know to update (e.g. so dashboards don't show the
 				// loading icon forever)
 				if (err instanceof UserCancelledError) {
-					vscode.window.showErrorMessage(loc.connectionRequired);
+					vscode.window.showWarningMessage(loc.connectionRequired);
 				} else {
 					vscode.window.showErrorMessage(loc.fetchStatusFailed(this.info.name, err));
 				}

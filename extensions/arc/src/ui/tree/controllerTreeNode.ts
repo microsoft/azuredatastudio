@@ -11,12 +11,13 @@ import { PostgresTreeNode } from './postgresTreeNode';
 import { ControllerModel, Registration, ResourceInfo } from '../../models/controllerModel';
 import { ControllerDashboard } from '../dashboards/controller/controllerDashboard';
 import { PostgresModel } from '../../models/postgresModel';
-import { parseInstanceName } from '../../common/utils';
+import { parseInstanceName, UserCancelledError } from '../../common/utils';
 import { MiaaModel } from '../../models/miaaModel';
 import { Deferred } from '../../common/promise';
 import { RefreshTreeNode } from './refreshTreeNode';
 import { ResourceTreeNode } from './resourceTreeNode';
 import { AzureArcTreeDataProvider } from './azureArcTreeDataProvider';
+import * as loc from '../../localizedConstants';
 
 /**
  * The TreeNode for displaying an Azure Arc Controller
@@ -38,10 +39,19 @@ export class ControllerTreeNode extends TreeNode {
 			await this.model.refresh(false);
 			await this._childrenRefreshPromise.promise;
 		} catch (err) {
-			// Couldn't get the children and TreeView doesn't have a way to collapse a node
-			// in a way that will refetch its children when expanded again so instead we
-			// display a tempory node that will prompt the user to re-enter credentials
-			return [new RefreshTreeNode(this)];
+			vscode.window.showErrorMessage(loc.errorConnectingToController(err));
+			try {
+				await this.model.refresh(false, true);
+				await this._childrenRefreshPromise.promise;
+			} catch (err) {
+				if (!(err instanceof UserCancelledError)) {
+					vscode.window.showErrorMessage(loc.errorConnectingToController(err));
+				}
+				// Couldn't get the children and TreeView doesn't have a way to collapse a node
+				// in a way that will refetch its children when expanded again so instead we
+				// display a tempory node that will prompt the user to re-enter credentials
+				return [new RefreshTreeNode(this)];
+			}
 		}
 
 		return this._children;
