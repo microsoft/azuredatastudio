@@ -48,18 +48,24 @@ export class Project {
 		for (let ig = 0; ig < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
 			const itemGroup = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ItemGroup)[ig];
 
-			for (let b = 0; b < itemGroup.getElementsByTagName(constants.Build).length; b++) {
-				this.files.push(this.createProjectEntry(itemGroup.getElementsByTagName(constants.Build)[b].getAttribute(constants.Include), EntryType.File));
+			const buildElements = itemGroup.getElementsByTagName(constants.Build);
+			for (let b = 0; b < buildElements.length; b++) {
+				this.files.push(this.createProjectEntry(buildElements[b].getAttribute(constants.Include), EntryType.File));
 			}
 
-			for (let f = 0; f < itemGroup.getElementsByTagName(constants.Folder).length; f++) {
-				this.files.push(this.createProjectEntry(itemGroup.getElementsByTagName(constants.Folder)[f].getAttribute(constants.Include), EntryType.Folder));
+			const folderElements = itemGroup.getElementsByTagName(constants.Folder);
+			for (let f = 0; f < folderElements.length; f++) {
+				// don't add Properties folder since it isn't supported for now
+				if (folderElements[f].getAttribute(constants.Include) !== constants.Properties) {
+					this.files.push(this.createProjectEntry(folderElements[f].getAttribute(constants.Include), EntryType.Folder));
+				}
 			}
 		}
 
 		// find all import statements to include
-		for (let i = 0; i < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Import).length; i++) {
-			const importTarget = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Import)[i];
+		const importElements = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Import);
+		for (let i = 0; i < importElements.length; i++) {
+			const importTarget = importElements[i];
 			this.importedTargets.push(importTarget.getAttribute(constants.Project));
 		}
 
@@ -589,3 +595,5 @@ export enum SystemDatabase {
 	master,
 	msdb
 }
+
+export const reservedProjectFolders = ['Properties', 'Data Sources', 'Database References'];

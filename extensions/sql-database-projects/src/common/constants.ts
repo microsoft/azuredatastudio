@@ -107,6 +107,8 @@ export function projectAlreadyOpened(path: string) { return localize('projectAlr
 export function projectAlreadyExists(name: string, path: string) { return localize('projectAlreadyExists', "A project named {0} already exists in {1}.", name, path); }
 export function noFileExist(fileName: string) { return localize('noFileExist', "File {0} doesn't exist", fileName); }
 export function cannotResolvePath(path: string) { return localize('cannotResolvePath', "Cannot resolve path {0}", path); }
+export function fileAlreadyExists(filename: string) { return localize('fileAlreadyExists', "A file with the name '{0}' already exists on disk at this location. Please choose another name.", filename); }
+export function folderAlreadyExists(filename: string) { return localize('folderAlreadyExists', "A folder with the name '{0}' already exists on disk at this location. Please choose another name.", filename); }
 export function invalidInput(input: string) { return localize('invalidInput', "Invalid input: {0}", input); }
 
 export function mssqlNotFound(mssqlConfigDir: string) { return localize('mssqlNotFound', "Could not get mssql extension's install location at {0}", mssqlConfigDir); }
@@ -153,6 +155,7 @@ export const ArtifactReference = 'ArtifactReference';
 export const SuppressMissingDependenciesErrors = 'SuppressMissingDependenciesErrors';
 export const DatabaseVariableLiteralValue = 'DatabaseVariableLiteralValue';
 export const DSP = 'DSP';
+export const Properties = 'Properties';
 
 // SqlProj File targets
 export const NetCoreTargets = '$(NETCoreTargetsPath)\\Microsoft.Data.Tools.Schema.SqlTasks.targets';
