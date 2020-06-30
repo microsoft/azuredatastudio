@@ -27,13 +27,12 @@ export class MiaaModel extends ResourceModel {
 	// The ID of the active connection used to query the server
 	private _activeConnectionId: string | undefined = undefined;
 
-	private readonly _onPasswordUpdated = new vscode.EventEmitter<string>();
 	private readonly _onStatusUpdated = new vscode.EventEmitter<HybridSqlNsNameGetResponse | undefined>();
 	private readonly _onDatabasesUpdated = new vscode.EventEmitter<DatabaseModel[]>();
-	public onPasswordUpdated = this._onPasswordUpdated.event;
 	public onStatusUpdated = this._onStatusUpdated.event;
 	public onDatabasesUpdated = this._onDatabasesUpdated.event;
-	public passwordLastUpdated?: Date;
+	public statusLastUpdated?: Date;
+	public databasesLastUpdated?: Date;
 
 	private _refreshPromise: Deferred<void> | undefined = undefined;
 
@@ -78,12 +77,14 @@ export class MiaaModel extends ResourceModel {
 		try {
 			const instanceRefresh = this._sqlInstanceRouter.apiV1HybridSqlNsNameGet(this.info.namespace, this.info.name).then(response => {
 				this._status = response.body;
+				this.statusLastUpdated = new Date();
 				this._onStatusUpdated.fire(this._status);
 			}).catch(err => {
 				// If an error occurs show a message so the user knows something failed but still
 				// fire the event so callers can know to update (e.g. so dashboards don't show the
 				// loading icon forever)
 				vscode.window.showErrorMessage(loc.fetchStatusFailed(this.info.name, err));
+				this.statusLastUpdated = new Date();
 				this._onStatusUpdated.fire(undefined);
 				throw err;
 			});
@@ -111,6 +112,7 @@ export class MiaaModel extends ResourceModel {
 							} else {
 								this._databases = (<string[]>databases).map(db => { return { name: db, status: '-' }; });
 							}
+							this.databasesLastUpdated = new Date();
 							this._onDatabasesUpdated.fire(this._databases);
 						});
 					});
@@ -125,6 +127,7 @@ export class MiaaModel extends ResourceModel {
 				} else {
 					vscode.window.showErrorMessage(loc.fetchStatusFailed(this.info.name, err));
 				}
+				this.databasesLastUpdated = new Date();
 				this._onDatabasesUpdated.fire(this._databases);
 				throw err;
 			}

@@ -47,8 +47,7 @@ import { IPathService } from 'vs/workbench/services/path/common/pathService';
 import { IPath, win32, posix } from 'vs/base/common/path';
 
 // {{SQL CARBON EDIT}} -- Display the editor's tab color
-import * as QueryConstants from 'sql/platform/query/common/constants';
-import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
+import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 // {{SQL CARBON EDIT}} -- End
 
 interface IEditorInputLabel {
@@ -1471,8 +1470,8 @@ export class TabsTitleControl extends TitleControl {
 	// {{SQL CARBON EDIT}} -- Display the editor's tab color
 	private setEditorTabColor(editor: IEditorInput, tabContainer: HTMLElement, isTabActive: boolean) {
 		let sqlEditor = editor as any;
-		let tabColorMode = WorkbenchUtils.getSqlConfigValue<string>(this.configurationService, 'tabColorMode');
-		if (tabColorMode === QueryConstants.tabColorModeOff || (tabColorMode !== QueryConstants.tabColorModeBorder && tabColorMode !== QueryConstants.tabColorModeFill)
+		const tabColorMode = this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').tabColorMode;
+		if (tabColorMode === 'off' || (tabColorMode !== 'border' && tabColorMode !== 'fill')
 			|| this.themeService.getColorTheme().type === HIGH_CONTRAST || !sqlEditor.tabColor) {
 			tabContainer.style.borderTopColor = '';
 			tabContainer.style.borderTopWidth = '';
@@ -1482,7 +1481,7 @@ export class TabsTitleControl extends TitleControl {
 		tabContainer.style.borderTopColor = sqlEditor.tabColor;
 		tabContainer.style.borderTopWidth = isTabActive ? '3px' : '2px';
 		tabContainer.style.borderTopStyle = 'solid';
-		if (tabColorMode === QueryConstants.tabColorModeFill) {
+		if (tabColorMode === 'fill') {
 			let backgroundColor = Color.Format.CSS.parseHex(sqlEditor.tabColor);
 			if (backgroundColor) {
 				tabContainer.style.backgroundColor = backgroundColor.transparent(isTabActive ? 0.5 : 0.2).toString();
