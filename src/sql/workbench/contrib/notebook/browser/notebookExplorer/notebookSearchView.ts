@@ -49,7 +49,7 @@ import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { MultiCursorSelectionController } from 'vs/editor/contrib/multicursor/multicursor';
 import { Selection } from 'vs/editor/common/core/selection';
 import { Color, RGBA } from 'vs/base/common/color';
-import { IViewDescriptorService } from 'vs/workbench/common/views';
+import { IViewDescriptorService, IViewsService } from 'vs/workbench/common/views';
 import { createEditorFromSearchResult } from 'vs/workbench/contrib/searchEditor/browser/searchEditorActions';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -1134,3 +1134,7 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 		}
 	}
 });
+
+export function getSearchView(viewsService: IViewsService): NotebookSearchView | undefined {
+	return viewsService.getActiveViewWithId(NotebookSearchView.ID) as NotebookSearchView ?? undefined;
+}

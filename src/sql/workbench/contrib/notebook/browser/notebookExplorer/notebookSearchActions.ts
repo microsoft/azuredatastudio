@@ -7,7 +7,7 @@ import { Action } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
 import { IViewsService } from 'vs/workbench/common/views';
 import { searchCollapseAllIcon, searchExpandAllIcon, searchClearIcon, searchStopIcon } from 'vs/workbench/contrib/search/browser/searchIcons';
-import { NotebookSearchView } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearchView';
+import { getSearchView } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearchView';
 import { FolderMatch, Match, FileMatch } from 'vs/workbench/contrib/search/common/searchModel';
 
 export class ToggleCollapseAndExpandAction extends Action {
@@ -201,8 +201,4 @@ export class ClearSearchResultsAction extends Action {
 		}
 		return Promise.resolve();
 	}
-}
-
-function getSearchView(viewsService: IViewsService): NotebookSearchView | undefined {
-	return viewsService.getActiveViewWithId(NotebookSearchView.ID) as NotebookSearchView ?? undefined;
 }
