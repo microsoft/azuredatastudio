@@ -19,7 +19,8 @@ import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService
 import { entries } from 'sql/base/common/collections';
 import { TestLayoutService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { INewConnectionParams, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
-
+import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
+import { createConnectionProfile } from 'sql/workbench/services/connection/test/browser/connectionManagementService.test';
 
 suite('ConnectionDialogWidget tests', () => {
 	let connectionDialogWidget: TestConnectionDialogWidget;
@@ -40,7 +41,7 @@ suite('ConnectionDialogWidget tests', () => {
 			new TestCapabilitiesService());
 		let providerDisplayNames = ['Mock SQL Server'];
 		let providerNameToDisplayMap = { 'MSSQL': 'Mock SQL Server' };
-		connectionDialogWidget = new TestConnectionDialogWidget(providerDisplayNames, providerNameToDisplayMap['MSSQL'], providerNameToDisplayMap, cmInstantiationService, mockConnectionManagementService.object, new TestThemeService(), new TestLayoutService(), undefined, new MockContextKeyService(), undefined, undefined, undefined, new NullLogService(), undefined);
+		connectionDialogWidget = new TestConnectionDialogWidget(providerDisplayNames, providerNameToDisplayMap['MSSQL'], providerNameToDisplayMap, cmInstantiationService, mockConnectionManagementService.object, new TestThemeService(), new TestLayoutService(), new NullAdsTelemetryService(), new MockContextKeyService(), undefined, undefined, undefined, new NullLogService(), undefined);
 		element = DOM.createStyleSheet();
 		connectionDialogWidget.render();
 		connectionDialogWidget.renderBody(element);
@@ -81,6 +82,42 @@ suite('ConnectionDialogWidget tests', () => {
 		});
 		connectionDialogWidget.newConnectionParams = params;
 		assert.equal(connectionDialogWidget.newConnectionParams, params);
+	});
+
+	test('open should call onInitDialog', async () => {
+		let params: INewConnectionParams = {
+			connectionType: ConnectionType.editor,
+			input: {
+				onConnectReject: undefined,
+				onConnectStart: undefined,
+				onDisconnect: undefined,
+				onConnectSuccess: undefined,
+				onConnectCanceled: undefined,
+				uri: 'Editor Uri'
+			},
+			runQueryOnCompletion: RunQueryOnConnectionMode.executeQuery,
+			providers: ['MSSQL']
+		};
+		let providerNameToDisplayMap = { 'MSSQL': 'Mock SQL Server' };
+		mockConnectionManagementService.setup(x => x.getUniqueConnectionProvidersByNameMap(TypeMoq.It.isAny())).returns(() => {
+			return getUniqueConnectionProvidersByNameMap(providerNameToDisplayMap);
+		});
+		//params must be assigned to get load providers
+		connectionDialogWidget.newConnectionParams = params;
+		let mockConnectionProfile = createConnectionProfile('test_id', '');
+		mockConnectionManagementService.setup(x => x.getRecentConnections(TypeMoq.It.isValue(params.providers))).returns(() => {
+			return [mockConnectionProfile];
+		});
+		let called = false;
+		connectionDialogWidget.onInitDialog(() => {
+			called = true;
+		});
+		return connectionDialogWidget.open(true).then(() => {
+			called = false;
+			return connectionDialogWidget.open(false).then(() => {
+				assert(called);
+			});
+		});
 	});
 });
 

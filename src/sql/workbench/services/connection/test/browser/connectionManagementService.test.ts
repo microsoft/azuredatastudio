@@ -1883,7 +1883,7 @@ test('clearRecentConnection and ConnectionsList should call connectionStore func
 	assert(called);
 });
 
-function createConnectionProfile(id: string, password?: string): ConnectionProfile {
+export function createConnectionProfile(id: string, password?: string): ConnectionProfile {
 	const capabilitiesService = new TestCapabilitiesService();
 	return new ConnectionProfile(capabilitiesService, {
 		connectionName: 'newName',
