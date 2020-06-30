@@ -55,7 +55,7 @@ function fromSelection(slc: Selection): number[] {
 	return [slc.startLineNumber, slc.startColumn, slc.endLineNumber, slc.endColumn];
 }
 
-suite('FindController', () => {
+suite.skip('FindController', () => {
 	let queryState: { [key: string]: any; } = {};
 	let clipboardState = '';
 	let serviceCollection = new ServiceCollection();
@@ -430,7 +430,7 @@ suite('FindController', () => {
 	});
 });
 
-suite('FindController query options persistence', () => {
+suite.skip('FindController query options persistence', () => {
 	let queryState: { [key: string]: any; } = {};
 	queryState['editor.isRegex'] = false;
 	queryState['editor.matchCase'] = false;
