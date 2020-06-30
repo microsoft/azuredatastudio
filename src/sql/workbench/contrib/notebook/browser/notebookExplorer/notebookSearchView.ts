@@ -280,7 +280,7 @@ export class NotebookSearchView extends ViewPane {
 		super.updateActions();
 	}
 
-	private onSearchResultsChanged(event?: IChangeEvent): void {
+	private async onSearchResultsChanged(event?: IChangeEvent): Promise<void> {
 		if (this.isVisible()) {
 			return this.refreshAndUpdateCount(event);
 		} else {
@@ -288,18 +288,18 @@ export class NotebookSearchView extends ViewPane {
 		}
 	}
 
-	private refreshAndUpdateCount(event?: IChangeEvent): void {
+	private async refreshAndUpdateCount(event?: IChangeEvent): Promise<void> {
 		this.updateSearchResultCount(this.viewModel.searchResult.query!.userDisabledExcludesAndIgnoreFiles);
 		return this.refreshTree(event);
 	}
 
-	refreshTree(event?: IChangeEvent): void {
+	async refreshTree(event?: IChangeEvent): Promise<void> {
 		const collapseResults = this.searchConfig.collapseResults;
 		if (!event || event.added || event.removed) {
 			// Refresh whole tree
 			if (this.searchConfig.sortOrder === SearchSortOrder.Modified) {
 				// Ensure all matches have retrieved their file stat
-				this.retrieveFileStats()
+				await this.retrieveFileStats()
 					.then(() => this.tree.setChildren(null, this.createResultIterator(collapseResults)));
 			} else {
 				this.tree.setChildren(null, this.createResultIterator(collapseResults));
@@ -406,7 +406,7 @@ export class NotebookSearchView extends ViewPane {
 			this.toggleCollapseStateDelayer.trigger(() => this.toggleCollapseAction.onTreeCollapseStateChange())
 		));
 
-		this._register(Event.debounce(this.tree.onDidOpen, (last, event) => event, 75, true)(options => {
+		this._register(Event.debounce(this.tree.onDidOpen, (last, event) => event, 75, true)(async options => {
 			if (options.element instanceof Match) {
 				const selectedMatch: Match = options.element;
 				if (this.currentSelectedFileMatch) {
@@ -415,7 +415,7 @@ export class NotebookSearchView extends ViewPane {
 				this.currentSelectedFileMatch = selectedMatch.parent();
 				this.currentSelectedFileMatch.setSelectedMatch(selectedMatch);
 
-				this.onFocus(selectedMatch, options.editorOptions.preserveFocus, options.sideBySide, options.editorOptions.pinned);
+				await this.onFocus(selectedMatch, options.editorOptions.preserveFocus, options.sideBySide, options.editorOptions.pinned);
 			}
 		}));
 
@@ -442,14 +442,14 @@ export class NotebookSearchView extends ViewPane {
 			this.fileMatchOrFolderMatchWithResourceFocus.reset();
 		}));
 
-		this.treeSelectionChangeListener = this._register(this.tree.onDidChangeSelection((e) => {
+		this.treeSelectionChangeListener = this._register(this.tree.onDidChangeSelection(async (e) => {
 			if (this.tree.getSelection().length) {
 				let element = this.tree.getSelection()[0] as Match;
 				const resource = element instanceof Match ? element.parent().resource : (<FileMatch>element).resource;
 				if (resource.fsPath.endsWith('.md')) {
 					this.commandService.executeCommand('markdown.showPreview', resource);
 				} else {
-					this.open(this.tree.getSelection()[0] as Match, true, false, false);
+					await this.open(this.tree.getSelection()[0] as Match, true, false, false);
 				}
 			}
 		}));
@@ -679,7 +679,7 @@ export class NotebookSearchView extends ViewPane {
 			this.updateActions();
 		}, 2000);
 
-		const onComplete = (completed?: ISearchComplete) => {
+		const onComplete = async (completed?: ISearchComplete) => {
 			clearTimeout(slowTimer);
 			this.state = SearchUIState.Idle;
 
@@ -687,7 +687,7 @@ export class NotebookSearchView extends ViewPane {
 			progressComplete();
 
 			// Do final render, then expand if just 1 file with less than 50 matches
-			this.onSearchResultsChanged();
+			await this.onSearchResultsChanged();
 
 			const collapseResults = this.searchConfig.collapseResults;
 			if (collapseResults !== 'alwaysCollapse' && this.viewModel.searchResult.matches().length === 1) {
@@ -838,10 +838,10 @@ export class NotebookSearchView extends ViewPane {
 		}));
 	};
 
-	private onOpenSettings = (e: dom.EventLike): void => {
+	private onOpenSettings = async (e: dom.EventLike): Promise<void> => {
 		dom.EventHelper.stop(e, false);
 
-		this.openSettings('.exclude');
+		await this.openSettings('.exclude');
 	};
 
 	private openSettings(query: string): Promise<IEditorPane | undefined> {
@@ -1033,7 +1033,7 @@ export class NotebookSearchView extends ViewPane {
 		}
 	}
 
-	private onFilesChanged(e: FileChangesEvent): void {
+	private async onFilesChanged(e: FileChangesEvent): Promise<void> {
 		if (!this.viewModel || (this.searchConfig.sortOrder !== SearchSortOrder.Modified && !e.gotDeleted())) {
 			return;
 		}
@@ -1048,7 +1048,7 @@ export class NotebookSearchView extends ViewPane {
 			const changedMatches = matches.filter(m => e.contains(m.resource));
 			if (changedMatches.length && this.searchConfig.sortOrder === SearchSortOrder.Modified) {
 				// No matches need to be removed, but modified files need to have their file stat updated.
-				this.updateFileStats(changedMatches).then(() => this.refreshTree());
+				await this.updateFileStats(changedMatches).then(() => this.refreshTree());
 			}
 		}
 	}
