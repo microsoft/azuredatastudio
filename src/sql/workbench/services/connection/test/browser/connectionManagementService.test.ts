@@ -1512,7 +1512,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			called = true;
 		});
 		return connect(uri, options).then(() => {
-			called = false; // onLanguageFlavorChanged is called when connecting, must set back to false.
+			called = false; //onLanguageFlavorChanged is called when connecting, must set back to false.
 			connectionManagementService.ensureDefaultLanguageFlavor(uri);
 			assert.equal(called, false, 'do not expect flavor change to be called');
 		});
