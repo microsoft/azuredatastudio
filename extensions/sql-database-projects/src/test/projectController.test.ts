@@ -18,13 +18,14 @@ import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProje
 import { ProjectsController } from '../controllers/projectController';
 import { promises as fs } from 'fs';
 import { createContext, TestContext, mockDacFxResult } from './testContext';
-import { Project, SystemDatabase, ProjectEntry } from '../models/project';
+import { Project, SystemDatabase, ProjectEntry, reservedProjectFolders } from '../models/project';
 import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
 import { ApiWrapper } from '../common/apiWrapper';
 import { IDeploymentProfile, IGenerateScriptProfile } from '../models/IDeploymentProfile';
 import { exists } from '../common/utils';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { FolderNode } from '../models/tree/fileFolderTreeItem';
+import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 
 let testContext: TestContext;
 
@@ -77,7 +78,7 @@ describe('ProjectsController: project controller operations', function (): void 
 
 			const project = await projController.openProject(vscode.Uri.file(sqlProjPath));
 
-			should(project.files.length).equal(9); // detailed sqlproj tests in their own test file
+			should(project.files.length).equal(8); // detailed sqlproj tests in their own test file
 			should(project.dataSources.length).equal(2); // detailed datasources tests in their own test file
 		});
 
@@ -110,6 +111,75 @@ describe('ProjectsController: project controller operations', function (): void 
 			}
 		});
 
+		it('Should show error if trying to add a file that already exists', async function (): Promise<void> {
+			const tableName = 'table1';
+			testContext.apiWrapper.reset();
+			testContext.apiWrapper.setup(x => x.showInputBox(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(tableName));
+			testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
+
+			const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+			const project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
+
+			should(project.files.length).equal(0, 'There should be no files');
+			await projController.addItemPrompt(project, '', templates.script);
+			should(project.files.length).equal(1, 'File should be successfully added');
+			await testUtils.shouldThrowSpecificError(async () => await projController.addItemPrompt(project, '', templates.script), constants.fileAlreadyExists(tableName));
+		});
+
+		it('Should show error if trying to add a folder that already exists', async function (): Promise<void> {
+			const folderName = 'folder1';
+			testContext.apiWrapper.reset();
+			testContext.apiWrapper.setup(x => x.showInputBox(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(folderName));
+			testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
+
+			const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+			const project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
+			const projectRoot = new ProjectRootTreeItem(project);
+
+			should(project.files.length).equal(0, 'There should be no other folders');
+			await projController.addFolderPrompt(projectRoot);
+			should(project.files.length).equal(1, 'Folder should be successfully added');
+			projController.refreshProjectsTree();
+
+			await verifyFolderNotAdded(folderName, projController, project, projectRoot);
+
+			// reserved folder names
+			for (let i in reservedProjectFolders) {
+				await verifyFolderNotAdded(reservedProjectFolders[i], projController, project, projectRoot);
+			}
+		});
+
+		it('Should be able to add folder with reserved name as long as not at project root', async function (): Promise<void> {
+			const folderName = 'folder1';
+			testContext.apiWrapper.reset();
+			testContext.apiWrapper.setup(x => x.showInputBox(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(folderName));
+			testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
+
+			const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+			const project = await testUtils.createTestProject(baselines.openProjectFileBaseline);
+			const projectRoot = new ProjectRootTreeItem(project);
+
+			// make sure it's ok to add these folders if they aren't where the reserved folders are at the root of the project
+			let node = projectRoot.children.find(c => c.friendlyName === 'Tables');
+			for (let i in reservedProjectFolders) {
+				await verfiyFolderAdded(reservedProjectFolders[i], projController, project, <BaseProjectTreeItem>node);
+			}
+		});
+
+		async function verfiyFolderAdded(folderName: string, projController: ProjectsController, project: Project, node: BaseProjectTreeItem): Promise<void> {
+			const beforeFileCount = project.files.length;
+			testContext.apiWrapper.setup(x => x.showInputBox(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(folderName));
+			await projController.addFolderPrompt(node);
+			should(project.files.length).equal(beforeFileCount + 1, `File count should be increased by one after adding the folder ${folderName}`);
+		}
+
+		async function verifyFolderNotAdded(folderName: string, projController: ProjectsController, project: Project, node: BaseProjectTreeItem): Promise<void> {
+			const beforeFileCount = project.files.length;
+			testContext.apiWrapper.setup(x => x.showInputBox(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(folderName));
+			await testUtils.shouldThrowSpecificError(async () => await projController.addFolderPrompt(node), constants.folderAlreadyExists(folderName));
+			should(project.files.length).equal(beforeFileCount, 'File count should be the same as before the folder was attempted to be added');
+		}
+
 		it('Should delete nested ProjectEntry from node', async function (): Promise<void> {
 			let proj = await testUtils.createTestProject(templates.newSqlProjectTemplate);
 			const setupResult = await setupDeleteExcludeTest(proj);
@@ -123,8 +193,8 @@ describe('ProjectsController: project controller operations', function (): void 
 			await proj.readProjFile(); // reload edited sqlproj from disk
 
 			// confirm result
-			should(proj.files.length).equal(2, 'number of file/folder entries'); // lowerEntry and the contained scripts should be deleted
-			should(proj.files[1].relativePath).equal('UpperFolder');
+			should(proj.files.length).equal(1, 'number of file/folder entries'); // lowerEntry and the contained scripts should be deleted
+			should(proj.files[0].relativePath).equal('UpperFolder');
 
 			should(await exists(scriptEntry.fsUri.fsPath)).equal(false, 'script is supposed to be deleted');
 		});
@@ -142,8 +212,8 @@ describe('ProjectsController: project controller operations', function (): void 
 			await proj.readProjFile(); // reload edited sqlproj from disk
 
 			// confirm result
-			should(proj.files.length).equal(2, 'number of file/folder entries'); // LowerFolder and the contained scripts should be deleted
-			should(proj.files[1].relativePath).equal('UpperFolder'); // UpperFolder should still be there
+			should(proj.files.length).equal(1, 'number of file/folder entries'); // LowerFolder and the contained scripts should be deleted
+			should(proj.files[0].relativePath).equal('UpperFolder'); // UpperFolder should still be there
 
 			should(await exists(scriptEntry.fsUri.fsPath)).equal(true, 'script is supposed to still exist on disk');
 		});
@@ -456,7 +526,7 @@ async function setupDeleteExcludeTest(proj: Project): Promise<[ProjectEntry, Pro
 	testContext.apiWrapper.setup(x => x.showWarningMessageOptions(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(constants.yesString));
 
 	// confirm setup
-	should(proj.files.length).equal(5, 'number of file/folder entries');
+	should(proj.files.length).equal(4, 'number of file/folder entries');
 	should(path.parse(scriptEntry.fsUri.fsPath).base).equal('someScript.sql');
 	should((await fs.readFile(scriptEntry.fsUri.fsPath)).toString()).equal('not a real script');
 

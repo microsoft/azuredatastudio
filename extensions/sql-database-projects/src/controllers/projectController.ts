@@ -18,7 +18,7 @@ import { IConnectionProfile, TaskExecutionMode } from 'azdata';
 import { promises as fs } from 'fs';
 import { ApiWrapper } from '../common/apiWrapper';
 import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
-import { Project, DatabaseReferenceLocation, SystemDatabase, TargetPlatform, ProjectEntry } from '../models/project';
+import { Project, DatabaseReferenceLocation, SystemDatabase, TargetPlatform, ProjectEntry, reservedProjectFolders } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
 import { IDeploymentProfile, IGenerateScriptProfile, PublishSettings } from '../models/IDeploymentProfile';
@@ -280,9 +280,26 @@ export class ProjectsController {
 
 		const relativeFolderPath = path.join(this.getRelativePath(treeNode), newFolderName);
 
-		await project.addFolderItem(relativeFolderPath);
+		try {
+			// check if folder already exists or is a reserved folder
+			const absoluteFolderPath = path.join(project.projectFolderPath, relativeFolderPath);
+			const folderExists = await utils.exists(absoluteFolderPath);
 
-		this.refreshProjectsTree();
+			if (folderExists || this.isReservedFolder(absoluteFolderPath, project.projectFolderPath)) {
+				throw new Error(constants.folderAlreadyExists(path.parse(absoluteFolderPath).name));
+			}
+
+			await project.addFolderItem(relativeFolderPath);
+			this.refreshProjectsTree();
+		} catch (err) {
+			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
+		}
+	}
+
+	public isReservedFolder(absoluteFolderPath: string, projectFolderPath: string): boolean {
+		const sameName = reservedProjectFolders.find(f => f === path.parse(absoluteFolderPath).name) !== undefined;
+		const sameLocation = path.parse(absoluteFolderPath).dir === projectFolderPath;
+		return sameName && sameLocation;
 	}
 
 	public async addItemPromptFromNode(treeNode: BaseProjectTreeItem, itemTypeName?: string) {
@@ -315,16 +332,26 @@ export class ProjectsController {
 			return; // user cancelled
 		}
 
-		// TODO: file already exists?
-
 		const newFileText = this.macroExpansion(itemType.templateScript, { 'OBJECT_NAME': itemObjectName });
 		const relativeFilePath = path.join(relativePath, itemObjectName + constants.sqlFileExtension);
 
-		const newEntry = await project.addScriptItem(relativeFilePath, newFileText);
+		try {
+			// check if file already exists
+			const absoluteFilePath = path.join(project.projectFolderPath, relativeFilePath);
+			const fileExists = await utils.exists(absoluteFilePath);
 
-		this.apiWrapper.executeCommand('vscode.open', newEntry.fsUri);
+			if (fileExists) {
+				throw new Error(constants.fileAlreadyExists(path.parse(absoluteFilePath).name));
+			}
 
-		this.refreshProjectsTree();
+			const newEntry = await project.addScriptItem(relativeFilePath, newFileText);
+
+			this.apiWrapper.executeCommand('vscode.open', newEntry.fsUri);
+
+			this.refreshProjectsTree();
+		} catch (err) {
+			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
+		}
 	}
 
 	public async exclude(context: FileNode | FolderNode): Promise<void> {
