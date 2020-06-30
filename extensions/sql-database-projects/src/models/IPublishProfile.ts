@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-export interface IDeploymentProfile {
+export interface IPublishProfile {
 	databaseName: string;
 	connectionUri: string;
 	upgradeExisting: boolean;

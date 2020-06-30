@@ -9,20 +9,20 @@ import * as os from 'os';
 import * as vscode from 'vscode';
 import * as baselines from './baselines/baselines';
 import * as templates from '../templates/templates';
-import * as testUtils from '../test/testUtils';
+import * as testUtils from './testUtils';
 import * as TypeMoq from 'typemoq';
 
-import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
+import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { Project } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProjectTreeViewProvider';
 import { ProjectsController } from '../controllers/projectController';
 import { createContext, TestContext } from './testContext';
-import { IDeploymentProfile, IGenerateScriptProfile } from '../models/IDeploymentProfile';
+import { IPublishProfile, IGenerateScriptProfile } from '../models/IPublishProfile';
 
 
 let testContext: TestContext;
 
-describe.skip('Deploy Database Dialog', () => {
+describe.skip('Publish Database Dialog', () => {
 	before(async function (): Promise<void> {
 		await templates.loadTemplates(path.join(__dirname, '..', '..', 'resources', 'templates'));
 		await baselines.loadBaselines();
@@ -38,9 +38,9 @@ describe.skip('Deploy Database Dialog', () => {
 
 		const projFilePath = await projController.createNewProject('TestProjectName', vscode.Uri.file(projFileDir), true, 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575');
 		const project = new Project(projFilePath);
-		const deployDatabaseDialog = new DeployDatabaseDialog(testContext.apiWrapper.object, project);
-		deployDatabaseDialog.openDialog();
-		should.notEqual(deployDatabaseDialog.deployTab, undefined);
+		const publishDatabaseDialog = new PublishDatabaseDialog(testContext.apiWrapper.object, project);
+		publishDatabaseDialog.openDialog();
+		should.notEqual(publishDatabaseDialog.publishTab, undefined);
 	});
 
 	it('Should create default database name correctly ', async function (): Promise<void> {
@@ -51,20 +51,20 @@ describe.skip('Deploy Database Dialog', () => {
 		const projFilePath = await projController.createNewProject('TestProjectName', vscode.Uri.file(projFileDir), true, 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575');
 		const project = new Project(projFilePath);
 
-		const deployDatabaseDialog = new DeployDatabaseDialog(testContext.apiWrapper.object, project);
-		should.equal(deployDatabaseDialog.getDefaultDatabaseName(), project.projectFileName);
+		const publishDatabaseDialog = new PublishDatabaseDialog(testContext.apiWrapper.object, project);
+		should.equal(publishDatabaseDialog.getDefaultDatabaseName(), project.projectFileName);
 	});
 
-	it('Should include all info in deployment profile', async function (): Promise<void> {
+	it('Should include all info in publish profile', async function (): Promise<void> {
 		const proj = await testUtils.createTestProject(baselines.openProjectFileBaseline);
-		const dialog = TypeMoq.Mock.ofType(DeployDatabaseDialog, undefined, undefined, testContext.apiWrapper.object, proj);
+		const dialog = TypeMoq.Mock.ofType(PublishDatabaseDialog, undefined, undefined, testContext.apiWrapper.object, proj);
 		dialog.setup(x => x.getConnectionUri()).returns(async () => { return 'Mock|Connection|Uri'; });
 		dialog.setup(x => x.getTargetDatabaseName()).returns(() => 'MockDatabaseName');
 		dialog.callBase = true;
 
-		let profile: IDeploymentProfile | IGenerateScriptProfile | undefined;
+		let profile: IPublishProfile | IGenerateScriptProfile | undefined;
 
-		const expectedDeploy: IDeploymentProfile  = {
+		const expectedPublish: IPublishProfile  = {
 			databaseName: 'MockDatabaseName',
 			connectionUri: 'Mock|Connection|Uri',
 			upgradeExisting: true,
@@ -74,10 +74,10 @@ describe.skip('Deploy Database Dialog', () => {
 			}
 		};
 
-		dialog.object.deploy = async (_, prof) => { profile = prof; };
-		await dialog.object.deployClick();
+		dialog.object.publish = async (_, prof) => { profile = prof; };
+		await dialog.object.publishClick();
 
-		should(profile).deepEqual(expectedDeploy);
+		should(profile).deepEqual(expectedPublish);
 
 		const expectedGenScript: IGenerateScriptProfile = {
 			databaseName: 'MockDatabaseName',
