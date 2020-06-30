@@ -13,48 +13,34 @@ import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/t
 import { NullLogService } from 'vs/platform/log/common/log';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 import { TestConnectionDialogWidget } from 'sql/workbench/services/connection/test/browser/testConnectionDialogWidget';
-import { ClearRecentConnectionsAction } from 'sql/workbench/services/connection/browser/connectionActions';
-import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
-import { TestDialogService } from 'vs/platform/dialogs/test/common/testDialogService';
-import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
-import { RecentConnectionActionsProvider } from 'sql/workbench/services/connection/browser/recentConnectionTreeController';
+import { IStorageService } from 'vs/platform/storage/common/storage';
+import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
 
 suite('ConnectionDialogWidget tests', () => {
 	let connectionDialogWidget: TestConnectionDialogWidget;
 	let mockConnectionManagementService: TypeMoq.Mock<ConnectionManagementService>;
-	let testInstantiationService: TypeMoq.Mock<InstantiationService>;
+	let cmInstantiationService: TestInstantiationService;
 	setup(() => {
-		testInstantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Loose, new TestInstantiationService());
+		cmInstantiationService = new TestInstantiationService();
+		cmInstantiationService.stub(IStorageService, new TestStorageService());
 		mockConnectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Strict,
 			undefined, // connection store
 			undefined, // connection status manager
 			undefined, // connection dialog service
-			new TestInstantiationService(), // instantiation service
+			cmInstantiationService, // instantiation service
 			undefined, // editor service
 			undefined, // telemetry service
 			undefined, // configuration service
-			new TestCapabilitiesService(),
-			undefined,
-			undefined,
-			undefined,
-			undefined,
-			undefined,
-			new NullLogService(),
-			new TestStorageService());
+			new TestCapabilitiesService());
 		let providerDisplayNames = ['Mock SQL Server'];
 		let providerNameToDisplayMap = { 'MSSQL': 'Mock SQL Server' };
-		connectionDialogWidget = new TestConnectionDialogWidget(providerDisplayNames, providerNameToDisplayMap['MSSQL'], providerNameToDisplayMap, testInstantiationService.object, mockConnectionManagementService.object, undefined, undefined, undefined, new MockContextKeyService(), undefined, undefined, undefined, new NullLogService(), undefined);
+		connectionDialogWidget = new TestConnectionDialogWidget(providerDisplayNames, providerNameToDisplayMap['MSSQL'], providerNameToDisplayMap, cmInstantiationService, mockConnectionManagementService.object, new TestThemeService(), undefined, undefined, new MockContextKeyService(), undefined, undefined, undefined, new NullLogService(), undefined);
 	});
 
-	test('do something!', () => {
+	test('renderBody should attach a connection dialog body onto element', () => {
 		let element = DOM.createStyleSheet();
-		assert(true);
-		testInstantiationService.setup(x => x.createInstance(ClearRecentConnectionsAction, ClearRecentConnectionsAction.ID, ClearRecentConnectionsAction.LABEL)).returns(() => {
-			return new ClearRecentConnectionsAction(ClearRecentConnectionsAction.ID, ClearRecentConnectionsAction.LABEL, mockConnectionManagementService.object, new TestNotificationService(), undefined, new TestDialogService());
-		});
-		testInstantiationService.setup(x => x.createInstance(RecentConnectionActionsProvider)).returns(() => {
-			return new RecentConnectionActionsProvider(new TestInstantiationService());
-		});
 		connectionDialogWidget.renderBody(element);
+		assert.equal(element.childElementCount, 1);
+		assert.equal(element.children[0].className, 'connection-dialog');
 	});
 });
