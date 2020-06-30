@@ -21,7 +21,7 @@ import { createContext, TestContext, mockDacFxResult } from './testContext';
 import { Project, SystemDatabase, ProjectEntry } from '../models/project';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { ApiWrapper } from '../common/apiWrapper';
-import { IPublishProfile, IGenerateScriptProfile } from '../models/IPublishProfile';
+import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
 import { exists } from '../common/utils';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { FolderNode } from '../models/tree/fileFolderTreeItem';
@@ -182,7 +182,7 @@ describe('ProjectsController: project controller operations', function (): void 
 			let projController = TypeMoq.Mock.ofType(ProjectsController);
 			projController.callBase = true;
 			projController.setup(x => x.getPublishDialog(TypeMoq.It.isAny())).returns(() => publishDialog.object);
-			projController.setup(x => x.executionCallback(TypeMoq.It.isAny(), TypeMoq.It.is((_): _ is IPublishProfile => true))).returns(async () => {
+			projController.setup(x => x.executionCallback(TypeMoq.It.isAny(), TypeMoq.It.is((_): _ is IPublishSettings => true))).returns(async () => {
 				holler = publishHoller;
 				return undefined;
 			});
@@ -194,7 +194,7 @@ describe('ProjectsController: project controller operations', function (): void 
 				};
 			});
 
-			projController.setup(x => x.executionCallback(TypeMoq.It.isAny(), TypeMoq.It.is((_): _ is IGenerateScriptProfile => true))).returns(async () => {
+			projController.setup(x => x.executionCallback(TypeMoq.It.isAny(), TypeMoq.It.is((_): _ is IGenerateScriptSettings => true))).returns(async () => {
 				holler = generateHoller;
 				return undefined;
 			});

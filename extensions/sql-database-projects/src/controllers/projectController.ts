@@ -21,7 +21,7 @@ import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { Project, DatabaseReferenceLocation, SystemDatabase, TargetPlatform, ProjectEntry } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
-import { IPublishProfile, IGenerateScriptProfile, PublishSettings } from '../models/IPublishProfile';
+import { IPublishSettings, IGenerateScriptSettings, PublishProfile } from '../models/IPublishSettings';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { ImportDataModel } from '../models/api/import';
@@ -207,7 +207,7 @@ export class ProjectsController {
 		return publishDatabaseDialog;
 	}
 
-	public async executionCallback(project: Project, profile: IPublishProfile | IGenerateScriptProfile): Promise<mssql.DacFxResult | undefined> {
+	public async executionCallback(project: Project, profile: IPublishSettings | IGenerateScriptSettings): Promise<mssql.DacFxResult | undefined> {
 		const dacpacPath = await this.buildProject(project);
 
 		if (!dacpacPath) {
@@ -220,15 +220,15 @@ export class ProjectsController {
 
 		const dacFxService = await this.getDaxFxService();
 
-		if ((<IPublishProfile>profile).upgradeExisting) {
-			return await dacFxService.deployDacpac(tempPath, profile.databaseName, (<IPublishProfile>profile).upgradeExisting, profile.connectionUri, TaskExecutionMode.execute, profile.sqlCmdVariables);
+		if ((<IPublishSettings>profile).upgradeExisting) {
+			return await dacFxService.deployDacpac(tempPath, profile.databaseName, (<IPublishSettings>profile).upgradeExisting, profile.connectionUri, TaskExecutionMode.execute, profile.sqlCmdVariables);
 		}
 		else {
 			return await dacFxService.generateDeployScript(tempPath, profile.databaseName, profile.connectionUri, TaskExecutionMode.script, profile.sqlCmdVariables);
 		}
 	}
 
-	public async readPublishProfile(profileUri: Uri): Promise<PublishSettings> {
+	public async readPublishProfile(profileUri: Uri): Promise<PublishProfile> {
 		const profileText = await fs.readFile(profileUri.fsPath);
 		const profileXmlDoc = new xmldom.DOMParser().parseFromString(profileText.toString());
 

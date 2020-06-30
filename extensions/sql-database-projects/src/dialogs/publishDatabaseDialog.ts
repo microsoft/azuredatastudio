@@ -11,7 +11,7 @@ import * as utils from '../common/utils';
 import { Project } from '../models/project';
 import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStringSource';
 import { ApiWrapper } from '../common/apiWrapper';
-import { IPublishProfile, IGenerateScriptProfile } from '../models/IPublishProfile';
+import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
 
 interface DataSourceDropdownValue extends azdata.CategoryValue {
 	dataSource: SqlConnectionDataSource;
@@ -38,8 +38,8 @@ export class PublishDatabaseDialog {
 
 	private toDispose: vscode.Disposable[] = [];
 
-	public publish: ((proj: Project, profile: IPublishProfile) => any) | undefined;
-	public generateScript: ((proj: Project, profile: IGenerateScriptProfile) => any) | undefined;
+	public publish: ((proj: Project, profile: IPublishSettings) => any) | undefined;
+	public generateScript: ((proj: Project, profile: IGenerateScriptSettings) => any) | undefined;
 	public readPublishProfile: ((profileUri: vscode.Uri) => any) | undefined;
 
 	constructor(private apiWrapper: ApiWrapper, private project: Project) {
@@ -195,7 +195,7 @@ export class PublishDatabaseDialog {
 
 	public async publishClick(): Promise<void> {
 		const sqlCmdVars = this.getSqlCmdVariablesForPublish();
-		const profile: IPublishProfile = {
+		const profile: IPublishSettings = {
 			databaseName: this.getTargetDatabaseName(),
 			upgradeExisting: true,
 			connectionUri: await this.getConnectionUri(),
@@ -210,7 +210,7 @@ export class PublishDatabaseDialog {
 
 	public async generateScriptClick(): Promise<void> {
 		const sqlCmdVars = this.getSqlCmdVariablesForPublish();
-		const profile: IGenerateScriptProfile = {
+		const profile: IGenerateScriptSettings = {
 			databaseName: this.getTargetDatabaseName(),
 			connectionUri: await this.getConnectionUri(),
 			sqlCmdVariables: sqlCmdVars

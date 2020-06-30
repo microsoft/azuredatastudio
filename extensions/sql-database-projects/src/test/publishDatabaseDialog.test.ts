@@ -17,7 +17,7 @@ import { Project } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProjectTreeViewProvider';
 import { ProjectsController } from '../controllers/projectController';
 import { createContext, TestContext } from './testContext';
-import { IPublishProfile, IGenerateScriptProfile } from '../models/IPublishProfile';
+import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
 
 
 let testContext: TestContext;
@@ -62,9 +62,9 @@ describe.skip('Publish Database Dialog', () => {
 		dialog.setup(x => x.getTargetDatabaseName()).returns(() => 'MockDatabaseName');
 		dialog.callBase = true;
 
-		let profile: IPublishProfile | IGenerateScriptProfile | undefined;
+		let profile: IPublishSettings | IGenerateScriptSettings | undefined;
 
-		const expectedPublish: IPublishProfile  = {
+		const expectedPublish: IPublishSettings  = {
 			databaseName: 'MockDatabaseName',
 			connectionUri: 'Mock|Connection|Uri',
 			upgradeExisting: true,
@@ -79,7 +79,7 @@ describe.skip('Publish Database Dialog', () => {
 
 		should(profile).deepEqual(expectedPublish);
 
-		const expectedGenScript: IGenerateScriptProfile = {
+		const expectedGenScript: IGenerateScriptSettings = {
 			databaseName: 'MockDatabaseName',
 			connectionUri: 'Mock|Connection|Uri',
 			sqlCmdVariables: {
