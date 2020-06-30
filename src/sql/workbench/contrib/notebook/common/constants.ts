@@ -5,6 +5,7 @@
 
 import { RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import * as glob from 'vs/base/common/glob';
+import { SearchSortOrder } from 'vs/workbench/services/search/common/search';
 
 export const FindInNotebooksActionId = 'workbench.action.findInNotebooks';
 export const FocusActiveEditorCommandId = 'notebookSearch.action.focusActiveEditor';
@@ -27,16 +28,6 @@ export const AddCursorsAtSearchResults = 'addCursorsAtSearchResults';
 export const SearchViewFocusedKey = new RawContextKey<boolean>('notebookSearchViewletFocus', false);
 export const InputBoxFocusedKey = new RawContextKey<boolean>('inputBoxFocus', false);
 export const SearchInputBoxFocusedKey = new RawContextKey<boolean>('searchInputBoxFocus', false);
-
-
-export const enum SearchSortOrder {
-	Default = 'default',
-	FileNames = 'fileNames',
-	Type = 'type',
-	Modified = 'modified',
-	CountDescending = 'countDescending',
-	CountAscending = 'countAscending'
-}
 
 export interface INotebookSearchConfigurationProperties {
 	exclude: glob.IExpression;

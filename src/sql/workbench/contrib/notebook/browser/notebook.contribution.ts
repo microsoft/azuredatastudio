@@ -49,8 +49,7 @@ import { ToggleTabFocusModeAction } from 'vs/editor/contrib/toggleTabFocusMode/t
 import { NotebookExplorerViewletViewsContribution, OpenNotebookExplorerViewletAction } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet';
 import 'vs/css!./media/notebook.contribution';
 import { isMacintosh } from 'vs/base/common/platform';
-import { SearchSortOrder } from 'sql/workbench/contrib/notebook/common/constants';
-
+import { SearchSortOrder } from 'vs/workbench/services/search/common/search';
 
 Registry.as<IEditorInputFactoryRegistry>(EditorInputFactoryExtensions.EditorInputFactories)
 	.registerEditorInputFactory(FileNotebookInput.ID, FileNoteBookEditorInputFactory);
