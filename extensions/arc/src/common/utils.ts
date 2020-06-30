@@ -175,7 +175,7 @@ export async function promptForResourceDeletion(namespace: string, name: string)
  * @returns Promise resolving to the password if it passed validation,
  * or false if the input box was closed for any other reason
  */
-export async function promptAndConfirmPassword(validate: (input: string) => string): Promise<string | false> {
+export async function promptAndConfirmPassword(validate: (input: string) => string): Promise<string | undefined> {
 	const title = loc.resetPassword;
 	const options: vscode.InputBoxOptions = {
 		prompt: loc.enterNewPassword,
@@ -190,7 +190,7 @@ export async function promptAndConfirmPassword(validate: (input: string) => stri
 		return promptInputBox(title, options);
 	}
 
-	return false;
+	return undefined;
 }
 
 /**
@@ -198,7 +198,7 @@ export async function promptAndConfirmPassword(validate: (input: string) => stri
  * @param error The error object
  */
 export function getErrorMessage(error: any): string {
-	if (error?.body?.reason) {
+	if (error.body?.reason) {
 		// For HTTP Errors with a body pull out the reason message since that's usually the most helpful
 		return error.body.reason;
 	} else if (error.message) {
