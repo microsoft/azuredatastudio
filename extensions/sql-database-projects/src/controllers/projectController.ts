@@ -83,7 +83,7 @@ export class ProjectsController {
 
 		try {
 			this.refreshProjectsTree();
-			this.focusProject(newProject);
+			await this.focusProject(newProject);
 		}
 		catch (err) {
 			// if the project didnt load - remove it from the list of open projects
@@ -188,13 +188,13 @@ export class ProjectsController {
 	 * Builds and publishes a project
 	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
 	 */
-	public async publishProject(treeNode: BaseProjectTreeItem): Promise<PublishDatabaseDialog>;
+	public publishProject(treeNode: BaseProjectTreeItem): PublishDatabaseDialog;
 	/**
 	 * Builds and publishes a project
 	 * @param project Project to be built and published
 	 */
-	public async publishProject(project: Project): Promise<PublishDatabaseDialog>;
-	public async publishProject(context: Project | BaseProjectTreeItem): Promise<PublishDatabaseDialog> {
+	public publishProject(project: Project): PublishDatabaseDialog;
+	public publishProject(context: Project | BaseProjectTreeItem): PublishDatabaseDialog {
 		const project: Project = this.getProjectFromContext(context);
 		let publishDatabaseDialog = this.getPublishDialog(project);
 
