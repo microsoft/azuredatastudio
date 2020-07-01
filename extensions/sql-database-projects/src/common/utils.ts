@@ -101,10 +101,9 @@ export function getPlatformSafeFileEntryPath(filePath: string): string {
 }
 
 /**
- * Standardizes slashes to all be "\\" in the .sqlproj for for consistency between platforms
- * and compatibility with SSDT
+ * Standardizes slashes to be "\\" for consistency between platforms and compatibility with SSDT
  */
-export function standardizeSlashesForSqlProj(filePath: string): string {
+export function convertSlashesForSqlProj(filePath: string): string {
 	const parts = filePath.split('/');
 	return parts.join('\\');
 }

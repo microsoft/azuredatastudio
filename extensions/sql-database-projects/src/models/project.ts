@@ -311,7 +311,7 @@ export class Project {
 
 	private addFileToProjFile(path: string) {
 		const newFileNode = this.projFileXmlDoc.createElement(constants.Build);
-		newFileNode.setAttribute(constants.Include, utils.standardizeSlashesForSqlProj(path));
+		newFileNode.setAttribute(constants.Include, utils.convertSlashesForSqlProj(path));
 
 		this.findOrCreateItemGroup(constants.Build).appendChild(newFileNode);
 	}
@@ -320,7 +320,7 @@ export class Project {
 		const fileNodes = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Build);
 
 		for (let i = 0; i < fileNodes.length; i++) {
-			if (fileNodes[i].getAttribute(constants.Include) === utils.standardizeSlashesForSqlProj(path)) {
+			if (fileNodes[i].getAttribute(constants.Include) === utils.convertSlashesForSqlProj(path)) {
 				fileNodes[i].parentNode.removeChild(fileNodes[i]);
 				return;
 			}
@@ -331,7 +331,7 @@ export class Project {
 
 	private addFolderToProjFile(path: string) {
 		const newFolderNode = this.projFileXmlDoc.createElement(constants.Folder);
-		newFolderNode.setAttribute(constants.Include, utils.standardizeSlashesForSqlProj(path));
+		newFolderNode.setAttribute(constants.Include, utils.convertSlashesForSqlProj(path));
 
 		this.findOrCreateItemGroup(constants.Folder).appendChild(newFolderNode);
 	}
@@ -340,7 +340,7 @@ export class Project {
 		const folderNodes = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Folder);
 
 		for (let i = 0; i < folderNodes.length; i++) {
-			if (folderNodes[i].getAttribute(constants.Include) === utils.standardizeSlashesForSqlProj(path)) {
+			if (folderNodes[i].getAttribute(constants.Include) === utils.convertSlashesForSqlProj(path)) {
 				folderNodes[i].parentNode.removeChild(folderNodes[i]);
 				return;
 			}
@@ -372,7 +372,7 @@ export class Project {
 		if (isSystemDatabaseProjectEntry) {
 			let ssdtReferenceNode = this.projFileXmlDoc.createElement(constants.ArtifactReference);
 			ssdtReferenceNode.setAttribute(constants.Condition, constants.NotNetCoreCondition);
-			ssdtReferenceNode.setAttribute(constants.Include, (<SystemDatabaseReferenceProjectEntry>entry).ssdtPathForSqlProj()); // need to remove the leading slash for system database path for build to work on Windows
+			ssdtReferenceNode.setAttribute(constants.Include, (<SystemDatabaseReferenceProjectEntry>entry).ssdtPathForSqlProj());
 			this.addDatabaseReferenceChildren(ssdtReferenceNode, entry.name);
 			this.findOrCreateItemGroup(constants.ArtifactReference).appendChild(ssdtReferenceNode);
 		}
@@ -550,7 +550,7 @@ export class ProjectEntry {
 	}
 
 	public pathForSqlProj(): string {
-		return utils.standardizeSlashesForSqlProj(this.fsUri.path);
+		return utils.convertSlashesForSqlProj(this.fsUri.path);
 	}
 }
 
@@ -565,7 +565,6 @@ class DatabaseReferenceProjectEntry extends ProjectEntry {
 	public get databaseName(): string {
 		return path.parse(utils.getPlatformSafeFileEntryPath(this.fsUri.fsPath)).name;
 	}
-
 }
 
 class SystemDatabaseReferenceProjectEntry extends DatabaseReferenceProjectEntry {
@@ -575,12 +574,12 @@ class SystemDatabaseReferenceProjectEntry extends DatabaseReferenceProjectEntry 
 
 	public pathForSqlProj(): string {
 		// need to remove the leading slash for system database path for build to work on Windows
-		return utils.standardizeSlashesForSqlProj(this.fsUri.path.substring(1));
+		return utils.convertSlashesForSqlProj(this.fsUri.path.substring(1));
 	}
 
 	public ssdtPathForSqlProj(): string {
 		// need to remove the leading slash for system database path for build to work on Windows
-		return utils.standardizeSlashesForSqlProj(this.ssdtUri.path.substring(1));
+		return utils.convertSlashesForSqlProj(this.ssdtUri.path.substring(1));
 	}
 }
 
