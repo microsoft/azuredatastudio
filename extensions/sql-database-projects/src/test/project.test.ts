@@ -63,8 +63,8 @@ describe('Project: sqlproj content operations', function (): void {
 		const newProject = new Project(projFilePath);
 		await newProject.readProjFile();
 
-		should(newProject.files.find(f => f.type === EntryType.Folder && f.relativePath === folderPath)).not.equal(undefined);
-		should(newProject.files.find(f => f.type === EntryType.File && f.relativePath === filePath)).not.equal(undefined);
+		should(newProject.files.find(f => f.type === EntryType.Folder && f.relativePath === standardizeSlashesForSqlProj(folderPath))).not.equal(undefined);
+		should(newProject.files.find(f => f.type === EntryType.File && f.relativePath === standardizeSlashesForSqlProj(filePath))).not.equal(undefined);
 
 		const newFileContents = (await fs.readFile(path.join(newProject.projectFolderPath, filePath))).toString();
 
