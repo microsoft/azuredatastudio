@@ -11,16 +11,16 @@ import * as utils from '../common/utils';
 import { Project } from '../models/project';
 import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStringSource';
 import { ApiWrapper } from '../common/apiWrapper';
-import { IDeploymentProfile, IGenerateScriptProfile } from '../models/IDeploymentProfile';
+import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
 
 interface DataSourceDropdownValue extends azdata.CategoryValue {
 	dataSource: SqlConnectionDataSource;
 	database: string;
 }
 
-export class DeployDatabaseDialog {
+export class PublishDatabaseDialog {
 	public dialog: azdata.window.Dialog;
-	public deployTab: azdata.window.DialogTab;
+	public publishTab: azdata.window.DialogTab;
 	private targetConnectionTextBox: azdata.InputBoxComponent | undefined;
 	private targetConnectionFormComponent: azdata.FormComponent | undefined;
 	private dataSourcesFormComponent: azdata.FormComponent | undefined;
@@ -38,20 +38,20 @@ export class DeployDatabaseDialog {
 
 	private toDispose: vscode.Disposable[] = [];
 
-	public deploy: ((proj: Project, profile: IDeploymentProfile) => any) | undefined;
-	public generateScript: ((proj: Project, profile: IGenerateScriptProfile) => any) | undefined;
+	public publish: ((proj: Project, profile: IPublishSettings) => any) | undefined;
+	public generateScript: ((proj: Project, profile: IGenerateScriptSettings) => any) | undefined;
 	public readPublishProfile: ((profileUri: vscode.Uri) => any) | undefined;
 
 	constructor(private apiWrapper: ApiWrapper, private project: Project) {
-		this.dialog = azdata.window.createModelViewDialog(constants.deployDialogName);
-		this.deployTab = azdata.window.createTab(constants.deployDialogName);
+		this.dialog = azdata.window.createModelViewDialog(constants.publishDialogName);
+		this.publishTab = azdata.window.createTab(constants.publishDialogName);
 	}
 
 	public openDialog(): void {
 		this.initializeDialog();
-		this.dialog.okButton.label = constants.deployDialogOkButtonText;
+		this.dialog.okButton.label = constants.publishDialogOkButtonText;
 		this.dialog.okButton.enabled = false;
-		this.toDispose.push(this.dialog.okButton.onClick(async () => await this.deployClick()));
+		this.toDispose.push(this.dialog.okButton.onClick(async () => await this.publishClick()));
 
 		this.dialog.cancelButton.label = constants.cancelButtonText;
 
@@ -70,12 +70,12 @@ export class DeployDatabaseDialog {
 	}
 
 	private initializeDialog(): void {
-		this.initializeDeployTab();
-		this.dialog.content = [this.deployTab];
+		this.initializePublishTab();
+		this.dialog.content = [this.publishTab];
 	}
 
-	private initializeDeployTab(): void {
-		this.deployTab.registerContent(async view => {
+	private initializePublishTab(): void {
+		this.publishTab.registerContent(async view => {
 
 			// TODO : enable using this when data source creation is enabled
 			this.createRadioButtons(view);
@@ -189,13 +189,13 @@ export class DeployDatabaseDialog {
 			return await this.apiWrapper.getUriForConnection(connId);
 		}
 		catch (err) {
-			throw new Error(constants.unableToCreateDeploymentConnection + ': ' + utils.getErrorMessage(err));
+			throw new Error(constants.unableToCreatePublishConnection + ': ' + utils.getErrorMessage(err));
 		}
 	}
 
-	public async deployClick(): Promise<void> {
-		const sqlCmdVars = this.getSqlCmdVariablesForDeploy();
-		const profile: IDeploymentProfile = {
+	public async publishClick(): Promise<void> {
+		const sqlCmdVars = this.getSqlCmdVariablesForPublish();
+		const settings: IPublishSettings = {
 			databaseName: this.getTargetDatabaseName(),
 			upgradeExisting: true,
 			connectionUri: await this.getConnectionUri(),
@@ -203,14 +203,14 @@ export class DeployDatabaseDialog {
 		};
 
 		this.apiWrapper.closeDialog(this.dialog);
-		await this.deploy!(this.project, profile);
+		await this.publish!(this.project, settings);
 
 		this.dispose();
 	}
 
 	public async generateScriptClick(): Promise<void> {
-		const sqlCmdVars = this.getSqlCmdVariablesForDeploy();
-		const profile: IGenerateScriptProfile = {
+		const sqlCmdVars = this.getSqlCmdVariablesForPublish();
+		const settings: IGenerateScriptSettings = {
 			databaseName: this.getTargetDatabaseName(),
 			connectionUri: await this.getConnectionUri(),
 			sqlCmdVariables: sqlCmdVars
@@ -219,13 +219,13 @@ export class DeployDatabaseDialog {
 		this.apiWrapper.closeDialog(this.dialog);
 
 		if (this.generateScript) {
-			await this.generateScript!(this.project, profile);
+			await this.generateScript!(this.project, settings);
 		}
 
 		this.dispose();
 	}
 
-	private getSqlCmdVariablesForDeploy(): Record<string, string> {
+	private getSqlCmdVariablesForPublish(): Record<string, string> {
 		// get SQLCMD variables from project
 		let sqlCmdVariables = { ...this.project.sqlCmdVariables };
 
@@ -421,7 +421,7 @@ export class DeployDatabaseDialog {
 				const result = await this.readPublishProfile(fileUris[0]);
 				(<azdata.InputBoxComponent>this.targetDatabaseTextBox).value = result.databaseName;
 				this.profileSqlCmdVars = result.sqlCmdVariables;
-				const data = this.convertSqlCmdVarsToTableFormat(this.getSqlCmdVariablesForDeploy());
+				const data = this.convertSqlCmdVarsToTableFormat(this.getSqlCmdVariablesForPublish());
 
 				(<azdata.TableComponent>this.sqlCmdVariablesTable).updateProperties({
 					data: data
