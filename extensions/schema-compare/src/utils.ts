@@ -16,6 +16,19 @@ export interface IPackageInfo {
 	aiKey: string;
 }
 
+export interface ButtonState {
+	compareButtonState: boolean;
+	optionsButtonState: boolean;
+	switchButtonState: boolean;
+	openScmpButtonState: boolean;
+	saveScmpButtonState: boolean;
+	cancelCompareButtonState: boolean;
+	selectSourceButtonState: boolean;
+	selectTargetButtonState: boolean;
+	generateScriptButtonState: boolean;
+	applyButtonState: boolean;
+}
+
 export function getPackageInfo(packageJson: any): IPackageInfo {
 	if (packageJson) {
 		return {

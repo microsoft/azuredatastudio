@@ -38,19 +38,19 @@ export class SchemaCompareMainWindow {
 	private flexModel: azdata.FlexContainer;
 	private noDifferencesLabel: azdata.TextComponent;
 	private sourceTargetFlexLayout: azdata.FlexContainer;
-	private switchButton: azdata.ButtonComponent;
-	private compareButton: azdata.ButtonComponent;
-	private cancelCompareButton: azdata.ButtonComponent;
-	private optionsButton: azdata.ButtonComponent;
-	private generateScriptButton: azdata.ButtonComponent;
-	private applyButton: azdata.ButtonComponent;
-	private openScmpButton: azdata.ButtonComponent;
-	private selectSourceButton: azdata.ButtonComponent;
-	private selectTargetButton: azdata.ButtonComponent;
-	private saveScmpButton: azdata.ButtonComponent;
+	protected switchButton: azdata.ButtonComponent;
+	protected compareButton: azdata.ButtonComponent;
+	protected cancelCompareButton: azdata.ButtonComponent;
+	protected optionsButton: azdata.ButtonComponent;
+	protected generateScriptButton: azdata.ButtonComponent;
+	protected applyButton: azdata.ButtonComponent;
+	protected openScmpButton: azdata.ButtonComponent;
+	protected selectSourceButton: azdata.ButtonComponent;
+	protected selectTargetButton: azdata.ButtonComponent;
+	protected saveScmpButton: azdata.ButtonComponent;
 	private SchemaCompareActionMap: Map<Number, string>;
 	private operationId: string;
-	private comparisonResult: mssql.SchemaCompareResult;
+	protected comparisonResult: mssql.SchemaCompareResult;
 	private sourceNameComponent: azdata.TableComponent;
 	private targetNameComponent: azdata.TableComponent;
 	private deploymentOptions: mssql.DeploymentOptions;
@@ -278,32 +278,6 @@ export class SchemaCompareMainWindow {
 			// reset buttons to before comparison state
 			this.resetButtons(ResetButtonState.beforeCompareStart);
 		}
-	}
-
-	// only for test
-	public getComparisonResult(): mssql.SchemaCompareResult {
-		return this.comparisonResult;
-	}
-
-	// only for test
-	public verifyButtonsState(compareButtonState: boolean, optionsButtonState: boolean, switchButtonState: boolean,
-		openScmpButtonState: boolean, saveScmpButtonState: boolean, cancelCompareButtonState: boolean,
-		selectSourceButtonState: boolean, selectTargetButtonState: boolean, generateScriptButtonState: boolean,
-		applyButtonState: boolean): boolean {
-		let result: boolean = false;
-		if (this.compareButton.enabled === compareButtonState &&
-			this.optionsButton.enabled === optionsButtonState &&
-			this.switchButton.enabled === switchButtonState &&
-			this.openScmpButton.enabled === openScmpButtonState &&
-			this.saveScmpButton.enabled === saveScmpButtonState &&
-			this.cancelCompareButton.enabled === cancelCompareButtonState &&
-			this.selectSourceButton.enabled === selectSourceButtonState &&
-			this.selectTargetButton.enabled === selectTargetButtonState &&
-			this.generateScriptButton.enabled === generateScriptButtonState &&
-			this.applyButton.enabled === applyButtonState) {
-			result = true;
-		}
-		return result;
 	}
 
 	public setDeploymentOptions(deploymentOptions: mssql.DeploymentOptions): void {
