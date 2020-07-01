@@ -101,6 +101,15 @@ export function getPlatformSafeFileEntryPath(filePath: string): string {
 }
 
 /**
+ * Standardizes slashes to all be "\\" in the .sqlproj for for consistency between platforms
+ * and compatibility with SSDT
+ */
+export function standardizeSlashesForSqlProj(filePath: string): string {
+	const parts = filePath.split('/');
+	return parts.join('\\');
+}
+
+/**
  * Read SQLCMD variables from xmlDoc and return them
  * @param xmlDoc xml doc to read SQLCMD variables from. Format must be the same that sqlproj and publish profiles use
  */
