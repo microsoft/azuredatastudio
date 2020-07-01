@@ -20,6 +20,10 @@ describe('notebookUtils Tests', function (): void {
 	let notebookUtils: NotebookUtils;
 	let apiWrapperMock: TypeMoq.IMock<ApiWrapper>;
 
+	this.beforeAll(async function(): Promise<void> {
+		await vscode.commands.executeCommand('workbench.action.closeAllEditors');
+	})
+
 	beforeEach(function (): void {
 		apiWrapperMock = TypeMoq.Mock.ofInstance(new ApiWrapper());
 		notebookUtils = new NotebookUtils(apiWrapperMock.object);
