@@ -39,7 +39,7 @@ import { TreeViewPane } from 'sql/workbench/browser/parts/views/treeView';
 import { NotebookSearchView } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearchView';
 import * as path from 'vs/base/common/path';
 import { URI } from 'vs/base/common/uri';
-import { isMarkdownString } from 'vs/base/common/htmlContent';
+import { isString } from 'vs/base/common/types';
 
 export const VIEWLET_ID = 'workbench.view.notebooks';
 
@@ -163,7 +163,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 		this._register(this.searchWidget.onSearchCancel(({ focus }) => this.cancelSearch(focus)));
 		this._register(this.searchWidget.searchInput.onDidOptionChange(() => this.triggerQueryChange()));
 
-		this._register(this.searchWidget.onDidHeightChange(() => this.searchView?.reLayout(getTotalHeight(this.searchWidgetsContainerElement))));
+		this._register(this.searchWidget.onDidHeightChange(() => this.searchView?.reLayout()));
 
 		this._register(this.searchWidget.onPreserveCaseChange((state) => {
 			if (this.searchView && this.searchView.searchViewModel) {
@@ -271,7 +271,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 							let items = root.children;
 							items?.forEach(root => {
 								this.updateViewletsState();
-								let folderToSearch: IFolderQuery = { folder: URI.file(path.join(isMarkdownString(root.tooltip) ? root.tooltip.value : root.tooltip, 'content')) };
+								let folderToSearch: IFolderQuery = { folder: URI.file(path.join(isString(root.tooltip) ? root.tooltip : root.tooltip.value, 'content')) };
 								query.folderQueries.push(folderToSearch);
 								filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
 								this.searchView.doSearch(query, null, filesToIncludeFiltered, false, this.searchWidget);

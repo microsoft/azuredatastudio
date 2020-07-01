@@ -16,7 +16,6 @@ import { Iterable } from 'vs/base/common/iterator';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
-import 'vs/css!./media/searchview';
 import { ICodeEditor, isCodeEditor, getCodeEditor } from 'vs/editor/browser/editorBrowser';
 import * as nls from 'vs/nls';
 import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
@@ -34,7 +33,7 @@ import { ICssStyleCollector, IColorTheme, IThemeService, registerThemingParticip
 import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
 import { ResourceLabels } from 'vs/workbench/browser/labels';
 import { IEditorPane } from 'vs/workbench/common/editor';
-import { FileMatchRenderer, FolderMatchRenderer, MatchRenderer, SearchAccessibilityProvider, SearchDelegate, SearchDND } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearchResultsView';
+import { FileMatchRenderer, FolderMatchRenderer, MatchRenderer } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearchResultsView';
 import * as Constants from 'vs/workbench/contrib/search/common/constants';
 import { IReplaceService } from 'vs/workbench/contrib/search/common/replace';
 import { FileMatch, FileMatchOrMatch, IChangeEvent, ISearchWorkbenchService, Match, RenderableMatch, searchMatchComparer, SearchModel, SearchResult, FolderMatch, FolderMatchWithResource } from 'vs/workbench/contrib/search/common/searchModel';
@@ -58,6 +57,7 @@ import { NotebookSearchWidget } from 'sql/workbench/contrib/notebook/browser/not
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { appendKeyBindingLabel } from 'vs/workbench/contrib/search/browser/searchActions';
 import { searchCollapseAllIcon, searchExpandAllIcon, searchClearIcon, searchStopIcon } from 'vs/workbench/contrib/search/browser/searchIcons';
+import { SearchDelegate, SearchAccessibilityProvider, SearchDND } from 'vs/workbench/contrib/search/browser/searchResultsView';
 
 const $ = dom.$;
 
@@ -552,7 +552,7 @@ export class NotebookSearchView extends ViewPane {
 		super.focus();
 	}
 
-	public reLayout(searchWidgetHeight?: number): void {
+	public reLayout(): void {
 		if (this.isDisposed) {
 			return;
 		}
@@ -564,10 +564,8 @@ export class NotebookSearchView extends ViewPane {
 			0 :
 			dom.getTotalHeight(this.messagesElement);
 
-		searchWidgetHeight = searchWidgetHeight ?? 51; //default height
 		const searchResultContainerHeight = this.size.height -
-			messagesSize -
-			searchWidgetHeight;
+			messagesSize;
 
 		this.resultsElement.style.height = searchResultContainerHeight + 'px';
 

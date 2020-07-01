@@ -400,7 +400,7 @@ configurationRegistry.registerConfiguration({
 						type: 'object',
 						properties: {
 							when: {
-								type: 'string', // expression ({ "**/*.js": { "when": "$(basename).js" } })
+								type: 'string',
 								pattern: '\\w*\\$\\(basename\\)\\w*',
 								default: '$(basename).ext',
 								description: localize('exclude.when', 'Additional check on the siblings of a matching file. Use $(basename) as variable for the matching file name.')
