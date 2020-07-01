@@ -320,7 +320,7 @@ export class Project {
 		const fileNodes = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Build);
 
 		for (let i = 0; i < fileNodes.length; i++) {
-			if (fileNodes[i].getAttribute(constants.Include) === path) {
+			if (fileNodes[i].getAttribute(constants.Include) === utils.standardizeSlashesForSqlProj(path)) {
 				fileNodes[i].parentNode.removeChild(fileNodes[i]);
 				return;
 			}
@@ -340,7 +340,7 @@ export class Project {
 		const folderNodes = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Folder);
 
 		for (let i = 0; i < folderNodes.length; i++) {
-			if (folderNodes[i].getAttribute(constants.Include) === path) {
+			if (folderNodes[i].getAttribute(constants.Include) === utils.standardizeSlashesForSqlProj(path)) {
 				folderNodes[i].parentNode.removeChild(folderNodes[i]);
 				return;
 			}
