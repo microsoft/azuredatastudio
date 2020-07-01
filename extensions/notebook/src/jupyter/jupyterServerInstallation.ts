@@ -119,8 +119,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		this.outputChannel = outputChannel;
 		this.apiWrapper = apiWrapper;
 
-		// this.runningOnSAW = vscode.env.appName.toLowerCase().indexOf('saw') > 0;
-		this.runningOnSAW = vscode.env.appName.toLowerCase().indexOf('dev') > 0;
+		this.runningOnSAW = vscode.env.appName.toLowerCase().indexOf('saw') > 0;
 		this.apiWrapper.setCommandContext('notebook:runningOnSAW', this.runningOnSAW);
 
 		if (this.runningOnSAW) {

@@ -165,7 +165,7 @@ export class PerFolderServerInstance implements IServerInstance {
 			}
 			if (this._isStarted) {
 				let install = this.options.install;
-				let stopCommand = `"${install.pythonExecutable}" -s "${this.notebookScriptPath}" stop ${this._port}`;
+				let stopCommand = `"${install.pythonExecutable}" "${this.notebookScriptPath}" stop ${this._port}`;
 				await this.utils.executeBufferedCommand(stopCommand, install.execOptions, install.outputChannel);
 			}
 		} catch (error) {
@@ -246,7 +246,7 @@ export class PerFolderServerInstance implements IServerInstance {
 		let token = await utils.getRandomToken();
 		this._uri = vscode.Uri.parse(`http://localhost:${port}/?token=${token}`);
 		this._port = port.toString();
-		let startCommand = `"${this.options.install.pythonExecutable}" -s "${this.notebookScriptPath}" --no-browser --no-mathjax --notebook-dir "${notebookDirectory}" --port=${port} --NotebookApp.token=${token}`;
+		let startCommand = `"${this.options.install.pythonExecutable}" "${this.notebookScriptPath}" --no-browser --no-mathjax --notebook-dir "${notebookDirectory}" --port=${port} --NotebookApp.token=${token}`;
 		this.notifyStarting(this.options.install, startCommand);
 
 		// Execute the command

@@ -304,15 +304,15 @@
         },
         {
           "command": "jupyter.cmd.configurePython",
-          "when": "notebook:runningOnSAW == false"
+          "when": "!notebook:runningOnSAW"
         },
         {
           "command": "jupyter.reinstallDependencies",
-          "when": "notebook:runningOnSAW == false"
+          "when": "!notebook:runningOnSAW"
         },
         {
           "command": "jupyter.cmd.managePackages",
-          "when": "notebook:runningOnSAW == false"
+          "when": "!notebook:runningOnSAW"
         },
         {
           "command": "books.sqlserver2019",
@@ -426,7 +426,7 @@
       "notebook/toolbar": [
         {
           "command": "jupyter.cmd.managePackages",
-          "when": "providerId == jupyter && notebook:pythonInstalled && notebook:runningOnSAW == false"
+          "when": "providerId == jupyter && notebook:pythonInstalled && !notebook:runningOnSAW"
         }
       ]
     },
