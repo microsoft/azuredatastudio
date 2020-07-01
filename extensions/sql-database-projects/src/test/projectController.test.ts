@@ -19,9 +19,9 @@ import { ProjectsController } from '../controllers/projectController';
 import { promises as fs } from 'fs';
 import { createContext, TestContext, mockDacFxResult } from './testContext';
 import { Project, SystemDatabase, ProjectEntry, reservedProjectFolders } from '../models/project';
-import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
+import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { ApiWrapper } from '../common/apiWrapper';
-import { IDeploymentProfile, IGenerateScriptProfile } from '../models/IDeploymentProfile';
+import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
 import { exists } from '../common/utils';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { FolderNode } from '../models/tree/fileFolderTreeItem';
@@ -219,41 +219,41 @@ describe('ProjectsController: project controller operations', function (): void 
 		});
 	});
 
-	describe('Deployment and deployment script generation', function (): void {
-		it('Deploy dialog should open from ProjectController', async function (): Promise<void> {
+	describe('Publishing and script generation', function (): void {
+		it('Publish dialog should open from ProjectController', async function (): Promise<void> {
 			let opened = false;
 
-			let deployDialog = TypeMoq.Mock.ofType(DeployDatabaseDialog);
-			deployDialog.setup(x => x.openDialog()).returns(() => { opened = true; });
+			let publishDialog = TypeMoq.Mock.ofType(PublishDatabaseDialog);
+			publishDialog.setup(x => x.openDialog()).returns(() => { opened = true; });
 
 			let projController = TypeMoq.Mock.ofType(ProjectsController);
 			projController.callBase = true;
-			projController.setup(x => x.getDeployDialog(TypeMoq.It.isAny())).returns(() => deployDialog.object);
+			projController.setup(x => x.getPublishDialog(TypeMoq.It.isAny())).returns(() => publishDialog.object);
 
-			await projController.object.deployProject(new Project('FakePath'));
+			await projController.object.publishProject(new Project('FakePath'));
 			should(opened).equal(true);
 		});
 
-		it('Callbacks are hooked up and called from Deploy dialog', async function (): Promise<void> {
+		it('Callbacks are hooked up and called from Publish dialog', async function (): Promise<void> {
 			const projPath = path.dirname(await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline));
 			await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, projPath);
 			const proj = new Project(projPath);
 
-			const deployHoller = 'hello from callback for deploy()';
+			const publishHoller = 'hello from callback for publish()';
 			const generateHoller = 'hello from callback for generateScript()';
 			const profileHoller = 'hello from callback for readPublishProfile()';
 
 			let holler = 'nothing';
 
-			let deployDialog = TypeMoq.Mock.ofType(DeployDatabaseDialog, undefined, undefined, new ApiWrapper(), proj);
-			deployDialog.callBase = true;
-			deployDialog.setup(x => x.getConnectionUri()).returns(async () => 'fake|connection|uri');
+			let publishDialog = TypeMoq.Mock.ofType(PublishDatabaseDialog, undefined, undefined, new ApiWrapper(), proj);
+			publishDialog.callBase = true;
+			publishDialog.setup(x => x.getConnectionUri()).returns(async () => 'fake|connection|uri');
 
 			let projController = TypeMoq.Mock.ofType(ProjectsController);
 			projController.callBase = true;
-			projController.setup(x => x.getDeployDialog(TypeMoq.It.isAny())).returns(() => deployDialog.object);
-			projController.setup(x => x.executionCallback(TypeMoq.It.isAny(), TypeMoq.It.is((_): _ is IDeploymentProfile => true))).returns(async () => {
-				holler = deployHoller;
+			projController.setup(x => x.getPublishDialog(TypeMoq.It.isAny())).returns(() => publishDialog.object);
+			projController.setup(x => x.executionCallback(TypeMoq.It.isAny(), TypeMoq.It.is((_): _ is IPublishSettings => true))).returns(async () => {
+				holler = publishHoller;
 				return undefined;
 			});
 			projController.setup(x => x.readPublishProfile(TypeMoq.It.isAny())).returns(async () => {
@@ -264,22 +264,22 @@ describe('ProjectsController: project controller operations', function (): void 
 				};
 			});
 
-			projController.setup(x => x.executionCallback(TypeMoq.It.isAny(), TypeMoq.It.is((_): _ is IGenerateScriptProfile => true))).returns(async () => {
+			projController.setup(x => x.executionCallback(TypeMoq.It.isAny(), TypeMoq.It.is((_): _ is IGenerateScriptSettings => true))).returns(async () => {
 				holler = generateHoller;
 				return undefined;
 			});
 
-			let dialog = await projController.object.deployProject(proj);
-			await dialog.deployClick();
+			let dialog = await projController.object.publishProject(proj);
+			await dialog.publishClick();
 
-			should(holler).equal(deployHoller, 'executionCallback() is supposed to have been setup and called for Deploy scenario');
+			should(holler).equal(publishHoller, 'executionCallback() is supposed to have been setup and called for Publish scenario');
 
-			dialog = await projController.object.deployProject(proj);
+			dialog = await projController.object.publishProject(proj);
 			await dialog.generateScriptClick();
 
 			should(holler).equal(generateHoller, 'executionCallback() is supposed to have been setup and called for GenerateScript scenario');
 
-			dialog = await projController.object.deployProject(proj);
+			dialog = await projController.object.publishProject(proj);
 			await projController.object.readPublishProfile(vscode.Uri.parse('test'));
 
 			should(holler).equal(profileHoller, 'executionCallback() is supposed to have been setup and called for ReadPublishProfile scenario');
@@ -296,15 +296,15 @@ describe('ProjectsController: project controller operations', function (): void 
 			should(result.sqlCmdVariables['ProdDatabaseName']).equal('MyProdDatabase');
 		});
 
-		it('Should copy dacpac to temp folder before deploying', async function (): Promise<void> {
+		it('Should copy dacpac to temp folder before publishing', async function (): Promise<void> {
 			const fakeDacpacContents = 'SwiftFlewHiawathasArrow';
 			let postCopyContents = '';
 			let builtDacpacPath = '';
-			let deployedDacpacPath = '';
+			let publishedDacpacPath = '';
 
 			testContext.dacFxService.setup(x => x.generateDeployScript(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(async (p) => {
-				deployedDacpacPath = p;
-				postCopyContents = (await fs.readFile(deployedDacpacPath)).toString();
+				publishedDacpacPath = p;
+				postCopyContents = (await fs.readFile(publishedDacpacPath)).toString();
 				return Promise.resolve(mockDacFxResult);
 			});
 
@@ -321,9 +321,9 @@ describe('ProjectsController: project controller operations', function (): void 
 			await projController.object.executionCallback(new Project(''), { connectionUri: '', databaseName: '' });
 
 			should(builtDacpacPath).not.equal('', 'built dacpac path should be set');
-			should(deployedDacpacPath).not.equal('', 'deployed dacpac path should be set');
-			should(builtDacpacPath).not.equal(deployedDacpacPath, 'built and deployed dacpac paths should be different');
-			should(postCopyContents).equal(fakeDacpacContents, 'contents of built and deployed dacpacs should match');
+			should(publishedDacpacPath).not.equal('', 'published dacpac path should be set');
+			should(builtDacpacPath).not.equal(publishedDacpacPath, 'built and published dacpac paths should be different');
+			should(postCopyContents).equal(fakeDacpacContents, 'contents of built and published dacpacs should match');
 		});
 	});
 });
