@@ -8,10 +8,14 @@ import { getConfigurationKeys, IConfigurationOverrides, IConfigurationService, g
 export class TestConfigurationService implements IConfigurationService {
 	public _serviceBrand: undefined;
 
-	private configuration: { user: { [key: string]: any }; workspace: { [key: string]: any } } = {
+	private configuration: { user?: { [key: string]: any }; workspace?: { [key: string]: any } };
+
+	constructor(configuration: { user?: { [key: string]: any }; workspace?: { [key: string]: any } } = {
 		user: {},
 		workspace: {}
-	};
+	}) {
+		this.configuration = configuration;
+	}
 
 	public reloadConfiguration<T>(): Promise<T> {
 		return Promise.resolve(this.getValue());

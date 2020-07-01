@@ -25,10 +25,15 @@ import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvent
 import { firstIndex, find } from 'vs/base/common/arrays';
 import { HideInputTag } from 'sql/platform/notebooks/common/outputRegistry';
 import { FutureInternal, notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
+import { ICommandService } from 'vs/platform/commands/common/commands';
+import { tryMatchCellMagic, extractCellMagicCommandPlusArgs } from 'sql/workbench/services/notebook/browser/utils';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { Disposable } from 'vs/base/common/lifecycle';
 
 let modelId = 0;
+const ads_execute_command = 'ads_execute_command';
 
-export class CellModel implements ICellModel {
+export class CellModel extends Disposable implements ICellModel {
 	public id: string;
 
 	private _cellType: nb.CellType;
@@ -58,11 +63,15 @@ export class CellModel implements ICellModel {
 	private _modelContentChangedEvent: IModelContentChangedEvent;
 	private _showPreview: boolean = true;
 	private _onCellPreviewChanged = new Emitter<boolean>();
+	private _isCommandExecutionSettingEnabled: boolean = false;
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
-		@optional(INotebookService) private _notebookService?: INotebookService
+		@optional(INotebookService) private _notebookService?: INotebookService,
+		@optional(ICommandService) private _commandService?: ICommandService,
+		@optional(IConfigurationService) private _configurationService?: IConfigurationService
 	) {
+		super();
 		this.id = `${modelId++}`;
 		if (cellData) {
 			// Read in contents if available
@@ -82,6 +91,15 @@ export class CellModel implements ICellModel {
 		// if the fromJson() method was already called and _cellGuid was previously set, don't generate another UUID unnecessarily
 		this._cellGuid = this._cellGuid || generateUuid();
 		this.createUri();
+		if (this._configurationService) {
+			const allowADSCommandsKey = 'notebook.allowAzureDataStudioCommands';
+			this._isCommandExecutionSettingEnabled = this._configurationService.getValue(allowADSCommandsKey);
+			this._register(this._configurationService.onDidChangeConfiguration(e => {
+				if (e.affectsConfiguration(allowADSCommandsKey)) {
+					this._isCommandExecutionSettingEnabled = this._configurationService.getValue(allowADSCommandsKey);
+				}
+			}));
+		}
 	}
 
 	public equals(other: ICellModel) {
@@ -353,19 +371,42 @@ export class CellModel implements ICellModel {
 
 					// requestExecute expects a string for the code parameter
 					content = Array.isArray(content) ? content.join('') : content;
-					const future = kernel.requestExecute({
-						code: content,
-						stop_on_error: true
-					}, false);
-					this.setFuture(future as FutureInternal);
-					this.fireExecutionStateChanged();
-					// For now, await future completion. Later we should just track and handle cancellation based on model notifications
-					let result: nb.IExecuteReplyMsg = <nb.IExecuteReplyMsg><any>await future.done;
-					if (result && result.content) {
-						this.executionCount = result.content.execution_count;
-						if (result.content.status !== 'ok') {
-							// TODO track error state
-							return false;
+					if (tryMatchCellMagic(this.source[0]) !== ads_execute_command || !this._isCommandExecutionSettingEnabled) {
+						const future = kernel.requestExecute({
+							code: content,
+							stop_on_error: true
+						}, false);
+						this.setFuture(future as FutureInternal);
+						this.fireExecutionStateChanged();
+						// For now, await future completion. Later we should just track and handle cancellation based on model notifications
+						let result: nb.IExecuteReplyMsg = <nb.IExecuteReplyMsg><any>await future.done;
+						if (result && result.content) {
+							this.executionCount = result.content.execution_count;
+							if (result.content.status !== 'ok') {
+								// TODO track error state
+								return false;
+							}
+						}
+					} else {
+						let result = extractCellMagicCommandPlusArgs(this._source[0], ads_execute_command);
+						// Similar to the markdown renderer, we should not allow downloadResource here
+						if (result?.commandId !== '_workbench.downloadResource') {
+							try {
+								// Need to reset outputs here (kernels do this on their own)
+								this._outputs = [];
+								let commandExecuted = this._commandService?.executeCommand(result.commandId, result.args);
+								// This will ensure that the run button turns into a stop button
+								this.fireExecutionStateChanged();
+								await commandExecuted;
+								// For save files, if we output a message after saving the file, the file becomes dirty again.
+								// Special casing this to avoid this particular issue.
+								if (result?.commandId !== 'workbench.action.files.saveFiles') {
+									this.handleIOPub(this.toIOPubMessage(false));
+								}
+							} catch (error) {
+								this.handleIOPub(this.toIOPubMessage(true, error?.message));
+								return false;
+							}
 						}
 					}
 				}
@@ -709,6 +750,32 @@ export class CellModel implements ICellModel {
 			return sourceMultiline;
 		}
 		return source;
+	}
+
+	// Create an iopub message to display either a display result or an error result,
+	// in order to be displayed as part of a cell's outputs
+	private toIOPubMessage(isError: boolean, message?: string): nb.IIOPubMessage {
+		return {
+			channel: 'iopub',
+			type: 'iopub',
+			header: <nb.IHeader>{
+				msg_id: undefined,
+				msg_type: isError ? 'error' : 'display_data'
+			},
+			content: isError ? <nb.IErrorResult>{
+				output_type: 'error',
+				evalue: message,
+				ename: '',
+				traceback: []
+			} : <nb.IDisplayResult>{
+				output_type: 'execute_result',
+				data: {
+					'text/html': localize('commandSuccessful', "Command executed successfully"),
+				}
+			},
+			metadata: undefined,
+			parent_header: undefined
+		};
 	}
 
 	// Dispose and set current future to undefined

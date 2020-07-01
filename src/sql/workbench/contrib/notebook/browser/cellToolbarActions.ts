@@ -101,14 +101,14 @@ export class CellToggleMoreActions {
 		@IInstantiationService private instantiationService: IInstantiationService
 	) {
 		this._actions.push(
-			instantiationService.createInstance(RunCellsAction, 'runAllBefore', localize('runAllBefore', "Run Cells Before"), false),
-			instantiationService.createInstance(RunCellsAction, 'runAllAfter', localize('runAllAfter', "Run Cells After"), true),
+			instantiationService.createInstance(RunCellsAction, 'runAllAbove', localize('runAllAbove', "Run Cells Above"), false),
+			instantiationService.createInstance(RunCellsAction, 'runAllBelow', localize('runAllBelow', "Run Cells Below"), true),
 			new Separator(),
-			instantiationService.createInstance(AddCellFromContextAction, 'codeBefore', localize('codeBefore', "Insert Code Before"), CellTypes.Code, false),
-			instantiationService.createInstance(AddCellFromContextAction, 'codeAfter', localize('codeAfter', "Insert Code After"), CellTypes.Code, true),
+			instantiationService.createInstance(AddCellFromContextAction, 'codeAbove', localize('codeAbove', "Insert Code Above"), CellTypes.Code, false),
+			instantiationService.createInstance(AddCellFromContextAction, 'codeBelow', localize('codeBelow', "Insert Code Below"), CellTypes.Code, true),
 			new Separator(),
-			instantiationService.createInstance(AddCellFromContextAction, 'markdownBefore', localize('markdownBefore', "Insert Text Before"), CellTypes.Markdown, false),
-			instantiationService.createInstance(AddCellFromContextAction, 'markdownAfter', localize('markdownAfter', "Insert Text After"), CellTypes.Markdown, true),
+			instantiationService.createInstance(AddCellFromContextAction, 'markdownAbove', localize('markdownAbove', "Insert Text Above"), CellTypes.Markdown, false),
+			instantiationService.createInstance(AddCellFromContextAction, 'markdownBelow', localize('markdownBelow', "Insert Text Below"), CellTypes.Markdown, true),
 			new Separator(),
 			instantiationService.createInstance(CollapseCellAction, 'collapseCell', localize('collapseCell', "Collapse Cell"), true),
 			instantiationService.createInstance(CollapseCellAction, 'expandCell', localize('expandCell', "Expand Cell"), false),
