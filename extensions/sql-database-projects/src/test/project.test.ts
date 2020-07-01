@@ -12,7 +12,7 @@ import * as constants from '../common/constants';
 
 import { promises as fs } from 'fs';
 import { Project, EntryType, TargetPlatform, SystemDatabase, DatabaseReferenceLocation } from '../models/project';
-import { exists } from '../common/utils';
+import { exists, standardizeSlashesForSqlProj } from '../common/utils';
 import { Uri } from 'vscode';
 
 let projFilePath: string;
@@ -164,14 +164,14 @@ describe('Project: sqlproj content operations', function (): void {
 		should(project.databaseReferences[0].databaseName).equal(constants.master, 'The database reference should be master');
 		// make sure reference to SSDT master dacpac was added
 		let projFileText = (await fs.readFile(projFilePath)).toString();
-		should(projFileText).containEql(project.getSystemDacpacSsdtUri(constants.master).fsPath.substring(1));
+		should(projFileText).containEql(standardizeSlashesForSqlProj(project.getSystemDacpacSsdtUri(constants.master).fsPath.substring(1)));
 
 		await project.addSystemDatabaseReference(SystemDatabase.msdb);
 		should(project.databaseReferences.length).equal(2, 'There should be two database references after adding a reference to msdb');
 		should(project.databaseReferences[1].databaseName).equal(constants.msdb, 'The database reference should be msdb');
 		// make sure reference to SSDT msdb dacpac was added
 		projFileText = (await fs.readFile(projFilePath)).toString();
-		should(projFileText).containEql(project.getSystemDacpacSsdtUri(constants.msdb).fsPath.substring(1));
+		should(projFileText).containEql(standardizeSlashesForSqlProj(project.getSystemDacpacSsdtUri(constants.msdb).fsPath.substring(1)));
 
 		await project.addDatabaseReference(Uri.parse('test.dacpac'), DatabaseReferenceLocation.sameDatabase);
 		should(project.databaseReferences.length).equal(3, 'There should be three database references after adding a reference to test');
@@ -209,13 +209,13 @@ describe('Project: round trip updates', function (): void {
 
 	it('Should update SSDT project to work in ADS', async function (): Promise<void> {
 		const fileBeforeUpdate = baselines.SSDTProjectFileBaseline;
-		const fileAfterUpdate = isWindows ? baselines.SSDTProjectAfterUpdateBaselineWindows : baselines.SSDTProjectAfterUpdateBaseline;
+		const fileAfterUpdate = baselines.SSDTProjectAfterUpdateBaseline;
 		await testUpdateInRoundTrip(fileBeforeUpdate, fileAfterUpdate, true, true);
 	});
 
 	it('Should update SSDT project with new system database references', async function (): Promise<void> {
-		const fileBeforeUpdate = isWindows ? baselines.SSDTUpdatedProjectBaselineWindows : baselines.SSDTUpdatedProjectBaseline;
-		const fileAfterUpdate = isWindows ? baselines.SSDTUpdatedProjectAfterSystemDbUpdateBaselineWindows : baselines.SSDTUpdatedProjectAfterSystemDbUpdateBaseline;
+		const fileBeforeUpdate = baselines.SSDTUpdatedProjectBaseline;
+		const fileAfterUpdate = baselines.SSDTUpdatedProjectAfterSystemDbUpdateBaseline;
 		await testUpdateInRoundTrip(fileBeforeUpdate, fileAfterUpdate, false, true);
 	});
 
