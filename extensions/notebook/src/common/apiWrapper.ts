@@ -69,6 +69,14 @@ export class ApiWrapper {
 		return azdata.nb.notebookDocuments;
 	}
 
+	public getActiveNotebookEditor(): azdata.nb.NotebookEditor {
+		return azdata.nb.activeNotebookEditor;
+	}
+
+	public showNotebookDocument(uri: vscode.Uri, showOptions?: azdata.nb.NotebookShowOptions): Thenable<azdata.nb.NotebookEditor> {
+		return azdata.nb.showNotebookDocument(uri, showOptions);
+	}
+
 	/**
 	 * Get the configuration for a extensionName
 	 * @param extensionName The string name of the extension to get the configuration for
@@ -94,5 +102,9 @@ export class ApiWrapper {
 
 	public createTreeView<T>(viewId: string, options: vscode.TreeViewOptions<T>): vscode.TreeView<T> {
 		return vscode.window.createTreeView(viewId, options);
+	}
+
+	public showQuickPick(items: string[] | Thenable<string[]>, options?: vscode.QuickPickOptions, token?: vscode.CancellationToken): Thenable<string | undefined> {
+		return vscode.window.showQuickPick(items, options, token);
 	}
 }
