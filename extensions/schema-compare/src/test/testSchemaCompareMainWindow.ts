@@ -7,8 +7,19 @@ import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
 import { ApiWrapper } from '../common/apiWrapper';
-import { ButtonState } from '../utils';
 
+export interface ButtonState {
+	compareButtonState: boolean;
+	optionsButtonState: boolean;
+	switchButtonState: boolean;
+	openScmpButtonState: boolean;
+	saveScmpButtonState: boolean;
+	cancelCompareButtonState: boolean;
+	selectSourceButtonState: boolean;
+	selectTargetButtonState: boolean;
+	generateScriptButtonState: boolean;
+	applyButtonState: boolean;
+}
 export class SchemaCompareMainWindowTest extends SchemaCompareMainWindow {
 
 	constructor(
@@ -60,5 +71,4 @@ export class SchemaCompareMainWindowTest extends SchemaCompareMainWindow {
 
 		return result;
 	}
-
 }
