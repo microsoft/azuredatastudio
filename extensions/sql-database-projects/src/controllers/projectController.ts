@@ -17,11 +17,11 @@ import { Uri, QuickPickItem, WorkspaceFolder, extensions, Extension } from 'vsco
 import { IConnectionProfile, TaskExecutionMode } from 'azdata';
 import { promises as fs } from 'fs';
 import { ApiWrapper } from '../common/apiWrapper';
-import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
+import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { Project, DatabaseReferenceLocation, SystemDatabase, TargetPlatform, ProjectEntry, reservedProjectFolders } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
-import { IDeploymentProfile, IGenerateScriptProfile, PublishSettings } from '../models/IDeploymentProfile';
+import { IPublishSettings, IGenerateScriptSettings, PublishProfile } from '../models/IPublishSettings';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { ImportDataModel } from '../models/api/import';
@@ -185,50 +185,50 @@ export class ProjectsController {
 	}
 
 	/**
-	 * Builds and deploys a project
+	 * Builds and publishes a project
 	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
 	 */
-	public async deployProject(treeNode: BaseProjectTreeItem): Promise<DeployDatabaseDialog>;
+	public async publishProject(treeNode: BaseProjectTreeItem): Promise<PublishDatabaseDialog>;
 	/**
-	 * Builds and deploys a project
-	 * @param project Project to be built and deployed
+	 * Builds and publishes a project
+	 * @param project Project to be built and published
 	 */
-	public async deployProject(project: Project): Promise<DeployDatabaseDialog>;
-	public async deployProject(context: Project | BaseProjectTreeItem): Promise<DeployDatabaseDialog> {
+	public async publishProject(project: Project): Promise<PublishDatabaseDialog>;
+	public async publishProject(context: Project | BaseProjectTreeItem): Promise<PublishDatabaseDialog> {
 		const project: Project = this.getProjectFromContext(context);
-		let deployDatabaseDialog = this.getDeployDialog(project);
+		let publishDatabaseDialog = this.getPublishDialog(project);
 
-		deployDatabaseDialog.deploy = async (proj, prof) => await this.executionCallback(proj, prof);
-		deployDatabaseDialog.generateScript = async (proj, prof) => await this.executionCallback(proj, prof);
-		deployDatabaseDialog.readPublishProfile = async (profileUri) => await this.readPublishProfile(profileUri);
+		publishDatabaseDialog.publish = async (proj, prof) => await this.executionCallback(proj, prof);
+		publishDatabaseDialog.generateScript = async (proj, prof) => await this.executionCallback(proj, prof);
+		publishDatabaseDialog.readPublishProfile = async (profileUri) => await this.readPublishProfile(profileUri);
 
-		deployDatabaseDialog.openDialog();
+		publishDatabaseDialog.openDialog();
 
-		return deployDatabaseDialog;
+		return publishDatabaseDialog;
 	}
 
-	public async executionCallback(project: Project, profile: IDeploymentProfile | IGenerateScriptProfile): Promise<mssql.DacFxResult | undefined> {
+	public async executionCallback(project: Project, settings: IPublishSettings | IGenerateScriptSettings): Promise<mssql.DacFxResult | undefined> {
 		const dacpacPath = await this.buildProject(project);
 
 		if (!dacpacPath) {
 			return undefined; // buildProject() handles displaying the error
 		}
 
-		// copy dacpac to temp location before deployment
+		// copy dacpac to temp location before publishing
 		const tempPath = path.join(os.tmpdir(), `${path.parse(dacpacPath).name}_${new Date().getTime()}${constants.sqlprojExtension}`);
 		await fs.copyFile(dacpacPath, tempPath);
 
 		const dacFxService = await this.getDaxFxService();
 
-		if ((<IDeploymentProfile>profile).upgradeExisting) {
-			return await dacFxService.deployDacpac(tempPath, profile.databaseName, (<IDeploymentProfile>profile).upgradeExisting, profile.connectionUri, TaskExecutionMode.execute, profile.sqlCmdVariables);
+		if ((<IPublishSettings>settings).upgradeExisting) {
+			return await dacFxService.deployDacpac(tempPath, settings.databaseName, (<IPublishSettings>settings).upgradeExisting, settings.connectionUri, TaskExecutionMode.execute, settings.sqlCmdVariables);
 		}
 		else {
-			return await dacFxService.generateDeployScript(tempPath, profile.databaseName, profile.connectionUri, TaskExecutionMode.script, profile.sqlCmdVariables);
+			return await dacFxService.generateDeployScript(tempPath, settings.databaseName, settings.connectionUri, TaskExecutionMode.script, settings.sqlCmdVariables);
 		}
 	}
 
-	public async readPublishProfile(profileUri: Uri): Promise<PublishSettings> {
+	public async readPublishProfile(profileUri: Uri): Promise<PublishProfile> {
 		const profileText = await fs.readFile(profileUri.fsPath);
 		const profileXmlDoc = new xmldom.DOMParser().parseFromString(profileText.toString());
 
@@ -544,8 +544,8 @@ export class ProjectsController {
 
 	//#region Helper methods
 
-	public getDeployDialog(project: Project): DeployDatabaseDialog {
-		return new DeployDatabaseDialog(this.apiWrapper, project);
+	public getPublishDialog(project: Project): PublishDatabaseDialog {
+		return new PublishDatabaseDialog(this.apiWrapper, project);
 	}
 
 	public async updateProjectForRoundTrip(project: Project) {
