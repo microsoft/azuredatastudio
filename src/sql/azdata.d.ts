@@ -132,7 +132,7 @@ declare module 'azdata' {
 		export function getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
 
 		/**
-		 * Get the credentials for an active connection
+		 * Get the credentials for a connection
 		 * @param connectionId The id of the connection
 		 * @returns A dictionary containing the credentials as they would be included in the connection's options dictionary
 		 */
@@ -1305,7 +1305,7 @@ declare module 'azdata' {
 
 	// Admin Services interfaces  -----------------------------------------------------------------------
 	export interface DatabaseInfo {
-		options: {};
+		options: { [key: string]: any };
 	}
 
 	export interface LoginInfo {
@@ -2132,7 +2132,7 @@ declare module 'azdata' {
 		 * AzureResource.ResourceManagement if not given)
 		 * @return Promise to return the security token
 		 */
-		export function getSecurityToken(account: Account, resource?: AzureResource): Thenable<{}>;
+		export function getSecurityToken(account: Account, resource?: AzureResource): Thenable<{ [key: string]: any }>;
 
 		/**
 		 * An [event](#Event) which fires when the accounts have changed.
@@ -3659,6 +3659,7 @@ declare module 'azdata' {
 		export function createWebViewDialog(title: string): ModalDialog;
 
 		/**
+		 * @deprecated please use the method createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth) instead.
 		 * Create a dialog with the given title
 		 * @param title The title of the dialog, displayed at the top
 		 * @param isWide Indicates whether the dialog is wide or normal
@@ -4549,6 +4550,10 @@ declare module 'azdata' {
 
 		export interface NotebookProvider {
 			readonly providerId: string;
+			/**
+			 * @deprecated standardKernels will be removed in an upcoming release. Standard kernel contribution
+			 * should happen via JSON for extensions. Until this is removed, notebook providers can safely return an empty array.
+			 */
 			readonly standardKernels: IStandardKernel[];
 			getNotebookManager(notebookUri: vscode.Uri): Thenable<NotebookManager>;
 			handleNotebookClosed(notebookUri: vscode.Uri): void;

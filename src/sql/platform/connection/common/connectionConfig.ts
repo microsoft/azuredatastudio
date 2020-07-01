@@ -183,12 +183,7 @@ export class ConnectionConfig {
 		return changed;
 	}
 
-	/**
-	 * Get a list of all connections in the connection config. Connections returned
-	 * are sorted first by whether they were found in the user/workspace settings,
-	 * and next alphabetically by profile/server name.
-	 */
-	public getConnections(getWorkspaceConnections: boolean): ConnectionProfile[] {
+	public getIConnectionProfileStores(getWorkspaceConnections: boolean): IConnectionProfileStore[] {
 		let profiles: IConnectionProfileStore[] = [];
 		//TODO: have to figure out how to sort connections for all provider
 		// Read from user settings
@@ -207,7 +202,16 @@ export class ConnectionConfig {
 			}
 		}
 
-		let connectionProfiles = profiles.map(p => {
+		return profiles;
+	}
+
+	/**
+	 * Get a list of all connections in the connection config. Connections returned
+	 * are sorted first by whether they were found in the user/workspace settings,
+	 * and next alphabetically by profile/server name.
+	 */
+	public getConnections(getWorkspaceConnections: boolean): ConnectionProfile[] {
+		let connectionProfiles = this.getIConnectionProfileStores(getWorkspaceConnections).map(p => {
 			return ConnectionProfile.createFromStoredProfile(p, this._capabilitiesService);
 		});
 
@@ -277,9 +281,14 @@ export class ConnectionConfig {
 	 * Returns true if connection can be moved to another group
 	 */
 	public canChangeConnectionConfig(profile: ConnectionProfile, newGroupID: string): boolean {
-		let profiles = this.getConnections(true);
-		let existingProfile = find(profiles, p => p.getConnectionInfoId() === profile.getConnectionInfoId()
-			&& p.groupId === newGroupID);
+		let profiles = this.getIConnectionProfileStores(true);
+		let existingProfile = find(profiles, p =>
+			p.providerName === profile.providerName &&
+			p.options.authenticationType === profile.options.authenticationType &&
+			p.options.database === profile.options.database &&
+			p.options.server === profile.options.server &&
+			p.options.user === profile.options.user &&
+			p.groupId === newGroupID);
 		return existingProfile === undefined;
 	}
 
@@ -295,8 +304,7 @@ export class ConnectionConfig {
 				profiles.push(ConnectionProfile.convertToProfileStore(this._capabilitiesService, profile));
 			} else {
 				profiles.forEach((value) => {
-					let configProf = ConnectionProfile.createFromStoredProfile(value, this._capabilitiesService);
-					if (configProf.getOptionsKey() === profile.getOptionsKey()) {
+					if (value.id === profile.id) {
 						value.groupId = newGroupID;
 					}
 				});

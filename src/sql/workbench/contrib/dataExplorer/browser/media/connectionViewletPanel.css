@@ -18,7 +18,7 @@
 .server-explorer-viewlet:lang(ko) .monaco-tree .monaco-tree-row .server-group { font-weight: normal; }
 
 /* High Contrast Theming */
-.hc-black .monaco-workbench .server-explorer-viewlet .server-group {
+.monaco-workbench.hc-black .server-explorer-viewlet .server-group {
 	line-height: 20px;
 }
 

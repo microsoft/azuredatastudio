@@ -61,7 +61,7 @@ suite('set mode', () => {
 		const replaceEditorStub = sinon.stub(editorService, 'replaceEditors', () => Promise.resolve());
 		const stub = sinon.stub();
 		const modeSupport = { setMode: stub };
-		const activeEditor = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.txt'), undefined, 'plaintext');
+		const activeEditor = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.txt'), undefined, 'plaintext', undefined);
 		await instantiationService.invokeFunction(setMode, modeSupport, activeEditor, 'json');
 		assert(stub.calledOnce);
 		assert(stub.calledWithExactly('json'));
@@ -75,7 +75,7 @@ suite('set mode', () => {
 		const stub = sinon.stub();
 		const modeSupport = { setMode: stub };
 		const uri = URI.file('/test/file.sql');
-		const textInput = instantiationService.createInstance(FileEditorInput, uri, undefined, 'sql');
+		const textInput = instantiationService.createInstance(FileEditorInput, uri, undefined, 'sql', undefined);
 		const activeEditor = instantiationService.createInstance(FileQueryEditorInput, '', textInput, instantiationService.createInstance(QueryResultsInput, uri.toString()));
 		await instantiationService.invokeFunction(setMode, modeSupport, activeEditor, 'notebooks');
 		assert(stub.calledOnce);
@@ -89,7 +89,7 @@ suite('set mode', () => {
 		const stub = sinon.stub();
 		const modeSupport = { setMode: stub };
 		const uri = URI.file('/test/file.sql');
-		const textInput = instantiationService.createInstance(FileEditorInput, uri, undefined, 'sql');
+		const textInput = instantiationService.createInstance(FileEditorInput, uri, undefined, 'sql', undefined);
 		const activeEditor = instantiationService.createInstance(FileQueryEditorInput, '', textInput, instantiationService.createInstance(QueryResultsInput, uri.toString()));
 		await instantiationService.invokeFunction(setMode, modeSupport, activeEditor, 'plaintext');
 		assert(stub.calledOnce);
@@ -102,7 +102,7 @@ suite('set mode', () => {
 		instantiationService.stub(IEditorService, editorService);
 		const stub = sinon.stub();
 		const modeSupport = { setMode: stub };
-		const activeEditor = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.txt'), undefined, 'plaintext');
+		const activeEditor = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.txt'), undefined, 'plaintext', undefined);
 		await instantiationService.invokeFunction(setMode, modeSupport, activeEditor, 'sql');
 		assert(stub.calledOnce);
 		assert(stub.calledWithExactly('sql'));
@@ -117,7 +117,7 @@ suite('set mode', () => {
 		(instantiationService as TestInstantiationService).stub(INotificationService, 'error', errorStub);
 		const stub = sinon.stub();
 		const modeSupport = { setMode: stub };
-		const activeEditor = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.txt'), undefined, 'plaintext');
+		const activeEditor = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.txt'), undefined, 'plaintext', undefined);
 		sinon.stub(activeEditor, 'isDirty', () => true);
 		await instantiationService.invokeFunction(setMode, modeSupport, activeEditor, 'sql');
 		assert(stub.notCalled);
@@ -136,16 +136,18 @@ class MockEditorService extends TestEditorService {
 		group: {}
 	};
 
-	activeTextEditorControl: ICodeEditor = <any>{
-		getModel: () => {
-			return <any>{
-				getLanguageIdentifier: () => {
-					return { language: this.mode };
-				}
-			};
-		},
-		getEditorType: () => EditorType.ICodeEditor
-	};
+	get activeTextEditorControl(): ICodeEditor {
+		return {
+			getModel: () => {
+				return <any>{
+					getLanguageIdentifier: () => {
+						return { language: this.mode };
+					}
+				};
+			},
+			getEditorType: () => EditorType.ICodeEditor
+		} as any;
+	}
 
 	openEditor(_editor: any, _options?: any, _group?: any): Promise<any> {
 		return Promise.resolve(_editor);

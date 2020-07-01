@@ -18,9 +18,6 @@ import { AzureResourceTreeProvider } from './tree/treeProvider';
 import { AzureResourceAccountTreeNode } from './tree/accountTreeNode';
 import { IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService, IAzureTerminalService } from '../azureResource/interfaces';
 import { AzureResourceServiceNames } from './constants';
-import { AzureResourceGroupService } from './providers/resourceGroup/resourceGroupService';
-import { GetSubscriptionsResult, GetResourceGroupsResult } from '../azurecore';
-import { isArray } from 'util';
 import { AzureAccount, Tenant } from '../account-provider/interfaces';
 
 export function registerAzureResourceCommands(appContext: AppContext, tree: AzureResourceTreeProvider): void {
@@ -75,83 +72,15 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 		}
 	});
 
-	// Resource Management commands
-	appContext.apiWrapper.registerCommand('azure.accounts.getSubscriptions', async (account?: azdata.Account, ignoreErrors: boolean = false): Promise<GetSubscriptionsResult> => {
-		const result: GetSubscriptionsResult = { subscriptions: [], errors: [] };
-		if (!account?.properties?.tenants || !isArray(account.properties.tenants)) {
-			const error = new Error(localize('azure.accounts.getSubscriptions.invalidParamsError', "Invalid account"));
-			if (!ignoreErrors) {
-				throw error;
-			}
-			result.errors.push(error);
-			return result;
-		}
-		const subscriptionService = appContext.getService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService);
-		const tokens = await appContext.apiWrapper.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
-		await Promise.all(account.properties.tenants.map(async (tenant: { id: string | number; }) => {
-			try {
-				const token = tokens[tenant.id].token;
-				const tokenType = tokens[tenant.id].tokenType;
-
-				result.subscriptions.push(...await subscriptionService.getSubscriptions(account, new TokenCredentials(token, tokenType)));
-			} catch (err) {
-				const error = new Error(localize('azure.accounts.getSubscriptions.queryError', "Error fetching subscriptions for account {0} tenant {1} : {2}",
-					account.displayInfo.displayName,
-					tenant.id,
-					err instanceof Error ? err.message : err));
-				console.warn(error);
-				if (!ignoreErrors) {
-					throw error;
-				}
-				result.errors.push(error);
-			}
-			return Promise.resolve();
-		}));
-		return result;
-	});
-
-	appContext.apiWrapper.registerCommand('azure.accounts.getResourceGroups', async (account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, ignoreErrors: boolean = false): Promise<GetResourceGroupsResult> => {
-		const result: GetResourceGroupsResult = { resourceGroups: [], errors: [] };
-		if (!account?.properties?.tenants || !isArray(account.properties.tenants) || !subscription) {
-			const error = new Error(localize('azure.accounts.getResourceGroups.invalidParamsError', "Invalid account or subscription"));
-			if (!ignoreErrors) {
-				throw error;
-			}
-			result.errors.push(error);
-			return result;
-		}
-		const service = new AzureResourceGroupService();
-		await Promise.all(account.properties.tenants.map(async (tenant: { id: string | number; }) => {
-			try {
-				const tokens = await appContext.apiWrapper.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
-				const token = tokens[tenant.id].token;
-				const tokenType = tokens[tenant.id].tokenType;
-
-				result.resourceGroups.push(...await service.getResources(subscription, new TokenCredentials(token, tokenType), account));
-			} catch (err) {
-				const error = new Error(localize('azure.accounts.getResourceGroups.queryError', "Error fetching resource groups for account {0} ({1}) subscription {2} ({3}) tenant {4} : {5}",
-					account.displayInfo.displayName,
-					account.displayInfo.userId,
-					subscription.id,
-					subscription.name,
-					tenant.id,
-					err instanceof Error ? err.message : err));
-				console.warn(error);
-				if (!ignoreErrors) {
-					throw error;
-				}
-				result.errors.push(error);
-			}
-			return Promise.resolve();
-		}));
-
-		return result;
-	});
-
 	// Resource Tree commands
 
 	appContext.apiWrapper.registerCommand('azure.resource.selectsubscriptions', async (node?: TreeNode) => {
 		if (!(node instanceof AzureResourceAccountTreeNode)) {
+			return;
+		}
+
+		const account = node.account;
+		if (!account) {
 			return;
 		}
 
@@ -163,17 +92,17 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 		const subscriptions = (await accountNode.getCachedSubscriptions()) || <azureResource.AzureResourceSubscription[]>[];
 		if (subscriptions.length === 0) {
 			try {
-				const tokens = await this.servicePool.apiWrapper.getSecurityToken(this.account, azdata.AzureResource.ResourceManagement);
+				const tokens = await this.servicePool.apiWrapper.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
 
-				for (const tenant of this.account.properties.tenants) {
+				for (const tenant of account.properties.tenants) {
 					const token = tokens[tenant.id].token;
 					const tokenType = tokens[tenant.id].tokenType;
 
-					subscriptions.push(...await subscriptionService.getSubscriptions(accountNode.account, new TokenCredentials(token, tokenType)));
+					subscriptions.push(...await subscriptionService.getSubscriptions(account, new TokenCredentials(token, tokenType)));
 				}
 			} catch (error) {
-				this.account.isStale = true;
-				throw new AzureResourceCredentialError(localize('azure.resource.selectsubscriptions.credentialError', "Failed to get credential for account {0}. Please refresh the account.", this.account.key.accountId), error);
+				account.isStale = true;
+				throw new AzureResourceCredentialError(localize('azure.resource.selectsubscriptions.credentialError', "Failed to get credential for account {0}. Please refresh the account.", account.key.accountId), error);
 			}
 		}
 
@@ -255,18 +184,13 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 		}
 	});
 
-	appContext.apiWrapper.registerCommand('azure.resource.openInAzurePortal', async (node?: TreeNode) => {
-		if (!node) {
-			return;
-		}
+	appContext.apiWrapper.registerCommand('azure.resource.openInAzurePortal', async (connectionProfile: azdata.IConnectionProfile) => {
 
-		const treeItem: azdata.TreeItem = await node.getTreeItem();
-		if (!treeItem.payload) {
-			return;
-		}
-		let connectionProfile = Object.assign({}, treeItem.payload, { saveProfile: true });
-
-		if (!connectionProfile.azureResourceId) {
+		if (
+			!connectionProfile.azureResourceId ||
+			!connectionProfile.azurePortalEndpoint ||
+			!connectionProfile.azureTenantId
+		) {
 			return;
 		}
 

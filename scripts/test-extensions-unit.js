@@ -15,6 +15,7 @@ const extensionList = [
 	'azurecore',
 	'cms',
 	'dacpac',
+	'import',
 	'schema-compare',
 	//'mssql',
 	'notebook',

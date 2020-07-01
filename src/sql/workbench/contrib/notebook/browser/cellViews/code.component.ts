@@ -79,6 +79,10 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		this._activeCellId = value;
 	}
 
+	@Input() set hover(value: boolean) {
+		this.cellModel.hover = value;
+	}
+
 	protected _actionBar: Taskbar;
 	private readonly _minimumHeight = 30;
 	private readonly _maximumHeight = 4000;
@@ -247,6 +251,10 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		}));
 		this._register(this.cellModel.onCollapseStateChanged(isCollapsed => {
 			this.onCellCollapse(isCollapsed);
+		}));
+
+		this._register(this.cellModel.onCellPreviewChanged(() => {
+			this._layoutEmitter.fire();
 		}));
 
 		this.layout();

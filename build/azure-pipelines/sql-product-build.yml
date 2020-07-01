@@ -26,6 +26,16 @@ jobs:
   - template: darwin/sql-product-build-darwin.yml
   timeoutInMinutes: 180
 
+- job: macOS_Signing
+  condition: and(succeeded(), eq(variables['VSCODE_BUILD_MACOS'], 'true'), eq(variables['signed'], true))
+  pool:
+    vmImage: macOS-latest
+  dependsOn:
+  - macOS
+  steps:
+  - template: darwin/sql-product-build-darwin-signing.yml
+  timeoutInMinutes: 60
+
 - job: Linux
   condition: and(succeeded(), eq(variables['VSCODE_BUILD_LINUX'], 'true'))
   pool:
@@ -36,6 +46,18 @@ jobs:
   steps:
   - template: linux/sql-product-build-linux.yml
   timeoutInMinutes: 70
+
+- job: LinuxWeb
+  condition: and(succeeded(), eq(variables['VSCODE_BUILD_WEB'], 'true'))
+  pool:
+    vmImage: 'Ubuntu-16.04'
+  container: linux-x64
+  variables:
+    VSCODE_ARCH: x64
+  dependsOn:
+  - Compile
+  steps:
+  - template: web/sql-product-build-web.yml
 
 - job: Docker
   condition: and(succeeded(), eq(variables['VSCODE_BUILD_DOCKER'], 'true'))
@@ -77,6 +99,8 @@ jobs:
   - Docker
   - Windows
   - Windows_Test
+  - LinuxWeb
+  - macOS_Signing
   steps:
   - template: sql-release.yml
 
@@ -85,7 +109,7 @@ pr: none
 
 schedules:
 - cron: "0 5 * * Mon-Fri"
-  displayName: Mon-Fri at 7:00
+  displayName: Mon-Fri at 5AM UTC
   branches:
     include:
-    - master
+    - main

@@ -16,14 +16,13 @@
 	"azure.resource.connectazureDataExplorer.title": "Connect",
 
 	"accounts.clearTokenCache": "Clear Azure Account Token Cache",
-	"azure.accounts.getSubscriptions.title": "Get Azure Account Subscriptions",
-	"azure.accounts.getResourceGroups.title": "Get Azure Account Subscription Resource Groups",
 
 	"azure.openInAzurePortal.title": "Open in Azure Portal",
 
 	"config.azureAccountConfigurationSection": "Azure Account Configuration",
 	"config.enablePublicCloudDescription": "Should Azure public cloud integration be enabled",
 	"config.enableUsGovCloudDescription": "Should US Government Azure cloud (Fairfax) integration be enabled",
+	"config.enableUsNatCloudDescription": "Should US National Azure cloud integration be enabled",
 	"config.enableChinaCloudDescription": "Should Azure China integration be enabled",
 	"config.enableGermanyCloudDescription": "Should Azure Germany integration be enabled",
 	"config.azureAuthMethodConfigurationSection": "Azure Authentication Method",

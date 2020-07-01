@@ -60,6 +60,7 @@ const indentationFilter = [
 	// except specific folders
 	'!test/automation/out/**',
 	'!test/smoke/out/**',
+	'!extensions/typescript-language-features/test-workspace/**',
 	'!extensions/vscode-api-tests/testWorkspace/**',
 	'!extensions/vscode-api-tests/testWorkspace2/**',
 	'!build/monaco/**',
@@ -85,7 +86,7 @@ const indentationFilter = [
 	'!src/typings/**/*.d.ts',
 	'!extensions/**/*.d.ts',
 	'!**/*.{svg,exe,png,bmp,scpt,bat,cmd,cur,ttf,woff,eot,md,ps1,template,yaml,yml,d.ts.recipe,ico,icns,plist}',
-	'!build/{lib,download}/**/*.js',
+	'!build/{lib,download,darwin}/**/*.js',
 	'!build/**/*.sh',
 	'!build/azure-pipelines/**/*.js',
 	'!build/azure-pipelines/**/*.config',
@@ -108,6 +109,7 @@ const indentationFilter = [
 	'!extensions/sql-database-projects/src/test/baselines/*.xml',
 	'!extensions/sql-database-projects/src/test/baselines/*.json',
 	'!extensions/sql-database-projects/src/test/baselines/*.sqlproj',
+	'!extensions/sql-database-projects/BuildDirectory/SystemDacpacs/**',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts',
 	'!resources/linux/snap/electron-launch'
@@ -142,6 +144,7 @@ const copyrightFilter = [
 	'!extensions/*/server/bin/*',
 	'!src/vs/editor/test/node/classification/typescript-test.ts',
 	'!scripts/code-web.js',
+	'!resources/serverless/code-web.js',
 	// {{SQL CARBON EDIT}}
 	'!extensions/notebook/src/intellisense/text.ts',
 	'!extensions/mssql/src/hdfs/webhdfs.ts',
@@ -176,7 +179,8 @@ const copyrightFilter = [
 	'!**/*.gif',
 	'!**/*.xlf',
 	'!**/*.dacpac',
-	'!**/*.bacpac'
+	'!**/*.bacpac',
+	'!**/*.py'
 ];
 
 const jsHygieneFilter = [

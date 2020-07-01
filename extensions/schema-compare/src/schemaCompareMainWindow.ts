@@ -14,6 +14,7 @@ import { TelemetryReporter, TelemetryViews } from './telemetry';
 import { getTelemetryErrorType, getEndpointName, verifyConnectionAndGetOwnerUri, getRootPath } from './utils';
 import { SchemaCompareDialog } from './dialogs/schemaCompareDialog';
 import { isNullOrUndefined } from 'util';
+import { ApiWrapper } from './common/apiWrapper';
 
 // Do not localize this, this is used to decide the icon for the editor.
 // TODO : In future icon should be decided based on language id (scmp) and not resource name
@@ -68,7 +69,7 @@ export class SchemaCompareMainWindow {
 	public sourceEndpointInfo: mssql.SchemaCompareEndpointInfo;
 	public targetEndpointInfo: mssql.SchemaCompareEndpointInfo;
 
-	constructor(private schemaCompareService?: mssql.ISchemaCompareService, private extensionContext?: vscode.ExtensionContext) {
+	constructor(private apiWrapper: ApiWrapper, private schemaCompareService?: mssql.ISchemaCompareService, private extensionContext?: vscode.ExtensionContext) {
 		this.SchemaCompareActionMap = new Map<Number, string>();
 		this.SchemaCompareActionMap[mssql.SchemaUpdateAction.Delete] = loc.deleteAction;
 		this.SchemaCompareActionMap[mssql.SchemaUpdateAction.Change] = loc.changeAction;
@@ -81,12 +82,12 @@ export class SchemaCompareMainWindow {
 	// 1. undefined
 	// 2. connection profile
 	// 3. dacpac
-	public async start(context: any) {
+	public async start(context: any): Promise<void> {
 		// if schema compare was launched from a db, set that as the source
 		let profile = context ? <azdata.IConnectionProfile>context.connectionProfile : undefined;
 		let sourceDacpac = context as string;
 		if (profile) {
-			let ownerUri = await azdata.connection.getUriForConnection((profile.id));
+			let ownerUri = await this.apiWrapper.getUriForConnection((profile.id));
 			this.sourceEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Database,
 				serverDisplayName: `${profile.serverName} ${profile.userName}`,
@@ -108,138 +109,146 @@ export class SchemaCompareMainWindow {
 			};
 		}
 
-		this.editor.registerContent(async view => {
-			this.differencesTable = view.modelBuilder.table().withProperties({
-				data: [],
-				title: loc.differencesTableTitle
-			}).component();
-
-			this.diffEditor = view.modelBuilder.diffeditor().withProperties({
-				contentLeft: os.EOL,
-				contentRight: os.EOL,
-				height: 500,
-				title: loc.diffEditorTitle
-			}).component();
-
-			this.splitView = view.modelBuilder.splitViewContainer().component();
-
-			let sourceTargetLabels = view.modelBuilder.flexContainer()
-				.withProperties({
-					alignItems: 'stretch',
-					horizontal: true
-				}).component();
-
-			this.sourceTargetFlexLayout = view.modelBuilder.flexContainer()
-				.withProperties({
-					alignItems: 'stretch',
-					horizontal: true
-				}).component();
-
-			this.createSwitchButton(view);
-			this.createCompareButton(view);
-			this.createCancelButton(view);
-			this.createGenerateScriptButton(view);
-			this.createApplyButton(view);
-			this.createOptionsButton(view);
-			this.createOpenScmpButton(view);
-			this.createSaveScmpButton(view);
-			this.createSourceAndTargetButtons(view);
-			this.resetButtons(ResetButtonState.noSourceTarget);
-
-			let toolBar = view.modelBuilder.toolbarContainer();
-			toolBar.addToolbarItems([{
-				component: this.compareButton
-			}, {
-				component: this.cancelCompareButton
-			}, {
-				component: this.generateScriptButton
-			}, {
-				component: this.applyButton
-			}, {
-				component: this.optionsButton,
-				toolbarSeparatorAfter: true
-			}, {
-				component: this.switchButton,
-				toolbarSeparatorAfter: true
-			}, {
-				component: this.openScmpButton
-			}, {
-				component: this.saveScmpButton
-			}]);
-
-			let sourceLabel = view.modelBuilder.text().withProperties({
-				value: loc.sourceTitle,
-				CSSStyles: { 'margin-bottom': '0px' }
-			}).component();
-
-			let targetLabel = view.modelBuilder.text().withProperties({
-				value: loc.targetTitle,
-				CSSStyles: { 'margin-bottom': '0px' }
-			}).component();
-
-			let arrowLabel = view.modelBuilder.text().withProperties({
-				value: '➔'
-			}).component();
-
-			this.sourceName = getEndpointName(this.sourceEndpointInfo);
-			this.targetName = ' ';
-			this.sourceNameComponent = view.modelBuilder.table().withProperties({
-				columns: [
-					{
-						value: this.sourceName,
-						headerCssClass: 'no-borders',
-						toolTip: this.sourceName
-					},
-				]
-			}).component();
-
-			this.targetNameComponent = view.modelBuilder.table().withProperties({
-				columns: [
-					{
-						value: this.targetName,
-						headerCssClass: 'no-borders',
-						toolTip: this.targetName
-					},
-				]
-			}).component();
-
-			sourceTargetLabels.addItem(sourceLabel, { CSSStyles: { 'width': '55%', 'margin-left': '15px', 'font-size': 'larger', 'font-weight': 'bold' } });
-			sourceTargetLabels.addItem(targetLabel, { CSSStyles: { 'width': '45%', 'font-size': 'larger', 'font-weight': 'bold' } });
-			this.sourceTargetFlexLayout.addItem(this.sourceNameComponent, { CSSStyles: { 'width': '40%', 'height': '25px', 'margin-top': '10px', 'margin-left': '15px' } });
-			this.sourceTargetFlexLayout.addItem(this.selectSourceButton, { CSSStyles: { 'margin-top': '10px' } });
-			this.sourceTargetFlexLayout.addItem(arrowLabel, { CSSStyles: { 'width': '10%', 'font-size': 'larger', 'text-align-last': 'center' } });
-			this.sourceTargetFlexLayout.addItem(this.targetNameComponent, { CSSStyles: { 'width': '40%', 'height': '25px', 'margin-top': '10px', 'margin-left': '15px' } });
-			this.sourceTargetFlexLayout.addItem(this.selectTargetButton, { CSSStyles: { 'margin-top': '10px' } });
-
-			this.loader = view.modelBuilder.loadingComponent().component();
-			this.waitText = view.modelBuilder.text().withProperties({
-				value: loc.waitText
-			}).component();
-
-			this.startText = view.modelBuilder.text().withProperties({
-				value: loc.startText
-			}).component();
-
-			this.noDifferencesLabel = view.modelBuilder.text().withProperties({
-				value: loc.noDifferencesText
-			}).component();
-
-			this.flexModel = view.modelBuilder.flexContainer().component();
-			this.flexModel.addItem(toolBar.component(), { flex: 'none' });
-			this.flexModel.addItem(sourceTargetLabels, { flex: 'none' });
-			this.flexModel.addItem(this.sourceTargetFlexLayout, { flex: 'none' });
-			this.flexModel.addItem(this.startText, { CSSStyles: { 'margin': 'auto' } });
-
-			this.flexModel.setLayout({
-				flexFlow: 'column',
-				height: '100%'
-			});
-
-			await view.initializeModel(this.flexModel);
-		});
-
 		await this.GetDefaultDeploymentOptions();
-		this.editor.openEditor();
+		await Promise.all([
+			this.registerContent(),
+			this.editor.openEditor()
+		]);
+	}
+
+	private async registerContent(): Promise<void> {
+		return new Promise<void>((resolve) => {
+			this.editor.registerContent(async view => {
+				this.differencesTable = view.modelBuilder.table().withProperties({
+					data: [],
+					title: loc.differencesTableTitle
+				}).component();
+
+				this.diffEditor = view.modelBuilder.diffeditor().withProperties({
+					contentLeft: os.EOL,
+					contentRight: os.EOL,
+					height: 500,
+					title: loc.diffEditorTitle
+				}).component();
+
+				this.splitView = view.modelBuilder.splitViewContainer().component();
+
+				let sourceTargetLabels = view.modelBuilder.flexContainer()
+					.withProperties({
+						alignItems: 'stretch',
+						horizontal: true
+					}).component();
+
+				this.sourceTargetFlexLayout = view.modelBuilder.flexContainer()
+					.withProperties({
+						alignItems: 'stretch',
+						horizontal: true
+					}).component();
+
+				this.createSwitchButton(view);
+				this.createCompareButton(view);
+				this.createCancelButton(view);
+				this.createGenerateScriptButton(view);
+				this.createApplyButton(view);
+				this.createOptionsButton(view);
+				this.createOpenScmpButton(view);
+				this.createSaveScmpButton(view);
+				this.createSourceAndTargetButtons(view);
+				this.resetButtons(ResetButtonState.noSourceTarget);
+
+				let toolBar = view.modelBuilder.toolbarContainer();
+				toolBar.addToolbarItems([{
+					component: this.compareButton
+				}, {
+					component: this.cancelCompareButton
+				}, {
+					component: this.generateScriptButton
+				}, {
+					component: this.applyButton
+				}, {
+					component: this.optionsButton,
+					toolbarSeparatorAfter: true
+				}, {
+					component: this.switchButton,
+					toolbarSeparatorAfter: true
+				}, {
+					component: this.openScmpButton
+				}, {
+					component: this.saveScmpButton
+				}]);
+
+				let sourceLabel = view.modelBuilder.text().withProperties({
+					value: loc.sourceTitle,
+					CSSStyles: { 'margin-bottom': '0px' }
+				}).component();
+
+				let targetLabel = view.modelBuilder.text().withProperties({
+					value: loc.targetTitle,
+					CSSStyles: { 'margin-bottom': '0px' }
+				}).component();
+
+				let arrowLabel = view.modelBuilder.text().withProperties({
+					value: '➔'
+				}).component();
+
+				this.sourceName = getEndpointName(this.sourceEndpointInfo);
+				this.targetName = ' ';
+				this.sourceNameComponent = view.modelBuilder.table().withProperties({
+					columns: [
+						{
+							value: this.sourceName,
+							headerCssClass: 'no-borders',
+							toolTip: this.sourceName
+						},
+					]
+				}).component();
+
+				this.targetNameComponent = view.modelBuilder.table().withProperties({
+					columns: [
+						{
+							value: this.targetName,
+							headerCssClass: 'no-borders',
+							toolTip: this.targetName
+						},
+					]
+				}).component();
+
+				sourceTargetLabels.addItem(sourceLabel, { CSSStyles: { 'width': '55%', 'margin-left': '15px', 'font-size': 'larger', 'font-weight': 'bold' } });
+				sourceTargetLabels.addItem(targetLabel, { CSSStyles: { 'width': '45%', 'font-size': 'larger', 'font-weight': 'bold' } });
+				this.sourceTargetFlexLayout.addItem(this.sourceNameComponent, { CSSStyles: { 'width': '40%', 'height': '25px', 'margin-top': '10px', 'margin-left': '15px' } });
+				this.sourceTargetFlexLayout.addItem(this.selectSourceButton, { CSSStyles: { 'margin-top': '10px' } });
+				this.sourceTargetFlexLayout.addItem(arrowLabel, { CSSStyles: { 'width': '10%', 'font-size': 'larger', 'text-align-last': 'center' } });
+				this.sourceTargetFlexLayout.addItem(this.targetNameComponent, { CSSStyles: { 'width': '40%', 'height': '25px', 'margin-top': '10px', 'margin-left': '15px' } });
+				this.sourceTargetFlexLayout.addItem(this.selectTargetButton, { CSSStyles: { 'margin-top': '10px' } });
+
+				this.loader = view.modelBuilder.loadingComponent().component();
+				this.waitText = view.modelBuilder.text().withProperties({
+					value: loc.waitText
+				}).component();
+
+				this.startText = view.modelBuilder.text().withProperties({
+					value: loc.startText
+				}).component();
+
+				this.noDifferencesLabel = view.modelBuilder.text().withProperties({
+					value: loc.noDifferencesText
+				}).component();
+
+				this.flexModel = view.modelBuilder.flexContainer().component();
+				this.flexModel.addItem(toolBar.component(), { flex: 'none' });
+				this.flexModel.addItem(sourceTargetLabels, { flex: 'none' });
+				this.flexModel.addItem(this.sourceTargetFlexLayout, { flex: 'none' });
+				this.flexModel.addItem(this.startText, { CSSStyles: { 'margin': 'auto' } });
+
+				this.flexModel.setLayout({
+					flexFlow: 'column',
+					height: '100%'
+				});
+
+				await view.initializeModel(this.flexModel);
+				resolve();
+			});
+		});
 	}
 
 	// update source and target name to display
@@ -280,6 +289,15 @@ export class SchemaCompareMainWindow {
 		return this.deploymentOptions;
 	}
 
+	// only for test
+	public verifyButtonsState(generateScriptButtonState: boolean, applyButtonState: boolean): boolean {
+		let result: boolean = false;
+		if (this.generateScriptButton.enabled === generateScriptButtonState && this.applyButton.enabled === applyButtonState) {
+			result = true;
+		}
+		return result;
+	}
+
 	public setDeploymentOptions(deploymentOptions: mssql.DeploymentOptions): void {
 		this.deploymentOptions = deploymentOptions;
 	}
@@ -297,7 +315,7 @@ export class SchemaCompareMainWindow {
 				.withAdditionalProperties({
 					operationId: this.comparisonResult.operationId
 				}).send();
-			vscode.window.showErrorMessage(loc.compareErrorMessage(this.comparisonResult.errorMessage));
+			this.apiWrapper.showErrorMessage(loc.compareErrorMessage(this.comparisonResult.errorMessage));
 			return;
 		}
 		TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaComparisonFinished')
@@ -949,8 +967,8 @@ export class SchemaCompareMainWindow {
 				return;
 			}
 
-			this.sourceEndpointInfo = await this.constructEndpointInfo(result.sourceEndpointInfo, loc.sourceTitle);
-			this.targetEndpointInfo = await this.constructEndpointInfo(result.targetEndpointInfo, loc.targetTitle);
+			this.sourceEndpointInfo = await this.constructEndpointInfo(result.sourceEndpointInfo, loc.sourceTitle, this.apiWrapper);
+			this.targetEndpointInfo = await this.constructEndpointInfo(result.targetEndpointInfo, loc.targetTitle, this.apiWrapper);
 
 			this.updateSourceAndTarget();
 			this.setDeploymentOptions(result.deploymentOptions);
@@ -968,12 +986,12 @@ export class SchemaCompareMainWindow {
 		});
 	}
 
-	private async constructEndpointInfo(endpoint: mssql.SchemaCompareEndpointInfo, caller: string): Promise<mssql.SchemaCompareEndpointInfo> {
+	private async constructEndpointInfo(endpoint: mssql.SchemaCompareEndpointInfo, caller: string, apiWrapper: ApiWrapper): Promise<mssql.SchemaCompareEndpointInfo> {
 		let ownerUri;
 		let endpointInfo;
 		if (endpoint && endpoint.endpointType === mssql.SchemaCompareEndpointType.Database) {
 			// only set endpoint info if able to connect to the database
-			ownerUri = await verifyConnectionAndGetOwnerUri(endpoint, caller);
+			ownerUri = await verifyConnectionAndGetOwnerUri(endpoint, caller, apiWrapper);
 		}
 		if (ownerUri) {
 			endpointInfo = endpoint;

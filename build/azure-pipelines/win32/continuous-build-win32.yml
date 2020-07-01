@@ -36,15 +36,7 @@ steps:
     yarn electron
   displayName: Download Electron
 
-- script: |
-    yarn gulp hygiene
-  displayName: Run Hygiene Checks
-
-- script: | # {{SQL CARBON EDIT}} add step
-    yarn strict-vscode
-  displayName: Run Strict Null Check
-
-# - powershell: | {{SQL CARBON EDIT}} remove step
+# - powershell: | {{SQL CARBON EDIT}} remove editor check
 #     yarn monaco-compile-check
 #   displayName: Run Monaco Editor Checks
 
@@ -72,12 +64,13 @@ steps:
 #     .\scripts\test-integration.bat --tfs "Integration Tests"
 #   displayName: Run Integration Tests (Electron)
 
-# - task: PublishPipelineArtifact@0
-#   displayName: 'Publish Crash Reports'
-#   inputs:
-#     artifactName: crash-dump-windows
-#     targetPath: .build\crashes
-#   condition: succeededOrFailed()
+- task: PublishPipelineArtifact@0
+  displayName: 'Publish Crash Reports'
+  inputs:
+    artifactName: crash-dump-windows
+    targetPath: .build\crashes
+  continueOnError: true
+  condition: failed()
 
 - task: PublishTestResults@2
   displayName: Publish Tests Results

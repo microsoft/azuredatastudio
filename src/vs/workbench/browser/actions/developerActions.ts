@@ -141,14 +141,24 @@ class ToggleScreencastModeAction extends Action {
 		const keyboardMarker = append(container, $('.screencast-keyboard'));
 		disposables.add(toDisposable(() => keyboardMarker.remove()));
 
+		const updateKeyboardFontSize = () => {
+			keyboardMarker.style.fontSize = `${clamp(this.configurationService.getValue<number>('screencastMode.fontSize') || 56, 20, 100)}px`;
+		};
+
 		const updateKeyboardMarker = () => {
 			keyboardMarker.style.bottom = `${clamp(this.configurationService.getValue<number>('screencastMode.verticalOffset') || 0, 0, 90)}%`;
 		};
 
+		updateKeyboardFontSize();
 		updateKeyboardMarker();
+
 		disposables.add(this.configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('screencastMode.verticalOffset')) {
 				updateKeyboardMarker();
+			}
+
+			if (e.affectsConfiguration('screencastMode.fontSize')) {
+				updateKeyboardFontSize();
 			}
 		}));
 
@@ -239,7 +249,7 @@ class LogWorkingCopiesAction extends Action {
 
 // --- Actions Registration
 
-const developerCategory = nls.localize('developer', "Developer");
+const developerCategory = nls.localize({ key: 'developer', comment: ['A developer on Code itself or someone diagnosing issues in Code'] }, "Developer");
 const registry = Registry.as<IWorkbenchActionRegistry>(Extensions.WorkbenchActions);
 registry.registerWorkbenchAction(SyncActionDescriptor.from(InspectContextKeysAction), 'Developer: Inspect Context Keys', developerCategory);
 registry.registerWorkbenchAction(SyncActionDescriptor.from(ToggleScreencastModeAction), 'Developer: Toggle Screencast Mode', developerCategory);
@@ -260,6 +270,13 @@ configurationRegistry.registerConfiguration({
 			minimum: 0,
 			maximum: 90,
 			description: nls.localize('screencastMode.location.verticalPosition', "Controls the vertical offset of the screencast mode overlay from the bottom as a percentage of the workbench height.")
+		},
+		'screencastMode.fontSize': {
+			type: 'number',
+			default: 56,
+			minimum: 20,
+			maximum: 100,
+			description: nls.localize('screencastMode.fontSize', "Controls the font size (in pixels) of the screencast mode keyboard.")
 		},
 		'screencastMode.onlyKeyboardShortcuts': {
 			type: 'boolean',

@@ -12,7 +12,7 @@
 
 
 export class DuskyObjectModelsRole {
-    'name': string;
+    'name'?: string;
 
     static discriminator: string | undefined = undefined;
 

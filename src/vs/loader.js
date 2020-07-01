@@ -607,339 +607,356 @@ var AMDLoader;
          * Attach load / error listeners to a script element and remove them when either one has fired.
          * Implemented for browssers supporting HTML5 standard 'load' and 'error' events.
          */
-		BrowserScriptLoader.prototype.attachListeners = function (script, callback, errorback) {
-			var unbind = function () {
-				script.removeEventListener('load', loadEventListener);
-				script.removeEventListener('error', errorEventListener);
-			};
-			var loadEventListener = function (e) {
-				unbind();
-				callback();
-			};
-			var errorEventListener = function (e) {
-				unbind();
-				errorback(e);
-			};
-			script.addEventListener('load', loadEventListener);
-			script.addEventListener('error', errorEventListener);
-		};
-		BrowserScriptLoader.prototype.load = function (moduleManager, scriptSrc, callback, errorback) {
-			var script = document.createElement('script');
-			script.setAttribute('async', 'async');
-			script.setAttribute('type', 'text/javascript');
-			this.attachListeners(script, callback, errorback);
-			script.setAttribute('src', scriptSrc);
-			// Propagate CSP nonce to dynamically created script tag.
-			var cspNonce = moduleManager.getConfig().getOptionsLiteral().cspNonce;
-			if (cspNonce) {
-				script.setAttribute('nonce', cspNonce);
-			}
-			document.getElementsByTagName('head')[0].appendChild(script);
-		};
-		return BrowserScriptLoader;
-	}());
-	var WorkerScriptLoader = /** @class */ (function () {
-		function WorkerScriptLoader() {
-		}
-		WorkerScriptLoader.prototype.load = function (moduleManager, scriptSrc, callback, errorback) {
-			try {
-				importScripts(scriptSrc);
-				callback();
-			}
-			catch (e) {
-				errorback(e);
-			}
-		};
-		return WorkerScriptLoader;
-	}());
-	var NodeScriptLoader = /** @class */ (function () {
-		function NodeScriptLoader(env) {
-			this._env = env;
-			this._didInitialize = false;
-			this._didPatchNodeRequire = false;
-		}
-		NodeScriptLoader.prototype._init = function (nodeRequire) {
-			if (this._didInitialize) {
-				return;
-			}
-			this._didInitialize = true;
-			// capture node modules
-			this._fs = nodeRequire('fs');
-			this._vm = nodeRequire('vm');
-			this._path = nodeRequire('path');
-			this._crypto = nodeRequire('crypto');
-		};
-		// patch require-function of nodejs such that we can manually create a script
-		// from cached data. this is done by overriding the `Module._compile` function
-		NodeScriptLoader.prototype._initNodeRequire = function (nodeRequire, moduleManager) {
-			// It is important to check for `nodeCachedData` first and then set `_didPatchNodeRequire`.
-			// That's because `nodeCachedData` is set _after_ calling this for the first time...
-			var nodeCachedData = moduleManager.getConfig().getOptionsLiteral().nodeCachedData;
-			if (!nodeCachedData) {
-				return;
-			}
-			if (this._didPatchNodeRequire) {
-				return;
-			}
-			this._didPatchNodeRequire = true;
-			var that = this;
-			var Module = nodeRequire('module');
-			function makeRequireFunction(mod) {
-				var Module = mod.constructor;
-				var require = function require(path) {
-					try {
-						return mod.require(path);
-					}
-					finally {
-						// nothing
-					}
-				};
-				require.resolve = function resolve(request) {
-					return Module._resolveFilename(request, mod);
-				};
-				require.main = process.mainModule;
-				require.extensions = Module._extensions;
-				require.cache = Module._cache;
-				return require;
-			}
-			Module.prototype._compile = function (content, filename) {
-				// remove shebang and create wrapper function
-				var scriptSource = Module.wrap(content.replace(/^#!.*/, ''));
-				// create script
-				var recorder = moduleManager.getRecorder();
-				var cachedDataPath = that._getCachedDataPath(nodeCachedData, filename);
-				var options = { filename: filename };
-				var hashData;
-				try {
-					var data = that._fs.readFileSync(cachedDataPath);
-					hashData = data.slice(0, 16);
-					options.cachedData = data.slice(16);
-					recorder.record(60 /* CachedDataFound */, cachedDataPath);
-				}
-				catch (_e) {
-					recorder.record(61 /* CachedDataMissed */, cachedDataPath);
-				}
-				var script = new that._vm.Script(scriptSource, options);
-				var compileWrapper = script.runInThisContext(options);
-				// run script
-				var dirname = that._path.dirname(filename);
-				var require = makeRequireFunction(this);
-				var args = [this.exports, require, this, filename, dirname, process, _commonjsGlobal, Buffer];
-				var result = compileWrapper.apply(this.exports, args);
-				// cached data aftermath
-				that._handleCachedData(script, scriptSource, cachedDataPath, !options.cachedData, moduleManager);
-				that._verifyCachedData(script, scriptSource, cachedDataPath, hashData, moduleManager);
-				return result;
-			};
-		};
-		NodeScriptLoader.prototype.load = function (moduleManager, scriptSrc, callback, errorback) {
-			var _this = this;
-			var opts = moduleManager.getConfig().getOptionsLiteral();
-			var nodeRequire = (opts.nodeRequire || AMDLoader.global.nodeRequire);
-			var nodeInstrumenter = (opts.nodeInstrumenter || function (c) { return c; });
-			this._init(nodeRequire);
-			this._initNodeRequire(nodeRequire, moduleManager);
-			var recorder = moduleManager.getRecorder();
-			if (/^node\|/.test(scriptSrc)) {
-				var pieces = scriptSrc.split('|');
-				var moduleExports_1 = null;
-				try {
-					moduleExports_1 = nodeRequire(pieces[1]);
-				}
-				catch (err) {
-					errorback(err);
-					return;
-				}
-				moduleManager.enqueueDefineAnonymousModule([], function () { return moduleExports_1; });
-				callback();
-			}
-			else {
-				scriptSrc = AMDLoader.Utilities.fileUriToFilePath(this._env.isWindows, scriptSrc);
-				var normalizedScriptSrc_1 = this._path.normalize(scriptSrc);
-				var vmScriptPathOrUri_1 = this._getElectronRendererScriptPathOrUri(normalizedScriptSrc_1);
-				var wantsCachedData_1 = Boolean(opts.nodeCachedData);
-				var cachedDataPath_1 = wantsCachedData_1 ? this._getCachedDataPath(opts.nodeCachedData, scriptSrc) : undefined;
-				this._readSourceAndCachedData(normalizedScriptSrc_1, cachedDataPath_1, recorder, function (err, data, cachedData, hashData) {
-					if (err) {
-						errorback(err);
-						return;
-					}
-					var scriptSource;
-					if (data.charCodeAt(0) === NodeScriptLoader._BOM) {
-						scriptSource = NodeScriptLoader._PREFIX + data.substring(1) + NodeScriptLoader._SUFFIX;
-					}
-					else {
-						scriptSource = NodeScriptLoader._PREFIX + data + NodeScriptLoader._SUFFIX;
-					}
-					scriptSource = nodeInstrumenter(scriptSource, normalizedScriptSrc_1);
-					var scriptOpts = { filename: vmScriptPathOrUri_1, cachedData: cachedData };
-					var script = _this._createAndEvalScript(moduleManager, scriptSource, scriptOpts, callback, errorback);
-					_this._handleCachedData(script, scriptSource, cachedDataPath_1, wantsCachedData_1 && !cachedData, moduleManager);
-					_this._verifyCachedData(script, scriptSource, cachedDataPath_1, hashData, moduleManager);
-				});
-			}
-		};
-		NodeScriptLoader.prototype._createAndEvalScript = function (moduleManager, contents, options, callback, errorback) {
-			var recorder = moduleManager.getRecorder();
-			recorder.record(31 /* NodeBeginEvaluatingScript */, options.filename);
-			var script = new this._vm.Script(contents, options);
-			var ret = script.runInThisContext(options);
-			var globalDefineFunc = moduleManager.getGlobalAMDDefineFunc();
-			var receivedDefineCall = false;
-			var localDefineFunc = function () {
-				receivedDefineCall = true;
-				return globalDefineFunc.apply(null, arguments);
-			};
-			localDefineFunc.amd = globalDefineFunc.amd;
-			ret.call(AMDLoader.global, moduleManager.getGlobalAMDRequireFunc(), localDefineFunc, options.filename, this._path.dirname(options.filename));
-			recorder.record(32 /* NodeEndEvaluatingScript */, options.filename);
-			if (receivedDefineCall) {
-				callback();
-			}
-			else {
-				errorback(new Error("Didn't receive define call in " + options.filename + "!"));
-			}
-			return script;
-		};
-		NodeScriptLoader.prototype._getElectronRendererScriptPathOrUri = function (path) {
-			if (!this._env.isElectronRenderer) {
-				return path;
-			}
-			var driveLetterMatch = path.match(/^([a-z])\:(.*)/i);
-			if (driveLetterMatch) {
-				// windows
-				return "file:///" + (driveLetterMatch[1].toUpperCase() + ':' + driveLetterMatch[2]).replace(/\\/g, '/');
-			}
-			else {
-				// nix
-				return "file://" + path;
-			}
-		};
-		NodeScriptLoader.prototype._getCachedDataPath = function (config, filename) {
-			var hash = this._crypto.createHash('md5').update(filename, 'utf8').update(config.seed, 'utf8').digest('hex');
-			var basename = this._path.basename(filename).replace(/\.js$/, '');
-			return this._path.join(config.path, basename + "-" + hash + ".code");
-		};
-		NodeScriptLoader.prototype._handleCachedData = function (script, scriptSource, cachedDataPath, createCachedData, moduleManager) {
-			var _this = this;
-			if (script.cachedDataRejected) {
-				// cached data got rejected -> delete and re-create
-				this._fs.unlink(cachedDataPath, function (err) {
-					moduleManager.getRecorder().record(62 /* CachedDataRejected */, cachedDataPath);
-					_this._createAndWriteCachedData(script, scriptSource, cachedDataPath, moduleManager);
-					if (err) {
-						moduleManager.getConfig().onError(err);
-					}
-				});
-			}
-			else if (createCachedData) {
-				// no cached data, but wanted
-				this._createAndWriteCachedData(script, scriptSource, cachedDataPath, moduleManager);
-			}
-		};
-		// Cached data format: | SOURCE_HASH | V8_CACHED_DATA |
-		// -SOURCE_HASH is the md5 hash of the JS source (always 16 bytes)
-		// -V8_CACHED_DATA is what v8 produces
-		NodeScriptLoader.prototype._createAndWriteCachedData = function (script, scriptSource, cachedDataPath, moduleManager) {
-			var _this = this;
-			var timeout = Math.ceil(moduleManager.getConfig().getOptionsLiteral().nodeCachedData.writeDelay * (1 + Math.random()));
-			var lastSize = -1;
-			var iteration = 0;
-			var hashData = undefined;
-			var createLoop = function () {
-				setTimeout(function () {
-					if (!hashData) {
-						hashData = _this._crypto.createHash('md5').update(scriptSource, 'utf8').digest();
-					}
-					var cachedData = script.createCachedData();
-					if (cachedData.length === 0 || cachedData.length === lastSize || iteration >= 5) {
-						return;
-					}
-					lastSize = cachedData.length;
-					_this._fs.writeFile(cachedDataPath, Buffer.concat([hashData, cachedData]), function (err) {
-						if (err) {
-							moduleManager.getConfig().onError(err);
-						}
-						moduleManager.getRecorder().record(63 /* CachedDataCreated */, cachedDataPath);
-						createLoop();
-					});
-				}, timeout * (Math.pow(4, iteration++)));
-			};
-			// with some delay (`timeout`) create cached data
-			// and repeat that (with backoff delay) until the
-			// data seems to be not changing anymore
-			createLoop();
-		};
-		NodeScriptLoader.prototype._readSourceAndCachedData = function (sourcePath, cachedDataPath, recorder, callback) {
-			if (!cachedDataPath) {
-				// no cached data case
-				this._fs.readFile(sourcePath, { encoding: 'utf8' }, callback);
-			}
-			else {
-				// cached data case: read both files in parallel
-				var source_1 = undefined;
-				var cachedData_1 = undefined;
-				var hashData_1 = undefined;
-				var steps_1 = 2;
-				var step_1 = function (err) {
-					if (err) {
-						callback(err);
-					}
-					else if (--steps_1 === 0) {
-						callback(undefined, source_1, cachedData_1, hashData_1);
-					}
-				};
-				this._fs.readFile(sourcePath, { encoding: 'utf8' }, function (err, data) {
-					source_1 = data;
-					step_1(err);
-				});
-				this._fs.readFile(cachedDataPath, function (err, data) {
-					if (!err && data && data.length > 0) {
-						hashData_1 = data.slice(0, 16);
-						cachedData_1 = data.slice(16);
-						recorder.record(60 /* CachedDataFound */, cachedDataPath);
-					}
-					else {
-						recorder.record(61 /* CachedDataMissed */, cachedDataPath);
-					}
-					step_1(); // ignored: cached data is optional
-				});
-			}
-		};
-		NodeScriptLoader.prototype._verifyCachedData = function (script, scriptSource, cachedDataPath, hashData, moduleManager) {
-			var _this = this;
-			if (!hashData) {
-				// nothing to do
-				return;
-			}
-			if (script.cachedDataRejected) {
-				// invalid anyways
-				return;
-			}
-			setTimeout(function () {
-				// check source hash - the contract is that file paths change when file content
-				// change (e.g use the commit or version id as cache path). this check is
-				// for violations of this contract.
-				var hashDataNow = _this._crypto.createHash('md5').update(scriptSource, 'utf8').digest();
-				if (!hashData.equals(hashDataNow)) {
-					moduleManager.getConfig().onError(new Error("FAILED TO VERIFY CACHED DATA, deleting stale '" + cachedDataPath + "' now, but a RESTART IS REQUIRED"));
-					_this._fs.unlink(cachedDataPath, function (err) {
-						if (err) {
-							moduleManager.getConfig().onError(err);
-						}
-					});
-				}
-			}, Math.ceil(5000 * (1 + Math.random())));
-		};
-		NodeScriptLoader._BOM = 0xFEFF;
-		NodeScriptLoader._PREFIX = '(function (require, define, __filename, __dirname) { ';
-		NodeScriptLoader._SUFFIX = '\n});';
-		return NodeScriptLoader;
-	}());
-	function createScriptLoader(env) {
-		return new OnlyOnceScriptLoader(env);
-	}
-	AMDLoader.createScriptLoader = createScriptLoader;
+        BrowserScriptLoader.prototype.attachListeners = function (script, callback, errorback) {
+            var unbind = function () {
+                script.removeEventListener('load', loadEventListener);
+                script.removeEventListener('error', errorEventListener);
+            };
+            var loadEventListener = function (e) {
+                unbind();
+                callback();
+            };
+            var errorEventListener = function (e) {
+                unbind();
+                errorback(e);
+            };
+            script.addEventListener('load', loadEventListener);
+            script.addEventListener('error', errorEventListener);
+        };
+        BrowserScriptLoader.prototype.load = function (moduleManager, scriptSrc, callback, errorback) {
+            if (/^node\|/.test(scriptSrc)) {
+                var opts = moduleManager.getConfig().getOptionsLiteral();
+                var nodeRequire = (opts.nodeRequire || AMDLoader.global.nodeRequire);
+                var pieces = scriptSrc.split('|');
+                var moduleExports_1 = null;
+                try {
+                    moduleExports_1 = nodeRequire(pieces[1]);
+                }
+                catch (err) {
+                    errorback(err);
+                    return;
+                }
+                moduleManager.enqueueDefineAnonymousModule([], function () { return moduleExports_1; });
+                callback();
+            }
+            else {
+                var script = document.createElement('script');
+                script.setAttribute('async', 'async');
+                script.setAttribute('type', 'text/javascript');
+                this.attachListeners(script, callback, errorback);
+                script.setAttribute('src', scriptSrc);
+                // Propagate CSP nonce to dynamically created script tag.
+                var cspNonce = moduleManager.getConfig().getOptionsLiteral().cspNonce;
+                if (cspNonce) {
+                    script.setAttribute('nonce', cspNonce);
+                }
+                document.getElementsByTagName('head')[0].appendChild(script);
+            }
+        };
+        return BrowserScriptLoader;
+    }());
+    var WorkerScriptLoader = /** @class */ (function () {
+        function WorkerScriptLoader() {
+        }
+        WorkerScriptLoader.prototype.load = function (moduleManager, scriptSrc, callback, errorback) {
+            try {
+                importScripts(scriptSrc);
+                callback();
+            }
+            catch (e) {
+                errorback(e);
+            }
+        };
+        return WorkerScriptLoader;
+    }());
+    var NodeScriptLoader = /** @class */ (function () {
+        function NodeScriptLoader(env) {
+            this._env = env;
+            this._didInitialize = false;
+            this._didPatchNodeRequire = false;
+        }
+        NodeScriptLoader.prototype._init = function (nodeRequire) {
+            if (this._didInitialize) {
+                return;
+            }
+            this._didInitialize = true;
+            // capture node modules
+            this._fs = nodeRequire('fs');
+            this._vm = nodeRequire('vm');
+            this._path = nodeRequire('path');
+            this._crypto = nodeRequire('crypto');
+        };
+        // patch require-function of nodejs such that we can manually create a script
+        // from cached data. this is done by overriding the `Module._compile` function
+        NodeScriptLoader.prototype._initNodeRequire = function (nodeRequire, moduleManager) {
+            // It is important to check for `nodeCachedData` first and then set `_didPatchNodeRequire`.
+            // That's because `nodeCachedData` is set _after_ calling this for the first time...
+            var nodeCachedData = moduleManager.getConfig().getOptionsLiteral().nodeCachedData;
+            if (!nodeCachedData) {
+                return;
+            }
+            if (this._didPatchNodeRequire) {
+                return;
+            }
+            this._didPatchNodeRequire = true;
+            var that = this;
+            var Module = nodeRequire('module');
+            function makeRequireFunction(mod) {
+                var Module = mod.constructor;
+                var require = function require(path) {
+                    try {
+                        return mod.require(path);
+                    }
+                    finally {
+                        // nothing
+                    }
+                };
+                require.resolve = function resolve(request) {
+                    return Module._resolveFilename(request, mod);
+                };
+                require.main = process.mainModule;
+                require.extensions = Module._extensions;
+                require.cache = Module._cache;
+                return require;
+            }
+            Module.prototype._compile = function (content, filename) {
+                // remove shebang and create wrapper function
+                var scriptSource = Module.wrap(content.replace(/^#!.*/, ''));
+                // create script
+                var recorder = moduleManager.getRecorder();
+                var cachedDataPath = that._getCachedDataPath(nodeCachedData, filename);
+                var options = { filename: filename };
+                var hashData;
+                try {
+                    var data = that._fs.readFileSync(cachedDataPath);
+                    hashData = data.slice(0, 16);
+                    options.cachedData = data.slice(16);
+                    recorder.record(60 /* CachedDataFound */, cachedDataPath);
+                }
+                catch (_e) {
+                    recorder.record(61 /* CachedDataMissed */, cachedDataPath);
+                }
+                var script = new that._vm.Script(scriptSource, options);
+                var compileWrapper = script.runInThisContext(options);
+                // run script
+                var dirname = that._path.dirname(filename);
+                var require = makeRequireFunction(this);
+                var args = [this.exports, require, this, filename, dirname, process, _commonjsGlobal, Buffer];
+                var result = compileWrapper.apply(this.exports, args);
+                // cached data aftermath
+                that._handleCachedData(script, scriptSource, cachedDataPath, !options.cachedData, moduleManager);
+                that._verifyCachedData(script, scriptSource, cachedDataPath, hashData, moduleManager);
+                return result;
+            };
+        };
+        NodeScriptLoader.prototype.load = function (moduleManager, scriptSrc, callback, errorback) {
+            var _this = this;
+            var opts = moduleManager.getConfig().getOptionsLiteral();
+            var nodeRequire = (opts.nodeRequire || AMDLoader.global.nodeRequire);
+            var nodeInstrumenter = (opts.nodeInstrumenter || function (c) { return c; });
+            this._init(nodeRequire);
+            this._initNodeRequire(nodeRequire, moduleManager);
+            var recorder = moduleManager.getRecorder();
+            if (/^node\|/.test(scriptSrc)) {
+                var pieces = scriptSrc.split('|');
+                var moduleExports_2 = null;
+                try {
+                    moduleExports_2 = nodeRequire(pieces[1]);
+                }
+                catch (err) {
+                    errorback(err);
+                    return;
+                }
+                moduleManager.enqueueDefineAnonymousModule([], function () { return moduleExports_2; });
+                callback();
+            }
+            else {
+                scriptSrc = AMDLoader.Utilities.fileUriToFilePath(this._env.isWindows, scriptSrc);
+                var normalizedScriptSrc_1 = this._path.normalize(scriptSrc);
+                var vmScriptPathOrUri_1 = this._getElectronRendererScriptPathOrUri(normalizedScriptSrc_1);
+                var wantsCachedData_1 = Boolean(opts.nodeCachedData);
+                var cachedDataPath_1 = wantsCachedData_1 ? this._getCachedDataPath(opts.nodeCachedData, scriptSrc) : undefined;
+                this._readSourceAndCachedData(normalizedScriptSrc_1, cachedDataPath_1, recorder, function (err, data, cachedData, hashData) {
+                    if (err) {
+                        errorback(err);
+                        return;
+                    }
+                    var scriptSource;
+                    if (data.charCodeAt(0) === NodeScriptLoader._BOM) {
+                        scriptSource = NodeScriptLoader._PREFIX + data.substring(1) + NodeScriptLoader._SUFFIX;
+                    }
+                    else {
+                        scriptSource = NodeScriptLoader._PREFIX + data + NodeScriptLoader._SUFFIX;
+                    }
+                    scriptSource = nodeInstrumenter(scriptSource, normalizedScriptSrc_1);
+                    var scriptOpts = { filename: vmScriptPathOrUri_1, cachedData: cachedData };
+                    var script = _this._createAndEvalScript(moduleManager, scriptSource, scriptOpts, callback, errorback);
+                    _this._handleCachedData(script, scriptSource, cachedDataPath_1, wantsCachedData_1 && !cachedData, moduleManager);
+                    _this._verifyCachedData(script, scriptSource, cachedDataPath_1, hashData, moduleManager);
+                });
+            }
+        };
+        NodeScriptLoader.prototype._createAndEvalScript = function (moduleManager, contents, options, callback, errorback) {
+            var recorder = moduleManager.getRecorder();
+            recorder.record(31 /* NodeBeginEvaluatingScript */, options.filename);
+            var script = new this._vm.Script(contents, options);
+            var ret = script.runInThisContext(options);
+            var globalDefineFunc = moduleManager.getGlobalAMDDefineFunc();
+            var receivedDefineCall = false;
+            var localDefineFunc = function () {
+                receivedDefineCall = true;
+                return globalDefineFunc.apply(null, arguments);
+            };
+            localDefineFunc.amd = globalDefineFunc.amd;
+            ret.call(AMDLoader.global, moduleManager.getGlobalAMDRequireFunc(), localDefineFunc, options.filename, this._path.dirname(options.filename));
+            recorder.record(32 /* NodeEndEvaluatingScript */, options.filename);
+            if (receivedDefineCall) {
+                callback();
+            }
+            else {
+                errorback(new Error("Didn't receive define call in " + options.filename + "!"));
+            }
+            return script;
+        };
+        NodeScriptLoader.prototype._getElectronRendererScriptPathOrUri = function (path) {
+            if (!this._env.isElectronRenderer) {
+                return path;
+            }
+            var driveLetterMatch = path.match(/^([a-z])\:(.*)/i);
+            if (driveLetterMatch) {
+                // windows
+                return "file:///" + (driveLetterMatch[1].toUpperCase() + ':' + driveLetterMatch[2]).replace(/\\/g, '/');
+            }
+            else {
+                // nix
+                return "file://" + path;
+            }
+        };
+        NodeScriptLoader.prototype._getCachedDataPath = function (config, filename) {
+            var hash = this._crypto.createHash('md5').update(filename, 'utf8').update(config.seed, 'utf8').digest('hex');
+            var basename = this._path.basename(filename).replace(/\.js$/, '');
+            return this._path.join(config.path, basename + "-" + hash + ".code");
+        };
+        NodeScriptLoader.prototype._handleCachedData = function (script, scriptSource, cachedDataPath, createCachedData, moduleManager) {
+            var _this = this;
+            if (script.cachedDataRejected) {
+                // cached data got rejected -> delete and re-create
+                this._fs.unlink(cachedDataPath, function (err) {
+                    moduleManager.getRecorder().record(62 /* CachedDataRejected */, cachedDataPath);
+                    _this._createAndWriteCachedData(script, scriptSource, cachedDataPath, moduleManager);
+                    if (err) {
+                        moduleManager.getConfig().onError(err);
+                    }
+                });
+            }
+            else if (createCachedData) {
+                // no cached data, but wanted
+                this._createAndWriteCachedData(script, scriptSource, cachedDataPath, moduleManager);
+            }
+        };
+        // Cached data format: | SOURCE_HASH | V8_CACHED_DATA |
+        // -SOURCE_HASH is the md5 hash of the JS source (always 16 bytes)
+        // -V8_CACHED_DATA is what v8 produces
+        NodeScriptLoader.prototype._createAndWriteCachedData = function (script, scriptSource, cachedDataPath, moduleManager) {
+            var _this = this;
+            var timeout = Math.ceil(moduleManager.getConfig().getOptionsLiteral().nodeCachedData.writeDelay * (1 + Math.random()));
+            var lastSize = -1;
+            var iteration = 0;
+            var hashData = undefined;
+            var createLoop = function () {
+                setTimeout(function () {
+                    if (!hashData) {
+                        hashData = _this._crypto.createHash('md5').update(scriptSource, 'utf8').digest();
+                    }
+                    var cachedData = script.createCachedData();
+                    if (cachedData.length === 0 || cachedData.length === lastSize || iteration >= 5) {
+                        return;
+                    }
+                    lastSize = cachedData.length;
+                    _this._fs.writeFile(cachedDataPath, Buffer.concat([hashData, cachedData]), function (err) {
+                        if (err) {
+                            moduleManager.getConfig().onError(err);
+                        }
+                        moduleManager.getRecorder().record(63 /* CachedDataCreated */, cachedDataPath);
+                        createLoop();
+                    });
+                }, timeout * (Math.pow(4, iteration++)));
+            };
+            // with some delay (`timeout`) create cached data
+            // and repeat that (with backoff delay) until the
+            // data seems to be not changing anymore
+            createLoop();
+        };
+        NodeScriptLoader.prototype._readSourceAndCachedData = function (sourcePath, cachedDataPath, recorder, callback) {
+            if (!cachedDataPath) {
+                // no cached data case
+                this._fs.readFile(sourcePath, { encoding: 'utf8' }, callback);
+            }
+            else {
+                // cached data case: read both files in parallel
+                var source_1 = undefined;
+                var cachedData_1 = undefined;
+                var hashData_1 = undefined;
+                var steps_1 = 2;
+                var step_1 = function (err) {
+                    if (err) {
+                        callback(err);
+                    }
+                    else if (--steps_1 === 0) {
+                        callback(undefined, source_1, cachedData_1, hashData_1);
+                    }
+                };
+                this._fs.readFile(sourcePath, { encoding: 'utf8' }, function (err, data) {
+                    source_1 = data;
+                    step_1(err);
+                });
+                this._fs.readFile(cachedDataPath, function (err, data) {
+                    if (!err && data && data.length > 0) {
+                        hashData_1 = data.slice(0, 16);
+                        cachedData_1 = data.slice(16);
+                        recorder.record(60 /* CachedDataFound */, cachedDataPath);
+                    }
+                    else {
+                        recorder.record(61 /* CachedDataMissed */, cachedDataPath);
+                    }
+                    step_1(); // ignored: cached data is optional
+                });
+            }
+        };
+        NodeScriptLoader.prototype._verifyCachedData = function (script, scriptSource, cachedDataPath, hashData, moduleManager) {
+            var _this = this;
+            if (!hashData) {
+                // nothing to do
+                return;
+            }
+            if (script.cachedDataRejected) {
+                // invalid anyways
+                return;
+            }
+            setTimeout(function () {
+                // check source hash - the contract is that file paths change when file content
+                // change (e.g use the commit or version id as cache path). this check is
+                // for violations of this contract.
+                var hashDataNow = _this._crypto.createHash('md5').update(scriptSource, 'utf8').digest();
+                if (!hashData.equals(hashDataNow)) {
+                    moduleManager.getConfig().onError(new Error("FAILED TO VERIFY CACHED DATA, deleting stale '" + cachedDataPath + "' now, but a RESTART IS REQUIRED"));
+                    _this._fs.unlink(cachedDataPath, function (err) {
+                        if (err) {
+                            moduleManager.getConfig().onError(err);
+                        }
+                    });
+                }
+            }, Math.ceil(5000 * (1 + Math.random())));
+        };
+        NodeScriptLoader._BOM = 0xFEFF;
+        NodeScriptLoader._PREFIX = '(function (require, define, __filename, __dirname) { ';
+        NodeScriptLoader._SUFFIX = '\n});';
+        return NodeScriptLoader;
+    }());
+    function createScriptLoader(env) {
+        return new OnlyOnceScriptLoader(env);
+    }
+    AMDLoader.createScriptLoader = createScriptLoader;
 })(AMDLoader || (AMDLoader = {}));
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
