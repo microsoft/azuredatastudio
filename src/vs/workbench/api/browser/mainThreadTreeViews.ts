@@ -219,19 +219,25 @@ export class TreeViewDataProvider implements ITreeViewDataProvider {
 		return this.itemsMap.size === 0;
 	}
 
-	private async postGetChildren(elements: ITreeItem[]): Promise<ResolvableTreeItem[]> {
+	// {{SQL CARBON EDIT}}
+	private async postGetChildren(elements: ITreeItem[]): Promise<ResolvableTreeItem[] | ITreeItem[]> {
 		const result: ResolvableTreeItem[] = [];
+		const results: ITreeItem[] = [];
 		const hasResolve = await this.hasResolve;
 		if (elements) {
 			for (const element of elements) {
-				const resolvable = new ResolvableTreeItem(element, hasResolve ? () => {
-					return this._proxy.$resolve(this.treeViewId, element.handle);
-				} : undefined);
 				this.itemsMap.set(element.handle, element);
-				result.push(resolvable);
+				if (hasResolve) {
+					const resolvable = new ResolvableTreeItem(element, hasResolve ? () => {
+						return this._proxy.$resolve(this.treeViewId, element.handle);
+					} : undefined);
+					result.push(resolvable);
+				} else {
+					results.push(element);
+				}
 			}
 		}
-		return result;
+		return hasResolve ? result : results;
 	}
 
 	private updateTreeItem(current: ITreeItem, treeItem: ITreeItem): void {
