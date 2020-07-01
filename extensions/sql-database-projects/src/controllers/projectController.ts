@@ -207,24 +207,24 @@ export class ProjectsController {
 		return publishDatabaseDialog;
 	}
 
-	public async executionCallback(project: Project, profile: IPublishSettings | IGenerateScriptSettings): Promise<mssql.DacFxResult | undefined> {
+	public async executionCallback(project: Project, settings: IPublishSettings | IGenerateScriptSettings): Promise<mssql.DacFxResult | undefined> {
 		const dacpacPath = await this.buildProject(project);
 
 		if (!dacpacPath) {
 			return undefined; // buildProject() handles displaying the error
 		}
 
-		// copy dacpac to temp location before deployment
+		// copy dacpac to temp location before publishing
 		const tempPath = path.join(os.tmpdir(), `${path.parse(dacpacPath).name}_${new Date().getTime()}${constants.sqlprojExtension}`);
 		await fs.copyFile(dacpacPath, tempPath);
 
 		const dacFxService = await this.getDaxFxService();
 
-		if ((<IPublishSettings>profile).upgradeExisting) {
-			return await dacFxService.deployDacpac(tempPath, profile.databaseName, (<IPublishSettings>profile).upgradeExisting, profile.connectionUri, TaskExecutionMode.execute, profile.sqlCmdVariables);
+		if ((<IPublishSettings>settings).upgradeExisting) {
+			return await dacFxService.deployDacpac(tempPath, settings.databaseName, (<IPublishSettings>settings).upgradeExisting, settings.connectionUri, TaskExecutionMode.execute, settings.sqlCmdVariables);
 		}
 		else {
-			return await dacFxService.generateDeployScript(tempPath, profile.databaseName, profile.connectionUri, TaskExecutionMode.script, profile.sqlCmdVariables);
+			return await dacFxService.generateDeployScript(tempPath, settings.databaseName, settings.connectionUri, TaskExecutionMode.script, settings.sqlCmdVariables);
 		}
 	}
 

@@ -195,7 +195,7 @@ export class PublishDatabaseDialog {
 
 	public async publishClick(): Promise<void> {
 		const sqlCmdVars = this.getSqlCmdVariablesForPublish();
-		const profile: IPublishSettings = {
+		const settings: IPublishSettings = {
 			databaseName: this.getTargetDatabaseName(),
 			upgradeExisting: true,
 			connectionUri: await this.getConnectionUri(),
@@ -203,14 +203,14 @@ export class PublishDatabaseDialog {
 		};
 
 		this.apiWrapper.closeDialog(this.dialog);
-		await this.publish!(this.project, profile);
+		await this.publish!(this.project, settings);
 
 		this.dispose();
 	}
 
 	public async generateScriptClick(): Promise<void> {
 		const sqlCmdVars = this.getSqlCmdVariablesForPublish();
-		const profile: IGenerateScriptSettings = {
+		const settings: IGenerateScriptSettings = {
 			databaseName: this.getTargetDatabaseName(),
 			connectionUri: await this.getConnectionUri(),
 			sqlCmdVariables: sqlCmdVars
@@ -219,7 +219,7 @@ export class PublishDatabaseDialog {
 		this.apiWrapper.closeDialog(this.dialog);
 
 		if (this.generateScript) {
-			await this.generateScript!(this.project, profile);
+			await this.generateScript!(this.project, settings);
 		}
 
 		this.dispose();
