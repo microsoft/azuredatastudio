@@ -31,7 +31,7 @@ import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/t
 import { UNSAVED_GROUP_ID, mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { $ } from 'vs/base/browser/dom';
 import { OEManageConnectionAction } from 'sql/workbench/contrib/dashboard/browser/dashboardActions';
-import { IViewsService, IView, ViewContainerLocation, ViewContainer } from 'vs/workbench/common/views';
+import { IViewsService, IView, ViewContainerLocation, ViewContainer, IViewPaneContainer } from 'vs/workbench/common/views';
 import { ConsoleLogService } from 'vs/platform/log/common/log';
 import { IProgressIndicator } from 'vs/platform/progress/common/progress';
 import { IPaneComposite } from 'vs/workbench/common/panecomposite';
@@ -111,6 +111,9 @@ suite('SQL Connection Tree Action tests', () => {
 		});
 
 		const viewsService = new class implements IViewsService {
+			getActiveViewPaneContainerWithId(viewContainerId: string): IViewPaneContainer {
+				throw new Error('Method not implemented.');
+			}
 			getViewProgressIndicator(id: string): IProgressIndicator {
 				throw new Error('Method not implemented.');
 			}
