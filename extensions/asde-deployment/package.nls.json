@@ -37,5 +37,7 @@
 	"vm_password": "VM admin password",
 	"vm_password_confirm": "Confirm VM admin password",
 	"iot_device_id": "VM name (device id)",
-	"dacpac_path": "Dacpac file"
+	"dacpac_path": "Dacpac zip file",
+	"azure-info-section-title": "Azure information",
+	"sqlserver-info-section-title": "SQL Server information"
 }

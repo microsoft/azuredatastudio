@@ -270,18 +270,13 @@
                   "title": "",
                   "sections": [
                     {
-                      "title": "",
+                      "title": "%azure-info-section-title%",
+                      "collapsible": true,
                       "fields": [
                         {
-                          "label": "%azure_subscription_id%",
-                          "variableName": "AZDATA_NB_VAR_ASDE_SUBSCRIPTIONID",
-                          "type": "text",
-                          "required": true
-                        },
-                        {
-                          "label": "%azure_resource_group%",
-                          "variableName": "AZDATA_NB_VAR_ASDE_RESOURCEGROUP",
-                          "type": "text",
+                          "subscriptionVariableName": "AZDATA_NB_VAR_ASDE_SUBSCRIPTIONID",
+                          "resourceGroupVariableName": "AZDATA_NB_VAR_ASDE_RESOURCEGROUP",
+                          "type": "azure_account",
                           "required": true
                         },
                         {
@@ -339,7 +334,13 @@
                           "confirmationRequired": true,
                           "confirmationLabel": "%vm_password_confirm%",
                           "required": true
-                        },
+                        }
+                      ]
+                    },
+                    {
+                      "title": "%sqlserver-info-section-title%",
+                      "collapsible": true,
+                      "fields": [
                         {
                           "label": "%docker-sql-password-field%",
                           "variableName": "AZDATA_NB_VAR_SA_PASSWORD",
