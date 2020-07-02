@@ -42,8 +42,8 @@ jobs:
     vmImage: 'Ubuntu-16.04'
   variables:
     - template: ./sql-variables.yml
-      parameters:
-        extensions: variables.extensions
+  parameters:
+    extensions: variables.extensions
   container: linux-x64
   dependsOn:
   - Compile
