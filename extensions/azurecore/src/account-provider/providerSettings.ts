@@ -103,11 +103,6 @@ const usGovAzureSettings: ProviderSettings = {
 				endpoint: 'https://vault.usgovcloudapi.net',
 				azureResourceId: AzureResource.AzureKeyVault
 			},
-			azureDevOpsResource: {
-				id: 'ado',
-				endpoint: '499b84ac-1321-427f-aa17-267ca6975798',
-				azureResourceId: AzureResource.AzureDevOps,
-			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
 			scopes: [
 				'openid', 'email', 'profile', 'offline_access',
