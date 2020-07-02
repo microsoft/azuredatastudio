@@ -95,9 +95,9 @@ export class MarkdownTextTransformer {
 			let offset = selection.startLineNumber === selection.endLineNumber ? beginInsertedText.length : 0;
 			endRange = this.getIRangeWithOffsets(endRange, offset, 0, offset, 0);
 			this.setEndSelection(endRange, type, editorControl, editorModel, nothingSelected, isUndo);
+			// Always give focus back to the editor after pressing the button
+			editorControl.focus();
 		}
-		// Always give focus back to the editor after pressing the button
-		editorControl.focus();
 	}
 
 	private getEditorControl(): CodeEditorWidget | undefined {
@@ -197,9 +197,10 @@ export class MarkdownTextTransformer {
 			endRange = this.getIRangeWithOffsets(endRange, 0, 0, endInsertedCode.length, 0);
 			editorModel.pushEditOperations(selections, [{ range: endRange, text: '' }, { range: startRange, text: '' }], undefined);
 		} else if (markdownLineType === MarkdownLineType.WRAPPED_ABOVE_AND_BELOW) {
-			startRange = this.getIRangeWithOffsets(startRange, 0, -1, 0, 0);
-			endRange = this.getIRangeWithOffsets(endRange, 0, 0, endInsertedCode.length, 1);
-			editorModel.pushEditOperations(selections, [{ range: endRange, text: '' }, { range: startRange, text: '' }], undefined);
+			// Delete the entire rows above and below the current selection
+			const startLineRange = new Range(startRange.startLineNumber - 1, 1, startRange.startLineNumber, 1);
+			const endLineRange = new Range(endRange.startLineNumber, editorModel.getLineLength(endRange.startLineNumber) + 1, endRange.startLineNumber + 1, endInsertedCode.length + 1);
+			editorModel.pushEditOperations(selections, [EditOperation.delete(endLineRange), EditOperation.delete(startLineRange)], undefined);
 		} else if (markdownLineType === MarkdownLineType.EVERY_LINE) {
 			let operations: IIdentifiedSingleEditOperation[] = [];
 			for (let i = selection.startLineNumber; i <= selection.endLineNumber; i++) {
