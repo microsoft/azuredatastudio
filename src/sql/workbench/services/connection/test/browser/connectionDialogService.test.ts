@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ConnectionDialogService } from 'sql/workbench/services/connection/browser/connectionDialogService';
 import { ConnectionManagementService } from 'sql/workbench/services/connection/browser/connectionManagementService';
 import { ConnectionType, IConnectableInput, IConnectionResult, INewConnectionParams, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { TestErrorMessageService } from 'sql/platform/errorMessage/test/common/testErrorMessageService';
@@ -22,6 +21,7 @@ import { TestConfigurationService } from 'sql/platform/connection/test/common/te
 import { createConnectionProfile } from 'sql/workbench/services/connection/test/browser/connectionManagementService.test';
 import { getUniqueConnectionProvidersByNameMap } from 'sql/workbench/services/connection/test/browser/connectionDialogWidget.test';
 import { TestConnectionDialogWidget } from 'sql/workbench/services/connection/test/browser/testConnectionDialogWidget';
+import { MockConnectionDialogService } from 'sql/workbench/services/connection/test/browser/mockConnectionDialogService';
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
 import { TestLayoutService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
@@ -33,7 +33,7 @@ import { ConnectionWidget } from 'sql/workbench/services/connection/browser/conn
 
 suite('ConnectionDialogService tests', () => {
 
-	let connectionDialogService: ConnectionDialogService;
+	let connectionDialogService: MockConnectionDialogService;
 	let mockConnectionManagementService: TypeMoq.Mock<ConnectionManagementService>;
 	let testConnectionDialog: TestConnectionDialogWidget;
 	let mockInstantationService: TypeMoq.Mock<InstantiationService>;
@@ -82,7 +82,7 @@ suite('ConnectionDialogService tests', () => {
 			undefined, // configuration service
 			new TestCapabilitiesService());
 		testinstantiationService.stub(IConnectionManagementService, mockConnectionManagementService.object);
-		connectionDialogService = new ConnectionDialogService(testinstantiationService, capabilitiesService, errorMessageService.object,
+		connectionDialogService = new MockConnectionDialogService(testinstantiationService, capabilitiesService, errorMessageService.object,
 			new TestConfigurationService(), undefined, undefined, new NullLogService());
 		(connectionDialogService as any)._connectionManagementService = mockConnectionManagementService.object;
 		let providerDisplayNames = ['Mock SQL Server'];
