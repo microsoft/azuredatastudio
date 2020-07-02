@@ -174,8 +174,16 @@ suite('ConnectionDialogService tests', () => {
 			errorCode: -1,
 			callStack: 'testCallStack'
 		};
-		// promise will never resolve, must get it directly and compare its string value.
+		// promise only resolves upon handleDefaultOnConnect, must return it at the end
 		let connectionPromise = connectionDialogService.openDialogAndWait(mockConnectionManagementService.object, connectionParams, connectionProfile, connectionResult, false);
-		assert.equal('[object Promise]', connectionPromise.toString());
+
+		/* handleDefaultOnConnect should reset connection and resolve properly
+		Also openDialogAndWait returns the connection profile passed in */
+		let thenable: Thenable<void> = (connectionDialogService as any).handleDefaultOnConnect(connectionParams, connectionProfile);
+		return thenable.then(() => {
+			return connectionPromise.then(e => {
+				assert.equal(e, connectionProfile);
+			});
+		});
 	});
 });
