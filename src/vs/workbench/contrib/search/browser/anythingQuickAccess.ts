@@ -643,7 +643,7 @@ export class AnythingQuickAccessProvider extends PickerQuickAccessProvider<IAnyt
 			return undefined; // {{SQL CARBON EDIT}} strict-null
 		}
 
-		const userHome = await this.pathService.userHome;
+		const userHome = await this.pathService.userHome();
 		const detildifiedQuery = untildify(query.original, userHome.scheme === Schemas.file ? userHome.fsPath : userHome.path);
 		if (token.isCancellationRequested) {
 			return undefined; // {{SQL CARBON EDIT}} strict-null
