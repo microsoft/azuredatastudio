@@ -74,7 +74,6 @@ suite('MarkdownTextTransformer', () => {
 		// Couple widget with newly created text model
 		widget.setModel(textModel);
 
-		// let textModel = widget.getModel() as TextModel;
 		assert(!isUndefinedOrNull(widget.getModel()), 'Text model is undefined');
 	});
 
@@ -90,17 +89,17 @@ suite('MarkdownTextTransformer', () => {
 		testWithNoSelection(MarkdownButtonType.LINK, '[]()', true);
 		testWithNoSelection(MarkdownButtonType.LINK, '');
 		testWithNoSelection(MarkdownButtonType.UNORDERED_LIST, '- ', true);
-		testWithNoSelection(MarkdownButtonType.UNORDERED_LIST, '- ');
+		testWithNoSelection(MarkdownButtonType.UNORDERED_LIST, '');
 		testWithNoSelection(MarkdownButtonType.ORDERED_LIST, '1. ', true);
-		testWithNoSelection(MarkdownButtonType.ORDERED_LIST, '1. ');
+		testWithNoSelection(MarkdownButtonType.ORDERED_LIST, '');
 		testWithNoSelection(MarkdownButtonType.IMAGE, '![]()', true);
 		testWithNoSelection(MarkdownButtonType.IMAGE, '');
 		testWithNoSelection(MarkdownButtonType.HEADING1, '# ', true);
-		testWithNoSelection(MarkdownButtonType.HEADING1, '# ');
+		testWithNoSelection(MarkdownButtonType.HEADING1, '');
 		testWithNoSelection(MarkdownButtonType.HEADING2, '## ', true);
-		testWithNoSelection(MarkdownButtonType.HEADING2, '## ');
+		testWithNoSelection(MarkdownButtonType.HEADING2, '');
 		testWithNoSelection(MarkdownButtonType.HEADING3, '### ', true);
-		testWithNoSelection(MarkdownButtonType.HEADING3, '### ');
+		testWithNoSelection(MarkdownButtonType.HEADING3, '');
 	});
 
 	test('Transform text with one word selected', () => {
@@ -155,7 +154,7 @@ suite('MarkdownTextTransformer', () => {
 			textModel.setValue('');
 		}
 		markdownTextTransformer.transformText(type);
-		assert.equal(textModel.getValue(), expectedValue, `${MarkdownButtonType[type]} with no selection failed`);
+		assert.equal(textModel.getValue(), expectedValue, `${MarkdownButtonType[type]} with no selection failed (setValue ${setValue})`);
 	}
 
 	function testWithSingleWordSelected(type: MarkdownButtonType, expectedValue: string): void {
