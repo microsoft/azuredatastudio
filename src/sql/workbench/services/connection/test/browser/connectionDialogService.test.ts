@@ -30,6 +30,8 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { ConnectionWidget } from 'sql/workbench/services/connection/browser/connectionWidget';
+import { BrowserClipboardService } from 'vs/platform/clipboard/browser/clipboardService';
+import { NullCommandService } from 'vs/platform/commands/common/commands';
 
 suite('ConnectionDialogService tests', () => {
 
@@ -83,7 +85,7 @@ suite('ConnectionDialogService tests', () => {
 			new TestCapabilitiesService());
 		testinstantiationService.stub(IConnectionManagementService, mockConnectionManagementService.object);
 		connectionDialogService = new ConnectionDialogService(testinstantiationService, capabilitiesService, errorMessageService.object,
-			new TestConfigurationService(), undefined, undefined, new NullLogService());
+			new TestConfigurationService(), new BrowserClipboardService(), NullCommandService, new NullLogService());
 		(connectionDialogService as any)._connectionManagementService = mockConnectionManagementService.object;
 		let providerDisplayNames = ['Mock SQL Server'];
 		let providerNameToDisplayMap = { 'MSSQL': 'Mock SQL Server' };
@@ -136,7 +138,7 @@ suite('ConnectionDialogService tests', () => {
 		return testHandleDefaultOnConnectUri(false);
 	});
 
-	test('openDialogAndWait should return a promise when called', () => {
+	test('openDialogAndWait should return a deferred promise when called', () => {
 		let connectionParams = <INewConnectionParams>{
 			connectionType: ConnectionType.default,
 			input: <IConnectableInput>{
@@ -165,7 +167,15 @@ suite('ConnectionDialogService tests', () => {
 		mockInstantationService.setup(x => x.createInstance(TypeMoq.It.isValue(ConnectionWidget), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAnyString())).returns(() => {
 			return mockWidget.object;
 		});
-		let connectionPromise = connectionDialogService.openDialogAndWait(mockConnectionManagementService.object, connectionParams, connectionProfile, undefined);
+		// connectionResult is used for testing showErrorDialog.
+		let connectionResult: IConnectionResult = {
+			connected: true,
+			errorMessage: 'test_error',
+			errorCode: -1,
+			callStack: 'testCallStack'
+		};
+		// promise will never resolve, must get it directly and compare its string value.
+		let connectionPromise = connectionDialogService.openDialogAndWait(mockConnectionManagementService.object, connectionParams, connectionProfile, connectionResult, true);
 		assert.equal('[object Promise]', connectionPromise.toString());
 	});
 });
