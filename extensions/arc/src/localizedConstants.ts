@@ -124,7 +124,11 @@ export function copiedToClipboard(name: string): string { return localize('arc.c
 export function clickTheTroubleshootButton(resourceType: string): string { return localize('arc.clickTheTroubleshootButton', "Click the troubleshoot button to open the Azure Arc {0} troubleshooting notebook.", resourceType); }
 export function numVCores(vCores: string | undefined): string {
 	if (vCores && +vCores > 0) {
-		return localize('arc.numVCores', "{0} vCores", vCores);
+		if (+vCores === 1) {
+			return localize('arc.numVCore', "{0} vCore", vCores);
+		} else {
+			return localize('arc.numVCores', "{0} vCores", vCores);
+		}
 	} else {
 		return '-';
 	}
