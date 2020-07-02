@@ -13,7 +13,7 @@ import { getSafePath } from '../common/utils';
 import { isNullOrUndefined } from 'util';
 import { generateTestFolderPath } from './testUtils';
 
-describe.skip('NetCoreTool: Net core tests', function (): void {
+describe('NetCoreTool: Net core tests', function (): void {
 
 	it('Should override dotnet default value with settings', async function (): Promise<void> {
 		try {
