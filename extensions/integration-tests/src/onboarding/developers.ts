@@ -11,6 +11,7 @@ export const developers: string[] = [
 	'alanrenmsft',
 	'anthonydresser',
 	'Charles-Gagnon',
+	'karora',
 	'kburtram',
 	'smartguest',
 	'udeeshagautam',
