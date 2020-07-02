@@ -4,31 +4,74 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ConnectionDialogService } from 'sql/workbench/services/connection/browser/connectionDialogService';
-import { ConnectionDialogWidget } from 'sql/workbench/services/connection/browser/connectionDialogWidget';
 import { ConnectionManagementService } from 'sql/workbench/services/connection/browser/connectionManagementService';
-import { ConnectionType, IConnectableInput, IConnectionResult, INewConnectionParams } from 'sql/platform/connection/common/connectionManagement';
+import { ConnectionType, IConnectableInput, IConnectionResult, INewConnectionParams, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { TestErrorMessageService } from 'sql/platform/errorMessage/test/common/testErrorMessageService';
 
 import * as TypeMoq from 'typemoq';
+import * as assert from 'assert';
+import * as DOM from 'vs/base/browser/dom';
+import * as Constants from 'sql/platform/connection/common/constants';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
-import { NullLogService } from 'vs/platform/log/common/log';
+import { NullLogService, ILogService } from 'vs/platform/log/common/log';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
+import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
+import { createConnectionProfile } from 'sql/workbench/services/connection/test/browser/connectionManagementService.test';
+import { getUniqueConnectionProvidersByNameMap } from 'sql/workbench/services/connection/test/browser/connectionDialogWidget.test';
+import { TestConnectionDialogWidget } from 'sql/workbench/services/connection/test/browser/testConnectionDialogWidget';
+import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
+import { TestLayoutService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
+import { ServiceOptionType, ConnectionOptionSpecialType } from 'sql/platform/connection/common/interfaces';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
+import { ConnectionWidget } from 'sql/workbench/services/connection/browser/connectionWidget';
 
 suite('ConnectionDialogService tests', () => {
 
 	let connectionDialogService: ConnectionDialogService;
 	let mockConnectionManagementService: TypeMoq.Mock<ConnectionManagementService>;
-	let mockConnectionDialog: TypeMoq.Mock<ConnectionDialogWidget>;
+	let testConnectionDialog: TestConnectionDialogWidget;
+	let mockInstantationService: TypeMoq.Mock<InstantiationService>;
 
 	setup(() => {
+		mockInstantationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Strict);
 		let testinstantiationService = new TestInstantiationService();
 		testinstantiationService.stub(IStorageService, new TestStorageService());
+		testinstantiationService.stub(ILogService, new NullLogService());
+		testinstantiationService.stub(IConfigurationService, new TestConfigurationService());
+		testinstantiationService.stub(IInstantiationService, mockInstantationService.object);
 		let errorMessageService = getMockErrorMessageService();
-		connectionDialogService = new ConnectionDialogService(undefined, undefined, errorMessageService.object,
-			undefined, undefined, undefined, new NullLogService());
+		let capabilitiesService = new TestCapabilitiesService();
+		capabilitiesService.capabilities[Constants.mssqlProviderName] = {
+			connection: {
+				providerId: Constants.mssqlProviderName,
+				displayName: 'MSSQL',
+				connectionOptions: [
+					{
+						name: 'authenticationType',
+						displayName: undefined,
+						description: undefined,
+						groupName: undefined,
+						categoryValues: [
+							{
+								name: 'authenticationType',
+								displayName: 'authenticationType'
+							}
+						],
+						defaultValue: undefined,
+						isIdentity: true,
+						isRequired: true,
+						specialValueType: ConnectionOptionSpecialType.authType,
+						valueType: ServiceOptionType.string
+					}
+				]
+			}
+		};
 		mockConnectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Strict,
 			undefined, // connection store
 			undefined, // connection status manager
@@ -38,20 +81,16 @@ suite('ConnectionDialogService tests', () => {
 			undefined, // telemetry service
 			undefined, // configuration service
 			new TestCapabilitiesService());
+		testinstantiationService.stub(IConnectionManagementService, mockConnectionManagementService.object);
+		connectionDialogService = new ConnectionDialogService(testinstantiationService, capabilitiesService, errorMessageService.object,
+			new TestConfigurationService(), undefined, undefined, new NullLogService());
 		(connectionDialogService as any)._connectionManagementService = mockConnectionManagementService.object;
-		mockConnectionDialog = TypeMoq.Mock.ofType(ConnectionDialogWidget, TypeMoq.MockBehavior.Strict,
-			undefined,
-			undefined,
-			undefined,
-			undefined,
-			undefined,
-			undefined,
-			undefined,
-			undefined,
-			new MockContextKeyService()
-		);
-		mockConnectionDialog.setup(c => c.resetConnection());
-		(connectionDialogService as any)._connectionDialog = mockConnectionDialog.object;
+		let providerDisplayNames = ['Mock SQL Server'];
+		let providerNameToDisplayMap = { 'MSSQL': 'Mock SQL Server' };
+		testConnectionDialog = new TestConnectionDialogWidget(providerDisplayNames, providerNameToDisplayMap['MSSQL'], providerNameToDisplayMap, testinstantiationService, mockConnectionManagementService.object, new TestThemeService(), new TestLayoutService(), new NullAdsTelemetryService(), new MockContextKeyService(), undefined, undefined, undefined, new NullLogService(), undefined);
+		testConnectionDialog.render();
+		testConnectionDialog.renderBody(DOM.createStyleSheet());
+		(connectionDialogService as any)._connectionDialog = testConnectionDialog;
 	});
 
 	function getMockErrorMessageService(): TypeMoq.Mock<TestErrorMessageService> {
@@ -95,5 +134,39 @@ suite('ConnectionDialogService tests', () => {
 
 	test('handleDefaultOnConnect uses undefined URI for non-editor connections', () => {
 		return testHandleDefaultOnConnectUri(false);
+	});
+
+	test('showDialog should complete successfully when given valid parameters', () => {
+		let connectionParams = <INewConnectionParams>{
+			connectionType: ConnectionType.default,
+			input: <IConnectableInput>{
+				uri: 'test_uri',
+				onConnectStart: undefined,
+				onConnectSuccess: undefined,
+				onConnectReject: undefined,
+				onDisconnect: undefined,
+				onConnectCanceled: undefined
+			},
+			runQueryOnCompletion: undefined,
+			querySelection: undefined,
+			providers: ['MSSQL']
+		};
+		let connectionProfile = createConnectionProfile('test_id');
+
+		let providerNameToDisplayMap = { 'MSSQL': 'Mock SQL Server' };
+		mockConnectionManagementService.setup(x => x.getUniqueConnectionProvidersByNameMap(TypeMoq.It.isAny())).returns(() => {
+			return getUniqueConnectionProvidersByNameMap(providerNameToDisplayMap);
+		});
+		mockConnectionManagementService.setup(x => x.getRecentConnections(TypeMoq.It.isValue(connectionParams.providers))).returns(() => {
+			return [connectionProfile];
+		});
+		let mockWidget = TypeMoq.Mock.ofType(ConnectionWidget, TypeMoq.MockBehavior.Strict, [], undefined, 'MSSQL');
+		mockWidget.setup(x => x.focusOnOpen());
+		mockInstantationService.setup(x => x.createInstance(TypeMoq.It.isValue(ConnectionWidget), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAnyString())).returns(() => {
+			return mockWidget.object;
+		});
+		return connectionDialogService.showDialog(mockConnectionManagementService.object, connectionParams, connectionProfile, undefined).then(() => {
+			assert(true);
+		});
 	});
 });

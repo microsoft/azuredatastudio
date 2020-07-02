@@ -156,7 +156,7 @@ suite('ConnectionDialogWidget tests', () => {
 });
 
 // Copy of function in connectionManagementService.
-function getUniqueConnectionProvidersByNameMap(providerNameToDisplayNameMap: { [providerDisplayName: string]: string }): { [providerDisplayName: string]: string } {
+export function getUniqueConnectionProvidersByNameMap(providerNameToDisplayNameMap: { [providerDisplayName: string]: string }): { [providerDisplayName: string]: string } {
 	let uniqueProvidersMap = {};
 	let providerNames = entries(providerNameToDisplayNameMap);
 	providerNames.forEach(p => {
