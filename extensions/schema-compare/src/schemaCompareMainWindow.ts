@@ -38,19 +38,19 @@ export class SchemaCompareMainWindow {
 	private flexModel: azdata.FlexContainer;
 	private noDifferencesLabel: azdata.TextComponent;
 	private sourceTargetFlexLayout: azdata.FlexContainer;
-	private switchButton: azdata.ButtonComponent;
-	private compareButton: azdata.ButtonComponent;
-	private cancelCompareButton: azdata.ButtonComponent;
-	private optionsButton: azdata.ButtonComponent;
-	private generateScriptButton: azdata.ButtonComponent;
-	private applyButton: azdata.ButtonComponent;
-	private openScmpButton: azdata.ButtonComponent;
-	private selectSourceButton: azdata.ButtonComponent;
-	private selectTargetButton: azdata.ButtonComponent;
-	private saveScmpButton: azdata.ButtonComponent;
+	protected switchButton: azdata.ButtonComponent;
+	protected compareButton: azdata.ButtonComponent;
+	protected cancelCompareButton: azdata.ButtonComponent;
+	protected optionsButton: azdata.ButtonComponent;
+	protected generateScriptButton: azdata.ButtonComponent;
+	protected applyButton: azdata.ButtonComponent;
+	protected openScmpButton: azdata.ButtonComponent;
+	protected selectSourceButton: azdata.ButtonComponent;
+	protected selectTargetButton: azdata.ButtonComponent;
+	protected saveScmpButton: azdata.ButtonComponent;
 	private SchemaCompareActionMap: Map<Number, string>;
 	private operationId: string;
-	private comparisonResult: mssql.SchemaCompareResult;
+	protected comparisonResult: mssql.SchemaCompareResult;
 	private sourceNameComponent: azdata.TableComponent;
 	private targetNameComponent: azdata.TableComponent;
 	private deploymentOptions: mssql.DeploymentOptions;
@@ -154,6 +154,29 @@ export class SchemaCompareMainWindow {
 				this.createOpenScmpButton(view);
 				this.createSaveScmpButton(view);
 				this.createSourceAndTargetButtons(view);
+
+				this.sourceName = getEndpointName(this.sourceEndpointInfo);
+				this.targetName = ' ';
+				this.sourceNameComponent = view.modelBuilder.table().withProperties({
+					columns: [
+						{
+							value: this.sourceName,
+							headerCssClass: 'no-borders',
+							toolTip: this.sourceName
+						},
+					]
+				}).component();
+
+				this.targetNameComponent = view.modelBuilder.table().withProperties({
+					columns: [
+						{
+							value: this.targetName,
+							headerCssClass: 'no-borders',
+							toolTip: this.targetName
+						},
+					]
+				}).component();
+
 				this.resetButtons(ResetButtonState.noSourceTarget);
 
 				let toolBar = view.modelBuilder.toolbarContainer();
@@ -189,28 +212,6 @@ export class SchemaCompareMainWindow {
 
 				let arrowLabel = view.modelBuilder.text().withProperties({
 					value: '➔'
-				}).component();
-
-				this.sourceName = getEndpointName(this.sourceEndpointInfo);
-				this.targetName = ' ';
-				this.sourceNameComponent = view.modelBuilder.table().withProperties({
-					columns: [
-						{
-							value: this.sourceName,
-							headerCssClass: 'no-borders',
-							toolTip: this.sourceName
-						},
-					]
-				}).component();
-
-				this.targetNameComponent = view.modelBuilder.table().withProperties({
-					columns: [
-						{
-							value: this.targetName,
-							headerCssClass: 'no-borders',
-							toolTip: this.targetName
-						},
-					]
 				}).component();
 
 				sourceTargetLabels.addItem(sourceLabel, { CSSStyles: { 'width': '55%', 'margin-left': '15px', 'font-size': 'larger', 'font-weight': 'bold' } });
@@ -277,25 +278,6 @@ export class SchemaCompareMainWindow {
 			// reset buttons to before comparison state
 			this.resetButtons(ResetButtonState.beforeCompareStart);
 		}
-	}
-
-	// only for test
-	public getComparisonResult(): mssql.SchemaCompareResult {
-		return this.comparisonResult;
-	}
-
-	// only for test
-	public getDeploymentOptions(): mssql.DeploymentOptions {
-		return this.deploymentOptions;
-	}
-
-	// only for test
-	public verifyButtonsState(generateScriptButtonState: boolean, applyButtonState: boolean): boolean {
-		let result: boolean = false;
-		if (this.generateScriptButton.enabled === generateScriptButtonState && this.applyButton.enabled === applyButtonState) {
-			result = true;
-		}
-		return result;
 	}
 
 	public setDeploymentOptions(deploymentOptions: mssql.DeploymentOptions): void {
@@ -802,7 +784,7 @@ export class SchemaCompareMainWindow {
 			case (ResetButtonState.noSourceTarget): {
 				this.compareButton.enabled = false;
 				this.optionsButton.enabled = false;
-				this.switchButton.enabled = this.sourceEndpointInfo ? true : false; // allows switching if the source is set
+				this.switchButton.enabled = ((this.sourceName && this.sourceName !== ' ') || (this.targetName && this.targetName !== ' ')) ? true : false; // allows switching if the source or target name is set
 				this.openScmpButton.enabled = true;
 				this.cancelCompareButton.enabled = false;
 				this.selectSourceButton.enabled = true;
