@@ -31,9 +31,10 @@ describe('Jupyter server instance', function (): void {
 
 	beforeEach(() => {
 		mockApiWrapper = TypeMoq.Mock.ofType(ApiWrapper);
+		mockApiWrapper.setup(w => w.setCommandContext(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()));
 		mockApiWrapper.setup(a => a.showErrorMessage(TypeMoq.It.isAny()));
 		mockApiWrapper.setup(a => a.getWorkspacePathFromUri(TypeMoq.It.isAny())).returns(() => undefined);
-		mockInstall = TypeMoq.Mock.ofType(JupyterServerInstallation, undefined, undefined, '/root');
+		mockInstall = TypeMoq.Mock.ofType(JupyterServerInstallation, undefined, undefined, '/root', undefined, mockApiWrapper.object);
 		mockOutputChannel = TypeMoq.Mock.ofType(MockOutputChannel);
 		mockInstall.setup(i => i.outputChannel).returns(() => mockOutputChannel.object);
 		mockInstall.setup(i => i.pythonExecutable).returns(() => 'python3');

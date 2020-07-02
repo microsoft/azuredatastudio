@@ -22,7 +22,9 @@ describe('Configure Python Wizard', function () {
 	let testInstallation: JupyterServerInstallation;
 
 	beforeEach(() => {
-		let mockInstall = TypeMoq.Mock.ofType(JupyterServerInstallation);
+		let mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
+		mockApiWrapper.setup(w => w.setCommandContext(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()));
+		let mockInstall = TypeMoq.Mock.ofType(JupyterServerInstallation, undefined, undefined, '/root', undefined, mockApiWrapper.object);
 		mockInstall.setup(i => i.getInstalledPipPackages(TypeMoq.It.isAnyString())).returns(() => Promise.resolve([]));
 		mockInstall.setup(i => i.getRequiredPackagesForKernel(TypeMoq.It.isAnyString())).returns(() => [{ name: 'TestPkg', version: '1.0.0'}]);
 		testInstallation = mockInstall.object;

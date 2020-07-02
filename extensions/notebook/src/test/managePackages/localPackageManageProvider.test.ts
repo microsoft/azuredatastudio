@@ -13,6 +13,7 @@ import { LocalCondaPackageManageProvider } from '../../jupyter/localCondaPackage
 import * as constants from '../../common/constants';
 import { LocalPipPackageManageProvider } from '../../jupyter/localPipPackageManageProvider';
 import { IPiPyClient, PiPyClient } from '../../jupyter/pipyClient';
+import { ApiWrapper } from '../../common/apiWrapper';
 
 interface TestContext {
 	serverInstallation: IJupyterServerInstallation;
@@ -209,7 +210,9 @@ describe('Manage Package Providers', () => {
 	}
 
 	function createJupyterServerInstallation(testContext: TestContext): TypeMoq.IMock<JupyterServerInstallation> {
-		let mockInstance = TypeMoq.Mock.ofType(JupyterServerInstallation);
+		let mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
+		mockApiWrapper.setup(w => w.setCommandContext(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()));
+		let mockInstance = TypeMoq.Mock.ofType(JupyterServerInstallation, undefined, undefined, undefined, undefined, mockApiWrapper.object);
 		mockInstance.setup(x => x.installCondaPackages(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((packages, useMinVersion) => testContext.serverInstallation.installCondaPackages(packages, useMinVersion));
 		mockInstance.setup(x => x.installPipPackages(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((packages, useMinVersion) => testContext.serverInstallation.installPipPackages(packages, useMinVersion));
 		mockInstance.setup(x => x.uninstallCondaPackages(TypeMoq.It.isAny())).returns((packages, useMinVersion) => testContext.serverInstallation.uninstallCondaPackages(packages));

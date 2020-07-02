@@ -32,12 +32,13 @@ describe('Local Jupyter Server Manager', function (): void {
 	beforeEach(() => {
 		mockExtensionContext = new MockExtensionContext();
 		mockApiWrapper = TypeMoq.Mock.ofType(ApiWrapper);
+		mockApiWrapper.setup(w => w.setCommandContext(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()));
 		mockApiWrapper.setup(a => a.showErrorMessage(TypeMoq.It.isAny()));
 		mockApiWrapper.setup(a => a.getWorkspacePathFromUri(TypeMoq.It.isAny())).returns(() => undefined);
 		mockFactory = TypeMoq.Mock.ofType(ServerInstanceFactory);
 
 		deferredInstall = new Deferred<void>();
-		let mockInstall = TypeMoq.Mock.ofType(JupyterServerInstallation, undefined, undefined, '/root');
+		let mockInstall = TypeMoq.Mock.ofType(JupyterServerInstallation, undefined, undefined, '/root', undefined, mockApiWrapper.object);
 		mockInstall.setup(j => j.promptForPythonInstall(TypeMoq.It.isAny())).returns(() => deferredInstall.promise);
 		mockInstall.object.execOptions = { env: Object.assign({}, process.env) };
 
