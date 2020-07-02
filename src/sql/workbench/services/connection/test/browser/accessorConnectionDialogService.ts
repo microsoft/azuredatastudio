@@ -12,7 +12,8 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { ILogService } from 'vs/platform/log/common/log';
 
-export class MockConnectionDialogService extends ConnectionDialogService {
+// version of ConnectionDialogService with access to private functions for testing.
+export class AccessorConnectionDialogService extends ConnectionDialogService {
 	constructor(
 		@IInstantiationService _instantiationService: IInstantiationService,
 		@ICapabilitiesService _capabilitiesService: ICapabilitiesService,

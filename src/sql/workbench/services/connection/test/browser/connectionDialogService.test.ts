@@ -21,7 +21,7 @@ import { TestConfigurationService } from 'sql/platform/connection/test/common/te
 import { createConnectionProfile } from 'sql/workbench/services/connection/test/browser/connectionManagementService.test';
 import { getUniqueConnectionProvidersByNameMap } from 'sql/workbench/services/connection/test/browser/connectionDialogWidget.test';
 import { TestConnectionDialogWidget } from 'sql/workbench/services/connection/test/browser/testConnectionDialogWidget';
-import { MockConnectionDialogService } from 'sql/workbench/services/connection/test/browser/mockConnectionDialogService';
+import { AccessorConnectionDialogService } from 'sql/workbench/services/connection/test/browser/accessorConnectionDialogService';
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
 import { TestLayoutService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
@@ -33,7 +33,7 @@ import { ConnectionWidget } from 'sql/workbench/services/connection/browser/conn
 
 suite('ConnectionDialogService tests', () => {
 
-	let connectionDialogService: MockConnectionDialogService;
+	let connectionDialogService: AccessorConnectionDialogService;
 	let mockConnectionManagementService: TypeMoq.Mock<ConnectionManagementService>;
 	let testConnectionDialog: TestConnectionDialogWidget;
 	let mockInstantationService: TypeMoq.Mock<InstantiationService>;
@@ -82,7 +82,7 @@ suite('ConnectionDialogService tests', () => {
 			undefined, // configuration service
 			new TestCapabilitiesService());
 		testinstantiationService.stub(IConnectionManagementService, mockConnectionManagementService.object);
-		connectionDialogService = new MockConnectionDialogService(testinstantiationService, capabilitiesService, errorMessageService.object,
+		connectionDialogService = new AccessorConnectionDialogService(testinstantiationService, capabilitiesService, errorMessageService.object,
 			new TestConfigurationService(), undefined, undefined, new NullLogService());
 		(connectionDialogService as any)._connectionManagementService = mockConnectionManagementService.object;
 		let providerDisplayNames = ['Mock SQL Server'];
