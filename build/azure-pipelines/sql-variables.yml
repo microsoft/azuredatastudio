@@ -1,0 +1,15 @@
+variables:
+- name: extensions
+  type: object
+  default:
+  - admin-tool-ext-win
+  - agent
+  - azurecore
+  - cms
+  - dacpac
+  - import
+  - schema-compare
+  - notebook
+  - resource-deployment
+  - machine-learning-services
+  - sql-database-projects
