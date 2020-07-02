@@ -4,15 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import vscode = require('vscode');
+import { ApiWrapper } from '../common/apiWrapper';
 
-export class QuestionTypes {
-	public static get input(): string { return 'input'; }
-	public static get password(): string { return 'password'; }
-	public static get list(): string { return 'list'; }
-	public static get confirm(): string { return 'confirm'; }
-	public static get checkbox(): string { return 'checkbox'; }
-	public static get expand(): string { return 'expand'; }
-}
+export const confirm = 'confirm';
 
 // Question interface to clarify how to use the prompt feature
 // based on Bower Question format: https://github.com/bower/bower/blob/89069784bb46bfd6639b4a75e98a0d7399a8c2cb/packages/bower-logger/README.md
@@ -54,15 +48,14 @@ export interface IQuestionHandler {
 }
 
 export interface IPrompter {
-	promptSingle<T>(question: IQuestion, ignoreFocusOut?: boolean): Promise<T>;
+	promptSingle<T>(question: IQuestion, apiWrapper?: ApiWrapper): Promise<T>;
 	/**
 	 * Prompts for multiple questions
 	 *
 	 * @returns Map of question IDs to results, or undefined if
 	 * the user canceled the question session
 	 */
-	prompt<T>(questions: IQuestion[], ignoreFocusOut?: boolean): Promise<{ [questionId: string]: any }>;
-	promptCallback(questions: IQuestion[], callback: IPromptCallback): void;
+	prompt<T>(questions: IQuestion[], apiWrapper?: ApiWrapper): Promise<{ [questionId: string]: any }>;
 }
 
 export interface IPromptCallback {

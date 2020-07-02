@@ -171,55 +171,16 @@ steps:
       pushd ../azuredatastudio-darwin
       ditto -c -k --keepParent *.app $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin.zip
       popd
-    displayName: 'Archive'
-
-  - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
-    displayName: 'ESRP CodeSigning'
-    inputs:
-      ConnectedServiceName: 'Code Signing'
-      FolderPath: '$(Build.SourcesDirectory)/.build/darwin/archive'
-      Pattern: 'azuredatastudio-darwin.zip'
-      signConfigType: inlineSignParams
-      inlineOperation: |
-        [
-          {
-            "keyCode": "CP-401337-Apple",
-            "operationCode": "MacAppDeveloperSign",
-            "parameters": {
-              "Hardening": "Enable"
-            },
-            "toolName": "sign",
-            "toolVersion": "1.0"
-          }
-        ]
-      SessionTimeout: 90
-    condition: and(succeeded(), eq(variables['signed'], true))
+    displayName: 'Archive (no signing)'
+    condition: and(succeeded(), eq(variables['signed'], false))
 
   - script: |
-      zip -d $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin.zip "*.pkg"
-    displayName: Clean Archive
-    condition: and(succeeded(), eq(variables['signed'], true))
-
-  - task: EsrpCodeSigning@1
-    displayName: 'ESRP Notarization'
-    inputs:
-      ConnectedServiceName: 'Code Signing'
-      FolderPath: '$(Build.SourcesDirectory)/.build/darwin/archive'
-      Pattern: 'azuredatastudio-darwin.zip'
-      signConfigType: inlineSignParams
-      inlineOperation: |
-        [
-          {
-            "KeyCode": "CP-401337-Apple",
-            "OperationCode": "MacAppNotarize",
-            "Parameters": {
-              "BundleId": "com.microsoft.azuredatastudio-$(VSCODE_QUALITY)"
-            },
-            "ToolName": "sign",
-            "ToolVersion": "1.0"
-          }
-        ]
-      SessionTimeout: 120
+      set -e
+      mkdir -p .build/darwin/archive
+      pushd ../azuredatastudio-darwin
+      ditto -c -k --keepParent *.app $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin-unsigned.zip
+      popd
+    displayName: 'Archive'
     condition: and(succeeded(), eq(variables['signed'], true))
 
   - script: |

@@ -115,6 +115,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Microsoft/azuredatastudio/tree/master/samples/sqlservices"
+    "url": "https://github.com/Microsoft/azuredatastudio/tree/main/samples/sqlservices"
   }
 }

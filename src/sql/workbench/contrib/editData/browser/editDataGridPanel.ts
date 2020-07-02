@@ -66,6 +66,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	private rowIdMappings: { [gridRowId: number]: number } = {};
 	private dirtyCells: number[] = [];
 	protected plugins = new Array<Slick.Plugin<any>>();
+	private newlinePattern: string;
 	// List of column names with their indexes stored.
 	private columnNameToIndex: { [columnNumber: number]: string } = {};
 	// Edit Data functions
@@ -190,10 +191,10 @@ export class EditDataGridPanel extends GridParentComponent {
 				returnVal = null;
 			}
 			else if (Services.DBCellValue.isDBCellValue(value)) {
-				returnVal = this.spacefyLinebreaks(value.displayValue);
+				returnVal = this.replaceLinebreaks(value.displayValue);
 			}
 			else if (typeof value === 'string') {
-				returnVal = this.spacefyLinebreaks(value);
+				returnVal = this.replaceLinebreaks(value);
 			}
 			return returnVal;
 		};
@@ -431,8 +432,12 @@ export class EditDataGridPanel extends GridParentComponent {
 	/**
 	 * Replace the line breaks with space.
 	 */
-	private spacefyLinebreaks(inputStr: string): string {
-		return inputStr.replace(/(\r\n|\n|\r)/g, ' ');
+	private replaceLinebreaks(inputStr: string): string {
+		let newlineMatches = inputStr.match(/(\r\n|\n|\r)/g);
+		if (newlineMatches && newlineMatches.length > 0) {
+			this.newlinePattern = newlineMatches[0];
+		}
+		return inputStr.replace(/(\r\n|\n|\r)/g, '\u0000');
 	}
 
 	private refreshGrid(): Thenable<void> {
@@ -575,7 +580,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					? self.rowIdMappings[self.currentCell.row]
 					: self.currentCell.row;
 
-				return self.dataService.updateCell(sessionRowId, self.currentCell.column - 1, self.currentEditCellValue);
+				return self.dataService.updateCell(sessionRowId, self.currentCell.column - 1, this.newlinePattern ? self.currentEditCellValue.replace('\u0000', this.newlinePattern) : self.currentEditCellValue);
 			}).then(
 				result => {
 					self.currentEditCellValue = undefined;

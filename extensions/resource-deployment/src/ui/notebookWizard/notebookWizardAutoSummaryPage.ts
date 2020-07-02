@@ -37,7 +37,7 @@ export class NotebookWizardAutoSummaryPage extends NotebookWizardPage {
 		this.wizard.wizardObject.message = { text: '' };
 	}
 
-	public onEnter(): void {
+	public async onEnter(): Promise<void> {
 		this.formItems.forEach(item => {
 			this.form!.removeFormItem(item);
 		});
@@ -50,7 +50,8 @@ export class NotebookWizardAutoSummaryPage extends NotebookWizardPage {
 		const labelPosition = this.pageInfo.labelPosition || this.wizard.wizardInfo.labelPosition || LabelPosition.Left;
 		const inputWidth = this.pageInfo.inputWidth || this.wizard.wizardInfo.inputWidth || DefaultInputWidth;
 
-		this.wizard.wizardInfo.pages.filter((undefined, index) => index < this._pageIndex).forEach(pageInfo => {
+		const filteredPages = this.wizard.wizardInfo.pages.filter((undefined, index) => index < this._pageIndex);
+		for (const pageInfo of filteredPages) {
 			const summarySectionInfo: SectionInfo = {
 				labelPosition: labelPosition,
 				labelWidth: labelWidth,
@@ -76,7 +77,7 @@ export class NotebookWizardAutoSummaryPage extends NotebookWizardPage {
 			if (summarySectionInfo!.rows!.length > 0) {
 				const formComponent: azdata.FormComponent = {
 					title: pageInfo.title,
-					component: createSection({
+					component: await createSection({
 						container: this.wizard.wizardObject,
 						inputComponents: this.wizard.inputComponents,
 						sectionInfo: summarySectionInfo,
@@ -88,7 +89,7 @@ export class NotebookWizardAutoSummaryPage extends NotebookWizardPage {
 				};
 				this.formItems.push(formComponent);
 			}
-		});
+		}
 		this.form.addFormItems(this.formItems);
 
 	}
