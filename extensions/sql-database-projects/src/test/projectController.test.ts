@@ -256,13 +256,14 @@ describe('ProjectsController: project controller operations', function (): void 
 				holler = publishHoller;
 				return new Promise((resolve) => resolve(undefined));
 			});
-			projController.setup(x => x.readPublishProfile(TypeMoq.It.isAny())).returns(() => new Promise((resolve) => {
+			projController.setup(x => x.readPublishProfile(TypeMoq.It.isAny())).returns(() => {
 				holler = profileHoller;
-				resolve({
-					databaseName: '',
-					sqlCmdVariables: {}
-				});
-			}));
+				return new Promise((resolve) =>
+					resolve({
+						databaseName: '',
+						sqlCmdVariables: {}
+					}));
+			});
 
 			projController.setup(x => x.executionCallback(TypeMoq.It.isAny(), TypeMoq.It.is((_): _ is IGenerateScriptSettings => true))).returns(() => {
 				holler = generateHoller;

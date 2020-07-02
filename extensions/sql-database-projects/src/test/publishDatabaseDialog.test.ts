@@ -22,7 +22,7 @@ import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSet
 
 let testContext: TestContext;
 
-describe('Publish Database Dialog', () => {
+describe.skip('Publish Database Dialog', () => {
 	before(async function (): Promise<void> {
 		await templates.loadTemplates(path.join(__dirname, '..', '..', 'resources', 'templates'));
 		await baselines.loadBaselines();
