@@ -470,6 +470,7 @@ suite('Test class NotebookEditor:', () => {
 			notebookFindModel['_findMatches'] = findMatches;
 			notebookFindModel['_findArray'] = findMatches.map(x => x?.range);
 			await notebookEditor['_onFindStateChange'](findReplaceStateChangedEvent);
+			notebookEditor['_finder'].getDomNode().style.visibility = visibility;
 			notebookFindModelMock.verify(x => x.find(
 				TypeMoq.It.isAnyString(),
 				TypeMoq.It.isAny(),
