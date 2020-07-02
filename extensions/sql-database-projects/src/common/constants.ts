@@ -21,6 +21,7 @@ export const msdb = 'msdb';
 export const msdbDacpac = 'msdb.dacpac';
 export const MicrosoftDatatoolsSchemaSqlSql = 'Microsoft.Data.Tools.Schema.Sql.Sql';
 export const databaseSchemaProvider = 'DatabaseSchemaProvider';
+export const openFileCommand = 'revealFileInOS';
 
 // UI Strings
 
