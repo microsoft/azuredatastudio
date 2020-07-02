@@ -1,5 +1,5 @@
 parameters:
-  extensions: []
+  extensionsToUnitTest: []
 
 steps:
   - script: |
@@ -129,7 +129,7 @@ steps:
     displayName: Run integration tests (Electron)
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
-  - ${{each extension in parameters.extensions}}:
+  - ${{each extension in parameters.extensionsToUnitTest}}:
     - script: |
         set -e
         APP_ROOT=$(agent.builddirectory)/azuredatastudio-linux-x64

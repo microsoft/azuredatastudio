@@ -20,7 +20,7 @@ const extensionList = [
 	//'mssql',
 	'notebook',
 	'resource-deployment',
-	'machine-learning-services',
+	'machine-learning',
 	'sql-database-projects'];
 
 let argv = require('yargs')
