@@ -140,7 +140,7 @@ suite('ConnectionDialogService tests', () => {
 
 	test('openDialogAndWait should return a deferred promise when called', () => {
 		let connectionParams = <INewConnectionParams>{
-			connectionType: ConnectionType.default,
+			connectionType: ConnectionType.editor,
 			input: <IConnectableInput>{
 				uri: 'test_uri',
 				onConnectStart: undefined,
@@ -154,6 +154,7 @@ suite('ConnectionDialogService tests', () => {
 			providers: ['MSSQL']
 		};
 		let connectionProfile = createConnectionProfile('test_id');
+		connectionProfile.providerName = undefined;
 
 		let providerNameToDisplayMap = { 'MSSQL': 'Mock SQL Server' };
 		mockConnectionManagementService.setup(x => x.getUniqueConnectionProvidersByNameMap(TypeMoq.It.isAny())).returns(() => {
