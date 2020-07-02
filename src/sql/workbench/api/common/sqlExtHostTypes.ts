@@ -397,7 +397,6 @@ export interface ToolbarLayout {
 }
 
 export class TreeComponentItem extends vsExtTypes.TreeItem {
-	label?: string;
 	checked?: boolean;
 }
 
@@ -411,7 +410,6 @@ export enum AzureResource {
 }
 
 export class TreeItem extends vsExtTypes.TreeItem {
-	label?: string;
 	payload?: IConnectionProfile;
 	providerHandle?: string;
 }

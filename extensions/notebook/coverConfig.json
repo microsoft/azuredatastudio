@@ -6,7 +6,9 @@
 		"**/integrationTest/**",
 		"**/node_modules/**",
 		"**/test/**",
-		"extension.js"
+		"extension.js",
+		"common/apiWrapper.js",
+		"common/localizedConstants.js"
 	],
 	"reports": [
 		"cobertura",

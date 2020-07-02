@@ -7,12 +7,10 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as loc from '../../../localizedConstants';
 import { DashboardPage } from '../../components/dashboardPage';
-import { IconPathHelper, cssStyles, ResourceType } from '../../../constants';
-import { ControllerModel, Registration } from '../../../models/controllerModel';
-import { getAzurecoreApi, promptForResourceDeletion, getDatabaseStateDisplayText } from '../../../common/utils';
-import { MiaaModel, DatabaseModel } from '../../../models/miaaModel';
-import { HybridSqlNsNameGetResponse } from '../../../controller/generated/v1/model/hybridSqlNsNameGetResponse';
-import { EndpointModel } from '../../../controller/generated/v1/api';
+import { IconPathHelper, cssStyles, ResourceType, Endpoints } from '../../../constants';
+import { ControllerModel } from '../../../models/controllerModel';
+import { promptForResourceDeletion, getDatabaseStateDisplayText } from '../../../common/utils';
+import { MiaaModel } from '../../../models/miaaModel';
 
 export class MiaaDashboardOverviewPage extends DashboardPage {
 
@@ -41,14 +39,10 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		super(modelView);
 		this._instanceProperties.miaaAdmin = this._miaaModel.username || this._instanceProperties.miaaAdmin;
 		this.disposables.push(
-			this._controllerModel.onRegistrationsUpdated((_: Registration[]) => {
-				this.eventuallyRunOnInitialized(() => {
-					this.handleRegistrationsUpdated().catch(e => console.log(e));
-				});
-			}),
-			this._controllerModel.onEndpointsUpdated(endpoints => this.eventuallyRunOnInitialized(() => this.handleEndpointsUpdated(endpoints))),
-			this._miaaModel.onStatusUpdated(status => this.eventuallyRunOnInitialized(() => this.handleMiaaStatusUpdated(status))),
-			this._miaaModel.onDatabasesUpdated(databases => this.eventuallyRunOnInitialized(() => this.handleDatabasesUpdated(databases)))
+			this._controllerModel.onRegistrationsUpdated(() => this.handleRegistrationsUpdated()),
+			this._controllerModel.onEndpointsUpdated(() => this.eventuallyRunOnInitialized(() => this.handleEndpointsUpdated())),
+			this._miaaModel.onStatusUpdated(() => this.eventuallyRunOnInitialized(() => this.handleMiaaStatusUpdated())),
+			this._miaaModel.onDatabasesUpdated(() => this.eventuallyRunOnInitialized(() => this.handleDatabasesUpdated()))
 		);
 	}
 
@@ -69,25 +63,64 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 	}
 
 	public get container(): azdata.Component {
+		// Create loaded components
+		this._propertiesContainer = this.modelView.modelBuilder.propertiesContainer().component();
+		this._propertiesLoading = this.modelView.modelBuilder.loadingComponent().component();
 
+		this._kibanaLink = this.modelView.modelBuilder.hyperlink().component();
+		this._kibanaLoading = this.modelView.modelBuilder.loadingComponent().component();
+
+		this._grafanaLink = this.modelView.modelBuilder.hyperlink().component();
+		this._grafanaLoading = this.modelView.modelBuilder.loadingComponent().component();
+
+		this._databasesTableLoading = this.modelView.modelBuilder.loadingComponent().component();
+		this._databasesTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
+			width: '100%',
+			columns: [
+				{
+					displayName: loc.name,
+					valueType: azdata.DeclarativeDataType.string,
+					isReadOnly: true,
+					width: '80%',
+					headerCssStyles: cssStyles.tableHeader,
+					rowCssStyles: cssStyles.tableRow
+				},
+				{
+					displayName: loc.status,
+					valueType: azdata.DeclarativeDataType.string,
+					isReadOnly: true,
+					width: '20%',
+					headerCssStyles: cssStyles.tableHeader,
+					rowCssStyles: cssStyles.tableRow
+				}
+			],
+			data: []
+		}).component();
+
+		// Update loaded components with data
+		this.handleRegistrationsUpdated();
+		this.handleMiaaStatusUpdated();
+		this.handleEndpointsUpdated();
+		this.handleDatabasesUpdated();
+
+		// Assign the loading component after it has data
+		this._propertiesLoading.component = this._propertiesContainer;
+		this._kibanaLoading.component = this._kibanaLink;
+		this._grafanaLoading.component = this._grafanaLink;
+		this._databasesTableLoading.component = this._databasesTable;
+
+		// Assemble the container
 		const rootContainer = this.modelView.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
 			.withProperties({ CSSStyles: { 'margin': '18px' } })
 			.component();
 
 		// Properties
-		this._propertiesContainer = this.modelView.modelBuilder.propertiesContainer().component();
-		this._propertiesLoading = this.modelView.modelBuilder.loadingComponent().withItem(this._propertiesContainer).component();
 		rootContainer.addItem(this._propertiesLoading, { CSSStyles: cssStyles.text });
 
 		// Service endpoints
 		const titleCSS = { ...cssStyles.title, 'margin-block-start': '2em', 'margin-block-end': '0' };
 		rootContainer.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.serviceEndpoints, CSSStyles: titleCSS }).component());
-
-		this._kibanaLink = this.modelView.modelBuilder.hyperlink().component();
-		this._grafanaLink = this.modelView.modelBuilder.hyperlink().component();
-		this._kibanaLoading = this.modelView.modelBuilder.loadingComponent().withItem(this._kibanaLink).component();
-		this._grafanaLoading = this.modelView.modelBuilder.loadingComponent().withItem(this._grafanaLink).component();
 
 		const endpointsTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
 			width: '100%',
@@ -132,30 +165,6 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 
 		// Databases
 		rootContainer.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.databases, CSSStyles: titleCSS }).component());
-		this._databasesTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
-			width: '100%',
-			columns: [
-				{
-					displayName: loc.name,
-					valueType: azdata.DeclarativeDataType.string,
-					isReadOnly: true,
-					width: '80%',
-					headerCssStyles: cssStyles.tableHeader,
-					rowCssStyles: cssStyles.tableRow
-				},
-				{
-					displayName: loc.status,
-					valueType: azdata.DeclarativeDataType.string,
-					isReadOnly: true,
-					width: '20%',
-					headerCssStyles: cssStyles.tableHeader,
-					rowCssStyles: cssStyles.tableRow
-				}
-			],
-			data: []
-		}).component();
-
-		this._databasesTableLoading = this.modelView.modelBuilder.loadingComponent().withItem(this._databasesTable).component();
 		rootContainer.addItem(this._databasesTableLoading, { CSSStyles: { 'margin-bottom': '20px' } });
 
 		this.initialized = true;
@@ -230,12 +239,12 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		).component();
 	}
 
-	private async handleRegistrationsUpdated(): Promise<void> {
+	private handleRegistrationsUpdated(): void {
 		const reg = this._controllerModel.getRegistration(ResourceType.sqlManagedInstances, this._miaaModel.info.namespace, this._miaaModel.info.name);
 		if (reg) {
 			this._instanceProperties.resourceGroup = reg.resourceGroupName || '-';
 			this._instanceProperties.dataController = this._controllerModel.controllerRegistration?.instanceName || '-';
-			this._instanceProperties.region = (await getAzurecoreApi()).getRegionDisplayName(reg.location);
+			this._instanceProperties.region = reg.region || '-';
 			this._instanceProperties.subscriptionId = reg.subscriptionId || '-';
 			this._instanceProperties.vCores = reg.vCores || '';
 			this._instanceProperties.host = reg.externalEndpoint || '-';
@@ -243,31 +252,34 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		}
 	}
 
-	private async handleMiaaStatusUpdated(status: HybridSqlNsNameGetResponse | undefined): Promise<void> {
-		this._instanceProperties.status = status?.status || '-';
+	private handleMiaaStatusUpdated(): void {
+		this._instanceProperties.status = this._miaaModel.status;
 		this.refreshDisplayedProperties();
 	}
 
-	private handleEndpointsUpdated(endpoints: EndpointModel[]): void {
+	private handleEndpointsUpdated(): void {
+		const kibanaEndpoint = this._controllerModel.getEndpoint(Endpoints.logsui);
 		const kibanaQuery = `kubernetes_namespace:"${this._miaaModel.info.namespace}" and instance_name :"${this._miaaModel.info.name}"`;
-		const kibanaUrl = `${endpoints.find(e => e.name === 'logsui')?.endpoint}/app/kibana#/discover?_a=(query:(language:kuery,query:'${kibanaQuery}'))`;
+		const kibanaUrl = kibanaEndpoint ? `${kibanaEndpoint.endpoint}/app/kibana#/discover?_a=(query:(language:kuery,query:'${kibanaQuery}'))` : '';
 		this._kibanaLink.label = kibanaUrl;
 		this._kibanaLink.url = kibanaUrl;
 
-		const grafanaUrl = `${endpoints.find(e => e.name === 'metricsui')?.endpoint}/d/wZx3OUdmz/azure-sql-db-managed-instance-metrics?var-hostname=${this._miaaModel.info.name}-0`;
+		const grafanaEndpoint = this._controllerModel.getEndpoint(Endpoints.metricsui);
+		const grafanaQuery = `var-hostname=${this._miaaModel.info.name}-0`;
+		const grafanaUrl = grafanaEndpoint ? `${grafanaEndpoint.endpoint}/d/wZx3OUdmz/azure-sql-db-managed-instance-metrics?${grafanaQuery}` : '';
 		this._grafanaLink.label = grafanaUrl;
 		this._grafanaLink.url = grafanaUrl;
 
-		this._kibanaLoading!.loading = false;
-		this._grafanaLoading!.loading = false;
+		this._kibanaLoading!.loading = !this._controllerModel.endpointsLastUpdated;
+		this._grafanaLoading!.loading = !this._controllerModel.endpointsLastUpdated;
 	}
 
-	private handleDatabasesUpdated(databases: DatabaseModel[]): void {
+	private handleDatabasesUpdated(): void {
 		// If we were able to get the databases it means we have a good connection so update the username too
 		this._instanceProperties.miaaAdmin = this._miaaModel.username || this._instanceProperties.miaaAdmin;
 		this.refreshDisplayedProperties();
-		this._databasesTable.data = databases.map(d => [d.name, getDatabaseStateDisplayText(d.status)]);
-		this._databasesTableLoading.loading = false;
+		this._databasesTable.data = this._miaaModel.databases.map(d => [d.name, getDatabaseStateDisplayText(d.status)]);
+		this._databasesTableLoading.loading = !this._miaaModel.databasesLastUpdated;
 	}
 
 	private refreshDisplayedProperties(): void {
@@ -306,7 +318,9 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 			}
 		];
 
-		this._propertiesLoading.loading = false;
+		this._propertiesLoading.loading =
+			!this._controllerModel.registrationsLastUpdated &&
+			!this._miaaModel.statusLastUpdated &&
+			!this._miaaModel.databasesLastUpdated;
 	}
-
 }

@@ -561,10 +561,10 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				CardType: sqlExtHostTypes.CardType,
 				Orientation: sqlExtHostTypes.Orientation,
 				SqlThemeIcon: sqlExtHostTypes.SqlThemeIcon,
-				TreeComponentItem: sqlExtHostTypes.TreeComponentItem,
+				TreeComponentItem: sqlExtHostTypes.TreeComponentItem as any, // work around
 				nb: nb,
 				AzureResource: sqlExtHostTypes.AzureResource,
-				TreeItem: sqlExtHostTypes.TreeItem,
+				TreeItem: sqlExtHostTypes.TreeItem as any, // work around
 				extensions: extensions,
 				ColumnType: sqlExtHostTypes.ColumnType,
 				ActionOnCellCheckboxCheck: sqlExtHostTypes.ActionOnCellCheckboxCheck,

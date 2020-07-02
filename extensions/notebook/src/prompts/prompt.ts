@@ -4,6 +4,7 @@
 // License: https://github.com/DonJayamanne/bowerVSCode/blob/master/LICENSE
 
 import { InputBoxOptions, QuickPickOptions } from 'vscode';
+import { ApiWrapper } from '../common/apiWrapper';
 
 abstract class Prompt {
 
@@ -15,7 +16,7 @@ abstract class Prompt {
 		this._ignoreFocusOut = ignoreFocusOut ? ignoreFocusOut : false;
 	}
 
-	public abstract render(): any;
+	public abstract render(apiWrapper: ApiWrapper): any;
 
 	protected get defaultQuickPickOptions(): QuickPickOptions {
 		return {
