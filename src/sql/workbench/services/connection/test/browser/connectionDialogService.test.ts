@@ -138,7 +138,7 @@ suite('ConnectionDialogService tests', () => {
 		return testHandleDefaultOnConnectUri(false);
 	});
 
-	test('openDialogAndWait should return a deferred promise when called', () => {
+	test('openDialogAndWait should return a deferred promise when called', async () => {
 		let connectionParams = <INewConnectionParams>{
 			connectionType: ConnectionType.editor,
 			input: <IConnectableInput>{
@@ -180,11 +180,29 @@ suite('ConnectionDialogService tests', () => {
 
 		/* handleDefaultOnConnect should reset connection and resolve properly
 		Also openDialogAndWait returns the connection profile passed in */
-		let thenable: Thenable<void> = (connectionDialogService as any).handleDefaultOnConnect(connectionParams, connectionProfile);
-		return thenable.then(() => {
-			return connectionPromise.then(e => {
-				assert.equal(e, connectionProfile);
-			});
-		});
+		(connectionDialogService as any).handleDefaultOnConnect(connectionParams, connectionProfile);
+		let result = await connectionPromise;
+		assert.equal(result, connectionProfile);
+	});
+
+	test('handleOnConnect does something', () => {
+		let connectionParams = <INewConnectionParams>{
+			connectionType: ConnectionType.editor,
+			input: <IConnectableInput>{
+				uri: 'test_uri',
+				onConnectStart: undefined,
+				onConnectSuccess: undefined,
+				onConnectReject: undefined,
+				onDisconnect: undefined,
+				onConnectCanceled: undefined
+			},
+			runQueryOnCompletion: undefined,
+			querySelection: undefined,
+			providers: ['MSSQL']
+		};
+		let connectionProfile = createConnectionProfile('test_id');
+		assert(connectionProfile);
+		assert(connectionParams);
+		//(connectionDialogService as any).handleOnConnect(connectionParams, connectionProfile);
 	});
 });

@@ -112,12 +112,11 @@ suite('ConnectionDialogWidget tests', () => {
 		connectionDialogWidget.onInitDialog(() => {
 			called = true;
 		});
-		return connectionDialogWidget.open(true).then(() => {
-			called = false;
-			return connectionDialogWidget.open(false).then(() => {
-				assert(called);
-			});
-		});
+		await connectionDialogWidget.open(true);
+		assert(called);
+		called = false;
+		await connectionDialogWidget.open(false);
+		assert(called);
 	});
 
 	test('get set tests for connectButtonState and databaseDropdownExpanded', () => {
