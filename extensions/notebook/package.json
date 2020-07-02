@@ -312,7 +312,7 @@
         },
         {
           "command": "jupyter.cmd.managePackages",
-          "when": "!notebook:runningOnSAW"
+          "when": "false"
         },
         {
           "command": "books.sqlserver2019",
