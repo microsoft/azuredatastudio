@@ -42,13 +42,13 @@ jobs:
     vmImage: 'Ubuntu-16.04'
   variables:
     - template: ./sql-variables.yml
-  parameters:
-    extensions: variables.extensions
   container: linux-x64
   dependsOn:
   - Compile
   steps:
   - template: linux/sql-product-build-linux.yml
+    parameters:
+      extensions: variables.extensions
   timeoutInMinutes: 70
 
 - job: LinuxWeb
