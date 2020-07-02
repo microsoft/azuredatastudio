@@ -18,7 +18,6 @@ import { EditOperation } from 'vs/editor/common/core/editOperation';
 import { Position } from 'vs/editor/common/core/position';
 
 
-// Action to decorate markdown
 export class TransformMarkdownAction extends Action {
 
 	constructor(
@@ -68,9 +67,7 @@ export class MarkdownTextTransformer {
 				endLineNumber: selection.startLineNumber
 			};
 
-			// Get text to insert before selection
 			let beginInsertedText = getStartTextToInsert(type);
-			// Get text to insert after selection
 			let endInsertedText = getEndTextToInsert(type);
 
 			let endRange: IRange = {
@@ -224,7 +221,9 @@ export class MarkdownTextTransformer {
 			const replacementTokens = getStartTextToReplace(markdownButtonType);
 			const operations: IIdentifiedSingleEditOperation[] = [];
 			// Create the edit operation to insert the text for every line
-			for (let i = selection.startLineNumber; i <= selection.endLineNumber; i++) {
+			for (const i = selection.startLineNumber; i <= selection.endLineNumber; i++) {
+				// If this token is part of a group then see if the text for this line
+				// starts with any of the tokens in that group
 				const replacementText = replacementTokens.find(t => {
 					const text = editorModel.getValueInRange({
 						startColumn: 1,
@@ -320,14 +319,29 @@ export enum MarkdownButtonType {
 	PARAGRAPH
 }
 
-// If EVERY_LINE, we need to insert markdown at each line (e.g. lists)
-// WRAPPED_ABOVE_AND_BELOW puts text above and below the highlighted text
+/**
+ * The line types
+ */
 export enum MarkdownLineType {
+	/**
+	 * Applies to the beginning and end lines only of a selection
+	 */
 	BEGIN_AND_END_LINES,
+	/**
+	 * Applies to every line within the selection
+	 */
 	EVERY_LINE,
+	/**
+	 * Applies to the entire selection by wrapping it in new text above and below
+	 */
 	WRAPPED_ABOVE_AND_BELOW
 }
 
+/**
+ * Groups of related types - these will be considered as the same when doing a transformation
+ * so will replace each other instead of just prepending new text if the line already starts
+ * with the text for another member of the group.
+ */
 const buttonTypeGroups = [
 	[
 		MarkdownButtonType.HEADING1,
@@ -337,6 +351,11 @@ const buttonTypeGroups = [
 	]
 ];
 
+/**
+ * Gets the list of strings that will be replaced if a selection starts
+ * with the specified text
+ * @param type The button type action being ran
+ */
 function getStartTextToReplace(type: MarkdownButtonType): string[] {
 	for (const group of buttonTypeGroups) {
 		const item = group.find(value => value === type);
@@ -347,6 +366,10 @@ function getStartTextToReplace(type: MarkdownButtonType): string[] {
 	return [];
 }
 
+/**
+ * Gets the text to insert at the beginning of the selection
+ * @param type The button type action being ran
+ */
 function getStartTextToInsert(type: MarkdownButtonType): string {
 	switch (type) {
 		case MarkdownButtonType.BOLD:
@@ -378,6 +401,10 @@ function getStartTextToInsert(type: MarkdownButtonType): string {
 	}
 }
 
+/**
+ * Gets the text to insert at the end of the selection
+ * @param type The button type action being ran
+ */
 function getEndTextToInsert(type: MarkdownButtonType): string {
 	switch (type) {
 		case MarkdownButtonType.BOLD:
@@ -404,6 +431,10 @@ function getEndTextToInsert(type: MarkdownButtonType): string {
 	}
 }
 
+/**
+ * Gets the line type that a button type applies to
+ * @param type The button type action being ran
+ */
 function getMarkdownLineType(type: MarkdownButtonType): MarkdownLineType {
 	switch (type) {
 		case MarkdownButtonType.CODE:
@@ -420,8 +451,13 @@ function getMarkdownLineType(type: MarkdownButtonType): MarkdownLineType {
 	}
 }
 
-// Get offset from the end column for editor selection
-// For example, when inserting a link, we want to have the cursor be present in between the brackets
+
+/**
+ * Get offset from the end column for editor selection
+ * For example, when inserting a link, we want to have the cursor be present in between the brackets
+ * @param type
+ * @param nothingSelected
+ */
 function getColumnOffsetForSelection(type: MarkdownButtonType, nothingSelected: boolean): number {
 	if (nothingSelected) {
 		return 0;
