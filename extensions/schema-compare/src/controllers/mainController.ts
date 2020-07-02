@@ -30,7 +30,7 @@ export default class MainController implements Disposable {
 	}
 
 	private initializeSchemaCompareDialog(): void {
-		this.apiWrapper.registerCommand('schemaCompare.start', (context: any) => this.schemaCompareMainWindow.start(context));
+		this.apiWrapper.registerCommand('schemaCompare.start', async (context: any) => { await this.schemaCompareMainWindow.start(context); });
 	}
 
 	public dispose(): void {

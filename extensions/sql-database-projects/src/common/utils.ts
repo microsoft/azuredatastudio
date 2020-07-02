@@ -59,16 +59,9 @@ export async function exists(path: string): Promise<boolean> {
 	try {
 		await fs.access(path);
 		return true;
-	} catch (e) {
+	} catch {
 		return false;
 	}
-}
-
-/**
- * Convert camelCase input to PascalCase
- */
-export function toPascalCase(input: string): string {
-	return input.charAt(0).toUpperCase() + input.substr(1);
 }
 
 /**
@@ -95,6 +88,16 @@ export function getSafeWindowsPath(filePath: string): string {
 export function getSafeNonWindowsPath(filePath: string): string {
 	filePath = filePath.split('\\').join('/').split('"').join('');
 	return '"' + filePath + '"';
+}
+
+/**
+ * Get safe relative path for Windows and non-Windows Platform
+ * This is needed to read sqlproj entried created on SSDT and opened in MAC
+ * '/' in tree is recognized all platforms but "\\" only by windows
+ */
+export function getPlatformSafeFileEntryPath(filePath: string): string {
+	const parts = filePath.split('\\');
+	return parts.join('/');
 }
 
 /**

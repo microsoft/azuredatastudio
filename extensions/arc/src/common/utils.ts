@@ -8,6 +8,8 @@ import * as azurecore from '../../../azurecore/src/azurecore';
 import * as loc from '../localizedConstants';
 import { IconPathHelper, IconPath, ResourceType, Connectionmode } from '../constants';
 
+export class UserCancelledError extends Error { }
+
 /**
  * Converts the resource type name into the localized Display Name for that type.
  * @param resourceType The resource type name to convert
@@ -91,7 +93,7 @@ export function getDatabaseStateDisplayText(state: string): string {
 			return loc.restoring;
 		case 'RECOVERING':
 			return loc.recovering;
-		case 'RECOVERY PENDING	':
+		case 'RECOVERY PENDING':
 			return loc.recoveryPending;
 		case 'SUSPECT':
 			return loc.suspect;
@@ -100,13 +102,6 @@ export function getDatabaseStateDisplayText(state: string): string {
 	}
 	return state;
 }
-
-/**
- * Opens an input box prompting the user to enter in the name of a resource to delete
- * @param namespace The namespace of the resource to delete
- * @param name The name of the resource to delete
- * @returns Promise resolving to true if the user confirmed the name, false if the input box was closed for any other reason
- */
 
 /**
  * Opens an input box prompting and validating the user's input.
@@ -171,9 +166,9 @@ export async function promptForResourceDeletion(namespace: string, name: string)
  * Opens an input box prompting the user to enter and confirm a password
  * @param validate A function that accepts the password and returns an error message if it's invalid
  * @returns Promise resolving to the password if it passed validation,
- * or false if the input box was closed for any other reason
+ * or undefined if the input box was closed for any other reason
  */
-export async function promptAndConfirmPassword(validate: (input: string) => string): Promise<string | false> {
+export async function promptAndConfirmPassword(validate: (input: string) => string): Promise<string | undefined> {
 	const title = loc.resetPassword;
 	const options: vscode.InputBoxOptions = {
 		prompt: loc.enterNewPassword,
@@ -188,7 +183,7 @@ export async function promptAndConfirmPassword(validate: (input: string) => stri
 		return promptInputBox(title, options);
 	}
 
-	return false;
+	return undefined;
 }
 
 /**
@@ -196,7 +191,7 @@ export async function promptAndConfirmPassword(validate: (input: string) => stri
  * @param error The error object
  */
 export function getErrorMessage(error: any): string {
-	if (error?.body?.reason) {
+	if (error.body?.reason) {
 		// For HTTP Errors with a body pull out the reason message since that's usually the most helpful
 		return error.body.reason;
 	} else if (error.message) {

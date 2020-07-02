@@ -3,14 +3,15 @@
 Microsoft SQL Server Database Projects for Azure Data Studio includes:
 
 ## Database Projects
-The Database Projects extension provides a way to design, edit, and deploy schemas for SQL databases from a source controlled project.
+The Database Projects extension provides a way to design, edit, and publish schemas for SQL databases from a source controlled project.
 
 Please report issues and feature requests [here.](https://github.com/microsoft/azuredatastudio/issues)
 
 ## Getting Started with Database Projects
 
-* Create a new database project by selecting File -> New Database Project, going to the Database Projects viewlet under Explorer, or by searching for **New Database Project** in the command palette (Ctrl + Shift + P).
-* Existing database projects can be opened from File -> Open File, or via **Open Database Project** in the command palette.
+* Create a new database project by going to the **Projects** viewlet under Explorer, or by searching for **New Database Project** in the command palette.
+* Existing database projects can be opened via **Open Database Project** in the command palette.
+* Start from an existing database by using **Import New Database Project** from the command palette.
 
 ## Code of Conduct
 

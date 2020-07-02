@@ -32,7 +32,7 @@ export const newDatabaseProjectName = localize('newDatabaseProjectName', "New da
 export const sqlDatabaseProject = localize('sqlDatabaseProject', "SQL database project");
 export const yesString = localize('yesString', "Yes");
 export const noString = localize('noString', "No");
-export const extractTargetInput = localize('extractTargetInput', "Target for extraction:");
+export const extractTargetInput = localize('extractTargetInput', "Select folder structure for SQL files");
 export const selectString = localize('selectString', "Select");
 export const addDatabaseReferenceInput = localize('addDatabaseReferenceInput', "Add database reference for:");
 export const systemDatabaseReferenceInput = localize('systemDatabaseReferenceInput', "System Database:");
@@ -43,17 +43,24 @@ export const databaseReferenceDatabaseName = localize('databaseReferenceDatabase
 export const dacpacFiles = localize('dacpacFiles', "dacpac Files");
 export const publishSettingsFiles = localize('publishSettingsFiles', "Publish Settings File");
 export const systemDatabase = localize('systemDatabase', "System Database");
+export const file = localize('file', "File");
+export const flat = localize('flat', "Flat");
+export const objectType = localize('objectType', "Object Type");
+export const schema = localize('schema', "Schema");
+export const schemaObjectType = localize('schemaObjectType', "Schema/Object Type");
 export function newObjectNamePrompt(objectType: string) { return localize('newObjectNamePrompt', 'New {0} name:', objectType); }
+export function deleteConfirmation(toDelete: string) { return localize('deleteConfirmation', "Are you sure you want to delete {0}?", toDelete); }
+export function deleteConfirmationContents(toDelete: string) { return localize('deleteConfirmationContents', "Are you sure you want to delete {0} and all of its contents?", toDelete); }
 
-// Deploy dialog strings
 
-export const deployDialogName = localize('deployDialogName', "Publish Database");
-export const deployDialogOkButtonText = localize('deployDialogOkButtonText', "Publish");
+// Publish dialog strings
+
+export const publishDialogName = localize('publishDialogName', "Publish Database");
+export const publishDialogOkButtonText = localize('publishDialogOkButtonText', "Publish");
 export const cancelButtonText = localize('cancelButtonText', "Cancel");
 export const generateScriptButtonText = localize('generateScriptButtonText', "Generate Script");
 export const targetDatabaseSettings = localize('targetDatabaseSettings', "Target Database Settings");
 export const databaseNameLabel = localize('databaseNameLabel', "Database");
-export const deployScriptNameLabel = localize('deployScriptName', "Publish script name");
 export const targetConnectionLabel = localize('targetConnectionLabel', "Target Connection");
 export const editConnectionButtonText = localize('editConnectionButtonText', "Edit");
 export const clearButtonText = localize('clearButtonText', "Clear");
@@ -93,15 +100,29 @@ export const databaseNameRequired = localize('databaseNameRequired', "Database n
 export const invalidDataSchemaProvider = localize('invalidDataSchemaProvider', "Invalid DSP in .sqlproj file");
 export const invalidDatabaseReference = localize('invalidDatabaseReference', "Invalid database reference in .sqlproj file");
 export const databaseSelectionRequired = localize('databaseSelectionRequired', "Database selection is required to import a project");
-export const unableToCreateDeploymentConnection = localize('unableToCreateDeploymentConnection', "Unable to construct connection");
+export const unableToCreatePublishConnection = localize('unableToCreatePublishConnection', "Unable to construct connection");
+export const databaseReferenceAlreadyExists = localize('databaseReferenceAlreadyExists', "A reference to this database already exists in this project");
 export function projectAlreadyOpened(path: string) { return localize('projectAlreadyOpened', "Project '{0}' is already opened.", path); }
 export function projectAlreadyExists(name: string, path: string) { return localize('projectAlreadyExists', "A project named {0} already exists in {1}.", name, path); }
 export function noFileExist(fileName: string) { return localize('noFileExist', "File {0} doesn't exist", fileName); }
 export function cannotResolvePath(path: string) { return localize('cannotResolvePath', "Cannot resolve path {0}", path); }
+export function fileAlreadyExists(filename: string) { return localize('fileAlreadyExists', "A file with the name '{0}' already exists on disk at this location. Please choose another name.", filename); }
+export function folderAlreadyExists(filename: string) { return localize('folderAlreadyExists', "A folder with the name '{0}' already exists on disk at this location. Please choose another name.", filename); }
+export function invalidInput(input: string) { return localize('invalidInput', "Invalid input: {0}", input); }
 
 export function mssqlNotFound(mssqlConfigDir: string) { return localize('mssqlNotFound', "Could not get mssql extension's install location at {0}", mssqlConfigDir); }
 export function projBuildFailed(errorMessage: string) { return localize('projBuildFailed', "Build failed. Check output pane for more details. {0}", errorMessage); }
 export function unexpectedProjectContext(uri: string) { return localize('unexpectedProjectContext', "Unable to establish project context.  Command invoked from unexpected location: {0}", uri); }
+export function unableToPerformAction(action: string, uri: string) { return localize('unableToPerformAction', "Unable to locate '{0}' target: '{1}'", action, uri); }
+export function unableToFindObject(path: string, objType: string) { return localize('unableToFindFile', "Unable to find {1} with path '{0}'", path, objType); }
+
+// Action types
+export const deleteAction = localize('deleteAction', 'Delete');
+export const excludeAction = localize('excludeAction', 'Exclude');
+
+// Project tree object types
+export const fileObject = localize('fileObject', "file");
+export const folderObject = localize('folderObject', "folder");
 
 // Project script types
 
@@ -133,6 +154,7 @@ export const ArtifactReference = 'ArtifactReference';
 export const SuppressMissingDependenciesErrors = 'SuppressMissingDependenciesErrors';
 export const DatabaseVariableLiteralValue = 'DatabaseVariableLiteralValue';
 export const DSP = 'DSP';
+export const Properties = 'Properties';
 
 // SqlProj File targets
 export const NetCoreTargets = '$(NETCoreTargetsPath)\\Microsoft.Data.Tools.Schema.SqlTasks.targets';

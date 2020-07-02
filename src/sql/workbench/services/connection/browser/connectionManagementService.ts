@@ -22,7 +22,6 @@ import { ConnectionGlobalStatus } from 'sql/workbench/services/connection/browse
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
 import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/browser/angularEventingService';
-import * as QueryConstants from 'sql/platform/query/common/constants';
 import { Deferred } from 'sql/base/common/promise';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IAccountManagementService, AzureResource } from 'sql/platform/accounts/common/interfaces';
@@ -52,6 +51,7 @@ import { assign } from 'vs/base/common/objects';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
+import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -1339,7 +1339,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	public getTabColorForUri(uri: string): string {
-		if (WorkbenchUtils.getSqlConfigValue<string>(this._configurationService, 'tabColorMode') === QueryConstants.tabColorModeOff) {
+		if (this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').tabColorMode === 'off') {
 			return undefined;
 		}
 		let connectionProfile = this.getConnectionProfile(uri);
@@ -1357,10 +1357,15 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this._connectionStore.getProfileWithoutPassword(originalProfile);
 	}
 
-	public getActiveConnectionCredentials(profileId: string): { [name: string]: string } {
+	public async getConnectionCredentials(profileId: string): Promise<{ [name: string]: string }> {
 		let profile = find(this.getActiveConnections(), connectionProfile => connectionProfile.id === profileId);
 		if (!profile) {
-			return undefined;
+			// Couldn't find an active profile so try all profiles now - fetching the password if we found one
+			profile = find(this.getConnections(), connectionProfile => connectionProfile.id === profileId);
+			if (!profile) {
+				return undefined;
+			}
+			await this.addSavedPassword(profile);
 		}
 
 		// Find the password option for the connection provider

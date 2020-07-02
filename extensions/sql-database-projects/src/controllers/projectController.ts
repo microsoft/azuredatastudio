@@ -6,6 +6,7 @@
 import * as constants from '../common/constants';
 import * as dataSources from '../models/dataSources/dataSources';
 import * as mssql from '../../../mssql';
+import * as os from 'os';
 import * as path from 'path';
 import * as utils from '../common/utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
@@ -16,26 +17,16 @@ import { Uri, QuickPickItem, WorkspaceFolder, extensions, Extension } from 'vsco
 import { IConnectionProfile, TaskExecutionMode } from 'azdata';
 import { promises as fs } from 'fs';
 import { ApiWrapper } from '../common/apiWrapper';
-import { DeployDatabaseDialog } from '../dialogs/deployDatabaseDialog';
-import { Project, DatabaseReferenceLocation, SystemDatabase, TargetPlatform } from '../models/project';
+import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
+import { Project, DatabaseReferenceLocation, SystemDatabase, TargetPlatform, ProjectEntry, reservedProjectFolders } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
-import { FolderNode } from '../models/tree/fileFolderTreeItem';
-import { IDeploymentProfile, IGenerateScriptProfile, PublishSettings } from '../models/IDeploymentProfile';
+import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
+import { IPublishSettings, IGenerateScriptSettings, PublishProfile } from '../models/IPublishSettings';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { ImportDataModel } from '../models/api/import';
 import { NetCoreTool, DotNetCommandOptions } from '../tools/netcoreTool';
 import { BuildHelper } from '../tools/buildHelper';
-
-// TODO: use string enums
-export enum ExtractTarget {
-	dacpac = 0,
-	file = 1,
-	flat = 2,
-	objectType = 3,
-	schema = 4,
-	schemaObjectType = 5
-}
 
 /**
  * Controller for managing project lifecycle
@@ -85,11 +76,20 @@ export class ProjectsController {
 				// TODO: prompt to create new datasources.json; for now, swallow
 			}
 			else {
+				this.projects = this.projects.filter((e) => { return e !== newProject; });
 				throw err;
 			}
 		}
 
-		this.refreshProjectsTree();
+		try {
+			this.refreshProjectsTree();
+			await this.focusProject(newProject);
+		}
+		catch (err) {
+			// if the project didnt load - remove it from the list of open projects
+			this.projects = this.projects.filter((e) => { return e !== newProject; });
+			throw err;
+		}
 
 		return newProject;
 	}
@@ -101,7 +101,13 @@ export class ProjectsController {
 		}
 	}
 
-	public async createNewProject(newProjName: string, folderUri: Uri, projectGuid?: string): Promise<string> {
+	/**
+	 * Creates a new folder with the project name in the specified location, and places the new .sqlproj inside it
+	 * @param newProjName
+	 * @param folderUri
+	 * @param projectGuid
+	 */
+	public async createNewProject(newProjName: string, folderUri: Uri, makeOwnFolder: boolean, projectGuid?: string): Promise<string> {
 		if (projectGuid && !UUID.isUUID(projectGuid)) {
 			throw new Error(`Specified GUID is invalid: '${projectGuid}'`);
 		}
@@ -119,7 +125,7 @@ export class ProjectsController {
 			newProjFileName += constants.sqlprojExtension;
 		}
 
-		const newProjFilePath = path.join(folderUri.fsPath, newProjFileName);
+		const newProjFilePath = makeOwnFolder ? path.join(folderUri.fsPath, path.parse(newProjFileName).name, newProjFileName) : path.join(folderUri.fsPath, newProjFileName);
 
 		let fileExists = false;
 		try {
@@ -139,7 +145,7 @@ export class ProjectsController {
 	}
 
 	public closeProject(treeNode: BaseProjectTreeItem) {
-		const project = ProjectsController.getProjectFromContext(treeNode);
+		const project = this.getProjectFromContext(treeNode);
 		this.projects = this.projects.filter((e) => { return e !== project; });
 		this.refreshProjectsTree();
 	}
@@ -157,7 +163,7 @@ export class ProjectsController {
 	 */
 	public async buildProject(project: Project): Promise<string>;
 	public async buildProject(context: Project | BaseProjectTreeItem): Promise<string | undefined> {
-		const project: Project = ProjectsController.getProjectFromContext(context);
+		const project: Project = this.getProjectFromContext(context);
 
 		// Check mssql extension for project dlls (tracking issue #10273)
 		await this.buildHelper.createBuildDirFolder();
@@ -179,46 +185,50 @@ export class ProjectsController {
 	}
 
 	/**
-	 * Builds and deploys a project
+	 * Builds and publishes a project
 	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
 	 */
-	public async deployProject(treeNode: BaseProjectTreeItem): Promise<DeployDatabaseDialog>;
+	public publishProject(treeNode: BaseProjectTreeItem): PublishDatabaseDialog;
 	/**
-	 * Builds and deploys a project
-	 * @param project Project to be built and deployed
+	 * Builds and publishes a project
+	 * @param project Project to be built and published
 	 */
-	public async deployProject(project: Project): Promise<DeployDatabaseDialog>;
-	public async deployProject(context: Project | BaseProjectTreeItem): Promise<DeployDatabaseDialog> {
-		const project: Project = ProjectsController.getProjectFromContext(context);
-		let deployDatabaseDialog = this.getDeployDialog(project);
+	public publishProject(project: Project): PublishDatabaseDialog;
+	public publishProject(context: Project | BaseProjectTreeItem): PublishDatabaseDialog {
+		const project: Project = this.getProjectFromContext(context);
+		let publishDatabaseDialog = this.getPublishDialog(project);
 
-		deployDatabaseDialog.deploy = async (proj, prof) => await this.executionCallback(proj, prof);
-		deployDatabaseDialog.generateScript = async (proj, prof) => await this.executionCallback(proj, prof);
-		deployDatabaseDialog.readPublishProfile = async (profileUri) => await this.readPublishProfile(profileUri);
+		publishDatabaseDialog.publish = async (proj, prof) => await this.executionCallback(proj, prof);
+		publishDatabaseDialog.generateScript = async (proj, prof) => await this.executionCallback(proj, prof);
+		publishDatabaseDialog.readPublishProfile = async (profileUri) => await this.readPublishProfile(profileUri);
 
-		deployDatabaseDialog.openDialog();
+		publishDatabaseDialog.openDialog();
 
-		return deployDatabaseDialog;
+		return publishDatabaseDialog;
 	}
 
-	public async executionCallback(project: Project, profile: IDeploymentProfile | IGenerateScriptProfile): Promise<mssql.DacFxResult | undefined> {
+	public async executionCallback(project: Project, settings: IPublishSettings | IGenerateScriptSettings): Promise<mssql.DacFxResult | undefined> {
 		const dacpacPath = await this.buildProject(project);
 
 		if (!dacpacPath) {
 			return undefined; // buildProject() handles displaying the error
 		}
 
-		const dacFxService = await ProjectsController.getDaxFxService();
+		// copy dacpac to temp location before publishing
+		const tempPath = path.join(os.tmpdir(), `${path.parse(dacpacPath).name}_${new Date().getTime()}${constants.sqlprojExtension}`);
+		await fs.copyFile(dacpacPath, tempPath);
 
-		if ((<IDeploymentProfile>profile).upgradeExisting) {
-			return await dacFxService.deployDacpac(dacpacPath, profile.databaseName, (<IDeploymentProfile>profile).upgradeExisting, profile.connectionUri, TaskExecutionMode.execute, profile.sqlCmdVariables);
+		const dacFxService = await this.getDaxFxService();
+
+		if ((<IPublishSettings>settings).upgradeExisting) {
+			return await dacFxService.deployDacpac(tempPath, settings.databaseName, (<IPublishSettings>settings).upgradeExisting, settings.connectionUri, TaskExecutionMode.execute, settings.sqlCmdVariables);
 		}
 		else {
-			return await dacFxService.generateDeployScript(dacpacPath, profile.databaseName, profile.connectionUri, TaskExecutionMode.script, profile.sqlCmdVariables);
+			return await dacFxService.generateDeployScript(tempPath, settings.databaseName, settings.connectionUri, TaskExecutionMode.script, settings.sqlCmdVariables);
 		}
 	}
 
-	public async readPublishProfile(profileUri: Uri): Promise<PublishSettings> {
+	public async readPublishProfile(profileUri: Uri): Promise<PublishProfile> {
 		const profileText = await fs.readFile(profileUri.fsPath);
 		const profileXmlDoc = new xmldom.DOMParser().parseFromString(profileText.toString());
 
@@ -246,7 +256,7 @@ export class ProjectsController {
 			await this.buildProject(treeNode);
 
 			// start schema compare with the dacpac produced from build
-			const project = ProjectsController.getProjectFromContext(treeNode);
+			const project = this.getProjectFromContext(treeNode);
 			const dacpacPath = path.join(project.projectFolderPath, 'bin', 'Debug', `${project.projectFileName}.dacpac`);
 
 			// check that dacpac exists
@@ -261,7 +271,7 @@ export class ProjectsController {
 	}
 
 	public async addFolderPrompt(treeNode: BaseProjectTreeItem) {
-		const project = ProjectsController.getProjectFromContext(treeNode);
+		const project = this.getProjectFromContext(treeNode);
 		const newFolderName = await this.promptForNewObjectName(new templates.ProjectScriptType(templates.folder, constants.folderFriendlyName, ''), project);
 
 		if (!newFolderName) {
@@ -270,13 +280,30 @@ export class ProjectsController {
 
 		const relativeFolderPath = path.join(this.getRelativePath(treeNode), newFolderName);
 
-		await project.addFolderItem(relativeFolderPath);
+		try {
+			// check if folder already exists or is a reserved folder
+			const absoluteFolderPath = path.join(project.projectFolderPath, relativeFolderPath);
+			const folderExists = await utils.exists(absoluteFolderPath);
 
-		this.refreshProjectsTree();
+			if (folderExists || this.isReservedFolder(absoluteFolderPath, project.projectFolderPath)) {
+				throw new Error(constants.folderAlreadyExists(path.parse(absoluteFolderPath).name));
+			}
+
+			await project.addFolderItem(relativeFolderPath);
+			this.refreshProjectsTree();
+		} catch (err) {
+			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
+		}
+	}
+
+	public isReservedFolder(absoluteFolderPath: string, projectFolderPath: string): boolean {
+		const sameName = reservedProjectFolders.find(f => f === path.parse(absoluteFolderPath).name) !== undefined;
+		const sameLocation = path.parse(absoluteFolderPath).dir === projectFolderPath;
+		return sameName && sameLocation;
 	}
 
 	public async addItemPromptFromNode(treeNode: BaseProjectTreeItem, itemTypeName?: string) {
-		await this.addItemPrompt(ProjectsController.getProjectFromContext(treeNode), this.getRelativePath(treeNode), itemTypeName);
+		await this.addItemPrompt(this.getProjectFromContext(treeNode), this.getRelativePath(treeNode), itemTypeName);
 	}
 
 	public async addItemPrompt(project: Project, relativePath: string, itemTypeName?: string) {
@@ -305,24 +332,80 @@ export class ProjectsController {
 			return; // user cancelled
 		}
 
-		// TODO: file already exists?
-
 		const newFileText = this.macroExpansion(itemType.templateScript, { 'OBJECT_NAME': itemObjectName });
 		const relativeFilePath = path.join(relativePath, itemObjectName + constants.sqlFileExtension);
 
-		const newEntry = await project.addScriptItem(relativeFilePath, newFileText);
+		try {
+			// check if file already exists
+			const absoluteFilePath = path.join(project.projectFolderPath, relativeFilePath);
+			const fileExists = await utils.exists(absoluteFilePath);
 
-		this.apiWrapper.executeCommand('vscode.open', newEntry.fsUri);
+			if (fileExists) {
+				throw new Error(constants.fileAlreadyExists(path.parse(absoluteFilePath).name));
+			}
+
+			const newEntry = await project.addScriptItem(relativeFilePath, newFileText);
+
+			this.apiWrapper.executeCommand('vscode.open', newEntry.fsUri);
+
+			this.refreshProjectsTree();
+		} catch (err) {
+			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
+		}
+	}
+
+	public async exclude(context: FileNode | FolderNode): Promise<void> {
+		const project = this.getProjectFromContext(context);
+
+		const fileEntry = this.getProjectEntry(project, context);
+
+		if (fileEntry) {
+			await project.exclude(fileEntry);
+		} else {
+			this.apiWrapper.showErrorMessage(constants.unableToPerformAction(constants.excludeAction, context.uri.path));
+		}
 
 		this.refreshProjectsTree();
 	}
 
+	public async delete(context: BaseProjectTreeItem): Promise<void> {
+		const project = this.getProjectFromContext(context);
+
+		const confirmationPrompt = context instanceof FolderNode ? constants.deleteConfirmationContents(context.friendlyName) : constants.deleteConfirmation(context.friendlyName);
+		const response = await this.apiWrapper.showWarningMessageOptions(confirmationPrompt, { modal: true }, constants.yesString);
+
+		if (response !== constants.yesString) {
+			return;
+		}
+
+		let success = false;
+
+		if (context instanceof FileNode || FolderNode) {
+			const fileEntry = this.getProjectEntry(project, context);
+
+			if (fileEntry) {
+				await project.deleteFileFolder(fileEntry);
+				success = true;
+			}
+		}
+
+		if (success) {
+			this.refreshProjectsTree();
+		} else {
+			this.apiWrapper.showErrorMessage(constants.unableToPerformAction(constants.deleteAction, context.uri.path));
+		}
+	}
+
+	private getProjectEntry(project: Project, context: BaseProjectTreeItem): ProjectEntry | undefined {
+		return project.files.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(context.root.uri, context.uri)));
+	}
+
 	/**
 	 * Adds a database reference to the project
-	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
+	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project
 	 */
 	public async addDatabaseReference(context: Project | BaseProjectTreeItem): Promise<void> {
-		const project = ProjectsController.getProjectFromContext(context);
+		const project = this.getProjectFromContext(context);
 
 		try {
 			// choose if reference is to master or a dacpac
@@ -461,8 +544,8 @@ export class ProjectsController {
 
 	//#region Helper methods
 
-	public getDeployDialog(project: Project): DeployDatabaseDialog {
-		return new DeployDatabaseDialog(this.apiWrapper, project);
+	public getPublishDialog(project: Project): PublishDatabaseDialog {
+		return new PublishDatabaseDialog(this.apiWrapper, project);
 	}
 
 	public async updateProjectForRoundTrip(project: Project) {
@@ -484,7 +567,7 @@ export class ProjectsController {
 		}
 	}
 
-	private static getProjectFromContext(context: Project | BaseProjectTreeItem) {
+	private getProjectFromContext(context: Project | BaseProjectTreeItem) {
 		if (context instanceof Project) {
 			return context;
 		}
@@ -497,7 +580,7 @@ export class ProjectsController {
 		}
 	}
 
-	private static async getDaxFxService(): Promise<mssql.IDacFxService> {
+	public async getDaxFxService(): Promise<mssql.IDacFxService> {
 		const ext: Extension<any> = extensions.getExtension(mssql.extension.name)!;
 
 		await ext.activate();
@@ -552,13 +635,24 @@ export class ProjectsController {
 				model.database = profile.databaseName;
 			}
 			else {
-				const connectionId = (await this.apiWrapper.openConnectionDialog()).connectionId;
+				const connection = await this.apiWrapper.openConnectionDialog();
+				if (!connection) {
+					return;
+				}
 
-				const databaseList = await this.apiWrapper.listDatabases(connectionId);
-				const database = (await this.apiWrapper.showQuickPick(databaseList.map(dbName => { return { label: dbName }; })))?.label;
+				const connectionId = connection.connectionId;
+				let database;
 
-				if (!database) {
-					throw new Error(constants.databaseSelectionRequired);
+				// use database that was connected to if it isn't master
+				if (connection.options['database'] && connection.options['database'] !== constants.master) {
+					database = connection.options['database'];
+				} else {
+					const databaseList = await this.apiWrapper.listDatabases(connectionId);
+					database = (await this.apiWrapper.showQuickPick(databaseList.map(dbName => { return { label: dbName }; })))?.label;
+
+					if (!database) {
+						throw new Error(constants.databaseSelectionRequired);
+					}
 				}
 
 				model.serverId = connectionId;
@@ -607,7 +701,7 @@ export class ProjectsController {
 			// TODO: Check for success
 
 			// Create and open new project
-			const newProjFilePath = await this.createNewProject(newProjName as string, newProjFolderUri as Uri);
+			const newProjFilePath = await this.createNewProject(newProjName as string, newProjFolderUri as Uri, false);
 			const project = await this.openProject(Uri.file(newProjFilePath));
 
 			//Create a list of all the files and directories to be added to project
@@ -618,8 +712,6 @@ export class ProjectsController {
 
 			//Refresh project to show the added files
 			this.refreshProjectsTree();
-
-			await this.focusProject(project);
 		}
 		catch (err) {
 			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
@@ -640,12 +732,12 @@ export class ProjectsController {
 	private mapExtractTargetEnum(inputTarget: any): mssql.ExtractTarget {
 		if (inputTarget) {
 			switch (inputTarget) {
-				case 'File': return mssql.ExtractTarget['file'];
-				case 'Flat': return mssql.ExtractTarget['flat'];
-				case 'ObjectType': return mssql.ExtractTarget['objectType'];
-				case 'Schema': return mssql.ExtractTarget['schema'];
-				case 'SchemaObjectType': return mssql.ExtractTarget['schemaObjectType'];
-				default: throw new Error(`Invalid input: ${inputTarget}`);
+				case constants.file: return mssql.ExtractTarget['file'];
+				case constants.flat: return mssql.ExtractTarget['flat'];
+				case constants.objectType: return mssql.ExtractTarget['objectType'];
+				case constants.schema: return mssql.ExtractTarget['schema'];
+				case constants.schemaObjectType: return mssql.ExtractTarget['schemaObjectType'];
+				default: throw new Error(constants.invalidInput(inputTarget));
 			}
 		} else {
 			throw new Error(constants.extractTargetRequired);
@@ -657,14 +749,11 @@ export class ProjectsController {
 
 		let extractTargetOptions: QuickPickItem[] = [];
 
-		let keys: string[] = Object.keys(ExtractTarget).filter(k => typeof ExtractTarget[k as any] === 'number');
+		let keys = [constants.file, constants.flat, constants.objectType, constants.schema, constants.schemaObjectType];
 
 		// TODO: Create a wrapper class to handle the mapping
 		keys.forEach((targetOption: string) => {
-			if (targetOption !== 'dacpac') {		//Do not present the option to create Dacpac
-				let pascalCaseTargetOption: string = utils.toPascalCase(targetOption);	// for better readability
-				extractTargetOptions.push({ label: pascalCaseTargetOption });
-			}
+			extractTargetOptions.push({ label: targetOption });
 		});
 
 		let input = await this.apiWrapper.showQuickPick(extractTargetOptions, {
