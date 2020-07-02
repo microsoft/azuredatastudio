@@ -40,15 +40,13 @@ jobs:
   condition: and(succeeded(), eq(variables['VSCODE_BUILD_LINUX'], 'true'))
   pool:
     vmImage: 'Ubuntu-16.04'
-  variables:
-    - template: ./sql-variables.yml
   container: linux-x64
   dependsOn:
   - Compile
   steps:
   - template: linux/sql-product-build-linux.yml
     parameters:
-      extensions: variables.extensions
+      extensions: ["admin-tool-ext-win","agent","azurecore","cms","dacpac","import","schema-compare","notebook","resource-deployment","machine-learning-services","sql-database-projects"]
   timeoutInMinutes: 70
 
 - job: LinuxWeb
