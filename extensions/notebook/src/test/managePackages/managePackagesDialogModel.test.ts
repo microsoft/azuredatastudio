@@ -11,15 +11,19 @@ import { LocalPipPackageManageProvider } from '../../jupyter/localPipPackageMana
 
 import { ManagePackagesDialogModel } from '../../dialog/managePackages/managePackagesDialogModel';
 import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
+import { ApiWrapper } from '../../common/apiWrapper';
 
 interface TestContext {
 	provider: IPackageManageProvider;
 }
 
 describe('Manage Packages', () => {
+	let mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
+	mockApiWrapper.setup(w => w.setCommandContext(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()));
+
 	let jupyterServerInstallation: JupyterServerInstallation;
 	beforeEach(() => {
-		jupyterServerInstallation = new JupyterServerInstallation(undefined, undefined, undefined);
+		jupyterServerInstallation = new JupyterServerInstallation(undefined, undefined, mockApiWrapper.object);
 	});
 
 	it('Should throw exception given undefined providers', async function (): Promise<void> {
