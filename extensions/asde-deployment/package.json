@@ -41,6 +41,10 @@
               {
                 "name": "remote",
                 "displayName": "%sql-edge-remote-display-name%"
+              },
+              {
+                "name": "azure",
+                "displayName": "%sql-edge-azure-display-name%"
               }
             ]
           }
@@ -255,6 +259,92 @@
             },
             "requiredTools": [],
             "when": "type=remote"
+          },
+          {
+            "dialog": {
+              "notebook": "%sql-edge-azure-notebook%",
+              "title": "%sql-edge-azure-title%",
+              "name": "sql-edge-azure-dialog",
+              "tabs": [
+                {
+                  "title": "",
+                  "sections": [
+                    {
+                      "title": "",
+                      "fields": [
+                        {
+                          "label": "%azure_subscription_id%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_SUBSCRIPTIONID",
+                          "type": "text",
+                          "required": true
+                        },
+                        {
+                          "label": "%azure_resource_group%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_RESOURCEGROUP",
+                          "type": "text",
+                          "required": true
+                        },
+                        {
+                          "label": "%azure_location%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_AZURE_LOCATION",
+                          "type": "text",
+                          "required": true
+                        },
+                        {
+                          "label": "%docker-sql-password-field%",
+                          "variableName": "AZDATA_NB_VAR_SA_PASSWORD",
+                          "type": "sql_password",
+                          "userName": "sa",
+                          "confirmationRequired": true,
+                          "confirmationLabel": "%docker-confirm-sql-password-field%",
+                          "defaultValue": "",
+                          "required": true
+                        },
+                        {
+                          "label": "%vm_admin%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_VM_ADMIN",
+                          "type": "text",
+                          "required": true
+                        },
+                        {
+                          "label": "%vm_password%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_VM_PASSWORD",
+                          "type": "password",
+                          "confirmationRequired": true,
+                          "confirmationLabel": "%vm_password_confirm%",
+                          "required": true
+                        },
+                        {
+                          "label": "%iot_device_id%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_DEVICE_ID",
+                          "type": "text",
+                          "required": true
+                        },
+                        {
+                          "label": "%dacpac_path%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_DACPAC_PATH",
+                          "type": "text",
+                          "required": true
+                        },
+                        {
+                          "label": "%docker-sql-port-field%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_SQL_PORT",
+                          "type": "number",
+                          "defaultValue": 31433,
+                          "required": true
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "requiredTools": [
+              {
+                "name": "azure-cli"
+              }
+            ],
+            "when": "type=azure"
           }
         ],
         "agreement": {
