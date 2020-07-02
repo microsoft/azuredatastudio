@@ -49,6 +49,30 @@ suite('ConnectionDialogService tests', () => {
 		testinstantiationService.stub(IInstantiationService, mockInstantationService.object);
 		let errorMessageService = getMockErrorMessageService();
 		let capabilitiesService = new TestCapabilitiesService();
+		mockConnectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Strict,
+			undefined, // connection store
+			undefined, // connection status manager
+			undefined, // connection dialog service
+			testinstantiationService, // instantiation service
+			undefined, // editor service
+			undefined, // telemetry service
+			undefined, // configuration service
+			new TestCapabilitiesService());
+		testinstantiationService.stub(IConnectionManagementService, mockConnectionManagementService.object);
+		connectionDialogService = new ConnectionDialogService(testinstantiationService, capabilitiesService, errorMessageService.object,
+			new TestConfigurationService(), new BrowserClipboardService(), NullCommandService, new NullLogService());
+		(connectionDialogService as any)._connectionManagementService = mockConnectionManagementService.object;
+
+		let providerDisplayNames = ['Mock SQL Server'];
+		let providerNameToDisplayMap = { 'MSSQL': 'Mock SQL Server' };
+		mockConnectionManagementService.setup(x => x.getUniqueConnectionProvidersByNameMap(TypeMoq.It.isAny())).returns(() => {
+			return getUniqueConnectionProvidersByNameMap(providerNameToDisplayMap);
+		});
+		testConnectionDialog = new TestConnectionDialogWidget(providerDisplayNames, providerNameToDisplayMap['MSSQL'], providerNameToDisplayMap, testinstantiationService, mockConnectionManagementService.object, new TestThemeService(), new TestLayoutService(), new NullAdsTelemetryService(), new MockContextKeyService(), undefined, undefined, undefined, new NullLogService(), undefined);
+		testConnectionDialog.render();
+		testConnectionDialog.renderBody(DOM.createStyleSheet());
+		(connectionDialogService as any)._connectionDialog = testConnectionDialog;
+
 		capabilitiesService.capabilities[Constants.mssqlProviderName] = {
 			connection: {
 				providerId: Constants.mssqlProviderName,
@@ -74,25 +98,7 @@ suite('ConnectionDialogService tests', () => {
 				]
 			}
 		};
-		mockConnectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Strict,
-			undefined, // connection store
-			undefined, // connection status manager
-			undefined, // connection dialog service
-			testinstantiationService, // instantiation service
-			undefined, // editor service
-			undefined, // telemetry service
-			undefined, // configuration service
-			new TestCapabilitiesService());
-		testinstantiationService.stub(IConnectionManagementService, mockConnectionManagementService.object);
-		connectionDialogService = new ConnectionDialogService(testinstantiationService, capabilitiesService, errorMessageService.object,
-			new TestConfigurationService(), new BrowserClipboardService(), NullCommandService, new NullLogService());
-		(connectionDialogService as any)._connectionManagementService = mockConnectionManagementService.object;
-		let providerDisplayNames = ['Mock SQL Server'];
-		let providerNameToDisplayMap = { 'MSSQL': 'Mock SQL Server' };
-		testConnectionDialog = new TestConnectionDialogWidget(providerDisplayNames, providerNameToDisplayMap['MSSQL'], providerNameToDisplayMap, testinstantiationService, mockConnectionManagementService.object, new TestThemeService(), new TestLayoutService(), new NullAdsTelemetryService(), new MockContextKeyService(), undefined, undefined, undefined, new NullLogService(), undefined);
-		testConnectionDialog.render();
-		testConnectionDialog.renderBody(DOM.createStyleSheet());
-		(connectionDialogService as any)._connectionDialog = testConnectionDialog;
+		capabilitiesService.fireCapabilitiesRegistered(Constants.mssqlProviderName, capabilitiesService.capabilities[Constants.mssqlProviderName]);
 	});
 
 	function getMockErrorMessageService(): TypeMoq.Mock<TestErrorMessageService> {
@@ -156,10 +162,6 @@ suite('ConnectionDialogService tests', () => {
 		let connectionProfile = createConnectionProfile('test_id');
 		connectionProfile.providerName = undefined;
 
-		let providerNameToDisplayMap = { 'MSSQL': 'Mock SQL Server' };
-		mockConnectionManagementService.setup(x => x.getUniqueConnectionProvidersByNameMap(TypeMoq.It.isAny())).returns(() => {
-			return getUniqueConnectionProvidersByNameMap(providerNameToDisplayMap);
-		});
 		mockConnectionManagementService.setup(x => x.getRecentConnections(TypeMoq.It.isValue(connectionParams.providers))).returns(() => {
 			return [connectionProfile];
 		});
@@ -186,23 +188,6 @@ suite('ConnectionDialogService tests', () => {
 	});
 
 	test('handleOnConnect does something', () => {
-		let connectionParams = <INewConnectionParams>{
-			connectionType: ConnectionType.editor,
-			input: <IConnectableInput>{
-				uri: 'test_uri',
-				onConnectStart: undefined,
-				onConnectSuccess: undefined,
-				onConnectReject: undefined,
-				onDisconnect: undefined,
-				onConnectCanceled: undefined
-			},
-			runQueryOnCompletion: undefined,
-			querySelection: undefined,
-			providers: ['MSSQL']
-		};
-		let connectionProfile = createConnectionProfile('test_id');
-		assert(connectionProfile);
-		assert(connectionParams);
-		//(connectionDialogService as any).handleOnConnect(connectionParams, connectionProfile);
+		assert(true);
 	});
 });
