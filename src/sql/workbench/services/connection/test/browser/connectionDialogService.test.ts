@@ -169,13 +169,13 @@ suite('ConnectionDialogService tests', () => {
 		});
 		// connectionResult is used for testing showErrorDialog.
 		let connectionResult: IConnectionResult = {
-			connected: true,
+			connected: false,
 			errorMessage: 'test_error',
 			errorCode: -1,
 			callStack: 'testCallStack'
 		};
 		// promise will never resolve, must get it directly and compare its string value.
-		let connectionPromise = connectionDialogService.openDialogAndWait(mockConnectionManagementService.object, connectionParams, connectionProfile, connectionResult, true);
+		let connectionPromise = connectionDialogService.openDialogAndWait(mockConnectionManagementService.object, connectionParams, connectionProfile, connectionResult, false);
 		assert.equal('[object Promise]', connectionPromise.toString());
 	});
 });
