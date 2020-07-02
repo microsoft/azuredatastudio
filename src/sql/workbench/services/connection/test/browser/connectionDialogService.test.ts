@@ -136,7 +136,7 @@ suite('ConnectionDialogService tests', () => {
 		return testHandleDefaultOnConnectUri(false);
 	});
 
-	test('showDialog should complete successfully when given valid parameters', () => {
+	test('openDialogAndWait should return a promise when called', () => {
 		let connectionParams = <INewConnectionParams>{
 			connectionType: ConnectionType.default,
 			input: <IConnectableInput>{
@@ -165,8 +165,7 @@ suite('ConnectionDialogService tests', () => {
 		mockInstantationService.setup(x => x.createInstance(TypeMoq.It.isValue(ConnectionWidget), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAnyString())).returns(() => {
 			return mockWidget.object;
 		});
-		return connectionDialogService.showDialog(mockConnectionManagementService.object, connectionParams, connectionProfile, undefined).then(() => {
-			assert(true);
-		});
+		let connectionPromise = connectionDialogService.openDialogAndWait(mockConnectionManagementService.object, connectionParams, connectionProfile, undefined);
+		assert.equal('[object Promise]', connectionPromise.toString());
 	});
 });
