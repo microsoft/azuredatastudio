@@ -614,7 +614,7 @@ function processFilePickerField(context: FieldContext): FilePickerInputs {
 	});
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, { component: input });
 	input.enabled = false;
-	const browseFileButton = context.view!.modelBuilder.button().withProperties({ label: loc.browse }).component();
+	const browseFileButton = context.view!.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: loc.browse, width: '100px' }).component();
 	context.onNewDisposableCreated(browseFileButton.onDidClick(async () => {
 		let fileUris = await vscode.window.showOpenDialog({
 			canSelectFiles: true,
@@ -623,7 +623,7 @@ function processFilePickerField(context: FieldContext): FilePickerInputs {
 			defaultUri: vscode.Uri.file(path.dirname(input.value || os_homedir())),
 			openLabel: loc.select,
 			filters: {
-				'Config Files': ['*'],
+				'File': ['*'],
 			}
 		});
 		if (!fileUris || fileUris.length === 0) {
@@ -632,7 +632,7 @@ function processFilePickerField(context: FieldContext): FilePickerInputs {
 		let fileUri = fileUris[0];
 		input.value = fileUri.fsPath;
 	}));
-	context.fieldInfo.labelPosition = LabelPosition.Left;
+	context.fieldInfo.labelPosition = context.fieldInfo.labelPosition;
 	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo, [browseFileButton]);
 	return { input: input, browseButton: browseFileButton };
 }
@@ -685,6 +685,7 @@ async function processKubeConfigClusterPickerField(context: KubeClusterContextFi
 			inputWidth: context.fieldInfo.inputWidth,
 			labelWidth: context.fieldInfo.labelWidth,
 			variableName: kubeConfigFilePathVariableName,
+			labelPosition: LabelPosition.Left,
 			required: true
 		}
 	};
@@ -946,11 +947,45 @@ async function handleSelectedSubscriptionChanged(context: AzureAccountFieldConte
  * Map of known Azure location friendly names to their internal names
  */
 const knownAzureLocationNameMappings = new Map<string, string>([
+	['Australia Central', azurecore.AzureRegion.australiacentral],
+	['Australia Central 2', azurecore.AzureRegion.australiacentral2],
+	['Australia East', azurecore.AzureRegion.australiaeast],
+	['Australia Southeast', azurecore.AzureRegion.australiasoutheast],
+	['Brazil South', azurecore.AzureRegion.brazilsouth],
+	['Canada Central', azurecore.AzureRegion.canadacentral],
+	['Canada East', azurecore.AzureRegion.canadaeast],
+	['Central India', azurecore.AzureRegion.centralindia],
+	['Central US', azurecore.AzureRegion.centralus],
+	['East Asia', azurecore.AzureRegion.eastasia],
 	['East US', azurecore.AzureRegion.eastus],
 	['East US 2', azurecore.AzureRegion.eastus2],
-	['Central US', azurecore.AzureRegion.centralus],
+	['France Central', azurecore.AzureRegion.francecentral],
+	['France South', azurecore.AzureRegion.francesouth],
+	['Germany North', azurecore.AzureRegion.germanynorth],
+	['Germany West Central', azurecore.AzureRegion.germanywestcentral],
+	['Japan East', azurecore.AzureRegion.japaneast],
+	['Japan West', azurecore.AzureRegion.japanwest],
+	['Korea Central', azurecore.AzureRegion.koreacentral],
+	['Korea South', azurecore.AzureRegion.koreasouth],
+	['North Central US', azurecore.AzureRegion.northcentralus],
+	['North Europe', azurecore.AzureRegion.northeurope],
+	['Norway East', azurecore.AzureRegion.norwayeast],
+	['Norway West', azurecore.AzureRegion.norwaywest],
+	['South Africa North', azurecore.AzureRegion.southafricanorth],
+	['South Africa West', azurecore.AzureRegion.southafricawest],
+	['South Central US', azurecore.AzureRegion.southcentralus],
+	['South East Asia', azurecore.AzureRegion.southeastasia],
+	['South India', azurecore.AzureRegion.southindia],
+	['Switzerland North', azurecore.AzureRegion.switzerlandnorth],
+	['Switzerland West', azurecore.AzureRegion.switzerlandwest],
+	['UAE Central', azurecore.AzureRegion.uaecentral],
+	['UAE North', azurecore.AzureRegion.uaenorth],
+	['UK South', azurecore.AzureRegion.uksouth],
+	['UK West', azurecore.AzureRegion.ukwest],
+	['West Central US', azurecore.AzureRegion.westcentralus],
 	['West Europe', azurecore.AzureRegion.westeurope],
-	['Southeast Asia', azurecore.AzureRegion.southeastasia],
+	['West India', azurecore.AzureRegion.westindia],
+	['West US', azurecore.AzureRegion.westus],
 	['West US 2', azurecore.AzureRegion.westus2]
 ]);
 
@@ -970,7 +1005,8 @@ function processAzureLocationsField(context: AzureLocationsFieldContext): azdata
 		editable: false,
 		required: context.fieldInfo.required,
 		label: loc.location,
-		values: context.fieldInfo.locations
+		values: context.fieldInfo.locations,
+		defaultValue: context.fieldInfo.defaultValue
 	});
 	locationDropdown.fireOnTextChange = true;
 	context.fieldInfo.subFields = context.fieldInfo.subFields || [];

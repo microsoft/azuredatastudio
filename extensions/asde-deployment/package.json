@@ -285,19 +285,45 @@
                           "required": true
                         },
                         {
+                          "type": "azure_locations",
                           "label": "%azure_location%",
-                          "variableName": "AZDATA_NB_VAR_ASDE_AZURE_LOCATION",
-                          "type": "text",
-                          "required": true
+                          "defaultValue": "West US",
+                          "required": true,
+                          "locationVariableName": "AZDATA_NB_VAR_ASDE_AZURE_LOCATION",
+                          "displayLocationVariableName": "AZDATA_NB_VAR_ASDE_AZURE_LOCATION_TEXT",
+                          "locations": [
+                            "Australia East",
+                            "Australia Southeast",
+                            "Brazil South",
+                            "Canada Central",
+                            "Canada East",
+                            "Central India",
+                            "Central US",
+                            "East Asia",
+                            "East US",
+                            "East US 2",
+                            "France Central",
+                            "Japan East",
+                            "Japan West",
+                            "Korea Central",
+                            "Korea South",
+                            "North Central US",
+                            "North Europe",
+                            "South Central US",
+                            "South India",
+                            "Southeast Asia",
+                            "UK South",
+                            "UK West",
+                            "West Central US",
+                            "West Europe",
+                            "West US",
+                            "West US 2"
+                          ]
                         },
                         {
-                          "label": "%docker-sql-password-field%",
-                          "variableName": "AZDATA_NB_VAR_SA_PASSWORD",
-                          "type": "sql_password",
-                          "userName": "sa",
-                          "confirmationRequired": true,
-                          "confirmationLabel": "%docker-confirm-sql-password-field%",
-                          "defaultValue": "",
+                          "label": "%iot_device_id%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_DEVICE_ID",
+                          "type": "text",
                           "required": true
                         },
                         {
@@ -315,15 +341,13 @@
                           "required": true
                         },
                         {
-                          "label": "%iot_device_id%",
-                          "variableName": "AZDATA_NB_VAR_ASDE_DEVICE_ID",
-                          "type": "text",
-                          "required": true
-                        },
-                        {
-                          "label": "%dacpac_path%",
-                          "variableName": "AZDATA_NB_VAR_ASDE_DACPAC_PATH",
-                          "type": "text",
+                          "label": "%docker-sql-password-field%",
+                          "variableName": "AZDATA_NB_VAR_SA_PASSWORD",
+                          "type": "sql_password",
+                          "userName": "sa",
+                          "confirmationRequired": true,
+                          "confirmationLabel": "%docker-confirm-sql-password-field%",
+                          "defaultValue": "",
                           "required": true
                         },
                         {
@@ -331,6 +355,12 @@
                           "variableName": "AZDATA_NB_VAR_ASDE_SQL_PORT",
                           "type": "number",
                           "defaultValue": 31433,
+                          "required": true
+                        },
+                        {
+                          "label": "%dacpac_path%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_DACPAC_PATH",
+                          "type": "file_picker",
                           "required": true
                         }
                       ]
