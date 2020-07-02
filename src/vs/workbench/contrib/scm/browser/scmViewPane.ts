@@ -79,6 +79,8 @@ import { Command } from 'vs/editor/common/modes';
 import { renderCodicons } from 'vs/base/common/codicons';
 import { ToolBar } from 'vs/base/browser/ui/toolbar/toolbar';
 import { AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
+import { domEvent } from 'vs/base/browser/event';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 
 type TreeElement = ISCMRepository | ISCMInput | ISCMResourceGroup | IResourceNode<ISCMResource, ISCMResourceGroup> | ISCMResource;
 
@@ -272,6 +274,7 @@ class InputRenderer implements ICompressibleTreeRenderer<ISCMInput, FuzzyScore, 
 	constructor(
 		private outerLayout: ISCMLayout,
 		private updateHeight: (input: ISCMInput, height: number) => void,
+		private focusTree: () => void,
 		@IInstantiationService private instantiationService: IInstantiationService,
 	) { }
 
@@ -279,10 +282,16 @@ class InputRenderer implements ICompressibleTreeRenderer<ISCMInput, FuzzyScore, 
 		// hack
 		addClass(container.parentElement!.parentElement!.querySelector('.monaco-tl-twistie')! as HTMLElement, 'force-no-twistie');
 
+		const disposables = new DisposableStore();
 		const inputElement = append(container, $('.scm-input'));
 		const inputWidget = this.instantiationService.createInstance(SCMInputWidget, inputElement);
+		disposables.add(inputWidget);
 
-		return { inputWidget, disposable: Disposable.None, templateDisposable: inputWidget };
+		const onKeyDown = Event.map(domEvent(container, 'keydown'), e => new StandardKeyboardEvent(e));
+		const onEscape = Event.filter(onKeyDown, e => e.keyCode === KeyCode.Escape);
+		disposables.add(onEscape(this.focusTree));
+
+		return { inputWidget, disposable: Disposable.None, templateDisposable: disposables };
 	}
 
 	renderElement(node: ITreeNode<ISCMInput, FuzzyScore>, index: number, templateData: InputTemplate): void {
@@ -304,22 +313,24 @@ class InputRenderer implements ICompressibleTreeRenderer<ISCMInput, FuzzyScore, 
 			this.contentHeights.set(input, contentHeight);
 
 			if (lastContentHeight !== contentHeight) {
-				if (lastContentHeight !== undefined) {
-					this.updateHeight(input, contentHeight + 10);
-					templateData.inputWidget.layout();
-				} else if (contentHeight !== InputRenderer.DEFAULT_HEIGHT) {
-					// first time render, we must rerender on the next stack frame
-					const timeout = setTimeout(() => {
-						this.updateHeight(input, contentHeight + 10);
-						templateData.inputWidget.layout();
-					});
-					disposables.add({ dispose: () => clearTimeout(timeout) });
-				}
+				this.updateHeight(input, contentHeight + 10);
+				templateData.inputWidget.layout();
 			}
 		};
 
-		disposables.add(templateData.inputWidget.onDidChangeContentHeight(onDidChangeContentHeight));
-		onDidChangeContentHeight();
+		const initialRender = () => {
+			disposables.add(templateData.inputWidget.onDidChangeContentHeight(onDidChangeContentHeight));
+			onDidChangeContentHeight();
+		};
+
+		const contentHeight = templateData.inputWidget.getContentHeight();
+
+		if (contentHeight !== InputRenderer.DEFAULT_HEIGHT) {
+			const timeout = setTimeout(initialRender, 0);
+			disposables.add({ dispose: () => clearTimeout(timeout) });
+		} else {
+			initialRender();
+		}
 
 		// Layout the editor whenever the outer layout happens
 		const layoutEditor = () => templateData.inputWidget.layout();
@@ -855,6 +866,7 @@ class ViewModel {
 	private visibilityDisposables = new DisposableStore();
 	private scrollTop: number | undefined;
 	private firstVisible = true;
+	private repositoryCollapseStates: Map<ISCMRepository, boolean> | undefined;
 	private disposables = new DisposableStore();
 
 	constructor(
@@ -950,6 +962,7 @@ class ViewModel {
 			this.visibilityDisposables = new DisposableStore();
 			this.repositories.onDidSplice(this.onDidSpliceRepositories, this, this.visibilityDisposables);
 			this.onDidSpliceRepositories({ start: 0, deleteCount: 0, toInsert: this.repositories.elements });
+			this.repositoryCollapseStates = undefined;
 
 			if (typeof this.scrollTop === 'number') {
 				this.tree.scrollTop = this.scrollTop;
@@ -959,6 +972,14 @@ class ViewModel {
 			this.editorService.onDidActiveEditorChange(this.onDidActiveEditorChange, this, this.visibilityDisposables);
 			this.onDidActiveEditorChange();
 		} else {
+			if (this.items.length > 1) {
+				this.repositoryCollapseStates = new Map();
+
+				for (const item of this.items) {
+					this.repositoryCollapseStates.set(item.element, this.tree.isCollapsed(item.element));
+				}
+			}
+
 			this.visibilityDisposables.dispose();
 			this.onDidSpliceRepositories({ start: 0, deleteCount: this.items.length, toInsert: [] });
 			this.scrollTop = this.tree.scrollTop;
@@ -988,7 +1009,8 @@ class ViewModel {
 				children.push(...item.groupItems.map(i => this.render(i)));
 			}
 
-			return { element: item.element, children, incompressible: true, collapsible: hasSomeChanges };
+			const collapsed = this.repositoryCollapseStates?.get(item.element) ?? false;
+			return { element: item.element, children, incompressible: true, collapsed, collapsible: hasSomeChanges };
 		} else {
 			const children = this.mode === ViewModelMode.List
 				? Iterable.map(item.resources, element => ({ element, incompressible: true }))
@@ -1528,7 +1550,7 @@ export class SCMViewPane extends ViewPane {
 
 		this._register(repositories.onDidSplice(() => this.updateActions()));
 
-		this.inputRenderer = this.instantiationService.createInstance(InputRenderer, this.layoutCache, (input, height) => this.tree.updateElementHeight(input, height));
+		this.inputRenderer = this.instantiationService.createInstance(InputRenderer, this.layoutCache, (input, height) => this.tree.updateElementHeight(input, height), () => this.tree.domFocus());
 		const delegate = new ProviderListDelegate(this.inputRenderer);
 
 		const actionViewItemProvider = (action: IAction) => this.getActionViewItem(action);
