@@ -1,7 +1,6 @@
 variables:
 - name: extensions
-  type: object
-  default:
+  value:
   - admin-tool-ext-win
   - agent
   - azurecore
