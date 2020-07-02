@@ -38,6 +38,16 @@ export class Project {
 	}
 
 	/**
+	 * Open and load a .sqlproj file
+	 */
+	public static async openProject(projectFilePath: string): Promise<Project> {
+		const proj = new Project(projectFilePath);
+		await proj.readProjFile();
+
+		return proj;
+	}
+
+	/**
 	 * Reads the project setting and contents from the file
 	 */
 	public async readProjFile() {

@@ -66,11 +66,11 @@ export class ProjectsController {
 			}
 		}
 
-		const newProject = new Project(projectFile.fsPath);
+		let newProject: Project;
 
 		try {
 			// Read project file
-			await newProject.readProjFile();
+			newProject = await Project.openProject(projectFile.fsPath);
 			this.projects.push(newProject);
 
 			// Update for round tripping as needed
@@ -79,29 +79,29 @@ export class ProjectsController {
 			// Read datasources.json (if present)
 			const dataSourcesFilePath = path.join(path.dirname(projectFile.fsPath), constants.dataSourcesFileName);
 
-			newProject.dataSources = await dataSources.load(dataSourcesFilePath);
-		}
-		catch (err) {
-			if (err instanceof dataSources.NoDataSourcesFileError) {
-				// TODO: prompt to create new datasources.json; for now, swallow
+			try {
+				newProject.dataSources = await dataSources.load(dataSourcesFilePath);
 			}
-			else {
-				this.projects = this.projects.filter((e) => { return e !== newProject; });
-				throw err;
+			catch (err) {
+				if (err instanceof dataSources.NoDataSourcesFileError) {
+					// TODO: prompt to create new datasources.json; for now, swallow
+				}
+				else {
+					throw err;
+				}
 			}
-		}
 
-		try {
 			this.refreshProjectsTree();
 			this.focusProject(newProject);
 		}
 		catch (err) {
 			// if the project didnt load - remove it from the list of open projects
 			this.projects = this.projects.filter((e) => { return e !== newProject; });
+
 			throw err;
 		}
 
-		return newProject;
+		return newProject!;
 	}
 
 	public async focusProject(project?: Project): Promise<void> {
@@ -615,44 +615,21 @@ export class ProjectsController {
 			}
 
 			model.projName = await this.getProjectName(model.database);
+			let newProjFolderUri = (await this.getFolderLocation()).fsPath;
 			model.extractTarget = await this.getExtractTarget();
 
-			// Get folder location for project creation
-			let newProjUri = await this.getFolderLocation(model.extractTarget);
+			const newProjFilePath = await this.createNewProject(model.projName, Uri.file(newProjFolderUri), true);
 
-			// Set project folder/file location
-			let newProjFolderUri;
-			if (model.extractTarget === mssql.ExtractTarget['file']) {
-				// Get folder info, if extractTarget = File
-				newProjFolderUri = Uri.file(path.dirname(newProjUri.fsPath));
-			} else {
-				newProjFolderUri = newProjUri;
-			}
-
-			await this.validateEmptyDir(newProjFolderUri.fsPath);
-
-			// TODO: what if the selected folder is outside the workspace?
-			model.filePath = newProjUri.fsPath;
-
-			//Set model version
+			model.filePath = path.dirname(newProjFilePath);
 			model.version = '1.0.0.0';
 
-			// Call ExtractAPI in DacFx Service
-			await this.importApiCall(model);
-			// TODO: Check for success
+			const project = await Project.openProject(newProjFilePath);
 
-			// Create and open new project
-			const newProjFilePath = await this.createNewProject(model.projName, newProjFolderUri as Uri, false);
-			const project = await this.openProject(Uri.file(newProjFilePath));
+			await this.importApiCall(model); // Call ExtractAPI in DacFx Service
+			let fileFolderList: string[] = await this.generateList(model.filePath); // Create a list of all the files and directories to be added to project
 
-			//Create a list of all the files and directories to be added to project
-			let fileFolderList: string[] = await this.generateList(model.filePath);
-
-			// Add generated file structure to the project
-			await project.addToProject(fileFolderList);
-
-			//Refresh project to show the added files
-			this.refreshProjectsTree();
+			await project.addToProject(fileFolderList); // Add generated file structure to the project
+			await this.openProject(Uri.file(newProjFilePath));
 		}
 		catch (err) {
 			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
@@ -702,11 +679,11 @@ export class ProjectsController {
 			value: `DatabaseProject${dbName}`
 		});
 
+		projName = projName?.trim();
+
 		if (!projName) {
 			throw new Error(constants.projectNameRequired);
 		}
-
-		projName = projName?.trim();
 
 		return projName;
 	}
@@ -752,49 +729,25 @@ export class ProjectsController {
 		return extractTarget;
 	}
 
-	private async getFolderLocation(extractTarget: mssql.ExtractTarget): Promise<Uri> {
-		let selectionResult;
-		let projUri;
+	private async getFolderLocation(): Promise<Uri> {
+		let projUri: Uri;
 
-		if (extractTarget !== mssql.ExtractTarget.file) {
-			selectionResult = await this.apiWrapper.showOpenDialog({
-				canSelectFiles: false,
-				canSelectFolders: true,
-				canSelectMany: false,
-				openLabel: constants.selectString,
-				defaultUri: this.apiWrapper.workspaceFolders() ? (this.apiWrapper.workspaceFolders() as WorkspaceFolder[])[0].uri : undefined
-			});
-			if (selectionResult) {
-				projUri = (selectionResult as Uri[])[0];
-			}
-		} else {
-			// Get filename
-			selectionResult = await this.apiWrapper.showSaveDialog(
-				{
-					defaultUri: this.apiWrapper.workspaceFolders() ? (this.apiWrapper.workspaceFolders() as WorkspaceFolder[])[0].uri : undefined,
-					saveLabel: constants.selectString,
-					filters: {
-						'SQL files': ['sql'],
-						'All files': ['*']
-					}
-				}
-			);
-			if (selectionResult) {
-				projUri = selectionResult as unknown as Uri;
-			}
+		const selectionResult = await this.apiWrapper.showOpenDialog({
+			canSelectFiles: false,
+			canSelectFolders: true,
+			canSelectMany: false,
+			openLabel: constants.selectString,
+			defaultUri: this.apiWrapper.workspaceFolders() ? (this.apiWrapper.workspaceFolders() as WorkspaceFolder[])[0].uri : undefined
+		});
+
+		if (selectionResult) {
+			projUri = (selectionResult as Uri[])[0];
 		}
-
-		if (!projUri) {
+		else {
 			throw new Error(constants.projectLocationRequired);
 		}
 
 		return projUri;
-	}
-
-	private async validateEmptyDir(newProjFolderUri: string): Promise<void> {
-		if (!((await fs.readdir(newProjFolderUri)).length === 0)) {
-			throw new Error(constants.projectLocationNotEmpty);
-		}
 	}
 
 	private async importApiCall(model: ImportDataModel): Promise<void> {
@@ -804,6 +757,8 @@ export class ProjectsController {
 		const ownerUri = await this.apiWrapper.getUriForConnection(model.serverId);
 
 		await service.importDatabaseProject(model.database, model.filePath, model.projName, model.version, ownerUri, model.extractTarget, TaskExecutionMode.execute);
+
+		// TODO: Check for success; throw error
 	}
 
 	/**
