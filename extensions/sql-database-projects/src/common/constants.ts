@@ -21,7 +21,12 @@ export const msdb = 'msdb';
 export const msdbDacpac = 'msdb.dacpac';
 export const MicrosoftDatatoolsSchemaSqlSql = 'Microsoft.Data.Tools.Schema.Sql.Sql';
 export const databaseSchemaProvider = 'DatabaseSchemaProvider';
-export const openFileCommand = 'revealFileInOS';
+
+// commands
+export const revealFileInOsCommand = 'revealFileInOS';
+export const schemaCompareStartCommand = 'schemaCompare.start';
+export const sqlDatabaseProjectsViewFocusCommand = 'sqlDatabaseProjectsView.focus';
+export const vscodeOpenCommand = 'vscode.open';
 
 // UI Strings
 
