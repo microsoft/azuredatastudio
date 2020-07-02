@@ -221,7 +221,7 @@ export class MarkdownTextTransformer {
 			const replacementTokens = getStartTextToReplace(markdownButtonType);
 			const operations: IIdentifiedSingleEditOperation[] = [];
 			// Create the edit operation to insert the text for every line
-			for (const i = selection.startLineNumber; i <= selection.endLineNumber; i++) {
+			for (let i = selection.startLineNumber; i <= selection.endLineNumber; i++) {
 				// If this token is part of a group then see if the text for this line
 				// starts with any of the tokens in that group
 				const replacementText = replacementTokens.find(t => {
