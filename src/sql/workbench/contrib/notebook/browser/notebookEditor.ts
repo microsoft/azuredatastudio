@@ -310,29 +310,27 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 					);
 					this._setCurrentFindMatch(findScope);
 				} else {
-					this.notebookInput.notebookFindModel.clearDecorations();
 					this.notebookFindModel.findExpression = this._findState.searchString;
-					this.notebookInput.notebookFindModel.find(this._findState.searchString, this._findState.matchCase, this._findState.wholeWord, NOTEBOOK_MAX_MATCHES).then(findRange => {
-						if (findRange) {
-							this.setSelection(findRange);
-						} else if (this.notebookFindModel.findMatches.length > 0) {
-							this.setSelection(this.notebookFindModel.findMatches[0].range);
-						} else {
-							this.notebookInput.notebookFindModel.clearFind();
-							this._updateFinderMatchState();
-							this._finder.focusFindInput();
-							return;
-						}
+					const findRange = await this.notebookInput.notebookFindModel.find(this._findState.searchString, this._findState.matchCase, this._findState.wholeWord, NOTEBOOK_MAX_MATCHES);
+					if (findRange) {
+						this.setSelection(findRange);
+					} else if (this.notebookFindModel.findMatches.length > 0) {
+						this.setSelection(this.notebookFindModel.findMatches[0].range);
+					} else {
+						this.notebookInput.notebookFindModel.clearFind();
 						this._updateFinderMatchState();
 						this._finder.focusFindInput();
-						this._findDecorations.set(this.notebookFindModel.findMatches, this._currentMatch);
-						this._findState.changeMatchInfo(
-							this.notebookFindModel.getFindIndex(),
-							this._findDecorations.getCount(),
-							this._currentMatch
-						);
-						this._setCurrentFindMatch(this._currentMatch);
-					});
+						return;
+					}
+					this._updateFinderMatchState();
+					this._finder.focusFindInput();
+					this._findDecorations.set(this.notebookFindModel.findMatches, this._currentMatch);
+					this._findState.changeMatchInfo(
+						this.notebookFindModel.getFindIndex(),
+						this._findDecorations.getCount(),
+						this._currentMatch
+					);
+					this._setCurrentFindMatch(this._currentMatch);
 				}
 			} else {
 				this.notebookFindModel.clearFind();

@@ -6,7 +6,8 @@
 import * as assert from 'assert';
 import { nb } from 'azdata';
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
-import { ACTION_IDS } from 'sql/workbench/contrib/notebook/browser/find/notebookFindWidget';
+import { NotebookFindMatch/* , NotebookFindDecorations */ } from 'sql/workbench/contrib/notebook/browser/find/notebookFindDecorations';
+import { ACTION_IDS/* , NOTEBOOK_MAX_MATCHES */ } from 'sql/workbench/contrib/notebook/browser/find/notebookFindWidget';
 import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/untitledNotebookInput';
 import { NotebookFindNextAction, NotebookFindPreviousAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
@@ -18,6 +19,7 @@ import { ICellModel, NotebookContentChange } from 'sql/workbench/services/notebo
 import { INotebookService, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookService } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
 import * as TypeMoq from 'typemoq';
+//import * as Mockito from 'ts-mockito';
 import * as DOM from 'vs/base/browser/dom';
 import { errorHandler, onUnexpectedError } from 'vs/base/common/errors';
 import { Emitter, Event } from 'vs/base/common/event';
@@ -27,7 +29,8 @@ import { URI } from 'vs/base/common/uri';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IOverlayWidget, IOverlayWidgetPosition } from 'vs/editor/browser/editorBrowser';
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfigurationService';
-import { INewFindReplaceState } from 'vs/editor/contrib/find/findState';
+import { INewFindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contrib/find/findState';
+import { getRandomString } from 'vs/editor/test/common/model/linesTextBuffer/textBufferAutoTestUtils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ContextViewService } from 'vs/platform/contextview/browser/contextViewService';
@@ -81,79 +84,23 @@ class NotebookModelStub extends stubs.NotebookModelStub {
 	}
 }
 
-suite('Test class NotebookEditor', () => {
-
+suite('Test class NotebookEditor:', () => {
+	let instantiationService = <TestInstantiationService>workbenchInstantiationService();
+	let workbenchThemeService = instantiationService.createInstance(WorkbenchThemeService);
 	let notebookEditor: NotebookEditor;
-
-	const installEvent: Emitter<InstallExtensionEvent> = new Emitter<InstallExtensionEvent>();
-	const didInstallEvent = new Emitter<DidInstallExtensionEvent>();
-	const uninstallEvent = new Emitter<IExtensionIdentifier>();
-	const didUninstallEvent = new Emitter<DidUninstallExtensionEvent>();
-
-	const instantiationService = <TestInstantiationService>workbenchInstantiationService();
-	const workbenchThemeService = instantiationService.createInstance(WorkbenchThemeService);
-	instantiationService.stub(IWorkbenchThemeService, workbenchThemeService);
-
-	const queryManagementService = new NBTestQueryManagementService();
-
-	instantiationService.stub(IExtensionManagementService, ExtensionManagementService);
-	instantiationService.stub(IExtensionManagementService, 'onInstallExtension', installEvent.event);
-	instantiationService.stub(IExtensionManagementService, 'onDidInstallExtension', didInstallEvent.event);
-	instantiationService.stub(IExtensionManagementService, 'onUninstallExtension', uninstallEvent.event);
-	instantiationService.stub(IExtensionManagementService, 'onDidUninstallExtension', didUninstallEvent.event);
-
-	const extensionService = instantiationService.get(IExtensionService);
-	const notebookService = new NotebookService(
-		instantiationService.get(ILifecycleService),
-		instantiationService.get(IStorageService),
-		extensionService,
-		instantiationService.get(IExtensionManagementService),
-		instantiationService,
-		instantiationService.get(IFileService),
-		instantiationService.get(ILogService),
-		queryManagementService,
-		instantiationService.get(IContextKeyService)
-	);
-
-	instantiationService.stub(INotebookService, notebookService);
-
-	const testTitle = 'NotebookEditor.Test-Title';
-	const untitledUri = URI.from({ scheme: Schemas.untitled, path: 'NotebookEditor.Test-TestPath' });
-	const untitledTextEditorService = instantiationService.get(IUntitledTextEditorService);
-	const untitledTextInput = instantiationService.createInstance(UntitledTextEditorInput, untitledTextEditorService.create({ associatedResource: untitledUri }));
-	const untitledNotebookInput = new UntitledNotebookInput(
-		testTitle, untitledUri, untitledTextInput,
-		undefined, instantiationService, notebookService, extensionService
-	);
-
-	const cellTextEditorGuid = generateUuid();
-	const queryTextEditor = new QueryTextEditor(
-		instantiationService.get(ITelemetryService),
-		instantiationService,
-		instantiationService.get(IStorageService),
-		instantiationService.get(ITextResourceConfigurationService),
-		instantiationService.get(IThemeService),
-		instantiationService.get(IEditorGroupsService),
-		instantiationService.get(IEditorService),
-		instantiationService.get(IConfigurationService)
-	);
-	const notebookEditorStub = new NotebookEditorStub({ cellGuid: cellTextEditorGuid, editor: queryTextEditor, model: new NotebookModelStub() });
-	notebookEditorStub.id = untitledNotebookInput.notebookUri.toString();
-	notebookService.addNotebookEditor(notebookEditorStub);
+	let testTitle: string;
+	let notebookService: NotebookService;
+	let extensionService: IExtensionService;
+	let cellTextEditorGuid: string;
+	let queryTextEditor: QueryTextEditor;
+	let untitledNotebookInput: UntitledNotebookInput;
+	let notebookEditorStub: NotebookEditorStub;
 
 	setup(async () => {
+		// setup services
+		({ instantiationService, workbenchThemeService, notebookService, testTitle, extensionService, cellTextEditorGuid, queryTextEditor, untitledNotebookInput, notebookEditorStub } = setupServices({ instantiationService, workbenchThemeService }));
 		// Create notebookEditor
-		notebookEditor = new NotebookEditor(
-			instantiationService.get(ITelemetryService),
-			instantiationService.get(IThemeService),
-			instantiationService,
-			instantiationService.get(IStorageService),
-			new ContextViewService(instantiationService.get(ILayoutService)),
-			instantiationService.get(IKeybindingService),
-			instantiationService.get(IContextKeyService),
-			workbenchThemeService,
-			notebookService
-		);
+		notebookEditor = createNotebookEditor(instantiationService, workbenchThemeService, notebookService);
 	});
 
 	test('Verifies that create() calls createEditor() and sets the provided parent object as the \'_overlay\' field', () => {
@@ -165,7 +112,7 @@ suite('Test class NotebookEditor', () => {
 	});
 
 	for (const notebookModel of [new NotebookModelStub(), undefined]) {
-		test.skip(`Tests that notebookModel='${notebookModel}' set indirectly by setInput -> setNotebookModel is returned by getNotebookModel()`, async () => {
+		test(`Tests that notebookModel='${notebookModel}' set indirectly by setInput -> setNotebookModel is returned by getNotebookModel()`, async () => {
 			createEditor(notebookEditor);
 			const untitledUri = URI.from({ scheme: Schemas.untitled, path: `NotebookEditor.Test-TestPath-${notebookModel}` });
 			const untitledTextEditorService = instantiationService.get(IUntitledTextEditorService);
@@ -179,6 +126,7 @@ suite('Test class NotebookEditor', () => {
 			notebookService.addNotebookEditor(testNotebookEditor);
 			notebookEditor.clearInput();
 			await notebookEditor.setInput(untitledNotebookInput, EditorOptions.create({ pinned: true }));
+			untitledNotebookInput.notebookFindModel.notebookModel = undefined; // clear preexisting notebookModel
 			const result = await notebookEditor.getNotebookModel();
 			assert.strictEqual(result, notebookModel, `getNotebookModel() should return the model set in the INotebookEditor object`);
 		});
@@ -193,7 +141,7 @@ suite('Test class NotebookEditor', () => {
 		assert.ok(isDisposed, 'notebookEditor\'s disposable store must be disposed');
 	});
 
-	test('Tests that getPosition and getLastPosition correctly return the range set by setSelection', async () => {
+	test('Tests that getPosition() and getLastPosition() correctly return the range set by setSelection', async () => {
 		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 		let currentPosition = notebookEditor.getPosition();
 		let lastPosition = notebookEditor.getLastPosition();
@@ -346,7 +294,7 @@ suite('Test class NotebookEditor', () => {
 	});
 
 	for (const action of [ACTION_IDS.FIND_NEXT, ACTION_IDS.FIND_PREVIOUS]) {
-		test.skip(`Tests that ${action} raises 'no search running' error when findArray is empty`, async () => {
+		test(`Tests that ${action} raises 'no search running' error when findArray is empty`, async () => {
 			await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 			let unexpectedErrorCalled = false;
 			const onUnexpectedErrorVerifier = (error: any) => {
@@ -366,8 +314,9 @@ suite('Test class NotebookEditor', () => {
 
 	for (const action of [ACTION_IDS.FIND_NEXT, ACTION_IDS.FIND_PREVIOUS]) {
 		for (const range of [<NotebookRange>{}, new NotebookRange(<ICellModel>{}, 0, 0, 0, 0)]) {
-			test.skip(`Tests ${action} returns the NotebookRange with cell: '${JSON.stringify(range.cell)}' that is as expected given the findArray`, async () => {
+			test(`Tests ${action} returns the NotebookRange with cell: '${JSON.stringify(range.cell)}' that is as expected given the findArray`, async () => {
 				await setupNotebookEditor(notebookEditor, untitledNotebookInput);
+				untitledNotebookInput.notebookFindModel.notebookModel = undefined; // clear preexisting notebookModel
 				const notebookModel = await notebookEditor.getNotebookModel();
 				const mockModel = TypeMoq.Mock.ofInstance(notebookModel);
 				mockModel.callBase = true; //forward calls to the base object
@@ -393,15 +342,20 @@ suite('Test class NotebookEditor', () => {
 		}
 	}
 
-	test.skip(`Verifies visibility and decorations are set correctly when FindStateChange callbacks happen`, async () => {
+	test(`Verifies visibility and decorations are set correctly when _onFindStateChange callback happens`, async () => {
 		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
+		// untitledNotebookInput.notebookFindModel.notebookModel = undefined; // clear preexisting notebookModel
+		// notebookEditor.setNotebookModel();
 		let currentPosition = new NotebookRange(<ICellModel>{}, 0, 0, 0, 0);
 		notebookEditor.setSelection(currentPosition);
 		notebookEditor.notebookFindModel['_findArray'] = [currentPosition]; //set some pending finds.
+		untitledNotebookInput.notebookFindModel.notebookModel = undefined; // clear preexisting notebookModel
+		await notebookEditor.setNotebookModel();
 		await notebookEditor.findNext();
 		const findState = notebookEditor['_findState'];
 		const finder = notebookEditor['_finder'];
 		const newState: INewFindReplaceState = {};
+
 		const findDecorations = notebookEditor.notebookInput.notebookFindModel.findDecorations;
 		const findDecorationsMock = TypeMoq.Mock.ofInstance(findDecorations);
 		findDecorationsMock.callBase = true; //forward to base object by default.
@@ -422,10 +376,270 @@ suite('Test class NotebookEditor', () => {
 			} else {
 				assert.strictEqual(finder.getDomNode().style.visibility, 'hidden', 'finder node should be hidden when newState.isNotRevealed');
 				assert.ok(clearDecorationsCalled, 'decorations are cleared when finder isNotRevealed');
+				//verify that clearDecorations was called only once.
+				findDecorationsMock.verify(x => x.clearDecorations(), TypeMoq.Times.once());
 			}
 		}
 	});
+
+	for (const currentMatch of [null, new NotebookRange(<ICellModel>{}, 1, 1, 1, 1)]) {
+		const searchString = getRandomString(1, 10); // a random string 1 to 10 characters long.
+		for (const modelFindExpression of [searchString, getRandomString(1, 10)]) {
+			for (const matchCase of [false, true]) {
+				for (const wholeWord of [false, true]) {
+					for (const findMatches of [[], [new NotebookFindMatch(currentMatch || <NotebookRange>{}, null)]]) {
+						test(`Verifies _onFindStateChange callback when searchString='${searchString}', currentMatch='${JSON.stringify(currentMatch)}', findExpression='${modelFindExpression}', matchCase='${matchCase}', wholeWord='${wholeWord}', findMatches=${JSON.stringify(findMatches)}`, async () => {
+							const { findReplaceStateChangedEvent, notebookFindModelMock, findDecorationsMock, notebookEditor } = await findStateChangeSetup(instantiationService, workbenchThemeService, notebookService, untitledNotebookInput, modelFindExpression, currentMatch, searchString, wholeWord, matchCase, null, findMatches);
+							await notebookEditor['_onFindStateChange'](findReplaceStateChangedEvent);
+							if (currentMatch) {
+								assert.strictEqual(notebookEditor.getPosition(), currentMatch, `position must be set to the same NotebookRange that we set for '_currentMatch' property of notebookEditor`);
+							}
+							if (searchString === modelFindExpression && currentMatch && !matchCase && !wholeWord) {
+								notebookFindModelMock.verify(x => x.find(
+									TypeMoq.It.isAnyString(),
+									TypeMoq.It.isAny(),
+									TypeMoq.It.isAny(),
+									TypeMoq.It.isAnyNumber()
+								), TypeMoq.Times.never());
+								findDecorationsMock.verify(x => x.set(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.never());
+							} else {
+								notebookFindModelMock.verify(x => x.find(
+									TypeMoq.It.isAnyString(),
+									TypeMoq.It.isAny(),
+									TypeMoq.It.isAny(),
+									TypeMoq.It.isAnyNumber()
+								), TypeMoq.Times.once());
+								assert.strictEqual(notebookEditor.notebookFindModel.findExpression, searchString, `findExpression should get set to the provided searchString:${searchString}`);
+								if (!currentMatch && notebookEditor.notebookFindModel.findMatches.length === 0) {
+									notebookFindModelMock.verify(x => x.clearFind(), TypeMoq.Times.once());
+									findDecorationsMock.verify(x => x.set(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.never());
+									assert.strictEqual(notebookEditor.notebookFindModel.findArray?.length ?? 0, 0, 'The find array should be cleared or undefined if there were no findMatches');
+								} else {
+									findDecorationsMock.verify(x => x.set(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+								}
+							}
+							findDecorationsMock.verify(x => x.clearDecorations(), TypeMoq.Times.once());
+						});
+					}
+				}
+			}
+		}
+	}
+
+	for (const searchString of ['', undefined]) {
+		for (const matchCase of [true, false]) {
+			for (const wholeWord of [true, false]) {
+				test(`Verifies _onFindStateChange callback when searchString='${searchString}', matchCase='${matchCase}', wholeWord='${wholeWord}'`, async () => {
+					const { findReplaceStateChangedEvent, notebookFindModelMock, findDecorationsMock, notebookEditor } = await findStateChangeSetup(instantiationService, workbenchThemeService, notebookService, untitledNotebookInput, undefined, undefined, searchString, wholeWord, matchCase);
+					await notebookEditor['_onFindStateChange'](findReplaceStateChangedEvent);
+					notebookFindModelMock.verify(x => x.find(
+						TypeMoq.It.isAnyString(),
+						TypeMoq.It.isAny(),
+						TypeMoq.It.isAny(),
+						TypeMoq.It.isAnyNumber()
+					), TypeMoq.Times.never());
+					if (searchString === '' || findReplaceStateChangedEvent.matchCase || findReplaceStateChangedEvent.wholeWord) {
+						findDecorationsMock.verify(x => x.clearDecorations(), TypeMoq.Times.once());
+						notebookFindModelMock.verify(x => x.clearFind(), TypeMoq.Times.once());
+					} else {
+						findDecorationsMock.verify(x => x.clearDecorations(), TypeMoq.Times.never());
+						notebookFindModelMock.verify(x => x.clearFind(), TypeMoq.Times.never());
+					}
+				});
+			}
+		}
+	}
+
+
+	for (const visibility of ['hidden', 'visible']) {
+		const searchString = getRandomString(1, 10);
+		const matchCase = true;
+		const wholeWord = true;
+		const searchScope = new NotebookRange(<ICellModel>{}, 1, 1, 1, 1);
+		const currentMatch = <NotebookRange>{};
+		test(`Verifies _onFindStateChange callback when searchScope='${JSON.stringify(searchScope)}',  visibility='${visibility}', searchString='${searchString}', matchCase='${matchCase}', wholeWord='${wholeWord}'`, async () => {
+			const { findReplaceStateChangedEvent, notebookFindModelMock, findDecorationsMock, notebookFindModel, notebookEditor } = await findStateChangeSetup(instantiationService, workbenchThemeService, notebookService, untitledNotebookInput, undefined, currentMatch, searchString, wholeWord, matchCase, searchScope);
+			notebookFindModelMock.setup(x => x.getIndexByRange(TypeMoq.It.isAny())).returns((_range: NotebookRange) => {
+				assert.strictEqual(_range, currentMatch, `getIndexByRange must be called with the same NotebookRange that we set for '_currentMatch' property of notebookEditor`);
+				return 0;
+			});
+			findReplaceStateChangedEvent.searchString = false;
+			findReplaceStateChangedEvent.matchCase = false;
+			findReplaceStateChangedEvent.wholeWord = false;
+			const findMatches = [new NotebookFindMatch(currentMatch, null)];
+			notebookFindModel['_findMatches'] = findMatches;
+			notebookFindModel['_findArray'] = findMatches.map(x => x?.range);
+			await notebookEditor['_onFindStateChange'](findReplaceStateChangedEvent);
+			notebookFindModelMock.verify(x => x.find(
+				TypeMoq.It.isAnyString(),
+				TypeMoq.It.isAny(),
+				TypeMoq.It.isAny(),
+				TypeMoq.It.isAnyNumber()
+			), TypeMoq.Times.once());
+			findDecorationsMock.verify(x => x.clearDecorations(), TypeMoq.Times.never());
+			notebookFindModelMock.verify(x => x.clearFind(), TypeMoq.Times.never());
+			if (visibility === 'visible') {
+				assert.strictEqual(notebookEditor.getPosition(), currentMatch, `position must be set to the same NotebookRange that we set for '_currentMatch' property of notebookEditor`);
+			}
+		});
+	}
+
+	test(`Verifies _onFindStateChange callback sets notebookModel when it was not previously set'`, async () => {
+		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
+		notebookEditor['_notebookModel'] = undefined;
+		const findState = notebookEditor['_findState'];
+		const newState: INewFindReplaceState = {
+			searchString: getRandomString(1, 10),
+			matchCase: true,
+			wholeWord: true,
+			searchScope: <NotebookRange>{}
+		};
+		findState.change(newState, false);
+		untitledNotebookInput.notebookFindModel.notebookModel = undefined; // clear preexisting notebookModel
+		const model = await notebookEditor.getNotebookModel();
+		assert.notStrictEqual(model, undefined, 'Notebook model should be defined after findState.change->notebookEditor._onFindReplaceStateChange call');
+	});
 });
+
+async function findStateChangeSetup(instantiationService: TestInstantiationService, workbenchThemeService: any, notebookService: NotebookService, untitledNotebookInput: UntitledNotebookInput, modelFindExpression: string, currentMatch: NotebookRange, searchString: string, wholeWord: boolean, matchCase: boolean, searchScope: NotebookRange | null = undefined, findMatches: Array<NotebookFindMatch> = []) {
+	const findReplaceStateChangedEvent: FindReplaceStateChangedEvent = {
+		searchString: searchString !== undefined,
+		matchCase: matchCase,
+		wholeWord: wholeWord,
+		searchScope: !!searchScope,
+		isRevealed: true,
+
+		moveCursor: false,
+		updateHistory: false,
+		replaceString: false,
+		isReplaceRevealed: false,
+		isRegex: false,
+		preserveCase: false,
+		matchesPosition: false,
+		matchesCount: false,
+		currentMatch: false,
+		loop: false
+	};
+
+	const notebookEditor = createNotebookEditor(instantiationService, workbenchThemeService, notebookService);
+	await setupNotebookEditor(notebookEditor, untitledNotebookInput);
+	untitledNotebookInput.notebookFindModel.notebookModel = undefined; // clear preexisting notebookModel
+	await notebookEditor.setNotebookModel();
+	const findState = notebookEditor['_findState'];
+	findState['_searchString'] = searchString;
+	findState['_isRevealed'] = findReplaceStateChangedEvent.isRevealed;
+	findState['_wholeWord'] = findReplaceStateChangedEvent.wholeWord;
+	findState['_matchCase'] = findReplaceStateChangedEvent.matchCase;
+	findState['_searchScope'] = searchScope;
+	const notebookFindModel = notebookEditor.notebookInput.notebookFindModel;
+	notebookFindModel['_findMatches'] = findMatches;
+	notebookFindModel['_findArray'] = findMatches.map(x => x?.range);
+	const notebookFindModelMock = TypeMoq.Mock.ofInstance(notebookFindModel);
+	notebookFindModelMock.callBase = true;
+	const spiedNotebookFindModel = notebookFindModelMock.object;
+	notebookEditor.notebookInput['_notebookFindModel'] = spiedNotebookFindModel;
+
+	spiedNotebookFindModel.findExpression = modelFindExpression;
+	const findDecorations = notebookFindModel.findDecorations;
+	findDecorations['_currentMatch'] = currentMatch;
+
+	const findDecorationsMock = TypeMoq.Mock.ofInstance(findDecorations);
+	const spiedFindDecorations = findDecorationsMock.object;
+	findDecorationsMock.callBase = true; //forward to base object by default.
+	notebookFindModel['_findDecorations'] = spiedFindDecorations;
+	notebookEditor['_currentMatch'] = currentMatch;
+
+	findDecorationsMock.setup(x => x.clearDecorations());
+	findDecorationsMock.setup(x => x.set(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((_findMatches, _currentMatch) => {
+		// install a no-op method
+	});
+	notebookFindModelMock.setup(x => x.find(
+		TypeMoq.It.isAnyString(),
+		TypeMoq.It.isAny(),
+		TypeMoq.It.isAny(),
+		TypeMoq.It.isAnyNumber()
+	)).returns((_searchString: string, _matchCase: boolean, _wholeWord: boolean, _maxMatches: number) => {
+		assert.strictEqual(_searchString, searchString, `find method should be called with the test search string:'${searchString}'`);
+		assert.strictEqual(_wholeWord, wholeWord, `find method should be called with the test value of wholeWord:'${wholeWord}'`);
+		assert.strictEqual(_matchCase, matchCase, `find method should be called with the test value of matchCase:'${matchCase}'`);
+		return Promise.resolve(currentMatch);
+	});
+	notebookFindModelMock.setup(x => x.clearFind());
+	return { findReplaceStateChangedEvent, notebookFindModelMock, findDecorationsMock, notebookFindModel, notebookEditor };
+}
+
+function setupServices(arg: { workbenchThemeService?: WorkbenchThemeService, instantiationService?: TestInstantiationService } = {}) {
+	const installEvent: Emitter<InstallExtensionEvent> = new Emitter<InstallExtensionEvent>();
+	const didInstallEvent = new Emitter<DidInstallExtensionEvent>();
+	const uninstallEvent = new Emitter<IExtensionIdentifier>();
+	const didUninstallEvent = new Emitter<DidUninstallExtensionEvent>();
+
+	const instantiationService = arg.instantiationService ?? <TestInstantiationService>workbenchInstantiationService();
+	const workbenchThemeService = arg.workbenchThemeService ?? instantiationService.createInstance(WorkbenchThemeService);
+	instantiationService.stub(IWorkbenchThemeService, workbenchThemeService);
+
+	const queryManagementService = new NBTestQueryManagementService();
+
+	instantiationService.stub(IExtensionManagementService, ExtensionManagementService);
+	instantiationService.stub(IExtensionManagementService, 'onInstallExtension', installEvent.event);
+	instantiationService.stub(IExtensionManagementService, 'onDidInstallExtension', didInstallEvent.event);
+	instantiationService.stub(IExtensionManagementService, 'onUninstallExtension', uninstallEvent.event);
+	instantiationService.stub(IExtensionManagementService, 'onDidUninstallExtension', didUninstallEvent.event);
+
+	const extensionService = instantiationService.get(IExtensionService);
+	const notebookService = new NotebookService(
+		instantiationService.get(ILifecycleService),
+		instantiationService.get(IStorageService),
+		extensionService,
+		instantiationService.get(IExtensionManagementService),
+		instantiationService,
+		instantiationService.get(IFileService),
+		instantiationService.get(ILogService),
+		queryManagementService,
+		instantiationService.get(IContextKeyService)
+	);
+
+	instantiationService.stub(INotebookService, notebookService);
+
+	const testTitle = 'NotebookEditor.Test-Title';
+	const untitledUri = URI.from({ scheme: Schemas.untitled, path: 'NotebookEditor.Test-TestPath' });
+	const untitledTextEditorService = instantiationService.get(IUntitledTextEditorService);
+	const untitledTextInput = instantiationService.createInstance(UntitledTextEditorInput, untitledTextEditorService.create({ associatedResource: untitledUri }));
+	const untitledNotebookInput = new UntitledNotebookInput(
+		testTitle, untitledUri, untitledTextInput,
+		undefined, instantiationService, notebookService, extensionService
+	);
+
+	const cellTextEditorGuid = generateUuid();
+	const queryTextEditor = new QueryTextEditor(
+		instantiationService.get(ITelemetryService),
+		instantiationService,
+		instantiationService.get(IStorageService),
+		instantiationService.get(ITextResourceConfigurationService),
+		instantiationService.get(IThemeService),
+		instantiationService.get(IEditorGroupsService),
+		instantiationService.get(IEditorService),
+		instantiationService.get(IConfigurationService)
+	);
+	const notebookEditorStub = new NotebookEditorStub({ cellGuid: cellTextEditorGuid, editor: queryTextEditor, model: new NotebookModelStub() });
+	notebookEditorStub.id = untitledNotebookInput.notebookUri.toString();
+	notebookService.addNotebookEditor(notebookEditorStub);
+	return { instantiationService, workbenchThemeService, notebookService, testTitle, extensionService, cellTextEditorGuid, queryTextEditor, untitledNotebookInput, notebookEditorStub };
+}
+
+function createNotebookEditor(instantiationService: TestInstantiationService, workbenchThemeService: WorkbenchThemeService, notebookService: NotebookService) {
+	return new NotebookEditor(
+		instantiationService.get(ITelemetryService),
+		instantiationService.get(IThemeService),
+		instantiationService,
+		instantiationService.get(IStorageService),
+		new ContextViewService(instantiationService.get(ILayoutService)),
+		instantiationService.get(IKeybindingService),
+		instantiationService.get(IContextKeyService),
+		workbenchThemeService,
+		notebookService
+	);
+}
 
 async function setupNotebookEditor(notebookEditor: NotebookEditor, untitledNotebookInput: UntitledNotebookInput): Promise<void> {
 	createEditor(notebookEditor);
