@@ -247,27 +247,26 @@ describe('ProjectsController: project controller operations', function (): void 
 
 			let publishDialog = TypeMoq.Mock.ofType(PublishDatabaseDialog, undefined, undefined, new ApiWrapper(), proj);
 			publishDialog.callBase = true;
-			publishDialog.setup(x => x.getConnectionUri()).returns(() => new Promise((resolve) => resolve('fake|connection|uri')));
+			publishDialog.setup(x => x.getConnectionUri()).returns(() => Promise.resolve('fake|connection|uri'));
 
 			let projController = TypeMoq.Mock.ofType(ProjectsController);
 			projController.callBase = true;
 			projController.setup(x => x.getPublishDialog(TypeMoq.It.isAny())).returns(() => publishDialog.object);
 			projController.setup(x => x.executionCallback(TypeMoq.It.isAny(), TypeMoq.It.is((_): _ is IPublishSettings => true))).returns(() => {
 				holler = publishHoller;
-				return new Promise((resolve) => resolve(undefined));
+				return Promise.resolve(undefined);
 			});
 			projController.setup(x => x.readPublishProfile(TypeMoq.It.isAny())).returns(() => {
 				holler = profileHoller;
-				return new Promise((resolve) =>
-					resolve({
+				return Promise.resolve({
 						databaseName: '',
 						sqlCmdVariables: {}
-					}));
+					});
 			});
 
 			projController.setup(x => x.executionCallback(TypeMoq.It.isAny(), TypeMoq.It.is((_): _ is IGenerateScriptSettings => true))).returns(() => {
 				holler = generateHoller;
-				return new Promise((resolve) => resolve(undefined));
+				return Promise.resolve(undefined);
 			});
 
 			let dialog = await projController.object.publishProject(proj);
