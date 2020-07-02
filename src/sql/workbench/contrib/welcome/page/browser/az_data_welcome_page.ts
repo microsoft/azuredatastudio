@@ -111,14 +111,14 @@ export default () => `
 				<div class="resources-container">
 					<h2>${escape(localize('welcomePage.resources', "Resources"))}</h2>
 					<div class="tabs">
-						<input class="input" name="tabs" type="radio" id="tab-1" checked="checked" />
+						<input tabindex="-1" class="input" name="tabs" type="radio" id="tab-1" checked="checked" />
 						<label class="label" for="tab-1" tabIndex="0">${escape(localize('welcomePage.history', "History"))}</label>
 						<div class="panel">
 							<div class="recent history">
 								<div class="flex list-header-container">
 									<i class="icon-document themed-icon"></i>
-									<h4 class="list-header">${escape(localize('welcomePage.name', "Name"))}</h4>
-									<h4 class="list-header-last-opened">${escape(localize('welcomePage.lastOpened', "Last Opened"))}</h4>
+									<label tabindex="0" class="list-header"><b>${escape(localize('welcomePage.name', "Name"))}</b></label>
+									<label tabindex="0" class="list-header-last-opened"><b>${escape(localize('welcomePage.lastOpened', "Last Opened"))}</b></label>
 								</div>
 								<ul class="list">
 									<!-- Filled programmatically -->
