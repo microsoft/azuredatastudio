@@ -35,6 +35,12 @@ export class AzdataService implements IAzdataService {
 			case BdcDeploymentType.ExistingKubeAdm:
 				profilePrefix = 'kubeadm';
 				break;
+			case BdcDeploymentType.ExistingARO:
+				profilePrefix = 'aro';
+				break;
+			case BdcDeploymentType.ExistingOpenShift:
+				profilePrefix = 'openshift';
+				break;
 			default:
 				throw new Error(`Unknown deployment type: ${deploymentType}`);
 		}

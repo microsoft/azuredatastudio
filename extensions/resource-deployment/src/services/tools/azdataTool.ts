@@ -29,7 +29,7 @@ export class AzdataTool extends ToolBase {
 	}
 
 	get description(): string {
-		return localize('resourceDeployment.AzdataDescription', "Bootstraps and manages the Big Data Cluster");
+		return localize('resourceDeployment.AzdataDescription', "Azure Data command line interface");
 	}
 
 	get type(): ToolType {
