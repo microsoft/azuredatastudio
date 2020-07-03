@@ -278,7 +278,9 @@
                           "resourceGroupVariableName": "AZDATA_NB_VAR_ASDE_RESOURCEGROUP",
                           "type": "azure_account",
                           "required": true,
-                          "allowNewResourceGroup": true
+                          "allowNewResourceGroup": true,
+                          "newResourceGroupFlagVariableName": "AZDATA_NB_VAR_ASDE_NEW_RESOURCEGROUP",
+                          "newResourceGroupNameVariableName": "AZDATA_NB_VAR_ASDE_NEW_RESOURCEGROUP_NAME"
                         },
                         {
                           "type": "azure_locations",

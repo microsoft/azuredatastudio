@@ -749,6 +749,27 @@ async function processAzureAccountField(context: AzureAccountFieldContext): Prom
 	const accountDropdown = accountComponents.accountDropdown;
 	const subscriptionDropdown = createAzureSubscriptionDropdown(context, subscriptionValueToSubscriptionMap);
 	const resourceGroupDropdown = createAzureResourceGroupsDropdown(context, accountDropdown, accountValueToAccountMap, subscriptionDropdown, subscriptionValueToSubscriptionMap);
+	if (context.fieldInfo.allowNewResourceGroup) {
+		const newRGCheckbox = createCheckbox(context.view, { initialValue: false, label: loc.createNewResourceGroup });
+		context.onNewInputComponentCreated(context.fieldInfo.newResourceGroupFlagVariableName!, { component: newRGCheckbox });
+		const newRGNameInput = createTextInput(context.view, { ariaLabel: loc.NewResourceGroupAriaLabel });
+		context.onNewInputComponentCreated(context.fieldInfo.newResourceGroupNameVariableName!, { component: newRGNameInput });
+		context.components.push(newRGCheckbox);
+		context.components.push(newRGNameInput);
+		const setRGStatus = (newRG: boolean) => {
+			resourceGroupDropdown.required = !newRG;
+			resourceGroupDropdown.enabled = !newRG;
+			newRGNameInput.required = newRG;
+			newRGNameInput.enabled = newRG;
+			if (!newRG) {
+				newRGNameInput.value = '';
+			}
+		};
+		context.onNewDisposableCreated(newRGCheckbox.onChanged(() => {
+			setRGStatus(newRGCheckbox.checked!);
+		}));
+		setRGStatus(false);
+	}
 	const locationDropdown = context.fieldInfo.locations && await processAzureLocationsField(context);
 	accountDropdown.onValueChanged(async selectedItem => {
 		const selectedAccount = accountValueToAccountMap.get(selectedItem.selected)!;
@@ -923,7 +944,7 @@ function createAzureResourceGroupsDropdown(
 	const resourceGroupDropdown = createDropdown(context.view, {
 		defaultValue: (context.fieldInfo.required) ? undefined : '',
 		width: context.fieldInfo.inputWidth,
-		editable: context.fieldInfo.allowNewResourceGroup,
+		editable: false,
 		required: context.fieldInfo.required,
 		label: loc.resourceGroup
 	});
