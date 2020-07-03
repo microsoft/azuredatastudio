@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as should from 'should';
 import * as path from 'path';
@@ -20,6 +21,7 @@ import { ApiWrapper } from '../../common/apiWrapper';
 import { BookModel } from '../../book/bookModel';
 import { BookTrustManager } from '../../book/bookTrustManager';
 import { NavigationProviders } from '../../common/constants';
+import * as TypeMoq from 'typemoq';
 
 export interface IExpectedBookItem {
 	title: string;
@@ -30,16 +32,16 @@ export interface IExpectedBookItem {
 	nextUri?: string | undefined;
 }
 
-export function equalBookItems(book: BookTreeItem, expectedBook: IExpectedBookItem): void {
-	should(book.title).equal(expectedBook.title);
+export function equalBookItems(book: BookTreeItem, expectedBook: IExpectedBookItem, errorMsg?: string): void {
+	should(book.title).equal(expectedBook.title, 'Book titles do not match, expected ' + expectedBook.title + ' and got '+ book.title);
 	should(path.posix.parse(book.uri)).deepEqual(path.posix.parse(expectedBook.url));
 	if (expectedBook.previousUri || expectedBook.nextUri) {
 		let prevUri = book.previousUri ? book.previousUri.toLocaleLowerCase() : undefined;
 		let expectedPrevUri = expectedBook.previousUri ? expectedBook.previousUri.replace(/\\/g, '/') : undefined;
-		should(prevUri).equal(expectedPrevUri);
+		should(prevUri).equal(expectedPrevUri, errorMsg?? 'PreviousUri\'s do not match, expected ' + expectedPrevUri + ' and got '+ prevUri);
 		let nextUri = book.nextUri ? book.nextUri.toLocaleLowerCase() : undefined;
 		let expectedNextUri = expectedBook.nextUri ? expectedBook.nextUri.replace(/\\/g, '/') : undefined;
-		should(nextUri).equal(expectedNextUri);
+		should(nextUri).equal(expectedNextUri, errorMsg?? 'NextUri\'s do not match, expected ' + expectedNextUri + ' and got '+ nextUri);
 	}
 }
 
@@ -285,18 +287,24 @@ describe('BookTreeViewProviderTests', function () {
 				equalBookItems(currentSelection, expectedNotebook1);
 			});
 
-			/* it('revealActiveDocumentInViewlet should return correct bookItem for highlight on openNotebook', async () => {
+			it('revealActiveDocumentInViewlet should be called on showNotebook', async () => {
 				let notebook2Path = path.join(rootFolderPath, 'Book', 'content', 'notebook2.ipynb');
+				const notebookUri = vscode.Uri.file(notebook2Path);
 
-				await bookTreeViewProvider.openNotebook(notebook2Path);
-				await should(bookTreeViewProvider.revealActiveDocumentInViewlet()).resolvedWith(expectedNotebook2);
-				//let currentSelection = await bookTreeViewProvider.revealActiveDocumentInViewlet();
-				//should(currentSelection);
-				//equalBookItems(currentSelection, expectedNotebook2);
-				await fs.unlink(notebook2Path);
-				//let bookTreeViewProviderMock = TypeMoq.Mock.ofInstance(new BookTreeViewProvider(appContext.apiWrapper, [], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator));
-				//bookTreeViewProviderMock.setup(x => x.revealActiveDocumentInViewlet(TypeMoq.It.isAny())).returns(() => Promise.resolve());
-			}); */
+				//await bookTreeViewProvider.openBook(bookFolderPath, undefined, false, false);
+				let bookTreeViewProviderMock = TypeMoq.Mock.ofInstance(bookTreeViewProvider);
+				//bookTreeViewProviderMock.setup(x => x.revealActiveDocumentInViewlet(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(undefined));
+				await azdata.nb.showNotebookDocument(notebookUri);
+
+				//bookTreeViewProviderMock.setup(x => x.bookTreeViewer?.reveal(TypeMoq.It.isAny())).returns(() => Promise.resolve());
+				should(azdata.nb.notebookDocuments.find(doc => doc.fileName === notebookUri.fsPath)).not.be.undefined();
+				await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+				bookTreeViewProviderMock.verify(x => x.revealActiveDocumentInViewlet(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+
+				//let currentSelection = await bookTreeViewProviderMock.object.revealActiveDocumentInViewlet();
+				//should(currentSelection).not.be.undefined();
+
+			});
 
 		});
 
