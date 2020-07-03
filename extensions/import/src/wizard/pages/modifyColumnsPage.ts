@@ -45,10 +45,10 @@ export class ModifyColumnsPage extends ImportPage {
 		{ name: 'varchar(50)', displayName: 'varchar(50)' },
 		{ name: 'varchar(MAX)', displayName: 'varchar(MAX)' }
 	];
-	private table: azdata.DeclarativeTableComponent;
-	private loading: azdata.LoadingComponent;
-	private text: azdata.TextComponent;
-	private form: azdata.FormContainer;
+	public table: azdata.DeclarativeTableComponent;
+	public loading: azdata.LoadingComponent;
+	public text: azdata.TextComponent;
+	public form: azdata.FormContainer;
 
 	private static convertMetadata(column: ColumnMetadata): any[] {
 		return [column.columnName, column.dataType, false, column.nullable];
