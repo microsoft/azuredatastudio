@@ -6,15 +6,7 @@
 import * as should from 'should';
 import * as path from 'path';
 import {createDummyFileStructure} from './testUtils';
-import {toPascalCase, exists} from '../common/utils';
-
-describe('Tests for conversion within PascalCase and camelCase', function (): void {
-	it('Should generate PascalCase from camelCase correctly', async () => {
-		should(toPascalCase('')).equal('');
-		should(toPascalCase('camelCase')).equal('CamelCase');
-		should(toPascalCase('camel.case')).equal('Camel.case');
-	});
-});
+import { exists} from '../common/utils';
 
 describe('Tests to verify exists function', function (): void {
 	it('Should determine existence of files/folders', async () => {
