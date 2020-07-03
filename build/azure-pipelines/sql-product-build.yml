@@ -45,6 +45,8 @@ jobs:
   - Compile
   steps:
   - template: linux/sql-product-build-linux.yml
+    parameters:
+      extensionsToUnitTest: ["admin-tool-ext-win", "agent", "azurecore", "cms", "dacpac", "import", "schema-compare", "notebook", "resource-deployment", "machine-learning", "sql-database-projects"]
   timeoutInMinutes: 70
 
 - job: LinuxWeb
