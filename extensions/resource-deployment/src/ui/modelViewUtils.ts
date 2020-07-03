@@ -998,7 +998,7 @@ async function processAzureLocationsField(context: AzureLocationsFieldContext): 
 		editable: false,
 		required: context.fieldInfo.required,
 		label: loc.location,
-		values: context.fieldInfo.locations
+		values: locationValues
 	});
 	locationDropdown.fireOnTextChange = true;
 	context.fieldInfo.subFields = context.fieldInfo.subFields || [];
