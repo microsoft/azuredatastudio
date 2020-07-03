@@ -24,7 +24,7 @@ export class ConnectToControllerDialog {
 
 	constructor(private _treeDataProvider: AzureArcTreeDataProvider) { }
 
-	public showDialog(controllerInfo?: ControllerInfo, password?: string): void {
+	public showDialog(controllerInfo?: ControllerInfo, password?: string): azdata.window.Dialog {
 		const dialog = azdata.window.createModelViewDialog(loc.connectToController);
 		dialog.cancelButton.onClick(() => this.handleCancel());
 		dialog.registerContent(async view => {
@@ -82,6 +82,7 @@ export class ConnectToControllerDialog {
 		dialog.okButton.label = loc.connect;
 		dialog.cancelButton.label = loc.cancel;
 		azdata.window.openDialog(dialog);
+		return dialog;
 	}
 
 	private async validate(): Promise<boolean> {
