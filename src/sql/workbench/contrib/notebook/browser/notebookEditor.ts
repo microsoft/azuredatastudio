@@ -310,6 +310,7 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 					);
 					this._setCurrentFindMatch(findScope);
 				} else {
+					this.notebookInput.notebookFindModel.clearDecorations();
 					this.notebookFindModel.findExpression = this._findState.searchString;
 					const findRange = await this.notebookInput.notebookFindModel.find(this._findState.searchString, this._findState.matchCase, this._findState.wholeWord, NOTEBOOK_MAX_MATCHES);
 					if (findRange) {
