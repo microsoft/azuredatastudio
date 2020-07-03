@@ -15,8 +15,8 @@ import { NBTestQueryManagementService } from 'sql/workbench/contrib/notebook/tes
 import * as stubs from 'sql/workbench/contrib/notebook/test/stubs';
 import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/testCommon';
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
-import { ICellModel, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
-import { INotebookService, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
+import { ICellModel, NotebookContentChange, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { INotebookService, NotebookRange, INotebookEditor } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookService } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
 import * as TypeMoq from 'typemoq';
 //import * as Mockito from 'ts-mockito';
@@ -56,17 +56,19 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 
 class NotebookModelStub extends stubs.NotebookModelStub {
 	private _cells: Array<ICellModel> = [new CellModel(undefined, undefined)];
-	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
+	public contentChangedEmitter = new Emitter<NotebookContentChange>();
 	private _kernelChangedEmitter = new Emitter<nb.IKernelChangedArgs>();
 	private _onActiveCellChanged = new Emitter<ICellModel>();
+
 	get cells(): ReadonlyArray<ICellModel> {
 		return this._cells;
 	}
 	public get contentChanged(): Event<NotebookContentChange> {
-		return this._contentChangedEmitter.event;
+		return this.contentChangedEmitter.event;
 	}
 
 	get kernelChanged(): Event<nb.IKernelChangedArgs> {
@@ -280,10 +282,9 @@ suite('Test class NotebookEditor:', () => {
 		assert.ok(notebookEditor.getAction(ACTION_IDS.FIND_PREVIOUS) instanceof NotebookFindPreviousAction, `getAction called for '${ACTION_IDS.FIND_PREVIOUS}' should return an instance of ${NotebookFindPreviousAction}`);
 	});
 
-	test('Verifies toggleSearch changes isRevealed state with and without a notebookModel', async () => {
+	test('Debug_Verifies toggleSearch changes isRevealed state with and without a notebookModel', async () => {
 		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
-		const notebookModel = await notebookEditor.getNotebookModel();
-		for (const model of [notebookModel, undefined]) {
+		for (const model of [<INotebookModel>{}, undefined]) {
 			notebookEditor['_notebookModel'] = model;
 			for (let i: number = 1; i <= 2; i++) { //Do it twice so that two toggles return back to original state verifying both transitions
 				let isRevealed = notebookEditor['_findState']['_isRevealed'];
@@ -483,6 +484,31 @@ suite('Test class NotebookEditor:', () => {
 			}
 		});
 	}
+
+
+	test(`Verifies callback registered by registerModelChanges`, async () => {
+		const searchString = getRandomString(1, 10);
+		const matchCase = true;
+		const wholeWord = true;
+		const searchScope = new NotebookRange(<ICellModel>{}, 1, 1, 1, 1);
+		const currentMatch = <NotebookRange>{};
+		const { /* findReplaceStateChangedEvent,  */notebookFindModelMock/* , findDecorationsMock, */, /* notebookFindModel */ notebookEditor } = await findStateChangeSetup(instantiationService, workbenchThemeService, notebookService, untitledNotebookInput, undefined, currentMatch, searchString, wholeWord, matchCase, searchScope);
+		notebookFindModelMock.setup(x => x.getIndexByRange(TypeMoq.It.isAny())).returns((_range: NotebookRange) => {
+			assert.strictEqual(_range, currentMatch, `getIndexByRange must be called with the same NotebookRange that we set for '_currentMatch' property of notebookEditor`);
+			return 0;
+		});
+		notebookEditor['registerModelChanges']();
+		const notebookModel = <NotebookModelStub>await notebookEditor.getNotebookModel();
+		notebookModel.cells[0]['_onCellModeChanged'].fire(true); //fire cellModeChanged event on the first sell of our test notebookModel
+		notebookModel.contentChangedEmitter.fire({ changeType: NotebookChangeType.Saved });
+		(<NotebookService>notebookService)['_onNotebookEditorAdd'].fire(<INotebookEditor>{});
+		notebookFindModelMock.verify(x => x.find(
+			TypeMoq.It.isAnyString(),
+			TypeMoq.It.isAny(),
+			TypeMoq.It.isAny(),
+			TypeMoq.It.isAnyNumber()
+		), TypeMoq.Times.exactly(3));
+	});
 
 	test(`Verifies _onFindStateChange callback sets notebookModel when it was not previously set'`, async () => {
 		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
