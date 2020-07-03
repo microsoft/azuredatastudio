@@ -14,9 +14,9 @@ import { IAccountManagementService } from 'sql/platform/accounts/common/interfac
 
 const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
 
-CommandsRegistry.registerCommand('workbench.actions.modal.linkedAccount', accessor => {
+CommandsRegistry.registerCommand('workbench.actions.modal.linkedAccount', async accessor => {
 	const accountManagementService = accessor.get(IAccountManagementService);
-	accountManagementService.openAccountListDialog();
+	await accountManagementService.openAccountListDialog();
 });
 
 class AccountsStatusBarContributions extends Disposable implements IWorkbenchContribution {

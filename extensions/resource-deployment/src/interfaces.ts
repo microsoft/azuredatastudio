@@ -236,6 +236,7 @@ export interface AzureAccountFieldInfo extends AzureLocationsFieldInfo {
 	displaySubscriptionVariableName?: string;
 	subscriptionVariableName?: string;
 	resourceGroupVariableName?: string;
+	allowNewResourceGroup?: boolean;
 }
 
 export interface AzureLocationsFieldInfo extends FieldInfo {

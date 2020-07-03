@@ -277,7 +277,8 @@
                           "subscriptionVariableName": "AZDATA_NB_VAR_ASDE_SUBSCRIPTIONID",
                           "resourceGroupVariableName": "AZDATA_NB_VAR_ASDE_RESOURCEGROUP",
                           "type": "azure_account",
-                          "required": true
+                          "required": true,
+                          "allowNewResourceGroup": true
                         },
                         {
                           "type": "azure_locations",
@@ -362,7 +363,7 @@
                           "label": "%dacpac_path%",
                           "variableName": "AZDATA_NB_VAR_ASDE_DACPAC_PATH",
                           "type": "file_picker",
-                          "required": true
+                          "required": false
                         }
                       ]
                     }

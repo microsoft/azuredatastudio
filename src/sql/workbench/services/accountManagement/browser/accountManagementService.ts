@@ -297,7 +297,7 @@ export class AccountManagementService implements IAccountManagementService {
 	// UI METHODS //////////////////////////////////////////////////////////
 	/**
 	 * Opens the account list dialog
-	 * @return Promise that finishes when the account list dialog opens
+	 * @return Promise that finishes when the account list dialog closes
 	 */
 	public openAccountListDialog(): Thenable<void> {
 		let self = this;
@@ -310,7 +310,9 @@ export class AccountManagementService implements IAccountManagementService {
 				}
 
 				self._accountDialogController.openAccountDialog();
-				resolve();
+				self._accountDialogController.accountDialog.onCloseEvent(() => {
+					resolve();
+				});
 			} catch (e) {
 				reject(e);
 			}
