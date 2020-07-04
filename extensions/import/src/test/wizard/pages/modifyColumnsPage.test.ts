@@ -23,17 +23,22 @@ describe('import extension modify Column Page', function () {
 	beforeEach(function () {
 		// Creating the page Wizard
 		_apiWrapper = new ApiWrapper();
-		page1 = this._apiWrapper.createWizardPage(constants.page1NameText);
+		page1 = _apiWrapper.createWizardPage(constants.page1NameText);
 		mockFlatFileWizard = TypeMoq.Mock.ofType(FlatFileWizard, TypeMoq.MockBehavior.Loose, undefined, TypeMoq.It.isAny(), _apiWrapper);
 		mockImportModel = TypeMoq.Mock.ofType(TestImportDataModel, TypeMoq.MockBehavior.Loose);
-		page1.registerContent(async (view: any) => {
-			modifyColumnPage = new ModifyColumnsPage(mockFlatFileWizard.object, this.page1, mockImportModel.object, view, this.provider, _apiWrapper);
-		});
-
 
 	});
 
-	describe('checking if all components are initialized properly', async function () {
+	it('checking if all components are initialized properly', async function () {
+		let testView = await new Promise<any>(function (resolve){
+			page1.registerContent(async (view: any) => {
+				console.log('\n\n Resigter Content Called:\n\n');
+				console.log(view);
+
+				resolve(view);
+			});
+		});
+		modifyColumnPage = new ModifyColumnsPage(mockFlatFileWizard.object, this.page1, mockImportModel.object, testView, this.provider, _apiWrapper);
 		await modifyColumnPage.start().then(() => {
 			modifyColumnPage.setupNavigationValidator();
 			modifyColumnPage.onPageEnter();
