@@ -266,7 +266,6 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 		return this._actionMap[id];
 	}
 
-
 	private async _onFindStateChange(e: FindReplaceStateChangedEvent): Promise<void> {
 		if (!this._notebookModel) {
 			await this.setNotebookModel();
