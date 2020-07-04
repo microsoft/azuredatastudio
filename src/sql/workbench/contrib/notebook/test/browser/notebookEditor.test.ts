@@ -6,8 +6,8 @@
 import * as assert from 'assert';
 import { nb } from 'azdata';
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
-import { NotebookFindMatch/* , NotebookFindDecorations */ } from 'sql/workbench/contrib/notebook/browser/find/notebookFindDecorations';
-import { ACTION_IDS/* , NOTEBOOK_MAX_MATCHES */ } from 'sql/workbench/contrib/notebook/browser/find/notebookFindWidget';
+import { NotebookFindMatch } from 'sql/workbench/contrib/notebook/browser/find/notebookFindDecorations';
+import { ACTION_IDS } from 'sql/workbench/contrib/notebook/browser/find/notebookFindWidget';
 import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/untitledNotebookInput';
 import { NotebookFindNextAction, NotebookFindPreviousAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
@@ -16,10 +16,9 @@ import * as stubs from 'sql/workbench/contrib/notebook/test/stubs';
 import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/testCommon';
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 import { ICellModel, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
-import { INotebookService, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotebookService, NotebookRange, INotebookEditor } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookService } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
 import * as TypeMoq from 'typemoq';
-//import * as Mockito from 'ts-mockito';
 import * as DOM from 'vs/base/browser/dom';
 import { errorHandler, onUnexpectedError } from 'vs/base/common/errors';
 import { Emitter, Event } from 'vs/base/common/event';
@@ -56,17 +55,20 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
+import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 
 class NotebookModelStub extends stubs.NotebookModelStub {
 	private _cells: Array<ICellModel> = [new CellModel(undefined, undefined)];
-	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
+	public contentChangedEmitter = new Emitter<NotebookContentChange>();
 	private _kernelChangedEmitter = new Emitter<nb.IKernelChangedArgs>();
 	private _onActiveCellChanged = new Emitter<ICellModel>();
+
 	get cells(): ReadonlyArray<ICellModel> {
 		return this._cells;
 	}
 	public get contentChanged(): Event<NotebookContentChange> {
-		return this._contentChangedEmitter.event;
+		return this.contentChangedEmitter.event;
 	}
 
 	get kernelChanged(): Event<nb.IKernelChangedArgs> {
@@ -282,8 +284,7 @@ suite('Test class NotebookEditor:', () => {
 
 	test('Verifies toggleSearch changes isRevealed state with and without a notebookModel', async () => {
 		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
-		const notebookModel = await notebookEditor.getNotebookModel();
-		for (const model of [notebookModel, undefined]) {
+		for (const model of [new NotebookModelStub(), undefined]) {
 			notebookEditor['_notebookModel'] = model;
 			for (let i: number = 1; i <= 2; i++) { //Do it twice so that two toggles return back to original state verifying both transitions
 				let isRevealed = notebookEditor['_findState']['_isRevealed'];
@@ -298,7 +299,6 @@ suite('Test class NotebookEditor:', () => {
 			await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 			let unexpectedErrorCalled = false;
 			const onUnexpectedErrorVerifier = (error: any) => {
-				//console.log(`Verifies that: ${onUnexpectedError} is passed an instance of ${Error}`);
 				unexpectedErrorCalled = true;
 				assert.ok(error instanceof Error, `${onUnexpectedError} must be passed an instance of ${Error}`);
 				assert.strictEqual((error as Error).message, 'no search running', `Error text must be 'no search running' when findArray is empty`);
@@ -388,7 +388,7 @@ suite('Test class NotebookEditor:', () => {
 			for (const matchCase of [false, true]) {
 				for (const wholeWord of [false, true]) {
 					for (const findMatches of [[], [new NotebookFindMatch(currentMatch || <NotebookRange>{}, null)]]) {
-						test(`Verifies _onFindStateChange callback when searchString='${searchString}', currentMatch='${JSON.stringify(currentMatch)}', findExpression='${modelFindExpression}', matchCase='${matchCase}', wholeWord='${wholeWord}', findMatches=${JSON.stringify(findMatches)}`, async () => {
+						test(`Verifies _onFindStateChange callback when searchString='${searchString}', currentMatch='${currentMatch}', findExpression='${modelFindExpression}', matchCase='${matchCase}', wholeWord='${wholeWord}', findMatches='${findMatches}'`, async () => {
 							const { findReplaceStateChangedEvent, notebookFindModelMock, findDecorationsMock, notebookEditor } = await findStateChangeSetup(instantiationService, workbenchThemeService, notebookService, untitledNotebookInput, modelFindExpression, currentMatch, searchString, wholeWord, matchCase, null, findMatches);
 							await notebookEditor['_onFindStateChange'](findReplaceStateChangedEvent);
 							if (currentMatch) {
@@ -457,7 +457,7 @@ suite('Test class NotebookEditor:', () => {
 		const wholeWord = true;
 		const searchScope = new NotebookRange(<ICellModel>{}, 1, 1, 1, 1);
 		const currentMatch = <NotebookRange>{};
-		test(`Verifies _onFindStateChange callback when searchScope='${JSON.stringify(searchScope)}',  visibility='${visibility}', searchString='${searchString}', matchCase='${matchCase}', wholeWord='${wholeWord}'`, async () => {
+		test(`Verifies _onFindStateChange callback when searchScope is defined,  visibility='${visibility}', searchString='${searchString}', matchCase='${matchCase}', wholeWord='${wholeWord}'`, async () => {
 			const { findReplaceStateChangedEvent, notebookFindModelMock, findDecorationsMock, notebookFindModel, notebookEditor } = await findStateChangeSetup(instantiationService, workbenchThemeService, notebookService, untitledNotebookInput, undefined, currentMatch, searchString, wholeWord, matchCase, searchScope);
 			notebookFindModelMock.setup(x => x.getIndexByRange(TypeMoq.It.isAny())).returns((_range: NotebookRange) => {
 				assert.strictEqual(_range, currentMatch, `getIndexByRange must be called with the same NotebookRange that we set for '_currentMatch' property of notebookEditor`);
@@ -485,6 +485,58 @@ suite('Test class NotebookEditor:', () => {
 		});
 	}
 
+
+	test(`Verifies callbacks registered by registerModelChanges`, async () => {
+		const searchString = getRandomString(1, 10);
+		const matchCase = true;
+		const wholeWord = true;
+		const searchScope = new NotebookRange(<ICellModel>{}, 1, 1, 1, 1);
+		const currentMatch = <NotebookRange>{};
+		const { notebookFindModelMock, notebookEditor } = await findStateChangeSetup(instantiationService, workbenchThemeService, notebookService, untitledNotebookInput, undefined, currentMatch, searchString, wholeWord, matchCase, searchScope);
+		notebookFindModelMock.setup(x => x.getIndexByRange(TypeMoq.It.isAny())).returns((_range: NotebookRange) => {
+			assert.strictEqual(_range, currentMatch, `getIndexByRange must be called with the same NotebookRange that we set for '_currentMatch' property of notebookEditor`);
+			return 0;
+		});
+		untitledNotebookInput.notebookFindModel.notebookModel = undefined; // clear preexisting notebookModel
+		const notebookModel = <NotebookModelStub>await notebookEditor.getNotebookModel();
+		notebookEditor['registerModelChanges']();
+		notebookModel.cells[0]['_onCellModeChanged'].fire(true); //fire cellModeChanged event on the first sell of our test notebookModel
+		notebookModel.contentChangedEmitter.fire({ changeType: NotebookChangeType.Saved });
+		(<NotebookService>notebookService)['_onNotebookEditorAdd'].fire(<INotebookEditor>{});
+		notebookFindModelMock.verify(x => x.find(
+			TypeMoq.It.isAnyString(),
+			TypeMoq.It.isAny(),
+			TypeMoq.It.isAny(),
+			TypeMoq.It.isAnyNumber()
+		), TypeMoq.Times.exactly(3));
+	});
+
+	test(`Verifies _triggerInputChange raises error and does not throw'`, async () => {
+		const searchString = getRandomString(1, 10);
+		const matchCase = true;
+		const wholeWord = true;
+		const searchScope = new NotebookRange(<ICellModel>{}, 1, 1, 1, 1);
+		const currentMatch = <NotebookRange>{};
+		const { notebookEditor } = await findStateChangeSetup(instantiationService, workbenchThemeService, notebookService, untitledNotebookInput, undefined, currentMatch, searchString, wholeWord, matchCase, searchScope);
+		untitledNotebookInput.notebookFindModel.notebookModel = undefined; // clear preexisting notebookModel
+		await notebookEditor.setNotebookModel();
+		let unexpectedErrorCalled = false;
+		const unexpectedErrorMessage = 'unexpected Error occurred';
+		const onUnexpectedErrorVerifier = (error: any) => {
+			unexpectedErrorCalled = true;
+			assert.ok(error instanceof Error, `${onUnexpectedError} must be passed an instance of ${Error}`);
+			assert.strictEqual((error as Error).message, unexpectedErrorMessage, `Error text must be '${unexpectedErrorMessage}' when exception occurs within _triggerInputChange method`);
+		};
+		errorHandler.setUnexpectedErrorHandler(onUnexpectedErrorVerifier);
+		notebookEditor['_onFindStateChange'] = async (changeEvent: FindReplaceStateChangedEvent) => {
+			try {
+				throw new Error(unexpectedErrorMessage);
+			} finally { }
+		};
+		notebookEditor['_triggerInputChange']();
+		assert.notStrictEqual(unexpectedErrorCalled, true, '_triggerInputChange did not raise an error when an exception occurred Notebook model should be defined after findState.change->notebookEditor._onFindReplaceStateChange call');
+	});
+
 	test(`Verifies _onFindStateChange callback sets notebookModel when it was not previously set'`, async () => {
 		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 		notebookEditor['_notebookModel'] = undefined;
@@ -499,6 +551,40 @@ suite('Test class NotebookEditor:', () => {
 		untitledNotebookInput.notebookFindModel.notebookModel = undefined; // clear preexisting notebookModel
 		const model = await notebookEditor.getNotebookModel();
 		assert.notStrictEqual(model, undefined, 'Notebook model should be defined after findState.change->notebookEditor._onFindReplaceStateChange call');
+	});
+
+	test(`Verifies _updateFinderMatchState with no notebookInput or notebookFindModel`, async () => {
+		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
+		const findState = notebookEditor['_findState'];
+		findState['changeMatchInfo'] = (matchPosition: number, matchCount: number, currentMatch: NotebookRange) => {
+			assert.strictEqual(matchPosition, 0, `matchPosition parameter to changeMatchInfo call when notebookInput or notebookFindModel is not defined should be 0`);
+			assert.strictEqual(matchCount, 0, `matchCount parameter to changeMatchInfo call when notebookInput or notebookFindModel is not defined should be 0`);
+			assert.strictEqual(currentMatch, undefined, `currentMatch parameter to changeMatchInfo call when notebookInput or notebookFindModel is not defined should be undefined`);
+		};
+		notebookEditor['_input'] = <NotebookInput>{};
+		notebookEditor['_updateFinderMatchState']();
+		notebookEditor['_input'] = undefined;
+		notebookEditor['_updateFinderMatchState']();
+	});
+
+	test(`Verifies onFindCountChange.fire invokes _updateFinderMatchState`, async () => {
+		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
+		untitledNotebookInput.notebookFindModel.notebookModel = undefined; // clear preexisting notebookModel
+		await notebookEditor.setNotebookModel();
+		const findState = notebookEditor['_findState'];
+		const newState: INewFindReplaceState = {
+			searchString: getRandomString(1, 10),
+			matchCase: true,
+			wholeWord: true,
+			searchScope: <NotebookRange>{}
+		};
+		findState.change(newState, false); //installs _updateFinderMatchState as event handler for onFindCountChange event
+		let updateFinderMatchStateCalled = false;
+		notebookEditor['_updateFinderMatchState'] = () => {
+			updateFinderMatchStateCalled = true;
+		};
+		notebookEditor.notebookInput.notebookFindModel['_onFindCountChange'].fire(null);
+		assert.strictEqual(updateFinderMatchStateCalled, true, `_updateFinderMatchState() should have been called`);
 	});
 });
 
