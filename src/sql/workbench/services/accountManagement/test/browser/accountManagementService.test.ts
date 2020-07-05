@@ -403,7 +403,7 @@ suite('Account Management Service Tests:', () => {
 			.returns(() => mockDialogController.object);
 
 		// If: I open the account dialog when it doesn't exist
-		return state.accountManagementService.openAccountListDialog()
+		return state.accountManagementService.openAccountListDialog(false)
 			.then(() => {
 				// Then:
 				// ... The instantiation service should have been called once
@@ -426,8 +426,8 @@ suite('Account Management Service Tests:', () => {
 			.returns(() => mockDialogController.object);
 
 		// If: I open the account dialog for a second time
-		return state.accountManagementService.openAccountListDialog()
-			.then(() => state.accountManagementService.openAccountListDialog())
+		return state.accountManagementService.openAccountListDialog(false)
+			.then(() => state.accountManagementService.openAccountListDialog(false))
 			.then(() => {
 				// Then:
 				// ... The instantiation service should have only been called once

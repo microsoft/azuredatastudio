@@ -8,6 +8,6 @@ import { IAccountManagementService } from 'sql/platform/accounts/common/interfac
 
 CommandsRegistry.registerCommand('workbench.actions.modal.linkedAccount', async accessor => {
 	const accountManagementService = accessor.get(IAccountManagementService);
-	await accountManagementService.openAccountListDialog();
+	await accountManagementService.openAccountListDialog(true);
 });
 

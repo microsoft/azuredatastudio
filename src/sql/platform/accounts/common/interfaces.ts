@@ -27,7 +27,7 @@ export interface IAccountManagementService {
 	refreshAccount(account: azdata.Account): Thenable<azdata.Account>;
 
 	// UI METHODS //////////////////////////////////////////////////////////
-	openAccountListDialog(): Thenable<void>;
+	openAccountListDialog(waitForDialogClose: boolean): Thenable<void>;
 	beginAutoOAuthDeviceCode(providerId: string, title: string, message: string, userCode: string, uri: string): Thenable<void>;
 	endAutoOAuthDeviceCode(): void;
 	cancelAutoOAuthDeviceCode(providerId: string): void;
