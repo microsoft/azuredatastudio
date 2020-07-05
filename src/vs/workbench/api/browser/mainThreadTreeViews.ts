@@ -219,7 +219,6 @@ export class TreeViewDataProvider implements ITreeViewDataProvider {
 		return this.itemsMap.size === 0;
 	}
 
-	// {{SQL CARBON EDIT}}
 	private async postGetChildren(elements: ITreeItem[]): Promise<ResolvableTreeItem[] | ITreeItem[]> {
 		const result: ResolvableTreeItem[] = [];
 		const results: ITreeItem[] = [];

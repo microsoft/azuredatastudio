@@ -30,8 +30,7 @@ import { IEnvironmentService } from 'vs/platform/environment/common/environment'
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IEditor } from 'vs/editor/common/editorCommon';
 import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/testCommon';
-
-
+import { Range } from 'vs/editor/common/core/range';
 
 suite('MarkdownTextTransformer', () => {
 	let markdownTextTransformer: MarkdownTextTransformer;
@@ -74,7 +73,6 @@ suite('MarkdownTextTransformer', () => {
 		// Couple widget with newly created text model
 		widget.setModel(textModel);
 
-		// let textModel = widget.getModel() as TextModel;
 		assert(!isUndefinedOrNull(widget.getModel()), 'Text model is undefined');
 	});
 
@@ -90,22 +88,21 @@ suite('MarkdownTextTransformer', () => {
 		testWithNoSelection(MarkdownButtonType.LINK, '[]()', true);
 		testWithNoSelection(MarkdownButtonType.LINK, '');
 		testWithNoSelection(MarkdownButtonType.UNORDERED_LIST, '- ', true);
-		testWithNoSelection(MarkdownButtonType.UNORDERED_LIST, '- ');
+		testWithNoSelection(MarkdownButtonType.UNORDERED_LIST, '');
 		testWithNoSelection(MarkdownButtonType.ORDERED_LIST, '1. ', true);
-		testWithNoSelection(MarkdownButtonType.ORDERED_LIST, '1. ');
+		testWithNoSelection(MarkdownButtonType.ORDERED_LIST, '');
 		testWithNoSelection(MarkdownButtonType.IMAGE, '![]()', true);
 		testWithNoSelection(MarkdownButtonType.IMAGE, '');
+		testWithNoSelection(MarkdownButtonType.HEADING1, '# ', true);
+		testWithNoSelection(MarkdownButtonType.HEADING1, '');
+		testWithNoSelection(MarkdownButtonType.HEADING2, '## ', true);
+		testWithNoSelection(MarkdownButtonType.HEADING2, '');
+		testWithNoSelection(MarkdownButtonType.HEADING3, '### ', true);
+		testWithNoSelection(MarkdownButtonType.HEADING3, '');
 	});
 
 	test('Transform text with one word selected', () => {
-		testWithSingleWordSelected(MarkdownButtonType.BOLD, '**WORD**');
-		testWithSingleWordSelected(MarkdownButtonType.ITALIC, '_WORD_');
 		testWithSingleWordSelected(MarkdownButtonType.CODE, '```\nWORD\n```');
-		testWithSingleWordSelected(MarkdownButtonType.HIGHLIGHT, '<mark>WORD</mark>');
-		testWithSingleWordSelected(MarkdownButtonType.LINK, '[WORD]()');
-		testWithSingleWordSelected(MarkdownButtonType.UNORDERED_LIST, '- WORD');
-		testWithSingleWordSelected(MarkdownButtonType.ORDERED_LIST, '1. WORD');
-		testWithSingleWordSelected(MarkdownButtonType.IMAGE, '![WORD]()');
 	});
 
 	test('Transform text with multiple words selected', () => {
@@ -128,6 +125,9 @@ suite('MarkdownTextTransformer', () => {
 		testWithMultipleLinesSelected(MarkdownButtonType.UNORDERED_LIST, '- Multi\n- Lines\n- Selected');
 		testWithMultipleLinesSelected(MarkdownButtonType.ORDERED_LIST, '1. Multi\n1. Lines\n1. Selected');
 		testWithMultipleLinesSelected(MarkdownButtonType.IMAGE, '![Multi\nLines\nSelected]()');
+		testWithMultipleLinesSelected(MarkdownButtonType.HEADING1, '# Multi\n# Lines\n# Selected');
+		testWithMultipleLinesSelected(MarkdownButtonType.HEADING2, '## Multi\n## Lines\n## Selected');
+		testWithMultipleLinesSelected(MarkdownButtonType.HEADING3, '### Multi\n### Lines\n### Selected');
 	});
 
 	test('Ensure notebook editor returns expected object', () => {
@@ -146,16 +146,26 @@ suite('MarkdownTextTransformer', () => {
 			textModel.setValue('');
 		}
 		markdownTextTransformer.transformText(type);
-		assert.equal(textModel.getValue(), expectedValue, `${MarkdownButtonType[type]} with no selection failed`);
+		assert.equal(textModel.getValue(), expectedValue, `${MarkdownButtonType[type]} with no selection failed (setValue ${setValue})`);
 	}
 
 	function testWithSingleWordSelected(type: MarkdownButtonType, expectedValue: string): void {
 		let value = 'WORD';
 		textModel.setValue(value);
-		widget.setSelection({ startColumn: 1, startLineNumber: 1, endColumn: 5, endLineNumber: 1 });
+
+		// Test transformation (adding text)
+		widget.setSelection({ startColumn: 1, startLineNumber: 1, endColumn: value.length + 1, endLineNumber: 1 });
 		assert.equal(textModel.getValueInRange(widget.getSelection()), value, 'Expected selection is not found');
 		markdownTextTransformer.transformText(type);
-		assert.equal(textModel.getValue(), expectedValue, `${MarkdownButtonType[type]} with single word selection failed`);
+		const textModelValue = textModel.getValue();
+		assert.equal(textModelValue, expectedValue, `${MarkdownButtonType[type]} with single word selection failed`);
+
+		// Test undo (removing text)
+		const valueRange = getValueRange(textModel, value);
+		assert.notEqual(valueRange, undefined, 'Could not find value in model after transformation');
+		widget.setSelection(valueRange);
+		markdownTextTransformer.transformText(type);
+		assert.equal(textModel.getValue(), value, `Undo operation for ${MarkdownButtonType[type]} with single word selection failed`);
 	}
 
 	function testWithMultipleWordsSelected(type: MarkdownButtonType, expectedValue: string): void {
@@ -165,6 +175,13 @@ suite('MarkdownTextTransformer', () => {
 		assert.equal(textModel.getValueInRange(widget.getSelection()), value, 'Expected multi-word selection is not found');
 		markdownTextTransformer.transformText(type);
 		assert.equal(textModel.getValue(), expectedValue, `${MarkdownButtonType[type]} with multiple word selection failed`);
+
+		// Test undo (removing text)
+		const valueRange = getValueRange(textModel, value);
+		assert.notEqual(valueRange, undefined, 'Could not find value in model after transformation');
+		widget.setSelection(valueRange);
+		markdownTextTransformer.transformText(type);
+		assert.equal(textModel.getValue(), value, `Undo operation for ${MarkdownButtonType[type]} with multiple word selection failed`);
 	}
 
 	function testWithMultipleLinesSelected(type: MarkdownButtonType, expectedValue: string): void {
@@ -174,6 +191,32 @@ suite('MarkdownTextTransformer', () => {
 		assert.equal(textModel.getValueInRange(widget.getSelection()), value, 'Expected multi-line selection is not found');
 		markdownTextTransformer.transformText(type);
 		assert.equal(textModel.getValue(), expectedValue, `${MarkdownButtonType[type]} with multiple line selection failed`);
+
+		// Test undo (removing text)
+		let valueRange = getValueRange(textModel, 'Multi');
+		// Modify the range to include all the lines
+		valueRange = new Range(valueRange.startLineNumber, valueRange.startColumn, valueRange.endLineNumber + 2, 9);
+		assert.notEqual(valueRange, undefined, 'Could not find value in model after transformation');
+		widget.setSelection(valueRange);
+		markdownTextTransformer.transformText(type);
+		assert.equal(textModel.getValue(), value, `Undo operation for ${MarkdownButtonType[type]} with multiple line selection failed`);
 	}
 });
 
+/**
+ * Searches the model for the specified string value and if found returns a range for the last
+ * occurence of that value.
+ * @param textModel The model to search
+ * @param value The value to search for
+ */
+function getValueRange(textModel: TextModel, value: string): Range | undefined {
+	const linesContent = textModel.getLinesContent();
+	let range = undefined;
+	linesContent.forEach((line, index) => {
+		const valueIndex = line.indexOf(value);
+		if (valueIndex >= 0) {
+			range = new Range(index + 1, valueIndex + 1, index + 1, valueIndex + value.length + 1);
+		}
+	});
+	return range;
+}
