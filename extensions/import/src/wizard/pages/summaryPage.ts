@@ -10,10 +10,10 @@ import { InsertDataResponse } from '../../services/contracts';
 import * as constants from '../../common/constants';
 
 export class SummaryPage extends ImportPage {
-	private table: azdata.TableComponent;
-	private statusText: azdata.TextComponent;
-	private loading: azdata.LoadingComponent;
-	private form: azdata.FormContainer;
+	public table: azdata.TableComponent;
+	public statusText: azdata.TextComponent;
+	public loading: azdata.LoadingComponent;
+	public form: azdata.FormContainer;
 
 	async start(): Promise<boolean> {
 		this.table = this.view.modelBuilder.table().component();

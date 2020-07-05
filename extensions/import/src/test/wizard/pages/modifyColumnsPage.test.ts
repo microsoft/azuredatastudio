@@ -12,35 +12,68 @@ import * as should from 'should';
 import { ModifyColumnsPage } from '../../../wizard/pages/modifyColumnsPage';
 import { ImportDataModel } from '../../../wizard/api/models';
 import { TestImportDataModel } from '../../utils.test';
+import { ImportPage } from '../../../wizard/api/importPage';
+// import { FlatFileProvider, PROSEDiscoveryParams, InsertDataParams, GetColumnInfoParams, ChangeColumnSettingsParams } from '../../../services/contracts';
 
 describe('import extension modify Column Page', function () {
-	let _apiWrapper: ApiWrapper;
-	let page1: azdata.window.WizardPage;
-	let modifyColumnPage: ModifyColumnsPage;
+	let wizard: azdata.window.Wizard;
+	let page: azdata.window.WizardPage;
+	let modifyColumnsPage: ModifyColumnsPage;
 	let mockFlatFileWizard: TypeMoq.IMock<FlatFileWizard>;
 	let mockImportModel: TypeMoq.IMock<ImportDataModel>;
+	let apiWrapper: ApiWrapper;
+	let pages: Map<number, ImportPage> = new Map<number, ImportPage>();
 
-	beforeEach(function () {
-		// Creating the page Wizard
-		_apiWrapper = new ApiWrapper();
-		page1 = this._apiWrapper.createWizardPage(constants.page1NameText);
-		mockFlatFileWizard = TypeMoq.Mock.ofType(FlatFileWizard, TypeMoq.MockBehavior.Loose, undefined, TypeMoq.It.isAny(), _apiWrapper);
+	beforeEach(async function () {
+		apiWrapper = new ApiWrapper();
+		mockFlatFileWizard = TypeMoq.Mock.ofType(FlatFileWizard, TypeMoq.MockBehavior.Loose, undefined, TypeMoq.It.isAny(), apiWrapper);
 		mockImportModel = TypeMoq.Mock.ofType(TestImportDataModel, TypeMoq.MockBehavior.Loose);
-		page1.registerContent(async (view: any) => {
-			modifyColumnPage = new ModifyColumnsPage(mockFlatFileWizard.object, this.page1, mockImportModel.object, view, this.provider, _apiWrapper);
-		});
-
+		wizard = apiWrapper.createWizard(constants.wizardNameText);
+		page = apiWrapper.createWizardPage(constants.page3NameText);
 
 	});
 
-	describe('checking if all components are initialized properly', async function () {
-		await modifyColumnPage.start().then(() => {
-			modifyColumnPage.setupNavigationValidator();
-			modifyColumnPage.onPageEnter();
+	it('checking if all components are initialized properly', async function () {
+		await new Promise(function (resolve) {
+			page.registerContent(async (view) => {
+				modifyColumnsPage = new ModifyColumnsPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny(), apiWrapper);
+				pages.set(1, modifyColumnsPage);
+				await modifyColumnsPage.start().then(() => {
+					modifyColumnsPage.setupNavigationValidator();
+					modifyColumnsPage.onPageEnter();
+					resolve();
+				});
+			});
+			wizard.generateScriptButton.hidden = true;
+
+			wizard.pages = [page];
+			wizard.open();
 		});
-		should.notEqual(modifyColumnPage.table, undefined);
-		should.notEqual(modifyColumnPage.text, undefined);
-		should.notEqual(modifyColumnPage.loading, undefined);
-		should.notEqual(modifyColumnPage.form, undefined);
+		should.notEqual(modifyColumnsPage.table, undefined);
+		should.notEqual(modifyColumnsPage.text, undefined);
+		should.notEqual(modifyColumnsPage.loading, undefined);
+		should.notEqual(modifyColumnsPage.form, undefined);
 	});
+
+	it('handleImport updates table value correctly when import is successful', async function() {
+
+	});
+
 });
+
+// class TestFlatFileProvider implements FlatFileProvider{
+// 	providerId?: string;
+// 	sendPROSEDiscoveryRequest(params: PROSEDiscoveryParams): Thenable<import("../../../services/contracts").PROSEDiscoveryResponse> {
+// 		throw new Error('Method not implemented.');
+// 	}
+// 	sendInsertDataRequest(params: InsertDataParams): Thenable<import("../../../services/contracts").InsertDataResponse> {
+// 		throw new Error('Method not implemented.');
+// 	}
+// 	sendGetColumnInfoRequest(params: GetColumnInfoParams): Thenable<import("../../../services/contracts").GetColumnInfoResponse> {
+// 		throw new Error('Method not implemented.');
+// 	}
+// 	sendChangeColumnSettingsRequest(params: ChangeColumnSettingsParams): Thenable<import("../../../services/contracts").ChangeColumnSettingsResponse> {
+// 		throw new Error('Method not implemented.');
+// 	}
+
+// }

@@ -11,17 +11,27 @@ import { ImportDataModel } from '../../../wizard/api/models';
 import { TestImportDataModel, TestQueryProvider } from '../../utils.test';
 import { FileConfigPage } from '../../../wizard/pages/fileConfigPage';
 import * as should from 'should';
+import { ImportPage } from '../../../wizard/api/importPage';
+import * as constants from '../../../common/constants';
 
-describe('import extension wizard pages', function () {
+describe('File config page', function () {
 
 	let mockFlatFileWizard: TypeMoq.IMock<FlatFileWizard>;
 	let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
 	let mockImportModel: TypeMoq.IMock<ImportDataModel>;
+	let wizard: azdata.window.Wizard;
+	let page: azdata.window.WizardPage;
+	let pages: Map<number, ImportPage> = new Map<number, ImportPage>();
+	let apiWrapper: ApiWrapper;
+	let fileConfigPage: FileConfigPage;
+
+
 
 	this.beforeEach(function () {
 		mockApiWrapper = TypeMoq.Mock.ofType(ApiWrapper);
 		mockFlatFileWizard = TypeMoq.Mock.ofType(FlatFileWizard, TypeMoq.MockBehavior.Loose, undefined, TypeMoq.It.isAny(), mockApiWrapper.object);
 		mockImportModel = TypeMoq.Mock.ofType(TestImportDataModel, TypeMoq.MockBehavior.Loose);
+		apiWrapper = new ApiWrapper();
 	});
 
 	it('get schema returns active schema first', async function () {
@@ -62,5 +72,35 @@ describe('import extension wizard pages', function () {
 		let actualSchemaValues = await importPage.getSchemaValues();
 
 		should(expectedSchemaValues).deepEqual(actualSchemaValues);
+	});
+
+	it('checking if all components are initialized properly', async function () {
+		wizard = apiWrapper.createWizard(constants.wizardNameText);
+		page = apiWrapper.createWizardPage(constants.page3NameText);
+
+		await new Promise(function (resolve) {
+			page.registerContent(async (view) => {
+				fileConfigPage = new FileConfigPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny(), apiWrapper);
+				pages.set(1, fileConfigPage);
+				await fileConfigPage.start().then(() => {
+					fileConfigPage.setupNavigationValidator();
+					fileConfigPage.onPageEnter();
+					resolve();
+				});
+			});
+			wizard.generateScriptButton.hidden = true;
+
+			wizard.pages = [page];
+			wizard.open();
+		});
+		should.notEqual(fileConfigPage.serverDropdown, undefined);
+		should.notEqual(fileConfigPage.databaseDropdown, undefined);
+		should.notEqual(fileConfigPage.fileTextBox, undefined);
+		should.notEqual(fileConfigPage.fileButton, undefined);
+		should.notEqual(fileConfigPage.tableNameTextBox, undefined);
+		should.notEqual(fileConfigPage.schemaDropdown, undefined);
+		should.notEqual(fileConfigPage.form, undefined);
+		should.notEqual(fileConfigPage.databaseLoader, undefined);
+		should.notEqual(fileConfigPage.schemaLoader, undefined);
 	});
 });

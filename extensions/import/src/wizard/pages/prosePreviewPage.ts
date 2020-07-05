@@ -9,11 +9,11 @@ import * as constants from '../../common/constants';
 
 export class ProsePreviewPage extends ImportPage {
 
-	private table: azdata.TableComponent;
-	private loading: azdata.LoadingComponent;
-	private form: azdata.FormContainer;
-	private refresh: azdata.ButtonComponent;
-	private resultTextComponent: azdata.TextComponent;
+	public table: azdata.TableComponent;
+	public loading: azdata.LoadingComponent;
+	public form: azdata.FormContainer;
+	public refresh: azdata.ButtonComponent;
+	public resultTextComponent: azdata.TextComponent;
 	private isSuccess: boolean;
 
 	async start(): Promise<boolean> {

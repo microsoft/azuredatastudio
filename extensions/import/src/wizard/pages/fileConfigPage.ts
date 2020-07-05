@@ -10,16 +10,16 @@ import * as constants from '../../common/constants';
 
 export class FileConfigPage extends ImportPage {
 
-	private serverDropdown: azdata.DropDownComponent;
-	private databaseDropdown: azdata.DropDownComponent;
-	private fileTextBox: azdata.InputBoxComponent;
-	private fileButton: azdata.ButtonComponent;
-	private tableNameTextBox: azdata.InputBoxComponent;
-	private schemaDropdown: azdata.DropDownComponent;
-	private form: azdata.FormContainer;
+	public serverDropdown: azdata.DropDownComponent;
+	public databaseDropdown: azdata.DropDownComponent;
+	public fileTextBox: azdata.InputBoxComponent;
+	public fileButton: azdata.ButtonComponent;
+	public tableNameTextBox: azdata.InputBoxComponent;
+	public schemaDropdown: azdata.DropDownComponent;
+	public form: azdata.FormContainer;
 
-	private databaseLoader: azdata.LoadingComponent;
-	private schemaLoader: azdata.LoadingComponent;
+	public databaseLoader: azdata.LoadingComponent;
+	public schemaLoader: azdata.LoadingComponent;
 
 	private tableNames: string[] = [];
 
