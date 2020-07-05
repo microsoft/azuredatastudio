@@ -18,3 +18,8 @@
 	box-sizing: border-box;
 	padding: 5px 12px 6px 16px;
 }
+
+.search-view .resultmessages {
+	margin-top: 5px;
+	cursor: default;
+}

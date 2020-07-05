@@ -36,7 +36,7 @@ import { QueryBuilder, ITextQueryBuilderOptions } from 'vs/workbench/contrib/sea
 import { IFileService } from 'vs/platform/files/common/files';
 import { getOutOfWorkspaceEditorResources } from 'vs/workbench/contrib/search/common/search';
 import { TreeViewPane } from 'sql/workbench/browser/parts/views/treeView';
-import { NotebookSearchView } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearchView';
+import { NotebookSearchView } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearch';
 import * as path from 'vs/base/common/path';
 import { URI } from 'vs/base/common/uri';
 import { isString } from 'vs/base/common/types';
@@ -274,7 +274,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 								let folderToSearch: IFolderQuery = { folder: URI.file(path.join(isString(root.tooltip) ? root.tooltip : root.tooltip.value, 'content')) };
 								query.folderQueries.push(folderToSearch);
 								filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
-								this.searchView.doSearch(query, null, filesToIncludeFiltered, false, this.searchWidget);
+								this.searchView.startSearch(query, null, filesToIncludeFiltered, false, this.searchWidget);
 							});
 						}
 					}
