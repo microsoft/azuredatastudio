@@ -4,14 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import { EOL } from 'os';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DeployClusterWizard } from '../deployClusterWizard';
-import { SectionInfo, FieldType, LabelPosition } from '../../../interfaces';
-import { createSection, InputComponents, setModelValues, Validator, getInputBoxComponent, isValidSQLPassword, getInvalidSQLPasswordMessage, getPasswordMismatchMessage, InputComponent } from '../../modelViewUtils';
+import { FieldType, LabelPosition, SectionInfo } from '../../../interfaces';
+import { createSection, getInputBoxComponent, getInvalidSQLPasswordMessage, getPasswordMismatchMessage, InputComponentInfo, InputComponents, isValidSQLPassword, setModelValues, Validator } from '../../modelViewUtils';
 import { WizardPageBase } from '../../wizardPageBase';
 import * as VariableNames from '../constants';
-import { EOL } from 'os';
+import { DeployClusterWizard } from '../deployClusterWizard';
 import { AuthenticationMode } from '../deployClusterWizardModel';
 const localize = nls.loadMessageBundle();
 
@@ -174,7 +174,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					variableName: VariableNames.DomainServiceAccountPassword_VariableName
 				}, {
 					type: FieldType.Text,
-					label: localize('deployCluster.AppOwers', "App owners"),
+					label: localize('deployCluster.AppOwners', "App owners"),
 					required: false,
 					variableName: VariableNames.AppOwners_VariableName,
 					placeHolder: localize('deployCluster.AppOwnersPlaceHolder', "Use comma to separate the values."),
@@ -186,47 +186,62 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					variableName: VariableNames.AppReaders_VariableName,
 					placeHolder: localize('deployCluster.AppReadersPlaceHolder', "Use comma to separate the values."),
 					description: localize('deployCluster.AppReadersDescription', "The Active Directory users or groups of app readers. Use comma as separator them if there are multiple users/groups.")
+				}, {
+					type: FieldType.Text,
+					label: localize('deployCluster.Subdomain', "Subdomain"),
+					required: false,
+					variableName: VariableNames.Subdomain_VariableName,
+					description: localize('deployCluster.SubdomainDescription', "A unique DNS subdomain to use for this SQL Server Big Data Cluster. If not provided, the cluster name will be used as the default value.")
+				}, {
+					type: FieldType.Text,
+					label: localize('deployCluster.AccountPrefix', "Account prefix"),
+					required: false,
+					variableName: VariableNames.AccountPrefix_VariableName,
+					description: localize('deployCluster.AccountPrefixDescription', "A unique prefix for AD accounts SQL Server Big Data Cluster will generate. If not provided, the subdomain name will be used as the default value. If a subdomain is not provided, the cluster name will be used as the default value.")
 				}
 			]
 		};
-		this.pageObject.registerContent((view: azdata.ModelView) => {
-			const basicSettingsGroup = createSection({
+		this.pageObject.registerContent(async (view: azdata.ModelView) => {
+			const basicSettingsGroup = await createSection({
 				view: view,
 				container: self.wizard.wizardObject,
+				inputComponents: this.wizard.inputComponents,
 				sectionInfo: basicSection,
 				onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 					self.wizard.registerDisposable(disposable);
 				},
-				onNewInputComponentCreated: (name: string, component: InputComponent): void => {
-					self.inputComponents[name] = { component: component };
+				onNewInputComponentCreated: (name: string, inputComponent: InputComponentInfo): void => {
+					self.inputComponents[name] = { component: inputComponent.component };
 				},
 				onNewValidatorCreated: (validator: Validator): void => {
 					self.validators.push(validator);
 				}
 			});
-			const activeDirectorySettingsGroup = createSection({
+			const activeDirectorySettingsGroup = await createSection({
 				view: view,
 				container: self.wizard.wizardObject,
+				inputComponents: this.wizard.inputComponents,
 				sectionInfo: activeDirectorySection,
 				onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 					self.wizard.registerDisposable(disposable);
 				},
-				onNewInputComponentCreated: (name: string, component: InputComponent): void => {
-					self.inputComponents[name] = { component: component };
+				onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo): void => {
+					this.inputComponents[name] = { component: inputComponentInfo.component };
 				},
 				onNewValidatorCreated: (validator: Validator): void => {
 					self.validators.push(validator);
 				}
 			});
-			const dockerSettingsGroup = createSection({
+			const dockerSettingsGroup = await createSection({
 				view: view,
 				container: self.wizard.wizardObject,
+				inputComponents: this.wizard.inputComponents,
 				sectionInfo: dockerSection,
 				onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 					self.wizard.registerDisposable(disposable);
 				},
-				onNewInputComponentCreated: (name: string, component: InputComponent): void => {
-					self.inputComponents[name] = { component: component };
+				onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo): void => {
+					this.inputComponents[name] = { component: inputComponentInfo.component };
 				},
 				onNewValidatorCreated: (validator: Validator): void => {
 					self.validators.push(validator);
@@ -266,6 +281,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 
 	public onLeave() {
 		setModelValues(this.inputComponents, this.wizard.model);
+		Object.assign(this.wizard.inputComponents, this.inputComponents);
 		if (this.wizard.model.authenticationMode === AuthenticationMode.ActiveDirectory) {
 			const variableDNSPrefixMapping: { [s: string]: string } = {};
 			variableDNSPrefixMapping[VariableNames.AppServiceProxyDNSName_VariableName] = 'bdc-appproxy';
@@ -275,10 +291,9 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			variableDNSPrefixMapping[VariableNames.SQLServerDNSName_VariableName] = 'bdc-sql';
 			variableDNSPrefixMapping[VariableNames.ServiceProxyDNSName_VariableName] = 'bdc-proxy';
 
+			const subdomain = this.wizard.model.getStringValue(VariableNames.Subdomain_VariableName) || this.wizard.model.getStringValue(VariableNames.ClusterName_VariableName);
 			Object.keys(variableDNSPrefixMapping).forEach((variableName: string) => {
-				if (!this.wizard.model.getStringValue(variableName)) {
-					this.wizard.model.setPropertyValue(variableName, `${variableDNSPrefixMapping[variableName]}.${this.wizard.model.getStringValue(VariableNames.DomainDNSName_VariableName)}`);
-				}
+				this.wizard.model.setPropertyValue(variableName, `${variableDNSPrefixMapping[variableName]}.${subdomain}.${this.wizard.model.getStringValue(VariableNames.DomainDNSName_VariableName)}`);
 			});
 		}
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
@@ -286,7 +301,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		});
 	}
 
-	public onEnter() {
+	public async onEnter(): Promise<void> {
 		getInputBoxComponent(VariableNames.DockerRegistry_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(VariableNames.DockerRegistry_VariableName);
 		getInputBoxComponent(VariableNames.DockerRepository_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(VariableNames.DockerRepository_VariableName);
 		getInputBoxComponent(VariableNames.DockerImageTag_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(VariableNames.DockerImageTag_VariableName);

@@ -287,7 +287,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 
 			editButton = this._modelBuilder.button().withProperties({
 				label: '',
-				title: constants.deleteTitle,
+				title: constants.editTitle,
 				iconPath: {
 					dark: this.asAbsolutePath('images/dark/edit_inverse.svg'),
 					light: this.asAbsolutePath('images/light/edit.svg')

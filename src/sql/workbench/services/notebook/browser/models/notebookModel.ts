@@ -29,6 +29,7 @@ import { find, firstIndex } from 'vs/base/common/arrays';
 import { startsWith } from 'vs/base/common/strings';
 import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { Deferred } from 'sql/base/common/promise';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -54,7 +55,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _layoutChanged = new Emitter<void>();
 	private _inErrorState: boolean = false;
 	private _activeClientSession: IClientSession;
-	private _sessionLoadFinished: Promise<void>;
+	private _sessionLoadFinished = new Deferred<void>();
 	private _onClientSessionReady = new Emitter<IClientSession>();
 	private _onProviderIdChanged = new Emitter<string>();
 	private _trustedMode: boolean;
@@ -147,7 +148,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	public get contentChanged(): Event<NotebookContentChange> {
 		return this._contentChangedEmitter.event;
 	}
-
 
 	public get isSessionReady(): boolean {
 		return !!this._activeClientSession;
@@ -378,7 +378,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 		// Set newly created cell as active cell
 		this.updateActiveCell(cell);
-
+		cell.isEditMode = true;
 		this._contentChangedEmitter.fire({
 			changeType: NotebookChangeType.CellsModified,
 			cells: [cell],
@@ -492,7 +492,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			clientSession.statusChanged(async (session) => {
 				this._kernelsChangedEmitter.fire(session.kernel);
 			});
-			await clientSession.initialize();
+			await clientSession.initialize().then(() => {
+				this._sessionLoadFinished.resolve();
+			});
 			// By somehow we have to wait for ready, otherwise may not be called for some cases.
 			await clientSession.ready;
 			if (clientSession.kernel) {

@@ -9,7 +9,7 @@
     "vscode": "^1.25.0",
     "azdata": ">=1.13.0"
   },
-  "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
+  "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",
   "aiKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e",
   "activationEvents": [
@@ -64,7 +64,7 @@
     }
   },
   "dependencies": {
-    "ads-extension-telemetry": "github:Charles-Gagnon/ads-extension-telemetry#0.1.0",
+    "ads-extension-telemetry": "^1.0.0",
     "vscode-nls": "^4.0.0"
   },
   "devDependencies": {
@@ -75,7 +75,7 @@
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.1",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "github:corivera/vscodetestcover#1.0.6"
+    "vscodetestcover": "^1.0.9"
   },
   "__metadata": {
     "id": "37",

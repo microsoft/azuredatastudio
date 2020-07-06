@@ -38,40 +38,35 @@ export class BrowserClipboardService implements IClipboardService {
 	/**
 	 * Reads text from the system find pasteboard.
 	 */
-	readFindText(): string {
+	readFindText(): Promise<string> {
 		return this._vsClipboardService.readFindText();
 	}
 
 	/**
 	 * Writes text to the system find pasteboard.
 	 */
-	writeFindText(text: string): void {
-		this._vsClipboardService.writeFindText(text);
+	writeFindText(text: string): Promise<void> {
+		return this._vsClipboardService.writeFindText(text);
 	}
 
 	/**
 	 * Writes resources to the system clipboard.
 	 */
-	writeResources(resources: URI[]): void {
-		this._vsClipboardService.writeResources(resources);
+	writeResources(resources: URI[]): Promise<void> {
+		return this._vsClipboardService.writeResources(resources);
 	}
 
 	/**
 	 * Reads resources from the system clipboard.
 	 */
-	readResources(): URI[] {
+	readResources(): Promise<URI[]> {
 		return this._vsClipboardService.readResources();
 	}
 
 	/**
 	 * Find out if resources are copied to the clipboard.
 	 */
-	hasResources(): boolean {
+	hasResources(): Promise<boolean> {
 		return this._vsClipboardService.hasResources();
-	}
-
-	readTextSync(): string | undefined {
-		// eslint-disable-next-line no-sync
-		return this._vsClipboardService.readTextSync();
 	}
 }

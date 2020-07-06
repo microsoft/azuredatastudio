@@ -15,7 +15,7 @@ import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview
 import { FindInput, IFindInputStyles } from 'vs/base/browser/ui/findinput/findInput';
 import { IMessage as InputBoxMessage } from 'vs/base/browser/ui/inputbox/inputBox';
 import { Widget } from 'vs/base/browser/ui/widget';
-import { Sash, IHorizontalSashLayoutProvider, ISashEvent, Orientation } from 'vs/base/browser/ui/sash/sash';
+import { Sash, ISashEvent, Orientation, IVerticalSashLayoutProvider } from 'vs/base/browser/ui/sash/sash';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IOverlayWidget, IOverlayWidgetPosition, OverlayWidgetPositionPreference } from 'vs/editor/browser/editorBrowser';
 import { FIND_IDS, CONTEXT_FIND_INPUT_FOCUSED } from 'vs/editor/contrib/find/findModel';
@@ -61,7 +61,7 @@ export interface IConfigurationChangedEvent {
 	layoutInfo?: boolean;
 }
 
-export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSashLayoutProvider {
+export class FindWidget extends Widget implements IOverlayWidget, IVerticalSashLayoutProvider {
 	private static ID = 'editor.contrib.findWidget';
 	private _tableController: ITableController;
 	private _state: FindReplaceState;
@@ -349,14 +349,8 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 	}
 
 	// ----- sash
-	public getHorizontalSashTop(sash: Sash): number {
+	public getVerticalSashLeft(sash: Sash): number {
 		return 0;
-	}
-	public getHorizontalSashLeft?(sash: Sash): number {
-		return 0;
-	}
-	public getHorizontalSashWidth?(sash: Sash): number {
-		return 500;
 	}
 
 	// ----- initialization
@@ -427,7 +421,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 		// Previous button
 		this._prevBtn = this._register(new SimpleButton({
 			label: NLS_PREVIOUS_MATCH_BTN_LABEL + this._keybindingLabelFor(FIND_IDS.PreviousMatchFindAction),
-			className: 'previous',
+			className: 'codicon codicon-arrow-up',
 			onTrigger: () => {
 				this._tableController.getAction(ACTION_IDS.FIND_PREVIOUS).run().then(null, onUnexpectedError);
 			},
@@ -437,7 +431,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 		// Next button
 		this._nextBtn = this._register(new SimpleButton({
 			label: NLS_NEXT_MATCH_BTN_LABEL + this._keybindingLabelFor(FIND_IDS.NextMatchFindAction),
-			className: 'next',
+			className: 'codicon codicon-arrow-down',
 			onTrigger: () => {
 				this._tableController.getAction(ACTION_IDS.FIND_NEXT).run().then(null, onUnexpectedError);
 			},
@@ -447,21 +441,24 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 		let findPart = document.createElement('div');
 		findPart.className = 'find-part';
 		findPart.appendChild(this._findInput.domNode);
-		findPart.appendChild(this._matchesCount);
-		findPart.appendChild(this._prevBtn.domNode);
-		findPart.appendChild(this._nextBtn.domNode);
+		let actionsContainer = document.createElement('div');
+		findPart.appendChild(actionsContainer);
+		actionsContainer.className = 'find-actions';
+		actionsContainer.appendChild(this._matchesCount);
+		actionsContainer.appendChild(this._prevBtn.domNode);
+		actionsContainer.appendChild(this._nextBtn.domNode);
 
 		// Close button
 		this._closeBtn = this._register(new SimpleButton({
 			label: NLS_CLOSE_BTN_LABEL + this._keybindingLabelFor(FIND_IDS.CloseFindWidgetCommand),
-			className: 'close-fw',
+			className: 'codicon codicon-close',
 			onTrigger: () => {
 				this._state.change({ isRevealed: false, searchScope: null }, false);
 			},
 			onKeyDown: () => { }
 		}));
 
-		findPart.appendChild(this._closeBtn.domNode);
+		actionsContainer.appendChild(this._closeBtn.domNode);
 
 		return findPart;
 	}

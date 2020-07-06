@@ -6,9 +6,9 @@
 import * as azdata from 'azdata';
 import * as loc from '../../../localizedConstants';
 import { IconPathHelper } from '../../../constants';
-import { PostgresDashboardPage } from './postgresDashboardPage';
+import { DashboardPage } from '../../components/dashboardPage';
 
-export class PostgresNetworkingPage extends PostgresDashboardPage {
+export class PostgresNetworkingPage extends DashboardPage {
 	protected get title(): string {
 		return loc.networking;
 	}

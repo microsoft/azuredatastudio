@@ -71,7 +71,7 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 			{},
 			{
 				allowScripts: true
-			});
+			}, undefined);
 
 		this._webview.mountTo(this._el.nativeElement);
 
@@ -114,7 +114,7 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 
 	private sendMessage(): void {
 		if (this._webview && this.message) {
-			this._webview.sendMessage(this.message);
+			this._webview.postMessage(this.message);
 		}
 	}
 

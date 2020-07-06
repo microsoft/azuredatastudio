@@ -18,7 +18,7 @@ import * as utils from '../common/utils';
 import { OutputChannel, ConfigurationTarget, window } from 'vscode';
 import { Deferred } from '../common/promise';
 import { ConfigurePythonWizard } from '../dialog/configurePython/configurePythonWizard';
-import { IPrompter, IQuestion, QuestionTypes } from '../prompts/question';
+import { IPrompter, IQuestion, confirm } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
 import { ConfigurePythonDialog } from '../dialog/configurePython/configurePythonDialog';
 
@@ -34,7 +34,6 @@ const msgTaskName = localize('msgTaskName', "Installing Notebook dependencies");
 const msgInstallPkgStart = localize('msgInstallPkgStart', "Installing Notebook dependencies, see Tasks view for more information");
 const msgInstallPkgFinish = localize('msgInstallPkgFinish', "Notebook dependencies installation is complete");
 const msgPythonRunningError = localize('msgPythonRunningError', "Cannot overwrite an existing Python installation while python is running. Please close any active notebooks before proceeding.");
-const msgSkipPythonInstall = localize('msgSkipPythonInstall', "Python already exists at the specific location. Skipping install.");
 const msgWaitingForInstall = localize('msgWaitingForInstall', "Another Python installation is currently in progress. Waiting for it to complete.");
 function msgDependenciesInstallationFailed(errorMessage: string): string { return localize('msgDependenciesInstallationFailed', "Installing Notebook dependencies failed with error: {0}", errorMessage); }
 function msgDownloadPython(platform: string, pythonDownloadUrl: string): string { return localize('msgDownloadPython', "Downloading local python for platform: {0} to {1}", platform, pythonDownloadUrl); }
@@ -110,6 +109,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	private readonly _expectedCondaPackages: PythonPkgDetails[];
 
 	private _kernelSetupCache: Map<string, boolean>;
+	private readonly _requiredKernelPackages: Map<string, PythonPkgDetails[]>;
+	private readonly _requiredPackagesSet: Set<string>;
 
 	constructor(extensionPath: string, outputChannel: OutputChannel, apiWrapper: ApiWrapper, pythonInstallationPath?: string) {
 		this.extensionPath = extensionPath;
@@ -129,28 +130,66 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}
 
 		this._kernelSetupCache = new Map<string, boolean>();
+		this._requiredKernelPackages = new Map<string, PythonPkgDetails[]>();
+
+		let jupyterPkg = {
+			name: 'jupyter',
+			version: '1.0.0'
+		};
+		this._requiredKernelPackages.set(constants.python3DisplayName, [jupyterPkg]);
+
+		let powershellPkg = {
+			name: 'powershell-kernel',
+			version: '0.1.3'
+		};
+		this._requiredKernelPackages.set(constants.powershellDisplayName, [jupyterPkg, powershellPkg]);
+
+		let sparkPackages = [
+			jupyterPkg,
+			{
+				name: 'sparkmagic',
+				version: '0.12.9'
+			}, {
+				name: 'pandas',
+				version: '0.24.2'
+			}, {
+				name: 'prose-codeaccelerator',
+				version: '1.3.0'
+			}];
+		this._requiredKernelPackages.set(constants.pysparkDisplayName, sparkPackages);
+		this._requiredKernelPackages.set(constants.sparkScalaDisplayName, sparkPackages);
+		this._requiredKernelPackages.set(constants.sparkRDisplayName, sparkPackages);
+
+		let allPackages = sparkPackages.concat(powershellPkg);
+		this._requiredKernelPackages.set(constants.allKernelsName, allPackages);
+
+		this._requiredPackagesSet = new Set<string>();
+		allPackages.forEach(pkg => {
+			this._requiredPackagesSet.add(pkg.name);
+		});
 	}
 
 	private async installDependencies(backgroundOperation: azdata.BackgroundOperation, forceInstall: boolean, specificPackages?: PythonPkgDetails[]): Promise<void> {
-		if (!(await utils.exists(this._pythonExecutable)) || forceInstall || this._usingExistingPython) {
-			window.showInformationMessage(msgInstallPkgStart);
+		window.showInformationMessage(msgInstallPkgStart);
 
-			this.outputChannel.show(true);
-			this.outputChannel.appendLine(msgInstallPkgProgress);
-			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgInstallPkgProgress);
+		this.outputChannel.show(true);
+		this.outputChannel.appendLine(msgInstallPkgProgress);
+		backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgInstallPkgProgress);
 
-			try {
+		try {
+			let pythonExists = await utils.exists(this._pythonExecutable);
+			if (!pythonExists || forceInstall) {
 				await this.installPythonPackage(backgroundOperation, this._usingExistingPython, this._pythonInstallationPath, this.outputChannel);
-				await this.upgradePythonPackages(false, forceInstall, specificPackages);
-			} catch (err) {
-				this.outputChannel.appendLine(msgDependenciesInstallationFailed(utils.getErrorMessage(err)));
-				throw err;
 			}
-
-			this.outputChannel.appendLine(msgInstallPkgFinish);
-			backgroundOperation.updateStatus(azdata.TaskStatus.Succeeded, msgInstallPkgFinish);
-			window.showInformationMessage(msgInstallPkgFinish);
+			await this.upgradePythonPackages(false, forceInstall, specificPackages);
+		} catch (err) {
+			this.outputChannel.appendLine(msgDependenciesInstallationFailed(utils.getErrorMessage(err)));
+			throw err;
 		}
+
+		this.outputChannel.appendLine(msgInstallPkgFinish);
+		backgroundOperation.updateStatus(azdata.TaskStatus.Succeeded, msgInstallPkgFinish);
+		window.showInformationMessage(msgInstallPkgFinish);
 	}
 
 	public installPythonPackage(backgroundOperation: azdata.BackgroundOperation, usingExistingPython: boolean, pythonInstallationPath: string, outputChannel: OutputChannel): Promise<void> {
@@ -388,41 +427,29 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		this._usingExistingPython = installSettings.existingPython;
 		await this.configurePackagePaths();
 
-		let updateConfig = async () => {
-			let notebookConfig = this.apiWrapper.getConfiguration(constants.notebookConfigKey);
-			await notebookConfig.update(constants.pythonPathConfigKey, this._pythonInstallationPath, ConfigurationTarget.Global);
-			await notebookConfig.update(constants.existingPythonConfigKey, this._usingExistingPython, ConfigurationTarget.Global);
-			await this.configurePackagePaths();
-		};
+		this.apiWrapper.startBackgroundOperation({
+			displayName: msgTaskName,
+			description: msgTaskName,
+			isCancelable: false,
+			operation: op => {
+				this.installDependencies(op, forceInstall, installSettings.specificPackages)
+					.then(async () => {
+						let notebookConfig = this.apiWrapper.getConfiguration(constants.notebookConfigKey);
+						await notebookConfig.update(constants.pythonPathConfigKey, this._pythonInstallationPath, ConfigurationTarget.Global);
+						await notebookConfig.update(constants.existingPythonConfigKey, this._usingExistingPython, ConfigurationTarget.Global);
+						await this.configurePackagePaths();
 
-		if (!(await utils.exists(this._pythonExecutable)) || forceInstall || this._usingExistingPython) {
-			this.apiWrapper.startBackgroundOperation({
-				displayName: msgTaskName,
-				description: msgTaskName,
-				isCancelable: false,
-				operation: op => {
-					this.installDependencies(op, forceInstall, installSettings.specificPackages)
-						.then(async () => {
-							await updateConfig();
-							this._installCompletion.resolve();
-							this._installInProgress = false;
-						})
-						.catch(err => {
-							let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));
-							op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
-							this._installCompletion.reject(errorMsg);
-							this._installInProgress = false;
-						});
-				}
-			});
-		} else {
-			// Python executable already exists, but the path setting wasn't defined,
-			// so update it here
-			await updateConfig();
-			this._installCompletion.resolve();
-			this._installInProgress = false;
-			this.apiWrapper.showInfoMessage(msgSkipPythonInstall);
-		}
+						this._installCompletion.resolve();
+						this._installInProgress = false;
+					})
+					.catch(err => {
+						let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));
+						op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
+						this._installCompletion.reject(errorMsg);
+						this._installInProgress = false;
+					});
+			}
+		});
 		return this._installCompletion.promise;
 	}
 
@@ -430,12 +457,20 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	 * Opens a dialog for configuring the installation path for the Notebook Python dependencies.
 	 */
 	public async promptForPythonInstall(kernelDisplayName: string): Promise<void> {
-		if (!JupyterServerInstallation.isPythonInstalled(this.apiWrapper)) {
-			let enablePreviewFeatures = this.apiWrapper.getConfiguration('workbench').get('enablePreviewFeatures');
-			if (enablePreviewFeatures) {
+		if (this._installInProgress) {
+			this.apiWrapper.showInfoMessage(msgWaitingForInstall);
+			return this._installCompletion.promise;
+		}
+
+		let isPythonInstalled = JupyterServerInstallation.isPythonInstalled(this.apiWrapper);
+		let areRequiredPackagesInstalled = await this.areRequiredPackagesInstalled(kernelDisplayName);
+		if (!isPythonInstalled || !areRequiredPackagesInstalled) {
+			if (this.previewFeaturesEnabled) {
 				let pythonWizard = new ConfigurePythonWizard(this.apiWrapper, this);
 				await pythonWizard.start(kernelDisplayName, true);
-				return pythonWizard.setupComplete;
+				return pythonWizard.setupComplete.then(() => {
+					this._kernelSetupCache.set(kernelDisplayName, true);
+				});
 			} else {
 				let pythonDialog = new ConfigurePythonDialog(this.apiWrapper, this);
 				return pythonDialog.showDialog(true);
@@ -453,12 +488,11 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}
 
 		let requiredPackages: PythonPkgDetails[];
-		let enablePreviewFeatures = this.apiWrapper.getConfiguration('workbench').get('enablePreviewFeatures');
-		if (enablePreviewFeatures) {
+		if (this.previewFeaturesEnabled) {
 			if (this._kernelSetupCache.get(kernelName)) {
 				return;
 			}
-			requiredPackages = JupyterServerInstallation.getRequiredPackagesForKernel(kernelName);
+			requiredPackages = this.getRequiredPackagesForKernel(kernelName);
 		}
 
 		this._installInProgress = true;
@@ -475,6 +509,27 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 				this._installInProgress = false;
 			});
 		return this._installCompletion.promise;
+	}
+
+	private async areRequiredPackagesInstalled(kernelDisplayName: string): Promise<boolean> {
+		if (this._kernelSetupCache.get(kernelDisplayName)) {
+			return true;
+		}
+
+		let installedPackages = await this.getInstalledPipPackages();
+		let installedPackageMap = new Map<string, string>();
+		installedPackages.forEach(pkg => {
+			installedPackageMap.set(pkg.name, pkg.version);
+		});
+		let requiredPackages = this.getRequiredPackagesForKernel(kernelDisplayName);
+		for (let pkg of requiredPackages) {
+			let installedVersion = installedPackageMap.get(pkg.name);
+			if (!installedVersion || utils.comparePackageVersions(installedVersion, pkg.version) < 0) {
+				return false;
+			}
+		}
+		this._kernelSetupCache.set(kernelDisplayName, true);
+		return true;
 	}
 
 	private async upgradePythonPackages(promptForUpgrade: boolean, forceInstall: boolean, specificPackages?: PythonPkgDetails[]): Promise<void> {
@@ -532,10 +587,10 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			let doUpgrade: boolean;
 			if (promptForUpgrade) {
 				doUpgrade = await this._prompter.promptSingle<boolean>(<IQuestion>{
-					type: QuestionTypes.confirm,
+					type: confirm,
 					message: localize('confirmPackageUpgrade', "Some required python packages need to be installed. Would you like to install them now?"),
 					default: true
-				});
+				}, this.apiWrapper);
 				if (!doUpgrade) {
 					throw new Error(localize('configurePython.packageInstallDeclined', "Package installation was declined."));
 				}
@@ -625,6 +680,13 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	}
 
 	public uninstallPipPackages(packages: PythonPkgDetails[]): Promise<void> {
+		for (let pkg of packages) {
+			if (this._requiredPackagesSet.has(pkg.name)) {
+				this._kernelSetupCache.clear();
+				break;
+			}
+		}
+
 		let packagesStr = packages.map(pkg => `"${pkg.name}==${pkg.version}"`).join(' ');
 		let cmd = `"${this.pythonExecutable}" -m pip uninstall -y ${packagesStr}`;
 		return this.executeStreamedCommand(cmd);
@@ -669,6 +731,13 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	}
 
 	public uninstallCondaPackages(packages: PythonPkgDetails[]): Promise<void> {
+		for (let pkg of packages) {
+			if (this._requiredPackagesSet.has(pkg.name)) {
+				this._kernelSetupCache.clear();
+				break;
+			}
+		}
+
 		let condaExe = this.getCondaExePath();
 		let packagesStr = packages.map(pkg => `"${pkg.name}==${pkg.version}"`).join(' ');
 		let cmd = `"${condaExe}" uninstall -y ${packagesStr}`;
@@ -751,7 +820,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		return useExistingPython;
 	}
 
-	private static getPythonPathSetting(apiWrapper: ApiWrapper): string {
+	public static getPythonPathSetting(apiWrapper: ApiWrapper): string {
 		let path = undefined;
 		if (apiWrapper) {
 			let notebookConfig = apiWrapper.getConfiguration(constants.notebookConfigKey);
@@ -813,53 +882,12 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		return undefined;
 	}
 
-	public static getRequiredPackagesForKernel(kernelName: string): PythonPkgDetails[] {
-		let packages = [{
-			name: 'jupyter',
-			version: '1.0.0'
-		}];
-		switch (kernelName) {
-			case constants.python3DisplayName:
-				break;
-			case constants.pysparkDisplayName:
-			case constants.sparkScalaDisplayName:
-			case constants.sparkRDisplayName:
-				packages.push({
-					name: 'sparkmagic',
-					version: '0.12.9'
-				}, {
-					name: 'pandas',
-					version: '0.24.2'
-				}, {
-					name: 'prose-codeaccelerator',
-					version: '1.3.0'
-				});
-				break;
-			case constants.powershellDisplayName:
-				packages.push({
-					name: 'powershell-kernel',
-					version: '0.1.3'
-				});
-				break;
-			case constants.allKernelsName:
-				packages.push({
-					name: 'sparkmagic',
-					version: '0.12.9'
-				}, {
-					name: 'pandas',
-					version: '0.24.2'
-				}, {
-					name: 'prose-codeaccelerator',
-					version: '1.3.0'
-				}, {
-					name: 'powershell-kernel',
-					version: '0.1.3'
-				});
-				break;
-			default:
-				return undefined;
-		}
-		return packages;
+	public getRequiredPackagesForKernel(kernelName: string): PythonPkgDetails[] {
+		return this._requiredKernelPackages.get(kernelName) ?? [];
+	}
+
+	public get previewFeaturesEnabled(): boolean {
+		return this.apiWrapper.getConfiguration('workbench').get('enablePreviewFeatures');
 	}
 }
 

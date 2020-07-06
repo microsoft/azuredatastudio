@@ -10,24 +10,30 @@
  * Do not edit the class manually.
  */
 
-import { DuskyObjectModelsResourceRequirements } from './duskyObjectModelsResourceRequirements';
+import { DuskyObjectModelsSchedulingOptions } from './duskyObjectModelsSchedulingOptions';
 
 export class DuskyObjectModelsSchedulingSpec {
-    'nodeSelector'?: { [key: string]: string; };
-    'resources'?: DuskyObjectModelsResourceRequirements;
+    '_default'?: DuskyObjectModelsSchedulingOptions;
+    'roles'?: { [key: string]: DuskyObjectModelsSchedulingOptions; };
+    'availabilityZones'?: { [key: string]: DuskyObjectModelsSchedulingOptions; };
 
     static discriminator: string | undefined = undefined;
 
     static attributeTypeMap: Array<{name: string, baseName: string, type: string}> = [
         {
-            "name": "nodeSelector",
-            "baseName": "nodeSelector",
-            "type": "{ [key: string]: string; }"
+            "name": "_default",
+            "baseName": "default",
+            "type": "DuskyObjectModelsSchedulingOptions"
         },
         {
-            "name": "resources",
-            "baseName": "resources",
-            "type": "DuskyObjectModelsResourceRequirements"
+            "name": "roles",
+            "baseName": "roles",
+            "type": "{ [key: string]: DuskyObjectModelsSchedulingOptions; }"
+        },
+        {
+            "name": "availabilityZones",
+            "baseName": "availability-zones",
+            "type": "{ [key: string]: DuskyObjectModelsSchedulingOptions; }"
         }    ];
 
     static getAttributeTypeMap() {

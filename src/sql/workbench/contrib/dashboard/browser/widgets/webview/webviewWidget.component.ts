@@ -86,7 +86,7 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 
 	public sendMessage(message: string): void {
 		if (this._webview) {
-			this._webview.sendMessage(message);
+			this._webview.postMessage(message);
 		}
 	}
 
@@ -102,7 +102,7 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 			{},
 			{
 				allowScripts: true,
-			});
+			}, undefined);
 
 		this._webview.mountTo(this._el.nativeElement);
 		this._onMessageDisposable = this._webview.onMessage(e => {

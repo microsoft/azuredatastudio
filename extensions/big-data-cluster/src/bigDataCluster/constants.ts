@@ -8,7 +8,6 @@ import * as vscode from 'vscode';
 export enum BdcItemType {
 	controllerRoot = 'bigDataClusters.itemType.controllerRootNode',
 	controller = 'bigDataClusters.itemType.controllerNode',
-	addController = 'bigDataClusters.itemType.addControllerNode',
 	loadingController = 'bigDataClusters.itemType.loadingControllerNode'
 }
 
@@ -73,8 +72,6 @@ export namespace cssStyles {
 	export const lastUpdatedText = { ...text, 'color': '#595959' };
 	export const errorText = { ...text, 'color': 'red' };
 }
-
-export type AuthType = 'integrated' | 'basic';
 
 export const clusterEndpointsProperty = 'clusterEndpoints';
 export const controllerEndpointName = 'controller';

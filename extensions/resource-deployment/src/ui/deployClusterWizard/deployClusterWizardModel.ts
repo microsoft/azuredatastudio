@@ -4,13 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 import { EOL } from 'os';
 import { delimiter } from 'path';
-import { BdcDeploymentType } from '../../interfaces';
+import { BdcDeploymentType, ITool } from '../../interfaces';
 import { BigDataClusterDeploymentProfile, DataResource, HdfsResource, SqlServerMasterResource } from '../../services/bigDataClusterDeploymentProfile';
 import { KubeCtlToolName } from '../../services/tools/kubeCtlTool';
-import { getRuntimeBinaryPathEnvironmentVariableName } from '../../utils';
+import { getRuntimeBinaryPathEnvironmentVariableName, setEnvironmentVariablesForInstallPaths } from '../../utils';
 import { Model } from '../model';
-import * as VariableNames from './constants';
 import { ToolsInstallPath } from './../../constants';
+import * as VariableNames from './constants';
 
 export class DeployClusterWizardModel extends Model {
 	constructor(public deploymentTarget: BdcDeploymentType) {
@@ -132,13 +132,15 @@ export class DeployClusterWizardModel extends Model {
 				clusterAdmins: this.getStringValue(VariableNames.ClusterAdmins_VariableName)!,
 				clusterUsers: this.getStringValue(VariableNames.ClusterUsers_VariableName)!,
 				appOwners: this.getStringValue(VariableNames.AppOwners_VariableName),
-				appReaders: this.getStringValue(VariableNames.AppReaders_VariableName)
+				appReaders: this.getStringValue(VariableNames.AppReaders_VariableName),
+				subdomain: this.getStringValue(VariableNames.Subdomain_VariableName),
+				accountPrefix: this.getStringValue(VariableNames.AccountPrefix_VariableName)
 			});
 		}
 		return targetDeploymentProfile;
 	}
 
-	public getCodeCellContentForNotebook(): string[] {
+	public getCodeCellContentForNotebook(tools: ITool[]): string[] {
 		const profile = this.createTargetProfile();
 		const statements: string[] = [];
 		if (this.deploymentTarget === BdcDeploymentType.NewAKS) {
@@ -148,7 +150,10 @@ export class DeployClusterWizardModel extends Model {
 			statements.push(`azure_vm_size = '${this.getStringValue(VariableNames.VMSize_VariableName)}'`);
 			statements.push(`azure_vm_count = '${this.getStringValue(VariableNames.VMCount_VariableName)}'`);
 			statements.push(`aks_cluster_name = '${this.getStringValue(VariableNames.AksName_VariableName)}'`);
-		} else if (this.deploymentTarget === BdcDeploymentType.ExistingAKS || this.deploymentTarget === BdcDeploymentType.ExistingKubeAdm) {
+		} else if (this.deploymentTarget === BdcDeploymentType.ExistingAKS
+			|| this.deploymentTarget === BdcDeploymentType.ExistingKubeAdm
+			|| this.deploymentTarget === BdcDeploymentType.ExistingARO
+			|| this.deploymentTarget === BdcDeploymentType.ExistingOpenShift) {
 			statements.push(`mssql_kube_config_path = '${this.escapeForNotebookCodeCell(this.getStringValue(VariableNames.KubeConfigPath_VariableName)!)}'`);
 			statements.push(`mssql_cluster_context = '${this.getStringValue(VariableNames.ClusterContext_VariableName)}'`);
 			statements.push('os.environ["KUBECONFIG"] = mssql_kube_config_path');
@@ -166,15 +171,12 @@ export class DeployClusterWizardModel extends Model {
 			statements.push(`os.environ["DOCKER_PASSWORD"] = os.environ["${VariableNames.DockerPassword_VariableName}"]`);
 		}
 		const kubeCtlEnvVarName: string = getRuntimeBinaryPathEnvironmentVariableName(KubeCtlToolName);
-		statements.push(`os.environ["${kubeCtlEnvVarName}"] = "${this.escapeForNotebookCodeCell(process.env[kubeCtlEnvVarName]!)}"`);
-		statements.push(`os.environ["PATH"] = os.environ["PATH"] + "${delimiter}" + "${this.escapeForNotebookCodeCell(process.env[ToolsInstallPath]!)}"`);
+		const env: NodeJS.ProcessEnv = {};
+		setEnvironmentVariablesForInstallPaths(tools, env);
+		statements.push(`os.environ["${kubeCtlEnvVarName}"] = "${this.escapeForNotebookCodeCell(env[kubeCtlEnvVarName]!)}"`);
+		statements.push(`os.environ["PATH"] = os.environ["PATH"] + "${delimiter}" + "${this.escapeForNotebookCodeCell(env[ToolsInstallPath]!)}"`);
 		statements.push(`print('Variables have been set successfully.')`);
 		return statements.map(line => line + EOL);
-	}
-
-	private escapeForNotebookCodeCell(original: string): string {
-		// Escape the \ character for the code cell string value
-		return original && original.replace(/\\/g, '\\\\');
 	}
 }
 

@@ -8,8 +8,8 @@ import { AdvancedPropertiesController } from 'sql/workbench/services/connection/
 import * as azdata from 'azdata';
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
-import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
+import { ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 
 suite('Advanced properties dialog tests', () => {
 	let advancedController: AdvancedPropertiesController;

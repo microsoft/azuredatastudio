@@ -17,6 +17,8 @@ import { MountHdfsDialogModel as MountHdfsModel, MountHdfsProperties, MountHdfsD
 import { getControllerEndpoint } from './bigDataCluster/utils';
 import * as commands from './commands';
 import { HdfsDialogCancelledError } from './bigDataCluster/dialog/hdfsDialogBase';
+import { IExtension, AuthType, IClusterController } from 'bdc';
+import { ClusterController } from './bigDataCluster/controller/clusterControllerApi';
 
 const localize = nls.loadMessageBundle();
 
@@ -24,26 +26,32 @@ const endpointNotFoundError = localize('mount.error.endpointNotFound', "Controll
 
 let throttleTimers: { [key: string]: any } = {};
 
-export function activate(extensionContext: vscode.ExtensionContext) {
+export async function activate(extensionContext: vscode.ExtensionContext): Promise<IExtension> {
 	IconPathHelper.setExtensionContext(extensionContext);
-	let treeDataProvider = new ControllerTreeDataProvider(extensionContext.globalState);
-	registerTreeDataProvider(treeDataProvider);
+	await vscode.commands.executeCommand('setContext', 'bdc.loaded', false);
+	const treeDataProvider = new ControllerTreeDataProvider(extensionContext.globalState);
+	vscode.window.registerTreeDataProvider('sqlBigDataCluster', treeDataProvider);
 	registerCommands(extensionContext, treeDataProvider);
+	return {
+		getClusterController(url: string, authType: AuthType, username?: string, password?: string): IClusterController {
+			return new ClusterController(url, authType, username, password);
+		}
+	};
 }
 
 export function deactivate() {
 }
 
-function registerTreeDataProvider(treeDataProvider: ControllerTreeDataProvider): void {
-	vscode.window.registerTreeDataProvider('sqlBigDataCluster', treeDataProvider);
-}
-
 function registerCommands(context: vscode.ExtensionContext, treeDataProvider: ControllerTreeDataProvider): void {
-	vscode.commands.registerCommand(commands.AddControllerCommand, (node?: TreeNode) => {
-		runThrottledAction(commands.AddControllerCommand, () => addBdcController(treeDataProvider, node));
+	vscode.commands.registerCommand(commands.ConnectControllerCommand, (node?: TreeNode) => {
+		runThrottledAction(commands.ConnectControllerCommand, () => addBdcController(treeDataProvider, node));
 	});
 
-	vscode.commands.registerCommand(commands.DeleteControllerCommand, async (node: TreeNode) => {
+	vscode.commands.registerCommand(commands.CreateControllerCommand, () => {
+		runThrottledAction(commands.CreateControllerCommand, () => vscode.commands.executeCommand('azdata.resource.deploy'));
+	});
+
+	vscode.commands.registerCommand(commands.RemoveControllerCommand, async (node: TreeNode) => {
 		await deleteBdcController(treeDataProvider, node);
 	});
 
@@ -173,20 +181,20 @@ async function deleteBdcController(treeDataProvider: ControllerTreeDataProvider,
 
 	let options = {
 		ignoreFocusOut: false,
-		placeHolder: localize('textConfirmDeleteController', "Are you sure you want to delete \'{0}\'?", controllerNode.label)
+		placeHolder: localize('textConfirmRemoveController', "Are you sure you want to remove \'{0}\'?", controllerNode.label)
 	};
 
 	let result = await vscode.window.showQuickPick(Object.keys(choices), options);
 	let remove: boolean = !!(result && choices[result]);
 	if (remove) {
-		await deleteControllerInternal(treeDataProvider, controllerNode);
+		await removeControllerInternal(treeDataProvider, controllerNode);
 	}
 	return remove;
 }
 
-async function deleteControllerInternal(treeDataProvider: ControllerTreeDataProvider, controllerNode: ControllerNode): Promise<void> {
-	const deleted = treeDataProvider.deleteController(controllerNode.url, controllerNode.auth, controllerNode.username);
-	if (deleted) {
+async function removeControllerInternal(treeDataProvider: ControllerTreeDataProvider, controllerNode: ControllerNode): Promise<void> {
+	const removed = treeDataProvider.removeController(controllerNode.url, controllerNode.auth, controllerNode.username);
+	if (removed) {
 		await treeDataProvider.saveControllers();
 	}
 }

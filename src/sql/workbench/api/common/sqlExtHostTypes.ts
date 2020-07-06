@@ -249,12 +249,12 @@ export interface IComponentEventArgs {
 
 export interface IModelViewDialogDetails {
 	title: string;
-	isWide: boolean;
 	content: string | number[];
 	okButton: number;
 	cancelButton: number;
 	customButtons: number[];
 	message: DialogMessage;
+	width: DialogWidth;
 }
 
 export interface IModelViewTabDetails {
@@ -290,7 +290,10 @@ export interface IModelViewWizardDetails {
 	customButtons: number[];
 	message: DialogMessage;
 	displayPageTitles: boolean;
+	width: DialogWidth;
 }
+
+export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
 
 export enum MessageLevel {
 	Error = 0,
@@ -350,7 +353,8 @@ export enum DataProviderType {
 	CapabilitiesProvider = 'CapabilitiesProvider',
 	ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
 	SerializationProvider = 'SerializationProvider',
-	IconProvider = 'IconProvider'
+	IconProvider = 'IconProvider',
+	SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider'
 }
 
 export enum DeclarativeDataType {
@@ -393,7 +397,6 @@ export interface ToolbarLayout {
 }
 
 export class TreeComponentItem extends vsExtTypes.TreeItem {
-	label?: string;
 	checked?: boolean;
 }
 
@@ -403,11 +406,11 @@ export enum AzureResource {
 	OssRdbms = 2,
 	AzureKeyVault = 3,
 	Graph = 4,
-	MicrosoftResourceManagement = 5
+	MicrosoftResourceManagement = 5,
+	AzureDevOps = 6
 }
 
 export class TreeItem extends vsExtTypes.TreeItem {
-	label?: string;
 	payload?: IConnectionProfile;
 	providerHandle?: string;
 }
@@ -847,12 +850,12 @@ export interface TabbedPanelLayout {
 	alwaysShowTabs: boolean;
 }
 
-export const enum SqlAssessmentTargetType {
+export enum SqlAssessmentTargetType {
 	Server = 1,
 	Database = 2
 }
 
-export const enum SqlAssessmentResultItemKind {
+export enum SqlAssessmentResultItemKind {
 	RealResult = 0,
 	Warning = 1,
 	Error = 2

@@ -6,7 +6,7 @@
 import 'vs/css!./media/tabstitlecontrol';
 import { isMacintosh, isWindows } from 'vs/base/common/platform';
 import { shorten } from 'vs/base/common/labels';
-import { toResource, GroupIdentifier, IEditorInput, Verbosity, EditorCommandsContextActionRunner, IEditorPartOptions, SideBySideEditor } from 'vs/workbench/common/editor';
+import { toResource, GroupIdentifier, IEditorInput, Verbosity, EditorCommandsContextActionRunner, IEditorPartOptions, SideBySideEditor, computeEditorAriaLabel } from 'vs/workbench/common/editor';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { EventType as TouchEventType, GestureEvent, Gesture } from 'vs/base/browser/touch';
 import { KeyCode } from 'vs/base/common/keyCodes';
@@ -31,10 +31,10 @@ import { ResourcesDropHandler, DraggedEditorIdentifier, DraggedEditorGroupIdenti
 import { Color } from 'vs/base/common/color';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
-import { MergeGroupMode, IMergeGroupOptions, GroupsArrangement } from 'vs/workbench/services/editor/common/editorGroupsService';
+import { MergeGroupMode, IMergeGroupOptions, GroupsArrangement, IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { addClass, addDisposableListener, hasClass, EventType, EventHelper, removeClass, Dimension, scheduleAtNextAnimationFrame, findParentWithClass, clearNode } from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
-import { IEditorGroupsAccessor, IEditorGroupView, EditorServiceImpl } from 'vs/workbench/browser/parts/editor/editor';
+import { IEditorGroupsAccessor, IEditorGroupView, EditorServiceImpl, EDITOR_TITLE_HEIGHT } from 'vs/workbench/browser/parts/editor/editor';
 import { CloseOneEditorAction } from 'vs/workbench/browser/parts/editor/editorActions';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { BreadcrumbsControl } from 'vs/workbench/browser/parts/editor/breadcrumbsControl';
@@ -47,8 +47,7 @@ import { IPathService } from 'vs/workbench/services/path/common/pathService';
 import { IPath, win32, posix } from 'vs/base/common/path';
 
 // {{SQL CARBON EDIT}} -- Display the editor's tab color
-import * as QueryConstants from 'sql/platform/query/common/constants';
-import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
+import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 // {{SQL CARBON EDIT}} -- End
 
 interface IEditorInputLabel {
@@ -107,7 +106,8 @@ export class TabsTitleControl extends TitleControl {
 		@IConfigurationService configurationService: IConfigurationService,
 		@IFileService fileService: IFileService,
 		@IEditorService private readonly editorService: EditorServiceImpl,
-		@IPathService private readonly pathService: IPathService
+		@IPathService private readonly pathService: IPathService,
+		@IEditorGroupsService private readonly editorGroupService: IEditorGroupsService
 	) {
 		super(parent, accessor, group, contextMenuService, instantiationService, contextKeyService, keybindingService, telemetryService, notificationService, menuService, quickInputService, themeService, extensionService, configurationService, fileService);
 
@@ -199,15 +199,12 @@ export class TabsTitleControl extends TitleControl {
 
 	private updateBreadcrumbsControl(): void {
 		if (this.breadcrumbsControl && this.breadcrumbsControl.update()) {
-			// relayout when we have a breadcrumbs and when update changed
-			// its hidden-status
-			this.group.relayout();
+			this.group.relayout(); // relayout when we have a breadcrumbs and when update changed its hidden-status
 		}
 	}
 
 	protected handleBreadcrumbsEnablementChange(): void {
-		// relayout when breadcrumbs are enable/disabled
-		this.group.relayout();
+		this.group.relayout(); // relayout when breadcrumbs are enable/disabled
 	}
 
 	private registerTabsContainerListeners(tabsContainer: HTMLElement, tabsScrollbar: ScrollableElement): void {
@@ -395,6 +392,9 @@ export class TabsTitleControl extends TitleControl {
 
 	closeEditors(editors: IEditorInput[]): void {
 		this.handleClosedEditors();
+		if (this.group.count === 0) {
+			this.updateBreadcrumbsControl();
+		}
 	}
 
 	private handleClosedEditors(): void {
@@ -432,9 +432,6 @@ export class TabsTitleControl extends TitleControl {
 
 			this.clearEditorActionsToolbar();
 		}
-
-		// Update Breadcrumbs
-		this.updateBreadcrumbsControl();
 	}
 
 	moveEditor(editor: IEditorInput, fromIndex: number, targetIndex: number): void {
@@ -529,7 +526,7 @@ export class TabsTitleControl extends TitleControl {
 			oldOptions.tabCloseButton !== newOptions.tabCloseButton ||
 			oldOptions.tabSizing !== newOptions.tabSizing ||
 			oldOptions.showIcons !== newOptions.showIcons ||
-			oldOptions.iconTheme !== newOptions.iconTheme ||
+			oldOptions.hasIcons !== newOptions.hasIcons ||
 			oldOptions.highlightModifiedTabs !== newOptions.highlightModifiedTabs
 		) {
 			this.redraw();
@@ -608,7 +605,7 @@ export class TabsTitleControl extends TitleControl {
 		const disposables = new DisposableStore();
 
 		const handleClickOrTouch = (e: MouseEvent | GestureEvent): void => {
-			tab.blur();
+			tab.blur(); // prevent flicker of focus outline on tab until editor got focus
 
 			if (e instanceof MouseEvent && e.button !== 0) {
 				if (e.button === 1) {
@@ -649,14 +646,17 @@ export class TabsTitleControl extends TitleControl {
 			tabsScrollbar.setScrollPosition({ scrollLeft: tabsScrollbar.getScrollPosition().scrollLeft - e.translationX });
 		}));
 
-		// Close on mouse middle click
+		// Prevent flicker of focus outline on tab until editor got focus
 		disposables.add(addDisposableListener(tab, EventType.MOUSE_UP, (e: MouseEvent) => {
 			EventHelper.stop(e);
 
 			tab.blur();
+		}));
 
+		// Close on mouse middle click
+		disposables.add(addDisposableListener(tab, EventType.AUXCLICK, (e: MouseEvent) => {
 			if (e.button === 1 /* Middle Button*/) {
-				e.stopPropagation(); // for https://github.com/Microsoft/vscode/issues/56715
+				EventHelper.stop(e, true /* for https://github.com/Microsoft/vscode/issues/56715 */);
 
 				this.blockRevealActiveTabOnce();
 				this.closeOneEditorAction.run({ groupId: this.group.id, editorIndex: index });
@@ -898,12 +898,12 @@ export class TabsTitleControl extends TitleControl {
 		const { verbosity, shortenDuplicates } = this.getLabelConfigFlags(labelFormat);
 
 		// Build labels and descriptions for each editor
-		const labels = this.group.editors.map(editor => ({
+		const labels = this.group.editors.map((editor, index) => ({
 			editor,
 			name: editor.getName(),
 			description: editor.getDescription(verbosity),
 			title: withNullAsUndefined(editor.getTitle(Verbosity.LONG)),
-			ariaLabel: editor.isReadonly() ? localize('readonlyEditor', "{0} readonly", editor.getTitle(Verbosity.SHORT)) : editor.getTitle(Verbosity.SHORT)
+			ariaLabel: computeEditorAriaLabel(editor, index, this.group, this.editorGroupService.count)
 		}));
 
 		// Shorten labels as needed
@@ -1047,10 +1047,10 @@ export class TabsTitleControl extends TitleControl {
 			domAction(tabContainer, `sizing-${option}`);
 		});
 
-		if (options.showIcons && !!options.iconTheme) {
-			addClass(tabContainer, 'has-icon-theme');
+		if (options.showIcons && options.hasIcons) {
+			addClass(tabContainer, 'has-icon');
 		} else {
-			removeClass(tabContainer, 'has-icon-theme');
+			removeClass(tabContainer, 'has-icon');
 		}
 
 		// Sticky Tabs need a position to remain at their location
@@ -1076,7 +1076,7 @@ export class TabsTitleControl extends TitleControl {
 		let name: string | undefined;
 		let description: string;
 		if (isTabSticky) {
-			const isShowingIcons = this.accessor.partOptions.showIcons && !!this.accessor.partOptions.iconTheme;
+			const isShowingIcons = this.accessor.partOptions.showIcons && this.accessor.partOptions.hasIcons;
 			name = isShowingIcons ? '' : tabLabel.name?.charAt(0).toUpperCase();
 			description = '';
 		} else {
@@ -1103,7 +1103,7 @@ export class TabsTitleControl extends TitleControl {
 		this.setEditorTabColor(editor, tabContainer, this.group.isActive(editor)); // {{SQL CARBON EDIT}} -- Display the editor's tab color
 
 		// Tests helper
-		const resource = toResource(editor, { supportSideBySide: SideBySideEditor.MASTER });
+		const resource = toResource(editor, { supportSideBySide: SideBySideEditor.PRIMARY });
 		if (resource) {
 			tabContainer.setAttribute('data-resource-name', basenameOrAuthority(resource));
 		} else {
@@ -1209,6 +1209,10 @@ export class TabsTitleControl extends TitleControl {
 		}
 
 		return hasModifiedBorderColor;
+	}
+
+	getPreferredHeight(): number {
+		return EDITOR_TITLE_HEIGHT + (this.breadcrumbsControl && !this.breadcrumbsControl.isHidden() ? BreadcrumbsControl.HEIGHT : 0);
 	}
 
 	layout(dimension: Dimension | undefined): void {
@@ -1469,8 +1473,8 @@ export class TabsTitleControl extends TitleControl {
 	// {{SQL CARBON EDIT}} -- Display the editor's tab color
 	private setEditorTabColor(editor: IEditorInput, tabContainer: HTMLElement, isTabActive: boolean) {
 		let sqlEditor = editor as any;
-		let tabColorMode = WorkbenchUtils.getSqlConfigValue<string>(this.configurationService, 'tabColorMode');
-		if (tabColorMode === QueryConstants.tabColorModeOff || (tabColorMode !== QueryConstants.tabColorModeBorder && tabColorMode !== QueryConstants.tabColorModeFill)
+		const tabColorMode = this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').tabColorMode;
+		if (tabColorMode === 'off' || (tabColorMode !== 'border' && tabColorMode !== 'fill')
 			|| this.themeService.getColorTheme().type === HIGH_CONTRAST || !sqlEditor.tabColor) {
 			tabContainer.style.borderTopColor = '';
 			tabContainer.style.borderTopWidth = '';
@@ -1480,7 +1484,7 @@ export class TabsTitleControl extends TitleControl {
 		tabContainer.style.borderTopColor = sqlEditor.tabColor;
 		tabContainer.style.borderTopWidth = isTabActive ? '3px' : '2px';
 		tabContainer.style.borderTopStyle = 'solid';
-		if (tabColorMode === QueryConstants.tabColorModeFill) {
+		if (tabColorMode === 'fill') {
 			let backgroundColor = Color.Format.CSS.parseHex(sqlEditor.tabColor);
 			if (backgroundColor) {
 				tabContainer.style.backgroundColor = backgroundColor.transparent(isTabActive ? 0.5 : 0.2).toString();

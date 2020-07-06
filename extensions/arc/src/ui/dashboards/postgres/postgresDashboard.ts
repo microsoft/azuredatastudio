@@ -3,47 +3,55 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as loc from '../../../localizedConstants';
 import { ControllerModel } from '../../../models/controllerModel';
 import { PostgresModel } from '../../../models/postgresModel';
 import { PostgresOverviewPage } from './postgresOverviewPage';
-import { PostgresComputeStoragePage } from './postgresComputeStoragePage';
 import { PostgresConnectionStringsPage } from './postgresConnectionStringsPage';
-import { PostgresBackupPage } from './postgresBackupPage';
 import { PostgresPropertiesPage } from './postgresPropertiesPage';
-import { PostgresNetworkingPage } from './postgresNetworkingPage';
 import { Dashboard } from '../../components/dashboard';
+import { PostgresDiagnoseAndSolveProblemsPage } from './postgresDiagnoseAndSolveProblemsPage';
+import { PostgresSupportRequestPage } from './postgresSupportRequestPage';
+import { PostgresResourceHealthPage } from './postgresResourceHealthPage';
 
 export class PostgresDashboard extends Dashboard {
-	constructor(title: string, private _controllerModel: ControllerModel, private _databaseModel: PostgresModel) {
-		super(title);
+	constructor(private _context: vscode.ExtensionContext, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
+		super(loc.postgresDashboard);
+	}
+
+	public async showDashboard(): Promise<void> {
+		await super.showDashboard();
+
+		// Kick off the model refresh but don't wait on it since that's all handled with callbacks anyways
+		this._controllerModel.refresh().catch(err => console.log(`Error refreshing controller model for Postgres dashboard ${err}`));
+		this._postgresModel.refresh().catch(err => console.log(`Error refreshing Postgres model for Postgres dashboard ${err}`));
 	}
 
 	protected async registerTabs(modelView: azdata.ModelView): Promise<(azdata.DashboardTab | azdata.DashboardTabGroup)[]> {
-		await Promise.all([this._controllerModel.refresh(), this._databaseModel.refresh()]);
-
-		const overviewPage = new PostgresOverviewPage(modelView, this._controllerModel, this._databaseModel);
-		const computeStoragePage = new PostgresComputeStoragePage(modelView, this._controllerModel, this._databaseModel);
-		const connectionStringsPage = new PostgresConnectionStringsPage(modelView, this._controllerModel, this._databaseModel);
-		const backupPage = new PostgresBackupPage(modelView, this._controllerModel, this._databaseModel);
-		const propertiesPage = new PostgresPropertiesPage(modelView, this._controllerModel, this._databaseModel);
-		const networkingPage = new PostgresNetworkingPage(modelView, this._controllerModel, this._databaseModel);
+		const overviewPage = new PostgresOverviewPage(modelView, this._controllerModel, this._postgresModel);
+		const connectionStringsPage = new PostgresConnectionStringsPage(modelView, this._postgresModel);
+		const propertiesPage = new PostgresPropertiesPage(modelView, this._controllerModel, this._postgresModel);
+		const resourceHealthPage = new PostgresResourceHealthPage(modelView, this._postgresModel);
+		const diagnoseAndSolveProblemsPage = new PostgresDiagnoseAndSolveProblemsPage(modelView, this._context, this._postgresModel);
+		const supportRequestPage = new PostgresSupportRequestPage(modelView, this._controllerModel, this._postgresModel);
 
 		return [
 			overviewPage.tab,
 			{
 				title: loc.settings,
 				tabs: [
-					computeStoragePage.tab,
 					connectionStringsPage.tab,
-					backupPage.tab,
 					propertiesPage.tab
 				]
-			}, {
-				title: loc.security,
+			},
+			{
+				title: loc.supportAndTroubleshooting,
 				tabs: [
-					networkingPage.tab
+					resourceHealthPage.tab,
+					diagnoseAndSolveProblemsPage.tab,
+					supportRequestPage.tab
 				]
 			}
 		];

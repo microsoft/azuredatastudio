@@ -46,6 +46,9 @@ import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } fr
 import { NotebookThemingContribution } from 'sql/workbench/contrib/notebook/browser/notebookThemingContribution';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 import { ToggleTabFocusModeAction } from 'vs/editor/contrib/toggleTabFocusMode/toggleTabFocusMode';
+import { NotebookExplorerViewletViewsContribution, OpenNotebookExplorerViewletAction } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet';
+import 'vs/css!./media/notebook.contribution';
+
 
 Registry.as<IEditorInputFactoryRegistry>(EditorInputFactoryExtensions.EditorInputFactories)
 	.registerEditorInputFactory(FileNotebookInput.ID, FileNoteBookEditorInputFactory);
@@ -210,6 +213,19 @@ configurationRegistry.registerConfiguration({
 	}
 });
 
+configurationRegistry.registerConfiguration({
+	'id': 'notebook',
+	'title': 'Notebook',
+	'type': 'object',
+	'properties': {
+		'notebook.allowAzureDataStudioCommands': {
+			'type': 'boolean',
+			'default': false,
+			'description': localize('notebook.allowADSCommands', "Allow notebooks to run Azure Data Studio commands.")
+		}
+	}
+});
+
 /* *************** Output components *************** */
 // Note: most existing types use the same component to render. In order to
 // preserve correct rank order, we register it once for each different rank of
@@ -348,3 +364,16 @@ registerComponentType({
 	selector: MimeRendererComponent.SELECTOR
 });
 registerCellComponent(TextCellComponent);
+
+const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
+workbenchRegistry.registerWorkbenchContribution(NotebookExplorerViewletViewsContribution, LifecyclePhase.Starting);
+const registry = Registry.as<IWorkbenchActionRegistry>(WorkbenchActionsExtensions.WorkbenchActions);
+registry.registerWorkbenchAction(
+	SyncActionDescriptor.create(
+		OpenNotebookExplorerViewletAction,
+		OpenNotebookExplorerViewletAction.ID,
+		OpenNotebookExplorerViewletAction.LABEL,
+		{ primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_B }),
+	'View: Show Notebook Explorer',
+	localize('notebookExplorer.view', "View")
+);
