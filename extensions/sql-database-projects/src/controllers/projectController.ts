@@ -623,12 +623,12 @@ export class ProjectsController {
 	 * Imports a new SQL database project from the existing database,
 	 * prompting the user for a name, file path location and extract target
 	 */
-	public async importNewDatabaseProject(context: any): Promise<void> {
+	public async importNewDatabaseProject(context: any | IConnectionProfile): Promise<void> {
 		let model = <ImportDataModel>{};
 
 		// TODO: Refactor code
 		try {
-			let profile = context ? <IConnectionProfile>context.connectionProfile : undefined;
+			let profile = context ? context.connectionProfile ? <IConnectionProfile>context.connectionProfile : context : undefined;
 			//TODO: Prompt for new connection addition and get database information if context information isn't provided.
 			if (profile) {
 				model.serverId = profile.id;

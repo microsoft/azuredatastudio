@@ -189,7 +189,9 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 					// Need to ensure that we don't add the same action multiple times
 					let foundIndex = firstIndex(tasks, act => act.action && act.action.id === a.id);
 					if (foundIndex < 0) {
-						tasks.push({ action: a });
+						// a._options = {arg: this.connectionManagementService.connectionInfo.connectionProfile};
+						let action = new ToolbarAction(a.id, a.label, '', this.runAction, this, this.logService);
+						tasks.push({ action: action });
 					}
 				}
 			});
@@ -275,7 +277,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	}
 
 	private runAction(id: string): Promise<void> {
-		return this.commandService.executeCommand(id, this.connectionManagementService.connectionInfo.connectionProfile);
+		return this.commandService.executeCommand(id, this.connectionManagementService.connectionInfo.connectionProfile.toIConnectionProfile());
 	}
 
 	private createActionItemProvider(action: Action): IActionViewItem {
