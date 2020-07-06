@@ -120,7 +120,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		this.apiWrapper = apiWrapper;
 
 		this._runningOnSAW = vscode.env.appName.toLowerCase().indexOf('saw') > 0;
-		this.apiWrapper.setCommandContext('notebook:runningOnSAW', this._runningOnSAW);
+		vscode.commands.executeCommand(constants.BuiltInCommands.SetContext, 'notebook:runningOnSAW', this._runningOnSAW);
 
 		if (this._runningOnSAW) {
 			this._pythonInstallationPath = `${vscode.env.appRoot}\\ads-python`;

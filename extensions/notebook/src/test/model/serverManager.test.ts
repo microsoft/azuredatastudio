@@ -32,7 +32,6 @@ describe('Local Jupyter Server Manager', function (): void {
 	beforeEach(() => {
 		mockExtensionContext = new MockExtensionContext();
 		mockApiWrapper = TypeMoq.Mock.ofType(ApiWrapper);
-		mockApiWrapper.setup(w => w.setCommandContext(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()));
 		mockApiWrapper.setup(a => a.showErrorMessage(TypeMoq.It.isAny()));
 		mockApiWrapper.setup(a => a.getWorkspacePathFromUri(TypeMoq.It.isAny())).returns(() => undefined);
 		mockFactory = TypeMoq.Mock.ofType(ServerInstanceFactory);
