@@ -266,7 +266,17 @@
 }
 
 .ads-homepage #tool-tip-container-wide {
-	display: none
+	display: none;
+}
+
+.ads-homepage #tool-tip-container-wide .ads-welcome-page-link{
+	display: flex;
+	align-items: center;
+}
+
+.ads-homepage #tool-tip-container-narrow .ads-welcome-page-link{
+	display: flex;
+	align-items: center;
 }
 
 .ads-homepage #tool-tip-container-narrow {
@@ -281,7 +291,9 @@
 }
 
 .ads-homepage.XL #tool-tip-container-wide {
-	display: block
+	display: flex;
+	justify-content: flex-end;
+	padding-top: 10px;
 }
 
 .ads-homepage.XL #tool-tip-container-narrow {
@@ -293,6 +305,7 @@
 	visibility: hidden;
 	padding: 10px 15px;
 	z-index: 1;
+	top: 32px;
 	right: -72px;
 	text-align: center;
 	border-radius: 6px;
@@ -382,6 +395,7 @@
 	width: 12px;
 	height: 12px;
 	margin-left: 6px;
+	margin-top: 3px;
 	-webkit-mask: url(../../media/info.svg) no-repeat;
 	-webkit-mask-size: 12px 12px;
 	mask: url(../../media/info.svg) no-repeat;
@@ -414,6 +428,7 @@
 
 .ads-homepage .codicon-chevron-right {
 	transform: rotate(90deg);
+	pointer-events: none;
 }
 
 .ads-homepage .icon-arrow-right {
@@ -1314,7 +1329,7 @@
 	font-size: 1.16em;
 	font-family: Segoe UI, Frutiger, Frutiger Linotype, Dejavu Sans, Helvetica Neue, Arial, sans-serif;
 	font-weight: normal;
-	padding: 10px 0 10px;
+	padding: 10px 15px 10px 0;
 }
 
 .ads-homepage .guided-tour-banner b {

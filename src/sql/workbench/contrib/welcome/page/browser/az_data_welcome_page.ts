@@ -11,7 +11,7 @@ export default () => `
 	<div class="welcomePage">
 		<div class="ads-homepage splash">
 			<div class="gradient">
-				<div class="preview-text tool-tip">
+				<div class="ads-homepage-section tool-tip">
 					<div class="tool-tip-container" id="tool-tip-container-wide">
 						<a class="ads-welcome-page-link" aria-describedby="tooltip-text-wide" id="preview-link-wide" class="preview-link" tabindex="0" name="preview"><p>Preview</p><i class="icon-info themed-icon"></i></a>
 						<span role="tooltip" id="tooltip-text-wide" class="tool-tip-text" aria-hidden="true">
