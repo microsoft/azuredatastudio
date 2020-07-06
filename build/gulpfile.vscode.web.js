@@ -21,6 +21,7 @@ const vfs = require('vinyl-fs');
 const fs = require('fs');
 const packageJson = require('../package.json');
 const { compileBuildTask } = require('./gulpfile.compile');
+const extensions = require('./lib/extensions');
 
 const REPO_ROOT = path.dirname(__dirname);
 const BUILD_ROOT = path.dirname(REPO_ROOT);
@@ -99,6 +100,7 @@ const vscodeWebPatchProductTask = () => {
 	const contents = fs.readFileSync(fullpath).toString();
 	const productConfiguration = JSON.stringify({
 		...product,
+		extensionAllowedProposedApi: [...product.extensionAllowedProposedApi, 'sandy081.999-test-github-issue-notebooks'],
 		version,
 		commit,
 		date: new Date().toISOString()
@@ -108,8 +110,18 @@ const vscodeWebPatchProductTask = () => {
 };
 exports.vscodeWebPatchProductTask = vscodeWebPatchProductTask;
 
+const vscodeWebPatchBuiltinExtensionsTask = () => {
+	const builtinExtensions = JSON.stringify(extensions.scanBuiltinExtensions('.build/web/extensions', true));
+	const fullpath = path.join(process.cwd(), 'out-build', 'vs', 'workbench', 'services', 'extensionManagement', 'browser', 'builtinExtensionsScannerService.js');
+	const contents = fs.readFileSync(fullpath).toString();
+	const newContents = contents.replace('/*BUILD->INSERT_BUILTIN_EXTENSIONS*/', builtinExtensions.substr(1, builtinExtensions.length - 2) /* without [ and ]*/);
+	fs.writeFileSync(fullpath, newContents);
+};
+exports.vscodeWebPatchBuiltinExtensionsTask = vscodeWebPatchBuiltinExtensionsTask;
+
 const minifyVSCodeWebTask = task.define('minify-vscode-web', task.series(
 	vscodeWebPatchProductTask,
+	vscodeWebPatchBuiltinExtensionsTask,
 	optimizeVSCodeWebTask,
 	util.rimraf('out-vscode-web-min'),
 	common.minifyTask('out-vscode-web', `https://sqlopsbuilds.blob.core.windows.net/sourcemaps/${commit}/core`)
@@ -124,7 +136,9 @@ function packageTask(sourceFolderName, destinationFolderName) {
 			.pipe(rename(function (path) { path.dirname = path.dirname.replace(new RegExp('^' + sourceFolderName), 'out'); }))
 			.pipe(filter(['**', '!**/*.js.map']));
 
-		const sources = es.merge(src);
+		const extensions = gulp.src('.build/web/extensions/**', { base: '.build/web', dot: true });
+
+		const sources = es.merge(src, extensions);
 
 		const name = product.nameShort;
 		const packageJsonStream = gulp.src(['remote/web/package.json'], { base: 'remote/web' })
@@ -136,7 +150,7 @@ function packageTask(sourceFolderName, destinationFolderName) {
 
 		const deps = gulp.src(dependenciesSrc, { base: 'remote/web', dot: true })
 			.pipe(filter(['**', '!**/package-lock.json']))
-			.pipe(util.cleanNodeModules(path.join(__dirname, '.nativeignore')));
+			.pipe(util.cleanNodeModules(path.join(__dirname, '.webignore')));
 
 		const favicon = gulp.src('resources/server/favicon.ico', { base: 'resources/server' });
 		const manifest = gulp.src('resources/server/manifest.json', { base: 'resources/server' });
@@ -163,6 +177,17 @@ function packageTask(sourceFolderName, destinationFolderName) {
 	};
 }
 
+const builtInExtensions = product.builtInExtensions.filter(e => {
+	return e.name === 'ms-vscode.references-view';
+});
+
+const compileWebExtensionsBuildTask = task.define('compile-web-extensions-build', task.series(
+	task.define('clean-web-extensions-build', util.rimraf('.build/web/extensions')),
+	task.define('bundle-web-extensions-build', () => extensions.packageLocalWebExtensionsStream().pipe(gulp.dest('.build/web'))),
+	task.define('bundle-marketplace-web-extensions-build', () => extensions.packageMarketplaceWebExtensionsStream(builtInExtensions).pipe(gulp.dest('.build/web'))),
+));
+
+
 const dashed = (str) => (str ? `-${str}` : ``);
 
 ['', 'min'].forEach(minified => {
@@ -170,6 +195,7 @@ const dashed = (str) => (str ? `-${str}` : ``);
 	const destinationFolderName = `vscode-web`;
 
 	const vscodeWebTaskCI = task.define(`vscode-web${dashed(minified)}-ci`, task.series(
+		compileWebExtensionsBuildTask,
 		minified ? minifyVSCodeWebTask : optimizeVSCodeWebTask,
 		util.rimraf(path.join(BUILD_ROOT, destinationFolderName)),
 		packageTask(sourceFolderName, destinationFolderName)

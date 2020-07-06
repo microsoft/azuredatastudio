@@ -19,6 +19,7 @@ const serverOptions: OptionDescriptions<ServerParsedArgs> = {
 	'port': { type: 'string' },
 	'connectionToken': { type: 'string' },
 	'host': { type: 'string' },
+	'socket-path': { type: 'string' },
 	'driver': { type: 'string' },
 
 	'fileWatcherPolling': { type: 'string' },
@@ -35,6 +36,7 @@ const serverOptions: OptionDescriptions<ServerParsedArgs> = {
 	'locate-extension': OPTIONS['locate-extension'],
 	'list-extensions': OPTIONS['list-extensions'],
 	'force': OPTIONS['force'],
+	'do-not-sync': OPTIONS['do-not-sync'],
 
 	'disable-user-env-probe': OPTIONS['disable-user-env-probe'],
 
@@ -50,6 +52,7 @@ export interface ServerParsedArgs {
 	port?: string;
 	connectionToken?: string;
 	host?: string;
+	'socket-path'?: string;
 	driver?: string;
 	'disable-telemetry'?: boolean;
 	fileWatcherPolling?: string;
@@ -68,6 +71,7 @@ export interface ServerParsedArgs {
 	'use-host-proxy'?: string;
 
 	force?: boolean; // used by install-extension
+	'do-not-sync'?: boolean; // used by install-extension
 
 	'user-data-dir'?: string;
 	'builtin-extensions-dir'?: string;
@@ -81,7 +85,7 @@ export interface ServerParsedArgs {
 }
 
 export class ServerEnvironmentService extends EnvironmentService {
-	readonly args!: ServerParsedArgs;
+	get args(): ServerParsedArgs { return super.args as ServerParsedArgs; }
 }
 
 const errorReporter: ErrorReporter = {
@@ -116,6 +120,8 @@ try {
 } catch (e) {
 	console.log('Port is not a number, using 8000 instead.');
 }
+
+const SOCKET_PATH = args['socket-path'];
 
 args['extensions-dir'] = args['extensions-dir'] || join(REMOTE_DATA_FOLDER, 'extensions');
 
@@ -157,7 +163,11 @@ if (shouldSpawnCli(args)) {
 	logService.info(license);
 	console.log(license);
 	const server = new RemoteExtensionHostAgentServer(CONNECTION_AUTH_TOKEN, environmentService, logService);
-	server.start(HOST, PORT);
+	if (SOCKET_PATH) {
+		server.start({ socketPath: SOCKET_PATH });
+	} else {
+		server.start({ host: HOST, port: PORT });
+	}
 	process.on('exit', () => {
 		server.dispose();
 	});

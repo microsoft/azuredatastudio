@@ -178,6 +178,8 @@ class ServerLogService extends AbstractLogService implements ILogService {
 	}
 }
 
+export type ServerListenOptions = { host?: string; port?: number; socketPath?: string };
+
 export class RemoteExtensionHostAgentServer extends Disposable {
 
 	private readonly _logService: ILogService;
@@ -209,9 +211,9 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 		}
 	}
 
-	public async start(host: string | undefined, port: number) {
+	public async start(listenOptions: ServerListenOptions) {
 		await this._createServices();
-		return this._start(host, port);
+		return this._start(listenOptions);
 	}
 
 	private async _createServices(): Promise<void> {
@@ -292,17 +294,19 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 		return this._uriTransformerCache[remoteAuthority];
 	}
 
-	private async _start(host: string | undefined, port: number) {
-		const ifaces = os.networkInterfaces();
-		const logService = this._logService;
-		Object.keys(ifaces).forEach(function (ifname) {
-			ifaces[ifname].forEach(function (iface) {
-				if (!iface.internal && iface.family === 'IPv4') {
-					console.log(`IP Address: ${iface.address}`);
-					logService.trace(`IP Address: ${iface.address}`);
-				}
+	private async _start(listenOptions: ServerListenOptions) {
+		if (typeof listenOptions.port === 'number') {
+			const ifaces = os.networkInterfaces();
+			const logService = this._logService;
+			Object.keys(ifaces).forEach(function (ifname) {
+				ifaces[ifname].forEach(function (iface) {
+					if (!iface.internal && iface.family === 'IPv4') {
+						console.log(`IP Address: ${iface.address}`);
+						logService.trace(`IP Address: ${iface.address}`);
+					}
+				});
 			});
-		});
+		}
 
 		setTimeout(() => this._cleanupOlderLogs(this._environmentService.logsPath).then(null, err => this._logService.error(err)), 10000);
 
@@ -426,7 +430,10 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 			this._logService.error(`Error occurred in server`);
 			this._logService.error(err);
 		});
-		server.listen({ host, port }, () => {
+		const nodeListenOptions = listenOptions.socketPath ?
+			{ path: listenOptions.socketPath } :
+			{ host: listenOptions.host, port: listenOptions.port };
+		server.listen(nodeListenOptions, () => {
 			// Do not change this line. VS Code looks for this in
 			// the output.
 			const address = assertIsDefined(server.address());

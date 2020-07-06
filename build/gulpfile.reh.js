@@ -72,6 +72,7 @@ const serverResources = [
 	'out-build/bootstrap.js',
 	'out-build/bootstrap-fork.js',
 	'out-build/bootstrap-amd.js',
+	'out-build/bootstrap-node.js',
 	'out-build/paths.js',
 
 	// main entry points

@@ -14,6 +14,6 @@ if (process.argv[2] === '--exec') {
 	// Set default remote native node modules path, if unset
 	process.env['VSCODE_INJECT_NODE_MODULE_LOOKUP_PATH'] = process.env['VSCODE_INJECT_NODE_MODULE_LOOKUP_PATH'] || path.join(__dirname, '..', '..', '..', 'remote', 'node_modules');
 
-	require('../../bootstrap').injectNodeModuleLookupPath(process.env['VSCODE_INJECT_NODE_MODULE_LOOKUP_PATH']);
+	require('../../bootstrap-node').injectNodeModuleLookupPath(process.env['VSCODE_INJECT_NODE_MODULE_LOOKUP_PATH']);
 	require('../../bootstrap-amd').load('vs/server/remoteExtensionHostAgent');
 }

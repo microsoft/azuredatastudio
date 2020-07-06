@@ -32,6 +32,9 @@ const isSupportedForCmd = (optionId: keyof ParsedArgs) => {
 		case 'export-default-configuration':
 		case 'install-source':
 		case 'driver':
+		case 'crash-reporter-directory':
+		case 'extensions-download-dir':
+		case 'builtin-extensions-dir':
 			return false;
 		default:
 			return true;
@@ -44,6 +47,7 @@ const isSupportedForPipe = (optionId: keyof ParsedArgs) => {
 		case 'help':
 		case 'folder-uri':
 		case 'file-uri':
+		case 'add':
 		case 'diff':
 		case 'wait':
 		case 'goto':
@@ -334,7 +338,8 @@ const cwd = process.env.PWD || process.cwd(); // prefer process.env.PWD as it do
 function pathToURI(input: string): _url.URL {
 	input = input.trim();
 	input = resolve(cwd, input);
-	return new _url.URL('file:///' + input);
+
+	return _url.pathToFileURL(input);
 }
 
 function translatePath(input: string, mapFileUri: (input: string) => string, folderURIS: string[], fileURIS: string[]) {
