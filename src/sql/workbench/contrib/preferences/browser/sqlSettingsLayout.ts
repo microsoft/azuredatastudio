@@ -19,24 +19,14 @@ let sqlTocItems: ITOCEntry[] = [{
 			settings: ['startup.alwaysShowServersView', 'connection.*', 'serverGroup.*', 'datasource.*']
 		},
 		{
-			id: 'data/query',
-			label: localize('query', "Query"),
-			settings: ['sql.query.*', 'resultsGrid.*']
+			id: 'data/queryEditor',
+			label: localize('queryEditor', "Query Editor"),
+			settings: ['queryEditor.*']
 		},
 		{
 			id: 'data/notebook',
 			label: localize('notebook', "Notebook"),
 			settings: ['notebook.*']
-		},
-		{
-			id: 'data/sql',
-			label: localize('sql', "SQL"),
-			settings: ['sql.*']
-		},
-		{
-			id: 'data/mssql',
-			label: localize('mssql', "Microsoft SQL Server"),
-			settings: ['mssql.*']
 		},
 		{
 			id: 'data/dashboard',

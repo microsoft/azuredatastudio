@@ -25,7 +25,7 @@ describe('MainController: main controller operations', function (): void {
 		await baselines.loadBaselines();
 	});
 
-	beforeEach(async function (): Promise<void> {
+	beforeEach(function (): void {
 		testContext.apiWrapper.reset();
 	});
 

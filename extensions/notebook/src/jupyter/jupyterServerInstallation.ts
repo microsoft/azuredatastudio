@@ -18,7 +18,7 @@ import * as utils from '../common/utils';
 import { OutputChannel, ConfigurationTarget, window } from 'vscode';
 import { Deferred } from '../common/promise';
 import { ConfigurePythonWizard } from '../dialog/configurePython/configurePythonWizard';
-import { IPrompter, IQuestion, QuestionTypes } from '../prompts/question';
+import { IPrompter, IQuestion, confirm } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
 import { ConfigurePythonDialog } from '../dialog/configurePython/configurePythonDialog';
 
@@ -587,10 +587,10 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			let doUpgrade: boolean;
 			if (promptForUpgrade) {
 				doUpgrade = await this._prompter.promptSingle<boolean>(<IQuestion>{
-					type: QuestionTypes.confirm,
+					type: confirm,
 					message: localize('confirmPackageUpgrade', "Some required python packages need to be installed. Would you like to install them now?"),
 					default: true
-				});
+				}, this.apiWrapper);
 				if (!doUpgrade) {
 					throw new Error(localize('configurePython.packageInstallDeclined', "Package installation was declined."));
 				}

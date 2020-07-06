@@ -29,7 +29,7 @@ describe.skip('NetCoreTool: Net core tests', function (): void {
 		}
 	});
 
-	it('Should find right dotnet default paths', async function (): Promise<void> {
+	it('Should find right dotnet default paths', function (): void {
 		const netcoreTool = new NetCoreTool();
 		netcoreTool.findOrInstallNetCore();
 
