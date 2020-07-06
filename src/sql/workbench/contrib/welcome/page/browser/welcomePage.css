@@ -546,12 +546,12 @@
 
 .ads-homepage .tile:not(.extension):not(.extension-pack) {
 	border: 1px solid;
-	border-radius: 4px
+	border-radius: 4px;
 }
 
 .ads-homepage .tile.extension-pack {
 	border: 1px solid;
-	border-radius: 4px
+	border-radius: 4px;
 }
 
 .ads-homepage .extension-list {
@@ -560,17 +560,17 @@
 
 .ads-homepage.XS.SM.MD.LG.XL .extension-list {
 	grid-column: 5/span 4;
-	grid-row: 1/span 4
+	grid-row: 1/span 4;
 }
 
 .ads-homepage .extension-header, .ads-homepage .extension-pack-extension-list-header {
 	font-weight: 600;
-	font-size: 1.33em
+	font-size: 1.33em;
 }
 
 .ads-homepage .tile {
 	transition: all .5s ease;
-	border-radius: 4px
+	border-radius: 4px;
 }
 
 .ads-homepage .tile:hover:not(.no-hover) {
