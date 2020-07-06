@@ -112,17 +112,17 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	private readonly _requiredKernelPackages: Map<string, PythonPkgDetails[]>;
 	private readonly _requiredPackagesSet: Set<string>;
 
-	public readonly runningOnSAW: boolean;
+	private readonly _runningOnSAW: boolean;
 
 	constructor(extensionPath: string, outputChannel: vscode.OutputChannel, apiWrapper: ApiWrapper) {
 		this.extensionPath = extensionPath;
 		this.outputChannel = outputChannel;
 		this.apiWrapper = apiWrapper;
 
-		this.runningOnSAW = vscode.env.appName.toLowerCase().indexOf('saw') > 0;
-		this.apiWrapper.setCommandContext('notebook:runningOnSAW', this.runningOnSAW);
+		this._runningOnSAW = vscode.env.appName.toLowerCase().indexOf('saw') > 0;
+		this.apiWrapper.setCommandContext('notebook:runningOnSAW', this._runningOnSAW);
 
-		if (this.runningOnSAW) {
+		if (this._runningOnSAW) {
 			this._pythonInstallationPath = `${vscode.env.appRoot}\\ads-python`;
 			this._usingExistingPython = true;
 		} else {
@@ -468,6 +468,9 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	 * Opens a dialog for configuring the installation path for the Notebook Python dependencies.
 	 */
 	public async promptForPythonInstall(kernelDisplayName: string): Promise<void> {
+		if (this._runningOnSAW) {
+			return Promise.resolve();
+		}
 		if (this._installInProgress) {
 			this.apiWrapper.showInfoMessage(msgWaitingForInstall);
 			return this._installCompletion.promise;
@@ -493,6 +496,9 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	 * Prompts user to upgrade certain python packages if they're below the minimum expected version.
 	 */
 	public async promptForPackageUpgrade(kernelName: string): Promise<void> {
+		if (this._runningOnSAW) {
+			return Promise.resolve();
+		}
 		if (this._installInProgress) {
 			this.apiWrapper.showInfoMessage(msgWaitingForInstall);
 			return this._installCompletion.promise;
