@@ -37,7 +37,7 @@ describe('Local Jupyter Server Manager', function (): void {
 		mockFactory = TypeMoq.Mock.ofType(ServerInstanceFactory);
 
 		deferredInstall = new Deferred<void>();
-		let mockInstall = TypeMoq.Mock.ofType(JupyterServerInstallation, undefined, undefined, '/root', undefined, mockApiWrapper.object);
+		let mockInstall = TypeMoq.Mock.ofType(JupyterServerInstallation, undefined, undefined, '/root');
 		mockInstall.setup(j => j.promptForPythonInstall(TypeMoq.It.isAny())).returns(() => deferredInstall.promise);
 		mockInstall.object.execOptions = { env: Object.assign({}, process.env) };
 
