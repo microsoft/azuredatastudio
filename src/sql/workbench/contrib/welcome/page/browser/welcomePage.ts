@@ -389,14 +389,15 @@ class WelcomePage extends Disposable {
 		let openFileButton = this._register(new Button(fileBtnContainer));
 		openFileButton.label = openFileText;
 		const getNewFileBtn = document.querySelector('#open-file-btn-container .monaco-button') as HTMLAnchorElement;
+		const body = document.querySelector('body');
 
-		if (process.platform === 'win32' || process.platform === 'linux') {
+		if (body.classList.contains('windows') || body.classList.contains('linux')) {
 			getNewFileBtn.classList.add(...fileBtnWindowsClasses);
 			openFileButton.onDidClick(async () => {
 				await this.commandService.executeCommand('workbench.action.files.openFile');
 			}
 			);
-		} else if (process.platform === 'darwin') {
+		} else if (body.classList.contains('mac')) {
 			getNewFileBtn.classList.add(...fileBtnMacClasses);
 			openFileButton.onDidClick(async () => {
 				await this.commandService.executeCommand('workbench.action.files.openLocalFileFolder');
