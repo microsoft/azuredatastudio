@@ -341,21 +341,33 @@ class WelcomePage extends Disposable {
 	}
 
 	private async handleAccessibility(commandService: ICommandService): Promise<void> {
-		const tileServer = document.querySelector('#tile-server-link') as HTMLElement;
+		const tileServer = document.getElementById('tile-server-link') as HTMLElement;
 		this.handlerTileServerEvent(commandService, tileServer, 'keydown');
 		this.handlerTileServerEvent(commandService, tileServer, 'click');
+		addStandardDisposableListener(tileServer, 'keydown', event => {
+			if (event.equals(KeyCode.Enter)) {
+				const historyLabel = document.getElementById('historyLabel') as HTMLElement;
+				commandService.executeCommand('azdata.resource.deploy');
+				historyLabel.focus();
+			}
+		});
+		addStandardDisposableListener(tileServer, 'click', event => {
+			const historyLabel = document.getElementById('historyLabel') as HTMLElement;
+			commandService.executeCommand('azdata.resource.deploy');
+			historyLabel.focus();
+		});
 	}
 
 	private handlerTileServerEvent(commandService: ICommandService, elm: HTMLElement, eventType: string): void {
 		addStandardDisposableListener(elm, eventType, event => {
 			if (eventType === 'keydown') {
 				if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
-					const historyLabel = document.querySelector('#historyLabel') as HTMLElement;
+					const historyLabel = document.getElementById('historyLabel') as HTMLElement;
 					commandService.executeCommand('azdata.resource.deploy');
 					historyLabel.focus();
 				}
 			} else {
-				const historyLabel = document.querySelector('#historyLabel') as HTMLElement;
+				const historyLabel = document.getElementById('historyLabel') as HTMLElement;
 				commandService.executeCommand('azdata.resource.deploy');
 				historyLabel.focus();
 			}
@@ -413,8 +425,8 @@ class WelcomePage extends Disposable {
 	}
 
 	private createWidePreviewToolTip(): void {
-		const previewLink = document.querySelector('#tool-tip-container-wide') as HTMLElement;
-		const tooltip = document.querySelector('#tooltip-text-wide') as HTMLElement;
+		const previewLink = document.getElementById('tool-tip-container-wide') as HTMLElement;
+		const tooltip = document.getElementById('tooltip-text-wide') as HTMLElement;
 		const previewModalBody = document.querySelector('.preview-tooltip-body') as HTMLElement;
 		const previewModalHeader = document.querySelector('.preview-tooltip-header') as HTMLElement;
 		addStandardDisposableListener(previewLink, 'mouseover', () => {
@@ -465,14 +477,14 @@ class WelcomePage extends Disposable {
 	}
 
 	private createDropDown(): void {
-		const dropdownBtn = document.querySelector('#dropdown-btn') as HTMLElement;
-		const dropdown = document.querySelector('#dropdown') as HTMLInputElement;
+		const dropdownBtn = document.getElementById('dropdown-btn') as HTMLElement;
+		const dropdown = document.getElementById('dropdown') as HTMLInputElement;
 		addStandardDisposableListener(dropdownBtn, 'click', () => {
 			dropdown.classList.toggle('show');
 		});
 		addStandardDisposableListener(dropdownBtn, 'keydown', event => {
 			if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
-				const dropdownFirstElement = document.querySelector('#dropdown').firstElementChild.children[0] as HTMLInputElement;
+				const dropdownFirstElement = document.getElementById('dropdown').firstElementChild.children[0] as HTMLInputElement;
 				dropdown.classList.toggle('show');
 				dropdownFirstElement.focus();
 			}
@@ -489,10 +501,10 @@ class WelcomePage extends Disposable {
 
 		const body = document.querySelector('body');
 		if (body.classList.contains('windows') || body.classList.contains('linux')) {
-			const macOnly = document.querySelector('#dropdown-mac-only');
+			const macOnly = document.getElementById('dropdown-mac-only');
 			macOnly.remove();
 		} else if (body.classList.contains('mac')) {
-			const windowsLinuxOnly = document.querySelector('#dropdown-windows-linux-only');
+			const windowsLinuxOnly = document.getElementById('dropdown-windows-linux-only');
 			windowsLinuxOnly.remove();
 		}
 		window.addEventListener('click', (event) => {
@@ -505,8 +517,8 @@ class WelcomePage extends Disposable {
 		});
 
 		addStandardDisposableListener(dropdown, 'keydown', event => {
-			const dropdownLastElement = document.querySelector('#dropdown').lastElementChild.children[0] as HTMLInputElement;
-			const dropdownFirstElement = document.querySelector('#dropdown').firstElementChild.children[0] as HTMLInputElement;
+			const dropdownLastElement = document.getElementById('dropdown').lastElementChild.children[0] as HTMLInputElement;
+			const dropdownFirstElement = document.getElementById('dropdown').firstElementChild.children[0] as HTMLInputElement;
 			if (event.equals(KeyCode.Tab)) {
 				EventHelper.stop(event);
 				return;
@@ -531,8 +543,8 @@ class WelcomePage extends Disposable {
 	}
 
 	private createPreviewModal(): void {
-		const modal = document.querySelector('#preview-modal') as HTMLElement;
-		const btn = document.querySelector('#tool-tip-container-narrow') as HTMLElement;
+		const modal = document.getElementById('preview-modal') as HTMLElement;
+		const btn = document.getElementById('tool-tip-container-narrow') as HTMLElement;
 		const span = document.querySelector('.close-icon') as HTMLElement;
 		const previewModalHeader = document.querySelector('.preview-modal-header') as HTMLElement;
 		btn.addEventListener('click', function () {
