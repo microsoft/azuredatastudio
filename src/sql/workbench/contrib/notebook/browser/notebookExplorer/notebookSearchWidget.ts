@@ -37,7 +37,7 @@ export interface INotebookExplorerSearchOptions {
 
 const ctrlKeyMod = (isMacintosh ? KeyMod.WinCtrl : KeyMod.CtrlCmd);
 export const SingleLineInputHeight = 24;
-function stopPropagationForMultiLineUpwards(event: IKeyboardEvent, value: string, textarea: HTMLTextAreaElement | null) {
+function stopPropagationForMultiLineUpwards(event: IKeyboardEvent, value: string, textarea: HTMLTextAreaElement | undefined) {
 	const isMultiline = !!value.match(/\n/);
 	if (textarea && (isMultiline || textarea.clientHeight > SingleLineInputHeight) && textarea.selectionStart > 0) {
 		event.stopPropagation();
@@ -45,7 +45,7 @@ function stopPropagationForMultiLineUpwards(event: IKeyboardEvent, value: string
 	}
 }
 
-function stopPropagationForMultiLineDownwards(event: IKeyboardEvent, value: string, textarea: HTMLTextAreaElement | null) {
+function stopPropagationForMultiLineDownwards(event: IKeyboardEvent, value: string, textarea: HTMLTextAreaElement | undefined) {
 	const isMultiline = !!value.match(/\n/);
 	if (textarea && (isMultiline || textarea.clientHeight > SingleLineInputHeight) && textarea.selectionEnd < textarea.value.length) {
 		event.stopPropagation();
@@ -61,7 +61,7 @@ export class NotebookSearchWidget extends Widget {
 	searchInputFocusTracker!: IFocusTracker;
 	private searchInputBoxFocused: IContextKey<boolean>;
 	private ignoreGlobalFindBufferOnNextFocus = false;
-	private previousGlobalFindBufferValue: string | null = null;
+	private previousGlobalFindBufferValue: string | undefined = undefined;
 
 
 	private _onSearchSubmit = this._register(new Emitter<{ triggeredOnType: boolean, delay: number }>());
@@ -218,12 +218,12 @@ export class NotebookSearchWidget extends Widget {
 		this._onSearchSubmit.fire({ triggeredOnType, delay });
 	}
 
-	private validateSearchInput(value: string): IMessage | null {
+	private validateSearchInput(value: string): IMessage | undefined {
 		if (value.length === 0) {
-			return null;
+			return undefined;
 		}
 		if (!this.searchInput.getRegex()) {
-			return null;
+			return undefined;
 		}
 		try {
 			new RegExp(value, 'u');
@@ -231,7 +231,7 @@ export class NotebookSearchWidget extends Widget {
 			return { content: e.message };
 		}
 
-		return null;
+		return undefined;
 	}
 
 	private onSearchInputKeyDown(keyboardEvent: IKeyboardEvent) {

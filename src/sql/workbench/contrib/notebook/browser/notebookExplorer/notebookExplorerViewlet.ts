@@ -165,11 +165,11 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 
 		this._register(this.searchWidget.onDidHeightChange(() => this.searchView?.reLayout()));
 
-		this._register(this.searchWidget.onPreserveCaseChange((state) => {
+		this._register(this.searchWidget.onPreserveCaseChange(async (state) => {
 			if (this.searchView && this.searchView.searchViewModel) {
 				this.searchView.searchViewModel.preserveCase = state;
+				await this.refreshTree();
 			}
-			this.refreshTree();
 		}));
 
 		this._register(this.searchWidget.searchInput.onInput(() => this.searchView?.updateActions()));
@@ -260,7 +260,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 			return;
 		}
 
-		this.validateQuery(query).then(async () => {
+		this.validateQuery(query).then(() => {
 			if (this.views.length > 1) {
 				let filesToIncludeFiltered: string = '';
 				this.views.forEach(async (v) => {
@@ -356,8 +356,8 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 
 
 
-	refreshTree(event?: IChangeEvent): void {
-		this.searchView.refreshTree(event);
+	async refreshTree(event?: IChangeEvent): Promise<void> {
+		await this.searchView.refreshTree(event);
 	}
 
 	private get searchConfig(): Constants.INotebookSearchConfigurationProperties {
