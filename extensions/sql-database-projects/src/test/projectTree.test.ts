@@ -14,7 +14,7 @@ import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { DatabaseProjectItemType } from '../common/constants';
 
 describe.skip('Project Tree tests', function (): void {
-	it('Should correctly order tree nodes by type, then by name', async function (): Promise<void> {
+	it('Should correctly order tree nodes by type, then by name', function (): void {
 		const root = os.platform() === 'win32' ? 'Z:\\' : '/';
 
 		const parent = new ProjectRootTreeItem(new Project(vscode.Uri.file(`${root}Fake.sqlproj`).fsPath));
@@ -46,7 +46,7 @@ describe.skip('Project Tree tests', function (): void {
 		should(inputNodes.map(n => n.uri.path)).deepEqual(expectedNodes.map(n => n.uri.path));
 	});
 
-	it('Should build tree from Project file correctly', async function (): Promise<void> {
+	it('Should build tree from Project file correctly', function (): void {
 		const root = os.platform() === 'win32' ? 'Z:\\' : '/';
 		const proj = new Project(vscode.Uri.file(`${root}TestProj.sqlproj`).fsPath);
 
@@ -94,7 +94,7 @@ describe.skip('Project Tree tests', function (): void {
 			DatabaseProjectItemType.file]);
 	});
 
-	it('Should be able to parse windows relative path as platform safe path', async function (): Promise<void> {
+	it('Should be able to parse windows relative path as platform safe path', function (): void {
 		const root = os.platform() === 'win32' ? 'Z:\\' : '/';
 		const proj = new Project(vscode.Uri.file(`${root}TestProj.sqlproj`).fsPath);
 

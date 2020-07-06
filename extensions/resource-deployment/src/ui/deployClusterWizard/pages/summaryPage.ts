@@ -29,7 +29,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 		});
 	}
 
-	public onEnter() {
+	public async onEnter(): Promise<void> {
 		this.wizard.showCustomButtons();
 		this.formItems.forEach(item => {
 			this.form!.removeFormItem(item);
@@ -279,10 +279,10 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 			]
 		};
 
-		const createSectionFunc = (sectionInfo: SectionInfo): azdata.FormComponent => {
+		const createSectionFunc = async (sectionInfo: SectionInfo): Promise<azdata.FormComponent> => {
 			return {
 				title: '',
-				component: createSection({
+				component: await createSection({
 					container: this.wizard.wizardObject,
 					inputComponents: this.wizard.inputComponents,
 					sectionInfo: sectionInfo,
@@ -295,12 +295,12 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 		};
 
 		if (this.wizard.deploymentType === BdcDeploymentType.ExistingAKS || this.wizard.deploymentType === BdcDeploymentType.ExistingKubeAdm) {
-			const deploymentTargetSection = createSectionFunc(deploymentTargetSectionInfo);
+			const deploymentTargetSection = await createSectionFunc(deploymentTargetSectionInfo);
 			this.formItems.push(deploymentTargetSection);
 		}
 
-		const clusterSection = createSectionFunc(clusterSectionInfo);
-		const scaleSection = createSectionFunc(scaleSectionInfo);
+		const clusterSection = await createSectionFunc(clusterSectionInfo);
+		const scaleSection = await createSectionFunc(scaleSectionInfo);
 		const endpointSection = {
 			title: '',
 			component: this.createEndpointSection()
@@ -310,7 +310,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 			component: this.createStorageSection()
 		};
 		if (this.wizard.model.getStringValue(VariableNames.AksName_VariableName)) {
-			const azureSection = createSectionFunc(azureSectionInfo);
+			const azureSection = await createSectionFunc(azureSectionInfo);
 			this.formItems.push(azureSection);
 		}
 

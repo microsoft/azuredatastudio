@@ -15,7 +15,7 @@ import * as localizedConstants from '../common/localizedConstants';
 import { JupyterServerInstallation } from './jupyterServerInstallation';
 import { IServerInstance } from './common';
 import * as utils from '../common/utils';
-import { IPrompter, QuestionTypes, IQuestion } from '../prompts/question';
+import { IPrompter, IQuestion, confirm } from '../prompts/question';
 
 import { AppContext } from '../common/appContext';
 import { ApiWrapper } from '../common/apiWrapper';
@@ -42,6 +42,7 @@ export class JupyterController implements vscode.Disposable {
 
 	private outputChannel: vscode.OutputChannel;
 	private prompter: IPrompter;
+	private _notebookProvider: JupyterNotebookProvider;
 
 	constructor(private appContext: AppContext) {
 		this.prompter = new CodeAdapter();
@@ -54,6 +55,10 @@ export class JupyterController implements vscode.Disposable {
 
 	public get extensionContext(): vscode.ExtensionContext {
 		return this.appContext && this.appContext.extensionContext;
+	}
+
+	public get notebookProvider(): JupyterNotebookProvider {
+		return this._notebookProvider;
 	}
 
 	public dispose(): void {
@@ -89,23 +94,22 @@ export class JupyterController implements vscode.Disposable {
 		let supportedFileFilter: vscode.DocumentFilter[] = [
 			{ scheme: 'untitled', language: '*' }
 		];
-		let notebookProvider = this.registerNotebookProvider();
-		this.extensionContext.subscriptions.push(this.apiWrapper.registerCompletionItemProvider(supportedFileFilter, new NotebookCompletionItemProvider(notebookProvider)));
+		this.registerNotebookProvider();
+		this.extensionContext.subscriptions.push(this.apiWrapper.registerCompletionItemProvider(supportedFileFilter, new NotebookCompletionItemProvider(this._notebookProvider)));
 
 		this.registerDefaultPackageManageProviders();
 		return true;
 	}
 
-	private registerNotebookProvider(): JupyterNotebookProvider {
-		let notebookProvider = new JupyterNotebookProvider((documentUri: vscode.Uri) => new LocalJupyterServerManager({
+	private registerNotebookProvider(): void {
+		this._notebookProvider = new JupyterNotebookProvider((documentUri: vscode.Uri) => new LocalJupyterServerManager({
 			documentPath: documentUri.fsPath,
 			jupyterInstallation: this._jupyterInstallation,
 			extensionContext: this.extensionContext,
 			apiWrapper: this.apiWrapper,
 			factory: this._serverInstanceFactory
 		}));
-		azdata.nb.registerNotebookProvider(notebookProvider);
-		return notebookProvider;
+		azdata.nb.registerNotebookProvider(this._notebookProvider);
 	}
 
 	private saveProfileAndCreateNotebook(profile: azdata.IConnectionProfile): Promise<void> {
@@ -198,10 +202,10 @@ export class JupyterController implements vscode.Disposable {
 	//Confirmation message dialog
 	private async confirmReinstall(): Promise<boolean> {
 		return await this.prompter.promptSingle<boolean>(<IQuestion>{
-			type: QuestionTypes.confirm,
+			type: confirm,
 			message: localize('confirmReinstall', "Are you sure you want to reinstall?"),
 			default: true
-		});
+		}, this.apiWrapper);
 	}
 
 	public async doManagePackages(options?: ManagePackageDialogOptions): Promise<void> {
