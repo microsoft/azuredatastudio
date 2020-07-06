@@ -270,7 +270,17 @@
 }
 
 .ads-homepage #tool-tip-container-wide {
-	display: none
+	display: none;
+}
+
+.ads-homepage #tool-tip-container-wide .ads-welcome-page-link{
+	display: flex;
+	align-items: center;
+}
+
+.ads-homepage #tool-tip-container-narrow .ads-welcome-page-link{
+	display: flex;
+	align-items: center;
 }
 
 .ads-homepage #tool-tip-container-narrow {
@@ -285,7 +295,9 @@
 }
 
 .ads-homepage.XL #tool-tip-container-wide {
-	display: block
+	display: flex;
+	justify-content: flex-end;
+	padding-top: 10px;
 }
 
 .ads-homepage.XL #tool-tip-container-narrow {
@@ -297,6 +309,7 @@
 	visibility: hidden;
 	padding: 10px 15px;
 	z-index: 1;
+	top: 32px;
 	right: -72px;
 	text-align: center;
 	border-radius: 6px;
@@ -386,6 +399,7 @@
 	width: 12px;
 	height: 12px;
 	margin-left: 6px;
+	margin-top: 3px;
 	-webkit-mask: url(../../media/info.svg) no-repeat;
 	-webkit-mask-size: 12px 12px;
 	mask: url(../../media/info.svg) no-repeat;
@@ -399,6 +413,11 @@
 .ads-homepage .monaco-text-button {
 	min-width: 77px;
 	margin: 10px 0;
+}
+
+.ads-homepage .codicon-chevron-right {
+	transform: rotate(90deg);
+	pointer-events: none;
 }
 
 .ads-homepage .icon-arrow-right {
@@ -531,12 +550,12 @@
 
 .ads-homepage .tile:not(.extension):not(.extension-pack) {
 	border: 1px solid;
-	border-radius: 4px
+	border-radius: 4px;
 }
 
 .ads-homepage .tile.extension-pack {
 	border: 1px solid;
-	border-radius: 4px
+	border-radius: 4px;
 }
 
 .ads-homepage .extension-list {
@@ -545,17 +564,17 @@
 
 .ads-homepage.XS.SM.MD.LG.XL .extension-list {
 	grid-column: 5/span 4;
-	grid-row: 1/span 4
+	grid-row: 1/span 4;
 }
 
 .ads-homepage .extension-header, .ads-homepage .extension-pack-extension-list-header {
 	font-weight: 600;
-	font-size: 1.33em
+	font-size: 1.33em;
 }
 
 .ads-homepage .tile {
 	transition: all .5s ease;
-	border-radius: 4px
+	border-radius: 4px;
 }
 
 .ads-homepage .tile:hover:not(.no-hover) {
@@ -1301,7 +1320,7 @@
 	font-size: 1.16em;
 	font-family: Segoe UI, Frutiger, Frutiger Linotype, Dejavu Sans, Helvetica Neue, Arial, sans-serif;
 	font-weight: normal;
-	padding: 10px 0 10px;
+	padding: 10px 15px 10px 0;
 }
 
 .ads-homepage .guided-tour-banner b {

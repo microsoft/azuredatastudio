@@ -45,13 +45,12 @@ import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { joinPath } from 'vs/base/common/resources';
-import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { addStandardDisposableListener, EventHelper } from 'vs/base/browser/dom';
 import { GuidedTour } from 'sql/workbench/contrib/welcome/page/browser/gettingStartedTour';
-
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { Button } from 'sql/base/browser/ui/button/button';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 const configurationKey = 'workbench.startupEditor';
 const oldConfigurationKey = 'workbench.welcome.enabled';
 const telemetryFrom = 'welcomePage';
@@ -229,8 +228,8 @@ class WelcomePage extends Disposable {
 		@IHostService private readonly hostService: IHostService,
 		@IFileService fileService: IFileService,
 		@IProductService private readonly productService: IProductService,
+		@IWorkbenchLayoutService protected layoutService: IWorkbenchLayoutService,
 		@ICommandService private readonly commandService: ICommandService,
-		@IWorkbenchLayoutService protected layoutService: IWorkbenchLayoutService
 	) {
 		super();
 		this._register(lifecycleService.onShutdown(() => this.dispose()));
@@ -320,7 +319,7 @@ class WelcomePage extends Disposable {
 				while (ul.firstChild) {
 					ul.removeChild(ul.firstChild);
 				}
-				await this.mapListEntries(workspacesToShow, fileService);
+				await this.mapListEntries(workspacesToShow, fileService, container);
 			};
 			await updateEntries();
 			this._register(this.labelService.onDidChangeFormatters(updateEntries));
@@ -344,11 +343,11 @@ class WelcomePage extends Disposable {
 	}
 
 	private createButtons(): void {
+		const container = document.querySelector('.ads-homepage .hero');
 		const dropdownButtonContainer = document.querySelector('#dropdown-btn-container') as HTMLElement;
-		const nav = document.createElement('nav');
 		const dropdownUl = document.createElement('ul');
 		const i = document.createElement('div');
-
+		const nav = document.createElement('nav');
 		const newText = localize('welcomePage.new', "New");
 		let dropdownBtn = this._register(new Button(dropdownButtonContainer));
 		dropdownBtn.label = newText;
@@ -356,7 +355,7 @@ class WelcomePage extends Disposable {
 		const iconClassList = ['twisties', 'codicon', 'codicon-chevron-right'];
 
 		i.classList.add(...iconClassList);
-
+		const openFileCopy = localize('welcomePage.openFile', "Open file");
 		dropdownUl.classList.add('dropdown-content');
 		dropdownUl.setAttribute('aria-hidden', 'true');
 		dropdownUl.setAttribute('aria-label', 'submenu');
@@ -367,9 +366,9 @@ class WelcomePage extends Disposable {
 			`<li role="none"><a role="menuitem" tabIndex="-1" class="move" href="command:registeredServers.addConnection">${(localize('welcomePage.newConnection', "New connection"))} </a></li>
 			<li role="none"><a role="menuitem" tabIndex="-1" class="move" href="command:workbench.action.files.newUntitledFile">${(localize('welcomePage.newQuery', "New query"))}</a></li>
 			<li role="none"><a role="menuitem" tabIndex="-1" class="move" href="command:notebook.command.new">${(localize('welcomePage.newNotebook', "New notebook"))}</a></li>
-			<li role="none" id="dropdown-mac-only"><a role="menuitem" tabIndex="-1" class="move mac-only" href="command:workbench.action.files.openLocalFileFolder">${(localize('welcomePage.openFileMac', "Open file"))}</a></li>
-			<li role="none" id="dropdown-windows-linux-only"><a role="menuitem" tabIndex="-1" class="move windows-only linux-only" href="command:workbench.action.files.openFile">${(localize('welcomePage.openFileLinuxPC', "Open file"))}</a></li`;
-		const getDropdownBtn = document.querySelector('#dropdown-btn-container .monaco-button') as HTMLElement;
+			<li role="none" id="dropdown-mac-only"><a role="menuitem" tabIndex="-1" class="move mac-only" href="command:workbench.action.files.openLocalFileFolder">${openFileCopy}</a></li>
+			<li role="none" id="dropdown-windows-linux-only"><a role="menuitem" tabIndex="-1" class="move windows-only linux-only" href="command:workbench.action.files.openFile">${openFileCopy}</a></li`;
+		const getDropdownBtn = container.querySelector('#dropdown-btn-container .monaco-button') as HTMLElement;
 		getDropdownBtn.id = 'dropdown-btn';
 		getDropdownBtn.setAttribute('role', 'navigation');
 		getDropdownBtn.setAttribute('aria-haspopup', 'true');
@@ -384,19 +383,20 @@ class WelcomePage extends Disposable {
 		const fileBtnWindowsClasses = ['windows-only', 'linux-only', 'btn-secondary'];
 		const fileBtnMacClasses = ['mac-only', 'btn-secondary'];
 
-		const fileBtnContainer = document.querySelector('#open-file-btn-container') as HTMLElement;
-		const openFileText = localize('welcomePage.openFile', "Open file");
+		const fileBtnContainer = container.querySelector('#open-file-btn-container') as HTMLElement;
+		const openFileText = openFileCopy;
 		let openFileButton = this._register(new Button(fileBtnContainer));
 		openFileButton.label = openFileText;
-		const getNewFileBtn = document.querySelector('#open-file-btn-container .monaco-button') as HTMLAnchorElement;
+		const getNewFileBtn = container.querySelector('#open-file-btn-container .monaco-button') as HTMLAnchorElement;
+		const body = document.querySelector('body');
 
-		if (process.platform === 'win32' || process.platform === 'linux') {
+		if (body.classList.contains('windows') || body.classList.contains('linux')) {
 			getNewFileBtn.classList.add(...fileBtnWindowsClasses);
 			openFileButton.onDidClick(async () => {
 				await this.commandService.executeCommand('workbench.action.files.openFile');
 			}
 			);
-		} else if (process.platform === 'darwin') {
+		} else if (body.classList.contains('mac')) {
 			getNewFileBtn.classList.add(...fileBtnMacClasses);
 			openFileButton.onDidClick(async () => {
 				await this.commandService.executeCommand('workbench.action.files.openLocalFileFolder');
@@ -441,6 +441,7 @@ class WelcomePage extends Disposable {
 			guidedTour.create();
 		});
 
+
 		removeTourBtn.addEventListener('click', (e: MouseEvent) => {
 			this.configurationService.updateValue(configurationKey, 'welcomePage', ConfigurationTarget.USER);
 			guidedTourNotificationContainer.classList.add('hide');
@@ -456,10 +457,11 @@ class WelcomePage extends Disposable {
 	}
 
 	private createWidePreviewToolTip(): void {
-		const previewLink = document.querySelector('#tool-tip-container-wide') as HTMLElement;
-		const tooltip = document.querySelector('#tooltip-text-wide') as HTMLElement;
-		const previewModalBody = document.querySelector('.preview-tooltip-body') as HTMLElement;
-		const previewModalHeader = document.querySelector('.preview-tooltip-header') as HTMLElement;
+		const container = document.querySelector('.ads-homepage .tool-tip');
+		const previewLink = container.querySelector('#tool-tip-container-wide') as HTMLElement;
+		const tooltip = container.querySelector('#tooltip-text-wide') as HTMLElement;
+		const previewModalBody = container.querySelector('.preview-tooltip-body') as HTMLElement;
+		const previewModalHeader = container.querySelector('.preview-tooltip-header') as HTMLElement;
 		addStandardDisposableListener(previewLink, 'mouseover', () => {
 			tooltip.setAttribute('aria-hidden', 'true');
 			tooltip.classList.toggle('show');
@@ -497,6 +499,7 @@ class WelcomePage extends Disposable {
 				}
 			}
 		});
+
 		window.addEventListener('click', (event) => {
 			const target = event.target as HTMLTextAreaElement;
 			if (!target.matches('.tooltip')) {
@@ -508,9 +511,9 @@ class WelcomePage extends Disposable {
 	}
 
 	private createDropDown(): void {
-		const dropdownBtn = document.querySelector('#dropdown-btn') as HTMLElement;
-		const dropdown = document.querySelector('.dropdown') as HTMLInputElement;
-
+		const container = document.querySelector('.ads-homepage .hero');
+		const dropdownBtn = container.querySelector('#dropdown-btn') as HTMLElement;
+		const dropdown = container.querySelector('#dropdown') as HTMLInputElement;
 		addStandardDisposableListener(dropdownBtn, 'click', () => {
 			dropdown.classList.toggle('show');
 		});
@@ -533,24 +536,25 @@ class WelcomePage extends Disposable {
 
 		const body = document.querySelector('body');
 		if (body.classList.contains('windows') || body.classList.contains('linux')) {
-			const macOnly = document.querySelector('#dropdown-mac-only');
+			const macOnly = container.querySelector('#dropdown-mac-only');
 			macOnly.remove();
 		} else if (body.classList.contains('mac')) {
-			const windowsLinuxOnly = document.querySelector('#dropdown-windows-linux-only');
+			const windowsLinuxOnly = container.querySelector('#dropdown-windows-linux-only');
 			windowsLinuxOnly.remove();
 		}
 		window.addEventListener('click', (event) => {
 			const target = event.target as HTMLTextAreaElement;
 			if (!target.matches('#dropdown-btn')) {
 				if (dropdown.classList.contains('show')) {
-					dropdown.classList.remove('show');
+					dropdown.classList.toggle('show');
 				}
 			}
 		});
 
 		addStandardDisposableListener(dropdown, 'keydown', event => {
-			const dropdownLastElement = document.querySelector('#dropdown').lastElementChild.children[0] as HTMLInputElement;
-			const dropdownFirstElement = document.querySelector('#dropdown').firstElementChild.children[0] as HTMLInputElement;
+			const container = document.querySelector('.ads-homepage .hero');
+			const dropdownLastElement = container.querySelector('#dropdown').lastElementChild.children[0] as HTMLInputElement;
+			const dropdownFirstElement = container.querySelector('#dropdown').firstElementChild.children[0] as HTMLInputElement;
 			if (event.equals(KeyCode.Tab)) {
 				EventHelper.stop(event);
 				return;
@@ -559,7 +563,7 @@ class WelcomePage extends Disposable {
 				if (event.target === dropdownFirstElement) {
 					dropdownLastElement.focus();
 				} else {
-					const movePrev = <HTMLElement>document.querySelector('.move:focus').parentElement.previousElementSibling.children[0] as HTMLElement;
+					const movePrev = <HTMLElement>container.querySelector('.move:focus').parentElement.previousElementSibling.children[0] as HTMLElement;
 					movePrev.focus();
 				}
 			}
@@ -567,7 +571,7 @@ class WelcomePage extends Disposable {
 				if (event.target === dropdownLastElement) {
 					dropdownFirstElement.focus();
 				} else {
-					const moveNext = <HTMLElement>document.querySelector('.move:focus').parentElement.nextElementSibling.children[0] as HTMLElement;
+					const moveNext = <HTMLElement>container.querySelector('.move:focus').parentElement.nextElementSibling.children[0] as HTMLElement;
 					moveNext.focus();
 				}
 			}
@@ -575,16 +579,15 @@ class WelcomePage extends Disposable {
 	}
 
 	private createPreviewModal(): void {
-		const modal = document.querySelector('#preview-modal') as HTMLElement;
-		const btn = document.querySelector('#tool-tip-container-narrow') as HTMLElement;
-		const span = document.querySelector('.close-icon') as HTMLElement;
-		const previewModalHeader = document.querySelector('.preview-modal-header') as HTMLElement;
-
-
-
+		const container = document.querySelector('.ads-homepage');
+		const modal = container.querySelector('#preview-modal') as HTMLElement;
+		const btn = container.querySelector('#tool-tip-container-narrow') as HTMLElement;
+		const span = container.querySelector('.close-icon') as HTMLElement;
+		const previewModalHeader = container.querySelector('.preview-modal-header') as HTMLElement;
 		btn.addEventListener('click', function () {
 			modal.classList.toggle('show');
 		});
+
 		span.addEventListener('click', function () {
 			modal.classList.remove('show');
 		});
@@ -618,10 +621,9 @@ class WelcomePage extends Disposable {
 				}
 			}
 		});
-
 		modal.addEventListener('keydown', function (e: KeyboardEvent) {
-			const previewModalBody = document.querySelector('.preview-modal-body') as HTMLElement;
-			const previewModalHeader = document.querySelector('.preview-modal-header') as HTMLElement;
+			const previewModalBody = container.querySelector('.preview-modal-body') as HTMLElement;
+			const previewModalHeader = container.querySelector('.preview-modal-header') as HTMLElement;
 			let event = new StandardKeyboardEvent(e);
 
 			if (event.equals(KeyCode.Tab)) {
@@ -636,7 +638,7 @@ class WelcomePage extends Disposable {
 		});
 	}
 
-	private async createListEntries(fileService: IFileService, fullPath: URI, windowOpenable: IWindowOpenable, relativePath: string): Promise<HTMLElement[]> {
+	private async createListEntries(container: HTMLElement, fileService: IFileService, fullPath: URI, windowOpenable: IWindowOpenable, relativePath: string): Promise<HTMLElement[]> {
 		let result: HTMLElement[] = [];
 		const value = await fileService.resolve(fullPath);
 		let date = new Date(value.mtime);
@@ -648,12 +650,13 @@ class WelcomePage extends Disposable {
 		const icon = document.createElement('i');
 		const a = document.createElement('a');
 		const span = document.createElement('span');
-		const ul = document.querySelector('.recent ul');
+		const ul = container.querySelector('.list');
 		icon.title = relativePath;
 		a.innerText = name;
 		a.title = relativePath;
 		a.setAttribute('aria-label', localize('welcomePage.openFolderWithPath', "Open folder {0} with path {1}", name, parentPath));
 		a.href = 'javascript:void(0)';
+
 		a.addEventListener('click', e => {
 			this.telemetryService.publicLog2<WorkbenchActionExecutedEvent, WorkbenchActionExecutedClassification>('workbenchActionExecuted', {
 				id: 'openRecentFolder',
@@ -676,7 +679,7 @@ class WelcomePage extends Disposable {
 		return result;
 	}
 
-	private async mapListEntries(recents: (IRecentWorkspace | IRecentFolder)[], fileService: IFileService): Promise<HTMLElement[]> {
+	private async mapListEntries(recents: (IRecentWorkspace | IRecentFolder)[], fileService: IFileService, container: HTMLElement): Promise<HTMLElement[]> {
 		const result: HTMLElement[] = [];
 		for (let i = 0; i < recents.length; i++) {
 			const recent = recents[i];
@@ -691,7 +694,7 @@ class WelcomePage extends Disposable {
 				relativePath = recent.label || this.labelService.getWorkspaceLabel(recent.workspace, { verbose: true });
 				windowOpenable = { workspaceUri: recent.workspace.configPath };
 			}
-			const elements = await this.createListEntries(fileService, fullPath, windowOpenable, relativePath);
+			const elements = await this.createListEntries(container, fileService, fullPath, windowOpenable, relativePath);
 			result.push(...elements);
 		}
 		return result;
@@ -740,7 +743,7 @@ class WelcomePage extends Disposable {
 				let dropdownBtn = this._register(new Button(btnContainer));
 				dropdownBtn.label = installText;
 				const classes = ['btn', 'btn-secondary'];
-				const getDropdownBtn = document.querySelector('.extensionPack .monaco-button:first-of-type') as HTMLAnchorElement;
+				const getDropdownBtn = container.querySelector('.extensionPack .monaco-button:first-of-type') as HTMLAnchorElement;
 				getDropdownBtn.id = 'dropdown-btn';
 				getDropdownBtn.classList.add(...classes);
 				getDropdownBtn.title = extension.title || (extension.isKeymap ? localize('welcomePage.installKeymap', "Install {0} keymap", extension.name) : localize('welcomePage.installExtensionPack', "Install additional support for {0}", extension.name));
@@ -757,14 +760,14 @@ class WelcomePage extends Disposable {
 				});
 
 
-				const description = document.querySelector('.extension-pack-body');
-				const header = document.querySelector('.extension-pack-header');
+				const description = container.querySelector('.extension-pack-body');
+				const header = container.querySelector('.extension-pack-header');
 
 				const installedText = localize('welcomePage.installed', "Installed");
 				let installedButton = new Button(btnContainer);
 				installedButton.label = installedText;
 				installedButton.enabled = false;
-				const getInstalledButton = document.querySelector('.extensionPack .monaco-button:nth-of-type(2)') as HTMLAnchorElement;
+				const getInstalledButton = container.querySelector('.extensionPack .monaco-button:nth-of-type(2)') as HTMLAnchorElement;
 
 				getInstalledButton.innerText = localize('welcomePage.installed', "Installed");
 				getInstalledButton.title = extension.isKeymap ? localize('welcomePage.installedKeymap', "{0} keymap is already installed", extension.name) : localize('welcomePage.installedExtensionPack', "{0} support is already installed", extension.name);
@@ -1005,6 +1008,7 @@ registerThemingParticipant((theme, collector) => {
 	const tileBackgroundColor = theme.getColor(inputBackground);
 	if (tileBackgroundColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tile:not(.extension):not(.extension-pack) { background-color: ${tileBackgroundColor};  }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary .monaco-button { background-color: ${tileBackgroundColor} !important;  }`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tool-tip .tool-tip-text { background-color: ${tileBackgroundColor};  }`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .modal-content { background-color: ${tileBackgroundColor};  }`);
 	}
@@ -1037,7 +1041,7 @@ registerThemingParticipant((theme, collector) => {
 	}
 	const buttonSecondaryBackgroundColor = theme.getColor(buttonSecondaryBackground);
 	if (buttonSecondaryBackgroundColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary { background-color: ${buttonSecondaryBackgroundColor} !important}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary { background-color: ${buttonSecondaryBackgroundColor} !important;}`);
 	}
 	const buttonSecondaryBorderColor = theme.getColor(buttonSecondaryBorder);
 	if (buttonSecondaryBorderColor) {
@@ -1045,7 +1049,7 @@ registerThemingParticipant((theme, collector) => {
 	}
 	const buttonSecondaryColor = theme.getColor(buttonSecondary);
 	if (buttonSecondaryColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary { color: ${buttonSecondaryColor} !important}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary { color: ${buttonSecondaryColor} !important;}`);
 	}
 	const buttonSecondaryHover = theme.getColor(buttonSecondaryHoverColor);
 	if (buttonSecondaryColor) {
@@ -1119,6 +1123,7 @@ registerThemingParticipant((theme, collector) => {
 	const link = theme.getColor(textLinkForeground);
 	if (link) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage a { color: ${link}; }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .btn-primary .monaco-button { border: 1px solid ${link}; }`);
 	}
 	const activeLink = theme.getColor(textLinkActiveForeground);
 	if (activeLink) {
