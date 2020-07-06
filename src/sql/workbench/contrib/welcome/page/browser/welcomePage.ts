@@ -344,7 +344,7 @@ class WelcomePage extends Disposable {
 	}
 
 	private createButtons(): void {
-		const dropdownButtonContainer = document.querySelector('#dropdown_btn_container') as HTMLElement;
+		const dropdownButtonContainer = document.querySelector('#dropdown-btn-container') as HTMLElement;
 		const nav = document.createElement('nav');
 		const dropdownUl = document.createElement('ul');
 		const i = document.createElement('div');
@@ -361,34 +361,34 @@ class WelcomePage extends Disposable {
 		dropdownUl.setAttribute('aria-hidden', 'true');
 		dropdownUl.setAttribute('aria-label', 'submenu');
 		dropdownUl.setAttribute('role', 'menu');
-		dropdownUl.setAttribute('aria-labelledby', 'dropdown_btn');
+		dropdownUl.setAttribute('aria-labelledby', 'dropdown-btn');
 		dropdownUl.id = 'dropdown';
 		dropdownUl.innerHTML =
 			`<li role="none"><a role="menuitem" tabIndex="-1" class="move" href="command:registeredServers.addConnection">${(localize('welcomePage.newConnection', "New connection"))} </a></li>
 			<li role="none"><a role="menuitem" tabIndex="-1" class="move" href="command:workbench.action.files.newUntitledFile">${(localize('welcomePage.newQuery', "New query"))}</a></li>
 			<li role="none"><a role="menuitem" tabIndex="-1" class="move" href="command:notebook.command.new">${(localize('welcomePage.newNotebook', "New notebook"))}</a></li>
-			<li role="none" id="dropdown-mac-only"><a role="menuitem" tabIndex="-1" class="move mac_only" href="command:workbench.action.files.openLocalFileFolder">${(localize('welcomePage.openFileMac', "Open file"))}</a></li>
-			<li role="none" id="dropdown-windows-linux-only"><a role="menuitem" tabIndex="-1" class="move windows_only linux_only" href="command:workbench.action.files.openFile">${(localize('welcomePage.openFileLinuxPC', "Open file"))}</a></li`;
-		const getDropdownBtn = document.querySelector('#dropdown_btn_container .monaco-button') as HTMLElement;
-		getDropdownBtn.id = 'dropdown_btn';
+			<li role="none" id="dropdown-mac-only"><a role="menuitem" tabIndex="-1" class="move mac-only" href="command:workbench.action.files.openLocalFileFolder">${(localize('welcomePage.openFileMac', "Open file"))}</a></li>
+			<li role="none" id="dropdown-windows-linux-only"><a role="menuitem" tabIndex="-1" class="move windows-only linux-only" href="command:workbench.action.files.openFile">${(localize('welcomePage.openFileLinuxPC', "Open file"))}</a></li`;
+		const getDropdownBtn = document.querySelector('#dropdown-btn-container .monaco-button') as HTMLElement;
+		getDropdownBtn.id = 'dropdown-btn';
 		getDropdownBtn.setAttribute('role', 'navigation');
 		getDropdownBtn.setAttribute('aria-haspopup', 'true');
 		getDropdownBtn.setAttribute('aria-controls', 'dropdown');
 		nav.setAttribute('role', 'navigation');
-		nav.classList.add('dropdown_nav');
+		nav.classList.add('dropdown-nav');
 		dropdownUl.classList.add('dropdown');
-		getDropdownBtn.id = 'dropdown_btn';
+		getDropdownBtn.id = 'dropdown-btn';
 		getDropdownBtn.appendChild(i);
 		nav.appendChild(dropdownUl);
 		dropdownButtonContainer.appendChild(nav);
-		const fileBtnWindowsClasses = ['windows_only', 'linux_only', 'btn_secondary'];
-		const fileBtnMacClasses = ['mac_only', 'btn_secondary'];
+		const fileBtnWindowsClasses = ['windows-only', 'linux-only', 'btn-secondary'];
+		const fileBtnMacClasses = ['mac-only', 'btn-secondary'];
 
-		const fileBtnContainer = document.querySelector('#open_file_btn_container') as HTMLElement;
+		const fileBtnContainer = document.querySelector('#open-file-btn-container') as HTMLElement;
 		const openFileText = localize('welcomePage.openFile', "Open file");
 		let openFileButton = this._register(new Button(fileBtnContainer));
 		openFileButton.label = openFileText;
-		const getNewFileBtn = document.querySelector('#open_file_btn_container .monaco-button') as HTMLAnchorElement;
+		const getNewFileBtn = document.querySelector('#open-file-btn-container .monaco-button') as HTMLAnchorElement;
 
 		if (process.platform === 'win32' || process.platform === 'linux') {
 			getNewFileBtn.classList.add(...fileBtnWindowsClasses);
@@ -508,7 +508,7 @@ class WelcomePage extends Disposable {
 	}
 
 	private createDropDown(): void {
-		const dropdownBtn = document.querySelector('#dropdown_btn') as HTMLElement;
+		const dropdownBtn = document.querySelector('#dropdown-btn') as HTMLElement;
 		const dropdown = document.querySelector('.dropdown') as HTMLInputElement;
 
 		addStandardDisposableListener(dropdownBtn, 'click', () => {
@@ -541,7 +541,7 @@ class WelcomePage extends Disposable {
 		}
 		window.addEventListener('click', (event) => {
 			const target = event.target as HTMLTextAreaElement;
-			if (!target.matches('#dropdown_btn')) {
+			if (!target.matches('#dropdown-btn')) {
 				if (dropdown.classList.contains('show')) {
 					dropdown.classList.remove('show');
 				}
@@ -575,10 +575,10 @@ class WelcomePage extends Disposable {
 	}
 
 	private createPreviewModal(): void {
-		const modal = document.querySelector('#preview_modal') as HTMLElement;
-		const btn = document.querySelector('#tool_tip_container_narrow') as HTMLElement;
-		const span = document.querySelector('.close_icon') as HTMLElement;
-		const previewModalHeader = document.querySelector('.preview_modal_header') as HTMLElement;
+		const modal = document.querySelector('#preview-modal') as HTMLElement;
+		const btn = document.querySelector('#tool-tip-container-narrow') as HTMLElement;
+		const span = document.querySelector('.close-icon') as HTMLElement;
+		const previewModalHeader = document.querySelector('.preview-modal-header') as HTMLElement;
 
 
 
@@ -739,14 +739,14 @@ class WelcomePage extends Disposable {
 				const installText = localize('welcomePage.install', "Install");
 				let dropdownBtn = this._register(new Button(btnContainer));
 				dropdownBtn.label = installText;
-				const classes = ['btn', 'btn_secondary'];
+				const classes = ['btn', 'btn-secondary'];
 				const getDropdownBtn = document.querySelector('.extensionPack .monaco-button:first-of-type') as HTMLAnchorElement;
-				getDropdownBtn.id = 'dropdown_btn';
+				getDropdownBtn.id = 'dropdown-btn';
 				getDropdownBtn.classList.add(...classes);
 				getDropdownBtn.title = extension.title || (extension.isKeymap ? localize('welcomePage.installKeymap', "Install {0} keymap", extension.name) : localize('welcomePage.installExtensionPack', "Install additional support for {0}", extension.name));
 				getDropdownBtn.setAttribute('aria-haspopup', 'true');
 				getDropdownBtn.setAttribute('aria-controls', 'dropdown');
-				getDropdownBtn.id = 'dropdown_btn';
+				getDropdownBtn.id = 'dropdown-btn';
 				getDropdownBtn.classList.add('installExtension');
 				getDropdownBtn.setAttribute('data-extension', extension.id);
 				getDropdownBtn.href = 'javascript:void(0)';
@@ -757,8 +757,8 @@ class WelcomePage extends Disposable {
 				});
 
 
-				const description = document.querySelector('.extension_pack_body');
-				const header = document.querySelector('.extension_pack_header');
+				const description = document.querySelector('.extension-pack-body');
+				const header = document.querySelector('.extension-pack-header');
 
 				const installedText = localize('welcomePage.installed', "Installed");
 				let installedButton = new Button(btnContainer);
@@ -773,7 +773,7 @@ class WelcomePage extends Disposable {
 				getInstalledButton.setAttribute('data-extension', extension.id);
 				description.innerHTML = extension.description;
 				header.innerHTML = extension.name;
-				this.addExtensionPackList(container, '.extension_pack_extension_list');
+				this.addExtensionPackList(container, '.extension-pack-extension-list');
 			});
 		}
 	}
@@ -1033,23 +1033,23 @@ registerThemingParticipant((theme, collector) => {
 	}
 	const buttonHoverBackgroundColor = theme.getColor(buttonHoverBackground);
 	if (buttonHoverBackgroundColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_primary:hover { background: ${buttonHoverBackgroundColor}}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-primary:hover { background: ${buttonHoverBackgroundColor}}`);
 	}
 	const buttonSecondaryBackgroundColor = theme.getColor(buttonSecondaryBackground);
 	if (buttonSecondaryBackgroundColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_secondary { background-color: ${buttonSecondaryBackgroundColor}}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary { background-color: ${buttonSecondaryBackgroundColor} !important}`);
 	}
 	const buttonSecondaryBorderColor = theme.getColor(buttonSecondaryBorder);
 	if (buttonSecondaryBorderColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_secondary { border: 1px solid ${buttonSecondaryBorderColor}}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary { border: 1px solid ${buttonSecondaryBorderColor}}`);
 	}
 	const buttonSecondaryColor = theme.getColor(buttonSecondary);
 	if (buttonSecondaryColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_secondary { color: ${buttonSecondaryColor}}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary { color: ${buttonSecondaryColor} !important}`);
 	}
 	const buttonSecondaryHover = theme.getColor(buttonSecondaryHoverColor);
 	if (buttonSecondaryColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn_secondary:hover:not(.disabled) { color: ${buttonSecondaryHover}; border: 1px solid ${buttonSecondaryHover}}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary:hover:not(.disabled) { color: ${buttonSecondaryHover}; border: 1px solid ${buttonSecondaryHover}}`);
 	}
 	const selectBackgroundColor = theme.getColor(selectBackground);
 	if (selectBackgroundColor) {

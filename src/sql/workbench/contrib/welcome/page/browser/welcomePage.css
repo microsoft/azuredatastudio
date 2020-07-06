@@ -144,7 +144,7 @@
 	justify-content: flex-start
 }
 
-.ads_homepage .btn span {
+.ads-homepage .btn span {
 	display: block
 }
 
@@ -162,23 +162,23 @@
 	line-height: 1.6em
 }
 
-.ads_homepage .btn_primary {
+.ads-homepage .btn-primary {
 	border: 1px solid;
 }
 
-.ads_homepage .btn_primary:hover {
+.ads-homepage .btn-primary:hover {
 	cursor: pointer;
 }
 
-.ads_homepage .btn_secondary:hover {
+.ads-homepage .btn-secondary:hover {
 	cursor: pointer;
 }
 
-.ads_homepage .btn_secondary {
+.ads-homepage .btn-secondary {
 	line-height: 1.41em;
 }
 
-.ads_homepage.XS:not(.SM) #dropdown_btn_container {
+.ads-homepage.XS:not(.SM) #dropdown-btn-container {
 	width: 100%;
 }
 
@@ -392,11 +392,11 @@
 	mask-size: 12px 12px
 }
 
-.ads_homepage .codicon-chevron-right {
+.ads-homepage .codicon-chevron-right {
 	transform: rotate(90deg);
 }
 
-.ads_homepage .monaco-text-button {
+.ads-homepage .monaco-text-button {
 	min-width: 77px;
 	margin: 10px 0;
 }
@@ -504,15 +504,15 @@
 	grid-template-columns: repeat(2, 1fr)
 }
 
-.ads_homepage .dropdown_btn_container {
+.ads-homepage .dropdown-btn-container {
 	margin: 10px 10px 10px 0;
 }
 
-.ads_homepage.XS:not(.SM) .dropdown_btn_container {
+.ads-homepage.XS:not(.SM) .dropdown-btn-container {
 	width: 100%;
 }
 
-.ads_homepage.XS.SM.MD.LG.XL .extension_pack_container {
+.ads-homepage.XS.SM.MD.LG.XL .extension-pack-container {
 	grid-template-columns: repeat(8, 1fr)
 }
 
@@ -1212,11 +1212,11 @@
 	background: 0 0
 }
 
-.ads_homepage .extension_pack .extension_pack_extensions .btn_secondary {
+.ads-homepage .extension-pack .extension-pack-extensions .btn-secondary {
 	box-sizing: border-box !important;
 }
 
-.ads_homepage.XS.SM .btn_secondary {
+.ads-homepage.XS.SM .btn-secondary {
 	margin: 0 0 0 15px;
 	max-width: 77px;
 }

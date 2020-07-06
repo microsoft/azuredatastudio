@@ -39,10 +39,10 @@ export default () => `
 									<div class="caption-container">
 										<span class="icon xs"></span><h1 class="caption"></h1>
 									</div>
-									<div class="flex btn_container">
-										<div id="dropdown_btn_container">
+									<div class="flex btn-container">
+										<div id="dropdown-btn-container">
 										</div>
-										<div id="open_file_btn_container">
+										<div id="open-file-btn-container">
 										</div>
 									</div>
 								</div>
@@ -97,24 +97,24 @@ export default () => `
 						<input class="input" name="tabs" type="radio" id="tab-1" checked="checked" />
 						<label class="label" for="tab-1" tabIndex="0">${escape(localize('welcomePage.history', "History"))}</label>
 						<div class="panel">
-							<div class="recent history">
-								<div class="flex list-header-container">
-									<i class="icon-document themed-icon"></i>
-									<h4 class="list-header">${escape(localize('welcomePage.name', "Name"))}</h4>
-									<h4 class="list-header-last-opened">${escape(localize('welcomePage.lastOpened', "Last Opened"))}</h4>
-								</div>
-								<ul class="list">
-									<!-- Filled programmatically -->
-								</ul>
-								<p class="none detail">No recent folders</p>
-								<ul class="moreRecent-list">
-									<li class="moreRecent">
-										<a class="ads-welcome-page-link" href="command:workbench.action.openRecent">${escape(localize('welcomePage.moreRecent', "Show more"))}
-											<i class="icon-arrow-down-dark"></i>
-										</a>
-									</li>
-								</ul>
-							</div>
+						<div class="recent history">
+						<div class="flex list-header-container">
+							<i class="icon-document themed-icon"></i>
+							<h4 class="list-header">${escape(localize('welcomePage.name', "Name"))}</h4>
+							<h4 class="list-header-last-opened">${escape(localize('welcomePage.lastOpened', "Last Opened"))}</h4>
+						</div>
+						<ul class="list">
+							<!-- Filled programmatically -->
+						</ul>
+						<p class="none detail">No recent folders</p>
+						<ul class="moreRecent-list">
+							<li class="moreRecent">
+								<a class="ads-welcome-page-link" href="command:workbench.action.openRecent">${escape(localize('welcomePage.moreRecent', "Show more"))}
+									<i class="icon-arrow-down-dark"></i>
+								</a>
+							</li>
+						</ul>
+					</div>
 						</div>
 					</div>
 					<p class="showOnStartup"><input type="checkbox" id="showOnStartup" class="checkbox">
@@ -141,7 +141,7 @@ export default () => `
 						<p>${escape(localize('welcomePage.documentationBody',
 				"Visit the documentation center for quickstarts, how-to guides, and references for PowerShell, APIs, etc."))}
 						</p>
-						<div class="videos_container row">
+						<div class="videos-container row">
 							<h2>Videos</h2>
 							<div class="flex flex-container-video">
 								<div class="videos-container-video">
