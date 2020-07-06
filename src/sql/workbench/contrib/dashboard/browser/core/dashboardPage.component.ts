@@ -181,7 +181,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			let primary: IAction[] = [];
 			let secondary: IAction[] = [];
 			const menu = this.menuService.createMenu(MenuId.DashboardToolbar, this.contextKeyService);
-			let groups = menu.getActions({ arg: null, shouldForwardArgs: true });
+			let groups = menu.getActions({ arg: this.connectionManagementService.connectionInfo.connectionProfile.toIConnectionProfile(), shouldForwardArgs: true });
 			fillInActions(groups, { primary, secondary }, false, (group: string) => group === undefined || group === '');
 
 			primary.forEach(a => {
@@ -189,9 +189,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 					// Need to ensure that we don't add the same action multiple times
 					let foundIndex = firstIndex(tasks, act => act.action && act.action.id === a.id);
 					if (foundIndex < 0) {
-						// a._options = {arg: this.connectionManagementService.connectionInfo.connectionProfile};
-						let action = new ToolbarAction(a.id, a.label, '', this.runAction, this, this.logService);
-						tasks.push({ action: action });
+						tasks.push({ action: a });
 					}
 				}
 			});
@@ -277,7 +275,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	}
 
 	private runAction(id: string): Promise<void> {
-		return this.commandService.executeCommand(id, this.connectionManagementService.connectionInfo.connectionProfile.toIConnectionProfile());
+		return this.commandService.executeCommand(id, this.connectionManagementService.connectionInfo.connectionProfile);
 	}
 
 	private createActionItemProvider(action: Action): IActionViewItem {
