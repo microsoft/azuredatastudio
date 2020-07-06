@@ -1,0 +1,227 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.ads-tour:focus {
+	outline: 0 none !important;
+}
+
+.monaco-workbench>.ads-tour {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	z-index: 9999;
+	font-size: 1em;
+	transition: font-size .25s;
+	outline: 0;
+}
+
+#workbench\.parts\.editor {
+	transition: filter .25s, opacity .2s;
+}
+
+.monaco-workbench.blur-background #workbench\.parts\.editor,
+.monaco-workbench.blur-background #workbench\.parts\.panel,
+.monaco-workbench.blur-background #workbench\.parts\.sidebar {
+	filter: blur(2px);
+	opacity: .4;
+}
+
+.hc-black .monaco-workbench.blur-background #workbench\.parts\.editor,
+.hc-black .monaco-workbench.blur-background #workbench\.parts\.panel,
+.hc-black .monaco-workbench.blur-background #workbench\.parts\.sidebar {
+	opacity: .2;
+}
+
+.guided-tour .ads-tour-hide {
+	display: none;
+}
+
+.guided-tour p {
+	font-size: 1.2em;
+	font-family: Segoe UI, Frutiger, Frutiger Linotype, Dejavu Sans, Helvetica Neue, Arial, sans-serif;
+	font-weight: 400;
+}
+
+.ads-tour-popup .ads-tour-popup-text-container {
+	padding: 20px 15px 15px 20px;
+}
+
+.ads-tour-popup .ads-tour-popup-text-container p {
+	font-size: 1em;
+}
+
+.ads-tour-popup {
+	position: absolute;
+	width: 400px;
+	left: 45px;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: center;
+}
+
+.ads-tour-btn-container {
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+}
+
+.ads-tour-btn-container p {
+	font-size: 1.5em;
+	margin: 0;
+	margin-left: 15px;
+}
+
+.ads-tour-btn-container:first-of-type(p) {
+	margin-bottom: 20px;
+}
+
+.ads-tour-popup .ads-tour-btn-exit {
+	background: none;
+	position: absolute;
+	top: 2px;
+	right: 10px;
+	font-size: 1.185em;
+	font-family: inherit;
+	transform: scaleX(1.4);
+}
+
+.ads-tour-popup .ads-tour-btn-exit:hover {
+	cursor: pointer;
+}
+
+.ads-tour-popup .monaco-button {
+	box-sizing: border-box;
+	width: 77px;
+	height: 34px;
+	padding-top: 1px;
+	font-size: 1.08em;
+	line-height: 29px;
+	border-radius: 2px;
+	display: flex;
+	align-content: center;
+	justify-content: center;
+	text-align: center;
+	text-decoration: none;
+	margin: 0;
+	align-self: flex-end;
+	cursor: pointer;
+}
+
+.ads-tour-popup .flex.column {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	height: 100%;
+}
+
+.ads-tour-popup h1,
+.ads-tour-popup p {
+	font-family: Segoe UI, Frutiger, Frutiger Linotype, Dejavu Sans, Helvetica Neue, Arial, sans-serif;
+	font-weight: 400;
+}
+
+.ads-tour-popup h1 {
+	margin: 0;
+	font-size: 20px;
+}
+
+.ads-tour-popup.arrow-left:after {
+	content: " ";
+	position: absolute;
+	left: -10px;
+	top: 8px;
+	border-top: 10px solid transparent;
+	border-left: none;
+	border-bottom: 10px solid transparent;
+}
+
+.ads-tour-popup.arrow-top:after {
+	content: " ";
+	position: absolute;
+	left: 0;
+	right: 0;
+	border-top: 10px solid transparent;
+	border-left: none;
+	border-bottom: 10px solid transparent;
+	transform: rotate(90deg);
+	bottom: 509px;
+}
+
+.ads-tour-popup.arrow-bottom-left:after {
+	content: " ";
+	position: absolute;
+	left: -10px;
+	border-top: 10px solid transparent;
+	border-left: none;
+	border-bottom: 10px solid transparent;
+	bottom: 3px;
+}
+
+.ads-tour-popup.arrow-center-left:after {
+	content: " ";
+	position: absolute;
+	left: -10px;
+	border-top: 10px solid transparent;
+	border-left: none;
+	border-bottom: 10px solid transparent;
+	bottom: 145px;
+}
+
+.ads-tour-popup {
+	max-height: 361px;
+	display: none;
+	z-index: 1;
+}
+
+.ads-tour-popup.ads-tour-show {
+	display: block;
+}
+
+.tour-overlay {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 30px;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	opacity: .6;
+}
+
+.ads-tour-popup .ads-tour-img {
+	width: 400px;
+	height: 178px;
+}
+
+.ads-tour-btn-container .ads-tour-docs-link {
+	align-self: center;
+	justify-self: flex-start;
+	margin-right: auto;
+	text-decoration: underline;
+}
+
+.ads-tour-btn {
+	box-sizing: border-box;
+	width: 100%;
+	height: 34px;
+	padding-top: 1px;
+	font-size: 1.08em;
+	line-height: 29px;
+	border-radius: 2px;
+	display: flex;
+	align-content: center;
+	justify-content: center;
+	text-align: center;
+	text-decoration: none;
+	margin: 10px 0;
+}
+
+.monaco-workbench .activitybar>.content :not(.monaco-menu)>.monaco-action-bar .action-label.codicon.subject-element-focused {
+	z-index: 1!important;
+	pointer-events: none!important;
+}

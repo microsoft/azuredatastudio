@@ -132,7 +132,7 @@ declare module 'azdata' {
 		export function getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
 
 		/**
-		 * Get the credentials for an active connection
+		 * Get the credentials for a connection
 		 * @param connectionId The id of the connection
 		 * @returns A dictionary containing the credentials as they would be included in the connection's options dictionary
 		 */
@@ -1305,7 +1305,7 @@ declare module 'azdata' {
 
 	// Admin Services interfaces  -----------------------------------------------------------------------
 	export interface DatabaseInfo {
-		options: {};
+		options: { [key: string]: any };
 	}
 
 	export interface LoginInfo {
@@ -2216,7 +2216,8 @@ declare module 'azdata' {
 		OssRdbms = 2,
 		AzureKeyVault = 3,
 		Graph = 4,
-		MicrosoftResourceManagement = 5
+		MicrosoftResourceManagement = 5,
+		AzureDevOps = 6
 	}
 
 	export interface DidChangeAccountsParams {
@@ -4550,6 +4551,10 @@ declare module 'azdata' {
 
 		export interface NotebookProvider {
 			readonly providerId: string;
+			/**
+			 * @deprecated standardKernels will be removed in an upcoming release. Standard kernel contribution
+			 * should happen via JSON for extensions. Until this is removed, notebook providers can safely return an empty array.
+			 */
 			readonly standardKernels: IStandardKernel[];
 			getNotebookManager(notebookUri: vscode.Uri): Thenable<NotebookManager>;
 			handleNotebookClosed(notebookUri: vscode.Uri): void;

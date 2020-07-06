@@ -29,12 +29,18 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 		validationFailures.forEach(message => console.error(message));
 		return;
 	}
-	const openDialog = (resourceTypeName: string) => {
-		const filtered = resourceTypes.filter(resourceType => resourceType.name === resourceTypeName);
-		if (filtered.length !== 1) {
-			vscode.window.showErrorMessage(localize('resourceDeployment.UnknownResourceType', "The resource type: {0} is not defined", resourceTypeName));
+	/**
+	 * Opens a new ResourceTypePickerDialog
+	 * @param defaultResourceTypeName The resource type name to have selected by default
+	 * @param resourceTypeNameFilters Optional filters to apply to the resource types displayed. If undefined all
+	 * resource types will be displayed
+	 */
+	const openDialog = (defaultResourceTypeName: string, resourceTypeNameFilters?: string[]) => {
+		const defaultResourceType = resourceTypes.find(resourceType => resourceType.name === defaultResourceTypeName);
+		if (!defaultResourceType) {
+			vscode.window.showErrorMessage(localize('resourceDeployment.UnknownResourceType', "The resource type: {0} is not defined", defaultResourceTypeName));
 		} else {
-			const dialog = new ResourceTypePickerDialog(toolsService, resourceTypeService, filtered[0]);
+			const dialog = new ResourceTypePickerDialog(toolsService, resourceTypeService, defaultResourceType, resourceTypeNameFilters);
 			dialog.open();
 		}
 	};
@@ -45,9 +51,14 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 	vscode.commands.registerCommand('azdata.resource.sql-bdc.deploy', () => {
 		openDialog('sql-bdc');
 	});
-	vscode.commands.registerCommand('azdata.resource.deploy', (resourceType: string) => {
-		if (typeof resourceType === 'string') {
-			openDialog(resourceType);
+	vscode.commands.registerCommand('azdata.resource.deploy', (defaultResourceTypeName?: string, resourceTypeNameFilters?: string[]) => {
+		if ((resourceTypeNameFilters && !Array.isArray(resourceTypeNameFilters) ||
+			(resourceTypeNameFilters && resourceTypeNameFilters.length > 0 && typeof resourceTypeNameFilters[0] !== 'string'))) {
+			throw new Error('resourceTypeNameFilters must either be undefined or an array of strings');
+		}
+
+		if (typeof defaultResourceTypeName === 'string') {
+			openDialog(defaultResourceTypeName, resourceTypeNameFilters);
 		} else {
 			let defaultDeploymentType: string;
 			if (platformService.platform() === 'win32') {
@@ -55,7 +66,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 			} else {
 				defaultDeploymentType = 'sql-image';
 			}
-			openDialog(defaultDeploymentType);
+			openDialog(defaultDeploymentType, resourceTypeNameFilters);
 		}
 	});
 	vscode.commands.registerCommand('azdata.openNotebookInputDialog', (dialogInfo: NotebookBasedDialogInfo) => {

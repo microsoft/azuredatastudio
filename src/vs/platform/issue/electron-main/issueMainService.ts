@@ -28,7 +28,7 @@ export const IIssueMainService = createDecorator<IIssueMainService>('issueMainSe
 export interface IIssueMainService extends ICommonIssueService { }
 
 export class IssueMainService implements ICommonIssueService {
-	_serviceBrand: undefined;
+	declare readonly _serviceBrand: undefined;
 	_issueWindow: BrowserWindow | null = null;
 	_issueParentWindow: BrowserWindow | null = null;
 	_processExplorerWindow: BrowserWindow | null = null;
@@ -196,7 +196,9 @@ export class IssueMainService implements ICommonIssueService {
 						webPreferences: {
 							preload: URI.parse(require.toUrl('vs/base/parts/sandbox/electron-browser/preload.js')).fsPath,
 							nodeIntegration: true,
-							enableWebSQL: false
+							enableWebSQL: false,
+							enableRemoteModule: false,
+							nativeWindowOpen: true
 						}
 					});
 
@@ -247,7 +249,9 @@ export class IssueMainService implements ICommonIssueService {
 						webPreferences: {
 							preload: URI.parse(require.toUrl('vs/base/parts/sandbox/electron-browser/preload.js')).fsPath,
 							nodeIntegration: true,
-							enableWebSQL: false
+							enableWebSQL: false,
+							enableRemoteModule: false,
+							nativeWindowOpen: true
 						}
 					});
 

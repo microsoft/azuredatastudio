@@ -86,7 +86,7 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 
 	public sendMessage(message: string): void {
 		if (this._webview) {
-			this._webview.sendMessage(message);
+			this._webview.postMessage(message);
 		}
 	}
 
