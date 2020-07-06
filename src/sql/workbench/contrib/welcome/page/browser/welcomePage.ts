@@ -342,18 +342,23 @@ class WelcomePage extends Disposable {
 
 	private async handleAccessibility(commandService: ICommandService): Promise<void> {
 		const tileServer = document.querySelector('#tile-server-link') as HTMLElement;
+		this.handlerTileServerEvent(commandService, tileServer, 'keydown');
+		this.handlerTileServerEvent(commandService, tileServer, 'click');
+	}
 
-		addStandardDisposableListener(tileServer, 'keydown', event => {
-			if (event.equals(KeyCode.Enter)) {
+	private handlerTileServerEvent(commandService: ICommandService, elm: HTMLElement, eventType: string): void {
+		addStandardDisposableListener(elm, eventType, event => {
+			if (eventType === 'keydown') {
+				if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
+					const historyLabel = document.querySelector('#historyLabel') as HTMLElement;
+					commandService.executeCommand('azdata.resource.deploy');
+					historyLabel.focus();
+				}
+			} else {
 				const historyLabel = document.querySelector('#historyLabel') as HTMLElement;
 				commandService.executeCommand('azdata.resource.deploy');
 				historyLabel.focus();
 			}
-		});
-		addStandardDisposableListener(tileServer, 'click', event => {
-			const historyLabel = document.querySelector('#historyLabel') as HTMLElement;
-			commandService.executeCommand('azdata.resource.deploy');
-			historyLabel.focus();
 		});
 	}
 
