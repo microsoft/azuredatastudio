@@ -17,9 +17,6 @@ import { TreeItemCollapsibleState } from 'sql/workbench/services/objectExplorer/
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
 import * as assert from 'assert';
 
-
-
-
 suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 
 	let serverTreeView: ServerTreeView;
