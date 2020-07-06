@@ -48,7 +48,6 @@ import { joinPath } from 'vs/base/common/resources';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { addStandardDisposableListener, EventHelper } from 'vs/base/browser/dom';
 import { GuidedTour } from 'sql/workbench/contrib/welcome/page/browser/gettingStartedTour';
-
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { Button } from 'sql/base/browser/ui/button/button';
@@ -228,6 +227,7 @@ class WelcomePage extends Disposable {
 		@IHostService private readonly hostService: IHostService,
 		@IFileService fileService: IFileService,
 		@IProductService private readonly productService: IProductService,
+		@ICommandService private readonly commandService: ICommandService,
 		@IWorkbenchLayoutService protected layoutService: IWorkbenchLayoutService) {
 		super();
 		this._register(lifecycleService.onShutdown(() => this.dispose()));
@@ -337,6 +337,24 @@ class WelcomePage extends Disposable {
 		this.createDropDown();
 		this.createWidePreviewToolTip();
 		this.createPreviewModal();
+		this.handleAccessibility(this.commandService);
+	}
+
+	private async handleAccessibility(commandService: ICommandService): Promise<void> {
+		const tileServer = document.querySelector('#tile-server-link') as HTMLElement;
+
+		addStandardDisposableListener(tileServer, 'keydown', event => {
+			if (event.equals(KeyCode.Enter)) {
+				const historyLabel = document.querySelector('#historyLabel') as HTMLElement;
+				commandService.executeCommand('azdata.resource.deploy');
+				historyLabel.focus();
+			}
+		});
+		addStandardDisposableListener(tileServer, 'click', event => {
+			const historyLabel = document.querySelector('#historyLabel') as HTMLElement;
+			commandService.executeCommand('azdata.resource.deploy');
+			historyLabel.focus();
+		});
 	}
 
 	private enableGuidedTour(): void {

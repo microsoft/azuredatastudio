@@ -96,8 +96,8 @@ export default () => `
 							</a>
 						</div>
 						<div class="col">
-							<a class="header-bottom-nav-tile-link ads-welcome-page-link" href="command:azdata.resource.deploy">
-								<div class="header-bottom-nav-tile tile tile-server">
+							<a id="tile-server-link" class="header-bottom-nav-tile-link ads-welcome-page-link">
+								<div class="header-bottom-nav-tile tile tile-server" tabindex="0">
 									<h3>${escape(localize('welcomePage.deployServer', "Deploy a server"))}</h3>
 									<p>${escape(localize('welcomePage.deployServerBody', "Create a new instance of SQL Server on the platform of your choice."))}</p>
 									<div class="icon server"></div>
@@ -112,7 +112,7 @@ export default () => `
 					<h2>${escape(localize('welcomePage.resources', "Resources"))}</h2>
 					<div class="tabs">
 						<input tabindex="-1" class="input" name="tabs" type="radio" id="tab-1" checked="checked" />
-						<label class="label" for="tab-1" tabIndex="0">${escape(localize('welcomePage.history', "History"))}</label>
+						<label id="historyLabel" class="label" for="tab-1" tabIndex="0">${escape(localize('welcomePage.history', "History"))}</label>
 						<div class="panel">
 							<div class="recent history">
 								<div class="flex list-header-container">
