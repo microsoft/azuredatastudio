@@ -34,47 +34,7 @@ let expectedNotebookContent: nb.INotebookContents = {
 	nbformat_minor: 2
 };
 
-let expectedNotebookMarkdownContent: nb.INotebookContents = {
-	cells: [{
-		cell_type: CellTypes.Markdown,
-		source: '# Header 1'
-	}],
-	metadata: {
-		kernelspec: {
-			name: 'mssql',
-			language: 'sql'
-		}
-	},
-	nbformat: 4,
-	nbformat_minor: 2
-};
-
-let expectedNotebookStreamOutputContent: nb.INotebookContents = {
-	cells: [{
-		cell_type: CellTypes.Code,
-		source: [],
-		metadata: { language: 'python' },
-		execution_count: 1,
-		outputs: [
-			<nb.IStreamResult>{
-				output_type: 'stream',
-				text: 'Select * FROM database WHERE x = 0  \nSelect * FROM database WHERE x = 0\n'
-			}
-		]
-	}],
-	metadata: {
-		kernelspec: {
-			name: 'Python 3',
-			language: 'python3'
-		}
-	},
-	nbformat: 4,
-	nbformat_minor: 2
-};
-
 let notebookContentString = JSON.stringify(expectedNotebookContent);
-let markdownNotebookContent = JSON.stringify(expectedNotebookMarkdownContent);
-let streamOutputContent = JSON.stringify(expectedNotebookStreamOutputContent);
 
 function verifyMatchesExpectedNotebook(notebook: nb.INotebookContents): void {
 	assert.equal(notebook.cells.length, 1, 'Expected 1 cell');
@@ -190,6 +150,21 @@ suite('Local Content Manager', function (): void {
 	});
 
 	test('Should create a markdown cell', async function (): Promise<void> {
+		let expectedNotebookMarkdownContent: nb.INotebookContents = {
+			cells: [{
+				cell_type: CellTypes.Markdown,
+				source: '# Header 1'
+			}],
+			metadata: {
+				kernelspec: {
+					name: 'mssql',
+					language: 'sql'
+				}
+			},
+			nbformat: 4,
+			nbformat_minor: 2
+		};
+		let markdownNotebookContent = JSON.stringify(expectedNotebookMarkdownContent);
 		// verify that notebooks support markdown cells
 		let notebook = await contentManager.loadFromContentString(markdownNotebookContent);
 		// assert that markdown cell is supported by
@@ -200,6 +175,29 @@ suite('Local Content Manager', function (): void {
 	});
 
 	test('Should allow stream for output types', async function (): Promise<void> {
+		let expectedNotebookStreamOutputContent: nb.INotebookContents = {
+			cells: [{
+				cell_type: CellTypes.Code,
+				source: [],
+				metadata: { language: 'python' },
+				execution_count: 1,
+				outputs: [
+					<nb.IStreamResult>{
+						output_type: 'stream',
+						text: 'Select * FROM database WHERE x = 0  \nSelect * FROM database WHERE x = 0\n'
+					}
+				]
+			}],
+			metadata: {
+				kernelspec: {
+					name: 'Python 3',
+					language: 'python3'
+				}
+			},
+			nbformat: 4,
+			nbformat_minor: 2
+		};
+		let streamOutputContent = JSON.stringify(expectedNotebookStreamOutputContent);
 		// Verify that the stream output type is supported
 		let notebook = await contentManager.loadFromContentString(streamOutputContent);
 		assert.equal(notebook.cells[0].outputs[0].output_type, 'stream', 'Cell output from notebook should be stream');
