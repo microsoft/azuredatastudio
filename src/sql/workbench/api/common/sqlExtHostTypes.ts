@@ -397,7 +397,6 @@ export interface ToolbarLayout {
 }
 
 export class TreeComponentItem extends vsExtTypes.TreeItem {
-	label?: string;
 	checked?: boolean;
 }
 
@@ -407,11 +406,11 @@ export enum AzureResource {
 	OssRdbms = 2,
 	AzureKeyVault = 3,
 	Graph = 4,
-	MicrosoftResourceManagement = 5
+	MicrosoftResourceManagement = 5,
+	AzureDevOps = 6
 }
 
 export class TreeItem extends vsExtTypes.TreeItem {
-	label?: string;
 	payload?: IConnectionProfile;
 	providerHandle?: string;
 }

@@ -14,10 +14,9 @@
 .message-tree .monaco-tl-contents {
 	user-select: text;
 	-webkit-user-select: text;
-	white-space: pre;
 }
 
-.message-tree.word-wrap .monaco-tl-contents {
+.message-tree.word-wrap .monaco-tl-contents .message {
 	/* Wrap words but also do not trim whitespace #6275 */
 	word-wrap: break-word;
 	white-space: pre-wrap;
@@ -92,6 +91,7 @@
 .message-tree .batch-start,
 .message-tree .error-message {
 	display: inline-block;
+	width: calc(100% - 100px);
 }
 
 .message-tree .batch-start {

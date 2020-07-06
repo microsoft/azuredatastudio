@@ -82,6 +82,8 @@ export interface IGalleryExtension {
 	installCount: number;
 	rating: number;
 	ratingCount: number;
+	assetUri: URI;
+	assetTypes: string[];
 	assets: IGalleryExtensionAssets;
 	properties: IGalleryExtensionProperties;
 	telemetryData: any;
@@ -95,16 +97,10 @@ export interface IGalleryMetadata {
 }
 
 export interface ILocalExtension extends IExtension {
-	readonly manifest: IExtensionManifest;
 	isMachineScoped: boolean;
 	publisherId: string | null;
 	publisherDisplayName: string | null;
-	readmeUrl: URI | null;
-	changelogUrl: URI | null;
 }
-
-export const IExtensionManagementService = createDecorator<IExtensionManagementService>('extensionManagementService');
-export const IExtensionGalleryService = createDecorator<IExtensionGalleryService>('extensionGalleryService');
 
 export const enum SortBy {
 	NoneOrRelevance = 0,
@@ -152,6 +148,7 @@ export interface ITranslation {
 	contents: { [key: string]: {} };
 }
 
+export const IExtensionGalleryService = createDecorator<IExtensionGalleryService>('extensionGalleryService');
 export interface IExtensionGalleryService {
 	readonly _serviceBrand: undefined;
 	isEnabled(): boolean;
@@ -199,6 +196,7 @@ export class ExtensionManagementError extends Error {
 	}
 }
 
+export const IExtensionManagementService = createDecorator<IExtensionManagementService>('extensionManagementService');
 export interface IExtensionManagementService {
 	readonly _serviceBrand: undefined;
 
