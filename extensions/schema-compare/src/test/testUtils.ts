@@ -5,9 +5,11 @@
 
 import * as azdata from 'azdata';
 import * as mssql from '../../../mssql';
+import should = require('should');
+import { AssertionError } from 'assert';
 
 // Mock test data
-export const mockConnectionProfile: azdata.IConnectionProfile = {
+export const mockIConnectionProfile: azdata.IConnectionProfile = {
 	connectionName: 'My Connection',
 	serverName: 'My Server',
 	databaseName: 'My Database',
@@ -21,6 +23,35 @@ export const mockConnectionProfile: azdata.IConnectionProfile = {
 	saveProfile: true,
 	id: 'My Id',
 	options: null
+};
+
+export const mockConnectionProfile: azdata.connection.ConnectionProfile = {
+	providerId: 'My Provider',
+	connectionId: 'My Id',
+	connectionName: 'My Connection',
+	serverName: 'My Server',
+	databaseName: 'My Database',
+	userName: 'My User',
+	password: 'My Pwd',
+	authenticationType: 'SqlLogin',
+	savePassword: false,
+	groupFullName: 'My groupName',
+	groupId: 'My GroupId',
+	saveProfile: true,
+	options: {
+		server: 'My Server',
+		database: 'My Database',
+		user: 'My User',
+		password: 'My Pwd',
+		authenticationType: 'SqlLogin'
+	}
+};
+
+export const mockConnectionResult: azdata.ConnectionResult = {
+	connected: false,
+	connectionId: undefined,
+	errorMessage: 'Login failed for user \'sa\'',
+	errorCode: 18456
 };
 
 export const mockConnectionInfo = {
@@ -53,3 +84,39 @@ export const mockDatabaseEndpoint: mssql.SchemaCompareEndpointInfo = {
 	packageFilePath: '',
 	connectionDetails: undefined
 };
+
+export async function shouldThrowSpecificError(block: Function, expectedMessage: string, details?: string) {
+	let succeeded = false;
+	try {
+		await block();
+		succeeded = true;
+	}
+	catch (err) {
+		should(err.message).equal(expectedMessage);
+	}
+
+	if (succeeded) {
+		throw new AssertionError({ message: `Operation succeeded, but expected failure with exception: "${expectedMessage}".${details ? '  ' + details : ''}` });
+	}
+}
+
+export async function setDacpacEndpointInfo(path: string): Promise<mssql.SchemaCompareEndpointInfo> {
+	let endpointInfo: mssql.SchemaCompareEndpointInfo;
+
+	endpointInfo = { ...mockDacpacEndpoint };
+	endpointInfo.packageFilePath = path;
+
+	return endpointInfo;
+}
+
+export async function setDatabaseEndpointInfo(): Promise<mssql.SchemaCompareEndpointInfo> {
+	let endpointInfo: mssql.SchemaCompareEndpointInfo;
+	let dbName = 'My Database';
+	let serverName = 'My Server';
+
+	endpointInfo = { ...mockDatabaseEndpoint };
+	endpointInfo.databaseName = dbName;
+	endpointInfo.serverName = serverName;
+
+	return endpointInfo;
+}

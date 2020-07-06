@@ -12,8 +12,8 @@
 
 
 export class DuskyObjectModelsDatabaseServiceCondition {
-    'type': string;
-    'status': DuskyObjectModelsDatabaseServiceCondition.StatusEnum;
+    'type'?: string;
+    'status'?: string;
     'lastTransitionTime'?: Date | null;
     'reason'?: string;
     'message'?: string;
@@ -29,7 +29,7 @@ export class DuskyObjectModelsDatabaseServiceCondition {
         {
             "name": "status",
             "baseName": "status",
-            "type": "DuskyObjectModelsDatabaseServiceCondition.StatusEnum"
+            "type": "string"
         },
         {
             "name": "lastTransitionTime",
@@ -52,10 +52,3 @@ export class DuskyObjectModelsDatabaseServiceCondition {
     }
 }
 
-export namespace DuskyObjectModelsDatabaseServiceCondition {
-    export enum StatusEnum {
-        Unknown = <any> 'Unknown',
-        False = <any> 'False',
-        True = <any> 'True'
-    }
-}

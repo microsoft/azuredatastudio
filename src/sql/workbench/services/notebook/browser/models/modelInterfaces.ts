@@ -234,6 +234,10 @@ export interface INotebookModel {
 	 */
 	readonly clientSession: IClientSession;
 	/**
+	 * Promise indicating when client session is ready to use.
+	 */
+	readonly sessionLoadFinished: Promise<void>;
+	/**
 	 * LanguageInfo saved in the notebook
 	 */
 	readonly languageInfo: nb.ILanguageInfo;
@@ -457,6 +461,8 @@ export interface ICellModel {
 	readonly onCellModeChanged: Event<boolean>;
 	modelContentChangedEvent: IModelContentChangedEvent;
 	isEditMode: boolean;
+	showPreview: boolean;
+	readonly onCellPreviewChanged: Event<boolean>;
 	sendChangeToNotebook(change: NotebookChangeType): void;
 }
 

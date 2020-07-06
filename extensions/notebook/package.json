@@ -186,7 +186,7 @@
         }
       },
       {
-        "command": "notebook.command.searchUntitledBook",
+        "command": "notebook.command.searchProvidedBook",
         "title": "%title.searchJupyterBook%",
         "category": "%books-preview-category%",
         "icon": {
@@ -328,7 +328,7 @@
           "when": "false"
         },
         {
-          "command": "notebook.command.searchUntitledBook",
+          "command": "notebook.command.searchProvidedBook",
           "when": "false"
         },
         {
@@ -390,7 +390,7 @@
           "group": "inline"
         },
         {
-          "command": "notebook.command.searchUntitledBook",
+          "command": "notebook.command.searchProvidedBook",
           "when": "view == providedBooksView && viewItem == providedBook && providedBooks",
           "group": "inline"
         },

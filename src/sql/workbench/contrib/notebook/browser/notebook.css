@@ -74,7 +74,7 @@
 	width: 16px;
 }
 .notebookEditor .in-preview .actions-container .action-item:last-child {
-	margin-right: 8px;
+	margin-right: 14px;
 }
 .notebookEditor
 	.in-preview
@@ -83,20 +83,11 @@
 	.notebook-button {
 	margin-right: 0;
 }
-.notebookEditor
-	.in-preview
-	.actions-container
-	.action-item:last-child
-	.notebook-button.fixed-width {
+
+.notebookEditor .in-preview .actions-container .action-item:last-child .notebook-button.fixed-width {
+	background-size: contain;
 	margin-left: 8px;
-	margin-right: -28px;
-}
-.notebookEditor
-	.in-preview
-	.actions-container
-	.action-item
-	.notebook-button.fixed-width {
-	width: 34px;
+	padding: 0 0 0 18px;
 }
 
 .notebookEditor .labelOnLeftContainer {
@@ -171,14 +162,13 @@
 }
 
 .vs-dark .notebookEditor :not(.in-preview) .notebook-button.icon-clear-results,
-.hc-black
-	.notebookEditor
-	:not(.in-preview)
-	.notebook-button.icon-clear-results {
+.hc-black .notebookEditor :not(.in-preview) .notebook-button.icon-clear-results {
 	background-image: url("./media/dark/clear_results_inverse.svg");
 }
 
-.notebookEditor .in-preview .notebook-button.masked-icon {
+.notebookEditor .in-preview .notebook-button.masked-icon,
+.vs-dark .notebookEditor .in-preview .notebook-button.icon-clear-results,
+.hc-black .notebookEditor .in-preview .notebook-button.icon-clear-results {
 	background-image: none;
 }
 /* non-preview */

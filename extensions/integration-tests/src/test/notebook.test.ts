@@ -84,7 +84,7 @@ suite('Notebook integration test suite', function () {
 		}
 	});
 
-	test('Sql NB run cells above and below test @UNSTABLE@', async function () {
+	test('Sql NB run cells above and below test', async function () {
 		let notebook = await openNotebook(sqlNotebookMultipleCellsContent, sqlKernelMetadata, this.test.title + this.invocationCount++);
 		// When running all cells above a cell, ensure that only cells preceding current cell have output
 		await runCells(notebook, true, undefined, notebook.document.cells[1]);
@@ -101,13 +101,13 @@ suite('Notebook integration test suite', function () {
 		assert(notebook.document.cells[2].contents.outputs.length === 3, `Expected length: '3', Actual: '${notebook.document.cells[2].contents.outputs.length}'`);
 	});
 
-	test('Clear cell output - SQL notebook @UNSTABLE@', async function () {
+	test('Clear cell output - SQL notebook', async function () {
 		let notebook = await openNotebook(sqlNotebookContent, sqlKernelMetadata, this.test.title + this.invocationCount++);
 		await runCell(notebook);
 		await verifyClearOutputs(notebook);
 	});
 
-	test('Clear all outputs - SQL notebook @UNSTABLE@', async function () {
+	test('Clear all outputs - SQL notebook', async function () {
 		let notebook = await openNotebook(sqlNotebookContent, sqlKernelMetadata, this.test.title + this.invocationCount++);
 		await runCell(notebook);
 		await verifyClearAllOutputs(notebook);
