@@ -5,18 +5,16 @@
 
 import * as should from 'should';
 import * as path from 'path';
-import * as os from 'os';
 import * as baselines from './baselines/baselines';
 import * as testUtils from './testUtils';
 import * as constants from '../common/constants';
 
 import { promises as fs } from 'fs';
 import { Project, EntryType, TargetPlatform, SystemDatabase, DatabaseReferenceLocation } from '../models/project';
-import { exists } from '../common/utils';
+import { exists, convertSlashesForSqlProj } from '../common/utils';
 import { Uri } from 'vscode';
 
 let projFilePath: string;
-const isWindows = os.platform() === 'win32';
 
 describe('Project: sqlproj content operations', function (): void {
 	before(async function (): Promise<void> {
@@ -63,8 +61,8 @@ describe('Project: sqlproj content operations', function (): void {
 		const newProject = new Project(projFilePath);
 		await newProject.readProjFile();
 
-		should(newProject.files.find(f => f.type === EntryType.Folder && f.relativePath === folderPath)).not.equal(undefined);
-		should(newProject.files.find(f => f.type === EntryType.File && f.relativePath === filePath)).not.equal(undefined);
+		should(newProject.files.find(f => f.type === EntryType.Folder && f.relativePath === convertSlashesForSqlProj(folderPath))).not.equal(undefined);
+		should(newProject.files.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(filePath))).not.equal(undefined);
 
 		const newFileContents = (await fs.readFile(path.join(newProject.projectFolderPath, filePath))).toString();
 
@@ -164,14 +162,14 @@ describe('Project: sqlproj content operations', function (): void {
 		should(project.databaseReferences[0].databaseName).equal(constants.master, 'The database reference should be master');
 		// make sure reference to SSDT master dacpac was added
 		let projFileText = (await fs.readFile(projFilePath)).toString();
-		should(projFileText).containEql(project.getSystemDacpacSsdtUri(constants.master).fsPath.substring(1));
+		should(projFileText).containEql(convertSlashesForSqlProj(project.getSystemDacpacSsdtUri(constants.master).fsPath.substring(1)));
 
 		await project.addSystemDatabaseReference(SystemDatabase.msdb);
 		should(project.databaseReferences.length).equal(2, 'There should be two database references after adding a reference to msdb');
 		should(project.databaseReferences[1].databaseName).equal(constants.msdb, 'The database reference should be msdb');
 		// make sure reference to SSDT msdb dacpac was added
 		projFileText = (await fs.readFile(projFilePath)).toString();
-		should(projFileText).containEql(project.getSystemDacpacSsdtUri(constants.msdb).fsPath.substring(1));
+		should(projFileText).containEql(convertSlashesForSqlProj(project.getSystemDacpacSsdtUri(constants.msdb).fsPath.substring(1)));
 
 		await project.addDatabaseReference(Uri.parse('test.dacpac'), DatabaseReferenceLocation.sameDatabase);
 		should(project.databaseReferences.length).equal(3, 'There should be three database references after adding a reference to test');
@@ -208,15 +206,11 @@ describe('Project: round trip updates', function (): void {
 	});
 
 	it('Should update SSDT project to work in ADS', async function (): Promise<void> {
-		const fileBeforeUpdate = baselines.SSDTProjectFileBaseline;
-		const fileAfterUpdate = isWindows ? baselines.SSDTProjectAfterUpdateBaselineWindows : baselines.SSDTProjectAfterUpdateBaseline;
-		await testUpdateInRoundTrip(fileBeforeUpdate, fileAfterUpdate, true, true);
+		await testUpdateInRoundTrip( baselines.SSDTProjectFileBaseline, baselines.SSDTProjectAfterUpdateBaseline, true, true);
 	});
 
 	it('Should update SSDT project with new system database references', async function (): Promise<void> {
-		const fileBeforeUpdate = isWindows ? baselines.SSDTUpdatedProjectBaselineWindows : baselines.SSDTUpdatedProjectBaseline;
-		const fileAfterUpdate = isWindows ? baselines.SSDTUpdatedProjectAfterSystemDbUpdateBaselineWindows : baselines.SSDTUpdatedProjectAfterSystemDbUpdateBaseline;
-		await testUpdateInRoundTrip(fileBeforeUpdate, fileAfterUpdate, false, true);
+		await testUpdateInRoundTrip(baselines.SSDTUpdatedProjectBaseline, baselines.SSDTUpdatedProjectAfterSystemDbUpdateBaseline, false, true);
 	});
 
 	it('Should update SSDT project to work in ADS handling pre-exsiting targets', async function (): Promise<void> {
