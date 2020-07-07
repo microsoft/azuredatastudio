@@ -147,7 +147,7 @@ describe('Jupyter server instance', function (): void {
 		await serverInstance.stop();
 
 		// Then I expect stop to be called on the child process
-		should(actualCommand.indexOf(`jupyter notebook stop ${serverInstance.port}`)).be.greaterThan(-1);
+		should(actualCommand.includes(`stop ${serverInstance.port}`)).be.true('Command did not contain specified port.');
 		mockUtils.verify(u => u.removeDir(TypeMoq.It.isAny()), TypeMoq.Times.never());
 	});
 
