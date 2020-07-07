@@ -255,6 +255,60 @@ export class FutureStub implements Kernel.IFuture {
 		throw new Error('Method not implemented.');
 	}
 }
+
+export class TestKernel implements azdata.nb.IKernel {
+	constructor(
+		private _isReady = false,
+		private _supportsIntellisense = false,
+		private _matches = ['firstMatch', 'secondMatch', 'thirdMatch'],
+		private _status_override: 'ok' | 'error' = 'ok'
+	) { }
+
+	get id(): string {
+		throw new Error('Method not implemented.');
+	}
+	get name(): string {
+		throw new Error('Method not implemented.');
+	}
+	get supportsIntellisense(): boolean {
+		return this._supportsIntellisense;
+	}
+	get isReady(): boolean {
+		return this._isReady;
+	}
+	get ready(): Thenable<void> {
+		throw new Error('Method not implemented.');
+	}
+	get info(): azdata.nb.IInfoReply {
+		throw new Error('Method not implemented.');
+	}
+	getSpec(): Thenable<azdata.nb.IKernelSpec> {
+		throw new Error('Method not implemented.');
+	}
+	requestExecute(content: azdata.nb.IExecuteRequest, disposeOnDone?: boolean): azdata.nb.IFuture {
+		throw new Error('Method not implemented.');
+	}
+	requestComplete(content: azdata.nb.ICompleteRequest): Thenable<azdata.nb.ICompleteReplyMsg> {
+		let msg: azdata.nb.ICompleteReplyMsg = {
+			channel: 'shell',
+			content: {
+				cursor_end: 0,
+				cursor_start: 0,
+				matches: this._matches,
+				metadata: undefined,
+				status: this._status_override
+			},
+			header: undefined,
+			metadata: undefined,
+			parent_header: undefined,
+			type: undefined
+		};
+		return Promise.resolve(msg);
+	}
+	interrupt(): Thenable<void> {
+		throw new Error('Method not implemented.');
+	}
+}
 //#endregion
 
 //#region test modelView components
