@@ -22,7 +22,7 @@ describe('notebookUtils Tests', function (): void {
 
 	this.beforeAll(async function(): Promise<void> {
 		await vscode.commands.executeCommand('workbench.action.closeAllEditors');
-	})
+	});
 
 	beforeEach(function (): void {
 		apiWrapperMock = TypeMoq.Mock.ofInstance(new ApiWrapper());
@@ -189,7 +189,7 @@ describe('notebookUtils Tests', function (): void {
 					nodeSubType: undefined,
 					nodeType: undefined
 				}
-			}
+			};
 			await notebookUtils.analyzeNotebook(oeContext);
 			should(notebookEditor.document.cells.length).equal(1, 'One cell should exist');
 			should(notebookEditor.document.cells[0].contents.cell_type).equal(CellTypes.Code, 'Cell was created with incorrect type');
