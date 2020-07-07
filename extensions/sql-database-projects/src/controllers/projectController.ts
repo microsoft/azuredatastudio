@@ -623,16 +623,18 @@ export class ProjectsController {
 	 * Imports a new SQL database project from the existing database,
 	 * prompting the user for a name, file path location and extract target
 	 */
-	public async importNewDatabaseProject(context: any | IConnectionProfile): Promise<void> {
+	public async importNewDatabaseProject(context: IConnectionProfile | any): Promise<void> {
 		let model = <ImportDataModel>{};
 
 		// TODO: Refactor code
 		try {
-			let profile = context ? context.connectionProfile ? <IConnectionProfile>context.connectionProfile : context : undefined;
+			let profile: IConnectionProfile = context ? ((<any>context).connectionProfile ? (<any>context).connectionProfile : context) : undefined;
 			//TODO: Prompt for new connection addition and get database information if context information isn't provided.
+
+			let connectionId;
 			if (profile) {
-				model.serverId = profile.id;
 				model.database = profile.databaseName;
+				connectionId = profile.id;
 			}
 			else {
 				const connection = await this.apiWrapper.openConnectionDialog();
@@ -640,23 +642,29 @@ export class ProjectsController {
 					return;
 				}
 
-				const connectionId = connection.connectionId;
-				let database;
+				connectionId = connection.connectionId;
 
-				// use database that was connected to if it isn't master
-				if (connection.options['database'] && connection.options['database'] !== constants.master) {
-					database = connection.options['database'];
-				} else {
-					const databaseList = await this.apiWrapper.listDatabases(connectionId);
-					database = (await this.apiWrapper.showQuickPick(databaseList.map(dbName => { return { label: dbName }; })))?.label;
+				// use database that was connected to
+				if (connection.options['database']) {
+					model.database = connection.options['database'];
+				}
+			}
 
-					if (!database) {
-						throw new Error(constants.databaseSelectionRequired);
-					}
+			//
+			if (!model.database || model.database === constants.master) {
+				const databaseList = await this.apiWrapper.listDatabases(connectionId);
+				let database = (await this.apiWrapper.showQuickPick(databaseList.map(dbName => { return { label: dbName }; }),
+					{
+						canPickMany: false,
+						placeHolder: constants.extractDatabaseSelection
+					}))?.label;
+
+				if (!database) {
+					throw new Error(constants.databaseSelectionRequired);
 				}
 
-				model.serverId = connectionId;
 				model.database = database;
+				model.serverId = connectionId;
 			}
 
 			// Get project name
