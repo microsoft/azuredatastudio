@@ -428,23 +428,54 @@ export abstract class AzureAuth implements vscode.Disposable {
 	}
 
 	private async openConsentDialog(tenantId: string, resourceId: string): Promise<boolean> {
+		const getTenantConfigurationSet = (): Set<string> => {
+			const configuration = vscode.workspace.getConfiguration('azure.tenant.config');
+			let values: string[] = configuration.get('filter') ?? [];
+			return new Set<string>(values);
+		};
+
+		const updateTenantConfigurationSet = (set: Set<string>): void => {
+			const configuration = vscode.workspace.getConfiguration('azure.tenant.config');
+			configuration.update('filter', Array.from(set), vscode.ConfigurationTarget.Global);
+		};
+
+		// The user wants to ignore this tenant.
+		if (getTenantConfigurationSet().has(tenantId)) {
+			return false;
+		}
+
 		interface ConsentMessageItem extends vscode.MessageItem {
 			booleanResult: boolean;
+			action?: (tenantId: string) => void;
 		}
 
 		const openItem: ConsentMessageItem = {
-			title: localize('open', "Open"),
+			title: localize('azurecore.consentDialog.open', "Open"),
 			booleanResult: true
 		};
 
 		const closeItem: ConsentMessageItem = {
-			title: localize('cancel', "Cancel"),
+			title: localize('azurecore.consentDialog.cancel', "Cancel"),
 			isCloseAffordance: true,
 			booleanResult: false
 		};
 
+		const dontAskAgainItem: ConsentMessageItem = {
+			title: localize('azurecore.consentDialog.noAsk', "Don't Ask Again"),
+			booleanResult: false,
+			action: (tenantId: string) => {
+				let set = getTenantConfigurationSet();
+				set.add(tenantId);
+				updateTenantConfigurationSet(set);
+			}
+
+		};
 		const messageBody = localize('azurecore.consentDialog.body', "Your tenant {0} requires you to re-authenticate again to access {1} resources. Press Open to start the authentication process.", tenantId, resourceId);
-		const result = await vscode.window.showInformationMessage(messageBody, { modal: true }, openItem, closeItem);
+		const result = await vscode.window.showInformationMessage(messageBody, { modal: true }, openItem, closeItem, dontAskAgainItem);
+
+		if (result.action) {
+			result.action(tenantId);
+		}
 
 		return result.booleanResult;
 	}
