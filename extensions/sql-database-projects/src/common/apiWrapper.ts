@@ -51,6 +51,10 @@ export class ApiWrapper {
 		return azdata.connection.listDatabases(connectionId);
 	}
 
+	public getConnectionString(connectionId: string, includePassword: boolean): Thenable<string> {
+		return azdata.connection.getConnectionString(connectionId, includePassword);
+	}
+
 	//#endregion
 
 	//#region azdata.dataprotocol

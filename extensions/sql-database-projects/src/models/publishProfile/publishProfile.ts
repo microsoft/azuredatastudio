@@ -66,7 +66,7 @@ export function readSqlCmdVariables(xmlDoc: any): Record<string, string> {
 	return sqlCmdVariables;
 }
 
-async function readConnectionString(xmlDoc: any, apiWrapper: ApiWrapper,): Promise<{ connectionId: string, connectionString: string }> {
+export async function readConnectionString(xmlDoc: any, apiWrapper: ApiWrapper): Promise<{ connectionId: string, connectionString: string }> {
 	let targetConnectionString: string = '';
 	let connId: string = '';
 
@@ -86,6 +86,9 @@ async function readConnectionString(xmlDoc: any, apiWrapper: ApiWrapper,): Promi
 			throw new Error(constants.unableToCreatePublishConnection + ': ' + utils.getErrorMessage(err));
 		}
 	}
+
+	// mask password in connection string
+	targetConnectionString = await apiWrapper.getConnectionString(connId, false);
 
 	return {
 		connectionId: connId,

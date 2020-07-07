@@ -26,7 +26,7 @@ import { exists } from '../common/utils';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { FolderNode } from '../models/tree/fileFolderTreeItem';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
-
+import { readConnectionString } from '../models/publishProfile/publishProfile';
 let testContext: TestContext;
 
 // Mock test data
@@ -256,12 +256,14 @@ describe('ProjectsController: project controller operations', function (): void 
 				holler = publishHoller;
 				return Promise.resolve(undefined);
 			});
-			projController.setup(x => x.readPublishProfile(TypeMoq.It.isAny())).returns(() => {
+			projController.setup(x => x.readPublishProfileCallback(TypeMoq.It.isAny())).returns(() => {
 				holler = profileHoller;
 				return Promise.resolve({
-						databaseName: '',
-						sqlCmdVariables: {}
-					});
+					databaseName: '',
+					connectionId: '',
+					connectionString: '',
+					sqlCmdVariables: {}
+				});
 			});
 
 			projController.setup(x => x.executionCallback(TypeMoq.It.isAny(), TypeMoq.It.is((_): _ is IGenerateScriptSettings => true))).returns(() => {
@@ -280,7 +282,7 @@ describe('ProjectsController: project controller operations', function (): void 
 			should(holler).equal(generateHoller, 'executionCallback() is supposed to have been setup and called for GenerateScript scenario');
 
 			dialog = await projController.object.publishProject(proj);
-			await projController.object.readPublishProfile(vscode.Uri.parse('test'));
+			await projController.object.readPublishProfileCallback(vscode.Uri.parse('test'));
 
 			should(holler).equal(profileHoller, 'executionCallback() is supposed to have been setup and called for ReadPublishProfile scenario');
 		});
@@ -289,11 +291,20 @@ describe('ProjectsController: project controller operations', function (): void 
 			await baselines.loadBaselines();
 			let profilePath = await testUtils.createTestFile(baselines.publishProfileBaseline, 'publishProfile.publish.xml');
 			const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+			const connectionResult = {
+				connected: true,
+				connectionId: 'connId',
+				errorMessage: '',
+				errorCode: 0
+			};
+			testContext.apiWrapper.setup(x => x.connectionConnect(TypeMoq.It.isAny(),TypeMoq.It.isAny(),TypeMoq.It.isAny())).returns(async () => Promise.resolve(connectionResult));
 
-			let result = await projController.readPublishProfile(vscode.Uri.file(profilePath));
+			let result = await projController.readPublishProfileCallback(vscode.Uri.file(profilePath));
 			should(result.databaseName).equal('targetDb');
 			should(Object.keys(result.sqlCmdVariables).length).equal(1);
 			should(result.sqlCmdVariables['ProdDatabaseName']).equal('MyProdDatabase');
+			should(result.connectionId).equal('connId');
+			should(result.connectionString).equal('Data Source=testserver;Integrated Security=true;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Connect Timeout=60;Encrypt=False;TrustServerCertificate=True');
 		});
 
 		it('Should copy dacpac to temp folder before publishing', async function (): Promise<void> {

@@ -5,7 +5,6 @@
 
 import * as constants from '../common/constants';
 import * as dataSources from '../models/dataSources/dataSources';
-import * as publishProfile from '../models/publishProfile/publishProfile';
 import * as mssql from '../../../mssql';
 import * as os from 'os';
 import * as path from 'path';
@@ -27,6 +26,7 @@ import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { ImportDataModel } from '../models/api/import';
 import { NetCoreTool, DotNetCommandOptions } from '../tools/netcoreTool';
 import { BuildHelper } from '../tools/buildHelper';
+import { PublishProfile, load } from '../models/publishProfile/publishProfile';
 
 /**
  * Controller for managing project lifecycle
@@ -200,7 +200,7 @@ export class ProjectsController {
 
 		publishDatabaseDialog.publish = async (proj, prof) => await this.executionCallback(proj, prof);
 		publishDatabaseDialog.generateScript = async (proj, prof) => await this.executionCallback(proj, prof);
-		publishDatabaseDialog.readPublishProfile = async (profileUri) => publishProfile.load(profileUri, this.apiWrapper);
+		publishDatabaseDialog.readPublishProfile = async (profileUri) => await this.readPublishProfileCallback(profileUri);
 
 		publishDatabaseDialog.openDialog();
 
@@ -226,6 +226,11 @@ export class ProjectsController {
 		else {
 			return await dacFxService.generateDeployScript(tempPath, settings.databaseName, settings.connectionUri, TaskExecutionMode.script, settings.sqlCmdVariables);
 		}
+	}
+
+	public async readPublishProfileCallback(profileUri: Uri): Promise<PublishProfile> {
+		const profile = await load(profileUri, this.apiWrapper);
+		return profile;
 	}
 
 	public async schemaCompare(treeNode: BaseProjectTreeItem): Promise<void> {
