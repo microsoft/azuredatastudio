@@ -96,7 +96,7 @@ export class ProjectsController {
 
 	public async focusProject(project?: Project): Promise<void> {
 		if (project && this.projects.includes(project)) {
-			await this.apiWrapper.executeCommand('sqlDatabaseProjectsView.focus');
+			await this.apiWrapper.executeCommand(constants.sqlDatabaseProjectsViewFocusCommand);
 			await this.projectTreeViewProvider.focus(project);
 		}
 	}
@@ -261,7 +261,7 @@ export class ProjectsController {
 
 			// check that dacpac exists
 			if (await utils.exists(dacpacPath)) {
-				this.apiWrapper.executeCommand('schemaCompare.start', dacpacPath);
+				this.apiWrapper.executeCommand(constants.schemaCompareStartCommand, dacpacPath);
 			} else {
 				this.apiWrapper.showErrorMessage(constants.buildDacpacNotFound);
 			}
@@ -346,7 +346,7 @@ export class ProjectsController {
 
 			const newEntry = await project.addScriptItem(relativeFilePath, newFileText);
 
-			this.apiWrapper.executeCommand('vscode.open', newEntry.fsUri);
+			this.apiWrapper.executeCommand(constants.vscodeOpenCommand, newEntry.fsUri);
 
 			this.refreshProjectsTree();
 		} catch (err) {
@@ -398,6 +398,15 @@ export class ProjectsController {
 
 	private getProjectEntry(project: Project, context: BaseProjectTreeItem): ProjectEntry | undefined {
 		return project.files.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(context.root.uri, context.uri)));
+	}
+
+	/**
+	 * Opens the folder containing the project
+	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project
+	 */
+	public async openContainingFolder(context: BaseProjectTreeItem): Promise<void> {
+		const project = this.getProjectFromContext(context);
+		await this.apiWrapper.executeCommand(constants.revealFileInOsCommand, Uri.file(project.projectFilePath));
 	}
 
 	/**
