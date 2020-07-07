@@ -50,7 +50,7 @@ import { NodeContextKey } from 'sql/workbench/browser/parts/views/nodeContext';
 
 export class TreeViewPane extends ViewPane {
 
-	public treeView: ITreeView;
+	public readonly treeView: ITreeView;
 
 	constructor(
 		options: IViewletViewOptions,
