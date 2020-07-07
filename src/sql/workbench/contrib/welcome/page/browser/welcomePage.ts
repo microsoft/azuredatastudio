@@ -1136,10 +1136,6 @@ registerThemingParticipant((theme, collector) => {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage a:hover, .monaco-workbench .part.editor > .content .welcomePage a:active { color: ${activeLink}; }`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads-homepage .themed-icon-alt { background-color: ${activeLink}; }`);
 	}
-	// const focusColor = theme.getColor(focusBorder);
-	// if (focusColor) {
-	// 	collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage a:focus { outline-color: ${focusColor}; }`);
-	// }
 	const activeBorder = theme.getColor(activeContrastBorder);
 	if (activeBorder) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .commands .item button:hover { outline-color: ${activeBorder}; }`);
