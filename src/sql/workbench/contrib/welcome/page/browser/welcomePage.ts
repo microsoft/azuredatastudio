@@ -30,7 +30,7 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import { splitName } from 'vs/base/common/labels';
 import { registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { buttonSecondaryBackground, buttonSecondaryBorder, buttonSecondary, buttonSecondaryHoverColor, tileBorder, disabledButton, disabledButtonBackground, gradientOne, gradientTwo, gradientBackground, extensionPackHeaderShadow, extensionPackGradientColorOneColor, extensionPackGradientColorTwoColor, tileBoxShadow, buttonDropdownBackgroundHover, hoverShadow } from 'sql/platform/theme/common/colorRegistry';
-import { registerColor, foreground, textLinkActiveForeground, focusBorder, descriptionForeground, activeContrastBorder, buttonBackground, buttonForeground, menuBorder, menuForeground, menuSelectionForeground, editorWidgetBorder, selectBackground, buttonHoverBackground, selectBorder, iconForeground, textLinkForeground, inputBackground } from 'vs/platform/theme/common/colorRegistry';
+import { registerColor, foreground, textLinkActiveForeground, descriptionForeground, activeContrastBorder, buttonBackground, buttonForeground, menuBorder, menuForeground, menuSelectionForeground, editorWidgetBorder, selectBackground, buttonHoverBackground, selectBorder, iconForeground, textLinkForeground, inputBackground, focusBorder } from 'vs/platform/theme/common/colorRegistry';
 import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IEditorInputFactory, EditorInput } from 'vs/workbench/common/editor';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
@@ -1029,7 +1029,11 @@ registerThemingParticipant((theme, collector) => {
 	if (buttonPrimaryBackgroundColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-primary { background-color: ${buttonPrimaryBackgroundColor};}`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-primary { border-color: ${buttonPrimaryBackgroundColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .header-bottom-nav-tile-link:focus { outline: 1px solid ${buttonPrimaryBackgroundColor}} `);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage *:focus { outline: 1px solid ${buttonPrimaryBackgroundColor}} `);
+
 	}
+
 	const buttonForegroundColor = theme.getColor(buttonForeground);
 	if (buttonForegroundColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-primary { color: ${buttonForegroundColor};}`);
@@ -1124,7 +1128,7 @@ registerThemingParticipant((theme, collector) => {
 	}
 	const link = theme.getColor(textLinkForeground);
 	if (link) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage a { color: ${link}; }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage a.ads-welcome-page-link { color: ${link}; }`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .btn-primary .monaco-button { border: 1px solid ${link}; }`);
 	}
 	const activeLink = theme.getColor(textLinkActiveForeground);
@@ -1132,10 +1136,10 @@ registerThemingParticipant((theme, collector) => {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage a:hover, .monaco-workbench .part.editor > .content .welcomePage a:active { color: ${activeLink}; }`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads-homepage .themed-icon-alt { background-color: ${activeLink}; }`);
 	}
-	const focusColor = theme.getColor(focusBorder);
-	if (focusColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage a:focus { outline-color: ${focusColor}; }`);
-	}
+	// const focusColor = theme.getColor(focusBorder);
+	// if (focusColor) {
+	// 	collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage a:focus { outline-color: ${focusColor}; }`);
+	// }
 	const activeBorder = theme.getColor(activeContrastBorder);
 	if (activeBorder) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .commands .item button:hover { outline-color: ${activeBorder}; }`);

@@ -51,7 +51,7 @@ export default () => `
 					</div>
 					<div class="row header-bottom-nav-tiles ads-grid">
 						<div class="col">
-							<a class="header-bottom-nav-tile-link ads-welcome-page-link" href="command:registeredServers.addConnection">
+							<a class="header-bottom-nav-tile-link" href="command:registeredServers.addConnection">
 								<div class="header-bottom-nav-tile tile tile-connection">
 									<h3>${escape(localize('welcomePage.createConnection', "Create a connection"))}</h3>
 									<p>${escape(localize('welcomePage.createConnectionBody', "Connect to a database instance through the connection dialog."))}</p>
@@ -60,7 +60,7 @@ export default () => `
 							</a>
 						</div>
 						<div class="col">
-							<a class="header-bottom-nav-tile-link ads-welcome-page-link"
+							<a class="header-bottom-nav-tile-link"
 								href="command:workbench.action.files.newUntitledFile">
 								<div class="header-bottom-nav-tile tile tile-query">
 									<h3>${escape(localize('welcomePage.runQuery', "Run a query"))}</h3>
@@ -70,7 +70,7 @@ export default () => `
 							</a>
 						</div>
 						<div class="col">
-							<a class="header-bottom-nav-tile-link ads-welcome-page-link" href="command:notebook.command.new">
+							<a class="header-bottom-nav-tile-link" href="command:notebook.command.new">
 								<div class="header-bottom-nav-tile tile tile-notebook">
 									<h3>${escape(localize('welcomePage.createNotebook', "Create a notebook"))}</h3>
 									<p>${escape(localize('welcomePage.createNotebookBody', "Build a new notebook using a native notebook editor."))}</p>
@@ -79,7 +79,7 @@ export default () => `
 							</a>
 						</div>
 						<div class="col">
-							<a class="header-bottom-nav-tile-link ads-welcome-page-link" href="command:azdata.resource.deploy">
+							<a class="header-bottom-nav-tile-link" href="command:azdata.resource.deploy">
 								<div class="header-bottom-nav-tile tile tile-server">
 									<h3>${escape(localize('welcomePage.deployServer', "Deploy a server"))}</h3>
 									<p>${escape(localize('welcomePage.deployServerBody', "Create a new instance of SQL Server on the platform of your choice."))}</p>
