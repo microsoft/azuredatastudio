@@ -1,10 +1,12 @@
-'use strict';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 // This code is originally from https://github.com/DonJayamanne/bowerVSCode
 // License: https://github.com/DonJayamanne/bowerVSCode/blob/master/LICENSE
 
 import { InputBoxOptions, QuickPickOptions } from 'vscode';
-import { ApiWrapper } from '../common/apiWrapper';
 
 abstract class Prompt {
 
@@ -16,7 +18,7 @@ abstract class Prompt {
 		this._ignoreFocusOut = ignoreFocusOut ? ignoreFocusOut : false;
 	}
 
-	public abstract render(apiWrapper: ApiWrapper): any;
+	public abstract render(): any;
 
 	protected get defaultQuickPickOptions(): QuickPickOptions {
 		return {

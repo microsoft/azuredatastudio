@@ -1,4 +1,7 @@
-'use strict';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 // This code is originally from https://github.com/DonJayamanne/bowerVSCode
 // License: https://github.com/DonJayamanne/bowerVSCode/blob/master/LICENSE
@@ -6,7 +9,7 @@
 import Prompt from './prompt';
 import LocalizedConstants = require('../common/localizedConstants');
 import EscapeException from './escapeException';
-import { ApiWrapper } from '../common/apiWrapper';
+import * as vscode from 'vscode';
 
 export default class ConfirmPrompt extends Prompt {
 
@@ -14,7 +17,7 @@ export default class ConfirmPrompt extends Prompt {
 		super(question);
 	}
 
-	public render(apiWrapper: ApiWrapper): any {
+	public render(): any {
 		let choices: { [id: string]: boolean } = {};
 		choices[LocalizedConstants.msgYes] = true;
 		choices[LocalizedConstants.msgNo] = false;
@@ -22,7 +25,7 @@ export default class ConfirmPrompt extends Prompt {
 		let options = this.defaultQuickPickOptions;
 		options.placeHolder = this._question.message;
 
-		return apiWrapper.showQuickPick(Object.keys(choices), options)
+		return vscode.window.showQuickPick(Object.keys(choices), options)
 			.then(result => {
 				if (result === undefined) {
 					throw new EscapeException();
