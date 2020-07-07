@@ -16,6 +16,8 @@ import { InstantiationService } from 'vs/platform/instantiation/common/instantia
 import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
 import { EventVerifierSingle } from 'sql/base/test/common/event';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
+import { AccountDialog } from 'sql/workbench/services/accountManagement/browser/accountDialog';
+import { Emitter } from 'vs/base/common/event';
 
 // SUITE CONSTANTS /////////////////////////////////////////////////////////
 const hasAccountProvider: azdata.AccountProviderMetadata = {
@@ -398,7 +400,14 @@ suite('Account Management Service Tests:', () => {
 
 		// ... Add mocking for instantiating an account dialog controller
 		let mockDialogController = TypeMoq.Mock.ofType(AccountDialogController);
+		let mockAccountDialog = {};
 		mockDialogController.setup(x => x.openAccountDialog());
+		mockDialogController.setup(x => x.accountDialog).returns(() => <AccountDialog>mockAccountDialog);
+		let mockAccountDialogCloseEvent = new Emitter<void>();
+		mockAccountDialog['onCloseEvent'] = mockAccountDialogCloseEvent.event;
+		setTimeout(() => {
+			mockAccountDialogCloseEvent.fire();
+		}, 1000);
 		state.instantiationService.setup(x => x.createInstance(TypeMoq.It.isValue(AccountDialogController)))
 			.returns(() => mockDialogController.object);
 
@@ -421,13 +430,25 @@ suite('Account Management Service Tests:', () => {
 
 		// ... Add mocking for instantiating an account dialog controller
 		let mockDialogController = TypeMoq.Mock.ofType(AccountDialogController);
+		let mockAccountDialog = {};
 		mockDialogController.setup(x => x.openAccountDialog());
+		mockDialogController.setup(x => x.accountDialog).returns(() => <AccountDialog>mockAccountDialog);
+		let mockAccountDialogCloseEvent = new Emitter<void>();
+		mockAccountDialog['onCloseEvent'] = mockAccountDialogCloseEvent.event;
+		setTimeout(() => {
+			mockAccountDialogCloseEvent.fire();
+		}, 1000);
 		state.instantiationService.setup(x => x.createInstance(TypeMoq.It.isValue(AccountDialogController)))
 			.returns(() => mockDialogController.object);
 
 		// If: I open the account dialog for a second time
 		return state.accountManagementService.openAccountListDialog()
-			.then(() => state.accountManagementService.openAccountListDialog())
+			.then(() => {
+				setTimeout(() => {
+					mockAccountDialogCloseEvent.fire();
+				}, 1000);
+				state.accountManagementService.openAccountListDialog();
+			})
 			.then(() => {
 				// Then:
 				// ... The instantiation service should have only been called once
