@@ -37,12 +37,6 @@
 	margin: 0
 }
 
-.monaco-workbench .part.editor > .content .welcomePage .header-bottom-nav-tile-link:focus {
-	opacity: 1;
-	filter: brightness(100%);
-}
-
-
 .ads-homepage h1 {
 	font-size: 3em;
 	line-height: 1em;
