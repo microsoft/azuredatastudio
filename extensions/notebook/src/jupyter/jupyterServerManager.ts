@@ -15,7 +15,7 @@ import { JupyterServerInstallation } from './jupyterServerInstallation';
 import * as utils from '../common/utils';
 import { IServerInstance } from './common';
 import { PerFolderServerInstance, IInstanceOptions } from './serverInstance';
-import { CommandContext } from '../common/constants';
+import { CommandContext, BuiltInCommands } from '../common/constants';
 
 export interface IServerManagerOptions {
 	documentPath: string;
@@ -112,7 +112,7 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 		if (!installation.previewFeaturesEnabled) {
 			await installation.promptForPackageUpgrade(kernelSpec.display_name);
 		}
-		this._apiWrapper.setCommandContext(CommandContext.NotebookPythonInstalled, true);
+		vscode.commands.executeCommand(BuiltInCommands.SetContext, CommandContext.NotebookPythonInstalled, true);
 
 		// Calculate the path to use as the notebook-dir for Jupyter based on the path of the uri of the
 		// notebook to open. This will be the workspace folder if the notebook uri is inside a workspace

@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as vscode from 'vscode';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as nls from 'vscode-nls';
@@ -15,7 +16,6 @@ import * as tar from 'tar';
 import { ApiWrapper } from '../common/apiWrapper';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
-import { OutputChannel, ConfigurationTarget, window } from 'vscode';
 import { Deferred } from '../common/promise';
 import { ConfigurePythonWizard } from '../dialog/configurePython/configurePythonWizard';
 import { IPrompter, IQuestion, confirm } from '../prompts/question';
@@ -59,13 +59,13 @@ export interface IJupyterServerInstallation {
 	uninstallPipPackages(packages: PythonPkgDetails[]): Promise<void>;
 	pythonExecutable: string;
 	pythonInstallationPath: string;
-	installPythonPackage(backgroundOperation: azdata.BackgroundOperation, usingExistingPython: boolean, pythonInstallationPath: string, outputChannel: OutputChannel): Promise<void>;
+	installPythonPackage(backgroundOperation: azdata.BackgroundOperation, usingExistingPython: boolean, pythonInstallationPath: string, outputChannel: vscode.OutputChannel): Promise<void>;
 }
 export class JupyterServerInstallation implements IJupyterServerInstallation {
 	public apiWrapper: ApiWrapper;
 	public extensionPath: string;
 	public pythonBinPath: string;
-	public outputChannel: OutputChannel;
+	public outputChannel: vscode.OutputChannel;
 	public pythonEnvVarPath: string;
 	public execOptions: ExecOptions;
 
@@ -112,14 +112,25 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	private readonly _requiredKernelPackages: Map<string, PythonPkgDetails[]>;
 	private readonly _requiredPackagesSet: Set<string>;
 
-	constructor(extensionPath: string, outputChannel: OutputChannel, apiWrapper: ApiWrapper, pythonInstallationPath?: string) {
+	private readonly _runningOnSAW: boolean;
+
+	constructor(extensionPath: string, outputChannel: vscode.OutputChannel, apiWrapper: ApiWrapper) {
 		this.extensionPath = extensionPath;
 		this.outputChannel = outputChannel;
 		this.apiWrapper = apiWrapper;
-		this._pythonInstallationPath = pythonInstallationPath || JupyterServerInstallation.getPythonInstallPath(this.apiWrapper);
+
+		this._runningOnSAW = vscode.env.appName.toLowerCase().indexOf('saw') > 0;
+		vscode.commands.executeCommand(constants.BuiltInCommands.SetContext, 'notebook:runningOnSAW', this._runningOnSAW);
+
+		if (this._runningOnSAW) {
+			this._pythonInstallationPath = `${vscode.env.appRoot}\\ads-python`;
+			this._usingExistingPython = true;
+		} else {
+			this._pythonInstallationPath = JupyterServerInstallation.getPythonInstallPath(this.apiWrapper);
+			this._usingExistingPython = JupyterServerInstallation.getExistingPythonSetting(this.apiWrapper);
+		}
 		this._usingConda = false;
 		this._installInProgress = false;
-		this._usingExistingPython = JupyterServerInstallation.getExistingPythonSetting(this.apiWrapper);
 
 		this._prompter = new CodeAdapter();
 
@@ -170,7 +181,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	}
 
 	private async installDependencies(backgroundOperation: azdata.BackgroundOperation, forceInstall: boolean, specificPackages?: PythonPkgDetails[]): Promise<void> {
-		window.showInformationMessage(msgInstallPkgStart);
+		vscode.window.showInformationMessage(msgInstallPkgStart);
 
 		this.outputChannel.show(true);
 		this.outputChannel.appendLine(msgInstallPkgProgress);
@@ -189,10 +200,10 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 		this.outputChannel.appendLine(msgInstallPkgFinish);
 		backgroundOperation.updateStatus(azdata.TaskStatus.Succeeded, msgInstallPkgFinish);
-		window.showInformationMessage(msgInstallPkgFinish);
+		vscode.window.showInformationMessage(msgInstallPkgFinish);
 	}
 
-	public installPythonPackage(backgroundOperation: azdata.BackgroundOperation, usingExistingPython: boolean, pythonInstallationPath: string, outputChannel: OutputChannel): Promise<void> {
+	public installPythonPackage(backgroundOperation: azdata.BackgroundOperation, usingExistingPython: boolean, pythonInstallationPath: string, outputChannel: vscode.OutputChannel): Promise<void> {
 		if (usingExistingPython) {
 			return Promise.resolve();
 		}
@@ -435,8 +446,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 				this.installDependencies(op, forceInstall, installSettings.specificPackages)
 					.then(async () => {
 						let notebookConfig = this.apiWrapper.getConfiguration(constants.notebookConfigKey);
-						await notebookConfig.update(constants.pythonPathConfigKey, this._pythonInstallationPath, ConfigurationTarget.Global);
-						await notebookConfig.update(constants.existingPythonConfigKey, this._usingExistingPython, ConfigurationTarget.Global);
+						await notebookConfig.update(constants.pythonPathConfigKey, this._pythonInstallationPath, vscode.ConfigurationTarget.Global);
+						await notebookConfig.update(constants.existingPythonConfigKey, this._usingExistingPython, vscode.ConfigurationTarget.Global);
 						await this.configurePackagePaths();
 
 						this._installCompletion.resolve();
@@ -457,6 +468,9 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	 * Opens a dialog for configuring the installation path for the Notebook Python dependencies.
 	 */
 	public async promptForPythonInstall(kernelDisplayName: string): Promise<void> {
+		if (this._runningOnSAW) {
+			return Promise.resolve();
+		}
 		if (this._installInProgress) {
 			this.apiWrapper.showInfoMessage(msgWaitingForInstall);
 			return this._installCompletion.promise;
@@ -482,6 +496,9 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	 * Prompts user to upgrade certain python packages if they're below the minimum expected version.
 	 */
 	public async promptForPackageUpgrade(kernelName: string): Promise<void> {
+		if (this._runningOnSAW) {
+			return Promise.resolve();
+		}
 		if (this._installInProgress) {
 			this.apiWrapper.showInfoMessage(msgWaitingForInstall);
 			return this._installCompletion.promise;
@@ -833,22 +850,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			}
 		}
 		return path;
-	}
-
-	/**
-	 * Returns the folder containing the python executable under the path defined in
-	 * "notebook.pythonPath" in the user's settings.
-	 * @param apiWrapper An ApiWrapper to use when retrieving user settings info.
-	 */
-	public static getPythonBinPath(apiWrapper: ApiWrapper): string {
-		let pythonBinPathSuffix = process.platform === constants.winPlatform ? '' : 'bin';
-
-		let useExistingInstall = JupyterServerInstallation.getExistingPythonSetting(apiWrapper);
-
-		return path.join(
-			JupyterServerInstallation.getPythonInstallPath(apiWrapper),
-			useExistingInstall ? '' : constants.pythonBundleVersion,
-			pythonBinPathSuffix);
 	}
 
 	public static getPythonExePath(pythonInstallPath: string, useExistingInstall: boolean): string {
