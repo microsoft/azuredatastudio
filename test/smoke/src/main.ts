@@ -292,7 +292,11 @@ describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 		});
 
 		after(async function () {
-			if (screenshotsPath) {
+			await this.app.stop();
+		});
+
+		if (screenshotsPath) {
+			afterEach(async function () {
 				if (this.currentTest.state !== 'failed') {
 					return;
 				}
@@ -300,17 +304,17 @@ describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 				const name = this.currentTest.fullTitle().replace(/[^a-z0-9\-]/ig, '_');
 
 				await app.captureScreenshot(name);
-			}
+			});
+		}
 
-			if (opts.log) {
+		if (opts.log) {
+			beforeEach(async function () {
 				const app = this.app as Application;
 				const title = this.currentTest.fullTitle();
 
 				app.logger.log('*** Test start:', title);
-			}
-
-			await this.app.stop();
-		});
+			});
+		}
 
 		sqlMain();
 		/*if (!opts.web) { setupDataLossTests(); }
