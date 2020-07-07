@@ -1,7 +1,7 @@
 {
   "name": "sql-database-projects",
   "displayName": "SQL Database Projects",
-  "description": "The SQL Database Projects extension for Azure Data Studio allows users to develop and deploy database schemas.",
+  "description": "The SQL Database Projects extension for Azure Data Studio allows users to develop and publish database schemas.",
   "version": "0.1.1",
   "publisher": "Microsoft",
   "preview": true,
@@ -101,8 +101,8 @@
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
-        "command": "sqlDatabaseProjects.deploy",
-        "title": "%sqlDatabaseProjects.deploy%",
+        "command": "sqlDatabaseProjects.publish",
+        "title": "%sqlDatabaseProjects.publish%",
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
@@ -123,6 +123,11 @@
       {
         "command": "sqlDatabaseProjects.addDatabaseReference",
         "title": "%sqlDatabaseProjects.addDatabaseReference%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.openContainingFolder",
+        "title": "%sqlDatabaseProjects.openContainingFolder%",
         "category": "%sqlDatabaseProjects.displayName%"
       }
     ],
@@ -171,7 +176,7 @@
           "when": "false"
         },
         {
-          "command": "sqlDatabaseProjects.deploy",
+          "command": "sqlDatabaseProjects.publish",
           "when": "false"
         },
         {
@@ -188,6 +193,10 @@
         {
           "command": "sqlDatabaseProjects.addDatabaseReference",
           "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.openContainingFolder",
+          "when": "false"
         }
       ],
       "view/item/context": [
@@ -197,7 +206,7 @@
           "group": "1_dbProjectsFirst@1"
         },
         {
-          "command": "sqlDatabaseProjects.deploy",
+          "command": "sqlDatabaseProjects.publish",
           "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project",
           "group": "1_dbProjectsFirst@2"
         },
@@ -250,6 +259,11 @@
           "command": "sqlDatabaseProjects.delete",
           "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.folder || viewItem == databaseProject.itemType.file",
           "group": "9_dbProjectsLast@2"
+        },
+        {
+          "command": "sqlDatabaseProjects.openContainingFolder",
+          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project",
+          "group": "9_dbProjectsLast@8"
         },
         {
           "command": "sqlDatabaseProjects.close",

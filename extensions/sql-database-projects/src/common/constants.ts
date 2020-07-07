@@ -22,6 +22,12 @@ export const msdbDacpac = 'msdb.dacpac';
 export const MicrosoftDatatoolsSchemaSqlSql = 'Microsoft.Data.Tools.Schema.Sql.Sql';
 export const databaseSchemaProvider = 'DatabaseSchemaProvider';
 
+// commands
+export const revealFileInOsCommand = 'revealFileInOS';
+export const schemaCompareStartCommand = 'schemaCompare.start';
+export const sqlDatabaseProjectsViewFocusCommand = 'sqlDatabaseProjectsView.focus';
+export const vscodeOpenCommand = 'vscode.open';
+
 // UI Strings
 
 export const projectNodeName = localize('projectNodeName', "Database Project");
@@ -53,15 +59,14 @@ export function deleteConfirmation(toDelete: string) { return localize('deleteCo
 export function deleteConfirmationContents(toDelete: string) { return localize('deleteConfirmationContents', "Are you sure you want to delete {0} and all of its contents?", toDelete); }
 
 
-// Deploy dialog strings
+// Publish dialog strings
 
-export const deployDialogName = localize('deployDialogName', "Publish Database");
-export const deployDialogOkButtonText = localize('deployDialogOkButtonText', "Publish");
+export const publishDialogName = localize('publishDialogName', "Publish Database");
+export const publishDialogOkButtonText = localize('publishDialogOkButtonText', "Publish");
 export const cancelButtonText = localize('cancelButtonText', "Cancel");
 export const generateScriptButtonText = localize('generateScriptButtonText', "Generate Script");
 export const targetDatabaseSettings = localize('targetDatabaseSettings', "Target Database Settings");
 export const databaseNameLabel = localize('databaseNameLabel', "Database");
-export const deployScriptNameLabel = localize('deployScriptName', "Publish script name");
 export const targetConnectionLabel = localize('targetConnectionLabel', "Target Connection");
 export const editConnectionButtonText = localize('editConnectionButtonText', "Edit");
 export const clearButtonText = localize('clearButtonText', "Clear");
@@ -101,12 +106,14 @@ export const databaseNameRequired = localize('databaseNameRequired', "Database n
 export const invalidDataSchemaProvider = localize('invalidDataSchemaProvider', "Invalid DSP in .sqlproj file");
 export const invalidDatabaseReference = localize('invalidDatabaseReference', "Invalid database reference in .sqlproj file");
 export const databaseSelectionRequired = localize('databaseSelectionRequired', "Database selection is required to import a project");
-export const unableToCreateDeploymentConnection = localize('unableToCreateDeploymentConnection', "Unable to construct connection");
+export const unableToCreatePublishConnection = localize('unableToCreatePublishConnection', "Unable to construct connection");
 export const databaseReferenceAlreadyExists = localize('databaseReferenceAlreadyExists', "A reference to this database already exists in this project");
 export function projectAlreadyOpened(path: string) { return localize('projectAlreadyOpened', "Project '{0}' is already opened.", path); }
 export function projectAlreadyExists(name: string, path: string) { return localize('projectAlreadyExists', "A project named {0} already exists in {1}.", name, path); }
 export function noFileExist(fileName: string) { return localize('noFileExist', "File {0} doesn't exist", fileName); }
 export function cannotResolvePath(path: string) { return localize('cannotResolvePath', "Cannot resolve path {0}", path); }
+export function fileAlreadyExists(filename: string) { return localize('fileAlreadyExists', "A file with the name '{0}' already exists on disk at this location. Please choose another name.", filename); }
+export function folderAlreadyExists(filename: string) { return localize('folderAlreadyExists', "A folder with the name '{0}' already exists on disk at this location. Please choose another name.", filename); }
 export function invalidInput(input: string) { return localize('invalidInput', "Invalid input: {0}", input); }
 
 export function mssqlNotFound(mssqlConfigDir: string) { return localize('mssqlNotFound', "Could not get mssql extension's install location at {0}", mssqlConfigDir); }
@@ -153,6 +160,7 @@ export const ArtifactReference = 'ArtifactReference';
 export const SuppressMissingDependenciesErrors = 'SuppressMissingDependenciesErrors';
 export const DatabaseVariableLiteralValue = 'DatabaseVariableLiteralValue';
 export const DSP = 'DSP';
+export const Properties = 'Properties';
 
 // SqlProj File targets
 export const NetCoreTargets = '$(NETCoreTargetsPath)\\Microsoft.Data.Tools.Schema.SqlTasks.targets';

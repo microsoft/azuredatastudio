@@ -60,7 +60,7 @@ export interface IModelStore {
 	getComponentDescriptor(componentId: string): IComponentDescriptor;
 	registerComponent(component: IComponent): void;
 	unregisterComponent(component: IComponent): void;
-	getComponent(componentId: string): IComponent;
+	getComponent(componentId: string): IComponent | undefined;
 	/**
 	 * Runs on a component immediately if the component exists, or runs on
 	 * registration of the component otherwise

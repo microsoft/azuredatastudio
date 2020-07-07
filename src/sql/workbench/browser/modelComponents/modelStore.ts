@@ -47,7 +47,7 @@ export class ModelStore implements IModelStore {
 		// TODO notify model for cleanup
 	}
 
-	getComponent(componentId: string): IComponent {
+	getComponent(componentId: string): IComponent | undefined {
 		return this._componentMappings[componentId];
 	}
 

@@ -11,7 +11,7 @@ import { BuildHelper } from '../tools/buildHelper';
 
 describe('BuildHelper: Build Helper tests', function (): void {
 
-	it('Should get correct build arguments', async function (): Promise<void> {
+	it('Should get correct build arguments', function (): void {
 		// update settings and validate
 		const buildHelper = new BuildHelper();
 		const resultArg = buildHelper.constructBuildArguments('dummy\\project path\\more space in path', 'dummy\\dll path');

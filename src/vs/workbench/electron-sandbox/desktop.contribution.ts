@@ -92,7 +92,7 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 
 	// Actions: Developer
 	(function registerDeveloperActions(): void {
-		const developerCategory = nls.localize('developer', "Developer");
+		const developerCategory = nls.localize({ key: 'developer', comment: ['A developer on Code itself or someone diagnosing issues in Code'] }, "Developer");
 		registry.registerWorkbenchAction(SyncActionDescriptor.from(ReloadWindowWithExtensionsDisabledAction), 'Developer: Reload With Extensions Disabled', developerCategory);
 		registry.registerWorkbenchAction(SyncActionDescriptor.from(ToggleDevToolsAction), 'Developer: Toggle Developer Tools', developerCategory);
 
