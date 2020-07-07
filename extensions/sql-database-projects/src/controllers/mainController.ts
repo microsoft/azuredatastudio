@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import * as templates from '../templates/templates';
 import * as constants from '../common/constants';
 import * as path from 'path';
+import * as glob from 'fast-glob';
 
 import { Uri, Disposable, ExtensionContext, WorkspaceFolder } from 'vscode';
 import { ApiWrapper } from '../common/apiWrapper';
@@ -78,6 +79,23 @@ export default class MainController implements Disposable {
 
 		// ensure .net core is installed
 		this.netcoreTool.findOrInstallNetCore();
+
+		// load any sql projects that are open in workspace folder
+		const workspaceFolders = this.apiWrapper.workspaceFolders();
+		if (workspaceFolders?.length) {
+			await Promise.all(workspaceFolders.map(async (workspaceFolder) => {
+				await this.loadProjectsInFolder(workspaceFolder.uri.fsPath);
+			}));
+		}
+	}
+
+	public async loadProjectsInFolder(folderPath: string): Promise<void> {
+		let sqlprojFilter = path.posix.join(folderPath, '**', '*.sqlproj');
+		let results = await glob(sqlprojFilter);
+
+		for (let f in results) {
+			await this.projectsController.openProject(Uri.file(results[f]));
+		}
 	}
 
 	/**
