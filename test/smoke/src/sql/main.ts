@@ -18,6 +18,7 @@ export function main(): void {
 }
 
 /* eslint-disable no-sync */
+/* eslint-disable no-console */
 const PLATFORM = '${PLATFORM}';
 const RUNTIME = '${RUNTIME}';
 const VERSION = '${VERSION}';
@@ -25,6 +26,7 @@ const VERSION = '${VERSION}';
 const sqliteUrl = `https://github.com/anthonydresser/azuredatastudio-sqlite/releases/download/1.0.12/azuredatastudio-sqlite-${PLATFORM}-${RUNTIME}-${VERSION}.zip`;
 
 export async function setup(app: ApplicationOptions): Promise<void> {
+	console.log('*** Downloading test extensions');
 	const requestUrl = sqliteUrl.replace(PLATFORM, process.platform).replace(RUNTIME, getRuntime(app.web || app.remote || false)).replace(VERSION, getVersion(app.web || app.remote || false));
 	const zip = await fetch(requestUrl);
 	if (!zip) {
