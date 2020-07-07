@@ -5,13 +5,13 @@
 
 import * as constants from '../common/constants';
 import * as dataSources from '../models/dataSources/dataSources';
+import * as publishProfile from '../models/publishProfile/publishProfile';
 import * as mssql from '../../../mssql';
 import * as os from 'os';
 import * as path from 'path';
 import * as utils from '../common/utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as templates from '../templates/templates';
-import * as publishProfile from '../models/publishProfile/publishProfile';
 
 import { Uri, QuickPickItem, WorkspaceFolder, extensions, Extension } from 'vscode';
 import { IConnectionProfile, TaskExecutionMode } from 'azdata';
@@ -20,8 +20,8 @@ import { ApiWrapper } from '../common/apiWrapper';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { Project, DatabaseReferenceLocation, SystemDatabase, TargetPlatform, ProjectEntry, reservedProjectFolders } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
-import { FolderNode } from '../models/tree/fileFolderTreeItem';
-import { IDeploymentProfile, IGenerateScriptProfile } from '../models/IDeploymentProfile';
+import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
+import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { ImportDataModel } from '../models/api/import';
@@ -198,9 +198,9 @@ export class ProjectsController {
 		const project: Project = this.getProjectFromContext(context);
 		let publishDatabaseDialog = this.getPublishDialog(project);
 
-		deployDatabaseDialog.deploy = async (proj, prof) => await this.executionCallback(proj, prof);
-		deployDatabaseDialog.generateScript = async (proj, prof) => await this.executionCallback(proj, prof);
-		deployDatabaseDialog.readPublishProfile = async (profileUri) => await publishProfile.load(profileUri, this.apiWrapper);
+		publishDatabaseDialog.publish = async (proj, prof) => await this.executionCallback(proj, prof);
+		publishDatabaseDialog.generateScript = async (proj, prof) => await this.executionCallback(proj, prof);
+		publishDatabaseDialog.readPublishProfile = async (profileUri) => publishProfile.load(profileUri, this.apiWrapper);
 
 		publishDatabaseDialog.openDialog();
 

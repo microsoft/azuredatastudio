@@ -9,14 +9,22 @@ import * as utils from '../../common/utils';
 
 import { promises as fs } from 'fs';
 import { Uri } from 'vscode';
-import { PublishSettings } from './publishSettings';
 import { SqlConnectionDataSource } from '../dataSources/sqlConnectionStringSource';
 import { ApiWrapper } from '../../common/apiWrapper';
+
+
+// only reading db name and SQLCMD vars from profile for now
+export interface PublishProfile {
+	databaseName: string;
+	connectionId: string;
+	connectionString: string;
+	sqlCmdVariables: Record<string, string>;
+}
 
 /**
  * parses the specified file to load publish settings
  */
-export async function load(profileUri: Uri, apiWrapper: ApiWrapper,): Promise<PublishSettings> {
+export async function load(profileUri: Uri, apiWrapper: ApiWrapper,): Promise<PublishProfile> {
 	const profileText = await fs.readFile(profileUri.fsPath);
 	const profileXmlDoc = new xmldom.DOMParser().parseFromString(profileText.toString());
 
@@ -75,7 +83,7 @@ async function readConnectionString(xmlDoc: any, apiWrapper: ApiWrapper,): Promi
 				connId = (await apiWrapper.openConnectionDialog(undefined, connectionProfile)).connectionId;
 			}
 		} catch (err) {
-			throw new Error(constants.unableToCreateDeploymentConnection + ': ' + utils.getErrorMessage(err));
+			throw new Error(constants.unableToCreatePublishConnection + ': ' + utils.getErrorMessage(err));
 		}
 	}
 

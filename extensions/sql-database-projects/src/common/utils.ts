@@ -5,6 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as os from 'os';
+import * as constants from './constants';
 import { promises as fs } from 'fs';
 
 /**
