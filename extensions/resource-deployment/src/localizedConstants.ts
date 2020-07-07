@@ -15,3 +15,9 @@ export const browse = localize('filePicker.browse', "Browse");
 export const select = localize('filePicker.select', "Select");
 export const kubeConfigFilePath = localize('kubeConfigClusterPicker.kubeConfigFilePatht', "Kube config file path");
 export const clusterContextNotFound = localize('kubeConfigClusterPicker.clusterContextNotFound', "No cluster context information found");
+export const signIn = localize('azure.signin', "Sign in…");
+export const refresh = localize('azure.refresh', "Refresh");
+export const createNewResourceGroup = localize('azure.resourceGroup.createNewResourceGroup', "Create a new resource group");
+export const NewResourceGroupAriaLabel = localize('azure.resourceGroup.NewResourceGroupAriaLabel', "New resource group name");
+
+
