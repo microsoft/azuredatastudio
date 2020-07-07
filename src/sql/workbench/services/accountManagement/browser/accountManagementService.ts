@@ -297,10 +297,9 @@ export class AccountManagementService implements IAccountManagementService {
 	// UI METHODS //////////////////////////////////////////////////////////
 	/**
 	 * Opens the account list dialog
-	 * @param waitForDialogClose whether to wait for the dialog to close
-	 * @return Promise that finishes when the account list dialog opens or closes based on the value of waitForDialogClose parameter
+	 * @return Promise that finishes when the account list dialog closes
 	 */
-	public openAccountListDialog(waitForDialogClose: boolean): Thenable<void> {
+	public openAccountListDialog(): Thenable<void> {
 		let self = this;
 
 		return new Promise((resolve, reject) => {
@@ -309,14 +308,8 @@ export class AccountManagementService implements IAccountManagementService {
 				if (!self._accountDialogController) {
 					self._accountDialogController = self._instantiationService.createInstance(AccountDialogController);
 				}
-
 				self._accountDialogController.openAccountDialog();
-				if (waitForDialogClose) {
-					self._accountDialogController.accountDialog.onCloseEvent(resolve);
-				}
-				else {
-					resolve();
-				}
+				self._accountDialogController.accountDialog.onCloseEvent(resolve);
 			} catch (e) {
 				reject(e);
 			}

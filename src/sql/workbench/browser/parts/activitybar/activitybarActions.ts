@@ -33,20 +33,20 @@ export class AccountsActionViewItem extends ActivityActionViewItem {
 
 		this._register(DOM.addDisposableListener(this.container, DOM.EventType.MOUSE_DOWN, (e: MouseEvent) => {
 			DOM.EventHelper.stop(e, true);
-			this.accountManagementService.openAccountListDialog(false);
+			this.accountManagementService.openAccountListDialog();
 		}));
 
 		this._register(DOM.addDisposableListener(this.container, DOM.EventType.KEY_UP, (e: KeyboardEvent) => {
 			let event = new StandardKeyboardEvent(e);
 			if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
 				DOM.EventHelper.stop(e, true);
-				this.accountManagementService.openAccountListDialog(false);
+				this.accountManagementService.openAccountListDialog();
 			}
 		}));
 
 		this._register(DOM.addDisposableListener(this.container, TouchEventType.Tap, (e: GestureEvent) => {
 			DOM.EventHelper.stop(e, true);
-			this.accountManagementService.openAccountListDialog(false);
+			this.accountManagementService.openAccountListDialog();
 		}));
 	}
 }
