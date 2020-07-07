@@ -650,7 +650,7 @@ export class ProjectsController {
 				}
 			}
 
-			//
+			// choose database if connection was to a server or master
 			if (!model.database || model.database === constants.master) {
 				const databaseList = await this.apiWrapper.listDatabases(connectionId);
 				let database = (await this.apiWrapper.showQuickPick(databaseList.map(dbName => { return { label: dbName }; }),
