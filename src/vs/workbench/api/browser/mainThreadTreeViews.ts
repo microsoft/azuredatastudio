@@ -164,13 +164,13 @@ export type TreeItemHandle = string;
 // {{SQL CARBON EDIT}}
 export class TreeViewDataProvider implements ITreeViewDataProvider {
 
-	private readonly itemsMap: Map<TreeItemHandle, ITreeItem> = new Map<TreeItemHandle, ITreeItem>();
-	private hasResolve: Promise<boolean>;
+	protected readonly itemsMap: Map<TreeItemHandle, ITreeItem> = new Map<TreeItemHandle, ITreeItem>(); // {{SQL CARBON EDIT}} For use by Component Tree View
+	protected hasResolve: Promise<boolean>; // {{SQL CARBON EDIT}} For use by Component Tree View
 
 	// {{SQL CARBON EDIT}}
 	constructor(protected readonly treeViewId: string,
 		protected readonly _proxy: ExtHostTreeViewsShape,
-		private readonly notificationService: INotificationService
+		protected readonly notificationService: INotificationService // {{SQL CARBON EDIT}} For use by Component Tree View
 	) {
 		this.hasResolve = this._proxy.$hasResolve(this.treeViewId);
 	}

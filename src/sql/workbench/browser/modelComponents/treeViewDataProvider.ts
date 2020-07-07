@@ -11,6 +11,23 @@ import { IModelViewTreeViewDataProvider, ITreeComponentItem } from 'sql/workbenc
 import { INotificationService } from 'vs/platform/notification/common/notification';
 // eslint-disable-next-line code-import-patterns
 import * as vsTreeView from 'vs/workbench/api/browser/mainThreadTreeViews';
+import { ResolvableTreeItem } from 'vs/workbench/common/views';
+
+export class ResolvableTreeComponentItem extends ResolvableTreeItem implements ITreeComponentItem {
+
+	checked?: boolean;
+	enabled?: boolean;
+	onCheckedChanged?: (checked: boolean) => void;
+	children?: ITreeComponentItem[];
+
+	constructor(treeItem: ITreeComponentItem, resolve?: (() => Promise<ITreeComponentItem | undefined>)) {
+		super(treeItem, resolve);
+		this.checked = treeItem.checked;
+		this.enabled = treeItem.enabled;
+		this.onCheckedChanged = treeItem.onCheckedChanged;
+		this.children = treeItem.children;
+	}
+}
 
 export class TreeViewDataProvider extends vsTreeView.TreeViewDataProvider implements IModelViewTreeViewDataProvider {
 	constructor(handle: number, treeViewId: string,
@@ -31,5 +48,30 @@ export class TreeViewDataProvider extends vsTreeView.TreeViewDataProvider implem
 	}
 
 	refresh(itemsToRefreshByHandle: { [treeItemHandle: string]: ITreeComponentItem }) {
+	}
+
+	getChildren(treeItem?: ITreeComponentItem): Promise<ITreeComponentItem[]> {
+		return Promise.resolve(this._proxy.$getChildren(this.treeViewId, treeItem ? treeItem.handle : undefined)
+			.then(
+				children => this.treeComponentPostGetChildren(children),
+				err => {
+					this.notificationService.error(err);
+					return [];
+				}));
+	}
+
+	private async treeComponentPostGetChildren(elements: ITreeComponentItem[]): Promise<ResolvableTreeComponentItem[]> {
+		const result: ResolvableTreeComponentItem[] = [];
+		const hasResolve = await this.hasResolve;
+		if (elements) {
+			for (const element of elements) {
+				const resolvable = new ResolvableTreeComponentItem(element, hasResolve ? () => {
+					return this._proxy.$resolve(this.treeViewId, element.handle);
+				} : undefined);
+				this.itemsMap.set(element.handle, resolvable);
+				result.push(resolvable);
+			}
+		}
+		return result;
 	}
 }
