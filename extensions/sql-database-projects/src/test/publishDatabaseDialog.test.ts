@@ -28,7 +28,7 @@ describe.skip('Publish Database Dialog', () => {
 		await baselines.loadBaselines();
 	});
 
-	beforeEach(async function (): Promise<void> {
+	beforeEach(function (): void {
 		testContext = createContext();
 	});
 
@@ -58,7 +58,7 @@ describe.skip('Publish Database Dialog', () => {
 	it('Should include all info in publish profile', async function (): Promise<void> {
 		const proj = await testUtils.createTestProject(baselines.openProjectFileBaseline);
 		const dialog = TypeMoq.Mock.ofType(PublishDatabaseDialog, undefined, undefined, testContext.apiWrapper.object, proj);
-		dialog.setup(x => x.getConnectionUri()).returns(async () => { return 'Mock|Connection|Uri'; });
+		dialog.setup(x => x.getConnectionUri()).returns(() => { return Promise.resolve('Mock|Connection|Uri'); });
 		dialog.setup(x => x.getTargetDatabaseName()).returns(() => 'MockDatabaseName');
 		dialog.callBase = true;
 
@@ -74,7 +74,7 @@ describe.skip('Publish Database Dialog', () => {
 			}
 		};
 
-		dialog.object.publish = async (_, prof) => { profile = prof; };
+		dialog.object.publish = (_, prof) => { profile = prof; };
 		await dialog.object.publishClick();
 
 		should(profile).deepEqual(expectedPublish);
@@ -88,7 +88,7 @@ describe.skip('Publish Database Dialog', () => {
 			}
 		};
 
-		dialog.object.generateScript = async (_, prof) => { profile = prof; };
+		dialog.object.generateScript = (_, prof) => { profile = prof; };
 		await dialog.object.generateScriptClick();
 
 		should(profile).deepEqual(expectedGenScript);
