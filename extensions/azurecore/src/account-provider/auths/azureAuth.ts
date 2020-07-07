@@ -461,7 +461,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		};
 
 		const dontAskAgainItem: ConsentMessageItem = {
-			title: localize('azurecore.consentDialog.noAsk', "Don't Ask Again"),
+			title: localize('azurecore.consentDialog.ignore', "Ignore Tenant"),
 			booleanResult: false,
 			action: (tenantId: string) => {
 				let set = getTenantConfigurationSet();
@@ -470,7 +470,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			}
 
 		};
-		const messageBody = localize('azurecore.consentDialog.body', "Your tenant {0} requires you to re-authenticate again to access {1} resources. Press Open to start the authentication process.", tenantId, resourceId);
+		const messageBody = localize('azurecore.consentDialog.body', "Your tenant '{0}' requires you to re-authenticate again to access {1} resources. Press Open to start the authentication process.", tenantId, resourceId);
 		const result = await vscode.window.showInformationMessage(messageBody, { modal: true }, openItem, closeItem, dontAskAgainItem);
 
 		if (result.action) {
