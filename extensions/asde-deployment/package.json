@@ -52,7 +52,7 @@
         "providers": [
           {
             "dialog": {
-              "notebook": "%sql-edge-local-notebook%",
+              "notebook": "./notebooks/edge/deploy-sql-edge-local.ipynb",
               "title": "%sql-edge-local-title%",
               "name": "sql-edge-local-dialog",
               "tabs": [
@@ -145,7 +145,7 @@
           },
           {
             "dialog": {
-              "notebook": "%sql-edge-remote-notebook%",
+              "notebook": "./notebooks/edge/deploy-sql-edge-remote.ipynb",
               "title": "%sql-edge-remote-title%",
               "name": "sql-edge-remote-dialog",
               "tabs": [
@@ -262,7 +262,7 @@
           },
           {
             "dialog": {
-              "notebook": "%sql-edge-azure-notebook%",
+              "notebook": "./notebooks/edge/deploy-sql-edge-azure.ipynb",
               "title": "%sql-edge-azure-title%",
               "name": "sql-edge-azure-dialog",
               "tabs": [
@@ -365,7 +365,13 @@
                           "label": "%dacpac_path%",
                           "variableName": "AZDATA_NB_VAR_ASDE_DACPAC_PATH",
                           "type": "file_picker",
-                          "required": false
+                          "required": false,
+                          "filter": {
+                            "displayName": "%dacpac-zip-files%",
+                            "fileTypes": [
+                              "zip"
+                            ]
+                          }
                         }
                       ]
                     }

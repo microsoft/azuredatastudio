@@ -247,6 +247,15 @@ export interface AzureLocationsFieldInfo extends FieldInfo {
 	locations?: string[]
 }
 
+export interface FilePickerFieldInfo extends FieldInfo {
+	filter: FilePickerFilter;
+}
+
+export interface FilePickerFilter {
+	displayName: string;
+	fileTypes: string[];
+}
+
 export const enum LabelPosition {
 	Top = 'top',
 	Left = 'left'

@@ -8,7 +8,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { azureResource } from '../../../azurecore/src/azureResource/azure-resource';
-import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles } from '../interfaces';
+import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles, FilePickerFieldInfo } from '../interfaces';
 import * as loc from '../localizedConstants';
 import { getDefaultKubeConfigPath, getKubeConfigClusterContexts } from '../services/kubeService';
 import { assert, getDateTimeString, getErrorMessage } from '../utils';
@@ -627,6 +627,13 @@ function processFilePickerField(context: FieldContext): FilePickerInputs {
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, { component: input });
 	input.enabled = false;
 	const browseFileButton = context.view!.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: loc.browse, width: buttonWidth }).component();
+	const fieldInfo = context.fieldInfo as FilePickerFieldInfo;
+	let filter: { [name: string]: string[] } | undefined = undefined;
+	if (fieldInfo.filter) {
+		const filterName = fieldInfo.filter.displayName;
+		filter = {};
+		filter[filterName] = fieldInfo.filter.fileTypes;
+	}
 	context.onNewDisposableCreated(browseFileButton.onDidClick(async () => {
 		let fileUris = await vscode.window.showOpenDialog({
 			canSelectFiles: true,
@@ -634,9 +641,7 @@ function processFilePickerField(context: FieldContext): FilePickerInputs {
 			canSelectMany: false,
 			defaultUri: vscode.Uri.file(path.dirname(input.value || os_homedir())),
 			openLabel: loc.select,
-			filters: {
-				'File': ['*'],
-			}
+			filters: filter
 		});
 		if (!fileUris || fileUris.length === 0) {
 			return;

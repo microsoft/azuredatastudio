@@ -11,7 +11,6 @@
 	"sql-edge-type-display-name": "Deployment target",
 	"sql-edge-local-display-name": "Local",
 	"sql-edge-remote-display-name": "Remote",
-	"sql-edge-local-notebook": "./notebooks/edge/deploy-sql-edge-local.ipynb",
 	"sql-edge-local-title": "Deploy Azure SQL DB Edge locally",
 	"docker-settings-section-title": "Docker settings",
 	"docker-registry-field": "Registry",
@@ -21,14 +20,12 @@
 	"docker-password-field": "Password",
 	"edge-agreement": "I accept {0} and {1}.",
 	"edge-eula": "Microsoft SQL Server License Agreement",
-	"sql-edge-remote-notebook": "./notebooks/edge/deploy-sql-edge-remote.ipynb",
 	"sql-edge-remote-title": "Deploy Azure SQL DB Edge on a remote machine",
 	"remote-info-section-title": "Target machine information",
 	"edge-remote-target-field": "Name or IP address",
 	"edge-remote-username-field": "Username",
 	"edge-remote-password-field": "Password",
 	"sql-edge-azure-display-name": "An Azure VM via Azure IoT Hub",
-	"sql-edge-azure-notebook": "./notebooks/edge/deploy-sql-edge-azure.ipynb",
 	"sql-edge-azure-title": "Deploy Azure SQL DB Edge to an Azure VM via IoT hub",
 	"azure_subscription_id": "Subscription id",
 	"azure_resource_group": "Resource group",
@@ -39,5 +36,6 @@
 	"iot_device_id": "VM name (device id)",
 	"dacpac_path": "Dacpac zip file",
 	"azure-info-section-title": "Azure information",
-	"sqlserver-info-section-title": "SQL Server information"
+	"sqlserver-info-section-title": "SQL Server information",
+	"dacpac-zip-files": "Dacpac zip files"
 }
