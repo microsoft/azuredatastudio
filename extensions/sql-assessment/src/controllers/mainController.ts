@@ -83,26 +83,10 @@ export default class MainController {
 
 			this.tblResults = await this.createTable(view);
 			rootContainer.addItem(this.tblResults, { flex: '1 1 auto' });
-			this.toDispose.push(this.tblResults.onRowSelected(() => {
-
-				if (this.tblResults.selectedRows !== undefined) {
-					this.displayDetails(this.tblResults.selectedRows[0]);
-				}
-			}));
-
 			await view.initializeModel(rootContainer);
 		});
 	}
 
-	private displayDetails(rowIndex: number) {
-		let tableRow = this.tblResults.data[rowIndex];
-		console.log(tableRow);
-
-
-		//this.tblResults.expandRow(rowIndex, 3, 'bla bla bla');
-
-
-	}
 
 	private async createPropertiesSection(view: azdata.ModelView): Promise<azdata.FlexContainer> {
 		const serverInfo = await azdata.connection.getServerInfo(view.connection.connectionId);
@@ -320,6 +304,10 @@ export default class MainController {
 				}],
 				height: '100%',
 				width: '100%',
+				headerFilter: true,
+				rowDetails: {
+					panelRows: 3
+				}
 			})
 			.component();
 	}
@@ -332,6 +320,7 @@ export default class MainController {
 			assessmentType === AssessmentType.AvailableRules ? item.displayName : item.message,
 			item.tags,
 			item.checkId,
+			// details data
 			assessmentType === AssessmentType.AvailableRules ? item.description : item.message,
 		];
 	}

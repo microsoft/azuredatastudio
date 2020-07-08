@@ -14,7 +14,7 @@ import * as azdata from 'azdata';
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 
 import { Table } from 'sql/base/browser/ui/table/table';
-import { TableDataView, SlickTableDataView } from 'sql/base/browser/ui/table/tableDataView';
+import { SlickTableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { attachTableStyler, attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { getContentHeight, getContentWidth, Dimension } from 'vs/base/browser/dom';
@@ -27,7 +27,7 @@ import { slickGridDataItemColumnValueWithNoData, textFormatter } from 'sql/base/
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSizeToNumber } from 'sql/base/browser/dom';
-import { RowDetailView, ExtendedItem } from 'sql/base/browser/ui/table/plugins/rowDetailView';
+import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowDetailView';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { find } from 'vs/base/common/arrays';
 export enum ColumnSizingMode {
@@ -170,42 +170,50 @@ export default class TableComponent extends ComponentBase implements IComponent,
 				}
 			});
 
-			const rowDetail = new RowDetailView({
-				cssClass: '_detail_selector',
-				process: (item) => {
-					(<any>rowDetail).onAsyncResponse.notify({
-						'itemDetail': item,
-					}, undefined, this);
-				},
-				useRowClick: true,
-				panelRows: 3,
-				postTemplate: (itemDetail) => itemDetail.__detailsData__,
-				preTemplate: () => '',
-				loadOnce: true,
-				width: 29
-			});
-			this.rowDetail = rowDetail;
-			this._table.registerPlugin(<any>this.rowDetail);
 
-			const filterPlugin = new HeaderFilter<Slick.SlickData>();
-			this._register(attachButtonStyler(filterPlugin, this.themeService));
-			this.filterPlugin = filterPlugin;
-			this.filterPlugin.onFilterApplied.subscribe((e, args) => {
-				let filterValues = args.column.filterValues;
-				if (filterValues) {
-					this._tableData.refresh();
-					this._table.grid.resetActiveCell();
-				}
-			});
-			//this.filterPlugin.onCommand.subscribe((e, args: any) => {
-			//				this.columnSort(args.column.field, args.command === 'sort-asc');
-			//});
-			filterPlugin['getFilterValues'] = this.getFilterValues;
-			filterPlugin['getAllFilterValues'] = this.getAllFilterValues;
-			filterPlugin['getFilterValuesByInput'] = this.getFilterValuesByInput;
-			this._table.registerPlugin(filterPlugin);
+
 
 		}
+	}
+
+	private registerRowDetailPlugin() {
+		const rowDetail = new RowDetailView({
+			cssClass: '_detail_selector',
+			process: (item) => {
+				(<any>rowDetail).onAsyncResponse.notify({
+					'itemDetail': item,
+				}, undefined, this);
+			},
+			useRowClick: true,
+			panelRows: 3,
+			postTemplate: (itemDetail) => itemDetail.__detailsData__,
+			preTemplate: () => '',
+			loadOnce: true,
+		});
+		this.rowDetail = rowDetail;
+
+		this._table.registerPlugin(<any>this.rowDetail);
+	}
+
+	private registerFilterPlugin() {
+		const filterPlugin = new HeaderFilter<Slick.SlickData>();
+		this._register(attachButtonStyler(filterPlugin, this.themeService));
+		this.filterPlugin = filterPlugin;
+		this.filterPlugin.onFilterApplied.subscribe((e, args) => {
+			let filterValues = args.column.filterValues;
+			if (filterValues) {
+				this._tableData.refresh();
+				this._table.grid.resetActiveCell();
+			}
+		});
+		//this.filterPlugin.onCommand.subscribe((e, args: any) => {
+		//				this.columnSort(args.column.field, args.command === 'sort-asc');
+		//});
+		filterPlugin['getFilterValues'] = this.getFilterValues;
+		filterPlugin['getAllFilterValues'] = this.getAllFilterValues;
+		filterPlugin['getFilterValuesByInput'] = this.getFilterValuesByInput;
+		this._table.registerPlugin(filterPlugin);
+
 	}
 
 	public validate(): Thenable<boolean> {
@@ -294,20 +302,38 @@ export default class TableComponent extends ComponentBase implements IComponent,
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this._tableColumns = this.transformColumns(this.columns);
-		this._tableColumns.unshift(this.rowDetail.getColumnDefinition());
+
+		if (this.properties['rowDetails'] !== undefined) {
+			this.registerRowDetailPlugin();
+			this._tableColumns.unshift(this.rowDetail.getColumnDefinition());
+		}
+
 		this._table.columns = this._tableColumns;
 
-
-		if (this.properties['setData'] === true) {
-			this._table.setData(this._tableData);
-			this._tableData.setData(TableComponent.transformData(this.data, this.columns));
-			this._tableData.setFilter((item) => this.filter(item));
-
-		}
 		if (this.properties['appendData'] !== undefined) {
 			this._tableData.push(TableComponent.transformData(this.properties['appendData'], this.columns));
 			this.data.push(...this.properties['appendData']);
+		} else {
+			this._tableData.setData(TableComponent.transformData(this.data, this.columns));
 		}
+
+		if (this.properties['headerFilter'] === true) {
+			this.registerFilterPlugin();
+			this._tableData.setFilter((item) => this.filter(item));
+		}
+
+		// if (this.properties['setData'] === true) {
+		// 	this._table.setData(this._tableData);
+		// 	this._tableData.setData(TableComponent.transformData(this.data, this.columns));
+		// 	if (this.properties['headerFilter'] === true){
+		// 		this.registerFilterPlugin();
+		// 		this._tableData.setFilter((item) => this.filter(item));
+		// 	}
+		// }
+		// if (this.properties['appendData'] !== undefined) {
+		// 	this._tableData.push(TableComponent.transformData(this.properties['appendData'], this.columns));
+		// 	this.data.push(...this.properties['appendData']);
+		// }
 
 		this._table.setTableTitle(this.title);
 		if (this.selectedRows) {

@@ -1395,7 +1395,9 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 	}
 
 	public appendData(v: any[][]): void {
-		this.setProperty('appendData', v);
+		this.setProperty('appendData', v).then(() => {
+			delete this.properties['appendData'];
+		});
 	}
 }
 
