@@ -16,13 +16,15 @@ describe('Main Controller', function () {
 	// path of the extension root directory from the test file
 	const extensionPath = __dirname + '../../../../';
 
-	this.beforeEach(function () {
+	beforeEach(function () {
 		// creating a mock Extension Context with current extensionPath
+
 		mockExtensionContext = TypeMoq.Mock.ofType(TestExtensionContext, TypeMoq.MockBehavior.Loose, true, extensionPath);
 		mockApiWrapper = TypeMoq.Mock.ofType(ApiWrapper);
 	});
 
 	it('Should resgister flatFileImportStartCommand after activate is called', async function(){
+		this.timeout(20000);
 		// using vscode and azdata APIs available during tests
 		mockApiWrapper.callBase = true;
 
