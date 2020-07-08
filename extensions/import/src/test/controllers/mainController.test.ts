@@ -13,7 +13,7 @@ import { TestExtensionContext } from '../utils.test';
 describe('Main Controller', function () {
 	let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 	let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
-	// path of the root directory of the extension from the test file
+	// path of the extension root directory from the test file
 	const extensionPath = __dirname + '../../../../';
 
 	this.beforeEach(function () {
