@@ -19,7 +19,7 @@ interface TestContext {
 describe('Manage Packages', () => {
 	let jupyterServerInstallation: JupyterServerInstallation;
 	beforeEach(() => {
-		jupyterServerInstallation = new JupyterServerInstallation(undefined, undefined, undefined, undefined);
+		jupyterServerInstallation = new JupyterServerInstallation(undefined, undefined, undefined);
 	});
 
 	it('Should throw exception given undefined providers', async function (): Promise<void> {

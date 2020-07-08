@@ -107,13 +107,11 @@ export default () => `
 									<!-- Filled programmatically -->
 								</ul>
 								<p class="none detail">No recent folders</p>
-								<ul class="moreRecent-list">
-									<li class="moreRecent">
-										<a class="ads-welcome-page-link" href="command:workbench.action.openRecent">${escape(localize('welcomePage.moreRecent', "Show more"))}
-											<i class="icon-arrow-down-dark"></i>
-										</a>
-									</li>
-								</ul>
+								<div class="moreRecent">
+									<a class="ads-welcome-page-link" href="command:workbench.action.openRecent">${escape(localize('welcomePage.moreRecent', "Show more"))}
+									<i class="icon-arrow-down-dark"></i>
+								</a>
+							</div>
 							</div>
 						</div>
 					</div>
