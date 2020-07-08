@@ -333,7 +333,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 		}
 	}
 
-	private validateQuery(query: ITextQuery): Promise<void> {
+	private async validateQuery(query: ITextQuery): Promise<void> {
 		// Validate folderQueries
 		const folderQueriesExistP =
 			query.folderQueries.map(fq => {
