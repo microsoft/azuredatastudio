@@ -21,17 +21,6 @@ describe('Main Controller', function () {
 		mockApiWrapper = TypeMoq.Mock.ofType(ApiWrapper);
 	});
 
-	it('Should create new instance successfully', async function () {
-		// mocking createOutputChannel in API wrapper
-		mockApiWrapper.setup(x => x.createOutputChannel(TypeMoq.It.isAny()));
-
-		// creating a Main Controller
-		new MainController(mockExtensionContext.object, mockApiWrapper.object);
-
-		// verifying if the output channel is created
-		mockApiWrapper.verify(x => x.createOutputChannel(TypeMoq.It.isAny()), TypeMoq.Times.once());
-	});
-
 	it('Should resgister flatFileImportStartCommand after activate is called', async function(){
 		// using vscode and azdata APIs available during tests
 		mockApiWrapper.callBase = true;
