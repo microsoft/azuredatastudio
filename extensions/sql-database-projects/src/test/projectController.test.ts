@@ -26,7 +26,6 @@ import { exists } from '../common/utils';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { FolderNode } from '../models/tree/fileFolderTreeItem';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
-import { readConnectionString } from '../models/publishProfile/publishProfile';
 let testContext: TestContext;
 
 // Mock test data
@@ -287,25 +286,6 @@ describe('ProjectsController: project controller operations', function (): void 
 			should(holler).equal(profileHoller, 'executionCallback() is supposed to have been setup and called for ReadPublishProfile scenario');
 		});
 
-		it('Should read database name and SQLCMD variables from publish profile', async function (): Promise<void> {
-			await baselines.loadBaselines();
-			let profilePath = await testUtils.createTestFile(baselines.publishProfileBaseline, 'publishProfile.publish.xml');
-			const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
-			const connectionResult = {
-				connected: true,
-				connectionId: 'connId',
-				errorMessage: '',
-				errorCode: 0
-			};
-			testContext.apiWrapper.setup(x => x.connectionConnect(TypeMoq.It.isAny(),TypeMoq.It.isAny(),TypeMoq.It.isAny())).returns(async () => Promise.resolve(connectionResult));
-
-			let result = await projController.readPublishProfileCallback(vscode.Uri.file(profilePath));
-			should(result.databaseName).equal('targetDb');
-			should(Object.keys(result.sqlCmdVariables).length).equal(1);
-			should(result.sqlCmdVariables['ProdDatabaseName']).equal('MyProdDatabase');
-			should(result.connectionId).equal('connId');
-			should(result.connectionString).equal('Data Source=testserver;Integrated Security=true;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Connect Timeout=60;Encrypt=False;TrustServerCertificate=True');
-		});
 
 		it('Should copy dacpac to temp folder before publishing', async function (): Promise<void> {
 			const fakeDacpacContents = 'SwiftFlewHiawathasArrow';
