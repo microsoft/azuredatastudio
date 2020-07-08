@@ -625,7 +625,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	handler: async (accessor, args?: { viewType: string }) => {
 		const editorService = accessor.get(IEditorService);
 
-		if (args) {
+		if (args && args.viewType) { // {{SQL CARBON EDIT}} explicitly check for viewtype
 			const editorGroupsService = accessor.get(IEditorGroupsService);
 			const configurationService = accessor.get(IConfigurationService);
 			const quickInputService = accessor.get(IQuickInputService);
@@ -651,11 +651,11 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 			const configurationService = accessor.get(IConfigurationService);
 			const quickInputService = accessor.get(IQuickInputService);
 
-			const textInput = editorService.createEditorInput({ options: { pinned: true } });
+			const textInput = editorService.createEditorInput({ options: { pinned: true }, mode: 'txt' });
 			const group = editorGroupsService.activeGroup;
 			await openEditorWith(textInput, viewType, { pinned: true }, group, editorService, configurationService, quickInputService);
 		} else {
-			await editorService.openEditor({ options: { pinned: true } }); // untitled are always pinned
+			await editorService.openEditor({ options: { pinned: true }, mode: 'txt' }); // untitled are always pinned
 		}
 	}
 });
