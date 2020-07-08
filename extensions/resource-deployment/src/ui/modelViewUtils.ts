@@ -8,7 +8,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { azureResource } from '../../../azurecore/src/azureResource/azure-resource';
-import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles } from '../interfaces';
+import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles, FilePickerFieldInfo } from '../interfaces';
 import * as loc from '../localizedConstants';
 import { getDefaultKubeConfigPath, getKubeConfigClusterContexts } from '../services/kubeService';
 import { assert, getDateTimeString, getErrorMessage } from '../utils';
@@ -96,6 +96,12 @@ interface AzureLocationsFieldContext extends FieldContext {
 
 interface AzureAccountFieldContext extends FieldContext {
 	fieldInfo: AzureAccountFieldInfo;
+}
+
+interface AzureAccountComponents {
+	accountDropdown: azdata.DropDownComponent;
+	signInButton: azdata.ButtonComponent;
+	refreshAccountsButton: azdata.ButtonComponent;
 }
 
 interface ContextBase {
@@ -602,18 +608,32 @@ function processCheckboxField(context: FieldContext): void {
  * @param context The context to use to create the field
  */
 function processFilePickerField(context: FieldContext): FilePickerInputs {
+	const inputWidth = parseInt(context.fieldInfo.inputWidth!);
+	if (inputWidth === NaN) {
+		// this is a dev time only error
+		throw new Error('Unable to parse the input width of the file picker field');
+	}
+	const buttonWidth = 100;
+
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
 	const input = createTextInput(context.view, {
 		defaultValue: context.fieldInfo.defaultValue || '',
 		ariaLabel: context.fieldInfo.label,
 		required: context.fieldInfo.required,
 		placeHolder: context.fieldInfo.placeHolder,
-		width: context.fieldInfo.inputWidth,
+		width: `${inputWidth - buttonWidth}px`,
 		enabled: context.fieldInfo.enabled
 	});
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, { component: input });
 	input.enabled = false;
-	const browseFileButton = context.view!.modelBuilder.button().withProperties({ label: loc.browse }).component();
+	const browseFileButton = context.view!.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: loc.browse, width: buttonWidth }).component();
+	const fieldInfo = context.fieldInfo as FilePickerFieldInfo;
+	let filter: { [name: string]: string[] } | undefined = undefined;
+	if (fieldInfo.filter) {
+		const filterName = fieldInfo.filter.displayName;
+		filter = {};
+		filter[filterName] = fieldInfo.filter.fileTypes;
+	}
 	context.onNewDisposableCreated(browseFileButton.onDidClick(async () => {
 		let fileUris = await vscode.window.showOpenDialog({
 			canSelectFiles: true,
@@ -621,9 +641,7 @@ function processFilePickerField(context: FieldContext): FilePickerInputs {
 			canSelectMany: false,
 			defaultUri: vscode.Uri.file(path.dirname(input.value || os_homedir())),
 			openLabel: loc.select,
-			filters: {
-				'Config Files': ['*'],
-			}
+			filters: filter
 		});
 		if (!fileUris || fileUris.length === 0) {
 			return;
@@ -631,8 +649,8 @@ function processFilePickerField(context: FieldContext): FilePickerInputs {
 		let fileUri = fileUris[0];
 		input.value = fileUri.fsPath;
 	}));
-	context.fieldInfo.labelPosition = LabelPosition.Left;
-	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo, [browseFileButton]);
+	const component = createFlexContainer(context.view, [input, browseFileButton], true, context.fieldInfo.inputWidth);
+	addLabelInputPairToContainer(context.view, context.components, label, component, context.fieldInfo);
 	return { input: input, browseButton: browseFileButton };
 }
 
@@ -684,6 +702,7 @@ async function processKubeConfigClusterPickerField(context: KubeClusterContextFi
 			inputWidth: context.fieldInfo.inputWidth,
 			labelWidth: context.fieldInfo.labelWidth,
 			variableName: kubeConfigFilePathVariableName,
+			labelPosition: LabelPosition.Left,
 			required: true
 		}
 	};
@@ -731,31 +750,66 @@ async function processAzureAccountField(context: AzureAccountFieldContext): Prom
 	context.fieldInfo.subFields = [];
 	const accountValueToAccountMap = new Map<string, azdata.Account>();
 	const subscriptionValueToSubscriptionMap = new Map<string, azureResource.AzureResourceSubscription>();
-	const accountDropdown = createAzureAccountDropdown(context);
+	const accountComponents = createAzureAccountDropdown(context);
+	const accountDropdown = accountComponents.accountDropdown;
 	const subscriptionDropdown = createAzureSubscriptionDropdown(context, subscriptionValueToSubscriptionMap);
 	const resourceGroupDropdown = createAzureResourceGroupsDropdown(context, accountDropdown, accountValueToAccountMap, subscriptionDropdown, subscriptionValueToSubscriptionMap);
+	if (context.fieldInfo.allowNewResourceGroup) {
+		const newRGCheckbox = createCheckbox(context.view, { initialValue: false, label: loc.createNewResourceGroup });
+		context.onNewInputComponentCreated(context.fieldInfo.newResourceGroupFlagVariableName!, { component: newRGCheckbox });
+		const newRGNameInput = createTextInput(context.view, { ariaLabel: loc.NewResourceGroupAriaLabel });
+		context.onNewInputComponentCreated(context.fieldInfo.newResourceGroupNameVariableName!, { component: newRGNameInput });
+		context.components.push(newRGCheckbox);
+		context.components.push(newRGNameInput);
+		const setRGStatus = (newRG: boolean) => {
+			resourceGroupDropdown.required = !newRG;
+			resourceGroupDropdown.enabled = !newRG;
+			newRGNameInput.required = newRG;
+			newRGNameInput.enabled = newRG;
+			if (!newRG) {
+				newRGNameInput.value = '';
+			}
+		};
+		context.onNewDisposableCreated(newRGCheckbox.onChanged(() => {
+			setRGStatus(newRGCheckbox.checked!);
+		}));
+		setRGStatus(false);
+	}
 	const locationDropdown = context.fieldInfo.locations && await processAzureLocationsField(context);
 	accountDropdown.onValueChanged(async selectedItem => {
 		const selectedAccount = accountValueToAccountMap.get(selectedItem.selected)!;
 		await handleSelectedAccountChanged(context, selectedAccount, subscriptionDropdown, subscriptionValueToSubscriptionMap, resourceGroupDropdown, locationDropdown);
 	});
-	try {
-		const accounts = await azdata.accounts.getAllAccounts();
-		// Append a blank value for the "default" option if the field isn't required, context will clear all the dropdowns when selected
-		const dropdownValues = context.fieldInfo.required ? [] : [''];
-		accountDropdown.values = dropdownValues.concat(accounts.map(account => {
-			const displayName = `${account.displayInfo.displayName} (${account.displayInfo.userId})`;
-			accountValueToAccountMap.set(displayName, account);
-			return displayName;
-		}));
-		const selectedAccount = accountDropdown.value ? accountValueToAccountMap.get(accountDropdown.value.toString()) : undefined;
-		await handleSelectedAccountChanged(context, selectedAccount, subscriptionDropdown, subscriptionValueToSubscriptionMap, resourceGroupDropdown, locationDropdown);
-	} catch (error) {
-		vscode.window.showErrorMessage(localize('azure.accounts.unexpectedAccountsError', 'Unexpected error fetching accounts: ${0}', getErrorMessage(error)));
-	}
+
+	const populateAzureAccounts = async () => {
+		accountValueToAccountMap.clear();
+		try {
+			const accounts = await azdata.accounts.getAllAccounts();
+			// Append a blank value for the "default" option if the field isn't required, context will clear all the dropdowns when selected
+			const dropdownValues = context.fieldInfo.required ? [] : [''];
+			accountDropdown.values = dropdownValues.concat(accounts.map(account => {
+				const displayName = `${account.displayInfo.displayName} (${account.displayInfo.userId})`;
+				accountValueToAccountMap.set(displayName, account);
+				return displayName;
+			}));
+			const selectedAccount = accountDropdown.value ? accountValueToAccountMap.get(accountDropdown.value.toString()) : undefined;
+			await handleSelectedAccountChanged(context, selectedAccount, subscriptionDropdown, subscriptionValueToSubscriptionMap, resourceGroupDropdown, locationDropdown);
+		} catch (error) {
+			vscode.window.showErrorMessage(localize('azure.accounts.unexpectedAccountsError', 'Unexpected error fetching accounts: ${0}', getErrorMessage(error)));
+		}
+	};
+
+	context.onNewDisposableCreated(accountComponents.refreshAccountsButton.onDidClick(async () => {
+		await populateAzureAccounts();
+	}));
+	context.onNewDisposableCreated(accountComponents.signInButton.onDidClick(async () => {
+		await vscode.commands.executeCommand('workbench.actions.modal.linkedAccount');
+		await populateAzureAccounts();
+	}));
+	await populateAzureAccounts();
 }
 
-function createAzureAccountDropdown(context: AzureAccountFieldContext): azdata.DropDownComponent {
+function createAzureAccountDropdown(context: AzureAccountFieldContext): AzureAccountComponents {
 	const label = createLabel(context.view, {
 		text: loc.account,
 		description: context.fieldInfo.description,
@@ -771,8 +825,18 @@ function createAzureAccountDropdown(context: AzureAccountFieldContext): azdata.D
 	});
 	accountDropdown.fireOnTextChange = true;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, { component: accountDropdown });
+	const signInButton = context.view!.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: loc.signIn, width: '100px' }).component();
+	const refreshButton = context.view!.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: loc.refresh, width: '100px' }).component();
 	addLabelInputPairToContainer(context.view, context.components, label, accountDropdown, context.fieldInfo);
-	return accountDropdown;
+
+	const buttons = createFlexContainer(context.view!, [signInButton, refreshButton], true, undefined, undefined, undefined, { 'margin-right': '10px' });
+	context.components.push(buttons);
+	return {
+		accountDropdown: accountDropdown,
+		signInButton: signInButton,
+		refreshAccountsButton: refreshButton
+	};
+
 }
 
 function createAzureSubscriptionDropdown(
