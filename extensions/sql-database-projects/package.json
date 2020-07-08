@@ -124,6 +124,11 @@
         "command": "sqlDatabaseProjects.addDatabaseReference",
         "title": "%sqlDatabaseProjects.addDatabaseReference%",
         "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.openContainingFolder",
+        "title": "%sqlDatabaseProjects.openContainingFolder%",
+        "category": "%sqlDatabaseProjects.displayName%"
       }
     ],
     "menus": {
@@ -188,6 +193,10 @@
         {
           "command": "sqlDatabaseProjects.addDatabaseReference",
           "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.openContainingFolder",
+          "when": "false"
         }
       ],
       "view/item/context": [
@@ -250,6 +259,11 @@
           "command": "sqlDatabaseProjects.delete",
           "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.folder || viewItem == databaseProject.itemType.file",
           "group": "9_dbProjectsLast@2"
+        },
+        {
+          "command": "sqlDatabaseProjects.openContainingFolder",
+          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project",
+          "group": "9_dbProjectsLast@8"
         },
         {
           "command": "sqlDatabaseProjects.close",
