@@ -225,7 +225,7 @@ export class InstalledPackagesTab {
 			type: confirm,
 			message: localize('managePackages.confirmUninstall', "Are you sure you want to uninstall the specified packages?"),
 			default: false
-		}, this.jupyterInstallation?.apiWrapper);
+		});
 
 		if (doUninstall) {
 			try {
@@ -244,7 +244,7 @@ export class InstalledPackagesTab {
 					"Uninstalling {0}",
 					packagesStr);
 
-				this.jupyterInstallation.apiWrapper.startBackgroundOperation({
+				azdata.tasks.startBackgroundOperation({
 					displayName: taskName,
 					description: taskName,
 					isCancelable: false,

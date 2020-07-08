@@ -8,7 +8,6 @@ import * as os from 'os';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { getErrorMessage, isEditorTitleFree } from '../common/utils';
-import { ApiWrapper } from './apiWrapper';
 
 const localize = nls.loadMessageBundle();
 
@@ -18,7 +17,7 @@ const noNotebookVisible = localize('noNotebookVisible', "No notebook editor is a
 
 export class NotebookUtils {
 
-	constructor(private _apiWrapper: ApiWrapper) { }
+	constructor() { }
 
 	public async newNotebook(connectionProfile?: azdata.IConnectionProfile): Promise<azdata.nb.NotebookEditor> {
 		const title = this.findNextUntitledEditorName();
@@ -51,59 +50,59 @@ export class NotebookUtils {
 			let filter: { [key: string]: Array<string> } = {};
 			// TODO support querying valid notebook file types
 			filter[localize('notebookFiles', "Notebooks")] = ['ipynb'];
-			let file = await this._apiWrapper.showOpenDialog({
+			let file = await vscode.window.showOpenDialog({
 				filters: filter
 			});
 			if (file && file.length > 0) {
 				await azdata.nb.showNotebookDocument(file[0]);
 			}
 		} catch (err) {
-			this._apiWrapper.showErrorMessage(getErrorMessage(err));
+			vscode.window.showErrorMessage(getErrorMessage(err));
 		}
 	}
 
 	public async runActiveCell(): Promise<void> {
 		try {
-			let notebook = this._apiWrapper.getActiveNotebookEditor();
+			let notebook = azdata.nb.activeNotebookEditor;
 			if (notebook) {
 				await notebook.runCell();
 			} else {
 				throw new Error(noNotebookVisible);
 			}
 		} catch (err) {
-			this._apiWrapper.showErrorMessage(getErrorMessage(err));
+			vscode.window.showErrorMessage(getErrorMessage(err));
 		}
 	}
 
 	public async clearActiveCellOutput(): Promise<void> {
 		try {
-			let notebook = this._apiWrapper.getActiveNotebookEditor();
+			let notebook = azdata.nb.activeNotebookEditor;
 			if (notebook) {
 				await notebook.clearOutput();
 			} else {
 				throw new Error(noNotebookVisible);
 			}
 		} catch (err) {
-			this._apiWrapper.showErrorMessage(getErrorMessage(err));
+			vscode.window.showErrorMessage(getErrorMessage(err));
 		}
 	}
 
 	public async runAllCells(startCell?: azdata.nb.NotebookCell, endCell?: azdata.nb.NotebookCell): Promise<void> {
 		try {
-			let notebook = this._apiWrapper.getActiveNotebookEditor();
+			let notebook = azdata.nb.activeNotebookEditor;
 			if (notebook) {
 				await notebook.runAllCells(startCell, endCell);
 			} else {
 				throw new Error(noNotebookVisible);
 			}
 		} catch (err) {
-			this._apiWrapper.showErrorMessage(getErrorMessage(err));
+			vscode.window.showErrorMessage(getErrorMessage(err));
 		}
 	}
 
 	public async addCell(cellType: azdata.nb.CellType): Promise<void> {
 		try {
-			let notebook = this._apiWrapper.getActiveNotebookEditor();
+			let notebook = azdata.nb.activeNotebookEditor;
 			if (notebook) {
 				await notebook.edit((editBuilder: azdata.nb.NotebookEditorEdit) => {
 					// TODO should prompt and handle cell placement
@@ -116,7 +115,7 @@ export class NotebookUtils {
 				throw new Error(noNotebookVisible);
 			}
 		} catch (err) {
-			this._apiWrapper.showErrorMessage(getErrorMessage(err));
+			vscode.window.showErrorMessage(getErrorMessage(err));
 		}
 	}
 
@@ -126,7 +125,7 @@ export class NotebookUtils {
 		let title = this.findNextUntitledEditorName();
 		let untitledUri = vscode.Uri.parse(`untitled:${title}`);
 
-		let editor = await this._apiWrapper.showNotebookDocument(untitledUri, {
+		let editor = await azdata.nb.showNotebookDocument(untitledUri, {
 			connectionProfile: oeContext ? oeContext.connectionProfile : undefined,
 			providerId: JUPYTER_NOTEBOOK_PROVIDER,
 			preview: false,
