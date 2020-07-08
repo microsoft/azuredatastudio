@@ -179,6 +179,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 
 	cancelSearch(focus: boolean = true): boolean {
 		if (focus) {
+			this.searchView?.cancelSearch(focus);
 			this.searchWidget.focus();
 			return true;
 		}
@@ -367,15 +368,11 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 	private trackInputBox(inputFocusTracker: IFocusTracker, contextKey?: IContextKey<boolean>): void {
 		this._register(inputFocusTracker.onDidFocus(() => {
 			this.inputBoxFocused.set(true);
-			if (contextKey) {
-				contextKey.set(true);
-			}
+			contextKey?.set(true);
 		}));
 		this._register(inputFocusTracker.onDidBlur(() => {
 			this.inputBoxFocused.set(this.searchWidget.searchInputHasFocus());
-			if (contextKey) {
-				contextKey.set(false);
-			}
+			contextKey?.set(false);
 		}));
 	}
 

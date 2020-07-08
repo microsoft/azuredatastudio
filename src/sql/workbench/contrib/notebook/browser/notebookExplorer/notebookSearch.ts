@@ -187,7 +187,7 @@ export class NotebookSearchView extends SearchView {
 
 		this.container = dom.append(parent, dom.$('.search-view'));
 
-		this.messagesElement = dom.append(this.container, $('.resultmessages'));
+		this.messagesElement = dom.append(this.container, $('.result-messages'));
 		if (this.contextService.getWorkbenchState() === WorkbenchState.EMPTY) {
 			this.showSearchWithoutFolderMessage();
 		}
@@ -327,13 +327,6 @@ export class NotebookSearchView extends SearchView {
 				} else {
 					const openSettingsLink = dom.append(p, $('a.pointer.prominent', { tabindex: 0 }, nls.localize('openSettings.message', "Open Settings")));
 					this.addClickEvents(openSettingsLink, this.onOpenSettings);
-				}
-
-				if (completed) {
-					dom.append(p, $('span', undefined, ' - '));
-
-					const learnMoreLink = dom.append(p, $('a.pointer.prominent', { tabindex: 0 }, nls.localize('openSettings.learnMore', "Learn More")));
-					this.addClickEvents(learnMoreLink, this.onLearnMore);
 				}
 
 				if (this.contextService.getWorkbenchState() === WorkbenchState.EMPTY && !this.contextKeyService.getContextKeyValue('bookOpened')) {
