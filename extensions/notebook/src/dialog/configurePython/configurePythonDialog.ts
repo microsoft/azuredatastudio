@@ -10,7 +10,6 @@ import { promises as fs } from 'fs';
 import * as utils from '../../common/utils';
 
 import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
-import { ApiWrapper } from '../../common/apiWrapper';
 import { Deferred } from '../../common/promise';
 import { PythonPathLookup, PythonPathInfo } from '../pythonPathLookup';
 
@@ -39,7 +38,7 @@ export class ConfigurePythonDialog {
 	private pythonPathsPromise: Promise<PythonPathInfo[]>;
 	private usingCustomPath: boolean;
 
-	constructor(private apiWrapper: ApiWrapper, private jupyterInstallation: JupyterServerInstallation) {
+	constructor(private jupyterInstallation: JupyterServerInstallation) {
 		this.setupComplete = new Deferred<void>();
 		this.pythonPathsPromise = (new PythonPathLookup()).getSuggestions();
 		this.usingCustomPath = false;
@@ -108,7 +107,7 @@ export class ConfigurePythonDialog {
 				}
 			});
 
-			let useExistingPython = JupyterServerInstallation.getExistingPythonSetting(this.apiWrapper);
+			let useExistingPython = JupyterServerInstallation.getExistingPythonSetting();
 			this.createInstallRadioButtons(view.modelBuilder, useExistingPython);
 
 			let formModel = view.modelBuilder.formContainer()
@@ -271,7 +270,7 @@ export class ConfigurePythonDialog {
 			openLabel: this.SelectFileLabel
 		};
 
-		let fileUris: vscode.Uri[] = await this.apiWrapper.showOpenDialog(options);
+		let fileUris: vscode.Uri[] = await vscode.window.showOpenDialog(options);
 		if (fileUris && fileUris[0]) {
 			let existingValues = <azdata.CategoryValue[]>this.pythonLocationDropdown.values;
 			let filePath = fileUris[0].fsPath;

@@ -10,7 +10,6 @@ import { ChildProcess } from 'child_process';
 import 'mocha';
 
 import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
-import { ApiWrapper } from '../..//common/apiWrapper';
 import { PerFolderServerInstance, ServerInstanceUtils } from '../../jupyter/serverInstance';
 import { MockOutputChannel } from '../common/stubs';
 import * as testUtils from '../common/testUtils';
@@ -25,14 +24,10 @@ describe('Jupyter server instance', function (): void {
 	let expectedPath = 'mydir/notebook.ipynb';
 	let mockInstall: TypeMoq.IMock<JupyterServerInstallation>;
 	let mockOutputChannel: TypeMoq.IMock<MockOutputChannel>;
-	let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
 	let mockUtils: TypeMoq.IMock<ServerInstanceUtils>;
 	let serverInstance: PerFolderServerInstance;
 
 	beforeEach(() => {
-		mockApiWrapper = TypeMoq.Mock.ofType(ApiWrapper);
-		mockApiWrapper.setup(a => a.showErrorMessage(TypeMoq.It.isAny()));
-		mockApiWrapper.setup(a => a.getWorkspacePathFromUri(TypeMoq.It.isAny())).returns(() => undefined);
 		mockInstall = TypeMoq.Mock.ofType(JupyterServerInstallation, undefined, undefined, '/root');
 		mockOutputChannel = TypeMoq.Mock.ofType(MockOutputChannel);
 		mockInstall.setup(i => i.outputChannel).returns(() => mockOutputChannel.object);
