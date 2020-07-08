@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Code } from '../code';
-import { waitForNewDialog } from './sqlutils';
+import { waitForNewDialog, waitForDialogGone } from './sqlutils';
 
 const CONNECTION_DIALOG_TITLE = 'Connection';
 
@@ -30,7 +30,6 @@ export class ConnectionDialog {
 	async connect(): Promise<void> {
 		await this.code.waitAndClick(ConnectionDialog.CONNECT_BUTTON_SELECTOR);
 
-		const selector = `.editor-instance .monaco-editor textarea`;
-		return this.code.waitForActiveElement(selector);
+		return waitForDialogGone(this.code, CONNECTION_DIALOG_TITLE);
 	}
 }
