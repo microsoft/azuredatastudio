@@ -14,7 +14,7 @@ import * as should from 'should';
 describe('import extension flat file wizard', function () {
 	let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
 	this.beforeEach(function () {
-		mockApiWrapper = TypeMoq.Mock.ofType(ApiWrapper, TypeMoq.MockBehavior.Loose, false);
+		mockApiWrapper = TypeMoq.Mock.ofType(ApiWrapper);
 	});
 	it('opens connectionDialog when there are no active connections', async function () {
 		let testConnection: azdata.connection.Connection = {

@@ -17,6 +17,7 @@ describe('Main Controller', function () {
 	const extensionPath = __dirname + '../../../../';
 
 	this.beforeEach(function () {
+		// creating a mock Extension Context with current extensionPath
 		mockExtensionContext = TypeMoq.Mock.ofType(TestExtensionContext, TypeMoq.MockBehavior.Loose, true, extensionPath);
 		mockApiWrapper = TypeMoq.Mock.ofType(ApiWrapper);
 	});
