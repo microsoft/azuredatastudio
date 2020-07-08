@@ -9,16 +9,16 @@ import { ApiWrapper } from '../../../common/apiWrapper';
 import * as constants from '../../../common/constants';
 import { FlatFileWizard } from '../../../wizard/flatFileWizard';
 import * as should from 'should';
-import { ModifyColumnsPage } from '../../../wizard/pages/modifyColumnsPage';
 import { ImportDataModel } from '../../../wizard/api/models';
 import { TestImportDataModel, TestFlatFileProvider } from '../../utils.test';
 import { ImportPage } from '../../../wizard/api/importPage';
-import { FlatFileProvider } from '../../../services/contracts';
+import { SummaryPage } from '../../../wizard/pages/summaryPage';
+import { FlatFileProvider, InsertDataResponse } from '../../../services/contracts';
 
-describe('import extension modify Column Page', function () {
+describe('import extension summary page tests', function () {
 	let wizard: azdata.window.Wizard;
 	let page: azdata.window.WizardPage;
-	let modifyColumnsPage: ModifyColumnsPage;
+	let summaryPage: SummaryPage;
 	let mockFlatFileWizard: TypeMoq.IMock<FlatFileWizard>;
 	let mockImportModel: TypeMoq.IMock<ImportDataModel>;
 	let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
@@ -47,15 +47,13 @@ describe('import extension modify Column Page', function () {
 	});
 
 	it('checking if all components are initialized properly', async function () {
-
-		// waiting for the register content to be called from wizard.open();
 		await new Promise(function (resolve) {
 			page.registerContent(async (view) => {
-				modifyColumnsPage = new ModifyColumnsPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny(), mockApiWrapper.object);
-				pages.set(1, modifyColumnsPage);
-				await modifyColumnsPage.start().then(() => {
-					modifyColumnsPage.setupNavigationValidator();
-					modifyColumnsPage.onPageEnter();
+				summaryPage = new SummaryPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny(), mockApiWrapper.object);
+				pages.set(1, summaryPage);
+				await summaryPage.start().then(() => {
+					summaryPage.setupNavigationValidator();
+					summaryPage.onPageEnter();
 					resolve();
 				});
 			});
@@ -64,16 +62,24 @@ describe('import extension modify Column Page', function () {
 			wizard.pages = [page];
 			wizard.open();
 		});
-
-		// checking if all the components are initialized properly
-		should.notEqual(modifyColumnsPage.table, undefined);
-		should.notEqual(modifyColumnsPage.text, undefined);
-		should.notEqual(modifyColumnsPage.loading, undefined);
-		should.notEqual(modifyColumnsPage.form, undefined);
+		should.notEqual(summaryPage.table, undefined);
+		should.notEqual(summaryPage.statusText, undefined);
+		should.notEqual(summaryPage.loading, undefined);
+		should.notEqual(summaryPage.form, undefined);
 	});
 
-	it('handleImport updates table value correctly when import is successful', async function() {
+	it('handle import updates status Text correctly', async function() {
 
+		let testServerConnection: azdata.connection.Connection = {
+			providerName: 'testProviderName',
+			connectionId: 'testConnectionId',
+			options: {}
+		};
+
+		mockImportModel.object.server =  testServerConnection;
+		mockImportModel.object.database = 'testDatabase';
+		mockImportModel.object.schema = 'testSchema';
+		mockImportModel.object.filePath = 'testFilePath';
 
 		let testProseColumns = [
 			{
@@ -90,22 +96,25 @@ describe('import extension modify Column Page', function () {
 			}
 		];
 
-		let testTableData = [
-			[ 'column1', 'nvarchar(50)', false, false],
-			[ 'column2', 'nvarchar(50)', false, false]
-		];
 
 		mockImportModel.object.proseColumns = testProseColumns;
 
+		let testSendInsertDataRequestResponse: InsertDataResponse = {
+			result: {
+				success: true,
+				errorMessage: ''
+			}
+		};
 
-		// waiting for the register content to be called from wizard.open();
+		mockFlatFileProvider.setup(x => x.sendInsertDataRequest(TypeMoq.It.isAny())).returns(async () => { return testSendInsertDataRequestResponse; });
+
 		await new Promise(function (resolve) {
 			page.registerContent(async (view) => {
-				modifyColumnsPage = new ModifyColumnsPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny(), mockApiWrapper.object);
-				pages.set(1, modifyColumnsPage);
-				await modifyColumnsPage.start().then(async () => {
-					await modifyColumnsPage.setupNavigationValidator();
-					await modifyColumnsPage.onPageEnter();
+				summaryPage = new SummaryPage(mockFlatFileWizard.object, page, mockImportModel.object, view, mockFlatFileProvider.object, mockApiWrapper.object);
+				pages.set(1, summaryPage);
+				await summaryPage.start().then(async () => {
+					summaryPage.setupNavigationValidator();
+					await summaryPage.onPageEnter();
 					resolve();
 				});
 			});
@@ -115,7 +124,19 @@ describe('import extension modify Column Page', function () {
 			wizard.open();
 		});
 
-		should.deepEqual(modifyColumnsPage.table.data, testTableData);
+
+		should.equal(summaryPage.statusText.value,  constants.updateText);
+
+		testSendInsertDataRequestResponse = {
+			result: {
+				success: false,
+				errorMessage: 'testError'
+			}
+		};
+
+		mockFlatFileProvider.setup(x => x.sendInsertDataRequest(TypeMoq.It.isAny())).returns(async () => { return testSendInsertDataRequestResponse; });
+		await summaryPage.onPageEnter();
+		should.equal(summaryPage.statusText.value,  '✗ testError');
 
 	});
 });

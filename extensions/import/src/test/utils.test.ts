@@ -6,6 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { ImportDataModel, ColumnMetadata } from '../wizard/api/models';
+import { FlatFileProvider, PROSEDiscoveryParams, InsertDataParams, GetColumnInfoParams, ChangeColumnSettingsParams } from '../services/contracts';
 
 export class ImportTestUtils {
 
@@ -184,6 +185,9 @@ export class TestButton implements azdata.window.Button {
 }
 
 export class TestExtensionContext implements vscode.ExtensionContext {
+	constructor(extensionPath: string){
+		this.extensionPath = extensionPath;
+	}
 	extensionMode: vscode.ExtensionMode;
 	subscriptions: { dispose(): any; }[];
 	workspaceState: vscode.Memento;
@@ -210,4 +214,21 @@ export class TestImportDataModel implements ImportDataModel {
 	schema: string;
 	filePath: string;
 	fileType: string;
+}
+
+export class TestFlatFileProvider implements FlatFileProvider {
+	providerId?: string;
+	sendPROSEDiscoveryRequest(params: PROSEDiscoveryParams): Thenable<import("../services/contracts").PROSEDiscoveryResponse> {
+		throw new Error('Method not implemented.');
+	}
+	sendInsertDataRequest(params: InsertDataParams): Thenable<import("../services/contracts").InsertDataResponse> {
+		throw new Error('Method not implemented.');
+	}
+	sendGetColumnInfoRequest(params: GetColumnInfoParams): Thenable<import("../services/contracts").GetColumnInfoResponse> {
+		throw new Error('Method not implemented.');
+	}
+	sendChangeColumnSettingsRequest(params: ChangeColumnSettingsParams): Thenable<import("../services/contracts").ChangeColumnSettingsResponse> {
+		throw new Error('Method not implemented.');
+	}
+
 }
