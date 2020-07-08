@@ -170,7 +170,7 @@ export class TreeViewDataProvider implements ITreeViewDataProvider {
 	// {{SQL CARBON EDIT}}
 	constructor(protected readonly treeViewId: string,
 		protected readonly _proxy: ExtHostTreeViewsShape,
-		protected readonly notificationService: INotificationService // {{SQL CARBON EDIT}} For use by Component Tree View
+		private readonly notificationService: INotificationService
 	) {
 		this.hasResolve = this._proxy.$hasResolve(this.treeViewId);
 	}
@@ -219,7 +219,7 @@ export class TreeViewDataProvider implements ITreeViewDataProvider {
 		return this.itemsMap.size === 0;
 	}
 
-	private async postGetChildren(elements: ITreeItem[]): Promise<ResolvableTreeItem[]> {
+	protected async postGetChildren(elements: ITreeItem[]): Promise<ResolvableTreeItem[]> { // {{SQL CARBON EDIT}} For use by Component Tree View
 		const result: ResolvableTreeItem[] = [];
 		const hasResolve = await this.hasResolve;
 		if (elements) {

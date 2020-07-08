@@ -50,17 +50,12 @@ export class TreeViewDataProvider extends vsTreeView.TreeViewDataProvider implem
 	refresh(itemsToRefreshByHandle: { [treeItemHandle: string]: ITreeComponentItem }) {
 	}
 
-	getChildren(treeItem?: ITreeComponentItem): Promise<ITreeComponentItem[]> {
-		return Promise.resolve(this._proxy.$getChildren(this.treeViewId, treeItem ? treeItem.handle : undefined)
-			.then(
-				children => this.treeComponentPostGetChildren(children),
-				err => {
-					this.notificationService.error(err);
-					return [];
-				}));
-	}
-
-	private async treeComponentPostGetChildren(elements: ITreeComponentItem[]): Promise<ResolvableTreeComponentItem[]> {
+	/**
+	 * Returns the set of mapped ResolvableTreeComponentItems
+	 * @override
+	 * @param elements The elements to map
+	 */
+	protected async postGetChildren(elements: ITreeComponentItem[]): Promise<ResolvableTreeComponentItem[]> {
 		const result: ResolvableTreeComponentItem[] = [];
 		const hasResolve = await this.hasResolve;
 		if (elements) {
