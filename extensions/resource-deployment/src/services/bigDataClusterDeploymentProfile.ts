@@ -185,7 +185,7 @@ export class BigDataClusterDeploymentProfile {
 	}
 
 	public setResourceStorage(resourceName: 'data-0' | 'master' | 'storage-0', dataStorageClass: string, dataStorageSize: number, logsStorageClass: string, logsStorageSize: number) {
-		this.bdcConfig.spec.resources[resourceName]['storage'] = {
+		this.bdcConfig.spec.resources[resourceName].spec.storage = {
 			data: {
 				size: `${dataStorageSize}Gi`,
 				className: dataStorageClass,
