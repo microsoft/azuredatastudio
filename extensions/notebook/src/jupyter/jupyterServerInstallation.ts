@@ -13,7 +13,6 @@ import * as request from 'request';
 import * as zip from 'adm-zip';
 import * as tar from 'tar';
 
-import { ApiWrapper } from '../common/apiWrapper';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
 import { Deferred } from '../common/promise';
@@ -62,7 +61,6 @@ export interface IJupyterServerInstallation {
 	installPythonPackage(backgroundOperation: azdata.BackgroundOperation, usingExistingPython: boolean, pythonInstallationPath: string, outputChannel: vscode.OutputChannel): Promise<void>;
 }
 export class JupyterServerInstallation implements IJupyterServerInstallation {
-	public apiWrapper: ApiWrapper;
 	public extensionPath: string;
 	public pythonBinPath: string;
 	public outputChannel: vscode.OutputChannel;
@@ -114,10 +112,9 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 	private readonly _runningOnSAW: boolean;
 
-	constructor(extensionPath: string, outputChannel: vscode.OutputChannel, apiWrapper: ApiWrapper) {
+	constructor(extensionPath: string, outputChannel: vscode.OutputChannel) {
 		this.extensionPath = extensionPath;
 		this.outputChannel = outputChannel;
-		this.apiWrapper = apiWrapper;
 
 		this._runningOnSAW = vscode.env.appName.toLowerCase().indexOf('saw') > 0;
 		vscode.commands.executeCommand(constants.BuiltInCommands.SetContext, 'notebook:runningOnSAW', this._runningOnSAW);
@@ -126,8 +123,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			this._pythonInstallationPath = `${vscode.env.appRoot}\\ads-python`;
 			this._usingExistingPython = true;
 		} else {
-			this._pythonInstallationPath = JupyterServerInstallation.getPythonInstallPath(this.apiWrapper);
-			this._usingExistingPython = JupyterServerInstallation.getExistingPythonSetting(this.apiWrapper);
+			this._pythonInstallationPath = JupyterServerInstallation.getPythonInstallPath();
+			this._usingExistingPython = JupyterServerInstallation.getExistingPythonSetting();
 		}
 		this._usingConda = false;
 		this._installInProgress = false;
@@ -427,7 +424,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}
 
 		if (this._installInProgress) {
-			this.apiWrapper.showInfoMessage(msgWaitingForInstall);
+			vscode.window.showInformationMessage(msgWaitingForInstall);
 			return this._installCompletion.promise;
 		}
 
@@ -438,14 +435,14 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		this._usingExistingPython = installSettings.existingPython;
 		await this.configurePackagePaths();
 
-		this.apiWrapper.startBackgroundOperation({
+		azdata.tasks.startBackgroundOperation({
 			displayName: msgTaskName,
 			description: msgTaskName,
 			isCancelable: false,
 			operation: op => {
 				this.installDependencies(op, forceInstall, installSettings.specificPackages)
 					.then(async () => {
-						let notebookConfig = this.apiWrapper.getConfiguration(constants.notebookConfigKey);
+						let notebookConfig = vscode.workspace.getConfiguration(constants.notebookConfigKey);
 						await notebookConfig.update(constants.pythonPathConfigKey, this._pythonInstallationPath, vscode.ConfigurationTarget.Global);
 						await notebookConfig.update(constants.existingPythonConfigKey, this._usingExistingPython, vscode.ConfigurationTarget.Global);
 						await this.configurePackagePaths();
@@ -472,21 +469,21 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			return Promise.resolve();
 		}
 		if (this._installInProgress) {
-			this.apiWrapper.showInfoMessage(msgWaitingForInstall);
+			vscode.window.showInformationMessage(msgWaitingForInstall);
 			return this._installCompletion.promise;
 		}
 
-		let isPythonInstalled = JupyterServerInstallation.isPythonInstalled(this.apiWrapper);
+		let isPythonInstalled = JupyterServerInstallation.isPythonInstalled();
 		let areRequiredPackagesInstalled = await this.areRequiredPackagesInstalled(kernelDisplayName);
 		if (!isPythonInstalled || !areRequiredPackagesInstalled) {
 			if (this.previewFeaturesEnabled) {
-				let pythonWizard = new ConfigurePythonWizard(this.apiWrapper, this);
+				let pythonWizard = new ConfigurePythonWizard(this);
 				await pythonWizard.start(kernelDisplayName, true);
 				return pythonWizard.setupComplete.then(() => {
 					this._kernelSetupCache.set(kernelDisplayName, true);
 				});
 			} else {
-				let pythonDialog = new ConfigurePythonDialog(this.apiWrapper, this);
+				let pythonDialog = new ConfigurePythonDialog(this);
 				return pythonDialog.showDialog(true);
 			}
 		}
@@ -500,7 +497,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			return Promise.resolve();
 		}
 		if (this._installInProgress) {
-			this.apiWrapper.showInfoMessage(msgWaitingForInstall);
+			vscode.window.showInformationMessage(msgWaitingForInstall);
 			return this._installCompletion.promise;
 		}
 
@@ -607,7 +604,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 					type: confirm,
 					message: localize('confirmPackageUpgrade', "Some required python packages need to be installed. Would you like to install them now?"),
 					default: true
-				}, this.apiWrapper);
+				});
 				if (!doUpgrade) {
 					throw new Error(localize('configurePython.packageInstallDeclined', "Package installation was declined."));
 				}
@@ -637,7 +634,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 						packagesStr);
 
 					let backgroundTaskComplete = new Deferred<void>();
-					this.apiWrapper.startBackgroundOperation({
+					azdata.tasks.startBackgroundOperation({
 						displayName: taskName,
 						description: taskName,
 						isCancelable: false,
@@ -667,7 +664,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 				if (!fs.existsSync(pythonExePath)) {
 					return [];
 				}
-			} else if (!JupyterServerInstallation.isPythonInstalled(this.apiWrapper)) {
+			} else if (!JupyterServerInstallation.isPythonInstalled()) {
 				return [];
 			}
 
@@ -801,16 +798,15 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 	/**
 	 * Checks if a python executable exists at the "notebook.pythonPath" defined in the user's settings.
-	 * @param apiWrapper An ApiWrapper to use when retrieving user settings info.
 	 */
-	public static isPythonInstalled(apiWrapper: ApiWrapper): boolean {
+	public static isPythonInstalled(): boolean {
 		// Don't use _pythonExecutable here, since it could be populated with a default value
-		let pathSetting = JupyterServerInstallation.getPythonPathSetting(apiWrapper);
+		let pathSetting = JupyterServerInstallation.getPythonPathSetting();
 		if (!pathSetting) {
 			return false;
 		}
 
-		let useExistingInstall = JupyterServerInstallation.getExistingPythonSetting(apiWrapper);
+		let useExistingInstall = JupyterServerInstallation.getExistingPythonSetting();
 		let pythonExe = JupyterServerInstallation.getPythonExePath(pathSetting, useExistingInstall);
 		// eslint-disable-next-line no-sync
 		return fs.existsSync(pythonExe);
@@ -819,34 +815,29 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	/**
 	 * Returns the Python installation path defined in "notebook.pythonPath" in the user's settings.
 	 * Returns a default path if the setting is not defined.
-	 * @param apiWrapper An ApiWrapper to use when retrieving user settings info.
 	 */
-	public static getPythonInstallPath(apiWrapper: ApiWrapper): string {
-		let userPath = JupyterServerInstallation.getPythonPathSetting(apiWrapper);
+	public static getPythonInstallPath(): string {
+		let userPath = JupyterServerInstallation.getPythonPathSetting();
 		return userPath ? userPath : JupyterServerInstallation.DefaultPythonLocation;
 	}
 
-	public static getExistingPythonSetting(apiWrapper: ApiWrapper): boolean {
+	public static getExistingPythonSetting(): boolean {
 		let useExistingPython = false;
-		if (apiWrapper) {
-			let notebookConfig = apiWrapper.getConfiguration(constants.notebookConfigKey);
-			if (notebookConfig) {
-				useExistingPython = !!notebookConfig[constants.existingPythonConfigKey];
-			}
+		let notebookConfig = vscode.workspace.getConfiguration(constants.notebookConfigKey);
+		if (notebookConfig) {
+			useExistingPython = !!notebookConfig[constants.existingPythonConfigKey];
 		}
 		return useExistingPython;
 	}
 
-	public static getPythonPathSetting(apiWrapper: ApiWrapper): string {
+	public static getPythonPathSetting(): string {
 		let path = undefined;
-		if (apiWrapper) {
-			let notebookConfig = apiWrapper.getConfiguration(constants.notebookConfigKey);
-			if (notebookConfig) {
-				let configPythonPath = notebookConfig[constants.pythonPathConfigKey];
-				// eslint-disable-next-line no-sync
-				if (configPythonPath && fs.existsSync(configPythonPath)) {
-					path = configPythonPath;
-				}
+		let notebookConfig = vscode.workspace.getConfiguration(constants.notebookConfigKey);
+		if (notebookConfig) {
+			let configPythonPath = notebookConfig[constants.pythonPathConfigKey];
+			// eslint-disable-next-line no-sync
+			if (configPythonPath && fs.existsSync(configPythonPath)) {
+				path = configPythonPath;
 			}
 		}
 		return path;
@@ -888,7 +879,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	}
 
 	public get previewFeaturesEnabled(): boolean {
-		return this.apiWrapper.getConfiguration('workbench').get('enablePreviewFeatures');
+		return vscode.workspace.getConfiguration('workbench').get('enablePreviewFeatures');
 	}
 }
 
