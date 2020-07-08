@@ -253,7 +253,7 @@ export class PublishDatabaseDialog {
 			}).component();
 
 		this.connectionsRadioButton.checked = true;
-		this.connectionsRadioButton.onDidClick(async () => {
+		this.connectionsRadioButton.onDidClick(() => {
 			this.formBuilder!.removeFormItem(<azdata.FormComponent>this.dataSourcesFormComponent);
 			this.formBuilder!.insertFormItem(<azdata.FormComponent>this.targetConnectionFormComponent, 2);
 			this.connectionIsDataSource = false;
@@ -266,7 +266,7 @@ export class PublishDatabaseDialog {
 				label: constants.dataSourceRadioButtonLabel
 			}).component();
 
-		this.dataSourcesRadioButton.onDidClick(async () => {
+		this.dataSourcesRadioButton.onDidClick(() => {
 			this.formBuilder!.removeFormItem(<azdata.FormComponent>this.targetConnectionFormComponent);
 			this.formBuilder!.insertFormItem(<azdata.FormComponent>this.dataSourcesFormComponent, 2);
 			this.connectionIsDataSource = true;
@@ -423,7 +423,7 @@ export class PublishDatabaseDialog {
 				this.profileSqlCmdVars = result.sqlCmdVariables;
 				const data = this.convertSqlCmdVarsToTableFormat(this.getSqlCmdVariablesForPublish());
 
-				(<azdata.TableComponent>this.sqlCmdVariablesTable).updateProperties({
+				await (<azdata.TableComponent>this.sqlCmdVariablesTable).updateProperties({
 					data: data
 				});
 

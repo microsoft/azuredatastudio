@@ -46,7 +46,7 @@ const mockConnectionProfile: azdata.IConnectionProfile = {
 	options: undefined as any
 };
 
-beforeEach(async function (): Promise<void> {
+beforeEach(function (): void {
 	testContext = createContext();
 });
 
@@ -247,26 +247,26 @@ describe('ProjectsController: project controller operations', function (): void 
 
 			let publishDialog = TypeMoq.Mock.ofType(PublishDatabaseDialog, undefined, undefined, new ApiWrapper(), proj);
 			publishDialog.callBase = true;
-			publishDialog.setup(x => x.getConnectionUri()).returns(async () => 'fake|connection|uri');
+			publishDialog.setup(x => x.getConnectionUri()).returns(() => Promise.resolve('fake|connection|uri'));
 
 			let projController = TypeMoq.Mock.ofType(ProjectsController);
 			projController.callBase = true;
 			projController.setup(x => x.getPublishDialog(TypeMoq.It.isAny())).returns(() => publishDialog.object);
-			projController.setup(x => x.executionCallback(TypeMoq.It.isAny(), TypeMoq.It.is((_): _ is IPublishSettings => true))).returns(async () => {
+			projController.setup(x => x.executionCallback(TypeMoq.It.isAny(), TypeMoq.It.is((_): _ is IPublishSettings => true))).returns(() => {
 				holler = publishHoller;
-				return undefined;
+				return Promise.resolve(undefined);
 			});
-			projController.setup(x => x.readPublishProfile(TypeMoq.It.isAny())).returns(async () => {
+			projController.setup(x => x.readPublishProfile(TypeMoq.It.isAny())).returns(() => {
 				holler = profileHoller;
-				return {
-					databaseName: '',
-					sqlCmdVariables: {}
-				};
+				return Promise.resolve({
+						databaseName: '',
+						sqlCmdVariables: {}
+					});
 			});
 
-			projController.setup(x => x.executionCallback(TypeMoq.It.isAny(), TypeMoq.It.is((_): _ is IGenerateScriptSettings => true))).returns(async () => {
+			projController.setup(x => x.executionCallback(TypeMoq.It.isAny(), TypeMoq.It.is((_): _ is IGenerateScriptSettings => true))).returns(() => {
 				holler = generateHoller;
-				return undefined;
+				return Promise.resolve(undefined);
 			});
 
 			let dialog = await projController.object.publishProject(proj);
