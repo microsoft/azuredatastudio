@@ -40,8 +40,8 @@ export interface SqlArgs {
 	user?: string;
 	command?: string;
 	provider?: string;
-	aad?: boolean; // deprecated - used by SSMS - authenticationType should be used isntead
-	integrated?: boolean; // deprecated - used by SSMS - authenticationType should be used isntead.
+	aad?: boolean; // deprecated - used by SSMS - authenticationType should be used instead
+	integrated?: boolean; // deprecated - used by SSMS - authenticationType should be used instead.
 }
 
 //#region decorators
