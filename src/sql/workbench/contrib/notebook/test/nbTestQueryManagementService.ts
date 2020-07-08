@@ -7,8 +7,8 @@ import { TestQueryManagementService } from 'sql/workbench/services/query/test/co
 import { Event, Emitter } from 'vs/base/common/event';
 
 export class NBTestQueryManagementService extends TestQueryManagementService {
-	readonly _onHandlerAdded = new Emitter<string>();
-	onHandlerAdded: Event<string> = this._onHandlerAdded.event;
+	onHandlerAddedEmitter = new Emitter<string>();
+	onHandlerAdded: Event<string> = this.onHandlerAddedEmitter.event;
 
 	getRegisteredProviders(): string[] {
 		return ['sql'];

@@ -6,6 +6,8 @@
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import * as stubs from 'sql/workbench/contrib/notebook/test/stubs';
 import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { INotebookParams } from 'sql/workbench/services/notebook/browser/notebookService';
+import * as TypeMoq from 'typemoq';
 import * as dom from 'vs/base/browser/dom';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -14,24 +16,39 @@ import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService
 import { TestEditorGroupsService, TestEditorService, TestTextResourceConfigurationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
 
+/**
+ *	Helper method to build get a spied object one can use to listen on using setups, returns and callback and the returned mock object
+ *
+ * @param object - the object to be spied upon
+ * @param behavior - the TypeMoq.MockBehavior value. Default is Loose
+ * @param callBase - whether to forward all calls by default to the base object. Default is true.
+ */
+export function getMockAndSpy<U>(object: U, behavior: TypeMoq.MockBehavior = TypeMoq.MockBehavior.Loose, callBase: boolean = true) {
+	const mock = TypeMoq.Mock.ofInstance(object, behavior);
+	mock.callBase = callBase;
+	const spiedObject = mock.object;
+	return { mock: mock, spy: spiedObject };
+}
+
 // Typically you will pass in either editor or the instantiationService parameter.
 // Leave both undefined when you want the underlying object(s) to have an undefined editor.
 export class NotebookEditorStub extends stubs.NotebookEditorStub {
 	cellEditors: CellEditorProviderStub[];
-	private _model: INotebookModel | undefined;
+	model: INotebookModel | undefined;
 
-	get model(): INotebookModel | undefined {
-		return this._model;
+	get id(): string {
+		return this.notebookParams?.notebookUri?.toString();
 	}
 
 	get modelReady(): Promise<INotebookModel> {
-		return Promise.resolve(this._model);
+		return Promise.resolve(this.model);
 	}
 
 	// Normally one needs to provide either the editor or the instantiationService as the constructor parameter
-	constructor({ cellGuid, instantiationService, editor, model }: { cellGuid?: string; instantiationService?: IInstantiationService; editor?: QueryTextEditor; model?: INotebookModel } = {}) {
+	constructor({ cellGuid, instantiationService, editor, model, notebookParams }: { cellGuid?: string; instantiationService?: IInstantiationService; editor?: QueryTextEditor; model?: INotebookModel, notebookParams?: INotebookParams } = {}) {
 		super();
-		this._model = model;
+		this.model = model;
+		this.notebookParams = notebookParams;
 		this.cellEditors = [new CellEditorProviderStub({ cellGuid: cellGuid, instantiationService: instantiationService, editor: editor })];
 	}
 }

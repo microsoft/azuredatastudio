@@ -16,7 +16,7 @@ import { RenderMimeRegistry } from 'sql/workbench/services/notebook/browser/outp
 import { standardRendererFactories } from 'sql/workbench/services/notebook/browser/outputs/factories';
 import { Extensions, INotebookProviderRegistry, NotebookProviderRegistration } from 'sql/workbench/services/notebook/common/notebookRegistry';
 import { Emitter, Event } from 'vs/base/common/event';
-import { Memento } from 'vs/workbench/common/memento';
+import { Memento, MementoObject } from 'vs/workbench/common/memento';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IExtensionManagementService, IExtensionIdentifier } from 'vs/platform/extensionManagement/common/extensionManagement';
@@ -33,7 +33,6 @@ import { Schemas } from 'vs/base/common/network';
 import { ILogService } from 'vs/platform/log/common/log';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
-import { find, firstIndex } from 'vs/base/common/arrays';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -47,7 +46,7 @@ interface NotebookProviderCache {
 	[id: string]: NotebookProviderProperties;
 }
 
-interface NotebookProvidersMemento {
+export interface NotebookProvidersMemento extends MementoObject {
 	notebookProviderCache: NotebookProviderCache;
 }
 
@@ -59,13 +58,13 @@ interface TrustedNotebookCache {
 	[uri: string]: TrustedNotebookMetadata;
 }
 
-interface TrustedNotebooksMemento {
+export interface TrustedNotebooksMemento extends MementoObject {
 	trustedNotebooksCache: TrustedNotebookCache;
 }
 
 const notebookRegistry = Registry.as<INotebookProviderRegistry>(Extensions.NotebookProviderContribution);
 
-class ProviderDescriptor {
+export class ProviderDescriptor {
 	private _instanceReady = new Deferred<INotebookProvider>();
 	constructor(private _instance?: INotebookProvider) {
 		if (_instance) {
@@ -86,27 +85,28 @@ class ProviderDescriptor {
 	}
 }
 
+export const NotebookUriNotDefined = localize('notebookUriNotDefined', "No URI was passed when creating a notebook manager");
+
 export class NotebookService extends Disposable implements INotebookService {
 	_serviceBrand: undefined;
 
-	private _providersMemento: Memento;
-	private _trustedNotebooksMemento: Memento;
+	private _providersMemento: Memento = new Memento('notebookProviders', this._storageService);
+	protected _trustedNotebooksMemento: Memento = new Memento('notebooks.trusted', this._storageService);
 	private _mimeRegistry: RenderMimeRegistry;
 	private _providers: Map<string, ProviderDescriptor> = new Map();
 	private _navigationProviders: Map<string, INavigationProvider> = new Map();
 	private _managersMap: Map<string, INotebookManager[]> = new Map();
 	private _onNotebookEditorAdd = new Emitter<INotebookEditor>();
 	private _onNotebookEditorRemove = new Emitter<INotebookEditor>();
-	private _onCellChanged = new Emitter<INotebookEditor>();
 	private _onNotebookEditorRename = new Emitter<INotebookEditor>();
 	private _editors = new Map<string, INotebookEditor>();
 	private _fileToProviders = new Map<string, NotebookProviderRegistration[]>();
 	private _providerToStandardKernels = new Map<string, nb.IStandardKernel[]>();
 	private _registrationComplete = new Deferred<void>();
-	private _isRegistrationComplete = false;
-	private _themeParticipant: IDisposable;
-	private _trustedCacheQueue: URI[] = [];
-	private _unTrustedCacheQueue: URI[] = [];
+	protected _isRegistrationComplete = false;
+	protected _themeParticipant: IDisposable;
+	protected _trustedCacheQueue: URI[] = [];
+	protected _unTrustedCacheQueue: URI[] = [];
 
 	constructor(
 		@ILifecycleService lifecycleService: ILifecycleService,
@@ -120,9 +120,6 @@ export class NotebookService extends Disposable implements INotebookService {
 		@IContextKeyService private contextKeyService: IContextKeyService,
 	) {
 		super();
-		this._providersMemento = new Memento('notebookProviders', this._storageService);
-		this._trustedNotebooksMemento = new Memento('notebooks.trusted', this._storageService);
-
 		this._register(notebookRegistry.onNewRegistration(this.updateRegisteredProviders, this));
 		this.registerBuiltInProvider();
 		// If a provider has been already registered, the onNewRegistration event will not have a listener attached yet
@@ -145,13 +142,13 @@ export class NotebookService extends Disposable implements INotebookService {
 					this.updateSQLRegistrationWithConnectionProviders();
 				}
 
-				this._register(this._queryManagementService.onHandlerAdded((queryType) => {
+				this._register(this._queryManagementService.onHandlerAdded((_queryType) => {
 					this.updateSQLRegistrationWithConnectionProviders();
 				}));
 			}).catch(err => onUnexpectedError(err));
 		}
 		if (extensionManagementService) {
-			this._register(extensionManagementService.onDidUninstallExtension(({ identifier }) => this.removeContributedProvidersFromCache(identifier, this._extensionService)));
+			this._register(extensionManagementService.onDidUninstallExtension(async ({ identifier }) => await this.removeContributedProvidersFromCache(identifier, this._extensionService)));
 		}
 
 		lifecycleService.onWillShutdown(() => this.shutdown());
@@ -169,7 +166,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		let sqlNotebookProvider = this._providerToStandardKernels.get(notebookConstants.SQL);
 		if (sqlNotebookProvider) {
 			let sqlConnectionTypes = this._queryManagementService.getRegisteredProviders();
-			let provider = find(sqlNotebookProvider, p => p.name === notebookConstants.SQL);
+			let provider = sqlNotebookProvider.find(p => p.name === notebookConstants.SQL);
 			if (provider) {
 				this._providerToStandardKernels.set(notebookConstants.SQL, [{
 					name: notebookConstants.SQL,
@@ -282,7 +279,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		return this._providerToStandardKernels.get(provider.toUpperCase());
 	}
 
-	private shutdown(): void {
+	protected shutdown(): void {
 		this._managersMap.forEach(manager => {
 			manager.forEach(m => {
 				if (m.serverManager) {
@@ -295,14 +292,14 @@ export class NotebookService extends Disposable implements INotebookService {
 
 	async getOrCreateNotebookManager(providerId: string, uri: URI): Promise<INotebookManager> {
 		if (!uri) {
-			throw new Error(localize('notebookUriNotDefined', "No URI was passed when creating a notebook manager"));
+			throw new Error(NotebookUriNotDefined);
 		}
 		let uriString = uri.toString();
 		let managers: INotebookManager[] = this._managersMap.get(uriString);
 		// If manager already exists for a given notebook, return it
 		if (managers) {
-			let index = firstIndex(managers, m => m.providerId === providerId);
-			if (index && index >= 0) {
+			let index = managers.findIndex(m => m.providerId === providerId);
+			if (index >= 0) {
 				return managers[index];
 			}
 		}
@@ -317,11 +314,9 @@ export class NotebookService extends Disposable implements INotebookService {
 	get onNotebookEditorAdd(): Event<INotebookEditor> {
 		return this._onNotebookEditorAdd.event;
 	}
+
 	get onNotebookEditorRemove(): Event<INotebookEditor> {
 		return this._onNotebookEditorRemove.event;
-	}
-	get onCellChanged(): Event<INotebookEditor> {
-		return this._onCellChanged.event;
 	}
 
 	get onNotebookEditorRename(): Event<INotebookEditor> {
@@ -341,18 +336,12 @@ export class NotebookService extends Disposable implements INotebookService {
 		this.sendNotebookCloseToProvider(editor);
 	}
 
-	listNotebookEditors(): INotebookEditor[] {
-		let editors = [];
-		this._editors.forEach(e => editors.push(e));
-		return editors;
-	}
-
 	findNotebookEditor(notebookUri: URI): INotebookEditor | undefined {
 		if (!notebookUri) {
 			return undefined;
 		}
 		let uriString = notebookUri.toString();
-		let editor = find(this.listNotebookEditors(), n => n.id === uriString);
+		let editor = this.listNotebookEditors().find(n => n.id === uriString);
 		return editor;
 	}
 
@@ -360,10 +349,16 @@ export class NotebookService extends Disposable implements INotebookService {
 		let oldUriKey = oldUri.toString();
 		if (this._editors.has(oldUriKey)) {
 			this._editors.delete(oldUriKey);
-			currentEditor.notebookParams.notebookUri = newUri;
-			this._editors.set(newUri.toString(), currentEditor);
+			currentEditor.notebookParams.notebookUri = newUri; //currentEditor.id gets this value as a string
+			this._editors.set(currentEditor.id, currentEditor);
 			this._onNotebookEditorRename.fire(currentEditor);
 		}
+	}
+
+	listNotebookEditors(): INotebookEditor[] {
+		let editors = [];
+		this._editors.forEach(e => editors.push(e));
+		return editors;
 	}
 
 	get languageMagics(): ILanguageMagic[] {
@@ -375,11 +370,11 @@ export class NotebookService extends Disposable implements INotebookService {
 	private sendNotebookCloseToProvider(editor: INotebookEditor): void {
 		let notebookUri = editor.notebookParams.notebookUri;
 		let uriString = notebookUri.toString();
-		let manager = this._managersMap.get(uriString);
-		if (manager) {
+		let managers = this._managersMap.get(uriString);
+		if (managers) {
 			// As we have a manager, we can assume provider is ready
 			this._managersMap.delete(uriString);
-			manager.forEach(m => {
+			managers.forEach(m => {
 				let provider = this._providers.get(m.providerId);
 				provider.instance.handleNotebookClosed(notebookUri);
 			});
@@ -389,10 +384,10 @@ export class NotebookService extends Disposable implements INotebookService {
 	private async doWithProvider<T>(providerId: string, op: (provider: INotebookProvider) => Thenable<T>): Promise<T> {
 		// Make sure the provider exists before attempting to retrieve accounts
 		let provider: INotebookProvider = await this.getProviderInstance(providerId);
-		return op(provider);
+		return await op(provider);
 	}
 
-	private async getProviderInstance(providerId: string, timeout?: number): Promise<INotebookProvider> {
+	protected async getProviderInstance(providerId: string, timeout?: number): Promise<INotebookProvider> {
 		let providerDescriptor = this._providers.get(providerId);
 		let instance: INotebookProvider;
 
@@ -405,7 +400,7 @@ export class NotebookService extends Disposable implements INotebookService {
 				} catch (error) {
 					this._logService.error(error);
 				}
-				instance = await this.waitOnProviderAvailability(providerDescriptor);
+				instance = await this.waitOnProviderAvailability(providerDescriptor, timeout);
 			} else {
 				instance = providerDescriptor.instance;
 			}
@@ -424,9 +419,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		return instance;
 	}
 
-	private waitOnProviderAvailability(providerDescriptor: ProviderDescriptor, timeout?: number): Promise<INotebookProvider> {
-		// Wait up to 30 seconds for the provider to be registered
-		timeout = timeout || 30000;
+	private waitOnProviderAvailability(providerDescriptor: ProviderDescriptor, timeout: number = 30000): Promise<INotebookProvider> {
 		let promises: Promise<INotebookProvider>[] = [
 			providerDescriptor.instanceReady,
 			new Promise<INotebookProvider>((resolve, reject) => setTimeout(() => resolve(), timeout))
@@ -437,18 +430,18 @@ export class NotebookService extends Disposable implements INotebookService {
 	//Returns an instantiation of RenderMimeRegistry class
 	getMimeRegistry(): RenderMimeRegistry {
 		if (!this._mimeRegistry) {
-			return new RenderMimeRegistry({
+			this._mimeRegistry = new RenderMimeRegistry({
 				initialFactories: standardRendererFactories
 			});
 		}
 		return this._mimeRegistry;
 	}
 
-	private get providersMemento(): NotebookProvidersMemento {
+	protected get providersMemento(): NotebookProvidersMemento {
 		return this._providersMemento.getMemento(StorageScope.GLOBAL) as NotebookProvidersMemento;
 	}
 
-	private get trustedNotebooksMemento(): TrustedNotebooksMemento {
+	protected get trustedNotebooksMemento(): TrustedNotebooksMemento {
 		let cache = this._trustedNotebooksMemento.getMemento(StorageScope.GLOBAL) as TrustedNotebooksMemento;
 		if (!cache.trustedNotebooksCache) {
 			cache.trustedNotebooksCache = {};
@@ -456,7 +449,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		return cache;
 	}
 
-	private cleanupProviders(): void {
+	protected cleanupProviders(): void {
 		let knownProviders = Object.keys(notebookRegistry.providers);
 		let cache = this.providersMemento.notebookProviderCache;
 		for (let key in cache) {
@@ -477,17 +470,20 @@ export class NotebookService extends Disposable implements INotebookService {
 		});
 	}
 
-	private removeContributedProvidersFromCache(identifier: IExtensionIdentifier, extensionService: IExtensionService): void {
+	protected async removeContributedProvidersFromCache(identifier: IExtensionIdentifier, extensionService: IExtensionService): Promise<void> {
 		const notebookProvider = 'notebookProvider';
-		extensionService.getExtensions().then(i => {
-			let extension = find(i, c => c.identifier.value.toLowerCase() === identifier.id.toLowerCase());
+		try {
+			const extensions = await extensionService.getExtensions();
+			let extension = extensions.find(c => c.identifier.value.toLowerCase() === identifier.id.toLowerCase());
 			if (extension && extension.contributes
 				&& extension.contributes[notebookProvider]
 				&& extension.contributes[notebookProvider].providerId) {
 				let id = extension.contributes[notebookProvider].providerId;
 				delete this.providersMemento.notebookProviderCache[id];
 			}
-		}).catch(err => onUnexpectedError(err));
+		} catch (err) {
+			onUnexpectedError(err);
+		}
 	}
 
 	async isNotebookTrustCached(notebookUri: URI, isDirty: boolean): Promise<boolean> {
@@ -532,7 +528,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			// 3. Not already saving (e.g. isn't in the queue to be cached)
 			// 4. Notebook is trusted. Don't need to save state of untrusted notebooks
 			let notebookUriString = notebookUri.toString();
-			if (changeType === NotebookChangeType.Saved && firstIndex(this._trustedCacheQueue, uri => uri.toString() === notebookUriString) < 0) {
+			if (changeType === NotebookChangeType.Saved && this._trustedCacheQueue.findIndex(uri => uri.toString() === notebookUriString) < 0) {
 				if (isTrusted) {
 					this._trustedCacheQueue.push(notebookUri);
 					await this.updateTrustedCache();
@@ -541,7 +537,7 @@ export class NotebookService extends Disposable implements INotebookService {
 					await this.updateTrustedCache();
 				} else {
 					// Only save as trusted if the associated notebook model is trusted
-					let notebook = find(this.listNotebookEditors(), n => n.id === notebookUriString);
+					let notebook = this.listNotebookEditors().find(n => n.id === notebookUriString);
 					if (notebook && notebook.model) {
 						if (notebook.model.trustedMode) {
 							this._trustedCacheQueue.push(notebookUri);
@@ -590,7 +586,7 @@ export class NotebookService extends Disposable implements INotebookService {
 				let items = this._unTrustedCacheQueue;
 				this._unTrustedCacheQueue = [];
 				let trustedCache = this.trustedNotebooksMemento.trustedNotebooksCache;
-				//Remove the trusted intry from the cache
+				//Remove the trusted entry from the cache
 				for (let i = 0; i < items.length; i++) {
 					if (trustedCache[items[i].toString()]) {
 						trustedCache[items[i].toString()] = null;

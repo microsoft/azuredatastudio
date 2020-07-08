@@ -15,7 +15,7 @@ import * as stubs from 'sql/workbench/contrib/notebook/test/stubs';
 import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/testCommon';
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 import { ICellModel, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
-import { INotebookService, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotebookParams, INotebookService, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookService } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
 import * as TypeMoq from 'typemoq';
 import * as DOM from 'vs/base/browser/dom';
@@ -137,8 +137,7 @@ suite('Test class NotebookEditor', () => {
 		instantiationService.get(IEditorService),
 		instantiationService.get(IConfigurationService)
 	);
-	const notebookEditorStub = new NotebookEditorStub({ cellGuid: cellTextEditorGuid, editor: queryTextEditor, model: new NotebookModelStub() });
-	notebookEditorStub.id = untitledNotebookInput.notebookUri.toString();
+	const notebookEditorStub = new NotebookEditorStub({ cellGuid: cellTextEditorGuid, editor: queryTextEditor, model: new NotebookModelStub(), notebookParams: <INotebookParams>{ notebookUri: untitledNotebookInput.notebookUri } });
 	notebookService.addNotebookEditor(notebookEditorStub);
 
 	setup(async () => {
@@ -174,8 +173,7 @@ suite('Test class NotebookEditor', () => {
 				testTitle, untitledUri, untitledTextInput,
 				undefined, instantiationService, notebookService, extensionService
 			);
-			const testNotebookEditor = new NotebookEditorStub({ cellGuid: cellTextEditorGuid, editor: queryTextEditor, model: notebookModel });
-			testNotebookEditor.id = untitledNotebookInput.notebookUri.toString();
+			const testNotebookEditor = new NotebookEditorStub({ cellGuid: cellTextEditorGuid, editor: queryTextEditor, model: notebookModel, notebookParams: <INotebookParams>{ notebookUri: untitledNotebookInput.notebookUri } });
 			notebookService.addNotebookEditor(testNotebookEditor);
 			notebookEditor.clearInput();
 			await notebookEditor.setInput(untitledNotebookInput, EditorOptions.create({ pinned: true }));
@@ -288,7 +286,6 @@ suite('Test class NotebookEditor', () => {
 		const oldRange = {} as NotebookRange;
 		const iNotebookEditorMock = TypeMoq.Mock.ofInstance(notebookEditorStub);
 		iNotebookEditorMock.callBase = true; //by default forward all call call to the underlying object
-		iNotebookEditorMock.object.id = untitledNotebookInput.notebookUri.toString();
 		iNotebookEditorMock
 			.setup(x => x.deltaDecorations(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
 			.callback((newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange) => {
