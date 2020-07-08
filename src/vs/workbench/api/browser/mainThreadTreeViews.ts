@@ -219,27 +219,19 @@ export class TreeViewDataProvider implements ITreeViewDataProvider {
 		return this.itemsMap.size === 0;
 	}
 
-	// {{SQL CARBON EDIT}}
-	private async postGetChildren(elements: ITreeItem[]): Promise<ResolvableTreeItem[] | ITreeItem[]> {
-		// only if the tree hasResolve it should return ResolvableTreeItem, others still expect ITreeItem
-		// check for hasResolve and return the correct type accordingly.
+	private async postGetChildren(elements: ITreeItem[]): Promise<ResolvableTreeItem[]> {
 		const result: ResolvableTreeItem[] = [];
-		const results: ITreeItem[] = [];
 		const hasResolve = await this.hasResolve;
 		if (elements) {
 			for (const element of elements) {
-				this.itemsMap.set(element.handle, element);
-				if (hasResolve) {
-					const resolvable = new ResolvableTreeItem(element, hasResolve ? () => {
-						return this._proxy.$resolve(this.treeViewId, element.handle);
-					} : undefined);
-					result.push(resolvable);
-				} else {
-					results.push(element);
-				}
+				const resolvable = new ResolvableTreeItem(element, hasResolve ? () => {
+					return this._proxy.$resolve(this.treeViewId, element.handle);
+				} : undefined);
+				this.itemsMap.set(element.handle, resolvable);
+				result.push(resolvable);
 			}
 		}
-		return hasResolve ? result : results;
+		return result;
 	}
 
 	private updateTreeItem(current: ITreeItem, treeItem: ITreeItem): void {
