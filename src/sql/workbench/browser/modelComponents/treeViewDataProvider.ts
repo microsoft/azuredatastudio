@@ -12,6 +12,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 // eslint-disable-next-line code-import-patterns
 import * as vsTreeView from 'vs/workbench/api/browser/mainThreadTreeViews';
 import { ResolvableTreeItem } from 'vs/workbench/common/views';
+import { deepClone } from 'vs/base/common/objects';
 
 export class ResolvableTreeComponentItem extends ResolvableTreeItem implements ITreeComponentItem {
 
@@ -25,7 +26,7 @@ export class ResolvableTreeComponentItem extends ResolvableTreeItem implements I
 		this.checked = treeItem.checked;
 		this.enabled = treeItem.enabled;
 		this.onCheckedChanged = treeItem.onCheckedChanged;
-		this.children = treeItem.children;
+		this.children = deepClone(treeItem.children);
 	}
 }
 
