@@ -13,7 +13,7 @@ import { SqlConnectionDataSource } from '../dataSources/sqlConnectionStringSourc
 import { ApiWrapper } from '../../common/apiWrapper';
 
 
-// only reading db name and SQLCMD vars from profile for now
+// only reading db name, connection string, and SQLCMD vars from profile for now
 export interface PublishProfile {
 	databaseName: string;
 	connectionId: string;
@@ -66,7 +66,7 @@ export function readSqlCmdVariables(xmlDoc: any): Record<string, string> {
 	return sqlCmdVariables;
 }
 
-export async function readConnectionString(xmlDoc: any, apiWrapper: ApiWrapper): Promise<{ connectionId: string, connectionString: string }> {
+async function readConnectionString(xmlDoc: any, apiWrapper: ApiWrapper): Promise<{ connectionId: string, connectionString: string }> {
 	let targetConnectionString: string = '';
 	let connId: string = '';
 
@@ -83,7 +83,7 @@ export async function readConnectionString(xmlDoc: any, apiWrapper: ApiWrapper):
 				connId = (await apiWrapper.openConnectionDialog(undefined, connectionProfile)).connectionId;
 			}
 		} catch (err) {
-			throw new Error(constants.unableToCreatePublishConnection + ': ' + utils.getErrorMessage(err));
+			throw new Error(constants.unableToCreatePublishConnection(utils.getErrorMessage(err)));
 		}
 	}
 

@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import * as TypeMoq from 'typemoq';
 import * as baselines from './baselines/baselines';
 import * as testUtils from './testUtils';
+import * as constants from '../common/constants';
 import { TestContext, createContext } from './testContext';
 import { ProjectsController } from '../controllers/projectController';
 import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProjectTreeViewProvider';
@@ -64,5 +65,17 @@ describe('Publish profile tests', function (): void {
 		should(result.sqlCmdVariables['ProdDatabaseName']).equal('MyProdDatabase');
 		should(result.connectionId).equal('connId');
 		should(result.connectionString).equal('Data Source=testserver;User Id=testUser;Password=******;Integrated Security=false;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Connect Timeout=60;Encrypt=False;TrustServerCertificate=True');
+	});
+
+	it('Should throw error when connecting does not work', async function (): Promise<void> {
+		await baselines.loadBaselines();
+		let profilePath = await testUtils.createTestFile(baselines.publishProfileIntegratedSecurityBaseline, 'publishProfile.publish.xml');
+		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+
+		const connectionString = 'Data Source=testserver;User Id=testUser;Password=******;Integrated Security=false;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Connect Timeout=60;Encrypt=False;TrustServerCertificate=True';
+		testContext.apiWrapper.setup(x => x.connectionConnect(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => { throw new Error('Could not connect'); });
+		testContext.apiWrapper.setup(x => x.getConnectionString(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(async () => Promise.resolve(connectionString));
+
+		await testUtils.shouldThrowSpecificError(async () => await projController.readPublishProfileCallback(vscode.Uri.file(profilePath)), constants.unableToCreatePublishConnection('Could not connect'));
 	});
 });
