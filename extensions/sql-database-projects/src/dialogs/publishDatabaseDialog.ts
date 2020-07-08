@@ -370,7 +370,7 @@ export class PublishDatabaseDialog {
 			}
 
 			// change the database inputbox value to the connection's database if there is one
-			if (this.connection.options.database) {
+			if (this.connection.options.database && this.connection.options.database !== constants.master) {
 				this.targetDatabaseTextBox!.value = this.connection.options.database;
 			}
 		});

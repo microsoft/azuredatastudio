@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as vscode from 'vscode';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as nls from 'vscode-nls';
@@ -14,7 +15,6 @@ import * as tar from 'tar';
 
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
-import * as vscode from 'vscode';
 import { Deferred } from '../common/promise';
 import { ConfigurePythonWizard } from '../dialog/configurePython/configurePythonWizard';
 import { IPrompter, IQuestion, confirm } from '../prompts/question';
@@ -110,13 +110,24 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	private readonly _requiredKernelPackages: Map<string, PythonPkgDetails[]>;
 	private readonly _requiredPackagesSet: Set<string>;
 
-	constructor(extensionPath: string, outputChannel: vscode.OutputChannel, pythonInstallationPath?: string) {
+	private readonly _runningOnSAW: boolean;
+
+	constructor(extensionPath: string, outputChannel: vscode.OutputChannel) {
 		this.extensionPath = extensionPath;
 		this.outputChannel = outputChannel;
-		this._pythonInstallationPath = pythonInstallationPath || JupyterServerInstallation.getPythonInstallPath();
+
+		this._runningOnSAW = vscode.env.appName.toLowerCase().indexOf('saw') > 0;
+		vscode.commands.executeCommand(constants.BuiltInCommands.SetContext, 'notebook:runningOnSAW', this._runningOnSAW);
+
+		if (this._runningOnSAW) {
+			this._pythonInstallationPath = `${vscode.env.appRoot}\\ads-python`;
+			this._usingExistingPython = true;
+		} else {
+			this._pythonInstallationPath = JupyterServerInstallation.getPythonInstallPath();
+			this._usingExistingPython = JupyterServerInstallation.getExistingPythonSetting();
+		}
 		this._usingConda = false;
 		this._installInProgress = false;
-		this._usingExistingPython = JupyterServerInstallation.getExistingPythonSetting();
 
 		this._prompter = new CodeAdapter();
 
@@ -454,6 +465,9 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	 * Opens a dialog for configuring the installation path for the Notebook Python dependencies.
 	 */
 	public async promptForPythonInstall(kernelDisplayName: string): Promise<void> {
+		if (this._runningOnSAW) {
+			return Promise.resolve();
+		}
 		if (this._installInProgress) {
 			vscode.window.showInformationMessage(msgWaitingForInstall);
 			return this._installCompletion.promise;
@@ -479,6 +493,9 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	 * Prompts user to upgrade certain python packages if they're below the minimum expected version.
 	 */
 	public async promptForPackageUpgrade(kernelName: string): Promise<void> {
+		if (this._runningOnSAW) {
+			return Promise.resolve();
+		}
 		if (this._installInProgress) {
 			vscode.window.showInformationMessage(msgWaitingForInstall);
 			return this._installCompletion.promise;
@@ -824,21 +841,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			}
 		}
 		return path;
-	}
-
-	/**
-	 * Returns the folder containing the python executable under the path defined in
-	 * "notebook.pythonPath" in the user's settings.
-	 */
-	public static getPythonBinPath(): string {
-		let pythonBinPathSuffix = process.platform === constants.winPlatform ? '' : 'bin';
-
-		let useExistingInstall = JupyterServerInstallation.getExistingPythonSetting();
-
-		return path.join(
-			JupyterServerInstallation.getPythonInstallPath(),
-			useExistingInstall ? '' : constants.pythonBundleVersion,
-			pythonBinPathSuffix);
 	}
 
 	public static getPythonExePath(pythonInstallPath: string, useExistingInstall: boolean): string {
