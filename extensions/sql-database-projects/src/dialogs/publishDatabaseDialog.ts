@@ -112,6 +112,10 @@ export class PublishDatabaseDialog {
 					{
 						title: constants.targetDatabaseSettings,
 						components: [
+							{
+								title: constants.profileWarningText,
+								component: <azdata.ButtonComponent>this.loadProfileButton
+							},
 							/* TODO : enable using this when data source creation is enabled
 							{
 								title: constants.selectConnectionRadioButtonsTitle,
@@ -121,10 +125,6 @@ export class PublishDatabaseDialog {
 							{
 								title: constants.databaseNameLabel,
 								component: this.targetDatabaseTextBox
-							},
-							{
-								title: constants.profileWarningText,
-								component: <azdata.ButtonComponent>this.loadProfileButton
 							}
 						]
 					}
