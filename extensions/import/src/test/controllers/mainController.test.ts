@@ -25,8 +25,8 @@ describe('Main Controller', function () {
 		mockApiWrapper = TypeMoq.Mock.ofType(ApiWrapper);
 	});
 
-	it('Should resgister flatFileImportStartCommand after activate is called', async function(){
-		this.timeout(30000);
+	it('Should download required binaries and resgister flatFileImportStartCommand after activate is called', async function(){
+		this.timeout(50000);
 
 		// using vscode and azdata APIs available during tests
 		mockApiWrapper.callBase = true;
@@ -40,7 +40,7 @@ describe('Main Controller', function () {
 		// verifying that the command is registered.
 		mockApiWrapper.verify(x => x.registerTask(constants.flatFileImportStartCommand, TypeMoq.It.isAny()), TypeMoq.Times.once());
 
-		//Checking if file .net code files are downloaded
+		//Checking if .net code files are downloaded
 		should.equal(fs.existsSync(path.join(extensionPath, 'flatfileimportservice')), true);
 	});
 });
