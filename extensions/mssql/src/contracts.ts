@@ -35,13 +35,17 @@ export class TelemetryParams {
 export interface RequestSecurityTokenParams {
 	authority: string;
 	provider: string;
-	resource: string;
-	scope: string;
+	resource?: string;
+	scope?: string;
+	serverName?: string;
+	connectionId?: string;
+	databaseName?: string;
 }
 
 export interface RequestSecurityTokenResponse {
 	accountKey: string;
 	token: string;
+	expiration: number;
 }
 
 export namespace SecurityTokenRequest {

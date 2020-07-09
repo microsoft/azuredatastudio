@@ -64,6 +64,11 @@ export interface Token extends AccountKey {
 	 * TokenType
 	 */
 	tokenType: string;
+
+	/**
+	 * TokenExpiration - in epoch - seconds
+	 */
+	tokenExpiration: number;
 }
 
 export interface TokenClaims { // https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens
@@ -93,7 +98,7 @@ export interface TokenClaims { // https://docs.microsoft.com/en-us/azure/active-
 export type TokenRefreshResponse = { accessToken: AccessToken, refreshToken: RefreshToken, tokenClaims: TokenClaims, expiresOn: string };
 
 export abstract class AzureAuth implements vscode.Disposable {
-	protected readonly memdb = new MemoryDatabase();
+	private readonly memdb = new MemoryDatabase();
 
 	protected readonly WorkSchoolAccountType: string = 'work_school';
 	protected readonly MicrosoftAccountType: string = 'microsoft';
@@ -197,29 +202,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		for (const tenant of azureAccount.properties.tenants) {
 			let cachedTokens = await this.getCachedToken(account.key, resource.id, tenant.id);
-			// Check expiration
-			if (cachedTokens) {
-				const expiresOn = Number(this.memdb.get(this.createMemdbString(account.key.accountId, tenant.id, resource.id)));
-				const currentTime = new Date().getTime() / 1000;
-
-				if (!Number.isNaN(expiresOn)) {
-					const remainingTime = expiresOn - currentTime;
-					const fiveMinutes = 5 * 60;
-					// If the remaining time is less than five minutes, assume the token has expired. It's too close to expiration to be meaningful.
-					if (remainingTime < fiveMinutes) {
-						cachedTokens = undefined;
-					}
-				} else {
-					// No expiration date, assume expired.
-					cachedTokens = undefined;
-					console.info('Assuming expired token due to no expiration date - this is expected on first launch.');
-				}
-
-			}
-
 			// Refresh
 			if (!cachedTokens) {
-
 				const baseToken = await this.getCachedToken(account.key);
 				if (!baseToken) {
 					account.isStale = true;
@@ -238,15 +222,16 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 				cachedTokens = await this.getCachedToken(account.key, resource.id, tenant.id);
 				if (!cachedTokens) {
-					console.log('Refresh access tokens didn not set cache');
+					console.log('Refresh access tokens did not set cache');
 					return undefined;
 				}
 			}
-			const { accessToken } = cachedTokens;
+			const { accessToken, expiresOn } = cachedTokens;
 			response[tenant.id] = {
 				token: accessToken.token,
 				key: accessToken.key,
-				tokenType: 'Bearer'
+				tokenType: 'Bearer',
+				tokenExpiration: expiresOn
 			};
 		}
 
@@ -418,7 +403,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 				}
 			}
 
-			this.memdb.set(this.createMemdbString(refreshResponse.accessToken.key, tenant, resourceId), refreshResponse.expiresOn);
 			return refreshResponse;
 		} catch (err) {
 			const msg = localize('azure.noToken', "Retrieving the Azure token failed. Please sign in again.");
@@ -481,13 +465,13 @@ export abstract class AzureAuth implements vscode.Disposable {
 			throw new Error(msg);
 		}
 
-		await this.setCachedToken(account, accessToken, refreshToken, resource?.id, tenant?.id);
+		await this.setCachedToken(account, accessToken, refreshToken, getTokenResponse.expiresOn, resource?.id, tenant?.id);
 
 		return getTokenResponse;
 	}
 
 
-	public async setCachedToken(account: azdata.AccountKey, accessToken: AccessToken, refreshToken: RefreshToken, resourceId?: string, tenantId?: string): Promise<void> {
+	public async setCachedToken(account: azdata.AccountKey, accessToken: AccessToken, refreshToken: RefreshToken, expiresOn: string, resourceId?: string, tenantId?: string): Promise<void> {
 		const msg = localize('azure.cacheErrorAdd', "Error when adding your account to the cache.");
 		resourceId = resourceId ?? '';
 		tenantId = tenantId ?? '';
@@ -502,9 +486,11 @@ export abstract class AzureAuth implements vscode.Disposable {
 			console.error('Error when storing tokens.', ex);
 			throw new Error(msg);
 		}
+
+		this.memdb.set(this.createMemdbString(refreshToken.key, tenantId, resourceId), expiresOn);
 	}
 
-	public async getCachedToken(account: azdata.AccountKey, resourceId?: string, tenantId?: string): Promise<{ accessToken: AccessToken, refreshToken: RefreshToken } | undefined> {
+	public async getCachedToken(account: azdata.AccountKey, resourceId?: string, tenantId?: string): Promise<{ accessToken: AccessToken, refreshToken: RefreshToken, expiresOn: number } | undefined> {
 		resourceId = resourceId ?? '';
 		tenantId = tenantId ?? '';
 
@@ -529,9 +515,29 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return undefined;
 		}
 
+		let expiresOn = 0;
+		// This is only an opeeration on actual resourced tokens
+		if (resourceId) {
+			expiresOn = Number(this.memdb.get(this.createMemdbString(account.accountId, tenantId, resourceId)));
+
+			if (!expiresOn || Number.isNaN(expiresOn)) {
+				console.info('Assuming expired token due to no expiration date - this is expected on first launch.');
+				return undefined;
+			}
+
+			const currentTime = new Date().getTime() / 1000;
+			const remainingTime = expiresOn - currentTime;
+			const fiveMinutes = 5 * 60;
+
+			if (remainingTime < fiveMinutes) {
+				return undefined;
+			}
+		}
+
 		return {
 			accessToken,
-			refreshToken
+			refreshToken,
+			expiresOn
 		};
 
 	}

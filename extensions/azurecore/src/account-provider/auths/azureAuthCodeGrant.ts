@@ -201,12 +201,12 @@ export class AzureAuthCodeGrant extends AzureAuth {
 
 	public async login(): Promise<azdata.Account | azdata.PromptFailedResult> {
 		const { tokenRefreshResponse, authCompleteDeferred } = await this.promptForConsent(this.metadata.settings.signInResourceId);
-		const { accessToken, refreshToken, tokenClaims } = tokenRefreshResponse;
+		const { accessToken, refreshToken, tokenClaims, expiresOn } = tokenRefreshResponse;
 
 		const tenants = await this.getTenants(accessToken);
 
 		try {
-			await this.setCachedToken({ accountId: accessToken.key, providerId: this.metadata.id }, accessToken, refreshToken);
+			await this.setCachedToken({ accountId: accessToken.key, providerId: this.metadata.id }, accessToken, refreshToken, expiresOn);
 		} catch (ex) {
 			console.log(ex);
 			if (ex.msg) {

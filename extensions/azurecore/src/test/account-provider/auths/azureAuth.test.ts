@@ -57,7 +57,7 @@ describe('AccountProvider.AzureAuth', function (): void {
 	});
 
 	it('Basic token set and get', async function (): Promise<void> {
-		await baseAuth.setCachedToken(accountKey, accessToken, refreshToken);
+		await baseAuth.setCachedToken(accountKey, accessToken, refreshToken, `${(new Date().getTime() / 1000) + 5 * 60}`);
 		const result = await baseAuth.getCachedToken(accountKey);
 
 		should(JSON.stringify(result.accessToken)).be.equal(JSON.stringify(accessToken));

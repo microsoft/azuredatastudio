@@ -805,6 +805,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * @param connection The connection to fill in or update
 	 */
 	private async fillInOrClearAzureToken(connection: interfaces.IConnectionProfile): Promise<boolean> {
+		return true;
 		if (connection.authenticationType !== Constants.azureMFA && connection.authenticationType !== Constants.azureMFAAndUser) {
 			connection.options['azureAccountToken'] = undefined;
 			return true;

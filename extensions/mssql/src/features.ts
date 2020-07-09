@@ -42,53 +42,73 @@ export class AccountFeature implements StaticFeature {
 		let timeToLiveInSeconds = 10;
 		this.tokenCache = new DataItemCache(this.getToken, timeToLiveInSeconds);
 		this._client.onRequest(contracts.SecurityTokenRequest.type, async (request): Promise<contracts.RequestSecurityTokenResponse | undefined> => {
-			return this.tokenCache.getData(request);
+			try {
+				console.log('req-in', request.scope);
+				const x = await this.tokenCache.getData(request);
+				console.log('req-out', request.scope);
+				return x;
+			} catch (ex) {
+				console.log('req-error', request.scope);
+				console.log(ex);
+				return undefined;
+			}
 		});
 	}
 
 	protected async getToken(request: contracts.RequestSecurityTokenParams): Promise<contracts.RequestSecurityTokenResponse | undefined> {
-		const accountList = await azdata.accounts.getAllAccounts();
-		let account: azdata.Account;
+		try {
+			const accountList = await azdata.accounts.getAllAccounts();
+			let account: azdata.Account;
+			let resource: azdata.AzureResource = azdata.AzureResource.AzureKeyVault;
 
-		if (accountList.length < 1) {
-			// TODO: Prompt user to add account
-			window.showErrorMessage(localize('mssql.missingLinkedAzureAccount', "Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account is available. Please add a linked Azure account and retry the query."));
-			return undefined;
-		} else if (accountList.length > 1) {
-			let options: QuickPickOptions = {
-				ignoreFocusOut: true,
-				placeHolder: localize('mssql.chooseLinkedAzureAccount', "Please select a linked Azure account:")
-			};
-			let items = accountList.map(a => new AccountFeature.AccountQuickPickItem(a));
-			let selectedItem = await window.showQuickPick(items, options);
-			if (!selectedItem) { // The user canceled the selection.
-				window.showErrorMessage(localize('mssql.canceledLinkedAzureAccountSelection', "Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account was selected. Please retry the query and select a linked Azure account when prompted."));
+			if (accountList.length < 1) {
+				// TODO: Prompt user to add account
+				window.showErrorMessage(localize('mssql.missingLinkedAzureAccount', "Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account is available. Please add a linked Azure account and retry the query."));
+				return undefined;
+			} else if (accountList.length > 1) {
+				let options: QuickPickOptions = {
+					ignoreFocusOut: true,
+					placeHolder: localize('mssql.chooseLinkedAzureAccount', "Please select a linked Azure account:")
+				};
+				let items = accountList.map(a => new AccountFeature.AccountQuickPickItem(a));
+				let selectedItem = await window.showQuickPick(items, options);
+				if (!selectedItem) { // The user canceled the selection.
+					window.showErrorMessage(localize('mssql.canceledLinkedAzureAccountSelection', "Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account was selected. Please retry the query and select a linked Azure account when prompted."));
+					return undefined;
+				}
+				account = selectedItem.account;
+			} else {
+				account = accountList[0];
+			}
+
+
+			if (request.resource.includes('database')) {
+				resource = azdata.AzureResource.Sql;
+			}
+
+			const securityToken: { [key: string]: any } = await azdata.accounts.getSecurityToken(account, resource);
+			const tenant = account.properties.tenants.find((t: { [key: string]: string }) => request.authority.toLowerCase().includes(t.id.toLowerCase()));
+			const unauthorizedMessage = localize('mssql.insufficientlyPrivelagedAzureAccount', "The configured Azure account for {0} does not have sufficient permissions for Azure Key Vault to access a column master key for Always Encrypted.", account.key.accountId);
+			if (!tenant) {
+				window.showErrorMessage(unauthorizedMessage);
 				return undefined;
 			}
-			account = selectedItem.account;
-		} else {
-			account = accountList[0];
-		}
+			let tokenBundle = securityToken[tenant.id];
+			if (!tokenBundle) {
+				window.showErrorMessage(unauthorizedMessage);
+				return undefined;
+			}
 
-		const securityToken: { [key: string]: any } = await azdata.accounts.getSecurityToken(account, azdata.AzureResource.AzureKeyVault);
-		const tenant = account.properties.tenants.find((t: { [key: string]: string }) => request.authority.includes(t.id));
-		const unauthorizedMessage = localize('mssql.insufficientlyPrivelagedAzureAccount', "The configured Azure account for {0} does not have sufficient permissions for Azure Key Vault to access a column master key for Always Encrypted.", account.key.accountId);
-		if (!tenant) {
-			window.showErrorMessage(unauthorizedMessage);
+			let params: contracts.RequestSecurityTokenResponse = {
+				accountKey: JSON.stringify(account.key),
+				token: tokenBundle.token,
+				expiration: tokenBundle.tokenExpiration
+			};
+
+			return params;
+		} catch (ex) {
 			return undefined;
 		}
-		let tokenBundle = securityToken[tenant.id];
-		if (!tokenBundle) {
-			window.showErrorMessage(unauthorizedMessage);
-			return undefined;
-		}
-
-		let params: contracts.RequestSecurityTokenResponse = {
-			accountKey: JSON.stringify(account.key),
-			token: securityToken[tenant.id].token
-		};
-
-		return params;
 	}
 
 	static AccountQuickPickItem = class implements QuickPickItem {

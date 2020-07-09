@@ -37,7 +37,7 @@ interface DeviceCodeLogin { // https://docs.microsoft.com/en-us/azure/active-dir
 interface DeviceCodeLoginResult {
 	token_type: string,
 	scope: string,
-	expires_in: number,
+	expires_in: number, // seconds
 	access_token: string,
 	refresh_token: string,
 }
@@ -94,7 +94,9 @@ export class AzureDeviceCode extends AzureAuth {
 				key: accessToken.key,
 			};
 
-			await this.setCachedToken({ accountId: accessToken.key, providerId: this.metadata.id }, accessToken, refreshToken);
+			const expiresOn = new Date().getTime() + Number(finalDeviceLogin.expires_in);
+
+			await this.setCachedToken({ accountId: accessToken.key, providerId: this.metadata.id }, accessToken, refreshToken, `${expiresOn}`);
 
 			const tenants = await this.getTenants(accessToken);
 			const account = this.createAccount(tokenClaims, accessToken.key, tenants);
