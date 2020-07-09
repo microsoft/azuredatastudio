@@ -792,6 +792,7 @@ async function processAzureAccountField(context: AzureAccountFieldContext): Prom
 				accountValueToAccountMap.set(displayName, account);
 				return displayName;
 			}));
+			console.warn(`number of accounts: ${accounts.length}`);
 			const selectedAccount = accountDropdown.value ? accountValueToAccountMap.get(accountDropdown.value.toString()) : undefined;
 			await handleSelectedAccountChanged(context, selectedAccount, subscriptionDropdown, subscriptionValueToSubscriptionMap, resourceGroupDropdown, locationDropdown);
 		} catch (error) {
@@ -806,7 +807,11 @@ async function processAzureAccountField(context: AzureAccountFieldContext): Prom
 		await vscode.commands.executeCommand('workbench.actions.modal.linkedAccount');
 		await populateAzureAccounts();
 	}));
-	await populateAzureAccounts();
+
+	// populate the values in a different batch as the initialization to avoid the issue that the account list is empty even though the values are correctly.
+	setTimeout(async () => {
+		await populateAzureAccounts();
+	}, 0);
 }
 
 function createAzureAccountDropdown(context: AzureAccountFieldContext): AzureAccountComponents {
