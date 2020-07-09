@@ -21,6 +21,6 @@ export class QueryEditors {
 			await this.code.dispatchKeybinding('ctrl+n');
 		}
 
-		await this.editors.waitForEditorFocus('SQLQuery_2');
+		await this.editors.waitForEditorFocus('SQLQuery_1');
 	}
 }
