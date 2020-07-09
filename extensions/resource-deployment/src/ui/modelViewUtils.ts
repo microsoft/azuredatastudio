@@ -802,7 +802,11 @@ async function processAzureAccountField(context: AzureAccountFieldContext): Prom
 		await vscode.commands.executeCommand('workbench.actions.modal.linkedAccount');
 		await populateAzureAccounts();
 	}));
-	await populateAzureAccounts();
+
+	// populate the values in a different batch as the initialization to avoid the issue that the account list is empty even though the values are correctly.
+	setTimeout(async () => {
+		await populateAzureAccounts();
+	}, 0);
 }
 
 function createAzureAccountDropdown(context: AzureAccountFieldContext): AzureAccountComponents {
