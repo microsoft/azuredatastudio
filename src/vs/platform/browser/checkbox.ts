@@ -23,4 +23,3 @@ export class ThemableCheckboxActionViewItem extends CheckboxActionViewItem {
 	}
 
 }
-
