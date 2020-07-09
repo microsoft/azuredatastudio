@@ -13,7 +13,6 @@ import { JupyterServerInstanceStub } from '../common';
 import { LocalJupyterServerManager, ServerInstanceFactory } from '../../jupyter/jupyterServerManager';
 import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
 import { Deferred } from '../../common/promise';
-import { ApiWrapper } from '../../common/apiWrapper';
 import * as testUtils from '../common/testUtils';
 import { IServerInstance } from '../../jupyter/common';
 import { MockExtensionContext } from '../common/stubs';
@@ -26,14 +25,10 @@ describe('Local Jupyter Server Manager', function (): void {
 	let expectedPath = 'my/notebook.ipynb';
 	let serverManager: LocalJupyterServerManager;
 	let deferredInstall: Deferred<void>;
-	let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
 	let mockExtensionContext: MockExtensionContext;
 	let mockFactory: TypeMoq.IMock<ServerInstanceFactory>;
 	beforeEach(() => {
 		mockExtensionContext = new MockExtensionContext();
-		mockApiWrapper = TypeMoq.Mock.ofType(ApiWrapper);
-		mockApiWrapper.setup(a => a.showErrorMessage(TypeMoq.It.isAny()));
-		mockApiWrapper.setup(a => a.getWorkspacePathFromUri(TypeMoq.It.isAny())).returns(() => undefined);
 		mockFactory = TypeMoq.Mock.ofType(ServerInstanceFactory);
 
 		deferredInstall = new Deferred<void>();
@@ -45,7 +40,6 @@ describe('Local Jupyter Server Manager', function (): void {
 			documentPath: expectedPath,
 			jupyterInstallation: mockInstall.object,
 			extensionContext: mockExtensionContext,
-			apiWrapper: mockApiWrapper.object,
 			factory: mockFactory.object
 		});
 	});

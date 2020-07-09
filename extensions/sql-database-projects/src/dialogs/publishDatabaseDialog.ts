@@ -112,6 +112,10 @@ export class PublishDatabaseDialog {
 					{
 						title: constants.targetDatabaseSettings,
 						components: [
+							{
+								title: constants.profileWarningText,
+								component: <azdata.ButtonComponent>this.loadProfileButton
+							},
 							/* TODO : enable using this when data source creation is enabled
 							{
 								title: constants.selectConnectionRadioButtonsTitle,
@@ -121,10 +125,6 @@ export class PublishDatabaseDialog {
 							{
 								title: constants.databaseNameLabel,
 								component: this.targetDatabaseTextBox
-							},
-							{
-								title: constants.profileWarningText,
-								component: <azdata.ButtonComponent>this.loadProfileButton
 							}
 						]
 					}
@@ -253,7 +253,7 @@ export class PublishDatabaseDialog {
 			}).component();
 
 		this.connectionsRadioButton.checked = true;
-		this.connectionsRadioButton.onDidClick(async () => {
+		this.connectionsRadioButton.onDidClick(() => {
 			this.formBuilder!.removeFormItem(<azdata.FormComponent>this.dataSourcesFormComponent);
 			this.formBuilder!.insertFormItem(<azdata.FormComponent>this.targetConnectionFormComponent, 2);
 			this.connectionIsDataSource = false;
@@ -266,7 +266,7 @@ export class PublishDatabaseDialog {
 				label: constants.dataSourceRadioButtonLabel
 			}).component();
 
-		this.dataSourcesRadioButton.onDidClick(async () => {
+		this.dataSourcesRadioButton.onDidClick(() => {
 			this.formBuilder!.removeFormItem(<azdata.FormComponent>this.targetConnectionFormComponent);
 			this.formBuilder!.insertFormItem(<azdata.FormComponent>this.dataSourcesFormComponent, 2);
 			this.connectionIsDataSource = true;
@@ -370,7 +370,7 @@ export class PublishDatabaseDialog {
 			}
 
 			// change the database inputbox value to the connection's database if there is one
-			if (this.connection.options.database) {
+			if (this.connection.options.database && this.connection.options.database !== constants.master) {
 				this.targetDatabaseTextBox!.value = this.connection.options.database;
 			}
 		});
@@ -423,7 +423,7 @@ export class PublishDatabaseDialog {
 				this.profileSqlCmdVars = result.sqlCmdVariables;
 				const data = this.convertSqlCmdVarsToTableFormat(this.getSqlCmdVariablesForPublish());
 
-				(<azdata.TableComponent>this.sqlCmdVariablesTable).updateProperties({
+				await (<azdata.TableComponent>this.sqlCmdVariablesTable).updateProperties({
 					data: data
 				});
 

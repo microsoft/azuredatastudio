@@ -190,7 +190,7 @@ export class AddNewPackageTab {
 			"Installing {0} {1}",
 			packageName,
 			packageVersion);
-		this.jupyterInstallation.apiWrapper.startBackgroundOperation({
+		azdata.tasks.startBackgroundOperation({
 			displayName: taskName,
 			description: taskName,
 			isCancelable: false,

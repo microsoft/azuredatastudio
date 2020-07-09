@@ -11,7 +11,6 @@ import * as fileServices from 'fs';
 import * as fs from 'fs-extra';
 import * as loc from '../common/localizedConstants';
 import { IJupyterBookToc, IJupyterBookSection } from '../contracts/content';
-import { ApiWrapper } from '../common/apiWrapper';
 
 
 const fsPromises = fileServices.promises;
@@ -22,7 +21,6 @@ export class BookModel {
 	private _tableOfContentsPath: string;
 
 	private _errorMessage: string;
-	private apiWrapper: ApiWrapper = new ApiWrapper();
 
 	constructor(
 		public readonly bookPath: string,
@@ -130,7 +128,7 @@ export class BookModel {
 				this._bookItems.push(book);
 			} catch (e) {
 				this._errorMessage = loc.readBookError(this.bookPath, e instanceof Error ? e.message : e);
-				this.apiWrapper.showErrorMessage(this._errorMessage);
+				vscode.window.showErrorMessage(this._errorMessage);
 			}
 		}
 		return this._bookItems;
@@ -216,7 +214,7 @@ export class BookModel {
 						notebooks.push(markdown);
 					} else {
 						this._errorMessage = loc.missingFileError(sections[i].title);
-						this.apiWrapper.showErrorMessage(this._errorMessage);
+						vscode.window.showErrorMessage(this._errorMessage);
 					}
 				}
 			} else {
