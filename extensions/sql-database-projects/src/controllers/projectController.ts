@@ -634,11 +634,15 @@ export class ProjectsController {
 			model.projName = await this.getProjectName(model.database);
 			let newProjFolderUri = (await this.getFolderLocation()).fsPath;
 			model.extractTarget = await this.getExtractTarget();
+			model.version = '1.0.0.0';
 
 			const newProjFilePath = await this.createNewProject(model.projName, Uri.file(newProjFolderUri), true);
 
 			model.filePath = path.dirname(newProjFilePath);
-			model.version = '1.0.0.0';
+
+			if (model.extractTarget === mssql.ExtractTarget.file) {
+				model.filePath = path.join(model.filePath, model.projName + '.sql'); // File extractTarget specifies the exact file rather than the containing folder
+			}
 
 			const project = await Project.openProject(newProjFilePath);
 
@@ -764,7 +768,7 @@ export class ProjectsController {
 		return projUri;
 	}
 
-	private async importApiCall(model: ImportDataModel): Promise<void> {
+	public async importApiCall(model: ImportDataModel): Promise<void> {
 		let ext = this.apiWrapper.getExtension(mssql.extension.name)!;
 
 		const service = (await ext.activate() as mssql.IExtension).dacFx;

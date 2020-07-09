@@ -388,6 +388,33 @@ describe('ProjectsController: import operations', function (): void {
 		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
 		await testUtils.shouldThrowSpecificError(async () => await projController.importNewDatabaseProject({ connectionProfile: mockConnectionProfile }), constants.projectLocationRequired);
 	});
+
+	it('Should set model filePath correctly for ExtractType = File and not-File.', async function (): Promise<void> {
+		const projectName = 'MyProjectName';
+		let folderPath = await testUtils.generateTestFolderPath();
+
+		testContext.apiWrapper.setup(x => x.showInputBox(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(projectName));
+		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({ label: constants.file }));
+		testContext.apiWrapper.setup(x => x.showOpenDialog(TypeMoq.It.isAny())).returns(() => Promise.resolve([vscode.Uri.file(folderPath)]));
+
+		let importPath;
+
+		let projController = TypeMoq.Mock.ofType(ProjectsController, undefined, undefined, testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+		projController.callBase = true;
+
+		projController.setup(x => x.importApiCall(TypeMoq.It.isAny())).returns(async (model) => { importPath = model.filePath; });
+
+		await projController.object.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
+		should(importPath).equal(vscode.Uri.file(path.join(folderPath, projectName, projectName + '.sql')).fsPath, 'model.filePath should be set to a specific file for ExtractTarget === file');
+
+		// reset for counter-test
+		importPath = undefined;
+		folderPath = await testUtils.generateTestFolderPath();
+		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({ label: constants.schemaObjectType }));
+
+		await projController.object.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
+		should(importPath).equal(vscode.Uri.file(path.join(folderPath, projectName)).fsPath);//, 'model.filePath should be set to a folder for ExtractTarget !== file');
+	});
 });
 
 describe('ProjectsController: add database reference operations', function (): void {
