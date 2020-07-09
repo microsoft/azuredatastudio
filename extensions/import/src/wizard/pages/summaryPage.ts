@@ -10,38 +10,54 @@ import { InsertDataResponse } from '../../services/contracts';
 import * as constants from '../../common/constants';
 
 export class SummaryPage extends ImportPage {
-	public table: azdata.TableComponent;
-	public statusText: azdata.TextComponent;
-	public loading: azdata.LoadingComponent;
-	public form: azdata.FormContainer;
+	private _table: azdata.TableComponent;
+	private _statusText: azdata.TextComponent;
+	private _loading: azdata.LoadingComponent;
+	private _form: azdata.FormContainer;
+
+	public get table(): azdata.TableComponent {
+		return this._table;
+	}
+
+	public get statusText(): azdata.TextComponent {
+		return this._statusText;
+	}
+
+	public get loading(): azdata.LoadingComponent {
+		return this._loading;
+	}
+
+	public get form(): azdata.FormContainer {
+		return this._form;
+	}
 
 	async start(): Promise<boolean> {
-		this.table = this.view.modelBuilder.table().component();
-		this.statusText = this.view.modelBuilder.text().component();
-		this.loading = this.view.modelBuilder.loadingComponent().withItem(this.statusText).component();
+		this._table = this.view.modelBuilder.table().component();
+		this._statusText = this.view.modelBuilder.text().component();
+		this._loading = this.view.modelBuilder.loadingComponent().withItem(this._statusText).component();
 
-		this.form = this.view.modelBuilder.formContainer().withFormItems(
+		this._form = this.view.modelBuilder.formContainer().withFormItems(
 			[
 				{
-					component: this.table,
+					component: this._table,
 					title: constants.importInformationText
 				},
 				{
-					component: this.loading,
+					component: this._loading,
 					title: constants.importStatusText
 				}
 			]
 		).component();
 
-		await this.view.initializeModel(this.form);
+		await this.view.initializeModel(this._form);
 		return true;
 	}
 
 	async onPageEnter(): Promise<boolean> {
-		this.loading.loading = true;
+		this._loading.loading = true;
 		this.populateTable();
 		await this.handleImport();
-		this.loading.loading = false;
+		this._loading.loading = false;
 		this.instance.setImportAnotherFileVisibility(true);
 
 		return true;
@@ -54,12 +70,12 @@ export class SummaryPage extends ImportPage {
 	}
 	public setupNavigationValidator() {
 		this.instance.registerNavigationValidator((info) => {
-			return !this.loading.loading;
+			return !this._loading.loading;
 		});
 	}
 
 	private populateTable() {
-		this.table.updateProperties({
+		this._table.updateProperties({
 			data: [
 				[constants.serverNameText, this.model.server.providerName],
 				[constants.databaseText, this.model.database],
@@ -116,7 +132,7 @@ export class SummaryPage extends ImportPage {
 			//updateText = localize('flatFileImport.success.rows', '✔ You have successfully inserted {0} rows.', rows);
 			//}
 		}
-		this.statusText.updateProperties({
+		this._statusText.updateProperties({
 			value: updateText
 		});
 		return true;
