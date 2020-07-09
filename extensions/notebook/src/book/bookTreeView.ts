@@ -242,7 +242,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		} else if (uri.fsPath) {
 			notebookPath = uri.fsPath;
 		}
-		bookItem = await this.findAndExpandParentNode(notebookPath);
+		bookItem = notebookPath ? await this.findAndExpandParentNode(notebookPath) : undefined;
 
 		if (bookItem) {
 			// Select + focus item in viewlet if books viewlet is already open, or if we pass in variable
