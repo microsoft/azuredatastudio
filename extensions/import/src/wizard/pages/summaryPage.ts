@@ -19,45 +19,61 @@ export class SummaryPage extends ImportPage {
 		return this._table;
 	}
 
+	public set table(table: azdata.TableComponent) {
+		this._table = table;
+	}
+
 	public get statusText(): azdata.TextComponent {
 		return this._statusText;
+	}
+
+	public set statusText(statusText: azdata.TextComponent) {
+		this._statusText = statusText;
 	}
 
 	public get loading(): azdata.LoadingComponent {
 		return this._loading;
 	}
 
+	public set loading(loading: azdata.LoadingComponent) {
+		this._loading = loading;
+	}
+
 	public get form(): azdata.FormContainer {
 		return this._form;
 	}
 
-	async start(): Promise<boolean> {
-		this._table = this.view.modelBuilder.table().component();
-		this._statusText = this.view.modelBuilder.text().component();
-		this._loading = this.view.modelBuilder.loadingComponent().withItem(this._statusText).component();
+	public set form(form: azdata.FormContainer) {
+		this._form = form;
+	}
 
-		this._form = this.view.modelBuilder.formContainer().withFormItems(
+	async start(): Promise<boolean> {
+		this.table = this.view.modelBuilder.table().component();
+		this.statusText = this.view.modelBuilder.text().component();
+		this.loading = this.view.modelBuilder.loadingComponent().withItem(this.statusText).component();
+
+		this.form = this.view.modelBuilder.formContainer().withFormItems(
 			[
 				{
-					component: this._table,
+					component: this.table,
 					title: constants.importInformationText
 				},
 				{
-					component: this._loading,
+					component: this.loading,
 					title: constants.importStatusText
 				}
 			]
 		).component();
 
-		await this.view.initializeModel(this._form);
+		await this.view.initializeModel(this.form);
 		return true;
 	}
 
 	async onPageEnter(): Promise<boolean> {
-		this._loading.loading = true;
+		this.loading.loading = true;
 		this.populateTable();
 		await this.handleImport();
-		this._loading.loading = false;
+		this.loading.loading = false;
 		this.instance.setImportAnotherFileVisibility(true);
 
 		return true;
@@ -70,12 +86,12 @@ export class SummaryPage extends ImportPage {
 	}
 	public setupNavigationValidator() {
 		this.instance.registerNavigationValidator((info) => {
-			return !this._loading.loading;
+			return !this.loading.loading;
 		});
 	}
 
 	private populateTable() {
-		this._table.updateProperties({
+		this.table.updateProperties({
 			data: [
 				[constants.serverNameText, this.model.server.providerName],
 				[constants.databaseText, this.model.database],
@@ -117,7 +133,7 @@ export class SummaryPage extends ImportPage {
 
 		let updateText: string;
 		if (!result || !result.result.success) {
-			updateText = '✗ ';
+			updateText = constants.summaryErrorSymbol;
 			if (!result) {
 				updateText += err;
 			} else {
@@ -132,7 +148,7 @@ export class SummaryPage extends ImportPage {
 			//updateText = localize('flatFileImport.success.rows', '✔ You have successfully inserted {0} rows.', rows);
 			//}
 		}
-		this._statusText.updateProperties({
+		this.statusText.updateProperties({
 			value: updateText
 		});
 		return true;

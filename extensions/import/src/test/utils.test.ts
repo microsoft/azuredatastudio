@@ -203,6 +203,10 @@ export class TestExtensionContext implements vscode.ExtensionContext {
 	logPath: string;
 }
 
+export async function getExtensionPath(): Promise<string> {
+	return await vscode.extensions.getExtension('Microsoft.import').extensionPath;
+}
+
 export class TestImportDataModel implements ImportDataModel {
 	server: azdata.connection.Connection;
 	serverId: string;

@@ -63,11 +63,11 @@ describe('import extension prose preview tests', function () {
 		});
 
 		// checking if all the required components are correctly initialized
-		should.notEqual(prosePreviewPage.table, undefined);
-		should.notEqual(prosePreviewPage.refresh, undefined);
-		should.notEqual(prosePreviewPage.loading, undefined);
-		should.notEqual(prosePreviewPage.form, undefined);
-		should.notEqual(prosePreviewPage.resultTextComponent, undefined);
+		should.notEqual(prosePreviewPage.table, undefined, 'table should not be undefined');
+		should.notEqual(prosePreviewPage.refresh, undefined, 'refresh should not be undefined');
+		should.notEqual(prosePreviewPage.loading, undefined, 'loading should not be undefined');
+		should.notEqual(prosePreviewPage.form, undefined, 'form should not be undefined');
+		should.notEqual(prosePreviewPage.resultTextComponent, undefined, 'resultTextComponent should not be undefined');
 
 		// calling the clean up code
 		await prosePreviewPage.onPageLeave();

@@ -16,19 +16,16 @@ import * as constants from '../../../common/constants';
 
 describe('File config page', function () {
 
-	// declaring mock variables
 	let mockFlatFileWizard: TypeMoq.IMock<FlatFileWizard>;
 	let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
 	let mockImportModel: TypeMoq.IMock<ImportDataModel>;
 
-	// declaring instance variables
 	let fileConfigPage: FileConfigPage;
 	let wizard: azdata.window.Wizard;
 	let page: azdata.window.WizardPage;
 	let pages: Map<number, ImportPage> = new Map<number, ImportPage>();
 
 	this.beforeEach(function () {
-		// initializing mock variables
 		mockApiWrapper = TypeMoq.Mock.ofType(ApiWrapper);
 		mockFlatFileWizard = TypeMoq.Mock.ofType(FlatFileWizard, TypeMoq.MockBehavior.Loose, undefined, TypeMoq.It.isAny(), mockApiWrapper.object);
 		mockImportModel = TypeMoq.Mock.ofType(TestImportDataModel, TypeMoq.MockBehavior.Loose);
@@ -36,14 +33,12 @@ describe('File config page', function () {
 		// using the actual vscode and azdata apis.
 		mockApiWrapper.callBase = true;
 
-		// creating a wizard and adding page that will contain the fileConfigPage
 		wizard = mockApiWrapper.object.createWizard(constants.wizardNameText);
 		page = mockApiWrapper.object.createWizardPage(constants.page1NameText);
 	});
 
 	it('getSchema returns active schema first', async function () {
 
-		// Creating a mock query provider that will return mock results for schema query
 		let mockQueryProvider = TypeMoq.Mock.ofType(TestQueryProvider);
 
 		// mock result for the schema query
@@ -84,17 +79,14 @@ describe('File config page', function () {
 		mockQueryProvider.setup(x => x.runQueryAndReturn(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(async () => { return schemaQueryResult; });
 		mockApiWrapper.setup(x => x.getProvider<azdata.QueryProvider>(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => { return mockQueryProvider.object; });
 
-		// creating a fileConfig Page and calling getSchema Value
 		let fileConfigPage = new FileConfigPage(mockFlatFileWizard.object, TypeMoq.It.isAny(), mockImportModel.object, TypeMoq.It.isAny(), TypeMoq.It.isAny(), mockApiWrapper.object);
 		let actualSchemaValues = await fileConfigPage.getSchemaValues();
 
-		// verifying if the correct values were returned by the getSchema method.
 		should(expectedSchemaValues).deepEqual(actualSchemaValues);
 	});
 
 	it('checking if all components are initialized properly', async function () {
 
-		// Opening the wizard and initializing the page as FileConfigPage
 		await new Promise(function (resolve) {
 			page.registerContent(async (view) => {
 				fileConfigPage = new FileConfigPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny(), mockApiWrapper.object);
@@ -110,17 +102,16 @@ describe('File config page', function () {
 		});
 
 		// checking if all the required components are correctly initialized
-		should.notEqual(fileConfigPage.serverDropdown, undefined);
-		should.notEqual(fileConfigPage.databaseDropdown, undefined);
-		should.notEqual(fileConfigPage.fileTextBox, undefined);
-		should.notEqual(fileConfigPage.fileButton, undefined);
-		should.notEqual(fileConfigPage.tableNameTextBox, undefined);
-		should.notEqual(fileConfigPage.schemaDropdown, undefined);
-		should.notEqual(fileConfigPage.form, undefined);
-		should.notEqual(fileConfigPage.databaseLoader, undefined);
-		should.notEqual(fileConfigPage.schemaLoader, undefined);
+		should.notEqual(fileConfigPage.serverDropdown, undefined, 'serverDropdown should not be undefined');
+		should.notEqual(fileConfigPage.databaseDropdown, undefined, 'databaseDropdown should not be undefined');
+		should.notEqual(fileConfigPage.fileTextBox, undefined, 'fileTextBox should not be undefined');
+		should.notEqual(fileConfigPage.fileButton, undefined, 'fileButton should not be undefined');
+		should.notEqual(fileConfigPage.tableNameTextBox, undefined, 'tableNameTextBox should not be undefined');
+		should.notEqual(fileConfigPage.schemaDropdown, undefined, 'schemaDropdown should not be undefined');
+		should.notEqual(fileConfigPage.form, undefined, 'form should not be undefined');
+		should.notEqual(fileConfigPage.databaseLoader, undefined, 'databaseLoader should not be undefined');
+		should.notEqual(fileConfigPage.schemaLoader, undefined, 'schemaLoader should not be undefined');
 
-		// Calling the clean up code
 		await fileConfigPage.onPageLeave();
 		await fileConfigPage.cleanup();
 	});
@@ -130,7 +121,6 @@ describe('File config page', function () {
 		// using the actual vscode and azdata apis.
 		mockApiWrapper.callBase = true;
 
-		// creating a wizard and adding page that will contain the fileConfigPage
 		wizard = mockApiWrapper.object.createWizard(constants.wizardNameText);
 		page = mockApiWrapper.object.createWizardPage(constants.page1NameText);
 
@@ -245,12 +235,10 @@ describe('File config page', function () {
 			{ displayName: 'schema3', name: 'schema3' }
 		];
 
-		// creating mock query provider to get test schemas
 		let mockQueryProvider = TypeMoq.Mock.ofType(TestQueryProvider);
 		mockApiWrapper.setup(x => x.getProvider(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => { return mockQueryProvider.object;});
 		mockQueryProvider.setup(x => x.runQueryAndReturn(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(async () => { return schemaQueryResult; });
 
-		// Opening the wizard and initializing the page as FileConfigPage
 		await new Promise(function (resolve) {
 			page.registerContent(async (view) => {
 				fileConfigPage = new FileConfigPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny(), mockApiWrapper.object);

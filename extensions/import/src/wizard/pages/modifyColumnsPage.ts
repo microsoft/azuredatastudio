@@ -55,16 +55,32 @@ export class ModifyColumnsPage extends ImportPage {
 		return this._table;
 	}
 
+	public set table(table: azdata.DeclarativeTableComponent) {
+		this._table = table;
+	}
+
 	public get loading(): azdata.LoadingComponent {
 		return this._loading;
+	}
+
+	public set loading(loading: azdata.LoadingComponent) {
+		this._loading = loading;
 	}
 
 	public get text(): azdata.TextComponent {
 		return this._text;
 	}
 
+	public set text(text: azdata.TextComponent) {
+		this._text = text;
+	}
+
 	public get form(): azdata.FormContainer {
 		return this._form;
+	}
+
+	public set form(form: azdata.FormContainer) {
+		this._form = form;
 	}
 
 	private static convertMetadata(column: ColumnMetadata): any[] {
@@ -72,13 +88,13 @@ export class ModifyColumnsPage extends ImportPage {
 	}
 
 	async start(): Promise<boolean> {
-		this._loading = this.view.modelBuilder.loadingComponent().component();
-		this._table = this.view.modelBuilder.declarativeTable().component();
-		this._text = this.view.modelBuilder.text().component();
+		this.loading = this.view.modelBuilder.loadingComponent().component();
+		this.table = this.view.modelBuilder.declarativeTable().component();
+		this.text = this.view.modelBuilder.text().component();
 
-		this._table.onDataChanged((e) => {
+		this.table.onDataChanged((e) => {
 			this.model.proseColumns = [];
-			this._table.data.forEach((row) => {
+			this.table.data.forEach((row) => {
 				this.model.proseColumns.push({
 					columnName: row[0],
 					dataType: row[1],
@@ -89,15 +105,15 @@ export class ModifyColumnsPage extends ImportPage {
 		});
 
 
-		this._form = this.view.modelBuilder.formContainer()
+		this.form = this.view.modelBuilder.formContainer()
 			.withFormItems(
 				[
 					{
-						component: this._text,
+						component: this.text,
 						title: ''
 					},
 					{
-						component: this._table,
+						component: this.table,
 						title: ''
 					}
 				], {
@@ -105,16 +121,16 @@ export class ModifyColumnsPage extends ImportPage {
 				componentWidth: '100%'
 			}).component();
 
-		this._loading.component = this._form;
-		await this.view.initializeModel(this._form);
+		this.loading.component = this.form;
+		await this.view.initializeModel(this.form);
 		return true;
 	}
 
 	async onPageEnter(): Promise<boolean> {
-		this._loading.loading = true;
+		this.loading.loading = true;
 		await this.populateTable();
 		this.instance.changeNextButtonLabel(constants.importDataText);
-		this._loading.loading = false;
+		this.loading.loading = false;
 
 		return true;
 	}
@@ -133,7 +149,7 @@ export class ModifyColumnsPage extends ImportPage {
 
 	public setupNavigationValidator() {
 		this.instance.registerNavigationValidator((info) => {
-			return !this._loading.loading && this._table.data && this._table.data.length > 0;
+			return !this.loading.loading && this.table.data && this.table.data.length > 0;
 		});
 	}
 
@@ -144,7 +160,7 @@ export class ModifyColumnsPage extends ImportPage {
 			data.push(ModifyColumnsPage.convertMetadata(column));
 		});
 
-		this._table.updateProperties({
+		this.table.updateProperties({
 			columns: [{
 				displayName: constants.columnNameText,
 				valueType: azdata.DeclarativeDataType.string,

@@ -8,7 +8,7 @@ import * as TypeMoq from 'typemoq';
 import { ApiWrapper } from '../../common/apiWrapper';
 import MainController from '../../controllers/mainController';
 import * as constants from '../../common/constants';
-import { TestExtensionContext } from '../utils.test';
+import { TestExtensionContext, getExtensionPath } from '../utils.test';
 import * as fs from 'fs';
 import * as should from 'should';
 import * as path from 'path';
@@ -16,32 +16,36 @@ import * as path from 'path';
 describe('Main Controller', function () {
 	let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 	let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
-	let extensionPath: string;
 
 	beforeEach(async function () {
+		let extensionPath = await getExtensionPath();
 		// creating a mock Extension Context with current extensionPath
-		extensionPath = await vscode.extensions.getExtension('Microsoft.import').extensionPath;
 		mockExtensionContext = TypeMoq.Mock.ofType(TestExtensionContext, TypeMoq.MockBehavior.Loose, true, extensionPath);
 		mockApiWrapper = TypeMoq.Mock.ofType(ApiWrapper);
 	});
 
-	it('Should download required binaries and resgister flatFileImportStartCommand after activate is called', async function(){
+	it('Should download required binaries and register flatFileImportStartCommand after activate is called', async function () {
 		this.timeout(50000);
 
 		// using vscode and azdata APIs available during tests
 		mockApiWrapper.callBase = true;
 
-		// creating an instance of the Main Controller
 		let mainController = new MainController(mockExtensionContext.object, mockApiWrapper.object);
 
-		// calling the activate function
 		await mainController.activate();
 
-		// verifying that the command is registered.
+		// verifying that the task is registered.
 		mockApiWrapper.verify(x => x.registerTask(constants.flatFileImportStartCommand, TypeMoq.It.isAny()), TypeMoq.Times.once());
 
 		//Checking if .net code files are downloaded
-		should.equal(fs.existsSync(path.join(extensionPath, 'flatfileimportservice')), true);
+		should.equal(await checkPathExists(path.join(await getExtensionPath(), 'flatfileimportservice')), true);
 	});
 });
+
+
+async function checkPathExists(path: string): Promise<boolean> {
+	return fs.promises.access(path, fs.constants.F_OK)
+		.then(() => true)
+		.catch(() => false);
+}
 

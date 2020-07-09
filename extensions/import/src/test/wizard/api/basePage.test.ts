@@ -18,7 +18,7 @@ describe('import extension wizard pages', function () {
 	let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
 	let mockImportModel: TypeMoq.IMock<ImportDataModel>;
 
-	this.beforeEach(function () {
+	beforeEach(function () {
 		mockApiWrapper = TypeMoq.Mock.ofType(ApiWrapper);
 		mockFlatFileWizard = TypeMoq.Mock.ofType(FlatFileWizard, TypeMoq.MockBehavior.Loose, undefined, TypeMoq.It.isAny(), mockApiWrapper.object);
 		mockImportModel = TypeMoq.Mock.ofType(TestImportDataModel, TypeMoq.MockBehavior.Loose);
@@ -59,12 +59,15 @@ describe('import extension wizard pages', function () {
 
 		let serverValues = await importPage.getServerValues();
 
+		// getServer value should be undefined for null active connections
 		should(serverValues).undefined();
 
 		// mocking getActive connection returns empty array
 		mockApiWrapper.setup(x => x.getActiveConnections()).returns(async () => { return [] as azdata.connection.Connection[]; });
 
 		serverValues = await importPage.getServerValues();
+
+		// getServer value should be undefined for empty active connections
 		should(serverValues).undefined();
 	});
 
@@ -101,6 +104,7 @@ describe('import extension wizard pages', function () {
 		mockApiWrapper.setup(x => x.getActiveConnections()).returns(async () => { return testActiveConnections; });
 		mockImportModel.object.server = ImportTestUtils.getTestServer();
 
+		// the second connection should be the first element in the array as it is active
 		let expectedConnectionValues = [
 			{
 				connection: testActiveConnections[1],

@@ -17,13 +17,11 @@ import { FlatFileProvider, InsertDataResponse } from '../../../services/contract
 
 describe('import extension summary page tests', function () {
 
-	// declaring mock variables
 	let mockFlatFileWizard: TypeMoq.IMock<FlatFileWizard>;
 	let mockImportModel: TypeMoq.IMock<ImportDataModel>;
 	let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
 	let mockFlatFileProvider: TypeMoq.IMock<FlatFileProvider>;
 
-	// declaring instance variables
 	let summaryPage: SummaryPage;
 	let wizard: azdata.window.Wizard;
 	let page: azdata.window.WizardPage;
@@ -35,24 +33,16 @@ describe('import extension summary page tests', function () {
 		mockApiWrapper.callBase = true;
 
 		mockFlatFileProvider = TypeMoq.Mock.ofType(TestFlatFileProvider);
-
-		// mocking FlatFileWizard which is passed as a constructor argument to the page
 		mockFlatFileWizard = TypeMoq.Mock.ofType(FlatFileWizard, TypeMoq.MockBehavior.Loose, undefined, mockFlatFileProvider.object, mockApiWrapper.object);
-
-		// mocking ImportModel which is passes as a constructor argument to the page
 		mockImportModel = TypeMoq.Mock.ofType(TestImportDataModel, TypeMoq.MockBehavior.Loose);
 
-		// creating the wizard of which the page is going to be a part of
 		wizard = mockApiWrapper.object.createWizard(constants.wizardNameText);
-
-		// creating the wizard page that contains the form
 		page = mockApiWrapper.object.createWizardPage(constants.page4NameText);
 
 	});
 
 	it('checking if all components are initialized properly', async function () {
 
-		// Opening the wizard and initializing the page as Summary Page
 		await new Promise(function (resolve) {
 			page.registerContent(async (view) => {
 				summaryPage = new SummaryPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny(), mockApiWrapper.object);
@@ -68,18 +58,17 @@ describe('import extension summary page tests', function () {
 		});
 
 		// checking if all the required components are correctly initialized
-		should.notEqual(summaryPage.table, undefined);
-		should.notEqual(summaryPage.statusText, undefined);
-		should.notEqual(summaryPage.loading, undefined);
-		should.notEqual(summaryPage.form, undefined);
+		should.notEqual(summaryPage.table, undefined, 'table should not be undefined');
+		should.notEqual(summaryPage.statusText, undefined, 'statusText should not be undefined');
+		should.notEqual(summaryPage.loading, undefined, 'loading should not be undefined');
+		should.notEqual(summaryPage.form, undefined, 'form should not be undefined');
 
-		//Calling the clean up code
 		await summaryPage.onPageLeave();
 		await summaryPage.cleanup();
 
 	});
 
-	it('handle import updates status Text correctly', async function() {
+	it('handle import updates status Text correctly', async function () {
 
 		// Creating a test Connection
 		let testServerConnection: azdata.connection.Connection = {
@@ -90,7 +79,7 @@ describe('import extension summary page tests', function () {
 
 
 		// setting up connection objects in model
-		mockImportModel.object.server =  testServerConnection;
+		mockImportModel.object.server = testServerConnection;
 		mockImportModel.object.database = 'testDatabase';
 		mockImportModel.object.schema = 'testSchema';
 		mockImportModel.object.filePath = 'testFilePath';
@@ -121,7 +110,6 @@ describe('import extension summary page tests', function () {
 		};
 		mockFlatFileProvider.setup(x => x.sendInsertDataRequest(TypeMoq.It.isAny())).returns(async () => { return testSendInsertDataRequestResponse; });
 
-		// Opening the wizard and initializing the page as SummaryPage
 		await new Promise(function (resolve) {
 			page.registerContent(async (view) => {
 				summaryPage = new SummaryPage(mockFlatFileWizard.object, page, mockImportModel.object, view, mockFlatFileProvider.object, mockApiWrapper.object);
@@ -142,7 +130,7 @@ describe('import extension summary page tests', function () {
 		await summaryPage.onPageEnter();
 
 		// In case of success we should see the success message
-		should.equal(summaryPage.statusText.value,  constants.updateText);
+		should.equal(summaryPage.statusText.value, constants.updateText);
 
 		// In case of a failure we should see the error message
 		testSendInsertDataRequestResponse = {
@@ -157,7 +145,7 @@ describe('import extension summary page tests', function () {
 
 		// Entering the page. This method will try to create table using FlatFileProvider
 		await summaryPage.onPageEnter();
-		should.equal(summaryPage.statusText.value,  '✗ testError');
+		should.equal(summaryPage.statusText.value, constants.summaryErrorSymbol + 'testError');
 
 	});
 });

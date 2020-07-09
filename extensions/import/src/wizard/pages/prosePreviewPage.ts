@@ -14,71 +14,99 @@ export class ProsePreviewPage extends ImportPage {
 	private _form: azdata.FormContainer;
 	private _refresh: azdata.ButtonComponent;
 	private _resultTextComponent: azdata.TextComponent;
-	private isSuccess: boolean;
+	private _isSuccess: boolean;
 
 	public get table(): azdata.TableComponent {
 		return this._table;
+	}
+
+	public set table(table: azdata.TableComponent) {
+		this._table = table;
 	}
 
 	public get loading(): azdata.LoadingComponent {
 		return this._loading;
 	}
 
+	public set loading(loading: azdata.LoadingComponent) {
+		this._loading = loading;
+	}
+
 	public get form(): azdata.FormContainer {
 		return this._form;
+	}
+
+	public set form(form: azdata.FormContainer) {
+		this._form = form;
 	}
 
 	public get refresh(): azdata.ButtonComponent {
 		return this._refresh;
 	}
 
+	public set refresh(refresh: azdata.ButtonComponent) {
+		this._refresh = refresh;
+	}
+
 	public get resultTextComponent(): azdata.TextComponent {
 		return this._resultTextComponent;
 	}
 
+	public set resultTextComponent(resultTextComponent: azdata.TextComponent) {
+		this._resultTextComponent = resultTextComponent;
+	}
+
+	public get isSuccess(): boolean {
+		return this._isSuccess;
+	}
+
+	public set isSuccess(isSuccess: boolean) {
+		this._isSuccess = isSuccess;
+	}
+
 	async start(): Promise<boolean> {
-		this._table = this.view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
+		this.table = this.view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
 			data: undefined,
 			columns: undefined,
 			forceFitColumns: azdata.ColumnSizingMode.DataFit
 		}).component();
-		this._refresh = this.view.modelBuilder.button().withProperties({
+		this.refresh = this.view.modelBuilder.button().withProperties({
 			label: constants.refreshText,
 			isFile: false
 		}).component();
 
-		this._refresh.onDidClick(async () => {
+		this.refresh.onDidClick(async () => {
 			await this.onPageEnter();
 		});
 
-		this._loading = this.view.modelBuilder.loadingComponent().component();
+		this.loading = this.view.modelBuilder.loadingComponent().component();
 
-		this._resultTextComponent = this.view.modelBuilder.text()
+		this.resultTextComponent = this.view.modelBuilder.text()
 			.withProperties({
 				value: this.isSuccess ? constants.successTitleText : constants.failureTitleText
 			}).component();
 
-		this._form = this.view.modelBuilder.formContainer().withFormItems([
+		this.form = this.view.modelBuilder.formContainer().withFormItems([
 			{
-				component: this._resultTextComponent,
+				component: this.resultTextComponent,
 				title: ''
 			},
 			{
-				component: this._table,
+				component: this.table,
 				title: '',
-				actions: [this._refresh]
+				actions: [this.refresh]
 			}
 		]).component();
 
-		this._loading.component = this._form;
+		this.loading.component = this.form;
 
-		await this.view.initializeModel(this._loading);
+		await this.view.initializeModel(this.loading);
 
 		return true;
 	}
 
 	async onPageEnter(): Promise<boolean> {
-		this._loading.loading = true;
+		this.loading.loading = true;
 		let proseResult: boolean;
 		let error: string;
 		try {
@@ -87,19 +115,19 @@ export class ProsePreviewPage extends ImportPage {
 			error = ex.toString();
 		}
 
-		this._loading.loading = false;
+		this.loading.loading = false;
 		if (proseResult) {
 			await this.populateTable(this.model.proseDataPreview, this.model.proseColumns.map(c => c.columnName));
 			this.isSuccess = true;
-			if (this._form) {
-				this._resultTextComponent.value = constants.successTitleText;
+			if (this.form) {
+				this.resultTextComponent.value = constants.successTitleText;
 			}
 			return true;
 		} else {
 			await this.populateTable([], []);
 			this.isSuccess = false;
-			if (this._form) {
-				this._resultTextComponent.value = constants.failureTitleText + '\n' + (error ?? '');
+			if (this.form) {
+				this.resultTextComponent.value = constants.failureTitleText + '\n' + (error ?? '');
 			}
 			return false;
 		}
@@ -120,10 +148,10 @@ export class ProsePreviewPage extends ImportPage {
 			if (info) {
 				// Prose Preview to Modify Columns
 				if (info.lastPage === 1 && info.newPage === 2) {
-					return !this._loading.loading && this._table.data && this._table.data.length > 0;
+					return !this.loading.loading && this.table.data && this.table.data.length > 0;
 				}
 			}
-			return !this._loading.loading;
+			return !this.loading.loading;
 		});
 	}
 
@@ -167,7 +195,7 @@ export class ProsePreviewPage extends ImportPage {
 			rows = tableData.slice(0, rowsLength);
 		}
 
-		this._table.updateProperties({
+		this.table.updateProperties({
 			data: rows,
 			columns: columnHeaders,
 			height: 400,
@@ -176,6 +204,6 @@ export class ProsePreviewPage extends ImportPage {
 	}
 
 	private async emptyTable() {
-		this._table.updateProperties([]);
+		this.table.updateProperties([]);
 	}
 }

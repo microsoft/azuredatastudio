@@ -25,30 +25,22 @@ describe('import extension modify Column Page', function () {
 	let pages: Map<number, ImportPage> = new Map<number, ImportPage>();
 	let mockFlatFileProvider: TypeMoq.IMock<FlatFileProvider>;
 
-	beforeEach(async function () {
+	beforeEach(function () {
 		// Keeping the original behaviour of apiWrapper until some setup is needed to mock stuff
 		mockApiWrapper = TypeMoq.Mock.ofType(ApiWrapper, TypeMoq.MockBehavior.Loose);
 		mockApiWrapper.callBase = true;
 
 		mockFlatFileProvider = TypeMoq.Mock.ofType(TestFlatFileProvider);
-
-		// mocking FlatFileWizard which is passed as a constructor argument to the page
 		mockFlatFileWizard = TypeMoq.Mock.ofType(FlatFileWizard, TypeMoq.MockBehavior.Loose, undefined, mockFlatFileProvider.object, mockApiWrapper.object);
-
-		// mocking ImportModel which is passes as a constructor argument to the page
 		mockImportModel = TypeMoq.Mock.ofType(TestImportDataModel, TypeMoq.MockBehavior.Loose);
 
-		// creating the wizard of which the page is going to be a part of
 		wizard = mockApiWrapper.object.createWizard(constants.wizardNameText);
-
-		// creating the wizard page that contains the form
 		page = mockApiWrapper.object.createWizardPage(constants.page3NameText);
 
 	});
 
 	it('checking if all components are initialized properly', async function () {
 
-		// Opening the wizard and initializing the page as ModifyColumnsPage
 		await new Promise(function (resolve) {
 			page.registerContent(async (view) => {
 				modifyColumnsPage = new ModifyColumnsPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny(), mockApiWrapper.object);
@@ -64,10 +56,10 @@ describe('import extension modify Column Page', function () {
 		});
 
 		// checking if all the components are initialized properly
-		should.notEqual(modifyColumnsPage.table, undefined);
-		should.notEqual(modifyColumnsPage.text, undefined);
-		should.notEqual(modifyColumnsPage.loading, undefined);
-		should.notEqual(modifyColumnsPage.form, undefined);
+		should.notEqual(modifyColumnsPage.table, undefined, 'table should not be undefined');
+		should.notEqual(modifyColumnsPage.text, undefined, 'text should not be undefined');
+		should.notEqual(modifyColumnsPage.loading, undefined, 'loading should not be undefined');
+		should.notEqual(modifyColumnsPage.form, undefined, 'form should not be undefined');
 	});
 
 	it('handleImport updates table value correctly when import is successful', async function() {
@@ -95,8 +87,6 @@ describe('import extension modify Column Page', function () {
 
 		mockImportModel.object.proseColumns = testProseColumns;
 
-
-		// Opening the wizard and initializing the page as ModifyColumnsPage
 		await new Promise(function (resolve) {
 			page.registerContent(async (view) => {
 				modifyColumnsPage = new ModifyColumnsPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny(), mockApiWrapper.object);
