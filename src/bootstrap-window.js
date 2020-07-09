@@ -87,27 +87,8 @@
 		const loaderConfig = {
 			baseUrl: `${bootstrap.uriFromPath(configuration.appRoot)}/out`,
 			'vs/nls': nlsConfig,
-			nodeModules: [/*BUILD->INSERT_NODE_MODULES*/]
+			amdModulesPattern: /^(vs|sql)\//, // {{SQL CARBON EDIT}} include sql in regex
 		};
-
-		loaderConfig.nodeModules = loaderConfig.nodeModules.concat([
-			'@angular/common',
-			'@angular/core',
-			'@angular/forms',
-			'@angular/platform-browser',
-			'@angular/platform-browser-dynamic',
-			'@angular/router',
-			'rxjs/Observable',
-			'rxjs/add/observable/fromPromise',
-			'rxjs/Subject',
-			'rxjs/Observer',
-			'slickgrid/lib/jquery.event.drag-2.3.0',
-			'slickgrid/lib/jquery-ui-1.9.2',
-			'slickgrid/slick.core',
-			'slickgrid/slick.grid',
-			'slickgrid/slick.editors',
-			'slickgrid/slick.dataview'
-		]);
 
 		// cached data config
 		if (configuration.nodeCachedDataDir) {
