@@ -46,12 +46,12 @@ export class NetCoreTool {
 		vscode.window.showInformationMessage(NetCoreInstallationConfirmation, UpdateNetCoreLocation, InstallNetCore).then(async (result) => {
 			if (result === UpdateNetCoreLocation) {
 				//open settings
-				vscode.commands.executeCommand('workbench.action.openGlobalSettings');
+				await vscode.commands.executeCommand('workbench.action.openGlobalSettings');
 			}
 			else if (result === InstallNetCore) {
 				//open install link
 				const dotnetcoreURL = 'https://dotnet.microsoft.com/download/dotnet-core/3.1';
-				vscode.env.openExternal(vscode.Uri.parse(dotnetcoreURL));
+				await vscode.env.openExternal(vscode.Uri.parse(dotnetcoreURL));
 			}
 		});
 	}
