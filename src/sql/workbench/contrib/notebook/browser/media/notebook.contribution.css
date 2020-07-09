@@ -12,3 +12,14 @@
 .monaco-workbench .activitybar .monaco-action-bar .checked .action-label.book {
 	background-color: rgb(255, 255, 255);
 }
+
+.notebookExplorer-viewlet > .header {
+	height: 41px;
+	box-sizing: border-box;
+	padding: 5px 12px 6px 16px;
+}
+
+.notebookExplorer-viewlet .result-messages {
+	margin-top: 5px;
+	cursor: default;
+}
