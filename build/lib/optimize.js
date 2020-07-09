@@ -34,9 +34,9 @@ function loaderConfig() {
             'vs': 'out-build/vs',
             'sql': 'out-build/sql',
             'vscode': 'empty:',
-            'azdata': 'empty:'
+            'azdata': 'empty:' // {{SQL CARBON EDIT}}
         },
-        amdModulesPattern: /^(vs|sql)\//
+        amdModulesPattern: /^(vs|sql)\// // {{SQL CARBON EDIT}} include sql in regex
     };
     result['vs/css'] = { inlineResources: true };
     return result;
