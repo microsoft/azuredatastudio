@@ -583,7 +583,6 @@ export class ExtensionService extends AbstractExtensionService implements IExten
 				appSettingsHome: remoteEnv.appSettingsHome,
 				extensionHostLogsPath: remoteEnv.extensionHostLogsPath,
 				globalStorageHome: remoteEnv.globalStorageHome,
-				userHome: remoteEnv.userHome,
 				extensions: remoteExtensions,
 				allExtensions: this._registry.getAllExtensionDescriptions(),
 			});
