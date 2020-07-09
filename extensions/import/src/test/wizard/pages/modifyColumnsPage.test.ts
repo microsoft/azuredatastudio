@@ -48,14 +48,12 @@ describe('import extension modify Column Page', function () {
 
 	it('checking if all components are initialized properly', async function () {
 
-		// waiting for the register content to be called from wizard.open();
+		// Opening the wizard and initializing the page as ModifyColumnsPage
 		await new Promise(function (resolve) {
 			page.registerContent(async (view) => {
 				modifyColumnsPage = new ModifyColumnsPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny(), mockApiWrapper.object);
 				pages.set(1, modifyColumnsPage);
 				await modifyColumnsPage.start().then(() => {
-					modifyColumnsPage.setupNavigationValidator();
-					modifyColumnsPage.onPageEnter();
 					resolve();
 				});
 			});
@@ -98,14 +96,12 @@ describe('import extension modify Column Page', function () {
 		mockImportModel.object.proseColumns = testProseColumns;
 
 
-		// waiting for the register content to be called from wizard.open();
+		// Opening the wizard and initializing the page as ModifyColumnsPage
 		await new Promise(function (resolve) {
 			page.registerContent(async (view) => {
 				modifyColumnsPage = new ModifyColumnsPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny(), mockApiWrapper.object);
 				pages.set(1, modifyColumnsPage);
 				await modifyColumnsPage.start().then(async () => {
-					await modifyColumnsPage.setupNavigationValidator();
-					await modifyColumnsPage.onPageEnter();
 					resolve();
 				});
 			});
@@ -115,6 +111,10 @@ describe('import extension modify Column Page', function () {
 			wizard.open();
 		});
 
+
+		await modifyColumnsPage.onPageEnter();
+
+		// checking if all the required components are correctly initialized
 		should.deepEqual(modifyColumnsPage.table.data, testTableData);
 
 	});

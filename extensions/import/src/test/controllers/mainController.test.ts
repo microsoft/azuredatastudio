@@ -13,18 +13,17 @@ import { TestExtensionContext } from '../utils.test';
 describe('Main Controller', function () {
 	let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 	let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
-	// path of the extension root directory from the test file
-	const extensionPath = __dirname + '../../../../';
 
-	beforeEach(function () {
+	beforeEach(async function () {
 		// creating a mock Extension Context with current extensionPath
-
+		let extensionPath = await vscode.extensions.getExtension('Microsoft.import').extensionPath;
 		mockExtensionContext = TypeMoq.Mock.ofType(TestExtensionContext, TypeMoq.MockBehavior.Loose, true, extensionPath);
 		mockApiWrapper = TypeMoq.Mock.ofType(ApiWrapper);
 	});
 
 	it('Should resgister flatFileImportStartCommand after activate is called', async function(){
 		this.timeout(20000);
+
 		// using vscode and azdata APIs available during tests
 		mockApiWrapper.callBase = true;
 

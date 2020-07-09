@@ -16,12 +16,12 @@ import * as constants from '../../../common/constants';
 
 describe('File config page', function () {
 
-	// setting up mock variables
+	// declaring mock variables
 	let mockFlatFileWizard: TypeMoq.IMock<FlatFileWizard>;
 	let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
 	let mockImportModel: TypeMoq.IMock<ImportDataModel>;
 
-	// setting up instance variables
+	// declaring instance variables
 	let fileConfigPage: FileConfigPage;
 	let wizard: azdata.window.Wizard;
 	let page: azdata.window.WizardPage;
