@@ -78,7 +78,7 @@ export default class TableComponent extends ComponentBase implements IComponent,
 				if (col.type && col.type === 1) {
 					this.createCheckBoxPlugin(col, index);
 				}
-				if (col.type && col.type === 2) {
+				else if (col.type && col.type === 2) {
 					this.createButtonPlugin(col);
 				}
 				else if (col.value) {
@@ -342,17 +342,18 @@ export default class TableComponent extends ComponentBase implements IComponent,
 
 	private registerPlugins(col: string, plugin: CheckboxSelectColumn<{}> | ButtonColumn<{}>): void {
 
-		const index = this.columns?.findIndex(x => x === col || ('value' in x && x['value'] === col));
+		const index = 'index' in plugin ? plugin.index : this.columns?.findIndex(x => x === col || ('value' in x && x['value'] === col));
 		if (index >= 0) {
 			this._tableColumns.splice(index, 0, plugin.definition);
 			if (!(col in this._pluginsRegisterStatus) || !this._pluginsRegisterStatus[col]) {
 				this._table.registerPlugin(plugin);
 				this._pluginsRegisterStatus[col] = true;
 			}
-
-			this._table.columns = this._tableColumns;
-			this._table.autosizeColumns();
 		}
+
+		this._table.columns = this._tableColumns;
+		this._table.autosizeColumns();
+
 	}
 
 	public focus(): void {
