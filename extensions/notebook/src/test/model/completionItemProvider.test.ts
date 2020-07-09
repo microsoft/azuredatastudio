@@ -11,7 +11,6 @@ import * as TypeMoq from 'typemoq';
 import { NotebookCompletionItemProvider } from '../../intellisense/completionItemProvider';
 import { JupyterNotebookProvider } from '../../jupyter/jupyterNotebookProvider';
 import { NotebookUtils } from '../../common/notebookUtils';
-import { ApiWrapper } from '../../common/apiWrapper';
 import { JupyterNotebookManager } from '../../jupyter/jupyterNotebookManager';
 import { JupyterSessionManager, JupyterSession } from '../../jupyter/jupyterSessionManager';
 import { LocalJupyterServerManager } from '../../jupyter/jupyterServerManager';
@@ -22,7 +21,6 @@ describe('Completion Item Provider', function () {
 	let notebookProviderMock: TypeMoq.IMock<JupyterNotebookProvider>;
 	let notebookUtils: NotebookUtils;
 	let notebookManager: JupyterNotebookManager;
-	let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
 	let mockSessionManager: TypeMoq.IMock<JupyterSessionManager>;
 	let mockServerManager: TypeMoq.IMock<LocalJupyterServerManager>;
 	let mockJupyterSession: TypeMoq.IMock<JupyterSession>;
@@ -31,8 +29,7 @@ describe('Completion Item Provider', function () {
 	let token: vscode.CancellationToken;
 
 	this.beforeAll(async () => {
-		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
-		notebookUtils = new NotebookUtils(new ApiWrapper());
+		notebookUtils = new NotebookUtils();
 		mockServerManager = TypeMoq.Mock.ofType<LocalJupyterServerManager>();
 		testEvent = new vscode.EventEmitter();
 		token = {
@@ -47,7 +44,7 @@ describe('Completion Item Provider', function () {
 		mockSessionManager = TypeMoq.Mock.ofType<JupyterSessionManager>();
 		mockJupyterSession = TypeMoq.Mock.ofType<JupyterSession>();
 		kernel = new TestKernel(true, true);
-		notebookManager = new JupyterNotebookManager(mockServerManager.object, mockSessionManager.object, mockApiWrapper.object);
+		notebookManager = new JupyterNotebookManager(mockServerManager.object, mockSessionManager.object);
 		notebookProviderMock = TypeMoq.Mock.ofType<JupyterNotebookProvider>();
 		notebookProviderMock.setup(n => n.getNotebookManager(TypeMoq.It.isAny())).returns(() => Promise.resolve(notebookManager));
 		completionItemProvider = new NotebookCompletionItemProvider(notebookProviderMock.object);
