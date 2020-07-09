@@ -10,16 +10,52 @@ import * as constants from '../../common/constants';
 
 export class FileConfigPage extends ImportPage {
 
-	public serverDropdown: azdata.DropDownComponent;
-	public databaseDropdown: azdata.DropDownComponent;
-	public fileTextBox: azdata.InputBoxComponent;
-	public fileButton: azdata.ButtonComponent;
-	public tableNameTextBox: azdata.InputBoxComponent;
-	public schemaDropdown: azdata.DropDownComponent;
-	public form: azdata.FormContainer;
+	private _serverDropdown: azdata.DropDownComponent;
+	private _databaseDropdown: azdata.DropDownComponent;
+	private _fileTextBox: azdata.InputBoxComponent;
+	private _fileButton: azdata.ButtonComponent;
+	private _tableNameTextBox: azdata.InputBoxComponent;
+	private _schemaDropdown: azdata.DropDownComponent;
+	private _form: azdata.FormContainer;
 
-	public databaseLoader: azdata.LoadingComponent;
-	public schemaLoader: azdata.LoadingComponent;
+	private _databaseLoader: azdata.LoadingComponent;
+	private _schemaLoader: azdata.LoadingComponent;
+
+	public get serverDropdown(): azdata.DropDownComponent {
+		return this._serverDropdown;
+	}
+
+	public get databaseDropdown(): azdata.DropDownComponent {
+		return this._databaseDropdown;
+	}
+
+	public get fileTextBox(): azdata.InputBoxComponent {
+		return this._fileTextBox;
+	}
+
+	public get fileButton(): azdata.ButtonComponent {
+		return this._fileButton;
+	}
+
+	public get tableNameTextBox(): azdata.InputBoxComponent {
+		return this._tableNameTextBox;
+	}
+
+	public get schemaDropdown(): azdata.DropDownComponent {
+		return this._schemaDropdown;
+	}
+
+	public get form(): azdata.FormContainer {
+		return this._form;
+	}
+
+	public get databaseLoader(): azdata.LoadingComponent {
+		return this._databaseLoader;
+	}
+
+	public get schemaLoader(): azdata.LoadingComponent {
+		return this._schemaLoader;
+	}
 
 	private tableNames: string[] = [];
 
@@ -30,7 +66,7 @@ export class FileConfigPage extends ImportPage {
 		let databaseComponent = await this.createDatabaseDropdown();
 		let serverComponent = await this.createServerDropdown();
 
-		this.form = this.view.modelBuilder.formContainer()
+		this._form = this.view.modelBuilder.formContainer()
 			.withFormItems(
 				[
 					serverComponent,
@@ -40,7 +76,7 @@ export class FileConfigPage extends ImportPage {
 					schemaComponent
 				]).component();
 
-		await this.view.initializeModel(this.form);
+		await this.view.initializeModel(this._form);
 		return true;
 	}
 
@@ -65,7 +101,7 @@ export class FileConfigPage extends ImportPage {
 
 	public setupNavigationValidator() {
 		this.instance.registerNavigationValidator((info) => {
-			if (this.schemaLoader.loading || this.databaseLoader.loading) {
+			if (this._schemaLoader.loading || this._databaseLoader.loading) {
 				return false;
 			}
 			return true;
@@ -73,20 +109,20 @@ export class FileConfigPage extends ImportPage {
 	}
 
 	private async createServerDropdown(): Promise<azdata.FormComponent> {
-		this.serverDropdown = this.view.modelBuilder.dropDown().withProperties({
+		this._serverDropdown = this.view.modelBuilder.dropDown().withProperties({
 			required: true
 		}).component();
 
 		// Handle server changes
-		this.serverDropdown.onValueChanged(async (params) => {
-			this.model.server = (this.serverDropdown.value as ConnectionDropdownValue).connection;
+		this._serverDropdown.onValueChanged(async (params) => {
+			this.model.server = (this._serverDropdown.value as ConnectionDropdownValue).connection;
 
 			await this.populateDatabaseDropdown();
 			await this.populateSchemaDropdown();
 		});
 
 		return {
-			component: this.serverDropdown,
+			component: this._serverDropdown,
 			title: constants.serverDropDownTitleText
 		};
 	}
@@ -100,20 +136,20 @@ export class FileConfigPage extends ImportPage {
 		this.model.server = values[0].connection;
 
 
-		this.serverDropdown.updateProperties({
+		this._serverDropdown.updateProperties({
 			values: values
 		});
 		return true;
 	}
 
 	private async createDatabaseDropdown(): Promise<azdata.FormComponent> {
-		this.databaseDropdown = this.view.modelBuilder.dropDown().withProperties({
+		this._databaseDropdown = this.view.modelBuilder.dropDown().withProperties({
 			required: true
 		}).component();
 
 		// Handle database changes
-		this.databaseDropdown.onValueChanged(async (db) => {
-			this.model.database = (<azdata.CategoryValue>this.databaseDropdown.value).name;
+		this._databaseDropdown.onValueChanged(async (db) => {
+			this.model.database = (<azdata.CategoryValue>this._databaseDropdown.value).name;
 			//this.populateTableNames();
 			let connectionProvider = this._apiWrapper.getProvider<azdata.ConnectionProvider>(this.model.server.providerName, azdata.DataProviderType.ConnectionProvider);
 			let connectionUri = await this._apiWrapper.getUriForConnection(this.model.server.connectionId);
@@ -121,22 +157,22 @@ export class FileConfigPage extends ImportPage {
 			this.populateSchemaDropdown();
 		});
 
-		this.databaseLoader = this.view.modelBuilder.loadingComponent().withItem(this.databaseDropdown).component();
+		this._databaseLoader = this.view.modelBuilder.loadingComponent().withItem(this._databaseDropdown).component();
 
 		return {
-			component: this.databaseLoader,
+			component: this._databaseLoader,
 			title: constants.databaseDropdownTitleText
 		};
 	}
 
 	private async populateDatabaseDropdown(): Promise<boolean> {
-		this.databaseLoader.loading = true;
-		this.databaseDropdown.updateProperties({ values: [] });
-		this.schemaDropdown.updateProperties({ values: [] });
+		this._databaseLoader.loading = true;
+		this._databaseDropdown.updateProperties({ values: [] });
+		this._schemaDropdown.updateProperties({ values: [] });
 
 		if (!this.model.server) {
 			//TODO handle error case
-			this.databaseLoader.loading = false;
+			this._databaseLoader.loading = false;
 			return false;
 		}
 
@@ -149,30 +185,30 @@ export class FileConfigPage extends ImportPage {
 			// This code is used in case of contained databases when the query will return an error.
 			console.log(error);
 			values = [{ displayName: defaultServerDatabase, name: defaultServerDatabase }];
-			this.databaseDropdown.editable = false;
+			this._databaseDropdown.editable = false;
 		}
 
 		this.model.database = defaultServerDatabase;
 
-		this.databaseDropdown.updateProperties({
+		this._databaseDropdown.updateProperties({
 			values: values
 		});
 
-		this.databaseDropdown.value = { displayName: this.model.database, name: this.model.database };
-		this.databaseLoader.loading = false;
+		this._databaseDropdown.value = { displayName: this.model.database, name: this.model.database };
+		this._databaseLoader.loading = false;
 
 		return true;
 	}
 
 	private async createFileBrowser(): Promise<azdata.FormComponent> {
-		this.fileTextBox = this.view.modelBuilder.inputBox().withProperties({
+		this._fileTextBox = this.view.modelBuilder.inputBox().withProperties({
 			required: true
 		}).component();
-		this.fileButton = this.view.modelBuilder.button().withProperties({
+		this._fileButton = this.view.modelBuilder.button().withProperties({
 			label: constants.browseFilesText,
 		}).component();
 
-		this.fileButton.onDidClick(async (click) => {
+		this._fileButton.onDidClick(async (click) => {
 			let fileUris = await vscode.window.showOpenDialog(
 				{
 					canSelectFiles: true,
@@ -191,7 +227,7 @@ export class FileConfigPage extends ImportPage {
 			}
 
 			let fileUri = fileUris[0];
-			this.fileTextBox.value = fileUri.fsPath;
+			this._fileTextBox.value = fileUri.fsPath;
 
 			// Get the name of the file.
 			let nameStart = fileUri.path.lastIndexOf('/');
@@ -208,23 +244,23 @@ export class FileConfigPage extends ImportPage {
 				this.model.fileType = 'JSON';
 			}
 
-			this.tableNameTextBox.value = fileUri.path.substring(nameStart + 1, nameEnd);
-			this.model.table = this.tableNameTextBox.value;
-			this.tableNameTextBox.validate();
+			this._tableNameTextBox.value = fileUri.path.substring(nameStart + 1, nameEnd);
+			this.model.table = this._tableNameTextBox.value;
+			this._tableNameTextBox.validate();
 
 			// Let then model know about the file path
 			this.model.filePath = fileUri.fsPath;
 		});
 
 		return {
-			component: this.fileTextBox,
+			component: this._fileTextBox,
 			title: constants.fileTextboxTitleText,
-			actions: [this.fileButton]
+			actions: [this._fileButton]
 		};
 	}
 
 	private async createTableNameBox(): Promise<azdata.FormComponent> {
-		this.tableNameTextBox = this.view.modelBuilder.inputBox().withValidation((name) => {
+		this._tableNameTextBox = this.view.modelBuilder.inputBox().withValidation((name) => {
 			let tableName = name.value;
 
 			if (!tableName || tableName.length === 0) {
@@ -241,47 +277,47 @@ export class FileConfigPage extends ImportPage {
 			required: true,
 		}).component();
 
-		this.tableNameTextBox.onTextChanged((tableName) => {
+		this._tableNameTextBox.onTextChanged((tableName) => {
 			this.model.table = tableName;
 		});
 
 		return {
-			component: this.tableNameTextBox,
+			component: this._tableNameTextBox,
 			title: constants.tableTextboxTitleText,
 		};
 	}
 
 
 	private async createSchemaDropdown(): Promise<azdata.FormComponent> {
-		this.schemaDropdown = this.view.modelBuilder.dropDown().withProperties({
+		this._schemaDropdown = this.view.modelBuilder.dropDown().withProperties({
 			required: true
 		}).component();
-		this.schemaLoader = this.view.modelBuilder.loadingComponent().withItem(this.schemaDropdown).component();
+		this._schemaLoader = this.view.modelBuilder.loadingComponent().withItem(this._schemaDropdown).component();
 
-		this.schemaDropdown.onValueChanged(() => {
-			this.model.schema = (<azdata.CategoryValue>this.schemaDropdown.value).name;
+		this._schemaDropdown.onValueChanged(() => {
+			this.model.schema = (<azdata.CategoryValue>this._schemaDropdown.value).name;
 		});
 
 
 		return {
-			component: this.schemaLoader,
+			component: this._schemaLoader,
 			title: constants.schemaTextboxTitleText,
 		};
 
 	}
 
 	public async populateSchemaDropdown(): Promise<boolean> {
-		this.schemaLoader.loading = true;
+		this._schemaLoader.loading = true;
 
 		let values = await this.getSchemaValues();
 
 		this.model.schema = values[0].name;
 
-		this.schemaDropdown.updateProperties({
+		this._schemaDropdown.updateProperties({
 			values: values
 		});
 
-		this.schemaLoader.loading = false;
+		this._schemaLoader.loading = false;
 		return true;
 	}
 

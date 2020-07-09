@@ -9,56 +9,76 @@ import * as constants from '../../common/constants';
 
 export class ProsePreviewPage extends ImportPage {
 
-	public table: azdata.TableComponent;
-	public loading: azdata.LoadingComponent;
-	public form: azdata.FormContainer;
-	public refresh: azdata.ButtonComponent;
-	public resultTextComponent: azdata.TextComponent;
+	private _table: azdata.TableComponent;
+	private _loading: azdata.LoadingComponent;
+	private _form: azdata.FormContainer;
+	private _refresh: azdata.ButtonComponent;
+	private _resultTextComponent: azdata.TextComponent;
 	private isSuccess: boolean;
 
+	public get table(): azdata.TableComponent {
+		return this._table;
+	}
+
+	public get loading(): azdata.LoadingComponent {
+		return this._loading;
+	}
+
+	public get form(): azdata.FormContainer {
+		return this._form;
+	}
+
+	public get refresh(): azdata.ButtonComponent {
+		return this._refresh;
+	}
+
+	public get resultTextComponent(): azdata.TextComponent {
+		return this._resultTextComponent;
+	}
+
 	async start(): Promise<boolean> {
-		this.table = this.view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
+		this._table = this.view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
 			data: undefined,
 			columns: undefined,
 			forceFitColumns: azdata.ColumnSizingMode.DataFit
 		}).component();
-		this.refresh = this.view.modelBuilder.button().withProperties({
+		this._refresh = this.view.modelBuilder.button().withProperties({
 			label: constants.refreshText,
 			isFile: false
 		}).component();
 
-		this.refresh.onDidClick(async () => {
+		this._refresh.onDidClick(async () => {
 			await this.onPageEnter();
 		});
 
-		this.loading = this.view.modelBuilder.loadingComponent().component();
+		this._loading = this.view.modelBuilder.loadingComponent().component();
 
-		this.resultTextComponent = this.view.modelBuilder.text()
+		this._resultTextComponent = this.view.modelBuilder.text()
 			.withProperties({
 				value: this.isSuccess ? constants.successTitleText : constants.failureTitleText
 			}).component();
 
-		this.form = this.view.modelBuilder.formContainer().withFormItems([
+		this._form = this.view.modelBuilder.formContainer().withFormItems([
 			{
-				component: this.resultTextComponent,
+				component: this._resultTextComponent,
 				title: ''
 			},
 			{
-				component: this.table,
+				component: this._table,
 				title: '',
-				actions: [this.refresh]
+				actions: [this._refresh]
 			}
 		]).component();
 
-		this.loading.component = this.form;
+		this._loading.component = this._form;
 
-		await this.view.initializeModel(this.loading);
+		await this.view.initializeModel(this._loading);
 
 		return true;
 	}
 
 	async onPageEnter(): Promise<boolean> {
-		this.loading.loading = true;
+		this._loading.loading = true;
 		let proseResult: boolean;
 		let error: string;
 		try {
@@ -67,19 +87,19 @@ export class ProsePreviewPage extends ImportPage {
 			error = ex.toString();
 		}
 
-		this.loading.loading = false;
+		this._loading.loading = false;
 		if (proseResult) {
 			await this.populateTable(this.model.proseDataPreview, this.model.proseColumns.map(c => c.columnName));
 			this.isSuccess = true;
-			if (this.form) {
-				this.resultTextComponent.value = constants.successTitleText;
+			if (this._form) {
+				this._resultTextComponent.value = constants.successTitleText;
 			}
 			return true;
 		} else {
 			await this.populateTable([], []);
 			this.isSuccess = false;
-			if (this.form) {
-				this.resultTextComponent.value = constants.failureTitleText + '\n' + (error ?? '');
+			if (this._form) {
+				this._resultTextComponent.value = constants.failureTitleText + '\n' + (error ?? '');
 			}
 			return false;
 		}
@@ -100,10 +120,10 @@ export class ProsePreviewPage extends ImportPage {
 			if (info) {
 				// Prose Preview to Modify Columns
 				if (info.lastPage === 1 && info.newPage === 2) {
-					return !this.loading.loading && this.table.data && this.table.data.length > 0;
+					return !this._loading.loading && this._table.data && this._table.data.length > 0;
 				}
 			}
-			return !this.loading.loading;
+			return !this._loading.loading;
 		});
 	}
 
@@ -147,7 +167,7 @@ export class ProsePreviewPage extends ImportPage {
 			rows = tableData.slice(0, rowsLength);
 		}
 
-		this.table.updateProperties({
+		this._table.updateProperties({
 			data: rows,
 			columns: columnHeaders,
 			height: 400,
@@ -156,6 +176,6 @@ export class ProsePreviewPage extends ImportPage {
 	}
 
 	private async emptyTable() {
-		this.table.updateProperties([]);
+		this._table.updateProperties([]);
 	}
 }
