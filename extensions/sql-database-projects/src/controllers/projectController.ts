@@ -637,7 +637,7 @@ export class ProjectsController {
 
 		// TODO: Refactor code
 		try {
-			let profile: IConnectionProfile = context ? ((<any>context).connectionProfile ? (<any>context).connectionProfile : context) : undefined;
+			let profile = this.getConnectionProfileFromContext(context);
 			//TODO: Prompt for new connection addition and get database information if context information isn't provided.
 
 			let connectionId;
@@ -733,6 +733,16 @@ export class ProjectsController {
 		catch (err) {
 			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
 		}
+	}
+
+	private getConnectionProfileFromContext(context: IConnectionProfile | any): IConnectionProfile | undefined {
+		if (!context) {
+			return undefined;
+		}
+
+		// depending on where import new project is launched from, the connection profile could be passed as just
+		// the profile or it could be wrapped in another object
+		return (<any>context).connectionProfile ? (<any>context).connectionProfile : context;
 	}
 
 	private async getProjectName(dbName: string): Promise<string | undefined> {
