@@ -9,20 +9,24 @@ import { ApiWrapper } from '../../common/apiWrapper';
 import MainController from '../../controllers/mainController';
 import * as constants from '../../common/constants';
 import { TestExtensionContext } from '../utils.test';
+import * as fs from 'fs';
+import * as should from 'should';
+import * as path from 'path';
 
 describe('Main Controller', function () {
 	let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 	let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
+	let extensionPath: string;
 
 	beforeEach(async function () {
 		// creating a mock Extension Context with current extensionPath
-		let extensionPath = await vscode.extensions.getExtension('Microsoft.import').extensionPath;
+		extensionPath = await vscode.extensions.getExtension('Microsoft.import').extensionPath;
 		mockExtensionContext = TypeMoq.Mock.ofType(TestExtensionContext, TypeMoq.MockBehavior.Loose, true, extensionPath);
 		mockApiWrapper = TypeMoq.Mock.ofType(ApiWrapper);
 	});
 
 	it('Should resgister flatFileImportStartCommand after activate is called', async function(){
-		this.timeout(20000);
+		this.timeout(30000);
 
 		// using vscode and azdata APIs available during tests
 		mockApiWrapper.callBase = true;
@@ -35,6 +39,9 @@ describe('Main Controller', function () {
 
 		// verifying that the command is registered.
 		mockApiWrapper.verify(x => x.registerTask(constants.flatFileImportStartCommand, TypeMoq.It.isAny()), TypeMoq.Times.once());
+
+		//Checking if file .net code files are downloaded
+		should.equal(fs.existsSync(path.join(extensionPath, 'flatfileimportservice')), true);
 	});
 });
 
