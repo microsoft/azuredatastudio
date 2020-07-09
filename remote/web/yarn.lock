@@ -182,10 +182,10 @@ htmlparser2@^3.10.0:
     inherits "^2.0.1"
     readable-stream "^3.1.1"
 
-iconv-lite-umd@0.6.5:
-  version "0.6.5"
-  resolved "https://registry.yarnpkg.com/iconv-lite-umd/-/iconv-lite-umd-0.6.5.tgz#6a1f621a3b4d125f72feff813a9839e1ebd6c722"
-  integrity sha512-WDegH4al+e3n3jTOStRvm+jzDA3JMUQGgzdAsMxAgcgB0Oi72HjfdsoX08ieKsy3rKexXVjWZr41aOIUaCZnMg==
+iconv-lite-umd@0.6.7:
+  version "0.6.7"
+  resolved "https://registry.yarnpkg.com/iconv-lite-umd/-/iconv-lite-umd-0.6.7.tgz#ee437e34b30f15dc00ec93ea65065e672770777c"
+  integrity sha512-DT90zb7wL1B3I6DmYUMcfJeVdY19XigzDj5AtXbXEw9Jfi0+AVAxfn7ytvY7Xhr+GFn7nd7hPonapC37oo7iAQ==
 
 inherits@^2.0.1, inherits@^2.0.3:
   version "2.0.4"
