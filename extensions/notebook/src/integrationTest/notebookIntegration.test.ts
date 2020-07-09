@@ -46,13 +46,12 @@ describe('Notebook Extension Python Installation', function () {
 
 	it('Verify Python Installation', async function () {
 		should(installComplete).be.true('Python setup did not complete.');
-		let apiWrapper = jupyterController.jupyterInstallation.apiWrapper;
-		let jupyterPath = JupyterServerInstallation.getPythonInstallPath(apiWrapper);
+		let jupyterPath = JupyterServerInstallation.getPythonInstallPath();
 
 		console.log(`Expected python path: '${pythonInstallDir}'; actual: '${jupyterPath}'`);
 		should(jupyterPath).be.equal(pythonInstallDir);
-		should(JupyterServerInstallation.isPythonInstalled(apiWrapper)).be.true();
-		should(JupyterServerInstallation.getExistingPythonSetting(apiWrapper)).be.false();
+		should(JupyterServerInstallation.isPythonInstalled()).be.true();
+		should(JupyterServerInstallation.getExistingPythonSetting()).be.false();
 	});
 
 	it('Use Existing Python Installation', async function () {
@@ -68,17 +67,16 @@ describe('Notebook Extension Python Installation', function () {
 		console.log('Start Existing Python Installation');
 		let existingPythonPath = path.join(pythonInstallDir, pythonBundleVersion);
 		await install.startInstallProcess(false, { installPath: existingPythonPath, existingPython: true });
-		let apiWrapper = install.apiWrapper;
-		should(JupyterServerInstallation.isPythonInstalled(apiWrapper)).be.true();
-		should(JupyterServerInstallation.getPythonInstallPath(apiWrapper)).be.equal(existingPythonPath);
-		should(JupyterServerInstallation.getExistingPythonSetting(apiWrapper)).be.true();
+		should(JupyterServerInstallation.isPythonInstalled()).be.true();
+		should(JupyterServerInstallation.getPythonInstallPath()).be.equal(existingPythonPath);
+		should(JupyterServerInstallation.getExistingPythonSetting()).be.true();
 
 		// Redo "new" install to restore original settings.
 		// The actual install should get skipped since it already exists.
 		await install.startInstallProcess(false, { installPath: pythonInstallDir, existingPython: false });
-		should(JupyterServerInstallation.isPythonInstalled(apiWrapper)).be.true();
-		should(JupyterServerInstallation.getPythonInstallPath(apiWrapper)).be.equal(pythonInstallDir);
-		should(JupyterServerInstallation.getExistingPythonSetting(apiWrapper)).be.false();
+		should(JupyterServerInstallation.isPythonInstalled()).be.true();
+		should(JupyterServerInstallation.getPythonInstallPath()).be.equal(pythonInstallDir);
+		should(JupyterServerInstallation.getExistingPythonSetting()).be.false();
 		console.log('Existing Python Installation is done');
 	});
 

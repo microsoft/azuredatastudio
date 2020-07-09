@@ -608,11 +608,7 @@ function processCheckboxField(context: FieldContext): void {
  * @param context The context to use to create the field
  */
 function processFilePickerField(context: FieldContext): FilePickerInputs {
-	const inputWidth = parseInt(context.fieldInfo.inputWidth!);
-	if (inputWidth === NaN) {
-		// this is a dev time only error
-		throw new Error('Unable to parse the input width of the file picker field');
-	}
+	const inputWidth = parseInt(context.fieldInfo.inputWidth!.replace(/px/g, '').trim());
 	const buttonWidth = 100;
 
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });

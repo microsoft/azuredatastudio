@@ -5,7 +5,6 @@
 
 import * as azdata from 'azdata';
 import * as TypeMoq from 'typemoq';
-import { ApiWrapper } from '../common/apiWrapper';
 import { ConfigurePythonWizard, ConfigurePythonModel } from '../dialog/configurePython/configurePythonWizard';
 import { JupyterServerInstallation } from '../jupyter/jupyterServerInstallation';
 import { ConfigurePathPage } from '../dialog/configurePython/configurePathPage';
@@ -16,7 +15,6 @@ import { TestContext, createViewContext, TestButton } from './common';
 import { EventEmitter } from 'vscode';
 
 describe('Configure Python Wizard', function () {
-	let apiWrapper: ApiWrapper = new ApiWrapper();
 	let testWizard: ConfigurePythonWizard;
 	let viewContext: TestContext;
 	let testInstallation: JupyterServerInstallation;
@@ -45,21 +43,21 @@ describe('Configure Python Wizard', function () {
 	// These wizard tests are disabled due to errors with disposable objects
 	//
 	// it('Start wizard test', async () => {
-	// 	let wizard = new ConfigurePythonWizard(apiWrapper, testInstallation);
+	// 	let wizard = new ConfigurePythonWizard(testInstallation);
 	// 	await wizard.start();
 	// 	await wizard.close();
 	// 	await should(wizard.setupComplete).be.resolved();
 	// });
 
 	// it('Reject setup on cancel test', async () => {
-	// 	let wizard = new ConfigurePythonWizard(apiWrapper, testInstallation);
+	// 	let wizard = new ConfigurePythonWizard(testInstallation);
 	// 	await wizard.start(undefined, true);
 	// 	await wizard.close();
 	// 	await should(wizard.setupComplete).be.rejected();
 	// });
 
 	// it('Error message test', async () => {
-	// 	let wizard = new ConfigurePythonWizard(apiWrapper, testInstallation);
+	// 	let wizard = new ConfigurePythonWizard(testInstallation);
 	// 	await wizard.start();
 
 	// 	should(wizard.wizard.message).be.undefined();
@@ -86,7 +84,7 @@ describe('Configure Python Wizard', function () {
 		};
 
 		let page = azdata.window.createWizardPage('Page 1');
-		let configurePathPage = new ConfigurePathPage(apiWrapper, testWizard, page, model, viewContext.view);
+		let configurePathPage = new ConfigurePathPage(testWizard, page, model, viewContext.view);
 
 		should(await configurePathPage.initialize()).be.true();
 
@@ -108,7 +106,7 @@ describe('Configure Python Wizard', function () {
 		};
 
 		let page = azdata.window.createWizardPage('Page 2');
-		let pickPackagesPage = new PickPackagesPage(apiWrapper, testWizard, page, model, viewContext.view);
+		let pickPackagesPage = new PickPackagesPage(testWizard, page, model, viewContext.view);
 
 		should(await pickPackagesPage.initialize()).be.true();
 
@@ -132,7 +130,7 @@ describe('Configure Python Wizard', function () {
 		};
 
 		let page = azdata.window.createWizardPage('Page 2');
-		let pickPackagesPage = new PickPackagesPage(apiWrapper, testWizard, page, model, viewContext.view);
+		let pickPackagesPage = new PickPackagesPage(testWizard, page, model, viewContext.view);
 
 		should(await pickPackagesPage.initialize()).be.true();
 
