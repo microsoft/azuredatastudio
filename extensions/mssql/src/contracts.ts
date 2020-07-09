@@ -40,12 +40,14 @@ export interface RequestSecurityTokenParams {
 	serverName?: string;
 	connectionId?: string;
 	databaseName?: string;
+	correlationId?: number;
 }
 
 export interface RequestSecurityTokenResponse {
 	accountKey: string;
 	token: string;
 	expiration: number;
+	correlationId: number;
 }
 
 export namespace SecurityTokenRequest {

@@ -43,12 +43,15 @@ export class AccountFeature implements StaticFeature {
 		this.tokenCache = new DataItemCache(this.getToken, timeToLiveInSeconds);
 		this._client.onRequest(contracts.SecurityTokenRequest.type, async (request): Promise<contracts.RequestSecurityTokenResponse | undefined> => {
 			try {
-				console.log('req-in', request.scope);
-				const x = await this.tokenCache.getData(request);
-				console.log('req-out', request.scope);
+				let start = new Date().getTime();
+				console.log('req-in', request.correlationId);
+				// const x = await this.tokenCache.getData(request);
+				const x = await this.getToken(request);
+				let end = new Date().getTime();
+				console.log('req-out', x.correlationId, (end - start) / 1000);
 				return x;
 			} catch (ex) {
-				console.log('req-error', request.scope);
+				console.log('req-error', request.correlationId);
 				console.log(ex);
 				return undefined;
 			}
@@ -102,7 +105,8 @@ export class AccountFeature implements StaticFeature {
 			let params: contracts.RequestSecurityTokenResponse = {
 				accountKey: JSON.stringify(account.key),
 				token: tokenBundle.token,
-				expiration: tokenBundle.tokenExpiration
+				expiration: tokenBundle.tokenExpiration,
+				correlationId: request.correlationId
 			};
 
 			return params;
