@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { setup as setupQueryEditorTests } from './areas/queryEditor/queryEditor.test';
+import { setup as setupQueryEditorTests, setupWeb as setupQueryEditorWebTests } from './areas/queryEditor/queryEditor.test';
 import { setup as setupNotebookTests } from './areas/notebook/notebook.test';
 import { ApplicationOptions } from '../../../automation';
 import * as yazl from 'yauzl';
@@ -12,8 +12,12 @@ import * as path from 'path';
 import { request } from 'https';
 import * as mkdirp from 'mkdirp';
 
-export function main(): void {
-	setupQueryEditorTests();
+export function main(isWeb: boolean = false): void {
+	if (isWeb) {
+		setupQueryEditorWebTests();
+	} else {
+		setupQueryEditorTests();
+	}
 	setupNotebookTests();
 }
 

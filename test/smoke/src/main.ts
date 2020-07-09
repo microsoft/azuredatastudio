@@ -316,7 +316,7 @@ describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 			});
 		}
 
-		sqlMain();
+		sqlMain(opts.web);
 		/*if (!opts.web) { setupDataLossTests(); }
 		if (!opts.web) { setupDataPreferencesTests(); }
 		setupDataSearchTests();
