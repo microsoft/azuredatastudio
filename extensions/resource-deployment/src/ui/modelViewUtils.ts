@@ -792,7 +792,6 @@ async function processAzureAccountField(context: AzureAccountFieldContext): Prom
 				accountValueToAccountMap.set(displayName, account);
 				return displayName;
 			}));
-			console.warn(`number of accounts: ${accounts.length}`);
 			const selectedAccount = accountDropdown.value ? accountValueToAccountMap.get(accountDropdown.value.toString()) : undefined;
 			await handleSelectedAccountChanged(context, selectedAccount, subscriptionDropdown, subscriptionValueToSubscriptionMap, resourceGroupDropdown, locationDropdown);
 		} catch (error) {
