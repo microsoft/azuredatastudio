@@ -18,12 +18,12 @@ export class Editors {
 	}
 
 	async selectTab(fileName: string): Promise<void> {
-		await this.code.waitAndClick(`.tabs-container div.tab[data-resource-name^="${fileName}"]`);
+		await this.code.waitAndClick(`.tabs-container div.tab[data-resource-name$="${fileName}"]`);
 		await this.waitForEditorFocus(fileName);
 	}
 
 	async waitForActiveEditor(fileName: string): Promise<any> {
-		const selector = `.editor-instance .monaco-editor[data-uri^="${fileName}"] textarea`;
+		const selector = `.editor-instance .monaco-editor[data-uri$="${fileName}"] textarea`;
 		return this.code.waitForActiveElement(selector);
 	}
 
@@ -33,11 +33,11 @@ export class Editors {
 	}
 
 	async waitForActiveTab(fileName: string, isDirty: boolean = false): Promise<void> {
-		await this.code.waitForElement(`.tabs-container div.tab.active${isDirty ? '.dirty' : ''}[aria-selected="true"][data-resource-name^="${fileName}"]`);
+		await this.code.waitForElement(`.tabs-container div.tab.active${isDirty ? '.dirty' : ''}[aria-selected="true"][data-resource-name$="${fileName}"]`);
 	}
 
 	async waitForTab(fileName: string, isDirty: boolean = false): Promise<void> {
-		await this.code.waitForElement(`.tabs-container div.tab${isDirty ? '.dirty' : ''}[data-resource-name^="${fileName}"]`);
+		await this.code.waitForElement(`.tabs-container div.tab${isDirty ? '.dirty' : ''}[data-resource-name$="${fileName}"]`);
 	}
 
 	async newUntitledFile(): Promise<void> {
