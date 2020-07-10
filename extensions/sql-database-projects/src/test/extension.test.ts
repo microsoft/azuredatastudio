@@ -8,6 +8,6 @@ import * as vscode from 'vscode';
 
 describe('Extension activate test', () => {
 	it('Extension should activate correctly', async function (): Promise<void> {
-		await vscode.extensions.getExtension('Microsoft.sql-database-projects').activate();
+		await vscode.extensions.getExtension('Microsoft.sql-database-projects')?.activate();
 	});
 });

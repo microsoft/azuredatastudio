@@ -71,12 +71,14 @@ describe('MainController: main controller operations', function (): void {
 		await shouldThrowSpecificError(async () => await controller.createNewProject(), constants.projectLocationRequired);
 	});
 
-	it('Should activate and deactivate without error', async function (): Promise<void> {
-		let controller: MainController;
-		should.doesNotThrow(() => controller = createController(), 'Creating controller should not throw an error');
+	it('Should create new instance without error', async function (): Promise<void> {
+		should.doesNotThrow(() => createController(), 'Creating controller should not throw an error');
+	});
+
+	it('Should deactivate without error', async function (): Promise<void> {
+		let controller = createController();
 		should.notEqual(controller.extensionContext, undefined);
 
-		should.doesNotThrow(() => controller.activate(), 'activate() should not throw an error');
 		should.doesNotThrow(() => controller.dispose(), 'dispose() should not throw an error');
 	});
 });

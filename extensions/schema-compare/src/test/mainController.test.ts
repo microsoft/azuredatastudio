@@ -24,7 +24,6 @@ describe('MainController: main controller operations', function (): void {
 		should.doesNotThrow(() => controller = createController(), 'Creating controller should not throw an error');
 		should.notEqual(controller.extensionContext, undefined);
 
-		should.doesNotThrow(() => controller.activate(), 'activate() should not throw an error');
 		should.doesNotThrow(() => controller.dispose(), 'dispose() should not throw an error');
 	});
 });
