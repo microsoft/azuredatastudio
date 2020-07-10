@@ -80,6 +80,10 @@
 	<script src="./static/node_modules/zone.js/dist/zone.min.js"></script>
 	<script src="./static/node_modules/reflect-metadata/Reflect.js"></script>
 	<script src="./static/out/vs/loader.js"></script>
+	<script>
+		globalThis.MonacoPerformanceMarks = globalThis.MonacoPerformanceMarks || [];
+		globalThis.MonacoPerformanceMarks.push('willLoadWorkbenchMain', Date.now());
+	</script>
 	<script src="./static/out/vs/workbench/workbench.web.api.nls.js"></script>
 	<script src="./static/out/vs/workbench/workbench.web.api.js"></script>
 	<script src="./static/out/vs/code/browser/workbench/workbench.js"></script>
