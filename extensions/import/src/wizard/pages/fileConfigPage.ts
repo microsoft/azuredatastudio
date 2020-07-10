@@ -201,11 +201,24 @@ export class FileConfigPage extends ImportPage {
 			if (nameEnd === 0) {
 				nameEnd = fileUri.path.length;
 			}
-			this.model.fileType = 'TXT';
+
 			let extension = fileUri.path.substring(nameEnd + 1, fileUri.path.length);
 
-			if (extension.toLowerCase() === 'json') {
-				this.model.fileType = 'JSON';
+			/**
+			 * FileType should be TXT for txt files and files with unknown types.
+			 *  CSVs and TSVs are treated as the CSV file while learning in the prose library.
+			 */
+
+			switch (extension.toLowerCase()) {
+				case 'json':
+					this.model.fileType = 'JSON';
+					break;
+				case 'csv':
+				case 'tsv':
+					this.model.fileType = 'CSV';
+					break;
+				default:
+					this.model.fileType = 'TXT';
 			}
 
 			this.tableNameTextBox.value = fileUri.path.substring(nameStart + 1, nameEnd);

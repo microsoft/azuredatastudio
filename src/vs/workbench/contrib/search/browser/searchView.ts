@@ -73,7 +73,7 @@ import { searchDetailsIcon } from 'vs/workbench/contrib/search/browser/searchIco
 
 const $ = dom.$;
 
-enum SearchUIState {
+export enum SearchUIState { // {{SQL CARBON EDIT}}
 	Idle,
 	Searching,
 	SlowSearch
@@ -89,14 +89,14 @@ export class SearchView extends ViewPane {
 
 	private static readonly MAX_TEXT_RESULTS = 10000;
 
-	private static readonly ACTIONS_RIGHT_CLASS_NAME = 'actions-right';
+	protected static readonly ACTIONS_RIGHT_CLASS_NAME = 'actions-right'; // {{SQL CARBON EDIT}}
 
-	private isDisposed = false;
+	protected isDisposed = false; // {{SQL CARBON EDIT}}
 
-	private container!: HTMLElement;
+	protected container!: HTMLElement; // {{SQL CARBON EDIT}}
 	private queryBuilder: QueryBuilder;
-	private viewModel: SearchModel;
-	private memento: Memento;
+	protected viewModel: SearchModel; // {{SQL CARBON EDIT}}
+	protected memento: Memento; // {{SQL CARBON EDIT}}
 
 	private viewletVisible: IContextKey<boolean>;
 	private inputBoxFocused: IContextKey<boolean>;
@@ -109,74 +109,74 @@ export class SearchView extends ViewPane {
 	private fileMatchFocused: IContextKey<boolean>;
 	private folderMatchFocused: IContextKey<boolean>;
 	private matchFocused: IContextKey<boolean>;
-	private hasSearchResultsKey: IContextKey<boolean>;
+	protected hasSearchResultsKey: IContextKey<boolean>; // {{SQL CARBON EDIT}}
 
-	private state: SearchUIState = SearchUIState.Idle;
+	protected state: SearchUIState = SearchUIState.Idle; // {{SQL CARBON EDIT}}
 
 	private actions: Array<CollapseDeepestExpandedLevelAction | ClearSearchResultsAction | OpenSearchEditorAction> = [];
 	private toggleCollapseAction: ToggleCollapseAndExpandAction;
 	private cancelAction: CancelSearchAction;
 	private refreshAction: RefreshAction;
-	private contextMenu: IMenu | null = null;
+	protected contextMenu: IMenu | null = null; // {{SQL CARBON EDIT}}
 
-	private tree!: WorkbenchObjectTree<RenderableMatch>;
-	private treeLabels!: ResourceLabels;
-	private viewletState: MementoObject;
-	private messagesElement!: HTMLElement;
-	private messageDisposables: IDisposable[] = [];
+	protected tree!: WorkbenchObjectTree<RenderableMatch>; // {{SQL CARBON EDIT}}
+	protected treeLabels!: ResourceLabels; // {{SQL CARBON EDIT}}
+	protected viewletState: MementoObject; // {{SQL CARBON EDIT}}
+	protected messagesElement!: HTMLElement; // {{SQL CARBON EDIT}}
+	protected messageDisposables: IDisposable[] = []; // {{SQL CARBON EDIT}}
 	private searchWidgetsContainerElement!: HTMLElement;
 	private searchWidget!: SearchWidget;
-	private size!: dom.Dimension;
+	protected size!: dom.Dimension; // {{SQL CARBON EDIT}}
 	private queryDetails!: HTMLElement;
 	private toggleQueryDetailsButton!: HTMLElement;
 	private inputPatternExcludes!: ExcludePatternInputWidget;
 	private inputPatternIncludes!: PatternInputWidget;
-	private resultsElement!: HTMLElement;
+	protected resultsElement!: HTMLElement; // {{SQL CARBON EDIT}}
 
 	private currentSelectedFileMatch: FileMatch | undefined;
 
 	private delayedRefresh: Delayer<void>;
 	private changedWhileHidden: boolean = false;
-	private updatedActionsWhileHidden = false;
+	protected updatedActionsWhileHidden = false; // {{SQL CARBON EDIT}}
 
-	private searchWithoutFolderMessageElement: HTMLElement | undefined;
+	protected searchWithoutFolderMessageElement: HTMLElement | undefined; // {{SQL CARBON EDIT}}
 
-	private currentSearchQ = Promise.resolve();
+	protected currentSearchQ = Promise.resolve(); // {{SQL CARBON EDIT}}
 	private addToSearchHistoryDelayer: Delayer<void>;
 
-	private toggleCollapseStateDelayer: Delayer<void>;
+	protected toggleCollapseStateDelayer: Delayer<void>; // {{SQL CARBON EDIT}}
 
 	private triggerQueryDelayer: Delayer<void>;
 	private pauseSearching = false;
 
-	private treeAccessibilityProvider: SearchAccessibilityProvider;
+	protected treeAccessibilityProvider: SearchAccessibilityProvider; // {{SQL CARBON EDIT}}
 
 	constructor(
 		options: IViewPaneOptions,
-		@IFileService private readonly fileService: IFileService,
-		@IEditorService private readonly editorService: IEditorService,
-		@IProgressService private readonly progressService: IProgressService,
-		@INotificationService private readonly notificationService: INotificationService,
-		@IDialogService private readonly dialogService: IDialogService,
-		@IContextViewService private readonly contextViewService: IContextViewService,
-		@IInstantiationService instantiationService: IInstantiationService,
-		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
-		@IConfigurationService configurationService: IConfigurationService,
-		@IWorkspaceContextService private readonly contextService: IWorkspaceContextService,
-		@ISearchWorkbenchService private readonly searchWorkbenchService: ISearchWorkbenchService,
-		@IContextKeyService readonly contextKeyService: IContextKeyService,
-		@IReplaceService private readonly replaceService: IReplaceService,
-		@ITextFileService private readonly textFileService: ITextFileService,
-		@IPreferencesService private readonly preferencesService: IPreferencesService,
-		@IThemeService themeService: IThemeService,
-		@ISearchHistoryService private readonly searchHistoryService: ISearchHistoryService,
-		@IContextMenuService contextMenuService: IContextMenuService,
-		@IMenuService private readonly menuService: IMenuService,
-		@IAccessibilityService private readonly accessibilityService: IAccessibilityService,
-		@IKeybindingService keybindingService: IKeybindingService,
-		@IStorageService storageService: IStorageService,
-		@IOpenerService openerService: IOpenerService,
-		@ITelemetryService telemetryService: ITelemetryService,
+		@IFileService protected readonly fileService: IFileService, // {{SQL CARBON EDIT}}
+		@IEditorService protected readonly editorService: IEditorService, // {{SQL CARBON EDIT}}
+		@IProgressService protected readonly progressService: IProgressService, // {{SQL CARBON EDIT}}
+		@INotificationService protected readonly notificationService: INotificationService, // {{SQL CARBON EDIT}}
+		@IDialogService protected readonly dialogService: IDialogService, // {{SQL CARBON EDIT}}
+		@IContextViewService protected readonly contextViewService: IContextViewService, // {{SQL CARBON EDIT}}
+		@IInstantiationService instantiationService: IInstantiationService, // {{SQL CARBON EDIT}}
+		@IViewDescriptorService viewDescriptorService: IViewDescriptorService, // {{SQL CARBON EDIT}}
+		@IConfigurationService configurationService: IConfigurationService, // {{SQL CARBON EDIT}}
+		@IWorkspaceContextService protected readonly contextService: IWorkspaceContextService, // {{SQL CARBON EDIT}}
+		@ISearchWorkbenchService protected readonly searchWorkbenchService: ISearchWorkbenchService, // {{SQL CARBON EDIT}}
+		@IContextKeyService readonly contextKeyService: IContextKeyService, // {{SQL CARBON EDIT}}
+		@IReplaceService protected readonly replaceService: IReplaceService, // {{SQL CARBON EDIT}}
+		@ITextFileService protected readonly textFileService: ITextFileService, // {{SQL CARBON EDIT}}
+		@IPreferencesService protected readonly preferencesService: IPreferencesService, // {{SQL CARBON EDIT}}
+		@IThemeService themeService: IThemeService, // {{SQL CARBON EDIT}}
+		@ISearchHistoryService protected readonly searchHistoryService: ISearchHistoryService, // {{SQL CARBON EDIT}}
+		@IContextMenuService contextMenuService: IContextMenuService, // {{SQL CARBON EDIT}}
+		@IMenuService protected readonly menuService: IMenuService, // {{SQL CARBON EDIT}}
+		@IAccessibilityService protected readonly accessibilityService: IAccessibilityService, // {{SQL CARBON EDIT}}
+		@IKeybindingService keybindingService: IKeybindingService, // {{SQL CARBON EDIT}}
+		@IStorageService storageService: IStorageService, // {{SQL CARBON EDIT}}
+		@IOpenerService openerService: IOpenerService, // {{SQL CARBON EDIT}}
+		@ITelemetryService telemetryService: ITelemetryService, // {{SQL CARBON EDIT}}
 	) {
 
 		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService, telemetryService);
@@ -361,7 +361,11 @@ export class SearchView extends ViewPane {
 		this._register(this.onDidChangeBodyVisibility(visible => this.onVisibilityChanged(visible)));
 	}
 
-	private onVisibilityChanged(visible: boolean): void {
+	protected callRenderBody(parent: HTMLElement): void { // {{SQL CARBON EDIT}}
+		super.renderBody(parent); // {{SQL CARBON EDIT}}
+	} // {{SQL CARBON EDIT}}
+
+	protected onVisibilityChanged(visible: boolean): void { // {{SQL CARBON EDIT}}
 		this.viewletVisible.set(visible);
 		if (visible) {
 			if (this.changedWhileHidden) {
@@ -492,7 +496,7 @@ export class SearchView extends ViewPane {
 		}));
 	}
 
-	private onSearchResultsChanged(event?: IChangeEvent): void {
+	protected onSearchResultsChanged(event?: IChangeEvent): void { // {{SQL CARBON EDIT}}
 		if (this.isVisible()) {
 			return this.refreshAndUpdateCount(event);
 		} else {
@@ -500,7 +504,7 @@ export class SearchView extends ViewPane {
 		}
 	}
 
-	private refreshAndUpdateCount(event?: IChangeEvent): void {
+	protected refreshAndUpdateCount(event?: IChangeEvent): void { // {{SQL CARBON EDIT}}
 		this.searchWidget.setReplaceAllActionState(!this.viewModel.searchResult.isEmpty());
 		this.updateSearchResultCount(this.viewModel.searchResult.query!.userDisabledExcludesAndIgnoreFiles);
 		return this.refreshTree(event);
@@ -682,7 +686,7 @@ export class SearchView extends ViewPane {
 		return nls.localize('replaceAll.occurrences.files.confirmation.message', "Replace {0} occurrences across {1} files?", occurrences, fileCount);
 	}
 
-	private clearMessage(): HTMLElement {
+	protected clearMessage(): HTMLElement { // {{SQL CARBON EDIT}}
 		this.searchWithoutFolderMessageElement = undefined;
 
 		dom.clearNode(this.messagesElement);
@@ -693,7 +697,7 @@ export class SearchView extends ViewPane {
 		return dom.append(this.messagesElement, $('.message'));
 	}
 
-	private createSearchResultsView(container: HTMLElement): void {
+	protected createSearchResultsView(container: HTMLElement): void { // {{SQL CARBON EDIT}}
 		this.resultsElement = dom.append(container, $('.results.show-file-icons'));
 		const delegate = this.instantiationService.createInstance(SearchDelegate);
 
@@ -765,7 +769,7 @@ export class SearchView extends ViewPane {
 		}));
 	}
 
-	private onContextMenu(e: ITreeContextMenuEvent<RenderableMatch | null>): void {
+	protected onContextMenu(e: ITreeContextMenuEvent<RenderableMatch | null>): void { // {{SQL CARBON EDIT}}
 		if (!this.contextMenu) {
 			this.contextMenu = this._register(this.menuService.createMenu(MenuId.SearchContext, this.contextKeyService));
 		}
@@ -972,7 +976,7 @@ export class SearchView extends ViewPane {
 		}
 	}
 
-	private reLayout(): void {
+	protected reLayout(): void { // {{SQL CARBON EDIT}}
 		if (this.isDisposed) {
 			return;
 		}
@@ -1529,7 +1533,7 @@ export class SearchView extends ViewPane {
 			.then(onComplete, onError);
 	}
 
-	private addClickEvents = (element: HTMLElement, handler: (event: any) => void): void => {
+	protected addClickEvents = (element: HTMLElement, handler: (event: any) => void): void => { // {{SQL CARBON EDIT}}
 		this.messageDisposables.push(dom.addDisposableListener(element, dom.EventType.CLICK, handler));
 		this.messageDisposables.push(dom.addDisposableListener(element, dom.EventType.KEY_DOWN, e => {
 			const event = new StandardKeyboardEvent(e);
@@ -1548,7 +1552,7 @@ export class SearchView extends ViewPane {
 		}));
 	};
 
-	private onOpenSettings = (e: dom.EventLike): void => {
+	protected onOpenSettings = (e: dom.EventLike): void => { // {{SQL CARBON EDIT}}
 		dom.EventHelper.stop(e, false);
 
 		this.openSettings('.exclude');
@@ -1561,13 +1565,13 @@ export class SearchView extends ViewPane {
 			this.preferencesService.openGlobalSettings(undefined, options);
 	}
 
-	private onLearnMore = (e: MouseEvent): void => {
+	protected onLearnMore = (e: MouseEvent): void => { // {{SQL CARBON EDIT}}
 		dom.EventHelper.stop(e, false);
 
 		this.openerService.open(URI.parse('https://go.microsoft.com/fwlink/?linkid=853977'));
 	};
 
-	private updateSearchResultCount(disregardExcludesAndIgnores?: boolean): void {
+	protected updateSearchResultCount(disregardExcludesAndIgnores?: boolean): void { // {{SQL CARBON EDIT}}
 		const fileCount = this.viewModel.searchResult.fileCount();
 		this.hasSearchResultsKey.set(fileCount > 0);
 
@@ -1592,7 +1596,7 @@ export class SearchView extends ViewPane {
 
 			this.messageDisposables.push(dom.addDisposableListener(openInEditorLink, dom.EventType.CLICK, (e: MouseEvent) => {
 				dom.EventHelper.stop(e, false);
-				this.instantiationService.invokeFunction(createEditorFromSearchResult, this.searchResult, this.searchIncludePattern.getValue(), this.searchExcludePattern.getValue());
+				this.instantiationService.invokeFunction(createEditorFromSearchResult, this.searchResult, this.searchIncludePattern?.getValue(), this.searchExcludePattern?.getValue()); // {{SQL CARBON EDIT}}
 			}));
 
 			this.reLayout();
@@ -1613,7 +1617,7 @@ export class SearchView extends ViewPane {
 		}
 	}
 
-	private showSearchWithoutFolderMessage(): void {
+	protected showSearchWithoutFolderMessage(): void { // {{SQL CARBON EDIT}}
 		this.searchWithoutFolderMessageElement = this.clearMessage();
 
 		const textEl = dom.append(this.searchWithoutFolderMessageElement,
@@ -1639,7 +1643,7 @@ export class SearchView extends ViewPane {
 		}));
 	}
 
-	private showEmptyStage(forceHideMessages = false): void {
+	protected showEmptyStage(forceHideMessages = false): void { // {{SQL CARBON EDIT}}
 		// disable 'result'-actions
 		this.updateActions();
 
@@ -1786,7 +1790,7 @@ export class SearchView extends ViewPane {
 		];
 	}
 
-	private get searchConfig(): ISearchConfigurationProperties {
+	protected get searchConfig(): ISearchConfigurationProperties { // {{SQL CARBON EDIT}}
 		return this.configurationService.getValue<ISearchConfigurationProperties>('search');
 	}
 
@@ -1848,7 +1852,7 @@ export class SearchView extends ViewPane {
 		super.saveState();
 	}
 
-	private async retrieveFileStats(): Promise<void> {
+	protected async retrieveFileStats(): Promise<void> { // {{SQL CARBON EDIT}}
 		const files = this.searchResult.matches().filter(f => !f.fileStat).map(f => f.resolveFileStat(this.fileService));
 		await Promise.all(files);
 	}

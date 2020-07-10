@@ -40,6 +40,8 @@ export interface SqlArgs {
 	user?: string;
 	command?: string;
 	provider?: string;
+	aad?: boolean; // deprecated - used by SSMS - authenticationType should be used instead
+	integrated?: boolean; // deprecated - used by SSMS - authenticationType should be used instead.
 }
 
 //#region decorators
@@ -278,7 +280,22 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 		profile.serverName = args.server;
 		profile.databaseName = args.database ?? '';
 		profile.userName = args.user ?? '';
-		profile.authenticationType = args.authenticationType ?? Constants.integrated;
+
+		/*
+			Authentication Type:
+			1. Take --authenticationType, if not
+			2. Take --integrated, if not
+			3. take --aad, if not
+			4. If user exists, and user has @, then it's azureMFA
+			5. If user doesn't exist, or user doesn't have @, then integrated
+		*/
+		profile.authenticationType =
+			args.authenticationType ? args.authenticationType :
+				args.integrated ? Constants.integrated :
+					args.aad ? Constants.azureMFA :
+						(args.user && args.user.length > 0) ? args.user.includes('@') ? Constants.azureMFA : Constants.integrated :
+							Constants.integrated;
+
 		profile.connectionName = '';
 		profile.setOptionValue('applicationName', Constants.applicationName);
 		profile.setOptionValue('databaseDisplayName', profile.databaseName);
