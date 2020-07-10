@@ -56,7 +56,7 @@ export const ACCOUNT_VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewC
 	name: localize('accountExplorer.name', "Accounts"),
 	ctorDescriptor: new SyncDescriptor(AccountPaneContainer),
 	storageId: `${VIEWLET_ID}.state`
-}, ViewContainerLocation.Sidebar);
+}, ViewContainerLocation.Panel);
 
 class AccountPanel extends ViewPane {
 	public index: number;

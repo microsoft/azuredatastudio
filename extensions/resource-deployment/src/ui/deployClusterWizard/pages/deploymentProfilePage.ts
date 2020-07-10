@@ -216,7 +216,7 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 			.component();
 	}
 
-	public onEnter() {
+	public async onEnter(): Promise<void> {
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			this.wizard.wizardObject.message = { text: '' };
 			if (pcInfo.newPage > pcInfo.lastPage) {

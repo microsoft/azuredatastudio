@@ -12,10 +12,10 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { WorkbenchDataTree, horizontalScrollingKey } from 'vs/platform/list/browser/listService';
+import { WorkbenchDataTree } from 'vs/platform/list/browser/listService';
 import { isArray, isString } from 'vs/base/common/types';
 import { Disposable, DisposableStore, dispose } from 'vs/base/common/lifecycle';
-import { $, Dimension, createStyleSheet, addStandardDisposableGenericMouseDownListner } from 'vs/base/browser/dom';
+import { $, Dimension, createStyleSheet, addStandardDisposableGenericMouseDownListner, toggleClass } from 'vs/base/browser/dom';
 import { resultsErrorColor } from 'sql/platform/theme/common/colors';
 import { CachedListVirtualDelegate, IIdentityProvider } from 'vs/base/browser/ui/list/list';
 import { FuzzyScore } from 'vs/base/common/filters';
@@ -33,6 +33,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { IDataTreeViewState } from 'vs/base/browser/ui/tree/dataTree';
 import { IRange } from 'vs/editor/common/core/range';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 
 export interface IResultMessageIntern {
 	id?: string;
@@ -106,7 +107,8 @@ export class MessagePanel extends Disposable {
 		@IConfigurationService private configurationService: IConfigurationService
 	) {
 		super();
-		const horizontalScrollEnabled = this.configurationService.getValue(horizontalScrollingKey) || false;
+		const wordWrap = this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').messages.wordwrap;
+		toggleClass(this.container, 'word-wrap', wordWrap);
 		this.tree = <WorkbenchDataTree<Model, IResultMessageIntern, FuzzyScore>>instantiationService.createInstance(
 			WorkbenchDataTree,
 			'MessagePanel',
@@ -121,8 +123,9 @@ export class MessagePanel extends Disposable {
 			{
 				accessibilityProvider: new AccessibilityProvider(),
 				mouseSupport: false,
+				horizontalScrolling: !wordWrap,
 				setRowLineHeight: false,
-				supportDynamicHeights: !horizontalScrollEnabled,
+				supportDynamicHeights: wordWrap,
 				identityProvider: new IdentityProvider()
 			});
 		this._register(this.tree.onContextMenu(e => this.onContextMenu(e)));
@@ -176,7 +179,7 @@ export class MessagePanel extends Disposable {
 	}
 
 	public layout(size: Dimension): void {
-		this.tree.layout(size.height);
+		this.tree.layout(size.height, size.width);
 		this.tree.updateChildren();
 	}
 
@@ -313,7 +316,6 @@ class BatchMessageRenderer implements ITreeRenderer<IResultMessageIntern, void, 
 		const timeStamp = $('.time-stamp');
 		container.append(timeStamp);
 		const message = $('.batch-start');
-		message.style.whiteSpace = 'pre';
 		container.append(message);
 		return { message, timeStamp, disposable: new DisposableStore() };
 	}
@@ -346,7 +348,6 @@ class MessageRenderer implements ITreeRenderer<IResultMessageIntern, void, IMess
 	renderTemplate(container: HTMLElement): IMessageTemplate {
 		container.append($('.time-stamp'));
 		const message = $('.message');
-		message.style.whiteSpace = 'pre';
 		container.append(message);
 		return { message };
 	}

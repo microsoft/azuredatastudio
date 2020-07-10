@@ -8,14 +8,13 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as constants from '../common/constants';
-import { IPrompter, QuestionTypes, IQuestion } from '../prompts/question';
+import { IPrompter, IQuestion, confirm } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
 import { BookTreeItem, BookTreeItemType } from './bookTreeItem';
 import { BookModel } from './bookModel';
 import { Deferred } from '../common/promise';
 import { IBookTrustManager, BookTrustManager } from './bookTrustManager';
 import * as loc from '../common/localizedConstants';
-import { ApiWrapper } from '../common/apiWrapper';
 import * as glob from 'fast-glob';
 import { isNullOrUndefined } from 'util';
 import { debounce } from '../common/utils';
@@ -43,14 +42,14 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	public books: BookModel[];
 	public currentBook: BookModel;
 
-	constructor(private _apiWrapper: ApiWrapper, workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext, openAsUntitled: boolean, view: string, public providerId: string) {
+	constructor(workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext, openAsUntitled: boolean, view: string, public providerId: string) {
 		this._openAsUntitled = openAsUntitled;
 		this._extensionContext = extensionContext;
 		this.books = [];
 		this.initialize(workspaceFolders).catch(e => console.error(e));
 		this.viewId = view;
 		this.prompter = new CodeAdapter();
-		this._bookTrustManager = new BookTrustManager(this.books, _apiWrapper);
+		this._bookTrustManager = new BookTrustManager(this.books);
 
 		this._extensionContext.subscriptions.push(azdata.nb.registerNavigationProvider(this));
 	}
@@ -83,7 +82,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (bookPathToTrust) {
 			let trustChanged = this._bookTrustManager.setBookAsTrusted(bookPathToTrust);
 			if (trustChanged) {
-				let notebookDocuments = this._apiWrapper.getNotebookDocuments();
+				let notebookDocuments = azdata.nb.notebookDocuments;
 				if (notebookDocuments) {
 					// update trust state of opened items
 					notebookDocuments.forEach(document => {
@@ -93,9 +92,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 						}
 					});
 				}
-				this._apiWrapper.showInfoMessage(loc.msgBookTrusted);
+				vscode.window.showInformationMessage(loc.msgBookTrusted);
 			} else {
-				this._apiWrapper.showInfoMessage(loc.msgBookAlreadyTrusted);
+				vscode.window.showInformationMessage(loc.msgBookAlreadyTrusted);
 			}
 		}
 	}
@@ -178,7 +177,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (!this.currentBook) {
 			this.currentBook = book;
 		}
-		this._bookViewer = this._apiWrapper.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
+		this._bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
 		this._bookViewer.onDidChangeVisibility(e => {
 			let openDocument = azdata.nb.activeNotebookEditor;
 			let notebookPath = openDocument?.document.uri;
@@ -243,7 +242,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		} else if (uri.fsPath) {
 			notebookPath = uri.fsPath;
 		}
-		bookItem = await this.findAndExpandParentNode(notebookPath);
+		bookItem = notebookPath ? await this.findAndExpandParentNode(notebookPath) : undefined;
 
 		if (bookItem) {
 			// Select + focus item in viewlet if books viewlet is already open, or if we pass in variable
@@ -348,7 +347,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	public async searchJupyterBooks(treeItem?: BookTreeItem): Promise<void> {
 		let folderToSearch: string;
-		if (treeItem && treeItem.book.type !== BookTreeItemType.Notebook) {
+		if (treeItem && treeItem.sections !== undefined) {
 			if (treeItem.uri) {
 				folderToSearch = path.join(treeItem.root, Content, path.dirname(treeItem.uri));
 			} else {
@@ -486,7 +485,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	getParent(element?: BookTreeItem): vscode.ProviderResult<BookTreeItem> {
-		if (element) {
+		if (element?.uri) {
 			let parentPath: string;
 			parentPath = path.join(element.root, Content, element.uri.substring(0, element.uri.lastIndexOf(path.posix.sep)));
 			if (parentPath === element.root) {
@@ -511,7 +510,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	//Confirmation message dialog
 	private async confirmReplace(): Promise<boolean> {
 		return await this.prompter.promptSingle<boolean>(<IQuestion>{
-			type: QuestionTypes.confirm,
+			type: confirm,
 			message: loc.confirmReplace,
 			default: false
 		});

@@ -4,15 +4,17 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { addDisposableListener } from 'vs/base/browser/dom';
+import { streamToBuffer } from 'vs/base/common/buffer';
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { isWeb } from 'vs/base/common/platform';
+import { Schemas } from 'vs/base/common/network';
 import { URI } from 'vs/base/common/uri';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { IFileService } from 'vs/platform/files/common/files';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IRemoteAuthorityResolverService } from 'vs/platform/remote/common/remoteAuthorityResolver';
+import { REMOTE_HOST_SCHEME } from 'vs/platform/remote/common/remoteHosts';
 import { ITunnelService } from 'vs/platform/remote/common/tunnel';
+import { IRequestService } from 'vs/platform/request/common/request';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { loadLocalResource, WebviewResourceResponse } from 'vs/platform/webview/common/resourceLoader';
 import { WebviewPortMappingManager } from 'vs/platform/webview/common/webviewPortMapping';
@@ -32,7 +34,7 @@ export class IFrameWebview extends BaseWebview<HTMLIFrameElement> implements Web
 		webviewThemeDataProvider: WebviewThemeDataProvider,
 		@ITunnelService tunnelService: ITunnelService,
 		@IFileService private readonly fileService: IFileService,
-		@IConfigurationService private readonly _configurationService: IConfigurationService,
+		@IRequestService private readonly requestService: IRequestService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IEnvironmentService environmentService: IEnvironmentService,
 		@IWorkbenchEnvironmentService private readonly _workbenchEnvironmentService: IWorkbenchEnvironmentService,
@@ -40,10 +42,6 @@ export class IFrameWebview extends BaseWebview<HTMLIFrameElement> implements Web
 		@ILogService logService: ILogService,
 	) {
 		super(id, options, contentOptions, extension, webviewThemeDataProvider, logService, telemetryService, environmentService, _workbenchEnvironmentService);
-
-		if (!this.useExternalEndpoint && (!_workbenchEnvironmentService.options || typeof _workbenchEnvironmentService.webviewExternalEndpoint !== 'string')) {
-			throw new Error('To use iframe based webviews, you must configure `environmentService.webviewExternalEndpoint`');
-		}
 
 		this._portMappingManager = this._register(new WebviewPortMappingManager(
 			() => this.extension?.location,
@@ -62,7 +60,7 @@ export class IFrameWebview extends BaseWebview<HTMLIFrameElement> implements Web
 			this.localLocalhost(entry.origin);
 		}));
 
-		this.element!.setAttribute('src', `${this.externalEndpoint}/index.html?id=${this.id}`);
+		this.initElement(extension, options);
 	}
 
 	protected createElement(options: WebviewOptions, _contentOptions: WebviewContentOptions) {
@@ -77,16 +75,17 @@ export class IFrameWebview extends BaseWebview<HTMLIFrameElement> implements Web
 		return element;
 	}
 
+	protected initElement(extension: WebviewExtensionDescription | undefined, options: WebviewOptions) {
+		// The extensionId and purpose in the URL are used for filtering in js-debug:
+		this.element!.setAttribute('src', `${this.externalEndpoint}/index.html?id=${this.id}&extensionId=${extension?.id.value ?? ''}&purpose=${options.purpose}`);
+	}
+
 	private get externalEndpoint(): string {
 		const endpoint = this.workbenchEnvironmentService.webviewExternalEndpoint!.replace('{{uuid}}', this.id);
 		if (endpoint[endpoint.length - 1] === '/') {
 			return endpoint.slice(0, endpoint.length - 1);
 		}
 		return endpoint;
-	}
-
-	private get useExternalEndpoint(): boolean {
-		return isWeb || this._configurationService.getValue<boolean>('webview.experimental.useExternalEndpoint');
 	}
 
 	public mountTo(parent: HTMLElement) {
@@ -99,7 +98,7 @@ export class IFrameWebview extends BaseWebview<HTMLIFrameElement> implements Web
 		super.html = this.preprocessHtml(value);
 	}
 
-	private preprocessHtml(value: string): string {
+	protected preprocessHtml(value: string): string {
 		return value
 			.replace(/(["'])(?:vscode-resource):(\/\/([^\s\/'"]+?)(?=\/))?([^\s'"]+?)(["'])/gi, (match, startQuote, _1, scheme, path, endQuote) => {
 				if (scheme) {
@@ -115,7 +114,7 @@ export class IFrameWebview extends BaseWebview<HTMLIFrameElement> implements Web
 			});
 	}
 
-	protected get extraContentOptions() {
+	protected get extraContentOptions(): any {
 		return {
 			endpoint: this.externalEndpoint,
 		};
@@ -141,15 +140,42 @@ export class IFrameWebview extends BaseWebview<HTMLIFrameElement> implements Web
 
 	private async loadResource(requestPath: string, uri: URI) {
 		try {
-			const result = await loadLocalResource(uri, this.fileService, this.extension ? this.extension.location : undefined,
-				this.content.options.localResourceRoots || []);
+			const remoteAuthority = this._workbenchEnvironmentService.configuration.remoteAuthority;
+			const remoteConnectionData = remoteAuthority ? this._remoteAuthorityResolverService.getConnectionData(remoteAuthority) : null;
+			const extensionLocation = this.extension?.location;
+
+			// If we are loading a file resource from a remote extension, rewrite the uri to go remote
+			let rewriteUri: undefined | ((uri: URI) => URI);
+			if (extensionLocation?.scheme === REMOTE_HOST_SCHEME) {
+				rewriteUri = (uri) => {
+					if (uri.scheme === Schemas.file && extensionLocation?.scheme === REMOTE_HOST_SCHEME) {
+						return URI.from({
+							scheme: REMOTE_HOST_SCHEME,
+							authority: extensionLocation.authority,
+							path: '/vscode-resource',
+							query: JSON.stringify({
+								requestResourcePath: uri.path
+							})
+						});
+					}
+					return uri;
+				};
+			}
+
+			const result = await loadLocalResource(uri, {
+				extensionLocation: extensionLocation,
+				roots: this.content.options.localResourceRoots || [],
+				remoteConnectionData,
+				rewriteUri,
+			}, this.fileService, this.requestService);
 
 			if (result.type === WebviewResourceResponse.Type.Success) {
+				const { buffer } = await streamToBuffer(result.stream);
 				return this._send('did-load-resource', {
 					status: 200,
 					path: requestPath,
 					mime: result.mimeType,
-					data: result.buffer.buffer,
+					data: buffer,
 				});
 			}
 		} catch  {

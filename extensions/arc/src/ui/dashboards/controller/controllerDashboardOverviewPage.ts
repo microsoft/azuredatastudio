@@ -9,9 +9,7 @@ import * as loc from '../../../localizedConstants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { IconPathHelper, cssStyles, iconSize, ResourceType, Endpoints } from '../../../constants';
 import { ControllerModel } from '../../../models/controllerModel';
-import { resourceTypeToDisplayName, getAzurecoreApi, getResourceTypeIcon, getConnectionModeDisplayText, parseInstanceName } from '../../../common/utils';
-import { RegistrationResponse } from '../../../controller/generated/v1/model/registrationResponse';
-import { EndpointModel } from '../../../controller/generated/v1/api';
+import { resourceTypeToDisplayName, getResourceTypeIcon, getConnectionModeDisplayText, parseInstanceName } from '../../../common/utils';
 
 export class ControllerDashboardOverviewPage extends DashboardPage {
 
@@ -31,24 +29,12 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 		instanceNamespace: '-',
 	};
 
-	private _endpointsRetrieved = false;
-	private _registrationsRetrieved = false;
-
 	constructor(modelView: azdata.ModelView, private _controllerModel: ControllerModel) {
 		super(modelView);
-		this._controllerModel.onRegistrationsUpdated((_: RegistrationResponse[]) => {
-			this.eventuallyRunOnInitialized(() => {
-				this.handleRegistrationsUpdated().catch(e => console.log(e));
-			});
-		});
-		this._controllerModel.onEndpointsUpdated(endpoints => {
-			this.eventuallyRunOnInitialized(() => {
-				this.handleEndpointsUpdated(endpoints);
-			});
-		});
-		this.refresh().catch(e => {
-			console.log(e);
-		});
+
+		this.disposables.push(
+			this._controllerModel.onRegistrationsUpdated(() => this.eventuallyRunOnInitialized(() => this.handleRegistrationsUpdated())),
+			this._controllerModel.onEndpointsUpdated(() => this.eventuallyRunOnInitialized(() => this.handleEndpointsUpdated())));
 	}
 
 	public get title(): string {
@@ -68,27 +54,11 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 	}
 
 	public get container(): azdata.Component {
-
-		const rootContainer = this.modelView.modelBuilder.flexContainer()
-			.withLayout({ flexFlow: 'column' })
-			.component();
-
-		const contentContainer = this.modelView.modelBuilder.divContainer().component();
-		rootContainer.addItem(contentContainer, { CSSStyles: { 'margin': '10px 20px 0px 20px' } });
-
+		// Create loaded components
 		this._propertiesContainer = this.modelView.modelBuilder.propertiesContainer().component();
-		this._propertiesLoadingComponent = this.modelView.modelBuilder.loadingComponent().withItem(this._propertiesContainer).component();
+		this._propertiesLoadingComponent = this.modelView.modelBuilder.loadingComponent().component();
 
-		contentContainer.addItem(this._propertiesLoadingComponent);
-
-		const arcResourcesTitle = this.modelView.modelBuilder.text()
-			.withProperties<azdata.TextComponentProperties>({ value: loc.arcResources })
-			.component();
-
-		contentContainer.addItem(arcResourcesTitle, {
-			CSSStyles: cssStyles.title
-		});
-
+		this._arcResourcesLoadingComponent = this.modelView.modelBuilder.loadingComponent().component();
 		this._arcResourcesTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
 			data: [],
 			columns: [
@@ -127,11 +97,33 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 			ariaLabel: loc.arcResources
 		}).component();
 
-		const arcResourcesTableContainer = this.modelView.modelBuilder.divContainer()
-			.withItems([this._arcResourcesTable])
+		// Update loaded components with data
+		this.handleRegistrationsUpdated();
+		this.handleEndpointsUpdated();
+
+		// Assign the loading component after it has data
+		this._propertiesLoadingComponent.component = this._propertiesContainer;
+		this._arcResourcesLoadingComponent.component = this._arcResourcesTable;
+
+		// Assemble the container
+		const rootContainer = this.modelView.modelBuilder.flexContainer()
+			.withLayout({ flexFlow: 'column' })
 			.component();
 
-		this._arcResourcesLoadingComponent = this.modelView.modelBuilder.loadingComponent().withItem(arcResourcesTableContainer).component();
+		const contentContainer = this.modelView.modelBuilder.divContainer().component();
+		rootContainer.addItem(contentContainer, { CSSStyles: { 'margin': '10px 20px 0px 20px' } });
+
+		// Properties
+		contentContainer.addItem(this._propertiesLoadingComponent);
+
+		// Resources
+		const arcResourcesTitle = this.modelView.modelBuilder.text()
+			.withProperties<azdata.TextComponentProperties>({ value: loc.arcResources })
+			.component();
+
+		contentContainer.addItem(arcResourcesTitle, {
+			CSSStyles: cssStyles.title
+		});
 
 		contentContainer.addItem(this._arcResourcesLoadingComponent);
 		this.initialized = true;
@@ -193,19 +185,18 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 		).component();
 	}
 
-	private async handleRegistrationsUpdated(): Promise<void> {
+	private handleRegistrationsUpdated(): void {
 		const reg = this._controllerModel.controllerRegistration;
 		this.controllerProperties.instanceName = reg?.instanceName || this.controllerProperties.instanceName;
 		this.controllerProperties.resourceGroupName = reg?.resourceGroupName || this.controllerProperties.resourceGroupName;
-		this.controllerProperties.location = (await getAzurecoreApi()).getRegionDisplayName(reg?.location) || this.controllerProperties.location;
+		this.controllerProperties.location = reg?.region || this.controllerProperties.location;
 		this.controllerProperties.subscriptionId = reg?.subscriptionId || this.controllerProperties.subscriptionId;
 		this.controllerProperties.connectionMode = getConnectionModeDisplayText(reg?.connectionMode) || this.controllerProperties.connectionMode;
 		this.controllerProperties.instanceNamespace = reg?.instanceNamespace || this.controllerProperties.instanceNamespace;
-		this._registrationsRetrieved = true;
 		this.refreshDisplayedProperties();
 
 		this._arcResourcesTable.data = this._controllerModel.registrations
-			.filter(r => r.instanceType !== ResourceType.dataControllers)
+			.filter(r => r.instanceType !== ResourceType.dataControllers && !r.isDeleted)
 			.map(r => {
 				const iconPath = getResourceTypeIcon(r.instanceType ?? '');
 				const imageComponent = this.modelView.modelBuilder.image()
@@ -226,55 +217,51 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 				});
 				return [imageComponent, nameLink, resourceTypeToDisplayName(r.instanceType), loc.numVCores(r.vCores)];
 			});
-		this._arcResourcesLoadingComponent.loading = false;
+		this._arcResourcesLoadingComponent.loading = !this._controllerModel.registrationsLastUpdated;
 	}
 
-	private handleEndpointsUpdated(endpoints: EndpointModel[]): void {
-		const controllerEndpoint = endpoints.find(endpoint => endpoint.name === Endpoints.controller);
+	private handleEndpointsUpdated(): void {
+		const controllerEndpoint = this._controllerModel.getEndpoint(Endpoints.controller);
 		this.controllerProperties.controllerEndpoint = controllerEndpoint?.endpoint || this.controllerProperties.controllerEndpoint;
-		this._endpointsRetrieved = true;
 		this.refreshDisplayedProperties();
 	}
 
 	private refreshDisplayedProperties(): void {
-		// Only update once we've retrieved all the necessary properties
-		if (this._endpointsRetrieved && this._registrationsRetrieved) {
-			this._propertiesContainer.propertyItems = [
-				{
-					displayName: loc.name,
-					value: this.controllerProperties.instanceName
-				},
-				{
-					displayName: loc.resourceGroup,
-					value: this.controllerProperties.resourceGroupName
-				},
-				{
-					displayName: loc.region,
-					value: this.controllerProperties.location
-				},
-				{
-					displayName: loc.subscriptionId,
-					value: this.controllerProperties.subscriptionId
-				},
-				{
-					displayName: loc.type,
-					value: loc.dataControllersType
-				},
-				{
-					displayName: loc.controllerEndpoint,
-					value: this.controllerProperties.controllerEndpoint
-				},
-				{
-					displayName: loc.connectionMode,
-					value: this.controllerProperties.connectionMode
-				},
-				{
-					displayName: loc.namespace,
-					value: this.controllerProperties.instanceNamespace
-				}
-			];
-			this._propertiesLoadingComponent.loading = false;
-		}
+		this._propertiesContainer.propertyItems = [
+			{
+				displayName: loc.name,
+				value: this.controllerProperties.instanceName
+			},
+			{
+				displayName: loc.resourceGroup,
+				value: this.controllerProperties.resourceGroupName
+			},
+			{
+				displayName: loc.region,
+				value: this.controllerProperties.location
+			},
+			{
+				displayName: loc.subscriptionId,
+				value: this.controllerProperties.subscriptionId
+			},
+			{
+				displayName: loc.type,
+				value: loc.dataControllersType
+			},
+			{
+				displayName: loc.controllerEndpoint,
+				value: this.controllerProperties.controllerEndpoint
+			},
+			{
+				displayName: loc.connectionMode,
+				value: this.controllerProperties.connectionMode
+			},
+			{
+				displayName: loc.namespace,
+				value: this.controllerProperties.instanceNamespace
+			}
+		];
 
+		this._propertiesLoadingComponent.loading = !this._controllerModel.registrationsLastUpdated && !this._controllerModel.endpointsLastUpdated;
 	}
 }

@@ -124,7 +124,11 @@ export function copiedToClipboard(name: string): string { return localize('arc.c
 export function clickTheTroubleshootButton(resourceType: string): string { return localize('arc.clickTheTroubleshootButton', "Click the troubleshoot button to open the Azure Arc {0} troubleshooting notebook.", resourceType); }
 export function numVCores(vCores: string | undefined): string {
 	if (vCores && +vCores > 0) {
-		return localize('arc.numVCores', "{0} vCores", vCores);
+		if (+vCores === 1) {
+			return localize('arc.numVCore', "{0} vCore", vCores);
+		} else {
+			return localize('arc.numVCores', "{0} vCores", vCores);
+		}
 	} else {
 		return '-';
 	}
@@ -146,3 +150,4 @@ export function resourceDeletionWarning(namespace: string, name: string): string
 export function invalidResourceDeletionName(name: string): string { return localize('arc.invalidResourceDeletionName', "The value '{0}' does not match the instance name. Try again or press escape to exit", name); }
 export function couldNotFindAzureResource(name: string): string { return localize('arc.couldNotFindAzureResource', "Could not find Azure resource for {0}", name); }
 export function passwordResetFailed(error: any): string { return localize('arc.passwordResetFailed', "Failed to reset password. {0}", getErrorMessage(error)); }
+export function errorConnectingToController(error: any): string { return localize('arc.errorConnectingToController', "Error connecting to controller. {0}", getErrorMessage(error)); }

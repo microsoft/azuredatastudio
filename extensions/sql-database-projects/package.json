@@ -1,8 +1,8 @@
 {
   "name": "sql-database-projects",
   "displayName": "SQL Database Projects",
-  "description": "The SQL Database Projects extension for Azure Data Studio allows users to develop and deploy database schemas.",
-  "version": "0.1.0",
+  "description": "The SQL Database Projects extension for Azure Data Studio allows users to develop and publish database schemas.",
+  "version": "0.1.1",
   "publisher": "Microsoft",
   "preview": true,
   "engines": {
@@ -101,8 +101,8 @@
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
-        "command": "sqlDatabaseProjects.deploy",
-        "title": "%sqlDatabaseProjects.deploy%",
+        "command": "sqlDatabaseProjects.publish",
+        "title": "%sqlDatabaseProjects.publish%",
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
@@ -118,11 +118,20 @@
       {
         "command": "sqlDatabaseProjects.importDatabase",
         "title": "%sqlDatabaseProjects.importDatabase%",
-        "category": "%sqlDatabaseProjects.displayName%"
+        "category": "%sqlDatabaseProjects.displayName%",
+          "icon": {
+            "dark": "images/extension.png",
+            "light": "images/extension.png"
+          }
       },
       {
         "command": "sqlDatabaseProjects.addDatabaseReference",
         "title": "%sqlDatabaseProjects.addDatabaseReference%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.openContainingFolder",
+        "title": "%sqlDatabaseProjects.openContainingFolder%",
         "category": "%sqlDatabaseProjects.displayName%"
       }
     ],
@@ -171,7 +180,7 @@
           "when": "false"
         },
         {
-          "command": "sqlDatabaseProjects.deploy",
+          "command": "sqlDatabaseProjects.publish",
           "when": "false"
         },
         {
@@ -188,6 +197,10 @@
         {
           "command": "sqlDatabaseProjects.addDatabaseReference",
           "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.openContainingFolder",
+          "when": "false"
         }
       ],
       "view/item/context": [
@@ -197,7 +210,7 @@
           "group": "1_dbProjectsFirst@1"
         },
         {
-          "command": "sqlDatabaseProjects.deploy",
+          "command": "sqlDatabaseProjects.publish",
           "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project",
           "group": "1_dbProjectsFirst@2"
         },
@@ -252,6 +265,11 @@
           "group": "9_dbProjectsLast@2"
         },
         {
+          "command": "sqlDatabaseProjects.openContainingFolder",
+          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project",
+          "group": "9_dbProjectsLast@8"
+        },
+        {
           "command": "sqlDatabaseProjects.close",
           "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project",
           "group": "9_dbProjectsLast@9"
@@ -262,6 +280,12 @@
           "command": "sqlDatabaseProjects.importDatabase",
           "when": "connectionProvider == MSSQL && nodeType && nodeType == Database && mssql:engineedition != 11",
           "group": "export"
+        }
+      ],
+      "dashboard/toolbar": [
+        {
+            "command": "sqlDatabaseProjects.importDatabase",
+            "when": "connectionProvider == 'MSSQL' && mssql:engineedition != 11"
         }
       ]
     },

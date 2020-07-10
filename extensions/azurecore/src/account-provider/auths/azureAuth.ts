@@ -129,6 +129,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 			this.metadata.settings.azureKeyVaultResource
 		];
 
+		if (this.metadata.settings.azureDevOpsResource) {
+			this.resources = this.resources.concat(this.metadata.settings.azureDevOpsResource);
+		}
+
 		this.scopes = [...this.metadata.settings.scopes];
 		this.scopesString = this.scopes.join(' ');
 	}
@@ -227,6 +231,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 					await this.refreshAccessToken(account.key, baseToken.refreshToken, tenant, resource);
 				} catch (ex) {
 					console.log(`Could not refresh access token for ${JSON.stringify(tenant)} - silently removing the tenant from the user's account.`);
+					console.log(`Actual error: ${JSON.stringify(ex?.response?.data ?? ex.message ?? ex, undefined, 2)}`);
 					azureAccount.properties.tenants = azureAccount.properties.tenants.filter(t => t.id !== tenant.id);
 					continue;
 				}

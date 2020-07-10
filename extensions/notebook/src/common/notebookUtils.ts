@@ -8,7 +8,6 @@ import * as os from 'os';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { getErrorMessage, isEditorTitleFree } from '../common/utils';
-import { ApiWrapper } from './apiWrapper';
 
 const localize = nls.loadMessageBundle();
 
@@ -18,7 +17,7 @@ const noNotebookVisible = localize('noNotebookVisible', "No notebook editor is a
 
 export class NotebookUtils {
 
-	constructor(private _apiWrapper: ApiWrapper) { }
+	constructor() { }
 
 	public async newNotebook(connectionProfile?: azdata.IConnectionProfile): Promise<azdata.nb.NotebookEditor> {
 		const title = this.findNextUntitledEditorName();
@@ -51,14 +50,14 @@ export class NotebookUtils {
 			let filter: { [key: string]: Array<string> } = {};
 			// TODO support querying valid notebook file types
 			filter[localize('notebookFiles', "Notebooks")] = ['ipynb'];
-			let file = await this._apiWrapper.showOpenDialog({
+			let file = await vscode.window.showOpenDialog({
 				filters: filter
 			});
 			if (file && file.length > 0) {
 				await azdata.nb.showNotebookDocument(file[0]);
 			}
 		} catch (err) {
-			this._apiWrapper.showErrorMessage(getErrorMessage(err));
+			vscode.window.showErrorMessage(getErrorMessage(err));
 		}
 	}
 
@@ -142,8 +141,7 @@ export class NotebookUtils {
 			if (hdfsPath.length > 0) {
 				let analyzeCommand = '#' + msgSampleCodeDataFrame + os.EOL + 'df = (spark.read.option("inferSchema", "true")'
 					+ os.EOL + '.option("header", "true")' + os.EOL + '.csv("{0}"))' + os.EOL + 'df.show(10)';
-
-				editor.edit(editBuilder => {
+				await editor.edit(editBuilder => {
 					editBuilder.insertCell({
 						cell_type: 'code',
 						source: analyzeCommand.replace('{0}', hdfsPath)

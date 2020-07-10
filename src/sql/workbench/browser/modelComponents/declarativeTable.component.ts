@@ -28,31 +28,7 @@ export enum DeclarativeDataType {
 
 @Component({
 	selector: 'modelview-declarativeTable',
-	template: `
-	<table role=grid #container *ngIf="columns" class="declarative-table" [style.height]="getHeight()" [style.width]="getWidth()" [attr.aria-label]="ariaLabel">
-	<thead>
-		<ng-container *ngFor="let column of columns;">
-		<th class="declarative-table-header" aria-sort="none" [style.width]="getColumnWidth(column)" [attr.aria-label]="column.ariaLabel" [ngStyle]="column.headerCssStyles">{{column.displayName}}</th>
-		</ng-container>
-	</thead>
-		<ng-container *ngIf="data">
-			<ng-container *ngFor="let row of data;let r = index">
-				<tr class="declarative-table-row">
-					<ng-container *ngFor="let cellData of row;let c = index">
-						<td class="declarative-table-cell" [style.width]="getColumnWidth(c)" [attr.aria-label]="getAriaLabel(r, c)" [ngStyle]="columns[c].rowCssStyles">
-							<checkbox *ngIf="isCheckBox(c)" label="" (onChange)="onCheckBoxChanged($event,r,c)" [enabled]="isControlEnabled(c)" [checked]="isChecked(r,c)"></checkbox>
-							<select-box *ngIf="isSelectBox(c)" [options]="getOptions(c)" (onDidSelect)="onSelectBoxChanged($event,r,c)" [selectedOption]="getSelectedOptionDisplayName(r,c)"></select-box>
-							<editable-select-box *ngIf="isEditableSelectBox(c)" [options]="getOptions(c)" (onDidSelect)="onSelectBoxChanged($event,r,c)" [selectedOption]="getSelectedOptionDisplayName(r,c)"></editable-select-box>
-							<input-box *ngIf="isInputBox(c)" [value]="cellData" (onDidChange)="onInputBoxChanged($event,r,c)"></input-box>
-							<ng-container *ngIf="isLabel(c)" >{{cellData}}</ng-container>
-							<model-component-wrapper *ngIf="isComponent(c) && getItemDescriptor(cellData)" [descriptor]="getItemDescriptor(cellData)" [modelStore]="modelStore"></model-component-wrapper>
-						</td>
-					</ng-container>
-				</tr>
-			</ng-container>
-		</ng-container>
-	</table>
-	`
+	templateUrl: decodeURI(require.toUrl('./declarativeTable.component.html'))
 })
 export default class DeclarativeTableComponent extends ContainerBase<any> implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
@@ -77,6 +53,11 @@ export default class DeclarativeTableComponent extends ContainerBase<any> implem
 
 	ngOnDestroy(): void {
 		this.baseDestroy();
+	}
+
+	public isHeaderChecked(colIdx: number): boolean {
+		let column: azdata.DeclarativeTableColumn = this.columns[colIdx];
+		return column.isChecked;
 	}
 
 	public isCheckBox(colIdx: number): boolean {
@@ -105,6 +86,31 @@ export default class DeclarativeTableComponent extends ContainerBase<any> implem
 
 	public onCheckBoxChanged(e: boolean, rowIdx: number, colIdx: number): void {
 		this.onCellDataChanged(e, rowIdx, colIdx);
+		if (this.columns[colIdx].showCheckAll) {
+			if (e) {
+				for (let rowIdx = 0; rowIdx < this.data.length; rowIdx++) {
+					if (!this.data[rowIdx][colIdx]) {
+						return;
+					}
+				}
+			}
+			this.columns[colIdx].isChecked = e;
+			this._changeRef.detectChanges();
+		}
+	}
+
+	public onHeaderCheckBoxChanged(e: boolean, colIdx: number): void {
+		this.columns[colIdx].isChecked = e;
+		this.data.forEach((row, rowIdx) => {
+			if (row[colIdx] !== e) {
+				this.onCellDataChanged(e, rowIdx, colIdx);
+			}
+		});
+		this._changeRef.detectChanges();
+	}
+
+	public trackByFnCols(index: number, item: any): any {
+		return index;
 	}
 
 	public onSelectBoxChanged(e: ISelectData | string, rowIdx: number, colIdx: number): void {
@@ -126,7 +132,6 @@ export default class DeclarativeTableComponent extends ContainerBase<any> implem
 
 	private onCellDataChanged(newValue: any, rowIdx: number, colIdx: number): void {
 		this.data[rowIdx][colIdx] = newValue;
-		this.data = this.data;
 		let newCellData: azdata.TableCell = {
 			row: rowIdx,
 			column: colIdx,

@@ -236,12 +236,24 @@ export interface AzureAccountFieldInfo extends AzureLocationsFieldInfo {
 	displaySubscriptionVariableName?: string;
 	subscriptionVariableName?: string;
 	resourceGroupVariableName?: string;
+	allowNewResourceGroup?: boolean;
+	newResourceGroupFlagVariableName?: string;
+	newResourceGroupNameVariableName?: string;
 }
 
 export interface AzureLocationsFieldInfo extends FieldInfo {
 	locationVariableName?: string;
 	displayLocationVariableName?: string;
 	locations?: string[]
+}
+
+export interface FilePickerFieldInfo extends FieldInfo {
+	filter: FilePickerFilter;
+}
+
+export interface FilePickerFilter {
+	displayName: string;
+	fileTypes: string[];
 }
 
 export const enum LabelPosition {

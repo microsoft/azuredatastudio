@@ -542,7 +542,9 @@
                     "**/{vs,sql}/workbench/api/**/common/**",
                     "vs/workbench/contrib/files/common/editors/fileEditorInput", // this should be fine, it only accesses constants from contrib
                     "vscode-textmate",
-                    "vscode-oniguruma"
+                    "vscode-oniguruma",
+                    "iconv-lite-umd",
+                    "semver-umd"
                 ]
             },
             {

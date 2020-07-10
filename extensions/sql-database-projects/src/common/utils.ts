@@ -65,13 +65,6 @@ export async function exists(path: string): Promise<boolean> {
 }
 
 /**
- * Convert camelCase input to PascalCase
- */
-export function toPascalCase(input: string): string {
-	return input.charAt(0).toUpperCase() + input.substr(1);
-}
-
-/**
  * get quoted path to be used in any commandline argument
  * @param filePath
  */
@@ -105,6 +98,14 @@ export function getSafeNonWindowsPath(filePath: string): string {
 export function getPlatformSafeFileEntryPath(filePath: string): string {
 	const parts = filePath.split('\\');
 	return parts.join('/');
+}
+
+/**
+ * Standardizes slashes to be "\\" for consistency between platforms and compatibility with SSDT
+ */
+export function convertSlashesForSqlProj(filePath: string): string {
+	const parts = filePath.split('/');
+	return parts.join('\\');
 }
 
 /**

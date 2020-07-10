@@ -77,6 +77,14 @@ export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape
 	$setVisible(treeViewId: string, visible: boolean): void {
 	}
 
+	$hasResolve(treeViewId: string): Promise<boolean> {
+		return Promise.resolve(false);
+	}
+
+	$resolve(treeViewId: string, treeItemHandle: string): Promise<ITreeComponentItem | undefined> {
+		return Promise.resolve(undefined);
+	}
+
 	private createExtHostTreeViewer<T>(handle: number, id: string, dataProvider: azdata.TreeComponentDataProvider<T>, extension: IExtensionDescription, logService: ILogService): ExtHostTreeView<T> {
 		const treeView = new ExtHostTreeView<T>(handle, id, dataProvider, this._proxy, undefined, extension, logService);
 		this.treeViews.set(`${handle}-${id}`, treeView);

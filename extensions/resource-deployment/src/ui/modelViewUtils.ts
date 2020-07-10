@@ -7,9 +7,8 @@ import { EOL, homedir as os_homedir } from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import * as azurecore from '../../../azurecore/src/azurecore';
 import { azureResource } from '../../../azurecore/src/azureResource/azure-resource';
-import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles } from '../interfaces';
+import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles, FilePickerFieldInfo } from '../interfaces';
 import * as loc from '../localizedConstants';
 import { getDefaultKubeConfigPath, getKubeConfigClusterContexts } from '../services/kubeService';
 import { assert, getDateTimeString, getErrorMessage } from '../utils';
@@ -99,6 +98,12 @@ interface AzureAccountFieldContext extends FieldContext {
 	fieldInfo: AzureAccountFieldInfo;
 }
 
+interface AzureAccountComponents {
+	accountDropdown: azdata.DropDownComponent;
+	signInButton: azdata.ButtonComponent;
+	refreshAccountsButton: azdata.ButtonComponent;
+}
+
 interface ContextBase {
 	container: azdata.window.Dialog | azdata.window.Wizard;
 	inputComponents: InputComponents;
@@ -176,8 +181,8 @@ export function initializeDialog(dialogContext: DialogContext): void {
 	const tabs: azdata.window.DialogTab[] = [];
 	dialogContext.dialogInfo.tabs.forEach(tabInfo => {
 		const tab = azdata.window.createTab(tabInfo.title);
-		tab.registerContent((view: azdata.ModelView) => {
-			const sections = tabInfo.sections.map(sectionInfo => {
+		tab.registerContent(async (view: azdata.ModelView) => {
+			const sections = await Promise.all(tabInfo.sections.map(sectionInfo => {
 				sectionInfo.inputWidth = sectionInfo.inputWidth || tabInfo.inputWidth || DefaultInputWidth;
 				sectionInfo.labelWidth = sectionInfo.labelWidth || tabInfo.labelWidth || DefaultLabelWidth;
 				sectionInfo.fieldAlignItems = sectionInfo.fieldAlignItems || tabInfo.fieldAlignItems || DefaultFieldAlignItems;
@@ -193,7 +198,7 @@ export function initializeDialog(dialogContext: DialogContext): void {
 					container: dialogContext.container,
 					inputComponents: dialogContext.inputComponents
 				});
-			});
+			}));
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				sections.map(section => {
 					return { title: '', component: section };
@@ -212,8 +217,8 @@ export function initializeDialog(dialogContext: DialogContext): void {
 }
 
 export function initializeWizardPage(context: WizardPageContext): void {
-	context.page.registerContent((view: azdata.ModelView) => {
-		const sections = context.pageInfo.sections.map(sectionInfo => {
+	context.page.registerContent(async (view: azdata.ModelView) => {
+		const sections = await Promise.all(context.pageInfo.sections.map(sectionInfo => {
 			sectionInfo.inputWidth = sectionInfo.inputWidth || context.pageInfo.inputWidth || context.wizardInfo.inputWidth || DefaultInputWidth;
 			sectionInfo.labelWidth = sectionInfo.labelWidth || context.pageInfo.labelWidth || context.wizardInfo.labelWidth || DefaultLabelWidth;
 			sectionInfo.fieldAlignItems = sectionInfo.fieldAlignItems || context.pageInfo.fieldAlignItems || DefaultFieldAlignItems;
@@ -229,7 +234,7 @@ export function initializeWizardPage(context: WizardPageContext): void {
 				onNewValidatorCreated: context.onNewValidatorCreated,
 				sectionInfo: sectionInfo
 			});
-		});
+		}));
 		const formBuilder = view.modelBuilder.formContainer().withFormItems(
 			sections.map(section => { return { title: '', component: section }; }),
 			{
@@ -242,7 +247,7 @@ export function initializeWizardPage(context: WizardPageContext): void {
 	});
 }
 
-export function createSection(context: SectionContext): azdata.GroupContainer {
+export async function createSection(context: SectionContext): Promise<azdata.GroupContainer> {
 	const components: azdata.Component[] = [];
 	context.sectionInfo.inputWidth = context.sectionInfo.inputWidth || DefaultInputWidth;
 	context.sectionInfo.labelWidth = context.sectionInfo.labelWidth || DefaultLabelWidth;
@@ -250,11 +255,11 @@ export function createSection(context: SectionContext): azdata.GroupContainer {
 	context.sectionInfo.fieldWidth = context.sectionInfo.fieldWidth || DefaultFieldWidth;
 	context.sectionInfo.fieldHeight = context.sectionInfo.fieldHeight || DefaultFieldHeight;
 	if (context.sectionInfo.fields) {
-		processFields(context.sectionInfo.fields, components, context);
+		await processFields(context.sectionInfo.fields, components, context);
 	} else if (context.sectionInfo.rows) {
-		context.sectionInfo.rows.forEach(rowInfo => {
-			components.push(processRow(rowInfo, context));
-		});
+		for (const rowInfo of context.sectionInfo.rows) {
+			components.push(await processRow(rowInfo, context));
+		}
 	}
 
 	return createGroupContainer(context.view, components, {
@@ -264,19 +269,19 @@ export function createSection(context: SectionContext): azdata.GroupContainer {
 	});
 }
 
-function processRow(rowInfo: RowInfo, context: SectionContext): azdata.Component {
+async function processRow(rowInfo: RowInfo, context: SectionContext): Promise<azdata.Component> {
 	const items: azdata.Component[] = [];
 	if ('items' in rowInfo.items[0]) { // rowInfo.items is RowInfo[]
 		const rowItems = rowInfo.items as RowInfo[];
-		items.push(...rowItems.map(rowInfo => processRow(rowInfo, context)));
+		items.push(...(await Promise.all(rowItems.map(rowInfo => processRow(rowInfo, context)))));
 	} else { // rowInfo.items is FieldInfo[]
 		const fieldItems = rowInfo.items as FieldInfo[];
-		processFields(fieldItems, items, context, context.sectionInfo.spaceBetweenFields === undefined ? '50px' : context.sectionInfo.spaceBetweenFields);
+		await processFields(fieldItems, items, context, context.sectionInfo.spaceBetweenFields === undefined ? '50px' : context.sectionInfo.spaceBetweenFields);
 	}
 	return createFlexContainer(context.view, items, true, context.sectionInfo.fieldWidth, context.sectionInfo.fieldHeight, context.sectionInfo.fieldAlignItems, rowInfo.cssStyles);
 }
 
-function processFields(fieldInfoArray: FieldInfo[], components: azdata.Component[], context: SectionContext, spaceBetweenFields?: string): void {
+async function processFields(fieldInfoArray: FieldInfo[], components: azdata.Component[], context: SectionContext, spaceBetweenFields?: string): Promise<void> {
 	for (let i = 0; i < fieldInfoArray.length; i++) {
 		const fieldInfo = fieldInfoArray[i];
 		fieldInfo.labelWidth = fieldInfo.labelWidth || context.sectionInfo.labelWidth;
@@ -285,7 +290,7 @@ function processFields(fieldInfoArray: FieldInfo[], components: azdata.Component
 		fieldInfo.fieldWidth = fieldInfo.fieldWidth || context.sectionInfo.fieldWidth;
 		fieldInfo.fieldHeight = fieldInfo.fieldHeight || context.sectionInfo.fieldHeight;
 		fieldInfo.labelPosition = fieldInfo.labelPosition === undefined ? context.sectionInfo.labelPosition : fieldInfo.labelPosition;
-		processField({
+		await processField({
 			view: context.view,
 			onNewDisposableCreated: context.onNewDisposableCreated,
 			onNewInputComponentCreated: context.onNewInputComponentCreated,
@@ -338,7 +343,7 @@ function addLabelInputPairToContainer(view: azdata.ModelView, components: azdata
 	}
 }
 
-function processField(context: FieldContext): void {
+async function processField(context: FieldContext): Promise<void> {
 	switch (context.fieldInfo.type) {
 		case FieldType.Options:
 			processOptionsTypeField(context);
@@ -366,7 +371,7 @@ function processField(context: FieldContext): void {
 			processAzureAccountField(context);
 			break;
 		case FieldType.AzureLocations:
-			processAzureLocationsField(context);
+			await processAzureLocationsField(context);
 			break;
 		case FieldType.FilePicker:
 			processFilePickerField(context);
@@ -603,18 +608,28 @@ function processCheckboxField(context: FieldContext): void {
  * @param context The context to use to create the field
  */
 function processFilePickerField(context: FieldContext): FilePickerInputs {
+	const inputWidth = parseInt(context.fieldInfo.inputWidth!.replace(/px/g, '').trim());
+	const buttonWidth = 100;
+
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
 	const input = createTextInput(context.view, {
 		defaultValue: context.fieldInfo.defaultValue || '',
 		ariaLabel: context.fieldInfo.label,
 		required: context.fieldInfo.required,
 		placeHolder: context.fieldInfo.placeHolder,
-		width: context.fieldInfo.inputWidth,
+		width: `${inputWidth - buttonWidth}px`,
 		enabled: context.fieldInfo.enabled
 	});
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, { component: input });
 	input.enabled = false;
-	const browseFileButton = context.view!.modelBuilder.button().withProperties({ label: loc.browse }).component();
+	const browseFileButton = context.view!.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: loc.browse, width: buttonWidth }).component();
+	const fieldInfo = context.fieldInfo as FilePickerFieldInfo;
+	let filter: { [name: string]: string[] } | undefined = undefined;
+	if (fieldInfo.filter) {
+		const filterName = fieldInfo.filter.displayName;
+		filter = {};
+		filter[filterName] = fieldInfo.filter.fileTypes;
+	}
 	context.onNewDisposableCreated(browseFileButton.onDidClick(async () => {
 		let fileUris = await vscode.window.showOpenDialog({
 			canSelectFiles: true,
@@ -622,9 +637,7 @@ function processFilePickerField(context: FieldContext): FilePickerInputs {
 			canSelectMany: false,
 			defaultUri: vscode.Uri.file(path.dirname(input.value || os_homedir())),
 			openLabel: loc.select,
-			filters: {
-				'Config Files': ['*'],
-			}
+			filters: filter
 		});
 		if (!fileUris || fileUris.length === 0) {
 			return;
@@ -632,8 +645,8 @@ function processFilePickerField(context: FieldContext): FilePickerInputs {
 		let fileUri = fileUris[0];
 		input.value = fileUri.fsPath;
 	}));
-	context.fieldInfo.labelPosition = LabelPosition.Left;
-	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo, [browseFileButton]);
+	const component = createFlexContainer(context.view, [input, browseFileButton], true, context.fieldInfo.inputWidth);
+	addLabelInputPairToContainer(context.view, context.components, label, component, context.fieldInfo);
 	return { input: input, browseButton: browseFileButton };
 }
 
@@ -685,6 +698,7 @@ async function processKubeConfigClusterPickerField(context: KubeClusterContextFi
 			inputWidth: context.fieldInfo.inputWidth,
 			labelWidth: context.fieldInfo.labelWidth,
 			variableName: kubeConfigFilePathVariableName,
+			labelPosition: LabelPosition.Left,
 			required: true
 		}
 	};
@@ -732,31 +746,70 @@ async function processAzureAccountField(context: AzureAccountFieldContext): Prom
 	context.fieldInfo.subFields = [];
 	const accountValueToAccountMap = new Map<string, azdata.Account>();
 	const subscriptionValueToSubscriptionMap = new Map<string, azureResource.AzureResourceSubscription>();
-	const accountDropdown = createAzureAccountDropdown(context);
+	const accountComponents = createAzureAccountDropdown(context);
+	const accountDropdown = accountComponents.accountDropdown;
 	const subscriptionDropdown = createAzureSubscriptionDropdown(context, subscriptionValueToSubscriptionMap);
 	const resourceGroupDropdown = createAzureResourceGroupsDropdown(context, accountDropdown, accountValueToAccountMap, subscriptionDropdown, subscriptionValueToSubscriptionMap);
-	const locationDropdown = context.fieldInfo.locations && processAzureLocationsField(context);
+	if (context.fieldInfo.allowNewResourceGroup) {
+		const newRGCheckbox = createCheckbox(context.view, { initialValue: false, label: loc.createNewResourceGroup });
+		context.onNewInputComponentCreated(context.fieldInfo.newResourceGroupFlagVariableName!, { component: newRGCheckbox });
+		const newRGNameInput = createTextInput(context.view, { ariaLabel: loc.NewResourceGroupAriaLabel });
+		context.onNewInputComponentCreated(context.fieldInfo.newResourceGroupNameVariableName!, { component: newRGNameInput });
+		context.components.push(newRGCheckbox);
+		context.components.push(newRGNameInput);
+		const setRGStatus = (newRG: boolean) => {
+			resourceGroupDropdown.required = !newRG;
+			resourceGroupDropdown.enabled = !newRG;
+			newRGNameInput.required = newRG;
+			newRGNameInput.enabled = newRG;
+			if (!newRG) {
+				newRGNameInput.value = '';
+			}
+		};
+		context.onNewDisposableCreated(newRGCheckbox.onChanged(() => {
+			setRGStatus(newRGCheckbox.checked!);
+		}));
+		setRGStatus(false);
+	}
+	const locationDropdown = context.fieldInfo.locations && await processAzureLocationsField(context);
 	accountDropdown.onValueChanged(async selectedItem => {
 		const selectedAccount = accountValueToAccountMap.get(selectedItem.selected)!;
 		await handleSelectedAccountChanged(context, selectedAccount, subscriptionDropdown, subscriptionValueToSubscriptionMap, resourceGroupDropdown, locationDropdown);
 	});
-	try {
-		const accounts = await azdata.accounts.getAllAccounts();
-		// Append a blank value for the "default" option if the field isn't required, context will clear all the dropdowns when selected
-		const dropdownValues = context.fieldInfo.required ? [] : [''];
-		accountDropdown.values = dropdownValues.concat(accounts.map(account => {
-			const displayName = `${account.displayInfo.displayName} (${account.displayInfo.userId})`;
-			accountValueToAccountMap.set(displayName, account);
-			return displayName;
-		}));
-		const selectedAccount = accountDropdown.value ? accountValueToAccountMap.get(accountDropdown.value.toString()) : undefined;
-		await handleSelectedAccountChanged(context, selectedAccount, subscriptionDropdown, subscriptionValueToSubscriptionMap, resourceGroupDropdown, locationDropdown);
-	} catch (error) {
-		vscode.window.showErrorMessage(localize('azure.accounts.unexpectedAccountsError', 'Unexpected error fetching accounts: ${0}', getErrorMessage(error)));
-	}
+
+	const populateAzureAccounts = async () => {
+		accountValueToAccountMap.clear();
+		try {
+			const accounts = await azdata.accounts.getAllAccounts();
+			// Append a blank value for the "default" option if the field isn't required, context will clear all the dropdowns when selected
+			const dropdownValues = context.fieldInfo.required ? [] : [''];
+			accountDropdown.values = dropdownValues.concat(accounts.map(account => {
+				const displayName = `${account.displayInfo.displayName} (${account.displayInfo.userId})`;
+				accountValueToAccountMap.set(displayName, account);
+				return displayName;
+			}));
+			const selectedAccount = accountDropdown.value ? accountValueToAccountMap.get(accountDropdown.value.toString()) : undefined;
+			await handleSelectedAccountChanged(context, selectedAccount, subscriptionDropdown, subscriptionValueToSubscriptionMap, resourceGroupDropdown, locationDropdown);
+		} catch (error) {
+			vscode.window.showErrorMessage(localize('azure.accounts.unexpectedAccountsError', 'Unexpected error fetching accounts: ${0}', getErrorMessage(error)));
+		}
+	};
+
+	context.onNewDisposableCreated(accountComponents.refreshAccountsButton.onDidClick(async () => {
+		await populateAzureAccounts();
+	}));
+	context.onNewDisposableCreated(accountComponents.signInButton.onDidClick(async () => {
+		await vscode.commands.executeCommand('workbench.actions.modal.linkedAccount');
+		await populateAzureAccounts();
+	}));
+
+	// populate the values in a different batch as the initialization to avoid the issue that the account list is empty even though the values are correctly.
+	setTimeout(async () => {
+		await populateAzureAccounts();
+	}, 0);
 }
 
-function createAzureAccountDropdown(context: AzureAccountFieldContext): azdata.DropDownComponent {
+function createAzureAccountDropdown(context: AzureAccountFieldContext): AzureAccountComponents {
 	const label = createLabel(context.view, {
 		text: loc.account,
 		description: context.fieldInfo.description,
@@ -772,8 +825,18 @@ function createAzureAccountDropdown(context: AzureAccountFieldContext): azdata.D
 	});
 	accountDropdown.fireOnTextChange = true;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, { component: accountDropdown });
+	const signInButton = context.view!.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: loc.signIn, width: '100px' }).component();
+	const refreshButton = context.view!.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: loc.refresh, width: '100px' }).component();
 	addLabelInputPairToContainer(context.view, context.components, label, accountDropdown, context.fieldInfo);
-	return accountDropdown;
+
+	const buttons = createFlexContainer(context.view!, [signInButton, refreshButton], true, undefined, undefined, undefined, { 'margin-right': '10px' });
+	context.components.push(buttons);
+	return {
+		accountDropdown: accountDropdown,
+		signInButton: signInButton,
+		refreshAccountsButton: refreshButton
+	};
+
 }
 
 function createAzureSubscriptionDropdown(
@@ -920,8 +983,8 @@ async function handleSelectedSubscriptionChanged(context: AzureAccountFieldConte
 			return;
 		}
 		if (response.errors.length > 0) {
-			// If we got back some RG's then don't display the errors to the user - it's normal for users
-			// to not necessarily have access to all RG's on a subscription so displaying the errors
+			// If we got back some Resource Groups then don't display the errors to the user - it's normal for users
+			// to not necessarily have access to all Resource Groups on a subscription so displaying the errors
 			// in that case is usually just distracting and causes confusion
 			const errMsg = response.errors.join(EOL);
 			if (response.resourceGroups.length === 0) {
@@ -943,31 +1006,25 @@ async function handleSelectedSubscriptionChanged(context: AzureAccountFieldConte
 }
 
 /**
- * Map of known Azure location friendly names to their internal names
- */
-const knownAzureLocationNameMappings = new Map<string, string>([
-	['East US', azurecore.AzureRegion.eastus],
-	['East US 2', azurecore.AzureRegion.eastus2],
-	['Central US', azurecore.AzureRegion.centralus]
-]);
-
-/**
  * An Azure Locations field consists of a dropdown field for azure locations
  * @param context The context to use to create the field
  */
-function processAzureLocationsField(context: AzureLocationsFieldContext): azdata.DropDownComponent {
+async function processAzureLocationsField(context: AzureLocationsFieldContext): Promise<azdata.DropDownComponent> {
 	const label = createLabel(context.view, {
 		text: context.fieldInfo.label || loc.location,
 		required: context.fieldInfo.required,
 		width: context.fieldInfo.labelWidth,
 		cssStyles: context.fieldInfo.labelCSSStyles
 	});
+	const azurecoreApi = await apiService.getAzurecoreApi();
+	const locationValues = context.fieldInfo.locations?.map(l => { return { name: l, displayName: azurecoreApi.getRegionDisplayName(l) }; });
 	const locationDropdown = createDropdown(context.view, {
+		defaultValue: locationValues?.find(l => l.name === context.fieldInfo.defaultValue),
 		width: context.fieldInfo.inputWidth,
 		editable: false,
 		required: context.fieldInfo.required,
 		label: loc.location,
-		values: context.fieldInfo.locations
+		values: locationValues
 	});
 	locationDropdown.fireOnTextChange = true;
 	context.fieldInfo.subFields = context.fieldInfo.subFields || [];
@@ -975,12 +1032,6 @@ function processAzureLocationsField(context: AzureLocationsFieldContext): azdata
 		context.fieldInfo.subFields!.push({
 			label: label.value!,
 			variableName: context.fieldInfo.locationVariableName
-		});
-		context.onNewInputComponentCreated(context.fieldInfo.locationVariableName, {
-			component: locationDropdown,
-			inputValueTransformer: (inputValue: string) => {
-				return knownAzureLocationNameMappings.get(inputValue) || inputValue;
-			}
 		});
 	}
 	if (context.fieldInfo.displayLocationVariableName) {
@@ -990,12 +1041,6 @@ function processAzureLocationsField(context: AzureLocationsFieldContext): azdata
 		});
 		context.onNewInputComponentCreated(context.fieldInfo.displayLocationVariableName, { component: locationDropdown });
 	}
-	context.onNewInputComponentCreated(context.fieldInfo.variableName!, {
-		component: locationDropdown,
-		inputValueTransformer: (inputValue: string) => {
-			return knownAzureLocationNameMappings.get(inputValue) || inputValue;
-		}
-	});
 	addLabelInputPairToContainer(context.view, context.components, label, locationDropdown, context.fieldInfo);
 	return locationDropdown;
 }

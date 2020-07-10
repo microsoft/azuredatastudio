@@ -548,8 +548,12 @@ class DropOverlay extends Themable {
 	}
 }
 
-export interface EditorDropTargetDelegate {
-	groupContainsPredicate?(groupView: IEditorGroupView): boolean;
+export interface IEditorDropTargetDelegate {
+
+	/**
+	 * A helper to figure out if the drop target contains the provided group.
+	 */
+	containsGroup?(groupView: IEditorGroupView): boolean;
 }
 
 export class EditorDropTarget extends Themable {
@@ -564,7 +568,7 @@ export class EditorDropTarget extends Themable {
 	constructor(
 		private accessor: IEditorGroupsAccessor,
 		private container: HTMLElement,
-		private readonly delegate: EditorDropTargetDelegate,
+		private readonly delegate: IEditorDropTargetDelegate,
 		@IThemeService themeService: IThemeService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService
 	) {
@@ -638,7 +642,8 @@ export class EditorDropTarget extends Themable {
 
 	private findTargetGroupView(child: HTMLElement): IEditorGroupView | undefined {
 		const groups = this.accessor.groups;
-		return groups.find(groupView => isAncestor(child, groupView.element) || this.delegate.groupContainsPredicate?.(groupView));
+
+		return groups.find(groupView => isAncestor(child, groupView.element) || this.delegate.containsGroup?.(groupView));
 	}
 
 	private updateContainer(isDraggedOver: boolean): void {

@@ -58,6 +58,7 @@ const nodeModules = [ // {{SQL CARBON EDIT}}
 const vscodeEntryPoints = _.flatten([
 	buildfile.entrypoint('vs/workbench/workbench.desktop.main'),
 	buildfile.base,
+	buildfile.workerExtensionHost,
 	buildfile.workbenchDesktop,
 	buildfile.code
 ]);
@@ -69,6 +70,7 @@ const vscodeResources = [
 	'out-build/bootstrap.js',
 	'out-build/bootstrap-fork.js',
 	'out-build/bootstrap-amd.js',
+	'out-build/bootstrap-node.js',
 	'out-build/bootstrap-window.js',
 	'out-build/paths.js',
 	'out-build/vs/**/*.{svg,png,html}',
@@ -83,6 +85,7 @@ const vscodeResources = [
 	'out-build/vs/workbench/contrib/externalTerminal/**/*.scpt',
 	'out-build/vs/workbench/contrib/webview/browser/pre/*.js',
 	'out-build/vs/workbench/contrib/webview/electron-browser/pre/*.js',
+	'out-build/vs/workbench/services/extensions/worker/extensionHostWorkerMain.js',
 	'out-build/vs/**/markdown.css',
 	'out-build/vs/workbench/contrib/tasks/**/*.json',
 	'out-build/vs/platform/files/**/*.exe',

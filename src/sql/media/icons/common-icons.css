@@ -474,7 +474,8 @@ Includes non-masked style declarations. */
 .masked-pseudo:before {
 	height: 23px;
 	left: 0;
-	top: 2px;
+	top: 50%;
+	transform: translateY(-50%);
 	width: 30px;
 }
 .masked-pseudo-after:after {

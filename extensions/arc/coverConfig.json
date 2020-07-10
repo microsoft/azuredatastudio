@@ -5,7 +5,10 @@
 	"ignorePatterns": [
 		"**/generated/**",
 		"**/node_modules/**",
-		"**/test/**"
+		"**/test/**",
+		"constants.js",
+		"localizedConstants.js",
+		"extension.js"
 	],
 	"reports": [
 		"cobertura",

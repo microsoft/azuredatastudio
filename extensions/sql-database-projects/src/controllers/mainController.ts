@@ -52,7 +52,7 @@ export default class MainController implements Disposable {
 		this.apiWrapper.registerCommand('sqlDatabaseProjects.properties', async (node: BaseProjectTreeItem) => { await this.apiWrapper.showErrorMessage(`Properties not yet implemented: ${node.uri.path}`); }); // TODO
 
 		this.apiWrapper.registerCommand('sqlDatabaseProjects.build', async (node: BaseProjectTreeItem) => { await this.projectsController.buildProject(node); });
-		this.apiWrapper.registerCommand('sqlDatabaseProjects.deploy', async (node: BaseProjectTreeItem) => { await this.projectsController.deployProject(node); });
+		this.apiWrapper.registerCommand('sqlDatabaseProjects.publish', async (node: BaseProjectTreeItem) => { await this.projectsController.publishProject(node); });
 		this.apiWrapper.registerCommand('sqlDatabaseProjects.schemaCompare', async (node: BaseProjectTreeItem) => { await this.projectsController.schemaCompare(node); });
 		this.apiWrapper.registerCommand('sqlDatabaseProjects.importDatabase', async (profile: azdata.IConnectionProfile) => { await this.projectsController.importNewDatabaseProject(profile); });
 
@@ -64,6 +64,7 @@ export default class MainController implements Disposable {
 		this.apiWrapper.registerCommand('sqlDatabaseProjects.newFolder', async (node: BaseProjectTreeItem) => { await this.projectsController.addFolderPrompt(node); });
 
 		this.apiWrapper.registerCommand('sqlDatabaseProjects.addDatabaseReference', async (node: BaseProjectTreeItem) => { await this.projectsController.addDatabaseReference(node); });
+		this.apiWrapper.registerCommand('sqlDatabaseProjects.openContainingFolder', async (node: BaseProjectTreeItem) => { await this.projectsController.openContainingFolder(node); });
 		this.apiWrapper.registerCommand('sqlDatabaseProjects.delete', async (node: BaseProjectTreeItem) => { await this.projectsController.delete(node); });
 		this.apiWrapper.registerCommand('sqlDatabaseProjects.exclude', async (node: FileNode | FolderNode) => { await this.projectsController.exclude(node); });
 
@@ -76,7 +77,7 @@ export default class MainController implements Disposable {
 		await templates.loadTemplates(path.join(this.context.extensionPath, 'resources', 'templates'));
 
 		// ensure .net core is installed
-		this.netcoreTool.findOrInstallNetCore();
+		await this.netcoreTool.findOrInstallNetCore();
 	}
 
 	/**
@@ -136,7 +137,7 @@ export default class MainController implements Disposable {
 			// TODO: what if the selected folder is outside the workspace?
 
 			const newProjFolderUri = (selectionResult as Uri[])[0];
-			const newProjFilePath = await this.projectsController.createNewProject(<string>newProjName, newProjFolderUri);
+			const newProjFilePath = await this.projectsController.createNewProject(<string>newProjName, newProjFolderUri, true);
 			const proj = await this.projectsController.openProject(Uri.file(newProjFilePath));
 
 			return proj;

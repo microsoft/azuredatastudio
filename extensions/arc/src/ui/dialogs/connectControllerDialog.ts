@@ -24,7 +24,7 @@ export class ConnectToControllerDialog {
 
 	constructor(private _treeDataProvider: AzureArcTreeDataProvider) { }
 
-	public showDialog(controllerInfo?: ControllerInfo): void {
+	public showDialog(controllerInfo?: ControllerInfo, password?: string): void {
 		const dialog = azdata.window.createModelViewDialog(loc.connectToController);
 		dialog.cancelButton.onClick(() => this.handleCancel());
 		dialog.registerContent(async view => {
@@ -43,6 +43,7 @@ export class ConnectToControllerDialog {
 			this.passwordInputBox = this.modelBuilder.inputBox()
 				.withProperties<azdata.InputBoxProperties>({
 					inputType: 'password',
+					value: password
 				})
 				.component();
 			this.rememberPwCheckBox = this.modelBuilder.checkBox()

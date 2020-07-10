@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as loc from '../../../localizedConstants';
-import { IconPathHelper, cssStyles, ResourceType } from '../../../constants';
+import { IconPathHelper, cssStyles, ResourceType, Endpoints } from '../../../constants';
 import { V1Pod, DuskyObjectModelsDatabaseServiceArcPayload } from '../../../controller/generated/dusky/api';
 import { DashboardPage } from '../../components/dashboardPage';
 import { ControllerModel } from '../../../models/controllerModel';
@@ -311,13 +311,13 @@ export class PostgresOverviewPage extends DashboardPage {
 
 	private getKibanaLink(): string {
 		const kibanaQuery = `kubernetes_namespace:"${this._postgresModel.namespace}" and cluster_name:"${this._postgresModel.name}"`;
-		return `${this._controllerModel.getEndpoint('logsui')?.endpoint}/app/kibana#/discover?_a=(query:(language:kuery,query:'${kibanaQuery}'))`;
+		return `${this._controllerModel.getEndpoint(Endpoints.logsui)?.endpoint}/app/kibana#/discover?_a=(query:(language:kuery,query:'${kibanaQuery}'))`;
 
 	}
 
 	private getGrafanaLink(): string {
 		const grafanaQuery = `var-Namespace=${this._postgresModel.namespace}&var-Name=${this._postgresModel.name}`;
-		return `${this._controllerModel.getEndpoint('metricsui')?.endpoint}/d/postgres-metrics?${grafanaQuery}`;
+		return `${this._controllerModel.getEndpoint(Endpoints.metricsui)?.endpoint}/d/postgres-metrics?${grafanaQuery}`;
 	}
 
 	private getNodes(): string[][] {
