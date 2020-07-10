@@ -27,7 +27,6 @@ describe('Main Controller', function () {
 		this.timeout(50000);
 
 
-
 		// using vscode and azdata APIs available during tests
 		mockApiWrapper.callBase = true;
 
