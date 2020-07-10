@@ -18,6 +18,11 @@ import { shouldThrowSpecificError } from './testUtils';
 
 let testContext: TestContext;
 
+function createController(): MainController {
+	let controller = new MainController(testContext.context, testContext.apiWrapper.object);
+	return controller;
+}
+
 describe('MainController: main controller operations', function (): void {
 	before(async function (): Promise<void> {
 		testContext = createContext();
@@ -40,7 +45,7 @@ describe('MainController: main controller operations', function (): void {
 			return Promise.resolve(s);
 		});
 
-		const controller = new MainController(testContext.context, testContext.apiWrapper.object);
+		const controller = createController();
 		const proj = await controller.createNewProject();
 
 		should(proj).not.equal(undefined);
@@ -52,7 +57,7 @@ describe('MainController: main controller operations', function (): void {
 			testContext.apiWrapper.setup(x => x.showInputBox(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(name));
 			testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
 
-			const controller = new MainController(testContext.context, testContext.apiWrapper.object);
+			const controller = createController();
 			await shouldThrowSpecificError(async () => await controller.createNewProject(), constants.projectNameRequired, `case: '${name}'`);
 		}
 	});
@@ -62,7 +67,16 @@ describe('MainController: main controller operations', function (): void {
 		testContext.apiWrapper.setup(x => x.showOpenDialog(TypeMoq.It.isAny())).returns(() => Promise.resolve(undefined));
 		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
 
-		const controller = new MainController(testContext.context, testContext.apiWrapper.object);
+		const controller = createController();
 		await shouldThrowSpecificError(async () => await controller.createNewProject(), constants.projectLocationRequired);
+	});
+
+	it('Should activate and deactivate without error', async function (): Promise<void> {
+		let controller: MainController;
+		should.doesNotThrow(() => controller = createController(), 'Creating controller should not throw an error');
+		should.notEqual(controller.extensionContext, undefined);
+
+		should.doesNotThrow(() => controller.activate(), 'activate() should not throw an error');
+		should.doesNotThrow(() => controller.dispose(), 'dispose() should not throw an error');
 	});
 });
