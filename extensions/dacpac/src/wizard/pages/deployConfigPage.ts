@@ -110,7 +110,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 
 		let newRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
-				name: 'updateExisting',
+				name: 'newDatabase',
 				label: loc.newDatabase,
 			}).component();
 

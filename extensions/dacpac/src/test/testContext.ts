@@ -9,7 +9,7 @@ import * as azdata from 'azdata';
 
 export interface TestContext {
 	context: vscode.ExtensionContext;
-	view: azdata.ModelView;
+	viewContext: ViewTestContext;
 }
 
 export function createContext(): TestContext {
@@ -35,17 +35,21 @@ export function createContext(): TestContext {
 			environmentVariableCollection: undefined as any,
 			extensionMode: undefined as any
 		},
-		view: viewContext.view
+		viewContext: viewContext
 	};
 }
 
 export interface ViewTestContext {
 	view: azdata.ModelView;
 	onClick: vscode.EventEmitter<any>;
+	onTextChanged: vscode.EventEmitter<any>;
+	onValueChanged: vscode.EventEmitter<any>;
 }
 
 export function createViewContext(): ViewTestContext {
 	let onClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
+	let onTextChanged: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
+	let onValueChanged: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
 
 	let componentBase: azdata.Component = {
 		id: '',
@@ -91,7 +95,7 @@ export function createViewContext(): ViewTestContext {
 		withProperties: () => buttonBuilder,
 		withValidation: () => buttonBuilder
 	};
-	let radioButtonBuilder: azdata.ComponentBuilder<azdata.ButtonComponent> = {
+	let radioButtonBuilder: azdata.ComponentBuilder<azdata.RadioButtonComponent> = {
 		component: () => radioButton,
 		withProperties: () => radioButtonBuilder,
 		withValidation: () => radioButtonBuilder
@@ -102,12 +106,12 @@ export function createViewContext(): ViewTestContext {
 		withValidation: () => checkBoxBuilder
 	};
 	let inputBox: () => azdata.InputBoxComponent = () => Object.assign({}, componentBase, {
-		onTextChanged: onClick.event!,
-		onEnterKeyPressed: undefined!,
+		onTextChanged: onTextChanged.event,
+		onEnterKeyPressed: onClick.event,
 		value: ''
 	});
 	let dropdown: () => azdata.DropDownComponent = () => Object.assign({}, componentBase, {
-		onValueChanged: onClick.event,
+		onValueChanged: onValueChanged.event,
 		value: {
 			name: '',
 			displayName: ''
@@ -231,6 +235,8 @@ export function createViewContext(): ViewTestContext {
 	return {
 		view: view,
 		onClick: onClick,
+		onTextChanged: onTextChanged,
+		onValueChanged: onValueChanged
 	};
 }
 
