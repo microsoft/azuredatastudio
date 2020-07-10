@@ -13,6 +13,7 @@ export const developers: string[] = [
 	'Charles-Gagnon',
 	'ktech99',
 	'kburtram',
+	'lucyzhang929',
 	'smartguest',
 	'udeeshagautam',
 ];
