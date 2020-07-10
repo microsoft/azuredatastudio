@@ -8,7 +8,6 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { IInstantiationService, _util, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorInput } from 'vs/workbench/common/editor';
 import { Trace } from 'vs/platform/instantiation/common/instantiationService';
-import { values } from 'vs/base/common/map';
 import { IModuleFactory, IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -16,7 +15,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 const selectorCounter = new Map<string, number>();
 
 export function providerIterator(service: IInstantiationService): Provider[] {
-	return Array.from(values(_util.serviceIds)).map(v => {
+	return Array.from(_util.serviceIds.values()).map(v => {
 		let factory = () => {
 			return (<any>service)._getOrCreateServiceInstance(v, Trace.traceCreation(v));
 		};
