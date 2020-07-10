@@ -59,16 +59,16 @@ describe('import extension wizard pages', function () {
 
 		let serverValues = await importPage.getServerValues();
 
-		// getServer value should be undefined for null active connections
-		should(serverValues).undefined();
+		// getServer should be undefined for null active connections
+		should.equal(serverValues, undefined, 'getServer should be undefined for no active connections');
 
 		// mocking getActive connection returns empty array
 		mockApiWrapper.setup(x => x.getActiveConnections()).returns(async () => { return [] as azdata.connection.Connection[]; });
 
 		serverValues = await importPage.getServerValues();
 
-		// getServer value should be undefined for empty active connections
-		should(serverValues).undefined();
+		// getServer should be undefined for empty active connections
+		should.equal(serverValues, undefined, 'getServer should be undefined for empty active conections');
 	});
 
 	it('getServerValue return active server value first', async function () {
