@@ -16,9 +16,12 @@ import * as path from 'path';
 describe('Main Controller', function () {
 	let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 	let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
+	let extensionPath: string;
+	let flatFileImportServicePath: string;
 
 	beforeEach(async function () {
-		let extensionPath = await getExtensionPath();
+		extensionPath = await getExtensionPath();
+		flatFileImportServicePath = path.join(await getExtensionPath(), 'flatfileimportservice');
 		// creating a mock Extension Context with current extensionPath
 		mockExtensionContext = TypeMoq.Mock.ofType(TestExtensionContext, TypeMoq.MockBehavior.Loose, true, extensionPath);
 		mockApiWrapper = TypeMoq.Mock.ofType(ApiWrapper);
@@ -26,6 +29,12 @@ describe('Main Controller', function () {
 
 	it('Should download required binaries and register flatFileImportStartCommand after activate is called', async function () {
 		this.timeout(50000);
+
+		// deleting .net code files to check if activate downloads it again.
+		if(await checkPathExists(flatFileImportServicePath)){
+			await fs.promises.rmdir(flatFileImportServicePath);
+		}
+		should.equal(await checkPathExists(flatFileImportServicePath), false);
 
 		// using vscode and azdata APIs available during tests
 		mockApiWrapper.callBase = true;
@@ -38,7 +47,7 @@ describe('Main Controller', function () {
 		mockApiWrapper.verify(x => x.registerTask(constants.flatFileImportStartCommand, TypeMoq.It.isAny()), TypeMoq.Times.once());
 
 		//Checking if .net code files are downloaded
-		should.equal(await checkPathExists(path.join(await getExtensionPath(), 'flatfileimportservice')), true);
+		should.equal(await checkPathExists(flatFileImportServicePath), true);
 	});
 });
 
