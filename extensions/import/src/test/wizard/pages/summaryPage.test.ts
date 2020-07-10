@@ -47,9 +47,9 @@ describe('import extension summary page tests', function () {
 			page.registerContent(async (view) => {
 				summaryPage = new SummaryPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny(), mockApiWrapper.object);
 				pages.set(1, summaryPage);
-				await summaryPage.start().then(() => {
-					resolve();
-				});
+				await summaryPage.start();
+				resolve();
+
 			});
 			wizard.generateScriptButton.hidden = true;
 
@@ -114,11 +114,9 @@ describe('import extension summary page tests', function () {
 			page.registerContent(async (view) => {
 				summaryPage = new SummaryPage(mockFlatFileWizard.object, page, mockImportModel.object, view, mockFlatFileProvider.object, mockApiWrapper.object);
 				pages.set(1, summaryPage);
-				await summaryPage.start().then(async () => {
-					summaryPage.setupNavigationValidator();
-
-					resolve();
-				});
+				await summaryPage.start();
+				summaryPage.setupNavigationValidator();
+				resolve();
 			});
 			wizard.generateScriptButton.hidden = true;
 

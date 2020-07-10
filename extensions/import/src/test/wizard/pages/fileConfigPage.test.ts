@@ -91,9 +91,9 @@ describe('File config page', function () {
 			page.registerContent(async (view) => {
 				fileConfigPage = new FileConfigPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny(), mockApiWrapper.object);
 				pages.set(1, fileConfigPage);
-				await fileConfigPage.start().then(() => {
-					resolve();
-				});
+				await fileConfigPage.start();
+				resolve();
+
 			});
 			wizard.generateScriptButton.hidden = true;
 
@@ -164,7 +164,7 @@ describe('File config page', function () {
 				// default database. This datatabe will be the first value in the database dropdown
 				database: 'testdb2',
 				user: 'testcon2user',
-					server: 'testcon2server'
+				server: 'testcon2server'
 			}
 		};
 		mockImportModel.object.server = testServerConnection;
@@ -236,17 +236,16 @@ describe('File config page', function () {
 		];
 
 		let mockQueryProvider = TypeMoq.Mock.ofType(TestQueryProvider);
-		mockApiWrapper.setup(x => x.getProvider(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => { return mockQueryProvider.object;});
+		mockApiWrapper.setup(x => x.getProvider(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => { return mockQueryProvider.object; });
 		mockQueryProvider.setup(x => x.runQueryAndReturn(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(async () => { return schemaQueryResult; });
 
 		await new Promise(function (resolve) {
 			page.registerContent(async (view) => {
 				fileConfigPage = new FileConfigPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny(), mockApiWrapper.object);
 				pages.set(1, fileConfigPage);
-				await fileConfigPage.start().then(async () => {
-					await fileConfigPage.setupNavigationValidator();
-					resolve();
-				});
+				await fileConfigPage.start();
+				await fileConfigPage.setupNavigationValidator();
+				resolve();
 			});
 			wizard.generateScriptButton.hidden = true;
 
@@ -257,8 +256,8 @@ describe('File config page', function () {
 
 		await fileConfigPage.onPageEnter();
 
-		should.deepEqual(fileConfigPage.serverDropdown.value,expectedConnectionValues[0]);
-		should.deepEqual(fileConfigPage.serverDropdown.values,expectedConnectionValues);
+		should.deepEqual(fileConfigPage.serverDropdown.value, expectedConnectionValues[0]);
+		should.deepEqual(fileConfigPage.serverDropdown.values, expectedConnectionValues);
 		should.deepEqual(fileConfigPage.databaseDropdown.value, expectedDatabaseDropdownValues[0]);
 		should.deepEqual(fileConfigPage.databaseDropdown.values, expectedDatabaseDropdownValues);
 		should.deepEqual(fileConfigPage.schemaDropdown.value, expectedSchemaValues[0]);

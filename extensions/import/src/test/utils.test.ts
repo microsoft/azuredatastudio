@@ -6,7 +6,8 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { ImportDataModel, ColumnMetadata } from '../wizard/api/models';
-import { FlatFileProvider, PROSEDiscoveryParams, InsertDataParams, GetColumnInfoParams, ChangeColumnSettingsParams } from '../services/contracts';
+import { FlatFileProvider, PROSEDiscoveryParams, InsertDataParams, GetColumnInfoParams, ChangeColumnSettingsParams, PROSEDiscoveryResponse, InsertDataResponse, ChangeColumnSettingsResponse, GetColumnInfoResponse } from '../services/contracts';
+import * as fs from 'fs';
 
 export class ImportTestUtils {
 
@@ -34,6 +35,22 @@ export class ImportTestUtils {
 			groupFullName: 'testGroupFullName',
 			options: {}
 		} as azdata.connection.ConnectionProfile;
+	}
+
+	public static async checkPathExists(path: string): Promise<boolean> {
+		return fs.promises.access(path, fs.constants.F_OK)
+			.then(() => true)
+			.catch(() => false);
+	}
+
+	public static async getExtensionPath(): Promise<string> {
+		return await vscode.extensions.getExtension('Microsoft.import').extensionPath;
+	}
+
+	public static async getTestExtensionContext(): Promise<TestExtensionContext> {
+		let testContext = new TestExtensionContext();
+		testContext.extensionPath = await vscode.extensions.getExtension('Microsoft.import').extensionPath;
+		return testContext;
 	}
 }
 
@@ -185,9 +202,6 @@ export class TestButton implements azdata.window.Button {
 }
 
 export class TestExtensionContext implements vscode.ExtensionContext {
-	constructor(extensionPath: string){
-		this.extensionPath = extensionPath;
-	}
 	extensionMode: vscode.ExtensionMode;
 	subscriptions: { dispose(): any; }[];
 	workspaceState: vscode.Memento;
@@ -201,10 +215,6 @@ export class TestExtensionContext implements vscode.ExtensionContext {
 	storagePath: string;
 	globalStoragePath: string;
 	logPath: string;
-}
-
-export async function getExtensionPath(): Promise<string> {
-	return await vscode.extensions.getExtension('Microsoft.import').extensionPath;
 }
 
 export class TestImportDataModel implements ImportDataModel {
@@ -222,16 +232,16 @@ export class TestImportDataModel implements ImportDataModel {
 
 export class TestFlatFileProvider implements FlatFileProvider {
 	providerId?: string;
-	sendPROSEDiscoveryRequest(params: PROSEDiscoveryParams): Thenable<import("../services/contracts").PROSEDiscoveryResponse> {
+	sendPROSEDiscoveryRequest(params: PROSEDiscoveryParams): Thenable<PROSEDiscoveryResponse> {
 		throw new Error('Method not implemented.');
 	}
-	sendInsertDataRequest(params: InsertDataParams): Thenable<import("../services/contracts").InsertDataResponse> {
+	sendInsertDataRequest(params: InsertDataParams): Thenable<InsertDataResponse> {
 		throw new Error('Method not implemented.');
 	}
-	sendGetColumnInfoRequest(params: GetColumnInfoParams): Thenable<import("../services/contracts").GetColumnInfoResponse> {
+	sendGetColumnInfoRequest(params: GetColumnInfoParams): Thenable<GetColumnInfoResponse> {
 		throw new Error('Method not implemented.');
 	}
-	sendChangeColumnSettingsRequest(params: ChangeColumnSettingsParams): Thenable<import("../services/contracts").ChangeColumnSettingsResponse> {
+	sendChangeColumnSettingsRequest(params: ChangeColumnSettingsParams): Thenable<ChangeColumnSettingsResponse> {
 		throw new Error('Method not implemented.');
 	}
 

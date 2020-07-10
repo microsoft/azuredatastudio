@@ -51,11 +51,10 @@ describe('import extension prose preview tests', function () {
 			page.registerContent(async (view) => {
 				prosePreviewPage = new ProsePreviewPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny(), mockApiWrapper.object);
 				pages.set(1, prosePreviewPage);
-				await prosePreviewPage.start().then(async() => {
-					await prosePreviewPage.setupNavigationValidator();
-					await prosePreviewPage.onPageEnter();
-					resolve();
-				});
+				await prosePreviewPage.start();
+				await prosePreviewPage.setupNavigationValidator();
+				await prosePreviewPage.onPageEnter();
+				resolve();
 			});
 			wizard.generateScriptButton.hidden = true;
 			wizard.pages = [page];

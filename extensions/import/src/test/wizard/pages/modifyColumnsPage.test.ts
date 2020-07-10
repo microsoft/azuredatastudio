@@ -45,9 +45,8 @@ describe('import extension modify Column Page', function () {
 			page.registerContent(async (view) => {
 				modifyColumnsPage = new ModifyColumnsPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny(), mockApiWrapper.object);
 				pages.set(1, modifyColumnsPage);
-				await modifyColumnsPage.start().then(() => {
-					resolve();
-				});
+				await modifyColumnsPage.start();
+				resolve();
 			});
 			wizard.generateScriptButton.hidden = true;
 
@@ -91,9 +90,8 @@ describe('import extension modify Column Page', function () {
 			page.registerContent(async (view) => {
 				modifyColumnsPage = new ModifyColumnsPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny(), mockApiWrapper.object);
 				pages.set(1, modifyColumnsPage);
-				await modifyColumnsPage.start().then(async () => {
-					resolve();
-				});
+				await modifyColumnsPage.start();
+				resolve();
 			});
 			wizard.generateScriptButton.hidden = true;
 
