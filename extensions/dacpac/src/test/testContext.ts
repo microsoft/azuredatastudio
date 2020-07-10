@@ -44,12 +44,16 @@ export interface ViewTestContext {
 	onClick: vscode.EventEmitter<any>;
 	onTextChanged: vscode.EventEmitter<any>;
 	onValueChanged: vscode.EventEmitter<any>;
+	newDatabaseRadioOnClick: vscode.EventEmitter<any>;
+	updateExistingRadioOnClick: vscode.EventEmitter<any>;
 }
 
 export function createViewContext(): ViewTestContext {
 	let onClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
 	let onTextChanged: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
 	let onValueChanged: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
+	let newDatabaseRadioOnClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
+	let updateExistingRadioOnClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
 
 	let componentBase: azdata.Component = {
 		id: '',
@@ -64,10 +68,14 @@ export function createViewContext(): ViewTestContext {
 	let button: azdata.ButtonComponent = Object.assign({}, componentBase, {
 		onDidClick: onClick.event
 	});
-	let radioButton: azdata.RadioButtonComponent = Object.assign({}, componentBase, {
-		checked: false,
-		onDidClick: onClick.event,
-	});
+	let radioButton = () => {
+		let button: azdata.RadioButtonComponent = Object.assign({}, componentBase, {
+			name: '',
+			checked: false,
+			onDidClick: onClick.event,
+		});
+		return button;
+	};
 	let checkbox: azdata.CheckBoxComponent = Object.assign({}, componentBase, {
 		checked: true,
 		onChanged: onClick.event
@@ -95,11 +103,27 @@ export function createViewContext(): ViewTestContext {
 		withProperties: () => buttonBuilder,
 		withValidation: () => buttonBuilder
 	};
-	let radioButtonBuilder: azdata.ComponentBuilder<azdata.RadioButtonComponent> = {
-		component: () => radioButton,
-		withProperties: () => radioButtonBuilder,
-		withValidation: () => radioButtonBuilder
+
+	let radioButtonBuilder = () => {
+		let button = radioButton();
+		let builder: azdata.ComponentBuilder<azdata.RadioButtonComponent> = {
+			component: () => button,
+			withProperties: (properties) => {
+				if ((properties as any).name === 'newDatabase') {
+					button.name = 'newDatabase';
+					button.onDidClick = newDatabaseRadioOnClick.event;
+				}
+				else if ((properties as any).name === 'updateExisting') {
+					button.name = 'updateExisting';
+					button.onDidClick = updateExistingRadioOnClick.event;
+				}
+				return builder;
+			},
+			withValidation: () => builder
+		};
+		return builder;
 	};
+
 	let checkBoxBuilder: azdata.ComponentBuilder<azdata.CheckBoxComponent> = {
 		component: () => checkbox,
 		withProperties: () => checkBoxBuilder,
@@ -207,7 +231,7 @@ export function createViewContext(): ViewTestContext {
 			card: () => undefined!,
 			inputBox: () => inputBoxBuilder,
 			checkBox: () => checkBoxBuilder!,
-			radioButton: () => radioButtonBuilder,
+			radioButton: () => radioButtonBuilder(),
 			webView: undefined!,
 			editor: undefined!,
 			diffeditor: undefined!,
@@ -236,7 +260,8 @@ export function createViewContext(): ViewTestContext {
 		view: view,
 		onClick: onClick,
 		onTextChanged: onTextChanged,
-		onValueChanged: onValueChanged
+		onValueChanged: onValueChanged,
+		newDatabaseRadioOnClick: newDatabaseRadioOnClick,
+		updateExistingRadioOnClick: updateExistingRadioOnClick,
 	};
 }
-
