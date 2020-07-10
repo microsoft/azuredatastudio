@@ -90,9 +90,13 @@
 	<script src="./static/remote/web/node_modules/slickgrid/plugins/slick.cellrangedecorator.js"></script>
 	<script src="./static/remote/web/node_modules/zone.js/dist/zone.min.js"></script>
 	<script src="./static/remote/web/node_modules/reflect-metadata/Reflect.js"></script>
+	<script src="./static/out/vs/base/common/performance.js"></script>
 	<script src="./static/out/vs/loader.js"></script>
 	<script>
 		// NOTE: Changes to inline scripts require update of content security policy
-		require(['vs/code/browser/workbench/workbench'], function() {});
+		perf.mark('willLoadWorkbenchMain');
+		require(['vs/code/browser/workbench/workbench'], function() {
+			perf.mark('didLoadWorkbenchMain');
+		});
 	</script>
 </html>
