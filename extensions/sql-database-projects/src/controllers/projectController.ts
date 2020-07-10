@@ -261,7 +261,7 @@ export class ProjectsController {
 
 			// check that dacpac exists
 			if (await utils.exists(dacpacPath)) {
-				this.apiWrapper.executeCommand(constants.schemaCompareStartCommand, dacpacPath);
+				await this.apiWrapper.executeCommand(constants.schemaCompareStartCommand, dacpacPath);
 			} else {
 				this.apiWrapper.showErrorMessage(constants.buildDacpacNotFound);
 			}
@@ -346,7 +346,7 @@ export class ProjectsController {
 
 			const newEntry = await project.addScriptItem(relativeFilePath, newFileText);
 
-			this.apiWrapper.executeCommand(constants.vscodeOpenCommand, newEntry.fsUri);
+			await this.apiWrapper.executeCommand(constants.vscodeOpenCommand, newEntry.fsUri);
 
 			this.refreshProjectsTree();
 		} catch (err) {
