@@ -89,6 +89,14 @@
 			"problemMatcher": "$tsc"
 		},
 		{
+			"label": "Kill Build VS Code",
+			"dependsOn": [
+				"Kill Build VS Code Core",
+				"Kill Build VS Code Extensions"
+			],
+			"group": "build"
+		},
+		{
 			"type": "npm",
 			"script": "watch-webd",
 			"label": "Build Web Extensions",
