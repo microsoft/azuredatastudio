@@ -54,7 +54,7 @@ const labelDisplay = nls.localize("insights.item", "Item");
 const valueDisplay = nls.localize("insights.value", "Value");
 const iconClass = 'codicon';
 
-export const VIEWLET_ID = 'workbench.view.insightsdetail';
+export const VIEWLET_ID = 'workbench.view.insightdetails';
 
 export class InsightsDetailPaneContainer extends ViewPaneContainer { }
 
