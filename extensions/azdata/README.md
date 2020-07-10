@@ -1,8 +1,13 @@
-# SQL Assessment *(preview)*
+# Microsoft azdata Extension for Azure Data Studio
 
-SQL Assessment for Azure Data Studio provides a mechanism to evaluate the configuration of SQL Server for best practices.
+Welcome to Microsoft azdata for Azure Data Studio!
+
+## Overview
+
+This extension adds support for azdata within Azure Data Studio.
 
 ## Code of Conduct
+
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
 ## Privacy Statement

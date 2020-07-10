@@ -242,7 +242,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		} else if (uri.fsPath) {
 			notebookPath = uri.fsPath;
 		}
-		bookItem = await this.findAndExpandParentNode(notebookPath);
+		bookItem = notebookPath ? await this.findAndExpandParentNode(notebookPath) : undefined;
 
 		if (bookItem) {
 			// Select + focus item in viewlet if books viewlet is already open, or if we pass in variable
@@ -347,7 +347,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	public async searchJupyterBooks(treeItem?: BookTreeItem): Promise<void> {
 		let folderToSearch: string;
-		if (treeItem && treeItem.book.type !== BookTreeItemType.Notebook) {
+		if (treeItem && treeItem.sections !== undefined) {
 			if (treeItem.uri) {
 				folderToSearch = path.join(treeItem.root, Content, path.dirname(treeItem.uri));
 			} else {
@@ -485,7 +485,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	getParent(element?: BookTreeItem): vscode.ProviderResult<BookTreeItem> {
-		if (element) {
+		if (element?.uri) {
 			let parentPath: string;
 			parentPath = path.join(element.root, Content, element.uri.substring(0, element.uri.lastIndexOf(path.posix.sep)));
 			if (parentPath === element.root) {
