@@ -109,7 +109,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 			this._register(attachTableStyler(this._table, this.themeService));
 			this.layout();
 
-			this._table.onAdd();
+			this._table.onDidInsert();
 			this._initialized = true;
 		}
 	}
