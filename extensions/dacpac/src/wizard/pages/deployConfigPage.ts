@@ -104,13 +104,13 @@ export class DeployConfigPage extends DacFxConfigPage {
 	private async createRadiobuttons(): Promise<azdata.FormComponent> {
 		let upgradeRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
-				name: 'updateExisting',
+				name: 'updateExistingOrCreateNew',
 				label: loc.upgradeExistingDatabase,
 			}).component();
 
 		let newRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
-				name: 'updateExisting',
+				name: 'updateExistingOrCreateNew',
 				label: loc.newDatabase,
 			}).component();
 
