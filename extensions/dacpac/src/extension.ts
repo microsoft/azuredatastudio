@@ -3,21 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import MainController from './controllers/mainController';
-
-let controllers: MainController[] = [];
+import { DataTierApplicationWizard } from './wizard/dataTierApplicationWizard';
 
 export async function activate(context: vscode.ExtensionContext) {
-	let mainController = new MainController(context);
-	controllers.push(mainController);
-	context.subscriptions.push(mainController);
-
-	await mainController.activate();
+	vscode.commands.registerCommand('dacFx.start', (profile: azdata.IConnectionProfile, ...args: any[]) => new DataTierApplicationWizard().start(profile, args));
 }
 
-export function deactivate() {
-	for (let controller of controllers) {
-		controller.deactivate();
-	}
+export function deactivate(): void {
 }

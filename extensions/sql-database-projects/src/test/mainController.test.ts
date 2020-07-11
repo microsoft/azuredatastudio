@@ -75,10 +75,11 @@ describe('MainController: main controller operations', function (): void {
 		should.doesNotThrow(() => createController(), 'Creating controller should not throw an error');
 	});
 
-	it('Should deactivate without error', async function (): Promise<void> {
+	it('Should activate and deactivate without error', async function (): Promise<void> {
 		let controller = createController();
 		should.notEqual(controller.extensionContext, undefined);
 
+		should.doesNotThrow(() => controller.activate(), 'activate() should not throw an error');
 		should.doesNotThrow(() => controller.dispose(), 'dispose() should not throw an error');
 	});
 });
