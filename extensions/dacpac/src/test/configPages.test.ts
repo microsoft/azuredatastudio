@@ -33,13 +33,13 @@ describe('Dacfx Wizard Pages', function (): void {
 		should.equal(deployConfigPage.Model.database, undefined);
 
 		// Adding file name in test box should update model path and db
-		await deployConfigPage.SetFileName();
+		deployConfigPage.SetFileName();
 		testContext.viewContext.onTextChanged.fire(undefined);
 		should.equal(deployConfigPage.Model.filePath, 'DummyDacpac');
 		should.equal(deployConfigPage.Model.database, 'DummyDacpac');
 
 		// Choosing database should update model db but not path
-		await deployConfigPage.SetDatabaseDropDown();
+		deployConfigPage.SetDatabaseDropDown();
 		testContext.viewContext.onValueChanged.fire(undefined);
 		should.equal(deployConfigPage.Model.filePath, 'DummyDacpac');
 		should.equal(deployConfigPage.Model.database, 'DummyDatabase');
