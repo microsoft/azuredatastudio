@@ -40,7 +40,7 @@ describe('MainController: main controller operations', function (): void {
 			return Promise.resolve(s);
 		});
 
-		const controller = 	new MainController(testContext.context, testContext.apiWrapper.object);
+		const controller = new MainController(testContext.context, testContext.apiWrapper.object);
 		const proj = await controller.createNewProject();
 
 		should(proj).not.equal(undefined);
