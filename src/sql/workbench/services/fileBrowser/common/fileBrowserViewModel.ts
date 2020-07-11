@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
+import { IFileBrowserService } from 'sql/workbench/services/fileBrowser/common/interfaces';
 import { localize } from 'vs/nls';
 import { onUnexpectedError } from 'vs/base/common/errors';
 

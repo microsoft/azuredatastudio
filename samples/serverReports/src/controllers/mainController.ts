@@ -29,10 +29,10 @@ export default class MainController extends ControllerBase {
 	}
 
 	public activate(): Promise<boolean> {
-		azdata.tasks.registerTask("tempdb.startEvent", e => this.onExecute(e, 'startEvent.sql'));
-		azdata.tasks.registerTask("tempdb.stopEvent", e => this.onExecute(e, 'stopEvent.sql'));
-		azdata.tasks.registerTask("tempdb.contention", () => this.openurl('https://aka.ms/tempdbblog'));
-		azdata.tasks.registerTask("tempdb.pauseEvent", e => this.stopAutoRefresh(e));
+		azdata.tasks.registerTask('tempdb.startEvent', e => this.onExecute(e, 'startEvent.sql'));
+		azdata.tasks.registerTask('tempdb.stopEvent', e => this.onExecute(e, 'stopEvent.sql'));
+		azdata.tasks.registerTask('tempdb.contention', () => this.openurl('https://aka.ms/tempdbblog'));
+		azdata.tasks.registerTask('tempdb.pauseEvent', e => this.stopAutoRefresh(e));
 
 		return Promise.resolve(true);
 	}
@@ -42,7 +42,7 @@ export default class MainController extends ControllerBase {
 	}
 
 	private onExecute(connection: azdata.IConnectionProfile, fileName: string): void {
-		//Command to start/stop autorefresh and run the query
+		// Command to start/stop autorefresh and run the query
 		vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'type-of-contention', connection.id, true);
 		vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'metadata-contention', connection.id, true);
 		vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'allocation-contention', connection.id, true);
@@ -55,7 +55,7 @@ export default class MainController extends ControllerBase {
 		});
 	}
 
-	private stopAutoRefresh(connection: azdata.IConnectionProfile) {
+	private stopAutoRefresh(connection: azdata.IConnectionProfile): void {
 		vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'type-of-contention', connection.id, false);
 		vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'metadata-contention', connection.id, false);
 		vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'allocation-contention', connection.id, false);

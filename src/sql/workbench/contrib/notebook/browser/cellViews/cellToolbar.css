@@ -1,0 +1,53 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+cell-toolbar-component {
+	border-width: 1px;
+	border-style: solid;
+	position: absolute;
+	left: 20px;
+	top: -20px;
+}
+
+cell-toolbar-component .carbon-taskbar .monaco-action-bar.animated {
+	padding: 0;
+}
+
+cell-toolbar-component .carbon-taskbar.monaco-toolbar .monaco-action-bar.animated ul.actions-container {
+	display: flex;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+cell-toolbar-component ul.actions-container li.action-item {
+	display: inline-flex;
+	margin-right: 0;
+	text-align: center;
+}
+
+cell-toolbar-component ul.actions-container li:last-child {
+	margin-right: 0;
+}
+cell-toolbar-component .carbon-taskbar .action-label {
+	padding: 0;
+}
+cell-toolbar-component .monaco-action-bar .action-label {
+	margin-right: 0;
+}
+cell-toolbar-component ul.actions-container li a.masked-icon {
+	display: flex;
+}
+cell-toolbar-component ul.actions-container li a.masked-icon,
+cell-toolbar-component ul.actions-container li a.masked-icon:before {
+	height: 24px;
+	width: 29px;
+}
+cell-toolbar-component .codicon.masked-icon,
+.vs cell-toolbar-component .codicon.masked-icon,
+.vs-dark cell-toolbar-component .codicon.masked-icon,
+.hc-black cell-toolbar-component .codicon.masked-icon {
+	background-image: none;
+}

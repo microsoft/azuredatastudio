@@ -1,0 +1,65 @@
+{
+	"sqlPackageManagement": {
+		"requiredPythonPackages": [
+			{
+				"name": "sqlmlutils",
+				"version": "1.0.1"
+			}
+		],
+		"requiredRPackages": [
+			{
+				"name": "RODBCext",
+				"repository": "https://mran.microsoft.com/snapshot/2019-02-01/"
+			},
+			{
+				"name": "sqlmlutils",
+				"fileName": "sqlmlutils_0.7.1.zip",
+				"downloadUrl": "https://github.com/microsoft/sqlmlutils/blob/master/R/dist/sqlmlutils_0.7.1.zip?raw=true",
+				"platform" : "win32"
+			},
+			{
+				"name": "sqlmlutils",
+				"fileName": "sqlmlutils_0.7.1.tar.gz",
+				"downloadUrl": "https://github.com/microsoft/sqlmlutils/blob/master/R/dist/sqlmlutils_0.7.1.tar.gz?raw=true",
+				"platform" : "darwin"
+			},
+			{
+				"name": "sqlmlutils",
+				"fileName": "sqlmlutils_0.7.1.tar.gz",
+				"downloadUrl": "https://github.com/microsoft/sqlmlutils/blob/master/R/dist/sqlmlutils_0.7.1.tar.gz?raw=true",
+				"platform" : "linux"
+			}
+		],
+		"rPackagesRepository": "https://cran.r-project.org"
+	},
+	"modelManagement": {
+		"registeredModelsDatabaseName": "MlFlowDB",
+		"registeredModelsTableName": "artifacts",
+		"registeredModelsTableSchemaName": "dbo",
+		"amlModelManagementUrl": "modelmanagement.azureml.net",
+		"amlExperienceUrl": "experiments.azureml.net",
+		"amlApiVersion": "2018-11-19",
+		"requiredPythonPackages": [
+			{
+				"name": "onnx",
+				"version": ""
+			},
+			{
+				"name": "onnxruntime",
+				"version": ""
+			},
+			{
+				"name": "mlflow",
+				"version": ""
+			},
+			{
+				"name": "pyodbc",
+				"version": ""
+			},
+			{
+				"name": "mlflow-dbstore",
+				"version": ""
+			}
+		]
+	}
+}

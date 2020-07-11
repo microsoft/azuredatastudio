@@ -17,6 +17,7 @@ import { CmsResourceTreeNode } from './cmsResourceTreeNode';
 export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICmsResourceTreeChangeHandler {
 
 	private _appContext: AppContext;
+	private _children: TreeNode[] = [CmsResourceMessageTreeNode.create(CmsResourceTreeProvider.loadingLabel, undefined)];
 
 	public constructor(
 		public readonly appContext: AppContext
@@ -31,16 +32,14 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 		}
 
 		if (!this.isSystemInitialized) {
-			// Kick off loading the saved servers but then immediately return the loading node so
-			// the user isn't left with an empty tree while we load the nodes
-			this.loadSavedServers().catch(err => this._appContext.apiWrapper.showErrorMessage(localize('cms.resource.tree.treeProvider.loadError', "Unexpected error occured while loading saved servers {0}", err)));
-			return [CmsResourceMessageTreeNode.create(CmsResourceTreeProvider.loadingLabel, undefined)];
+			this.loadSavedServers().catch(err => this._appContext.apiWrapper.showErrorMessage(localize('cms.resource.tree.treeProvider.loadError', "Unexpected error occurred while loading saved servers {0}", err)));
+			return this._children;
 		}
 		try {
 			let registeredCmsServers = this.appContext.cmsUtils.registeredCmsServers;
 			if (registeredCmsServers && registeredCmsServers.length > 0) {
 				this.isSystemInitialized = true;
-				return registeredCmsServers.map((server) => {
+				this._children = registeredCmsServers.map((server) => {
 					return new CmsResourceTreeNode(
 						server.name,
 						server.description,
@@ -49,11 +48,12 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 						this._appContext, this, null);
 				}).sort((a, b) => a.name.localeCompare(b.name));
 			} else {
-				return [new CmsResourceEmptyTreeNode()];
+				this._children = [new CmsResourceEmptyTreeNode()];
 			}
 		} catch (error) {
-			return [new CmsResourceEmptyTreeNode()];
+			this._children = [new CmsResourceEmptyTreeNode()];
 		}
+		return this._children;
 	}
 
 	public get onDidChangeTreeData(): Event<TreeNode> {
@@ -93,6 +93,10 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 					await this.appContext.cmsUtils.cacheRegisteredCmsServer(server.name, server.description,
 						server.ownerUri, server.connection);
 				}
+				this._children = servers;
+			} else {
+				// No saved servers so just show the Add Server node since we're done loading
+				this._children = [new CmsResourceEmptyTreeNode()];
 			}
 			this._onDidChangeTreeData.fire(undefined);
 		} catch (error) {

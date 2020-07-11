@@ -99,15 +99,14 @@ export const databaseDashboardSettingSchema: IJSONSchema = {
 					'newQuery',
 					'mssqlCluster.task.newNotebook',
 					{ name: 'backup', when: '!mssql:iscloud && mssql:engineedition != 11' },
-					{ name: 'restore', when: '!mssql:iscloud && mssql:engineedition != 11' },
-					'configureDashboard'
+					{ name: 'restore', when: '!mssql:iscloud && mssql:engineedition != 11' }
 				]
 			}
 		},
 		{
-			name: 'Search',
+			name: nls.localize('objectsWidgetTitle', "Search"),
 			gridItemConfig: {
-				sizex: 1,
+				sizex: 3,
 				sizey: 2
 			},
 			widget: {

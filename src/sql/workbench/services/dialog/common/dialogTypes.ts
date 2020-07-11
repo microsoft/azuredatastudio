@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
-import { DialogMessage } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { DialogMessage, DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export class ModelViewPane {
 	private _valid: boolean = true;
@@ -41,7 +41,7 @@ export class Dialog extends ModelViewPane {
 	private static readonly CANCEL_BUTTON_LABEL = localize('dialogModalCancelButtonLabel', "Cancel");
 
 	public content: string | DialogTab[];
-	public isWide: boolean;
+	public width: DialogWidth;
 	public okButton: DialogButton = new DialogButton(Dialog.DONE_BUTTON_LABEL, true);
 	public cancelButton: DialogButton = new DialogButton(Dialog.CANCEL_BUTTON_LABEL, true);
 	public customButtons: DialogButton[];
@@ -199,6 +199,7 @@ export class Wizard {
 	public readonly onMessageChange = this._onMessageChange.event;
 	private _message: DialogMessage;
 	public displayPageTitles: boolean;
+	public width: DialogWidth;
 
 	constructor(public title: string) { }
 

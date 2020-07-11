@@ -8,7 +8,7 @@ import * as TreeDefaults from 'vs/base/parts/tree/browser/treeDefaults';
 import * as Model from 'vs/base/parts/tree/browser/treeModel';
 import * as View from './treeView';
 import * as _ from 'vs/base/parts/tree/browser/tree';
-import { INavigator, MappedNavigator } from 'vs/base/common/iterator';
+import { INavigator, MappedNavigator } from 'sql/base/common/navigator';
 import { Event, Emitter, Relay } from 'vs/base/common/event';
 import { Color } from 'vs/base/common/color';
 import { mixin } from 'vs/base/common/objects';

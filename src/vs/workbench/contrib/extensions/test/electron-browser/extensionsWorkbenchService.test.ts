@@ -12,13 +12,11 @@ import { IExtensionsWorkbenchService, ExtensionState, AutoCheckUpdatesConfigurat
 import { ExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/browser/extensionsWorkbenchService';
 import {
 	IExtensionManagementService, IExtensionGalleryService, ILocalExtension, IGalleryExtension,
-	DidInstallExtensionEvent, DidUninstallExtensionEvent, InstallExtensionEvent, IGalleryExtensionAssets, IExtensionIdentifier, InstallOperation
+	DidInstallExtensionEvent, DidUninstallExtensionEvent, InstallExtensionEvent, IGalleryExtensionAssets, IExtensionIdentifier, InstallOperation, IExtensionTipsService, IGalleryMetadata
 } from 'vs/platform/extensionManagement/common/extensionManagement';
-import { IWorkbenchExtensionEnablementService, EnablementState, IExtensionManagementServerService, IExtensionTipsService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
+import { IWorkbenchExtensionEnablementService, EnablementState, IExtensionManagementServerService, IExtensionRecommendationsService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { getGalleryExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
-import { ExtensionManagementService } from 'vs/platform/extensionManagement/node/extensionManagementService';
-import { ExtensionTipsService } from 'vs/workbench/contrib/extensions/browser/extensionTipsService';
-import { TestExtensionEnablementService } from 'vs/workbench/services/extensionManagement/test/electron-browser/extensionEnablementService.test';
+import { TestExtensionEnablementService } from 'vs/workbench/services/extensionManagement/test/browser/extensionEnablementService.test';
 import { ExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionGalleryService';
 import { IURLService } from 'vs/platform/url/common/url';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
@@ -27,19 +25,27 @@ import { IPager } from 'vs/base/common/paging';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { NullTelemetryService } from 'vs/platform/telemetry/common/telemetryUtils';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
-import { TestContextService, TestSharedProcessService } from 'vs/workbench/test/workbenchTestServices';
+import { TestSharedProcessService } from 'vs/workbench/test/electron-browser/workbenchTestServices';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService, NullLogService } from 'vs/platform/log/common/log';
 import { IProgressService } from 'vs/platform/progress/common/progress';
 import { ProgressService } from 'vs/workbench/services/progress/browser/progressService';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { URLService } from 'vs/platform/url/node/urlService';
+import { NativeURLService } from 'vs/platform/url/common/urlService';
 import { URI } from 'vs/base/common/uri';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { ExtensionType } from 'vs/platform/extensions/common/extensions';
 import { IRemoteAgentService } from 'vs/workbench/services/remote/common/remoteAgentService';
 import { RemoteAgentService } from 'vs/workbench/services/remote/electron-browser/remoteAgentServiceImpl';
 import { ISharedProcessService } from 'vs/platform/ipc/electron-browser/sharedProcessService';
+import { TestContextService } from 'vs/workbench/test/common/workbenchTestServices';
+import { IStorageKeysSyncRegistryService, StorageKeysSyncRegistryService } from 'vs/platform/userDataSync/common/storageKeys';
+import { IProductService } from 'vs/platform/product/common/productService';
+import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
+import { TestLifecycleService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { IExperimentService } from 'vs/workbench/contrib/experiments/common/experimentService';
+import { TestExperimentService } from 'vs/workbench/contrib/experiments/test/electron-browser/experimentService.test';
+import { ExtensionTipsService } from 'vs/platform/extensionManagement/node/extensionTipsService';
 
 suite('ExtensionsWorkbenchServiceTest', () => {
 
@@ -61,9 +67,11 @@ suite('ExtensionsWorkbenchServiceTest', () => {
 		instantiationService.stub(ITelemetryService, NullTelemetryService);
 		instantiationService.stub(ILogService, NullLogService);
 		instantiationService.stub(IProgressService, ProgressService);
+		instantiationService.stub(IStorageKeysSyncRegistryService, new StorageKeysSyncRegistryService());
+		instantiationService.stub(IProductService, {});
 
 		instantiationService.stub(IExtensionGalleryService, ExtensionGalleryService);
-		instantiationService.stub(IURLService, URLService);
+		instantiationService.stub(IURLService, NativeURLService);
 		instantiationService.stub(ISharedProcessService, TestSharedProcessService);
 
 		instantiationService.stub(IWorkspaceContextService, new TestContextService());
@@ -76,11 +84,20 @@ suite('ExtensionsWorkbenchServiceTest', () => {
 
 		instantiationService.stub(IRemoteAgentService, RemoteAgentService);
 
-		instantiationService.stub(IExtensionManagementService, ExtensionManagementService);
-		instantiationService.stub(IExtensionManagementService, 'onInstallExtension', installEvent.event);
-		instantiationService.stub(IExtensionManagementService, 'onDidInstallExtension', didInstallEvent.event);
-		instantiationService.stub(IExtensionManagementService, 'onUninstallExtension', uninstallEvent.event);
-		instantiationService.stub(IExtensionManagementService, 'onDidUninstallExtension', didUninstallEvent.event);
+		instantiationService.stub(IExtensionManagementService, <Partial<IExtensionManagementService>>{
+			onInstallExtension: installEvent.event,
+			onDidInstallExtension: didInstallEvent.event,
+			onUninstallExtension: uninstallEvent.event,
+			onDidUninstallExtension: didUninstallEvent.event,
+			async getInstalled() { return []; },
+			async getExtensionsReport() { return []; },
+			async updateMetadata(local: ILocalExtension, metadata: IGalleryMetadata) {
+				local.identifier.uuid = metadata.id;
+				local.publisherDisplayName = metadata.publisherDisplayName;
+				local.publisherId = metadata.publisherId;
+				return local;
+			}
+		});
 
 		instantiationService.stub(IExtensionManagementServerService, <IExtensionManagementServerService>{
 			localExtensionManagementServer: {
@@ -90,14 +107,16 @@ suite('ExtensionsWorkbenchServiceTest', () => {
 
 		instantiationService.stub(IWorkbenchExtensionEnablementService, new TestExtensionEnablementService(instantiationService));
 
-		instantiationService.set(IExtensionTipsService, instantiationService.createInstance(ExtensionTipsService));
+		instantiationService.stub(ILifecycleService, new TestLifecycleService());
+		instantiationService.stub(IExperimentService, instantiationService.createInstance(TestExperimentService));
+		instantiationService.stub(IExtensionTipsService, instantiationService.createInstance(ExtensionTipsService));
+		instantiationService.stub(IExtensionRecommendationsService, {});
 
 		instantiationService.stub(INotificationService, { prompt: () => null! });
 	});
 
 	setup(async () => {
 		instantiationService.stubPromise(IExtensionManagementService, 'getInstalled', []);
-		instantiationService.stubPromise(IExtensionManagementService, 'getExtensionsReport', []);
 		instantiationService.stubPromise(IExtensionGalleryService, 'query', aPage());
 		instantiationService.stubPromise(INotificationService, 'prompt', 0);
 		await (<TestExtensionEnablementService>instantiationService.get(IWorkbenchExtensionEnablementService)).reset();
@@ -942,16 +961,6 @@ suite('ExtensionsWorkbenchServiceTest', () => {
 			});
 	});
 
-	test('test installing an extension re-eanbles it when disabled globally', async () => {
-		testObject = await aWorkbenchService();
-		const local = aLocalExtension('pub.a');
-		await instantiationService.get(IWorkbenchExtensionEnablementService).setEnablement([local], EnablementState.DisabledGlobally);
-		didInstallEvent.fire({ local, identifier: local.identifier, operation: InstallOperation.Install });
-		instantiationService.stubPromise(IExtensionManagementService, 'getInstalled', [local]);
-		const actual = await testObject.queryLocal();
-		assert.equal(actual[0].enablementState, EnablementState.EnabledGlobally);
-	});
-
 	test('test updating an extension does not re-eanbles it when disabled globally', async () => {
 		testObject = await aWorkbenchService();
 		const local = aLocalExtension('pub.a');
@@ -960,16 +969,6 @@ suite('ExtensionsWorkbenchServiceTest', () => {
 		instantiationService.stubPromise(IExtensionManagementService, 'getInstalled', [local]);
 		const actual = await testObject.queryLocal();
 		assert.equal(actual[0].enablementState, EnablementState.DisabledGlobally);
-	});
-
-	test('test installing an extension re-eanbles it when workspace disabled', async () => {
-		testObject = await aWorkbenchService();
-		const local = aLocalExtension('pub.a');
-		await instantiationService.get(IWorkbenchExtensionEnablementService).setEnablement([local], EnablementState.DisabledWorkspace);
-		didInstallEvent.fire({ local, identifier: local.identifier, operation: InstallOperation.Install });
-		instantiationService.stubPromise(IExtensionManagementService, 'getInstalled', [local]);
-		const actual = await testObject.queryLocal();
-		assert.equal(actual[0].enablementState, EnablementState.EnabledGlobally);
 	});
 
 	test('test updating an extension does not re-eanbles it when workspace disabled', async () => {
@@ -993,8 +992,7 @@ suite('ExtensionsWorkbenchServiceTest', () => {
 		properties = assign({
 			type: ExtensionType.User,
 			location: URI.file(`pub.${name}`),
-			identifier: { id: getGalleryExtensionId(manifest.publisher, manifest.name), uuid: undefined },
-			metadata: { id: getGalleryExtensionId(manifest.publisher, manifest.name), publisherId: manifest.publisher, publisherDisplayName: 'somename' }
+			identifier: { id: getGalleryExtensionId(manifest.publisher, manifest.name) }
 		}, properties);
 		return <ILocalExtension>Object.create({ manifest, ...properties });
 	}

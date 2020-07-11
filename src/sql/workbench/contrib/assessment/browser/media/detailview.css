@@ -1,0 +1,38 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.asmtview-grid .grid-canvas>.ui-widget-content.slick-row .detailView-toggle {
+	display: inline-block;
+	cursor: pointer;
+}
+
+.asmtview-grid .grid-canvas>.ui-widget-content.slick-row .dynamic-cell-detail {
+	z-index: 101;
+	position: absolute;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	overflow: auto;
+}
+
+
+.asmtview-grid .grid-canvas>.ui-widget-content.slick-row .dynamic-cell-detail> :first-child {
+	vertical-align: middle;
+	line-height: 13px;
+	padding: 10px;
+	margin-left: 20px;
+}
+
+.asmtview-grid .grid-canvas>.ui-widget-content.slick-row .dynamic-cell-detail>.detail-container {
+	overflow: auto;
+	display: block !important;
+	max-height: 100px !important;
+	line-height: 20px;
+}
+
+.asmtview-grid .grid-canvas>.ui-widget-content.slick-row .dynamic-cell-detail>.detail-container>div,
+.asmtview-grid .grid-canvas>.ui-widget-content.slick-row .dynamic-cell-detail>.detail-container>div>span {
+	white-space: normal;
+}

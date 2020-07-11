@@ -5,15 +5,15 @@
 
 import { MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
 import * as commands from 'sql/workbench/contrib/scripting/browser/scriptingActions';
-import { MssqlNodeContext } from 'sql/workbench/contrib/dataExplorer/browser/mssqlNodeContext';
+import { MssqlNodeContext } from 'sql/workbench/services/objectExplorer/browser/mssqlNodeContext';
 import { localize } from 'vs/nls';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
-import { TreeNodeContextKey } from 'sql/workbench/contrib/objectExplorer/common/treeNodeContextKey';
-import { ConnectionContextKey } from 'sql/workbench/contrib/connection/common/connectionContextKey';
-import { NodeType } from 'sql/workbench/contrib/objectExplorer/common/nodeType';
+import { TreeNodeContextKey } from 'sql/workbench/services/objectExplorer/common/treeNodeContextKey';
+import { ConnectionContextKey } from 'sql/workbench/services/connection/common/connectionContextKey';
+import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerTreeContext';
+import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerContext';
 import { EditDataAction } from 'sql/workbench/browser/scriptingActions';
 import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
 
@@ -26,7 +26,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: commands.SCRIPT_AS_CREATE_COMMAND_ID,
 		title: localize('scriptAsCreate', "Script as Create")
 	},
-	when: ContextKeyExpr.and(MssqlNodeContext.CanScriptAsCreateOrDelete, MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()))
+	when: MssqlNodeContext.CanScriptAsCreateOrDelete
 });
 
 // Script as Delete
@@ -115,10 +115,10 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		title: localize('scriptCreate', "Script as Create")
 	},
 	when: ContextKeyExpr.or(
-		ContextKeyExpr.and(TreeNodeContextKey.NodeType.isEqualTo('Table'), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString())),
-		ContextKeyExpr.and(TreeNodeContextKey.NodeType.isEqualTo('View'), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString())),
-		ContextKeyExpr.and(TreeNodeContextKey.NodeType.isEqualTo('Schema'), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString())),
-		ContextKeyExpr.and(TreeNodeContextKey.NodeType.isEqualTo('User'), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString())),
+		TreeNodeContextKey.NodeType.isEqualTo('Table'),
+		TreeNodeContextKey.NodeType.isEqualTo('View'),
+		TreeNodeContextKey.NodeType.isEqualTo('Schema'),
+		TreeNodeContextKey.NodeType.isEqualTo('User'),
 		TreeNodeContextKey.NodeType.isEqualTo('UserDefinedTableType'),
 		TreeNodeContextKey.NodeType.isEqualTo('StoredProcedure'),
 		TreeNodeContextKey.NodeType.isEqualTo('AggregateFunction'),
@@ -296,7 +296,6 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 		id: commands.ExplorerScriptCreateAction.ID,
 		title: commands.ExplorerScriptCreateAction.LABEL
 	},
-	when: MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()),
 	order: 2
 });
 //#endregion

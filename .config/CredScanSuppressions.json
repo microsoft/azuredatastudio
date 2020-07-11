@@ -1,0 +1,17 @@
+{
+    "tool": "Credential Scanner",
+    "suppressions": [
+        {
+            "file": "src\\vs\\base\\test\\common\\uri.test.ts",
+            "_justification": "External code"
+        },
+        {
+            "file": "build\\actions\\AutoLabel\\dist\\index.js",
+            "_justification": "False positive from webpacked code"
+        },
+        {
+            "file": "build\\actions\\AutoMerge\\dist\\index.js",
+            "_justification": "False positive from webpacked code"
+        }
+    ]
+}

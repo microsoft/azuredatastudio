@@ -8,7 +8,7 @@ import * as nls from 'vscode-nls';
 import { AgreementInfo, DeploymentProvider, ITool, ResourceType, ToolStatus } from '../interfaces';
 import { IResourceTypeService } from '../services/resourceTypeService';
 import { IToolsService } from '../services/toolsService';
-import { getErrorMessage, setEnvironmentVariablesForInstallPaths } from '../utils';
+import { getErrorMessage } from '../utils';
 import { DialogBase } from './dialogBase';
 import { createFlexContainer } from './modelViewUtils';
 
@@ -33,9 +33,10 @@ export class ResourceTypePickerDialog extends DialogBase {
 	constructor(
 		private toolsService: IToolsService,
 		private resourceTypeService: IResourceTypeService,
-		resourceType: ResourceType) {
+		defaultResourceType: ResourceType,
+		private _resourceTypeNameFilters?: string[]) {
 		super(localize('resourceTypePickerDialog.title', "Select the deployment options"), 'ResourceTypePickerDialog', true);
-		this._selectedResourceType = resourceType;
+		this._selectedResourceType = defaultResourceType;
 		this._installToolButton = azdata.window.createButton(localize('deploymentDialog.InstallToolsButton', "Install tools"));
 		this._toDispose.push(this._installToolButton.onClick(() => {
 			this.installTools().catch(error => console.log(error));
@@ -61,9 +62,12 @@ export class ResourceTypePickerDialog extends DialogBase {
 		tab.registerContent((view: azdata.ModelView) => {
 			const tableWidth = 1126;
 			this._view = view;
-			const resourceTypes = this.resourceTypeService.getResourceTypes().sort((a: ResourceType, b: ResourceType) => {
-				return (a.displayIndex || Number.MAX_VALUE) - (b.displayIndex || Number.MAX_VALUE);
-			});
+			const resourceTypes = this.resourceTypeService
+				.getResourceTypes()
+				.filter(rt => !this._resourceTypeNameFilters || this._resourceTypeNameFilters.find(rtn => rt.name === rtn))
+				.sort((a: ResourceType, b: ResourceType) => {
+					return (a.displayIndex || Number.MAX_VALUE) - (b.displayIndex || Number.MAX_VALUE);
+				});
 			this._cardGroup = view.modelBuilder.radioCardGroup().withProperties<azdata.RadioCardGroupComponentProperties>({
 				cards: resourceTypes.map((resourceType) => {
 					return <azdata.RadioCard>{
@@ -102,7 +106,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			};
 			const versionColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolVersionColumnHeader', "Version"),
-				width: 60
+				width: 75
 			};
 			const minVersionColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolMinimumVersionColumnHeader', "Required Version"),
@@ -110,7 +114,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			};
 			const installedPathColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolDiscoveredPathColumnHeader', "Discovered Path or Additional Information"),
-				width: 570
+				width: 580
 			};
 			this._toolsTable = view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
 				data: [],
@@ -173,24 +177,26 @@ export class ResourceTypePickerDialog extends DialogBase {
 
 		this._optionsContainer.clearItems();
 		this._optionDropDownMap.clear();
-		resourceType.options.forEach(option => {
-			const optionLabel = this._view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-				value: option.displayName
-			}).component();
-			optionLabel.width = '150px';
+		if (resourceType.options) {
+			resourceType.options.forEach(option => {
+				const optionLabel = this._view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+					value: option.displayName
+				}).component();
+				optionLabel.width = '150px';
 
-			const optionSelectBox = this._view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
-				values: option.values,
-				value: option.values[0],
-				width: '300px',
-				ariaLabel: option.displayName
-			}).component();
+				const optionSelectBox = this._view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
+					values: option.values,
+					value: option.values[0],
+					width: '300px',
+					ariaLabel: option.displayName
+				}).component();
 
-			this._toDispose.push(optionSelectBox.onValueChanged(() => { this.updateToolsDisplayTable(); }));
-			this._optionDropDownMap.set(option.name, optionSelectBox);
-			const row = this._view.modelBuilder.flexContainer().withItems([optionLabel, optionSelectBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '20px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
-			this._optionsContainer.addItem(row);
-		});
+				this._toDispose.push(optionSelectBox.onValueChanged(() => { this.updateToolsDisplayTable(); }));
+				this._optionDropDownMap.set(option.name, optionSelectBox);
+				const row = this._view.modelBuilder.flexContainer().withItems([optionLabel, optionSelectBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '20px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+				this._optionsContainer.addItem(row);
+			});
+		}
 		this.updateToolsDisplayTable();
 	}
 
@@ -199,11 +205,14 @@ export class ResourceTypePickerDialog extends DialogBase {
 		const currentRefreshTimestamp = this.toolRefreshTimestamp;
 		const headerRowHeight = 28;
 		this._toolsTable.height = 25 * Math.max(this.toolRequirements.length, 1) + headerRowHeight;
-		this._dialogObject.message = {
-			text: ''
-		};
+		if (!this._installationInProgress) { // Wipe the informational message clean unless installation is already in progress.
+			this._dialogObject.message = {
+				text: ''
+			};
+		}
 		this._installToolButton.hidden = true;
 		if (this.toolRequirements.length === 0) {
+			this._toolsLoadingComponent.loading = false;
 			this._dialogObject.okButton.enabled = true;
 			this._toolsTable.data = [[localize('deploymentDialog.NoRequiredTool', "No tools required"), '']];
 			this._tools = [];
@@ -295,7 +304,8 @@ export class ResourceTypePickerDialog extends DialogBase {
 
 	private createAgreementCheckbox(agreementInfo: AgreementInfo): azdata.FlexContainer {
 		const checkbox = this._view.modelBuilder.checkBox().withProperties<azdata.CheckBoxProperties>({
-			ariaLabel: this.getAgreementDisplayText(agreementInfo)
+			ariaLabel: this.getAgreementDisplayText(agreementInfo),
+			required: true
 		}).component();
 		checkbox.checked = false;
 		this._toDispose.push(checkbox.onChanged(() => {
@@ -331,7 +341,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 	}
 
 	protected onComplete(): void {
-		setEnvironmentVariablesForInstallPaths(this._tools);
+		this.toolsService.toolsForCurrentProvider = this._tools;
 		this.resourceTypeService.startDeployment(this.getCurrentProvider());
 	}
 

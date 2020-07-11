@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as GridContentEvents from 'sql/workbench/contrib/grid/common/gridContentEvents';
-import { IQueryModelService } from 'sql/platform/query/common/queryModel';
+import * as GridContentEvents from 'sql/workbench/services/query/common/gridContentEvents';
+import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { EditDataEditor } from 'sql/workbench/contrib/editData/browser/editDataEditor';
 
@@ -13,7 +13,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 
 function runActionOnActiveResultsEditor(accessor: ServicesAccessor, eventName: string): void {
 	let editorService = accessor.get(IEditorService);
-	const candidates = [editorService.activeControl, ...editorService.visibleControls].filter(e => {
+	const candidates = [editorService.activeEditorPane, ...editorService.visibleEditorPanes].filter(e => {
 		if (e) {
 			let id = e.getId();
 			if (id === QueryEditor.ID || id === EditDataEditor.ID) {

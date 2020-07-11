@@ -21,7 +21,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
 
 /**
@@ -126,7 +126,7 @@ export class QueryTextEditor extends BaseTextEditor {
 		return editorWidget.getScrollHeight();
 	}
 
-	public setHeightToScrollHeight(configChanged?: boolean, isEditorCollapsed?: boolean, ) {
+	public setHeightToScrollHeight(configChanged?: boolean, isEditorCollapsed?: boolean,) {
 		let editorWidget = this.getControl() as ICodeEditor;
 		let layoutInfo = editorWidget.getLayoutInfo();
 		if (!this._scrollbarHeight) {
@@ -196,7 +196,7 @@ export class QueryTextEditor extends BaseTextEditor {
 		this.refreshEditorConfiguration();
 	}
 
-	private refreshEditorConfiguration(configuration = this.textResourceConfigurationService.getValue<IEditorConfiguration>(this.input.getResource())): void {
+	private refreshEditorConfiguration(configuration = this.textResourceConfigurationService.getValue<IEditorConfiguration>(this.input.resource)): void {
 		if (!this.getControl()) {
 			return;
 		}

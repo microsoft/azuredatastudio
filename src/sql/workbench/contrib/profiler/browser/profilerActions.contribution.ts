@@ -7,12 +7,12 @@ import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { ProfilerInput } from 'sql/workbench/contrib/profiler/browser/profilerInput';
+import { ProfilerInput } from 'sql/workbench/browser/editor/profiler/profilerInput';
 import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 import { IProfilerService } from 'sql/workbench/services/profiler/browser/interfaces';
 import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { ProfilerEditor } from 'sql/workbench/contrib/profiler/browser/profilerEditor';
-import { ObjectExplorerActionsContext } from 'sql/workbench/contrib/objectExplorer/browser/objectExplorerActions';
+import { ObjectExplorerActionsContext } from 'sql/workbench/services/objectExplorer/browser/objectExplorerActions';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
@@ -83,7 +83,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 		let profilerService: IProfilerService = accessor.get(IProfilerService);
 		let editorService: IEditorService = accessor.get(IEditorService);
 
-		let activeEditor = editorService.activeControl;
+		let activeEditor = editorService.activeEditorPane;
 		if (activeEditor instanceof ProfilerEditor) {
 			let profilerInput = activeEditor.input;
 			if (profilerInput.state.isRunning) {

@@ -5,7 +5,7 @@
 
 import {
 	Component, ContentChildren, QueryList, Inject, forwardRef, NgZone,
-	Input, EventEmitter, Output, ViewChild, ElementRef
+	Input, EventEmitter, Output, ViewChild, ElementRef, ChangeDetectorRef, ViewChildren
 } from '@angular/core';
 
 import { TabComponent } from 'sql/base/browser/ui/panel/tab.component';
@@ -19,12 +19,19 @@ import { mixin } from 'vs/base/common/objects';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { firstIndex } from 'vs/base/common/arrays';
+import * as nls from 'vs/nls';
+import { TabHeaderComponent } from 'sql/base/browser/ui/panel/tabHeader.component';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
+import { IThemable } from 'vs/base/common/styler';
+import { ITabbedPanelStyles } from 'sql/base/browser/ui/panel/panel';
+import { createStyleSheet } from 'vs/base/browser/dom';
 
 export interface IPanelOptions {
 	/**
 	 * Whether or not to show the tabs if there is only one tab present
 	 */
-	showTabsWhenOne?: boolean;
+	alwaysShowTabs?: boolean;
 	layout?: NavigationBarLayout;
 	showIcon?: boolean;
 }
@@ -35,7 +42,7 @@ export enum NavigationBarLayout {
 }
 
 const defaultOptions: IPanelOptions = {
-	showTabsWhenOne: true,
+	alwaysShowTabs: true,
 	layout: NavigationBarLayout.horizontal,
 	showIcon: false
 };
@@ -45,12 +52,22 @@ let idPool = 0;
 @Component({
 	selector: 'panel',
 	template: `
-		<div class="tabbedPanel fullsize" [ngClass]="options.layout === NavigationBarLayout.vertical ? 'vertical' : 'horizontal'">
-			<div *ngIf="!options.showTabsWhenOne ? _tabs.length !== 1 : true" class="composite title">
+		<div #rootContainer class="tabbedPanel fullsize" [ngClass]="_options.layout === NavigationBarLayout.vertical ? 'vertical' : 'horizontal'">
+			<div *ngIf="!_options.alwaysShowTabs ? _tabs && _tabs.length !== 1 : true" class="composite title">
 				<div class="tabContainer">
-					<div class="tabList" role="tablist" scrollable [horizontalScroll]="AutoScrollbarVisibility" [verticalScroll]="HiddenScrollbarVisibility" [scrollYToX]="true">
+					<div *ngIf="_options.layout === NavigationBarLayout.vertical" class="vertical-tab-action-container">
+						<button [attr.aria-expanded]="_tabExpanded" [title]="toggleTabPanelButtonAriaLabel" [attr.aria-label]="toggleTabPanelButtonAriaLabel" [ngClass]="toggleTabPanelButtonCssClass" tabindex="0" (click)="toggleTabPanel()"></button>
+					</div>
+					<div [style.display]="_tabExpanded ? 'flex': 'none'" [attr.aria-hidden]="_tabExpanded ? 'false': 'true'" class="tabList" role="tablist" (keydown)="onKey($event)">
 						<div role="presentation" *ngFor="let tab of _tabs">
-							<tab-header role="presentation" [active]="_activeTab === tab" [tab]="tab" [showIcon]="options.showIcon" (onSelectTab)='selectTab($event)' (onCloseTab)='closeTab($event)'></tab-header>
+							<ng-container *ngIf="tab.type!=='group-header'">
+								<tab-header role="presentation" [active]="_activeTab === tab" [tab]="tab" [showIcon]="_options.showIcon" (onSelectTab)='selectTab($event)' (onCloseTab)='closeTab($event)'></tab-header>
+							</ng-container>
+							<ng-container *ngIf="tab.type==='group-header' && _options.layout === NavigationBarLayout.vertical">
+								<div class="tab-group-header">
+									<span>{{tab.title}}</span>
+								</div>
+							</ng-container >
 						</div>
 					</div>
 				</div>
@@ -67,10 +84,20 @@ let idPool = 0;
 		</div>
 	`
 })
-export class PanelComponent extends Disposable {
-	@Input() public options?: IPanelOptions;
+export class PanelComponent extends Disposable implements IThemable {
+	private _options: IPanelOptions = defaultOptions;
+
+	@Input() public set options(newOptions: IPanelOptions) {
+		// Refresh for the case when the options are set
+		// manually through code which doesn't trigger
+		// Angular's change detection
+		this._options = newOptions;
+		this._cd.detectChanges();
+	}
+
 	@Input() public actions?: Array<Action>;
 	@ContentChildren(TabComponent) private readonly _tabs!: QueryList<TabComponent>;
+	@ViewChildren(TabHeaderComponent) private readonly _tabHeaders!: QueryList<TabHeaderComponent>;
 	@ViewChild(ScrollableDirective) private scrollable?: ScrollableDirective;
 
 	@Output() public onTabChange = new EventEmitter<TabComponent>();
@@ -79,18 +106,39 @@ export class PanelComponent extends Disposable {
 	private _activeTab?: TabComponent;
 	private _actionbar?: ActionBar;
 	private _mru: TabComponent[] = [];
+	private _tabExpanded: boolean = true;
+	private _styleElement: HTMLStyleElement;
 
 	protected AutoScrollbarVisibility = ScrollbarVisibility.Auto; // used by angular template
 	protected HiddenScrollbarVisibility = ScrollbarVisibility.Hidden; // used by angular template
 	protected NavigationBarLayout = NavigationBarLayout; // used by angular template
 
 	@ViewChild('panelActionbar', { read: ElementRef }) private _actionbarRef!: ElementRef;
-	constructor(@Inject(forwardRef(() => NgZone)) private _zone: NgZone) {
+	@ViewChild('rootContainer', { read: ElementRef }) private _rootContainer!: ElementRef;
+
+	constructor(
+		@Inject(forwardRef(() => NgZone)) private _zone: NgZone,
+		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef) {
 		super();
 	}
 
+	public get toggleTabPanelButtonCssClass(): string {
+		return this._tabExpanded ? 'tab-action collapse' : 'tab-action expand';
+	}
+
+	public get toggleTabPanelButtonAriaLabel(): string {
+		return this._tabExpanded ? nls.localize('hideTextLabel', "Hide text labels") : nls.localize('showTextLabel', "Show text labels");
+	}
+
+	toggleTabPanel(): void {
+		this._tabExpanded = !this._tabExpanded;
+		this._cd.detectChanges();
+	}
+
 	ngOnInit(): void {
-		this.options = mixin(this.options || {}, defaultOptions, false);
+		this._options = mixin(this._options || {}, defaultOptions, false);
+		const rootContainerElement = this._rootContainer.nativeElement as HTMLElement;
+		this._styleElement = createStyleSheet(rootContainerElement);
 	}
 
 	ngAfterContentInit(): void {
@@ -210,6 +258,31 @@ export class PanelComponent extends Disposable {
 		this.selectTab(nextTabIndex);
 	}
 
+	/**
+	 * Updates the specified tab with new config values
+	 * @param tabId The id of the tab to update
+	 * @param config The values to update the tab with
+	 */
+	public updateTab(tabId: string, config: { title?: string, iconClass?: string }): void {
+		// First find the tab and update it with the new values. Then manually refresh the
+		// tab header since it won't detect changes made to the corresponding tab by itself.
+		let tabHeader: TabHeaderComponent;
+		const tabHeaders = this._tabHeaders.toArray();
+		const tab = this._tabs.find((item, i) => {
+			if (item.identifier === tabId) {
+				tabHeader = tabHeaders?.length > i ? tabHeaders[i] : undefined;
+				return true;
+			}
+			return false;
+		});
+
+		if (tab) {
+			tab.title = config.title;
+			tab.iconClass = config.iconClass;
+			tabHeader?.refresh();
+		}
+	}
+
 	private findAndRemoveTabFromMRU(tab: TabComponent): void {
 		let mruIndex = firstIndex(this._mru, i => i === tab);
 
@@ -245,4 +318,115 @@ export class PanelComponent extends Disposable {
 	public layout() {
 		this._activeTab?.layout();
 	}
+
+	onKey(e: KeyboardEvent): void {
+		const event = new StandardKeyboardEvent(e);
+		let eventHandled: boolean = false;
+		if (event.equals(KeyCode.DownArrow) || event.equals(KeyCode.RightArrow)) {
+			this.focusNextTab();
+			eventHandled = true;
+		} else if (event.equals(KeyCode.UpArrow) || event.equals(KeyCode.LeftArrow)) {
+			this.focusPreviousTab();
+			eventHandled = true;
+		}
+
+		if (eventHandled) {
+			event.preventDefault();
+			event.stopPropagation();
+		}
+	}
+
+	private focusPreviousTab(): void {
+		const currentIndex = this.focusedTabHeaderIndex;
+		if (currentIndex !== -1) {
+			// Move to the previous tab, if we are at the first tab then move to the last tab.
+			this.focusOnTabHeader(currentIndex === 0 ? this._tabHeaders.length - 1 : currentIndex - 1);
+		}
+	}
+
+	private focusNextTab(): void {
+		const currentIndex = this.focusedTabHeaderIndex;
+		if (currentIndex !== -1) {
+			// Move to the next tab, if we are at the last tab then move to the first tab.
+			this.focusOnTabHeader(currentIndex === this._tabHeaders.length - 1 ? 0 : currentIndex + 1);
+		}
+	}
+
+	private focusOnTabHeader(index: number): void {
+		if (index >= 0 && index <= this._tabHeaders.length - 1) {
+			this._tabHeaders.toArray()[index].focusOnTabHeader();
+		}
+	}
+
+	private get focusedTabHeaderIndex(): number {
+		return this._tabHeaders.toArray().findIndex((header) => {
+			return header.nativeElement === document.activeElement;
+		});
+	}
+
+	style(styles: ITabbedPanelStyles) {
+		if (this._styleElement) {
+			const content: string[] = [];
+			if (styles.titleInactiveForeground) {
+				content.push(`.tabbedPanel.horizontal > .title .tabList .tab-header {
+					color: ${styles.titleInactiveForeground}
+				}`);
+			}
+			if (styles.titleActiveBorder && styles.titleActiveForeground) {
+				content.push(`.tabbedPanel.horizontal > .title .tabList .tab-header:focus,
+					.tabbedPanel.horizontal > .title .tabList .tab-header.active {
+					border-color: ${styles.titleActiveBorder};
+					border-style: solid;
+					color: ${styles.titleActiveForeground}
+				}`);
+
+				content.push(`.tabbedPanel.horizontal > .title .tabList .tab-header:focus,
+					.tabbedPanel.horizontal > .title .tabList .tab-header.active {;
+					border-width: 0 0 ${styles.activeTabContrastBorder ? '0' : '2'}px 0;
+				}`);
+
+				content.push(`.tabbedPanel.horizontal > .title .tabList .tab-header:hover {
+					color: ${styles.titleActiveForeground}
+				}`);
+			}
+
+			if (styles.activeBackgroundForVerticalLayout) {
+				content.push(`.tabbedPanel.vertical > .title .tabList .tab-header.active {
+					background-color:${styles.activeBackgroundForVerticalLayout}
+				}`);
+			}
+
+			if (styles.border) {
+				content.push(`.tabbedPanel.vertical > .title > .tabContainer {
+					border-right-width: 1px;
+					border-right-style: solid;
+					border-right-color: ${styles.border};
+				}
+
+				.tabbedPanel .tab-group-header {
+					border-color: ${styles.border};
+				}`);
+			}
+
+			if (styles.activeTabContrastBorder) {
+				content.push(`
+				.tabbedPanel > .title .tabList .tab-header.active {
+					outline: 1px solid;
+					outline-offset: -3px;
+					outline-color: ${styles.activeTabContrastBorder};
+				}
+			`);
+			} else {
+				content.push(`.tabbedPanel.horizontal > .title .tabList .tab-header:focus {
+					outline-width: 0px;
+				}`);
+			}
+
+			const newStyles = content.join('\n');
+			if (newStyles !== this._styleElement.innerHTML) {
+				this._styleElement.innerHTML = newStyles;
+			}
+		}
+	}
+
 }

@@ -23,19 +23,19 @@ import { IEditorGroup, IEditorGroupsService } from 'vs/workbench/services/editor
 import { SplitView, Sizing } from 'vs/base/browser/ui/splitview/splitview';
 import { Event } from 'vs/base/common/event';
 import { DisposableStore } from 'vs/base/common/lifecycle';
-import { ISelectionData } from 'azdata';
-import { Action, IActionViewItem } from 'vs/base/common/actions';
+import { IActionViewItem, IAction } from 'vs/base/common/actions';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { URI } from 'vs/base/common/uri';
 import { IFileService, FileChangesEvent } from 'vs/platform/files/common/files';
 
-import { QueryEditorInput, IQueryEditorStateChange } from 'sql/workbench/contrib/query/common/queryEditorInput';
+import { QueryEditorInput, IQueryEditorStateChange } from 'sql/workbench/common/editor/query/queryEditorInput';
 import { QueryResultsEditor } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
 import * as queryContext from 'sql/workbench/contrib/query/common/queryContext';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import * as actions from 'sql/workbench/contrib/query/browser/queryActions';
+import { IRange } from 'vs/editor/common/core/range';
 
 const QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY = 'queryEditorViewState';
 
@@ -105,7 +105,7 @@ export class QueryEditor extends BaseEditor {
 		this.queryEditorVisible = queryContext.QueryEditorVisibleContext.bindTo(contextKeyService);
 
 		// Clear view state for deleted files
-		this._register(fileService.onFileChanges(e => this.onFilesChanged(e)));
+		this._register(fileService.onDidFilesChange(e => this.onFilesChanged(e)));
 	}
 
 	private onFilesChanged(e: FileChangesEvent): void {
@@ -171,7 +171,7 @@ export class QueryEditor extends BaseEditor {
 		// Create QueryTaskbar
 		let taskbarContainer = DOM.append(parentElement, DOM.$('div'));
 		this.taskbar = this._register(new Taskbar(taskbarContainer, {
-			actionViewItemProvider: (action: Action) => this._getActionItemForAction(action),
+			actionViewItemProvider: action => this._getActionItemForAction(action),
 		}));
 
 		// Create Actions for the toolbar
@@ -236,7 +236,7 @@ export class QueryEditor extends BaseEditor {
 	 * Gets the IActionItem for the List Databases dropdown if provided the associated Action.
 	 * Otherwise returns null.
 	 */
-	private _getActionItemForAction(action: Action): IActionViewItem {
+	private _getActionItemForAction(action: IAction): IActionViewItem {
 		if (action.id === actions.ListDatabasesAction.ID) {
 			return this.listDatabasesActionItem;
 		}
@@ -317,7 +317,7 @@ export class QueryEditor extends BaseEditor {
 		this.inputDisposables.add(this.input.state.onChange(c => this.updateState(c)));
 		this.updateState({ connectingChange: true, connectedChange: true, executingChange: true, resultsVisibleChange: true, sqlCmdModeChanged: true });
 
-		const editorViewState = this.loadTextEditorViewState(this.input.getResource());
+		const editorViewState = this.loadTextEditorViewState(this.input.resource);
 
 		if (editorViewState && editorViewState.resultsHeight && this.splitview.length > 1) {
 			this.splitview.resizeView(1, editorViewState.resultsHeight);
@@ -331,7 +331,7 @@ export class QueryEditor extends BaseEditor {
 
 		// Otherwise we save the view state to restore it later
 		else if (!input.isDisposed()) {
-			this.saveTextEditorViewState(input.getResource());
+			this.saveTextEditorViewState(input.resource);
 		}
 	}
 
@@ -394,7 +394,7 @@ export class QueryEditor extends BaseEditor {
 			let visible = currentEditorIsVisible;
 			if (!currentEditorIsVisible) {
 				// Current editor is closing but still tracked as visible. Check if any other editor is visible
-				const candidates = [...this.editorService.visibleControls].filter(e => {
+				const candidates = [...this.editorService.visibleEditorPanes].filter(e => {
 					if (e && e.getId) {
 						return e.getId() === QueryEditor.ID;
 					}
@@ -499,7 +499,7 @@ export class QueryEditor extends BaseEditor {
 	 * Returns the underlying SQL editor's text selection in a 0-indexed format. Returns undefined if there
 	 * is no selected text.
 	 */
-	public getSelection(checkIfRange: boolean = true): ISelectionData {
+	public getSelection(checkIfRange: boolean = true): IRange {
 		if (this.currentTextEditor && this.currentTextEditor.getControl()) {
 			let vscodeSelection = this.currentTextEditor.getControl().getSelection();
 
@@ -508,13 +508,7 @@ export class QueryEditor extends BaseEditor {
 				!(vscodeSelection.getStartPosition().lineNumber === vscodeSelection.getEndPosition().lineNumber &&
 					vscodeSelection.getStartPosition().column === vscodeSelection.getEndPosition().column);
 			if (!checkIfRange || isRange) {
-				let sqlToolsServiceSelection: ISelectionData = {
-					startLine: vscodeSelection.getStartPosition().lineNumber - 1,
-					startColumn: vscodeSelection.getStartPosition().column - 1,
-					endLine: vscodeSelection.getEndPosition().lineNumber - 1,
-					endColumn: vscodeSelection.getEndPosition().column - 1,
-				};
-				return sqlToolsServiceSelection;
+				return vscodeSelection;
 			}
 		}
 
@@ -522,7 +516,7 @@ export class QueryEditor extends BaseEditor {
 		return undefined;
 	}
 
-	public getAllSelection(): ISelectionData {
+	public getAllSelection(): IRange {
 		if (this.currentTextEditor && this.currentTextEditor.getControl()) {
 			let control = this.currentTextEditor.getControl();
 			let codeEditor: ICodeEditor = <ICodeEditor>control;
@@ -530,13 +524,12 @@ export class QueryEditor extends BaseEditor {
 				let model = codeEditor.getModel();
 				let totalLines = model.getLineCount();
 				let endColumn = model.getLineMaxColumn(totalLines);
-				let selection: ISelectionData = {
-					startLine: 0,
-					startColumn: 0,
-					endLine: totalLines - 1,
-					endColumn: endColumn - 1,
+				return {
+					startLineNumber: 1,
+					startColumn: 1,
+					endLineNumber: totalLines,
+					endColumn: endColumn,
 				};
-				return selection;
 			}
 		}
 		return undefined;

@@ -10,11 +10,11 @@ import { IConfigurationRegistry, Extensions as ConfigurationExtensions, IConfigu
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import * as nls from 'vs/nls';
 
-import { ProfilerInput } from 'sql/workbench/contrib/profiler/browser/profilerInput';
+import { ProfilerInput } from 'sql/workbench/browser/editor/profiler/profilerInput';
 import { ProfilerEditor } from 'sql/workbench/contrib/profiler/browser/profilerEditor';
 import { PROFILER_VIEW_TEMPLATE_SETTINGS, PROFILER_SESSION_TEMPLATE_SETTINGS, IProfilerViewTemplate, IProfilerSessionTemplate, EngineType, PROFILER_FILTER_SETTINGS } from 'sql/workbench/services/profiler/browser/interfaces';
 
-const profilerDescriptor = new EditorDescriptor(
+const profilerDescriptor = EditorDescriptor.create(
 	ProfilerEditor,
 	ProfilerEditor.ID,
 	'ProfilerEditor'
@@ -57,7 +57,7 @@ const profilerViewTemplateSchema: IJSONSchema = {
 				},
 				{
 					name: 'LoginName',
-					eventsMapped: ['server_principal_name']
+					eventsMapped: ['server_principal_name', 'username']
 				},
 				{
 					name: 'ClientProcessID',
@@ -159,7 +159,7 @@ const profilerViewTemplateSchema: IJSONSchema = {
 				},
 				{
 					name: 'LoginName',
-					eventsMapped: ['server_principal_name']
+					eventsMapped: ['server_principal_name', 'username']
 				}
 			]
 		},
@@ -184,7 +184,7 @@ const profilerViewTemplateSchema: IJSONSchema = {
 				},
 				{
 					name: 'LoginName',
-					eventsMapped: ['server_principal_name']
+					eventsMapped: ['server_principal_name', 'username']
 				},
 				{
 					name: 'ClientProcessID',

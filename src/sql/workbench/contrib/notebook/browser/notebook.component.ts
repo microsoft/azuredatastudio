@@ -6,9 +6,9 @@
 import { nb } from 'azdata';
 import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy, ViewChildren, QueryList } from '@angular/core';
 
-import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
-import { INotificationService, INotification, Severity } from 'vs/platform/notification/common/notification';
+import { INotificationService, INotification } from 'vs/platform/notification/common/notification';
 import { localize } from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
@@ -18,27 +18,26 @@ import { MenuId, IMenuService, MenuItemAction } from 'vs/platform/actions/common
 import { IAction, Action, IActionViewItem } from 'vs/base/common/actions';
 import { IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
-import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import * as DOM from 'vs/base/browser/dom';
 
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
-import { CellTypes, CellType } from 'sql/workbench/contrib/notebook/common/models/contracts';
-import { ICellModel, IModelFactory, INotebookModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { CellTypes, CellType, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
+import { ICellModel, IModelFactory, INotebookModel, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER, INotebookSection, INavigationProvider, ICellEditorProvider } from 'sql/workbench/services/notebook/browser/notebookService';
-import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/notebookModel';
-import { ModelFactory } from 'sql/workbench/contrib/notebook/browser/models/modelFactory';
-import * as notebookUtils from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
+import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER, INotebookSection, INavigationProvider, ICellEditorProvider, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
+import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
+import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
+import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { Deferred } from 'sql/base/common/promise';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction, RunAllCellsAction, ClearAllOutputsAction, CollapseCellsAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { AddCellAction, KernelsDropdown, AttachToDropdown, TrustedAction, RunAllCellsAction, ClearAllOutputsAction, CollapseCellsAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/buttonMenu';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { CellMagicMapper } from 'sql/workbench/contrib/notebook/browser/models/cellMagicMapper';
-import { VIEWLET_ID, IExtensionsViewPaneContainer } from 'vs/workbench/contrib/extensions/common/extensions';
-import { CellModel } from 'sql/workbench/contrib/notebook/browser/models/cell';
+import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 import { FileOperationError, FileOperationResult } from 'vs/platform/files/common/files';
 import { isValidBasename } from 'vs/base/common/extpath';
 import { basename } from 'vs/base/common/resources';
@@ -47,7 +46,6 @@ import { toErrorMessage } from 'vs/base/common/errorMessage';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { LabeledMenuItemActionItem, fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
@@ -55,11 +53,12 @@ import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
 import { find, firstIndex } from 'vs/base/common/arrays';
 import { CodeCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/codeCell.component';
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
-import { NotebookRange } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
-
+import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
+import { IColorTheme } from 'vs/platform/theme/common/themeService';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
-
 
 @Component({
 	selector: NOTEBOOK_SELECTOR,
@@ -71,7 +70,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	@ViewChild('bookNav', { read: ElementRef }) private bookNav: ElementRef;
 
 	@ViewChildren(CodeCellComponent) private codeCells: QueryList<CodeCellComponent>;
-	@ViewChildren(TextCellComponent) private textCells: QueryList<ICellEditorProvider>;
+	@ViewChildren(TextCellComponent) private textCells: QueryList<TextCellComponent>;
 
 	private _model: NotebookModel;
 	protected _actionBar: Taskbar;
@@ -85,6 +84,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private _scrollTop: number;
 	private _navProvider: INavigationProvider;
 	private navigationResult: nb.NavigationResult;
+	public previewFeaturesEnabled: boolean = false;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -101,15 +101,18 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(IContextKeyService) private contextKeyService: IContextKeyService,
 		@Inject(IMenuService) private menuService: IMenuService,
 		@Inject(IKeybindingService) private keybindingService: IKeybindingService,
-		@Inject(IViewletService) private viewletService: IViewletService,
 		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService,
 		@Inject(ITextFileService) private textFileService: ITextFileService,
 		@Inject(ILogService) private readonly logService: ILogService,
-		@Inject(ITelemetryService) private telemetryService: ITelemetryService
+		@Inject(IAdsTelemetryService) private adstelemetryService: IAdsTelemetryService,
+		@Inject(IConfigurationService) private _configurationService: IConfigurationService
 	) {
 		super();
 		this.updateProfile();
 		this.isLoading = true;
+		this._register(this._configurationService.onDidChangeConfiguration(e => {
+			this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
+		}));
 	}
 
 	private updateProfile(): void {
@@ -150,6 +153,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this.codeCells.toArray().forEach(cell => editors.push(...cell.cellEditors));
 		}
 		if (this.textCells) {
+			this.textCells.toArray().forEach(cell => editors.push(...cell.cellEditors));
 			editors.push(...this.textCells.toArray());
 		}
 		return editors;
@@ -157,12 +161,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	public deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void {
 		if (newDecorationRange && newDecorationRange.cell && newDecorationRange.cell.cellType === 'markdown') {
-			let cell = this.cellEditors.filter(c => c.cellGuid() === newDecorationRange.cell.cellGuid)[0];
-			cell.deltaDecorations(newDecorationRange, undefined);
+			let cell = this.cellEditors.filter(c => c.cellGuid() === newDecorationRange.cell.cellGuid);
+			cell[cell.length - 1].deltaDecorations(newDecorationRange, undefined);
 		}
 		if (oldDecorationRange && oldDecorationRange.cell && oldDecorationRange.cell.cellType === 'markdown') {
-			let cell = this.cellEditors.filter(c => c.cellGuid() === oldDecorationRange.cell.cellGuid)[0];
-			cell.deltaDecorations(undefined, oldDecorationRange);
+			let cell = this.cellEditors.filter(c => c.cellGuid() === oldDecorationRange.cell.cellGuid);
+			cell[cell.length - 1].deltaDecorations(undefined, oldDecorationRange);
 		}
 	}
 
@@ -229,20 +233,20 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private setScrollPosition(): void {
 		if (this._notebookParams && this._notebookParams.input) {
-			this._notebookParams.input.layoutChanged(() => {
+			this._register(this._notebookParams.input.layoutChanged(() => {
 				let containerElement = <HTMLElement>this.container.nativeElement;
 				containerElement.scrollTop = this._scrollTop;
-			});
+			}));
 		}
 	}
 
 	private async doLoad(): Promise<void> {
 		try {
 			await this.createModelAndLoadContents();
-			await this.setNotebookManager();
-			await this.loadModel();
 			this._modelReadyDeferred.resolve(this._model);
 			this.notebookService.addNotebookEditor(this);
+			await this.setNotebookManager();
+			await this.loadModel();
 		} catch (error) {
 			if (error) {
 				// Offer to create a file from the error if we have a file not found and the name is valid
@@ -261,10 +265,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 					});
 					this.notificationService.error(errorWithAction);
 
-					let editors = this.editorService.visibleControls;
+					let editors = this.editorService.visibleEditorPanes;
 					for (let editor of editors) {
-						if (editor && editor.input.getResource() === this._notebookParams.input.notebookUri) {
-							await editor.group.closeEditor(this._notebookParams.input, { preserveFocus: true });
+						if (editor && editor.input.resource === this._notebookParams.input.notebookUri) {
+							await editor.group.closeEditor(this._notebookParams.input as NotebookInput, { preserveFocus: true }); // sketchy
 							break;
 						}
 					}
@@ -309,10 +313,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			layoutChanged: this._notebookParams.input.layoutChanged,
 			capabilitiesService: this.capabilitiesService,
 			editorLoadedTimestamp: this._notebookParams.input.editorOpenedTimestamp
-		}, this.profile, this.logService, this.notificationService, this.telemetryService);
+		}, this.profile, this.logService, this.notificationService, this.adstelemetryService);
 		let trusted = await this.notebookService.isNotebookTrustCached(this._notebookParams.notebookUri, this.isDirty());
 		this._register(model.onError((errInfo: INotification) => this.handleModelError(errInfo)));
-		this._register(model.contentChanged((change) => this.handleContentChanged()));
+		this._register(model.contentChanged((change) => this.handleContentChanged(change)));
 		this._register(model.onProviderIdChange((provider) => this.handleProviderIdChanged(provider)));
 		this._register(model.kernelChanged((kernelArgs) => this.handleKernelChanged(kernelArgs)));
 		this._model = this._register(model);
@@ -342,25 +346,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			let tsqlProvider = find(providers, provider => provider === SQL_NOTEBOOK_PROVIDER);
 			providerInfo.providerId = tsqlProvider ? SQL_NOTEBOOK_PROVIDER : providers[0];
 		}
-		if (DEFAULT_NOTEBOOK_PROVIDER === providerInfo.providerId) {
-			// If it's still the default, warn them they should install an extension
-			this.notificationService.prompt(Severity.Warning,
-				localize('noKernelInstalled', "Please install the SQL Server 2019 extension to run cells."),
-				[{
-					label: localize('installSql2019Extension', "Install Extension"),
-					run: () => this.openExtensionGallery()
-				}]);
-		}
-	}
-
-	private async openExtensionGallery(): Promise<void> {
-		try {
-			let viewlet = await this.viewletService.openViewlet(VIEWLET_ID, true);
-			(viewlet.getViewPaneContainer() as IExtensionsViewPaneContainer).search('sql-vnext');
-			viewlet.focus();
-		} catch (error) {
-			this.notificationService.error(error.message);
-		}
 	}
 
 	// Updates toolbar components
@@ -382,7 +367,11 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this.notificationService.notify(notification);
 	}
 
-	private handleContentChanged() {
+	private handleContentChanged(change: NotebookContentChange) {
+		if (change.changeType === NotebookChangeType.TrustChanged) {
+			this._trustedAction.trusted = this._model.trustedMode;
+		}
+
 		// Note: for now we just need to set dirty state and refresh the UI.
 		this.detectChanges();
 	}
@@ -411,44 +400,115 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	protected initActionBar(): void {
-		let kernelContainer = document.createElement('div');
-		let kernelDropdown = new KernelsDropdown(kernelContainer, this.contextViewService, this.modelReady);
-		kernelDropdown.render(kernelContainer);
-		attachSelectBoxStyler(kernelDropdown, this.themeService);
+		this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
 
-		let attachToContainer = document.createElement('div');
-		let attachToDropdown = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelReady,
-			this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService);
-		attachToDropdown.render(attachToContainer);
-		attachSelectBoxStyler(attachToDropdown, this.themeService);
+		if (this.previewFeaturesEnabled) {
+			let kernelContainer = document.createElement('li');
+			let kernelDropdown = this.instantiationService.createInstance(KernelsDropdown, kernelContainer, this.contextViewService, this.modelReady);
+			kernelDropdown.render(kernelContainer);
+			attachSelectBoxStyler(kernelDropdown, this.themeService);
 
-		let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('code', "Code"), 'notebook-button icon-add');
-		addCodeCellButton.cellType = CellTypes.Code;
+			let attachToContainer = document.createElement('li');
+			let attachToDropdown = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelReady,
+				this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService);
+			attachToDropdown.render(attachToContainer);
+			attachSelectBoxStyler(attachToDropdown, this.themeService);
 
-		let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('text', "Text"), 'notebook-button icon-add');
-		addTextCellButton.cellType = CellTypes.Markdown;
+			let spacerElement = document.createElement('li');
+			spacerElement.style.marginLeft = 'auto';
 
-		this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAll', "Run Cells"), 'notebook-button icon-run-cells');
-		let clearResultsButton = new ClearAllOutputsAction('notebook.ClearAllOutputs', localize('clearResults', "Clear Results"), 'notebook-button icon-clear-results');
+			let addCellsButton = new AddCellAction('notebook.AddCodeCell', localize('codeCellsPreview', "Add cell"), 'notebook-button masked-pseudo code');
 
-		this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted');
-		this._trustedAction.enabled = false;
+			let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('codePreview', "Code cell"), 'notebook-button masked-pseudo code');
+			addCodeCellButton.cellType = CellTypes.Code;
 
-		let collapseCellsAction = this.instantiationService.createInstance(CollapseCellsAction, 'notebook.collapseCells');
+			let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('textPreview', "Text cell"), 'notebook-button masked-pseudo markdown');
+			addTextCellButton.cellType = CellTypes.Markdown;
 
-		let taskbar = <HTMLElement>this.toolbar.nativeElement;
-		this._actionBar = new Taskbar(taskbar, { actionViewItemProvider: action => this.actionItemProvider(action as Action) });
-		this._actionBar.context = this;
-		this._actionBar.setContent([
-			{ action: addCodeCellButton },
-			{ action: addTextCellButton },
-			{ element: kernelContainer },
-			{ element: attachToContainer },
-			{ action: this._trustedAction },
-			{ action: this._runAllCellsAction },
-			{ action: clearResultsButton },
-			{ action: collapseCellsAction }
-		]);
+			this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAllPreview', "Run all"), 'notebook-button masked-pseudo start-outline');
+
+			let collapseCellsAction = this.instantiationService.createInstance(CollapseCellsAction, 'notebook.collapseCells', true);
+
+			let clearResultsButton = new ClearAllOutputsAction('notebook.ClearAllOutputs', true);
+
+			this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted', true);
+			this._trustedAction.enabled = false;
+
+			let taskbar = <HTMLElement>this.toolbar.nativeElement;
+			this._actionBar = new Taskbar(taskbar, { actionViewItemProvider: action => this.actionItemProvider(action as Action) });
+			this._actionBar.context = this;
+			taskbar.classList.add('in-preview');
+
+			let buttonDropdownContainer = DOM.$('li.action-item');
+			buttonDropdownContainer.setAttribute('role', 'presentation');
+			let dropdownMenuActionViewItem = new DropdownMenuActionViewItem(
+				addCellsButton,
+				[addCodeCellButton, addTextCellButton],
+				this.contextMenuService,
+				undefined,
+				this._actionBar.actionRunner,
+				undefined,
+				'codicon notebook-button masked-pseudo masked-pseudo-after add-new dropdown-arrow',
+				localize('addCell', "Cell"),
+				undefined
+			);
+			dropdownMenuActionViewItem.render(buttonDropdownContainer);
+			dropdownMenuActionViewItem.setActionContext(this);
+
+			this._actionBar.setContent([
+				{ element: buttonDropdownContainer },
+				{ action: this._runAllCellsAction },
+				{ element: Taskbar.createTaskbarSeparator() },
+				{ element: kernelContainer },
+				{ element: attachToContainer },
+				{ element: spacerElement },
+				{ action: collapseCellsAction },
+				{ action: clearResultsButton },
+				{ action: this._trustedAction },
+			]);
+		} else {
+			let kernelContainer = document.createElement('div');
+			let kernelDropdown = this.instantiationService.createInstance(KernelsDropdown, kernelContainer, this.contextViewService, this.modelReady);
+			kernelDropdown.render(kernelContainer);
+			attachSelectBoxStyler(kernelDropdown, this.themeService);
+
+			let attachToContainer = document.createElement('div');
+			let attachToDropdown = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelReady,
+				this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService);
+			attachToDropdown.render(attachToContainer);
+			attachSelectBoxStyler(attachToDropdown, this.themeService);
+
+			let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('code', "Code"), 'notebook-button icon-add');
+			addCodeCellButton.cellType = CellTypes.Code;
+
+			let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('text', "Text"), 'notebook-button icon-add');
+			addTextCellButton.cellType = CellTypes.Markdown;
+
+			this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAll', "Run Cells"), 'notebook-button icon-run-cells');
+
+			let clearResultsButton = new ClearAllOutputsAction('notebook.ClearAllOutputs', false);
+
+			this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted', false);
+			this._trustedAction.enabled = false;
+
+			let collapseCellsAction = this.instantiationService.createInstance(CollapseCellsAction, 'notebook.collapseCells', false);
+
+			let taskbar = <HTMLElement>this.toolbar.nativeElement;
+			this._actionBar = new Taskbar(taskbar, { actionViewItemProvider: action => this.actionItemProvider(action as Action) });
+			this._actionBar.context = this;
+
+			this._actionBar.setContent([
+				{ action: addCodeCellButton },
+				{ action: addTextCellButton },
+				{ element: kernelContainer },
+				{ element: attachToContainer },
+				{ action: this._trustedAction },
+				{ action: this._runAllCellsAction },
+				{ action: clearResultsButton },
+				{ action: collapseCellsAction }
+			]);
+		}
+
 	}
 
 	protected initNavSection(): void {
@@ -463,7 +523,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 					() => this.nextPage(), this.navigationResult.next ? true : false);
 				this.detectChanges();
 			}, err => {
-				console.log(err);
+				this.logService.info(err);
 			});
 		}
 	}
@@ -492,7 +552,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		// Check extensions to create ActionItem; otherwise, return undefined
 		// This is similar behavior that exists in MenuItemActionItem
 		if (action instanceof MenuItemAction) {
-			return new LabeledMenuItemActionItem(action, this.keybindingService, this.contextMenuService, this.notificationService, 'notebook-button');
+
+			if (action.item.id.includes('jupyter.cmd') && this.previewFeaturesEnabled) {
+				action.tooltip = action.label;
+				action.label = '';
+			}
+			return new LabeledMenuItemActionItem(action, this.keybindingService, this.contextMenuService, this.notificationService, 'notebook-button fixed-width');
 		}
 		return undefined;
 	}
@@ -550,12 +615,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	isActive(): boolean {
-		return this.editorService.activeEditor === this.notebookParams.input;
+		return this.editorService.activeEditor ? this.editorService.activeEditor.matches(this.notebookParams.input) : false;
 	}
 
 	isVisible(): boolean {
 		let notebookEditor = this.notebookParams.input;
-		return this.editorService.visibleEditors.some(e => e === notebookEditor);
+		return this.editorService.visibleEditors.some(e => e.matches(notebookEditor));
 	}
 
 	isDirty(): boolean {
@@ -666,10 +731,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private getSectionElements(): NotebookSection[] {
 		let headers: NotebookSection[] = [];
 		let el: HTMLElement = this.container.nativeElement;
-		let headerElements = el.querySelectorAll('h1, h2, h3, h4, h5, h6');
+		let headerElements = el.querySelectorAll('h1, h2, h3, h4, h5, h6, a[name], a[id]');
 		for (let i = 0; i < headerElements.length; i++) {
 			let headerEl = headerElements[i] as HTMLElement;
-			if (headerEl['id']) {
+			if (headerEl['id'] || headerEl['name']) {
 				headers.push(new NotebookSection(headerEl));
 			}
 		}
@@ -678,10 +743,17 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	navigateToSection(id: string): void {
 		id = id.toLowerCase();
+		let chromeHeight: number = 0;
+		let elBody: HTMLElement = document.body;
+		let tabBar = elBody.querySelector('.title.tabs') as HTMLElement;
+		let actionBar = elBody.querySelector('.editor-toolbar.actionbar-container') as HTMLElement;
 		let section = find(this.getSectionElements(), s => s.relativeUri && s.relativeUri.toLowerCase() === id);
 		if (section) {
 			// Scroll this section to the top of the header instead of just bringing header into view.
-			let scrollTop = jQuery(section.headerEl).offset().top;
+			if (tabBar && actionBar) {
+				chromeHeight = tabBar.scrollHeight + actionBar.scrollHeight;
+			}
+			let scrollTop: number = section.headerEl.getBoundingClientRect().top - (chromeHeight + 10);
 			(<HTMLElement>this.container.nativeElement).scrollTo({
 				top: scrollTop,
 				behavior: 'smooth'
@@ -697,7 +769,7 @@ class NotebookSection implements INotebookSection {
 	}
 
 	get relativeUri(): string {
-		return this.headerEl['id'];
+		return this.headerEl['id'] || this.headerEl['name'];
 	}
 
 	get header(): string {

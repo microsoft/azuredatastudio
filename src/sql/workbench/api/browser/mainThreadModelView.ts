@@ -10,8 +10,7 @@ import { Disposable } from 'vs/base/common/lifecycle';
 
 
 import { IModelViewService } from 'sql/platform/modelComponents/browser/modelViewService';
-import { IItemConfig, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IModelView } from 'sql/platform/model/browser/modelViewService';
+import { IItemConfig, IComponentShape, IModelView } from 'sql/platform/model/browser/modelViewService';
 import { find } from 'vs/base/common/arrays';
 
 
@@ -67,6 +66,10 @@ export class MainThreadModelView extends Disposable implements MainThreadModelVi
 		return this.execModelViewAction(handle, (modelView) => modelView.setLayout(componentId, layout));
 	}
 
+	$setItemLayout(handle: number, containerId: string, item: IItemConfig): Thenable<void> {
+		return this.execModelViewAction(handle, (modelView) => modelView.setItemLayout(containerId, item));
+	}
+
 	private onEvent(handle: number, componentId: string, eventArgs: any) {
 		this._proxy.$handleEvent(handle, componentId, eventArgs);
 	}
@@ -99,6 +102,10 @@ export class MainThreadModelView extends Disposable implements MainThreadModelVi
 
 	$focus(handle: number, componentId: string): Thenable<void> {
 		return new Promise(resolve => this.execModelViewAction(handle, (modelView) => resolve(modelView.focus(componentId))));
+	}
+
+	$doAction(handle: number, componentId: string, action: string, ...args: any[]): Thenable<void> {
+		return new Promise(resolve => this.execModelViewAction(handle, (modelView) => resolve(modelView.doAction(componentId, action, ...args))));
 	}
 
 	private runCustomValidations(handle: number, componentId: string): Thenable<boolean> {

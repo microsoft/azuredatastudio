@@ -26,6 +26,7 @@
 }
 
 .carbon-taskbar.monaco-toolbar .monaco-action-bar.animated .actions-container {
+	box-sizing: border-box;
 	justify-content: flex-start;
 	padding-left: 15px;
 	flex-wrap: wrap;
@@ -45,6 +46,10 @@
 
 .carbon-taskbar .action-item {
 	margin-right: 5px;
+}
+
+.carbon-taskbar .action-item.more {
+	padding-right: 15px;
 }
 
 .carbon-taskbar .action-label {
@@ -70,7 +75,7 @@
 }
 
 .taskbarSeparator {
-	width: 1px;
+	min-width: 1px;
 	background-color:#A5A5A5;
 	margin: 6px 8px;
 }
@@ -85,4 +90,53 @@
 
 .carbon-taskbar .codicon {
 	background-size: 11px;
+}
+
+.carbon-taskbar .overflow {
+	position:absolute;
+	right:0;
+	display:none;
+	z-index: 3;
+	padding-left: 0;
+	margin-top: 6px;
+	margin-right: 5px;
+}
+
+.vs-dark .carbon-taskbar .overflow {
+	box-sizing: border-box;
+}
+
+.hc-black .carbon-taskbar .overflow {
+	box-shadow: none;
+}
+
+.carbon-taskbar .overflow li {
+	padding: 5px;
+	margin-right: 0;
+}
+
+.carbon-taskbar .overflow li.focused a.action-label {
+	outline: none;
+}
+
+.carbon-taskbar .overflow a {
+	padding-left: 20px;
+}
+
+.carbon-taskbar .actions-container .action-item .action-label.moreActionsElement {
+	height: 18px;
+	margin-top: 3px;
+	background-position: center;
+	padding-right: 20px;
+}
+
+.carbon-taskbar .overflow .action-item .action-label{
+	background-size: 16px;
+	background-position: left;
+}
+
+.overflow .taskbarSeparator {
+	height: 1px;
+	width: 100%;
+	margin-left: 0;
 }

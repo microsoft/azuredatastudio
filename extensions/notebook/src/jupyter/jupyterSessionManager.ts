@@ -15,6 +15,8 @@ const localize = nls.loadMessageBundle();
 
 import { JupyterKernel } from './jupyterKernel';
 import { Deferred } from '../common/promise';
+import { JupyterServerInstallation } from './jupyterServerInstallation';
+import * as bdc from 'bdc';
 
 const configBase = {
 	'kernel_python_credentials': {
@@ -26,6 +28,7 @@ const configBase = {
 	'kernel_r_credentials': {
 		'url': ''
 	},
+	'livy_session_startup_timeout_seconds': 100,
 	'logging_config': {
 		'version': 1,
 		'formatters': {
@@ -54,17 +57,18 @@ const configBase = {
 const KNOX_ENDPOINT_SERVER = 'host';
 const KNOX_ENDPOINT_PORT = 'knoxport';
 const KNOX_ENDPOINT_GATEWAY = 'gateway';
+const CONTROLLER_ENDPOINT = 'controller';
 const SQL_PROVIDER = 'MSSQL';
 const USER = 'user';
 const AUTHTYPE = 'authenticationType';
 const INTEGRATED_AUTH = 'integrated';
-const DEFAULT_CLUSTER_USER_NAME = 'root';
 
 export class JupyterSessionManager implements nb.SessionManager {
 	private _ready: Deferred<void>;
 	private _isReady: boolean;
 	private _sessionManager: Session.IManager;
 	private static _sessions: JupyterSession[] = [];
+	private _installation: JupyterServerInstallation;
 
 	constructor(private _pythonEnvVarPath?: string) {
 		this._isReady = false;
@@ -83,6 +87,12 @@ export class JupyterSessionManager implements nb.SessionManager {
 			});
 	}
 
+	public set installation(installation: JupyterServerInstallation) {
+		this._installation = installation;
+		JupyterSessionManager._sessions.forEach(session => {
+			session.installation = installation;
+		});
+	}
 	public get isReady(): boolean {
 		return this._isReady;
 	}
@@ -107,6 +117,11 @@ export class JupyterSessionManager implements nb.SessionManager {
 			// TODO add more info to kernels
 			return kernel;
 		});
+
+		// For now, need to remove PySpark3, as it's been deprecated
+		// May want to have a formalized deprecated kernels mechanism in the future
+		kernels = kernels.filter(k => k.name !== 'pyspark3kernel');
+
 		let allKernels: nb.IAllKernels = {
 			defaultKernel: specs.default,
 			kernels: kernels
@@ -120,7 +135,7 @@ export class JupyterSessionManager implements nb.SessionManager {
 			return Promise.reject(new Error(localize('errorStartBeforeReady', "Cannot start a session, the manager is not yet initialized")));
 		}
 		let sessionImpl = await this._sessionManager.startNew(options);
-		let jupyterSession = new JupyterSession(sessionImpl, skipSettingEnvironmentVars, this._pythonEnvVarPath);
+		let jupyterSession = new JupyterSession(sessionImpl, this._installation, skipSettingEnvironmentVars, this._pythonEnvVarPath);
 		await jupyterSession.messagesComplete;
 		let index = JupyterSessionManager._sessions.findIndex(session => session.path === options.path);
 		if (index > -1) {
@@ -167,7 +182,7 @@ export class JupyterSession implements nb.ISession {
 	private _kernel: nb.IKernel;
 	private _messagesComplete: Deferred<void> = new Deferred<void>();
 
-	constructor(private sessionImpl: Session.ISession, skipSettingEnvironmentVars?: boolean, private _pythonEnvVarPath?: string) {
+	constructor(private sessionImpl: Session.ISession, private _installation: JupyterServerInstallation, skipSettingEnvironmentVars?: boolean, private _pythonEnvVarPath?: string) {
 		this.setEnvironmentVars(skipSettingEnvironmentVars).catch(error => {
 			console.error(`Unexpected exception setting Jupyter Session variables : ${error}`);
 			// We don't want callers to hang forever waiting - it's better to continue on even if we weren't
@@ -215,7 +230,24 @@ export class JupyterSession implements nb.ISession {
 		return this._messagesComplete.promise;
 	}
 
+	public set installation(installation: JupyterServerInstallation) {
+		this._installation = installation;
+	}
+
 	public async changeKernel(kernelInfo: nb.IKernelSpec): Promise<nb.IKernel> {
+		if (this._installation) {
+			try {
+				if (this._installation.previewFeaturesEnabled) {
+					await this._installation.promptForPythonInstall(kernelInfo.display_name);
+				} else {
+					await this._installation.promptForPackageUpgrade(kernelInfo.display_name);
+				}
+			} catch (err) {
+				// Have to swallow the error here to prevent hangs when changing back to the old kernel.
+				console.error(err.toString());
+				return this._kernel;
+			}
+		}
 		// For now, Jupyter implementation handles disposal etc. so we can just
 		// null out our kernel and let the changeKernel call handle this
 		this._kernel = undefined;
@@ -245,34 +277,54 @@ export class JupyterSession implements nb.ISession {
 		await fs.writeFile(configFilePath, JSON.stringify(config));
 	}
 
-	public async configureConnection(connection: IConnectionProfile): Promise<void> {
-		if (connection && connection.providerName && this.isSparkKernel(this.sessionImpl.kernel.name)) {
-			// TODO may need to reenable a way to get the credential
-			// await this._connection.getCredential();
+	public async configureConnection(connectionProfile: IConnectionProfile): Promise<void> {
+		if (connectionProfile && connectionProfile.providerName && this.isSparkKernel(this.sessionImpl.kernel.name)) {
 			// %_do_not_call_change_endpoint is a SparkMagic command that lets users change endpoint options,
 			// such as user/profile/host name/auth type
 
+			let credentials;
+			if (!this.isIntegratedAuth(connectionProfile)) {
+				credentials = await connection.getCredentials(connectionProfile.id);
+			}
 			//Update server info with bigdata endpoint - Unified Connection
-			if (connection.providerName === SQL_PROVIDER) {
-				let clusterEndpoint: utils.IEndpoint = await this.getClusterEndpoint(connection.id, KNOX_ENDPOINT_GATEWAY);
-				if (!clusterEndpoint) {
+			if (connectionProfile.providerName === SQL_PROVIDER) {
+				const endpoints = await this.getClusterEndpoints(connectionProfile.id);
+				const gatewayEndpoint: utils.IEndpoint = endpoints?.find(ep => ep.serviceName.toLowerCase() === KNOX_ENDPOINT_GATEWAY);
+				if (!gatewayEndpoint) {
 					return Promise.reject(new Error(localize('connectionNotValid', "Spark kernels require a connection to a SQL Server Big Data Cluster master instance.")));
 				}
-				let hostAndPort = utils.getHostAndPortFromEndpoint(clusterEndpoint.endpoint);
-				connection.options[KNOX_ENDPOINT_SERVER] = hostAndPort.host;
-				connection.options[KNOX_ENDPOINT_PORT] = hostAndPort.port;
-				connection.options[USER] = DEFAULT_CLUSTER_USER_NAME;
+				let gatewayHostAndPort = utils.getHostAndPortFromEndpoint(gatewayEndpoint.endpoint);
+				connectionProfile.options[KNOX_ENDPOINT_SERVER] = gatewayHostAndPort.host;
+				connectionProfile.options[KNOX_ENDPOINT_PORT] = gatewayHostAndPort.port;
+				// root is the default username for pre-CU5 instances, so while we prefer to use the connection username
+				// as a default now we'll still fall back to root if it's empty for some reason. (but the calls below should
+				// get the actual correct value regardless)
+				connectionProfile.options[USER] = connectionProfile.userName || 'root';
+				if (!this.isIntegratedAuth(connectionProfile)) {
+					try {
+						const bdcApi = <bdc.IExtension>await vscode.extensions.getExtension(bdc.constants.extensionName).activate();
+						const controllerEndpoint = endpoints.find(ep => ep.serviceName.toLowerCase() === CONTROLLER_ENDPOINT);
+						const controller = bdcApi.getClusterController(controllerEndpoint.endpoint, 'basic', connectionProfile.userName, credentials.password);
+						connectionProfile.options[USER] = await controller.getKnoxUsername(connectionProfile.userName);
+					} catch (err) {
+						console.log(`Unexpected error getting Knox username for Spark kernel: ${err}`);
+					}
+				}
 			}
 			else {
-				connection.options[KNOX_ENDPOINT_PORT] = this.getKnoxPortOrDefault(connection);
+				connectionProfile.options[KNOX_ENDPOINT_PORT] = this.getKnoxPortOrDefault(connectionProfile);
 			}
-			this.setHostAndPort(':', connection);
-			this.setHostAndPort(',', connection);
+			this.setHostAndPort(':', connectionProfile);
+			this.setHostAndPort(',', connectionProfile);
 
-			let server = vscode.Uri.parse(utils.getLivyUrl(connection.options[KNOX_ENDPOINT_SERVER], connection.options[KNOX_ENDPOINT_PORT])).toString();
-			let doNotCallChangeEndpointParams = this.isIntegratedAuth(connection) ?
-				`%_do_not_call_change_endpoint --server=${server} --auth=Kerberos`
-				: `%_do_not_call_change_endpoint --username=${connection.options[USER]} --password=${connection.options['password']} --server=${server} --auth=Basic_Access`;
+			let server = vscode.Uri.parse(utils.getLivyUrl(connectionProfile.options[KNOX_ENDPOINT_SERVER], connectionProfile.options[KNOX_ENDPOINT_PORT])).toString();
+			let doNotCallChangeEndpointParams: string;
+			if (this.isIntegratedAuth(connectionProfile)) {
+				doNotCallChangeEndpointParams = `%_do_not_call_change_endpoint --server=${server} --auth=Kerberos`;
+			} else {
+
+				doNotCallChangeEndpointParams = `%_do_not_call_change_endpoint --username=${connectionProfile.options[USER]} --password=${credentials.password} --server=${server} --auth=Basic_Access`;
+			}
 			let future = this.sessionImpl.kernel.requestExecute({
 				code: doNotCallChangeEndpointParams
 			}, true);
@@ -321,20 +373,17 @@ export class JupyterSession implements nb.ISession {
 		return port;
 	}
 
-	private async getClusterEndpoint(profileId: string, serviceName: string): Promise<utils.IEndpoint> {
+	private async getClusterEndpoints(profileId: string): Promise<utils.IEndpoint[]> {
 		let serverInfo: ServerInfo = await connection.getServerInfo(profileId);
 		if (!serverInfo || !serverInfo.options) {
-			return undefined;
+			return [];
 		}
-		let endpoints: utils.IEndpoint[] = utils.getClusterEndpoints(serverInfo);
-		if (!endpoints || endpoints.length === 0) {
-			return undefined;
-		}
-		return endpoints.find(ep => ep.serviceName.toLowerCase() === serviceName.toLowerCase());
+		return utils.getClusterEndpoints(serverInfo);
 	}
 
 	private async setEnvironmentVars(skip: boolean = false): Promise<void> {
-		if (!skip && this.sessionImpl) {
+		// The PowerShell kernel doesn't define the %cd and %set_env magics; no need to run those here then
+		if (!skip && this.sessionImpl?.kernel?.name !== 'powershell') {
 			let allCode: string = '';
 			// Ensure cwd matches notebook path (this follows Jupyter behavior)
 			if (this.path && path.dirname(this.path)) {
@@ -349,6 +398,7 @@ export class JupyterSession implements nb.ISession {
 					allCode += `%set_env ${key}=${process.env[key]}${EOL}`;
 				}
 			}
+
 			let future = this.sessionImpl.kernel.requestExecute({
 				code: allCode,
 				silent: true,

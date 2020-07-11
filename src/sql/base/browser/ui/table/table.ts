@@ -6,7 +6,6 @@
 import 'vs/css!./media/table';
 import 'vs/css!./media/slick.grid';
 import 'vs/css!./media/slickColorTheme';
-import 'vs/css!./media/slickGrid';
 
 import { TableDataView } from './tableDataView';
 import { IDisposableDataProvider, ITableSorter, ITableMouseEvent, ITableConfiguration, ITableStyles } from 'sql/base/browser/ui/table/interfaces';
@@ -49,6 +48,9 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 	private _onClick = new Emitter<ITableMouseEvent>();
 	public readonly onClick: Event<ITableMouseEvent> = this._onClick.event;
+
+	private _onDoubleClick = new Emitter<ITableMouseEvent>();
+	public readonly onDoubleClick: Event<ITableMouseEvent> = this._onDoubleClick.event;
 
 	private _onHeaderClick = new Emitter<ITableMouseEvent>();
 	public readonly onHeaderClick: Event<ITableMouseEvent> = this._onHeaderClick.event;
@@ -116,6 +118,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this.mapMouseEvent(this._grid.onContextMenu, this._onContextMenu);
 		this.mapMouseEvent(this._grid.onClick, this._onClick);
 		this.mapMouseEvent(this._grid.onHeaderClick, this._onHeaderClick);
+		this.mapMouseEvent(this._grid.onDblClick, this._onDoubleClick);
 		this._grid.onColumnsResized.subscribe(() => this._onColumnResize.fire());
 	}
 
@@ -127,8 +130,8 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 	}
 
 	private mapMouseEvent(slickEvent: Slick.Event<any>, emitter: Emitter<ITableMouseEvent>) {
-		slickEvent.subscribe((e: JQuery.Event) => {
-			const originalEvent = e.originalEvent;
+		slickEvent.subscribe((e: Slick.EventData) => {
+			const originalEvent = (e as JQuery.Event).originalEvent;
 			const cell = this._grid.getCellFromEvent(originalEvent);
 			const anchor = originalEvent instanceof MouseEvent ? { x: originalEvent.x, y: originalEvent.y } : originalEvent.srcElement as HTMLElement;
 			emitter.fire({ anchor, cell });
@@ -230,11 +233,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this._grid.setActiveCell(row, cell);
 	}
 
-	setActive(): void {
-		this._grid.setActiveCell(0, 1);
-	}
-
-	get activeCell(): Slick.Cell {
+	get activeCell(): Slick.Cell | null {
 		return this._grid.getActiveCell();
 	}
 

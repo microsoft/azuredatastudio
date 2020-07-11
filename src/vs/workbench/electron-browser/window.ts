@@ -6,64 +6,68 @@
 import * as nls from 'vs/nls';
 import { URI } from 'vs/base/common/uri';
 import * as errors from 'vs/base/common/errors';
-import { equals, deepClone, assign } from 'vs/base/common/objects';
+import { equals, deepClone } from 'vs/base/common/objects';
 import * as DOM from 'vs/base/browser/dom';
 import { Separator } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IAction } from 'vs/base/common/actions';
 import { IFileService } from 'vs/platform/files/common/files';
-import { toResource, IUntitledTextResourceInput, SideBySideEditor, pathsToEditors } from 'vs/workbench/common/editor';
-import { IEditorService, IResourceEditor } from 'vs/workbench/services/editor/common/editorService';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { IWindowSettings, IOpenFileRequest, IWindowsConfiguration, IAddFoldersRequest, IRunActionInWindowRequest, IRunKeybindingInWindowRequest, getTitleBarStyle } from 'vs/platform/windows/common/windows';
+import { toResource, IUntitledTextResourceEditorInput, SideBySideEditor, pathsToEditors } from 'vs/workbench/common/editor';
+import { IEditorService, IResourceEditorInputType } from 'vs/workbench/services/editor/common/editorService';
+import { ITelemetryService, crashReporterIdStorageKey } from 'vs/platform/telemetry/common/telemetry';
+import { IWindowSettings, IOpenFileRequest, IWindowsConfiguration, getTitleBarStyle, IAddFoldersRequest } from 'vs/platform/windows/common/windows';
+import { IRunActionInWindowRequest, IRunKeybindingInWindowRequest, INativeOpenFileRequest } from 'vs/platform/windows/node/window';
 import { ITitleService } from 'vs/workbench/services/title/common/titleService';
 import { IWorkbenchThemeService, VS_HC_THEME } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as browser from 'vs/base/browser/browser';
 import { ICommandService, CommandsRegistry } from 'vs/platform/commands/common/commands';
-import { IResourceInput } from 'vs/platform/editor/common/editor';
+import { IResourceEditorInput } from 'vs/platform/editor/common/editor';
 import { KeyboardMapperFactory } from 'vs/workbench/services/keybinding/electron-browser/nativeKeymapService';
-import { ipcRenderer as ipc, webFrame, crashReporter, Event as IpcEvent } from 'electron';
+import { CrashReporterStartOptions } from 'vs/base/parts/sandbox/common/electronTypes';
+import { crashReporter, ipcRenderer, webFrame } from 'vs/base/parts/sandbox/electron-sandbox/globals';
 import { IWorkspaceEditingService } from 'vs/workbench/services/workspaces/common/workspaceEditing';
 import { IMenuService, MenuId, IMenu, MenuItemAction, ICommandAction, SubmenuItemAction, MenuRegistry } from 'vs/platform/actions/common/actions';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { createAndFillInActionBarActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { RunOnceScheduler } from 'vs/base/common/async';
-import { IDisposable, Disposable, DisposableStore } from 'vs/base/common/lifecycle';
+import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { LifecyclePhase, ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
 import { IWorkspaceFolderCreationData, IWorkspacesService } from 'vs/platform/workspaces/common/workspaces';
 import { IIntegrityService } from 'vs/workbench/services/integrity/common/integrity';
 import { isRootUser, isWindows, isMacintosh, isLinux } from 'vs/base/common/platform';
-import product from 'vs/platform/product/common/product';
+import { IProductService, IAppCenterConfiguration } from 'vs/platform/product/common/productService';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { EditorServiceImpl } from 'vs/workbench/browser/parts/editor/editor';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 import { IAccessibilityService, AccessibilitySupport } from 'vs/platform/accessibility/common/accessibility';
 import { WorkbenchState, IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { coalesce } from 'vs/base/common/arrays';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { isEqual } from 'vs/base/common/resources';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { MenubarControl } from '../browser/parts/titlebar/menubarControl';
 import { ILabelService } from 'vs/platform/label/common/label';
 import { IUpdateService } from 'vs/platform/update/common/update';
-import { IStorageService } from 'vs/platform/storage/common/storage';
+import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { IPreferencesService } from '../services/preferences/common/preferences';
-import { IMenubarService, IMenubarData, IMenubarMenu, IMenubarKeybinding, IMenubarMenuItemSubmenu, IMenubarMenuItemAction, MenubarMenuItem } from 'vs/platform/menubar/node/menubar';
+import { IMenubarData, IMenubarMenu, IMenubarKeybinding, IMenubarMenuItemSubmenu, IMenubarMenuItemAction, MenubarMenuItem } from 'vs/platform/menubar/common/menubar';
+import { IMenubarService } from 'vs/platform/menubar/electron-sandbox/menubar';
 import { withNullAsUndefined, assertIsDefined } from 'vs/base/common/types';
 import { IOpenerService, OpenOptions } from 'vs/platform/opener/common/opener';
 import { Schemas } from 'vs/base/common/network';
-import { IElectronService } from 'vs/platform/electron/node/electron';
+import { IElectronService } from 'vs/platform/electron/electron-sandbox/electron';
 import { posix, dirname } from 'vs/base/common/path';
 import { getBaseLabel } from 'vs/base/common/labels';
 import { ITunnelService, extractLocalHostUriMetaDataForPortMapping } from 'vs/platform/remote/common/tunnel';
 import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/browser/layoutService';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
-import { IElectronEnvironmentService } from 'vs/workbench/services/electron/electron-browser/electronEnvironmentService';
 import { IWorkingCopyService, WorkingCopyCapabilities } from 'vs/workbench/services/workingCopy/common/workingCopyService';
 import { AutoSaveMode, IFilesConfigurationService } from 'vs/workbench/services/filesConfiguration/common/filesConfigurationService';
 import { Event } from 'vs/base/common/event';
+import { INativeWorkbenchEnvironmentService } from 'vs/workbench/services/environment/electron-browser/environmentService';
+import { clearAllFontInfos } from 'vs/editor/browser/config/configuration';
+import { IRemoteAuthorityResolverService } from 'vs/platform/remote/common/remoteAuthorityResolver';
+import { IAddressProvider, IAddress } from 'vs/platform/remote/common/remoteAgentConnection';
 
-export class ElectronWindow extends Disposable {
+export class NativeWindow extends Disposable {
 
 	private touchBarMenu: IMenu | undefined;
 	private readonly touchBarDisposables = this._register(new DisposableStore());
@@ -76,12 +80,12 @@ export class ElectronWindow extends Disposable {
 	private readonly addFoldersScheduler = this._register(new RunOnceScheduler(() => this.doAddFolders(), 100));
 	private pendingFoldersToAdd: URI[] = [];
 
-	private readonly closeEmptyWindowScheduler: RunOnceScheduler = this._register(new RunOnceScheduler(() => this.onAllEditorsClosed(), 50));
+	private readonly closeEmptyWindowScheduler = this._register(new RunOnceScheduler(() => this.onAllEditorsClosed(), 50));
 
 	private isDocumentedEdited = false;
 
 	constructor(
-		@IEditorService private readonly editorService: EditorServiceImpl,
+		@IEditorService private readonly editorService: IEditorService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@ITitleService private readonly titleService: ITitleService,
 		@IWorkbenchThemeService protected themeService: IWorkbenchThemeService,
@@ -94,7 +98,7 @@ export class ElectronWindow extends Disposable {
 		@IMenuService private readonly menuService: IMenuService,
 		@ILifecycleService private readonly lifecycleService: ILifecycleService,
 		@IIntegrityService private readonly integrityService: IIntegrityService,
-		@IWorkbenchEnvironmentService private readonly environmentService: IWorkbenchEnvironmentService,
+		@IWorkbenchEnvironmentService private readonly environmentService: INativeWorkbenchEnvironmentService,
 		@IAccessibilityService private readonly accessibilityService: IAccessibilityService,
 		@IWorkspaceContextService private readonly contextService: IWorkspaceContextService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
@@ -102,9 +106,11 @@ export class ElectronWindow extends Disposable {
 		@IElectronService private readonly electronService: IElectronService,
 		@ITunnelService private readonly tunnelService: ITunnelService,
 		@IWorkbenchLayoutService private readonly layoutService: IWorkbenchLayoutService,
-		@IElectronEnvironmentService private readonly electronEnvironmentService: IElectronEnvironmentService,
 		@IWorkingCopyService private readonly workingCopyService: IWorkingCopyService,
-		@IFilesConfigurationService private readonly filesConfigurationService: IFilesConfigurationService
+		@IFilesConfigurationService private readonly filesConfigurationService: IFilesConfigurationService,
+		@IStorageService private readonly storageService: IStorageService,
+		@IProductService private readonly productService: IProductService,
+		@IRemoteAuthorityResolverService private readonly remoteAuthorityResolverService: IRemoteAuthorityResolverService,
 	) {
 		super();
 
@@ -125,7 +131,7 @@ export class ElectronWindow extends Disposable {
 		});
 
 		// Support runAction event
-		ipc.on('vscode:runAction', async (event: IpcEvent, request: IRunActionInWindowRequest) => {
+		ipcRenderer.on('vscode:runAction', async (event: unknown, request: IRunActionInWindowRequest) => {
 			const args: unknown[] = request.args || [];
 
 			// If we run an action from the touchbar, we fill in the currently active resource
@@ -133,13 +139,13 @@ export class ElectronWindow extends Disposable {
 			if (request.from === 'touchbar') {
 				const activeEditor = this.editorService.activeEditor;
 				if (activeEditor) {
-					const resource = toResource(activeEditor, { supportSideBySide: SideBySideEditor.MASTER });
+					const resource = toResource(activeEditor, { supportSideBySide: SideBySideEditor.PRIMARY });
 					if (resource) {
 						args.push(resource);
 					}
 				}
 			} else {
-				args.push({ from: request.from }); // TODO@telemetry this is a bit weird to send this to every action?
+				args.push({ from: request.from });
 			}
 
 			try {
@@ -156,43 +162,48 @@ export class ElectronWindow extends Disposable {
 		});
 
 		// Support runKeybinding event
-		ipc.on('vscode:runKeybinding', (event: IpcEvent, request: IRunKeybindingInWindowRequest) => {
+		ipcRenderer.on('vscode:runKeybinding', (event: unknown, request: IRunKeybindingInWindowRequest) => {
 			if (document.activeElement) {
 				this.keybindingService.dispatchByUserSettingsLabel(request.userSettingsLabel, document.activeElement);
 			}
 		});
 
 		// Error reporting from main
-		ipc.on('vscode:reportError', (event: IpcEvent, error: string) => {
+		ipcRenderer.on('vscode:reportError', (event: unknown, error: string) => {
 			if (error) {
 				errors.onUnexpectedError(JSON.parse(error));
 			}
 		});
 
 		// Support openFiles event for existing and new files
-		ipc.on('vscode:openFiles', (event: IpcEvent, request: IOpenFileRequest) => this.onOpenFiles(request));
+		ipcRenderer.on('vscode:openFiles', (event: unknown, request: IOpenFileRequest) => this.onOpenFiles(request));
 
 		// Support addFolders event if we have a workspace opened
-		ipc.on('vscode:addFolders', (event: IpcEvent, request: IAddFoldersRequest) => this.onAddFoldersRequest(request));
+		ipcRenderer.on('vscode:addFolders', (event: unknown, request: IAddFoldersRequest) => this.onAddFoldersRequest(request));
 
 		// Message support
-		ipc.on('vscode:showInfoMessage', (event: IpcEvent, message: string) => {
+		ipcRenderer.on('vscode:showInfoMessage', (event: unknown, message: string) => {
 			this.notificationService.info(message);
 		});
 
+		// Display change events
+		ipcRenderer.on('vscode:displayChanged', () => {
+			clearAllFontInfos();
+		});
+
 		// Fullscreen Events
-		ipc.on('vscode:enterFullScreen', async () => {
+		ipcRenderer.on('vscode:enterFullScreen', async () => {
 			await this.lifecycleService.when(LifecyclePhase.Ready);
 			browser.setFullscreen(true);
 		});
 
-		ipc.on('vscode:leaveFullScreen', async () => {
+		ipcRenderer.on('vscode:leaveFullScreen', async () => {
 			await this.lifecycleService.when(LifecyclePhase.Ready);
 			browser.setFullscreen(false);
 		});
 
 		// High Contrast Events
-		ipc.on('vscode:enterHighContrast', async () => {
+		ipcRenderer.on('vscode:enterHighContrast', async () => {
 			const windowConfig = this.configurationService.getValue<IWindowSettings>('window');
 			if (windowConfig?.autoDetectHighContrast) {
 				await this.lifecycleService.when(LifecyclePhase.Ready);
@@ -200,7 +211,7 @@ export class ElectronWindow extends Disposable {
 			}
 		});
 
-		ipc.on('vscode:leaveHighContrast', async () => {
+		ipcRenderer.on('vscode:leaveHighContrast', async () => {
 			const windowConfig = this.configurationService.getValue<IWindowSettings>('window');
 			if (windowConfig?.autoDetectHighContrast) {
 				await this.lifecycleService.when(LifecyclePhase.Ready);
@@ -209,12 +220,12 @@ export class ElectronWindow extends Disposable {
 		});
 
 		// keyboard layout changed event
-		ipc.on('vscode:keyboardLayoutChanged', () => {
+		ipcRenderer.on('vscode:keyboardLayoutChanged', () => {
 			KeyboardMapperFactory.INSTANCE._onKeyboardLayoutChanged();
 		});
 
 		// accessibility support changed event
-		ipc.on('vscode:accessibilitySupportChanged', (event: IpcEvent, accessibilitySupportEnabled: boolean) => {
+		ipcRenderer.on('vscode:accessibilitySupportChanged', (event: unknown, accessibilitySupportEnabled: boolean) => {
 			this.accessibilityService.setAccessibilitySupport(accessibilitySupportEnabled ? AccessibilitySupport.Enabled : AccessibilitySupport.Disabled);
 		});
 
@@ -234,22 +245,19 @@ export class ElectronWindow extends Disposable {
 		// Listen to editor closing (if we run with --wait)
 		const filesToWait = this.environmentService.configuration.filesToWait;
 		if (filesToWait) {
-			const waitMarkerFile = filesToWait.waitMarkerFileUri;
-			const resourcesToWaitFor = coalesce(filesToWait.paths.map(p => p.fileUri));
-
-			this._register(this.trackClosedWaitFiles(waitMarkerFile, resourcesToWaitFor));
+			this.trackClosedWaitFiles(filesToWait.waitMarkerFileUri, coalesce(filesToWait.paths.map(path => path.fileUri)));
 		}
 
 		// macOS OS integration
 		if (isMacintosh) {
 			this._register(this.editorService.onDidActiveEditorChange(() => {
-				const file = toResource(this.editorService.activeEditor, { supportSideBySide: SideBySideEditor.MASTER, filterByScheme: Schemas.file });
+				const file = toResource(this.editorService.activeEditor, { supportSideBySide: SideBySideEditor.PRIMARY, filterByScheme: Schemas.file });
 
 				// Represented Filename
-				this.updateRepresentedFilename(file ? file.fsPath : undefined);
+				this.updateRepresentedFilename(file?.fsPath);
 
 				// Custom title menu
-				this.provideCustomTitleContextMenu(file ? file.fsPath : undefined);
+				this.provideCustomTitleContextMenu(file?.fsPath);
 			}));
 		}
 
@@ -264,30 +272,33 @@ export class ElectronWindow extends Disposable {
 			}));
 		}
 
-		// Document edited (macOS only): indicate for dirty working copies
-		if (isMacintosh) {
-			this._register(this.workingCopyService.onDidChangeDirty(workingCopy => {
-				const gotDirty = workingCopy.isDirty();
-				if (gotDirty && !(workingCopy.capabilities & WorkingCopyCapabilities.Untitled) && this.filesConfigurationService.getAutoSaveMode() === AutoSaveMode.AFTER_SHORT_DELAY) {
-					return; // do not indicate dirty of working copies that are auto saved after short delay
-				}
+		// Document edited: indicate for dirty working copies
+		this._register(this.workingCopyService.onDidChangeDirty(workingCopy => {
+			const gotDirty = workingCopy.isDirty();
+			if (gotDirty && !(workingCopy.capabilities & WorkingCopyCapabilities.Untitled) && this.filesConfigurationService.getAutoSaveMode() === AutoSaveMode.AFTER_SHORT_DELAY) {
+				return; // do not indicate dirty of working copies that are auto saved after short delay
+			}
 
-				if ((!this.isDocumentedEdited && gotDirty) || (this.isDocumentedEdited && !gotDirty)) {
-					const hasDirtyFiles = this.workingCopyService.hasDirty;
-					this.isDocumentedEdited = hasDirtyFiles;
+			this.updateDocumentEdited(gotDirty);
+		}));
 
-					this.electronService.setDocumentEdited(hasDirtyFiles);
-				}
-			}));
-		}
+		this.updateDocumentEdited();
 
 		// Detect minimize / maximize
 		this._register(Event.any(
-			Event.map(Event.filter(this.electronService.onWindowMaximize, id => id === this.electronEnvironmentService.windowId), () => true),
-			Event.map(Event.filter(this.electronService.onWindowUnmaximize, id => id === this.electronEnvironmentService.windowId), () => false)
+			Event.map(Event.filter(this.electronService.onWindowMaximize, id => id === this.electronService.windowId), () => true),
+			Event.map(Event.filter(this.electronService.onWindowUnmaximize, id => id === this.electronService.windowId), () => false)
 		)(e => this.onDidChangeMaximized(e)));
 
 		this.onDidChangeMaximized(this.environmentService.configuration.maximized ?? false);
+	}
+
+	private updateDocumentEdited(isDirty = this.workingCopyService.hasDirty): void {
+		if ((!this.isDocumentedEdited && isDirty) || (this.isDocumentedEdited && !isDirty)) {
+			this.isDocumentedEdited = isDirty;
+
+			this.electronService.setDocumentEdited(isDirty);
+		}
 	}
 
 	private onDidChangeMaximized(maximized: boolean): void {
@@ -299,8 +310,8 @@ export class ElectronWindow extends Disposable {
 		// Close when empty: check if we should close the window based on the setting
 		// Overruled by: window has a workspace opened or this window is for extension development
 		// or setting is disabled. Also enabled when running with --wait from the command line.
-		const visibleEditors = this.editorService.visibleControls;
-		if (visibleEditors.length === 0 && this.contextService.getWorkbenchState() === WorkbenchState.EMPTY && !this.environmentService.isExtensionDevelopment) {
+		const visibleEditorPanes = this.editorService.visibleEditorPanes;
+		if (visibleEditorPanes.length === 0 && this.contextService.getWorkbenchState() === WorkbenchState.EMPTY && !this.environmentService.isExtensionDevelopment) {
 			const closeWhenEmpty = this.configurationService.getValue<boolean>('window.closeWhenEmpty');
 			if (closeWhenEmpty || this.environmentService.args.wait) {
 				this.closeEmptyWindowScheduler.schedule();
@@ -309,8 +320,8 @@ export class ElectronWindow extends Disposable {
 	}
 
 	private onAllEditorsClosed(): void {
-		const visibleEditors = this.editorService.visibleControls.length;
-		if (visibleEditors === 0) {
+		const visibleEditorPanes = this.editorService.visibleEditorPanes.length;
+		if (visibleEditorPanes === 0) {
 			this.electronService.closeWindow();
 		}
 	}
@@ -389,8 +400,8 @@ export class ElectronWindow extends Disposable {
 		// Handle open calls
 		this.setupOpenHandlers();
 
-		// Emit event when vscode is ready
-		this.lifecycleService.when(LifecyclePhase.Ready).then(() => ipc.send('vscode:workbenchReady', this.electronEnvironmentService.windowId));
+		// Notify main side when window ready
+		this.lifecycleService.when(LifecyclePhase.Ready).then(() => this.electronService.notifyReady());
 
 		// Integrity warning
 		this.integrityService.isPure().then(res => this.titleService.updateProperties({ isPure: res.isPure }));
@@ -409,7 +420,7 @@ export class ElectronWindow extends Disposable {
 
 			// Show warning message (unix only)
 			if (isAdmin && !isWindows) {
-				this.notificationService.warn(nls.localize('runningAsRoot', "It is not recommended to run {0} as root user.", product.nameShort));
+				this.notificationService.warn(nls.localize('runningAsRoot', "It is not recommended to run {0} as root user.", this.productService.nameShort));
 			}
 		});
 
@@ -417,8 +428,20 @@ export class ElectronWindow extends Disposable {
 		this.updateTouchbarMenu();
 
 		// Crash reporter (if enabled)
-		if (!this.environmentService.disableCrashReporter && product.crashReporter && product.hockeyApp && this.configurationService.getValue('telemetry.enableCrashReporter')) {
-			this.setupCrashReporter(product.crashReporter.companyName, product.crashReporter.productName, product.hockeyApp);
+		if (!this.environmentService.disableCrashReporter && this.configurationService.getValue('telemetry.enableCrashReporter')) {
+			const companyName = this.productService.crashReporter?.companyName || 'Microsoft';
+			const productName = this.productService.crashReporter?.productName || this.productService.nameShort;
+
+			// With a provided crash reporter directory, crashes
+			// will be stored only locally in that folder
+			if (this.environmentService.crashReporterDirectory) {
+				this.setupCrashReporter(companyName, productName, undefined, this.environmentService.crashReporterDirectory);
+			}
+
+			// With appCenter enabled, crashes will be uploaded
+			else if (this.productService.appCenter) {
+				this.setupCrashReporter(companyName, productName, this.productService.appCenter, undefined);
+			}
 		}
 	}
 
@@ -451,7 +474,13 @@ export class ElectronWindow extends Disposable {
 				if (options?.allowTunneling) {
 					const portMappingRequest = extractLocalHostUriMetaDataForPortMapping(uri);
 					if (portMappingRequest) {
-						const tunnel = await this.tunnelService.openTunnel(undefined, portMappingRequest.port);
+						const remoteAuthority = this.environmentService.configuration.remoteAuthority;
+						const addressProvider: IAddressProvider | undefined = remoteAuthority ? {
+							getAddress: async (): Promise<IAddress> => {
+								return (await this.remoteAuthorityResolverService.resolveAuthority(remoteAuthority)).authority;
+							}
+						} : undefined;
+						const tunnel = await this.tunnelService.openTunnel(addressProvider, undefined, portMappingRequest.port);
 						if (tunnel) {
 							return {
 								resolved: uri.with({ authority: `127.0.0.1:${tunnel.tunnelLocalPort}` }),
@@ -531,37 +560,46 @@ export class ElectronWindow extends Disposable {
 		}
 	}
 
-	private async setupCrashReporter(companyName: string, productName: string, hockeyAppConfig: typeof product.hockeyApp): Promise<void> {
-		if (!hockeyAppConfig) {
-			return;
+	private async setupCrashReporter(companyName: string, productName: string, appCenter: IAppCenterConfiguration, crashesDirectory: undefined): Promise<void>;
+	private async setupCrashReporter(companyName: string, productName: string, appCenter: undefined, crashesDirectory: string): Promise<void>;
+	private async setupCrashReporter(companyName: string, productName: string, appCenter: IAppCenterConfiguration | undefined, crashesDirectory: string | undefined): Promise<void> {
+		let submitURL: string | undefined = undefined;
+		if (appCenter) {
+			submitURL = isWindows ? appCenter[process.arch === 'ia32' ? 'win32-ia32' : 'win32-x64'] : isLinux ? appCenter[`linux-x64`] : appCenter.darwin;
 		}
 
+		const info = await this.telemetryService.getTelemetryInfo();
+		const crashReporterId = this.storageService.get(crashReporterIdStorageKey, StorageScope.GLOBAL)!;
+
 		// base options with product info
-		const options = {
+		const options: CrashReporterStartOptions = {
 			companyName,
 			productName,
-			submitURL: isWindows ? hockeyAppConfig[process.arch === 'ia32' ? 'win32-ia32' : 'win32-x64'] : isLinux ? hockeyAppConfig[`linux-x64`] : hockeyAppConfig.darwin,
+			submitURL: (submitURL?.concat('&uid=', crashReporterId, '&iid=', crashReporterId, '&sid=', info.sessionId)) || '',
 			extra: {
-				vscode_version: product.version,
-				vscode_commit: product.commit
-			}
+				vscode_version: this.productService.version,
+				vscode_commit: this.productService.commit || ''
+			},
+
+			// If `crashesDirectory` is specified, we do not upload
+			uploadToServer: !crashesDirectory,
 		};
 
-		// mixin telemetry info
-		const info = await this.telemetryService.getTelemetryInfo();
-		assign(options.extra, { vscode_sessionId: info.sessionId });
+		// start crash reporter in the main process first.
+		// On windows crashpad excepts a name pipe for the client to connect,
+		// this pipe is created by crash reporter initialization from the main process,
+		// changing this order of initialization will cause issues.
+		// For more info: https://chromium.googlesource.com/crashpad/crashpad/+/HEAD/doc/overview_design.md#normal-registration
+		await this.electronService.startCrashReporter(options);
 
 		// start crash reporter right here
 		crashReporter.start(deepClone(options));
-
-		// start crash reporter in the main process
-		return this.electronService.startCrashReporter(options);
 	}
 
 	private onAddFoldersRequest(request: IAddFoldersRequest): void {
 
 		// Buffer all pending requests
-		this.pendingFoldersToAdd.push(...request.foldersToAdd.map(f => URI.revive(f)));
+		this.pendingFoldersToAdd.push(...request.foldersToAdd.map(folder => URI.revive(folder)));
 
 		// Delay the adding of folders a bit to buffer in case more requests are coming
 		if (!this.addFoldersScheduler.isScheduled()) {
@@ -581,8 +619,8 @@ export class ElectronWindow extends Disposable {
 		this.workspaceEditingService.addFolders(foldersToAdd);
 	}
 
-	private async onOpenFiles(request: IOpenFileRequest): Promise<void> {
-		const inputs: IResourceEditor[] = [];
+	private async onOpenFiles(request: INativeOpenFileRequest): Promise<void> {
+		const inputs: IResourceEditorInputType[] = [];
 		const diffMode = !!(request.filesToDiff && (request.filesToDiff.length === 2));
 
 		if (!diffMode && request.filesToOpenOrCreate) {
@@ -601,58 +639,20 @@ export class ElectronWindow extends Disposable {
 			// In wait mode, listen to changes to the editors and wait until the files
 			// are closed that the user wants to wait for. When this happens we delete
 			// the wait marker file to signal to the outside that editing is done.
-			const waitMarkerFile = URI.revive(request.filesToWait.waitMarkerFileUri);
-			const resourcesToWaitFor = coalesce(request.filesToWait.paths.map(p => URI.revive(p.fileUri)));
-			this.trackClosedWaitFiles(waitMarkerFile, resourcesToWaitFor);
+			this.trackClosedWaitFiles(URI.revive(request.filesToWait.waitMarkerFileUri), coalesce(request.filesToWait.paths.map(p => URI.revive(p.fileUri))));
 		}
 	}
 
-	private trackClosedWaitFiles(waitMarkerFile: URI, resourcesToWaitFor: URI[]): IDisposable {
-		// In wait mode, listen to changes to the editors and wait until the files
-		// are closed that the user wants to wait for. When this happens we delete
-		// the wait marker file to signal to the outside that editing is done.
-		const listener = this.editorService.onDidCloseEditor(async event => {
-			const closedResource = toResource(event.editor, { supportSideBySide: SideBySideEditor.MASTER });
+	private async trackClosedWaitFiles(waitMarkerFile: URI, resourcesToWaitFor: URI[]): Promise<void> {
 
-			// Remove from resources to wait for
-			resourcesToWaitFor = resourcesToWaitFor.filter(resourceToWaitFor => !isEqual(closedResource, resourceToWaitFor));
+		// Wait for the resources to be closed in the editor...
+		await this.editorService.whenClosed(resourcesToWaitFor.map(resource => ({ resource })), { waitForSaved: true });
 
-			if (resourcesToWaitFor.length === 0) {
-				// If auto save is configured with the default delay (1s) it is possible
-				// to close the editor while the save still continues in the background. As such
-				// we have to also check if the files to wait for are dirty and if so wait
-				// for them to get saved before deleting the wait marker file.
-				const dirtyFilesToWait = resourcesToWaitFor.filter(resourceToWaitFor => this.workingCopyService.isDirty(resourceToWaitFor));
-				if (dirtyFilesToWait.length > 0) {
-					await Promise.all(dirtyFilesToWait.map(async dirtyFileToWait => await this.joinResourceSaved(dirtyFileToWait)));
-				}
-
-				listener.dispose();
-				await this.fileService.del(waitMarkerFile);
-			}
-		});
-
-		return listener;
+		// ...before deleting the wait marker file
+		await this.fileService.del(waitMarkerFile);
 	}
 
-	private joinResourceSaved(resource: URI): Promise<void> {
-		return new Promise(resolve => {
-			if (!this.workingCopyService.isDirty(resource)) {
-				return resolve(); // return early if resource is not dirty
-			}
-
-			// Otherwise resolve promise when resource is saved
-			const listener = this.workingCopyService.onDidChangeDirty(e => {
-				if (!e.isDirty() && isEqual(resource, e.resource)) {
-					listener.dispose();
-
-					resolve();
-				}
-			});
-		});
-	}
-
-	private async openResources(resources: Array<IResourceInput | IUntitledTextResourceInput>, diffMode: boolean): Promise<unknown> {
+	private async openResources(resources: Array<IResourceEditorInput | IUntitledTextResourceEditorInput>, diffMode: boolean): Promise<unknown> {
 		await this.lifecycleService.when(LifecyclePhase.Ready);
 
 		// In diffMode we open 2 resources as diff
@@ -682,11 +682,11 @@ class NativeMenubarControl extends MenubarControl {
 		@IStorageService storageService: IStorageService,
 		@INotificationService notificationService: INotificationService,
 		@IPreferencesService preferencesService: IPreferencesService,
-		@IWorkbenchEnvironmentService environmentService: IWorkbenchEnvironmentService,
+		@IWorkbenchEnvironmentService protected readonly environmentService: INativeWorkbenchEnvironmentService,
 		@IAccessibilityService accessibilityService: IAccessibilityService,
 		@IMenubarService private readonly menubarService: IMenubarService,
 		@IHostService hostService: IHostService,
-		@IElectronEnvironmentService private readonly electronEnvironmentService: IElectronEnvironmentService
+		@IElectronService private readonly electronService: IElectronService
 	) {
 		super(
 			menuService,
@@ -735,7 +735,7 @@ class NativeMenubarControl extends MenubarControl {
 		// Send menus to main process to be rendered by Electron
 		const menubarData = { menus: {}, keybindings: {} };
 		if (this.getMenubarMenus(menubarData)) {
-			this.menubarService.updateMenubar(this.electronEnvironmentService.windowId, menubarData);
+			this.menubarService.updateMenubar(this.electronService.windowId, menubarData);
 		}
 	}
 
@@ -770,8 +770,8 @@ class NativeMenubarControl extends MenubarControl {
 				if (menuItem instanceof SubmenuItemAction) {
 					const submenu = { items: [] };
 
-					if (!this.menus[menuItem.item.submenu]) {
-						const menu = this.menus[menuItem.item.submenu] = this.menuService.createMenu(menuItem.item.submenu, this.contextKeyService);
+					if (!this.menus[menuItem.item.submenu.id]) {
+						const menu = this.menus[menuItem.item.submenu.id] = this.menuService.createMenu(menuItem.item.submenu, this.contextKeyService);
 						this._register(menu.onDidChange(() => this.updateMenubar()));
 					}
 

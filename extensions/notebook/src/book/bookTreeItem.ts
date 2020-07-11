@@ -18,6 +18,7 @@ export enum BookTreeItemType {
 
 export interface BookTreeItemFormat {
 	title: string;
+	contentPath: string;
 	root: string;
 	tableOfContents: IJupyterBookToc;
 	page: any;
@@ -28,7 +29,7 @@ export interface BookTreeItemFormat {
 
 export class BookTreeItem extends vscode.TreeItem {
 	private _sections: IJupyterBookSection[];
-	private _uri: string;
+	private _uri: string | undefined;
 	private _previousUri: string;
 	private _nextUri: string;
 	public command: vscode.Command;
@@ -40,11 +41,20 @@ export class BookTreeItem extends vscode.TreeItem {
 			this.collapsibleState = book.treeItemCollapsibleState;
 			this._sections = book.page;
 			if (book.isUntitled) {
-				this.contextValue = 'unsavedBook';
+				this.contextValue = 'providedBook';
 			} else {
 				this.contextValue = 'savedBook';
 			}
 		} else {
+			if (book.page && book.page.sections && book.page.sections.length > 0) {
+				this.contextValue = 'section';
+			} else if (book.type === BookTreeItemType.Notebook && !book.tableOfContents.sections) {
+				if (book.isUntitled) {
+					this.contextValue = 'unsavedNotebook';
+				} else {
+					this.contextValue = 'savedNotebook';
+				}
+			}
 			this.setPageVariables();
 			this.setCommand();
 		}
@@ -60,18 +70,19 @@ export class BookTreeItem extends vscode.TreeItem {
 		this._sections = this.book.page.sections || this.book.page.subsections;
 		this._uri = this.book.page.url;
 
-		let index = (this.book.tableOfContents.sections.indexOf(this.book.page));
-		this.setPreviousUri(index);
-		this.setNextUri(index);
+		if (this.book.tableOfContents.sections) {
+			let index = (this.book.tableOfContents.sections.indexOf(this.book.page));
+			this.setPreviousUri(index);
+			this.setNextUri(index);
+		}
 	}
 
 	private setCommand() {
 		if (this.book.type === BookTreeItemType.Notebook) {
-			let pathToNotebook = path.join(this.book.root, 'content', this._uri.concat('.ipynb'));
-			this.command = { command: this.book.isUntitled ? 'bookTreeView.openUntitledNotebook' : 'bookTreeView.openNotebook', title: loc.openNotebookCommand, arguments: [pathToNotebook], };
+			// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
+			this.command = { command: this.book.isUntitled ? 'bookTreeView.openUntitledNotebook' : 'bookTreeView.openNotebook', title: loc.openNotebookCommand, arguments: [this.book.contentPath], };
 		} else if (this.book.type === BookTreeItemType.Markdown) {
-			let pathToMarkdown = path.join(this.book.root, 'content', this._uri.concat('.md'));
-			this.command = { command: 'bookTreeView.openMarkdown', title: loc.openMarkdownCommand, arguments: [pathToMarkdown], };
+			this.command = { command: 'bookTreeView.openMarkdown', title: loc.openMarkdownCommand, arguments: [this.book.contentPath], };
 		} else if (this.book.type === BookTreeItemType.ExternalLink) {
 			this.command = { command: 'bookTreeView.openExternalLink', title: loc.openExternalLinkCommand, arguments: [this._uri], };
 		}
@@ -81,8 +92,8 @@ export class BookTreeItem extends vscode.TreeItem {
 		let i = --index;
 		while (i > -1) {
 			if (this.book.tableOfContents.sections[i].url) {
-				// TODO: Currently only navigating to notebooks. Need to add logic for markdown.
-				let pathToNotebook = path.join(this.book.root, 'content', this.book.tableOfContents.sections[i].url.concat('.ipynb'));
+				// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
+				let pathToNotebook = path.posix.join(this.book.root, 'content', this.book.tableOfContents.sections[i].url.concat('.ipynb'));
 				// eslint-disable-next-line no-sync
 				if (fs.existsSync(pathToNotebook)) {
 					this._previousUri = pathToNotebook;
@@ -97,8 +108,8 @@ export class BookTreeItem extends vscode.TreeItem {
 		let i = ++index;
 		while (i < this.book.tableOfContents.sections.length) {
 			if (this.book.tableOfContents.sections[i].url) {
-				// TODO: Currently only navigating to notebooks. Need to add logic for markdown.
-				let pathToNotebook = path.join(this.book.root, 'content', this.book.tableOfContents.sections[i].url.concat('.ipynb'));
+				// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
+				let pathToNotebook = path.posix.join(this.book.root, 'content', this.book.tableOfContents.sections[i].url.concat('.ipynb'));
 				// eslint-disable-next-line no-sync
 				if (fs.existsSync(pathToNotebook)) {
 					this._nextUri = pathToNotebook;
@@ -113,7 +124,7 @@ export class BookTreeItem extends vscode.TreeItem {
 		return this.book.title;
 	}
 
-	public get uri(): string {
+	public get uri(): string | undefined {
 		return this._uri;
 	}
 
@@ -142,7 +153,7 @@ export class BookTreeItem extends vscode.TreeItem {
 			return `${this._uri}`;
 		}
 		else {
-			return undefined;
+			return this.book.type === BookTreeItemType.Book ? this.book.root : this.book.contentPath;
 		}
 	}
 

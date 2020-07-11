@@ -25,8 +25,8 @@ export class ShowRecommendedExtensionsByScenarioAction extends Action {
 
 	run(): Promise<void> {
 		return this.viewletService.openViewlet(VIEWLET_ID, true)
-			.then(viewlet => viewlet?.getViewPaneContainer())
-			.then((viewlet: IExtensionsViewPaneContainer) => {
+			.then(viewlet => viewlet?.getViewPaneContainer() as IExtensionsViewPaneContainer)
+			.then(viewlet => {
 				viewlet.search('@' + this.scenarioType);
 				viewlet.focus();
 			});
@@ -51,8 +51,8 @@ export class InstallRecommendedExtensionsByScenarioAction extends Action {
 	run(): Promise<any> {
 		if (!this.recommendations.length) { return Promise.resolve(); }
 		return this.viewletService.openViewlet(VIEWLET_ID, true)
-			.then(viewlet => viewlet?.getViewPaneContainer())
-			.then((viewlet: IExtensionsViewPaneContainer) => {
+			.then(viewlet => viewlet?.getViewPaneContainer() as IExtensionsViewPaneContainer)
+			.then(viewlet => {
 				viewlet.search('@' + this.scenarioType);
 				viewlet.focus();
 				const names = this.recommendations.map(({ extensionId }) => extensionId);

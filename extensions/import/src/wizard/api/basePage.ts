@@ -5,12 +5,14 @@
 
 import * as azdata from 'azdata';
 import { ImportDataModel } from './models';
+import { ApiWrapper } from '../../common/apiWrapper';
 
 export abstract class BasePage {
 
 	protected readonly wizardPage: azdata.window.WizardPage;
 	protected readonly model: ImportDataModel;
 	protected readonly view: azdata.ModelView;
+	protected _apiWrapper: ApiWrapper;
 
 	/**
 	 * This method constructs all the elements of the page.
@@ -42,8 +44,8 @@ export abstract class BasePage {
 	 */
 	public abstract setupNavigationValidator(): void;
 
-	protected async getServerValues(): Promise<{ connection: azdata.connection.Connection, displayName: string, name: string }[]> {
-		let cons = await azdata.connection.getActiveConnections();
+	public async getServerValues(): Promise<{ connection: azdata.connection.Connection, displayName: string, name: string }[]> {
+		let cons = await this._apiWrapper.getActiveConnections();
 		// This user has no active connections ABORT MISSION
 		if (!cons || cons.length === 0) {
 			return undefined;
@@ -90,10 +92,10 @@ export abstract class BasePage {
 		return values;
 	}
 
-	protected async getDatabaseValues(): Promise<{ displayName: string, name: string }[]> {
+	public async getDatabaseValues(): Promise<{ displayName: string, name: string }[]> {
 		let idx = -1;
 		let count = -1;
-		let values = (await azdata.connection.listDatabases(this.model.server.connectionId)).map(db => {
+		let values = (await this._apiWrapper.listDatabases(this.model.server.connectionId)).map(db => {
 			count++;
 			if (this.model.database && db === this.model.database) {
 				idx = count;
@@ -109,10 +111,7 @@ export abstract class BasePage {
 			let tmp = values[0];
 			values[0] = values[idx];
 			values[idx] = tmp;
-		} else {
-			this.deleteDatabaseValues();
 		}
-
 		return values;
 	}
 
@@ -120,9 +119,5 @@ export abstract class BasePage {
 		delete this.model.server;
 		delete this.model.serverId;
 		delete this.model.database;
-	}
-
-	protected deleteDatabaseValues() {
-		return;
 	}
 }

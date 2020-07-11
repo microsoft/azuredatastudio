@@ -4,6 +4,11 @@
 		"default": false,
 		"description": "%config.enableUsGovCloudDescription%"
 	},
+	"accounts.azure.enableUsNatCloud": {
+		"type": "boolean",
+		"default": false,
+		"description": "%config.enableUsNatCloudDescription%"
+	},
 	"accounts.azure.enableChinaCloud": {
 		"type": "boolean",
 		"default": false,

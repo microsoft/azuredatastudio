@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzureResourceDatabaseServer } from '../../interfaces';
+import { azureResource } from '../../azure-resource';
 import { ResourceServiceBase, GraphData } from '../resourceTreeDataProviderBase';
 
 interface SqlInstanceGraphData extends GraphData {
@@ -15,19 +15,20 @@ interface SqlInstanceGraphData extends GraphData {
 
 const instanceQuery = 'where type == "microsoft.sql/managedinstances"';
 
-export class SqlInstanceResourceService extends ResourceServiceBase<SqlInstanceGraphData, AzureResourceDatabaseServer> {
+export class SqlInstanceResourceService extends ResourceServiceBase<SqlInstanceGraphData, azureResource.AzureResourceDatabaseServer> {
 
 	protected get query(): string {
 		return instanceQuery;
 	}
 
-	protected convertResource(resource: SqlInstanceGraphData): AzureResourceDatabaseServer {
+	protected convertResource(resource: SqlInstanceGraphData): azureResource.AzureResourceDatabaseServer {
 		return {
 			id: resource.id,
 			name: resource.name,
 			fullName: resource.properties.fullyQualifiedDomainName,
 			loginName: resource.properties.administratorLogin,
-			defaultDatabaseName: 'master'
+			defaultDatabaseName: 'master',
+			tenant: resource.tenantId
 		};
 	}
 }

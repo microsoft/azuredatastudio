@@ -32,6 +32,18 @@
 .tiw-metadata-value {
 	font-family: var(--monaco-monospace-font);
 	text-align: right;
+	word-break: break-word;
+}
+.tiw-metadata-key {
+	vertical-align: top;
+}
+
+.tiw-metadata-semantic {
+	font-style: italic;
+}
+
+.tiw-metadata-scopes {
+	line-height: normal;
 }
 
 .tiw-theme-selector {

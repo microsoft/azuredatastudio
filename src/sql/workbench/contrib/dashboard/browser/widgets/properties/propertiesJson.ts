@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ProviderProperties } from './propertiesWidget.component';
+import { ProviderProperties } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
 import * as nls from 'vs/nls';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 

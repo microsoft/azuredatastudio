@@ -14,20 +14,24 @@
 		{
 			"type": "node",
 			"request": "attach",
-			"name": "Attach to Extension Host",
-			"port": 5870,
-			"timeout": 30000,
 			"restart": true,
+			"name": "Attach to Extension Host",
+			"timeout": 30000,
+			"port": 5870,
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
 			]
 		},
 		{
-			"type": "chrome",
+			"type": "pwa-chrome",
 			"request": "attach",
 			"name": "Attach to Shared Process",
+			"timeout": 30000,
 			"port": 9222,
-			"urlFilter": "*"
+			"urlFilter": "*sharedProcess.html*",
+			"presentation": {
+				"hidden": true
+			}
 		},
 		{
 			"type": "node",
@@ -54,6 +58,7 @@
 			"type": "node",
 			"request": "attach",
 			"name": "Attach to Main Process",
+			"timeout": 30000,
 			"port": 5875,
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
@@ -63,13 +68,14 @@
 			}
 		},
 		{
-			"type": "chrome",
+			"type": "pwa-chrome",
 			"request": "attach",
 			"name": "Attach to azuredatastudio",
+			"timeout": 50000,
 			"port": 9222
 		},
 		{
-			"type": "chrome",
+			"type": "pwa-chrome",
 			"request": "launch",
 			"name": "Launch azuredatastudio",
 			"windows": {
@@ -94,16 +100,30 @@
 			],
 			"webRoot": "${workspaceFolder}",
 			// Settings for js-debug:
+			"userDataDir": false,
 			"pauseForSourceMap": false,
-			"outFiles": ["${workspaceFolder}/out/**/*.js"],
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js"
+			],
+			"browserLaunchLocation": "workspace"
+		},
+		{
+			"type": "chrome",
+			"request": "launch",
+			"name": "Launch ADS (Web) (TBD)",
+			"program": "${workspaceFolder}/resources/serverless/code-web.js",
+			"presentation": {
+				"group": "0_vscode",
+				"order": 2
+			}
 		},
 		{
 			"type": "node",
 			"request": "launch",
-			"name": "Launch ADS (Main Process)",
-			"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh",
+			"name": "Main Process",
+			"runtimeExecutable": "${workspaceFolder}/scripts/code.sh",
 			"windows": {
-				"runtimeExecutable": "${workspaceFolder}/scripts/sql.bat",
+				"runtimeExecutable": "${workspaceFolder}/scripts/code.bat",
 			},
 			"runtimeArgs": [
 				"--no-cached-data"
@@ -112,45 +132,8 @@
 				"${workspaceFolder}/out/**/*.js"
 			],
 			"presentation": {
-				"group": "2_launch",
+				"group": "1_vscode",
 				"order": 1
-			}
-		},
-		{
-			"type": "chrome",
-			"request": "launch",
-			"name": "Launch azuredatastudio with new notebook command",
-			"windows": {
-				"runtimeExecutable": "${workspaceFolder}/scripts/sql.bat"
-			},
-			"osx": {
-				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
-			},
-			"linux": {
-				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
-			},
-			"urlFilter": "*index.html*",
-			"runtimeArgs": [
-				"--inspect=5875",
-				"--command=notebook.command.new"
-			],
-			"skipFiles": [
-				"**/winjs*.js"
-			],
-			"webRoot": "${workspaceFolder}",
-			"timeout": 45000
-		},
-		{
-			"type": "chrome",
-			"request": "launch",
-			"name": "Launch ADS (Web) (TBD)",
-			"runtimeExecutable": "yarn",
-			"runtimeArgs": [
-				"web"
-			],
-			"presentation": {
-				"group": "2_launch",
-				"order": 2
 			}
 		},
 		{
@@ -160,7 +143,19 @@
 			"url": "http://localhost:8080",
 			"preLaunchTask": "Run web",
 			"presentation": {
-				"group": "2_launch",
+				"group": "0_vscode",
+				"order": 3
+			}
+		},
+		{
+			"type": "pwa-msedge",
+			"request": "launch",
+			"name": "VS Code (Web, Edge)",
+			"url": "http://localhost:8080",
+			"pauseForSourceMap": false,
+			"preLaunchTask": "Run web",
+			"presentation": {
+				"group": "0_vscode",
 				"order": 3
 			}
 		},
@@ -197,7 +192,7 @@
 			"type": "node",
 			"request": "launch",
 			"name": "Run Unit Tests",
-			"program": "${workspaceFolder}/test/electron/index.js",
+			"program": "${workspaceFolder}/test/unit/electron/index.js",
 			"runtimeExecutable": "${workspaceFolder}/.build/electron/Azure Data Studio.app/Contents/MacOS/Electron",
 			"windows": {
 				"runtimeExecutable": "${workspaceFolder}/.build/electron/azuredatastudio.exe"
@@ -269,13 +264,16 @@
 			]
 		},
 		{
-			"name": "Debug azuredatastudio Main and Renderer",
+			"name": "Azure Data Studio",
+			"stopAll": true,
 			"configurations": [
 				"Launch azuredatastudio",
-				"Attach to Main Process"
+				"Attach to Main Process",
+				"Attach to Extension Host",
+				"Attach to Shared Process",
 			],
 			"presentation": {
-				"group": "1_vscode",
+				"group": "0_vscode",
 				"order": 1
 			}
 		},

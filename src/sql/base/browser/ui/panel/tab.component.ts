@@ -6,16 +6,18 @@
 import { Component, Input, ContentChild, OnDestroy, TemplateRef, ChangeDetectorRef, forwardRef, Inject } from '@angular/core';
 
 import { Action } from 'vs/base/common/actions';
-import { Disposable } from 'vs/base/common/lifecycle';
+import { AngularDisposable } from 'sql/base/browser/lifecycle';
 
-export abstract class TabChild extends Disposable {
+export abstract class TabChild extends AngularDisposable {
 	public abstract layout(): void;
 }
+
+export type TabType = 'tab' | 'group-header';
 
 @Component({
 	selector: 'tab',
 	template: `
-		<div role="tabpanel" [attr.aria-labelledby]="identifier" tabindex="0" class="visibility" [class.hidden]="shouldBeHidden()" *ngIf="shouldBeIfed()" class="fullsize">
+		<div role="tabpanel" [attr.aria-labelledby]="identifier" class="visibility" [class.hidden]="shouldBeHidden()" *ngIf="shouldBeIfed()" class="fullsize">
 			<ng-container *ngTemplateOutlet="templateRef"></ng-container>
 		</div>
 	`
@@ -29,6 +31,7 @@ export class TabComponent implements OnDestroy {
 	@Input() public iconClass?: string;
 	public _active = false;
 	@Input() public identifier!: string;
+	@Input() public type: TabType = 'tab';
 	@Input() private visibilityType: 'if' | 'visibility' = 'if';
 	private rendered = false;
 	private destroyed: boolean = false;

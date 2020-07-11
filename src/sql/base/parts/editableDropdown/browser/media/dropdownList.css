@@ -43,13 +43,3 @@
 	text-overflow: ellipsis;
 	overflow: hidden;
 }
-
-.connection-input .monaco-dropdown .monaco-action-bar .action-label.codicon.dropdown-arrow {
-	background-position: 50%;
-	background-size: cover;
-}
-
-.connection-input .monaco-inputbox .monaco-action-bar .action-item .codicon {
-	width: 8px;
-	height: 8px;
-}

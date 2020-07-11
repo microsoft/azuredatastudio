@@ -63,6 +63,15 @@ export interface IJupyterServerInstallation {
 export interface IPackageDetails {
 	name: string;
 	version: string;
+	readonly?: boolean;
+}
+
+/**
+ * Package location
+ */
+export interface IPackageLocation {
+	name: string;
+	displayName: string;
 }
 
 /**
@@ -99,20 +108,22 @@ export interface IPackageManageProvider {
 	/**
 	 * Returns list of installed packages
 	 */
-	listPackages(): Promise<IPackageDetails[]>;
+	listPackages(location?: string): Promise<IPackageDetails[]>;
 
 	/**
 	 * Installs give packages
 	 * @param package Packages to install
 	 * @param useMinVersion if true, minimal version will be used
+	 * @param location package location
 	 */
-	installPackages(package: IPackageDetails[], useMinVersion: boolean): Promise<void>;
+	installPackages(package: IPackageDetails[], useMinVersion: boolean, location?: string): Promise<void>;
 
 	/**
 	 * Uninstalls given packages
 	 * @param package package to uninstall
+	 * @param location package location
 	 */
-	uninstallPackages(package: IPackageDetails[]): Promise<void>;
+	uninstallPackages(package: IPackageDetails[], location?: string): Promise<void>;
 
 	/**
 	 * Returns true if the provider can be used in current context
@@ -122,7 +133,7 @@ export interface IPackageManageProvider {
 	/**
 	 * Returns location title
 	 */
-	getLocationTitle(): Promise<string>;
+	getLocations(): Promise<IPackageLocation[]>;
 
 	/**
 	 * Returns Package Overview

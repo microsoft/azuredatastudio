@@ -10,17 +10,15 @@ import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectio
 import { equalsIgnoreCase } from 'vs/base/common/strings';
 import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { IEnvironmentService, ParsedArgs } from 'vs/platform/environment/common/environment';
+import { ParsedArgs } from 'vs/platform/environment/node/argv';
 import * as Constants from 'sql/platform/connection/common/constants';
-import * as platform from 'vs/platform/registry/common/platform';
-import { IConnectionProviderRegistry, Extensions as ConnectionProviderExtensions } from 'sql/workbench/contrib/connection/common/connectionProviderExtension';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { ipcRenderer as ipc } from 'electron';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { localize } from 'vs/nls';
-import { QueryEditorInput } from 'sql/workbench/contrib/query/common/queryEditorInput';
+import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
 import { URI } from 'vs/base/common/uri';
 import { ILogService } from 'vs/platform/log/common/log';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -31,26 +29,46 @@ import { IURLService, IURLHandler } from 'vs/platform/url/common/url';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { find } from 'vs/base/common/arrays';
+import { INativeEnvironmentService } from 'vs/platform/environment/node/environmentService';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 
-const connectAuthority = 'connect';
-
-interface SqlArgs {
+export interface SqlArgs {
 	_?: string[];
-	aad?: boolean;
+	authenticationType?: string
 	database?: string;
-	integrated?: boolean;
 	server?: string;
 	user?: string;
 	command?: string;
 	provider?: string;
+	aad?: boolean; // deprecated - used by SSMS - authenticationType should be used instead
+	integrated?: boolean; // deprecated - used by SSMS - authenticationType should be used instead.
 }
+
+//#region decorators
+
+type PathHandler = (uri: URI) => Promise<boolean>;
+
+const pathMappings: { [key: string]: PathHandler } = {};
+
+interface PathHandlerOptions {
+	path: string
+}
+
+function pathHandler({ path }: PathHandlerOptions) {
+	return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+		const method: PathHandler = descriptor.value;
+
+		pathMappings[path] = method;
+	};
+}
+//#endregion
 
 export class CommandLineWorkbenchContribution implements IWorkbenchContribution, IURLHandler {
 
 	constructor(
 		@ICapabilitiesService private readonly _capabilitiesService: ICapabilitiesService,
 		@IConnectionManagementService private readonly _connectionManagementService: IConnectionManagementService,
-		@IEnvironmentService environmentService: IEnvironmentService,
+		@IEnvironmentService environmentService: INativeEnvironmentService,
 		@IEditorService private readonly _editorService: IEditorService,
 		@ICommandService private readonly _commandService: ICommandService,
 		@IConfigurationService private readonly _configurationService: IConfigurationService,
@@ -73,13 +91,12 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 	}
 
 	private onLaunched(args: ParsedArgs) {
-		const registry = platform.Registry.as<IConnectionProviderRegistry>(ConnectionProviderExtensions.ConnectionProviderContributions);
-		let sqlProvider = registry.getProperties(Constants.mssqlProviderName);
+		let sqlProvider = this._capabilitiesService.getCapabilities(Constants.mssqlProviderName);
 		// We can't connect to object explorer until the MSSQL connection provider is registered
 		if (sqlProvider) {
 			this.processCommandLine(args).catch(reason => { this.logService.warn('processCommandLine failed: ' + reason); });
 		} else {
-			registry.onNewProvider(e => {
+			this._capabilitiesService.onCapabilitiesRegistered(e => {
 				if (e.id === Constants.mssqlProviderName) {
 					this.processCommandLine(args).catch(reason => { this.logService.warn('processCommandLine failed: ' + reason); });
 				}
@@ -154,27 +171,65 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 	}
 
 	public async handleURL(uri: URI): Promise<boolean> {
-		// Catch file URLs
-		let authority = uri.authority.toLowerCase();
-		if (authority === connectAuthority) {
-			try {
-				let args = this.parseProtocolArgs(uri);
-				if (!args.server) {
-					this._notificationService.warn(localize('warnServerRequired', "Cannot connect as no server information was provided"));
-					return true;
-				}
-				let isOpenOk = await this.confirmConnect(args);
-				if (isOpenOk) {
-					await this.processCommandLine(args);
-				}
-			} catch (err) {
-				this._notificationService.error(localize('errConnectUrl', "Could not open URL due to error {0}", getErrorMessage(err)));
-			}
-			// Handled either way
-			return true;
+		let key = uri.authority;
+
+		let method = pathMappings[key];
+
+		if (!method) {
+			return false;
+		}
+		method = method.bind(this);
+		const result = await method(uri);
+
+		if (typeof result !== 'boolean') {
+			throw new Error('Invalid URL Handler used in commandLine code.');
 		}
 
-		return false;
+		return result;
+	}
+
+	@pathHandler({
+		path: 'connect'
+	})
+	public async handleConnect(uri: URI): Promise<boolean> {
+		try {
+			let args = this.parseProtocolArgs(uri);
+			if (!args.server) {
+				this._notificationService.warn(localize('warnServerRequired', "Cannot connect as no server information was provided"));
+				return true;
+			}
+			let isOpenOk = await this.confirmConnect(args);
+			if (isOpenOk) {
+				await this.processCommandLine(args);
+			}
+		} catch (err) {
+			this._notificationService.error(localize('errConnectUrl', "Could not open URL due to error {0}", getErrorMessage(err)));
+		}
+		// Handled either way
+		return true;
+	}
+
+	@pathHandler({
+		path: 'openConnectionDialog'
+	})
+	public async handleOpenConnectionDialog(uri: URI): Promise<boolean> {
+		try {
+			let args = this.parseProtocolArgs(uri);
+			if (!args.server) {
+				this._notificationService.warn(localize('warnServerRequired', "Cannot connect as no server information was provided"));
+				return true;
+			}
+			let isOpenOk = await this.confirmConnect(args);
+			if (!isOpenOk) {
+				return false;
+			}
+
+			const connectionProfile = this.readProfileFromArgs(args);
+			await this._connectionManagementService.showConnectionDialog(undefined, undefined, connectionProfile);
+		} catch (err) {
+			this._notificationService.error(localize('errConnectUrl', "Could not open URL due to error {0}", getErrorMessage(err)));
+		}
+		return true;
 	}
 
 	private async confirmConnect(args: SqlArgs): Promise<boolean> {
@@ -201,7 +256,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 
 	// If an open and connectable query editor exists for the given URI, attach it to the connection profile
 	private async processFile(uriString: string, profile: IConnectionProfile, warnOnConnectFailure: boolean): Promise<void> {
-		let activeEditor = this._editorService.editors.filter(v => v.getResource().toString() === uriString).pop();
+		let activeEditor = this._editorService.editors.filter(v => v.resource.toString() === uriString).pop();
 		if (activeEditor instanceof QueryEditorInput && activeEditor.state.connected) {
 			let options: IConnectionCompletionOptions = {
 				params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none, input: activeEditor },
@@ -221,11 +276,26 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 		let profile = new ConnectionProfile(this._capabilitiesService, null);
 		// We want connection store to use any matching password it finds
 		profile.savePassword = true;
-		profile.providerName = args.provider ? args.provider : Constants.mssqlProviderName;
+		profile.providerName = args.provider ?? Constants.mssqlProviderName;
 		profile.serverName = args.server;
-		profile.databaseName = args.database ? args.database : '';
-		profile.userName = args.user ? args.user : '';
-		profile.authenticationType = args.integrated ? Constants.integrated : args.aad ? Constants.azureMFA : (profile.userName.length > 0) ? Constants.sqlLogin : Constants.integrated;
+		profile.databaseName = args.database ?? '';
+		profile.userName = args.user ?? '';
+
+		/*
+			Authentication Type:
+			1. Take --authenticationType, if not
+			2. Take --integrated, if not
+			3. take --aad, if not
+			4. If user exists, and user has @, then it's azureMFA
+			5. If user doesn't exist, or user doesn't have @, then integrated
+		*/
+		profile.authenticationType =
+			args.authenticationType ? args.authenticationType :
+				args.integrated ? Constants.integrated :
+					args.aad ? Constants.azureMFA :
+						(args.user && args.user.length > 0) ? args.user.includes('@') ? Constants.azureMFA : Constants.integrated :
+							Constants.integrated;
+
 		profile.connectionName = '';
 		profile.setOptionValue('applicationName', Constants.applicationName);
 		profile.setOptionValue('databaseDisplayName', profile.databaseName);

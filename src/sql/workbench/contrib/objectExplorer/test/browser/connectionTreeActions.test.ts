@@ -8,31 +8,33 @@ import * as assert from 'assert';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import {
-	RefreshAction, AddServerAction, DeleteConnectionAction, DisconnectConnectionAction,
+	RefreshAction, EditConnectionAction, AddServerAction, DeleteConnectionAction, DisconnectConnectionAction,
 	ActiveConnectionsFilterAction, RecentConnectionsFilterAction
 }
-	from 'sql/workbench/contrib/objectExplorer/browser/connectionTreeAction';
+	from 'sql/workbench/services/objectExplorer/browser/connectionTreeAction';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 import { TestErrorMessageService } from 'sql/platform/errorMessage/test/common/testErrorMessageService';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { ServerTreeView } from 'sql/workbench/contrib/objectExplorer/browser/serverTreeView';
-import * as  LocalizedConstants from 'sql/workbench/contrib/connection/common/localizedConstants';
+import * as  LocalizedConstants from 'sql/workbench/services/connection/browser/localizedConstants';
 import { ObjectExplorerService, ObjectExplorerNodeEventArgs } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
-import { TreeNode } from 'sql/workbench/contrib/objectExplorer/common/treeNode';
-import { NodeType } from 'sql/workbench/contrib/objectExplorer/common/nodeType';
+import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
+import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
-import { ServerTreeDataSource } from 'sql/workbench/contrib/objectExplorer/browser/serverTreeDataSource';
-import { Emitter } from 'vs/base/common/event';
+import { ServerTreeDataSource } from 'sql/workbench/services/objectExplorer/browser/serverTreeDataSource';
+import { Emitter, Event } from 'vs/base/common/event';
 import Severity from 'vs/base/common/severity';
-import { ObjectExplorerActionsContext } from 'sql/workbench/contrib/objectExplorer/browser/objectExplorerActions';
+import { ObjectExplorerActionsContext } from 'sql/workbench/services/objectExplorer/browser/objectExplorerActions';
 import { IConnectionResult, IConnectionParams } from 'sql/platform/connection/common/connectionManagement';
-import { TreeSelectionHandler } from 'sql/workbench/contrib/objectExplorer/browser/treeSelectionHandler';
+import { TreeSelectionHandler } from 'sql/workbench/services/objectExplorer/browser/treeSelectionHandler';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { UNSAVED_GROUP_ID, mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { $ } from 'vs/base/browser/dom';
 import { OEManageConnectionAction } from 'sql/workbench/contrib/dashboard/browser/dashboardActions';
-import { IViewsService, IView, ViewContainer, IViewDescriptorCollection } from 'vs/workbench/common/views';
+import { IViewsService, IView, ViewContainerLocation, ViewContainer } from 'vs/workbench/common/views';
 import { ConsoleLogService } from 'vs/platform/log/common/log';
+import { IProgressIndicator } from 'vs/platform/progress/common/progress';
+import { IPaneComposite } from 'vs/workbench/common/panecomposite';
 
 suite('SQL Connection Tree Action tests', () => {
 	let errorMessageService: TypeMoq.Mock<TestErrorMessageService>;
@@ -67,7 +69,7 @@ suite('SQL Connection Tree Action tests', () => {
 		connectionManagementService.setup(x => x.deleteConnectionGroup(TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
 		connectionManagementService.setup(x => x.deleteConnection(TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
 		connectionManagementService.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => profileToReturn);
-
+		connectionManagementService.setup(x => x.showEditConnectionDialog(TypeMoq.It.isAny())).returns(() => new Promise<void>((resolve, reject) => resolve()));
 		return connectionManagementService;
 	}
 
@@ -109,18 +111,41 @@ suite('SQL Connection Tree Action tests', () => {
 		});
 
 		const viewsService = new class implements IViewsService {
-			getActiveViewWithId(id: string): IView {
+			getViewProgressIndicator(id: string): IProgressIndicator {
+				throw new Error('Method not implemented.');
+			}
+			onDidChangeViewContainerVisibility: Event<{ id: string; visible: boolean; location: ViewContainerLocation; }>;
+			isViewContainerVisible(id: string): boolean {
+				throw new Error('Method not implemented.');
+			}
+			openViewContainer(id: string, focus?: boolean): Promise<IPaneComposite> {
+				throw new Error('Method not implemented.');
+			}
+			closeViewContainer(id: string): void {
+				throw new Error('Method not implemented.');
+			}
+			getVisibleViewContainer(location: ViewContainerLocation): ViewContainer {
+				throw new Error('Method not implemented.');
+			}
+			getProgressIndicator(id: string): IProgressIndicator {
+				throw new Error('Method not implemented.');
+			}
+			getActiveViewWithId<T extends IView>(id: string): T | null {
 				throw new Error('Method not implemented.');
 			}
 			_serviceBrand: undefined;
-			openView(id: string, focus?: boolean): Promise<IView> {
-				return Promise.resolve({
+			openView<T extends IView>(id: string, focus?: boolean): Promise<T | null> {
+				return Promise.resolve(<T><any>{
 					id: '',
 					serversTree: undefined
 				});
 			}
-			getViewDescriptors(container: ViewContainer): IViewDescriptorCollection {
-				throw new Error('Method not implemented.');
+			onDidChangeViewVisibility: Event<{ id: string, visible: boolean }> = Event.None;
+			closeView(id: string): void {
+				return;
+			}
+			isViewVisible(id: string): boolean {
+				return true;
 			}
 		};
 
@@ -519,4 +544,32 @@ suite('SQL Connection Tree Action tests', () => {
 		});
 	});
 
+	test('EditConnectionAction - test if show connection dialog is called', () => {
+		let connectionManagementService = createConnectionManagementService(true, undefined);
+
+		let connection: ConnectionProfile = new ConnectionProfile(capabilitiesService, {
+			connectionName: 'Test',
+			savePassword: false,
+			groupFullName: 'testGroup',
+			serverName: 'testServerName',
+			databaseName: 'testDatabaseName',
+			authenticationType: 'integrated',
+			password: 'test',
+			userName: 'testUsername',
+			groupId: undefined,
+			providerName: mssqlProviderName,
+			options: {},
+			saveProfile: true,
+			id: 'testId'
+		});
+
+		let connectionAction: EditConnectionAction = new EditConnectionAction(EditConnectionAction.ID,
+			EditConnectionAction.LABEL,
+			connection,
+			connectionManagementService.object);
+
+		return connectionAction.run().then((value) => {
+			connectionManagementService.verify(x => x.showEditConnectionDialog(TypeMoq.It.isAny()), TypeMoq.Times.once());
+		});
+	});
 });

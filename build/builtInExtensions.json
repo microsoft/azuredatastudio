@@ -1,7 +1,0 @@
-[
-	{
-		"name": "Microsoft.sqlservernotebook",
-		"version": "0.3.4",
-		"repo": "https://github.com/Microsoft/azuredatastudio"
-	}
-]

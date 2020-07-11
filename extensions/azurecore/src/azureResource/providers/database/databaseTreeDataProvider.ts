@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { TreeItem, ExtensionNodeType } from 'azdata';
+import { TreeItem, ExtensionNodeType, Account } from 'azdata';
 import { TreeItemCollapsibleState, ExtensionContext } from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
@@ -12,22 +12,22 @@ import { azureResource } from '../../azure-resource';
 import { AzureResourceItemType } from '../../../azureResource/constants';
 import { ApiWrapper } from '../../../apiWrapper';
 import { generateGuid } from '../../utils';
-import { IAzureResourceService, AzureResourceDatabase } from '../../interfaces';
+import { IAzureResourceService } from '../../interfaces';
 import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
 
-export class AzureResourceDatabaseTreeDataProvider extends ResourceTreeDataProviderBase<AzureResourceDatabase> {
+export class AzureResourceDatabaseTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabase> {
 
 	private static readonly containerId = 'azure.resource.providers.database.treeDataProvider.databaseContainer';
-	private static readonly containerLabel = localize('azure.resource.providers.database.treeDataProvider.databaseContainerLabel', "SQL Databases");
+	private static readonly containerLabel = localize('azure.resource.providers.database.treeDataProvider.databaseContainerLabel', "SQL database");
 
 	public constructor(
-		databaseService: IAzureResourceService<AzureResourceDatabase>,
+		databaseService: IAzureResourceService<azureResource.AzureResourceDatabase>,
 		apiWrapper: ApiWrapper,
 		private _extensionContext: ExtensionContext
 	) {
 		super(databaseService, apiWrapper);
 	}
-	protected getTreeItemForResource(database: AzureResourceDatabase): TreeItem {
+	protected getTreeItemForResource(database: azureResource.AzureResourceDatabase, account: Account): TreeItem {
 		return {
 			id: `databaseServer_${database.serverFullName}.database_${database.name}`,
 			label: `${database.name} (${database.serverName})`,
@@ -50,7 +50,11 @@ export class AzureResourceDatabaseTreeDataProvider extends ResourceTreeDataProvi
 				groupId: '',
 				providerName: 'MSSQL',
 				saveProfile: false,
-				options: {}
+				options: {},
+				azureAccount: account.key.accountId,
+				azureResourceId: database.id,
+				azureTenantId: database.tenant,
+				azurePortalEndpoint: account.properties.providerSettings.settings.portalEndpoint
 			},
 			childProvider: 'MSSQL',
 			type: ExtensionNodeType.Database

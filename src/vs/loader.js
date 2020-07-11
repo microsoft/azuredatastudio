@@ -472,7 +472,7 @@ var AMDLoader;
             }
             var result = moduleId;
             var results;
-            if (!AMDLoader.Utilities.endsWith(result, '.js') && !AMDLoader.Utilities.isAbsolutePath(result)) {
+            if ((!AMDLoader.Utilities.endsWith(result, '.js') || result === 'chart.js') && !AMDLoader.Utilities.isAbsolutePath(result)) {
                 results = this._applyPaths(result);
                 for (var i = 0, len = results.length; i < len; i++) {
                     if (this.isBuild() && results[i] === 'empty:') {
@@ -624,17 +624,34 @@ var AMDLoader;
             script.addEventListener('error', errorEventListener);
         };
         BrowserScriptLoader.prototype.load = function (moduleManager, scriptSrc, callback, errorback) {
-            var script = document.createElement('script');
-            script.setAttribute('async', 'async');
-            script.setAttribute('type', 'text/javascript');
-            this.attachListeners(script, callback, errorback);
-            script.setAttribute('src', scriptSrc);
-            // Propagate CSP nonce to dynamically created script tag.
-            var cspNonce = moduleManager.getConfig().getOptionsLiteral().cspNonce;
-            if (cspNonce) {
-                script.setAttribute('nonce', cspNonce);
+            if (/^node\|/.test(scriptSrc)) {
+                var opts = moduleManager.getConfig().getOptionsLiteral();
+                var nodeRequire = (opts.nodeRequire || AMDLoader.global.nodeRequire);
+                var pieces = scriptSrc.split('|');
+                var moduleExports_1 = null;
+                try {
+                    moduleExports_1 = nodeRequire(pieces[1]);
+                }
+                catch (err) {
+                    errorback(err);
+                    return;
+                }
+                moduleManager.enqueueDefineAnonymousModule([], function () { return moduleExports_1; });
+                callback();
             }
-            document.getElementsByTagName('head')[0].appendChild(script);
+            else {
+                var script = document.createElement('script');
+                script.setAttribute('async', 'async');
+                script.setAttribute('type', 'text/javascript');
+                this.attachListeners(script, callback, errorback);
+                script.setAttribute('src', scriptSrc);
+                // Propagate CSP nonce to dynamically created script tag.
+                var cspNonce = moduleManager.getConfig().getOptionsLiteral().cspNonce;
+                if (cspNonce) {
+                    script.setAttribute('nonce', cspNonce);
+                }
+                document.getElementsByTagName('head')[0].appendChild(script);
+            }
         };
         return BrowserScriptLoader;
     }());
@@ -742,15 +759,15 @@ var AMDLoader;
             var recorder = moduleManager.getRecorder();
             if (/^node\|/.test(scriptSrc)) {
                 var pieces = scriptSrc.split('|');
-                var moduleExports_1 = null;
+                var moduleExports_2 = null;
                 try {
-                    moduleExports_1 = nodeRequire(pieces[1]);
+                    moduleExports_2 = nodeRequire(pieces[1]);
                 }
                 catch (err) {
                     errorback(err);
                     return;
                 }
-                moduleManager.enqueueDefineAnonymousModule([], function () { return moduleExports_1; });
+                moduleManager.enqueueDefineAnonymousModule([], function () { return moduleExports_2; });
                 callback();
             }
             else {
@@ -923,7 +940,11 @@ var AMDLoader;
                 var hashDataNow = _this._crypto.createHash('md5').update(scriptSource, 'utf8').digest();
                 if (!hashData.equals(hashDataNow)) {
                     moduleManager.getConfig().onError(new Error("FAILED TO VERIFY CACHED DATA, deleting stale '" + cachedDataPath + "' now, but a RESTART IS REQUIRED"));
-                    _this._fs.unlink(cachedDataPath, function (err) { return moduleManager.getConfig().onError(err); });
+                    _this._fs.unlink(cachedDataPath, function (err) {
+                        if (err) {
+                            moduleManager.getConfig().onError(err);
+                        }
+                    });
                 }
             }, Math.ceil(5000 * (1 + Math.random())));
         };
@@ -1486,6 +1507,10 @@ var AMDLoader;
             };
             result.getStats = function () {
                 return _this.getLoaderEvents();
+            };
+            result.config = function (params, shouldOverwrite) {
+                if (shouldOverwrite === void 0) { shouldOverwrite = false; }
+                _this.configure(params, shouldOverwrite);
             };
             result.__$__nodeRequire = AMDLoader.global.nodeRequire;
             return result;

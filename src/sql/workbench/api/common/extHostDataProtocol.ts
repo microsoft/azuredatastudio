@@ -13,6 +13,8 @@ import { DataProviderType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IURITransformer } from 'vs/base/common/uriIpc';
 import { URI } from 'vs/base/common/uri';
 import { find } from 'vs/base/common/arrays';
+import { RunOnceScheduler } from 'vs/base/common/async';
+import { mapToSerializable } from 'sql/base/common/map';
 
 export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
@@ -25,6 +27,9 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	private static _handlePool: number = 0;
 	private _adapter = new Map<number, azdata.DataProvider>();
 	private _providersByType = new Map<azdata.DataProviderType, azdata.DataProvider[]>();
+
+	private readonly messageRunner = new RunOnceScheduler(() => this.sendMessages(), 1000);
+	private readonly queuedMessages = new Map<string, azdata.QueryExecuteMessageParams[]>();
 
 	constructor(
 		mainContext: IMainContext,
@@ -163,7 +168,11 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		this._proxy.$registerAgentServicesProvider(provider.providerId, provider.handle);
 		return rt;
 	}
-
+	$registerSqlAssessmentServiceProvider(provider: azdata.SqlAssessmentServicesProvider): vscode.Disposable {
+		let rt = this.registerProvider(provider, DataProviderType.SqlAssessmentServicesProvider);
+		this._proxy.$registerSqlAssessmentServicesProvider(provider.providerId, provider.handle);
+		return rt;
+	}
 	$registerCapabilitiesServiceProvider(provider: azdata.CapabilitiesProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.CapabilitiesProvider);
 		this._proxy.$registerCapabilitiesServiceProvider(provider.providerId, provider.handle);
@@ -302,6 +311,11 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		if (this.uriTransformer) {
 			result.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(result.ownerUri))).toString(true);
 		}
+		// clear messages to maintain the order of things
+		if (this.messageRunner.isScheduled()) {
+			this.messageRunner.cancel();
+			this.sendMessages();
+		}
 		this._proxy.$onQueryComplete(handle, result);
 	}
 	$onBatchStart(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void {
@@ -314,6 +328,8 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		if (this.uriTransformer) {
 			batchInfo.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(batchInfo.ownerUri))).toString(true);
 		}
+		this.messageRunner.cancel(); // clear batch messages before saying we completed the batch
+		this.sendMessages();
 		this._proxy.$onBatchComplete(handle, batchInfo);
 	}
 	$onResultSetAvailable(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void {
@@ -328,11 +344,23 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		}
 		this._proxy.$onResultSetUpdated(handle, resultSetInfo);
 	}
-	$onQueryMessage(handle: number, message: azdata.QueryExecuteMessageParams): void {
+	$onQueryMessage(message: azdata.QueryExecuteMessageParams): void {
 		if (this.uriTransformer) {
 			message.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(message.ownerUri))).toString(true);
 		}
-		this._proxy.$onQueryMessage(handle, message);
+		if (!this.queuedMessages.has(message.ownerUri)) {
+			this.queuedMessages.set(message.ownerUri, []);
+		}
+		this.queuedMessages.get(message.ownerUri).push(message);
+		if (!this.messageRunner.isScheduled()) {
+			this.messageRunner.schedule();
+		}
+	}
+
+	private sendMessages() {
+		const messages = mapToSerializable(this.queuedMessages);
+		this.queuedMessages.clear();
+		this._proxy.$onQueryMessage(messages);
 	}
 
 	$saveResults(handle: number, requestParams: azdata.SaveResultsRequestParams): Thenable<azdata.SaveResultRequestResult> {
@@ -389,7 +417,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<azdata.MetadataProvider>(handle).getMetadata(connectionUri);
 	}
 
-	public $getDatabases(handle: number, connectionUri: string): Thenable<string[]> {
+	public $getDatabases(handle: number, connectionUri: string): Thenable<string[] | azdata.DatabaseInfo[]> {
 		return this._resolveProvider<azdata.MetadataProvider>(handle).getDatabases(connectionUri);
 	}
 
@@ -814,5 +842,18 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	public $continueSerialization(handle: number, requestParams: azdata.SerializeDataContinueRequestParams): Thenable<azdata.SerializeDataResult> {
 		return this._resolveProvider<azdata.SerializationProvider>(handle).continueSerialization(requestParams);
+	}
+
+	// Assessment methods
+	public $assessmentInvoke(handle: number, ownerUri: string, targetType: number): Thenable<azdata.SqlAssessmentResult> {
+		return this._resolveProvider<azdata.SqlAssessmentServicesProvider>(handle).assessmentInvoke(ownerUri, targetType);
+	}
+
+	public $getAssessmentItems(handle: number, ownerUri: string, targetType: number): Thenable<azdata.SqlAssessmentResult> {
+		return this._resolveProvider<azdata.SqlAssessmentServicesProvider>(handle).getAssessmentItems(ownerUri, targetType);
+	}
+
+	public $generateAssessmentScript(handle: number, items: azdata.SqlAssessmentResultItem[]): Thenable<azdata.ResultStatus> {
+		return this._resolveProvider<azdata.SqlAssessmentServicesProvider>(handle).generateAssessmentScript(items);
 	}
 }

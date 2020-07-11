@@ -39,6 +39,7 @@ const CORE_TYPES = [
 	'group',
 	'groupEnd',
 	'table',
+	'assert',
 	'Error',
 	'String',
 	'throws',
@@ -64,7 +65,7 @@ const RULES = [
 
 	// Common: vs/base/common/platform.ts
 	{
-		target: '**/vs/base/common/platform.ts',
+		target: '**/{vs,sql}/base/common/platform.ts',
 		allowedTypes: [
 			...CORE_TYPES,
 
@@ -80,7 +81,7 @@ const RULES = [
 
 	// Common: vs/workbench/api/common/extHostExtensionService.ts
 	{
-		target: '**/vs/workbench/api/common/extHostExtensionService.ts',
+		target: '**/{vs,sql}/workbench/api/common/extHostExtensionService.ts',
 		allowedTypes: [
 			...CORE_TYPES,
 
@@ -112,6 +113,15 @@ const RULES = [
 		]
 	},
 
+	// Browser (editor contrib)
+	{
+		target: '**/src/{vs,sql}/editor/contrib/**',
+		allowedTypes: CORE_TYPES,
+		disallowedDefinitions: [
+			'@types/node'	// no node.js
+		]
+	},
+
 	// node.js
 	{
 		target: '**/{vs,sql}/**/node/**',
@@ -130,6 +140,15 @@ const RULES = [
 		],
 		disallowedDefinitions: [
 			'lib.dom.d.ts'	// no DOM
+		]
+	},
+
+	// Electron (sandbox)
+	{
+		target: '**/vs/**/electron-sandbox/**',
+		allowedTypes: CORE_TYPES,
+		disallowedDefinitions: [
+			'@types/node'	// no node.js
 		]
 	},
 

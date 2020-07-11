@@ -36,9 +36,9 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		this.grid = grid;
 		this.handler.subscribe(this.grid.onHeaderCellRendered, (e: Event, args: Slick.OnHeaderCellRenderedEventArgs<T>) => this.handleHeaderCellRendered(e, args))
 			.subscribe(this.grid.onBeforeHeaderCellDestroy, (e: Event, args: Slick.OnBeforeHeaderCellDestroyEventArgs<T>) => this.handleBeforeHeaderCellDestroy(e, args))
-			.subscribe(this.grid.onClick, (e: MouseEvent) => this.handleBodyMouseDown(e))
+			.subscribe(this.grid.onClick, (e: DOMEvent) => this.handleBodyMouseDown(e as MouseEvent))
 			.subscribe(this.grid.onColumnsResized, () => this.columnsResized())
-			.subscribe(this.grid.onKeyDown, (e: KeyboardEvent) => this.handleKeyDown(e));
+			.subscribe(this.grid.onKeyDown, (e: DOMEvent) => this.handleKeyDown(e as KeyboardEvent));
 		this.grid.setColumns(this.grid.getColumns());
 
 		this.disposableStore.add(addDisposableListener(document.body, 'mousedown', e => this.handleBodyMouseDown(e)));
@@ -227,7 +227,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		this.applyStyles();
 
 		jQuery(':checkbox', $filter).bind('click', (e) => {
-			this.workingFilters = this.changeWorkingFilter(filterItems, this.workingFilters, jQuery(target));
+			this.workingFilters = this.changeWorkingFilter(filterItems, this.workingFilters, jQuery(e.target));
 		});
 
 		const offset = jQuery(target).offset();

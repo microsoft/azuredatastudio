@@ -6,6 +6,7 @@
 	"notebook.useExistingPython.description": "Local path to a preexisting python installation used by Notebooks.",
 	"notebook.overrideEditorTheming.description": "Override editor default settings in the Notebook editor. Settings include background color, current line color and border",
 	"notebook.maxTableRows.description": "Maximum number of rows returned per table in the Notebook editor",
+	"notebook.trustedBooks.description": "Notebooks contained in these books will automatically be trusted.",
 	"notebook.maxBookSearchDepth.description": "Maximum depth of subdirectories to search for Books (Enter 0 for infinite)",
 	"notebook.command.new": "New Notebook",
 	"notebook.command.open": "Open Notebook",
@@ -30,9 +31,15 @@
 	"title.SQL19PreviewBook": "SQL Server 2019 Guide",
 	"books-preview-category": "Jupyter Books",
 	"title.saveJupyterBook": "Save Book",
+	"title.trustBook": "Trust Book",
 	"title.searchJupyterBook": "Search Book",
-	"title.SavedBooks": "Saved Books",
-	"title.UnsavedBooks": "Unsaved Books",
+	"title.SavedBooks": "Notebooks",
+	"title.ProvidedBooks": "Provided Books",
 	"title.PreviewLocalizedBook": "Get localized SQL Server 2019 guide",
-	"title.openJupyterBook": "Open Jupyter Book"
+	"title.openJupyterBook": "Open Jupyter Book",
+	"title.closeJupyterBook": "Close Jupyter Book",
+	"title.closeJupyterNotebook": "Close Jupyter Notebook",
+	"title.revealInBooksViewlet": "Reveal in Books",
+	"title.createJupyterBook": "Create Book (Preview)",
+	"title.openNotebookFolder": "Open Notebooks in Folder"
 }

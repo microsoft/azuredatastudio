@@ -9,8 +9,9 @@ import {
 } from '@angular/core';
 
 import * as DOM from 'vs/base/browser/dom';
-import { IComponent, IComponentDescriptor, IModelStore, ITitledComponent } from 'sql/workbench/browser/modelComponents/interfaces';
+import { ITitledComponent } from 'sql/workbench/browser/modelComponents/interfaces';
 import { ComponentWithIconBase } from 'sql/workbench/browser/modelComponents/componentWithIconBase';
+import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 
 @Component({
 	selector: 'modelview-image',

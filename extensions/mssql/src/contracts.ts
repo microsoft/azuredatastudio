@@ -31,6 +31,24 @@ export class TelemetryParams {
 
 // ------------------------------- </ Telemetry Sent Event > ----------------------------------
 
+// ------------------------------- < Security Token Request > ------------------------------------------
+export interface RequestSecurityTokenParams {
+	authority: string;
+	provider: string;
+	resource: string;
+	scope: string;
+}
+
+export interface RequestSecurityTokenResponse {
+	accountKey: string;
+	token: string;
+}
+
+export namespace SecurityTokenRequest {
+	export const type = new RequestType<RequestSecurityTokenParams, RequestSecurityTokenResponse, void, void>('account/securityTokenRequest');
+}
+// ------------------------------- </ Security Token Request > ------------------------------------------
+
 // ------------------------------- < Agent Management > ------------------------------------
 // Job management parameters
 export interface AgentJobsParams {
@@ -403,6 +421,7 @@ export enum TaskExecutionMode {
 	script = 1,
 	executeAndScript = 2,
 }
+
 export interface ExportParams {
 	databaseName: string;
 	packageFilePath: string;
@@ -424,6 +443,7 @@ export interface ExtractParams {
 	applicationName: string;
 	applicationVersion: string;
 	ownerUri: string;
+	extractTarget?: mssql.ExtractTarget;
 	taskExecutionMode: TaskExecutionMode;
 }
 
@@ -431,6 +451,7 @@ export interface DeployParams {
 	packageFilePath: string;
 	databaseName: string;
 	upgradeExisting: boolean;
+	sqlCommandVariableValues?: Record<string, string>;
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
 }
@@ -438,6 +459,7 @@ export interface DeployParams {
 export interface GenerateDeployScriptParams {
 	packageFilePath: string;
 	databaseName: string;
+	sqlCommandVariableValues?: Record<string, string>;
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
 }
@@ -536,6 +558,40 @@ export namespace RemoveServerGroupRequest {
 }
 // ------------------------------- <CMS> ----------------------------------------
 
+// ------------------------------- <Language Extensibility> -----------------------------
+
+export interface LanguageExtensionRequestParam {
+	ownerUri: string;
+}
+
+export interface ExternalLanguageRequestParam extends LanguageExtensionRequestParam {
+	languageName: string;
+}
+
+export interface ExternalLanguageUpdateRequestParam extends LanguageExtensionRequestParam {
+	language: mssql.ExternalLanguage;
+}
+
+export interface LanguageExtensionListResponseParam {
+	languages: mssql.ExternalLanguage[];
+}
+
+
+export interface ExternalLanguageResponseParam {
+}
+
+export namespace LanguageExtensibilityListRequest {
+	export const type = new RequestType<LanguageExtensionRequestParam, LanguageExtensionListResponseParam, void, void>('languageExtension/list');
+}
+
+export namespace LanguageExtensibilityDeleteRequest {
+	export const type = new RequestType<ExternalLanguageRequestParam, ExternalLanguageResponseParam, void, void>('languageExtension/delete');
+}
+
+export namespace LanguageExtensibilityUpdateRequest {
+	export const type = new RequestType<ExternalLanguageUpdateRequestParam, ExternalLanguageResponseParam, void, void>('languageExtension/update');
+}
+
 // ------------------------------- <Schema Compare> -----------------------------
 export interface SchemaCompareParams {
 	operationId: string;
@@ -621,6 +677,34 @@ export namespace SchemaCompareCancellationRequest {
 }
 
 // ------------------------------- <Schema Compare> -----------------------------
+
+/// ------------------------------- <Sql Assessment> -----------------------------
+
+export interface SqlAssessmentParams {
+	ownerUri: string;
+	targetType: azdata.sqlAssessment.SqlAssessmentTargetType
+}
+
+export interface GenerateSqlAssessmentScriptParams {
+	items: azdata.SqlAssessmentResultItem[];
+	taskExecutionMode: azdata.TaskExecutionMode;
+	targetServerName: string;
+	targetDatabaseName: string;
+}
+
+export namespace SqlAssessmentInvokeRequest {
+	export const type = new RequestType<SqlAssessmentParams, azdata.SqlAssessmentResult, void, void>('assessment/invoke');
+}
+
+export namespace GetSqlAssessmentItemsRequest {
+	export const type = new RequestType<SqlAssessmentParams, azdata.SqlAssessmentResult, void, void>('assessment/getAssessmentItems');
+}
+
+export namespace GenerateSqlAssessmentScriptRequest {
+	export const type = new RequestType<GenerateSqlAssessmentScriptParams, azdata.ResultStatus, void, void>('assessment/generateScript');
+}
+
+// ------------------------------- <Sql Assessment> -----------------------------
 
 // ------------------------------- <Serialization> -----------------------------
 export namespace SerializeDataStartRequest {

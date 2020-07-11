@@ -76,7 +76,7 @@ export class DropdownList extends Dropdown {
 			}
 		}));
 
-		this._register(this._list.onSelectionChange(() => {
+		this._register(this._list.onDidChangeSelection(() => {
 			// focus on the dropdown label then hide the dropdown list
 			this.element.focus();
 			this.hide();

@@ -14,7 +14,7 @@ import * as Mouse from 'vs/base/browser/mouseEvent';
 import * as Keyboard from 'vs/base/browser/keyboardEvent';
 import * as Model from 'vs/base/parts/tree/browser/treeModel';
 import * as dnd from './treeDnd';
-import { ArrayIterator, MappedIterator } from 'vs/base/common/iterator';
+import { ArrayNavigator } from 'vs/base/common/navigator';
 import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { HeightMap, IViewItem } from 'vs/base/parts/tree/browser/treeViewModel';
@@ -24,6 +24,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { DataTransfers, StaticDND, IDragAndDropData } from 'vs/base/browser/dnd';
 import { DefaultTreestyler } from './treeDefaults';
 import { Delayer, timeout } from 'vs/base/common/async';
+import { MappedNavigator } from 'sql/base/common/navigator';
 
 export interface IRow {
 	element: HTMLElement | null;
@@ -218,12 +219,11 @@ export class ViewItem implements IViewItem {
 		}
 		if (this.model.hasTrait('focused')) {
 			const base64Id = strings.safeBtoa(this.model.id);
-
-			this.element.setAttribute('aria-selected', 'true');
 			this.element.setAttribute('id', base64Id);
+			this.element.setAttribute('aria-selected', 'true');
 		} else {
-			this.element.setAttribute('aria-selected', 'false');
 			this.element.removeAttribute('id');
+			this.element.setAttribute('aria-selected', 'false');
 		}
 		if (this.model.hasChildren()) {
 			this.element.setAttribute('aria-expanded', String(!!this._styles['expanded']));
@@ -375,11 +375,6 @@ class RootViewItem extends ViewItem {
 	}
 }
 
-interface IThrottledGestureEvent {
-	translationX: number;
-	translationY: number;
-}
-
 function reactionEquals(one: _.IDragOverReaction, other: _.IDragOverReaction | null): boolean {
 	if (!one && !other) {
 		return true;
@@ -417,7 +412,6 @@ export class TreeView extends HeightMap {
 	private scrollableElement: ScrollableElement;
 	private msGesture: MSGesture | undefined;
 	private lastPointerType: string = '';
-	private lastClickTimeStamp: number = 0;
 
 	private horizontalScrolling: boolean;
 	private contentWidthUpdateDelayer = new Delayer<void>(50);
@@ -520,12 +514,7 @@ export class TreeView extends HeightMap {
 			this._onDidScroll.fire();
 		});
 
-		if (Browser.isIE) {
-			this.wrapper.style.msTouchAction = 'none';
-			this.wrapper.style.msContentZooming = 'none';
-		} else {
-			this.gestureDisposable = Touch.Gesture.addTarget(this.wrapper);
-		}
+		this.gestureDisposable = Touch.Gesture.addTarget(this.wrapper);
 
 		this.rowsContainer = document.createElement('div');
 		this.rowsContainer.className = 'monaco-tree-rows';
@@ -551,26 +540,6 @@ export class TreeView extends HeightMap {
 		this.viewListeners.push(DOM.addDisposableListener(this.domNode, 'contextmenu', (e) => this.onContextMenu(e)));
 		this.viewListeners.push(DOM.addDisposableListener(this.wrapper, Touch.EventType.Tap, (e) => this.onTap(e)));
 		this.viewListeners.push(DOM.addDisposableListener(this.wrapper, Touch.EventType.Change, (e) => this.onTouchChange(e)));
-
-		if (Browser.isIE) {
-			this.viewListeners.push(DOM.addDisposableListener(this.wrapper, 'MSPointerDown', (e) => this.onMsPointerDown(e)));
-			this.viewListeners.push(DOM.addDisposableListener(this.wrapper, 'MSGestureTap', (e) => this.onMsGestureTap(e)));
-
-			// these events come too fast, we throttle them
-			this.viewListeners.push(DOM.addDisposableThrottledListener<IThrottledGestureEvent>(this.wrapper, 'MSGestureChange', (e) => this.onThrottledMsGestureChange(e), (lastEvent: IThrottledGestureEvent, event: MSGestureEvent): IThrottledGestureEvent => {
-				event.stopPropagation();
-				event.preventDefault();
-
-				let result = { translationY: event.translationY, translationX: event.translationX };
-
-				if (lastEvent) {
-					result.translationY += lastEvent.translationY;
-					result.translationX += lastEvent.translationX;
-				}
-
-				return result;
-			}));
-		}
 
 		this.viewListeners.push(DOM.addDisposableListener(window, 'dragover', (e) => this.onDragOver(e)));
 		this.viewListeners.push(DOM.addDisposableListener(this.wrapper, 'drop', (e) => this.onDrop(e)));
@@ -861,7 +830,7 @@ export class TreeView extends HeightMap {
 	private onClearingInput(e: Model.IInputEvent): void {
 		let item = <Model.Item>e.item;
 		if (item) {
-			this.onRemoveItems(new MappedIterator(item.getNavigator(), item => item && item.id));
+			this.onRemoveItems(new MappedNavigator(item.getNavigator(), item => item && item.id));
 			this.onRowsChanged();
 		}
 	}
@@ -957,20 +926,20 @@ export class TreeView extends HeightMap {
 				for (const diffChange of diff) {
 
 					if (diffChange.originalLength > 0) {
-						this.onRemoveItems(new ArrayIterator(previousChildrenIds, diffChange.originalStart, diffChange.originalStart + diffChange.originalLength));
+						this.onRemoveItems(new ArrayNavigator(previousChildrenIds, diffChange.originalStart, diffChange.originalStart + diffChange.originalLength));
 					}
 
 					if (diffChange.modifiedLength > 0) {
 						let beforeItem: Model.Item | null = afterModelItems[diffChange.modifiedStart - 1] || item;
 						beforeItem = beforeItem.getDepth() > 0 ? beforeItem : null;
 
-						this.onInsertItems(new ArrayIterator(afterModelItems, diffChange.modifiedStart, diffChange.modifiedStart + diffChange.modifiedLength), beforeItem ? beforeItem.id : null);
+						this.onInsertItems(new ArrayNavigator(afterModelItems, diffChange.modifiedStart, diffChange.modifiedStart + diffChange.modifiedLength), beforeItem ? beforeItem.id : null);
 					}
 				}
 
 			} else if (skipDiff || diff.length) {
-				this.onRemoveItems(new ArrayIterator(previousChildrenIds));
-				this.onInsertItems(new ArrayIterator(afterModelItems), item.getDepth() > 0 ? item.id : null);
+				this.onRemoveItems(new ArrayNavigator(previousChildrenIds));
+				this.onInsertItems(new ArrayNavigator(afterModelItems), item.getDepth() > 0 ? item.id : null);
 			}
 
 			if (skipDiff || diff.length) {
@@ -1017,7 +986,7 @@ export class TreeView extends HeightMap {
 		let viewItem = this.items[item.id];
 		if (viewItem) {
 			viewItem.expanded = false;
-			this.onRemoveItems(new MappedIterator(item.getNavigator(), item => item && item.id));
+			this.onRemoveItems(new MappedNavigator(item.getNavigator(), item => item && item.id));
 			this.onRowsChanged();
 		}
 	}
@@ -1143,15 +1112,6 @@ export class TreeView extends HeightMap {
 		if (!item) {
 			return;
 		}
-
-		if (Browser.isIE && Date.now() - this.lastClickTimeStamp < 300) {
-			// IE10+ doesn't set the detail property correctly. While IE10 simply
-			// counts the number of clicks, IE11 reports always 1. To align with
-			// other browser, we set the value to 2 if clicks events come in a 300ms
-			// sequence.
-			event.detail = 2;
-		}
-		this.lastClickTimeStamp = Date.now();
 
 		this.context.controller!.onClick(this.context.tree, item.model.getElement(), event);
 	}
@@ -1567,39 +1527,6 @@ export class TreeView extends HeightMap {
 		this.domNode.removeAttribute('aria-activedescendant'); // ARIA
 
 		this._onDOMBlur.fire();
-	}
-
-	// MS specific DOM Events
-
-	private onMsPointerDown(event: MSPointerEvent): void {
-		if (!this.msGesture) {
-			return;
-		}
-
-		// Circumvent IE11 breaking change in e.pointerType & TypeScript's stale definitions
-		let pointerType = event.pointerType;
-		if (pointerType === ((<any>event).MSPOINTER_TYPE_MOUSE || 'mouse')) {
-			this.lastPointerType = 'mouse';
-			return;
-		} else if (pointerType === ((<any>event).MSPOINTER_TYPE_TOUCH || 'touch')) {
-			this.lastPointerType = 'touch';
-		} else {
-			return;
-		}
-
-		event.stopPropagation();
-		event.preventDefault();
-
-		this.msGesture.addPointer(event.pointerId);
-	}
-
-	private onThrottledMsGestureChange(event: IThrottledGestureEvent): void {
-		this.scrollTop -= event.translationY;
-	}
-
-	private onMsGestureTap(event: MSGestureEvent): void {
-		(<any>event).initialTarget = document.elementFromPoint(event.clientX, event.clientY);
-		this.onTap(<any>event);
 	}
 
 	// DOM changes

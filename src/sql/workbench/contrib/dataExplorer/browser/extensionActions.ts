@@ -6,7 +6,7 @@
 import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
 import { TreeViewItemHandleArg } from 'sql/workbench/common/views';
 import * as azdata from 'azdata';
-import { IOEShimService } from 'sql/workbench/contrib/objectExplorer/browser/objectExplorerViewTreeShim';
+import { IOEShimService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
@@ -17,6 +17,7 @@ export const IMPORT_COMMAND_ID = 'dataExplorer.flatFileImport';
 export const SCHEMA_COMPARE_COMMAND_ID = 'dataExplorer.schemaCompare';
 export const GENERATE_SCRIPTS_COMMAND_ID = 'dataExplorer.generateScripts';
 export const PROPERTIES_COMMAND_ID = 'dataExplorer.properties';
+export const IMPORT_DATABASE_COMMAND_ID = 'dataExplorer.importDatabase';
 
 
 // Data Tier Wizard
@@ -96,5 +97,15 @@ CommandsRegistry.registerCommand({
 			nodeInfo: oeShimService.getNodeInfoForTreeItem(args.$treeItem)
 		};
 		return commandService.executeCommand('adminToolExtWin.launchSsmsMinPropertiesDialog', objectExplorerContext);
+	}
+});
+
+// Import Database
+CommandsRegistry.registerCommand({
+	id: IMPORT_DATABASE_COMMAND_ID,
+	handler: (accessor, args: TreeViewItemHandleArg) => {
+		const commandService = accessor.get(ICommandService);
+		let connectedContext: azdata.ConnectedContext = { connectionProfile: args.$treeItem.payload };
+		return commandService.executeCommand('sqlDatabaseProjects.importDatabase', connectedContext);
 	}
 });

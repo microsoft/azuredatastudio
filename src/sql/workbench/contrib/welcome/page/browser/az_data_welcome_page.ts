@@ -9,66 +9,183 @@ import { localize } from 'vs/nls';
 export default () => `
 <div class="welcomePageContainer">
 	<div class="welcomePage">
-		<div class="title">
-			<h1 class="caption">${escape(localize('welcomePage.azdata', "Azure Data Studio"))}</h1>
-			<p class="subtitle detail"></p>
-		</div>
-		<div class="row">
-			<div class="splash">
-				<div class="section start">
-					<h2 class="caption">${escape(localize('welcomePage.start', "Start"))}</h2>
-					<ul>
-						<li><a href="command:registeredServers.addConnection">${escape(localize('welcomePage.newConnection', "New connection"))}</a></li>
-						<li><a href="command:workbench.action.files.newUntitledFile">${escape(localize('welcomePage.newQuery', "New query"))}</a></li>
-						<li><a href="command:notebook.command.new">${escape(localize('welcomePage.newNotebook', "New notebook"))}</a></li>
-						<li class="mac-only"><a href="command:workbench.action.files.openLocalFileFolder">${escape(localize('welcomePage.openFileMac', "Open file"))}</a></li>
-						<li class="windows-only linux-only"><a href="command:workbench.action.files.openFile">${escape(localize('welcomePage.openFileLinuxPC', "Open file"))}</a></li>
-					</ul>
+		<div class="ads-homepage splash">
+			<div class="gradient">
+				<div class="ads-homepage-section tool-tip">
+					<div class="tool-tip-container" id="tool-tip-container-wide">
+						<a class="ads-welcome-page-link" aria-describedby="tooltip-text-wide" id="preview-link-wide" class="preview-link" tabindex="0" name="preview"><p>Preview</p><i class="icon-info themed-icon"></i></a>
+						<span role="tooltip" id="tooltip-text-wide" class="tool-tip-text" aria-hidden="true">
+							<h3 tabindex="0" class="preview-tooltip-header">${escape(localize('welcomePage.previewHeader', "This page is in preview"))}</h3>
+							<p tabindex="0" class="preview-tooltip-body">${escape(localize('welcomePage.previewBody', "Preview features introduce new functionalities that are on track to becoming a permanent part the product. They are stable, but need additional accessibility improvements. We welcome your early feedback while they are under development."))}</p>
+						</span>
+					</div>
+					<div class="tool-tip-container" id="tool-tip-container-narrow">
+						<a class="ads-welcome-page-link" aria-haspopup="true" class="preview-link" tabindex="0" id="preview-link-narrow" name="previewNarrow"><p>Preview</p><i class="icon-info themed-icon"></i></a>
+					</div>
 				</div>
-				<div class="section deploy">
-					<h2 class="caption">${escape(localize('welcomePage.deploy', "Deploy"))}</h2>
-					<ul>
-						<li><a href="command:azdata.resource.deploy">${escape(localize('welcomePage.newDeployment', "New Deployment…"))}</a></li>
-					</ul>
+				<div id="preview-modal" class="modal" aria-modal="true" aria-hidden="true">
+					<div class="modal-content">
+						<span class="close-icon">x</span>
+						<h3 tabindex="0" class="preview-modal-header">${escape(localize('welcomePage.previewHeader', "This page is in preview"))}</h3>
+						<p tabindex="0" class="preview-modal-body">${escape(localize('welcomePage.previewBody', "Preview features introduce new functionalities that are on track to becoming a permanent part the product. They are stable, but need additional accessibility improvements. We welcome your early feedback while they are under development."))}</p>
+					</div>
 				</div>
-				<div class="section recent">
-					<h2 class="caption">${escape(localize('welcomePage.recent', "Recent"))}</h2>
-					<ul class="list">
-						<!-- Filled programmatically -->
-						<li class="moreRecent"><a href="command:workbench.action.openRecent">${escape(localize('welcomePage.moreRecent', "More..."))}</a><span class="path detail if_shortcut" data-command="workbench.action.openRecent">(<span class="shortcut" data-command="workbench.action.openRecent"></span>)</span></li>
-					</ul>
-					<p class="none detail">${escape(localize('welcomePage.noRecentFolders', "No recent folders"))}</p>
+				<div class="ads-homepage-section section header hero">
+					<div class="row start">
+						<div class="header-top-nav">
+							<div class="flex">
+								<div class="icon sm"></div>
+								<div class="title">
+									<div class="caption-container">
+										<span class="icon xs"></span><h1 class="caption"></h1>
+									</div>
+									<div class="flex btn-container">
+										<div id="dropdown-btn-container" class="btn btn-primary dropdown">
+										</div>
+										<div id="open-file-btn-container" class="btn btn-secondary">
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row header-bottom-nav-tiles ads-grid">
+						<div class="col">
+							<a class="header-bottom-nav-tile-link ads-welcome-page-link" href="command:registeredServers.addConnection">
+								<div class="header-bottom-nav-tile tile tile-connection">
+									<h3>${escape(localize('welcomePage.createConnection', "Create a connection"))}</h3>
+									<p>${escape(localize('welcomePage.createConnectionBody', "Connect to a database instance through the connection dialog."))}</p>
+									<div class="icon connection"></div>
+								</div>
+							</a>
+						</div>
+						<div class="col">
+							<a class="header-bottom-nav-tile-link ads-welcome-page-link"
+								href="command:workbench.action.files.newUntitledFile">
+								<div class="header-bottom-nav-tile tile tile-query">
+									<h3>${escape(localize('welcomePage.runQuery', "Run a query"))}</h3>
+									<p>${escape(localize('welcomePage.runQueryBody', "Interact with data through a query editor."))}</p>
+									<div class="icon query"></div>
+								</div>
+							</a>
+						</div>
+						<div class="col">
+							<a class="header-bottom-nav-tile-link ads-welcome-page-link" href="command:notebook.command.new">
+								<div class="header-bottom-nav-tile tile tile-notebook">
+									<h3>${escape(localize('welcomePage.createNotebook', "Create a notebook"))}</h3>
+									<p>${escape(localize('welcomePage.createNotebookBody', "Build a new notebook using a native notebook editor."))}</p>
+									<div class="icon notebook"></div>
+								</div>
+							</a>
+						</div>
+						<div class="col">
+							<a class="header-bottom-nav-tile-link ads-welcome-page-link" href="command:azdata.resource.deploy">
+								<div class="header-bottom-nav-tile tile tile-server">
+									<h3>${escape(localize('welcomePage.deployServer', "Deploy a server"))}</h3>
+									<p>${escape(localize('welcomePage.deployServerBody', "Create a new instance of SQL Server on the platform of your choice."))}</p>
+									<div class="icon server"></div>
+								</div>
+							</a>
+						</div>
+					</div>
 				</div>
-				<div class="section help">
-					<h2 class="caption">${escape(localize('welcomePage.help', "Help"))}</h2>
-					<ul>
-						<li><a href="https://aka.ms/get-started-azdata">${escape(localize('welcomePage.gettingStarted', "Getting started"))}</a></li>
-						<li><a href="https://aka.ms/azuredatastudio">${escape(localize('welcomePage.productDocumentation', "Documentation"))}</a></li>
-						<li><a href="https://github.com/Microsoft/azuredatastudio/issues/new/choose">${escape(localize('welcomePage.reportIssue', "Report issue or feature request"))}</a></li>
-						<li><a href="https://github.com/Microsoft/azuredatastudio">${escape(localize('welcomePage.gitHubRepository', "GitHub repository"))}</a></li>
-						<li><a href="https://aka.ms/azdata-releasenotes">${escape(localize('welcomePage.releaseNotes', "Release notes"))}</a></li>
-					</ul>
-				</div>
-				<p class="showOnStartup"><input type="checkbox" id="showOnStartup" class="checkbox"> <label class="caption" for="showOnStartup">${escape(localize('welcomePage.showOnStartup', "Show welcome page on startup"))}</label></p>
 			</div>
-			<div class="commands">
-				<div class="section customize">
-					<h2 class="caption">${escape(localize('welcomePage.customize', "Customize"))}</h2>
-					<div class="list">
-						<div class="item selectTheme"><button data-href="command:workbench.view.extensions"><h3 class="caption">${escape(localize('welcomePage.extensions', "Extensions"))}</h3> <span class="detail">${escape(localize('welcomePage.extensionDescription', "Download extensions that you need, including the SQL Server Admin pack and more"))}</span></button></div>
-						<div class="item selectTheme"><button data-href="command:workbench.action.openGlobalKeybindings"><h3 class="caption">${escape(localize('welcomePage.keyboardShortcut', "Keyboard Shortcuts"))}</h3> <span class="detail">${escape(localize('welcomePage.keyboardShortcutDescription', "Find your favorite commands and customize them"))}</span></button></div>
-						<div class="item selectTheme"><button data-href="command:workbench.action.selectTheme"><h3 class="caption">${escape(localize('welcomePage.colorTheme', "Color theme"))}</h3> <span class="detail">${escape(localize('welcomePage.colorThemeDescription', "Make the editor and your code look the way you love"))}</span></button></div>
+			<div class="ads-homepage-section middle-section content row ads-grid">
+				<div class="resources-container">
+					<h2>${escape(localize('welcomePage.resources', "Resources"))}</h2>
+					<div class="tabs">
+						<input class="input" name="tabs" type="radio" id="tab-1" checked="checked" />
+						<label class="label" for="tab-1" tabIndex="0">${escape(localize('welcomePage.history', "History"))}</label>
+						<div class="panel">
+							<div class="recent history">
+								<div class="flex list-header-container">
+									<i class="icon-document themed-icon"></i>
+									<h4 class="list-header">${escape(localize('welcomePage.name', "Name"))}</h4>
+									<h4 class="list-header-last-opened">${escape(localize('welcomePage.lastOpened', "Last Opened"))}</h4>
+								</div>
+								<ul class="list">
+									<!-- Filled programmatically -->
+								</ul>
+								<p class="none detail">No recent folders</p>
+								<div class="moreRecent">
+									<a class="ads-welcome-page-link" href="command:workbench.action.openRecent">${escape(localize('welcomePage.moreRecent', "Show more"))}
+									<i class="icon-arrow-down-dark"></i>
+								</a>
+							</div>
+							</div>
+						</div>
+					</div>
+					<p class="showOnStartup"><input type="checkbox" id="showOnStartup" class="checkbox">
+						<label for="showOnStartup">${escape(localize('welcomePage.showOnStartup', "Show welcome page on startup"))}</label>
+					</p>
+				</div>
+				<div class="getting-started-container">
+					<div class="links">
+						<h2>${escape(localize('welcomePage.usefuLinks', "Useful Links"))}</h2>
+						<div class="link-header">
+							<a class="link ads-welcome-page-link"
+								href="https://aka.ms/get-started-azdata">${escape(localize('welcomePage.gettingStarted',
+	"Getting Started"))}<span class="icon-link themed-icon-alt"></a>
+						</div>
+						<p>
+						${escape(localize('welcomePage.gettingStartedBody',
+		"Discover the capabilities offered by Azure Data Studio and learn how to make the most of them."))}
+						</p>
+						<div class="link-header">
+							<a class="link ads-welcome-page-link"
+								href="command:workbench.action.openDocumentationUrl">${escape(localize('welcomePage.documentation',
+			"Documentation"))}<span class="icon-link themed-icon-alt"</a></a>
+						</div>
+						<p>${escape(localize('welcomePage.documentationBody',
+				"Visit the documentation center for quickstarts, how-to guides, and references for PowerShell, APIs, etc."))}
+						</p>
+						<div class="videos-container row">
+							<h2>Videos</h2>
+							<div class="flex flex-container-video">
+								<div class="videos-container-video">
+									<a href="https://www.youtube.com/watch?v=Orv7fptVoUA" class="video overview ads-welcome-page-link">
+									<img src="${require.toUrl('./../../media/video_overview.png')}" class="video-overview" id="video-overview" />
+										<h4>${escape(localize('welcomePage.videoDescriptionOverview',
+					"Overview of Azure Data Studio"))}</h4>
+									</a>
+								</div>
+								<div class="videos-container-video">
+									<a href="https://www.youtube.com/watch?v=Nt4kIHQ0IOc" class="video overview ads-welcome-page-link">
+									<img src="${require.toUrl('./../../media/video_introduction.png')}" class="video-introduction" id="video-introduction" />
+										<h4>${escape(localize('welcomePage.videoDescriptionIntroduction',
+						"Introduction to Azure Data Studio Notebooks | Data Exposed"))}</h4>
+									</a>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
-				<div class="section learn">
-					<h2 class="caption">${escape(localize('welcomePage.learn', "Learn"))}</h2>
-					<div class="list">
-						<div class="item showCommands"><button data-href="command:workbench.action.showCommands"><h3 class="caption">${escape(localize('welcomePage.showCommands', "Find and run all commands"))}</h3> <span class="detail">${escape(localize('welcomePage.showCommandsDescription', "Rapidly access and search commands from the Command Palette ({0})"))
-		.replace('{0}', '<span class="shortcut" data-command="workbench.action.showCommands"></span>')}</span></button></div>
-						<div class="item showInterfaceOverview"><button data-href="https://aka.ms/azdata-blog"><h3 class="caption">${escape(localize('welcomePage.azdataBlog', "Discover what's new in the latest release"))}</h3> <span class="detail">${escape(localize('welcomePage.azdataBlogDescription', "New monthly blog posts each month showcasing our new features"))}</span></button></div>
-						<div class="item showInteractivePlayground"><button data-href="https://twitter.com/azuredatastudio"><h3 class="caption">${escape(localize('welcomePage.followTwitter', "Follow us on Twitter"))}</h3> <span class="detail">${escape(localize('welcomePage.followTwitterDescription', "Keep up to date with how the community is using Azure Data Studio and to talk directly with the engineers."))}</span></button></div>
+			</div>
+			<div class="ads-homepage-section content extensions">
+				<div class="flex flex-j-between">
+					<h2>Extend your data studio</h2>
+					<a class="link-show-all flex" href="command:workbench.view.extensions">${escape(localize('welcomePage.showAll', "Show All"))} <span class="icon-arrow-right"></span></a>
+				</div>
+				<div class="row ads-grid grip-gap-50">
+					<div
+						class="ads-grid tile no-hover extension-pack">
+						<div class="extension-pack-description">
+							<div class="extension-pack-header"></div>
+							<p class="extension-pack-body"></p>
+						</div>
+						<div class="extension-pack-extensions flex flex-d-column flex-j-evenly flex-a-start">
+							<div class="extension-pack-extension-list flex flex-d-column flex-j-evenly flex-a-start"></div>
+							<div class="flex flex-j-end extension-pack-btn-container flex flex-j-between flex-a-center"">
+							<div class="extensionPack" href="#"></div>
+							<a class="a-self-end link-learn-more flex flex-a-center ads-welcome-page-link" href="command:azdata.extension.open?%7B%22id%22%3A%22microsoft.admin-pack%22%7D">${escape(localize('welcomePage.learnMore',
+							"Learn more "))}<span class="icon-arrow-right"></span></a>
+						</div>
 					</div>
 				</div>
+				<div class="extension-list flex flex-d-column">
+					<!-- Dynamically populated -->
+				</div>
+				<br /><br /><br />
 			</div>
 		</div>
 	</div>

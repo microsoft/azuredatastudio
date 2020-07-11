@@ -1,0 +1,57 @@
+{
+	"enabled": true,
+	"relativeSourcePath": "../../../",
+	"relativeCoverageDir": "../../coverage",
+	"ignorePatterns": [
+		"**/bat/**",
+		"**/configuration-editing/**",
+		"**/docker/**",
+		"**/extension-editing/**",
+		"**/git/**",
+		"**/github/**",
+		"**/github-authentication/**",
+		"**/git-ui/**",
+		"**/image-preview/**",
+		"**/insights-default/**",
+		"**/integration-tests/**",
+		"**/json/**",
+		"**/json-language-features/**",
+		"**/liveshare/**",
+		"**/markdown-basics/**",
+		"**/markdown-language-features/**",
+		"**/merge-conflict/**",
+		"**/microsoft-authentication/**",
+		"**/powershell/**",
+		"**/python/**",
+		"**/r/**",
+		"**/search-result/**",
+		"**/vscode-account/**",
+		"**/vscode-test-resolver/**",
+		"**/vscode-web-playground/**",
+		"**/xml/**",
+		"**/xml-language-features/**",
+		"**/yaml/**",
+
+		"**/build/**",
+		"**/coverage/**",
+		"**/generated/**",
+		"**/images/**",
+		"**/node_modules/**",
+		"**/resources/**",
+		"**/test/**",
+
+		"**/extension.webpack.config.js",
+		"**/shared.webpack.config.js",
+		"**/postinstall.js"
+	],
+	"reports": [
+		"cobertura",
+		"lcov",
+		"json"
+	],
+	"verbose": false,
+	"remapOptions": {
+		"basePath": "../../../",
+		"useAbsolutePaths": true
+	}
+}

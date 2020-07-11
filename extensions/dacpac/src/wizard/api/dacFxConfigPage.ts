@@ -4,16 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as os from 'os';
 import * as path from 'path';
+import * as loc from '../../localizedConstants';
 import { DataTierApplicationWizard, Operation } from '../dataTierApplicationWizard';
 import { DacFxDataModel } from './models';
 import { BasePage } from './basePage';
 import { sanitizeStringForFilename, isValidBasename, isValidBasenameErrorMessage } from './utils';
-
-const localize = nls.loadMessageBundle();
 
 export abstract class DacFxConfigPage extends BasePage {
 
@@ -44,7 +42,7 @@ export abstract class DacFxConfigPage extends BasePage {
 	}
 
 	protected async createServerDropdown(isTargetServer: boolean): Promise<azdata.FormComponent> {
-		const serverDropDownTitle = isTargetServer ? localize('dacFx.targetServerDropdownTitle', "Target Server") : localize('dacFx.sourceServerDropdownTitle', "Source Server");
+		const serverDropDownTitle = isTargetServer ? loc.targetServer : loc.sourceServer;
 		this.serverDropdown = this.view.modelBuilder.dropDown().withProperties({
 			required: true,
 			ariaLabel: serverDropDownTitle
@@ -87,7 +85,7 @@ export abstract class DacFxConfigPage extends BasePage {
 			.withValidation(component => !this.databaseNameExists(component.value))
 			.withProperties({
 				required: true,
-				validationErrorMessage: localize('dacfx.databaseNameExistsErrorMessage', "A database with the same name already exists on the instance of SQL Server")
+				validationErrorMessage: loc.databaseNameExistsErrorMessage
 			}).component();
 
 		this.databaseTextBox.ariaLabel = title;
@@ -102,14 +100,15 @@ export abstract class DacFxConfigPage extends BasePage {
 	}
 
 	protected async createDatabaseDropdown(): Promise<azdata.FormComponent> {
-		const databaseDropdownTitle = localize('dacFx.sourceDatabaseDropdownTitle', "Source Database");
+		const databaseDropdownTitle = loc.sourceDatabase;
 		this.databaseDropdown = this.view.modelBuilder.dropDown().withProperties({
+			required: true,
 			ariaLabel: databaseDropdownTitle
 		}).component();
 
 		// Handle database changes
 		this.databaseDropdown.onValueChanged(async () => {
-			this.model.database = (<azdata.CategoryValue>this.databaseDropdown.value).name;
+			this.model.database = <string>this.databaseDropdown.value;
 			this.fileTextBox.value = this.generateFilePathFromDatabaseAndTimestamp();
 			this.model.filePath = this.fileTextBox.value;
 		});
@@ -117,7 +116,6 @@ export abstract class DacFxConfigPage extends BasePage {
 		this.databaseLoader = this.view.modelBuilder.loadingComponent().withItem(this.databaseDropdown).withProperties({
 			required: true
 		}).component();
-
 
 		return {
 			component: this.databaseLoader,
@@ -134,7 +132,14 @@ export abstract class DacFxConfigPage extends BasePage {
 			return false;
 		}
 
-		let values = await this.getDatabaseValues();
+		let values: string[];
+		try {
+			values = await this.getDatabaseValues();
+		} catch (e) {
+			// if the user doesn't have access to master, just set the database to the one the current connection is to
+			values = [this.model.server.databaseName];
+			console.warn(e);
+		}
 
 		// only update values and regenerate filepath if this is the first time and database isn't set yet
 		if (this.model.database !== values[0]) {
@@ -174,11 +179,11 @@ export abstract class DacFxConfigPage extends BasePage {
 			}
 		});
 
-		this.fileTextBox.ariaLabel = localize('dacfx.fileLocationAriaLabel', "File Location");
+		this.fileTextBox.ariaLabel = loc.fileLocation;
 		this.fileButton = this.view.modelBuilder.button().withProperties({
 			label: '•••',
-			title: localize('dacfx.selectFile', "Select file"),
-			ariaLabel: localize('dacfx.selectFile', "Select file")
+			title: loc.selectFile,
+			ariaLabel: loc.selectFile
 		}).component();
 	}
 
@@ -209,7 +214,7 @@ export abstract class DacFxConfigPage extends BasePage {
 	}
 
 	// Compares database name with existing databases on the server
-	protected databaseNameExists(n: string): boolean {
+	public databaseNameExists(n: string): boolean {
 		for (let i = 0; i < this.databaseValues.length; ++i) {
 			if (this.databaseValues[i].toLowerCase() === n.toLowerCase()) {
 				// database name exists

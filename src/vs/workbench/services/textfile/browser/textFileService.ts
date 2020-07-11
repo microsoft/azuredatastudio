@@ -5,57 +5,49 @@
 
 import * as nls from 'vs/nls';
 import { URI } from 'vs/base/common/uri';
-import { Emitter, AsyncEmitter } from 'vs/base/common/event';
-import { IResult, ITextFileOperationResult, ITextFileService, ITextFileStreamContent, ITextFileEditorModel, ITextFileContent, IResourceEncodings, IReadTextFileOptions, IWriteTextFileOptions, toBufferOrReadable, TextFileOperationError, TextFileOperationResult, FileOperationWillRunEvent, FileOperationDidRunEvent, ITextFileSaveOptions, ITextFileEditorModelManager } from 'vs/workbench/services/textfile/common/textfiles';
+import { ITextFileService, ITextFileStreamContent, ITextFileContent, IResourceEncodings, IReadTextFileOptions, IWriteTextFileOptions, toBufferOrReadable, TextFileOperationError, TextFileOperationResult, ITextFileSaveOptions, ITextFileEditorModelManager, IResourceEncoding } from 'vs/workbench/services/textfile/common/textfiles';
 import { IRevertOptions, IEncodingSupport } from 'vs/workbench/common/editor';
 import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
-import { IFileService, FileOperationError, FileOperationResult, IFileStatWithMetadata, ICreateFileOptions, FileOperation } from 'vs/platform/files/common/files';
+import { IFileService, FileOperationError, FileOperationResult, IFileStatWithMetadata, ICreateFileOptions } from 'vs/platform/files/common/files';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 import { IUntitledTextEditorService, IUntitledTextEditorModelManager } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
-import { UntitledTextEditorModel } from 'vs/workbench/common/editor/untitledTextEditorModel';
+import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 import { TextFileEditorModelManager } from 'vs/workbench/services/textfile/common/textFileEditorModelManager';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ResourceMap } from 'vs/base/common/map';
 import { Schemas } from 'vs/base/common/network';
 import { createTextBufferFactoryFromSnapshot, createTextBufferFactoryFromStream } from 'vs/editor/common/model/textModel';
 import { IModelService } from 'vs/editor/common/services/modelService';
-import { isEqualOrParent, isEqual, joinPath, dirname, basename, toLocalResource } from 'vs/base/common/resources';
+import { joinPath, dirname, basename, toLocalResource, extUri, extname, isEqualOrParent } from 'vs/base/common/resources';
 import { IDialogService, IFileDialogService, IConfirmation } from 'vs/platform/dialogs/common/dialogs';
-import { VSBuffer } from 'vs/base/common/buffer';
+import { VSBuffer, VSBufferReadable } from 'vs/base/common/buffer';
 import { ITextSnapshot, ITextModel } from 'vs/editor/common/model';
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { PLAINTEXT_MODE_ID } from 'vs/editor/common/modes/modesRegistry';
 import { IFilesConfigurationService } from 'vs/workbench/services/filesConfiguration/common/filesConfigurationService';
-import { CancellationToken } from 'vs/base/common/cancellation';
 import { ITextModelService, IResolvedTextEditorModel } from 'vs/editor/common/services/resolverService';
 import { BaseTextEditorModel } from 'vs/workbench/common/editor/textEditorModel';
 import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
-import { coalesce } from 'vs/base/common/arrays';
 import { suggestFilename } from 'vs/base/common/mime';
+import { IPathService } from 'vs/workbench/services/path/common/pathService';
+import { isValidBasename } from 'vs/base/common/extpath';
+import { IWorkingCopyFileService } from 'vs/workbench/services/workingCopy/common/workingCopyFileService';
+import { IUriIdentityService } from 'vs/workbench/services/uriIdentity/common/uriIdentity';
+import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
+import { WORKSPACE_EXTENSION } from 'vs/platform/workspaces/common/workspaces';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { UTF8, UTF8_with_bom, UTF16be, UTF16le, encodingExists, UTF8_BOM, detectEncodingByBOMFromBuffer } from 'vs/workbench/services/textfile/common/encoding';
 
 /**
  * The workbench file service implementation implements the raw file service spec and adds additional methods on top.
  */
 export abstract class AbstractTextFileService extends Disposable implements ITextFileService {
 
-	_serviceBrand: undefined;
-
-	//#region events
-
-	private _onWillRunOperation = this._register(new AsyncEmitter<FileOperationWillRunEvent>());
-	readonly onWillRunOperation = this._onWillRunOperation.event;
-
-	private _onDidRunOperation = this._register(new Emitter<FileOperationDidRunEvent>());
-	readonly onDidRunOperation = this._onDidRunOperation.event;
-
-	//#endregion
+	declare readonly _serviceBrand: undefined;
 
 	readonly files: ITextFileEditorModelManager = this._register(this.instantiationService.createInstance(TextFileEditorModelManager));
 
 	readonly untitled: IUntitledTextEditorModelManager = this.untitledTextEditorService;
-
-	abstract get encoding(): IResourceEncodings;
 
 	constructor(
 		@IFileService protected readonly fileService: IFileService,
@@ -69,7 +61,10 @@ export abstract class AbstractTextFileService extends Disposable implements ITex
 		@ITextResourceConfigurationService protected readonly textResourceConfigurationService: ITextResourceConfigurationService,
 		@IFilesConfigurationService protected readonly filesConfigurationService: IFilesConfigurationService,
 		@ITextModelService private readonly textModelService: ITextModelService,
-		@ICodeEditorService private readonly codeEditorService: ICodeEditorService
+		@ICodeEditorService private readonly codeEditorService: ICodeEditorService,
+		@IPathService private readonly pathService: IPathService,
+		@IWorkingCopyFileService private readonly workingCopyFileService: IWorkingCopyFileService,
+		@IUriIdentityService private readonly uriIdentityService: IUriIdentityService
 	) {
 		super();
 
@@ -82,7 +77,17 @@ export abstract class AbstractTextFileService extends Disposable implements ITex
 		this.lifecycleService.onShutdown(this.dispose, this);
 	}
 
-	//#region text file read / write
+	//#region text file read / write / create
+
+	private _encoding: EncodingOracle | undefined;
+
+	get encoding(): EncodingOracle {
+		if (!this._encoding) {
+			this._encoding = this._register(this.instantiationService.createInstance(EncodingOracle));
+		}
+
+		return this._encoding;
+	}
 
 	async read(resource: URI, options?: IReadTextFileOptions): Promise<ITextFileContent> {
 		const content = await this.fileService.readFile(resource, options);
@@ -138,160 +143,26 @@ export abstract class AbstractTextFileService extends Disposable implements ITex
 		}
 	}
 
+	async create(resource: URI, value?: string | ITextSnapshot, options?: ICreateFileOptions): Promise<IFileStatWithMetadata> {
+		const encodedValue = await this.doEncodeText(resource, value);
+
+		return this.workingCopyFileService.create(resource, encodedValue, options);
+	}
+
+	protected async doEncodeText(resource: URI, value?: string | ITextSnapshot): Promise<VSBuffer | VSBufferReadable | undefined> {
+		if (!value) {
+			return undefined;
+		}
+
+		return toBufferOrReadable(value);
+	}
+
 	async write(resource: URI, value: string | ITextSnapshot, options?: IWriteTextFileOptions): Promise<IFileStatWithMetadata> {
 		return this.fileService.writeFile(resource, toBufferOrReadable(value), options);
 	}
 
 	//#endregion
 
-	//#region text file IO primitives (create, move, copy, delete)
-
-	async create(resource: URI, value?: string | ITextSnapshot, options?: ICreateFileOptions): Promise<IFileStatWithMetadata> {
-
-		// before event
-		await this._onWillRunOperation.fireAsync({ operation: FileOperation.CREATE, target: resource }, CancellationToken.None);
-
-		const stat = await this.doCreate(resource, value, options);
-
-		// If we had an existing model for the given resource, load
-		// it again to make sure it is up to date with the contents
-		// we just wrote into the underlying resource by calling
-		// revert()
-		const existingModel = this.files.get(resource);
-		if (existingModel && !existingModel.isDisposed()) {
-			await existingModel.revert();
-		}
-
-		// after event
-		this._onDidRunOperation.fire(new FileOperationDidRunEvent(FileOperation.CREATE, resource));
-
-		return stat;
-	}
-
-	protected doCreate(resource: URI, value?: string | ITextSnapshot, options?: ICreateFileOptions): Promise<IFileStatWithMetadata> {
-		return this.fileService.createFile(resource, toBufferOrReadable(value), options);
-	}
-
-	async move(source: URI, target: URI, overwrite?: boolean): Promise<IFileStatWithMetadata> {
-		return this.moveOrCopy(source, target, true, overwrite);
-	}
-
-	async copy(source: URI, target: URI, overwrite?: boolean): Promise<IFileStatWithMetadata> {
-		return this.moveOrCopy(source, target, false, overwrite);
-	}
-
-	private async moveOrCopy(source: URI, target: URI, move: boolean, overwrite?: boolean): Promise<IFileStatWithMetadata> {
-
-		// before event
-		await this._onWillRunOperation.fireAsync({ operation: move ? FileOperation.MOVE : FileOperation.COPY, target, source }, CancellationToken.None);
-
-		// find all models that related to either source or target (can be many if resource is a folder)
-		const sourceModels: ITextFileEditorModel[] = [];
-		const targetModels: ITextFileEditorModel[] = [];
-		for (const model of this.getFileModels()) {
-			const resource = model.resource;
-
-			if (isEqualOrParent(resource, target, false /* do not ignorecase, see https://github.com/Microsoft/vscode/issues/56384 */)) {
-				targetModels.push(model);
-			}
-
-			if (isEqualOrParent(resource, source)) {
-				sourceModels.push(model);
-			}
-		}
-
-		// remember each source model to load again after move is done
-		// with optional content to restore if it was dirty
-		type ModelToRestore = { resource: URI; snapshot?: ITextSnapshot; encoding?: string; mode?: string };
-		const modelsToRestore: ModelToRestore[] = [];
-		for (const sourceModel of sourceModels) {
-			const sourceModelResource = sourceModel.resource;
-
-			// If the source is the actual model, just use target as new resource
-			let modelToRestoreResource: URI;
-			if (isEqual(sourceModelResource, source)) {
-				modelToRestoreResource = target;
-			}
-
-			// Otherwise a parent folder of the source is being moved, so we need
-			// to compute the target resource based on that
-			else {
-				modelToRestoreResource = joinPath(target, sourceModelResource.path.substr(source.path.length + 1));
-			}
-
-			const modelToRestore: ModelToRestore = { resource: modelToRestoreResource, encoding: sourceModel.getEncoding() };
-			if (sourceModel.isDirty()) {
-				modelToRestore.snapshot = sourceModel.createSnapshot();
-			}
-
-			modelsToRestore.push(modelToRestore);
-		}
-
-		// handle dirty models depending on the operation:
-		// - move: revert both source and target (if any)
-		// - copy: revert target (if any)
-		const dirtyModelsToRevert = (move ? [...sourceModels, ...targetModels] : [...targetModels]).filter(model => model.isDirty());
-		await this.doRevertFiles(dirtyModelsToRevert.map(dirtyModel => dirtyModel.resource), { soft: true });
-
-		// now we can rename the source to target via file operation
-		let stat: IFileStatWithMetadata;
-		try {
-			if (move) {
-				stat = await this.fileService.move(source, target, overwrite);
-			} else {
-				stat = await this.fileService.copy(source, target, overwrite);
-			}
-		} catch (error) {
-
-			// in case of any error, ensure to set dirty flag back
-			dirtyModelsToRevert.forEach(dirtyModel => dirtyModel.makeDirty());
-
-			throw error;
-		}
-
-		// finally, restore models that we had loaded previously
-		await Promise.all(modelsToRestore.map(async modelToRestore => {
-
-			// restore the model, forcing a reload. this is important because
-			// we know the file has changed on disk after the move and the
-			// model might have still existed with the previous state. this
-			// ensures we are not tracking a stale state.
-			const restoredModel = await this.files.resolve(modelToRestore.resource, { reload: { async: false }, encoding: modelToRestore.encoding, mode: modelToRestore.mode });
-
-			// restore previous dirty content if any and ensure to mark
-			// the model as dirty
-			if (modelToRestore.snapshot && restoredModel.isResolved()) {
-				this.modelService.updateModel(restoredModel.textEditorModel, createTextBufferFactoryFromSnapshot(modelToRestore.snapshot));
-
-				restoredModel.makeDirty();
-			}
-		}));
-
-		// after event
-		this._onDidRunOperation.fire(new FileOperationDidRunEvent(move ? FileOperation.MOVE : FileOperation.COPY, target, source));
-
-		return stat;
-	}
-
-	async delete(resource: URI, options?: { useTrash?: boolean, recursive?: boolean }): Promise<void> {
-
-		// before event
-		await this._onWillRunOperation.fireAsync({ operation: FileOperation.DELETE, target: resource }, CancellationToken.None);
-
-		// Check for any existing dirty file model for the resource
-		// and do a soft revert before deleting to be able to close
-		// any opened editor with these files
-		const dirtyFiles = this.getDirtyFileModels().map(dirtyFileModel => dirtyFileModel.resource).filter(dirty => isEqualOrParent(dirty, resource));
-		await this.doRevertFiles(dirtyFiles, { soft: true });
-
-		// Now actually delete from disk
-		await this.fileService.del(resource, options);
-
-		// after event
-		this._onDidRunOperation.fire(new FileOperationDidRunEvent(FileOperation.DELETE, resource));
-	}
-
-	//#endregion
 
 	//#region save
 
@@ -305,12 +176,12 @@ export abstract class AbstractTextFileService extends Disposable implements ITex
 
 				// Untitled with associated file path don't need to prompt
 				if (model.hasAssociatedFilePath) {
-					targetUri = this.suggestSavePath(resource);
+					targetUri = await this.suggestSavePath(resource);
 				}
 
 				// Otherwise ask user
 				else {
-					targetUri = await this.fileDialogService.pickFileToSave(this.suggestSavePath(resource), options?.availableFileSystems);
+					targetUri = await this.fileDialogService.pickFileToSave(await this.suggestSavePath(resource), options?.availableFileSystems);
 				}
 
 				// Save as if target provided
@@ -324,34 +195,18 @@ export abstract class AbstractTextFileService extends Disposable implements ITex
 		else {
 			const model = this.files.get(resource);
 			if (model) {
-
-				// Save with options
-				await model.save(options);
-
-				return !model.isDirty() ? resource : undefined;
+				return await model.save(options) ? resource : undefined;
 			}
 		}
 
 		return undefined;
 	}
 
-	private getFileModels(resources?: URI[]): ITextFileEditorModel[] {
-		if (Array.isArray(resources)) {
-			return coalesce(resources.map(resource => this.files.get(resource)));
-		}
-
-		return this.files.getAll();
-	}
-
-	private getDirtyFileModels(resources?: URI[]): ITextFileEditorModel[] {
-		return this.getFileModels(resources).filter(model => model.isDirty());
-	}
-
 	async saveAs(source: URI, target?: URI, options?: ITextFileSaveOptions): Promise<URI | undefined> {
 
 		// Get to target resource
 		if (!target) {
-			target = await this.fileDialogService.pickFileToSave(this.suggestSavePath(source), options?.availableFileSystems);
+			target = await this.fileDialogService.pickFileToSave(await this.suggestSavePath(source), options?.availableFileSystems);
 		}
 
 		if (!target) {
@@ -359,8 +214,19 @@ export abstract class AbstractTextFileService extends Disposable implements ITex
 		}
 
 		// Just save if target is same as models own resource
-		if (source.toString() === target.toString()) {
-			return this.save(source, options);
+		if (extUri.isEqual(source, target)) {
+			return this.save(source, { ...options, force: true  /* force to save, even if not dirty (https://github.com/microsoft/vscode/issues/99619) */ });
+		}
+
+		// If the target is different but of same identity, we
+		// move the source to the target, knowing that the
+		// underlying file system cannot have both and then save.
+		// However, this will only work if the source exists
+		// and is not orphaned, so we need to check that too.
+		if (this.fileService.canHandleResource(source) && this.uriIdentityService.extUri.isEqual(source, target) && (await this.fileService.exists(source))) {
+			await this.workingCopyFileService.move([{ source, target }]);
+
+			return this.save(target, options);
 		}
 
 		// Do it
@@ -388,11 +254,13 @@ export abstract class AbstractTextFileService extends Disposable implements ITex
 		// Next, if the source does not seem to be a file, we try to
 		// resolve a text model from the resource to get at the
 		// contents and additional meta data (e.g. encoding).
-		else if (this.textModelService.hasTextModelContentProvider(source.scheme)) {
+		else if (this.textModelService.canHandleResource(source)) {
 			const modelReference = await this.textModelService.createModelReference(source);
-			success = await this.doSaveAsTextFile(modelReference.object, source, target, options);
-
-			modelReference.dispose(); // free up our use of the reference
+			try {
+				success = await this.doSaveAsTextFile(modelReference.object, source, target, options);
+			} finally {
+				modelReference.dispose(); // free up our use of the reference
+			}
 		}
 
 		// Finally we simply check if we can find a editor model that
@@ -464,7 +332,7 @@ export abstract class AbstractTextFileService extends Disposable implements ITex
 		// path. This can happen if the file was created after the untitled file was opened.
 		// See https://github.com/Microsoft/vscode/issues/67946
 		let write: boolean;
-		if (sourceModel instanceof UntitledTextEditorModel && sourceModel.hasAssociatedFilePath && targetExists && isEqual(target, toLocalResource(sourceModel.resource, this.environmentService.configuration.remoteAuthority))) {
+		if (sourceModel instanceof UntitledTextEditorModel && sourceModel.hasAssociatedFilePath && targetExists && this.uriIdentityService.extUri.isEqual(target, toLocalResource(sourceModel.resource, this.environmentService.configuration.remoteAuthority))) {
 			write = await this.confirmOverwrite(target);
 		} else {
 			write = true;
@@ -514,9 +382,7 @@ export abstract class AbstractTextFileService extends Disposable implements ITex
 		}
 
 		// save model
-		await targetModel.save(options);
-
-		return true;
+		return await targetModel.save(options);
 	}
 
 	private async confirmOverwrite(resource: URI): Promise<boolean> {
@@ -530,7 +396,7 @@ export abstract class AbstractTextFileService extends Disposable implements ITex
 		return (await this.dialogService.confirm(confirm)).confirmed;
 	}
 
-	private suggestSavePath(resource: URI): URI {
+	private async suggestSavePath(resource: URI): Promise<URI> {
 
 		// Just take the resource as is if the file service can handle it
 		if (this.fileService.canHandleResource(resource)) {
@@ -550,12 +416,19 @@ export abstract class AbstractTextFileService extends Disposable implements ITex
 					return toLocalResource(resource, remoteAuthority);
 				}
 
-				// Untitled without associated file path
+				// Untitled without associated file path: use name
+				// of untitled model if it is a valid path name
+				let untitledName = model.name;
+				if (!isValidBasename(untitledName)) {
+					untitledName = basename(resource);
+				}
+
+				// Add mode file extension if specified
 				const mode = model.getMode();
-				if (mode !== PLAINTEXT_MODE_ID) { // do not suggest when the mode ID is simple plain text
-					suggestedFilename = suggestFilename(mode, model.getName());
+				if (mode !== PLAINTEXT_MODE_ID) {
+					suggestedFilename = suggestFilename(mode, untitledName);
 				} else {
-					suggestedFilename = model.getName();
+					suggestedFilename = untitledName;
 				}
 			}
 		}
@@ -566,60 +439,31 @@ export abstract class AbstractTextFileService extends Disposable implements ITex
 		}
 
 		// Try to place where last active file was if any
-		const defaultFilePath = this.fileDialogService.defaultFilePath();
-		if (defaultFilePath) {
-			return joinPath(defaultFilePath, suggestedFilename);
-		}
-
-		// Finally fallback to suggest just the file name
-		return toLocalResource(resource.with({ path: suggestedFilename }), remoteAuthority);
+		// Otherwise fallback to user home
+		return joinPath(this.fileDialogService.defaultFilePath() || (await this.pathService.userHome()), suggestedFilename);
 	}
 
 	//#endregion
 
 	//#region revert
 
-	async revert(resource: URI, options?: IRevertOptions): Promise<boolean> {
+	async revert(resource: URI, options?: IRevertOptions): Promise<void> {
 
 		// Untitled
 		if (resource.scheme === Schemas.untitled) {
-			const model = this.untitled.exists(resource) ? await this.untitled.resolve({ untitledResource: resource }) : undefined;
+			const model = this.untitled.get(resource);
 			if (model) {
 				return model.revert(options);
 			}
-
-			return false;
 		}
 
 		// File
-		return !(await this.doRevertFiles([resource], options)).results.some(result => result.error);
-	}
-
-	private async doRevertFiles(resources: URI[], options?: IRevertOptions): Promise<ITextFileOperationResult> {
-		const fileModels = options?.force ? this.getFileModels(resources) : this.getDirtyFileModels(resources);
-
-		const mapResourceToResult = new ResourceMap<IResult>();
-		fileModels.forEach(fileModel => {
-			mapResourceToResult.set(fileModel.resource, {
-				source: fileModel.resource
-			});
-		});
-
-		await Promise.all(fileModels.map(async model => {
-
-			// Revert through model
-			await model.revert(options);
-
-			// If model is still dirty, mark the resulting operation as error
-			if (model.isDirty()) {
-				const result = mapResourceToResult.get(model.resource);
-				if (result) {
-					result.error = true;
-				}
+		else {
+			const model = this.files.get(resource);
+			if (model && (model.isDirty() || options?.force)) {
+				return model.revert(options);
 			}
-		}));
-
-		return { results: mapResourceToResult.values() };
+		}
 	}
 
 	//#endregion
@@ -636,4 +480,151 @@ export abstract class AbstractTextFileService extends Disposable implements ITex
 	}
 
 	//#endregion
+}
+
+export interface IEncodingOverride {
+	parent?: URI;
+	extension?: string;
+	encoding: string;
+}
+
+export class EncodingOracle extends Disposable implements IResourceEncodings {
+
+	private _encodingOverrides: IEncodingOverride[];
+	protected get encodingOverrides(): IEncodingOverride[] { return this._encodingOverrides; }
+	protected set encodingOverrides(value: IEncodingOverride[]) { this._encodingOverrides = value; }
+
+	constructor(
+		@ITextResourceConfigurationService private textResourceConfigurationService: ITextResourceConfigurationService,
+		@IEnvironmentService private environmentService: IEnvironmentService,
+		@IWorkspaceContextService private contextService: IWorkspaceContextService,
+		@IFileService private fileService: IFileService
+	) {
+		super();
+
+		this._encodingOverrides = this.getDefaultEncodingOverrides();
+
+		this.registerListeners();
+	}
+
+	private registerListeners(): void {
+
+		// Workspace Folder Change
+		this._register(this.contextService.onDidChangeWorkspaceFolders(() => this.encodingOverrides = this.getDefaultEncodingOverrides()));
+	}
+
+	private getDefaultEncodingOverrides(): IEncodingOverride[] {
+		const defaultEncodingOverrides: IEncodingOverride[] = [];
+
+		// Global settings
+		defaultEncodingOverrides.push({ parent: this.environmentService.userRoamingDataHome, encoding: UTF8 });
+
+		// Workspace files (via extension and via untitled workspaces location)
+		defaultEncodingOverrides.push({ extension: WORKSPACE_EXTENSION, encoding: UTF8 });
+		defaultEncodingOverrides.push({ parent: this.environmentService.untitledWorkspacesHome, encoding: UTF8 });
+
+		// Folder Settings
+		this.contextService.getWorkspace().folders.forEach(folder => {
+			defaultEncodingOverrides.push({ parent: joinPath(folder.uri, '.vscode'), encoding: UTF8 });
+		});
+
+		return defaultEncodingOverrides;
+	}
+
+	async getWriteEncoding(resource: URI, options?: IWriteTextFileOptions): Promise<{ encoding: string, addBOM: boolean }> {
+		const { encoding, hasBOM } = await this.getPreferredWriteEncoding(resource, options ? options.encoding : undefined);
+
+		// Some encodings come with a BOM automatically
+		if (hasBOM) {
+			return { encoding, addBOM: true };
+		}
+
+		// Ensure that we preserve an existing BOM if found for UTF8
+		// unless we are instructed to overwrite the encoding
+		const overwriteEncoding = options?.overwriteEncoding;
+		if (!overwriteEncoding && encoding === UTF8) {
+			try {
+				const buffer = (await this.fileService.readFile(resource, { length: UTF8_BOM.length })).value;
+				if (detectEncodingByBOMFromBuffer(buffer, buffer.byteLength) === UTF8_with_bom) {
+					return { encoding, addBOM: true };
+				}
+			} catch (error) {
+				// ignore - file might not exist
+			}
+		}
+
+		return { encoding, addBOM: false };
+	}
+
+	async getPreferredWriteEncoding(resource: URI, preferredEncoding?: string): Promise<IResourceEncoding> {
+		const resourceEncoding = await this.getEncodingForResource(resource, preferredEncoding);
+
+		return {
+			encoding: resourceEncoding,
+			hasBOM: resourceEncoding === UTF16be || resourceEncoding === UTF16le || resourceEncoding === UTF8_with_bom // enforce BOM for certain encodings
+		};
+	}
+
+	getReadEncoding(resource: URI, options: IReadTextFileOptions | undefined, detectedEncoding: string | null): Promise<string> {
+		let preferredEncoding: string | undefined;
+
+		// Encoding passed in as option
+		if (options?.encoding) {
+			if (detectedEncoding === UTF8_with_bom && options.encoding === UTF8) {
+				preferredEncoding = UTF8_with_bom; // indicate the file has BOM if we are to resolve with UTF 8
+			} else {
+				preferredEncoding = options.encoding; // give passed in encoding highest priority
+			}
+		}
+
+		// Encoding detected
+		else if (detectedEncoding) {
+			preferredEncoding = detectedEncoding;
+		}
+
+		// Encoding configured
+		else if (this.textResourceConfigurationService.getValue(resource, 'files.encoding') === UTF8_with_bom) {
+			preferredEncoding = UTF8; // if we did not detect UTF 8 BOM before, this can only be UTF 8 then
+		}
+
+		return this.getEncodingForResource(resource, preferredEncoding);
+	}
+
+	private async getEncodingForResource(resource: URI, preferredEncoding?: string): Promise<string> {
+		let fileEncoding: string;
+
+		const override = this.getEncodingOverride(resource);
+		if (override) {
+			fileEncoding = override; // encoding override always wins
+		} else if (preferredEncoding) {
+			fileEncoding = preferredEncoding; // preferred encoding comes second
+		} else {
+			fileEncoding = this.textResourceConfigurationService.getValue(resource, 'files.encoding'); // and last we check for settings
+		}
+
+		if (!fileEncoding || !(await encodingExists(fileEncoding))) {
+			fileEncoding = UTF8; // the default is UTF 8
+		}
+
+		return fileEncoding;
+	}
+
+	private getEncodingOverride(resource: URI): string | undefined {
+		if (this.encodingOverrides && this.encodingOverrides.length) {
+			for (const override of this.encodingOverrides) {
+
+				// check if the resource is child of encoding override path
+				if (override.parent && isEqualOrParent(resource, override.parent)) {
+					return override.encoding;
+				}
+
+				// check if the resource extension is equal to encoding override
+				if (override.extension && extname(resource) === `.${override.extension}`) {
+					return override.encoding;
+				}
+			}
+		}
+
+		return undefined;
+	}
 }

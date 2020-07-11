@@ -8,9 +8,9 @@ import * as TypeMoq from 'typemoq';
 import * as azdata from 'azdata';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { CommandLineWorkbenchContribution } from 'sql/workbench/contrib/commandLine/electron-browser/commandLine';
+import { CommandLineWorkbenchContribution, SqlArgs } from 'sql/workbench/contrib/commandLine/electron-browser/commandLine';
 import * as Constants from 'sql/platform/connection/common/constants';
-import { ParsedArgs } from 'vs/platform/environment/common/environment';
+import { ParsedArgs } from 'vs/platform/environment/node/argv';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -22,25 +22,22 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService, NullLogService } from 'vs/platform/log/common/log';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
-import { TestEditorService, TestDialogService } from 'vs/workbench/test/workbenchTestServices';
+import { TestEditorService, workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { URI } from 'vs/base/common/uri';
-import { UntitledQueryEditorInput } from 'sql/workbench/contrib/query/common/untitledQueryEditorInput';
-import { TestQueryModelService } from 'sql/platform/query/test/common/testQueryModelService';
+import { TestQueryModelService } from 'sql/workbench/services/query/test/common/testQueryModelService';
 import { Event } from 'vs/base/common/event';
-import { IQueryModelService } from 'sql/platform/query/common/queryModel';
-import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
+import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
-import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
-import { LabelService } from 'vs/workbench/services/label/common/labelService';
+import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQueryEditorInput';
+import { TestDialogService } from 'vs/platform/dialogs/test/common/testDialogService';
 
-class TestParsedArgs implements ParsedArgs {
+class TestParsedArgs implements ParsedArgs, SqlArgs {
 	[arg: string]: any;
 	_: string[];
-	aad?: boolean;
-	add?: boolean;
 	database?: string;
 	command?: string;
 	debugBrkPluginHost?: string;
@@ -68,7 +65,6 @@ class TestParsedArgs implements ParsedArgs {
 	help?: boolean;
 	'install-extension'?: string[];
 	'install-source'?: string;
-	integrated?: boolean;
 	'list-extensions'?: boolean;
 	locale?: string;
 	log?: string;
@@ -98,6 +94,7 @@ class TestParsedArgs implements ParsedArgs {
 	version?: boolean;
 	wait?: boolean;
 	waitMarkerFilePath?: string;
+	authenticationType?: string;
 }
 suite('commandLineService tests', () => {
 
@@ -198,6 +195,8 @@ suite('commandLineService tests', () => {
 		args.server = 'myserver';
 		args.database = 'mydatabase';
 		args.user = 'myuser';
+		args.authenticationType = Constants.sqlLogin;
+
 		connectionManagementService.setup((c) => c.showConnectionDialog()).verifiable(TypeMoq.Times.never());
 		connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true).verifiable(TypeMoq.Times.atMostOnce());
 		connectionManagementService.setup(c => c.getConnectionGroups(TypeMoq.It.isAny())).returns(() => []);
@@ -374,6 +373,7 @@ suite('commandLineService tests', () => {
 		args.server = 'myserver';
 		args.database = 'mydatabase';
 		args.user = 'myuser';
+		args.authenticationType = Constants.sqlLogin;
 		args._ = ['c:\\dir\\file.sql'];
 		connectionManagementService.setup((c) => c.showConnectionDialog()).verifiable(TypeMoq.Times.never());
 		connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true).verifiable(TypeMoq.Times.atMostOnce());
@@ -391,10 +391,10 @@ suite('commandLineService tests', () => {
 		const querymodelService = TypeMoq.Mock.ofType<IQueryModelService>(TestQueryModelService, TypeMoq.MockBehavior.Strict);
 		querymodelService.setup(c => c.onRunQueryStart).returns(() => Event.None);
 		querymodelService.setup(c => c.onRunQueryComplete).returns(() => Event.None);
-		const instantiationService = new TestInstantiationService();
 		let uri = URI.file(args._[0]);
-		const untitledEditorInput = new UntitledTextEditorInput(uri, false, '', '', '', instantiationService, undefined, new LabelService(undefined, undefined), undefined, undefined);
-		const queryInput = new UntitledQueryEditorInput(undefined, untitledEditorInput, undefined, connectionManagementService.object, querymodelService.object, configurationService.object, undefined);
+		const workbenchinstantiationService = workbenchInstantiationService();
+		const editorInput = workbenchinstantiationService.createInstance(FileEditorInput, uri, undefined, undefined, undefined);
+		const queryInput = new FileQueryEditorInput(undefined, editorInput, undefined, connectionManagementService.object, querymodelService.object, configurationService.object);
 		queryInput.state.connected = true;
 		const editorService: TypeMoq.Mock<IEditorService> = TypeMoq.Mock.ofType<IEditorService>(TestEditorService, TypeMoq.MockBehavior.Strict);
 		editorService.setup(e => e.editors).returns(() => [queryInput]);
@@ -437,7 +437,7 @@ suite('commandLineService tests', () => {
 
 		test('handleUrl opens a new connection if a server name is passed', async () => {
 			// Given a URI pointing to a server
-			let uri: URI = URI.parse('azuredatastudio://connect?server=myserver&database=mydatabase&user=myuser');
+			let uri: URI = URI.parse('azuredatastudio://connect?server=myserver&database=mydatabase&user=myuser&authenticationType=SqlLogin');
 
 			const connectionManagementService: TypeMoq.Mock<IConnectionManagementService>
 				= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
@@ -528,7 +528,7 @@ suite('commandLineService tests', () => {
 
 		test('handleUrl ignores commands and connects', async () => {
 			// Given I pass a command
-			let uri: URI = URI.parse('azuredatastudio://connect?command=mycommand&server=myserver&database=mydatabase&user=myuser');
+			let uri: URI = URI.parse('azuredatastudio://connect?command=mycommand&server=myserver&database=mydatabase&user=myuser&authenticationType=SqlLogin');
 
 			const connectionManagementService: TypeMoq.Mock<IConnectionManagementService>
 				= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);

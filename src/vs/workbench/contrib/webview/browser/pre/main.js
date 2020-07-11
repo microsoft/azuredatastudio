@@ -11,7 +11,8 @@
  *   focusIframeOnCreate?: boolean,
  *   ready?: Promise<void>,
  *   onIframeLoaded?: (iframe: HTMLIFrameElement) => void,
- *   fakeLoad: boolean
+ *   fakeLoad?: boolean,
+ *   rewriteCSP: (existingCSP: string, endpoint?: string) => string,
  * }} WebviewHost
  */
 
@@ -114,6 +115,10 @@
 		height: 10px;
 	}
 
+	::-webkit-scrollbar-corner {
+		background-color: var(--vscode-editor-background);
+	}
+
 	::-webkit-scrollbar-thumb {
 		background-color: var(--vscode-scrollbarSlider-background);
 	}
@@ -125,10 +130,11 @@
 	}`;
 
 	/**
+	 * @param {boolean} allowMultipleAPIAcquire
 	 * @param {*} [state]
 	 * @return {string}
 	 */
-	function getVsCodeApiScript(state) {
+	function getVsCodeApiScript(allowMultipleAPIAcquire, state) {
 		return `
 			const acquireVsCodeApi = (function() {
 				const originalPostMessage = window.parent.postMessage.bind(window.parent);
@@ -138,7 +144,7 @@
 				let state = ${state ? `JSON.parse(${JSON.stringify(state)})` : undefined};
 
 				return () => {
-					if (acquired) {
+					if (acquired && !${allowMultipleAPIAcquire}) {
 						throw new Error('An instance of the VS Code API has already been acquired');
 					}
 					acquired = true;
@@ -173,7 +179,7 @@
 		let pendingMessages = [];
 
 		const initData = {
-			initialScrollProgress: undefined
+			initialScrollProgress: undefined,
 		};
 
 
@@ -189,11 +195,27 @@
 			if (body) {
 				body.classList.remove('vscode-light', 'vscode-dark', 'vscode-high-contrast');
 				body.classList.add(initData.activeTheme);
+
+				body.dataset.vscodeThemeKind = initData.activeTheme;
+				body.dataset.vscodeThemeName = initData.themeName || '';
 			}
 
 			if (initData.styles) {
+				const documentStyle = document.documentElement.style;
+
+				// Remove stale properties
+				for (let i = documentStyle.length - 1; i >= 0; i--) {
+					const property = documentStyle[i];
+
+					// Don't remove properties that the webview might have added separately
+					if (property && property.startsWith('--vscode-')) {
+						documentStyle.removeProperty(property);
+					}
+				}
+
+				// Re-add new properties
 				for (const variable of Object.keys(initData.styles)) {
-					document.documentElement.style.setProperty(`--${variable}`, initData.styles[variable]);
+					documentStyle.setProperty(`--${variable}`, initData.styles[variable]);
 				}
 			}
 		};
@@ -232,23 +254,23 @@
 		 * @param {MouseEvent} event
 		 */
 		const handleAuxClick =
-		(event) => {
-			// Prevent middle clicks opening a broken link in the browser
-			if (!event.view || !event.view.document) {
-				return;
-			}
-
-			if (event.button === 1) {
-				let node = /** @type {any} */ (event.target);
-				while (node) {
-					if (node.tagName && node.tagName.toLowerCase() === 'a' && node.href) {
-						event.preventDefault();
-						break;
-					}
-					node = node.parentNode;
+			(event) => {
+				// Prevent middle clicks opening a broken link in the browser
+				if (!event.view || !event.view.document) {
+					return;
 				}
-			}
-		};
+
+				if (event.button === 1) {
+					let node = /** @type {any} */ (event.target);
+					while (node) {
+						if (node.tagName && node.tagName.toLowerCase() === 'a' && node.href) {
+							event.preventDefault();
+							break;
+						}
+						node = node.parentNode;
+					}
+				}
+			};
 
 		/**
 		 * @param {KeyboardEvent} e
@@ -267,6 +289,22 @@
 		};
 
 		let isHandlingScroll = false;
+
+		const handleWheel = (event) => {
+			if (isHandlingScroll) {
+				return;
+			}
+
+			host.postMessage('did-scroll-wheel', {
+				deltaMode: event.deltaMode,
+				deltaX: event.deltaX,
+				deltaY: event.deltaY,
+				deltaZ: event.deltaZ,
+				detail: event.detail,
+				type: event.type
+			});
+		};
+
 		const handleInnerScroll = (event) => {
 			if (!event.target || !event.target.body) {
 				return;
@@ -308,7 +346,8 @@
 			// apply default script
 			if (options.allowScripts) {
 				const defaultScript = newDocument.createElement('script');
-				defaultScript.textContent = getVsCodeApiScript(data.state);
+				defaultScript.id = '_vscodeApiScript';
+				defaultScript.textContent = getVsCodeApiScript(options.allowMultipleAPIAcquire, data.state);
 				newDocument.head.prepend(defaultScript);
 			}
 
@@ -325,14 +364,10 @@
 			if (!csp) {
 				host.postMessage('no-csp-found');
 			} else {
-				// Rewrite vscode-resource in csp
-				if (data.endpoint) {
-					try {
-						const endpointUrl = new URL(data.endpoint);
-						csp.setAttribute('content', csp.getAttribute('content').replace(/vscode-resource:(?=(\s|;|$))/g, endpointUrl.origin));
-					} catch (e) {
-						console.error('Could not rewrite csp');
-					}
+				try {
+					csp.setAttribute('content', host.rewriteCSP(csp.getAttribute('content'), data.endpoint));
+				} catch (e) {
+					console.error(`Could not rewrite csp: ${e}`);
 				}
 			}
 
@@ -351,6 +386,7 @@
 			host.onMessage('styles', (_event, data) => {
 				initData.styles = data.styles;
 				initData.activeTheme = data.activeTheme;
+				initData.themeName = data.themeName;
 
 				const target = getActiveFrame();
 				if (!target) {
@@ -449,10 +485,14 @@
 					}, 0);
 				});
 
+				/**
+				 * @param {Document} contentDocument
+				 * @param {Window} contentWindow
+				 */
 				const onLoad = (contentDocument, contentWindow) => {
 					if (contentDocument && contentDocument.body) {
 						// Workaround for https://github.com/Microsoft/vscode/issues/12865
-						// check new scrollY and reset if neccessary
+						// check new scrollY and reset if necessary
 						setInitialScrollPosition(contentDocument.body, contentWindow);
 					}
 
@@ -471,12 +511,15 @@
 						}
 
 						contentWindow.addEventListener('scroll', handleInnerScroll);
+						contentWindow.addEventListener('wheel', handleWheel);
 
 						pendingMessages.forEach((data) => {
 							contentWindow.postMessage(data, '*');
 						});
 						pendingMessages = [];
 					}
+
+					host.postMessage('did-load');
 				};
 
 				/**
@@ -492,10 +535,12 @@
 					}, 200);
 
 					newFrame.contentWindow.addEventListener('load', function (e) {
+						const contentDocument = /** @type {Document} */ (e.target);
+
 						if (loadTimeout) {
 							clearTimeout(loadTimeout);
 							loadTimeout = undefined;
-							onLoad(e.target, this);
+							onLoad(contentDocument, this);
 						}
 					});
 
@@ -539,6 +584,13 @@
 				initData.initialScrollProgress = progress;
 			});
 
+			host.onMessage('execCommand', (_event, data) => {
+				const target = getActiveFrame();
+				if (!target) {
+					return;
+				}
+				target.contentDocument.execCommand(data);
+			});
 
 			trackFocus({
 				onFocus: () => host.postMessage('did-focus'),
@@ -553,6 +605,6 @@
 	if (typeof module !== 'undefined') {
 		module.exports = createWebviewManager;
 	} else {
-		window.createWebviewManager = createWebviewManager;
+		(/** @type {any} */ (window)).createWebviewManager = createWebviewManager;
 	}
 }());

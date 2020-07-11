@@ -7,7 +7,8 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 	ROOT=$(dirname "$(dirname "$(realpath "$0")")")
 else
 	ROOT=$(dirname "$(dirname "$(readlink -f $0)")")
-	if grep -qi Microsoft /proc/version; then
+	# If the script is running in Docker using the WSL2 engine, powershell.exe won't exist
+	if grep -qi Microsoft /proc/version && type powershell.exe > /dev/null 2>&1; then
 		IN_WSL=true
 	fi
 fi
@@ -50,11 +51,14 @@ function code() {
 	export VSCODE_LOGS=
 
 	# Launch Code
-	exec "$CODE" . "$@"
+	exec "$CODE" . --no-sandbox "$@"
 }
 
 function code-wsl()
 {
+	HOST_IP=$(powershell.exe –noprofile -Command "& {(Get-NetIPAddress | Where-Object {\$_.InterfaceAlias -like '*WSL*' -and \$_.AddressFamily -eq 'IPv4'}).IPAddress | Write-Host -NoNewline}")
+	export DISPLAY="$HOST_IP:0"
+
 	# in a wsl shell
 	ELECTRON="$ROOT/.build/electron/Code - OSS.exe"
 	if [ -f "$ELECTRON"  ]; then

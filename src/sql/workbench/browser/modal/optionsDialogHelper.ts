@@ -4,15 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as DialogHelper from './dialogHelper';
-import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
+import { SelectBox, SelectOptionItemSQL } from 'sql/base/browser/ui/selectBox/selectBox';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import * as types from 'vs/base/common/types';
 import * as azdata from 'azdata';
 import { localize } from 'vs/nls';
-import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { startsWith } from 'vs/base/common/strings';
+import { ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 
 export interface IOptionElement {
 	optionWidget: any;
@@ -21,8 +21,8 @@ export interface IOptionElement {
 }
 
 export function createOptionElement(option: azdata.ServiceOption, rowContainer: HTMLElement, options: { [name: string]: any },
-	optionsMap: { [optionName: string]: IOptionElement }, contextViewService: IContextViewService, onFocus: (name) => void): void {
-	let possibleInputs: string[] = [];
+	optionsMap: { [optionName: string]: IOptionElement }, contextViewService: IContextViewService, onFocus: (name) => void): IOptionElement {
+	let possibleInputs: SelectOptionItemSQL[] = [];
 	let optionValue = getOptionValueAndCategoryValues(option, options, possibleInputs);
 	let optionWidget: any;
 	let inputElement: HTMLElement;
@@ -63,13 +63,15 @@ export function createOptionElement(option: azdata.ServiceOption, rowContainer: 
 		}
 		inputElement = findElement(rowContainer, 'input');
 	}
-	optionsMap[option.name] = { optionWidget: optionWidget, option: option, optionValue: optionValue };
+	const optionElement = { optionWidget: optionWidget, option: option, optionValue: optionValue };
+	optionsMap[option.name] = optionElement;
 	inputElement.onfocus = () => onFocus(option.name);
+	return optionElement;
 }
 
-export function getOptionValueAndCategoryValues(option: azdata.ServiceOption, options: { [optionName: string]: any }, possibleInputs: string[]): any {
+export function getOptionValueAndCategoryValues(option: azdata.ServiceOption, options: { [optionName: string]: any }, possibleInputs: SelectOptionItemSQL[]): any {
 	let optionValue = option.defaultValue;
-	if (options[option.name]) {
+	if (options[option.name] !== undefined) {
 		// if the value type is boolean, the option value can be either boolean or string
 		if (option.valueType === ServiceOptionType.boolean) {
 			if (options[option.name] === true || options[option.name] === trueInputValue) {
@@ -85,18 +87,18 @@ export function getOptionValueAndCategoryValues(option: azdata.ServiceOption, op
 	if (option.valueType === ServiceOptionType.boolean || option.valueType === ServiceOptionType.category) {
 		// If the option is not required, the empty string should be add at the top of possible choices
 		if (!option.isRequired) {
-			possibleInputs.push('');
+			possibleInputs.push({ text: '', value: '' });
 		}
 
 		if (option.valueType === ServiceOptionType.boolean) {
-			possibleInputs.push(trueInputValue, falseInputValue);
+			possibleInputs.push({ text: trueInputValue, value: trueInputValue }, { text: falseInputValue, value: falseInputValue });
 		} else {
-			option.categoryValues.map(c => possibleInputs.push(c.name));
+			option.categoryValues.forEach(c => possibleInputs.push({ text: c.displayName, value: c.name }));
 		}
 
 		// If the option value is not set and default value is null, the option value should be set to the first possible input.
 		if (optionValue === null || optionValue === undefined) {
-			optionValue = possibleInputs[0];
+			optionValue = possibleInputs[0].text;
 		}
 	}
 	return optionValue;

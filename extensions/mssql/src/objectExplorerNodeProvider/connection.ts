@@ -76,6 +76,12 @@ export class SqlClusterConnection {
 		return authType && authType.toLowerCase() === constants.integratedAuth;
 	}
 
+	public updateUsername(username: string): void {
+		if (username) {
+			this._user = username;
+		}
+	}
+
 	public updatePassword(password: string): void {
 		if (password) {
 			this._password = password;

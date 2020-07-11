@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ITree, IDataSource } from 'vs/base/parts/tree/browser/tree';
-import { TaskNode } from 'sql/platform/tasks/common/tasksNode';
+import { TaskNode } from 'sql/workbench/services/tasks/common/tasksNode';
 
 /**
  * Implements the DataSource(that returns a parent/children of an element) for the task history

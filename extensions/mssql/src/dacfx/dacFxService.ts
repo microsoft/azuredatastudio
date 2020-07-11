@@ -55,7 +55,7 @@ export class DacFxService implements mssql.IDacFxService {
 	}
 
 	public extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.DacFxResult> {
-		const params: contracts.ExtractParams = { databaseName: databaseName, packageFilePath: packageFilePath, applicationName: applicationName, applicationVersion: applicationVersion, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
+		const params: contracts.ExtractParams = { databaseName: databaseName, packageFilePath: packageFilePath, applicationName: applicationName, applicationVersion: applicationVersion, ownerUri: ownerUri, extractTarget: mssql.ExtractTarget.dacpac, taskExecutionMode: taskExecutionMode };
 		return this.client.sendRequest(contracts.ExtractRequest.type, params).then(
 			undefined,
 			e => {
@@ -65,8 +65,19 @@ export class DacFxService implements mssql.IDacFxService {
 		);
 	}
 
-	public deployDacpac(packageFilePath: string, targetDatabaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.DacFxResult> {
-		const params: contracts.DeployParams = { packageFilePath: packageFilePath, databaseName: targetDatabaseName, upgradeExisting: upgradeExisting, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
+	public importDatabaseProject(databaseName: string, targetFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, extractTarget: mssql.ExtractTarget, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.DacFxResult> {
+		const params: contracts.ExtractParams = { databaseName: databaseName, packageFilePath: targetFilePath, applicationName: applicationName, applicationVersion: applicationVersion, ownerUri: ownerUri, extractTarget: extractTarget, taskExecutionMode: taskExecutionMode };
+		return this.client.sendRequest(contracts.ExtractRequest.type, params).then(
+			undefined,
+			e => {
+				this.client.logFailedRequest(contracts.ExtractRequest.type, e);
+				return Promise.resolve(undefined);
+			}
+		);
+	}
+
+	public deployDacpac(packageFilePath: string, targetDatabaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode, sqlCommandVariableValues?: Record<string, string>): Thenable<mssql.DacFxResult> {
+		const params: contracts.DeployParams = { packageFilePath: packageFilePath, databaseName: targetDatabaseName, upgradeExisting: upgradeExisting, sqlCommandVariableValues: sqlCommandVariableValues, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
 		return this.client.sendRequest(contracts.DeployRequest.type, params).then(
 			undefined,
 			e => {
@@ -76,8 +87,8 @@ export class DacFxService implements mssql.IDacFxService {
 		);
 	}
 
-	public generateDeployScript(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.DacFxResult> {
-		const params: contracts.GenerateDeployScriptParams = { packageFilePath: packageFilePath, databaseName: targetDatabaseName, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
+	public generateDeployScript(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode, sqlCommandVariableValues?: Record<string, string>): Thenable<mssql.DacFxResult> {
+		const params: contracts.GenerateDeployScriptParams = { packageFilePath: packageFilePath, databaseName: targetDatabaseName, sqlCommandVariableValues: sqlCommandVariableValues, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
 		return this.client.sendRequest(contracts.GenerateDeployScriptRequest.type, params).then(
 			undefined,
 			e => {

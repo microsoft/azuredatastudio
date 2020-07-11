@@ -1,3 +1,6 @@
+parameters:
+  extensionsToUnitTest: []
+
 steps:
   - script: |
       mkdir -p .build
@@ -87,24 +90,12 @@ steps:
 
   - script: |
       set -e
-      yarn gulp install-sqltoolsservice
-      yarn gulp install-ssmsmin
-    displayName: Install extension binaries
-
-  - script: |
-      set -e
       yarn gulp vscode-linux-x64-min-ci
       yarn gulp vscode-reh-linux-x64-min-ci
       yarn gulp vscode-reh-web-linux-x64-min-ci
     displayName: Build
     env:
       VSCODE_MIXIN_PASSWORD: $(github-distro-mixin-password)
-
-  - script: |
-      set -e
-      service xvfb start
-    displayName: Start xvfb
-    condition: and(succeeded(), eq(variables['VSCODE_STEP_ON_IT'], 'false'))
 
   - script: |
       set -e
@@ -115,12 +106,38 @@ steps:
 
   - script: |
       set -e
+      service xvfb start
+    displayName: Start xvfb
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+
+  - script: |
+      set -e
+      DISPLAY=:10 ./scripts/test.sh --build --coverage --reporter mocha-junit-reporter --tfs "Unit Tests"
+    displayName: Run unit tests (Electron)
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+
+  - script: |
+      # Figure out the full absolute path of the product we just built
+      # including the remote server and configure the integration tests
+      # to run with these builds instead of running out of sources.
+      set -e
       APP_ROOT=$(agent.builddirectory)/azuredatastudio-linux-x64
       APP_NAME=$(node -p "require(\"$APP_ROOT/resources/app/product.json\").applicationName")
       INTEGRATION_TEST_ELECTRON_PATH="$APP_ROOT/$APP_NAME" \
-      DISPLAY=:10 ./scripts/test-extensions-unit.sh
-    displayName: 'Run Stable Extension Unit Tests'
+      VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-linux-x64" \
+      DISPLAY=:10 ./scripts/test-integration.sh --build --tfs "Integration Tests"
+    displayName: Run integration tests (Electron)
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+
+  - ${{each extension in parameters.extensionsToUnitTest}}:
+    - script: |
+        set -e
+        APP_ROOT=$(agent.builddirectory)/azuredatastudio-linux-x64
+        APP_NAME=$(node -p "require(\"$APP_ROOT/resources/app/product.json\").applicationName")
+        INTEGRATION_TEST_ELECTRON_PATH="$APP_ROOT/$APP_NAME" \
+        DISPLAY=:10 node ./scripts/test-extensions-unit.js ${{ extension }}
+      displayName: 'Run ${{ extension }} Stable Extension Unit Tests'
+      condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   - script: |
       set -e
@@ -147,24 +164,23 @@ steps:
       ./build/azure-pipelines/linux/createDrop.sh
     displayName: Create Drop
 
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish Artifact: drop'
+  - script: |
+      set -e
+      shopt -s globstar
+      mkdir -p $(Build.ArtifactStagingDirectory)/test-results/coverage
+      cp --parents -r $(Build.SourcesDirectory)/extensions/*/coverage/** $(Build.ArtifactStagingDirectory)/test-results/coverage
+    displayName: Copy Coverage
 
   - task: PublishTestResults@2
     displayName: 'Publish Test Results test-results.xml'
     inputs:
-      testResultsFiles: 'test-results.xml'
-      searchFolder: '$(Build.SourcesDirectory)'
+      testResultsFiles: '*.xml'
+      searchFolder: '$(Build.ArtifactStagingDirectory)/test-results'
     continueOnError: true
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
-  - task: PublishCodeCoverageResults@1
-    displayName: 'Publish code coverage from $(Build.SourcesDirectory)/.build/coverage/cobertura-coverage.xml'
-    inputs:
-      codeCoverageTool: Cobertura
-      summaryFileLocation: '$(Build.SourcesDirectory)/.build/coverage/cobertura-coverage.xml'
-      reportDirectory: '$(Build.SourcesDirectory)/.build/coverage'
-    continueOnError: true
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: drop'
 
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
     displayName: 'Component Detection'

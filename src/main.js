@@ -16,13 +16,12 @@ const fs = require('fs');
 const os = require('os');
 const bootstrap = require('./bootstrap');
 const paths = require('./paths');
-// @ts-ignore
+/** @type {any} */
 const product = require('../product.json');
-// @ts-ignore
 const { app, protocol } = require('electron');
 
 // Enable portable support
-const portable = bootstrap.configurePortable();
+const portable = bootstrap.configurePortable(product);
 
 // Enable ASAR support
 bootstrap.enableASARSupport();
@@ -39,6 +38,47 @@ if (args['nogpu']) { // {{SQL CARBON EDIT}}
 const userDataPath = getUserDataPath(args);
 app.setPath('userData', userDataPath);
 
+// Set temp directory based on crash-reporter-directory CLI argument
+// The crash reporter will store crashes in temp folder so we need
+// to change that location accordingly.
+
+// If a crash-reporter-directory is specified we setup the crash reporter
+// right from the beginning as early as possible to monitor all processes.
+let crashReporterDirectory = args['crash-reporter-directory'];
+if (crashReporterDirectory) {
+	crashReporterDirectory = path.normalize(crashReporterDirectory);
+
+	if (!path.isAbsolute(crashReporterDirectory)) {
+		console.error(`The path '${crashReporterDirectory}' specified for --crash-reporter-directory must be absolute.`);
+		app.exit(1);
+	}
+
+	if (!fs.existsSync(crashReporterDirectory)) {
+		try {
+			fs.mkdirSync(crashReporterDirectory);
+		} catch (error) {
+			console.error(`The path '${crashReporterDirectory}' specified for --crash-reporter-directory does not seem to exist or cannot be created.`);
+			app.exit(1);
+		}
+	}
+
+	// Crashes are stored in the temp directory by default, so we
+	// need to change that directory to the provided one
+	console.log(`Found --crash-reporter-directory argument. Setting temp directory to be '${crashReporterDirectory}'`);
+	app.setPath('temp', crashReporterDirectory);
+
+	// Start crash reporter
+	const { crashReporter } = require('electron');
+	const productName = (product.crashReporter && product.crashReporter.productName) || product.nameShort;
+	const companyName = (product.crashReporter && product.crashReporter.companyName) || 'Microsoft';
+	crashReporter.start({
+		companyName: companyName,
+		productName: process.env['VSCODE_DEV'] ? `${productName} Dev` : productName,
+		submitURL: '',
+		uploadToServer: false
+	});
+}
+
 // Set logs path before app 'ready' event if running portable
 // to ensure that no 'logs' folder is created on disk at a
 // location outside of the portable directory
@@ -52,7 +92,23 @@ setCurrentWorkingDirectory();
 
 // Register custom schemes with privileges
 protocol.registerSchemesAsPrivileged([
-	{ scheme: 'vscode-resource', privileges: { secure: true, supportFetchAPI: true, corsEnabled: true } }
+	{
+		scheme: 'vscode-webview',
+		privileges: {
+			standard: true,
+			secure: true,
+			supportFetchAPI: true,
+			corsEnabled: true,
+		}
+	}, {
+		scheme: 'vscode-webview-resource',
+		privileges: {
+			secure: true,
+			standard: true,
+			supportFetchAPI: true,
+			corsEnabled: true,
+		}
+	},
 ]);
 
 // Global app listeners
@@ -63,6 +119,12 @@ const nodeCachedDataDir = getNodeCachedDir();
 
 // Configure static command line arguments
 const argvConfig = configureCommandlineSwitchesSync(args);
+
+// Remove env set by snap https://github.com/microsoft/vscode/issues/85344
+if (process.env['SNAP']) {
+	delete process.env['GDK_PIXBUF_MODULE_FILE'];
+	delete process.env['GDK_PIXBUF_MODULEDIR'];
+}
 
 /**
  * Support user defined locale: load it early before app('ready')
@@ -81,7 +143,6 @@ if (locale) {
 // Load our code once ready
 app.once('ready', function () {
 	if (args['trace']) {
-		// @ts-ignore
 		const contentTracing = require('electron').contentTracing;
 
 		const traceOptions = {
@@ -89,7 +150,7 @@ app.once('ready', function () {
 			traceOptions: args['trace-options'] || 'record-until-full,enable-sampling'
 		};
 
-		contentTracing.startRecording(traceOptions, () => onReady());
+		contentTracing.startRecording(traceOptions).finally(() => onReady());
 	} else {
 		onReady();
 	}
@@ -138,24 +199,55 @@ function configureCommandlineSwitchesSync(cliArgs) {
 		'disable-hardware-acceleration',
 
 		// provided by Electron
-		'disable-color-correct-rendering'
+		'disable-color-correct-rendering',
+
+		// override for the color profile to use
+		'force-color-profile'
+	];
+
+	if (process.platform === 'linux') {
+		SUPPORTED_ELECTRON_SWITCHES.push('force-renderer-accessibility');
+	}
+
+	const SUPPORTED_MAIN_PROCESS_SWITCHES = [
+
+		// Persistently enable proposed api via argv.json: https://github.com/microsoft/vscode/issues/99775
+		'enable-proposed-api'
 	];
 
 	// Read argv config
 	const argvConfig = readArgvConfigSync();
 
-	// Append each flag to Electron
 	Object.keys(argvConfig).forEach(argvKey => {
-		if (SUPPORTED_ELECTRON_SWITCHES.indexOf(argvKey) === -1) {
-			return; // unsupported argv key
+		const argvValue = argvConfig[argvKey];
+
+		// Append Electron flags to Electron
+		if (SUPPORTED_ELECTRON_SWITCHES.indexOf(argvKey) !== -1) {
+			// Color profile
+			if (argvKey === 'force-color-profile') {
+				if (argvValue) {
+					app.commandLine.appendSwitch(argvKey, argvValue);
+				}
+			}
+
+			// Others
+			else if (argvValue === true || argvValue === 'true') {
+				if (argvKey === 'disable-hardware-acceleration') {
+					app.disableHardwareAcceleration(); // needs to be called explicitly
+				} else {
+					app.commandLine.appendSwitch(argvKey);
+				}
+			}
 		}
 
-		const argvValue = argvConfig[argvKey];
-		if (argvValue === true || argvValue === 'true') {
-			if (argvKey === 'disable-hardware-acceleration') {
-				app.disableHardwareAcceleration(); // needs to be called explicitly
-			} else {
-				app.commandLine.appendSwitch(argvKey);
+		// Append main process flags to process.argv
+		else if (SUPPORTED_MAIN_PROCESS_SWITCHES.indexOf(argvKey) !== -1) {
+			if (argvKey === 'enable-proposed-api') {
+				if (Array.isArray(argvValue)) {
+					argvValue.forEach(id => id && typeof id === 'string' && process.argv.push('--enable-proposed-api', id));
+				} else {
+					console.error(`Unexpected value for \`enable-proposed-api\` in argv.json. Expected array of extension ids.`);
+				}
 			}
 		}
 	});
@@ -165,6 +257,9 @@ function configureCommandlineSwitchesSync(cliArgs) {
 	if (jsFlags) {
 		app.commandLine.appendSwitch('js-flags', jsFlags);
 	}
+
+	// TODO@Deepak Electron 7 workaround for https://github.com/microsoft/vscode/issues/88873
+	app.commandLine.appendSwitch('disable-features', 'LayoutNG');
 
 	return argvConfig;
 }
@@ -304,14 +399,15 @@ function getUserDataPath(cliArgs) {
  * @returns {ParsedArgs}
  */
 function parseCLIArgs() {
-	const minimist = require('vscode-minimist');
+	const minimist = require('minimist');
 
 	return minimist(process.argv, {
 		string: [
 			'user-data-dir',
 			'locale',
 			'js-flags',
-			'max-memory'
+			'max-memory',
+			'crash-reporter-directory'
 		]
 	});
 }
@@ -332,7 +428,7 @@ function setCurrentWorkingDirectory() {
 function registerListeners() {
 
 	/**
-	 * Mac: when someone drops a file to the not-yet running VSCode, the open-file event fires even before
+	 * macOS: when someone drops a file to the not-yet running VSCode, the open-file event fires even before
 	 * the app-ready event. We listen very early for open-file and remember this upon startup as path to open.
 	 *
 	 * @type {string[]}
@@ -344,7 +440,7 @@ function registerListeners() {
 	});
 
 	/**
-	 * React to open-url requests.
+	 * macOS: react to open-url requests.
 	 *
 	 * @type {string[]}
 	 */
@@ -378,7 +474,7 @@ function getNodeCachedDir() {
 
 		async ensureExists() {
 			try {
-				await bootstrap.mkdirp(this.value);
+				await mkdirp(this.value);
 
 				return this.value;
 			} catch (error) {
@@ -407,7 +503,20 @@ function getNodeCachedDir() {
 	};
 }
 
+/**
+ * @param {string} dir
+ * @returns {Promise<string>}
+ */
+function mkdirp(dir) {
+	const fs = require('fs');
+
+	return new Promise((resolve, reject) => {
+		fs.mkdir(dir, { recursive: true }, err => (err && err.code !== 'EEXIST') ? reject(err) : resolve(dir));
+	});
+}
+
 //#region NLS Support
+
 /**
  * Resolve the NLS configuration
  *
@@ -503,4 +612,5 @@ function getLegacyUserDefinedLocaleSync(localeConfigPath) {
 		// ignore
 	}
 }
+
 //#endregion

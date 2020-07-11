@@ -10,6 +10,7 @@ import { IConfigurationResolverService } from 'vs/workbench/services/configurati
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { IFileService } from 'vs/platform/files/common/files';
 import { URI } from 'vs/base/common/uri';
+import { Schemas } from 'vs/base/common/network';
 
 /**
  * Resolves the given file path using the VS ConfigurationResolver service, replacing macros such as
@@ -19,9 +20,11 @@ import { URI } from 'vs/base/common/uri';
  * @param workspaceContextService The workspace context to use for resolving workspace vars
  * @param configurationResolverService The resolver service to use to resolve the vars
  */
-export async function resolveQueryFilePath(services: ServicesAccessor, filePath: string): Promise<string> {
+export async function resolveQueryFilePath(services: ServicesAccessor, filePath: undefined): Promise<undefined>;
+export async function resolveQueryFilePath(services: ServicesAccessor, filePath: string): Promise<URI>;
+export async function resolveQueryFilePath(services: ServicesAccessor, filePath?: string): Promise<URI | undefined> {
 	if (!filePath) {
-		return filePath;
+		return undefined;
 	}
 
 	const workspaceContextService = services.get(IWorkspaceContextService);
@@ -31,15 +34,25 @@ export async function resolveQueryFilePath(services: ServicesAccessor, filePath:
 	let workspaceFolders: IWorkspaceFolder[] = workspaceContextService.getWorkspace().folders;
 	// Resolve the path using each folder in our workspace, or undefined if there aren't any
 	// (so that non-folder vars such as environment vars still resolve)
-	let resolvedFilePaths = (workspaceFolders.length > 0 ? workspaceFolders : [undefined])
-		.map(f => configurationResolverService.resolve(f, filePath));
+	const isRemote = fileService.canHandleResource(URI.from({ scheme: Schemas.vscodeRemote }));
+	let resolvedFileUris = (workspaceFolders.length > 0 ? workspaceFolders : [undefined])
+		.map(f => {
+			const uri = URI.file(configurationResolverService.resolve(f, filePath));
+			if (f) {
+				return uri.with({ scheme: f.uri.scheme }); // ensure we maintain the correct scheme
+			} else if (isRemote) {
+				return uri.with({ scheme: Schemas.vscodeRemote });
+			} else {
+				return uri;
+			}
+		});
 
 	// Just need a single query file so use the first we find that exists
-	for (const path of resolvedFilePaths) {
-		if (await fileService.exists(URI.file(path))) {
-			return path;
+	for (const uri of resolvedFileUris) {
+		if (await fileService.exists(uri)) {
+			return uri;
 		}
 	}
 
-	throw Error(localize('insightsDidNotFindResolvedFile', "Could not find query file at any of the following paths :\n {0}", resolvedFilePaths.join('\n')));
+	throw Error(localize('insightsDidNotFindResolvedFile', "Could not find query file at any of the following paths :\n {0}", resolvedFileUris.join('\n')));
 }

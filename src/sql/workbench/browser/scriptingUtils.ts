@@ -34,7 +34,7 @@ const targetDatabaseEngineEditionMap = {
 	5: 'SqlAzureDatabaseEdition',
 	6: 'SqlDatawarehouseEdition',
 	7: 'SqlServerStretchEdition',
-	11: 'SqlServerSqlOnDemandEdition',
+	11: 'SqlServerOnDemandEdition',
 };
 
 /**
@@ -45,7 +45,7 @@ export async function scriptSelect(connectionProfile: IConnectionProfile, metada
 	let paramDetails: azdata.ScriptingParamDetails = getScriptingParamDetails(connectionService, connectionResult, metadata);
 	const result = await scriptingService.script(connectionResult, metadata, ScriptOperation.Select, paramDetails);
 	if (result && result.script) {
-		const owner = await queryEditorService.newSqlEditor(result.script);
+		const owner = await queryEditorService.newSqlEditor({ initalContent: result.script });
 		// Connect our editor to the input connection
 		let options: IConnectionCompletionOptions = {
 			params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.executeQuery, input: owner },
@@ -127,7 +127,7 @@ export async function script(connectionProfile: IConnectionProfile, metadata: az
 
 		if (script) {
 			let description = (metadata.schema && metadata.schema !== '') ? `${metadata.schema}.${metadata.name}` : metadata.name;
-			const owner = await queryEditorService.newSqlEditor(script, connectionProfile.providerName, undefined, description);
+			const owner = await queryEditorService.newSqlEditor({ initalContent: script, description });
 			// Connect our editor to the input connection
 			let options: IConnectionCompletionOptions = {
 				params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none, input: owner },

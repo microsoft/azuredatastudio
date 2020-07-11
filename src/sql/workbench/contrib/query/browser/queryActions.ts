@@ -14,7 +14,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import Severity from 'vs/base/common/severity';
 import { append, $ } from 'vs/base/browser/dom';
 
-import { ISelectionData, QueryExecutionOptions } from 'azdata';
+import { QueryExecutionOptions } from 'azdata';
 import {
 	IConnectionManagementService,
 	IConnectionParams,
@@ -25,11 +25,11 @@ import {
 	IConnectableInput
 } from 'sql/platform/connection/common/connectionManagement';
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
-import { IQueryModelService } from 'sql/platform/query/common/queryModel';
+import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { attachEditableDropdownStyler, attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 import { Dropdown } from 'sql/base/parts/editableDropdown/browser/dropdown';
-import { Task } from 'sql/platform/tasks/browser/tasksRegistry';
+import { Task } from 'sql/workbench/services/tasks/browser/tasksRegistry';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
@@ -37,11 +37,13 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { getCurrentGlobalConnection } from 'sql/workbench/browser/taskUtilities';
 import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
-import { OEAction } from 'sql/workbench/contrib/objectExplorer/browser/objectExplorerActions';
+import { OEAction } from 'sql/workbench/services/objectExplorer/browser/objectExplorerActions';
 import { TreeViewItemHandleArg } from 'sql/workbench/common/views';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
+import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
+import { ILogService } from 'vs/platform/log/common/log';
+import { IRange } from 'vs/editor/common/core/range';
 
 /**
  * Action class that query-based Actions will extend. This base class automatically handles activating and
@@ -100,12 +102,12 @@ export abstract class QueryTaskbarAction extends Action {
 	 * Connects the given editor to it's current URI.
 	 * Public for testing only.
 	 */
-	protected connectEditor(editor: QueryEditor, runQueryOnCompletion?: RunQueryOnConnectionMode, selection?: ISelectionData): void {
+	protected connectEditor(editor: QueryEditor, runQueryOnCompletion?: RunQueryOnConnectionMode, range?: IRange): void {
 		let params: INewConnectionParams = {
 			input: editor.input,
 			connectionType: ConnectionType.editor,
 			runQueryOnCompletion: runQueryOnCompletion ? runQueryOnCompletion : RunQueryOnConnectionMode.none,
-			querySelection: selection
+			queryRange: range
 		};
 		this.connectionManagementService.showConnectionDialog(params);
 	}
@@ -119,7 +121,7 @@ export function openNewQuery(accessor: ServicesAccessor, profile?: IConnectionPr
 	if (!profile) {
 		profile = getCurrentGlobalConnection(objectExplorerService, connectionManagementService, editorService);
 	}
-	return queryEditorService.newSqlEditor(initalContent).then((owner: IConnectableInput) => {
+	return queryEditorService.newSqlEditor({ initalContent }).then((owner: IConnectableInput) => {
 		// Connect our editor to the input connection
 		let options: IConnectionCompletionOptions = {
 			params: { connectionType: ConnectionType.editor, runQueryOnCompletion: onConnection, input: owner },
@@ -240,7 +242,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 		if (this.isConnected(editor)) {
 			// if the selection isn't empty then execute the selection
 			// otherwise, either run the statement or the script depending on parameter
-			let selection: ISelectionData = editor.getSelection(false);
+			let selection = editor.getSelection(false);
 			if (runCurrentStatement && selection && this.isCursorPosition(selection)) {
 				editor.input.runQueryStatement(selection);
 			} else {
@@ -251,8 +253,8 @@ export class RunQueryAction extends QueryTaskbarAction {
 		}
 	}
 
-	protected isCursorPosition(selection: ISelectionData) {
-		return selection.startLine === selection.endLine
+	protected isCursorPosition(selection: IRange) {
+		return selection.startLineNumber === selection.endLineNumber
 			&& selection.startColumn === selection.endColumn;
 	}
 }
@@ -268,7 +270,8 @@ export class CancelQueryAction extends QueryTaskbarAction {
 	constructor(
 		editor: QueryEditor,
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
-		@IConnectionManagementService connectionManagementService: IConnectionManagementService
+		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
+		@ILogService private readonly logService: ILogService
 	) {
 		super(connectionManagementService, editor, CancelQueryAction.ID, CancelQueryAction.EnabledClass);
 		this.enabled = false;
@@ -278,7 +281,7 @@ export class CancelQueryAction extends QueryTaskbarAction {
 	public async run(): Promise<void> {
 		if (this.isConnected(this.editor)) {
 			if (!this.editor.input) {
-				console.error('editor input was null');
+				this.logService.error('editor input was null');
 				return;
 			}
 			this.queryModelService.cancelQuery(this.editor.input.uri);
@@ -526,7 +529,8 @@ export class ToggleSqlCmdModeAction extends QueryTaskbarAction {
 		private _isSqlCmdMode: boolean,
 		@IQueryManagementService protected readonly queryManagementService: IQueryManagementService,
 		@IConfigurationService protected readonly configurationService: IConfigurationService,
-		@IConnectionManagementService connectionManagementService: IConnectionManagementService
+		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
+		@ILogService private readonly logService: ILogService
 	) {
 		super(connectionManagementService, editor, ToggleSqlCmdModeAction.ID, undefined);
 	}
@@ -554,7 +558,7 @@ export class ToggleSqlCmdModeAction extends QueryTaskbarAction {
 		let queryoptions: QueryExecutionOptions = { options: {} };
 		queryoptions.options['isSqlCmdMode'] = toSqlCmdState;
 		if (!this.editor.input) {
-			console.error('editor input was null');
+			this.logService.error('editor input was null');
 			return;
 		}
 		this.queryManagementService.setQueryExecutionOptions(this.editor.input.uri, queryoptions);
@@ -586,7 +590,8 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 		@IContextViewService contextViewProvider: IContextViewService,
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@INotificationService private readonly notificationService: INotificationService,
-		@IConfigurationService private readonly configurationService: IConfigurationService
+		@IConfigurationService private readonly configurationService: IConfigurationService,
+		@ILogService private readonly logService: ILogService
 	) {
 		super();
 		this._databaseListDropdown = $('.databaseListDropdown');
@@ -680,7 +685,7 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 	// PRIVATE HELPERS /////////////////////////////////////////////////////
 	private databaseSelected(dbName: string): void {
 		if (!this._editor.input) {
-			console.error('editor input was null');
+			this.logService.error('editor input was null');
 			return;
 		}
 
@@ -716,7 +721,7 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 
 	private getCurrentDatabaseName(): string | undefined {
 		if (!this._editor.input) {
-			console.error('editor input was null');
+			this.logService.error('editor input was null');
 			return undefined;
 		}
 
@@ -744,7 +749,7 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 		}
 
 		if (!this._editor.input) {
-			console.error('editor input was null');
+			this.logService.error('editor input was null');
 			return;
 		}
 
@@ -758,7 +763,7 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 
 	private onDropdownFocus(): void {
 		if (!this._editor.input) {
-			console.error('editor input was null');
+			this.logService.error('editor input was null');
 			return;
 		}
 
@@ -782,7 +787,7 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 		if (this._isInAccessibilityMode) {
 			this._databaseSelectBox.enable();
 			if (!this._editor.input) {
-				console.error('editor input was null');
+				this.logService.error('editor input was null');
 				return;
 			}
 			let uri = this._editor.input.uri;

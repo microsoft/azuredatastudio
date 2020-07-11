@@ -7,7 +7,6 @@ import { Modal } from 'sql/workbench/browser/modal/modal';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { BackupModule } from 'sql/workbench/contrib/backup/browser/backup.module';
 import { BACKUP_SELECTOR } from 'sql/workbench/contrib/backup/browser/backup.component';
-import { attachModalDialogStyler } from 'sql/platform/theme/common/styler';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -17,9 +16,10 @@ import { bootstrapAngular } from 'sql/workbench/services/bootstrap/browser/boots
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { append, $ } from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { attachModalDialogStyler } from 'sql/workbench/common/styler';
+import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 
 export class BackupDialog extends Modal {
 	private _body: HTMLElement;
@@ -28,7 +28,7 @@ export class BackupDialog extends Modal {
 
 	constructor(
 		@IThemeService themeService: IThemeService,
-		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
+		@ILayoutService layoutService: ILayoutService,
 		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
@@ -55,7 +55,7 @@ export class BackupDialog extends Modal {
 	 * Get the bootstrap params and perform the bootstrap
 	 */
 	private bootstrapAngular(bodyContainer: HTMLElement) {
-		bootstrapAngular(this._instantiationService,
+		this._instantiationService.invokeFunction(bootstrapAngular,
 			BackupModule,
 			bodyContainer,
 			BACKUP_SELECTOR,

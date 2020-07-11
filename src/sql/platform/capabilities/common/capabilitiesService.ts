@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 
 import { Event } from 'vs/base/common/event';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+import type { IDisposable } from 'vs/base/common/lifecycle';
 
 export const SERVICE_ID = 'capabilitiesService';
 export const HOST_NAME = 'azdata';
@@ -55,11 +56,13 @@ export interface ICapabilitiesService {
 	/**
 	 * When new capabilities are registered, it emits the @see ProviderFeatures, which can be used to get the new capabilities
 	 */
-	readonly onCapabilitiesRegistered: Event<ProviderFeatures>;
+	readonly onCapabilitiesRegistered: Event<{ id: string; features: ProviderFeatures }>;
 
 	/**
 	 * Get an array of all known providers
 	 */
 	readonly providers: { [id: string]: ProviderFeatures };
+
+	registerConnectionProvider(id: string, properties: ConnectionProviderProperties): IDisposable;
 
 }

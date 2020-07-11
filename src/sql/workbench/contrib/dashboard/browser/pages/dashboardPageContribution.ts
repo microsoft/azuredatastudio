@@ -57,6 +57,10 @@ export function generateDashboardWidgetSchema(type?: 'database' | 'server', exte
 				properties: schemas,
 				minItems: 1,
 				maxItems: 1
+			},
+			hideHeader: {
+				type: 'boolean',
+				description: localize('azdata.extension.contributes.widget.hideHeader', "Whether to hide the header of the widget, default value is false")
 			}
 		}
 	};

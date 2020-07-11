@@ -1,0 +1,13 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.button-menu .in-preview .monaco-dropdown {
+	height: auto;
+	padding: 0;
+}
+.button-menu.masked-pseudo-after.dropdown-arrow:after {
+	right: 0;
+	width: 20px;
+}

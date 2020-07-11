@@ -16,7 +16,6 @@ import { IModeService } from 'vs/editor/common/services/modeService';
 import { IModelService } from 'vs/editor/common/services/modelService';
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
-import { IComponent, IComponentDescriptor, IModelStore } from 'sql/workbench/browser/modelComponents/interfaces';
 import { TextDiffEditor } from 'vs/workbench/browser/parts/editor/textDiffEditor';
 import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
 import { TextDiffEditorModel } from 'vs/workbench/common/editor/textDiffEditorModel';
@@ -26,6 +25,8 @@ import { ITextModel } from 'vs/editor/common/model';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { SimpleProgressIndicator } from 'sql/workbench/services/progress/browser/simpleProgressIndicator';
 import { IEditorProgressService } from 'vs/platform/progress/common/progress';
+import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
+import { convertSizeToNumber } from 'sql/base/browser/dom';
 
 @Component({
 	template: `
@@ -88,8 +89,8 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 			}
 		});
 
-		let editorinput1 = this._instantiationService.createInstance(ResourceEditorInput, 'source', undefined, uri1, undefined);
-		let editorinput2 = this._instantiationService.createInstance(ResourceEditorInput, 'target', undefined, uri2, undefined);
+		let editorinput1 = this._instantiationService.createInstance(ResourceEditorInput, uri1, 'source', undefined, undefined);
+		let editorinput2 = this._instantiationService.createInstance(ResourceEditorInput, uri2, 'target', undefined, undefined);
 		this._editorInput = new DiffEditorInput('DiffEditor', undefined, editorinput1, editorinput2, true);
 		this._editor.setInput(this._editorInput, undefined, cancellationTokenSource.token);
 
@@ -119,8 +120,8 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 	/// IComponent implementation
 
 	public layout(): void {
-		let width: number = this.convertSizeToNumber(this.width);
-		let height: number = this.convertSizeToNumber(this.height);
+		let width: number = convertSizeToNumber(this.width);
+		let height: number = convertSizeToNumber(this.height);
 		if (this._isAutoResizable) {
 			height = Math.max(this._editor.maximumHeight, this._minimumHeight ? this._minimumHeight : 0);
 		}

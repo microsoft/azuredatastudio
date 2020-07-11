@@ -8,7 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule, APP_BASE_HREF } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 
-import { ComponentHostDirective } from 'sql/workbench/contrib/dashboard/browser/core/componentHost.directive';
+import { ComponentHostDirective } from 'sql/base/browser/componentHost.directive';
 import { providerIterator } from 'sql/workbench/services/bootstrap/browser/bootstrapService';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { EditableDropDown } from 'sql/platform/browser/editableDropdown/editableDropdown.component';
@@ -20,7 +20,7 @@ import { OutputAreaComponent } from 'sql/workbench/contrib/notebook/browser/cell
 import { OutputComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/output.component';
 import { StdInComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/stdin.component';
 import { PlaceholderCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/placeholderCell.component';
-import LoadingSpinner from 'sql/workbench/browser/modelComponents/loadingSpinner.component';
+import LoadingSpinner from 'sql/base/browser/ui/loadingSpinner/loadingSpinner.component';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox.component';
 import { SelectBox } from 'sql/platform/browser/selectBox/selectBox.component';
 import { InputBox } from 'sql/platform/browser/inputbox/inputBox.component';
@@ -30,6 +30,8 @@ import { LinkHandlerDirective } from 'sql/workbench/contrib/notebook/browser/cel
 import { IBootstrapParams, ISelector } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { ICellComponenetRegistry, Extensions as OutputComponentExtensions } from 'sql/platform/notebooks/common/outputRegistry';
 import { CollapseComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/collapse.component';
+import { MarkdownToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component';
+import { CellToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/cellToolbar.component';
 
 const outputComponentRegistry = Registry.as<ICellComponenetRegistry>(OutputComponentExtensions.CellComponentContributions);
 
@@ -46,6 +48,8 @@ export const NotebookModule = (params, selector: string, instantiationService: I
 			LoadingSpinner,
 			CodeComponent,
 			CodeCellComponent,
+			CellToolbarComponent,
+			MarkdownToolbarComponent,
 			PlaceholderCellComponent,
 			NotebookComponent,
 			ComponentHostDirective,

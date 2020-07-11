@@ -7,9 +7,10 @@ import { ChangeDetectorRef, ElementRef } from '@angular/core';
 import * as azdata from 'azdata';
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { createIconCssClass, IUserFriendlyIcon } from 'sql/workbench/browser/modelComponents/iconUtils';
-import { IComponentDescriptor } from 'sql/workbench/browser/modelComponents/interfaces';
 import { removeCSSRulesContainingSelector } from 'vs/base/browser/dom';
 import { URI } from 'vs/base/common/uri';
+import { IComponentDescriptor } from 'sql/platform/dashboard/browser/interfaces';
+import { convertSize } from 'sql/base/browser/dom';
 
 export class ItemDescriptor<T> {
 	constructor(public descriptor: IComponentDescriptor, public config: T) { }
@@ -21,7 +22,7 @@ export abstract class ComponentWithIconBase extends ComponentBase {
 	protected _iconPath: IUserFriendlyIcon;
 	constructor(
 		changeRef: ChangeDetectorRef,
-		el: ElementRef, ) {
+		el: ElementRef,) {
 		super(changeRef, el);
 	}
 
@@ -40,11 +41,11 @@ export abstract class ComponentWithIconBase extends ComponentBase {
 	}
 
 	public getIconWidth(): string {
-		return this.convertSize(this.iconWidth, '40px');
+		return convertSize(this.iconWidth, '40px');
 	}
 
 	public getIconHeight(): string {
-		return this.convertSize(this.iconHeight, '40px');
+		return convertSize(this.iconHeight, '40px');
 	}
 
 	public get iconPath(): string | URI | { light: string | URI; dark: string | URI } {

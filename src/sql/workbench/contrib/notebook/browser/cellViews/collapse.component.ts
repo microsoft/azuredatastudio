@@ -6,7 +6,7 @@ import 'vs/css!./code';
 
 import { OnInit, Component, Input, ElementRef, ViewChild, SimpleChange, OnChanges } from '@angular/core';
 import { CellView } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
-import { ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { localize } from 'vs/nls';
 
 export const COLLAPSE_SELECTOR: string = 'collapse-component';
@@ -20,10 +20,10 @@ export class CollapseComponent extends CellView implements OnInit, OnChanges {
 	@ViewChild('collapseCellButton', { read: ElementRef }) private collapseCellButtonElement: ElementRef;
 
 	private readonly expandButtonTitle = localize('expandCellContents', "Expand code cell contents");
-	private readonly expandButtonClass = 'icon-show-cell';
+	private readonly expandButtonClass = 'arrow-down';
 
 	private readonly collapseButtonTitle = localize('collapseCellContents', "Collapse code cell contents");
-	private readonly collapseButtonClass = 'icon-hide-cell';
+	private readonly collapseButtonClass = 'arrow-up';
 
 	@Input() cellModel: ICellModel;
 	@Input() activeCellId: string;

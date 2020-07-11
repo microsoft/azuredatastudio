@@ -14,9 +14,9 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { NotebookModule } from 'sql/workbench/contrib/notebook/browser/notebook.module';
 import { NOTEBOOK_SELECTOR } from 'sql/workbench/contrib/notebook/browser/notebook.component';
-import { INotebookParams, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotebookParams, INotebookService, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IStorageService } from 'vs/platform/storage/common/storage';
-import { ACTION_IDS, NOTEBOOK_MAX_MATCHES, IFindNotebookController, FindWidget, IConfigurationChangedEvent } from 'sql/workbench/contrib/notebook/find/notebookFindWidget';
+import { ACTION_IDS, NOTEBOOK_MAX_MATCHES, IFindNotebookController, FindWidget, IConfigurationChangedEvent } from 'sql/workbench/contrib/notebook/browser/find/notebookFindWidget';
 import { IOverlayWidget } from 'vs/editor/browser/editorBrowser';
 import { FindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contrib/find/findState';
 import { IEditorAction } from 'vs/editor/common/editorCommon';
@@ -26,10 +26,11 @@ import { NotebookFindNextAction, NotebookFindPreviousAction } from 'sql/workbenc
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { INotebookModel, INotebookFindModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
-import { IDisposable, DisposableStore, dispose } from 'vs/base/common/lifecycle';
+import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { INotebookFindModel } from 'sql/workbench/contrib/notebook/browser/models/notebookFindModel';
+import { IDisposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IModelDecorationsChangeAccessor, IModelDeltaDecoration } from 'vs/editor/common/model';
-import { NotebookFindDecorations, NotebookRange } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
+import { NotebookFindDecorations } from 'sql/workbench/contrib/notebook/browser/find/notebookFindDecorations';
 import { TimeoutTimer } from 'vs/base/common/async';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 import { onUnexpectedError } from 'vs/base/common/errors';
@@ -65,12 +66,12 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 	) {
 		super(NotebookEditor.ID, telemetryService, themeService, storageService);
 		this._startSearchingTimer = new TimeoutTimer();
+		this._toDispose.add(this._startSearchingTimer);
 		this._actionMap[ACTION_IDS.FIND_NEXT] = this._instantiationService.createInstance(NotebookFindNextAction, this);
 		this._actionMap[ACTION_IDS.FIND_PREVIOUS] = this._instantiationService.createInstance(NotebookFindPreviousAction, this);
 	}
 
 	public dispose(): void {
-		dispose(this._startSearchingTimer);
 		this._toDispose.dispose();
 	}
 
@@ -93,7 +94,9 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 		let editorImpl = this._notebookService.findNotebookEditor(this.notebookInput.notebookUri);
 		if (editorImpl) {
 			let cellEditorProvider = editorImpl.cellEditors.filter(c => c.cellGuid() === cellGuid)[0];
-			return cellEditorProvider ? cellEditorProvider.getEditor() : undefined;
+			if (cellEditorProvider) {
+				return cellEditorProvider.getEditor();
+			}
 		}
 		return undefined;
 	}
@@ -108,7 +111,7 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 	}
 
 	public changeDecorations(callback: (changeAccessor: IModelDecorationsChangeAccessor) => any): any {
-		if (!this.notebookInput.notebookFindModel) {
+		if (!this.notebookInput?.notebookFindModel) {
 			// callback will not be called
 			return null;
 		}
@@ -167,8 +170,10 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 
 	/**
 	 * Sets focus on this editor. Specifically, it sets the focus on the hosted text editor.
+	 * An implementation provided here for IFindNotebookController interface.
 	 */
 	public focus(): void {
+		//no-op
 	}
 
 	/**
@@ -189,7 +194,7 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 
 		const parentElement = this.getContainer();
 
-		super.setInput(input, options, CancellationToken.None);
+		await super.setInput(input, options, CancellationToken.None);
 		DOM.clearNode(parentElement);
 		await this.setFindInput(parentElement);
 		if (!input.hasBootstrapped) {
@@ -227,7 +232,7 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 			providerInfo: input.getProviderInfo(),
 			profile: input.connectionProfile
 		};
-		bootstrapAngular(this._instantiationService,
+		this._instantiationService.invokeFunction(bootstrapAngular,
 			NotebookModule,
 			this._notebookContainer,
 			NOTEBOOK_SELECTOR,
@@ -268,6 +273,8 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 		}
 		if (this._findCountChangeListener === undefined && this._notebookModel) {
 			this._findCountChangeListener = this.notebookInput.notebookFindModel.onFindCountChange(() => this._updateFinderMatchState());
+			this._toDispose.add(this._findCountChangeListener);
+			this.registerModelChanges();
 		}
 		if (e.isRevealed) {
 			if (this._findState.isRevealed) {
@@ -279,60 +286,110 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 			} else {
 				this._finder.getDomNode().style.visibility = 'hidden';
 				this._findDecorations.clearDecorations();
+				return;
+			}
+		} else {
+			if (!this._findState.isRevealed) {
+				this._finder.getDomNode().style.visibility = 'hidden';
+				this._findDecorations.clearDecorations();
+				return;
 			}
 		}
 
 		if (e.searchString || e.matchCase || e.wholeWord) {
 			this._findDecorations.clearDecorations();
-			if (this._notebookModel) {
-				if (this._findState.searchString) {
-					let findScope = this._findDecorations.getFindScope();
-					if (this._findState.searchString === this.notebookFindModel.findExpression && findScope !== null && !e.matchCase && !e.wholeWord) {
-						if (findScope) {
-							this._updateFinderMatchState();
-							this._findState.changeMatchInfo(
-								this.notebookFindModel.getFindIndex(),
-								this._findDecorations.getCount(),
-								this._currentMatch
-							);
-							this._setCurrentFindMatch(findScope);
-						}
-					} else {
-						this.notebookInput.notebookFindModel.clearDecorations();
-						this.notebookFindModel.findExpression = this._findState.searchString;
-						this.notebookInput.notebookFindModel.find(this._findState.searchString, this._findState.matchCase, this._findState.wholeWord, NOTEBOOK_MAX_MATCHES).then(findRange => {
-							if (findRange) {
-								this.updatePosition(findRange);
-							} else if (this.notebookFindModel.findMatches.length > 0) {
-								this.updatePosition(this.notebookFindModel.findMatches[0].range);
-							} else {
-								this.notebookInput.notebookFindModel.clearFind();
-								this._updateFinderMatchState();
-								this._finder.focusFindInput();
-								return;
-							}
+			// if the search scope changes remove the prev
+			if (this._notebookModel && this._findState.searchString) {
+				let findScope = this._findDecorations.getFindScope();
+				if (this._findState.searchString === this.notebookFindModel.findExpression && findScope && !e.matchCase && !e.wholeWord && !e.searchScope) {
+					this._updateFinderMatchState();
+					this._findState.changeMatchInfo(
+						this.notebookFindModel.getFindIndex(),
+						this._findDecorations.getCount(),
+						this._currentMatch
+					);
+					this._setCurrentFindMatch(findScope);
+				} else {
+					this.notebookInput.notebookFindModel.clearDecorations();
+					this.notebookFindModel.findExpression = this._findState.searchString;
+					this.notebookInput.notebookFindModel.find(this._findState.searchString, this._findState.matchCase, this._findState.wholeWord, NOTEBOOK_MAX_MATCHES).then(findRange => {
+						if (findRange) {
+							this.setSelection(findRange);
+						} else if (this.notebookFindModel.findMatches.length > 0) {
+							this.setSelection(this.notebookFindModel.findMatches[0].range);
+						} else {
+							this.notebookInput.notebookFindModel.clearFind();
 							this._updateFinderMatchState();
 							this._finder.focusFindInput();
-							this._findDecorations.set(this.notebookFindModel.findMatches, this._currentMatch);
-							this._findState.changeMatchInfo(
-								this.notebookFindModel.getFindIndex(),
-								this._findDecorations.getCount(),
-								this._currentMatch
-							);
-							this._setCurrentFindMatch(this._currentMatch);
-						});
-					}
-				} else {
-					this.notebookFindModel.clearFind();
+							return;
+						}
+						this._updateFinderMatchState();
+						this._finder.focusFindInput();
+						this._findDecorations.set(this.notebookFindModel.findMatches, this._currentMatch);
+						this._findState.changeMatchInfo(
+							this.notebookFindModel.getFindIndex(),
+							this._findDecorations.getCount(),
+							this._currentMatch
+						);
+						this._setCurrentFindMatch(this._currentMatch);
+					});
 				}
+			} else {
+				this.notebookFindModel.clearFind();
 			}
 		}
+		if (e.searchScope) {
+			await this.notebookInput.notebookFindModel.find(this._findState.searchString, this._findState.matchCase, this._findState.wholeWord, NOTEBOOK_MAX_MATCHES);
+			this._findDecorations.set(this.notebookFindModel.findMatches, this._currentMatch);
+			this._findState.changeMatchInfo(
+				this.notebookFindModel.getIndexByRange(this._currentMatch),
+				this._findDecorations.getCount(),
+				this._currentMatch
+			);
+			if (this._finder.getDomNode().style.visibility === 'visible' && this._previousMatch !== this._currentMatch) {
+				this._setCurrentFindMatch(this._currentMatch);
+			}
+		}
+	}
+
+	private registerModelChanges(): void {
+		let changeEvent: FindReplaceStateChangedEvent = {
+			moveCursor: true,
+			updateHistory: true,
+			searchString: false,
+			replaceString: false,
+			isRevealed: false,
+			isReplaceRevealed: false,
+			isRegex: false,
+			wholeWord: false,
+			matchCase: false,
+			preserveCase: false,
+			searchScope: true,
+			matchesPosition: false,
+			matchesCount: false,
+			currentMatch: false,
+			loop: true
+		};
+		this._notebookModel.cells.forEach(cell => {
+			this._register(cell.onCellModeChanged((state) => {
+				this._onFindStateChange(changeEvent).catch(onUnexpectedError);
+			}));
+		});
+		this._register(this._notebookModel.contentChanged(e => {
+			this._onFindStateChange(changeEvent).catch(onUnexpectedError);
+		}));
+		this._register(this._notebookService.onNotebookEditorAdd(async (e) => {
+			// wait for the model to be ready and trigger input change
+			await e.modelReady;
+			this._triggerInputChange();
+		}));
 	}
 
 	public setSelection(range: NotebookRange): void {
 		this._previousMatch = this._currentMatch;
 		this._currentMatch = range;
 	}
+
 	public toggleSearch(): void {
 		// reveal only when the model is loaded
 		let isRevealed: boolean = !this._findState.isRevealed && this._notebookModel ? !this._findState.isRevealed : false;
@@ -344,21 +401,26 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 		}
 	}
 
-	public findNext(): void {
-		this.notebookFindModel.findNext().then(p => {
-			this.updatePosition(p);
+	public async findNext(): Promise<void> {
+		try {
+			const p = await this.notebookFindModel.findNext();
+			this.setSelection(p);
 			this._updateFinderMatchState();
 			this._setCurrentFindMatch(p);
-		}, er => { onUnexpectedError(er); });
+		} catch (er) {
+			onUnexpectedError(er);
+		}
 	}
 
-
-	public findPrevious(): void {
-		this.notebookFindModel.findPrevious().then(p => {
-			this.updatePosition(p);
+	public async findPrevious(): Promise<void> {
+		try {
+			const p = await this.notebookFindModel.findPrevious();
+			this.setSelection(p);
 			this._updateFinderMatchState();
 			this._setCurrentFindMatch(p);
-		}, er => { onUnexpectedError(er); });
+		} catch (er) {
+			onUnexpectedError(er);
+		}
 	}
 
 	private _updateFinderMatchState(): void {
@@ -367,11 +429,6 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 		} else {
 			this._findState.changeMatchInfo(0, 0, undefined);
 		}
-	}
-
-	private updatePosition(range: NotebookRange): void {
-		this._previousMatch = this._currentMatch;
-		this._currentMatch = range;
 	}
 
 	private _setCurrentFindMatch(match: NotebookRange): void {
@@ -397,7 +454,8 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 			searchScope: false,
 			matchesPosition: false,
 			matchesCount: false,
-			currentMatch: false
+			currentMatch: false,
+			loop: true
 		};
 		this._onFindStateChange(changeEvent).catch(e => { onUnexpectedError(e); });
 	}

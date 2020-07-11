@@ -7,27 +7,20 @@ import * as vscode from 'vscode';
 
 import ControllerBase from './controllers/controllerBase';
 import MainController from './controllers/mainController';
+import { ApiWrapper } from './common/apiWrapper';
 
 let controllers: ControllerBase[] = [];
 
-export function activate(context: vscode.ExtensionContext) {
-	let activations: Promise<boolean>[] = [];
+export async function activate(context: vscode.ExtensionContext): Promise<void> {
+
+	let apiWrapper = new ApiWrapper();
 
 	// Start the main controller
-	let mainController = new MainController(context);
+	let mainController = new MainController(context, apiWrapper);
 	controllers.push(mainController);
 	context.subscriptions.push(mainController);
-	activations.push(mainController.activate());
 
-	return Promise.all(activations)
-		.then((results: boolean[]) => {
-			for (let result of results) {
-				if (!result) {
-					return false;
-				}
-			}
-			return true;
-		});
+	await mainController.activate();
 }
 
 export function deactivate() {

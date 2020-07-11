@@ -13,6 +13,7 @@ import * as azdata from 'azdata';
 
 import { SqlMainContext, ExtHostModelViewDialogShape, MainThreadModelViewDialogShape, ExtHostModelViewShape, ExtHostBackgroundTaskManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
+import { TabOrientation, DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 const DONE_LABEL = nls.localize('dialogDoneLabel', "Done");
 const CANCEL_LABEL = nls.localize('dialogCancelLabel', "Cancel");
@@ -124,6 +125,7 @@ class DialogImpl extends ModelViewPanelImpl implements azdata.window.Dialog {
 	private _operationHandler: BackgroundOperationHandler;
 	private _dialogName: string;
 	private _isWide: boolean;
+	private _width: DialogWidth;
 
 	constructor(extHostModelViewDialog: ExtHostModelViewDialog,
 		extHostModelView: ExtHostModelViewShape,
@@ -136,6 +138,14 @@ class DialogImpl extends ModelViewPanelImpl implements azdata.window.Dialog {
 		this.okButton.onClick(() => {
 			this._operationHandler.createOperation();
 		});
+	}
+
+	public get width(): azdata.window.DialogWidth {
+		return this._width;
+	}
+
+	public set width(value: azdata.window.DialogWidth) {
+		this._width = value;
 	}
 
 	public registerOperation(operationInfo: azdata.BackgroundOperationInfo): void {
@@ -371,6 +381,7 @@ class WizardImpl implements azdata.window.Wizard {
 	private _message: azdata.window.DialogMessage;
 	private _displayPageTitles: boolean = true;
 	private _operationHandler: BackgroundOperationHandler;
+	private _width: DialogWidth;
 
 	constructor(public title: string, private _extHostModelViewDialog: ExtHostModelViewDialog, extHostTaskManagement: ExtHostBackgroundTaskManagementShape) {
 		this.doneButton = this._extHostModelViewDialog.createButton(DONE_LABEL);
@@ -389,6 +400,14 @@ class WizardImpl implements azdata.window.Wizard {
 
 	public registerOperation(operationInfo: azdata.BackgroundOperationInfo): void {
 		this._operationHandler.registerOperation(operationInfo);
+	}
+
+	public get width(): azdata.window.DialogWidth {
+		return this._width;
+	}
+
+	public set width(value: azdata.window.DialogWidth) {
+		this._width = value;
 	}
 
 	public get currentPage(): number {
@@ -454,6 +473,80 @@ class WizardImpl implements azdata.window.Wizard {
 		} else if (info.eventType === WizardPageInfoEventType.PageChanged) {
 			this._pageChangedEmitter.fire(info.pageChangeInfo);
 		}
+	}
+}
+
+class ModelViewDashboardImpl implements azdata.window.ModelViewDashboard {
+	private _tabbedPanel: azdata.TabbedPanelComponent;
+	private _view: azdata.ModelView;
+
+	constructor(
+		private _editor: ModelViewEditorImpl,
+		private _options?: azdata.ModelViewDashboardOptions
+	) {
+	}
+
+	updateTabs(tabs: (azdata.DashboardTab | azdata.DashboardTabGroup)[]): void {
+		if (this._tabbedPanel === undefined || this._view === undefined) {
+			throw new Error(nls.localize('dashboardNotInitialized', "Tabs are not initialized"));
+		}
+
+		this._tabbedPanel.updateTabs(this.createTabs(tabs, this._view));
+	}
+
+	registerTabs(handler: (view: azdata.ModelView) => Thenable<(azdata.DashboardTab | azdata.DashboardTabGroup)[]>): void {
+		this._editor.registerContent(async (view) => {
+			this._view = view;
+			const dashboardTabs = await handler(view);
+			const tabs = this.createTabs(dashboardTabs, view);
+			this._tabbedPanel = view.modelBuilder.tabbedPanel().withTabs(tabs).withLayout({
+				orientation: TabOrientation.Vertical,
+				showIcon: this._options?.showIcon ?? true,
+				alwaysShowTabs: this._options?.alwaysShowTabs ?? false
+			}).component();
+			return view.initializeModel(this._tabbedPanel);
+		});
+	}
+
+	open(): Thenable<void> {
+		return this._editor.openEditor();
+	}
+
+	createTab(tab: azdata.DashboardTab, view: azdata.ModelView): azdata.Tab {
+		if (tab.toolbar) {
+			const flexContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
+			flexContainer.addItem(tab.toolbar, { flex: '0 0 auto' });
+			flexContainer.addItem(tab.content, { flex: '1 1 auto' });
+			return {
+				title: tab.title,
+				id: tab.id,
+				content: flexContainer,
+				icon: tab.icon
+			};
+		} else {
+			return tab;
+		}
+	}
+
+	createTabs(dashboardTabs: (azdata.DashboardTab | azdata.DashboardTabGroup)[], view: azdata.ModelView): (azdata.TabGroup | azdata.Tab)[] {
+		const tabs: (azdata.TabGroup | azdata.Tab)[] = [];
+		dashboardTabs.forEach((item: azdata.DashboardTab | azdata.DashboardTabGroup) => {
+			if ('tabs' in item) {
+				tabs.push(<azdata.TabGroup>{
+					title: item.title,
+					tabs: item.tabs.map(tab => {
+						return this.createTab(tab, view);
+					})
+				});
+			} else {
+				tabs.push(this.createTab(item, view));
+			}
+		});
+		return tabs;
+	}
+
+	selectTab(id: string): void {
+		this._tabbedPanel.selectTab(id);
 	}
 }
 
@@ -562,6 +655,11 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		return editor;
 	}
 
+	public createModelViewDashboard(title: string, options: azdata.ModelViewDashboardOptions | undefined, extension: IExtensionDescription): azdata.window.ModelViewDashboard {
+		const editor = this.createModelViewEditor(title, extension, { supportsSave: false }) as ModelViewEditorImpl;
+		return new ModelViewDashboardImpl(editor, options);
+	}
+
 	public updateDialogContent(dialog: azdata.window.Dialog): void {
 		let handle = this.getHandle(dialog);
 		let tabs = dialog.content;
@@ -573,9 +671,17 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		}
 		this.updateButton(dialog.okButton);
 		this.updateButton(dialog.cancelButton);
+		let dialogWidth: DialogWidth = 'narrow';
+		if (dialog.isWide !== undefined) {
+			dialogWidth = dialog.isWide ? 'wide' : 'narrow';
+		} else if (dialog.width !== undefined) {
+			dialogWidth = dialog.width;
+		} else {
+			dialogWidth = 'narrow';
+		}
 		this._proxy.$setDialogDetails(handle, {
 			title: dialog.title,
-			isWide: dialog.isWide,
+			width: dialogWidth,
 			okButton: this.getHandle(dialog.okButton),
 			cancelButton: this.getHandle(dialog.cancelButton),
 			content: dialog.content && typeof dialog.content !== 'string' ? dialog.content.map(tab => this.getHandle(tab)) : dialog.content as string,
@@ -608,13 +714,13 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		this._onClickCallbacks.set(handle, callback);
 	}
 
-	public createDialog(title: string, dialogName?: string, extension?: IExtensionDescription, isWide?: boolean): azdata.window.Dialog {
+	public createDialog(title: string, dialogName?: string, extension?: IExtensionDescription, width?: azdata.window.DialogWidth): azdata.window.Dialog {
 		let dialog = new DialogImpl(this, this._extHostModelView, this._extHostTaskManagement, extension);
 		if (dialogName) {
 			dialog.dialogName = dialogName;
 		}
 		dialog.title = title;
-		dialog.isWide = isWide;
+		dialog.width = width ?? 'narrow';
 		dialog.handle = this.getHandle(dialog);
 		return dialog;
 	}
@@ -656,8 +762,9 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		return page;
 	}
 
-	public createWizard(title: string): azdata.window.Wizard {
+	public createWizard(title: string, width: azdata.window.DialogWidth = 'wide'): azdata.window.Wizard {
 		let wizard = new WizardImpl(title, this, this._extHostTaskManagement);
+		wizard.width = width;
 		this.getHandle(wizard);
 		return wizard;
 	}
@@ -689,6 +796,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		}
 		return this._proxy.$setWizardDetails(handle, {
 			title: wizard.title,
+			width: wizard.width,
 			pages: wizard.pages.map(page => this.getHandle(page)),
 			currentPage: wizard.currentPage,
 			backButton: this.getHandle(wizard.backButton),

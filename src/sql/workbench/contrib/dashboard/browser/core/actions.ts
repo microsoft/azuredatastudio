@@ -10,10 +10,10 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 
 import { IAngularEventingService, AngularEventType, IAngularEvent } from 'sql/platform/angularEventing/browser/angularEventingService';
 import { INewDashboardTabDialogService } from 'sql/workbench/services/dashboard/browser/newDashboardTabDialog';
-import { IDashboardTab } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
-import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
+import { IDashboardTab } from 'sql/workbench/services/dashboard/browser/common/interfaces';
 import { find, firstIndex } from 'vs/base/common/arrays';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export class EditDashboardAction extends Action {
 
@@ -26,7 +26,7 @@ export class EditDashboardAction extends Action {
 
 	constructor(
 		private editFn: () => void,
-		private context: any //this
+		private context: any
 	) {
 		super(EditDashboardAction.ID, EditDashboardAction.EDITLABEL, EditDashboardAction.ICON);
 	}
@@ -60,7 +60,7 @@ export class RefreshWidgetAction extends Action {
 
 	constructor(
 		private refreshFn: () => void,
-		private context: any // this
+		private context: any
 	) {
 		super(RefreshWidgetAction.ID, RefreshWidgetAction.LABEL, RefreshWidgetAction.ICON);
 	}
@@ -70,6 +70,29 @@ export class RefreshWidgetAction extends Action {
 			this.refreshFn.apply(this.context);
 			return Promise.resolve(true);
 		} catch (e) {
+			return Promise.resolve(false);
+		}
+	}
+}
+
+export class ToolbarAction extends Action {
+	constructor(
+		id: string,
+		label: string,
+		cssClass: string,
+		private runFn: (id: string) => void,
+		private context: any, // this
+		private logService: ILogService
+	) {
+		super(id, label, cssClass);
+	}
+
+	run(): Promise<boolean> {
+		try {
+			this.runFn.apply(this.context, [this.id]);
+			return Promise.resolve(true);
+		} catch (e) {
+			this.logService.error(e);
 			return Promise.resolve(false);
 		}
 	}
@@ -166,7 +189,7 @@ export class AddFeatureTabAction extends Action {
 		@IAngularEventingService private _angularEventService: IAngularEventingService
 	) {
 		super(AddFeatureTabAction.ID, AddFeatureTabAction.LABEL, AddFeatureTabAction.ICON);
-		this._register(subscriptionToDisposable(this._angularEventService.onAngularEvent(this._uri, (event) => this.handleDashboardEvent(event))));
+		this._register(this._angularEventService.onAngularEvent(this._uri)(event => this.handleDashboardEvent(event)));
 	}
 
 	run(): Promise<boolean> {
@@ -197,8 +220,8 @@ export class CollapseWidgetAction extends Action {
 	private static readonly ID = 'collapseWidget';
 	private static readonly COLLPASE_LABEL = nls.localize('collapseWidget', "Collapse");
 	private static readonly EXPAND_LABEL = nls.localize('expandWidget', "Expand");
-	private static readonly COLLAPSE_ICON = 'maximize-panel-action';
-	private static readonly EXPAND_ICON = 'minimize-panel-action';
+	private static readonly COLLAPSE_ICON = 'codicon-chevron-up';
+	private static readonly EXPAND_ICON = 'codicon-chevron-down';
 
 	constructor(
 		private _uri: string,

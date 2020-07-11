@@ -4,6 +4,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.rollupAngular = void 0;
 const fs = require("fs");
 const rollup = require("rollup");
 const path = require("path");
@@ -53,21 +54,6 @@ async function rollupModule(options) {
         };
     }
 }
-function rollupAngularSlickgrid(root) {
-    return new Promise(async (resolve, reject) => {
-        const result = await rollupModule({
-            moduleName: 'angular2-slickgrid',
-            inputFile: path.resolve(root, 'node_modules', 'angular2-slickgrid', 'out', 'index.js'),
-            outputDirectory: path.resolve(root, 'node_modules', 'angular2-slickgrid', 'out', 'bundles'),
-            outputFileName: 'angular2-slickgrid.umd.js'
-        });
-        if (!result.result) {
-            return reject(`angular2-slickgrid failed to bundle - ${result.exception}`);
-        }
-        resolve();
-    });
-}
-exports.rollupAngularSlickgrid = rollupAngularSlickgrid;
 function rollupAngular(root) {
     return new Promise(async (resolve, reject) => {
         const modules = ['core', 'animations', 'common', 'compiler', 'forms', 'platform-browser', 'platform-browser-dynamic', 'router'];

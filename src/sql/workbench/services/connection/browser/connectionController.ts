@@ -5,7 +5,7 @@
 
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionComponentCallbacks, IConnectionComponentController, IConnectionValidateResult } from 'sql/workbench/services/connection/browser/connectionDialogService';
-import { AdvancedPropertiesController } from 'sql/workbench/contrib/connection/browser/advancedPropertiesController';
+import { AdvancedPropertiesController } from 'sql/workbench/services/connection/browser/advancedPropertiesController';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import * as Constants from 'sql/platform/connection/common/constants';

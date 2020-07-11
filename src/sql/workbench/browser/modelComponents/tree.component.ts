@@ -12,7 +12,6 @@ import {
 import * as azdata from 'azdata';
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
-import { IComponent, IComponentDescriptor, IModelStore } from 'sql/workbench/browser/modelComponents/interfaces';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { TreeComponentRenderer } from 'sql/workbench/browser/modelComponents/treeComponentRenderer';
 import { TreeComponentDataSource } from 'sql/workbench/browser/modelComponents/treeDataSource';
@@ -26,6 +25,8 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { values } from 'vs/base/common/collections';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { IComponentDescriptor, IComponent, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
+import { convertSizeToNumber } from 'sql/base/browser/dom';
 
 class Root implements ITreeComponentItem {
 	label = {
@@ -143,8 +144,8 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 	}
 
 	private layoutTree(): void {
-		let width: number = this.convertSizeToNumber(this.width);
-		let height: number = this.convertSizeToNumber(this.height);
+		let width: number = convertSizeToNumber(this.width);
+		let height: number = convertSizeToNumber(this.height);
 		this._tree.layout(
 			height && height > 0 ? height : DOM.getContentHeight(this._inputContainer.nativeElement),
 			width && width > 0 ? width : DOM.getContentWidth(this._inputContainer.nativeElement));

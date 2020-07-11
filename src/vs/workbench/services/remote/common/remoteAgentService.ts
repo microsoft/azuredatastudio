@@ -16,7 +16,7 @@ export const RemoteExtensionLogFileName = 'remoteagent';
 export const IRemoteAgentService = createDecorator<IRemoteAgentService>('remoteAgentService');
 
 export interface IRemoteAgentService {
-	_serviceBrand: undefined;
+	readonly _serviceBrand: undefined;
 
 	readonly socketFactory: ISocketFactory;
 
@@ -35,5 +35,6 @@ export interface IRemoteAgentConnection {
 	readonly onDidStateChange: Event<PersistentConnectionEvent>;
 
 	getChannel<T extends IChannel>(channelName: string): T;
+	withChannel<T extends IChannel, R>(channelName: string, callback: (channel: T) => Promise<R>): Promise<R>;
 	registerChannel<T extends IServerChannel<RemoteAgentConnectionContext>>(channelName: string, channel: T): void;
 }

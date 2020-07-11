@@ -16,7 +16,7 @@ export interface IMetadataService {
 
 	getMetadata(connectionUri: string): Thenable<azdata.ProviderMetadata | undefined>;
 
-	getDatabaseNames(connectionUri: string): Thenable<string[]>;
+	getDatabases(connectionUri: string): Thenable<string[] | azdata.DatabaseInfo[]>;
 
 	getTableInfo(connectionUri: string, metadata: azdata.ObjectMetadata): Thenable<azdata.ColumnMetadata[] | undefined>;
 
@@ -49,7 +49,7 @@ export class MetadataService implements IMetadataService {
 		return Promise.resolve(undefined);
 	}
 
-	public getDatabaseNames(connectionUri: string): Thenable<string[]> {
+	public getDatabases(connectionUri: string): Thenable<string[] | azdata.DatabaseInfo[]> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(connectionUri);
 		if (providerId) {
 			let provider = this._providers[providerId];

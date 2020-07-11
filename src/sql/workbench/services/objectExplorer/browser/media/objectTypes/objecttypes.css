@@ -1,0 +1,643 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vs .icon.table,
+.vs-dark .icon.table,
+.hc-black .icon.table,
+.vs .codicon.table,
+.vs-dark .codicon.table,
+.hc-black .codicon.table {
+	background: url("Table.svg") center center no-repeat;
+}
+
+.vs .icon.aggregatefunction,
+.vs-dark .icon.aggregatefunction,
+.hc-black .icon.aggregatefunction {
+	background: url("AggregateFunction.svg") center center no-repeat;
+}
+
+.vs .icon.aggregatefunctionparameter_input,
+.vs-dark .icon.aggregatefunctionparameter_input,
+.hc-black .icon.aggregatefunctionparameter_input {
+	background: url("AggregateFunctionParameter_Input.svg") center center no-repeat;
+}
+
+.vs .icon.aggregatefunctionparameter_output,
+.vs-dark .icon.aggregatefunctionparameter_output,
+.hc-black .icon.aggregatefunctionparameter_output {
+	background: url("AggregateFunctionParameter_Output.svg") center center no-repeat;
+}
+
+.vs .icon.aggregatefunctionparameter_return,
+.vs-dark .icon.aggregatefunctionparameter_return,
+.hc-black .icon.aggregatefunctionparameter_return {
+	background: url("AggregateFunctionParameter_Return.svg") center center no-repeat;
+}
+
+.vs .icon.applicationrole,
+.vs-dark .icon.applicationrole,
+.hc-black .icon.applicationrole {
+	background: url("ApplicationRole.svg") center center no-repeat;
+}
+
+.vs .icon.assembly,
+.vs-dark .icon.assembly,
+.hc-black .icon.assembly {
+	background: url("Assembly.svg") center center no-repeat;
+}
+
+.vs .icon.asymmetrickey,
+.vs-dark .icon.asymmetrickey,
+.hc-black .icon.asymmetrickey {
+	background: url("AsymmetricKey.svg") center center no-repeat;
+}
+
+.vs .icon.brokerpriority,
+.vs-dark .icon.brokerpriority,
+.hc-black .icon.brokerpriority {
+	background: url("BrokerPriority.svg") center center no-repeat;
+}
+
+.vs .icon.certificate,
+.vs-dark .icon.certificate,
+.hc-black .icon.certificate {
+	background: url("Certificate.svg") center center no-repeat;
+}
+
+.vs .icon.column,
+.vs-dark .icon.column,
+.hc-black .icon.column {
+	background: url("Column.svg") center center no-repeat;
+}
+
+.vs .icon.columnencryptionkey,
+.vs-dark .icon.columnencryptionkey,
+.hc-black .icon.columnencryptionkey {
+	background: url("ColumnEncryptionKey.svg") center center no-repeat;
+}
+
+.vs .icon.columnmasterkey,
+.vs-dark .icon.columnmasterkey,
+.hc-black .icon.columnmasterkey {
+		background: url("ColumnMasterKey.svg") center center no-repeat;
+}
+
+.vs .icon.constraint,
+.vs-dark .icon.constraint,
+.hc-black .icon.constraint {
+	background: url("Constraint.svg") center center no-repeat;
+}
+
+.vs .icon.contract,
+.vs-dark .icon.contract,
+.hc-black .icon.contract {
+	background: url("Contract.svg") center center no-repeat;
+}
+
+.vs .icon.database,
+.vs-dark .icon.database,
+.hc-black .icon.database {
+	background: url("Database.svg") center center no-repeat;
+}
+
+.vs .icon.database_unavailable,
+.vs-dark .icon.database_unavailable,
+.hc-black .icon.database_unavailable {
+	background: url("Database_Unavailable.svg") center center no-repeat;
+}
+
+.vs .icon.databaseandqueueeventnotification,
+.vs-dark .icon.databaseandqueueeventnotification,
+.hc-black .icon.databaseandqueueeventnotification {
+	background: url("DatabaseAndQueueEventNotification.svg") center center no-repeat;
+}
+
+.vs .icon.databaseauditspecification,
+.vs-dark .icon.databaseauditspecification,
+.hc-black .icon.databaseauditspecification {
+	background: url("DatabaseAuditSpecification.svg") center center no-repeat;
+}
+
+.vs .icon.databaseencryptionkey,
+.vs-dark .icon.databaseencryptionkey,
+.hc-black .icon.databaseencryptionkey {
+	background: url("DatabaseEncryptionKey.svg") center center no-repeat;
+}
+
+.vs .icon.databaserole,
+.vs-dark .icon.databaserole,
+.hc-black .icon.databaserole {
+	background: url("DatabaseRole.svg") center center no-repeat;
+}
+
+.vs .icon.databasescopedcredential,
+.vs-dark .icon.databasescopedcredential,
+.hc-black .icon.databasescopedcredential {
+	background: url("DatabaseScopedCredential.svg") center center no-repeat;
+}
+
+.vs .icon.databasetrigger,
+.vs-dark .icon.databasetrigger,
+.hc-black .icon.databasetrigger {
+	background: url("DatabaseTrigger.svg") center center no-repeat;
+}
+
+.vs .icon.defaulticon,
+.vs-dark .icon.defaulticon,
+.hc-black .icon.defaulticon,
+.vs .icon.filegroup,
+.vs-dark .icon.filegroup,
+.hc-black .icon.filegroup,
+.vs .icon.historytable,
+.vs-dark .icon.historytable,
+.hc-black .icon.historytable {
+	background: url("DefaultIcon.svg") center center no-repeat;
+}
+
+.vs .icon.externaldatasource,
+.vs-dark .icon.externaldatasource,
+.hc-black .icon.externaldatasource {
+	background: url("ExternalDataSource.svg") center center no-repeat;
+}
+
+.vs .icon.externalfileformat,
+.vs-dark .icon.externalfileformat,
+.hc-black .icon.externalfileformat {
+	background: url("ExternalFileFormat.svg") center center no-repeat;
+}
+
+.vs .icon.filegroupfile,
+.vs-dark .icon.filegroupfile,
+.hc-black .icon.filegroupfile {
+	background: url("FileGroupFile.svg") center center no-repeat;
+}
+
+.vs .icon.filegroupfile_mounted,
+.vs-dark .icon.filegroupfile_mounted,
+.hc-black .icon.filegroupfile_mounted {
+	background: url("FileGroupFile_mounted.svg") center center no-repeat;
+}
+
+.vs .icon.folder,
+.vs-dark .icon.folder,
+.hc-black .icon.folder {
+	background: url("Folder.svg") center center no-repeat;
+}
+
+.vs .icon.folder_mounted,
+.vs-dark .icon.folder_mounted,
+.hc-black .icon.folder_mounted {
+	background: url("Folder_mounted.svg") center center no-repeat;
+}
+
+.vs .icon.fulltextcatalog,
+.vs-dark .icon.fulltextcatalog,
+.hc-black .icon.fulltextcatalog {
+	background: url("FullTextCatalog.svg") center center no-repeat;
+}
+
+.vs .icon.fulltextstoplist,
+.vs-dark .icon.fulltextstoplist,
+.hc-black .icon.fulltextstoplist {
+	background: url("FullTextStopList.svg") center center no-repeat;
+}
+
+.vs .icon.index,
+.vs-dark .icon.index,
+.hc-black .icon.index {
+	background: url("Index.svg") center center no-repeat;
+}
+
+.vs .icon.key_foreignkey,
+.vs-dark .icon.key_foreignkey,
+.hc-black .icon.key_foreignkey {
+	background: url("Key_ForeignKey.svg") center center no-repeat;
+}
+
+.vs .icon.key_primarykey,
+.vs-dark .icon.key_primarykey,
+.hc-black .icon.key_primarykey,
+.vs .icon.index_primarykey,
+.vs-dark .icon.index_primarykey,
+.hc-black .icon.index_primarykey {
+	background: url("Key_PrimaryKey.svg") center center no-repeat;
+}
+
+.vs .icon.key_uniquekey,
+.vs-dark .icon.key_uniquekey,
+.hc-black .icon.key_uniquekey,
+.vs .icon.index_uniquekey,
+.vs-dark .icon.index_uniquekey,
+.hc-black .icon.index_uniquekey {
+	background: url("Key_UniqueKey.svg") center center no-repeat;
+}
+
+.vs .icon.masterkey,
+.vs-dark .icon.masterkey,
+.hc-black .icon.masterkey {
+		background: url("MasterKey.svg") center center no-repeat;
+}
+
+.vs .icon.messagetype,
+.vs-dark .icon.messagetype,
+.hc-black .icon.messagetype {
+	background: url("MessageType.svg") center center no-repeat;
+}
+
+.vs .icon.objecttypes.css,
+.vs-dark .icon.objecttypes.css,
+.hc-black .icon.objecttypes.css {
+	background: url("objecttypes.css") center center no-repeat;
+}
+
+.vs .icon.partitionfunction,
+.vs-dark .icon.partitionfunction,
+.hc-black .icon.partitionfunction {
+	background: url("PartitionFunction.svg") center center no-repeat;
+}
+
+.vs .icon.partitionscheme,
+.vs-dark .icon.partitionscheme,
+.hc-black .icon.partitionscheme {
+	background: url("PartitionScheme.svg") center center no-repeat;
+}
+
+.vs .icon.queue,
+.vs-dark .icon.queue,
+.hc-black .icon.queue {
+	background: url("Queue.svg") center center no-repeat;
+}
+
+.vs .icon.remoteservicebinding,
+.vs-dark .icon.remoteservicebinding,
+.hc-black .icon.remoteservicebinding {
+	background: url("RemoteServiceBinding.svg") center center no-repeat;
+}
+
+.vs .icon.route,
+.vs-dark .icon.route,
+.hc-black .icon.route {
+	background: url("Route.svg") center center no-repeat;
+}
+
+.vs .icon.scalarvaluedfunction,
+.vs-dark .icon.scalarvaluedfunction,
+.hc-black .icon.scalarvaluedfunction {
+	background: url("ScalarValuedFunction.svg") center center no-repeat;
+}
+
+.vs .icon.scalarvaluedfunctionparameter_input,
+.vs-dark .icon.scalarvaluedfunctionparameter_input,
+.hc-black .icon.scalarvaluedfunctionparameter_input {
+	background: url("ScalarValuedFunctionParameter_Input.svg") center center no-repeat;
+}
+
+.vs .icon.scalarvaluedfunctionparameter_output,
+.vs-dark .icon.scalarvaluedfunctionparameter_output,
+.hc-black .icon.scalarvaluedfunctionparameter_output {
+	background: url("ScalarValuedFunctionParameter_Output.svg") center center no-repeat;
+}
+
+.vs .icon.scalarvaluedfunctionparameter_return,
+.vs-dark .icon.scalarvaluedfunctionparameter_return,
+.hc-black .icon.scalarvaluedfunctionparameter_return {
+	background: url("ScalarValuedFunctionParameter_Return.svg") center center no-repeat;
+}
+
+.vs .icon.schema,
+.vs-dark .icon.schema,
+.hc-black .icon.schema {
+	background: url("Schema.svg") center center no-repeat;
+}
+
+.vs .icon.searchpropertylist,
+.vs-dark .icon.searchpropertylist,
+.hc-black .icon.searchpropertylist {
+	background: url("SearchPropertyList.svg") center center no-repeat;
+}
+
+.vs .icon.securitypolicy,
+.vs-dark .icon.securitypolicy,
+.hc-black .icon.securitypolicy {
+	background: url("SecurityPolicy.svg") center center no-repeat;
+}
+
+.vs .icon.sequence,
+.vs-dark .icon.sequence,
+.hc-black .icon.sequence {
+	background: url("Sequence.svg") center center no-repeat;
+}
+
+.vs .icon.server,
+.vs-dark .icon.server,
+.hc-black .icon.server {
+	background: url("Server.svg") center center no-repeat;
+}
+
+.vs .icon.serverlevelcredential,
+.vs-dark .icon.serverlevelcredential,
+.hc-black .icon.serverlevelcredential {
+	background: url("ServerLevelCredential.svg") center center no-repeat;
+}
+
+.vs .icon.serverlevelcryptographicprovider,
+.vs-dark .icon.serverlevelcryptographicprovider,
+.hc-black .icon.serverlevelcryptographicprovider {
+	background: url("ServerLevelCryptographicProvider.svg") center center no-repeat;
+}
+
+.vs .icon.serverlevelendpoint,
+.vs-dark .icon.serverlevelendpoint,
+.hc-black .icon.serverlevelendpoint {
+	background: url("ServerLevelEndpoint.svg") center center no-repeat;
+}
+
+.vs .icon.serverlevellinkedserver,
+.vs-dark .icon.serverlevellinkedserver,
+.hc-black .icon.serverlevellinkedserver {
+	background: url("ServerLevelLinkedServer.svg") center center no-repeat;
+}
+
+.vs .icon.serverlevellinkedserverlogin,
+.vs-dark .icon.serverlevellinkedserverlogin,
+.hc-black .icon.serverlevellinkedserverlogin {
+	background: url("ServerLevelLinkedServerLogin.svg") center center no-repeat;
+}
+
+.vs .icon.serverlevellinkedserverlogin_disabled,
+.vs-dark .icon.serverlevellinkedserverlogin_disabled,
+.hc-black .icon.serverlevellinkedserverlogin_disabled {
+	background: url("ServerLevelLinkedServerLogin_Disabled.svg") center center no-repeat;
+}
+
+.vs .icon.serverlevellogin,
+.vs-dark .icon.serverlevellogin,
+.hc-black .icon.serverlevellogin {
+	background: url("ServerLevelLogin.svg") center center no-repeat;
+}
+
+.vs .icon.serverlevellogin_disabled,
+.vs-dark .icon.serverlevellogin_disabled,
+.hc-black .icon.serverlevellogin_disabled {
+	background: url("ServerLevelLogin_Disabled.svg") center center no-repeat;
+}
+
+.vs .icon.serverlevelserveraudit,
+.vs-dark .icon.serverlevelserveraudit,
+.hc-black .icon.serverlevelserveraudit {
+	background: url("ServerLevelServerAudit.svg") center center no-repeat;
+}
+
+.vs .icon.serverlevelserverauditspecification,
+.vs-dark .icon.serverlevelserverauditspecification,
+.hc-black .icon.serverlevelserverauditspecification {
+	background: url("ServerLevelServerAuditSpecification.svg") center center no-repeat;
+}
+
+.vs .icon.serverlevelserverrole,
+.vs-dark .icon.serverlevelserverrole,
+.hc-black .icon.serverlevelserverrole {
+	background: url("ServerLevelServerRole.svg") center center no-repeat;
+}
+
+.vs .icon.serverlevelservertrigger,
+.vs-dark .icon.serverlevelservertrigger,
+.hc-black .icon.serverlevelservertrigger {
+	background: url("ServerLevelServerTrigger.svg") center center no-repeat;
+}
+
+.vs .icon.serverlevelservertrigger_disabled,
+.vs-dark .icon.serverlevelservertrigger_disabled,
+.hc-black .icon.serverlevelservertrigger_disabled {
+	background: url("ServerLevelServerTrigger_Disabled.svg") center center no-repeat;
+}
+
+.vs .icon.service,
+.vs-dark .icon.service,
+.hc-black .icon.service {
+	background: url("Service.svg") center center no-repeat;
+}
+
+.vs .icon.sqllogfile,
+.vs-dark .icon.sqllogfile,
+.hc-black .icon.sqllogfile {
+	background: url("SqlLogFile.svg") center center no-repeat;
+}
+
+.vs .icon.statistic,
+.vs-dark .icon.statistic,
+.hc-black .icon.statistic {
+	background: url("Statistic.svg") center center no-repeat;
+}
+
+.vs .icon.storedprocedure,
+.vs-dark .icon.storedprocedure,
+.hc-black .icon.storedprocedure {
+	background: url("StoredProcedure.svg") center center no-repeat;
+}
+
+.vs .icon.storedprocedureparameter_input,
+.vs-dark .icon.storedprocedureparameter_input,
+.hc-black .icon.storedprocedureparameter_input {
+	background: url("StoredProcedureParameter_Input.svg") center center no-repeat;
+}
+
+.vs .icon.storedprocedureparameter_output,
+.vs-dark .icon.storedprocedureparameter_output,
+.hc-black .icon.storedprocedureparameter_output {
+	background: url("StoredProcedureParameter_Output.svg") center center no-repeat;
+}
+
+.vs .icon.storedprocedureparameter_return,
+.vs-dark .icon.storedprocedureparameter_return,
+.hc-black .icon.storedprocedureparameter_return {
+	background: url("StoredProcedureParameter_Return.svg") center center no-repeat;
+}
+
+.vs .icon.symmetrickey,
+.vs-dark .icon.symmetrickey,
+.hc-black .icon.symmetrickey {
+	background: url("SymmetricKey.svg") center center no-repeat;
+}
+
+.vs .icon.synonym,
+.vs-dark .icon.synonym,
+.hc-black .icon.synonym {
+	background: url("Synonym.svg") center center no-repeat;
+}
+
+.vs .icon.systemapproximatenumeric,
+.vs-dark .icon.systemapproximatenumeric,
+.hc-black .icon.systemapproximatenumeric {
+	background: url("SystemApproximateNumeric.svg") center center no-repeat;
+}
+
+.vs .icon.systembinarystring,
+.vs-dark .icon.systembinarystring,
+.hc-black .icon.systembinarystring {
+	background: url("SystemBinaryString.svg") center center no-repeat;
+}
+
+.vs .icon.systemcharacterstring,
+.vs-dark .icon.systemcharacterstring,
+.hc-black .icon.systemcharacterstring {
+	background: url("SystemCharacterString.svg") center center no-repeat;
+}
+
+.vs .icon.systemclrdatatype,
+.vs-dark .icon.systemclrdatatype,
+.hc-black .icon.systemclrdatatype {
+	background: url("SystemClrDataType.svg") center center no-repeat;
+}
+
+.vs .icon.systemcontract,
+.vs-dark .icon.systemcontract,
+.hc-black .icon.systemcontract {
+	background: url("SystemContract.svg") center center no-repeat;
+}
+
+.vs .icon.systemdateandtime,
+.vs-dark .icon.systemdateandtime,
+.hc-black .icon.systemdateandtime {
+	background: url("SystemDateAndTime.svg") center center no-repeat;
+}
+
+.vs .icon.systemexactnumeric,
+.vs-dark .icon.systemexactnumeric,
+.hc-black .icon.systemexactnumeric {
+	background: url("SystemExactNumeric.svg") center center no-repeat;
+}
+
+.vs .icon.systemmessagetype,
+.vs-dark .icon.systemmessagetype,
+.hc-black .icon.systemmessagetype {
+	background: url("SystemMessageType.svg") center center no-repeat;
+}
+
+.vs .icon.systemotherdatatype,
+.vs-dark .icon.systemotherdatatype,
+.hc-black .icon.systemotherdatatype {
+	background: url("SystemOtherDataType.svg") center center no-repeat;
+}
+
+.vs .icon.systemqueue,
+.vs-dark .icon.systemqueue,
+.hc-black .icon.systemqueue {
+	background: url("SystemQueue.svg") center center no-repeat;
+}
+
+.vs .icon.systemservice,
+.vs-dark .icon.systemservice,
+.hc-black .icon.systemservice {
+	background: url("SystemService.svg") center center no-repeat;
+}
+
+.vs .icon.systemspatialdatatype,
+.vs-dark .icon.systemspatialdatatype,
+.hc-black .icon.systemspatialdatatype {
+	background: url("SystemSpatialDataType.svg") center center no-repeat;
+}
+
+.vs .icon.systemunicodecharacterstring,
+.vs-dark .icon.systemunicodecharacterstring,
+.hc-black .icon.systemunicodecharacterstring {
+	background: url("SystemUnicodeCharacterString.svg") center center no-repeat;
+}
+
+.vs .icon.tablevaluedfunction,
+.vs-dark .icon.tablevaluedfunction,
+.hc-black .icon.tablevaluedfunction {
+	background: url("TableValuedFunction.svg") center center no-repeat;
+}
+
+.vs .icon.tablevaluedfunctionparameter_input,
+.vs-dark .icon.tablevaluedfunctionparameter_input,
+.hc-black .icon.tablevaluedfunctionparameter_input {
+	background: url("TableValuedFunctionParameter_Input.svg") center center no-repeat;
+}
+
+.vs .icon.tablevaluedfunctionparameter_output,
+.vs-dark .icon.tablevaluedfunctionparameter_output,
+.hc-black .icon.tablevaluedfunctionparameter_output {
+	background: url("TableValuedFunctionParameter_Output.svg") center center no-repeat;
+}
+
+.vs .icon.tablevaluedfunctionparameter_return,
+.vs-dark .icon.tablevaluedfunctionparameter_return,
+.hc-black .icon.tablevaluedfunctionparameter_return {
+	background: url("TableValuedFunctionParameter_Return.svg") center center no-repeat;
+}
+
+.vs .icon.table_temporal,
+.vs-dark .icon.table_temporal,
+.hc-black .icon.table_temporal {
+	background: url("Table_Temporal.svg") center center no-repeat;
+}
+
+.vs .icon.trigger,
+.vs-dark .icon.trigger,
+.hc-black .icon.trigger {
+	background: url("Trigger.svg") center center no-repeat;
+}
+
+.vs .icon.trigger_disabled,
+.vs-dark .icon.trigger_disabled,
+.hc-black .icon.trigger_disabled {
+	background: url("Trigger_Disabled.svg") center center no-repeat;
+}
+
+.vs .icon.user,
+.vs-dark .icon.user,
+.hc-black .icon.user {
+	background: url("User.svg") center center no-repeat;
+}
+
+.vs .icon.user_disabled,
+.vs-dark .icon.user_disabled,
+.hc-black .icon.user_disabled {
+	background: url("User_Disabled.svg") center center no-repeat;
+}
+
+.vs .icon.userdefineddatatype,
+.vs-dark .icon.userdefineddatatype,
+.hc-black .icon.userdefineddatatype {
+	background: url("UserDefinedDataType.svg") center center no-repeat;
+}
+
+.vs .icon.userdefinedtabletype,
+.vs-dark .icon.userdefinedtabletype,
+.hc-black .icon.userdefinedtabletype {
+	background: url("UserDefinedTableType.svg") center center no-repeat;
+}
+
+.vs .icon.userdefinedtabletypecolumn,
+.vs-dark .icon.userdefinedtabletypecolumn,
+.hc-black .icon.userdefinedtabletypecolumn {
+	background: url("UserDefinedTableTypeColumn.svg") center center no-repeat;
+}
+
+.vs .icon.userdefinedtabletypeconstraint,
+.vs-dark .icon.userdefinedtabletypeconstraint,
+.hc-black .icon.userdefinedtabletypeconstraint {
+	background: url("UserDefinedTableTypeConstraint.svg") center center no-repeat;
+}
+
+.vs .icon.userdefinedtype,
+.vs-dark .icon.userdefinedtype,
+.hc-black .icon.userdefinedtype {
+	background: url("UserDefinedType.svg") center center no-repeat;
+}
+
+.vs .icon.view,
+.vs-dark .icon.view,
+.hc-black .icon.view {
+	background: url("View.svg") center center no-repeat;
+}
+
+.vs .icon.xmlschemacollection,
+.vs-dark .icon.xmlschemacollection,
+.hc-black .icon.xmlschemacollection {
+	background: url("XmlSchemaCollection.svg") center center no-repeat;
+}

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-"use strict";
+'use strict';
 
 let del = require('del');
 let gulp = require('gulp');
@@ -18,21 +18,21 @@ let tsProject = ts.createProject('tsconfig.json');
 
 
 // GULP TASKS //////////////////////////////////////////////////////////////
-gulp.task('clean', function(done) {
+gulp.task('clean', function (done) {
 	return del('out', done);
 });
 
 gulp.task('lint', () => {
 	return gulp.src([
-		config.paths.project.root + '/src/**/*.ts'		
+		config.paths.project.root + '/src/**/*.ts'
 	])
-	.pipe((tslint({
-		formatter: "verbose"
-	})))
-	.pipe(tslint.report());
+		.pipe((tslint({
+			formatter: 'verbose'
+		})))
+		.pipe(tslint.report());
 });
 
-gulp.task('compile:src', function(done) {
+gulp.task('compile:src', function (done) {
 	gulp.src([
 		config.paths.project.root + '/src/**/*.sql',
 		config.paths.project.root + '/src/**/*.svg',
@@ -48,26 +48,27 @@ gulp.task('compile:src', function(done) {
 	return gulp.src(srcFiles)
 		.pipe(srcmap.init())
 		.pipe(tsProject())
-		.on('error', function() {
-			if(process.env.BUILDMACHINE) {
+		.on('error', function () {
+			if (process.env.BUILDMACHINE) {
 				done('Failed to compile extension source, see above.');
 				process.exit(1);
 			}
 		})
-		// TODO: Reinstate localization code
-		// .pipe(nls.rewriteLocalizeCalls())
-		// .pipe(nls.createAdditionalLanguageFiles(nls.coreLanguages, config.paths.project.root + '/localization/i18n', undefined, false))
-		.pipe(srcmap.write('.', { sourceRoot: function(file) { return file.cwd + '/src'; }}))
+		.pipe(srcmap.write('.', {
+			sourceRoot: function (file) {
+				return file.cwd + '/src';
+			}
+		}))
 		.pipe(gulp.dest('out/src/'));
 });
 
 // COMPOSED GULP TASKS /////////////////////////////////////////////////////
-gulp.task("compile", gulp.series("compile:src"));
+gulp.task('compile', gulp.series('compile:src'));
 
-gulp.task("build", gulp.series("clean", "lint", "compile"));
+gulp.task('build', gulp.series('clean', 'lint', 'compile'));
 
-gulp.task("watch", function() {
+gulp.task('watch', function () {
 	gulp.watch([config.paths.project.root + '/src/**/*',
-				config.paths.project.root + '/test/**/*.ts'],
+	config.paths.project.root + '/test/**/*.ts'],
 		gulp.series('build'));
 });

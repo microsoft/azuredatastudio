@@ -1,1 +1,3 @@
-<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><defs><style>.cls-1{fill:#212121;}</style></defs><title>newquery_16x16</title><path class="cls-1" d="M1.9,4H.38V2.45H1.9Zm0,9.14H.38V11.59H1.9ZM15.63,4H4.19V2.45H15.63Zm0,9.14H4.19V11.59H15.63Zm0-6.09H7.23V5.5h8.39Zm0,3H10.29V8.54h5.34Z"/></svg>
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 4V3H1V4H0ZM3 3H16V4H3V3ZM0 13V12H1V13H0ZM3 13V12H16V13H3ZM7 7V6H16V7H7ZM11 10V9H16V10H11Z" fill="#0078D4"/>
+</svg>

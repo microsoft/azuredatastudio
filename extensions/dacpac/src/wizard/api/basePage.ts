@@ -4,17 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as nls from 'vscode-nls';
+import * as loc from '../../localizedConstants';
 import { DacFxDataModel } from './models';
-
-const localize = nls.loadMessageBundle();
 
 export abstract class BasePage {
 
 	protected readonly wizardPage: azdata.window.WizardPage;
 	protected readonly model: DacFxDataModel;
 	protected readonly view: azdata.ModelView;
-	protected databaseValues: string[];
+	public databaseValues: string[];
 
 	/**
 	 * This method constructs all the elements of the page.
@@ -75,10 +73,17 @@ export abstract class BasePage {
 			let srv = c.options.server;
 
 			if (!usr) {
-				usr = localize('basePage.defaultUser', "default");
+				usr = loc.defaultText;
 			}
 
-			let finalName = `${srv} (${usr})`;
+			let finalName;
+			// show connection name if there is one
+			if (c.options.connectionName) {
+				finalName = `${c.options.connectionName}`;
+			} else {
+				finalName = `${srv} (${usr})`;
+			}
+
 			return {
 				connection: c,
 				displayName: finalName,

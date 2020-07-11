@@ -6,8 +6,8 @@
 import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { ProfilerSessionID, IProfilerSession, IProfilerService, IProfilerViewTemplate, IProfilerSessionTemplate, PROFILER_SETTINGS, IProfilerSettings, EngineType, ProfilerFilter, PROFILER_FILTER_SETTINGS } from './interfaces';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { ProfilerInput } from 'sql/workbench/contrib/profiler/browser/profilerInput';
-import { ProfilerColumnEditorDialog } from 'sql/workbench/contrib/profiler/browser/profilerColumnEditorDialog';
+import { ProfilerInput } from 'sql/workbench/browser/editor/profiler/profilerInput';
+import { ProfilerColumnEditorDialog } from 'sql/workbench/services/profiler/browser/profilerColumnEditorDialog';
 
 import * as azdata from 'azdata';
 
@@ -17,7 +17,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { Memento } from 'vs/workbench/common/memento';
-import { ProfilerFilterDialog } from 'sql/workbench/contrib/profiler/browser/profilerFilterDialog';
+import { ProfilerFilterDialog } from 'sql/workbench/services/profiler/browser/profilerFilterDialog';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 class TwoWayMap<T, K> {

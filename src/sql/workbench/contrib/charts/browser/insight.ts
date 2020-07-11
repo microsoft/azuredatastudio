@@ -6,7 +6,7 @@
 import { Graph } from './graphInsight';
 import { ImageInsight } from './imageInsight';
 import { TableInsight } from './tableInsight';
-import { IInsight, IInsightCtor, IInsightData } from './interfaces';
+import { IInsight, IInsightCtor } from './interfaces';
 import { CountInsight } from './countInsight';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -14,6 +14,7 @@ import { Dimension, clearNode } from 'vs/base/browser/dom';
 import { deepClone } from 'vs/base/common/objects';
 import { IInsightOptions, ChartType, DataDirection, InsightType } from 'sql/workbench/contrib/charts/common/interfaces';
 import { find } from 'vs/base/common/arrays';
+import { IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
 
 const defaultOptions: IInsightOptions = {
 	type: ChartType.Bar,
@@ -90,13 +91,13 @@ export class Insight {
 
 	private findctor(type: ChartType | InsightType): IInsightCtor {
 		if (find(Graph.types, x => x === type as ChartType)) {
-			return Graph;
+			return Graph as IInsightCtor;
 		} else if (find(ImageInsight.types, x => x === type as InsightType)) {
-			return ImageInsight;
+			return ImageInsight as IInsightCtor;
 		} else if (find(TableInsight.types, x => x === type as InsightType)) {
-			return TableInsight;
+			return TableInsight as IInsightCtor;
 		} else if (find(CountInsight.types, x => x === type as InsightType)) {
-			return CountInsight;
+			return CountInsight as IInsightCtor;
 		}
 		return undefined;
 	}

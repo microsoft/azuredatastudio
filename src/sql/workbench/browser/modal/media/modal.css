@@ -35,12 +35,20 @@
 .modal.flyout-dialog .modal-dialog {
 	margin: auto auto auto auto;
 	height: 100%;
-	width: 500px;
 	right: 0;
 	position: absolute;
 	overflow-y: hidden;
 }
-.modal.flyout-dialog.wide .modal-dialog {
+
+.modal.flyout-dialog .modal-dialog.narrow-dialog {
+	width: 500px;
+}
+
+.modal.flyout-dialog .modal-dialog.medium-dialog {
+	width: 800px;
+}
+
+.modal.flyout-dialog .modal-dialog.wide-dialog {
 	width: 1200px;
 	max-width: 95%;
 	min-width: 400px;
@@ -180,7 +188,7 @@
 
 .vs .modal.flyout-dialog .dialog-message.info,
 .vs-dark .modal.flyout-dialog .dialog-message.info {
-	background-color:#0078D7 !important;
+	background-color:#096CC9 !important;
 	color:#FFFFFF !important;
 }
 
@@ -214,7 +222,16 @@
 
 .modal.flyout-dialog .dialog-message-button {
 	min-width: 60px;
-	margin-right: 10px;
+	margin: 3px 10px 3px 3px;
+}
+
+.modal.flyout-dialog .dialog-message.info .dialog-message-button > a:focus,
+.modal.flyout-dialog .dialog-message.error .dialog-message-button > a:focus{
+	outline-color: #FFFFFF;
+}
+
+.modal.flyout-dialog .dialog-message.warning .dialog-message-button > a:focus{
+	outline-color: #000000;
 }
 
 .modal.flyout-dialog .dialog-message-button > a {

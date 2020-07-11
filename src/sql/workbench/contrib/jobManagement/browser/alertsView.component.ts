@@ -12,8 +12,8 @@ import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/workbench/contrib/jobManagement/browser/agentView.component';
-import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
-import { EditAlertAction, DeleteAlertAction, NewAlertAction } from 'sql/platform/jobManagement/browser/jobActions';
+import { IJobManagementService } from 'sql/workbench/services/jobManagement/common/interfaces';
+import { EditAlertAction, DeleteAlertAction, NewAlertAction } from 'sql/workbench/contrib/jobManagement/browser/jobActions';
 import { JobManagementView } from 'sql/workbench/contrib/jobManagement/browser/jobManagementView';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { ICommandService } from 'vs/platform/commands/common/commands';
@@ -22,7 +22,7 @@ import { IAction } from 'vs/base/common/actions';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
-import { AlertsCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
+import { AlertsCacheObject } from 'sql/workbench/services/jobManagement/common/jobManagementService';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowDetailView';
 
 export const VIEW_SELECTOR: string = 'jobalertsview-component';

@@ -11,14 +11,48 @@ import {
 import * as azdata from 'azdata';
 
 import * as colors from 'vs/platform/theme/common/colorRegistry';
-import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 
 import { ComponentWithIconBase } from 'sql/workbench/browser/modelComponents/componentWithIconBase';
-import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/workbench/browser/modelComponents/interfaces';
-import { StatusIndicator, CardProperties, ActionDescriptor, CardDescriptionItem } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import * as DOM from 'vs/base/browser/dom';
+import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
+import { IColorTheme } from 'vs/platform/theme/common/themeService';
+
+export interface ActionDescriptor {
+	label: string;
+	actionTitle?: string;
+	callbackData?: any;
+}
+
+export enum StatusIndicator {
+	None = 0,
+	Ok = 1,
+	Warning = 2,
+	Error = 3
+}
+
+export interface CardProperties {
+	label: string;
+	value?: string;
+	actions?: ActionDescriptor[];
+	descriptions?: CardDescriptionItem[];
+	status?: StatusIndicator;
+	selected?: boolean;
+	cardType: CardType;
+}
+
+export interface CardDescriptionItem {
+	label: string;
+	value?: string;
+}
+
+export enum CardType {
+	VerticalButton = 'VerticalButton',
+	Details = 'Details',
+	ListItem = 'ListItem'
+}
 
 @Component({
 	templateUrl: decodeURI(require.toUrl('./card.component.html'))

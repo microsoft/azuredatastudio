@@ -1,0 +1,24 @@
+{
+	"name": "github-actions",
+	"version": "1.0.0",
+	"description": "GitHub Actions",
+	"scripts": {
+		"test": "mocha -r ts-node/register **/*.test.ts",
+		"build": "tsc -p ./tsconfig.json",
+		"lint": "eslint -c .eslintrc --fix --ext .ts .",
+		"watch-typecheck": "tsc --watch"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/microsoft/azuredatastudio.git"
+	},
+	"keywords": [],
+	"author": "",
+	"dependencies": {
+		"@actions/core": "^1.2.3",
+		"@actions/github": "^2.1.1",
+		"axios": "^0.19.2",
+    "ts-node": "^8.6.2",
+    "typescript": "^3.8.3"
+	}
+}

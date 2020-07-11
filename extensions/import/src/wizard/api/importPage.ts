@@ -8,6 +8,7 @@ import * as azdata from 'azdata';
 import { FlatFileProvider } from '../../services/contracts';
 import { FlatFileWizard } from '../flatFileWizard';
 import { BasePage } from './basePage';
+import { ApiWrapper } from '../../common/apiWrapper';
 
 export abstract class ImportPage extends BasePage {
 
@@ -17,12 +18,14 @@ export abstract class ImportPage extends BasePage {
 	protected readonly view: azdata.ModelView;
 	protected readonly provider: FlatFileProvider;
 
-	protected constructor(instance: FlatFileWizard, wizardPage: azdata.window.WizardPage, model: ImportDataModel, view: azdata.ModelView, provider: FlatFileProvider) {
+
+	constructor(instance: FlatFileWizard, wizardPage: azdata.window.WizardPage, model: ImportDataModel, view: azdata.ModelView, provider: FlatFileProvider, apiWrapper: ApiWrapper) {
 		super();
 		this.instance = instance;
 		this.wizardPage = wizardPage;
 		this.model = model;
 		this.view = view;
 		this.provider = provider;
+		this._apiWrapper = apiWrapper;
 	}
 }

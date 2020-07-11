@@ -5,7 +5,7 @@
 
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
-import { NotebookContexts } from 'sql/workbench/contrib/notebook/browser/models/notebookContexts';
+import { NotebookContexts } from 'sql/workbench/services/notebook/browser/models/notebookContexts';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';

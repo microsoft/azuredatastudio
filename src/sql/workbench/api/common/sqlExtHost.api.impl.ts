@@ -70,6 +70,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 	const uriTransformer = accessor.get(IURITransformerService);
 	const rpcProtocol = accessor.get(IExtHostRpcService);
 	const extHostLogService = accessor.get(ILogService);
+	const logService = accessor.get(ILogService);
 
 	// Addressable instances
 	const extHostAccountManagement = rpcProtocol.set(SqlExtHostContext.ExtHostAccountManagement, new ExtHostAccountManagement(rpcProtocol));
@@ -82,15 +83,14 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 	const extHostTasks = rpcProtocol.set(SqlExtHostContext.ExtHostTasks, new ExtHostTasks(rpcProtocol, extHostLogService));
 	const extHostBackgroundTaskManagement = rpcProtocol.set(SqlExtHostContext.ExtHostBackgroundTaskManagement, new ExtHostBackgroundTaskManagement(rpcProtocol));
 	const extHostWebviewWidgets = rpcProtocol.set(SqlExtHostContext.ExtHostDashboardWebviews, new ExtHostDashboardWebviews(rpcProtocol));
-	const extHostModelViewTree = rpcProtocol.set(SqlExtHostContext.ExtHostModelViewTreeViews, new ExtHostModelViewTreeViews(rpcProtocol));
-	const extHostModelView = rpcProtocol.set(SqlExtHostContext.ExtHostModelView, new ExtHostModelView(rpcProtocol, extHostModelViewTree));
+	const extHostModelViewTree = rpcProtocol.set(SqlExtHostContext.ExtHostModelViewTreeViews, new ExtHostModelViewTreeViews(rpcProtocol, logService));
+	const extHostModelView = rpcProtocol.set(SqlExtHostContext.ExtHostModelView, new ExtHostModelView(rpcProtocol, extHostModelViewTree, logService));
 	const extHostDashboard = rpcProtocol.set(SqlExtHostContext.ExtHostDashboard, new ExtHostDashboard(rpcProtocol));
 	const extHostModelViewDialog = rpcProtocol.set(SqlExtHostContext.ExtHostModelViewDialog, new ExtHostModelViewDialog(rpcProtocol, extHostModelView, extHostBackgroundTaskManagement));
 	const extHostQueryEditor = rpcProtocol.set(SqlExtHostContext.ExtHostQueryEditor, new ExtHostQueryEditor(rpcProtocol));
 	const extHostNotebook = rpcProtocol.set(SqlExtHostContext.ExtHostNotebook, new ExtHostNotebook(rpcProtocol));
 	const extHostNotebookDocumentsAndEditors = rpcProtocol.set(SqlExtHostContext.ExtHostNotebookDocumentsAndEditors, new ExtHostNotebookDocumentsAndEditors(rpcProtocol));
 	const extHostExtensionManagement = rpcProtocol.set(SqlExtHostContext.ExtHostExtensionManagement, new ExtHostExtensionManagement(rpcProtocol));
-
 
 	return {
 		azdata: function (extension: IExtensionDescription): typeof azdata {
@@ -113,7 +113,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				},
 				// "sqlops" back-compat APIs
 				getActiveConnections(): Thenable<azdata.connection.Connection[]> {
-					console.warn('the method azdata.connection.getActiveConnections has been deprecated, replace it with azdata.connection.getConnections');
+					logService.warn('the method azdata.connection.getActiveConnections has been deprecated, replace it with azdata.connection.getConnections');
 					return extHostConnectionManagement.$getActiveConnections();
 				},
 				getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
@@ -240,7 +240,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				});
 
 				provider.registerOnMessage((message: azdata.QueryExecuteMessageParams) => {
-					extHostDataProvider.$onQueryMessage(provider.handle, message);
+					extHostDataProvider.$onQueryMessage(message);
 				});
 
 				provider.registerOnEditSessionReady((ownerUri: string, success: boolean, message: string) => {
@@ -364,6 +364,10 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				return extHostDataProvider.$registerSerializationProvider(provider);
 			};
 
+			let registerSqlAssessmentServicesProvider = (provider: azdata.SqlAssessmentServicesProvider): vscode.Disposable => {
+				return extHostDataProvider.$registerSqlAssessmentServiceProvider(provider);
+			};
+
 			// namespace: dataprotocol
 			const dataprotocol: typeof azdata.dataprotocol = {
 				registerBackupProvider,
@@ -382,6 +386,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				registerAgentServicesProvider,
 				registerCapabilitiesServiceProvider,
 				registerSerializationProvider,
+				registerSqlAssessmentServicesProvider,
 				onDidChangeLanguageFlavor(listener: (e: azdata.DidChangeLanguageFlavorParams) => any, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
 					return extHostDataProvider.onDidChangeLanguageFlavor(listener, thisArgs, disposables);
 				},
@@ -397,8 +402,15 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				createWebViewDialog(name: string) {
 					return extHostModalDialogs.createDialog(name);
 				},
-				createModelViewDialog(title: string, dialogName?: string, isWide?: boolean): azdata.window.Dialog {
-					return extHostModelViewDialog.createDialog(title, dialogName, extension, !!isWide);
+				// the 'width' parameter used to be boolean type named 'isWide', the optional boolean type for 'width' parameter is added for backward compatibility support of 'isWide' parameter.
+				createModelViewDialog(title: string, dialogName?: string, width?: boolean | azdata.window.DialogWidth): azdata.window.Dialog {
+					let dialogWidth: azdata.window.DialogWidth;
+					if (typeof width === 'boolean') {
+						dialogWidth = width === true ? 'wide' : 'narrow';
+					} else {
+						dialogWidth = width;
+					}
+					return extHostModelViewDialog.createDialog(title, dialogName, extension, dialogWidth);
 				},
 				createTab(title: string): azdata.window.DialogTab {
 					return extHostModelViewDialog.createTab(title, extension);
@@ -415,8 +427,11 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				createWizardPage(title: string): azdata.window.WizardPage {
 					return extHostModelViewDialog.createWizardPage(title, extension);
 				},
-				createWizard(title: string): azdata.window.Wizard {
-					return extHostModelViewDialog.createWizard(title);
+				createWizard(title: string, width?: azdata.window.DialogWidth): azdata.window.Wizard {
+					return extHostModelViewDialog.createWizard(title, width);
+				},
+				createModelViewDashboard(title: string, options?: azdata.ModelViewDashboardOptions): azdata.window.ModelViewDashboard {
+					return extHostModelViewDialog.createModelViewDashboard(title, options, extension);
 				},
 				MessageLevel: sqlExtHostTypes.MessageLevel
 			};
@@ -488,6 +503,9 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				get onDidOpenNotebookDocument() {
 					return extHostNotebookDocumentsAndEditors.onDidOpenNotebookDocument;
 				},
+				get onDidChangeActiveNotebookEditor() {
+					return extHostNotebookDocumentsAndEditors.onDidChangeActiveNotebookEditor;
+				},
 				get onDidChangeNotebookCell() {
 					return extHostNotebookDocumentsAndEditors.onDidChangeNotebookCell;
 				},
@@ -502,6 +520,11 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				},
 				CellRange: sqlExtHostTypes.CellRange,
 				NotebookChangeKind: sqlExtHostTypes.NotebookChangeKind
+			};
+
+			const sqlAssessment: typeof azdata.sqlAssessment = {
+				SqlAssessmentResultItemKind: sqlExtHostTypes.SqlAssessmentResultItemKind,
+				SqlAssessmentTargetType: sqlExtHostTypes.SqlAssessmentTargetType
 			};
 
 			return {
@@ -538,10 +561,10 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				CardType: sqlExtHostTypes.CardType,
 				Orientation: sqlExtHostTypes.Orientation,
 				SqlThemeIcon: sqlExtHostTypes.SqlThemeIcon,
-				TreeComponentItem: sqlExtHostTypes.TreeComponentItem,
+				TreeComponentItem: sqlExtHostTypes.TreeComponentItem as any, // work around
 				nb: nb,
 				AzureResource: sqlExtHostTypes.AzureResource,
-				TreeItem: sqlExtHostTypes.TreeItem,
+				TreeItem: sqlExtHostTypes.TreeItem as any, // work around
 				extensions: extensions,
 				ColumnType: sqlExtHostTypes.ColumnType,
 				ActionOnCellCheckboxCheck: sqlExtHostTypes.ActionOnCellCheckboxCheck,
@@ -549,7 +572,9 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				AgentSubSystem: sqlExtHostTypes.AgentSubSystem,
 				ExtensionNodeType: sqlExtHostTypes.ExtensionNodeType,
 				ColumnSizingMode: sqlExtHostTypes.ColumnSizingMode,
-				DatabaseEngineEdition: sqlExtHostTypes.DatabaseEngineEdition
+				DatabaseEngineEdition: sqlExtHostTypes.DatabaseEngineEdition,
+				TabOrientation: sqlExtHostTypes.TabOrientation,
+				sqlAssessment
 			};
 		}
 	};

@@ -16,7 +16,8 @@
   ],
   "scripts": {
     "compile": "gulp compile-extension:mssql-client",
-    "update-grammar": "node ../../build/npm/update-grammar.js Microsoft/vscode-mssql syntaxes/SQL.plist ./syntaxes/sql.tmLanguage.json"
+    "update-grammar": "node ../../build/npm/update-grammar.js Microsoft/vscode-mssql syntaxes/SQL.plist ./syntaxes/sql.tmLanguage.json",
+    "postinstall": "node ./build/postinstall.js"
   },
   "contributes": {
     "commands": [
@@ -52,7 +53,7 @@
         "command": "mssqlCluster.task.newNotebook",
         "title": "%notebook.command.new%",
         "icon": {
-          "dark": "resources/dark/new_notebook_inverse.svg",
+          "dark": "resources/dark/new_notebook.svg",
           "light": "resources/light/new_notebook.svg"
         }
       },
@@ -197,9 +198,157 @@
           "default": 100,
           "description": "%mssql.logFilesRemovalLimit%"
         },
-        "ignorePlatformWarning": {
+        "mssql.intelliSense.enableIntelliSense": {
           "type": "boolean",
-          "description": "%ignorePlatformWarning%",
+          "default": true,
+          "description": "%mssql.intelliSense.enableIntelliSense%"
+        },
+        "mssql.intelliSense.enableErrorChecking": {
+          "type": "boolean",
+          "default": true,
+          "description": "%mssql.intelliSense.enableErrorChecking%"
+        },
+        "mssql.intelliSense.enableSuggestions": {
+          "type": "boolean",
+          "default": true,
+          "description": "%mssql.intelliSense.enableSuggestions%"
+        },
+        "mssql.intelliSense.enableQuickInfo": {
+          "type": "boolean",
+          "default": true,
+          "description": "%mssql.intelliSense.enableQuickInfo%"
+        },
+        "mssql.intelliSense.lowerCaseSuggestions": {
+          "type": "boolean",
+          "default": false,
+          "description": "%mssql.intelliSense.lowerCaseSuggestions%"
+        },
+        "mssql.query.rowCount": {
+          "type": "number",
+          "default": 0,
+          "description": "%mssql.query.setRowCount%"
+        },
+        "mssql.query.textSize": {
+          "type": "number",
+          "default": 2147483647,
+          "description": "%mssql.query.textSize%"
+        },
+        "mssql.query.executionTimeout": {
+          "type": "number",
+          "default": 0,
+          "description": "%mssql.query.executionTimeout%"
+        },
+        "mssql.query.noCount": {
+          "type": "boolean",
+          "default": false,
+          "description": "%mssql.query.noCount%"
+        },
+        "mssql.query.noExec": {
+          "type": "boolean",
+          "default": false,
+          "description": "%mssql.query.noExec%"
+        },
+        "mssql.query.parseOnly": {
+          "type": "boolean",
+          "default": false,
+          "description": "%mssql.query.parseOnly%"
+        },
+        "mssql.query.arithAbort": {
+          "type": "boolean",
+          "default": true,
+          "description": "%mssql.query.arithAbort%"
+        },
+        "mssql.query.statisticsTime": {
+          "type": "boolean",
+          "default": false,
+          "description": "%mssql.query.statisticsTime%"
+        },
+        "mssql.query.statisticsIO": {
+          "type": "boolean",
+          "default": false,
+          "description": "%mssql.query.statisticsIO%"
+        },
+        "mssql.query.xactAbortOn": {
+          "type": "boolean",
+          "default": false,
+          "description": "%mssql.query.xactAbortOn%"
+        },
+        "mssql.query.transactionIsolationLevel": {
+          "enum": [
+            "READ COMMITTED",
+            "READ UNCOMMITTED",
+            "REPEATABLE READ",
+            "SERIALIZABLE"
+          ],
+          "default": "READ COMMITTED",
+          "description": "%mssql.query.transactionIsolationLevel%"
+        },
+        "mssql.query.deadlockPriority": {
+          "enum": [
+            "Normal",
+            "Low"
+          ],
+          "default": "Normal",
+          "description": "%mssql.query.deadlockPriority%"
+        },
+        "mssql.query.lockTimeout": {
+          "type": "number",
+          "default": -1,
+          "description": "%mssql.query.lockTimeout%"
+        },
+        "mssql.query.queryGovernorCostLimit": {
+          "type": "number",
+          "default": -1,
+          "description": "%mssql.query.queryGovernorCostLimit%"
+        },
+        "mssql.query.ansiDefaults": {
+          "type": "boolean",
+          "default": false,
+          "description": "%mssql.query.ansiDefaults%"
+        },
+        "mssql.query.quotedIdentifier": {
+          "type": "boolean",
+          "default": true,
+          "description": "%mssql.query.quotedIdentifier%"
+        },
+        "mssql.query.ansiNullDefaultOn": {
+          "type": "boolean",
+          "default": true,
+          "description": "%mssql.query.ansiNullDefaultOn%"
+        },
+        "mssql.query.implicitTransactions": {
+          "type": "boolean",
+          "default": false,
+          "description": "%mssql.query.implicitTransactions%"
+        },
+        "mssql.query.cursorCloseOnCommit": {
+          "type": "boolean",
+          "default": false,
+          "description": "%mssql.query.cursorCloseOnCommit%"
+        },
+        "mssql.query.ansiPadding": {
+          "type": "boolean",
+          "default": true,
+          "description": "%mssql.query.ansiPadding%"
+        },
+        "mssql.query.ansiWarnings": {
+          "type": "boolean",
+          "default": true,
+          "description": "%mssql.query.ansiWarnings%"
+        },
+        "mssql.query.ansiNulls": {
+          "type": "boolean",
+          "default": true,
+          "description": "%mssql.query.ansiNulls%"
+        },
+        "mssql.query.alwaysEncryptedParameterization": {
+          "type": "boolean",
+          "default": false,
+          "description": "%mssql.query.alwaysEncryptedParameterization%"
+        },
+        "mssql.ignorePlatformWarning": {
+          "type": "boolean",
+          "description": "%mssql.ignorePlatformWarning%",
           "default": false
         }
       }
@@ -365,6 +514,28 @@
               "displayName": "%onprem.serverProperties.osVersion%",
               "value": "osVersion"
             }
+          ],
+          "databasesListProperties": [
+            {
+              "displayName": "%databasesListProperties.name%",
+              "value": "name",
+              "widthWeight": 60
+            },
+            {
+              "displayName": "%databasesListProperties.status%",
+              "value": "state",
+              "widthWeight": 10
+            },
+            {
+              "displayName": "%databasesListProperties.size%",
+              "value": "sizeInMB",
+              "widthWeight": 10
+            },
+            {
+              "displayName": "%databasesListProperties.lastBackup%",
+              "value": "lastBackup",
+              "widthWeight": 20
+            }
           ]
         },
         {
@@ -403,6 +574,23 @@
               "displayName": "%cloud.serverProperties.serverEdition%",
               "value": "serverEdition"
             }
+          ],
+          "databasesListProperties": [
+            {
+              "displayName": "%databasesListProperties.name%",
+              "value": "name",
+              "widthWeight": 60
+            },
+            {
+              "displayName": "%databasesListProperties.status%",
+              "value": "state",
+              "widthWeight": 20
+            },
+            {
+              "displayName": "%databasesListProperties.size%",
+              "value": "sizeInMB",
+              "widthWeight": 20
+            }
           ]
         },
         {
@@ -433,6 +621,13 @@
               "displayName": "%cloud.serverProperties.serverEdition%",
               "value": "serverEdition"
             }
+          ],
+          "databasesListProperties": [
+            {
+              "displayName": "%databasesListProperties.name%",
+              "value": "name",
+              "widthWeight": 100
+            }
           ]
         }
       ]
@@ -443,7 +638,8 @@
         "description": "%tab.bigDataClusterDescription%",
         "provider": "MSSQL",
         "title": "%title.bigDataCluster%",
-        "when": "connectionProvider == 'MSSQL' && mssql:iscluster",
+        "group": "home",
+        "when": "connectionProvider == 'MSSQL' && mssql:iscluster && dashboardContext == 'server'",
         "container": {
           "grid-container": [
             {
@@ -687,14 +883,51 @@
           "objectType": null,
           "categoryValues": [
             {
-              "displayName": null,
+              "displayName": "%mssql.disabled%",
               "name": "Disabled"
             },
             {
-              "displayName": null,
+              "displayName": "%mssql.enabled%",
               "name": "Enabled"
             }
           ],
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "specialValueType": null,
+          "isIdentity": false,
+          "name": "attestationProtocol",
+          "displayName": "%mssql.connectionOptions.enclaveAttestationProtocol.displayName%",
+          "description": "%mssql.connectionOptions.enclaveAttestationProtocol.description%",
+          "groupName": "Security",
+          "valueType": "category",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": [
+            {
+              "displayName": "%mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.HGS%",
+              "name": "HGS"
+            },
+            {
+              "displayName": "%mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.AAS%",
+              "name": "AAS"
+            }
+          ],
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "specialValueType": null,
+          "isIdentity": false,
+          "name": "enclaveAttestationUrl",
+          "displayName": "%mssql.connectionOptions.enclaveAttestationUrl.displayName%",
+          "description": "%mssql.connectionOptions.enclaveAttestationUrl.description%",
+          "groupName": "Security",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
           "isRequired": false,
           "isArray": false
         },
@@ -996,16 +1229,16 @@
     }
   },
   "dependencies": {
+    "ads-kerberos": "^1.1.3",
     "buffer-stream-reader": "^0.1.1",
     "bytes": "^3.1.0",
-    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#1.0.0",
+    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#1.1.0",
     "error-ex": "^1.3.2",
     "figures": "^2.0.0",
     "find-remove": "1.2.1",
-    "kerberos": "^1.1.3",
     "request": "^2.88.0",
-    "request-promise": "^4.2.2",
-    "service-downloader": "github:anthonydresser/service-downloader#0.1.7",
+    "request-light": "^0.3.0",
+    "service-downloader": "0.2.1",
     "stream-meter": "^1.0.4",
     "through2": "^3.0.1",
     "tough-cookie": "^3.0.1",
@@ -1015,10 +1248,16 @@
   },
   "devDependencies": {
     "@types/bytes": "^3.0.0",
-    "@types/kerberos": "^1.1.0",
+    "@types/chai": "^4.2.11",
+    "@types/mocha": "^7.0.2",
     "@types/request": "^2.48.2",
-    "@types/request-promise": "^4.1.44",
     "@types/stream-meter": "^0.0.22",
-    "@types/through2": "^2.0.34"
+    "@types/through2": "^2.0.34",
+    "chai": "^4.2.0",
+    "mocha": "^7.1.1",
+    "mocha-junit-reporter": "^1.17.0",
+    "mocha-multi-reporters": "^1.1.7",
+    "typemoq": "^2.1.0",
+    "vscodetestcover": "^1.0.9"
   }
 }

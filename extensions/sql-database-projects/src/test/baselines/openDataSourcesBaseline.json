@@ -1,0 +1,21 @@
+{
+    "version": "0.0.0",
+    "datasources" : [
+        {
+            "name": "Test Data Source 1",
+            "type": "sql_connection_string",
+            "version": "0.0.0",
+            "data": {
+                "connectionString": "Data Source=.;Initial Catalog=testDb;Integrated Security=True"
+            }
+        },
+        {
+            "name": "My Other Data Source",
+            "type": "sql_connection_string",
+            "version": "0.0.0",
+            "data": {
+                "connectionString": "Data Source=.;Initial Catalog=testDb2;Integrated Security=False"
+            }
+        }
+    ]
+}

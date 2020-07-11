@@ -456,7 +456,7 @@
       </trans-unit>
       <trans-unit id="cms.errors.azureNotAllowed">
         <source xml:lang="en">Azure SQL Database Servers cannot be used as Central Management Servers</source>
-        <target state="new">Azure SQL Database Servers cannot be used as Central Management Servers</target>
+        <target state="translated">无法将 Azure SQL 数据库服务器用作中央管理服务器</target>
       </trans-unit>
       <trans-unit id="cms.confirmDeleteServer">
         <source xml:lang="en">Are you sure you want to delete</source>

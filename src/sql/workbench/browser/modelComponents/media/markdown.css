@@ -68,18 +68,18 @@ modelview-dom-component .showEditorSelection .code-line .code-line:hover:before 
 	border-left: none;
 }
 
-.vs-dark .monaco-workbench modelview-dom-component .showEditorSelection .code-active-line:before
-.hc-black .monaco-workbench modelview-dom-component .showEditorSelection .code-active-line:before {
+.monaco-workbench.vs-dark modelview-dom-component .showEditorSelection .code-active-line:before
+.monaco-workbench.hc-black modelview-dom-component .showEditorSelection .code-active-line:before {
 	border-left: 3px solid rgba(255, 255, 255, 0.4);
 }
 
-.vs-dark .monaco-workbench modelview-dom-component .showEditorSelection .code-line:hover:before
-.hc-black .monaco-workbench modelview-dom-component .showEditorSelection .code-line:hover:before {
+.monaco-workbench.vs-dark modelview-dom-component .showEditorSelection .code-line:hover:before
+.monaco-workbench.hc-black modelview-dom-component .showEditorSelection .code-line:hover:before {
 	border-left: 3px solid rgba(255, 255, 255, 0.60);
 }
 
-.vs-dark .monaco-workbench modelview-dom-component .showEditorSelection .code-line .code-line:hover:before
-.hc-black .monaco-workbench modelview-dom-component .showEditorSelection .code-line .code-line:hover:before {
+.monaco-workbench.vs-dark modelview-dom-component .showEditorSelection .code-line .code-line:hover:before
+.monaco-workbench.hc-black modelview-dom-component .showEditorSelection .code-line .code-line:hover:before {
 	border-left: none;
 }
 
@@ -205,15 +205,15 @@ modelview-dom-component pre {
 	background-color: rgba(220, 220, 220, 0.4);
 }
 
-.vs-dark .monaco-workbench modelview-dom-component pre {
+.monaco-workbench.vs-dark modelview-dom-component pre {
 	background-color: rgba(10, 10, 10, 0.4);
 }
 
-.hc-black .monaco-workbench modelview-dom-component pre {
+.monaco-workbench.hc-black modelview-dom-component pre {
 	background-color: rgb(0, 0, 0);
 }
 
-.hc-black .monaco-workbench modelview-dom-component h1 {
+.monaco-workbench.hc-black modelview-dom-component h1 {
 	border-color: rgb(0, 0, 0);
 }
 
@@ -221,7 +221,7 @@ modelview-dom-component table > thead > tr > th {
 	border-color: rgba(0, 0, 0, 0.69);
 }
 
-.vs-dark .monaco-workbench modelview-dom-component table > thead > tr > th {
+.monaco-workbench.vs-dark modelview-dom-component table > thead > tr > th {
 	border-color: rgba(255, 255, 255, 0.69);
 }
 
@@ -231,8 +231,8 @@ modelview-dom-component table > tbody > tr + tr > td {
 	border-color: rgba(0, 0, 0, 0.18);
 }
 
-.vs-dark .monaco-workbench modelview-dom-component h1,
-.vs-dark .monaco-workbench modelview-dom-component hr,
-.vs-dark .monaco-workbench modelview-dom-component table > tbody > tr + tr > td {
+.monaco-workbench.vs-dark modelview-dom-component h1,
+.monaco-workbench.vs-dark modelview-dom-component hr,
+.monaco-workbench.vs-dark modelview-dom-component table > tbody > tr + tr > td {
 	border-color: rgba(255, 255, 255, 0.18);
 }

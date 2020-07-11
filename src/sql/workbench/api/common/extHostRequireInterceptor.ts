@@ -10,6 +10,7 @@ import { ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensio
 import * as azdata from 'azdata';
 import { IAzdataExtensionApiFactory } from 'sql/workbench/api/common/sqlExtHost.api.impl';
 import { INodeModuleFactory } from 'vs/workbench/api/common/extHostRequireInterceptor';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export class AzdataNodeModuleFactory implements INodeModuleFactory {
 	public readonly nodeModuleName = 'azdata';
@@ -19,7 +20,8 @@ export class AzdataNodeModuleFactory implements INodeModuleFactory {
 
 	constructor(
 		private readonly _apiFactory: IAzdataExtensionApiFactory,
-		private readonly _extensionPaths: TernarySearchTree<IExtensionDescription>
+		private readonly _extensionPaths: TernarySearchTree<string, IExtensionDescription>,
+		private readonly _logService: ILogService
 	) {
 	}
 
@@ -40,7 +42,7 @@ export class AzdataNodeModuleFactory implements INodeModuleFactory {
 		if (!this._defaultApiImpl) {
 			let extensionPathsPretty = '';
 			this._extensionPaths.forEach((value, index) => extensionPathsPretty += `\t${index} -> ${value.identifier.value}\n`);
-			console.warn(`Could not identify extension for 'azdata' require call from ${parent.fsPath}. These are the extension path mappings: \n${extensionPathsPretty}`);
+			this._logService.warn(`Could not identify extension for 'azdata' require call from ${parent.fsPath}. These are the extension path mappings: \n${extensionPathsPretty}`);
 			this._defaultApiImpl = this._apiFactory(nullExtensionDescription);
 		}
 		return this._defaultApiImpl;

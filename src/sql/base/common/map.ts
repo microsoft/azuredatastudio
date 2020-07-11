@@ -62,3 +62,26 @@ export class ReverseLookUpMap<K, V> {
 		return this.forward.size;
 	}
 }
+
+/**
+ * ASSUMES THAT THE VALUES ARE ALREADY SERIALIZABLE
+ */
+export function mapToSerializable<T>(map: Map<string, T>): [string, T][] {
+	const serializable: [string, T][] = [];
+
+	map.forEach((value, key) => {
+		serializable.push([key, value]);
+	});
+
+	return serializable;
+}
+
+export function serializableToMap<T>(serializable: [string, T][]): Map<string, T> {
+	const items = new Map<string, T>();
+
+	for (const [key, value] of serializable) {
+		items.set(key, value);
+	}
+
+	return items;
+}

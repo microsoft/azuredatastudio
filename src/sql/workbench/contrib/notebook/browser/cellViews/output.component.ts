@@ -8,11 +8,11 @@ import 'vs/css!./media/output';
 import { OnInit, Component, Input, Inject, ElementRef, ViewChild, SimpleChange, AfterViewInit, forwardRef, ChangeDetectorRef, ComponentRef, ComponentFactoryResolver } from '@angular/core';
 import { Event } from 'vs/base/common/event';
 import { nb } from 'azdata';
-import { ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import * as outputProcessor from 'sql/workbench/contrib/notebook/browser/models/outputProcessor';
-import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
+import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 import * as DOM from 'vs/base/browser/dom';
-import { ComponentHostDirective } from 'sql/workbench/contrib/dashboard/browser/core/componentHost.directive';
+import { ComponentHostDirective } from 'sql/base/browser/componentHost.directive';
 import { Extensions, IMimeComponent, IMimeComponentRegistry } from 'sql/workbench/contrib/notebook/browser/outputs/mimeRegistry';
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import * as themeColors from 'vs/workbench/common/theme';
@@ -53,7 +53,7 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 	}
 
 	ngOnInit() {
-		this._register(this._themeService.onThemeChange(event => this.updateTheme(event)));
+		this._register(this._themeService.onDidColorThemeChange(event => this.updateTheme(event)));
 		this.loadComponent();
 		this.layout();
 		this._initialized = true;
@@ -62,7 +62,7 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 	}
 
 	ngAfterViewInit() {
-		this.updateTheme(this._themeService.getTheme());
+		this.updateTheme(this._themeService.getColorTheme());
 	}
 
 	ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
@@ -128,7 +128,7 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 	public hasError(): boolean {
 		return !types.isUndefinedOrNull(this.errorText);
 	}
-	private updateTheme(theme: ITheme): void {
+	private updateTheme(theme: IColorTheme): void {
 		let el = <HTMLElement>this._ref.nativeElement;
 		let backgroundColor = theme.getColor(colors.editorBackground, true);
 		let foregroundColor = theme.getColor(themeColors.SIDE_BAR_FOREGROUND, true);
@@ -172,6 +172,7 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 			this._componentInstance = componentRef.instance;
 			this._componentInstance.mimeType = mimeType;
 			this._componentInstance.cellModel = this.cellModel;
+			this._componentInstance.cellOutput = this.cellOutput;
 			this._componentInstance.bundleOptions = options;
 			this._changeref.detectChanges();
 			let el = <HTMLElement>componentRef.location.nativeElement;

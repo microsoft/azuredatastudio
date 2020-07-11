@@ -7,7 +7,7 @@ import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { Color } from 'vs/base/common/color';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { mixin } from 'vs/base/common/objects';
-import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
+import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { generateUuid } from 'vs/base/common/uuid';
@@ -17,17 +17,23 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { Button } from 'sql/base/browser/ui/button/button';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { localize } from 'vs/nls';
-import { MessageLevel } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { URI } from 'vs/base/common/uri';
 import { Schemas } from 'vs/base/common/network';
 import { find, firstIndex } from 'vs/base/common/arrays';
 import { IThemable } from 'vs/base/common/styler';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { alert } from 'vs/base/browser/ui/aria/aria';
+
+export enum MessageLevel {
+	Error = 0,
+	Warning = 1,
+	Information = 2
+}
 
 export const MODAL_SHOWING_KEY = 'modalShowing';
 export const MODAL_SHOWING_CONTEXT = new RawContextKey<Array<string>>(MODAL_SHOWING_KEY, []);
@@ -50,19 +56,22 @@ export interface IModalDialogStyles {
 	footerBorderTopColor?: Color;
 }
 
+export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
+
 export interface IModalOptions {
 	isFlyout?: boolean;
-	isWide?: boolean;
+	width?: DialogWidth;
 	isAngular?: boolean;
 	hasBackButton?: boolean;
 	hasTitleIcon?: boolean;
 	hasErrors?: boolean;
 	hasSpinner?: boolean;
+	spinnerTitle?: string;
 }
 
 const defaultOptions: IModalOptions = {
 	isFlyout: true,
-	isWide: false,
+	width: 'narrow',
 	isAngular: false,
 	hasBackButton: false,
 	hasTitleIcon: false,
@@ -76,6 +85,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	protected _useDefaultMessageBoxLocation: boolean = true;
 	protected _messageElement: HTMLElement;
 	protected _modalOptions: IModalOptions;
+	protected readonly disposableStore = this._register(new DisposableStore());
 	private _detailsButtonContainer: HTMLElement;
 	private _messageIcon: HTMLElement;
 	private _messageSeverity: HTMLElement;
@@ -110,10 +120,6 @@ export abstract class Modal extends Disposable implements IThemable {
 	private _leftFooter: HTMLElement;
 	private _rightFooter: HTMLElement;
 	private _footerButtons: Button[];
-
-	private _keydownListener: IDisposable;
-	private _resizeListener: IDisposable;
-
 	private _backButton: Button;
 
 	private _modalShowingContext: IContextKey<Array<string>>;
@@ -146,7 +152,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		private _title: string,
 		private _name: string,
 		private readonly _telemetryService: IAdsTelemetryService,
-		protected readonly layoutService: IWorkbenchLayoutService,
+		protected readonly layoutService: ILayoutService,
 		protected readonly _clipboardService: IClipboardService,
 		protected readonly _themeService: IThemeService,
 		protected readonly logService: ILogService,
@@ -171,15 +177,17 @@ export abstract class Modal extends Disposable implements IThemable {
 			builderClass += ' flyout-dialog';
 		}
 
-		if (this._modalOptions.isWide) {
-			builderClass += ' wide';
-		}
-
 		this._bodyContainer = DOM.$(`.${builderClass}`, { role: 'dialog', 'aria-label': this._title });
-		const top = this.layoutService.getTitleBarOffset();
+		const top = this.layoutService.offset?.top ?? 0;
 		this._bodyContainer.style.top = `${top}px`;
 		this._modalDialog = DOM.append(this._bodyContainer, DOM.$('.modal-dialog'));
 		this._modalContent = DOM.append(this._modalDialog, DOM.$('.modal-content'));
+
+		if (typeof this._modalOptions.width === 'number') {
+			this._modalDialog.style.width = `${this._modalOptions.width}px`;
+		} else {
+			this._modalDialog.classList.add(`${this._modalOptions.width}-dialog`);
+		}
 
 		if (!isUndefinedOrNull(this._title)) {
 			this._modalHeaderSection = DOM.append(this._modalContent, DOM.$('.modal-header'));
@@ -240,6 +248,7 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._modalFooterSection = DOM.append(this._modalContent, DOM.$('.modal-footer'));
 			if (this._modalOptions.hasSpinner) {
 				this._spinnerElement = DOM.append(this._modalFooterSection, DOM.$('.codicon.in-progress'));
+				this._spinnerElement.setAttribute('title', this._modalOptions.spinnerTitle);
 				DOM.hide(this._spinnerElement);
 			}
 			this._leftFooter = DOM.append(this._modalFooterSection, DOM.$('.left-footer'));
@@ -334,10 +343,8 @@ export abstract class Modal extends Disposable implements IThemable {
 		// Try to find focusable element in dialog pane rather than overall container. _modalBodySection contains items in the pane for a wizard.
 		// This ensures that we are setting the focus on a useful element in the form when possible.
 		const focusableElements = this._modalBodySection ?
-			this._modalBodySection.querySelectorAll('input') :
+			this._modalBodySection.querySelectorAll(tabbableElementsQuerySelector) :
 			this._bodyContainer.querySelectorAll(tabbableElementsQuerySelector);
-
-		this._focusedElementBeforeOpen = <HTMLElement>document.activeElement;
 
 		if (focusableElements && focusableElements.length > 0) {
 			(<HTMLElement>focusableElements[0]).focus();
@@ -348,11 +355,12 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Shows the modal and attaches key listeners
 	 */
 	protected show() {
+		this._focusedElementBeforeOpen = <HTMLElement>document.activeElement;
 		this._modalShowingContext.get()!.push(this._staticKey);
 		DOM.append(this.layoutService.container, this._bodyContainer);
 		this.setInitialFocusedElement();
 
-		this._keydownListener = DOM.addDisposableListener(document, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
+		this.disposableStore.add(DOM.addDisposableListener(document, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
 			let context = this._modalShowingContext.get()!;
 			if (context[context.length - 1] === this._staticKey) {
 				let event = new StandardKeyboardEvent(e);
@@ -366,10 +374,10 @@ export abstract class Modal extends Disposable implements IThemable {
 					this.handleForwardTab(e);
 				}
 			}
-		});
-		this._resizeListener = DOM.addDisposableListener(window, DOM.EventType.RESIZE, (e: Event) => {
+		}));
+		this.disposableStore.add(DOM.addDisposableListener(window, DOM.EventType.RESIZE, (e: Event) => {
 			this.layout(DOM.getTotalHeight(this._modalBodySection));
-		});
+		}));
 
 		this.layout(DOM.getTotalHeight(this._modalBodySection));
 		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.ModalDialogOpened)
@@ -388,14 +396,17 @@ export abstract class Modal extends Disposable implements IThemable {
 	protected hide() {
 		this._modalShowingContext.get()!.pop();
 		this._bodyContainer.remove();
-		if (this._focusedElementBeforeOpen) {
-			this._focusedElementBeforeOpen.focus();
-		}
-		this._keydownListener.dispose();
-		this._resizeListener.dispose();
+		this.disposableStore.clear();
 		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.ModalDialogClosed)
 			.withAdditionalProperties({ name: this._name })
 			.send();
+		this.restoreKeyboardFocus();
+	}
+
+	private restoreKeyboardFocus() {
+		if (this._focusedElementBeforeOpen) {
+			this._focusedElementBeforeOpen.focus();
+		}
 	}
 
 	/**
@@ -405,7 +416,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 */
 	protected addFooterButton(label: string, onSelect: () => void, orientation: 'left' | 'right' = 'right'): Button {
 		let footerButton = DOM.$('.footer-button');
-		let button = new Button(footerButton);
+		let button = this._register(new Button(footerButton));
 		button.label = label;
 		button.onDidClick(() => onSelect()); // @todo this should be registered to dispose but that brakes some dialogs
 		if (orientation === 'left') {
@@ -493,9 +504,11 @@ export abstract class Modal extends Disposable implements IThemable {
 				DOM.prepend(this._modalContent, (this._messageElement));
 			}
 		} else {
-			// Set the focus manually otherwise it'll escape the dialog to something behind it
-			this.setInitialFocusedElement();
 			DOM.removeNode(this._messageElement);
+			// Set the focus to first focus element if the focus is not within the dialog
+			if (!DOM.isAncestor(document.activeElement, this._bodyContainer)) {
+				this.setInitialFocusedElement();
+			}
 		}
 	}
 
@@ -506,6 +519,9 @@ export abstract class Modal extends Disposable implements IThemable {
 		if (this._modalOptions.hasSpinner) {
 			if (show) {
 				DOM.show(this._spinnerElement);
+				if (this._modalOptions.spinnerTitle) {
+					alert(this._modalOptions.spinnerTitle);
+				}
 			} else {
 				DOM.hide(this._spinnerElement);
 			}
@@ -523,8 +539,12 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Set the title of the modal
 	 */
 	protected set title(title: string) {
-		if (this._title !== undefined) {
+		this._title = title;
+		if (this._modalTitle) {
 			this._modalTitle.innerText = title;
+		}
+		if (this._bodyContainer) {
+			this._bodyContainer.setAttribute('aria-label', title);
 		}
 	}
 
@@ -598,7 +618,6 @@ export abstract class Modal extends Disposable implements IThemable {
 
 	public dispose() {
 		super.dispose();
-		this._keydownListener.dispose();
 		this._footerButtons = [];
 	}
 }

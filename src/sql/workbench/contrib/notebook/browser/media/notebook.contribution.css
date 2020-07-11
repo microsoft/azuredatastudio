@@ -1,0 +1,25 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+/* Activity Bar */
+.monaco-workbench .activitybar .monaco-action-bar .action-label.book {
+	background-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Activity Bar */
+.monaco-workbench .activitybar .monaco-action-bar .checked .action-label.book {
+	background-color: rgb(255, 255, 255);
+}
+
+.notebookExplorer-viewlet > .header {
+	height: 41px;
+	box-sizing: border-box;
+	padding: 5px 12px 6px 16px;
+}
+
+.notebookExplorer-viewlet .result-messages {
+	margin-top: 5px;
+	cursor: default;
+}

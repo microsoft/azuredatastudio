@@ -8,15 +8,13 @@ import * as DialogHelper from './dialogHelper';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { IModalOptions, Modal } from './modal';
 import * as OptionsDialogHelper from './optionsDialogHelper';
-import { attachButtonStyler, attachModalDialogStyler, attachPanelStyler } from 'sql/platform/theme/common/styler';
-import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
+import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 
 import * as azdata from 'azdata';
 
 import { Event, Emitter } from 'vs/base/common/event';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
-import { IContextViewService, IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { localize } from 'vs/nls';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
@@ -24,46 +22,14 @@ import * as styler from 'vs/platform/theme/common/styler';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import { Widget } from 'vs/base/browser/ui/widget';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { append, $ } from 'vs/base/browser/dom';
-import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
+import { append, $, clearNode } from 'vs/base/browser/dom';
+import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
-import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPaneContainer';
-import { IViewDescriptorService } from 'vs/workbench/common/views';
-
-export class CategoryView extends ViewPane {
-
-	constructor(
-		private contentElement: HTMLElement,
-		private size: number,
-		options: IViewPaneOptions,
-		@IKeybindingService keybindingService: IKeybindingService,
-		@IContextMenuService contextMenuService: IContextMenuService,
-		@IConfigurationService configurationService: IConfigurationService,
-		@IContextKeyService contextKeyService: IContextKeyService,
-		@IInstantiationService instantiationService: IInstantiationService,
-		@IViewDescriptorService viewDescriptorService: IViewDescriptorService
-	) {
-		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService);
-	}
-
-	// we want a fixed size, so when we render to will measure our content and set that to be our
-	// minimum and max size
-	protected renderBody(container: HTMLElement): void {
-		container.appendChild(this.contentElement);
-		this.maximumBodySize = this.size;
-		this.minimumBodySize = this.size;
-	}
-
-	protected layoutBody(size: number): void {
-		//
-	}
-}
+import { attachModalDialogStyler } from 'sql/workbench/common/styler';
+import { ServiceOptionType } from 'sql/platform/connection/common/interfaces';
+import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 
 export interface IOptionsDialogOptions extends IModalOptions {
 	cancelLabel?: string;
@@ -71,16 +37,13 @@ export interface IOptionsDialogOptions extends IModalOptions {
 
 export class OptionsDialog extends Modal {
 	private _body: HTMLElement;
-	private _optionGroups: HTMLElement;
+	private _optionGroupsContainer: HTMLElement;
+	private _categoryTitles: HTMLElement[] = [];
 	private _dividerBuilder: HTMLElement;
 	private _optionTitle: HTMLElement;
 	private _optionDescription: HTMLElement;
 	private _optionElements: { [optionName: string]: OptionsDialogHelper.IOptionElement } = {};
 	private _optionValues: { [optionName: string]: string };
-	private _optionRowSize = 31;
-	private _optionCategoryPadding = 30;
-	private height: number;
-	private splitview: ScrollableSplitView;
 
 	private _onOk = new Emitter<void>();
 	public onOk: Event<void> = this._onOk.event;
@@ -92,10 +55,9 @@ export class OptionsDialog extends Modal {
 		title: string,
 		name: string,
 		options: IOptionsDialogOptions,
-		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
+		@ILayoutService layoutService: ILayoutService,
 		@IThemeService themeService: IThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
-		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IClipboardService clipboardService: IClipboardService,
@@ -117,8 +79,8 @@ export class OptionsDialog extends Modal {
 		// Theme styler
 		attachButtonStyler(okButton, this._themeService);
 		attachButtonStyler(closeButton, this._themeService);
-		this._register(this._themeService.onThemeChange(e => this.updateTheme(e)));
-		this.updateTheme(this._themeService.getTheme());
+		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme(e)));
+		this.updateTheme(this._themeService.getColorTheme());
 	}
 
 	protected renderBody(container: HTMLElement) {
@@ -126,8 +88,7 @@ export class OptionsDialog extends Modal {
 
 		this._dividerBuilder = append(this._body, $('div'));
 
-		this._optionGroups = append(this._body, $('div.optionsDialog-options-groups.monaco-pane-view'));
-		this.splitview = new ScrollableSplitView(this._optionGroups, { enableResizing: false, scrollDebounce: 0 });
+		this._optionGroupsContainer = append(this._body, $('div.optionsDialog-options-groups.monaco-pane-view'));
 
 		const descriptionContainer = append(this._body, $('div.optionsDialog-description'));
 
@@ -136,14 +97,21 @@ export class OptionsDialog extends Modal {
 	}
 
 	// Update theming that is specific to options dialog flyout body
-	private updateTheme(theme: ITheme): void {
-		let borderColor = theme.getColor(contrastBorder);
-		let border = borderColor ? borderColor.toString() : null;
+	private updateTheme(theme: IColorTheme): void {
+		const borderColor = theme.getColor(contrastBorder);
+		const border = borderColor ? borderColor.toString() : null;
+		const backgroundColor = theme.getColor(SIDE_BAR_BACKGROUND);
 		if (this._dividerBuilder) {
 			this._dividerBuilder.style.borderTopWidth = border ? '1px' : null;
 			this._dividerBuilder.style.borderTopStyle = border ? 'solid' : null;
 			this._dividerBuilder.style.borderTopColor = border;
 		}
+		this._categoryTitles.forEach(titleElement => {
+			titleElement.style.borderWidth = border ? '1px 0px' : null;
+			titleElement.style.borderStyle = border ? 'solid none' : null;
+			titleElement.style.borderColor = border;
+			titleElement.style.backgroundColor = backgroundColor ? backgroundColor.toString() : null;
+		});
 	}
 
 	private onOptionLinkClicked(optionName: string): void {
@@ -156,7 +124,8 @@ export class OptionsDialog extends Modal {
 		for (let i = 0; i < options.length; i++) {
 			let option: azdata.ServiceOption = options[i];
 			let rowContainer = DialogHelper.appendRow(container, option.displayName, 'optionsDialog-label', 'optionsDialog-input');
-			OptionsDialogHelper.createOptionElement(option, rowContainer, this._optionValues, this._optionElements, this._contextViewService, (name) => this.onOptionLinkClicked(name));
+			const optionElement = OptionsDialogHelper.createOptionElement(option, rowContainer, this._optionValues, this._optionElements, this._contextViewService, (name) => this.onOptionLinkClicked(name));
+			this.disposableStore.add(optionElement.optionWidget);
 		}
 	}
 
@@ -168,12 +137,12 @@ export class OptionsDialog extends Modal {
 			switch (option.valueType) {
 				case ServiceOptionType.category:
 				case ServiceOptionType.boolean:
-					this._register(styler.attachSelectBoxStyler(<SelectBox>widget, this._themeService));
+					this.disposableStore.add(styler.attachSelectBoxStyler(<SelectBox>widget, this._themeService));
 					break;
 				case ServiceOptionType.string:
 				case ServiceOptionType.password:
 				case ServiceOptionType.number:
-					this._register(styler.attachInputBoxStyler(<InputBox>widget, this._themeService));
+					this.disposableStore.add(styler.attachInputBoxStyler(<InputBox>widget, this._themeService));
 			}
 		}
 	}
@@ -217,52 +186,42 @@ export class OptionsDialog extends Modal {
 	}
 
 	public close() {
-		this.dispose();
 		this.hide();
+		this._optionElements = {};
 		this._onCloseEvent.fire();
 	}
 
 	public open(options: azdata.ServiceOption[], optionValues: { [name: string]: any }) {
 		this._optionValues = optionValues;
 		let firstOption: string;
-		this.splitview.clear();
 		let categoryMap = OptionsDialogHelper.groupOptionsByCategory(options);
+		clearNode(this._optionGroupsContainer);
 		for (let category in categoryMap) {
+			const title = append(this._optionGroupsContainer, $('h2.option-category-title'));
+			title.innerText = category;
+			this._categoryTitles.push(title);
+
 			let serviceOptions: azdata.ServiceOption[] = categoryMap[category];
 			let bodyContainer = $('table.optionsDialog-table');
 			this.fillInOptions(bodyContainer, serviceOptions);
-
-			let viewSize = this._optionCategoryPadding + serviceOptions.length * this._optionRowSize;
-			let categoryView = this._instantiationService.createInstance(CategoryView, bodyContainer, viewSize, { title: category, ariaHeaderLabel: category, id: category });
-			this.splitview.addView(categoryView, viewSize);
-			categoryView.render();
-			attachPanelStyler(categoryView, this._themeService);
+			append(this._optionGroupsContainer, bodyContainer);
 
 			if (!firstOption) {
 				firstOption = serviceOptions[0].name;
 			}
 		}
-		if (this.height) {
-			this.splitview.layout(this.height - 120);
-		}
+		this.updateTheme(this._themeService.getColorTheme());
 		this.show();
 		let firstOptionWidget = this._optionElements[firstOption].optionWidget;
 		this.registerStyling();
-		firstOptionWidget.focus();
+		setTimeout(() => firstOptionWidget.focus(), 1);
 	}
 
 	protected layout(height?: number): void {
-		this.height = height;
-		// account for padding and the details view
-		this.splitview.layout(this.height - 120 - 20);
 	}
 
 	public dispose(): void {
 		super.dispose();
-		for (let optionName in this._optionElements) {
-			let widget: Widget = this._optionElements[optionName].optionWidget;
-			widget.dispose();
-			delete this._optionElements[optionName];
-		}
+		this._optionElements = {};
 	}
 }

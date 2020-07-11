@@ -23,6 +23,9 @@ export interface ITabbedPanelStyles {
 	titleInactiveForeground?: Color;
 	focusBorder?: Color;
 	outline?: Color;
+	activeBackgroundForVerticalLayout?: Color;
+	border?: Color;
+	activeTabContrastBorder?: Color;
 }
 
 export interface IPanelOptions {

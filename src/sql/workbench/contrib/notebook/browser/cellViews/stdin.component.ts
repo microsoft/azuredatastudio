@@ -23,7 +23,7 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { Deferred } from 'sql/base/common/promise';
-import { ICellModel, CellExecutionState } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
+import { ICellModel, CellExecutionState } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 
 export const STDIN_SELECTOR: string = 'stdin-component';
 @Component({

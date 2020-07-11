@@ -3,14 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ProfilerInput } from 'sql/workbench/contrib/profiler/browser/profilerInput';
+import { ProfilerInput } from 'sql/workbench/browser/editor/profiler/profilerInput';
 import { TabbedPanel } from 'sql/base/browser/ui/panel/panel';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { IProfilerService, IProfilerViewTemplate } from 'sql/workbench/services/profiler/browser/interfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { attachTableStyler, attachTabbedPanelStyler } from 'sql/platform/theme/common/styler';
-import { IProfilerStateChangedEvent } from 'sql/workbench/contrib/profiler/common/profilerState';
+import { attachTableStyler } from 'sql/platform/theme/common/styler';
+import { IProfilerStateChangedEvent } from 'sql/workbench/common/editor/profiler/profilerState';
 import { ProfilerTableEditor, ProfilerTableViewState } from 'sql/workbench/contrib/profiler/browser/profilerTableEditor';
 import * as Actions from 'sql/workbench/contrib/profiler/browser/profilerActions';
 import { CONTEXT_PROFILER_EDITOR, PROFILER_TABLE_COMMAND_SEARCH } from 'sql/workbench/contrib/profiler/common/interfaces';
@@ -51,7 +51,9 @@ import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelect
 import { handleCopyRequest } from 'sql/workbench/contrib/profiler/browser/profilerCopyHandler';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { find } from 'vs/base/common/arrays';
-import { UntitledTextEditorInput } from 'vs/workbench/common/editor/untitledTextEditorInput';
+import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
+import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
+import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 
 class BasicView implements IView {
 	public get element(): HTMLElement {
@@ -118,6 +120,7 @@ export interface IDetailData {
 export class ProfilerEditor extends BaseEditor {
 	public static readonly ID: string = 'workbench.editor.profiler';
 
+	private _untitledTextEditorModel: UntitledTextEditorModel;
 	private _editor: ProfilerResourceEditor;
 	private _editorModel: ITextModel;
 	private _editorInput: UntitledTextEditorInput;
@@ -170,11 +173,13 @@ export class ProfilerEditor extends BaseEditor {
 		this._profilerEditorContextKey = CONTEXT_PROFILER_EDITOR.bindTo(this._contextKeyService);
 
 		if (editorService) {
-			editorService.overrideOpenEditor((editor, options, group) => {
-				if (this.isVisible() && (editor !== this.input || group !== this.group)) {
-					this.saveEditorViewState();
+			editorService.overrideOpenEditor({
+				open: (editor, options, group) => {
+					if (this.isVisible() && (editor !== this.input || group !== this.group)) {
+						this.saveEditorViewState();
+					}
+					return {};
 				}
-				return {};
 			});
 		}
 	}
@@ -295,13 +300,13 @@ export class ProfilerEditor extends BaseEditor {
 		profilerTableContainer.style.height = '100%';
 		profilerTableContainer.style.overflow = 'hidden';
 		profilerTableContainer.style.position = 'relative';
-		let theme = this.themeService.getTheme();
+		let theme = this.themeService.getColorTheme();
 		if (theme.type === DARK) {
 			DOM.addClass(profilerTableContainer, VS_DARK_THEME);
 		} else if (theme.type === HIGH_CONTRAST) {
 			DOM.addClass(profilerTableContainer, VS_HC_THEME);
 		}
-		this.themeService.onThemeChange(e => {
+		this.themeService.onDidColorThemeChange(e => {
 			DOM.removeClasses(profilerTableContainer, VS_DARK_THEME, VS_HC_THEME);
 			if (e.type === DARK) {
 				DOM.addClass(profilerTableContainer, VS_DARK_THEME);
@@ -315,6 +320,7 @@ export class ProfilerEditor extends BaseEditor {
 			let data = this.input.data.getItem(args.rows[0]);
 			if (data) {
 				this._modelService.updateModel(this._editorModel, data['TextData']);
+				this._untitledTextEditorModel.setDirty(false);
 				this._detailTableData.clear();
 				this._detailTableData.push(Object.keys(data).filter(key => {
 					return data[key] !== ' ';
@@ -391,7 +397,7 @@ export class ProfilerEditor extends BaseEditor {
 			this._detailTable.updateRowCount();
 		});
 
-		const detailTableCopyKeybind = new CopyKeybind();
+		const detailTableCopyKeybind = new CopyKeybind<IDetailData>();
 		detailTableCopyKeybind.onCopy((ranges: Slick.Range[]) => {
 			// we always only get 1 item in the ranges
 			if (ranges && ranges.length === 1) {
@@ -432,7 +438,8 @@ export class ProfilerEditor extends BaseEditor {
 		editorContainer.className = 'profiler-editor';
 		this._editor.create(editorContainer);
 		this._editor.setVisible(true);
-		this._editorInput = this._instantiationService.createInstance(UntitledTextEditorInput, URI.from({ scheme: Schemas.untitled }), false, 'sql', '', '');
+		this._untitledTextEditorModel = this._instantiationService.createInstance(UntitledTextEditorModel, URI.from({ scheme: Schemas.untitled }), false, undefined, 'sql', undefined);
+		this._editorInput = this._instantiationService.createInstance(UntitledTextEditorInput, this._untitledTextEditorModel);
 		this._editor.setInput(this._editorInput, undefined);
 		this._editorInput.resolve().then(model => this._editorModel = model.textEditorModel);
 		return editorContainer;
@@ -499,7 +506,8 @@ export class ProfilerEditor extends BaseEditor {
 					seedSearchStringFromSelection: (controller.getState().searchString.length === 0),
 					shouldFocus: FindStartFocusAction.FocusFindInput,
 					shouldAnimate: true,
-					updateSearchScope: false
+					updateSearchScope: false,
+					loop: true
 				});
 			}
 		} else {
@@ -620,7 +628,7 @@ export class ProfilerEditor extends BaseEditor {
 abstract class SettingsCommand extends Command {
 
 	protected getProfilerEditor(accessor: ServicesAccessor): ProfilerEditor {
-		const activeEditor = accessor.get(IEditorService).activeControl;
+		const activeEditor = accessor.get(IEditorService).activeEditorPane;
 		if (activeEditor instanceof ProfilerEditor) {
 			return activeEditor;
 		}

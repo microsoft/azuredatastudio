@@ -6,8 +6,8 @@
 import { nb } from 'azdata';
 import { OnInit, Component, Input, Inject, forwardRef, ChangeDetectorRef, SimpleChange, OnChanges, HostListener, ViewChildren, QueryList } from '@angular/core';
 import { CellView } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
-import { ICellModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
-import { NotebookModel } from 'sql/workbench/contrib/notebook/browser/models/notebookModel';
+import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { Deferred } from 'sql/base/common/promise';
 import { ICellEditorProvider } from 'sql/workbench/services/notebook/browser/notebookService';
 import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/code.component';

@@ -4,12 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { OptionsDialog } from 'sql/workbench/browser/modal/optionsDialog';
-import { AdvancedPropertiesController } from 'sql/workbench/contrib/connection/browser/advancedPropertiesController';
+import { AdvancedPropertiesController } from 'sql/workbench/services/connection/browser/advancedPropertiesController';
 import * as azdata from 'azdata';
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
-import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
+import { ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 
 suite('Advanced properties dialog tests', () => {
 	let advancedController: AdvancedPropertiesController;
@@ -91,7 +91,6 @@ suite('Advanced properties dialog tests', () => {
 			undefined, // partsService
 			undefined, // themeService
 			undefined, // Context view service
-			undefined, // instantiation Service
 			undefined, // telemetry service
 			new MockContextKeyService() // contextkeyservice
 		);

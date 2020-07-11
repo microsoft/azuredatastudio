@@ -24,9 +24,16 @@ panel {
 	position: relative;
 }
 
+.tabbedPanel.vertical > .title {
+	flex: 0 0 auto;
+	flex-direction: column;
+	height: 100%;
+}
+
 .tabbedPanel .tabContainer {
 	flex: 1 1 auto;
 	overflow: hidden;
+	height: 100%;
 }
 
 .tabbedPanel .tabList {
@@ -34,7 +41,6 @@ panel {
 	margin: 0 auto;
 	padding: 0;
 	justify-content: flex-start;
-	line-height: 35px;
 	white-space: nowrap;
 	flex: 1;
 	height: 100%;
@@ -43,6 +49,19 @@ panel {
 .tabbedPanel .tabList .tab {
 	cursor: pointer;
 	margin: auto;
+	display: flex;
+	flex-flow: row;
+}
+
+.tabbedPanel.horizontal > .title .tabList .tab .tabLabel {
+	font-size: 12px;
+	max-width: 100px;
+}
+
+.tabbedPanel.vertical >.title .tabList .tab .tabLabel {
+	font-size: 13px;
+	padding-bottom: 0px;
+	max-width: 200px;
 }
 
 .tabbedPanel .tabList .tab .tabLabel {
@@ -51,8 +70,12 @@ panel {
 	font-weight: 600;
 }
 
-.tabbedPanel.vertical .tabList .tab .tabLabel {
-	font-size: 11px;
+.tabbedPanel.horizontal > .title .tabList .tab .tabLabel,
+.tabbedPanel.vertical > .title .tabList .tab .tabLabel {
+	text-overflow: ellipsis;
+	overflow: hidden;
+	border: 0px;
+	font-weight: normal;
 }
 
 .tabbedPanel .tabList .tab-header {
@@ -62,22 +85,23 @@ panel {
 	min-width: 65px;
 }
 
-.tabbedPanel.vertical .tabList .tab-header {
-	display: block;
-	text-transform: none;
-	text-overflow: ellipsis;
-	overflow: hidden;
-	width: 65px;
-	height: 50px;
-	line-height: 45px;
+.tabbedPanel.horizontal > .title .tabList .tab-header {
+	margin: 5px;
 }
 
-.tabbedPanel .tabList .tab .tabLabel.codicon {
+.tabbedPanel.vertical > .title .tabList .tab-header {
+	display: block;
+	min-width: 150px;
+	line-height: 35px;
+	padding-left: 24px;
+	padding-right: 24px;
+}
+
+.tabbedPanel .tabList .tab .tabIcon.codicon {
 	background-repeat: no-repeat;
-	background-position: center center;
-	background-size: 20px;
-	padding: 20px 25px;
-	line-height: 50px;
+	background-position: 2px center;
+	background-size: 16px;
+	padding: 2px 2px 2px 22px;
 }
 
 .tabbedPanel .tabList .actions-container {
@@ -86,8 +110,6 @@ panel {
 
 .tabbedPanel .composite.title .title-actions .action-label {
 	display: block;
-	height: 35px;
-	line-height: 35px;
 	min-width: 28px;
 	background-size: 16px;
 	background-position: center center;
@@ -117,24 +139,26 @@ panel {
 	height: 100%;
 }
 
-.tabbedPanel.vertical .tabList {
-	flex-direction: column;
-}
-
 .tabbedPanel > .tab-content {
-	flex: 1;
+	flex: 1 1 auto;
 	position: relative;
 }
 
-.tabbedPanel.vertical > .title > .tabList {
+.tabbedPanel.vertical > .title > .tabContainer .tabList {
 	flex-flow: column;
+	height: calc(100% - 35px);
+	overflow: auto;
+	line-height: 35px;
 }
 
-.tabbedPanel.horizontal > .title > .tabList {
+.tabbedPanel.horizontal > .title > .tabContainer .tabList {
 	flex-flow: row;
+	width: 100%;
+	overflow: auto;
+	line-height: 35px;
 }
 
-.tabbedPanel > .title > .monaco-scrollable-element {
+.tabbedPanel > .title > .tabContainer > .monaco-scrollable-element {
 	flex: 0 1 auto;
 	width: inherit;
 }
@@ -146,4 +170,51 @@ panel {
 .tabBody {
 	width: 100%;
 	height: 100%;
+}
+
+.tabbedPanel .tab-group-header {
+	font-weight: 600;
+	font-size: 14px;
+	margin: 10px 24px 5px 24px;
+	line-height: 35px;
+	border-style: solid;
+	border-width: 0 0 1px 0;
+}
+
+.tabbedPanel .vertical-tab-action-container {
+	display: flex;
+	flex-flow: row-reverse;
+	height: 35px;
+	padding: 0px 5px;
+}
+
+.tabbedPanel .tab-action {
+	width: 15px;
+	height: 15px;
+	padding: 0px;
+	border: 0px;
+	background-color: transparent;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: 9px 9px;
+	align-self: center;
+	cursor: pointer;
+}
+
+.vs .tabbedPanel .tab-action.collapse {
+	background-image: url("collapse.svg");
+}
+
+.vs-dark .tabbedPanel .tab-action.collapse,
+.hc-black .tabbedPanel .tab-action.collapse {
+	background-image: url("collapse_inverse.svg");
+}
+
+.vs .tabbedPanel .tab-action.expand {
+	background-image: url("expand.svg");
+}
+
+.vs-dark .tabbedPanel .tab-action.expand,
+.hc-black .tabbedPanel .tab-action.expand {
+	background-image: url("expand_inverse.svg");
 }

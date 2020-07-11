@@ -37,15 +37,14 @@ export class SparkJobSubmissionModel {
 	constructor(
 		private readonly _sqlClusterConnection: SqlClusterConnection,
 		private readonly _dialog: azdata.window.Dialog,
-		private readonly _appContext: AppContext,
-		requestService?: typeof import('request-promise')) {
+		private readonly _appContext: AppContext) {
 
 		if (!this._sqlClusterConnection || !this._dialog || !this._appContext) {
 			throw new Error(localize('sparkJobSubmission.SparkJobSubmissionModelInitializeError',
 				"Parameters for SparkJobSubmissionModel is illegal"));
 		}
 
-		this._dialogService = new SparkJobSubmissionService(requestService);
+		this._dialogService = new SparkJobSubmissionService();
 		this._guidForClusterFolder = utils.generateGuid();
 	}
 

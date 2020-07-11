@@ -5,7 +5,7 @@
 
 import { NgModuleRef, PlatformRef, Provider, enableProdMode } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-import { IInstantiationService, _util } from 'vs/platform/instantiation/common/instantiation';
+import { IInstantiationService, _util, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorInput } from 'vs/workbench/common/editor';
 import { Trace } from 'vs/platform/instantiation/common/instantiationService';
 import { values } from 'vs/base/common/map';
@@ -40,14 +40,16 @@ function createUniqueSelector(selector: string): string {
 
 let platform: PlatformRef;
 
-export function bootstrapAngular<T>(service: IInstantiationService, moduleType: IModuleFactory<T>, container: HTMLElement, selectorString: string, params: IBootstrapParams, input?: IEditorInput, callbackSetModule?: (value: NgModuleRef<T>) => void): string {
+export function bootstrapAngular<T>(accessor: ServicesAccessor, moduleType: IModuleFactory<T>, container: HTMLElement, selectorString: string, params: IBootstrapParams, input?: IEditorInput, callbackSetModule?: (value: NgModuleRef<T>) => void): string {
 	// Create the uniqueSelectorString
 	let uniqueSelectorString = createUniqueSelector(selectorString);
 	let selector = document.createElement(uniqueSelectorString);
 	container.appendChild(selector);
+	const instantiationService = accessor.get(IInstantiationService);
+	const logService = accessor.get(ILogService);
 
 	if (!platform) {
-		service.invokeFunction((accessor) => {
+		instantiationService.invokeFunction((accessor) => {
 			const environmentService = accessor.get(IEnvironmentService);
 			if (environmentService.isBuilt) {
 				enableProdMode();
@@ -56,7 +58,7 @@ export function bootstrapAngular<T>(service: IInstantiationService, moduleType: 
 		platform = platformBrowserDynamic();
 	}
 
-	platform.bootstrapModule(moduleType(params, uniqueSelectorString, service)).then(moduleRef => {
+	platform.bootstrapModule(moduleType(params, uniqueSelectorString, instantiationService)).then(moduleRef => {
 		if (input) {
 			input.onDispose(() => {
 				moduleRef.destroy();
@@ -66,14 +68,7 @@ export function bootstrapAngular<T>(service: IInstantiationService, moduleType: 
 			callbackSetModule(moduleRef);
 		}
 	}).catch((e) => {
-		service.invokeFunction((accessor) => {
-			const logService = accessor.get(ILogService);
-			if (!logService) {
-				console.error(e);
-				return;
-			}
-			logService.error(e);
-		});
+		logService.error(e);
 	});
 
 	return uniqueSelectorString;

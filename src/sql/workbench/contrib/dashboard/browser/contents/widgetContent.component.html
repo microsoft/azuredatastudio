@@ -5,7 +5,7 @@
  *--------------------------------------------------------------------------------------------*/
 -->
 <div class="scroll-container" #scrollContainer>
-	<div class="scrollable" #scrollable>
+	<div #scrollable>
 		<div [ngGrid]="gridConfig" *ngIf="widgets" >
 			<dashboard-widget-wrapper *ngFor="let widget of widgets" [(ngGridItem)]="widget.gridItemConfig" [_config]="widget">
 			</dashboard-widget-wrapper>

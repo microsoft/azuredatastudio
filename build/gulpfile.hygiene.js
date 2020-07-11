@@ -33,7 +33,9 @@ const all = [
 	'scripts/**/*',
 	'src/**/*',
 	'test/**/*',
-	'!**/node_modules/**'
+	'!test/**/out/**',
+	'!**/node_modules/**',
+	'!build/actions/**/*.js' // {{ SQL CARBON EDIT }}
 ];
 
 const indentationFilter = [
@@ -53,12 +55,12 @@ const indentationFilter = [
 	'!src/vs/base/common/marked/marked.js',
 	'!src/vs/base/node/terminateProcess.sh',
 	'!src/vs/base/node/cpuUsage.sh',
-	'!test/assert.js',
-	'!build/testSetup.js',
+	'!test/unit/assert.js',
 
 	// except specific folders
 	'!test/automation/out/**',
 	'!test/smoke/out/**',
+	'!extensions/typescript-language-features/test-workspace/**',
 	'!extensions/vscode-api-tests/testWorkspace/**',
 	'!extensions/vscode-api-tests/testWorkspace2/**',
 	'!build/monaco/**',
@@ -66,7 +68,6 @@ const indentationFilter = [
 
 	// except multiple specific files
 	'!**/package.json',
-	'!**/package-lock.json', // {{SQL CARBON EDIT}}
 	'!**/yarn.lock',
 	'!**/yarn-error.log',
 
@@ -84,8 +85,8 @@ const indentationFilter = [
 	'!src/vs/*/**/*.d.ts',
 	'!src/typings/**/*.d.ts',
 	'!extensions/**/*.d.ts',
-	'!**/*.{svg,exe,png,bmp,scpt,bat,cmd,cur,ttf,woff,eot,md,ps1,template,yaml,yml,d.ts.recipe,ico,icns}',
-	'!build/{lib,download}/**/*.js',
+	'!**/*.{svg,exe,png,bmp,scpt,bat,cmd,cur,ttf,woff,eot,md,ps1,template,yaml,yml,d.ts.recipe,ico,icns,plist}',
+	'!build/{lib,download,darwin}/**/*.js',
 	'!build/**/*.sh',
 	'!build/azure-pipelines/**/*.js',
 	'!build/azure-pipelines/**/*.config',
@@ -95,15 +96,23 @@ const indentationFilter = [
 	'!**/*.dockerfile',
 	'!extensions/markdown-language-features/media/*.js',
 	// {{SQL CARBON EDIT}}
-	'!**/*.{xlf,docx,sql,vsix,bacpac,ipynb}',
+	'!build/actions/**/*.js',
+	'!**/*.{xlf,docx,sql,vsix,bacpac,ipynb,jpg}',
 	'!extensions/mssql/sqltoolsservice/**',
 	'!extensions/import/flatfileimportservice/**',
 	'!extensions/admin-tool-ext-win/ssmsmin/**',
 	'!extensions/resource-deployment/notebooks/**',
 	'!extensions/mssql/notebooks/**',
 	'!extensions/integration-tests/testData/**',
+	'!extensions/arc/src/controller/generated/**',
+	'!extensions/sql-database-projects/resources/templates/*.xml',
+	'!extensions/sql-database-projects/src/test/baselines/*.xml',
+	'!extensions/sql-database-projects/src/test/baselines/*.json',
+	'!extensions/sql-database-projects/src/test/baselines/*.sqlproj',
+	'!extensions/sql-database-projects/BuildDirectory/SystemDacpacs/**',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts',
-	'!extensions/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts'
+	'!extensions/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts',
+	'!resources/linux/snap/electron-launch'
 ];
 
 const copyrightFilter = [
@@ -125,7 +134,6 @@ const copyrightFilter = [
 	'!**/*.disabled',
 	'!**/*.code-workspace',
 	'!**/*.js.map',
-	'!**/promise-polyfill/polyfill.js',
 	'!build/**/*.init',
 	'!resources/linux/snap/snapcraft.yaml',
 	'!resources/linux/snap/electron-launch',
@@ -136,14 +144,15 @@ const copyrightFilter = [
 	'!extensions/*/server/bin/*',
 	'!src/vs/editor/test/node/classification/typescript-test.ts',
 	'!scripts/code-web.js',
+	'!resources/serverless/code-web.js',
 	// {{SQL CARBON EDIT}}
 	'!extensions/notebook/src/intellisense/text.ts',
 	'!extensions/mssql/src/hdfs/webhdfs.ts',
 	'!src/sql/workbench/contrib/notebook/browser/outputs/tableRenderers.ts',
 	'!src/sql/workbench/contrib/notebook/common/models/url.ts',
-	'!src/sql/workbench/contrib/notebook/browser/models/renderMimeInterfaces.ts',
+	'!src/sql/workbench/services/notebook/browser/outputs/renderMimeInterfaces.ts',
 	'!src/sql/workbench/contrib/notebook/browser/models/outputProcessor.ts',
-	'!src/sql/workbench/contrib/notebook/browser/models/mimemodel.ts',
+	'!src/sql/workbench/services/notebook/browser/outputs/mimemodel.ts',
 	'!src/sql/workbench/contrib/notebook/browser/cellViews/media/*.css',
 	'!src/sql/base/browser/ui/table/plugins/rowSelectionModel.plugin.ts',
 	'!src/sql/base/browser/ui/table/plugins/rowDetailView.ts',
@@ -151,11 +160,11 @@ const copyrightFilter = [
 	'!src/sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin.ts',
 	'!src/sql/base/browser/ui/table/plugins/cellSelectionModel.plugin.ts',
 	'!src/sql/base/browser/ui/table/plugins/autoSizeColumns.plugin.ts',
-	'!src/sql/workbench/contrib/notebook/browser/outputs/sanitizer.ts',
+	'!src/sql/workbench/services/notebook/browser/outputs/sanitizer.ts',
 	'!src/sql/workbench/contrib/notebook/browser/outputs/renderers.ts',
-	'!src/sql/workbench/contrib/notebook/browser/outputs/registry.ts',
-	'!src/sql/workbench/contrib/notebook/browser/outputs/factories.ts',
-	'!src/sql/workbench/contrib/notebook/common/models/nbformat.ts',
+	'!src/sql/workbench/services/notebook/browser/outputs/registry.ts',
+	'!src/sql/workbench/services/notebook/browser/outputs/factories.ts',
+	'!src/sql/workbench/services/notebook/common/nbformat.ts',
 	'!extensions/markdown-language-features/media/tomorrow.css',
 	'!src/sql/workbench/browser/modelComponents/media/highlight.css',
 	'!src/sql/workbench/contrib/notebook/electron-browser/cellViews/media/highlight.css',
@@ -168,7 +177,8 @@ const copyrightFilter = [
 	'!**/*.gif',
 	'!**/*.xlf',
 	'!**/*.dacpac',
-	'!**/*.bacpac'
+	'!**/*.bacpac',
+	'!**/*.py'
 ];
 
 const jsHygieneFilter = [
@@ -199,14 +209,7 @@ const tsHygieneFilter = [
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts', // {{SQL CARBON EDIT}},
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/tokenApiGenerated.ts', // {{SQL CARBON EDIT}},
 	'!src/vs/workbench/services/themes/common/textMateScopeMatcher.ts', // {{SQL CARBON EDIT}} skip this because we have no plans on touching this and its not ours
-	'!src/vs/workbench/contrib/extensions/browser/extensionTipsService.ts' // {{SQL CARBON EDIT}} skip this because known issue
-];
-
-const sqlHygieneFilter = [ // for rules we want to only apply to our code
-	'src/sql/**/*.ts',
-	'!**/node_modules/**',
-	'extensions/**/*.ts',
-	'!extensions/{git,search-result,vscode-test-resolver,extension-editing,json-language-features,vscode-colorize-tests}/**/*.ts',
+	'!src/vs/workbench/contrib/extensions/browser/extensionRecommendationsService.ts' // {{SQL CARBON EDIT}} skip this because known issue
 ];
 
 const copyrightHeaderLines = [
@@ -376,20 +379,8 @@ function hygiene(some) {
 			errorCount += results.errorCount;
 		}));
 
-	const sqlJavascript = result
-		.pipe(filter(sqlHygieneFilter))
-		.pipe(gulpeslint({
-			configFile: '.eslintrc.sql.json',
-			rulePaths: ['./build/lib/eslint']
-		}))
-		.pipe(gulpeslint.formatEach('compact'))
-		.pipe(gulpeslint.results(results => {
-			errorCount += results.warningCount;
-			errorCount += results.errorCount;
-		}));
-
 	let count = 0;
-	return es.merge(typescript, javascript, sqlJavascript)
+	return es.merge(typescript, javascript)
 		.pipe(es.through(function (data) {
 			count++;
 			if (process.env['TRAVIS'] && count % 10 === 0) {
@@ -420,7 +411,7 @@ function createGitIndexVinyls(paths) {
 				return e(err);
 			}
 
-			cp.exec(`git show ":${relativePath}"`, { maxBuffer: 2000 * 1024, encoding: 'buffer' }, (err, out) => {
+			cp.exec(`git show :${relativePath}`, { maxBuffer: 2000 * 1024, encoding: 'buffer' }, (err, out) => {
 				if (err) {
 					return e(err);
 				}

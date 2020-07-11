@@ -5,13 +5,12 @@
 
 import * as assert from 'assert';
 import * as azdata from 'azdata';
-import { ICapabilitiesService, ProviderFeatures } from 'sql/platform/capabilities/common/capabilitiesService';
+import { ProviderFeatures } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionConfig, ISaveGroupResult } from 'sql/platform/connection/common/connectionConfig';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { IConnectionProfile, IConnectionProfileStore } from 'sql/platform/connection/common/interfaces';
+import { IConnectionProfile, IConnectionProfileStore, ConnectionOptionSpecialType, ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
-import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import * as TypeMoq from 'typemoq';
 import { Emitter } from 'vs/base/common/event';
@@ -20,7 +19,7 @@ import { ConfigurationTarget } from 'vs/platform/configuration/common/configurat
 import { find } from 'vs/base/common/arrays';
 
 suite('ConnectionConfig', () => {
-	let capabilitiesService: TypeMoq.Mock<ICapabilitiesService>;
+	let capabilitiesService: TypeMoq.Mock<TestCapabilitiesService>;
 	let msSQLCapabilities: ProviderFeatures;
 	let capabilities: ProviderFeatures[];
 	let onCapabilitiesRegistered = new Emitter<ProviderFeatures>();

@@ -5,7 +5,6 @@
 	"ignorePatterns": [
 		"**/node_modules/**"
 	],
-	"includePid": false,
 	"reports": [
 		"cobertura"
 	],

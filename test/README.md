@@ -1,32 +1,34 @@
-# Tests
+# Azure Data Studio Tests
 
-## Run
+## Contents
 
-The best way to run the Code tests is from the terminal. To make development changes to unit tests you need to be running `yarn run watch`. See [Development Workflow](https://github.com/Microsoft/vscode/wiki/How-to-Contribute#incremental-build) for more details. From the `azuredatastudio` folder run:
+This folder contains the various test runners for Azure Data Studio. Please refer to the documentation within for how to run them:
+* `unit`: our suite of unit tests ([README](unit/README.md))
+* `integration`: our suite of API tests ([README](integration/browser/README.md))
+* `smoke`: our suite of automated UI tests ([README](smoke/README.md))
+* `ui`: our suite of manual UI tests
 
-**OS X and Linux**
+## Extension Tests
 
-	./scripts/test.sh
+In addition to the above core tests many extensions in this repo also have tests themselves. These are split into two categories.
 
-**Windows**
+### Unit tests
 
-	scripts\test
+These are smaller tests that don't need connections to outside resources such as SQL instances. They are still ran within the context of Azure Data Studio and so have access to all the normal APIs as they would during runtime.
+
+Run these with the script `./scripts/test-extensions-unit.[bat|sh]`
+
+Code coverage is enabled by default. Reports can be found in the coverage folder at the root of the folder for each extension that ran.
 
 
-## Debug
+### Integration tests
 
-To debug tests use `--debug` when running the test script. Also, the set of tests can be reduced with the `--run` and `--runGlob` flags. Both require a file path/pattern. Like so:
+These are the group of tests that have dependencies on outside resources such as SQL instances. See the [README](../extensions/integration-tests/readme.md) for more information.
 
-	./scripts/test.sh --debug --runGrep **/extHost*.test.js
+Code coverage for this is also enabled by default (confined to the extensions), follow the instructions for running the tests in the above readme. 
 
-## Coverage
+## Code Coverage
 
-The following command will create a `coverage` folder at the root of the workspace:
+To generate a report combining the code coverage for extensions + core run `node ./test/combineCoverage`. Currently this will combine coverage from the Core Unit Tests, Extension Unit Tests and Extension Integration tests - see above docs for instructions on how to run those to generate coverage.
 
-**OS X and Linux**
-
-	./scripts/test.sh --coverage
-
-**Windows**
-
-	scripts\test --coverage
+Once ran the combined coverage report will be located in `./test/coverage`.

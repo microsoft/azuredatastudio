@@ -11,6 +11,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platform/configuration/common/configurationRegistry';
 
 new Actions.ConfigureDashboardAction().registerTask();
+new Actions.ClearSavedAccountsAction().registerTask();
 
 Registry.as<IConfigurationRegistry>(ConfigExtensions.Configuration).registerConfiguration({
 	'id': 'previewFeatures',
@@ -32,7 +33,7 @@ Registry.as<IConfigurationRegistry>(ConfigExtensions.Configuration).registerConf
 	'properties': {
 		'workbench.showConnectDialogOnStartup': {
 			'type': 'boolean',
-			'default': true,
+			'default': false,
 			'description': nls.localize('showConnectDialogOnStartup', "Show connect dialog on startup")
 		}
 	}

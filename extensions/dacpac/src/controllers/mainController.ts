@@ -4,20 +4,17 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import ControllerBase from './controllerBase';
 import * as vscode from 'vscode';
 import { DataTierApplicationWizard } from '../wizard/dataTierApplicationWizard';
 
 /**
  * The main controller class that initializes the extension
  */
-export default class MainController extends ControllerBase {
+export default class MainController implements vscode.Disposable {
 
-	public constructor(context: vscode.ExtensionContext) {
-		super(context);
+	public constructor(private context: vscode.ExtensionContext) {
 	}
-	/**
-	 */
+
 	public deactivate(): void {
 	}
 
@@ -28,5 +25,13 @@ export default class MainController extends ControllerBase {
 
 	private initializeDacFxWizard() {
 		azdata.tasks.registerTask('dacFx.start', (profile: azdata.IConnectionProfile, ...args: any[]) => new DataTierApplicationWizard().start(profile, args));
+	}
+
+	public get extensionContext(): vscode.ExtensionContext {
+		return this.context;
+	}
+
+	public dispose(): void {
+		this.deactivate();
 	}
 }

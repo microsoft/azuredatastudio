@@ -105,7 +105,9 @@ export class AzureResourceService {
 
 				if (extension.exports && extension.exports.provideResources) {
 					for (const resourceProvider of <azureResource.IAzureResourceProvider[]>extension.exports.provideResources()) {
-						this.doRegisterResourceProvider(resourceProvider);
+						if (resourceProvider) {
+							this.doRegisterResourceProvider(resourceProvider);
+						}
 					}
 				}
 			}

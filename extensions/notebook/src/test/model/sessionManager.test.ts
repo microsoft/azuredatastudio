@@ -108,7 +108,7 @@ describe('Jupyter Session', function (): void {
 
 	beforeEach(() => {
 		mockJupyterSession = TypeMoq.Mock.ofType(SessionStub);
-		session = new JupyterSession(mockJupyterSession.object);
+		session = new JupyterSession(mockJupyterSession.object, undefined, true);
 	});
 
 	it('should always be able to change kernels', function (): void {
@@ -145,7 +145,7 @@ describe('Jupyter Session', function (): void {
 		kernel = session.kernel;
 		// Then I expect it to have the ID, and only be called once
 		should(kernel.id).equal('id');
-		mockJupyterSession.verify(s => s.kernel, TypeMoq.Times.exactly(2));
+		mockJupyterSession.verify(s => s.kernel, TypeMoq.Times.exactly(1));
 	});
 
 	it('should send name in changeKernel request', async function (): Promise<void> {

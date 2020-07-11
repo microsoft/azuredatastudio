@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
+import * as loc from '../localizedConstants';
 import { SelectOperationPage } from './pages/selectOperationpage';
 import { DeployConfigPage } from './pages/deployConfigPage';
 import { DeployPlanPage } from './pages/deployPlanPage';
@@ -17,7 +17,6 @@ import { DacFxDataModel } from './api/models';
 import { BasePage } from './api/basePage';
 import * as mssql from '../../../mssql';
 
-const localize = nls.loadMessageBundle();
 const msSqlProvider = 'MSSQL';
 class Page {
 	wizardPage: azdata.window.WizardPage;
@@ -80,11 +79,12 @@ export enum PageName {
 export class DataTierApplicationWizard {
 	public wizard: azdata.window.Wizard;
 	private connection: azdata.connection.ConnectionProfile;
-	private model: DacFxDataModel;
+	public model: DacFxDataModel;
 	public pages: Map<string, Page> = new Map<string, Page>();
 	public selectedOperation: Operation;
 
 	constructor() {
+		this.wizard = azdata.window.createWizard(loc.wizardTitle);
 	}
 
 	public async start(p: any, ...args: any[]) {
@@ -98,9 +98,15 @@ export class DataTierApplicationWizard {
 
 		this.connection = await azdata.connection.getCurrentConnection();
 		if (!this.connection || (profile && this.connection.connectionId !== profile.id)) {
-			// @TODO: remove cast once azdata update complete - karlb 3/1/2019
-			this.connection = <azdata.connection.ConnectionProfile><any>await azdata.connection.openConnectionDialog(undefined, profile);
-
+			// check if there are any active connections
+			const connections = await azdata.connection.getConnections(true);
+			if (connections.length > 0) {
+				// set connection to the first one in the list
+				this.connection = connections[0];
+			} else {
+				// @TODO: remove cast once azdata update complete - karlb 3/1/2019
+				this.connection = <azdata.connection.ConnectionProfile><any>await azdata.connection.openConnectionDialog(undefined, profile);
+			}
 			// don't open the wizard if connection dialog is cancelled
 			if (!this.connection) {
 				return;
@@ -108,15 +114,23 @@ export class DataTierApplicationWizard {
 		}
 
 		this.model.serverId = this.connection.connectionId;
+		this.setPages();
 
-		this.wizard = azdata.window.createWizard(localize('dacfx.wizardTitle', "Data-tier Application Wizard"));
-		let selectOperationWizardPage = azdata.window.createWizardPage(localize('dacFx.selectOperationPageName', "Select an Operation"));
-		let deployConfigWizardPage = azdata.window.createWizardPage(localize('dacFx.deployConfigPageName', "Select Deploy Dacpac Settings"));
-		let deployPlanWizardPage = azdata.window.createWizardPage(localize('dacFx.deployPlanPage', "Review the deploy plan"));
-		let summaryWizardPage = azdata.window.createWizardPage(localize('dacFx.summaryPageName', "Summary"));
-		let extractConfigWizardPage = azdata.window.createWizardPage(localize('dacFx.extractConfigPageName', "Select Extract Dacpac Settings"));
-		let importConfigWizardPage = azdata.window.createWizardPage(localize('dacFx.importConfigPageName', "Select Import Bacpac Settings"));
-		let exportConfigWizardPage = azdata.window.createWizardPage(localize('dacFx.exportConfigPageName', "Select Export Bacpac Settings"));
+		this.wizard.generateScriptButton.hidden = true;
+		this.wizard.generateScriptButton.onClick(async () => await this.generateDeployScript());
+		this.wizard.doneButton.onClick(async () => await this.executeOperation());
+
+		this.wizard.open();
+	}
+
+	public setPages(): void {
+		let selectOperationWizardPage = azdata.window.createWizardPage(loc.selectOperationPageName);
+		let deployConfigWizardPage = azdata.window.createWizardPage(loc.deployConfigPageName);
+		let deployPlanWizardPage = azdata.window.createWizardPage(loc.deployPlanPageName);
+		let summaryWizardPage = azdata.window.createWizardPage(loc.summaryPageName);
+		let extractConfigWizardPage = azdata.window.createWizardPage(loc.extractConfigPageName);
+		let importConfigWizardPage = azdata.window.createWizardPage(loc.importConfigPageName);
+		let exportConfigWizardPage = azdata.window.createWizardPage(loc.exportConfigPageName);
 
 		this.pages.set(PageName.selectOperation, new Page(selectOperationWizardPage));
 		this.pages.set(PageName.deployConfig, new Page(deployConfigWizardPage));
@@ -187,11 +201,6 @@ export class DataTierApplicationWizard {
 		});
 
 		this.wizard.pages = [selectOperationWizardPage, deployConfigWizardPage, deployPlanWizardPage, summaryWizardPage];
-		this.wizard.generateScriptButton.hidden = true;
-		this.wizard.generateScriptButton.onClick(async () => await this.generateDeployScript());
-		this.wizard.doneButton.onClick(async () => await this.executeOperation());
-
-		this.wizard.open();
 	}
 
 	public registerNavigationValidator(validator: (pageChangeInfo: azdata.window.WizardPageChangeInfo) => boolean) {
@@ -201,27 +210,27 @@ export class DataTierApplicationWizard {
 	public setDoneButton(operation: Operation): void {
 		switch (operation) {
 			case Operation.deploy: {
-				this.wizard.doneButton.label = localize('dacFx.deployButton', "Deploy");
+				this.wizard.doneButton.label = loc.deploy;
 				this.selectedOperation = Operation.deploy;
 				break;
 			}
 			case Operation.extract: {
-				this.wizard.doneButton.label = localize('dacFx.extractButton', "Extract");
+				this.wizard.doneButton.label = loc.extract;
 				this.selectedOperation = Operation.extract;
 				break;
 			}
 			case Operation.import: {
-				this.wizard.doneButton.label = localize('dacFx.importButton', "Import");
+				this.wizard.doneButton.label = loc.importText;
 				this.selectedOperation = Operation.import;
 				break;
 			}
 			case Operation.export: {
-				this.wizard.doneButton.label = localize('dacFx.exportButton', "Export");
+				this.wizard.doneButton.label = loc.exportText;
 				this.selectedOperation = Operation.export;
 				break;
 			}
 			case Operation.generateDeployScript: {
-				this.wizard.doneButton.label = localize('dacFx.generateScriptButton', "Generate Script");
+				this.wizard.doneButton.label = loc.generateScript;
 				this.selectedOperation = Operation.generateDeployScript;
 				break;
 			}
@@ -289,7 +298,7 @@ export class DataTierApplicationWizard {
 		const service = await DataTierApplicationWizard.getService(msSqlProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 		this.wizard.message = {
-			text: localize('dacfx.scriptGeneratingMessage', "You can view the status of script generation in the Tasks View once the wizard is closed. The generated script will open when complete."),
+			text: loc.generatingScriptMessage,
 			level: azdata.window.MessageLevel.Information,
 			description: ''
 		};
@@ -328,7 +337,7 @@ export class DataTierApplicationWizard {
 		return page;
 	}
 
-	private isSummaryPage(idx: number): boolean {
+	public isSummaryPage(idx: number): boolean {
 		return this.selectedOperation === Operation.import && idx === ImportOperationPath.summary
 			|| this.selectedOperation === Operation.export && idx === ExportOperationPath.summary
 			|| this.selectedOperation === Operation.extract && idx === ExtractOperationPath.summary
@@ -343,8 +352,7 @@ export class DataTierApplicationWizard {
 		const result = await service.generateDeployPlan(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
 
 		if (!result || !result.success) {
-			vscode.window.showErrorMessage(
-				localize('alertData.deployPlanErrorMessage', "Generating deploy plan failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
+			vscode.window.showErrorMessage(loc.deployPlanErrorMessage(result.errorMessage));
 		}
 
 		return result.report;

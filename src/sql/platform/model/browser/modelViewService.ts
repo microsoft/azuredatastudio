@@ -4,14 +4,26 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { IItemConfig, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IComponentEventArgs } from 'sql/workbench/browser/modelComponents/interfaces';
 import { Event } from 'vs/base/common/event';
+import { IComponentEventArgs, ModelComponentTypes } from 'sql/platform/dashboard/browser/interfaces';
 
 export interface IView {
 	readonly id: string;
 	readonly connection: azdata.connection.Connection;
 	readonly serverInfo: azdata.ServerInfo;
+}
+
+export interface IComponentShape {
+	type: ModelComponentTypes;
+	id: string;
+	properties?: { [key: string]: any };
+	layout?: any;
+	itemConfigs?: IItemConfig[];
+}
+
+export interface IItemConfig {
+	componentShape: IComponentShape;
+	config: any;
 }
 
 export interface IModelViewEventArgs extends IComponentEventArgs {
@@ -24,6 +36,7 @@ export interface IModelView extends IView {
 	addToContainer(containerId: string, item: IItemConfig, index?: number): void;
 	removeFromContainer(containerId: string, item: IItemConfig): void;
 	setLayout(componentId: string, layout: any): void;
+	setItemLayout(componentId: string, item: IItemConfig): void;
 	setProperties(componentId: string, properties: { [key: string]: any }): void;
 	setDataProvider(handle: number, componentId: string, context: any): void;
 	refreshDataProvider(componentId: string, item: any): void;
@@ -32,4 +45,5 @@ export interface IModelView extends IView {
 	validate(componentId: string): Thenable<boolean>;
 	readonly onDestroy: Event<void>;
 	focus(componentId: string): void;
+	doAction(componentId: string, action: string, ...args: any[]): void;
 }

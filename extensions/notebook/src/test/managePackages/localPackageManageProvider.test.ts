@@ -8,7 +8,7 @@ import * as azdata from 'azdata';
 import * as should from 'should';
 import 'mocha';
 import * as TypeMoq from 'typemoq';
-import { JupyterServerInstallation, PythonPkgDetails, IJupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
+import { JupyterServerInstallation, PythonPkgDetails, IJupyterServerInstallation, PythonInstallSettings } from '../../jupyter/jupyterServerInstallation';
 import { LocalCondaPackageManageProvider } from '../../jupyter/localCondaPackageManageProvider';
 import * as constants from '../../common/constants';
 import { LocalPipPackageManageProvider } from '../../jupyter/localPipPackageManageProvider';
@@ -188,7 +188,7 @@ describe('Manage Package Providers', () => {
 			serverInstallation: {
 				installCondaPackages: (packages: PythonPkgDetails[], useMinVersion: boolean) => { return Promise.resolve(); },
 				configurePackagePaths: () => { return Promise.resolve(); },
-				startInstallProcess: (forceInstall: boolean, installSettings?: { installPath: string, existingPython: boolean }) => { return Promise.resolve(); },
+				startInstallProcess: (forceInstall: boolean, installSettings?: PythonInstallSettings) => { return Promise.resolve(); },
 				getInstalledPipPackages: () => { return Promise.resolve([]); },
 				installPipPackages: (packages: PythonPkgDetails[], useMinVersion: boolean) => { return Promise.resolve(); },
 				uninstallPipPackages: (packages: PythonPkgDetails[]) => { return Promise.resolve(); },

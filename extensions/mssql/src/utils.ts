@@ -187,7 +187,17 @@ export function verifyPlatform(): Thenable<boolean> {
 }
 
 export function getErrorMessage(error: Error | any, removeHeader: boolean = false): string {
-	let errorMessage: string = (error instanceof Error) ? error.message : error.toString();
+	let errorMessage: string;
+	if (error instanceof Error) {
+		errorMessage = error.message;
+	} else if (error.responseText) {
+		errorMessage = error.responseText;
+		if (error.status) {
+			errorMessage += ` (${error.status})`;
+		}
+	} else {
+		errorMessage = JSON.stringify(error.toString());
+	}
 	if (removeHeader) {
 		errorMessage = removeErrorHeader(errorMessage);
 	}

@@ -9,6 +9,8 @@ export const Extensions = {
 	CellComponentContributions: 'notebook.contributions.cells'
 };
 
+export const HideInputTag = 'hide_input';
+
 export interface ICellComponenetRegistry {
 	registerComponent(component: any): void;
 	getComponents(): Array<any>;

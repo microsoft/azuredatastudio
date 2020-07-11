@@ -93,7 +93,7 @@ export class ApiWrapper {
 		return vscode.workspace.asRelativePath(uri);
 	}
 
-	public getWorkspaceFolders(): vscode.WorkspaceFolder[] {
+	public getWorkspaceFolders(): readonly vscode.WorkspaceFolder[] {
 		return vscode.workspace.workspaceFolders;
 	}
 
@@ -138,6 +138,10 @@ export class ApiWrapper {
 		return this.getConfiguration(constants.extensionConfigSectionName);
 	}
 
+	public get onDidChangeConfiguration(): vscode.Event<vscode.ConfigurationChangeEvent> {
+		return vscode.workspace.onDidChangeConfiguration;
+	}
+
 	/**
 	 * Parse uri
 	 */
@@ -178,7 +182,7 @@ export class ApiWrapper {
 		return vscode.window.createStatusBarItem(alignment, priority);
 	}
 
-	public get workspaceFolders(): vscode.WorkspaceFolder[] {
+	public get workspaceFolders(): readonly vscode.WorkspaceFolder[] {
 		return vscode.workspace.workspaceFolders;
 	}
 

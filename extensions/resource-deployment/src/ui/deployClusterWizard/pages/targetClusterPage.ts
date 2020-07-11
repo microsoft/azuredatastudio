@@ -51,9 +51,9 @@ export class TargetClusterContextPage extends WizardPageBase<DeployClusterWizard
 		});
 	}
 
-	public onEnter() {
+	public async onEnter(): Promise<void> {
 		if (this.loadDefaultKubeConfigFile) {
-			let defaultKubeConfigPath = this.wizard.kubeService.getDefautConfigPath();
+			let defaultKubeConfigPath = this.wizard.kubeService.getDefaultConfigPath();
 			this.loadClusterContexts(defaultKubeConfigPath);
 			this.loadDefaultKubeConfigFile = false;
 		}

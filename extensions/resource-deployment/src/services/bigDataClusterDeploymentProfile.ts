@@ -30,6 +30,8 @@ export interface ActiveDirectorySettings {
 	clusterAdmins: string;
 	appReaders?: string;
 	appOwners?: string;
+	subdomain?: string;
+	accountPrefix?: string;
 }
 
 export class BigDataClusterDeploymentProfile {
@@ -183,7 +185,7 @@ export class BigDataClusterDeploymentProfile {
 	}
 
 	public setResourceStorage(resourceName: 'data-0' | 'master' | 'storage-0', dataStorageClass: string, dataStorageSize: number, logsStorageClass: string, logsStorageSize: number) {
-		this.bdcConfig.spec.resources[resourceName]['storage'] = {
+		this.bdcConfig.spec.resources[resourceName].spec.storage = {
 			data: {
 				size: `${dataStorageSize}Gi`,
 				className: dataStorageClass,
@@ -275,19 +277,24 @@ export class BigDataClusterDeploymentProfile {
 	}
 
 	public setActiveDirectorySettings(adSettings: ActiveDirectorySettings): void {
-		this._controlConfig.security.ouDistinguishedName = adSettings.organizationalUnit;
-		this._controlConfig.security.dnsIpAddresses = this.splitByComma(adSettings.dnsIPAddresses);
-		this._controlConfig.security.domainControllerFullyQualifiedDns = this.splitByComma(adSettings.domainControllerFQDNs);
-		this._controlConfig.security.domainDnsName = adSettings.domainDNSName;
-		this._controlConfig.security.realm = adSettings.domainDNSName.toUpperCase();
-		this._controlConfig.security.clusterAdmins = this.splitByComma(adSettings.clusterAdmins);
-		this._controlConfig.security.clusterUsers = this.splitByComma(adSettings.clusterUsers);
+		const activeDirectoryObject: any = {};
+		activeDirectoryObject.ouDistinguishedName = adSettings.organizationalUnit;
+		activeDirectoryObject.dnsIpAddresses = this.splitByComma(adSettings.dnsIPAddresses);
+		activeDirectoryObject.domainControllerFullyQualifiedDns = this.splitByComma(adSettings.domainControllerFQDNs.toLowerCase());
+		activeDirectoryObject.domainDnsName = adSettings.domainDNSName;
+		activeDirectoryObject.subdomain = adSettings.subdomain;
+		activeDirectoryObject.accountPrefix = adSettings.accountPrefix;
+		activeDirectoryObject.realm = adSettings.domainDNSName.toUpperCase();
+		activeDirectoryObject.clusterAdmins = this.splitByComma(adSettings.clusterAdmins);
+		activeDirectoryObject.clusterUsers = this.splitByComma(adSettings.clusterUsers);
 		if (adSettings.appReaders) {
-			this._controlConfig.security.appReaders = this.splitByComma(adSettings.appReaders);
+			activeDirectoryObject.appReaders = this.splitByComma(adSettings.appReaders);
 		}
 		if (adSettings.appOwners) {
-			this._controlConfig.security.appOwners = this.splitByComma(adSettings.appOwners);
+			activeDirectoryObject.appOwners = this.splitByComma(adSettings.appOwners);
 		}
+
+		this._controlConfig.security.activeDirectory = activeDirectoryObject;
 	}
 
 	public getBdcJson(readable: boolean = true): string {

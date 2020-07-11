@@ -12,6 +12,7 @@ import * as nls from 'vs/nls';
 import { RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { ExtensionIdentifier } from 'vs/platform/extensions/common/extensions';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+import { IMouseWheelEvent } from 'vs/base/browser/mouseEvent';
 
 /**
  * Set when the find widget in a webview is visible.
@@ -33,24 +34,33 @@ export interface WebviewIcons {
  * Handles the creation of webview elements.
  */
 export interface IWebviewService {
-	_serviceBrand: undefined;
+	readonly _serviceBrand: undefined;
 
-	createWebview(
+	createWebviewElement(
 		id: string,
 		options: WebviewOptions,
 		contentOptions: WebviewContentOptions,
+		extension: WebviewExtensionDescription | undefined,
 	): WebviewElement;
 
-	createWebviewEditorOverlay(
+	createWebviewOverlay(
 		id: string,
 		options: WebviewOptions,
 		contentOptions: WebviewContentOptions,
-	): WebviewEditorOverlay;
+		extension: WebviewExtensionDescription | undefined,
+	): WebviewOverlay;
 
 	setIcons(id: string, value: WebviewIcons | undefined): void;
 }
 
+export const enum WebviewContentPurpose {
+	NotebookRenderer = 'notebookRenderer',
+	CustomEditor = 'customEditor',
+}
+
 export interface WebviewOptions {
+	// The purpose of the webview; this is (currently) only used for filtering in js-debug
+	readonly purpose?: WebviewContentPurpose;
 	readonly customClasses?: string;
 	readonly enableFindWidget?: boolean;
 	readonly tryRestoreScrollPosition?: boolean;
@@ -58,6 +68,7 @@ export interface WebviewOptions {
 }
 
 export interface WebviewContentOptions {
+	readonly allowMultipleAPIAcquire?: boolean;
 	readonly allowScripts?: boolean;
 	readonly localResourceRoots?: ReadonlyArray<URI>;
 	readonly portMapping?: ReadonlyArray<modes.IWebviewPortMapping>;
@@ -69,22 +80,30 @@ export interface WebviewExtensionDescription {
 	readonly id: ExtensionIdentifier;
 }
 
-export interface Webview extends IDisposable {
+export interface IDataLinkClickEvent {
+	dataURL: string;
+	downloadName?: string;
+}
 
+export interface Webview extends IDisposable {
 	html: string;
 	contentOptions: WebviewContentOptions;
+	localResourcesRoot: URI[];
 	extension: WebviewExtensionDescription | undefined;
 	initialScrollProgress: number;
 	state: string | undefined;
 
 	readonly onDidFocus: Event<void>;
+	readonly onDidBlur: Event<void>;
 	readonly onDidClickLink: Event<string>;
 	readonly onDidScroll: Event<{ scrollYPercentage: number }>;
+	readonly onDidWheel: Event<IMouseWheelEvent>;
 	readonly onDidUpdateState: Event<string | undefined>;
+	readonly onDidReload: Event<void>;
 	readonly onMessage: Event<any>;
 	readonly onMissingCsp: Event<ExtensionIdentifier>;
 
-	sendMessage(data: any): void;
+	postMessage(data: any): void;
 
 	focus(): void;
 	reload(): void;
@@ -93,17 +112,27 @@ export interface Webview extends IDisposable {
 	hideFind(): void;
 	runFindAction(previous: boolean): void;
 
+	selectAll(): void;
+
 	windowDidDragStart(): void;
 	windowDidDragEnd(): void;
 }
 
+/**
+ * Basic webview rendered in the dom
+ */
 export interface WebviewElement extends Webview {
 	mountTo(parent: HTMLElement): void;
 }
 
-export interface WebviewEditorOverlay extends Webview {
+/**
+ * Dynamically created webview drawn over another element.
+ */
+export interface WebviewOverlay extends Webview {
 	readonly container: HTMLElement;
 	options: WebviewOptions;
+
+	readonly onDispose: Event<void>;
 
 	claim(owner: any): void;
 	release(owner: any): void;
@@ -113,4 +142,4 @@ export interface WebviewEditorOverlay extends Webview {
 	layoutWebviewOverElement(element: HTMLElement, dimension?: Dimension): void;
 }
 
-export const webviewDeveloperCategory = nls.localize('developer', "Developer");
+export const webviewDeveloperCategory = nls.localize({ key: 'developer', comment: ['A developer on Code itself or someone diagnosing issues in Code'] }, "Developer");

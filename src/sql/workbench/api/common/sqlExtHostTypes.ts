@@ -41,6 +41,11 @@ export enum EditRowState {
 	dirtyUpdate = 3
 }
 
+export enum ExtensionNodeType {
+	Server = 'Server',
+	Database = 'Database'
+}
+
 export enum TaskStatus {
 	NotStarted = 0,
 	InProgress = 1,
@@ -168,7 +173,14 @@ export enum ModelComponentTypes {
 	Dom,
 	Hyperlink,
 	Image,
-	RadioCardGroup
+	RadioCardGroup,
+	TabbedPanel,
+	Separator,
+	PropertiesContainer
+}
+
+export enum ModelViewAction {
+	SelectTab = 'selectTab'
 }
 
 export enum ColumnSizingMode {
@@ -197,11 +209,6 @@ export enum StepCompletionAction {
 	QuitWithFailure = 2,
 	GoToNextStep = 3,
 	GoToStep = 4
-}
-
-export enum ExtensionNodeType {
-	Server = 'Server',
-	Database = 'Database'
 }
 
 export interface CheckBoxInfo {
@@ -242,12 +249,12 @@ export interface IComponentEventArgs {
 
 export interface IModelViewDialogDetails {
 	title: string;
-	isWide: boolean;
 	content: string | number[];
 	okButton: number;
 	cancelButton: number;
 	customButtons: number[];
 	message: DialogMessage;
+	width: DialogWidth;
 }
 
 export interface IModelViewTabDetails {
@@ -283,7 +290,10 @@ export interface IModelViewWizardDetails {
 	customButtons: number[];
 	message: DialogMessage;
 	displayPageTitles: boolean;
+	width: DialogWidth;
 }
+
+export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
 
 export enum MessageLevel {
 	Error = 0,
@@ -343,7 +353,8 @@ export enum DataProviderType {
 	CapabilitiesProvider = 'CapabilitiesProvider',
 	ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
 	SerializationProvider = 'SerializationProvider',
-	IconProvider = 'IconProvider'
+	IconProvider = 'IconProvider',
+	SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider'
 }
 
 export enum DeclarativeDataType {
@@ -386,18 +397,20 @@ export interface ToolbarLayout {
 }
 
 export class TreeComponentItem extends vsExtTypes.TreeItem {
-	label?: string;
 	checked?: boolean;
 }
 
 export enum AzureResource {
 	ResourceManagement = 0,
 	Sql = 1,
-	OssRdbms = 2
+	OssRdbms = 2,
+	AzureKeyVault = 3,
+	Graph = 4,
+	MicrosoftResourceManagement = 5,
+	AzureDevOps = 6
 }
 
 export class TreeItem extends vsExtTypes.TreeItem {
-	label?: string;
 	payload?: IConnectionProfile;
 	providerHandle?: string;
 }
@@ -825,3 +838,25 @@ export type QueryEventType =
 	| 'queryStop'
 	| 'executionPlan'
 	| 'visualize';
+
+export enum TabOrientation {
+	Vertical = 'vertical',
+	Horizontal = 'horizontal'
+}
+
+export interface TabbedPanelLayout {
+	orientation: TabOrientation;
+	showIcon: boolean;
+	alwaysShowTabs: boolean;
+}
+
+export enum SqlAssessmentTargetType {
+	Server = 1,
+	Database = 2
+}
+
+export enum SqlAssessmentResultItemKind {
+	RealResult = 0,
+	Warning = 1,
+	Error = 2
+}

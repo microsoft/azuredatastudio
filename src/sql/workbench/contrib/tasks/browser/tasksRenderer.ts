@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ITree, IRenderer } from 'vs/base/parts/tree/browser/tree';
-import { TaskNode, TaskStatus } from 'sql/platform/tasks/common/tasksNode';
+import { TaskNode, TaskStatus } from 'sql/workbench/services/tasks/common/tasksNode';
 import * as dom from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
 import * as Utils from 'sql/platform/connection/common/utils';
@@ -103,11 +103,18 @@ export class TaskHistoryRenderer implements IRenderer {
 			templateData.label.textContent = element.taskName + ' ' + taskStatus;
 			templateData.label.title = templateData.label.textContent;
 
+			let description: string;
 			// Determine the target name and set hover text equal to that
-			let description = element.serverName;
-			if (element.databaseName) {
-				description += ' | ' + element.databaseName;
+			// show target location if there is one, otherwise show server and database name
+			if (element.targetLocation) {
+				description = element.targetLocation;
+			} else {
+				description = element.serverName;
+				if (element.databaseName) {
+					description += ' | ' + element.databaseName;
+				}
 			}
+
 			templateData.description.textContent = description;
 			templateData.description.title = templateData.description.textContent;
 

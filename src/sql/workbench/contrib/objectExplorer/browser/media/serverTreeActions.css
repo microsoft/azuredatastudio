@@ -8,8 +8,8 @@
 	background-image: url('add_server.svg');
 }
 
-.vs-dark .monaco-workbench .add-server-action,
-.hc-black .monaco-workbench .add-server-action {
+.monaco-workbench.vs-dark .add-server-action,
+.monaco-workbench.hc-black .add-server-action {
 	background-image: url('add_server_inverse.svg');
 }
 
@@ -17,8 +17,8 @@
 	background-image: url('new_servergroup.svg');
 }
 
-.vs-dark .monaco-workbench .add-server-group-action,
-.hc-black .monaco-workbench .add-server-group-action {
+.monaco-workbench.vs-dark .add-server-group-action,
+.monaco-workbench.hc-black .add-server-group-action {
 	background-image: url('new_servergroup_inverse.svg');
 }
 
@@ -26,7 +26,7 @@
 	background-image: url('connected_active_server.svg');
 }
 
-.vs-dark .monaco-workbench .active-connections-action,
-.hc-black .monaco-workbench .active-connections-action{
+.monaco-workbench.vs-dark .active-connections-action,
+.monaco-workbench.hc-black .active-connections-action{
 	background-image: url('connected_active_server_inverse.svg');
 }

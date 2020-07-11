@@ -7,12 +7,12 @@ import { ExtensionContext } from 'vscode';
 import { ApiWrapper } from '../../../apiWrapper';
 
 import { azureResource } from '../../azure-resource';
-import { IAzureResourceService, AzureResourceDatabaseServer } from '../../interfaces';
+import { IAzureResourceService } from '../../interfaces';
 import { PostgresServerTreeDataProvider as PostgresServerTreeDataProvider } from './postgresServerTreeDataProvider';
 
 export class PostgresServerProvider implements azureResource.IAzureResourceProvider {
 	public constructor(
-		private _databaseServerService: IAzureResourceService<AzureResourceDatabaseServer>,
+		private _databaseServerService: IAzureResourceService<azureResource.AzureResourceDatabaseServer>,
 		private _apiWrapper: ApiWrapper,
 		private _extensionContext: ExtensionContext
 	) {

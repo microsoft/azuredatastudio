@@ -33,6 +33,7 @@ import {
 	RunOptionsDTO
 } from 'vs/workbench/api/common/shared/tasks';
 import { IConfigurationResolverService } from 'vs/workbench/services/configurationResolver/common/configurationResolver';
+import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 
 namespace TaskExecutionDTO {
 	export function from(value: TaskExecution): TaskExecutionDTO {
@@ -327,10 +328,10 @@ namespace TaskDTO {
 			result.detail = task.configurationProperties.detail;
 		}
 		if (!ConfiguringTask.is(task) && task.command) {
-			if (task.command.runtime === RuntimeType.Process) {
-				result.execution = ProcessExecutionDTO.from(task.command);
-			} else if (task.command.runtime === RuntimeType.Shell) {
-				result.execution = ShellExecutionDTO.from(task.command);
+			switch (task.command.runtime) {
+				case RuntimeType.Process: result.execution = ProcessExecutionDTO.from(task.command); break;
+				case RuntimeType.Shell: result.execution = ShellExecutionDTO.from(task.command); break;
+				case RuntimeType.CustomExecution: result.execution = CustomExecutionDTO.from(task.command); break;
 			}
 		}
 		if (task.configurationProperties.problemMatchers) {
@@ -509,41 +510,41 @@ export class MainThreadTask implements MainThreadTaskShape {
 		});
 	}
 
-	public $executeTask(value: TaskHandleDTO | TaskDTO): Promise<TaskExecutionDTO> {
-		return new Promise<TaskExecutionDTO>((resolve, reject) => {
-			if (TaskHandleDTO.is(value)) {
-				const workspaceFolder = this._workspaceContextServer.getWorkspaceFolder(URI.revive(value.workspaceFolder));
-				if (workspaceFolder) {
-					this._taskService.getTask(workspaceFolder, value.id, true).then((task: Task | undefined) => {
-						if (!task) {
-							reject(new Error('Task not found'));
-						} else {
-							this._taskService.run(task).then(undefined, reason => {
-								// eat the error, it has already been surfaced to the user and we don't care about it here
-							});
-							const result: TaskExecutionDTO = {
-								id: value.id,
-								task: TaskDTO.from(task)
-							};
-							resolve(result);
-						}
-					}, (_error) => {
-						reject(new Error('Task not found'));
-					});
-				} else {
-					reject(new Error('No workspace folder'));
+	public async $getTaskExecution(value: TaskHandleDTO | TaskDTO): Promise<TaskExecutionDTO> {
+		if (TaskHandleDTO.is(value)) {
+			const workspaceFolder = typeof value.workspaceFolder === 'string' ? value.workspaceFolder : this._workspaceContextServer.getWorkspaceFolder(URI.revive(value.workspaceFolder));
+			if (workspaceFolder) {
+				const task = await this._taskService.getTask(workspaceFolder, value.id, true);
+				if (task) {
+					return {
+						id: task._id,
+						task: TaskDTO.from(task)
+					};
 				}
+				throw new Error('Task not found');
 			} else {
-				const task = TaskDTO.to(value, this._workspaceContextServer, true)!;
-				this._taskService.run(task).then(undefined, reason => {
-					// eat the error, it has already been surfaced to the user and we don't care about it here
-				});
-				const result: TaskExecutionDTO = {
-					id: task._id,
-					task: TaskDTO.from(task)
-				};
-				resolve(result);
+				throw new Error('No workspace folder');
 			}
+		} else {
+			const task = TaskDTO.to(value, this._workspaceContextServer, true)!;
+			return {
+				id: task._id,
+				task: TaskDTO.from(task)
+			};
+		}
+	}
+
+	public $executeTask(value: TaskDTO): Promise<TaskExecutionDTO> {
+		return new Promise<TaskExecutionDTO>((resolve, reject) => {
+			const task = TaskDTO.to(value, this._workspaceContextServer, true)!;
+			this._taskService.run(task).then(undefined, reason => {
+				// eat the error, it has already been surfaced to the user and we don't care about it here
+			});
+			const result: TaskExecutionDTO = {
+				id: task._id,
+				task: TaskDTO.from(task)
+			};
+			resolve(result);
 		});
 	}
 
@@ -604,7 +605,7 @@ export class MainThreadTask implements MainThreadTaskShape {
 				return URI.parse(`${info.scheme}://${info.authority}${path}`);
 			},
 			context: this._extHostContext,
-			resolveVariables: (workspaceFolder: IWorkspaceFolder, toResolve: ResolveSet): Promise<ResolvedVariables> => {
+			resolveVariables: (workspaceFolder: IWorkspaceFolder, toResolve: ResolveSet, target: ConfigurationTarget): Promise<ResolvedVariables> => {
 				const vars: string[] = [];
 				toResolve.variables.forEach(item => vars.push(item));
 				return Promise.resolve(this._proxy.$resolveVariables(workspaceFolder.uri, { process: toResolve.process, variables: vars })).then(values => {
@@ -613,7 +614,7 @@ export class MainThreadTask implements MainThreadTaskShape {
 						partiallyResolvedVars.push(entry.value);
 					});
 					return new Promise<ResolvedVariables>((resolve, reject) => {
-						this._configurationResolverService.resolveWithInteraction(workspaceFolder, partiallyResolvedVars, 'tasks').then(resolvedVars => {
+						this._configurationResolverService.resolveWithInteraction(workspaceFolder, partiallyResolvedVars, 'tasks', undefined, target).then(resolvedVars => {
 							const result: ResolvedVariables = {
 								process: undefined,
 								variables: new Map<string, string>()

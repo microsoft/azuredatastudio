@@ -11,8 +11,8 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { URI } from 'vs/base/common/uri';
 
-import { ClientSession } from 'sql/workbench/contrib/notebook/browser/models/clientSession';
-import { SessionManager } from 'sql/workbench/services/notebook/browser/sessionManager';
+import { ClientSession } from 'sql/workbench/services/notebook/browser/models/clientSession';
+import { SessionManager, EmptySession } from 'sql/workbench/contrib/notebook/test/emptySessionClasses';
 import { NotebookManagerStub, ServerManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 
@@ -36,7 +36,7 @@ suite('Client Session', function (): void {
 			notebookManager: notebookManager,
 			notebookUri: path,
 			notificationService: notificationService.object,
-			kernelSpec: undefined
+			kernelSpec: { name: 'python', display_name: 'Python 3', language: 'python' }
 		});
 
 		let serverlessNotebookManager = new NotebookManagerStub();
@@ -87,7 +87,12 @@ suite('Client Session', function (): void {
 			serverManager.isStarted = true;
 			resolve();
 		});
+		let sessionMock = TypeMoq.Mock.ofType(EmptySession);
+
 		mockSessionManager.setup(s => s.ready).returns(() => Promise.resolve());
+		mockSessionManager.setup(s => s.startNew(TypeMoq.It.isAny())).returns((options) => {
+			return Promise.resolve(sessionMock.object);
+		});
 
 		// When I call initialize
 		await session.initialize();
@@ -128,50 +133,53 @@ suite('Client Session', function (): void {
 		assert.equal(session.errorMessage, 'error');
 	});
 
-	// test('Should start session automatically if kernel preference requests it', async function (): Promise<void> {
-	// 	serverManager.isStarted = true;
-	// 	mockSessionManager.setup(s => s.ready).returns(() => Promise.resolve());
-	// 	let sessionMock = TypeMoq.Mock.ofType(EmptySession);
-	// 	let startOptions: nb.ISessionOptions = undefined;
-	// 	mockSessionManager.setup(s => s.startNew(TypeMoq.It.isAny())).returns((options) => {
-	// 		startOptions = options;
-	// 		return Promise.resolve(sessionMock.object);
-	// 	});
+	test('Should start session automatically if kernel preference requests it', async function (): Promise<void> {
+		serverManager.isStarted = true;
+		mockSessionManager.setup(s => s.ready).returns(() => Promise.resolve());
+		let sessionMock = TypeMoq.Mock.ofType(EmptySession);
+		let startOptions: nb.ISessionOptions = undefined;
+		mockSessionManager.setup(s => s.startNew(TypeMoq.It.isAny())).returns((options) => {
+			startOptions = options;
+			return Promise.resolve(sessionMock.object);
+		});
+		await session.initialize();
 
-	// 	// When I call initialize after defining kernel preferences
-	// 	session.kernelPreference = {
-	// 		shouldStart: true,
-	// 		name: 'python'
-	// 	};
-	// 	await session.initialize();
+		// Then
+		assert.equal(session.isReady, true, 'Session is not ready');
+		assert.equal(session.isInErrorState, false, 'Session should not be in error state');
+		assert.equal(startOptions.kernelName, 'python', 'Session not started with python by default');
+		assert.equal(startOptions.path, path.fsPath, 'Session start path is incorrect');
+	});
 
-	// 	// Then
-	// 	should(session.isReady).be.true();
-	// 	should(session.isInErrorState).be.false();
-	// 	should(startOptions.kernelName).equal('python');
-	// 	should(startOptions.path).equal(path.fsPath);
-	// });
+	test('Should shutdown session even if no serverManager is set', async function (): Promise<void> {
+		// Given a session against a remote server
+		let emptySession = new EmptySession({
+			path: path.toString(),
+			kernelId: '1',
+			kernelName: 'python',
+			name: 'emptySession',
+			type: 'type'
+		});
 
-	// test('Should shutdown session even if no serverManager is set', async function (): Promise<void> {
-	// 	// Given a session against a remote server
-	// 	let expectedId = 'abc';
-	// 	mockSessionManager.setup(s => s.isReady).returns(() => true);
-	// 	mockSessionManager.setup(s => s.shutdown(TypeMoq.It.isAny())).returns(() => Promise.resolve());
-	// 	let sessionMock = TypeMoq.Mock.ofType(EmptySession);
-	// 	sessionMock.setup(s => s.id).returns(() => expectedId);
-	// 	mockSessionManager.setup(s => s.startNew(TypeMoq.It.isAny())).returns(() => Promise.resolve(sessionMock.object));
+		mockSessionManager.setup(s => s.isReady).returns(() => true);
+		mockSessionManager.setup(s => s.shutdown(TypeMoq.It.isAny())).returns(() => Promise.resolve());
+		mockSessionManager.setup(s => s.startNew(TypeMoq.It.isAny())).returns(() => Promise.resolve(emptySession));
+		let newNotebookManager = notebookManager;
+		newNotebookManager.serverManager = undefined;
 
-	// 	remoteSession.kernelPreference = {
-	// 		shouldStart: true,
-	// 		name: 'python'
-	// 	};
-	// 	await remoteSession.initialize();
+		let remoteSession = new ClientSession({
+			kernelSpec: { name: 'python', display_name: 'Python 3', language: 'python' },
+			notebookManager: newNotebookManager,
+			notebookUri: path,
+			notificationService: notificationService.object
+		});
+		await remoteSession.initialize();
 
-	// 	// When I call shutdown
-	// 	await remoteSession.shutdown();
+		// When I call shutdown
+		await remoteSession.shutdown();
 
-	// 	// Then
-	// 	mockSessionManager.verify(s => s.shutdown(TypeMoq.It.isValue(expectedId)), TypeMoq.Times.once());
-	// });
+		// Then
+		mockSessionManager.verify(s => s.shutdown(TypeMoq.It.isAny()), TypeMoq.Times.once());
+	});
 
 });

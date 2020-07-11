@@ -1,4 +1,10 @@
 steps:
+  - task: InstallAppleCertificate@2
+    displayName: 'Install developer certificate'
+    inputs:
+      certSecureFile: 'osx_signing_key.p12'
+    condition: eq(variables['signed'], true)
+
   - script: |
       mkdir -p .build
       echo -n $BUILD_SOURCEVERSION > .build/commit
@@ -88,11 +94,6 @@ steps:
 
   - script: |
       set -e
-      yarn gulp install-sqltoolsservice
-    displayName: Install sqltoolsservice
-
-  - script: |
-      set -e
       yarn gulp package-rebuild-extensions
       yarn gulp vscode-darwin-min-ci
       yarn gulp vscode-reh-darwin-min-ci
@@ -103,34 +104,83 @@ steps:
 
   - script: |
       set -e
-      ./scripts/test.sh --build --coverage --reporter mocha-junit-reporter
+      ./scripts/test.sh --build --coverage --reporter mocha-junit-reporter --tfs "Unit Tests"
     displayName: Run unit tests
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   - script: |
+      # Figure out the full absolute path of the product we just built
+      # including the remote server and configure the integration tests
+      # to run with these builds instead of running out of sources.
+      set -e
+      APP_ROOT=$(agent.builddirectory)/azuredatastudio-darwin
+      APP_NAME="`ls $APP_ROOT | head -n 1`"
+      INTEGRATION_TEST_ELECTRON_PATH="$APP_ROOT/$APP_NAME/Contents/MacOS/Electron" \
+      VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-darwin" \
+      ./scripts/test-integration.sh --build --tfs "Integration Tests"
+    displayName: Run integration tests (Electron)
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+
+  - script: |
+      set -e
+      APP_ROOT=$(agent.builddirectory)/azuredatastudio-darwin
+      APP_NAME="`ls $APP_ROOT | head -n 1`"
+      yarn smoketest --build "$APP_ROOT/$APP_NAME" --screenshots "$(build.artifactstagingdirectory)/smokeshots"
+    displayName: Run smoke tests (Electron)
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+
+  # - script: |
+  #     set -e
+  #     VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-web-darwin" \
+  #     yarn smoketest --web --headless  --screenshots "$(build.artifactstagingdirectory)/smokeshots"
+  #   displayName: Run smoke tests (Browser)
+  #   condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+
+  - script: |
+      set -e
+      pushd ../azuredatastudio-darwin
+      ls
+
+      echo "Cleaning the application"
+      xattr -cr *.app
+      cd *.app
+      find . -name '._*' -print0 | xargs -0 rm -rf --
+      cd ..
+
+      echo "Signing the application with deep"
+      codesign --deep --force --timestamp --options runtime --entitlements $(Build.SourcesDirectory)/build/azure-pipelines/darwin/entitlements.xml -s LPV3BJJYXS *.app
+
+      cd *.app
+      ls
+      echo "Signing specific components"
+      find . -type f -print0 | xargs -0 file | grep ':  *Mach-O' | sed 's/:  *Mach-O.*//' | while read -r file; do codesign --options runtime --timestamp --entitlements $(Build.SourcesDirectory)/build/azure-pipelines/darwin/entitlements.xml -s LPV3BJJYXS --force "$file" || break; done
+
+      echo "Signing Electron again..."
+      codesign --force --timestamp --options runtime --entitlements $(Build.SourcesDirectory)/build/azure-pipelines/darwin/entitlements.xml -s LPV3BJJYXS Contents/Frameworks/Electron\ Framework.framework
+      cd ..
+
+      echo "Signing the entire application one more time"
+      codesign --force --timestamp --options runtime --entitlements $(Build.SourcesDirectory)/build/azure-pipelines/darwin/entitlements.xml -s LPV3BJJYXS *.app
+      popd
+    displayName: 'Manual codesign'
+    condition: and(succeeded(), eq(variables['signed'], true))
+
+  - script: |
       set -e
       mkdir -p .build/darwin/archive
-      pushd ../azuredatastudio-darwin && zip -r -X -y $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin.zip * && popd
-    displayName: 'Archive'
+      pushd ../azuredatastudio-darwin
+      ditto -c -k --keepParent *.app $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin.zip
+      popd
+    displayName: 'Archive (no signing)'
+    condition: and(succeeded(), eq(variables['signed'], false))
 
-  - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
-    displayName: 'ESRP CodeSigning'
-    inputs:
-      ConnectedServiceName: 'Code Signing'
-      FolderPath: '$(Build.SourcesDirectory)/.build/darwin/archive'
-      Pattern: 'azuredatastudio-darwin.zip'
-      signConfigType: inlineSignParams
-      inlineOperation: |
-        [
-          {
-            "keyCode": "CP-401337-Apple",
-            "operationSetCode": "MacAppDeveloperSign",
-            "parameters": [],
-            "toolName": "sign",
-            "toolVersion": "1.0"
-          }
-        ]
-      SessionTimeout: 125
+  - script: |
+      set -e
+      mkdir -p .build/darwin/archive
+      pushd ../azuredatastudio-darwin
+      ditto -c -k --keepParent *.app $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin-unsigned.zip
+      popd
+    displayName: 'Archive'
     condition: and(succeeded(), eq(variables['signed'], true))
 
   - script: |
@@ -140,20 +190,13 @@ steps:
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: drop'
+    condition: always()
 
   - task: PublishTestResults@2
     displayName: 'Publish Test Results test-results.xml'
     inputs:
       testResultsFiles: 'test-results.xml'
       searchFolder: '$(Build.SourcesDirectory)'
-    continueOnError: true
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
-
-  - task: PublishTestResults@2
-    displayName: 'Publish Integration and Smoke Test Results'
-    inputs:
-      testResultsFiles: 'dawin-integration-tests-results.xml'
-      searchFolder: '$(Build.ArtifactStagingDirectory)\test-results'
     continueOnError: true
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 

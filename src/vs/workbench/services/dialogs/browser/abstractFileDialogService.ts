@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vs/nls';
-import { IWindowOpenable } from 'vs/platform/windows/common/windows';
+import { IWindowOpenable, isWorkspaceToOpen, isFileToOpen } from 'vs/platform/windows/common/windows';
 import { IPickAndOpenOptions, ISaveDialogOptions, IOpenDialogOptions, FileFilter, IFileDialogService, IDialogService, ConfirmResult, getFileNamesMessage } from 'vs/platform/dialogs/common/dialogs';
 import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
 import { IHistoryService } from 'vs/workbench/services/history/common/history';
@@ -14,7 +14,7 @@ import { Schemas } from 'vs/base/common/network';
 import * as resources from 'vs/base/common/resources';
 import { IInstantiationService, } from 'vs/platform/instantiation/common/instantiation';
 import { SimpleFileDialog } from 'vs/workbench/services/dialogs/browser/simpleFileDialog';
-import { WORKSPACE_EXTENSION, isUntitledWorkspace } from 'vs/platform/workspaces/common/workspaces';
+import { WORKSPACE_EXTENSION, isUntitledWorkspace, IWorkspacesService } from 'vs/platform/workspaces/common/workspaces';
 import { REMOTE_HOST_SCHEME } from 'vs/platform/remote/common/remoteHosts';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IFileService } from 'vs/platform/files/common/files';
@@ -24,10 +24,12 @@ import Severity from 'vs/base/common/severity';
 import { coalesce } from 'vs/base/common/arrays';
 import { trim } from 'vs/base/common/strings';
 import { IModeService } from 'vs/editor/common/services/modeService';
+import { ILabelService } from 'vs/platform/label/common/label';
+import { isWindows } from 'vs/base/common/platform';
 
 export abstract class AbstractFileDialogService implements IFileDialogService {
 
-	_serviceBrand: undefined;
+	declare readonly _serviceBrand: undefined;
 
 	constructor(
 		@IHostService protected readonly hostService: IHostService,
@@ -39,7 +41,9 @@ export abstract class AbstractFileDialogService implements IFileDialogService {
 		@IFileService protected readonly fileService: IFileService,
 		@IOpenerService protected readonly openerService: IOpenerService,
 		@IDialogService private readonly dialogService: IDialogService,
-		@IModeService private readonly modeService: IModeService
+		@IModeService private readonly modeService: IModeService,
+		@IWorkspacesService private readonly workspacesService: IWorkspacesService,
+		@ILabelService private readonly labelService: ILabelService
 	) { }
 
 	defaultFilePath(schemeFilter = this.getSchemeFilterForWindow()): URI | undefined {
@@ -85,10 +89,14 @@ export abstract class AbstractFileDialogService implements IFileDialogService {
 	}
 
 	async showSaveConfirm(fileNamesOrResources: (string | URI)[]): Promise<ConfirmResult> {
-		if (this.environmentService.isExtensionDevelopment) {
-			return ConfirmResult.DONT_SAVE; // no veto when we are in extension dev mode because we cannot assume we run interactive (e.g. tests)
+		if (this.environmentService.isExtensionDevelopment && this.environmentService.extensionTestsLocationURI) {
+			return ConfirmResult.DONT_SAVE; // no veto when we are in extension dev testing mode because we cannot assume we run interactive
 		}
 
+		return this.doShowSaveConfirm(fileNamesOrResources);
+	}
+
+	protected async doShowSaveConfirm(fileNamesOrResources: (string | URI)[]): Promise<ConfirmResult> {
 		if (fileNamesOrResources.length === 0) {
 			return ConfirmResult.DONT_SAVE;
 		}
@@ -132,6 +140,11 @@ export abstract class AbstractFileDialogService implements IFileDialogService {
 			const stat = await this.fileService.resolve(uri);
 
 			const toOpen: IWindowOpenable = stat.isDirectory ? { folderUri: uri } : { fileUri: uri };
+			if (!isWorkspaceToOpen(toOpen) && isFileToOpen(toOpen)) {
+				// add the picked file into the list of recently opened
+				this.workspacesService.addRecentlyOpened([{ fileUri: toOpen.fileUri, label: this.labelService.getUriLabel(toOpen.fileUri) }]);
+			}
+
 			if (stat.isDirectory || options.forceNewWindow || preferNewWindow) {
 				return this.hostService.openWindow([toOpen], { forceNewWindow: options.forceNewWindow });
 			} else {
@@ -146,6 +159,9 @@ export abstract class AbstractFileDialogService implements IFileDialogService {
 
 		const uri = await this.pickResource({ canSelectFiles: true, canSelectFolders: false, canSelectMany: false, defaultUri: options.defaultUri, title, availableFileSystems });
 		if (uri) {
+			// add the picked file into the list of recently opened
+			this.workspacesService.addRecentlyOpened([{ fileUri: uri, label: this.labelService.getUriLabel(uri) }]);
+
 			if (options.forceNewWindow || preferNewWindow) {
 				return this.hostService.openWindow([{ fileUri: uri }], { forceNewWindow: options.forceNewWindow });
 			} else {
@@ -235,7 +251,7 @@ export abstract class AbstractFileDialogService implements IFileDialogService {
 		const options: ISaveDialogOptions = {
 			defaultUri,
 			title: nls.localize('saveAsTitle', "Save As"),
-			availableFileSystems,
+			availableFileSystems
 		};
 
 		interface IFilter { name: string; extensions: string[]; }
@@ -260,21 +276,29 @@ export abstract class AbstractFileDialogService implements IFileDialogService {
 			return filter;
 		}));
 
-		// Filters are a bit weird on Windows, based on having a match or not:
-		// Match: we put the matching filter first so that it shows up selected and the all files last
-		// No match: we put the all files filter first
-		const allFilesFilter = { name: nls.localize('allFiles', "All Files"), extensions: ['*'] };
-		if (matchingFilter) {
-			filters.unshift(matchingFilter);
-			filters.unshift(allFilesFilter);
-		} else {
-			filters.unshift(allFilesFilter);
+		// We have no matching filter, e.g. because the language
+		// is unknown. We still add the extension to the list of
+		// filters though so that it can be picked
+		// (https://github.com/microsoft/vscode/issues/96283) but
+		// only on Windows where this is an issue. Adding this to
+		// macOS would result in the following bugs:
+		// https://github.com/microsoft/vscode/issues/100614 and
+		// https://github.com/microsoft/vscode/issues/100241
+		if (isWindows && !matchingFilter && ext) {
+			matchingFilter = { name: trim(ext, '.').toUpperCase(), extensions: [trim(ext, '.')] };
 		}
 
-		// Allow to save file without extension
-		filters.push({ name: nls.localize('noExt', "No Extension"), extensions: [''] });
-
-		options.filters = filters;
+		// Order of filters is
+		// - File Extension Match
+		// - All Files
+		// - All Languages
+		// - No Extension
+		options.filters = coalesce([
+			matchingFilter,
+			{ name: nls.localize('allFiles', "All Files"), extensions: ['*'] },
+			...filters,
+			{ name: nls.localize('noExt', "No Extension"), extensions: [''] }
+		]);
 
 		return options;
 	}

@@ -10,7 +10,9 @@ import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 
 export function subscriptionToDisposable(sub: Subscription): IDisposable {
 	return {
-		dispose: sub.unsubscribe
+		dispose: () => {
+			sub.unsubscribe();
+		}
 	};
 }
 

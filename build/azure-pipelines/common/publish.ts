@@ -53,7 +53,7 @@ function getConfig(quality: string): Promise<Config> {
 	};
 
 	return new Promise<Config>((c, e) => {
-		client.queryDocuments(collection, query).toArray((err, results) => {
+		client.queryDocuments(collection, query, { enableCrossPartitionQuery: true }).toArray((err, results) => {
 			if (err && err.code !== 409) { return e(err); }
 
 			c(!results || results.length === 0 ? createDefaultConfig(quality) : results[0] as any as Config);
@@ -86,7 +86,7 @@ function createOrUpdate(commit: string, quality: string, platform: string, type:
 		updateTries++;
 
 		return new Promise<void>((c, e) => {
-			client.queryDocuments(collection, updateQuery).toArray((err, results) => {
+			client.queryDocuments(collection, updateQuery, { enableCrossPartitionQuery: true }).toArray((err, results) => {
 				if (err) { return e(err); }
 				if (results.length !== 1) { return e(new Error('No documents')); }
 
@@ -216,8 +216,14 @@ async function publish(commit: string, quality: string, platform: string, type: 
 	console.log('Asset:', JSON.stringify(asset, null, '  '));
 
 	// {{SQL CARBON EDIT}}
-	// Insiders: nightly build from master
-	const isReleased = (quality === 'insider' && /^master$|^refs\/heads\/master$/.test(sourceBranch) && /Project Collection Service Accounts|Microsoft.VisualStudio.Services.TFS/.test(queuedBy));
+	// Insiders: nightly build from main
+	const isReleased = (
+		(
+			(quality === 'insider' && /^main$|^refs\/heads\/main$/.test(sourceBranch)) ||
+			(quality === 'rc1' && /^release\/|^refs\/heads\/release\//.test(sourceBranch))
+		) &&
+		/Project Collection Service Accounts|Microsoft.VisualStudio.Services.TFS/.test(queuedBy)
+	);
 
 	const release = {
 		id: commit,

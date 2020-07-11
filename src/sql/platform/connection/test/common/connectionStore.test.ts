@@ -8,10 +8,10 @@ import * as azdata from 'azdata';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionStore } from 'sql/platform/connection/common/connectionStore';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { fixupConnectionCredentials } from 'sql/platform/connection/common/connectionInfo';
+import { IConnectionProfile, ConnectionOptionSpecialType, ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 import { TestCredentialsService } from 'sql/platform/credentials/test/common/testCredentialsService';
-import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { deepClone, deepFreeze, assign } from 'vs/base/common/objects';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
@@ -19,6 +19,7 @@ import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
 import { InMemoryStorageService } from 'vs/platform/storage/common/storage';
 import { find } from 'vs/base/common/arrays';
+import { generateUuid } from 'vs/base/common/uuid';
 
 suite('ConnectionStore', () => {
 	let defaultNamedProfile: IConnectionProfile = deepFreeze({
@@ -27,7 +28,7 @@ suite('ConnectionStore', () => {
 		databaseName: 'bcd',
 		authenticationType: 'SqlLogin',
 		userName: 'cde',
-		password: 'asdf!@#$',
+		password: generateUuid(),
 		savePassword: true,
 		groupId: '',
 		groupFullName: '',
@@ -249,6 +250,15 @@ suite('ConnectionStore', () => {
 		// then expect not to have credential store called, but MRU count upped to 3
 		assert.equal(current.length, 3);
 		assert.equal(credentialsService.credentials.size, 1);
+	});
+
+	test('fixupConnectionCredentials should fix blank connection profile', () => {
+		let blankConnectionProfile = new ConnectionProfile(capabilitiesService, '');
+		let resultProfile = fixupConnectionCredentials(blankConnectionProfile);
+		assert.equal(resultProfile.serverName, '');
+		assert.equal(resultProfile.databaseName, '');
+		assert.equal(resultProfile.userName, '');
+		assert.equal(resultProfile.password, '');
 	});
 
 	test('can clear connections list', async () => {

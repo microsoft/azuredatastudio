@@ -1,5 +1,76 @@
 # Change Log
 
+## Version 1.19.0
+* Release date: June 15, 2020
+* Release status: General Availability
+* Address issues in https://github.com/microsoft/azuredatastudio/milestone/55?closed=1
+* Bug fixes
+
+## Version 1.18.1
+* Release date: May 27, 2020
+* Release status: General Availability
+* Hotfix for https://github.com/microsoft/azuredatastudio/issues/10538
+* Hotfix for https://github.com/microsoft/azuredatastudio/issues/10537
+
+## Version 1.18.0
+* Release date: May 20, 2020
+* Release status: General Availability
+* Announcing Redgate SQL Prompt extension - This extension lets you manage formatting styles directly within Azure Data Studio, so you can create and edit your styles without leaving the IDE.
+* Announcing the new machine learning extension. This extension enables you to:
+    * Manage Python and R packages with SQL Server machine learning services with Azure Data Studio.
+    * Use ONNX model to make predictions in Azure SQL Edge.
+    * View ONNX models in an Azure SQL Edge database.
+    * Import ONNX models from a file or Azure Machine Learning into Azure SQL Edge database.
+    * Create a notebook to run experiments.
+* New notebook features:
+    * Added new Python dependencies wizard
+    * Improvements to the notebook markdown toolbar
+* Added support for parameterization for Always Encrypted - Allows you to run queries that insert, update or filter by encrypted database columns.
+* Bug fixes
+
+## Version 1.17.1
+* Release date: April 29, 2020
+* Release status: General Availability
+* Hotfix for https://github.com/microsoft/azuredatastudio/milestone/54?closed=1
+
+## Version 1.17.0
+* Release date: April 27, 2020
+* Release status: General Availability
+* New Welcome Page
+* New Notebook features
+    * New Markdown editor toolbar
+    * Books viewlet now works with notebooks
+* Improved dashboard
+* Always encrypted support
+* Accessibility bugs
+* VS Code merge
+
+## Version 1.16.0
+* Release date: March 18, 2020
+* Release status: General Availability
+* Notebooks:
+	* Charting
+	* Creating Jupyter books
+* Postgres extension update - Users can now authenticate to Azure Postgres servers with their linked Azure account
+* Accessibility bugs
+* VS Code merge
+* In the next release, GitHub releases will no longer contain the binary files to the latest version. Rather, they will contain links to the latest release. This will have no impact on users using the in-app update functionality.
+
+## Version 1.15.1
+* Release date: February 19, 2020
+* Release status: General Availability
+* Resolved [#9145 Edit Data render the result grid incorrectly when using custom query](https://github.com/microsoft/azuredatastudio/issues/9145).
+* Resolved [#9149 Show Active Connections](https://github.com/microsoft/azuredatastudio/issues/9149).
+
+## Version 1.15.0
+* Release date: February 13, 2020
+* Release status: General Availability
+* New Azure Sign-in improvement - Added improved Azure Sign-in experience, including removal of copy/paste of device code to make a more seamless connected experience.
+* Find in Notebook support - Users can now use Ctrl+F inside of a notebook. Find in Notebook support searches line by line through both code and text cells.
+* VS Code merge from 1.38 to 1.42 - This release includes updates to VS Code from the 3 previous VS Code releases. Read their [release notes](https://code.visualstudio.com/updates/v1_42) to learn more.
+* Fix for the ["white/blank screen"](https://github.com/microsoft/azuredatastudio/issues/8775) issue reported by many users.
+* Resolved [bugs and issues](https://github.com/microsoft/azuredatastudio/issues?q=is%3Aissue+label%3ABug+milestone%3A%22February+2020%22+is%3Aclosed).
+
 ## Version 1.14.1
 * Release date: December 26, 2019
 * Release status: General Availability

@@ -15,7 +15,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 
 import { ITreeComponentItem } from 'sql/workbench/common/views';
-import { ITaskHandlerDescription } from 'sql/platform/tasks/common/tasks';
+import { ITaskHandlerDescription } from 'sql/workbench/services/tasks/common/tasks';
 import {
 	IItemConfig, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails,
 	IModelViewWizardDetails, IModelViewWizardPageDetails, INotebookManagerDetails, INotebookSessionDetails,
@@ -25,7 +25,7 @@ import {
 import { EditorViewColumn } from 'vs/workbench/api/common/shared/editor';
 import { IUndoStopOptions } from 'vs/workbench/api/common/extHost.protocol';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
-import { IQueryEvent } from 'sql/platform/query/common/queryModel';
+import { IQueryEvent } from 'sql/workbench/services/query/common/queryModel';
 
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }
@@ -35,6 +35,7 @@ export abstract class ExtHostAccountManagementShape {
 	$prompt(handle: number): Thenable<azdata.Account | azdata.PromptFailedResult> { throw ni(); }
 	$refresh(handle: number, account: azdata.Account): Thenable<azdata.Account | azdata.PromptFailedResult> { throw ni(); }
 	$accountsChanged(handle: number, accounts: azdata.Account[]): Thenable<void> { throw ni(); }
+	$clearTokenCache(): Thenable<void> { throw ni(); }
 }
 
 export abstract class ExtHostConnectionManagementShape {
@@ -112,7 +113,7 @@ export abstract class ExtHostDataProtocolShape {
 	 */
 	$getMetadata(handle: number, connectionUri: string): Thenable<azdata.ProviderMetadata> { throw ni(); }
 
-	$getDatabases(handle: number, connectionUri: string): Thenable<string[]> { throw ni(); }
+	$getDatabases(handle: number, connectionUri: string): Thenable<string[] | azdata.DatabaseInfo[]> { throw ni(); }
 
 	$getTableInfo(handle: number, connectionUri: string, metadata: azdata.ObjectMetadata): Thenable<azdata.ColumnMetadata[]> { throw ni(); }
 
@@ -219,7 +220,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Callback when a message generated during query execution is issued
 	 */
-	$onQueryMessage(handle: number, message: azdata.QueryExecuteMessageParams): void { throw ni(); }
+	$onQueryMessage(message: azdata.QueryExecuteMessageParams): void { throw ni(); }
 
 	/**
 	 * Requests saving of the results from a result set into a specific format (CSV, JSON, Excel)
@@ -487,6 +488,26 @@ export abstract class ExtHostDataProtocolShape {
 	 * Serialization continuation request
 	 */
 	$continueSerialization(handle: number, requestParams: azdata.SerializeDataContinueRequestParams): Thenable<azdata.SerializeDataResult> { throw ni(); }
+
+
+	/**
+	 * SQL Assessment Section
+	 */
+
+	/**
+	* Perform an assessment
+	*/
+	$assessmentInvoke(handle: number, connectionUri: string, targetType: number): Thenable<azdata.SqlAssessmentResult> { throw ni(); }
+
+	/**
+	 * Get applicable assessment rules
+	 */
+	$getAssessmentItems(handle: number, connectionUri: string, targetType: number): Thenable<azdata.SqlAssessmentResult> { throw ni(); }
+
+	/**
+	 * Generate an assessment script based on recent results
+	 */
+	$generateAssessmentScript(handle: number, items: azdata.SqlAssessmentResultItem[]): Thenable<azdata.ResultStatus> { throw ni(); }
 }
 
 /**
@@ -550,6 +571,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerAdminServicesProvider(providerId: string, handle: number): Promise<any>;
 	$registerAgentServicesProvider(providerId: string, handle: number): Promise<any>;
 	$registerSerializationProvider(providerId: string, handle: number): Promise<any>;
+	$registerSqlAssessmentServicesProvider(providerId: string, handle: number): Promise<any>;
 	$unregisterProvider(handle: number): Promise<any>;
 	$onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void;
 	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;
@@ -559,7 +581,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$onBatchComplete(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void;
 	$onResultSetAvailable(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void;
 	$onResultSetUpdated(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void;
-	$onQueryMessage(handle: number, message: azdata.QueryExecuteMessageParams): void;
+	$onQueryMessage(message: [string, azdata.QueryExecuteMessageParams[]][]): void;
 	$onObjectExplorerSessionCreated(handle: number, message: azdata.ObjectExplorerSession): void;
 	$onObjectExplorerSessionDisconnected(handle: number, message: azdata.ObjectExplorerSession): void;
 	$onObjectExplorerNodeExpanded(providerId: string, message: azdata.ObjectExplorerExpandInfo): void;
@@ -710,6 +732,8 @@ export interface ExtHostModelViewTreeViewsShape {
 	$setExpanded(treeViewId: string, treeItemHandle: string, expanded: boolean): void;
 	$setSelection(treeViewId: string, treeItemHandles: string[]): void;
 	$setVisible(treeViewId: string, visible: boolean): void;
+	$hasResolve(treeViewId: string): Promise<boolean>;
+	$resolve(treeViewId: string, treeItemHandle: string): Promise<ITreeComponentItem | undefined>;
 }
 
 export interface ExtHostBackgroundTaskManagementShape {
@@ -731,12 +755,14 @@ export interface MainThreadModelViewShape extends IDisposable {
 	$addToContainer(handle: number, containerId: string, item: IItemConfig, index?: number): Thenable<void>;
 	$removeFromContainer(handle: number, containerId: string, item: IItemConfig): Thenable<void>;
 	$setLayout(handle: number, componentId: string, layout: any): Thenable<void>;
+	$setItemLayout(handle: number, componentId: string, item: IItemConfig): Thenable<void>;
 	$setProperties(handle: number, componentId: string, properties: { [key: string]: any }): Thenable<void>;
 	$registerEvent(handle: number, componentId: string): Thenable<void>;
 	$validate(handle: number, componentId: string): Thenable<boolean>;
 	$setDataProvider(handle: number, componentId: string): Thenable<void>;
 	$refreshDataProvider(handle: number, componentId: string, item?: any): Thenable<void>;
 	$focus(handle: number, componentId: string): Thenable<void>;
+	$doAction(handle: number, componentId: string, action: string, ...args: any[]): Thenable<void>;
 }
 
 export interface ExtHostObjectExplorerShape {
@@ -804,7 +830,7 @@ export interface ExtHostNotebookShape {
 	$handleNotebookClosed(notebookUri: UriComponents): void;
 
 	// Server Manager APIs
-	$doStartServer(managerHandle: number): Thenable<void>;
+	$doStartServer(managerHandle: number, kernelSpec: azdata.nb.IKernelSpec): Thenable<void>;
 	$doStopServer(managerHandle: number): Thenable<void>;
 
 	// Content Manager APIs
@@ -890,6 +916,7 @@ export interface ExtHostNotebookDocumentsAndEditorsShape {
 }
 
 export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable {
+	$trySetTrusted(_uri: UriComponents, isTrusted: boolean): Thenable<boolean>;
 	$trySaveDocument(uri: UriComponents): Thenable<boolean>;
 	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): Promise<string>;
 	$tryApplyEdits(id: string, modelVersionId: number, edits: ISingleNotebookEditOperation[], opts: IUndoStopOptions): Promise<boolean>;

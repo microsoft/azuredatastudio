@@ -48,8 +48,7 @@ export const clusterDetails = localize('bdc.dashboard.clusterDetails', "Cluster 
 export const clusterOverview = localize('bdc.dashboard.clusterOverview', "Cluster Overview");
 export const serviceEndpoints = localize('bdc.dashboard.serviceEndpoints', "Service Endpoints");
 export const clusterProperties = localize('bdc.dashboard.clusterProperties', "Cluster Properties");
-export const clusterState = localize('bdc.dashboard.clusterState', "Cluster State :");
-export const healthStatusWithColon = localize('bdc.dashboard.healthStatusWithColon', "Health Status :");
+export const clusterState = localize('bdc.dashboard.clusterState', "Cluster State");
 export const serviceName = localize('bdc.dashboard.serviceName', "Service Name");
 export const service = localize('bdc.dashboard.service', "Service");
 export const endpoint = localize('bdc.dashboard.endpoint', "Endpoint");
@@ -76,6 +75,8 @@ export const credentials = localize('mount.credentials.title', "Credentials");
 export const credentialsInfo = localize('mount.credentials.info', "Mount credentials for authentication to remote data source for reads");
 export const refreshMount = localize('refreshmount.dialog.title', "Refresh Mount");
 export const deleteMount = localize('deleteMount.dialog.title', "Delete Mount");
+export const loadingClusterStateCompleted = localize('bdc.dashboard.loadingClusterStateCompleted', "Loading cluster state completed");
+export const loadingHealthStatusCompleted = localize('bdc.dashboard.loadingHealthStatusCompleted', "Loading health status completed");
 
 // Errors
 export const usernameRequired = localize('err.controller.username.required', "Username is required");

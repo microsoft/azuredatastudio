@@ -9,8 +9,8 @@ import { Dialog, Wizard } from 'sql/workbench/services/dialog/common/dialogTypes
 import { IModalOptions } from 'sql/workbench/browser/modal/modal';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
-const defaultOptions: IModalOptions = { hasBackButton: false, isWide: false, hasErrors: true };
-const defaultWizardOptions: IModalOptions = { hasBackButton: false, isWide: true, hasErrors: true };
+export const DefaultDialogOptions: IModalOptions = { hasBackButton: false, width: 'narrow', hasErrors: true };
+export const DefaultWizardOptions: IModalOptions = { hasBackButton: false, width: 'wide', hasErrors: true };
 
 export class CustomDialogService {
 	private _dialogModals = new Map<Dialog, DialogModal>();
@@ -20,14 +20,14 @@ export class CustomDialogService {
 
 	public showDialog(dialog: Dialog, dialogName?: string, options?: IModalOptions): void {
 		let name = dialogName ? dialogName : 'CustomDialog';
-		let dialogModal = this._instantiationService.createInstance(DialogModal, dialog, name, options || defaultOptions);
+		let dialogModal = this._instantiationService.createInstance(DialogModal, dialog, name, options || DefaultDialogOptions);
 		this._dialogModals.set(dialog, dialogModal);
 		dialogModal.render();
 		dialogModal.open();
 	}
 
 	public showWizard(wizard: Wizard, options?: IModalOptions): void {
-		let wizardModal = this._instantiationService.createInstance(WizardModal, wizard, 'WizardPage', options || defaultWizardOptions);
+		let wizardModal = this._instantiationService.createInstance(WizardModal, wizard, 'WizardPage', options || DefaultWizardOptions);
 		this._wizardModals.set(wizard, wizardModal);
 		wizardModal.render();
 		wizardModal.open();

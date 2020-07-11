@@ -5,7 +5,7 @@
 
 
 import { ResourceServiceBase, GraphData } from '../resourceTreeDataProviderBase';
-import { AzureResourceDatabaseServer } from '../../interfaces';
+import { azureResource } from '../../azure-resource';
 
 
 export interface DbServerGraphData extends GraphData {
@@ -17,19 +17,20 @@ export interface DbServerGraphData extends GraphData {
 
 export const serversQuery = 'where type == "microsoft.sql/servers"';
 
-export class AzureResourceDatabaseServerService extends ResourceServiceBase<DbServerGraphData, AzureResourceDatabaseServer> {
+export class AzureResourceDatabaseServerService extends ResourceServiceBase<DbServerGraphData, azureResource.AzureResourceDatabaseServer> {
 
 	protected get query(): string {
 		return serversQuery;
 	}
 
-	protected convertResource(resource: DbServerGraphData): AzureResourceDatabaseServer {
+	protected convertResource(resource: DbServerGraphData): azureResource.AzureResourceDatabaseServer {
 		return {
 			id: resource.id,
 			name: resource.name,
 			fullName: resource.properties.fullyQualifiedDomainName,
 			loginName: resource.properties.administratorLogin,
-			defaultDatabaseName: 'master'
+			defaultDatabaseName: 'master',
+			tenant: resource.tenantId
 		};
 	}
 }

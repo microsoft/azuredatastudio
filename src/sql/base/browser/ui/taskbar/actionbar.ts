@@ -27,18 +27,18 @@ const defaultOptions: IActionBarOptions = {
  */
 export class ActionBar extends ActionRunner implements IActionRunner {
 
-	private _options: IActionBarOptions;
-	private _actionRunner: IActionRunner;
-	private _context: any;
+	protected _options: IActionBarOptions;
+	protected _actionRunner: IActionRunner;
+	protected _context: any;
 
 	// Items
-	private _items: IActionViewItem[];
-	private _focusedItem?: number;
-	private _focusTracker: DOM.IFocusTracker;
+	protected _items: IActionViewItem[];
+	protected _focusedItem?: number;
+	protected _focusTracker: DOM.IFocusTracker;
 
 	// Elements
-	private _domNode: HTMLElement;
-	private _actionsList: HTMLElement;
+	protected _domNode: HTMLElement;
+	protected _actionsList: HTMLElement;
 
 	constructor(container: HTMLElement, options: IActionBarOptions = defaultOptions) {
 		super();
@@ -128,6 +128,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 		this._actionsList = document.createElement('ul');
 		this._actionsList.className = 'actions-container';
 		this._actionsList.setAttribute('role', 'toolbar');
+		this._actionsList.id = 'actions-container';
 		if (this._options.ariaLabel) {
 			this._actionsList.setAttribute('aria-label', this._options.ariaLabel);
 		}
@@ -145,7 +146,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 		}
 	}
 
-	private updateFocusedItem(): void {
+	protected updateFocusedItem(): void {
 		let actionIndex = 0;
 		for (let i = 0; i < this._actionsList.children.length; i++) {
 			let elem = this._actionsList.children[i];
@@ -155,7 +156,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 				break;
 			}
 
-			if (elem.classList.contains('action-item')) {
+			if (elem.classList.contains('action-item') && i !== this._actionsList.children.length - 1) {
 				actionIndex++;
 			}
 		}
@@ -268,7 +269,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 		this.updateFocus();
 	}
 
-	private focusNext(): void {
+	protected focusNext(): void {
 		if (typeof this._focusedItem === 'undefined') {
 			this._focusedItem = this._items.length - 1;
 		}
@@ -288,7 +289,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 		this.updateFocus();
 	}
 
-	private focusPrevious(): void {
+	protected focusPrevious(): void {
 		if (typeof this._focusedItem === 'undefined') {
 			this._focusedItem = 0;
 		}
@@ -313,7 +314,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 		this.updateFocus();
 	}
 
-	private updateFocus(): void {
+	protected updateFocus(): void {
 		if (typeof this._focusedItem === 'undefined') {
 			this._domNode.focus();
 			return;
@@ -329,7 +330,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 					actionItem.focus();
 				}
 			} else {
-				if (types.isFunction(actionItem.blur)) {
+				if (actionItem && types.isFunction(actionItem.blur)) {
 					actionItem.blur();
 				}
 			}
@@ -349,7 +350,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 		}
 	}
 
-	private cancel(): void {
+	protected cancel(): void {
 		if (document.activeElement instanceof HTMLElement) {
 			(<HTMLElement>document.activeElement).blur(); // remove focus from focussed action
 		}

@@ -3,11 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { InjectionToken, OnDestroy } from '@angular/core';
+import { InjectionToken, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { NgGridItemConfig } from 'angular2-grid';
 import { Action } from 'vs/base/common/actions';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { IDashboardTab } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
+import { TabType } from 'sql/base/browser/ui/panel/tab.component';
+import { IDashboardTab } from 'sql/workbench/services/dashboard/browser/common/interfaces';
 
 export interface IDashboardWidget {
 	actions: Array<Action>;
@@ -33,6 +34,7 @@ export interface WidgetConfig {
 	fontSize?: string;
 	fontWeight?: string;
 	padding?: string;
+	hideHeader?: boolean;
 }
 
 export interface TabConfig extends IDashboardTab {
@@ -41,8 +43,9 @@ export interface TabConfig extends IDashboardTab {
 	editable: boolean;
 	canClose: boolean;
 	actions?: Array<Action>;
-	iconClass?: string;
+	type?: TabType;
 }
+
 
 export type IUserFriendlyIcon = string | { light: string; dark: string; };
 
@@ -61,6 +64,14 @@ export interface TabSettingConfig {
 
 export abstract class DashboardWidget extends Disposable implements OnDestroy {
 	protected _config: WidgetConfig;
+	protected _loading: boolean;
+	protected _inited: boolean = false;
+	protected _loadingMessage: string;
+	protected _loadingCompletedMessage: string;
+
+	constructor(protected _changeRef: ChangeDetectorRef) {
+		super();
+	}
 
 	get actions(): Array<Action> {
 		return [];
@@ -68,5 +79,12 @@ export abstract class DashboardWidget extends Disposable implements OnDestroy {
 
 	ngOnDestroy() {
 		this.dispose();
+	}
+
+	protected setLoadingStatus(loading: boolean): void {
+		this._loading = loading;
+		if (this._inited) {
+			this._changeRef.detectChanges();
+		}
 	}
 }

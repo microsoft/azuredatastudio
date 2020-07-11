@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { DashboardEditor } from 'sql/workbench/contrib/dashboard/browser/dashboardEditor';
-import { DashboardInput } from 'sql/workbench/contrib/dashboard/browser/dashboardInput';
+import { DashboardInput } from 'sql/workbench/browser/editor/profiler/dashboardInput';
 
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/browser/editor';
@@ -15,9 +15,9 @@ import { DASHBOARD_CONFIG_ID } from 'sql/workbench/contrib/dashboard/browser/pag
 import { DATABASE_DASHBOARD_PROPERTIES, databaseDashboardPropertiesSchema, DATABASE_DASHBOARD_SETTING, databaseDashboardSettingSchema, DATABASE_DASHBOARD_TABS, databaseDashboardTabsSchema } from 'sql/workbench/contrib/dashboard/browser/pages/databaseDashboardPage.contribution';
 import { SERVER_DASHBOARD_PROPERTIES, serverDashboardPropertiesSchema, SERVER_DASHBOARD_SETTING, serverDashboardSettingSchema, SERVER_DASHBOARD_TABS, serverDashboardTabsSchema } from 'sql/workbench/contrib/dashboard/browser/pages/serverDashboardPage.contribution';
 import { MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
-import { MssqlNodeContext } from 'sql/workbench/contrib/dataExplorer/browser/mssqlNodeContext';
+import { MssqlNodeContext } from 'sql/workbench/services/objectExplorer/browser/mssqlNodeContext';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
-import { TreeNodeContextKey } from 'sql/workbench/contrib/objectExplorer/common/treeNodeContextKey';
+import { TreeNodeContextKey } from 'sql/workbench/services/objectExplorer/common/treeNodeContextKey';
 import { DE_MANAGE_COMMAND_ID, OE_MANAGE_COMMAND_ID } from 'sql/workbench/contrib/dashboard/browser/dashboardActions';
 
 const configurationRegistry = Registry.as<IConfigurationRegistry>(Extensions.Configuration);
@@ -57,7 +57,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 	when: ContextKeyExpr.or(ContextKeyExpr.and(TreeNodeContextKey.Status.notEqualsTo('Unavailable'), TreeNodeContextKey.NodeType.isEqualTo('Server')), ContextKeyExpr.and(TreeNodeContextKey.Status.notEqualsTo('Unavailable'), TreeNodeContextKey.NodeType.isEqualTo('Database')))
 });
 
-const dashboardEditorDescriptor = new EditorDescriptor(
+const dashboardEditorDescriptor = EditorDescriptor.create(
 	DashboardEditor,
 	DashboardEditor.ID,
 	localize('dashboard.editor.label', "Dashboard")

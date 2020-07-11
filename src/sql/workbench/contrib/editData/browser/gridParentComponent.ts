@@ -8,13 +8,12 @@ import 'vs/css!./media/styles';
 
 import { Table } from 'sql/base/browser/ui/table/table';
 import { Subscription, Subject } from 'rxjs/Rx';
-import * as Constants from 'sql/workbench/contrib/query/common/constants';
-import * as LocalizedConstants from 'sql/workbench/contrib/query/common/localizedConstants';
-import { IGridInfo, IGridDataSet, SaveFormat } from 'sql/workbench/contrib/grid/common/interfaces';
+import * as Constants from 'sql/platform/query/common/constants';
+import { IGridInfo, IGridDataSet } from 'sql/workbench/contrib/grid/browser/interfaces';
 import * as Utils from 'sql/platform/connection/common/utils';
-import { DataService } from 'sql/workbench/contrib/grid/common/dataService';
-import * as actions from 'sql/workbench/contrib/editData/common/gridActions';
-import * as GridContentEvents from 'sql/workbench/contrib/grid/common/gridContentEvents';
+import { DataService } from 'sql/workbench/services/query/common/dataService';
+import * as actions from 'sql/workbench/contrib/editData/browser/gridActions';
+import * as GridContentEvents from 'sql/workbench/services/query/common/gridContentEvents';
 import { ResultsVisibleContext, ResultsGridFocussedContext, ResultsMessagesFocussedContext, QueryEditorVisibleContext } from 'sql/workbench/contrib/query/common/queryContext';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
@@ -30,6 +29,7 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { ILogService } from 'vs/platform/log/common/log';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
+import { SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
 
 
 export abstract class GridParentComponent extends Disposable {
@@ -40,7 +40,6 @@ export abstract class GridParentComponent extends Disposable {
 	protected rowHeight = 29;
 	protected defaultNumShowingRows = 8;
 	protected Constants = Constants;
-	protected LocalizedConstants = LocalizedConstants;
 	protected Utils = Utils;
 	// tslint:disable-next-line:no-unused-variable
 	protected startString = new Date().toLocaleTimeString();
@@ -105,7 +104,7 @@ export abstract class GridParentComponent extends Disposable {
 				this.messageActiveBool = sqlConfig['messagesDefaultOpen'];
 			}
 		}
-		this.subscribeWithDispose(this.dataService.gridContentObserver, (type) => {
+		this.toDispose.add(this.dataService.gridContent(type => {
 			switch (type) {
 				case GridContentEvents.RefreshContents:
 					self.refreshDatasets();
@@ -162,7 +161,7 @@ export abstract class GridParentComponent extends Disposable {
 					this.logService.error('Unexpected grid content event type "' + type + '" sent');
 					break;
 			}
-		});
+		}));
 
 		this.bindKeys(this.contextKeyService);
 	}
@@ -416,7 +415,7 @@ export abstract class GridParentComponent extends Disposable {
 		return (gridIndex: number) => {
 			self.activeGrid = gridIndex;
 			let grid = self.table;
-			grid.setActive();
+			grid.setActiveCell(0, 1);
 			grid.setSelectedRows(true);
 		};
 	}
@@ -439,7 +438,7 @@ export abstract class GridParentComponent extends Disposable {
 		}
 		setTimeout(() => {
 			self.resizeGrids();
-			self.table.setActive();
+			self.table.setActiveCell(0, 1);
 		});
 	}
 
@@ -500,12 +499,13 @@ export abstract class GridParentComponent extends Disposable {
 	protected abstract tryHandleKeyEvent(e: StandardKeyboardEvent): boolean;
 
 	resizeGrids(): void {
-		const self = this;
 		setTimeout(() => {
-			for (let grid of self.renderedDataSets) {
-				grid.resized.fire();
-			}
+			this.onResize();
 		});
+	}
+
+	protected onResize() {
+		this.table?.resizeCanvas();
 	}
 
 	/**

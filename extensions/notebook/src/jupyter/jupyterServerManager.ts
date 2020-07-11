@@ -10,29 +10,25 @@ import { ServerConnection } from '@jupyterlab/services';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-import { ApiWrapper } from '../common/apiWrapper';
 import { JupyterServerInstallation } from './jupyterServerInstallation';
 import * as utils from '../common/utils';
 import { IServerInstance } from './common';
 import { PerFolderServerInstance, IInstanceOptions } from './serverInstance';
-import { CommandContext } from '../common/constants';
+import { CommandContext, BuiltInCommands } from '../common/constants';
 
 export interface IServerManagerOptions {
 	documentPath: string;
 	jupyterInstallation: JupyterServerInstallation;
 	extensionContext: vscode.ExtensionContext;
-	apiWrapper?: ApiWrapper;
 	factory?: ServerInstanceFactory;
 }
 export class LocalJupyterServerManager implements nb.ServerManager, vscode.Disposable {
 	private _serverSettings: Partial<ServerConnection.ISettings>;
 	private _onServerStarted = new vscode.EventEmitter<void>();
 	private _instanceOptions: IInstanceOptions;
-	private _apiWrapper: ApiWrapper;
 	private _jupyterServer: IServerInstance;
 	factory: ServerInstanceFactory;
 	constructor(private options: IServerManagerOptions) {
-		this._apiWrapper = options.apiWrapper || new ApiWrapper();
 		this.factory = options.factory || new ServerInstanceFactory();
 	}
 
@@ -56,16 +52,15 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 		return this.options && this.options.jupyterInstallation;
 	}
 
-	public async startServer(): Promise<void> {
+	public async startServer(kernelSpec: nb.IKernelSpec): Promise<void> {
 		try {
 			if (!this._jupyterServer) {
-				this._jupyterServer = await this.doStartServer();
+				this._jupyterServer = await this.doStartServer(kernelSpec);
 				this.options.extensionContext.subscriptions.push(this);
 				let partialSettings = LocalJupyterServerManager.getLocalConnectionSettings(this._jupyterServer.uri);
 				this._serverSettings = partialSettings;
 				this._onServerStarted.fire();
 			}
-
 		} catch (error) {
 			// this is caught and notified up the stack, no longer showing a message here
 			throw error;
@@ -75,7 +70,7 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 	public dispose(): void {
 		this.stopServer().catch(err => {
 			let msg = utils.getErrorMessage(err);
-			this._apiWrapper.showErrorMessage(localize('shutdownError', "Shutdown of Notebook server failed: {0}", msg));
+			vscode.window.showErrorMessage(localize('shutdownError', "Shutdown of Notebook server failed: {0}", msg));
 		});
 	}
 
@@ -107,11 +102,13 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 		return this.options.documentPath;
 	}
 
-	private async doStartServer(): Promise<IServerInstance> { // We can't find or create servers until the installation is complete
+	private async doStartServer(kernelSpec: nb.IKernelSpec): Promise<IServerInstance> { // We can't find or create servers until the installation is complete
 		let installation = this.options.jupyterInstallation;
-		await installation.promptForPythonInstall();
-		await installation.promptForPackageUpgrade();
-		this._apiWrapper.setCommandContext(CommandContext.NotebookPythonInstalled, true);
+		await installation.promptForPythonInstall(kernelSpec.display_name);
+		if (!installation.previewFeaturesEnabled) {
+			await installation.promptForPackageUpgrade(kernelSpec.display_name);
+		}
+		vscode.commands.executeCommand(BuiltInCommands.SetContext, CommandContext.NotebookPythonInstalled, true);
 
 		// Calculate the path to use as the notebook-dir for Jupyter based on the path of the uri of the
 		// notebook to open. This will be the workspace folder if the notebook uri is inside a workspace
@@ -123,7 +120,7 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 		// /path2/nb2.ipynb
 		// /path2/nb3.ipynb
 		// ... will result in 2 notebook servers being started, one for /path1/ and one for /path2/
-		let notebookDir = this._apiWrapper.getWorkspacePathFromUri(vscode.Uri.file(this.documentPath));
+		let notebookDir = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(this.documentPath))?.uri.fsPath;
 		if (!notebookDir) {
 			let docDir;
 			// If a folder is passed in for documentPath, use the folder instead of calling dirname

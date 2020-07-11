@@ -13,7 +13,7 @@ import { hc_black, vs, vs_dark } from 'vs/editor/standalone/common/themes';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ColorIdentifier, Extensions, IColorRegistry } from 'vs/platform/theme/common/colorRegistry';
-import { Extensions as ThemingExtensions, ICssStyleCollector, IIconTheme, IThemingRegistry } from 'vs/platform/theme/common/themeService';
+import { Extensions as ThemingExtensions, ICssStyleCollector, IFileIconTheme, IThemingRegistry, ITokenStyle } from 'vs/platform/theme/common/themeService';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 
 const VS_THEME_NAME = 'vs';
@@ -46,6 +46,10 @@ class StandaloneTheme implements IStandaloneTheme {
 		this.colors = null;
 		this.defaultColors = Object.create(null);
 		this._tokenTheme = null;
+	}
+
+	public get label(): string {
+		return this.themeName;
 	}
 
 	public get base(): string {
@@ -131,13 +135,15 @@ class StandaloneTheme implements IStandaloneTheme {
 		return this._tokenTheme;
 	}
 
-	public getTokenStyleMetadata(type: string, modifiers: string[]): number | undefined {
+	public getTokenStyleMetadata(type: string, modifiers: string[], modelLanguage: string): ITokenStyle | undefined {
 		return undefined;
 	}
 
 	public get tokenColorMap(): string[] {
 		return [];
 	}
+
+	public readonly semanticHighlighting = false;
 }
 
 function isBuiltinTheme(themeName: string): themeName is BuiltinTheme {
@@ -166,13 +172,13 @@ function newBuiltInTheme(builtinTheme: BuiltinTheme): StandaloneTheme {
 
 export class StandaloneThemeServiceImpl extends Disposable implements IStandaloneThemeService {
 
-	_serviceBrand: undefined;
+	declare readonly _serviceBrand: undefined;
 
-	private readonly _onThemeChange = this._register(new Emitter<IStandaloneTheme>());
-	public readonly onThemeChange = this._onThemeChange.event;
+	private readonly _onColorThemeChange = this._register(new Emitter<IStandaloneTheme>());
+	public readonly onDidColorThemeChange = this._onColorThemeChange.event;
 
-	private readonly _onIconThemeChange = this._register(new Emitter<IIconTheme>());
-	public readonly onIconThemeChange = this._onIconThemeChange.event;
+	private readonly _onFileIconThemeChange = this._register(new Emitter<IFileIconTheme>());
+	public readonly onDidFileIconThemeChange = this._onFileIconThemeChange.event;
 
 	private readonly _environment: IEnvironmentService = Object.create(null);
 	private readonly _knownThemes: Map<string, StandaloneTheme>;
@@ -250,7 +256,7 @@ export class StandaloneThemeServiceImpl extends Disposable implements IStandalon
 		}
 	}
 
-	public getTheme(): IStandaloneTheme {
+	public getColorTheme(): IStandaloneTheme {
 		return this._theme;
 	}
 
@@ -287,12 +293,12 @@ export class StandaloneThemeServiceImpl extends Disposable implements IStandalon
 		this._styleElements.forEach(styleElement => styleElement.innerHTML = this._css);
 
 		TokenizationRegistry.setColorMap(colorMap);
-		this._onThemeChange.fire(theme);
+		this._onColorThemeChange.fire(theme);
 
 		return theme.id;
 	}
 
-	public getIconTheme(): IIconTheme {
+	public getFileIconTheme(): IFileIconTheme {
 		return {
 			hasFileIcons: false,
 			hasFolderIcons: false,

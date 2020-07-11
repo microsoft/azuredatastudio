@@ -204,12 +204,12 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 
 	$getContributedCommandHandlerDescriptions(): Promise<{ [id: string]: string | ICommandHandlerDescription }> {
 		const result: { [id: string]: string | ICommandHandlerDescription } = Object.create(null);
-		this._commands.forEach((command, id) => {
+		for (let [id, command] of this._commands) {
 			let { description } = command;
 			if (description) {
 				result[id] = description;
 			}
-		});
+		}
 		return Promise.resolve(result);
 	}
 }
@@ -230,6 +230,8 @@ export class CommandsConverter {
 		this._commands.registerCommand(true, this._delegatingCommandId, this._executeConvertedCommand, this);
 	}
 
+	toInternal(command: vscode.Command, disposables: DisposableStore): ICommandDto;
+	toInternal(command: vscode.Command | undefined, disposables: DisposableStore): ICommandDto | undefined;
 	toInternal(command: vscode.Command | undefined, disposables: DisposableStore): ICommandDto | undefined {
 
 		if (!command) {

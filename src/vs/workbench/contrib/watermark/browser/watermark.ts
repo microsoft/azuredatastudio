@@ -15,21 +15,18 @@ import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/
 import { IWorkbenchContribution, IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
 import { ILifecycleService, LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { GlobalNewUntitledFileAction } from 'vs/workbench/contrib/files/browser/fileActions';
 // import { OpenFolderAction, OpenFileFolderAction, OpenFileAction } from 'vs/workbench/browser/actions/workspaceActions';
-// import { ShowAllCommandsAction } from 'vs/workbench/contrib/quickopen/browser/commandsHandler';
+// import { ShowAllCommandsAction } from 'vs/workbench/contrib/quickaccess/browser/commandsQuickAccess';
 import { Parts, IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 // import { StartAction } from 'vs/workbench/contrib/debug/browser/debugActions';
 import { FindInFilesActionId } from 'vs/workbench/contrib/search/common/constants';
-// import { QUICKOPEN_ACTION_ID } from 'vs/workbench/browser/parts/quickopen/quickopen';
 import * as dom from 'vs/base/browser/dom';
 import { KeybindingLabel } from 'vs/base/browser/ui/keybindingLabel/keybindingLabel';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
-import { IDimension } from 'vs/platform/layout/browser/layoutService';
-// import { TERMINAL_COMMAND_ID } from 'vs/workbench/contrib/terminal/common/terminal';
 import { assertIsDefined } from 'vs/base/common/types';
 import { workbenchConfigurationNodeBase } from 'vs/workbench/common/configuration';
+import { NEW_UNTITLED_FILE_COMMAND_ID } from 'vs/workbench/contrib/files/browser/fileCommands';
 
 // {{SQL CARBON EDIT}}
 import { NewNotebookAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
@@ -45,16 +42,16 @@ interface WatermarkEntry {
 
 // {{SQL CARBON EDIT}}
 const showServers: WatermarkEntry = { text: nls.localize('watermark.showServers', "Show Servers"), id: OpenDataExplorerViewletAction.ID };
-const newSqlFile: WatermarkEntry = { text: nls.localize('watermark.newSqlFile', "New SQL File"), id: GlobalNewUntitledFileAction.ID };
+const newSqlFile: WatermarkEntry = { text: nls.localize('watermark.newSqlFile', "New SQL File"), id: NEW_UNTITLED_FILE_COMMAND_ID };
 const newNotebook: WatermarkEntry = { text: nls.localize('watermark.newNotebook', "New Notebook"), id: NewNotebookAction.ID };
 
-/*const showCommands: WatermarkEntry = { text: nls.localize('watermark.showCommands', "Show All Commands"), id: ShowAllCommandsAction.ID }; {{SQL CARBON EDIT}} no unused
-const quickOpen: WatermarkEntry = { text: nls.localize('watermark.quickOpen', "Go to File"), id: QUICKOPEN_ACTION_ID };
+/*const showCommands: WatermarkEntry = { text: nls.localize('watermark.showCommands', "Show All Commands"), id: ShowAllCommandsAction.ID };
+const quickAccess: WatermarkEntry = { text: nls.localize('watermark.quickAccess', "Go to File"), id: 'workbench.action.quickOpen' };
 const openFileNonMacOnly: WatermarkEntry = { text: nls.localize('watermark.openFile', "Open File"), id: OpenFileAction.ID, mac: false };
 const openFolderNonMacOnly: WatermarkEntry = { text: nls.localize('watermark.openFolder', "Open Folder"), id: OpenFolderAction.ID, mac: false };
 const openFileOrFolderMacOnly: WatermarkEntry = { text: nls.localize('watermark.openFileFolder', "Open File or Folder"), id: OpenFileFolderAction.ID, mac: true };
 const openRecent: WatermarkEntry = { text: nls.localize('watermark.openRecent', "Open Recent"), id: 'workbench.action.openRecent' };
-const newUntitledFile: WatermarkEntry = { text: nls.localize('watermark.newUntitledFile', "New Untitled File"), id: GlobalNewUntitledFileAction.ID };
+const newUntitledFile: WatermarkEntry = { text: nls.localize('watermark.newUntitledFile', "New Untitled File"), id: NEW_UNTITLED_FILE_COMMAND_ID };
 const newUntitledFileMacOnly: WatermarkEntry = assign({ mac: true }, newUntitledFile);
 const toggleTerminal: WatermarkEntry = { text: nls.localize({ key: 'watermark.toggleTerminal', comment: ['toggle is a verb here'] }, "Toggle Terminal"), id: TERMINAL_COMMAND_ID.TOGGLE };*/
 const findInFiles: WatermarkEntry = { text: nls.localize('watermark.findInFiles', "Find in Files"), id: FindInFilesActionId };
@@ -165,7 +162,7 @@ export class WatermarkContribution extends Disposable implements IWorkbenchContr
 		this.handleEditorPartSize(container, this.editorGroupsService.contentDimension);
 	}
 
-	private handleEditorPartSize(container: HTMLElement, dimension: IDimension): void {
+	private handleEditorPartSize(container: HTMLElement, dimension: dom.IDimension): void {
 		if (dimension.height <= 478) {
 			dom.addClass(container, 'max-height-478px');
 		} else {

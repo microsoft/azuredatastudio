@@ -15,8 +15,8 @@ import { INotebookService, INotebookProvider, INotebookManager } from 'sql/workb
 import { INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, FutureMessageType, INotebookFutureDetails, INotebookFutureDone } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { LocalContentManager } from 'sql/workbench/services/notebook/common/localContentManager';
 import { Deferred } from 'sql/base/common/promise';
-import { FutureInternal } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import type { FutureInternal } from 'sql/workbench/services/notebook/browser/interfaces';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadNotebook)
 export class MainThreadNotebook extends Disposable implements MainThreadNotebookShape {
@@ -184,12 +184,12 @@ class ServerManagerWrapper implements azdata.nb.ServerManager {
 		return this.onServerStartedEmitter.event;
 	}
 
-	startServer(): Thenable<void> {
-		return this.doStartServer();
+	startServer(kernelSpec: azdata.nb.IKernelSpec): Thenable<void> {
+		return this.doStartServer(kernelSpec);
 	}
 
-	private async doStartServer(): Promise<void> {
-		await this._proxy.ext.$doStartServer(this.handle);
+	private async doStartServer(kernelSpec: azdata.nb.IKernelSpec): Promise<void> {
+		await this._proxy.ext.$doStartServer(this.handle, kernelSpec);
 		this._isStarted = true;
 		this.onServerStartedEmitter.fire();
 	}
@@ -235,7 +235,9 @@ class SessionManagerWrapper implements azdata.nb.SessionManager {
 
 	private async doStartNew(options: azdata.nb.ISessionOptions): Promise<azdata.nb.ISession> {
 		let sessionDetails = await this._proxy.ext.$startNewSession(this.managerHandle, options);
-		return new SessionWrapper(this._proxy, sessionDetails);
+		const sessionManager = new SessionWrapper(this._proxy, sessionDetails);
+		await sessionManager.initialize();
+		return sessionManager;
 	}
 
 	shutdown(id: string): Thenable<void> {
@@ -257,34 +259,39 @@ class SessionManagerWrapper implements azdata.nb.SessionManager {
 
 class SessionWrapper implements azdata.nb.ISession {
 	private _kernel: KernelWrapper;
-	constructor(private _proxy: Proxies, private sessionDetails: INotebookSessionDetails) {
-		if (sessionDetails && sessionDetails.kernelDetails) {
-			this._kernel = new KernelWrapper(_proxy, sessionDetails.kernelDetails);
+	constructor(private _proxy: Proxies, private _sessionDetails: INotebookSessionDetails) {
+
+	}
+
+	public async initialize(): Promise<void> {
+		if (this._sessionDetails && this._sessionDetails.kernelDetails) {
+			this._kernel = new KernelWrapper(this._proxy, this._sessionDetails.kernelDetails);
+			return this._kernel.initialize();
 		}
 	}
 
 	get canChangeKernels(): boolean {
-		return this.sessionDetails.canChangeKernels;
+		return this._sessionDetails.canChangeKernels;
 	}
 
 	get id(): string {
-		return this.sessionDetails.id;
+		return this._sessionDetails.id;
 	}
 
 	get path(): string {
-		return this.sessionDetails.path;
+		return this._sessionDetails.path;
 	}
 
 	get name(): string {
-		return this.sessionDetails.name;
+		return this._sessionDetails.name;
 	}
 
 	get type(): string {
-		return this.sessionDetails.type;
+		return this._sessionDetails.type;
 	}
 
 	get status(): azdata.nb.KernelStatus {
-		return this.sessionDetails.status as azdata.nb.KernelStatus;
+		return this._sessionDetails.status as azdata.nb.KernelStatus;
 	}
 
 	get kernel(): azdata.nb.IKernel {
@@ -307,17 +314,18 @@ class SessionWrapper implements azdata.nb.ISession {
 	}
 
 	private async doChangeKernel(kernelInfo: azdata.nb.IKernelSpec): Promise<azdata.nb.IKernel> {
-		let kernelDetails = await this._proxy.ext.$changeKernel(this.sessionDetails.sessionId, kernelInfo);
+		let kernelDetails = await this._proxy.ext.$changeKernel(this._sessionDetails.sessionId, kernelInfo);
 		this._kernel = new KernelWrapper(this._proxy, kernelDetails);
+		await this._kernel.initialize();
 		return this._kernel;
 	}
 
 	private async doConfigureKernel(kernelInfo: azdata.nb.IKernelSpec): Promise<void> {
-		await this._proxy.ext.$configureKernel(this.sessionDetails.sessionId, kernelInfo);
+		await this._proxy.ext.$configureKernel(this._sessionDetails.sessionId, kernelInfo);
 	}
 
 	private async doConfigureConnection(connection: azdata.IConnectionProfile): Promise<void> {
-		await this._proxy.ext.$configureConnection(this.sessionDetails.sessionId, connection);
+		await this._proxy.ext.$configureConnection(this._sessionDetails.sessionId, connection);
 	}
 }
 
@@ -325,13 +333,12 @@ class KernelWrapper implements azdata.nb.IKernel {
 	private _isReady: boolean = false;
 	private _ready = new Deferred<void>();
 	private _info: azdata.nb.IInfoReply;
-	constructor(private _proxy: Proxies, private kernelDetails: INotebookKernelDetails) {
-		this.initialize(kernelDetails);
+	constructor(private readonly _proxy: Proxies, private readonly kernelDetails: INotebookKernelDetails) {
 	}
 
-	private async initialize(kernelDetails: INotebookKernelDetails): Promise<void> {
+	public async initialize(): Promise<void> {
 		try {
-			this._info = await this._proxy.ext.$getKernelReadyStatus(kernelDetails.kernelId);
+			this._info = await this._proxy.ext.$getKernelReadyStatus(this.kernelDetails.kernelId);
 			this._isReady = true;
 			this._ready.resolve();
 		} catch (error) {

@@ -8,9 +8,10 @@ import 'vs/css!./media/icons';
 
 import { ActionBar } from './actionbar';
 
-import { Action, IActionRunner, IAction } from 'vs/base/common/actions';
-import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
+import { IActionRunner, IAction } from 'vs/base/common/actions';
+import { ActionsOrientation, IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IToolBarOptions } from 'vs/base/browser/ui/toolbar/toolbar';
+import { OverflowActionBar } from 'sql/base/browser/ui/taskbar/overflowActionbar';
 
 /**
  * A wrapper for the different types of content a QueryTaskbar can display
@@ -24,6 +25,10 @@ export interface ITaskbarContent {
 	element?: HTMLElement;
 }
 
+export interface ITaskbarOptions extends IToolBarOptions {
+	collapseOverflow?: boolean
+}
+
 /**
  * A widget that combines an action bar for actions. This class was needed because we
  * want the ability to use the custom QueryActionBar in order to display other HTML
@@ -33,20 +38,36 @@ export class Taskbar {
 	private options: IToolBarOptions;
 	private actionBar: ActionBar;
 
-	constructor(container: HTMLElement, options: IToolBarOptions = { orientation: ActionsOrientation.HORIZONTAL }) {
+	constructor(container: HTMLElement, options: ITaskbarOptions = { orientation: ActionsOrientation.HORIZONTAL }) {
 		this.options = options;
 
 		let element = document.createElement('div');
 		element.className = 'monaco-toolbar carbon-taskbar';
 		container.appendChild(element);
 
-		this.actionBar = new ActionBar(element, {
-			orientation: options.orientation,
-			ariaLabel: options.ariaLabel,
-			actionViewItemProvider: (action: Action) => {
-				return options.actionViewItemProvider ? options.actionViewItemProvider(action) : undefined;
-			}
-		});
+		if (options.collapseOverflow) {
+			this.actionBar = new OverflowActionBar(
+				element,
+				{
+					orientation: options.orientation,
+					ariaLabel: options.ariaLabel,
+					actionViewItemProvider: (action: IAction): IActionViewItem | undefined => {
+						return options.actionViewItemProvider ? options.actionViewItemProvider(action) : undefined;
+					}
+				}
+			);
+		} else {
+			this.actionBar = new ActionBar(
+				element,
+				{
+					orientation: options.orientation,
+					ariaLabel: options.ariaLabel,
+					actionViewItemProvider: (action: IAction): IActionViewItem | undefined => {
+						return options.actionViewItemProvider ? options.actionViewItemProvider(action) : undefined;
+					}
+				}
+			);
+		}
 	}
 
 	/**

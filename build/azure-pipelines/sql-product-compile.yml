@@ -16,12 +16,10 @@ steps:
 - task: NodeTool@0
   inputs:
     versionSpec: "10.15.1"
-  condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))
 
 - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
   inputs:
     versionSpec: "1.x"
-  condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))
 
 - task: AzureKeyVault@1
   displayName: 'Azure Key Vault: Get Secrets'
@@ -56,26 +54,25 @@ steps:
     keyfile: 'build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
     targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
     vstsFeed: 'BuildCache'
-  condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))
 
 - script: |
     set -e
     CHILD_CONCURRENCY=1 yarn --frozen-lockfile
   displayName: Install dependencies
-  condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'), ne(variables['CacheRestored'], 'true'))
+  condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
 
 - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
   inputs:
     keyfile: 'build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
     targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
     vstsFeed: 'BuildCache'
-  condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'), ne(variables['CacheRestored'], 'true'))
+  condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
 
 - script: |
     set -e
     yarn postinstall
   displayName: Run postinstall scripts
-  condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'), eq(variables['CacheRestored'], 'true'))
+  condition: and(succeeded(), eq(variables['CacheRestored'], 'true'))
 
 # Mixin must run before optimize, because the CSS loader will
 # inline small SVGs
@@ -87,10 +84,11 @@ steps:
 
 - script: |
     set -e
+    yarn sqllint
     yarn gulp hygiene
     yarn strict-vscode
     yarn valid-layers-check
-  displayName: Run hygiene, tslint
+  displayName: Run hygiene, eslint
   condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'), eq(variables['VSCODE_STEP_ON_IT'], 'false'))
 
 - script: |
@@ -102,6 +100,27 @@ steps:
     yarn gulp minify-vscode-reh-web
   displayName: Compile
   condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))
+
+- script: |
+    set -e
+    AZURE_STORAGE_ACCOUNT="$(sourcemap-storage-account)" \
+    AZURE_STORAGE_ACCESS_KEY="$(sourcemap-storage-key)" \
+      node build/azure-pipelines/upload-sourcemaps
+  displayName: Upload sourcemaps
+  condition: and(succeeded(), ne(variables['CacheExists-Compilation'], 'true'))
+
+- script: |
+    set -e
+
+    VERSION=$(node -p "require(\"./package.json\").version")
+
+    echo -e "{  \"version\": \"$VERSION\", \"quality\": \"$VSCODE_QUALITY\", \"commit\": \"$BUILD_SOURCEVERSION\" }" > ".build/version.json"
+
+    node build/azure-pipelines/common/copyArtifacts.js
+  displayName: Write Version Information
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: drop'
 
 - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
   inputs:

@@ -19,11 +19,14 @@
 		"button.hoverBackground": "#0078d7",
 
 		// TODO add support for these
-		// "button.secondaryBackground": "#c8c8c8",
-		// "button.secondaryHoverBackground": "#a6a6a6",
-		// "button.secondaryForeground": "#333333",
-		// "button.disabledBackground": "#eaeaea",
-		// "button.disabledForeground": "#888888",
+		"button.secondaryBackground": "#ffffff",
+		"button.secondaryHoverBackground": "#ffffff",
+		"button.secondaryForeground": "#323130",
+		"button.secondaryHoverForeground": "#0078D4",
+
+		"button.disabledBackground": "#F3F2F1",
+		"button.disabledForeground": "#A19F9D",
+
 
 		//Checkbox
 		"checkbox.disabled.foreground": "#888888",
@@ -31,7 +34,7 @@
 		//Dropdown Control
 		"dropdown.background": "#ffffff",
 		"dropdown.foreground": "#4a4a4a",
-		"dropdown.border": "#c8c8c8",
+		"dropdown.border": "#888888",
 
 		//badge
 		"badge.background": "#777777",
@@ -39,7 +42,7 @@
 
 		//Input Control
 		"input.background": "#ffffff",
-		"input.border": "#c8c8c8",
+		"input.border": "#888888",
 		"input.disabled.background": "#dcdcdc",
 		"input.disabled.foreground": "#888888",
 		"inputOption.activeBorder": "#666666",
@@ -75,7 +78,7 @@
 		"tab.unfocusedInactiveForeground": "#888888",
 		"tab.unfocusedActiveForeground": "#212121",
 		"panel.background": "#ffffff",
-		"panel.border": "#c8c8c8",
+		"panel.border": "#888888",
 		"panelTitle.activeForeground": "#212121",
 		"panelTitle.inactiveForeground": "#757575",
 		"panelTitle.activeBorder": "#026dc8"

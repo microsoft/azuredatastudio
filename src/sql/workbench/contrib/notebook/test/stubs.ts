@@ -5,16 +5,17 @@
 
 import { nb, IConnectionProfile } from 'azdata';
 import * as vsEvent from 'vs/base/common/event';
-import { INotebookModel, ICellModel, IClientSession, NotebookContentChange, IKernelPreference, INotebookFindModel } from 'sql/workbench/contrib/notebook/browser/models/modelInterfaces';
-import { NotebookChangeType, CellType } from 'sql/workbench/contrib/notebook/common/models/contracts';
-import { INotebookManager, INotebookService, INotebookEditor, ILanguageMagic, INotebookProvider, INavigationProvider, INotebookParams, INotebookSection, ICellEditorProvider } from 'sql/workbench/services/notebook/browser/notebookService';
-import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IStandardKernelWithProvider } from 'sql/workbench/contrib/notebook/browser/models/notebookUtils';
+import { INotebookModel, ICellModel, IClientSession, NotebookContentChange, ISingleNotebookEditOperation } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { INotebookFindModel } from 'sql/workbench/contrib/notebook/browser/models/notebookFindModel';
+import { NotebookChangeType, CellType } from 'sql/workbench/services/notebook/common/contracts';
+import { INotebookManager, INotebookService, INotebookEditor, ILanguageMagic, INotebookProvider, INavigationProvider, INotebookParams, INotebookSection, ICellEditorProvider, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
+import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { IModelDecorationsChangeAccessor } from 'vs/editor/common/model';
-import { NotebookRange, NotebookFindMatch } from 'sql/workbench/contrib/notebook/find/notebookFindDecorations';
-import { URI } from 'vs/workbench/workbench.web.api';
-import { RenderMimeRegistry } from 'sql/workbench/contrib/notebook/browser/outputs/registry';
+import { NotebookFindMatch } from 'sql/workbench/contrib/notebook/browser/find/notebookFindDecorations';
+import { RenderMimeRegistry } from 'sql/workbench/services/notebook/browser/outputs/registry';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { URI } from 'vs/base/common/uri';
+import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 
 export class NotebookModelStub implements INotebookModel {
 	constructor(private _languageInfo?: nb.ILanguageInfo) {
@@ -36,6 +37,9 @@ export class NotebookModelStub implements INotebookModel {
 		throw new Error('method not implemented.');
 	}
 	get clientSession(): IClientSession {
+		throw new Error('method not implemented.');
+	}
+	get sessionLoadFinished(): Promise<void> {
 		throw new Error('method not implemented.');
 	}
 	get notebookManagers(): INotebookManager[] {
@@ -122,7 +126,6 @@ export class NotebookModelStub implements INotebookModel {
 }
 
 export class NotebookFindModelStub implements INotebookFindModel {
-
 	getFindCount(): number {
 		throw new Error('Method not implemented.');
 	}
@@ -157,6 +160,9 @@ export class NotebookFindModelStub implements INotebookFindModel {
 	findMatches: NotebookFindMatch[];
 	findExpression: string;
 	onFindCountChange: vsEvent.Event<number>;
+	getIndexByRange(range: NotebookRange): number {
+		throw new Error('Method not implemented.');
+	}
 }
 
 export class NotebookManagerStub implements INotebookManager {
@@ -174,7 +180,7 @@ export class ServerManagerStub implements nb.ServerManager {
 	calledEnd: boolean = false;
 	result: Promise<void> = undefined;
 
-	startServer(): Promise<void> {
+	startServer(kernelSpec: nb.IKernelSpec): Promise<void> {
 		this.calledStart = true;
 		return this.result;
 	}
@@ -202,6 +208,9 @@ export class NotebookServiceStub implements INotebookService {
 		throw new Error('Method not implemented.');
 	}
 	get languageMagics(): ILanguageMagic[] {
+		throw new Error('Method not implemented.');
+	}
+	setTrusted(notebookUri: URI, isTrusted: boolean): Promise<boolean> {
 		throw new Error('Method not implemented.');
 	}
 	registerProvider(providerId: string, provider: INotebookProvider): void {
@@ -249,7 +258,7 @@ export class NotebookServiceStub implements INotebookService {
 	isNotebookTrustCached(notebookUri: URI, isDirty: boolean): Promise<boolean> {
 		throw new Error('Method not implemented.');
 	}
-	serializeNotebookStateChange(notebookUri: URI, changeType: NotebookChangeType, cell?: ICellModel): void {
+	serializeNotebookStateChange(notebookUri: URI, changeType: NotebookChangeType, cell?: ICellModel, isTrusted?: boolean): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
 	navigateTo(notebookUri: URI, sectionId: string): void {
@@ -334,12 +343,6 @@ export class ClientSessionStub implements IClientSession {
 		throw new Error('Method not implemented.');
 	}
 	get kernelChangeCompleted(): Promise<void> {
-		throw new Error('Method not implemented.');
-	}
-	get kernelPreference(): IKernelPreference {
-		throw new Error('Method not implemented.');
-	}
-	set kernelPreference(value: IKernelPreference) {
 		throw new Error('Method not implemented.');
 	}
 	get kernelDisplayName(): string {
@@ -627,6 +630,66 @@ export class NodeStub implements Node {
 		throw new Error('Method not implemented.');
 	}
 	removeEventListener(type: string, callback: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void {
+		throw new Error('Method not implemented.');
+	}
+}
+
+export class NotebookEditorStub implements INotebookEditor {
+	notebookParams: INotebookParams;
+	id: string;
+	cells?: ICellModel[];
+	cellEditors: CellEditorProviderStub[];
+	modelReady: Promise<INotebookModel>;
+	model: INotebookModel;
+	isDirty(): boolean {
+		throw new Error('Method not implemented.');
+	}
+	isActive(): boolean {
+		throw new Error('Method not implemented.');
+	}
+	isVisible(): boolean {
+		throw new Error('Method not implemented.');
+	}
+	executeEdits(edits: ISingleNotebookEditOperation[]): boolean {
+		throw new Error('Method not implemented.');
+	}
+	runCell(cell: ICellModel): Promise<boolean> {
+		throw new Error('Method not implemented.');
+	}
+	runAllCells(startCell?: ICellModel, endCell?: ICellModel): Promise<boolean> {
+		throw new Error('Method not implemented.');
+	}
+	clearOutput(cell: ICellModel): Promise<boolean> {
+		throw new Error('Method not implemented.');
+	}
+	clearAllOutputs(): Promise<boolean> {
+		throw new Error('Method not implemented.');
+	}
+	getSections(): INotebookSection[] {
+		throw new Error('Method not implemented.');
+	}
+	navigateToSection(sectionId: string): void {
+		throw new Error('Method not implemented.');
+	}
+	deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void {
+		throw new Error('Method not implemented.');
+	}
+	addCell(cellType: CellType, index?: number, event?: UIEvent) {
+		throw new Error('Method not implemented.');
+	}
+}
+
+export class CellEditorProviderStub implements ICellEditorProvider {
+	hasEditor(): boolean {
+		throw new Error('Method not implemented.');
+	}
+	cellGuid(): string {
+		throw new Error('Method not implemented.');
+	}
+	getEditor(): QueryTextEditor {
+		throw new Error('Method not implemented.');
+	}
+	deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void {
 		throw new Error('Method not implemented.');
 	}
 }

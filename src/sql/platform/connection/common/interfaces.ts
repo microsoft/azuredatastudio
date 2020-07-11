@@ -5,6 +5,9 @@
 
 import * as azdata from 'azdata';
 
+// Used to allow various methods of matching profiles
+export type ProfileMatcher = (a: IConnectionProfile, b: IConnectionProfile) => boolean;
+
 export interface IConnectionProfile extends azdata.IConnectionProfile {
 	getOptionsKey(): string;
 	matches(profile: azdata.IConnectionProfile): boolean;
@@ -18,3 +21,22 @@ export interface IConnectionProfileStore {
 	id: string;
 }
 
+export enum ServiceOptionType {
+	string = 'string',
+	multistring = 'multistring',
+	password = 'password',
+	number = 'number',
+	category = 'category',
+	boolean = 'boolean',
+	object = 'object'
+}
+
+export enum ConnectionOptionSpecialType {
+	connectionName = 'connectionName',
+	serverName = 'serverName',
+	databaseName = 'databaseName',
+	authType = 'authType',
+	userName = 'userName',
+	password = 'password',
+	appName = 'appName'
+}

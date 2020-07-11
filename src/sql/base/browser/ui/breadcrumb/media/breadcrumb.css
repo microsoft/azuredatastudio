@@ -30,3 +30,11 @@ breadcrumb .chevron-right.codicon {
 breadcrumb .router-link {
 	cursor: pointer;
 }
+
+breadcrumb .breadcrumb-container {
+	display: flex;
+	flex-flow: row;
+	align-items: center;
+	margin: 10px;
+	margin-left: 19px
+}

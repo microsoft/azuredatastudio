@@ -5,9 +5,7 @@
 
 import * as should from 'should';
 import 'mocha';
-
-import { buildSsmsMinCommandArgs, buildUrn, LaunchSsmsDialogParams } from '../main';
-import { doubleEscapeSingleQuotes, backEscapeDoubleQuotes } from '../utils';
+import { doubleEscapeSingleQuotes, backEscapeDoubleQuotes, getTelemetryErrorType,buildSsmsMinCommandArgs, buildUrn, LaunchSsmsDialogParams } from '../utils';
 import { ExtHostObjectExplorerNodeStub } from './stubs';
 
 describe('buildSsmsMinCommandArgs Method Tests', () => {
@@ -73,13 +71,14 @@ const tableSchema = 'tbl\'sch';
 const escapedTableSchema = doubleEscapeSingleQuotes(tableSchema);
 
 describe('buildUrn Method Tests', () => {
-	it('Urn should be correct with just server', async function (): Promise<void> {
+	it('Urn should be correct with no node', async function (): Promise<void> {
 		should(await buildUrn(undefined)).equal('Server');
 	});
 
 	it('Urn should be correct with Server and only Databases folder', async function (): Promise<void> {
 		const leafNode: ExtHostObjectExplorerNodeStub =
-			new ExtHostObjectExplorerNodeStub('Databases', undefined, 'Folder', undefined);
+			new ExtHostObjectExplorerNodeStub('MyServer', undefined, 'Server', undefined)
+				.createChild('Databases', undefined, 'Folder');
 		should(await buildUrn(leafNode)).equal('Server');
 	});
 
@@ -99,6 +98,16 @@ describe('buildUrn Method Tests', () => {
 				.createChild(tableName, tableSchema, 'Table');
 		should(await buildUrn(rootNode)).equal(
 			`Server/Database[@Name='${escapedDbName}' and @Schema='${escapedDbSchema}']/Table[@Name='${escapedTableName}' and @Schema='${escapedTableSchema}']`);
+	});
+
+	it('Urn should be correct with Multiple levels of Nodes without schemas', async function (): Promise<void> {
+		const rootNode: ExtHostObjectExplorerNodeStub =
+			new ExtHostObjectExplorerNodeStub('Databases', undefined, 'Folder', undefined)
+				.createChild(dbName, undefined, 'Database')
+				.createChild('Tables', undefined, 'Folder')
+				.createChild(tableName, undefined, 'Table');
+		should(await buildUrn(rootNode)).equal(
+			`Server/Database[@Name='${escapedDbName}']/Table[@Name='${escapedTableName}']`);
 	});
 });
 
@@ -127,5 +136,32 @@ describe('backEscapeDoubleQuotes Method Tests', () => {
 		const testString: string = 'MyTestString\"\"WithQuotes';
 		const ret = backEscapeDoubleQuotes(testString);
 		should(ret).equal('MyTestString\\"\\"WithQuotes');
+	});
+});
+
+describe('getTelemetryErrorType Method Tests', () => {
+	it('ExeNotFound', function (): void {
+		const msg = getTelemetryErrorType('SsmsMin.exe is not recognized as an internal or external command');
+		should(msg).equal('ExeNotFound');
+	});
+
+	it('UnknownAction', function (): void {
+		const msg = getTelemetryErrorType('Unknown Action "foo"');
+		should(msg).equal('UnknownAction');
+	});
+
+	it('NoActionProvided', function (): void {
+		const msg = getTelemetryErrorType('No Action Provided');
+		should(msg).equal('NoActionProvided');
+	});
+
+	it('RunException', function (): void {
+		const msg = getTelemetryErrorType('Run exception "Error occurred"');
+		should(msg).equal('RunException');
+	});
+
+	it('Other', function (): void {
+		const msg = getTelemetryErrorType('Some other error message');
+		should(msg).equal('Other');
 	});
 });

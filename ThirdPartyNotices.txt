@@ -12,6 +12,7 @@ expressly granted herein, whether by implication, estoppel or otherwise.
     angular2-grid: https://github.com/BTMorton/angular2-grid
     angular2-slickgrid: https://github.com/Microsoft/angular2-slickgrid
     applicationinsights: https://github.com/Microsoft/ApplicationInsights-node.js
+		axios: https://github.com/axios/axios
     bootstrap: https://github.com/twbs/bootstrap
     chart.js: https://github.com/Timer/chartjs
     chokidar: https://github.com/paulmillr/chokidar
@@ -38,6 +39,7 @@ expressly granted herein, whether by implication, estoppel or otherwise.
     jschardet: https://github.com/aadsm/jschardet
     jupyter-powershell: https://github.com/vors/jupyter-powershell
     JupyterLab: https://github.com/jupyterlab/jupyterlab
+		keytar: https://github.com/atom/node-keytar
     make-error: https://github.com/JsCommunity/make-error
     minimist: https://github.com/substack/minimist
     moment: https://github.com/moment/moment
@@ -47,9 +49,11 @@ expressly granted herein, whether by implication, estoppel or otherwise.
     node-fetch: https://github.com/bitinn/node-fetch
     node-pty: https://github.com/Tyriar/node-pty
     nsfw: https://github.com/Axosoft/nsfw
+    optimist: https://github.com/substack/node-optimist
     primeng: https://github.com/primefaces/primeng
     process-nextick-args: https://github.com/calvinmetcalf/process-nextick-args
     pty.js: https://github.com/chjj/pty.js
+		qs: https://github.com/ljharb/qs
     reflect-metadata: https://github.com/rbuckton/reflect-metadata
     request: https://github.com/request/request
     rxjs: https://github.com/ReactiveX/RxJS
@@ -68,7 +72,10 @@ expressly granted herein, whether by implication, estoppel or otherwise.
     vscode-ripgrep: https://github.com/roblourens/vscode-ripgrep
     vscode-textmate: https://github.com/Microsoft/vscode-textmate
     winreg: https://github.com/fresc81/node-winreg
+    xmldom: https://github.com/xmldom/xmldom
+    xml-formatter: https://github.com/chrisbottin/xml-formatter
     xterm: https://github.com/sourcelair/xterm.js
+    yargs: https://github.com/yargs/yargs
     yauzl: https://github.com/thejoshwolfe/yauzl
     zone.js: https://www.npmjs.com/package/zone
 
@@ -1448,6 +1455,32 @@ SOFTWARE.
 =========================================
 END OF nsfw NOTICES AND INFORMATION
 
+%% optimist NOTICES AND INFORMATION BEGIN HERE
+=========================================
+Copyright 2010 James Halliday (mail@substack.net)
+
+This project is free software released under the MIT/X11 license:
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+=========================================
+END OF optimist NOTICES AND INFORMATION
+
 %% primeng NOTICES AND INFORMATION BEGIN HERE
 =========================================
 The MIT License (MIT)
@@ -2194,6 +2227,51 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =========================================
 END OF winreg NOTICES AND INFORMATION
 
+%% xmldom NOTICES AND INFORMATION BEGIN HERE
+=========================================
+The MIT License (MIT)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in the
+Software without restriction, including without limitation the rights to use, copy,
+modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+and to permit persons to whom the Software is furnished to do so, subject to the
+following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies
+or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+=========================================
+END OF xmldom NOTICES AND INFORMATION
+
+%% xml-formatter NOTICES AND INFORMATION BEGIN HERE
+=========================================
+The MIT License (MIT)
+
+Copyright 2019 Chris Bottin (https://github.com/chrisbottin)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+and associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+=========================================
+END OF xml-formatter NOTICES AND INFORMATION
+
 %% xterm NOTICES AND INFORMATION BEGIN HERE
 =========================================
 Copyright (c) 2014-2016, SourceLair Private Company (https://www.sourcelair.com)
@@ -2218,6 +2296,32 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 =========================================
 END OF xterm NOTICES AND INFORMATION
+
+%% yargs NOTICES AND INFORMATION BEGIN HERE
+=========================================
+MIT License
+
+Copyright 2010 James Halliday (mail@substack.net); Modified work Copyright 2014 Contributors (ben@npmjs.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+=========================================
+END OF yargs NOTICES AND INFORMATION
 
 %% yauzl NOTICES AND INFORMATION BEGIN HERE
 =========================================

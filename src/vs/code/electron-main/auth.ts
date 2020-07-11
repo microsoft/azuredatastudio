@@ -6,7 +6,7 @@
 import { localize } from 'vs/nls';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { Event } from 'vs/base/common/event';
-import { BrowserWindow, app, AuthInfo, WebContents, Event as ElectronEvent } from 'electron';
+import { BrowserWindow, BrowserWindowConstructorOptions, app, AuthInfo, WebContents, Event as ElectronEvent } from 'electron';
 
 type LoginEvent = {
 	event: ElectronEvent;
@@ -23,7 +23,7 @@ type Credentials = {
 
 export class ProxyAuthHandler extends Disposable {
 
-	_serviceBrand: undefined;
+	declare readonly _serviceBrand: undefined;
 
 	private retryCount = 0;
 
@@ -49,7 +49,7 @@ export class ProxyAuthHandler extends Disposable {
 
 		event.preventDefault();
 
-		const opts: any = {
+		const opts: BrowserWindowConstructorOptions = {
 			alwaysOnTop: true,
 			skipTaskbar: true,
 			resizable: false,
@@ -59,7 +59,9 @@ export class ProxyAuthHandler extends Disposable {
 			title: 'VS Code',
 			webPreferences: {
 				nodeIntegration: true,
-				webviewTag: true
+				enableWebSQL: false,
+				enableRemoteModule: false,
+				nativeWindowOpen: true
 			}
 		};
 

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { INextIterator } from 'vs/base/common/iterator';
+import { INavigator } from 'vs/base/common/navigator';
 
 export interface IView {
 	id?: string;
@@ -31,7 +31,7 @@ export class HeightMap {
 		return !last ? 0 : last.top + last.height;
 	}
 
-	public onInsertItems(iterator: INextIterator<IViewItem>, afterItemId: string | null = null): number | undefined {
+	public onInsertItems(iterator: INavigator<IViewItem>, afterItemId: string | null = null): number | undefined {
 		let viewItem: IViewItem | null = null;
 		let i: number, j: number;
 		let totalSize: number;
@@ -45,6 +45,7 @@ export class HeightMap {
 			viewItem = this.heightMap[i - 1];
 
 			if (!viewItem) {
+				// eslint-disable-next-line no-console
 				console.error('view item doesnt exist');
 				return undefined;
 			}
@@ -52,7 +53,7 @@ export class HeightMap {
 			totalSize = viewItem.top + viewItem.height;
 		}
 
-		let boundSplice = this.heightMap.splice.bind(this.heightMap, i, 0);
+		const startingIndex = i;
 
 		let itemsToInsert: IViewItem[] = [];
 
@@ -64,7 +65,7 @@ export class HeightMap {
 			sizeDiff += viewItem.height;
 		}
 
-		boundSplice.apply(this.heightMap, itemsToInsert);
+		this.heightMap.splice(startingIndex, 0, ...itemsToInsert);
 
 		for (j = i; j < this.heightMap.length; j++) {
 			viewItem = this.heightMap[j];
@@ -88,7 +89,7 @@ export class HeightMap {
 	}
 
 	// Contiguous items
-	public onRemoveItems(iterator: INextIterator<string>): void {
+	public onRemoveItems(iterator: INavigator<string>): void {
 		let itemId: string | null = null;
 		let viewItem: IViewItem;
 		let startIndex: number | null = null;
@@ -100,6 +101,7 @@ export class HeightMap {
 			viewItem = this.heightMap[i];
 
 			if (!viewItem) {
+				// eslint-disable-next-line no-console
 				console.error('view item doesnt exist');
 				return;
 			}
