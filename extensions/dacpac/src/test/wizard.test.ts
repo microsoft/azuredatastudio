@@ -16,6 +16,7 @@ import { ImportConfigPage } from '../wizard/pages/importConfigPage';
 import { DacFxSummaryPage } from '../wizard/pages/dacFxSummaryPage';
 import { SelectOperationPage } from '../wizard/pages/selectOperationpage';
 import { DeployPlanPage } from '../wizard/pages/deployPlanPage';
+import { BasePage } from '../wizard/api/basePage';
 
 let wizard: DataTierApplicationWizard;
 let testContext: TestContext;
@@ -110,45 +111,38 @@ describe('Dacfx wizard', function (): void {
 	it('Should start all pages - Set 1', async () => {
 		testContext = createContext();
 		wizard.setPages();
-		let result = false;
 
 		let selectOperationPage = new SelectOperationPage(wizard, wizard.pages.get(PageName.selectOperation).wizardPage, wizard.model, testContext.viewContext.view);
-		result = await selectOperationPage.start();
-		should.equal(result, true);
-		result = false;
+		await validateStartPage(selectOperationPage);
 
 		let deployConfigPage = new DeployConfigPage(wizard, wizard.pages.get(PageName.deployConfig).wizardPage, wizard.model, testContext.viewContext.view);
-		result = await deployConfigPage.start();
-		should.equal(result, true);
-		result = false;
+		await validateStartPage(deployConfigPage);
 
 		let deployPlanPage = new DeployPlanPage(wizard, wizard.pages.get(PageName.deployPlan).wizardPage, wizard.model, testContext.viewContext.view);
-		result = await deployPlanPage.start();
-		should.equal(result, true);
+		await validateStartPage(deployPlanPage);
 
 		let dacFxSummaryPage = new DacFxSummaryPage(wizard, wizard.pages.get(PageName.summary).wizardPage, wizard.model, testContext.viewContext.view);
-		result = await dacFxSummaryPage.start();
-		should.equal(result, true);
+		await validateStartPage(dacFxSummaryPage);
+
 	});
 
 	it('Should start all pages - Set 2', async () => {
 		testContext = createContext();
 		wizard.setPages();
-		let result = false;
 
 		let exportConfigPage = new ExportConfigPage(wizard, wizard.pages.get(PageName.exportConfig).wizardPage, wizard.model, testContext.viewContext.view);
-		result = await exportConfigPage.start();
-		should.equal(result, true);
-		result = false;
+		await validateStartPage(exportConfigPage);
 
 		let extractConfigPage = new ExtractConfigPage(wizard, wizard.pages.get(PageName.exportConfig).wizardPage, wizard.model, testContext.viewContext.view);
-		result = await extractConfigPage.start();
-		should.equal(result, true);
-		result = false;
+		await validateStartPage(extractConfigPage);
 
 		let importConfigPage = new ImportConfigPage(wizard, wizard.pages.get(PageName.importConfig).wizardPage, wizard.model, testContext.viewContext.view);
-		result = await importConfigPage.start();
-		should.equal(result, true);
-		result = false;
+		await validateStartPage(importConfigPage);
 	});
+
+	async function validateStartPage(page: BasePage) : Promise<void> {
+		let result = false;
+		result = await page.start();
+		should.equal(result, true);
+	}
 });

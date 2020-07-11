@@ -6,6 +6,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as azdata from 'azdata';
+import * as loc from '../localizedConstants';
 
 export interface TestContext {
 	context: vscode.ExtensionContext;
@@ -71,6 +72,7 @@ export function createViewContext(): ViewTestContext {
 	let radioButton = () => {
 		let button: azdata.RadioButtonComponent = Object.assign({}, componentBase, {
 			name: '',
+			label: '',
 			checked: false,
 			onDidClick: onClick.event,
 		});
@@ -109,12 +111,12 @@ export function createViewContext(): ViewTestContext {
 		let builder: azdata.ComponentBuilder<azdata.RadioButtonComponent> = {
 			component: () => button,
 			withProperties: (properties) => {
-				if ((properties as any).name === 'newDatabase') {
-					button.name = 'newDatabase';
+				if ((properties as any).label === loc.newDatabase) {
+					button.label = loc.newDatabase;
 					button.onDidClick = newDatabaseRadioOnClick.event;
 				}
-				else if ((properties as any).name === 'updateExisting') {
-					button.name = 'updateExisting';
+				else if ((properties as any).label === loc.upgradeExistingDatabase) {
+					button.label = loc.upgradeExistingDatabase;
 					button.onDidClick = updateExistingRadioOnClick.event;
 				}
 				return builder;

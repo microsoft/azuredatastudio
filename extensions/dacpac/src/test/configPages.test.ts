@@ -27,7 +27,7 @@ describe('Dacfx Wizard Pages', function (): void {
 		let deployConfigPage = new TestDeployConfigPage(wizard, wizard.pages.get(PageName.deployConfig).wizardPage, wizard.model, testContext.viewContext.view);
 		await deployConfigPage.start();
 
-		// alidate state after start
+		// Validate state after start
 		should.equal(deployConfigPage.Model.upgradeExisting, true);
 		should.equal(deployConfigPage.Model.filePath, undefined);
 		should.equal(deployConfigPage.Model.database, undefined);
@@ -44,7 +44,7 @@ describe('Dacfx Wizard Pages', function (): void {
 		should.equal(deployConfigPage.Model.filePath, 'DummyDacpac');
 		should.equal(deployConfigPage.Model.database, 'DummyDatabase');
 
-		// Changing radio buttons should affect omdel correctly
+		// Changing radio buttons should affect model correctly
 		testContext.viewContext.newDatabaseRadioOnClick.fire(undefined);
 		should.equal(deployConfigPage.Model.upgradeExisting, false);
 		testContext.viewContext.updateExistingRadioOnClick.fire(undefined);
