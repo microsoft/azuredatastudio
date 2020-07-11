@@ -147,7 +147,7 @@ export class WorkbenchTable<T> extends Table<T> {
 		super(user, container, columns, dataSource,
 			{
 				keyboardSupport: false,
-				...computeStyles(themeService.getTheme(), defaultHighPerfTableStyles),
+				...computeStyles(themeService.getColorTheme(), defaultHighPerfTableStyles),
 				...workbenchTableOptions
 			}
 		);

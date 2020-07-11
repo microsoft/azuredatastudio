@@ -5,13 +5,13 @@
 
 import 'vs/css!./media/optimizedGridPanel';
 
-import * as azdata from 'azdata';
-
 import { ITableRenderer, ITableColumn } from 'sql/base/browser/ui/table/highPerf/table';
 import { IView, Orientation } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 import { VirtualizedWindow } from 'sql/base/browser/ui/table/highPerf/virtualizedWindow';
-import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { attachHighPerfTableStyler } from 'sql/platform/theme/common/styler';
+import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
+import { GridTableState } from 'sql/workbench/common/editor/query/gridTableState';
+import { ResultSetSummary } from 'sql/workbench/services/query/common/query';
 
 import { append, $, getContentWidth, getContentHeight } from 'vs/base/browser/dom';
 import { Disposable } from 'vs/base/common/lifecycle';
@@ -20,7 +20,6 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
-import { GridTableState } from 'sql/workbench/contrib/query/common/gridPanelState';
 import { WorkbenchTable } from 'sql/platform/table/browser/tableService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
@@ -70,7 +69,7 @@ export class GridTable<T> extends Disposable implements IView {
 
 	private rowHeight: number;
 
-	public get resultSet(): azdata.ResultSetSummary {
+	public get resultSet(): ResultSetSummary {
 		return this._resultSet;
 	}
 
@@ -84,7 +83,7 @@ export class GridTable<T> extends Disposable implements IView {
 
 	constructor(
 		private readonly runner: QueryRunner,
-		private _resultSet: azdata.ResultSetSummary,
+		private _resultSet: ResultSetSummary,
 		state: GridTableState,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@IThemeService private readonly themeService: IThemeService,
@@ -107,7 +106,7 @@ export class GridTable<T> extends Disposable implements IView {
 
 		this.virtWindow = new VirtualizedWindow<T>(50, this.resultSet.rowCount, (offset, count) => {
 			return Promise.resolve(this.runner.getQueryRows(offset, count, this._resultSet.batchId, this._resultSet.id).then(r => {
-				return r.resultSubset.rows.map(c => c.reduce((p, c, i) => {
+				return r.rows.map(c => c.reduce((p, c, i) => {
 					p[this.columns[i].id] = c.displayValue;
 					return p;
 				}, Object.create(null)));
@@ -131,7 +130,7 @@ export class GridTable<T> extends Disposable implements IView {
 		this._state = val;
 	}
 
-	public updateResult(resultSet: azdata.ResultSetSummary) {
+	public updateResult(resultSet: ResultSetSummary) {
 		this._resultSet = resultSet;
 		if (this.table) {
 			this.virtWindow.length = resultSet.rowCount;
@@ -163,4 +162,6 @@ export class GridTable<T> extends Disposable implements IView {
 
 	public style(): void {
 	}
+
+	public focus() { }
 }

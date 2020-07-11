@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import { EditorInput } from 'vs/workbench/common/editor';
 import { IEditorModel } from 'vs/platform/editor/common/editor';
+import { URI } from 'vs/base/common/uri';
 
 export class SlickGridTableTestInput extends EditorInput {
 
@@ -17,6 +18,10 @@ export class SlickGridTableTestInput extends EditorInput {
 
 	resolve(): Promise<IEditorModel> {
 		return Promise.resolve(undefined);
+	}
+
+	get resource(): URI {
+		return undefined;
 	}
 }
 
@@ -32,5 +37,9 @@ export class AsyncTableTestInput extends EditorInput {
 
 	resolve(): Promise<IEditorModel> {
 		return Promise.resolve(undefined);
+	}
+
+	get resource(): URI {
+		return undefined;
 	}
 }
