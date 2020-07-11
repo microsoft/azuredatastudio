@@ -16,11 +16,11 @@ import { RenderMimeRegistry } from 'sql/workbench/services/notebook/browser/outp
 import { standardRendererFactories } from 'sql/workbench/services/notebook/browser/outputs/factories';
 import { Extensions, INotebookProviderRegistry, NotebookProviderRegistration } from 'sql/workbench/services/notebook/common/notebookRegistry';
 import { Emitter, Event } from 'vs/base/common/event';
-import { Memento, MementoObject } from 'vs/workbench/common/memento';
+import { Memento } from 'vs/workbench/common/memento';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IExtensionManagementService, IExtensionIdentifier } from 'vs/platform/extensionManagement/common/extensionManagement';
-import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { Deferred } from 'sql/base/common/promise';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
@@ -46,7 +46,7 @@ interface NotebookProviderCache {
 	[id: string]: NotebookProviderProperties;
 }
 
-export interface NotebookProvidersMemento extends MementoObject {
+export interface NotebookProvidersMemento {
 	notebookProviderCache: NotebookProviderCache;
 }
 
@@ -58,7 +58,7 @@ interface TrustedNotebookCache {
 	[uri: string]: TrustedNotebookMetadata;
 }
 
-export interface TrustedNotebooksMemento extends MementoObject {
+export interface TrustedNotebooksMemento {
 	trustedNotebooksCache: TrustedNotebookCache;
 }
 
@@ -86,12 +86,13 @@ export class ProviderDescriptor {
 }
 
 export const NotebookUriNotDefined = localize('notebookUriNotDefined', "No URI was passed when creating a notebook manager");
-
+export const NotebookServiceNoProviderRegistered = localize('notebookServiceNoProvider', "Notebook provider does not exist");
+export const TrustedNotebooksMementoId = 'notebooks.trusted';
 export class NotebookService extends Disposable implements INotebookService {
 	_serviceBrand: undefined;
 
-	private _providersMemento: Memento = new Memento('notebookProviders', this._storageService);
-	protected _trustedNotebooksMemento: Memento = new Memento('notebooks.trusted', this._storageService);
+	private _providersMemento: Memento;
+	private _trustedNotebooksMemento: Memento;
 	private _mimeRegistry: RenderMimeRegistry;
 	private _providers: Map<string, ProviderDescriptor> = new Map();
 	private _navigationProviders: Map<string, INavigationProvider> = new Map();
@@ -103,10 +104,9 @@ export class NotebookService extends Disposable implements INotebookService {
 	private _fileToProviders = new Map<string, NotebookProviderRegistration[]>();
 	private _providerToStandardKernels = new Map<string, nb.IStandardKernel[]>();
 	private _registrationComplete = new Deferred<void>();
-	protected _isRegistrationComplete = false;
-	protected _themeParticipant: IDisposable;
-	protected _trustedCacheQueue: URI[] = [];
-	protected _unTrustedCacheQueue: URI[] = [];
+	private _isRegistrationComplete = false;
+	private _trustedCacheQueue: URI[] = [];
+	private _unTrustedCacheQueue: URI[] = [];
 
 	constructor(
 		@ILifecycleService lifecycleService: ILifecycleService,
@@ -120,8 +120,14 @@ export class NotebookService extends Disposable implements INotebookService {
 		@IContextKeyService private contextKeyService: IContextKeyService,
 	) {
 		super();
+		this._providersMemento = new Memento('notebookProviders', this._storageService);
+		this._trustedNotebooksMemento = new Memento(TrustedNotebooksMementoId, this._storageService);
+		if (this._storageService !== undefined && this.providersMemento.notebookProviderCache === undefined) {
+			this.providersMemento.notebookProviderCache = <NotebookProviderCache>{};
+		}
 		this._register(notebookRegistry.onNewRegistration(this.updateRegisteredProviders, this));
 		this.registerBuiltInProvider();
+
 		// If a provider has been already registered, the onNewRegistration event will not have a listener attached yet
 		// So, explicitly updating registered providers here.
 		if (notebookRegistry.providers.length > 0) {
@@ -156,18 +162,15 @@ export class NotebookService extends Disposable implements INotebookService {
 
 	public dispose(): void {
 		super.dispose();
-		if (this._themeParticipant) {
-			this._themeParticipant.dispose();
-		}
 	}
 
 	private updateSQLRegistrationWithConnectionProviders() {
 		// Update the SQL extension
-		let sqlNotebookProvider = this._providerToStandardKernels.get(notebookConstants.SQL);
-		if (sqlNotebookProvider) {
+		let sqlNotebookKernels = this._providerToStandardKernels.get(notebookConstants.SQL);
+		if (sqlNotebookKernels) {
 			let sqlConnectionTypes = this._queryManagementService.getRegisteredProviders();
-			let provider = sqlNotebookProvider.find(p => p.name === notebookConstants.SQL);
-			if (provider) {
+			let kernel = sqlNotebookKernels.find(p => p.name === notebookConstants.SQL);
+			if (kernel) {
 				this._providerToStandardKernels.set(notebookConstants.SQL, [{
 					name: notebookConstants.SQL,
 					displayName: notebookConstants.SQL,
@@ -279,7 +282,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		return this._providerToStandardKernels.get(provider.toUpperCase());
 	}
 
-	protected shutdown(): void {
+	private shutdown(): void {
 		this._managersMap.forEach(manager => {
 			manager.forEach(m => {
 				if (m.serverManager) {
@@ -384,10 +387,10 @@ export class NotebookService extends Disposable implements INotebookService {
 	private async doWithProvider<T>(providerId: string, op: (provider: INotebookProvider) => Thenable<T>): Promise<T> {
 		// Make sure the provider exists before attempting to retrieve accounts
 		let provider: INotebookProvider = await this.getProviderInstance(providerId);
-		return await op(provider);
+		return op(provider);
 	}
 
-	protected async getProviderInstance(providerId: string, timeout?: number): Promise<INotebookProvider> {
+	private async getProviderInstance(providerId: string, timeout?: number): Promise<INotebookProvider> {
 		let providerDescriptor = this._providers.get(providerId);
 		let instance: INotebookProvider;
 
@@ -414,12 +417,14 @@ export class NotebookService extends Disposable implements INotebookService {
 
 		// Should never happen, but if default wasn't registered we should throw
 		if (!instance) {
-			throw new Error(localize('notebookServiceNoProvider', "Notebook provider does not exist"));
+			throw new Error(NotebookServiceNoProviderRegistered);
 		}
 		return instance;
 	}
 
-	private waitOnProviderAvailability(providerDescriptor: ProviderDescriptor, timeout: number = 30000): Promise<INotebookProvider> {
+	private waitOnProviderAvailability(providerDescriptor: ProviderDescriptor, timeout?: number): Promise<INotebookProvider> {
+		// Wait up to 30 seconds for the provider to be registered
+		timeout = timeout ?? 30000;
 		let promises: Promise<INotebookProvider>[] = [
 			providerDescriptor.instanceReady,
 			new Promise<INotebookProvider>((resolve, reject) => setTimeout(() => resolve(), timeout))
@@ -437,11 +442,11 @@ export class NotebookService extends Disposable implements INotebookService {
 		return this._mimeRegistry;
 	}
 
-	protected get providersMemento(): NotebookProvidersMemento {
+	private get providersMemento(): NotebookProvidersMemento {
 		return this._providersMemento.getMemento(StorageScope.GLOBAL) as NotebookProvidersMemento;
 	}
 
-	protected get trustedNotebooksMemento(): TrustedNotebooksMemento {
+	private get trustedNotebooksMemento(): TrustedNotebooksMemento {
 		let cache = this._trustedNotebooksMemento.getMemento(StorageScope.GLOBAL) as TrustedNotebooksMemento;
 		if (!cache.trustedNotebooksCache) {
 			cache.trustedNotebooksCache = {};
@@ -449,7 +454,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		return cache;
 	}
 
-	protected cleanupProviders(): void {
+	private cleanupProviders(): void {
 		let knownProviders = Object.keys(notebookRegistry.providers);
 		let cache = this.providersMemento.notebookProviderCache;
 		for (let key in cache) {
@@ -473,12 +478,12 @@ export class NotebookService extends Disposable implements INotebookService {
 	protected async removeContributedProvidersFromCache(identifier: IExtensionIdentifier, extensionService: IExtensionService): Promise<void> {
 		const notebookProvider = 'notebookProvider';
 		try {
-			const extensions = await extensionService.getExtensions();
-			let extension = extensions.find(c => c.identifier.value.toLowerCase() === identifier.id.toLowerCase());
-			if (extension && extension.contributes
-				&& extension.contributes[notebookProvider]
-				&& extension.contributes[notebookProvider].providerId) {
-				let id = extension.contributes[notebookProvider].providerId;
+			const extensionDescriptions = await extensionService.getExtensions();
+			let extensionDescription = extensionDescriptions.find(c => c.identifier.value.toLowerCase() === identifier.id.toLowerCase());
+			if (extensionDescription && extensionDescription.contributes
+				&& extensionDescription.contributes[notebookProvider] //'notebookProvider' isn't a field defined on IExtensionContributions so contributes[notebookProvider] is 'any'. TODO: Code cleanup
+				&& extensionDescription.contributes[notebookProvider].providerId) {
+				let id = extensionDescription.contributes[notebookProvider].providerId;
 				delete this.providersMemento.notebookProviderCache[id];
 			}
 		} catch (err) {
