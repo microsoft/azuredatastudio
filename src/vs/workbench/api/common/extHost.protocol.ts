@@ -67,10 +67,10 @@ export interface IEnvironment {
 	appRoot?: URI;
 	appLanguage: string;
 	appUriScheme: string;
-	appSettingsHome?: URI;
 	extensionDevelopmentLocationURI?: URI[];
 	extensionTestsLocationURI?: URI;
 	globalStorageHome: URI;
+	workspaceStorageHome: URI;
 	webviewResourceRoot: string;
 	webviewCspSource: string;
 	useHostProxy?: boolean;
