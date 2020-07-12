@@ -24,7 +24,7 @@ const mocktarget: string = 'target.dacpac';
 let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 let testContext: TestContext;
 
-before(async function (): Promise<void> {
+before(function (): void {
 	testContext = createContext();
 });
 describe('SchemaCompareDialog.openDialog', function (): void {
@@ -45,10 +45,12 @@ describe('SchemaCompareDialog.openDialog', function (): void {
 });
 
 describe('SchemaCompareMainWindow.start', function (): void {
+
 	before(() => {
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 		mockExtensionContext.setup(x => x.extensionPath).returns(() => '');
 	});
+
 	it('Should be correct when created.', async function (): Promise<void> {
 		let sc = new SchemaCompareTestService();
 
@@ -57,8 +59,8 @@ describe('SchemaCompareMainWindow.start', function (): void {
 
 		should(result.getComparisonResult() === undefined);
 
-		result.sourceEndpointInfo = await setDacpacEndpointInfo(mocksource);
-		result.targetEndpointInfo = await setDacpacEndpointInfo(mocktarget);
+		result.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
+		result.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
 		await result.execute();
 
 		should(result.getComparisonResult() !== undefined);
@@ -103,13 +105,14 @@ describe('SchemaCompareMainWindow.start', function (): void {
 });
 
 describe('SchemaCompareMainWindow.execute', function (): void {
+
 	before(() => {
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 		mockExtensionContext.setup(x => x.extensionPath).returns(() => '');
 		testContext = createContext();
 	});
 
-	beforeEach(async function (): Promise<void> {
+	beforeEach(function (): void {
 		testContext.apiWrapper.reset();
 	});
 
@@ -123,8 +126,8 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 
 		should(result.getComparisonResult() === undefined);
 
-		result.sourceEndpointInfo = await setDacpacEndpointInfo(mocksource);
-		result.targetEndpointInfo = await setDacpacEndpointInfo(mocktarget);
+		result.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
+		result.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
 
 		await shouldThrowSpecificError(async () => await result.execute(), loc.compareErrorMessage('Test failure'));
 	});
@@ -139,8 +142,8 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 
 		should(result.getComparisonResult() === undefined);
 
-		result.sourceEndpointInfo = await setDacpacEndpointInfo(mocksource);
-		result.targetEndpointInfo = await setDacpacEndpointInfo(mocktarget);
+		result.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
+		result.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
 
 		await result.execute();
 		testContext.apiWrapper.verify(x => x.showErrorMessage(TypeMoq.It.isAny()), TypeMoq.Times.once());
@@ -155,8 +158,8 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 
 		should(result.getComparisonResult() === undefined);
 
-		result.sourceEndpointInfo = await setDacpacEndpointInfo(mocksource);
-		result.targetEndpointInfo = await setDacpacEndpointInfo(mocktarget);
+		result.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
+		result.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
 
 		await result.execute();
 
@@ -176,8 +179,8 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 
 		should(result.getComparisonResult() === undefined);
 
-		result.sourceEndpointInfo = await setDacpacEndpointInfo(mocksource);
-		result.targetEndpointInfo = await setDatabaseEndpointInfo();
+		result.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
+		result.targetEndpointInfo = setDatabaseEndpointInfo();
 
 		await result.execute();
 
@@ -249,8 +252,8 @@ describe('SchemaCompareMainWindow.updateSourceAndTarget', function (): void {
 
 		should(result.getComparisonResult() === undefined);
 
-		result.sourceEndpointInfo = await setDacpacEndpointInfo(mocksource);
-		result.targetEndpointInfo = await setDacpacEndpointInfo(mocktarget);
+		result.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
+		result.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
 
 		result.updateSourceAndTarget();
 

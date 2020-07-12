@@ -84,7 +84,7 @@ function connectionInfoToConnectionProfile(details: azdata.ConnectionInfo): azda
 	};
 }
 
-export async function verifyConnectionAndGetOwnerUri(endpoint: mssql.SchemaCompareEndpointInfo, caller: string, apiWrapper: ApiWrapper): Promise<string> {
+export async function verifyConnectionAndGetOwnerUri(endpoint: mssql.SchemaCompareEndpointInfo, caller: string, apiWrapper: ApiWrapper): Promise<string | undefined> {
 	let ownerUri = undefined;
 
 	if (endpoint.endpointType === mssql.SchemaCompareEndpointType.Database && endpoint.connectionDetails) {
