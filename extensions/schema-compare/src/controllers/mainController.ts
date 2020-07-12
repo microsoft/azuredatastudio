@@ -14,7 +14,7 @@ export default class MainController implements Disposable {
 	protected schemaCompareMainWindow: SchemaCompareMainWindow;
 
 	public constructor(private context: ExtensionContext, private apiWrapper: ApiWrapper) {
-		this.schemaCompareMainWindow = new SchemaCompareMainWindow(this.apiWrapper, null, this.extensionContext);
+		this.schemaCompareMainWindow = new SchemaCompareMainWindow(this.apiWrapper, null, this.extensionContext, null);
 	}
 
 	public get extensionContext(): ExtensionContext {
