@@ -3179,10 +3179,20 @@ declare namespace monaco.editor {
 		 * Defaults to false.
 		 */
 		originalEditable?: boolean;
-		/**
+		/** // {{SQL CARBON EDIT}}
 		 * Adding option to reverse coloring in diff editor
 		 */
 		reverse?: boolean;
+		/**
+		 * Original editor should be have code lens enabled?
+		 * Defaults to false.
+		 */
+		originalCodeLens?: boolean;
+		/**
+		 * Modified editor should be have code lens enabled?
+		 * Defaults to false.
+		 */
+		modifiedCodeLens?: boolean;
 	}
 
 	/**
