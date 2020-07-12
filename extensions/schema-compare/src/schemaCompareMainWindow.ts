@@ -362,8 +362,8 @@ export class SchemaCompareMainWindow {
 		// explicitly exclude things that were excluded in previous compare
 		const thingsToExclude = this.sourceTargetSwitched ? this.originalTargetExcludes : this.originalSourceExcludes;
 		if (thingsToExclude) {
-			thingsToExclude.forEach(item => {
-				service.schemaCompareIncludeExcludeNode(this.comparisonResult.operationId, item, false, azdata.TaskExecutionMode.execute);
+			thingsToExclude.forEach(async (item) => {
+				await service.schemaCompareIncludeExcludeNode(this.comparisonResult.operationId, item, false, azdata.TaskExecutionMode.execute);
 			});
 
 			// disable apply and generate script buttons if no changes are included
@@ -586,7 +586,7 @@ export class SchemaCompareMainWindow {
 		return script;
 	}
 
-	public startCompare(): void {
+	public async startCompare(): Promise<void> {
 		this.flexModel.removeItem(this.splitView);
 		this.flexModel.removeItem(this.noDifferencesLabel);
 		this.flexModel.removeItem(this.startText);
@@ -604,7 +604,7 @@ export class SchemaCompareMainWindow {
 			this.tablelistenersToDispose.forEach(x => x.dispose());
 		}
 		this.resetButtons(ResetButtonState.comparing);
-		this.execute();
+		await this.execute();
 	}
 
 	private createCompareButton(view: azdata.ModelView): void {
@@ -618,7 +618,7 @@ export class SchemaCompareMainWindow {
 		}).component();
 
 		this.compareButton.onDidClick(async (click) => {
-			this.startCompare();
+			await this.startCompare();
 		});
 	}
 
@@ -868,7 +868,7 @@ export class SchemaCompareMainWindow {
 
 			// only compare if both source and target are set
 			if (this.sourceEndpointInfo && this.targetEndpointInfo) {
-				this.startCompare();
+				await this.startCompare();
 			}
 		});
 	}
