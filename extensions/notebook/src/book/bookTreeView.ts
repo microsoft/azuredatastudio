@@ -20,6 +20,7 @@ import * as glob from 'fast-glob';
 import { isNullOrUndefined } from 'util';
 import { debounce } from '../common/utils';
 import { RemoteBookDialogModel, RemoteBookDialog } from '../dialog/remoteBookDialog';
+import { RemoteBookController } from '../book/remoteBookController';
 
 const Content = 'content';
 
@@ -385,8 +386,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	public async openRemoteBook(): Promise<void> {
-		let model = new RemoteBookDialogModel(this._apiWrapper);
-		let dialog = new RemoteBookDialog(model);
+		let model = new RemoteBookDialogModel();
+		let controller = new RemoteBookController(model);
+		let dialog = new RemoteBookDialog(controller);
 		await dialog.createDialog();
 	}
 
