@@ -28,6 +28,7 @@ import {
 
 import { SimpleWebServer } from '../utils/simpleWebServer';
 import { SimpleTokenCache } from '../simpleTokenCache';
+import { Logger } from '../../utils/Logger';
 const localize = nls.loadMessageBundle();
 
 function parseQuery(uri: vscode.Uri) {
@@ -82,7 +83,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 			if (ex.msg) {
 				vscode.window.showErrorMessage(ex.msg);
 			}
-			console.log(ex);
+			Logger.error(ex);
 		}
 
 		if (!accessToken) {
@@ -111,7 +112,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		} catch (err) {
 			const msg = localize('azure.serverCouldNotStart', 'Server could not start. This could be a permissions error or an incompatibility on your system. You can try enabling device code authentication from settings.');
 			vscode.window.showErrorMessage(msg);
-			console.dir(err);
+			Logger.error(JSON.stringify(err));
 			return undefined;
 		}
 
@@ -208,7 +209,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		try {
 			await this.setCachedToken({ accountId: accessToken.key, providerId: this.metadata.id }, accessToken, refreshToken);
 		} catch (ex) {
-			console.log(ex);
+			Logger.error(ex);
 			if (ex.msg) {
 				vscode.window.showErrorMessage(ex.msg);
 				authCompleteDeferred.reject(ex);
@@ -237,7 +238,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 			try {
 				fileContents = await fs.readFile(filePath);
 			} catch (ex) {
-				console.error(ex);
+				Logger.error(ex);
 				res.writeHead(400);
 				res.end();
 				return;
@@ -252,11 +253,11 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		};
 
 		server.on('/landing.css', (req, reqUrl, res) => {
-			sendFile(res, path.join(mediaPath, 'landing.css'), 'text/css; charset=utf-8').catch(console.error);
+			sendFile(res, path.join(mediaPath, 'landing.css'), 'text/css; charset=utf-8').catch(Logger.error);
 		});
 
 		server.on('/SignIn.svg', (req, reqUrl, res) => {
-			sendFile(res, path.join(mediaPath, 'SignIn.svg'), 'image/svg+xml').catch(console.error);
+			sendFile(res, path.join(mediaPath, 'SignIn.svg'), 'image/svg+xml').catch(Logger.error);
 		});
 
 		server.on('/signin', (req, reqUrl, res) => {
@@ -267,7 +268,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 				res.writeHead(400, { 'content-type': 'text/html' });
 				res.write(localize('azureAuth.nonceError', "Authentication failed due to a nonce mismatch, please close Azure Data Studio and try again."));
 				res.end();
-				console.error('nonce no match', receivedNonce, nonce);
+				Logger.error('nonce no match', receivedNonce, nonce);
 				return;
 			}
 			res.writeHead(302, { Location: loginUrl });

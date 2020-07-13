@@ -4,11 +4,33 @@
  *--------------------------------------------------------------------------------------------*/
 
 export class Logger {
+	private static _piiLogging: boolean = false;
 
-}
+	static log(msg: any, ...vals: any[]) {
+		if (vals && vals.length > 0) {
+			return console.log(msg, vals);
+		}
+		console.log(msg);
+	}
 
-export enum LogLevel {
-	OFF,
-	INFO,
+	static error(msg: any, ...vals: any[]) {
+		if (vals && vals.length > 0) {
+			return console.error(msg, vals);
+		}
+		console.error(msg);
+	}
 
+	static pii(msg: any, ...vals: any[]) {
+		if (this.piiLogging) {
+			Logger.log(msg, vals);
+		}
+	}
+
+	public static set piiLogging(val: boolean) {
+		this._piiLogging = val;
+	}
+
+	public static get piiLogging(): boolean {
+		return this._piiLogging;
+	}
 }
