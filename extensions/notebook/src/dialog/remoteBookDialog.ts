@@ -5,9 +5,11 @@
 
 import * as azdata from 'azdata';
 import * as loc from '../common/localizedConstants';
-import { RemoteBookController, IReleases, IAssets, GitHubRemoteBook } from '../book/remoteBookController';
-import { ApiWrapper } from '../common/apiWrapper';
+import { RemoteBookController, IReleases, IAssets } from '../book/remoteBookController';
 import * as utils from '../common/utils';
+import * as nls from 'vscode-nls';
+const localize = nls.loadMessageBundle();
+const msgUndefinedAssetError = localize('msgUndefinedAssetError', "The selected book is not valid");
 
 function getRemoteLocationCategory(name: string): azdata.CategoryValue {
 	if (name === loc.onGitHub) {
@@ -17,42 +19,11 @@ function getRemoteLocationCategory(name: string): azdata.CategoryValue {
 }
 
 export class RemoteBookDialogModel {
-	private _remoteTypes: azdata.CategoryValue[];
-	private _controller: RemoteBookController;
 	private _remoteLocation: string;
 	private _releases: IReleases[];
 	private _assets: IAssets[];
 
-	constructor(private apiWrapper: ApiWrapper) {
-		this._controller = new RemoteBookController(this.apiWrapper);
-	}
-
-	public get remoteLocationCategories(): azdata.CategoryValue[] {
-		if (!this._remoteTypes) {
-			this._remoteTypes = [getRemoteLocationCategory(loc.onGitHub)];
-		}
-		return this._remoteTypes;
-	}
-
-	public async getReleases(url: string): Promise<Boolean> {
-		let remotePath: URL;
-		url = loc.apiGitHub(url);
-		remotePath = new URL(url);
-		this._releases = await GitHubRemoteBook.getReleases(remotePath);
-		return this._releases !== undefined && this._releases.length > 0;
-	}
-
-	public async getListAssets(release: IReleases): Promise<IAssets[]> {
-		try {
-			return await GitHubRemoteBook.getListAssets(release);
-		}
-		catch (error) {
-			throw error;
-		}
-	}
-
-	public async downloadLocalCopy(url: URL, asset?: IAssets): Promise<void> {
-		await this._controller.setRemoteBook(url, this._remoteLocation, asset);
+	constructor() {
 	}
 
 	public get remoteLocation(): string {
@@ -93,10 +64,11 @@ export class RemoteBookDialog {
 	public bookDropdown: azdata.DropDownComponent;
 	public versionDropdown: azdata.DropDownComponent;
 	public languageDropdown: azdata.DropDownComponent;
+	private _remoteTypes: azdata.CategoryValue[];
 	private readonly tigertoolboxrepo = 'repos/microsoft/tigertoolbox';
 	private readonly urlGithubRE = /^(?:https:\/\/(?:github.com|api.github.com\/repos)|(?:\/)?(?:\/)?repos)([\w-.?!=&%*+:@\/]*)/g;
 
-	constructor(public model: RemoteBookDialogModel) {
+	constructor(public controller: RemoteBookController) {
 	}
 
 	public async createDialog(): Promise<void> {
@@ -105,7 +77,7 @@ export class RemoteBookDialog {
 			this.view = view;
 
 			this.remoteLocationDropdown = this.view.modelBuilder.dropDown().withProperties({
-				values: this.model.remoteLocationCategories,
+				values: this.remoteLocationCategories,
 				value: '',
 				editable: false,
 			}).component();
@@ -227,8 +199,7 @@ export class RemoteBookDialog {
 	}
 
 	public onRemoteLocationChanged(): void {
-		this.model.remoteLocation = this.remoteLocationValue;
-		if (this.model.releases !== undefined && this.model.remoteLocation === loc.onGitHub) {
+		if (this.controller.getReleases() !== undefined && this.remoteLocationValue === loc.onGitHub) {
 			this.releaseDropdown.enabled = true;
 		} else {
 			this.releaseDropdown.enabled = false;
@@ -239,14 +210,13 @@ export class RemoteBookDialog {
 		try {
 			let url = utils.getDropdownValue(this.githubRepoDropdown);
 			url = url.trim().toLowerCase();
-			this.model.remoteLocation = this.remoteLocationValue;
-			if (this.model.remoteLocation === loc.onGitHub && url.length > 0) {
+			if (this.remoteLocationValue === loc.onGitHub && url.length > 0) {
 				//get the first group to extract /owner/repo/releases format
 				let groupsRe = url.match(this.urlGithubRE);
 				if (groupsRe !== null && groupsRe.length > 0) {
-					url = groupsRe[0];
-					let isValid = await this.model.getReleases(url);
-					if (isValid) {
+					url = loc.apiGitHub(groupsRe[0]);
+					let releases = await this.controller.fetchGithubReleases(new URL(url));
+					if (releases) {
 						this.releaseDropdown.enabled = true;
 						await this.fillReleasesDropdown();
 					}
@@ -265,18 +235,17 @@ export class RemoteBookDialog {
 
 	public async getAssets(): Promise<void> {
 		try {
-			if (this.model.remoteLocation === loc.onGitHub) {
-				let selected_release = this.model.releases.filter(release =>
+			if (this.remoteLocationValue === loc.onGitHub) {
+				let selected_release = this.controller.getReleases().filter(release =>
 					release.name === this.releaseDropdown.value);
-				let assets = await this.model.getListAssets(selected_release[0]);
+				let assets = await this.controller.fecthListAssets(selected_release[0]);
 				if (assets !== undefined && assets.length > 0) {
-					let bookValues: string[] = [];
+					let bookValues: string[] = ['-'];
 					assets.forEach(asset => {
 						bookValues.push(asset.book);
 					});
+					bookValues = [...new Set(bookValues)]; //Remove duplicates
 					this.bookDropdown.values = bookValues;
-					await this.fillVersionDropdown();
-					await this.fillLanguageDropdown();
 				}
 			}
 		}
@@ -291,15 +260,17 @@ export class RemoteBookDialog {
 
 	public async download(): Promise<boolean> {
 		try {
-			if (this.model.remoteLocation === loc.onGitHub) {
-				let selected_asset = await this.getSelectedAsset(); //in controller
-				await this.model.downloadLocalCopy(selected_asset.url, selected_asset);
+			if (this.remoteLocationValue === loc.onGitHub) {
+				let selected_asset = await this.getSelectedAsset();
+				if (selected_asset === undefined) {
+					throw (msgUndefinedAssetError);
+				}
+				await this.controller.setRemoteBook(selected_asset.url, this.remoteLocationValue, selected_asset);
 			} else {
 				let url = utils.getDropdownValue(this.githubRepoDropdown);
 				let newUrl = new URL(url);
-				await this.model.downloadLocalCopy(newUrl);
+				await this.controller.setRemoteBook(newUrl, this.remoteLocationValue);
 			}
-			this.dialog.okButton.enabled = true;
 			return true;
 		}
 		catch (error) {
@@ -312,8 +283,8 @@ export class RemoteBookDialog {
 	}
 
 	public async fillReleasesDropdown(): Promise<void> {
-		let versions: string[] = [];
-		this.model.releases.forEach(release => {
+		let versions: string[] = ['-'];
+		this.controller.getReleases().forEach(release => {
 			versions.push(release.name);
 		});
 		this.releaseDropdown.values = versions;
@@ -321,8 +292,8 @@ export class RemoteBookDialog {
 	}
 
 	public async fillVersionDropdown(): Promise<void> {
-		let versions: string[] = [];
-		this.model.assets.forEach(asset => {
+		let versions: string[] = ['-'];
+		this.controller.getAssets().forEach(asset => {
 			if (asset.book === this.bookDropdown.value) {
 				versions.push(asset.version);
 			}
@@ -331,33 +302,42 @@ export class RemoteBookDialog {
 	}
 
 	public async fillLanguageDropdown(): Promise<void> {
-		let languages: string[] = [];
-		this.model.assets.forEach(asset => {
+		let languages: string[] = ['-'];
+		this.controller.getAssets().forEach(asset => {
 			if (asset.book === this.bookDropdown.value && asset.version === this.versionDropdown.value) {
 				languages.push(asset.language);
 			}
 		});
 		this.languageDropdown.values = languages;
+		if (this.checkValues) {
+			this.dialog.okButton.enabled = true;
+		}
 	}
 
 	public async getSelectedAsset(): Promise<IAssets> {
 		let lang = this.languageDropdown.value;
 		let book = this.bookDropdown.value;
 		let version = this.versionDropdown.value;
-		let assets: IAssets[] = [];
-		this.model.assets.forEach(asset => {
+		let selected_asset: IAssets;
+		this.controller.getAssets().forEach(asset => {
 			if (asset.book === book && asset.version === version && asset.language === lang) {
-				if (asset.browser_download_url.href.endsWith('zip')) {
-					asset.zip_url = asset.browser_download_url;
-				} else {
-					asset.tar_url = asset.browser_download_url;
-				}
-				assets.push(asset);
+				selected_asset = asset;
 			}
 		});
-		if (assets.length > 1) {
-			return { ...assets[0], ...assets[1] };
+		return selected_asset;
+	}
+
+	public checkValues(): boolean {
+		if (this.languageDropdown.value !== 'N/A' && this.versionDropdown.value !== 'N/A' && this.bookDropdown.value !== 'N/A') {
+			return true;
 		}
-		return assets[0];
+		return false;
+	}
+
+	public get remoteLocationCategories(): azdata.CategoryValue[] {
+		if (!this._remoteTypes) {
+			this._remoteTypes = [getRemoteLocationCategory(loc.onGitHub)];
+		}
+		return this._remoteTypes;
 	}
 }
