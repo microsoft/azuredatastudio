@@ -22,6 +22,7 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 import { IFileService } from 'vs/platform/files/common/files';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
+import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 
 const editorInputFactoryRegistry = Registry.as<IEditorInputFactoryRegistry>(EditorInputExtensions.EditorInputFactories);
 
@@ -130,7 +131,7 @@ export class UntitledQueryEditorInputFactory implements IEditorInputFactory {
 	serialize(editorInput: UntitledQueryEditorInput): string {
 		const factory = editorInputFactoryRegistry.getEditorInputFactory(UntitledTextEditorInput.ID);
 		// only serialize non-dirty files if the user has that setting
-		if (factory && (editorInput.isDirty() || this.configurationService.getValue<boolean>('sql.promptToSaveGeneratedFiles'))) {
+		if (factory && (editorInput.isDirty() || this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').promptToSaveGeneratedFiles)) {
 			return factory.serialize(editorInput.text); // serialize based on the underlying input
 		}
 		return undefined;

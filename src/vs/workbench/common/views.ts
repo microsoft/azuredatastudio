@@ -34,7 +34,8 @@ export namespace Extensions {
 
 export enum ViewContainerLocation {
 	Sidebar,
-	Panel
+	Panel,
+	Dialog // {{SQL CARBON EDIT}}
 }
 
 export interface IViewContainerDescriptor {

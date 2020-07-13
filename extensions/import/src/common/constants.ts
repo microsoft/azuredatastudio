@@ -12,6 +12,8 @@ export const configLogDebugInfo = 'logDebugInfo';
 export const sqlConfigSectionName = 'sql';
 export const mssqlProvider = 'MSSQL';
 
+export const summaryErrorSymbol = '✗ ';
+
 export const supportedProviders = [mssqlProvider];
 
 // Links
