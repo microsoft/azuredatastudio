@@ -476,7 +476,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			}
 
 		};
-		const messageBody = localize('azurecore.consentDialog.body', "Your tenant '{1}({0})' requires you to re-authenticate again to access {1} resources. Press Open to start the authentication process.", tenant.displayName, tenant.id, resourceId);
+		const messageBody = localize('azurecore.consentDialog.body', "Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.", tenant.displayName, tenant.id, resourceId);
 		const result = await vscode.window.showInformationMessage(messageBody, { modal: true }, openItem, closeItem, dontAskAgainItem);
 
 		if (result.action) {
