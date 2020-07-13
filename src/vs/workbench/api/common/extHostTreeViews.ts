@@ -26,6 +26,10 @@ import { IMarkdownString } from 'vs/base/common/htmlContent';
 import * as azdata from 'azdata';
 export type TreeItemHandle = string;
 
+function isMarkdownString(value: any): value is vscode.MarkdownString {
+	return (value !== undefined) && value.appendCodeblock && value.appendMarkdown && value.appendText && (value.value !== undefined);
+}
+
 function toTreeItemLabel(label: any, extension: IExtensionDescription): ITreeItemLabel | undefined {
 	if (isString(label)) {
 		return { label };
@@ -538,14 +542,11 @@ export class ExtHostTreeView<T> extends Disposable {
 	}
 
 	private getTooltip(tooltip?: string | vscode.MarkdownString): string | IMarkdownString | undefined {
-		if (typeof tooltip === 'string') {
-			return tooltip;
-		} else if (tooltip === undefined) {
-			return undefined;
-		} else {
+		if (isMarkdownString(tooltip)) {
 			checkProposedApiEnabled(this.extension);
 			return MarkdownString.from(tooltip);
 		}
+		return tooltip;
 	}
 
 	protected createTreeNode(element: T, extensionTreeItem: azdata.TreeItem2, parent: TreeNode | Root): TreeNode { // {{SQL CARBON EDIT}} change to protected, change to azdata.TreeItem
