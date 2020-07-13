@@ -7,6 +7,7 @@ import * as should from 'should';
 import * as TypeMoq from 'typemoq';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import * as sinon from 'sinon';
 import 'mocha';
 import { TokenCredentials } from '@azure/ms-rest-js';
 import { AppContext } from '../../../appContext';
@@ -23,18 +24,16 @@ import { AzureResourceAccountTreeNode } from '../../../azureResource/tree/accoun
 import { AzureResourceSubscriptionTreeNode } from '../../../azureResource/tree/subscriptionTreeNode';
 import { AzureResourceItemType, AzureResourceServiceNames } from '../../../azureResource/constants';
 import { AzureResourceMessageTreeNode } from '../../../azureResource/messageTreeNode';
-import { ApiWrapper } from '../../../apiWrapper';
 import { generateGuid } from '../../../azureResource/utils';
 
 // Mock services
 let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
-let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
 let mockCacheService: TypeMoq.IMock<IAzureResourceCacheService>;
 let mockSubscriptionService: TypeMoq.IMock<IAzureResourceSubscriptionService>;
 let mockSubscriptionFilterService: TypeMoq.IMock<IAzureResourceSubscriptionFilterService>;
 let mockTenantService: TypeMoq.IMock<IAzureResourceTenantService>;
 let mockAppContext: AppContext;
-
+let getSecurityTokenStub: sinon.SinonStub;
 let mockTreeChangeHandler: TypeMoq.IMock<IAzureResourceTreeChangeHandler>;
 
 // Mock test data
@@ -91,7 +90,6 @@ let mockSubscriptionCache: azureResource.AzureResourceSubscription[] = [];
 describe('AzureResourceAccountTreeNode.info', function (): void {
 	beforeEach(() => {
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
-		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
 		mockCacheService = TypeMoq.Mock.ofType<IAzureResourceCacheService>();
 		mockSubscriptionService = TypeMoq.Mock.ofType<IAzureResourceSubscriptionService>();
 		mockSubscriptionFilterService = TypeMoq.Mock.ofType<IAzureResourceSubscriptionFilterService>();
@@ -101,17 +99,21 @@ describe('AzureResourceAccountTreeNode.info', function (): void {
 
 		mockSubscriptionCache = [];
 
-		mockAppContext = new AppContext(mockExtensionContext.object, mockApiWrapper.object);
+		mockAppContext = new AppContext(mockExtensionContext.object);
 		mockAppContext.registerService<IAzureResourceCacheService>(AzureResourceServiceNames.cacheService, mockCacheService.object);
 		mockAppContext.registerService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService, mockSubscriptionService.object);
 		mockAppContext.registerService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService, mockSubscriptionFilterService.object);
 		mockAppContext.registerService<IAzureResourceTenantService>(AzureResourceServiceNames.tenantService, mockTenantService.object);
 
-		mockApiWrapper.setup((o) => o.getSecurityToken(mockAccount, azdata.AzureResource.ResourceManagement)).returns(() => Promise.resolve(mockTokens));
+		getSecurityTokenStub = sinon.stub(azdata.accounts, 'getSecurityToken').returns(Promise.resolve(mockTokens));
 		mockCacheService.setup((o) => o.generateKey(TypeMoq.It.isAnyString())).returns(() => generateGuid());
 		mockCacheService.setup((o) => o.get(TypeMoq.It.isAnyString())).returns(() => mockSubscriptionCache);
 		mockCacheService.setup((o) => o.update(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns(() => mockSubscriptionCache = mockSubscriptions);
 		mockTenantService.setup((o) => o.getTenantId(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(mockTenantId));
+	});
+
+	afterEach(function (): void {
+		sinon.restore();
 	});
 
 	it('Should be correct when created.', async function (): Promise<void> {
@@ -179,7 +181,6 @@ describe('AzureResourceAccountTreeNode.info', function (): void {
 describe('AzureResourceAccountTreeNode.getChildren', function (): void {
 	beforeEach(() => {
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
-		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
 		mockCacheService = TypeMoq.Mock.ofType<IAzureResourceCacheService>();
 		mockSubscriptionService = TypeMoq.Mock.ofType<IAzureResourceSubscriptionService>();
 		mockSubscriptionFilterService = TypeMoq.Mock.ofType<IAzureResourceSubscriptionFilterService>();
@@ -189,17 +190,21 @@ describe('AzureResourceAccountTreeNode.getChildren', function (): void {
 
 		mockSubscriptionCache = [];
 
-		mockAppContext = new AppContext(mockExtensionContext.object, mockApiWrapper.object);
+		mockAppContext = new AppContext(mockExtensionContext.object);
 		mockAppContext.registerService<IAzureResourceCacheService>(AzureResourceServiceNames.cacheService, mockCacheService.object);
 		mockAppContext.registerService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService, mockSubscriptionService.object);
 		mockAppContext.registerService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService, mockSubscriptionFilterService.object);
 		mockAppContext.registerService<IAzureResourceTenantService>(AzureResourceServiceNames.tenantService, mockTenantService.object);
 
-		mockApiWrapper.setup((o) => o.getSecurityToken(mockAccount, azdata.AzureResource.ResourceManagement)).returns(() => Promise.resolve(mockTokens));
+		sinon.stub(azdata.accounts, 'getSecurityToken').returns(Promise.resolve(mockTokens));
 		mockCacheService.setup((o) => o.generateKey(TypeMoq.It.isAnyString())).returns(() => generateGuid());
 		mockCacheService.setup((o) => o.get(TypeMoq.It.isAnyString())).returns(() => mockSubscriptionCache);
 		mockCacheService.setup((o) => o.update(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns(() => mockSubscriptionCache = mockSubscriptions);
 		mockTenantService.setup((o) => o.getTenantId(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(mockTenantId));
+	});
+
+	afterEach(function (): void {
+		sinon.restore();
 	});
 
 	it('Should load subscriptions from scratch and update cache when it is clearing cache.', async function (): Promise<void> {
@@ -300,7 +305,7 @@ describe('AzureResourceAccountTreeNode.getChildren', function (): void {
 
 		const children = await accountTreeNode.getChildren();
 
-		mockApiWrapper.verify((o) => o.getSecurityToken(mockAccount, azdata.AzureResource.ResourceManagement), TypeMoq.Times.once());
+		should(getSecurityTokenStub.calledOnce).be.true('getSecurityToken should have been called exactly once');
 		mockSubscriptionService.verify((o) => o.getSubscriptions(mockAccount, mockCredential), TypeMoq.Times.once());
 		mockSubscriptionFilterService.verify((o) => o.getSelectedSubscriptions(mockAccount), TypeMoq.Times.once());
 		mockCacheService.verify((o) => o.get(TypeMoq.It.isAnyString()), TypeMoq.Times.never());
@@ -317,7 +322,6 @@ describe('AzureResourceAccountTreeNode.getChildren', function (): void {
 describe('AzureResourceAccountTreeNode.clearCache', function (): void {
 	beforeEach(() => {
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
-		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
 		mockCacheService = TypeMoq.Mock.ofType<IAzureResourceCacheService>();
 		mockSubscriptionService = TypeMoq.Mock.ofType<IAzureResourceSubscriptionService>();
 		mockSubscriptionFilterService = TypeMoq.Mock.ofType<IAzureResourceSubscriptionFilterService>();
@@ -327,17 +331,21 @@ describe('AzureResourceAccountTreeNode.clearCache', function (): void {
 
 		mockSubscriptionCache = [];
 
-		mockAppContext = new AppContext(mockExtensionContext.object, mockApiWrapper.object);
+		mockAppContext = new AppContext(mockExtensionContext.object);
 		mockAppContext.registerService<IAzureResourceCacheService>(AzureResourceServiceNames.cacheService, mockCacheService.object);
 		mockAppContext.registerService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService, mockSubscriptionService.object);
 		mockAppContext.registerService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService, mockSubscriptionFilterService.object);
 		mockAppContext.registerService<IAzureResourceTenantService>(AzureResourceServiceNames.tenantService, mockTenantService.object);
 
-		mockApiWrapper.setup((o,) => o.getSecurityToken(mockAccount, azdata.AzureResource.ResourceManagement)).returns(() => Promise.resolve(mockTokens));
+		sinon.stub(azdata.accounts, 'getSecurityToken').returns(Promise.resolve(mockTokens));
 		mockCacheService.setup((o) => o.generateKey(TypeMoq.It.isAnyString())).returns(() => generateGuid());
 		mockCacheService.setup((o) => o.get(TypeMoq.It.isAnyString())).returns(() => mockSubscriptionCache);
 		mockCacheService.setup((o) => o.update(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns(() => mockSubscriptionCache = mockSubscriptions);
 		mockTenantService.setup((o) => o.getTenantId(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(mockTenantId));
+	});
+
+	afterEach(function (): void {
+		sinon.restore();
 	});
 
 	it('Should clear cache.', async function (): Promise<void> {

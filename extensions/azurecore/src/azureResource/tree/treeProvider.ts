@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { TreeDataProvider, EventEmitter, Event, TreeItem } from 'vscode';
+import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { AppContext } from '../../appContext';
 import * as nls from 'vscode-nls';
@@ -16,41 +16,29 @@ import { AzureResourceMessageTreeNode } from '../messageTreeNode';
 import { AzureResourceContainerTreeNodeBase } from './baseTreeNodes';
 import { AzureResourceErrorMessageUtil, equals } from '../utils';
 import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
-import { IAzureResourceAccountService } from '../../azureResource/interfaces';
-import { AzureResourceServiceNames } from '../constants';
 
 
-export class AzureResourceTreeProvider implements TreeDataProvider<TreeNode>, IAzureResourceTreeChangeHandler {
+export class AzureResourceTreeProvider implements vscode.TreeDataProvider<TreeNode>, IAzureResourceTreeChangeHandler {
 	public isSystemInitialized: boolean = false;
 
-	private accountService: IAzureResourceAccountService;
 	private accounts: azdata.Account[];
-	private _onDidChangeTreeData = new EventEmitter<TreeNode>();
+	private _onDidChangeTreeData = new vscode.EventEmitter<TreeNode>();
 	private loadingAccountsPromise: Promise<void>;
 
-	public constructor(public readonly appContext: AppContext) {
-		if (appContext) {
-			this.hookAccountService(appContext);
-		}
-	}
-
-	private hookAccountService(appContext: AppContext): void {
-		this.accountService = appContext.getService<IAzureResourceAccountService>(AzureResourceServiceNames.accountService);
-		if (this.accountService) {
-			this.accountService.onDidChangeAccounts(async (e: azdata.DidChangeAccountsParams) => {
-				// This event sends it per provider, we need to make sure we get all the azure related accounts
-				let accounts = await this.accountService.getAccounts();
-				accounts = accounts.filter(a => a.key.providerId.startsWith('azure'));
-				// the onDidChangeAccounts event will trigger in many cases where the accounts didn't actually change
-				// the notifyNodeChanged event triggers a refresh which triggers a getChildren which can trigger this callback
-				// this below check short-circuits the infinite callback loop
-				this.setSystemInitialized();
-				if (!equals(accounts, this.accounts)) {
-					this.accounts = accounts;
-					this.notifyNodeChanged(undefined);
-				}
-			});
-		}
+	public constructor(private readonly appContext: AppContext) {
+		azdata.accounts.onDidChangeAccounts(async (e: azdata.DidChangeAccountsParams) => {
+			// This event sends it per provider, we need to make sure we get all the azure related accounts
+			let accounts = await azdata.accounts.getAllAccounts();
+			accounts = accounts.filter(a => a.key.providerId.startsWith('azure'));
+			// the onDidChangeAccounts event will trigger in many cases where the accounts didn't actually change
+			// the notifyNodeChanged event triggers a refresh which triggers a getChildren which can trigger this callback
+			// this below check short-circuits the infinite callback loop
+			this.setSystemInitialized();
+			if (!equals(accounts, this.accounts)) {
+				this.accounts = accounts;
+				this.notifyNodeChanged(undefined);
+			}
+		});
 	}
 
 	public async getChildren(element?: TreeNode): Promise<TreeNode[]> {
@@ -78,7 +66,7 @@ export class AzureResourceTreeProvider implements TreeDataProvider<TreeNode>, IA
 
 	private async loadAccounts(): Promise<void> {
 		try {
-			this.accounts = await this.appContext.getService<IAzureResourceAccountService>(AzureResourceServiceNames.accountService).getAccounts();
+			this.accounts = await azdata.accounts.getAllAccounts();
 			// System has been initialized
 			this.setSystemInitialized();
 			this._onDidChangeTreeData.fire(undefined);
@@ -93,7 +81,7 @@ export class AzureResourceTreeProvider implements TreeDataProvider<TreeNode>, IA
 		this.loadingAccountsPromise = undefined;
 	}
 
-	public get onDidChangeTreeData(): Event<TreeNode> {
+	public get onDidChangeTreeData(): vscode.Event<TreeNode> {
 		return this._onDidChangeTreeData.event;
 	}
 
@@ -111,7 +99,7 @@ export class AzureResourceTreeProvider implements TreeDataProvider<TreeNode>, IA
 		this._onDidChangeTreeData.fire(node);
 	}
 
-	public getTreeItem(element: TreeNode): TreeItem | Thenable<TreeItem> {
+	public getTreeItem(element: TreeNode): vscode.TreeItem | Thenable<vscode.TreeItem> {
 		return element.getTreeItem();
 	}
 }

@@ -3,9 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-
-import { window, QuickPickItem, env, Uri } from 'vscode';
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import { TokenCredentials } from '@azure/ms-rest-js';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
@@ -21,12 +20,12 @@ import { AzureResourceServiceNames } from './constants';
 import { AzureAccount, Tenant } from '../account-provider/interfaces';
 
 export function registerAzureResourceCommands(appContext: AppContext, tree: AzureResourceTreeProvider): void {
-	appContext.apiWrapper.registerCommand('azure.resource.startterminal', async (node?: TreeNode) => {
+	vscode.commands.registerCommand('azure.resource.startterminal', async (node?: TreeNode) => {
 		try {
-			const enablePreviewFeatures = appContext.apiWrapper.getConfiguration('workbench').get('enablePreviewFeatures');
+			const enablePreviewFeatures = vscode.workspace.getConfiguration('workbench').get('enablePreviewFeatures');
 			if (!enablePreviewFeatures) {
 				const msg = localize('azure.cloudTerminalPreview', "You must enable preview features in order to use Azure Cloud Shell.");
-				appContext.apiWrapper.showInformationMessage(msg);
+				vscode.window.showInformationMessage(msg);
 				return;
 			}
 			if (!node || !(node instanceof AzureResourceAccountTreeNode)) {
@@ -36,28 +35,28 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 			const accountNode = node as AzureResourceAccountTreeNode;
 			const azureAccount = accountNode.account as AzureAccount;
 
-			const tokens = await appContext.apiWrapper.getSecurityToken(azureAccount, azdata.AzureResource.MicrosoftResourceManagement);
+			const tokens = await azdata.accounts.getSecurityToken(azureAccount, azdata.AzureResource.MicrosoftResourceManagement);
 
 			const terminalService = appContext.getService<IAzureTerminalService>(AzureResourceServiceNames.terminalService);
 
 			const listOfTenants = azureAccount.properties.tenants.map(t => t.displayName);
 
 			if (listOfTenants.length === 0) {
-				window.showErrorMessage(localize('azure.noTenants', "A tenant is required for this feature. Your Azure subscription seems to have no tenants."));
+				vscode.window.showErrorMessage(localize('azure.noTenants', "A tenant is required for this feature. Your Azure subscription seems to have no tenants."));
 				return;
 			}
 
 			let tenant: Tenant;
-			window.setStatusBarMessage(localize('azure.startingCloudShell', "Starting cloud shell…"), 5000);
+			vscode.window.setStatusBarMessage(localize('azure.startingCloudShell', "Starting cloud shell…"), 5000);
 
 			if (listOfTenants.length === 1) {
 				// Don't show quickpick for a single option
 				tenant = azureAccount.properties.tenants[0];
 			} else {
-				const pickedTenant = await window.showQuickPick(listOfTenants, { canPickMany: false });
+				const pickedTenant = await vscode.window.showQuickPick(listOfTenants, { canPickMany: false });
 
 				if (!pickedTenant) {
-					window.showErrorMessage(localize('azure.mustPickTenant', "You must select a tenant for this feature to work."));
+					vscode.window.showErrorMessage(localize('azure.mustPickTenant', "You must select a tenant for this feature to work."));
 					return;
 				}
 
@@ -68,13 +67,13 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 			await terminalService.getOrCreateCloudConsole(azureAccount, tenant, tokens);
 		} catch (ex) {
 			console.error(ex);
-			window.showErrorMessage(ex);
+			vscode.window.showErrorMessage(ex);
 		}
 	});
 
 	// Resource Tree commands
 
-	appContext.apiWrapper.registerCommand('azure.resource.selectsubscriptions', async (node?: TreeNode) => {
+	vscode.commands.registerCommand('azure.resource.selectsubscriptions', async (node?: TreeNode) => {
 		if (!(node instanceof AzureResourceAccountTreeNode)) {
 			return;
 		}
@@ -92,7 +91,7 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 		const subscriptions = (await accountNode.getCachedSubscriptions()) || <azureResource.AzureResourceSubscription[]>[];
 		if (subscriptions.length === 0) {
 			try {
-				const tokens = await this.servicePool.apiWrapper.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
+				const tokens = await azdata.accounts.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
 
 				for (const tenant of account.properties.tenants) {
 					const token = tokens[tenant.id].token;
@@ -119,7 +118,7 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 			selectedSubscriptionIds.push(...subscriptions.map((subscription) => subscription.id));
 		}
 
-		interface AzureResourceSubscriptionQuickPickItem extends QuickPickItem {
+		interface AzureResourceSubscriptionQuickPickItem extends vscode.QuickPickItem {
 			subscription: azureResource.AzureResourceSubscription;
 		}
 
@@ -131,7 +130,7 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 			};
 		}).sort((a, b) => a.label.localeCompare(b.label));
 
-		const selectedSubscriptionQuickPickItems = await window.showQuickPick(subscriptionQuickPickItems, { canPickMany: true });
+		const selectedSubscriptionQuickPickItems = await vscode.window.showQuickPick(subscriptionQuickPickItems, { canPickMany: true });
 		if (selectedSubscriptionQuickPickItems && selectedSubscriptionQuickPickItems.length > 0) {
 			await tree.refresh(node, false);
 
@@ -140,17 +139,17 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 		}
 	});
 
-	appContext.apiWrapper.registerCommand('azure.resource.refreshall', () => tree.notifyNodeChanged(undefined));
+	vscode.commands.registerCommand('azure.resource.refreshall', () => tree.notifyNodeChanged(undefined));
 
-	appContext.apiWrapper.registerCommand('azure.resource.refresh', async (node?: TreeNode) => {
+	vscode.commands.registerCommand('azure.resource.refresh', async (node?: TreeNode) => {
 		await tree.refresh(node, true);
 	});
 
-	appContext.apiWrapper.registerCommand('azure.resource.signin', async (node?: TreeNode) => {
-		appContext.apiWrapper.executeCommand('workbench.actions.modal.linkedAccount');
+	vscode.commands.registerCommand('azure.resource.signin', async (node?: TreeNode) => {
+		vscode.commands.executeCommand('workbench.actions.modal.linkedAccount');
 	});
 
-	appContext.apiWrapper.registerCommand('azure.resource.connectsqlserver', async (node?: TreeNode) => {
+	vscode.commands.registerCommand('azure.resource.connectsqlserver', async (node?: TreeNode) => {
 		if (!node) {
 			return;
 		}
@@ -161,13 +160,13 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 		}
 		// Ensure connection is saved to the Connections list, then open connection dialog
 		let connectionProfile = Object.assign({}, treeItem.payload, { saveProfile: true });
-		const conn = await appContext.apiWrapper.openConnectionDialog(undefined, connectionProfile, { saveConnection: true, showDashboard: true });
+		const conn = await azdata.connection.openConnectionDialog(undefined, connectionProfile, { saveConnection: true, showDashboard: true });
 		if (conn) {
-			appContext.apiWrapper.executeCommand('workbench.view.connections');
+			vscode.commands.executeCommand('workbench.view.connections');
 		}
 	});
 
-	appContext.apiWrapper.registerCommand('azure.resource.openInAzurePortal', async (connectionProfile: azdata.IConnectionProfile) => {
+	vscode.commands.registerCommand('azure.resource.openInAzurePortal', async (connectionProfile: azdata.IConnectionProfile) => {
 
 		if (
 			!connectionProfile.azureResourceId ||
@@ -178,6 +177,6 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 		}
 
 		const urlToOpen = `${connectionProfile.azurePortalEndpoint}//${connectionProfile.azureTenantId}/#resource/${connectionProfile.azureResourceId}`;
-		env.openExternal(Uri.parse(urlToOpen));
+		vscode.env.openExternal(vscode.Uri.parse(urlToOpen));
 	});
 }
