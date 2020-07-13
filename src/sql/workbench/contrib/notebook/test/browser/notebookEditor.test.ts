@@ -8,6 +8,7 @@ import { nb } from 'azdata';
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import { NotebookFindMatch } from 'sql/workbench/contrib/notebook/browser/find/notebookFindDecorations';
 import { ACTION_IDS } from 'sql/workbench/contrib/notebook/browser/find/notebookFindWidget';
+import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/untitledNotebookInput';
 import { NotebookFindNextAction, NotebookFindPreviousAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
@@ -16,8 +17,9 @@ import * as stubs from 'sql/workbench/contrib/notebook/test/stubs';
 import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/testCommon';
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 import { ICellModel, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
-import { INotebookService, NotebookRange, INotebookEditor } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotebookEditor, INotebookService, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookService } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
+import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import * as TypeMoq from 'typemoq';
 import * as DOM from 'vs/base/browser/dom';
 import { errorHandler, onUnexpectedError } from 'vs/base/common/errors';
@@ -28,7 +30,7 @@ import { URI } from 'vs/base/common/uri';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IOverlayWidget, IOverlayWidgetPosition } from 'vs/editor/browser/editorBrowser';
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfigurationService';
-import { INewFindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contrib/find/findState';
+import { FindReplaceStateChangedEvent, INewFindReplaceState } from 'vs/editor/contrib/find/findState';
 import { getRandomString } from 'vs/editor/test/common/model/linesTextBuffer/textBufferAutoTestUtils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -55,8 +57,6 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
-import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
-import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 
 class NotebookModelStub extends stubs.NotebookModelStub {
 	private _cells: Array<ICellModel> = [new CellModel(undefined, undefined)];
@@ -387,36 +387,7 @@ suite('Test class NotebookEditor:', () => {
 				for (const wholeWord of [false, true]) {
 					for (const findMatches of [[], [new NotebookFindMatch(currentMatch || <NotebookRange>{}, null)]]) {
 						test(`Verifies _onFindStateChange callback when searchString='${searchString}', currentMatch='${currentMatch}', findExpression='${modelFindExpression}', matchCase='${matchCase}', wholeWord='${wholeWord}', findMatches='${findMatches}'`, async () => {
-							const { findReplaceStateChangedEvent, notebookFindModelMock, findDecorationsMock, notebookEditor } = await findStateChangeSetup(instantiationService, workbenchThemeService, notebookService, untitledNotebookInput, modelFindExpression, currentMatch, searchString, wholeWord, matchCase, null, findMatches);
-							await notebookEditor['_onFindStateChange'](findReplaceStateChangedEvent);
-							if (currentMatch) {
-								assert.strictEqual(notebookEditor.getPosition(), currentMatch, `position must be set to the same NotebookRange that we set for '_currentMatch' property of notebookEditor`);
-							}
-							if (searchString === modelFindExpression && currentMatch && !matchCase && !wholeWord) {
-								notebookFindModelMock.verify(x => x.find(
-									TypeMoq.It.isAnyString(),
-									TypeMoq.It.isAny(),
-									TypeMoq.It.isAny(),
-									TypeMoq.It.isAnyNumber()
-								), TypeMoq.Times.never());
-								findDecorationsMock.verify(x => x.set(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.never());
-							} else {
-								notebookFindModelMock.verify(x => x.find(
-									TypeMoq.It.isAnyString(),
-									TypeMoq.It.isAny(),
-									TypeMoq.It.isAny(),
-									TypeMoq.It.isAnyNumber()
-								), TypeMoq.Times.once());
-								assert.strictEqual(notebookEditor.notebookFindModel.findExpression, searchString, `findExpression should get set to the provided searchString:${searchString}`);
-								if (!currentMatch && notebookEditor.notebookFindModel.findMatches.length === 0) {
-									notebookFindModelMock.verify(x => x.clearFind(), TypeMoq.Times.once());
-									findDecorationsMock.verify(x => x.set(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.never());
-									assert.strictEqual(notebookEditor.notebookFindModel.findArray?.length ?? 0, 0, 'The find array should be cleared or undefined if there were no findMatches');
-								} else {
-									findDecorationsMock.verify(x => x.set(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
-								}
-							}
-							findDecorationsMock.verify(x => x.clearDecorations(), TypeMoq.Times.once());
+							await verifyFindCallsWhenFindStateChangeCallbackFires(instantiationService, workbenchThemeService, notebookService, untitledNotebookInput, modelFindExpression, currentMatch, searchString, wholeWord, matchCase, findMatches);
 						});
 					}
 				}
@@ -424,25 +395,12 @@ suite('Test class NotebookEditor:', () => {
 		}
 	}
 
+
 	for (const searchString of ['', undefined]) {
 		for (const matchCase of [true, false]) {
 			for (const wholeWord of [true, false]) {
 				test(`Verifies _onFindStateChange callback when searchString='${searchString}', matchCase='${matchCase}', wholeWord='${wholeWord}'`, async () => {
-					const { findReplaceStateChangedEvent, notebookFindModelMock, findDecorationsMock, notebookEditor } = await findStateChangeSetup(instantiationService, workbenchThemeService, notebookService, untitledNotebookInput, undefined, undefined, searchString, wholeWord, matchCase);
-					await notebookEditor['_onFindStateChange'](findReplaceStateChangedEvent);
-					notebookFindModelMock.verify(x => x.find(
-						TypeMoq.It.isAnyString(),
-						TypeMoq.It.isAny(),
-						TypeMoq.It.isAny(),
-						TypeMoq.It.isAnyNumber()
-					), TypeMoq.Times.never());
-					if (searchString === '' || findReplaceStateChangedEvent.matchCase || findReplaceStateChangedEvent.wholeWord) {
-						findDecorationsMock.verify(x => x.clearDecorations(), TypeMoq.Times.once());
-						notebookFindModelMock.verify(x => x.clearFind(), TypeMoq.Times.once());
-					} else {
-						findDecorationsMock.verify(x => x.clearDecorations(), TypeMoq.Times.never());
-						notebookFindModelMock.verify(x => x.clearFind(), TypeMoq.Times.never());
-					}
+					await verifyClearDeocorationsAndClearFindCallsWhenFindStateChangeCallbackFires(instantiationService, workbenchThemeService, notebookService, untitledNotebookInput, searchString, wholeWord, matchCase);
 				});
 			}
 		}
@@ -585,6 +543,60 @@ suite('Test class NotebookEditor:', () => {
 		assert.strictEqual(updateFinderMatchStateCalled, true, `_updateFinderMatchState() should have been called`);
 	});
 });
+
+async function verifyClearDeocorationsAndClearFindCallsWhenFindStateChangeCallbackFires(instantiationService: TestInstantiationService, workbenchThemeService: any, notebookService: NotebookService, untitledNotebookInput: UntitledNotebookInput, searchString: string, wholeWord: boolean, matchCase: boolean) {
+	const { findReplaceStateChangedEvent, notebookFindModelMock, findDecorationsMock, notebookEditor } = await findStateChangeSetup(instantiationService, workbenchThemeService, notebookService, untitledNotebookInput, undefined, undefined, searchString, wholeWord, matchCase);
+	await notebookEditor['_onFindStateChange'](findReplaceStateChangedEvent);
+	notebookFindModelMock.verify(x => x.find(
+		TypeMoq.It.isAnyString(),
+		TypeMoq.It.isAny(),
+		TypeMoq.It.isAny(),
+		TypeMoq.It.isAnyNumber()
+	), TypeMoq.Times.never());
+	if (searchString === '' || findReplaceStateChangedEvent.matchCase || findReplaceStateChangedEvent.wholeWord) {
+		findDecorationsMock.verify(x => x.clearDecorations(), TypeMoq.Times.once());
+		notebookFindModelMock.verify(x => x.clearFind(), TypeMoq.Times.once());
+	}
+	else {
+		findDecorationsMock.verify(x => x.clearDecorations(), TypeMoq.Times.never());
+		notebookFindModelMock.verify(x => x.clearFind(), TypeMoq.Times.never());
+	}
+}
+
+async function verifyFindCallsWhenFindStateChangeCallbackFires(instantiationService: TestInstantiationService, workbenchThemeService: any, notebookService: NotebookService, untitledNotebookInput: UntitledNotebookInput, modelFindExpression: string, currentMatch: NotebookRange, searchString: string, wholeWord: boolean, matchCase: boolean, findMatches: NotebookFindMatch[]) {
+	const { findReplaceStateChangedEvent, notebookFindModelMock, findDecorationsMock, notebookEditor } = await findStateChangeSetup(instantiationService, workbenchThemeService, notebookService, untitledNotebookInput, modelFindExpression, currentMatch, searchString, wholeWord, matchCase, null, findMatches);
+	await notebookEditor['_onFindStateChange'](findReplaceStateChangedEvent);
+	if (currentMatch) {
+		assert.strictEqual(notebookEditor.getPosition(), currentMatch, `position must be set to the same NotebookRange that we set for '_currentMatch' property of notebookEditor`);
+	}
+	if (searchString === modelFindExpression && currentMatch && !matchCase && !wholeWord) {
+		notebookFindModelMock.verify(x => x.find(
+			TypeMoq.It.isAnyString(),
+			TypeMoq.It.isAny(),
+			TypeMoq.It.isAny(),
+			TypeMoq.It.isAnyNumber()
+		), TypeMoq.Times.never());
+		findDecorationsMock.verify(x => x.set(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.never());
+	}
+	else {
+		notebookFindModelMock.verify(x => x.find(
+			TypeMoq.It.isAnyString(),
+			TypeMoq.It.isAny(),
+			TypeMoq.It.isAny(),
+			TypeMoq.It.isAnyNumber()
+		), TypeMoq.Times.once());
+		assert.strictEqual(notebookEditor.notebookFindModel.findExpression, searchString, `findExpression should get set to the provided searchString:${searchString}`);
+		if (!currentMatch && notebookEditor.notebookFindModel.findMatches.length === 0) {
+			notebookFindModelMock.verify(x => x.clearFind(), TypeMoq.Times.once());
+			findDecorationsMock.verify(x => x.set(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.never());
+			assert.strictEqual(notebookEditor.notebookFindModel.findArray?.length ?? 0, 0, 'The find array should be cleared or undefined if there were no findMatches');
+		}
+		else {
+			findDecorationsMock.verify(x => x.set(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+		}
+	}
+	findDecorationsMock.verify(x => x.clearDecorations(), TypeMoq.Times.once());
+}
 
 async function findStateChangeSetup(instantiationService: TestInstantiationService, workbenchThemeService: any, notebookService: NotebookService, untitledNotebookInput: UntitledNotebookInput, modelFindExpression: string, currentMatch: NotebookRange, searchString: string, wholeWord: boolean, matchCase: boolean, searchScope: NotebookRange | null = undefined, findMatches: Array<NotebookFindMatch> = []) {
 	const findReplaceStateChangedEvent: FindReplaceStateChangedEvent = {
