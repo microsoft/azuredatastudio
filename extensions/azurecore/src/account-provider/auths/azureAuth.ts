@@ -22,6 +22,7 @@ import {
 
 import { SimpleTokenCache } from '../simpleTokenCache';
 import { MemoryDatabase } from '../utils/memoryDatabase';
+import { Logger } from '../../utils/Logger';
 const localize = nls.loadMessageBundle();
 
 export interface AccountKey {
@@ -175,7 +176,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			if (ex.message) {
 				await vscode.window.showErrorMessage(ex.message);
 			}
-			console.log(ex);
+			Logger.error(ex);
 		}
 		return oldAccount;
 	}
@@ -183,7 +184,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	public async getSecurityToken(account: azdata.Account, azureResource: azdata.AzureResource): Promise<TokenResponse | undefined> {
 		if (account.isStale === true) {
-			console.log('Account was stale, no tokens being fetched');
+			Logger.log('Account was stale, no tokens being fetched');
 			return undefined;
 		}
 
@@ -212,7 +213,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 				} else {
 					// No expiration date, assume expired.
 					cachedTokens = undefined;
-					console.info('Assuming expired token due to no expiration date - this is expected on first launch.');
+					Logger.log('Assuming expired token due to no expiration date - this is expected on first launch.');
 				}
 
 			}
@@ -223,22 +224,22 @@ export abstract class AzureAuth implements vscode.Disposable {
 				const baseToken = await this.getCachedToken(account.key);
 				if (!baseToken) {
 					account.isStale = true;
-					console.log('Base token was empty, account is stale.');
+					Logger.log('Base token was empty, account is stale.');
 					return undefined;
 				}
 
 				try {
 					await this.refreshAccessToken(account.key, baseToken.refreshToken, tenant, resource);
 				} catch (ex) {
-					console.log(`Could not refresh access token for ${JSON.stringify(tenant)} - silently removing the tenant from the user's account.`);
-					console.log(`Actual error: ${JSON.stringify(ex?.response?.data ?? ex.message ?? ex, undefined, 2)}`);
+					Logger.log(`Could not refresh access token for ${JSON.stringify(tenant)} - silently removing the tenant from the user's account.`);
+					Logger.error(`Actual error: ${JSON.stringify(ex?.response?.data ?? ex.message ?? ex, undefined, 2)}`);
 					azureAccount.properties.tenants = azureAccount.properties.tenants.filter(t => t.id !== tenant.id);
 					continue;
 				}
 
 				cachedTokens = await this.getCachedToken(account.key, resource.id, tenant.id);
 				if (!cachedTokens) {
-					console.log('Refresh access tokens didn not set cache');
+					Logger.log('Refresh access tokens didn not set cache');
 					return undefined;
 				}
 			}
@@ -270,7 +271,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		} catch (ex) {
 			const msg = localize('azure.cacheErrrorRemove', "Error when removing your account from the cache.");
 			vscode.window.showErrorMessage(msg);
-			console.error('Error when removing tokens.', ex);
+			Logger.error('Error when removing tokens.', ex);
 		}
 	}
 
@@ -292,7 +293,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 			return await axios.post(uri, qs.stringify(postData), config);
 		} catch (ex) {
-			console.log('Unexpected error making Azure auth request', 'azureCore.postRequest', JSON.stringify(ex?.response?.data, undefined, 2));
+			Logger.log('Unexpected error making Azure auth request', 'azureCore.postRequest', JSON.stringify(ex?.response?.data, undefined, 2));
 			throw ex;
 		}
 	}
@@ -309,7 +310,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return await axios.get(uri, config);
 		} catch (ex) {
 			// Intercept and print error
-			console.log('Unexpected error making Azure auth request', 'azureCore.getRequest', JSON.stringify(ex?.response?.data, undefined, 2));
+			Logger.log('Unexpected error making Azure auth request', 'azureCore.getRequest', JSON.stringify(ex?.response?.data, undefined, 2));
 			// rethrow error
 			throw ex;
 		}
@@ -326,6 +327,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2019-11-01');
 		try {
 			const tenantResponse = await this.makeGetRequest(token.token, tenantUri);
+			Logger.pii('getTenants', tenantResponse.data);
 			const tenants: Tenant[] = tenantResponse.data.value.map((tenantInfo: TenantResponse) => {
 				return {
 					id: tenantInfo.tenantId,
@@ -343,7 +345,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 			return tenants;
 		} catch (ex) {
-			console.log(ex);
+			Logger.log(ex);
 			throw new Error('Error retrieving tenant information');
 		}
 	}
@@ -357,7 +359,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		const allSubs: Subscription[] = [];
 		const tokens = await this.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
 		if (!tokens) {
-			console.log('There were no resource management tokens to retrieve subscriptions from. Account is stale.');
+			Logger.log('There were no resource management tokens to retrieve subscriptions from. Account is stale.');
 			account.isStale = true;
 		}
 
@@ -366,6 +368,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			const subscriptionUri = url.resolve(this.metadata.settings.armResource.endpoint, 'subscriptions?api-version=2019-11-01');
 			try {
 				const subscriptionResponse = await this.makeGetRequest(token.token, subscriptionUri);
+				Logger.pii('getSubscriptions', subscriptionResponse.data);
 				const subscriptions: Subscription[] = subscriptionResponse.data.value.map((subscriptionInfo: SubscriptionResponse) => {
 					return {
 						id: subscriptionInfo.subscriptionId,
@@ -375,7 +378,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 				});
 				allSubs.push(...subscriptions);
 			} catch (ex) {
-				console.log(ex);
+				Logger.error(ex);
 				throw new Error('Error retrieving subscription information');
 			}
 		}
@@ -389,6 +392,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			try {
 				const tokenUrl = `${this.loginEndpointUrl}${tenant}/oauth2/token`;
 				const tokenResponse = await this.makePostRequest(tokenUrl, postData);
+				Logger.pii(JSON.stringify(tokenResponse.data));
 				const tokenClaims = this.getTokenClaims(tokenResponse.data.access_token);
 
 				const accessToken: AccessToken = {
@@ -404,6 +408,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 				refreshResponse = { accessToken, refreshToken, tokenClaims, expiresOn };
 			} catch (ex) {
+				Logger.pii(JSON.stringify(ex?.response?.data));
 				if (ex?.response?.data?.error === 'interaction_required') {
 					const shouldOpenLink = await this.openConsentDialog(tenant, resourceId);
 					if (shouldOpenLink === true) {
@@ -476,7 +481,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		const refreshToken = getTokenResponse?.refreshToken;
 
 		if (!accessToken || !refreshToken) {
-			console.log('Access or refresh token were undefined');
+			Logger.log('Access or refresh token were undefined');
 			const msg = localize('azure.refreshTokenError', "Error when refreshing your account.");
 			throw new Error(msg);
 		}
@@ -499,7 +504,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			await this.tokenCache.saveCredential(`${account.accountId}_access_${resourceId}_${tenantId}`, JSON.stringify(accessToken));
 			await this.tokenCache.saveCredential(`${account.accountId}_refresh_${resourceId}_${tenantId}`, JSON.stringify(refreshToken));
 		} catch (ex) {
-			console.error('Error when storing tokens.', ex);
+			Logger.error('Error when storing tokens.', ex);
 			throw new Error(msg);
 		}
 	}

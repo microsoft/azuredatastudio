@@ -18,6 +18,7 @@ import { getRootPath, resolveCurrentDirectory } from 'sql/platform/common/pathUt
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IFileDialogService, FileFilter } from 'vs/platform/dialogs/common/dialogs';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
+import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 
 let prevSavePath: URI;
 
@@ -31,19 +32,6 @@ export interface ISaveRequest {
 export interface SaveResultsResponse {
 	succeeded: boolean;
 	messages?: string;
-}
-
-interface ICsvConfig {
-	includeHeaders: boolean;
-	delimiter: string;
-	lineSeperator: string;
-	textIdentifier: string;
-	encoding: string;
-}
-
-interface IXmlConfig {
-	formatted: boolean;
-	encoding: string;
 }
 
 export enum SaveFormat {
@@ -201,7 +189,7 @@ export class ResultSerializer {
 		let saveResultsParams = <SaveResultsRequestParams>{ resultFormat: SaveFormat.CSV as string };
 
 		// get save results config from vscode config
-		let saveConfig = this._configurationService.getValue<ICsvConfig>('sql.saveAsCsv');
+		let saveConfig = this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.saveAsCsv;
 		// if user entered config, set options
 		if (saveConfig) {
 			if (saveConfig.includeHeaders !== undefined) {
@@ -247,7 +235,7 @@ export class ResultSerializer {
 		let saveResultsParams = <SaveResultsRequestParams>{ resultFormat: SaveFormat.XML as string };
 
 		// get save results config from vscode config
-		let saveConfig = this._configurationService.getValue<IXmlConfig>('sql.saveAsXml');
+		let saveConfig = this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.saveAsXml;
 		// if user entered config, set options
 		if (saveConfig) {
 			if (saveConfig.formatted !== undefined) {

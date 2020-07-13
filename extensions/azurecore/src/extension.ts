@@ -42,6 +42,7 @@ import * as azureResourceUtils from './azureResource/utils';
 import * as utils from './utils';
 import * as loc from './localizedConstants';
 import { AzureResourceGroupService } from './azureResource/providers/resourceGroup/resourceGroupService';
+import { Logger } from './utils/Logger';
 
 let extensionContext: vscode.ExtensionContext;
 
@@ -76,6 +77,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 	if (!storagePath) {
 		return undefined;
 	}
+	updatePiiLoggingLevel(apiWrapper);
 
 	// Create the provider service and activate
 	initAzureAccountProvider(extensionContext, storagePath).catch((err) => console.log(err));
@@ -164,5 +166,15 @@ async function onDidChangeConfiguration(e: vscode.ConfigurationChangeEvent, apiW
 		if (response === loc.reload) {
 			await apiWrapper.executeCommand('workbench.action.reloadWindow');
 		}
+		return;
 	}
+
+	if (e.affectsConfiguration('azure.piiLogging')) {
+		updatePiiLoggingLevel(apiWrapper);
+	}
+}
+
+function updatePiiLoggingLevel(apiWrapper: ApiWrapper) {
+	const piiLogging: boolean = apiWrapper.getExtensionConfiguration().get('piiLogging');
+	Logger.piiLogging = piiLogging;
 }

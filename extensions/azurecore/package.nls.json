@@ -28,5 +28,6 @@
 	"config.azureCodeGrantMethod": "Code Grant Method",
 	"config.azureDeviceCodeMethod": "Device Code Method",
 	"config.noSystemKeychain": "Disable system keychain integration. Credentials will be stored in a flat file in the user's home directory.",
-	"config.enableArcFeatures": "Should features related to Azure Arc be enabled (preview)"
+	"config.enableArcFeatures": "Should features related to Azure Arc be enabled (preview)",
+	"config.piiLogging": "Should Personally Identifiable Information (PII) be logged in the console view locally"
 }
