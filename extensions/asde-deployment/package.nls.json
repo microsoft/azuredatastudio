@@ -1,6 +1,6 @@
 {
-	"extension-displayName": "Azure SQL DB Edge Deployment Extension",
-	"extension-description": "Provides a notebook-based experience to deploy Azure SQL DB Edge",
+	"extension-displayName": "Azure SQL Edge Deployment Extension",
+	"extension-description": "Provides a notebook-based experience to deploy Azure SQL Edge",
 	"docker-container-name-field": "Container name",
 	"docker-sql-password-field": "SQL Server (sa) password",
 	"docker-confirm-sql-password-field": "Confirm password",
