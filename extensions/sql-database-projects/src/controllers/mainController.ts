@@ -82,7 +82,7 @@ export default class MainController implements Disposable {
 		await templates.loadTemplates(path.join(this.context.extensionPath, 'resources', 'templates'));
 
 		// ensure .net core is installed
-		this.netcoreTool.findOrInstallNetCore();
+		await this.netcoreTool.findOrInstallNetCore();
 
 		// load any sql projects that are open in workspace folder
 		await this.loadProjectsInWorkspace();
@@ -98,7 +98,9 @@ export default class MainController implements Disposable {
 	}
 
 	public async loadProjectsInFolder(folderPath: string): Promise<void> {
-		let sqlprojFilter = path.posix.join(folderPath, '**', '*.sqlproj');
+		// path needs to use forward slashes for glob to work
+		let escapedPath = glob.escapePath(folderPath.replace(/\\/g, '/'));
+		let sqlprojFilter = path.posix.join(escapedPath, '**', '*.sqlproj');
 		let results = await glob(sqlprojFilter);
 
 		for (let f in results) {
