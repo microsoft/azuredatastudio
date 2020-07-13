@@ -38,6 +38,10 @@ export default class MainController implements Disposable {
 		return this.context;
 	}
 
+	public get projController(): ProjectsController {
+		return this.projectsController;
+	}
+
 	public deactivate(): void {
 	}
 
@@ -81,6 +85,10 @@ export default class MainController implements Disposable {
 		this.netcoreTool.findOrInstallNetCore();
 
 		// load any sql projects that are open in workspace folder
+		await this.loadProjectsInWorkspace();
+	}
+
+	public async loadProjectsInWorkspace(): Promise<void> {
 		const workspaceFolders = this.apiWrapper.workspaceFolders();
 		if (workspaceFolders?.length) {
 			await Promise.all(workspaceFolders.map(async (workspaceFolder) => {
