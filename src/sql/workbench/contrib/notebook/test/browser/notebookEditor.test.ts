@@ -344,8 +344,6 @@ suite('Test class NotebookEditor:', () => {
 
 	test(`Verifies visibility and decorations are set correctly when _onFindStateChange callback happens`, async () => {
 		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
-		// untitledNotebookInput.notebookFindModel.notebookModel = undefined; // clear preexisting notebookModel
-		// notebookEditor.setNotebookModel();
 		let currentPosition = new NotebookRange(<ICellModel>{}, 0, 0, 0, 0);
 		notebookEditor.setSelection(currentPosition);
 		notebookEditor.notebookFindModel['_findArray'] = [currentPosition]; //set some pending finds.
