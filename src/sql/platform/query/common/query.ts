@@ -13,7 +13,7 @@ export interface IQueryEditorConfiguration {
 			readonly encoding: string
 		},
 		readonly saveAsXml: {
-			readonly formatted: string,
+			readonly formatted: boolean,
 			readonly encoding: string
 		},
 		readonly streaming: boolean,
