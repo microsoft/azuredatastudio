@@ -436,7 +436,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 
 		if (tenant.id === 'common') {
-			throw new Error('Common tenant should not need consnet');
+			throw new Error('Common tenant should not need consent');
 		}
 
 		const getTenantConfigurationSet = (): Set<string> => {
@@ -445,15 +445,15 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return new Set<string>(values);
 		};
 
-		const updateTenantConfigurationSet = (set: Set<string>): void => {
-			const configuration = vscode.workspace.getConfiguration('azure.tenant.config');
-			configuration.update('filter', Array.from(set), vscode.ConfigurationTarget.Global);
-		};
-
 		// The user wants to ignore this tenant.
 		if (getTenantConfigurationSet().has(tenant?.displayName ?? tenant?.id)) {
 			return false;
 		}
+
+		const updateTenantConfigurationSet = (set: Set<string>): void => {
+			const configuration = vscode.workspace.getConfiguration('azure.tenant.config');
+			configuration.update('filter', Array.from(set), vscode.ConfigurationTarget.Global);
+		};
 
 		interface ConsentMessageItem extends vscode.MessageItem {
 			booleanResult: boolean;
