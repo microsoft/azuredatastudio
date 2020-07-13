@@ -59,8 +59,9 @@ export class ModifyColumnsPage extends ImportPage {
 		this.table = this.view.modelBuilder.declarativeTable().component();
 		this.text = this.view.modelBuilder.text().component();
 
-		this.table.onDataChanged((e) => {
+		this.table.onDataChanged((e: DeclarativeTableDataValueChanged) => {
 			this.model.proseColumns = [];
+			this.table.data[e.row][e.column] = e.value;
 			this.table.data.forEach((row) => {
 				this.model.proseColumns.push({
 					columnName: row[0],
@@ -155,4 +156,10 @@ export class ModifyColumnsPage extends ImportPage {
 			data: data
 		});
 	}
+}
+
+interface DeclarativeTableDataValueChanged {
+	row: number;
+	column: number;
+	value: string | boolean;
 }
