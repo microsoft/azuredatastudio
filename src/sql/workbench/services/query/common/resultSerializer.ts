@@ -246,7 +246,7 @@ export class ResultSerializer {
 
 		// get save results config from vscode config
 		let saveConfig = this._configurationService.getValue<IXmlConfig>('sql.saveAsXml');
-		// if user entered config, set options
+		// if user entered config, set those options
 		if (saveConfig) {
 			if (saveConfig.formatted !== undefined) {
 				saveResultsParams.formatted = saveConfig.formatted;
@@ -254,6 +254,8 @@ export class ResultSerializer {
 			if (saveConfig.encoding !== undefined) {
 				saveResultsParams.encoding = saveConfig.encoding;
 			}
+		} else { // otherwise format and encode by default
+			saveResultsParams.formatted = true;
 		}
 
 		return saveResultsParams;
