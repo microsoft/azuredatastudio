@@ -39,6 +39,7 @@ export const sqlDatabaseProject = localize('sqlDatabaseProject', "SQL database p
 export const yesString = localize('yesString', "Yes");
 export const noString = localize('noString', "No");
 export const extractTargetInput = localize('extractTargetInput', "Select folder structure for SQL files");
+export const extractDatabaseSelection = localize('extractDatabaseSelection', "Select database to import");
 export const selectString = localize('selectString', "Select");
 export const addDatabaseReferenceInput = localize('addDatabaseReferenceInput', "Add database reference for:");
 export const systemDatabaseReferenceInput = localize('systemDatabaseReferenceInput', "System Database:");

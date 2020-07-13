@@ -5,12 +5,10 @@
 
 import * as azdata from 'azdata';
 import { ConfigurePythonModel, ConfigurePythonWizard } from './configurePythonWizard';
-import { ApiWrapper } from '../../common/apiWrapper';
 
 export abstract class BasePage {
 
-	constructor(protected readonly apiWrapper: ApiWrapper,
-		protected readonly instance: ConfigurePythonWizard,
+	constructor(protected readonly instance: ConfigurePythonWizard,
 		protected readonly wizardPage: azdata.window.WizardPage,
 		protected readonly model: ConfigurePythonModel,
 		protected readonly view: azdata.ModelView) {
