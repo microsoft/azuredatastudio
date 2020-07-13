@@ -13,7 +13,7 @@ import { ExtHostTreeViewsShape, MainThreadTreeViewsShape } from './extHost.proto
 import { ITreeItem, TreeViewItemHandleArg, ITreeItemLabel, IRevealOptions } from 'vs/workbench/common/views';
 import { ExtHostCommands, CommandsConverter } from 'vs/workbench/api/common/extHostCommands';
 import { asPromise } from 'vs/base/common/async';
-import { TreeItemCollapsibleState, ThemeIcon } from 'vs/workbench/api/common/extHostTypes';
+import { TreeItemCollapsibleState, ThemeIcon, MarkdownString as MarkdownStringType } from 'vs/workbench/api/common/extHostTypes';
 import { isUndefinedOrNull, isString } from 'vs/base/common/types';
 import { equals, coalesce } from 'vs/base/common/arrays';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -25,10 +25,6 @@ import { IMarkdownString } from 'vs/base/common/htmlContent';
 // {{SQL CARBON EDIT}}
 import * as azdata from 'azdata';
 export type TreeItemHandle = string;
-
-function isMarkdownString(value: any): value is vscode.MarkdownString {
-	return (value !== undefined) && value.appendCodeblock && value.appendMarkdown && value.appendText && (value.value !== undefined);
-}
 
 function toTreeItemLabel(label: any, extension: IExtensionDescription): ITreeItemLabel | undefined {
 	if (isString(label)) {
@@ -542,7 +538,7 @@ export class ExtHostTreeView<T> extends Disposable {
 	}
 
 	private getTooltip(tooltip?: string | vscode.MarkdownString): string | IMarkdownString | undefined {
-		if (isMarkdownString(tooltip)) {
+		if (MarkdownStringType.isMarkdownString(tooltip)) {
 			checkProposedApiEnabled(this.extension);
 			return MarkdownString.from(tooltip);
 		}
