@@ -28,6 +28,11 @@
             "type": "array",
             "default": null,
             "description": "%azure.resource.config.filter.description%"
+          },
+          "azure.tenant.config.filter": {
+            "type":"array",
+            "default": [],
+            "description": "%azure.tenant.config.filter.description%"
           }
         }
       },

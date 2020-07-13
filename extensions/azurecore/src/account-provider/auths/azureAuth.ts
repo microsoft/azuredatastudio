@@ -100,7 +100,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	protected readonly MicrosoftAccountType: string = 'microsoft';
 
 	protected readonly loginEndpointUrl: string;
-	protected readonly commonTenant: string;
+	protected readonly commonTenant: Tenant;
 	protected readonly redirectUri: string;
 	protected readonly scopes: string[];
 	protected readonly scopesString: string;
@@ -117,7 +117,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 		public readonly userFriendlyName: string
 	) {
 		this.loginEndpointUrl = this.metadata.settings.host;
-		this.commonTenant = 'common';
+		this.commonTenant = {
+			id: 'common',
+			displayName: 'common',
+		};
 		this.redirectUri = this.metadata.settings.redirectUri;
 		this.clientId = this.metadata.settings.clientId;
 
@@ -390,7 +393,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			let refreshResponse: TokenRefreshResponse;
 
 			try {
-				const tokenUrl = `${this.loginEndpointUrl}${tenant}/oauth2/token`;
+				const tokenUrl = `${this.loginEndpointUrl}${tenant.id}/oauth2/token`;
 				const tokenResponse = await this.makePostRequest(tokenUrl, postData);
 				Logger.pii(JSON.stringify(tokenResponse.data));
 				const tokenClaims = this.getTokenClaims(tokenResponse.data.access_token);
@@ -412,7 +415,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 				if (ex?.response?.data?.error === 'interaction_required') {
 					const shouldOpenLink = await this.openConsentDialog(tenant, resourceId);
 					if (shouldOpenLink === true) {
-						const { tokenRefreshResponse, authCompleteDeferred } = await this.promptForConsent(resourceEndpoint, tenant);
+						const { tokenRefreshResponse, authCompleteDeferred } = await this.promptForConsent(resourceEndpoint, tenant.id);
 						refreshResponse = tokenRefreshResponse;
 						authCompleteDeferred.resolve();
 					} else {
@@ -423,7 +426,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 				}
 			}
 
-			this.memdb.set(this.createMemdbString(refreshResponse.accessToken.key, tenant, resourceId), refreshResponse.expiresOn);
+			this.memdb.set(this.createMemdbString(refreshResponse.accessToken.key, tenant.id, resourceId), refreshResponse.expiresOn);
 			return refreshResponse;
 		} catch (err) {
 			const msg = localize('azure.noToken', "Retrieving the Azure token failed. Please sign in again.");
@@ -432,24 +435,63 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 	}
 
-	private async openConsentDialog(tenantId: string, resourceId: string): Promise<boolean> {
+	private async openConsentDialog(tenant: Tenant, resourceId: string): Promise<boolean> {
+		if (!tenant.displayName && !tenant.id) {
+			throw new Error('Tenant did not have display name or id');
+		}
+
+		if (tenant.id === 'common') {
+			throw new Error('Common tenant should not need consent');
+		}
+
+		const getTenantConfigurationSet = (): Set<string> => {
+			const configuration = vscode.workspace.getConfiguration('azure.tenant.config');
+			let values: string[] = configuration.get('filter') ?? [];
+			return new Set<string>(values);
+		};
+
+		// The user wants to ignore this tenant.
+		if (getTenantConfigurationSet().has(tenant?.displayName ?? tenant?.id)) {
+			return false;
+		}
+
+		const updateTenantConfigurationSet = (set: Set<string>): void => {
+			const configuration = vscode.workspace.getConfiguration('azure.tenant.config');
+			configuration.update('filter', Array.from(set), vscode.ConfigurationTarget.Global);
+		};
+
 		interface ConsentMessageItem extends vscode.MessageItem {
 			booleanResult: boolean;
+			action?: (tenantId: string) => void;
 		}
 
 		const openItem: ConsentMessageItem = {
-			title: localize('open', "Open"),
+			title: localize('azurecore.consentDialog.open', "Open"),
 			booleanResult: true
 		};
 
 		const closeItem: ConsentMessageItem = {
-			title: localize('cancel', "Cancel"),
+			title: localize('azurecore.consentDialog.cancel', "Cancel"),
 			isCloseAffordance: true,
 			booleanResult: false
 		};
 
-		const messageBody = localize('azurecore.consentDialog.body', "Your tenant {0} requires you to re-authenticate again to access {1} resources. Press Open to start the authentication process.", tenantId, resourceId);
-		const result = await vscode.window.showInformationMessage(messageBody, { modal: true }, openItem, closeItem);
+		const dontAskAgainItem: ConsentMessageItem = {
+			title: localize('azurecore.consentDialog.ignore', "Ignore Tenant"),
+			booleanResult: false,
+			action: (tenantId: string) => {
+				let set = getTenantConfigurationSet();
+				set.add(tenantId);
+				updateTenantConfigurationSet(set);
+			}
+
+		};
+		const messageBody = localize('azurecore.consentDialog.body', "Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.", tenant.displayName, tenant.id, resourceId);
+		const result = await vscode.window.showInformationMessage(messageBody, { modal: true }, openItem, closeItem, dontAskAgainItem);
+
+		if (result.action) {
+			result.action(tenant.id);
+		}
 
 		return result.booleanResult;
 	}
@@ -463,19 +505,19 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 	}
 
-	private async refreshAccessToken(account: azdata.AccountKey, rt: RefreshToken, tenant?: Tenant, resource?: Resource): Promise<TokenRefreshResponse> {
+	private async refreshAccessToken(account: azdata.AccountKey, rt: RefreshToken, tenant: Tenant = this.commonTenant, resource?: Resource): Promise<TokenRefreshResponse> {
 		const postData: { [key: string]: string } = {
 			grant_type: 'refresh_token',
 			refresh_token: rt.token,
 			client_id: this.clientId,
-			tenant: this.commonTenant,
+			tenant: tenant.id,
 		};
 
 		if (resource) {
 			postData.resource = resource.endpoint;
 		}
 
-		const getTokenResponse = await this.getToken(postData, tenant?.id, resource?.id, resource?.endpoint);
+		const getTokenResponse = await this.getToken(postData, tenant, resource?.id, resource?.endpoint);
 
 		const accessToken = getTokenResponse?.accessToken;
 		const refreshToken = getTokenResponse?.refreshToken;
