@@ -19,7 +19,7 @@
 	"docker-username-field": "Username",
 	"docker-password-field": "Password",
 	"edge-agreement": "I accept {0} and {1}.",
-	"edge-eula": "Microsoft SQL Server License Agreement",
+	"edge-eula": "Microsoft Azure SQL Edge License Agreement",
 	"sql-edge-remote-title": "Deploy Azure SQL Edge container instance on remote machine",
 	"remote-info-section-title": "Target machine information",
 	"edge-remote-target-field": "Name or IP address",
