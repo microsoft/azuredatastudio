@@ -19,6 +19,7 @@ import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/commo
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 import { mixin } from 'vs/base/common/objects';
+import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 
 const defaults: INewSqlEditorOptions = {
 	open: true
@@ -55,7 +56,7 @@ export class QueryEditorService implements IQueryEditorService {
 		let untitledEditorModel = await fileInput.resolve() as UntitledTextEditorModel;
 		if (options.initalContent) {
 			untitledEditorModel.textEditorModel.setValue(options.initalContent);
-			if (options.dirty === false || (options.dirty === undefined && !this._configurationService.getValue<boolean>('sql.promptToSaveGeneratedFiles'))) {
+			if (options.dirty === false || (options.dirty === undefined && !this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').promptToSaveGeneratedFiles)) {
 				untitledEditorModel.setDirty(false);
 			}
 		}
