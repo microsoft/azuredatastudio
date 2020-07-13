@@ -3,37 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
-import * as TypeMoq from 'typemoq';
-import { RemoteBookDialog, RemoteBookDialogModel } from '../../dialog/remoteBookDialog';
-import { IReleases, IAssets, GitHubRemoteBook } from '../../book/remoteBookController';
+import { RemoteBookDialogModel, RemoteBookDialog } from '../../dialog/remoteBookDialog';
+import { RemoteBookController } from '../../book/remoteBookController';
 import * as should from 'should';
-import { ApiWrapper } from '../../common/apiWrapper';
-import { EventEmitter } from 'vscode';
-import * as loc from '../../common/localizedConstants';
-import { TestButton, createViewContext, TestDropdownComponent } from '../../test/common';
-
-interface TestContext {
-	view: azdata.ModelView;
-	onClick: EventEmitter<any>;
-	dialog: TypeMoq.IMock<RemoteBookDialog>;
-	model: TypeMoq.IMock<RemoteBookDialogModel>;
-}
-
-function createContext(): TestContext {
-	let apiWrapper = new ApiWrapper();
-	let viewTestContext = createViewContext();
-	let model = TypeMoq.Mock.ofInstance(new RemoteBookDialogModel(apiWrapper));
-	let dialog = TypeMoq.Mock.ofInstance(new RemoteBookDialog(model.target));
-	dialog.setup(x => x.model).returns(() => model.target);
-
-	return {
-		view: dialog.target.view,
-		onClick: viewTestContext.onClick,
-		dialog,
-		model
-	};
-}
+import * as request from 'request';
+import * as sinon from 'sinon';
 
 export interface IExpectedBookItem {
 	title: string;
@@ -45,105 +19,81 @@ export interface IExpectedBookItem {
 }
 
 describe('Add Remote Book Dialog', function () {
-	let apiWrapper = new ApiWrapper();
-	let remoteBookDialogModel = TypeMoq.Mock.ofInstance(new RemoteBookDialogModel(apiWrapper));
-	//let testDialog = TypeMoq.Mock.ofType(RemoteBookDialog);
+	let remoteBookDialogModel = new RemoteBookDialogModel();
+	let remoteBookController = new RemoteBookController(remoteBookDialogModel);
+	let remoteBookDialog = new RemoteBookDialog(remoteBookController);
 
-	beforeEach(() => {
-		// let mockReleasesDropdown = new TestDropdownComponent(new EventEmitter<void>());
-		// let mockBookDropdown = new TestDropdownComponent(new EventEmitter<void>());
-		// let mockVersionDropdown = new TestDropdownComponent(new EventEmitter<void>());
-		// let mockLanguageDropdown = new TestDropdownComponent(new EventEmitter<void>());
-		// testDialog.object.releaseDropdown = mockReleasesDropdown;
-		// testDialog.object.bookDropdown = mockBookDropdown;
-		// testDialog.object.versionDropdown = mockVersionDropdown;
-		// testDialog.object.languageDropdown = mockLanguageDropdown;
-		// testDialog.setup(d => d.createDialog()).returns(() => Promise.resolve());
-		// testDialog.setup(d => d.getAssets()).returns(() => Promise.resolve());
-
-		// remoteBookDialog = testDialog.object;
-
+	afterEach(function (): void {
+		sinon.restore();
 	});
 
 	it('Should open dialog successfully ', async function (): Promise<void> {
-		let remoteBookDialog = new RemoteBookDialog(remoteBookDialogModel.object);
-		await should(remoteBookDialog.createDialog()).be.resolved();
+		let spy = sinon.spy();
+		spy(remoteBookDialog, 'createDialog');
+		await remoteBookDialog.createDialog();
+		should(spy.calledOnce).be.true();
 	});
 
-	it('getReleases should return true if there are releases', async function (): Promise<void> {
-		let testContext = createContext();
-		let dummy_releases: IReleases[] = [{
-			name: 'Test Release',
-			assets_url: new URL('c://new/assets/url'),
-		},
-		{
-			name: 'Test Release1',
-			assets_url: new URL('c://new/assets1/url'),
-		}];
+	it('Verify that fetchReleases call populates model correctly', async function (): Promise<void> {
+		let expectedBody = JSON.stringify([
+			{
+				name: 'Test release 1',
+				assets_url: 'https://api.github.com/repos/microsoft/test/releases/1/assets'
+			},
+			{
+				name: 'Test release 2',
+				assets_url: 'https://api.github.com/repos/microsoft/test/releases/2/assets'
+			},
+			{
+				name: 'Test release 3',
+				assets_url: 'https://api.github.com/repos/microsoft/test/releases/3/assets'
+			}
+		]);
+		let expectedURL = new URL('https://api.github.com/repos/microsoft/test/releases');
+		sinon.stub(request, 'get').yields(null, { statusCode: 200 }, expectedBody);
 
-		let dummy_url = new URL('//new/releases/url');
-		let githubBook = TypeMoq.Mock.ofType(GitHubRemoteBook);
-		githubBook.setup(() => GitHubRemoteBook.getReleases(dummy_url)).returns(() => Promise.resolve(dummy_releases));
-		let model = new RemoteBookDialogModel(apiWrapper);
-		let release_url = 'path/to/release';
-		//testContext.model.target.releases = releases;
-		testContext.model.setup(x => x.getReleases(release_url)).returns(() => Promise.resolve(testContext.model.target.releases !== undefined && testContext.model.target.releases.length > 0));
-		should(await testContext.model.target.getReleases(release_url)).be.true();
+		let result = await remoteBookController.fetchGithubReleases(expectedURL);
+		should(result.length).be.equal(3, 'Result should be equal to the expectedBody');
+		result.forEach(release => {
+			should(release).have.property('name');
+			should(release).have.property('assets_url');
+		});
+		let modelReleases = remoteBookDialogModel.releases;
+		should(result).deepEqual(remoteBookController.getReleases());
+		should(result).deepEqual(modelReleases);
 	});
 
-	it('getAssets should fill the assets dropdown', async function (): Promise<void> {
-		let release: IReleases = {
-			name: 'Test Release',
-			assets_url: new URL('c://new/assets/url'),
-		};
+	it('Verify that fetchAssets call populates model correctly', async function (): Promise<void> {
+		let expectedBody = JSON.stringify([
+			{
+				name: 'Test release 1',
+				assets_url: 'https://api.github.com/repos/microsoft/test/releases/1/assets'
+			},
+			{
+				name: 'Test release 2',
+				assets_url: 'https://api.github.com/repos/microsoft/test/releases/2/assets'
+			},
+			{
+				name: 'Test release 3',
+				assets_url: 'https://api.github.com/repos/microsoft/test/releases/3/assets'
+			}
+		]);
+		let expectedURL = new URL('https://api.github.com/repos/microsoft/test/releases');
+		sinon.stub(request, 'get').yields(null, { statusCode: 200 }, expectedBody);
 
-		let assets: IAssets[] = [{
-			name: 'CU5-1.1-EN.zip',
-			browser_download_url: new URL('c://new/assets/url/book/CU5'),
-			book: 'CU5',
-			version: '1.1',
-			language: 'EN',
-			url: new URL('c://new/assets/url')
-		}];
-		remoteBookDialogModel.target.releases = [release];
-		remoteBookDialogModel.target.assets = assets;
-		remoteBookDialogModel.target.remoteLocation = loc.onGitHub;
-		remoteBookDialogModel.setup(x => x.getListAssets(release)).returns(() => Promise.resolve(assets));
-		should(await remoteBookDialogModel.target.getListAssets(release)).not.be.undefined();
-		should(await remoteBookDialogModel.target.getListAssets(release)).deepEqual(assets);
-		// await remoteBookDialog.createDialog();
-		// remoteBookDialog.releaseDropdown.value = release.name;
-		// await remoteBookDialog.getAssets();
-		// should(remoteBookDialog.bookDropdown.value).deepEqual(assets[0].book);
+		let result = await remoteBookController.fetchGithubReleases(expectedURL);
+		should(result.length).be.equal(3, 'Result should be equal to the expectedBody');
+		result.forEach(release => {
+			should(release).have.property('name');
+			should(release).have.property('assets_url');
+		});
+		let modelReleases = remoteBookDialogModel.releases;
+		should(result).deepEqual(remoteBookController.getReleases());
+		should(result).deepEqual(modelReleases);
 	});
 
 	it('Should extract the folder containing books', async function (): Promise<void> {
 
 	});
-
-	// it('Should get selected book and map it to the asset', async function() : Promise<void>{
-	// 	let testContext = createViewContext();
-	// 	let assets : IAssets[] = [{
-	// 		name: 'CU5-1.1-EN.zip',
-	// 		browser_download_url: new URL('c://new/assets/url/book/CU5'),
-	// 		book: 'CU5',
-	// 		version: '1.1',
-	// 		language: 'EN',
-	// 		url:  new URL('c://new/assets/url')
-	// 	}];
-
-	// 	//testContext.model.setup(x => x.getListAssets(release)).returns(() => Promise.resolve(true));
-	// 	testContext.model.object.assets = assets;
-	// 	testContext.dialog.setup(x => x.createDialog()).returns(() => Promise.resolve());
-	// 	testContext.dialog.setup(x => x.getAssets()).returns(() => Promise.resolve());
-	// 	let dialog = testContext.dialog.object;
-	// 	should.notEqual(dialog.bookDropdown, undefined);
-	// 	should.notEqual(dialog.versionDropdown, undefined);
-	// 	should.notEqual(dialog.languageDropdown, undefined);
-	// });
-
-	// it('Should create book from assets', async function() : Promise<void>{
-	// 	//let testContext = createViewContext();
-	// });
-
 });
+
