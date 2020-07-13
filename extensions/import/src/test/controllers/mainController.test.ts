@@ -3,29 +3,42 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
 import * as TypeMoq from 'typemoq';
 import { ApiWrapper } from '../../common/apiWrapper';
 import MainController from '../../controllers/mainController';
-import { TestExtensionContext } from '../utils.test';
+import * as constants from '../../common/constants';
+import * as should from 'should';
+import * as path from 'path';
+import { ImportTestUtils, TestExtensionContext } from '../utils.test';
 
 describe('Main Controller', function () {
-	let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
+	let testExtensionContext: TestExtensionContext;
 	let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
+	let extensionPath: string;
 
-	this.beforeEach(function () {
-		mockExtensionContext = TypeMoq.Mock.ofType(TestExtensionContext, TypeMoq.MockBehavior.Loose);
+	beforeEach(async function () {
+		extensionPath = await ImportTestUtils.getExtensionPath();
+		// creating a mock Extension Context with current extensionPath
+		testExtensionContext = await ImportTestUtils.getTestExtensionContext();
 		mockApiWrapper = TypeMoq.Mock.ofType(ApiWrapper);
 	});
 
-	it('Should create new instance successfully', async function () {
-		// mocking createOutputChannel in API wrapper
-		mockApiWrapper.setup(x => x.createOutputChannel(TypeMoq.It.isAny()));
+	it('Should download required binaries and register flatFileImportStartCommand after activate is called', async function () {
+		this.timeout(50000);
 
-		// creating a Main Controller
-		new MainController(mockExtensionContext.object, mockApiWrapper.object);
 
-		// verifying if the output channel is created
-		mockApiWrapper.verify(x => x.createOutputChannel(TypeMoq.It.isAny()), TypeMoq.Times.once());
+		// using vscode and azdata APIs available during tests
+		mockApiWrapper.callBase = true;
+
+		let mainController = new MainController(testExtensionContext, mockApiWrapper.object);
+
+		await mainController.activate();
+
+		// verifying that the task is registered.
+		mockApiWrapper.verify(x => x.registerTask(constants.flatFileImportStartCommand, TypeMoq.It.isAny()), TypeMoq.Times.once());
+
+		//Checking if .net code files are downloaded
+		should.equal(await ImportTestUtils.checkPathExists(path.join(extensionPath, 'flatfileimportservice')), true);
 	});
 });
+

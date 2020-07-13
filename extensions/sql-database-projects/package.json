@@ -118,7 +118,11 @@
       {
         "command": "sqlDatabaseProjects.importDatabase",
         "title": "%sqlDatabaseProjects.importDatabase%",
-        "category": "%sqlDatabaseProjects.displayName%"
+        "category": "%sqlDatabaseProjects.displayName%",
+          "icon": {
+            "dark": "images/extension.png",
+            "light": "images/extension.png"
+          }
       },
       {
         "command": "sqlDatabaseProjects.addDatabaseReference",
@@ -276,6 +280,12 @@
           "command": "sqlDatabaseProjects.importDatabase",
           "when": "connectionProvider == MSSQL && nodeType && nodeType == Database && mssql:engineedition != 11",
           "group": "export"
+        }
+      ],
+      "dashboard/toolbar": [
+        {
+            "command": "sqlDatabaseProjects.importDatabase",
+            "when": "connectionProvider == 'MSSQL' && mssql:engineedition != 11"
         }
       ]
     },
