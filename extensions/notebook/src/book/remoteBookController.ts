@@ -61,7 +61,7 @@ export class RemoteBookController {
 				}
 				let releases = JSON.parse(body);
 				let bookReleases: IReleases[] = [];
-				if (releases) {
+				if (releases !== undefined && releases.length > 0) {
 					let keys = Object.keys(releases);
 					keys = keys.filter(key => {
 						let release = {} as IReleases;
@@ -75,8 +75,8 @@ export class RemoteBookController {
 						bookReleases.push(release);
 					});
 				}
-				if (bookReleases) {
-					this.model.releases = bookReleases;
+				this.model.releases = bookReleases;
+				if (bookReleases.length > 0) {
 					resolve(bookReleases);
 				} else {
 					return reject(msgReleaseNotFound);
