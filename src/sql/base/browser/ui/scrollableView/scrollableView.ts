@@ -82,7 +82,7 @@ export class ScrollableView extends Disposable {
 		this.domNode.appendChild(this.scrollableElement.getDomNode());
 		container.appendChild(this.domNode);
 
-		this._register(this.scrollableElement.onScroll(this.onScroll, this));
+		this._register(Event.debounce(this.scrollableElement.onScroll, (l, e) => e, 25)(this.onScroll, this));
 
 		// Prevent the monaco-scrollable-element from scrolling
 		// https://github.com/Microsoft/vscode/issues/44181
