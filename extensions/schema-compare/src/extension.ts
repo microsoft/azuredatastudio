@@ -4,22 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import MainController from './controllers/mainController';
 import { ApiWrapper } from './common/apiWrapper';
+import { SchemaCompareMainWindow } from './schemaCompareMainWindow';
 
-let controllers: MainController[] = [];
-
-export async function activate(context: vscode.ExtensionContext): Promise<void> {
-	// Start the main controller
-	let mainController = new MainController(context, new ApiWrapper());
-	controllers.push(mainController);
-	context.subscriptions.push(mainController);
-
-	await mainController.activate();
+export async function activate(extensionContext: vscode.ExtensionContext): Promise<void> {
+	vscode.commands.registerCommand('schemaCompare.start', async (context: any) => { await new SchemaCompareMainWindow(new ApiWrapper(), undefined, extensionContext).start(context); });
 }
 
 export function deactivate(): void {
-	for (let controller of controllers) {
-		controller.deactivate();
-	}
 }

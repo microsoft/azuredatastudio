@@ -245,6 +245,7 @@ const externalExtensions = [
 	'admin-tool-ext-win',
 	'agent',
 	'arc',
+	'azdata',
 	'import',
 	'profiler',
 	'admin-pack',

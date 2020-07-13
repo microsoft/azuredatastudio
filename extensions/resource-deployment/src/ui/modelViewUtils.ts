@@ -608,11 +608,7 @@ function processCheckboxField(context: FieldContext): void {
  * @param context The context to use to create the field
  */
 function processFilePickerField(context: FieldContext): FilePickerInputs {
-	const inputWidth = parseInt(context.fieldInfo.inputWidth!);
-	if (inputWidth === NaN) {
-		// this is a dev time only error
-		throw new Error('Unable to parse the input width of the file picker field');
-	}
+	const inputWidth = parseInt(context.fieldInfo.inputWidth!.replace(/px/g, '').trim());
 	const buttonWidth = 100;
 
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
@@ -806,7 +802,11 @@ async function processAzureAccountField(context: AzureAccountFieldContext): Prom
 		await vscode.commands.executeCommand('workbench.actions.modal.linkedAccount');
 		await populateAzureAccounts();
 	}));
-	await populateAzureAccounts();
+
+	// populate the values in a different batch as the initialization to avoid the issue that the account list is empty even though the values are correctly.
+	setTimeout(async () => {
+		await populateAzureAccounts();
+	}, 0);
 }
 
 function createAzureAccountDropdown(context: AzureAccountFieldContext): AzureAccountComponents {

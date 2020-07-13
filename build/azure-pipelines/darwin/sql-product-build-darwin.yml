@@ -27,11 +27,11 @@ steps:
 
   - task: NodeTool@0
     inputs:
-      versionSpec: '10.15.3'
+      versionSpec: "12.13.0"
 
   - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
     inputs:
-      versionSpec: '1.x'
+      versionSpec: "1.x"
 
   - task: AzureKeyVault@1
     displayName: 'Azure Key Vault: Get Secrets'
@@ -129,12 +129,14 @@ steps:
     displayName: Run smoke tests (Electron)
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
-  # - script: |
-  #     set -e
-  #     VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-web-darwin" \
-  #     yarn smoketest --web --headless  --screenshots "$(build.artifactstagingdirectory)/smokeshots"
-  #   displayName: Run smoke tests (Browser)
-  #   condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+  - script: |
+      set -e
+      node ./node_modules/playwright/install.js
+      VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-web-darwin" \
+      yarn smoketest --web --headless  --screenshots "$(build.artifactstagingdirectory)/smokeshots"
+    displayName: Run smoke tests (Browser)
+    continueOnError: true
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   - script: |
       set -e

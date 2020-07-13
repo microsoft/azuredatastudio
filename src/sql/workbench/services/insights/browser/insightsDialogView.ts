@@ -41,16 +41,29 @@ import { TaskRegistry } from 'sql/workbench/services/tasks/browser/tasksRegistry
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { onUnexpectedError } from 'vs/base/common/errors';
-import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { ViewPane, IViewPaneOptions, ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 import { attachPanelStyler, attachModalDialogStyler } from 'sql/workbench/common/styler';
-import { IViewDescriptorService } from 'vs/workbench/common/views';
+import { IViewDescriptorService, IViewContainersRegistry, ViewContainerLocation, Extensions as ViewContainerExtensions, IViewsRegistry } from 'vs/workbench/common/views';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { Registry } from 'vs/platform/registry/common/platform';
+import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 
 const labelDisplay = nls.localize("insights.item", "Item");
 const valueDisplay = nls.localize("insights.value", "Value");
 const iconClass = 'codicon';
+
+export const VIEWLET_ID = 'workbench.view.insightdetails';
+
+export class InsightsDetailPaneContainer extends ViewPaneContainer { }
+
+export const INSIGHTS_DETAIL_VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
+	id: VIEWLET_ID,
+	name: nls.localize('insightsDetailView.name', "Insight Details"),
+	ctorDescriptor: new SyncDescriptor(InsightsDetailPaneContainer),
+	storageId: `${VIEWLET_ID}.state`
+}, ViewContainerLocation.Dialog);
 
 class InsightTableView extends ViewPane {
 	private _table: Table<ListResource>;
@@ -217,17 +230,29 @@ export class InsightsDialogView extends Modal {
 
 		this._splitView = new SplitView(container);
 
+		const itemsViewId = 'insights.top';
+		const itemDetailsViewId = 'insights.bottom';
 		const itemsHeaderTitle = nls.localize("insights.dialog.items", "Items");
 		const itemsDetailHeaderTitle = nls.localize("insights.dialog.itemDetails", "Item Details");
 
 		this._topTableData = new TableDataView<ListResource>();
 		this._bottomTableData = new TableDataView<ListResource>();
-		let topTableView = this._instantiationService.createInstance(InsightTableView, this._topColumns, this._topTableData, { forceFitColumns: true }, { id: 'insights.top', title: itemsHeaderTitle });
+		let topTableView = this._instantiationService.createInstance(InsightTableView, this._topColumns, this._topTableData, { forceFitColumns: true }, { id: itemsViewId, title: itemsHeaderTitle });
+		Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).registerViews([{
+			id: itemsViewId,
+			name: itemsHeaderTitle,
+			ctorDescriptor: new SyncDescriptor(InsightTableView),
+		}], INSIGHTS_DETAIL_VIEW_CONTAINER);
 		topTableView.render();
 		attachPanelStyler(topTableView, this._themeService);
 		this._topTable = topTableView.table;
 		this._topTable.setSelectionModel(new RowSelectionModel<ListResource>());
-		let bottomTableView = this._instantiationService.createInstance(InsightTableView, this._bottomColumns, this._bottomTableData, { forceFitColumns: true }, { id: 'insights.bottom', title: itemsDetailHeaderTitle });
+		let bottomTableView = this._instantiationService.createInstance(InsightTableView, this._bottomColumns, this._bottomTableData, { forceFitColumns: true }, { id: itemDetailsViewId, title: itemsDetailHeaderTitle });
+		Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).registerViews([{
+			id: itemDetailsViewId,
+			name: itemsDetailHeaderTitle,
+			ctorDescriptor: new SyncDescriptor(InsightTableView),
+		}], INSIGHTS_DETAIL_VIEW_CONTAINER);
 		bottomTableView.render();
 		attachPanelStyler(bottomTableView, this._themeService);
 		this._bottomTable = bottomTableView.table;

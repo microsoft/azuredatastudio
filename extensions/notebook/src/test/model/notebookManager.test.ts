@@ -12,7 +12,6 @@ import 'mocha';
 import { LocalJupyterServerManager, ServerInstanceFactory, IServerManagerOptions } from '../../jupyter/jupyterServerManager';
 import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
 import { Deferred } from '../../common/promise';
-import { ApiWrapper } from '../../common/apiWrapper';
 import { MockExtensionContext } from '../common/stubs';
 import { JupyterSessionManager } from '../../jupyter/jupyterSessionManager';
 import { JupyterNotebookManager } from '../../jupyter/jupyterNotebookManager';
@@ -28,15 +27,11 @@ describe('Jupyter Notebook Manager', function (): void {
 	let sessionManager: JupyterSessionManager;
 	let notebookManager: JupyterNotebookManager;
 	let deferredInstall: Deferred<void>;
-	let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
 	let mockExtensionContext: MockExtensionContext;
 	let mockFactory: TypeMoq.IMock<ServerInstanceFactory>;
 	let serverManagerOptions: IServerManagerOptions;
 	beforeEach(() => {
 		mockExtensionContext = new MockExtensionContext();
-		mockApiWrapper = TypeMoq.Mock.ofType(ApiWrapper);
-		mockApiWrapper.setup(a => a.showErrorMessage(TypeMoq.It.isAny()));
-		mockApiWrapper.setup(a => a.getWorkspacePathFromUri(TypeMoq.It.isAny())).returns(() => undefined);
 		mockFactory = TypeMoq.Mock.ofType(ServerInstanceFactory);
 
 		deferredInstall = new Deferred<void>();
@@ -48,7 +43,6 @@ describe('Jupyter Notebook Manager', function (): void {
 			documentPath: expectedPath,
 			jupyterInstallation: mockInstall.object,
 			extensionContext: mockExtensionContext,
-			apiWrapper: mockApiWrapper.object,
 			factory: mockFactory.object
 		};
 		serverManager = new LocalJupyterServerManager(serverManagerOptions);
@@ -90,7 +84,7 @@ describe('Jupyter Notebook Manager', function (): void {
 	it('Session and server managers should be shutdown/stopped on dispose', async function(): Promise<void> {
 		let sessionManager = TypeMoq.Mock.ofType<JupyterSessionManager>();
 		let serverManager = TypeMoq.Mock.ofType<LocalJupyterServerManager>();
-		notebookManager = new JupyterNotebookManager(serverManager.object, sessionManager.object, mockApiWrapper.object);
+		notebookManager = new JupyterNotebookManager(serverManager.object, sessionManager.object);
 		sessionManager.setup(s => s.shutdownAll()).returns(() => new Promise((resolve) => resolve()));
 		serverManager.setup(s => s.stopServer()).returns(() => new Promise((resolve) => resolve()));
 
