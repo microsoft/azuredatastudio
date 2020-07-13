@@ -327,7 +327,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2019-11-01');
 		try {
 			const tenantResponse = await this.makeGetRequest(token.token, tenantUri);
-			Logger.pii(tenantResponse.data);
+			Logger.pii('getTenants', tenantResponse.data);
 			const tenants: Tenant[] = tenantResponse.data.value.map((tenantInfo: TenantResponse) => {
 				return {
 					id: tenantInfo.tenantId,
@@ -368,7 +368,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			const subscriptionUri = url.resolve(this.metadata.settings.armResource.endpoint, 'subscriptions?api-version=2019-11-01');
 			try {
 				const subscriptionResponse = await this.makeGetRequest(token.token, subscriptionUri);
-				Logger.pii(subscriptionResponse.data);
+				Logger.pii('getSubscriptions', subscriptionResponse.data);
 				const subscriptions: Subscription[] = subscriptionResponse.data.value.map((subscriptionInfo: SubscriptionResponse) => {
 					return {
 						id: subscriptionInfo.subscriptionId,
