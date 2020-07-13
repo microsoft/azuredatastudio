@@ -71,9 +71,9 @@ class ReplaceAllAction extends Action {
 	}
 }
 
-const ctrlKeyMod = (isMacintosh ? KeyMod.WinCtrl : KeyMod.CtrlCmd);
+export const ctrlKeyMod = (isMacintosh ? KeyMod.WinCtrl : KeyMod.CtrlCmd); // {{SQL CARBON EDIT}}
 
-function stopPropagationForMultiLineUpwards(event: IKeyboardEvent, value: string, textarea: HTMLTextAreaElement | null) {
+export function stopPropagationForMultiLineUpwards(event: IKeyboardEvent, value: string, textarea: HTMLTextAreaElement | null) { // {{SQL CARBON EDIT}}
 	const isMultiline = !!value.match(/\n/);
 	if (textarea && (isMultiline || textarea.clientHeight > SingleLineInputHeight) && textarea.selectionStart > 0) {
 		event.stopPropagation();
@@ -81,7 +81,7 @@ function stopPropagationForMultiLineUpwards(event: IKeyboardEvent, value: string
 	}
 }
 
-function stopPropagationForMultiLineDownwards(event: IKeyboardEvent, value: string, textarea: HTMLTextAreaElement | null) {
+export function stopPropagationForMultiLineDownwards(event: IKeyboardEvent, value: string, textarea: HTMLTextAreaElement | null) { // {{SQL CARBON EDIT}}
 	const isMultiline = !!value.match(/\n/);
 	if (textarea && (isMultiline || textarea.clientHeight > SingleLineInputHeight) && textarea.selectionEnd < textarea.value.length) {
 		event.stopPropagation();

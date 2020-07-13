@@ -125,7 +125,7 @@ export class SearchView extends ViewPane {
 	protected messagesElement!: HTMLElement; // {{SQL CARBON EDIT}}
 	protected messageDisposables: IDisposable[] = []; // {{SQL CARBON EDIT}}
 	private searchWidgetsContainerElement!: HTMLElement;
-	private searchWidget!: SearchWidget;
+	protected searchWidget!: SearchWidget; // {{SQL CARBON EDIT}}
 	protected size!: dom.Dimension; // {{SQL CARBON EDIT}}
 	private queryDetails!: HTMLElement;
 	private toggleQueryDetailsButton!: HTMLElement;

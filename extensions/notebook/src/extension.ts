@@ -124,16 +124,10 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	azdata.nb.onDidChangeActiveNotebookEditor(e => {
 		if (e.document.uri.scheme === 'untitled') {
 			providedBookTreeViewProvider.revealActiveDocumentInViewlet(e.document.uri, false);
+			vscode.commands.executeCommand(BuiltInCommands.SetContext, unsavedBooksContextKey, true);
 		} else {
 			bookTreeViewProvider.revealActiveDocumentInViewlet(e.document.uri, false);
-		}
-	});
-
-	azdata.nb.onDidOpenNotebookDocument(async e => {
-		if (e.uri.scheme === 'untitled') {
-			await vscode.commands.executeCommand(BuiltInCommands.SetContext, unsavedBooksContextKey, true);
-		} else {
-			await vscode.commands.executeCommand(BuiltInCommands.SetContext, unsavedBooksContextKey, false);
+			vscode.commands.executeCommand(BuiltInCommands.SetContext, unsavedBooksContextKey, false);
 		}
 	});
 
