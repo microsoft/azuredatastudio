@@ -434,6 +434,11 @@ export abstract class AzureAuth implements vscode.Disposable {
 		if (!tenant.displayName && !tenant.id) {
 			throw new Error('Tenant did not have display name or id');
 		}
+
+		if (tenant.id === 'common') {
+			throw new Error('Common tenant should not need consnet');
+		}
+
 		const getTenantConfigurationSet = (): Set<string> => {
 			const configuration = vscode.workspace.getConfiguration('azure.tenant.config');
 			let values: string[] = configuration.get('filter') ?? [];
