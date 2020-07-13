@@ -13,6 +13,7 @@
 	"azure.resource.startterminal.title": "Start Cloud Shell",
 	"azure.resource.connectsqlserver.title": "Connect",
 	"azure.resource.connectsqldb.title": "Add to Servers",
+	"azure.tenant.config.filter.description": "The list of tenant IDs to ignore when querying azure resources. Each element is a tenant id.",
 
 	"accounts.clearTokenCache": "Clear Azure Account Token Cache",
 
