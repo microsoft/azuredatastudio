@@ -658,7 +658,7 @@ export class ProjectsController {
 			const project = await Project.openProject(newProjFilePath);
 
 			await this.importApiCall(model); // Call ExtractAPI in DacFx Service
-			let fileFolderList: string[] = await this.generateList(model.filePath); // Create a list of all the files and directories to be added to project
+			let fileFolderList: string[] = model.extractTarget === mssql.ExtractTarget.file ? [model.filePath] : await this.generateList(model.filePath); // Create a list of all the files and directories to be added to project
 
 			await project.addToProject(fileFolderList); // Add generated file structure to the project
 			await this.openProject(Uri.file(newProjFilePath));
