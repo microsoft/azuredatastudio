@@ -8,10 +8,8 @@ import * as azdata from 'azdata';
 import * as path from 'path';
 import * as TypeMoq from 'typemoq';
 import * as mssql from '../../../mssql/src/mssql';
-import { ApiWrapper } from '../common/apiWrapper';
 
 export interface TestContext {
-	apiWrapper: TypeMoq.IMock<ApiWrapper>;
 	context: vscode.ExtensionContext;
 	dacFxService: TypeMoq.IMock<mssql.IDacFxService>;
 }
@@ -37,7 +35,6 @@ export function createContext(): TestContext {
 	let extensionPath = path.join(__dirname, '..', '..');
 
 	return {
-		apiWrapper: TypeMoq.Mock.ofType(ApiWrapper),
 		context: {
 			subscriptions: [],
 			workspaceState: {
