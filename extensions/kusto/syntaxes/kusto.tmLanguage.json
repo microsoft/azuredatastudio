@@ -1,0 +1,25 @@
+{
+	"scopeName": "source.kusto",
+	"patterns": [{ "include": "#expression" }],
+	"repository": {
+	  "expression": {
+		"patterns": [{ "include": "#default-keywords" }, { "include": "#paren-expression" }]
+	  },
+	  "default-keywords": {
+		"match": "as|consume|count|datatable|distinct|evaluate|extend|externaldata|facet|find|fork|getschema|invoke|join|limit|take|lookup|make-series|mv-expand|order|sort|project-away|project-rename|project|parse|partition|print|range|reduce|render|sample|sample-distinct|search|serialize|sort|summarize|take|top-nested|top|top-hitters|union|where",
+		"name": "keyword.default-keywords"
+	  },
+	  "paren-expression": {
+		"begin": "\\(",
+		"end": "\\)",
+		"beginCaptures": {
+		  "0": { "name": "punctuation.paren.open" }
+		},
+		"endCaptures": {
+		  "0": { "name": "punctuation.paren.close" }
+		},
+		"name": "expression.group",
+		"patterns": [{ "include": "#expression" }]
+	  }
+	}
+  }

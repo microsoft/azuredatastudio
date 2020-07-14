@@ -64,7 +64,7 @@
       {
         "language": "kusto",
         "scopeName": "source.kusto",
-        "path": "./syntaxes/kusto.tmLanguage"
+        "path": "./syntaxes/kusto.tmLanguage.json"
       }
     ],
     "themes": [
