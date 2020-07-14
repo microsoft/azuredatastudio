@@ -5,6 +5,7 @@
 
 import MainController from '../../controllers/mainController';
 import { ImportTestUtils, TestExtensionContext } from '../utils.test';
+import * as should from 'should';
 
 describe('Main Controller', function () {
 	let testExtensionContext: TestExtensionContext;
@@ -16,8 +17,7 @@ describe('Main Controller', function () {
 
 	it('Should register task flatFileImportStartCommand after activate is called', async function () {
 		let mainController = new MainController(testExtensionContext);
-
-		await mainController.activate();
+		should.doesNotThrow(() => mainController.activate());
 	});
 });
 
