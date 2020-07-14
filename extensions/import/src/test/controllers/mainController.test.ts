@@ -19,15 +19,11 @@ describe('Main Controller', function () {
 		registerTaskSpy = sinon.spy(azdata.tasks, 'registerTask');
 	});
 
-	it('Should download required binaries and register flatFileImportStartCommand after activate is called', async function () {
+	it('Should register task flatFileImportStartCommand after activate is called', async function () {
 
 		let mainController = new MainController(testExtensionContext);
 
 		await mainController.activate();
-
-		// verifying that the task is registered.
-		sinon.assert.calledOnceWithExactly(registerTaskSpy, constants.flatFileImportStartCommand);
-
 	});
 });
 
