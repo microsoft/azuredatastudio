@@ -13,7 +13,7 @@ import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/testComm
 import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INavigationProvider, INotebookEditor, INotebookManager, INotebookParams, INotebookProvider, NavigationProviders, SQL_NOTEBOOK_PROVIDER, unsavedBooksContextKey } from 'sql/workbench/services/notebook/browser/notebookService';
-import { NotebookService, NotebookServiceNoProviderRegistered, NotebookUriNotDefined, ProviderDescriptor, TrustedNotebooksMementoId } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
+import { FailToSaveTrustState, NotebookService, NotebookServiceNoProviderRegistered, NotebookUriNotDefined, ProviderDescriptor } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { Extensions, INotebookProviderRegistry, NotebookProviderRegistration } from 'sql/workbench/services/notebook/common/notebookRegistry';
 import * as TypeMoq from 'typemoq';
@@ -26,7 +26,6 @@ import { TestInstantiationService } from 'vs/platform/instantiation/test/common/
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 import { NullLogService } from 'vs/platform/log/common/log';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { IWorkspaceStorageChangeEvent, StorageScope } from 'vs/platform/storage/common/storage';
 import { ExtensionManagementService } from 'vs/workbench/services/extensionManagement/common/extensionManagementService';
 import { TestFileService, TestLifecycleService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { TestExtensionService, TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
@@ -107,7 +106,7 @@ suite('NotebookService:', function (): void {
 	let extensionManagementService: IExtensionManagementService;
 	let extensionServiceMock: TypeMoq.Mock<TestExtensionService>;
 	let testNo = 0;
-	let sandbox;
+	let sandbox: sinon.SinonSandbox;
 
 	let installExtensionEmitter: Emitter<InstallExtensionEvent>,
 		didInstallExtensionEmitter: Emitter<DidInstallExtensionEvent>,
@@ -152,6 +151,17 @@ suite('NotebookService:', function (): void {
 		sandbox.restore();
 	});
 
+	test(`verify that setTrusted logs message and does not throw when storageService.store throws`, async () => {
+		const saveError = new Error(`exception encountered while storing`);
+		sandbox.stub(storageService, 'store').throws(saveError);
+		logServiceMock.setup(x => x.trace(TypeMoq.It.isAnyString())).returns((message: string) => {
+			assert.ok(message.startsWith(FailToSaveTrustState), `the traced log message must start with ${FailToSaveTrustState}`);
+		}).verifiable(TypeMoq.Times.once());
+		const notebookUri = setTrustedSetup(notebookService);
+		await notebookService.setTrusted(notebookUri, true);
+		logServiceMock.verifyAll();
+	});
+
 	test('Validate default properties on create', async function (): Promise<void> {
 		assert.equal(notebookService.languageMagics.length, 0, 'No language magics should exist after creation');
 		assert.equal(notebookService.listNotebookEditors().length, 0, 'No notebook editors should be listed');
@@ -193,7 +203,7 @@ suite('NotebookService:', function (): void {
 		assert.strictEqual(notebookService['_store']['_isDisposed'], true, `underlying disposable store object should be disposed state`);
 	});
 
-	test('Debug_verify that getProviderInstance does not throw when extensionService.whenInstalledExtensionRegistered() throws', async () => {
+	test('verify that getOrCreateNotebookManager does not throw when extensionService.whenInstalledExtensionRegistered() throws', async () => {
 		const providerId = 'providerId1';
 		createRegisteredProviderWithManager({ notebookService, providerId });
 		notebookService.registerProvider(providerId, undefined);
@@ -214,26 +224,23 @@ suite('NotebookService:', function (): void {
 	test('verify that getOrCreateNotebookManager throws when no providers are registered', async () => {
 		const methodName = 'getOrCreateNotebookManager';
 
-		// update the builtin provider to be undefined
+		// register the builtin sql provider to be undefined
 		notebookService.registerProvider(SQL_NOTEBOOK_PROVIDER, undefined);
 		try {
-			await notebookService.getOrCreateNotebookManager(SQL_NOTEBOOK_PROVIDER, URI.parse('untitled:uri1'));
+			await notebookService.getOrCreateNotebookManager('test', URI.parse('untitled:uri1'));
+			throw Error(`${methodName}  did not throw as was expected`);
 		} catch (error) {
 			assert.strictEqual((error as Error).message, NotebookServiceNoProviderRegistered, `${methodName} should throw error with message:${NotebookServiceNoProviderRegistered}' when no providers are registered`);
 		}
 
-		// when even default provider is not registered, method under test throws exception
-		const notebookRegistry = Registry.as<INotebookProviderRegistry>(Extensions.NotebookProviderContribution);
-		// unregister all builtin providers
-		for (const providerContribution of notebookRegistry.providers) {
-			notebookService.unregisterProvider(providerContribution.provider);
-		}
+		// when even the default provider is not registered, method under test throws exception
+		unRegisterProviders(notebookService);
 		try {
 			await notebookService.getOrCreateNotebookManager(SQL_NOTEBOOK_PROVIDER, URI.parse('untitled:uri1'));
+			throw Error(`${methodName} did not throw as was expected`);
 		} catch (error) {
 			assert.strictEqual((error as Error).message, NotebookServiceNoProviderRegistered, `${methodName} should throw error with message:${NotebookServiceNoProviderRegistered}' when no providers are registered`);
 		}
-
 	});
 
 	test('test register/get of navigationProviders', async () => {
@@ -259,6 +266,7 @@ suite('NotebookService:', function (): void {
 		await notebookService.registrationComplete;
 		try {
 			await notebookService.getOrCreateNotebookManager(SQL_NOTEBOOK_PROVIDER, undefined);
+			throw new Error('expected exception was not thrown');
 		} catch (error) {
 			assert.strictEqual((error as Error).message, NotebookUriNotDefined, `getOrCreateNotebookManager must throw with UriNotDefined error, when a valid uri is not provided`);
 		}
@@ -451,48 +459,39 @@ suite('NotebookService:', function (): void {
 		}
 	});
 
-	for (const isTrusted of [true, false, undefined]) {
-		for (const isModelTrusted of [true, false]) {
-			if (isTrusted !== undefined && !isModelTrusted) {
-				continue; // if isTrusted is true or false then we need to do only one case of isModelTrusted value and we are arbitrarily choose true as isModelTrusted does not matter in that case.
-			}
-			test(`verify serializeNotebookStateCache serializes to trusted or untrusted cache when notebook:isTrusted:${isTrusted} && notebookModel:isTrusted:${isModelTrusted}`, async () => {
-				const notebookUri = URI.parse('uri' + testNo); //Generate a unique notebookUri for each test so that information stored by serializeNotebookStateChange is unique for each test.
-				const model = new NotebookModelStub();
-				const modelMock = TypeMoq.Mock.ofInstance(model);
-				modelMock.callBase = true;
-				const notebookEditor = new NotebookEditorStub({
-					notebookParams: <INotebookParams>{
-						notebookUri: notebookUri,
-					},
-					model: modelMock.object
-				});
-				notebookEditor.model.trustedMode = isModelTrusted;
-				notebookService.addNotebookEditor(notebookEditor);
-				const changeType = NotebookChangeType.Saved;
-				const cellModel = <ICellModel>{};
-				modelMock.setup(x => x.serializationStateChanged(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
-					.returns((_changeType: NotebookChangeType, _cellModel?: ICellModel) => {
-						assert.strictEqual(_changeType, changeType, `changeType value sent to INotebookModel.serializationStateChange should be the one passed to NotebookService.serializeNotebookStateChange`);
-						assert.strictEqual(_cellModel, cellModel, `cellModel value sent to INotebookModel.serializationStateChange should be the one passed to NotebookService.serializeNotebookStateChange`);
-					})
-					.verifiable(TypeMoq.Times.once());
-				let storeCalled = 0;
-				storageService.onDidChangeStorage((e: IWorkspaceStorageChangeEvent) => {
-					storeCalled++;
-					assert.ok(e.key.endsWith(TrustedNotebooksMementoId), `The key to store memento should be ending with ${TrustedNotebooksMementoId} for NotebookService's trustedNotebooksMementoes`);
-					assert.strictEqual(e.scope, StorageScope.GLOBAL, `The scope to store memento should be GLOBAL for NotebookService's trustedNotebooksMementoes`);
-				});
-				await notebookService.serializeNotebookStateChange(notebookUri, changeType, cellModel, isTrusted);
-				modelMock.verifyAll();
-				if (isTrusted) {
-					//only when isTrusted do we always write out a net new entry
-					assert.strictEqual(storeCalled, 1, `store method on the storageService should be called exactly once`);
+	suite(`serialization tests`, () => {
+		for (const isTrusted of [true, false, undefined]) {
+			for (const isModelTrusted of [true, false]) {
+				if (isTrusted !== undefined && !isModelTrusted) {
+					continue; // if isTrusted is true or false then we need to do only one case of isModelTrusted value and we are arbitrarily choose true as isModelTrusted does not matter in that case.
 				}
-				storeCalled = 0;
-			});
+				test(`verify serializeNotebookStateCache serializes correctly when notebook:isTrusted:${isTrusted} && notebookModel:isTrusted:${isModelTrusted}`, async () => {
+					const notebookUri = URI.parse('uri' + testNo); //Generate a unique notebookUri for each test so that information stored by serializeNotebookStateChange is unique for each test.
+					const model = new NotebookModelStub();
+					const modelMock = TypeMoq.Mock.ofInstance(model);
+					modelMock.callBase = true;
+					const notebookEditor = new NotebookEditorStub({
+						notebookParams: <INotebookParams>{
+							notebookUri: notebookUri,
+						},
+						model: modelMock.object
+					});
+					notebookEditor.model.trustedMode = isModelTrusted;
+					notebookService.addNotebookEditor(notebookEditor);
+					const changeType = NotebookChangeType.Saved;
+					const cellModel = <ICellModel>{};
+					modelMock.setup(x => x.serializationStateChanged(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
+						.returns((_changeType: NotebookChangeType, _cellModel?: ICellModel) => {
+							assert.strictEqual(_changeType, changeType, `changeType value sent to INotebookModel.serializationStateChange should be the one passed to NotebookService.serializeNotebookStateChange`);
+							assert.strictEqual(_cellModel, cellModel, `cellModel value sent to INotebookModel.serializationStateChange should be the one passed to NotebookService.serializeNotebookStateChange`);
+						})
+						.verifiable(TypeMoq.Times.once());
+					await notebookService.serializeNotebookStateChange(notebookUri, changeType, cellModel, isTrusted);
+					modelMock.verifyAll();
+				});
+			}
 		}
-	}
+	});
 
 	test(`verify isNotebookTrustCached when notebook was not previously trusted`, async () => {
 		assert.strictEqual(await notebookService.isNotebookTrustCached(URI.parse('untitled:foo'), /* isDirty */ false), true, `untitled notebooks are always trust cached`);
@@ -514,14 +513,7 @@ suite('NotebookService:', function (): void {
 				continue;
 			}
 			test(`verify setTrusted & isNotebookTrustCached calls for isDirty=${isDirty}, isTrusted=${isTrusted}`, async () => {
-				const notebookUri = URI.parse('id1');
-				const notebookEditor = new NotebookEditorStub({
-					notebookParams: <INotebookParams>{
-						notebookUri: notebookUri,
-					},
-					model: new NotebookModelStub()
-				});
-				notebookService.addNotebookEditor(notebookEditor);
+				const notebookUri = setTrustedSetup(notebookService);
 				await notebookService.setTrusted(notebookUri, isTrusted);
 				const result = await notebookService.isNotebookTrustCached(notebookUri, isDirty);
 				if (isDirty) {
@@ -553,6 +545,26 @@ suite('NotebookService:', function (): void {
 
 	});
 });
+
+function unRegisterProviders(notebookService: NotebookService) {
+	const notebookRegistry = Registry.as<INotebookProviderRegistry>(Extensions.NotebookProviderContribution);
+	// unregister all builtin providers
+	for (const providerContribution of notebookRegistry.providers) {
+		notebookService.unregisterProvider(providerContribution.provider);
+	}
+}
+
+function setTrustedSetup(notebookService: NotebookService) {
+	const notebookUri = URI.parse('id1');
+	const notebookEditor = new NotebookEditorStub({
+		notebookParams: <INotebookParams>{
+			notebookUri: notebookUri,
+		},
+		model: new NotebookModelStub()
+	});
+	notebookService.addNotebookEditor(notebookEditor);
+	return notebookUri;
+}
 
 function createRegisteredProviderWithManager({ notebookService, providerId = 'providerId', testProviderManagers = undefined }: { providerId?: string; notebookService: NotebookService; testProviderManagers?: TestNotebookProvider[] }): TestNotebookProvider {
 	const provider = new TestNotebookProvider(providerId);

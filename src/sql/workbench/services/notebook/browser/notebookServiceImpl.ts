@@ -87,6 +87,7 @@ export class ProviderDescriptor {
 
 export const NotebookUriNotDefined = localize('notebookUriNotDefined', "No URI was passed when creating a notebook manager");
 export const NotebookServiceNoProviderRegistered = localize('notebookServiceNoProvider', "Notebook provider does not exist");
+export const FailToSaveTrustState = 'Failed to save trust state to cache';
 export const TrustedNotebooksMementoId = 'notebooks.trusted';
 export class NotebookService extends Disposable implements INotebookService {
 	_serviceBrand: undefined;
@@ -601,7 +602,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			}
 		} catch (err) {
 			if (this._logService) {
-				this._logService.trace(`Failed to save trust state to cache: ${toErrorMessage(err)}`);
+				this._logService.trace(`${FailToSaveTrustState}: ${toErrorMessage(err)}`);
 			}
 		}
 	}
