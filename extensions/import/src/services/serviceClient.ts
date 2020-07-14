@@ -16,14 +16,12 @@ import { Telemetry, LanguageClientErrorHandler } from './telemetry';
 import * as Constants from '../common/constants';
 import { TelemetryFeature, FlatFileImportFeature } from './features';
 import { promises as fs } from 'fs';
-import { ApiWrapper } from '../common/apiWrapper';
 
 export class ServiceClient {
 	private statusView: vscode.StatusBarItem;
 
 	constructor(
 		private outputChannel: vscode.OutputChannel,
-		private _apiWrapper: ApiWrapper
 	) {
 		this.statusView = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
 	}
@@ -69,8 +67,8 @@ export class ServiceClient {
 	public async downloadBinaries(context: vscode.ExtensionContext, rawConfig: Buffer): Promise<string> {
 		const config = JSON.parse(rawConfig.toString());
 		config.installDirectory = path.join(context.extensionPath, config.installDirectory);
-		config.proxy = this._apiWrapper.getConfiguration('http').get('proxy');
-		config.strictSSL = this._apiWrapper.getConfiguration('http').get('proxyStrictSSL') || true;
+		config.proxy = vscode.workspace.getConfiguration('http').get('proxy');
+		config.strictSSL = vscode.workspace.getConfiguration('http').get('proxyStrictSSL') || true;
 		const serverdownloader = new ServerProvider(config);
 		serverdownloader.eventEmitter.onAny(this.generateHandleServerProviderEvent());
 		return serverdownloader.getOrDownloadServer();

@@ -6,16 +6,22 @@
 import * as TypeMoq from 'typemoq';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import { ApiWrapper } from '../../common/apiWrapper';
 import { FlatFileWizard } from '../../wizard/flatFileWizard';
-import { ImportTestUtils, TestWizard, TestWizardPage, TestButton } from '../utils.test';
+import { ImportTestUtils } from '../utils.test';
 import * as should from 'should';
+import * as sinon from 'sinon';
 
 describe('import extension flat file wizard', function () {
-	let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
-	this.beforeEach(function () {
-		mockApiWrapper = TypeMoq.Mock.ofType(ApiWrapper);
+	let showErrorMessageSpy: sinon.SinonSpy;
+
+	this.beforeEach(function() {
+		showErrorMessageSpy = sinon.spy(vscode.window, 'showErrorMessage');
 	});
+
+	this.afterEach(function () {
+		sinon.restore();
+	});
+
 	it('opens connectionDialog when there are no active connections', async function () {
 		let testConnection: azdata.connection.Connection = {
 			providerName: 'MSSQL',
@@ -24,46 +30,43 @@ describe('import extension flat file wizard', function () {
 		};
 
 		// There is no current connection.
-		mockApiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return undefined; });
-
+		sinon.stub(azdata.connection, 'getCurrentConnection').returns(undefined);
 
 		// openConnectionDialog returns a test connection
-		mockApiWrapper.setup(x => x.openConnectionDialog(TypeMoq.It.isAny())).returns(async () => { return testConnection; });
+		let openConnectionDialogSpy = sinon.stub(azdata.connection, 'openConnectionDialog').returns(Promise.resolve(testConnection));
 
-		let testFlatFileWizard = new FlatFileWizard(TypeMoq.It.isAny(), mockApiWrapper.object);
+		let testFlatFileWizard = new FlatFileWizard(TypeMoq.It.isAny());
 
 		await testFlatFileWizard.getConnectionId();
 
 		// openConnectionDialog will be called once
-		mockApiWrapper.verify(x => x.openConnectionDialog(TypeMoq.It.isAny()), TypeMoq.Times.once());
-
+		sinon.assert.calledOnce(openConnectionDialogSpy);
 	});
 
 	it('shows error message when an invalid connection is selected', async function () {
 		// The active connection doesn't have a valid Provider
 		let testConnectionProfile: azdata.connection.ConnectionProfile = ImportTestUtils.getTestConnectionProfile();
-		mockApiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(testConnectionProfile); });
-		mockApiWrapper.setup(x => x.openConnectionDialog(TypeMoq.It.isAny())).returns(() => { return undefined; });
+		sinon.stub(azdata.connection, 'getCurrentConnection').returns(Promise.resolve(testConnectionProfile));
+		sinon.stub(azdata.connection, 'openConnectionDialog').returns(undefined);
 
-		let testFlatFileWizard = new FlatFileWizard(TypeMoq.It.isAny(), mockApiWrapper.object);
+		let testFlatFileWizard = new FlatFileWizard(TypeMoq.It.isAny());
 
 		await testFlatFileWizard.getConnectionId();
 
-		mockApiWrapper.verify(x => x.showErrorMessage(TypeMoq.It.isAny()), TypeMoq.Times.once());
+		sinon.assert.calledOnce(showErrorMessageSpy);
 
 	});
 
 	it('shows error message when no connection is selected', async function () {
 		// The active connection doesn't have a valid Provider
-		mockApiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return undefined; });
-		mockApiWrapper.setup(x => x.openConnectionDialog(TypeMoq.It.isAny())).returns(() => { return undefined; });
+		sinon.stub(azdata.connection, 'getCurrentConnection').returns(Promise.resolve(undefined));
+		sinon.stub(azdata.connection, 'openConnectionDialog').returns(undefined);
 
-		let testFlatFileWizard = new FlatFileWizard(TypeMoq.It.isAny(), mockApiWrapper.object);
+		let testFlatFileWizard = new FlatFileWizard(TypeMoq.It.isAny());
 
 		await testFlatFileWizard.getConnectionId();
 
-		mockApiWrapper.verify(x => x.showErrorMessage(TypeMoq.It.isAny()), TypeMoq.Times.once());
-
+		sinon.assert.calledOnce(showErrorMessageSpy);
 	});
 
 	it('getConnection returns active connection', async function () {
@@ -71,9 +74,9 @@ describe('import extension flat file wizard', function () {
 		testConnectionProfile.providerId = 'MSSQL';
 
 		//mocking an active connection
-		mockApiWrapper.setup(x => x.getCurrentConnection()).returns(async () => { return testConnectionProfile; })
+		sinon.stub(azdata.connection, 'getCurrentConnection').returns(Promise.resolve(testConnectionProfile));
 
-		let testFlatFileWizard = new FlatFileWizard(TypeMoq.It.isAny(), mockApiWrapper.object);
+		let testFlatFileWizard = new FlatFileWizard(TypeMoq.It.isAny());
 
 		//getConnectionID should return the connectionId of active connection
 		let connectionId = await testFlatFileWizard.getConnectionId();
@@ -83,23 +86,15 @@ describe('import extension flat file wizard', function () {
 	it('should initialize all pages', async function () {
 		let testConnectionProfile = ImportTestUtils.getTestConnectionProfile();
 		testConnectionProfile.providerId = 'MSSQL';
-		mockApiWrapper.setup(x => x.getCurrentConnection()).returns(async () => { return testConnectionProfile; });
-		let onClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
-		let mockWizard = TypeMoq.Mock.ofType(TestWizard);
-		let mockWizardPage = TypeMoq.Mock.ofType(TestWizardPage);
-		let mockButton = TypeMoq.Mock.ofType(TestButton, TypeMoq.MockBehavior.Loose, undefined, onClick);
+
+		sinon.stub(azdata.connection, 'getCurrentConnection').returns(Promise.resolve(testConnectionProfile));
 
 		let testProvider = {
 			providerId: 'testProviderId',
 			connectionProfile: ImportTestUtils.getTestConnectionProfile()
 		};
 
-		// Mocking wizard component creation
-		mockApiWrapper.setup(x => x.createWizard(TypeMoq.It.isAnyString())).returns(() => { return mockWizard.object; });
-		mockApiWrapper.setup(x => x.createWizardPage(TypeMoq.It.isAnyString())).returns(() => { return mockWizardPage.object; });
-		mockApiWrapper.setup(x => x.createButton(TypeMoq.It.isAnyString())).returns(() => { return mockButton.object; });
-
-		let testFlatFileWizard = new FlatFileWizard(TypeMoq.It.isAny(), mockApiWrapper.object);
+		let testFlatFileWizard = new FlatFileWizard(TypeMoq.It.isAny());
 
 		await testFlatFileWizard.start(testProvider);
 
