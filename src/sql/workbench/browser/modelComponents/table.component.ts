@@ -14,21 +14,27 @@ import * as azdata from 'azdata';
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 
 import { Table } from 'sql/base/browser/ui/table/table';
-import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
-import { attachTableStyler } from 'sql/platform/theme/common/styler';
+import { SlickTableDataView } from 'sql/base/browser/ui/table/tableDataView';
+import { attachTableStyler, attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { getContentHeight, getContentWidth, Dimension } from 'vs/base/browser/dom';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
 import { CheckboxSelectColumn, ICheckboxCellActionEventArgs } from 'sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin';
+import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowDetailView';
+import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { Emitter, Event as vsEvent } from 'vs/base/common/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
-import { slickGridDataItemColumnValueWithNoData, textFormatter } from 'sql/base/browser/ui/table/formatters';
+import { slickGridDataItemColumnValueWithNoData, textFormatter, htmlFormatter } from 'sql/base/browser/ui/table/formatters';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSizeToNumber } from 'sql/base/browser/dom';
+<<<<<<< HEAD
 import { ButtonColumn, ButtonClickEventArgs } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
 import { createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
+=======
+import { find } from 'vs/base/common/arrays';
+>>>>>>> d588273fd... table component enhancement
 
 export enum ColumnSizingMode {
 	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
@@ -46,13 +52,19 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	private _table: Table<Slick.SlickData>;
-	private _tableData: TableDataView<Slick.SlickData>;
+	private _tableData: SlickTableDataView<Slick.SlickData>;
 	private _tableColumns;
 	private _checkboxColumns: CheckboxSelectColumn<{}>[] = [];
 	private _buttonsColumns: ButtonColumn<{}>[] = [];
 	private _pluginsRegisterStatus: boolean[] = [];
 	private _onCheckBoxChanged = new Emitter<ICheckboxCellActionEventArgs>();
+<<<<<<< HEAD
 	private _onButtonClicked = new Emitter<ButtonClickEventArgs<{}>>();
+=======
+	private _rowDetail: RowDetailView<Slick.SlickData>;
+	private _filterPlugin: any;
+
+>>>>>>> d588273fd... table component enhancement
 	public readonly onCheckBoxChanged: vsEvent<ICheckboxCellActionEventArgs> = this._onCheckBoxChanged.event;
 	public readonly onButtonClicked: vsEvent<ButtonClickEventArgs<{}>> = this._onButtonClicked.event;
 
@@ -90,7 +102,9 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 						cssClass: col.cssClass,
 						headerCssClass: col.headerCssClass,
 						toolTip: col.toolTip,
-						formatter: textFormatter,
+						formatter: col.options?.hasHtml
+							? htmlFormatter
+							: textFormatter,
 					});
 				} else {
 					mycolumns.push(<Slick.Column<any>>{
@@ -120,7 +134,9 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 				let object: { [key: string]: string } = {};
 				if (row.forEach) {
 					row.forEach((val, index) => {
-						let columnName: string = (columns[index].value) ? columns[index].value : <string>columns[index];
+						let columnName: string = index < columns.length
+							? (columns[index].value) ? columns[index].value : <string>columns[index]
+							: '__detailsData__';
 						object[columnName] = val;
 					});
 				}
@@ -133,7 +149,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 
 	ngAfterViewInit(): void {
 		if (this._inputContainer) {
-			this._tableData = new TableDataView<Slick.SlickData>();
+			this._tableData = new SlickTableDataView<Slick.SlickData>();
 
 			let options = <Slick.GridOptions<any>>{
 				syncColumnCellResize: true,
@@ -237,11 +253,26 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
-		this._tableData.clear();
-		this._tableData.push(TableComponent.transformData(this.data, this.columns));
 		this._tableColumns = this.transformColumns(this.columns);
+
+		if (this.properties['rowDetails'] !== undefined) {
+			this.registerRowDetailPlugin(this.properties['rowDetails']);
+			this._tableColumns.unshift(this._rowDetail.getColumnDefinition());
+		}
 		this._table.columns = this._tableColumns;
-		this._table.setData(this._tableData);
+
+		if (this.properties['appendData'] !== undefined) {
+			this._tableData.push(TableComponent.transformData(this.properties['appendData'], this.columns));
+			this.data.push(...this.properties['appendData']);
+		} else {
+			this._tableData.setData(TableComponent.transformData(this.data, this.columns));
+		}
+
+		if (this.properties['headerFilter'] === true) {
+			this.registerFilterPlugin();
+			this._tableData.setFilter((item) => this.filter(item));
+		}
+
 		this._table.setTableTitle(this.title);
 		if (this.selectedRows) {
 			this._table.setSelectedRows(this.selectedRows);
@@ -364,6 +395,154 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 			this._table.grid.getActiveCellNode().focus();
 		}
 	}
+
+	private registerRowDetailPlugin(settings: azdata.RowDetailsOptions) {
+		const rowDetail = new RowDetailView({
+			cssClass: '_detail_selector',
+			process: (item) => {
+				(<any>rowDetail).onAsyncResponse.notify({
+					'itemDetail': item,
+				}, undefined, this);
+			},
+			useRowClick: true,
+			panelRows: settings.panelRows,
+			postTemplate: (itemDetail) => itemDetail.__detailsData__,
+			preTemplate: () => '',
+			loadOnce: true,
+			detailsHtml: settings.detailsHtml
+		});
+		this._rowDetail = rowDetail;
+		this._table.registerPlugin(<any>this._rowDetail);
+	}
+
+	private registerFilterPlugin() {
+		const filterPlugin = new HeaderFilter<Slick.SlickData>();
+		this._register(attachButtonStyler(filterPlugin, this.themeService));
+		this._filterPlugin = filterPlugin;
+		this._filterPlugin.onFilterApplied.subscribe((e, args) => {
+			let filterValues = args.column.filterValues;
+			if (filterValues) {
+				this._tableData.refresh();
+				this._table.grid.resetActiveCell();
+			}
+		});
+		//this.filterPlugin.onCommand.subscribe((e, args: any) => {
+		//				this.columnSort(args.column.field, args.command === 'sort-asc');
+		//});
+		filterPlugin['getFilterValues'] = this.getFilterValues;
+		filterPlugin['getAllFilterValues'] = this.getAllFilterValues;
+		filterPlugin['getFilterValuesByInput'] = this.getFilterValuesByInput;
+		this._table.registerPlugin(filterPlugin);
+
+	}
+	private filter(item: any) {
+		let columns = this._table.grid.getColumns();
+		let value = true;
+		for (let i = 0; i < columns.length; i++) {
+			let col: any = columns[i];
+			let filterValues = col.filterValues;
+			if (filterValues && filterValues.length > 0) {
+				if (item._parent) {
+					value = value && find(filterValues, x => x === item._parent[col.field]);
+				} else {
+					let colValue = item[col.field];
+					if (colValue instanceof Array) {
+						value = value && find(filterValues, x => colValue.indexOf(x) >= 0);
+					} else {
+						value = value && find(filterValues, x => x === colValue);
+					}
+				}
+			}
+		}
+		return value;
+	}
+	private getFilterValues(dataView: Slick.DataProvider<Slick.SlickData>, column: Slick.Column<any>): Array<any> {
+		const seen: Array<string> = [];
+		for (let i = 0; i < dataView.getLength(); i++) {
+			const value = dataView.getItem(i)[column.field!];
+			if (value instanceof Array) {
+				for (let item = 0; item < value.length; item++) {
+					if (!seen.some(x => x === value[item])) {
+						seen.push(value[item]);
+					}
+				}
+			} else {
+				if (!seen.some(x => x === value)) {
+					seen.push(value);
+				}
+			}
+		}
+		return seen;
+	}
+
+	private getAllFilterValues(data: Array<Slick.SlickData>, column: Slick.Column<any>) {
+		const seen: Array<any> = [];
+		for (let i = 0; i < data.length; i++) {
+			const value = data[i][column.field!];
+			if (value instanceof Array) {
+				for (let item = 0; item < value.length; item++) {
+					if (!seen.some(x => x === value[item])) {
+						seen.push(value[item]);
+					}
+				}
+			} else {
+				if (!seen.some(x => x === value)) {
+					seen.push(value);
+				}
+			}
+		}
+
+		return seen.sort((v) => { return v; });
+	}
+
+	private getFilterValuesByInput($input: JQuery<HTMLElement>): Array<string> {
+		const column = $input.data('column'),
+			filter = $input.val() as string,
+			dataView = this['grid'].getData() as Slick.DataProvider<Slick.SlickData>,
+			seen: Array<any> = [];
+
+		for (let i = 0; i < dataView.getLength(); i++) {
+			const value = dataView.getItem(i)[column.field];
+			if (value instanceof Array) {
+				if (filter.length > 0) {
+					const itemValue = !value ? [] : value;
+					const lowercaseFilter = filter.toString().toLowerCase();
+					const lowercaseVals = itemValue.map(v => v.toLowerCase());
+					for (let valIdx = 0; valIdx < value.length; valIdx++) {
+						if (!seen.some(x => x === value[valIdx]) && lowercaseVals[valIdx].indexOf(lowercaseFilter) > -1) {
+							seen.push(value[valIdx]);
+						}
+					}
+				}
+				else {
+					for (let item = 0; item < value.length; item++) {
+						if (!seen.some(x => x === value[item])) {
+							seen.push(value[item]);
+						}
+					}
+				}
+
+			} else {
+				if (filter.length > 0) {
+					const itemValue = !value ? '' : value;
+					const lowercaseFilter = filter.toString().toLowerCase();
+					const lowercaseVal = itemValue.toString().toLowerCase();
+
+					if (!seen.some(x => x === value) && lowercaseVal.indexOf(lowercaseFilter) > -1) {
+						seen.push(value);
+					}
+				}
+				else {
+					if (!seen.some(x => x === value)) {
+						seen.push(value);
+					}
+				}
+			}
+		}
+
+		return seen.sort((v) => { return v; });
+	}
+
 
 	// CSS-bound properties
 

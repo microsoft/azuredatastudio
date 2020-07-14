@@ -195,6 +195,7 @@ export function createViewContext(): ViewTestContext {
 		data: [] as any[][],
 		columns: [] as string[],
 		onRowSelected: onClick.event,
+		appendData: (data: any[][]) => Promise.resolve(),
 	});
 
 	let loadingComponent: () => azdata.LoadingComponent = () => Object.assign({}, componentBase, {

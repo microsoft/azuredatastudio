@@ -3,18 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.center-align
-{
+.center-align {
 	text-align: center;
 }
 
-.align-with-header
-{
-	padding-left:3px !important;
+.align-with-header {
+	padding-left: 3px !important;
 }
 
-.no-borders
-{
+.no-borders {
 	border: none !important
 }
 
@@ -22,6 +19,41 @@
 	display: none;
 }
 
+<<<<<<< HEAD
 .modelview-table-button-icon {
 	background-color: transparent;
+=======
+.detailView-toggle {
+	display: inline-block;
+	cursor: pointer;
+}
+
+.dynamic-cell-detail {
+	z-index: 101;
+	position: absolute;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	overflow: auto;
+}
+
+
+.dynamic-cell-detail> :first-child {
+	vertical-align: middle;
+	line-height: 13px;
+	padding: 10px;
+	margin-left: 20px;
+}
+
+.dynamic-cell-detail>.detail-container {
+	overflow: auto;
+	display: block !important;
+	max-height: 100px !important;
+	line-height: 20px;
+}
+
+.dynamic-cell-detail>.detail-container>div,
+.dynamic-cell-detail>.detail-container>div>span {
+	white-space: normal;
+>>>>>>> d588273fd... table component enhancement
 }

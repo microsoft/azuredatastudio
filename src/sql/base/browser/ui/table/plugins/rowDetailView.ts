@@ -15,6 +15,8 @@ export interface IRowDetailViewOptions<T> {
 	preTemplate: (item: ExtendedItem<T>) => string;
 	process: (item: ExtendedItem<T>) => void;
 	postTemplate: (item: ExtendedItem<T>) => string;
+	detailsHtml?: boolean;
+	headerCssClass?: string;
 }
 
 const defaultOptions = {
@@ -348,6 +350,7 @@ export class RowDetailView<T extends Slick.SlickData> {
 			resizable: false,
 			sortable: false,
 			cssClass: this._options.cssClass,
+			headerCssClass: this._options.headerCssClass,
 			formatter: (row, cell, value, columnDef, dataContext) => this.detailSelectionFormatter(row, cell, value, columnDef, dataContext as ExtendedItem<T>)
 		};
 	}
@@ -386,7 +389,10 @@ export class RowDetailView<T extends Slick.SlickData> {
 			html.push(`style=\'height:${dataContext._height}px;`); //set total height of padding
 			html.push(`top:${rowHeight}px'>`);             //shift detail below 1st row
 			html.push(`<div id='detailViewContainer_${dataContext.id}"'  class='detail-container' style='max-height:${(dataContext._height! - rowHeight + bottomMargin)}px'>`); //sub ctr for custom styling
-			html.push(`<div id='innerDetailView_${dataContext.id}'>${escape(dataContext._detailContent!)}</div></div>`);
+			let detailsContent = this._options.detailsHtml
+				? dataContext._detailContent!
+				: escape(dataContext._detailContent!);
+			html.push(`<div id='innerDetailView_${dataContext.id}'>${detailsContent}</div></div>`);
 			//&omit a final closing detail container </div> that would come next
 
 			return html.join('');
