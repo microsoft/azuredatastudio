@@ -1384,6 +1384,12 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 		this.setProperty('updateCells', v);
 	}
 
+	public appendData(v: any[][]): void {
+		this.setProperty('appendData', v).then(() => {
+			delete this.properties['appendData'];
+		});
+	}
+
 	public get onRowSelected(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onSelectedRowChanged);
 		return emitter && emitter.event;

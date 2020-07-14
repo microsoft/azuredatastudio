@@ -3197,6 +3197,7 @@ declare module 'azdata' {
 	}
 
 	export interface TextColumnOption {
+		hasHtml?: boolean
 	}
 
 	export enum ActionOnCellCheckboxCheck {
@@ -3208,6 +3209,11 @@ declare module 'azdata' {
 		ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
 		AutoFit = 1,	// columns will be ForceFit up to a certain number; currently 3.  At 4 or more the behavior will switch to NO force fit
 		DataFit = 2		// columns use sizing based on cell data, horiz scroll bar present if more cells than visible in view area
+	}
+
+	export interface RowDetailsOptions {
+		panelRows: number,
+		detailsHtml: boolean
 	}
 
 	export interface TableComponentProperties extends ComponentProperties {
@@ -3465,6 +3471,7 @@ declare module 'azdata' {
 	export interface TableComponent extends Component, TableComponentProperties {
 		onRowSelected: vscode.Event<any>;
 		onCellAction?: vscode.Event<ICellActionEventArgs>;
+		appendData(data: any[][]);
 	}
 
 	export interface FileBrowserTreeComponent extends Component, FileBrowserTreeProperties {

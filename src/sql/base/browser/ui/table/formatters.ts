@@ -68,6 +68,27 @@ export function textFormatter(row: number | undefined, cell: any | undefined, va
 	return `<span title="${titleValue}" class="${cellClasses}">${valueToDisplay}</span>`;
 }
 
+export function htmlFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
+	let cellClasses = 'grid-cell-value-container';
+	let valueToDisplay = '';
+
+	if (DBCellValue.isDBCellValue(value)) {
+		valueToDisplay = 'NULL';
+		if (!value.isNull) {
+			valueToDisplay = value.displayValue.replace(/(\r\n|\n|\r)/g, ' ');
+		} else {
+			cellClasses += ' missing-value';
+		}
+	} else if (typeof value === 'string' || (value && value.text)) {
+		if (value.text) {
+			valueToDisplay = value.text;
+		} else {
+			valueToDisplay = value;
+		}
+	}
+
+	return `<div class="${cellClasses}">${valueToDisplay}</div>`;
+}
 /**
  * Provide slick grid cell with encoded ariaLabel and plain text.
  * text will be escaped by the textFormatter and ariaLabel will be consumed by slickgrid directly.

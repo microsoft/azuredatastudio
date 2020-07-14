@@ -6,7 +6,7 @@
 import { Event, Emitter } from 'vs/base/common/event';
 import * as types from 'vs/base/common/types';
 import { compare as stringCompare } from 'vs/base/common/strings';
-
+import { generateUuid } from 'vs/base/common/uuid';
 import { IDisposableDataProvider } from 'sql/base/browser/ui/table/interfaces';
 
 export interface IFindPosition {
@@ -255,3 +255,41 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 		this._findArray = [];
 	}
 }
+
+export class SlickTableDataView<T extends Slick.SlickData> extends Slick.Data.DataView<T>
+	implements IDisposableDataProvider<T>
+{
+	push(items: Array<T>): void;
+	push(item: T): void;
+	push(input: T | Array<T>): void {
+		let inputArray = new Array();
+		if (Array.isArray(input)) {
+			inputArray.push(...input);
+		} else {
+			inputArray.push(input);
+		}
+		if (inputArray.length > 0 && inputArray[0]['id'] === undefined) {
+			inputArray.forEach(item => item.id = generateUuid());
+		}
+
+		this.beginUpdate();
+		inputArray.forEach(item => this.addItem(item));
+		this.endUpdate();
+	}
+
+	public setData(data: T[]): void {
+		let inputArray = new Array();
+		inputArray.push(...data);
+		inputArray.forEach(item => item.id = generateUuid());
+		this.setItems(inputArray);
+
+	}
+
+
+
+	dispose(): void {
+
+	}
+
+}
+
