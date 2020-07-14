@@ -76,13 +76,13 @@ class TestNotebookProvider implements INotebookProvider {
 	}
 }
 
-suite('Test class ProviderDescriptor:', () => {
+suite('ProviderDescriptor:', () => {
 	test('Verifies varies getter setters of Provider Descriptor', async () => {
 		const notebookProvider = <INotebookProvider>{};
 		const providerDescriptor = new ProviderDescriptor(notebookProvider);
 		assert.strictEqual(providerDescriptor.instance, notebookProvider, `providerDescriptor instance should be the value passed into the constructor`);
 		const providerInstancePromise = providerDescriptor.instanceReady;
-		assert.notStrictEqual(providerInstancePromise, undefined, `providerDescriptor instanceReady should return an undefined promise object`);
+		assert.notStrictEqual(providerInstancePromise, undefined, `providerDescriptor instanceReady should not return an undefined promise object`);
 		const result = await providerInstancePromise;
 		assert.strictEqual(result, notebookProvider, `instanceReady property of the providerDescriptor should resolve with notebookProvider object that it was constructed with`);
 
@@ -93,7 +93,7 @@ suite('Test class ProviderDescriptor:', () => {
 	});
 });
 
-suite('Test class NotebookService:', function (): void {
+suite('NotebookService:', function (): void {
 	let notebookService: NotebookService;
 	let lifecycleService: TestLifecycleService;
 	let storageService: TestStorageService;
@@ -203,7 +203,6 @@ suite('Test class NotebookService:', function (): void {
 
 		logServiceMock.setup(x => x.error(TypeMoq.It.isAny()))
 			.returns((_error: string | Error, ...args: any[]) => {
-				assert.ok(_error instanceof Error, `error passed into logService.error call should be an instance of ${Error}`);
 				assert.strictEqual(_error, error, `error object passed to logService.error call must be the one thrown from whenInstalledExtensionsRegistered call`);
 			})
 			.verifiable(TypeMoq.Times.once());
@@ -212,8 +211,8 @@ suite('Test class NotebookService:', function (): void {
 	});
 
 
-	test('verify that getProviderInstance throws when no providers are registered', async () => {
-		const methodName = 'getProviderInstance';
+	test('verify that getOrCreateNotebookManager throws when no providers are registered', async () => {
+		const methodName = 'getOrCreateNotebookManager';
 
 		// update the builtin provider to be undefined
 		notebookService.registerProvider(SQL_NOTEBOOK_PROVIDER, undefined);
@@ -279,7 +278,7 @@ suite('Test class NotebookService:', function (): void {
 	});
 
 	test('verifies add/remove/find/list/renameNotebookEditor methods and corresponding events', async () => {
-		assert.strictEqual(notebookService.findNotebookEditor(undefined), undefined, `findNotebookEditor should return the editor when searching with the latest Uri`);
+		assert.strictEqual(notebookService.findNotebookEditor(undefined), undefined, `findNotebookEditor should return undefined for undefined input`);
 
 		let editorsAdded = 0;
 		let editorsRemoved = 0;
@@ -333,7 +332,7 @@ suite('Test class NotebookService:', function (): void {
 		assert.strictEqual(editorsRemoved, 1, `onNotebookEditorRemove should have been called that increments editorsRemoved value`);
 	});
 
-	test('test registration of a new provider with multiple filetypes & kernels and verify that it is returned by getProviderInstance', async () => {
+	test('test registration of a new provider with multiple filetypes & kernels and verify that corresponding manager is returned by getOrCreateNotebookManager', async () => {
 		const providerId = 'Jpeg';
 		const notebookProviderRegistration = <NotebookProviderRegistration>{
 			provider: providerId,
