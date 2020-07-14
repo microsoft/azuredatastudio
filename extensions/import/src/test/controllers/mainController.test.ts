@@ -7,6 +7,7 @@ import * as TypeMoq from 'typemoq';
 import { ApiWrapper } from '../../common/apiWrapper';
 import MainController from '../../controllers/mainController';
 import { ImportTestUtils, TestExtensionContext } from '../utils.test';
+import * as should from 'should';
 
 describe('Main Controller', function () {
 	let testExtensionContext: TestExtensionContext;
@@ -24,7 +25,7 @@ describe('Main Controller', function () {
 
 		let mainController = new MainController(testExtensionContext, mockApiWrapper.object);
 
-		mainController.activate();
+		should.doesNotThrow(() => mainController.activate());
 	});
 });
 
