@@ -341,7 +341,7 @@ const queryEditorConfiguration: IConfigurationNode = {
 			'default': 'utf-8'
 		},
 		'queryEditor.results.saveAsXml.formatted': {
-			'type': 'string',
+			'type': 'boolean',
 			'description': localize('queryEditor.results.saveAsXml.formatted', "When true, XML output will be formatted when saving results as XML"),
 			'default': true
 		},
