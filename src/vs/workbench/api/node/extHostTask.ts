@@ -6,7 +6,7 @@
 // import * as path from 'vs/base/common/path';
 
 import { URI, UriComponents } from 'vs/base/common/uri';
-// import { win32 } from 'vs/base/node/processes';
+import { win32 } from 'vs/base/node/processes';
 import * as types from 'vs/workbench/api/common/extHostTypes';
 import { IExtHostWorkspace } from 'vs/workbench/api/common/extHostWorkspace';
 import type * as vscode from 'vscode';
@@ -195,5 +195,9 @@ export class ExtHostTask extends ExtHostTaskBase {
 
 	public async $jsonTasksSupported(): Promise<boolean> {
 		return true;
+	}
+
+	public async $findExecutable(command: string, cwd?: string, paths?: string[]): Promise<string> {
+		return win32.findExecutable(command, cwd, paths);
 	}
 }
