@@ -430,10 +430,6 @@
           "command": "notebook.command.openNotebookFolder",
           "when": "view == bookTreeView",
           "group": "navigation"
-        },
-        {
-          "command": "notebook.command.openRemoteBook",
-          "when": "view == bookTreeView"
         }
       ],
       "notebook/toolbar": [

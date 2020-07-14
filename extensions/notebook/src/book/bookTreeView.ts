@@ -392,11 +392,11 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	public async openNotebookFolder(folderPath?: string): Promise<void> {
-		const allFilesFilter = loc.allFiles;
-		let filter: any = {};
-		filter[allFilesFilter] = '*';
 		let uris: vscode.Uri[];
 		if (folderPath === undefined) {
+			const allFilesFilter = loc.allFiles;
+			let filter: any = {};
+			filter[allFilesFilter] = '*';
 			uris = await vscode.window.showOpenDialog({
 				filters: filter,
 				canSelectFiles: false,

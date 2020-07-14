@@ -58,3 +58,15 @@ export const add = localize('add', "Add");
 export const close = localize('close', "Close");
 export const invalidTextPlaceholder = localize('invalidTextPlaceholder', "N/A");
 export function apiGitHub(url: string): string { return localize('apiGithub', "https://api.github.com/{0}/releases", url); }
+
+// Remote Book Controller constants
+export const msgRemoteBookDownloadProgress = localize('msgRemoteBookDownloadProgress', "Remote Book download is in progress");
+export const msgRemoteBookDownloadComplete = localize('msgRemoteBookDownloadComplete', "Remote Book download is complete");
+export const msgRemoteBookDownloadError = localize('msgRemoteBookDownloadError', "Error while downloading remote Book");
+export const msgRemoteBookUnpackingError = localize('msgRemoteBookUnpackingError', "Error while decompressing remote Book");
+export const msgRemoteBookDirectoryError = localize('msgRemoteBookDirectoryError', "Error while creating remote book directory");
+export const msgTaskName = localize('msgTaskName', "Downloading Remote Book");
+export const msgResourceNotFound = localize('msgResourceNotFound', "Resource not Found");
+export const msgBookNotFound = localize('msgBookNotFound', "Books not Found");
+export const msgReleaseNotFound = localize('msgReleaseNotFound', "Releases not Found");
+export function httpRequestError(code: number, message: string): string { return localize('httpRequestError', "Http Request failed with error: {0} {1}", code, message); }

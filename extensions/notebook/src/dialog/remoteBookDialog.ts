@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as loc from '../common/localizedConstants';
-import { RemoteBookController, IReleases, IAssets } from '../book/remoteBookController';
+import { RemoteBookController, IRelease, IAsset } from '../book/remoteBookController';
 import * as utils from '../common/utils';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
@@ -20,8 +20,8 @@ function getRemoteLocationCategory(name: string): azdata.CategoryValue {
 
 export class RemoteBookDialogModel {
 	private _remoteLocation: string;
-	private _releases: IReleases[];
-	private _assets: IAssets[];
+	private _releases: IRelease[];
+	private _assets: IAsset[];
 
 	constructor() {
 	}
@@ -34,19 +34,19 @@ export class RemoteBookDialogModel {
 		this._remoteLocation = location;
 	}
 
-	public get releases(): IReleases[] {
+	public get releases(): IRelease[] {
 		return this._releases;
 	}
 
-	public set releases(newReleases: IReleases[]) {
+	public set releases(newReleases: IRelease[]) {
 		this._releases = newReleases;
 	}
 
-	public get assets(): IAssets[] {
+	public get assets(): IAsset[] {
 		return this._assets;
 	}
 
-	public set assets(newAssets: IAssets[]) {
+	public set assets(newAssets: IAsset[]) {
 		this._assets = newAssets;
 	}
 
@@ -65,7 +65,7 @@ export class RemoteBookDialog {
 	public versionDropdown: azdata.DropDownComponent;
 	public languageDropdown: azdata.DropDownComponent;
 	private _remoteTypes: azdata.CategoryValue[];
-	private readonly tigertoolboxrepo = 'repos/microsoft/tigertoolbox';
+	private readonly tigerToolboxRepo = 'repos/microsoft/tigertoolbox';
 	private readonly urlGithubRE = /^(?:https:\/\/(?:github.com|api.github.com\/repos)|(?:\/)?(?:\/)?repos)([\w-.?!=&%*+:@\/]*)/g;
 
 	constructor(public controller: RemoteBookController) {
@@ -85,7 +85,7 @@ export class RemoteBookDialog {
 			this.remoteLocationDropdown.onValueChanged(e => this.onRemoteLocationChanged());
 
 			this.githubRepoDropdown = this.view.modelBuilder.dropDown().withProperties({
-				values: [this.tigertoolboxrepo],
+				values: [this.tigerToolboxRepo],
 				value: '',
 				editable: true,
 				fireOnTextChange: true,
@@ -314,11 +314,11 @@ export class RemoteBookDialog {
 		}
 	}
 
-	public async getSelectedAsset(): Promise<IAssets> {
+	public async getSelectedAsset(): Promise<IAsset> {
 		let lang = this.languageDropdown.value;
 		let book = this.bookDropdown.value;
 		let version = this.versionDropdown.value;
-		let selected_asset: IAssets;
+		let selected_asset: IAsset;
 		this.controller.getAssets().forEach(asset => {
 			if (asset.book === book && asset.version === version && asset.language === lang) {
 				selected_asset = asset;
