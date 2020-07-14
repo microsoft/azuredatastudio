@@ -96,7 +96,7 @@ export class ProjectsController {
 
 	public async focusProject(project?: Project): Promise<void> {
 		if (project && this.projects.includes(project)) {
-			await this.apiWrapper.executeCommand('sqlDatabaseProjectsView.focus');
+			await this.apiWrapper.executeCommand(constants.sqlDatabaseProjectsViewFocusCommand);
 			await this.projectTreeViewProvider.focus(project);
 		}
 	}
@@ -261,7 +261,7 @@ export class ProjectsController {
 
 			// check that dacpac exists
 			if (await utils.exists(dacpacPath)) {
-				this.apiWrapper.executeCommand('schemaCompare.start', dacpacPath);
+				await this.apiWrapper.executeCommand(constants.schemaCompareStartCommand, dacpacPath);
 			} else {
 				this.apiWrapper.showErrorMessage(constants.buildDacpacNotFound);
 			}
@@ -346,7 +346,7 @@ export class ProjectsController {
 
 			const newEntry = await project.addScriptItem(relativeFilePath, newFileText);
 
-			this.apiWrapper.executeCommand('vscode.open', newEntry.fsUri);
+			await this.apiWrapper.executeCommand(constants.vscodeOpenCommand, newEntry.fsUri);
 
 			this.refreshProjectsTree();
 		} catch (err) {
@@ -398,6 +398,15 @@ export class ProjectsController {
 
 	private getProjectEntry(project: Project, context: BaseProjectTreeItem): ProjectEntry | undefined {
 		return project.files.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(context.root.uri, context.uri)));
+	}
+
+	/**
+	 * Opens the folder containing the project
+	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project
+	 */
+	public async openContainingFolder(context: BaseProjectTreeItem): Promise<void> {
+		const project = this.getProjectFromContext(context);
+		await this.apiWrapper.executeCommand(constants.revealFileInOsCommand, Uri.file(project.projectFilePath));
 	}
 
 	/**
@@ -623,16 +632,18 @@ export class ProjectsController {
 	 * Imports a new SQL database project from the existing database,
 	 * prompting the user for a name, file path location and extract target
 	 */
-	public async importNewDatabaseProject(context: any): Promise<void> {
+	public async importNewDatabaseProject(context: IConnectionProfile | any): Promise<void> {
 		let model = <ImportDataModel>{};
 
 		// TODO: Refactor code
 		try {
-			let profile = context ? <IConnectionProfile>context.connectionProfile : undefined;
+			let profile = this.getConnectionProfileFromContext(context);
 			//TODO: Prompt for new connection addition and get database information if context information isn't provided.
+
+			let connectionId;
 			if (profile) {
-				model.serverId = profile.id;
 				model.database = profile.databaseName;
+				connectionId = profile.id;
 			}
 			else {
 				const connection = await this.apiWrapper.openConnectionDialog();
@@ -640,23 +651,29 @@ export class ProjectsController {
 					return;
 				}
 
-				const connectionId = connection.connectionId;
-				let database;
+				connectionId = connection.connectionId;
 
-				// use database that was connected to if it isn't master
-				if (connection.options['database'] && connection.options['database'] !== constants.master) {
-					database = connection.options['database'];
-				} else {
-					const databaseList = await this.apiWrapper.listDatabases(connectionId);
-					database = (await this.apiWrapper.showQuickPick(databaseList.map(dbName => { return { label: dbName }; })))?.label;
+				// use database that was connected to
+				if (connection.options['database']) {
+					model.database = connection.options['database'];
+				}
+			}
 
-					if (!database) {
-						throw new Error(constants.databaseSelectionRequired);
-					}
+			// choose database if connection was to a server or master
+			if (!model.database || model.database === constants.master) {
+				const databaseList = await this.apiWrapper.listDatabases(connectionId);
+				let database = (await this.apiWrapper.showQuickPick(databaseList.map(dbName => { return { label: dbName }; }),
+					{
+						canPickMany: false,
+						placeHolder: constants.extractDatabaseSelection
+					}))?.label;
+
+				if (!database) {
+					throw new Error(constants.databaseSelectionRequired);
 				}
 
-				model.serverId = connectionId;
 				model.database = database;
+				model.serverId = connectionId;
 			}
 
 			// Get project name
@@ -716,6 +733,16 @@ export class ProjectsController {
 		catch (err) {
 			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
 		}
+	}
+
+	private getConnectionProfileFromContext(context: IConnectionProfile | any): IConnectionProfile | undefined {
+		if (!context) {
+			return undefined;
+		}
+
+		// depending on where import new project is launched from, the connection profile could be passed as just
+		// the profile or it could be wrapped in another object
+		return (<any>context).connectionProfile ? (<any>context).connectionProfile : context;
 	}
 
 	private async getProjectName(dbName: string): Promise<string | undefined> {

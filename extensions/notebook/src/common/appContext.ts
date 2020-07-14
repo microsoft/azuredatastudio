@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { ApiWrapper } from './apiWrapper';
 import { NotebookUtils } from './notebookUtils';
 
 /**
@@ -14,8 +13,7 @@ export class AppContext {
 
 	public readonly notebookUtils: NotebookUtils;
 
-	constructor(public readonly extensionContext: vscode.ExtensionContext, public readonly apiWrapper: ApiWrapper) {
-		this.apiWrapper = apiWrapper || new ApiWrapper();
-		this.notebookUtils = new NotebookUtils(apiWrapper);
+	constructor(public readonly extensionContext: vscode.ExtensionContext) {
+		this.notebookUtils = new NotebookUtils();
 	}
 }

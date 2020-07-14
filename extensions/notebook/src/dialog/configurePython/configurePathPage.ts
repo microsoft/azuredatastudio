@@ -236,7 +236,7 @@ export class ConfigurePathPage extends BasePage {
 			openLabel: this.SelectFileLabel
 		};
 
-		let fileUris: vscode.Uri[] = await this.apiWrapper.showOpenDialog(options);
+		let fileUris: vscode.Uri[] = await vscode.window.showOpenDialog(options);
 		if (fileUris?.length > 0 && fileUris[0]) {
 			let existingValues = <azdata.CategoryValue[]>this.pythonLocationDropdown.values;
 			let filePath = fileUris[0].fsPath;
