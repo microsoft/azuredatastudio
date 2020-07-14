@@ -197,7 +197,7 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 		try {
 			let session = this.getSqlClusterSessionForNode(node);
 			if (!session) {
-				this.appContext.apiWrapper.showErrorMessage(localize('sessionNotFound', "Session for node {0} does not exist", node.nodePathValue));
+				vscode.window.showErrorMessage(localize('sessionNotFound', "Session for node {0} does not exist", node.nodePathValue));
 			} else {
 				let nodeInfo = node.getNodeInfo();
 				let expandInfo: azdata.ExpandNodeInfo = {
