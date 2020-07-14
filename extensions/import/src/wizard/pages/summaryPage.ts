@@ -10,10 +10,42 @@ import { InsertDataResponse } from '../../services/contracts';
 import * as constants from '../../common/constants';
 
 export class SummaryPage extends ImportPage {
-	private table: azdata.TableComponent;
-	private statusText: azdata.TextComponent;
-	private loading: azdata.LoadingComponent;
-	private form: azdata.FormContainer;
+	private _table: azdata.TableComponent;
+	private _statusText: azdata.TextComponent;
+	private _loading: azdata.LoadingComponent;
+	private _form: azdata.FormContainer;
+
+	public get table(): azdata.TableComponent {
+		return this._table;
+	}
+
+	public set table(table: azdata.TableComponent) {
+		this._table = table;
+	}
+
+	public get statusText(): azdata.TextComponent {
+		return this._statusText;
+	}
+
+	public set statusText(statusText: azdata.TextComponent) {
+		this._statusText = statusText;
+	}
+
+	public get loading(): azdata.LoadingComponent {
+		return this._loading;
+	}
+
+	public set loading(loading: azdata.LoadingComponent) {
+		this._loading = loading;
+	}
+
+	public get form(): azdata.FormContainer {
+		return this._form;
+	}
+
+	public set form(form: azdata.FormContainer) {
+		this._form = form;
+	}
 
 	async start(): Promise<boolean> {
 		this.table = this.view.modelBuilder.table().component();
@@ -101,7 +133,7 @@ export class SummaryPage extends ImportPage {
 
 		let updateText: string;
 		if (!result || !result.result.success) {
-			updateText = '✗ ';
+			updateText = constants.summaryErrorSymbol;
 			if (!result) {
 				updateText += err;
 			} else {

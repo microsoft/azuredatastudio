@@ -77,7 +77,7 @@ export default class MainController implements Disposable {
 		await templates.loadTemplates(path.join(this.context.extensionPath, 'resources', 'templates'));
 
 		// ensure .net core is installed
-		this.netcoreTool.findOrInstallNetCore();
+		await this.netcoreTool.findOrInstallNetCore();
 	}
 
 	/**

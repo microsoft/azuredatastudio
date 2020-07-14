@@ -261,7 +261,7 @@ export class ProjectsController {
 
 			// check that dacpac exists
 			if (await utils.exists(dacpacPath)) {
-				this.apiWrapper.executeCommand(constants.schemaCompareStartCommand, dacpacPath);
+				await this.apiWrapper.executeCommand(constants.schemaCompareStartCommand, dacpacPath);
 			} else {
 				this.apiWrapper.showErrorMessage(constants.buildDacpacNotFound);
 			}
@@ -346,7 +346,7 @@ export class ProjectsController {
 
 			const newEntry = await project.addScriptItem(relativeFilePath, newFileText);
 
-			this.apiWrapper.executeCommand(constants.vscodeOpenCommand, newEntry.fsUri);
+			await this.apiWrapper.executeCommand(constants.vscodeOpenCommand, newEntry.fsUri);
 
 			this.refreshProjectsTree();
 		} catch (err) {
@@ -632,7 +632,9 @@ export class ProjectsController {
 	 * Imports a new SQL database project from the existing database,
 	 * prompting the user for a name, file path location and extract target
 	 */
-	public async importNewDatabaseProject(context: any): Promise<void> {
+	public async importNewDatabaseProject(context: IConnectionProfile | any): Promise<void> {
+
+		// TODO: Refactor code
 		try {
 			const model: ImportDataModel | undefined = await this.getModelFromContext(context);
 
@@ -669,38 +671,57 @@ export class ProjectsController {
 	private async getModelFromContext(context: any): Promise<ImportDataModel | undefined> {
 		let model = <ImportDataModel>{};
 
-		let profile = context ? <IConnectionProfile>context.connectionProfile : undefined;
+		let profile = this.getConnectionProfileFromContext(context);
+		let connectionId;
 		//TODO: Prompt for new connection addition and get database information if context information isn't provided.
+
 		if (profile) {
-			model.serverId = profile.id;
 			model.database = profile.databaseName;
+			connectionId = profile.id;
 		}
 		else {
 			const connection = await this.apiWrapper.openConnectionDialog();
+
 			if (!connection) {
 				return undefined;
 			}
 
-			const connectionId = connection.connectionId;
-			let database;
+			connectionId = connection.connectionId;
 
-			// use database that was connected to if it isn't master
-			if (connection.options['database'] && connection.options['database'] !== constants.master) {
-				database = connection.options['database'];
-			} else {
+			// use database that was connected to
+			if (connection.options['database']) {
+				model.database = connection.options['database'];
+			}
+
+			// choose database if connection was to a server or master
+			if (!model.database || model.database === constants.master) {
 				const databaseList = await this.apiWrapper.listDatabases(connectionId);
-				database = (await this.apiWrapper.showQuickPick(databaseList.map(dbName => { return { label: dbName }; })))?.label;
+				let database = (await this.apiWrapper.showQuickPick(databaseList.map(dbName => { return { label: dbName }; }),
+					{
+						canPickMany: false,
+						placeHolder: constants.extractDatabaseSelection
+					}))?.label;
 
 				if (!database) {
 					throw new Error(constants.databaseSelectionRequired);
 				}
-			}
 
-			model.serverId = connectionId;
-			model.database = database;
+				model.database = database;
+				model.serverId = connectionId;
+			}
 		}
 
 		return model;
+	}
+
+	private getConnectionProfileFromContext(context: IConnectionProfile | any): IConnectionProfile | undefined {
+		if (!context) {
+			return undefined;
+		}
+
+		// depending on where import new project is launched from, the connection profile could be passed as just
+		// the profile or it could be wrapped in another object
+		return (<any>context).connectionProfile ? (<any>context).connectionProfile : context;
 	}
 
 	private async getProjectName(dbName: string): Promise<string> {
