@@ -9,7 +9,6 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import { AzureResourceItemType } from '../../../azureResource/constants';
-import { ApiWrapper } from '../../../apiWrapper';
 import { generateGuid } from '../../utils';
 import { IAzureResourceService } from '../../interfaces';
 import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
@@ -21,10 +20,9 @@ export class AzureResourceDatabaseServerTreeDataProvider extends ResourceTreeDat
 
 	public constructor(
 		databaseServerService: IAzureResourceService<azureResource.AzureResourceDatabaseServer>,
-		apiWrapper: ApiWrapper,
 		private _extensionContext: ExtensionContext
 	) {
-		super(databaseServerService, apiWrapper);
+		super(databaseServerService);
 	}
 
 

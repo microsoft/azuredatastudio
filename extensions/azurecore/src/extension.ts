@@ -10,7 +10,6 @@ import * as path from 'path';
 import * as os from 'os';
 
 import { AppContext } from './appContext';
-import { ApiWrapper } from './apiWrapper';
 import { AzureAccountProviderService } from './account-provider/azureAccountProviderService';
 
 import { AzureResourceDatabaseServerProvider } from './azureResource/providers/databaseServer/databaseServerProvider';
@@ -18,9 +17,8 @@ import { AzureResourceDatabaseServerService } from './azureResource/providers/da
 import { AzureResourceDatabaseProvider } from './azureResource/providers/database/databaseProvider';
 import { AzureResourceDatabaseService } from './azureResource/providers/database/databaseService';
 import { AzureResourceService } from './azureResource/resourceService';
-import { IAzureResourceCacheService, IAzureResourceAccountService, IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService, IAzureResourceTenantService, IAzureTerminalService } from './azureResource/interfaces';
+import { IAzureResourceCacheService, IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService, IAzureResourceTenantService, IAzureTerminalService } from './azureResource/interfaces';
 import { AzureResourceServiceNames } from './azureResource/constants';
-import { AzureResourceAccountService } from './azureResource/services/accountService';
 import { AzureResourceSubscriptionService } from './azureResource/services/subscriptionService';
 import { AzureResourceSubscriptionFilterService } from './azureResource/services/subscriptionFilterService';
 import { AzureResourceCacheService } from './azureResource/services/cacheService';
@@ -41,6 +39,7 @@ import * as azurecore from './azurecore';
 import * as azureResourceUtils from './azureResource/utils';
 import * as utils from './utils';
 import * as loc from './localizedConstants';
+import * as constants from './constants';
 import { AzureResourceGroupService } from './azureResource/providers/resourceGroup/resourceGroupService';
 import { Logger } from './utils/Logger';
 
@@ -70,39 +69,38 @@ function pushDisposable(disposable: vscode.Disposable): void {
 // your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext): Promise<azurecore.IExtension> {
 	extensionContext = context;
-	const apiWrapper = new ApiWrapper();
-	let appContext = new AppContext(extensionContext, apiWrapper);
+	let appContext = new AppContext(extensionContext);
 
 	let storagePath = await findOrMakeStoragePath();
 	if (!storagePath) {
 		return undefined;
 	}
-	updatePiiLoggingLevel(apiWrapper);
+	updatePiiLoggingLevel();
 
 	// Create the provider service and activate
 	initAzureAccountProvider(extensionContext, storagePath).catch((err) => console.log(err));
 
 	registerAzureServices(appContext);
 	const azureResourceTree = new AzureResourceTreeProvider(appContext);
-	pushDisposable(apiWrapper.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
-	pushDisposable(apiWrapper.onDidChangeConfiguration(e => onDidChangeConfiguration(e, apiWrapper), this));
+	pushDisposable(vscode.window.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
+	pushDisposable(vscode.workspace.onDidChangeConfiguration(e => onDidChangeConfiguration(e), this));
 	registerAzureResourceCommands(appContext, azureResourceTree);
 
 	return {
 		getSubscriptions(account?: azdata.Account, ignoreErrors?: boolean): Thenable<azurecore.GetSubscriptionsResult> { return azureResourceUtils.getSubscriptions(appContext, account, ignoreErrors); },
 		getResourceGroups(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, ignoreErrors?: boolean): Thenable<azurecore.GetResourceGroupsResult> { return azureResourceUtils.getResourceGroups(appContext, account, subscription, ignoreErrors); },
 		provideResources(): azureResource.IAzureResourceProvider[] {
-			const arcFeaturedEnabled = apiWrapper.getExtensionConfiguration().get('enableArcFeatures');
+			const arcFeaturedEnabled = vscode.workspace.getConfiguration(constants.extensionConfigSectionName).get('enableArcFeatures');
 			const providers: azureResource.IAzureResourceProvider[] = [
-				new AzureResourceDatabaseServerProvider(new AzureResourceDatabaseServerService(), apiWrapper, extensionContext),
-				new AzureResourceDatabaseProvider(new AzureResourceDatabaseService(), apiWrapper, extensionContext),
-				new SqlInstanceProvider(new SqlInstanceResourceService(), apiWrapper, extensionContext),
-				new PostgresServerProvider(new PostgresServerService(), apiWrapper, extensionContext),
+				new AzureResourceDatabaseServerProvider(new AzureResourceDatabaseServerService(), extensionContext),
+				new AzureResourceDatabaseProvider(new AzureResourceDatabaseService(), extensionContext),
+				new SqlInstanceProvider(new SqlInstanceResourceService(), extensionContext),
+				new PostgresServerProvider(new PostgresServerService(), extensionContext),
 			];
 			if (arcFeaturedEnabled) {
 				providers.push(
-					new SqlInstanceArcProvider(new SqlInstanceArcResourceService(), apiWrapper, extensionContext),
-					new PostgresServerArcProvider(new PostgresServerArcService(), apiWrapper, extensionContext)
+					new SqlInstanceArcProvider(new SqlInstanceArcResourceService(), extensionContext),
+					new PostgresServerArcProvider(new PostgresServerArcService(), extensionContext)
 				);
 			}
 			return providers;
@@ -152,7 +150,6 @@ async function initAzureAccountProvider(extensionContext: vscode.ExtensionContex
 function registerAzureServices(appContext: AppContext): void {
 	appContext.registerService<AzureResourceService>(AzureResourceServiceNames.resourceService, new AzureResourceService());
 	appContext.registerService<AzureResourceGroupService>(AzureResourceServiceNames.resourceGroupService, new AzureResourceGroupService());
-	appContext.registerService<IAzureResourceAccountService>(AzureResourceServiceNames.accountService, new AzureResourceAccountService(appContext.apiWrapper));
 	appContext.registerService<IAzureResourceCacheService>(AzureResourceServiceNames.cacheService, new AzureResourceCacheService(extensionContext));
 	appContext.registerService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService, new AzureResourceSubscriptionService());
 	appContext.registerService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService, new AzureResourceSubscriptionFilterService(new AzureResourceCacheService(extensionContext)));
@@ -160,21 +157,21 @@ function registerAzureServices(appContext: AppContext): void {
 	appContext.registerService<IAzureTerminalService>(AzureResourceServiceNames.terminalService, new AzureTerminalService(extensionContext));
 }
 
-async function onDidChangeConfiguration(e: vscode.ConfigurationChangeEvent, apiWrapper: ApiWrapper): Promise<void> {
+async function onDidChangeConfiguration(e: vscode.ConfigurationChangeEvent): Promise<void> {
 	if (e.affectsConfiguration('azure.enableArcFeatures')) {
-		const response = await apiWrapper.showInformationMessage(loc.requiresReload, loc.reload);
+		const response = await vscode.window.showInformationMessage(loc.requiresReload, loc.reload);
 		if (response === loc.reload) {
-			await apiWrapper.executeCommand('workbench.action.reloadWindow');
+			await vscode.commands.executeCommand('workbench.action.reloadWindow');
 		}
 		return;
 	}
 
 	if (e.affectsConfiguration('azure.piiLogging')) {
-		updatePiiLoggingLevel(apiWrapper);
+		updatePiiLoggingLevel();
 	}
 }
 
-function updatePiiLoggingLevel(apiWrapper: ApiWrapper) {
-	const piiLogging: boolean = apiWrapper.getExtensionConfiguration().get('piiLogging');
+function updatePiiLoggingLevel() {
+	const piiLogging: boolean = vscode.workspace.getConfiguration(constants.extensionConfigSectionName).get('piiLogging');
 	Logger.piiLogging = piiLogging;
 }
