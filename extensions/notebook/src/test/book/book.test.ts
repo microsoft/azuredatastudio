@@ -19,7 +19,8 @@ import { exists } from '../../common/utils';
 import { BookModel } from '../../book/bookModel';
 import { BookTrustManager } from '../../book/bookTrustManager';
 import { NavigationProviders } from '../../common/constants';
-import * as TypeMoq from 'typemoq';
+import * as sinon from 'sinon';
+import { AppContext } from '../../common/appContext';
 
 export interface IExpectedBookItem {
 	title: string;
@@ -47,6 +48,7 @@ describe('BookTreeViewProviderTests', function () {
 	describe('BookTreeViewProvider', () => {
 
 		let mockExtensionContext: vscode.ExtensionContext;
+		let appContext: AppContext ;
 		let nonBookFolderPath: string;
 		let bookFolderPath: string;
 		let rootFolderPath: string;
@@ -59,6 +61,9 @@ describe('BookTreeViewProviderTests', function () {
 
 		this.beforeAll(async () => {
 			mockExtensionContext = new MockExtensionContext();
+			let notebookExtension: vscode.Extension<any> = vscode.extensions.getExtension('Microsoft.notebook');
+			await notebookExtension.activate();
+			appContext = notebookExtension.exports.getAppContext();
 			rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
 			nonBookFolderPath = path.join(rootFolderPath, `NonBook`);
 			bookFolderPath = path.join(rootFolderPath, `Book`);
@@ -154,16 +159,17 @@ describe('BookTreeViewProviderTests', function () {
 			let notebook1: BookTreeItem;
 
 			this.beforeAll(async () => {
-				let folder: vscode.WorkspaceFolder = {
+				/* let folder: vscode.WorkspaceFolder = {
 					uri: vscode.Uri.file(rootFolderPath),
 					name: '',
 					index: 0
-				};
-				bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
-				providedbookTreeViewProvider = new BookTreeViewProvider([], mockExtensionContext, true, 'providedBooksView', NavigationProviders.ProvidedBooksNavigator);
+				}; */
+				bookTreeViewProvider = appContext.bookTreeViewProvider; //new BookTreeViewProvider([folder], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
+				providedbookTreeViewProvider = appContext.providedBookTreeViewProvider;
 				let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 				await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
 				await Promise.race([providedbookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('ProvidedBooksTreeViewProvider did not initialize in time'); })]);
+				await bookTreeViewProvider.openBook(bookFolderPath, undefined, false, false);
 				await providedbookTreeViewProvider.openBook(bookFolderPath, undefined, false, false);
 			});
 
@@ -277,8 +283,7 @@ describe('BookTreeViewProviderTests', function () {
 
 			it('revealActiveDocumentInViewlet should return correct bookItem for highlight', async () => {
 				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb');
-
-				let currentSelection = await bookTreeViewProvider.revealActiveDocumentInViewlet(vscode.Uri.parse(notebook1Path), false);
+				let currentSelection = await bookTreeViewProvider.findAndExpandParentNode(notebook1Path);
 				equalBookItems(currentSelection, expectedNotebook1);
 			});
 
@@ -286,19 +291,12 @@ describe('BookTreeViewProviderTests', function () {
 				let notebook2Path = path.join(rootFolderPath, 'Book', 'content', 'notebook2.ipynb');
 				const notebookUri = vscode.Uri.file(notebook2Path);
 
-				//await bookTreeViewProvider.openBook(bookFolderPath, undefined, false, false);
-				let bookTreeViewProviderMock = TypeMoq.Mock.ofInstance(bookTreeViewProvider);
-				//bookTreeViewProviderMock.setup(x => x.revealActiveDocumentInViewlet(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(undefined));
+				let revealActiveDocumentInViewletSpy = sinon.spy(bookTreeViewProvider, 'revealActiveDocumentInViewlet');
 				await azdata.nb.showNotebookDocument(notebookUri);
-
-				//bookTreeViewProviderMock.setup(x => x.bookTreeViewer?.reveal(TypeMoq.It.isAny())).returns(() => Promise.resolve());
 				should(azdata.nb.notebookDocuments.find(doc => doc.fileName === notebookUri.fsPath)).not.be.undefined();
 				await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
-				bookTreeViewProviderMock.verify(x => x.revealActiveDocumentInViewlet(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
-
-				//let currentSelection = await bookTreeViewProviderMock.object.revealActiveDocumentInViewlet();
-				//should(currentSelection).not.be.undefined();
-
+				should(revealActiveDocumentInViewletSpy.called).be.true('revealActiveDocumentInViewlet should have been called');
+				sinon.restore();
 			});
 
 		});
