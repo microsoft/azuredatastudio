@@ -306,7 +306,7 @@ export class DataTierApplicationWizard {
 		await service.generateDeployScript(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.script);
 	}
 
-	private getPage(idx: number): Page {
+	public getPage(idx: number): Page {
 		let page: Page;
 
 		if (idx === 1) {

@@ -16,8 +16,6 @@ import { BookTreeItem, BookTreeItemType } from '../../book/bookTreeItem';
 import { promisify } from 'util';
 import { MockExtensionContext } from '../common/stubs';
 import { exists } from '../../common/utils';
-import { AppContext } from '../../common/appContext';
-import { ApiWrapper } from '../../common/apiWrapper';
 import { BookModel } from '../../book/bookModel';
 import { BookTrustManager } from '../../book/bookTrustManager';
 import { NavigationProviders } from '../../common/constants';
@@ -58,7 +56,6 @@ describe('BookTreeViewProviderTests', function () {
 		let expectedMarkdown: IExpectedBookItem;
 		let expectedExternalLink: IExpectedBookItem;
 		let expectedBook: IExpectedBookItem;
-		let appContext: AppContext;
 
 		this.beforeAll(async () => {
 			mockExtensionContext = new MockExtensionContext();
@@ -105,7 +102,6 @@ describe('BookTreeViewProviderTests', function () {
 				sections: [expectedNotebook1, expectedMarkdown, expectedExternalLink],
 				title: 'Test Book'
 			};
-			appContext = new AppContext(mockExtensionContext, new ApiWrapper());
 
 			await fs.mkdir(rootFolderPath);
 			await fs.mkdir(bookFolderPath);
@@ -118,11 +114,10 @@ describe('BookTreeViewProviderTests', function () {
 			await fs.writeFile(notebook2File, '');
 			await fs.writeFile(notebook3File, '');
 			await fs.writeFile(markdownFile, '');
-			// appContext = new AppContext(undefined, new ApiWrapper());
 		});
 
 		it('should initialize correctly with empty workspace array', async () => {
-			const bookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
+			const bookTreeViewProvider = new BookTreeViewProvider([], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
 			await bookTreeViewProvider.initialized;
 		});
 
@@ -132,7 +127,7 @@ describe('BookTreeViewProviderTests', function () {
 				name: '',
 				index: 0
 			};
-			const bookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [folder], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
+			const bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
 			await bookTreeViewProvider.initialized;
 		});
 
@@ -147,7 +142,7 @@ describe('BookTreeViewProviderTests', function () {
 				name: '',
 				index: 0
 			};
-			const bookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [book, nonBook], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
+			const bookTreeViewProvider = new BookTreeViewProvider([book, nonBook], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
 			await bookTreeViewProvider.initialized;
 			should(bookTreeViewProvider.books.length).equal(1, 'Expected book was not initialized');
 		});
@@ -164,8 +159,8 @@ describe('BookTreeViewProviderTests', function () {
 					name: '',
 					index: 0
 				};
-				bookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [folder], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
-				providedbookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [], mockExtensionContext, true, 'providedBooksView', NavigationProviders.ProvidedBooksNavigator);
+				bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
+				providedbookTreeViewProvider = new BookTreeViewProvider([], mockExtensionContext, true, 'providedBooksView', NavigationProviders.ProvidedBooksNavigator);
 				let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 				await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
 				await Promise.race([providedbookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('ProvidedBooksTreeViewProvider did not initialize in time'); })]);
@@ -204,7 +199,7 @@ describe('BookTreeViewProviderTests', function () {
 
 			it('bookTreeViewProvider should set notebooks trusted to true on trustBook', async () => {
 				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb');
-				let bookTrustManager: BookTrustManager = new BookTrustManager(bookTreeViewProvider.books, appContext.apiWrapper);
+				let bookTrustManager: BookTrustManager = new BookTrustManager(bookTreeViewProvider.books);
 				let isTrusted = bookTrustManager.isNotebookTrustedByDefault(vscode.Uri.file(notebook1Path).fsPath);
 				should(isTrusted).equal(false, 'Notebook should not be trusted by default');
 
@@ -323,7 +318,6 @@ describe('BookTreeViewProviderTests', function () {
 		let tableOfContentsFile: string;
 		let bookTreeViewProvider: BookTreeViewProvider;
 		let folder: vscode.WorkspaceFolder;
-		let appContext: AppContext;
 
 		this.beforeAll(async () => {
 			rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
@@ -340,11 +334,9 @@ describe('BookTreeViewProviderTests', function () {
 				name: '',
 				index: 0
 			};
-			appContext = new AppContext(mockExtensionContext, new ApiWrapper());
-			bookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [folder], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
+			bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
 			let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 			await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
-			appContext = new AppContext(undefined, new ApiWrapper());
 		});
 
 		it('should ignore toc.yml files not in _data folder', async () => {
@@ -367,7 +359,6 @@ describe('BookTreeViewProviderTests', function () {
 		let folder: vscode.WorkspaceFolder;
 		let bookTreeViewProvider: BookTreeViewProvider;
 		let tocFile: string;
-		let appContext: AppContext;
 
 		this.beforeAll(async () => {
 			rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
@@ -383,11 +374,9 @@ describe('BookTreeViewProviderTests', function () {
 				name: '',
 				index: 0
 			};
-			appContext = new AppContext(mockExtensionContext, new ApiWrapper());
-			bookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [folder], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
+			bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
 			let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 			await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
-			appContext = new AppContext(undefined, new ApiWrapper());
 		});
 
 		it('should show error message if config.yml file not found', async () => {
@@ -415,7 +404,6 @@ describe('BookTreeViewProviderTests', function () {
 		let bookTreeViewProvider: BookTreeViewProvider;
 		let folder: vscode.WorkspaceFolder;
 		let expectedNotebook2: IExpectedBookItem;
-		let appContext: AppContext;
 
 		this.beforeAll(async () => {
 			rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
@@ -443,11 +431,9 @@ describe('BookTreeViewProviderTests', function () {
 				name: '',
 				index: 0
 			};
-			appContext = new AppContext(mockExtensionContext, new ApiWrapper());
-			bookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [folder], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
+			bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
 			let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 			await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
-			appContext = new AppContext(undefined, new ApiWrapper());
 		});
 
 		it('should show error if notebook or markdown file is missing', async function (): Promise<void> {
@@ -469,7 +455,6 @@ describe('BookTreeViewProviderTests', function () {
 		let rootFolderPath: string;
 		let tableOfContentsFile: string;
 		let bookTreeViewProvider: BookTreeViewProvider;
-		let appContext: AppContext;
 
 		this.beforeAll(async () => {
 			rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
@@ -486,11 +471,9 @@ describe('BookTreeViewProviderTests', function () {
 			await fs.writeFile(notebook2File, '');
 
 			const mockExtensionContext = new MockExtensionContext();
-			appContext = new AppContext(mockExtensionContext, new ApiWrapper());
-			bookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
+			bookTreeViewProvider = new BookTreeViewProvider([], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
 			let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 			await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
-			appContext = new AppContext(undefined, new ApiWrapper());
 		});
 
 		it('should add book and initialize book on openBook', async () => {
@@ -545,7 +528,6 @@ describe('BookTreeViewProviderTests', function () {
 		let standaloneNotebookTitle: string;
 		let standaloneNotebookFile: string;
 		let bookTreeViewProvider: BookTreeViewProvider;
-		let appContext: AppContext;
 
 		this.beforeAll(async () => {
 			rootFolderPath = path.join(os.tmpdir(), `BookFolderTest_${uuid.v4()}`);
@@ -570,11 +552,9 @@ describe('BookTreeViewProviderTests', function () {
 			await fs.writeFile(standaloneNotebookFile, '');
 
 			const mockExtensionContext = new MockExtensionContext();
-			appContext = new AppContext(mockExtensionContext, new ApiWrapper());
-			bookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
+			bookTreeViewProvider = new BookTreeViewProvider([], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
 			let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 			await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
-			appContext = new AppContext(undefined, new ApiWrapper());
 		});
 
 		it('should include books and notebooks when opening parent folder', async () => {

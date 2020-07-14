@@ -112,6 +112,10 @@ export class PublishDatabaseDialog {
 					{
 						title: constants.targetDatabaseSettings,
 						components: [
+							{
+								title: constants.profileWarningText,
+								component: <azdata.ButtonComponent>this.loadProfileButton
+							},
 							/* TODO : enable using this when data source creation is enabled
 							{
 								title: constants.selectConnectionRadioButtonsTitle,
@@ -121,10 +125,6 @@ export class PublishDatabaseDialog {
 							{
 								title: constants.databaseNameLabel,
 								component: this.targetDatabaseTextBox
-							},
-							{
-								title: constants.profileWarningText,
-								component: <azdata.ButtonComponent>this.loadProfileButton
 							}
 						]
 					}
@@ -370,7 +370,7 @@ export class PublishDatabaseDialog {
 			}
 
 			// change the database inputbox value to the connection's database if there is one
-			if (this.connection.options.database) {
+			if (this.connection.options.database && this.connection.options.database !== constants.master) {
 				this.targetDatabaseTextBox!.value = this.connection.options.database;
 			}
 		});

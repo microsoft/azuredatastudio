@@ -3,8 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import vscode = require('vscode');
-import { ApiWrapper } from '../common/apiWrapper';
+import * as vscode from 'vscode';
 
 export const confirm = 'confirm';
 
@@ -48,14 +47,14 @@ export interface IQuestionHandler {
 }
 
 export interface IPrompter {
-	promptSingle<T>(question: IQuestion, apiWrapper?: ApiWrapper): Promise<T>;
+	promptSingle<T>(question: IQuestion): Promise<T>;
 	/**
 	 * Prompts for multiple questions
 	 *
 	 * @returns Map of question IDs to results, or undefined if
 	 * the user canceled the question session
 	 */
-	prompt<T>(questions: IQuestion[], apiWrapper?: ApiWrapper): Promise<{ [questionId: string]: any }>;
+	prompt<T>(questions: IQuestion[]): Promise<{ [questionId: string]: any }>;
 }
 
 export interface IPromptCallback {

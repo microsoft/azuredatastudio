@@ -50,7 +50,7 @@ import { NodeContextKey } from 'sql/workbench/browser/parts/views/nodeContext';
 
 export class TreeViewPane extends ViewPane {
 
-	private treeView: ITreeView;
+	public readonly treeView: ITreeView;
 
 	constructor(
 		options: IViewletViewOptions,
@@ -138,7 +138,7 @@ export class TreeView extends Disposable implements ITreeView {
 	private tree: Tree | undefined;
 	private treeLabels: ResourceLabels | undefined;
 
-	private root: ITreeItem;
+	public readonly root: ITreeItem;
 	private elementsToRefresh: ITreeItem[] = [];
 
 	private readonly _onDidExpandItem: Emitter<ITreeItem> = this._register(new Emitter<ITreeItem>());

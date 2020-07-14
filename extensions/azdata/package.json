@@ -1,0 +1,28 @@
+{
+  "name": "azdata",
+  "displayName": "%azdata.displayName%",
+  "description": "%azdata.description%",
+  "version": "0.1.0",
+  "publisher": "Microsoft",
+  "preview": true,
+  "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
+  "icon": "images/extension.png",
+  "engines": {
+    "vscode": "*",
+    "azdata": ">=1.20.0"
+  },
+  "activationEvents": [
+    "*"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/azuredatastudio.git"
+  },
+  "main": "./out/extension",
+  "dependencies": {
+    "vscode-nls": "^4.1.2"
+  },
+  "devDependencies": {
+    "@types/node": "^12.11.7"
+  }
+}

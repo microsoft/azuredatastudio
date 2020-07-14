@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
   "version": "1.20.0",
-  "distro": "1cbfc86b4d9fe276817c369668b425e26494bb9e",
+  "distro": "0e27fd464a32a78a47a0aa815f408233820c59cc",
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -30,6 +30,7 @@
     "update-grammars": "node build/npm/update-all-grammars.js",
     "update-localization-extension": "node build/npm/update-localization-extension.js",
     "smoketest": "cd test/smoke && node test/index.js",
+    "download-builtin-extensions": "node build/lib/builtInExtensions.js",
     "monaco-compile-check": "tsc -p src/tsconfig.monaco.json --noEmit",
     "strict-vscode": "node --max_old_space_size=4095 node_modules/typescript/bin/tsc -p src/tsconfig.vscode.json",
     "strict-vscode-watch": "node --max_old_space_size=4095 node_modules/typescript/bin/tsc -p src/tsconfig.vscode.json --watch",
