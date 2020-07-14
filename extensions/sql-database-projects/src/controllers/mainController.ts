@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import * as templates from '../templates/templates';
 import * as constants from '../common/constants';
 import * as path from 'path';
+import * as glob from 'fast-glob';
 
 import { Uri, Disposable, ExtensionContext, WorkspaceFolder } from 'vscode';
 import { ApiWrapper } from '../common/apiWrapper';
@@ -35,6 +36,10 @@ export default class MainController implements Disposable {
 
 	public get extensionContext(): ExtensionContext {
 		return this.context;
+	}
+
+	public get projController(): ProjectsController {
+		return this.projectsController;
 	}
 
 	public deactivate(): void {
@@ -78,6 +83,29 @@ export default class MainController implements Disposable {
 
 		// ensure .net core is installed
 		await this.netcoreTool.findOrInstallNetCore();
+
+		// load any sql projects that are open in workspace folder
+		await this.loadProjectsInWorkspace();
+	}
+
+	public async loadProjectsInWorkspace(): Promise<void> {
+		const workspaceFolders = this.apiWrapper.workspaceFolders();
+		if (workspaceFolders?.length) {
+			await Promise.all(workspaceFolders.map(async (workspaceFolder) => {
+				await this.loadProjectsInFolder(workspaceFolder.uri.fsPath);
+			}));
+		}
+	}
+
+	public async loadProjectsInFolder(folderPath: string): Promise<void> {
+		// path needs to use forward slashes for glob to work
+		let escapedPath = glob.escapePath(folderPath.replace(/\\/g, '/'));
+		let sqlprojFilter = path.posix.join(escapedPath, '**', '*.sqlproj');
+		let results = await glob(sqlprojFilter);
+
+		for (let f in results) {
+			await this.projectsController.openProject(Uri.file(results[f]));
+		}
 	}
 
 	/**
