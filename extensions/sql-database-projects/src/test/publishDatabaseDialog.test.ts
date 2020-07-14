@@ -16,20 +16,12 @@ import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { Project } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProjectTreeViewProvider';
 import { ProjectsController } from '../controllers/projectController';
-import { createContext, TestContext } from './testContext';
 import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
-
-
-let testContext: TestContext;
 
 describe.skip('Publish Database Dialog', () => {
 	before(async function (): Promise<void> {
 		await templates.loadTemplates(path.join(__dirname, '..', '..', 'resources', 'templates'));
 		await baselines.loadBaselines();
-	});
-
-	beforeEach(function (): void {
-		testContext = createContext();
 	});
 
 	it('Should open dialog successfully ', async function (): Promise<void> {
