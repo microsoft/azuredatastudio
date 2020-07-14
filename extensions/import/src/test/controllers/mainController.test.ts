@@ -6,7 +6,6 @@
 import * as TypeMoq from 'typemoq';
 import { ApiWrapper } from '../../common/apiWrapper';
 import MainController from '../../controllers/mainController';
-import * as constants from '../../common/constants';
 import { ImportTestUtils, TestExtensionContext } from '../utils.test';
 
 describe('Main Controller', function () {
@@ -19,17 +18,13 @@ describe('Main Controller', function () {
 		mockApiWrapper = TypeMoq.Mock.ofType(ApiWrapper);
 	});
 
-	it('Should register task flatFileImportStartCommand after activate is called', async function () {
-
+	it('Extension activates successfully', async function () {
 		// using vscode and azdata APIs available during tests
 		mockApiWrapper.callBase = true;
 
 		let mainController = new MainController(testExtensionContext, mockApiWrapper.object);
 
-		await mainController.activate();
-
-		// verifying that the task is registered.
-		mockApiWrapper.verify(x => x.registerTask(constants.flatFileImportStartCommand, TypeMoq.It.isAny()), TypeMoq.Times.once());
+		mainController.activate();
 	});
 });
 
