@@ -977,7 +977,7 @@ export class SearchView extends ViewPane {
 	}
 
 	protected reLayout(): void { // {{SQL CARBON EDIT}}
-		if (this.isDisposed) {
+		if (this.isDisposed || !this.size) {
 			return;
 		}
 
