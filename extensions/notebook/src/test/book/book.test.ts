@@ -61,9 +61,6 @@ describe('BooksTreeViewTests', function () {
 
 		this.beforeAll(async () => {
 			mockExtensionContext = new MockExtensionContext();
-			let notebookExtension: vscode.Extension<any> = vscode.extensions.getExtension('Microsoft.notebook');
-			await notebookExtension.activate();
-			appContext = notebookExtension.exports.getAppContext();
 			rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
 			nonBookFolderPath = path.join(rootFolderPath, `NonBook`);
 			bookFolderPath = path.join(rootFolderPath, `Book`);
@@ -119,6 +116,15 @@ describe('BooksTreeViewTests', function () {
 			await fs.writeFile(notebook2File, '');
 			await fs.writeFile(notebook3File, '');
 			await fs.writeFile(markdownFile, '');
+		});
+
+		it('bookProviders should be initialized on extension activate', async () => {
+			let notebookExtension: vscode.Extension<any> = vscode.extensions.getExtension('Microsoft.notebook');
+			await notebookExtension.activate();
+			appContext = notebookExtension.exports.getAppContext();
+			should(appContext).not.be.undefined();
+			should(appContext.bookTreeViewProvider).not.be.undefined();
+			should(appContext.providedBookTreeViewProvider).not.be.undefined();
 		});
 
 		it('should initialize correctly with empty workspace array', async () => {
