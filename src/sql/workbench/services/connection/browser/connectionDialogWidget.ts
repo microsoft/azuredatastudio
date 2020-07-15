@@ -40,13 +40,17 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { entries } from 'sql/base/common/collections';
 import { attachTabbedPanelStyler, attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { IViewPaneContainer, IView, IViewContainersRegistry, Extensions as ViewContainerExtensions, ViewContainerLocation, IViewDescriptorService, ViewContainer } from 'vs/workbench/common/views';
+import { IAction, IActionViewItem } from 'vs/base/common/actions';
+import { Registry } from 'vs/platform/registry/common/platform';
+import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 
 export interface OnShowUIResponse {
 	selectedProviderDisplayName: string;
 	container: HTMLElement;
 }
 
-export class ConnectionDialogWidget extends Modal {
+export class ConnectionDialogWidget extends Modal implements IViewPaneContainer {
 	private _body: HTMLElement;
 	private _recentConnection: HTMLElement;
 	private _noRecentConnection: HTMLElement;
@@ -87,18 +91,22 @@ export class ConnectionDialogWidget extends Modal {
 
 	private _connecting = false;
 
+	readonly viewContainer: ViewContainer;
+	protected readonly viewContainerModel: IViewContainerModel;
+
 	constructor(
 		private providerDisplayNameOptions: string[],
 		private selectedProviderType: string,
 		private providerNameToDisplayNameMap: { [providerDisplayName: string]: string },
-		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@IInstantiationService private readonly instantiationService: IInstantiationService,
+		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
+		@IContextMenuService private readonly contextMenuService: IContextMenuService,
+		@IContextViewService private readonly contextViewService: IContextViewService,
+		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
 		@IThemeService themeService: IThemeService,
 		@ILayoutService layoutService: ILayoutService,
 		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IContextMenuService private _contextMenuService: IContextMenuService,
-		@IContextViewService private _contextViewService: IContextViewService,
 		@IClipboardService clipboardService: IClipboardService,
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
@@ -114,6 +122,14 @@ export class ConnectionDialogWidget extends Modal {
 			textResourcePropertiesService,
 			contextKeyService,
 			{ hasSpinner: true, spinnerTitle: localize('connecting', "Connecting"), hasErrors: true });
+
+		const container = viewDescriptorService.getViewContainerById('connection');
+		if (!container) {
+			throw new Error('Could not find container');
+		}
+
+		this.viewContainer = container;
+		this.viewContainerModel = viewDescriptorService.getViewContainerModel(container);
 	}
 
 	/**
@@ -142,7 +158,7 @@ export class ConnectionDialogWidget extends Modal {
 		}
 
 		// Remove duplicate listings (CMS uses the same display name)
-		let uniqueProvidersMap = this._connectionManagementService.getUniqueConnectionProvidersByNameMap(filteredProviderMap);
+		let uniqueProvidersMap = this.connectionManagementService.getUniqueConnectionProvidersByNameMap(filteredProviderMap);
 		this._providerTypeSelectBox.setOptions(Object.keys(uniqueProvidersMap).map(k => uniqueProvidersMap[k]));
 	}
 
@@ -154,7 +170,7 @@ export class ConnectionDialogWidget extends Modal {
 		this._body = DOM.append(container, DOM.$('.connection-dialog'));
 
 		const connectTypeLabel = localize('connectType', "Connection type");
-		this._providerTypeSelectBox = new SelectBox(this.providerDisplayNameOptions, this.selectedProviderType, this._contextViewService, undefined, { ariaLabel: connectTypeLabel });
+		this._providerTypeSelectBox = new SelectBox(this.providerDisplayNameOptions, this.selectedProviderType, this.contextViewService, undefined, { ariaLabel: connectTypeLabel });
 		// Recent connection tab
 		const recentConnectionTab = DOM.$('.connection-recent-tab');
 		const recentConnectionContainer = DOM.append(recentConnectionTab, DOM.$('.connection-recent', { id: 'recentConnection' }));
@@ -205,7 +221,7 @@ export class ConnectionDialogWidget extends Modal {
 
 			if (c === savedConnectionTabId && expandableTree.getContentHeight() === 0) {
 				// Update saved connection tree
-				await TreeUpdateUtils.structuralTreeUpdate(this._savedConnectionTree, 'saved', this._connectionManagementService, this._providers);
+				await TreeUpdateUtils.structuralTreeUpdate(this._savedConnectionTree, 'saved', this.connectionManagementService, this._providers);
 
 				if (expandableTree.getContentHeight() > 0) {
 					DOM.hide(this._noSavedConnection);
@@ -320,7 +336,7 @@ export class ConnectionDialogWidget extends Modal {
 		const container = DOM.append(recentConnectionContainer, DOM.$('.recent-titles-container'));
 		const actionsContainer = DOM.append(container, DOM.$('.connection-history-actions'));
 		this._actionbar = this._register(new ActionBar(actionsContainer, { animated: false }));
-		const clearAction = this._instantiationService.createInstance(ClearRecentConnectionsAction, ClearRecentConnectionsAction.ID, ClearRecentConnectionsAction.LABEL);
+		const clearAction = this.instantiationService.createInstance(ClearRecentConnectionsAction, ClearRecentConnectionsAction.ID, ClearRecentConnectionsAction.LABEL);
 		clearAction.useConfirmationMessage = true;
 		clearAction.onRecentConnectionsRemoved(() => this.open(false));
 		this._actionbar.push(clearAction, { icon: true, label: true });
@@ -332,21 +348,21 @@ export class ConnectionDialogWidget extends Modal {
 				this.onConnectionClick({ payload: { origin: origin, originalEvent: eventish } }, element);
 			}
 		};
-		const actionProvider = this._instantiationService.createInstance(RecentConnectionActionsProvider);
-		const controller = new RecentConnectionTreeController(leftClick, actionProvider, this._connectionManagementService, this._contextMenuService);
+		const actionProvider = this.instantiationService.createInstance(RecentConnectionActionsProvider);
+		const controller = new RecentConnectionTreeController(leftClick, actionProvider, this.connectionManagementService, this.contextMenuService);
 		actionProvider.onRecentConnectionRemoved(() => {
-			const recentConnections: ConnectionProfile[] = this._connectionManagementService.getRecentConnections();
+			const recentConnections: ConnectionProfile[] = this.connectionManagementService.getRecentConnections();
 			this.open(recentConnections.length > 0).catch(err => this.logService.error(`Unexpected error opening connection widget after a recent connection was removed from action provider: ${err}`));
 			// We're just using the connections to determine if there are connections to show, dispose them right after to clean up their handlers
 			recentConnections.forEach(conn => conn.dispose());
 		});
 		controller.onRecentConnectionRemoved(() => {
-			const recentConnections: ConnectionProfile[] = this._connectionManagementService.getRecentConnections();
+			const recentConnections: ConnectionProfile[] = this.connectionManagementService.getRecentConnections();
 			this.open(recentConnections.length > 0).catch(err => this.logService.error(`Unexpected error opening connection widget after a recent connection was removed from controller : ${err}`));
 			// We're just using the connections to determine if there are connections to show, dispose them right after to clean up their handlers
 			recentConnections.forEach(conn => conn.dispose());
 		});
-		this._recentConnectionTree = TreeCreationUtils.createConnectionTree(treeContainer, this._instantiationService, controller);
+		this._recentConnectionTree = TreeCreationUtils.createConnectionTree(treeContainer, this.instantiationService, controller);
 
 		// Theme styler
 		this._register(styler.attachListStyler(this._recentConnectionTree, this._themeService));
@@ -371,7 +387,7 @@ export class ConnectionDialogWidget extends Modal {
 		};
 
 		const controller = new SavedConnectionTreeController(leftClick);
-		this._savedConnectionTree = TreeCreationUtils.createConnectionTree(treeContainer, this._instantiationService, controller);
+		this._savedConnectionTree = TreeCreationUtils.createConnectionTree(treeContainer, this.instantiationService, controller);
 
 		// Theme styler
 		this._register(styler.attachListStyler(this._savedConnectionTree, this._themeService));
@@ -411,7 +427,7 @@ export class ConnectionDialogWidget extends Modal {
 			DOM.hide(this._recentConnection);
 			DOM.show(this._noRecentConnection);
 		}
-		await TreeUpdateUtils.structuralTreeUpdate(this._recentConnectionTree, 'recent', this._connectionManagementService, this._providers);
+		await TreeUpdateUtils.structuralTreeUpdate(this._recentConnectionTree, 'recent', this.connectionManagementService, this._providers);
 
 		// reset saved connection tree
 		await this._savedConnectionTree.setInput([]);
@@ -478,4 +494,51 @@ export class ConnectionDialogWidget extends Modal {
 	public get databaseDropdownExpanded(): boolean {
 		return this._databaseDropdownExpanded;
 	}
+
+	//#region ViewletContainer
+	public readonly onDidAddViews: Event<IView[]> = Event.None;
+	public readonly onDidRemoveViews: Event<IView[]> = Event.None;
+	public readonly onDidChangeViewVisibility: Event<IView> = Event.None;
+	public get views(): IView[] {
+		return [];
+	}
+
+	setVisible(visible: boolean): void {
+	}
+
+	isVisible(): boolean {
+		return false;
+	}
+
+	focus(): void {
+	}
+
+	getActions(): IAction[] {
+		return [];
+	}
+
+	getSecondaryActions(): IAction[] {
+		return [];
+	}
+
+	getActionViewItem(action: IAction): IActionViewItem {
+		throw new Error('Method not implemented.');
+	}
+
+	getView(viewId: string): IView {
+		throw new Error('Method not implemented.');
+	}
+
+	saveState(): void {
+	}
+	//#endregion
 }
+
+export const VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
+	id: 'connection',
+	name: 'ConnectionDialog',
+	ctorDescriptor: new SyncDescriptor(class { }),
+	icon: 'dataExplorer',
+	order: 0,
+	storageId: `connection.state`
+}, ViewContainerLocation.Dialog);

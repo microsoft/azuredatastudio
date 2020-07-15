@@ -881,7 +881,6 @@ export class ViewPaneContainer extends Component implements IViewPaneContainer {
 			throw new Error('Could not find container');
 		}
 
-
 		this.viewContainer = container;
 		this.visibleViewsStorageId = `${id}.numberOfVisibleViews`;
 		this.visibleViewsCountFromCache = this.storageService.getNumber(this.visibleViewsStorageId, StorageScope.WORKSPACE, undefined);

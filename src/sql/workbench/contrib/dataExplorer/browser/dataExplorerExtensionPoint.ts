@@ -39,7 +39,7 @@ const viewDescriptor: IJSONSchema = {
 		when: {
 			description: localize('vscode.extension.contributes.view.when', "Condition which must be true to show this view"),
 			type: 'string'
-		},
+		}
 	}
 };
 
@@ -61,7 +61,6 @@ const dataExplorerContribution: IJSONSchema = {
 		default: []
 	}
 };
-
 
 const dataExplorerExtensionPoint: IExtensionPoint<{ [loc: string]: IUserFriendlyViewDescriptor[] }> = ExtensionsRegistry.registerExtensionPoint<{ [loc: string]: IUserFriendlyViewDescriptor[] }>({ extensionPoint: 'dataExplorer', jsonSchema: dataExplorerContribution });
 
@@ -86,9 +85,8 @@ export class DataExplorerContainerExtensionHandler implements IWorkbenchContribu
 						return;
 					}
 
-					let container = this.viewContainersRegistry.get(VIEWLET_ID);
+					let container = this.viewContainersRegistry.get(entry.key);
 					if (!container) {
-						collector.warn(localize('ViewsContainerDoesnotExist', "View container '{0}' does not exist and all views registered to it will be added to 'Data Explorer'.", entry.key));
 						container = this.viewContainersRegistry.get(VIEWLET_ID);
 					}
 					const registeredViews = Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).getViews(container);
@@ -154,4 +152,3 @@ export class DataExplorerContainerExtensionHandler implements IWorkbenchContribu
 		return true;
 	}
 }
-
