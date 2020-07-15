@@ -1029,7 +1029,6 @@ registerThemingParticipant((theme, collector) => {
 	if (buttonPrimaryBackgroundColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-primary { background-color: ${buttonPrimaryBackgroundColor};}`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-primary { border-color: ${buttonPrimaryBackgroundColor};}`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .header-bottom-nav-tile-link:focus { outline: 1px solid ${buttonPrimaryBackgroundColor}} `);
 	}
 
 	const buttonForegroundColor = theme.getColor(buttonForeground);
@@ -1142,6 +1141,7 @@ registerThemingParticipant((theme, collector) => {
 	if (focusBorderColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads-homepage #dropdown-btn:focus { outline-color: ${focusBorderColor}; }`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage *:focus { outline: 1px solid ${focusBorderColor}} `);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .header-bottom-nav-tile-link:focus { outline: 1px solid ${focusBorderColor}} `);
 	}
 	const iconForegroundColor = theme.getColor(iconForeground);
 	if (iconForegroundColor) {
