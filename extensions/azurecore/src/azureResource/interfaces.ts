@@ -5,16 +5,10 @@
 
 import * as msRest from '@azure/ms-rest-js';
 
-import { Account, DidChangeAccountsParams } from 'azdata';
-import { Event } from 'vscode';
+import { Account } from 'azdata';
 
 import { azureResource } from './azure-resource';
 import { AzureAccount, AzureAccountSecurityToken, Tenant } from '../account-provider/interfaces';
-
-export interface IAzureResourceAccountService {
-	getAccounts(): Promise<Account[]>;
-	readonly onDidChangeAccounts: Event<DidChangeAccountsParams>;
-}
 
 export interface IAzureResourceSubscriptionService {
 	getSubscriptions(account: Account, credential: msRest.ServiceClientCredentials): Promise<azureResource.AzureResourceSubscription[]>;
