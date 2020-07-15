@@ -6,22 +6,24 @@
 import * as TypeMoq from 'typemoq';
 import * as azdata from 'azdata';
 import { FlatFileWizard } from '../../../wizard/flatFileWizard';
-import { ApiWrapper } from '../../../common/apiWrapper';
 import { ImportDataModel } from '../../../wizard/api/models';
 import { TestImportDataModel, ImportTestUtils } from '../../utils.test';
 import { FileConfigPage } from '../../../wizard/pages/fileConfigPage';
 import * as should from 'should';
+import * as sinon from 'sinon';
 
-describe('import extension wizard pages', function () {
+describe('Base page tests', function () {
 
 	let mockFlatFileWizard: TypeMoq.IMock<FlatFileWizard>;
-	let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
 	let mockImportModel: TypeMoq.IMock<ImportDataModel>;
 
 	beforeEach(function () {
-		mockApiWrapper = TypeMoq.Mock.ofType(ApiWrapper);
-		mockFlatFileWizard = TypeMoq.Mock.ofType(FlatFileWizard, TypeMoq.MockBehavior.Loose, undefined, TypeMoq.It.isAny(), mockApiWrapper.object);
+		mockFlatFileWizard = TypeMoq.Mock.ofType(FlatFileWizard, TypeMoq.MockBehavior.Loose, undefined, TypeMoq.It.isAny());
 		mockImportModel = TypeMoq.Mock.ofType(TestImportDataModel, TypeMoq.MockBehavior.Loose);
+	});
+
+	afterEach(function (): void {
+		sinon.restore();
 	});
 
 	it('getDatabaseValue returns active database first', async function () {
@@ -30,8 +32,8 @@ describe('import extension wizard pages', function () {
 		let activeDatabase: string = 'testdb2';
 
 		// setting up mocks
-		let importPage = new FileConfigPage(mockFlatFileWizard.object, TypeMoq.It.isAny(), mockImportModel.object, TypeMoq.It.isAny(), TypeMoq.It.isAny(), mockApiWrapper.object);
-		mockApiWrapper.setup(x => x.listDatabases(TypeMoq.It.isAnyString())).returns(async () => { return databases; });
+		let importPage = new FileConfigPage(mockFlatFileWizard.object, TypeMoq.It.isAny(), mockImportModel.object, TypeMoq.It.isAny(), TypeMoq.It.isAny());
+		sinon.stub(azdata.connection, 'listDatabases').returns(Promise.resolve(databases));
 		mockImportModel.object.server = {
 			providerName: 'MSSQL',
 			connectionId: 'testConnectionId',
@@ -52,10 +54,10 @@ describe('import extension wizard pages', function () {
 
 	it('getServerValue returns null on no active connection', async function () {
 
-		let importPage = new FileConfigPage(mockFlatFileWizard.object, TypeMoq.It.isAny(), mockImportModel.object, TypeMoq.It.isAny(), TypeMoq.It.isAny(), mockApiWrapper.object);
+		let importPage = new FileConfigPage(mockFlatFileWizard.object, TypeMoq.It.isAny(), mockImportModel.object, TypeMoq.It.isAny(), TypeMoq.It.isAny());
 
 		// mocking getActive connection to return null
-		mockApiWrapper.setup(x => x.getActiveConnections()).returns(async () => { return undefined; });
+		let getActiveConnectionStub = sinon.stub(azdata.connection, 'getActiveConnections').returns(Promise.resolve(undefined));
 
 		let serverValues = await importPage.getServerValues();
 
@@ -63,7 +65,7 @@ describe('import extension wizard pages', function () {
 		should.equal(serverValues, undefined, 'getServer should be undefined for no active connections');
 
 		// mocking getActive connection returns empty array
-		mockApiWrapper.setup(x => x.getActiveConnections()).returns(async () => { return [] as azdata.connection.Connection[]; });
+		getActiveConnectionStub.returns(Promise.resolve([] as azdata.connection.Connection[]));
 
 		serverValues = await importPage.getServerValues();
 
@@ -100,8 +102,8 @@ describe('import extension wizard pages', function () {
 			}
 		];
 
-		let importPage = new FileConfigPage(mockFlatFileWizard.object, TypeMoq.It.isAny(), mockImportModel.object, TypeMoq.It.isAny(), TypeMoq.It.isAny(), mockApiWrapper.object);
-		mockApiWrapper.setup(x => x.getActiveConnections()).returns(async () => { return testActiveConnections; });
+		let importPage = new FileConfigPage(mockFlatFileWizard.object, TypeMoq.It.isAny(), mockImportModel.object, TypeMoq.It.isAny(), TypeMoq.It.isAny());
+		sinon.stub(azdata.connection, 'getActiveConnections').returns(Promise.resolve(testActiveConnections));
 		mockImportModel.object.server = ImportTestUtils.getTestServer();
 
 		// the second connection should be the first element in the array as it is active

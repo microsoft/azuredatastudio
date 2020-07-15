@@ -123,7 +123,7 @@ export class SummaryPage extends ImportPage {
 
 		try {
 			result = await this.provider.sendInsertDataRequest({
-				connectionString: await this._apiWrapper.getConnectionString(this.model.server.connectionId, includePasswordInConnectionString),
+				connectionString: await azdata.connection.getConnectionString(this.model.server.connectionId, includePasswordInConnectionString),
 				//TODO check what SSMS uses as batch size
 				batchSize: 500
 			});
