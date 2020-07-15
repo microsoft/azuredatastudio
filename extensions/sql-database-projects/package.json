@@ -118,7 +118,11 @@
       {
         "command": "sqlDatabaseProjects.importDatabase",
         "title": "%sqlDatabaseProjects.importDatabase%",
-        "category": "%sqlDatabaseProjects.displayName%"
+        "category": "%sqlDatabaseProjects.displayName%",
+          "icon": {
+            "dark": "images/extension.png",
+            "light": "images/extension.png"
+          }
       },
       {
         "command": "sqlDatabaseProjects.addDatabaseReference",
@@ -277,6 +281,12 @@
           "when": "connectionProvider == MSSQL && nodeType && nodeType == Database && mssql:engineedition != 11",
           "group": "export"
         }
+      ],
+      "dashboard/toolbar": [
+        {
+            "command": "sqlDatabaseProjects.importDatabase",
+            "when": "connectionProvider == 'MSSQL' && mssql:engineedition != 11"
+        }
       ]
     },
     "views": {
@@ -297,6 +307,7 @@
   },
   "dependencies": {
     "@types/xml-formatter": "^1.1.0",
+    "fast-glob": "^3.1.0",
     "promisify-child-process": "^3.1.1",
     "vscode-languageclient": "^5.3.0-next.1",
     "vscode-nls": "^3.2.1",

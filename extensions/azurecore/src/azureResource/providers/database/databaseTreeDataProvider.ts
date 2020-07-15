@@ -10,7 +10,6 @@ const localize = nls.loadMessageBundle();
 
 import { azureResource } from '../../azure-resource';
 import { AzureResourceItemType } from '../../../azureResource/constants';
-import { ApiWrapper } from '../../../apiWrapper';
 import { generateGuid } from '../../utils';
 import { IAzureResourceService } from '../../interfaces';
 import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
@@ -22,10 +21,9 @@ export class AzureResourceDatabaseTreeDataProvider extends ResourceTreeDataProvi
 
 	public constructor(
 		databaseService: IAzureResourceService<azureResource.AzureResourceDatabase>,
-		apiWrapper: ApiWrapper,
 		private _extensionContext: ExtensionContext
 	) {
-		super(databaseService, apiWrapper);
+		super(databaseService);
 	}
 	protected getTreeItemForResource(database: azureResource.AzureResourceDatabase, account: Account): TreeItem {
 		return {

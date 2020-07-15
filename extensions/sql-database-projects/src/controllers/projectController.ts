@@ -56,11 +56,11 @@ export class ProjectsController {
 			}
 		}
 
-		const newProject = new Project(projectFile.fsPath);
+		let newProject: Project;
 
 		try {
 			// Read project file
-			await newProject.readProjFile();
+			newProject = await Project.openProject(projectFile.fsPath);
 			this.projects.push(newProject);
 
 			// Update for round tripping as needed
@@ -69,29 +69,29 @@ export class ProjectsController {
 			// Read datasources.json (if present)
 			const dataSourcesFilePath = path.join(path.dirname(projectFile.fsPath), constants.dataSourcesFileName);
 
-			newProject.dataSources = await dataSources.load(dataSourcesFilePath);
-		}
-		catch (err) {
-			if (err instanceof dataSources.NoDataSourcesFileError) {
-				// TODO: prompt to create new datasources.json; for now, swallow
+			try {
+				newProject.dataSources = await dataSources.load(dataSourcesFilePath);
 			}
-			else {
-				this.projects = this.projects.filter((e) => { return e !== newProject; });
-				throw err;
+			catch (err) {
+				if (err instanceof dataSources.NoDataSourcesFileError) {
+					// TODO: prompt to create new datasources.json; for now, swallow
+				}
+				else {
+					throw err;
+				}
 			}
-		}
 
-		try {
 			this.refreshProjectsTree();
 			await this.focusProject(newProject);
 		}
 		catch (err) {
 			// if the project didnt load - remove it from the list of open projects
 			this.projects = this.projects.filter((e) => { return e !== newProject; });
+
 			throw err;
 		}
 
-		return newProject;
+		return newProject!;
 	}
 
 	public async focusProject(project?: Project): Promise<void> {
@@ -261,7 +261,7 @@ export class ProjectsController {
 
 			// check that dacpac exists
 			if (await utils.exists(dacpacPath)) {
-				this.apiWrapper.executeCommand(constants.schemaCompareStartCommand, dacpacPath);
+				await this.apiWrapper.executeCommand(constants.schemaCompareStartCommand, dacpacPath);
 			} else {
 				this.apiWrapper.showErrorMessage(constants.buildDacpacNotFound);
 			}
@@ -346,7 +346,7 @@ export class ProjectsController {
 
 			const newEntry = await project.addScriptItem(relativeFilePath, newFileText);
 
-			this.apiWrapper.executeCommand(constants.vscodeOpenCommand, newEntry.fsUri);
+			await this.apiWrapper.executeCommand(constants.vscodeOpenCommand, newEntry.fsUri);
 
 			this.refreshProjectsTree();
 		} catch (err) {
@@ -632,108 +632,109 @@ export class ProjectsController {
 	 * Imports a new SQL database project from the existing database,
 	 * prompting the user for a name, file path location and extract target
 	 */
-	public async importNewDatabaseProject(context: any): Promise<void> {
-		let model = <ImportDataModel>{};
+	public async importNewDatabaseProject(context: IConnectionProfile | any): Promise<void> {
 
 		// TODO: Refactor code
 		try {
-			let profile = context ? <IConnectionProfile>context.connectionProfile : undefined;
-			//TODO: Prompt for new connection addition and get database information if context information isn't provided.
-			if (profile) {
-				model.serverId = profile.id;
-				model.database = profile.databaseName;
-			}
-			else {
-				const connection = await this.apiWrapper.openConnectionDialog();
-				if (!connection) {
-					return;
-				}
+			const model: ImportDataModel | undefined = await this.getModelFromContext(context);
 
-				const connectionId = connection.connectionId;
-				let database;
-
-				// use database that was connected to if it isn't master
-				if (connection.options['database'] && connection.options['database'] !== constants.master) {
-					database = connection.options['database'];
-				} else {
-					const databaseList = await this.apiWrapper.listDatabases(connectionId);
-					database = (await this.apiWrapper.showQuickPick(databaseList.map(dbName => { return { label: dbName }; })))?.label;
-
-					if (!database) {
-						throw new Error(constants.databaseSelectionRequired);
-					}
-				}
-
-				model.serverId = connectionId;
-				model.database = database;
+			if (!model) {
+				return; // cancelled by user
 			}
 
-			// Get project name
-			let newProjName = await this.getProjectName(model.database);
-			if (!newProjName) {
-				throw new Error(constants.projectNameRequired);
-			}
-			model.projName = newProjName;
-
-			// Get extractTarget
-			let extractTarget: mssql.ExtractTarget = await this.getExtractTarget();
-			model.extractTarget = extractTarget;
-
-			// Get folder location for project creation
-			let newProjUri = await this.getFolderLocation(model.extractTarget);
-			if (!newProjUri) {
-				throw new Error(constants.projectLocationRequired);
-			}
-
-			// Set project folder/file location
-			let newProjFolderUri;
-			if (extractTarget === mssql.ExtractTarget['file']) {
-				// Get folder info, if extractTarget = File
-				newProjFolderUri = Uri.file(path.dirname(newProjUri.fsPath));
-			} else {
-				newProjFolderUri = newProjUri;
-			}
-
-			// Check folder is empty
-			let isEmpty: boolean = await this.isDirEmpty(newProjFolderUri.fsPath);
-			if (!isEmpty) {
-				throw new Error(constants.projectLocationNotEmpty);
-			}
-			// TODO: what if the selected folder is outside the workspace?
-			model.filePath = newProjUri.fsPath;
-
-			//Set model version
+			model.projName = await this.getProjectName(model.database);
+			let newProjFolderUri = (await this.getFolderLocation()).fsPath;
+			model.extractTarget = await this.getExtractTarget();
 			model.version = '1.0.0.0';
 
-			// Call ExtractAPI in DacFx Service
-			await this.importApiCall(model);
-			// TODO: Check for success
+			const newProjFilePath = await this.createNewProject(model.projName, Uri.file(newProjFolderUri), true);
 
-			// Create and open new project
-			const newProjFilePath = await this.createNewProject(newProjName as string, newProjFolderUri as Uri, false);
-			const project = await this.openProject(Uri.file(newProjFilePath));
+			model.filePath = path.dirname(newProjFilePath);
 
-			//Create a list of all the files and directories to be added to project
-			let fileFolderList: string[] = await this.generateList(model.filePath);
+			if (model.extractTarget === mssql.ExtractTarget.file) {
+				model.filePath = path.join(model.filePath, model.projName + '.sql'); // File extractTarget specifies the exact file rather than the containing folder
+			}
 
-			// Add generated file structure to the project
-			await project.addToProject(fileFolderList);
+			const project = await Project.openProject(newProjFilePath);
 
-			//Refresh project to show the added files
-			this.refreshProjectsTree();
+			await this.importApiCall(model); // Call ExtractAPI in DacFx Service
+			let fileFolderList: string[] = model.extractTarget === mssql.ExtractTarget.file ? [model.filePath] : await this.generateList(model.filePath); // Create a list of all the files and directories to be added to project
+
+			await project.addToProject(fileFolderList); // Add generated file structure to the project
+			await this.openProject(Uri.file(newProjFilePath));
 		}
 		catch (err) {
 			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
 		}
 	}
 
-	private async getProjectName(dbName: string): Promise<string | undefined> {
+	public async getModelFromContext(context: any): Promise<ImportDataModel | undefined> {
+		let model = <ImportDataModel>{};
+
+		let profile = this.getConnectionProfileFromContext(context);
+		let connectionId, database;
+		//TODO: Prompt for new connection addition and get database information if context information isn't provided.
+
+		if (profile) {
+			database = profile.databaseName;
+			connectionId = profile.id;
+		}
+		else {
+			const connection = await this.apiWrapper.openConnectionDialog();
+
+			if (!connection) {
+				return undefined;
+			}
+
+			connectionId = connection.connectionId;
+
+			// use database that was connected to
+			if (connection.options['database']) {
+				database = connection.options['database'];
+			}
+
+			// choose database if connection was to a server or master
+			if (!model.database || model.database === constants.master) {
+				const databaseList = await this.apiWrapper.listDatabases(connectionId);
+				database = (await this.apiWrapper.showQuickPick(databaseList.map(dbName => { return { label: dbName }; }),
+					{
+						canPickMany: false,
+						placeHolder: constants.extractDatabaseSelection
+					}))?.label;
+
+				if (!database) {
+					throw new Error(constants.databaseSelectionRequired);
+				}
+			}
+		}
+
+		model.database = database;
+		model.serverId = connectionId;
+
+		return model;
+	}
+
+	private getConnectionProfileFromContext(context: IConnectionProfile | any): IConnectionProfile | undefined {
+		if (!context) {
+			return undefined;
+		}
+
+		// depending on where import new project is launched from, the connection profile could be passed as just
+		// the profile or it could be wrapped in another object
+		return (<any>context).connectionProfile ? (<any>context).connectionProfile : context;
+	}
+
+	private async getProjectName(dbName: string): Promise<string> {
 		let projName = await this.apiWrapper.showInputBox({
 			prompt: constants.newDatabaseProjectName,
 			value: `DatabaseProject${dbName}`
 		});
 
 		projName = projName?.trim();
+
+		if (!projName) {
+			throw new Error(constants.projectNameRequired);
+		}
 
 		return projName;
 	}
@@ -776,52 +777,36 @@ export class ProjectsController {
 		return extractTarget;
 	}
 
-	private async getFolderLocation(extractTarget: mssql.ExtractTarget): Promise<Uri | undefined> {
-		let selectionResult;
-		let projUri;
+	private async getFolderLocation(): Promise<Uri> {
+		let projUri: Uri;
 
-		if (extractTarget !== mssql.ExtractTarget.file) {
-			selectionResult = await this.apiWrapper.showOpenDialog({
-				canSelectFiles: false,
-				canSelectFolders: true,
-				canSelectMany: false,
-				openLabel: constants.selectString,
-				defaultUri: this.apiWrapper.workspaceFolders() ? (this.apiWrapper.workspaceFolders() as WorkspaceFolder[])[0].uri : undefined
-			});
-			if (selectionResult) {
-				projUri = (selectionResult as Uri[])[0];
-			}
-		} else {
-			// Get filename
-			selectionResult = await this.apiWrapper.showSaveDialog(
-				{
-					defaultUri: this.apiWrapper.workspaceFolders() ? (this.apiWrapper.workspaceFolders() as WorkspaceFolder[])[0].uri : undefined,
-					saveLabel: constants.selectString,
-					filters: {
-						'SQL files': ['sql'],
-						'All files': ['*']
-					}
-				}
-			);
-			if (selectionResult) {
-				projUri = selectionResult as unknown as Uri;
-			}
+		const selectionResult = await this.apiWrapper.showOpenDialog({
+			canSelectFiles: false,
+			canSelectFolders: true,
+			canSelectMany: false,
+			openLabel: constants.selectString,
+			defaultUri: this.apiWrapper.workspaceFolders() ? (this.apiWrapper.workspaceFolders() as WorkspaceFolder[])[0].uri : undefined
+		});
+
+		if (selectionResult) {
+			projUri = (selectionResult as Uri[])[0];
+		}
+		else {
+			throw new Error(constants.projectLocationRequired);
 		}
 
 		return projUri;
 	}
 
-	private async isDirEmpty(newProjFolderUri: string): Promise<boolean> {
-		return (await fs.readdir(newProjFolderUri)).length === 0;
-	}
-
-	private async importApiCall(model: ImportDataModel): Promise<void> {
+	public async importApiCall(model: ImportDataModel): Promise<void> {
 		let ext = this.apiWrapper.getExtension(mssql.extension.name)!;
 
 		const service = (await ext.activate() as mssql.IExtension).dacFx;
 		const ownerUri = await this.apiWrapper.getUriForConnection(model.serverId);
 
 		await service.importDatabaseProject(model.database, model.filePath, model.projName, model.version, ownerUri, model.extractTarget, TaskExecutionMode.execute);
+
+		// TODO: Check for success; throw error
 	}
 
 	/**
