@@ -102,15 +102,17 @@ describe('ProjectsController: project controller operations', function (): void 
 
 		it('Should return silently when no SQL object name provided in prompts', async function (): Promise<void> {
 			for (const name of ['', '    ', undefined]) {
-				const stub = sinon.stub(vscode.window, 'showInputBox').resolves(name);
-
+				const showInputBoxStub = sinon.stub(vscode.window, 'showInputBox').resolves(name);
+				const showErrorMessageSpy = sinon.spy(vscode.window, 'showErrorMessage');
 				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
 				const project = new Project('FakePath');
 
 				should(project.files.length).equal(0);
 				await projController.addItemPrompt(new Project('FakePath'), '', templates.script);
 				should(project.files.length).equal(0, 'Expected to return without throwing an exception or adding a file when an empty/undefined name is provided.');
-				stub.restore();
+				should(showErrorMessageSpy.notCalled).be.true('showErrorMessage should not have been called');
+				showInputBoxStub.restore();
+				showErrorMessageSpy.restore();
 			}
 		});
 
