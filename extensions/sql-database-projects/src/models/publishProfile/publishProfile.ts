@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import * as xmldom from 'xmldom';
 import * as constants from '../../common/constants';
 import * as utils from '../../common/utils';
@@ -10,8 +11,6 @@ import * as utils from '../../common/utils';
 import { promises as fs } from 'fs';
 import { Uri } from 'vscode';
 import { SqlConnectionDataSource } from '../dataSources/sqlConnectionStringSource';
-import { ApiWrapper } from '../../common/apiWrapper';
-
 
 // only reading db name, connection string, and SQLCMD vars from profile for now
 export interface PublishProfile {
@@ -24,7 +23,7 @@ export interface PublishProfile {
 /**
  * parses the specified file to load publish settings
  */
-export async function load(profileUri: Uri, apiWrapper: ApiWrapper,): Promise<PublishProfile> {
+export async function load(profileUri: Uri): Promise<PublishProfile> {
 	const profileText = await fs.readFile(profileUri.fsPath);
 	const profileXmlDoc = new xmldom.DOMParser().parseFromString(profileText.toString());
 
@@ -36,7 +35,7 @@ export async function load(profileUri: Uri, apiWrapper: ApiWrapper,): Promise<Pu
 		targetDbName = profileXmlDoc.documentElement.getElementsByTagName(constants.targetDatabaseName)[targetDatabaseNameCount - 1].textContent;
 	}
 
-	const connectionInfo = await readConnectionString(profileXmlDoc, apiWrapper);
+	const connectionInfo = await readConnectionString(profileXmlDoc);
 
 	// get all SQLCMD variables to include from the profile
 	const sqlCmdVariables = readSqlCmdVariables(profileXmlDoc);
@@ -66,7 +65,7 @@ export function readSqlCmdVariables(xmlDoc: any): Record<string, string> {
 	return sqlCmdVariables;
 }
 
-async function readConnectionString(xmlDoc: any, apiWrapper: ApiWrapper): Promise<{ connectionId: string, connectionString: string }> {
+async function readConnectionString(xmlDoc: any): Promise<{ connectionId: string, connectionString: string }> {
 	let targetConnectionString: string = '';
 	let connId: string = '';
 
@@ -77,10 +76,10 @@ async function readConnectionString(xmlDoc: any, apiWrapper: ApiWrapper): Promis
 
 		try {
 			if (dataSource.integratedSecurity) {
-				connId = (await apiWrapper.connectionConnect(connectionProfile, false, false)).connectionId;
+				connId = (await azdata.connection.connect(connectionProfile, false, false)).connectionId;
 			}
 			else {
-				connId = (await apiWrapper.openConnectionDialog(undefined, connectionProfile)).connectionId;
+				connId = (await azdata.connection.openConnectionDialog(undefined, connectionProfile)).connectionId;
 			}
 		} catch (err) {
 			throw new Error(constants.unableToCreatePublishConnection(utils.getErrorMessage(err)));
@@ -88,7 +87,7 @@ async function readConnectionString(xmlDoc: any, apiWrapper: ApiWrapper): Promis
 	}
 
 	// mask password in connection string
-	targetConnectionString = await apiWrapper.getConnectionString(connId, false);
+	targetConnectionString = await azdata.connection.getConnectionString(connId, false);
 
 	return {
 		connectionId: connId,
