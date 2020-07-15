@@ -66,8 +66,8 @@ export class WelcomePageContribution implements IWorkbenchContribution {
 		@IFileService private readonly fileService: IFileService,
 		@IWorkspaceContextService private readonly contextService: IWorkspaceContextService,
 		@ILifecycleService private readonly lifecycleService: ILifecycleService,
-		@ICommandService private readonly commandService: ICommandService,
 		@IWorkbenchLayoutService protected layoutService: IWorkbenchLayoutService,
+		@ICommandService private readonly commandService: ICommandService
 	) {
 		this.enableWelcomePage().catch(onUnexpectedError);
 	}
@@ -227,8 +227,8 @@ class WelcomePage extends Disposable {
 		@IHostService private readonly hostService: IHostService,
 		@IFileService fileService: IFileService,
 		@IProductService private readonly productService: IProductService,
-		@ICommandService private readonly commandService: ICommandService,
-		@IWorkbenchLayoutService protected layoutService: IWorkbenchLayoutService) {
+		@IWorkbenchLayoutService protected layoutService: IWorkbenchLayoutService,
+		@ICommandService private readonly commandService: ICommandService) {
 		super();
 		this._register(lifecycleService.onShutdown(() => this.dispose()));
 		const recentlyOpened = this.workspacesService.getRecentlyOpened();
@@ -337,25 +337,29 @@ class WelcomePage extends Disposable {
 		this.createDropDown();
 		this.createWidePreviewToolTip();
 		this.createPreviewModal();
-		this.handleAccessibility(this.commandService);
+		this.handleAccessibility();
 	}
 
-	private async handleAccessibility(commandService: ICommandService): Promise<void> {
-		const tileServer = document.getElementById('tile-server-link') as HTMLElement;
-		this.handlerTileServerEvent(commandService, tileServer, 'keydown');
-		this.handlerTileServerEvent(commandService, tileServer, 'click');
-		addStandardDisposableListener(tileServer, 'keydown', event => {
-			if (event.equals(KeyCode.Enter)) {
-				const historyLabel = document.getElementById('historyLabel') as HTMLElement;
-				commandService.executeCommand('azdata.resource.deploy');
-				historyLabel.focus();
+	private async handleAccessibility(): Promise<void> {
+		const tileServer = document.getElementById(
+			'tile-server-link'
+		) as HTMLElement;
+		this.handlerTileServerEvent(this.commandService, tileServer, 'keydown');
+		this.handlerTileServerEvent(this.commandService, tileServer, 'click');
+		addStandardDisposableListener(tileServer, 'keydown', (event) => {
+			if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
+				this.historyLabel();
 			}
 		});
-		addStandardDisposableListener(tileServer, 'click', event => {
-			const historyLabel = document.getElementById('historyLabel') as HTMLElement;
-			commandService.executeCommand('azdata.resource.deploy');
-			historyLabel.focus();
+		addStandardDisposableListener(tileServer, 'click', (event) => {
+			this.historyLabel();
 		});
+	}
+
+	private historyLabel() {
+		const historyLabel = document.getElementById('historyLabel') as HTMLElement;
+		this.commandService.executeCommand('azdata.resource.deploy');
+		historyLabel.focus();
 	}
 
 	private handlerTileServerEvent(commandService: ICommandService, elm: HTMLElement, eventType: string): void {
