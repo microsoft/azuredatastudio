@@ -26,7 +26,7 @@ interface BookSearchResults {
 	bookPaths: string[];
 }
 
-export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeItem>, azdata.nb.NavigationProvider, vscode.Disposable {
+export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeItem>, azdata.nb.NavigationProvider {
 	private _onDidChangeTreeData: vscode.EventEmitter<BookTreeItem | undefined> = new vscode.EventEmitter<BookTreeItem | undefined>();
 	readonly onDidChangeTreeData: vscode.Event<BookTreeItem | undefined> = this._onDidChangeTreeData.event;
 	private _throttleTimer: any;
@@ -535,14 +535,5 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			};
 		}
 		return Promise.resolve(result);
-	}
-
-	public getBookFromItemPath(itemPath: string): BookModel | undefined {
-		let selectedBook = this.books.find(b => itemPath.toLowerCase().indexOf(b.bookPath.toLowerCase()) > -1);
-		return selectedBook;
-	}
-
-	dispose() {
-		this.dispose();
 	}
 }

@@ -162,6 +162,7 @@ describe('BooksTreeViewTests', function () {
 			let bookTreeViewProvider: BookTreeViewProvider;
 			let book: BookTreeItem;
 			let notebook1: BookTreeItem;
+			let notebook2: BookTreeItem;
 
 			this.beforeAll(async () => {
 				bookTreeViewProvider = appContext.bookTreeViewProvider;
@@ -194,7 +195,7 @@ describe('BooksTreeViewTests', function () {
 				const children = await bookTreeViewProvider.getChildren(notebook1);
 				should(children).be.Array();
 				should(children.length).equal(2);
-				const notebook2 = children[0];
+				notebook2 = children[0];
 				const notebook3 = children[1];
 				equalBookItems(notebook2, expectedNotebook2);
 				equalBookItems(notebook3, expectedNotebook3);
@@ -221,6 +222,15 @@ describe('BooksTreeViewTests', function () {
 				should(result.next.fsPath).equal(vscode.Uri.file(notebook3Path).fsPath, 'getNavigation failed to get the next url');
 				should(result.previous.fsPath).equal(vscode.Uri.file(notebook1Path).fsPath, 'getNavigation failed to get the previous url');
 
+			});
+
+			it('getParent should return when element is a valid child notebook', async () => {
+				let parent = await bookTreeViewProvider.getParent();
+				should(parent).be.undefined();
+
+				parent = await bookTreeViewProvider.getParent(notebook2);
+				should(parent).not.be.undefined();
+				equalBookItems(parent, expectedNotebook1);
 			});
 
 			it('revealActiveDocumentInViewlet should return correct bookItem for highlight', async () => {
@@ -510,13 +520,6 @@ describe('BooksTreeViewTests', function () {
 			should(bookTreeViewProvider.books.length).equal(1, 'Failed to initialize the book on open');
 		});
 
-		it('should remove book on closeBook', async () => {
-			await bookTreeViewProvider.openBook(rootFolderPath);
-			should(bookTreeViewProvider.books.length).equal(1, 'Failed to initialize the book on open');
-			await bookTreeViewProvider.closeBook(bookTreeViewProvider.books[0].bookItems[0]);
-			should(bookTreeViewProvider.books.length).equal(0, 'Failed to remove the book on close');
-		});
-
 		it('should add book when bookPath contains special characters on openBook', async () => {
 			let rootFolderPath2 = path.join(os.tmpdir(), `BookTestData(1)_${uuid.v4()}`);
 			let dataFolderPath2 = path.join(rootFolderPath2, '_data');
@@ -532,12 +535,57 @@ describe('BooksTreeViewTests', function () {
 			await fs.writeFile(notebook2File2, '');
 
 			await bookTreeViewProvider.openBook(rootFolderPath2);
-			should(bookTreeViewProvider.books.length).equal(1, 'Failed to initialize the book on open');
+			should(bookTreeViewProvider.books.length).equal(2, 'Failed to initialize the book on open');
+
+			await promisify(rimraf)(rootFolderPath2);
 		});
 
 		it('should get notebook path with untitled schema on openNotebookAsUntitled', async () => {
 			let notebookUri = bookTreeViewProvider.getUntitledNotebookUri(path.join(rootFolderPath, 'content', 'notebook2.ipynb'));
 			should(notebookUri.scheme).equal('untitled', 'Failed to get untitled uri of the resource');
+		});
+
+		it('openNotebookFolder should prompt for notebook path and invoke loadNotebooksInFolder', async () => {
+			sinon.stub(vscode.window, 'showOpenDialog').returns(Promise.resolve([vscode.Uri.file(rootFolderPath)]));
+			let loadNotebooksSpy = sinon.spy(bookTreeViewProvider, 'loadNotebooksInFolder');
+			await bookTreeViewProvider.openNotebookFolder();
+
+			should(loadNotebooksSpy.calledOnce).be.true('openNotebookFolder should have called loadNotebooksInFolder');
+			sinon.restore();
+		});
+
+		it('openNewBook should prompt for notebook path and invoke openBook', async () => {
+			sinon.stub(vscode.window, 'showOpenDialog').returns(Promise.resolve([vscode.Uri.file(rootFolderPath)]));
+			let openBookSpy = sinon.spy(bookTreeViewProvider, 'openBook');
+			await bookTreeViewProvider.openNewBook();
+
+			should(openBookSpy.calledOnce).be.true('openNewBook should have called openBook');
+			sinon.restore();
+		});
+
+		it('searchJupyterBooks should call command that opens Search view', async () => {
+			let executeCOmmandSpy = sinon.spy(vscode.commands, 'executeCommand');
+			await bookTreeViewProvider.searchJupyterBooks(bookTreeViewProvider.books[0].bookItems[0]);
+			should(executeCOmmandSpy.calledWith('workbench.action.findInFiles')).be.true('searchJupyterBooks should have called command to open Search view');
+			sinon.restore();
+		});
+
+		it('saveJupyterBooks should prompt location and openBook', async () => {
+			let saveFolderPath = path.join(os.tmpdir(), `Book_${uuid.v4()}`);
+			await fs.mkdir(saveFolderPath);
+			sinon.stub(vscode.window, 'showOpenDialog').returns(Promise.resolve([vscode.Uri.file(saveFolderPath)]));
+			let executeCOmmandSpy = sinon.spy(vscode.commands, 'executeCommand');
+			await bookTreeViewProvider.saveJupyterBooks();
+			should(executeCOmmandSpy.calledWith('bookTreeView.openBook')).be.true('saveJupyterBooks should have called command openBook after saving');
+			sinon.restore();
+
+			await promisify(rimraf)(saveFolderPath);
+		});
+
+		it('should remove book on closeBook', async () => {
+			let length: number = bookTreeViewProvider.books.length;
+			await bookTreeViewProvider.closeBook(bookTreeViewProvider.books[0].bookItems[0]);
+			should(bookTreeViewProvider.books.length).equal(length-1, 'Failed to remove the book on close');
 		});
 
 		this.afterAll(async function (): Promise<void> {
