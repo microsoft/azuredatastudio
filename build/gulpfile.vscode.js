@@ -36,23 +36,6 @@ const { compileBuildTask } = require('./gulpfile.compile');
 const { compileExtensionsBuildTask } = require('./gulpfile.extensions');
 
 const productionDependencies = deps.getProductionDependencies(path.dirname(__dirname));
-const baseModules = Object.keys(process.binding('natives')).filter(n => !/^_|\//.test(n));
-const nodeModules = [ // {{SQL CARBON EDIT}}
-	'electron',
-	'original-fs',
-	'rxjs/Observable',
-	'rxjs/add/observable/fromPromise',
-	'rxjs/Subject',
-	'rxjs/Observer',
-	'slickgrid/lib/jquery.event.drag-2.3.0',
-	'slickgrid/lib/jquery-ui-1.9.2',
-	'slickgrid/slick.core',
-	'slickgrid/slick.grid',
-	'slickgrid/slick.editors',
-	'slickgrid/slick.dataview']
-	.concat(Object.keys(product.dependencies || {}))
-	.concat(_.uniq(productionDependencies.map(d => d.name)))
-	.concat(baseModules);
 
 // Build
 const vscodeEntryPoints = _.flatten([
@@ -75,6 +58,7 @@ const vscodeResources = [
 	'out-build/paths.js',
 	'out-build/vs/**/*.{svg,png,html}',
 	'!out-build/vs/code/browser/**/*.html',
+	'!out-build/vs/editor/standalone/**/*.svg',
 	'out-build/vs/base/common/performance.js',
 	'out-build/vs/base/node/languagePacks.js',
 	'out-build/vs/base/node/{stdForkStart.js,terminateProcess.sh,cpuUsage.sh,ps.sh}',
@@ -123,7 +107,7 @@ const optimizeVSCodeTask = task.define('optimize-vscode', task.series(
 		src: 'out-build',
 		entryPoints: vscodeEntryPoints,
 		resources: vscodeResources,
-		loaderConfig: common.loaderConfig(nodeModules),
+		loaderConfig: common.loaderConfig(),
 		out: 'out-vscode',
 		bundleInfo: undefined
 	})
@@ -134,12 +118,6 @@ const sourceMappingURLBase = `https://sqlopsbuilds.blob.core.windows.net/sourcem
 const minifyVSCodeTask = task.define('minify-vscode', task.series(
 	optimizeVSCodeTask,
 	util.rimraf('out-vscode-min'),
-	() => {
-		const fullpath = path.join(process.cwd(), 'out-vscode/bootstrap-window.js');
-		const contents = fs.readFileSync(fullpath).toString();
-		const newContents = contents.replace('[/*BUILD->INSERT_NODE_MODULES*/]', JSON.stringify(nodeModules));
-		fs.writeFileSync(fullpath, newContents);
-	},
 	common.minifyTask('out-vscode', `${sourceMappingURLBase}/core`)
 ));
 gulp.task(minifyVSCodeTask);
