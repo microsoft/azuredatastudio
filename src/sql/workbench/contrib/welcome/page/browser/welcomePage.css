@@ -831,7 +831,8 @@
 }
 
 .monaco-workbench .part.editor>.content .ads-homepage a.header-bottom-nav-tile-link {
-	text-decoration: none
+	text-decoration: none;
+	display: block;
 }
 
 .ads-homepage .header-bottom-nav-tile .icon {
