@@ -6,7 +6,7 @@
 import { IUserDataSyncService, IAuthenticationProvider, getUserDataSyncStore, isAuthenticationProvider, IUserDataAutoSyncService, SyncResource, IResourcePreview, ISyncResourcePreview, Change, IManualSyncTask } from 'vs/platform/userDataSync/common/userDataSync';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
-import { IUserDataSyncWorkbenchService, IUserDataSyncAccount, AccountStatus, CONTEXT_SYNC_ENABLEMENT, CONTEXT_SYNC_STATE, CONTEXT_ACCOUNT_STATE, SHOW_SYNC_LOG_COMMAND_ID, getSyncAreaLabel, IUserDataSyncPreview, IUserDataSyncResourceGroup, CONTEXT_SHOW_MANUAL_SYNC_VIEW, SHOW_SYNCED_DATA_COMMAND_ID, MANUAL_SYNC_VIEW_ID } from 'vs/workbench/services/userDataSync/common/userDataSync';
+import { IUserDataSyncWorkbenchService, IUserDataSyncAccount, AccountStatus, CONTEXT_SYNC_ENABLEMENT, CONTEXT_SYNC_STATE, CONTEXT_ACCOUNT_STATE, SHOW_SYNC_LOG_COMMAND_ID, getSyncAreaLabel, IUserDataSyncPreview, IUserDataSyncResourceGroup, CONTEXT_ENABLE_MANUAL_SYNC_VIEW, MANUAL_SYNC_VIEW_ID, CONTEXT_ENABLE_ACTIVITY_VIEWS, SYNC_VIEW_CONTAINER_ID } from 'vs/workbench/services/userDataSync/common/userDataSync';
 import { AuthenticationSession, AuthenticationSessionsChangeEvent } from 'vs/editor/common/modes';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { Emitter, Event } from 'vs/base/common/event';
@@ -25,7 +25,6 @@ import { canceled } from 'vs/base/common/errors';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { ICommandService } from 'vs/platform/commands/common/commands';
 import { Action } from 'vs/base/common/actions';
 import { IProgressService, ProgressLocation } from 'vs/platform/progress/common/progress';
 import { isEqual } from 'vs/base/common/resources';
@@ -81,7 +80,8 @@ export class UserDataSyncWorkbenchService extends Disposable implements IUserDat
 	private readonly syncEnablementContext: IContextKey<boolean>;
 	private readonly syncStatusContext: IContextKey<string>;
 	private readonly accountStatusContext: IContextKey<string>;
-	private readonly showManualSyncViewContext: IContextKey<boolean>;
+	private readonly manualSyncViewEnablementContext: IContextKey<boolean>;
+	private readonly activityViewsEnablementContext: IContextKey<boolean>;
 
 	readonly userDataSyncPreview: UserDataSyncPreview = this._register(new UserDataSyncPreview(this.userDataSyncService));
 
@@ -101,7 +101,6 @@ export class UserDataSyncWorkbenchService extends Disposable implements IUserDat
 		@INotificationService private readonly notificationService: INotificationService,
 		@IProgressService private readonly progressService: IProgressService,
 		@IDialogService private readonly dialogService: IDialogService,
-		@ICommandService private readonly commandService: ICommandService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IViewsService private readonly viewsService: IViewsService,
 		@IViewDescriptorService private readonly viewDescriptorService: IViewDescriptorService,
@@ -112,7 +111,8 @@ export class UserDataSyncWorkbenchService extends Disposable implements IUserDat
 		this.syncEnablementContext = CONTEXT_SYNC_ENABLEMENT.bindTo(contextKeyService);
 		this.syncStatusContext = CONTEXT_SYNC_STATE.bindTo(contextKeyService);
 		this.accountStatusContext = CONTEXT_ACCOUNT_STATE.bindTo(contextKeyService);
-		this.showManualSyncViewContext = CONTEXT_SHOW_MANUAL_SYNC_VIEW.bindTo(contextKeyService);
+		this.activityViewsEnablementContext = CONTEXT_ENABLE_ACTIVITY_VIEWS.bindTo(contextKeyService);
+		this.manualSyncViewEnablementContext = CONTEXT_ENABLE_MANUAL_SYNC_VIEW.bindTo(contextKeyService);
 
 		decorationsService.registerDecorationsProvider(this.userDataSyncPreview);
 
@@ -337,8 +337,8 @@ export class UserDataSyncWorkbenchService extends Disposable implements IUserDat
 		const visibleViewContainer = this.viewsService.getVisibleViewContainer(ViewContainerLocation.Sidebar);
 		this.userDataSyncPreview.setManualSyncPreview(task, preview);
 
-		this.showManualSyncViewContext.set(true);
-		await this.commandService.executeCommand(SHOW_SYNCED_DATA_COMMAND_ID);
+		this.manualSyncViewEnablementContext.set(true);
+		await this.waitForActiveSyncViews();
 		await this.viewsService.openView(MANUAL_SYNC_VIEW_ID);
 
 		await Event.toPromise(Event.filter(this.userDataSyncPreview.onDidChangeChanges, e => e.length === 0));
@@ -349,11 +349,40 @@ export class UserDataSyncWorkbenchService extends Disposable implements IUserDat
 		/* Merge to sync globalState changes */
 		await task.merge();
 
+		this.manualSyncViewEnablementContext.set(false);
 		if (visibleViewContainer) {
 			this.viewsService.openViewContainer(visibleViewContainer.id);
 		} else {
 			const viewContainer = this.viewDescriptorService.getViewContainerByViewId(MANUAL_SYNC_VIEW_ID);
 			this.viewsService.closeViewContainer(viewContainer!.id);
+		}
+	}
+
+	async resetSyncedData(): Promise<void> {
+		const result = await this.dialogService.confirm({
+			message: localize('reset', "This will clear your synced data from the cloud and stop sync on all your devices."),
+			title: localize('reset title', "Reset Synced Data"),
+			type: 'info',
+			primaryButton: localize('reset button', "Reset"),
+		});
+		if (result.confirmed) {
+			await this.userDataSyncService.resetRemote();
+		}
+	}
+
+	async showSyncActivity(): Promise<void> {
+		this.activityViewsEnablementContext.set(true);
+		await this.waitForActiveSyncViews();
+		await this.viewsService.openViewContainer(SYNC_VIEW_CONTAINER_ID);
+	}
+
+	private async waitForActiveSyncViews(): Promise<void> {
+		const viewContainer = this.viewDescriptorService.getViewContainerById(SYNC_VIEW_CONTAINER_ID);
+		if (viewContainer) {
+			const model = this.viewDescriptorService.getViewContainerModel(viewContainer);
+			if (!model.activeViewDescriptors.length) {
+				await Event.toPromise(Event.filter(model.onDidChangeActiveViewDescriptors, e => model.activeViewDescriptors.length > 0));
+			}
 		}
 	}
 
