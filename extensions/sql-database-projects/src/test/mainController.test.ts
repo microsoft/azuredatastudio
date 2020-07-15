@@ -10,7 +10,7 @@ import * as vscode from 'vscode';
 import * as sinon from 'sinon';
 import * as baselines from './baselines/baselines';
 import * as templates from '../templates/templates';
-
+import * as constants from '../common/constants';
 import { createContext, TestContext } from './testContext';
 import MainController from '../controllers/mainController';
 import { generateTestFolderPath, createTestProject } from './testUtils';
@@ -48,6 +48,7 @@ describe('MainController: main controller operations', function (): void {
 			const controller = new MainController(testContext.context);
 			await controller.createNewProject();
 			should(spy.calledOnce).be.true('showErrorMessage should have been called exactly once');
+			should(spy.calledWith(constants.projectNameRequired)).be.true(`showErrorMessage not called with expected message '${constants.projectNameRequired}' Actual '${spy.getCall(0).args[0]}'`);
 			stub.restore();
 			spy.restore();
 		}
@@ -60,6 +61,7 @@ describe('MainController: main controller operations', function (): void {
 		const controller = new MainController(testContext.context);
 		await controller.createNewProject();
 		should(spy.calledOnce).be.true('showErrorMessage should be called exactly once');
+		should(spy.calledWith(constants.projectLocationRequired)).be.true(`showErrorMessage not called with expected message '${constants.projectLocationRequired}' Actual '${spy.getCall(0).args[0]}'`);
 	});
 
 	it('Should create new instance without error', async function (): Promise<void> {

@@ -125,7 +125,9 @@ describe('ProjectsController: project controller operations', function (): void 
 			await projController.addItemPrompt(project, '', templates.script);
 			should(project.files.length).equal(1, 'File should be successfully added');
 			await projController.addItemPrompt(project, '', templates.script);
+			const msg = constants.fileAlreadyExists(tableName);
 			should(spy.calledOnce).be.true('showErrorMessage should have been called exactly once');
+			should(spy.calledWith(msg)).be.true(`showErrorMessage not called with expected message '${msg}' Actual '${spy.getCall(0).args[0]}'`);
 		});
 
 		it('Should show error if trying to add a folder that already exists', async function (): Promise<void> {
@@ -179,6 +181,8 @@ describe('ProjectsController: project controller operations', function (): void 
 			const showErrorMessageSpy = sinon.spy(vscode.window, 'showErrorMessage');
 			await projController.addFolderPrompt(node);
 			should(showErrorMessageSpy.calledOnce).be.true('showErrorMessage should have been called exactly once');
+			const msg = constants.folderAlreadyExists(folderName);
+			should(showErrorMessageSpy.calledWith(msg)).be.true(`showErrorMessage not called with expected message '${msg}' Actual '${showErrorMessageSpy.getCall(0).args[0]}'`);
 			should(project.files.length).equal(beforeFileCount, 'File count should be the same as before the folder was attempted to be added');
 			showInputBoxStub.restore();
 			showErrorMessageSpy.restore();
@@ -350,6 +354,8 @@ describe('ProjectsController: import operations', function (): void {
 
 		await projController.generateList(testFolderPath);
 		should(spy.calledOnce).be.true('showErrorMessage should have been called');
+		const msg = constants.cannotResolvePath(testFolderPath);
+		should(spy.calledWith(msg)).be.true(`showErrorMessage not called with expected message '${msg}' Actual '${spy.getCall(0).args[0]}'`);
 	});
 
 	it('Should show error when no project name provided', async function (): Promise<void> {
@@ -360,6 +366,7 @@ describe('ProjectsController: import operations', function (): void {
 			const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
 			await projController.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
 			should(spy.calledOnce).be.true('showErrorMessage should have been called');
+			should(spy.calledWith(constants.projectNameRequired)).be.true(`showErrorMessage not called with expected message '${constants.projectNameRequired}' Actual '${spy.getCall(0).args[0]}'`);
 			sinon.restore();
 		}
 	});
@@ -373,18 +380,19 @@ describe('ProjectsController: import operations', function (): void {
 		const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
 		await projController.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
 		should(spy.calledOnce).be.true('showErrorMessage should have been called');
+		should(spy.calledWith(constants.extractTargetRequired)).be.true(`showErrorMessage not called with expected message '${constants.extractTargetRequired}' Actual '${spy.getCall(0).args[0]}'`);
 	});
 
 	it('Should show error when no location provided with ExtractTarget = File', async function (): Promise<void> {
 		sinon.stub(vscode.window, 'showInputBox').resolves('MyProjectName');
-		sinon.stub(vscode.window, 'showOpenDialog').resolves([vscode.Uri.file('fakePath')]);
+		sinon.stub(vscode.window, 'showOpenDialog').resolves(undefined);
 		sinon.stub(vscode.window, 'showQuickPick').resolves({ label: constants.file });
-		sinon.stub(vscode.window, 'showSaveDialog').resolves(undefined);
 		const spy = sinon.spy(vscode.window, 'showErrorMessage');
 
 		const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
 		await projController.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
 		should(spy.calledOnce).be.true('showErrorMessage should have been called');
+		should(spy.calledWith(constants.projectLocationRequired)).be.true(`showErrorMessage not called with expected message '${constants.projectLocationRequired}' Actual '${spy.getCall(0).args[0]}'`);
 	});
 
 	it('Should show error when no location provided with ExtractTarget = SchemaObjectType', async function (): Promise<void> {
@@ -396,6 +404,7 @@ describe('ProjectsController: import operations', function (): void {
 		const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
 		await projController.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
 		should(spy.calledOnce).be.true('showErrorMessage should have been called');
+		should(spy.calledWith(constants.projectLocationRequired)).be.true(`showErrorMessage not called with expected message '${constants.projectLocationRequired}' Actual '${spy.getCall(0).args[0]}'`);
 	});
 
 	it('Should set model filePath correctly for ExtractType = File and not-File.', async function (): Promise<void> {
@@ -453,11 +462,11 @@ describe('ProjectsController: add database reference operations', function (): v
 	it('Should show error when no reference type is selected', async function (): Promise<void> {
 		sinon.stub(vscode.window, 'showQuickPick').resolves(undefined);
 		const spy = sinon.spy(vscode.window, 'showErrorMessage');
-		// testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
 
 		const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
 		await projController.addDatabaseReference(new Project('FakePath'));
-		should(spy.calledOnce).be.true('showErrorMessage should have been called');
+		should(spy.calledOnce).be.true('showErrorMessage should have been called exactly once');
+		should(spy.calledWith(constants.databaseReferenceTypeRequired)).be.true(`showErrorMessage not called with expected message '${constants.databaseReferenceTypeRequired}' Actual '${spy.getCall(0).args[0]}'`);
 	});
 
 	it('Should show error when no file is selected', async function (): Promise<void> {
@@ -467,7 +476,8 @@ describe('ProjectsController: add database reference operations', function (): v
 
 		const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
 		await projController.addDatabaseReference(new Project('FakePath'));
-		should(spy.calledOnce).be.true('showErrorMessage should have been called');
+		should(spy.calledOnce).be.true('showErrorMessage should have been called exactly once');
+		should(spy.calledWith(constants.dacpacFileLocationRequired)).be.true(`showErrorMessage not called with expected message '${constants.dacpacFileLocationRequired}' Actual '${spy.getCall(0).args[0]}'`);
 	});
 
 	it('Should show error when no database name is provided', async function (): Promise<void> {
@@ -478,7 +488,8 @@ describe('ProjectsController: add database reference operations', function (): v
 
 		const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
 		await projController.addDatabaseReference(new Project('FakePath'));
-		should(spy.calledOnce).be.true('showErrorMessage should have been called');
+		should(spy.calledOnce).be.true('showErrorMessage should have been called exactly once');
+		should(spy.calledWith(constants.databaseNameRequired)).be.true(`showErrorMessage not called with expected message '${constants.databaseNameRequired}' Actual '${spy.getCall(0).args[0]}'`);
 	});
 
 	it('Should return the correct system database', async function (): Promise<void> {
@@ -511,12 +522,11 @@ describe('ProjectsController: round trip feature with SSDT', function (): void {
 		const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
 
 		await projController.openProject(vscode.Uri.file(sqlProjPath));
-		should(stub.calledOnce).be.true('showWarningMessage should have been called');
+		should(stub.calledOnce).be.true('showWarningMessage should have been called exactly once');
+		should(stub.calledWith(constants.updateProjectForRoundTrip)).be.true(`showWarningMessage not called with expected message '${constants.updateProjectForRoundTrip}' Actual '${stub.getCall(0).args[0]}'`);
 	});
 
 	it('Should not show warning message for non-SSDT projects that have the additional information for Build', async function (): Promise<void> {
-		// testContext.apiWrapper.setup(x => x.showWarningMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
-
 		// setup test files
 		const folderPath = await testUtils.generateTestFolderPath();
 		const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline, folderPath);
@@ -569,7 +579,6 @@ async function setupDeleteExcludeTest(proj: Project): Promise<[ProjectEntry, Pro
 
 	const projTreeRoot = new ProjectRootTreeItem(proj);
 	sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.yesString));
-	// testContext.apiWrapper.setup(x => x.showWarningMessageOptions(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(constants.yesString));
 
 	// confirm setup
 	should(proj.files.length).equal(4, 'number of file/folder entries');
