@@ -6,18 +6,17 @@
 import * as TypeMoq from 'typemoq';
 import * as azdata from 'azdata';
 import { FlatFileWizard } from '../../../wizard/flatFileWizard';
-import { ApiWrapper } from '../../../common/apiWrapper';
 import { ImportDataModel } from '../../../wizard/api/models';
 import { TestImportDataModel, TestQueryProvider } from '../../utils.test';
 import { FileConfigPage } from '../../../wizard/pages/fileConfigPage';
 import * as should from 'should';
+import * as sinon from 'sinon';
 import { ImportPage } from '../../../wizard/api/importPage';
 import * as constants from '../../../common/constants';
 
 describe('File config page', function () {
 
 	let mockFlatFileWizard: TypeMoq.IMock<FlatFileWizard>;
-	let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
 	let mockImportModel: TypeMoq.IMock<ImportDataModel>;
 
 	let fileConfigPage: FileConfigPage;
@@ -26,15 +25,15 @@ describe('File config page', function () {
 	let pages: Map<number, ImportPage> = new Map<number, ImportPage>();
 
 	this.beforeEach(function () {
-		mockApiWrapper = TypeMoq.Mock.ofType(ApiWrapper);
-		mockFlatFileWizard = TypeMoq.Mock.ofType(FlatFileWizard, TypeMoq.MockBehavior.Loose, undefined, TypeMoq.It.isAny(), mockApiWrapper.object);
+		mockFlatFileWizard = TypeMoq.Mock.ofType(FlatFileWizard, TypeMoq.MockBehavior.Loose, undefined, TypeMoq.It.isAny());
 		mockImportModel = TypeMoq.Mock.ofType(TestImportDataModel, TypeMoq.MockBehavior.Loose);
 
-		// using the actual vscode and azdata apis.
-		mockApiWrapper.callBase = true;
+		wizard = azdata.window.createWizard(constants.wizardNameText);
+		page = azdata.window.createWizardPage(constants.page1NameText);
+	});
 
-		wizard = mockApiWrapper.object.createWizard(constants.wizardNameText);
-		page = mockApiWrapper.object.createWizardPage(constants.page1NameText);
+	afterEach(function (): void {
+		sinon.restore();
 	});
 
 	it('getSchema returns active schema first', async function () {
@@ -77,9 +76,9 @@ describe('File config page', function () {
 
 		// setting up mocks to return test objects created earlier
 		mockQueryProvider.setup(x => x.runQueryAndReturn(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(async () => { return schemaQueryResult; });
-		mockApiWrapper.setup(x => x.getProvider<azdata.QueryProvider>(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => { return mockQueryProvider.object; });
+		sinon.stub(azdata.dataprotocol, 'getProvider' ).returns(mockQueryProvider.object);
 
-		let fileConfigPage = new FileConfigPage(mockFlatFileWizard.object, TypeMoq.It.isAny(), mockImportModel.object, TypeMoq.It.isAny(), TypeMoq.It.isAny(), mockApiWrapper.object);
+		let fileConfigPage = new FileConfigPage(mockFlatFileWizard.object, TypeMoq.It.isAny(), mockImportModel.object, TypeMoq.It.isAny(), TypeMoq.It.isAny());
 		let actualSchemaValues = await fileConfigPage.getSchemaValues();
 
 		should(expectedSchemaValues).deepEqual(actualSchemaValues);
@@ -89,7 +88,7 @@ describe('File config page', function () {
 
 		await new Promise(function (resolve) {
 			page.registerContent(async (view) => {
-				fileConfigPage = new FileConfigPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny(), mockApiWrapper.object);
+				fileConfigPage = new FileConfigPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny());
 				pages.set(1, fileConfigPage);
 				await fileConfigPage.start();
 				resolve();
@@ -118,11 +117,8 @@ describe('File config page', function () {
 
 	it('Dropdown values are correctly set', async function () {
 
-		// using the actual vscode and azdata apis.
-		mockApiWrapper.callBase = true;
-
-		wizard = mockApiWrapper.object.createWizard(constants.wizardNameText);
-		page = mockApiWrapper.object.createWizardPage(constants.page1NameText);
+		wizard = azdata.window.createWizard(constants.wizardNameText);
+		page = azdata.window.createWizardPage(constants.page1NameText);
 
 		// creating mock server values
 		let testActiveConnections: azdata.connection.Connection[] = [
@@ -154,7 +150,7 @@ describe('File config page', function () {
 				}
 			}
 		];
-		mockApiWrapper.setup(x => x.getActiveConnections()).returns(async () => { return testActiveConnections; });
+		sinon.stub(azdata.connection, 'getActiveConnections').returns(Promise.resolve(testActiveConnections));
 
 		// creating a test active connection. This connection will be the first value in server dropdown array
 		let testServerConnection: azdata.connection.Connection = {
@@ -191,7 +187,7 @@ describe('File config page', function () {
 
 		//  creating mock database values
 		let databases: string[] = ['testdb1', 'testdb2', 'testdb3'];
-		mockApiWrapper.setup(x => x.listDatabases(TypeMoq.It.isAnyString())).returns(async () => { return databases; });
+		sinon.stub(azdata.connection, 'listDatabases').returns(Promise.resolve(databases));
 		mockImportModel.object.database = 'testdb2';
 
 		// expected values for the database dropdown
@@ -236,12 +232,12 @@ describe('File config page', function () {
 		];
 
 		let mockQueryProvider = TypeMoq.Mock.ofType(TestQueryProvider);
-		mockApiWrapper.setup(x => x.getProvider(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => { return mockQueryProvider.object; });
+		sinon.stub(azdata.dataprotocol, 'getProvider').returns(mockQueryProvider.object);
 		mockQueryProvider.setup(x => x.runQueryAndReturn(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(async () => { return schemaQueryResult; });
 
 		await new Promise(function (resolve) {
 			page.registerContent(async (view) => {
-				fileConfigPage = new FileConfigPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny(), mockApiWrapper.object);
+				fileConfigPage = new FileConfigPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny());
 				pages.set(1, fileConfigPage);
 				await fileConfigPage.start();
 				await fileConfigPage.setupNavigationValidator();
