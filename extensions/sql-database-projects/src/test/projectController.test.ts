@@ -102,7 +102,7 @@ describe('ProjectsController: project controller operations', function (): void 
 
 		it('Should return silently when no SQL object name provided in prompts', async function (): Promise<void> {
 			for (const name of ['', '    ', undefined]) {
-				const stub = sinon.stub(vscode.window, 'showInputBox').returns(Promise.resolve(name));
+				const stub = sinon.stub(vscode.window, 'showInputBox').resolves(name);
 
 				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
 				const project = new Project('FakePath');
@@ -116,7 +116,7 @@ describe('ProjectsController: project controller operations', function (): void 
 
 		it('Should show error if trying to add a file that already exists', async function (): Promise<void> {
 			const tableName = 'table1';
-			sinon.stub(vscode.window, 'showInputBox').returns(Promise.resolve(tableName));
+			sinon.stub(vscode.window, 'showInputBox').resolves(tableName);
 			const spy = sinon.spy(vscode.window, 'showErrorMessage');
 			const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
 			const project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
@@ -130,7 +130,7 @@ describe('ProjectsController: project controller operations', function (): void 
 
 		it('Should show error if trying to add a folder that already exists', async function (): Promise<void> {
 			const folderName = 'folder1';
-			const stub = sinon.stub(vscode.window, 'showInputBox').returns(Promise.resolve(folderName));
+			const stub = sinon.stub(vscode.window, 'showInputBox').resolves(folderName);
 
 			const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
 			const project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
@@ -151,7 +151,7 @@ describe('ProjectsController: project controller operations', function (): void 
 
 		it('Should be able to add folder with reserved name as long as not at project root', async function (): Promise<void> {
 			const folderName = 'folder1';
-			const stub = sinon.stub(vscode.window, 'showInputBox').returns(Promise.resolve(folderName));
+			const stub = sinon.stub(vscode.window, 'showInputBox').resolves(folderName);
 
 			const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
 			const project = await testUtils.createTestProject(baselines.openProjectFileBaseline);
@@ -167,7 +167,7 @@ describe('ProjectsController: project controller operations', function (): void 
 
 		async function verifyFolderAdded(folderName: string, projController: ProjectsController, project: Project, node: BaseProjectTreeItem): Promise<void> {
 			const beforeFileCount = project.files.length;
-			const stub = sinon.stub(vscode.window, 'showInputBox').returns(Promise.resolve(folderName));
+			const stub = sinon.stub(vscode.window, 'showInputBox').resolves(folderName);
 			await projController.addFolderPrompt(node);
 			should(project.files.length).equal(beforeFileCount + 1, `File count should be increased by one after adding the folder ${folderName}`);
 			stub.restore();
@@ -175,7 +175,7 @@ describe('ProjectsController: project controller operations', function (): void 
 
 		async function verifyFolderNotAdded(folderName: string, projController: ProjectsController, project: Project, node: BaseProjectTreeItem): Promise<void> {
 			const beforeFileCount = project.files.length;
-			const showInputBoxStub = sinon.stub(vscode.window, 'showInputBox').returns(Promise.resolve(folderName));
+			const showInputBoxStub = sinon.stub(vscode.window, 'showInputBox').resolves(folderName);
 			const showErrorMessageSpy = sinon.spy(vscode.window, 'showErrorMessage');
 			await projController.addFolderPrompt(node);
 			should(showErrorMessageSpy.calledOnce).be.true('showErrorMessage should have been called exactly once');
@@ -354,7 +354,7 @@ describe('ProjectsController: import operations', function (): void {
 
 	it('Should show error when no project name provided', async function (): Promise<void> {
 		for (const name of ['', '    ', undefined]) {
-			sinon.stub(vscode.window, 'showInputBox').returns(Promise.resolve(name));
+			sinon.stub(vscode.window, 'showInputBox').resolves(name);
 			const spy = sinon.spy(vscode.window, 'showErrorMessage');
 
 			const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
@@ -365,9 +365,9 @@ describe('ProjectsController: import operations', function (): void {
 	});
 
 	it('Should show error when no target information provided', async function (): Promise<void> {
-		sinon.stub(vscode.window, 'showInputBox').returns(Promise.resolve('MyProjectName'));
-		sinon.stub(vscode.window, 'showQuickPick').returns(Promise.resolve(undefined));
-		sinon.stub(vscode.window, 'showOpenDialog').returns(Promise.resolve([vscode.Uri.file('fakePath')]));
+		sinon.stub(vscode.window, 'showInputBox').resolves('MyProjectName');
+		sinon.stub(vscode.window, 'showQuickPick').resolves(undefined);
+		sinon.stub(vscode.window, 'showOpenDialog').resolves([vscode.Uri.file('fakePath')]);
 		const spy = sinon.spy(vscode.window, 'showErrorMessage');
 
 		const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
@@ -376,10 +376,10 @@ describe('ProjectsController: import operations', function (): void {
 	});
 
 	it('Should show error when no location provided with ExtractTarget = File', async function (): Promise<void> {
-		sinon.stub(vscode.window, 'showInputBox').returns(Promise.resolve('MyProjectName'));
+		sinon.stub(vscode.window, 'showInputBox').resolves('MyProjectName');
 		sinon.stub(vscode.window, 'showOpenDialog').resolves([vscode.Uri.file('fakePath')]);
-		sinon.stub(vscode.window, 'showQuickPick').returns(Promise.resolve({ label: constants.file }));
-		sinon.stub(vscode.window, 'showSaveDialog').returns(Promise.resolve(undefined));
+		sinon.stub(vscode.window, 'showQuickPick').resolves({ label: constants.file });
+		sinon.stub(vscode.window, 'showSaveDialog').resolves(undefined);
 		const spy = sinon.spy(vscode.window, 'showErrorMessage');
 
 		const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
@@ -388,9 +388,9 @@ describe('ProjectsController: import operations', function (): void {
 	});
 
 	it('Should show error when no location provided with ExtractTarget = SchemaObjectType', async function (): Promise<void> {
-		sinon.stub(vscode.window, 'showInputBox').returns(Promise.resolve('MyProjectName'));
-		sinon.stub(vscode.window, 'showQuickPick').returns(Promise.resolve({ label: constants.schemaObjectType }));
-		sinon.stub(vscode.window, 'showOpenDialog').returns(Promise.resolve(undefined));
+		sinon.stub(vscode.window, 'showInputBox').resolves('MyProjectName');
+		sinon.stub(vscode.window, 'showQuickPick').resolves({ label: constants.schemaObjectType });
+		sinon.stub(vscode.window, 'showOpenDialog').resolves(undefined);
 		const spy = sinon.spy(vscode.window, 'showErrorMessage');
 
 		const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
@@ -403,7 +403,7 @@ describe('ProjectsController: import operations', function (): void {
 		let folderPath = await testUtils.generateTestFolderPath();
 
 		sinon.stub(vscode.window, 'showInputBox').resolves(projectName);
-		const showQuickPickStub = sinon.stub(vscode.window, 'showQuickPick').returns(Promise.resolve({ label: constants.file }));
+		const showQuickPickStub = sinon.stub(vscode.window, 'showQuickPick').resolves({ label: constants.file });
 		sinon.stub(vscode.window, 'showOpenDialog').callsFake(() => Promise.resolve([vscode.Uri.file(folderPath)]));
 
 		let importPath;
@@ -419,7 +419,7 @@ describe('ProjectsController: import operations', function (): void {
 		// reset for counter-test
 		importPath = undefined;
 		folderPath = await testUtils.generateTestFolderPath();
-		showQuickPickStub.returns(Promise.resolve({ label: constants.schemaObjectType }));
+		showQuickPickStub.resolves({ label: constants.schemaObjectType });
 
 		await projController.object.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
 		should(importPath).equal(vscode.Uri.file(path.join(folderPath, projectName)).fsPath, `model.filePath should be set to a folder for ExtractTarget !== file, but was ${importPath}`);
@@ -429,13 +429,13 @@ describe('ProjectsController: import operations', function (): void {
 		const connectionId = 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575';
 		// test welcome button and palette launch points (context-less)
 		let mockDbSelection = 'FakeDatabase';
-		sinon.stub(azdata.connection, 'listDatabases').returns(Promise.resolve([]));
-		sinon.stub(vscode.window, 'showQuickPick').returns(Promise.resolve({ label: mockDbSelection }));
-		sinon.stub(azdata.connection, 'openConnectionDialog').returns(Promise.resolve({
+		sinon.stub(azdata.connection, 'listDatabases').resolves([]);
+		sinon.stub(vscode.window, 'showQuickPick').resolves({ label: mockDbSelection });
+		sinon.stub(azdata.connection, 'openConnectionDialog').resolves({
 			providerName: 'MSSQL',
 			connectionId: connectionId,
 			options: {}
-		}));
+		});
 
 		let projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
 
@@ -451,7 +451,7 @@ describe('ProjectsController: import operations', function (): void {
 
 describe('ProjectsController: add database reference operations', function (): void {
 	it('Should show error when no reference type is selected', async function (): Promise<void> {
-		sinon.stub(vscode.window, 'showQuickPick').returns(Promise.resolve(undefined));
+		sinon.stub(vscode.window, 'showQuickPick').resolves(undefined);
 		const spy = sinon.spy(vscode.window, 'showErrorMessage');
 		// testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
 
@@ -461,8 +461,8 @@ describe('ProjectsController: add database reference operations', function (): v
 	});
 
 	it('Should show error when no file is selected', async function (): Promise<void> {
-		sinon.stub(vscode.window, 'showQuickPick').returns(Promise.resolve({ label: constants.dacpac }));
-		sinon.stub(vscode.window, 'showOpenDialog').returns(Promise.resolve(undefined));
+		sinon.stub(vscode.window, 'showQuickPick').resolves({ label: constants.dacpac });
+		sinon.stub(vscode.window, 'showOpenDialog').resolves(undefined);
 		const spy = sinon.spy(vscode.window, 'showErrorMessage');
 
 		const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
@@ -471,9 +471,9 @@ describe('ProjectsController: add database reference operations', function (): v
 	});
 
 	it('Should show error when no database name is provided', async function (): Promise<void> {
-		sinon.stub(vscode.window, 'showInputBox').returns(Promise.resolve(undefined));
-		sinon.stub(vscode.window, 'showQuickPick').returns(Promise.resolve({ label: constants.dacpac }));
-		sinon.stub(vscode.window, 'showOpenDialog').returns(Promise.resolve([vscode.Uri.file('FakePath')]));
+		sinon.stub(vscode.window, 'showInputBox').resolves(undefined);
+		sinon.stub(vscode.window, 'showQuickPick').resolves({ label: constants.dacpac });
+		sinon.stub(vscode.window, 'showOpenDialog').resolves([vscode.Uri.file('FakePath')]);
 		const spy = sinon.spy(vscode.window, 'showErrorMessage');
 
 		const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
@@ -486,15 +486,15 @@ describe('ProjectsController: add database reference operations', function (): v
 		const projFilePath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
 		const project = await Project.openProject(projFilePath);
 
-		const stub = sinon.stub(vscode.window, 'showQuickPick').returns(Promise.resolve({ label: constants.master }));
+		const stub = sinon.stub(vscode.window, 'showQuickPick').resolves({ label: constants.master });
 		let systemDb = await projController.getSystemDatabaseName(project);
 		should.equal(systemDb, SystemDatabase.master);
 
-		stub.returns(Promise.resolve({ label: constants.msdb }));
+		stub.resolves({ label: constants.msdb });
 		systemDb = await projController.getSystemDatabaseName(project);
 		should.equal(systemDb, SystemDatabase.msdb);
 
-		stub.returns(Promise.resolve(undefined));
+		stub.resolves(undefined);
 		await testUtils.shouldThrowSpecificError(async () => await projController.getSystemDatabaseName(project), constants.systemDatabaseReferenceRequired);
 	});
 });

@@ -31,8 +31,8 @@ describe('MainController: main controller operations', function (): void {
 	it('Should create new project through MainController', async function (): Promise<void> {
 		const projFileDir = path.join(os.tmpdir(), `TestProject_${new Date().getTime()}`);
 
-		sinon.stub(vscode.window, 'showInputBox').returns(Promise.resolve('MyProjectName'));
-		sinon.stub(vscode.window, 'showOpenDialog').returns(Promise.resolve([vscode.Uri.file(projFileDir)]));
+		sinon.stub(vscode.window, 'showInputBox').resolves('MyProjectName');
+		sinon.stub(vscode.window, 'showOpenDialog').resolves([vscode.Uri.file(projFileDir)]);
 		sinon.replaceGetter(vscode.workspace, 'workspaceFolders', () => undefined);
 
 		const controller = new MainController(testContext.context);
@@ -43,7 +43,7 @@ describe('MainController: main controller operations', function (): void {
 
 	it('Should show error when no project name', async function (): Promise<void> {
 		for (const name of ['', '    ', undefined]) {
-			const stub = sinon.stub(vscode.window, 'showInputBox').returns(Promise.resolve(name));
+			const stub = sinon.stub(vscode.window, 'showInputBox').resolves(name);
 			const spy = sinon.spy(vscode.window, 'showErrorMessage');
 			const controller = new MainController(testContext.context);
 			await controller.createNewProject();
@@ -54,8 +54,8 @@ describe('MainController: main controller operations', function (): void {
 	});
 
 	it('Should show error when no location name', async function (): Promise<void> {
-		sinon.stub(vscode.window, 'showInputBox').returns(Promise.resolve('MyProjectName'));
-		sinon.stub(vscode.window, 'showOpenDialog').returns(Promise.resolve(undefined));
+		sinon.stub(vscode.window, 'showInputBox').resolves('MyProjectName');
+		sinon.stub(vscode.window, 'showOpenDialog').resolves(undefined);
 		const spy = sinon.spy(vscode.window, 'showErrorMessage');
 		const controller = new MainController(testContext.context);
 		await controller.createNewProject();
