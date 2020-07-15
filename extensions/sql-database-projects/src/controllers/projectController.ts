@@ -672,11 +672,11 @@ export class ProjectsController {
 		let model = <ImportDataModel>{};
 
 		let profile = this.getConnectionProfileFromContext(context);
-		let connectionId;
+		let connectionId, database;
 		//TODO: Prompt for new connection addition and get database information if context information isn't provided.
 
 		if (profile) {
-			model.database = profile.databaseName;
+			database = profile.databaseName;
 			connectionId = profile.id;
 		}
 		else {
@@ -690,13 +690,13 @@ export class ProjectsController {
 
 			// use database that was connected to
 			if (connection.options['database']) {
-				model.database = connection.options['database'];
+				database = connection.options['database'];
 			}
 
 			// choose database if connection was to a server or master
 			if (!model.database || model.database === constants.master) {
 				const databaseList = await this.apiWrapper.listDatabases(connectionId);
-				let database = (await this.apiWrapper.showQuickPick(databaseList.map(dbName => { return { label: dbName }; }),
+				database = (await this.apiWrapper.showQuickPick(databaseList.map(dbName => { return { label: dbName }; }),
 					{
 						canPickMany: false,
 						placeHolder: constants.extractDatabaseSelection
@@ -705,11 +705,11 @@ export class ProjectsController {
 				if (!database) {
 					throw new Error(constants.databaseSelectionRequired);
 				}
-
-				model.database = database;
-				model.serverId = connectionId;
 			}
 		}
+
+		model.database = database;
+		model.serverId = connectionId;
 
 		return model;
 	}
