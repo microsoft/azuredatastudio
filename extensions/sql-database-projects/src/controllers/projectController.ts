@@ -668,7 +668,7 @@ export class ProjectsController {
 		}
 	}
 
-	private async getModelFromContext(context: any): Promise<ImportDataModel | undefined> {
+	public async getModelFromContext(context: any): Promise<ImportDataModel | undefined> {
 		let model = <ImportDataModel>{};
 
 		let profile = this.getConnectionProfileFromContext(context);

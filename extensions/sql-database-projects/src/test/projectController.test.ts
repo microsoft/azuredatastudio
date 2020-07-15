@@ -415,6 +415,30 @@ describe('ProjectsController: import operations', function (): void {
 		await projController.object.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
 		should(importPath).equal(vscode.Uri.file(path.join(folderPath, projectName)).fsPath);//, 'model.filePath should be set to a folder for ExtractTarget !== file');
 	});
+
+	it('Should establish Import context correctly for ObjectExplorer and palette launch points', async function (): Promise<void> {
+		// test welcome button and palette launch points (context-less)
+		let mockDbSelection = 'FakeDatabase';
+
+		testContext.apiWrapper.setup(x => x.listDatabases(TypeMoq.It.isAny())).returns(() => Promise.resolve([]));
+		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({ label: mockDbSelection }));
+		testContext.apiWrapper.setup(x => x.openConnectionDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
+			providerName: 'MSSQL',
+			connectionId: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575',
+			options: {}
+		}));
+
+		let projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+
+		let result = await projController.getModelFromContext(undefined);
+
+		should(result).deepEqual({database: mockDbSelection, serverId: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575'});
+
+		// test launch via Object Explorer context
+		testContext.apiWrapper.reset();
+		result = await projController.getModelFromContext(mockConnectionProfile);
+		should(result).deepEqual({database: 'My Database', serverId: 'My Id'});
+	});
 });
 
 describe('ProjectsController: add database reference operations', function (): void {
