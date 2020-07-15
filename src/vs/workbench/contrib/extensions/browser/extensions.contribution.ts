@@ -19,7 +19,7 @@ import { ExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/brow
 import {
 	OpenExtensionsViewletAction, InstallExtensionsAction, ShowOutdatedExtensionsAction, ShowRecommendedExtensionsAction, ShowRecommendedKeymapExtensionsAction, ShowPopularExtensionsAction,
 	ShowEnabledExtensionsAction, ShowInstalledExtensionsAction, ShowDisabledExtensionsAction, ShowBuiltInExtensionsAction, UpdateAllAction,
-	EnableAllAction, EnableAllWorkspaceAction, DisableAllAction, DisableAllWorkspaceAction, CheckForUpdatesAction, ShowLanguageExtensionsAction, ShowAzureExtensionsAction, EnableAutoUpdateAction, DisableAutoUpdateAction, ConfigureRecommendedExtensionsCommandsContributor, InstallVSIXAction, ReinstallAction, InstallSpecificVersionOfExtensionAction
+	EnableAllAction, EnableAllWorkspaceAction, DisableAllAction, DisableAllWorkspaceAction, CheckForUpdatesAction, ShowLanguageExtensionsAction, ShowAzureExtensionsAction, EnableAutoUpdateAction, DisableAutoUpdateAction, ConfigureRecommendedExtensionsCommandsContributor, InstallVSIXAction, ReinstallAction, InstallSpecificVersionOfExtensionAction, ClearExtensionsSearchResultsAction
 } from 'vs/workbench/contrib/extensions/browser/extensionsActions';
 import { ExtensionsInput } from 'vs/workbench/contrib/extensions/common/extensionsInput';
 import { ExtensionEditor } from 'vs/workbench/contrib/extensions/browser/extensionEditor';
@@ -49,6 +49,10 @@ import { IQuickAccessRegistry, Extensions } from 'vs/platform/quickinput/common/
 import { InstallExtensionQuickAccessProvider, ManageExtensionsQuickAccessProvider } from 'vs/workbench/contrib/extensions/browser/extensionsQuickAccess';
 import { ExtensionRecommendationsService } from 'vs/workbench/contrib/extensions/browser/extensionRecommendationsService';
 import { CONTEXT_SYNC_ENABLEMENT } from 'vs/workbench/services/userDataSync/common/userDataSync';
+import { CopyAction, CutAction, PasteAction } from 'vs/editor/contrib/clipboard/clipboard';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { MultiCommand } from 'vs/editor/browser/editorExtensions';
+import { Webview } from 'vs/workbench/contrib/webview/browser/webview';
 
 // Singletons
 registerSingleton(IExtensionsWorkbenchService, ExtensionsWorkbenchService);
@@ -150,6 +154,7 @@ actionRegistry.registerWorkbenchAction(enableAllWorkspaceAction, 'Extensions: En
 const checkForUpdatesAction = SyncActionDescriptor.from(CheckForUpdatesAction);
 actionRegistry.registerWorkbenchAction(checkForUpdatesAction, `Extensions: Check for Extension Updates`, ExtensionsLabel);
 
+actionRegistry.registerWorkbenchAction(SyncActionDescriptor.from(ClearExtensionsSearchResultsAction), 'Extensions: Clear Extensions Search Results', ExtensionsLabel);
 actionRegistry.registerWorkbenchAction(SyncActionDescriptor.from(EnableAutoUpdateAction), `Extensions: Enable Auto Updating Extensions`, ExtensionsLabel);
 actionRegistry.registerWorkbenchAction(SyncActionDescriptor.from(DisableAutoUpdateAction), `Extensions: Disable Auto Updating Extensions`, ExtensionsLabel);
 actionRegistry.registerWorkbenchAction(SyncActionDescriptor.from(InstallSpecificVersionOfExtensionAction), 'Install Specific Version of Extension...', ExtensionsLabel);
@@ -469,6 +474,25 @@ registerAction2(class extends Action2 {
 		}
 	}
 });
+
+function overrideActionForActiveExtensionEditorWebview(command: MultiCommand | undefined, f: (webview: Webview) => void) {
+	command?.addImplementation(105, (accessor) => {
+		const editorService = accessor.get(IEditorService);
+		const editor = editorService.activeEditorPane;
+		if (editor instanceof ExtensionEditor) {
+			if (editor.activeWebview) {
+				f(editor.activeWebview);
+				return true;
+			}
+		}
+		return false;
+	});
+}
+
+overrideActionForActiveExtensionEditorWebview(CopyAction, webview => webview.copy());
+overrideActionForActiveExtensionEditorWebview(CutAction, webview => webview.cut());
+overrideActionForActiveExtensionEditorWebview(PasteAction, webview => webview.paste());
+
 
 const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
 
