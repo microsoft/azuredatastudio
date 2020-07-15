@@ -189,8 +189,7 @@ describe('ProjectsController: project controller operations', function (): void 
 
 			await projController.delete(projTreeRoot.children.find(x => x.friendlyName === 'UpperFolder')!.children[0] /* LowerFolder */);
 
-			proj = new Project(proj.projectFilePath);
-			await proj.readProjFile(); // reload edited sqlproj from disk
+			proj = await Project.openProject(proj.projectFilePath); // reload edited sqlproj from disk
 
 			// confirm result
 			should(proj.files.length).equal(1, 'number of file/folder entries'); // lowerEntry and the contained scripts should be deleted
@@ -208,8 +207,7 @@ describe('ProjectsController: project controller operations', function (): void 
 
 			await projController.exclude(<FolderNode>projTreeRoot.children.find(x => x.friendlyName === 'UpperFolder')!.children[0] /* LowerFolder */);
 
-			proj = new Project(proj.projectFilePath);
-			await proj.readProjFile(); // reload edited sqlproj from disk
+			proj = await Project.openProject(proj.projectFilePath); // reload edited sqlproj from disk
 
 			// confirm result
 			should(proj.files.length).equal(1, 'number of file/folder entries'); // LowerFolder and the contained scripts should be deleted
@@ -362,6 +360,7 @@ describe('ProjectsController: import operations', function (): void {
 
 	it('Should show error when no target information provided', async function (): Promise<void> {
 		testContext.apiWrapper.setup(x => x.showInputBox(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('MyProjectName'));
+		testContext.apiWrapper.setup(x => x.showOpenDialog(TypeMoq.It.isAny())).returns(() => Promise.resolve([vscode.Uri.file('fakePath')]));
 		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny())).returns(() => Promise.resolve(undefined));
 		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
 
@@ -390,18 +389,55 @@ describe('ProjectsController: import operations', function (): void {
 		await testUtils.shouldThrowSpecificError(async () => await projController.importNewDatabaseProject({ connectionProfile: mockConnectionProfile }), constants.projectLocationRequired);
 	});
 
-	it('Should show error when selected folder is not empty', async function (): Promise<void> {
-		const testFolderPath = await testUtils.createDummyFileStructure();
+	it('Should set model filePath correctly for ExtractType = File and not-File.', async function (): Promise<void> {
+		const projectName = 'MyProjectName';
+		let folderPath = await testUtils.generateTestFolderPath();
 
-		testContext.apiWrapper.setup(x => x.showInputBox(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('MyProjectName'));
-		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({ label: constants.objectType }));
-		testContext.apiWrapper.setup(x => x.showOpenDialog(TypeMoq.It.isAny())).returns(() => Promise.resolve([vscode.Uri.file(testFolderPath)]));
-		testContext.apiWrapper.setup(x => x.workspaceFolders()).returns(() => undefined);
-		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
+		testContext.apiWrapper.setup(x => x.showInputBox(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(projectName));
+		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({ label: constants.file }));
+		testContext.apiWrapper.setup(x => x.showOpenDialog(TypeMoq.It.isAny())).returns(() => Promise.resolve([vscode.Uri.file(folderPath)]));
 
-		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+		let importPath;
 
-		await testUtils.shouldThrowSpecificError(async () => await projController.importNewDatabaseProject({ connectionProfile: mockConnectionProfile }), constants.projectLocationNotEmpty);
+		let projController = TypeMoq.Mock.ofType(ProjectsController, undefined, undefined, testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+		projController.callBase = true;
+
+		projController.setup(x => x.importApiCall(TypeMoq.It.isAny())).returns(async (model) => { importPath = model.filePath; });
+
+		await projController.object.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
+		should(importPath).equal(vscode.Uri.file(path.join(folderPath, projectName, projectName + '.sql')).fsPath, `model.filePath should be set to a specific file for ExtractTarget === file, but was ${importPath}`);
+
+		// reset for counter-test
+		importPath = undefined;
+		folderPath = await testUtils.generateTestFolderPath();
+		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({ label: constants.schemaObjectType }));
+
+		await projController.object.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
+		should(importPath).equal(vscode.Uri.file(path.join(folderPath, projectName)).fsPath, `model.filePath should be set to a folder for ExtractTarget !== file, but was ${importPath}`);
+	});
+
+	it('Should establish Import context correctly for ObjectExplorer and palette launch points', async function (): Promise<void> {
+		// test welcome button and palette launch points (context-less)
+		let mockDbSelection = 'FakeDatabase';
+
+		testContext.apiWrapper.setup(x => x.listDatabases(TypeMoq.It.isAny())).returns(() => Promise.resolve([]));
+		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({ label: mockDbSelection }));
+		testContext.apiWrapper.setup(x => x.openConnectionDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
+			providerName: 'MSSQL',
+			connectionId: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575',
+			options: {}
+		}));
+
+		let projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+
+		let result = await projController.getModelFromContext(undefined);
+
+		should(result).deepEqual({database: mockDbSelection, serverId: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575'});
+
+		// test launch via Object Explorer context
+		testContext.apiWrapper.reset();
+		result = await projController.getModelFromContext(mockConnectionProfile);
+		should(result).deepEqual({database: 'My Database', serverId: 'My Id'});
 	});
 });
 
@@ -437,8 +473,7 @@ describe('ProjectsController: add database reference operations', function (): v
 	it('Should return the correct system database', async function (): Promise<void> {
 		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
 		const projFilePath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
-		const project: Project = new Project(projFilePath);
-		await project.readProjFile();
+		const project = await Project.openProject(projFilePath);
 
 		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({ label: constants.master }));
 		let systemDb = await projController.getSystemDatabaseName(project);
