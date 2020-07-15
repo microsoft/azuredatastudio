@@ -24,13 +24,6 @@ export default interface ITableModel {
 	Example:
 	<DepartmentTableModel, {cardinality: "1:Many", reference: "FK_EmployeeHistory_Employee_EmployeeID" }
 	*/
-
 	relationships: Map<ITableModel, JSON>;
-
-	getName(): string;
-	getSummary(): string;
-	getPrimaryKey(): Map<string, string>;
-	getForeignKey(): Map<string, string>[];
-	getRelationships(): Map<ITableModel, JSON>;
 
 }

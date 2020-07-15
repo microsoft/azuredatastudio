@@ -3,12 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-
-import * as path from 'path';
-import * as fs from 'fs';
+//import * as path from 'path';
+//import { promises as fs} from 'fs';
 import ControllerBase from './controllerBase';
 import * as vscode from 'vscode';
-import { ApiWrapper } from '../common/apiWrapper';
+//import { ApiWrapper } from '../common/apiWrapper';
+import * as azdata from 'azdata';
 
 /**
  * The main controller class that initializes the extension
@@ -17,7 +17,6 @@ export default class MainController extends ControllerBase {
 
 	public constructor(
 		context: vscode.ExtensionContext,
-		apiWrapper: ApiWrapper
 	) {
 		super(context);
 	}
@@ -31,25 +30,113 @@ export default class MainController extends ControllerBase {
 		return new Promise<boolean>(async (resolve) => {
 			vscode.commands.registerCommand('db-diagram.new', async () => {
 
-				//Dummy Data
-				/*const serverName = 'My Server';
-				const dbName = 'My Database';
-				const dbInformation = 'This is a database about a company. There is 1 significant cluster';
-				const tables = ['Employee', 'Department', 'Manager'];*/
+				//initialize data models from sqlToolsService required
 
-				// Create and show a new webview
-				const panel = vscode.window.createWebviewPanel(
-					'dbDiagram', // Identifies the type of the webview. Used internally
-					'DB Diagram', // Title of the panel displayed to the user
-					vscode.ViewColumn.One, // Editor column to show the new webview panel in.
-					{} // Webview options. More on these later.
-				);
-				const onDiskPath = vscode.Uri.file(
-					path.join('..', '..', 'src', 'ui-resources', 'index.html')
-				);
-				const htmlTemplate = panel.webview.asWebviewUri(onDiskPath);
-				panel.webview.html = await fs.promises.readFile(htmlTemplate.fsPath, 'utf-8');
+				const dashboard = azdata.window.createModelViewDashboard('Test Dashboard');
+				dashboard.registerTabs(async (view: azdata.ModelView) => {
+					// Tab with toolbar
+					const button = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+						label: 'Add databases tab',
+						// iconPath: {
+						// 	light: context.asAbsolutePath('images/compare.svg'),
+						// 	dark: context.asAbsolutePath('images/compare-inverse.svg')
+						// }
+					}).component();
 
+					const toolbar = view.modelBuilder.toolbarContainer().withItems([button]).withLayout({
+						orientation: azdata.Orientation.Horizontal
+					}).component();
+
+					const input1 = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({ value: 'input 1' }).component();
+					const homeTab: azdata.DashboardTab = {
+						id: 'home',
+						toolbar: toolbar,
+						content: input1,
+						title: 'Home',
+						// icon: context.asAbsolutePath('images/home.svg') // icon can be the path of a svg file
+					};
+
+					// Tab with nested tabbed Panel
+					const addTabButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: 'Add a tab', width: '150px' }).component();
+					const removeTabButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: 'Remove a tab', width: '150px' }).component();
+					const container = view.modelBuilder.flexContainer().withItems([addTabButton, removeTabButton]).withLayout({ flexFlow: 'column' }).component();
+					const nestedTab1 = {
+						title: 'Tab1',
+						content: container,
+						id: 'tab1',
+						// icon: {
+						// 	light: context.asAbsolutePath('images/user.svg'),
+						// 	dark: context.asAbsolutePath('images/user_inverse.svg') // icon can also be theme aware
+						// }
+					};
+
+					const input2 = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({ value: 'input 2' }).component();
+					const nestedTab2 = {
+						title: 'Tab2',
+						content: input2,
+						// icon: {
+						// 	light: context.asAbsolutePath('images/group.svg'),
+						// 	dark: context.asAbsolutePath('images/group_inverse.svg')
+						// },
+						id: 'tab2'
+					};
+
+					const input3 = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({ value: 'input 4' }).component();
+					const nestedTab3 = {
+						title: 'Tab3',
+						content: input3,
+						id: 'tab3'
+					};
+
+					const tabbedPanel = view.modelBuilder.tabbedPanel().withTabs([
+						nestedTab1, nestedTab2
+					]).withLayout({
+						orientation: azdata.TabOrientation.Horizontal,
+						showIcon: true
+					}).component();
+
+
+					addTabButton.onDidClick(() => {
+						tabbedPanel.updateTabs([nestedTab1, nestedTab2, nestedTab3]);
+					});
+
+					removeTabButton.onDidClick(() => {
+						tabbedPanel.updateTabs([nestedTab1, nestedTab3]);
+					});
+
+					const settingsTab: azdata.DashboardTab = {
+						id: 'settings',
+						content: tabbedPanel,
+						title: 'Settings',
+						//icon: context.asAbsolutePath('images/default.svg')
+					};
+
+					// You can also add a tab group
+					const securityTabGroup: azdata.DashboardTabGroup = {
+						title: 'Security',
+						tabs: [
+							settingsTab
+						]
+					};
+
+					// Databases tab
+					const databasesText = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({ value: 'This is databases tab', width: '200px' }).component();
+					const databasesTab: azdata.DashboardTab = {
+						id: 'databases',
+						content: databasesText,
+						title: 'Databases',
+						//icon: context.asAbsolutePath('images/default.svg')
+					};
+					button.onDidClick(() => {
+						dashboard.updateTabs([homeTab, databasesTab, securityTabGroup]);
+					});
+
+					return [
+						homeTab,
+						securityTabGroup
+					];
+				});
+				await dashboard.open();
 			});
 
 			resolve(true);
@@ -59,3 +146,8 @@ export default class MainController extends ControllerBase {
 	}
 
 }
+
+
+
+
+

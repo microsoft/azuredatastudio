@@ -20,16 +20,4 @@ export default class DatabaseModel implements IDatabaseModel {
 		this.tables = tables;
 	}
 
-	public getName(): string {
-		return this.name;
-	}
-
-	public getSummary(): string {
-		return this.summary;
-	}
-
-	public getTables(): ITableModel[] {
-		return this.tables;
-	}
-
 }

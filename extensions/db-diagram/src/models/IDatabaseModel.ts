@@ -12,10 +12,5 @@ export default interface IDatabaseModel {
 	name: string;
 	summary: string;
 	tables: ITableModel[];
-	getName(): string;
-	getSummary(): string;
-	getTables(): ITableModel[];
-
-
 
 }

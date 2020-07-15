@@ -25,23 +25,5 @@ export default class TableModel implements ITableModel {
 		this.primaryKey = primaryKey;
 		this.foreignKey = foreignKey;
 	}
-	getPrimaryKey(): Map<string, string> {
-		return this.primaryKey;
-	}
-	getForeignKey(): Map<string, string>[] {
-		return this.foreignKey;
-	}
-
-	public getName(): string {
-		return this.name;
-	}
-
-	public getSummary(): string {
-		return this.summary;
-	}
-
-	public getRelationships(): Map<ITableModel, JSON> {
-		return this.relationships;
-	}
 
 }
