@@ -27,7 +27,6 @@ import { IQueryManagementService } from 'sql/workbench/services/query/common/que
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
 import { SqlNotebookProvider } from 'sql/workbench/services/notebook/browser/sql/sqlNotebookProvider';
-import { keys } from 'vs/base/common/map';
 import { IFileService, IFileStatWithMetadata } from 'vs/platform/files/common/files';
 import { Schemas } from 'vs/base/common/network';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -269,7 +268,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	getSupportedFileExtensions(): string[] {
-		return Array.from(keys(this._fileToProviders));
+		return Array.from(this._fileToProviders.keys());
 	}
 
 	getProvidersForFileType(fileType: string): string[] {

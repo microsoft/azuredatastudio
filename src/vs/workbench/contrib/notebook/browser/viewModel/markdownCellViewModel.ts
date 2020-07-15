@@ -8,13 +8,13 @@ import { Emitter, Event } from 'vs/base/common/event';
 import * as UUID from 'vs/base/common/uuid';
 import * as editorCommon from 'vs/editor/common/editorCommon';
 import * as model from 'vs/editor/common/model';
-import { BOTTOM_CELL_TOOLBAR_HEIGHT, CELL_MARGIN, CELL_RUN_GUTTER, CELL_STATUSBAR_HEIGHT, EDITOR_TOP_MARGIN, CELL_BOTTOM_MARGIN } from 'vs/workbench/contrib/notebook/browser/constants';
+import { BOTTOM_CELL_TOOLBAR_HEIGHT, CELL_MARGIN, CELL_STATUSBAR_HEIGHT, EDITOR_TOP_MARGIN, CELL_BOTTOM_MARGIN, CODE_CELL_LEFT_MARGIN } from 'vs/workbench/contrib/notebook/browser/constants';
 import { CellFindMatch, ICellViewModel, MarkdownCellLayoutChangeEvent, MarkdownCellLayoutInfo, NotebookLayoutInfo } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
 import { MarkdownRenderer } from 'vs/workbench/contrib/notebook/browser/view/renderers/mdRenderer';
 import { BaseCellViewModel } from 'vs/workbench/contrib/notebook/browser/viewModel/baseCellViewModel';
 import { EditorFoldingStateDelegate } from 'vs/workbench/contrib/notebook/browser/contrib/fold/foldingModel';
 import { NotebookCellTextModel } from 'vs/workbench/contrib/notebook/common/model/notebookCellTextModel';
-import { CellKind } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import { CellKind, INotebookSearchOptions } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import { NotebookEventDispatcher, NotebookCellStateChangedEvent } from 'vs/workbench/contrib/notebook/browser/viewModel/eventDispatcher';
 
 export class MarkdownCellViewModel extends BaseCellViewModel implements ICellViewModel {
@@ -87,7 +87,7 @@ export class MarkdownCellViewModel extends BaseCellViewModel implements ICellVie
 	}
 
 	private computeEditorWidth(outerWidth: number) {
-		return outerWidth - (CELL_MARGIN * 2) - CELL_RUN_GUTTER;
+		return outerWidth - (CELL_MARGIN * 2) - CODE_CELL_LEFT_MARGIN;
 	}
 
 	layoutChange(state: MarkdownCellLayoutChangeEvent) {
@@ -179,8 +179,8 @@ export class MarkdownCellViewModel extends BaseCellViewModel implements ICellVie
 	private readonly _hasFindResult = this._register(new Emitter<boolean>());
 	public readonly hasFindResult: Event<boolean> = this._hasFindResult.event;
 
-	startFind(value: string): CellFindMatch | null {
-		const matches = super.cellStartFind(value);
+	startFind(value: string, options: INotebookSearchOptions): CellFindMatch | null {
+		const matches = super.cellStartFind(value, options);
 
 		if (matches === null) {
 			return null;
