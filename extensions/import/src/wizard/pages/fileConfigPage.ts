@@ -188,8 +188,8 @@ export class FileConfigPage extends ImportPage {
 		this.databaseDropdown.onValueChanged(async (db) => {
 			this.model.database = (<azdata.CategoryValue>this.databaseDropdown.value).name;
 			//this.populateTableNames();
-			let connectionProvider = this._apiWrapper.getProvider<azdata.ConnectionProvider>(this.model.server.providerName, azdata.DataProviderType.ConnectionProvider);
-			let connectionUri = await this._apiWrapper.getUriForConnection(this.model.server.connectionId);
+			let connectionProvider = azdata.dataprotocol.getProvider<azdata.ConnectionProvider>(this.model.server.providerName, azdata.DataProviderType.ConnectionProvider);
+			let connectionUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 			connectionProvider.changeDatabase(connectionUri, this.model.database);
 			this.populateSchemaDropdown();
 		});
@@ -372,8 +372,8 @@ export class FileConfigPage extends ImportPage {
 	}
 
 	public async getSchemaValues(): Promise<{ displayName: string, name: string }[]> {
-		let connectionUri = await this._apiWrapper.getUriForConnection(this.model.server.connectionId);
-		let queryProvider = this._apiWrapper.getProvider<azdata.QueryProvider>(this.model.server.providerName, azdata.DataProviderType.QueryProvider);
+		let connectionUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
+		let queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(this.model.server.providerName, azdata.DataProviderType.QueryProvider);
 
 		let results = await queryProvider.runQueryAndReturn(connectionUri, constants.selectSchemaQuery);
 

@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import { FlatFileProvider } from '../services/contracts';
 import { ImportDataModel } from './api/models';
 import { ImportPage } from './api/importPage';
@@ -12,7 +13,6 @@ import { FileConfigPage } from './pages/fileConfigPage';
 import { ProsePreviewPage } from './pages/prosePreviewPage';
 import { ModifyColumnsPage } from './pages/modifyColumnsPage';
 import { SummaryPage } from './pages/summaryPage';
-import { ApiWrapper } from '../common/apiWrapper';
 import * as constants from '../common/constants';
 
 export class FlatFileWizard {
@@ -27,7 +27,6 @@ export class FlatFileWizard {
 
 	constructor(
 		provider: FlatFileProvider,
-		private _apiWrapper: ApiWrapper
 	) {
 		this.provider = provider;
 	}
@@ -51,16 +50,16 @@ export class FlatFileWizard {
 
 		model.serverId = connectionId;
 
-		this.wizard = this._apiWrapper.createWizard(constants.wizardNameText);
-		this.page1 = this._apiWrapper.createWizardPage(constants.page1NameText);
-		this.page2 = this._apiWrapper.createWizardPage(constants.page2NameText);
-		this.page3 = this._apiWrapper.createWizardPage(constants.page3NameText);
-		this.page4 = this._apiWrapper.createWizardPage(constants.page4NameText);
+		this.wizard = azdata.window.createWizard(constants.wizardNameText);
+		this.page1 = azdata.window.createWizardPage(constants.page1NameText);
+		this.page2 = azdata.window.createWizardPage(constants.page2NameText);
+		this.page3 = azdata.window.createWizardPage(constants.page3NameText);
+		this.page4 = azdata.window.createWizardPage(constants.page4NameText);
 
 		let fileConfigPage: FileConfigPage;
 
 		this.page1.registerContent(async (view) => {
-			fileConfigPage = new FileConfigPage(this, this.page1, model, view, this.provider, this._apiWrapper);
+			fileConfigPage = new FileConfigPage(this, this.page1, model, view, this.provider);
 			pages.set(0, fileConfigPage);
 			await fileConfigPage.start().then(() => {
 				fileConfigPage.setupNavigationValidator();
@@ -70,14 +69,14 @@ export class FlatFileWizard {
 
 		let prosePreviewPage: ProsePreviewPage;
 		this.page2.registerContent(async (view) => {
-			prosePreviewPage = new ProsePreviewPage(this, this.page2, model, view, this.provider, this._apiWrapper);
+			prosePreviewPage = new ProsePreviewPage(this, this.page2, model, view, this.provider);
 			pages.set(1, prosePreviewPage);
 			await prosePreviewPage.start();
 		});
 
 		let modifyColumnsPage: ModifyColumnsPage;
 		this.page3.registerContent(async (view) => {
-			modifyColumnsPage = new ModifyColumnsPage(this, this.page3, model, view, this.provider, this._apiWrapper);
+			modifyColumnsPage = new ModifyColumnsPage(this, this.page3, model, view, this.provider);
 			pages.set(2, modifyColumnsPage);
 			await modifyColumnsPage.start();
 		});
@@ -85,13 +84,13 @@ export class FlatFileWizard {
 		let summaryPage: SummaryPage;
 
 		this.page4.registerContent(async (view) => {
-			summaryPage = new SummaryPage(this, this.page4, model, view, this.provider, this._apiWrapper);
+			summaryPage = new SummaryPage(this, this.page4, model, view, this.provider);
 			pages.set(3, summaryPage);
 			await summaryPage.start();
 		});
 
 
-		this.importAnotherFileButton = this._apiWrapper.createButton(constants.importNewFileText);
+		this.importAnotherFileButton = azdata.window.createButton(constants.importNewFileText);
 		this.importAnotherFileButton.onClick(() => {
 			//TODO replace this with proper cleanup for all the pages
 			this.wizard.close();
@@ -124,20 +123,20 @@ export class FlatFileWizard {
 	}
 
 	public async getConnectionId(): Promise<string> {
-		let currentConnection = await this._apiWrapper.getCurrentConnection();
+		let currentConnection = await azdata.connection.getCurrentConnection();
 
 		let connectionId: string;
 
 		if (!currentConnection) {
-			let connection = await this._apiWrapper.openConnectionDialog(constants.supportedProviders);
+			let connection = await azdata.connection.openConnectionDialog(constants.supportedProviders);
 			if (!connection) {
-				this._apiWrapper.showErrorMessage(constants.needConnectionText);
+				vscode.window.showErrorMessage(constants.needConnectionText);
 				return undefined;
 			}
 			connectionId = connection.connectionId;
 		} else {
 			if (currentConnection.providerId !== 'MSSQL') {
-				this._apiWrapper.showErrorMessage(constants.needSqlConnectionText);
+				vscode.window.showErrorMessage(constants.needSqlConnectionText);
 				return undefined;
 			}
 			connectionId = currentConnection.connectionId;

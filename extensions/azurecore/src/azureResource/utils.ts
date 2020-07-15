@@ -151,7 +151,7 @@ export async function getSubscriptions(appContext: AppContext, account?: azdata.
 	}
 
 	const subscriptionService = appContext.getService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService);
-	const tokens = await appContext.apiWrapper.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
+	const tokens = await azdata.accounts.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
 	await Promise.all(account.properties.tenants.map(async (tenant: { id: string | number; }) => {
 		try {
 			const token = tokens[tenant.id].token;

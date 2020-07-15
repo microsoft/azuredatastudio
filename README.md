@@ -129,10 +129,10 @@ Copyright (c) Microsoft Corporation. All rights reserved.
 
 Licensed under the [Source EULA](LICENSE.txt).
 
-[win-user]: https://go.microsoft.com/fwlink/?linkid=2132348
-[win-system]: https://go.microsoft.com/fwlink/?linkid=2132347
-[win-zip]: https://go.microsoft.com/fwlink/?linkid=2132518
-[osx-zip]: https://go.microsoft.com/fwlink/?linkid=2132519
-[linux-zip]: https://go.microsoft.com/fwlink/?linkid=2132349
-[linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2132351
-[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2132350
+[win-user]: https://go.microsoft.com/fwlink/?linkid=2135512
+[win-system]: https://go.microsoft.com/fwlink/?linkid=2135513
+[win-zip]: https://go.microsoft.com/fwlink/?linkid=2135514
+[osx-zip]: https://go.microsoft.com/fwlink/?linkid=2135266
+[linux-zip]: https://go.microsoft.com/fwlink/?linkid=2135267
+[linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2135268
+[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2135515

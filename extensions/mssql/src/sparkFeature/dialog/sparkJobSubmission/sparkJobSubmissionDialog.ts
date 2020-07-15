@@ -10,7 +10,6 @@ import * as utils from '../../../utils';
 import * as LocalizedConstants from '../../../localizedConstants';
 
 import { AppContext } from '../../../appContext';
-import { ApiWrapper } from '../../../apiWrapper';
 import { SparkJobSubmissionModel } from './sparkJobSubmissionModel';
 import { SparkConfigurationTab } from './sparkConfigurationTab';
 import { SparkJobSubmissionInput } from './sparkJobSubmissionService';
@@ -24,9 +23,6 @@ export class SparkJobSubmissionDialog {
 	private _dataModel: SparkJobSubmissionModel;
 	private _sparkConfigTab: SparkConfigurationTab;
 	private _sparkAdvancedTab: SparkAdvancedTab;
-	private get apiWrapper(): ApiWrapper {
-		return this.appContext.apiWrapper;
-	}
 
 	constructor(
 		private sqlClusterConnection: SqlClusterConnection,
@@ -39,12 +35,12 @@ export class SparkJobSubmissionDialog {
 	}
 
 	public async openDialog(path?: string): Promise<void> {
-		this._dialog = this.apiWrapper.createDialog(localize('sparkJobSubmission.DialogTitleNewJob', "New Job"));
+		this._dialog = azdata.window.createModelViewDialog(localize('sparkJobSubmission.DialogTitleNewJob', "New Job"));
 
 		this._dataModel = new SparkJobSubmissionModel(this.sqlClusterConnection, this._dialog, this.appContext);
 
-		this._sparkConfigTab = new SparkConfigurationTab(this._dataModel, this.appContext, path);
-		this._sparkAdvancedTab = new SparkAdvancedTab(this.appContext);
+		this._sparkConfigTab = new SparkConfigurationTab(this._dataModel, path);
+		this._sparkAdvancedTab = new SparkAdvancedTab();
 
 		this._dialog.content = [this._sparkConfigTab.tab, this._sparkAdvancedTab.tab];
 
@@ -55,13 +51,13 @@ export class SparkJobSubmissionDialog {
 
 		this._dialog.registerCloseValidator(() => this.handleValidate());
 
-		await this.apiWrapper.openDialog(this._dialog);
+		azdata.window.openDialog(this._dialog);
 	}
 
 	private onClickOk(): void {
 		let jobName = localize('sparkJobSubmission.SubmitSparkJob', "{0} Spark Job Submission:",
 			this._sparkConfigTab.getInputValues()[0]);
-		this.apiWrapper.startBackgroundOperation(
+		azdata.tasks.startBackgroundOperation(
 			{
 				connection: this.sqlClusterConnection.connection,
 				displayName: jobName,

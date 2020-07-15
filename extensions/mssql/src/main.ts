@@ -12,7 +12,6 @@ import * as Constants from './constants';
 import ContextProvider from './contextProvider';
 import * as Utils from './utils';
 import { AppContext } from './appContext';
-import { ApiWrapper } from './apiWrapper';
 import { UploadFilesCommand, MkDirCommand, SaveFileCommand, PreviewFileCommand, CopyPathCommand, DeleteFilesCommand, ManageAccessCommand } from './objectExplorerNodeProvider/hdfsCommands';
 import { IPrompter } from './prompts/question';
 import CodeAdapter from './prompts/adapter';
@@ -52,7 +51,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	IconPathHelper.setExtensionContext(context);
 
 	let prompter: IPrompter = new CodeAdapter();
-	let appContext = new AppContext(context, new ApiWrapper());
+	let appContext = new AppContext(context);
 
 	let nodeProvider = new MssqlObjectExplorerNodeProvider(prompter, appContext);
 	azdata.dataprotocol.registerObjectExplorerNodeProvider(nodeProvider);
@@ -108,30 +107,28 @@ function registerHdfsCommands(context: vscode.ExtensionContext, prompter: IPromp
 
 function activateSparkFeatures(appContext: AppContext): void {
 	let extensionContext = appContext.extensionContext;
-	let apiWrapper = appContext.apiWrapper;
 	let outputChannel: vscode.OutputChannel = mssqlOutputChannel;
 	extensionContext.subscriptions.push(new OpenSparkJobSubmissionDialogCommand(appContext, outputChannel));
 	extensionContext.subscriptions.push(new OpenSparkJobSubmissionDialogFromFileCommand(appContext, outputChannel));
-	apiWrapper.registerTaskHandler(Constants.mssqlClusterLivySubmitSparkJobTask, async (profile: azdata.IConnectionProfile) => {
+	azdata.tasks.registerTask(Constants.mssqlClusterLivySubmitSparkJobTask, async (profile: azdata.IConnectionProfile) => {
 		await new OpenSparkJobSubmissionDialogTask(appContext, outputChannel).execute(profile);
 	});
-	apiWrapper.registerTaskHandler(Constants.mssqlClusterLivyOpenSparkHistory, async (profile: azdata.IConnectionProfile) => {
+	azdata.tasks.registerTask(Constants.mssqlClusterLivyOpenSparkHistory, async (profile: azdata.IConnectionProfile) => {
 		await new OpenSparkYarnHistoryTask(appContext).execute(profile, true);
 	});
-	apiWrapper.registerTaskHandler(Constants.mssqlClusterLivyOpenYarnHistory, async (profile: azdata.IConnectionProfile) => {
+	azdata.tasks.registerTask(Constants.mssqlClusterLivyOpenYarnHistory, async (profile: azdata.IConnectionProfile) => {
 		await new OpenSparkYarnHistoryTask(appContext).execute(profile, false);
 	});
 }
 
 function activateNotebookTask(appContext: AppContext): void {
-	let apiWrapper = appContext.apiWrapper;
-	apiWrapper.registerTaskHandler(Constants.mssqlClusterNewNotebookTask, (profile: azdata.IConnectionProfile) => {
+	azdata.tasks.registerTask(Constants.mssqlClusterNewNotebookTask, (profile: azdata.IConnectionProfile) => {
 		return saveProfileAndCreateNotebook(profile);
 	});
-	apiWrapper.registerTaskHandler(Constants.mssqlClusterOpenNotebookTask, (profile: azdata.IConnectionProfile) => {
+	azdata.tasks.registerTask(Constants.mssqlClusterOpenNotebookTask, (profile: azdata.IConnectionProfile) => {
 		return handleOpenNotebookTask(profile);
 	});
-	apiWrapper.registerTaskHandler(Constants.mssqlOpenClusterDashboard, (profile: azdata.IConnectionProfile) => {
+	azdata.tasks.registerTask(Constants.mssqlOpenClusterDashboard, (profile: azdata.IConnectionProfile) => {
 		return handleOpenClusterDashboardTask(profile, appContext);
 	});
 }
@@ -207,11 +204,11 @@ async function handleOpenClusterDashboardTask(profile: azdata.IConnectionProfile
 	const serverInfo = await azdata.connection.getServerInfo(profile.id);
 	const controller = Utils.getClusterEndpoints(serverInfo).find(e => e.serviceName === Endpoint.controller);
 	if (!controller) {
-		appContext.apiWrapper.showErrorMessage(localize('noController', "Could not find the controller endpoint for this instance"));
+		vscode.window.showErrorMessage(localize('noController', "Could not find the controller endpoint for this instance"));
 		return;
 	}
 
-	appContext.apiWrapper.executeCommand('bigDataClusters.command.manageController',
+	vscode.commands.executeCommand('bigDataClusters.command.manageController',
 		{
 			url: controller.endpoint,
 			auth: profile.authenticationType === 'Integrated' ? AuthType.Integrated : AuthType.Basic,
