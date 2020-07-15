@@ -405,7 +405,7 @@ describe('ProjectsController: import operations', function (): void {
 		projController.setup(x => x.importApiCall(TypeMoq.It.isAny())).returns(async (model) => { importPath = model.filePath; });
 
 		await projController.object.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
-		should(importPath).equal(vscode.Uri.file(path.join(folderPath, projectName, projectName + '.sql')).fsPath, 'model.filePath should be set to a specific file for ExtractTarget === file');
+		should(importPath).equal(vscode.Uri.file(path.join(folderPath, projectName, projectName + '.sql')).fsPath, `model.filePath should be set to a specific file for ExtractTarget === file, but was ${importPath}`);
 
 		// reset for counter-test
 		importPath = undefined;
@@ -413,7 +413,7 @@ describe('ProjectsController: import operations', function (): void {
 		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({ label: constants.schemaObjectType }));
 
 		await projController.object.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
-		should(importPath).equal(vscode.Uri.file(path.join(folderPath, projectName)).fsPath);//, 'model.filePath should be set to a folder for ExtractTarget !== file');
+		should(importPath).equal(vscode.Uri.file(path.join(folderPath, projectName)).fsPath, `model.filePath should be set to a folder for ExtractTarget !== file, but was ${importPath}`);
 	});
 
 	it('Should establish Import context correctly for ObjectExplorer and palette launch points', async function (): Promise<void> {
