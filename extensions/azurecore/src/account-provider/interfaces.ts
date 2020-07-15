@@ -22,12 +22,12 @@ export interface Tenant {
 	/**
 	 * Identifier of the user in the tenant
 	 */
-	userId: string;
+	userId?: string;
 
 	/**
 	 * The category the user has set their tenant to (e.g. Home Tenant)
 	 */
-	tenantCategory: string;
+	tenantCategory?: string;
 }
 
 /**
