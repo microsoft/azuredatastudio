@@ -144,43 +144,6 @@
 	justify-content: flex-start
 }
 
-.ads-homepage.XS:not(.SM) .btn-container div {
-	width: 100%;
-	width: 100%;
-}
-
-.ads-homepage.XS:not(.SM) .btn {
-	box-sizing: border-box;
-	width: 100%;
-	height: 34px;
-	padding-top: 1px;
-	font-size: 1.08em;
-	line-height: 29px;
-	border-radius: 2px;
-	display: flex;
-	align-content: center;
-	justify-content: center;
-	text-align: center;
-	text-decoration: none;
-	margin: 10px 0
-}
-
-.ads-homepage.SM .btn {
-	box-sizing: border-box;
-	width: 100%;
-	height: 34px;
-	padding-top: 1px;
-	font-size: 1.08em;
-	line-height: 29px;
-	border-radius: 2px;
-	display: flex;
-	align-content: center;
-	justify-content: center;
-	text-align: center;
-	text-decoration: none;
-	margin: 10px 0
-}
-
 .ads-homepage .btn span {
 	display: block
 }
@@ -192,7 +155,6 @@
 .ads-homepage.XS .btn {
 	margin: 0 8px 0 0;
 	width: 77px;
-	height: 25px;
 	line-height: 18px
 }
 
@@ -216,7 +178,7 @@
 	line-height: 1.6em
 }
 
-.ads-homepage #dropdown-btn:focus {
+.ads-homepage #ads-welcome-dropdown-btn:focus {
 	outline: 1px solid
 }
 
@@ -304,7 +266,17 @@
 }
 
 .ads-homepage #tool-tip-container-wide {
-	display: none
+	display: none;
+}
+
+.ads-homepage #tool-tip-container-wide .ads-welcome-page-link{
+	display: flex;
+	align-items: center;
+}
+
+.ads-homepage #tool-tip-container-narrow .ads-welcome-page-link{
+	display: flex;
+	align-items: center;
 }
 
 .ads-homepage #tool-tip-container-narrow {
@@ -319,7 +291,9 @@
 }
 
 .ads-homepage.XL #tool-tip-container-wide {
-	display: block
+	display: flex;
+	justify-content: flex-end;
+	padding-top: 10px;
 }
 
 .ads-homepage.XL #tool-tip-container-narrow {
@@ -331,6 +305,7 @@
 	visibility: hidden;
 	padding: 10px 15px;
 	z-index: 1;
+	top: 32px;
 	right: -72px;
 	text-align: center;
 	border-radius: 6px;
@@ -420,6 +395,7 @@
 	width: 12px;
 	height: 12px;
 	margin-left: 6px;
+	margin-top: 3px;
 	-webkit-mask: url(../../media/info.svg) no-repeat;
 	-webkit-mask-size: 12px 12px;
 	mask: url(../../media/info.svg) no-repeat;
@@ -448,6 +424,11 @@
 	top: -1px;
 	bottom: 5px;
 	margin: auto
+}
+
+.ads-homepage .codicon-chevron-right {
+	transform: rotate(90deg);
+	pointer-events: none;
 }
 
 .ads-homepage .icon-arrow-right {
@@ -484,7 +465,6 @@
 	mask: url(../../media/link_icon.svg) no-repeat;
 	mask-size: 11px 11px;
 	height: 11px;
-	width: 11px
 }
 
 .ads-homepage .icon-arrow-down-dark {
@@ -504,7 +484,6 @@
 	display: inline-block;
 	width: 11px;
 	height: 6px;
-	content: "";
 	transform: rotate(90deg);
 	top: 14px;
 	bottom: 5px;
@@ -555,6 +534,14 @@
 	grid-template-columns: repeat(2, 1fr)
 }
 
+.ads_homepage .dropdown_btn_container {
+	margin: 10px 10px 10px 0;
+}
+
+.ads_homepage.XS:not(.SM) .dropdown_btn_container {
+	width: 100%;
+}
+
 .ads-homepage.XS.SM.MD.LG.XL .extension-pack-container {
 	grid-template-columns: repeat(8, 1fr)
 }
@@ -574,12 +561,12 @@
 
 .ads-homepage .tile:not(.extension):not(.extension-pack) {
 	border: 1px solid;
-	border-radius: 4px
+	border-radius: 4px;
 }
 
 .ads-homepage .tile.extension-pack {
 	border: 1px solid;
-	border-radius: 4px
+	border-radius: 4px;
 }
 
 .ads-homepage .extension-list {
@@ -588,17 +575,17 @@
 
 .ads-homepage.XS.SM.MD.LG.XL .extension-list {
 	grid-column: 5/span 4;
-	grid-row: 1/span 4
+	grid-row: 1/span 4;
 }
 
 .ads-homepage .extension-header, .ads-homepage .extension-pack-extension-list-header {
 	font-weight: 600;
-	font-size: 1.33em
+	font-size: 1.33em;
 }
 
 .ads-homepage .tile {
 	transition: all .5s ease;
-	border-radius: 4px
+	border-radius: 4px;
 }
 
 .ads-homepage .tile:hover:not(.no-hover) {
@@ -645,11 +632,11 @@
 	padding: 0 8% 0
 }
 
-.ads-homepage-section h2 {
+.ads-welcome-section h2 {
 	margin-bottom: 16px
 }
 
-.ads-homepage-section.hero {
+.ads-welcome-section.hero {
 	background-size: 1128px 467px;
 	background-repeat: no-repeat;
 	background-image: url(../../media/homeBanner_icon.svg);
@@ -659,7 +646,7 @@
 	background-repeat: no-repeat
 }
 
-.hc-black .ads-homepage-section.hero, .vs-dark .ads-homepage-section.hero {
+.hc-black .ads-welcome-section.hero, .vs-dark .ads-welcome-section.hero {
 	background-size: 1128px 467px;
 	background-repeat: no-repeat;
 	background-image: url(../../media/homeBanner_icon_dark.svg);
@@ -669,21 +656,21 @@
 	background-repeat: no-repeat
 }
 
-.ads-homepage.LG .ads-homepage-section.hero {
+.ads-homepage.LG .ads-welcome-section.hero {
 	background-size: contain;
 	background-repeat: no-repeat;
 	background-image: url(../../media/homeBanner_icon.svg);
 	background-position: 94% -54px
 }
 
-.ads-homepage.XL .ads-homepage-section.hero {
+.ads-homepage.XL .ads-welcome-section.hero {
 	background-size: 597px;
 	background-repeat: no-repeat;
 	background-image: url(../../media/homeBanner_icon.svg);
 	background-position: 94% -54px
 }
 
-.hc-black .ads-homepage.LG .ads-homepage-section.hero, .vs-dark .ads-homepage.LG .ads-homepage-section.hero {
+.hc-black .ads-homepage.LG .ads-welcome-section.hero, .vs-dark .ads-homepage.LG .ads-welcome-section.hero {
 	background-size: 597px;
 	background-repeat: no-repeat;
 	background-image: url(../../media/homeBanner_icon_dark.svg);
@@ -934,22 +921,22 @@
 	width: 100%
 }
 
-.ads-homepage .ads-homepage-section .history .list, .ads-homepage .ads-homepage-section .pinned .list {
+.ads-homepage .ads-welcome-section .history .list, .ads-homepage .ads-welcome-section .pinned .list {
 	list-style-type: none;
 	padding: 0;
 	margin-top: 0
 }
 
-.ads-homepage .ads-homepage-section .history .list-header, .ads-homepage .ads-homepage-section .pinned .list-header {
+.ads-homepage .ads-welcome-section .history .list-header, .ads-homepage .ads-welcome-section .pinned .list-header {
 	padding: 0 0 2px 11px
 }
 
-.ads-homepage.XS:not(.SM) .ads-homepage-section .pinned .list-header, .ads-homepage.XS:not(.SM) .ads-homepage-section .history .list-header {
+.ads-homepage.XS:not(.SM) .ads-welcome-section .pinned .list-header, .ads-homepage.XS:not(.SM) .ads-welcome-section .history .list-header {
 	padding: 0 0 2px 41px;
 	line-height: 1em
 }
 
-.ads-homepage .ads-homepage-section .history .list li:not(.moreRecent), .ads-homepage .ads-homepage-section .history .list-header-container, .ads-homepage .ads-homepage-section .pinned .list li:not(.moreRecent), .ads-homepage .ads-homepage-section .pinned .list-header-container {
+.ads-homepage .ads-welcome-section .history .list li:not(.moreRecent), .ads-homepage .ads-welcome-section .history .list-header-container, .ads-homepage .ads-welcome-section .pinned .list li:not(.moreRecent), .ads-homepage .ads-welcome-section .pinned .list-header-container {
 	height: 33px;
 	list-style: none;
 	border-bottom: 1px solid;
@@ -962,40 +949,40 @@
 	text-decoration: none
 }
 
-.ads-homepage.XS:not(.SM) .ads-homepage-section .history .list-header-container {
+.ads-homepage.XS:not(.SM) .ads-welcome-section .history .list-header-container {
 	display: flex;
 	flex-direction: column;
 	padding: 15px;
 	align-items: flex-start
 }
 
-.ads-homepage .ads-homepage-section .history .list-header-container .list-header-last-opened {
+.ads-homepage .ads-welcome-section .history .list-header-container .list-header-last-opened {
 	margin-left: auto
 }
 
-.ads-homepage.XS:not(.SM) .ads-homepage-section .history .list-header-container .list-header-last-opened {
+.ads-homepage.XS:not(.SM) .ads-welcome-section .history .list-header-container .list-header-last-opened {
 	margin-left: 0;
 	padding: 0 0 2px 41px
 }
 
-.ads-homepage .ads-homepage-section .history .detail {
+.ads-homepage .ads-welcome-section .history .detail {
 	margin-left: auto
 }
 
-.ads-homepage.XS:not(.SM) .ads-homepage-section .history .detail {
+.ads-homepage.XS:not(.SM) .ads-welcome-section .history .detail {
 	margin-left: 0;
 	padding: 0 0 2px 41px
 }
 
-.ads-homepage .ads-homepage-section .history .list li:not(.moreRecent) a, .ads-homepage .ads-homepage-section .pinned .list li:not(.moreRecent) a {
+.ads-homepage .ads-welcome-section .history .list li:not(.moreRecent) a, .ads-homepage .ads-welcome-section .pinned .list li:not(.moreRecent) a {
 	padding: 0 0 2px 11px
 }
 
-.ads-homepage .ads-homepage-section .pinned .list li:not(.moreRecent) a, .ads-homepage.XS:not(.SM) .ads-homepage-section .history .list li:not(.moreRecent) a {
+.ads-homepage .ads-welcome-section .pinned .list li:not(.moreRecent) a, .ads-homepage.XS:not(.SM) .ads-welcome-section .history .list li:not(.moreRecent) a {
 	padding: 0 0 2px 41px
 }
 
-.ads-homepage .ads-homepage-section .history .list li:not(.moreRecent) i, .ads-homepage .ads-homepage-section .pinned .list li i, .ads-homepage .icon-document {
+.ads-homepage .ads-welcome-section .history .list li:not(.moreRecent) i, .ads-homepage .ads-welcome-section .pinned .list li i, .ads-homepage .icon-document {
 	-webkit-mask: url(../../media/icon_file_document.svg) no-repeat;
 	-webkit-mask-size: 13px 16px;
 	mask: url(../../media/icon_file_document.svg) no-repeat;
@@ -1004,7 +991,7 @@
 	width: 16px
 }
 
-.ads-homepage .ads-homepage-section .history .list li:not(.moreRecent) i[title$=".ipynb"], .ads-homepage .ads-homepage-section .pinned .list li:not(.moreRecent) i[title$=".ipynb"] {
+.ads-homepage .ads-welcome-section .history .list li:not(.moreRecent) i[title$=".ipynb"], .ads-homepage .ads-welcome-section .pinned .list li:not(.moreRecent) i[title$=".ipynb"] {
 	-webkit-mask: url(../../media/icon_file_ipynb.svg) no-repeat;
 	-webkit-mask-size: 13px 16px;
 	mask: url(../../media/icon_file_ipynb.svg) no-repeat;
@@ -1013,7 +1000,7 @@
 	width: 16px
 }
 
-.ads-homepage .ads-homepage-section .history .list li:not(.moreRecent) i[title$=".sql"], .ads-homepage .ads-homepage-section .pinned .list li:not(.moreRecent) i[title$=".sql"] {
+.ads-homepage .ads-welcome-section .history .list li:not(.moreRecent) i[title$=".sql"], .ads-homepage .ads-welcome-section .pinned .list li:not(.moreRecent) i[title$=".sql"] {
 	-webkit-mask: url(../../media/icon_file_sql.svg) no-repeat;
 	-webkit-mask-size: 13px 16px;
 	mask: url(../../media/icon_file_sql.svg) no-repeat;
@@ -1022,7 +1009,7 @@
 	width: 16px
 }
 
-.ads-homepage .ads-homepage-section .history .list li:not(.moreRecent) i[title$=".csv"], .ads-homepage .ads-homepage-section .pinned .list li:not(.moreRecent) a[title$=".csv"] {
+.ads-homepage .ads-welcome-section .history .list li:not(.moreRecent) i[title$=".csv"], .ads-homepage .ads-welcome-section .pinned .list li:not(.moreRecent) a[title$=".csv"] {
 	-webkit-mask: url(../../media/icon_file_csv.svg) no-repeat;
 	-webkit-mask-size: 13px 16px;
 	mask: url(../../media/icon_file_csv.svg) no-repeat;
@@ -1031,7 +1018,7 @@
 	width: 16px
 }
 
-.ads-homepage.XS:not(.SM) .ads-homepage-section .history .list li:not(.moreRecent) i, .ads-homepage.XS:not(.SM) .ads-homepage-section .pinned .list li i, .ads-homepage.XS:not(.SM) .icon-document {
+.ads-homepage.XS:not(.SM) .ads-welcome-section .history .list li:not(.moreRecent) i, .ads-homepage.XS:not(.SM) .ads-welcome-section .pinned .list li i, .ads-homepage.XS:not(.SM) .icon-document {
 	-webkit-mask: url(../../media/icon_file_document.svg) no-repeat;
 	-webkit-mask-size: 20px 23px;
 	mask: url(../../media/icon_file_document.svg) no-repeat;
@@ -1045,7 +1032,7 @@
 	margin: auto
 }
 
-.ads-homepage.XS:not(.SM) .ads-homepage-section .history .list li:not(.moreRecent) i[title$=".ipynb"], .ads-homepage.XS:not(.SM) .ads-homepage-section .pinned .list li:not(.moreRecent) i[title$=".ipynb"] {
+.ads-homepage.XS:not(.SM) .ads-welcome-section .history .list li:not(.moreRecent) i[title$=".ipynb"], .ads-homepage.XS:not(.SM) .ads-welcome-section .pinned .list li:not(.moreRecent) i[title$=".ipynb"] {
 	-webkit-mask: url(../../media/icon_file_ipynb.svg) no-repeat;
 	-webkit-mask-size: 20px 23px;
 	mask: url(../../media/icon_file_ipynb.svg) no-repeat;
@@ -1059,7 +1046,7 @@
 	margin: auto
 }
 
-.ads-homepage.XS:not(.SM) .ads-homepage-section .history .list li:not(.moreRecent) i[title$=".sql"], .ads-homepage.XS:not(.SM) .ads-homepage-section .pinned .list li:not(.moreRecent) i[title$=".sql"] {
+.ads-homepage.XS:not(.SM) .ads-welcome-section .history .list li:not(.moreRecent) i[title$=".sql"], .ads-homepage.XS:not(.SM) .ads-welcome-section .pinned .list li:not(.moreRecent) i[title$=".sql"] {
 	-webkit-mask: url(../../media/icon_file_sql.svg) no-repeat;
 	-webkit-mask-size: 20px 23px;
 	mask: url(../../media/icon_file_sql.svg) no-repeat;
@@ -1073,7 +1060,7 @@
 	margin: auto
 }
 
-.ads-homepage.XS:not(.SM) .ads-homepage-section .history .list li:not(.moreRecent) i[title$=".csv"], .ads-homepage.XS:not(.SM) .ads-homepage-section .pinned .list li:not(.moreRecent) a[title$=".csv"] {
+.ads-homepage.XS:not(.SM) .ads-welcome-section .history .list li:not(.moreRecent) i[title$=".csv"], .ads-homepage.XS:not(.SM) .ads-welcome-section .pinned .list li:not(.moreRecent) a[title$=".csv"] {
 	-webkit-mask: url(../../media/icon_file_csv.svg) no-repeat;
 	-webkit-mask-size: 20px 23px;
 	mask: url(../../media/icon_file_csv.svg) no-repeat;
@@ -1087,7 +1074,7 @@
 	margin: auto
 }
 
-.ads-homepage.XS:not(.SM) .ads-homepage-section .history .list li {
+.ads-homepage.XS:not(.SM) .ads-welcome-section .history .list li {
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-start;
@@ -1096,58 +1083,58 @@
 	padding-top: 10px
 }
 
-.ads-homepage .ads-homepage-section .history .moreRecent-list {
+.ads-homepage .ads-welcome-section .history .moreRecent-list {
 	list-style-type: none;
 	padding: 0;
 	margin: 0
 }
 
-.ads-homepage .ads-homepage-section .history .moreRecent-list li.moreRecent {
+.ads-homepage .ads-welcome-section .history .moreRecent-list li.moreRecent {
 	display: flex;
 	align-items: center;
 	margin-top: 10px
 }
 
-.ads-homepage .ads-homepage-section .history .moreRecent-list li.moreRecent a {
+.ads-homepage .ads-welcome-section .history .moreRecent-list li.moreRecent a {
 	text-decoration: none
 }
 
-.ads-homepage .ads-homepage-section .links .link-header {
+.ads-homepage .ads-welcome-section .links .link-header {
 	font-size: 1.16em;
 	margin-bottom: 4px
 }
 
-.ads-homepage .ads-homepage-section .links p {
+.ads-homepage .ads-welcome-section .links p {
 	margin-bottom: 16px
 }
 
-.ads-homepage.XS .ads-homepage-section .links .flex-container-video {
+.ads-homepage.XS .ads-welcome-section .links .flex-container-video {
 	display: flex;
 	flex-direction: column
 }
 
-.ads-homepage.SM .ads-homepage-section .links .flex-container-video {
+.ads-homepage.SM .ads-welcome-section .links .flex-container-video {
 	display: flex;
 	flex-direction: row
 }
 
-.ads-homepage .ads-homepage-section .links .videos-container {
+.ads-homepage .ads-welcome-section .links .videos-container {
 	margin-bottom: 20px;
 	display: flex;
 	flex-direction: column
 }
 
-.ads-homepage .ads-homepage-section .links .videos-container-video {
+.ads-homepage .ads-welcome-section .links .videos-container-video {
 	margin-right: 16px
 }
 
-.ads-homepage .ads-homepage-section .links .videos-container .video {
+.ads-homepage .ads-welcome-section .links .videos-container .video {
 	display: block;
 	width: 100%;
 	height: 100%
 }
 
-.ads-homepage .ads-homepage-section .links .videos-container .video img {
+.ads-homepage .ads-welcome-section .links .videos-container .video img {
 	max-width: 100%
 }
 
@@ -1342,7 +1329,7 @@
 	font-size: 1.16em;
 	font-family: Segoe UI, Frutiger, Frutiger Linotype, Dejavu Sans, Helvetica Neue, Arial, sans-serif;
 	font-weight: normal;
-	padding: 10px 0 10px;
+	padding: 10px 15px 10px 0;
 }
 
 .ads-homepage .guided-tour-banner b {

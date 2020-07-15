@@ -5,18 +5,16 @@
 
 import * as should from 'should';
 import * as path from 'path';
-import * as os from 'os';
 import * as baselines from './baselines/baselines';
 import * as testUtils from './testUtils';
 import * as constants from '../common/constants';
 
 import { promises as fs } from 'fs';
 import { Project, EntryType, TargetPlatform, SystemDatabase, DatabaseReferenceLocation } from '../models/project';
-import { exists } from '../common/utils';
+import { exists, convertSlashesForSqlProj } from '../common/utils';
 import { Uri } from 'vscode';
 
 let projFilePath: string;
-const isWindows = os.platform() === 'win32';
 
 describe('Project: sqlproj content operations', function (): void {
 	before(async function (): Promise<void> {
@@ -28,8 +26,7 @@ describe('Project: sqlproj content operations', function (): void {
 	});
 
 	it('Should read Project from sqlproj', async function (): Promise<void> {
-		const project: Project = new Project(projFilePath);
-		await project.readProjFile();
+		const project: Project = await Project.openProject(projFilePath);
 
 		// Files and folders
 		should(project.files.filter(f => f.type === EntryType.File).length).equal(4);
@@ -50,8 +47,7 @@ describe('Project: sqlproj content operations', function (): void {
 	});
 
 	it('Should add Folder and Build entries to sqlproj', async function (): Promise<void> {
-		const project: Project = new Project(projFilePath);
-		await project.readProjFile();
+		const project = await Project.openProject(projFilePath);
 
 		const folderPath = 'Stored Procedures';
 		const filePath = path.join(folderPath, 'Fake Stored Proc.sql');
@@ -60,11 +56,10 @@ describe('Project: sqlproj content operations', function (): void {
 		await project.addFolderItem(folderPath);
 		await project.addScriptItem(filePath, fileContents);
 
-		const newProject = new Project(projFilePath);
-		await newProject.readProjFile();
+		const newProject = await Project.openProject(projFilePath);
 
-		should(newProject.files.find(f => f.type === EntryType.Folder && f.relativePath === folderPath)).not.equal(undefined);
-		should(newProject.files.find(f => f.type === EntryType.File && f.relativePath === filePath)).not.equal(undefined);
+		should(newProject.files.find(f => f.type === EntryType.Folder && f.relativePath === convertSlashesForSqlProj(folderPath))).not.equal(undefined);
+		should(newProject.files.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(filePath))).not.equal(undefined);
 
 		const newFileContents = (await fs.readFile(path.join(newProject.projectFolderPath, filePath))).toString();
 
@@ -73,8 +68,7 @@ describe('Project: sqlproj content operations', function (): void {
 
 	it('Should add Folder and Build entries to sqlproj with pre-existing scripts on disk', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-		const project: Project = new Project(projFilePath);
-		await project.readProjFile();
+		const project = await Project.openProject(projFilePath);
 
 		let list: string[] = await testUtils.createListOfFiles(path.dirname(projFilePath));
 
@@ -86,8 +80,7 @@ describe('Project: sqlproj content operations', function (): void {
 
 	it('Should throw error while adding Folder and Build entries to sqlproj when a file/folder does not exist on disk', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-		const project = new Project(projFilePath);
-		await project.readProjFile();
+		const project = await Project.openProject(projFilePath);
 
 		let list: string[] = [];
 		let testFolderPath: string = await testUtils.createDummyFileStructure(true, list, path.dirname(projFilePath));
@@ -100,8 +93,7 @@ describe('Project: sqlproj content operations', function (): void {
 
 	it('Should choose correct master dacpac', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-		const project = new Project(projFilePath);
-		await project.readProjFile();
+		const project = await Project.openProject(projFilePath);
 
 		let uri = project.getSystemDacpacUri(constants.masterDacpac);
 		let ssdtUri = project.getSystemDacpacSsdtUri(constants.masterDacpac);
@@ -123,8 +115,7 @@ describe('Project: sqlproj content operations', function (): void {
 
 	it('Should choose correct msdb dacpac', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-		const project = new Project(projFilePath);
-		await project.readProjFile();
+		const project = await Project.openProject(projFilePath);
 
 		let uri = project.getSystemDacpacUri(constants.msdbDacpac);
 		let ssdtUri = project.getSystemDacpacSsdtUri(constants.msdbDacpac);
@@ -146,8 +137,7 @@ describe('Project: sqlproj content operations', function (): void {
 
 	it('Should throw error when choosing correct master dacpac if invalid DSP', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-		const project = new Project(projFilePath);
-		await project.readProjFile();
+		const project = await Project.openProject(projFilePath);
 
 		project.changeDSP('invalidPlatform');
 		await testUtils.shouldThrowSpecificError(async () => await project.getSystemDacpacUri(constants.masterDacpac), constants.invalidDataSchemaProvider);
@@ -155,8 +145,7 @@ describe('Project: sqlproj content operations', function (): void {
 
 	it('Should add database references correctly', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-		const project = new Project(projFilePath);
-		await project.readProjFile();
+		const project = await Project.openProject(projFilePath);
 
 		should(project.databaseReferences.length).equal(0, 'There should be no datbase references to start with');
 		await project.addSystemDatabaseReference(SystemDatabase.master);
@@ -164,14 +153,14 @@ describe('Project: sqlproj content operations', function (): void {
 		should(project.databaseReferences[0].databaseName).equal(constants.master, 'The database reference should be master');
 		// make sure reference to SSDT master dacpac was added
 		let projFileText = (await fs.readFile(projFilePath)).toString();
-		should(projFileText).containEql(project.getSystemDacpacSsdtUri(constants.master).fsPath.substring(1));
+		should(projFileText).containEql(convertSlashesForSqlProj(project.getSystemDacpacSsdtUri(constants.master).fsPath.substring(1)));
 
 		await project.addSystemDatabaseReference(SystemDatabase.msdb);
 		should(project.databaseReferences.length).equal(2, 'There should be two database references after adding a reference to msdb');
 		should(project.databaseReferences[1].databaseName).equal(constants.msdb, 'The database reference should be msdb');
 		// make sure reference to SSDT msdb dacpac was added
 		projFileText = (await fs.readFile(projFilePath)).toString();
-		should(projFileText).containEql(project.getSystemDacpacSsdtUri(constants.msdb).fsPath.substring(1));
+		should(projFileText).containEql(convertSlashesForSqlProj(project.getSystemDacpacSsdtUri(constants.msdb).fsPath.substring(1)));
 
 		await project.addDatabaseReference(Uri.parse('test.dacpac'), DatabaseReferenceLocation.sameDatabase);
 		should(project.databaseReferences.length).equal(3, 'There should be three database references after adding a reference to test');
@@ -180,8 +169,7 @@ describe('Project: sqlproj content operations', function (): void {
 
 	it('Should not allow adding duplicate database references', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-		const project = new Project(projFilePath);
-		await project.readProjFile();
+		const project = await Project.openProject(projFilePath);
 
 		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
 		await project.addSystemDatabaseReference(SystemDatabase.master);
@@ -208,15 +196,11 @@ describe('Project: round trip updates', function (): void {
 	});
 
 	it('Should update SSDT project to work in ADS', async function (): Promise<void> {
-		const fileBeforeUpdate = baselines.SSDTProjectFileBaseline;
-		const fileAfterUpdate = isWindows ? baselines.SSDTProjectAfterUpdateBaselineWindows : baselines.SSDTProjectAfterUpdateBaseline;
-		await testUpdateInRoundTrip(fileBeforeUpdate, fileAfterUpdate, true, true);
+		await testUpdateInRoundTrip( baselines.SSDTProjectFileBaseline, baselines.SSDTProjectAfterUpdateBaseline, true, true);
 	});
 
 	it('Should update SSDT project with new system database references', async function (): Promise<void> {
-		const fileBeforeUpdate = isWindows ? baselines.SSDTUpdatedProjectBaselineWindows : baselines.SSDTUpdatedProjectBaseline;
-		const fileAfterUpdate = isWindows ? baselines.SSDTUpdatedProjectAfterSystemDbUpdateBaselineWindows : baselines.SSDTUpdatedProjectAfterSystemDbUpdateBaseline;
-		await testUpdateInRoundTrip(fileBeforeUpdate, fileAfterUpdate, false, true);
+		await testUpdateInRoundTrip(baselines.SSDTUpdatedProjectBaseline, baselines.SSDTUpdatedProjectAfterSystemDbUpdateBaseline, false, true);
 	});
 
 	it('Should update SSDT project to work in ADS handling pre-exsiting targets', async function (): Promise<void> {
@@ -226,8 +210,7 @@ describe('Project: round trip updates', function (): void {
 
 async function testUpdateInRoundTrip(fileBeforeupdate: string, fileAfterUpdate: string, testTargets: boolean, testReferences: boolean): Promise<void> {
 	projFilePath = await testUtils.createTestSqlProjFile(fileBeforeupdate);
-	const project: Project = new Project(projFilePath);
-	await project.readProjFile();
+	const project = await Project.openProject(projFilePath);
 
 	if (testTargets) {
 		await testUpdateTargetsImportsRoundTrip(project);

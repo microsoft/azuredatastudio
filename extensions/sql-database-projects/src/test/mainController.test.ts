@@ -14,7 +14,7 @@ import * as constants from '../common/constants';
 
 import { createContext, TestContext } from './testContext';
 import MainController from '../controllers/mainController';
-import { shouldThrowSpecificError } from './testUtils';
+import { shouldThrowSpecificError, generateTestFolderPath, createTestProject } from './testUtils';
 
 let testContext: TestContext;
 
@@ -64,5 +64,40 @@ describe('MainController: main controller operations', function (): void {
 
 		const controller = new MainController(testContext.context, testContext.apiWrapper.object);
 		await shouldThrowSpecificError(async () => await controller.createNewProject(), constants.projectLocationRequired);
+	});
+
+	it('Should create new instance without error', async function (): Promise<void> {
+		should.doesNotThrow(() => new MainController(testContext.context, testContext.apiWrapper.object), 'Creating controller should not throw an error');
+	});
+
+	it('Should activate and deactivate without error', async function (): Promise<void> {
+		let controller = new MainController(testContext.context, testContext.apiWrapper.object);
+		should.notEqual(controller.extensionContext, undefined);
+
+		should.doesNotThrow(() => controller.activate(), 'activate() should not throw an error');
+		should.doesNotThrow(() => controller.dispose(), 'dispose() should not throw an error');
+	});
+
+	it('Should load projects in workspace', async function (): Promise<void> {
+		const rootFolderPath = await generateTestFolderPath();
+		const project = await createTestProject(baselines.openProjectFileBaseline, rootFolderPath);
+		const nestedFolder = path.join(rootFolderPath, 'nestedProject');
+		const nestedProject = await createTestProject(baselines.openProjectFileBaseline, nestedFolder);
+
+		testContext.apiWrapper.setup(x => x.workspaceFolders()).returns(() => [workspaceFolder]);
+		const workspaceFolder: vscode.WorkspaceFolder = {
+			uri: vscode.Uri.file(rootFolderPath),
+			name: '',
+			index: 0
+		};
+
+		const controller = new MainController(testContext.context, testContext.apiWrapper.object);
+		should(controller.projController.projects.length).equal(0);
+
+		await controller.loadProjectsInWorkspace();
+
+		should(controller.projController.projects.length).equal(2);
+		should(controller.projController.projects[0].projectFolderPath).equal(project.projectFolderPath);
+		should(controller.projController.projects[1].projectFolderPath).equal(nestedProject.projectFolderPath);
 	});
 });
