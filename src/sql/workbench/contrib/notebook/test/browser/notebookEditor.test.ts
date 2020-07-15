@@ -17,7 +17,7 @@ import * as stubs from 'sql/workbench/contrib/notebook/test/stubs';
 import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/testCommon';
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 import { ICellModel, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
-import { INotebookEditor, INotebookService, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotebookEditor, INotebookParams, INotebookService, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookService } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import * as TypeMoq from 'typemoq';
@@ -123,8 +123,7 @@ suite('Test class NotebookEditor:', () => {
 				testTitle, untitledUri, untitledTextInput,
 				undefined, instantiationService, notebookService, extensionService
 			);
-			const testNotebookEditor = new NotebookEditorStub({ cellGuid: cellTextEditorGuid, editor: queryTextEditor, model: notebookModel });
-			testNotebookEditor.id = untitledNotebookInput.notebookUri.toString();
+			const testNotebookEditor = new NotebookEditorStub({ cellGuid: cellTextEditorGuid, editor: queryTextEditor, model: notebookModel, notebookParams: <INotebookParams>{ notebookUri: untitledNotebookInput.notebookUri } });
 			notebookService.addNotebookEditor(testNotebookEditor);
 			notebookEditor.clearInput();
 			await notebookEditor.setInput(untitledNotebookInput, EditorOptions.create({ pinned: true }));
@@ -238,7 +237,6 @@ suite('Test class NotebookEditor:', () => {
 		const oldRange = {} as NotebookRange;
 		const iNotebookEditorMock = TypeMoq.Mock.ofInstance(notebookEditorStub);
 		iNotebookEditorMock.callBase = true; //by default forward all call call to the underlying object
-		iNotebookEditorMock.object.id = untitledNotebookInput.notebookUri.toString();
 		iNotebookEditorMock
 			.setup(x => x.deltaDecorations(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
 			.callback((newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange) => {
@@ -718,8 +716,7 @@ function setupServices(arg: { workbenchThemeService?: WorkbenchThemeService, ins
 		instantiationService.get(IEditorService),
 		instantiationService.get(IConfigurationService)
 	);
-	const notebookEditorStub = new NotebookEditorStub({ cellGuid: cellTextEditorGuid, editor: queryTextEditor, model: new NotebookModelStub() });
-	notebookEditorStub.id = untitledNotebookInput.notebookUri.toString();
+	const notebookEditorStub = new NotebookEditorStub({ cellGuid: cellTextEditorGuid, editor: queryTextEditor, model: new NotebookModelStub(), notebookParams: <INotebookParams>{ notebookUri: untitledNotebookInput.notebookUri } });
 	notebookService.addNotebookEditor(notebookEditorStub);
 	return { instantiationService, workbenchThemeService, notebookService, testTitle, extensionService, cellTextEditorGuid, queryTextEditor, untitledNotebookInput, notebookEditorStub };
 }
