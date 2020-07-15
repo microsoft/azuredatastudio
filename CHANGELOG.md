@@ -1,5 +1,17 @@
 # Change Log
 
+## Version 1.20.0
+* Release date: July 15, 2020
+* Release status: General Availability
+* Feature Tour
+* New Notebook Features
+    * Header support in Markdown Toolbar
+    * Side-by-side Markdown preview in Text Cells
+* Drag and drop columns and tables into Query Editor
+* Azure Account icon added to Activity Bar
+* Address issues in [July 2020 Milestone](https://github.com/microsoft/azuredatastudio/milestone/57?closed=1)
+* Bug fixes
+
 ## Version 1.19.0
 * Release date: June 15, 2020
 * Release status: General Availability
