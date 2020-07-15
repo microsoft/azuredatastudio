@@ -347,11 +347,13 @@ class WelcomePage extends Disposable {
 		) as HTMLElement;
 		this.handlerTileServerEvent(this.commandService, tileServer, 'keydown');
 		this.handlerTileServerEvent(this.commandService, tileServer, 'click');
+
 		addStandardDisposableListener(tileServer, 'keydown', (event) => {
 			if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
 				this.historyLabel();
 			}
 		});
+
 		addStandardDisposableListener(tileServer, 'click', (event) => {
 			this.historyLabel();
 		});
