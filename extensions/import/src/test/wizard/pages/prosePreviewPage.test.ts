@@ -5,7 +5,6 @@
 
 import * as TypeMoq from 'typemoq';
 import * as azdata from 'azdata';
-import { ApiWrapper } from '../../../common/apiWrapper';
 import * as constants from '../../../common/constants';
 import { FlatFileWizard } from '../../../wizard/flatFileWizard';
 import * as should from 'should';
@@ -19,7 +18,6 @@ describe('import extension prose preview tests', function () {
 	// declaring mock variables
 	let mockFlatFileWizard: TypeMoq.IMock<FlatFileWizard>;
 	let mockImportModel: TypeMoq.IMock<ImportDataModel>;
-	let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
 
 	// declaring instance variables
 	let wizard: azdata.window.Wizard;
@@ -31,16 +29,12 @@ describe('import extension prose preview tests', function () {
 	beforeEach(async function () {
 
 		// initializing mock variables
-		mockApiWrapper = TypeMoq.Mock.ofType(ApiWrapper);
-		mockFlatFileWizard = TypeMoq.Mock.ofType(FlatFileWizard, TypeMoq.MockBehavior.Loose, undefined, TypeMoq.It.isAny(), mockApiWrapper);
+		mockFlatFileWizard = TypeMoq.Mock.ofType(FlatFileWizard, TypeMoq.MockBehavior.Loose, undefined, TypeMoq.It.isAny());
 		mockImportModel = TypeMoq.Mock.ofType(TestImportDataModel, TypeMoq.MockBehavior.Loose);
 
-		// using the actual vscode and azdata apis.
-		mockApiWrapper.callBase = true;
-
 		// creating a wizard and adding page that will contain the fileConfigPage
-		wizard = mockApiWrapper.object.createWizard(constants.wizardNameText);
-		page = mockApiWrapper.object.createWizardPage(constants.page2NameText);
+		wizard = azdata.window.createWizard(constants.wizardNameText);
+		page = azdata.window.createWizardPage(constants.page2NameText);
 
 	});
 
@@ -49,7 +43,7 @@ describe('import extension prose preview tests', function () {
 		// Opening the wizard and initializing the page as ProsePreviewPage
 		await new Promise(function (resolve) {
 			page.registerContent(async (view) => {
-				prosePreviewPage = new ProsePreviewPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny(), mockApiWrapper.object);
+				prosePreviewPage = new ProsePreviewPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny());
 				pages.set(1, prosePreviewPage);
 				await prosePreviewPage.start();
 				await prosePreviewPage.setupNavigationValidator();
