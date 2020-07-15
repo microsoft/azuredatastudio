@@ -7,7 +7,6 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { ImportDataModel, ColumnMetadata } from '../wizard/api/models';
 import { FlatFileProvider, PROSEDiscoveryParams, InsertDataParams, GetColumnInfoParams, ChangeColumnSettingsParams, PROSEDiscoveryResponse, InsertDataResponse, ChangeColumnSettingsResponse, GetColumnInfoResponse } from '../services/contracts';
-import * as fs from 'fs';
 
 export class ImportTestUtils {
 
@@ -35,12 +34,6 @@ export class ImportTestUtils {
 			groupFullName: 'testGroupFullName',
 			options: {}
 		} as azdata.connection.ConnectionProfile;
-	}
-
-	public static async checkPathExists(path: string): Promise<boolean> {
-		return fs.promises.access(path, fs.constants.F_OK)
-			.then(() => true)
-			.catch(() => false);
 	}
 
 	public static async getExtensionPath(): Promise<string> {
@@ -134,71 +127,8 @@ export class TestQueryProvider implements azdata.QueryProvider {
 		throw new Error('Method not implemented.');
 	}
 	handle?: number;
-	providerId: string;
+	providerId: string = 'testProviderId';
 
-}
-
-export class TestWizard implements azdata.window.Wizard {
-	title: string;
-	pages: azdata.window.WizardPage[];
-	currentPage: number;
-	doneButton: azdata.window.Button;
-	cancelButton: azdata.window.Button;
-	generateScriptButton: azdata.window.Button = azdata.window.createButton('testButton');
-	nextButton: azdata.window.Button;
-	backButton: azdata.window.Button;
-	customButtons: azdata.window.Button[];
-	displayPageTitles: boolean;
-	onPageChanged: vscode.Event<azdata.window.WizardPageChangeInfo> = new vscode.EventEmitter<any>().event;
-	addPage(page: azdata.window.WizardPage, index?: number): Thenable<void> {
-		throw new Error('Method not implemented.');
-	}
-	removePage(index: number): Thenable<void> {
-		throw new Error('Method not implemented.');
-	}
-	setCurrentPage(index: number): Thenable<void> {
-		throw new Error('Method not implemented.');
-	}
-	open(): Thenable<void> {
-		throw new Error('Method not implemented.');
-	}
-	close(): Thenable<void> {
-		throw new Error('Method not implemented.');
-	}
-	registerNavigationValidator(validator: (pageChangeInfo: azdata.window.WizardPageChangeInfo) => boolean | Thenable<boolean>): void {
-		throw new Error('Method not implemented.');
-	}
-	message: azdata.window.DialogMessage;
-	registerOperation(operationInfo: azdata.BackgroundOperationInfo): void {
-		throw new Error('Method not implemented.');
-	}
-
-}
-
-export class TestWizardPage implements azdata.window.WizardPage {
-	title: string;
-	content: string;
-	customButtons: azdata.window.Button[];
-	enabled: boolean;
-	description: string;
-	registerContent(handler: (view: azdata.ModelView) => Thenable<void>): void {
-		throw new Error('Method not implemented.');
-	}
-	modelView: azdata.ModelView;
-	valid: boolean;
-	onValidityChanged: vscode.Event<boolean>;
-
-}
-
-export class TestButton implements azdata.window.Button {
-	label: string;
-	enabled: boolean;
-	hidden: boolean;
-	focused?: boolean;
-	constructor(private onClickEmitter: vscode.EventEmitter<void>) {
-	}
-	onClick: vscode.Event<void> = this.onClickEmitter.event;
-	position?: azdata.window.DialogButtonPosition;
 }
 
 export class TestExtensionContext implements vscode.ExtensionContext {
