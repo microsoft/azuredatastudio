@@ -193,8 +193,7 @@ describe('ProjectsController: project controller operations', function (): void 
 
 			await projController.delete(projTreeRoot.children.find(x => x.friendlyName === 'UpperFolder')!.children[0] /* LowerFolder */);
 
-			proj = new Project(proj.projectFilePath);
-			await proj.readProjFile(); // reload edited sqlproj from disk
+			proj = await Project.openProject(proj.projectFilePath); // reload edited sqlproj from disk
 
 			// confirm result
 			should(proj.files.length).equal(1, 'number of file/folder entries'); // lowerEntry and the contained scripts should be deleted
@@ -212,8 +211,7 @@ describe('ProjectsController: project controller operations', function (): void 
 
 			await projController.exclude(<FolderNode>projTreeRoot.children.find(x => x.friendlyName === 'UpperFolder')!.children[0] /* LowerFolder */);
 
-			proj = new Project(proj.projectFilePath);
-			await proj.readProjFile(); // reload edited sqlproj from disk
+			proj = await Project.openProject(proj.projectFilePath); // reload edited sqlproj from disk
 
 			// confirm result
 			should(proj.files.length).equal(1, 'number of file/folder entries'); // LowerFolder and the contained scripts should be deleted
@@ -369,6 +367,7 @@ describe('ProjectsController: import operations', function (): void {
 	it('Should show error when no target information provided', async function (): Promise<void> {
 		sinon.stub(vscode.window, 'showInputBox').returns(Promise.resolve('MyProjectName'));
 		sinon.stub(vscode.window, 'showQuickPick').returns(Promise.resolve(undefined));
+		sinon.stub(vscode.window, 'showOpenDialog').returns(Promise.resolve([vscode.Uri.file('fakePath')]));
 		const spy = sinon.spy(vscode.window, 'showErrorMessage');
 
 		const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
@@ -378,6 +377,7 @@ describe('ProjectsController: import operations', function (): void {
 
 	it('Should show error when no location provided with ExtractTarget = File', async function (): Promise<void> {
 		sinon.stub(vscode.window, 'showInputBox').returns(Promise.resolve('MyProjectName'));
+		sinon.stub(vscode.window, 'showOpenDialog').resolves([vscode.Uri.file('fakePath')]);
 		sinon.stub(vscode.window, 'showQuickPick').returns(Promise.resolve({ label: constants.file }));
 		sinon.stub(vscode.window, 'showSaveDialog').returns(Promise.resolve(undefined));
 		const spy = sinon.spy(vscode.window, 'showErrorMessage');
@@ -398,17 +398,54 @@ describe('ProjectsController: import operations', function (): void {
 		should(spy.calledOnce).be.true('showErrorMessage should have been called');
 	});
 
-	it('Should show error when selected folder is not empty', async function (): Promise<void> {
-		const testFolderPath = await testUtils.createDummyFileStructure();
-		sinon.stub(vscode.window, 'showInputBox').returns(Promise.resolve('MyProjectName'));
-		sinon.stub(vscode.window, 'showQuickPick').returns(Promise.resolve({ label: constants.objectType }));
-		sinon.stub(vscode.window, 'showOpenDialog').returns(Promise.resolve([vscode.Uri.file(testFolderPath)]));
-		const spy = sinon.spy(vscode.window, 'showErrorMessage');
+	it('Should set model filePath correctly for ExtractType = File and not-File.', async function (): Promise<void> {
+		const projectName = 'MyProjectName';
+		let folderPath = await testUtils.generateTestFolderPath();
 
-		const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+		sinon.stub(vscode.window, 'showInputBox').resolves(projectName);
+		const showQuickPickStub = sinon.stub(vscode.window, 'showQuickPick').returns(Promise.resolve({ label: constants.file }));
+		sinon.stub(vscode.window, 'showOpenDialog').callsFake(() => Promise.resolve([vscode.Uri.file(folderPath)]));
 
-		await projController.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
-		should(spy.calledOnce).be.true('showErrorMessage should have been called');
+		let importPath;
+
+		let projController = TypeMoq.Mock.ofType(ProjectsController, undefined, undefined, new SqlDatabaseProjectTreeViewProvider());
+		projController.callBase = true;
+
+		projController.setup(x => x.importApiCall(TypeMoq.It.isAny())).returns(async (model) => { console.log('CALLED'); importPath = model.filePath; });
+
+		await projController.object.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
+		should(importPath).equal(vscode.Uri.file(path.join(folderPath, projectName, projectName + '.sql')).fsPath, `model.filePath should be set to a specific file for ExtractTarget === file, but was ${importPath}`);
+
+		// reset for counter-test
+		importPath = undefined;
+		folderPath = await testUtils.generateTestFolderPath();
+		showQuickPickStub.returns(Promise.resolve({ label: constants.schemaObjectType }));
+
+		await projController.object.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
+		should(importPath).equal(vscode.Uri.file(path.join(folderPath, projectName)).fsPath, `model.filePath should be set to a folder for ExtractTarget !== file, but was ${importPath}`);
+	});
+
+	it('Should establish Import context correctly for ObjectExplorer and palette launch points', async function (): Promise<void> {
+		const connectionId = 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575';
+		// test welcome button and palette launch points (context-less)
+		let mockDbSelection = 'FakeDatabase';
+		sinon.stub(azdata.connection, 'listDatabases').returns(Promise.resolve([]));
+		sinon.stub(vscode.window, 'showQuickPick').returns(Promise.resolve({ label: mockDbSelection }));
+		sinon.stub(azdata.connection, 'openConnectionDialog').returns(Promise.resolve({
+			providerName: 'MSSQL',
+			connectionId: connectionId,
+			options: {}
+		}));
+
+		let projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+
+		let result = await projController.getModelFromContext(undefined);
+
+		should(result).deepEqual({database: mockDbSelection, serverId: connectionId});
+
+		// test launch via Object Explorer context
+		result = await projController.getModelFromContext(mockConnectionProfile);
+		should(result).deepEqual({database: 'My Database', serverId: 'My Id'});
 	});
 });
 
@@ -447,8 +484,7 @@ describe('ProjectsController: add database reference operations', function (): v
 	it('Should return the correct system database', async function (): Promise<void> {
 		const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
 		const projFilePath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
-		const project: Project = new Project(projFilePath);
-		await project.readProjFile();
+		const project = await Project.openProject(projFilePath);
 
 		const stub = sinon.stub(vscode.window, 'showQuickPick').returns(Promise.resolve({ label: constants.master }));
 		let systemDb = await projController.getSystemDatabaseName(project);

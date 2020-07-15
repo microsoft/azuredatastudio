@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
-import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import * as dataSources from '../models/dataSources/dataSources';
 import * as mssql from '../../../mssql';
@@ -15,6 +13,8 @@ import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as templates from '../templates/templates';
 import * as xmldom from 'xmldom';
 
+import * as vscode from 'vscode';
+import * as azdata from 'azdata';
 import { promises as fs } from 'fs';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { Project, DatabaseReferenceLocation, SystemDatabase, TargetPlatform, ProjectEntry, reservedProjectFolders } from '../models/project';
@@ -55,11 +55,11 @@ export class ProjectsController {
 			}
 		}
 
-		const newProject = new Project(projectFile.fsPath);
+		let newProject: Project;
 
 		try {
 			// Read project file
-			await newProject.readProjFile();
+			newProject = await Project.openProject(projectFile.fsPath);
 			this.projects.push(newProject);
 
 			// Update for round tripping as needed
@@ -68,29 +68,29 @@ export class ProjectsController {
 			// Read datasources.json (if present)
 			const dataSourcesFilePath = path.join(path.dirname(projectFile.fsPath), constants.dataSourcesFileName);
 
-			newProject.dataSources = await dataSources.load(dataSourcesFilePath);
-		}
-		catch (err) {
-			if (err instanceof dataSources.NoDataSourcesFileError) {
-				// TODO: prompt to create new datasources.json; for now, swallow
+			try {
+				newProject.dataSources = await dataSources.load(dataSourcesFilePath);
 			}
-			else {
-				this.projects = this.projects.filter((e) => { return e !== newProject; });
-				throw err;
+			catch (err) {
+				if (err instanceof dataSources.NoDataSourcesFileError) {
+					// TODO: prompt to create new datasources.json; for now, swallow
+				}
+				else {
+					throw err;
+				}
 			}
-		}
 
-		try {
 			this.refreshProjectsTree();
 			await this.focusProject(newProject);
 		}
 		catch (err) {
 			// if the project didnt load - remove it from the list of open projects
 			this.projects = this.projects.filter((e) => { return e !== newProject; });
+
 			throw err;
 		}
 
-		return newProject;
+		return newProject!;
 	}
 
 	public async focusProject(project?: Project): Promise<void> {
@@ -632,36 +632,67 @@ export class ProjectsController {
 	 * prompting the user for a name, file path location and extract target
 	 */
 	public async importNewDatabaseProject(context: azdata.IConnectionProfile | any): Promise<void> {
-		let model = <ImportDataModel>{};
 
 		// TODO: Refactor code
 		try {
-			let profile = this.getConnectionProfileFromContext(context);
-			//TODO: Prompt for new connection addition and get database information if context information isn't provided.
+			const model: ImportDataModel | undefined = await this.getModelFromContext(context);
 
-			let connectionId;
-			if (profile) {
-				model.database = profile.databaseName;
-				connectionId = profile.id;
+			if (!model) {
+				return; // cancelled by user
 			}
-			else {
-				const connection = await azdata.connection.openConnectionDialog();
-				if (!connection) {
-					return;
-				}
+			model.projName = await this.getProjectName(model.database);
+			let newProjFolderUri = (await this.getFolderLocation()).fsPath;
+			model.extractTarget = await this.getExtractTarget();
+			model.version = '1.0.0.0';
 
-				connectionId = connection.connectionId;
+			const newProjFilePath = await this.createNewProject(model.projName, vscode.Uri.file(newProjFolderUri), true);
+			model.filePath = path.dirname(newProjFilePath);
 
-				// use database that was connected to
-				if (connection.options['database']) {
-					model.database = connection.options['database'];
-				}
+			if (model.extractTarget === mssql.ExtractTarget.file) {
+				model.filePath = path.join(model.filePath, model.projName + '.sql'); // File extractTarget specifies the exact file rather than the containing folder
+			}
+
+			const project = await Project.openProject(newProjFilePath);
+			await this.importApiCall(model); // Call ExtractAPI in DacFx Service
+			let fileFolderList: string[] = model.extractTarget === mssql.ExtractTarget.file ? [model.filePath] : await this.generateList(model.filePath); // Create a list of all the files and directories to be added to project
+
+			await project.addToProject(fileFolderList); // Add generated file structure to the project
+			await this.openProject(vscode.Uri.file(newProjFilePath));
+		}
+		catch (err) {
+			vscode.window.showErrorMessage(utils.getErrorMessage(err));
+		}
+	}
+
+	public async getModelFromContext(context: any): Promise<ImportDataModel | undefined> {
+		let model = <ImportDataModel>{};
+
+		let profile = this.getConnectionProfileFromContext(context);
+		let connectionId, database;
+		//TODO: Prompt for new connection addition and get database information if context information isn't provided.
+
+		if (profile) {
+			database = profile.databaseName;
+			connectionId = profile.id;
+		}
+		else {
+			const connection = await azdata.connection.openConnectionDialog();
+
+			if (!connection) {
+				return undefined;
+			}
+
+			connectionId = connection.connectionId;
+
+			// use database that was connected to
+			if (connection.options['database']) {
+				database = connection.options['database'];
 			}
 
 			// choose database if connection was to a server or master
 			if (!model.database || model.database === constants.master) {
 				const databaseList = await azdata.connection.listDatabases(connectionId);
-				let database = (await vscode.window.showQuickPick(databaseList.map(dbName => { return { label: dbName }; }),
+				database = (await vscode.window.showQuickPick(databaseList.map(dbName => { return { label: dbName }; }),
 					{
 						canPickMany: false,
 						placeHolder: constants.extractDatabaseSelection
@@ -670,68 +701,13 @@ export class ProjectsController {
 				if (!database) {
 					throw new Error(constants.databaseSelectionRequired);
 				}
-
-				model.database = database;
-				model.serverId = connectionId;
 			}
-
-			// Get project name
-			let newProjName = await this.getProjectName(model.database);
-			if (!newProjName) {
-				throw new Error(constants.projectNameRequired);
-			}
-			model.projName = newProjName;
-
-			// Get extractTarget
-			let extractTarget: mssql.ExtractTarget = await this.getExtractTarget();
-			model.extractTarget = extractTarget;
-
-			// Get folder location for project creation
-			let newProjUri = await this.getFolderLocation(model.extractTarget);
-			if (!newProjUri) {
-				throw new Error(constants.projectLocationRequired);
-			}
-
-			// Set project folder/file location
-			let newProjFolderUri;
-			if (extractTarget === mssql.ExtractTarget['file']) {
-				// Get folder info, if extractTarget = File
-				newProjFolderUri = vscode.Uri.file(path.dirname(newProjUri.fsPath));
-			} else {
-				newProjFolderUri = newProjUri;
-			}
-
-			// Check folder is empty
-			let isEmpty: boolean = await this.isDirEmpty(newProjFolderUri.fsPath);
-			if (!isEmpty) {
-				throw new Error(constants.projectLocationNotEmpty);
-			}
-			// TODO: what if the selected folder is outside the workspace?
-			model.filePath = newProjUri.fsPath;
-
-			//Set model version
-			model.version = '1.0.0.0';
-
-			// Call ExtractAPI in DacFx Service
-			await this.importApiCall(model);
-			// TODO: Check for success
-
-			// Create and open new project
-			const newProjFilePath = await this.createNewProject(newProjName as string, newProjFolderUri as vscode.Uri, false);
-			const project = await this.openProject(vscode.Uri.file(newProjFilePath));
-
-			//Create a list of all the files and directories to be added to project
-			let fileFolderList: string[] = await this.generateList(model.filePath);
-
-			// Add generated file structure to the project
-			await project.addToProject(fileFolderList);
-
-			//Refresh project to show the added files
-			this.refreshProjectsTree();
 		}
-		catch (err) {
-			vscode.window.showErrorMessage(utils.getErrorMessage(err));
-		}
+
+		model.database = database;
+		model.serverId = connectionId;
+
+		return model;
 	}
 
 	private getConnectionProfileFromContext(context: azdata.IConnectionProfile | any): azdata.IConnectionProfile | undefined {
@@ -744,13 +720,17 @@ export class ProjectsController {
 		return (<any>context).connectionProfile ? (<any>context).connectionProfile : context;
 	}
 
-	private async getProjectName(dbName: string): Promise<string | undefined> {
+	private async getProjectName(dbName: string): Promise<string> {
 		let projName = await vscode.window.showInputBox({
 			prompt: constants.newDatabaseProjectName,
 			value: `DatabaseProject${dbName}`
 		});
 
 		projName = projName?.trim();
+
+		if (!projName) {
+			throw new Error(constants.projectNameRequired);
+		}
 
 		return projName;
 	}
@@ -793,52 +773,36 @@ export class ProjectsController {
 		return extractTarget;
 	}
 
-	private async getFolderLocation(extractTarget: mssql.ExtractTarget): Promise<vscode.Uri | undefined> {
-		let selectionResult;
-		let projUri;
+	private async getFolderLocation(): Promise<vscode.Uri> {
+		let projUri: vscode.Uri;
 
-		if (extractTarget !== mssql.ExtractTarget.file) {
-			selectionResult = await vscode.window.showOpenDialog({
-				canSelectFiles: false,
-				canSelectFolders: true,
-				canSelectMany: false,
-				openLabel: constants.selectString,
-				defaultUri: vscode.workspace.workspaceFolders ? (vscode.workspace.workspaceFolders as vscode.WorkspaceFolder[])[0].uri : undefined
-			});
-			if (selectionResult) {
-				projUri = (selectionResult as vscode.Uri[])[0];
-			}
-		} else {
-			// Get filename
-			selectionResult = await vscode.window.showSaveDialog(
-				{
-					defaultUri: vscode.workspace.workspaceFolders ? (vscode.workspace.workspaceFolders as vscode.WorkspaceFolder[])[0].uri : undefined,
-					saveLabel: constants.selectString,
-					filters: {
-						'SQL files': ['sql'],
-						'All files': ['*']
-					}
-				}
-			);
-			if (selectionResult) {
-				projUri = selectionResult as unknown as vscode.Uri;
-			}
+		const selectionResult = await vscode.window.showOpenDialog({
+			canSelectFiles: false,
+			canSelectFolders: true,
+			canSelectMany: false,
+			openLabel: constants.selectString,
+			defaultUri: vscode.workspace.workspaceFolders ? (vscode.workspace.workspaceFolders as vscode.WorkspaceFolder[])[0].uri : undefined
+		});
+
+		if (selectionResult) {
+			projUri = (selectionResult as vscode.Uri[])[0];
+		}
+		else {
+			throw new Error(constants.projectLocationRequired);
 		}
 
 		return projUri;
 	}
 
-	private async isDirEmpty(newProjFolderUri: string): Promise<boolean> {
-		return (await fs.readdir(newProjFolderUri)).length === 0;
-	}
-
-	private async importApiCall(model: ImportDataModel): Promise<void> {
+	public async importApiCall(model: ImportDataModel): Promise<void> {
 		let ext = vscode.extensions.getExtension(mssql.extension.name)!;
 
 		const service = (await ext.activate() as mssql.IExtension).dacFx;
 		const ownerUri = await azdata.connection.getUriForConnection(model.serverId);
 
 		await service.importDatabaseProject(model.database, model.filePath, model.projName, model.version, ownerUri, model.extractTarget, azdata.TaskExecutionMode.execute);
+
+		// TODO: Check for success; throw error
 	}
 
 	/**
