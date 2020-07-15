@@ -4,13 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import * as templates from '../templates/templates';
 import * as constants from '../common/constants';
 import * as path from 'path';
 import * as glob from 'fast-glob';
 
-import { Uri, Disposable, ExtensionContext, WorkspaceFolder } from 'vscode';
-import { ApiWrapper } from '../common/apiWrapper';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { getErrorMessage } from '../common/utils';
 import { ProjectsController } from './projectController';
@@ -24,17 +23,17 @@ const SQL_DATABASE_PROJECTS_VIEW_ID = 'sqlDatabaseProjectsView';
 /**
  * The main controller class that initializes the extension
  */
-export default class MainController implements Disposable {
+export default class MainController implements vscode.Disposable {
 	protected dbProjectTreeViewProvider: SqlDatabaseProjectTreeViewProvider = new SqlDatabaseProjectTreeViewProvider();
 	protected projectsController: ProjectsController;
 	protected netcoreTool: NetCoreTool;
 
-	public constructor(private context: ExtensionContext, private apiWrapper: ApiWrapper) {
-		this.projectsController = new ProjectsController(apiWrapper, this.dbProjectTreeViewProvider);
+	public constructor(private context: vscode.ExtensionContext) {
+		this.projectsController = new ProjectsController(this.dbProjectTreeViewProvider);
 		this.netcoreTool = new NetCoreTool();
 	}
 
-	public get extensionContext(): ExtensionContext {
+	public get extensionContext(): vscode.ExtensionContext {
 		return this.context;
 	}
 
@@ -51,30 +50,30 @@ export default class MainController implements Disposable {
 
 	private async initializeDatabaseProjects(): Promise<void> {
 		// init commands
-		this.apiWrapper.registerCommand('sqlDatabaseProjects.new', async () => { await this.createNewProject(); });
-		this.apiWrapper.registerCommand('sqlDatabaseProjects.open', async () => { await this.openProjectFromFile(); });
-		this.apiWrapper.registerCommand('sqlDatabaseProjects.close', (node: BaseProjectTreeItem) => { this.projectsController.closeProject(node); });
-		this.apiWrapper.registerCommand('sqlDatabaseProjects.properties', async (node: BaseProjectTreeItem) => { await this.apiWrapper.showErrorMessage(`Properties not yet implemented: ${node.uri.path}`); }); // TODO
+		vscode.commands.registerCommand('sqlDatabaseProjects.new', async () => { await this.createNewProject(); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.open', async () => { await this.openProjectFromFile(); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.close', (node: BaseProjectTreeItem) => { this.projectsController.closeProject(node); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.properties', async (node: BaseProjectTreeItem) => { await vscode.window.showErrorMessage(`Properties not yet implemented: ${node.uri.path}`); }); // TODO
 
-		this.apiWrapper.registerCommand('sqlDatabaseProjects.build', async (node: BaseProjectTreeItem) => { await this.projectsController.buildProject(node); });
-		this.apiWrapper.registerCommand('sqlDatabaseProjects.publish', async (node: BaseProjectTreeItem) => { await this.projectsController.publishProject(node); });
-		this.apiWrapper.registerCommand('sqlDatabaseProjects.schemaCompare', async (node: BaseProjectTreeItem) => { await this.projectsController.schemaCompare(node); });
-		this.apiWrapper.registerCommand('sqlDatabaseProjects.importDatabase', async (profile: azdata.IConnectionProfile) => { await this.projectsController.importNewDatabaseProject(profile); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.build', async (node: BaseProjectTreeItem) => { await this.projectsController.buildProject(node); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.publish', async (node: BaseProjectTreeItem) => { await this.projectsController.publishProject(node); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.schemaCompare', async (node: BaseProjectTreeItem) => { await this.projectsController.schemaCompare(node); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.importDatabase', async (profile: azdata.IConnectionProfile) => { await this.projectsController.importNewDatabaseProject(profile); });
 
-		this.apiWrapper.registerCommand('sqlDatabaseProjects.newScript', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.script); });
-		this.apiWrapper.registerCommand('sqlDatabaseProjects.newTable', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.table); });
-		this.apiWrapper.registerCommand('sqlDatabaseProjects.newView', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.view); });
-		this.apiWrapper.registerCommand('sqlDatabaseProjects.newStoredProcedure', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.storedProcedure); });
-		this.apiWrapper.registerCommand('sqlDatabaseProjects.newItem', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node); });
-		this.apiWrapper.registerCommand('sqlDatabaseProjects.newFolder', async (node: BaseProjectTreeItem) => { await this.projectsController.addFolderPrompt(node); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.newScript', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.script); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.newTable', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.table); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.newView', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.view); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.newStoredProcedure', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.storedProcedure); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.newItem', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.newFolder', async (node: BaseProjectTreeItem) => { await this.projectsController.addFolderPrompt(node); });
 
-		this.apiWrapper.registerCommand('sqlDatabaseProjects.addDatabaseReference', async (node: BaseProjectTreeItem) => { await this.projectsController.addDatabaseReference(node); });
-		this.apiWrapper.registerCommand('sqlDatabaseProjects.openContainingFolder', async (node: BaseProjectTreeItem) => { await this.projectsController.openContainingFolder(node); });
-		this.apiWrapper.registerCommand('sqlDatabaseProjects.delete', async (node: BaseProjectTreeItem) => { await this.projectsController.delete(node); });
-		this.apiWrapper.registerCommand('sqlDatabaseProjects.exclude', async (node: FileNode | FolderNode) => { await this.projectsController.exclude(node); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.addDatabaseReference', async (node: BaseProjectTreeItem) => { await this.projectsController.addDatabaseReference(node); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.openContainingFolder', async (node: BaseProjectTreeItem) => { await this.projectsController.openContainingFolder(node); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.delete', async (node: BaseProjectTreeItem) => { await this.projectsController.delete(node); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.exclude', async (node: FileNode | FolderNode) => { await this.projectsController.exclude(node); });
 
 		// init view
-		const treeView = this.apiWrapper.createTreeView(SQL_DATABASE_PROJECTS_VIEW_ID, { treeDataProvider: this.dbProjectTreeViewProvider });
+		const treeView = vscode.window.createTreeView(SQL_DATABASE_PROJECTS_VIEW_ID, { treeDataProvider: this.dbProjectTreeViewProvider });
 		this.dbProjectTreeViewProvider.setTreeView(treeView);
 
 		this.extensionContext.subscriptions.push(treeView);
@@ -89,7 +88,7 @@ export default class MainController implements Disposable {
 	}
 
 	public async loadProjectsInWorkspace(): Promise<void> {
-		const workspaceFolders = this.apiWrapper.workspaceFolders();
+		const workspaceFolders = vscode.workspace.workspaceFolders;
 		if (workspaceFolders?.length) {
 			await Promise.all(workspaceFolders.map(async (workspaceFolder) => {
 				await this.loadProjectsInFolder(workspaceFolder.uri.fsPath);
@@ -104,7 +103,7 @@ export default class MainController implements Disposable {
 		let results = await glob(sqlprojFilter);
 
 		for (let f in results) {
-			await this.projectsController.openProject(Uri.file(results[f]));
+			await this.projectsController.openProject(vscode.Uri.file(results[f]));
 		}
 	}
 
@@ -118,7 +117,7 @@ export default class MainController implements Disposable {
 
 			filter[constants.sqlDatabaseProject] = ['sqlproj'];
 
-			let files: Uri[] | undefined = await this.apiWrapper.showOpenDialog({ filters: filter });
+			let files: vscode.Uri[] | undefined = await vscode.window.showOpenDialog({ filters: filter });
 
 			if (files) {
 				for (const file of files) {
@@ -127,7 +126,7 @@ export default class MainController implements Disposable {
 			}
 		}
 		catch (err) {
-			this.apiWrapper.showErrorMessage(getErrorMessage(err));
+			vscode.window.showErrorMessage(getErrorMessage(err));
 		}
 	}
 
@@ -136,7 +135,7 @@ export default class MainController implements Disposable {
 	 */
 	public async createNewProject(): Promise<Project | undefined> {
 		try {
-			let newProjName = await this.apiWrapper.showInputBox({
+			let newProjName = await vscode.window.showInputBox({
 				prompt: constants.newDatabaseProjectName,
 				value: `DatabaseProject${this.projectsController.projects.length + 1}`
 				// TODO: Smarter way to suggest a name.  Easy if we prompt for location first, but that feels odd...
@@ -146,32 +145,32 @@ export default class MainController implements Disposable {
 
 			if (!newProjName) {
 				// TODO: is this case considered an intentional cancellation (shouldn't warn) or an error case (should warn)?
-				this.apiWrapper.showErrorMessage(constants.projectNameRequired);
+				vscode.window.showErrorMessage(constants.projectNameRequired);
 				return undefined;
 			}
 
-			let selectionResult = await this.apiWrapper.showOpenDialog({
+			let selectionResult = await vscode.window.showOpenDialog({
 				canSelectFiles: false,
 				canSelectFolders: true,
 				canSelectMany: false,
-				defaultUri: this.apiWrapper.workspaceFolders() ? (this.apiWrapper.workspaceFolders() as WorkspaceFolder[])[0].uri : undefined
+				defaultUri: vscode.workspace.workspaceFolders ? (vscode.workspace.workspaceFolders as vscode.WorkspaceFolder[])[0].uri : undefined
 			});
 
 			if (!selectionResult) {
-				this.apiWrapper.showErrorMessage(constants.projectLocationRequired);
+				vscode.window.showErrorMessage(constants.projectLocationRequired);
 				return undefined;
 			}
 
 			// TODO: what if the selected folder is outside the workspace?
 
-			const newProjFolderUri = (selectionResult as Uri[])[0];
+			const newProjFolderUri = (selectionResult as vscode.Uri[])[0];
 			const newProjFilePath = await this.projectsController.createNewProject(<string>newProjName, newProjFolderUri, true);
-			const proj = await this.projectsController.openProject(Uri.file(newProjFilePath));
+			const proj = await this.projectsController.openProject(vscode.Uri.file(newProjFilePath));
 
 			return proj;
 		}
 		catch (err) {
-			this.apiWrapper.showErrorMessage(getErrorMessage(err));
+			vscode.window.showErrorMessage(getErrorMessage(err));
 			return undefined;
 		}
 	}
