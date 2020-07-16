@@ -13,17 +13,17 @@ export default () => `
 			<div class="gradient">
 				<div class="ads-welcome-section tool-tip">
 					<div class="tool-tip-container" id="ads-welcome-tool-tip-container-wide">
-						<a class="ads-welcome-page-link" aria-describedby="ads-welcome-tooltip-text-wide" id="preview-link-wide" class="preview-link" tabindex="0" name="preview"><p>Preview</p><i class="icon-info themed-icon"></i></a>
+						<a class="ads-welcome-page-link" aria-describedby="ads-welcome-tooltip-text-wide" id="ads-welcome-preview-link-wide" class="preview-link" tabindex="0" name="preview"><p>Preview</p><i class="icon-info themed-icon"></i></a>
 						<span role="tooltip" id="ads-welcome-tooltip-text-wide" class="tool-tip-text" aria-hidden="true">
 							<h3 tabindex="0" class="preview-tooltip-header">${escape(localize('welcomePage.previewHeader', "This page is in preview"))}</h3>
 							<p tabindex="0" class="preview-tooltip-body">${escape(localize('welcomePage.previewBody', "Preview features introduce new functionalities that are on track to becoming a permanent part the product. They are stable, but need additional accessibility improvements. We welcome your early feedback while they are under development."))}</p>
 						</span>
 					</div>
-					<div class="tool-tip-container" id="tool-tip-container-narrow">
-						<a class="ads-welcome-page-link" aria-haspopup="true" class="preview-link" tabindex="0" id="preview-link-narrow" name="previewNarrow"><p>Preview</p><i class="icon-info themed-icon"></i></a>
+					<div class="tool-tip-container" id="ads-welcome-tool-tip-container-narrow">
+						<a class="ads-welcome-page-link" aria-haspopup="true" class="preview-link" tabindex="0" id="ads-welcome-preview-link-narrow" name="previewNarrow"><p>Preview</p><i class="icon-info themed-icon"></i></a>
 					</div>
 				</div>
-				<div id="preview-modal" class="modal" aria-modal="true" aria-hidden="true">
+				<div id="ads-welcome-preview-modal" class="modal" aria-modal="true" aria-hidden="true">
 					<div class="modal-content">
 						<span class="close-icon">x</span>
 						<h3 tabindex="0" class="preview-modal-header">${escape(localize('welcomePage.previewHeader', "This page is in preview"))}</h3>
@@ -79,7 +79,7 @@ export default () => `
 							</a>
 						</div>
 						<div class="col">
-							<a id="tile-server-link" class="header-bottom-nav-tile-link ads-welcome-page-link">
+							<a id="ads-welcome-tile-server-link" class="header-bottom-nav-tile-link ads-welcome-page-link">
 								<div class="header-bottom-nav-tile tile tile-server" tabindex="0">
 									<h3>${escape(localize('welcomePage.deployServer', "Deploy a server"))}</h3>
 									<p>${escape(localize('welcomePage.deployServerBody', "Create a new instance of SQL Server on the platform of your choice."))}</p>
@@ -95,8 +95,8 @@ export default () => `
 					<h2>${escape(localize('welcomePage.resources', "Resources"))}</h2>
 					<div class="tabs">
 						<!-- Checkbox is not accessible to user yet, this feature is still in development -->
-						<input tabindex="-1" class="input" name="tabs" type="radio" id="tab-1" checked="checked" />
-						<label id="historyLabel" class="label" for="tab-1" tabIndex="0">${escape(localize('welcomePage.history', "History"))}</label>
+						<input tabindex="-1" class="input" name="tabs" type="radio" id="ads-welcome-tab-1" checked="checked" />
+						<label id="ads-welcome-history-label" class="label" for="ads-welcome-tab-1" tabIndex="0">${escape(localize('welcomePage.history', "History"))}</label>
 						<div class="panel">
 							<div class="recent history">
 								<div class="flex list-header-container">
@@ -145,14 +145,14 @@ export default () => `
 							<div class="flex flex-container-video">
 								<div class="videos-container-video">
 									<a href="https://www.youtube.com/watch?v=Orv7fptVoUA" class="video overview ads-welcome-page-link">
-									<img src="${require.toUrl('./../../media/video_overview.png')}" class="video-overview" id="video-overview" />
+									<img src="${require.toUrl('./../../media/video_overview.png')}" class="video-overview" id="ads-welcome-video-overview" />
 										<h4>${escape(localize('welcomePage.videoDescriptionOverview',
 					"Overview of Azure Data Studio"))}</h4>
 									</a>
 								</div>
 								<div class="videos-container-video">
 									<a href="https://www.youtube.com/watch?v=Nt4kIHQ0IOc" class="video overview ads-welcome-page-link">
-									<img src="${require.toUrl('./../../media/video_introduction.png')}" class="video-introduction" id="video-introduction" />
+									<img src="${require.toUrl('./../../media/video_introduction.png')}" class="video-introduction" id="ads-welcome-video-introduction" />
 										<h4>${escape(localize('welcomePage.videoDescriptionIntroduction',
 						"Introduction to Azure Data Studio Notebooks | Data Exposed"))}</h4>
 									</a>

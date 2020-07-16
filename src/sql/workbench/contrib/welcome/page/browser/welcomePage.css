@@ -265,21 +265,23 @@
 	margin-right: 15px
 }
 
-.ads-homepage #tool-tip-container-wide {
+.ads-homepage #ads-welcome-tool-tip-container-wide {
 	display: none;
 }
 
-.ads-homepage #tool-tip-container-wide .ads-welcome-page-link{
+.ads-homepage #ads-welcome-tool-tip-container-wide .ads-welcome-page-link {
 	display: flex;
 	align-items: center;
 }
 
-.ads-homepage #tool-tip-container-narrow .ads-welcome-page-link{
+.ads-homepage #ads-welcome-tool-tip-container-narrow .ads-welcome-page-link {
 	display: flex;
 	align-items: center;
+	padding-top: 18px;
+	padding-left: 10px;
 }
 
-.ads-homepage #tool-tip-container-narrow {
+.ads-homepage #ads-welcome-tool-tip-container-narrow {
 	display: block;
 	bottom: 13px;
 	position: relative;
@@ -290,13 +292,13 @@
 	margin-right: 0
 }
 
-.ads-homepage.XL #tool-tip-container-wide {
+.ads-homepage.XL #ads-welcome-tool-tip-container-wide {
 	display: flex;
 	justify-content: flex-end;
 	padding-top: 10px;
 }
 
-.ads-homepage.XL #tool-tip-container-narrow {
+.ads-homepage.XL #ads-welcome-tool-tip-container-narrow {
 	display: none
 }
 
@@ -329,7 +331,7 @@
 	border-style: solid
 }
 
-.ads-homepage #tool-tip-container-wide .tool-tip-text.show {
+.ads-homepage #ads-welcome-tool-tip-container-wide .tool-tip-text.show {
 	visibility: visible
 }
 
@@ -1317,7 +1319,7 @@
 	width: 99%;
 }
 
-.ads-homepage #guidedTourBanner.show {
+.ads-homepage #ads-welcome-guidedTourBanner.show {
 	opacity: 1;
 	min-height: 60px;
 	height: auto;
@@ -1344,6 +1346,10 @@
 	font-size: 14px !important;
 	width: 125px !important;
 	height: 32px !important;
+}
+
+#ads-welcome-dropdown-btn-container.xs {
+	width: 100%;
 }
 
 .ads-homepage .guided-tour-banner .ads-tour-btn-container {
