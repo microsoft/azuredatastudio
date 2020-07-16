@@ -191,16 +191,24 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	async showPreviewFile(urlToOpen?: string): Promise<void> {
 		if (this.currentBook) {
 			const bookRoot = this.currentBook.bookItems[0];
-			const sectionToOpen = bookRoot.findChildSection(urlToOpen);
-			const urlPath = sectionToOpen ? sectionToOpen.url : bookRoot.tableOfContents.sections[0].url;
-			const sectionToOpenMarkdown: string = path.join(this.currentBook.bookPath, Content, urlPath.concat('.md'));
-			// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
-			const sectionToOpenNotebook: string = path.posix.join(this.currentBook.bookPath, Content, urlPath.concat('.ipynb'));
-			if (await fs.pathExists(sectionToOpenMarkdown)) {
-				this.openMarkdown(sectionToOpenMarkdown);
+			let urlPath: string;
+			// if urlToOpen is provided, show preview of that file else default to first book section.
+			if (urlToOpen) {
+				const sectionToOpen = bookRoot.findChildSection(urlToOpen);
+				urlPath = sectionToOpen.url;
+			} else {
+				urlPath = bookRoot.tableOfContents.sections[0].url;
 			}
-			else if (await fs.pathExists(sectionToOpenNotebook)) {
-				await this.openNotebook(sectionToOpenNotebook);
+			if (urlPath) {
+				const sectionToOpenMarkdown: string = path.join(this.currentBook.bookPath, Content, urlPath.concat('.md'));
+				// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
+				const sectionToOpenNotebook: string = path.posix.join(this.currentBook.bookPath, Content, urlPath.concat('.ipynb'));
+				if (await fs.pathExists(sectionToOpenMarkdown)) {
+					this.openMarkdown(sectionToOpenMarkdown);
+				}
+				else if (await fs.pathExists(sectionToOpenNotebook)) {
+					await this.openNotebook(sectionToOpenNotebook);
+				}
 			}
 		}
 	}
