@@ -150,6 +150,12 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					variableName: VariableNames.DomainDNSName_VariableName
 				}, {
 					type: FieldType.Text,
+					label: localize('deployCluster.Realm', "Realm"),
+					required: false,
+					variableName: VariableNames.Realm_VariableName,
+					description: localize('deployCluster.RealmDescription', "If not provided, the domain DNS name will be used as the default value.")
+				}, {
+					type: FieldType.Text,
 					label: localize('deployCluster.ClusterAdmins', "Cluster admin group"),
 					required: true,
 					variableName: VariableNames.ClusterAdmins_VariableName,
