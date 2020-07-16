@@ -13,13 +13,10 @@ import { AppContext } from './common/appContext';
 import { IExtensionApi, IPackageManageProvider } from './types';
 import { CellType } from './contracts/content';
 import { NotebookUriHandler } from './protocol/notebookUriHandler';
-import { BookTreeViewProvider } from './book/bookTreeView';
-import { NavigationProviders, BuiltInCommands, unsavedBooksContextKey } from './common/constants';
+import { BuiltInCommands, unsavedBooksContextKey } from './common/constants';
 
 const localize = nls.loadMessageBundle();
 
-const BOOKS_VIEWID = 'bookTreeView';
-const PROVIDED_BOOKS_VIEWID = 'providedBooksView';
 let controller: JupyterController;
 type ChooseCellType = { label: string, id: CellType };
 
@@ -115,10 +112,10 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 		return undefined;
 	}
 
-	let workspaceFolders = vscode.workspace.workspaceFolders?.slice() ?? [];
-	const bookTreeViewProvider = new BookTreeViewProvider(workspaceFolders, extensionContext, false, BOOKS_VIEWID, NavigationProviders.NotebooksNavigator);
+
+	const bookTreeViewProvider = appContext.bookTreeViewProvider;
 	await bookTreeViewProvider.initialized;
-	const providedBookTreeViewProvider = new BookTreeViewProvider([], extensionContext, true, PROVIDED_BOOKS_VIEWID, NavigationProviders.ProvidedBooksNavigator);
+	const providedBookTreeViewProvider = appContext.providedBookTreeViewProvider;
 	await providedBookTreeViewProvider.initialized;
 
 	azdata.nb.onDidChangeActiveNotebookEditor(e => {
@@ -146,6 +143,9 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 		},
 		getPackageManagers() {
 			return controller.packageManageProviders;
+		},
+		getAppContext() {
+			return appContext;
 		}
 	};
 }
