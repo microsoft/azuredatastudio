@@ -27,7 +27,8 @@ export enum ComponentEventType {
  * Actions that can be handled by ModelView components
  */
 export enum ModelViewAction {
-	SelectTab = 'selectTab'
+	SelectTab = 'selectTab',
+	AppendData = 'appendData'
 }
 
 /**

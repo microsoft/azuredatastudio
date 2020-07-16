@@ -3221,11 +3221,6 @@ declare module 'azdata' {
 		DataFit = 2		// columns use sizing based on cell data, horiz scroll bar present if more cells than visible in view area
 	}
 
-	export interface RowDetailsOptions {
-		panelRows: number,
-		detailsHtml: boolean
-	}
-
 	export interface TableComponentProperties extends ComponentProperties {
 		data: any[][];
 		columns: string[] | TableColumn[];
@@ -3237,6 +3232,8 @@ declare module 'azdata' {
 		ariaColumnCount?: number;
 		updateCells?: TableCell[];
 		moveFocusOutWithTab?: boolean; // accessibility requirement for tables with no actionable cells
+		headerFilter?: boolean,
+		rowDetails?: RowDetailsOptions
 	}
 
 	export interface CheckBoxCell extends TableCell {

@@ -27,14 +27,19 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { slickGridDataItemColumnValueWithNoData, textFormatter, htmlFormatter } from 'sql/base/browser/ui/table/formatters';
 import { isUndefinedOrNull } from 'vs/base/common/types';
-import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
+import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType, ModelViewAction } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSizeToNumber } from 'sql/base/browser/dom';
 <<<<<<< HEAD
 import { ButtonColumn, ButtonClickEventArgs } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
 import { createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
 =======
 import { find } from 'vs/base/common/arrays';
+<<<<<<< HEAD
 >>>>>>> d588273fd... table component enhancement
+=======
+import { generateUuid } from 'vs/base/common/uuid';
+
+>>>>>>> a7439d2e3... recent PR comments
 
 export enum ColumnSizingMode {
 	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
@@ -62,7 +67,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 	private _onButtonClicked = new Emitter<ButtonClickEventArgs<{}>>();
 =======
 	private _rowDetail: RowDetailView<Slick.SlickData>;
-	private _filterPlugin: any;
+	private _filterPlugin: HeaderFilter<Slick.SlickData>;
 
 >>>>>>> d588273fd... table component enhancement
 	public readonly onCheckBoxChanged: vsEvent<ICheckboxCellActionEventArgs> = this._onCheckBoxChanged.event;
@@ -140,6 +145,9 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 						object[columnName] = val;
 					});
 				}
+				if (object['id'] === undefined) {
+					object.id = generateUuid();
+				}
 				return object;
 			});
 		} else {
@@ -197,6 +205,8 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 	}
 
 	ngOnDestroy(): void {
+		this._filterPlugin?.destroy();
+		this._rowDetail?.destroy();
 		this.baseDestroy();
 	}
 
@@ -251,6 +261,11 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		this.layout();
 	}
 
+	private appendData(data: any[][]) {
+		this._tableData.push(TableComponent.transformData(data, this.columns));
+		this.data.push(...data);
+	}
+
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this._tableColumns = this.transformColumns(this.columns);
@@ -261,12 +276,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		}
 		this._table.columns = this._tableColumns;
 
-		if (this.properties['appendData'] !== undefined) {
-			this._tableData.push(TableComponent.transformData(this.properties['appendData'], this.columns));
-			this.data.push(...this.properties['appendData']);
-		} else {
-			this._tableData.setData(TableComponent.transformData(this.data, this.columns));
-		}
+		this._tableData.setData(TableComponent.transformData(this.data, this.columns));
 
 		if (this.properties['headerFilter'] === true) {
 			this.registerFilterPlugin();
@@ -309,6 +319,13 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 
 		this.layoutTable();
 		this.validate();
+	}
+
+	public doAction(action: string, ...args: any[]): void {
+		switch (action) {
+			case ModelViewAction.AppendData:
+				this.appendData(args[0]);
+		}
 	}
 
 	private updateTableCells(cellInfos): void {
@@ -409,7 +426,8 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 			postTemplate: (itemDetail) => itemDetail.__detailsData__,
 			preTemplate: () => '',
 			loadOnce: true,
-			detailsHtml: settings.detailsHtml
+			detailsHtml: settings.detailsHtml,
+			headerCssClass: settings.headerCssClass
 		});
 		this._rowDetail = rowDetail;
 		this._table.registerPlugin(<any>this._rowDetail);
@@ -420,15 +438,12 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		this._register(attachButtonStyler(filterPlugin, this.themeService));
 		this._filterPlugin = filterPlugin;
 		this._filterPlugin.onFilterApplied.subscribe((e, args) => {
-			let filterValues = args.column.filterValues;
+			let filterValues = (<any>args).column.filterValues;
 			if (filterValues) {
 				this._tableData.refresh();
 				this._table.grid.resetActiveCell();
 			}
 		});
-		//this.filterPlugin.onCommand.subscribe((e, args: any) => {
-		//				this.columnSort(args.column.field, args.command === 'sort-asc');
-		//});
 		filterPlugin['getFilterValues'] = this.getFilterValues;
 		filterPlugin['getAllFilterValues'] = this.getAllFilterValues;
 		filterPlugin['getFilterValuesByInput'] = this.getFilterValuesByInput;
