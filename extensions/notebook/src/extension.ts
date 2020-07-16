@@ -17,7 +17,6 @@ import { BuiltInCommands, unsavedBooksContextKey } from './common/constants';
 
 const localize = nls.loadMessageBundle();
 
-
 let controller: JupyterController;
 type ChooseCellType = { label: string, id: CellType };
 

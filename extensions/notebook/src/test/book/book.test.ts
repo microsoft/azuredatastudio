@@ -19,6 +19,7 @@ import { exists } from '../../common/utils';
 import { BookModel } from '../../book/bookModel';
 import { BookTrustManager } from '../../book/bookTrustManager';
 import { NavigationProviders } from '../../common/constants';
+import { readBookError } from '../../common/localizedConstants';
 import * as sinon from 'sinon';
 import { AppContext } from '../../common/appContext';
 
@@ -32,15 +33,15 @@ export interface IExpectedBookItem {
 }
 
 export function equalBookItems(book: BookTreeItem, expectedBook: IExpectedBookItem, errorMsg?: string): void {
-	should(book.title).equal(expectedBook.title, 'Book titles do not match, expected ' + expectedBook.title + ' and got ' + book.title);
+	should(book.title).equal(expectedBook.title, `Book titles do not match, expected ${expectedBook?.title} and got ${book?.title}`);
 	should(path.posix.parse(book.uri)).deepEqual(path.posix.parse(expectedBook.url));
 	if (expectedBook.previousUri || expectedBook.nextUri) {
 		let prevUri = book.previousUri ? book.previousUri.toLocaleLowerCase() : undefined;
 		let expectedPrevUri = expectedBook.previousUri ? expectedBook.previousUri.replace(/\\/g, '/') : undefined;
-		should(prevUri).equal(expectedPrevUri, errorMsg ?? 'PreviousUri\'s do not match, expected ' + expectedPrevUri + ' and got ' + prevUri);
+		should(prevUri).equal(expectedPrevUri, errorMsg ?? `PreviousUri\'s do not match, expected ${expectedPrevUri} and got ${prevUri}`);
 		let nextUri = book.nextUri ? book.nextUri.toLocaleLowerCase() : undefined;
 		let expectedNextUri = expectedBook.nextUri ? expectedBook.nextUri.replace(/\\/g, '/') : undefined;
-		should(nextUri).equal(expectedNextUri, errorMsg ?? 'NextUri\'s do not match, expected ' + expectedNextUri + ' and got ' + nextUri);
+		should(nextUri).equal(expectedNextUri, errorMsg ?? `NextUri\'s do not match, expected ${expectedNextUri} and got ${nextUri}`);
 	}
 }
 
@@ -119,9 +120,7 @@ describe('BooksTreeViewTests', function () {
 		});
 
 		it('bookProviders should be initialized on extension activate', async () => {
-			let notebookExtension: vscode.Extension<any> = vscode.extensions.getExtension('Microsoft.notebook');
-			await notebookExtension.activate();
-			appContext = notebookExtension.exports.getAppContext();
+			appContext = (await vscode.extensions.getExtension('Microsoft.notebook').activate()).getAppContext();
 			should(appContext).not.be.undefined();
 			should(appContext.bookTreeViewProvider).not.be.undefined();
 			should(appContext.providedBookTreeViewProvider).not.be.undefined();
@@ -169,6 +168,10 @@ describe('BooksTreeViewTests', function () {
 				let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 				await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
 				await bookTreeViewProvider.openBook(bookFolderPath, undefined, false, false);
+			});
+
+			afterEach(function(): void {
+				sinon.restore();
 			});
 
 			it('getChildren should return all book nodes when element is undefined', async function (): Promise<void> {
@@ -253,7 +256,6 @@ describe('BooksTreeViewTests', function () {
 				await azdata.nb.showNotebookDocument(notebookUri);
 				should(azdata.nb.notebookDocuments.find(doc => doc.fileName === notebookUri.fsPath)).not.be.undefined();
 				should(revealActiveDocumentInViewletSpy.calledTwice).be.true('revealActiveDocumentInViewlet should have been called twice');
-				sinon.restore();
 			});
 
 			this.afterAll(async () => {
@@ -272,6 +274,10 @@ describe('BooksTreeViewTests', function () {
 				let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 				await Promise.race([providedbookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('ProvidedBooksTreeViewProvider did not initialize in time'); })]);
 				await providedbookTreeViewProvider.openBook(bookFolderPath, undefined, false, false);
+			});
+
+			afterEach(function(): void {
+				sinon.restore();
 			});
 
 			it('getChildren should return all book nodes when element is undefined', async function (): Promise<void> {
@@ -332,7 +338,6 @@ describe('BooksTreeViewTests', function () {
 				await azdata.nb.showNotebookDocument(untitledNotebook2Uri);
 				should(azdata.nb.notebookDocuments.find(doc => doc.fileName === untitledNotebook2Uri.fsPath)).not.be.undefined();
 				should(revealActiveDocumentInViewletSpy.calledTwice).be.true('revealActiveDocumentInViewlet should have been called twice');
-				sinon.restore();
 			});
 
 			this.afterAll(async () => {
@@ -419,13 +424,13 @@ describe('BooksTreeViewTests', function () {
 
 		it('should show error message if config.yml file not found', async () => {
 			await bookTreeViewProvider.currentBook.readBooks();
-			should(bookTreeViewProvider.currentBook.errorMessage.toLocaleLowerCase()).equal(('Failed to read book ' + bookTreeViewProvider.currentBook.bookPath + ': ENOENT: no such file or directory, open \'' + configFile + '\'').toLocaleLowerCase());
+			should(bookTreeViewProvider.currentBook.errorMessage).equal(readBookError(bookTreeViewProvider.currentBook.bookPath, `ENOENT: no such file or directory, open '${configFile}'`));
 		});
 
 		it('should show error if toc.yml file format is invalid', async function (): Promise<void> {
 			await fs.writeFile(configFile, 'title: Test Book');
 			await bookTreeViewProvider.currentBook.readBooks();
-			should(bookTreeViewProvider.currentBook.errorMessage.toLocaleLowerCase()).equal(('Failed to read book ' + bookTreeViewProvider.currentBook.bookPath + ': Invalid toc file').toLocaleLowerCase());
+			should(bookTreeViewProvider.currentBook.errorMessage).equal(readBookError(bookTreeViewProvider.currentBook.bookPath, `Invalid toc file`));
 		});
 
 		this.afterAll(async function (): Promise<void> {
@@ -514,6 +519,10 @@ describe('BooksTreeViewTests', function () {
 			await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
 		});
 
+		afterEach(function(): void {
+			sinon.restore();
+		});
+
 		it('should add book and initialize book on openBook', async () => {
 			should(bookTreeViewProvider.books.length).equal(0, 'Invalid books on initialize.');
 			await bookTreeViewProvider.openBook(rootFolderPath);
@@ -551,7 +560,6 @@ describe('BooksTreeViewTests', function () {
 			await bookTreeViewProvider.openNotebookFolder();
 
 			should(loadNotebooksSpy.calledOnce).be.true('openNotebookFolder should have called loadNotebooksInFolder');
-			sinon.restore();
 		});
 
 		it('openNewBook should prompt for notebook path and invoke openBook', async () => {
@@ -560,14 +568,12 @@ describe('BooksTreeViewTests', function () {
 			await bookTreeViewProvider.openNewBook();
 
 			should(openBookSpy.calledOnce).be.true('openNewBook should have called openBook');
-			sinon.restore();
 		});
 
 		it('searchJupyterBooks should call command that opens Search view', async () => {
-			let executeCOmmandSpy = sinon.spy(vscode.commands, 'executeCommand');
+			let executeCommandSpy = sinon.spy(vscode.commands, 'executeCommand');
 			await bookTreeViewProvider.searchJupyterBooks(bookTreeViewProvider.books[0].bookItems[0]);
-			should(executeCOmmandSpy.calledWith('workbench.action.findInFiles')).be.true('searchJupyterBooks should have called command to open Search view');
-			sinon.restore();
+			should(executeCommandSpy.calledWith('workbench.action.findInFiles')).be.true('searchJupyterBooks should have called command to open Search view');
 		});
 
 		it('saveJupyterBooks should prompt location and openBook', async () => {
@@ -577,7 +583,6 @@ describe('BooksTreeViewTests', function () {
 			let executeCOmmandSpy = sinon.spy(vscode.commands, 'executeCommand');
 			await bookTreeViewProvider.saveJupyterBooks();
 			should(executeCOmmandSpy.calledWith('bookTreeView.openBook')).be.true('saveJupyterBooks should have called command openBook after saving');
-			sinon.restore();
 
 			await promisify(rimraf)(saveFolderPath);
 		});
