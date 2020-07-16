@@ -7,17 +7,16 @@ import * as should from 'should';
 import * as TypeMoq from 'typemoq';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import * as sinon from 'sinon';
 import 'mocha';
 
 import { azureResource } from '../../../../azureResource/azure-resource';
-import { ApiWrapper } from '../../../../apiWrapper';
 import { AzureResourceDatabaseServerTreeDataProvider } from '../../../../azureResource/providers/databaseServer/databaseServerTreeDataProvider';
 import { AzureResourceItemType } from '../../../../azureResource/constants';
 import { IAzureResourceService } from '../../../../azureResource/interfaces';
 
 // Mock services
 let mockDatabaseServerService: TypeMoq.IMock<IAzureResourceService<azureResource.AzureResourceDatabaseServer>>;
-let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
 let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 import settings from '../../../../account-provider/providerSettings';
 import { AzureAccount } from '../../../../account-provider/interfaces';
@@ -88,12 +87,11 @@ const mockDatabaseServers: azureResource.AzureResourceDatabaseServer[] = [
 describe('AzureResourceDatabaseServerTreeDataProvider.info', function (): void {
 	beforeEach(() => {
 		mockDatabaseServerService = TypeMoq.Mock.ofType<IAzureResourceService<azureResource.AzureResourceDatabaseServer>>();
-		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 	});
 
 	it('Should be correct when created.', async function (): Promise<void> {
-		const treeDataProvider = new AzureResourceDatabaseServerTreeDataProvider(mockDatabaseServerService.object, mockApiWrapper.object, mockExtensionContext.object);
+		const treeDataProvider = new AzureResourceDatabaseServerTreeDataProvider(mockDatabaseServerService.object, mockExtensionContext.object);
 
 		const treeItem = await treeDataProvider.getTreeItem(mockResourceRootNode);
 		should(treeItem.id).equal(mockResourceRootNode.treeItem.id);
@@ -106,16 +104,19 @@ describe('AzureResourceDatabaseServerTreeDataProvider.info', function (): void {
 describe('AzureResourceDatabaseServerTreeDataProvider.getChildren', function (): void {
 	beforeEach(() => {
 		mockDatabaseServerService = TypeMoq.Mock.ofType<IAzureResourceService<azureResource.AzureResourceDatabaseServer>>();
-		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 
-		mockApiWrapper.setup((o) => o.getSecurityToken(mockAccount, azdata.AzureResource.ResourceManagement)).returns(() => Promise.resolve(mockTokens));
+		sinon.stub(azdata.accounts, 'getSecurityToken').returns(Promise.resolve(mockTokens));
 		mockDatabaseServerService.setup((o) => o.getResources(mockSubscription, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(mockDatabaseServers));
 		mockExtensionContext.setup((o) => o.asAbsolutePath(TypeMoq.It.isAnyString())).returns(() => TypeMoq.It.isAnyString());
 	});
 
+	afterEach(function (): void {
+		sinon.restore();
+	});
+
 	it('Should return container node when element is undefined.', async function (): Promise<void> {
-		const treeDataProvider = new AzureResourceDatabaseServerTreeDataProvider(mockDatabaseServerService.object, mockApiWrapper.object, mockExtensionContext.object);
+		const treeDataProvider = new AzureResourceDatabaseServerTreeDataProvider(mockDatabaseServerService.object, mockExtensionContext.object);
 
 		const children = await treeDataProvider.getChildren();
 
@@ -133,7 +134,7 @@ describe('AzureResourceDatabaseServerTreeDataProvider.getChildren', function ():
 	});
 
 	it('Should return resource nodes when it is container node.', async function (): Promise<void> {
-		const treeDataProvider = new AzureResourceDatabaseServerTreeDataProvider(mockDatabaseServerService.object, mockApiWrapper.object, mockExtensionContext.object);
+		const treeDataProvider = new AzureResourceDatabaseServerTreeDataProvider(mockDatabaseServerService.object, mockExtensionContext.object);
 
 		const children = await treeDataProvider.getChildren(mockResourceRootNode);
 

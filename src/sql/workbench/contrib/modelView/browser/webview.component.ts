@@ -114,7 +114,7 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 
 	private sendMessage(): void {
 		if (this._webview && this.message) {
-			this._webview.sendMessage(this.message);
+			this._webview.postMessage(this.message);
 		}
 	}
 

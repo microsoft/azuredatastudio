@@ -16,7 +16,7 @@ const localize = nls.loadMessageBundle();
 export const DBProjectConfigurationKey: string = 'sqlDatabaseProjects';
 export const NetCoreInstallLocationKey: string = 'netCoreSDKLocation';
 export const NextCoreNonWindowsDefaultPath = '/usr/local/share';
-export const NetCoreInstallationConfirmation: string = localize('sqlDatabaseProjects.NetCoreInstallationConfirmation', "The .NET Core SDK cannnot be located. Project build will not work. Please install the same or update the .Net Core SDK location in settings if already installed.");
+export const NetCoreInstallationConfirmation: string = localize('sqlDatabaseProjects.NetCoreInstallationConfirmation', "The .NET Core SDK cannnot be located. Project build will not work. Please install .NET Core SDK version 3.1 or update the .Net Core SDK location in settings if already installed.");
 export const UpdateNetCoreLocation: string = localize('sqlDatabaseProjects.UpdateNetCoreLocation', "Update .Net Core location");
 export const InstallNetCore: string = localize('sqlDatabaseProjects.InstallNetCore', "Install .Net Core SDK");
 
@@ -34,26 +34,25 @@ export class NetCoreTool {
 
 	private _outputChannel: vscode.OutputChannel = vscode.window.createOutputChannel(projectsOutputChannel);
 
-	public findOrInstallNetCore(): boolean {
+	public async findOrInstallNetCore(): Promise<boolean> {
 		if (!this.isNetCoreInstallationPresent) {
-			this.showInstallDialog();
+			await this.showInstallDialog();
 			return false;
 		}
 		return true;
 	}
 
-	private showInstallDialog(): void {
-		vscode.window.showInformationMessage(NetCoreInstallationConfirmation, UpdateNetCoreLocation, InstallNetCore).then(async (result) => {
-			if (result === UpdateNetCoreLocation) {
-				//open settings
-				vscode.commands.executeCommand('workbench.action.openGlobalSettings');
-			}
-			else if (result === InstallNetCore) {
-				//open install link
-				const dotnetcoreURL = 'https://dotnet.microsoft.com/download/dotnet-core/3.1';
-				vscode.env.openExternal(vscode.Uri.parse(dotnetcoreURL));
-			}
-		});
+	private async showInstallDialog(): Promise<void> {
+		let result = await vscode.window.showInformationMessage(NetCoreInstallationConfirmation, UpdateNetCoreLocation, InstallNetCore);
+		if (result === UpdateNetCoreLocation) {
+			//open settings
+			await vscode.commands.executeCommand('workbench.action.openGlobalSettings');
+		}
+		else if (result === InstallNetCore) {
+			//open install link
+			const dotnetcoreURL = 'https://dotnet.microsoft.com/download/dotnet-core/3.1';
+			await vscode.env.openExternal(vscode.Uri.parse(dotnetcoreURL));
+		}
 	}
 
 	private get isNetCoreInstallationPresent(): Boolean {

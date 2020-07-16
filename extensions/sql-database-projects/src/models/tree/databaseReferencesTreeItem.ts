@@ -23,7 +23,7 @@ export class DatabaseReferencesTreeItem extends BaseProjectTreeItem {
 
 	private construct() {
 		for (const reference of (this.parent as ProjectRootTreeItem).project.databaseReferences) {
-			this.references.push(new MessageTreeItem(reference));
+			this.references.push(new MessageTreeItem(reference.databaseName));
 		}
 	}
 

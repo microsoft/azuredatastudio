@@ -121,7 +121,7 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 	}
 
 	public $getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
-		return Promise.resolve(this._connectionManagementService.getActiveConnectionCredentials(connectionId));
+		return Promise.resolve(this._connectionManagementService.getConnectionCredentials(connectionId));
 	}
 
 	public $getServerInfo(connectionId: string): Thenable<azdata.ServerInfo> {

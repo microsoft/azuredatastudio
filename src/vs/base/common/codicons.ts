@@ -251,6 +251,7 @@ export namespace Codicon {
 	export const database = new Codicon('database', { character: '\\eace' });
 	export const debugContinue = new Codicon('debug-continue', { character: '\\eacf' });
 	export const debugDisconnect = new Codicon('debug-disconnect', { character: '\\ead0' });
+	export const disconnect = new Codicon('disconnect', { character: '\\ead0' }); // {{SQL CARBON EDIT}} Uncolored version of debug-disconnect
 	export const debugPause = new Codicon('debug-pause', { character: '\\ead1' });
 	export const debugRestart = new Codicon('debug-restart', { character: '\\ead2' });
 	export const debugStart = new Codicon('debug-start', { character: '\\ead3' });
@@ -495,6 +496,7 @@ export function markdownUnescapeCodicons(text: string): string {
 const renderCodiconsRegex = /(\\)?\$\((([a-z0-9\-]+?)(?:~([a-z0-9\-]*?))?)\)/gi;
 export function renderCodicons(text: string): string {
 	return text.replace(renderCodiconsRegex, (_, escaped, codicon, name, animation) => {
+		// If the class for codicons is changed, it should also be updated in src\vs\base\browser\markdownRenderer.ts
 		return escaped
 			? `$(${codicon})`
 			: `<span class="codicon codicon-${name}${animation ? ` codicon-animation-${animation}` : ''}"></span>`;

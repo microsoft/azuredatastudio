@@ -13,6 +13,7 @@
 	"azure.resource.startterminal.title": "Start Cloud Shell",
 	"azure.resource.connectsqlserver.title": "Connect",
 	"azure.resource.connectsqldb.title": "Add to Servers",
+	"azure.tenant.config.filter.description": "The list of tenant IDs to ignore when querying azure resources. Each element is a tenant id.",
 
 	"accounts.clearTokenCache": "Clear Azure Account Token Cache",
 
@@ -21,11 +22,13 @@
 	"config.azureAccountConfigurationSection": "Azure Account Configuration",
 	"config.enablePublicCloudDescription": "Should Azure public cloud integration be enabled",
 	"config.enableUsGovCloudDescription": "Should US Government Azure cloud (Fairfax) integration be enabled",
+	"config.enableUsNatCloudDescription": "Should US National Azure cloud integration be enabled",
 	"config.enableChinaCloudDescription": "Should Azure China integration be enabled",
 	"config.enableGermanyCloudDescription": "Should Azure Germany integration be enabled",
 	"config.azureAuthMethodConfigurationSection": "Azure Authentication Method",
 	"config.azureCodeGrantMethod": "Code Grant Method",
 	"config.azureDeviceCodeMethod": "Device Code Method",
 	"config.noSystemKeychain": "Disable system keychain integration. Credentials will be stored in a flat file in the user's home directory.",
-	"config.enableArcFeatures": "Should features related to Azure Arc be enabled (preview)"
+	"config.enableArcFeatures": "Should features related to Azure Arc be enabled (preview)",
+	"config.piiLogging": "Should Personally Identifiable Information (PII) be logged in the console view locally"
 }

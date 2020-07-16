@@ -10,7 +10,7 @@ import { nb, ServerInfo } from 'azdata';
 import { getHostAndPortFromEndpoint, isStream, getProvidersForFileName, asyncForEach, clusterEndpointsProperty, getClusterEndpoints, RawEndpoint, IEndpoint, getStandardKernelsForProvider, IStandardKernelWithProvider, rewriteUrlUsingRegex } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { INotebookService, DEFAULT_NOTEBOOK_FILETYPE, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookServiceStub } from 'sql/workbench/contrib/notebook/test/stubs';
-import { tryMatchCellMagic } from 'sql/workbench/services/notebook/browser/utils';
+import { tryMatchCellMagic, extractCellMagicCommandPlusArgs } from 'sql/workbench/services/notebook/browser/utils';
 
 suite('notebookUtils', function (): void {
 	const mockNotebookService = TypeMoq.Mock.ofType<INotebookService>(NotebookServiceStub);
@@ -119,6 +119,51 @@ suite('notebookUtils', function (): void {
 
 		result = tryMatchCellMagic('%% sql');
 		assert.strictEqual(result, null);
+	});
+
+	test('extractCellMagicCommandPlusArgs Test', async function (): Promise<void> {
+		let result = extractCellMagicCommandPlusArgs(undefined, undefined);
+		assert.strictEqual(result, undefined);
+
+		result = extractCellMagicCommandPlusArgs('test', undefined);
+		assert.strictEqual(result, undefined);
+
+		result = extractCellMagicCommandPlusArgs(undefined, 'test');
+		assert.strictEqual(result, undefined);
+
+		result = extractCellMagicCommandPlusArgs('%%magic', 'magic');
+		assert.strictEqual(result, undefined);
+
+		result = extractCellMagicCommandPlusArgs('%%magic ', 'magic');
+		assert.strictEqual(result, undefined);
+
+		result = extractCellMagicCommandPlusArgs('magic', 'magic');
+		assert.strictEqual(result, undefined);
+
+		result = extractCellMagicCommandPlusArgs('magic ', 'magic');
+		assert.strictEqual(result, undefined);
+
+		result = extractCellMagicCommandPlusArgs('%%magic command', 'otherMagic');
+		assert.strictEqual(result, undefined);
+
+		result = extractCellMagicCommandPlusArgs('%%magiccommand', 'magic');
+		assert.strictEqual(result, undefined);
+
+		result = extractCellMagicCommandPlusArgs('%%magic command', 'magic');
+		assert.equal(result.commandId, 'command');
+		assert.equal(result.args, '');
+
+		result = extractCellMagicCommandPlusArgs('%%magic command arg1', 'magic');
+		assert.equal(result.commandId, 'command');
+		assert.equal(result.args, 'arg1');
+
+		result = extractCellMagicCommandPlusArgs('%%magic command arg1 arg2', 'magic');
+		assert.equal(result.commandId, 'command');
+		assert.equal(result.args, 'arg1 arg2');
+
+		result = extractCellMagicCommandPlusArgs('%%magic command.id arg1 arg2 arg3', 'magic');
+		assert.equal(result.commandId, 'command.id');
+		assert.equal(result.args, 'arg1 arg2 arg3');
 	});
 
 	test('asyncForEach Test', async function (): Promise<void> {

@@ -21,7 +21,7 @@ if (isWeb) {
 	if (Object.keys(product).length === 0) {
 		Object.assign(product, {
 			version: '1.17.0-dev',
-			vscodeVersion: '1.46.0-dev',
+			vscodeVersion: '1.47.0-dev',
 			nameLong: 'Azure Data Studio Web Dev',
 			nameShort: 'Azure Data Studio Web Dev',
 			urlProtocol: 'azuredatastudio-oss'

@@ -10,6 +10,9 @@
 		<!-- Workbench Configuration -->
 		<meta id="vscode-workbench-web-configuration" data-settings="{{WORKBENCH_WEB_CONFIGURATION}}">
 
+		<!-- Builtin Extensions (running out of sources) -->
+		<meta id="vscode-workbench-builtin-extensions" data-settings="{{WORKBENCH_BUILTIN_EXTENSIONS}}">
+
 		<!-- Workarounds/Hacks (remote user data uri) -->
 		<meta id="vscode-remote-user-data-uri" data-settings="{{REMOTE_USER_DATA_URI}}">
 
@@ -72,7 +75,9 @@
 				'rxjs/operator/mergeAll': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?20`,
 				'rxjs/operator/filter': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?21`,
 				'sanitize-html': `${window.location.origin}/static/remote/web/node_modules/sanitize-html/dist/sanitize-html.js`,
-				'ansi_up': `${window.location.origin}/static/remote/web/node_modules/ansi_up/ansi_up.js`
+				'ansi_up': `${window.location.origin}/static/remote/web/node_modules/ansi_up/ansi_up.js`,
+				'iconv-lite-umd': `${window.location.origin}/static/remote/web/node_modules/iconv-lite-umd/lib/iconv-lite-umd.js`,
+				'jschardet': `${window.location.origin}/static/remote/web/node_modules/jschardet/dist/jschardet.min.js`,
 			}
 		};
 	</script>

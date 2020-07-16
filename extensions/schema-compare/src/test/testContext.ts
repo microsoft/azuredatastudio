@@ -34,7 +34,8 @@ export function createContext(): TestContext {
 			globalStoragePath: '',
 			logPath: '',
 			extensionUri: vscode.Uri.parse(''),
-			environmentVariableCollection: undefined as any
+			environmentVariableCollection: undefined as any,
+			extensionMode: undefined as any
 		},
 	};
 }

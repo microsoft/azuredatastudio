@@ -198,9 +198,157 @@
           "default": 100,
           "description": "%mssql.logFilesRemovalLimit%"
         },
-        "ignorePlatformWarning": {
+        "mssql.intelliSense.enableIntelliSense": {
           "type": "boolean",
-          "description": "%ignorePlatformWarning%",
+          "default": true,
+          "description": "%mssql.intelliSense.enableIntelliSense%"
+        },
+        "mssql.intelliSense.enableErrorChecking": {
+          "type": "boolean",
+          "default": true,
+          "description": "%mssql.intelliSense.enableErrorChecking%"
+        },
+        "mssql.intelliSense.enableSuggestions": {
+          "type": "boolean",
+          "default": true,
+          "description": "%mssql.intelliSense.enableSuggestions%"
+        },
+        "mssql.intelliSense.enableQuickInfo": {
+          "type": "boolean",
+          "default": true,
+          "description": "%mssql.intelliSense.enableQuickInfo%"
+        },
+        "mssql.intelliSense.lowerCaseSuggestions": {
+          "type": "boolean",
+          "default": false,
+          "description": "%mssql.intelliSense.lowerCaseSuggestions%"
+        },
+        "mssql.query.rowCount": {
+          "type": "number",
+          "default": 0,
+          "description": "%mssql.query.setRowCount%"
+        },
+        "mssql.query.textSize": {
+          "type": "number",
+          "default": 2147483647,
+          "description": "%mssql.query.textSize%"
+        },
+        "mssql.query.executionTimeout": {
+          "type": "number",
+          "default": 0,
+          "description": "%mssql.query.executionTimeout%"
+        },
+        "mssql.query.noCount": {
+          "type": "boolean",
+          "default": false,
+          "description": "%mssql.query.noCount%"
+        },
+        "mssql.query.noExec": {
+          "type": "boolean",
+          "default": false,
+          "description": "%mssql.query.noExec%"
+        },
+        "mssql.query.parseOnly": {
+          "type": "boolean",
+          "default": false,
+          "description": "%mssql.query.parseOnly%"
+        },
+        "mssql.query.arithAbort": {
+          "type": "boolean",
+          "default": true,
+          "description": "%mssql.query.arithAbort%"
+        },
+        "mssql.query.statisticsTime": {
+          "type": "boolean",
+          "default": false,
+          "description": "%mssql.query.statisticsTime%"
+        },
+        "mssql.query.statisticsIO": {
+          "type": "boolean",
+          "default": false,
+          "description": "%mssql.query.statisticsIO%"
+        },
+        "mssql.query.xactAbortOn": {
+          "type": "boolean",
+          "default": false,
+          "description": "%mssql.query.xactAbortOn%"
+        },
+        "mssql.query.transactionIsolationLevel": {
+          "enum": [
+            "READ COMMITTED",
+            "READ UNCOMMITTED",
+            "REPEATABLE READ",
+            "SERIALIZABLE"
+          ],
+          "default": "READ COMMITTED",
+          "description": "%mssql.query.transactionIsolationLevel%"
+        },
+        "mssql.query.deadlockPriority": {
+          "enum": [
+            "Normal",
+            "Low"
+          ],
+          "default": "Normal",
+          "description": "%mssql.query.deadlockPriority%"
+        },
+        "mssql.query.lockTimeout": {
+          "type": "number",
+          "default": -1,
+          "description": "%mssql.query.lockTimeout%"
+        },
+        "mssql.query.queryGovernorCostLimit": {
+          "type": "number",
+          "default": -1,
+          "description": "%mssql.query.queryGovernorCostLimit%"
+        },
+        "mssql.query.ansiDefaults": {
+          "type": "boolean",
+          "default": false,
+          "description": "%mssql.query.ansiDefaults%"
+        },
+        "mssql.query.quotedIdentifier": {
+          "type": "boolean",
+          "default": true,
+          "description": "%mssql.query.quotedIdentifier%"
+        },
+        "mssql.query.ansiNullDefaultOn": {
+          "type": "boolean",
+          "default": true,
+          "description": "%mssql.query.ansiNullDefaultOn%"
+        },
+        "mssql.query.implicitTransactions": {
+          "type": "boolean",
+          "default": false,
+          "description": "%mssql.query.implicitTransactions%"
+        },
+        "mssql.query.cursorCloseOnCommit": {
+          "type": "boolean",
+          "default": false,
+          "description": "%mssql.query.cursorCloseOnCommit%"
+        },
+        "mssql.query.ansiPadding": {
+          "type": "boolean",
+          "default": true,
+          "description": "%mssql.query.ansiPadding%"
+        },
+        "mssql.query.ansiWarnings": {
+          "type": "boolean",
+          "default": true,
+          "description": "%mssql.query.ansiWarnings%"
+        },
+        "mssql.query.ansiNulls": {
+          "type": "boolean",
+          "default": true,
+          "description": "%mssql.query.ansiNulls%"
+        },
+        "mssql.query.alwaysEncryptedParameterization": {
+          "type": "boolean",
+          "default": false,
+          "description": "%mssql.query.alwaysEncryptedParameterization%"
+        },
+        "mssql.ignorePlatformWarning": {
+          "type": "boolean",
+          "description": "%mssql.ignorePlatformWarning%",
           "default": false
         }
       }

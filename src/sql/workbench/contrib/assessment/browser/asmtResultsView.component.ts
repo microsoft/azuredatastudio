@@ -91,7 +91,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 			width: 80,
 			id: 'target'
 		},
-		{ name: nls.localize('asmt.column.severity', "Serverity"), field: 'severity', maxWidth: 90, id: 'severity' },
+		{ name: nls.localize('asmt.column.severity', "Severity"), field: 'severity', maxWidth: 90, id: 'severity' },
 		{
 			name: nls.localize('asmt.column.message', "Message"),
 			field: 'message',

@@ -7,6 +7,8 @@ import * as vscode from 'vscode';
 import * as loc from '../localizedConstants';
 import { DuskyObjectModelsDatabaseService, DatabaseRouterApi, DuskyObjectModelsDatabase, V1Status, V1Pod } from '../controller/generated/dusky/api';
 import { Authentication } from '../controller/auth';
+import { ResourceInfo, Registration } from './controllerModel';
+import { ResourceModel } from './resourceModel';
 
 export enum PodRole {
 	Monitor,
@@ -14,70 +16,57 @@ export enum PodRole {
 	Shard
 }
 
-export class PostgresModel {
+export class PostgresModel extends ResourceModel {
 	private _databaseRouter: DatabaseRouterApi;
 	private _service?: DuskyObjectModelsDatabaseService;
-	private _password?: string;
 	private _pods?: V1Pod[];
 	private readonly _onServiceUpdated = new vscode.EventEmitter<DuskyObjectModelsDatabaseService>();
-	private readonly _onPasswordUpdated = new vscode.EventEmitter<string>();
 	private readonly _onPodsUpdated = new vscode.EventEmitter<V1Pod[]>();
 	public onServiceUpdated = this._onServiceUpdated.event;
-	public onPasswordUpdated = this._onPasswordUpdated.event;
 	public onPodsUpdated = this._onPodsUpdated.event;
 	public serviceLastUpdated?: Date;
-	public passwordLastUpdated?: Date;
 	public podsLastUpdated?: Date;
 
-	constructor(controllerUrl: string, auth: Authentication, private _namespace: string, private _name: string) {
+	constructor(controllerUrl: string, auth: Authentication, info: ResourceInfo, registration: Registration) {
+		super(info, registration);
 		this._databaseRouter = new DatabaseRouterApi(controllerUrl);
 		this._databaseRouter.setDefaultAuthentication(auth);
 	}
 
 	/** Returns the service's Kubernetes namespace */
-	public namespace(): string {
-		return this._namespace;
+	public get namespace(): string {
+		return this.info.namespace;
 	}
 
 	/** Returns the service's name */
-	public name(): string {
-		return this._name;
+	public get name(): string {
+		return this.info.name;
 	}
 
 	/** Returns the service's fully qualified name in the format namespace.name */
-	public fullName(): string {
-		return `${this._namespace}.${this._name}`;
+	public get fullName(): string {
+		return `${this.info.namespace}.${this.info.name}`;
 	}
 
 	/** Returns the service's spec */
-	public service(): DuskyObjectModelsDatabaseService | undefined {
+	public get service(): DuskyObjectModelsDatabaseService | undefined {
 		return this._service;
 	}
 
-	/** Returns the service's password */
-	public password(): string | undefined {
-		return this._password;
-	}
-
 	/** Returns the service's pods */
-	public pods(): V1Pod[] | undefined {
+	public get pods(): V1Pod[] | undefined {
 		return this._pods;
 	}
 
 	/** Refreshes the model */
 	public async refresh() {
 		await Promise.all([
-			this._databaseRouter.getDuskyDatabaseService(this._namespace, this._name).then(response => {
+			this._databaseRouter.getDuskyDatabaseService(this.info.namespace, this.info.name).then(response => {
 				this._service = response.body;
 				this.serviceLastUpdated = new Date();
 				this._onServiceUpdated.fire(this._service);
 			}),
-			this._databaseRouter.getDuskyPassword(this._namespace, this._name).then(response => {
-				this._password = response.body;
-				this.passwordLastUpdated = new Date();
-				this._onPasswordUpdated.fire(this._password!);
-			}),
-			this._databaseRouter.getDuskyPods(this._namespace, this._name).then(response => {
+			this._databaseRouter.getDuskyPods(this.info.namespace, this.info.name).then(response => {
 				this._pods = response.body;
 				this.podsLastUpdated = new Date();
 				this._onPodsUpdated.fire(this._pods!);
@@ -91,11 +80,11 @@ export class PostgresModel {
 	 */
 	public async update(func: (service: DuskyObjectModelsDatabaseService) => void): Promise<DuskyObjectModelsDatabaseService> {
 		// Get the latest spec of the service in case it has changed
-		const service = (await this._databaseRouter.getDuskyDatabaseService(this._namespace, this._name)).body;
+		const service = (await this._databaseRouter.getDuskyDatabaseService(this.info.namespace, this.info.name)).body;
 		service.status = undefined; // can't update the status
 		func(service);
 
-		return await this._databaseRouter.updateDuskyDatabaseService(this.namespace(), this.name(), service).then(r => {
+		return await this._databaseRouter.updateDuskyDatabaseService(this.namespace, this.name, service).then(r => {
 			this._service = r.body;
 			return this._service;
 		});
@@ -103,19 +92,19 @@ export class PostgresModel {
 
 	/** Deletes the service */
 	public async delete(): Promise<V1Status> {
-		return (await this._databaseRouter.deleteDuskyDatabaseService(this._namespace, this._name)).body;
+		return (await this._databaseRouter.deleteDuskyDatabaseService(this.info.namespace, this.info.name)).body;
 	}
 
 	/** Creates a SQL database in the service */
 	public async createDatabase(db: DuskyObjectModelsDatabase): Promise<DuskyObjectModelsDatabase> {
-		return await (await this._databaseRouter.createDuskyDatabase(this.namespace(), this.name(), db)).body;
+		return (await this._databaseRouter.createDuskyDatabase(this.namespace, this.name, db)).body;
 	}
 
 	/**
 	 * Returns the IP address and port of the service, preferring external IP over
 	 * internal IP. If either field is not available it will be set to undefined.
 	 */
-	public endpoint(): { ip?: string, port?: number } {
+	public get endpoint(): { ip?: string, port?: number } {
 		const externalIp = this._service?.status?.externalIP;
 		const internalIp = this._service?.status?.internalIP;
 		const externalPort = this._service?.status?.externalPort;
@@ -127,7 +116,7 @@ export class PostgresModel {
 	}
 
 	/** Returns the service's configuration e.g. '3 nodes, 1.5 vCores, 1GiB RAM, 2GiB storage per node' */
-	public configuration(): string {
+	public get configuration(): string {
 
 		// TODO: Resource requests and limits can be configured per role. Figure out how
 		//       to display that in the UI. For now, only show the default configuration.
@@ -136,7 +125,7 @@ export class PostgresModel {
 		const cpuRequest = this._service?.spec?.scheduling?._default?.resources?.requests?.['cpu'];
 		const ramRequest = this._service?.spec?.scheduling?._default?.resources?.requests?.['memory'];
 		const storage = this._service?.spec?.storage?.volumeSize;
-		const nodes = this.pods()?.length;
+		const nodes = this.pods?.length;
 
 		let configuration: string[] = [];
 
@@ -183,10 +172,10 @@ export class PostgresModel {
 	}
 
 	/** Given a V1Pod returns its status */
-	public static getPodStatus(pod: V1Pod) {
+	public static getPodStatus(pod: V1Pod): string {
 		const phase = pod.status?.phase;
 		if (phase !== 'Running') {
-			return phase;
+			return phase ?? '';
 		}
 
 		// Pods can be in the running phase while some

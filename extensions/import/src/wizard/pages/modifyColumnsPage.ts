@@ -4,13 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as nls from 'vscode-nls';
-import { ColumnMetadata, ImportDataModel } from '../api/models';
+import { ColumnMetadata, ColumnMetadataArray } from '../api/models';
 import { ImportPage } from '../api/importPage';
-import { FlatFileProvider } from '../../services/contracts';
-import { FlatFileWizard } from '../flatFileWizard';
-
-const localize = nls.loadMessageBundle();
+import * as constants from '../../common/constants';
 
 export class ModifyColumnsPage extends ImportPage {
 	private readonly categoryValues = [
@@ -49,15 +45,43 @@ export class ModifyColumnsPage extends ImportPage {
 		{ name: 'varchar(50)', displayName: 'varchar(50)' },
 		{ name: 'varchar(MAX)', displayName: 'varchar(MAX)' }
 	];
-	private table: azdata.DeclarativeTableComponent;
-	private loading: azdata.LoadingComponent;
-	private text: azdata.TextComponent;
-	private form: azdata.FormContainer;
 
-	public constructor(instance: FlatFileWizard, wizardPage: azdata.window.WizardPage, model: ImportDataModel, view: azdata.ModelView, provider: FlatFileProvider) {
-		super(instance, wizardPage, model, view, provider);
+	private _table: azdata.DeclarativeTableComponent;
+	private _loading: azdata.LoadingComponent;
+	private _text: azdata.TextComponent;
+	private _form: azdata.FormContainer;
+
+	public get table(): azdata.DeclarativeTableComponent {
+		return this._table;
 	}
 
+	public set table(table: azdata.DeclarativeTableComponent) {
+		this._table = table;
+	}
+
+	public get loading(): azdata.LoadingComponent {
+		return this._loading;
+	}
+
+	public set loading(loading: azdata.LoadingComponent) {
+		this._loading = loading;
+	}
+
+	public get text(): azdata.TextComponent {
+		return this._text;
+	}
+
+	public set text(text: azdata.TextComponent) {
+		this._text = text;
+	}
+
+	public get form(): azdata.FormContainer {
+		return this._form;
+	}
+
+	public set form(form: azdata.FormContainer) {
+		this._form = form;
+	}
 
 	private static convertMetadata(column: ColumnMetadata): any[] {
 		return [column.columnName, column.dataType, false, column.nullable];
@@ -105,20 +129,20 @@ export class ModifyColumnsPage extends ImportPage {
 	async onPageEnter(): Promise<boolean> {
 		this.loading.loading = true;
 		await this.populateTable();
-		this.instance.changeNextButtonLabel(localize('flatFileImport.importData', "Import Data"));
+		this.instance.changeNextButtonLabel(constants.importDataText);
 		this.loading.loading = false;
 
 		return true;
 	}
 
 	async onPageLeave(): Promise<boolean> {
-		this.instance.changeNextButtonLabel(localize('flatFileImport.next', "Next"));
+		this.instance.changeNextButtonLabel(constants.nextText);
 		return undefined;
 	}
 
 	async cleanup(): Promise<boolean> {
 		delete this.model.proseColumns;
-		this.instance.changeNextButtonLabel(localize('flatFileImport.next', "Next"));
+		this.instance.changeNextButtonLabel(constants.nextText);
 
 		return true;
 	}
@@ -130,40 +154,38 @@ export class ModifyColumnsPage extends ImportPage {
 	}
 
 	private async populateTable() {
-		let data: any[][] = [];
+		let data: ColumnMetadataArray[] = [];
 
 		this.model.proseColumns.forEach((column) => {
 			data.push(ModifyColumnsPage.convertMetadata(column));
 		});
 
 		this.table.updateProperties({
-			height: 400,
 			columns: [{
-				displayName: localize('flatFileImport.columnName', "Column Name"),
+				displayName: constants.columnNameText,
 				valueType: azdata.DeclarativeDataType.string,
 				width: '150px',
 				isReadOnly: false
 			}, {
-				displayName: localize('flatFileImport.dataType', "Data Type"),
+				displayName: constants.dataTypeText,
 				valueType: azdata.DeclarativeDataType.editableCategory,
 				width: '150px',
 				isReadOnly: false,
 				categoryValues: this.categoryValues
 			}, {
-				displayName: localize('flatFileImport.primaryKey', "Primary Key"),
+				displayName: constants.primaryKeyText,
 				valueType: azdata.DeclarativeDataType.boolean,
 				width: '100px',
-				isReadOnly: false
+				isReadOnly: false,
+				showCheckAll: true
 			}, {
-				displayName: localize('flatFileImport.allowNulls', "Allow Nulls"),
+				displayName: constants.allowNullsText,
 				valueType: azdata.DeclarativeDataType.boolean,
 				isReadOnly: false,
-				width: '100px'
+				width: '100px',
+				showCheckAll: true
 			}],
 			data: data
 		});
-
-
 	}
-
 }

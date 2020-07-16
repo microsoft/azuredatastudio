@@ -216,7 +216,7 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 			.component();
 	}
 
-	public onEnter() {
+	public async onEnter(): Promise<void> {
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			this.wizard.wizardObject.message = { text: '' };
 			if (pcInfo.newPage > pcInfo.lastPage) {
@@ -246,6 +246,10 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 				return 'aks-dev-test';
 			case BdcDeploymentType.ExistingKubeAdm:
 				return 'kubeadm-dev-test';
+			case BdcDeploymentType.ExistingARO:
+				return 'aro-dev-test';
+			case BdcDeploymentType.ExistingOpenShift:
+				return 'openshift-dev-test';
 			default:
 				throw new Error(`Unknown deployment type: ${this.wizard.deploymentType}`);
 		}

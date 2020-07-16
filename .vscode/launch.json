@@ -26,6 +26,7 @@
 			"type": "pwa-chrome",
 			"request": "attach",
 			"name": "Attach to Shared Process",
+			"timeout": 30000,
 			"port": 9222,
 			"urlFilter": "*sharedProcess.html*",
 			"presentation": {
@@ -57,6 +58,7 @@
 			"type": "node",
 			"request": "attach",
 			"name": "Attach to Main Process",
+			"timeout": 30000,
 			"port": 5875,
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
@@ -109,7 +111,7 @@
 			"type": "chrome",
 			"request": "launch",
 			"name": "Launch ADS (Web) (TBD)",
-			"program": "${workspaceFolder}/scripts/code-web.js",
+			"program": "${workspaceFolder}/resources/serverless/code-web.js",
 			"presentation": {
 				"group": "0_vscode",
 				"order": 2
@@ -139,6 +141,18 @@
 			"request": "launch",
 			"name": "Launch ADS (Web, Chrome) (TBD)",
 			"url": "http://localhost:8080",
+			"preLaunchTask": "Run web",
+			"presentation": {
+				"group": "0_vscode",
+				"order": 3
+			}
+		},
+		{
+			"type": "pwa-msedge",
+			"request": "launch",
+			"name": "VS Code (Web, Edge)",
+			"url": "http://localhost:8080",
+			"pauseForSourceMap": false,
 			"preLaunchTask": "Run web",
 			"presentation": {
 				"group": "0_vscode",
@@ -251,6 +265,7 @@
 		},
 		{
 			"name": "Azure Data Studio",
+			"stopAll": true,
 			"configurations": [
 				"Launch azuredatastudio",
 				"Attach to Main Process",

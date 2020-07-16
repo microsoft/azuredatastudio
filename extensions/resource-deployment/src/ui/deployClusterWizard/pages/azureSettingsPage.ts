@@ -125,8 +125,8 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				}]
 			}]
 		};
-		this.pageObject.registerContent((view: azdata.ModelView) => {
-			const azureGroup = createSection({
+		this.pageObject.registerContent(async (view: azdata.ModelView) => {
+			const azureGroup = await createSection({
 				sectionInfo: azureSection,
 				view: view,
 				onNewDisposableCreated: (disposable: vscode.Disposable): void => {
@@ -157,7 +157,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		});
 	}
 
-	public onEnter(): void {
+	public async onEnter(): Promise<void> {
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			this.wizard.wizardObject.message = { text: '' };
 			if (pcInfo.newPage > pcInfo.lastPage) {

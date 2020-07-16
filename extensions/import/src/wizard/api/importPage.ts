@@ -17,7 +17,8 @@ export abstract class ImportPage extends BasePage {
 	protected readonly view: azdata.ModelView;
 	protected readonly provider: FlatFileProvider;
 
-	protected constructor(instance: FlatFileWizard, wizardPage: azdata.window.WizardPage, model: ImportDataModel, view: azdata.ModelView, provider: FlatFileProvider) {
+
+	constructor(instance: FlatFileWizard, wizardPage: azdata.window.WizardPage, model: ImportDataModel, view: azdata.ModelView, provider: FlatFileProvider) {
 		super();
 		this.instance = instance;
 		this.wizardPage = wizardPage;

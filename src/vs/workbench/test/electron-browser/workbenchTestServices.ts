@@ -7,7 +7,8 @@ import { workbenchInstantiationService as browserWorkbenchInstantiationService, 
 import { Event } from 'vs/base/common/event';
 import { ISharedProcessService } from 'vs/platform/ipc/electron-browser/sharedProcessService';
 import { NativeWorkbenchEnvironmentService, INativeWorkbenchEnvironmentService } from 'vs/workbench/services/environment/electron-browser/environmentService';
-import { NativeTextFileService, EncodingOracle, IEncodingOverride } from 'vs/workbench/services/textfile/electron-browser/nativeTextFileService';
+import { NativeTextFileService, } from 'vs/workbench/services/textfile/electron-browser/nativeTextFileService';
+import { EncodingOracle, IEncodingOverride } from 'vs/workbench/services/textfile/browser/textFileService';
 import { IElectronService } from 'vs/platform/electron/electron-sandbox/electron';
 import { FileOperationError, IFileService } from 'vs/platform/files/common/files';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
@@ -29,7 +30,7 @@ import { parseArgs, OPTIONS } from 'vs/platform/environment/node/argv';
 import { LogLevel, ILogService } from 'vs/platform/log/common/log';
 import { IPathService } from 'vs/workbench/services/path/common/pathService';
 import { IWorkingCopyFileService } from 'vs/workbench/services/workingCopy/common/workingCopyFileService';
-import { UTF16le, UTF16be, UTF8_with_bom } from 'vs/base/node/encoding';
+import { UTF16le, UTF16be, UTF8_with_bom } from 'vs/workbench/services/textfile/common/encoding';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { ModelServiceImpl } from 'vs/editor/common/services/modelServiceImpl';
 import { IBackupFileService } from 'vs/workbench/services/backup/common/backup';
@@ -38,6 +39,8 @@ import { IWorkingCopyService } from 'vs/workbench/services/workingCopy/common/wo
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { INativeWindowConfiguration } from 'vs/platform/windows/node/window';
 import { TestContextService } from 'vs/workbench/test/common/workbenchTestServices';
+import { IUriIdentityService } from 'vs/workbench/services/uriIdentity/common/uriIdentity';
+import { MouseInputEvent } from 'vs/base/parts/sandbox/common/electronTypes';
 
 export const TestWindowConfiguration: INativeWindowConfiguration = {
 	windowId: 0,
@@ -74,7 +77,8 @@ export class TestTextFileService extends NativeTextFileService {
 		@ICodeEditorService codeEditorService: ICodeEditorService,
 		@IPathService athService: IPathService,
 		@IWorkingCopyFileService workingCopyFileService: IWorkingCopyFileService,
-		@ILogService logService: ILogService
+		@ILogService logService: ILogService,
+		@IUriIdentityService uriIdentityService: IUriIdentityService
 	) {
 		super(
 			fileService,
@@ -92,7 +96,8 @@ export class TestTextFileService extends NativeTextFileService {
 			codeEditorService,
 			athService,
 			workingCopyFileService,
-			logService
+			logService,
+			uriIdentityService
 		);
 	}
 
@@ -149,7 +154,7 @@ class TestEncodingOracle extends EncodingOracle {
 
 export class TestSharedProcessService implements ISharedProcessService {
 
-	_serviceBrand: undefined;
+	declare readonly _serviceBrand: undefined;
 
 	getChannel(channelName: string): any { return undefined; }
 
@@ -161,7 +166,7 @@ export class TestSharedProcessService implements ISharedProcessService {
 
 export class TestElectronService implements IElectronService {
 
-	_serviceBrand: undefined;
+	declare readonly _serviceBrand: undefined;
 
 	readonly windowId = -1;
 
@@ -170,6 +175,7 @@ export class TestElectronService implements IElectronService {
 	onWindowUnmaximize: Event<number> = Event.None;
 	onWindowFocus: Event<number> = Event.None;
 	onWindowBlur: Event<number> = Event.None;
+	onOSResume: Event<unknown> = Event.None;
 
 	windowCount = Promise.resolve(1);
 	getWindowCount(): Promise<number> { return this.windowCount; }
@@ -209,11 +215,13 @@ export class TestElectronService implements IElectronService {
 	async moveWindowTabToNewWindow(): Promise<void> { }
 	async mergeAllWindowTabs(): Promise<void> { }
 	async toggleWindowTabsBar(): Promise<void> { }
+	async notifyReady(): Promise<void> { }
 	async relaunch(options?: { addArgs?: string[] | undefined; removeArgs?: string[] | undefined; } | undefined): Promise<void> { }
 	async reload(): Promise<void> { }
 	async closeWindow(): Promise<void> { }
 	async closeWindowById(): Promise<void> { }
 	async quit(): Promise<void> { }
+	async exit(code: number): Promise<void> { }
 	async openDevTools(options?: Electron.OpenDevToolsOptions | undefined): Promise<void> { }
 	async toggleDevTools(): Promise<void> { }
 	async startCrashReporter(options: Electron.CrashReporterStartOptions): Promise<void> { }
@@ -225,6 +233,7 @@ export class TestElectronService implements IElectronService {
 	async writeClipboardBuffer(format: string, buffer: Uint8Array, type?: 'selection' | 'clipboard' | undefined): Promise<void> { }
 	async readClipboardBuffer(format: string): Promise<Uint8Array> { return Uint8Array.from([]); }
 	async hasClipboard(format: string, type?: 'selection' | 'clipboard' | undefined): Promise<boolean> { return false; }
+	async sendInputEvent(event: MouseInputEvent): Promise<void> { }
 }
 
 export function workbenchInstantiationService(): ITestInstantiationService {
@@ -257,7 +266,7 @@ export class TestServiceAccessor {
 
 export class TestNativePathService extends TestPathService {
 
-	_serviceBrand: undefined;
+	declare readonly _serviceBrand: undefined;
 
 	constructor(@IWorkbenchEnvironmentService environmentService: INativeWorkbenchEnvironmentService) {
 		super(environmentService.userHome);

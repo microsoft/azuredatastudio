@@ -236,12 +236,24 @@ export interface AzureAccountFieldInfo extends AzureLocationsFieldInfo {
 	displaySubscriptionVariableName?: string;
 	subscriptionVariableName?: string;
 	resourceGroupVariableName?: string;
+	allowNewResourceGroup?: boolean;
+	newResourceGroupFlagVariableName?: string;
+	newResourceGroupNameVariableName?: string;
 }
 
 export interface AzureLocationsFieldInfo extends FieldInfo {
 	locationVariableName?: string;
 	displayLocationVariableName?: string;
 	locations?: string[]
+}
+
+export interface FilePickerFieldInfo extends FieldInfo {
+	filter: FilePickerFilter;
+}
+
+export interface FilePickerFilter {
+	displayName: string;
+	fileTypes: string[];
 }
 
 export const enum LabelPosition {
@@ -347,7 +359,9 @@ export interface ITool {
 export const enum BdcDeploymentType {
 	NewAKS = 'new-aks',
 	ExistingAKS = 'existing-aks',
-	ExistingKubeAdm = 'existing-kubeadm'
+	ExistingKubeAdm = 'existing-kubeadm',
+	ExistingARO = 'existing-aro',
+	ExistingOpenShift = 'existing-openshift'
 }
 
 export const enum ArcDeploymentType {

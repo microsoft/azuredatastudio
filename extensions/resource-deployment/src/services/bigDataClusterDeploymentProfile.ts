@@ -30,6 +30,8 @@ export interface ActiveDirectorySettings {
 	clusterAdmins: string;
 	appReaders?: string;
 	appOwners?: string;
+	subdomain?: string;
+	accountPrefix?: string;
 }
 
 export class BigDataClusterDeploymentProfile {
@@ -183,7 +185,7 @@ export class BigDataClusterDeploymentProfile {
 	}
 
 	public setResourceStorage(resourceName: 'data-0' | 'master' | 'storage-0', dataStorageClass: string, dataStorageSize: number, logsStorageClass: string, logsStorageSize: number) {
-		this.bdcConfig.spec.resources[resourceName]['storage'] = {
+		this.bdcConfig.spec.resources[resourceName].spec.storage = {
 			data: {
 				size: `${dataStorageSize}Gi`,
 				className: dataStorageClass,
@@ -280,6 +282,8 @@ export class BigDataClusterDeploymentProfile {
 		activeDirectoryObject.dnsIpAddresses = this.splitByComma(adSettings.dnsIPAddresses);
 		activeDirectoryObject.domainControllerFullyQualifiedDns = this.splitByComma(adSettings.domainControllerFQDNs.toLowerCase());
 		activeDirectoryObject.domainDnsName = adSettings.domainDNSName;
+		activeDirectoryObject.subdomain = adSettings.subdomain;
+		activeDirectoryObject.accountPrefix = adSettings.accountPrefix;
 		activeDirectoryObject.realm = adSettings.domainDNSName.toUpperCase();
 		activeDirectoryObject.clusterAdmins = this.splitByComma(adSettings.clusterAdmins);
 		activeDirectoryObject.clusterUsers = this.splitByComma(adSettings.clusterUsers);

@@ -35,8 +35,8 @@ export interface IOpenEditorOverrideEntry {
 }
 
 export interface IOpenEditorOverrideHandler {
-	open(editor: IEditorInput, options: IEditorOptions | ITextEditorOptions | undefined, group: IEditorGroup, context: OpenEditorContext, id?: string): IOpenEditorOverride | undefined;
-	getEditorOverrides?(resource: URI, options: IEditorOptions | undefined, group: IEditorGroup | undefined): IOpenEditorOverrideEntry[];
+	open(editor: IEditorInput, options: IEditorOptions | ITextEditorOptions | undefined, group: IEditorGroup, context: OpenEditorContext): IOpenEditorOverride | undefined;
+	getEditorOverrides?(resource: URI, options: IEditorOptions | undefined, group: IEditorGroup | undefined, id: string | undefined): IOpenEditorOverrideEntry[];
 }
 
 export interface IOpenEditorOverride {
@@ -74,7 +74,6 @@ export interface ISaveAllEditorsOptions extends ISaveEditorsOptions, IBaseSaveRe
 export interface IRevertAllEditorsOptions extends IRevertOptions, IBaseSaveRevertAllEditorOptions { }
 
 export interface ICustomEditorInfo {
-
 	readonly id: string;
 	readonly displayName: string;
 	readonly providerDisplayName: string;
@@ -82,12 +81,13 @@ export interface ICustomEditorInfo {
 
 export interface ICustomEditorViewTypesHandler {
 	readonly onDidChangeViewTypes: Event<void>;
+
 	getViewTypes(): ICustomEditorInfo[];
 }
 
 export interface IEditorService {
 
-	_serviceBrand: undefined;
+	readonly _serviceBrand: undefined;
 
 	/**
 	 * Emitted when the currently active editor changes.
@@ -236,7 +236,7 @@ export interface IEditorService {
 	/**
 	 * Get all available editor overrides for the editor input.
 	 */
-	getEditorOverrides(resource: URI, options: IEditorOptions | undefined, group: IEditorGroup | undefined): [IOpenEditorOverrideHandler, IOpenEditorOverrideEntry][];
+	getEditorOverrides(resource: URI, options: IEditorOptions | undefined, group: IEditorGroup | undefined, id: string | undefined): [IOpenEditorOverrideHandler, IOpenEditorOverrideEntry][];
 
 	/**
 	 * Allows to override the opening of editors by installing a handler that will
@@ -247,6 +247,8 @@ export interface IEditorService {
 
 	/**
 	 * Register handlers for custom editor view types.
+	 * The handler will provide all available custom editors registered
+	 * and also notify the editor service when a custom editor view type is registered/unregistered.
 	 */
 	registerCustomEditorViewTypesHandler(source: string, handler: ICustomEditorViewTypesHandler): IDisposable;
 
@@ -289,12 +291,11 @@ export interface IEditorService {
 	revertAll(options?: IRevertAllEditorsOptions): Promise<boolean>;
 
 	/**
-	 * Track the provided list of resources for being opened as editors
-	 * and resolve once all have been closed.
+	 * Track the provided editors until all have been closed.
 	 *
 	 * @param options use `waitForSaved: true` to wait for the resources
 	 * being saved. If auto-save is enabled, it may be possible to close
 	 * an editor while the save continues in the background.
 	 */
-	whenClosed(resources: URI[], options?: { waitForSaved: boolean }): Promise<void>;
+	whenClosed(editors: IResourceEditorInput[], options?: { waitForSaved: boolean }): Promise<void>;
 }

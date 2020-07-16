@@ -732,6 +732,8 @@ export interface ExtHostModelViewTreeViewsShape {
 	$setExpanded(treeViewId: string, treeItemHandle: string, expanded: boolean): void;
 	$setSelection(treeViewId: string, treeItemHandles: string[]): void;
 	$setVisible(treeViewId: string, visible: boolean): void;
+	$hasResolve(treeViewId: string): Promise<boolean>;
+	$resolve(treeViewId: string, treeItemHandle: string): Promise<ITreeComponentItem | undefined>;
 }
 
 export interface ExtHostBackgroundTaskManagementShape {

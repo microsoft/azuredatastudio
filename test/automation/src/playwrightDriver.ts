@@ -35,7 +35,10 @@ function buildDriver(browser: playwright.Browser, page: playwright.Page): IDrive
 		getWindowIds: () => {
 			return Promise.resolve([1]);
 		},
-		capturePage: () => Promise.resolve(''),
+		capturePage: async () => {
+			const buffer = await page.screenshot();
+			return buffer.toString('base64');
+		},
 		reloadWindow: (windowId) => Promise.resolve(),
 		exitApplication: () => browser.close(),
 		dispatchKeybinding: async (windowId, keybinding) => {
@@ -91,7 +94,7 @@ let server: ChildProcess | undefined;
 let endpoint: string | undefined;
 let workspacePath: string | undefined;
 
-export async function launch(userDataDir: string, _workspacePath: string, extensionsDir: string, codeServerPath = process.env.VSCODE_REMOTE_SERVER_PATH): Promise<void> {
+export async function launch(userDataDir: string, _workspacePath: string, codeServerPath = process.env.VSCODE_REMOTE_SERVER_PATH, extPath: string): Promise<void> {
 	workspacePath = _workspacePath;
 
 	const agentFolder = userDataDir;
@@ -111,7 +114,7 @@ export async function launch(userDataDir: string, _workspacePath: string, extens
 	}
 	server = spawn(
 		serverLocation,
-		['--browser', 'none', '--driver', 'web', '--extensions-dir', `${extensionsDir}`],
+		['--browser', 'none', '--driver', 'web', '--extensions-dir', extPath],
 		{ env }
 	);
 	server.stderr?.on('data', error => console.log(`Server stderr: ${error}`));
@@ -143,10 +146,11 @@ function waitForEndpoint(): Promise<string> {
 export function connect(browserType: 'chromium' | 'webkit' | 'firefox' = 'chromium'): Promise<{ client: IDisposable, driver: IDriver }> {
 	return new Promise(async (c) => {
 		const browser = await playwright[browserType].launch({ headless: false });
-		const context = await browser.newContext();
+		const context = await browser.newContext({ permissions: ['clipboard-read'] }); // {{SQL CARBON EDIT}} avoid permissison request
 		const page = await context.newPage();
 		await page.setViewportSize({ width, height });
-		await page.goto(`${endpoint}&folder=vscode-remote://localhost:9888${URI.file(workspacePath!).path}`);
+		const payloadParam = `[["enableProposedApi",""]]`;
+		await page.goto(`${endpoint}&folder=vscode-remote://localhost:9888${URI.file(workspacePath!).path}&payload=${payloadParam}`);
 		const result = {
 			client: { dispose: () => browser.close() && teardown() },
 			driver: buildDriver(browser, page)

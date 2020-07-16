@@ -4,28 +4,64 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as nls from 'vscode-nls';
-import { ImportDataModel } from '../api/models';
 import { ImportPage } from '../api/importPage';
-import { FlatFileProvider } from '../../services/contracts';
-import { FlatFileWizard } from '../flatFileWizard';
-
-const localize = nls.loadMessageBundle();
+import * as constants from '../../common/constants';
 
 export class ProsePreviewPage extends ImportPage {
 
-	private readonly successTitle: string = localize('flatFileImport.prosePreviewMessage', "This operation analyzed the input file structure to generate the preview below for up to the first 50 rows.");
-	private readonly failureTitle: string = localize('flatFileImport.prosePreviewMessageFail', "This operation was unsuccessful. Please try a different input file.");
+	private _table: azdata.TableComponent;
+	private _loading: azdata.LoadingComponent;
+	private _form: azdata.FormContainer;
+	private _refresh: azdata.ButtonComponent;
+	private _resultTextComponent: azdata.TextComponent;
+	private _isSuccess: boolean;
 
-	private table: azdata.TableComponent;
-	private loading: azdata.LoadingComponent;
-	private form: azdata.FormContainer;
-	private refresh: azdata.ButtonComponent;
-	private resultTextComponent: azdata.TextComponent;
-	private isSuccess: boolean;
+	public get table(): azdata.TableComponent {
+		return this._table;
+	}
 
-	public constructor(instance: FlatFileWizard, wizardPage: azdata.window.WizardPage, model: ImportDataModel, view: azdata.ModelView, provider: FlatFileProvider) {
-		super(instance, wizardPage, model, view, provider);
+	public set table(table: azdata.TableComponent) {
+		this._table = table;
+	}
+
+	public get loading(): azdata.LoadingComponent {
+		return this._loading;
+	}
+
+	public set loading(loading: azdata.LoadingComponent) {
+		this._loading = loading;
+	}
+
+	public get form(): azdata.FormContainer {
+		return this._form;
+	}
+
+	public set form(form: azdata.FormContainer) {
+		this._form = form;
+	}
+
+	public get refresh(): azdata.ButtonComponent {
+		return this._refresh;
+	}
+
+	public set refresh(refresh: azdata.ButtonComponent) {
+		this._refresh = refresh;
+	}
+
+	public get resultTextComponent(): azdata.TextComponent {
+		return this._resultTextComponent;
+	}
+
+	public set resultTextComponent(resultTextComponent: azdata.TextComponent) {
+		this._resultTextComponent = resultTextComponent;
+	}
+
+	public get isSuccess(): boolean {
+		return this._isSuccess;
+	}
+
+	public set isSuccess(isSuccess: boolean) {
+		this._isSuccess = isSuccess;
 	}
 
 	async start(): Promise<boolean> {
@@ -35,7 +71,7 @@ export class ProsePreviewPage extends ImportPage {
 			forceFitColumns: azdata.ColumnSizingMode.DataFit
 		}).component();
 		this.refresh = this.view.modelBuilder.button().withProperties({
-			label: localize('flatFileImport.refresh', "Refresh"),
+			label: constants.refreshText,
 			isFile: false
 		}).component();
 
@@ -47,7 +83,7 @@ export class ProsePreviewPage extends ImportPage {
 
 		this.resultTextComponent = this.view.modelBuilder.text()
 			.withProperties({
-				value: this.isSuccess ? this.successTitle : this.failureTitle
+				value: this.isSuccess ? constants.successTitleText : constants.failureTitleText
 			}).component();
 
 		this.form = this.view.modelBuilder.formContainer().withFormItems([
@@ -84,14 +120,14 @@ export class ProsePreviewPage extends ImportPage {
 			await this.populateTable(this.model.proseDataPreview, this.model.proseColumns.map(c => c.columnName));
 			this.isSuccess = true;
 			if (this.form) {
-				this.resultTextComponent.value = this.successTitle;
+				this.resultTextComponent.value = constants.successTitleText;
 			}
 			return true;
 		} else {
 			await this.populateTable([], []);
 			this.isSuccess = false;
 			if (this.form) {
-				this.resultTextComponent.value = this.failureTitle + '\n' + (error ?? '');
+				this.resultTextComponent.value = constants.failureTitleText + '\n' + (error ?? '');
 			}
 			return false;
 		}
