@@ -580,9 +580,9 @@ describe('BooksTreeViewTests', function () {
 			let saveFolderPath = path.join(os.tmpdir(), `Book_${uuid.v4()}`);
 			await fs.mkdir(saveFolderPath);
 			sinon.stub(vscode.window, 'showOpenDialog').returns(Promise.resolve([vscode.Uri.file(saveFolderPath)]));
-			let executeCOmmandSpy = sinon.spy(vscode.commands, 'executeCommand');
+			let executeCommandSpy = sinon.spy(vscode.commands, 'executeCommand');
 			await bookTreeViewProvider.saveJupyterBooks();
-			should(executeCOmmandSpy.calledWith('bookTreeView.openBook')).be.true('saveJupyterBooks should have called command openBook after saving');
+			should(executeCommandSpy.calledWith('bookTreeView.openBook')).be.true('saveJupyterBooks should have called command openBook after saving');
 
 			await promisify(rimraf)(saveFolderPath);
 		});
