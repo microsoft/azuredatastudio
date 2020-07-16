@@ -484,4 +484,10 @@ declare module 'azdata' {
 		childProvider?: string;
 		type?: ExtensionNodeType;
 	}
+
+	export interface RowDetailsOptions {
+		panelRows: number,
+		detailsHtml: boolean,
+		headerCssClass?: string
+	}
 }

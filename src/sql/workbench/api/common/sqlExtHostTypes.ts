@@ -180,7 +180,8 @@ export enum ModelComponentTypes {
 }
 
 export enum ModelViewAction {
-	SelectTab = 'selectTab'
+	SelectTab = 'selectTab',
+	AppendData = 'appendData'
 }
 
 export enum ColumnSizingMode {

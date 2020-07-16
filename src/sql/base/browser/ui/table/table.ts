@@ -286,7 +286,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 		if (styles.tableHeaderBackground) {
 			content.push(`.monaco-table .${this.idPrefix} .slick-header .slick-header-column { background-color: ${styles.tableHeaderBackground}; }`);
-			content.push(`.monaco-table.${this.idPrefix} .slick-row .dynamic-cell-detail { background-color: ${styles.tableHeaderBackground} }`);
+			content.push(`.monaco-table .${this.idPrefix} .slick-row .dynamic-cell-detail { background-color: ${styles.tableHeaderBackground} }`);
 		}
 
 		if (styles.tableHeaderForeground) {

@@ -6,7 +6,6 @@
 import { Event, Emitter } from 'vs/base/common/event';
 import * as types from 'vs/base/common/types';
 import { compare as stringCompare } from 'vs/base/common/strings';
-import { generateUuid } from 'vs/base/common/uuid';
 import { IDisposableDataProvider } from 'sql/base/browser/ui/table/interfaces';
 
 export interface IFindPosition {
@@ -268,9 +267,6 @@ export class SlickTableDataView<T extends Slick.SlickData> extends Slick.Data.Da
 		} else {
 			inputArray.push(input);
 		}
-		if (inputArray.length > 0 && inputArray[0]['id'] === undefined) {
-			inputArray.forEach(item => item.id = generateUuid());
-		}
 
 		this.beginUpdate();
 		inputArray.forEach(item => this.addItem(item));
@@ -280,12 +276,8 @@ export class SlickTableDataView<T extends Slick.SlickData> extends Slick.Data.Da
 	public setData(data: T[]): void {
 		let inputArray = new Array();
 		inputArray.push(...data);
-		inputArray.forEach(item => item.id = generateUuid());
 		this.setItems(inputArray);
-
 	}
-
-
 
 	dispose(): void {
 
