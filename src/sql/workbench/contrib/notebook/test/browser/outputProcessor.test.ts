@@ -131,6 +131,6 @@ suite('OutputProcessor functions', function (): void {
 	});
 });
 
-function getRandom<T>(...list: T[]) {
+function getRandom<T>(...list: T[]): T {
 	return list[Math.floor((Math.random() * list.length))];
 }
