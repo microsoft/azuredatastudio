@@ -314,6 +314,7 @@ export class GuidedTour extends Disposable {
 
 Registry.as<IWorkbenchActionRegistry>(Extensions.WorkbenchActions)
 	.registerWorkbenchAction(SyncActionDescriptor.create(GuidedTourAction, GuidedTourAction.ID, GuidedTourAction.LABEL), 'Help: Getting Started Guided Tour', localize('help', "Help"));
+
 Registry.as<IWorkbenchActionRegistry>(Extensions.WorkbenchActions)
 	.registerWorkbenchAction(SyncActionDescriptor.create(HideGuidedTourAction, HideGuidedTourAction.ID, HideGuidedTourAction.LABEL, { primary: KeyCode.Escape }, IS_OVERLAY_VISIBLE), 'Help: Hide Getting Started Guided Tour', localize('help', "Help"));
 
