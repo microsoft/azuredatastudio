@@ -104,7 +104,7 @@ export class WorkbenchThemeService implements IWorkbenchThemeService {
 		@ILogService private readonly logService: ILogService
 	) {
 		this.container = layoutService.container;
-		const defaultThemeType = environmentService.configuration.defaultThemeType || DARK;
+		const defaultThemeType = environmentService.configuration.defaultThemeType || LIGHT; // {{SQL CARBON EDIT}} default to light theme
 		this.settings = new ThemeConfiguration(configurationService, defaultThemeType);
 
 		this.colorThemeRegistry = new ThemeRegistry(extensionService, colorThemesExtPoint, ColorThemeData.fromExtensionTheme);
