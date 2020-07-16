@@ -41,7 +41,7 @@ const mockTenantId = 'mock_tenant_id';
 
 const mockAccount: azdata.Account = {
 	key: {
-		accountId: 'mock_account',
+		accountId: '97915f6d-84fa-4926-b60c-38db64327ad7',
 		providerId: 'mock_provider'
 	},
 	displayInfo: {
@@ -49,7 +49,7 @@ const mockAccount: azdata.Account = {
 		accountType: 'Microsoft',
 		contextualDisplayName: 'test',
 		userId: 'test@email.com',
-		email: 'test@email.com'
+		email: '97915f6d-84fa-4926-b60c-38db64327ad7'
 	},
 	properties: {
 		tenants: [
