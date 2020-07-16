@@ -52,53 +52,57 @@
 	position: absolute;
 	right: 0;
 }
+
 .markdown-toolbar .carbon-taskbar li a {
 	display: flex;
 	height: 20px;
 	width: 20px;
-	-webkit-mask-position: center;
-	-webkit-mask-repeat: no-repeat;
-	mask-position: center;
-	mask-repeat: no-repeat;
 }
 
-.markdown-toolbar li a.codicon.bold {
+.markdown-toolbar li a.codicon.bold::before {
 	-webkit-mask-size: 50% 100%;
 	mask-size: 50% 100%;
 }
-.markdown-toolbar li a.codicon.italic {
+.markdown-toolbar li a.codicon.italic::before {
 	-webkit-mask-size: 60% 100%;
 	mask-size: 60% 100%;
 }
-.markdown-toolbar li a.codicon.highlight {
+
+.markdown-toolbar li a.codicon.underline::before{
+	-webkit-mask-size: 65% 100%;
+	mask-size: 60% 100%;
+}
+
+.markdown-toolbar li a.codicon.highlight::before {
 	-webkit-mask-size: 65% 100%;
 	mask-size: 65% 100%;
 }
-.markdown-toolbar li a.codicon.code {
+
+.markdown-toolbar li a.codicon.code::before {
 	-webkit-mask-size: 88% 100%;
 	mask-size: 88% 100%;
 }
-.markdown-toolbar li a.codicon.insert-link {
+.markdown-toolbar li a.codicon.insert-link::before {
 	-webkit-mask-size: 80% 100%;
 	mask-size: 80% 100%;
 }
-.markdown-toolbar li a.codicon.list {
+.markdown-toolbar li a.codicon.list::before {
 	-webkit-mask-size: 80% 100%;
 	mask-size: 80% 100%;
 }
-.markdown-toolbar li a.codicon.ordered-list {
+.markdown-toolbar li a.codicon.ordered-list::before {
 	-webkit-mask-size: 86% 100%;
 	mask-size: 86% 100%;
 }
-.markdown-toolbar li a.codicon.insertimage {
+.markdown-toolbar li a.codicon.insertimage::before {
 	-webkit-mask-size: 86% 100%;
 	mask-size: 86% 100%;
 }
-.markdown-toolbar li a.codicon.split-toggle-on {
+.markdown-toolbar li a.codicon.split-toggle-on::before {
 	-webkit-mask-size: 75% 100%;
 	mask-size: 75% 100%;
 }
-.markdown-toolbar li a.codicon.split-toggle-off {
+.markdown-toolbar li a.codicon.split-toggle-off::before {
 	-webkit-mask-size: 75% 100%;
 	mask-size: 75% 100%;
 }

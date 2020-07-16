@@ -324,47 +324,57 @@ Includes non-masked style declarations. */
 	mask-size: 50% 100%;
 }
 
-.codicon.bold {
+.codicon.masked-icon.bold::before {
 	-webkit-mask-image: url("toolbar-bold.svg");
 	mask-image: url("toolbar-bold.svg");
 }
-.codicon.italic {
+
+.codicon.masked-icon.italic::before {
 	-webkit-mask-image: url("toolbar-italic.svg");
 	mask-image: url("toolbar-italic.svg");
 }
-.codicon.underline {
+
+.codicon.masked-icon.underline::before {
 	-webkit-mask-image: url("toolbar-underline.svg");
 	mask-image: url("toolbar-underline.svg");
 }
-.codicon.highlight {
+
+.codicon.masked-icon.highlight::before {
 	-webkit-mask-image: url("toolbar-highlight.svg");
 	mask-image: url("toolbar-highlight.svg");
 }
-.codicon.code {
+
+.codicon.masked-icon.code::before {
 	-webkit-mask-image: url("toolbar-code.svg");
 	mask-image: url("toolbar-code.svg");
 }
-.codicon.insert-link {
+
+.codicon.masked-icon.insert-link::before {
 	-webkit-mask-image: url("toolbar-link.svg");
 	mask-image: url("toolbar-link.svg");
 }
-.codicon.list {
+
+.codicon.masked-icon.list::before {
 	-webkit-mask-image: url("toolbar-list.svg");
 	mask-image: url("toolbar-list.svg");
 }
-.codicon.ordered-list {
+
+.codicon.masked-icon.ordered-list::before {
 	-webkit-mask-image: url("toolbar-ordered-list.svg");
 	mask-image: url("toolbar-ordered-list.svg");
 }
-.codicon.insert-image {
+
+.codicon.masked-icon.insert-image::before {
 	-webkit-mask-image: url("toolbar-image.svg");
 	mask-image: url("toolbar-image.svg");
 }
-.codicon.split-toggle-on {
+
+.codicon.masked-icon.split-toggle-on::before {
 	-webkit-mask-image: url("toolbar-preview-toggle-on.svg");
 	mask-image: url("toolbar-preview-toggle-on.svg");
 }
-.codicon.split-toggle-off {
+
+.codicon.masked-icon.split-toggle-off::before {
 	-webkit-mask-image: url("toolbar-preview-toggle-off.svg");
 	mask-image: url("toolbar-preview-toggle-off.svg");
 }
