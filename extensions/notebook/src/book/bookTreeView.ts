@@ -382,7 +382,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	public async openNotebookFolder(): Promise<void> {
+	public async openNotebookFolder(urlToOpen?: string, showPreview?: boolean): Promise<void> {
 		const allFilesFilter = loc.allFiles;
 		let filter: any = {};
 		filter[allFilesFilter] = '*';
@@ -394,17 +394,17 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			openLabel: loc.labelSelectFolder
 		});
 		if (uris && uris.length > 0) {
-			await this.loadNotebooksInFolder(uris[0]?.fsPath);
+			await this.loadNotebooksInFolder(uris[0]?.fsPath, urlToOpen, showPreview);
 		}
 	}
 
-	public async loadNotebooksInFolder(folderPath: string) {
+	public async loadNotebooksInFolder(folderPath: string, urlToOpen?: string, showPreview?: boolean) {
 		let bookCollection = await this.getNotebooksInTree(folderPath);
 		for (let i = 0; i < bookCollection.bookPaths.length; i++) {
-			await this.openBook(bookCollection.bookPaths[i], undefined, false);
+			await this.openBook(bookCollection.bookPaths[i], urlToOpen, showPreview);
 		}
 		for (let i = 0; i < bookCollection.notebookPaths.length; i++) {
-			await this.openBook(bookCollection.notebookPaths[i], undefined, false, true);
+			await this.openBook(bookCollection.notebookPaths[i], urlToOpen, showPreview, true);
 		}
 	}
 
