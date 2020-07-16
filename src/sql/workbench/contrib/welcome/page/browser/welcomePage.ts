@@ -316,9 +316,6 @@ class WelcomePage extends Disposable {
 			}
 			const workspacesToShow = workspaces.slice(0, 5);
 			const updateEntries = async () => {
-				while (ul.firstChild) {
-					ul.removeChild(ul.firstChild);
-				}
 				await this.mapListEntries(workspacesToShow, fileService, container);
 			};
 			await updateEntries();
@@ -680,25 +677,30 @@ class WelcomePage extends Disposable {
 		return result;
 	}
 
+	private called: boolean;
 	private async mapListEntries(recents: (IRecentWorkspace | IRecentFolder)[], fileService: IFileService, container: HTMLElement): Promise<HTMLElement[]> {
-		const result: HTMLElement[] = [];
-		for (let i = 0; i < recents.length; i++) {
-			const recent = recents[i];
-			let relativePath: string;
-			let fullPath: URI;
-			let windowOpenable: IWindowOpenable;
-			if (isRecentFolder(recent)) {
-				windowOpenable = { folderUri: recent.folderUri };
-				relativePath = recent.label || this.labelService.getWorkspaceLabel(recent.folderUri, { verbose: true });
-				fullPath = recent.folderUri;
-			} else {
-				relativePath = recent.label || this.labelService.getWorkspaceLabel(recent.workspace, { verbose: true });
-				windowOpenable = { workspaceUri: recent.workspace.configPath };
+		if (!this.called) {
+			this.called = true;
+			const result: HTMLElement[] = [];
+			for (let i = 0; i < recents.length; i++) {
+				const recent = recents[i];
+				let relativePath: string;
+				let fullPath: URI;
+				let windowOpenable: IWindowOpenable;
+				if (isRecentFolder(recent)) {
+					windowOpenable = { folderUri: recent.folderUri };
+					relativePath = recent.label || this.labelService.getWorkspaceLabel(recent.folderUri, { verbose: true });
+					fullPath = recent.folderUri;
+				} else {
+					relativePath = recent.label || this.labelService.getWorkspaceLabel(recent.workspace, { verbose: true });
+					windowOpenable = { workspaceUri: recent.workspace.configPath };
+				}
+				const elements = await this.createListEntries(container, fileService, fullPath, windowOpenable, relativePath);
+				result.push(...elements);
 			}
-			const elements = await this.createListEntries(container, fileService, fullPath, windowOpenable, relativePath);
-			result.push(...elements);
+			return result;
 		}
-		return result;
+		return null;
 	}
 
 	private addExtensionList(container: HTMLElement, listSelector: string): void {
