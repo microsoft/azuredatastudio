@@ -61,9 +61,6 @@ export class ServerInstanceUtils {
 	public copy(src: string, dest: string): Promise<void> {
 		return fs.copy(src, dest);
 	}
-	public copyFIles(src: string, dest: string): Promise<void> {
-		return fs.copyFile(src, dest);
-	}
 	public async exists(path: string): Promise<boolean> {
 		try {
 			await fs.access(path);
@@ -121,6 +118,7 @@ export class PerFolderServerInstance implements IServerInstance {
 	 */
 	private instanceDataRoot: string;
 
+	private _systemJupyterDir: string;
 	private _port: string;
 	private _uri: vscode.Uri;
 	private _isStarted: boolean = false;
@@ -215,15 +213,11 @@ export class PerFolderServerInstance implements IServerInstance {
 
 	private async copyKernelsToSystemJupyterDirs(): Promise<void> {
 		let kernelsExtensionSource = path.join(this.options.install.extensionPath, 'kernels');
-		let copyDir = path.join(this.getSystemJupyterHomeDir(), 'kernels');
-		if (this.options.install.runningOnSaw) {
-			kernelsExtensionSource = path.join(kernelsExtensionSource, 'powershell');
-			copyDir = path.join(copyDir, 'powershell');
+		this._systemJupyterDir = path.join(this.getSystemJupyterHomeDir(), 'kernels');
+		if (!(await this.utils.exists(this._systemJupyterDir))) {
+			await this.utils.mkDir(this._systemJupyterDir, this.options.install.outputChannel);
 		}
-		if (!(await this.utils.exists(copyDir))) {
-			await this.utils.mkDir(copyDir, this.options.install.outputChannel);
-		}
-		await this.utils.copy(kernelsExtensionSource, copyDir);
+		await this.utils.copy(kernelsExtensionSource, this._systemJupyterDir);
 	}
 
 	private getSystemJupyterHomeDir(): string {
