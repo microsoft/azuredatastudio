@@ -614,7 +614,13 @@ export abstract class AzureAuth implements vscode.Disposable {
 			accountIssuer = 'msft';
 		}
 
-		const displayName = tokenClaims.name ?? tokenClaims.email ?? tokenClaims.unique_name;
+		const name = tokenClaims.name ?? tokenClaims.email ?? tokenClaims.unique_name;
+		const email = tokenClaims.email ?? tokenClaims.unique_name;
+
+		let displayName = name;
+		if (email) {
+			displayName = `${displayName} - ${email}`;
+		}
 
 		let contextualDisplayName: string;
 		switch (accountIssuer) {
@@ -643,7 +649,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 				userId: key,
 				contextualDisplayName: contextualDisplayName,
 				displayName,
-				email: tokenClaims.email ?? tokenClaims.unique_name
+				email,
+				name,
 			},
 			properties: {
 				providerSettings: this.metadata,

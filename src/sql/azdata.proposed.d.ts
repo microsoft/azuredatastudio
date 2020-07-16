@@ -487,6 +487,7 @@ declare module 'azdata' {
 
 	export interface AccountDisplayInfo {
 		email?: string;
+		name?: string;
 	}
 
 }
