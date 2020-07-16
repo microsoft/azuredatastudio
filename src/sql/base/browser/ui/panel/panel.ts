@@ -284,7 +284,7 @@ export class TabbedPanel extends Disposable {
 				}
 			}
 			if (!this._shownTabId && this._tabMap.size > 0) {
-				this.showTab(this._tabMap.values()[0].tab.identifier);
+				this.showTab(this._tabMap.values().next().value.tab.identifier);
 			}
 		}
 
