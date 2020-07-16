@@ -484,4 +484,9 @@ declare module 'azdata' {
 		childProvider?: string;
 		type?: ExtensionNodeType;
 	}
+
+	export interface AccountDisplayInfo {
+		email?: string;
+	}
+
 }

@@ -73,8 +73,8 @@ export class AccountPickerListRenderer implements IListRenderer<azdata.Account, 
 		templateData.contextualDisplayName.innerText = account.displayInfo.contextualDisplayName;
 
 		// show the account display name text, something like "User Name (user@email.com)"
-		if (account.displayInfo.userId && account.displayInfo.displayName) {
-			templateData.displayName.innerText = account.displayInfo.displayName + ' (' + account.displayInfo.userId + ')';
+		if (account.displayInfo.userId && account.displayInfo.email) {
+			templateData.displayName.innerText = account.displayInfo.displayName + ' (' + account.displayInfo.email + ')';
 		} else {
 			templateData.displayName.innerText = account.displayInfo.displayName;
 		}
