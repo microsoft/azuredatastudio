@@ -267,10 +267,12 @@ describe ('ProjectsController', function(): void {
 					holler = publishHoller;
 					return Promise.resolve(undefined);
 				});
-				projController.setup(x => x.readPublishProfile(TypeMoq.It.isAny())).returns(() => {
+				projController.setup(x => x.readPublishProfileCallback(TypeMoq.It.isAny())).returns(() => {
 					holler = profileHoller;
 					return Promise.resolve({
 						databaseName: '',
+						connectionId: '',
+						connectionString: '',
 						sqlCmdVariables: {}
 					});
 				});
@@ -291,21 +293,11 @@ describe ('ProjectsController', function(): void {
 				should(holler).equal(generateHoller, 'executionCallback() is supposed to have been setup and called for GenerateScript scenario');
 
 				dialog = await projController.object.publishProject(proj);
-				await projController.object.readPublishProfile(vscode.Uri.parse('test'));
+				await projController.object.readPublishProfileCallback(vscode.Uri.parse('test'));
 
 				should(holler).equal(profileHoller, 'executionCallback() is supposed to have been setup and called for ReadPublishProfile scenario');
 			});
 
-			it('Should read database name and SQLCMD variables from publish profile', async function (): Promise<void> {
-				await baselines.loadBaselines();
-				let profilePath = await testUtils.createTestFile(baselines.publishProfileBaseline, 'publishProfile.publish.xml');
-				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
-
-				let result = await projController.readPublishProfile(vscode.Uri.file(profilePath));
-				should(result.databaseName).equal('targetDb');
-				should(Object.keys(result.sqlCmdVariables).length).equal(1);
-				should(result.sqlCmdVariables['ProdDatabaseName']).equal('MyProdDatabase');
-			});
 
 			it('Should copy dacpac to temp folder before publishing', async function (): Promise<void> {
 				const fakeDacpacContents = 'SwiftFlewHiawathasArrow';
