@@ -345,8 +345,8 @@ Includes non-masked style declarations. */
 }
 
 .codicon.masked-icon.code::before {
-	-webkit-mask-image: url("toolbar-code.svg");
-	mask-image: url("toolbar-code.svg");
+	-webkit-mask-image: url("code.svg");
+	mask-image: url("code.svg");
 }
 
 .codicon.masked-icon.insert-link::before {
@@ -378,10 +378,7 @@ Includes non-masked style declarations. */
 	-webkit-mask-image: url("toolbar-preview-toggle-off.svg");
 	mask-image: url("toolbar-preview-toggle-off.svg");
 }
-.codicon.code {
-	-webkit-mask-image: url("code.svg");
-	mask-image: url("code.svg");
-}
+
 .codicon.markdown {
 	-webkit-mask-image: url("markdown.svg");
 	mask-image: url("markdown.svg");
