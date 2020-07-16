@@ -9,18 +9,13 @@ import * as should from 'should';
 
 describe('Main Controller', function () {
 	let testExtensionContext: TestExtensionContext;
-  
+
 	beforeEach(async function () {
-		// creating a mock Extension Context with current extensionPath
 		testExtensionContext = await ImportTestUtils.getTestExtensionContext();
 	});
 
 	it('Extension activates successfully', async function () {
-		// using vscode and azdata APIs available during tests
-		mockApiWrapper.callBase = true;
-    
-		let mainController = new MainController(testExtensionContext, mockApiWrapper.object);
-    
+		let mainController = new MainController(testExtensionContext);
 		should.doesNotThrow(() => mainController.activate());
 	});
 });
