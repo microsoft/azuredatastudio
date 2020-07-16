@@ -15,11 +15,11 @@ interface IActionMetadata {
 	description?: string,
 	link?: string,
 	iconPath?: { light: string | vscode.Uri; dark: string | vscode.Uri },
-	command?: string;
+	command?: string
 }
 
 const maxWidth = 800;
-const headerMaxHeight = 270;
+const headerMaxHeight = 240;
 export class DashboardWidget {
 
 	/**
@@ -42,7 +42,7 @@ export class DashboardWidget {
 					CSSStyles: {
 						'background-image': `url(${vscode.Uri.file(this.asAbsolutePath('images/background.svg'))}), linear-gradient(0deg, #F0F0F0 0%, rgba(242,242,242,0) 100%, rgba(242,242,242,0.04) 100%)`,
 						'background-repeat': 'no-repeat',
-						'background-position': 'bottom',
+						'background-position': 'center',
 						'width': `${maxWidth}px`,
 						'height': '240px',
 						'background-size': `${maxWidth}px ${headerMaxHeight}px`
@@ -63,7 +63,7 @@ export class DashboardWidget {
 						position: 'absolute'
 					}).component();
 				mainContainer.addItem(container, {
-					CSSStyles: { 'padding-top': '25px', 'padding-left': '5px' }
+					CSSStyles: { 'padding-top': '25px' }
 				});
 				await view.initializeModel(mainContainer);
 				resolve();
@@ -100,9 +100,8 @@ export class DashboardWidget {
 		const tasksContainer = await this.createTasks(view);
 		header.addItem(tasksContainer, {
 			CSSStyles: {
-				'justify-content': 'space-around',
 				'height': '84px',
-				'width': `${maxWidth}px`,
+				'width': `${maxWidth}px`
 			}
 		});
 
@@ -468,6 +467,12 @@ export class DashboardWidget {
 			width: '100%',
 			height: '84px',
 		}).component();
+		tasksContainer.updateCssStyles(
+			{
+				'justify-content': 'space-around',
+				'margin-top': '87px'
+			}
+		);
 		const predictionMetadata: IActionMetadata = {
 			title: constants.makePredictionTitle,
 			description: constants.makePredictionDesc,
@@ -506,8 +511,6 @@ export class DashboardWidget {
 
 		tasksContainer.addItems([importModelsButton, predictionButton, notebookModelsButton], {
 			CSSStyles: {
-				'background-color': '#FFFFFF'
-				//'padding': '12px'
 			}
 		});
 		if (!await this._predictService.serverSupportOnnxModel()) {
@@ -555,7 +558,7 @@ export class DashboardWidget {
 			}
 		}).component();
 		const image = view.modelBuilder.image().withProperties({
-			width: '32x',
+			width: '32px',
 			height: '32px',
 			iconPath: taskMetaData.iconPath,
 			iconHeight: '32px',
@@ -583,10 +586,10 @@ export class DashboardWidget {
 		});
 		mainContainer.addItems([iconContainer], {
 			CSSStyles: {
-				'padding': '10px',
-				'border-radius': '5px',
-				'border-color': '#f2f2f2',
-				'border': '1px solid'
+				'background-color': '#FFFFFF',
+				'border-radius': '4px',
+				'box-shadow': '0px 3px 8px rgba(0, 0, 0, 0.14)',
+				'padding': '10px'
 			}
 		});
 		mainContainer.onDidClick(async () => {
