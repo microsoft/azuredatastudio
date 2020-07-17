@@ -13,28 +13,28 @@ describe('Schema Compare Options Model', () => {
 		should.notEqual(model.getOptionsData(), undefined, "Options shouldn't be undefined");
 		should.notEqual(model.getObjectsData(), undefined, "Objects shouldn't be udnefined");
 
-		should.doesNotThrow(() => model.SetDeploymentOptions());
-		should.doesNotThrow(() => model.SetObjectTypeOptions());
+		should.doesNotThrow(() => model.setDeploymentOptions());
+		should.doesNotThrow(() => model.setObjectTypeOptions());
 
-		should.equal(model.GetSchemaCompareOptionUtil(''), false, "Should return false if an invalid option is passed in");
-		should.equal(model.GetSchemaCompareIncludedObjectsUtil(''), false, "Should return false if invalid object name is passed in");
+		should(model.getSchemaCompareOptionUtil('')).be.false("Should return false if an invalid option is passed in");
+		should(model.getSchemaCompareIncludedObjectsUtil('')).be.false("Should return false if invalid object name is passed in");
 	});
 
 	it('Should exclude objects', function (): void {
 		const model = new SchemaCompareOptionsModel(defaultOptions);
-		should.equal(model.excludedObjectTypes.length, 0, "There shuld be no excluded objects");
+		should(model.excludedObjectTypes.length).be.equal(0, "There shuld be no excluded objects");
 
 		model.objectTypeLabels.forEach(l => {
-			model.SetSchemaCompareIncludedObjectsUtil(l, false);
+			model.setSchemaCompareIncludedObjectsUtil(l, false);
 		});
 
-		should.equal(model.excludedObjectTypes.length, model.objectTypeLabels.length, "All the object types should be excluded");
+		should(model.excludedObjectTypes.length).be.equal(model.objectTypeLabels.length, "All the object types should be excluded");
 	});
 
 	it('Should get descriptions', function (): void {
 		const model = new SchemaCompareOptionsModel(defaultOptions);
 		model.optionsLabels.forEach(l => {
-			should.notEqual(model.GetDescription(l), undefined);
+			should(model.getDescription(l)).not.equal(undefined);
 		});
 	});
 });

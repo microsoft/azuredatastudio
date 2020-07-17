@@ -64,8 +64,8 @@ export class SchemaCompareOptionsDialog {
 	}
 
 	protected async execute() {
-		this.optionsModel.SetDeploymentOptions();
-		this.optionsModel.SetObjectTypeOptions();
+		this.optionsModel.setDeploymentOptions();
+		this.optionsModel.setObjectTypeOptions();
 		this.schemaComparison.setDeploymentOptions(this.deploymentOptions);
 
 		if (this.optionsChanged) {
@@ -122,7 +122,7 @@ export class SchemaCompareOptionsDialog {
 				let row = this.optionsTable.selectedRows[0];
 				let label = this.optionsModel.optionsLabels[row];
 				this.descriptionText.updateProperties({
-					value: this.optionsModel.GetDescription(label)
+					value: this.optionsModel.getDescription(label)
 				});
 			}));
 

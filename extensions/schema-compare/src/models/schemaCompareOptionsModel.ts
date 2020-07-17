@@ -170,7 +170,7 @@ export class SchemaCompareOptionsModel {
 		let data = [];
 		this.optionsLookup = {};
 		this.optionsLabels.forEach(l => {
-			let checked: boolean = this.GetSchemaCompareOptionUtil(l);
+			let checked: boolean = this.getSchemaCompareOptionUtil(l);
 			data.push([checked, l]);
 			this.optionsLookup[l] = checked;
 		});
@@ -181,20 +181,20 @@ export class SchemaCompareOptionsModel {
 		let data = [];
 		this.objectsLookup = {};
 		this.objectTypeLabels.forEach(l => {
-			let checked: boolean = this.GetSchemaCompareIncludedObjectsUtil(l);
+			let checked: boolean = this.getSchemaCompareIncludedObjectsUtil(l);
 			data.push([checked, l]);
 			this.objectsLookup[l] = checked;
 		});
 		return data;
 	}
 
-	public SetDeploymentOptions() {
+	public setDeploymentOptions() {
 		for (let option in this.optionsLookup) {
-			this.SetSchemaCompareOptionUtil(option, this.optionsLookup[option]);
+			this.setSchemaCompareOptionUtil(option, this.optionsLookup[option]);
 		}
 	}
 
-	public SetSchemaCompareOptionUtil(label: string, value: boolean) {
+	public setSchemaCompareOptionUtil(label: string, value: boolean) {
 		switch (label) {
 			case loc.IgnoreTableOptions:
 				this.deploymentOptions.ignoreTableOptions = value;
@@ -427,7 +427,7 @@ export class SchemaCompareOptionsModel {
 		}
 	}
 
-	public GetSchemaCompareOptionUtil(label): boolean {
+	public getSchemaCompareOptionUtil(label): boolean {
 		switch (label) {
 			case loc.IgnoreTableOptions:
 				return this.deploymentOptions.ignoreTableOptions;
@@ -660,14 +660,14 @@ export class SchemaCompareOptionsModel {
 		return false;
 	}
 
-	public SetObjectTypeOptions() {
+	public setObjectTypeOptions() {
 		for (let option in this.objectsLookup) {
-			this.SetSchemaCompareIncludedObjectsUtil(option, this.objectsLookup[option]);
+			this.setSchemaCompareIncludedObjectsUtil(option, this.objectsLookup[option]);
 		}
 		this.deploymentOptions.excludeObjectTypes = this.excludedObjectTypes;
 	}
 
-	public GetSchemaCompareIncludedObjectsUtil(label): boolean {
+	public getSchemaCompareIncludedObjectsUtil(label): boolean {
 		switch (label) {
 			case loc.Aggregates:
 				return !isNullOrUndefined(this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.Aggregates)) ? false : true;
@@ -807,7 +807,7 @@ export class SchemaCompareOptionsModel {
 		return false;
 	}
 
-	public SetSchemaCompareIncludedObjectsUtil(label: string, included: boolean) {
+	public setSchemaCompareIncludedObjectsUtil(label: string, included: boolean) {
 		switch (label) {
 			case loc.Aggregates:
 				if (!included) {
@@ -1147,7 +1147,7 @@ export class SchemaCompareOptionsModel {
 		}
 	}
 
-	public GetDescription(label: string): string {
+	public getDescription(label: string): string {
 		switch (label) {
 			case loc.IgnoreTableOptions:
 				return loc.descriptionIgnoreTableOptions;
