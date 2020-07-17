@@ -123,6 +123,8 @@ export abstract class BasePage {
 			return db;
 		});
 
+		console.log('===2: ' + this.databaseValues);
+
 		if (idx >= 0) {
 			let tmp = this.databaseValues[0];
 			this.databaseValues[0] = this.databaseValues[idx];

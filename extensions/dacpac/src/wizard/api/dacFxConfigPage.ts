@@ -67,6 +67,7 @@ export abstract class DacFxConfigPage extends BasePage {
 
 	protected async populateServerDropdown(): Promise<boolean> {
 		let values = await this.getServerValues();
+
 		if (values === undefined) {
 			return false;
 		}

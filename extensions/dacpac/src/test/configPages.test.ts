@@ -5,10 +5,12 @@
 
 import 'mocha';
 import * as should from 'should';
+import * as sinon from 'sinon';
+import * as azdata from 'azdata';
 import { DataTierApplicationWizard, PageName } from '../wizard/dataTierApplicationWizard';
 import { DacFxDataModel } from '../wizard/api/models';
 import { TestContext, createContext } from './testContext';
-import { TestDeployConfigPage, TestExtractConfigPage } from './testDacFxConfigPages';
+import { TestDeployConfigPage, TestExtractConfigPage, TestImportConfigPage} from './testDacFxConfigPages';
 
 let wizard: DataTierApplicationWizard;
 let testContext: TestContext;
@@ -18,6 +20,10 @@ describe('Dacfx Wizard Pages', function (): void {
 		wizard = new DataTierApplicationWizard();
 		wizard.model = <DacFxDataModel>{};
 		wizard.model.server = undefined;
+	});
+
+	afterEach(function (): void {
+		sinon.restore();
 	});
 
 	it('Should open and edit deploy config page correctly', async () => {
@@ -74,4 +80,33 @@ describe('Dacfx Wizard Pages', function (): void {
 		await extractConfigPage.onPageLeave();
 		should.equal(extractConfigPage.Model.filePath, 'DummyPath.dacpac');
 	});
+
+	it('Should open and edit import config page correctly', async () => {
+		testContext = createContext();
+		wizard.setPages();
+		sinon.stub(azdata.connection, 'getConnections').resolves([mockConnectionProfile]);
+		sinon.stub(azdata.connection, 'listDatabases').resolves(['fakeDatabaseName']);
+
+		let importConfigPage = new TestImportConfigPage(wizard, wizard.pages.get(PageName.deployConfig).wizardPage, wizard.model, testContext.viewContext.view);
+		await importConfigPage.start();
+
+		let result = await importConfigPage.onPageEnter();
+		should(result).equal(true, 'onPageEnter() should successfullly load connection profiles');
+	});
 });
+
+const mockConnectionProfile: azdata.connection.ConnectionProfile = {
+	providerId: 'MSSQL',
+	connectionId: 'My Connection ID',
+	connectionName: 'My Connection',
+	serverName: 'My Server',
+	databaseName: 'My Database',
+	userName: 'My User',
+	password: 'My Pwd',
+	authenticationType: 'SqlLogin',
+	savePassword: false,
+	groupFullName: 'My groupName',
+	groupId: 'My GroupId',
+	saveProfile: true,
+	options: {}
+};
