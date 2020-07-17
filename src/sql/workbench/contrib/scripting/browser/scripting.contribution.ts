@@ -296,6 +296,7 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 		id: commands.ExplorerScriptCreateAction.ID,
 		title: commands.ExplorerScriptCreateAction.LABEL
 	},
+	when: ItemContextKey.ItemType.notEqualsTo('database'),
 	order: 2
 });
 //#endregion

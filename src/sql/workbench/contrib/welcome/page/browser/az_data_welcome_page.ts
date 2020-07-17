@@ -51,7 +51,7 @@ export default () => `
 					</div>
 					<div class="row header-bottom-nav-tiles ads-grid">
 						<div class="col">
-							<a class="header-bottom-nav-tile-link ads-welcome-page-link" href="command:registeredServers.addConnection">
+							<a class="header-bottom-nav-tile-link" href="command:registeredServers.addConnection">
 								<div class="header-bottom-nav-tile tile tile-connection">
 									<h3>${escape(localize('welcomePage.createConnection', "Create a connection"))}</h3>
 									<p>${escape(localize('welcomePage.createConnectionBody', "Connect to a database instance through the connection dialog."))}</p>
@@ -60,7 +60,7 @@ export default () => `
 							</a>
 						</div>
 						<div class="col">
-							<a class="header-bottom-nav-tile-link ads-welcome-page-link"
+							<a class="header-bottom-nav-tile-link"
 								href="command:workbench.action.files.newUntitledFile">
 								<div class="header-bottom-nav-tile tile tile-query">
 									<h3>${escape(localize('welcomePage.runQuery', "Run a query"))}</h3>
@@ -70,7 +70,7 @@ export default () => `
 							</a>
 						</div>
 						<div class="col">
-							<a class="header-bottom-nav-tile-link ads-welcome-page-link" href="command:notebook.command.new">
+							<a class="header-bottom-nav-tile-link" href="command:notebook.command.new">
 								<div class="header-bottom-nav-tile tile tile-notebook">
 									<h3>${escape(localize('welcomePage.createNotebook', "Create a notebook"))}</h3>
 									<p>${escape(localize('welcomePage.createNotebookBody', "Build a new notebook using a native notebook editor."))}</p>
@@ -79,7 +79,7 @@ export default () => `
 							</a>
 						</div>
 						<div class="col">
-							<a class="header-bottom-nav-tile-link ads-welcome-page-link" href="command:azdata.resource.deploy">
+							<a class="header-bottom-nav-tile-link" href="command:azdata.resource.deploy">
 								<div class="header-bottom-nav-tile tile tile-server">
 									<h3>${escape(localize('welcomePage.deployServer', "Deploy a server"))}</h3>
 									<p>${escape(localize('welcomePage.deployServerBody', "Create a new instance of SQL Server on the platform of your choice."))}</p>
@@ -95,13 +95,13 @@ export default () => `
 					<h2>${escape(localize('welcomePage.resources', "Resources"))}</h2>
 					<div class="tabs">
 						<input class="input" name="tabs" type="radio" id="tab-1" checked="checked" />
-						<label class="label" for="tab-1" tabIndex="0">${escape(localize('welcomePage.history', "History"))}</label>
+						<span class="label" for="tab-1" tabIndex="0">${escape(localize('welcomePage.history', "History"))}</span>
 						<div class="panel">
 							<div class="recent history">
 								<div class="flex list-header-container">
 									<i class="icon-document themed-icon"></i>
-									<h4 class="list-header">${escape(localize('welcomePage.name', "Name"))}</h4>
-									<h4 class="list-header-last-opened">${escape(localize('welcomePage.lastOpened', "Last Opened"))}</h4>
+									<span tabindex="0" class="list-header"><b>${escape(localize('welcomePage.name', "Name"))}</b></span>
+									<span tabindex="0" class="list-header-last-opened"><b>${escape(localize('welcomePage.lastOpened', "Last Opened"))}</b></span>
 								</div>
 								<ul class="list">
 									<!-- Filled programmatically -->
@@ -164,6 +164,7 @@ export default () => `
 			<div class="ads-homepage-section content extensions">
 				<div class="flex flex-j-between">
 					<h2>Extend your data studio</h2>
+					<a class="link-show-all flex" href="command:workbench.view.extensions">${escape(localize('welcomePage.showAll', "Show All"))} <span class="icon-arrow-right"></span></a>
 					<a class="link-show-all flex" href="command:workbench.view.extensions">${escape(localize('welcomePage.showAll', "Show All"))} <span class="icon-arrow-right"></span></a>
 				</div>
 				<div class="row ads-grid grip-gap-50">
