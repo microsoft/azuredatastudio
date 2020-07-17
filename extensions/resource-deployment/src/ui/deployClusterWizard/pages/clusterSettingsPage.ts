@@ -13,6 +13,7 @@ import { WizardPageBase } from '../../wizardPageBase';
 import * as VariableNames from '../constants';
 import { DeployClusterWizard } from '../deployClusterWizard';
 import { AuthenticationMode } from '../deployClusterWizardModel';
+import * as localizedConstants from '../../../localizedConstants';
 const localize = nls.loadMessageBundle();
 
 const ConfirmPasswordName = 'ConfirmPassword';
@@ -150,7 +151,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					variableName: VariableNames.DomainDNSName_VariableName
 				}, {
 					type: FieldType.Text,
-					label: localize('deployCluster.Realm', "Realm"),
+					label: localizedConstants.realm,
 					required: false,
 					variableName: VariableNames.Realm_VariableName,
 					description: localize('deployCluster.RealmDescription', "If not provided, the domain DNS name will be used as the default value.")

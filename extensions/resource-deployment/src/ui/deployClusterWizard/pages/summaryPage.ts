@@ -10,6 +10,7 @@ import { createSection, createGroupContainer, createFlexContainer, createLabel }
 import { WizardPageBase } from '../../wizardPageBase';
 import * as VariableNames from '../constants';
 import { AuthenticationMode } from '../deployClusterWizardModel';
+import * as localizedConstants from '../../../localizedConstants';
 const localize = nls.loadMessageBundle();
 
 export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
@@ -186,7 +187,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 						labelCSSStyles: { fontWeight: FontWeight.Bold }
 					}, {
 						type: FieldType.ReadonlyText,
-						label: localize('deployCluster.Realm', "Realm"),
+						label: localizedConstants.realm,
 						defaultValue: this.wizard.model.getStringValue(VariableNames.Realm_VariableName, ''),
 						labelCSSStyles: { fontWeight: FontWeight.Bold }
 					}]
