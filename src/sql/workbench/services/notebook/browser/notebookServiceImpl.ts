@@ -269,7 +269,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		}
 		// Filter out unusable kernels when running on a SAW
 		if (this.productService.quality === 'saw') {
-			standardKernels = standardKernels.filter(kernel => !kernel.blockedOnSaw);
+			standardKernels = standardKernels.filter(kernel => !kernel.blockedOnSAW);
 		}
 		this._providerToStandardKernels.set(providerUpperCase, standardKernels);
 	}

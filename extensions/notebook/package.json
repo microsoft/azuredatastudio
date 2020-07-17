@@ -507,7 +507,7 @@
           "connectionProviderIds": [
             "MSSQL"
           ],
-          "blockedOnSaw": true
+          "blockedOnSAW": true
         },
         {
           "name": "sparkkernel",
@@ -515,7 +515,7 @@
           "connectionProviderIds": [
             "MSSQL"
           ],
-          "blockedOnSaw": true
+          "blockedOnSAW": true
         },
         {
           "name": "sparkrkernel",
@@ -523,7 +523,7 @@
           "connectionProviderIds": [
             "MSSQL"
           ],
-          "blockedOnSaw": true
+          "blockedOnSAW": true
         },
         {
           "name": "python3",

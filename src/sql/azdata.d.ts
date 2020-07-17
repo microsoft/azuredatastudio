@@ -4547,7 +4547,6 @@ declare module 'azdata' {
 			readonly name: string;
 			readonly displayName: string;
 			readonly connectionProviderIds: string[];
-			readonly blockedOnSaw?: boolean;
 		}
 
 		export interface NotebookProvider {
