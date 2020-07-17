@@ -7,8 +7,8 @@ import * as should from 'should';
 import * as mssql from '../../../../mssql/src/mssql';
 import {SchemaCompareOptionsModel} from '../../models/schemaCompareOptionsModel';
 
-describe('Schema Compare Options Dialog', () => {
-	it('Should create model successfully ', async function (): Promise<void> {
+describe('Schema Compare Options Model', () => {
+	it('Should create model and set options successfully', async function (): Promise<void> {
 		const model = new SchemaCompareOptionsModel(defaultOptions);
 		should.notEqual(model.getOptionsData(), undefined);
 		should.notEqual(model.getObjectsData(), undefined);
@@ -16,12 +16,15 @@ describe('Schema Compare Options Dialog', () => {
 		should.doesNotThrow(() => model.SetObjectTypeOptions());
 	});
 
-	it('Should exclude objects correctly', async function (): Promise<void> {
+	it('Should exclude objects', async function (): Promise<void> {
 		const model = new SchemaCompareOptionsModel(defaultOptions);
+		should.equal(model.excludedObjectTypes.length, 0, "There shuld be no excluded objects");
+
 		model.objectTypeLabels.forEach(l => {
 			model.SetSchemaCompareIncludedObjectsUtil(l, false);
 		});
 
+		should.equal(model.excludedObjectTypes.length, model.objectTypeLabels.length, "All the object types should be excluded");
 	});
 
 	it('Should get descriptions', async function (): Promise<void> {
@@ -31,7 +34,6 @@ describe('Schema Compare Options Dialog', () => {
 		});
 	});
 });
-
 
 const defaultOptions: mssql.DeploymentOptions =  {
 	ignoreTableOptions: false,

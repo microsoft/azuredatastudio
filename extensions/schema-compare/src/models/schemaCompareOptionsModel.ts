@@ -8,7 +8,7 @@ import { isNullOrUndefined } from 'util';
 
 export class SchemaCompareOptionsModel {
 	public deploymentOptions: mssql.DeploymentOptions;
-	private excludedObjectTypes: mssql.SchemaObjectType[] = [];
+	public excludedObjectTypes: mssql.SchemaObjectType[] = [];
 
 	public optionsLookup = {};
 	public objectsLookup = {};
@@ -92,10 +92,6 @@ export class SchemaCompareOptionsModel {
 		loc.IgnoreColumnOrder,
 	].sort();
 
-	constructor(defaultOptions: mssql.DeploymentOptions) {
-		this.deploymentOptions = defaultOptions;
-	}
-
 	public objectTypeLabels: string[] = [
 		loc.Aggregates,
 		loc.ApplicationRoles,
@@ -165,6 +161,10 @@ export class SchemaCompareOptionsModel {
 		loc.ServerRoles,
 		loc.ServerTriggers
 	].sort();
+
+	constructor(defaultOptions: mssql.DeploymentOptions) {
+		this.deploymentOptions = defaultOptions;
+	}
 
 	public getOptionsData(): string[][] {
 		let data = [];
