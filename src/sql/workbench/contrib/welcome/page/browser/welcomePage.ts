@@ -369,7 +369,8 @@ class WelcomePage extends Disposable {
 			<li role="none" id="dropdown-windows-linux-only"><a role="menuitem" tabIndex="-1" class="move windows-only linux-only" href="command:workbench.action.files.openFile">${openFileCopy}</a></li`;
 		const getDropdownBtn = container.querySelector('#dropdown-btn-container .monaco-button') as HTMLElement;
 		getDropdownBtn.id = 'dropdown-btn';
-		getDropdownBtn.setAttribute('role', 'navigation');
+		getDropdownBtn.setAttribute('role', 'button');
+		getDropdownBtn.setAttribute('name', 'New');
 		getDropdownBtn.setAttribute('aria-haspopup', 'true');
 		getDropdownBtn.setAttribute('aria-controls', 'dropdown');
 		nav.setAttribute('role', 'navigation');
@@ -387,6 +388,8 @@ class WelcomePage extends Disposable {
 		let openFileButton = this._register(new Button(fileBtnContainer));
 		openFileButton.label = openFileText;
 		const getNewFileBtn = container.querySelector('#open-file-btn-container .monaco-button') as HTMLAnchorElement;
+		getNewFileBtn.setAttribute('role', 'button');
+		getNewFileBtn.setAttribute('name', 'Open File');
 		const body = document.querySelector('body');
 
 		if (body.classList.contains('windows') || body.classList.contains('linux')) {
@@ -752,6 +755,7 @@ class WelcomePage extends Disposable {
 				getDropdownBtn.title = extension.title || (extension.isKeymap ? localize('welcomePage.installKeymap', "Install {0} keymap", extension.name) : localize('welcomePage.installExtensionPack', "Install additional support for {0}", extension.name));
 				getDropdownBtn.setAttribute('aria-haspopup', 'true');
 				getDropdownBtn.setAttribute('aria-controls', 'dropdown');
+				getDropdownBtn.setAttribute('role', 'button');
 				getDropdownBtn.id = 'dropdown-btn';
 				getDropdownBtn.classList.add('installExtension');
 				getDropdownBtn.setAttribute('data-extension', extension.id);
