@@ -162,8 +162,8 @@
 	line-height: 1.6em
 }
 
-.ads-homepage .btn-primary {
-	border: 1px solid
+.btn-primary .monaco-button, .btn-secondary .monaco-button {
+	height: 28px;
 }
 
 .ads-homepage .btn-primary:hover {
@@ -402,28 +402,13 @@
 	mask-size: 12px 12px
 }
 
-.ads-homepage .icon-arrow-down {
-	position: relative;
-	height: 20px;
-	width: 18px;
-	display: inline-block
+.ads_homepage .codicon-chevron-right {
+	transform: rotate(90deg);
 }
 
-.ads-homepage .icon-arrow-down:before {
-	position: absolute;
-	font: normal normal normal 16px/1 codicon;
-	text-decoration: none;
-	text-rendering: auto;
-	text-align: center;
-	-webkit-font-smoothing: antialiased;
-	display: inline-block;
-	width: 11px;
-	height: 6px;
-	content: "";
-	transform: rotate(90deg);
-	top: -1px;
-	bottom: 5px;
-	margin: auto
+.ads_homepage .monaco-text-button {
+	min-width: 77px;
+	margin: 10px 0;
 }
 
 .ads-homepage .codicon-chevron-right {

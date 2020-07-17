@@ -165,6 +165,7 @@ export default () => `
 				<div class="flex flex-j-between">
 					<h2>Extend your data studio</h2>
 					<a class="link-show-all flex" href="command:workbench.view.extensions">${escape(localize('welcomePage.showAll', "Show All"))} <span class="icon-arrow-right"></span></a>
+					<a class="link-show-all flex" href="command:workbench.view.extensions">${escape(localize('welcomePage.showAll', "Show All"))} <span class="icon-arrow-right"></span></a>
 				</div>
 				<div class="row ads-grid grip-gap-50">
 					<div
