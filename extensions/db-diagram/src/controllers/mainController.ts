@@ -3,11 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-//import * as path from 'path';
-//import { promises as fs} from 'fs';
+
 import ControllerBase from './controllerBase';
 import * as vscode from 'vscode';
-//import { ApiWrapper } from '../common/apiWrapper';
 import * as azdata from 'azdata';
 
 /**
@@ -30,111 +28,106 @@ export default class MainController extends ControllerBase {
 		return new Promise<boolean>(async (resolve) => {
 			vscode.commands.registerCommand('db-diagram.new', async () => {
 
-				//initialize data models from sqlToolsService required
+				//Configure data models
+				let tableSummary = 'This is a summary of a table';
 
-				const dashboard = azdata.window.createModelViewDashboard('Test Dashboard');
+
+				const dashboard = azdata.window.createModelViewDashboard('DB Diagram');
 				dashboard.registerTabs(async (view: azdata.ModelView) => {
-					// Tab with toolbar
-					const button = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-						label: 'Add databases tab',
-						// iconPath: {
-						// 	light: context.asAbsolutePath('images/compare.svg'),
-						// 	dark: context.asAbsolutePath('images/compare-inverse.svg')
-						// }
+
+					let searchBar = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+						validationErrorMessage: 'validation error message',
+						readOnly: false,
 					}).component();
 
-					const toolbar = view.modelBuilder.toolbarContainer().withItems([button]).withLayout({
-						orientation: azdata.Orientation.Horizontal
+					let granularitySelector = view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
+						value: 'Granularity Selector',
+						values: ['Database', 'Table'],
+						editable: false,
+						fireOnTextChange: false,
+						required: false,
 					}).component();
 
-					const input1 = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({ value: 'input 1' }).component();
+					let summaryTitle = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+						value: 'Summary'
+					}).component();
+
+					let summaryDescription = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+						value: tableSummary
+					}).component();
+
+					let summaryCard = view.modelBuilder.flexContainer()
+						.withLayout({
+							flexFlow: 'column',
+							alignItems: 'center'
+						})
+						.withItems([
+							summaryTitle, summaryDescription
+						])
+						.component();
+
+
+					let relationshipsTitle = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+						value: 'Relationships'
+					}).component();
+
+					let relationshipsTable = view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
+						data: null, //need to consult how to populate these datatables
+						columns: null,
+						fontSize: null,
+						selectedRows: null,
+						forceFitColumns: null,
+						title: null,
+						ariaRowCount: null,
+						ariaColumnCount: null,
+						updateCells: null,
+						moveFocusOutWithTab: null
+					}).component();
+
+					let relationshipsCard = view.modelBuilder.flexContainer()
+						.withLayout({
+							flexFlow: 'column',
+							alignItems: 'center'
+						})
+						.withItems([
+							relationshipsTitle, relationshipsTable
+						])
+						.component();
+
+					let columnsTitle = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+						value: 'Columns'
+					}).component();
+
+					let columnsTable = view.modelBuilder.table().component();
+
+					let columnsCard = view.modelBuilder.flexContainer()
+						.withLayout({
+							flexFlow: 'column',
+							alignItems: 'center',
+						})
+						.withItems([
+							columnsTitle, columnsTable
+						])
+						.component();
+
+					let mainModel = view.modelBuilder.flexContainer()
+						.withLayout({
+							flexFlow: 'row',
+							alignItems: 'center'
+						})
+						.withItems([
+							searchBar, granularitySelector, summaryCard, columnsCard, relationshipsCard
+						])
+						.component();
+
 					const homeTab: azdata.DashboardTab = {
 						id: 'home',
-						toolbar: toolbar,
-						content: input1,
+						content: mainModel,
 						title: 'Home',
-						// icon: context.asAbsolutePath('images/home.svg') // icon can be the path of a svg file
 					};
 
-					// Tab with nested tabbed Panel
-					const addTabButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: 'Add a tab', width: '150px' }).component();
-					const removeTabButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: 'Remove a tab', width: '150px' }).component();
-					const container = view.modelBuilder.flexContainer().withItems([addTabButton, removeTabButton]).withLayout({ flexFlow: 'column' }).component();
-					const nestedTab1 = {
-						title: 'Tab1',
-						content: container,
-						id: 'tab1',
-						// icon: {
-						// 	light: context.asAbsolutePath('images/user.svg'),
-						// 	dark: context.asAbsolutePath('images/user_inverse.svg') // icon can also be theme aware
-						// }
-					};
+					return [homeTab];
 
-					const input2 = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({ value: 'input 2' }).component();
-					const nestedTab2 = {
-						title: 'Tab2',
-						content: input2,
-						// icon: {
-						// 	light: context.asAbsolutePath('images/group.svg'),
-						// 	dark: context.asAbsolutePath('images/group_inverse.svg')
-						// },
-						id: 'tab2'
-					};
-
-					const input3 = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({ value: 'input 4' }).component();
-					const nestedTab3 = {
-						title: 'Tab3',
-						content: input3,
-						id: 'tab3'
-					};
-
-					const tabbedPanel = view.modelBuilder.tabbedPanel().withTabs([
-						nestedTab1, nestedTab2
-					]).withLayout({
-						orientation: azdata.TabOrientation.Horizontal,
-						showIcon: true
-					}).component();
-
-
-					addTabButton.onDidClick(() => {
-						tabbedPanel.updateTabs([nestedTab1, nestedTab2, nestedTab3]);
-					});
-
-					removeTabButton.onDidClick(() => {
-						tabbedPanel.updateTabs([nestedTab1, nestedTab3]);
-					});
-
-					const settingsTab: azdata.DashboardTab = {
-						id: 'settings',
-						content: tabbedPanel,
-						title: 'Settings',
-						//icon: context.asAbsolutePath('images/default.svg')
-					};
-
-					// You can also add a tab group
-					const securityTabGroup: azdata.DashboardTabGroup = {
-						title: 'Security',
-						tabs: [
-							settingsTab
-						]
-					};
-
-					// Databases tab
-					const databasesText = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({ value: 'This is databases tab', width: '200px' }).component();
-					const databasesTab: azdata.DashboardTab = {
-						id: 'databases',
-						content: databasesText,
-						title: 'Databases',
-						//icon: context.asAbsolutePath('images/default.svg')
-					};
-					button.onDidClick(() => {
-						dashboard.updateTabs([homeTab, databasesTab, securityTabGroup]);
-					});
-
-					return [
-						homeTab,
-						securityTabGroup
-					];
 				});
 				await dashboard.open();
 			});
@@ -146,8 +139,3 @@ export default class MainController extends ControllerBase {
 	}
 
 }
-
-
-
-
-

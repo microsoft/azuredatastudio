@@ -21,8 +21,6 @@ export default abstract class ControllerBase implements vscode.Disposable {
 
 	abstract deactivate(): void;
 
-
-
 	public dispose(): void {
 		this.deactivate();
 	}

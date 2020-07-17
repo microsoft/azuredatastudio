@@ -7,17 +7,9 @@
 
 export default interface INodeModel {
 
-	//Name of the node
 	name: string;
-	//Summary of the node
 	summary: string;
-	//Map containing related tables pointing to cardinalities,
-	//<Connected Node, Relationship Information>
 	relationships: Map<INodeModel, JSON>;
-
-	getName(): string;
-	getSummary(): string;
-	getRelationships(): Map<INodeModel, JSON>;
-
+	metadata: JSON;
 
 }

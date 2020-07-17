@@ -9,8 +9,6 @@ export default interface INetworkGraphModel {
 	name: string;
 	summary: string;
 	nodes: INodeModel[];
-	getName(): string;
-	getSummary(): string;
-	getNodes(): INodeModel[];
+	metadata: JSON;
 
 }
