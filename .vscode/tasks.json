@@ -66,22 +66,18 @@
 		},
 		{
 			"type": "npm",
-			"script": "strict-vscode-watch",
-			"label": "TS - Strict VSCode",
-			"isBackground": true,
+			"script": "kill-watch-clientd",
+			"label": "Kill Build VS Code Core",
+			"group": "build",
 			"presentation": {
 				"reveal": "never"
 			},
-			"problemMatcher": {
-				"base": "$tsc-watch",
-				"owner": "typescript-vscode",
-				"applyTo": "allDocuments"
-			}
+			"problemMatcher": "$tsc"
 		},
 		{
 			"type": "npm",
-			"script": "kill-watchd",
-			"label": "Kill Build VS Code",
+			"script": "kill-watch-extensionsd",
+			"label": "Kill Build VS Code Extensions",
 			"group": "build",
 			"presentation": {
 				"reveal": "never"
@@ -95,6 +91,20 @@
 				"Kill Build VS Code Extensions"
 			],
 			"group": "build"
+		},
+		{
+			"type": "npm",
+			"script": "strict-vscode-watch",
+			"label": "TS - Strict VSCode",
+			"isBackground": true,
+			"presentation": {
+				"reveal": "never"
+			},
+			"problemMatcher": {
+				"base": "$tsc-watch",
+				"owner": "typescript-vscode",
+				"applyTo": "allDocuments"
+			}
 		},
 		{
 			"type": "npm",
