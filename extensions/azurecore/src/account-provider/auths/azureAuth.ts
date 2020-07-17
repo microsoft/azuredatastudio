@@ -451,7 +451,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		};
 
 		// The user wants to ignore this tenant.
-		if (getTenantConfigurationSet().has(tenant?.displayName ?? tenant?.id)) {
+		if (getTenantConfigurationSet().has(tenant.id)) {
 			return false;
 		}
 
