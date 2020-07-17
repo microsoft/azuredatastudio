@@ -154,8 +154,7 @@ export class QueryTextEditor extends BaseTextEditor {
 			this._editorWorkspaceConfig = this.workspaceConfigurationService.getValue('editor');
 			this._lineHeight = editorWidget.getOption(EditorOption.lineHeight) || 18;
 		}
-		let wordWrapEnabled: boolean = this._editorWorkspaceConfig && this._editorWorkspaceConfig['wordWrap'] && this._editorWorkspaceConfig['wordWrap'] === 'on' ? true : false;
-		if (wordWrapEnabled) {
+		if (layoutInfo.isViewportWrapping) {
 			for (let line = 1; line <= lineCount; line++) {
 				// 2 columns is equivalent to the viewport column width and the edge of the editor
 				if (editorWidgetModel.getLineMaxColumn(line) >= layoutInfo.viewportColumn + 2) {
