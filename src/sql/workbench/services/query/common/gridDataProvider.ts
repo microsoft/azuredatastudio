@@ -102,7 +102,7 @@ export async function getResultsString(provider: IGridDataProvider, selection: S
 
 	let copyString = '';
 	if (includeHeaders) {
-		copyString = [...headers.values()].join('\t').concat(eol);
+		copyString = Array.from(headers.values()).join('\t').concat(eol);
 	}
 
 	const rowKeys = [...headers.keys()];

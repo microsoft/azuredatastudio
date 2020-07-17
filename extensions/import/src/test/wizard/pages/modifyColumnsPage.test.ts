@@ -5,7 +5,6 @@
 
 import * as TypeMoq from 'typemoq';
 import * as azdata from 'azdata';
-import { ApiWrapper } from '../../../common/apiWrapper';
 import * as constants from '../../../common/constants';
 import { FlatFileWizard } from '../../../wizard/flatFileWizard';
 import * as should from 'should';
@@ -21,21 +20,17 @@ describe('import extension modify Column Page', function () {
 	let modifyColumnsPage: ModifyColumnsPage;
 	let mockFlatFileWizard: TypeMoq.IMock<FlatFileWizard>;
 	let mockImportModel: TypeMoq.IMock<ImportDataModel>;
-	let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
 	let pages: Map<number, ImportPage> = new Map<number, ImportPage>();
 	let mockFlatFileProvider: TypeMoq.IMock<FlatFileProvider>;
 
 	beforeEach(function () {
-		// Keeping the original behaviour of apiWrapper until some setup is needed to mock stuff
-		mockApiWrapper = TypeMoq.Mock.ofType(ApiWrapper, TypeMoq.MockBehavior.Loose);
-		mockApiWrapper.callBase = true;
 
 		mockFlatFileProvider = TypeMoq.Mock.ofType(TestFlatFileProvider);
-		mockFlatFileWizard = TypeMoq.Mock.ofType(FlatFileWizard, TypeMoq.MockBehavior.Loose, undefined, mockFlatFileProvider.object, mockApiWrapper.object);
+		mockFlatFileWizard = TypeMoq.Mock.ofType(FlatFileWizard, TypeMoq.MockBehavior.Loose, undefined, mockFlatFileProvider.object);
 		mockImportModel = TypeMoq.Mock.ofType(TestImportDataModel, TypeMoq.MockBehavior.Loose);
 
-		wizard = mockApiWrapper.object.createWizard(constants.wizardNameText);
-		page = mockApiWrapper.object.createWizardPage(constants.page3NameText);
+		wizard = azdata.window.createWizard(constants.wizardNameText);
+		page = azdata.window.createWizardPage(constants.page3NameText);
 
 	});
 
@@ -43,7 +38,7 @@ describe('import extension modify Column Page', function () {
 
 		await new Promise(function (resolve) {
 			page.registerContent(async (view) => {
-				modifyColumnsPage = new ModifyColumnsPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny(), mockApiWrapper.object);
+				modifyColumnsPage = new ModifyColumnsPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny());
 				pages.set(1, modifyColumnsPage);
 				await modifyColumnsPage.start();
 				resolve();
@@ -88,7 +83,7 @@ describe('import extension modify Column Page', function () {
 
 		await new Promise(function (resolve) {
 			page.registerContent(async (view) => {
-				modifyColumnsPage = new ModifyColumnsPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny(), mockApiWrapper.object);
+				modifyColumnsPage = new ModifyColumnsPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny());
 				pages.set(1, modifyColumnsPage);
 				await modifyColumnsPage.start();
 				resolve();

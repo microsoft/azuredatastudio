@@ -28,7 +28,7 @@ import { Emitter, Event } from 'vs/base/common/event';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { Disposable, DisposableStore, dispose } from 'vs/base/common/lifecycle';
 import { isIOS } from 'vs/base/common/platform';
-import { escapeRegExpCharacters, startsWith } from 'vs/base/common/strings';
+import { escapeRegExpCharacters } from 'vs/base/common/strings';
 import { isArray, isDefined, isUndefinedOrNull } from 'vs/base/common/types';
 import { localize } from 'vs/nls';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
@@ -105,9 +105,17 @@ function getObjectValueType(schema: IJSONSchema): ObjectValue['type'] {
 }
 
 function getObjectDisplayValue(element: SettingsTreeSettingElement): IObjectDataItem[] {
+	const elementDefaultValue: Record<string, unknown> = typeof element.defaultValue === 'object'
+		? element.defaultValue ?? {}
+		: {};
+
+	const elementScopeValue: Record<string, unknown> = typeof element.scopeValue === 'object'
+		? element.scopeValue ?? {}
+		: {};
+
 	const data = element.isConfigured ?
-		{ ...element.defaultValue, ...element.scopeValue } :
-		element.defaultValue;
+		{ ...elementDefaultValue, ...elementScopeValue } :
+		elementDefaultValue;
 
 	const { objectProperties, objectPatternProperties, objectAdditionalProperties } = element.setting;
 	const patternsAndSchemas = Object
@@ -129,7 +137,7 @@ function getObjectDisplayValue(element: SettingsTreeSettingElement): IObjectData
 
 	return Object.keys(data).map(key => {
 		if (isDefined(objectProperties) && key in objectProperties) {
-			const defaultValue = element.defaultValue[key];
+			const defaultValue = elementDefaultValue[key];
 			const valueEnumOptions = getEnumOptionsFromSchema(objectProperties[key]);
 
 			return {
@@ -144,7 +152,7 @@ function getObjectDisplayValue(element: SettingsTreeSettingElement): IObjectData
 					options: valueEnumOptions,
 				},
 				removable: isUndefinedOrNull(defaultValue),
-			};
+			} as IObjectDataItem;
 		}
 
 		const schema = patternsAndSchemas.find(({ pattern }) => pattern.test(key))?.schema;
@@ -159,7 +167,7 @@ function getObjectDisplayValue(element: SettingsTreeSettingElement): IObjectData
 					options: valueEnumOptions,
 				},
 				removable: true,
-			};
+			} as IObjectDataItem;
 		}
 
 		return {
@@ -170,7 +178,7 @@ function getObjectDisplayValue(element: SettingsTreeSettingElement): IObjectData
 				options: additionalValueEnums,
 			},
 			removable: true,
-		};
+		} as IObjectDataItem;
 	});
 }
 
@@ -704,7 +712,7 @@ export abstract class AbstractSettingRenderer extends Disposable implements ITre
 		const renderedMarkdown = renderMarkdown({ value: text, isTrusted: true }, {
 			actionHandler: {
 				callback: (content: string) => {
-					if (startsWith(content, '#')) {
+					if (content.startsWith('#')) {
 						const e: ISettingLinkClickEvent = {
 							source: element,
 							targetKey: content.substr(1)
@@ -1055,8 +1063,14 @@ export class SettingObjectRenderer extends AbstractSettingRenderer implements IT
 
 	private onDidChangeObject(template: ISettingObjectItemTemplate, e: ISettingListChangeEvent<IObjectDataItem>): void {
 		if (template.context) {
-			const defaultValue: Record<string, unknown> = template.context.defaultValue;
-			const scopeValue: Record<string, unknown> = template.context.scopeValue;
+			const defaultValue: Record<string, unknown> = typeof template.context.defaultValue === 'object'
+				? template.context.defaultValue ?? {}
+				: {};
+
+			const scopeValue: Record<string, unknown> = typeof template.context.scopeValue === 'object'
+				? template.context.scopeValue ?? {}
+				: {};
+
 			const newValue: Record<string, unknown> = {};
 			let newItems: IObjectDataItem[] = [];
 
@@ -1088,7 +1102,7 @@ export class SettingObjectRenderer extends AbstractSettingRenderer implements IT
 				}
 			}
 			// New item was added
-			else if (template.objectWidget.isItemNew(e.originalItem)) {
+			else if (template.objectWidget.isItemNew(e.originalItem) && e.item.key.data !== '') {
 				newValue[e.item.key.data] = e.item.value.data;
 				newItems.push(e.item);
 			}
@@ -1116,13 +1130,16 @@ export class SettingObjectRenderer extends AbstractSettingRenderer implements IT
 
 	protected renderValue(dataElement: SettingsTreeSettingElement, template: ISettingObjectItemTemplate, onChange: (value: string) => void): void {
 		const items = getObjectDisplayValue(dataElement);
+		const { key, objectProperties, objectPatternProperties, objectAdditionalProperties } = dataElement.setting;
 
 		template.objectWidget.setValue(items, {
-			showAddButton: (
-				typeof dataElement.setting.objectAdditionalProperties === 'object' ||
-				isDefined(dataElement.setting.objectPatternProperties) ||
-				!areAllPropertiesDefined(Object.keys(dataElement.setting.objectProperties ?? {}), items)
-			),
+			settingKey: key,
+			showAddButton: objectAdditionalProperties === false
+				? (
+					!areAllPropertiesDefined(Object.keys(objectProperties ?? {}), items) ||
+					isDefined(objectPatternProperties)
+				)
+				: true,
 			keySuggester: createObjectKeySuggester(dataElement),
 			valueSuggester: createObjectValueSuggester(dataElement),
 		});
@@ -1329,7 +1346,7 @@ export class SettingEnumRenderer extends AbstractSettingRenderer implements ITre
 					},
 					disposeables: disposables
 				},
-				decoratorRight: (data === dataElement.defaultValue ? localize('settings.Default', "{0}", 'default') : '')
+				decoratorRight: (data === dataElement.defaultValue ? localize('settings.Default', "default") : '')
 			});
 
 		template.selectBox.setOptions(displayOptions);
@@ -1845,6 +1862,7 @@ export class SettingsTree extends ObjectTree<SettingsTreeElement> {
 		viewState: ISettingsEditorViewState,
 		renderers: ITreeRenderer<any, void, any>[],
 		@IThemeService themeService: IThemeService,
+		@IConfigurationService configurationService: IConfigurationService,
 		@IInstantiationService instantiationService: IInstantiationService,
 	) {
 		super('SettingsTree', container,
@@ -1870,7 +1888,8 @@ export class SettingsTree extends ObjectTree<SettingsTreeElement> {
 					}
 				},
 				styleController: id => new DefaultStyleController(DOM.createStyleSheet(container), id),
-				filter: instantiationService.createInstance(SettingsTreeFilter, viewState)
+				filter: instantiationService.createInstance(SettingsTreeFilter, viewState),
+				smoothScrolling: configurationService.getValue<boolean>('workbench.list.smoothScrolling'),
 			});
 
 		this.disposables.clear();
@@ -1944,6 +1963,14 @@ export class SettingsTree extends ObjectTree<SettingsTreeElement> {
 			listInactiveFocusOutline: editorBackground
 		}, colors => {
 			this.style(colors);
+		}));
+
+		this.disposables.add(configurationService.onDidChangeConfiguration(e => {
+			if (e.affectsConfiguration('workbench.list.smoothScrolling')) {
+				this.updateOptions({
+					smoothScrolling: configurationService.getValue<boolean>('workbench.list.smoothScrolling')
+				});
+			}
 		}));
 	}
 

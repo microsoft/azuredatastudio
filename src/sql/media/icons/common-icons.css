@@ -324,54 +324,61 @@ Includes non-masked style declarations. */
 	mask-size: 50% 100%;
 }
 
-.codicon.bold {
+.codicon.masked-icon.bold::before {
 	-webkit-mask-image: url("toolbar-bold.svg");
 	mask-image: url("toolbar-bold.svg");
 }
-.codicon.italic {
+
+.codicon.masked-icon.italic::before {
 	-webkit-mask-image: url("toolbar-italic.svg");
 	mask-image: url("toolbar-italic.svg");
 }
-.codicon.underline {
+
+.codicon.masked-icon.underline::before {
 	-webkit-mask-image: url("toolbar-underline.svg");
 	mask-image: url("toolbar-underline.svg");
 }
-.codicon.highlight {
+
+.codicon.masked-icon.highlight::before {
 	-webkit-mask-image: url("toolbar-highlight.svg");
 	mask-image: url("toolbar-highlight.svg");
 }
-.codicon.code {
-	-webkit-mask-image: url("toolbar-code.svg");
-	mask-image: url("toolbar-code.svg");
-}
-.codicon.insert-link {
-	-webkit-mask-image: url("toolbar-link.svg");
-	mask-image: url("toolbar-link.svg");
-}
-.codicon.list {
-	-webkit-mask-image: url("toolbar-list.svg");
-	mask-image: url("toolbar-list.svg");
-}
-.codicon.ordered-list {
-	-webkit-mask-image: url("toolbar-ordered-list.svg");
-	mask-image: url("toolbar-ordered-list.svg");
-}
-.codicon.insert-image {
-	-webkit-mask-image: url("toolbar-image.svg");
-	mask-image: url("toolbar-image.svg");
-}
-.codicon.split-toggle-on {
-	-webkit-mask-image: url("toolbar-preview-toggle-on.svg");
-	mask-image: url("toolbar-preview-toggle-on.svg");
-}
-.codicon.split-toggle-off {
-	-webkit-mask-image: url("toolbar-preview-toggle-off.svg");
-	mask-image: url("toolbar-preview-toggle-off.svg");
-}
-.codicon.code {
+
+.codicon.masked-icon.code::before {
 	-webkit-mask-image: url("code.svg");
 	mask-image: url("code.svg");
 }
+
+.codicon.masked-icon.insert-link::before {
+	-webkit-mask-image: url("toolbar-link.svg");
+	mask-image: url("toolbar-link.svg");
+}
+
+.codicon.masked-icon.list::before {
+	-webkit-mask-image: url("toolbar-list.svg");
+	mask-image: url("toolbar-list.svg");
+}
+
+.codicon.masked-icon.ordered-list::before {
+	-webkit-mask-image: url("toolbar-ordered-list.svg");
+	mask-image: url("toolbar-ordered-list.svg");
+}
+
+.codicon.masked-icon.insert-image::before {
+	-webkit-mask-image: url("toolbar-image.svg");
+	mask-image: url("toolbar-image.svg");
+}
+
+.codicon.masked-icon.split-toggle-on::before {
+	-webkit-mask-image: url("toolbar-preview-toggle-on.svg");
+	mask-image: url("toolbar-preview-toggle-on.svg");
+}
+
+.codicon.masked-icon.split-toggle-off::before {
+	-webkit-mask-image: url("toolbar-preview-toggle-off.svg");
+	mask-image: url("toolbar-preview-toggle-off.svg");
+}
+
 .codicon.markdown {
 	-webkit-mask-image: url("markdown.svg");
 	mask-image: url("markdown.svg");

@@ -10,7 +10,6 @@ import * as utils from '../common/utils';
 
 import { Project } from '../models/project';
 import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStringSource';
-import { ApiWrapper } from '../common/apiWrapper';
 import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
 
 interface DataSourceDropdownValue extends azdata.CategoryValue {
@@ -32,7 +31,7 @@ export class PublishDatabaseDialog {
 	private sqlCmdVariablesTable: azdata.TableComponent | undefined;
 	private formBuilder: azdata.FormBuilder | undefined;
 
-	private connection: azdata.connection.Connection | undefined;
+	private connectionId: string | undefined;
 	private connectionIsDataSource: boolean | undefined;
 	private profileSqlCmdVars: Record<string, string> | undefined;
 
@@ -42,7 +41,7 @@ export class PublishDatabaseDialog {
 	public generateScript: ((proj: Project, profile: IGenerateScriptSettings) => any) | undefined;
 	public readPublishProfile: ((profileUri: vscode.Uri) => any) | undefined;
 
-	constructor(private apiWrapper: ApiWrapper, private project: Project) {
+	constructor(private project: Project) {
 		this.dialog = azdata.window.createModelViewDialog(constants.publishDialogName);
 		this.publishTab = azdata.window.createTab(constants.publishDialogName);
 	}
@@ -156,37 +155,24 @@ export class PublishDatabaseDialog {
 
 			if (this.connectionIsDataSource) {
 				const dataSource = (this.dataSourcesDropDown!.value! as DataSourceDropdownValue).dataSource;
-
-				const connProfile: azdata.IConnectionProfile = {
-					serverName: dataSource.server,
-					databaseName: dataSource.database,
-					connectionName: dataSource.name,
-					userName: dataSource.username,
-					password: dataSource.password,
-					authenticationType: dataSource.integratedSecurity ? 'Integrated' : 'SqlAuth',
-					savePassword: false,
-					providerName: 'MSSQL',
-					saveProfile: true,
-					id: dataSource.name + '-dataSource',
-					options: []
-				};
+				const connProfile: azdata.IConnectionProfile = dataSource.getConnectionProfile();
 
 				if (dataSource.integratedSecurity) {
-					connId = (await this.apiWrapper.connectionConnect(connProfile, false, false)).connectionId;
+					connId = (await azdata.connection.connect(connProfile, false, false)).connectionId;
 				}
 				else {
-					connId = (await this.apiWrapper.openConnectionDialog(undefined, connProfile)).connectionId;
+					connId = (await azdata.connection.openConnectionDialog(undefined, connProfile)).connectionId;
 				}
 			}
 			else {
-				if (!this.connection) {
+				if (!this.connectionId) {
 					throw new Error('Connection not defined.');
 				}
 
-				connId = this.connection?.connectionId;
+				connId = this.connectionId;
 			}
 
-			return await this.apiWrapper.getUriForConnection(connId);
+			return await azdata.connection.getUriForConnection(connId);
 		}
 		catch (err) {
 			throw new Error(constants.unableToCreatePublishConnection + ': ' + utils.getErrorMessage(err));
@@ -202,7 +188,7 @@ export class PublishDatabaseDialog {
 			sqlCmdVariables: sqlCmdVars
 		};
 
-		this.apiWrapper.closeDialog(this.dialog);
+		azdata.window.closeDialog(this.dialog);
 		await this.publish!(this.project, settings);
 
 		this.dispose();
@@ -216,7 +202,7 @@ export class PublishDatabaseDialog {
 			sqlCmdVariables: sqlCmdVars
 		};
 
-		this.apiWrapper.closeDialog(this.dialog);
+		azdata.window.closeDialog(this.dialog);
 
 		if (this.generateScript) {
 			await this.generateScript!(this.project, settings);
@@ -360,18 +346,19 @@ export class PublishDatabaseDialog {
 		}).component();
 
 		editConnectionButton.onDidClick(async () => {
-			this.connection = await this.apiWrapper.openConnectionDialog();
+			let connection = await azdata.connection.openConnectionDialog();
+			this.connectionId = connection.connectionId;
 
 			// show connection name if there is one, otherwise show connection string
-			if (this.connection.options['connectionName']) {
-				this.targetConnectionTextBox!.value = this.connection.options['connectionName'];
+			if (connection.options['connectionName']) {
+				this.targetConnectionTextBox!.value = connection.options['connectionName'];
 			} else {
-				this.targetConnectionTextBox!.value = await azdata.connection.getConnectionString(this.connection.connectionId, false);
+				this.targetConnectionTextBox!.value = await azdata.connection.getConnectionString(connection.connectionId, false);
 			}
 
 			// change the database inputbox value to the connection's database if there is one
-			if (this.connection.options.database && this.connection.options.database !== constants.master) {
-				this.targetDatabaseTextBox!.value = this.connection.options.database;
+			if (connection.options.database && connection.options.database !== constants.master) {
+				this.targetDatabaseTextBox!.value = connection.options.database;
 			}
 		});
 
@@ -401,7 +388,7 @@ export class PublishDatabaseDialog {
 		}).component();
 
 		loadProfileButton.onDidClick(async () => {
-			const fileUris = await this.apiWrapper.showOpenDialog(
+			const fileUris = await vscode.window.showOpenDialog(
 				{
 					canSelectFiles: true,
 					canSelectFolders: false,
@@ -420,6 +407,10 @@ export class PublishDatabaseDialog {
 			if (this.readPublishProfile) {
 				const result = await this.readPublishProfile(fileUris[0]);
 				(<azdata.InputBoxComponent>this.targetDatabaseTextBox).value = result.databaseName;
+
+				this.connectionId = result.connectionId;
+				(<azdata.InputBoxComponent>this.targetConnectionTextBox).value = result.connectionString;
+
 				this.profileSqlCmdVars = result.sqlCmdVariables;
 				const data = this.convertSqlCmdVarsToTableFormat(this.getSqlCmdVariablesForPublish());
 
