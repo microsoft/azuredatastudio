@@ -155,7 +155,7 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 	}
 
 	private generateLabel(): string {
-		let label = `${this.account.displayInfo.displayName} (${this.account.key.accountId})`;
+		let label = this.account.displayInfo.displayName;
 
 		if (this._totalSubscriptionCount !== 0) {
 			label += ` (${this._selectedSubscriptionCount} / ${this._totalSubscriptionCount} subscriptions)`;

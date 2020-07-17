@@ -2160,7 +2160,7 @@ declare module 'azdata' {
 		displayName: string;
 
 		/**
-		 * User id that identifies the account, such as "user@contoso.com".
+		 * Unique user id that identifies the account.
 		 */
 		userId: string;
 	}
