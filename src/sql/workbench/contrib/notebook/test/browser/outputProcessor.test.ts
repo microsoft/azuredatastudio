@@ -8,13 +8,28 @@ import { nb } from 'azdata';
 import * as op from 'sql/workbench/contrib/notebook/browser/models/outputProcessor';
 import { JSONObject } from 'sql/workbench/services/notebook/common/jsonext';
 import { nbformat as nbformat } from 'sql/workbench/services/notebook/common/nbformat';
+import { getRandomElement } from 'vs/base/common/arrays';
 import { getRandomString } from 'vs/editor/test/common/model/linesTextBuffer/textBufferAutoTestUtils';
 
 
 suite('OutputProcessor functions', function (): void {
-	suite('getData', async function (): Promise<void> {
-		const text = getRandomString(1, 10);
+	const text = getRandomString(1, 10);
 
+	const arbitraryMetadata = {
+		// arbitrarily construction chart options. It is any JSONObject
+		azdata_chartOptions: {
+			scale: true,
+			dataGrid: false,
+			arbitraryCharProperty: {
+				prop1: 'value1',
+				prop2: {
+					deepProp1: 3
+				}
+			}
+		}
+	};
+
+	suite('getData', async function (): Promise<void> {
 		// data tests
 		for (const outputType of ['execute_result', 'display_data', 'update_display_data'] as nbformat.OutputType[]) {
 			const output = <nbformat.IExecuteResult>{
@@ -29,7 +44,7 @@ suite('OutputProcessor functions', function (): void {
 		}
 
 		// error tests
-		for (const traceback of [undefined, [], [''], [getRandomString(0, 10), getRandomString(0, 10)]]) {
+		for (const traceback of [undefined, [undefined], [], [''], [getRandomString(0, 10), getRandomString(0, 10)]]) {
 			for (const evalue of [undefined, getRandomString(1, 10)]) {
 				for (const ename of [text, '']) {
 					const output = <nbformat.IError>{
@@ -59,19 +74,17 @@ suite('OutputProcessor functions', function (): void {
 	});
 
 	suite('getMetadata', async function (): Promise<void> {
-		for (const outputType of ['execute_result', 'display_data', getRandom('update_display_data', 'stream', 'error')] as nbformat.OutputType[]) {
-			const text = getRandomString(1, 10);
+		for (const outputType of ['execute_result', 'display_data', getRandomElement(['update_display_data', 'stream', 'error'])] as nbformat.OutputType[]) {
 			const output: nb.ICellOutput = {
 				output_type: outputType
 			};
 			test(`test for outputType:${outputType}`, async () => {
-				const metadata: JSONObject = { key: text };
-				output.metadata = metadata;
+				output.metadata = arbitraryMetadata;
 				const result = op.getMetadata(output);
 				if (nbformat.isExecuteResult(output) || nbformat.isDisplayData(output)) {
-					assert.deepEqual(result, metadata, `getData should return the metadata object passed in the output object to the getMetadata() call`);
+					assert.deepEqual(result, output.metadata, `getMetadata should return the metadata object passed in the output object`);
 				} else {
-					assert.deepEqual(result, {}, `getMetadata should return an empty object when output_type is ont IDisplayData or IExecuteResult`);
+					assert.deepEqual(result, {}, `getMetadata should return an empty object when output_type is not IDisplayData or IExecuteResult`);
 				}
 			});
 		}
@@ -79,15 +92,11 @@ suite('OutputProcessor functions', function (): void {
 
 	suite('getBundleOptions', async function (): Promise<void> {
 		for (const trusted of [true, false]) {
-			const outputType = getRandom('execute_result', 'display_data') as nbformat.OutputType;
+			const outputType = getRandomElement(['execute_result', 'display_data']) as nbformat.OutputType;
+
 			const output: nb.ICellOutput = {
 				output_type: outputType,
-				metadata: {
-					azdata_chartOptions: {
-						scale: true,
-						dataGrid: false
-					}
-				}
+				metadata: arbitraryMetadata
 			};
 			const options: op.IOutputModelOptions = {
 				value: output,
@@ -113,7 +122,8 @@ function verifyGetDataForDataOutput(output: nbformat.IExecuteResult | nbformat.I
 }
 
 function verifyGetDataForStreamOutput(output: nbformat.IStream): void {
-	//expected return value is an object with a single property of 'application/vnd.jupyter.stderr' or 'application/vnd.jupyter.stdout' corresponding to the stream name
+	// expected return value is an object with a single property of 'application/vnd.jupyter.stderr' or 'application/vnd.jupyter.stdout'
+	// corresponding to the stream name. The value of this property is the value of the 'text' field of the output object that was sent into the getData call
 	const expectedData = output.name === 'stderr'
 		? {
 			'application/vnd.jupyter.stderr': output.text,
@@ -130,7 +140,7 @@ function verifyGetDataForErrorOutput(output: nbformat.IError): void {
 	const tracedata = (output.traceback === undefined || output.traceback === []) ? undefined : output.traceback.join('\n');
 	// getData returns an object with single property: 'application/vnd.jupyter.stderr'
 	// this property is assigned to a '\n' delimited traceback data when it is present.
-	// when absent ths property gets ename and evalue information information ': ' delimited unless
+	// when traceback is absent this property gets ename and evalue information with ': ' as delimiter unless
 	// ename is empty in which case it is just evalue information.
 	let expectedData: JSONObject = {
 		'application/vnd.jupyter.stderr': undefined
@@ -153,8 +163,4 @@ function verifyGetDataForErrorOutput(output: nbformat.IError): void {
 		}
 	}
 	assert.deepEqual(result, <JSONObject>expectedData, `getData should return the expectedData:'${JSON.stringify(expectedData)}' object`);
-}
-
-function getRandom<T>(...list: T[]): T {
-	return list[Math.floor((Math.random() * list.length))];
 }
