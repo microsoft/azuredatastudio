@@ -162,8 +162,8 @@
 	line-height: 1.6em
 }
 
-.ads-homepage .btn-primary {
-	border: 1px solid
+.btn-primary .monaco-button, .btn-secondary .monaco-button {
+	height: 28px;
 }
 
 .ads-homepage .btn-primary:hover {
