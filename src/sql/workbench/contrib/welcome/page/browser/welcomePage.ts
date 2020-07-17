@@ -370,7 +370,7 @@ class WelcomePage extends Disposable {
 		const getDropdownBtn = container.querySelector('#dropdown-btn-container .monaco-button') as HTMLElement;
 		getDropdownBtn.id = 'dropdown-btn';
 		getDropdownBtn.setAttribute('role', 'button');
-		getDropdownBtn.setAttribute('name', 'New');
+		getDropdownBtn.setAttribute('aria-label', `${(localize('welcomePage.new', "New"))}`);
 		getDropdownBtn.setAttribute('aria-haspopup', 'true');
 		getDropdownBtn.setAttribute('aria-controls', 'dropdown');
 		nav.setAttribute('role', 'navigation');
@@ -389,7 +389,7 @@ class WelcomePage extends Disposable {
 		openFileButton.label = openFileText;
 		const getNewFileBtn = container.querySelector('#open-file-btn-container .monaco-button') as HTMLAnchorElement;
 		getNewFileBtn.setAttribute('role', 'button');
-		getNewFileBtn.setAttribute('name', 'Open File');
+		getDropdownBtn.setAttribute('aria-label', openFileCopy);
 		const body = document.querySelector('body');
 
 		if (body.classList.contains('windows') || body.classList.contains('linux')) {

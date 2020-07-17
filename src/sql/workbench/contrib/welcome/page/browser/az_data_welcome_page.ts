@@ -13,14 +13,14 @@ export default () => `
 			<div class="gradient">
 				<div class="ads-homepage-section tool-tip">
 					<div class="tool-tip-container" id="tool-tip-container-wide">
-						<a class="ads-welcome-page-link" aria-describedby="tooltip-text-wide" id="preview-link-wide" class="preview-link" tabindex="0" name="preview"><p>Preview</p><i class="icon-info themed-icon"></i></a>
+						<a class="ads-welcome-page-link" aria-describedby="tooltip-text-wide" id="preview-link-wide" class="preview-link" tabindex="0" aria-label="preview"><p>Preview</p><i class="icon-info themed-icon"></i></a>
 						<span role="tooltip" id="tooltip-text-wide" class="tool-tip-text" aria-hidden="true">
 							<h3 tabindex="0" class="preview-tooltip-header">${escape(localize('welcomePage.previewHeader', "This page is in preview"))}</h3>
 							<p tabindex="0" class="preview-tooltip-body">${escape(localize('welcomePage.previewBody', "Preview features introduce new functionalities that are on track to becoming a permanent part the product. They are stable, but need additional accessibility improvements. We welcome your early feedback while they are under development."))}</p>
 						</span>
 					</div>
 					<div class="tool-tip-container" id="tool-tip-container-narrow">
-						<a class="ads-welcome-page-link" aria-haspopup="true" class="preview-link" tabindex="0" id="preview-link-narrow" name="previewNarrow"><p>Preview</p><i class="icon-info themed-icon"></i></a>
+						<a class="ads-welcome-page-link" aria-haspopup="true" class="preview-link" tabindex="0" id="preview-link-narrow" aria-label="${escape(localize('welcomePage.previewNarrow', "Preview Narrow"))}"><p>Preview</p><i class="icon-info themed-icon"></i></a>
 					</div>
 				</div>
 				<div id="preview-modal" class="modal" aria-modal="true" aria-hidden="true">
@@ -51,7 +51,7 @@ export default () => `
 					</div>
 					<div class="row header-bottom-nav-tiles ads-grid">
 						<div class="col">
-							<a class="header-bottom-nav-tile-link" href="command:registeredServers.addConnection" role="button" name="Create a Connection">
+							<a class="header-bottom-nav-tile-link" href="command:registeredServers.addConnection" role="button" aria-label="${escape(localize('welcomePage.createConnection', "Create a connection"))}">
 								<div class="header-bottom-nav-tile tile tile-connection">
 									<h3>${escape(localize('welcomePage.createConnection', "Create a connection"))}</h3>
 									<p>${escape(localize('welcomePage.createConnectionBody', "Connect to a database instance through the connection dialog."))}</p>
@@ -61,7 +61,7 @@ export default () => `
 						</div>
 						<div class="col">
 							<a class="header-bottom-nav-tile-link"
-								href="command:workbench.action.files.newUntitledFile" role="button" name="Run a Query">
+								href="command:workbench.action.files.newUntitledFile" role="button" aria-label="${escape(localize('welcomePage.runQuery', "Run a query"))}">
 								<div class="header-bottom-nav-tile tile tile-query">
 									<h3>${escape(localize('welcomePage.runQuery', "Run a query"))}</h3>
 									<p>${escape(localize('welcomePage.runQueryBody', "Interact with data through a query editor."))}</p>
@@ -70,7 +70,7 @@ export default () => `
 							</a>
 						</div>
 						<div class="col">
-							<a class="header-bottom-nav-tile-link" href="command:notebook.command.new" role="button" name="Create a Notebook">
+							<a class="header-bottom-nav-tile-link" href="command:notebook.command.new" role="button" aria-label="${escape(localize('welcomePage.createNotebook', "Create a notebook"))}">
 								<div class="header-bottom-nav-tile tile tile-notebook">
 									<h3>${escape(localize('welcomePage.createNotebook', "Create a notebook"))}</h3>
 									<p>${escape(localize('welcomePage.createNotebookBody', "Build a new notebook using a native notebook editor."))}</p>
@@ -79,7 +79,7 @@ export default () => `
 							</a>
 						</div>
 						<div class="col">
-							<a class="header-bottom-nav-tile-link" href="command:azdata.resource.deploy" role="button" name="Deploy a Server">
+							<a class="header-bottom-nav-tile-link" href="command:azdata.resource.deploy" role="button" aria-label="${escape(localize('welcomePage.deployServer', "Deploy a server"))}">
 								<div class="header-bottom-nav-tile tile tile-server">
 									<h3>${escape(localize('welcomePage.deployServer', "Deploy a server"))}</h3>
 									<p>${escape(localize('welcomePage.deployServerBody', "Create a new instance of SQL Server on the platform of your choice."))}</p>
@@ -108,7 +108,7 @@ export default () => `
 								</ul>
 								<p class="none detail">No recent folders</p>
 								<div class="moreRecent">
-									<a class="ads-welcome-page-link" href="command:workbench.action.openRecent" role="button" name="Show More">${escape(localize('welcomePage.moreRecent', "Show more"))}
+									<a class="ads-welcome-page-link" href="command:workbench.action.openRecent" role="button" aria-label="${escape(localize('welcomePage.moreRecent', "Show more"))}">${escape(localize('welcomePage.moreRecent', "Show more"))}
 									<i class="icon-arrow-down-dark"></i>
 								</a>
 							</div>
@@ -164,7 +164,7 @@ export default () => `
 			<div class="ads-homepage-section content extensions">
 				<div class="flex flex-j-between">
 					<h2>Extend your data studio</h2>
-					<a class="link-show-all flex" href="command:workbench.view.extensions" role="button" name="Show All">${escape(localize('welcomePage.showAll', "Show All"))} <span class="icon-arrow-right"></span></a>
+					<a class="link-show-all flex" href="command:workbench.view.extensions" role="button" aria-label="Show All">${escape(localize('welcomePage.showAll', "Show All"))} <span class="icon-arrow-right"></span></a>
 				</div>
 				<div class="row ads-grid grip-gap-50">
 					<div
