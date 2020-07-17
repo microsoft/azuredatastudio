@@ -31,9 +31,9 @@ export class NotebookThemingContribution extends Disposable implements IWorkbenc
 		}
 	}
 
-	private updateNotebookThemes(affectsResultsGrid: boolean) {
+	private updateNotebookThemes(forceThemeUpdate: boolean) {
 		let overrideEditorSetting = this.configurationService.getValue<boolean>(OVERRIDE_EDITOR_THEMING_SETTING);
-		if (overrideEditorSetting !== this.overrideEditorThemeSetting || affectsResultsGrid) {
+		if (overrideEditorSetting !== this.overrideEditorThemeSetting || forceThemeUpdate) {
 			// Re-add the participant since this will trigger update of theming rules, can't just
 			// update something and ask to change
 			if (this.themeParticipant) {
