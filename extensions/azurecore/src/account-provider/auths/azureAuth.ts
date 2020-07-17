@@ -435,7 +435,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 	}
 
-	private async openConsentDialog(tenant: Tenant, resourceId: string): Promise<boolean> {
+	public async openConsentDialog(tenant: Tenant, resourceId: string): Promise<boolean> {
 		if (!tenant.displayName && !tenant.id) {
 			throw new Error('Tenant did not have display name or id');
 		}
@@ -451,18 +451,18 @@ export abstract class AzureAuth implements vscode.Disposable {
 		};
 
 		// The user wants to ignore this tenant.
-		if (getTenantConfigurationSet().has(tenant?.displayName ?? tenant?.id)) {
+		if (getTenantConfigurationSet().has(tenant.id)) {
 			return false;
 		}
 
-		const updateTenantConfigurationSet = (set: Set<string>): void => {
+		const updateTenantConfigurationSet = async (set: Set<string>): Promise<void> => {
 			const configuration = vscode.workspace.getConfiguration('azure.tenant.config');
-			configuration.update('filter', Array.from(set), vscode.ConfigurationTarget.Global);
+			await configuration.update('filter', Array.from(set), vscode.ConfigurationTarget.Global);
 		};
 
 		interface ConsentMessageItem extends vscode.MessageItem {
 			booleanResult: boolean;
-			action?: (tenantId: string) => void;
+			action?: (tenantId: string) => Promise<void>;
 		}
 
 		const openItem: ConsentMessageItem = {
@@ -479,10 +479,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 		const dontAskAgainItem: ConsentMessageItem = {
 			title: localize('azurecore.consentDialog.ignore', "Ignore Tenant"),
 			booleanResult: false,
-			action: (tenantId: string) => {
+			action: async (tenantId: string) => {
 				let set = getTenantConfigurationSet();
 				set.add(tenantId);
-				updateTenantConfigurationSet(set);
+				await updateTenantConfigurationSet(set);
 			}
 
 		};
@@ -490,7 +490,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		const result = await vscode.window.showInformationMessage(messageBody, { modal: true }, openItem, closeItem, dontAskAgainItem);
 
 		if (result.action) {
-			result.action(tenant.id);
+			await result.action(tenant.id);
 		}
 
 		return result.booleanResult;
