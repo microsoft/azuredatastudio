@@ -133,7 +133,10 @@ export class PackageManager {
 
 		await utils.createFolder(utils.getRPackagesFolderPath(this._rootFolder));
 		const packages = this._config.requiredSqlRPackages.filter(p => !p.platform || p.platform === process.platform);
-		await Promise.all(packages.map(x => this.installRPackage(x)));
+		for (let index = 0; index < packages.length; index++) {
+			const packageName = packages[index];
+			await this.installRPackage(packageName);
+		}
 	}
 
 	/**
