@@ -84,8 +84,8 @@ export class BuildHelper {
 	}
 
 	public constructBuildArguments(projectPath: string, buildDirPath: string): string {
-		projectPath = utils.getSafePath(projectPath);
-		buildDirPath = utils.getSafePath(buildDirPath);
+		projectPath = utils.getQuotedPath(projectPath);
+		buildDirPath = utils.getQuotedPath(buildDirPath);
 		return ` build ${projectPath} /p:NetCoreBuild=true /p:NETCoreTargetsPath=${buildDirPath}`;
 	}
 }

@@ -162,6 +162,7 @@ export const SuppressMissingDependenciesErrors = 'SuppressMissingDependenciesErr
 export const DatabaseVariableLiteralValue = 'DatabaseVariableLiteralValue';
 export const DSP = 'DSP';
 export const Properties = 'Properties';
+export const Link = 'Link';
 
 // SqlProj File targets
 export const NetCoreTargets = '$(NETCoreTargetsPath)\\Microsoft.Data.Tools.Schema.SqlTasks.targets';
