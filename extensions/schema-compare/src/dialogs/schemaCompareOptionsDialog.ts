@@ -183,7 +183,7 @@ export class SchemaCompareOptionsDialog {
 		this.deploymentOptions = defaultOptions;
 	}
 
-	protected async initializeDialog() {
+	protected async initializeDialog(): Promise<void> {
 		this.generalOptionsTab = azdata.window.createTab(loc.GeneralOptionsLabel);
 		this.objectTypesTab = azdata.window.createTab(loc.ObjectTypesOptionsLabel);
 		await this.initializeSchemaCompareOptionsDialogTab();
@@ -191,7 +191,7 @@ export class SchemaCompareOptionsDialog {
 		this.dialog.content = [this.generalOptionsTab, this.objectTypesTab];
 	}
 
-	public async openDialog() {
+	public async openDialog(): Promise<void> {
 		let event = null;
 		this.dialog = azdata.window.createModelViewDialog(loc.OptionsLabel, event);
 
@@ -211,7 +211,7 @@ export class SchemaCompareOptionsDialog {
 		azdata.window.openDialog(this.dialog);
 	}
 
-	protected async execute() {
+	protected execute(): void {
 		this.SetDeploymentOptions();
 		this.SetObjectTypeOptions();
 		this.schemaComparison.setDeploymentOptions(this.deploymentOptions);
@@ -226,26 +226,26 @@ export class SchemaCompareOptionsDialog {
 		this.disposeListeners();
 	}
 
-	protected async cancel() {
+	protected cancel(): void {
 		this.disposeListeners();
 	}
 
-	private async reset() {
+	private async reset(): Promise<void> {
 		let service = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).schemaCompare;
 		let result = await service.schemaCompareGetDefaultOptions();
 		this.deploymentOptions = result.defaultDeploymentOptions;
 		this.optionsChanged = true;
 
-		this.updateOptionsTable();
+		await this.updateOptionsTable();
 		this.optionsFlexBuilder.removeItem(this.optionsTable);
 		this.optionsFlexBuilder.insertItem(this.optionsTable, 0, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh' } });
 
-		this.updateObjectsTable();
+		await this.updateObjectsTable();
 		this.objectTypesFlexBuilder.removeItem(this.objectsTable);
 		this.objectTypesFlexBuilder.addItem(this.objectsTable, { CSSStyles: { 'overflow': 'scroll', 'height': '80vh' } });
 	}
 
-	private async initializeSchemaCompareOptionsDialogTab() {
+	private initializeSchemaCompareOptionsDialogTab(): void {
 		this.generalOptionsTab.registerContent(async view => {
 
 			this.descriptionHeading = view.modelBuilder.table().withProperties({
@@ -264,17 +264,17 @@ export class SchemaCompareOptionsDialog {
 
 
 			this.optionsTable = view.modelBuilder.table().component();
-			this.updateOptionsTable();
+			await this.updateOptionsTable();
 
 			this.disposableListeners.push(this.optionsTable.onRowSelected(async () => {
 				let row = this.optionsTable.selectedRows[0];
 				let label = this.optionsLabels[row];
-				this.descriptionText.updateProperties({
+				await this.descriptionText.updateProperties({
 					value: this.GetDescription(label)
 				});
 			}));
 
-			this.disposableListeners.push(this.optionsTable.onCellAction(async (rowState) => {
+			this.disposableListeners.push(this.optionsTable.onCellAction((rowState) => {
 				let checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
 					let label = this.optionsLabels[checkboxState.row];
@@ -292,11 +292,11 @@ export class SchemaCompareOptionsDialog {
 			this.optionsFlexBuilder.addItem(this.descriptionHeading, { CSSStyles: { 'font-weight': 'bold', 'height': '30px' } });
 			this.optionsFlexBuilder.addItem(this.descriptionText, { CSSStyles: { 'padding': '4px', 'margin-right': '10px', 'overflow': 'scroll', 'height': '10vh' } });
 			await view.initializeModel(this.optionsFlexBuilder);
-			this.optionsTable.focus();
+			await this.optionsTable.focus();
 		});
 	}
 
-	private async initializeSchemaCompareObjectTypesDialogTab() {
+	private initializeSchemaCompareObjectTypesDialogTab(): void {
 		this.objectTypesTab.registerContent(async view => {
 
 			this.objectTypesFlexBuilder = view.modelBuilder.flexContainer()
@@ -305,9 +305,9 @@ export class SchemaCompareOptionsDialog {
 				}).component();
 
 			this.objectsTable = view.modelBuilder.table().component();
-			this.updateObjectsTable();
+			await this.updateObjectsTable();
 
-			this.disposableListeners.push(this.objectsTable.onCellAction(async (rowState) => {
+			this.disposableListeners.push(this.objectsTable.onCellAction((rowState) => {
 				let checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
 					let label = this.objectTypeLabels[checkboxState.row];
@@ -328,9 +328,9 @@ export class SchemaCompareOptionsDialog {
 		}
 	}
 
-	private updateOptionsTable(): void {
+	private async updateOptionsTable(): Promise<void> {
 		let data = this.getOptionsData();
-		this.optionsTable.updateProperties({
+		await this.optionsTable.updateProperties({
 			data: data,
 			columns: [
 				{
@@ -352,9 +352,9 @@ export class SchemaCompareOptionsDialog {
 		});
 	}
 
-	private updateObjectsTable(): void {
+	private async updateObjectsTable(): Promise<void> {
 		let data = this.getObjectsData();
-		this.objectsTable.updateProperties({
+		await this.objectsTable.updateProperties({
 			data: data,
 			columns: [
 				{

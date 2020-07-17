@@ -24,9 +24,10 @@ const mocktarget: string = 'target.dacpac';
 let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 let testContext: TestContext;
 
-before(async function (): Promise<void> {
+before(function (): void {
 	testContext = createContext();
 });
+
 describe('SchemaCompareDialog.openDialog', function (): void {
 	before(() => {
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
@@ -109,7 +110,7 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 		testContext = createContext();
 	});
 
-	beforeEach(async function (): Promise<void> {
+	beforeEach(function (): void {
 		testContext.apiWrapper.reset();
 	});
 
