@@ -7,9 +7,6 @@ import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-import { AppContext } from '../../../appContext';
-import { ApiWrapper } from '../../../apiWrapper';
-
 export class SparkAdvancedTab {
 	private _tab: azdata.window.DialogTab;
 	public get tab(): azdata.window.DialogTab { return this._tab; }
@@ -18,12 +15,8 @@ export class SparkAdvancedTab {
 	private _referenceJARFilesInputBox: azdata.InputBoxComponent;
 	private _referencePyFilesInputBox: azdata.InputBoxComponent;
 
-	private get apiWrapper(): ApiWrapper {
-		return this.appContext.apiWrapper;
-	}
-
-	constructor(private appContext: AppContext) {
-		this._tab = this.apiWrapper.createTab(localize('sparkJobSubmission.AdvancedTabName', "ADVANCED"));
+	constructor() {
+		this._tab = azdata.window.createTab(localize('sparkJobSubmission.AdvancedTabName', "ADVANCED"));
 
 		this._tab.registerContent(async (modelView) => {
 			let builder = modelView.modelBuilder;

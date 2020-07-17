@@ -77,7 +77,7 @@ export const selectConnectionRadioButtonsTitle = localize('selectconnectionRadio
 export const dataSourceDropdownTitle = localize('dataSourceDropdownTitle', "Data source");
 export const noDataSourcesText = localize('noDataSourcesText', "No data sources in this project");
 export const loadProfileButtonText = localize('loadProfileButtonText', "Load Profile...");
-export const profileWarningText = localize('profileWarningText', "⚠Warning: Only database name and SQLCMD variables are able to be loaded from a profile at this time");
+export const profileWarningText = localize('profileWarningText', "⚠ Warning: Only SQL Login and Integrated Authentication connection strings, database name, and SQLCMD variables are able to be loaded from a profile at this time");
 export const sqlCmdTableLabel = localize('sqlCmdTableLabel', "SQLCMD Variables");
 export const sqlCmdVariableColumn = localize('sqlCmdVariableColumn', "Variable");
 export const sqlCmdValueColumn = localize('sqlCmdValueColumn', "Value");
@@ -107,7 +107,6 @@ export const databaseNameRequired = localize('databaseNameRequired', "Database n
 export const invalidDataSchemaProvider = localize('invalidDataSchemaProvider', "Invalid DSP in .sqlproj file");
 export const invalidDatabaseReference = localize('invalidDatabaseReference', "Invalid database reference in .sqlproj file");
 export const databaseSelectionRequired = localize('databaseSelectionRequired', "Database selection is required to import a project");
-export const unableToCreatePublishConnection = localize('unableToCreatePublishConnection', "Unable to construct connection");
 export const databaseReferenceAlreadyExists = localize('databaseReferenceAlreadyExists', "A reference to this database already exists in this project");
 export function projectAlreadyOpened(path: string) { return localize('projectAlreadyOpened', "Project '{0}' is already opened.", path); }
 export function projectAlreadyExists(name: string, path: string) { return localize('projectAlreadyExists', "A project named {0} already exists in {1}.", name, path); }
@@ -116,6 +115,7 @@ export function cannotResolvePath(path: string) { return localize('cannotResolve
 export function fileAlreadyExists(filename: string) { return localize('fileAlreadyExists', "A file with the name '{0}' already exists on disk at this location. Please choose another name.", filename); }
 export function folderAlreadyExists(filename: string) { return localize('folderAlreadyExists', "A folder with the name '{0}' already exists on disk at this location. Please choose another name.", filename); }
 export function invalidInput(input: string) { return localize('invalidInput', "Invalid input: {0}", input); }
+export function unableToCreatePublishConnection(input: string) { return localize('unableToCreatePublishConnection', "Unable to construct connection: {0}", input); }
 
 export function mssqlNotFound(mssqlConfigDir: string) { return localize('mssqlNotFound', "Could not get mssql extension's install location at {0}", mssqlConfigDir); }
 export function projBuildFailed(errorMessage: string) { return localize('projBuildFailed', "Build failed. Check output pane for more details. {0}", errorMessage); }
@@ -183,6 +183,7 @@ export const All = 'All';
 
 // Profile XML names
 export const targetDatabaseName = 'TargetDatabaseName';
+export const targetConnectionString = 'TargetConnectionString';
 
 // SQL connection string components
 export const initialCatalogSetting = 'Initial Catalog';

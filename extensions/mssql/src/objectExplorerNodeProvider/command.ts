@@ -8,7 +8,6 @@ import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-import { ApiWrapper } from '../apiWrapper';
 import { TreeNode } from './treeNodes';
 import { QuestionTypes, IPrompter, IQuestion } from '../prompts/question';
 import * as utils from '../utils';
@@ -63,12 +62,12 @@ export abstract class Command extends vscode.Disposable {
 		super(() => this.dispose());
 
 		if (typeof command === 'string') {
-			this.disposable = this.apiWrapper.registerCommand(command, (...args: any[]) => this._execute(command, ...args), this);
+			this.disposable = vscode.commands.registerCommand(command, (...args: any[]) => this._execute(command, ...args), this);
 
 			return;
 		}
 
-		const subscriptions = command.map(cmd => this.apiWrapper.registerCommand(cmd, (...args: any[]) => this._execute(cmd, ...args), this));
+		const subscriptions = command.map(cmd => vscode.commands.registerCommand(cmd, (...args: any[]) => this._execute(cmd, ...args), this));
 		this.disposable = vscode.Disposable.from(...subscriptions);
 	}
 
@@ -76,10 +75,6 @@ export abstract class Command extends vscode.Disposable {
 		if (this.disposable) {
 			this.disposable.dispose();
 		}
-	}
-
-	protected get apiWrapper(): ApiWrapper {
-		return this.appContext.apiWrapper;
 	}
 
 	protected async preExecute(...args: any[]): Promise<any> {
@@ -138,12 +133,12 @@ export abstract class ProgressCommand extends Command {
 	): Promise<void> {
 		let disposables: vscode.Disposable[] = [];
 		const tokenSource = new vscode.CancellationTokenSource();
-		const statusBarItem = this.apiWrapper.createStatusBarItem(vscode.StatusBarAlignment.Left);
+		const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
 		disposables.push(vscode.Disposable.from(statusBarItem));
 		statusBarItem.text = localize('progress', "$(sync~spin) {0}...", label);
 		if (isCancelable) {
 			const cancelCommandId = `cancelProgress${ProgressCommand.progressId++}`;
-			disposables.push(this.apiWrapper.registerCommand(cancelCommandId, async () => {
+			disposables.push(vscode.commands.registerCommand(cancelCommandId, async () => {
 				if (await this.confirmCancel()) {
 					tokenSource.cancel();
 				}
@@ -177,7 +172,7 @@ export abstract class ProgressCommand extends Command {
 }
 
 export function registerSearchServerCommand(appContext: AppContext): void {
-	appContext.apiWrapper.registerCommand('mssql.searchServers', () => {
+	vscode.commands.registerCommand('mssql.searchServers', () => {
 		vscode.window.showInputBox({
 			placeHolder: localize('mssql.searchServers', "Search Server Names")
 		}).then((stringSearch) => {
@@ -186,7 +181,7 @@ export function registerSearchServerCommand(appContext: AppContext): void {
 			}
 		});
 	});
-	appContext.apiWrapper.registerCommand('mssql.clearSearchServerResult', () => {
+	vscode.commands.registerCommand('mssql.clearSearchServerResult', () => {
 		vscode.commands.executeCommand('registeredServers.clearSearchServerResult');
 	});
 }
