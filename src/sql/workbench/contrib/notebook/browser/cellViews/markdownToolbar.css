@@ -52,55 +52,31 @@
 	position: absolute;
 	right: 0;
 }
+
 .markdown-toolbar .carbon-taskbar li a {
 	display: flex;
 	height: 20px;
 	width: 20px;
-	-webkit-mask-position: center;
-	-webkit-mask-repeat: no-repeat;
-	mask-position: center;
-	mask-repeat: no-repeat;
 }
 
-.markdown-toolbar li a.codicon.bold {
-	-webkit-mask-size: 50% 100%;
-	mask-size: 50% 100%;
+.markdown-toolbar li a.codicon.masked-icon::before {
+	-webkit-mask-size: auto;
+	mask-size: auto;
 }
-.markdown-toolbar li a.codicon.italic {
-	-webkit-mask-size: 60% 100%;
-	mask-size: 60% 100%;
-}
-.markdown-toolbar li a.codicon.highlight {
-	-webkit-mask-size: 65% 100%;
-	mask-size: 65% 100%;
-}
-.markdown-toolbar li a.codicon.code {
+
+.markdown-toolbar li a.codicon.code::before {
 	-webkit-mask-size: 88% 100%;
 	mask-size: 88% 100%;
 }
-.markdown-toolbar li a.codicon.insert-link {
+
+.markdown-toolbar li a.codicon.insert-link::before {
 	-webkit-mask-size: 80% 100%;
 	mask-size: 80% 100%;
 }
-.markdown-toolbar li a.codicon.list {
-	-webkit-mask-size: 80% 100%;
-	mask-size: 80% 100%;
-}
-.markdown-toolbar li a.codicon.ordered-list {
+
+.markdown-toolbar li a.codicon.ordered-list::before {
 	-webkit-mask-size: 86% 100%;
 	mask-size: 86% 100%;
-}
-.markdown-toolbar li a.codicon.insertimage {
-	-webkit-mask-size: 86% 100%;
-	mask-size: 86% 100%;
-}
-.markdown-toolbar li a.codicon.split-toggle-on {
-	-webkit-mask-size: 75% 100%;
-	mask-size: 75% 100%;
-}
-.markdown-toolbar li a.codicon.split-toggle-off {
-	-webkit-mask-size: 75% 100%;
-	mask-size: 75% 100%;
 }
 
 text-cell-component .offscreen {
