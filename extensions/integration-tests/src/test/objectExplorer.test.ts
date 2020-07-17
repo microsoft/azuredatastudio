@@ -6,7 +6,7 @@
 import 'mocha';
 import * as azdata from 'azdata';
 import { getBdcServer, TestServerProfile, getAzureServer, getStandaloneServer } from './testConfig';
-import { connectToServer, createDB, deleteDB, DefaultConnectTimeoutInMs, asyncTimeout } from './utils';
+import { connectToServer, createDB, DefaultConnectTimeoutInMs, asyncTimeout, tryDeleteDB } from './utils';
 import * as assert from 'assert';
 
 suite('Object Explorer integration suite', () => {
@@ -129,7 +129,7 @@ async function verifyDBContextMenu(server: TestServerProfile, timeoutinMS: numbe
 		return assert(expectedActions.length === actions.length && expectedString === actualString, `Expected actions: "${expectedString}", Actual actions: "${actualString}"`);
 	}
 	finally {
-		await deleteDB(server, dbName, ownerUri);
+		await tryDeleteDB(server, dbName, ownerUri);
 	}
 }
 
