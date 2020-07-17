@@ -236,11 +236,6 @@ export class JupyterSession implements nb.ISession {
 
 	public async changeKernel(kernelInfo: nb.IKernelSpec): Promise<nb.IKernel> {
 		if (this._installation) {
-			if (this._installation.runningOnSaw && kernelInfo.name.toLowerCase().includes('spark')) {
-				vscode.window.showErrorMessage(localize('sparkOnSawUnsupported', "Spark kernels are not supported on SAW devices."));
-				return this._kernel;
-			}
-
 			try {
 				if (this._installation.previewFeaturesEnabled) {
 					await this._installation.promptForPythonInstall(kernelInfo.display_name);
