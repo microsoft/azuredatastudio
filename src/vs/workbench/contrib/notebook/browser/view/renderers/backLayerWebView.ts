@@ -13,7 +13,7 @@ import { URI } from 'vs/base/common/uri';
 import * as UUID from 'vs/base/common/uuid';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { IOpenerService, matchesScheme } from 'vs/platform/opener/common/opener';
-import { CELL_MARGIN, CELL_RUN_GUTTER, CODE_CELL_LEFT_MARGIN } from 'vs/workbench/contrib/notebook/browser/constants';
+import { CELL_MARGIN, CELL_RUN_GUTTER, CODE_CELL_LEFT_MARGIN, CELL_OUTPUT_PADDING } from 'vs/workbench/contrib/notebook/browser/constants';
 import { INotebookEditor } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
 import { CodeCellViewModel } from 'vs/workbench/contrib/notebook/browser/viewModel/codeCellViewModel';
 import { CellOutputKind, IProcessedOutput } from 'vs/workbench/contrib/notebook/common/notebookCommon';
@@ -155,6 +155,13 @@ export interface IUpdatePreloadResourceMessage {
 	source: 'renderer' | 'kernel';
 }
 
+export interface IUpdateDecorationsMessage {
+	type: 'decorations';
+	cellId: string;
+	addedClassNames: string[];
+	removedClassNames: string[];
+}
+
 export interface ICustomRendererMessage {
 	__vscode_notebook_message: boolean;
 	type: 'customRendererMessage';
@@ -184,6 +191,7 @@ export type ToWebviewMessage =
 	| IShowOutputMessage
 	| IUpdatePreloadResourceMessage
 	| IFocusOutputMessage
+	| IUpdateDecorationsMessage
 	| ICustomRendererMessage;
 
 export type AnyMessage = FromWebviewMessage | ToWebviewMessage;
@@ -242,7 +250,7 @@ export class BackLayerWebView extends Disposable {
 
 		this.element = document.createElement('div');
 
-		this.element.style.width = `calc(100% - ${CODE_CELL_LEFT_MARGIN + CELL_MARGIN + CELL_RUN_GUTTER}px)`;
+		this.element.style.width = `calc(100% - ${CODE_CELL_LEFT_MARGIN + (CELL_MARGIN * 2) + CELL_RUN_GUTTER}px)`;
 		this.element.style.height = '1400px';
 		this.element.style.position = 'absolute';
 		this.element.style.margin = `0px 0 0px ${CODE_CELL_LEFT_MARGIN + CELL_RUN_GUTTER}px`;
@@ -259,6 +267,9 @@ export class BackLayerWebView extends Disposable {
 						padding: ${outputNodePadding}px;
 						box-sizing: border-box;
 						background-color: var(--vscode-notebook-outputContainerBackgroundColor);
+					}
+					#container > div.nb-symbolHighlight > div {
+						background-color: var(--vscode-notebook-symbolHighlightBackground);
 					}
 					body {
 						padding: 0px;
@@ -312,7 +323,7 @@ export class BackLayerWebView extends Disposable {
 
 		if (!isWeb) {
 			coreDependencies = `<script src="${loader}"></script>`;
-			const htmlContent = this.generateContent(8, coreDependencies, baseUrl.toString());
+			const htmlContent = this.generateContent(CELL_OUTPUT_PADDING, coreDependencies, baseUrl.toString());
 			this.initialize(htmlContent);
 			resolveFunc!();
 		} else {
@@ -329,7 +340,7 @@ ${loaderJs}
 </script>
 `;
 
-				const htmlContent = this.generateContent(8, coreDependencies, baseUrl.toString());
+				const htmlContent = this.generateContent(CELL_OUTPUT_PADDING, coreDependencies, baseUrl.toString());
 				this.initialize(htmlContent);
 				resolveFunc!();
 			});
@@ -683,6 +694,16 @@ ${loaderJs}
 				cellId,
 			});
 		}, 50);
+	}
+
+	deltaCellOutputContainerClassNames(cellId: string, added: string[], removed: string[]) {
+		this._sendMessageToWebview({
+			type: 'decorations',
+			cellId,
+			addedClassNames: added,
+			removedClassNames: removed
+		});
+
 	}
 
 	async updateKernelPreloads(extensionLocations: URI[], preloads: URI[]) {
