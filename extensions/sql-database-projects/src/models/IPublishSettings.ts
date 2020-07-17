@@ -15,9 +15,3 @@ export interface IGenerateScriptSettings {
 	connectionUri: string;
 	sqlCmdVariables?: Record<string, string>;
 }
-
-// only reading db name and SQLCMD vars from profile for now
-export interface PublishProfile {
-	databaseName: string;
-	sqlCmdVariables: Record<string, string>;
-}

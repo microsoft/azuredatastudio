@@ -230,7 +230,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	async revealActiveDocumentInViewlet(uri?: vscode.Uri, shouldReveal: boolean = true): Promise<void> {
+	async revealActiveDocumentInViewlet(uri?: vscode.Uri, shouldReveal: boolean = true): Promise<BookTreeItem | undefined> {
 		let bookItem: BookTreeItem;
 		let notebookPath: string;
 		// If no uri is passed in, try to use the current active notebook editor
@@ -242,15 +242,16 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		} else if (uri.fsPath) {
 			notebookPath = uri.fsPath;
 		}
-		bookItem = await this.findAndExpandParentNode(notebookPath);
 
-		if (bookItem) {
+		if (shouldReveal || this._bookViewer.visible) {
+			bookItem = notebookPath ? await this.findAndExpandParentNode(notebookPath) : undefined;
 			// Select + focus item in viewlet if books viewlet is already open, or if we pass in variable
-			if (shouldReveal || this._bookViewer.visible) {
+			if (bookItem) {
 				// Note: 3 is the maximum number of levels that the vscode APIs let you expand to
 				await this._bookViewer.reveal(bookItem, { select: true, focus: true, expand: true });
 			}
 		}
+		return bookItem;
 	}
 
 	async findAndExpandParentNode(notebookPath: string): Promise<BookTreeItem> {
@@ -347,7 +348,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	public async searchJupyterBooks(treeItem?: BookTreeItem): Promise<void> {
 		let folderToSearch: string;
-		if (treeItem && treeItem.book.type !== BookTreeItemType.Notebook) {
+		if (treeItem && treeItem.sections !== undefined) {
 			if (treeItem.uri) {
 				folderToSearch = path.join(treeItem.root, Content, path.dirname(treeItem.uri));
 			} else {
@@ -534,10 +535,5 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			};
 		}
 		return Promise.resolve(result);
-	}
-
-	public getBookFromItemPath(itemPath: string): BookModel | undefined {
-		let selectedBook = this.books.find(b => itemPath.toLowerCase().indexOf(b.bookPath.toLowerCase()) > -1);
-		return selectedBook;
 	}
 }

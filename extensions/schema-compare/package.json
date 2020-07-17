@@ -15,7 +15,7 @@
   "activationEvents": [
     "onCommand:schemaCompare.start"
   ],
-  "main": "./out/main",
+  "main": "./out/extension",
   "repository": {
     "type": "git",
     "url": "https://github.com/Microsoft/azuredatastudio.git"

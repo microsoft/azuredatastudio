@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { TreeItem, TreeItemCollapsibleState } from 'vscode';
-import { Account, NodeInfo, AzureResource } from 'azdata';
+import * as vscode from 'vscode';
+import * as azdata from 'azdata';
 import { TokenCredentials } from '@azure/ms-rest-js';
 
 import * as nls from 'vscode-nls';
@@ -24,7 +24,7 @@ import { IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterServ
 
 export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNodeBase {
 	public constructor(
-		public readonly account: Account,
+		public readonly account: azdata.Account,
 		appContext: AppContext,
 		treeChangeHandler: IAzureResourceTreeChangeHandler
 	) {
@@ -42,7 +42,7 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 	public async getChildren(): Promise<TreeNode[]> {
 		try {
 			let subscriptions: azureResource.AzureResourceSubscription[] = [];
-			const tokens = await this.appContext.apiWrapper.getSecurityToken(this.account, AzureResource.ResourceManagement);
+			const tokens = await azdata.accounts.getSecurityToken(this.account, azdata.AzureResource.ResourceManagement);
 
 			if (this._isClearingCache) {
 				try {
@@ -99,7 +99,7 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 			}
 		} catch (error) {
 			if (error instanceof AzureResourceCredentialError) {
-				this.appContext.apiWrapper.executeCommand('azure.resource.signin');
+				vscode.commands.executeCommand('azure.resource.signin');
 			}
 			return [AzureResourceMessageTreeNode.create(AzureResourceErrorMessageUtil.getErrorMessage(error), this)];
 		}
@@ -109,8 +109,8 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 		return this.getCache<azureResource.AzureResourceSubscription[]>();
 	}
 
-	public getTreeItem(): TreeItem | Promise<TreeItem> {
-		const item = new TreeItem(this._label, TreeItemCollapsibleState.Collapsed);
+	public getTreeItem(): vscode.TreeItem | Promise<vscode.TreeItem> {
+		const item = new vscode.TreeItem(this._label, vscode.TreeItemCollapsibleState.Collapsed);
 		item.id = this._id;
 		item.contextValue = AzureResourceItemType.account;
 		item.iconPath = {
@@ -120,7 +120,7 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 		return item;
 	}
 
-	public getNodeInfo(): NodeInfo {
+	public getNodeInfo(): azdata.NodeInfo {
 		return {
 			label: this._label,
 			isLeaf: false,

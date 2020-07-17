@@ -81,7 +81,7 @@ suite('Schema compare integration test suite', () => {
 		assert(openScmpResult.sourceEndpointInfo.packageFilePath === source.packageFilePath, `Expected: source packageFilePath to be ${source.packageFilePath}, Actual: ${openScmpResult.sourceEndpointInfo.packageFilePath}`);
 		assert(openScmpResult.targetEndpointInfo.packageFilePath === target.packageFilePath, `Expected: target packageFilePath to be ${target.packageFilePath}, Actual: ${openScmpResult.targetEndpointInfo.packageFilePath}`);
 	});
-	test('Schema compare database to database comparison, script generation, and scmp', async function () {
+	test('Schema compare database to database comparison, script generation, and scmp @UNSTABLE@', async function () {
 		let server = await getStandaloneServer();
 		await utils.connectToServer(server, SERVER_CONNECTION_TIMEOUT);
 
