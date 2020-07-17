@@ -5,12 +5,12 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as TypeMoq from 'typemoq';
+import * as should from 'should';
 import { ManagePackagesDialog } from '../../dialog/managePackages/managePackagesDialog';
 import { ManagePackagesDialogModel } from '../../dialog/managePackages/managePackagesDialogModel';
 import { IPackageManageProvider, IPackageLocation } from '../../types';
 import { LocalCondaPackageManageProvider } from '../../jupyter/localCondaPackageManageProvider';
 import { InstalledPackagesTab } from '../../dialog/managePackages/installedPackagesTab';
-import should = require('should');
 
 interface TestContext {
 	view: azdata.ModelView;

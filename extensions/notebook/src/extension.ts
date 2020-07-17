@@ -10,22 +10,18 @@ import * as path from 'path';
 
 import { JupyterController } from './jupyter/jupyterController';
 import { AppContext } from './common/appContext';
-import { ApiWrapper } from './common/apiWrapper';
 import { IExtensionApi, IPackageManageProvider } from './types';
 import { CellType } from './contracts/content';
 import { NotebookUriHandler } from './protocol/notebookUriHandler';
-import { BookTreeViewProvider } from './book/bookTreeView';
-import { NavigationProviders, BuiltInCommands, unsavedBooksContextKey } from './common/constants';
+import { BuiltInCommands, unsavedBooksContextKey } from './common/constants';
 
 const localize = nls.loadMessageBundle();
 
-const BOOKS_VIEWID = 'bookTreeView';
-const PROVIDED_BOOKS_VIEWID = 'providedBooksView';
 let controller: JupyterController;
 type ChooseCellType = { label: string, id: CellType };
 
 export async function activate(extensionContext: vscode.ExtensionContext): Promise<IExtensionApi> {
-	const appContext = new AppContext(extensionContext, new ApiWrapper());
+	const appContext = new AppContext(extensionContext);
 	const createBookPath: string = path.posix.join(extensionContext.extensionPath, 'resources', 'notebooks', 'JupyterBooksCreate.ipynb');
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openBook', (bookPath: string, openAsUntitled: boolean, urlToOpen?: string) => openAsUntitled ? providedBookTreeViewProvider.openBook(bookPath, urlToOpen, true) : bookTreeViewProvider.openBook(bookPath, urlToOpen, true)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openNotebook', (resource) => bookTreeViewProvider.openNotebook(resource)));
@@ -116,10 +112,10 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 		return undefined;
 	}
 
-	let workspaceFolders = vscode.workspace.workspaceFolders?.slice() ?? [];
-	const bookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, workspaceFolders, extensionContext, false, BOOKS_VIEWID, NavigationProviders.NotebooksNavigator);
+
+	const bookTreeViewProvider = appContext.bookTreeViewProvider;
 	await bookTreeViewProvider.initialized;
-	const providedBookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [], extensionContext, true, PROVIDED_BOOKS_VIEWID, NavigationProviders.ProvidedBooksNavigator);
+	const providedBookTreeViewProvider = appContext.providedBookTreeViewProvider;
 	await providedBookTreeViewProvider.initialized;
 
 	azdata.nb.onDidChangeActiveNotebookEditor(e => {
@@ -147,6 +143,9 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 		},
 		getPackageManagers() {
 			return controller.packageManageProviders;
+		},
+		getAppContext() {
+			return appContext;
 		}
 	};
 }

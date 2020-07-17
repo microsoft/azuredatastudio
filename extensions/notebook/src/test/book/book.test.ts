@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as should from 'should';
 import * as path from 'path';
@@ -15,11 +16,12 @@ import { BookTreeItem, BookTreeItemType } from '../../book/bookTreeItem';
 import { promisify } from 'util';
 import { MockExtensionContext } from '../common/stubs';
 import { exists } from '../../common/utils';
-import { AppContext } from '../../common/appContext';
-import { ApiWrapper } from '../../common/apiWrapper';
 import { BookModel } from '../../book/bookModel';
 import { BookTrustManager } from '../../book/bookTrustManager';
 import { NavigationProviders } from '../../common/constants';
+import { readBookError } from '../../common/localizedConstants';
+import * as sinon from 'sinon';
+import { AppContext } from '../../common/appContext';
 
 export interface IExpectedBookItem {
 	title: string;
@@ -30,23 +32,24 @@ export interface IExpectedBookItem {
 	nextUri?: string | undefined;
 }
 
-export function equalBookItems(book: BookTreeItem, expectedBook: IExpectedBookItem): void {
-	should(book.title).equal(expectedBook.title);
+export function equalBookItems(book: BookTreeItem, expectedBook: IExpectedBookItem, errorMsg?: string): void {
+	should(book.title).equal(expectedBook.title, `Book titles do not match, expected ${expectedBook?.title} and got ${book?.title}`);
 	should(path.posix.parse(book.uri)).deepEqual(path.posix.parse(expectedBook.url));
 	if (expectedBook.previousUri || expectedBook.nextUri) {
 		let prevUri = book.previousUri ? book.previousUri.toLocaleLowerCase() : undefined;
 		let expectedPrevUri = expectedBook.previousUri ? expectedBook.previousUri.replace(/\\/g, '/') : undefined;
-		should(prevUri).equal(expectedPrevUri);
+		should(prevUri).equal(expectedPrevUri, errorMsg ?? `PreviousUri\'s do not match, expected ${expectedPrevUri} and got ${prevUri}`);
 		let nextUri = book.nextUri ? book.nextUri.toLocaleLowerCase() : undefined;
 		let expectedNextUri = expectedBook.nextUri ? expectedBook.nextUri.replace(/\\/g, '/') : undefined;
-		should(nextUri).equal(expectedNextUri);
+		should(nextUri).equal(expectedNextUri, errorMsg ?? `NextUri\'s do not match, expected ${expectedNextUri} and got ${nextUri}`);
 	}
 }
 
-describe('BookTreeViewProviderTests', function () {
+describe('BooksTreeViewTests', function () {
 	describe('BookTreeViewProvider', () => {
 
 		let mockExtensionContext: vscode.ExtensionContext;
+		let appContext: AppContext;
 		let nonBookFolderPath: string;
 		let bookFolderPath: string;
 		let rootFolderPath: string;
@@ -56,7 +59,6 @@ describe('BookTreeViewProviderTests', function () {
 		let expectedMarkdown: IExpectedBookItem;
 		let expectedExternalLink: IExpectedBookItem;
 		let expectedBook: IExpectedBookItem;
-		let appContext: AppContext;
 
 		this.beforeAll(async () => {
 			mockExtensionContext = new MockExtensionContext();
@@ -103,7 +105,6 @@ describe('BookTreeViewProviderTests', function () {
 				sections: [expectedNotebook1, expectedMarkdown, expectedExternalLink],
 				title: 'Test Book'
 			};
-			appContext = new AppContext(mockExtensionContext, new ApiWrapper());
 
 			await fs.mkdir(rootFolderPath);
 			await fs.mkdir(bookFolderPath);
@@ -116,11 +117,17 @@ describe('BookTreeViewProviderTests', function () {
 			await fs.writeFile(notebook2File, '');
 			await fs.writeFile(notebook3File, '');
 			await fs.writeFile(markdownFile, '');
-			appContext = new AppContext(undefined, new ApiWrapper());
+		});
+
+		it('bookProviders should be initialized on extension activate', async () => {
+			appContext = (await vscode.extensions.getExtension('Microsoft.notebook').activate()).getAppContext();
+			should(appContext).not.be.undefined();
+			should(appContext.bookTreeViewProvider).not.be.undefined();
+			should(appContext.providedBookTreeViewProvider).not.be.undefined();
 		});
 
 		it('should initialize correctly with empty workspace array', async () => {
-			const bookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
+			const bookTreeViewProvider = new BookTreeViewProvider([], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
 			await bookTreeViewProvider.initialized;
 		});
 
@@ -130,7 +137,7 @@ describe('BookTreeViewProviderTests', function () {
 				name: '',
 				index: 0
 			};
-			const bookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [folder], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
+			const bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
 			await bookTreeViewProvider.initialized;
 		});
 
@@ -145,32 +152,29 @@ describe('BookTreeViewProviderTests', function () {
 				name: '',
 				index: 0
 			};
-			const bookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [book, nonBook], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
+			const bookTreeViewProvider = new BookTreeViewProvider([book, nonBook], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
 			await bookTreeViewProvider.initialized;
 			should(bookTreeViewProvider.books.length).equal(1, 'Expected book was not initialized');
 		});
 
-		describe('getChildren', function (): void {
+		describe('bookTreeViewProvider', function (): void {
 			let bookTreeViewProvider: BookTreeViewProvider;
-			let providedbookTreeViewProvider: BookTreeViewProvider;
 			let book: BookTreeItem;
 			let notebook1: BookTreeItem;
+			let notebook2: BookTreeItem;
 
 			this.beforeAll(async () => {
-				let folder: vscode.WorkspaceFolder = {
-					uri: vscode.Uri.file(rootFolderPath),
-					name: '',
-					index: 0
-				};
-				bookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [folder], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
-				providedbookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [], mockExtensionContext, true, 'providedBooksView', NavigationProviders.ProvidedBooksNavigator);
+				bookTreeViewProvider = appContext.bookTreeViewProvider;
 				let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 				await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
-				await Promise.race([providedbookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('ProvidedBooksTreeViewProvider did not initialize in time'); })]);
-				await providedbookTreeViewProvider.openBook(bookFolderPath, undefined, false, false);
+				await bookTreeViewProvider.openBook(bookFolderPath, undefined, false, false);
 			});
 
-			it('bookTreeViewProvider should return all book nodes when element is undefined', async function (): Promise<void> {
+			afterEach(function(): void {
+				sinon.restore();
+			});
+
+			it('getChildren should return all book nodes when element is undefined', async function (): Promise<void> {
 				const children = await bookTreeViewProvider.getChildren();
 				should(children).be.Array();
 				should(children.length).equal(1);
@@ -178,7 +182,7 @@ describe('BookTreeViewProviderTests', function () {
 				should(book.title).equal(expectedBook.title);
 			});
 
-			it('bookTreeViewProvider should return all page nodes when element is a book', async function (): Promise<void> {
+			it('getChildren should return all page nodes when element is a book', async function (): Promise<void> {
 				const children = await bookTreeViewProvider.getChildren(book);
 				should(children).be.Array();
 				should(children.length).equal(3);
@@ -190,19 +194,19 @@ describe('BookTreeViewProviderTests', function () {
 				equalBookItems(externalLink, expectedExternalLink);
 			});
 
-			it('bookTreeViewProvider should return all sections when element is a notebook', async function (): Promise<void> {
+			it('getChildren should return all sections when element is a notebook', async function (): Promise<void> {
 				const children = await bookTreeViewProvider.getChildren(notebook1);
 				should(children).be.Array();
 				should(children.length).equal(2);
-				const notebook2 = children[0];
+				notebook2 = children[0];
 				const notebook3 = children[1];
 				equalBookItems(notebook2, expectedNotebook2);
 				equalBookItems(notebook3, expectedNotebook3);
 			});
 
-			it('bookTreeViewProvider should set notebooks trusted to true on trustBook', async () => {
+			it('should set notebooks trusted to true on trustBook', async () => {
 				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb');
-				let bookTrustManager: BookTrustManager = new BookTrustManager(bookTreeViewProvider.books, appContext.apiWrapper);
+				let bookTrustManager: BookTrustManager = new BookTrustManager(bookTreeViewProvider.books);
 				let isTrusted = bookTrustManager.isNotebookTrustedByDefault(vscode.Uri.file(notebook1Path).fsPath);
 				should(isTrusted).equal(false, 'Notebook should not be trusted by default');
 
@@ -212,7 +216,7 @@ describe('BookTreeViewProviderTests', function () {
 
 			});
 
-			it('bookTreeViewProvider getNavigation should get previous and next urls correctly from the bookModel', async () => {
+			it('getNavigation should get previous and next urls correctly from the bookModel', async () => {
 				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb');
 				let notebook2Path = path.join(rootFolderPath, 'Book', 'content', 'notebook2.ipynb');
 				let notebook3Path = path.join(rootFolderPath, 'Book', 'content', 'notebook3.ipynb');
@@ -223,7 +227,60 @@ describe('BookTreeViewProviderTests', function () {
 
 			});
 
-			it('providedBookTreeViewProvider should return all book nodes when element is undefined', async function (): Promise<void> {
+			it('getParent should return when element is a valid child notebook', async () => {
+				let parent = await bookTreeViewProvider.getParent();
+				should(parent).be.undefined();
+
+				parent = await bookTreeViewProvider.getParent(notebook2);
+				should(parent).not.be.undefined();
+				equalBookItems(parent, expectedNotebook1);
+			});
+
+			it('revealActiveDocumentInViewlet should return correct bookItem for highlight', async () => {
+				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb');
+				let currentSelection = await bookTreeViewProvider.findAndExpandParentNode(notebook1Path);
+				equalBookItems(currentSelection, expectedNotebook1);
+			});
+
+			it('revealActiveDocumentInViewlet should be called on showNotebook', async () => {
+				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb');
+				let notebook2Path = path.join(rootFolderPath, 'Book', 'content', 'notebook2.ipynb');
+				let notebookUri = vscode.Uri.file(notebook2Path);
+
+				let revealActiveDocumentInViewletSpy = sinon.spy(bookTreeViewProvider, 'revealActiveDocumentInViewlet');
+				await azdata.nb.showNotebookDocument(notebookUri);
+				should(azdata.nb.notebookDocuments.find(doc => doc.fileName === notebookUri.fsPath)).not.be.undefined();
+				should(revealActiveDocumentInViewletSpy.calledOnce).be.true('revealActiveDocumentInViewlet should have been called');
+
+				notebookUri = vscode.Uri.file(notebook1Path);
+				await azdata.nb.showNotebookDocument(notebookUri);
+				should(azdata.nb.notebookDocuments.find(doc => doc.fileName === notebookUri.fsPath)).not.be.undefined();
+				should(revealActiveDocumentInViewletSpy.calledTwice).be.true('revealActiveDocumentInViewlet should have been called twice');
+			});
+
+			this.afterAll(async () => {
+				await vscode.commands.executeCommand('workbench.action.closeAllEditors');
+			});
+
+		});
+
+		describe('providedBookTreeViewProvider', function (): void {
+			let providedbookTreeViewProvider: BookTreeViewProvider;
+			let book: BookTreeItem;
+			let notebook1: BookTreeItem;
+
+			this.beforeAll(async () => {
+				providedbookTreeViewProvider = appContext.providedBookTreeViewProvider;
+				let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
+				await Promise.race([providedbookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('ProvidedBooksTreeViewProvider did not initialize in time'); })]);
+				await providedbookTreeViewProvider.openBook(bookFolderPath, undefined, false, false);
+			});
+
+			afterEach(function(): void {
+				sinon.restore();
+			});
+
+			it('getChildren should return all book nodes when element is undefined', async function (): Promise<void> {
 				const children = await providedbookTreeViewProvider.getChildren();
 				should(children).be.Array();
 				should(children.length).equal(1);
@@ -231,7 +288,7 @@ describe('BookTreeViewProviderTests', function () {
 				should(book.title).equal(expectedBook.title);
 			});
 
-			it('providedBookTreeViewProvider should return all page nodes when element is a book', async function (): Promise<void> {
+			it('getChildren should return all page nodes when element is a book', async function (): Promise<void> {
 				const children = await providedbookTreeViewProvider.getChildren(book);
 				should(children).be.Array();
 				should(children.length).equal(3);
@@ -243,7 +300,7 @@ describe('BookTreeViewProviderTests', function () {
 				equalBookItems(externalLink, expectedExternalLink);
 			});
 
-			it('providedBookTreeViewProvider should return all sections when element is a notebook', async function (): Promise<void> {
+			it('getChildren should return all sections when element is a notebook', async function (): Promise<void> {
 				const children = await providedbookTreeViewProvider.getChildren(notebook1);
 				should(children).be.Array();
 				should(children.length).equal(2);
@@ -253,7 +310,7 @@ describe('BookTreeViewProviderTests', function () {
 				equalBookItems(notebook3, expectedNotebook3);
 			});
 
-			it('providedBookTreeViewProvider getNavigation should get previous and next urls correctly from the bookModel', async () => {
+			it('getNavigation should get previous and next urls correctly from the bookModel', async () => {
 				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb');
 				let notebook2Path = path.join(rootFolderPath, 'Book', 'content', 'notebook2.ipynb');
 				let notebook3Path = path.join(rootFolderPath, 'Book', 'content', 'notebook3.ipynb');
@@ -261,6 +318,30 @@ describe('BookTreeViewProviderTests', function () {
 				should(result.hasNavigation).be.true('getNavigation failed to get previous and next urls');
 				should(result.next.fsPath).equal(notebook3Path, 'getNavigation failed to get the next url');
 				should(result.previous.fsPath).equal(notebook1Path, 'getNavigation failed to get the previous url');
+			});
+
+			it('revealActiveDocumentInViewlet should return correct bookItem for highlight', async () => {
+				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb');
+				let currentSelection = await providedbookTreeViewProvider.findAndExpandParentNode(notebook1Path);
+				equalBookItems(currentSelection, expectedNotebook1);
+			});
+
+			it('revealActiveDocumentInViewlet should be called on showNotebook', async () => {
+				const untitledNotebook1Uri = vscode.Uri.parse(`untitled:notebook1.ipynb`);
+				const untitledNotebook2Uri = vscode.Uri.parse(`untitled:notebook2.ipynb`);
+
+				let revealActiveDocumentInViewletSpy = sinon.spy(providedbookTreeViewProvider, 'revealActiveDocumentInViewlet');
+				await azdata.nb.showNotebookDocument(untitledNotebook1Uri);
+				should(azdata.nb.notebookDocuments.find(doc => doc.fileName === untitledNotebook1Uri.fsPath)).not.be.undefined();
+				should(revealActiveDocumentInViewletSpy.calledOnce).be.true('revealActiveDocumentInViewlet should have been called');
+
+				await azdata.nb.showNotebookDocument(untitledNotebook2Uri);
+				should(azdata.nb.notebookDocuments.find(doc => doc.fileName === untitledNotebook2Uri.fsPath)).not.be.undefined();
+				should(revealActiveDocumentInViewletSpy.calledTwice).be.true('revealActiveDocumentInViewlet should have been called twice');
+			});
+
+			this.afterAll(async () => {
+				await vscode.commands.executeCommand('workbench.action.closeAllEditors');
 			});
 
 		});
@@ -280,7 +361,6 @@ describe('BookTreeViewProviderTests', function () {
 		let tableOfContentsFile: string;
 		let bookTreeViewProvider: BookTreeViewProvider;
 		let folder: vscode.WorkspaceFolder;
-		let appContext: AppContext;
 
 		this.beforeAll(async () => {
 			rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
@@ -297,11 +377,9 @@ describe('BookTreeViewProviderTests', function () {
 				name: '',
 				index: 0
 			};
-			appContext = new AppContext(mockExtensionContext, new ApiWrapper());
-			bookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [folder], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
+			bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
 			let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 			await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
-			appContext = new AppContext(undefined, new ApiWrapper());
 		});
 
 		it('should ignore toc.yml files not in _data folder', async () => {
@@ -324,7 +402,6 @@ describe('BookTreeViewProviderTests', function () {
 		let folder: vscode.WorkspaceFolder;
 		let bookTreeViewProvider: BookTreeViewProvider;
 		let tocFile: string;
-		let appContext: AppContext;
 
 		this.beforeAll(async () => {
 			rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
@@ -340,22 +417,20 @@ describe('BookTreeViewProviderTests', function () {
 				name: '',
 				index: 0
 			};
-			appContext = new AppContext(mockExtensionContext, new ApiWrapper());
-			bookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [folder], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
+			bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
 			let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 			await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
-			appContext = new AppContext(undefined, new ApiWrapper());
 		});
 
 		it('should show error message if config.yml file not found', async () => {
 			await bookTreeViewProvider.currentBook.readBooks();
-			should(bookTreeViewProvider.currentBook.errorMessage.toLocaleLowerCase()).equal(('Failed to read book '+ bookTreeViewProvider.currentBook.bookPath +': ENOENT: no such file or directory, open \'' + configFile + '\'').toLocaleLowerCase());
+			should(bookTreeViewProvider.currentBook.errorMessage).equal(readBookError(bookTreeViewProvider.currentBook.bookPath, `ENOENT: no such file or directory, open '${configFile}'`));
 		});
 
 		it('should show error if toc.yml file format is invalid', async function (): Promise<void> {
 			await fs.writeFile(configFile, 'title: Test Book');
 			await bookTreeViewProvider.currentBook.readBooks();
-			should(bookTreeViewProvider.currentBook.errorMessage.toLocaleLowerCase()).equal(('Failed to read book '+ bookTreeViewProvider.currentBook.bookPath +': Invalid toc file').toLocaleLowerCase());
+			should(bookTreeViewProvider.currentBook.errorMessage).equal(readBookError(bookTreeViewProvider.currentBook.bookPath, `Invalid toc file`));
 		});
 
 		this.afterAll(async function (): Promise<void> {
@@ -372,7 +447,6 @@ describe('BookTreeViewProviderTests', function () {
 		let bookTreeViewProvider: BookTreeViewProvider;
 		let folder: vscode.WorkspaceFolder;
 		let expectedNotebook2: IExpectedBookItem;
-		let appContext: AppContext;
 
 		this.beforeAll(async () => {
 			rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
@@ -400,11 +474,9 @@ describe('BookTreeViewProviderTests', function () {
 				name: '',
 				index: 0
 			};
-			appContext = new AppContext(mockExtensionContext, new ApiWrapper());
-			bookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [folder], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
+			bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
 			let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 			await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
-			appContext = new AppContext(undefined, new ApiWrapper());
 		});
 
 		it('should show error if notebook or markdown file is missing', async function (): Promise<void> {
@@ -426,7 +498,6 @@ describe('BookTreeViewProviderTests', function () {
 		let rootFolderPath: string;
 		let tableOfContentsFile: string;
 		let bookTreeViewProvider: BookTreeViewProvider;
-		let appContext: AppContext;
 
 		this.beforeAll(async () => {
 			rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
@@ -443,24 +514,19 @@ describe('BookTreeViewProviderTests', function () {
 			await fs.writeFile(notebook2File, '');
 
 			const mockExtensionContext = new MockExtensionContext();
-			appContext = new AppContext(mockExtensionContext, new ApiWrapper());
-			bookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
+			bookTreeViewProvider = new BookTreeViewProvider([], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
 			let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 			await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
-			appContext = new AppContext(undefined, new ApiWrapper());
+		});
+
+		afterEach(function(): void {
+			sinon.restore();
 		});
 
 		it('should add book and initialize book on openBook', async () => {
 			should(bookTreeViewProvider.books.length).equal(0, 'Invalid books on initialize.');
 			await bookTreeViewProvider.openBook(rootFolderPath);
 			should(bookTreeViewProvider.books.length).equal(1, 'Failed to initialize the book on open');
-		});
-
-		it('should remove book on closeBook', async () => {
-			await bookTreeViewProvider.openBook(rootFolderPath);
-			should(bookTreeViewProvider.books.length).equal(1, 'Failed to initialize the book on open');
-			await bookTreeViewProvider.closeBook(bookTreeViewProvider.books[0].bookItems[0]);
-			should(bookTreeViewProvider.books.length).equal(0, 'Failed to remove the book on close');
 		});
 
 		it('should add book when bookPath contains special characters on openBook', async () => {
@@ -478,12 +544,53 @@ describe('BookTreeViewProviderTests', function () {
 			await fs.writeFile(notebook2File2, '');
 
 			await bookTreeViewProvider.openBook(rootFolderPath2);
-			should(bookTreeViewProvider.books.length).equal(1, 'Failed to initialize the book on open');
+			should(bookTreeViewProvider.books.length).equal(2, 'Failed to initialize the book on open');
+
+			await promisify(rimraf)(rootFolderPath2);
 		});
 
 		it('should get notebook path with untitled schema on openNotebookAsUntitled', async () => {
 			let notebookUri = bookTreeViewProvider.getUntitledNotebookUri(path.join(rootFolderPath, 'content', 'notebook2.ipynb'));
 			should(notebookUri.scheme).equal('untitled', 'Failed to get untitled uri of the resource');
+		});
+
+		it('openNotebookFolder should prompt for notebook path and invoke loadNotebooksInFolder', async () => {
+			sinon.stub(vscode.window, 'showOpenDialog').returns(Promise.resolve([vscode.Uri.file(rootFolderPath)]));
+			let loadNotebooksSpy = sinon.spy(bookTreeViewProvider, 'loadNotebooksInFolder');
+			await bookTreeViewProvider.openNotebookFolder();
+
+			should(loadNotebooksSpy.calledOnce).be.true('openNotebookFolder should have called loadNotebooksInFolder');
+		});
+
+		it('openNewBook should prompt for notebook path and invoke openBook', async () => {
+			sinon.stub(vscode.window, 'showOpenDialog').returns(Promise.resolve([vscode.Uri.file(rootFolderPath)]));
+			let openBookSpy = sinon.spy(bookTreeViewProvider, 'openBook');
+			await bookTreeViewProvider.openNewBook();
+
+			should(openBookSpy.calledOnce).be.true('openNewBook should have called openBook');
+		});
+
+		it('searchJupyterBooks should call command that opens Search view', async () => {
+			let executeCommandSpy = sinon.spy(vscode.commands, 'executeCommand');
+			await bookTreeViewProvider.searchJupyterBooks(bookTreeViewProvider.books[0].bookItems[0]);
+			should(executeCommandSpy.calledWith('workbench.action.findInFiles')).be.true('searchJupyterBooks should have called command to open Search view');
+		});
+
+		it('saveJupyterBooks should prompt location and openBook', async () => {
+			let saveFolderPath = path.join(os.tmpdir(), `Book_${uuid.v4()}`);
+			await fs.mkdir(saveFolderPath);
+			sinon.stub(vscode.window, 'showOpenDialog').returns(Promise.resolve([vscode.Uri.file(saveFolderPath)]));
+			let executeCommandSpy = sinon.spy(vscode.commands, 'executeCommand');
+			await bookTreeViewProvider.saveJupyterBooks();
+			should(executeCommandSpy.calledWith('bookTreeView.openBook')).be.true('saveJupyterBooks should have called command openBook after saving');
+
+			await promisify(rimraf)(saveFolderPath);
+		});
+
+		it('should remove book on closeBook', async () => {
+			let length: number = bookTreeViewProvider.books.length;
+			await bookTreeViewProvider.closeBook(bookTreeViewProvider.books[0].bookItems[0]);
+			should(bookTreeViewProvider.books.length).equal(length-1, 'Failed to remove the book on close');
 		});
 
 		this.afterAll(async function (): Promise<void> {
@@ -502,7 +609,6 @@ describe('BookTreeViewProviderTests', function () {
 		let standaloneNotebookTitle: string;
 		let standaloneNotebookFile: string;
 		let bookTreeViewProvider: BookTreeViewProvider;
-		let appContext: AppContext;
 
 		this.beforeAll(async () => {
 			rootFolderPath = path.join(os.tmpdir(), `BookFolderTest_${uuid.v4()}`);
@@ -527,11 +633,9 @@ describe('BookTreeViewProviderTests', function () {
 			await fs.writeFile(standaloneNotebookFile, '');
 
 			const mockExtensionContext = new MockExtensionContext();
-			appContext = new AppContext(mockExtensionContext, new ApiWrapper());
-			bookTreeViewProvider = new BookTreeViewProvider(appContext.apiWrapper, [], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
+			bookTreeViewProvider = new BookTreeViewProvider([], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
 			let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 			await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
-			appContext = new AppContext(undefined, new ApiWrapper());
 		});
 
 		it('should include books and notebooks when opening parent folder', async () => {

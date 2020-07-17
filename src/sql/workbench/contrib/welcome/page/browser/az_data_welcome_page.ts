@@ -11,7 +11,7 @@ export default () => `
 	<div class="welcomePage">
 		<div class="ads-homepage splash">
 			<div class="gradient">
-				<div class="preview-text tool-tip">
+				<div class="ads-homepage-section tool-tip">
 					<div class="tool-tip-container" id="tool-tip-container-wide">
 						<a class="ads-welcome-page-link" aria-describedby="tooltip-text-wide" id="preview-link-wide" class="preview-link" tabindex="0" name="preview"><p>Preview</p><i class="icon-info themed-icon"></i></a>
 						<span role="tooltip" id="tooltip-text-wide" class="tool-tip-text" aria-hidden="true">
@@ -40,27 +40,10 @@ export default () => `
 										<span class="icon xs"></span><h1 class="caption"></h1>
 									</div>
 									<div class="flex btn-container">
-										<div>
-											<button id="dropdown-btn" class="btn btn-primary dropdown" role="navigation" aria-haspopup="true" aria-controls="dropdown">
-												<div class="dropdown-text" style="pointer-events: none;">
-													<span>${escape(localize('welcomePage.new', "New"))}</span><i class="icon-arrow-down"></i>
-												</div>
-											</button>
-											<nav role="navigation" class="dropdown-nav">
-												<ul id="dropdown" class="dropdown-content" aria-hidden="true" aria-label="submenu" role="menu" aria-labelledby="dropdown-btn">
-													<li role="none"><a class="ads-welcome-page-link" role="menuitem" tabIndex="-1" class="move" href="command:registeredServers.addConnection">${escape(localize('welcomePage.newConnection', "New connection"))}</a></li>
-													<li role="none"><a class="ads-welcome-page-link" role="menuitem" tabIndex="-1" class="move" href="command:workbench.action.files.newUntitledFile">${escape(localize('welcomePage.newQuery', "New query"))}</a></li>
-													<li role="none"><a class="ads-welcome-page-link" role="menuitem" tabIndex="-1" class="move" href="command:notebook.command.new">${escape(localize('welcomePage.newNotebook', "New notebook"))}</a></li>
-													<li role="none" id="dropdown-mac-only"><a class="ads-welcome-page-link" role="menuitem" tabIndex="-1" class="move mac-only" href="command:workbench.action.files.openLocalFileFolder">${escape(localize('welcomePage.openFileMac', "Open file"))}</a></li>
-													<li role="none" id="dropdown-windows-linux-only"><a class="ads-welcome-page-link" role="menuitem" tabIndex="-1" class="move windows-only linux-only" href="command:workbench.action.files.openFile">${escape(localize('welcomePage.openFileLinuxPC', "Open file"))}</a></li>
-												</ul>
-											</nav>
+										<div id="dropdown-btn-container" class="btn btn-primary dropdown">
 										</div>
-										<a class="windows-only linux-only btn btn-secondary"
-											href="command:workbench.action.files.openFile">
-											${escape(localize('welcomePage.openFileLinuxPC', "Open file"))}
-										</a>
-										<a class="mac-only btn btn-secondary" href="command:workbench.action.files.openLocalFileFolder">${escape(localize('welcomePage.openFileMac', "Open file"))}</a>
+										<div id="open-file-btn-container" class="btn btn-secondary">
+										</div>
 									</div>
 								</div>
 							</div>
@@ -68,7 +51,7 @@ export default () => `
 					</div>
 					<div class="row header-bottom-nav-tiles ads-grid">
 						<div class="col">
-							<a class="header-bottom-nav-tile-link ads-welcome-page-link" href="command:registeredServers.addConnection">
+							<a class="header-bottom-nav-tile-link" href="command:registeredServers.addConnection">
 								<div class="header-bottom-nav-tile tile tile-connection">
 									<h3>${escape(localize('welcomePage.createConnection', "Create a connection"))}</h3>
 									<p>${escape(localize('welcomePage.createConnectionBody', "Connect to a database instance through the connection dialog."))}</p>
@@ -77,7 +60,7 @@ export default () => `
 							</a>
 						</div>
 						<div class="col">
-							<a class="header-bottom-nav-tile-link ads-welcome-page-link"
+							<a class="header-bottom-nav-tile-link"
 								href="command:workbench.action.files.newUntitledFile">
 								<div class="header-bottom-nav-tile tile tile-query">
 									<h3>${escape(localize('welcomePage.runQuery', "Run a query"))}</h3>
@@ -87,7 +70,7 @@ export default () => `
 							</a>
 						</div>
 						<div class="col">
-							<a class="header-bottom-nav-tile-link ads-welcome-page-link" href="command:notebook.command.new">
+							<a class="header-bottom-nav-tile-link" href="command:notebook.command.new">
 								<div class="header-bottom-nav-tile tile tile-notebook">
 									<h3>${escape(localize('welcomePage.createNotebook', "Create a notebook"))}</h3>
 									<p>${escape(localize('welcomePage.createNotebookBody', "Build a new notebook using a native notebook editor."))}</p>
@@ -96,7 +79,7 @@ export default () => `
 							</a>
 						</div>
 						<div class="col">
-							<a class="header-bottom-nav-tile-link ads-welcome-page-link" href="command:azdata.resource.deploy">
+							<a class="header-bottom-nav-tile-link" href="command:azdata.resource.deploy">
 								<div class="header-bottom-nav-tile tile tile-server">
 									<h3>${escape(localize('welcomePage.deployServer', "Deploy a server"))}</h3>
 									<p>${escape(localize('welcomePage.deployServerBody', "Create a new instance of SQL Server on the platform of your choice."))}</p>
@@ -111,26 +94,25 @@ export default () => `
 				<div class="resources-container">
 					<h2>${escape(localize('welcomePage.resources', "Resources"))}</h2>
 					<div class="tabs">
-						<input class="input" name="tabs" type="radio" id="tab-1" checked="checked" />
-						<label class="label" for="tab-1" tabIndex="0">${escape(localize('welcomePage.history', "History"))}</label>
+					<!-- Checkbox is not accessible to user yet, this feature is still in development -->
+					<input tabindex="-1" class="input" name="tabs" type="radio" id="tab-1" checked="checked" />
+					<span id="historyLabel" class="label" for="tab-1" tabIndex="0">${escape(localize('welcomePage.history', "History"))}</span>
 						<div class="panel">
 							<div class="recent history">
 								<div class="flex list-header-container">
 									<i class="icon-document themed-icon"></i>
-									<h4 class="list-header">${escape(localize('welcomePage.name', "Name"))}</h4>
-									<h4 class="list-header-last-opened">${escape(localize('welcomePage.lastOpened', "Last Opened"))}</h4>
+									<span class="list-header">${escape(localize('welcomePage.name', "Name"))}</span>
+									<span class="list-header-last-opened">${escape(localize('welcomePage.lastOpened', "Last Opened"))}</span>
 								</div>
 								<ul class="list">
 									<!-- Filled programmatically -->
 								</ul>
 								<p class="none detail">No recent folders</p>
-								<ul class="moreRecent-list">
-									<li class="moreRecent">
-										<a class="ads-welcome-page-link" href="command:workbench.action.openRecent">${escape(localize('welcomePage.moreRecent', "Show more"))}
-											<i class="icon-arrow-down-dark"></i>
-										</a>
-									</li>
-								</ul>
+								<div class="moreRecent">
+									<a class="ads-welcome-page-link" href="command:workbench.action.openRecent">${escape(localize('welcomePage.moreRecent', "Show more"))}
+									<i class="icon-arrow-down-dark"></i>
+									</a>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -158,8 +140,6 @@ export default () => `
 						<p>${escape(localize('welcomePage.documentationBody',
 				"Visit the documentation center for quickstarts, how-to guides, and references for PowerShell, APIs, etc."))}
 						</p>
-
-
 						<div class="videos-container row">
 							<h2>Videos</h2>
 							<div class="flex flex-container-video">
@@ -169,7 +149,6 @@ export default () => `
 										<h4>${escape(localize('welcomePage.videoDescriptionOverview',
 					"Overview of Azure Data Studio"))}</h4>
 									</a>
-
 								</div>
 								<div class="videos-container-video">
 									<a href="https://www.youtube.com/watch?v=Nt4kIHQ0IOc" class="video overview ads-welcome-page-link">
@@ -186,7 +165,8 @@ export default () => `
 			<div class="ads-homepage-section content extensions">
 				<div class="flex flex-j-between">
 					<h2>Extend your data studio</h2>
-					<a class="link-show-all flex ads-welcome-page-link" href="command:extensions.listView.focus">${escape(localize('welcomePage.showAll', "Show All"))} <span class="icon-arrow-right"></span></a>
+					<a class="link-show-all flex" href="command:workbench.view.extensions">${escape(localize('welcomePage.showAll', "Show All"))} <span class="icon-arrow-right"></span></a>
+					<a class="link-show-all flex" href="command:workbench.view.extensions">${escape(localize('welcomePage.showAll', "Show All"))} <span class="icon-arrow-right"></span></a>
 				</div>
 				<div class="row ads-grid grip-gap-50">
 					<div

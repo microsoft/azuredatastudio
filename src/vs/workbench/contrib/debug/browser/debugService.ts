@@ -348,8 +348,8 @@ export class DebugService implements IDebugService {
 			}
 
 			if (configOrName && !config) {
-				const message = !!launch ? nls.localize('configMissing', "Configuration '{0}' is missing in 'launch.json'.", typeof configOrName === 'string' ? configOrName : JSON.stringify(configOrName)) :
-					nls.localize('launchJsonDoesNotExist', "'launch.json' does not exist.");
+				const message = !!launch ? nls.localize('configMissing', "Configuration '{0}' is missing in 'launch.json'.", typeof configOrName === 'string' ? configOrName : configOrName.name) :
+					nls.localize('launchJsonDoesNotExist', "'launch.json' does not exist for passed workspace folder.");
 				throw new Error(message);
 			}
 
@@ -358,6 +358,7 @@ export class DebugService implements IDebugService {
 			return result;
 		} catch (err) {
 			// make sure to get out of initializing state, and propagate the result
+			this.notificationService.error(err);
 			this.endInitializingState();
 			return Promise.reject(err);
 		}
@@ -618,8 +619,15 @@ export class DebugService implements IDebugService {
 			}
 
 			const root = session.root || this.contextService.getWorkspace();
+			await this.taskRunner.runTask(root, session.configuration.preRestartTask);
 			await this.taskRunner.runTask(root, session.configuration.postDebugTask);
-			return this.taskRunner.runTaskAndCheckErrors(root, session.configuration.preLaunchTask, (msg, actions) => this.showError(msg, actions));
+
+			const taskResult1 = await this.taskRunner.runTaskAndCheckErrors(root, session.configuration.preLaunchTask, (msg, actions) => this.showError(msg, actions));
+			if (taskResult1 !== TaskRunResult.Success) {
+				return taskResult1;
+			}
+
+			return this.taskRunner.runTaskAndCheckErrors(root, session.configuration.postRestartTask, (msg, actions) => this.showError(msg, actions));
 		};
 
 		const extensionDebugSession = getExtensionHostDebugSession(session);
@@ -703,7 +711,7 @@ export class DebugService implements IDebugService {
 		});
 	}
 
-	stopSession(session: IDebugSession): Promise<any> {
+	stopSession(session: IDebugSession | undefined): Promise<any> {
 		if (session) {
 			return session.terminate();
 		}

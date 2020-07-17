@@ -109,6 +109,12 @@ export async function createDB(dbName: string, ownerUri: string): Promise<void> 
 	assert(dbCreatedResult.columnInfo[0].columnName !== 'ErrorMessage', 'DB creation threw error');
 }
 
+/**
+ * Attempts to delete a database, throwing an exception if it fails.
+ * @param server The server information
+ * @param dbName The name of the DB to delete
+ * @param ownerUri The ownerUri of the connection used to run the query
+ */
 export async function deleteDB(server: TestServerProfile, dbName: string, ownerUri: string): Promise<void> {
 	let query = `BEGIN TRY
 			ALTER DATABASE ${dbName}
@@ -123,7 +129,23 @@ export async function deleteDB(server: TestServerProfile, dbName: string, ownerU
 
 	ownerUri = await ensureServerConnected(server, ownerUri);
 	let dbDeleteResult = await runQuery(query, ownerUri);
-	assert(dbDeleteResult.columnInfo[0].columnName !== 'ErrorMessage', 'DB deletion threw error');
+	assert(dbDeleteResult.columnInfo[0].columnName !== 'ErrorMessage', `Error deleting db ${dbName} : ${dbDeleteResult.rows[0][0]}`);
+}
+
+/**
+ * Attempts to delete a database, returning true if successful and false if not.
+ * @param server The server information
+ * @param dbName The name of the DB to delete
+ * @param ownerUri The ownerUri of the connection used to run the query
+ */
+export async function tryDeleteDB(server: TestServerProfile, dbName: string, ownerUri: string): Promise<boolean> {
+	try {
+		deleteDB(server, dbName, ownerUri);
+		return true;
+	} catch (err) {
+		console.warn(err);
+		return false;
+	}
 }
 
 async function ensureServerConnected(server: TestServerProfile, ownerUri: string): Promise<string> {

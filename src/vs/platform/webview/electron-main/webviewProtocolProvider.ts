@@ -3,19 +3,21 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { session, protocol } from 'electron';
+import { protocol, session } from 'electron';
 import { Readable } from 'stream';
-import { VSBufferReadableStream } from 'vs/base/common/buffer';
+import { bufferToStream, VSBuffer, VSBufferReadableStream } from 'vs/base/common/buffer';
 import { Disposable, toDisposable } from 'vs/base/common/lifecycle';
 import { Schemas } from 'vs/base/common/network';
 import { URI } from 'vs/base/common/uri';
-import { IFileService } from 'vs/platform/files/common/files';
+import { FileOperationError, FileOperationResult, IFileService } from 'vs/platform/files/common/files';
 import { IRemoteConnectionData } from 'vs/platform/remote/common/remoteAuthorityResolver';
+import { REMOTE_HOST_SCHEME } from 'vs/platform/remote/common/remoteHosts';
 import { IRequestService } from 'vs/platform/request/common/request';
 import { loadLocalResource, webviewPartitionId, WebviewResourceResponse } from 'vs/platform/webview/common/resourceLoader';
-import { REMOTE_HOST_SCHEME } from 'vs/platform/remote/common/remoteHosts';
+import { IWindowsMainService } from 'vs/platform/windows/electron-main/windows';
 
 interface WebviewMetadata {
+	readonly windowId: number;
 	readonly extensionLocation: URI | undefined;
 	readonly localResourceRoots: readonly URI[];
 	readonly remoteConnectionData: IRemoteConnectionData | null;
@@ -32,9 +34,13 @@ export class WebviewProtocolProvider extends Disposable {
 
 	private readonly webviewMetadata = new Map<string, WebviewMetadata>();
 
+	private requestIdPool = 1;
+	private readonly pendingResourceReads = new Map<number, { resolve: (content: VSBuffer | undefined) => void }>();
+
 	constructor(
 		@IFileService private readonly fileService: IFileService,
 		@IRequestService private readonly requestService: IRequestService,
+		@IWindowsMainService readonly windowsMainService: IWindowsMainService,
 	) {
 		super();
 
@@ -156,8 +162,7 @@ export class WebviewProtocolProvider extends Disposable {
 					rewriteUri = (uri) => {
 						if (metadata.remoteConnectionData) {
 							if (uri.scheme === Schemas.vscodeRemote || (metadata.extensionLocation?.scheme === REMOTE_HOST_SCHEME)) {
-								const scheme = metadata.remoteConnectionData.host === 'localhost' || metadata.remoteConnectionData.host === '127.0.0.1' ? 'http' : 'https';
-								return URI.parse(`${scheme}://${metadata.remoteConnectionData.host}:${metadata.remoteConnectionData.port}`).with({
+								return URI.parse(`http://${metadata.remoteConnectionData.host}:${metadata.remoteConnectionData.port}`).with({
 									path: '/vscode-remote-resource',
 									query: `tkn=${metadata.remoteConnectionData.connectionToken}&path=${encodeURIComponent(uri.path)}`,
 								});
@@ -167,12 +172,42 @@ export class WebviewProtocolProvider extends Disposable {
 					};
 				}
 
+				const fileService = {
+					readFileStream: async (resource: URI): Promise<VSBufferReadableStream> => {
+						if (uri.scheme === Schemas.file) {
+							return (await this.fileService.readFileStream(resource)).value;
+						}
+
+						// Unknown uri scheme. Try delegating the file read back to the renderer
+						// process which should have a file system provider registered for the uri.
+
+						const window = this.windowsMainService.getWindowById(metadata.windowId);
+						if (!window) {
+							throw new FileOperationError('Could not find window for resource', FileOperationResult.FILE_NOT_FOUND);
+						}
+
+						const requestId = this.requestIdPool++;
+						const p = new Promise<VSBuffer | undefined>(resolve => {
+							this.pendingResourceReads.set(requestId, { resolve });
+						});
+
+						window.send(`vscode:loadWebviewResource-${id}`, requestId, uri);
+
+						const result = await p;
+						if (!result) {
+							throw new FileOperationError('Could not read file', FileOperationResult.FILE_NOT_FOUND);
+						}
+
+						return bufferToStream(result);
+					}
+				};
+
 				const result = await loadLocalResource(uri, {
 					extensionLocation: metadata.extensionLocation,
 					roots: metadata.localResourceRoots,
 					remoteConnectionData: metadata.remoteConnectionData,
 					rewriteUri,
-				}, this.fileService, this.requestService);
+				}, fileService, this.requestService);
 
 				if (result.type === WebviewResourceResponse.Type.Success) {
 					return callback({
@@ -195,5 +230,14 @@ export class WebviewProtocolProvider extends Disposable {
 		}
 
 		return callback({ data: null, statusCode: 404 });
+	}
+
+	public didLoadResource(requestId: number, content: VSBuffer | undefined) {
+		const pendingRead = this.pendingResourceReads.get(requestId);
+		if (!pendingRead) {
+			throw new Error('Unknown request');
+		}
+		this.pendingResourceReads.delete(requestId);
+		pendingRead.resolve(content);
 	}
 }

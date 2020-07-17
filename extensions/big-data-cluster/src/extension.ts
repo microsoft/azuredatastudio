@@ -48,7 +48,7 @@ function registerCommands(context: vscode.ExtensionContext, treeDataProvider: Co
 	});
 
 	vscode.commands.registerCommand(commands.CreateControllerCommand, () => {
-		runThrottledAction(commands.CreateControllerCommand, () => vscode.commands.executeCommand('azdata.resource.deploy'));
+		runThrottledAction(commands.CreateControllerCommand, () => vscode.commands.executeCommand('azdata.resource.deploy', 'sql-bdc', ['sql-bdc']));
 	});
 
 	vscode.commands.registerCommand(commands.RemoveControllerCommand, async (node: TreeNode) => {
