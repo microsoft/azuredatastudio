@@ -370,7 +370,7 @@ class WelcomePage extends Disposable {
 		const getDropdownBtn = container.querySelector('#dropdown-btn-container .monaco-button') as HTMLElement;
 		getDropdownBtn.id = 'dropdown-btn';
 		getDropdownBtn.setAttribute('role', 'button');
-		getDropdownBtn.setAttribute('aria-label', `${(localize('welcomePage.new', "New"))}`);
+		getDropdownBtn.setAttribute('aria-label', newText);
 		getDropdownBtn.setAttribute('aria-haspopup', 'true');
 		getDropdownBtn.setAttribute('aria-controls', 'dropdown');
 		nav.setAttribute('role', 'navigation');
@@ -777,7 +777,7 @@ class WelcomePage extends Disposable {
 				installedButton.enabled = false;
 				const getInstalledButton = container.querySelector('.extensionPack .monaco-button:nth-of-type(2)') as HTMLAnchorElement;
 
-				getInstalledButton.innerText = localize('welcomePage.installed', "Installed");
+				getInstalledButton.innerText = installedText;
 				getInstalledButton.title = extension.isKeymap ? localize('welcomePage.installedKeymap', "{0} keymap is already installed", extension.name) : localize('welcomePage.installedExtensionPack', "{0} support is already installed", extension.name);
 				getInstalledButton.classList.add('enabledExtension');
 				getInstalledButton.classList.add(...classes);
