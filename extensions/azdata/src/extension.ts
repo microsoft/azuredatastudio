@@ -35,5 +35,4 @@ async function checkForAzdata(): Promise<void> {
 	}
 }
 
-export function deactivate(): void {
-}
+export function deactivate(): void { }
