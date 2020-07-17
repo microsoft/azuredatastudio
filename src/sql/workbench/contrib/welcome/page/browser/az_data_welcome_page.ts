@@ -40,9 +40,9 @@ export default () => `
 										<span class="icon xs"></span><h1 class="caption"></h1>
 									</div>
 									<div class="flex btn-container">
-										<div id="dropdown-btn-container" class="btn btn-primary dropdown">
+										<div id="dropdown-btn-container" class="btn dropdown">
 										</div>
-										<div id="open-file-btn-container" class="btn btn-secondary">
+										<div id="open-file-btn-container" class="btn">
 										</div>
 									</div>
 								</div>

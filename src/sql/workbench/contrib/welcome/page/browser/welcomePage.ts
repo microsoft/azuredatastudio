@@ -371,6 +371,7 @@ class WelcomePage extends Disposable {
 			<li role="none" id="dropdown-windows-linux-only"><a role="menuitem" tabIndex="-1" class="move windows-only linux-only" href="command:workbench.action.files.openFile">${openFileCopy}</a></li`;
 		const getDropdownBtn = container.querySelector('#dropdown-btn-container .monaco-button') as HTMLElement;
 		getDropdownBtn.id = 'dropdown-btn';
+		getDropdownBtn.classList.add('btn-primary');
 		getDropdownBtn.setAttribute('role', 'navigation');
 		getDropdownBtn.setAttribute('aria-haspopup', 'true');
 		getDropdownBtn.setAttribute('aria-controls', 'dropdown');
@@ -1011,6 +1012,7 @@ registerThemingParticipant((theme, collector) => {
 	if (tileBackgroundColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tile:not(.extension):not(.extension-pack) { background-color: ${tileBackgroundColor};  }`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary .monaco-button { background-color: ${tileBackgroundColor} !important;  }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary.monaco-button { background-color: ${tileBackgroundColor} !important;  }`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tool-tip .tool-tip-text { background-color: ${tileBackgroundColor};  }`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .modal-content { background-color: ${tileBackgroundColor};  }`);
 	}
@@ -1027,8 +1029,12 @@ registerThemingParticipant((theme, collector) => {
 	}
 	const buttonPrimaryBackgroundColor = theme.getColor(buttonBackground);
 	if (buttonPrimaryBackgroundColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-primary { background-color: ${buttonPrimaryBackgroundColor};}`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-primary { border-color: ${buttonPrimaryBackgroundColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-primary { background-color: ${buttonPrimaryBackgroundColor} !important;}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-primary { border: 1px solid ${buttonPrimaryBackgroundColor} !important;}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .btn-primary .monaco-button { border: 1px solid ${buttonPrimaryBackgroundColor}; }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .btn-primary .monaco-button { border: 1px solid ${buttonPrimaryBackgroundColor}; }`);
+
+
 	}
 	const buttonForegroundColor = theme.getColor(buttonForeground);
 	if (buttonForegroundColor) {
@@ -1076,7 +1082,6 @@ registerThemingParticipant((theme, collector) => {
 	if (menuBorderColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .dropdown-content a { border-color: ${menuBorderColor};}`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .ads-homepage .dropdown-content { border-color: ${menuBorderColor};}`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-primary { border-color: ${menuBorderColor};}`);
 	}
 	const buttonDropdownBackgroundHoverColor = theme.getColor(buttonDropdownBackgroundHover);
 	if (buttonDropdownBackgroundHoverColor) {
@@ -1125,7 +1130,6 @@ registerThemingParticipant((theme, collector) => {
 	const link = theme.getColor(textLinkForeground);
 	if (link) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage a { color: ${link}; }`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .btn-primary .monaco-button { border: 1px solid ${link}; }`);
 	}
 	const activeLink = theme.getColor(textLinkActiveForeground);
 	if (activeLink) {
