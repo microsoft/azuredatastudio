@@ -8,7 +8,7 @@ import * as mssql from '../../../../mssql/src/mssql';
 import {SchemaCompareOptionsModel} from '../../models/schemaCompareOptionsModel';
 
 describe('Schema Compare Options Model', () => {
-	it('Should create model and set options successfully', async function (): Promise<void> {
+	it('Should create model and set options successfully', function (): void {
 		const model = new SchemaCompareOptionsModel(defaultOptions);
 		should.notEqual(model.getOptionsData(), undefined);
 		should.notEqual(model.getObjectsData(), undefined);
@@ -16,7 +16,7 @@ describe('Schema Compare Options Model', () => {
 		should.doesNotThrow(() => model.SetObjectTypeOptions());
 	});
 
-	it('Should exclude objects', async function (): Promise<void> {
+	it('Should exclude objects', function (): void {
 		const model = new SchemaCompareOptionsModel(defaultOptions);
 		should.equal(model.excludedObjectTypes.length, 0, "There shuld be no excluded objects");
 
@@ -27,7 +27,7 @@ describe('Schema Compare Options Model', () => {
 		should.equal(model.excludedObjectTypes.length, model.objectTypeLabels.length, "All the object types should be excluded");
 	});
 
-	it('Should get descriptions', async function (): Promise<void> {
+	it('Should get descriptions', function (): void {
 		const model = new SchemaCompareOptionsModel(defaultOptions);
 		model.optionsLabels.forEach(l => {
 			should.notEqual(model.GetDescription(l), undefined);
