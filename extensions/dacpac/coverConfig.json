@@ -4,7 +4,8 @@
 	"relativeCoverageDir": "../../coverage",
 	"ignorePatterns": [
 		"**/node_modules/**",
-		"**/test/**"
+		"**/test/**",
+		"extension.js"
 	],
 	"reports": [
 		"cobertura",
