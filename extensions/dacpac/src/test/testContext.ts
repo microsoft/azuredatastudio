@@ -47,6 +47,7 @@ export interface ViewTestContext {
 	onValueChanged: vscode.EventEmitter<any>;
 	newDatabaseRadioOnClick: vscode.EventEmitter<any>;
 	updateExistingRadioOnClick: vscode.EventEmitter<any>;
+	fileButtonOnClick: vscode.EventEmitter<any>;
 }
 
 export function createViewContext(): ViewTestContext {
@@ -55,6 +56,7 @@ export function createViewContext(): ViewTestContext {
 	let onValueChanged: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
 	let newDatabaseRadioOnClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
 	let updateExistingRadioOnClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
+	let fileButtonOnClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
 
 	let componentBase: azdata.Component = {
 		id: '',
@@ -102,7 +104,13 @@ export function createViewContext(): ViewTestContext {
 
 	let buttonBuilder: azdata.ComponentBuilder<azdata.ButtonComponent> = {
 		component: () => button,
-		withProperties: () => buttonBuilder,
+		withProperties: (properties) => {
+			if ((properties as any).label === '•••') {
+				button.label = '•••';
+				button.onDidClick = fileButtonOnClick.event;
+			}
+			return buttonBuilder;
+		},
 		withValidation: () => buttonBuilder
 	};
 
@@ -265,5 +273,6 @@ export function createViewContext(): ViewTestContext {
 		onValueChanged: onValueChanged,
 		newDatabaseRadioOnClick: newDatabaseRadioOnClick,
 		updateExistingRadioOnClick: updateExistingRadioOnClick,
+		fileButtonOnClick: fileButtonOnClick
 	};
 }

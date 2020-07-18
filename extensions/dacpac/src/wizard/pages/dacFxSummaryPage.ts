@@ -10,22 +10,12 @@ import { DataTierApplicationWizard, Operation } from '../dataTierApplicationWiza
 import { BasePage } from '../api/basePage';
 
 export class DacFxSummaryPage extends BasePage {
-
-	protected readonly wizardPage: azdata.window.WizardPage;
-	protected readonly instance: DataTierApplicationWizard;
-	protected readonly model: DacFxDataModel;
-	protected readonly view: azdata.ModelView;
-
 	private form: azdata.FormContainer;
 	private table: azdata.TableComponent;
 	private loader: azdata.LoadingComponent;
 
 	public constructor(instance: DataTierApplicationWizard, wizardPage: azdata.window.WizardPage, model: DacFxDataModel, view: azdata.ModelView) {
-		super();
-		this.instance = instance;
-		this.wizardPage = wizardPage;
-		this.model = model;
-		this.view = view;
+		super(instance, wizardPage, model, view);
 	}
 
 	async start(): Promise<boolean> {

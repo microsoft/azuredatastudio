@@ -12,12 +12,6 @@ import { DacFxConfigPage } from '../api/dacFxConfigPage';
 import { generateDatabaseName } from '../api/utils';
 
 export class ImportConfigPage extends DacFxConfigPage {
-
-	protected readonly wizardPage: azdata.window.WizardPage;
-	protected readonly instance: DataTierApplicationWizard;
-	protected readonly model: DacFxDataModel;
-	protected readonly view: azdata.ModelView;
-
 	private form: azdata.FormContainer;
 
 	public constructor(instance: DataTierApplicationWizard, wizardPage: azdata.window.WizardPage, model: DacFxDataModel, view: azdata.ModelView) {
@@ -77,6 +71,9 @@ export class ImportConfigPage extends DacFxConfigPage {
 			this.model.filePath = fileUri.fsPath;
 			this.model.database = generateDatabaseName(this.model.filePath);
 			this.databaseTextBox.value = this.model.database;
+
+			console.log('=== In click A: ' + this.model.filePath);
+			console.log('=== In click B: ' + this.model.database);
 		});
 
 		this.fileTextBox.onTextChanged(async () => {

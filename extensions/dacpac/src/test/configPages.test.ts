@@ -7,6 +7,9 @@ import 'mocha';
 import * as should from 'should';
 import * as sinon from 'sinon';
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
+import * as os from 'os';
+import * as path from 'path';
 import { DataTierApplicationWizard, PageName } from '../wizard/dataTierApplicationWizard';
 import { DacFxDataModel } from '../wizard/api/models';
 import { TestContext, createContext } from './testContext';
@@ -82,16 +85,24 @@ describe('Dacfx Wizard Pages', function (): void {
 	});
 
 	it('Should open and edit import config page correctly', async () => {
+		const dacpacPath = path.join(os.tmpdir(), 'myDatabase.dacpac');
+
 		testContext = createContext();
 		wizard.setPages();
+
 		sinon.stub(azdata.connection, 'getConnections').resolves([mockConnectionProfile]);
 		sinon.stub(azdata.connection, 'listDatabases').resolves(['fakeDatabaseName']);
+		sinon.stub(vscode.window, 'showOpenDialog').resolves([vscode.Uri.file(dacpacPath)]);
 
-		let importConfigPage = new TestImportConfigPage(wizard, wizard.pages.get(PageName.deployConfig).wizardPage, wizard.model, testContext.viewContext.view);
+		let importConfigPage = new TestImportConfigPage(wizard, wizard.pages.get(PageName.importConfig).wizardPage, wizard.model, testContext.viewContext.view);
 		await importConfigPage.start();
 
-		let result = await importConfigPage.onPageEnter();
-		should(result).equal(true, 'onPageEnter() should successfullly load connection profiles');
+		//let result = await importConfigPage.onPageEnter();
+		//should(result).equal(true, 'onPageEnter() should successfullly load connection profiles');
+
+		testContext.viewContext.fileButtonOnClick.fire(undefined);
+		should(importConfigPage.Model.filePath).equal(dacpacPath);
+		should(importConfigPage.Model.database).equal('myDatabase');
 	});
 });
 
