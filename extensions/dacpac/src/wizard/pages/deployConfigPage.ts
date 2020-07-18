@@ -12,11 +12,6 @@ import { DacFxConfigPage } from '../api/dacFxConfigPage';
 import { generateDatabaseName } from '../api/utils';
 
 export class DeployConfigPage extends DacFxConfigPage {
-
-	protected readonly wizardPage: azdata.window.WizardPage;
-	protected readonly instance: DataTierApplicationWizard;
-	protected readonly model: DacFxDataModel;
-	protected readonly view: azdata.ModelView;
 	private databaseDropdownComponent: azdata.FormComponent;
 	private databaseComponent: azdata.FormComponent;
 	private formBuilder: azdata.FormBuilder;
