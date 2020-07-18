@@ -55,9 +55,6 @@ export class TestImportConfigPage extends ImportConfigPage {
 	}
 
 	get Model(): DacFxDataModel {
-		console.log('=== Test page A: ' + this.model);
-		console.log('=== Test page B: ' + this.model.database);
-		console.log('=== Test page C: ' + this.model.filePath);
 		return this.model;
 	}
 }
