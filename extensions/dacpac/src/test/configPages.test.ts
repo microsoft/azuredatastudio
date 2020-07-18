@@ -85,7 +85,7 @@ describe('Dacfx Wizard Pages', function (): void {
 	});
 
 	it('Should open and edit import config page correctly', async () => {
-		const dacpacPath = path.join(os.tmpdir(), 'myDatabase.dacpac');
+		const dacpacPath = vscode.Uri.file(path.join(os.tmpdir(), 'myDatabase.dacpac')).fsPath;
 
 		testContext = createContext();
 		wizard.setPages();
@@ -101,6 +101,7 @@ describe('Dacfx Wizard Pages', function (): void {
 		//should(result).equal(true, 'onPageEnter() should successfullly load connection profiles');
 
 		testContext.viewContext.fileButtonOnClick.fire(undefined);
+		await importConfigPage.selectionPromise;
 		should(importConfigPage.Model.filePath).equal(dacpacPath);
 		should(importConfigPage.Model.database).equal('myDatabase');
 	});

@@ -13,6 +13,7 @@ import { generateDatabaseName } from '../api/utils';
 
 export class ImportConfigPage extends DacFxConfigPage {
 	private form: azdata.FormContainer;
+	public selectionPromise: Promise<void>;
 
 	public constructor(instance: DataTierApplicationWizard, wizardPage: azdata.window.WizardPage, model: DacFxDataModel, view: azdata.ModelView) {
 		super(instance, wizardPage, model, view);
@@ -48,33 +49,7 @@ export class ImportConfigPage extends DacFxConfigPage {
 	private async createFileBrowser(): Promise<azdata.FormComponent> {
 		this.createFileBrowserParts();
 
-		this.fileButton.onDidClick(async (click) => {
-			let fileUris = await vscode.window.showOpenDialog(
-				{
-					canSelectFiles: true,
-					canSelectFolders: false,
-					canSelectMany: false,
-					defaultUri: vscode.Uri.file(this.getRootPath()),
-					openLabel: loc.open,
-					filters: {
-						'bacpac Files': ['bacpac'],
-					}
-				}
-			);
-
-			if (!fileUris || fileUris.length === 0) {
-				return;
-			}
-
-			let fileUri = fileUris[0];
-			this.fileTextBox.value = fileUri.fsPath;
-			this.model.filePath = fileUri.fsPath;
-			this.model.database = generateDatabaseName(this.model.filePath);
-			this.databaseTextBox.value = this.model.database;
-
-			console.log('=== In click A: ' + this.model.filePath);
-			console.log('=== In click B: ' + this.model.database);
-		});
+		this.fileButton.onDidClick(async (click) => { this.selectionPromise = this.handleFileSelection(); });
 
 		this.fileTextBox.onTextChanged(async () => {
 			this.model.filePath = this.fileTextBox.value;
@@ -87,5 +62,30 @@ export class ImportConfigPage extends DacFxConfigPage {
 			title: loc.fileLocation,
 			actions: [this.fileButton]
 		};
+	}
+
+	private async handleFileSelection(): Promise<void> {
+		let fileUris = await vscode.window.showOpenDialog(
+			{
+				canSelectFiles: true,
+				canSelectFolders: false,
+				canSelectMany: false,
+				defaultUri: vscode.Uri.file(this.getRootPath()),
+				openLabel: loc.open,
+				filters: {
+					'bacpac Files': ['bacpac'],
+				}
+			}
+		);
+
+		if (!fileUris || fileUris.length === 0) {
+			return;
+		}
+
+		let fileUri = fileUris[0];
+		this.fileTextBox.value = fileUri.fsPath;
+		this.model.filePath = fileUri.fsPath;
+		this.model.database = generateDatabaseName(this.model.filePath);
+		this.databaseTextBox.value = this.model.database;
 	}
 }
