@@ -8,14 +8,14 @@ import { findAzdata, downloadAndInstallAzdata } from './azdata';
 import * as loc from './localizedConstants';
 import { ExitCodeError } from './common/childProcess';
 
-export async function activate(extensionContext: vscode.ExtensionContext): Promise<void> {
-	if (extensionContext.extensionMode !== vscode.ExtensionMode.Test) {
-		await checkForAzdata();
+export async function activate(): Promise<void> {
+	const outputChannel = vscode.window.createOutputChannel('azdata');
+	if (false) {
+		await checkForAzdata(outputChannel);
 	}
 }
 
-async function checkForAzdata(): Promise<void> {
-	const outputChannel = vscode.window.createOutputChannel('azdata');
+async function checkForAzdata(outputChannel: vscode.OutputChannel): Promise<void> {
 	try {
 		const azdata = await findAzdata(outputChannel);
 		vscode.window.showInformationMessage(loc.foundExistingAzdata(azdata.path, azdata.version));
