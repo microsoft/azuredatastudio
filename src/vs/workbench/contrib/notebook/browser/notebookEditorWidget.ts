@@ -485,7 +485,8 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 
 		this._currentKernelTokenSource = new CancellationTokenSource();
 		this._localStore.add(this._currentKernelTokenSource);
-		await this._setKernels(textModel, this._currentKernelTokenSource);
+		// we don't await for it, otherwise it will slow down the file opening
+		this._setKernels(textModel, this._currentKernelTokenSource);
 
 		this._localStore.add(this.notebookService.onDidChangeKernels(async () => {
 			if (this.activeKernel === undefined) {
@@ -566,7 +567,16 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 	private async _setKernels(textModel: NotebookTextModel, tokenSource: CancellationTokenSource) {
 		const provider = this.notebookService.getContributedNotebookProviders(this.viewModel!.uri)[0];
 		const availableKernels2 = await this.notebookService.getContributedNotebookKernels2(textModel.viewType, textModel.uri, tokenSource.token);
+
+		if (tokenSource.token.isCancellationRequested) {
+			return;
+		}
+
 		const availableKernels = this.notebookService.getContributedNotebookKernels(textModel.viewType, textModel.uri);
+
+		if (tokenSource.token.isCancellationRequested) {
+			return;
+		}
 
 		if (provider.kernel && (availableKernels.length + availableKernels2.length) > 0) {
 			this._notebookHasMultipleKernels!.set(true);
@@ -582,6 +592,7 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 		if (provider && provider.kernel) {
 			// it has a builtin kernel, don't automatically choose a kernel
 			this._loadKernelPreloads(provider.providerExtensionLocation, provider.kernel);
+			tokenSource.dispose();
 			return;
 		}
 
@@ -591,6 +602,8 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 			const preferedKernel = kernelsFromSameExtension.find(kernel => kernel.isPreferred) || kernelsFromSameExtension[0];
 			this.activeKernel = preferedKernel;
 			await preferedKernel.resolve(this.viewModel!.uri, this.getId(), tokenSource.token);
+
+			tokenSource.dispose();
 			return;
 		}
 
@@ -600,6 +613,8 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 		if (this.activeKernel) {
 			this._loadKernelPreloads(this.activeKernel.extensionLocation, this.activeKernel);
 		}
+
+		tokenSource.dispose();
 	}
 
 	private _loadKernelPreloads(extensionLocation: URI, kernel: INotebookKernelInfoDto) {
