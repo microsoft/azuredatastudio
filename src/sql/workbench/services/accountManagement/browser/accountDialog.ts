@@ -292,7 +292,7 @@ export class AccountDialog extends Modal {
 		this._splitViewContainer.hidden = false;
 		this._noaccountViewContainer.hidden = true;
 		if (Iterable.consume(this._providerViewsMap.values()).length > 0) {
-			const firstView = this._providerViewsMap.values()[0];
+			const firstView = this._providerViewsMap.values().next().value;
 			if (firstView instanceof AccountPanel) {
 				firstView.setSelection([0]);
 				firstView.focus();
