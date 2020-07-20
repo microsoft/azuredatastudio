@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { RemoteBookDialogModel, RemoteBookDialog } from '../../dialog/remoteBookDialog';
-import { IRelease, RemoteBookController, GitHubRemoteBook } from '../../book/remoteBookController';
+import { IRelease, RemoteBookController } from '../../book/remoteBookController';
 import * as should from 'should';
 import * as request from 'request';
 import * as sinon from 'sinon';
@@ -15,6 +15,7 @@ import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as uuid from 'uuid';
 import AdmZip = require('adm-zip');
+import { afterEach } from 'mocha';
 
 const localize = nls.loadMessageBundle();
 const msgReleaseNotFound = localize('msgReleaseNotFound', "Releases not Found");
@@ -31,23 +32,22 @@ export interface IExpectedBookItem {
 }
 
 describe('Add Remote Book Dialog', function () {
-	let remoteBookDialogModel = new RemoteBookDialogModel();
-	let remoteBookController = new RemoteBookController(remoteBookDialogModel);
-	let remoteBookDialog = new RemoteBookDialog(remoteBookController);
-	let sinonTest : sinon.SinonStub;
+	let model = new RemoteBookDialogModel();
+	let controller = new RemoteBookController(model);
+	let dialog = new RemoteBookDialog(controller);
+	let sinonTest: sinon.SinonStub;
 
-	beforeEach(function(): void{
+	beforeEach(function (): void {
 		sinonTest = sinon.stub(request, 'get');
 	});
 
 	afterEach(function (): void {
-		sinonTest.restore();
+		sinonTest.reset();
 	});
 
 	it('Should open dialog successfully ', async function (): Promise<void> {
-		let spy = sinon.spy();
-		spy(remoteBookDialog, 'createDialog');
-		await remoteBookDialog.createDialog();
+		const spy = sinon.spy(dialog, 'createDialog');
+		await dialog.createDialog();
 		should(spy.calledOnce).be.true();
 	});
 
@@ -70,7 +70,7 @@ describe('Add Remote Book Dialog', function () {
 
 		sinonTest.yields(null, { statusCode: 200 }, expectedBody);
 
-		let result = await remoteBookController.fetchGithubReleases(expectedURL);
+		let result = await controller.getReleases(expectedURL);
 
 		should(result.length).be.equal(3, 'Result should be equal to the expectedBody');
 
@@ -78,8 +78,8 @@ describe('Add Remote Book Dialog', function () {
 			should(release).have.property('name');
 			should(release).have.property('assetsUrl');
 		});
-		let modelReleases = remoteBookDialogModel.releases;
-		should(result).deepEqual(remoteBookController.getReleases());
+		let modelReleases = model.releases;
+		should(result).deepEqual(await controller.getReleases());
 		should(result).deepEqual(modelReleases);
 	});
 
@@ -89,12 +89,12 @@ describe('Add Remote Book Dialog', function () {
 		sinonTest.yields(null, { statusCode: 200 }, expectedBody);
 
 		try {
-			let result = await remoteBookController.fetchGithubReleases(expectedURL);
+			let result = await controller.getReleases(expectedURL);
 			should(result.length).be.equal(0, 'Result should be equal to the expectedBody');
 		}
 		catch (err) {
 			should(err).be.equals(msgReleaseNotFound);
-			should(remoteBookDialogModel.releases.length).be.equal(0);
+			should(model.releases.length).be.equal(0);
 		}
 	});
 
@@ -124,15 +124,15 @@ describe('Add Remote Book Dialog', function () {
 		};
 		sinonTest.yields(null, { statusCode: 200 }, expectedBody);
 
-		let result = await remoteBookController.fecthListAssets(expectedRelease);
+		let result = await controller.getAssets(expectedRelease);
 		should(result.length).be.equal(3, 'Result should be equal to the expectedBody');
 		result.forEach(release => {
 			should(release).have.property('name');
 			should(release).have.property('url');
 			should(release).have.property('browserDownloadUrl');
 		});
-		let modelAssets = remoteBookDialogModel.assets;
-		should(result).deepEqual(remoteBookController.getAssets());
+		let modelAssets = model.assets;
+		should(result).deepEqual(await controller.getAssets());
 		should(result).deepEqual(modelAssets);
 	});
 
@@ -175,7 +175,7 @@ describe('Add Remote Book Dialog', function () {
 
 		sinonTest.yields(null, { statusCode: 200 }, expectedBody);
 
-		let result = await remoteBookController.fecthListAssets(expectedRelease);
+		let result = await controller.getAssets(expectedRelease);
 		should(result.length).be.equal(3, 'Should get the files based on the OS platform');
 		result.forEach(asset => {
 			should(asset).have.property('name');
@@ -193,7 +193,7 @@ describe('Add Remote Book Dialog', function () {
 		let expectedNotebook1: IExpectedBookItem;
 		let expectedNotebook2: IExpectedBookItem;
 		let expectedExternalLink: IExpectedBookItem;
-		let expectedBook: IExpectedBookItem;
+		//let expectedBook: IExpectedBookItem;
 		rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
 		bookFolderPath = path.join(rootFolderPath, `Book`);
 		let dataFolderPath: string = path.join(bookFolderPath, '_data');
@@ -219,7 +219,7 @@ describe('Add Remote Book Dialog', function () {
 			url: 'https://github.com/',
 			external: true
 		};
-		expectedBook = {
+		let expectedBook: IExpectedBookItem = {
 			sections: [expectedNotebook1, expectedNotebook2, expectedExternalLink],
 			title: 'Test Book'
 		};
@@ -261,12 +261,12 @@ describe('Add Remote Book Dialog', function () {
 		sinonTest.yields(null, { statusCode: 200 }, expectedBody);
 
 		try {
-			let result = await remoteBookController.fecthListAssets(expectedRelease);
+			let result = await controller.getAssets(expectedRelease);
 			should(result.length).be.equal(0, 'Should be empty when the naming convention is not being followed');
 		}
 		catch (err) {
 			should(err).be.equals(msgBookNotFound);
-			should(remoteBookDialogModel.releases.length).be.equal(0);
+			should(model.releases.length).be.equal(0);
 		}
 	});
 
@@ -280,12 +280,12 @@ describe('Add Remote Book Dialog', function () {
 		sinonTest.yields(null, { statusCode: 200 }, expectedBody);
 
 		try {
-			let result = await remoteBookController.fecthListAssets(expectedRelease);
+			let result = await controller.getAssets(expectedRelease);
 			should(result.length).be.equal(0, 'Should be empty since no assets were returned');
 		}
 		catch (err) {
 			should(err).be.equals(msgBookNotFound);
-			should(remoteBookDialogModel.releases.length).be.equal(0);
+			should(model.releases.length).be.equal(0);
 		}
 	});
 });

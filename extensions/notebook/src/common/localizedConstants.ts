@@ -56,8 +56,7 @@ export const urlGithubError = localize('urlGithubError', "The url provided is no
 export const search = localize('search', "Search");
 export const add = localize('add', "Add");
 export const close = localize('close', "Close");
-export const invalidTextPlaceholder = localize('invalidTextPlaceholder', "N/A");
-export function apiGitHub(url: string): string { return localize('apiGithub', "https://api.github.com/{0}/releases", url); }
+export const invalidTextPlaceholder = localize('invalidTextPlaceholder', "-");
 
 // Remote Book Controller constants
 export const msgRemoteBookDownloadProgress = localize('msgRemoteBookDownloadProgress', "Remote Book download is in progress");
@@ -69,4 +68,5 @@ export const msgTaskName = localize('msgTaskName', "Downloading Remote Book");
 export const msgResourceNotFound = localize('msgResourceNotFound', "Resource not Found");
 export const msgBookNotFound = localize('msgBookNotFound', "Books not Found");
 export const msgReleaseNotFound = localize('msgReleaseNotFound', "Releases not Found");
+export const msgUndefinedAssetError = localize('msgUndefinedAssetError', "The selected book is not valid");
 export function httpRequestError(code: number, message: string): string { return localize('httpRequestError', "Http Request failed with error: {0} {1}", code, message); }

@@ -7,9 +7,11 @@ import * as azdata from 'azdata';
 import * as loc from '../common/localizedConstants';
 import { RemoteBookController, IRelease, IAsset } from '../book/remoteBookController';
 import * as utils from '../common/utils';
-import * as nls from 'vscode-nls';
-const localize = nls.loadMessageBundle();
-const msgUndefinedAssetError = localize('msgUndefinedAssetError', "The selected book is not valid");
+import { RemoteBook } from '../book/remoteBook';
+
+function apiGitHub(url: string): string {
+	return `https://api.github.com/${url}/releases`;
+}
 
 function getRemoteLocationCategory(name: string): azdata.CategoryValue {
 	if (name === loc.onGitHub) {
@@ -22,6 +24,7 @@ export class RemoteBookDialogModel {
 	private _remoteLocation: string;
 	private _releases: IRelease[];
 	private _assets: IAsset[];
+	private _book: RemoteBook;
 
 	constructor() {
 	}
@@ -50,6 +53,14 @@ export class RemoteBookDialogModel {
 		this._assets = newAssets;
 	}
 
+	public get remoteBook(): RemoteBook {
+		return this._book;
+	}
+
+	public set remoteBook(newBook: RemoteBook) {
+		this._book = newBook;
+	}
+
 }
 
 export class RemoteBookDialog {
@@ -66,7 +77,7 @@ export class RemoteBookDialog {
 	public languageDropdown: azdata.DropDownComponent;
 	private _remoteTypes: azdata.CategoryValue[];
 	private readonly tigerToolboxRepo = 'repos/microsoft/tigertoolbox';
-	private readonly urlGithubRE = /^(?:https:\/\/(?:github.com|api.github.com\/repos)|(?:\/)?(?:\/)?repos)([\w-.?!=&%*+:@\/]*)/g;
+	private readonly urlGithubRE = /^(?:https:\/\/(?:github\.com|api\.github\.com\/repos)|(?:\/)?(?:\/)?repos)([\w-.?!=&%*+:@\/]*)/g;
 
 	constructor(public controller: RemoteBookController) {
 	}
@@ -129,6 +140,7 @@ export class RemoteBookDialog {
 				editable: false,
 			}).component();
 
+			this.languageDropdown.onValueChanged(async () => this.checkValues());
 			this.setFieldsToEmpty();
 
 			this.formModel = this.view.modelBuilder.formContainer()
@@ -192,6 +204,7 @@ export class RemoteBookDialog {
 			values: [loc.invalidTextPlaceholder],
 			value: loc.invalidTextPlaceholder
 		});
+		this.dialog.okButton.enabled = false;
 	}
 
 	private get remoteLocationValue(): string {
@@ -213,12 +226,13 @@ export class RemoteBookDialog {
 			if (this.remoteLocationValue === loc.onGitHub && url.length > 0) {
 				//get the first group to extract /owner/repo/releases format
 				let groupsRe = url.match(this.urlGithubRE);
-				if (groupsRe !== null && groupsRe.length > 0) {
-					url = loc.apiGitHub(groupsRe[0]);
-					let releases = await this.controller.fetchGithubReleases(new URL(url));
+				if (groupsRe?.length > 0) {
+					url = apiGitHub(groupsRe[0]);
+					let releases = await this.controller.getReleases(new URL(url));
 					if (releases) {
 						this.releaseDropdown.enabled = true;
 						await this.fillReleasesDropdown();
+						this.setFieldsToEmpty();
 					}
 				} else {
 					throw new Error(loc.urlGithubError);
@@ -226,35 +240,26 @@ export class RemoteBookDialog {
 			}
 		}
 		catch (error) {
-			this.dialog.message = {
-				text: (typeof error === 'string') ? error : error.message,
-				level: azdata.window.MessageLevel.Error
-			};
+			this.showErrorMessage(error);
 		}
 	}
 
 	public async getAssets(): Promise<void> {
 		try {
 			if (this.remoteLocationValue === loc.onGitHub) {
-				let selected_release = this.controller.getReleases().filter(release =>
+				let releases = await this.controller.getReleases();
+				let selected_release = releases.filter(release =>
 					release.name === this.releaseDropdown.value);
-				let assets = await this.controller.fecthListAssets(selected_release[0]);
-				if (assets !== undefined && assets.length > 0) {
-					let bookValues: string[] = ['-'];
-					assets.forEach(asset => {
-						bookValues.push(asset.book);
-					});
-					bookValues = [...new Set(bookValues)]; //Remove duplicates
-					this.bookDropdown.values = bookValues;
+				let assets = await this.controller.getAssets(selected_release[0]);
+				if (assets?.length > 0) {
+					this.bookDropdown.values = ['-'].concat([...new Set(assets.map(asset => asset.book))]);
 				}
+				this.checkValues();
 			}
 		}
 		catch (error) {
 			this.setFieldsToEmpty();
-			this.dialog.message = {
-				text: (typeof error === 'string') ? error : error.message,
-				level: azdata.window.MessageLevel.Error
-			};
+			this.showErrorMessage(error);
 		}
 	}
 
@@ -263,7 +268,7 @@ export class RemoteBookDialog {
 			if (this.remoteLocationValue === loc.onGitHub) {
 				let selected_asset = await this.getSelectedAsset();
 				if (selected_asset === undefined) {
-					throw (msgUndefinedAssetError);
+					throw new Error(loc.msgUndefinedAssetError);
 				}
 				await this.controller.setRemoteBook(selected_asset.url, this.remoteLocationValue, selected_asset);
 			} else {
@@ -274,43 +279,39 @@ export class RemoteBookDialog {
 			return true;
 		}
 		catch (error) {
-			this.dialog.message = {
-				text: (typeof error === 'string') ? error : error.message,
-				level: azdata.window.MessageLevel.Error
-			};
+			this.showErrorMessage(error);
 			return false;
 		}
 	}
 
 	public async fillReleasesDropdown(): Promise<void> {
-		let versions: string[] = ['-'];
-		this.controller.getReleases().forEach(release => {
-			versions.push(release.name);
-		});
-		this.releaseDropdown.values = versions;
-		this.releaseDropdown.value = ' ';
+		try {
+			this.releaseDropdown.values = ['-'].concat((await this.controller.getReleases()).map(release => release.name));
+		}
+		catch (error) {
+			this.showErrorMessage(error);
+		}
 	}
 
 	public async fillVersionDropdown(): Promise<void> {
-		let versions: string[] = ['-'];
-		this.controller.getAssets().forEach(asset => {
-			if (asset.book === this.bookDropdown.value) {
-				versions.push(asset.version);
-			}
-		});
-		this.versionDropdown.values = versions;
+		try {
+			let filtered_assets = (await this.controller.getAssets()).filter(asset => asset.book === this.bookDropdown.value);
+			this.versionDropdown.values = ['-'].concat(filtered_assets.map(asset => asset.version));
+			this.checkValues();
+		}
+		catch (error) {
+			this.showErrorMessage(error);
+		}
 	}
 
 	public async fillLanguageDropdown(): Promise<void> {
-		let languages: string[] = ['-'];
-		this.controller.getAssets().forEach(asset => {
-			if (asset.book === this.bookDropdown.value && asset.version === this.versionDropdown.value) {
-				languages.push(asset.language);
-			}
-		});
-		this.languageDropdown.values = languages;
-		if (this.checkValues) {
-			this.dialog.okButton.enabled = true;
+		try {
+			let filtered_assets = (await this.controller.getAssets()).filter(asset => asset.book === this.bookDropdown.value &&
+				asset.version === this.versionDropdown.value);
+			this.languageDropdown.values = ['-'].concat(filtered_assets.map(asset => asset.language));
+			this.checkValues();
+		} catch (error) {
+			this.showErrorMessage(error);
 		}
 	}
 
@@ -318,20 +319,16 @@ export class RemoteBookDialog {
 		let lang = this.languageDropdown.value;
 		let book = this.bookDropdown.value;
 		let version = this.versionDropdown.value;
-		let selected_asset: IAsset;
-		this.controller.getAssets().forEach(asset => {
-			if (asset.book === book && asset.version === version && asset.language === lang) {
-				selected_asset = asset;
-			}
-		});
-		return selected_asset;
+		return (await this.controller.getAssets()).filter(asset => asset.book === book && asset.version === version && asset.language === lang)[0];
 	}
 
-	public checkValues(): boolean {
-		if (this.languageDropdown.value !== 'N/A' && this.versionDropdown.value !== 'N/A' && this.bookDropdown.value !== 'N/A') {
-			return true;
+	public checkValues(): void {
+		if (this.languageDropdown.value !== loc.invalidTextPlaceholder && this.versionDropdown.value !== loc.invalidTextPlaceholder &&
+			this.bookDropdown.value !== loc.invalidTextPlaceholder) {
+			this.dialog.okButton.enabled = true;
+		} else {
+			this.dialog.okButton.enabled = false;
 		}
-		return false;
 	}
 
 	public get remoteLocationCategories(): azdata.CategoryValue[] {
@@ -339,5 +336,12 @@ export class RemoteBookDialog {
 			this._remoteTypes = [getRemoteLocationCategory(loc.onGitHub)];
 		}
 		return this._remoteTypes;
+	}
+
+	public showErrorMessage(message: string): void {
+		this.dialog.message = {
+			text: message,
+			level: azdata.window.MessageLevel.Error
+		};
 	}
 }
