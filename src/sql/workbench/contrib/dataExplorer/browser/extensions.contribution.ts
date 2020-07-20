@@ -12,6 +12,7 @@ import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType'
 import { localize } from 'vs/nls';
 import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
 
+// TODOKusto: Search for mssqlProviderName and make it generic to be for Kusto of SQL
 // Data-Tier Application Wizard
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	group: 'export',

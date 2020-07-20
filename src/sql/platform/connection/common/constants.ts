@@ -11,6 +11,7 @@ export const outputChannelName = 'MSSQL';
 export const capabilitiesOptions = 'OPTIONS_METADATA';
 
 export const mssqlProviderName = 'MSSQL';
+export const kustoProviderName = 'KUSTO';
 export const anyProviderName = '*';
 export const connectionProviderContextKey = 'connectionProvider';
 

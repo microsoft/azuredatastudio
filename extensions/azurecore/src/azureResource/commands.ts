@@ -166,6 +166,23 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 		}
 	});
 
+	vscode.commands.registerCommand('azure.resource.connectazureDataExplorer', async (node?: TreeNode) => {
+		if (!node) {
+			return;
+		}
+
+		const treeItem: azdata.TreeItem = await node.getTreeItem();
+		if (!treeItem.payload) {
+			return;
+		}
+		// Ensure connection is saved to the Connections list, then open connection dialog
+		let connectionProfile = Object.assign({}, treeItem.payload, { saveProfile: true });
+		const conn = await azdata.connection.openConnectionDialog(undefined, connectionProfile, { saveConnection: true, showDashboard: true });
+		if (conn) {
+			vscode.commands.executeCommand('workbench.view.connections');
+		}
+	});
+
 	vscode.commands.registerCommand('azure.resource.openInAzurePortal', async (connectionProfile: azdata.IConnectionProfile) => {
 
 		if (
