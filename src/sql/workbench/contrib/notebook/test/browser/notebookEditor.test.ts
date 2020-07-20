@@ -32,7 +32,6 @@ import { IOverlayWidget, IOverlayWidgetPosition } from 'vs/editor/browser/editor
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { FindReplaceStateChangedEvent, INewFindReplaceState } from 'vs/editor/contrib/find/findState';
 import { getRandomString } from 'vs/editor/test/common/model/linesTextBuffer/textBufferAutoTestUtils';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ContextViewService } from 'vs/platform/contextview/browser/contextViewService';
 import { DidInstallExtensionEvent, DidUninstallExtensionEvent, IExtensionManagementService, InstallExtensionEvent } from 'vs/platform/extensionManagement/common/extensionManagement';
@@ -717,8 +716,7 @@ function setupServices(arg: { workbenchThemeService?: WorkbenchThemeService, ins
 		instantiationService.get(ITextResourceConfigurationService),
 		instantiationService.get(IThemeService),
 		instantiationService.get(IEditorGroupsService),
-		instantiationService.get(IEditorService),
-		instantiationService.get(IConfigurationService)
+		instantiationService.get(IEditorService)
 	);
 	const notebookEditorStub = new NotebookEditorStub({ cellGuid: cellTextEditorGuid, editor: queryTextEditor, model: new NotebookModelStub(), notebookParams: <INotebookParams>{ notebookUri: untitledNotebookInput.notebookUri } });
 	notebookService.addNotebookEditor(notebookEditorStub);
