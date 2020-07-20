@@ -22,12 +22,12 @@ export interface Tenant {
 	/**
 	 * Identifier of the user in the tenant
 	 */
-	userId: string;
+	userId?: string;
 
 	/**
 	 * The category the user has set their tenant to (e.g. Home Tenant)
 	 */
-	tenantCategory: string;
+	tenantCategory?: string;
 }
 
 /**
@@ -98,6 +98,11 @@ interface Settings {
 	 * Information that describes the Azure Key Vault resource
 	 */
 	azureKeyVaultResource?: Resource;
+
+	/**
+	 * Information that describes the Azure Dev Ops resource
+	 */
+	azureDevOpsResource?: Resource;
 
 	/**
 	 * A list of tenant IDs to authenticate against. If defined, then these IDs will be used

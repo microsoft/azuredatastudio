@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as should from 'should';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
 import * as TypeMoq from 'typemoq';
@@ -14,6 +15,7 @@ import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
 import { SchemaCompareTestService, testStateScmp } from './testSchemaCompareService';
 import { createContext, TestContext } from './testContext';
 import { mockIConnectionProfile, mockFilePath, setDacpacEndpointInfo, setDatabaseEndpointInfo, shouldThrowSpecificError } from './testUtils';
+import { SchemaCompareMainWindowTest } from './testSchemaCompareMainWindow';
 
 // Mock test data
 const mocksource: string = 'source.dacpac';
@@ -47,12 +49,11 @@ describe('SchemaCompareMainWindow.start', function (): void {
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 		mockExtensionContext.setup(x => x.extensionPath).returns(() => '');
 	});
-
 	it('Should be correct when created.', async function (): Promise<void> {
 		let sc = new SchemaCompareTestService();
 
-		let result = new SchemaCompareMainWindow(testContext.apiWrapper.object, sc, mockExtensionContext.object);
-		await result.start(null);
+		let result = new SchemaCompareMainWindowTest(testContext.apiWrapper.object, sc, mockExtensionContext.object);
+		await result.start(undefined);
 
 		should(result.getComparisonResult() === undefined);
 
@@ -67,7 +68,7 @@ describe('SchemaCompareMainWindow.start', function (): void {
 	it('Should start with the source as undefined', async function (): Promise<void> {
 		let sc = new SchemaCompareTestService();
 
-		let result = new SchemaCompareMainWindow(testContext.apiWrapper.object, sc, mockExtensionContext.object);
+		let result = new SchemaCompareMainWindowTest(testContext.apiWrapper.object, sc, mockExtensionContext.object);
 		await result.start(undefined);
 
 		should.equal(result.sourceEndpointInfo, undefined);
@@ -77,7 +78,7 @@ describe('SchemaCompareMainWindow.start', function (): void {
 	it('Should start with the source as database', async function (): Promise<void> {
 		let sc = new SchemaCompareTestService();
 
-		let result = new SchemaCompareMainWindow(testContext.apiWrapper.object, sc, mockExtensionContext.object);
+		let result = new SchemaCompareMainWindowTest(testContext.apiWrapper.object, sc, mockExtensionContext.object);
 		await result.start({connectionProfile: mockIConnectionProfile});
 
 		should.notEqual(result.sourceEndpointInfo, undefined);
@@ -90,7 +91,7 @@ describe('SchemaCompareMainWindow.start', function (): void {
 	it('Should start with the source as dacpac.', async function (): Promise<void> {
 		let sc = new SchemaCompareTestService();
 
-		let result = new SchemaCompareMainWindow(testContext.apiWrapper.object, sc, mockExtensionContext.object);
+		let result = new SchemaCompareMainWindowTest(testContext.apiWrapper.object, sc, mockExtensionContext.object);
 		const dacpacPath = mockFilePath;
 		await result.start(dacpacPath);
 
@@ -116,9 +117,9 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 		let sc = new SchemaCompareTestService(testStateScmp.FAILURE);
 
 		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
-		let result = new SchemaCompareMainWindow(testContext.apiWrapper.object, sc, mockExtensionContext.object);
+		let result = new SchemaCompareMainWindowTest(testContext.apiWrapper.object, sc, mockExtensionContext.object);
 
-		await result.start(null);
+		await result.start(undefined);
 
 		should(result.getComparisonResult() === undefined);
 
@@ -132,9 +133,9 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 		let sc = new SchemaCompareTestService(testStateScmp.FAILURE);
 
 		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns(() => Promise.resolve(''));
-		let result = new SchemaCompareMainWindow(testContext.apiWrapper.object, sc, mockExtensionContext.object);
+		let result = new SchemaCompareMainWindowTest(testContext.apiWrapper.object, sc, mockExtensionContext.object);
 
-		await result.start(null);
+		await result.start(undefined);
 
 		should(result.getComparisonResult() === undefined);
 
@@ -148,9 +149,9 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 	it('Should disable script button and apply button for Schema Compare service for dacpac', async function (): Promise<void> {
 		let sc = new SchemaCompareTestService(testStateScmp.SUCCESS_NOT_EQUAL);
 
-		let result = new SchemaCompareMainWindow(testContext.apiWrapper.object, sc, mockExtensionContext.object);
+		let result = new SchemaCompareMainWindowTest(testContext.apiWrapper.object, sc, mockExtensionContext.object);
 
-		await result.start(null);
+		await result.start(undefined);
 
 		should(result.getComparisonResult() === undefined);
 
@@ -160,15 +161,18 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 		await result.execute();
 
 		//Generate script button and apply button should be disabled for dacpac comparison
-		should(result.verifyButtonsState(false, false)).equal(true);
+		should(result.verifyButtonsState( {compareButtonState: true, optionsButtonState: true, switchButtonState: true,
+			openScmpButtonState: true, saveScmpButtonState: true, cancelCompareButtonState: false,
+			selectSourceButtonState: true, selectTargetButtonState: true, generateScriptButtonState: false,
+			applyButtonState: false} )).equal(true);
 	});
 
 	it('Should disable script button and apply button for Schema Compare service for database', async function (): Promise<void> {
 		let sc = new SchemaCompareTestService(testStateScmp.SUCCESS_NOT_EQUAL);
 
-		let result = new SchemaCompareMainWindow(testContext.apiWrapper.object, sc, mockExtensionContext.object);
+		let result = new SchemaCompareMainWindowTest(testContext.apiWrapper.object, sc, mockExtensionContext.object);
 
-		await result.start(null);
+		await result.start(undefined);
 
 		should(result.getComparisonResult() === undefined);
 
@@ -178,8 +182,82 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 		await result.execute();
 
 		//Generate script button and apply button should be enabled for database comparison
-		should(result.verifyButtonsState(true, true)).equal(true);
+		should(result.verifyButtonsState( {compareButtonState: true, optionsButtonState: true, switchButtonState: true,
+			openScmpButtonState: true, saveScmpButtonState: true, cancelCompareButtonState: false,
+			selectSourceButtonState: true, selectTargetButtonState: true, generateScriptButtonState: true,
+			applyButtonState: true} )).equal(true);
 	});
 
 });
 
+describe('SchemaCompareMainWindow.updateSourceAndTarget', function (): void {
+	before(() => {
+		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
+		mockExtensionContext.setup(x => x.extensionPath).returns(() => '');
+		testContext = createContext();
+	});
+
+	it('Should set buttons appropriately when source and target endpoints are empty', async function (): Promise<void> {
+		let sc = new SchemaCompareTestService();
+		let endpointInfo: mssql.SchemaCompareEndpointInfo;
+
+		let result = new SchemaCompareMainWindowTest(testContext.apiWrapper.object, sc, mockExtensionContext.object);
+
+		await result.start(undefined);
+
+		should(result.getComparisonResult() === undefined);
+
+		result.sourceEndpointInfo = {...endpointInfo};
+		result.targetEndpointInfo = {...endpointInfo};
+
+		result.updateSourceAndTarget();
+
+		should(result.verifyButtonsState( {compareButtonState: false, optionsButtonState: false, switchButtonState: false,
+			openScmpButtonState: true, saveScmpButtonState: false, cancelCompareButtonState: false,
+			selectSourceButtonState: true, selectTargetButtonState: true, generateScriptButtonState: false,
+			applyButtonState: false} )).equal(true);
+	});
+
+	it('Should set buttons appropriately when source endpoint is empty and target endpoint is populated', async function (): Promise<void> {
+		let sc = new SchemaCompareTestService();
+		let endpointInfo: mssql.SchemaCompareEndpointInfo;
+
+		let result = new SchemaCompareMainWindowTest(testContext.apiWrapper.object, sc, mockExtensionContext.object);
+
+		await result.start(undefined);
+
+		should(result.getComparisonResult() === undefined);
+
+		result.sourceEndpointInfo = {...endpointInfo};
+		result.targetEndpointInfo = await setDacpacEndpointInfo(mocktarget);
+
+		result.updateSourceAndTarget();
+
+		should(result.verifyButtonsState( {compareButtonState: false, optionsButtonState: false, switchButtonState: true,
+			openScmpButtonState: true, saveScmpButtonState: false, cancelCompareButtonState: false,
+			selectSourceButtonState: true, selectTargetButtonState: true, generateScriptButtonState: false,
+			applyButtonState: false} )).equal(true);
+	});
+
+	it('Should set buttons appropriately when source and target endpoints are populated', async function (): Promise<void> {
+		let sc = new SchemaCompareTestService();
+		let endpointInfo: mssql.SchemaCompareEndpointInfo;
+
+		let result = new SchemaCompareMainWindowTest(testContext.apiWrapper.object, sc, mockExtensionContext.object);
+
+		await result.start(undefined);
+
+		should(result.getComparisonResult() === undefined);
+
+		result.sourceEndpointInfo = await setDacpacEndpointInfo(mocksource);
+		result.targetEndpointInfo = await setDacpacEndpointInfo(mocktarget);
+
+		result.updateSourceAndTarget();
+
+		should(result.verifyButtonsState( {compareButtonState: true, optionsButtonState: true, switchButtonState: true,
+			openScmpButtonState: true, saveScmpButtonState: true, cancelCompareButtonState: false,
+			selectSourceButtonState: true, selectTargetButtonState: true, generateScriptButtonState: false,
+			applyButtonState: false} )).equal(true);
+	});
+
+});

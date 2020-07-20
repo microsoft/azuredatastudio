@@ -10,7 +10,6 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import * as azdata from 'azdata';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { Event, Emitter } from 'vs/base/common/event';
-import { keys } from 'vs/base/common/map';
 import { assign } from 'vs/base/common/objects';
 import { IAdsTelemetryService, ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import EditQueryRunner from 'sql/workbench/services/editData/common/editQueryRunner';
@@ -175,7 +174,7 @@ export class QueryManagementService implements IQueryManagementService {
 	}
 
 	public getRegisteredProviders(): string[] {
-		return Array.from(keys(this._requestHandlers));
+		return Array.from(this._requestHandlers.keys());
 	}
 
 	private addTelemetry(eventName: string, ownerUri: string, runOptions?: ExecutionPlanOptions): void {

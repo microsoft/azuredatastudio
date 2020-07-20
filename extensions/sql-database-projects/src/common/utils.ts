@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as os from 'os';
-import * as constants from '../common/constants';
+import * as constants from './constants';
 import { promises as fs } from 'fs';
 
 /**
@@ -98,6 +98,14 @@ export function getSafeNonWindowsPath(filePath: string): string {
 export function getPlatformSafeFileEntryPath(filePath: string): string {
 	const parts = filePath.split('\\');
 	return parts.join('/');
+}
+
+/**
+ * Standardizes slashes to be "\\" for consistency between platforms and compatibility with SSDT
+ */
+export function convertSlashesForSqlProj(filePath: string): string {
+	const parts = filePath.split('/');
+	return parts.join('\\');
 }
 
 /**

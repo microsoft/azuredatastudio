@@ -7,7 +7,6 @@
 		"**/node_modules/**",
 		"**/test/**",
 		"extension.js",
-		"common/apiWrapper.js",
 		"common/localizedConstants.js"
 	],
 	"reports": [

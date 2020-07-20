@@ -199,9 +199,11 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			});
 			this.markdownResult.element.innerHTML = this.sanitizeContent(this.markdownResult.element.innerHTML);
 			this.setLoading(false);
-			let outputElement = <HTMLElement>this.output.nativeElement;
-			outputElement.innerHTML = this.markdownResult.element.innerHTML;
-			this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
+			if (this.showPreview) {
+				let outputElement = <HTMLElement>this.output.nativeElement;
+				outputElement.innerHTML = this.markdownResult.element.innerHTML;
+				this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
+			}
 		}
 	}
 

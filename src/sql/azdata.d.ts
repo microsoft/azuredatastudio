@@ -2160,7 +2160,7 @@ declare module 'azdata' {
 		displayName: string;
 
 		/**
-		 * User id that identifies the account, such as "user@contoso.com".
+		 * Unique user id that identifies the account.
 		 */
 		userId: string;
 	}
@@ -2216,7 +2216,8 @@ declare module 'azdata' {
 		OssRdbms = 2,
 		AzureKeyVault = 3,
 		Graph = 4,
-		MicrosoftResourceManagement = 5
+		MicrosoftResourceManagement = 5,
+		AzureDevOps = 6
 	}
 
 	export interface DidChangeAccountsParams {
