@@ -525,8 +525,21 @@ describe('BooksTreeViewTests', function () {
 
 		it('should add book and initialize book on openBook', async () => {
 			should(bookTreeViewProvider.books.length).equal(0, 'Invalid books on initialize.');
+
+			let showPreviewSpy = sinon.spy(bookTreeViewProvider, 'showPreviewFile');
+
 			await bookTreeViewProvider.openBook(rootFolderPath);
 			should(bookTreeViewProvider.books.length).equal(1, 'Failed to initialize the book on open');
+			should(showPreviewSpy.notCalled).be.true('Should not call showPreviewFile when showPreview isn\' true');
+		});
+
+		it('should add book and initialize book on openBook', async () => {
+			await bookTreeViewProvider.closeBook(bookTreeViewProvider.books[0].bookItems[0]);
+			let showPreviewSpy = sinon.spy(bookTreeViewProvider, 'showPreviewFile');
+
+			await bookTreeViewProvider.openBook(rootFolderPath, undefined, true);
+			should(bookTreeViewProvider.books.length).equal(1, 'Failed to initialize the book on open');
+			should(showPreviewSpy.calledOnce).be.true('Should have called showPreviewFile.');
 		});
 
 		it('should add book when bookPath contains special characters on openBook', async () => {
