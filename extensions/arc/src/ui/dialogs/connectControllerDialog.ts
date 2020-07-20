@@ -88,8 +88,21 @@ export class ConnectToControllerDialog {
 		if (!this.urlInputBox.value || !this.usernameInputBox.value || !this.passwordInputBox.value) {
 			return false;
 		}
+		let url = this.urlInputBox.value;
+		// Only support https connections
+		if (url.toLowerCase().startsWith('http://')) {
+			url = url.replace('http', 'https');
+		}
+		// Append https if they didn't type it in
+		if (!url.toLowerCase().startsWith('https://')) {
+			url = `https://${url}`;
+		}
+		// Append default port if one wasn't specified
+		if (!/.*:\d*$/.test(url)) {
+			url = `${url}:30080`;
+		}
 		const controllerInfo: ControllerInfo = {
-			url: this.urlInputBox.value,
+			url: url,
 			username: this.usernameInputBox.value,
 			rememberPassword: this.rememberPwCheckBox.checked ?? false,
 			resources: []
