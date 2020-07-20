@@ -183,19 +183,19 @@ export class SchemaCompareOptionsDialog {
 		this.deploymentOptions = defaultOptions;
 	}
 
-	protected async initializeDialog(): Promise<void> {
+	protected initializeDialog(): void {
 		this.generalOptionsTab = azdata.window.createTab(loc.GeneralOptionsLabel);
 		this.objectTypesTab = azdata.window.createTab(loc.ObjectTypesOptionsLabel);
-		await this.initializeSchemaCompareOptionsDialogTab();
-		await this.initializeSchemaCompareObjectTypesDialogTab();
+		this.initializeSchemaCompareOptionsDialogTab();
+		this.initializeSchemaCompareObjectTypesDialogTab();
 		this.dialog.content = [this.generalOptionsTab, this.objectTypesTab];
 	}
 
-	public async openDialog(): Promise<void> {
+	public openDialog(): void {
 		let event = null;
 		this.dialog = azdata.window.createModelViewDialog(loc.OptionsLabel, event);
 
-		await this.initializeDialog();
+		this.initializeDialog();
 
 		this.dialog.okButton.label = loc.OkButtonText;
 		this.dialog.okButton.onClick(async () => await this.execute());
