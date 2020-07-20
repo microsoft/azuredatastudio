@@ -8,7 +8,7 @@ import * as should from 'should';
 import { DataTierApplicationWizard, PageName } from '../wizard/dataTierApplicationWizard';
 import { DacFxDataModel } from '../wizard/api/models';
 import { TestContext, createContext } from './testContext';
-import { TestDeployConfigPage, TestExtractConfigPage } from './DacFxTestConfigPages';
+import { TestDeployConfigPage, TestExtractConfigPage } from './testDacFxConfigPages';
 
 let wizard: DataTierApplicationWizard;
 let testContext: TestContext;
