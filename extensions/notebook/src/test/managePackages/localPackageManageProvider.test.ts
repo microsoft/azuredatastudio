@@ -197,7 +197,7 @@ describe('Manage Package Providers', () => {
 		should(packageInfo.info.name).not.be.undefined();
 		should(packageInfo.info.name.toString().toLowerCase()).equal(pkgName);
 
-		// Try to fetch an empty string ensure retrieval fails
+		// Try to fetch an empty string to ensure retrieval fails
 		await should(pypiClient.fetchPypiPackage('')).be.rejected();
 	});
 
