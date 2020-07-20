@@ -26,7 +26,7 @@ export class SlickTableDataView<T extends Slick.SlickData> extends Slick.Data.Da
 	public setData(data: T[]): void {
 		let inputArray = new Array();
 		inputArray.push(...data);
-		this.setItems(inputArray);
+		this.setItems(inputArray, '__id__');
 	}
 
 	dispose(): void {

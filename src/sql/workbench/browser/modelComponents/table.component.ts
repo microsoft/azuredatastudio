@@ -133,7 +133,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		}
 	}
 
-	public static transformData(rows: string[][], columns: any[]): { [key: string]: string }[] {
+	public static transformData(rows: string[][], columns: any[], generateId: boolean = false): { [key: string]: string }[] {
 		if (rows && columns) {
 			return rows.map(row => {
 				let object: { [key: string]: string } = {};
@@ -145,8 +145,8 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 						object[columnName] = val;
 					});
 				}
-				if (object['id'] === undefined) {
-					object.id = generateUuid();
+				if (object['__id__'] === undefined) {
+					object.__id__ = generateUuid();
 				}
 				return object;
 			});
@@ -262,7 +262,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 	}
 
 	private appendData(data: any[][]) {
-		this._tableData.push(TableComponent.transformData(data, this.columns));
+		this._tableData.push(TableComponent.transformData(data, this.columns, true));
 		this.data.push(...data);
 	}
 
@@ -276,7 +276,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		}
 		this._table.columns = this._tableColumns;
 
-		this._tableData.setData(TableComponent.transformData(this.data, this.columns));
+		this._tableData.setData(TableComponent.transformData(this.data, this.columns, true));
 
 		if (this.properties['headerFilter'] === true) {
 			this.registerFilterPlugin();
