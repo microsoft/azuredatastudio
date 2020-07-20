@@ -725,7 +725,7 @@ class TreeDataSource implements IAsyncDataSource<ITreeItem, ITreeItem> {
 	async getChildren(node: ITreeItem): Promise<any[]> {
 		if (node.childProvider) {  // tracked change
 			try {
-				return await this.withProgress(this.objectExplorerService.getChildren(node, this.id));
+				return await /*this.withProgress(*/this.objectExplorerService.getChildren(node, this.id);
 			} catch (err) {
 				// if some error is caused we assume something tangently happened
 				// i.e the user could retry if they wanted.
@@ -741,7 +741,7 @@ class TreeDataSource implements IAsyncDataSource<ITreeItem, ITreeItem> {
 			}
 		}
 		if (this.treeView.dataProvider) {
-			return await this.withProgress(this.treeView.dataProvider.getChildren(node));
+			return await /*this.withProgress(*/this.treeView.dataProvider.getChildren(node);
 		}
 		return [];
 	}

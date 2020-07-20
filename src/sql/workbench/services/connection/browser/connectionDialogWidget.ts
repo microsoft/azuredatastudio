@@ -32,7 +32,7 @@ import * as styler from 'vs/platform/theme/common/styler';
 import * as DOM from 'vs/base/browser/dom';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
+import { SIDE_BAR_BACKGROUND, PANEL_SECTION_HEADER_BACKGROUND, PANEL_SECTION_HEADER_FOREGROUND, PANEL_SECTION_HEADER_BORDER, PANEL_SECTION_DRAG_AND_DROP_BACKGROUND, PANEL_SECTION_BORDER } from 'vs/workbench/common/theme';
 import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
@@ -40,10 +40,12 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { entries } from 'sql/base/common/collections';
 import { attachTabbedPanelStyler, attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
-import { IViewPaneContainer, IView, IViewContainersRegistry, Extensions as ViewContainerExtensions, ViewContainerLocation, IViewDescriptorService, ViewContainer } from 'vs/workbench/common/views';
+import { IViewPaneContainer, IView, IViewContainersRegistry, Extensions as ViewContainerExtensions, ViewContainerLocation, IViewDescriptorService, ViewContainer, IViewContainerModel, IAddedViewDescriptorRef, IViewDescriptorRef, IViewDescriptor } from 'vs/workbench/common/views';
 import { IAction, IActionViewItem } from 'vs/base/common/actions';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
+import { ViewPane, IPaneColors } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { IViewletViewOptions } from 'vs/workbench/browser/parts/views/viewsViewlet';
 
 export interface OnShowUIResponse {
 	selectedProviderDisplayName: string;
@@ -93,6 +95,8 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 
 	readonly viewContainer: ViewContainer;
 	protected readonly viewContainerModel: IViewContainerModel;
+	private paneItems: { pane: ViewPane }[] = [];
+	private orthogonalSize = 0;
 
 	constructor(
 		private providerDisplayNameOptions: string[],
@@ -245,6 +249,17 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 
 		this._connectionUIContainer = DOM.$('.connection-provider-info', { id: 'connectionProviderInfo' });
 		this._body.append(this._connectionUIContainer);
+
+		this._register(this.viewContainerModel.onDidAddVisibleViewDescriptors(added => this.onDidAddViewDescriptors(added)));
+		this._register(this.viewContainerModel.onDidRemoveVisibleViewDescriptors(removed => this.onDidRemoveViewDescriptors(removed)));
+		const addedViews: IAddedViewDescriptorRef[] = this.viewContainerModel.visibleViewDescriptors.map((viewDescriptor, index) => {
+			const size = this.viewContainerModel.getSize(viewDescriptor.id);
+			const collapsed = this.viewContainerModel.isCollapsed(viewDescriptor.id);
+			return ({ viewDescriptor, index, size, collapsed });
+		});
+		if (addedViews.length) {
+			this.onDidAddViewDescriptors(addedViews);
+		}
 
 		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme(e)));
 		this.updateTheme(this._themeService.getColorTheme());
@@ -433,13 +448,17 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 		await this._savedConnectionTree.setInput([]);
 
 		// call layout with view height
-		this.layout();
 		this.initDialog();
 	}
 
-	protected layout(height?: number): void {
+	protected layout(height: number): void {
 		// Height is the overall height. Since we're laying out a specific component, always get its actual height
-		this._recentConnectionTree.layout(DOM.getTotalHeight(this._recentConnectionTree.getHTMLElement()));
+		const width = DOM.getContentWidth(this._body);
+		this.orthogonalSize = width;
+		for (const { pane } of this.paneItems) {
+			pane.orthogonalSize = width;
+		}
+		this._panel.layout(new DOM.Dimension(this.orthogonalSize, 500));
 	}
 
 	/**
@@ -507,7 +526,7 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 	}
 
 	isVisible(): boolean {
-		return false;
+		return true;
 	}
 
 	focus(): void {
@@ -530,6 +549,79 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 	}
 
 	saveState(): void {
+	}
+
+	private onDidRemoveViewDescriptors(removed: IViewDescriptorRef[]): any {
+		throw new Error('Method not implemented.');
+	}
+
+	protected onDidAddViewDescriptors(added: IAddedViewDescriptorRef[]): ViewPane[] {
+		const panesToAdd: { pane: ViewPane, size: number, index: number }[] = [];
+
+		for (const { viewDescriptor, index, size } of added) {
+			const pane = this.createView(viewDescriptor,
+				{
+					id: viewDescriptor.id,
+					title: viewDescriptor.name,
+					expanded: true
+				});
+
+			pane.render();
+
+			panesToAdd.push({ pane, size: size || pane.minimumSize, index });
+		}
+
+		this.addPanes(panesToAdd);
+
+		const panes: ViewPane[] = [];
+		for (const { pane } of panesToAdd) {
+			pane.setVisible(this.isVisible());
+			pane.headerVisible = false;
+			panes.push(pane);
+		}
+		return panes;
+	}
+
+	protected createView(viewDescriptor: IViewDescriptor, options: IViewletViewOptions): ViewPane {
+		return (this.instantiationService as any).createInstance(viewDescriptor.ctorDescriptor.ctor, ...(viewDescriptor.ctorDescriptor.staticArguments || []), options) as ViewPane;
+	}
+
+	addPanes(panes: { pane: ViewPane, size: number }[]): void {
+
+		for (const { pane: pane, size } of panes) {
+			this.addPane(pane, size);
+		}
+
+		// this._onDidAddViews.fire(panes.map(({ pane }) => pane));
+	}
+
+	private addPane(pane: ViewPane, size: number): void {
+		const paneStyler = styler.attachStyler<IPaneColors>(this._themeService, {
+			headerForeground: PANEL_SECTION_HEADER_FOREGROUND,
+			headerBackground: PANEL_SECTION_HEADER_BACKGROUND,
+			headerBorder: PANEL_SECTION_HEADER_BORDER,
+			dropBackground: PANEL_SECTION_DRAG_AND_DROP_BACKGROUND,
+			leftBorder: PANEL_SECTION_BORDER
+		}, pane);
+
+		// const disposable = combinedDisposable(pane, paneStyler);
+		const paneItem = { pane };
+
+		this.paneItems.push(paneItem);
+		this._panel.pushTab({
+			identifier: pane.id,
+			title: pane.title,
+			view: {
+				focus: () => pane.focus(),
+				layout: d => {
+					pane.layout(d.height);
+				},
+				render: e => {
+					pane.render();
+					e.appendChild(pane.element);
+				},
+			}
+		});
 	}
 	//#endregion
 }
