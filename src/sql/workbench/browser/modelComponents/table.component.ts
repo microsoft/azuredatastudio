@@ -14,7 +14,7 @@ import * as azdata from 'azdata';
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 
 import { Table } from 'sql/base/browser/ui/table/table';
-import { SlickTableDataView } from 'sql/base/browser/ui/table/tableDataView';
+import { SlickTableDataView } from 'sql/base/browser/ui/table/slickTableDataView';
 import { attachTableStyler, attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { getContentHeight, getContentWidth, Dimension } from 'vs/base/browser/dom';

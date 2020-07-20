@@ -7,7 +7,7 @@ import 'vs/css!./media/table';
 import 'vs/css!./media/slick.grid';
 import 'vs/css!./media/slickColorTheme';
 
-import { TableDataView, SlickTableDataView } from './tableDataView';
+import { TableDataView } from './tableDataView';
 import { IDisposableDataProvider, ITableSorter, ITableMouseEvent, ITableConfiguration, ITableStyles } from 'sql/base/browser/ui/table/interfaces';
 
 import * as DOM from 'vs/base/browser/dom';
@@ -18,7 +18,6 @@ import { Widget } from 'vs/base/browser/ui/widget';
 import { isArray, isBoolean } from 'vs/base/common/types';
 import { Event, Emitter } from 'vs/base/common/event';
 import { range } from 'vs/base/common/arrays';
-import { AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 
 function getDefaultOptions<T>(): Slick.GridOptions<T> {
 	return <Slick.GridOptions<T>>{
@@ -164,15 +163,11 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		return this._grid;
 	}
 
-	setData(data: Array<T>): void;
-	setData(data: TableDataView<T>): void;
-	setData(data: AsyncDataProvider<T>): void;
-	setData(data: SlickTableDataView<T>): void;
-	setData(data: Array<T> | TableDataView<T> | AsyncDataProvider<T> | SlickTableDataView<T>): void {
-		if (data instanceof TableDataView || data instanceof AsyncDataProvider || data instanceof SlickTableDataView) {
-			this._data = data;
-		} else {
+	setData(data: Array<T> | IDisposableDataProvider<T>): void {
+		if (isArray(data)) {
 			this._data = new TableDataView<T>(data);
+		} else {
+			this._data = data;
 		}
 		this._grid.setData(this._data, true);
 	}
