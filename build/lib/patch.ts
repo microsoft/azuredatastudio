@@ -23,6 +23,8 @@ async function main(): Promise<void> {
 
 	const target = args.commit ?? 'vsdistro/distro';
 
+	console.log(`Using ${target} for vscode target to patch.`);
+
 	for (const name of files) {
 		const namePath = path.join(...name.split('.').slice(0, -1).join('.').split('_'));
 		cp.spawnSync('git', ['fetch', 'vsdistro']);
