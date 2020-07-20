@@ -17,9 +17,7 @@ describe('azdata', function () {
 	let outputChannelMock: TypeMoq.IMock<vscode.OutputChannel>;
 	beforeEach(function (): void {
 		outputChannelMock = TypeMoq.Mock.ofType<vscode.OutputChannel>();
-		// We're mocking azdata existing for these tests so stub out the function that runs the
-		// actual commands for that and installation
-		sinon.stub(childProcess, 'executeCommand').returns(Promise.resolve(''));
+
 	});
 	afterEach(function (): void {
 		sinon.restore();
@@ -28,6 +26,8 @@ describe('azdata', function () {
 	});
 
 	describe('findAzdata', function () {
+		// Mock call to --version to simulate azdata being installed
+		sinon.stub(childProcess, 'executeCommand').returns(Promise.resolve('v1.0.0'));
 		it('successful', async function (): Promise<void> {
 			sinon.stub(utils, 'searchForCmd').returns(Promise.resolve('C:\\path\\to\\azdata.cmd'));
 			await should(azdata.findAzdata(outputChannelMock.object)).not.be.rejected();
