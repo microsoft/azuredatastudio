@@ -190,24 +190,36 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	async showPreviewFile(urlToOpen?: string): Promise<void> {
 		if (this.currentBook) {
-			const bookRoot = this.currentBook.bookItems[0];
 			let urlPath: string;
-			// if urlToOpen is provided, show preview of that file else default to first book section.
-			if (urlToOpen) {
-				const sectionToOpen = bookRoot.findChildSection(urlToOpen);
-				urlPath = sectionToOpen.url;
+			if (this.currentBook.isNotebook) {
+				urlPath = urlToOpen && this.currentBook.bookPath === urlToOpen ? this.currentBook.bookPath : undefined;
 			} else {
-				urlPath = bookRoot.tableOfContents.sections[0].url;
+				if (urlToOpen) {
+					const bookRoot = this.currentBook.bookItems[0];
+					const sectionToOpen = bookRoot.findChildSection(urlToOpen);
+					urlPath = sectionToOpen?.url;
+				} else {
+					urlPath = this.currentBook.bookItems[0].tableOfContents.sections[0].url;
+				}
 			}
 			if (urlPath) {
-				const sectionToOpenMarkdown: string = path.join(this.currentBook.bookPath, Content, urlPath.concat('.md'));
-				// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
-				const sectionToOpenNotebook: string = path.posix.join(this.currentBook.bookPath, Content, urlPath.concat('.ipynb'));
-				if (await fs.pathExists(sectionToOpenMarkdown)) {
-					this.openMarkdown(sectionToOpenMarkdown);
-				}
-				else if (await fs.pathExists(sectionToOpenNotebook)) {
-					await this.openNotebook(sectionToOpenNotebook);
+				if (this.currentBook.isNotebook) {
+					if (urlPath.endsWith('.md')) {
+						this.openMarkdown(urlPath);
+					}
+					else if (urlPath.endsWith('.ipynb')) {
+						await this.openNotebook(urlPath);
+					}
+				} else {
+					// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
+					const sectionToOpenMarkdown: string = path.posix.join(this.currentBook.bookPath, Content, urlPath.concat('.md'));
+					const sectionToOpenNotebook: string = path.posix.join(this.currentBook.bookPath, Content, urlPath.concat('.ipynb'));
+					if (await fs.pathExists(sectionToOpenMarkdown)) {
+						this.openMarkdown(sectionToOpenMarkdown);
+					}
+					else if (await fs.pathExists(sectionToOpenNotebook)) {
+						await this.openNotebook(sectionToOpenNotebook);
+					}
 				}
 			}
 		}
@@ -391,19 +403,23 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	public async openNotebookFolder(urlToOpen?: string, showPreview?: boolean): Promise<void> {
-		const allFilesFilter = loc.allFiles;
-		let filter: any = {};
-		filter[allFilesFilter] = '*';
-		let uris = await vscode.window.showOpenDialog({
-			filters: filter,
-			canSelectFiles: false,
-			canSelectMany: false,
-			canSelectFolders: true,
-			openLabel: loc.labelSelectFolder
-		});
-		if (uris && uris.length > 0) {
-			await this.loadNotebooksInFolder(uris[0]?.fsPath, urlToOpen, showPreview);
+	public async openNotebookFolder(folderPath?: string, urlToOpen?: string, showPreview?: boolean): Promise<void> {
+		if (!folderPath) {
+			const allFilesFilter = loc.allFiles;
+			let filter: any = {};
+			filter[allFilesFilter] = '*';
+			let uris = await vscode.window.showOpenDialog({
+				filters: filter,
+				canSelectFiles: false,
+				canSelectMany: false,
+				canSelectFolders: true,
+				openLabel: loc.labelSelectFolder
+			});
+			folderPath = uris && uris.length > 0 ? uris[0].fsPath : undefined;
+		}
+
+		if (folderPath) {
+			await this.loadNotebooksInFolder(folderPath, urlToOpen, showPreview);
 		}
 	}
 

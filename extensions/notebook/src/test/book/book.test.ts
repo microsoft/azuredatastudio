@@ -554,11 +554,20 @@ describe('BooksTreeViewTests', function () {
 			should(notebookUri.scheme).equal('untitled', 'Failed to get untitled uri of the resource');
 		});
 
-		it('openNotebookFolder should prompt for notebook path and invoke loadNotebooksInFolder', async () => {
+		it('openNotebookFolder without folderPath should prompt for folder path and invoke loadNotebooksInFolder', async () => {
 			sinon.stub(vscode.window, 'showOpenDialog').returns(Promise.resolve([vscode.Uri.file(rootFolderPath)]));
 			let loadNotebooksSpy = sinon.spy(bookTreeViewProvider, 'loadNotebooksInFolder');
 			await bookTreeViewProvider.openNotebookFolder();
 
+			should(loadNotebooksSpy.calledWith(rootFolderPath)).be.true('openNotebookFolder should have called loadNotebooksInFolder passing the folderPath');
+		});
+
+		it('openNotebookFolder with folderPath shouldn\'t prompt for folder path but invoke loadNotebooksInFolder with the provided folderPath', async () => {
+			let showOpenDialogSpy = sinon.spy(vscode.window, 'showOpenDialog');
+			let loadNotebooksSpy = sinon.spy(bookTreeViewProvider, 'loadNotebooksInFolder');
+			await bookTreeViewProvider.openNotebookFolder(rootFolderPath);
+
+			should(showOpenDialogSpy.notCalled).be.true('openNotebookFolder with folderPath shouldn\'t prompt to select folder');
 			should(loadNotebooksSpy.calledOnce).be.true('openNotebookFolder should have called loadNotebooksInFolder');
 		});
 
