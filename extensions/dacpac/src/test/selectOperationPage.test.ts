@@ -5,11 +5,11 @@
 
 import 'mocha';
 import * as should from 'should';
+import * as loc from '../localizedConstants';
 import { DataTierApplicationWizard, PageName } from '../wizard/dataTierApplicationWizard';
 import { DacFxDataModel } from '../wizard/api/models';
 import { TestContext, createContext } from './testContext';
-import { TestSelectOperationPage } from './DacFxTestConfigPages';
-import * as loc from '../localizedConstants';
+import { TestSelectOperationPage } from './testDacFxConfigPages';
 
 let wizard: DataTierApplicationWizard;
 let testContext: TestContext;

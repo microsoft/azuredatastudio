@@ -4,11 +4,16 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as mssql from '../../../mssql';
+import * as mssql from '../../../mssql/src/mssql';
+
+export const deployOperationId = 'deploy dacpac';
+export const extractOperationId = 'extract dacpac';
+export const exportOperationId = 'export bacpac';
+export const importOperationId = 'import bacpac';
+export const generateScript = 'genenrate script';
+export const generateDeployPlan = 'genenrate deploy plan';
 
 export class DacFxTestService implements mssql.IDacFxService {
-
-	testOperationId: string = 'Test Operation Id';
 	dacfxResult: mssql.DacFxResult = {
 		success: true,
 		operationId: 'test',
@@ -18,36 +23,36 @@ export class DacFxTestService implements mssql.IDacFxService {
 	}
 
 	exportBacpac(databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.DacFxResult> {
-		this.dacfxResult.operationId = 'export bacpac';
+		this.dacfxResult.operationId = exportOperationId;
 		return Promise.resolve(this.dacfxResult);
 	}
 	importBacpac(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.DacFxResult> {
-		this.dacfxResult.operationId = 'import bacpac';
+		this.dacfxResult.operationId = importOperationId;
 		return Promise.resolve(this.dacfxResult);
 	}
 	extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.DacFxResult> {
-		this.dacfxResult.operationId = 'extract dacpac';
+		this.dacfxResult.operationId = extractOperationId;
 		return Promise.resolve(this.dacfxResult);
 	}
 	importDatabaseProject(databaseName: string, targetFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, extractTarget: mssql.ExtractTarget, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.DacFxResult> {
-		this.dacfxResult.operationId = 'import bacpac';
+		this.dacfxResult.operationId = importOperationId;
 		return Promise.resolve(this.dacfxResult);
 	}
 	deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode, sqlCommandVariableValues?: Record<string, string>): Thenable<mssql.DacFxResult> {
-		this.dacfxResult.operationId = 'deploy dacpac';
+		this.dacfxResult.operationId = deployOperationId;
 		return Promise.resolve(this.dacfxResult);
 	}
 	generateDeployScript(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode, sqlCommandVariableValues?: Record<string, string>): Thenable<mssql.DacFxResult> {
-		this.dacfxResult.operationId = 'generate deploy script';
+		this.dacfxResult.operationId = generateScript;
 		return Promise.resolve(this.dacfxResult);
 	}
 	generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.GenerateDeployPlanResult> {
-		this.dacfxResult.operationId = 'genenrate deploy plan';
+		this.dacfxResult.operationId = generateDeployPlan;
 		const deployPlan: mssql.GenerateDeployPlanResult = {
-			operationId: 'genenrate deploy plan',
+			operationId: generateDeployPlan,
 			success: true,
 			errorMessage: '',
-			report: 'test deploy plan report'
+			report: generateDeployPlan
 		};
 		return Promise.resolve(deployPlan);
 	}

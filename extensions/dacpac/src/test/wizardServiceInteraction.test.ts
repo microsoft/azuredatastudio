@@ -4,12 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'mocha';
+import * as azdata from 'azdata';
 import * as should from 'should';
 import * as sinon from 'sinon';
 import { DataTierApplicationWizard, Operation } from '../wizard/dataTierApplicationWizard';
 import { DacFxDataModel } from '../wizard/api/models';
-import * as azdata from 'azdata';
-import { DacFxTestService } from './DacfxTestService';
+import { DacFxTestService, deployOperationId, extractOperationId, importOperationId, exportOperationId, generateDeployPlan } from './testDacFxService';
 
 let wizard: DataTierApplicationWizard;
 let connectionProfileMock: azdata.connection.ConnectionProfile = new azdata.connection.ConnectionProfile();
@@ -54,17 +54,17 @@ describe('Dacfx wizard with connection', function (): void {
 	it('Should call all service methods correctly', async () => {
 		wizard.model.server = connectionProfileMock;
 
-		await validateServiceCalls(wizard, Operation.deploy, 'deploy dacpac');
-		await validateServiceCalls(wizard, Operation.extract, 'extract dacpac');
-		await validateServiceCalls(wizard, Operation.import, 'import bacpac');
-		await validateServiceCalls(wizard, Operation.export, 'export bacpac');
+		await validateServiceCalls(wizard, Operation.deploy, deployOperationId);
+		await validateServiceCalls(wizard, Operation.extract, extractOperationId);
+		await validateServiceCalls(wizard, Operation.import, importOperationId);
+		await validateServiceCalls(wizard, Operation.export, exportOperationId);
 	});
 
 	it('Should call deploy plan generator correctly', async () => {
 		wizard.model.server = connectionProfileMock;
 
 		const report = await wizard.generateDeployPlan();
-		should(report).equal('test deploy plan report');
+		should(report).equal(generateDeployPlan);
 	});
 
 	async function validateServiceCalls(wizard: DataTierApplicationWizard, selectedOperation: Operation, expectedOperationId: string): Promise<void> {
