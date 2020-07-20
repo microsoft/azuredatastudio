@@ -101,7 +101,7 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 				}
 			} catch (error) {
 				account.isStale = true;
-				throw new AzureResourceCredentialError(localize('azure.resource.selectsubscriptions.credentialError', "Failed to get credential for account {0}. Please refresh the account.", account.key.accountId), error);
+				throw new AzureResourceCredentialError(localize('azure.resource.selectsubscriptions.credentialError', "Failed to get credential for account {0}. Please refresh the account.", account.displayInfo.displayName), error);
 			}
 		}
 

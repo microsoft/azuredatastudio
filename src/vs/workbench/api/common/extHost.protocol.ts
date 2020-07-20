@@ -67,11 +67,10 @@ export interface IEnvironment {
 	appRoot?: URI;
 	appLanguage: string;
 	appUriScheme: string;
-	appSettingsHome?: URI;
 	extensionDevelopmentLocationURI?: URI[];
 	extensionTestsLocationURI?: URI;
 	globalStorageHome: URI;
-	userHome: URI;
+	workspaceStorageHome: URI;
 	webviewResourceRoot: string;
 	webviewCspSource: string;
 	useHostProxy?: boolean;
@@ -162,7 +161,7 @@ export interface MainThreadCommentsShape extends IDisposable {
 }
 
 export interface MainThreadAuthenticationShape extends IDisposable {
-	$registerAuthenticationProvider(id: string, displayName: string, supportsMultipleAccounts: boolean): void;
+	$registerAuthenticationProvider(id: string, label: string, supportsMultipleAccounts: boolean): void;
 	$unregisterAuthenticationProvider(id: string): void;
 	$getProviderIds(): Promise<string[]>;
 	$sendDidChangeSessions(providerId: string, event: modes.AuthenticationSessionsChangeEvent): void;
@@ -206,8 +205,8 @@ export interface MainThreadDialogSaveOptions {
 }
 
 export interface MainThreadDiaglogsShape extends IDisposable {
-	$showOpenDialog(options: MainThreadDialogOpenOptions): Promise<UriComponents[] | undefined>;
-	$showSaveDialog(options: MainThreadDialogSaveOptions): Promise<UriComponents | undefined>;
+	$showOpenDialog(options?: MainThreadDialogOpenOptions): Promise<UriComponents[] | undefined>;
+	$showSaveDialog(options?: MainThreadDialogSaveOptions): Promise<UriComponents | undefined>;
 }
 
 export interface MainThreadDecorationsShape extends IDisposable {
@@ -738,7 +737,7 @@ export interface ITextSearchComplete {
 export interface MainThreadWorkspaceShape extends IDisposable {
 	$startFileSearch(includePattern: string | null, includeFolder: UriComponents | null, excludePatternOrDisregardExcludes: string | false | null, maxResults: number | null, token: CancellationToken): Promise<UriComponents[] | null>;
 	$startTextSearch(query: search.IPatternInfo, folder: UriComponents | null, options: ITextQueryBuilderOptions, requestId: number, token: CancellationToken): Promise<ITextSearchComplete | null>;
-	$checkExists(folders: UriComponents[], includes: string[], token: CancellationToken): Promise<boolean>;
+	$checkExists(folders: readonly UriComponents[], includes: string[], token: CancellationToken): Promise<boolean>;
 	$saveAll(includeUntitled?: boolean): Promise<boolean>;
 	$updateWorkspaceFolders(extensionName: string, index: number, deleteCount: number, workspaceFoldersToAdd: { uri: UriComponents, name?: string; }[]): Promise<void>;
 	$resolveProxy(url: string): Promise<string | undefined>;
@@ -784,7 +783,7 @@ export interface MainThreadTaskShape extends IDisposable {
 	$unregisterTaskProvider(handle: number): Promise<void>;
 	$fetchTasks(filter?: tasks.TaskFilterDTO): Promise<tasks.TaskDTO[]>;
 	$getTaskExecution(value: tasks.TaskHandleDTO | tasks.TaskDTO): Promise<tasks.TaskExecutionDTO>;
-	$executeTask(task: tasks.TaskDTO): Promise<tasks.TaskExecutionDTO>;
+	$executeTask(task: tasks.TaskHandleDTO | tasks.TaskDTO): Promise<tasks.TaskExecutionDTO>;
 	$terminateTask(id: string): Promise<void>;
 	$registerTaskSystem(scheme: string, info: tasks.TaskSystemInfoDTO): void;
 	$customExecutionComplete(id: string, result?: number): Promise<void>;
@@ -862,7 +861,7 @@ export interface IStartDebuggingOptions {
 	parentSessionID?: DebugSessionUUID;
 	repl?: IDebugSessionReplMode;
 	noDebug?: boolean;
-	noCompact?: boolean;
+	compact?: boolean;
 }
 
 export interface MainThreadDebugServiceShape extends IDisposable {
@@ -876,8 +875,10 @@ export interface MainThreadDebugServiceShape extends IDisposable {
 	$unregisterDebugConfigurationProvider(handle: number): void;
 	$unregisterDebugAdapterDescriptorFactory(handle: number): void;
 	$startDebugging(folder: UriComponents | undefined, nameOrConfig: string | IDebugConfiguration, options: IStartDebuggingOptions): Promise<boolean>;
+	$stopDebugging(sessionId: DebugSessionUUID | undefined): Promise<void>;
 	$setDebugSessionName(id: DebugSessionUUID, name: string): void;
 	$customDebugAdapterRequest(id: DebugSessionUUID, command: string, args: any): Promise<any>;
+	$terminateDebugSession(id: DebugSessionUUID): Promise<void>;
 	$appendDebugConsole(value: string): void;
 	$startBreakpointEvents(): void;
 	$registerBreakpoints(breakpoints: Array<ISourceMultiBreakpointDto | IFunctionBreakpointDto | IDataBreakpointDto>): Promise<void>;
@@ -1029,8 +1030,8 @@ export interface ExtHostAuthenticationShape {
 	$getSessionAccessToken(id: string, sessionId: string): Promise<string>;
 	$login(id: string, scopes: string[]): Promise<modes.AuthenticationSession>;
 	$logout(id: string, sessionId: string): Promise<void>;
-	$onDidChangeAuthenticationSessions(providerId: string, event: modes.AuthenticationSessionsChangeEvent): Promise<void>;
-	$onDidChangeAuthenticationProviders(added: string[], removed: string[]): Promise<void>;
+	$onDidChangeAuthenticationSessions(id: string, label: string, event: modes.AuthenticationSessionsChangeEvent): Promise<void>;
+	$onDidChangeAuthenticationProviders(added: modes.AuthenticationProviderInformation[], removed: modes.AuthenticationProviderInformation[]): Promise<void>;
 }
 
 export interface ExtHostSearchShape {
@@ -1455,6 +1456,7 @@ export interface ExtHostTaskShape {
 	$resolveVariables(workspaceFolder: UriComponents, toResolve: { process?: { name: string; cwd?: string; }, variables: string[]; }): Promise<{ process?: string; variables: { [key: string]: string; }; }>;
 	$getDefaultShellAndArgs(): Thenable<{ shell: string, args: string[] | string | undefined; }>;
 	$jsonTasksSupported(): Thenable<boolean>;
+	$findExecutable(command: string, cwd?: string, paths?: string[]): Promise<string | undefined>;
 }
 
 export interface IBreakpointDto {

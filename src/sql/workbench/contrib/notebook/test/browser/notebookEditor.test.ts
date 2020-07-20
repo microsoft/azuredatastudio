@@ -57,6 +57,7 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { IProductService } from 'vs/platform/product/common/productService';
 
 class NotebookModelStub extends stubs.NotebookModelStub {
 	private _cells: Array<ICellModel> = [new CellModel(undefined, undefined)];
@@ -681,6 +682,8 @@ function setupServices(arg: { workbenchThemeService?: WorkbenchThemeService, ins
 	instantiationService.stub(IExtensionManagementService, 'onUninstallExtension', uninstallEvent.event);
 	instantiationService.stub(IExtensionManagementService, 'onDidUninstallExtension', didUninstallEvent.event);
 
+	instantiationService.stub(IProductService, { quality: 'stable' });
+
 	const extensionService = instantiationService.get(IExtensionService);
 	const notebookService = new NotebookService(
 		instantiationService.get(ILifecycleService),
@@ -691,7 +694,8 @@ function setupServices(arg: { workbenchThemeService?: WorkbenchThemeService, ins
 		instantiationService.get(IFileService),
 		instantiationService.get(ILogService),
 		queryManagementService,
-		instantiationService.get(IContextKeyService)
+		instantiationService.get(IContextKeyService),
+		instantiationService.get(IProductService)
 	);
 
 	instantiationService.stub(INotebookService, notebookService);

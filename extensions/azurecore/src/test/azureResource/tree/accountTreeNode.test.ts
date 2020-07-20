@@ -41,14 +41,15 @@ const mockTenantId = 'mock_tenant_id';
 
 const mockAccount: azdata.Account = {
 	key: {
-		accountId: 'mock_account',
+		accountId: '97915f6d-84fa-4926-b60c-38db64327ad7',
 		providerId: 'mock_provider'
 	},
 	displayInfo: {
 		displayName: 'mock_account@test.com',
 		accountType: 'Microsoft',
 		contextualDisplayName: 'test',
-		userId: 'test@email.com'
+		userId: 'test@email.com',
+		email: '97915f6d-84fa-4926-b60c-38db64327ad7'
 	},
 	properties: {
 		tenants: [
@@ -120,18 +121,17 @@ describe('AzureResourceAccountTreeNode.info', function (): void {
 		const accountTreeNode = new AzureResourceAccountTreeNode(mockAccount, mockAppContext, mockTreeChangeHandler.object);
 
 		const accountTreeNodeId = `account_${mockAccount.key.accountId}`;
-		const accountTreeNodeLabel = `${mockAccount.displayInfo.displayName} (${mockAccount.key.accountId})`;
 
 		should(accountTreeNode.nodePathValue).equal(accountTreeNodeId);
 
 		const treeItem = await accountTreeNode.getTreeItem();
 		should(treeItem.id).equal(accountTreeNodeId);
-		should(treeItem.label).equal(accountTreeNodeLabel);
+		should(treeItem.label).equal(mockAccount.displayInfo.displayName);
 		should(treeItem.contextValue).equal(AzureResourceItemType.account);
 		should(treeItem.collapsibleState).equal(vscode.TreeItemCollapsibleState.Collapsed);
 
 		const nodeInfo = accountTreeNode.getNodeInfo();
-		should(nodeInfo.label).equal(accountTreeNodeLabel);
+		should(nodeInfo.label).equal(mockAccount.displayInfo.displayName);
 		should(nodeInfo.isLeaf).false();
 		should(nodeInfo.nodeType).equal(AzureResourceItemType.account);
 		should(nodeInfo.iconType).equal(AzureResourceItemType.account);
@@ -141,7 +141,7 @@ describe('AzureResourceAccountTreeNode.info', function (): void {
 		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount, mockCredential)).returns(() => Promise.resolve(mockSubscriptions));
 		mockSubscriptionFilterService.setup((o) => o.getSelectedSubscriptions(mockAccount)).returns(() => Promise.resolve(undefined));
 
-		const accountTreeNodeLabel = `${mockAccount.displayInfo.displayName} (${mockAccount.key.accountId}) (${mockSubscriptions.length} / ${mockSubscriptions.length} subscriptions)`;
+		const accountTreeNodeLabel = `${mockAccount.displayInfo.displayName} (${mockSubscriptions.length} / ${mockSubscriptions.length} subscriptions)`;
 
 		const accountTreeNode = new AzureResourceAccountTreeNode(mockAccount, mockAppContext, mockTreeChangeHandler.object);
 
@@ -161,7 +161,7 @@ describe('AzureResourceAccountTreeNode.info', function (): void {
 		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount, mockCredential)).returns(() => Promise.resolve(mockSubscriptions));
 		mockSubscriptionFilterService.setup((o) => o.getSelectedSubscriptions(mockAccount)).returns(() => Promise.resolve(mockFilteredSubscriptions));
 
-		const accountTreeNodeLabel = `${mockAccount.displayInfo.displayName} (${mockAccount.key.accountId}) (${mockFilteredSubscriptions.length} / ${mockSubscriptions.length} subscriptions)`;
+		const accountTreeNodeLabel = `${mockAccount.displayInfo.displayName} (${mockFilteredSubscriptions.length} / ${mockSubscriptions.length} subscriptions)`;
 
 		const accountTreeNode = new AzureResourceAccountTreeNode(mockAccount, mockAppContext, mockTreeChangeHandler.object);
 

@@ -101,7 +101,7 @@ export class AccountFeature implements StaticFeature {
 
 		constructor(account: azdata.Account) {
 			this.account = account;
-			this.label = account.key.accountId;
+			this.label = account.displayInfo.displayName;
 		}
 	};
 }

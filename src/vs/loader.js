@@ -174,60 +174,60 @@ var AMDLoader;
         /**
          * Does `url` start with http:// or https:// or file:// or / ?
          */
-		Utilities.isAbsolutePath = function (url) {
-			return /^((http:\/\/)|(https:\/\/)|(file:\/\/)|(\/))/.test(url);
-		};
-		Utilities.forEachProperty = function (obj, callback) {
-			if (obj) {
-				var key = void 0;
-				for (key in obj) {
-					if (obj.hasOwnProperty(key)) {
-						callback(key, obj[key]);
-					}
-				}
-			}
-		};
-		Utilities.isEmpty = function (obj) {
-			var isEmpty = true;
-			Utilities.forEachProperty(obj, function () {
-				isEmpty = false;
-			});
-			return isEmpty;
-		};
-		Utilities.recursiveClone = function (obj) {
-			if (!obj || typeof obj !== 'object') {
-				return obj;
-			}
-			var result = Array.isArray(obj) ? [] : {};
-			Utilities.forEachProperty(obj, function (key, value) {
-				if (value && typeof value === 'object') {
-					result[key] = Utilities.recursiveClone(value);
-				}
-				else {
-					result[key] = value;
-				}
-			});
-			return result;
-		};
-		Utilities.generateAnonymousModule = function () {
-			return '===anonymous' + (Utilities.NEXT_ANONYMOUS_ID++) + '===';
-		};
-		Utilities.isAnonymousModule = function (id) {
-			return Utilities.startsWith(id, '===anonymous');
-		};
-		Utilities.getHighPerformanceTimestamp = function () {
-			if (!this.PERFORMANCE_NOW_PROBED) {
-				this.PERFORMANCE_NOW_PROBED = true;
-				this.HAS_PERFORMANCE_NOW = (AMDLoader.global.performance && typeof AMDLoader.global.performance.now === 'function');
-			}
-			return (this.HAS_PERFORMANCE_NOW ? AMDLoader.global.performance.now() : Date.now());
-		};
-		Utilities.NEXT_ANONYMOUS_ID = 1;
-		Utilities.PERFORMANCE_NOW_PROBED = false;
-		Utilities.HAS_PERFORMANCE_NOW = false;
-		return Utilities;
-	}());
-	AMDLoader.Utilities = Utilities;
+        Utilities.isAbsolutePath = function (url) {
+            return /^((http:\/\/)|(https:\/\/)|(file:\/\/)|(\/))/.test(url);
+        };
+        Utilities.forEachProperty = function (obj, callback) {
+            if (obj) {
+                var key = void 0;
+                for (key in obj) {
+                    if (obj.hasOwnProperty(key)) {
+                        callback(key, obj[key]);
+                    }
+                }
+            }
+        };
+        Utilities.isEmpty = function (obj) {
+            var isEmpty = true;
+            Utilities.forEachProperty(obj, function () {
+                isEmpty = false;
+            });
+            return isEmpty;
+        };
+        Utilities.recursiveClone = function (obj) {
+            if (!obj || typeof obj !== 'object' || obj instanceof RegExp) {
+                return obj;
+            }
+            var result = Array.isArray(obj) ? [] : {};
+            Utilities.forEachProperty(obj, function (key, value) {
+                if (value && typeof value === 'object') {
+                    result[key] = Utilities.recursiveClone(value);
+                }
+                else {
+                    result[key] = value;
+                }
+            });
+            return result;
+        };
+        Utilities.generateAnonymousModule = function () {
+            return '===anonymous' + (Utilities.NEXT_ANONYMOUS_ID++) + '===';
+        };
+        Utilities.isAnonymousModule = function (id) {
+            return Utilities.startsWith(id, '===anonymous');
+        };
+        Utilities.getHighPerformanceTimestamp = function () {
+            if (!this.PERFORMANCE_NOW_PROBED) {
+                this.PERFORMANCE_NOW_PROBED = true;
+                this.HAS_PERFORMANCE_NOW = (AMDLoader.global.performance && typeof AMDLoader.global.performance.now === 'function');
+            }
+            return (this.HAS_PERFORMANCE_NOW ? AMDLoader.global.performance.now() : Date.now());
+        };
+        Utilities.NEXT_ANONYMOUS_ID = 1;
+        Utilities.PERFORMANCE_NOW_PROBED = false;
+        Utilities.HAS_PERFORMANCE_NOW = false;
+        return Utilities;
+    }());
+    AMDLoader.Utilities = Utilities;
 })(AMDLoader || (AMDLoader = {}));
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
@@ -253,158 +253,161 @@ var AMDLoader;
         /**
          * Ensure configuration options make sense
          */
-		ConfigurationOptionsUtil.validateConfigurationOptions = function (options) {
-			function defaultOnError(err) {
-				if (err.phase === 'loading') {
-					console.error('Loading "' + err.moduleId + '" failed');
-					console.error(err);
-					console.error('Here are the modules that depend on it:');
-					console.error(err.neededBy);
-					return;
-				}
-				if (err.phase === 'factory') {
-					console.error('The factory method of "' + err.moduleId + '" has thrown an exception');
-					console.error(err);
-					return;
-				}
-			}
-			options = options || {};
-			if (typeof options.baseUrl !== 'string') {
-				options.baseUrl = '';
-			}
-			if (typeof options.isBuild !== 'boolean') {
-				options.isBuild = false;
-			}
-			if (typeof options.paths !== 'object') {
-				options.paths = {};
-			}
-			if (typeof options.config !== 'object') {
-				options.config = {};
-			}
-			if (typeof options.catchError === 'undefined') {
-				options.catchError = false;
-			}
-			if (typeof options.recordStats === 'undefined') {
-				options.recordStats = false;
-			}
-			if (typeof options.urlArgs !== 'string') {
-				options.urlArgs = '';
-			}
-			if (typeof options.onError !== 'function') {
-				options.onError = defaultOnError;
-			}
-			if (!Array.isArray(options.ignoreDuplicateModules)) {
-				options.ignoreDuplicateModules = [];
-			}
-			if (options.baseUrl.length > 0) {
-				if (!AMDLoader.Utilities.endsWith(options.baseUrl, '/')) {
-					options.baseUrl += '/';
-				}
-			}
-			if (typeof options.cspNonce !== 'string') {
-				options.cspNonce = '';
-			}
-			if (!Array.isArray(options.nodeModules)) {
-				options.nodeModules = [];
-			}
-			if (options.nodeCachedData && typeof options.nodeCachedData === 'object') {
-				if (typeof options.nodeCachedData.seed !== 'string') {
-					options.nodeCachedData.seed = 'seed';
-				}
-				if (typeof options.nodeCachedData.writeDelay !== 'number' || options.nodeCachedData.writeDelay < 0) {
-					options.nodeCachedData.writeDelay = 1000 * 7;
-				}
-				if (!options.nodeCachedData.path || typeof options.nodeCachedData.path !== 'string') {
-					var err = ensureError(new Error('INVALID cached data configuration, \'path\' MUST be set'));
-					err.phase = 'configuration';
-					options.onError(err);
-					options.nodeCachedData = undefined;
-				}
-			}
-			return options;
-		};
-		ConfigurationOptionsUtil.mergeConfigurationOptions = function (overwrite, base) {
-			if (overwrite === void 0) { overwrite = null; }
-			if (base === void 0) { base = null; }
-			var result = AMDLoader.Utilities.recursiveClone(base || {});
-			// Merge known properties and overwrite the unknown ones
-			AMDLoader.Utilities.forEachProperty(overwrite, function (key, value) {
-				if (key === 'ignoreDuplicateModules' && typeof result.ignoreDuplicateModules !== 'undefined') {
-					result.ignoreDuplicateModules = result.ignoreDuplicateModules.concat(value);
-				}
-				else if (key === 'paths' && typeof result.paths !== 'undefined') {
-					AMDLoader.Utilities.forEachProperty(value, function (key2, value2) { return result.paths[key2] = value2; });
-				}
-				else if (key === 'config' && typeof result.config !== 'undefined') {
-					AMDLoader.Utilities.forEachProperty(value, function (key2, value2) { return result.config[key2] = value2; });
-				}
-				else {
-					result[key] = AMDLoader.Utilities.recursiveClone(value);
-				}
-			});
-			return ConfigurationOptionsUtil.validateConfigurationOptions(result);
-		};
-		return ConfigurationOptionsUtil;
-	}());
-	AMDLoader.ConfigurationOptionsUtil = ConfigurationOptionsUtil;
-	var Configuration = /** @class */ (function () {
-		function Configuration(env, options) {
-			this._env = env;
-			this.options = ConfigurationOptionsUtil.mergeConfigurationOptions(options);
-			this._createIgnoreDuplicateModulesMap();
-			this._createNodeModulesMap();
-			this._createSortedPathsRules();
-			if (this.options.baseUrl === '') {
-				if (this.options.nodeRequire && this.options.nodeRequire.main && this.options.nodeRequire.main.filename && this._env.isNode) {
-					var nodeMain = this.options.nodeRequire.main.filename;
-					var dirnameIndex = Math.max(nodeMain.lastIndexOf('/'), nodeMain.lastIndexOf('\\'));
-					this.options.baseUrl = nodeMain.substring(0, dirnameIndex + 1);
-				}
-				if (this.options.nodeMain && this._env.isNode) {
-					var nodeMain = this.options.nodeMain;
-					var dirnameIndex = Math.max(nodeMain.lastIndexOf('/'), nodeMain.lastIndexOf('\\'));
-					this.options.baseUrl = nodeMain.substring(0, dirnameIndex + 1);
-				}
-			}
-		}
-		Configuration.prototype._createIgnoreDuplicateModulesMap = function () {
-			// Build a map out of the ignoreDuplicateModules array
-			this.ignoreDuplicateModulesMap = {};
-			for (var i = 0; i < this.options.ignoreDuplicateModules.length; i++) {
-				this.ignoreDuplicateModulesMap[this.options.ignoreDuplicateModules[i]] = true;
-			}
-		};
-		Configuration.prototype._createNodeModulesMap = function () {
-			// Build a map out of nodeModules array
-			this.nodeModulesMap = Object.create(null);
-			for (var _i = 0, _a = this.options.nodeModules; _i < _a.length; _i++) {
-				var nodeModule = _a[_i];
-				this.nodeModulesMap[nodeModule] = true;
-			}
-		};
-		Configuration.prototype._createSortedPathsRules = function () {
-			var _this = this;
-			// Create an array our of the paths rules, sorted descending by length to
-			// result in a more specific -> less specific order
-			this.sortedPathsRules = [];
-			AMDLoader.Utilities.forEachProperty(this.options.paths, function (from, to) {
-				if (!Array.isArray(to)) {
-					_this.sortedPathsRules.push({
-						from: from,
-						to: [to]
-					});
-				}
-				else {
-					_this.sortedPathsRules.push({
-						from: from,
-						to: to
-					});
-				}
-			});
-			this.sortedPathsRules.sort(function (a, b) {
-				return b.from.length - a.from.length;
-			});
-		};
+        ConfigurationOptionsUtil.validateConfigurationOptions = function (options) {
+            function defaultOnError(err) {
+                if (err.phase === 'loading') {
+                    console.error('Loading "' + err.moduleId + '" failed');
+                    console.error(err);
+                    console.error('Here are the modules that depend on it:');
+                    console.error(err.neededBy);
+                    return;
+                }
+                if (err.phase === 'factory') {
+                    console.error('The factory method of "' + err.moduleId + '" has thrown an exception');
+                    console.error(err);
+                    return;
+                }
+            }
+            options = options || {};
+            if (typeof options.baseUrl !== 'string') {
+                options.baseUrl = '';
+            }
+            if (typeof options.isBuild !== 'boolean') {
+                options.isBuild = false;
+            }
+            if (typeof options.paths !== 'object') {
+                options.paths = {};
+            }
+            if (typeof options.config !== 'object') {
+                options.config = {};
+            }
+            if (typeof options.catchError === 'undefined') {
+                options.catchError = false;
+            }
+            if (typeof options.recordStats === 'undefined') {
+                options.recordStats = false;
+            }
+            if (typeof options.urlArgs !== 'string') {
+                options.urlArgs = '';
+            }
+            if (typeof options.onError !== 'function') {
+                options.onError = defaultOnError;
+            }
+            if (!Array.isArray(options.ignoreDuplicateModules)) {
+                options.ignoreDuplicateModules = [];
+            }
+            if (options.baseUrl.length > 0) {
+                if (!AMDLoader.Utilities.endsWith(options.baseUrl, '/')) {
+                    options.baseUrl += '/';
+                }
+            }
+            if (typeof options.cspNonce !== 'string') {
+                options.cspNonce = '';
+            }
+            if (typeof options.preferScriptTags === 'undefined') {
+                options.preferScriptTags = false;
+            }
+            if (!Array.isArray(options.nodeModules)) {
+                options.nodeModules = [];
+            }
+            if (options.nodeCachedData && typeof options.nodeCachedData === 'object') {
+                if (typeof options.nodeCachedData.seed !== 'string') {
+                    options.nodeCachedData.seed = 'seed';
+                }
+                if (typeof options.nodeCachedData.writeDelay !== 'number' || options.nodeCachedData.writeDelay < 0) {
+                    options.nodeCachedData.writeDelay = 1000 * 7;
+                }
+                if (!options.nodeCachedData.path || typeof options.nodeCachedData.path !== 'string') {
+                    var err = ensureError(new Error('INVALID cached data configuration, \'path\' MUST be set'));
+                    err.phase = 'configuration';
+                    options.onError(err);
+                    options.nodeCachedData = undefined;
+                }
+            }
+            return options;
+        };
+        ConfigurationOptionsUtil.mergeConfigurationOptions = function (overwrite, base) {
+            if (overwrite === void 0) { overwrite = null; }
+            if (base === void 0) { base = null; }
+            var result = AMDLoader.Utilities.recursiveClone(base || {});
+            // Merge known properties and overwrite the unknown ones
+            AMDLoader.Utilities.forEachProperty(overwrite, function (key, value) {
+                if (key === 'ignoreDuplicateModules' && typeof result.ignoreDuplicateModules !== 'undefined') {
+                    result.ignoreDuplicateModules = result.ignoreDuplicateModules.concat(value);
+                }
+                else if (key === 'paths' && typeof result.paths !== 'undefined') {
+                    AMDLoader.Utilities.forEachProperty(value, function (key2, value2) { return result.paths[key2] = value2; });
+                }
+                else if (key === 'config' && typeof result.config !== 'undefined') {
+                    AMDLoader.Utilities.forEachProperty(value, function (key2, value2) { return result.config[key2] = value2; });
+                }
+                else {
+                    result[key] = AMDLoader.Utilities.recursiveClone(value);
+                }
+            });
+            return ConfigurationOptionsUtil.validateConfigurationOptions(result);
+        };
+        return ConfigurationOptionsUtil;
+    }());
+    AMDLoader.ConfigurationOptionsUtil = ConfigurationOptionsUtil;
+    var Configuration = /** @class */ (function () {
+        function Configuration(env, options) {
+            this._env = env;
+            this.options = ConfigurationOptionsUtil.mergeConfigurationOptions(options);
+            this._createIgnoreDuplicateModulesMap();
+            this._createNodeModulesMap();
+            this._createSortedPathsRules();
+            if (this.options.baseUrl === '') {
+                if (this.options.nodeRequire && this.options.nodeRequire.main && this.options.nodeRequire.main.filename && this._env.isNode) {
+                    var nodeMain = this.options.nodeRequire.main.filename;
+                    var dirnameIndex = Math.max(nodeMain.lastIndexOf('/'), nodeMain.lastIndexOf('\\'));
+                    this.options.baseUrl = nodeMain.substring(0, dirnameIndex + 1);
+                }
+                if (this.options.nodeMain && this._env.isNode) {
+                    var nodeMain = this.options.nodeMain;
+                    var dirnameIndex = Math.max(nodeMain.lastIndexOf('/'), nodeMain.lastIndexOf('\\'));
+                    this.options.baseUrl = nodeMain.substring(0, dirnameIndex + 1);
+                }
+            }
+        }
+        Configuration.prototype._createIgnoreDuplicateModulesMap = function () {
+            // Build a map out of the ignoreDuplicateModules array
+            this.ignoreDuplicateModulesMap = {};
+            for (var i = 0; i < this.options.ignoreDuplicateModules.length; i++) {
+                this.ignoreDuplicateModulesMap[this.options.ignoreDuplicateModules[i]] = true;
+            }
+        };
+        Configuration.prototype._createNodeModulesMap = function () {
+            // Build a map out of nodeModules array
+            this.nodeModulesMap = Object.create(null);
+            for (var _i = 0, _a = this.options.nodeModules; _i < _a.length; _i++) {
+                var nodeModule = _a[_i];
+                this.nodeModulesMap[nodeModule] = true;
+            }
+        };
+        Configuration.prototype._createSortedPathsRules = function () {
+            var _this = this;
+            // Create an array our of the paths rules, sorted descending by length to
+            // result in a more specific -> less specific order
+            this.sortedPathsRules = [];
+            AMDLoader.Utilities.forEachProperty(this.options.paths, function (from, to) {
+                if (!Array.isArray(to)) {
+                    _this.sortedPathsRules.push({
+                        from: from,
+                        to: [to]
+                    });
+                }
+                else {
+                    _this.sortedPathsRules.push({
+                        from: from,
+                        to: to
+                    });
+                }
+            });
+            this.sortedPathsRules.sort(function (a, b) {
+                return b.from.length - a.from.length;
+            });
+        };
         /**
          * Clone current configuration and overwrite options selectively.
          * @param options The selective options to overwrite with.
@@ -458,42 +461,44 @@ var AMDLoader;
         /**
          * Transform a module id to a location. Appends .js to module ids
          */
-		Configuration.prototype.moduleIdToPaths = function (moduleId) {
-			if (this.nodeModulesMap[moduleId] === true) {
-				// This is a node module...
-				if (this.isBuild()) {
-					// ...and we are at build time, drop it
-					return ['empty:'];
-				}
-				else {
-					// ...and at runtime we create a `shortcut`-path
-					return ['node|' + moduleId];
-				}
-			}
-			var result = moduleId;
-			var results;
-			if ((!AMDLoader.Utilities.endsWith(result, '.js') || result === 'chart.js') && !AMDLoader.Utilities.isAbsolutePath(result)) {
-				results = this._applyPaths(result);
-				for (var i = 0, len = results.length; i < len; i++) {
-					if (this.isBuild() && results[i] === 'empty:') {
-						continue;
-					}
-					if (!AMDLoader.Utilities.isAbsolutePath(results[i])) {
-						results[i] = this.options.baseUrl + results[i];
-					}
-					if (!AMDLoader.Utilities.endsWith(results[i], '.js') && !AMDLoader.Utilities.containsQueryString(results[i])) {
-						results[i] = results[i] + '.js';
-					}
-				}
-			}
-			else {
-				if (!AMDLoader.Utilities.endsWith(result, '.js') && !AMDLoader.Utilities.containsQueryString(result)) {
-					result = result + '.js';
-				}
-				results = [result];
-			}
-			return this._addUrlArgsIfNecessaryToUrls(results);
-		};
+        Configuration.prototype.moduleIdToPaths = function (moduleId) {
+            var isNodeModule = ((this.nodeModulesMap[moduleId] === true)
+                || (this.options.amdModulesPattern instanceof RegExp && !this.options.amdModulesPattern.test(moduleId)));
+            if (isNodeModule) {
+                // This is a node module...
+                if (this.isBuild()) {
+                    // ...and we are at build time, drop it
+                    return ['empty:'];
+                }
+                else {
+                    // ...and at runtime we create a `shortcut`-path
+                    return ['node|' + moduleId];
+                }
+            }
+            var result = moduleId;
+            var results;
+            if ((!AMDLoader.Utilities.endsWith(result, '.js') || result === 'chart.js') && !AMDLoader.Utilities.isAbsolutePath(result)) {
+                results = this._applyPaths(result);
+                for (var i = 0, len = results.length; i < len; i++) {
+                    if (this.isBuild() && results[i] === 'empty:') {
+                        continue;
+                    }
+                    if (!AMDLoader.Utilities.isAbsolutePath(results[i])) {
+                        results[i] = this.options.baseUrl + results[i];
+                    }
+                    if (!AMDLoader.Utilities.endsWith(results[i], '.js') && !AMDLoader.Utilities.containsQueryString(results[i])) {
+                        results[i] = results[i] + '.js';
+                    }
+                }
+            }
+            else {
+                if (!AMDLoader.Utilities.endsWith(result, '.js') && !AMDLoader.Utilities.containsQueryString(result)) {
+                    result = result + '.js';
+                }
+                results = [result];
+            }
+            return this._addUrlArgsIfNecessaryToUrls(results);
+        };
         /**
          * Transform a module id or url to a location.
          */
@@ -558,51 +563,64 @@ var AMDLoader;
     /**
      * Load `scriptSrc` only once (avoid multiple <script> tags)
      */
-	var OnlyOnceScriptLoader = /** @class */ (function () {
-		function OnlyOnceScriptLoader(env) {
-			this._env = env;
-			this._scriptLoader = null;
-			this._callbackMap = {};
-		}
-		OnlyOnceScriptLoader.prototype.load = function (moduleManager, scriptSrc, callback, errorback) {
-			var _this = this;
-			if (!this._scriptLoader) {
-				this._scriptLoader = (this._env.isWebWorker
-					? new WorkerScriptLoader()
-					: this._env.isNode
-						? new NodeScriptLoader(this._env)
-						: new BrowserScriptLoader());
-			}
-			var scriptCallbacks = {
-				callback: callback,
-				errorback: errorback
-			};
-			if (this._callbackMap.hasOwnProperty(scriptSrc)) {
-				this._callbackMap[scriptSrc].push(scriptCallbacks);
-				return;
-			}
-			this._callbackMap[scriptSrc] = [scriptCallbacks];
-			this._scriptLoader.load(moduleManager, scriptSrc, function () { return _this.triggerCallback(scriptSrc); }, function (err) { return _this.triggerErrorback(scriptSrc, err); });
-		};
-		OnlyOnceScriptLoader.prototype.triggerCallback = function (scriptSrc) {
-			var scriptCallbacks = this._callbackMap[scriptSrc];
-			delete this._callbackMap[scriptSrc];
-			for (var i = 0; i < scriptCallbacks.length; i++) {
-				scriptCallbacks[i].callback();
-			}
-		};
-		OnlyOnceScriptLoader.prototype.triggerErrorback = function (scriptSrc, err) {
-			var scriptCallbacks = this._callbackMap[scriptSrc];
-			delete this._callbackMap[scriptSrc];
-			for (var i = 0; i < scriptCallbacks.length; i++) {
-				scriptCallbacks[i].errorback(err);
-			}
-		};
-		return OnlyOnceScriptLoader;
-	}());
-	var BrowserScriptLoader = /** @class */ (function () {
-		function BrowserScriptLoader() {
-		}
+    var OnlyOnceScriptLoader = /** @class */ (function () {
+        function OnlyOnceScriptLoader(env) {
+            this._env = env;
+            this._scriptLoader = null;
+            this._callbackMap = {};
+        }
+        OnlyOnceScriptLoader.prototype.load = function (moduleManager, scriptSrc, callback, errorback) {
+            var _this = this;
+            if (!this._scriptLoader) {
+                if (this._env.isWebWorker) {
+                    this._scriptLoader = new WorkerScriptLoader();
+                }
+                else if (this._env.isElectronRenderer) {
+                    var preferScriptTags = moduleManager.getConfig().getOptionsLiteral().preferScriptTags;
+                    if (preferScriptTags) {
+                        this._scriptLoader = new BrowserScriptLoader();
+                    }
+                    else {
+                        this._scriptLoader = new NodeScriptLoader(this._env);
+                    }
+                }
+                else if (this._env.isNode) {
+                    this._scriptLoader = new NodeScriptLoader(this._env);
+                }
+                else {
+                    this._scriptLoader = new BrowserScriptLoader();
+                }
+            }
+            var scriptCallbacks = {
+                callback: callback,
+                errorback: errorback
+            };
+            if (this._callbackMap.hasOwnProperty(scriptSrc)) {
+                this._callbackMap[scriptSrc].push(scriptCallbacks);
+                return;
+            }
+            this._callbackMap[scriptSrc] = [scriptCallbacks];
+            this._scriptLoader.load(moduleManager, scriptSrc, function () { return _this.triggerCallback(scriptSrc); }, function (err) { return _this.triggerErrorback(scriptSrc, err); });
+        };
+        OnlyOnceScriptLoader.prototype.triggerCallback = function (scriptSrc) {
+            var scriptCallbacks = this._callbackMap[scriptSrc];
+            delete this._callbackMap[scriptSrc];
+            for (var i = 0; i < scriptCallbacks.length; i++) {
+                scriptCallbacks[i].callback();
+            }
+        };
+        OnlyOnceScriptLoader.prototype.triggerErrorback = function (scriptSrc, err) {
+            var scriptCallbacks = this._callbackMap[scriptSrc];
+            delete this._callbackMap[scriptSrc];
+            for (var i = 0; i < scriptCallbacks.length; i++) {
+                scriptCallbacks[i].errorback(err);
+            }
+        };
+        return OnlyOnceScriptLoader;
+    }());
+    var BrowserScriptLoader = /** @class */ (function () {
+        function BrowserScriptLoader() {
+        }
         /**
          * Attach load / error listeners to a script element and remove them when either one has fired.
          * Implemented for browssers supporting HTML5 standard 'load' and 'error' events.
@@ -870,6 +888,12 @@ var AMDLoader;
                     }
                     var cachedData = script.createCachedData();
                     if (cachedData.length === 0 || cachedData.length === lastSize || iteration >= 5) {
+                        // done
+                        return;
+                    }
+                    if (cachedData.length < lastSize) {
+                        // less data than before: skip, try again next round
+                        createLoop();
                         return;
                     }
                     lastSize = cachedData.length;

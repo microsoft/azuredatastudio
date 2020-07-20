@@ -22,7 +22,6 @@ import { URI } from 'vs/base/common/uri';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
-import { keys } from 'vs/base/common/map';
 import { ILogService } from 'vs/platform/log/common/log';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { find, firstIndex } from 'vs/base/common/arrays';
@@ -213,7 +212,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public standardKernelsDisplayName(): string[] {
-		return Array.from(keys(this._kernelDisplayNameToNotebookProviderIds));
+		return Array.from(this._kernelDisplayNameToNotebookProviderIds.keys());
 	}
 
 	public get inErrorState(): boolean {

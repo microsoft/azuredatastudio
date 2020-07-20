@@ -32,14 +32,15 @@ function log(prefix: string, message: string): void {
 	fancyLog(ansiColors.cyan('[' + prefix + ']'), message);
 }
 
-export function loaderConfig(emptyPaths?: string[]) {
+export function loaderConfig() {
 	const result: any = {
 		paths: {
 			'vs': 'out-build/vs',
 			'sql': 'out-build/sql', // {{SQL CARBON EDIT}}
-			'vscode': 'empty:'
+			'vscode': 'empty:',
+			'azdata': 'empty:' // {{SQL CARBON EDIT}}
 		},
-		nodeModules: emptyPaths || []
+		amdModulesPattern: /^(vs|sql)\// // {{SQL CARBON EDIT}} include sql in regex
 	};
 
 	result['vs/css'] = { inlineResources: true };
