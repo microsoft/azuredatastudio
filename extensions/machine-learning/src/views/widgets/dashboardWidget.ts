@@ -43,29 +43,29 @@ export class DashboardWidget {
 						'background-image': `url(${vscode.Uri.file(this.asAbsolutePath('images/background.svg'))}), linear-gradient(0deg, #F0F0F0 0%, rgba(242,242,242,0) 100%, rgba(242,242,242,0.04) 100%)`,
 						'background-repeat': 'no-repeat',
 						'background-position': 'center',
+						'background-size': `${maxWidth}px ${headerMaxHeight}px`,
+						'border': 'none',
 						'width': `${maxWidth}px`,
-						'height': '240px',
-						'background-size': `${maxWidth}px ${headerMaxHeight}px`
+						'height': '240px'
 					}
 				});
-
 				container.addItem(footerContainer, {
 					CSSStyles: {
 						'width': `${maxWidth}px`,
 						'height': '500px',
 					}
 				});
-				const mainContainer = view.modelBuilder.flexContainer()
-					.withLayout({
-						flexFlow: 'column',
-						width: '100%',
-						height: '100%',
-						position: 'absolute'
-					}).component();
-				mainContainer.addItem(container, {
-					CSSStyles: { 'padding-top': '25px' }
-				});
-				await view.initializeModel(mainContainer);
+				// const mainContainer = view.modelBuilder.flexContainer()
+				// 	.withLayout({
+				// 		flexFlow: 'column',
+				// 		width: '100%',
+				// 		height: '100%',
+				// 		position: 'absolute'
+				// 	}).component();
+				// mainContainer.addItem(container, {
+				// 	CSSStyles: { 'padding-top': '25px' }
+				// });
+				await view.initializeModel(container);
 				resolve();
 			});
 		});
