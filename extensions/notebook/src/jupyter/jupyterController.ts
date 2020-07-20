@@ -30,6 +30,7 @@ import { LocalCondaPackageManageProvider } from './localCondaPackageManageProvid
 import { ManagePackagesDialogModel, ManagePackageDialogOptions } from '../dialog/managePackages/managePackagesDialogModel';
 import { PiPyClient } from './pipyClient';
 import { ConfigurePythonDialog } from '../dialog/configurePython/configurePythonDialog';
+import { IconPathHelper } from '../common/iconHelper';
 
 let untitledCounter = 0;
 
@@ -66,6 +67,7 @@ export class JupyterController implements vscode.Disposable {
 			this.extensionContext.extensionPath,
 			this.outputChannel);
 		await this._jupyterInstallation.configurePackagePaths();
+		IconPathHelper.setExtensionContext(this.extensionContext);
 
 		// Add command/task handlers
 		azdata.tasks.registerTask(constants.jupyterOpenNotebookTask, (profile: azdata.IConnectionProfile) => {

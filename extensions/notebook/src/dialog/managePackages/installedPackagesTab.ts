@@ -11,6 +11,7 @@ import * as utils from '../../common/utils';
 import { ManagePackagesDialog } from './managePackagesDialog';
 import CodeAdapter from '../../prompts/adapter';
 import { IQuestion, confirm } from '../../prompts/question';
+import { IconPathHelper } from '../../common/iconHelper';
 
 const localize = nls.loadMessageBundle();
 
@@ -79,10 +80,7 @@ export class InstalledPackagesTab {
 							value: localize('managePackages.deleteColumn', "Delete"),
 							type: azdata.ColumnType.button,
 							options: {
-								icon: {
-									dark: this.dialog.extensionContext.asAbsolutePath('resources/dark/delete_inverse.svg'),
-									light: this.dialog.extensionContext.asAbsolutePath('resources/light/delete.svg')
-								}
+								icon: IconPathHelper.delete
 							}
 						}
 					],
