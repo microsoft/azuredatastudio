@@ -17,6 +17,7 @@ import { SimpleTokenCache } from './simpleTokenCache';
 import { AzureAuth, TokenResponse } from './auths/azureAuth';
 import { AzureAuthCodeGrant } from './auths/azureAuthCodeGrant';
 import { AzureDeviceCode } from './auths/azureDeviceCode';
+import { Logger } from '../utils/Logger';
 
 const localize = nls.loadMessageBundle();
 
@@ -127,7 +128,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		}
 
 		if (this.authMappings.size === 0) {
-			console.log('No auth method was enabled.');
+			Logger.log('No auth method was enabled.');
 			vscode.window.showErrorMessage(noAuthAvailable);
 			return { canceled: true };
 		}
@@ -144,7 +145,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		const pick = await vscode.window.showQuickPick(options, { canPickMany: false });
 
 		if (!pick) {
-			console.log('No auth method was selected.');
+			Logger.log('No auth method was selected.');
 			vscode.window.showErrorMessage(noAuthSelected);
 			return { canceled: true };
 		}

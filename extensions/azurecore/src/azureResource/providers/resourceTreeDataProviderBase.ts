@@ -7,17 +7,13 @@ import * as azdata from 'azdata';
 import * as msRest from '@azure/ms-rest-js';
 
 import { azureResource } from '../azure-resource';
-import { ApiWrapper } from '../../apiWrapper';
 import { IAzureResourceService } from '../interfaces';
 import { AzureResourceErrorMessageUtil } from '../utils';
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 
 export abstract class ResourceTreeDataProviderBase<T extends azureResource.AzureResource> implements azureResource.IAzureResourceTreeDataProvider {
 
-	public constructor(
-		protected _resourceService: IAzureResourceService<T>,
-		protected _apiWrapper: ApiWrapper
-	) {
+	public constructor(protected _resourceService: IAzureResourceService<T>) {
 	}
 
 	public getTreeItem(element: azureResource.IAzureResourceNode): azdata.TreeItem | Thenable<azdata.TreeItem> {
@@ -45,7 +41,7 @@ export abstract class ResourceTreeDataProviderBase<T extends azureResource.Azure
 	}
 
 	private async getResources(element: azureResource.IAzureResourceNode): Promise<T[]> {
-		const tokens = await this._apiWrapper.getSecurityToken(element.account, azdata.AzureResource.ResourceManagement);
+		const tokens = await azdata.accounts.getSecurityToken(element.account, azdata.AzureResource.ResourceManagement);
 		const credential = new msRest.TokenCredentials(tokens[element.tenantId].token, tokens[element.tenantId].tokenType);
 
 		const resources: T[] = await this._resourceService.getResources(element.subscription, credential, element.account) || <T[]>[];

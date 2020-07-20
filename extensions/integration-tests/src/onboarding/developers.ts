@@ -11,10 +11,13 @@ export const developers: string[] = [
 	'alanrenmsft',
 	'anthonydresser',
 	'Charles-Gagnon',
+	'cssuh',
 	'ktech99',
 	'kburtram',
+	'lucyzhang929',
 	'smartguest',
 	'udeeshagautam',
+	'VasuBhog'
 ];
 
 

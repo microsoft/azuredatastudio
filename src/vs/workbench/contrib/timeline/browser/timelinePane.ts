@@ -293,8 +293,7 @@ export class TimelinePane extends ViewPane {
 
 	get pageSize() {
 		let pageSize = this.configurationService.getValue<number | null | undefined>('timeline.pageSize');
-		// eslint-disable-next-line eqeqeq
-		if (pageSize == null) {
+		if (pageSize === undefined || pageSize === null) {
 			// If we are paging when scrolling, then add an extra item to the end to make sure the "Load more" item is out of view
 			pageSize = Math.max(20, Math.floor((this.tree.renderHeight / ItemHeight) + (this.pageOnScroll ? 1 : -1)));
 		}
@@ -885,6 +884,12 @@ export class TimelinePane extends ViewPane {
 					}
 					return element.accessibilityInformation ? element.accessibilityInformation.label : localize('timeline.aria.item', "{0}: {1}", element.relativeTime ?? '', element.label);
 				},
+				getRole(element: TreeElement): string {
+					if (isLoadMoreCommand(element)) {
+						return 'treeitem';
+					}
+					return element.accessibilityInformation && element.accessibilityInformation.role ? element.accessibilityInformation.role : 'treeitem';
+				},
 				getWidgetAriaLabel(): string {
 					return localize('timeline', "Timeline");
 				}
@@ -903,8 +908,7 @@ export class TimelinePane extends ViewPane {
 			}
 
 			const item = e.element;
-			// eslint-disable-next-line eqeqeq
-			if (item == null) {
+			if (item === null) {
 				return;
 			}
 
