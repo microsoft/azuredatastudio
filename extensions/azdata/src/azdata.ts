@@ -6,12 +6,14 @@
 import * as os from 'os';
 import * as path from 'path';
 import * as uuid from 'uuid';
-import * as which from 'which';
 import * as vscode from 'vscode';
 import { HttpClient } from './common/httpClient';
 import * as loc from './localizedConstants';
 import { executeCommand } from './common/childProcess';
+import { searchForCmd } from './common/utils';
 
+export const azdataHostname = 'https://aka.ms';
+export const azdataUri = 'azdata-msi';
 /**
  * Information about an azdata installation
  */
@@ -69,7 +71,7 @@ export async function downloadAndInstallAzdata(outputChannel: vscode.OutputChann
 async function downloadAndInstallAzdataWin32(outputChannel: vscode.OutputChannel): Promise<void> {
 	const downloadPath = path.join(os.tmpdir(), `azdata-msi-${uuid.v4()}.msi`);
 	outputChannel.appendLine(loc.downloadingTo('azdata-cli.msi', downloadPath));
-	await HttpClient.download('https://aka.ms/azdata-msi', downloadPath, outputChannel);
+	await HttpClient.download(`${azdataHostname}/${azdataUri}`, downloadPath, outputChannel);
 	await executeCommand('msiexec', ['/i', downloadPath], outputChannel);
 }
 
@@ -78,8 +80,8 @@ async function downloadAndInstallAzdataWin32(outputChannel: vscode.OutputChannel
  * @param outputChannel Channel used to display diagnostic information
  */
 async function findAzdataWin32(outputChannel: vscode.OutputChannel): Promise<IAzdata> {
-	const whichPromise = new Promise<string>((c, e) => which('azdata.cmd', (err, path) => err ? e(err) : c(path)));
-	return findSpecificAzdata(await whichPromise, outputChannel);
+	const promise = searchForCmd('azdata.cmd');
+	return findSpecificAzdata(await promise, outputChannel);
 }
 
 /**

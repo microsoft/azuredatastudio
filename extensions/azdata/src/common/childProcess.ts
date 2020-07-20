@@ -26,7 +26,7 @@ export async function executeCommand(command: string, args?: string[], outputCha
 	return new Promise((resolve, reject) => {
 		outputChannel?.appendLine(loc.executingCommand(command, args ?? []));
 		const buffers: Buffer[] = [];
-		const child = cp.spawn(command, args);
+		const child = cp.spawn(command, args, { shell: true });
 		child.stdout.on('data', (b: Buffer) => buffers.push(b));
 		child.on('error', reject);
 		child.on('exit', code => code ? reject(new ExitCodeError(code)) : resolve(Buffer.concat(buffers).toString('utf8').trim()));
