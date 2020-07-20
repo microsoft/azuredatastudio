@@ -225,7 +225,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			if (!cachedTokens) {
 
 				const baseToken = await this.getCachedToken(account.key);
-				if (!baseToken) {
+				if (!baseToken || !baseToken.refreshToken) {
 					account.isStale = true;
 					Logger.log('Base token was empty, account is stale.');
 					return undefined;
