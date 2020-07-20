@@ -533,7 +533,7 @@ describe('BooksTreeViewTests', function () {
 			should(showPreviewSpy.notCalled).be.true('Should not call showPreviewFile when showPreview isn\' true');
 		});
 
-		it('should add book and initialize book on openBook', async () => {
+		it('should call showPreviewFile on openBook when showPreview flag is set', async () => {
 			await bookTreeViewProvider.closeBook(bookTreeViewProvider.books[0].bookItems[0]);
 			let showPreviewSpy = sinon.spy(bookTreeViewProvider, 'showPreviewFile');
 
