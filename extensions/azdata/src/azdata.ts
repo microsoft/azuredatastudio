@@ -57,7 +57,15 @@ export async function downloadAndInstallAzdata(outputChannel: vscode.OutputChann
 	const statusDisposable = vscode.window.setStatusBarMessage(loc.installingAzdata);
 	try {
 		switch (process.platform) {
-			case 'win32': await downloadAndInstallAzdataWin32(outputChannel);
+			case 'win32':
+				await downloadAndInstallAzdataWin32(outputChannel);
+				break;
+			case 'darwin':
+				await installAzdataDarwin();
+				break;
+			case 'linux':
+				await installAzdataLinux();
+				break;
 		}
 	} finally {
 		statusDisposable.dispose();
@@ -73,6 +81,20 @@ async function downloadAndInstallAzdataWin32(outputChannel: vscode.OutputChannel
 	outputChannel.appendLine(loc.downloadingTo('azdata-cli.msi', downloadPath));
 	await HttpClient.download(`${azdataHostname}/${azdataUri}`, downloadPath, outputChannel);
 	await executeCommand('msiexec', ['/i', downloadPath], outputChannel);
+}
+
+/**
+ * Runs commands to install azdata on MacOS
+ */
+async function installAzdataDarwin(): Promise<void> {
+	throw new Error('Not yet implemented');
+}
+
+/**
+ * Runs commands to install azdata on Linux
+ */
+async function installAzdataLinux(): Promise<void> {
+	throw new Error('Not yet implemented');
 }
 
 /**

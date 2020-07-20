@@ -38,7 +38,8 @@ describe('azdata', function () {
 		});
 	});
 
-	describe('downloadAndInstallAzdata', function (): void {
+	// TODO: Install not implemented on linux yet
+	describe.skip('downloadAndInstallAzdata', function (): void {
 		it('successful download & install', async function (): Promise<void> {
 			nock(azdata.azdataHostname)
 				.get(`/${azdata.azdataUri}`)
