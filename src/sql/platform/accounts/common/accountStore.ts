@@ -64,13 +64,28 @@ export default class AccountStore implements IAccountStore {
 				// Remove old accounts that are now deprecated
 				try {
 					accounts = accounts.filter(account => {
+						const accountKey = account?.key?.accountId;
 						const providerKey = account?.key?.providerId;
-						// Account has no provider, remove it.
-						if (providerKey === undefined) {
+
+						// eslint-disable-next-line eqeqeq
+						if (accountKey == undefined) {
 							return false;
 						}
+
+						// eslint-disable-next-line eqeqeq
+						if (providerKey == undefined) {
+							return false;
+						}
+
 						// Returns true if the account isn't from a deprecated provider
-						return !this.deprecatedProviders.includes(providerKey);
+						if (this.deprecatedProviders.includes(providerKey)) {
+							return false;
+						}
+						// Check if accountKey is a UUID
+						if (providerKey.startsWith('azure_') && accountKey.split('-').length !== 5) {
+							return false;
+						}
+						return true;
 					});
 				} catch (ex) {
 					this.logService.error(ex);
