@@ -9,11 +9,9 @@ import * as op from 'sql/workbench/contrib/notebook/browser/models/outputProcess
 import { JSONObject } from 'sql/workbench/services/notebook/common/jsonext';
 import { nbformat as nbformat } from 'sql/workbench/services/notebook/common/nbformat';
 import { getRandomElement } from 'vs/base/common/arrays';
-import { getRandomString } from 'vs/editor/test/common/model/linesTextBuffer/textBufferAutoTestUtils';
-
 
 suite('OutputProcessor functions', function (): void {
-	const text = getRandomString(1, 10);
+	const text = 'An arbitrary text input:!@#$%^&*()_+~`:;,.-_=';
 
 	const arbitraryMetadata = {
 		// arbitrarily construction chart options. It is any JSONObject
@@ -29,7 +27,7 @@ suite('OutputProcessor functions', function (): void {
 		}
 	};
 
-	suite('getData', async function (): Promise<void> {
+	suite('getData', function (): void {
 		// data tests
 		for (const outputType of ['execute_result', 'display_data', 'update_display_data'] as nbformat.OutputType[]) {
 			const output = <nbformat.IExecuteResult>{
@@ -38,22 +36,22 @@ suite('OutputProcessor functions', function (): void {
 					result: text  // free form fields of the IMimeBundle. This is just an arbitrarily cooked-up hardcoded example for the test.
 				}
 			};
-			test(`test for outputType:${output.output_type}`, async () => {
+			test(`test for outputType:${output.output_type}`, () => {
 				verifyGetDataForDataOutput(output);
 			});
 		}
 
 		// error tests
-		for (const traceback of [undefined, [undefined], [], [''], [getRandomString(0, 10), getRandomString(0, 10)]]) {
-			for (const evalue of [undefined, getRandomString(1, 10)]) {
-				for (const ename of [text, '']) {
+		for (const traceback of [undefined, [undefined], [], [''], ['tb1:!@#$%^&*()_+~`:;,.-_=', 'tb2:!@#$%^&*()_+~`:;,.-_=']]) {
+			for (const evalue of [undefined, '', 'evalue1:!@#$%^&*()_+~`:;,.-_=']) {
+				for (const ename of ['ename1:!@#$%^&*()_+~`:;,.-_=', '', undefined]) {
 					const output = <nbformat.IError>{
 						output_type: 'error',
 						ename: ename,
 						evalue: evalue,
 						traceback: traceback
 					};
-					test(`test for outputType:'${output.output_type}', ename:'${ename}', evalue:${evalue}, and traceback:${JSON.stringify(traceback)}`, async () => {
+					test(`test for outputType:'${output.output_type}', ename:'${ename}', evalue:${evalue}, and traceback:${JSON.stringify(traceback)}`, () => {
 						verifyGetDataForErrorOutput(output);
 					});
 				}
@@ -67,18 +65,18 @@ suite('OutputProcessor functions', function (): void {
 				text: text,
 				name: name
 			};
-			test(`test for outputType:'${output.output_type} and name:${name}`, async () => {
+			test(`test for outputType:'${output.output_type} and name:${name}`, () => {
 				verifyGetDataForStreamOutput(output);
 			});
 		}
 	});
 
-	suite('getMetadata', async function (): Promise<void> {
+	suite('getMetadata', function (): void {
 		for (const outputType of ['execute_result', 'display_data', getRandomElement(['update_display_data', 'stream', 'error'])] as nbformat.OutputType[]) {
 			const output: nb.ICellOutput = {
 				output_type: outputType
 			};
-			test(`test for outputType:${outputType}`, async () => {
+			test(`test for outputType:${outputType}`, () => {
 				output.metadata = arbitraryMetadata;
 				const result = op.getMetadata(output);
 				if (nbformat.isExecuteResult(output) || nbformat.isDisplayData(output)) {
@@ -90,7 +88,7 @@ suite('OutputProcessor functions', function (): void {
 		}
 	});
 
-	suite('getBundleOptions', async function (): Promise<void> {
+	suite('getBundleOptions', function (): void {
 		for (const trusted of [true, false]) {
 			const outputType = getRandomElement(['execute_result', 'display_data']) as nbformat.OutputType;
 
@@ -102,7 +100,7 @@ suite('OutputProcessor functions', function (): void {
 				value: output,
 				trusted: trusted
 			};
-			test(`test for outputType:${outputType}, bundleOptions.trusted:${trusted}`, async () => {
+			test(`test for outputType:${outputType}, bundleOptions.trusted:${trusted}`, () => {
 				const result = op.getBundleOptions(options);
 				const expected = {
 					data: op.getData(output),
@@ -151,7 +149,7 @@ function verifyGetDataForErrorOutput(output: nbformat.IError): void {
 		};
 	}
 	else if (output.evalue) {
-		if (output.ename !== '') {
+		if (output.ename !== undefined && output.ename !== '') {
 			expectedData = {
 				'application/vnd.jupyter.stderr': `${output.ename}: ${output.evalue}`
 			};
