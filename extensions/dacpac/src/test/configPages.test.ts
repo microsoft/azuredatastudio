@@ -13,7 +13,7 @@ import * as path from 'path';
 import { DataTierApplicationWizard, PageName } from '../wizard/dataTierApplicationWizard';
 import { DacFxDataModel } from '../wizard/api/models';
 import { TestContext, createContext } from './testContext';
-import { TestDeployConfigPage, TestExtractConfigPage, TestImportConfigPage } from './DacFxTestConfigPages';
+import { TestDeployConfigPage, TestExtractConfigPage } from './testDacFxConfigPages';
 
 let wizard: DataTierApplicationWizard;
 let testContext: TestContext;

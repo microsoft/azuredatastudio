@@ -48,6 +48,10 @@ export interface ViewTestContext {
 	newDatabaseRadioOnClick: vscode.EventEmitter<any>;
 	updateExistingRadioOnClick: vscode.EventEmitter<any>;
 	fileButtonOnClick: vscode.EventEmitter<any>;
+	deployOnClick: vscode.EventEmitter<any>,
+	extractOnClick: vscode.EventEmitter<any>,
+	exportOnClick: vscode.EventEmitter<any>,
+	importOnClick: vscode.EventEmitter<any>,
 }
 
 export function createViewContext(): ViewTestContext {
@@ -57,6 +61,10 @@ export function createViewContext(): ViewTestContext {
 	let newDatabaseRadioOnClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
 	let updateExistingRadioOnClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
 	let fileButtonOnClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
+	let deployOnClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
+	let extractOnClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
+	let exportOnClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
+	let importOnClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
 
 	let componentBase: azdata.Component = {
 		id: '',
@@ -119,13 +127,31 @@ export function createViewContext(): ViewTestContext {
 		let builder: azdata.ComponentBuilder<azdata.RadioButtonComponent> = {
 			component: () => button,
 			withProperties: (properties) => {
-				if ((properties as any).label === loc.newDatabase) {
-					button.label = loc.newDatabase;
-					button.onDidClick = newDatabaseRadioOnClick.event;
-				}
-				else if ((properties as any).label === loc.upgradeExistingDatabase) {
-					button.label = loc.upgradeExistingDatabase;
-					button.onDidClick = updateExistingRadioOnClick.event;
+				switch ((properties as any).label) {
+					case loc.newDatabase:
+						button.label = loc.newDatabase;
+						button.onDidClick = newDatabaseRadioOnClick.event;
+						break;
+					case loc.upgradeExistingDatabase:
+						button.label = loc.upgradeExistingDatabase;
+						button.onDidClick = updateExistingRadioOnClick.event;
+						break;
+					case loc.deployDescription:
+						button.label = loc.deployDescription;
+						button.onDidClick = deployOnClick.event;
+						break;
+					case loc.exportDescription:
+						button.label = loc.exportDescription;
+						button.onDidClick = exportOnClick.event;
+						break;
+					case loc.extractDescription:
+						button.label = loc.extractDescription;
+						button.onDidClick = extractOnClick.event;
+						break;
+					case loc.importDescription:
+						button.label = loc.importDescription;
+						button.onDidClick = importOnClick.event;
+						break;
 				}
 				return builder;
 			},
@@ -273,6 +299,10 @@ export function createViewContext(): ViewTestContext {
 		onValueChanged: onValueChanged,
 		newDatabaseRadioOnClick: newDatabaseRadioOnClick,
 		updateExistingRadioOnClick: updateExistingRadioOnClick,
-		fileButtonOnClick: fileButtonOnClick
+		fileButtonOnClick: fileButtonOnClick,
+		deployOnClick: deployOnClick,
+		extractOnClick: extractOnClick,
+		exportOnClick: exportOnClick,
+		importOnClick: importOnClick,
 	};
 }
