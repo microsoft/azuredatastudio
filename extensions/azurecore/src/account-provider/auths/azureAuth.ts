@@ -403,15 +403,19 @@ export abstract class AzureAuth implements vscode.Disposable {
 					key: tokenClaims.oid ?? tokenClaims.email ?? tokenClaims.unique_name ?? tokenClaims.name,
 				};
 
-				const refreshToken: RefreshToken = {
-					token: tokenResponse.data.refresh_token,
-					key: accessToken.key
-				};
+				let refreshToken: RefreshToken;
+
+				if (tokenResponse.data.refresh_token) {
+					refreshToken = {
+						token: tokenResponse.data.refresh_token,
+						key: accessToken.key
+					};
+				}
 				const expiresOn = tokenResponse.data.expires_on;
 
 				refreshResponse = { accessToken, refreshToken, tokenClaims, expiresOn };
 			} catch (ex) {
-				Logger.pii(JSON.stringify(ex?.response?.data));
+				Logger.pii(JSON.stringify(ex?.response?.data ?? ex));
 				if (ex?.response?.data?.error === 'interaction_required') {
 					const shouldOpenLink = await this.openConsentDialog(tenant, resourceId);
 					if (shouldOpenLink === true) {
@@ -522,7 +526,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		const accessToken = getTokenResponse?.accessToken;
 		const refreshToken = getTokenResponse?.refreshToken;
 
-		if (!accessToken || !refreshToken) {
+		if (!accessToken) {
 			Logger.log('Access or refresh token were undefined');
 			const msg = localize('azure.refreshTokenError', "Error when refreshing your account.");
 			throw new Error(msg);
@@ -538,13 +542,16 @@ export abstract class AzureAuth implements vscode.Disposable {
 		const msg = localize('azure.cacheErrorAdd', "Error when adding your account to the cache.");
 		resourceId = resourceId ?? '';
 		tenantId = tenantId ?? '';
-		if (!accessToken || !accessToken.token || !refreshToken.token || !accessToken.key) {
+		if (!accessToken || !accessToken.token || !accessToken.key) {
 			throw new Error(msg);
 		}
 
 		try {
 			await this.tokenCache.saveCredential(`${account.accountId}_access_${resourceId}_${tenantId}`, JSON.stringify(accessToken));
-			await this.tokenCache.saveCredential(`${account.accountId}_refresh_${resourceId}_${tenantId}`, JSON.stringify(refreshToken));
+			// Save refresh token if it exists
+			if (refreshToken?.token) {
+				await this.tokenCache.saveCredential(`${account.accountId}_refresh_${resourceId}_${tenantId}`, JSON.stringify(refreshToken));
+			}
 		} catch (ex) {
 			Logger.error('Error when storing tokens.', ex);
 			throw new Error(msg);
@@ -559,16 +566,23 @@ export abstract class AzureAuth implements vscode.Disposable {
 		let refreshToken: RefreshToken;
 		try {
 			accessToken = JSON.parse(await this.tokenCache.getCredential(`${account.accountId}_access_${resourceId}_${tenantId}`));
-			refreshToken = JSON.parse(await this.tokenCache.getCredential(`${account.accountId}_refresh_${resourceId}_${tenantId}`));
+			const refreshTokenText = await this.tokenCache.getCredential(`${account.accountId}_refresh_${resourceId}_${tenantId}`);
+			if (refreshTokenText) {
+				refreshToken = JSON.parse(refreshTokenText);
+				if (!refreshToken?.token) {
+					Logger.log('Refresh token was defined but there was no token - invalid account');
+					return undefined;
+				}
+				if (!refreshToken?.key) {
+					Logger.log('Refresh token was defined but there was no key - invalid account');
+					return undefined;
+				}
+			}
 		} catch (ex) {
 			return undefined;
 		}
 
-		if (!accessToken || !refreshToken) {
-			return undefined;
-		}
-
-		if (!refreshToken.token || !refreshToken.key) {
+		if (!accessToken) {
 			return undefined;
 		}
 
