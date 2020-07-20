@@ -31,7 +31,7 @@ export class PostgresOverviewPage extends DashboardPage {
 		this.disposables.push(
 			this._controllerModel.onEndpointsUpdated(() => this.eventuallyRunOnInitialized(() => this.handleEndpointsUpdated())),
 			this._controllerModel.onRegistrationsUpdated(() => this.eventuallyRunOnInitialized(() => this.handleRegistrationsUpdated())),
-			this._postgresModel.onServiceUpdated(() => this.eventuallyRunOnInitialized(() => this.hadleServiceUpdated())),
+			this._postgresModel.onServiceUpdated(() => this.eventuallyRunOnInitialized(() => this.handleServiceUpdated())),
 			this._postgresModel.onPodsUpdated(() => this.eventuallyRunOnInitialized(() => this.handlePodsUpdated())));
 	}
 
@@ -353,7 +353,7 @@ export class PostgresOverviewPage extends DashboardPage {
 		this.propertiesLoading!.loading = false;
 	}
 
-	private hadleServiceUpdated() {
+	private handleServiceUpdated() {
 		this.properties!.propertyItems = this.getProperties();
 		this.propertiesLoading!.loading = false;
 
