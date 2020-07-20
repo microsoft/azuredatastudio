@@ -506,21 +506,24 @@
           "displayName": "PySpark",
           "connectionProviderIds": [
             "MSSQL"
-          ]
+          ],
+          "blockedOnSAW": true
         },
         {
           "name": "sparkkernel",
           "displayName": "Spark | Scala",
           "connectionProviderIds": [
             "MSSQL"
-          ]
+          ],
+          "blockedOnSAW": true
         },
         {
           "name": "sparkrkernel",
           "displayName": "Spark | R",
           "connectionProviderIds": [
             "MSSQL"
-          ]
+          ],
+          "blockedOnSAW": true
         },
         {
           "name": "python3",
