@@ -3,47 +3,68 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
 import * as should from 'should';
-import 'mocha';
-import { TestDialog } from '../../stubs/testDialog';
+import * as sinon from 'sinon';
 import { ConnectToControllerDialog } from '../../../ui/dialogs/connectControllerDialog';
+import { ControllerInfo, ControllerModel } from '../../../models/controllerModel';
 
 describe('ConnectControllerDialog', function (): void {
-
-	const originalCreateModelViewDialog = azdata.window.createModelViewDialog;
-	const originalOpenDialog = azdata.window.openDialog;
-
-	before(function (): void {
-		const modelViewDialog = new TestDialog();
-		azdata.window.createModelViewDialog = () => {
-			return modelViewDialog;
-		};
-		azdata.window.openDialog = (_dialog) => { };
+	afterEach(function (): void {
+		sinon.restore();
 	});
 
-	after(function (): void {
-		azdata.window.createModelViewDialog = originalCreateModelViewDialog;
-		azdata.window.openDialog = originalOpenDialog;
-	});
+	(<{ info: ControllerInfo | undefined, description: string }[]>[
+		{ info: undefined, description: 'all input' },
+		{ info: { url: '127.0.0.1' }, description: 'all but URL' },
+		{ info: { url: '127.0.0.1', username: 'sa' }, description: 'all but URL and password' }]).forEach(test => {
+			it(`Validate returns false when ${test.description} is empty`, async function (): Promise<void> {
+				const connectControllerDialog = new ConnectToControllerDialog(undefined!);
+				connectControllerDialog.showDialog(test.info, undefined);
+				await connectControllerDialog.isInitialized;
+				const validateResult = await connectControllerDialog.validate();
+				should(validateResult).be.false();
+			});
+		});
 
-	it('Validate returns false when input is empty', async function (): Promise<void> {
+	it('validate returns false if controller refresh fails', async function (): Promise<void> {
+		sinon.stub(ControllerModel.prototype, 'refresh').returns(Promise.reject('Controller refresh failed'));
 		const connectControllerDialog = new ConnectToControllerDialog(undefined!);
-		const dialog = connectControllerDialog.showDialog(undefined, undefined) as TestDialog;
-		await dialog.show();
-		const validateResult = await dialog.close();
-		should(validateResult).be.false();
+		const info = { url: 'https://127.0.0.1:30080', username: 'sa', rememberPassword: true, resources: [] };
+		connectControllerDialog.showDialog(info, 'pwd');
+		await connectControllerDialog.isInitialized;
+		const validateResult = await connectControllerDialog.validate();
+		should(validateResult).be.false('Validation should have returned false');
 	});
 
-	it('Validate returns false when input is empty', async function (): Promise<void> {
-		const connectControllerDialog = new ConnectToControllerDialog(undefined!);
-		const dialog = connectControllerDialog.showDialog(undefined, undefined) as TestDialog;
-		await dialog.show();
-		connectControllerDialog['urlInputBox'].value = '127.0.0.1';
-		connectControllerDialog['usernameInputBox'].value = 'sa';
-		connectControllerDialog['passwordInputBox'].value = '12345';
-		await dialog.close();
-		//const validateResult = await dialog.close();
-		// should(validateResult).be.true();
+	it('validate replaces http with https', async function (): Promise<void> {
+		await validateConnectControllerDialog(
+			{ url: 'http://127.0.0.1:30081', username: 'sa', rememberPassword: true, resources: [] },
+			'https://127.0.0.1:30081');
+	});
+
+	it('validate appends https if missing', async function (): Promise<void> {
+		await validateConnectControllerDialog({ url: '127.0.0.1:30080', username: 'sa', rememberPassword: true, resources: [] },
+			'https://127.0.0.1:30080');
+	});
+
+	it('validate appends default port if missing', async function (): Promise<void> {
+		await validateConnectControllerDialog({ url: 'https://127.0.0.1', username: 'sa', rememberPassword: true, resources: [] },
+			'https://127.0.0.1:30080');
+	});
+
+	it('validate appends both port and https if missing', async function (): Promise<void> {
+		await validateConnectControllerDialog({ url: '127.0.0.1', username: 'sa', rememberPassword: true, resources: [] },
+			'https://127.0.0.1:30080');
 	});
 });
+
+async function validateConnectControllerDialog(info: ControllerInfo, expectedUrl: string): Promise<void> {
+	sinon.stub(ControllerModel.prototype, 'refresh').returns(Promise.resolve());
+	const connectControllerDialog = new ConnectToControllerDialog(undefined!);
+	connectControllerDialog.showDialog(info, 'pwd');
+	await connectControllerDialog.isInitialized;
+	const validateResult = await connectControllerDialog.validate();
+	should(validateResult).be.true('Validation should have returned true');
+	const model = await connectControllerDialog.waitForClose();
+	should(model?.controllerModel.info.url).equal(expectedUrl);
+}

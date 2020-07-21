@@ -17,6 +17,10 @@ export abstract class InitializingComponent {
 		return this._initialized;
 	}
 
+	public get isInitialized(): Promise<void> {
+		return this.onInitializedPromise.promise;
+	}
+
 	protected set initialized(value: boolean) {
 		if (!this._initialized && value) {
 			this._initialized = true;
