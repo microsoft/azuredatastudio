@@ -329,11 +329,6 @@ export class JupyterSession implements nb.ISession {
 				code: doNotCallChangeEndpointParams
 			}, true);
 			await future.done;
-
-			future = this.sessionImpl.kernel.requestExecute({
-				code: `%%configure -f${EOL}{"conf": {"spark.pyspark.python": "python3"}}`
-			}, true);
-			await future.done;
 		}
 	}
 
