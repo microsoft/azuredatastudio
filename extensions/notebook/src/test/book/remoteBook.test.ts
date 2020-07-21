@@ -15,7 +15,6 @@ import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as uuid from 'uuid';
 import AdmZip = require('adm-zip');
-import { afterEach } from 'mocha';
 
 const localize = nls.loadMessageBundle();
 const msgReleaseNotFound = localize('msgReleaseNotFound', "Releases not Found");
@@ -42,7 +41,7 @@ describe('Add Remote Book Dialog', function () {
 	});
 
 	afterEach(function (): void {
-		sinonTest.reset();
+		sinonTest.restore();
 	});
 
 	it('Should open dialog successfully ', async function (): Promise<void> {
@@ -93,7 +92,7 @@ describe('Add Remote Book Dialog', function () {
 			should(result.length).be.equal(0, 'Result should be equal to the expectedBody');
 		}
 		catch (err) {
-			should(err).be.equals(msgReleaseNotFound);
+			should(err.message).be.equals(msgReleaseNotFound);
 			should(model.releases.length).be.equal(0);
 		}
 	});
@@ -265,7 +264,7 @@ describe('Add Remote Book Dialog', function () {
 			should(result.length).be.equal(0, 'Should be empty when the naming convention is not being followed');
 		}
 		catch (err) {
-			should(err).be.equals(msgBookNotFound);
+			should(err.message).be.equals(msgBookNotFound);
 			should(model.releases.length).be.equal(0);
 		}
 	});
@@ -284,7 +283,7 @@ describe('Add Remote Book Dialog', function () {
 			should(result.length).be.equal(0, 'Should be empty since no assets were returned');
 		}
 		catch (err) {
-			should(err).be.equals(msgBookNotFound);
+			should(err.message).be.equals(msgBookNotFound);
 			should(model.releases.length).be.equal(0);
 		}
 	});

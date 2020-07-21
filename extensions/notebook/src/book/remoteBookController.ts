@@ -26,11 +26,8 @@ export class RemoteBookController {
 	}
 
 	public async getReleases(url?: URL): Promise<IRelease[]> {
-		if (this.model.releases) {
-			return new Promise<IRelease[]>((resolve, reject) => {
-				resolve(this.model.releases);
-			});
-		} else {
+		if (url) {
+			this.model.releases = [];
 			let options = {
 				headers: {
 					'User-Agent': 'request'
@@ -43,7 +40,7 @@ export class RemoteBookController {
 					}
 
 					if (response.statusCode !== 200) {
-						return reject(loc.httpRequestError(response.statusCode, response.statusMessage));
+						return reject(new Error(loc.httpRequestError(response.statusCode, response.statusMessage)));
 					}
 
 					let releases = JSON.parse(body);
@@ -59,23 +56,23 @@ export class RemoteBookController {
 							}
 						});
 					}
-					this.model.releases = bookReleases;
 					if (bookReleases.length > 0) {
+						this.model.releases = bookReleases;
 						resolve(bookReleases);
 					} else {
-						return reject(loc.msgReleaseNotFound);
+						return reject(new Error(loc.msgReleaseNotFound));
 					}
 				});
+			});
+		} else {
+			return new Promise<IRelease[]>((resolve, reject) => {
+				resolve(this.model.releases);
 			});
 		}
 	}
 
 	public async getAssets(release?: IRelease): Promise<IAsset[]> {
-		if (this.model.assets) {
-			return new Promise<IAsset[]>((resolve, reject) => {
-				resolve(this.model.assets);
-			});
-		} else {
+		if (release) {
 			let format: string[] = [];
 			if (utils.getOSPlatform() === utils.Platform.Windows || utils.getOSPlatform() === utils.Platform.Mac) {
 				format = ['zip'];
@@ -94,7 +91,7 @@ export class RemoteBookController {
 					}
 
 					if (response.statusCode !== 200) {
-						return reject(loc.httpRequestError(response.statusCode, response.statusMessage));
+						return reject(new Error(loc.httpRequestError(response.statusCode, response.statusMessage)));
 					}
 					let assets = JSON.parse(body);
 					let githubAssets: IAsset[] = [];
@@ -121,8 +118,12 @@ export class RemoteBookController {
 					if (githubAssets.length > 0) {
 						resolve(githubAssets);
 					}
-					return reject(loc.msgBookNotFound);
+					return reject(new Error(loc.msgBookNotFound));
 				});
+			});
+		} else {
+			return new Promise<IAsset[]>((resolve, reject) => {
+				resolve(this.model.assets);
 			});
 		}
 	}

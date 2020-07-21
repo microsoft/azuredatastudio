@@ -240,7 +240,9 @@ export class RemoteBookDialog {
 			}
 		}
 		catch (error) {
-			this.showErrorMessage(error);
+			await this.fillReleasesDropdown();
+			this.setFieldsToEmpty();
+			this.showErrorMessage(error.message);
 		}
 	}
 
@@ -259,7 +261,7 @@ export class RemoteBookDialog {
 		}
 		catch (error) {
 			this.setFieldsToEmpty();
-			this.showErrorMessage(error);
+			this.showErrorMessage(error.message);
 		}
 	}
 
@@ -279,40 +281,26 @@ export class RemoteBookDialog {
 			return true;
 		}
 		catch (error) {
-			this.showErrorMessage(error);
+			this.showErrorMessage(error.message);
 			return false;
 		}
 	}
 
 	public async fillReleasesDropdown(): Promise<void> {
-		try {
-			this.releaseDropdown.values = ['-'].concat((await this.controller.getReleases()).map(release => release.name));
-		}
-		catch (error) {
-			this.showErrorMessage(error);
-		}
+		this.releaseDropdown.values = ['-'].concat((await this.controller.getReleases()).map(release => release.name));
 	}
 
 	public async fillVersionDropdown(): Promise<void> {
-		try {
-			let filtered_assets = (await this.controller.getAssets()).filter(asset => asset.book === this.bookDropdown.value);
-			this.versionDropdown.values = ['-'].concat(filtered_assets.map(asset => asset.version));
-			this.checkValues();
-		}
-		catch (error) {
-			this.showErrorMessage(error);
-		}
+		let filtered_assets = (await this.controller.getAssets()).filter(asset => asset.book === this.bookDropdown.value);
+		this.versionDropdown.values = ['-'].concat(filtered_assets.map(asset => asset.version));
+		this.checkValues();
 	}
 
 	public async fillLanguageDropdown(): Promise<void> {
-		try {
-			let filtered_assets = (await this.controller.getAssets()).filter(asset => asset.book === this.bookDropdown.value &&
-				asset.version === this.versionDropdown.value);
-			this.languageDropdown.values = ['-'].concat(filtered_assets.map(asset => asset.language));
-			this.checkValues();
-		} catch (error) {
-			this.showErrorMessage(error);
-		}
+		let filtered_assets = (await this.controller.getAssets()).filter(asset => asset.book === this.bookDropdown.value &&
+			asset.version === this.versionDropdown.value);
+		this.languageDropdown.values = ['-'].concat(filtered_assets.map(asset => asset.language));
+		this.checkValues();
 	}
 
 	public async getSelectedAsset(): Promise<IAsset> {
