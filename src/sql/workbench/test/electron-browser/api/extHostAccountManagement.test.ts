@@ -442,6 +442,8 @@ function getMockAccountManagementService(accounts: azdata.Account[]): TypeMoq.Mo
 		.returns(() => Promise.resolve(accounts));
 	mockAccountManagementService.setup(x => x.getSecurityToken(TypeMoq.It.isValue(accounts[0]), TypeMoq.It.isAny()))
 		.returns(() => Promise.resolve({}));
+	mockAccountManagementService.setup(x => x.getAccountSecurityToken(TypeMoq.It.isValue(accounts[0]), TypeMoq.It.isAny(), TypeMoq.It.isAny()))
+		.returns(() => Promise.resolve(undefined));
 	mockAccountManagementService.setup(x => x.updateAccountListEvent)
 		.returns(() => () => { return undefined; });
 

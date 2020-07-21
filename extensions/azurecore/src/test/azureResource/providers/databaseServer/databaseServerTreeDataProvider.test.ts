@@ -41,12 +41,14 @@ const mockAccount: AzureAccount = {
 	isStale: false
 };
 
+const mockTenantId: string = 'mock_tenant';
+
 const mockSubscription: azureResource.AzureResourceSubscription = {
 	id: 'mock_subscription',
-	name: 'mock subscription'
+	name: 'mock subscription',
+	tenant: mockTenantId
 };
 
-const mockTenantId: string = 'mock_tenant';
 
 const mockResourceRootNode: azureResource.IAzureResourceNode = {
 	account: mockAccount,

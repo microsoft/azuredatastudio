@@ -14,10 +14,9 @@ import {
 } from './interfaces';
 
 import { SimpleTokenCache } from './simpleTokenCache';
-import { AzureAuth, TokenResponse } from './auths/azureAuth';
-import { AzureAuthCodeGrant } from './auths/azureAuthCodeGrant';
-import { AzureDeviceCode } from './auths/azureDeviceCode';
 import { Logger } from '../utils/Logger';
+import { MultiTenantTokenResponse, Token, AzureAuth } from './auths/azureAuth';
+import { AzureAuthCodeGrant } from './auths/azureAuthCodeGrant';
 
 const localize = nls.loadMessageBundle();
 
@@ -50,6 +49,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 
 	clearTokenCache(): Thenable<void> {
 		return this.getAuthMethod().deleteAllCache();
+		return undefined;
 	}
 
 	private handleAuthMapping(metadata: AzureAccountProviderMetadata, tokenCache: SimpleTokenCache, context: vscode.ExtensionContext, uriEventHandler: vscode.EventEmitter<vscode.Uri>) {
@@ -58,14 +58,14 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		const configuration = vscode.workspace.getConfiguration(AzureAccountProvider.CONFIGURATION_SECTION);
 
 		const codeGrantMethod: boolean = configuration.get('codeGrant');
-		const deviceCodeMethod: boolean = configuration.get('deviceCode');
+		// const deviceCodeMethod: boolean = configuration.get('deviceCode');
 
 		if (codeGrantMethod === true && !this.forceDeviceCode) {
 			this.authMappings.set(AzureAuthType.AuthCodeGrant, new AzureAuthCodeGrant(metadata, tokenCache, context, uriEventHandler));
 		}
-		if (deviceCodeMethod === true || this.forceDeviceCode) {
-			this.authMappings.set(AzureAuthType.DeviceCode, new AzureDeviceCode(metadata, tokenCache, context, uriEventHandler));
-		}
+		// if (deviceCodeMethod === true || this.forceDeviceCode) {
+		// 	this.authMappings.set(AzureAuthType.DeviceCode, new AzureDeviceCode(metadata, tokenCache, context, uriEventHandler));
+		// }
 	}
 
 	private getAuthMethod(account?: azdata.Account): AzureAuth {
@@ -101,14 +101,22 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 	}
 
 
-	getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Thenable<TokenResponse | undefined> {
+	getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Thenable<MultiTenantTokenResponse | undefined> {
 		return this._getSecurityToken(account, resource);
 	}
 
-	private async _getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Promise<TokenResponse | undefined> {
+	getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Thenable<Token | undefined> {
+		return this._getAccountSecurityToken(account, tenant, resource);
+	}
+
+	private async _getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Promise<Token | undefined> {
 		await this.initCompletePromise;
 		const azureAuth = this.getAuthMethod(undefined);
-		return azureAuth?.getSecurityToken(account, resource);
+		return azureAuth?.getAccountSecurityToken(account, tenant, resource);
+	}
+
+	private async _getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Promise<MultiTenantTokenResponse | undefined> {
+		throw new Error('use getAccountSecurityToken');
 	}
 
 	prompt(): Thenable<azdata.Account | azdata.PromptFailedResult> {
@@ -134,7 +142,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		}
 
 		if (this.authMappings.size === 1) {
-			return this.getAuthMethod(undefined).login();
+			return this.getAuthMethod(undefined).startLogin();
 		}
 
 		const options: Option[] = [];
@@ -150,7 +158,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 			return { canceled: true };
 		}
 
-		return pick.azureAuth.login();
+		return pick.azureAuth.startLogin();
 	}
 
 	refresh(account: azdata.Account): Thenable<azdata.Account | azdata.PromptFailedResult> {
@@ -167,7 +175,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 	}
 
 	autoOAuthCancelled(): Thenable<void> {
-		this.authMappings.forEach(val => val.autoOAuthCancelled());
+		// this.authMappings.forEach(val => val.autoOAuthCancelled());
 		return Promise.resolve();
 	}
 }
