@@ -236,6 +236,7 @@ registerSingleton(IAdsTelemetryService, AdsTelemetryService);
 registerSingleton(IObjectExplorerService, ObjectExplorerService);
 registerSingleton(IOEShimService, OEShimService);
 registerSingleton(IAssessmentService, AssessmentService);
+registerSingleton(ISearchWidgetService, SearchWidgetService);
 
 //#endregion
 
@@ -483,5 +484,6 @@ import 'sql/workbench/contrib/extensions/browser/extensions.contribution';
 
 // Azure
 import 'sql/workbench/contrib/azure/browser/azure.contribution';
+import { ISearchWidgetService, SearchWidgetService } from 'sql/workbench/contrib/searchWidget/browser/searchWidgetService';
 
 //#endregion

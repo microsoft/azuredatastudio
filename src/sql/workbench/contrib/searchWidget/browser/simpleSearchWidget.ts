@@ -25,7 +25,6 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { Extensions as ViewContainerExtensions, IViewDescriptor, IViewsRegistry, IViewDescriptorService } from 'vs/workbench/common/views';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
-import { NotebookSearchView } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearch';
 import { ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 import { IChangeEvent } from 'vs/workbench/contrib/search/common/searchModel';
 import { ISearchWidgetOptions, stopPropagationForMultiLineUpwards, stopPropagationForMultiLineDownwards, ctrlKeyMod } from 'vs/workbench/contrib/search/browser/searchWidget';
@@ -39,15 +38,16 @@ import { TreeViewPane } from 'sql/workbench/browser/parts/views/treeView';
 import { isString } from 'vs/base/common/types';
 import * as path from 'vs/base/common/path';
 import { IFileService } from 'vs/platform/files/common/files';
+import { SearchViewResultsView } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/searchResultsViewPane';
 
-export interface INotebookExplorerSearchOptions extends ISearchWidgetOptions {
+export interface IViewExplorerSearchOptions extends ISearchWidgetOptions {
 	showSearchResultsPane?: boolean;
 	/**
 	 * Custom search function
 	*/
 	doSearch(query: any): Promise<void>;
 }
-export class NotebookSearchWidget extends Widget {
+export class SimpleSearchWidget extends Widget {
 
 	domNode!: HTMLElement;
 
@@ -80,7 +80,7 @@ export class NotebookSearchWidget extends Widget {
 
 	constructor(
 		container: HTMLElement,
-		options: INotebookExplorerSearchOptions,
+		options: IViewExplorerSearchOptions,
 		private parentContainer: ViewPaneContainer,
 		viewletId: string,
 		@IContextViewService private readonly contextViewService: IContextViewService,
@@ -115,31 +115,33 @@ export class NotebookSearchWidget extends Widget {
 			viewDescriptors.push(this.createSearchResultsViewDescriptor());
 			const container = this.viewDescriptorService.getViewContainerById(viewletId);
 			Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).registerViews(viewDescriptors, container);
+
+			//register search results view specific stuff.
+			this._register(this.onDidHeightChange(() => this.searchView?.reLayout()));
+
+			this._register(this.onPreserveCaseChange(async (state) => {
+				if (this.searchView?.searchViewModel) {
+					this.searchView.searchViewModel.preserveCase = state;
+					await this.refreshTree();
+				}
+			}));
+
+			this._register(this.searchInput.onInput(() => this.searchView?.updateActions()));
 		}
 
 		this._register(this.onSearchSubmit(ops => this.triggerQueryChange(ops)));
 		this._register(this.onSearchCancel(({ focus }) => this.cancelSearch(focus)));
 		this._register(this.searchInput.onDidOptionChange(() => this.triggerQueryChange()));
 
-		this._register(this.onDidHeightChange(() => this.searchView?.reLayout()));
-
-		this._register(this.onPreserveCaseChange(async (state) => {
-			if (this.searchView?.searchViewModel) {
-				this.searchView.searchViewModel.preserveCase = state;
-				await this.refreshTree();
-			}
-		}));
-
-		this._register(this.searchInput.onInput(() => this.searchView?.updateActions()));
 
 		this.trackInputBox(this.searchInputFocusTracker);
 	}
 
 	createSearchResultsViewDescriptor(): IViewDescriptor {
 		return {
-			id: NotebookSearchView.ID,
-			name: localize('notebookExplorer.searchResults', "Search Results"),
-			ctorDescriptor: new SyncDescriptor(NotebookSearchView),
+			id: SearchViewResultsView.ID,
+			name: localize('viewExplorer.searchResults', "Search Results"),
+			ctorDescriptor: new SyncDescriptor(SearchViewResultsView),
 			weight: 100,
 			canToggleVisibility: true,
 			hideByDefault: false,
@@ -148,15 +150,15 @@ export class NotebookSearchWidget extends Widget {
 		};
 	}
 
-	public get searchView(): NotebookSearchView | undefined {
-		return <NotebookSearchView>this.parentContainer.getView(NotebookSearchView.ID) ?? undefined;
+	public get searchView(): SearchViewResultsView | undefined {
+		return <SearchViewResultsView>this.parentContainer.getView(SearchViewResultsView.ID) ?? undefined;
 	}
 
 	searchInputHasFocus(): boolean {
 		return !!this.searchInputBoxFocused.get();
 	}
 
-	private render(container: HTMLElement, options: INotebookExplorerSearchOptions): void {
+	private render(container: HTMLElement, options: IViewExplorerSearchOptions): void {
 		this.domNode = append(container, $('.search-widget'));
 		this.domNode.style.position = 'relative';
 
@@ -176,7 +178,7 @@ export class NotebookSearchWidget extends Widget {
 		this.searchInput.clear();
 	}
 
-	private renderSearchInput(parent: HTMLElement, options: INotebookExplorerSearchOptions): void {
+	private renderSearchInput(parent: HTMLElement, options: IViewExplorerSearchOptions): void {
 		const inputOptions: IFindInputOptions = {
 			label: localize('label.Search', 'Search: Type Search Term and press Enter to search or Escape to cancel'),
 			validation: (value: string) => this.validateSearchInput(value),
@@ -310,7 +312,7 @@ export class NotebookSearchWidget extends Widget {
 		const options: ITextQueryBuilderOptions = {
 			_reason: 'searchView',
 			extraFileResources: this.instantiationService.invokeFunction(getOutOfWorkspaceEditorResources),
-			maxResults: NotebookSearchWidget.MAX_TEXT_RESULTS,
+			maxResults: SimpleSearchWidget.MAX_TEXT_RESULTS,
 			disregardIgnoreFiles: undefined,
 			disregardExcludeSettings: undefined,
 			excludePattern,

@@ -36,24 +36,25 @@ import { ISearchComplete, SearchCompletionExitCode, ITextQuery, SearchSortOrder,
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import * as aria from 'vs/base/browser/ui/aria/aria';
 import * as errors from 'vs/base/common/errors';
-import { NotebookSearchWidget } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearchWidget';
 import { ITreeElement, ITreeContextMenuEvent } from 'vs/base/browser/ui/tree/tree';
 import { Iterable } from 'vs/base/common/iterator';
 import { searchClearIcon, searchCollapseAllIcon, searchExpandAllIcon, searchStopIcon } from 'vs/workbench/contrib/search/browser/searchIcons';
 import { Action, IAction } from 'vs/base/common/actions';
 import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { Memento } from 'vs/workbench/common/memento';
+import { SimpleSearchWidget } from 'sql/workbench/contrib/searchWidget/browser/simpleSearchWidget';
 
 const $ = dom.$;
 
-export class NotebookSearchView extends SearchView {
-	static readonly ID = 'notebookExplorer.searchResults';
+export class SearchViewResultsView extends SearchView {
+	static readonly ID = 'viewPaneExplorer.searchResults';
 
 	private treeSelectionChangeListener: IDisposable;
 
 	private viewActions: Array<CollapseDeepestExpandedLevelAction | ClearSearchResultsAction> = [];
 	private cancelSearchAction: CancelSearchAction;
 	private toggleExpandAction: ToggleCollapseAndExpandAction;
+	public searchResultsViewID?: string;
 
 	constructor(
 		options: IViewPaneOptions,
@@ -176,12 +177,6 @@ export class NotebookSearchView extends SearchView {
 		this.tree.layout(searchResultContainerHeight, this.size.width);
 	}
 
-	public onDidNotebooksOpenState(): void {
-		if (this.contextKeyService.getContextKeyValue('bookOpened') && this.searchWithoutFolderMessageElement) {
-			dom.hide(this.searchWithoutFolderMessageElement);
-		}
-	}
-
 	renderBody(parent: HTMLElement): void {
 		super.callRenderBody(parent);
 
@@ -237,7 +232,7 @@ export class NotebookSearchView extends SearchView {
 		}));
 	}
 
-	public startSearch(query: ITextQuery, excludePatternText: string, includePatternText: string, triggeredOnType: boolean, searchWidget: NotebookSearchWidget): Thenable<void> {
+	public startSearch(query: ITextQuery, excludePatternText: string, includePatternText: string, triggeredOnType: boolean, searchWidget: SimpleSearchWidget): Thenable<void> {
 		let progressComplete: () => void;
 		this.progressService.withProgress({ location: this.getProgressLocation(), delay: triggeredOnType ? 300 : 0 }, _progress => {
 			return new Promise(resolve => progressComplete = resolve);
@@ -463,7 +458,7 @@ export class NotebookSearchView extends SearchView {
 				this.createSearchFileIterator(match);
 	}
 
-	triggerSearchQueryChange(query: ITextQuery, excludePatternText: string, includePatternText: string, triggeredOnType: boolean, searchWidget: NotebookSearchWidget) {
+	triggerSearchQueryChange(query: ITextQuery, excludePatternText: string, includePatternText: string, triggeredOnType: boolean, searchWidget: SimpleSearchWidget) {
 		this.viewModel.cancelSearch(true);
 
 		this.currentSearchQ = this.currentSearchQ
@@ -489,7 +484,7 @@ export class NotebookSearchView extends SearchView {
 }
 
 class ToggleCollapseAndExpandAction extends Action {
-	static readonly ID: string = 'notebookSearch.action.collapseOrExpandSearchResults';
+	static readonly ID: string = 'searchResults.action.collapseOrExpandSearchResults';
 	static LABEL: string = nls.localize('ToggleCollapseAndExpandAction.label', "Toggle Collapse and Expand");
 
 	// Cache to keep from crawling the tree too often.
@@ -545,7 +540,7 @@ class ToggleCollapseAndExpandAction extends Action {
 
 class CancelSearchAction extends Action {
 
-	static readonly ID: string = 'notebookSearch.action.cancelSearch';
+	static readonly ID: string = 'searchResults.action.cancelSearch';
 	static LABEL: string = nls.localize('CancelSearchAction.label', "Cancel Search");
 
 	constructor(id: string, label: string,
@@ -572,7 +567,7 @@ class CancelSearchAction extends Action {
 
 class ExpandAllAction extends Action {
 
-	static readonly ID: string = 'notebookSearch.action.expandSearchResults';
+	static readonly ID: string = 'searchResults.action.expandSearchResults';
 	static LABEL: string = nls.localize('ExpandAllAction.label', "Expand All");
 
 	constructor(id: string, label: string,
@@ -601,7 +596,7 @@ class ExpandAllAction extends Action {
 
 class CollapseDeepestExpandedLevelAction extends Action {
 
-	static readonly ID: string = 'notebookSearch.action.collapseSearchResults';
+	static readonly ID: string = 'searchResults.action.collapseSearchResults';
 	static LABEL: string = nls.localize('CollapseDeepestExpandedLevelAction.label', "Collapse All");
 
 	constructor(id: string, label: string,
@@ -657,7 +652,7 @@ class CollapseDeepestExpandedLevelAction extends Action {
 
 class ClearSearchResultsAction extends Action {
 
-	static readonly ID: string = 'notebookSearch.action.clearSearchResults';
+	static readonly ID: string = 'searchResults.action.clearSearchResults';
 	static LABEL: string = nls.localize('ClearSearchResultsAction.label', "Clear Search Results");
 
 	constructor(id: string, label: string,
@@ -681,6 +676,6 @@ class ClearSearchResultsAction extends Action {
 	}
 }
 
-function getSearchView(viewsService: IViewsService): NotebookSearchView | undefined {
-	return viewsService.getActiveViewWithId(NotebookSearchView.ID) as NotebookSearchView ?? undefined;
+function getSearchView(viewsService: IViewsService): SearchViewResultsView | undefined {
+	return viewsService.getActiveViewWithId(SearchViewResultsView.ID) as SearchViewResultsView ?? undefined;
 }

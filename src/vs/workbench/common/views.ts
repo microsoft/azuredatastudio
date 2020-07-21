@@ -718,7 +718,6 @@ export interface IViewPaneContainer {
 	onDidChangeViewVisibility: Event<IView>;
 
 	readonly views: IView[];
-	readonly addSearch: boolean; // {{SQL CARBON EDIT}}
 
 	setVisible(visible: boolean): void;
 	isVisible(): boolean;
