@@ -28,8 +28,6 @@ export default class MainController extends ControllerBase {
 		return new Promise<boolean>(async (resolve) => {
 			vscode.commands.registerCommand('db-diagram.new', async () => {
 
-				// //Configure data models
-				// let tableSummary = 'This is a summary of a table';
 
 				let visualTabLayout: azdata.FlexLayout = {
 					flexFlow: 'column'
@@ -49,7 +47,9 @@ export default class MainController extends ControllerBase {
 						flexFlow: 'column'
 					};
 
-					const searchInput = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({ value: 'search' }).component();
+					let searchInput = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+						value: 'Search'
+					}).component();
 
 					let granularityDropDown = view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
 						value: 'Granularity Selector',
@@ -62,18 +62,61 @@ export default class MainController extends ControllerBase {
 					const contextualForm = view.modelBuilder
 						.flexContainer()
 						.withItems([searchInput, granularityDropDown])
-						.withLayout({ flexFlow: 'row' }).component();
+						.withLayout({ flexFlow: 'row', width: 400, justifyContent: 'space-between' })
+						.component();
 
-					const contextualInfo = view.modelBuilder.flexContainer().withItems([]).withLayout({ flexFlow: 'column' }).component();
-					const contextualContainer = view.modelBuilder.flexContainer().withItems([contextualForm, contextualInfo]).withLayout(contextualTabLayout).component();
+
+					let summaryTitle = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+						value: 'Summary'
+					}).component();
+
+					let summaryDescription = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+						value: 'This is a summary of a table. ' +
+							'It is related to 5 other tables, has 4 foreign keys and 1 primary key'
+					}).component();
+
+					const contextualSummary = view.modelBuilder
+						.flexContainer()
+						.withItems([summaryTitle, summaryDescription])
+						.withLayout({ flexFlow: 'column' }).component();
+
+					let columnsTitle = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+						value: 'Columns'
+					}).component();
+
+					let columnsTable = view.modelBuilder.table().component();
+
+					const contextualColumns = view.modelBuilder
+						.flexContainer()
+						.withItems([columnsTitle, columnsTable])
+						.withLayout({ flexFlow: 'column', width: 400 }).component();
+
+					let relationshipsTitle = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+						value: 'Relationships'
+					}).component();
+
+					let relationshipsTable = view.modelBuilder.table().component();
+
+					const contextualRelationships = view.modelBuilder
+						.flexContainer()
+						.withItems([relationshipsTitle, relationshipsTable])
+						.withLayout({ flexFlow: 'column', width: 400 }).component();
+
+					const contextualTables = view.modelBuilder
+						.flexContainer()
+						.withItems([contextualColumns, contextualRelationships])
+						.withLayout({ flexFlow: 'row', width: 800 }).component();
+
+					//const contextualInfo = view.modelBuilder.flexContainer().withItems([]).withLayout({ flexFlow: 'column' }).component();
+					const contextualContainer = view.modelBuilder.flexContainer()
+						.withItems([contextualForm, contextualSummary, contextualTables])
+						.withLayout(contextualTabLayout).component();
+
 					const contextualTab = {
 						title: 'Contextual',
 						content: contextualContainer,
 						id: 'contextualTab'
 					};
-
-
-
 
 					const tabbedPanel = view.modelBuilder.tabbedPanel().withTabs(
 						[visualTab, contextualTab]
@@ -86,97 +129,6 @@ export default class MainController extends ControllerBase {
 					};
 
 					return [mainPanel];
-
-					// let searchBar = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
-					// 	validationErrorMessage: 'validation error message',
-					// 	readOnly: false,
-					// }).component();
-
-					// let granularitySelector = view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
-					// 	value: 'Granularity Selector',
-					// 	values: ['Database', 'Table'],
-					// 	editable: false,
-					// 	fireOnTextChange: false,
-					// 	required: false,
-					// }).component();
-
-					// let summaryTitle = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-					// 	value: 'Summary'
-					// }).component();
-
-					// let summaryDescription = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-					// 	value: tableSummary
-					// }).component();
-
-					// let summaryCard = view.modelBuilder.flexContainer()
-					// 	.withLayout({
-					// 		flexFlow: 'column',
-					// 		alignItems: 'center'
-					// 	})
-					// 	.withItems([
-					// 		summaryTitle, summaryDescription
-					// 	])
-					// 	.component();
-
-
-					// let relationshipsTitle = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-					// 	value: 'Relationships'
-					// }).component();
-
-					// let relationshipsTable = view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
-					// 	data: null, //need to consult how to populate these datatables
-					// 	columns: null,
-					// 	fontSize: null,
-					// 	selectedRows: null,
-					// 	forceFitColumns: null,
-					// 	title: null,
-					// 	ariaRowCount: null,
-					// 	ariaColumnCount: null,
-					// 	updateCells: null,
-					// 	moveFocusOutWithTab: null
-					// }).component();
-
-					// let relationshipsCard = view.modelBuilder.flexContainer()
-					// 	.withLayout({
-					// 		flexFlow: 'column',
-					// 		alignItems: 'center'
-					// 	})
-					// 	.withItems([
-					// 		relationshipsTitle, relationshipsTable
-					// 	])
-					// 	.component();
-
-					// let columnsTitle = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-					// 	value: 'Columns'
-					// }).component();
-
-					// let columnsTable = view.modelBuilder.table().component();
-
-					// let columnsCard = view.modelBuilder.flexContainer()
-					// 	.withLayout({
-					// 		flexFlow: 'column',
-					// 		alignItems: 'center',
-					// 	})
-					// 	.withItems([
-					// 		columnsTitle, columnsTable
-					// 	])
-					// 	.component();
-
-					// let mainModel = view.modelBuilder.flexContainer()
-					// 	.withLayout({
-					// 		flexFlow: 'row',
-					// 		alignItems: 'center'
-					// 	})
-					// 	.withItems([
-					// 		searchBar, granularitySelector, summaryCard, columnsCard, relationshipsCard
-					// 	])
-					// 	.component();
-
-					// const homeTab: azdata.DashboardTab = {
-					// 	id: 'home',
-					// 	content: mainModel,
-					// 	title: 'Home',
-					// };
 
 				});
 				await dashboard.open();

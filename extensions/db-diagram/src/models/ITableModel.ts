@@ -11,13 +11,23 @@ export default interface ITableModel {
 	//Summary of the table
 	summary: string;
 
-	//Map containing columns pointing to their types
+	//Map containing column names pointing to their types
 	columns: Map<string, string>;
 
 	//Map containing primary key (or composite primary) pointing to it(s) types
+	//Map containing foreign key pointing to it(s) types
+	/*
+	Example(s):
+	{departmentID: 'int'}
+	{'employeeHistory': 'varchar', employeeID: 'int'}
+	*/
 	primaryKey: Map<string, string>;
 
 	//Map containing foreign key pointing to it(s) types
+	/*
+	Example:
+	[{'employeeHistory': 'varchar', employeeID: 'int'}, {'departmentHistory': 'string'}]
+	*/
 	foreignKey: Map<string, string>[];
 
 	/*Map containing related tables and relationship information
