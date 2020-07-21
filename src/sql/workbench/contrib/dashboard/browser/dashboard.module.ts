@@ -67,7 +67,7 @@ const baseComponents = [DashboardHomeContainer, DashboardComponent, DashboardWid
 	DashboardWidgetContainer, DashboardGridContainer, DashboardErrorContainer, DashboardNavSection, ModelViewContent, WebviewContent, WidgetContent,
 	ComponentHostDirective, BreadcrumbComponent, ControlHostContent, DashboardControlHostContainer,
 	JobsViewComponent, NotebooksViewComponent, AgentViewComponent, JobHistoryComponent, NotebookHistoryComponent, JobStepsViewComponent, AlertsViewComponent, ProxiesViewComponent, OperatorsViewComponent,
-	DashboardModelViewContainer, ModelComponentWrapper, Checkbox, EditableDropDown, SelectBox, InputBox, AsmtViewComponent, AsmtResultsViewComponent];
+	DashboardModelViewContainer, ModelComponentWrapper, Checkbox, EditableDropDown, SelectBox, InputBox, AsmtViewComponent, AsmtResultsViewComponent, DiagramComponent];
 
 /* Panel */
 import { PanelModule } from 'sql/base/browser/ui/panel/panel.module';
@@ -90,6 +90,7 @@ import { IInstantiationService, _util } from 'vs/platform/instantiation/common/i
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { PropertiesContainerModule } from 'sql/base/browser/ui/propertiesContainer/propertiesContainer.module';
 import { LoadingSpinnerModule } from 'sql/base/browser/ui/loadingSpinner/loadingSpinner.module';
+import { DiagramComponent } from 'sql/workbench/contrib/diagrams/browser/diagram.component';
 
 
 const widgetComponents = [

@@ -34,13 +34,14 @@ export default class MainController extends ControllerBase {
 				// let tableSummary = 'This is a summary of a table';
 
 				let service = await DiagramUtils.getDiagramService();
-				await service.getDiagramModel(connection.connectionId);
+				let model = await service.getDiagramModel(connection.connectionId);
+				console.log(model);
 
 				let visualTabLayout: azdata.FlexLayout = {
 					flexFlow: 'column'
 				};
 
-				const dashboard = azdata.window.createModelViewDashboard('DB Diagram');
+				const dashboard = azdata.window.createModelViewDashboard('db-diagram');
 				dashboard.registerTabs(async (view: azdata.ModelView) => {
 
 					const visualContainer = view.modelBuilder.flexContainer().withItems([]).withLayout(visualTabLayout).component();

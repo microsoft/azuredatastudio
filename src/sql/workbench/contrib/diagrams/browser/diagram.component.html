@@ -1,0 +1,79 @@
+<!--
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+-->
+<div id="asmtViewDiv" class="fullsize">
+	<div style="margin: 10px 0px 0px 10px;">
+		<div>
+			<div class="propertiesSectionTitle">
+				<span>{{localizedStrings.SECTION_TITLE_SQL_SERVER}}</span>
+			</div>
+			<div>
+				<div class="propertyBlock">
+					<div>
+						<span class="propertyLabel">{{localizedStrings.SERVER_VERSION}}</span>
+						<span>{{connectionInfo.serverVersion}}</span>
+					</div>
+					<div>
+						<span class="propertyLabel">{{localizedStrings.SERVER_EDITION}}</span>
+						<span>{{connectionInfo.serverEdition}}</span>
+					</div>
+				</div>
+				<div class="propertyBlock">
+					<div>
+						<span class="propertyLabel">{{localizedStrings.SERVER_INSTANCENAME}}</span>
+						<span>{{instanceName}}</span>
+					</div>
+					<div>
+						<span class="propertyLabel">{{localizedStrings.SERVER_OSVERSION}}</span>
+						<span>{{connectionInfo.osVersion}}</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="card">
+		<h2> Summary </h2>
+		<p> This table contains the summary of a table of Database 1</p>
+	</div>
+	<div class="columns card">
+		<h2> Columns </h2>
+		<table>
+			<tr>
+				<th>Name</th>
+				<th>Type</th>
+			</tr>
+			<tr>
+				<td>EmployeeID</td>
+				<td>Int</td>
+			</tr>
+			<tr>
+				<td>Name</td>
+				<td>String</td>
+			</tr>
+		</table>
+	</div>
+	<div class="relationships card">
+		<h2> Relationships </h2>
+		<table>
+			<tr>
+				<th>Table</th>
+				<th>Cardinality</th>
+				<th>Foreign Key</th>
+			</tr>
+			<tr>
+				<td>Department</td>
+				<td>One to one</td>
+				<td>DepartmentID</td>
+			</tr>
+			<tr>
+				<td>Manager</td>
+				<td>Many to one</td>
+				<td>EmployeeID</td>
+			</tr>
+		</table>
+	</div>
+
+</div>

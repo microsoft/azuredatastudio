@@ -24,6 +24,21 @@
 		"Microsoft.mssql"
 	],
 	"contributes": {
+    "dashboard.tabs": [
+      {
+        "id": "db-diagram",
+        "description": "Database Diagram",
+        "provider": "MSSQL",
+        "title": "Database Diagram",
+        "group": "administration",
+        "when": "connectionProvider == 'MSSQL' && dashboardContext == 'server'",
+        "container": {
+          "controlhost-container": {
+            "type": "diagram"
+          }
+        }
+      }
+    ],
 		"commands": [
 			{
 				"command": "db-diagram.new",
