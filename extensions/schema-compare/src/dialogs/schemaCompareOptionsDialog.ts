@@ -181,7 +181,7 @@ export class SchemaCompareOptionsDialog {
 	}
 
 	private async updateOptionsTable(): Promise<void> {
-		let data = this.getOptionsData();
+		let data = this.optionsModel.getOptionsData();
 		await this.optionsTable.updateProperties({
 			data: data,
 			columns: [
@@ -205,7 +205,7 @@ export class SchemaCompareOptionsDialog {
 	}
 
 	private async updateObjectsTable(): Promise<void> {
-		let data = this.getObjectsData();
+		let data = this.optionsModel.getObjectsData();
 		await this.objectsTable.updateProperties({
 			data: data,
 			columns: [
