@@ -8,7 +8,11 @@ import * as azdata from 'azdata';
 import * as mssql from '../../../mssql';
 import * as loc from '../localizedConstants';
 import * as TypeMoq from 'typemoq';
-import {getEndpointName, verifyConnectionAndGetOwnerUri } from '../utils';
+import * as path from 'path';
+import * as uuid from 'uuid';
+import * as os from 'os';
+import { promises as fs } from 'fs';
+import {getEndpointName, verifyConnectionAndGetOwnerUri, exists } from '../utils';
 import {mockDacpacEndpoint, mockDatabaseEndpoint, mockFilePath, mockConnectionInfo, shouldThrowSpecificError, mockConnectionResult, mockConnectionProfile} from './testUtils';
 import { createContext, TestContext } from './testContext';
 
@@ -126,5 +130,20 @@ describe('utils: In-depth tests to verify verifyConnectionAndGetOwnerUri', funct
 		ownerUri = await verifyConnectionAndGetOwnerUri(testDatabaseEndpoint, 'test', testContext.apiWrapper.object);
 
 		should(ownerUri).equal(expectedOwnerUri);
+	});
+});
+
+describe('utils: Test to verify exists method', () => {
+	it('Should run as expected', async () => {
+		const filename = path.join(os.tmpdir(), `SchemaCompareUtilsTest_${uuid.v4()}`);
+		try {
+			should(await exists(filename)).be.false();
+			await fs.writeFile(filename, '');
+			should(await exists(filename)).be.true();
+		} finally {
+			try {
+				await fs.unlink(filename);
+			} catch { /* no-op */ }
+		}
 	});
 });

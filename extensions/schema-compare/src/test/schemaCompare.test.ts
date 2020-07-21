@@ -24,24 +24,8 @@ const mocktarget: string = 'target.dacpac';
 let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 let testContext: TestContext;
 
-before(async function (): Promise<void> {
+before(function (): void {
 	testContext = createContext();
-});
-describe('SchemaCompareDialog.openDialog', function (): void {
-	before(() => {
-		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
-		mockExtensionContext.setup(x => x.extensionPath).returns(() => '');
-	});
-
-	it('Should be correct when created.', async function (): Promise<void> {
-		let schemaCompareResult = new SchemaCompareMainWindow(testContext.apiWrapper.object, undefined, mockExtensionContext.object);
-		let dialog = new SchemaCompareDialog(schemaCompareResult);
-		await dialog.openDialog();
-
-		should(dialog.dialog.title).equal('Schema Compare');
-		should(dialog.dialog.okButton.label).equal('OK');
-		should(dialog.dialog.okButton.enabled).equal(false); // Should be false when open
-	});
 });
 
 describe('SchemaCompareMainWindow.start', function (): void {
@@ -109,7 +93,7 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 		testContext = createContext();
 	});
 
-	beforeEach(async function (): Promise<void> {
+	beforeEach(function (): void {
 		testContext.apiWrapper.reset();
 	});
 
