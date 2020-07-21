@@ -62,8 +62,9 @@ export class FirewallRuleDialogController {
 		try {
 			const tenantId = this._connection.azureTenantId;
 			const token = await this._accountManagementService.getAccountSecurityToken(this._firewallRuleDialog.viewModel.selectedAccount!, tenantId, AzureResource.ResourceManagement);
-			const securityTokenMappings = {};
-			securityTokenMappings[tenantId] = token;
+			const securityTokenMappings = {
+				[tenantId]: token
+			};
 
 			const firewallRuleInfo: azdata.FirewallRuleInfo = {
 				startIpAddress: this._firewallRuleDialog.viewModel.isIPAddressSelected ? this._firewallRuleDialog.viewModel.defaultIPAddress : this._firewallRuleDialog.viewModel.fromSubnetIPRange,
