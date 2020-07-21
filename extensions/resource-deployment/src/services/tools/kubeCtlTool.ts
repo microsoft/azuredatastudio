@@ -14,6 +14,13 @@ const localize = nls.loadMessageBundle();
 const defaultInstallationRoot = '/usr/local/bin';
 export const KubeCtlToolName = 'kubectl';
 
+interface KubeCtlVersion {
+	clientVersion: {
+		major: string;
+		minor: string;
+	};
+}
+
 export class KubeCtlTool extends ToolBase {
 	constructor(platformService: IPlatformService) {
 		super(platformService);
@@ -42,8 +49,9 @@ export class KubeCtlTool extends ToolBase {
 	protected getVersionFromOutput(output: string): SemVer | undefined {
 		let version: SemVer | undefined = undefined;
 		if (output) {
-			const versionJson = JSON.parse(output);
-			version = new SemVer(`${versionJson.clientVersion.major}.${versionJson.clientVersion.minor}.0`);
+			const versionJson: KubeCtlVersion = JSON.parse(output);
+			// kubectl version output might contain '+' character in the minor version, e.g. 16+, we have to remove it to make it a valid semantic version string.
+			version = new SemVer(`${versionJson.clientVersion.major}.${versionJson.clientVersion.minor.replace(/\+/g, '')}.0`);
 		}
 		return version;
 	}
