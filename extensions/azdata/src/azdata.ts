@@ -6,12 +6,14 @@
 import * as os from 'os';
 import * as path from 'path';
 import * as uuid from 'uuid';
-import * as which from 'which';
 import * as vscode from 'vscode';
 import { HttpClient } from './common/httpClient';
 import * as loc from './localizedConstants';
 import { executeCommand } from './common/childProcess';
+import { searchForCmd } from './common/utils';
 
+export const azdataHostname = 'https://aka.ms';
+export const azdataUri = 'azdata-msi';
 /**
  * Information about an azdata installation
  */
@@ -55,7 +57,15 @@ export async function downloadAndInstallAzdata(outputChannel: vscode.OutputChann
 	const statusDisposable = vscode.window.setStatusBarMessage(loc.installingAzdata);
 	try {
 		switch (process.platform) {
-			case 'win32': await downloadAndInstallAzdataWin32(outputChannel);
+			case 'win32':
+				await downloadAndInstallAzdataWin32(outputChannel);
+				break;
+			case 'darwin':
+				await installAzdataDarwin();
+				break;
+			case 'linux':
+				await installAzdataLinux();
+				break;
 		}
 	} finally {
 		statusDisposable.dispose();
@@ -69,8 +79,22 @@ export async function downloadAndInstallAzdata(outputChannel: vscode.OutputChann
 async function downloadAndInstallAzdataWin32(outputChannel: vscode.OutputChannel): Promise<void> {
 	const downloadPath = path.join(os.tmpdir(), `azdata-msi-${uuid.v4()}.msi`);
 	outputChannel.appendLine(loc.downloadingTo('azdata-cli.msi', downloadPath));
-	await HttpClient.download('https://aka.ms/azdata-msi', downloadPath, outputChannel);
+	await HttpClient.download(`${azdataHostname}/${azdataUri}`, downloadPath, outputChannel);
 	await executeCommand('msiexec', ['/i', downloadPath], outputChannel);
+}
+
+/**
+ * Runs commands to install azdata on MacOS
+ */
+async function installAzdataDarwin(): Promise<void> {
+	throw new Error('Not yet implemented');
+}
+
+/**
+ * Runs commands to install azdata on Linux
+ */
+async function installAzdataLinux(): Promise<void> {
+	throw new Error('Not yet implemented');
 }
 
 /**
@@ -78,8 +102,8 @@ async function downloadAndInstallAzdataWin32(outputChannel: vscode.OutputChannel
  * @param outputChannel Channel used to display diagnostic information
  */
 async function findAzdataWin32(outputChannel: vscode.OutputChannel): Promise<IAzdata> {
-	const whichPromise = new Promise<string>((c, e) => which('azdata.cmd', (err, path) => err ? e(err) : c(path)));
-	return findSpecificAzdata(await whichPromise, outputChannel);
+	const promise = searchForCmd('azdata.cmd');
+	return findSpecificAzdata(await promise, outputChannel);
 }
 
 /**
