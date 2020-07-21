@@ -228,7 +228,8 @@ export class ProjectsController {
 	}
 
 	public async readPublishProfileCallback(profileUri: vscode.Uri): Promise<PublishProfile> {
-		const profile = await load(profileUri);
+		const dacFxService = await this.getDaxFxService();
+		const profile = await load(profileUri, dacFxService);
 		return profile;
 	}
 

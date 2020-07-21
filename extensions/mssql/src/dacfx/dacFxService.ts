@@ -108,4 +108,15 @@ export class DacFxService implements mssql.IDacFxService {
 			}
 		);
 	}
+
+	public getOptionsFromProfile(profilePath: string): Thenable<mssql.DacFxOptionsResult> {
+		const params: contracts.GetOptionsFromProfileParams = { profilePath: profilePath };
+		return this.client.sendRequest(contracts.GetOptionsFromProfileRequest.type, params).then(
+			undefined,
+			e => {
+				this.client.logFailedRequest(contracts.GetOptionsFromProfileRequest.type, e);
+				return Promise.resolve(undefined);
+			}
+		);
+	}
 }

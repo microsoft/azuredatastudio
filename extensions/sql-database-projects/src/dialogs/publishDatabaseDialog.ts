@@ -11,6 +11,7 @@ import * as utils from '../common/utils';
 import { Project } from '../models/project';
 import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStringSource';
 import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
+import { DeploymentOptions } from '../../../mssql/src/mssql';
 
 interface DataSourceDropdownValue extends azdata.CategoryValue {
 	dataSource: SqlConnectionDataSource;
@@ -34,6 +35,7 @@ export class PublishDatabaseDialog {
 	private connectionId: string | undefined;
 	private connectionIsDataSource: boolean | undefined;
 	private profileSqlCmdVars: Record<string, string> | undefined;
+	private deploymentOptions: DeploymentOptions | undefined;
 
 	private toDispose: vscode.Disposable[] = [];
 
@@ -185,7 +187,8 @@ export class PublishDatabaseDialog {
 			databaseName: this.getTargetDatabaseName(),
 			upgradeExisting: true,
 			connectionUri: await this.getConnectionUri(),
-			sqlCmdVariables: sqlCmdVars
+			sqlCmdVariables: sqlCmdVars,
+			deploymentOptions: this.deploymentOptions
 		};
 
 		azdata.window.closeDialog(this.dialog);
@@ -199,7 +202,8 @@ export class PublishDatabaseDialog {
 		const settings: IGenerateScriptSettings = {
 			databaseName: this.getTargetDatabaseName(),
 			connectionUri: await this.getConnectionUri(),
-			sqlCmdVariables: sqlCmdVars
+			sqlCmdVariables: sqlCmdVars,
+			deploymentOptions: this.deploymentOptions
 		};
 
 		azdata.window.closeDialog(this.dialog);
@@ -393,7 +397,7 @@ export class PublishDatabaseDialog {
 					canSelectFiles: true,
 					canSelectFolders: false,
 					canSelectMany: false,
-					defaultUri: vscode.Uri.parse(this.project.projectFolderPath),
+					defaultUri: vscode.workspace.workspaceFolders ? (vscode.workspace.workspaceFolders as vscode.WorkspaceFolder[])[0].uri : undefined,
 					filters: {
 						[constants.publishSettingsFiles]: ['publish.xml']
 					}
