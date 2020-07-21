@@ -65,6 +65,37 @@ export class EditCellAction extends ToggleableAction {
 	}
 }
 
+export class MoveCellAction extends CellActionBase {
+	constructor(
+		id: string,
+		cssClass: string,
+		label: string,
+		@INotificationService notificationService: INotificationService
+	) {
+		super(id, label, undefined, notificationService);
+		this._cssClass = cssClass;
+		this._tooltip = label;
+		this._label = '';
+	}
+
+	doRun(context: CellContext): Promise<void> {
+		let moveDirection = this._cssClass.includes('move-down') ? 'down' : 'up';
+		try {
+			let model = context.model;
+			// Todo: trigger cell move action using the moveDirection string.
+			alert(moveDirection);
+		} catch (error) {
+			let message = getErrorMessage(error);
+
+			this.notificationService.notify({
+				severity: Severity.Error,
+				message: message
+			});
+		}
+		return Promise.resolve();
+	}
+}
+
 export class DeleteCellAction extends CellActionBase {
 	constructor(
 		id: string,
