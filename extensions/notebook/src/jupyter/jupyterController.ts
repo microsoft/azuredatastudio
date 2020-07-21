@@ -28,7 +28,7 @@ import { IPackageManageProvider } from '../types';
 import { LocalPipPackageManageProvider } from './localPipPackageManageProvider';
 import { LocalCondaPackageManageProvider } from './localCondaPackageManageProvider';
 import { ManagePackagesDialogModel, ManagePackageDialogOptions } from '../dialog/managePackages/managePackagesDialogModel';
-import { PiPyClient } from './pipyClient';
+import { PyPiClient } from './pypiClient';
 import { ConfigurePythonDialog } from '../dialog/configurePython/configurePythonDialog';
 
 let untitledCounter = 0;
@@ -243,7 +243,7 @@ export class JupyterController implements vscode.Disposable {
 	}
 
 	private registerDefaultPackageManageProviders(): void {
-		this.registerPackageManager(LocalPipPackageManageProvider.ProviderId, new LocalPipPackageManageProvider(this._jupyterInstallation, new PiPyClient()));
+		this.registerPackageManager(LocalPipPackageManageProvider.ProviderId, new LocalPipPackageManageProvider(this._jupyterInstallation, new PyPiClient()));
 		this.registerPackageManager(LocalCondaPackageManageProvider.ProviderId, new LocalCondaPackageManageProvider(this._jupyterInstallation));
 	}
 
