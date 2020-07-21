@@ -243,7 +243,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			notebookPath = uri.fsPath;
 		}
 
-		if (shouldReveal || this._bookViewer.visible) {
+		if (shouldReveal || this._bookViewer?.visible) {
 			bookItem = notebookPath ? await this.findAndExpandParentNode(notebookPath) : undefined;
 			// Select + focus item in viewlet if books viewlet is already open, or if we pass in variable
 			if (bookItem) {
@@ -264,7 +264,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			let book = allNodes ? Array.from(allNodes?.keys())?.filter(x => x.indexOf(notebookPath.substring(0, notebookPath.lastIndexOf(path.sep))) > -1) : undefined;
 			let bookNode = book?.length > 0 ? this.currentBook?.getNotebook(book.find(x => x.substring(0, x.lastIndexOf(path.sep)) === notebookPath.substring(0, notebookPath.lastIndexOf(path.sep)))) : undefined;
 			if (bookNode) {
-				if (this._bookViewer.visible) {
+				if (this._bookViewer?.visible) {
 					await this._bookViewer.reveal(bookNode, { select: true, focus: false, expand: 3 });
 				} else {
 					await this.getChildren(bookNode);

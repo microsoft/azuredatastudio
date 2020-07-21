@@ -25,10 +25,20 @@ export class ExitCodeError extends Error {
 export async function executeCommand(command: string, args?: string[], outputChannel?: vscode.OutputChannel): Promise<string> {
 	return new Promise((resolve, reject) => {
 		outputChannel?.appendLine(loc.executingCommand(command, args ?? []));
-		const buffers: Buffer[] = [];
-		const child = cp.spawn(command, args);
-		child.stdout.on('data', (b: Buffer) => buffers.push(b));
+		const stdoutBuffers: Buffer[] = [];
+		const stderrBuffers: Buffer[] = [];
+		const child = cp.spawn(command, args, { shell: true });
+		child.stdout.on('data', (b: Buffer) => stdoutBuffers.push(b));
+		child.stderr.on('data', (b: Buffer) => stderrBuffers.push(b));
 		child.on('error', reject);
-		child.on('exit', code => code ? reject(new ExitCodeError(code)) : resolve(Buffer.concat(buffers).toString('utf8').trim()));
+		child.on('exit', code => {
+			if (stderrBuffers.length > 0) {
+				reject(new Error(Buffer.concat(stderrBuffers).toString('utf8').trim()));
+			} else if (code) {
+				reject(new ExitCodeError(code));
+			} else {
+				resolve(Buffer.concat(stdoutBuffers).toString('utf8').trim());
+			}
+		});
 	});
 }
