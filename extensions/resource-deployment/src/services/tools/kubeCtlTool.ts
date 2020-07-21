@@ -16,8 +16,7 @@ export const KubeCtlToolName = 'kubectl';
 
 interface KubeCtlVersion {
 	clientVersion: {
-		major: string;
-		minor: string;
+		gitVersion: string;
 	};
 }
 
@@ -50,8 +49,11 @@ export class KubeCtlTool extends ToolBase {
 		let version: SemVer | undefined = undefined;
 		if (output) {
 			const versionJson: KubeCtlVersion = JSON.parse(output);
-			// kubectl version output might contain '+' character in the minor version, e.g. 16+, we have to remove it to make it a valid semantic version string.
-			version = new SemVer(`${versionJson.clientVersion.major}.${versionJson.clientVersion.minor.replace(/\+/g, '')}.0`);
+			if (versionJson && versionJson.clientVersion && versionJson.clientVersion.gitVersion) {
+				version = new SemVer(versionJson.clientVersion.gitVersion);
+			} else {
+				throw new Error(localize('resourceDeployment.invalidKubectlVersionOutput', "Unable to parse the kubectl version command output: \"{0}\"", output));
+			}
 		}
 		return version;
 	}
