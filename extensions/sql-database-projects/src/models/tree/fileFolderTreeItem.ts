@@ -97,7 +97,7 @@ function fsPathToProjectUri(fileSystemUri: vscode.Uri, projectNode: ProjectRootT
 	}
 	else if (isFile) {
 		// if file is outside the folder add add at top level in tree
-		// this is not true foe foldersotherwize the outside files will not be directly inside the top level
+		// this is not true for folders otherwise the outside files will not be directly inside the top level
 		let parts = utils.getPlatformSafeFileEntryPath(fileSystemUri.fsPath).split('/');
 		localUri = parts[parts.length - 1];
 	}

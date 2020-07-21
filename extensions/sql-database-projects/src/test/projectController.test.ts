@@ -48,7 +48,13 @@ const mockConnectionProfile: azdata.IConnectionProfile = {
 
 
 
-describe ('ProjectsController', function(): void {
+describe('ProjectsController', function (): void {
+	// Moving to overall describe since it's used across multiple child functions
+	before(async function (): Promise<void> {
+		await templates.loadTemplates(path.join(__dirname, '..', '..', 'resources', 'templates'));
+		await baselines.loadBaselines();
+	});
+
 	beforeEach(function (): void {
 		testContext = createContext();
 	});
@@ -58,11 +64,6 @@ describe ('ProjectsController', function(): void {
 	});
 
 	describe('project controller operations', function (): void {
-		before(async function (): Promise<void> {
-			await templates.loadTemplates(path.join(__dirname, '..', '..', 'resources', 'templates'));
-			await baselines.loadBaselines();
-		});
-
 		describe('Project file operations and prompting', function (): void {
 			it('Should create new sqlproj file with correct values', async function (): Promise<void> {
 				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
@@ -85,7 +86,7 @@ describe ('ProjectsController', function(): void {
 
 				const project = await projController.openProject(vscode.Uri.file(sqlProjPath));
 
-				should(project.files.length).equal(8); // detailed sqlproj tests in their own test file
+				should(project.files.length).equal(9); // detailed sqlproj tests in their own test file
 				should(project.dataSources.length).equal(2); // detailed datasources tests in their own test file
 			});
 
@@ -447,11 +448,11 @@ describe ('ProjectsController', function(): void {
 
 			let result = await projController.getModelFromContext(undefined);
 
-			should(result).deepEqual({database: mockDbSelection, serverId: connectionId});
+			should(result).deepEqual({ database: mockDbSelection, serverId: connectionId });
 
 			// test launch via Object Explorer context
 			result = await projController.getModelFromContext(mockConnectionProfile);
-			should(result).deepEqual({database: 'My Database', serverId: 'My Id'});
+			should(result).deepEqual({ database: 'My Database', serverId: 'My Id' });
 		});
 	});
 
