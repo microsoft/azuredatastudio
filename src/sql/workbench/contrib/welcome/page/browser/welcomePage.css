@@ -1346,6 +1346,10 @@
 	height: 32px !important;
 }
 
+.ads-homepage .monaco-button {
+	height: 28px;
+}
+
 .ads-homepage .guided-tour-banner .ads-tour-btn-container {
 	display: flex;
 	justify-content: flex-end;
