@@ -122,16 +122,19 @@ export function isAuthenticationProvider(thing: any): thing is IAuthenticationPr
 }
 
 export function getUserDataSyncStore(productService: IProductService, configurationService: IConfigurationService): IUserDataSyncStore | undefined {
-	const value = configurationService.getValue<ConfigurationSyncStore>(CONFIGURATION_SYNC_STORE_KEY) || productService[CONFIGURATION_SYNC_STORE_KEY];
+	const value = {
+		...(productService[CONFIGURATION_SYNC_STORE_KEY] || {}),
+		...(configurationService.getValue<ConfigurationSyncStore>(CONFIGURATION_SYNC_STORE_KEY) || {})
+	};
 	if (value
-		&& isString(value.url)
-		&& isObject(value.authenticationProviders)
-		&& Object.keys(value.authenticationProviders).every(authenticationProviderId => isArray(value.authenticationProviders[authenticationProviderId].scopes))
+		&& isString((value as any).url) // {{SQL CARBON EDIT}} strict-nulls
+		&& isObject((value as any).authenticationProviders) // {{SQL CARBON EDIT}} strict-nulls
+		&& Object.keys((value as any).authenticationProviders).every(authenticationProviderId => isArray((value as any).authenticationProviders[authenticationProviderId].scopes)) // {{SQL CARBON EDIT}} strict-nulls
 	) {
 		return {
-			url: joinPath(URI.parse(value.url), 'v1'),
-			authenticationProviders: Object.keys(value.authenticationProviders).reduce<IAuthenticationProvider[]>((result, id) => {
-				result.push({ id, scopes: value.authenticationProviders[id].scopes });
+			url: joinPath(URI.parse((value as any).url), 'v1'), // {{SQL CARBON EDIT}} strict-nulls
+			authenticationProviders: Object.keys((value as any).authenticationProviders).reduce<IAuthenticationProvider[]>((result, id) => { // {{SQL CARBON EDIT}} strict-nulls
+				result.push({ id, scopes: (value as any).authenticationProviders[id].scopes }); // {{SQL CARBON EDIT}} strict-nulls
 				return result;
 			}, [])
 		};
