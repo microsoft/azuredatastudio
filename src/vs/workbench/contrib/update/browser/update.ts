@@ -55,7 +55,7 @@ export class OpenLatestReleaseNotesInBrowserAction extends Action {
 		if (this.productService.releaseNotesUrl) {
 			const uri = URI.parse(this.productService.releaseNotesUrl);
 			await this.openerService.open(uri);
-		} else { //{{SQL CARBON EDIT}}
+		} else {
 			throw new Error(nls.localize('update.noReleaseNotesOnline', "This version of {0} does not have release notes online", this.productService.nameLong));
 		}
 	}
