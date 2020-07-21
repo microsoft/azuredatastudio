@@ -25,6 +25,15 @@ import { diff, IProcessedOutput, NOTEBOOK_EDITOR_CURSOR_BOUNDARY, CellKind } fro
 import { clamp } from 'vs/base/common/numbers';
 import { SCROLLABLE_ELEMENT_PADDING_TOP } from 'vs/workbench/contrib/notebook/browser/constants';
 
+export interface IFocusNextPreviousDelegate {
+	onFocusNext(applyFocusNext: () => void): void;
+	onFocusPrevious(applyFocusPrevious: () => void): void;
+}
+
+export interface INotebookCellListOptions extends IWorkbenchListOptions<CellViewModel> {
+	focusNextPreviousDelegate: IFocusNextPreviousDelegate;
+}
+
 export class NotebookCellList extends WorkbenchList<CellViewModel> implements IDisposable, IStyleController, INotebookCellList {
 	get onWillScroll(): Event<ScrollEvent> { return this.view.onWillScroll; }
 
@@ -51,19 +60,22 @@ export class NotebookCellList extends WorkbenchList<CellViewModel> implements ID
 		return this._isDisposed;
 	}
 
+	private readonly _focusNextPreviousDelegate: IFocusNextPreviousDelegate;
+
 	constructor(
 		private listUser: string,
 		container: HTMLElement,
 		delegate: IListVirtualDelegate<CellViewModel>,
 		renderers: IListRenderer<CellViewModel, BaseCellRenderTemplate>[],
 		contextKeyService: IContextKeyService,
-		options: IWorkbenchListOptions<CellViewModel>,
+		options: INotebookCellListOptions,
 		@IListService listService: IListService,
 		@IThemeService themeService: IThemeService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IKeybindingService keybindingService: IKeybindingService
 	) {
 		super(listUser, container, delegate, renderers, options, contextKeyService, listService, themeService, configurationService, keybindingService);
+		this._focusNextPreviousDelegate = options.focusNextPreviousDelegate;
 		this._previousFocusedElements = this.getFocusedElements();
 		this._localDisposableStore.add(this.onDidChangeFocus((e) => {
 			this._previousFocusedElements.forEach(element => {
@@ -356,6 +368,10 @@ export class NotebookCellList extends WorkbenchList<CellViewModel> implements ID
 
 	splice2(start: number, deleteCount: number, elements: CellViewModel[] = []): void {
 		// we need to convert start and delete count based on hidden ranges
+		if (start < 0 || start > this.view.length) {
+			return;
+		}
+
 		super.splice(start, deleteCount, elements);
 
 		const selectionsLeft = [];
@@ -416,6 +432,14 @@ export class NotebookCellList extends WorkbenchList<CellViewModel> implements ID
 			this.setSelection([index]);
 			this.setFocus([index]);
 		}
+	}
+
+	focusNext(n: number | undefined, loop: boolean | undefined, browserEvent?: UIEvent, filter?: (element: CellViewModel) => boolean): void {
+		this._focusNextPreviousDelegate.onFocusNext(() => super.focusNext(n, loop, browserEvent, filter));
+	}
+
+	focusPrevious(n: number | undefined, loop: boolean | undefined, browserEvent?: UIEvent, filter?: (element: CellViewModel) => boolean): void {
+		this._focusNextPreviousDelegate.onFocusPrevious(() => super.focusPrevious(n, loop, browserEvent, filter));
 	}
 
 	setFocus(indexes: number[], browserEvent?: UIEvent, ignoreTextModelUpdate?: boolean): void {
@@ -730,10 +754,19 @@ export class NotebookCellList extends WorkbenchList<CellViewModel> implements ID
 		const scrollTop = this.getViewScrollTop();
 		const wrapperBottom = this.getViewScrollBottom();
 		const elementTop = this.view.elementTop(viewIndex);
+		const elementBottom = this.view.elementHeight(viewIndex) + elementTop;
 
-		if (ignoreIfInsideViewport && elementTop >= scrollTop && elementTop < wrapperBottom) {
-			// inside the viewport
-			return;
+		if (ignoreIfInsideViewport
+			&& elementTop >= scrollTop
+			&& elementTop < wrapperBottom) {
+
+			if (revealPosition === CellRevealPosition.Center
+				&& elementBottom > wrapperBottom
+				&& elementTop > (scrollTop + wrapperBottom) / 2) {
+				// the element is partially visible and it's below the center of the viewport
+			} else {
+				return;
+			}
 		}
 
 		// first render

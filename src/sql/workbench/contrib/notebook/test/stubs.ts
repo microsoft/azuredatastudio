@@ -106,12 +106,12 @@ export class NotebookModelStub implements INotebookModel {
 		throw new Error('method not implemented.');
 	}
 	get onProviderIdChange(): vsEvent.Event<string> {
-		throw new Error('method not impelemented.');
+		throw new Error('method not implemented.');
 	}
 	toJSON(): nb.INotebookContents {
 		throw new Error('Method not implemented.');
 	}
-	serializationStateChanged(changeType: NotebookChangeType): void {
+	serializationStateChanged(changeType: NotebookChangeType, cell?: ICellModel): void {
 		throw new Error('Method not implemented.');
 	}
 	get onActiveCellChanged(): vsEvent.Event<ICellModel> {

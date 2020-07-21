@@ -94,14 +94,15 @@ export default () => `
 				<div class="resources-container">
 					<h2>${escape(localize('welcomePage.resources', "Resources"))}</h2>
 					<div class="tabs">
-						<input class="input" name="tabs" type="radio" id="tab-1" checked="checked" />
-						<label class="label" for="tab-1" tabIndex="0">${escape(localize('welcomePage.history', "History"))}</label>
+					<!-- Checkbox is not accessible to user yet, this feature is still in development -->
+					<input tabindex="-1" class="input" name="tabs" type="radio" id="tab-1" checked="checked" />
+					<span id="historyLabel" class="label" for="tab-1" tabIndex="0">${escape(localize('welcomePage.history', "History"))}</span>
 						<div class="panel">
 							<div class="recent history">
 								<div class="flex list-header-container">
 									<i class="icon-document themed-icon"></i>
-									<h4 class="list-header">${escape(localize('welcomePage.name', "Name"))}</h4>
-									<h4 class="list-header-last-opened">${escape(localize('welcomePage.lastOpened', "Last Opened"))}</h4>
+									<span class="list-header">${escape(localize('welcomePage.name', "Name"))}</span>
+									<span class="list-header-last-opened">${escape(localize('welcomePage.lastOpened', "Last Opened"))}</span>
 								</div>
 								<ul class="list">
 									<!-- Filled programmatically -->
@@ -110,8 +111,8 @@ export default () => `
 								<div class="moreRecent">
 									<a role="button" class="ads-welcome-page-link" href="command:workbench.action.openRecent">${escape(localize('welcomePage.moreRecent', "Show more"))}
 									<i class="icon-arrow-down-dark"></i>
-								</a>
-							</div>
+									</a>
+								</div>
 							</div>
 						</div>
 					</div>

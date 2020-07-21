@@ -12,6 +12,7 @@ const os = require('os');
 const extensionList = [
 	'admin-tool-ext-win',
 	'agent',
+	'azdata',
 	'azurecore',
 	'cms',
 	'dacpac',

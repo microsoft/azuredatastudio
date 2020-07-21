@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { ApiWrapper } from './apiWrapper';
 
 /**
  * Global context for the application
@@ -13,9 +12,7 @@ export class AppContext {
 
 	private serviceMap: Map<string, any> = new Map();
 
-	constructor(public readonly extensionContext: vscode.ExtensionContext, public readonly apiWrapper: ApiWrapper) {
-		this.apiWrapper = apiWrapper || new ApiWrapper();
-	}
+	constructor(public readonly extensionContext: vscode.ExtensionContext) { }
 
 	public getService<T>(serviceName: string): T {
 		const service = this.serviceMap.get(serviceName) as T;

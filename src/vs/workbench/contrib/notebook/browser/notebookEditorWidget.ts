@@ -23,12 +23,12 @@ import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/c
 import { IResourceEditorInput } from 'vs/platform/editor/common/editor';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
-import { contrastBorder, editorBackground, focusBorder, foreground, registerColor, textBlockQuoteBackground, textBlockQuoteBorder, textLinkActiveForeground, textLinkForeground, textPreformatForeground, errorForeground, transparent, widgetShadow, listFocusBackground, listInactiveSelectionBackground, scrollbarSliderBackground, scrollbarSliderHoverBackground, scrollbarSliderActiveBackground } from 'vs/platform/theme/common/colorRegistry';
+import { contrastBorder, editorBackground, focusBorder, foreground, registerColor, textBlockQuoteBackground, textBlockQuoteBorder, textLinkActiveForeground, textLinkForeground, textPreformatForeground, errorForeground, transparent, listFocusBackground, listInactiveSelectionBackground, scrollbarSliderBackground, scrollbarSliderHoverBackground, scrollbarSliderActiveBackground } from 'vs/platform/theme/common/colorRegistry';
 import { registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { EditorMemento } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { EditorOptions, IEditorMemento } from 'vs/workbench/common/editor';
 import { CELL_MARGIN, CELL_RUN_GUTTER, EDITOR_BOTTOM_PADDING, EDITOR_TOP_MARGIN, EDITOR_TOP_PADDING, SCROLLABLE_ELEMENT_PADDING_TOP, BOTTOM_CELL_TOOLBAR_HEIGHT, CELL_BOTTOM_MARGIN, CODE_CELL_LEFT_MARGIN } from 'vs/workbench/contrib/notebook/browser/constants';
-import { CellEditState, CellFocusMode, ICellRange, ICellViewModel, INotebookCellList, INotebookEditor, INotebookEditorContribution, INotebookEditorMouseEvent, NotebookLayoutInfo, NOTEBOOK_EDITOR_EDITABLE, NOTEBOOK_EDITOR_EXECUTING_NOTEBOOK, NOTEBOOK_EDITOR_FOCUSED, NOTEBOOK_EDITOR_RUNNABLE, NOTEBOOK_HAS_MULTIPLE_KERNELS, NOTEBOOK_OUTPUT_FOCUSED } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
+import { CellEditState, CellFocusMode, ICellRange, ICellViewModel, INotebookCellList, INotebookEditor, INotebookEditorContribution, INotebookEditorMouseEvent, NotebookLayoutInfo, NOTEBOOK_EDITOR_EDITABLE, NOTEBOOK_EDITOR_EXECUTING_NOTEBOOK, NOTEBOOK_EDITOR_FOCUSED, NOTEBOOK_EDITOR_RUNNABLE, NOTEBOOK_HAS_MULTIPLE_KERNELS, NOTEBOOK_OUTPUT_FOCUSED, INotebookDeltaDecoration, NOTEBOOK_CELL_LIST_FOCUSED } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
 import { NotebookEditorExtensionsRegistry } from 'vs/workbench/contrib/notebook/browser/notebookEditorExtensions';
 import { NotebookCellList } from 'vs/workbench/contrib/notebook/browser/view/notebookCellList';
 import { OutputRenderer } from 'vs/workbench/contrib/notebook/browser/view/output/outputRenderer';
@@ -83,7 +83,10 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 	private _fontInfo: BareFontInfo | undefined;
 	private _dimension: DOM.Dimension | null = null;
 	private _shadowElementViewInfo: { height: number, width: number, top: number; left: number; } | null = null;
+
+	private _cellListFocusTracker: DOM.IFocusTracker | null = null;
 	private _editorFocus: IContextKey<boolean> | null = null;
+	private _cellListFocus: IContextKey<boolean> | null = null;
 	private _outputFocus: IContextKey<boolean> | null = null;
 	private _editorEditable: IContextKey<boolean> | null = null;
 	private _editorRunnable: IContextKey<boolean> | null = null;
@@ -159,6 +162,15 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 		return this._renderedEditors.get(focused);
 	}
 
+	private _cursorNavigationMode: boolean = false;
+	get cursorNavigationMode(): boolean {
+		return this._cursorNavigationMode;
+	}
+
+	set cursorNavigationMode(v: boolean) {
+		this._cursorNavigationMode = v;
+	}
+
 	constructor(
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IStorageService storageService: IStorageService,
@@ -220,6 +232,12 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 		// Note - focus going to the webview will fire 'blur', but the webview element will be
 		// a descendent of the notebook editor root.
 		const focused = DOM.isAncestor(document.activeElement, this._overlayContainer);
+		if (focused) {
+			const cellListFocused = DOM.isAncestor(document.activeElement, this._body);
+			this._cellListFocus?.set(cellListFocused);
+		} else {
+			this._cellListFocus?.set(false);
+		}
 		this._editorFocus?.set(focused);
 		this._notebookViewModel?.setFocus(focused);
 	}
@@ -240,7 +258,7 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 		this._createBody(this._overlayContainer);
 		this._generateFontInfo();
 		this._editorFocus = NOTEBOOK_EDITOR_FOCUSED.bindTo(this.contextKeyService);
-		this._editorFocus.set(true);
+		this._cellListFocus = NOTEBOOK_CELL_LIST_FOCUSED.bindTo(this.contextKeyService);
 		this._isVisible = true;
 		this._outputFocus = NOTEBOOK_OUTPUT_FOCUSED.bindTo(this.contextKeyService);
 		this._editorEditable = NOTEBOOK_EDITOR_EDITABLE.bindTo(this.contextKeyService);
@@ -305,27 +323,31 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 				transformOptimization: false,
 				styleController: (_suffix: string) => { return this._list!; },
 				overrideStyles: {
-					listBackground: Color.transparent,
-					listActiveSelectionBackground: Color.transparent,
+					listBackground: editorBackground,
+					listActiveSelectionBackground: editorBackground,
 					listActiveSelectionForeground: foreground,
-					listFocusAndSelectionBackground: Color.transparent,
+					listFocusAndSelectionBackground: editorBackground,
 					listFocusAndSelectionForeground: foreground,
-					listFocusBackground: Color.transparent,
+					listFocusBackground: editorBackground,
 					listFocusForeground: foreground,
 					listHoverForeground: foreground,
-					listHoverBackground: Color.transparent,
+					listHoverBackground: editorBackground,
 					listHoverOutline: focusBorder,
 					listFocusOutline: focusBorder,
-					listInactiveSelectionBackground: Color.transparent,
+					listInactiveSelectionBackground: editorBackground,
 					listInactiveSelectionForeground: foreground,
-					listInactiveFocusBackground: Color.transparent,
-					listInactiveFocusOutline: Color.transparent,
+					listInactiveFocusBackground: editorBackground,
+					listInactiveFocusOutline: editorBackground,
 				},
 				accessibilityProvider: {
 					getAriaLabel() { return null; },
 					getWidgetAriaLabel() {
 						return nls.localize('notebookTreeAriaLabel', "Notebook");
 					}
+				},
+				focusNextPreviousDelegate: {
+					onFocusNext: (applyFocusNext: () => void) => this._updateForCursorNavigationMode(applyFocusNext),
+					onFocusPrevious: (applyFocusPrevious: () => void) => this._updateForCursorNavigationMode(applyFocusPrevious),
 				}
 			},
 		);
@@ -365,11 +387,43 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 			}
 		}));
 
-		this._register(this._list.onDidChangeFocus(_e => this._onDidChangeActiveEditor.fire(this)));
+		this._register(this._list.onDidChangeFocus(_e => {
+			this._onDidChangeActiveEditor.fire(this);
+			this._cursorNavigationMode = false;
+		}));
 
 		const widgetFocusTracker = DOM.trackFocus(this.getDomNode());
 		this._register(widgetFocusTracker);
 		this._register(widgetFocusTracker.onDidFocus(() => this._onDidFocusEmitter.fire()));
+
+		this._cellListFocusTracker = this._register(DOM.trackFocus(this._body));
+		this._register(this._cellListFocusTracker.onDidFocus(() => {
+			// hack - FocusTracker forces 'blur' to run after 'focus'. 
+			// We want the other way around so that when switching from notebook to notebook, the focus happens last
+			setTimeout(() => {
+				this.updateEditorFocus();
+			}, 0);
+		}));
+		this._register(this._cellListFocusTracker.onDidBlur(() => {
+			this.updateEditorFocus();
+		}));
+	}
+
+	private _updateForCursorNavigationMode(applyFocusChange: () => void): void {
+		if (this._cursorNavigationMode) {
+			// Will fire onDidChangeFocus, resetting the state to Container
+			applyFocusChange();
+
+			const newFocusedCell = this._list!.getFocusedElements()[0];
+			if (newFocusedCell.cellKind === CellKind.Code || newFocusedCell.editState === CellEditState.Editing) {
+				this.focusNotebookCell(newFocusedCell, 'editor');
+			} else {
+				// Reset to "Editor", the state has not been consumed
+				this._cursorNavigationMode = true;
+			}
+		} else {
+			applyFocusChange();
+		}
 	}
 
 	getDomNode() {
@@ -683,7 +737,6 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 		}
 
 		if (viewState?.editorFocused) {
-			this._list?.focusView();
 			const cell = this._notebookViewModel?.viewCells[focusIdx];
 			if (cell) {
 				cell.focusMode = CellFocusMode.Editor;
@@ -708,7 +761,7 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 				if (elm.cellKind === CellKind.Code) {
 					cellHeights[i] = elm.layoutInfo.totalHeight;
 				} else {
-					cellHeights[i] = 0;
+					cellHeights[i] = elm.layoutInfo.totalHeight;
 				}
 			}
 
@@ -846,8 +899,8 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 		this._list?.setCellSelection(cell, range);
 	}
 
-	changeDecorations<T>(callback: (changeAccessor: IModelDecorationsChangeAccessor) => T): T | null {
-		return this._notebookViewModel?.changeDecorations<T>(callback) || null;
+	changeModelDecorations<T>(callback: (changeAccessor: IModelDecorationsChangeAccessor) => T): T | null {
+		return this._notebookViewModel?.changeModelDecorations<T>(callback) || null;
 	}
 
 	setHiddenAreas(_ranges: ICellRange[]): boolean {
@@ -1193,6 +1246,14 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 
 	//#region MISC
 
+	deltaCellDecorations(oldDecorations: string[], newDecorations: INotebookDeltaDecoration[]): string[] {
+		return this._notebookViewModel?.deltaCellDecorations(oldDecorations, newDecorations) || [];
+	}
+
+	deltaCellOutputContainerClassNames(cellId: string, added: string[], removed: string[]) {
+		this._webview?.deltaCellOutputContainerClassNames(cellId, added, removed);
+	}
+
 	getLayoutInfo(): NotebookLayoutInfo {
 		if (!this._list) {
 			throw new Error('Editor is not initalized successfully');
@@ -1313,11 +1374,11 @@ export const notebookCellBorder = registerColor('notebook.cellBorderColor', {
 	hc: PANEL_BORDER
 }, nls.localize('notebook.cellBorderColor', "The border color for notebook cells."));
 
-export const focusedEditorIndicator = registerColor('notebook.focusedEditorIndicator', {
+export const focusedEditorBorderColor = registerColor('notebook.focusedEditorBorder', {
 	light: focusBorder,
 	dark: focusBorder,
 	hc: focusBorder
-}, nls.localize('notebook.focusedEditorIndicator', "The color of the notebook cell editor indicator."));
+}, nls.localize('notebook.focusedEditorBorder', "The color of the notebook cell editor border."));
 
 export const cellStatusIconSuccess = registerColor('notebookStatusSuccessIcon.foreground', {
 	light: debugIconStartForeground,
@@ -1344,23 +1405,29 @@ export const notebookOutputContainerColor = registerColor('notebook.outputContai
 }, nls.localize('notebook.outputContainerBackgroundColor', "The Color of the notebook output container background."));
 
 // TODO currently also used for toolbar border, if we keep all of this, pick a generic name
-export const CELL_TOOLBAR_SEPERATOR = registerColor('notebook.cellToolbarSeperator', {
+export const CELL_TOOLBAR_SEPERATOR = registerColor('notebook.cellToolbarSeparator', {
 	dark: Color.fromHex('#808080').transparent(0.35),
 	light: Color.fromHex('#808080').transparent(0.35),
 	hc: contrastBorder
-}, nls.localize('cellToolbarSeperator', "The color of the seperator in the cell bottom toolbar"));
+}, nls.localize('notebook.cellToolbarSeparator', "The color of the seperator in the cell bottom toolbar"));
 
-export const cellFocusBackground = registerColor('notebook.cellFocusBackground', {
+export const focusedCellBackground = registerColor('notebook.focusedCellBackground', {
 	dark: transparent(PANEL_BORDER, .4),
 	light: transparent(listFocusBackground, .4),
-	hc: PANEL_BORDER
-}, nls.localize('cellFocusBackground', "The background color of focused or hovered cells"));
+	hc: null
+}, nls.localize('focusedCellBackground', "The background color of a cell when the cell is focused."));
 
-export const focusedCellShadow = registerColor('notebook.focusedCellShadow', {
-	dark: transparent(widgetShadow, 0.6),
-	light: transparent(widgetShadow, 0.4),
-	hc: Color.transparent
-}, nls.localize('cellShadow', "The color of the shadow on the focused or hovered cell"));
+export const cellHoverBackground = registerColor('notebook.cellHoverBackground', {
+	dark: transparent(focusedCellBackground, .5),
+	light: transparent(focusedCellBackground, .7),
+	hc: null
+}, nls.localize('notebook.cellHoverBackground', "The background color of a cell when the cell is hovered."));
+
+export const focusedCellBorder = registerColor('notebook.focusedCellBorder', {
+	dark: Color.white.transparent(0.12),
+	light: Color.black.transparent(0.12),
+	hc: focusBorder
+}, nls.localize('notebook.focusedCellBorder', "The color of the cell's top and bottom border when the cell is focused."));
 
 export const cellStatusBarItemHover = registerColor('notebook.cellStatusBarItemHoverBackground', {
 	light: new Color(new RGBA(0, 0, 0, 0.08)),
@@ -1393,7 +1460,11 @@ export const listScrollbarSliderActiveBackground = registerColor('notebookScroll
 	hc: scrollbarSliderActiveBackground
 }, nls.localize('notebookScrollbarSliderActiveBackground', "Notebook scrollbar slider background color when clicked on."));
 
-
+export const cellSymbolHighlight = registerColor('notebook.symbolHighlightBackground', {
+	dark: Color.fromHex('#ffffff0b'),
+	light: Color.fromHex('#fdff0033'),
+	hc: null
+}, nls.localize('notebook.symbolHighlightBackground', "Background color of highlighted cell"));
 
 registerThemingParticipant((theme, collector) => {
 	collector.addRule(`.notebookOverlay > .cell-list-container > .monaco-list > .monaco-scrollable-element {
@@ -1457,18 +1528,38 @@ registerThemingParticipant((theme, collector) => {
 		collector.addRule(`.notebookOverlay .monaco-list-row > .monaco-toolbar { border: solid 1px ${cellToolbarSeperator}; }`);
 	}
 
-	const cellFocusBackgroundColor = theme.getColor(cellFocusBackground);
-	if (cellFocusBackgroundColor) {
-		collector.addRule(`.notebookOverlay .code-cell-row:hover .cell-focus-indicator,
-			.notebookOverlay .code-cell-row.focused .cell-focus-indicator,
-			.notebookOverlay .code-cell-row.cell-output-hover .cell-focus-indicator { background-color: ${cellFocusBackgroundColor} !important; }`);
-		collector.addRule(`.notebookOverlay .markdown-cell-row:hover,
-			.notebookOverlay .markdown-cell-row.focused { background-color: ${cellFocusBackgroundColor} !important; }`);
+	const focusedCellBackgroundColor = theme.getColor(focusedCellBackground);
+	if (focusedCellBackgroundColor) {
+		collector.addRule(`.notebookOverlay .code-cell-row.focused .cell-focus-indicator,
+			.notebookOverlay .markdown-cell-row.focused { background-color: ${focusedCellBackgroundColor} !important; }`);
 	}
 
-	const focusedEditorIndicatorColor = theme.getColor(focusedEditorIndicator);
-	if (focusedEditorIndicatorColor) {
-		collector.addRule(`.notebookOverlay .monaco-list-row.cell-editor-focus .cell-editor-part:before { outline: solid 1px ${focusedEditorIndicatorColor}; }`);
+	const cellHoverBackgroundColor = theme.getColor(cellHoverBackground);
+	if (cellHoverBackgroundColor) {
+		collector.addRule(`.notebookOverlay .code-cell-row:not(.focused):hover .cell-focus-indicator,
+			.notebookOverlay .code-cell-row:not(.focused).cell-output-hover .cell-focus-indicator,
+			.notebookOverlay .markdown-cell-row:not(.focused):hover { background-color: ${cellHoverBackgroundColor} !important; }`);
+	}
+
+	const focusedCellBorderColor = theme.getColor(focusedCellBorder);
+	collector.addRule(`.monaco-workbench .notebookOverlay .monaco-list .monaco-list-row.focused .cell-focus-indicator-top:before,
+			.monaco-workbench .notebookOverlay .monaco-list .monaco-list-row.focused .cell-focus-indicator-bottom:before,
+			.monaco-workbench .notebookOverlay .monaco-list .markdown-cell-row.focused:before,
+			.monaco-workbench .notebookOverlay .monaco-list .markdown-cell-row.focused:after {
+				border-color: ${focusedCellBorderColor} !important;
+			}`);
+
+	const cellSymbolHighlightColor = theme.getColor(cellSymbolHighlight);
+	if (cellSymbolHighlightColor) {
+		collector.addRule(`.monaco-workbench .notebookOverlay .monaco-list .monaco-list-row.code-cell-row.nb-symbolHighlight .cell-focus-indicator,
+		.monaco-workbench .notebookOverlay .monaco-list .monaco-list-row.nb-symbolHighlight.markdown-cell-row {
+			background-color: ${cellSymbolHighlightColor} !important;
+		}`);
+	}
+
+	const focusedEditorBorderColorColor = theme.getColor(focusedEditorBorderColor);
+	if (focusedEditorBorderColorColor) {
+		collector.addRule(`.notebookOverlay .monaco-list-row.cell-editor-focus .cell-editor-part:before { outline: solid 1px ${focusedEditorBorderColorColor}; }`);
 	}
 
 	const editorBorderColor = theme.getColor(notebookCellBorder);
@@ -1501,15 +1592,6 @@ registerThemingParticipant((theme, collector) => {
 		collector.addRule(`.monaco-workbench .notebookOverlay .cell-statusbar-container .cell-language-picker:hover { background-color: ${cellStatusBarHoverBg}; }`);
 	}
 
-	const cellShadowColor = theme.getColor(focusedCellShadow);
-	if (cellShadowColor) {
-		// Code cells
-		collector.addRule(`.monaco-workbench .notebookOverlay .monaco-list .monaco-list-row.focused .cell-shadow { box-shadow: 0px 0px 4px 2px ${cellShadowColor} }`);
-
-		// Markdown cells
-		collector.addRule(`.monaco-workbench .notebookOverlay .monaco-list .markdown-cell-row.focused { box-shadow: 0px 0px 4px 2px ${cellShadowColor} }`);
-	}
-
 	const cellInsertionIndicatorColor = theme.getColor(cellInsertionIndicator);
 	if (cellInsertionIndicatorColor) {
 		collector.addRule(`.notebookOverlay > .cell-list-container > .cell-list-insertion-indicator { background-color: ${cellInsertionIndicatorColor}; }`);
@@ -1534,23 +1616,23 @@ registerThemingParticipant((theme, collector) => {
 	}
 
 	// Cell Margin
-	collector.addRule(`.notebookOverlay .cell-list-container > .monaco-list > .monaco-scrollable-element > .monaco-list-rows > .monaco-list-row  > div.cell { margin: 0px ${CELL_MARGIN}px 0px ${CELL_MARGIN}px; }`);
+	collector.addRule(`.notebookOverlay .cell-list-container > .monaco-list > .monaco-scrollable-element > .monaco-list-rows > .monaco-list-row  > div.cell { margin: 0px ${CELL_MARGIN * 2}px 0px ${CELL_MARGIN}px; }`);
 	collector.addRule(`.notebookOverlay .cell-list-container > .monaco-list > .monaco-scrollable-element > .monaco-list-rows > .monaco-list-row  > div.cell.code { margin-left: ${CODE_CELL_LEFT_MARGIN}px; }`);
 	collector.addRule(`.notebookOverlay .cell-list-container > .monaco-list > .monaco-scrollable-element > .monaco-list-rows > .monaco-list-row { padding-top: ${EDITOR_TOP_MARGIN}px; }`);
 	collector.addRule(`.notebookOverlay .cell-list-container > .monaco-list > .monaco-scrollable-element > .monaco-list-rows > .markdown-cell-row { padding-bottom: ${CELL_BOTTOM_MARGIN}px; }`);
 	collector.addRule(`.notebookOverlay .cell-list-container > .monaco-list > .monaco-scrollable-element > .monaco-list-rows > .markdown-cell-row .cell-bottom-toolbar-container { margin-top: ${CELL_BOTTOM_MARGIN}px; }`);
 	collector.addRule(`.notebookOverlay .output { margin: 0px ${CELL_MARGIN}px 0px ${CODE_CELL_LEFT_MARGIN + CELL_RUN_GUTTER}px; }`);
-	collector.addRule(`.notebookOverlay .output { width: calc(100% - ${CODE_CELL_LEFT_MARGIN + CELL_RUN_GUTTER + CELL_MARGIN}px); }`);
-	collector.addRule(`.notebookOverlay .cell-bottom-toolbar-container { width: calc(100% - ${CELL_MARGIN * 2 + CELL_RUN_GUTTER}px); margin: 0px ${CELL_MARGIN}px 0px ${CELL_MARGIN + CELL_RUN_GUTTER}px; }`);
+	collector.addRule(`.notebookOverlay .output { width: calc(100% - ${CODE_CELL_LEFT_MARGIN + CELL_RUN_GUTTER + (CELL_MARGIN * 2)}px); }`);
+	collector.addRule(`.notebookOverlay .cell-bottom-toolbar-container { width: calc(100% - ${CELL_MARGIN * 2 + CELL_RUN_GUTTER}px); margin: 0px ${CELL_MARGIN * 2}px 0px ${CELL_MARGIN + CELL_RUN_GUTTER}px; }`);
 
-	collector.addRule(`.notebookOverlay .markdown-cell-row .cell .cell-editor-part { margin-left: ${CELL_RUN_GUTTER}px; }`);
 	collector.addRule(`.notebookOverlay .cell-list-container > .monaco-list > .monaco-scrollable-element > .monaco-list-rows > .monaco-list-row  > div.cell.markdown { padding-left: ${CELL_RUN_GUTTER}px; }`);
 	collector.addRule(`.notebookOverlay .cell .run-button-container { width: ${CELL_RUN_GUTTER}px; }`);
 	collector.addRule(`.notebookOverlay .cell-drag-image .cell-editor-container > div { padding: ${EDITOR_TOP_PADDING}px 16px ${EDITOR_BOTTOM_PADDING}px 16px; }`);
 	collector.addRule(`.notebookOverlay .monaco-list .monaco-list-row .cell-focus-indicator-top { height: ${EDITOR_TOP_MARGIN}px; }`);
 	collector.addRule(`.notebookOverlay .monaco-list .monaco-list-row .cell-focus-indicator-side { bottom: ${BOTTOM_CELL_TOOLBAR_HEIGHT}px; }`);
-	collector.addRule(`.notebookOverlay .monaco-list .monaco-list-row .cell-focus-indicator { width: ${CODE_CELL_LEFT_MARGIN + CELL_RUN_GUTTER}px; }`);
-	collector.addRule(`.notebookOverlay .monaco-list .monaco-list-row .cell-focus-indicator.cell-focus-indicator-right { width: ${CELL_MARGIN}px; }`);
+	collector.addRule(`.notebookOverlay .monaco-list .monaco-list-row.code-cell-row .cell-focus-indicator-left { width: ${CODE_CELL_LEFT_MARGIN + CELL_RUN_GUTTER}px; }`);
+	collector.addRule(`.notebookOverlay .monaco-list .monaco-list-row.markdown-cell-row .cell-focus-indicator-left { width: ${CODE_CELL_LEFT_MARGIN}px; }`);
+	collector.addRule(`.notebookOverlay .monaco-list .monaco-list-row .cell-focus-indicator.cell-focus-indicator-right { width: ${CELL_MARGIN * 2}px; }`);
 	collector.addRule(`.notebookOverlay .monaco-list .monaco-list-row .cell-focus-indicator-bottom { height: ${CELL_BOTTOM_MARGIN}px; }`);
 	collector.addRule(`.notebookOverlay .monaco-list .monaco-list-row .cell-shadow-container-bottom { top: ${CELL_BOTTOM_MARGIN}px; }`);
 });
