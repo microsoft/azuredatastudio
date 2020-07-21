@@ -49,7 +49,11 @@ export class KubeCtlTool extends ToolBase {
 		let version: SemVer | undefined = undefined;
 		if (output) {
 			const versionJson: KubeCtlVersion = JSON.parse(output);
-			version = new SemVer(versionJson.clientVersion.gitVersion);
+			if (versionJson && versionJson.clientVersion && versionJson.clientVersion.gitVersion) {
+				version = new SemVer(versionJson.clientVersion.gitVersion);
+			} else {
+				throw new Error(localize('resourceDeployment.invalidKubectlVersionOutput', "Unable to parse the kubectl version command output: \"{0}\"", output));
+			}
 		}
 		return version;
 	}
