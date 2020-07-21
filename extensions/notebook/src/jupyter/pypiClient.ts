@@ -9,11 +9,11 @@ import * as constants from '../common/constants';
 
 const localize = nls.loadMessageBundle();
 
-export interface IPiPyClient {
+export interface IPyPiClient {
 	fetchPypiPackage(packageName: string): Promise<any>;
 }
 
-export class PiPyClient implements IPiPyClient {
+export class PyPiClient implements IPyPiClient {
 
 	private readonly RequestTimeout = 10000;
 	private getLink(packageName: string): string {
