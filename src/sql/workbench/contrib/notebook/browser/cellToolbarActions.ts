@@ -81,7 +81,6 @@ export class MoveCellAction extends CellActionBase {
 	doRun(context: CellContext): Promise<void> {
 		let moveDirection = this._cssClass.includes('move-down') ? 'down' : 'up';
 		try {
-			let model = context.model;
 			// Todo: trigger cell move action using the moveDirection string.
 			alert(moveDirection);
 		} catch (error) {
@@ -132,6 +131,8 @@ export class CellToggleMoreActions {
 		@IInstantiationService private instantiationService: IInstantiationService
 	) {
 		this._actions.push(
+			instantiationService.createInstance(ConvertCellAction, 'convertCell', localize('convertCell', "Convert Cell")),
+			new Separator(),
 			instantiationService.createInstance(RunCellsAction, 'runAllAbove', localize('runAllAbove', "Run Cells Above"), false),
 			instantiationService.createInstance(RunCellsAction, 'runAllBelow', localize('runAllBelow', "Run Cells Below"), true),
 			new Separator(),
@@ -179,6 +180,30 @@ export function removeDuplicatedAndStartingSeparators(actions: (Action | CellAct
 	}
 	if (actions[actions.length - 1] instanceof Separator) {
 		actions.splice(actions.length - 1, 1);
+	}
+}
+
+export class ConvertCellAction extends CellActionBase {
+	constructor(id: string, label: string,
+		@INotificationService notificationService: INotificationService
+	) {
+		super(id, label, undefined, notificationService);
+	}
+
+	doRun(context: CellContext): Promise<void> {
+		try {
+			let cellType: string = context.cell.cellType;
+			// Todo: wire up cell conversion: code <=> text
+			alert(cellType);
+		} catch (error) {
+			let message = getErrorMessage(error);
+
+			this.notificationService.notify({
+				severity: Severity.Error,
+				message: message
+			});
+		}
+		return Promise.resolve();
 	}
 }
 
