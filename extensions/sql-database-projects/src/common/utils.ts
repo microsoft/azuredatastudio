@@ -40,7 +40,7 @@ export function trimUri(innerUri: vscode.Uri, outerUri: vscode.Uri): string {
 	}
 
 	while (innerParts.length > 1) {
-		outerParts.unshift('..');
+		outerParts.unshift(constants.RelativeOuterPath);
 		innerParts = innerParts.slice(1);
 	}
 
