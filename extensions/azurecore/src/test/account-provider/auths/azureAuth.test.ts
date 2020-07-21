@@ -6,10 +6,11 @@
 import * as should from 'should';
 import * as os from 'os';
 import 'mocha';
+import * as vscode from 'vscode';
 
 import { PromptFailedResult, AccountKey } from 'azdata';
 import { AzureAuth, AccessToken, RefreshToken, TokenClaims, TokenRefreshResponse } from '../../../account-provider/auths/azureAuth';
-import { AzureAccount, AzureAuthType, Deferred } from '../../../account-provider/interfaces';
+import { AzureAccount, AzureAuthType, Deferred, Tenant } from '../../../account-provider/interfaces';
 import providerSettings from '../../../account-provider/providerSettings';
 import { SimpleTokenCache } from '../../../account-provider/simpleTokenCache';
 import { CredentialsTestProvider } from '../../stubs/credentialsTestProvider';
@@ -47,6 +48,11 @@ const refreshToken: RefreshToken = {
 
 const resourceId = 'resource';
 const tenantId = 'tenant';
+
+const tenant: Tenant = {
+	id: tenantId,
+	displayName: 'common'
+};
 
 // These tests don't work on Linux systems because gnome-keyring doesn't like running on headless machines.
 describe('AccountProvider.AzureAuth', function (): void {
@@ -95,5 +101,17 @@ describe('AccountProvider.AzureAuth', function (): void {
 		should(account.properties.azureAuthType).be.equal(AzureAuthType.AuthCodeGrant);
 		should(account.key.accountId).be.equal('someKey');
 		should(account.properties.isMsAccount).be.equal(true);
+	});
+	it('Should handle ignored tenants', async function (): Promise<void> {
+		// Don't sit on the await openConsentDialog if test is failing
+		this.timeout(3000);
+
+		const configuration = vscode.workspace.getConfiguration('azure.tenant.config');
+		const values = [tenantId];
+
+		await configuration.update('filter', values, vscode.ConfigurationTarget.Global);
+		const x = await baseAuth.openConsentDialog(tenant, resourceId);
+
+		should(x).be.false();
 	});
 });

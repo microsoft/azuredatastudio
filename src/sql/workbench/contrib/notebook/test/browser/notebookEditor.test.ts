@@ -32,7 +32,6 @@ import { IOverlayWidget, IOverlayWidgetPosition } from 'vs/editor/browser/editor
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { FindReplaceStateChangedEvent, INewFindReplaceState } from 'vs/editor/contrib/find/findState';
 import { getRandomString } from 'vs/editor/test/common/model/linesTextBuffer/textBufferAutoTestUtils';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ContextViewService } from 'vs/platform/contextview/browser/contextViewService';
 import { DidInstallExtensionEvent, DidUninstallExtensionEvent, IExtensionManagementService, InstallExtensionEvent } from 'vs/platform/extensionManagement/common/extensionManagement';
@@ -57,6 +56,7 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { IProductService } from 'vs/platform/product/common/productService';
 
 class NotebookModelStub extends stubs.NotebookModelStub {
 	private _cells: Array<ICellModel> = [new CellModel(undefined, undefined)];
@@ -681,6 +681,8 @@ function setupServices(arg: { workbenchThemeService?: WorkbenchThemeService, ins
 	instantiationService.stub(IExtensionManagementService, 'onUninstallExtension', uninstallEvent.event);
 	instantiationService.stub(IExtensionManagementService, 'onDidUninstallExtension', didUninstallEvent.event);
 
+	instantiationService.stub(IProductService, { quality: 'stable' });
+
 	const extensionService = instantiationService.get(IExtensionService);
 	const notebookService = new NotebookService(
 		instantiationService.get(ILifecycleService),
@@ -691,7 +693,8 @@ function setupServices(arg: { workbenchThemeService?: WorkbenchThemeService, ins
 		instantiationService.get(IFileService),
 		instantiationService.get(ILogService),
 		queryManagementService,
-		instantiationService.get(IContextKeyService)
+		instantiationService.get(IContextKeyService),
+		instantiationService.get(IProductService)
 	);
 
 	instantiationService.stub(INotebookService, notebookService);
@@ -713,8 +716,7 @@ function setupServices(arg: { workbenchThemeService?: WorkbenchThemeService, ins
 		instantiationService.get(ITextResourceConfigurationService),
 		instantiationService.get(IThemeService),
 		instantiationService.get(IEditorGroupsService),
-		instantiationService.get(IEditorService),
-		instantiationService.get(IConfigurationService)
+		instantiationService.get(IEditorService)
 	);
 	const notebookEditorStub = new NotebookEditorStub({ cellGuid: cellTextEditorGuid, editor: queryTextEditor, model: new NotebookModelStub(), notebookParams: <INotebookParams>{ notebookUri: untitledNotebookInput.notebookUri } });
 	notebookService.addNotebookEditor(notebookEditorStub);

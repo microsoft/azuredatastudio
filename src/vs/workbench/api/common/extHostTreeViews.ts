@@ -13,7 +13,7 @@ import { ExtHostTreeViewsShape, MainThreadTreeViewsShape } from './extHost.proto
 import { ITreeItem, TreeViewItemHandleArg, ITreeItemLabel, IRevealOptions } from 'vs/workbench/common/views';
 import { ExtHostCommands, CommandsConverter } from 'vs/workbench/api/common/extHostCommands';
 import { asPromise } from 'vs/base/common/async';
-import { TreeItemCollapsibleState, ThemeIcon } from 'vs/workbench/api/common/extHostTypes';
+import { TreeItemCollapsibleState, ThemeIcon, MarkdownString as MarkdownStringType } from 'vs/workbench/api/common/extHostTypes';
 import { isUndefinedOrNull, isString } from 'vs/base/common/types';
 import { equals, coalesce } from 'vs/base/common/arrays';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -367,7 +367,7 @@ export class ExtHostTreeView<T> extends Disposable {
 			if (node) {
 				const resolve = await this.dataProvider.resolveTreeItem(element, node.extensionItem);
 				// Resolvable elements. Currently only tooltip.
-				node.item.tooltip = resolve.tooltip;
+				node.item.tooltip = this.getTooltip(resolve.tooltip);
 				return node.item;
 			}
 		}
@@ -538,14 +538,11 @@ export class ExtHostTreeView<T> extends Disposable {
 	}
 
 	private getTooltip(tooltip?: string | vscode.MarkdownString): string | IMarkdownString | undefined {
-		if (typeof tooltip === 'string') {
-			return tooltip;
-		} else if (tooltip === undefined) {
-			return undefined;
-		} else {
+		if (MarkdownStringType.isMarkdownString(tooltip)) {
 			checkProposedApiEnabled(this.extension);
 			return MarkdownString.from(tooltip);
 		}
+		return tooltip;
 	}
 
 	protected createTreeNode(element: T, extensionTreeItem: azdata.TreeItem2, parent: TreeNode | Root): TreeNode { // {{SQL CARBON EDIT}} change to protected, change to azdata.TreeItem

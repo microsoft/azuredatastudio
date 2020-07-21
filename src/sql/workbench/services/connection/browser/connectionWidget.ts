@@ -520,7 +520,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		let oldSelection = this._azureAccountDropdown.value;
 		const accounts = await this._accountManagementService.getAccounts();
 		this._azureAccountList = accounts.filter(a => a.key.providerId.startsWith('azure'));
-		let accountDropdownOptions = this._azureAccountList.map(account => account.key.accountId);
+		let accountDropdownOptions = this._azureAccountList.map(account => account.displayInfo.displayName);
 		if (accountDropdownOptions.length === 0) {
 			// If there are no accounts add a blank option so that add account isn't automatically selected
 			accountDropdownOptions.unshift('');
