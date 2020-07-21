@@ -155,7 +155,64 @@
       ]
     },
     "dashboard": {
-      "provider": "KUSTO"
+      "provider": "KUSTO",
+      "flavors": [
+        {
+          "flavor": "cloud",
+          "conditions": [
+            {
+              "field": "isCloud",
+              "operator": "==",
+              "value": true
+            }
+          ],
+          "databaseProperties": [
+            {
+              "displayName": "%cloud.databaseProperties.azureEdition%",
+              "value": "azureEdition"
+            },
+            {
+              "displayName": "%cloud.databaseProperties.serviceLevelObjective%",
+              "value": "serviceLevelObjective"
+            },
+            {
+              "displayName": "%cloud.databaseProperties.compatibilityLevel%",
+              "value": "compatibilityLevel"
+            },
+            {
+              "displayName": "%cloud.databaseProperties.owner%",
+              "value": "owner"
+            }
+          ],
+          "serverProperties": [
+            {
+              "displayName": "%cloud.serverProperties.serverVersion%",
+              "value": "serverVersion"
+            },
+            {
+              "displayName": "%cloud.serverProperties.serverEdition%",
+              "value": "serverEdition"
+            }
+          ],
+          "databasesListProperties": [
+            {
+              "displayName": "%databasesListProperties.name%",
+              "value": "name",
+              "widthWeight": 60
+            },
+            {
+              "displayName": "%databasesListProperties.status%",
+              "value": "state",
+              "widthWeight": 20
+            },
+            {
+              "displayName": "%databasesListProperties.size%",
+              "value": "sizeInMB",
+              "widthWeight": 20
+            }
+          ]
+        }
+      ]
     },
     "connectionProvider": {
       "providerId": "KUSTO",
