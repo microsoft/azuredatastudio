@@ -59,6 +59,7 @@ describe('ConnectControllerDialog', function (): void {
 });
 
 async function validateConnectControllerDialog(info: ControllerInfo, expectedUrl: string): Promise<void> {
+	// For first set of tests just stub out refresh calls - we'll test that separately
 	sinon.stub(ControllerModel.prototype, 'refresh').returns(Promise.resolve());
 	const connectControllerDialog = new ConnectToControllerDialog(undefined!);
 	connectControllerDialog.showDialog(info, 'pwd');
