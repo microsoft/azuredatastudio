@@ -69,6 +69,19 @@ export class SchemaCompareMainWindowTest extends SchemaCompareMainWindow {
 			result = true;
 		}
 
+		if (result === false) {
+			console.log('CompareButton: (Actual) ', this.compareButton.enabled, '(Expected) ', buttonState.compareButtonState);
+			console.log('OptionsButton: (Actual) ', this.optionsButton.enabled, '(Expected) ', buttonState.optionsButtonState);
+			console.log('SwitchButton: (Actual) ', this.switchButton.enabled, '(Expected) ', buttonState.switchButtonState);
+			console.log('OpenScmpButton: (Actual) ', this.openScmpButton.enabled, '(Expected) ', buttonState.openScmpButtonState);
+			console.log('SaveScmpButton: (Actual) ', this.saveScmpButton.enabled, '(Expected) ', buttonState.saveScmpButtonState);
+			console.log('CancelCompareButton: (Actual) ', this.cancelCompareButton.enabled, '(Expected) ', buttonState.cancelCompareButtonState);
+			console.log('SelectSourceButton: (Actual) ', this.selectSourceButton.enabled, '(Expected) ', buttonState.selectSourceButtonState);
+			console.log('SelectTargetButton: (Actual) ', this.selectTargetButton.enabled, '(Expected) ', buttonState.selectTargetButtonState);
+			console.log('GenerateScriptButton: (Actual) ', this.generateScriptButton.enabled, '(Expected) ', buttonState.generateScriptButtonState);
+			console.log('ApplyButton: (Actual) ', this.applyButton.enabled, '(Expected) ', buttonState.applyButtonState);
+		}
+
 		return result;
 	}
 }
