@@ -81,18 +81,18 @@ export abstract class AzureAuth implements vscode.Disposable {
 		try {
 			const result = await this.login(this.commonTenant, this.metadata.settings.microsoftResource);
 			loginComplete = result.authComplete;
-			if (!result || !result.authComplete || !result.response) {
+			if (!result || !result.response) {
 				console.log('result empty');
 				// TODO do something
 				return undefined;
 			}
 			const account = await this.hydrateAccount(result.response.accessToken, result.response.tokenClaims);
-			loginComplete.resolve();
+			loginComplete?.resolve();
 			return account;
 		} catch (ex) {
 			if (ex instanceof AzureAuthError) {
 				if (loginComplete) {
-					loginComplete?.reject(ex.getPrintableString());
+					loginComplete.reject(ex.getPrintableString());
 				} else {
 					vscode.window.showErrorMessage(ex.getPrintableString());
 				}
@@ -222,7 +222,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		return this.handleInteractionRequired(tenant, resource);
 	}
 
-	protected async getToken(tenant: Tenant, resource: Resource, postData: AuthorizationCodePostData | TokenPostData): Promise<OAuthTokenResponse> {
+	protected async getToken(tenant: Tenant, resource: Resource, postData: AuthorizationCodePostData | TokenPostData | RefreshTokenPostData): Promise<OAuthTokenResponse> {
 		const tokenUrl = `${this.loginEndpointUrl}${tenant.id}/oauth2/token`;
 		const response = await this.makePostRequest(tokenUrl, postData);
 
@@ -232,7 +232,12 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		const accessTokenString = response.data?.access_token;
 		const refreshTokenString = response.data?.refresh_token;
+		const expiresOnString = response.data.expires_on;
 
+		return this.getTokenHelper(tenant, resource, accessTokenString, refreshTokenString, expiresOnString);
+	}
+
+	protected async getTokenHelper(tenant: Tenant, resource: Resource, accessTokenString: string, refreshTokenString: string, expiresOnString: string): Promise<OAuthTokenResponse> {
 		if (!accessTokenString) {
 			const msg = localize('azure.accessTokenEmpty', 'No access token returned from Microsoft OAuth');
 			throw new AzureAuthError(msg, 'Access token was empty', undefined);
@@ -252,7 +257,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			key: userKey
 		};
 		let refreshToken: RefreshToken;
-		const expiresOn: string = response.data.expires_on;
+		const expiresOn: string = expiresOnString;
 
 		if (refreshTokenString) {
 			refreshToken = {
@@ -514,7 +519,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	//#endregion
 
 	//#region network functions
-	private async makePostRequest(url: string, postData: AuthorizationCodePostData | TokenPostData): Promise<AxiosResponse<any>> {
+	protected async makePostRequest(url: string, postData: AuthorizationCodePostData | TokenPostData | DeviceCodeStartPostData | DeviceCodeCheckPostData): Promise<AxiosResponse<any>> {
 		const config: AxiosRequestConfig = {
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded'
@@ -585,6 +590,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 	}
 
 	public async dispose() { }
+
+	public async autoOAuthCancelled(): Promise<void> { }
 
 	//#endregion
 }
@@ -660,7 +667,7 @@ export interface TokenClaims { // https://docs.microsoft.com/en-us/azure/active-
 export type OAuthTokenResponse = { accessToken: AccessToken, refreshToken: RefreshToken, tokenClaims: TokenClaims, expiresOn: string };
 
 export interface TokenPostData {
-	grant_type: 'refresh_token' | 'authorization_code';
+	grant_type: 'refresh_token' | 'authorization_code' | 'urn:ietf:params:oauth:grant-type:device_code';
 	client_id: string;
 	resource: string;
 }
@@ -679,4 +686,13 @@ export interface AuthorizationCodePostData extends TokenPostData {
 	redirect_uri: string;
 }
 
+export interface DeviceCodeStartPostData extends Omit<TokenPostData, 'grant_type'> {
+
+}
+
+export interface DeviceCodeCheckPostData extends Omit<TokenPostData, 'resource'> {
+	grant_type: 'urn:ietf:params:oauth:grant-type:device_code',
+	tenant: string,
+	code: string
+}
 //#endregion

@@ -17,6 +17,7 @@ import { SimpleTokenCache } from './simpleTokenCache';
 import { Logger } from '../utils/Logger';
 import { MultiTenantTokenResponse, Token, AzureAuth } from './auths/azureAuth';
 import { AzureAuthCodeGrant } from './auths/azureAuthCodeGrant';
+import { AzureDeviceCode } from './auths/azureDeviceCode';
 
 const localize = nls.loadMessageBundle();
 
@@ -58,14 +59,14 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		const configuration = vscode.workspace.getConfiguration(AzureAccountProvider.CONFIGURATION_SECTION);
 
 		const codeGrantMethod: boolean = configuration.get('codeGrant');
-		// const deviceCodeMethod: boolean = configuration.get('deviceCode');
+		const deviceCodeMethod: boolean = configuration.get('deviceCode');
 
 		if (codeGrantMethod === true && !this.forceDeviceCode) {
 			this.authMappings.set(AzureAuthType.AuthCodeGrant, new AzureAuthCodeGrant(metadata, tokenCache, context, uriEventHandler));
 		}
-		// if (deviceCodeMethod === true || this.forceDeviceCode) {
-		// 	this.authMappings.set(AzureAuthType.DeviceCode, new AzureDeviceCode(metadata, tokenCache, context, uriEventHandler));
-		// }
+		if (deviceCodeMethod === true || this.forceDeviceCode) {
+			this.authMappings.set(AzureAuthType.DeviceCode, new AzureDeviceCode(metadata, tokenCache, context, uriEventHandler));
+		}
 	}
 
 	private getAuthMethod(account?: azdata.Account): AzureAuth {
@@ -175,7 +176,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 	}
 
 	autoOAuthCancelled(): Thenable<void> {
-		// this.authMappings.forEach(val => val.autoOAuthCancelled());
+		this.authMappings.forEach(val => val.autoOAuthCancelled());
 		return Promise.resolve();
 	}
 }
