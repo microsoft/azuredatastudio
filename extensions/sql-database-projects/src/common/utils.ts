@@ -31,7 +31,7 @@ export function trimUri(innerUri: vscode.Uri, outerUri: vscode.Uri): string {
 	if (path.isAbsolute(outerUri.path)
 		&& innerParts.length > 0 && outerParts.length > 0
 		&& innerParts[0].toLowerCase() !== outerParts[0].toLowerCase()) {
-		throw new Error('Files are added to project file with abosolute paths outside of projects drive. please make the path relative and add files from the same drive');
+		throw new Error(constants.ousiderFolderPath);
 	}
 
 	while (innerParts.length > 0 && outerParts.length > 0 && innerParts[0].toLocaleLowerCase() === outerParts[0].toLocaleLowerCase()) {
