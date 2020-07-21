@@ -296,7 +296,7 @@ describe('AzureResourceAccountTreeNode.getChildren', function (): void {
 
 		const children = await accountTreeNode.getChildren();
 
-		should(getSecurityTokenStub.calledOnce).be.true('getSecurityToken should have been called exactly once');
+		should(getSecurityTokenStub.calledTwice).be.true('getSecurityToken should have been called exactly twice - once per subscription');
 		mockSubscriptionService.verify((o) => o.getSubscriptions(mockAccount, mockCredential, mockTenantId), TypeMoq.Times.once());
 		mockSubscriptionFilterService.verify((o) => o.getSelectedSubscriptions(mockAccount), TypeMoq.Times.once());
 		mockCacheService.verify((o) => o.get(TypeMoq.It.isAnyString()), TypeMoq.Times.never());

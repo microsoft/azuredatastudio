@@ -64,8 +64,7 @@ const mockResourceRootNode: azureResource.IAzureResourceNode = {
 	}
 };
 
-const mockTokens: { [key: string]: any } = {};
-mockTokens[mockTenantId] = {
+const mockToken = {
 	token: 'mock_token',
 	tokenType: 'Bearer'
 };
@@ -109,7 +108,7 @@ describe('AzureResourceDatabaseTreeDataProvider.getChildren', function (): void 
 		mockDatabaseService = TypeMoq.Mock.ofType<IAzureResourceService<azureResource.AzureResourceDatabase>>();
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 
-		sinon.stub(azdata.accounts, 'getSecurityToken').returns(Promise.resolve(mockTokens));
+		sinon.stub(azdata.accounts, 'getAccountSecurityToken').returns(Promise.resolve(mockToken));
 		mockDatabaseService.setup((o) => o.getResources(mockSubscription, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(mockDatabases));
 		mockExtensionContext.setup((o) => o.asAbsolutePath(TypeMoq.It.isAnyString())).returns(() => TypeMoq.It.isAnyString());
 	});
