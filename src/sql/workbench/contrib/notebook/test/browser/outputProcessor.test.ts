@@ -8,7 +8,6 @@ import { nb } from 'azdata';
 import * as op from 'sql/workbench/contrib/notebook/browser/models/outputProcessor';
 import { JSONObject } from 'sql/workbench/services/notebook/common/jsonext';
 import { nbformat as nbformat } from 'sql/workbench/services/notebook/common/nbformat';
-import { getRandomElement } from 'vs/base/common/arrays';
 
 suite('OutputProcessor functions', function (): void {
 	const text = 'An arbitrary text input:!@#$%^&*()_+~`:;,.-_=';
@@ -42,7 +41,7 @@ suite('OutputProcessor functions', function (): void {
 		}
 
 		// error tests
-		for (const traceback of [undefined, [undefined], [], [''], ['tb1:!@#$%^&*()_+~`:;,.-_=', 'tb2:!@#$%^&*()_+~`:;,.-_=']]) {
+		for (const traceback of [undefined, [undefined], [], [''], ['Arbitrary traceback 1:!@#$%^&*()_+~`:;,.-_=', 'Arbitrary traceback 2:!@#$%^&*()_+~`:;,.-_=']]) {
 			for (const evalue of [undefined, '', 'evalue1:!@#$%^&*()_+~`:;,.-_=']) {
 				for (const ename of ['ename1:!@#$%^&*()_+~`:;,.-_=', '', undefined]) {
 					const output = <nbformat.IError>{
@@ -72,7 +71,7 @@ suite('OutputProcessor functions', function (): void {
 	});
 
 	suite('getMetadata', function (): void {
-		for (const outputType of ['execute_result', 'display_data', getRandomElement(['update_display_data', 'stream', 'error'])] as nbformat.OutputType[]) {
+		for (const outputType of ['execute_result', 'display_data', 'update_display_data', 'stream', 'error'] as nbformat.OutputType[]) {
 			const output: nb.ICellOutput = {
 				output_type: outputType
 			};
@@ -90,25 +89,25 @@ suite('OutputProcessor functions', function (): void {
 
 	suite('getBundleOptions', function (): void {
 		for (const trusted of [true, false]) {
-			const outputType = getRandomElement(['execute_result', 'display_data']) as nbformat.OutputType;
-
-			const output: nb.ICellOutput = {
-				output_type: outputType,
-				metadata: arbitraryMetadata
-			};
-			const options: op.IOutputModelOptions = {
-				value: output,
-				trusted: trusted
-			};
-			test(`test for outputType:${outputType}, bundleOptions.trusted:${trusted}`, () => {
-				const result = op.getBundleOptions(options);
-				const expected = {
-					data: op.getData(output),
-					metadata: op.getMetadata(output),
+			for (const outputType of ['execute_result', 'display_data'] as nbformat.OutputType[]) {
+				const output: nb.ICellOutput = {
+					output_type: outputType,
+					metadata: arbitraryMetadata
+				};
+				const options: op.IOutputModelOptions = {
+					value: output,
 					trusted: trusted
 				};
-				assert.deepEqual(result, expected, `getBundleOptions should return an object that has data and metadata fields as returned by getData and getMetadata calls and a trusted field as the value of the 'trusted' field in options passed to it`);
-			});
+				test(`test for outputType:${outputType}, bundleOptions.trusted:${trusted}`, () => {
+					const result = op.getBundleOptions(options);
+					const expected = {
+						data: op.getData(output),
+						metadata: op.getMetadata(output),
+						trusted: trusted
+					};
+					assert.deepEqual(result, expected, `getBundleOptions should return an object that has data and metadata fields as returned by getData and getMetadata calls and a trusted field as the value of the 'trusted' field in options passed to it`);
+				});
+			}
 		}
 	});
 });
