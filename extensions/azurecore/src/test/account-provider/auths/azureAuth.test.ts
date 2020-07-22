@@ -11,10 +11,11 @@ import * as TypeMoq from 'typemoq';
 import 'mocha';
 import { AzureAuthCodeGrant } from '../../../account-provider/auths/azureAuthCodeGrant';
 // import { AzureDeviceCode } from '../../../account-provider/auths/azureDeviceCode';
-import { Token, TokenClaims, AccessToken, RefreshToken, OAuthTokenResponse } from '../../../account-provider/auths/azureAuth';
+import { Token, TokenClaims, AccessToken, RefreshToken, OAuthTokenResponse, TokenPostData } from '../../../account-provider/auths/azureAuth';
 import { Tenant, AzureAccount } from '../../../account-provider/interfaces';
 import providerSettings from '../../../account-provider/providerSettings';
 import { AzureResource } from 'azdata';
+import { AxiosResponse } from 'axios';
 
 
 let azureAuthCodeGrant: TypeMoq.IMock<AzureAuthCodeGrant>;
@@ -174,6 +175,69 @@ describe('Azure Authentication', function () {
 			});
 		});
 
+	});
+
+	describe('getToken', function () {
+
+		it('calls handle interaction required', async function () {
+			azureAuthCodeGrant.setup(x => x.makePostRequest(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+				return Promise.resolve({
+					data: {
+						error: 'interaction_required'
+					}
+				} as AxiosResponse<any>);
+			});
+
+			azureAuthCodeGrant.setup(x => x.handleInteractionRequired(mockTenant, provider.settings.microsoftResource)).returns(() => {
+				return Promise.resolve({
+					accessToken: mockAccessToken
+				} as OAuthTokenResponse);
+			});
+
+
+			const result = await azureAuthCodeGrant.object.getToken(mockTenant, provider.settings.microsoftResource, {} as TokenPostData);
+
+			azureAuthCodeGrant.verify(x => x.handleInteractionRequired(mockTenant, provider.settings.microsoftResource), TypeMoq.Times.once());
+
+			should(result.accessToken).be.deepEqual(mockAccessToken);
+		});
+
+		it('unknown error should throw error', async function () {
+			azureAuthCodeGrant.setup(x => x.makePostRequest(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+				return Promise.resolve({
+					data: {
+						error: 'unknown error'
+					}
+				} as AxiosResponse<any>);
+			});
+
+			await azureAuthCodeGrant.object.getToken(mockTenant, provider.settings.microsoftResource, {} as TokenPostData).should.be.rejected();
+		});
+
+		it('calls getTokenHelper', async function () {
+			azureAuthCodeGrant.setup(x => x.makePostRequest(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+				return Promise.resolve({
+					data: {
+						access_token: mockAccessToken.token,
+						refresh_token: mockRefreshToken.token,
+						expires_on: `0`
+					}
+				} as AxiosResponse<any>);
+			});
+
+			azureAuthCodeGrant.setup(x => x.getTokenHelper(mockTenant, provider.settings.microsoftResource, TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+				return Promise.resolve({
+					accessToken: mockAccessToken
+				} as OAuthTokenResponse);
+			});
+
+
+			const result = await azureAuthCodeGrant.object.getToken(mockTenant, provider.settings.microsoftResource, {} as TokenPostData);
+
+			azureAuthCodeGrant.verify(x => x.getTokenHelper(mockTenant, provider.settings.microsoftResource, TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+
+			should(result.accessToken).be.deepEqual(mockAccessToken);
+		});
 	});
 
 });

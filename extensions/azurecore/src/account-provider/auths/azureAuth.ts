@@ -227,7 +227,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		return this.handleInteractionRequired(tenant, resource);
 	}
 
-	protected async getToken(tenant: Tenant, resource: Resource, postData: AuthorizationCodePostData | TokenPostData | RefreshTokenPostData): Promise<OAuthTokenResponse> {
+	public async getToken(tenant: Tenant, resource: Resource, postData: AuthorizationCodePostData | TokenPostData | RefreshTokenPostData): Promise<OAuthTokenResponse> {
 		const tokenUrl = `${this.loginEndpointUrl}${tenant.id}/oauth2/token`;
 		const response = await this.makePostRequest(tokenUrl, postData);
 
@@ -247,7 +247,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		return this.getTokenHelper(tenant, resource, accessTokenString, refreshTokenString, expiresOnString);
 	}
 
-	protected async getTokenHelper(tenant: Tenant, resource: Resource, accessTokenString: string, refreshTokenString: string, expiresOnString: string): Promise<OAuthTokenResponse> {
+	public async getTokenHelper(tenant: Tenant, resource: Resource, accessTokenString: string, refreshTokenString: string, expiresOnString: string): Promise<OAuthTokenResponse> {
 		if (!accessTokenString) {
 			const msg = localize('azure.accessTokenEmpty', 'No access token returned from Microsoft OAuth');
 			throw new AzureAuthError(msg, 'Access token was empty', undefined);
@@ -391,7 +391,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	//#region interaction handling
 
-	private async handleInteractionRequired(tenant: Tenant, resource: Resource): Promise<OAuthTokenResponse | undefined> {
+	public async handleInteractionRequired(tenant: Tenant, resource: Resource): Promise<OAuthTokenResponse | undefined> {
 		const shouldOpen = await this.askUserForInteraction(tenant, resource);
 		if (shouldOpen) {
 			const result = await this.login(tenant, resource);
@@ -530,7 +530,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	//#endregion
 
 	//#region network functions
-	protected async makePostRequest(url: string, postData: AuthorizationCodePostData | TokenPostData | DeviceCodeStartPostData | DeviceCodeCheckPostData): Promise<AxiosResponse<any>> {
+	public async makePostRequest(url: string, postData: AuthorizationCodePostData | TokenPostData | DeviceCodeStartPostData | DeviceCodeCheckPostData): Promise<AxiosResponse<any>> {
 		const config: AxiosRequestConfig = {
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded'
