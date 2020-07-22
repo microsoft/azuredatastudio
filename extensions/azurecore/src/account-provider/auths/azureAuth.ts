@@ -35,7 +35,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	protected readonly MicrosoftAccountType: string = 'microsoft';
 
 	protected readonly loginEndpointUrl: string;
-	protected readonly commonTenant: Tenant;
+	public readonly commonTenant: Tenant;
 	protected readonly redirectUri: string;
 	protected readonly scopes: string[];
 	protected readonly scopesString: string;
@@ -206,7 +206,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	 * @param resource
 	 * @param refreshToken
 	 */
-	protected async refreshToken(tenant: Tenant, resource: Resource, refreshToken: RefreshToken | undefined): Promise<OAuthTokenResponse> {
+	public async refreshToken(tenant: Tenant, resource: Resource, refreshToken: RefreshToken | undefined): Promise<OAuthTokenResponse> {
 		if (refreshToken) {
 			const postData: RefreshTokenPostData = {
 				grant_type: 'refresh_token',
@@ -344,7 +344,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 	}
 
-	private async getSavedToken(tenant: Tenant, resource: Resource, accountKey: azdata.AccountKey): Promise<{ accessToken: AccessToken, refreshToken: RefreshToken, expiresOn: string }> {
+	public async getSavedToken(tenant: Tenant, resource: Resource, accountKey: azdata.AccountKey): Promise<{ accessToken: AccessToken, refreshToken: RefreshToken, expiresOn: string }> {
 		const getMsg = localize('azure.cacheErrorGet', "Error when getting your account from the cache");
 		const parseMsg = localize('azure.cacheErrorParse', "Error when parsing your account from the cache");
 
