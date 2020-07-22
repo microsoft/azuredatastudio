@@ -118,7 +118,7 @@ describe.skip('Project Tree tests', function (): void {
 	});
 
 	it('Should be able to parse and include relative paths outside project folder', function (): void {
-		const root = os.platform() === 'win32' ? 'Z:\\Level1\\Level2\\' : '/';
+		const root = os.platform() === 'win32' ? 'Z:\\Level1\\Level2\\' : '/Root/Level1/Level2';
 		const proj = new Project(vscode.Uri.file(`${root}TestProj.sqlproj`).fsPath);
 
 		// nested entries before explicit top-level folder entry

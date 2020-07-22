@@ -23,7 +23,6 @@ describe('Tests to verify utils functions', function (): void {
 	});
 
 	it('Should get correct relative paths of files/folders', async () => {
-		// test mac style paths
 		const root = os.platform() === 'win32' ? 'Z:\\' : '/';
 		let projectUri = Uri.file(path.join(root, 'project', 'folder', 'project.sqlproj'));
 		let fileUri = Uri.file(path.join(root, 'project', 'folder', 'file.sql'));

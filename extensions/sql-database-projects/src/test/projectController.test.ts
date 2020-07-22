@@ -24,7 +24,7 @@ import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
 import { exists } from '../common/utils';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
-import { FolderNode } from '../models/tree/fileFolderTreeItem';
+import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 
 let testContext: TestContext;
@@ -46,10 +46,7 @@ const mockConnectionProfile: azdata.IConnectionProfile = {
 	options: undefined as any
 };
 
-
-
 describe('ProjectsController', function (): void {
-	// Moving to overall describe since it's used across multiple child functions
 	before(async function (): Promise<void> {
 		await templates.loadTemplates(path.join(__dirname, '..', '..', 'resources', 'templates'));
 		await baselines.loadBaselines();
@@ -202,6 +199,7 @@ describe('ProjectsController', function (): void {
 				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
 
 				await projController.delete(projTreeRoot.children.find(x => x.friendlyName === 'UpperFolder')!.children[0] /* LowerFolder */);
+				await projController.delete(projTreeRoot.children.find(x => x.friendlyName === 'anotherScript.sql')!);
 
 				proj = await Project.openProject(proj.projectFilePath); // reload edited sqlproj from disk
 
@@ -220,6 +218,7 @@ describe('ProjectsController', function (): void {
 				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
 
 				await projController.exclude(<FolderNode>projTreeRoot.children.find(x => x.friendlyName === 'UpperFolder')!.children[0] /* LowerFolder */);
+				await projController.exclude(<FileNode>projTreeRoot.children.find(x => x.friendlyName === 'anotherScript.sql')!);
 
 				proj = await Project.openProject(proj.projectFilePath); // reload edited sqlproj from disk
 
@@ -576,12 +575,13 @@ async function setupDeleteExcludeTest(proj: Project): Promise<[ProjectEntry, Pro
 	await proj.addFolderItem('UpperFolder/LowerFolder');
 	const scriptEntry = await proj.addScriptItem('UpperFolder/LowerFolder/someScript.sql', 'not a real script');
 	await proj.addScriptItem('UpperFolder/LowerFolder/someOtherScript.sql', 'Also not a real script');
+	await proj.addScriptItem('../anotherScript.sql', 'Also not a real script');
 
 	const projTreeRoot = new ProjectRootTreeItem(proj);
 	sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.yesString));
 
 	// confirm setup
-	should(proj.files.length).equal(4, 'number of file/folder entries');
+	should(proj.files.length).equal(5, 'number of file/folder entries');
 	should(path.parse(scriptEntry.fsUri.fsPath).base).equal('someScript.sql');
 	should((await fs.readFile(scriptEntry.fsUri.fsPath)).toString()).equal('not a real script');
 

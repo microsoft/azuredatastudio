@@ -21,11 +21,13 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	databaseReferencesNode: DatabaseReferencesTreeItem;
 	fileChildren: { [childName: string]: (fileTree.FolderNode | fileTree.FileNode) } = {};
 	project: Project;
+	fileSystemUri: vscode.Uri;
 
 	constructor(project: Project) {
 		super(vscode.Uri.parse(path.basename(project.projectFilePath)), undefined);
 
 		this.project = project;
+		this.fileSystemUri = vscode.Uri.file(project.projectFilePath);
 		this.dataSourceNode = new DataSourcesTreeItem(this);
 		this.databaseReferencesNode = new DatabaseReferencesTreeItem(this);
 
@@ -54,6 +56,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 			if (entry.type !== EntryType.File && entry.relativePath.startsWith(RelativeOuterPath)) {
 				continue;
 			}
+
 			const parentNode = this.getEntryParentNode(entry);
 
 			if (Object.keys(parentNode.fileChildren).includes(path.basename(entry.fsUri.path))) {
