@@ -10,7 +10,8 @@ import * as nls from 'vscode-nls';
 import {
 	AzureAccountProviderMetadata,
 	AzureAuthType,
-	Deferred
+	Deferred,
+	AzureAccount
 } from './interfaces';
 
 import { SimpleTokenCache } from './simpleTokenCache';
@@ -116,7 +117,14 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 	}
 
 	private async _getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Promise<MultiTenantTokenResponse | undefined> {
-		throw new Error('use getAccountSecurityToken');
+		vscode.window.showInformationMessage(localize('azure.deprecatedGetSecurityToken', "A call was made to azdata.accounts.getSecurityToken, this method is deprecated and will be removed in future releases. Please use getAccountSecurityToken instead."));
+		const azureAccount = account as AzureAccount;
+		const response: MultiTenantTokenResponse = {};
+		for (const tenant of azureAccount.properties.tenants) {
+			response[tenant.id] = await this._getAccountSecurityToken(account, tenant.id, resource);
+		}
+
+		return response;
 	}
 
 	prompt(): Thenable<azdata.Account | azdata.PromptFailedResult> {
