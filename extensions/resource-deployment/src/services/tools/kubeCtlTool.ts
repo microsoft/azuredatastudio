@@ -14,6 +14,12 @@ const localize = nls.loadMessageBundle();
 const defaultInstallationRoot = '/usr/local/bin';
 export const KubeCtlToolName = 'kubectl';
 
+interface KubeCtlVersion {
+	clientVersion: {
+		gitVersion: string;
+	};
+}
+
 export class KubeCtlTool extends ToolBase {
 	constructor(platformService: IPlatformService) {
 		super(platformService);
@@ -42,8 +48,12 @@ export class KubeCtlTool extends ToolBase {
 	protected getVersionFromOutput(output: string): SemVer | undefined {
 		let version: SemVer | undefined = undefined;
 		if (output) {
-			const versionJson = JSON.parse(output);
-			version = new SemVer(`${versionJson.clientVersion.major}.${versionJson.clientVersion.minor}.0`);
+			const versionJson: KubeCtlVersion = JSON.parse(output);
+			if (versionJson && versionJson.clientVersion && versionJson.clientVersion.gitVersion) {
+				version = new SemVer(versionJson.clientVersion.gitVersion);
+			} else {
+				throw new Error(localize('resourceDeployment.invalidKubectlVersionOutput', "Unable to parse the kubectl version command output: \"{0}\"", output));
+			}
 		}
 		return version;
 	}

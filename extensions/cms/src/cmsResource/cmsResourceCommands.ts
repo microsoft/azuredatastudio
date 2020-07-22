@@ -5,6 +5,7 @@
 
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import { AppContext } from '../appContext';
 import { TreeNode } from './treeNode';
 import { CmsResourceTreeProvider } from './tree/treeProvider';
@@ -17,7 +18,7 @@ const localize = nls.loadMessageBundle();
 
 export function registerCmsServerCommand(appContext: AppContext, tree: CmsResourceTreeProvider): void {
 	// Create a CMS Server
-	appContext.apiWrapper.registerCommand('cms.resource.registerCmsServer', async (node?: TreeNode, connectionProfile?: azdata.IConnectionProfile) => {
+	vscode.commands.registerCommand('cms.resource.registerCmsServer', async (node?: TreeNode, connectionProfile?: azdata.IConnectionProfile) => {
 		if (node && !(node instanceof CmsResourceEmptyTreeNode)) {
 			return;
 		}
@@ -60,7 +61,7 @@ export function registerCmsServerCommand(appContext: AppContext, tree: CmsResour
 
 export function deleteCmsServerCommand(appContext: AppContext, tree: CmsResourceTreeProvider): void {
 	// Delete a CMS Server
-	appContext.apiWrapper.registerCommand('cms.resource.deleteCmsServer', async (node?: TreeNode) => {
+	vscode.commands.registerCommand('cms.resource.deleteCmsServer', async (node?: TreeNode) => {
 		if (!(node instanceof CmsResourceTreeNode)) {
 			return;
 		}
@@ -72,7 +73,7 @@ export function deleteCmsServerCommand(appContext: AppContext, tree: CmsResource
 
 export function addRegisteredServerCommand(appContext: AppContext, tree: CmsResourceTreeProvider): void {
 	// Add a registered server
-	appContext.apiWrapper.registerCommand('cms.resource.addRegisteredServer', async (node?: TreeNode) => {
+	vscode.commands.registerCommand('cms.resource.addRegisteredServer', async (node?: TreeNode) => {
 		if (!(node instanceof CmsResourceTreeNode || node instanceof ServerGroupTreeNode)) {
 			return;
 		}
@@ -86,11 +87,11 @@ export function addRegisteredServerCommand(appContext: AppContext, tree: CmsReso
 
 export function deleteRegisteredServerCommand(appContext: AppContext, tree: CmsResourceTreeProvider): void {
 	// Delete a registered server
-	appContext.apiWrapper.registerCommand('cms.resource.deleteRegisteredServer', async (node?: TreeNode) => {
+	vscode.commands.registerCommand('cms.resource.deleteRegisteredServer', async (node?: TreeNode) => {
 		if (!(node instanceof RegisteredServerTreeNode)) {
 			return;
 		}
-		let result = await appContext.apiWrapper.showWarningMessage(
+		let result = await vscode.window.showWarningMessage(
 			`${localize('cms.confirmDeleteServer', "Are you sure you want to delete")} ${node.name}?`,
 			localize('cms.yes', "Yes"),
 			localize('cms.no', "No"));
@@ -103,7 +104,7 @@ export function deleteRegisteredServerCommand(appContext: AppContext, tree: CmsR
 
 export function addServerGroupCommand(appContext: AppContext, tree: CmsResourceTreeProvider): void {
 	// Add a registered server group
-	appContext.apiWrapper.registerCommand('cms.resource.addServerGroup', async (node?: TreeNode) => {
+	vscode.commands.registerCommand('cms.resource.addServerGroup', async (node?: TreeNode) => {
 		if (!(node instanceof ServerGroupTreeNode || node instanceof CmsResourceTreeNode)) {
 			return;
 		}
@@ -153,7 +154,7 @@ export function addServerGroupCommand(appContext: AppContext, tree: CmsResourceT
 			} else {
 				// error out for same server group
 				const errorText = localize('cms.errors.sameServerGroupName', "{0} already has a Server Group with the name {1}", node.name, serverGroupName);
-				appContext.apiWrapper.showErrorMessage(errorText);
+				vscode.window.showErrorMessage(errorText);
 				throw new Error(errorText);
 			}
 		});
@@ -162,11 +163,11 @@ export function addServerGroupCommand(appContext: AppContext, tree: CmsResourceT
 
 export function deleteServerGroupCommand(appContext: AppContext, tree: CmsResourceTreeProvider): void {
 	// Remove a registered server group
-	appContext.apiWrapper.registerCommand('cms.resource.deleteServerGroup', async (node?: TreeNode) => {
+	vscode.commands.registerCommand('cms.resource.deleteServerGroup', async (node?: TreeNode) => {
 		if (!(node instanceof ServerGroupTreeNode)) {
 			return;
 		}
-		let result = await appContext.apiWrapper.showWarningMessage(
+		let result = await vscode.window.showWarningMessage(
 			`${localize('cms.confirmDeleteGroup', "Are you sure you want to delete")} ${node.name}?`,
 			localize('cms.yes', "Yes"),
 			localize('cms.no', "No"));
@@ -179,7 +180,7 @@ export function deleteServerGroupCommand(appContext: AppContext, tree: CmsResour
 
 export function refreshCommand(appContext: AppContext, tree: CmsResourceTreeProvider): void {
 	// Refresh the cms resource
-	appContext.apiWrapper.registerCommand('cms.resource.refresh', async (node?: TreeNode) => {
+	vscode.commands.registerCommand('cms.resource.refresh', async (node?: TreeNode) => {
 		if (!node) {
 			return;
 		}

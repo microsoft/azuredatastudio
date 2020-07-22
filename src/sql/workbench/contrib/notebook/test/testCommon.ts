@@ -8,7 +8,6 @@ import * as stubs from 'sql/workbench/contrib/notebook/test/stubs';
 import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookParams } from 'sql/workbench/services/notebook/browser/notebookService';
 import * as dom from 'vs/base/browser/dom';
-import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { NullTelemetryService } from 'vs/platform/telemetry/common/telemetryUtils';
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
@@ -55,8 +54,7 @@ class CellEditorProviderStub extends stubs.CellEditorProviderStub {
 				new TestTextResourceConfigurationService(),
 				new TestThemeService(),
 				new TestEditorGroupsService(),
-				new TestEditorService(),
-				new TestConfigurationService()
+				new TestEditorService()
 			);
 		}
 		if (this._editor) {

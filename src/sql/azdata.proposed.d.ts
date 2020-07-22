@@ -36,6 +36,10 @@ declare module 'azdata' {
 			 */
 			setTrusted(state: boolean);
 		}
+
+		export interface IStandardKernel {
+			readonly blockedOnSAW?: boolean;
+		}
 	}
 
 	export type SqlDbType = 'BigInt' | 'Binary' | 'Bit' | 'Char' | 'DateTime' | 'Decimal'
