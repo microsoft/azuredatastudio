@@ -9,7 +9,7 @@ import * as uuid from 'uuid';
 import * as vscode from 'vscode';
 import { HttpClient } from './common/httpClient';
 import * as loc from './localizedConstants';
-import { executeCommand } from './common/childProcess';
+import { executeCommand, executeSudoCommand } from './common/childProcess';
 import { searchForCmd } from './common/utils';
 
 export const azdataHostname = 'https://aka.ms';
@@ -55,6 +55,7 @@ export async function findAzdata(outputChannel: vscode.OutputChannel): Promise<I
  */
 export async function downloadAndInstallAzdata(outputChannel: vscode.OutputChannel): Promise<void> {
 	const statusDisposable = vscode.window.setStatusBarMessage(loc.installingAzdata);
+	outputChannel.appendLine(loc.installingAzdata);
 	try {
 		switch (process.platform) {
 			case 'win32':
@@ -64,8 +65,10 @@ export async function downloadAndInstallAzdata(outputChannel: vscode.OutputChann
 				await installAzdataDarwin();
 				break;
 			case 'linux':
-				await installAzdataLinux();
+				await installAzdataLinux(outputChannel);
 				break;
+			default:
+				throw new Error(`Platform ${process.platform} is unsupported`);
 		}
 	} finally {
 		statusDisposable.dispose();
@@ -93,8 +96,19 @@ async function installAzdataDarwin(): Promise<void> {
 /**
  * Runs commands to install azdata on Linux
  */
-async function installAzdataLinux(): Promise<void> {
-	throw new Error('Not yet implemented');
+async function installAzdataLinux(outputChannel: vscode.OutputChannel): Promise<void> {
+	// https://docs.microsoft.com/en-us/sql/big-data-cluster/deploy-install-azdata-linux-package
+	// Get packages needed for install process
+	await executeSudoCommand('apt-get update', outputChannel);
+	await executeSudoCommand('apt-get install gnupg ca-certificates curl wget software-properties-common apt-transport-https lsb-release -y', outputChannel);
+	// Download and install the signing key
+	await executeSudoCommand('curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/microsoft.asc.gpg > /dev/null', outputChannel);
+	// Add the azdata repository information
+	const release = (await executeCommand('lsb_release', ['-rs'], outputChannel)).trim();
+	await executeSudoCommand(`add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/${release}/mssql-server-2019.list)"`, outputChannel);
+	// Update repository information and install azdata
+	await executeSudoCommand('apt-get update', outputChannel);
+	await executeSudoCommand('apt-get install -y azdata-cli', outputChannel);
 }
 
 /**

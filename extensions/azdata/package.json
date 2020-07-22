@@ -21,6 +21,7 @@
   "main": "./out/extension",
   "dependencies": {
     "request": "^2.88.2",
+    "sudo-prompt": "^9.2.1",
     "uuid": "^8.2.0",
     "vscode-nls": "^4.1.2",
     "which": "^2.0.2"
