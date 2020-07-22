@@ -8,7 +8,7 @@ import * as azdata from 'azdata';
 import * as sinon from 'sinon';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 import { AddCellAction, ClearAllOutputsAction, CollapseCellsAction, KernelsDropdown, msgChanging, NewNotebookAction, noKernelName, RunAllCellsAction, TrustedAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
-import { ClientSessionStub as stubs_ClientSessionStub, ContextViewProviderStub, NotebookComponentStub, NotebookModelStub as stubs_NotebookModelStub } from 'sql/workbench/contrib/notebook/test/stubs';
+import { ClientSessionStub, ContextViewProviderStub, NotebookComponentStub, NotebookModelStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/testCommon';
 import { ICellModel, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
@@ -24,7 +24,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 
-class ClientSessionStub extends stubs_ClientSessionStub {
+class TestClientSession extends ClientSessionStub {
 	private _errorState: boolean = false;
 	setErrorState = (value: boolean) => this._errorState = value;
 	get isInErrorState(): boolean {
@@ -36,15 +36,15 @@ class ClientSessionStub extends stubs_ClientSessionStub {
 		};
 	}
 }
-class NotebookModelStub extends stubs_NotebookModelStub {
-	private _clientSession: ClientSessionStub = new ClientSessionStub();
+class TestNotebookModel extends NotebookModelStub {
+	private _clientSession: TestClientSession = new TestClientSession();
 	public kernelChangedEmitter: Emitter<azdata.nb.IKernelChangedArgs> = new Emitter<azdata.nb.IKernelChangedArgs>();
 
 	public get kernelChanged() {
 		return this.kernelChangedEmitter.event;
 	}
 
-	public get clientSession(): ClientSessionStub {
+	public get clientSession(): TestClientSession {
 		return this._clientSession;
 	}
 
@@ -244,7 +244,7 @@ suite('Notebook Actions', function (): void {
 		let kernelsDropdown: KernelsDropdown;
 		let contextViewProvider: ContextViewProviderStub;
 		let container: HTMLElement;
-		let notebookModel: NotebookModelStub;
+		let notebookModel: TestNotebookModel;
 		let configurationService: TestConfigurationService;
 		let notebookEditor: NotebookEditorStub;
 		let sandbox: sinon.SinonSandbox;
@@ -257,7 +257,7 @@ suite('Notebook Actions', function (): void {
 			const instantiationService = <TestInstantiationService>workbenchInstantiationService();
 			configurationService = new TestConfigurationService();
 			instantiationService.set(IConfigurationService, configurationService);
-			notebookModel = new NotebookModelStub();
+			notebookModel = new TestNotebookModel();
 			notebookEditor = new NotebookEditorStub({ model: notebookModel });
 			await notebookEditor.modelReady;
 			kernelsDropdown = new KernelsDropdown(container, contextViewProvider, notebookEditor.modelReady, configurationService);
@@ -281,7 +281,7 @@ suite('Notebook Actions', function (): void {
 							};
 							configurationService.onDidChangeConfigurationEmitter.fire(e); //reconfigure kernelDropdown object based on config changes
 							const expectedSetOptionsArgs = {
-								kernels: [noKernelName, ...notebookModel.specs.kernels.map(x => x.display_name), ...notebookModel.standardKernelsDisplayName()], // these are the kernels fed into the update method via the notebookModelStub object
+								kernels: [noKernelName, ...notebookModel.specs.kernels.map(x => x.display_name), ...notebookModel.standardKernelsDisplayName()], // these are the kernels fed into the update method via the testNotebookModel object
 								selected: 0 // the selected value is NoKernelName value when no kernel is defined or is ready.
 							};
 							verifyUpdateKernelForNoKernelCase(notebookModel, kernelsDropdown, kernel, setOptionsSpy, expectedSetOptionsArgs, clientSessionErrorState);
@@ -295,7 +295,7 @@ suite('Notebook Actions', function (): void {
 					for (const clientSessionErrorState of [true, false]) {
 						test(`verify for kernel:${JSON.stringify(kernel)} and notebookModel's clientSession error state: ${clientSessionErrorState}`, () => {
 							const expectedSetOptionsArgs = {
-								kernels: [noKernelName, ...notebookModel.standardKernelsDisplayName()], // these are the kernels fed into the update method via the notebookModelStub object
+								kernels: [noKernelName, ...notebookModel.standardKernelsDisplayName()], // these are the kernels fed into the update method via the testNotebookModel object
 								selected: 0 // the selected value is NoKernelName value when no kernel is defined or is ready.
 							};
 							verifyUpdateKernelForNoKernelCase(notebookModel, kernelsDropdown, kernel, setOptionsSpy, expectedSetOptionsArgs, clientSessionErrorState);
@@ -390,8 +390,8 @@ suite('Notebook Actions', function (): void {
 });
 
 
-function testDefinedAndReadyKernelForTrueShowKernels(notebookModel: NotebookModelStub, kernel: azdata.nb.IKernel, kernelsDropdown: KernelsDropdown, setOptionsSpy: sinon.SinonSpy) {
-	// these are the kernels fed into the update method via the notebookModelStub object
+function testDefinedAndReadyKernelForTrueShowKernels(notebookModel: TestNotebookModel, kernel: azdata.nb.IKernel, kernelsDropdown: KernelsDropdown, setOptionsSpy: sinon.SinonSpy) {
+	// these are the kernels fed into the update method via the testNotebookModel object
 	const kernels = [...notebookModel.specs.kernels.map(x => x.display_name), ...notebookModel.standardKernelsDisplayName()];
 	let index = kernels.findIndex(x => x === kernel.name);
 	if (index === -1) {
@@ -404,8 +404,8 @@ function testDefinedAndReadyKernelForTrueShowKernels(notebookModel: NotebookMode
 	verifyUpdateKernelForKernelDefinedAndReadyCase(notebookModel, kernelsDropdown, kernel, setOptionsSpy, expectedSetOptionsArgs);
 }
 
-function testDefinedAndReadyKernelForFalseShowKernels(notebookModel: NotebookModelStub, kernel: azdata.nb.IKernel, kernelsDropdown: KernelsDropdown, setOptionsSpy: sinon.SinonSpy) {
-	// these are the kernels fed into the update method via the notebookModelStub object
+function testDefinedAndReadyKernelForFalseShowKernels(notebookModel: TestNotebookModel, kernel: azdata.nb.IKernel, kernelsDropdown: KernelsDropdown, setOptionsSpy: sinon.SinonSpy) {
+	// these are the kernels fed into the update method via the testNotebookModel object
 	const kernels = [...notebookModel.standardKernelsDisplayName()];
 	let index = kernels.findIndex(x => x === kernel.name);
 	if (index === -1) {
@@ -418,8 +418,8 @@ function testDefinedAndReadyKernelForFalseShowKernels(notebookModel: NotebookMod
 	verifyUpdateKernelForKernelDefinedAndReadyCase(notebookModel, kernelsDropdown, kernel, setOptionsSpy, expectedSetOptionsArgs);
 }
 
-function verifyUpdateKernelForNoKernelCase(notebookModel: NotebookModelStub, kernelsDropdown: KernelsDropdown, kernel: azdata.nb.IKernel, setOptionsSpy: sinon.SinonSpy, expectedSetOptionsArgs: {
-	kernels: string[]; // these are the kernels fed into the update method via the notebookModelStub object
+function verifyUpdateKernelForNoKernelCase(notebookModel: TestNotebookModel, kernelsDropdown: KernelsDropdown, kernel: azdata.nb.IKernel, setOptionsSpy: sinon.SinonSpy, expectedSetOptionsArgs: {
+	kernels: string[]; // these are the kernels fed into the update method via the testNotebookModel object
 	selected: number; // the selected value is NoKernelName value when no kernel is defined or is ready.
 }, clientSessionErrorState: boolean) {
 	notebookModel.clientSession.setErrorState(clientSessionErrorState);
@@ -434,8 +434,8 @@ function verifyUpdateKernelForNoKernelCase(notebookModel: NotebookModelStub, ker
 	}
 }
 
-function verifyUpdateKernelForKernelDefinedAndReadyCase(notebookModel: NotebookModelStub, kernelsDropdown: KernelsDropdown, kernel: azdata.nb.IKernel, setOptionsSpy: sinon.SinonSpy, expectedSetOptionsArgs: {
-	kernels: string[]; // these are the kernels fed into the update method via the notebookModelStub object
+function verifyUpdateKernelForKernelDefinedAndReadyCase(notebookModel: TestNotebookModel, kernelsDropdown: KernelsDropdown, kernel: azdata.nb.IKernel, setOptionsSpy: sinon.SinonSpy, expectedSetOptionsArgs: {
+	kernels: string[]; // these are the kernels fed into the update method via the testNotebookModel object
 	selected: number; // the selected value is NoKernelName value when no kernel is defined or is ready.
 }) {
 	kernelsDropdown.updateKernel(kernel);
