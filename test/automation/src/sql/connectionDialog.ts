@@ -28,7 +28,7 @@ export class ConnectionDialog extends Dialog {
 		await this.code.waitForSetValue(ConnectionDialog.TARGET_SELECTOR.replace('${TARGET}', '' + target), value);
 	}
 
-	private static readonly CONNECT_BUTTON_SELECTOR = '.modal .modal-footer a[aria-label="Connect"]';
+	private static readonly CONNECT_BUTTON_SELECTOR = '.modal .modal-footer a[aria-label="Connect"]:not(.disabled)';
 	async connect(): Promise<void> {
 		await this.code.waitAndClick(ConnectionDialog.CONNECT_BUTTON_SELECTOR);
 

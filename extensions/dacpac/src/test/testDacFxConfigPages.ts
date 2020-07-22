@@ -8,6 +8,7 @@ import { DacFxDataModel } from '../wizard/api/models';
 import { DeployConfigPage } from '../wizard/pages/deployConfigPage';
 import { ExtractConfigPage } from '../wizard/pages/extractConfigPage';
 import { DataTierApplicationWizard } from '../wizard/dataTierApplicationWizard';
+import { SelectOperationPage } from '../wizard/pages/selectOperationpage';
 
 export class TestDeployConfigPage extends DeployConfigPage {
 
@@ -37,5 +38,15 @@ export class TestExtractConfigPage extends ExtractConfigPage {
 	get Model(): DacFxDataModel {
 		return this.model;
 	}
+}
 
+export class TestSelectOperationPage extends SelectOperationPage {
+
+	constructor(instance: DataTierApplicationWizard, wizardPage: azdata.window.WizardPage, model: DacFxDataModel, view: azdata.ModelView) {
+		super(instance, wizardPage, model, view);
+	}
+
+	get WizardState(): DataTierApplicationWizard {
+		return this.instance;
+	}
 }
