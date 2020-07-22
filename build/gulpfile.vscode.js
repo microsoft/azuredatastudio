@@ -97,6 +97,7 @@ const vscodeResources = [
 	'out-build/sql/media/icons/*.svg',
 	'out-build/sql/workbench/parts/notebook/media/**/*.svg',
 	'out-build/sql/setup.js', // {{SQL CARBON EDIT}} end
+	'out-build/vs/code/electron-sandbox/processExplorer/processExplorer.js',
 	'out-build/vs/platform/auth/common/auth.css',
 	'!**/test/**'
 ];
