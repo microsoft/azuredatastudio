@@ -765,6 +765,18 @@
                 ]
             },
             {
+                "target": "**/{vs,sql}/code/browser/**",
+                "restrictions": [
+                    "vs/nls",
+                    "vs/css!./**/*",
+                    "**/{vs,sql}/base/**/{common,browser}/**",
+                    "**/{vs,sql}/base/parts/**/{common,browser}/**",
+                    "**/{vs,sql}/platform/**/{common,browser}/**",
+                    "**/{vs,sql}/code/**/{common,browser}/**",
+                    "**/{vs,sql}/workbench/workbench.web.api"
+                ]
+            },
+            {
                 "target": "**/{vs,sql}/code/node/**",
                 "restrictions": [
                     "vs/nls",
@@ -832,6 +844,18 @@
                     "**/{vs,sql}/editor/**",
                     "**/{vs,sql}/workbench/**/{common,browser}/**",
                     "**/{vs,sql}/workbench/workbench.common.main"
+                ]
+            },
+            {
+                "target": "**/src/{vs,sql}/workbench/workbench.web.api.ts",
+                "restrictions": [
+                    "vs/nls",
+                    "**/{vs,sql}/base/**/{common,browser}/**",
+                    "**/{vs,sql}/base/parts/**/{common,browser}/**",
+                    "**/{vs,sql}/platform/**/{common,browser}/**",
+                    "**/{vs,sql}/editor/**",
+                    "**/{vs,sql}/workbench/**/{common,browser}/**",
+                    "**/{vs,sql}/workbench/workbench.web.main"
                 ]
             },
             {
