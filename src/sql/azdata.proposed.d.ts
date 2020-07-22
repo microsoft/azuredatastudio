@@ -441,6 +441,14 @@ declare module 'azdata' {
 		targetLocation?: string;
 	}
 
+	export interface ButtonColumnOption {
+		icon?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+	}
+
+	export interface ButtonCell extends TableCell {
+		columnName: string;
+	}
+
 	export namespace sqlAssessment {
 
 		export enum SqlAssessmentTargetType {
