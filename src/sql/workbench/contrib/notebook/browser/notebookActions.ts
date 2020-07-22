@@ -31,7 +31,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 
 const msgLoading = localize('loading', "Loading kernels...");
-const msgChanging = localize('changing', "Changing kernel...");
+export const msgChanging = localize('changing', "Changing kernel...");
 const attachToLabel: string = localize('AttachTo', "Attach to ");
 const kernelLabel: string = localize('Kernel', "Kernel ");
 const msgLoadingContexts = localize('loadingContexts', "Loading contexts...");
@@ -283,6 +283,7 @@ export class CollapseCellsAction extends ToggleableAction {
 
 const ShowAllKernelsConfigName = 'notebook.showAllKernels';
 const WorkbenchPreviewConfigName = 'workbench.enablePreviewFeatures';
+export const NoKernelName = localize('noKernel', "No Kernel");
 export class KernelsDropdown extends SelectBox {
 	private model: NotebookModel;
 	private _showAllKernels: boolean = false;
@@ -327,7 +328,7 @@ export class KernelsDropdown extends SelectBox {
 					index = firstIndex(kernels, kernel => kernel === standardKernel.displayName);
 				} else {
 					let kernelSpec = this.model.specs.kernels.find(k => k.name === kernel.name);
-					index = firstIndex(kernels, k => k === kernelSpec.display_name);
+					index = firstIndex(kernels, k => k === kernelSpec?.display_name);
 				}
 				// This is an error case that should never happen
 				// Just in case, setting index to 0
@@ -337,8 +338,7 @@ export class KernelsDropdown extends SelectBox {
 				this.setOptions(kernels, index);
 			}
 		} else if (this.model.clientSession.isInErrorState) {
-			let noKernelName = localize('noKernel', "No Kernel");
-			kernels.unshift(noKernelName);
+			kernels.unshift(NoKernelName);
 			this.setOptions(kernels, 0);
 		}
 	}
