@@ -686,6 +686,7 @@
     "connectionProvider": {
       "providerId": "MSSQL",
       "displayName": "%mssql.provider.displayName%",
+      "notebookKernelAlias": "Kusto",
       "iconPath": [
         {
           "id": "mssql:cloud",
