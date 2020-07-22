@@ -281,9 +281,9 @@ export class CollapseCellsAction extends ToggleableAction {
 	}
 }
 
-const ShowAllKernelsConfigName = 'notebook.showAllKernels';
-const WorkbenchPreviewConfigName = 'workbench.enablePreviewFeatures';
-export const NoKernelName = localize('noKernel', "No Kernel");
+const showAllKernelsConfigName = 'notebook.showAllKernels';
+const workbenchPreviewConfigName = 'workbench.enablePreviewFeatures';
+export const noKernelName = localize('noKernel', "No Kernel");
 export class KernelsDropdown extends SelectBox {
 	private model: NotebookModel;
 	private _showAllKernels: boolean = false;
@@ -301,7 +301,7 @@ export class KernelsDropdown extends SelectBox {
 		this.onDidSelect(e => this.doChangeKernel(e.selected));
 		this.getAllKernelConfigValue();
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
-			if (e.affectsConfiguration(ShowAllKernelsConfigName) || e.affectsConfiguration(WorkbenchPreviewConfigName)) {
+			if (e.affectsConfiguration(showAllKernelsConfigName) || e.affectsConfiguration(workbenchPreviewConfigName)) {
 				this.getAllKernelConfigValue();
 			}
 		}));
@@ -338,7 +338,7 @@ export class KernelsDropdown extends SelectBox {
 				this.setOptions(kernels, index);
 			}
 		} else if (this.model.clientSession.isInErrorState) {
-			kernels.unshift(NoKernelName);
+			kernels.unshift(noKernelName);
 			this.setOptions(kernels, 0);
 		}
 	}
@@ -349,7 +349,7 @@ export class KernelsDropdown extends SelectBox {
 	}
 
 	private getAllKernelConfigValue(): void {
-		this._showAllKernels = !!this._configurationService.getValue(ShowAllKernelsConfigName) && !!this._configurationService.getValue(WorkbenchPreviewConfigName);
+		this._showAllKernels = !!this._configurationService.getValue(showAllKernelsConfigName) && !!this._configurationService.getValue(workbenchPreviewConfigName);
 	}
 }
 

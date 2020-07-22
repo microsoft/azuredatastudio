@@ -7,7 +7,7 @@ import * as assert from 'assert';
 import * as azdata from 'azdata';
 import * as sinon from 'sinon';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
-import { AddCellAction, ClearAllOutputsAction, CollapseCellsAction, KernelsDropdown, msgChanging, NewNotebookAction, NoKernelName, RunAllCellsAction, TrustedAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { AddCellAction, ClearAllOutputsAction, CollapseCellsAction, KernelsDropdown, msgChanging, NewNotebookAction, noKernelName, RunAllCellsAction, TrustedAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { ClientSessionStub as stubs_ClientSessionStub, ContextViewProviderStub, NotebookComponentStub, NotebookModelStub as stubs_NotebookModelStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/testCommon';
 import { ICellModel, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
@@ -15,14 +15,14 @@ import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/bro
 import { INotebookEditor } from 'sql/workbench/services/notebook/browser/notebookService';
 import { CellType } from 'sql/workbench/services/notebook/common/contracts';
 import * as TypeMoq from 'typemoq';
+import { Emitter } from 'vs/base/common/event';
 import { TestCommandService } from 'vs/editor/test/browser/editorTestServices';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { IConfigurationService, IConfigurationChangeEvent, IConfigurationOverrides } from 'vs/platform/configuration/common/configuration';
+import { IConfigurationChangeEvent, IConfigurationOverrides, IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
-import { Emitter } from 'vs/base/common/event';
 
 class ClientSessionStub extends stubs_ClientSessionStub {
 	private _errorState: boolean = false;
@@ -281,7 +281,7 @@ suite('Notebook Actions', function (): void {
 							};
 							configurationService.onDidChangeConfigurationEmitter.fire(e); //reconfigure kernelDropdown object based on config changes
 							const expectedSetOptionsArgs = {
-								kernels: [NoKernelName, ...notebookModel.specs.kernels.map(x => x.display_name), ...notebookModel.standardKernelsDisplayName()], // these are the kernels fed into the update method via the notebookModelStub object
+								kernels: [noKernelName, ...notebookModel.specs.kernels.map(x => x.display_name), ...notebookModel.standardKernelsDisplayName()], // these are the kernels fed into the update method via the notebookModelStub object
 								selected: 0 // the selected value is NoKernelName value when no kernel is defined or is ready.
 							};
 							verifyUpdateKernelForNoKernelCase(notebookModel, kernelsDropdown, kernel, setOptionsSpy, expectedSetOptionsArgs, clientSessionErrorState);
@@ -295,7 +295,7 @@ suite('Notebook Actions', function (): void {
 					for (const clientSessionErrorState of [true, false]) {
 						test(`verify for kernel:${JSON.stringify(kernel)} and notebookModel's clientSession error state: ${clientSessionErrorState}`, () => {
 							const expectedSetOptionsArgs = {
-								kernels: [NoKernelName, ...notebookModel.standardKernelsDisplayName()], // these are the kernels fed into the update method via the notebookModelStub object
+								kernels: [noKernelName, ...notebookModel.standardKernelsDisplayName()], // these are the kernels fed into the update method via the notebookModelStub object
 								selected: 0 // the selected value is NoKernelName value when no kernel is defined or is ready.
 							};
 							verifyUpdateKernelForNoKernelCase(notebookModel, kernelsDropdown, kernel, setOptionsSpy, expectedSetOptionsArgs, clientSessionErrorState);
@@ -344,10 +344,11 @@ suite('Notebook Actions', function (): void {
 					configurationService.onDidChangeConfigurationEmitter.fire(e); //reconfigure kernelDropdown object based on config changes
 					//showAllKernels should now be set to false
 
-					//Now fire another changeConfiguration but with affects configuration return false for all values. Even though configuration service returns true for the config values that affect showAllKernels, the test that follows proves that showAllKernels remained false.
+					//Now fire another changeConfiguration but with affectsConfiguration returning false for all values. Even though configuration service returns true for the config values that affect showAllKernels, the test that follows proves that showAllKernels remained false.
 					getValueStub.restore();
 					sandbox.stub(configurationService, 'getValue').returns(true); // returns false for all configuration values.
 					e = <IConfigurationChangeEvent>{
+						// the following fake of returning false, simulates the scenario where config changes have occurred but none that affect should affect 'showAllKernels'
 						affectsConfiguration(_configuration: string, _overrides?: IConfigurationOverrides) {
 							return false;
 						}
