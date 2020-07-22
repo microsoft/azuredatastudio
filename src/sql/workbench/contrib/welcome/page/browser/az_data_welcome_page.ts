@@ -13,14 +13,14 @@ export default () => `
 			<div class="gradient">
 				<div class="ads-homepage-section tool-tip">
 					<div class="tool-tip-container" id="tool-tip-container-wide">
-						<a class="ads-welcome-page-link" aria-describedby="tooltip-text-wide" id="preview-link-wide" class="preview-link" tabindex="0" name="preview"><p>Preview</p><i class="icon-info themed-icon"></i></a>
+						<a role="button" class="ads-welcome-page-link" aria-describedby="tooltip-text-wide" id="preview-link-wide" class="preview-link" tabindex="0" name="preview"><p>Preview</p><i class="icon-info themed-icon"></i></a>
 						<span role="tooltip" id="tooltip-text-wide" class="tool-tip-text" aria-hidden="true">
 							<h3 tabindex="0" class="preview-tooltip-header">${escape(localize('welcomePage.previewHeader', "This page is in preview"))}</h3>
 							<p tabindex="0" class="preview-tooltip-body">${escape(localize('welcomePage.previewBody', "Preview features introduce new functionalities that are on track to becoming a permanent part the product. They are stable, but need additional accessibility improvements. We welcome your early feedback while they are under development."))}</p>
 						</span>
 					</div>
 					<div class="tool-tip-container" id="tool-tip-container-narrow">
-						<a class="ads-welcome-page-link" aria-haspopup="true" class="preview-link" tabindex="0" id="preview-link-narrow" name="previewNarrow"><p>Preview</p><i class="icon-info themed-icon"></i></a>
+						<a role="button" class="ads-welcome-page-link" aria-haspopup="true" class="preview-link" tabindex="0" id="preview-link-narrow" name="previewNarrow"><p>Preview</p><i class="icon-info themed-icon"></i></a>
 					</div>
 				</div>
 				<div id="preview-modal" class="modal" aria-modal="true" aria-hidden="true">
@@ -51,7 +51,7 @@ export default () => `
 					</div>
 					<div class="row header-bottom-nav-tiles ads-grid">
 						<div class="col">
-							<a class="header-bottom-nav-tile-link" href="command:registeredServers.addConnection">
+							<a role="button" class="header-bottom-nav-tile-link ads-welcome-page-link" href="command:registeredServers.addConnection">
 								<div class="header-bottom-nav-tile tile tile-connection">
 									<h3>${escape(localize('welcomePage.createConnection', "Create a connection"))}</h3>
 									<p>${escape(localize('welcomePage.createConnectionBody', "Connect to a database instance through the connection dialog."))}</p>
@@ -60,7 +60,7 @@ export default () => `
 							</a>
 						</div>
 						<div class="col">
-							<a class="header-bottom-nav-tile-link"
+							<a role="button" class="header-bottom-nav-tile-link ads-welcome-page-link"
 								href="command:workbench.action.files.newUntitledFile">
 								<div class="header-bottom-nav-tile tile tile-query">
 									<h3>${escape(localize('welcomePage.runQuery', "Run a query"))}</h3>
@@ -70,7 +70,7 @@ export default () => `
 							</a>
 						</div>
 						<div class="col">
-							<a class="header-bottom-nav-tile-link" href="command:notebook.command.new">
+							<a role="button" class="header-bottom-nav-tile-link ads-welcome-page-link" href="command:notebook.command.new">
 								<div class="header-bottom-nav-tile tile tile-notebook">
 									<h3>${escape(localize('welcomePage.createNotebook', "Create a notebook"))}</h3>
 									<p>${escape(localize('welcomePage.createNotebookBody', "Build a new notebook using a native notebook editor."))}</p>
@@ -79,7 +79,7 @@ export default () => `
 							</a>
 						</div>
 						<div class="col">
-							<a class="header-bottom-nav-tile-link" href="command:azdata.resource.deploy">
+							<a role="button" class="header-bottom-nav-tile-link ads-welcome-page-link" href="command:azdata.resource.deploy">
 								<div class="header-bottom-nav-tile tile tile-server">
 									<h3>${escape(localize('welcomePage.deployServer', "Deploy a server"))}</h3>
 									<p>${escape(localize('welcomePage.deployServerBody', "Create a new instance of SQL Server on the platform of your choice."))}</p>
@@ -94,24 +94,25 @@ export default () => `
 				<div class="resources-container">
 					<h2>${escape(localize('welcomePage.resources', "Resources"))}</h2>
 					<div class="tabs">
-						<input class="input" name="tabs" type="radio" id="tab-1" checked="checked" />
-						<label class="label" for="tab-1" tabIndex="0">${escape(localize('welcomePage.history', "History"))}</label>
+					<!-- Checkbox is not accessible to user yet, this feature is still in development -->
+					<input tabindex="-1" class="input" name="tabs" type="radio" id="tab-1" checked="checked" />
+					<span id="historyLabel" class="label" for="tab-1" tabIndex="0">${escape(localize('welcomePage.history', "History"))}</span>
 						<div class="panel">
 							<div class="recent history">
 								<div class="flex list-header-container">
 									<i class="icon-document themed-icon"></i>
-									<h4 class="list-header">${escape(localize('welcomePage.name', "Name"))}</h4>
-									<h4 class="list-header-last-opened">${escape(localize('welcomePage.lastOpened', "Last Opened"))}</h4>
+									<span class="list-header">${escape(localize('welcomePage.name', "Name"))}</span>
+									<span class="list-header-last-opened">${escape(localize('welcomePage.lastOpened', "Last Opened"))}</span>
 								</div>
 								<ul class="list">
 									<!-- Filled programmatically -->
 								</ul>
 								<p class="none detail">No recent folders</p>
 								<div class="moreRecent">
-									<a class="ads-welcome-page-link" href="command:workbench.action.openRecent">${escape(localize('welcomePage.moreRecent', "Show more"))}
+									<a role="button" class="ads-welcome-page-link" href="command:workbench.action.openRecent">${escape(localize('welcomePage.moreRecent', "Show more"))}
 									<i class="icon-arrow-down-dark"></i>
-								</a>
-							</div>
+									</a>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -164,7 +165,7 @@ export default () => `
 			<div class="ads-homepage-section content extensions">
 				<div class="flex flex-j-between">
 					<h2>Extend your data studio</h2>
-					<a class="link-show-all flex" href="command:workbench.view.extensions">${escape(localize('welcomePage.showAll', "Show All"))} <span class="icon-arrow-right"></span></a>
+					<a role="button" class="link-show-all flex" href="command:workbench.view.extensions">${escape(localize('welcomePage.showAll', "Show All"))} <span class="icon-arrow-right"></span></a>
 				</div>
 				<div class="row ads-grid grip-gap-50">
 					<div
@@ -177,7 +178,7 @@ export default () => `
 							<div class="extension-pack-extension-list flex flex-d-column flex-j-evenly flex-a-start"></div>
 							<div class="flex flex-j-end extension-pack-btn-container flex flex-j-between flex-a-center"">
 							<div class="extensionPack" href="#"></div>
-							<a class="a-self-end link-learn-more flex flex-a-center ads-welcome-page-link" href="command:azdata.extension.open?%7B%22id%22%3A%22microsoft.admin-pack%22%7D">${escape(localize('welcomePage.learnMore',
+							<a role="button" class="a-self-end link-learn-more flex flex-a-center ads-welcome-page-link" href="command:azdata.extension.open?%7B%22id%22%3A%22microsoft.admin-pack%22%7D">${escape(localize('welcomePage.learnMore',
 							"Learn more "))}<span class="icon-arrow-right"></span></a>
 						</div>
 					</div>

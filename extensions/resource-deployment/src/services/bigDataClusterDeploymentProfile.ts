@@ -26,6 +26,7 @@ export interface ActiveDirectorySettings {
 	domainControllerFQDNs: string;
 	dnsIPAddresses: string;
 	domainDNSName: string;
+	realm?: string;
 	clusterUsers: string;
 	clusterAdmins: string;
 	appReaders?: string;
@@ -284,7 +285,7 @@ export class BigDataClusterDeploymentProfile {
 		activeDirectoryObject.domainDnsName = adSettings.domainDNSName;
 		activeDirectoryObject.subdomain = adSettings.subdomain;
 		activeDirectoryObject.accountPrefix = adSettings.accountPrefix;
-		activeDirectoryObject.realm = adSettings.domainDNSName.toUpperCase();
+		activeDirectoryObject.realm = adSettings.realm ?? adSettings.domainDNSName.toUpperCase();
 		activeDirectoryObject.clusterAdmins = this.splitByComma(adSettings.clusterAdmins);
 		activeDirectoryObject.clusterUsers = this.splitByComma(adSettings.clusterUsers);
 		if (adSettings.appReaders) {

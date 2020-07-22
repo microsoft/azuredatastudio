@@ -1,5 +1,13 @@
 # Change Log
 
+## Version 1.20.1
+* Release date: July 17, 2020
+* Release status: General Availability
+* Fix bug #11372 Object Explorer drag-and-drop table incorrectly wraps table names [#11372](https://github.com/microsoft/azuredatastudio/issues/11372)
+* Fix bug #11356 Dark theme is now the default theme [#11356](https://github.com/microsoft/azuredatastudio/issues/11356)
+* Known Issues:
+    * Some users have reported connection errors from the new Microsoft.Data.SqlClient v2.0.0 included in this release. Users have found [following these instructions](https://github.com/microsoft/azuredatastudio/issues/11367#issuecomment-659614111) to successfully connect. This issue was caused by a client driver update which fixed an issue where TLS encryption wasn't enforced correctly. See https://github.com/dotnet/SqlClient/blob/master/release-notes/2.0/2.0.0.md#breaking-changes-1 and https://docs.microsoft.com/en-us/sql/relational-databases/native-client/features/using-encryption-without-validation for more information.
+
 ## Version 1.20.0
 * Release date: July 15, 2020
 * Release status: General Availability

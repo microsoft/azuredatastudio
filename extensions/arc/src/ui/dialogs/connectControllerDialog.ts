@@ -9,10 +9,11 @@ import * as loc from '../../localizedConstants';
 import { AzureArcTreeDataProvider } from '../tree/azureArcTreeDataProvider';
 import { ControllerModel, ControllerInfo } from '../../models/controllerModel';
 import { Deferred } from '../../common/promise';
+import { InitializingComponent } from '../components/initializingComponent';
 
 export type ConnectToControllerDialogModel = { controllerModel: ControllerModel, password: string };
 
-export class ConnectToControllerDialog {
+export class ConnectToControllerDialog extends InitializingComponent {
 	private modelBuilder!: azdata.ModelBuilder;
 
 	private urlInputBox!: azdata.InputBoxComponent;
@@ -22,9 +23,11 @@ export class ConnectToControllerDialog {
 
 	private _completionPromise = new Deferred<ConnectToControllerDialogModel | undefined>();
 
-	constructor(private _treeDataProvider: AzureArcTreeDataProvider) { }
+	constructor(private _treeDataProvider: AzureArcTreeDataProvider) {
+		super();
+	}
 
-	public showDialog(controllerInfo?: ControllerInfo, password?: string): void {
+	public showDialog(controllerInfo?: ControllerInfo, password?: string): azdata.window.Dialog {
 		const dialog = azdata.window.createModelViewDialog(loc.connectToController);
 		dialog.cancelButton.onClick(() => this.handleCancel());
 		dialog.registerContent(async view => {
@@ -76,20 +79,35 @@ export class ConnectToControllerDialog {
 				}]).withLayout({ width: '100%' }).component();
 			await view.initializeModel(formModel);
 			this.urlInputBox.focus();
+			this.initialized = true;
 		});
 
 		dialog.registerCloseValidator(async () => await this.validate());
 		dialog.okButton.label = loc.connect;
 		dialog.cancelButton.label = loc.cancel;
 		azdata.window.openDialog(dialog);
+		return dialog;
 	}
 
-	private async validate(): Promise<boolean> {
+	public async validate(): Promise<boolean> {
 		if (!this.urlInputBox.value || !this.usernameInputBox.value || !this.passwordInputBox.value) {
 			return false;
 		}
+		let url = this.urlInputBox.value;
+		// Only support https connections
+		if (url.toLowerCase().startsWith('http://')) {
+			url = url.replace('http', 'https');
+		}
+		// Append https if they didn't type it in
+		if (!url.toLowerCase().startsWith('https://')) {
+			url = `https://${url}`;
+		}
+		// Append default port if one wasn't specified
+		if (!/.*:\d*$/.test(url)) {
+			url = `${url}:30080`;
+		}
 		const controllerInfo: ControllerInfo = {
-			url: this.urlInputBox.value,
+			url: url,
 			username: this.usernameInputBox.value,
 			rememberPassword: this.rememberPwCheckBox.checked ?? false,
 			resources: []
