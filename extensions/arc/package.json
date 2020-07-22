@@ -713,17 +713,6 @@
                   "title": "",
                   "sections": [
                     {
-                      "title": "%arc.azure.section.title%",
-                      "fields": [
-                        {
-                          "subscriptionVariableName": "AZDATA_NB_VAR_ARC_SUBSCRIPTION",
-                          "resourceGroupVariableName": "AZDATA_NB_VAR_ARC_RESOURCE_GROUP_NAME",
-                          "type": "azure_account",
-                          "required": true
-                        }
-                      ]
-                    },
-                    {
                       "title": "%arc.postgres.settings.section.title%",
                       "fields": [
                         {
