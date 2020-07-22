@@ -9,10 +9,11 @@ import * as loc from '../../localizedConstants';
 import { AzureArcTreeDataProvider } from '../tree/azureArcTreeDataProvider';
 import { ControllerModel, ControllerInfo } from '../../models/controllerModel';
 import { Deferred } from '../../common/promise';
+import { InitializingComponent } from '../components/initializingComponent';
 
 export type ConnectToControllerDialogModel = { controllerModel: ControllerModel, password: string };
 
-export class ConnectToControllerDialog {
+export class ConnectToControllerDialog extends InitializingComponent {
 	private modelBuilder!: azdata.ModelBuilder;
 
 	private urlInputBox!: azdata.InputBoxComponent;
@@ -22,9 +23,11 @@ export class ConnectToControllerDialog {
 
 	private _completionPromise = new Deferred<ConnectToControllerDialogModel | undefined>();
 
-	constructor(private _treeDataProvider: AzureArcTreeDataProvider) { }
+	constructor(private _treeDataProvider: AzureArcTreeDataProvider) {
+		super();
+	}
 
-	public showDialog(controllerInfo?: ControllerInfo, password?: string): void {
+	public showDialog(controllerInfo?: ControllerInfo, password?: string): azdata.window.Dialog {
 		const dialog = azdata.window.createModelViewDialog(loc.connectToController);
 		dialog.cancelButton.onClick(() => this.handleCancel());
 		dialog.registerContent(async view => {
@@ -76,15 +79,17 @@ export class ConnectToControllerDialog {
 				}]).withLayout({ width: '100%' }).component();
 			await view.initializeModel(formModel);
 			this.urlInputBox.focus();
+			this.initialized = true;
 		});
 
 		dialog.registerCloseValidator(async () => await this.validate());
 		dialog.okButton.label = loc.connect;
 		dialog.cancelButton.label = loc.cancel;
 		azdata.window.openDialog(dialog);
+		return dialog;
 	}
 
-	private async validate(): Promise<boolean> {
+	public async validate(): Promise<boolean> {
 		if (!this.urlInputBox.value || !this.usernameInputBox.value || !this.passwordInputBox.value) {
 			return false;
 		}
