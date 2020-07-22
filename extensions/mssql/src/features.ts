@@ -70,22 +70,22 @@ export class AccountFeature implements StaticFeature {
 			account = accountList[0];
 		}
 
-		const securityToken: { [key: string]: any } = await azdata.accounts.getSecurityToken(account, azdata.AzureResource.AzureKeyVault);
 		const tenant = account.properties.tenants.find((t: { [key: string]: string }) => request.authority.includes(t.id));
 		const unauthorizedMessage = localize('mssql.insufficientlyPrivelagedAzureAccount', "The configured Azure account for {0} does not have sufficient permissions for Azure Key Vault to access a column master key for Always Encrypted.", account.key.accountId);
 		if (!tenant) {
 			window.showErrorMessage(unauthorizedMessage);
 			return undefined;
 		}
-		let tokenBundle = securityToken[tenant.id];
-		if (!tokenBundle) {
+		const securityToken = await azdata.accounts.getAccountSecurityToken(account, tenant, azdata.AzureResource.AzureKeyVault);
+
+		if (!securityToken?.token) {
 			window.showErrorMessage(unauthorizedMessage);
 			return undefined;
 		}
 
 		let params: contracts.RequestSecurityTokenResponse = {
 			accountKey: JSON.stringify(account.key),
-			token: securityToken[tenant.id].token
+			token: securityToken.token
 		};
 
 		return params;

@@ -6,7 +6,7 @@
 import 'vs/css!./media/sqlConnection';
 
 import { Button } from 'sql/base/browser/ui/button/button';
-import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
+import { SelectBox, SelectOptionItemSQL } from 'sql/base/browser/ui/selectBox/selectBox';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
@@ -520,12 +520,18 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		let oldSelection = this._azureAccountDropdown.value;
 		const accounts = await this._accountManagementService.getAccounts();
 		this._azureAccountList = accounts.filter(a => a.key.providerId.startsWith('azure'));
-		let accountDropdownOptions = this._azureAccountList.map(account => account.displayInfo.displayName);
+		let accountDropdownOptions: SelectOptionItemSQL[] = this._azureAccountList.map(account => {
+			return {
+				text: account.displayInfo.displayName,
+				value: account.key.accountId
+			} as SelectOptionItemSQL;
+		});
+
 		if (accountDropdownOptions.length === 0) {
 			// If there are no accounts add a blank option so that add account isn't automatically selected
-			accountDropdownOptions.unshift('');
+			accountDropdownOptions.unshift({ text: '', value: '' });
 		}
-		accountDropdownOptions.push(this._addAzureAccountMessage);
+		accountDropdownOptions.push({ text: this._addAzureAccountMessage, value: this._addAzureAccountMessage });
 		this._azureAccountDropdown.setOptions(accountDropdownOptions);
 		this._azureAccountDropdown.selectWithOptionName(oldSelection);
 	}

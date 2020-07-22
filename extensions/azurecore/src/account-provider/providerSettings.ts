@@ -17,7 +17,6 @@ const publicAzureSettings: ProviderSettings = {
 		settings: {
 			host: 'https://login.microsoftonline.com/',
 			clientId: 'a69788c6-1d43-44ed-9ca3-b83e194da255',
-			signInResourceId: 'https://management.core.windows.net/',
 			microsoftResource: {
 				id: 'marm',
 				endpoint: 'https://management.core.windows.net/',
@@ -72,7 +71,6 @@ const usGovAzureSettings: ProviderSettings = {
 		settings: {
 			host: 'https://login.microsoftonline.us/',
 			clientId: 'a69788c6-1d43-44ed-9ca3-b83e194da255',
-			signInResourceId: 'https://management.core.usgovcloudapi.net/',
 			microsoftResource: {
 				id: 'marm',
 				endpoint: 'https://management.core.usgovcloudapi.net/',
@@ -121,7 +119,6 @@ const usNatAzureSettings: ProviderSettings = {
 		settings: {
 			host: 'https://login.microsoftonline.eaglex.ic.gov/',
 			clientId: 'a69788c6-1d43-44ed-9ca3-b83e194da255',
-			signInResourceId: 'https://management.core.eaglex.ic.gov/',
 			microsoftResource: {
 				id: 'marm',
 				endpoint: 'https://management.azure.eaglex.ic.gov/',
@@ -171,7 +168,6 @@ const germanyAzureSettings: ProviderSettings = {
 		settings: {
 			host: 'https://login.microsoftazure.de/',
 			clientId: 'a69788c6-1d43-44ed-9ca3-b83e194da255',
-			signInResourceId: 'https://management.core.cloudapi.de/',
 			graphResource: {
 				id: 'https://graph.cloudapi.de/',
 				endpoint: 'https://graph.cloudapi.de'
@@ -197,7 +193,6 @@ const chinaAzureSettings: ProviderSettings = {
 		settings: {
 			host: 'https://login.chinacloudapi.cn/',
 			clientId: 'a69788c6-1d43-44ed-9ca3-b83e194da255',
-			signInResourceId: 'https://management.core.chinacloudapi.cn/',
 			graphResource: {
 				id: 'https://graph.chinacloudapi.cn/',
 				endpoint: 'https://graph.chinacloudapi.cn'
