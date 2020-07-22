@@ -123,7 +123,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 	}
 
-	private async hydrateAccount(token: Token | AccessToken, tokenClaims: TokenClaims): Promise<AzureAccount> {
+	public async hydrateAccount(token: Token | AccessToken, tokenClaims: TokenClaims): Promise<AzureAccount> {
 		const tenants = await this.getTenants({ ...token });
 		const account = this.createAccount(tokenClaims, token.key, tenants);
 		return account;
@@ -291,7 +291,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 
 	//#region tenant calls
-	private async getTenants(token: AccessToken): Promise<Tenant[]> {
+	public async getTenants(token: AccessToken): Promise<Tenant[]> {
 		interface TenantResponse { // https://docs.microsoft.com/en-us/rest/api/resources/tenants/list
 			id: string
 			tenantId: string
