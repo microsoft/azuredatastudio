@@ -76,15 +76,16 @@ export abstract class AzureAuth implements vscode.Disposable {
 		this.scopesString = this.scopes.join(' ');
 	}
 
-	public async startLogin(): Promise<AzureAccount | undefined> {
+	public async startLogin(): Promise<AzureAccount | azdata.PromptFailedResult> {
 		let loginComplete: Deferred<void>;
 		try {
 			const result = await this.login(this.commonTenant, this.metadata.settings.microsoftResource);
 			loginComplete = result.authComplete;
-			if (!result || !result.response) {
-				console.log('result empty');
-				// TODO do something
-				return undefined;
+			if (!result?.response) {
+				Logger.error('Authentication failed');
+				return {
+					canceled: false
+				};
 			}
 			const account = await this.hydrateAccount(result.response.accessToken, result.response.tokenClaims);
 			loginComplete?.resolve();
