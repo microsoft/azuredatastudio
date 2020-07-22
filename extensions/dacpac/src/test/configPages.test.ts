@@ -10,10 +10,12 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as os from 'os';
 import * as path from 'path';
+
 import { DataTierApplicationWizard, PageName } from '../wizard/dataTierApplicationWizard';
 import { DacFxDataModel } from '../wizard/api/models';
 import { TestContext, createContext } from './testContext';
-import { TestDeployConfigPage, TestExtractConfigPage, TestImportConfigPage} from './testDacFxConfigPages';
+import { TestDeployConfigPage, TestExtractConfigPage, TestImportConfigPage } from './testDacFxConfigPages';
+import { mockConnectionProfile } from './testUtils';
 
 let wizard: DataTierApplicationWizard;
 let testContext: TestContext;
@@ -97,8 +99,8 @@ describe('Dacfx Wizard Pages', function (): void {
 		let importConfigPage = new TestImportConfigPage(wizard, wizard.pages.get(PageName.importConfig).wizardPage, wizard.model, testContext.viewContext.view);
 		await importConfigPage.start();
 
-		//let result = await importConfigPage.onPageEnter();
-		//should(result).equal(true, 'onPageEnter() should successfullly load connection profiles');
+		let result = await importConfigPage.onPageEnter();
+		should(result).equal(true, 'onPageEnter() should successfullly load connection profiles');
 
 		testContext.viewContext.fileButtonOnClick.fire(undefined);
 		await importConfigPage.selectionPromise;
@@ -107,18 +109,4 @@ describe('Dacfx Wizard Pages', function (): void {
 	});
 });
 
-const mockConnectionProfile: azdata.connection.ConnectionProfile = {
-	providerId: 'MSSQL',
-	connectionId: 'My Connection ID',
-	connectionName: 'My Connection',
-	serverName: 'My Server',
-	databaseName: 'My Database',
-	userName: 'My User',
-	password: 'My Pwd',
-	authenticationType: 'SqlLogin',
-	savePassword: false,
-	groupFullName: 'My groupName',
-	groupId: 'My GroupId',
-	saveProfile: true,
-	options: {}
-};
+
