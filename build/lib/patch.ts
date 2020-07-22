@@ -30,6 +30,7 @@ async function main(): Promise<void> {
 		cp.spawnSync('git', ['fetch', 'vsdistro']);
 		cp.spawnSync('git', ['checkout', target, '--', namePath]);
 		cp.spawnSync('git', ['apply', '--ignore-space-change', '--ignore-whitespace', path.join(patchPath, name)]);
+		cp.spawnSync('git', ['add', '-A']);
 	}
 }
 
