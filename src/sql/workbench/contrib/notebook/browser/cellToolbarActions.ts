@@ -18,6 +18,7 @@ import Severity from 'vs/base/common/severity';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { MoveDirection } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 
 
 export class EditCellAction extends ToggleableAction {
@@ -79,10 +80,9 @@ export class MoveCellAction extends CellActionBase {
 	}
 
 	doRun(context: CellContext): Promise<void> {
-		let moveDirection = this._cssClass.includes('move-down') ? 'down' : 'up';
+		let moveDirection = this._cssClass.includes('move-down') ? MoveDirection.Down : MoveDirection.Up;
 		try {
-			// Todo: trigger cell move action using the moveDirection string.
-			alert(moveDirection);
+			context.model.moveCell(context.cell, moveDirection);
 		} catch (error) {
 			let message = getErrorMessage(error);
 

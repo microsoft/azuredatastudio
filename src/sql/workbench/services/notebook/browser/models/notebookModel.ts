@@ -9,7 +9,7 @@ import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
 
-import { IClientSession, INotebookModel, INotebookModelOptions, ICellModel, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { IClientSession, INotebookModel, INotebookModelOptions, ICellModel, NotebookContentChange, MoveDirection } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellType, CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { nbversion } from 'sql/workbench/services/notebook/common/notebookConstants';
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
@@ -385,6 +385,40 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		});
 
 		return cell;
+	}
+
+	moveCell(cell: ICellModel, direction: MoveDirection): void {
+		if (this.inErrorState) {
+			return null;
+		}
+		let index = this.findCellIndex(cell);
+
+		if ((index === 0 && direction === MoveDirection.Up) || ((index === this._cells.length - 1 && direction === MoveDirection.Down))) {
+			// Nothing to do
+			return;
+		}
+
+		if (direction === MoveDirection.Down) {
+			this._cells.splice(index, 1);
+			if (index + 1 < this._cells.length) {
+				this._cells.splice(index + 1, 0, cell);
+			} else {
+				this._cells.push(cell);
+			}
+		} else {
+			this._cells.splice(index, 1);
+			this._cells.splice(index - 1, 0, cell);
+		}
+
+		index = this.findCellIndex(cell);
+
+		// Set newly created cell as active cell
+		this.updateActiveCell(cell);
+		this._contentChangedEmitter.fire({
+			changeType: NotebookChangeType.CellsModified,
+			cells: [cell],
+			cellIndex: index
+		});
 	}
 
 	public updateActiveCell(cell: ICellModel): void {

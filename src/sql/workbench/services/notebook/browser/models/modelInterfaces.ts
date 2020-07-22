@@ -344,6 +344,12 @@ export interface INotebookModel {
 	addCell(cellType: CellType, index?: number): void;
 
 	/**
+	 * Moves a cell up/down
+	 */
+	moveCell(cellModel: ICellModel, direction: MoveDirection): void;
+
+
+	/**
 	 * Deletes a cell
 	 */
 	deleteCell(cellModel: ICellModel): void;
@@ -422,6 +428,11 @@ export enum CellExecutionState {
 	Stopped = 1,
 	Running = 2,
 	Error = 3
+}
+
+export enum MoveDirection {
+	Up,
+	Down
 }
 
 export interface IOutputChangedEvent {
