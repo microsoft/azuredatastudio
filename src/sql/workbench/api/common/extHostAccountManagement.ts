@@ -89,10 +89,7 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 		return Promise.all(promises).then(() => resultAccounts);
 	}
 
-	public $getSecurityToken(account: azdata.Account, resource?: azdata.AzureResource): Thenable<{}> {
-		if (resource === undefined) {
-			resource = AzureResource.ResourceManagement;
-		}
+	public $getSecurityToken(account: azdata.Account, resource: azdata.AzureResource = AzureResource.ResourceManagement): Thenable<{}> {
 		return this.$getAllAccounts().then(() => {
 			for (const handle in this._accounts) {
 				const providerHandle = parseInt(handle);
@@ -105,10 +102,7 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 		});
 	}
 
-	public $getAccountSecurityToken(account: azdata.Account, tenant: string, resource?: azdata.AzureResource): Thenable<{ token: string }> {
-		if (resource === undefined) {
-			resource = AzureResource.ResourceManagement;
-		}
+	public $getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource = AzureResource.ResourceManagement): Thenable<{ token: string }> {
 		return this.$getAllAccounts().then(() => {
 			for (const handle in this._accounts) {
 				const providerHandle = parseInt(handle);

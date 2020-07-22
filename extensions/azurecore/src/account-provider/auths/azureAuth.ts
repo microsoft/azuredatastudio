@@ -76,7 +76,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		this.scopesString = this.scopes.join(' ');
 	}
 
-	public async startLogin(): Promise<AzureAccount> {
+	public async startLogin(): Promise<AzureAccount | undefined> {
 		let loginComplete: Deferred<void>;
 		try {
 			const result = await this.login(this.commonTenant, this.metadata.settings.microsoftResource);
@@ -102,10 +102,15 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 	}
 
+	private getHomeTenant(account: AzureAccount): Tenant {
+		// Home is defined by the API
+		// Lets pick the home tenant - and fall back to commonTenant if they don't exist
+		return account.properties.tenants.find(t => t.tenantCategory === 'Home') ?? account.properties.tenants[0] ?? this.commonTenant;
+	}
+
 	public async refreshAccess(account: AzureAccount): Promise<AzureAccount> {
 		try {
-			// Lets pick the home tenant - and fall back to commonTenant if they don't exist
-			const tenant = account.properties.tenants.find(t => t.tenantCategory === 'Home') ?? account.properties.tenants[0] ?? this.commonTenant;
+			const tenant = this.getHomeTenant(account);
 			const tokenResult = await this.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.MicrosoftResourceManagement);
 			if (!tokenResult) {
 				account.isStale = true;
@@ -151,7 +156,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		const cachedTokens = await this.getSavedToken(tenant, resource, account.key);
 
 		// Let's check to see if we can just use the cached tokens to return to the user
-		if (cachedTokens && cachedTokens.accessToken) {
+		if (cachedTokens?.accessToken) {
 			let expiry = Number(cachedTokens.expiresOn);
 			if (Number.isNaN(expiry)) {
 				Logger.log('Expiration time was not defined. This is expected on first launch');
@@ -235,8 +240,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 			throw new AzureAuthError(localize('azure.responseError', "Token retrival failed with an error. Open developer tools to view the error"), 'Token retrival failed', undefined);
 		}
 
-		const accessTokenString = response.data?.access_token;
-		const refreshTokenString = response.data?.refresh_token;
+		const accessTokenString = response.data.access_token;
+		const refreshTokenString = response.data.refresh_token;
 		const expiresOnString = response.data.expires_on;
 
 		return this.getTokenHelper(tenant, resource, accessTokenString, refreshTokenString, expiresOnString);
@@ -262,7 +267,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 			key: userKey
 		};
 		let refreshToken: RefreshToken;
-		const expiresOn: string = expiresOnString;
 
 		if (refreshTokenString) {
 			refreshToken = {
@@ -275,7 +279,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			accessToken,
 			refreshToken,
 			tokenClaims,
-			expiresOn
+			expiresOn: expiresOnString
 		};
 
 		const accountKey: azdata.AccountKey = {
@@ -388,19 +392,21 @@ export abstract class AzureAuth implements vscode.Disposable {
 	//#region interaction handling
 
 	private async handleInteractionRequired(tenant: Tenant, resource: Resource): Promise<OAuthTokenResponse | undefined> {
-		const shouldOpen = await this.shouldOpenConsentDialog(tenant, resource);
+		const shouldOpen = await this.askUserForInteraction(tenant, resource);
 		if (shouldOpen) {
 			const result = await this.login(tenant, resource);
-			if (result && result.authComplete) {
-				result.authComplete.resolve();
-			}
-
+			result?.authComplete?.resolve();
 			return result?.response;
 		}
 		return undefined;
 	}
 
-	private async shouldOpenConsentDialog(tenant: Tenant, resource: Resource) {
+	/**
+	 * Asks the user if they would like to do the interaction based authentication as required by OAuth2
+	 * @param tenant
+	 * @param resource
+	 */
+	private async askUserForInteraction(tenant: Tenant, resource: Resource): Promise<boolean> {
 		if (!tenant.displayName && !tenant.id) {
 			throw new Error('Tenant did not have display name or id');
 		}

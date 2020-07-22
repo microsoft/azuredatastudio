@@ -2293,14 +2293,6 @@ declare module 'azdata' {
 		getSecurityToken(account: Account, resource: AzureResource): Thenable<{} | undefined>;
 
 		/**
-		 * Generates a security token for the provided account and tenant
-		 * @param account The account to generate a security token for
-		 * @param resource The resource to get the token for
-		 * @return Promise to return a security token object
-		 */
-		getAccountSecurityToken(account: Account, tenant: string, resource: AzureResource): Thenable<{ token: string } | undefined>;
-
-		/**
 		 * Prompts the user to enter account information.
 		 * Returns an error if the user canceled the operation.
 		 */

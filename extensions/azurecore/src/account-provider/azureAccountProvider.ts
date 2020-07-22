@@ -50,7 +50,6 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 
 	clearTokenCache(): Thenable<void> {
 		return this.getAuthMethod().deleteAllCache();
-		return undefined;
 	}
 
 	private handleAuthMapping(metadata: AzureAccountProviderMetadata, tokenCache: SimpleTokenCache, context: vscode.ExtensionContext, uriEventHandler: vscode.EventEmitter<vscode.Uri>) {
