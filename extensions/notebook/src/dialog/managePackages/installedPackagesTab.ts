@@ -5,6 +5,7 @@
 
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 
 import { JupyterServerInstallation, PythonPkgDetails } from '../../jupyter/jupyterServerInstallation';
 import * as utils from '../../common/utils';
@@ -28,6 +29,7 @@ export class InstalledPackagesTab {
 	private uninstallPackageButton: azdata.ButtonComponent;
 	private view: azdata.ModelView | undefined;
 	private formBuilder: azdata.FormBuilder;
+	private disposables: vscode.Disposable[] = [];
 
 	constructor(private dialog: ManagePackagesDialog, private jupyterInstallation: JupyterServerInstallation) {
 		this.prompter = new CodeAdapter();
@@ -36,6 +38,13 @@ export class InstalledPackagesTab {
 
 		this.installedPkgTab.registerContent(async view => {
 			this.view = view;
+
+			// Dispose the resources
+			this.disposables.push(view.onClosed(() => {
+				this.disposables.forEach(d => {
+					try { d.dispose(); } catch { }
+				});
+			}));
 			let dropdownValues = this.dialog.model.getPackageTypes().map(x => {
 				return {
 					name: x.providerId,
@@ -88,12 +97,12 @@ export class InstalledPackagesTab {
 					height: '600px',
 					width: '400px'
 				}).component();
-			this.installedPackagesTable.onCellAction(async (rowState) => {
+			this.disposables.push(this.installedPackagesTable.onCellAction(async (rowState) => {
 				let buttonState = <azdata.ICellActionEventArgs>rowState;
 				if (buttonState) {
 					await this.doUninstallPackage([rowState.row]);
 				}
-			});
+			}));
 
 			this.uninstallPackageButton = view.modelBuilder.button()
 				.withProperties({
