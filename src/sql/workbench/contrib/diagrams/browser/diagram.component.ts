@@ -3,11 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Component, Inject, forwardRef, ChangeDetectorRef, Injectable, OnInit } from '@angular/core';
+import { Component, Inject, forwardRef, ChangeDetectorRef, Injectable, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { localize } from 'vs/nls';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { ServerInfo } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
+import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
+import { GetDiagramModelAction } from 'sql/workbench/contrib/diagrams/browser/diagramActions';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { Action } from 'vs/base/common/actions';
 
 const LocalizedStrings = {
 	SECTION_TITLE_API: localize('asmt.section.api.title', "API information"),
@@ -26,21 +30,28 @@ export const DASHBOARD_SELECTOR: string = 'diagram-component';
 	selector: DASHBOARD_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./diagram.component.html'))
 })
+
 @Injectable()
 export class DiagramComponent extends AngularDisposable implements OnInit {
 
 	protected localizedStrings = LocalizedStrings;
 	connectionInfo: ServerInfo = null;
 	instanceName: string = '';
+	protected _actionBar: Taskbar;
+
+	@ViewChild('diagramActionbarContainer') protected actionBarContainer: ElementRef;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
-		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface) {
+		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
+		@Inject(IInstantiationService) private _instantiationService: IInstantiationService
+	) {
 		super();
 	}
 
 	ngOnInit() {
 		this.displayConnectionInfo();
+		this.initActionBar();
 	}
 
 
@@ -55,6 +66,17 @@ export class DiagramComponent extends AngularDisposable implements OnInit {
 			this.instanceName = machineName + '\\' + serverName;
 		}
 		this._cd.detectChanges();
+	}
+
+	private initActionBar(): void {
+		const getModelAction: Action = this._instantiationService.createInstance(GetDiagramModelAction,
+			GetDiagramModelAction.ID, GetDiagramModelAction.LABEL);
+		const taskbar: HTMLElement = <HTMLElement>this.actionBarContainer.nativeElement;
+		this._actionBar = new Taskbar(taskbar);
+		this._actionBar.setContent([
+			{ action: getModelAction },
+		]);
+		this._actionBar.context = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 	}
 
 	public layout() {
