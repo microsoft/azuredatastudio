@@ -202,7 +202,8 @@
 			},
 			"outputCapture": "std",
 			"args": [
-				"--remote-debugging-port=9222"
+				"--remote-debugging-port=9222",
+				"-g Debug_"
 			],
 			"cwd": "${workspaceFolder}",
 			"outFiles": [

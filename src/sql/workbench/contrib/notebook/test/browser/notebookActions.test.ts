@@ -417,7 +417,7 @@ function testDefinedAndReadyKernelForFalseShowKernels(notebookModel: NotebookMod
 }
 
 function verifyUpdateKernelForNoKernelCase(notebookModel: NotebookModelStub, kernelsDropdown: KernelsDropdown, kernel: azdata.nb.IKernel, setOptionsSpy: sinon.SinonSpy, expectedSetOptionsArgs: {
-	kernels: string[]; // this are the kernels fed into the update method via the notebookModelStub object
+	kernels: string[]; // these are the kernels fed into the update method via the notebookModelStub object
 	selected: number; // the selected value is NoKernelName value when no kernel is defined or is ready.
 }, clientSessionErrorState: boolean) {
 	notebookModel.clientSession.setErrorState(clientSessionErrorState);
@@ -433,7 +433,7 @@ function verifyUpdateKernelForNoKernelCase(notebookModel: NotebookModelStub, ker
 }
 
 function verifyUpdateKernelForKernelDefinedAndReadyCase(notebookModel: NotebookModelStub, kernelsDropdown: KernelsDropdown, kernel: azdata.nb.IKernel, setOptionsSpy: sinon.SinonSpy, expectedSetOptionsArgs: {
-	kernels: string[]; // this are the kernels fed into the update method via the notebookModelStub object
+	kernels: string[]; // these are the kernels fed into the update method via the notebookModelStub object
 	selected: number; // the selected value is NoKernelName value when no kernel is defined or is ready.
 }) {
 	kernelsDropdown.updateKernel(kernel);
