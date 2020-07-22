@@ -35,7 +35,6 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 			const accountNode = node as AzureResourceAccountTreeNode;
 			const azureAccount = accountNode.account as AzureAccount;
 
-			const tokens = await azdata.accounts.getSecurityToken(azureAccount, azdata.AzureResource.MicrosoftResourceManagement);
 
 			const terminalService = appContext.getService<IAzureTerminalService>(AzureResourceServiceNames.terminalService);
 
@@ -64,7 +63,7 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 				tenant = azureAccount.properties.tenants[listOfTenants.indexOf(pickedTenant)];
 			}
 
-			await terminalService.getOrCreateCloudConsole(azureAccount, tenant, tokens);
+			await terminalService.getOrCreateCloudConsole(azureAccount, tenant);
 		} catch (ex) {
 			console.error(ex);
 			vscode.window.showErrorMessage(ex);
@@ -91,13 +90,14 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 		const subscriptions = (await accountNode.getCachedSubscriptions()) || <azureResource.AzureResourceSubscription[]>[];
 		if (subscriptions.length === 0) {
 			try {
-				const tokens = await azdata.accounts.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
 
 				for (const tenant of account.properties.tenants) {
-					const token = tokens[tenant.id].token;
-					const tokenType = tokens[tenant.id].tokenType;
+					const response = await azdata.accounts.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.ResourceManagement);
 
-					subscriptions.push(...await subscriptionService.getSubscriptions(account, new TokenCredentials(token, tokenType)));
+					const token = response.token;
+					const tokenType = response.tokenType;
+
+					subscriptions.push(...await subscriptionService.getSubscriptions(account, new TokenCredentials(token, tokenType), tenant.id));
 				}
 			} catch (error) {
 				account.isStale = true;
