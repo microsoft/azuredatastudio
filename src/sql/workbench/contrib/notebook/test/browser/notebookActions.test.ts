@@ -23,6 +23,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { Emitter } from 'vs/base/common/event';
+
 class ClientSessionStub extends stubs_ClientSessionStub {
 	private _errorState: boolean = false;
 	setErrorState = (value: boolean) => this._errorState = value;

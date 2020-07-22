@@ -3,8 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { getConfigurationKeys, IConfigurationOverrides, IConfigurationService, getConfigurationValue, ConfigurationTarget, IConfigurationValue, IConfigurationChangeEvent } from 'vs/platform/configuration/common/configuration';
 import { Emitter } from 'vs/base/common/event';
+import { ConfigurationTarget, getConfigurationKeys, getConfigurationValue, IConfigurationChangeEvent, IConfigurationOverrides, IConfigurationService, IConfigurationValue } from 'vs/platform/configuration/common/configuration';
+
 
 export class TestConfigurationService implements IConfigurationService {
 	public onDidChangeConfigurationEmitter = new Emitter<IConfigurationChangeEvent>();
