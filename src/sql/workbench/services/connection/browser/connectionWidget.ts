@@ -816,7 +816,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	}
 
 	public get userName(): string {
-		return this.authenticationType === AuthenticationType.AzureMFA ? this._azureAccountDropdown.value : this._userNameInputBox.value;
+		return this.authenticationType === AuthenticationType.AzureMFA ? this._azureAccountDropdown.label : this._userNameInputBox.value;
 	}
 
 	public get password(): string {

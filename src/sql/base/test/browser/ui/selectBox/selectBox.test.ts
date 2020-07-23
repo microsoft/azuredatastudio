@@ -45,6 +45,7 @@ suite('Select Box tests', () => {
 		});
 
 		assert(sb.value === options[0].value);
+		assert(sb.label === options[0].text);
 	});
 
 	test('values get auto populated', () => {
