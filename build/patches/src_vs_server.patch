@@ -1,5 +1,5 @@
 diff --git a/src/vs/server/cli.js b/src/vs/server/cli.js
-index 72aaf6c95e..c2f149cdd5 100644
+index c974cec0921..6ad8446c338 100644
 --- a/src/vs/server/cli.js
 +++ b/src/vs/server/cli.js
 @@ -1,6 +1,6 @@
@@ -11,7 +11,7 @@ index 72aaf6c95e..c2f149cdd5 100644
  const path = require('path');
  
 diff --git a/src/vs/server/main.js b/src/vs/server/main.js
-index 13a03967ab..e23be0562f 100644
+index 42487a4aceb..bf33bc88f16 100644
 --- a/src/vs/server/main.js
 +++ b/src/vs/server/main.js
 @@ -1,6 +1,6 @@
@@ -23,10 +23,10 @@ index 13a03967ab..e23be0562f 100644
  
  //@ts-check
 diff --git a/src/vs/server/remoteExtensionHostAgent.ts b/src/vs/server/remoteExtensionHostAgent.ts
-index 030c38f07b..ea35604f9a 100644
+index 6538e8287f7..237622dac14 100644
 --- a/src/vs/server/remoteExtensionHostAgent.ts
 +++ b/src/vs/server/remoteExtensionHostAgent.ts
-@@ -139,7 +139,7 @@ if (shouldSpawnCli(args)) {
+@@ -154,7 +154,7 @@ if (shouldSpawnCli(args)) {
  	const license = `
  
  *
@@ -35,21 +35,8 @@ index 030c38f07b..ea35604f9a 100644
  *
  * Reminder: You may only use this software with Visual Studio family products,
  * as described in the license https://aka.ms/vscode-remote/license
-diff --git a/src/vs/server/webClientServer.ts b/src/vs/server/webClientServer.ts
-index 6ce045a262..f236564cde 100644
---- a/src/vs/server/webClientServer.ts
-+++ b/src/vs/server/webClientServer.ts
-@@ -213,7 +213,7 @@ export class WebClientServer {
- 			// and we want to set it prolong it to ensure that this
- 			// client is valid for another 1 week at least
- 			'Set-Cookie': cookie.serialize('vscode-tkn', this._connectionToken, { maxAge: 60 * 60 * 24 * 7 /* 1 week */ }),
--			'Content-Security-Policy': cspDirectives
-+			// 'Content-Security-Policy': cspDirectives
- 		});
- 		return res.end(data);
- 	}
 diff --git a/src/vs/server/remoteLanguagePacks.ts b/src/vs/server/remoteLanguagePacks.ts
-index 63ae32e71..d0caeab82 100644
+index 63ae32e719e..d0caeab8289 100644
 --- a/src/vs/server/remoteLanguagePacks.ts
 +++ b/src/vs/server/remoteLanguagePacks.ts
 @@ -1,7 +1,7 @@
@@ -61,25 +48,3 @@ index 63ae32e71..d0caeab82 100644
  
  import * as fs from 'fs';
  import * as path from 'vs/base/common/path';
-diff --git a/src/vs/server/webClientServer.ts b/src/vs/server/webClientServer.ts
-index f236564cd..a3b91f9b3 100644
---- a/src/vs/server/webClientServer.ts
-+++ b/src/vs/server/webClientServer.ts
-@@ -191,7 +191,7 @@ export class WebClientServer {
- 			})))
- 			.replace('{{REMOTE_USER_DATA_URI}}', escapeAttribute(JSON.stringify(transformer.transformOutgoing(webUserDataHome))));
- 
--		const cspDirectives = [
-+		/*const cspDirectives = [
- 			'default-src \'self\';',
- 			'img-src \'self\' https: data: blob:;',
- 			'media-src \'none\';',
-@@ -205,7 +205,7 @@ export class WebClientServer {
- 			'connect-src \'self\' ws: wss: https:;',
- 			'font-src \'self\' blob:;',
- 			'manifest-src \'self\';'
--		].join(' ');
-+		].join(' ');*/
- 
- 		res.writeHead(200, {
- 			'Content-Type': 'text/html',
