@@ -3,104 +3,39 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import * as azdata from 'azdata';
+
 import * as nls from 'vscode-nls';
-import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
-import * as qs from 'qs';
-import * as url from 'url';
 
 import {
-	AzureAccountProviderMetadata,
-	Tenant,
 	AzureAccount,
-	Resource,
+	AzureAccountProviderMetadata,
 	AzureAuthType,
-	Subscription,
-	Deferred
+	Deferred,
+	Resource,
+	Tenant
 } from '../interfaces';
+import * as url from 'url';
 
 import { SimpleTokenCache } from '../simpleTokenCache';
 import { MemoryDatabase } from '../utils/memoryDatabase';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Logger } from '../../utils/Logger';
+import * as qs from 'qs';
+import { AzureAuthError } from './azureAuthError';
+
 const localize = nls.loadMessageBundle();
 
-export interface AccountKey {
-	/**
-	 * Account Key - uniquely identifies an account
-	 */
-	key: string
-}
-
-export interface AccessToken extends AccountKey {
-	/**
-	 * Access Token
-	 */
-	token: string;
-}
-
-export interface RefreshToken extends AccountKey {
-	/**
-	 * Refresh Token
-	 */
-	token: string;
-
-	/**
-	 * Account Key
-	 */
-	key: string
-}
-
-export interface TokenResponse {
-	[tenantId: string]: Token
-}
-
-export interface Token extends AccountKey {
-	/**
-	 * Access token
-	 */
-	token: string;
-
-	/**
-	 * TokenType
-	 */
-	tokenType: string;
-}
-
-export interface TokenClaims { // https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens
-	aud: string;
-	iss: string;
-	iat: number;
-	idp: string,
-	nbf: number;
-	exp: number;
-	c_hash: string;
-	at_hash: string;
-	aio: string;
-	preferred_username: string;
-	email: string;
-	name: string;
-	nonce: string;
-	oid: string;
-	roles: string[];
-	rh: string;
-	sub: string;
-	tid: string;
-	unique_name: string;
-	uti: string;
-	ver: string;
-}
-
-export type TokenRefreshResponse = { accessToken: AccessToken, refreshToken: RefreshToken, tokenClaims: TokenClaims, expiresOn: string };
 
 export abstract class AzureAuth implements vscode.Disposable {
-	protected readonly memdb = new MemoryDatabase();
+	protected readonly memdb = new MemoryDatabase<string>();
 
 	protected readonly WorkSchoolAccountType: string = 'work_school';
 	protected readonly MicrosoftAccountType: string = 'microsoft';
 
 	protected readonly loginEndpointUrl: string;
-	protected readonly commonTenant: Tenant;
+	public readonly commonTenant: Tenant;
 	protected readonly redirectUri: string;
 	protected readonly scopes: string[];
 	protected readonly scopesString: string;
@@ -141,185 +76,227 @@ export abstract class AzureAuth implements vscode.Disposable {
 		this.scopesString = this.scopes.join(' ');
 	}
 
-	public abstract async login(): Promise<AzureAccount | azdata.PromptFailedResult>;
-
-	public abstract async autoOAuthCancelled(): Promise<void>;
-
-	public abstract async promptForConsent(resourceId: string, tenant: string): Promise<{ tokenRefreshResponse: TokenRefreshResponse, authCompleteDeferred: Deferred<void> } | undefined>;
-
-	public dispose() { }
-
-	public async refreshAccess(oldAccount: azdata.Account): Promise<azdata.Account> {
-		const response = await this.getCachedToken(oldAccount.key);
-		if (!response) {
-			oldAccount.isStale = true;
-			return oldAccount;
-		}
-
-		const refreshToken = response.refreshToken;
-		if (!refreshToken || !refreshToken.key) {
-			oldAccount.isStale = true;
-			return oldAccount;
-		}
-
+	public async startLogin(): Promise<AzureAccount | azdata.PromptFailedResult> {
+		let loginComplete: Deferred<void>;
 		try {
-			// Refresh the access token
-			const tokenResponse = await this.refreshAccessToken(oldAccount.key, refreshToken);
-			const tenants = await this.getTenants(tokenResponse.accessToken);
-
-			// Recreate account object
-			const newAccount = this.createAccount(tokenResponse.tokenClaims, tokenResponse.accessToken.key, tenants);
-
-			const subscriptions = await this.getSubscriptions(newAccount);
-			newAccount.properties.subscriptions = subscriptions;
-
-			return newAccount;
+			const result = await this.login(this.commonTenant, this.metadata.settings.microsoftResource);
+			loginComplete = result.authComplete;
+			if (!result?.response) {
+				Logger.error('Authentication failed');
+				return {
+					canceled: false
+				};
+			}
+			const account = await this.hydrateAccount(result.response.accessToken, result.response.tokenClaims);
+			loginComplete?.resolve();
+			return account;
 		} catch (ex) {
-			oldAccount.isStale = true;
-			if (ex.message) {
-				await vscode.window.showErrorMessage(ex.message);
+			if (ex instanceof AzureAuthError) {
+				if (loginComplete) {
+					loginComplete.reject(ex.getPrintableString());
+				} else {
+					vscode.window.showErrorMessage(ex.getPrintableString());
+				}
 			}
 			Logger.error(ex);
+			return undefined;
 		}
-		return oldAccount;
 	}
 
+	private getHomeTenant(account: AzureAccount): Tenant {
+		// Home is defined by the API
+		// Lets pick the home tenant - and fall back to commonTenant if they don't exist
+		return account.properties.tenants.find(t => t.tenantCategory === 'Home') ?? account.properties.tenants[0] ?? this.commonTenant;
+	}
 
-	public async getSecurityToken(account: azdata.Account, azureResource: azdata.AzureResource): Promise<TokenResponse | undefined> {
+	public async refreshAccess(account: AzureAccount): Promise<AzureAccount> {
+		try {
+			const tenant = this.getHomeTenant(account);
+			const tokenResult = await this.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.MicrosoftResourceManagement);
+			if (!tokenResult) {
+				account.isStale = true;
+				return account;
+			}
+
+			return await this.hydrateAccount(tokenResult, this.getTokenClaims(tokenResult.token));
+		} catch (ex) {
+			if (ex instanceof AzureAuthError) {
+				vscode.window.showErrorMessage(ex.getPrintableString());
+			}
+			Logger.error(ex);
+			account.isStale = true;
+			return account;
+		}
+	}
+
+	public async hydrateAccount(token: Token | AccessToken, tokenClaims: TokenClaims): Promise<AzureAccount> {
+		const tenants = await this.getTenants({ ...token });
+		const account = this.createAccount(tokenClaims, token.key, tenants);
+		return account;
+	}
+
+	public async getAccountSecurityToken(account: AzureAccount, tenantId: string, azureResource: azdata.AzureResource): Promise<Token | undefined> {
 		if (account.isStale === true) {
-			Logger.log('Account was stale, no tokens being fetched');
+			Logger.log('Account was stale. No tokens being fetched.');
 			return undefined;
 		}
 
 		const resource = this.resources.find(s => s.azureResourceId === azureResource);
 		if (!resource) {
+			Logger.log('Invalid resource, not fetching', azureResource);
+
 			return undefined;
 		}
 
-		const azureAccount = account as AzureAccount;
-		const response: TokenResponse = {};
+		const tenant = account.properties.tenants.find(t => t.id === tenantId);
 
-		for (const tenant of azureAccount.properties.tenants) {
-			let cachedTokens = await this.getCachedToken(account.key, resource.id, tenant.id);
-			// Check expiration
-			if (cachedTokens) {
-				const expiresOn = Number(this.memdb.get(this.createMemdbString(account.key.accountId, tenant.id, resource.id)));
-				const currentTime = new Date().getTime() / 1000;
+		if (!tenant) {
+			throw new AzureAuthError(localize('azure.tenantNotFound', "Specifed tenant with ID '{0}' not found.", tenantId), `Tenant ${tenantId} not found.`, undefined);
+		}
 
-				if (!Number.isNaN(expiresOn)) {
-					const remainingTime = expiresOn - currentTime;
-					const fiveMinutes = 5 * 60;
-					// If the remaining time is less than five minutes, assume the token has expired. It's too close to expiration to be meaningful.
-					if (remainingTime < fiveMinutes) {
-						cachedTokens = undefined;
-					}
-				} else {
-					// No expiration date, assume expired.
-					cachedTokens = undefined;
-					Logger.log('Assuming expired token due to no expiration date - this is expected on first launch.');
-				}
+		const cachedTokens = await this.getSavedToken(tenant, resource, account.key);
 
+		// Let's check to see if we can just use the cached tokens to return to the user
+		if (cachedTokens?.accessToken) {
+			let expiry = Number(cachedTokens.expiresOn);
+			if (Number.isNaN(expiry)) {
+				Logger.log('Expiration time was not defined. This is expected on first launch');
+				expiry = 0;
 			}
+			const currentTime = new Date().getTime() / 1000;
 
-			// Refresh
-			if (!cachedTokens) {
+			let accessToken = cachedTokens.accessToken;
+			const remainingTime = expiry - currentTime;
+			const maxTolerance = 2 * 60; // two minutes
 
-				const baseToken = await this.getCachedToken(account.key);
-				if (!baseToken) {
-					account.isStale = true;
-					Logger.log('Base token was empty, account is stale.');
-					return undefined;
-				}
-
-				try {
-					await this.refreshAccessToken(account.key, baseToken.refreshToken, tenant, resource);
-				} catch (ex) {
-					Logger.log(`Could not refresh access token for ${JSON.stringify(tenant)} - silently removing the tenant from the user's account.`);
-					Logger.error(`Actual error: ${JSON.stringify(ex?.response?.data ?? ex.message ?? ex, undefined, 2)}`);
-					azureAccount.properties.tenants = azureAccount.properties.tenants.filter(t => t.id !== tenant.id);
-					continue;
-				}
-
-				cachedTokens = await this.getCachedToken(account.key, resource.id, tenant.id);
-				if (!cachedTokens) {
-					Logger.log('Refresh access tokens didn not set cache');
-					return undefined;
-				}
+			if (remainingTime < maxTolerance) {
+				const result = await this.refreshToken(tenant, resource, cachedTokens.refreshToken);
+				accessToken = result.accessToken;
 			}
-			const { accessToken } = cachedTokens;
-			response[tenant.id] = {
-				token: accessToken.token,
-				key: accessToken.key,
+			// Let's just return here.
+			if (accessToken) {
+				return {
+					...accessToken,
+					tokenType: 'Bearer'
+				};
+			}
+		}
+
+		// User didn't have any cached tokens, or the cached tokens weren't useful.
+		// For most users we can use the refresh token from the general microsoft resource to an access token of basically any type of resource we want.
+		const baseTokens = await this.getSavedToken(this.commonTenant, this.metadata.settings.microsoftResource, account.key);
+		if (!baseTokens) {
+			Logger.error('User had no base tokens for the basic resource registered. This should not happen and indicates something went wrong with the authentication cycle');
+			const msg = localize('azure.noBaseToken', 'Something failed with the authentication, or your tokens have been deleted from the system. Please try adding your account to Azure Data Studio again.');
+			account.isStale = true;
+			throw new AzureAuthError(msg, 'No base token found', undefined);
+		}
+		// Let's try to convert the access token type, worst case we'll have to prompt the user to do an interactive authentication.
+		const result = await this.refreshToken(tenant, resource, baseTokens.refreshToken);
+		if (result.accessToken) {
+			return {
+				...result.accessToken,
 				tokenType: 'Bearer'
 			};
 		}
-
-		if (azureAccount.properties.subscriptions) {
-			azureAccount.properties.subscriptions.forEach(subscription => {
-				// Make sure that tenant has information populated.
-				if (response[subscription.tenantId]) {
-					response[subscription.id] = {
-						...response[subscription.tenantId]
-					};
-				}
-			});
-		}
-
-		return response;
+		return undefined;
 	}
 
-	public async clearCredentials(account: azdata.AccountKey): Promise<void> {
-		try {
-			return this.deleteAccountCache(account);
-		} catch (ex) {
-			const msg = localize('azure.cacheErrrorRemove', "Error when removing your account from the cache.");
-			vscode.window.showErrorMessage(msg);
-			Logger.error('Error when removing tokens.', ex);
-		}
-	}
 
-	protected toBase64UrlEncoding(base64string: string): string {
-		return base64string.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_'); // Need to use base64url encoding
-	}
 
-	protected async makePostRequest(uri: string, postData: { [key: string]: string }, validateStatus = false) {
-		try {
-			const config: AxiosRequestConfig = {
-				headers: {
-					'Content-Type': 'application/x-www-form-urlencoded'
-				}
+	protected abstract async login(tenant: Tenant, resource: Resource): Promise<{ response: OAuthTokenResponse, authComplete: Deferred<void> }>;
+
+	/**
+	 * Refreshes a token, if a refreshToken is passed in then we use that. If it is not passed in then we will prompt the user for consent.
+	 * @param tenant
+	 * @param resource
+	 * @param refreshToken
+	 */
+	public async refreshToken(tenant: Tenant, resource: Resource, refreshToken: RefreshToken | undefined): Promise<OAuthTokenResponse> {
+		if (refreshToken) {
+			const postData: RefreshTokenPostData = {
+				grant_type: 'refresh_token',
+				client_id: this.clientId,
+				refresh_token: refreshToken.token,
+				tenant: tenant.id,
+				resource: resource.endpoint
 			};
 
-			if (validateStatus) {
-				config.validateStatus = () => true;
-			}
-
-			return await axios.post(uri, qs.stringify(postData), config);
-		} catch (ex) {
-			Logger.log('Unexpected error making Azure auth request', 'azureCore.postRequest', JSON.stringify(ex?.response?.data, undefined, 2));
-			throw ex;
+			return this.getToken(tenant, resource, postData);
 		}
+
+		return this.handleInteractionRequired(tenant, resource);
 	}
 
-	protected async makeGetRequest(token: string, uri: string): Promise<AxiosResponse<any>> {
-		try {
-			const config = {
-				headers: {
-					Authorization: `Bearer ${token}`,
-					'Content-Type': 'application/json',
-				},
+	public async getToken(tenant: Tenant, resource: Resource, postData: AuthorizationCodePostData | TokenPostData | RefreshTokenPostData): Promise<OAuthTokenResponse> {
+		const tokenUrl = `${this.loginEndpointUrl}${tenant.id}/oauth2/token`;
+		const response = await this.makePostRequest(tokenUrl, postData);
+
+		if (response.data.error === 'interaction_required') {
+			return this.handleInteractionRequired(tenant, resource);
+		}
+
+		if (response.data.error) {
+			Logger.error('Response error!', response.data);
+			throw new AzureAuthError(localize('azure.responseError', "Token retrival failed with an error. Open developer tools to view the error"), 'Token retrival failed', undefined);
+		}
+
+		const accessTokenString = response.data.access_token;
+		const refreshTokenString = response.data.refresh_token;
+		const expiresOnString = response.data.expires_on;
+
+		return this.getTokenHelper(tenant, resource, accessTokenString, refreshTokenString, expiresOnString);
+	}
+
+	public async getTokenHelper(tenant: Tenant, resource: Resource, accessTokenString: string, refreshTokenString: string, expiresOnString: string): Promise<OAuthTokenResponse> {
+		if (!accessTokenString) {
+			const msg = localize('azure.accessTokenEmpty', 'No access token returned from Microsoft OAuth');
+			throw new AzureAuthError(msg, 'Access token was empty', undefined);
+		}
+
+		const tokenClaims: TokenClaims = this.getTokenClaims(accessTokenString);
+
+		const userKey = tokenClaims.sub ?? tokenClaims.oid;
+
+		if (!userKey) {
+			const msg = localize('azure.noUniqueIdentifier', "The user had no unique identifier within AAD");
+			throw new AzureAuthError(msg, 'No unique identifier', undefined);
+		}
+
+		const accessToken: AccessToken = {
+			token: accessTokenString,
+			key: userKey
+		};
+		let refreshToken: RefreshToken;
+
+		if (refreshTokenString) {
+			refreshToken = {
+				token: refreshTokenString,
+				key: userKey
 			};
-
-			return await axios.get(uri, config);
-		} catch (ex) {
-			// Intercept and print error
-			Logger.log('Unexpected error making Azure auth request', 'azureCore.getRequest', JSON.stringify(ex?.response?.data, undefined, 2));
-			// rethrow error
-			throw ex;
 		}
+
+		const result: OAuthTokenResponse = {
+			accessToken,
+			refreshToken,
+			tokenClaims,
+			expiresOn: expiresOnString
+		};
+
+		const accountKey: azdata.AccountKey = {
+			providerId: this.metadata.id,
+			accountId: userKey
+		};
+
+		await this.saveToken(tenant, resource, accountKey, result);
+
+		return result;
 	}
 
-	protected async getTenants(token: AccessToken): Promise<Tenant[]> {
+
+
+	//#region tenant calls
+	public async getTenants(token: AccessToken): Promise<Tenant[]> {
 		interface TenantResponse { // https://docs.microsoft.com/en-us/rest/api/resources/tenants/list
 			id: string
 			tenantId: string
@@ -329,7 +306,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2019-11-01');
 		try {
-			const tenantResponse = await this.makeGetRequest(token.token, tenantUri);
+			const tenantResponse = await this.makeGetRequest(tenantUri, token.token);
 			Logger.pii('getTenants', tenantResponse.data);
 			const tenants: Tenant[] = tenantResponse.data.value.map((tenantInfo: TenantResponse) => {
 				return {
@@ -353,95 +330,86 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 	}
 
-	protected async getSubscriptions(account: AzureAccount): Promise<Subscription[]> {
-		interface SubscriptionResponse { // https://docs.microsoft.com/en-us/rest/api/resources/subscriptions/list
-			subscriptionId: string
-			tenantId: string
-			displayName: string
-		}
-		const allSubs: Subscription[] = [];
-		const tokens = await this.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
-		if (!tokens) {
-			Logger.log('There were no resource management tokens to retrieve subscriptions from. Account is stale.');
-			account.isStale = true;
-		}
+	//#endregion
 
-		for (const tenant of account.properties.tenants) {
-			const token = tokens[tenant.id];
-			const subscriptionUri = url.resolve(this.metadata.settings.armResource.endpoint, 'subscriptions?api-version=2019-11-01');
-			try {
-				const subscriptionResponse = await this.makeGetRequest(token.token, subscriptionUri);
-				Logger.pii('getSubscriptions', subscriptionResponse.data);
-				const subscriptions: Subscription[] = subscriptionResponse.data.value.map((subscriptionInfo: SubscriptionResponse) => {
-					return {
-						id: subscriptionInfo.subscriptionId,
-						displayName: subscriptionInfo.displayName,
-						tenantId: subscriptionInfo.tenantId
-					} as Subscription;
-				});
-				allSubs.push(...subscriptions);
-			} catch (ex) {
-				Logger.error(ex);
-				throw new Error('Error retrieving subscription information');
-			}
+	//#region token management
+	private async saveToken(tenant: Tenant, resource: Resource, accountKey: azdata.AccountKey, { accessToken, refreshToken, expiresOn }: OAuthTokenResponse) {
+		const msg = localize('azure.cacheErrorAdd', "Error when adding your account to the cache.");
+		if (!tenant.id || !resource.id) {
+			Logger.pii('Tenant ID or resource ID was undefined', tenant, resource);
+			throw new AzureAuthError(msg, 'Adding account to cache failed', undefined);
 		}
-		return allSubs;
-	}
-
-	protected async getToken(postData: { [key: string]: string }, tenant = this.commonTenant, resourceId: string = '', resourceEndpoint: string = ''): Promise<TokenRefreshResponse | undefined> {
 		try {
-			let refreshResponse: TokenRefreshResponse;
-
-			try {
-				const tokenUrl = `${this.loginEndpointUrl}${tenant.id}/oauth2/token`;
-				const tokenResponse = await this.makePostRequest(tokenUrl, postData);
-				Logger.pii(JSON.stringify(tokenResponse.data));
-				const tokenClaims = this.getTokenClaims(tokenResponse.data.access_token);
-
-				const accessToken: AccessToken = {
-					token: tokenResponse.data.access_token,
-					key: tokenClaims.oid ?? tokenClaims.email ?? tokenClaims.unique_name ?? tokenClaims.name,
-				};
-
-				const refreshToken: RefreshToken = {
-					token: tokenResponse.data.refresh_token,
-					key: accessToken.key
-				};
-				const expiresOn = tokenResponse.data.expires_on;
-
-				refreshResponse = { accessToken, refreshToken, tokenClaims, expiresOn };
-			} catch (ex) {
-				Logger.pii(JSON.stringify(ex?.response?.data));
-				if (ex?.response?.data?.error === 'interaction_required') {
-					const shouldOpenLink = await this.openConsentDialog(tenant, resourceId);
-					if (shouldOpenLink === true) {
-						const { tokenRefreshResponse, authCompleteDeferred } = await this.promptForConsent(resourceEndpoint, tenant.id);
-						refreshResponse = tokenRefreshResponse;
-						authCompleteDeferred.resolve();
-					} else {
-						vscode.window.showInformationMessage(localize('azure.noConsentToReauth', "The authentication failed since Azure Data Studio was unable to open re-authentication page."));
-					}
-				} else {
-					return undefined;
-				}
-			}
-
-			this.memdb.set(this.createMemdbString(refreshResponse.accessToken.key, tenant.id, resourceId), refreshResponse.expiresOn);
-			return refreshResponse;
-		} catch (err) {
-			const msg = localize('azure.noToken', "Retrieving the Azure token failed. Please sign in again.");
-			vscode.window.showErrorMessage(msg);
-			throw new Error(err);
+			await this.tokenCache.saveCredential(`${accountKey.accountId}_access_${resource.id}_${tenant.id}`, JSON.stringify(accessToken));
+			await this.tokenCache.saveCredential(`${accountKey.accountId}_refresh_${resource.id}_${tenant.id}`, JSON.stringify(refreshToken));
+			this.memdb.set(`${accountKey.accountId}_${tenant.id}_${resource.id}`, expiresOn);
+		} catch (ex) {
+			Logger.error(ex);
+			throw new AzureAuthError(msg, 'Adding account to cache failed', ex);
 		}
 	}
 
-	public async openConsentDialog(tenant: Tenant, resourceId: string): Promise<boolean> {
+	public async getSavedToken(tenant: Tenant, resource: Resource, accountKey: azdata.AccountKey): Promise<{ accessToken: AccessToken, refreshToken: RefreshToken, expiresOn: string }> {
+		const getMsg = localize('azure.cacheErrorGet', "Error when getting your account from the cache");
+		const parseMsg = localize('azure.cacheErrorParse', "Error when parsing your account from the cache");
+
+		if (!tenant.id || !resource.id) {
+			Logger.pii('Tenant ID or resource ID was undefined', tenant, resource);
+			throw new AzureAuthError(getMsg, 'Getting account from cache failed', undefined);
+		}
+
+		let accessTokenString: string;
+		let refreshTokenString: string;
+		let expiresOn: string;
+		try {
+			accessTokenString = await this.tokenCache.getCredential(`${accountKey.accountId}_access_${resource.id}_${tenant.id}`);
+			refreshTokenString = await this.tokenCache.getCredential(`${accountKey.accountId}_refresh_${resource.id}_${tenant.id}`);
+			expiresOn = this.memdb.get(`${accountKey.accountId}_${tenant.id}_${resource.id}`);
+		} catch (ex) {
+			Logger.error(ex);
+			throw new AzureAuthError(getMsg, 'Getting account from cache failed', ex);
+		}
+
+		try {
+			if (!accessTokenString) {
+				return undefined;
+			}
+			const accessToken: AccessToken = JSON.parse(accessTokenString);
+			let refreshToken: RefreshToken;
+			if (refreshTokenString) {
+				refreshToken = JSON.parse(refreshTokenString);
+			}
+
+			return {
+				accessToken, refreshToken, expiresOn
+			};
+		} catch (ex) {
+			Logger.error(ex);
+			throw new AzureAuthError(parseMsg, 'Parsing account from cache failed', ex);
+		}
+	}
+	//#endregion
+
+	//#region interaction handling
+
+	public async handleInteractionRequired(tenant: Tenant, resource: Resource): Promise<OAuthTokenResponse | undefined> {
+		const shouldOpen = await this.askUserForInteraction(tenant, resource);
+		if (shouldOpen) {
+			const result = await this.login(tenant, resource);
+			result?.authComplete?.resolve();
+			return result?.response;
+		}
+		return undefined;
+	}
+
+	/**
+	 * Asks the user if they would like to do the interaction based authentication as required by OAuth2
+	 * @param tenant
+	 * @param resource
+	 */
+	private async askUserForInteraction(tenant: Tenant, resource: Resource): Promise<boolean> {
 		if (!tenant.displayName && !tenant.id) {
 			throw new Error('Tenant did not have display name or id');
-		}
-
-		if (tenant.id === 'common') {
-			throw new Error('Common tenant should not need consent');
 		}
 
 		const getTenantConfigurationSet = (): Set<string> => {
@@ -486,7 +454,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			}
 
 		};
-		const messageBody = localize('azurecore.consentDialog.body', "Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.", tenant.displayName, tenant.id, resourceId);
+		const messageBody = localize('azurecore.consentDialog.body', "Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.", tenant.displayName, tenant.id, resource.id);
 		const result = await vscode.window.showInformationMessage(messageBody, { modal: true }, openItem, closeItem, dontAskAgainItem);
 
 		if (result.action) {
@@ -495,113 +463,9 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		return result.booleanResult;
 	}
+	//#endregion
 
-	protected getTokenClaims(accessToken: string): TokenClaims | undefined {
-		try {
-			const split = accessToken.split('.');
-			return JSON.parse(Buffer.from(split[1], 'base64').toString('binary'));
-		} catch (ex) {
-			throw new Error('Unable to read token claims: ' + JSON.stringify(ex));
-		}
-	}
-
-	private async refreshAccessToken(account: azdata.AccountKey, rt: RefreshToken, tenant: Tenant = this.commonTenant, resource?: Resource): Promise<TokenRefreshResponse> {
-		const postData: { [key: string]: string } = {
-			grant_type: 'refresh_token',
-			refresh_token: rt.token,
-			client_id: this.clientId,
-			tenant: tenant.id,
-		};
-
-		if (resource) {
-			postData.resource = resource.endpoint;
-		}
-
-		const getTokenResponse = await this.getToken(postData, tenant, resource?.id, resource?.endpoint);
-
-		const accessToken = getTokenResponse?.accessToken;
-		const refreshToken = getTokenResponse?.refreshToken;
-
-		if (!accessToken || !refreshToken) {
-			Logger.log('Access or refresh token were undefined');
-			const msg = localize('azure.refreshTokenError', "Error when refreshing your account.");
-			throw new Error(msg);
-		}
-
-		await this.setCachedToken(account, accessToken, refreshToken, resource?.id, tenant?.id);
-
-		return getTokenResponse;
-	}
-
-
-	public async setCachedToken(account: azdata.AccountKey, accessToken: AccessToken, refreshToken: RefreshToken, resourceId?: string, tenantId?: string): Promise<void> {
-		const msg = localize('azure.cacheErrorAdd', "Error when adding your account to the cache.");
-		resourceId = resourceId ?? '';
-		tenantId = tenantId ?? '';
-		if (!accessToken || !accessToken.token || !refreshToken.token || !accessToken.key) {
-			throw new Error(msg);
-		}
-
-		try {
-			await this.tokenCache.saveCredential(`${account.accountId}_access_${resourceId}_${tenantId}`, JSON.stringify(accessToken));
-			await this.tokenCache.saveCredential(`${account.accountId}_refresh_${resourceId}_${tenantId}`, JSON.stringify(refreshToken));
-		} catch (ex) {
-			Logger.error('Error when storing tokens.', ex);
-			throw new Error(msg);
-		}
-	}
-
-	public async getCachedToken(account: azdata.AccountKey, resourceId?: string, tenantId?: string): Promise<{ accessToken: AccessToken, refreshToken: RefreshToken } | undefined> {
-		resourceId = resourceId ?? '';
-		tenantId = tenantId ?? '';
-
-		let accessToken: AccessToken;
-		let refreshToken: RefreshToken;
-		try {
-			accessToken = JSON.parse(await this.tokenCache.getCredential(`${account.accountId}_access_${resourceId}_${tenantId}`));
-			refreshToken = JSON.parse(await this.tokenCache.getCredential(`${account.accountId}_refresh_${resourceId}_${tenantId}`));
-		} catch (ex) {
-			return undefined;
-		}
-
-		if (!accessToken || !refreshToken) {
-			return undefined;
-		}
-
-		if (!refreshToken.token || !refreshToken.key) {
-			return undefined;
-		}
-
-		if (!accessToken.token || !accessToken.key) {
-			return undefined;
-		}
-
-		return {
-			accessToken,
-			refreshToken
-		};
-
-	}
-
-	public createMemdbString(accountKey: string, tenantId: string, resourceId: string): string {
-		return `${accountKey}_${tenantId}_${resourceId}`;
-	}
-
-	public async deleteAccountCache(account: azdata.AccountKey): Promise<void> {
-		const results = await this.tokenCache.findCredentials(account.accountId);
-
-		for (let { account } of results) {
-			await this.tokenCache.clearCredential(account);
-		}
-	}
-
-	public async deleteAllCache(): Promise<void> {
-		const results = await this.tokenCache.findCredentials('');
-
-		for (let { account } of results) {
-			await this.tokenCache.clearCredential(account);
-		}
-	}
+	//#region data modeling
 
 	public createAccount(tokenClaims: TokenClaims, key: string, tenants: Tenant[]): AzureAccount {
 		// Determine if this is a microsoft account
@@ -663,4 +527,184 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		return account;
 	}
+
+	//#endregion
+
+	//#region network functions
+	public async makePostRequest(url: string, postData: AuthorizationCodePostData | TokenPostData | DeviceCodeStartPostData | DeviceCodeCheckPostData): Promise<AxiosResponse<any>> {
+		const config: AxiosRequestConfig = {
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded'
+			},
+			validateStatus: () => true // Never throw
+		};
+
+		// Intercept response and print out the response for future debugging
+		const response = await axios.post(url, qs.stringify(postData), config);
+		Logger.pii(url, postData, response.data);
+		return response;
+	}
+
+	private async makeGetRequest(url: string, token: string): Promise<AxiosResponse<any>> {
+		const config: AxiosRequestConfig = {
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${token}`
+			},
+			validateStatus: () => true // Never throw
+		};
+
+		const response = await axios.get(url, config);
+		Logger.pii(url, response.data);
+		return response;
+	}
+
+	//#endregion
+
+	//#region inconsequential
+	protected getTokenClaims(accessToken: string): TokenClaims | undefined {
+		try {
+			const split = accessToken.split('.');
+			return JSON.parse(Buffer.from(split[1], 'base64').toString('binary'));
+		} catch (ex) {
+			throw new Error('Unable to read token claims: ' + JSON.stringify(ex));
+		}
+	}
+
+	protected toBase64UrlEncoding(base64string: string): string {
+		return base64string.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_'); // Need to use base64url encoding
+	}
+
+	public async deleteAllCache(): Promise<void> {
+		const results = await this.tokenCache.findCredentials('');
+
+		for (let { account } of results) {
+			await this.tokenCache.clearCredential(account);
+		}
+	}
+
+	public async clearCredentials(account: azdata.AccountKey): Promise<void> {
+		try {
+			return this.deleteAccountCache(account);
+		} catch (ex) {
+			const msg = localize('azure.cacheErrrorRemove', "Error when removing your account from the cache.");
+			vscode.window.showErrorMessage(msg);
+			Logger.error('Error when removing tokens.', ex);
+		}
+	}
+
+	public async deleteAccountCache(account: azdata.AccountKey): Promise<void> {
+		const results = await this.tokenCache.findCredentials(account.accountId);
+
+		for (let { account } of results) {
+			await this.tokenCache.clearCredential(account);
+		}
+	}
+
+	public async dispose() { }
+
+	public async autoOAuthCancelled(): Promise<void> { }
+
+	//#endregion
 }
+
+//#region models
+
+export interface AccountKey {
+	/**
+	 * Account Key - uniquely identifies an account
+	 */
+	key: string
+}
+
+export interface AccessToken extends AccountKey {
+	/**
+	 * Access Token
+	 */
+	token: string;
+}
+
+export interface RefreshToken extends AccountKey {
+	/**
+	 * Refresh Token
+	 */
+	token: string;
+
+	/**
+	 * Account Key
+	 */
+	key: string
+}
+
+export interface MultiTenantTokenResponse {
+	[tenantId: string]: Token
+}
+
+export interface Token extends AccountKey {
+	/**
+	 * Access token
+	 */
+	token: string;
+
+	/**
+	 * TokenType
+	 */
+	tokenType: string;
+}
+
+export interface TokenClaims { // https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens
+	aud: string;
+	iss: string;
+	iat: number;
+	idp: string,
+	nbf: number;
+	exp: number;
+	c_hash: string;
+	at_hash: string;
+	aio: string;
+	preferred_username: string;
+	email: string;
+	name: string;
+	nonce: string;
+	oid: string;
+	roles: string[];
+	rh: string;
+	sub: string;
+	tid: string;
+	unique_name: string;
+	uti: string;
+	ver: string;
+}
+
+export type OAuthTokenResponse = { accessToken: AccessToken, refreshToken: RefreshToken, tokenClaims: TokenClaims, expiresOn: string };
+
+export interface TokenPostData {
+	grant_type: 'refresh_token' | 'authorization_code' | 'urn:ietf:params:oauth:grant-type:device_code';
+	client_id: string;
+	resource: string;
+}
+
+export interface RefreshTokenPostData extends TokenPostData {
+	grant_type: 'refresh_token';
+	refresh_token: string;
+	client_id: string;
+	tenant: string
+}
+
+export interface AuthorizationCodePostData extends TokenPostData {
+	grant_type: 'authorization_code';
+	code: string;
+	code_verifier: string;
+	redirect_uri: string;
+}
+
+export interface DeviceCodeStartPostData extends Omit<TokenPostData, 'grant_type'> {
+
+}
+
+export interface DeviceCodeCheckPostData extends Omit<TokenPostData, 'resource'> {
+	grant_type: 'urn:ietf:params:oauth:grant-type:device_code',
+	tenant: string,
+	code: string
+}
+//#endregion

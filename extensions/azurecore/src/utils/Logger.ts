@@ -7,17 +7,13 @@ export class Logger {
 	private static _piiLogging: boolean = false;
 
 	static log(msg: any, ...vals: any[]) {
-		if (vals && vals.length > 0) {
-			return console.log(msg, vals);
-		}
-		console.log(msg);
+		const fullMessage = `${msg} - ${vals.map(v => JSON.stringify(v)).join(' - ')}`;
+		console.log(fullMessage);
 	}
 
 	static error(msg: any, ...vals: any[]) {
-		if (vals && vals.length > 0) {
-			return console.error(msg, vals);
-		}
-		console.error(msg);
+		const fullMessage = `${msg} - ${vals.map(v => JSON.stringify(v)).join(' - ')}`;
+		console.error(fullMessage);
 	}
 
 	static pii(msg: any, ...vals: any[]) {

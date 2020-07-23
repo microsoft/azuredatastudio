@@ -26,7 +26,7 @@ async function checkForAzdata(outputChannel: vscode.OutputChannel): Promise<void
 				await downloadAndInstallAzdata(outputChannel);
 				vscode.window.showInformationMessage(loc.azdataInstalled);
 			} catch (err) {
-				// 1602 is User Cancelling installation - not unexpected so don't display
+				// Windows: 1602 is User Cancelling installation - not unexpected so don't display
 				if (!(err instanceof ExitCodeError) || err.code !== 1602) {
 					vscode.window.showWarningMessage(loc.installError(err));
 				}

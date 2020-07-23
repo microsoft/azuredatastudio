@@ -441,6 +441,14 @@ declare module 'azdata' {
 		targetLocation?: string;
 	}
 
+	export interface ButtonColumnOption {
+		icon?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+	}
+
+	export interface ButtonCell extends TableCell {
+		columnName: string;
+	}
+
 	export namespace sqlAssessment {
 
 		export enum SqlAssessmentTargetType {
@@ -492,6 +500,16 @@ declare module 'azdata' {
 	export interface AccountDisplayInfo {
 		email?: string;
 		name?: string;
+	}
+
+	export interface AccountProvider {
+		/**
+		 * Generates a security token for the provided account and tenant
+		 * @param account The account to generate a security token for
+		 * @param resource The resource to get the token for
+		 * @return Promise to return a security token object
+		 */
+		getAccountSecurityToken(account: Account, tenant: string, resource: AzureResource): Thenable<{ token: string } | undefined>;
 	}
 
 }

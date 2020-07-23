@@ -92,7 +92,8 @@ suite('Firewall rule dialog controller tests', () => {
 			providerName: mssqlProviderName,
 			options: {},
 			saveProfile: true,
-			id: ''
+			id: '',
+			azureTenantId: 'someTenant'
 		};
 	});
 
@@ -137,7 +138,7 @@ suite('Firewall rule dialog controller tests', () => {
 
 		// Then: it should get security token from account management service and call create firewall rule in resource provider
 		await deferredPromise;
-		mockAccountManagementService.verify(x => x.getSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+		mockAccountManagementService.verify(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
 		mockResourceProvider.verify(x => x.createFirewallRule(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
 		mockFirewallRuleDialog.verify(x => x.close(), TypeMoq.Times.once());
 		mockFirewallRuleDialog.verify(x => x.onServiceComplete(), TypeMoq.Times.once());
@@ -164,7 +165,7 @@ suite('Firewall rule dialog controller tests', () => {
 
 		// Then: it should get security token from account management service and an error dialog should have been opened
 		await deferredPromise;
-		mockAccountManagementService.verify(x => x.getSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+		mockAccountManagementService.verify(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
 		mockErrorMessageService.verify(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
 		mockResourceProvider.verify(x => x.createFirewallRule(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.never());
 	});
@@ -191,7 +192,7 @@ suite('Firewall rule dialog controller tests', () => {
 		// Then: it should get security token from account management service and an error dialog should have been opened
 		await deferredPromise;
 
-		mockAccountManagementService.verify(x => x.getSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+		mockAccountManagementService.verify(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
 		mockResourceProvider.verify(x => x.createFirewallRule(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
 		mockErrorMessageService.verify(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
@@ -217,7 +218,7 @@ suite('Firewall rule dialog controller tests', () => {
 
 		// Then: it should get security token from account management service and an error dialog should have been opened
 		await deferredPromise;
-		mockAccountManagementService.verify(x => x.getSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+		mockAccountManagementService.verify(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
 		mockResourceProvider.verify(x => x.createFirewallRule(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
 		mockErrorMessageService.verify(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
@@ -226,8 +227,8 @@ suite('Firewall rule dialog controller tests', () => {
 function getMockAccountManagementService(resolveSecurityToken: boolean): TypeMoq.Mock<TestAccountManagementService> {
 	let accountManagementTestService = new TestAccountManagementService();
 	let mockAccountManagementService = TypeMoq.Mock.ofInstance(accountManagementTestService);
-	mockAccountManagementService.setup(x => x.getSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
-		.returns(() => resolveSecurityToken ? Promise.resolve({}) : Promise.reject(null));
+	mockAccountManagementService.setup(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()))
+		.returns(() => resolveSecurityToken ? Promise.resolve({ token: 'token' }) : Promise.reject(null));
 	return mockAccountManagementService;
 }
 
