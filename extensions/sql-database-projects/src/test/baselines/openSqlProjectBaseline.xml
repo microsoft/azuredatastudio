@@ -68,6 +68,7 @@
     <Build Include="Tables\Users.sql" />
     <Build Include="Tables\Action History.sql" />
     <Build Include="Views\Maintenance\Database Performance.sql" />
+    <Build Include="..\Test\Test.sql" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\User" />
