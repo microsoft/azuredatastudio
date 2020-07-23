@@ -9,7 +9,7 @@ import 'mocha';
 import { resourceTypeToDisplayName, parseEndpoint, parseInstanceName, getAzurecoreApi, getResourceTypeIcon, getConnectionModeDisplayText, getDatabaseStateDisplayText, promptForResourceDeletion, promptAndConfirmPassword, getErrorMessage } from '../../common/utils';
 
 import * as loc from '../../localizedConstants';
-import { ResourceType, IconPathHelper, Connectionmode as ConnectionMode } from '../../constants';
+import { ResourceType, IconPathHelper, ConnectionMode as ConnectionMode } from '../../constants';
 import { MockInputBox } from '../stubs';
 import { HttpError } from '../../controller/generated/v1/api';
 import { IncomingMessage } from 'http';
@@ -91,8 +91,8 @@ describe('getResourceTypeIcon Method Tests', function () {
 
 describe('getConnectionModeDisplayText Method Tests', function () {
 	it('Display Name should be correct for valid ResourceType', function (): void {
-		should(getConnectionModeDisplayText(ConnectionMode.connected)).equal(loc.connected);
-		should(getConnectionModeDisplayText(ConnectionMode.disconnected)).equal(loc.disconnected);
+		should(getConnectionModeDisplayText(ConnectionMode.direct)).equal(loc.direct);
+		should(getConnectionModeDisplayText(ConnectionMode.indirect)).equal(loc.indirect);
 	});
 
 	it('Display Name should be correct for unknown value', function (): void {

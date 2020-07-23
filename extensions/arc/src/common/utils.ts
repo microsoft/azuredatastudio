@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 import * as azurecore from '../../../azurecore/src/azurecore';
 import * as loc from '../localizedConstants';
-import { IconPathHelper, IconPath, ResourceType, Connectionmode } from '../constants';
+import { IconPathHelper, IconPath, ResourceType, ConnectionMode } from '../constants';
 
 export class UserCancelledError extends Error { }
 
@@ -71,10 +71,10 @@ export function getResourceTypeIcon(resourceType: string | undefined): IconPath 
 export function getConnectionModeDisplayText(connectionMode: string | undefined): string {
 	connectionMode = connectionMode ?? '';
 	switch (connectionMode) {
-		case Connectionmode.connected:
-			return loc.connected;
-		case Connectionmode.disconnected:
-			return loc.disconnected;
+		case ConnectionMode.direct:
+			return loc.direct;
+		case ConnectionMode.indirect:
+			return loc.indirect;
 	}
 	return connectionMode;
 }
