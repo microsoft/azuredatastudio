@@ -35,7 +35,7 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openBook', () => bookTreeViewProvider.openNewBook()));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.closeBook', (book: any) => bookTreeViewProvider.closeBook(book)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.closeNotebook', (book: any) => bookTreeViewProvider.closeBook(book)));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openNotebookFolder', () => bookTreeViewProvider.openNotebookFolder()));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openNotebookFolder', (folderPath?: string, urlToOpen?: string, showPreview?: boolean,) => bookTreeViewProvider.openNotebookFolder(folderPath, urlToOpen, showPreview)));
 
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.createBook', async () => {
 		let untitledFileName: vscode.Uri = vscode.Uri.parse(`untitled:${createBookPath}`);
