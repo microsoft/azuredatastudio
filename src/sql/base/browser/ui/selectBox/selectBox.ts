@@ -197,6 +197,10 @@ export class SelectBox extends vsSelectBox {
 		return this._selectedOption;
 	}
 
+	public get label(): string | undefined {
+		return this._dialogOptions.find(s => s.value === this._selectedOption).text;
+	}
+
 	public get values(): string[] {
 		return this._dialogOptions.map(s => s.value);
 	}
