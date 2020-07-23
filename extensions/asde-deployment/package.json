@@ -319,12 +319,6 @@
                           ]
                         },
                         {
-                          "label": "%iot_device_id%",
-                          "variableName": "AZDATA_NB_VAR_ASDE_DEVICE_ID",
-                          "type": "text",
-                          "required": true
-                        },
-                        {
                           "label": "%vm_admin%",
                           "variableName": "AZDATA_NB_VAR_ASDE_VM_ADMIN",
                           "type": "text",
