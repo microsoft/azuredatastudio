@@ -175,7 +175,7 @@
       }
     ],
     "dataExplorer": {
-      "connection": [
+      "dialog/connection": [
         {
           "id": "azureResourceExplorer",
           "name": "%azure.resource.explorer.title%"

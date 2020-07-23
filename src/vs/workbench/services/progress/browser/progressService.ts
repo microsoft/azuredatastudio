@@ -61,6 +61,8 @@ export class ProgressService extends Disposable implements IProgressService {
 				return this.withViewProgress(location, task, { ...options, location });
 			}
 
+			return task({ report: () => { return; } });
+
 			throw new Error(`Bad progress location: ${location}`);
 		}
 

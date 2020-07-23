@@ -20,6 +20,7 @@ import { integrated, azureMFA } from 'sql/platform/connection/common/constants';
 import { AuthenticationType } from 'sql/workbench/services/connection/browser/connectionWidget';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
+import { RecentConnectionsViewContribution, SavedConnectionsViewContribution } from 'sql/workbench/contrib/connection/browser/connectionDialogPanes';
 
 const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
 
@@ -133,3 +134,6 @@ configurationRegistry.registerConfiguration({
 		}
 	}
 });
+
+workbenchRegistry.registerWorkbenchContribution(RecentConnectionsViewContribution, LifecyclePhase.Ready);
+workbenchRegistry.registerWorkbenchContribution(SavedConnectionsViewContribution, LifecyclePhase.Ready);
