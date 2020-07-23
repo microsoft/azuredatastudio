@@ -73,13 +73,14 @@ export default class MainController implements vscode.Disposable {
 		vscode.commands.registerCommand('sqlDatabaseProjects.delete', async (node: BaseProjectTreeItem) => { await this.projectsController.delete(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.exclude', async (node: FileNode | FolderNode) => { await this.projectsController.exclude(node); });
 
+		IconPathHelper.setExtensionContext(this.extensionContext);
+
 		// init view
 		const treeView = vscode.window.createTreeView(SQL_DATABASE_PROJECTS_VIEW_ID, { treeDataProvider: this.dbProjectTreeViewProvider });
 		this.dbProjectTreeViewProvider.setTreeView(treeView);
 
 		this.extensionContext.subscriptions.push(treeView);
 
-		IconPathHelper.setExtensionContext(this.extensionContext);
 		await templates.loadTemplates(path.join(this.context.extensionPath, 'resources', 'templates'));
 
 		// ensure .net core is installed
