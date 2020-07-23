@@ -242,27 +242,26 @@ export class NotebookSearchResultsView extends SearchView {
 	}
 
 	public async validateAndSearch(query: ITextQuery, searchWidget: SimpleSearchWidget): Promise<void> {
-		this.validateQry(query).then(() => {
-			if (this.parentContainer.views.length > 1) {
-				let filesToIncludeFiltered: string = '';
-				this.parentContainer.views.forEach(async (v) => {
-					let booksViewPane = (<TreeViewPane>this.parentContainer.getView(v.id));
-					if (booksViewPane?.treeView?.root) {
-						let root = booksViewPane.treeView.root;
-						if (root.children) {
-							let items = root.children;
-							items?.forEach(root => {
-								searchWidget.updateViewletsState();
-								let folderToSearch: IFolderQuery = { folder: URI.file(path.join(isString(root.tooltip) ? root.tooltip : root.tooltip.value, 'content')) };
-								query.folderQueries.push(folderToSearch);
-								filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
-								this.startSearch(query, null, filesToIncludeFiltered, false, searchWidget);
-							});
-						}
+		await this.validateQry(query).catch(e => errors.onUnexpectedError(e));
+		if (this.parentContainer.views.length > 1) {
+			let filesToIncludeFiltered: string = '';
+			this.parentContainer.views.forEach(async (v) => {
+				let booksViewPane = (<TreeViewPane>this.parentContainer.getView(v.id));
+				if (booksViewPane?.treeView?.root) {
+					let root = booksViewPane.treeView.root;
+					if (root.children) {
+						let items = root.children;
+						items?.forEach(async root => {
+							searchWidget.updateViewletsState();
+							let folderToSearch: IFolderQuery = { folder: URI.file(path.join(isString(root.tooltip) ? root.tooltip : root.tooltip.value, 'content')) };
+							query.folderQueries.push(folderToSearch);
+							filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
+							await this.startSearch(query, null, filesToIncludeFiltered, false, searchWidget);
+						});
 					}
-				});
-			}
-		});
+				}
+			});
+		}
 	}
 
 	private async validateQry(query: ITextQuery): Promise<void> {
