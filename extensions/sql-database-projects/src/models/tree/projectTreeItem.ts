@@ -11,7 +11,7 @@ import * as fileTree from './fileFolderTreeItem';
 import { Project, ProjectEntry, EntryType } from '../project';
 import * as utils from '../../common/utils';
 import { DatabaseReferencesTreeItem } from './databaseReferencesTreeItem';
-import { DatabaseProjectItemType } from '../../common/constants';
+import { DatabaseProjectItemType, RelativeOuterPath } from '../../common/constants';
 
 /**
  * TreeNode root that represents an entire project
@@ -21,11 +21,13 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	databaseReferencesNode: DatabaseReferencesTreeItem;
 	fileChildren: { [childName: string]: (fileTree.FolderNode | fileTree.FileNode) } = {};
 	project: Project;
+	fileSystemUri: vscode.Uri;
 
 	constructor(project: Project) {
 		super(vscode.Uri.parse(path.basename(project.projectFilePath)), undefined);
 
 		this.project = project;
+		this.fileSystemUri = vscode.Uri.file(project.projectFilePath);
 		this.dataSourceNode = new DataSourcesTreeItem(this);
 		this.databaseReferencesNode = new DatabaseReferencesTreeItem(this);
 
@@ -51,6 +53,10 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	 */
 	private construct() {
 		for (const entry of this.project.files) {
+			if (entry.type !== EntryType.File && entry.relativePath.startsWith(RelativeOuterPath)) {
+				continue;
+			}
+
 			const parentNode = this.getEntryParentNode(entry);
 
 			if (Object.keys(parentNode.fileChildren).includes(path.basename(entry.fsUri.path))) {
@@ -82,6 +88,10 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 
 		if (relativePathParts.length === 0) {
 			return this; // if nothing left after trimming the entry itself, must been root
+		}
+
+		if (relativePathParts[0] === RelativeOuterPath) {
+			return this;
 		}
 
 		let current: fileTree.FolderNode | ProjectRootTreeItem = this;
