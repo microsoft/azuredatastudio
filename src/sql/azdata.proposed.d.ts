@@ -520,6 +520,9 @@ declare module 'azdata' {
 	}
 
 	export interface Account {
+		/**
+		 * Specifies if an account should be deleted
+		 */
 		delete?: boolean;
 	}
 
