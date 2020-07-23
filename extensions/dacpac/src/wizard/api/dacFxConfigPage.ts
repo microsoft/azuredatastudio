@@ -14,11 +14,6 @@ import { BasePage } from './basePage';
 import { sanitizeStringForFilename, isValidBasename, isValidBasenameErrorMessage } from './utils';
 
 export abstract class DacFxConfigPage extends BasePage {
-
-	protected readonly wizardPage: azdata.window.WizardPage;
-	protected readonly instance: DataTierApplicationWizard;
-	protected readonly model: DacFxDataModel;
-	protected readonly view: azdata.ModelView;
 	protected serverDropdown: azdata.DropDownComponent;
 	protected databaseTextBox: azdata.InputBoxComponent;
 	protected databaseDropdown: azdata.DropDownComponent;
@@ -28,11 +23,7 @@ export abstract class DacFxConfigPage extends BasePage {
 	protected fileExtension: string;
 
 	protected constructor(instance: DataTierApplicationWizard, wizardPage: azdata.window.WizardPage, model: DacFxDataModel, view: azdata.ModelView) {
-		super();
-		this.instance = instance;
-		this.wizardPage = wizardPage;
-		this.model = model;
-		this.view = view;
+		super(instance, wizardPage, model, view);
 	}
 
 	public setupNavigationValidator(): void {
@@ -67,6 +58,7 @@ export abstract class DacFxConfigPage extends BasePage {
 
 	protected async populateServerDropdown(): Promise<boolean> {
 		let values = await this.getServerValues();
+
 		if (values === undefined) {
 			return false;
 		}
