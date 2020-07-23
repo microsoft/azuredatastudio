@@ -43,8 +43,12 @@
                 "displayName": "%sql-edge-remote-display-name%"
               },
               {
-                "name": "azure",
+                "name": "azure-create-new",
                 "displayName": "%sql-edge-azure-display-name%"
+              },
+              {
+                "name": "azure-single-device",
+                "displayName": "%sql-edge-azure-single-device-display-name%"
               }
             ]
           }
@@ -378,7 +382,93 @@
                 "name": "azure-cli"
               }
             ],
-            "when": "type=azure"
+            "when": "type=azure-create-new"
+          },
+          {
+            "dialog": {
+              "notebook": "./notebooks/edge/deploy-sql-edge-single-device.ipynb",
+              "title": "%sql-edge-azure-single-device-title%",
+              "name": "sql-edge-azure-dialog",
+              "tabs": [
+                {
+                  "title": "",
+                  "sections": [
+                    {
+                      "title": "%azure-info-section-title%",
+                      "collapsible": true,
+                      "fields": [
+                        {
+                          "type": "azure_account",
+                          "subscriptionVariableName": "AZDATA_NB_VAR_ASDE_SUBSCRIPTIONID",
+                          "resourceGroupVariableName": "AZDATA_NB_VAR_ASDE_RESOURCEGROUP",
+                          "required": true
+                        },
+                        {
+                          "label": "%iot-hub-name%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_HUBNAME",
+                          "type": "text",
+                          "required": true
+                        },
+                        {
+                          "label": "%device-id%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_DEVICE_ID",
+                          "type": "text",
+                          "required": true
+                        },
+                        {
+                          "label": "%device-ip-address%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_DEVICE_IP_ADDRESS",
+                          "type": "text",
+                          "description": "%device-ip-address-description%",
+                          "required": false
+                        }
+                      ]
+                    },
+                    {
+                      "title": "%sqlserver-info-section-title%",
+                      "collapsible": true,
+                      "fields": [
+                        {
+                          "label": "%docker-sql-password-field%",
+                          "variableName": "AZDATA_NB_VAR_SA_PASSWORD",
+                          "type": "sql_password",
+                          "userName": "sa",
+                          "confirmationRequired": true,
+                          "confirmationLabel": "%docker-confirm-sql-password-field%",
+                          "defaultValue": "",
+                          "required": true
+                        },
+                        {
+                          "label": "%docker-sql-port-field%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_SQL_PORT",
+                          "type": "number",
+                          "defaultValue": 31433,
+                          "required": true
+                        },
+                        {
+                          "label": "%dacpac_path%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_DACPAC_PATH",
+                          "type": "file_picker",
+                          "required": false,
+                          "filter": {
+                            "displayName": "%dacpac-zip-files%",
+                            "fileTypes": [
+                              "zip"
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "requiredTools": [
+              {
+                "name": "azure-cli"
+              }
+            ],
+            "when": "type=azure-single-device"
           }
         ],
         "agreement": {
