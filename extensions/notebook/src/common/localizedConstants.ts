@@ -70,3 +70,4 @@ export const msgBookNotFound = localize('msgBookNotFound', "Books not Found");
 export const msgReleaseNotFound = localize('msgReleaseNotFound', "Releases not Found");
 export const msgUndefinedAssetError = localize('msgUndefinedAssetError', "The selected book is not valid");
 export function httpRequestError(code: number, message: string): string { return localize('httpRequestError', "Http Request failed with error: {0} {1}", code, message); }
+export function msgDownloadLocation(downloadLocation: string): string { return localize('msgDownloadLocation', "Downloading in {0}", downloadLocation); }

@@ -20,6 +20,7 @@ export class GitHubRemoteBook extends RemoteBook {
 
 	public async createLocalCopy(): Promise<void> {
 		this.outputChannel.show(true);
+		this.outputChannel.appendLine(loc.msgDownloadLocation(this._localPath.href));
 		this.outputChannel.appendLine(loc.msgRemoteBookDownloadProgress);
 		this.setLocalPath();
 		this.createDirectory();
@@ -79,7 +80,7 @@ export class GitHubRemoteBook extends RemoteBook {
 			}
 			await fs.promises.unlink(remoteBookFullPath.href);
 			this.outputChannel.appendLine(loc.msgRemoteBookDownloadComplete);
-			vscode.commands.executeCommand('notebook.command.openNotebookFolder', this._localPath.href);
+			vscode.commands.executeCommand('notebook.command.openBook', this._localPath.href, undefined, true);
 		}
 		catch (err) {
 			this.outputChannel.appendLine(err);

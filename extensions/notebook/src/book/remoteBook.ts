@@ -14,7 +14,11 @@ export abstract class RemoteBook {
 
 	constructor(public remotePath: URL, protected _asset?: IAsset) {
 		this.remotePath = remotePath;
-		this.outputChannel = vscode.window.createOutputChannel(loc.msgTaskName);
+		this.outputChannel = this.createOutputChannel();
+	}
+
+	public createOutputChannel(): vscode.OutputChannel {
+		return this.outputChannel || (this.outputChannel = vscode.window.createOutputChannel(loc.msgTaskName));
 	}
 
 	public async abstract createLocalCopy(): Promise<void>;
