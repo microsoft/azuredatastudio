@@ -2,11 +2,11 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { IAction } from 'vs/base/common/actions';
+import { IAction, IActionViewItem } from 'vs/base/common/actions';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import {
-	IActionBarOptions, ActionsOrientation, IActionViewItem,
+	IActionBarOptions, ActionsOrientation,
 	IActionOptions
 } from 'vs/base/browser/ui/actionbar/actionbar';
 import * as DOM from 'vs/base/browser/dom';

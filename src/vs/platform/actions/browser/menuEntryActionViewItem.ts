@@ -229,7 +229,7 @@ export class MenuEntryActionViewItem extends ActionViewItem {
 		}
 	}
 
-	private _updateItemClass(item: ICommandAction): void {
+	protected _updateItemClass(item: ICommandAction): void { // {{SQL CARBON EDIT}} make it overwritable
 		this._itemClassDispose.value = undefined;
 
 		const icon = this._commandAction.checked && (item.toggled as { icon?: Icon })?.icon ? (item.toggled as { icon: Icon }).icon : item.icon;
@@ -333,7 +333,7 @@ export class LabeledMenuItemActionItem extends MenuEntryActionViewItem {
 
 	// Overwrite item class to ensure that we can pass in a CSS class that other items use
 	// Leverages the _defaultCSSClassToAdd property that's passed into the constructor
-	_updateItemClass(item: ICommandAction): void {
+	protected _updateItemClass(item: ICommandAction): void {
 		dispose(this._labeledItemClassDispose);
 		this._labeledItemClassDispose = undefined;
 
@@ -346,13 +346,13 @@ export class LabeledMenuItemActionItem extends MenuEntryActionViewItem {
 			if (item.icon?.dark?.scheme) {
 				const iconPathMapKey = item.icon.dark.toString();
 
-				if (MenuEntryActionViewItem.ICON_PATH_TO_CSS_RULES.has(iconPathMapKey)) {
-					iconClass = MenuEntryActionViewItem.ICON_PATH_TO_CSS_RULES.get(iconPathMapKey)!;
+				if (ICON_PATH_TO_CSS_RULES.has(iconPathMapKey)) {
+					iconClass = ICON_PATH_TO_CSS_RULES.get(iconPathMapKey)!;
 				} else {
 					iconClass = ids.nextId();
 					createCSSRule(`.codicon.${iconClass}`, `background-image: ${asCSSUrl(item.icon.light || item.icon.dark)}`);
 					createCSSRule(`.vs-dark .codicon.${iconClass}, .hc-black .codicon.${iconClass}`, `background-image: ${asCSSUrl(item.icon.dark)}`);
-					MenuEntryActionViewItem.ICON_PATH_TO_CSS_RULES.set(iconPathMapKey, iconClass);
+					ICON_PATH_TO_CSS_RULES.set(iconPathMapKey, iconClass);
 				}
 
 				if (this.label) {
