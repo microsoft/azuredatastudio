@@ -40,7 +40,7 @@
 	"sql-edge-azure-single-device-display-name": "Existing device of an Azure IoT Hub",
 	"sql-edge-azure-single-device-title": "Deploy Azure SQL Edge to an existing device",
 	"iot-hub-name": "IoT Hub name",
-	"device-id": "Device Id",
+	"device-id": "Device ID",
 	"device-ip-address": "Device IP Address",
 	"device-ip-address-description": "Will be used to connect to the Azure SQL Edge instance after deployment"
 }
