@@ -2131,8 +2131,17 @@ declare module 'azdata' {
 		 * @param account Account to generate security token for (defaults to
 		 * AzureResource.ResourceManagement if not given)
 		 * @return Promise to return the security token
+		 * @deprecated use getAccountSecurityToken
 		 */
 		export function getSecurityToken(account: Account, resource?: AzureResource): Thenable<{ [key: string]: any }>;
+
+		/**
+		 * Generates a security token by asking the account's provider
+		 * @param account
+		 * @param tenant
+		 * @param resource
+		 */
+		export function getAccountSecurityToken(account: Account, tenant: string, resource: AzureResource): Thenable<{ token: string, tokenType?: string } | undefined>;
 
 		/**
 		 * An [event](#Event) which fires when the accounts have changed.
@@ -2160,7 +2169,7 @@ declare module 'azdata' {
 		displayName: string;
 
 		/**
-		 * User id that identifies the account, such as "user@contoso.com".
+		 * Unique user id that identifies the account.
 		 */
 		userId: string;
 	}
@@ -2279,6 +2288,7 @@ declare module 'azdata' {
 		 * @param account The account to generate a security token for
 		 * @param resource The resource to get the token for
 		 * @return Promise to return a security token object
+		 * @deprecated use getAccountSecurityToken
 		 */
 		getSecurityToken(account: Account, resource: AzureResource): Thenable<{} | undefined>;
 

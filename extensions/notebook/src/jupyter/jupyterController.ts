@@ -28,8 +28,9 @@ import { IPackageManageProvider } from '../types';
 import { LocalPipPackageManageProvider } from './localPipPackageManageProvider';
 import { LocalCondaPackageManageProvider } from './localCondaPackageManageProvider';
 import { ManagePackagesDialogModel, ManagePackageDialogOptions } from '../dialog/managePackages/managePackagesDialogModel';
-import { PiPyClient } from './pipyClient';
+import { PyPiClient } from './pypiClient';
 import { ConfigurePythonDialog } from '../dialog/configurePython/configurePythonDialog';
+import { IconPathHelper } from '../common/iconHelper';
 
 let untitledCounter = 0;
 
@@ -66,6 +67,7 @@ export class JupyterController implements vscode.Disposable {
 			this.extensionContext.extensionPath,
 			this.outputChannel);
 		await this._jupyterInstallation.configurePackagePaths();
+		IconPathHelper.setExtensionContext(this.extensionContext);
 
 		// Add command/task handlers
 		azdata.tasks.registerTask(constants.jupyterOpenNotebookTask, (profile: azdata.IConnectionProfile) => {
@@ -212,7 +214,7 @@ export class JupyterController implements vscode.Disposable {
 			let model = new ManagePackagesDialogModel(this._jupyterInstallation, this._packageManageProviders, options);
 
 			await model.init();
-			let packagesDialog = new ManagePackagesDialog(model);
+			let packagesDialog = new ManagePackagesDialog(model, this.extensionContext);
 			packagesDialog.showDialog();
 		} catch (error) {
 			let message = utils.getErrorMessage(error);
@@ -243,7 +245,7 @@ export class JupyterController implements vscode.Disposable {
 	}
 
 	private registerDefaultPackageManageProviders(): void {
-		this.registerPackageManager(LocalPipPackageManageProvider.ProviderId, new LocalPipPackageManageProvider(this._jupyterInstallation, new PiPyClient()));
+		this.registerPackageManager(LocalPipPackageManageProvider.ProviderId, new LocalPipPackageManageProvider(this._jupyterInstallation, new PyPiClient()));
 		this.registerPackageManager(LocalCondaPackageManageProvider.ProviderId, new LocalCondaPackageManageProvider(this._jupyterInstallation));
 	}
 

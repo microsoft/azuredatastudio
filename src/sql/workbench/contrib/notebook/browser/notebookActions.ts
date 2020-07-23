@@ -31,7 +31,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 
 const msgLoading = localize('loading', "Loading kernels...");
-const msgChanging = localize('changing', "Changing kernel...");
+export const msgChanging = localize('changing', "Changing kernel...");
 const attachToLabel: string = localize('AttachTo', "Attach to ");
 const kernelLabel: string = localize('Kernel', "Kernel ");
 const msgLoadingContexts = localize('loadingContexts', "Loading contexts...");
@@ -281,8 +281,9 @@ export class CollapseCellsAction extends ToggleableAction {
 	}
 }
 
-const ShowAllKernelsConfigName = 'notebook.showAllKernels';
-const WorkbenchPreviewConfigName = 'workbench.enablePreviewFeatures';
+const showAllKernelsConfigName = 'notebook.showAllKernels';
+const workbenchPreviewConfigName = 'workbench.enablePreviewFeatures';
+export const noKernelName = localize('noKernel', "No Kernel");
 export class KernelsDropdown extends SelectBox {
 	private model: NotebookModel;
 	private _showAllKernels: boolean = false;
@@ -300,7 +301,7 @@ export class KernelsDropdown extends SelectBox {
 		this.onDidSelect(e => this.doChangeKernel(e.selected));
 		this.getAllKernelConfigValue();
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
-			if (e.affectsConfiguration(ShowAllKernelsConfigName) || e.affectsConfiguration(WorkbenchPreviewConfigName)) {
+			if (e.affectsConfiguration(showAllKernelsConfigName) || e.affectsConfiguration(workbenchPreviewConfigName)) {
 				this.getAllKernelConfigValue();
 			}
 		}));
@@ -327,7 +328,7 @@ export class KernelsDropdown extends SelectBox {
 					index = firstIndex(kernels, kernel => kernel === standardKernel.displayName);
 				} else {
 					let kernelSpec = this.model.specs.kernels.find(k => k.name === kernel.name);
-					index = firstIndex(kernels, k => k === kernelSpec.display_name);
+					index = firstIndex(kernels, k => k === kernelSpec?.display_name);
 				}
 				// This is an error case that should never happen
 				// Just in case, setting index to 0
@@ -337,7 +338,6 @@ export class KernelsDropdown extends SelectBox {
 				this.setOptions(kernels, index);
 			}
 		} else if (this.model.clientSession.isInErrorState) {
-			let noKernelName = localize('noKernel', "No Kernel");
 			kernels.unshift(noKernelName);
 			this.setOptions(kernels, 0);
 		}
@@ -349,7 +349,7 @@ export class KernelsDropdown extends SelectBox {
 	}
 
 	private getAllKernelConfigValue(): void {
-		this._showAllKernels = !!this._configurationService.getValue(ShowAllKernelsConfigName) && !!this._configurationService.getValue(WorkbenchPreviewConfigName);
+		this._showAllKernels = !!this._configurationService.getValue(showAllKernelsConfigName) && !!this._configurationService.getValue(workbenchPreviewConfigName);
 	}
 }
 

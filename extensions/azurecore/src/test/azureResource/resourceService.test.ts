@@ -33,12 +33,13 @@ const mockAccount: AzureAccount = {
 	isStale: false
 };
 
+const mockTenantId: string = 'mock_tenant';
+
 const mockSubscription: azureResource.AzureResourceSubscription = {
 	id: 'mock_subscription',
-	name: 'mock subscription'
+	name: 'mock subscription',
+	tenant: mockTenantId
 };
-
-const mockTenantId: string = 'mock_tenant';
 
 let mockResourceTreeDataProvider1: TypeMoq.IMock<azureResource.IAzureResourceTreeDataProvider>;
 let mockResourceProvider1: TypeMoq.IMock<azureResource.IAzureResourceProvider>;

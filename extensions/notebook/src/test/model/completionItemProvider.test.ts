@@ -15,6 +15,7 @@ import { JupyterNotebookManager } from '../../jupyter/jupyterNotebookManager';
 import { JupyterSessionManager, JupyterSession } from '../../jupyter/jupyterSessionManager';
 import { LocalJupyterServerManager } from '../../jupyter/jupyterServerManager';
 import { TestKernel } from '../common';
+import { sleep } from '../common/testUtils';
 
 describe('Completion Item Provider', function () {
 	let completionItemProvider: NotebookCompletionItemProvider;
@@ -64,7 +65,7 @@ describe('Completion Item Provider', function () {
 	it('should not provide items when session does not exist in notebook provider', async () => {
 		let notebook = await notebookUtils.newNotebook();
 		await notebookUtils.addCell('code');
-		let document = vscode.workspace.textDocuments.find(d => d.uri.path === notebook.document.cells[0].uri.path);
+		let document = await tryFindTextDocument(notebook);
 		should(document).not.equal(undefined, 'Could not find text document that matched cell uri path');
 
 		let completionItems = await completionItemProvider.provideCompletionItems(document, undefined, undefined, undefined);
@@ -76,7 +77,7 @@ describe('Completion Item Provider', function () {
 
 		let notebook = await notebookUtils.newNotebook();
 		await notebookUtils.addCell('code');
-		let document = vscode.workspace.textDocuments.find(d => d.uri.path === notebook.document.cells[0].uri.path);
+		let document = await tryFindTextDocument(notebook);
 
 		let completionItems = await completionItemProvider.provideCompletionItems(document, undefined, undefined, undefined);
 		should(completionItems).deepEqual([]);
@@ -87,7 +88,7 @@ describe('Completion Item Provider', function () {
 
 		let notebook = await notebookUtils.newNotebook();
 		await notebookUtils.addCell('code');
-		let document = vscode.workspace.textDocuments.find(d => d.uri.path === notebook.document.cells[0].uri.path);
+		let document = await tryFindTextDocument(notebook);
 
 		mockJupyterSession.setup(s => s.path).returns(() => document.uri.path);
 
@@ -103,7 +104,7 @@ describe('Completion Item Provider', function () {
 
 		let notebook = await notebookUtils.newNotebook();
 		await notebookUtils.addCell('code');
-		let document = vscode.workspace.textDocuments.find(d => d.uri.path === notebook.document.cells[0].uri.path);
+		let document = await tryFindTextDocument(notebook);
 
 		mockJupyterSession.setup(s => s.path).returns(() => document.uri.path);
 
@@ -151,7 +152,7 @@ describe('Completion Item Provider', function () {
 				source: 'sample text'
 			});
 		});
-		let document = vscode.workspace.textDocuments.find(d => d.uri.path === notebook.document.cells[0].uri.path);
+		let document = await tryFindTextDocument(notebook);
 
 		let completionItems = await completionItemProvider.provideCompletionItems(document, new vscode.Position(1, 1), token, undefined);
 		should(completionItems).deepEqual([]);
@@ -192,7 +193,18 @@ describe('Completion Item Provider', function () {
 		} else {
 			await notebookUtils.addCell('code');
 		}
+		let document = await tryFindTextDocument(notebook);
+		return document;
+	}
+
+	async function tryFindTextDocument(notebook: azdata.nb.NotebookEditor): Promise<vscode.TextDocument> {
 		let document = vscode.workspace.textDocuments.find(d => d.uri.path === notebook.document.cells[0].uri.path);
+		let triesRemaining = 10;
+		while (!document && triesRemaining > 0) {
+			await sleep(500);
+			document = vscode.workspace.textDocuments.find(d => d.uri.path === notebook.document.cells[0].uri.path);
+			triesRemaining--;
+		}
 		return document;
 	}
 });

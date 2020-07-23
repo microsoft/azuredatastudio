@@ -100,7 +100,7 @@ export async function shouldThrowSpecificError(block: Function, expectedMessage:
 	}
 }
 
-export async function setDacpacEndpointInfo(path: string): Promise<mssql.SchemaCompareEndpointInfo> {
+export function setDacpacEndpointInfo(path: string): mssql.SchemaCompareEndpointInfo {
 	let endpointInfo: mssql.SchemaCompareEndpointInfo;
 
 	endpointInfo = { ...mockDacpacEndpoint };
@@ -109,7 +109,7 @@ export async function setDacpacEndpointInfo(path: string): Promise<mssql.SchemaC
 	return endpointInfo;
 }
 
-export async function setDatabaseEndpointInfo(): Promise<mssql.SchemaCompareEndpointInfo> {
+export function setDatabaseEndpointInfo(): mssql.SchemaCompareEndpointInfo {
 	let endpointInfo: mssql.SchemaCompareEndpointInfo;
 	let dbName = 'My Database';
 	let serverName = 'My Server';

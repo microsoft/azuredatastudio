@@ -319,6 +319,11 @@ export class Code {
 		return await poll<IElement>(() => this.driver.getElements(windowId, selector).then(els => els[0]), accept, `get element '${selector}'`, retryCount);
 	}
 
+	async waitForElementGone(selector: string, accept: (result: IElement | undefined) => boolean = result => !result, retryCount: number = 200): Promise<IElement> {
+		const windowId = await this.getActiveWindowId();
+		return await poll<IElement>(() => this.driver.getElements(windowId, selector).then(els => els[0]), accept, `get element gone '${selector}'`, retryCount);
+	}
+
 	async waitForActiveElement(selector: string, retryCount: number = 200): Promise<void> {
 		const windowId = await this.getActiveWindowId();
 		await poll(() => this.driver.isActiveElement(windowId, selector), r => r, `is active element '${selector}'`, retryCount);

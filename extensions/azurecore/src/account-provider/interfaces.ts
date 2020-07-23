@@ -22,12 +22,12 @@ export interface Tenant {
 	/**
 	 * Identifier of the user in the tenant
 	 */
-	userId: string;
+	userId?: string;
 
 	/**
 	 * The category the user has set their tenant to (e.g. Home Tenant)
 	 */
-	tenantCategory: string;
+	tenantCategory?: string;
 }
 
 /**
@@ -63,11 +63,6 @@ interface Settings {
 	 * Identifier of the client application
 	 */
 	clientId?: string;
-
-	/**
-	 * Identifier of the resource to request when signing in
-	 */
-	signInResourceId?: string;
 
 	/**
 	 * Information that describes the Microsoft resource management resource
@@ -177,10 +172,6 @@ interface AzureAccountProperties {
 	 */
 	tenants: Tenant[];
 
-	/**
-	 * A list of subscriptions the user belongs to
-	 */
-	subscriptions?: Subscription[];
 }
 
 export interface Subscription {

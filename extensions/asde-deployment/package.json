@@ -319,12 +319,6 @@
                           ]
                         },
                         {
-                          "label": "%iot_device_id%",
-                          "variableName": "AZDATA_NB_VAR_ASDE_DEVICE_ID",
-                          "type": "text",
-                          "required": true
-                        },
-                        {
                           "label": "%vm_admin%",
                           "variableName": "AZDATA_NB_VAR_ASDE_VM_ADMIN",
                           "type": "text",
@@ -396,7 +390,7 @@
             },
             {
               "text": "%edge-eula%",
-              "url": "https://go.microsoft.com/fwlink/?LinkId=746388"
+              "url": "https://go.microsoft.com/fwlink/?linkid=2128283"
             }
           ]
         }

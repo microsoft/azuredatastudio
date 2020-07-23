@@ -31,6 +31,7 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IEditor } from 'vs/editor/common/editorCommon';
 import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/testCommon';
 import { Range } from 'vs/editor/common/core/range';
+import { IProductService } from 'vs/platform/product/common/productService';
 
 suite('MarkdownTextTransformer', () => {
 	let markdownTextTransformer: MarkdownTextTransformer;
@@ -53,8 +54,21 @@ suite('MarkdownTextTransformer', () => {
 		instantiationService.stub(IEnvironmentService, TestEnvironmentService);
 		instantiationService.stub(IStorageService, new TestStorageService());
 
-		mockNotebookService = TypeMoq.Mock.ofType(NotebookService, undefined, new TestLifecycleService(), undefined, undefined, undefined, instantiationService, new MockContextKeyService(),
-			undefined, undefined, undefined, undefined, undefined, undefined, TestEnvironmentService);
+		instantiationService.stub(IProductService, { quality: 'stable' });
+
+		let notebookService = new NotebookService(
+			new TestLifecycleService(),
+			undefined,
+			undefined,
+			undefined,
+			instantiationService,
+			undefined,
+			undefined,
+			undefined,
+			new MockContextKeyService(),
+			instantiationService.get(IProductService)
+		);
+		mockNotebookService = TypeMoq.Mock.ofInstance(notebookService);
 
 		cellModel = new CellModel(undefined, undefined, mockNotebookService.object);
 		notebookEditor = new NotebookEditorStub({ cellGuid: cellModel.cellGuid, instantiationService: instantiationService });
