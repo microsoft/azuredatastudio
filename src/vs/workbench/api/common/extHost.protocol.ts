@@ -799,7 +799,7 @@ export interface MainThreadExtensionServiceShape extends IDisposable {
 	$onDidActivateExtension(extensionId: ExtensionIdentifier, codeLoadingTime: number, activateCallTime: number, activateResolvedTime: number, activationReason: ExtensionActivationReason): void;
 	$onExtensionActivationError(extensionId: ExtensionIdentifier, error: ExtensionActivationError): Promise<void>;
 	$onExtensionRuntimeError(extensionId: ExtensionIdentifier, error: SerializedError): void;
-	$onExtensionHostExit(code: number): void;
+	$onExtensionHostExit(code: number): Promise<void>;
 }
 
 export interface SCMProviderFeatures {
@@ -882,7 +882,6 @@ export interface MainThreadDebugServiceShape extends IDisposable {
 	$stopDebugging(sessionId: DebugSessionUUID | undefined): Promise<void>;
 	$setDebugSessionName(id: DebugSessionUUID, name: string): void;
 	$customDebugAdapterRequest(id: DebugSessionUUID, command: string, args: any): Promise<any>;
-	$terminateDebugSession(id: DebugSessionUUID): Promise<void>;
 	$appendDebugConsole(value: string): void;
 	$startBreakpointEvents(): void;
 	$registerBreakpoints(breakpoints: Array<ISourceMultiBreakpointDto | IFunctionBreakpointDto | IDataBreakpointDto>): Promise<void>;

@@ -5,11 +5,10 @@
 
 import 'vs/css!./media/activitybarpart';
 import * as nls from 'vs/nls';
-import { ActionsOrientation, ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
+import { ActionsOrientation, ActionBar, Separator } from 'vs/base/browser/ui/actionbar/actionbar';
 import { GLOBAL_ACTIVITY_ID, IActivity, ACCOUNTS_ACTIIVTY_ID } from 'vs/workbench/common/activity';
 import { Part } from 'vs/workbench/browser/part';
-import { GlobalActivityActionViewItem, ViewContainerActivityAction, PlaceHolderToggleCompositePinnedAction, PlaceHolderViewContainerActivityAction, HomeAction, HomeActionViewItem } from 'vs/workbench/browser/parts/activitybar/activitybarActions';
-import { AccountsActionViewItem } from 'sql/workbench/browser/parts/activitybar/activitybarActions'; // {{ SQL CARBON EDIT }} - use the ADS account management action
+import { GlobalActivityActionViewItem, ViewContainerActivityAction, PlaceHolderToggleCompositePinnedAction, PlaceHolderViewContainerActivityAction, HomeAction, HomeActionViewItem, ACCOUNTS_VISIBILITY_PREFERENCE_KEY } from 'vs/workbench/browser/parts/activitybar/activitybarActions';
 import { IBadge, NumberBadge } from 'vs/workbench/services/activity/common/activity';
 import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/browser/layoutService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -42,6 +41,8 @@ import { Action } from 'vs/base/common/actions';
 import { Event } from 'vs/base/common/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
+
+import { AccountsActionViewItem } from 'sql/workbench/browser/parts/activitybar/activitybarActions'; // {{ SQL CARBON EDIT }} - use the ADS account management action
 
 interface IPlaceholderViewContainer {
 	id: string;
@@ -76,7 +77,7 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 	static readonly PINNED_VIEW_CONTAINERS = 'workbench.activity.pinnedViewlets2';
 	private static readonly PLACEHOLDER_VIEW_CONTAINERS = 'workbench.activity.placeholderViewlets';
 	private static readonly HOME_BAR_VISIBILITY_PREFERENCE = 'workbench.activity.showHomeIndicator';
-
+	private static readonly ACCOUNTS_ACTION_INDEX = 0;
 	//#region IView
 
 	readonly minimumWidth: number = 48;
@@ -164,6 +165,18 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 				if (menuBarVisibility === 'compact' || (menuBarVisibility === 'hidden' && isWeb)) {
 					actions.push(this.instantiationService.createInstance(ToggleMenuBarAction, ToggleMenuBarAction.ID, menuBarVisibility === 'compact' ? nls.localize('hideMenu', "Hide Menu") : nls.localize('showMenu', "Show Menu")));
 				}
+
+				const toggleAccountsVisibilityAction = new Action(
+					'toggleAccountsVisibility',
+					nls.localize('accounts', "Accounts"),
+					undefined,
+					true,
+					async () => { this.accountsVisibilityPreference = !this.accountsVisibilityPreference; }
+				);
+
+				toggleAccountsVisibilityAction.checked = !!this.accountsActivityAction;
+				actions.push(toggleAccountsVisibilityAction);
+				actions.push(new Separator());
 
 				actions.push(new Action(
 					ToggleActivityBarVisibilityAction.ID,
@@ -588,15 +601,33 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 			cssClass: Codicon.settingsGear.classNames
 		});
 
-		this.accountsActivityAction = new ActivityAction({
-			id: 'workbench.actions.accounts',
-			name: nls.localize('accounts', "Accounts"),
-			cssClass: Codicon.account.classNames
-		});
+		if (this.accountsVisibilityPreference) {
+			this.accountsActivityAction = new ActivityAction({
+				id: 'workbench.actions.accounts',
+				name: nls.localize('accounts', "Accounts"),
+				cssClass: Codicon.account.classNames
+			});
 
-		this.globalActivityActionBar.push(this.accountsActivityAction);
+			this.globalActivityActionBar.push(this.accountsActivityAction, { index: ActivitybarPart.ACCOUNTS_ACTION_INDEX });
+		}
 
 		this.globalActivityActionBar.push(this.globalActivityAction);
+	}
+
+	private toggleAccountsActivity() {
+		if (this.globalActivityActionBar) {
+			if (this.accountsActivityAction) {
+				this.globalActivityActionBar.pull(ActivitybarPart.ACCOUNTS_ACTION_INDEX);
+				this.accountsActivityAction = undefined;
+			} else {
+				this.accountsActivityAction = new ActivityAction({
+					id: 'workbench.actions.accounts',
+					name: nls.localize('accounts', "Accounts"),
+					cssClass: Codicon.account.classNames
+				});
+				this.globalActivityActionBar.push(this.accountsActivityAction, { index: ActivitybarPart.ACCOUNTS_ACTION_INDEX });
+			}
+		}
 	}
 
 	private getCompositeActions(compositeId: string): { activityAction: ViewContainerActivityAction, pinnedAction: ToggleCompositePinnedAction } {
@@ -828,6 +859,10 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 		if (e.key === ActivitybarPart.HOME_BAR_VISIBILITY_PREFERENCE && e.scope === StorageScope.GLOBAL) {
 			this.onDidChangeHomeBarVisibility();
 		}
+
+		if (e.key === ACCOUNTS_VISIBILITY_PREFERENCE_KEY && e.scope === StorageScope.GLOBAL) {
+			this.toggleAccountsActivity();
+		}
 	}
 
 	private saveCachedViewContainers(): void {
@@ -963,6 +998,14 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 
 	private set homeBarVisibilityPreference(value: boolean) {
 		this.storageService.store(ActivitybarPart.HOME_BAR_VISIBILITY_PREFERENCE, value, StorageScope.GLOBAL);
+	}
+
+	private get accountsVisibilityPreference(): boolean {
+		return this.storageService.getBoolean(ACCOUNTS_VISIBILITY_PREFERENCE_KEY, StorageScope.GLOBAL, true);
+	}
+
+	private set accountsVisibilityPreference(value: boolean) {
+		this.storageService.store(ACCOUNTS_VISIBILITY_PREFERENCE_KEY, value, StorageScope.GLOBAL);
 	}
 
 	private migrateFromOldCachedViewContainersValue(): void {
