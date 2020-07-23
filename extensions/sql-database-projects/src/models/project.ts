@@ -568,7 +568,7 @@ export class ProjectEntry {
 /**
  * Represents a database reference entry in a project file
  */
-class DatabaseReferenceProjectEntry extends ProjectEntry {
+export class DatabaseReferenceProjectEntry extends ProjectEntry {
 	constructor(uri: Uri, public databaseLocation: DatabaseReferenceLocation, public name?: string) {
 		super(uri, '', EntryType.DatabaseReference);
 	}
