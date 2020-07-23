@@ -276,15 +276,15 @@ export class SchemaCompareDialog {
 			let formModel = this.formBuilder.component();
 			await this.view.initializeModel(formModel);
 			if (this.sourceIsDacpac) {
-				this.sourceDacpacRadioButton.focus();
+				await this.sourceDacpacRadioButton.focus();
 			} else {
-				this.sourceDatabaseRadioButton.focus();
+				await this.sourceDatabaseRadioButton.focus();
 			}
 			this.initDialogComplete.resolve();
 		});
 	}
 
-	private async createFileBrowser(isTarget: boolean, endpoint: mssql.SchemaCompareEndpointInfo): Promise<azdata.FormComponent> {
+	private createFileBrowser(isTarget: boolean, endpoint: mssql.SchemaCompareEndpointInfo): azdata.FormComponent {
 		let currentTextbox = isTarget ? this.targetTextBox : this.sourceTextBox;
 		if (isTarget) {
 			this.targetFileButton = this.view.modelBuilder.button().withProperties({
@@ -335,7 +335,7 @@ export class SchemaCompareDialog {
 		};
 	}
 
-	private async createSourceRadiobuttons(): Promise<azdata.FormComponent> {
+	private createSourceRadiobuttons(): azdata.FormComponent {
 		this.sourceDacpacRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'source',
@@ -391,7 +391,7 @@ export class SchemaCompareDialog {
 		};
 	}
 
-	private async createTargetRadiobuttons(): Promise<azdata.FormComponent> {
+	private createTargetRadiobuttons(): azdata.FormComponent {
 		let dacpacRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'target',
@@ -463,7 +463,7 @@ export class SchemaCompareDialog {
 		return !isNullOrUndefined(filename) && await exists(filename) && (filename.toLocaleLowerCase().endsWith('.dacpac'));
 	}
 
-	protected async createSourceServerDropdown(): Promise<azdata.FormComponent> {
+	protected createSourceServerDropdown(): azdata.FormComponent {
 		this.sourceServerDropdown = this.view.modelBuilder.dropDown().withProperties(
 			{
 				editable: true,
@@ -473,7 +473,7 @@ export class SchemaCompareDialog {
 		).component();
 		this.sourceServerDropdown.onValueChanged(async (value) => {
 			if (this.sourceServerDropdown.values.findIndex(x => this.matchesValue(x, value)) === -1) {
-				this.sourceDatabaseDropdown.updateProperties({
+				await this.sourceDatabaseDropdown.updateProperties({
 					values: [],
 					value: '  '
 				});
@@ -489,7 +489,7 @@ export class SchemaCompareDialog {
 		};
 	}
 
-	protected async createTargetServerDropdown(): Promise<azdata.FormComponent> {
+	protected createTargetServerDropdown(): azdata.FormComponent {
 		this.targetServerDropdown = this.view.modelBuilder.dropDown().withProperties(
 			{
 				editable: true,
@@ -499,7 +499,7 @@ export class SchemaCompareDialog {
 		).component();
 		this.targetServerDropdown.onValueChanged(async (value) => {
 			if (this.targetServerDropdown.values.findIndex(x => this.matchesValue(x, value)) === -1) {
-				this.targetDatabaseDropdown.updateProperties({
+				await this.targetDatabaseDropdown.updateProperties({
 					values: [],
 					value: '  '
 				});
@@ -520,7 +520,7 @@ export class SchemaCompareDialog {
 		let values = await this.getServerValues(isTarget);
 
 		if (values && values.length > 0) {
-			currentDropdown.updateProperties({
+			await currentDropdown.updateProperties({
 				values: values,
 				value: values[0]
 			});
@@ -587,7 +587,7 @@ export class SchemaCompareDialog {
 		return values;
 	}
 
-	protected async createSourceDatabaseDropdown(): Promise<azdata.FormComponent> {
+	protected createSourceDatabaseDropdown(): azdata.FormComponent {
 		this.sourceDatabaseDropdown = this.view.modelBuilder.dropDown().withProperties(
 			{
 				editable: true,
@@ -606,7 +606,7 @@ export class SchemaCompareDialog {
 		};
 	}
 
-	protected async createTargetDatabaseDropdown(): Promise<azdata.FormComponent> {
+	protected createTargetDatabaseDropdown(): azdata.FormComponent {
 		this.targetDatabaseDropdown = this.view.modelBuilder.dropDown().withProperties(
 			{
 				editable: true,
@@ -631,7 +631,7 @@ export class SchemaCompareDialog {
 
 	protected async populateDatabaseDropdown(connectionProfile: azdata.connection.ConnectionProfile, isTarget: boolean): Promise<void> {
 		let currentDropdown = isTarget ? this.targetDatabaseDropdown : this.sourceDatabaseDropdown;
-		currentDropdown.updateProperties({ values: [], value: null });
+		await currentDropdown.updateProperties({ values: [], value: null });
 
 		let values = [];
 		try {
@@ -642,7 +642,7 @@ export class SchemaCompareDialog {
 			console.warn(e);
 		}
 		if (values && values.length > 0) {
-			currentDropdown.updateProperties({
+			await currentDropdown.updateProperties({
 				values: values,
 				value: values[0],
 			});
@@ -674,7 +674,7 @@ export class SchemaCompareDialog {
 		return values;
 	}
 
-	protected async createNoActiveConnectionsText(): Promise<azdata.FormComponent> {
+	protected createNoActiveConnectionsText(): azdata.FormComponent {
 		let noActiveConnectionsText = this.view.modelBuilder.text().withProperties({ value: loc.NoActiveConnectionsLabel }).component();
 
 		return {

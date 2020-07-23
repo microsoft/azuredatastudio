@@ -100,7 +100,7 @@ export class NetCoreTool {
 			throw new Error(NetCoreInstallationConfirmation);
 		}
 
-		const dotnetPath = utils.getSafePath(path.join(this.netcoreInstallLocation, dotnet));
+		const dotnetPath = utils.getQuotedPath(path.join(this.netcoreInstallLocation, dotnet));
 		const command = dotnetPath + ' ' + options.argument;
 
 		try {

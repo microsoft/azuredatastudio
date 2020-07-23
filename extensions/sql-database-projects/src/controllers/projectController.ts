@@ -380,6 +380,13 @@ export class ProjectsController {
 	}
 
 	private getProjectEntry(project: Project, context: BaseProjectTreeItem): ProjectEntry | undefined {
+		const root = context.root as ProjectRootTreeItem;
+		const fileOrFolder = context as FileNode ? context as FileNode : context as FolderNode;
+
+		if (root && fileOrFolder) {
+			// use relative path and not tree paths for files and folder
+			return project.files.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(root.fileSystemUri, fileOrFolder.fileSystemUri)));
+		}
 		return project.files.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(context.root.uri, context.uri)));
 	}
 

@@ -1775,6 +1775,29 @@ export class ShowPopularExtensionsAction extends Action {
 	}
 }
 
+export class RecentlyPublishedExtensionsAction extends Action {
+
+	static readonly ID = 'workbench.extensions.action.recentlyPublishedExtensions';
+	static readonly LABEL = localize('recentlyPublishedExtensions', "Recently Published Extensions");
+
+	constructor(
+		id: string,
+		label: string,
+		@IViewletService private readonly viewletService: IViewletService
+	) {
+		super(id, label, undefined, true);
+	}
+
+	run(): Promise<void> {
+		return this.viewletService.openViewlet(VIEWLET_ID, true)
+			.then(viewlet => viewlet?.getViewPaneContainer() as IExtensionsViewPaneContainer)
+			.then(viewlet => {
+				viewlet.search('@sort:publishedDate ');
+				viewlet.focus();
+			});
+	}
+}
+
 export class ShowRecommendedExtensionsAction extends Action {
 
 	static readonly ID = 'workbench.extensions.action.showRecommendedExtensions';
@@ -2045,6 +2068,27 @@ export class ShowAzureExtensionsAction extends Action {
 			.then(viewlet => viewlet?.getViewPaneContainer() as IExtensionsViewPaneContainer)
 			.then(viewlet => {
 				viewlet.search('@sort:installs azure ');
+				viewlet.focus();
+			});
+	}
+}
+
+export class SearchCategoryAction extends Action {
+
+	constructor(
+		id: string,
+		label: string,
+		private readonly category: string,
+		@IViewletService private readonly viewletService: IViewletService
+	) {
+		super(id, label, undefined, true);
+	}
+
+	run(): Promise<void> {
+		return this.viewletService.openViewlet(VIEWLET_ID, true)
+			.then(viewlet => viewlet?.getViewPaneContainer() as IExtensionsViewPaneContainer)
+			.then(viewlet => {
+				viewlet.search(`@category:"${this.category.toLowerCase()}"`);
 				viewlet.focus();
 			});
 	}

@@ -245,6 +245,19 @@ export class AccountManagementService implements IAccountManagementService {
 	}
 
 	/**
+	 * Generates a security token by asking the account's provider
+	 * @param account Account to generate security token for
+	 * @param tenant Tenant to generate security token for
+	 * @param resource The resource to get the security token for
+	 * @return Promise to return the security token
+	 */
+	public getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Thenable<{ token: string }> {
+		return this.doWithProvider(account.key.providerId, provider => {
+			return provider.provider.getAccountSecurityToken(account, tenant, resource);
+		});
+	}
+
+	/**
 	 * Removes an account from the account store and clears sensitive data in the provider
 	 * @param accountKey Key for the account to remove
 	 * @returns Promise with result of account removal, true if account was
@@ -285,10 +298,14 @@ export class AccountManagementService implements IAccountManagementService {
 
 		let finalResult = true;
 		for (const account of accounts) {
-			const removeResult = await this.removeAccount(account.key);
-			if (removeResult === false) {
-				this._logService.info('Error when removing %s.', account.key);
-				finalResult = false;
+			try {
+				const removeResult = await this.removeAccount(account.key);
+				if (removeResult === false) {
+					this._logService.info('Error when removing %s.', account.key);
+					finalResult = false;
+				}
+			} catch (ex) {
+				this._logService.error('Error when removing an account %s. Exception: %s', account.key, JSON.stringify(ex));
 			}
 		}
 		return finalResult;

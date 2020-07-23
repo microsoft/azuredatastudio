@@ -51,6 +51,7 @@ export interface ViewTestContext {
 	extractOnClick: vscode.EventEmitter<any>,
 	exportOnClick: vscode.EventEmitter<any>,
 	importOnClick: vscode.EventEmitter<any>,
+	fileButtonOnClick: vscode.EventEmitter<any>;
 }
 
 export function createViewContext(): ViewTestContext {
@@ -63,6 +64,7 @@ export function createViewContext(): ViewTestContext {
 	let extractOnClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
 	let exportOnClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
 	let importOnClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
+	let fileButtonOnClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
 
 	let componentBase: azdata.Component = {
 		id: '',
@@ -110,7 +112,13 @@ export function createViewContext(): ViewTestContext {
 
 	let buttonBuilder: azdata.ComponentBuilder<azdata.ButtonComponent> = {
 		component: () => button,
-		withProperties: () => buttonBuilder,
+		withProperties: (properties) => {
+			if ((properties as any).label === '•••') {
+				button.label = '•••';
+				button.onDidClick = fileButtonOnClick.event;
+			}
+			return buttonBuilder;
+		},
 		withValidation: () => buttonBuilder
 	};
 
@@ -295,5 +303,6 @@ export function createViewContext(): ViewTestContext {
 		extractOnClick: extractOnClick,
 		exportOnClick: exportOnClick,
 		importOnClick: importOnClick,
+		fileButtonOnClick: fileButtonOnClick
 	};
 }
