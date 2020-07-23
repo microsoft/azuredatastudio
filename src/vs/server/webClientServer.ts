@@ -7,7 +7,7 @@ import * as http from 'http';
 import * as url from 'url';
 import * as util from 'util';
 import * as cookie from 'cookie';
-// import * as crypto from 'crypto';
+import * as crypto from 'crypto';
 import { isEqualOrParent, sanitizeFilePath } from 'vs/base/common/extpath';
 import { getMediaMime } from 'vs/base/common/mime';
 import { isLinux } from 'vs/base/common/platform';
@@ -217,7 +217,7 @@ export class WebClientServer {
 		return res.end(data);
 	}
 
-	/*private _getScriptCspHashes(content: string): string[] {
+	private _getScriptCspHashes(content: string): string[] {
 		// Compute the CSP hashes for line scripts. Uses regex
 		// which means it isn't 100% good.
 		const regex = /<script>([\s\S]+?)<\/script>/img;
@@ -233,7 +233,7 @@ export class WebClientServer {
 			result.push(`'sha256-${hash}'`);
 		}
 		return result;
-	}*/
+	}
 
 	private async _getWorkspaceFromCLI(): Promise<{ workspacePath?: string, isFolder?: boolean }> {
 		const cwd = process.env['VSCODE_CWD'] || process.cwd();
