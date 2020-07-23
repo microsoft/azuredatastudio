@@ -9,7 +9,7 @@ import * as testUtils from './testUtils';
 import * as sql from '../models/dataSources/sqlConnectionStringSource';
 import * as dataSources from '../models/dataSources/dataSources';
 
-describe('Data Sources: DataSource operations', function (): void {
+describe.skip('Data Sources: DataSource operations', function (): void {
 	before(async function () : Promise<void> {
 		await baselines.loadBaselines();
 	});

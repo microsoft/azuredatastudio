@@ -8,6 +8,8 @@ import * as path from 'path';
 import { BaseProjectTreeItem } from './baseTreeItem';
 import { ProjectRootTreeItem } from './projectTreeItem';
 import { Project } from '../project';
+import { DatabaseProjectItemType } from '../../common/constants';
+import * as utils from '../../common/utils';
 
 /**
  * Node representing a folder in a project
@@ -26,7 +28,9 @@ export class FolderNode extends BaseProjectTreeItem {
 	}
 
 	public get treeItem(): vscode.TreeItem {
-		return new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.Expanded);
+		const folderItem = new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.Expanded);
+		folderItem.contextValue = DatabaseProjectItemType.folder;
+		return folderItem;
 	}
 
 	public get project(): Project {
@@ -41,7 +45,7 @@ export class FileNode extends BaseProjectTreeItem {
 	public fileSystemUri: vscode.Uri;
 
 	constructor(filePath: vscode.Uri, parent: FolderNode | ProjectRootTreeItem) {
-		super(fsPathToProjectUri(filePath, parent.root as ProjectRootTreeItem), parent);
+		super(fsPathToProjectUri(filePath, parent.root as ProjectRootTreeItem, true), parent);
 		this.fileSystemUri = filePath;
 	}
 
@@ -58,7 +62,7 @@ export class FileNode extends BaseProjectTreeItem {
 			arguments: [this.fileSystemUri]
 		};
 
-		treeItem.contextValue = 'File';
+		treeItem.contextValue = DatabaseProjectItemType.file;
 
 		return treeItem;
 	}
@@ -84,15 +88,18 @@ export function sortFileFolderNodes(a: (FolderNode | FileNode), b: (FolderNode |
 /**
  * Converts a full filesystem URI to a project-relative URI that's compatible with the project tree
  */
-function fsPathToProjectUri(fileSystemUri: vscode.Uri, projectNode: ProjectRootTreeItem): vscode.Uri {
-	const projBaseDir = path.dirname(projectNode.project.projectFilePath);
+function fsPathToProjectUri(fileSystemUri: vscode.Uri, projectNode: ProjectRootTreeItem, isFile?: boolean): vscode.Uri {
+	const projBaseDir = projectNode.project.projectFolderPath;
 	let localUri = '';
 
 	if (fileSystemUri.fsPath.startsWith(projBaseDir)) {
 		localUri = fileSystemUri.fsPath.substring(projBaseDir.length);
 	}
-	else {
-		throw new Error(`Project (${projBaseDir}) pointing to file outside of directory (${fileSystemUri.fsPath})`);
+	else if (isFile) {
+		// if file is outside the folder add add at top level in tree
+		// this is not true for folders otherwise the outside files will not be directly inside the top level
+		let parts = utils.getPlatformSafeFileEntryPath(fileSystemUri.fsPath).split('/');
+		localUri = parts[parts.length - 1];
 	}
 
 	return vscode.Uri.file(path.join(projectNode.uri.path, localUri));

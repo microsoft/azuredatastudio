@@ -69,19 +69,4 @@ export class BrowserClipboardService implements IClipboardService {
 	hasResources(): Promise<boolean> {
 		return this._vsClipboardService.hasResources();
 	}
-
-	readTextSync(): string | undefined {
-		// eslint-disable-next-line no-sync
-		return this._vsClipboardService.readTextSync();
-	}
-
-	readFindTextSync(): string {
-		// eslint-disable-next-line no-sync
-		return this._vsClipboardService.readFindTextSync();
-	}
-
-	writeFindTextSync(text: string): void {
-		// eslint-disable-next-line no-sync
-		return this._vsClipboardService.writeFindTextSync(text);
-	}
 }

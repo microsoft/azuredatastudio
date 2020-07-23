@@ -49,6 +49,8 @@ properties-container .propertyValue {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+	user-select: text;
+	cursor: text;
 }
 
 properties-container .splitter {

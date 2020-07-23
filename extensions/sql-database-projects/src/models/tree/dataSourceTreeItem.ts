@@ -34,7 +34,9 @@ export class DataSourcesTreeItem extends BaseProjectTreeItem {
 	}
 
 	public get treeItem(): vscode.TreeItem {
-		return new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.Collapsed);
+		const dataSource = new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.Collapsed);
+		dataSource.contextValue = constants.DatabaseProjectItemType.dataSourceRoot;
+		return dataSource;
 	}
 }
 

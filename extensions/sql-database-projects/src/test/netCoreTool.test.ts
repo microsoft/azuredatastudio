@@ -9,11 +9,11 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { NetCoreTool, DBProjectConfigurationKey, NetCoreInstallLocationKey, NextCoreNonWindowsDefaultPath } from '../tools/netcoreTool';
-import { getSafePath } from '../common/utils';
+import { getQuotedPath } from '../common/utils';
 import { isNullOrUndefined } from 'util';
 import { generateTestFolderPath } from './testUtils';
 
-describe('NetCoreTool: Net core tests', function (): void {
+describe.skip('NetCoreTool: Net core tests', function (): void {
 
 	it('Should override dotnet default value with settings', async function (): Promise<void> {
 		try {
@@ -29,7 +29,7 @@ describe('NetCoreTool: Net core tests', function (): void {
 		}
 	});
 
-	it('Should find right dotnet default paths', async function (): Promise<void> {
+	it('Should find right dotnet default paths', function (): void {
 		const netcoreTool = new NetCoreTool();
 		netcoreTool.findOrInstallNetCore();
 
@@ -52,7 +52,7 @@ describe('NetCoreTool: Net core tests', function (): void {
 		const outputChannel = vscode.window.createOutputChannel('db project test');
 
 		try {
-			await netcoreTool.runStreamedCommand('echo test > ' + getSafePath(dummyFile), outputChannel, undefined);
+			await netcoreTool.runStreamedCommand('echo test > ' + getQuotedPath(dummyFile), outputChannel, undefined);
 			const text = await fs.promises.readFile(dummyFile);
 			should(text.toString().trim()).equal('test');
 		}

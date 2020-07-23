@@ -24,14 +24,14 @@ export abstract class WizardBase<T, P extends WizardPageBase<T>, M extends Model
 		this.wizardObject = azdata.window.createWizard(title);
 	}
 
-	public open(): Thenable<void> {
+	public async open(): Promise<void> {
 		this.initialize();
 		this.wizardObject.customButtons = this.customButtons;
-		this.toDispose.push(this.wizardObject.onPageChanged((e) => {
+		this.toDispose.push(this.wizardObject.onPageChanged(async (e) => {
 			let previousPage = this.pages[e.lastPage];
 			let newPage = this.pages[e.newPage];
 			previousPage.onLeave();
-			newPage.onEnter();
+			await newPage.onEnter();
 		}));
 
 		this.toDispose.push(this.wizardObject.doneButton.onClick(async () => {
@@ -43,12 +43,10 @@ export abstract class WizardBase<T, P extends WizardPageBase<T>, M extends Model
 			this.dispose();
 		}));
 
-		return this.wizardObject.open().then(() => {
-			if (this.pages && this.pages.length > 0) {
-				this.pages[0].onEnter();
-			}
-		});
-
+		await this.wizardObject.open();
+		if (this.pages && this.pages.length > 0) {
+			await this.pages[0].onEnter();
+		}
 	}
 
 	protected abstract initialize(): void;

@@ -40,6 +40,8 @@ export const sparkScalaDisplayName = 'Spark | Scala';
 export const sparkRDisplayName = 'Spark | R';
 export const powershellDisplayName = 'PowerShell';
 export const allKernelsName = 'All Kernels';
+export const BOOKS_VIEWID = 'bookTreeView';
+export const PROVIDED_BOOKS_VIEWID = 'providedBooksView';
 
 export const visitedNotebooksMementoKey = 'notebooks.visited';
 
@@ -56,6 +58,15 @@ export enum PythonPkgType {
 	Anaconda = 'Anaconda'
 }
 
+export enum NavigationProviders {
+	NotebooksNavigator = 'BookNavigator.Notebooks',
+	ProvidedBooksNavigator = 'BookNavigator.ProvidedBooks'
+}
+
+export const unsavedBooksContextKey = 'unsavedBooks';
+
 export const pythonWindowsInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2110625';
 export const pythonMacInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2128152';
 export const pythonLinuxInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2110524';
+
+export const notebookLanguages = ['notebook', 'ipynb'];

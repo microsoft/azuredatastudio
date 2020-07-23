@@ -13,12 +13,14 @@ import { ExtHostTreeViewsShape, MainThreadTreeViewsShape } from './extHost.proto
 import { ITreeItem, TreeViewItemHandleArg, ITreeItemLabel, IRevealOptions } from 'vs/workbench/common/views';
 import { ExtHostCommands, CommandsConverter } from 'vs/workbench/api/common/extHostCommands';
 import { asPromise } from 'vs/base/common/async';
-import { TreeItemCollapsibleState, ThemeIcon } from 'vs/workbench/api/common/extHostTypes';
+import { TreeItemCollapsibleState, ThemeIcon, MarkdownString as MarkdownStringType } from 'vs/workbench/api/common/extHostTypes';
 import { isUndefinedOrNull, isString } from 'vs/base/common/types';
 import { equals, coalesce } from 'vs/base/common/arrays';
 import { ILogService } from 'vs/platform/log/common/log';
 import { checkProposedApiEnabled } from 'vs/workbench/services/extensions/common/extensions';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
+import { MarkdownString } from 'vs/workbench/api/common/extHostTypeConverters';
+import { IMarkdownString } from 'vs/base/common/htmlContent';
 
 // {{SQL CARBON EDIT}}
 import * as azdata from 'azdata';
@@ -119,6 +121,22 @@ export class ExtHostTreeViews implements ExtHostTreeViewsShape {
 		return treeView.getChildren(treeItemHandle);
 	}
 
+	async $hasResolve(treeViewId: string): Promise<boolean> {
+		const treeView = this.treeViews.get(treeViewId);
+		if (!treeView) {
+			throw new Error(localize('treeView.notRegistered', 'No tree view with id \'{0}\' registered.', treeViewId));
+		}
+		return treeView.hasResolve;
+	}
+
+	$resolve(treeViewId: string, treeItemHandle: string): Promise<ITreeItem | undefined> {
+		const treeView = this.treeViews.get(treeViewId);
+		if (!treeView) {
+			throw new Error(localize('treeView.notRegistered', 'No tree view with id \'{0}\' registered.', treeViewId));
+		}
+		return treeView.resolveTreeItem(treeItemHandle);
+	}
+
 	$setExpanded(treeViewId: string, treeItemHandle: string, expanded: boolean): void {
 		const treeView = this.treeViews.get(treeViewId);
 		if (!treeView) {
@@ -160,6 +178,7 @@ type TreeData<T> = { message: boolean, element: T | Root | false };
 
 export interface TreeNode extends IDisposable { // {{SQL CARBON EDIT}} export interface
 	item: ITreeItem;
+	extensionItem: vscode.TreeItem2;
 	parent: TreeNode | Root;
 	children?: TreeNode[];
 }
@@ -334,8 +353,28 @@ export class ExtHostTreeView<T> extends Disposable {
 		}
 	}
 
-	// {{SQL CARBON EDIT}}
-	protected resolveUnknownParentChain(element: T): Promise<TreeNode[]> {
+	get hasResolve(): boolean {
+		return !!this.dataProvider.resolveTreeItem;
+	}
+
+	async resolveTreeItem(treeItemHandle: string): Promise<ITreeItem | undefined> {
+		if (!this.dataProvider.resolveTreeItem) {
+			return undefined; // {{SQL CARBON EDIT}} strict-null-checks
+		}
+		const element = this.elements.get(treeItemHandle);
+		if (element) {
+			const node = this.nodes.get(element);
+			if (node) {
+				const resolve = await this.dataProvider.resolveTreeItem(element, node.extensionItem);
+				// Resolvable elements. Currently only tooltip.
+				node.item.tooltip = this.getTooltip(resolve.tooltip);
+				return node.item;
+			}
+		}
+		return undefined; // {{SQL CARBON EDIT}} strict-null-checks
+	}
+
+	protected resolveUnknownParentChain(element: T): Promise<TreeNode[]> { // {{SQL CARBON EDIT}}
 		return this.resolveParent(element)
 			.then((parent) => {
 				if (!parent) {
@@ -498,7 +537,15 @@ export class ExtHostTreeView<T> extends Disposable {
 		return node;
 	}
 
-	protected createTreeNode(element: T, extensionTreeItem: azdata.TreeItem2, parent: TreeNode | Root): TreeNode { 	// {{SQL CARBON EDIT}} change to protected, change to azdata.TreeItem
+	private getTooltip(tooltip?: string | vscode.MarkdownString): string | IMarkdownString | undefined {
+		if (MarkdownStringType.isMarkdownString(tooltip)) {
+			checkProposedApiEnabled(this.extension);
+			return MarkdownString.from(tooltip);
+		}
+		return tooltip;
+	}
+
+	protected createTreeNode(element: T, extensionTreeItem: azdata.TreeItem2, parent: TreeNode | Root): TreeNode { // {{SQL CARBON EDIT}} change to protected, change to azdata.TreeItem
 		const disposable = new DisposableStore();
 		const handle = this.createHandle(element, extensionTreeItem, parent);
 		const icon = this.getLightIconPath(extensionTreeItem);
@@ -508,7 +555,7 @@ export class ExtHostTreeView<T> extends Disposable {
 			label: toTreeItemLabel(extensionTreeItem.label, this.extension),
 			description: extensionTreeItem.description,
 			resourceUri: extensionTreeItem.resourceUri,
-			tooltip: typeof extensionTreeItem.tooltip === 'string' ? extensionTreeItem.tooltip : undefined,
+			tooltip: this.getTooltip(extensionTreeItem.tooltip),
 			command: extensionTreeItem.command ? this.commands.toInternal(extensionTreeItem.command, disposable) : undefined,
 			contextValue: extensionTreeItem.contextValue,
 			icon,
@@ -523,6 +570,7 @@ export class ExtHostTreeView<T> extends Disposable {
 
 		return {
 			item,
+			extensionItem: extensionTreeItem,
 			parent,
 			children: undefined,
 			dispose(): void { disposable.dispose(); }

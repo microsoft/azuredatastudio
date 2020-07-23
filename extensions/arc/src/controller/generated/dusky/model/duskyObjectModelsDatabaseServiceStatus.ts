@@ -13,21 +13,18 @@
 import { DuskyObjectModelsDatabaseServiceCondition } from './duskyObjectModelsDatabaseServiceCondition';
 
 export class DuskyObjectModelsDatabaseServiceStatus {
-    'state': string;
+    'state'?: string;
     'appliedGeneration'?: number | null;
     'conditions'?: Array<DuskyObjectModelsDatabaseServiceCondition>;
     'internalIP'?: string;
     'internalPort'?: number | null;
     'externalIP'?: string;
     'externalPort'?: number | null;
-    'podsFailed': number;
-    'podsPending': number;
-    'podsRunning': number;
-    'podsUnknown': number;
-    'restartRequired': boolean;
-    'execFailCount'?: number | null;
-    'settingsUpdatePending'?: boolean;
-    'shardsProvisioned'?: number | null;
+    'podsFailed'?: number;
+    'podsPending'?: number;
+    'podsRunning'?: number;
+    'podsUnknown'?: number;
+    'restartRequired'?: boolean;
 
     static discriminator: string | undefined = undefined;
 
@@ -91,21 +88,6 @@ export class DuskyObjectModelsDatabaseServiceStatus {
             "name": "restartRequired",
             "baseName": "restartRequired",
             "type": "boolean"
-        },
-        {
-            "name": "execFailCount",
-            "baseName": "execFailCount",
-            "type": "number"
-        },
-        {
-            "name": "settingsUpdatePending",
-            "baseName": "settingsUpdatePending",
-            "type": "boolean"
-        },
-        {
-            "name": "shardsProvisioned",
-            "baseName": "shardsProvisioned",
-            "type": "number"
         }    ];
 
     static getAttributeTypeMap() {

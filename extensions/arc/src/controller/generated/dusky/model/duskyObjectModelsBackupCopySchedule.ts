@@ -12,7 +12,7 @@
 
 
 export class DuskyObjectModelsBackupCopySchedule {
-    'interval': string;
+    'interval'?: string;
     'offset'?: string;
 
     static discriminator: string | undefined = undefined;

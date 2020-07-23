@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as yaml from 'js-yaml';
 import { BookTreeItem, BookTreeItemType } from './bookTreeItem';
@@ -12,19 +11,16 @@ import * as fileServices from 'fs';
 import * as fs from 'fs-extra';
 import * as loc from '../common/localizedConstants';
 import { IJupyterBookToc, IJupyterBookSection } from '../contracts/content';
-import { ApiWrapper } from '../common/apiWrapper';
 
 
 const fsPromises = fileServices.promises;
 
-export class BookModel implements azdata.nb.NavigationProvider {
+export class BookModel {
 	private _bookItems: BookTreeItem[];
 	private _allNotebooks = new Map<string, BookTreeItem>();
 	private _tableOfContentsPath: string;
-	readonly providerId: string = 'BookNavigator';
 
 	private _errorMessage: string;
-	private apiWrapper: ApiWrapper = new ApiWrapper();
 
 	constructor(
 		public readonly bookPath: string,
@@ -32,7 +28,6 @@ export class BookModel implements azdata.nb.NavigationProvider {
 		public readonly isNotebook: boolean,
 		private _extensionContext: vscode.ExtensionContext) {
 		this._bookItems = [];
-		this._extensionContext.subscriptions.push(azdata.nb.registerNavigationProvider(this));
 	}
 
 	public async initializeContents(): Promise<void> {
@@ -133,7 +128,7 @@ export class BookModel implements azdata.nb.NavigationProvider {
 				this._bookItems.push(book);
 			} catch (e) {
 				this._errorMessage = loc.readBookError(this.bookPath, e instanceof Error ? e.message : e);
-				this.apiWrapper.showErrorMessage(this._errorMessage);
+				vscode.window.showErrorMessage(this._errorMessage);
 			}
 		}
 		return this._bookItems;
@@ -219,7 +214,7 @@ export class BookModel implements azdata.nb.NavigationProvider {
 						notebooks.push(markdown);
 					} else {
 						this._errorMessage = loc.missingFileError(sections[i].title);
-						this.apiWrapper.showErrorMessage(this._errorMessage);
+						vscode.window.showErrorMessage(this._errorMessage);
 					}
 				}
 			} else {
@@ -249,30 +244,6 @@ export class BookModel implements azdata.nb.NavigationProvider {
 
 	public get tableOfContentsPath(): string {
 		return this._tableOfContentsPath;
-	}
-
-	getNavigation(uri: vscode.Uri): Thenable<azdata.nb.NavigationResult> {
-		let notebook = !this.openAsUntitled ? this._allNotebooks.get(uri.fsPath) : this._allNotebooks.get(path.basename(uri.fsPath));
-		let result: azdata.nb.NavigationResult;
-		if (notebook) {
-			result = {
-				hasNavigation: true,
-				previous: notebook.previousUri ?
-					this.openAsUntitled ? this.getUntitledUri(notebook.previousUri) : vscode.Uri.file(notebook.previousUri) : undefined,
-				next: notebook.nextUri ? this.openAsUntitled ? this.getUntitledUri(notebook.nextUri) : vscode.Uri.file(notebook.nextUri) : undefined
-			};
-		} else {
-			result = {
-				hasNavigation: false,
-				previous: undefined,
-				next: undefined
-			};
-		}
-		return Promise.resolve(result);
-	}
-
-	getUntitledUri(resource: string): vscode.Uri {
-		return vscode.Uri.parse(`untitled:${resource}`);
 	}
 
 	public get errorMessage(): string {

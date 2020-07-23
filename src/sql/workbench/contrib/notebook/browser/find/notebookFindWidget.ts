@@ -55,8 +55,8 @@ export interface IFindNotebookController {
 	addOverlayWidget(widget: IOverlayWidget): void;
 	getAction(id: string): IEditorAction;
 	onDidChangeConfiguration(fn: (e: IConfigurationChangedEvent) => void): IDisposable;
-	findNext();
-	findPrevious();
+	findNext(): Promise<void>;
+	findPrevious(): Promise<void>;
 }
 
 export interface IConfigurationChangedEvent {

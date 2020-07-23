@@ -5,32 +5,96 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as nls from 'vscode-nls';
-import { ImportDataModel } from '../api/models';
 import { ImportPage } from '../api/importPage';
-import { FlatFileProvider } from '../../services/contracts';
-import { FlatFileWizard } from '../flatFileWizard';
-
-const localize = nls.loadMessageBundle();
+import * as constants from '../../common/constants';
 
 export class FileConfigPage extends ImportPage {
 
-	private serverDropdown: azdata.DropDownComponent;
-	private databaseDropdown: azdata.DropDownComponent;
-	private fileTextBox: azdata.InputBoxComponent;
-	private fileButton: azdata.ButtonComponent;
-	private tableNameTextBox: azdata.InputBoxComponent;
-	private schemaDropdown: azdata.DropDownComponent;
-	private form: azdata.FormContainer;
+	private _serverDropdown: azdata.DropDownComponent;
+	private _databaseDropdown: azdata.DropDownComponent;
+	private _fileTextBox: azdata.InputBoxComponent;
+	private _fileButton: azdata.ButtonComponent;
+	private _tableNameTextBox: azdata.InputBoxComponent;
+	private _schemaDropdown: azdata.DropDownComponent;
+	private _form: azdata.FormContainer;
 
-	private databaseLoader: azdata.LoadingComponent;
-	private schemaLoader: azdata.LoadingComponent;
+	private _databaseLoader: azdata.LoadingComponent;
+	private _schemaLoader: azdata.LoadingComponent;
+
+	public get serverDropdown(): azdata.DropDownComponent {
+		return this._serverDropdown;
+	}
+
+	public set serverDropdown(serverDropdown: azdata.DropDownComponent) {
+		this._serverDropdown = serverDropdown;
+	}
+
+	public get databaseDropdown(): azdata.DropDownComponent {
+		return this._databaseDropdown;
+	}
+
+	public set databaseDropdown(databaseDropdown: azdata.DropDownComponent) {
+		this._databaseDropdown = databaseDropdown;
+	}
+
+	public get fileTextBox(): azdata.InputBoxComponent {
+		return this._fileTextBox;
+	}
+
+	public set fileTextBox(fileTextBox: azdata.InputBoxComponent) {
+		this._fileTextBox = fileTextBox;
+	}
+
+	public get fileButton(): azdata.ButtonComponent {
+		return this._fileButton;
+	}
+
+	public set fileButton(fileButton: azdata.ButtonComponent) {
+		this._fileButton = fileButton;
+	}
+
+	public get tableNameTextBox(): azdata.InputBoxComponent {
+		return this._tableNameTextBox;
+	}
+
+	public set tableNameTextBox(tableNameTextBox: azdata.InputBoxComponent) {
+		this._tableNameTextBox = tableNameTextBox;
+	}
+
+	public get schemaDropdown(): azdata.DropDownComponent {
+		return this._schemaDropdown;
+	}
+
+	public set schemaDropdown(schemaDropdown: azdata.DropDownComponent) {
+		this._schemaDropdown = schemaDropdown;
+	}
+
+	public get form(): azdata.FormContainer {
+		return this._form;
+	}
+
+	public set form(form: azdata.FormContainer) {
+		this._form = form;
+	}
+
+	public get databaseLoader(): azdata.LoadingComponent {
+		return this._databaseLoader;
+	}
+
+	public set databaseLoader(databaseLoader: azdata.LoadingComponent) {
+		this._databaseLoader = databaseLoader;
+	}
+
+	public get schemaLoader(): azdata.LoadingComponent {
+		return this._schemaLoader;
+	}
+
+	public set schemaLoader(schemaLoader: azdata.LoadingComponent) {
+		this._schemaLoader = schemaLoader;
+	}
+
 
 	private tableNames: string[] = [];
-
-	public constructor(instance: FlatFileWizard, wizardPage: azdata.window.WizardPage, model: ImportDataModel, view: azdata.ModelView, provider: FlatFileProvider) {
-		super(instance, wizardPage, model, view, provider);
-	}
 
 	async start(): Promise<boolean> {
 		let schemaComponent = await this.createSchemaDropdown();
@@ -96,7 +160,7 @@ export class FileConfigPage extends ImportPage {
 
 		return {
 			component: this.serverDropdown,
-			title: localize('flatFileImport.serverDropdownTitle', "Server the database is in")
+			title: constants.serverDropDownTitleText
 		};
 	}
 
@@ -134,7 +198,7 @@ export class FileConfigPage extends ImportPage {
 
 		return {
 			component: this.databaseLoader,
-			title: localize('flatFileImport.databaseDropdownTitle', "Database the table is created in")
+			title: constants.databaseDropdownTitleText
 		};
 	}
 
@@ -178,7 +242,7 @@ export class FileConfigPage extends ImportPage {
 			required: true
 		}).component();
 		this.fileButton = this.view.modelBuilder.button().withProperties({
-			label: localize('flatFileImport.browseFiles', "Browse"),
+			label: constants.browseFilesText,
 		}).component();
 
 		this.fileButton.onDidClick(async (click) => {
@@ -187,7 +251,7 @@ export class FileConfigPage extends ImportPage {
 					canSelectFiles: true,
 					canSelectFolders: false,
 					canSelectMany: false,
-					openLabel: localize('flatFileImport.openFile', "Open"),
+					openLabel: constants.openFileText,
 					filters: {
 						'CSV/TXT Files': ['csv', 'txt'],
 						'All Files': ['*']
@@ -210,11 +274,24 @@ export class FileConfigPage extends ImportPage {
 			if (nameEnd === 0) {
 				nameEnd = fileUri.path.length;
 			}
-			this.model.fileType = 'TXT';
+
 			let extension = fileUri.path.substring(nameEnd + 1, fileUri.path.length);
 
-			if (extension.toLowerCase() === 'json') {
-				this.model.fileType = 'JSON';
+			/**
+			 * FileType should be TXT for txt files and files with unknown types.
+			 *  CSVs and TSVs are treated as the CSV file while learning in the prose library.
+			 */
+
+			switch (extension.toLowerCase()) {
+				case 'json':
+					this.model.fileType = 'JSON';
+					break;
+				case 'csv':
+				case 'tsv':
+					this.model.fileType = 'CSV';
+					break;
+				default:
+					this.model.fileType = 'TXT';
 			}
 
 			this.tableNameTextBox.value = fileUri.path.substring(nameStart + 1, nameEnd);
@@ -227,7 +304,7 @@ export class FileConfigPage extends ImportPage {
 
 		return {
 			component: this.fileTextBox,
-			title: localize('flatFileImport.fileTextboxTitle', "Location of the file to be imported"),
+			title: constants.fileTextboxTitleText,
 			actions: [this.fileButton]
 		};
 	}
@@ -256,7 +333,7 @@ export class FileConfigPage extends ImportPage {
 
 		return {
 			component: this.tableNameTextBox,
-			title: localize('flatFileImport.tableTextboxTitle', "New table name"),
+			title: constants.tableTextboxTitleText,
 		};
 	}
 
@@ -274,20 +351,31 @@ export class FileConfigPage extends ImportPage {
 
 		return {
 			component: this.schemaLoader,
-			title: localize('flatFileImport.schemaTextboxTitle', "Table schema"),
+			title: constants.schemaTextboxTitleText,
 		};
 
 	}
 
-	private async populateSchemaDropdown(): Promise<boolean> {
+	public async populateSchemaDropdown(): Promise<boolean> {
 		this.schemaLoader.loading = true;
 
+		let values = await this.getSchemaValues();
+
+		this.model.schema = values[0].name;
+
+		this.schemaDropdown.updateProperties({
+			values: values
+		});
+
+		this.schemaLoader.loading = false;
+		return true;
+	}
+
+	public async getSchemaValues(): Promise<{ displayName: string, name: string }[]> {
 		let connectionUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 		let queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(this.model.server.providerName, azdata.DataProviderType.QueryProvider);
 
-		const query = `SELECT name FROM sys.schemas`;
-
-		let results = await queryProvider.runQueryAndReturn(connectionUri, query);
+		let results = await queryProvider.runQueryAndReturn(connectionUri, constants.selectSchemaQuery);
 
 		let idx = -1;
 		let count = -1;
@@ -311,15 +399,7 @@ export class FileConfigPage extends ImportPage {
 			values[0] = values[idx];
 			values[idx] = tmp;
 		}
-
-		this.model.schema = values[0].name;
-
-		this.schemaDropdown.updateProperties({
-			values: values
-		});
-
-		this.schemaLoader.loading = false;
-		return true;
+		return values;
 	}
 
 	protected deleteServerValues() {

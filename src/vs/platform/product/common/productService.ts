@@ -11,7 +11,7 @@ export const IProductService = createDecorator<IProductService>('productService'
 
 export interface IProductService extends Readonly<IProductConfiguration> {
 
-	_serviceBrand: undefined;
+	readonly _serviceBrand: undefined;
 
 }
 
@@ -108,12 +108,7 @@ export interface IProductConfiguration {
 	readonly checksums?: { [path: string]: string; };
 	readonly checksumFailMoreInfoUrl?: string;
 
-	readonly appCenter?: {
-		readonly 'win32-ia32': string;
-		readonly 'win32-x64': string;
-		readonly 'linux-x64': string;
-		readonly 'darwin': string;
-	};
+	readonly appCenter?: IAppCenterConfiguration;
 
 	readonly portable?: string;
 
@@ -126,6 +121,13 @@ export interface IProductConfiguration {
 	readonly 'configurationSync.store'?: ConfigurationSyncStore;
 }
 
+export interface IAppCenterConfiguration {
+	readonly 'win32-ia32': string;
+	readonly 'win32-x64': string;
+	readonly 'linux-x64': string;
+	readonly 'darwin': string;
+}
+
 export interface IConfigBasedExtensionTip {
 	configPath: string;
 	configName: string;
@@ -135,9 +137,7 @@ export interface IConfigBasedExtensionTip {
 export interface IExeBasedExtensionTip {
 	friendlyName: string;
 	windowsPath?: string;
-	recommendations: readonly string[];
-	important?: boolean;
-	exeFriendlyName?: string;
+	recommendations: IStringDictionary<{ name: string, important?: boolean, isExtensionPack?: boolean }>;
 }
 
 export interface IRemoteExtensionTip {

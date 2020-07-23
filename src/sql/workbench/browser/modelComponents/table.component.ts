@@ -27,6 +27,8 @@ import { slickGridDataItemColumnValueWithNoData, textFormatter } from 'sql/base/
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSizeToNumber } from 'sql/base/browser/dom';
+import { ButtonColumn, ButtonClickEventArgs } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
+import { createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
 
 export enum ColumnSizingMode {
 	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
@@ -47,8 +49,12 @@ export default class TableComponent extends ComponentBase implements IComponent,
 	private _tableData: TableDataView<Slick.SlickData>;
 	private _tableColumns;
 	private _checkboxColumns: CheckboxSelectColumn<{}>[] = [];
+	private _buttonsColumns: ButtonColumn<{}>[] = [];
+	private _pluginsRegisterStatus: boolean[] = [];
 	private _onCheckBoxChanged = new Emitter<ICheckboxCellActionEventArgs>();
+	private _onButtonClicked = new Emitter<ButtonClickEventArgs<{}>>();
 	public readonly onCheckBoxChanged: vsEvent<ICheckboxCellActionEventArgs> = this._onCheckBoxChanged.event;
+	public readonly onButtonClicked: vsEvent<ButtonClickEventArgs<{}>> = this._onButtonClicked.event;
 
 	@ViewChild('table', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
@@ -71,6 +77,9 @@ export default class TableComponent extends ComponentBase implements IComponent,
 			(<any[]>columns).map(col => {
 				if (col.type && col.type === 1) {
 					this.createCheckBoxPlugin(col, index);
+				}
+				else if (col.type && col.type === 2) {
+					this.createButtonPlugin(col);
 				}
 				else if (col.value) {
 					mycolumns.push(<Slick.Column<any>>{
@@ -238,7 +247,8 @@ export default class TableComponent extends ComponentBase implements IComponent,
 			this._table.setSelectedRows(this.selectedRows);
 		}
 
-		Object.keys(this._checkboxColumns).forEach(col => this.registerCheckboxPlugin(this._checkboxColumns[col]));
+		Object.keys(this._checkboxColumns).forEach(col => this.registerPlugins(col, this._checkboxColumns[col]));
+		Object.keys(this._buttonsColumns).forEach(col => this.registerPlugins(col, this._buttonsColumns[col]));
 
 		if (this.ariaRowCount === -1) {
 			this._table.removeAriaRowCount();
@@ -309,11 +319,41 @@ export default class TableComponent extends ComponentBase implements IComponent,
 		}
 	}
 
-	private registerCheckboxPlugin(checkboxSelectColumn: CheckboxSelectColumn<{}>): void {
-		this._tableColumns.splice(checkboxSelectColumn.index, 0, checkboxSelectColumn.getColumnDefinition());
-		this._table.registerPlugin(checkboxSelectColumn);
+	private createButtonPlugin(col: any) {
+		let name = col.value;
+		if (!this._buttonsColumns[col.value]) {
+			this._buttonsColumns[col.value] = new ButtonColumn({
+				title: col.title,
+				iconCssClass: 'modelview-table-button-icon  ' + (col.options ? createIconCssClass(col.options.icon) : '')
+			});
+
+			this._register(this._buttonsColumns[col.value].onClick((state) => {
+				this.fireEvent({
+					eventType: ComponentEventType.onCellAction,
+					args: {
+						row: state.row,
+						column: state.column,
+						name: name
+					}
+				});
+			}));
+		}
+	}
+
+	private registerPlugins(col: string, plugin: CheckboxSelectColumn<{}> | ButtonColumn<{}>): void {
+
+		const index = 'index' in plugin ? plugin.index : this.columns?.findIndex(x => x === col || ('value' in x && x['value'] === col));
+		if (index >= 0) {
+			this._tableColumns.splice(index, 0, plugin.definition);
+			if (!(col in this._pluginsRegisterStatus) || !this._pluginsRegisterStatus[col]) {
+				this._table.registerPlugin(plugin);
+				this._pluginsRegisterStatus[col] = true;
+			}
+		}
+
 		this._table.columns = this._tableColumns;
 		this._table.autosizeColumns();
+
 	}
 
 	public focus(): void {
@@ -335,7 +375,7 @@ export default class TableComponent extends ComponentBase implements IComponent,
 		this.setPropertyFromUI<azdata.TableComponentProperties, any[][]>((props, value) => props.data = value, newValue);
 	}
 
-	public get columns(): string[] {
+	public get columns(): string[] | azdata.TableColumn[] {
 		return this.getPropertyOrDefault<azdata.TableComponentProperties, string[]>((props) => props.columns, []);
 	}
 
@@ -343,8 +383,8 @@ export default class TableComponent extends ComponentBase implements IComponent,
 		return this.getPropertyOrDefault<azdata.TableComponentProperties, number | string>((props) => props.fontSize, '');
 	}
 
-	public set columns(newValue: string[]) {
-		this.setPropertyFromUI<azdata.TableComponentProperties, string[]>((props, value) => props.columns = value, newValue);
+	public set columns(newValue: string[] | azdata.TableColumn[]) {
+		this.setPropertyFromUI<azdata.TableComponentProperties, string[] | azdata.TableColumn[]>((props, value) => props.columns = value, newValue);
 	}
 
 	public get selectedRows(): number[] {

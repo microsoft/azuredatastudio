@@ -13,6 +13,7 @@ import { WizardPageBase } from '../../wizardPageBase';
 import * as VariableNames from '../constants';
 import { DeployClusterWizard } from '../deployClusterWizard';
 import { AuthenticationMode } from '../deployClusterWizardModel';
+import * as localizedConstants from '../../../localizedConstants';
 const localize = nls.loadMessageBundle();
 
 const ConfirmPasswordName = 'ConfirmPassword';
@@ -150,6 +151,12 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					variableName: VariableNames.DomainDNSName_VariableName
 				}, {
 					type: FieldType.Text,
+					label: localizedConstants.realm,
+					required: false,
+					variableName: VariableNames.Realm_VariableName,
+					description: localize('deployCluster.RealmDescription', "If not provided, the domain DNS name will be used as the default value.")
+				}, {
+					type: FieldType.Text,
 					label: localize('deployCluster.ClusterAdmins', "Cluster admin group"),
 					required: true,
 					variableName: VariableNames.ClusterAdmins_VariableName,
@@ -186,11 +193,23 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					variableName: VariableNames.AppReaders_VariableName,
 					placeHolder: localize('deployCluster.AppReadersPlaceHolder', "Use comma to separate the values."),
 					description: localize('deployCluster.AppReadersDescription', "The Active Directory users or groups of app readers. Use comma as separator them if there are multiple users/groups.")
+				}, {
+					type: FieldType.Text,
+					label: localize('deployCluster.Subdomain', "Subdomain"),
+					required: false,
+					variableName: VariableNames.Subdomain_VariableName,
+					description: localize('deployCluster.SubdomainDescription', "A unique DNS subdomain to use for this SQL Server Big Data Cluster. If not provided, the cluster name will be used as the default value.")
+				}, {
+					type: FieldType.Text,
+					label: localize('deployCluster.AccountPrefix', "Account prefix"),
+					required: false,
+					variableName: VariableNames.AccountPrefix_VariableName,
+					description: localize('deployCluster.AccountPrefixDescription', "A unique prefix for AD accounts SQL Server Big Data Cluster will generate. If not provided, the subdomain name will be used as the default value. If a subdomain is not provided, the cluster name will be used as the default value.")
 				}
 			]
 		};
-		this.pageObject.registerContent((view: azdata.ModelView) => {
-			const basicSettingsGroup = createSection({
+		this.pageObject.registerContent(async (view: azdata.ModelView) => {
+			const basicSettingsGroup = await createSection({
 				view: view,
 				container: self.wizard.wizardObject,
 				inputComponents: this.wizard.inputComponents,
@@ -205,7 +224,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					self.validators.push(validator);
 				}
 			});
-			const activeDirectorySettingsGroup = createSection({
+			const activeDirectorySettingsGroup = await createSection({
 				view: view,
 				container: self.wizard.wizardObject,
 				inputComponents: this.wizard.inputComponents,
@@ -220,7 +239,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					self.validators.push(validator);
 				}
 			});
-			const dockerSettingsGroup = createSection({
+			const dockerSettingsGroup = await createSection({
 				view: view,
 				container: self.wizard.wizardObject,
 				inputComponents: this.wizard.inputComponents,
@@ -279,10 +298,9 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			variableDNSPrefixMapping[VariableNames.SQLServerDNSName_VariableName] = 'bdc-sql';
 			variableDNSPrefixMapping[VariableNames.ServiceProxyDNSName_VariableName] = 'bdc-proxy';
 
+			const subdomain = this.wizard.model.getStringValue(VariableNames.Subdomain_VariableName) || this.wizard.model.getStringValue(VariableNames.ClusterName_VariableName);
 			Object.keys(variableDNSPrefixMapping).forEach((variableName: string) => {
-				if (!this.wizard.model.getStringValue(variableName)) {
-					this.wizard.model.setPropertyValue(variableName, `${variableDNSPrefixMapping[variableName]}.${this.wizard.model.getStringValue(VariableNames.DomainDNSName_VariableName)}`);
-				}
+				this.wizard.model.setPropertyValue(variableName, `${variableDNSPrefixMapping[variableName]}.${subdomain}.${this.wizard.model.getStringValue(VariableNames.DomainDNSName_VariableName)}`);
 			});
 		}
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
@@ -290,7 +308,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		});
 	}
 
-	public onEnter() {
+	public async onEnter(): Promise<void> {
 		getInputBoxComponent(VariableNames.DockerRegistry_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(VariableNames.DockerRegistry_VariableName);
 		getInputBoxComponent(VariableNames.DockerRepository_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(VariableNames.DockerRepository_VariableName);
 		getInputBoxComponent(VariableNames.DockerImageTag_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(VariableNames.DockerImageTag_VariableName);

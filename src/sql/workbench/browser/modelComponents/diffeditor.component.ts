@@ -89,8 +89,8 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 			}
 		});
 
-		let editorinput1 = this._instantiationService.createInstance(ResourceEditorInput, 'source', undefined, uri1, undefined);
-		let editorinput2 = this._instantiationService.createInstance(ResourceEditorInput, 'target', undefined, uri2, undefined);
+		let editorinput1 = this._instantiationService.createInstance(ResourceEditorInput, uri1, 'source', undefined, undefined);
+		let editorinput2 = this._instantiationService.createInstance(ResourceEditorInput, uri2, 'target', undefined, undefined);
 		this._editorInput = new DiffEditorInput('DiffEditor', undefined, editorinput1, editorinput2, true);
 		this._editor.setInput(this._editorInput, undefined, cancellationTokenSource.token);
 

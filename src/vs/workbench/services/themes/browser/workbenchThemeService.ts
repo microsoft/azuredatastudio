@@ -71,7 +71,7 @@ const fileIconThemesExtPoint = registerFileIconThemeExtensionPoint();
 const productIconThemesExtPoint = registerProductIconThemeExtensionPoint();
 
 export class WorkbenchThemeService implements IWorkbenchThemeService {
-	_serviceBrand: undefined;
+	declare readonly _serviceBrand: undefined;
 
 	private readonly container: HTMLElement;
 	private settings: ThemeConfiguration;
@@ -104,7 +104,7 @@ export class WorkbenchThemeService implements IWorkbenchThemeService {
 		@ILogService private readonly logService: ILogService
 	) {
 		this.container = layoutService.container;
-		const defaultThemeType = environmentService.configuration.defaultThemeType || DARK;
+		const defaultThemeType = environmentService.configuration.defaultThemeType || LIGHT; // {{SQL CARBON EDIT}} default to light theme
 		this.settings = new ThemeConfiguration(configurationService, defaultThemeType);
 
 		this.colorThemeRegistry = new ThemeRegistry(extensionService, colorThemesExtPoint, ColorThemeData.fromExtensionTheme);
@@ -374,13 +374,6 @@ export class WorkbenchThemeService implements IWorkbenchThemeService {
 				return null;
 			}
 			return themeData.ensureLoaded(this.extensionResourceLoaderService).then(_ => {
-				if (themeId === this.currentColorTheme.id && !this.currentColorTheme.isLoaded && this.currentColorTheme.hasEqualData(themeData)) {
-					this.currentColorTheme.clearCaches();
-					// the loaded theme is identical to the perisisted theme. Don't need to send an event.
-					this.currentColorTheme = themeData;
-					themeData.setCustomizations(this.settings);
-					return Promise.resolve(themeData);
-				}
 				themeData.setCustomizations(this.settings);
 				return this.applyTheme(themeData, settingsTarget);
 			}, error => {

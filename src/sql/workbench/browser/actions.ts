@@ -74,7 +74,7 @@ export class InsightAction extends Action {
 export class ConfigureDashboardAction extends Task {
 	public static readonly ID = 'configureDashboard';
 	public static readonly LABEL = nls.localize('configureDashboardLearnMore', "Learn More");
-	public static readonly ICON = 'configure-dashboard';
+	public static readonly ICON = 'info';
 	private static readonly configHelpUri = 'https://aka.ms/sqldashboardconfig';
 
 	constructor() {

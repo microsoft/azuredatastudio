@@ -3,9 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-
-import { window, QuickPickItem, env, Uri } from 'vscode';
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import { TokenCredentials } from '@azure/ms-rest-js';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
@@ -18,18 +17,15 @@ import { AzureResourceTreeProvider } from './tree/treeProvider';
 import { AzureResourceAccountTreeNode } from './tree/accountTreeNode';
 import { IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService, IAzureTerminalService } from '../azureResource/interfaces';
 import { AzureResourceServiceNames } from './constants';
-import { AzureResourceGroupService } from './providers/resourceGroup/resourceGroupService';
-import { GetSubscriptionsResult, GetResourceGroupsResult } from '../azurecore';
-import { isArray } from 'util';
 import { AzureAccount, Tenant } from '../account-provider/interfaces';
 
 export function registerAzureResourceCommands(appContext: AppContext, tree: AzureResourceTreeProvider): void {
-	appContext.apiWrapper.registerCommand('azure.resource.startterminal', async (node?: TreeNode) => {
+	vscode.commands.registerCommand('azure.resource.startterminal', async (node?: TreeNode) => {
 		try {
-			const enablePreviewFeatures = appContext.apiWrapper.getConfiguration('workbench').get('enablePreviewFeatures');
+			const enablePreviewFeatures = vscode.workspace.getConfiguration('workbench').get('enablePreviewFeatures');
 			if (!enablePreviewFeatures) {
 				const msg = localize('azure.cloudTerminalPreview', "You must enable preview features in order to use Azure Cloud Shell.");
-				appContext.apiWrapper.showInformationMessage(msg);
+				vscode.window.showInformationMessage(msg);
 				return;
 			}
 			if (!node || !(node instanceof AzureResourceAccountTreeNode)) {
@@ -39,28 +35,27 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 			const accountNode = node as AzureResourceAccountTreeNode;
 			const azureAccount = accountNode.account as AzureAccount;
 
-			const tokens = await appContext.apiWrapper.getSecurityToken(azureAccount, azdata.AzureResource.MicrosoftResourceManagement);
 
 			const terminalService = appContext.getService<IAzureTerminalService>(AzureResourceServiceNames.terminalService);
 
 			const listOfTenants = azureAccount.properties.tenants.map(t => t.displayName);
 
 			if (listOfTenants.length === 0) {
-				window.showErrorMessage(localize('azure.noTenants', "A tenant is required for this feature. Your Azure subscription seems to have no tenants."));
+				vscode.window.showErrorMessage(localize('azure.noTenants', "A tenant is required for this feature. Your Azure subscription seems to have no tenants."));
 				return;
 			}
 
 			let tenant: Tenant;
-			window.setStatusBarMessage(localize('azure.startingCloudShell', "Starting cloud shell…"), 5000);
+			vscode.window.setStatusBarMessage(localize('azure.startingCloudShell', "Starting cloud shell…"), 5000);
 
 			if (listOfTenants.length === 1) {
 				// Don't show quickpick for a single option
 				tenant = azureAccount.properties.tenants[0];
 			} else {
-				const pickedTenant = await window.showQuickPick(listOfTenants, { canPickMany: false });
+				const pickedTenant = await vscode.window.showQuickPick(listOfTenants, { canPickMany: false });
 
 				if (!pickedTenant) {
-					window.showErrorMessage(localize('azure.mustPickTenant', "You must select a tenant for this feature to work."));
+					vscode.window.showErrorMessage(localize('azure.mustPickTenant', "You must select a tenant for this feature to work."));
 					return;
 				}
 
@@ -68,90 +63,22 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 				tenant = azureAccount.properties.tenants[listOfTenants.indexOf(pickedTenant)];
 			}
 
-			await terminalService.getOrCreateCloudConsole(azureAccount, tenant, tokens);
+			await terminalService.getOrCreateCloudConsole(azureAccount, tenant);
 		} catch (ex) {
 			console.error(ex);
-			window.showErrorMessage(ex);
+			vscode.window.showErrorMessage(ex);
 		}
-	});
-
-	// Resource Management commands
-	appContext.apiWrapper.registerCommand('azure.accounts.getSubscriptions', async (account?: azdata.Account, ignoreErrors: boolean = false): Promise<GetSubscriptionsResult> => {
-		const result: GetSubscriptionsResult = { subscriptions: [], errors: [] };
-		if (!account?.properties?.tenants || !isArray(account.properties.tenants)) {
-			const error = new Error(localize('azure.accounts.getSubscriptions.invalidParamsError', "Invalid account"));
-			if (!ignoreErrors) {
-				throw error;
-			}
-			result.errors.push(error);
-			return result;
-		}
-		const subscriptionService = appContext.getService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService);
-		const tokens = await appContext.apiWrapper.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
-		await Promise.all(account.properties.tenants.map(async (tenant: { id: string | number; }) => {
-			try {
-				const token = tokens[tenant.id].token;
-				const tokenType = tokens[tenant.id].tokenType;
-
-				result.subscriptions.push(...await subscriptionService.getSubscriptions(account, new TokenCredentials(token, tokenType)));
-			} catch (err) {
-				const error = new Error(localize('azure.accounts.getSubscriptions.queryError', "Error fetching subscriptions for account {0} tenant {1} : {2}",
-					account.displayInfo.displayName,
-					tenant.id,
-					err instanceof Error ? err.message : err));
-				console.warn(error);
-				if (!ignoreErrors) {
-					throw error;
-				}
-				result.errors.push(error);
-			}
-			return Promise.resolve();
-		}));
-		return result;
-	});
-
-	appContext.apiWrapper.registerCommand('azure.accounts.getResourceGroups', async (account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, ignoreErrors: boolean = false): Promise<GetResourceGroupsResult> => {
-		const result: GetResourceGroupsResult = { resourceGroups: [], errors: [] };
-		if (!account?.properties?.tenants || !isArray(account.properties.tenants) || !subscription) {
-			const error = new Error(localize('azure.accounts.getResourceGroups.invalidParamsError', "Invalid account or subscription"));
-			if (!ignoreErrors) {
-				throw error;
-			}
-			result.errors.push(error);
-			return result;
-		}
-		const service = new AzureResourceGroupService();
-		await Promise.all(account.properties.tenants.map(async (tenant: { id: string | number; }) => {
-			try {
-				const tokens = await appContext.apiWrapper.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
-				const token = tokens[tenant.id].token;
-				const tokenType = tokens[tenant.id].tokenType;
-
-				result.resourceGroups.push(...await service.getResources(subscription, new TokenCredentials(token, tokenType), account));
-			} catch (err) {
-				const error = new Error(localize('azure.accounts.getResourceGroups.queryError', "Error fetching resource groups for account {0} ({1}) subscription {2} ({3}) tenant {4} : {5}",
-					account.displayInfo.displayName,
-					account.displayInfo.userId,
-					subscription.id,
-					subscription.name,
-					tenant.id,
-					err instanceof Error ? err.message : err));
-				console.warn(error);
-				if (!ignoreErrors) {
-					throw error;
-				}
-				result.errors.push(error);
-			}
-			return Promise.resolve();
-		}));
-
-		return result;
 	});
 
 	// Resource Tree commands
 
-	appContext.apiWrapper.registerCommand('azure.resource.selectsubscriptions', async (node?: TreeNode) => {
+	vscode.commands.registerCommand('azure.resource.selectsubscriptions', async (node?: TreeNode) => {
 		if (!(node instanceof AzureResourceAccountTreeNode)) {
+			return;
+		}
+
+		const account = node.account;
+		if (!account) {
 			return;
 		}
 
@@ -163,17 +90,18 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 		const subscriptions = (await accountNode.getCachedSubscriptions()) || <azureResource.AzureResourceSubscription[]>[];
 		if (subscriptions.length === 0) {
 			try {
-				const tokens = await this.servicePool.apiWrapper.getSecurityToken(this.account, azdata.AzureResource.ResourceManagement);
 
-				for (const tenant of this.account.properties.tenants) {
-					const token = tokens[tenant.id].token;
-					const tokenType = tokens[tenant.id].tokenType;
+				for (const tenant of account.properties.tenants) {
+					const response = await azdata.accounts.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.ResourceManagement);
 
-					subscriptions.push(...await subscriptionService.getSubscriptions(accountNode.account, new TokenCredentials(token, tokenType)));
+					const token = response.token;
+					const tokenType = response.tokenType;
+
+					subscriptions.push(...await subscriptionService.getSubscriptions(account, new TokenCredentials(token, tokenType), tenant.id));
 				}
 			} catch (error) {
-				this.account.isStale = true;
-				throw new AzureResourceCredentialError(localize('azure.resource.selectsubscriptions.credentialError', "Failed to get credential for account {0}. Please refresh the account.", this.account.key.accountId), error);
+				account.isStale = true;
+				throw new AzureResourceCredentialError(localize('azure.resource.selectsubscriptions.credentialError', "Failed to get credential for account {0}. Please refresh the account.", account.displayInfo.displayName), error);
 			}
 		}
 
@@ -190,7 +118,7 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 			selectedSubscriptionIds.push(...subscriptions.map((subscription) => subscription.id));
 		}
 
-		interface AzureResourceSubscriptionQuickPickItem extends QuickPickItem {
+		interface AzureResourceSubscriptionQuickPickItem extends vscode.QuickPickItem {
 			subscription: azureResource.AzureResourceSubscription;
 		}
 
@@ -202,7 +130,7 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 			};
 		}).sort((a, b) => a.label.localeCompare(b.label));
 
-		const selectedSubscriptionQuickPickItems = await window.showQuickPick(subscriptionQuickPickItems, { canPickMany: true });
+		const selectedSubscriptionQuickPickItems = await vscode.window.showQuickPick(subscriptionQuickPickItems, { canPickMany: true });
 		if (selectedSubscriptionQuickPickItems && selectedSubscriptionQuickPickItems.length > 0) {
 			await tree.refresh(node, false);
 
@@ -211,17 +139,17 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 		}
 	});
 
-	appContext.apiWrapper.registerCommand('azure.resource.refreshall', () => tree.notifyNodeChanged(undefined));
+	vscode.commands.registerCommand('azure.resource.refreshall', () => tree.notifyNodeChanged(undefined));
 
-	appContext.apiWrapper.registerCommand('azure.resource.refresh', async (node?: TreeNode) => {
+	vscode.commands.registerCommand('azure.resource.refresh', async (node?: TreeNode) => {
 		await tree.refresh(node, true);
 	});
 
-	appContext.apiWrapper.registerCommand('azure.resource.signin', async (node?: TreeNode) => {
-		appContext.apiWrapper.executeCommand('workbench.actions.modal.linkedAccount');
+	vscode.commands.registerCommand('azure.resource.signin', async (node?: TreeNode) => {
+		vscode.commands.executeCommand('workbench.actions.modal.linkedAccount');
 	});
 
-	appContext.apiWrapper.registerCommand('azure.resource.connectsqlserver', async (node?: TreeNode) => {
+	vscode.commands.registerCommand('azure.resource.connectsqlserver', async (node?: TreeNode) => {
 		if (!node) {
 			return;
 		}
@@ -232,13 +160,13 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 		}
 		// Ensure connection is saved to the Connections list, then open connection dialog
 		let connectionProfile = Object.assign({}, treeItem.payload, { saveProfile: true });
-		const conn = await appContext.apiWrapper.openConnectionDialog(undefined, connectionProfile, { saveConnection: true, showDashboard: true });
+		const conn = await azdata.connection.openConnectionDialog(undefined, connectionProfile, { saveConnection: true, showDashboard: true });
 		if (conn) {
-			appContext.apiWrapper.executeCommand('workbench.view.connections');
+			vscode.commands.executeCommand('workbench.view.connections');
 		}
 	});
 
-	appContext.apiWrapper.registerCommand('azure.resource.openInAzurePortal', async (connectionProfile: azdata.IConnectionProfile) => {
+	vscode.commands.registerCommand('azure.resource.openInAzurePortal', async (connectionProfile: azdata.IConnectionProfile) => {
 
 		if (
 			!connectionProfile.azureResourceId ||
@@ -249,6 +177,6 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 		}
 
 		const urlToOpen = `${connectionProfile.azurePortalEndpoint}//${connectionProfile.azureTenantId}/#resource/${connectionProfile.azureResourceId}`;
-		env.openExternal(Uri.parse(urlToOpen));
+		vscode.env.openExternal(vscode.Uri.parse(urlToOpen));
 	});
 }

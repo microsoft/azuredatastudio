@@ -19,7 +19,7 @@ export class DuskyObjectModelsRestoreStatus {
     'fromServer'?: string;
     'restoreTime'?: Date;
     'startTime'?: Date;
-    'state': string;
+    'state'?: string;
 
     static discriminator: string | undefined = undefined;
 

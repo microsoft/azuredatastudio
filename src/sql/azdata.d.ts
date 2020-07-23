@@ -132,7 +132,7 @@ declare module 'azdata' {
 		export function getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
 
 		/**
-		 * Get the credentials for an active connection
+		 * Get the credentials for a connection
 		 * @param connectionId The id of the connection
 		 * @returns A dictionary containing the credentials as they would be included in the connection's options dictionary
 		 */
@@ -1305,7 +1305,7 @@ declare module 'azdata' {
 
 	// Admin Services interfaces  -----------------------------------------------------------------------
 	export interface DatabaseInfo {
-		options: {};
+		options: { [key: string]: any };
 	}
 
 	export interface LoginInfo {
@@ -2131,8 +2131,17 @@ declare module 'azdata' {
 		 * @param account Account to generate security token for (defaults to
 		 * AzureResource.ResourceManagement if not given)
 		 * @return Promise to return the security token
+		 * @deprecated use getAccountSecurityToken
 		 */
-		export function getSecurityToken(account: Account, resource?: AzureResource): Thenable<{}>;
+		export function getSecurityToken(account: Account, resource?: AzureResource): Thenable<{ [key: string]: any }>;
+
+		/**
+		 * Generates a security token by asking the account's provider
+		 * @param account
+		 * @param tenant
+		 * @param resource
+		 */
+		export function getAccountSecurityToken(account: Account, tenant: string, resource: AzureResource): Thenable<{ token: string, tokenType?: string } | undefined>;
 
 		/**
 		 * An [event](#Event) which fires when the accounts have changed.
@@ -2160,7 +2169,7 @@ declare module 'azdata' {
 		displayName: string;
 
 		/**
-		 * User id that identifies the account, such as "user@contoso.com".
+		 * Unique user id that identifies the account.
 		 */
 		userId: string;
 	}
@@ -2216,7 +2225,8 @@ declare module 'azdata' {
 		OssRdbms = 2,
 		AzureKeyVault = 3,
 		Graph = 4,
-		MicrosoftResourceManagement = 5
+		MicrosoftResourceManagement = 5,
+		AzureDevOps = 6
 	}
 
 	export interface DidChangeAccountsParams {
@@ -2278,6 +2288,7 @@ declare module 'azdata' {
 		 * @param account The account to generate a security token for
 		 * @param resource The resource to get the token for
 		 * @return Promise to return a security token object
+		 * @deprecated use getAccountSecurityToken
 		 */
 		getSecurityToken(account: Account, resource: AzureResource): Thenable<{} | undefined>;
 
@@ -4550,6 +4561,10 @@ declare module 'azdata' {
 
 		export interface NotebookProvider {
 			readonly providerId: string;
+			/**
+			 * @deprecated standardKernels will be removed in an upcoming release. Standard kernel contribution
+			 * should happen via JSON for extensions. Until this is removed, notebook providers can safely return an empty array.
+			 */
 			readonly standardKernels: IStandardKernel[];
 			getNotebookManager(notebookUri: vscode.Uri): Thenable<NotebookManager>;
 			handleNotebookClosed(notebookUri: vscode.Uri): void;

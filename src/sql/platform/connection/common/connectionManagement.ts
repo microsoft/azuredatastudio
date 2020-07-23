@@ -268,12 +268,12 @@ export interface IConnectionManagementService {
 	removeConnectionProfileCredentials(profile: IConnectionProfile): IConnectionProfile;
 
 	/**
-	 * Get the credentials for a connected connection profile, as they would appear in the options dictionary
+	 * Get the credentials for a connection profile, as they would appear in the options dictionary
 	 * @param profileId The id of the connection profile to get the password for
 	 * @returns A dictionary containing the credentials as they would be included
-	 * in the connection profile's options dictionary, or undefined if the profile is not connected
+	 * in the connection profile's options dictionary, or undefined if the profile was not found
 	 */
-	getActiveConnectionCredentials(profileId: string): { [name: string]: string };
+	getConnectionCredentials(profileId: string): Promise<{ [name: string]: string }>;
 
 	/**
 	 * Get the ServerInfo for a connected connection profile

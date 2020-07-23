@@ -5,6 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
+import * as azurecore from '../../../azurecore/src/azurecore';
 
 /**
  * Wrapper class to act as a facade over VSCode and Data APIs and allow us to test / mock callbacks into
@@ -136,5 +137,17 @@ export class ApiWrapper {
 
 	public registerWidget(widgetId: string, handler: (view: azdata.ModelView) => void): void {
 		azdata.ui.registerModelViewProvider(widgetId, handler);
+	}
+
+	private azurecoreApi: azurecore.IExtension | undefined;
+
+	public async getAzurecoreApi(): Promise<azurecore.IExtension> {
+		if (!this.azurecoreApi) {
+			this.azurecoreApi = await this.getExtension(azurecore.extension.name)?.activate();
+			if (!this.azurecoreApi) {
+				throw new Error('Unable to retrieve azurecore API');
+			}
+		}
+		return this.azurecoreApi;
 	}
 }

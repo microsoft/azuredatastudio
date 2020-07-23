@@ -329,11 +329,6 @@ export class JupyterSession implements nb.ISession {
 				code: doNotCallChangeEndpointParams
 			}, true);
 			await future.done;
-
-			future = this.sessionImpl.kernel.requestExecute({
-				code: `%%configure -f${EOL}{"conf": {"spark.pyspark.python": "python3"}}`
-			}, true);
-			await future.done;
 		}
 	}
 
@@ -382,7 +377,8 @@ export class JupyterSession implements nb.ISession {
 	}
 
 	private async setEnvironmentVars(skip: boolean = false): Promise<void> {
-		if (!skip && this.sessionImpl) {
+		// The PowerShell kernel doesn't define the %cd and %set_env magics; no need to run those here then
+		if (!skip && this.sessionImpl?.kernel?.name !== 'powershell') {
 			let allCode: string = '';
 			// Ensure cwd matches notebook path (this follows Jupyter behavior)
 			if (this.path && path.dirname(this.path)) {

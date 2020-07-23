@@ -25,6 +25,7 @@ import { values } from 'vs/base/common/collections';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
 import { INotificationService, Severity, INotification } from 'vs/platform/notification/common/notification';
+import { Action } from 'vs/base/common/actions';
 
 export class AccountManagementService implements IAccountManagementService {
 	// CONSTANTS ///////////////////////////////////////////////////////////
@@ -119,11 +120,16 @@ export class AccountManagementService implements IAccountManagementService {
 	 * @return Promise to return an account
 	 */
 	public addAccount(providerId: string): Thenable<void> {
+		const closeAction: Action = new Action('closeAddingAccount', localize('accountManagementService.close', "Close"), undefined, true);
+
 		const loginNotification: INotification = {
 			severity: Severity.Info,
 			message: localize('loggingIn', "Adding account..."),
 			progress: {
 				infinite: true
+			},
+			actions: {
+				primary: [closeAction]
 			}
 		};
 
@@ -239,6 +245,19 @@ export class AccountManagementService implements IAccountManagementService {
 	}
 
 	/**
+	 * Generates a security token by asking the account's provider
+	 * @param account Account to generate security token for
+	 * @param tenant Tenant to generate security token for
+	 * @param resource The resource to get the security token for
+	 * @return Promise to return the security token
+	 */
+	public getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Thenable<{ token: string }> {
+		return this.doWithProvider(account.key.providerId, provider => {
+			return provider.provider.getAccountSecurityToken(account, tenant, resource);
+		});
+	}
+
+	/**
 	 * Removes an account from the account store and clears sensitive data in the provider
 	 * @param accountKey Key for the account to remove
 	 * @returns Promise with result of account removal, true if account was
@@ -291,7 +310,7 @@ export class AccountManagementService implements IAccountManagementService {
 	// UI METHODS //////////////////////////////////////////////////////////
 	/**
 	 * Opens the account list dialog
-	 * @return Promise that finishes when the account list dialog opens
+	 * @return Promise that finishes when the account list dialog closes
 	 */
 	public openAccountListDialog(): Thenable<void> {
 		let self = this;
@@ -302,9 +321,8 @@ export class AccountManagementService implements IAccountManagementService {
 				if (!self._accountDialogController) {
 					self._accountDialogController = self._instantiationService.createInstance(AccountDialogController);
 				}
-
 				self._accountDialogController.openAccountDialog();
-				resolve();
+				self._accountDialogController.accountDialog.onCloseEvent(resolve);
 			} catch (e) {
 				reject(e);
 			}

@@ -47,6 +47,7 @@ import { GridPanelState, GridTableState } from 'sql/workbench/common/editor/quer
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
 import { Progress } from 'vs/platform/progress/common/progress';
+import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -123,7 +124,7 @@ export class GridPanel extends Disposable {
 			this.reset();
 		}));
 		this.addResultSet(this.runner.batchSets.reduce<ResultSetSummary[]>((p, e) => {
-			if (this.configurationService.getValue<boolean>('sql.results.streaming')) {
+			if (this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.streaming) {
 				p = p.concat(e.resultSetSummaries);
 			} else {
 				p = p.concat(e.resultSetSummaries.filter(c => c.complete));
@@ -157,7 +158,7 @@ export class GridPanel extends Disposable {
 			}
 		};
 
-		if (this.configurationService.getValue<boolean>('sql.results.streaming')) {
+		if (this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.streaming) {
 			this.addResultSet(resultsToAdd);
 			sizeChanges();
 		} else {
@@ -183,7 +184,7 @@ export class GridPanel extends Disposable {
 			}
 		};
 
-		if (this.configurationService.getValue<boolean>('sql.results.streaming')) {
+		if (this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.streaming) {
 			for (let set of resultsToUpdate) {
 				let table = find(this.tables, t => t.resultSet.batchId === set.batchId && t.resultSet.id === set.id);
 				if (table) {
@@ -482,6 +483,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.table.registerPlugin(new AdditionalKeyBindings());
 		this._register(this.table.onContextMenu(this.contextMenu, this));
 		this._register(this.table.onClick(this.onTableClick, this));
+		//This listener is used for correcting auto-scroling when clicking on the header for reszing.
+		this._register(this.table.onHeaderClick(this.onHeaderClick, this));
 
 		if (this.styles) {
 			this.table.style(this.styles);
@@ -578,6 +581,11 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 
 	public set state(val: GridTableState) {
 		this._state = val;
+	}
+
+	private onHeaderClick(event: ITableMouseEvent) {
+		//header clicks must be accounted for as they force the table to scroll to the top;
+		this.scrolled = false;
 	}
 
 	private onTableClick(event: ITableMouseEvent) {

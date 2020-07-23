@@ -22,6 +22,10 @@ export abstract class BaseProjectTreeItem {
 
 	abstract get treeItem(): vscode.TreeItem;
 
+	public get friendlyName(): string {
+		return path.parse(this.uri.path).base;
+	}
+
 	public get root() {
 		let node: BaseProjectTreeItem = this;
 

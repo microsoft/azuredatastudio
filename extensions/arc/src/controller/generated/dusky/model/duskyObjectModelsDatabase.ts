@@ -12,9 +12,9 @@
 
 
 export class DuskyObjectModelsDatabase {
-    'name': string;
+    'name'?: string;
     'owner'?: string;
-    'sharded'?: boolean;
+    'sharded'?: boolean | null;
 
     static discriminator: string | undefined = undefined;
 

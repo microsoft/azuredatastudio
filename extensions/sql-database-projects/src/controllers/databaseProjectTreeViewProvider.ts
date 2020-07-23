@@ -67,7 +67,7 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 		this.treeView = value;
 	}
 
-	public async focus(project: Project) {
+	public async focus(project: Project): Promise<void> {
 		const projNode = this.roots.find(x => x instanceof ProjectRootTreeItem ? (<ProjectRootTreeItem>x).project === project : false);
 
 		if (projNode) {

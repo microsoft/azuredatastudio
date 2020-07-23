@@ -5,12 +5,12 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as TypeMoq from 'typemoq';
+import * as should from 'should';
 import { ManagePackagesDialog } from '../../dialog/managePackages/managePackagesDialog';
 import { ManagePackagesDialogModel } from '../../dialog/managePackages/managePackagesDialogModel';
 import { IPackageManageProvider, IPackageLocation } from '../../types';
 import { LocalCondaPackageManageProvider } from '../../jupyter/localCondaPackageManageProvider';
 import { InstalledPackagesTab } from '../../dialog/managePackages/installedPackagesTab';
-import should = require('should');
 
 interface TestContext {
 	view: azdata.ModelView;
@@ -110,7 +110,10 @@ describe('Manage Package Dialog', () => {
 		let packageManageProviders = new Map<string, IPackageManageProvider>();
 		packageManageProviders.set(LocalCondaPackageManageProvider.ProviderId, new LocalCondaPackageManageProvider(undefined));
 		let model = TypeMoq.Mock.ofInstance(new ManagePackagesDialogModel(undefined, packageManageProviders));
-		let dialog = TypeMoq.Mock.ofInstance(new ManagePackagesDialog(model.object));
+		const mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
+		mockExtensionContext.setup(x => x.asAbsolutePath(TypeMoq.It.isAny())).returns(() => '');
+
+		let dialog = TypeMoq.Mock.ofInstance(new ManagePackagesDialog(model.object, mockExtensionContext.object));
 		dialog.setup(x => x.model).returns(() => model.object);
 
 		let onClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();

@@ -10,18 +10,3 @@ export const configCopyRemoveNewLine = 'copyRemoveNewLine';
 export const configShowBatchTime = 'showBatchTime';
 export const querySection = 'query';
 export const shortcutStart = 'shortcut';
-
-export const tabColorModeOff = 'off';
-export const tabColorModeBorder = 'border';
-export const tabColorModeFill = 'fill';
-
-export const defaultChartType = 'defaultChartType';
-export const chartTypeBar = 'bar';
-export const chartTypeDoughnut = 'doughnut';
-export const chartTypeHorizontalBar = 'horizontalBar';
-export const chartTypeLine = 'line';
-export const chartTypePie = 'pie';
-export const chartTypeScatter = 'scatter';
-export const chartTypeTimeSeries = 'timeSeries';
-export const allChartTypes = [chartTypeBar, chartTypeDoughnut, chartTypeHorizontalBar, chartTypeLine,
-	chartTypePie, chartTypeScatter, chartTypeTimeSeries];

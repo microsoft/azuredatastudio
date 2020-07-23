@@ -15,7 +15,7 @@ import { DuskyObjectModelsStorageSpec } from './duskyObjectModelsStorageSpec';
 
 export class DuskyObjectModelsBackupTier {
     'retention'?: DuskyObjectModelsRetentionSpec;
-    'storage': DuskyObjectModelsStorageSpec;
+    'storage'?: DuskyObjectModelsStorageSpec;
 
     static discriminator: string | undefined = undefined;
 

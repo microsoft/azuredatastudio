@@ -32,7 +32,7 @@ export async function createTestSqlProjFile(contents: string, folderPath?: strin
 }
 
 export async function createTestProject(contents: string, folderPath?: string): Promise<Project> {
-	return new Project(await createTestSqlProjFile(contents, folderPath));
+	return await Project.openProject(await createTestSqlProjFile(contents, folderPath));
 }
 
 export async function createTestDataSources(contents: string, folderPath?: string): Promise<string> {
@@ -46,7 +46,7 @@ export async function generateTestFolderPath(): Promise<string> {
 	return folderPath;
 }
 
-async function createTestFile(contents: string, fileName: string, folderPath?: string): Promise<string> {
+export async function createTestFile(contents: string, fileName: string, folderPath?: string): Promise<string> {
 	folderPath = folderPath ?? await generateTestFolderPath();
 	const filePath = path.join(folderPath, fileName);
 

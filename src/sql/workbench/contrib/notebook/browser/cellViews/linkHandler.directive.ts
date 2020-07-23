@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Directive, Inject, HostListener, Input } from '@angular/core';
-
 import { URI } from 'vs/base/common/uri';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { onUnexpectedError } from 'vs/base/common/errors';

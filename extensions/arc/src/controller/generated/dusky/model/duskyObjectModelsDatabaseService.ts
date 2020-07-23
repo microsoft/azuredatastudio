@@ -13,13 +13,13 @@
 import { DuskyObjectModelsDatabaseServiceArcPayload } from './duskyObjectModelsDatabaseServiceArcPayload';
 import { DuskyObjectModelsDatabaseServiceSpec } from './duskyObjectModelsDatabaseServiceSpec';
 import { DuskyObjectModelsDatabaseServiceStatus } from './duskyObjectModelsDatabaseServiceStatus';
-import { DuskyObjectModelsObjectMeta } from './duskyObjectModelsObjectMeta';
+import { V1ObjectMeta } from './v1ObjectMeta';
 
 export class DuskyObjectModelsDatabaseService {
-    'kind'?: string;
     'apiVersion'?: string;
-    'metadata'?: DuskyObjectModelsObjectMeta;
-    'spec': DuskyObjectModelsDatabaseServiceSpec;
+    'kind'?: string;
+    'metadata'?: V1ObjectMeta;
+    'spec'?: DuskyObjectModelsDatabaseServiceSpec;
     'status'?: DuskyObjectModelsDatabaseServiceStatus;
     'arc'?: DuskyObjectModelsDatabaseServiceArcPayload;
 
@@ -27,19 +27,19 @@ export class DuskyObjectModelsDatabaseService {
 
     static attributeTypeMap: Array<{name: string, baseName: string, type: string}> = [
         {
-            "name": "kind",
-            "baseName": "kind",
-            "type": "string"
-        },
-        {
             "name": "apiVersion",
             "baseName": "apiVersion",
             "type": "string"
         },
         {
+            "name": "kind",
+            "baseName": "kind",
+            "type": "string"
+        },
+        {
             "name": "metadata",
             "baseName": "metadata",
-            "type": "DuskyObjectModelsObjectMeta"
+            "type": "V1ObjectMeta"
         },
         {
             "name": "spec",

@@ -28,6 +28,11 @@
             "type": "array",
             "default": null,
             "description": "%azure.resource.config.filter.description%"
+          },
+          "azure.tenant.config.filter": {
+            "type":"array",
+            "default": [],
+            "description": "%azure.tenant.config.filter.description%"
           }
         }
       },
@@ -44,6 +49,11 @@
             "type": "boolean",
             "default": false,
             "description": "%config.enableUsGovCloudDescription%"
+          },
+          "accounts.azure.cloud.enableUsNatCloud": {
+            "type": "boolean",
+            "default": false,
+            "description": "%config.enableUsNatCloudDescription%"
           },
           "accounts.azure.cloud.enableGermanyCloud": {
             "type": "boolean",
@@ -87,6 +97,11 @@
             "default": true,
             "description": "%config.noSystemKeychain%",
             "when": "isLinux || isWeb"
+          },
+          "azure.piiLogging": {
+            "type": "boolean",
+            "default": false,
+            "description": "%config.piiLogging%"
           }
         }
       }
@@ -111,16 +126,6 @@
       {
         "command": "accounts.clearTokenCache",
         "title": "%accounts.clearTokenCache%",
-        "category": "Azure Accounts"
-      },
-      {
-        "command": "azure.accounts.getSubscriptions",
-        "title": "%azure.accounts.getSubscriptions.title%",
-        "category": "Azure Accounts"
-      },
-      {
-        "command": "azure.accounts.getResourceGroups",
-        "title": "%azure.accounts.getResourceGroups.title%",
         "category": "Azure Accounts"
       },
       {
@@ -198,14 +203,6 @@
         {
           "command": "azure.resource.connectsqlserver",
           "when": "false"
-        },
-        {
-          "command": "azure.accounts.getSubscriptions",
-          "when": "false"
-        },
-        {
-          "command": "azure.accounts.getResourceGroups",
-          "when": "false"
         }
       ],
       "view/title": [
@@ -279,11 +276,13 @@
     "@types/node": "^12.11.7",
     "@types/qs": "^6.9.1",
     "@types/request": "^2.48.1",
+    "@types/sinon": "^9.0.4",
     "@types/ws": "^6.0.4",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.1",
+    "sinon": "^9.0.2",
     "typemoq": "^2.1.0",
     "vscodetestcover": "^1.0.9"
   }

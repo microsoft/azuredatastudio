@@ -4,23 +4,24 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { ApiWrapper } from './apiWrapper';
+import { NotebookUtils } from './notebookUtils';
+import { BookTreeViewProvider } from '../book/bookTreeView';
+import { NavigationProviders, BOOKS_VIEWID, PROVIDED_BOOKS_VIEWID } from './constants';
 
 /**
  * Global context for the application
  */
 export class AppContext {
 
-	private serviceMap: Map<string, any> = new Map();
-	constructor(public readonly extensionContext: vscode.ExtensionContext, public readonly apiWrapper: ApiWrapper) {
-		this.apiWrapper = apiWrapper || new ApiWrapper();
-	}
+	public readonly notebookUtils: NotebookUtils;
+	public readonly bookTreeViewProvider: BookTreeViewProvider;
+	public readonly providedBookTreeViewProvider: BookTreeViewProvider;
 
-	public getService<T>(serviceName: string): T {
-		return this.serviceMap.get(serviceName) as T;
-	}
+	constructor(public readonly extensionContext: vscode.ExtensionContext) {
+		this.notebookUtils = new NotebookUtils();
 
-	public registerService<T>(serviceName: string, service: T): void {
-		this.serviceMap.set(serviceName, service);
+		let workspaceFolders = vscode.workspace.workspaceFolders?.slice() ?? [];
+		this.bookTreeViewProvider = new BookTreeViewProvider(workspaceFolders, extensionContext, false, BOOKS_VIEWID, NavigationProviders.NotebooksNavigator);
+		this.providedBookTreeViewProvider = new BookTreeViewProvider([], extensionContext, true, PROVIDED_BOOKS_VIEWID, NavigationProviders.ProvidedBooksNavigator);
 	}
 }

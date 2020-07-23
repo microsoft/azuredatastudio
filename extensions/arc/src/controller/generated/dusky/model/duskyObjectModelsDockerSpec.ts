@@ -14,7 +14,7 @@
 export class DuskyObjectModelsDockerSpec {
     'registry'?: string;
     'repository'?: string;
-    'imagePullPolicy'?: string;
+    'imagePullPolicy'?: DuskyObjectModelsDockerSpec.ImagePullPolicyEnum;
     'imagePullSecret'?: string;
     'imageTagSuffix'?: string;
 
@@ -34,7 +34,7 @@ export class DuskyObjectModelsDockerSpec {
         {
             "name": "imagePullPolicy",
             "baseName": "imagePullPolicy",
-            "type": "string"
+            "type": "DuskyObjectModelsDockerSpec.ImagePullPolicyEnum"
         },
         {
             "name": "imagePullSecret",
@@ -52,3 +52,10 @@ export class DuskyObjectModelsDockerSpec {
     }
 }
 
+export namespace DuskyObjectModelsDockerSpec {
+    export enum ImagePullPolicyEnum {
+        IfNotPresent = <any> 'IfNotPresent',
+        Always = <any> 'Always',
+        Never = <any> 'Never'
+    }
+}

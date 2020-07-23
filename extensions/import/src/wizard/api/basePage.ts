@@ -42,7 +42,7 @@ export abstract class BasePage {
 	 */
 	public abstract setupNavigationValidator(): void;
 
-	protected async getServerValues(): Promise<{ connection: azdata.connection.Connection, displayName: string, name: string }[]> {
+	public async getServerValues(): Promise<{ connection: azdata.connection.Connection, displayName: string, name: string }[]> {
 		let cons = await azdata.connection.getActiveConnections();
 		// This user has no active connections ABORT MISSION
 		if (!cons || cons.length === 0) {
@@ -90,7 +90,7 @@ export abstract class BasePage {
 		return values;
 	}
 
-	protected async getDatabaseValues(): Promise<{ displayName: string, name: string }[]> {
+	public async getDatabaseValues(): Promise<{ displayName: string, name: string }[]> {
 		let idx = -1;
 		let count = -1;
 		let values = (await azdata.connection.listDatabases(this.model.server.connectionId)).map(db => {
@@ -109,10 +109,7 @@ export abstract class BasePage {
 			let tmp = values[0];
 			values[0] = values[idx];
 			values[idx] = tmp;
-		} else {
-			this.deleteDatabaseValues();
 		}
-
 		return values;
 	}
 
@@ -120,9 +117,5 @@ export abstract class BasePage {
 		delete this.model.server;
 		delete this.model.serverId;
 		delete this.model.database;
-	}
-
-	protected deleteDatabaseValues() {
-		return;
 	}
 }

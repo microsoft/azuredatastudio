@@ -12,9 +12,9 @@
 
 
 export class DuskyObjectModelsUser {
-    'name': string;
+    'name'?: string;
     'password'?: string;
-    'roles': Array<string>;
+    'roles'?: Array<string>;
 
     static discriminator: string | undefined = undefined;
 

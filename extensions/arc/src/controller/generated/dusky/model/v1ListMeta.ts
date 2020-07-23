@@ -13,6 +13,7 @@
 
 export class V1ListMeta {
     '_continue'?: string;
+    'remainingItemCount'?: number | null;
     'resourceVersion'?: string;
     'selfLink'?: string;
 
@@ -23,6 +24,11 @@ export class V1ListMeta {
             "name": "_continue",
             "baseName": "continue",
             "type": "string"
+        },
+        {
+            "name": "remainingItemCount",
+            "baseName": "remainingItemCount",
+            "type": "number"
         },
         {
             "name": "resourceVersion",

@@ -10,6 +10,7 @@ import { createSection, createGroupContainer, createFlexContainer, createLabel }
 import { WizardPageBase } from '../../wizardPageBase';
 import * as VariableNames from '../constants';
 import { AuthenticationMode } from '../deployClusterWizardModel';
+import * as localizedConstants from '../../../localizedConstants';
 const localize = nls.loadMessageBundle();
 
 export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
@@ -29,7 +30,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 		});
 	}
 
-	public onEnter() {
+	public async onEnter(): Promise<void> {
 		this.wizard.showCustomButtons();
 		this.formItems.forEach(item => {
 			this.form!.removeFormItem(item);
@@ -53,6 +54,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 						{
 							type: FieldType.ReadonlyText,
 							label: localize('deployCluster.ClusterContext', "Cluster context"),
+							defaultValue: this.wizard.model.getStringValue(VariableNames.ClusterContext_VariableName),
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
 						}]
 				}
@@ -151,13 +153,28 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 					{
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.AppOwners', "App owners"),
-						defaultValue: this.wizard.model.getStringValue(VariableNames.AppOwners_VariableName),
+						defaultValue: this.wizard.model.getStringValue(VariableNames.AppOwners_VariableName, ''),
 						labelCSSStyles: { fontWeight: FontWeight.Bold }
 					},
 					{
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.AppReaders', "App readers"),
-						defaultValue: this.wizard.model.getStringValue(VariableNames.AppReaders_VariableName),
+						defaultValue: this.wizard.model.getStringValue(VariableNames.AppReaders_VariableName, ''),
+						labelCSSStyles: { fontWeight: FontWeight.Bold }
+					}]
+			});
+			clusterSectionInfo.rows!.push({
+				items: [
+					{
+						type: FieldType.ReadonlyText,
+						label: localize('deployCluster.Subdomain', "Subdomain"),
+						defaultValue: this.wizard.model.getStringValue(VariableNames.Subdomain_VariableName, ''),
+						labelCSSStyles: { fontWeight: FontWeight.Bold }
+					},
+					{
+						type: FieldType.ReadonlyText,
+						label: localize('deployCluster.AccountPrefix', "Account prefix"),
+						defaultValue: this.wizard.model.getStringValue(VariableNames.AccountPrefix_VariableName, ''),
 						labelCSSStyles: { fontWeight: FontWeight.Bold }
 					}]
 			});
@@ -167,6 +184,11 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.DomainServiceAccountUserName', "Service account username"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.DomainServiceAccountUserName_VariableName),
+						labelCSSStyles: { fontWeight: FontWeight.Bold }
+					}, {
+						type: FieldType.ReadonlyText,
+						label: localizedConstants.realm,
+						defaultValue: this.wizard.model.getStringValue(VariableNames.Realm_VariableName, ''),
 						labelCSSStyles: { fontWeight: FontWeight.Bold }
 					}]
 			});
@@ -264,10 +286,10 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 			]
 		};
 
-		const createSectionFunc = (sectionInfo: SectionInfo): azdata.FormComponent => {
+		const createSectionFunc = async (sectionInfo: SectionInfo): Promise<azdata.FormComponent> => {
 			return {
 				title: '',
-				component: createSection({
+				component: await createSection({
 					container: this.wizard.wizardObject,
 					inputComponents: this.wizard.inputComponents,
 					sectionInfo: sectionInfo,
@@ -280,12 +302,12 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 		};
 
 		if (this.wizard.deploymentType === BdcDeploymentType.ExistingAKS || this.wizard.deploymentType === BdcDeploymentType.ExistingKubeAdm) {
-			const deploymentTargetSection = createSectionFunc(deploymentTargetSectionInfo);
+			const deploymentTargetSection = await createSectionFunc(deploymentTargetSectionInfo);
 			this.formItems.push(deploymentTargetSection);
 		}
 
-		const clusterSection = createSectionFunc(clusterSectionInfo);
-		const scaleSection = createSectionFunc(scaleSectionInfo);
+		const clusterSection = await createSectionFunc(clusterSectionInfo);
+		const scaleSection = await createSectionFunc(scaleSectionInfo);
 		const endpointSection = {
 			title: '',
 			component: this.createEndpointSection()
@@ -295,7 +317,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 			component: this.createStorageSection()
 		};
 		if (this.wizard.model.getStringValue(VariableNames.AksName_VariableName)) {
-			const azureSection = createSectionFunc(azureSectionInfo);
+			const azureSection = await createSectionFunc(azureSectionInfo);
 			this.formItems.push(azureSection);
 		}
 

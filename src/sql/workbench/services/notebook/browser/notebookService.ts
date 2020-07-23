@@ -34,6 +34,16 @@ export interface ILanguageMagic {
 	executionTarget?: string;
 }
 
+/**
+*  Valid navigation providers.
+*/
+export enum NavigationProviders {
+	NotebooksNavigator = 'BookNavigator.Notebooks',
+	ProvidedBooksNavigator = 'BookNavigator.ProvidedBooks'
+}
+
+export const unsavedBooksContextKey = 'unsavedBooks';
+
 export interface INotebookService {
 	_serviceBrand: undefined;
 
@@ -114,7 +124,7 @@ export interface INotebookService {
 	navigateTo(notebookUri: URI, sectionId: string): void;
 
 	/**
-	 * Sets the trusted mode for the sepcified notebook.
+	 * Sets the trusted mode for the specified notebook.
 	 * @param notebookUri URI of the notebook to navigate to
 	 * @param isTrusted True if notebook is to be set to trusted, false otherwise.
 	 */

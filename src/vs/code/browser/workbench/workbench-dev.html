@@ -2,6 +2,10 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<script>
+			globalThis.MonacoPerformanceMarks = globalThis.MonacoPerformanceMarks || [];
+			globalThis.MonacoPerformanceMarks.push('renderer/started', Date.now());
+		</script>
 		<meta charset="utf-8" />
 
 		<!-- Disable pinch zooming -->
@@ -9,6 +13,9 @@
 
 		<!-- Workbench Configuration -->
 		<meta id="vscode-workbench-web-configuration" data-settings="{{WORKBENCH_WEB_CONFIGURATION}}">
+
+		<!-- Builtin Extensions (running out of sources) -->
+		<meta id="vscode-workbench-builtin-extensions" data-settings="{{WORKBENCH_BUILTIN_EXTENSIONS}}">
 
 		<!-- Workarounds/Hacks (remote user data uri) -->
 		<meta id="vscode-remote-user-data-uri" data-settings="{{REMOTE_USER_DATA_URI}}">
@@ -26,6 +33,7 @@
 		// NOTE: Changes to inline scripts require update of content security policy
 		self.require = {
 			baseUrl: `${window.location.origin}/static/out`,
+			recordStats: true,
 			paths: {
 				'vscode-textmate': `${window.location.origin}/static/remote/web/node_modules/vscode-textmate/release/main`,
 				'vscode-oniguruma': `${window.location.origin}/static/remote/web/node_modules/vscode-oniguruma/release/main`,
@@ -72,7 +80,9 @@
 				'rxjs/operator/mergeAll': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?20`,
 				'rxjs/operator/filter': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?21`,
 				'sanitize-html': `${window.location.origin}/static/remote/web/node_modules/sanitize-html/dist/sanitize-html.js`,
-				'ansi_up': `${window.location.origin}/static/remote/web/node_modules/ansi_up/ansi_up.js`
+				'ansi_up': `${window.location.origin}/static/remote/web/node_modules/ansi_up/ansi_up.js`,
+				'iconv-lite-umd': `${window.location.origin}/static/remote/web/node_modules/iconv-lite-umd/lib/iconv-lite-umd.js`,
+				'jschardet': `${window.location.origin}/static/remote/web/node_modules/jschardet/dist/jschardet.min.js`,
 			}
 		};
 	</script>
@@ -85,7 +95,11 @@
 	<script src="./static/remote/web/node_modules/slickgrid/plugins/slick.cellrangedecorator.js"></script>
 	<script src="./static/remote/web/node_modules/zone.js/dist/zone.min.js"></script>
 	<script src="./static/remote/web/node_modules/reflect-metadata/Reflect.js"></script>
+	<script src="./static/out/vs/base/common/performance.js"></script>
 	<script src="./static/out/vs/loader.js"></script>
+	<script>
+		globalThis.MonacoPerformanceMarks.push('willLoadWorkbenchMain', Date.now());
+	</script>
 	<script>
 		// NOTE: Changes to inline scripts require update of content security policy
 		require(['vs/code/browser/workbench/workbench'], function() {});

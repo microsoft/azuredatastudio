@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import { azureResource } from './azureResource/azure-resource';
 
 /**
@@ -62,6 +63,8 @@ export const enum AzureRegion {
 }
 
 export interface IExtension {
+	getSubscriptions(account?: azdata.Account, ignoreErrors?: boolean): Thenable<GetSubscriptionsResult>;
+	getResourceGroups(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, ignoreErrors?: boolean): Thenable<GetResourceGroupsResult>;
 	/**
 	 * Converts a region value (@see AzureRegion) into the localized Display Name
 	 * @param region The region value
