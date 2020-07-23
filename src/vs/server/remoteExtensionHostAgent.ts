@@ -4,6 +4,7 @@
 
 import * as os from 'os';
 import * as fs from 'fs';
+import * as path from 'path';
 import { URI } from 'vs/base/common/uri';
 import { run as runCli, shouldSpawnCli } from 'vs/server/remoteExtensionManagement';
 import { EnvironmentService } from 'vs/platform/environment/node/environmentService';
@@ -162,6 +163,35 @@ if (shouldSpawnCli(args)) {
 `;
 	logService.info(license);
 	console.log(license);
+
+	//
+	// On Windows, exit early with warning message to users about potential security issue
+	// if there is node_modules folder under home drive or Users folder.
+	//
+	if (process.platform === 'win32' && process.env.HOMEDRIVE && process.env.HOMEPATH) {
+		const homeDirModulesPath = path.join(process.env.HOMEDRIVE, 'node_modules');
+		const userDir = path.dirname(path.join(process.env.HOMEDRIVE, process.env.HOMEPATH));
+		const userDirModulesPath = path.join(userDir, 'node_modules');
+		if (fs.existsSync(homeDirModulesPath) || fs.existsSync(userDirModulesPath)) {
+			const message = `
+
+*
+* !!!! Server terminated due to presence of CVE-2020-1416 !!!!
+*
+* Please remove the following directories and re-try
+* ${homeDirModulesPath}
+* ${userDirModulesPath}
+*
+* For more information on the vulnerability https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-1416
+*
+
+`;
+			logService.warn(message);
+			console.warn(message);
+			process.exit(0);
+		}
+	}
+
 	const server = new RemoteExtensionHostAgentServer(CONNECTION_AUTH_TOKEN, environmentService, logService);
 	if (SOCKET_PATH) {
 		server.start({ socketPath: SOCKET_PATH });

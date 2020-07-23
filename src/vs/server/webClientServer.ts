@@ -7,6 +7,7 @@ import * as http from 'http';
 import * as url from 'url';
 import * as util from 'util';
 import * as cookie from 'cookie';
+// import * as crypto from 'crypto';
 import { isEqualOrParent, sanitizeFilePath } from 'vs/base/common/extpath';
 import { getMediaMime } from 'vs/base/common/mime';
 import { isLinux } from 'vs/base/common/platform';
@@ -195,9 +196,7 @@ export class WebClientServer {
 			'default-src \'self\';',
 			'img-src \'self\' https: data: blob:;',
 			'media-src \'none\';',
-			this._environmentService.isBuilt ?
-				'script-src \'self\' https://az416426.vo.msecnd.net \'unsafe-eval\' https: \'sha256-KvqvQAsrx/7S91ELaOLViI/Iqznq/r8lsa8W+fP1TnQ=\';' :
-				'script-src \'self\' https://az416426.vo.msecnd.net \'unsafe-eval\' https: \'sha256-7r3C4aq4cVZ0IgStqJaTrDV/LHR+C8n9H6GJzPmUn0w=\' \'sha256-meDZW3XhN5JmdjFUrWGhTouRKBiWYtXHltaKnqn/WMo=\';',
+			`script-src 'self' 'unsafe-eval' https://az416426.vo.msecnd.net ${this._getScriptCspHashes(data).join(' ')};`,
 			'child-src \'self\';',
 			'frame-src \'self\' https://*.vscode-webview-test.com;',
 			'worker-src \'self\';',
@@ -217,6 +216,24 @@ export class WebClientServer {
 		});
 		return res.end(data);
 	}
+
+	/*private _getScriptCspHashes(content: string): string[] {
+		// Compute the CSP hashes for line scripts. Uses regex
+		// which means it isn't 100% good.
+		const regex = /<script>([\s\S]+?)<\/script>/img;
+		const result: string[] = [];
+		let match: RegExpExecArray | null;
+		while (match = regex.exec(content)) {
+			const hasher = crypto.createHash('sha256');
+			const script = match[1];
+			const hash = hasher
+				.update(Buffer.from(script))
+				.digest().toString('base64');
+
+			result.push(`'sha256-${hash}'`);
+		}
+		return result;
+	}*/
 
 	private async _getWorkspaceFromCLI(): Promise<{ workspacePath?: string, isFolder?: boolean }> {
 		const cwd = process.env['VSCODE_CWD'] || process.cwd();

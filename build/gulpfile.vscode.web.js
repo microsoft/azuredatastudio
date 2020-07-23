@@ -124,7 +124,7 @@ const minifyVSCodeWebTask = task.define('minify-vscode-web', task.series(
 	vscodeWebPatchBuiltinExtensionsTask,
 	optimizeVSCodeWebTask,
 	util.rimraf('out-vscode-web-min'),
-	common.minifyTask('out-vscode-web', `https://sqlopsbuilds.blob.core.windows.net/sourcemaps/${commit}/core`)
+	common.minifyTask('out-vscode-web', `https://ticino.blob.core.windows.net/sourcemaps/${commit}/core`)
 ));
 gulp.task(minifyVSCodeWebTask);
 
