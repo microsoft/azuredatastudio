@@ -815,8 +815,6 @@ export class ViewPaneContainer extends Component implements IViewPaneContainer {
 	private lastFocusedPane: ViewPane | undefined;
 	private paneItems: IViewPaneItem[] = [];
 	private paneview?: PaneView;
-	readonly addSearch: boolean;
-
 
 	private visible: boolean = false;
 
@@ -986,13 +984,6 @@ export class ViewPaneContainer extends Component implements IViewPaneContainer {
 		});
 
 		this._register(this.viewContainerModel.onDidChangeActiveViewDescriptors(() => this._onTitleAreaUpdate.fire()));
-	}
-
-	protected addSearchWidget(searchPane: ViewPane, size: number): void {
-		// extended classes can add search based on addSearch
-		if (this.addSearch) {
-			this.addPane(searchPane, size, 0);
-		}
 	}
 
 	getTitle(): string {
