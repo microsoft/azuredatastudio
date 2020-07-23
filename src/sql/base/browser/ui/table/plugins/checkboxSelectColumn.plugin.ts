@@ -239,7 +239,7 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 		}
 	}
 
-	public getColumnDefinition(): Slick.Column<T> {
+	public get definition(): Slick.Column<T> {
 		return {
 			id: this._options.columnId,
 			name: this._options.title || strings.format(checkboxTemplate, '', ''),

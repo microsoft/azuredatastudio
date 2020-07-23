@@ -17,12 +17,11 @@ import { AzureResourceDatabaseServerService } from './azureResource/providers/da
 import { AzureResourceDatabaseProvider } from './azureResource/providers/database/databaseProvider';
 import { AzureResourceDatabaseService } from './azureResource/providers/database/databaseService';
 import { AzureResourceService } from './azureResource/resourceService';
-import { IAzureResourceCacheService, IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService, IAzureResourceTenantService, IAzureTerminalService } from './azureResource/interfaces';
+import { IAzureResourceCacheService, IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService, IAzureTerminalService } from './azureResource/interfaces';
 import { AzureResourceServiceNames } from './azureResource/constants';
 import { AzureResourceSubscriptionService } from './azureResource/services/subscriptionService';
 import { AzureResourceSubscriptionFilterService } from './azureResource/services/subscriptionFilterService';
 import { AzureResourceCacheService } from './azureResource/services/cacheService';
-import { AzureResourceTenantService } from './azureResource/services/tenantService';
 import { registerAzureResourceCommands } from './azureResource/commands';
 import { AzureResourceTreeProvider } from './azureResource/tree/treeProvider';
 import { SqlInstanceResourceService } from './azureResource/providers/sqlinstance/sqlInstanceService';
@@ -153,7 +152,6 @@ function registerAzureServices(appContext: AppContext): void {
 	appContext.registerService<IAzureResourceCacheService>(AzureResourceServiceNames.cacheService, new AzureResourceCacheService(extensionContext));
 	appContext.registerService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService, new AzureResourceSubscriptionService());
 	appContext.registerService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService, new AzureResourceSubscriptionFilterService(new AzureResourceCacheService(extensionContext)));
-	appContext.registerService<IAzureResourceTenantService>(AzureResourceServiceNames.tenantService, new AzureResourceTenantService());
 	appContext.registerService<IAzureTerminalService>(AzureResourceServiceNames.terminalService, new AzureTerminalService(extensionContext));
 }
 

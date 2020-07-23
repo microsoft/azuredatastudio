@@ -387,6 +387,7 @@ class WelcomePage extends Disposable {
 		let openFileButton = this._register(new Button(fileBtnContainer));
 		openFileButton.label = openFileText;
 		const getNewFileBtn = container.querySelector('#open-file-btn-container .monaco-button') as HTMLAnchorElement;
+		getNewFileBtn.setAttribute('role', 'button');
 		const body = document.querySelector('body');
 
 		if (body.classList.contains('windows') || body.classList.contains('linux')) {
@@ -416,6 +417,7 @@ class WelcomePage extends Disposable {
 		let startTourBtn = new Button(containerRight);
 		startTourBtn.label = localize('welcomePage.startTour', "Start Tour");
 		const removeTourBtn = document.createElement('a');
+		removeTourBtn.setAttribute('role', 'button');
 		const removeBtnClasses = ['btn-remove-tour', 'codicon', 'codicon-close'];
 		const flexClassesLeft = ['flex', 'flex-a-center'];
 		const flexClassesRight = ['flex', 'flex-a-start'];
@@ -656,6 +658,7 @@ class WelcomePage extends Disposable {
 		a.innerText = name;
 		a.title = relativePath;
 		a.setAttribute('aria-label', localize('welcomePage.openFolderWithPath', "Open folder {0} with path {1}", name, parentPath));
+		a.setAttribute('role', 'button');
 		a.href = 'javascript:void(0)';
 
 		a.addEventListener('click', e => {
@@ -717,6 +720,7 @@ class WelcomePage extends Disposable {
 				const bodyElm = document.createElement('p');
 				outerAnchorContainerElm.classList.add('extension');
 				outerAnchorContainerElm.classList.add('tile');
+				outerAnchorContainerElm.setAttribute('role', 'button');
 				outerAnchorContainerElm.href = extension.link;
 				flexDivContainerElm.classList.add(...flexDivContainerClasses);
 				descriptionContainerElm.classList.add('description');
@@ -752,6 +756,7 @@ class WelcomePage extends Disposable {
 				getDropdownBtn.title = extension.title || (extension.isKeymap ? localize('welcomePage.installKeymap', "Install {0} keymap", extension.name) : localize('welcomePage.installExtensionPack', "Install additional support for {0}", extension.name));
 				getDropdownBtn.setAttribute('aria-haspopup', 'true');
 				getDropdownBtn.setAttribute('aria-controls', 'dropdown');
+				getDropdownBtn.setAttribute('role', 'navigation');
 				getDropdownBtn.id = 'dropdown-btn';
 				getDropdownBtn.classList.add('installExtension');
 				getDropdownBtn.setAttribute('data-extension', extension.id);
@@ -798,6 +803,7 @@ class WelcomePage extends Disposable {
 				const outerContainerClasses = ['extension-pack-extension-container', 'flex', 'flex-j-center'];
 				const flexContainerClasses = ['flex', 'flex-a-center'];
 				anchorElem.href = j.link;
+				anchorElem.setAttribute('role', 'button');
 				outerContainerElem.classList.add(...outerContainerClasses);
 				flexContainerElem.classList.add(...flexContainerClasses);
 				iconContainerElem.classList.add('icon');

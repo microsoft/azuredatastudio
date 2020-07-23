@@ -55,7 +55,7 @@ export class OpenLatestReleaseNotesInBrowserAction extends Action {
 		if (this.productService.releaseNotesUrl) {
 			const uri = URI.parse(this.productService.releaseNotesUrl);
 			await this.openerService.open(uri);
-		} else { //{{SQL CARBON EDIT}}
+		} else {
 			throw new Error(nls.localize('update.noReleaseNotesOnline', "This version of {0} does not have release notes online", this.productService.nameLong));
 		}
 	}
@@ -507,7 +507,9 @@ export class SwitchProductQualityContribution extends Disposable implements IWor
 				const res = await dialogService.confirm({
 					type: 'info',
 					message: nls.localize('relaunchMessage', "Changing the version requires a reload to take effect"),
-					detail: newQuality === 'insider' ? nls.localize('relaunchDetailInsiders', "Press the reload button to switch to the insiders version.") : nls.localize('relaunchDetailStable', "Press the reload button to switch to the stable version."),
+					detail: newQuality === 'insider' ?
+						nls.localize('relaunchDetailInsiders', "Press the reload button to switch to the nightly pre-production version of VSCode.") :
+						nls.localize('relaunchDetailStable', "Press the reload button to switch to the monthly released stable version of VSCode."),
 					primaryButton: nls.localize('reload', "&&Reload")
 				});
 

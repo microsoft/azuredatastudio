@@ -8,21 +8,24 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import {
 	AzureAuth,
-	TokenClaims,
-	AccessToken,
-	RefreshToken,
+	OAuthTokenResponse,
+	DeviceCodeStartPostData,
+	DeviceCodeCheckPostData,
 
 } from './azureAuth';
 
 import {
 	AzureAccountProviderMetadata,
-	AzureAccount,
 	AzureAuthType,
+	Tenant,
+	Resource,
+	Deferred,
 	// Tenant,
 	// Subscription
 } from '../interfaces';
 
 import { SimpleTokenCache } from '../simpleTokenCache';
+import { Logger } from '../../utils/Logger';
 const localize = nls.loadMessageBundle();
 
 interface DeviceCodeLogin { // https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code
@@ -43,7 +46,6 @@ interface DeviceCodeLoginResult {
 }
 
 export class AzureDeviceCode extends AzureAuth {
-
 	private static readonly USER_FRIENDLY_NAME: string = localize('azure.azureDeviceCodeAuth', "Azure Device Code");
 	private readonly pageTitle: string;
 	constructor(
@@ -56,60 +58,42 @@ export class AzureDeviceCode extends AzureAuth {
 		this.pageTitle = localize('addAccount', "Add {0} account", this.metadata.displayName);
 
 	}
+	protected async login(tenant: Tenant, resource: Resource): Promise<{ response: OAuthTokenResponse, authComplete: Deferred<void> }> {
+		let authCompleteDeferred: Deferred<void>;
+		let authCompletePromise = new Promise<void>((resolve, reject) => authCompleteDeferred = { resolve, reject });
 
-	public async promptForConsent(resourceId: string, tenant: string = this.commonTenant.id): Promise<undefined> {
-		vscode.window.showErrorMessage(localize('azure.deviceCodeDoesNotSupportConsent', "Device code authentication does not support prompting for consent. Switch the authentication method in settings to code grant."));
-		return undefined;
+		const uri = `${this.loginEndpointUrl}/${this.commonTenant.id}/oauth2/devicecode`;
+		const postData: DeviceCodeStartPostData = {
+			client_id: this.clientId,
+			resource: resource.endpoint
+		};
+
+		const postResult = await this.makePostRequest(uri, postData);
+
+		const initialDeviceLogin: DeviceCodeLogin = postResult.data;
+
+		await azdata.accounts.beginAutoOAuthDeviceCode(this.metadata.id, this.pageTitle, initialDeviceLogin.message, initialDeviceLogin.user_code, initialDeviceLogin.verification_url);
+
+		const finalDeviceLogin = await this.setupPolling(initialDeviceLogin);
+
+		const accessTokenString = finalDeviceLogin.access_token;
+		const refreshTokenString = finalDeviceLogin.refresh_token;
+
+		const currentTime = new Date().getTime() / 1000;
+		const expiresOn = `${currentTime + finalDeviceLogin.expires_in}`;
+
+		const result = await this.getTokenHelper(tenant, resource, accessTokenString, refreshTokenString, expiresOn);
+		this.closeOnceComplete(authCompletePromise).catch(Logger.error);
+
+		return {
+			response: result,
+			authComplete: authCompleteDeferred
+		};
 	}
 
-	public async login(): Promise<AzureAccount | azdata.PromptFailedResult> {
-		try {
-			const uri = `${this.loginEndpointUrl}/${this.commonTenant}/oauth2/devicecode`;
-			const postResult = await this.makePostRequest(uri, {
-				client_id: this.clientId,
-				resource: this.metadata.settings.signInResourceId
-			});
-
-			const initialDeviceLogin: DeviceCodeLogin = postResult.data;
-
-			await azdata.accounts.beginAutoOAuthDeviceCode(this.metadata.id, this.pageTitle, initialDeviceLogin.message, initialDeviceLogin.user_code, initialDeviceLogin.verification_url);
-
-			const finalDeviceLogin = await this.setupPolling(initialDeviceLogin);
-
-			let tokenClaims: TokenClaims;
-			let accessToken: AccessToken;
-			let refreshToken: RefreshToken;
-			// let tenants: Tenant[];
-			// let subscriptions: Subscription[];
-
-			tokenClaims = this.getTokenClaims(finalDeviceLogin.access_token);
-
-			accessToken = {
-				token: finalDeviceLogin.access_token,
-				key: tokenClaims.email || tokenClaims.unique_name || tokenClaims.name,
-			};
-
-			refreshToken = {
-				token: finalDeviceLogin.refresh_token,
-				key: accessToken.key,
-			};
-
-			await this.setCachedToken({ accountId: accessToken.key, providerId: this.metadata.id }, accessToken, refreshToken);
-
-			const tenants = await this.getTenants(accessToken);
-			const account = this.createAccount(tokenClaims, accessToken.key, tenants);
-			const subscriptions = await this.getSubscriptions(account);
-			account.properties.subscriptions = subscriptions;
-			return account;
-		} catch (ex) {
-			console.log(ex);
-			if (ex.msg) {
-				vscode.window.showErrorMessage(ex.msg);
-			}
-			return { canceled: false };
-		} finally {
-			azdata.accounts.endAutoOAuthDeviceCode();
-		}
+	private async closeOnceComplete(promise: Promise<void>): Promise<void> {
+		await promise;
+		azdata.accounts.endAutoOAuthDeviceCode();
 	}
 
 
@@ -141,14 +125,14 @@ export class AzureDeviceCode extends AzureAuth {
 		const msg = localize('azure.deviceCodeCheckFail', "Error encountered when trying to check for login results");
 		try {
 			const uri = `${this.loginEndpointUrl}/${this.commonTenant}/oauth2/token`;
-			const postData = {
+			const postData: DeviceCodeCheckPostData = {
 				grant_type: 'urn:ietf:params:oauth:grant-type:device_code',
 				client_id: this.clientId,
 				tenant: this.commonTenant.id,
 				code: info.device_code
 			};
 
-			const postResult = await this.makePostRequest(uri, postData, true);
+			const postResult = await this.makePostRequest(uri, postData);
 
 			const result: DeviceCodeLoginResult = postResult.data;
 
@@ -164,5 +148,4 @@ export class AzureDeviceCode extends AzureAuth {
 	public async autoOAuthCancelled(): Promise<void> {
 		return azdata.accounts.endAutoOAuthDeviceCode();
 	}
-
 }

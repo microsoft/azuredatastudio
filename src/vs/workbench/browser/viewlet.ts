@@ -45,7 +45,7 @@ export abstract class Viewlet extends PaneComposite implements IViewlet {
 		@IConfigurationService protected configurationService: IConfigurationService
 	) {
 		super(id, viewPaneContainer, telemetryService, storageService, instantiationService, themeService, contextMenuService, extensionService, contextService);
-		this._register(Event.any(viewPaneContainer.onDidAddViews, viewPaneContainer.onDidRemoveViews)(() => {
+		this._register(Event.any(viewPaneContainer.onDidAddViews, viewPaneContainer.onDidRemoveViews, viewPaneContainer.onTitleAreaUpdate)(() => {
 			// Update title area since there is no better way to update secondary actions
 			this.updateTitleArea();
 		}));
@@ -68,18 +68,18 @@ export abstract class Viewlet extends PaneComposite implements IViewlet {
 	}
 
 	getSecondaryActions(): IAction[] {
-		const viewSecondaryActions = this.viewPaneContainer.getViewsVisibilityActions();
+		const viewVisibilityActions = this.viewPaneContainer.getViewsVisibilityActions();
 		const secondaryActions = this.viewPaneContainer.getSecondaryActions();
-		if (viewSecondaryActions.length <= 1) {
+		if (viewVisibilityActions.length <= 1 || viewVisibilityActions.every(({ enabled }) => !enabled)) {
 			return secondaryActions;
 		}
 
 		if (secondaryActions.length === 0) {
-			return viewSecondaryActions;
+			return viewVisibilityActions;
 		}
 
 		return [
-			new ContextSubMenu(nls.localize('views', "Views"), viewSecondaryActions),
+			new ContextSubMenu(nls.localize('views', "Views"), viewVisibilityActions),
 			new Separator(),
 			...secondaryActions
 		];
