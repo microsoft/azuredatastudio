@@ -74,7 +74,8 @@ const FOCUS_OUT_OUTPUT_COMMAND_ID = 'notebook.cell.focusOutOutput';
 
 export const NOTEBOOK_ACTIONS_CATEGORY = { value: localize('notebookActions.category', "Notebook"), original: 'Notebook' };
 
-export const CELL_TITLE_GROUP_ID = 'inline';
+export const CELL_TITLE_CELL_GROUP_ID = 'inline/cell';
+export const CELL_TITLE_OUTPUT_GROUP_ID = 'inline/output';
 
 const EDITOR_WIDGET_ACTION_WEIGHT = KeybindingWeight.EditorContrib; // smaller than Suggest Widget, etc
 
@@ -407,6 +408,11 @@ registerAction2(class extends NotebookCellAction {
 				weight: KeybindingWeight.WorkbenchContrib
 			},
 			precondition: ContextKeyExpr.and(NOTEBOOK_IS_ACTIVE_EDITOR),
+			menu: {
+				id: MenuId.NotebookCellTitle,
+				when: ContextKeyExpr.and(NOTEBOOK_EDITOR_FOCUSED, NOTEBOOK_EDITOR_EDITABLE, NOTEBOOK_CELL_EDITABLE),
+				group: '2_edit',
+			}
 		});
 	}
 
@@ -425,6 +431,11 @@ registerAction2(class extends NotebookCellAction {
 				primary: KeyCode.KEY_M,
 				weight: KeybindingWeight.WorkbenchContrib
 			},
+			menu: {
+				id: MenuId.NotebookCellTitle,
+				when: ContextKeyExpr.and(NOTEBOOK_EDITOR_FOCUSED, NOTEBOOK_EDITOR_EDITABLE, NOTEBOOK_CELL_EDITABLE),
+				group: '2_edit',
+			}
 		});
 	}
 
@@ -601,7 +612,7 @@ registerAction2(class extends NotebookCellAction {
 						NOTEBOOK_CELL_MARKDOWN_EDIT_MODE.toNegated(),
 						NOTEBOOK_CELL_EDITABLE),
 					order: CellToolbarOrder.EditCell,
-					group: CELL_TITLE_GROUP_ID
+					group: CELL_TITLE_CELL_GROUP_ID
 				},
 				icon: { id: 'codicon/pencil' }
 			});
@@ -625,7 +636,7 @@ registerAction2(class extends NotebookCellAction {
 						NOTEBOOK_CELL_MARKDOWN_EDIT_MODE,
 						NOTEBOOK_CELL_EDITABLE),
 					order: CellToolbarOrder.SaveCell,
-					group: CELL_TITLE_GROUP_ID
+					group: CELL_TITLE_CELL_GROUP_ID
 				},
 				icon: { id: 'codicon/check' },
 				keybinding: {
@@ -659,7 +670,7 @@ registerAction2(class extends NotebookCellAction {
 					id: MenuId.NotebookCellTitle,
 					order: CellToolbarOrder.DeleteCell,
 					when: NOTEBOOK_EDITOR_EDITABLE,
-					group: CELL_TITLE_GROUP_ID
+					group: CELL_TITLE_CELL_GROUP_ID
 				},
 				keybinding: {
 					primary: KeyCode.Delete,
@@ -758,6 +769,11 @@ registerAction2(class extends NotebookCellAction {
 					primary: KeyMod.CtrlCmd | KeyCode.KEY_C,
 					weight: EDITOR_WIDGET_ACTION_WEIGHT
 				},
+				menu: {
+					id: MenuId.NotebookCellTitle,
+					when: NOTEBOOK_EDITOR_FOCUSED,
+					group: '1_copy',
+				}
 			});
 	}
 
@@ -780,6 +796,11 @@ registerAction2(class extends NotebookCellAction {
 					primary: KeyMod.CtrlCmd | KeyCode.KEY_X,
 					weight: EDITOR_WIDGET_ACTION_WEIGHT
 				},
+				menu: {
+					id: MenuId.NotebookCellTitle,
+					when: ContextKeyExpr.and(NOTEBOOK_EDITOR_FOCUSED, NOTEBOOK_EDITOR_EDITABLE, NOTEBOOK_CELL_EDITABLE),
+					group: '1_copy',
+				}
 			});
 	}
 
@@ -864,6 +885,11 @@ registerAction2(class extends NotebookAction {
 					primary: KeyMod.CtrlCmd | KeyCode.KEY_V,
 					weight: EDITOR_WIDGET_ACTION_WEIGHT
 				},
+				menu: {
+					id: MenuId.NotebookCellTitle,
+					when: ContextKeyExpr.and(NOTEBOOK_EDITOR_FOCUSED, NOTEBOOK_EDITOR_EDITABLE),
+					group: '1_copy',
+				}
 			});
 	}
 
@@ -1176,7 +1202,7 @@ registerAction2(class extends NotebookCellAction {
 				id: MenuId.NotebookCellTitle,
 				when: ContextKeyExpr.and(NOTEBOOK_CELL_TYPE.isEqualTo('code'), NOTEBOOK_EDITOR_RUNNABLE),
 				order: CellToolbarOrder.ClearCellOutput,
-				group: CELL_TITLE_GROUP_ID
+				group: CELL_TITLE_OUTPUT_GROUP_ID
 			},
 			keybinding: {
 				when: ContextKeyExpr.and(NOTEBOOK_EDITOR_FOCUSED, ContextKeyExpr.not(InputFocusedContextKey), NOTEBOOK_CELL_HAS_OUTPUTS),
@@ -1339,7 +1365,11 @@ registerAction2(class extends NotebookCellAction {
 					id: MenuId.NotebookCellTitle,
 					when: ContextKeyExpr.and(NOTEBOOK_EDITOR_FOCUSED, NOTEBOOK_EDITOR_EDITABLE, NOTEBOOK_CELL_EDITABLE, InputFocusedContext),
 					order: CellToolbarOrder.SplitCell,
-					group: CELL_TITLE_GROUP_ID
+					group: CELL_TITLE_CELL_GROUP_ID,
+					// alt: {
+					// 	id: JOIN_CELL_BELOW_COMMAND_ID,
+					// 	title: localize('notebookActions.joinCellBelow', "Join with Next Cell")
+					// }
 				},
 				icon: { id: 'codicon/split-vertical' },
 				keybinding: {
@@ -1392,6 +1422,11 @@ registerAction2(class extends NotebookCellAction {
 					when: NOTEBOOK_EDITOR_FOCUSED,
 					primary: KeyMod.WinCtrl | KeyMod.Alt | KeyCode.KEY_J,
 					weight: KeybindingWeight.WorkbenchContrib
+				},
+				menu: {
+					id: MenuId.NotebookCellTitle,
+					when: ContextKeyExpr.and(NOTEBOOK_EDITOR_FOCUSED, NOTEBOOK_EDITOR_EDITABLE, NOTEBOOK_CELL_EDITABLE),
+					group: '2_edit',
 				}
 			});
 	}

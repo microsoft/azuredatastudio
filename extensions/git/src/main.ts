@@ -74,7 +74,7 @@ async function createModel(context: ExtensionContext, outputChannel: OutputChann
 		new GitTimelineProvider(model)
 	);
 
-	// await checkGitVersion(info); {{SQL CARBON EDIT}} Don't check git version
+	// checkGitVersion(info); {{SQL CARBON EDIT}} Don't check git version
 
 	return model;
 }
