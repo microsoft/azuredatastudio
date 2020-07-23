@@ -29,6 +29,7 @@ export class PublishDatabaseDialog {
 	private dataSourcesRadioButton: azdata.RadioButtonComponent | undefined;
 	private loadProfileButton: azdata.ButtonComponent | undefined;
 	private sqlCmdVariablesTable: azdata.TableComponent | undefined;
+	private sqlCmdVariablesFormComponent: azdata.FormComponent | undefined;
 	private formBuilder: azdata.FormBuilder | undefined;
 
 	private connectionId: string | undefined;
@@ -105,6 +106,11 @@ export class PublishDatabaseDialog {
 				width: 400,
 				height: 400
 			}).component();
+
+			this.sqlCmdVariablesFormComponent = {
+				title: constants.sqlCmdTableLabel,
+				component: <azdata.TableComponent>this.sqlCmdVariablesTable
+			};
 
 			this.formBuilder = <azdata.FormBuilder>view.modelBuilder.formContainer()
 				.withFormItems([
@@ -418,13 +424,14 @@ export class PublishDatabaseDialog {
 					data: data
 				});
 
-				// add SQLCMD Variables table if it wasn't there before
-				if (Object.keys(this.project.sqlCmdVariables).length === 0) {
-					this.formBuilder?.insertFormItem({
-						title: constants.sqlCmdTableLabel,
-						component: <azdata.TableComponent>this.sqlCmdVariablesTable
-					},
-						6);
+				if (Object.keys(result.sqlCmdVariables).length) {
+					// add SQLCMD Variables table if it wasn't there before
+					if (Object.keys(this.project.sqlCmdVariables).length === 0) {
+						this.formBuilder?.insertFormItem(<azdata.FormComponent>this.sqlCmdVariablesFormComponent, 6);
+					}
+				} else if (Object.keys(this.project.sqlCmdVariables).length === 0) {
+					// remove the table if there are no SQLCMD variables in the project and loaded profile
+					this.formBuilder?.removeFormItem(<azdata.FormComponent>this.sqlCmdVariablesFormComponent);
 				}
 			}
 		});
