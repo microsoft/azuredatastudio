@@ -22,30 +22,18 @@ import { appendKeyBindingLabel } from 'vs/workbench/contrib/search/browser/searc
 import { ContextScopedFindInput } from 'vs/platform/browser/contextScopedHistoryWidget';
 import { attachFindReplaceInputBoxStyler } from 'vs/platform/theme/common/styler';
 import { KeyCode } from 'vs/base/common/keyCodes';
-import { Extensions as ViewContainerExtensions, IViewDescriptor, IViewsRegistry, IViewDescriptorService } from 'vs/workbench/common/views';
-import { Registry } from 'vs/platform/registry/common/platform';
-import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
+import { IViewDescriptorService } from 'vs/workbench/common/views';
 import { ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneContainer';
-import { IChangeEvent } from 'vs/workbench/contrib/search/common/searchModel';
 import { ISearchWidgetOptions, stopPropagationForMultiLineUpwards, stopPropagationForMultiLineDownwards, ctrlKeyMod } from 'vs/workbench/contrib/search/browser/searchWidget';
 import { Delayer } from 'vs/base/common/async';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { QueryBuilder, ITextQueryBuilderOptions } from 'vs/workbench/contrib/search/common/queryBuilder';
-import { ITextQuery, IFolderQuery, IPatternInfo } from 'vs/workbench/services/search/common/search';
+import { ITextQuery, IPatternInfo } from 'vs/workbench/services/search/common/search';
 import { getOutOfWorkspaceEditorResources } from 'vs/workbench/contrib/search/common/search';
-import { URI } from 'vs/base/common/uri';
-import { TreeViewPane } from 'sql/workbench/browser/parts/views/treeView';
-import { isString } from 'vs/base/common/types';
-import * as path from 'vs/base/common/path';
-import { IFileService } from 'vs/platform/files/common/files';
-import { SearchViewResultsView } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/searchResultsViewPane';
+import { NotebookSearchResultsView } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/searchResultsViewPane';
 
 export interface IViewExplorerSearchOptions extends ISearchWidgetOptions {
 	showSearchResultsPane?: boolean;
-	/**
-	 * Custom search function
-	*/
-	doSearch(query: any): Promise<void>;
 }
 export class SimpleSearchWidget extends Widget {
 
@@ -92,7 +80,6 @@ export class SimpleSearchWidget extends Widget {
 		@IAccessibilityService private readonly accessibilityService: IAccessibilityService,
 		@IViewDescriptorService protected viewDescriptorService: IViewDescriptorService,
 		@IInstantiationService private instantiationService: IInstantiationService,
-		@IFileService private readonly fileService: IFileService,
 	) {
 		super();
 		this.searchInputBoxFocused = Constants.SearchInputBoxFocusedKey.bindTo(this.contextKeyService);
@@ -110,25 +97,6 @@ export class SimpleSearchWidget extends Widget {
 		this.accessibilityService.onDidChangeScreenReaderOptimized(() => this.updateAccessibilitySupport());
 		this.updateAccessibilitySupport();
 
-		if (options.showSearchResultsPane) {
-			let viewDescriptors = [];
-			viewDescriptors.push(this.createSearchResultsViewDescriptor());
-			const container = this.viewDescriptorService.getViewContainerById(viewletId);
-			Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).registerViews(viewDescriptors, container);
-
-			//register search results view specific stuff.
-			this._register(this.onDidHeightChange(() => this.searchView?.reLayout()));
-
-			this._register(this.onPreserveCaseChange(async (state) => {
-				if (this.searchView?.searchViewModel) {
-					this.searchView.searchViewModel.preserveCase = state;
-					await this.refreshTree();
-				}
-			}));
-
-			this._register(this.searchInput.onInput(() => this.searchView?.updateActions()));
-		}
-
 		this._register(this.onSearchSubmit(ops => this.triggerQueryChange(ops)));
 		this._register(this.onSearchCancel(({ focus }) => this.cancelSearch(focus)));
 		this._register(this.searchInput.onDidOptionChange(() => this.triggerQueryChange()));
@@ -137,21 +105,8 @@ export class SimpleSearchWidget extends Widget {
 		this.trackInputBox(this.searchInputFocusTracker);
 	}
 
-	createSearchResultsViewDescriptor(): IViewDescriptor {
-		return {
-			id: SearchViewResultsView.ID,
-			name: localize('viewExplorer.searchResults', "Search Results"),
-			ctorDescriptor: new SyncDescriptor(SearchViewResultsView),
-			weight: 100,
-			canToggleVisibility: true,
-			hideByDefault: false,
-			order: 0,
-			collapsed: true
-		};
-	}
-
-	public get searchView(): SearchViewResultsView | undefined {
-		return <SearchViewResultsView>this.parentContainer.getView(SearchViewResultsView.ID) ?? undefined;
+	public get searchView(): NotebookSearchResultsView | undefined {
+		return <NotebookSearchResultsView>this.parentContainer.getView(NotebookSearchResultsView.ID) ?? undefined;
 	}
 
 	searchInputHasFocus(): boolean {
@@ -338,33 +293,21 @@ export class SimpleSearchWidget extends Widget {
 			return;
 		}
 
-		this.validateQuery(query).then(() => {
-			if (this.parentContainer.views.length > 1) {
-				let filesToIncludeFiltered: string = '';
-				this.parentContainer.views.forEach(async (v) => {
-					let booksViewPane = (<TreeViewPane>this.parentContainer.getView(v.id));
-					if (booksViewPane?.treeView?.root) {
-						let root = booksViewPane.treeView.root;
-						if (root.children) {
-							let items = root.children;
-							items?.forEach(root => {
-								this.updateViewletsState();
-								let folderToSearch: IFolderQuery = { folder: URI.file(path.join(isString(root.tooltip) ? root.tooltip : root.tooltip.value, 'content')) };
-								query.folderQueries.push(folderToSearch);
-								filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
-								this.searchView?.startSearch(query, null, filesToIncludeFiltered, false, this);
-							});
-						}
-					}
-				});
-			}
-
+		this.searchView.parent = this.parentContainer;
+		this.searchView?.validateAndSearch(query, this).then(() => {
 			if (!preserveFocus) {
 				this.focus(false); // focus back to input field
 			}
 		}, onQueryValidationError);
 	}
 
+	clearSearchResults(clearInput = true): void {
+		this.searchView?.clearSearchResults(clearInput);
+
+		if (clearInput) {
+			this.clear();
+		}
+	}
 
 	updateViewletsState(): void {
 		let containerModel = this.viewDescriptorService.getViewContainerModel(this.parentContainer.viewContainer);
@@ -389,38 +332,6 @@ export class SimpleSearchWidget extends Widget {
 			this.searchView?.setExpanded(false);
 		}
 	}
-
-	clearSearchResults(clearInput = true): void {
-		this.searchView?.clearSearchResults(clearInput);
-
-		if (clearInput) {
-			this.clear();
-		}
-	}
-
-	private async validateQuery(query: ITextQuery): Promise<void> {
-		// Validate folderQueries
-		const folderQueriesExistP =
-			query.folderQueries.map(fq => {
-				return this.fileService.exists(fq.folder);
-			});
-
-		return Promise.all(folderQueriesExistP).then(existResults => {
-			// If no folders exist, show an error message about the first one
-			const existingFolderQueries = query.folderQueries.filter((folderQuery, i) => existResults[i]);
-			if (!query.folderQueries.length || existingFolderQueries.length) {
-				query.folderQueries = existingFolderQueries;
-			} else {
-				const nonExistantPath = query.folderQueries[0].folder.fsPath;
-				const searchPathNotFoundError = localize('searchPathNotFoundError', "Search path not found: {0}", nonExistantPath);
-				return Promise.reject(new Error(searchPathNotFoundError));
-			}
-
-			return undefined;
-		});
-	}
-
-
 
 	private validateSearchInput(value: string): IMessage | undefined {
 		if (value.length === 0) {
@@ -485,10 +396,6 @@ export class SimpleSearchWidget extends Widget {
 			return true;
 		}
 		return false;
-	}
-
-	async refreshTree(event?: IChangeEvent): Promise<void> {
-		await this.searchView?.refreshTree(event);
 	}
 
 	public get searchConfig(): Constants.INotebookSearchConfigurationProperties {

@@ -3,12 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-/* Activity Bar */
-.monaco-workbench .activitybar .monaco-action-bar .action-label.book {
-	background-color: rgba(255, 255, 255, 0.4);
+.searchExplorer-viewlet > .header {
+	height: 41px;
+	box-sizing: border-box;
+	padding: 5px 12px 6px 16px;
 }
 
-/* Activity Bar */
-.monaco-workbench .activitybar .monaco-action-bar .checked .action-label.book {
-	background-color: rgb(255, 255, 255);
+.searchExplorer-viewlet .result-messages {
+	margin-top: 5px;
+	cursor: default;
 }

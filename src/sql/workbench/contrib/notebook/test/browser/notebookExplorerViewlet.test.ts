@@ -8,7 +8,8 @@ import * as Platform from 'vs/platform/registry/common/platform';
 import * as Types from 'vs/base/common/types';
 import { Extensions as ViewContainerExtensions, IViewDescriptor, IViewsRegistry } from 'vs/workbench/common/views';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
-import { NotebookExplorerViewletViewsContribution, SearchViewPaneContainer } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet';
+import { NotebookExplorerViewletViewsContribution } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet';
+import { SearchViewPaneContainer } from 'sql/workbench/contrib/searchViewPane/browser/searchViewPaneContainer';
 
 suite('Notebook Explorer Views', () => {
 

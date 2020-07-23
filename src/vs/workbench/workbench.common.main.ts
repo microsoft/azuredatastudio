@@ -484,6 +484,6 @@ import 'sql/workbench/contrib/extensions/browser/extensions.contribution';
 
 // Azure
 import 'sql/workbench/contrib/azure/browser/azure.contribution';
-import { ISearchWidgetService, SearchWidgetService } from 'sql/workbench/contrib/searchWidget/browser/searchWidgetService';
+import { ISearchWidgetService, SearchWidgetService } from 'sql/workbench/contrib/searchViewPane/browser/searchWidget/searchWidgetService';
 
 //#endregion

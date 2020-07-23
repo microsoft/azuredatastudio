@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { SearchView, SearchUIState } from 'vs/workbench/contrib/search/browser/searchView';
-import { IViewPaneOptions, ViewPane } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { IViewPaneOptions, ViewPane, ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 import { IFileService } from 'vs/platform/files/common/files';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IProgressService } from 'vs/platform/progress/common/progress';
@@ -32,7 +32,7 @@ import { IOpenerService } from 'vs/platform/opener/common/opener';
 import * as dom from 'vs/base/browser/dom';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import * as nls from 'vs/nls';
-import { ISearchComplete, SearchCompletionExitCode, ITextQuery, SearchSortOrder, ISearchConfigurationProperties } from 'vs/workbench/services/search/common/search';
+import { ISearchComplete, SearchCompletionExitCode, ITextQuery, SearchSortOrder, ISearchConfigurationProperties, IFolderQuery } from 'vs/workbench/services/search/common/search';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import * as aria from 'vs/base/browser/ui/aria/aria';
 import * as errors from 'vs/base/common/errors';
@@ -42,12 +42,16 @@ import { searchClearIcon, searchCollapseAllIcon, searchExpandAllIcon, searchStop
 import { Action, IAction } from 'vs/base/common/actions';
 import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { Memento } from 'vs/workbench/common/memento';
-import { SimpleSearchWidget } from 'sql/workbench/contrib/searchWidget/browser/simpleSearchWidget';
+import { TreeViewPane } from 'sql/workbench/browser/parts/views/treeView';
+import { URI } from 'vs/base/common/uri';
+import * as path from 'vs/base/common/path';
+import { SimpleSearchWidget } from 'sql/workbench/contrib/searchViewPane/browser/searchWidget/simpleSearchWidget';
+import { isString } from 'vs/base/common/types';
 
 const $ = dom.$;
 
-export class SearchViewResultsView extends SearchView {
-	static readonly ID = 'viewPaneExplorer.searchResults';
+export class NotebookSearchResultsView extends SearchView {
+	static readonly ID = 'notebookExplorer.searchResults';
 
 	private treeSelectionChangeListener: IDisposable;
 
@@ -55,6 +59,7 @@ export class SearchViewResultsView extends SearchView {
 	private cancelSearchAction: CancelSearchAction;
 	private toggleExpandAction: ToggleCollapseAndExpandAction;
 	public searchResultsViewID?: string;
+	private parentContainer: ViewPaneContainer;
 
 	constructor(
 		options: IViewPaneOptions,
@@ -106,6 +111,10 @@ export class SearchViewResultsView extends SearchView {
 
 	get searchViewModel(): SearchModel {
 		return this.viewModel;
+	}
+
+	set parent(parent: ViewPaneContainer) {
+		this.parentContainer = parent;
 	}
 
 	hasSearchPattern(): boolean {
@@ -232,7 +241,54 @@ export class SearchViewResultsView extends SearchView {
 		}));
 	}
 
-	public startSearch(query: ITextQuery, excludePatternText: string, includePatternText: string, triggeredOnType: boolean, searchWidget: SimpleSearchWidget): Thenable<void> {
+	public async validateAndSearch(query: ITextQuery, searchWidget: SimpleSearchWidget): Promise<void> {
+		this.validateQry(query).then(() => {
+			if (this.parentContainer.views.length > 1) {
+				let filesToIncludeFiltered: string = '';
+				this.parentContainer.views.forEach(async (v) => {
+					let booksViewPane = (<TreeViewPane>this.parentContainer.getView(v.id));
+					if (booksViewPane?.treeView?.root) {
+						let root = booksViewPane.treeView.root;
+						if (root.children) {
+							let items = root.children;
+							items?.forEach(root => {
+								searchWidget.updateViewletsState();
+								let folderToSearch: IFolderQuery = { folder: URI.file(path.join(isString(root.tooltip) ? root.tooltip : root.tooltip.value, 'content')) };
+								query.folderQueries.push(folderToSearch);
+								filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
+								this.startSearch(query, null, filesToIncludeFiltered, false, searchWidget);
+							});
+						}
+					}
+				});
+			}
+		});
+	}
+
+	private async validateQry(query: ITextQuery): Promise<void> {
+		// Validate folderQueries
+		const folderQueriesExistP =
+			query.folderQueries.map(fq => {
+				return this.fileService.exists(fq.folder);
+			});
+
+		return Promise.all(folderQueriesExistP).then(existResults => {
+			// If no folders exist, show an error message about the first one
+			const existingFolderQueries = query.folderQueries.filter((folderQuery, i) => existResults[i]);
+			if (!query.folderQueries.length || existingFolderQueries.length) {
+				query.folderQueries = existingFolderQueries;
+			} else {
+				const nonExistantPath = query.folderQueries[0].folder.fsPath;
+				const searchPathNotFoundError = nls.localize('searchPathNotFoundError', "Search path not found: {0}", nonExistantPath);
+				return Promise.reject(new Error(searchPathNotFoundError));
+			}
+
+			return undefined;
+		});
+	}
+
+
+	public startSearch(query: ITextQuery, excludePatternText: string, includePatternText: string, triggeredOnType: boolean, searchWidget: SimpleSearchWidget): Promise<void> {
 		let progressComplete: () => void;
 		this.progressService.withProgress({ location: this.getProgressLocation(), delay: triggeredOnType ? 300 : 0 }, _progress => {
 			return new Promise(resolve => progressComplete = resolve);
@@ -676,6 +732,6 @@ class ClearSearchResultsAction extends Action {
 	}
 }
 
-function getSearchView(viewsService: IViewsService): SearchViewResultsView | undefined {
-	return viewsService.getActiveViewWithId(SearchViewResultsView.ID) as SearchViewResultsView ?? undefined;
+function getSearchView(viewsService: IViewsService): NotebookSearchResultsView | undefined {
+	return viewsService.getActiveViewWithId(NotebookSearchResultsView.ID) as NotebookSearchResultsView ?? undefined;
 }
