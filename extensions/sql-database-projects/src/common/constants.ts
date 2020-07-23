@@ -108,6 +108,7 @@ export const invalidDataSchemaProvider = localize('invalidDataSchemaProvider', "
 export const invalidDatabaseReference = localize('invalidDatabaseReference', "Invalid database reference in .sqlproj file");
 export const databaseSelectionRequired = localize('databaseSelectionRequired', "Database selection is required to import a project");
 export const databaseReferenceAlreadyExists = localize('databaseReferenceAlreadyExists', "A reference to this database already exists in this project");
+export const ousiderFolderPath = localize('outsideFolderPath', "Items with absolute path outside project folder are not supported. Please make sure the paths in the project file are relative to project folder.");
 export function projectAlreadyOpened(path: string) { return localize('projectAlreadyOpened', "Project '{0}' is already opened.", path); }
 export function projectAlreadyExists(name: string, path: string) { return localize('projectAlreadyExists', "A project named {0} already exists in {1}.", name, path); }
 export function noFileExist(fileName: string) { return localize('noFileExist', "File {0} doesn't exist", fileName); }
@@ -162,6 +163,7 @@ export const SuppressMissingDependenciesErrors = 'SuppressMissingDependenciesErr
 export const DatabaseVariableLiteralValue = 'DatabaseVariableLiteralValue';
 export const DSP = 'DSP';
 export const Properties = 'Properties';
+export const RelativeOuterPath = '..';
 
 // SqlProj File targets
 export const NetCoreTargets = '$(NETCoreTargetsPath)\\Microsoft.Data.Tools.Schema.SqlTasks.targets';
