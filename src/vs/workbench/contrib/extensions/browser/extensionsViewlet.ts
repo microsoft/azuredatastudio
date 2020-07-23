@@ -10,8 +10,7 @@ import { isPromiseCanceledError } from 'vs/base/common/errors';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { Disposable, MutableDisposable } from 'vs/base/common/lifecycle';
 import { Event as EventOf, Emitter } from 'vs/base/common/event';
-import { IAction, Action } from 'vs/base/common/actions';
-import { Separator, IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
+import { IAction, Action, Separator, SubmenuAction } from 'vs/base/common/actions';
 import { IViewlet } from 'vs/workbench/common/viewlet';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { append, $, addClass, toggleClass, Dimension, hide, show } from 'vs/base/browser/dom';
@@ -59,8 +58,6 @@ import { IPreferencesService } from 'vs/workbench/services/preferences/common/pr
 import { DragAndDropObserver } from 'vs/workbench/browser/dnd';
 import { URI } from 'vs/base/common/uri';
 import { SIDE_BAR_DRAG_AND_DROP_BACKGROUND } from 'vs/workbench/common/theme';
-import { ContextSubMenu } from 'vs/base/browser/contextmenu';
-import { DropdownMenuActionViewItem } from 'vs/base/browser/ui/dropdown/dropdown';
 
 const NonEmptyWorkspaceContext = new RawContextKey<boolean>('nonEmptyWorkspace', false);
 const DefaultViewsContext = new RawContextKey<boolean>('defaultExtensionViews', true);
@@ -498,48 +495,40 @@ export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IE
 	}
 
 	getActions(): IAction[] {
+		const filterActions: IAction[] = [];
+
+		// Local extensions filters
+		filterActions.push(...[
+			this.instantiationService.createInstance(ShowBuiltInExtensionsAction, ShowBuiltInExtensionsAction.ID, localize('builtin filter', "Built-in")),
+			this.instantiationService.createInstance(ShowInstalledExtensionsAction, ShowInstalledExtensionsAction.ID, localize('installed filter', "Installed")),
+			this.instantiationService.createInstance(ShowEnabledExtensionsAction, ShowEnabledExtensionsAction.ID, localize('enabled filter', "Enabled")),
+			this.instantiationService.createInstance(ShowDisabledExtensionsAction, ShowDisabledExtensionsAction.ID, localize('disabled filter', "Disabled")),
+			this.instantiationService.createInstance(ShowOutdatedExtensionsAction, ShowOutdatedExtensionsAction.ID, localize('outdated filter', "Outdated")),
+		]);
+
+		if (this.extensionGalleryService.isEnabled()) {
+			filterActions.splice(0, 0, ...[
+				// this.instantiationService.createInstance(ShowPopularExtensionsAction, ShowPopularExtensionsAction.ID, localize('most popular filter', "Most Popular")), // {{SQL CARBON EDIT}}
+				// this.instantiationService.createInstance(RecentlyPublishedExtensionsAction, RecentlyPublishedExtensionsAction.ID, localize('recently published filter', "Recently Published")), // {{SQL CARBON EDIT}}
+				this.instantiationService.createInstance(ShowRecommendedExtensionsAction, ShowRecommendedExtensionsAction.ID, localize('recomended filter', "Recommended")),
+				new SubmenuAction('workbench.extensions.action.filterExtensionsByCategory', localize('filter by category', "Category"), EXTENSION_CATEGORIES.map(category => this.instantiationService.createInstance(SearchCategoryAction, `extensions.actions.searchByCategory.${category}`, category, category))),
+				new Separator(),
+			]);
+			filterActions.push(...[
+				new Separator(),
+				new SubmenuAction('workbench.extensions.action.sortBy', localize('sorty by', "Sort By"), [
+					// this.instantiationService.createInstance(ChangeSortAction, 'extensions.sort.install', localize('sort by installs', "Install Count"), this.onSearchChange, 'installs'), // {{SQL CARBON EDIT}}
+					// this.instantiationService.createInstance(ChangeSortAction, 'extensions.sort.rating', localize('sort by rating', "Rating"), this.onSearchChange, 'rating'), // {{SQL CARBON EDIT}}
+					this.instantiationService.createInstance(ChangeSortAction, 'extensions.sort.name', localize('sort by name', "Name"), this.onSearchChange, 'name'),
+					this.instantiationService.createInstance(ChangeSortAction, 'extensions.sort.publishedDate', localize('sort by date', "Published Date"), this.onSearchChange, 'publishedDate'),
+				]),
+			]);
+		}
+
 		return [
-			new Action('workbench.extensions.action.filterExtensions', localize('filterExtensions', "Filter Extensions..."), 'codicon-filter', true),
+			new SubmenuAction('workbench.extensions.action.filterExtensions', localize('filterExtensions', "Filter Extensions..."), filterActions, 'codicon-filter'),
 			this.instantiationService.createInstance(ClearExtensionsInputAction, ClearExtensionsInputAction.ID, ClearExtensionsInputAction.LABEL, this.onSearchChange, this.searchBox ? this.searchBox.getValue() : ''),
 		];
-	}
-
-	getActionViewItem(action: IAction): IActionViewItem | undefined {
-		if (action.id === 'workbench.extensions.action.filterExtensions') {
-			const filterActions: IAction[] = [];
-
-			// Local extensions filters
-			filterActions.push(...[
-				this.instantiationService.createInstance(ShowBuiltInExtensionsAction, ShowBuiltInExtensionsAction.ID, localize('builtin filter', "Built-in")),
-				this.instantiationService.createInstance(ShowInstalledExtensionsAction, ShowInstalledExtensionsAction.ID, localize('installed filter', "Installed")),
-				this.instantiationService.createInstance(ShowEnabledExtensionsAction, ShowEnabledExtensionsAction.ID, localize('enabled filter', "Enabled")),
-				this.instantiationService.createInstance(ShowDisabledExtensionsAction, ShowDisabledExtensionsAction.ID, localize('disabled filter', "Disabled")),
-				this.instantiationService.createInstance(ShowOutdatedExtensionsAction, ShowOutdatedExtensionsAction.ID, localize('outdated filter', "Outdated")),
-			]);
-
-			if (this.extensionGalleryService.isEnabled()) {
-				filterActions.splice(0, 0, ...[
-					// this.instantiationService.createInstance(ShowPopularExtensionsAction, ShowPopularExtensionsAction.ID, localize('most popular filter', "Most Popular")),  // {{SQL CARBON EDIT}}
-					// this.instantiationService.createInstance(RecentlyPublishedExtensionsAction, RecentlyPublishedExtensionsAction.ID, localize('recently published filter', "Recently Published")),  // {{SQL CARBON EDIT}}
-					this.instantiationService.createInstance(ShowRecommendedExtensionsAction, ShowRecommendedExtensionsAction.ID, localize('recomended filter', "Recommended")),
-					new ContextSubMenu(localize('filter by category', "Category"), EXTENSION_CATEGORIES.map(category => this.instantiationService.createInstance(SearchCategoryAction, `extensions.actions.searchByCategory.${category}`, category, category))),
-					new Separator(),
-				]);
-				filterActions.push(...[
-					new Separator(),
-					new ContextSubMenu(localize('sorty by', "Sort By"), [
-						// this.instantiationService.createInstance(ChangeSortAction, 'extensions.sort.install', localize('sort by installs', "Install Count"), this.onSearchChange, 'installs'), // {{SQL CARBON EDIT}}
-						// this.instantiationService.createInstance(ChangeSortAction, 'extensions.sort.rating', localize('sort by rating', "Rating"), this.onSearchChange, 'rating'), // {{SQL CARBON EDIT}}
-						this.instantiationService.createInstance(ChangeSortAction, 'extensions.sort.name', localize('sort by name', "Name"), this.onSearchChange, 'name'),
-						this.instantiationService.createInstance(ChangeSortAction, 'extensions.sort.publishedDate', localize('sort by date', "Published Date"), this.onSearchChange, 'publishedDate'),
-					]),
-				]);
-			}
-
-			return new DropdownMenuActionViewItem(action, filterActions,
-				this.contextMenuService, undefined, undefined, undefined, 'codicon-filter', undefined, true);
-		}
-		return super.getActionViewItem(action);
 	}
 
 	getSecondaryActions(): IAction[] {
