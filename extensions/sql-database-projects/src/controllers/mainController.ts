@@ -17,6 +17,7 @@ import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { NetCoreTool } from '../tools/netcoreTool';
 import { Project } from '../models/project';
 import { FileNode, FolderNode } from '../models/tree/fileFolderTreeItem';
+import { IconPathHelper } from '../common/iconHelper';
 
 const SQL_DATABASE_PROJECTS_VIEW_ID = 'sqlDatabaseProjectsView';
 
@@ -78,6 +79,7 @@ export default class MainController implements vscode.Disposable {
 
 		this.extensionContext.subscriptions.push(treeView);
 
+		IconPathHelper.setExtensionContext(this.extensionContext);
 		await templates.loadTemplates(path.join(this.context.extensionPath, 'resources', 'templates'));
 
 		// ensure .net core is installed
