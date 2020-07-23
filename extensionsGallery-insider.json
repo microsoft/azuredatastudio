@@ -3432,18 +3432,18 @@
 					},
 					"versions": [
 						{
-							"version": "0.1.1",
-							"lastUpdated": "06/24/2020",
+							"version": "0.1.2",
+							"lastUpdated": "07/24/2020",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-database-projects/sql-database-projects-0.1.1.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-database-projects/sql-database-projects-0.1.2.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/sql-database-projects/images/extension.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/sql-database-projects/images/sqlDatabaseProjects.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
