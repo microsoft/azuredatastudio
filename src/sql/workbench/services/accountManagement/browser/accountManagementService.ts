@@ -298,10 +298,14 @@ export class AccountManagementService implements IAccountManagementService {
 
 		let finalResult = true;
 		for (const account of accounts) {
-			const removeResult = await this.removeAccount(account.key);
-			if (removeResult === false) {
-				this._logService.info('Error when removing %s.', account.key);
-				finalResult = false;
+			try {
+				const removeResult = await this.removeAccount(account.key);
+				if (removeResult === false) {
+					this._logService.info('Error when removing %s.', account.key);
+					finalResult = false;
+				}
+			} catch (ex) {
+				this._logService.error('Error when removing an account %s. Exception: %s', account.key, JSON.stringify(ex));
 			}
 		}
 		return finalResult;
