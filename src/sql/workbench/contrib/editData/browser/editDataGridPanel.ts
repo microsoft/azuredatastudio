@@ -55,8 +55,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	//main dataset to work on.
 	private dataSet: IGridDataSet;
 	private oldDataRows: VirtualizedCollection<any>;
-
-	private currentGridData: {}[];
+	private oldGridData: {}[];
 	private firstRender = true;
 	private firstLoad = true;
 	private enableEditing = true;
@@ -162,7 +161,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	handleStart(self: EditDataGridPanel, event: any): void {
 		self.dataSet = undefined;
 		self.oldDataRows = undefined;
-		self.currentGridData = undefined;
+		self.oldGridData = undefined;
 		self.placeHolderDataSets = [];
 		self.renderedDataSets = self.placeHolderDataSets;
 
@@ -249,13 +248,15 @@ export class EditDataGridPanel extends GridParentComponent {
 						}, {}));
 					}
 					if (gridData && gridData.length !== 0) {
-						this.currentGridData = assign({}, gridData);
+						this.oldGridData = assign({}, gridData);
 					}
 					return gridData;
-				} else if (this.currentGridData) {
+				} else if (this.oldGridData) {
+					//handle case where there is a good backup available to use instead.
 					this.logService.error('griddata is undefined, using last known good grid data.');
-					return this.currentGridData;
+					return this.oldGridData;
 				} else {
+					//handle case where there is no backup available. Must reject without data returned.
 					this.notificationService.error(localize('gridDataLoadFail', 'Grid data load failure, no backup available, please reload the table'));
 					return Promise.reject();
 				}
@@ -452,15 +453,11 @@ export class EditDataGridPanel extends GridParentComponent {
 
 				if (this.placeHolderDataSets.length !== 0 && this.placeHolderDataSets[0].dataRows && this.oldDataRows !== this.placeHolderDataSets[0].dataRows) {
 					this.detectChange();
-					//check done to prevent oldDataRows from being corrupted during constant refresh.
+					//check if placeHolderDataSets has not been corrupted due to constant refresh.
 					if (this.placeHolderDataSets.length !== 0 && this.placeHolderDataSets[0].dataRows) {
 						this.oldDataRows = assign({}, this.placeHolderDataSets[0].dataRows);
 					}
-				} else {
-					this.logService.error('data set is empty, refresh cancelled.');
-					reject();
 				}
-
 
 				if (this.firstRender) {
 					setTimeout(() => this.setActive());
