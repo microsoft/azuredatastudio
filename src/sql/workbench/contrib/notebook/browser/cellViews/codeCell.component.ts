@@ -32,11 +32,23 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 		this._activeCellId = value;
 	}
 
-	// @HostListener('document:keydown.escape', ['$event'])
-	// handleKeyboardEvent() {
-	// 	this.cellModel.active = false;
-	// 	this._model.updateActiveCell(undefined);
-	// }
+	@HostListener('document:keydown', ['$event'])
+	handleKeyboardEvent(event) {
+		switch (event.key) {
+			case 'Escape':
+				if (this.cellModel.isEditMode) {
+					this.cellModel.isEditMode = false;
+				}
+				break;
+			case 'Enter':
+				if (!this.cellModel.isEditMode) {
+					this.cellModel.isEditMode = true;
+				}
+				break;
+			default:
+				break;
+		}
+	}
 
 	private _model: NotebookModel;
 	private _activeCellId: string;
