@@ -10,7 +10,7 @@ import { SmoothScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollable
 import { Scrollable, ScrollbarVisibility, INewScrollDimensions, ScrollEvent } from 'vs/base/common/scrollable';
 import { getOrDefault } from 'vs/base/common/objects';
 import * as DOM from 'vs/base/browser/dom';
-import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
+import { Disposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { domEvent } from 'vs/base/browser/event';
 import { Event } from 'vs/base/common/event';
 import { Range, IRange } from 'vs/base/common/range';
@@ -30,7 +30,7 @@ const DefaultOptions: IScrollableViewOptions = {
 
 export interface IView {
 	layout(height: number, width: number): void;
-	readonly onDidMinOrMaxHeightChange: Event<number>;
+	readonly onDidChange: Event<number>;
 	readonly element: HTMLElement;
 	readonly minHeight: number;
 	readonly maxHeight: number;
@@ -44,6 +44,7 @@ interface IItem {
 	domNode?: HTMLElement;
 	onDidInsertDisposable?: IDisposable; // I don't trust the children
 	onDidRemoveDisposable?: IDisposable; // I don't trust the children
+	disposables: IDisposable[];
 }
 
 export class ScrollableView extends Disposable {
@@ -124,11 +125,7 @@ export class ScrollableView extends Disposable {
 		this.scrollableElement.setScrollPosition({ scrollTop });
 	}
 
-	public addViews(views: IView[], index = 0): void {
-		const items = views.map(view => ({ size: 0, view }));
-
-		// calculate heights
-		this.items.splice(index, 0, ...items);
+	private rerender() {
 		this.calculateItemHeights();
 		this.lastRenderTop = 0;
 		this.lastRenderHeight = 0; // this could be optimized
@@ -136,6 +133,16 @@ export class ScrollableView extends Disposable {
 		this.render(previousRenderRange, this.lastRenderTop, this.lastRenderHeight, true);
 
 		this.eventuallyUpdateScrollDimensions();
+	}
+
+	public addViews(views: IView[], index = 0): void {
+		const items = views.map(view => ({ size: 0, view, disposables: [] }));
+
+		items.map(i => i.disposables.push(i.view.onDidChange(() => this.rerender())));
+
+		// calculate heights
+		this.items.splice(index, 0, ...items);
+		this.rerender();
 	}
 
 	public addView(view: IView, index = 0): void {
@@ -149,13 +156,24 @@ export class ScrollableView extends Disposable {
 			DOM.removeNode(item.domNode);
 			item.domNode = undefined;
 		}
-		this.calculateItemHeights();
-		this.lastRenderTop = 0;
-		this.lastRenderHeight = 0; // this could be optimized
-		const previousRenderRange = this.getRenderRange(this.lastRenderTop, this.lastRenderHeight);
-		this.render(previousRenderRange, this.lastRenderTop, this.lastRenderHeight, true);
+		dispose(item.disposables);
+		this.rerender();
+	}
 
-		this.eventuallyUpdateScrollDimensions();
+	/**
+	 * Removes all views
+	 */
+	public clear(): void {
+		for (const item of this.items) {
+			if (item.domNode) {
+				DOM.clearNode(item.domNode);
+				DOM.removeNode(item.domNode);
+				item.domNode = undefined;
+			}
+			dispose(item.disposables);
+		}
+		this.items.splice(0, this.items.length);
+		this.rerender();
 	}
 
 	private calculateItemHeights() {
@@ -166,7 +184,7 @@ export class ScrollableView extends Disposable {
 			// try to even distribute
 			let renderHeightRemaining = this.renderHeight;
 			this.items.forEach((item, index) => {
-				const desiredheight = renderHeightRemaining / (this.items.length - index);
+				const desiredheight = Math.floor(renderHeightRemaining / (this.items.length - index));
 				item.size = clamp(desiredheight, item.view.minHeight, item.view.maxHeight);
 				renderHeightRemaining -= item.size;
 			});

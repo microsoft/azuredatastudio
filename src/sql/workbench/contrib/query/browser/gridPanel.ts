@@ -253,9 +253,7 @@ export class GridPanel extends Disposable {
 	}
 
 	private reset() {
-		for (let i = this.scrollableView.length - 1; i >= 0; i--) {
-			this.scrollableView.removeView(i);
-		}
+		this.scrollableView.clear();
 		dispose(this.tables);
 		this.tableDisposable.clear();
 		this.tables = [];
@@ -274,7 +272,7 @@ export class GridPanel extends Disposable {
 				continue;
 			}
 
-			this.scrollableView.removeView(i);
+			this.scrollableView.clear();
 		}
 	}
 
@@ -390,7 +388,6 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			};
 		});
 	}
-	onDidMinOrMaxHeightChange: Event<number>;
 
 	abstract get gridDataProvider(): IGridDataProvider;
 
