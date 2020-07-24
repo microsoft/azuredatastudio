@@ -99,13 +99,6 @@ export class DacFxSummaryPage extends BasePage {
 					[fileLocation, this.model.filePath]];
 				break;
 			}
-			case Operation.generateDeployScript: {
-				data = [
-					[targetServer, this.model.serverName],
-					[fileLocation, this.model.filePath],
-					[targetDatabase, this.model.database]];
-				break;
-			}
 		}
 
 		this.table.updateProperties({
