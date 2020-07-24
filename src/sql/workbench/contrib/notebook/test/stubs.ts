@@ -121,6 +121,9 @@ export class NotebookModelStub implements INotebookModel {
 	get onActiveCellChanged(): vsEvent.Event<ICellModel> {
 		throw new Error('Method not implemented.');
 	}
+	get onCellTypeChanged(): vsEvent.Event<ICellModel> {
+		throw new Error('method not implemented.');
+	}
 	updateActiveCell(cell: ICellModel) {
 		throw new Error('Method not implemented.');
 	}

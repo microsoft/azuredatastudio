@@ -192,9 +192,7 @@ export class ConvertCellAction extends CellActionBase {
 
 	doRun(context: CellContext): Promise<void> {
 		try {
-			let cellType: string = context.cell.cellType;
-			// Todo: wire up cell conversion: code <=> text
-			alert(cellType);
+			context?.model?.convertCellType(context?.cell);
 		} catch (error) {
 			let message = getErrorMessage(error);
 

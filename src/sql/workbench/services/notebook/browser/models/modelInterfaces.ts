@@ -313,6 +313,11 @@ export interface INotebookModel {
 	readonly onActiveCellChanged: Event<ICellModel>;
 
 	/**
+	 * Event fired on cell type change
+	 */
+	readonly onCellTypeChanged: Event<ICellModel>;
+
+	/**
 	 * The trusted mode of the Notebook
 	 */
 	trustedMode: boolean;
