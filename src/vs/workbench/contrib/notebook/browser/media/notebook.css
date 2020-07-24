@@ -211,6 +211,21 @@
 	outline: none !important;
 }
 
+.monaco-workbench .notebookOverlay > .cell-list-container > .monaco-list > .monaco-scrollable-element > .monaco-list-rows > .monaco-list-row .cell-collapsed-part {
+	cursor: pointer;
+	box-sizing: border-box;
+	padding-left: 2px;
+}
+
+.monaco-workbench .notebookOverlay > .cell-list-container > .monaco-list > .monaco-scrollable-element > .monaco-list-rows > .monaco-list-row .cell-collapsed-part .codicon {
+	margin-top: 2px;
+}
+
+.monaco-workbench .notebookOverlay > .cell-list-container > .monaco-list > .monaco-scrollable-element > .monaco-list-rows > .monaco-list-row.collapsed .notebook-folding-indicator,
+.monaco-workbench .notebookOverlay > .cell-list-container > .monaco-list > .monaco-scrollable-element > .monaco-list-rows > .monaco-list-row.collapsed > .monaco-toolbar {
+	display: none;
+}
+
 /* top and bottom borders on cells */
 .monaco-workbench .notebookOverlay .monaco-list .monaco-list-row.focused .cell-focus-indicator-top:before,
 .monaco-workbench .notebookOverlay .monaco-list .monaco-list-row.focused .cell-focus-indicator-bottom:before,
@@ -423,7 +438,6 @@
 	position: absolute;
 	box-sizing: border-box;
 	top: 0px;
-	opacity: 0;
 }
 
 .monaco-workbench .notebookOverlay .monaco-list .monaco-list-row .cell-focus-indicator-side {
@@ -686,12 +700,14 @@
 	top: 0;
 	left: 0;
 	right: 0;
-	height: 100%;
+	width: 26px;
+	height: 26px;
+	cursor: pointer;
 }
 
 .monaco-workbench .notebookOverlay > .cell-list-container .notebook-folding-indicator .codicon {
 	visibility: visible;
-	padding: 10px 0 0 10px;
+	padding: 8px 0 0 10px;
 }
 
 /** Theming */

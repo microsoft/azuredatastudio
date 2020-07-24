@@ -27,7 +27,7 @@ import { contrastBorder, editorBackground, focusBorder, foreground, registerColo
 import { registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { EditorMemento } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { EditorOptions, IEditorMemento } from 'vs/workbench/common/editor';
-import { CELL_MARGIN, CELL_RUN_GUTTER, EDITOR_BOTTOM_PADDING, EDITOR_TOP_MARGIN, EDITOR_TOP_PADDING, SCROLLABLE_ELEMENT_PADDING_TOP, BOTTOM_CELL_TOOLBAR_HEIGHT, CELL_BOTTOM_MARGIN, CODE_CELL_LEFT_MARGIN } from 'vs/workbench/contrib/notebook/browser/constants';
+import { CELL_MARGIN, CELL_RUN_GUTTER, EDITOR_BOTTOM_PADDING, CELL_TOP_MARGIN, EDITOR_TOP_PADDING, SCROLLABLE_ELEMENT_PADDING_TOP, BOTTOM_CELL_TOOLBAR_HEIGHT, CELL_BOTTOM_MARGIN, CODE_CELL_LEFT_MARGIN, COLLAPSED_INDICATOR_HEIGHT } from 'vs/workbench/contrib/notebook/browser/constants';
 import { CellEditState, CellFocusMode, ICellRange, ICellViewModel, INotebookCellList, INotebookEditor, INotebookEditorContribution, INotebookEditorMouseEvent, NotebookLayoutInfo, NOTEBOOK_EDITOR_EDITABLE, NOTEBOOK_EDITOR_EXECUTING_NOTEBOOK, NOTEBOOK_EDITOR_FOCUSED, NOTEBOOK_EDITOR_RUNNABLE, NOTEBOOK_HAS_MULTIPLE_KERNELS, NOTEBOOK_OUTPUT_FOCUSED, INotebookDeltaDecoration } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
 import { NotebookEditorExtensionsRegistry } from 'vs/workbench/contrib/notebook/browser/notebookEditorExtensions';
 import { NotebookCellList } from 'vs/workbench/contrib/notebook/browser/view/notebookCellList';
@@ -69,6 +69,8 @@ export class NotebookEditorOptions extends EditorOptions {
 	}
 }
 
+const NotebookEditorActiveKernelCache = 'workbench.editor.notebook.activeKernel';
+
 export class NotebookEditorWidget extends Disposable implements INotebookEditor {
 	static readonly ID: string = 'workbench.editor.notebook';
 	private static readonly EDITOR_MEMENTOS = new Map<string, EditorMemento<unknown>>();
@@ -98,6 +100,7 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 	protected readonly _contributions: { [key: string]: INotebookEditorContribution; };
 	private _scrollBeyondLastLine: boolean;
 	private readonly _memento: Memento;
+	private readonly _activeKernelMemento: Memento;
 	private readonly _onDidFocusEmitter = this._register(new Emitter<void>());
 	public readonly onDidFocus = this._onDidFocusEmitter.event;
 	private _cellContextKeyManager: CellContextKeyManager | null = null;
@@ -150,6 +153,10 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 		}
 
 		this._activeKernel = kernel;
+
+		const memento = this._activeKernelMemento.getMemento(StorageScope.GLOBAL);
+		memento[this.viewModel!.viewType] = this._activeKernel?.id;
+		this._activeKernelMemento.saveMemento();
 		this._onDidChangeKernel.fire();
 	}
 
@@ -197,6 +204,7 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 	) {
 		super();
 		this._memento = new Memento(NotebookEditorWidget.ID, storageService);
+		this._activeKernelMemento = new Memento(NotebookEditorActiveKernelCache, storageService);
 
 		this._outputRenderer = new OutputRenderer(this, this.instantiationService);
 		this._contributions = {};
@@ -613,12 +621,17 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 	private async _setKernelsFromProviders(provider: NotebookProviderInfo, kernels: INotebookKernelInfo2[], tokenSource: CancellationTokenSource) {
 		const rawAssociations = this.configurationService.getValue<NotebookKernelProviderAssociations>(notebookKernelProviderAssociationsSettingId) || [];
 		const userSetKernelProvider = rawAssociations.filter(e => e.viewType === this.viewModel?.viewType)[0]?.kernelProvider;
+		const memento = this._activeKernelMemento.getMemento(StorageScope.GLOBAL);
 
 		if (userSetKernelProvider) {
 			const filteredKernels = kernels.filter(kernel => kernel.extension.value === userSetKernelProvider);
 
 			if (filteredKernels.length) {
-				this.activeKernel = filteredKernels.find(kernel => kernel.isPreferred) || filteredKernels[0];
+				const cachedKernelId = memento[provider.id];
+				this.activeKernel =
+					filteredKernels.find(kernel => kernel.isPreferred)
+					|| filteredKernels.find(kernel => kernel.id === cachedKernelId)
+					|| filteredKernels[0];
 			} else {
 				this.activeKernel = undefined;
 			}
@@ -628,6 +641,9 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 				await (this.activeKernel as INotebookKernelInfo2).resolve(this.viewModel!.uri, this.getId(), tokenSource.token); // {{SQL CARBON EDIT}} strict-null-checks
 			}
 
+			memento[provider.id] = this._activeKernel?.id;
+			this._activeKernelMemento.saveMemento();
+
 			tokenSource.dispose();
 			return;
 		}
@@ -635,10 +651,17 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 		// choose a preferred kernel
 		const kernelsFromSameExtension = kernels.filter(kernel => kernel.extension.value === provider.providerExtensionId);
 		if (kernelsFromSameExtension.length) {
-			const preferedKernel = kernelsFromSameExtension.find(kernel => kernel.isPreferred) || kernelsFromSameExtension[0];
+			const cachedKernelId = memento[provider.id];
+
+			const preferedKernel = kernelsFromSameExtension.find(kernel => kernel.isPreferred)
+				|| kernelsFromSameExtension.find(kernel => kernel.id === cachedKernelId)
+				|| kernelsFromSameExtension[0];
 			this.activeKernel = preferedKernel;
 			await this._loadKernelPreloads(this.activeKernel.extensionLocation, this.activeKernel);
 			await preferedKernel.resolve(this.viewModel!.uri, this.getId(), tokenSource.token);
+
+			memento[provider.id] = this._activeKernel?.id;
+			this._activeKernelMemento.saveMemento();
 			tokenSource.dispose();
 			return;
 		}
@@ -1677,12 +1700,14 @@ registerThemingParticipant((theme, collector) => {
 	if (cellToolbarSeperator) {
 		collector.addRule(`.notebookOverlay .monaco-list-row > .monaco-toolbar { border: solid 1px ${cellToolbarSeperator}; }`);
 		collector.addRule(`.notebookOverlay .cell-bottom-toolbar-container .action-item { border: solid 1px ${cellToolbarSeperator} }`);
+		collector.addRule(`.monaco-workbench .notebookOverlay > .cell-list-container > .monaco-list > .monaco-scrollable-element > .monaco-list-rows > .monaco-list-row .cell-collapsed-part { border-bottom: solid 1px ${cellToolbarSeperator} }`);
 	}
 
 	const focusedCellBackgroundColor = theme.getColor(focusedCellBackground);
 	if (focusedCellBackgroundColor) {
 		collector.addRule(`.notebookOverlay .code-cell-row.focused .cell-focus-indicator,
 			.notebookOverlay .markdown-cell-row.focused { background-color: ${focusedCellBackgroundColor} !important; }`);
+		collector.addRule(`.notebookOverlay .code-cell-row.focused.collapsed .cell-collapsed-part { background-color: ${focusedCellBackgroundColor} !important; }`);
 	}
 
 	const cellHoverBackgroundColor = theme.getColor(cellHoverBackground);
@@ -1690,6 +1715,8 @@ registerThemingParticipant((theme, collector) => {
 		collector.addRule(`.notebookOverlay .code-cell-row:not(.focused):hover .cell-focus-indicator,
 			.notebookOverlay .code-cell-row:not(.focused).cell-output-hover .cell-focus-indicator,
 			.notebookOverlay .markdown-cell-row:not(.focused):hover { background-color: ${cellHoverBackgroundColor} !important; }`);
+		collector.addRule(`.notebookOverlay .code-cell-row:not(.focused).cell-output-hover .cell-collapsed-part,
+		.notebookOverlay .code-cell-row:not(.focused):hover.collapsed .cell-collapsed-part { background-color: ${cellHoverBackgroundColor} !important; }`);
 	}
 
 	const focusedCellBorderColor = theme.getColor(focusedCellBorder);
@@ -1765,7 +1792,7 @@ registerThemingParticipant((theme, collector) => {
 	// Cell Margin
 	collector.addRule(`.notebookOverlay .cell-list-container > .monaco-list > .monaco-scrollable-element > .monaco-list-rows > .monaco-list-row  > div.cell { margin: 0px ${CELL_MARGIN * 2}px 0px ${CELL_MARGIN}px; }`);
 	collector.addRule(`.notebookOverlay .cell-list-container > .monaco-list > .monaco-scrollable-element > .monaco-list-rows > .monaco-list-row  > div.cell.code { margin-left: ${CODE_CELL_LEFT_MARGIN}px; }`);
-	collector.addRule(`.notebookOverlay .cell-list-container > .monaco-list > .monaco-scrollable-element > .monaco-list-rows > .monaco-list-row { padding-top: ${EDITOR_TOP_MARGIN}px; }`);
+	collector.addRule(`.notebookOverlay .cell-list-container > .monaco-list > .monaco-scrollable-element > .monaco-list-rows > .monaco-list-row { padding-top: ${CELL_TOP_MARGIN}px; }`);
 	collector.addRule(`.notebookOverlay .cell-list-container > .monaco-list > .monaco-scrollable-element > .monaco-list-rows > .markdown-cell-row { padding-bottom: ${CELL_BOTTOM_MARGIN}px; }`);
 	collector.addRule(`.notebookOverlay .output { margin: 0px ${CELL_MARGIN}px 0px ${CODE_CELL_LEFT_MARGIN + CELL_RUN_GUTTER}px; }`);
 	collector.addRule(`.notebookOverlay .output { width: calc(100% - ${CODE_CELL_LEFT_MARGIN + CELL_RUN_GUTTER + (CELL_MARGIN * 2)}px); }`);
@@ -1773,11 +1800,13 @@ registerThemingParticipant((theme, collector) => {
 	collector.addRule(`.notebookOverlay .cell-list-container > .monaco-list > .monaco-scrollable-element > .monaco-list-rows > .monaco-list-row  > div.cell.markdown { padding-left: ${CELL_RUN_GUTTER}px; }`);
 	collector.addRule(`.notebookOverlay .cell .run-button-container { width: ${CELL_RUN_GUTTER}px; }`);
 	collector.addRule(`.notebookOverlay .cell-drag-image .cell-editor-container > div { padding: ${EDITOR_TOP_PADDING}px 16px ${EDITOR_BOTTOM_PADDING}px 16px; }`);
-	collector.addRule(`.notebookOverlay .monaco-list .monaco-list-row .cell-focus-indicator-top { height: ${EDITOR_TOP_MARGIN}px; }`);
+	collector.addRule(`.notebookOverlay .monaco-list .monaco-list-row .cell-focus-indicator-top { height: ${CELL_TOP_MARGIN}px; }`);
 	collector.addRule(`.notebookOverlay .monaco-list .monaco-list-row .cell-focus-indicator-side { bottom: ${BOTTOM_CELL_TOOLBAR_HEIGHT}px; }`);
 	collector.addRule(`.notebookOverlay .monaco-list .monaco-list-row.code-cell-row .cell-focus-indicator-left { width: ${CODE_CELL_LEFT_MARGIN + CELL_RUN_GUTTER}px; }`);
 	collector.addRule(`.notebookOverlay .monaco-list .monaco-list-row.markdown-cell-row .cell-focus-indicator-left { width: ${CODE_CELL_LEFT_MARGIN}px; }`);
 	collector.addRule(`.notebookOverlay .monaco-list .monaco-list-row .cell-focus-indicator.cell-focus-indicator-right { width: ${CELL_MARGIN * 2}px; }`);
 	collector.addRule(`.notebookOverlay .monaco-list .monaco-list-row .cell-focus-indicator-bottom { height: ${CELL_BOTTOM_MARGIN}px; }`);
 	collector.addRule(`.notebookOverlay .monaco-list .monaco-list-row .cell-shadow-container-bottom { top: ${CELL_BOTTOM_MARGIN}px; }`);
+
+	collector.addRule(`.monaco-workbench .notebookOverlay > .cell-list-container > .monaco-list > .monaco-scrollable-element > .monaco-list-rows > .monaco-list-row.collapsed .cell-collapsed-part { margin-left: ${CODE_CELL_LEFT_MARGIN + CELL_RUN_GUTTER}px; height: ${COLLAPSED_INDICATOR_HEIGHT}px; }`);
 });
