@@ -666,7 +666,7 @@ export interface TokenClaims { // https://docs.microsoft.com/en-us/azure/active-
 	idp: string,
 	nbf: number;
 	exp: number;
-	home_oid: string;
+	home_oid?: string;
 	c_hash: string;
 	at_hash: string;
 	aio: string;
