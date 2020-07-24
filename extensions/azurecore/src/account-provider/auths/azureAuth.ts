@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 
 import * as nls from 'vscode-nls';
+import * as constants from '../../constants';
 
 import {
 	AzureAccount,
@@ -254,6 +255,16 @@ export abstract class AzureAuth implements vscode.Disposable {
 		return this.getTokenHelper(tenant, resource, accessTokenString, refreshTokenString, expiresOnString);
 	}
 
+	public getUserUniqueId(tokenClaims: TokenClaims): string | undefined {
+		const shouldUseSub = vscode.workspace.getConfiguration(constants.extensionConfigSectionName).get<boolean>('useSubClaim');
+
+		if (shouldUseSub === true) {
+			return tokenClaims.sub ?? tokenClaims.oid ?? tokenClaims.unique_name;
+		} else {
+			return tokenClaims.unique_name ?? tokenClaims.email ?? tokenClaims.name;
+		}
+	}
+
 	public async getTokenHelper(tenant: Tenant, resource: Resource, accessTokenString: string, refreshTokenString: string, expiresOnString: string): Promise<OAuthTokenResponse> {
 		if (!accessTokenString) {
 			const msg = localize('azure.accessTokenEmpty', 'No access token returned from Microsoft OAuth');
@@ -262,7 +273,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		const tokenClaims: TokenClaims = this.getTokenClaims(accessTokenString);
 
-		const userKey = tokenClaims.sub ?? tokenClaims.oid;
+		const userKey = this.getUserUniqueId(tokenClaims);
 
 		if (!userKey) {
 			const msg = localize('azure.noUniqueIdentifier', "The user had no unique identifier within AAD");
