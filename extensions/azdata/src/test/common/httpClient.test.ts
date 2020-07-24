@@ -10,10 +10,10 @@ import { HttpClient } from '../../common/httpClient';
 import * as path from 'path';
 import * as os from 'os';
 import * as fs from 'fs';
-import * as uuid from 'uuid';
 import * as nock from 'nock';
 import * as sinon from 'sinon';
 import { PassThrough } from 'stream';
+import { Deferred } from '../../common/promise';
 
 describe('HttpClient', function () {
 
@@ -29,14 +29,14 @@ describe('HttpClient', function () {
 	});
 
 	it('downloads file successfully', async function (): Promise<void> {
-		const downloadPath = path.join(os.tmpdir(), `azdata-httpClientTest-${uuid.v4()}.txt`);
-		await HttpClient.download('https://raw.githubusercontent.com/microsoft/azuredatastudio/main/README.md', downloadPath, outputChannelMock.object);
+		const downloadFolder = path.join(os.tmpdir());
+		const downloadPath = await HttpClient.download('https://raw.githubusercontent.com/microsoft/azuredatastudio/main/README.md', downloadFolder, outputChannelMock.object);
 		// Verify file was downloaded correctly
 		await fs.promises.stat(downloadPath);
 	});
 
 	it('errors on response stream error', async function (): Promise<void> {
-		const downloadPath = path.join(os.tmpdir(), `azdata-httpClientTest-error-${uuid.v4()}.txt`);
+		const downloadPath = path.join(os.tmpdir());
 		nock('https://127.0.0.1')
 			.get('/')
 			.replyWithError('Unexpected Error');
@@ -45,14 +45,30 @@ describe('HttpClient', function () {
 		await should(downloadPromise).be.rejected();
 	});
 
+	it('rejects on non-OK status code', async function (): Promise<void> {
+		const downloadPath = path.join(os.tmpdir());
+		nock('https://127.0.0.1')
+			.get('/')
+			.reply(404, '');
+		const downloadPromise = HttpClient.download('https://127.0.0.1', downloadPath, outputChannelMock.object);
+
+		await should(downloadPromise).be.rejected();
+	});
+
 	it('errors on write stream error', async function (): Promise<void> {
-		const downloadPath = path.join(os.tmpdir(), `azdata-httpClientTest-error-${uuid.v4()}.txt`);
+		const downloadPath = path.join(os.tmpdir());
 		const mockWriteStream = new PassThrough();
-		sinon.stub(fs, 'createWriteStream').returns(<any>mockWriteStream);
+		const deferredPromise = new Deferred();
+		sinon.stub(fs, 'createWriteStream').callsFake(() => {
+			deferredPromise.resolve();
+			return <any>mockWriteStream;
+		});
 		nock('https://127.0.0.1')
 			.get('/')
 			.reply(200, '');
 		const downloadPromise = HttpClient.download('https://127.0.0.1', downloadPath, outputChannelMock.object);
+		// Wait for the stream to be created before throwing the error or HttpClient will miss the event
+		await deferredPromise;
 		try {
 			// Passthrough streams will throw the error we emit so just no-op and
 			// let the HttpClient handler handle the error

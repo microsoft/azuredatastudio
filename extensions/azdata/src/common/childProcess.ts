@@ -23,7 +23,7 @@ export class ExitCodeError extends Error {
  * @param args Optional args to pass, every arg and arg value must be a separate item in the array
  * @param outputChannel Channel used to display diagnostic information
  */
-export async function executeCommand(command: string, args?: string[], outputChannel?: vscode.OutputChannel): Promise<string> {
+export async function executeCommand(command: string, args?: string[], outputChannel?: vscode.OutputChannel): Promise<{ stdout: string, stderr: string }> {
 	return new Promise((resolve, reject) => {
 		outputChannel?.appendLine(loc.executingCommand(command, args ?? []));
 		const stdoutBuffers: Buffer[] = [];
@@ -33,12 +33,13 @@ export async function executeCommand(command: string, args?: string[], outputCha
 		child.stderr.on('data', (b: Buffer) => stderrBuffers.push(b));
 		child.on('error', reject);
 		child.on('exit', code => {
-			if (stderrBuffers.length > 0) {
-				reject(new Error(Buffer.concat(stderrBuffers).toString('utf8').trim()));
-			} else if (code) {
+			if (code) {
 				reject(new ExitCodeError(code));
 			} else {
-				resolve(Buffer.concat(stdoutBuffers).toString('utf8').trim());
+				resolve({
+					stdout: Buffer.concat(stdoutBuffers).toString('utf8').trim(),
+					stderr: Buffer.concat(stderrBuffers).toString('utf8').trim()
+				});
 			}
 		});
 	});
@@ -58,9 +59,9 @@ export async function executeSudoCommand(command: string, outputChannel?: vscode
 			if (error) {
 				reject(error);
 			} else if (stderr) {
-				reject(stderr.toString('utf8'));
+				reject(stderr.toString());
 			} else {
-				resolve(stdout ? stdout.toString('utf8') : '');
+				resolve(stdout ? stdout.toString() : '');
 			}
 		});
 	});

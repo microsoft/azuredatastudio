@@ -6,24 +6,26 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as request from 'request';
+import * as path from 'path';
 import * as loc from '../localizedConstants';
+import { IncomingMessage } from 'http';
 
 const DownloadTimeout = 20000;
 
 export namespace HttpClient {
 
 	/**
-	 * Downloads a file from the given URL
+	 * Downloads a file from the given URL, resolving to the full path of the downloaded file when complete
 	 * @param downloadUrl The URL to download the file from
-	 * @param targetPath The path to download the file to
+	 * @param targetFolder The folder to download the file to
 	 * @param outputChannel Channel used to display diagnostic information
 	 */
-	export function download(downloadUrl: string, targetPath: string, outputChannel: vscode.OutputChannel): Promise<void> {
+	export function download(downloadUrl: string, targetFolder: string, outputChannel: vscode.OutputChannel, followRedirect?: (response: IncomingMessage) => boolean): Promise<string> {
 		return new Promise((resolve, reject) => {
 			let totalMegaBytes: number | undefined = undefined;
 			let receivedBytes = 0;
 			let printThreshold = 0.1;
-			let downloadRequest = request.get(downloadUrl, { timeout: DownloadTimeout })
+			let downloadRequest = request.get(downloadUrl, { timeout: DownloadTimeout, followRedirect: followRedirect })
 				.on('error', downloadError => {
 					outputChannel.appendLine(loc.downloadError);
 					outputChannel.appendLine(downloadError?.message ?? downloadError);
@@ -35,6 +37,20 @@ export namespace HttpClient {
 						outputChannel.appendLine(response.statusMessage);
 						return reject(response.statusMessage);
 					}
+					const filename = path.basename(response.request.path);
+					const targetPath = path.join(targetFolder, filename);
+					outputChannel.appendLine(loc.downloadingTo(filename, targetPath));
+					// Wait to create the WriteStream until here so we can use the actual
+					// filename based off of the URI.
+					downloadRequest.pipe(fs.createWriteStream(targetPath))
+						.on('close', async () => {
+							outputChannel.appendLine(loc.downloadFinished);
+							resolve(targetPath);
+						})
+						.on('error', (downloadError) => {
+							reject(downloadError);
+							downloadRequest.abort();
+						});
 					let contentLength = response.headers['content-length'];
 					let totalBytes = parseInt(contentLength || '0');
 					totalMegaBytes = totalBytes / (1024 * 1024);
@@ -50,15 +66,6 @@ export namespace HttpClient {
 							printThreshold += 0.1;
 						}
 					}
-				});
-			downloadRequest.pipe(fs.createWriteStream(targetPath))
-				.on('close', async () => {
-					outputChannel.appendLine(loc.downloadFinished);
-					resolve();
-				})
-				.on('error', (downloadError) => {
-					reject(downloadError);
-					downloadRequest.abort();
 				});
 		});
 	}

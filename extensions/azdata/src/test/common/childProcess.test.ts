@@ -20,7 +20,7 @@ describe('ChildProcess', function () {
 	it('Gets expected output', async function (): Promise<void> {
 		const echoOutput = 'test';
 		const output = await executeCommand('echo', [echoOutput]);
-		should(output).equal(echoOutput);
+		should(output.stdout).equal(echoOutput);
 	});
 
 	it('Invalid command errors', async function (): Promise<void> {
