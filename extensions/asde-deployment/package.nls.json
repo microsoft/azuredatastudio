@@ -25,8 +25,8 @@
 	"edge-remote-target-field": "Name or IP address",
 	"edge-remote-username-field": "Username",
 	"edge-remote-password-field": "Password",
-	"sql-edge-azure-display-name": "Azure VM via Azure IoT Hub",
-	"sql-edge-azure-title": "Deploy Azure SQL Edge to an Azure VM via IoT hub",
+	"sql-edge-azure-display-name": "New Azure IoT Hub and VM",
+	"sql-edge-azure-title": "Deploy Azure SQL Edge to a new Azure VM via IoT hub",
 	"azure_subscription_id": "Subscription id",
 	"azure_resource_group": "Resource group",
 	"azure_location": "Location",
@@ -35,6 +35,12 @@
 	"vm_password_confirm": "Confirm VM admin password",
 	"dacpac_path": "Dacpac zip file",
 	"azure-info-section-title": "Azure information",
-	"sqlserver-info-section-title": "SQL Server information",
-	"dacpac-zip-files": "Dacpac zip files"
+	"sqlserver-info-section-title": "Azure SQL Edge information",
+	"dacpac-zip-files": "Dacpac zip files",
+	"sql-edge-azure-single-device-display-name": "Existing device of an Azure IoT Hub",
+	"sql-edge-azure-single-device-title": "Deploy Azure SQL Edge to an existing device",
+	"iot-hub-name": "IoT Hub name",
+	"device-id": "Device ID",
+	"device-ip-address": "Device IP Address",
+	"device-ip-address-description": "Will be used to connect to the Azure SQL Edge instance after deployment"
 }
