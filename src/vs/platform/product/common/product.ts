@@ -24,7 +24,10 @@ if (isWeb) {
 			vscodeVersion: '1.48.0-dev',
 			nameLong: 'Azure Data Studio Web Dev',
 			nameShort: 'Azure Data Studio Web Dev',
-			urlProtocol: 'azuredatastudio-oss'
+			urlProtocol: 'azuredatastudio-oss',
+			extensionAllowedProposedApi: [
+				'ms-vscode.references-view'
+			],
 		});
 	}
 }
