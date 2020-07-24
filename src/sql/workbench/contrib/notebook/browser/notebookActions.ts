@@ -282,6 +282,7 @@ export const noKernelName = localize('noKernel', "No Kernel");
 =======
 const ShowAllKernelsConfigName = 'notebook.showAllKernels';
 const WorkbenchPreviewConfigName = 'workbench.enablePreviewFeatures';
+let kernelAlias = [];
 
 >>>>>>> Get Kernel Alias through Capability Services
 export class KernelsDropdown extends SelectBox {
@@ -293,10 +294,11 @@ export class KernelsDropdown extends SelectBox {
 <<<<<<< HEAD
 =======
 		const providers = _capabilitiesService.providers;
-		let kernelAlias = [];
+
 		if (providers) {
 			for (const server in providers) {
-				if (providers[server].connection.notebookKernelAlias) {
+				let alias = providers[server].connection.notebookKernelAlias;
+				if (alias && kernelAlias.indexOf(alias) === -1) {
 					kernelAlias.push(providers[server].connection.notebookKernelAlias);
 				}
 			}
@@ -339,6 +341,11 @@ export class KernelsDropdown extends SelectBox {
 				let index;
 				if (standardKernel) {
 					index = firstIndex(kernels, kernel => kernel === standardKernel.displayName);
+					if (kernelAlias !== undefined || kernelAlias.length !== 0) {
+						for (let x in kernelAlias) {
+							kernels.splice(1, 0, kernelAlias[x]);
+						}
+					}
 				} else {
 					let kernelSpec = this.model.specs.kernels.find(k => k.name === kernel.name);
 					index = firstIndex(kernels, k => k === kernelSpec?.display_name);
@@ -368,6 +375,7 @@ export class KernelsDropdown extends SelectBox {
 
 export class AttachToDropdown extends SelectBox {
 	private model: NotebookModel;
+	private kernels: KernelsDropdown;
 
 	constructor(
 		container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>,
