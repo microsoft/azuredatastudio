@@ -40,7 +40,7 @@ import { localize } from 'vs/nls';
 export class EditDataGridPanel extends GridParentComponent {
 	// The time(in milliseconds) we wait before refreshing the grid.
 	// We use clearTimeout and setTimeout pair to avoid unnecessary refreshes.
-	private refreshGridTimeoutInMs = 200;
+	private refreshGridTimeoutInMs = 300;
 
 	// The timeout handle for the refresh grid task
 	private refreshGridTimeoutHandle: any;

@@ -64,6 +64,12 @@ export abstract class EditDataAction extends Action {
 export class RefreshTableAction extends EditDataAction {
 	private static EnabledClass = 'start';
 	public static ID = 'refreshTableAction';
+	// The time(in milliseconds) we wait before executing another run.
+	// We use clearTimeout and setTimeout pair to avoid unnecessary refreshes.
+	private runTimeoutInMs = 300;
+
+	// The timeout handle for the refresh grid task
+	private runTimeoutHandle: any;
 
 	constructor(editor: EditDataEditor,
 		@IQueryModelService private _queryModelService: IQueryModelService,
@@ -74,29 +80,32 @@ export class RefreshTableAction extends EditDataAction {
 		this.label = nls.localize('editData.run', "Run");
 	}
 
-	public run(): Promise<void> {
-		if (this.isConnected(this.editor)) {
-			let input = this.editor.editDataInput;
+	public async run(): Promise<void> {
+		clearTimeout(this.runTimeoutHandle);
+		this.runTimeoutHandle = setTimeout(() => {
 
-			let rowLimit: number = undefined;
-			let queryString: string = undefined;
-			if (input.queryPaneEnabled) {
-				queryString = input.queryString = this.editor.getEditorText();
-			} else {
-				rowLimit = input.rowLimit;
-			}
+			if (this.isConnected(this.editor)) {
+				let input = this.editor.editDataInput;
 
-			this._queryModelService.disposeEdit(input.uri).then((result) => {
-				this._queryModelService.initializeEdit(input.uri, input.schemaName, input.tableName, input.objectType, rowLimit, queryString);
-				input.showResultsEditor();
-			}, error => {
-				this._notificationService.notify({
-					severity: Severity.Error,
-					message: nls.localize('disposeEditFailure', "Dispose Edit Failed With Error: ") + error
+				let rowLimit: number = undefined;
+				let queryString: string = undefined;
+				if (input.queryPaneEnabled) {
+					queryString = input.queryString = this.editor.getEditorText();
+				} else {
+					rowLimit = input.rowLimit;
+				}
+
+				this._queryModelService.disposeEdit(input.uri).then((result) => {
+					this._queryModelService.initializeEdit(input.uri, input.schemaName, input.tableName, input.objectType, rowLimit, queryString);
+					input.showResultsEditor();
+				}, error => {
+					this._notificationService.notify({
+						severity: Severity.Error,
+						message: nls.localize('disposeEditFailure', "Dispose Edit Failed With Error: ") + error
+					});
 				});
-			});
-		}
-		return Promise.resolve(null);
+			}
+		}, this.runTimeoutInMs);
 	}
 }
 
