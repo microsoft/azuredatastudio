@@ -8,31 +8,17 @@ import { IRelease, RemoteBookController } from '../../book/remoteBookController'
 import * as should from 'should';
 import * as request from 'request';
 import * as sinon from 'sinon';
-import * as nls from 'vscode-nls';
 import * as utils from '../../common/utils';
-import * as path from 'path';
-import * as fs from 'fs-extra';
-import * as os from 'os';
-import * as uuid from 'uuid';
-import AdmZip = require('adm-zip');
-
-const localize = nls.loadMessageBundle();
-const msgReleaseNotFound = localize('msgReleaseNotFound', "Releases not Found");
-const msgBookNotFound = localize('msgBookNotFound', "Books not Found");
-
-
-export interface IExpectedBookItem {
-	title: string;
-	url?: string;
-	sections?: any[];
-	external?: boolean;
-	previousUri?: string | undefined;
-	nextUri?: string | undefined;
-}
+import * as vscode from 'vscode';
+import { MockExtensionContext } from '../common/stubs';
+import { AppContext } from '../../common/appContext';
+import * as loc from '../../common/localizedConstants';
 
 describe('Add Remote Book Dialog', function () {
+	let mockExtensionContext: vscode.ExtensionContext = new MockExtensionContext();
+	let appContext = new AppContext(mockExtensionContext);
 	let model = new RemoteBookDialogModel();
-	let controller = new RemoteBookController(model);
+	let controller = new RemoteBookController(model, appContext.outputChanel);
 	let dialog = new RemoteBookDialog(controller);
 	let sinonTest: sinon.SinonStub;
 
@@ -92,7 +78,7 @@ describe('Add Remote Book Dialog', function () {
 			should(result.length).be.equal(0, 'Result should be equal to the expectedBody');
 		}
 		catch (err) {
-			should(err.message).be.equals(msgReleaseNotFound);
+			should(err.message).be.equals(loc.msgReleaseNotFound);
 			should(model.releases.length).be.equal(0);
 		}
 	});
@@ -185,59 +171,6 @@ describe('Add Remote Book Dialog', function () {
 		sinonTestUtils.restore();
 	});
 
-	it('Should extract the folder containing books', async function (): Promise<void> {
-		// Create local file containing books
-		let bookFolderPath: string;
-		let rootFolderPath: string;
-		let expectedNotebook1: IExpectedBookItem;
-		let expectedNotebook2: IExpectedBookItem;
-		let expectedExternalLink: IExpectedBookItem;
-		//let expectedBook: IExpectedBookItem;
-		rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
-		bookFolderPath = path.join(rootFolderPath, `Book`);
-		let dataFolderPath: string = path.join(bookFolderPath, '_data');
-		let contentFolderPath: string = path.join(bookFolderPath, 'content');
-		let configFile: string = path.join(bookFolderPath, '_config.yml');
-		let tableOfContentsFile: string = path.join(dataFolderPath, 'toc.yml');
-		let notebook1File: string = path.join(contentFolderPath, 'notebook1.ipynb');
-		let notebook2File: string = path.join(contentFolderPath, 'notebook2.ipynb');
-
-		expectedNotebook1 = {
-			title: 'Notebook1',
-			url: '/notebook1',
-			previousUri: undefined,
-			nextUri: notebook2File.toLocaleLowerCase()
-		};
-		expectedNotebook2 = {
-			title: 'Notebook2',
-			url: '/notebook2',
-			previousUri: notebook1File.toLocaleLowerCase()
-		};
-		expectedExternalLink = {
-			title: 'GitHub',
-			url: 'https://github.com/',
-			external: true
-		};
-		let expectedBook: IExpectedBookItem = {
-			sections: [expectedNotebook1, expectedNotebook2, expectedExternalLink],
-			title: 'Test Book'
-		};
-
-		await fs.mkdir(rootFolderPath);
-		await fs.mkdir(bookFolderPath);
-		await fs.mkdir(dataFolderPath);
-		await fs.mkdir(contentFolderPath);
-		await fs.writeFile(configFile, 'title: Test Book');
-		await fs.writeFile(tableOfContentsFile, '- title: Notebook1\n  url: /notebook1\n  sections:\n  - title: Notebook2\n    url: /notebook2\n');
-		await fs.writeFile(notebook1File, '');
-		await fs.writeFile(notebook2File, '');
-
-		// Create zip file
-		let zip = new AdmZip();
-		zip.addLocalFolder(bookFolderPath);
-		zip.writeZip(path.join(rootFolderPath, `Book.zip`));
-	});
-
 	it('Should throw an error if the book object does not follow the name-version-lang format', async function (): Promise<void> {
 		let expectedBody = JSON.stringify([
 			{
@@ -264,7 +197,7 @@ describe('Add Remote Book Dialog', function () {
 			should(result.length).be.equal(0, 'Should be empty when the naming convention is not being followed');
 		}
 		catch (err) {
-			should(err.message).be.equals(msgBookNotFound);
+			should(err.message).be.equals(loc.msgBookNotFound);
 			should(model.releases.length).be.equal(0);
 		}
 	});
@@ -283,7 +216,7 @@ describe('Add Remote Book Dialog', function () {
 			should(result.length).be.equal(0, 'Should be empty since no assets were returned');
 		}
 		catch (err) {
-			should(err.message).be.equals(msgBookNotFound);
+			should(err.message).be.equals(loc.msgBookNotFound);
 			should(model.releases.length).be.equal(0);
 		}
 	});

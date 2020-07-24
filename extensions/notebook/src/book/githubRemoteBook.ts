@@ -12,23 +12,27 @@ import * as tar from 'tar';
 import * as utils from '../common/utils';
 import { RemoteBook } from './remoteBook';
 import { IAsset } from './remoteBookController';
+import * as constants from '../common/constants';
 
 export class GitHubRemoteBook extends RemoteBook {
-	constructor(public remotePath: URL, protected _asset: IAsset) {
-		super(remotePath, _asset);
+	constructor(public remotePath: URL, public outputChannel: vscode.OutputChannel, protected _asset: IAsset) {
+		super(remotePath, outputChannel, _asset);
 	}
 
 	public async createLocalCopy(): Promise<void> {
 		this.outputChannel.show(true);
+		this.setLocalPath();
 		this.outputChannel.appendLine(loc.msgDownloadLocation(this._localPath.href));
 		this.outputChannel.appendLine(loc.msgRemoteBookDownloadProgress);
-		this.setLocalPath();
 		this.createDirectory();
+		let notebookConfig = vscode.workspace.getConfiguration(constants.notebookConfigKey);
+		let downloadTimeout = notebookConfig[constants.remoteBookDownloadTimeout];
 
 		return new Promise((resolve, reject) => {
 			let options = {
 				headers: {
-					'User-Agent': 'request'
+					'User-Agent': 'request',
+					'timeout': downloadTimeout
 				}
 			};
 			let downloadRequest = request.get(this._asset.browserDownloadUrl.href, options)
@@ -39,7 +43,7 @@ export class GitHubRemoteBook extends RemoteBook {
 				.on('response', (response) => {
 					if (response.statusCode !== 200) {
 						this.outputChannel.appendLine(loc.msgRemoteBookDownloadError);
-						return reject(response.statusMessage);
+						return reject(new Error(loc.httpRequestError(response.statusCode, response.statusMessage)));
 					}
 				});
 			let remoteBookFullPath = new URL(this._localPath.href.concat('.zip'));
@@ -57,7 +61,6 @@ export class GitHubRemoteBook extends RemoteBook {
 	public async createDirectory(): Promise<void> {
 		let fileName = this._asset.book.concat('-').concat(this._asset.version).concat('-').concat(this._asset.language);
 		this._localPath = new URL(path.join(this._localPath.href, fileName));
-
 		try {
 			let exists = await fs.pathExists(this._localPath.href);
 			if (exists) {
@@ -80,7 +83,7 @@ export class GitHubRemoteBook extends RemoteBook {
 			}
 			await fs.promises.unlink(remoteBookFullPath.href);
 			this.outputChannel.appendLine(loc.msgRemoteBookDownloadComplete);
-			vscode.commands.executeCommand('notebook.command.openBook', this._localPath.href, undefined, true);
+			vscode.commands.executeCommand('notebook.command.openNotebookFolder', this._localPath.href, undefined, true);
 		}
 		catch (err) {
 			this.outputChannel.appendLine(err);

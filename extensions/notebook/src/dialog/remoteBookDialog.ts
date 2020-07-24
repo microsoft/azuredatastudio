@@ -269,7 +269,7 @@ export class RemoteBookDialog {
 		try {
 			if (this.remoteLocationValue === loc.onGitHub) {
 				let selected_asset = await this.getSelectedAsset();
-				if (selected_asset === undefined) {
+				if (!selected_asset) {
 					throw new Error(loc.msgUndefinedAssetError);
 				}
 				await this.controller.setRemoteBook(selected_asset.url, this.remoteLocationValue, selected_asset);

@@ -6,6 +6,7 @@
 import * as request from 'request';
 import * as loc from '../common/localizedConstants';
 import * as utils from '../common/utils';
+import * as vscode from 'vscode';
 import { RemoteBookDialogModel } from '../dialog/remoteBookDialog';
 import { GitHubRemoteBook } from '../book/githubRemoteBook';
 import { SharedRemoteBook } from '../book/sharedRemoteBook';
@@ -13,14 +14,14 @@ import { SharedRemoteBook } from '../book/sharedRemoteBook';
 const assetNameRE = /([a-zA-Z0-9]+)(?:-|_)([a-zA-Z0-9.]+)(?:-|_)([a-zA-Z0-9]+).(zip|tar.gz|tgz)/;
 
 export class RemoteBookController {
-	constructor(public model: RemoteBookDialogModel) {
+	constructor(public model: RemoteBookDialogModel, public outputChannel: vscode.OutputChannel) {
 	}
 
 	public async setRemoteBook(url: URL, remoteLocation: string, asset?: IAsset): Promise<void> {
 		if (remoteLocation === 'GitHub') {
-			this.model.remoteBook = new GitHubRemoteBook(url, asset);
+			this.model.remoteBook = new GitHubRemoteBook(url, this.outputChannel, asset);
 		} else {
-			this.model.remoteBook = new SharedRemoteBook(url);
+			this.model.remoteBook = new SharedRemoteBook(url, this.outputChannel);
 		}
 		return await this.model.remoteBook.createLocalCopy();
 	}

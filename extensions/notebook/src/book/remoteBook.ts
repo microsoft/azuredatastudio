@@ -3,22 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as loc from '../common/localizedConstants';
 import * as vscode from 'vscode';
 import * as utils from '../common/utils';
 import { IAsset } from './remoteBookController';
 
 export abstract class RemoteBook {
 	protected _localPath: URL;
-	protected outputChannel: vscode.OutputChannel;
 
-	constructor(public remotePath: URL, protected _asset?: IAsset) {
+	constructor(public remotePath: URL, public outputChannel: vscode.OutputChannel, protected _asset?: IAsset) {
 		this.remotePath = remotePath;
-		this.outputChannel = this.createOutputChannel();
-	}
-
-	public createOutputChannel(): vscode.OutputChannel {
-		return this.outputChannel || (this.outputChannel = vscode.window.createOutputChannel(loc.msgTaskName));
 	}
 
 	public async abstract createLocalCopy(): Promise<void>;

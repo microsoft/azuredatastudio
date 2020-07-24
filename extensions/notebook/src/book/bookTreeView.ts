@@ -18,8 +18,6 @@ import * as loc from '../common/localizedConstants';
 import * as glob from 'fast-glob';
 import { isNullOrUndefined } from 'util';
 import { debounce } from '../common/utils';
-import { RemoteBookDialogModel, RemoteBookDialog } from '../dialog/remoteBookDialog';
-import { RemoteBookController } from '../book/remoteBookController';
 
 const Content = 'content';
 
@@ -403,13 +401,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			let bookPath = uris[0];
 			await this.openBook(bookPath.fsPath, undefined, true);
 		}
-	}
-
-	public async openRemoteBook(): Promise<void> {
-		let model = new RemoteBookDialogModel();
-		let controller = new RemoteBookController(model);
-		let dialog = new RemoteBookDialog(controller);
-		await dialog.createDialog();
 	}
 
 	public async openNotebookFolder(folderPath?: string, urlToOpen?: string, showPreview?: boolean): Promise<void> {
