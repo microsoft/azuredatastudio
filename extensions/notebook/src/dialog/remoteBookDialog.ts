@@ -5,9 +5,11 @@
 
 import * as azdata from 'azdata';
 import * as loc from '../common/localizedConstants';
-import { RemoteBookController, IRelease, IAsset } from '../book/remoteBookController';
+import { RemoteBookController, IAsset } from '../book/remoteBookController';
 import * as utils from '../common/utils';
-import { RemoteBook } from '../book/remoteBook';
+
+const tigerToolboxRepo = 'repos/microsoft/tigertoolbox';
+const urlGithubRE = /^(?:https:\/\/(?:github\.com|api\.github\.com\/repos)|(?:\/)?(?:\/)?repos)([\w-.?!=&%*+:@\/]*)/g;
 
 function apiGitHub(url: string): string {
 	return `https://api.github.com/${url}/releases`;
@@ -18,49 +20,6 @@ function getRemoteLocationCategory(name: string): azdata.CategoryValue {
 		return { name: name, displayName: loc.onGitHub };
 	}
 	return { name: name, displayName: loc.onSharedFile };
-}
-
-export class RemoteBookDialogModel {
-	private _remoteLocation: string;
-	private _releases: IRelease[];
-	private _assets: IAsset[];
-	private _book: RemoteBook;
-
-	constructor() {
-	}
-
-	public get remoteLocation(): string {
-		return this._remoteLocation;
-	}
-
-	public set remoteLocation(location: string) {
-		this._remoteLocation = location;
-	}
-
-	public get releases(): IRelease[] {
-		return this._releases;
-	}
-
-	public set releases(newReleases: IRelease[]) {
-		this._releases = newReleases;
-	}
-
-	public get assets(): IAsset[] {
-		return this._assets;
-	}
-
-	public set assets(newAssets: IAsset[]) {
-		this._assets = newAssets;
-	}
-
-	public get remoteBook(): RemoteBook {
-		return this._book;
-	}
-
-	public set remoteBook(newBook: RemoteBook) {
-		this._book = newBook;
-	}
-
 }
 
 export class RemoteBookDialog {
@@ -76,8 +35,6 @@ export class RemoteBookDialog {
 	public versionDropdown: azdata.DropDownComponent;
 	public languageDropdown: azdata.DropDownComponent;
 	private _remoteTypes: azdata.CategoryValue[];
-	private readonly tigerToolboxRepo = 'repos/microsoft/tigertoolbox';
-	private readonly urlGithubRE = /^(?:https:\/\/(?:github\.com|api\.github\.com\/repos)|(?:\/)?(?:\/)?repos)([\w-.?!=&%*+:@\/]*)/g;
 
 	constructor(public controller: RemoteBookController) {
 	}
@@ -96,7 +53,7 @@ export class RemoteBookDialog {
 			this.remoteLocationDropdown.onValueChanged(e => this.onRemoteLocationChanged());
 
 			this.githubRepoDropdown = this.view.modelBuilder.dropDown().withProperties({
-				values: [this.tigerToolboxRepo],
+				values: [tigerToolboxRepo],
 				value: '',
 				editable: true,
 				fireOnTextChange: true,
@@ -225,7 +182,7 @@ export class RemoteBookDialog {
 			url = url.trim().toLowerCase();
 			if (this.remoteLocationValue === loc.onGitHub && url.length > 0) {
 				//get the first group to extract /owner/repo/releases format
-				let groupsRe = url.match(this.urlGithubRE);
+				let groupsRe = url.match(urlGithubRE);
 				if (groupsRe?.length > 0) {
 					url = apiGitHub(groupsRe[0]);
 					let releases = await this.controller.getReleases(new URL(url));

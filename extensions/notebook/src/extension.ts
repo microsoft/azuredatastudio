@@ -15,13 +15,14 @@ import { CellType } from './contracts/content';
 import { NotebookUriHandler } from './protocol/notebookUriHandler';
 import { BuiltInCommands, unsavedBooksContextKey } from './common/constants';
 import { RemoteBookController } from './book/remoteBookController';
-import { RemoteBookDialogModel, RemoteBookDialog } from './dialog/remoteBookDialog';
+import { RemoteBookDialog } from './dialog/remoteBookDialog';
+import { RemoteBookDialogModel } from './dialog/remoteBookDialogModel';
 
 const localize = nls.loadMessageBundle();
 
 let controller: JupyterController;
 type ChooseCellType = { label: string, id: CellType };
-let controllerRemoteBook: RemoteBookController;
+let remoteBookController: RemoteBookController;
 
 export async function activate(extensionContext: vscode.ExtensionContext): Promise<IExtensionApi> {
 	const appContext = new AppContext(extensionContext);
@@ -51,10 +52,10 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	}));
 
 	let model = new RemoteBookDialogModel();
-	controllerRemoteBook = new RemoteBookController(model, appContext.outputChanel);
+	remoteBookController = new RemoteBookController(model, appContext.outputChannel);
 
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openRemoteBook', async () => {
-		let dialog = new RemoteBookDialog(controllerRemoteBook);
+		let dialog = new RemoteBookDialog(remoteBookController);
 		dialog.createDialog();
 	}));
 

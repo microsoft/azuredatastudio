@@ -36,9 +36,10 @@ export class GitHubRemoteBook extends RemoteBook {
 				}
 			};
 			let downloadRequest = request.get(this._asset.browserDownloadUrl.href, options)
-				.on('error', (downloadError) => {
+				.on('error', (error) => {
 					this.outputChannel.appendLine(loc.msgRemoteBookDownloadError);
-					reject(downloadError);
+					this.outputChannel.appendLine(error.message);
+					reject(error);
 				})
 				.on('response', (response) => {
 					if (response.statusCode !== 200) {
@@ -51,9 +52,10 @@ export class GitHubRemoteBook extends RemoteBook {
 				.on('close', async () => {
 					resolve(this.extractFiles(remoteBookFullPath));
 				})
-				.on('error', (downloadError) => {
+				.on('error', (error) => {
 					this.outputChannel.appendLine(loc.msgRemoteBookDownloadError);
-					reject(downloadError);
+					this.outputChannel.appendLine(error.message);
+					reject(error);
 					downloadRequest.abort();
 				});
 		});
@@ -68,6 +70,7 @@ export class GitHubRemoteBook extends RemoteBook {
 			}
 			await fs.promises.mkdir(this._localPath.href);
 		} catch (error) {
+			this.outputChannel.appendLine(loc.msgRemoteBookDirectoryError);
 			this.outputChannel.appendLine(error);
 		}
 	}
@@ -77,8 +80,9 @@ export class GitHubRemoteBook extends RemoteBook {
 				let zippedFile = new zip(remoteBookFullPath.href);
 				zippedFile.extractAllTo(this._localPath.href);
 			} else {
-				tar.extract({ file: remoteBookFullPath.href, cwd: this._localPath.href }).catch(err => {
+				tar.extract({ file: remoteBookFullPath.href, cwd: this._localPath.href }).catch(error => {
 					this.outputChannel.appendLine(loc.msgRemoteBookUnpackingError);
+					this.outputChannel.appendLine(error.message);
 				});
 			}
 			await fs.promises.unlink(remoteBookFullPath.href);
@@ -86,7 +90,7 @@ export class GitHubRemoteBook extends RemoteBook {
 			vscode.commands.executeCommand('notebook.command.openNotebookFolder', this._localPath.href, undefined, true);
 		}
 		catch (err) {
-			this.outputChannel.appendLine(err);
+			this.outputChannel.appendLine(err.message);
 		}
 	}
 }

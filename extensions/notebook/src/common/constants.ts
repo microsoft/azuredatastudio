@@ -8,7 +8,7 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 // CONFIG VALUES ///////////////////////////////////////////////////////////
-export const extensionOutputChannel = 'Notebooks';
+export const extensionOutputChannelName = 'Notebooks';
 
 // JUPYTER CONFIG //////////////////////////////////////////////////////////
 export const pythonBundleVersion = '0.0.1';

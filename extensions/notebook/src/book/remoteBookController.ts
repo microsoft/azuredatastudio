@@ -7,7 +7,7 @@ import * as request from 'request';
 import * as loc from '../common/localizedConstants';
 import * as utils from '../common/utils';
 import * as vscode from 'vscode';
-import { RemoteBookDialogModel } from '../dialog/remoteBookDialog';
+import { RemoteBookDialogModel } from '../dialog/remoteBookDialogModel';
 import { GitHubRemoteBook } from '../book/githubRemoteBook';
 import { SharedRemoteBook } from '../book/sharedRemoteBook';
 
@@ -66,9 +66,7 @@ export class RemoteBookController {
 				});
 			});
 		} else {
-			return new Promise<IRelease[]>((resolve, reject) => {
-				resolve(this.model.releases);
-			});
+			return this.model.releases;
 		}
 	}
 
@@ -123,9 +121,7 @@ export class RemoteBookController {
 				});
 			});
 		} else {
-			return new Promise<IAsset[]>((resolve, reject) => {
-				resolve(this.model.assets);
-			});
+			return this.model.assets;
 		}
 	}
 }

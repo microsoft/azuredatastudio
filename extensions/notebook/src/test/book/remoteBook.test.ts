@@ -3,7 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { RemoteBookDialogModel, RemoteBookDialog } from '../../dialog/remoteBookDialog';
+import { RemoteBookDialog } from '../../dialog/remoteBookDialog';
+import { RemoteBookDialogModel } from '../../dialog/remoteBookDialogModel';
 import { IRelease, RemoteBookController } from '../../book/remoteBookController';
 import * as should from 'should';
 import * as request from 'request';
@@ -18,7 +19,7 @@ describe('Add Remote Book Dialog', function () {
 	let mockExtensionContext: vscode.ExtensionContext = new MockExtensionContext();
 	let appContext = new AppContext(mockExtensionContext);
 	let model = new RemoteBookDialogModel();
-	let controller = new RemoteBookController(model, appContext.outputChanel);
+	let controller = new RemoteBookController(model, appContext.outputChannel);
 	let dialog = new RemoteBookDialog(controller);
 	let sinonTest: sinon.SinonStub;
 
@@ -36,38 +37,6 @@ describe('Add Remote Book Dialog', function () {
 		should(spy.calledOnce).be.true();
 	});
 
-	it('Verify that fetchReleases call populates model correctly', async function (): Promise<void> {
-		let expectedBody = JSON.stringify([
-			{
-				name: 'Test release 1',
-				assets_url: 'https://api.github.com/repos/microsoft/test/releases/1/assets'
-			},
-			{
-				name: 'Test release 2',
-				assets_url: 'https://api.github.com/repos/microsoft/test/releases/2/assets'
-			},
-			{
-				name: 'Test release 3',
-				assets_url: 'https://api.github.com/repos/microsoft/test/releases/3/assets'
-			}
-		]);
-		let expectedURL = new URL('https://api.github.com/repos/microsoft/test/releases');
-
-		sinonTest.yields(null, { statusCode: 200 }, expectedBody);
-
-		let result = await controller.getReleases(expectedURL);
-
-		should(result.length).be.equal(3, 'Result should be equal to the expectedBody');
-
-		result.forEach(release => {
-			should(release).have.property('name');
-			should(release).have.property('assetsUrl');
-		});
-		let modelReleases = model.releases;
-		should(result).deepEqual(await controller.getReleases());
-		should(result).deepEqual(modelReleases);
-	});
-
 	it('Verify that errorMessage is thrown, when fetchReleases call returns empty', async function (): Promise<void> {
 		let expectedBody = JSON.stringify([]);
 		let expectedURL = new URL('https://api.github.com/repos/microsoft/test/releases');
@@ -81,44 +50,6 @@ describe('Add Remote Book Dialog', function () {
 			should(err.message).be.equals(loc.msgReleaseNotFound);
 			should(model.releases.length).be.equal(0);
 		}
-	});
-
-	it('Verify that fetchAssets call populates model correctly', async function (): Promise<void> {
-		let expectedBody = JSON.stringify([
-			{
-				url: 'https://api.github.com/repos/microsoft/test/releases/1/assets/1',
-				name: 'test-1.1-EN.zip',
-				browser_download_url: 'https://api.github.com/repos/microsoft/test/releases/download/1/test-1.1-EN.zip',
-
-			},
-			{
-				url: 'https://api.github.com/repos/microsoft/test/releases/1/assets/2',
-				name: 'test-1.1-ES.zip',
-				browser_download_url: 'https://api.github.com/repos/microsoft/test/releases/download/2/test-1.1-ES.zip',
-			},
-			{
-				url: 'https://api.github.com/repos/microsoft/test/releases/1/assets/3',
-				name: 'test-1.2-EN.zip',
-				browser_download_url: 'https://api.github.com/repos/microsoft/test/releases/download/1/test-1.2-EN.zip',
-			}
-		]);
-		let expectedURL = new URL('https://api.github.com/repos/microsoft/test/releases/1/assets');
-		let expectedRelease: IRelease = {
-			name: 'Test Release',
-			assetsUrl: expectedURL
-		};
-		sinonTest.yields(null, { statusCode: 200 }, expectedBody);
-
-		let result = await controller.getAssets(expectedRelease);
-		should(result.length).be.equal(3, 'Result should be equal to the expectedBody');
-		result.forEach(release => {
-			should(release).have.property('name');
-			should(release).have.property('url');
-			should(release).have.property('browserDownloadUrl');
-		});
-		let modelAssets = model.assets;
-		should(result).deepEqual(await controller.getAssets());
-		should(result).deepEqual(modelAssets);
 	});
 
 	it('Should get the books with the same format as the user OS platform', async function (): Promise<void> {

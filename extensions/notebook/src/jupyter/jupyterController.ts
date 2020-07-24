@@ -63,7 +63,7 @@ export class JupyterController implements vscode.Disposable {
 	public async activate(): Promise<boolean> {
 		this._jupyterInstallation = new JupyterServerInstallation(
 			this.extensionContext.extensionPath,
-			this.appContext.outputChanel);
+			this.appContext.outputChannel);
 		await this._jupyterInstallation.configurePackagePaths();
 		IconPathHelper.setExtensionContext(this.extensionContext);
 
