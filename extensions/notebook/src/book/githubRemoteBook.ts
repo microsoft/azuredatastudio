@@ -71,7 +71,7 @@ export class GitHubRemoteBook extends RemoteBook {
 			await fs.promises.mkdir(this._localPath.href);
 		} catch (error) {
 			this.outputChannel.appendLine(loc.msgRemoteBookDirectoryError);
-			this.outputChannel.appendLine(error);
+			this.outputChannel.appendLine(error.message);
 		}
 	}
 	public async extractFiles(remoteBookFullPath: URL): Promise<void> {
