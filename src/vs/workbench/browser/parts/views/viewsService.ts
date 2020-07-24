@@ -275,6 +275,11 @@ export class ViewsService extends Disposable implements IViewsService {
 		return viewContainerId ? this.viewDescriptorService.getViewContainerById(viewContainerId) : null;
 	}
 
+	getActiveViewPaneContainerWithId(viewContainerId: string): IViewPaneContainer | null {
+		const viewContainer = this.viewDescriptorService.getViewContainerById(viewContainerId);
+		return viewContainer ? this.getActiveViewPaneContainer(viewContainer) : null;
+	}
+
 	async openViewContainer(id: string, focus?: boolean): Promise<IPaneComposite | null> {
 		const viewContainer = this.viewDescriptorService.getViewContainerById(id);
 		if (viewContainer) {
@@ -297,9 +302,9 @@ export class ViewsService extends Disposable implements IViewsService {
 			const viewContainerLocation = this.viewDescriptorService.getViewContainerLocation(viewContainer);
 			switch (viewContainerLocation) {
 				case ViewContainerLocation.Panel:
-					return this.panelService.getActivePanel()?.getId() === id ? this.panelService.hideActivePanel() : undefined;
+					return this.panelService.getActivePanel()?.getId() === id ? this.layoutService.setPanelHidden(true) : undefined;
 				case ViewContainerLocation.Sidebar:
-					return this.viewletService.getActiveViewlet()?.getId() === id ? this.viewletService.hideActiveViewlet() : undefined;
+					return this.viewletService.getActiveViewlet()?.getId() === id ? this.layoutService.setSideBarHidden(true) : undefined;
 			}
 		}
 	}

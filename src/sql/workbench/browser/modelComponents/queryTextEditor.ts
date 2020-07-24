@@ -20,7 +20,6 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
 
@@ -35,7 +34,6 @@ export class QueryTextEditor extends BaseTextEditor {
 	private _maxHeight: number = 4000;
 	private _selected: boolean;
 	private _hideLineNumbers: boolean;
-	private _editorWorkspaceConfig;
 	private _scrollbarHeight: number;
 	private _lineHeight: number;
 
@@ -46,9 +44,7 @@ export class QueryTextEditor extends BaseTextEditor {
 		@ITextResourceConfigurationService configurationService: ITextResourceConfigurationService,
 		@IThemeService themeService: IThemeService,
 		@IEditorGroupsService editorGroupService: IEditorGroupsService,
-		@IEditorService protected editorService: IEditorService,
-		@IConfigurationService private workspaceConfigurationService: IConfigurationService
-
+		@IEditorService protected editorService: IEditorService
 	) {
 		super(
 			QueryTextEditor.ID, telemetryService, instantiationService, storageService,
@@ -150,12 +146,10 @@ export class QueryTextEditor extends BaseTextEditor {
 		// that the viewportColumn will always be greater than any character's column in an editor.
 		let numberWrappedLines = 0;
 		let shouldAddHorizontalScrollbarHeight = false;
-		if (!this._editorWorkspaceConfig || configChanged) {
-			this._editorWorkspaceConfig = this.workspaceConfigurationService.getValue('editor');
+		if (!this._lineHeight || configChanged) {
 			this._lineHeight = editorWidget.getOption(EditorOption.lineHeight) || 18;
 		}
-		let wordWrapEnabled: boolean = this._editorWorkspaceConfig && this._editorWorkspaceConfig['wordWrap'] && this._editorWorkspaceConfig['wordWrap'] === 'on' ? true : false;
-		if (wordWrapEnabled) {
+		if (layoutInfo.isViewportWrapping) {
 			for (let line = 1; line <= lineCount; line++) {
 				// 2 columns is equivalent to the viewport column width and the edge of the editor
 				if (editorWidgetModel.getLineMaxColumn(line) >= layoutInfo.viewportColumn + 2) {

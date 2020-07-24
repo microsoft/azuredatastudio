@@ -114,11 +114,11 @@ export async function getResourceGroups(appContext: AppContext, account?: azdata
 		return result;
 	}
 	const service = appContext.getService<AzureResourceGroupService>(AzureResourceServiceNames.resourceGroupService);
-	await Promise.all(account.properties.tenants.map(async (tenant: { id: string | number; }) => {
+	await Promise.all(account.properties.tenants.map(async (tenant: { id: string; }) => {
 		try {
-			const tokens = await azdata.accounts.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
-			const token = tokens[tenant.id].token;
-			const tokenType = tokens[tenant.id].tokenType;
+			const tokenResponse = await azdata.accounts.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.ResourceManagement);
+			const token = tokenResponse.token;
+			const tokenType = tokenResponse.tokenType;
 
 			result.resourceGroups.push(...await service.getResources(subscription, new TokenCredentials(token, tokenType), account));
 		} catch (err) {
@@ -151,13 +151,13 @@ export async function getSubscriptions(appContext: AppContext, account?: azdata.
 	}
 
 	const subscriptionService = appContext.getService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService);
-	const tokens = await appContext.apiWrapper.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
-	await Promise.all(account.properties.tenants.map(async (tenant: { id: string | number; }) => {
+	await Promise.all(account.properties.tenants.map(async (tenant: { id: string; }) => {
 		try {
-			const token = tokens[tenant.id].token;
-			const tokenType = tokens[tenant.id].tokenType;
+			const response = await azdata.accounts.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.ResourceManagement);
+			const token = response.token;
+			const tokenType = response.tokenType;
 
-			result.subscriptions.push(...await subscriptionService.getSubscriptions(account, new TokenCredentials(token, tokenType)));
+			result.subscriptions.push(...await subscriptionService.getSubscriptions(account, new TokenCredentials(token, tokenType), tenant.id));
 		} catch (err) {
 			const error = new Error(localize('azure.accounts.getSubscriptions.queryError', "Error fetching subscriptions for account {0} tenant {1} : {2}",
 				account.displayInfo.displayName,

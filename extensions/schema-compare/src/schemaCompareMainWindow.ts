@@ -725,7 +725,7 @@ export class SchemaCompareMainWindow {
 			TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareOptionsOpened');
 			// create fresh every time
 			this.schemaCompareOptionDialog = new SchemaCompareOptionsDialog(this.deploymentOptions, this);
-			await this.schemaCompareOptionDialog.openDialog();
+			this.schemaCompareOptionDialog.openDialog();
 		});
 	}
 

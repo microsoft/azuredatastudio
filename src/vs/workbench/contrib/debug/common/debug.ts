@@ -157,7 +157,7 @@ export interface IDebugSessionOptions {
 	parentSession?: IDebugSession;
 	repl?: IDebugSessionReplMode;
 	compoundRoot?: DebugCompoundRoot;
-	noCompact?: boolean;
+	compact?: boolean;
 }
 
 export interface IDebugSession extends ITreeElement {
@@ -168,7 +168,7 @@ export interface IDebugSession extends ITreeElement {
 	readonly root: IWorkspaceFolder | undefined;
 	readonly parentSession: IDebugSession | undefined;
 	readonly subId: string | undefined;
-	readonly noCompact: boolean;
+	readonly compact: boolean;
 
 	setSubId(subId: string | undefined): void;
 
@@ -489,6 +489,8 @@ export interface IGlobalConfig {
 
 export interface IEnvConfig {
 	internalConsoleOptions?: 'neverOpen' | 'openOnSessionStart' | 'openOnFirstSessionStart';
+	preRestartTask?: string | TaskIdentifier;
+	postRestartTask?: string | TaskIdentifier;
 	preLaunchTask?: string | TaskIdentifier;
 	postDebugTask?: string | TaskIdentifier;
 	debugServer?: number;
@@ -868,7 +870,7 @@ export interface IDebugService {
 	restartSession(session: IDebugSession, restartData?: any): Promise<any>;
 
 	/**
-	 * Stops the session. If the session does not exist then stops all sessions.
+	 * Stops the session. If no session is specified then all sessions are stopped.
 	 */
 	stopSession(session: IDebugSession | undefined): Promise<any>;
 

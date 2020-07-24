@@ -10,16 +10,89 @@ import * as constants from '../../common/constants';
 
 export class FileConfigPage extends ImportPage {
 
-	private serverDropdown: azdata.DropDownComponent;
-	private databaseDropdown: azdata.DropDownComponent;
-	private fileTextBox: azdata.InputBoxComponent;
-	private fileButton: azdata.ButtonComponent;
-	private tableNameTextBox: azdata.InputBoxComponent;
-	private schemaDropdown: azdata.DropDownComponent;
-	private form: azdata.FormContainer;
+	private _serverDropdown: azdata.DropDownComponent;
+	private _databaseDropdown: azdata.DropDownComponent;
+	private _fileTextBox: azdata.InputBoxComponent;
+	private _fileButton: azdata.ButtonComponent;
+	private _tableNameTextBox: azdata.InputBoxComponent;
+	private _schemaDropdown: azdata.DropDownComponent;
+	private _form: azdata.FormContainer;
 
-	private databaseLoader: azdata.LoadingComponent;
-	private schemaLoader: azdata.LoadingComponent;
+	private _databaseLoader: azdata.LoadingComponent;
+	private _schemaLoader: azdata.LoadingComponent;
+
+	public get serverDropdown(): azdata.DropDownComponent {
+		return this._serverDropdown;
+	}
+
+	public set serverDropdown(serverDropdown: azdata.DropDownComponent) {
+		this._serverDropdown = serverDropdown;
+	}
+
+	public get databaseDropdown(): azdata.DropDownComponent {
+		return this._databaseDropdown;
+	}
+
+	public set databaseDropdown(databaseDropdown: azdata.DropDownComponent) {
+		this._databaseDropdown = databaseDropdown;
+	}
+
+	public get fileTextBox(): azdata.InputBoxComponent {
+		return this._fileTextBox;
+	}
+
+	public set fileTextBox(fileTextBox: azdata.InputBoxComponent) {
+		this._fileTextBox = fileTextBox;
+	}
+
+	public get fileButton(): azdata.ButtonComponent {
+		return this._fileButton;
+	}
+
+	public set fileButton(fileButton: azdata.ButtonComponent) {
+		this._fileButton = fileButton;
+	}
+
+	public get tableNameTextBox(): azdata.InputBoxComponent {
+		return this._tableNameTextBox;
+	}
+
+	public set tableNameTextBox(tableNameTextBox: azdata.InputBoxComponent) {
+		this._tableNameTextBox = tableNameTextBox;
+	}
+
+	public get schemaDropdown(): azdata.DropDownComponent {
+		return this._schemaDropdown;
+	}
+
+	public set schemaDropdown(schemaDropdown: azdata.DropDownComponent) {
+		this._schemaDropdown = schemaDropdown;
+	}
+
+	public get form(): azdata.FormContainer {
+		return this._form;
+	}
+
+	public set form(form: azdata.FormContainer) {
+		this._form = form;
+	}
+
+	public get databaseLoader(): azdata.LoadingComponent {
+		return this._databaseLoader;
+	}
+
+	public set databaseLoader(databaseLoader: azdata.LoadingComponent) {
+		this._databaseLoader = databaseLoader;
+	}
+
+	public get schemaLoader(): azdata.LoadingComponent {
+		return this._schemaLoader;
+	}
+
+	public set schemaLoader(schemaLoader: azdata.LoadingComponent) {
+		this._schemaLoader = schemaLoader;
+	}
+
 
 	private tableNames: string[] = [];
 
@@ -115,8 +188,8 @@ export class FileConfigPage extends ImportPage {
 		this.databaseDropdown.onValueChanged(async (db) => {
 			this.model.database = (<azdata.CategoryValue>this.databaseDropdown.value).name;
 			//this.populateTableNames();
-			let connectionProvider = this._apiWrapper.getProvider<azdata.ConnectionProvider>(this.model.server.providerName, azdata.DataProviderType.ConnectionProvider);
-			let connectionUri = await this._apiWrapper.getUriForConnection(this.model.server.connectionId);
+			let connectionProvider = azdata.dataprotocol.getProvider<azdata.ConnectionProvider>(this.model.server.providerName, azdata.DataProviderType.ConnectionProvider);
+			let connectionUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 			connectionProvider.changeDatabase(connectionUri, this.model.database);
 			this.populateSchemaDropdown();
 		});
@@ -299,8 +372,8 @@ export class FileConfigPage extends ImportPage {
 	}
 
 	public async getSchemaValues(): Promise<{ displayName: string, name: string }[]> {
-		let connectionUri = await this._apiWrapper.getUriForConnection(this.model.server.connectionId);
-		let queryProvider = this._apiWrapper.getProvider<azdata.QueryProvider>(this.model.server.providerName, azdata.DataProviderType.QueryProvider);
+		let connectionUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
+		let queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(this.model.server.providerName, azdata.DataProviderType.QueryProvider);
 
 		let results = await queryProvider.runQueryAndReturn(connectionUri, constants.selectSchemaQuery);
 
