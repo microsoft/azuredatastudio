@@ -6,13 +6,21 @@
 import * as azdata from 'azdata';
 import * as loc from '../../localizedConstants';
 import { DacFxDataModel } from './models';
+import { DataTierApplicationWizard } from '../dataTierApplicationWizard';
 
 export abstract class BasePage {
-
+	protected readonly instance: DataTierApplicationWizard;
 	protected readonly wizardPage: azdata.window.WizardPage;
 	protected readonly model: DacFxDataModel;
 	protected readonly view: azdata.ModelView;
 	public databaseValues: string[];
+
+	protected constructor(instance: DataTierApplicationWizard, wizardPage: azdata.window.WizardPage, model: DacFxDataModel, view: azdata.ModelView) {
+		this.instance = instance;
+		this.wizardPage = wizardPage;
+		this.model = model;
+		this.view = view;
+	}
 
 	/**
 	 * This method constructs all the elements of the page.

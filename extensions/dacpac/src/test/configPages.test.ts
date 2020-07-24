@@ -5,10 +5,17 @@
 
 import 'mocha';
 import * as should from 'should';
+import * as sinon from 'sinon';
+import * as azdata from 'azdata';
+import * as vscode from 'vscode';
+import * as os from 'os';
+import * as path from 'path';
+
 import { DataTierApplicationWizard, PageName } from '../wizard/dataTierApplicationWizard';
 import { DacFxDataModel } from '../wizard/api/models';
 import { TestContext, createContext } from './testContext';
-import { TestDeployConfigPage, TestExtractConfigPage } from './testDacFxConfigPages';
+import { TestDeployConfigPage, TestExtractConfigPage, TestImportConfigPage } from './testDacFxConfigPages';
+import { mockConnectionProfile } from './testUtils';
 
 let wizard: DataTierApplicationWizard;
 let testContext: TestContext;
@@ -18,6 +25,10 @@ describe('Dacfx Wizard Pages', function (): void {
 		wizard = new DataTierApplicationWizard();
 		wizard.model = <DacFxDataModel>{};
 		wizard.model.server = undefined;
+	});
+
+	afterEach(function (): void {
+		sinon.restore();
 	});
 
 	it('Should open and edit deploy config page correctly', async () => {
@@ -74,4 +85,28 @@ describe('Dacfx Wizard Pages', function (): void {
 		await extractConfigPage.onPageLeave();
 		should.equal(extractConfigPage.Model.filePath, 'DummyPath.dacpac');
 	});
+
+	it('Should open and edit import config page correctly', async () => {
+		const dacpacPath = vscode.Uri.file(path.join(os.tmpdir(), 'myDatabase.dacpac')).fsPath;
+
+		testContext = createContext();
+		wizard.setPages();
+
+		sinon.stub(azdata.connection, 'getConnections').resolves([mockConnectionProfile]);
+		sinon.stub(azdata.connection, 'listDatabases').resolves(['fakeDatabaseName']);
+		sinon.stub(vscode.window, 'showOpenDialog').resolves([vscode.Uri.file(dacpacPath)]);
+
+		let importConfigPage = new TestImportConfigPage(wizard, wizard.pages.get(PageName.importConfig).wizardPage, wizard.model, testContext.viewContext.view);
+		await importConfigPage.start();
+
+		let result = await importConfigPage.onPageEnter();
+		should(result).equal(true, 'onPageEnter() should successfullly load connection profiles');
+
+		testContext.viewContext.fileButtonOnClick.fire(undefined);
+		await importConfigPage.selectionPromise;
+		should(importConfigPage.Model.filePath).equal(dacpacPath);
+		should(importConfigPage.Model.database).equal('myDatabase');
+	});
 });
+
+
