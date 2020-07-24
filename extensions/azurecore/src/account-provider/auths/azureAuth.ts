@@ -29,6 +29,7 @@ const localize = nls.loadMessageBundle();
 
 
 export abstract class AzureAuth implements vscode.Disposable {
+	public static ACCOUNT_VERSION = '2.0';
 	protected readonly memdb = new MemoryDatabase<string>();
 
 	protected readonly WorkSchoolAccountType: string = 'work_school';
@@ -110,6 +111,11 @@ export abstract class AzureAuth implements vscode.Disposable {
 	}
 
 	public async refreshAccess(account: AzureAccount): Promise<AzureAccount> {
+		// Deprecated account - delete it.
+		if (account.key.accountVersion !== AzureAuth.ACCOUNT_VERSION) {
+			account.delete = true;
+			return account;
+		}
 		try {
 			const tenant = this.getHomeTenant(account);
 			const tokenResult = await this.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.MicrosoftResourceManagement);
@@ -505,7 +511,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 		const account = {
 			key: {
 				providerId: this.metadata.id,
-				accountId: key
+				accountId: key,
+				accountVersion: AzureAuth.ACCOUNT_VERSION,
 			},
 			name: displayName,
 			displayInfo: {
