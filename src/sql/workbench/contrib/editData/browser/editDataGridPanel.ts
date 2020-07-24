@@ -35,6 +35,7 @@ import { Event } from 'vs/base/common/event';
 import { equals } from 'vs/base/common/arrays';
 import * as DOM from 'vs/base/browser/dom';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { localize } from 'vs/nls';
 
 export class EditDataGridPanel extends GridParentComponent {
 	// The time(in milliseconds) we wait before refreshing the grid.
@@ -54,7 +55,8 @@ export class EditDataGridPanel extends GridParentComponent {
 	//main dataset to work on.
 	private dataSet: IGridDataSet;
 	private oldDataRows: VirtualizedCollection<any>;
-	private oldGridData: {}[];
+
+	private currentGridData: {}[];
 	private firstRender = true;
 	private firstLoad = true;
 	private enableEditing = true;
@@ -160,7 +162,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	handleStart(self: EditDataGridPanel, event: any): void {
 		self.dataSet = undefined;
 		self.oldDataRows = undefined;
-		self.oldGridData = undefined;
+		self.currentGridData = undefined;
 		self.placeHolderDataSets = [];
 		self.renderedDataSets = self.placeHolderDataSets;
 
@@ -246,14 +248,16 @@ export class EditDataGridPanel extends GridParentComponent {
 							return p;
 						}, {}));
 					}
-					if (gridData && gridData !== this.oldGridData) {
-						this.oldGridData = gridData;
+					if (gridData && gridData.length !== 0) {
+						this.currentGridData = assign({}, gridData);
 					}
 					return gridData;
-				}
-				else {
-					this.logService.error('Grid data is nonexistent, using last known good grid');
-					return this.oldGridData;
+				} else if (this.currentGridData) {
+					this.logService.error('griddata is undefined, using last known good grid data.');
+					return this.currentGridData;
+				} else {
+					this.notificationService.error(localize('gridDataLoadFail', 'Grid data load failure, no backup available, please reload the table'));
+					return Promise.reject();
 				}
 			});
 		};
@@ -403,20 +407,14 @@ export class EditDataGridPanel extends GridParentComponent {
 		self.gridDataProvider = new AsyncDataProvider(dataSet.dataRows);
 
 		// Create a dataSet to render without rows to reduce DOM size
-		let undefinedDataSet = deepClone(dataSet);
-		undefinedDataSet.columnDefinitions = dataSet.columnDefinitions;
-		undefinedDataSet.dataRows = undefined;
-		self.placeHolderDataSets.push(undefinedDataSet);
-		if (self.placeHolderDataSets[0]) {
-			this.refreshDatasets();
-		}
+		self.recreateDatasets(dataSet);
 		self.refreshGrid();
 
 		// Setup the state of the selected cell
-		this.resetCurrentCell();
-		this.removingNewRow = false;
-		this.newRowVisible = false;
-		this.dirtyCells = [];
+		self.resetCurrentCell();
+		self.removingNewRow = false;
+		self.newRowVisible = false;
+		self.dirtyCells = [];
 
 	}
 
@@ -446,22 +444,23 @@ export class EditDataGridPanel extends GridParentComponent {
 			clearTimeout(this.refreshGridTimeoutHandle);
 
 			this.refreshGridTimeoutHandle = setTimeout(() => {
-				try {
-					if (this.dataSet) {
-						this.placeHolderDataSets[0].dataRows = this.dataSet.dataRows;
-						this.onResize();
-					}
 
-
-					if (this.placeHolderDataSets[0].dataRows && this.oldDataRows !== this.placeHolderDataSets[0].dataRows) {
-						this.detectChange();
-						this.oldDataRows = this.placeHolderDataSets[0].dataRows;
-					}
+				if (this.dataSet) {
+					this.placeHolderDataSets[0].dataRows = this.dataSet.dataRows;
+					this.onResize();
 				}
-				catch {
+
+				if (this.placeHolderDataSets.length !== 0 && this.placeHolderDataSets[0].dataRows && this.oldDataRows !== this.placeHolderDataSets[0].dataRows) {
+					this.detectChange();
+					//check done to prevent oldDataRows from being corrupted during constant refresh.
+					if (this.placeHolderDataSets.length !== 0 && this.placeHolderDataSets[0].dataRows) {
+						this.oldDataRows = assign({}, this.placeHolderDataSets[0].dataRows);
+					}
+				} else {
 					this.logService.error('data set is empty, refresh cancelled.');
 					reject();
 				}
+
 
 				if (this.firstRender) {
 					setTimeout(() => this.setActive());
@@ -504,6 +503,17 @@ export class EditDataGridPanel extends GridParentComponent {
 			handled = true;
 		}
 		return handled;
+	}
+
+
+	recreateDatasets(dataSet: IGridDataSet): void {
+		let undefinedDataSet = deepClone(dataSet);
+		undefinedDataSet.columnDefinitions = dataSet.columnDefinitions;
+		undefinedDataSet.dataRows = undefined;
+		this.placeHolderDataSets.push(undefinedDataSet);
+		if (this.placeHolderDataSets[0]) {
+			this.refreshDatasets();
+		}
 	}
 
 	/**
