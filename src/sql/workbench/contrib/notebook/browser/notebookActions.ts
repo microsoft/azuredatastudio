@@ -28,7 +28,11 @@ import { find, firstIndex } from 'vs/base/common/arrays';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
+<<<<<<< HEAD
 import { URI } from 'vs/base/common/uri';
+=======
+
+>>>>>>> Get Kernel Alias through Capability Services
 
 const msgLoading = localize('loading', "Loading kernels...");
 export const msgChanging = localize('changing', "Changing kernel...");
@@ -271,15 +275,34 @@ export class CollapseCellsAction extends ToggleableAction {
 	}
 }
 
+<<<<<<< HEAD
 const showAllKernelsConfigName = 'notebook.showAllKernels';
 const workbenchPreviewConfigName = 'workbench.enablePreviewFeatures';
 export const noKernelName = localize('noKernel', "No Kernel");
+=======
+const ShowAllKernelsConfigName = 'notebook.showAllKernels';
+const WorkbenchPreviewConfigName = 'workbench.enablePreviewFeatures';
+
+>>>>>>> Get Kernel Alias through Capability Services
 export class KernelsDropdown extends SelectBox {
 	private model: NotebookModel;
 	private _showAllKernels: boolean = false;
-	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>, @IConfigurationService private _configurationService: IConfigurationService) {
+	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>, @IConfigurationService private _configurationService: IConfigurationService, @ICapabilitiesService private _capabilitiesService: ICapabilitiesService) {
 		super([msgLoading], msgLoading, contextViewProvider, container, { labelText: kernelLabel, labelOnTop: false, ariaLabel: kernelLabel } as ISelectBoxOptionsWithLabel);
 
+<<<<<<< HEAD
+=======
+		const providers = _capabilitiesService.providers;
+		let kernelAlias = [];
+		if (providers) {
+			for (const server in providers) {
+				if (providers[server].connection.notebookKernelAlias) {
+					kernelAlias.push(providers[server].connection.notebookKernelAlias);
+				}
+			}
+		}
+
+>>>>>>> Get Kernel Alias through Capability Services
 		if (modelReady) {
 			modelReady
 				.then((model) => this.updateModel(model))
