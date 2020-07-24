@@ -198,8 +198,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._scrollTop = (<HTMLElement>event.srcElement).scrollTop;
 	}
 
-	public unselectActiveCell() {
-		this.model.updateActiveCell(undefined);
+	public selectTopCell() {
+		this.model.updateActiveCell(this._model.cells[0]);
 		this.detectChanges();
 	}
 
@@ -212,6 +212,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	public onKeyDown(event) {
+		if (!this.model.activeCell) {
+			this.selectTopCell();
+		}
 		switch (event.key) {
 			case 'ArrowDown':
 			case 'ArrowRight':

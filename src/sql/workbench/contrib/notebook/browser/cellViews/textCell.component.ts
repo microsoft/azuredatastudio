@@ -49,13 +49,22 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this._activeCellId = value;
 	}
 
-	@HostListener('document:keydown.escape', ['$event'])
-	handleKeyboardEvent() {
-		if (this.isEditMode) {
-			this.toggleEditMode(false);
+	@HostListener('document:keydown', ['$event'])
+	handleKeyboardEvent(event) {
+		switch (event.key) {
+			case 'Escape':
+				if (this.isEditMode) {
+					this.toggleEditMode(false);
+				}
+				break;
+			case 'Enter':
+				if (!this.isEditMode) {
+					this.toggleEditMode(true);
+				}
+				break;
+			default:
+				break;
 		}
-		this.cellModel.active = false;
-		this._model.updateActiveCell(undefined);
 	}
 
 	@HostListener('document:keydown.meta.a', ['$event'])
