@@ -16,6 +16,7 @@ export const developers: string[] = [
 	'kburtram',
 	'lucyzhang929',
 	'smartguest',
+	't-anjaga',
 	'udeeshagautam',
 	'VasuBhog'
 ];
