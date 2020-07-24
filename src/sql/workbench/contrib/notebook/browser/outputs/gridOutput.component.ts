@@ -368,9 +368,9 @@ class DataResourceDataProvider implements IGridDataProvider {
 		return this._serializationService.serializeResults(serializeRequestParams);
 	}
 
-    /**
-     * Check if a range of cells were selected.
-     */
+	/**
+	 * Check if a range of cells were selected.
+	 */
 	private isSelected(selection: Slick.Range): boolean {
 		return (selection && !((selection.fromCell === selection.toCell) && (selection.fromRow === selection.toRow)));
 	}
