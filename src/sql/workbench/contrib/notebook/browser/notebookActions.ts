@@ -29,7 +29,6 @@ import { INotebookEditor } from 'sql/workbench/services/notebook/browser/noteboo
 import { NotebookComponent } from 'sql/workbench/contrib/notebook/browser/notebook.component';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
-import { ExtensionsRegistry } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 
 
 const msgLoading = localize('loading', "Loading kernels...");
@@ -285,31 +284,20 @@ export class CollapseCellsAction extends ToggleableAction {
 
 const ShowAllKernelsConfigName = 'notebook.showAllKernels';
 const WorkbenchPreviewConfigName = 'workbench.enablePreviewFeatures';
-const extensionPoints = ExtensionsRegistry.getExtensionPoints();
-// eslint-disable-next-line no-console
 
 export class KernelsDropdown extends SelectBox {
 	private model: NotebookModel;
 	private _showAllKernels: boolean = false;
-	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>, @IConfigurationService private _configurationService: IConfigurationService) {
+	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>, @IConfigurationService private _configurationService: IConfigurationService, @ICapabilitiesService private _capabilitiesService: ICapabilitiesService) {
 		super([msgLoading], msgLoading, contextViewProvider, container, { labelText: kernelLabel, labelOnTop: false, ariaLabel: kernelLabel } as ISelectBoxOptionsWithLabel);
 
-		for (const extensionPoint of extensionPoints) {
-			const users = extensionPoint._users;
-			if (extensionPoint.name === 'connectionProvider') {
-				if (users) {
-					// eslint-disable-next-line no-console
-					console.log(users);
-					for (const user of users) {
-						const kernelAlias = user.value.notebookKernelAlias;
-						if (kernelAlias) {
-							// eslint-disable-next-line no-console
-							console.log(kernelAlias);
-							//once we get kernel alias add to Dropdown menu
-						}
-					}
+		const providers = _capabilitiesService.providers;
+		let kernelAlias = [];
+		if (providers) {
+			for (const server in providers) {
+				if (providers[server].connection.notebookKernelAlias) {
+					kernelAlias.push(providers[server].connection.notebookKernelAlias);
 				}
-				break;
 			}
 		}
 

@@ -108,7 +108,7 @@ export class ExtensionPoint<T> implements IExtensionPoint<T> {
 	public readonly defaultExtensionKind: ExtensionKind;
 
 	private _handler: IExtensionPointHandler<T> | null;
-	public _users: IExtensionPointUser<T>[] | null;
+	private _users: IExtensionPointUser<T>[] | null;
 	private _delta: ExtensionPointUserDelta<T> | null;
 
 	constructor(name: string, defaultExtensionKind: ExtensionKind) {
