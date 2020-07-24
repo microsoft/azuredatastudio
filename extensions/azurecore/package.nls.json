@@ -31,5 +31,5 @@
 	"config.noSystemKeychain": "Disable system keychain integration. Credentials will be stored in a flat file in the user's home directory.",
 	"config.enableArcFeatures": "Should features related to Azure Arc be enabled (preview)",
 	"config.piiLogging": "Should Personally Identifiable Information (PII) be logged in the console view locally",
-	"config.useSubClaim": "Azure Data Studio should internally use sub claims for uniquely identifying unique Azure accounts. This should only be used if you have multiple Azure accounts that share the same email. This feature is experimental and may cause a poor user experience."
+	"config.useSubClaim": "Should Azure Data Studio internally use sub claims, instead of unique_name and email, for uniquely identifying unique Azure accounts. This should only be used if you have multiple Azure accounts that share the same email. This feature is experimental and may cause a poor user experience."
 }
