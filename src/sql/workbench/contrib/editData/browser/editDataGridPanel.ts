@@ -35,7 +35,6 @@ import { Event } from 'vs/base/common/event';
 import { equals } from 'vs/base/common/arrays';
 import * as DOM from 'vs/base/browser/dom';
 import { onUnexpectedError } from 'vs/base/common/errors';
-import { localize } from 'vs/nls';
 
 export class EditDataGridPanel extends GridParentComponent {
 	// The time(in milliseconds) we wait before refreshing the grid.
@@ -44,6 +43,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	// The timeout handle for the refresh grid task
 	private refreshGridTimeoutHandle: any;
+
 
 	// Optimized for the edit top 200 rows scenario, only need to retrieve the data once
 	// to make the scroll experience smoother
@@ -224,7 +224,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		// Setup a function for generating a promise to lookup result subsets
 		this.loadDataFunction = (offset: number, count: number): Promise<{}[]> => {
 			return self.dataService.getEditRows(offset, count).then(result => {
-				if (this.dataSet) {
+				if (result) {
 					let gridData = result.subset.map(r => {
 						let dataWithSchema = {};
 						// skip the first column since its a number column
@@ -251,14 +251,8 @@ export class EditDataGridPanel extends GridParentComponent {
 						this.oldGridData = assign({}, gridData);
 					}
 					return gridData;
-				} else if (this.oldGridData) {
-					//handle case where there is a good backup available to use instead.
-					this.logService.error('griddata is undefined, using last known good grid data.');
-					return this.oldGridData;
 				} else {
-					//handle case where there is no backup available. Must reject without data returned.
-					this.notificationService.error(localize('gridDataLoadFail', 'Grid data load failure, no backup available, please reload the table'));
-					return Promise.reject();
+					return this.oldGridData;
 				}
 			});
 		};

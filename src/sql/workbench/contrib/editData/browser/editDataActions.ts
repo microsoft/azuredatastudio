@@ -81,7 +81,6 @@ export class RefreshTableAction extends EditDataAction {
 	}
 
 	public async run(): Promise<void> {
-		clearTimeout(this.runTimeoutHandle);
 		this.runTimeoutHandle = setTimeout(() => {
 
 			if (this.isConnected(this.editor)) {
