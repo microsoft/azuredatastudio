@@ -52,16 +52,14 @@ export async function executeCommand(command: string, args?: string[], outputCha
  * @param args The additional args
  * @param outputChannel Channel used to display diagnostic information
  */
-export async function executeSudoCommand(command: string, outputChannel?: vscode.OutputChannel): Promise<string> {
-	return new Promise<string>((resolve, reject) => {
+export async function executeSudoCommand(command: string, outputChannel?: vscode.OutputChannel): Promise<{ stdout: string, stderr: string }> {
+	return new Promise((resolve, reject) => {
 		outputChannel?.appendLine(loc.executingCommand(`sudo ${command}`, []));
 		sudo.exec(command, { name: vscode.env.appName }, (error, stdout, stderr) => {
 			if (error) {
 				reject(error);
-			} else if (stderr) {
-				reject(stderr.toString());
 			} else {
-				resolve(stdout ? stdout.toString() : '');
+				resolve({ stdout: stdout?.toString() ?? '', stderr: stderr?.toString() ?? '' });
 			}
 		});
 	});
