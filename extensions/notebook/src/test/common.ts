@@ -334,7 +334,7 @@ class TestComponentBase implements azdata.Component {
 	}
 }
 
-class TestDropdownComponent extends TestComponentBase implements azdata.DropDownComponent {
+export class TestDropdownComponent extends TestComponentBase implements azdata.DropDownComponent {
 	constructor(private onClick: vscode.EventEmitter<any>) {
 		super();
 	}

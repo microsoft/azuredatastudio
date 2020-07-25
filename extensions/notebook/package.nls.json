@@ -8,6 +8,7 @@
 	"notebook.maxTableRows.description": "Maximum number of rows returned per table in the Notebook editor",
 	"notebook.trustedBooks.description": "Notebooks contained in these books will automatically be trusted.",
 	"notebook.maxBookSearchDepth.description": "Maximum depth of subdirectories to search for Books (Enter 0 for infinite)",
+	"notebook.remoteBookDownloadTimeout.description": "Download timeout in milliseconds for GitHub books",
 	"notebook.command.new": "New Notebook",
 	"notebook.command.open": "Open Notebook",
 	"notebook.analyzeJupyterNotebook": "Analyze in Notebook",
@@ -41,5 +42,6 @@
 	"title.closeJupyterNotebook": "Close Jupyter Notebook",
 	"title.revealInBooksViewlet": "Reveal in Books",
 	"title.createJupyterBook": "Create Book (Preview)",
-	"title.openNotebookFolder": "Open Notebooks in Folder"
+	"title.openNotebookFolder": "Open Notebooks in Folder",
+	"title.openRemoteJupyterBook": "Add Remote Jupyter Book"
 }
