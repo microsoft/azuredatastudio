@@ -40,13 +40,11 @@ export class JupyterController implements vscode.Disposable {
 	private _serverInstanceFactory: ServerInstanceFactory = new ServerInstanceFactory();
 	private _packageManageProviders = new Map<string, IPackageManageProvider>();
 
-	private outputChannel: vscode.OutputChannel;
 	private prompter: IPrompter;
 	private _notebookProvider: JupyterNotebookProvider;
 
 	constructor(private appContext: AppContext) {
 		this.prompter = new CodeAdapter();
-		this.outputChannel = vscode.window.createOutputChannel(constants.extensionOutputChannel);
 	}
 
 	public get extensionContext(): vscode.ExtensionContext {
@@ -65,7 +63,7 @@ export class JupyterController implements vscode.Disposable {
 	public async activate(): Promise<boolean> {
 		this._jupyterInstallation = new JupyterServerInstallation(
 			this.extensionContext.extensionPath,
-			this.outputChannel);
+			this.appContext.outputChannel);
 		await this._jupyterInstallation.configurePackagePaths();
 		IconPathHelper.setExtensionContext(this.extensionContext);
 
