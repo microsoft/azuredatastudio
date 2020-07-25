@@ -14,6 +14,9 @@ import { IExtensionApi, IPackageManageProvider } from './types';
 import { CellType } from './contracts/content';
 import { NotebookUriHandler } from './protocol/notebookUriHandler';
 import { BuiltInCommands, unsavedBooksContextKey } from './common/constants';
+import { RemoteBookController } from './book/remoteBookController';
+import { RemoteBookDialog } from './dialog/remoteBookDialog';
+import { RemoteBookDialogModel } from './dialog/remoteBookDialogModel';
 
 const localize = nls.loadMessageBundle();
 
@@ -36,7 +39,6 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.closeBook', (book: any) => bookTreeViewProvider.closeBook(book)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.closeNotebook', (book: any) => bookTreeViewProvider.closeBook(book)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openNotebookFolder', (folderPath?: string, urlToOpen?: string, showPreview?: boolean,) => bookTreeViewProvider.openNotebookFolder(folderPath, urlToOpen, showPreview)));
-
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.createBook', async () => {
 		let untitledFileName: vscode.Uri = vscode.Uri.parse(`untitled:${createBookPath}`);
 		await vscode.workspace.openTextDocument(createBookPath).then((document) => {
@@ -47,6 +49,15 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 			});
 		});
 	}));
+
+	let model = new RemoteBookDialogModel();
+	let remoteBookController = new RemoteBookController(model, appContext.outputChannel);
+
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openRemoteBook', async () => {
+		let dialog = new RemoteBookDialog(remoteBookController);
+		dialog.createDialog();
+	}));
+
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('_notebook.command.new', async (context?: azdata.ConnectedContext) => {
 		let connectionProfile: azdata.IConnectionProfile = undefined;
 		if (context && context.connectionProfile) {
