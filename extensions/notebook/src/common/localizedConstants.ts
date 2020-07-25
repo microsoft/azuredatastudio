@@ -39,3 +39,35 @@ export function openMarkdownError(resource: string, error: string): string { ret
 export function openUntitledNotebookError(resource: string, error: string): string { return localize('openUntitledNotebookError', "Open untitled notebook {0} as untitled failed: {1}", resource, error); }
 export function openExternalLinkError(resource: string, error: string): string { return localize('openExternalLinkError', "Open link {0} failed: {1}", resource, error); }
 export function closeBookError(resource: string, error: string): string { return localize('closeBookError', "Close book {0} failed: {1}", resource, error); }
+
+// Remote Book dialog constants
+export const url = localize('url', "URL");
+export const repoUrl = localize('repoUrl', "Repository URL");
+export const location = localize('location', "Location");
+export const addRemoteBook = localize('addRemoteBook', "Add Remote Book");
+export const onGitHub = localize('onGitHub', "GitHub");
+export const onSharedFile = localize('onsharedFile', "Shared File");
+export const releases = localize('releases', "Releases");
+export const book = localize('book', "Book");
+export const version = localize('version', "Version");
+export const language = localize('language', "Language");
+export const booksNotFound = localize('booksNotFound', "No books are currently available on the provided link");
+export const urlGithubError = localize('urlGithubError', "The url provided is not a Github release url");
+export const search = localize('search', "Search");
+export const add = localize('add', "Add");
+export const close = localize('close', "Close");
+export const invalidTextPlaceholder = localize('invalidTextPlaceholder', "-");
+
+// Remote Book Controller constants
+export const msgRemoteBookDownloadProgress = localize('msgRemoteBookDownloadProgress', "Remote Book download is in progress");
+export const msgRemoteBookDownloadComplete = localize('msgRemoteBookDownloadComplete', "Remote Book download is complete");
+export const msgRemoteBookDownloadError = localize('msgRemoteBookDownloadError', "Error while downloading remote Book");
+export const msgRemoteBookUnpackingError = localize('msgRemoteBookUnpackingError', "Error while decompressing remote Book");
+export const msgRemoteBookDirectoryError = localize('msgRemoteBookDirectoryError', "Error while creating remote Book directory");
+export const msgTaskName = localize('msgTaskName', "Downloading Remote Book");
+export const msgResourceNotFound = localize('msgResourceNotFound', "Resource not Found");
+export const msgBookNotFound = localize('msgBookNotFound', "Books not Found");
+export const msgReleaseNotFound = localize('msgReleaseNotFound', "Releases not Found");
+export const msgUndefinedAssetError = localize('msgUndefinedAssetError', "The selected book is not valid");
+export function httpRequestError(code: number, message: string): string { return localize('httpRequestError', "Http Request failed with error: {0} {1}", code, message); }
+export function msgDownloadLocation(downloadLocation: string): string { return localize('msgDownloadLocation', "Downloading to {0}", downloadLocation); }
