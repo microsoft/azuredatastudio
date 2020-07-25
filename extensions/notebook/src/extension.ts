@@ -22,7 +22,6 @@ const localize = nls.loadMessageBundle();
 
 let controller: JupyterController;
 type ChooseCellType = { label: string, id: CellType };
-let remoteBookController: RemoteBookController;
 
 export async function activate(extensionContext: vscode.ExtensionContext): Promise<IExtensionApi> {
 	const appContext = new AppContext(extensionContext);
@@ -52,7 +51,7 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	}));
 
 	let model = new RemoteBookDialogModel();
-	remoteBookController = new RemoteBookController(model, appContext.outputChannel);
+	let remoteBookController = new RemoteBookController(model, appContext.outputChannel);
 
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openRemoteBook', async () => {
 		let dialog = new RemoteBookDialog(remoteBookController);
