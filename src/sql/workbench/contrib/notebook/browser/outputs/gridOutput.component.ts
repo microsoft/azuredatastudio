@@ -337,24 +337,23 @@ class DataResourceDataProvider implements IGridDataProvider {
 			}
 			let result: ICellValue[][] = [];
 			if (includeHeaders) {
-				let columnHeaders: ICellValue[] = columns.map(col => {
+				result.push(columns.map(col => {
 					let headerData: azdata.DbCellValue;
-					headerData = ({
+					headerData = {
 						displayValue: col.columnName,
 						isNull: false,
 						invariantCultureDisplayValue: col.columnName
-					});
+					};
 					return headerData;
-				});
-				result.push(columnHeaders);
+				}));
 			}
-			this.rows.slice(index, endIndex).map(row => {
+			result = result.concat(this.rows.slice(index, endIndex).map(row => {
 				if (this.isSelected(singleSelection)) {
-					result.push(row.slice(singleSelection.fromCell, singleSelection.toCell + 1));
+					return row.slice(singleSelection.fromCell, singleSelection.toCell + 1);
 				} else {
-					result.push(row);
+					return row;
 				}
-			});
+			}));
 			return result;
 		};
 
