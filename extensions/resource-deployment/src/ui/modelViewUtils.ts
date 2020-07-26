@@ -680,9 +680,11 @@ function getClusterContexts(file: string): (() => Promise<OptionsInfo>) {
 }
 
 async function throwIfNotExistsOrNotAFile(file: string, fileDescription: string = 'kube config') {
-	let stats;
 	try {
-		stats = await fs.promises.stat(file); // this throws if the file does not exist with error.code = ENOENT
+		const stats = await fs.promises.stat(file); // this throws if the file does not exist with error.code = ENOENT
+		if (!stats.isFile()) {
+			throw Error(localize('getClusterContexts.NotFile', "Path:{0} is not a file, please select a valid {1} file ...", file, fileDescription));
+		}
 	}
 	catch (e) {
 		if (e.code === 'ENOENT') {
@@ -691,9 +693,6 @@ async function throwIfNotExistsOrNotAFile(file: string, fileDescription: string 
 		else {
 			throw e;
 		}
-	}
-	if (!stats.isFile()) {
-		throw Error(localize('getClusterContexts.NotFile', "Path:{0} is not a file, please select a valid {1} file ...", file, fileDescription));
 	}
 }
 
