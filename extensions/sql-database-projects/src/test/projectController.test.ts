@@ -417,7 +417,7 @@ describe('ProjectsController', function (): void {
 			let projController = TypeMoq.Mock.ofType(ProjectsController, undefined, undefined, new SqlDatabaseProjectTreeViewProvider());
 			projController.callBase = true;
 
-			projController.setup(x => x.importApiCall(TypeMoq.It.isAny())).returns(async (model) => { console.log('CALLED'); importPath = model.filePath; });
+			projController.setup(x => x.importApiCall(TypeMoq.It.isAny())).returns(async (model) => { importPath = model.filePath; });
 
 			await projController.object.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
 			should(importPath).equal(vscode.Uri.file(path.join(folderPath, projectName, projectName + '.sql')).fsPath, `model.filePath should be set to a specific file for ExtractTarget === file, but was ${importPath}`);
