@@ -683,12 +683,12 @@ async function throwIfNotExistsOrNotAFile(file: string, fileDescription: string 
 	try {
 		const stats = await fs.promises.stat(file); // this throws if the file does not exist with error.code = ENOENT
 		if (!stats.isFile()) {
-			throw Error(localize('getClusterContexts.NotFile', "Path:{0} is not a file, please select a valid {1} file ...", file, fileDescription));
+			throw Error(localize('getClusterContexts.NotFile', "Path:{0} is not a file, please select a valid {1} file.", file, fileDescription));
 		}
 	}
 	catch (e) {
 		if (e.code === 'ENOENT') {
-			throw Error(localize('getClusterContexts.FileNotFound', "File:{0} not found. Please select a {1} file ...", file, fileDescription));
+			throw Error(localize('getClusterContexts.FileNotFound', "File:{0} not found. Please select a {1} file.", file, fileDescription));
 		}
 		else {
 			throw e;
