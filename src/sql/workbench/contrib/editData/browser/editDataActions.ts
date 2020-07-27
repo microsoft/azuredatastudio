@@ -66,7 +66,7 @@ export class RefreshTableAction extends EditDataAction {
 	public static ID = 'refreshTableAction';
 	private static clicked = false;
 	//timeout to ensure query has completed fully.
-	private timeoutClicked = 2500;
+	private timeoutClicked = 2000;
 
 
 	constructor(editor: EditDataEditor,
