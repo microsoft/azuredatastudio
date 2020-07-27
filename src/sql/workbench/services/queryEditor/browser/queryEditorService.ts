@@ -49,7 +49,7 @@ export class QueryEditorService implements IQueryEditorService {
 		options = mixin(options, defaults, false);
 		// Create file path and file URI
 		let filePath = await this.createUntitledSqlFilePath();
-		let docUri: URI = URI.from({ scheme: Schemas.untitled, path: filePath });
+		let docUri: URI = options.resource ?? URI.from({ scheme: Schemas.untitled, path: filePath });
 
 		// Create a sql document pane with accoutrements
 		const fileInput = this._editorService.createEditorInput({ forceUntitled: true, resource: docUri, mode: 'sql' }) as UntitledTextEditorInput;
