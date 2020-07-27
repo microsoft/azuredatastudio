@@ -261,8 +261,13 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 
 		const tokenClaims: TokenClaims = this.getTokenClaims(accessTokenString);
+		let userKey: string;
 
-		const userKey = tokenClaims.home_oid ?? tokenClaims.oid ?? tokenClaims.unique_name ?? tokenClaims.sub;
+		if (tokenClaims.idp === 'live.com') {
+			userKey = tokenClaims.unique_name ?? tokenClaims.email ?? tokenClaims.sub;
+		} else {
+			userKey = tokenClaims.home_oid ?? tokenClaims.oid ?? tokenClaims.unique_name ?? tokenClaims.email ?? tokenClaims.sub;
+		}
 
 		if (!userKey) {
 			const msg = localize('azure.noUniqueIdentifier', "The user had no unique identifier within AAD");
