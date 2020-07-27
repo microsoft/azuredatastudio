@@ -32,13 +32,15 @@ export class AccountListDelegate implements IListVirtualDelegate<azdata.Account>
 	}
 }
 
-export interface AccountPickerListTemplate {
+export interface PickerListTemplate {
 	root: HTMLElement;
-	icon: HTMLElement;
-	badgeContent: HTMLElement;
-	contextualDisplayName: HTMLElement;
 	label: HTMLElement;
 	displayName: HTMLElement;
+}
+
+export interface AccountPickerListTemplate extends PickerListTemplate {
+	icon: HTMLElement;
+	badgeContent: HTMLElement;
 }
 
 export interface AccountListTemplate extends AccountPickerListTemplate {

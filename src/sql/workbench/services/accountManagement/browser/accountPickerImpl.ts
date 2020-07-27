@@ -8,7 +8,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { Event, Emitter } from 'vs/base/common/event';
 import { List } from 'vs/base/browser/ui/list/listWidget';
 import { IDropdownOptions } from 'vs/base/browser/ui/dropdown/dropdown';
-import { IListEvent } from 'vs/base/browser/ui/list/list';
+import { IListEvent, IListVirtualDelegate, IListRenderer } from 'vs/base/browser/ui/list/list';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { buttonBackground } from 'vs/platform/theme/common/colorRegistry';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
@@ -21,13 +21,57 @@ import * as azdata from 'azdata';
 import { DropdownList } from 'sql/base/browser/ui/dropdownList/dropdownList';
 import { attachDropdownStyler } from 'sql/platform/theme/common/styler';
 import { AddAccountAction, RefreshAccountAction } from 'sql/platform/accounts/common/accountActions';
-import { AccountPickerListRenderer, AccountListDelegate } from 'sql/workbench/services/accountManagement/browser/accountListRenderer';
+import { AccountPickerListRenderer, AccountListDelegate, PickerListTemplate } from 'sql/workbench/services/accountManagement/browser/accountListRenderer';
 import { AccountPickerViewModel } from 'sql/platform/accounts/common/accountPickerViewModel';
 import { firstIndex } from 'vs/base/common/arrays';
 
 interface Tenant {
 	id: string;
 	displayName: string;
+}
+
+export class TenantListDelegate implements IListVirtualDelegate<Tenant> {
+
+	constructor(
+		private _height: number
+	) {
+	}
+
+	public getHeight(element: Tenant): number {
+		return this._height;
+	}
+
+	public getTemplateId(element: Tenant): string {
+		return 'tenantListRenderer';
+	}
+}
+
+export class TenantPickerListRenderer implements IListRenderer<Tenant, PickerListTemplate> {
+	public static TEMPLATE_ID = 'accountListRenderer';
+
+	public get templateId(): string {
+		return AccountPickerListRenderer.TEMPLATE_ID;
+	}
+
+	public renderTemplate(container: HTMLElement): PickerListTemplate {
+		const tableTemplate: PickerListTemplate = Object.create(null);
+		tableTemplate.root = DOM.append(container, DOM.$('div.list-row.account-picker-list'));
+		tableTemplate.label = DOM.append(tableTemplate.root, DOM.$('div.label'));
+		tableTemplate.displayName = DOM.append(tableTemplate.label, DOM.$('div.display-name'));
+		return tableTemplate;
+	}
+
+	public renderElement(tenant: Tenant, index: number, templateData: PickerListTemplate): void {
+		templateData.displayName.innerText = tenant.displayName;
+	}
+
+	public disposeTemplate(template: PickerListTemplate): void {
+		// noop
+	}
+
+	public disposeElement(element: Tenant, index: number, templateData: PickerListTemplate): void {
+		// noop
+	}
 }
 
 export class AccountPicker extends Disposable {
@@ -38,9 +82,8 @@ export class AccountPicker extends Disposable {
 	private _refreshContainer: HTMLElement;
 	private _listContainer: HTMLElement;
 	private _dropdown: DropdownList;
-	private _tenantContainer: HTMLElement;
 	private _tenantListContainer: HTMLElement;
-	private _tenantsList: List<Tenant>;
+	private _tenantList: List<Tenant>;
 	private _tenantDropdown: DropdownList;
 	private _refreshAccountAction: RefreshAccountAction;
 
@@ -99,11 +142,19 @@ export class AccountPicker extends Disposable {
 	public createAccountPickerComponent() {
 		// Create an account list
 		const delegate = new AccountListDelegate(AccountPicker.ACCOUNTPICKERLIST_HEIGHT);
+		const tenantDelegate = new TenantListDelegate(AccountPicker.ACCOUNTPICKERLIST_HEIGHT);
+
 		const accountRenderer = new AccountPickerListRenderer();
+		const tenantRenderer = new TenantPickerListRenderer();
+
 		this._listContainer = DOM.$('div.account-list-container');
+		this._tenantListContainer = DOM.$('div.tenant-list-container');
 
 		this._accountList = new List<azdata.Account>('AccountPicker', this._listContainer, delegate, [accountRenderer]);
+		this._tenantList = new List<Tenant>('TenantPicker', this._tenantListContainer, tenantDelegate, [tenantRenderer]);
+
 		this._register(attachListStyler(this._accountList, this._themeService));
+		this._register(attachListStyler(this._tenantList, this._themeService));
 
 		this._rootElement = DOM.$('div.account-picker-container');
 
@@ -113,6 +164,11 @@ export class AccountPicker extends Disposable {
 			labelRenderer: (container) => this.renderLabel(container)
 		};
 
+		const tenantOption: IDropdownOptions = {
+			contextViewProvider: this._contextViewService,
+			labelRenderer: (container) => this.renderTenantLabel(container)
+		};
+
 		// Create the add account action
 		const addAccountAction = this._instantiationService.createInstance(AddAccountAction, this._providerId);
 		addAccountAction.addAccountCompleteEvent(() => this._addAccountCompleteEmitter.fire());
@@ -120,11 +176,20 @@ export class AccountPicker extends Disposable {
 		addAccountAction.addAccountStartEvent(() => this._addAccountStartEmitter.fire());
 
 		this._dropdown = this._register(new DropdownList(this._rootElement, option, this._listContainer, this._accountList, addAccountAction));
+		this._tenantDropdown = this._register(new DropdownList(this._rootElement, tenantOption, this._tenantListContainer, this._tenantList));
+
 		this._register(attachDropdownStyler(this._dropdown, this._themeService));
 		this._register(this._accountList.onDidChangeSelection((e: IListEvent<azdata.Account>) => {
 			if (e.elements.length === 1) {
 				this._dropdown.renderLabel();
 				this.onAccountSelectionChange(e.elements[0]);
+			}
+		}));
+
+		this._register(this._tenantList.onDidChangeSelection((e: IListEvent<Tenant>) => {
+			if (e.elements.length === 1) {
+				this._tenantDropdown.renderLabel();
+				this.onTenantSelectionChange(e.elements[0].id);
 			}
 		}));
 
@@ -169,10 +234,10 @@ export class AccountPicker extends Disposable {
 			DOM.hide(this._refreshContainer);
 
 			if (account.properties.tenants?.length === 1) {
-				DOM.hide(this._tenantContainer);
+				DOM.hide(this._tenantListContainer);
 				this.onTenantSelectionChange(account?.properties?.tenants[0]);
 			} else {
-				DOM.show(this._tenantContainer);
+				DOM.show(this._tenantListContainer);
 			}
 		}
 
@@ -215,6 +280,25 @@ export class AccountPicker extends Disposable {
 		} else {
 			const row = DOM.append(container, DOM.$('div.no-account-container'));
 			row.innerText = AddAccountAction.LABEL + '...';
+		}
+		return null;
+	}
+
+	private renderTenantLabel(container: HTMLElement): IDisposable | null {
+		if (container.hasChildNodes()) {
+			for (let i = 0; i < container.childNodes.length; i++) {
+				container.removeChild(container.childNodes.item(i));
+			}
+		}
+
+		const selectedTenants = this._tenantList.getSelectedElements();
+		const tenant = selectedTenants ? selectedTenants[0] : undefined;
+		if (tenant) {
+			const row = DOM.append(container, DOM.$('div.selected-tenant-container'));
+			const label = DOM.append(row, DOM.$('div.label'));
+
+			// TODO: Pick between the light and dark logo
+			label.innerText = tenant.displayName;
 		}
 		return null;
 	}
