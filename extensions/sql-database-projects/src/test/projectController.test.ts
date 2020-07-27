@@ -252,7 +252,6 @@ describe('ProjectsController', function (): void {
 
 				const publishHoller = 'hello from callback for publish()';
 				const generateHoller = 'hello from callback for generateScript()';
-				const profileHoller = 'hello from callback for readPublishProfile()';
 
 				let holler = 'nothing';
 
@@ -266,15 +265,6 @@ describe('ProjectsController', function (): void {
 				projController.setup(x => x.executionCallback(TypeMoq.It.isAny(), TypeMoq.It.is((_): _ is IPublishSettings => true))).returns(() => {
 					holler = publishHoller;
 					return Promise.resolve(undefined);
-				});
-				projController.setup(x => x.readPublishProfileCallback(TypeMoq.It.isAny())).returns(() => {
-					holler = profileHoller;
-					return Promise.resolve({
-						databaseName: '',
-						connectionId: '',
-						connectionString: '',
-						sqlCmdVariables: {}
-					});
 				});
 
 				projController.setup(x => x.executionCallback(TypeMoq.It.isAny(), TypeMoq.It.is((_): _ is IGenerateScriptSettings => true))).returns(() => {
@@ -291,13 +281,7 @@ describe('ProjectsController', function (): void {
 				await dialog.generateScriptClick();
 
 				should(holler).equal(generateHoller, 'executionCallback() is supposed to have been setup and called for GenerateScript scenario');
-
-				dialog = await projController.object.publishProject(proj);
-				await projController.object.readPublishProfileCallback(vscode.Uri.parse('test'));
-
-				should(holler).equal(profileHoller, 'executionCallback() is supposed to have been setup and called for ReadPublishProfile scenario');
 			});
-
 
 			it('Should copy dacpac to temp folder before publishing', async function (): Promise<void> {
 				const fakeDacpacContents = 'SwiftFlewHiawathasArrow';
@@ -417,7 +401,7 @@ describe('ProjectsController', function (): void {
 			let projController = TypeMoq.Mock.ofType(ProjectsController, undefined, undefined, new SqlDatabaseProjectTreeViewProvider());
 			projController.callBase = true;
 
-			projController.setup(x => x.importApiCall(TypeMoq.It.isAny())).returns(async (model) => { console.log('CALLED'); importPath = model.filePath; });
+			projController.setup(x => x.importApiCall(TypeMoq.It.isAny())).returns(async (model) => { importPath = model.filePath; });
 
 			await projController.object.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
 			should(importPath).equal(vscode.Uri.file(path.join(folderPath, projectName, projectName + '.sql')).fsPath, `model.filePath should be set to a specific file for ExtractTarget === file, but was ${importPath}`);
