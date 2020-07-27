@@ -17,6 +17,12 @@ interface DataSourceDropdownValue extends azdata.CategoryValue {
 	database: string;
 }
 
+export namespace cssStyles {
+	export const text = { 'user-select': 'text', 'cursor': 'text' };
+	export const tableHeader = { ...text, 'text-align': 'left', 'border': 'none' };
+	export const tableRow = { ...text, 'border-top': 'solid 1px #ccc', 'border-bottom': 'solid 1px #ccc', 'border-left': 'none', 'border-right': 'none' };
+}
+
 export class PublishDatabaseDialog {
 	public dialog: azdata.window.Dialog;
 	public publishTab: azdata.window.DialogTab;
@@ -28,13 +34,13 @@ export class PublishDatabaseDialog {
 	private connectionsRadioButton: azdata.RadioButtonComponent | undefined;
 	private dataSourcesRadioButton: azdata.RadioButtonComponent | undefined;
 	private loadProfileButton: azdata.ButtonComponent | undefined;
-	private sqlCmdVariablesTable: azdata.TableComponent | undefined;
+	private sqlCmdVariablesTable: azdata.DeclarativeTableComponent | undefined;
 	private sqlCmdVariablesFormComponent: azdata.FormComponent | undefined;
 	private formBuilder: azdata.FormBuilder | undefined;
 
 	private connectionId: string | undefined;
 	private connectionIsDataSource: boolean | undefined;
-	private profileSqlCmdVars: Record<string, string> | undefined;
+	private sqlCmdVars: Record<string, string> | undefined;
 
 	private toDispose: vscode.Disposable[] = [];
 
@@ -93,23 +99,11 @@ export class PublishDatabaseDialog {
 			});
 
 			this.loadProfileButton = this.createLoadProfileButton(view);
-			this.sqlCmdVariablesTable = view.modelBuilder.table().withProperties({
-				title: constants.sqlCmdTableLabel,
-				data: this.convertSqlCmdVarsToTableFormat(this.project.sqlCmdVariables),
-				columns: [
-					{
-						value: constants.sqlCmdVariableColumn
-					},
-					{
-						value: constants.sqlCmdValueColumn,
-					}],
-				width: 400,
-				height: 400
-			}).component();
+			this.sqlCmdVariablesTable = this.createSqlCmdTable(view);
 
 			this.sqlCmdVariablesFormComponent = {
 				title: constants.sqlCmdTableLabel,
-				component: <azdata.TableComponent>this.sqlCmdVariablesTable
+				component: <azdata.DeclarativeTableComponent>this.sqlCmdVariablesTable
 			};
 
 			this.formBuilder = <azdata.FormBuilder>view.modelBuilder.formContainer()
@@ -144,7 +138,7 @@ export class PublishDatabaseDialog {
 			if (Object.keys(this.project.sqlCmdVariables).length > 0) {
 				this.formBuilder.insertFormItem({
 					title: constants.sqlCmdTableLabel,
-					component: <azdata.TableComponent>this.sqlCmdVariablesTable
+					component: <azdata.DeclarativeTableComponent>this.sqlCmdVariablesTable
 				},
 					6);
 			}
@@ -218,14 +212,8 @@ export class PublishDatabaseDialog {
 	}
 
 	private getSqlCmdVariablesForPublish(): Record<string, string> {
-		// get SQLCMD variables from project
-		let sqlCmdVariables = { ...this.project.sqlCmdVariables };
-
-		// update with SQLCMD variables loaded from profile if there are any
-		for (const key in this.profileSqlCmdVars) {
-			sqlCmdVariables[key] = this.profileSqlCmdVars[key];
-		}
-
+		// get SQLCMD variables from table
+		let sqlCmdVariables = { ...this.sqlCmdVars };
 		return sqlCmdVariables;
 	}
 
@@ -344,6 +332,42 @@ export class PublishDatabaseDialog {
 		}
 	}
 
+	private createSqlCmdTable(view: azdata.ModelView): azdata.DeclarativeTableComponent {
+		this.sqlCmdVars = { ...this.project.sqlCmdVariables };
+
+		const table = view.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
+			ariaLabel: constants.sqlCmdTableLabel,
+			data: this.convertSqlCmdVarsToTableFormat(this.sqlCmdVars),
+			columns: [
+				{
+					displayName: constants.sqlCmdVariableColumn,
+					valueType: azdata.DeclarativeDataType.string,
+					width: '50%',
+					isReadOnly: true,
+					headerCssStyles: cssStyles.tableHeader,
+					rowCssStyles: cssStyles.tableRow
+				},
+				{
+					displayName: constants.sqlCmdValueColumn,
+					valueType: azdata.DeclarativeDataType.string,
+					width: '50%',
+					isReadOnly: false,
+					headerCssStyles: cssStyles.tableHeader,
+					rowCssStyles: cssStyles.tableRow
+				}],
+			width: '100%'
+		}).component();
+
+		table.onDataChanged(() => {
+			this.sqlCmdVars = {};
+			table.data.forEach((row) => {
+				(<Record<string, string>>this.sqlCmdVars)[row[0]] = row[1];
+			});
+		});
+
+		return table;
+	}
+
 	private createEditConnectionButton(view: azdata.ModelView): azdata.Component {
 		let editConnectionButton: azdata.ButtonComponent = view.modelBuilder.button().withProperties({
 			label: constants.editConnectionButtonText,
@@ -417,10 +441,13 @@ export class PublishDatabaseDialog {
 				this.connectionId = result.connectionId;
 				(<azdata.InputBoxComponent>this.targetConnectionTextBox).value = result.connectionString;
 
-				this.profileSqlCmdVars = result.sqlCmdVariables;
+				for (let key in result.sqlCmdVariables) {
+					(<Record<string, string>>this.sqlCmdVars)[key] = result.sqlCmdVariables[key];
+				}
+
 				const data = this.convertSqlCmdVarsToTableFormat(this.getSqlCmdVariablesForPublish());
 
-				await (<azdata.TableComponent>this.sqlCmdVariablesTable).updateProperties({
+				await (<azdata.DeclarativeTableComponent>this.sqlCmdVariablesTable).updateProperties({
 					data: data
 				});
 
