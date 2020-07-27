@@ -224,7 +224,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		// Setup a function for generating a promise to lookup result subsets
 		this.loadDataFunction = (offset: number, count: number): Promise<{}[]> => {
 			return self.dataService.getEditRows(offset, count).then(result => {
-				if (result) {
+				if (this.dataSet) {
 					let gridData = result.subset.map(r => {
 						let dataWithSchema = {};
 						// skip the first column since its a number column

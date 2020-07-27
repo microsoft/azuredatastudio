@@ -673,7 +673,9 @@ export class EditDataEditor extends BaseEditor {
 	private _updateTaskbar(owner: EditDataInput): void {
 		// Update the taskbar if the owner of this call is being presented
 		if (owner.matches(this.editDataInput)) {
-			this._refreshTableAction.enabled = owner.refreshButtonEnabled;
+			if (!this._refreshTableAction.isClicked()) {
+				this._refreshTableAction.enabled = owner.refreshButtonEnabled;
+			}
 			this._stopRefreshTableAction.enabled = owner.stopButtonEnabled;
 			this._changeMaxRowsActionItem.setCurrentOptionIndex = owner.rowLimit;
 			this._showQueryPaneAction.queryPaneEnabled = owner.queryPaneEnabled;
