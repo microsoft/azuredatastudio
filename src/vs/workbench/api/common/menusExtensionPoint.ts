@@ -198,7 +198,7 @@ const apiMenus: IAPIMenu[] = [
 	},
 	{
 		key: 'objectExplorer/item/context',
-		id: MenuId.DataExplorerContext,
+		id: MenuId.ObjectExplorerItemContext,
 		description: localize('objectExplorer.context', "The object explorer item context menu")
 	},
 	// {{SQL CARBON EDIT}} end menu entries
