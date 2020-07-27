@@ -18,6 +18,7 @@ export class AccountPickerViewModel {
 	public get updateAccountListEvent(): Event<UpdateAccountListEventParams> { return this._updateAccountListEmitter.event; }
 
 	public selectedAccount: azdata.Account | undefined;
+	public selectedTenantId: string | undefined;
 
 	constructor(
 		_providerId: string,

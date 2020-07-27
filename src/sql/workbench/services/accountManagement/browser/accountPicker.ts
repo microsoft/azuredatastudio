@@ -16,5 +16,6 @@ export interface IAccountPickerService {
 	addAccountErrorEvent: Event<string>;
 	addAccountStartEvent: Event<void>;
 	onAccountSelectionChangeEvent: Event<azdata.Account | undefined>;
+	onTenantSelectionChangeEvent: Event<string | undefined>;
 	selectedAccount: azdata.Account | undefined;
 }

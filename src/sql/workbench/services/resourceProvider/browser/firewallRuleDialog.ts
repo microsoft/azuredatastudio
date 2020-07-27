@@ -138,6 +138,7 @@ export class FirewallRuleDialog extends Modal {
 		});
 		this._accountPickerService.addAccountStartEvent(() => this.spinner = true);
 		this._accountPickerService.onAccountSelectionChangeEvent((account) => this.onAccountSelectionChange(account));
+		this._accountPickerService.onTenantSelectionChangeEvent((tenantId) => this.onTenantSelectionChange(tenantId));
 
 		const azureAccountSection = DOM.append(body, DOM.$('.azure-account-section.new-section'));
 		const azureAccountLabel = localize('azureAccount', "Azure account");
@@ -287,6 +288,10 @@ export class FirewallRuleDialog extends Modal {
 		} else {
 			this._createButton.enabled = false;
 		}
+	}
+
+	public onTenantSelectionChange(tenantId: string): void {
+
 	}
 
 	public onServiceComplete() {

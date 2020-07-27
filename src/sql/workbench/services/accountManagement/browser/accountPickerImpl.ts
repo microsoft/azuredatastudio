@@ -25,6 +25,11 @@ import { AccountPickerListRenderer, AccountListDelegate } from 'sql/workbench/se
 import { AccountPickerViewModel } from 'sql/platform/accounts/common/accountPickerViewModel';
 import { firstIndex } from 'vs/base/common/arrays';
 
+interface Tenant {
+	id: string;
+	displayName: string;
+}
+
 export class AccountPicker extends Disposable {
 	public static ACCOUNTPICKERLIST_HEIGHT = 47;
 	public viewModel: AccountPickerViewModel;
@@ -33,6 +38,10 @@ export class AccountPicker extends Disposable {
 	private _refreshContainer: HTMLElement;
 	private _listContainer: HTMLElement;
 	private _dropdown: DropdownList;
+	private _tenantContainer: HTMLElement;
+	private _tenantListContainer: HTMLElement;
+	private _tenantsList: List<Tenant>;
+	private _tenantDropdown: DropdownList;
 	private _refreshAccountAction: RefreshAccountAction;
 
 	// EVENTING ////////////////////////////////////////////////////////////
@@ -48,6 +57,9 @@ export class AccountPicker extends Disposable {
 	private _onAccountSelectionChangeEvent: Emitter<azdata.Account | undefined>;
 	public get onAccountSelectionChangeEvent(): Event<azdata.Account | undefined> { return this._onAccountSelectionChangeEvent.event; }
 
+	private _onTenantSelectionChangeEvent: Emitter<string | undefined>;
+	public get onTenantSelectionChangeEvent(): Event<string | undefined> { return this._onTenantSelectionChangeEvent.event; }
+
 	constructor(
 		private _providerId: string,
 		@IThemeService private _themeService: IThemeService,
@@ -61,6 +73,7 @@ export class AccountPicker extends Disposable {
 		this._addAccountErrorEmitter = new Emitter<string>();
 		this._addAccountStartEmitter = new Emitter<void>();
 		this._onAccountSelectionChangeEvent = new Emitter<azdata.Account>();
+		this._onTenantSelectionChangeEvent = new Emitter<string | undefined>();
 
 		// Create the view model, wire up the events, and initialize with baseline data
 		this.viewModel = this._instantiationService.createInstance(AccountPickerViewModel, this._providerId);
@@ -88,6 +101,7 @@ export class AccountPicker extends Disposable {
 		const delegate = new AccountListDelegate(AccountPicker.ACCOUNTPICKERLIST_HEIGHT);
 		const accountRenderer = new AccountPickerListRenderer();
 		this._listContainer = DOM.$('div.account-list-container');
+
 		this._accountList = new List<azdata.Account>('AccountPicker', this._listContainer, delegate, [accountRenderer]);
 		this._register(attachListStyler(this._accountList, this._themeService));
 
@@ -153,9 +167,21 @@ export class AccountPicker extends Disposable {
 			DOM.show(this._refreshContainer);
 		} else {
 			DOM.hide(this._refreshContainer);
+
+			if (account.properties.tenants?.length === 1) {
+				DOM.hide(this._tenantContainer);
+				this.onTenantSelectionChange(account?.properties?.tenants[0]);
+			} else {
+				DOM.show(this._tenantContainer);
+			}
 		}
 
 		this._onAccountSelectionChangeEvent.fire(account);
+	}
+
+	private onTenantSelectionChange(tenantId: string | undefined) {
+		this.viewModel.selectedTenantId = tenantId;
+		this._onTenantSelectionChangeEvent.fire(tenantId);
 	}
 
 	private renderLabel(container: HTMLElement): IDisposable | null {
