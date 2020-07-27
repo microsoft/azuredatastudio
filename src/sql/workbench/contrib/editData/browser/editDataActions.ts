@@ -66,7 +66,7 @@ export class RefreshTableAction extends EditDataAction {
 	public static ID = 'refreshTableAction';
 	private static clicked = false;
 	//timeout to ensure query has completed fully.
-	private timeoutClicked = 3000;
+	private timeoutClicked = 2500;
 
 
 	constructor(editor: EditDataEditor,
@@ -86,6 +86,7 @@ export class RefreshTableAction extends EditDataAction {
 		if (!RefreshTableAction.clicked && this.isConnected(this.editor)) {
 			RefreshTableAction.clicked = true;
 			this.enabled = false;
+			this._notificationService.status(nls.localize('refreshEditDataTable', "Table refresh in progress, please wait for completion."), { hideAfter: this.timeoutClicked });
 			let input = this.editor.editDataInput;
 
 			let rowLimit: number = undefined;
