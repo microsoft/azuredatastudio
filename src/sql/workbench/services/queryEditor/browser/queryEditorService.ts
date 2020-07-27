@@ -43,7 +43,7 @@ export class QueryEditorService implements IQueryEditorService {
 	////// Public functions
 
 	/**
-	 * Creates new untitled document for SQL query and opens in new editor tab
+	 * Creates new untitled document for SQL/Kusto query and opens in new editor tab
 	 */
 	public async newSqlEditor(options: INewSqlEditorOptions = {}, connectionProviderName?: string): Promise<IConnectableInput> {
 		options = mixin(options, defaults, false);
