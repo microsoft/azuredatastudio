@@ -39,11 +39,10 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 export class EditDataGridPanel extends GridParentComponent {
 	// The time(in milliseconds) we wait before refreshing the grid.
 	// We use clearTimeout and setTimeout pair to avoid unnecessary refreshes.
-	private refreshGridTimeoutInMs = 300;
+	private refreshGridTimeoutInMs = 200;
 
 	// The timeout handle for the refresh grid task
 	private refreshGridTimeoutHandle: any;
-
 
 	// Optimized for the edit top 200 rows scenario, only need to retrieve the data once
 	// to make the scroll experience smoother
@@ -402,14 +401,20 @@ export class EditDataGridPanel extends GridParentComponent {
 		self.gridDataProvider = new AsyncDataProvider(dataSet.dataRows);
 
 		// Create a dataSet to render without rows to reduce DOM size
-		self.recreateDatasets(dataSet);
+		let undefinedDataSet = deepClone(dataSet);
+		undefinedDataSet.columnDefinitions = dataSet.columnDefinitions;
+		undefinedDataSet.dataRows = undefined;
+		this.placeHolderDataSets.push(undefinedDataSet);
+		if (this.placeHolderDataSets[0]) {
+			this.refreshDatasets();
+		}
 		self.refreshGrid();
 
 		// Setup the state of the selected cell
-		self.resetCurrentCell();
-		self.removingNewRow = false;
-		self.newRowVisible = false;
-		self.dirtyCells = [];
+		this.resetCurrentCell();
+		this.removingNewRow = false;
+		this.newRowVisible = false;
+		this.dirtyCells = [];
 
 	}
 
@@ -494,17 +499,6 @@ export class EditDataGridPanel extends GridParentComponent {
 			handled = true;
 		}
 		return handled;
-	}
-
-
-	recreateDatasets(dataSet: IGridDataSet): void {
-		let undefinedDataSet = deepClone(dataSet);
-		undefinedDataSet.columnDefinitions = dataSet.columnDefinitions;
-		undefinedDataSet.dataRows = undefined;
-		this.placeHolderDataSets.push(undefinedDataSet);
-		if (this.placeHolderDataSets[0]) {
-			this.refreshDatasets();
-		}
 	}
 
 	/**
