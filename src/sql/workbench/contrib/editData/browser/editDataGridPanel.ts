@@ -250,7 +250,8 @@ export class EditDataGridPanel extends GridParentComponent {
 						this.oldGridData = assign({}, gridData);
 					}
 					return gridData;
-				} else {
+				}
+				else {
 					return this.oldGridData;
 				}
 			});
@@ -404,8 +405,8 @@ export class EditDataGridPanel extends GridParentComponent {
 		let undefinedDataSet = deepClone(dataSet);
 		undefinedDataSet.columnDefinitions = dataSet.columnDefinitions;
 		undefinedDataSet.dataRows = undefined;
-		this.placeHolderDataSets.push(undefinedDataSet);
-		if (this.placeHolderDataSets[0]) {
+		self.placeHolderDataSets.push(undefinedDataSet);
+		if (self.placeHolderDataSets[0]) {
 			this.refreshDatasets();
 		}
 		self.refreshGrid();
