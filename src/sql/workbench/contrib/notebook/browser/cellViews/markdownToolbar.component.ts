@@ -30,13 +30,18 @@ export class MarkdownToolbarComponent {
 	public buttonLink = localize('buttonLink', "Link");
 	public buttonList = localize('buttonList', "List");
 	public buttonOrderedList = localize('buttonOrderedList', "Ordered list");
-	public buttonImage = localize('buttonImage', "Image");
-	public buttonPreview = localize('buttonPreview', "Markdown preview toggle - off");
+
+	public imageDropdown = localize('imageDropdown', "Image");
+	public embedImage = localize('embedImage', "Embed an image");
+	public linkImage = localize('linkImage', "Link to an image");
+
 	public dropdownHeading = localize('dropdownHeading', "Heading");
 	public optionHeading1 = localize('optionHeading1', "Heading 1");
 	public optionHeading2 = localize('optionHeading2', "Heading 2");
 	public optionHeading3 = localize('optionHeading3', "Heading 3");
 	public optionParagraph = localize('optionParagraph', "Paragraph");
+
+	public buttonPreview = localize('buttonPreview', "Markdown preview toggle - off");
 
 	@Input() public cellModel: ICellModel;
 	private _actionBar: Taskbar;
@@ -59,8 +64,10 @@ export class MarkdownToolbarComponent {
 		let linkButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.linkText', '', 'insert-link masked-icon', this.buttonLink, this.cellModel, MarkdownButtonType.LINK);
 		let listButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.listText', '', 'list masked-icon', this.buttonList, this.cellModel, MarkdownButtonType.UNORDERED_LIST);
 		let orderedListButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.orderedText', '', 'ordered-list masked-icon', this.buttonOrderedList, this.cellModel, MarkdownButtonType.ORDERED_LIST);
-		let imageButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.imageText', '', 'insert-image masked-icon', this.buttonImage, this.cellModel, MarkdownButtonType.IMAGE);
-		let togglePreviewAction = this._instantiationService.createInstance(TogglePreviewAction, 'notebook.togglePreview masked-icon', true, this.cellModel.showPreview);
+
+		let imageDropdown = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.imageText', '', '', this.imageDropdown, this.cellModel, null);
+		let embedImage = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.embedImage', this.embedImage, '', this.embedImage, this.cellModel, MarkdownButtonType.EMBEDIMAGE);
+		let linkImage = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.linkImage', this.linkImage, '', this.linkImage, this.cellModel, MarkdownButtonType.LINKIMAGE);
 
 		let headingDropdown = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading', '', 'heading', this.dropdownHeading, this.cellModel, null);
 		let heading1 = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading1', this.optionHeading1, 'heading 1', this.optionHeading1, this.cellModel, MarkdownButtonType.HEADING1);
@@ -68,9 +75,27 @@ export class MarkdownToolbarComponent {
 		let heading3 = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading3', this.optionHeading3, 'heading 3', this.optionHeading3, this.cellModel, MarkdownButtonType.HEADING3);
 		let paragraph = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.paragraph', this.optionParagraph, 'paragraph', this.optionParagraph, this.cellModel, MarkdownButtonType.PARAGRAPH);
 
+		let togglePreviewAction = this._instantiationService.createInstance(TogglePreviewAction, 'notebook.togglePreview masked-icon', true, this.cellModel.showPreview);
+
 		let taskbar = <HTMLElement>this.mdtoolbar.nativeElement;
 		this._actionBar = new Taskbar(taskbar);
 		this._actionBar.context = this;
+
+		let imageSelectDropdownContainer = DOM.$('li.action-item');
+		imageSelectDropdownContainer.setAttribute('role', 'presentation');
+		let dropdownImageSelectActionViewItem = new DropdownMenuActionViewItem(
+			imageDropdown,
+			[embedImage, linkImage],
+			this.contextMenuService,
+			undefined,
+			this._actionBar.actionRunner,
+			undefined,
+			'codicon masked-icon insert-image',
+			'',
+			undefined
+		);
+		dropdownImageSelectActionViewItem.render(imageSelectDropdownContainer);
+		dropdownImageSelectActionViewItem.setActionContext(this);
 
 		let buttonDropdownContainer = DOM.$('li.action-item');
 		buttonDropdownContainer.setAttribute('role', 'presentation');
@@ -97,7 +122,7 @@ export class MarkdownToolbarComponent {
 			{ action: linkButton },
 			{ action: listButton },
 			{ action: orderedListButton },
-			{ action: imageButton },
+			{ element: imageSelectDropdownContainer },
 			{ element: buttonDropdownContainer },
 			{ action: togglePreviewAction }
 		]);

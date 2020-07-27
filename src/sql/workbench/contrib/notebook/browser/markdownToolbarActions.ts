@@ -313,7 +313,8 @@ export enum MarkdownButtonType {
 	LINK,
 	UNORDERED_LIST,
 	ORDERED_LIST,
-	IMAGE,
+	EMBEDIMAGE,
+	LINKIMAGE,
 	HEADING1,
 	HEADING2,
 	HEADING3,
@@ -374,7 +375,7 @@ function getStartTextToReplace(type: MarkdownButtonType): string[] {
 function getStartTextToInsert(type: MarkdownButtonType): string {
 	switch (type) {
 		case MarkdownButtonType.BOLD:
-			return '**';
+			return '<b>';
 		case MarkdownButtonType.ITALIC:
 			return '_';
 		case MarkdownButtonType.UNDERLINE:
@@ -387,7 +388,7 @@ function getStartTextToInsert(type: MarkdownButtonType): string {
 			return '- ';
 		case MarkdownButtonType.ORDERED_LIST:
 			return '1. ';
-		case MarkdownButtonType.IMAGE:
+		case MarkdownButtonType.LINKIMAGE:
 			return '![';
 		case MarkdownButtonType.HIGHLIGHT:
 			return '<mark>';
@@ -409,7 +410,7 @@ function getStartTextToInsert(type: MarkdownButtonType): string {
 function getEndTextToInsert(type: MarkdownButtonType): string {
 	switch (type) {
 		case MarkdownButtonType.BOLD:
-			return '**';
+			return '</b>';
 		case MarkdownButtonType.ITALIC:
 			return '_';
 		case MarkdownButtonType.UNDERLINE:
@@ -417,7 +418,7 @@ function getEndTextToInsert(type: MarkdownButtonType): string {
 		case MarkdownButtonType.CODE:
 			return '\n```';
 		case MarkdownButtonType.LINK:
-		case MarkdownButtonType.IMAGE:
+		case MarkdownButtonType.LINKIMAGE:
 			return ']()';
 		case MarkdownButtonType.HIGHLIGHT:
 			return '</mark>';
@@ -466,7 +467,7 @@ function getColumnOffsetForSelection(type: MarkdownButtonType, nothingSelected: 
 	switch (type) {
 		case MarkdownButtonType.LINK:
 			return 2;
-		case MarkdownButtonType.IMAGE:
+		case MarkdownButtonType.LINKIMAGE:
 			return 2;
 		// -1 is considered as having no explicit offset, so do not do anything with selection
 		default: return -1;
