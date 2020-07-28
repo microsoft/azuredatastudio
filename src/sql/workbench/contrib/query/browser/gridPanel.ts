@@ -316,6 +316,10 @@ export interface IDataSet {
 	columnInfo: IColumn[];
 }
 
+export interface IGridTableOptions {
+	actionOrientation: ActionsOrientation;
+}
+
 export abstract class GridTableBase<T> extends Disposable implements IView {
 	private table: Table<T>;
 	private actionBar: ActionBar;
@@ -365,7 +369,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		protected instantiationService: IInstantiationService,
 		protected editorService: IEditorService,
 		protected untitledEditorService: IUntitledTextEditorService,
-		protected configurationService: IConfigurationService
+		protected configurationService: IConfigurationService,
+		private readonly options: IGridTableOptions = { actionOrientation: ActionsOrientation.VERTICAL }
 	) {
 		super();
 		let config = this.configurationService.getValue<{ rowHeight: number }>('resultsGrid');
@@ -429,17 +434,11 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	}
 
 	// actionsOrientation controls the orientation (horizontal or vertical) of the actionBar
-	private build(actionsOrientation?: ActionsOrientation): void {
-
-		// Default is VERTICAL
-		if (isUndefinedOrNull(actionsOrientation)) {
-			actionsOrientation = ActionsOrientation.VERTICAL;
-		}
-
+	private build(): void {
 		let actionBarContainer = document.createElement('div');
 
 		// Create a horizontal actionbar if orientation passed in is HORIZONTAL
-		if (actionsOrientation === ActionsOrientation.HORIZONTAL) {
+		if (this.options.actionOrientation === ActionsOrientation.HORIZONTAL) {
 			actionBarContainer.className = 'grid-panel action-bar horizontal';
 			this.container.appendChild(actionBarContainer);
 		}
@@ -490,7 +489,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			this.table.style(this.styles);
 		}
 		// If the actionsOrientation passed in is "VERTICAL" (or no actionsOrientation is passed in at all), create a vertical actionBar
-		if (actionsOrientation === ActionsOrientation.VERTICAL) {
+		if (this.options.actionOrientation === ActionsOrientation.VERTICAL) {
 			actionBarContainer.className = 'grid-panel action-bar vertical';
 			actionBarContainer.style.width = ACTIONBAR_WIDTH + 'px';
 			this.container.appendChild(actionBarContainer);
@@ -503,7 +502,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			resultId: this.resultSet.id
 		};
 		this.actionBar = new ActionBar(actionBarContainer, {
-			orientation: actionsOrientation, context: context
+			orientation: this.options.actionOrientation, context: context
 		});
 		// update context before we run an action
 		this.selectionModel.onSelectedRangesChanged.subscribe(e => {
@@ -637,7 +636,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	protected abstract getContextActions(): IAction[];
 
 	// The actionsOrientation passed in controls the actionBar orientation
-	public layout(size?: number, orientation?: Orientation, actionsOrientation?: ActionsOrientation): void {
+	public layout(size?: number): void {
 		if (!size) {
 			size = this.currentHeight;
 		} else {
