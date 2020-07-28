@@ -150,7 +150,6 @@ export class AsmtDatabaseSelectItemsAction extends Action {
 	}
 }
 
-
 export class AsmtServerInvokeItemsAction extends AsmtServerAction {
 	public static ID = 'asmtaction.server.invokeitems';
 	public static LABEL = nls.localize('asmtaction.server.invokeitems', "Invoke Assessment");
@@ -284,7 +283,7 @@ export class AsmtGenerateHTMLReportAction extends Action {
 			return this._openerService.open(result.resource.fsPath, { openExternal: true });
 		} else if (choice === 1) {
 			await this._clipboardService.writeText(filePath);
-			this._notificationService.info(nls.localize('asmtaction.pathcopied', 'Path has been copied to clipboard'));
+			this._notificationService.info(nls.localize('asmtaction.pathcopied', 'The path has been copied to the clipboard'));
 		}
 		return true;
 	}

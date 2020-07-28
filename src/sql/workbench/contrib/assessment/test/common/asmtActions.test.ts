@@ -14,7 +14,8 @@ import {
 	AsmtExportAsScriptAction,
 	AsmtSamplesLinkAction,
 	AsmtDatabaseInvokeItemsAction,
-	AsmtDatabaseSelectItemsAction
+	AsmtDatabaseSelectItemsAction,
+	AsmtGenerateHTMLReportAction
 } from 'sql/workbench/contrib/assessment/common/asmtActions';
 import { AssessmentService } from 'sql/workbench/services/assessment/common/assessmentService';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
@@ -24,14 +25,42 @@ import { TestConnectionManagementService } from 'sql/platform/connection/test/co
 import { NullLogService } from 'vs/platform/log/common/log';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { OpenerServiceStub } from 'sql/platform/opener/common/openerServiceStub';
+import { FileServiceStub, EnvironmentServiceStub, DialogServiceStub, ClipboardServiceStub, NotificationServiceStub } from 'sql/workbench/contrib/assessment/test/common/vsServicesStubs';
+import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { URI } from 'vs/base/common/uri';
+import { SqlAssessmentTargetType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+
+
 /**
  * Class to test Assessment Management Actions
  */
-
 let assessmentResultItems: azdata.SqlAssessmentResultItem[] = [
-	<azdata.SqlAssessmentResultItem>{ checkId: 'check1' },
-	<azdata.SqlAssessmentResultItem>{ checkId: 'check2' },
-	<azdata.SqlAssessmentResultItem>{ checkId: 'check3' }
+	<azdata.SqlAssessmentResultItem>{
+		checkId: 'check1',
+		rulesetVersion: '1.0.0',
+		targetType: SqlAssessmentTargetType.Database,
+		targetName: 'db1',
+		level: 'Warning',
+		message: ''
+	},
+	<azdata.SqlAssessmentResultItem>{
+		checkId: 'check2',
+		rulesetVersion: '1.0.0',
+		targetType: SqlAssessmentTargetType.Database,
+		targetName: 'db1',
+		level: 'Error',
+		message: ''
+	},
+	<azdata.SqlAssessmentResultItem>{
+		checkId: 'check3',
+		rulesetVersion: '1.0.0',
+		targetType: SqlAssessmentTargetType.Database,
+		targetName: 'db1',
+		level: 'Information',
+		message: ''
+	}
 ];
 let assessmentResult: azdata.SqlAssessmentResult = {
 	success: true,
@@ -47,8 +76,13 @@ class AssessmentTestViewComponent implements IAssessmentComponent {
 	stopProgress(mode: AssessmentType) { return undefined; }
 	recentResult: SqlAssessmentResultInfo = {
 		result: assessmentResult,
-		connectionInfo: null,
-		dateUpdated: 0
+		connectionInfo: {
+			serverInfo: null,
+			connectionProfile: {
+				serverName: 'testServer'
+			}
+		},
+		dateUpdated: Date.now()
 	};
 	isActive: boolean = true;
 }
@@ -186,4 +220,54 @@ suite('Assessment Actions', () => {
 		openerService.verify(s => s.open(TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 
+	test('Make HTML Report Action', async () => {
+		const openerService = TypeMoq.Mock.ofType<IOpenerService>(OpenerServiceStub);
+		openerService.setup(s => s.open(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
+
+		let envService = new EnvironmentServiceStub();
+		envService.userRoamingDataHome = URI.parse('file:///usr/home');
+
+		const dialogService = TypeMoq.Mock.ofType<IDialogService>(DialogServiceStub);
+		dialogService.setup(s => s.show(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
+			choice: 0
+		}));
+		let action = new AsmtGenerateHTMLReportAction(new FileServiceStub(),
+			openerService.object,
+			envService,
+			dialogService.object,
+			new ClipboardServiceStub(),
+			new NullAdsTelemetryService(),
+			new NotificationServiceStub());
+		assert.equal(action.id, AsmtGenerateHTMLReportAction.ID, 'Generate HTML Report id action mismatch');
+		assert.equal(action.label, AsmtGenerateHTMLReportAction.LABEL, 'Generate HTML Report label action mismatch');
+
+		let result = await action.run({ ownerUri: '', component: mockAsmtViewComponent.object, connectionId: '' });
+		assert.ok(result, 'Generate HTML Report action should succeed');
+		openerService.verify(s => s.open(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+
+		// copy path test
+		dialogService.reset();
+		dialogService.setup(s => s.show(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
+			choice: 1
+		}));
+		openerService.reset();
+		const clipboardService = TypeMoq.Mock.ofType<IClipboardService>(ClipboardServiceStub);
+		clipboardService.setup(s => s.writeText(TypeMoq.It.isAny())).returns(() => Promise.resolve());
+		const notificationService = TypeMoq.Mock.ofType<INotificationService>(NotificationServiceStub);
+		notificationService.setup(s => s.info(TypeMoq.It.isAny())).returns(() => '');
+
+		action = new AsmtGenerateHTMLReportAction(new FileServiceStub(),
+			openerService.object,
+			envService,
+			dialogService.object,
+			clipboardService.object,
+			new NullAdsTelemetryService(),
+			notificationService.object);
+		result = await action.run({ ownerUri: '', component: mockAsmtViewComponent.object, connectionId: '' });
+		assert.ok(result, 'Generate HTML Report action should succeed');
+		openerService.verify(s => s.open(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.never());
+		clipboardService.verify(s => s.writeText(TypeMoq.It.isAny()), TypeMoq.Times.once());
+		notificationService.verify(s => s.info(TypeMoq.It.isAny()), TypeMoq.Times.once());
+	});
 });
+
