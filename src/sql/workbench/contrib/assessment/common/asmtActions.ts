@@ -5,23 +5,33 @@
 
 import { Action } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
-
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IAssessmentService } from 'sql/workbench/services/assessment/common/interfaces';
-import { SqlAssessmentResult, SqlAssessmentResultItem } from 'azdata';
+import { SqlAssessmentResult } from 'azdata';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
+import { IFileService } from 'vs/platform/files/common/files';
 import { URI } from 'vs/base/common/uri';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { AssessmentType, AssessmentTargetType, TARGET_ICON_CLASS } from 'sql/workbench/contrib/assessment/common/consts';
 import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
+import { VSBuffer } from 'vs/base/common/buffer';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import * as path from 'vs/base/common/path';
+import { HTMLReportBuilder } from 'sql/workbench/contrib/assessment/common/htmlReportGenerator';
+
+export interface SqlAssessmentResultInfo {
+	result: SqlAssessmentResult;
+	dateUpdated: number;
+	connectionInfo: any
+}
 
 export interface IAssessmentComponent {
 	showProgress(mode: AssessmentType): any;
 	showInitialResults(result: SqlAssessmentResult, method: AssessmentType): any;
 	appendResults(result: SqlAssessmentResult, method: AssessmentType): any;
 	stopProgress(mode: AssessmentType): any;
-	resultItems: SqlAssessmentResultItem[];
+	recentResult: SqlAssessmentResultInfo;
 	isActive: boolean;
 }
 
@@ -198,8 +208,8 @@ export class AsmtExportAsScriptAction extends Action {
 
 	public async run(context: IAsmtActionInfo): Promise<boolean> {
 		this._telemetryService.sendActionEvent(TelemetryView.SqlAssessment, AsmtExportAsScriptAction.ID);
-		if (context && context.component && context.component.resultItems) {
-			await this._assessmentService.generateAssessmentScript(context.ownerUri, context.component.resultItems);
+		if (context && context.component && context.component.recentResult?.result.items) {
+			await this._assessmentService.generateAssessmentScript(context.ownerUri, context.component.recentResult?.result.items);
 			return true;
 		}
 		return false;
@@ -224,4 +234,40 @@ export class AsmtSamplesLinkAction extends Action {
 		this._telemetryService.sendActionEvent(TelemetryView.SqlAssessment, AsmtSamplesLinkAction.ID);
 		return this._openerService.open(URI.parse(AsmtSamplesLinkAction.configHelpUri));
 	}
+}
+
+export class AsmtGenerateHTMLReportAction extends Action {
+	public static readonly ID = 'asmtaction.generatehtmlreport';
+	public static readonly LABEL = nls.localize('asmtaction.generatehtmlreport', "Make HTML Report");
+	public static readonly ICON = 'asmt-learnmore';
+
+	constructor(
+		@IFileService private _fileService: IFileService,
+		@IOpenerService private _openerService: IOpenerService,
+		@IEnvironmentService private _environmentService: IEnvironmentService,
+		//@IAdsTelemetryService private _telemetryService: IAdsTelemetryService
+
+	) {
+		super(AsmtGenerateHTMLReportAction.ID, AsmtGenerateHTMLReportAction.LABEL, AsmtGenerateHTMLReportAction.ICON);
+	}
+
+	public async run(context: IAsmtActionInfo): Promise<boolean> {
+		const fileName = this.generateReportFileName(new Date(context.component.recentResult.dateUpdated));
+
+		const result = await this._fileService.createFile(
+			URI.file(path.join(this._environmentService.userRoamingDataHome.fsPath, 'SqlAssessmentReports', fileName)),
+			VSBuffer.fromString(new HTMLReportBuilder(context.component.recentResult.result,
+				context.component.recentResult.dateUpdated,
+				context.component.recentResult.connectionInfo).Build()),
+			{ overwrite: true });
+
+		return this._openerService.open(result.resource.fsPath, { openExternal: true });
+	}
+
+	private generateReportFileName(resultDate): string {
+		const datetime = `${resultDate.toISOString().replace(/-/g, '').replace('T', '').replace(/:/g, '').split('.')[0]}`;
+		return `SqlAssessmentReport_${datetime}.html`;
+	}
+
+
 }

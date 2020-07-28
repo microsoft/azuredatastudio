@@ -57,13 +57,7 @@ export class AsmtViewComponent extends AngularDisposable implements OnInit {
 	private displayConnectionInfo() {
 		this.connectionInfo = this._commonService.connectionManagementService.connectionInfo.serverInfo;
 		let serverName = this._commonService.connectionManagementService.connectionInfo.connectionProfile.serverName;
-		let machineName = this.connectionInfo['machineName'];
-		if ((['local', '(local)', '(local);'].indexOf(serverName.toLowerCase()) >= 0) || machineName.toLowerCase() === serverName.toLowerCase()) {
-			this.instanceName = machineName;
-		}
-		else {
-			this.instanceName = machineName + '\\' + serverName;
-		}
+		this.instanceName = serverName;
 	}
 
 	public displayAssessmentInfo(apiVersion: string, rulesetVersion: string) {

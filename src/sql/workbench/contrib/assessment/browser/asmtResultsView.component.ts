@@ -25,12 +25,14 @@ import { RowDetailView, ExtendedItem } from 'sql/base/browser/ui/table/plugins/r
 import {
 	IAssessmentComponent,
 	IAsmtActionInfo,
+	SqlAssessmentResultInfo,
 	AsmtServerSelectItemsAction,
 	AsmtServerInvokeItemsAction,
 	AsmtDatabaseSelectItemsAction,
 	AsmtDatabaseInvokeItemsAction,
 	AsmtExportAsScriptAction,
-	AsmtSamplesLinkAction
+	AsmtSamplesLinkAction,
+	AsmtGenerateHTMLReportAction
 } from 'sql/workbench/contrib/assessment/common/asmtActions';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IAction } from 'vs/base/common/actions';
@@ -116,7 +118,8 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 	private placeholderElem: HTMLElement;
 	private placeholderNoResultsLabel: string;
 	private spinner: { [mode: number]: HTMLElement } = Object.create(null);
-	private lastInvokedResults: azdata.SqlAssessmentResultItem[];
+	private lastInvokedResult: SqlAssessmentResultInfo;
+	private initialConnectionInfo: any;
 
 	@ViewChild('resultsgrid') _gridEl: ElementRef;
 	@ViewChild('actionbarContainer') protected actionBarContainer: ElementRef;
@@ -134,7 +137,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 	) {
 		super();
 		let self = this;
-		let profile = this._commonService.connectionManagementService.connectionInfo.connectionProfile;
+		const profile = this._commonService.connectionManagementService.connectionInfo.connectionProfile;
 
 		this.isServerMode = !profile.databaseName || Utils.isMaster(profile);
 
@@ -146,6 +149,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 
 		this._register(_dashboardService.onLayout(d => self.layout()));
 		this._register(_themeService.onDidColorThemeChange(this._updateStyles, this));
+		this.initialConnectionInfo = this._commonService.connectionManagementService.connectionInfo;
 	}
 
 	ngOnInit(): void {
@@ -156,6 +160,8 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 
 	ngOnDestroy(): void {
 		this.isVisible = false;
+		this.rowDetail?.destroy();
+		this.filterPlugin.destroy();
 	}
 
 	ngAfterContentChecked(): void {
@@ -173,8 +179,8 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		}
 	}
 
-	public get resultItems(): azdata.SqlAssessmentResultItem[] {
-		return this.lastInvokedResults;
+	public get recentResult(): SqlAssessmentResultInfo {
+		return this.lastInvokedResult;
 	}
 
 	public get isActive(): boolean {
@@ -209,9 +215,13 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 	public showInitialResults(result: azdata.SqlAssessmentResult, method: AssessmentType) {
 		if (result) {
 			if (method === AssessmentType.InvokeAssessment) {
-				this.lastInvokedResults = result.items;
+				this.lastInvokedResult = {
+					result: result,
+					dateUpdated: Date.now(),
+					connectionInfo: this.initialConnectionInfo
+				};
 			} else {
-				this.lastInvokedResults = [];
+				this.lastInvokedResult = null;
 			}
 
 			this.displayResults(result.items, method);
@@ -229,7 +239,8 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 
 	public appendResults(result: azdata.SqlAssessmentResult, method: AssessmentType) {
 		if (method === AssessmentType.InvokeAssessment) {
-			this.lastInvokedResults.push(...result.items);
+			this.lastInvokedResult.dateUpdated = Date.now();
+			this.lastInvokedResult.result.items.push(...result.items);
 		}
 
 		if (result) {
@@ -353,7 +364,8 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 			{ action: selectAction },
 			{ element: this.spinner[AssessmentType.AvailableRules] },
 			{ action: this.exportActionItem },
-			{ action: this._instantiationService.createInstance(AsmtSamplesLinkAction) }
+			{ action: this._instantiationService.createInstance(AsmtSamplesLinkAction) },
+			{ action: this._instantiationService.createInstance(AsmtGenerateHTMLReportAction) }
 		]);
 
 		let connectionInfo = this._commonService.connectionManagementService.connectionInfo;

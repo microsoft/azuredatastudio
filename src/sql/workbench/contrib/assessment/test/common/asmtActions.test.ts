@@ -8,6 +8,7 @@ import * as assert from 'assert';
 import { AssessmentType, AssessmentTargetType } from 'sql/workbench/contrib/assessment/common/consts';
 import {
 	IAssessmentComponent,
+	SqlAssessmentResultInfo,
 	AsmtServerInvokeItemsAction,
 	AsmtServerSelectItemsAction,
 	AsmtExportAsScriptAction,
@@ -32,25 +33,29 @@ let assessmentResultItems: azdata.SqlAssessmentResultItem[] = [
 	<azdata.SqlAssessmentResultItem>{ checkId: 'check2' },
 	<azdata.SqlAssessmentResultItem>{ checkId: 'check3' }
 ];
-
-class AssessmentTestViewComponent implements IAssessmentComponent {
-	showProgress(mode: AssessmentType) { return undefined; }
-	showInitialResults(result: azdata.SqlAssessmentResult, method: AssessmentType) { return undefined; }
-	appendResults(result: azdata.SqlAssessmentResult, method: AssessmentType) { }
-	stopProgress(mode: AssessmentType) { return undefined; }
-	resultItems: azdata.SqlAssessmentResultItem[] = assessmentResultItems;
-	isActive: boolean = true;
-}
-
-let mockAssessmentService: TypeMoq.Mock<AssessmentService>;
-let mockAsmtViewComponent: TypeMoq.Mock<IAssessmentComponent>;
-
 let assessmentResult: azdata.SqlAssessmentResult = {
 	success: true,
 	errorMessage: '',
 	apiVersion: '',
 	items: assessmentResultItems
 };
+
+class AssessmentTestViewComponent implements IAssessmentComponent {
+	showProgress(mode: AssessmentType) { return undefined; }
+	showInitialResults(result: azdata.SqlAssessmentResult, method: AssessmentType) { return undefined; }
+	appendResults(result: azdata.SqlAssessmentResult, method: AssessmentType) { }
+	stopProgress(mode: AssessmentType) { return undefined; }
+	recentResult: SqlAssessmentResultInfo = {
+		result: assessmentResult,
+		connectionInfo: null,
+		dateUpdated: 0
+	};
+	isActive: boolean = true;
+}
+
+let mockAssessmentService: TypeMoq.Mock<AssessmentService>;
+let mockAsmtViewComponent: TypeMoq.Mock<IAssessmentComponent>;
+
 
 // Tests
 suite('Assessment Actions', () => {
