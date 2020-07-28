@@ -313,8 +313,7 @@ export enum MarkdownButtonType {
 	LINK,
 	UNORDERED_LIST,
 	ORDERED_LIST,
-	EMBEDIMAGE,
-	LINKIMAGE,
+	IMAGE,
 	HEADING1,
 	HEADING2,
 	HEADING3,
@@ -388,7 +387,7 @@ function getStartTextToInsert(type: MarkdownButtonType): string {
 			return '- ';
 		case MarkdownButtonType.ORDERED_LIST:
 			return '1. ';
-		case MarkdownButtonType.LINKIMAGE:
+		case MarkdownButtonType.IMAGE:
 			return '![';
 		case MarkdownButtonType.HIGHLIGHT:
 			return '<mark>';
@@ -418,7 +417,7 @@ function getEndTextToInsert(type: MarkdownButtonType): string {
 		case MarkdownButtonType.CODE:
 			return '\n```';
 		case MarkdownButtonType.LINK:
-		case MarkdownButtonType.LINKIMAGE:
+		case MarkdownButtonType.IMAGE:
 			return ']()';
 		case MarkdownButtonType.HIGHLIGHT:
 			return '</mark>';
@@ -467,7 +466,7 @@ function getColumnOffsetForSelection(type: MarkdownButtonType, nothingSelected: 
 	switch (type) {
 		case MarkdownButtonType.LINK:
 			return 2;
-		case MarkdownButtonType.LINKIMAGE:
+		case MarkdownButtonType.IMAGE:
 			return 2;
 		// -1 is considered as having no explicit offset, so do not do anything with selection
 		default: return -1;
