@@ -172,7 +172,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	 * @param bookPath The path to the book folder to create the model for
 	 */
 	private async createAndAddBookModel(bookPath: string, isNotebook: boolean): Promise<void> {
-		const book: BookModel = new BookModel(bookPath, this._openAsUntitled, isNotebook, this.bookQuantity, this._extensionContext,);
+		const book: BookModel = new BookModel(bookPath, this._openAsUntitled, isNotebook, this.bookQuantity, this._extensionContext);
 		await book.initializeContents();
 		this.books.push(book);
 		if (!this.currentBook) {
@@ -400,7 +400,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		});
 		if (uris && uris.length > 0) {
 			let bookPath = uris[0];
-			await this.openBook(bookPath.fsPath, undefined, true,);
+			await this.openBook(bookPath.fsPath, undefined, true);
 		}
 	}
 
