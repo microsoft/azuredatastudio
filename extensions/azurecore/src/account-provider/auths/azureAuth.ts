@@ -261,8 +261,16 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 
 		const tokenClaims: TokenClaims = this.getTokenClaims(accessTokenString);
+		let userKey: string;
 
-		const userKey = tokenClaims.home_oid ?? tokenClaims.oid ?? tokenClaims.unique_name ?? tokenClaims.sub;
+		// Personal accounts don't have an oid when logging into the `common` tenant, but when logging into their home tenant they end up having an oid.
+		// This makes the key for the same account be different.
+		// We need to special case personal accounts.
+		if (tokenClaims.idp === 'live.com') { // Personal account
+			userKey = tokenClaims.unique_name ?? tokenClaims.email ?? tokenClaims.sub;
+		} else {
+			userKey = tokenClaims.home_oid ?? tokenClaims.oid ?? tokenClaims.unique_name ?? tokenClaims.email ?? tokenClaims.sub;
+		}
 
 		if (!userKey) {
 			const msg = localize('azure.noUniqueIdentifier', "The user had no unique identifier within AAD");
