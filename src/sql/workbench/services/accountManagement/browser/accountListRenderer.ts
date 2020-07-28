@@ -36,6 +36,7 @@ export interface PickerListTemplate {
 	root: HTMLElement;
 	label: HTMLElement;
 	displayName: HTMLElement;
+	content: HTMLElement;
 }
 
 export interface AccountPickerListTemplate extends PickerListTemplate {
@@ -44,7 +45,6 @@ export interface AccountPickerListTemplate extends PickerListTemplate {
 }
 
 export interface AccountListTemplate extends AccountPickerListTemplate {
-	content: HTMLElement;
 	actions: ActionBar;
 }
 

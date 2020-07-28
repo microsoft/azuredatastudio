@@ -141,9 +141,14 @@ export class FirewallRuleDialog extends Modal {
 		this._accountPickerService.onTenantSelectionChangeEvent((tenantId) => this.onTenantSelectionChange(tenantId));
 
 		const azureAccountSection = DOM.append(body, DOM.$('.azure-account-section.new-section'));
+
 		const azureAccountLabel = localize('azureAccount', "Azure account");
-		this.createLabelElement(azureAccountSection, azureAccountLabel, true);
-		this._accountPickerService.renderAccountPicker(DOM.append(azureAccountSection, DOM.$('.dialog-input')));
+		const accountSection = this.createLabelElement(azureAccountSection, azureAccountLabel, true);
+
+		const azureTenantLabel = localize('azureTenant', "Azure tenant");
+		const tenantSection = this.createLabelElement(azureAccountSection, azureTenantLabel, true);
+
+		this._accountPickerService.renderAccountPicker(DOM.append(accountSection, DOM.$('.dialog-input')), DOM.append(tenantSection, DOM.$('.dialog-input')));
 
 		const firewallRuleSection = DOM.append(body, DOM.$('.firewall-rule-section.new-section'));
 		const firewallRuleLabel = localize('filewallRule', "Firewall rule");
@@ -216,7 +221,9 @@ export class FirewallRuleDialog extends Modal {
 		if (isHeader) {
 			className += ' header';
 		}
-		DOM.append(container, DOM.$(`.${className}`)).innerText = content;
+		const element = DOM.append(container, DOM.$(`.${className}`));
+		element.innerText = content;
+		return element;
 	}
 
 	// Update theming that is specific to firewall rule flyout body

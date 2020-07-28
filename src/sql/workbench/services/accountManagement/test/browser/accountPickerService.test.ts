@@ -38,7 +38,7 @@ suite('Account picker service tests', () => {
 
 		// ... Create instance of the service and reder account picker
 		let service = new AccountPickerService(instantiationService);
-		service.renderAccountPicker(TypeMoq.It.isAny());
+		service.renderAccountPicker(TypeMoq.It.isAny(), TypeMoq.It.isAny());
 
 		// Then:
 		// ... All the events for the view models should be properly initialized
@@ -111,7 +111,7 @@ function createInstantiationService(): InstantiationService {
 		.returns(() => mockAddAccountStartEmitter.event);
 	mockAccountDialog.setup(x => x.onAccountSelectionChangeEvent)
 		.returns((account) => mockOnAccountSelectionChangeEvent.event);
-	mockAccountDialog.setup(x => x.render(TypeMoq.It.isAny()))
+	mockAccountDialog.setup(x => x.render(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
 		.returns((container) => undefined);
 	mockAccountDialog.setup(x => x.createAccountPickerComponent());
 

@@ -52,7 +52,7 @@ export class AccountPickerService implements IAccountPickerService {
 	/**
 	 * Render account picker
 	 */
-	public renderAccountPicker(container: HTMLElement): void {
+	public renderAccountPicker(accountContainer: HTMLElement, tenantContainer): void {
 		if (!this._accountPicker) {
 			// TODO: expand support to multiple providers
 			const providerId: string = 'azure_publicCloud';
@@ -65,6 +65,6 @@ export class AccountPickerService implements IAccountPickerService {
 		this._accountPicker.addAccountStartEvent(() => this._addAccountStartEmitter.fire());
 		this._accountPicker.onAccountSelectionChangeEvent((account) => this._onAccountSelectionChangeEvent.fire(account));
 		this._accountPicker.onTenantSelectionChangeEvent((tenantId) => this._onTenantSelectionChangeEvent.fire(tenantId));
-		this._accountPicker.render(container);
+		this._accountPicker.render(accountContainer, tenantContainer);
 	}
 }
