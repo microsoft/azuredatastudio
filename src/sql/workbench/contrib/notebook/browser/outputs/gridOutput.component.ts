@@ -325,7 +325,7 @@ class DataResourceDataProvider implements IGridDataProvider {
 			maxRow = singleSelection.toRow + 1;
 			columns = columns.slice(singleSelection.fromCell, singleSelection.toCell + 1);
 		}
-		let getRows: ((index: number, rowCount: number) => ICellValue[][]) = (index, rowCount) => {
+		let getRows: ((index: number, includeHeaders: boolean, rowCount: number) => ICellValue[][]) = (index, includeHeaders, rowCount) => {
 			// Offset for selections by adding the selection startRow to the index
 			index = index + minRow;
 			if (rowLength === 0 || index < 0 || index >= maxRow) {
@@ -335,12 +335,25 @@ class DataResourceDataProvider implements IGridDataProvider {
 			if (endIndex > maxRow) {
 				endIndex = maxRow;
 			}
-			let result = this.rows.slice(index, endIndex).map(row => {
+			let result: ICellValue[][] = [];
+			if (includeHeaders) {
+				result.push(columns.map(col => {
+					let headerData: azdata.DbCellValue;
+					headerData = {
+						displayValue: col.columnName,
+						isNull: false,
+						invariantCultureDisplayValue: col.columnName
+					};
+					return headerData;
+				}));
+			}
+			result = result.concat(this.rows.slice(index, endIndex).map(row => {
 				if (this.isSelected(singleSelection)) {
 					return row.slice(singleSelection.fromCell, singleSelection.toCell + 1);
+				} else {
+					return row;
 				}
-				return row;
-			});
+			}));
 			return result;
 		};
 
@@ -348,7 +361,7 @@ class DataResourceDataProvider implements IGridDataProvider {
 			saveFormat: format,
 			columns: columns,
 			filePath: filePath.fsPath,
-			getRowRange: (rowStart, numberOfRows) => getRows(rowStart, numberOfRows),
+			getRowRange: (rowStart, includeHeaders, numberOfRows) => getRows(rowStart, includeHeaders, numberOfRows),
 			rowCount: rowLength
 		});
 		return this._serializationService.serializeResults(serializeRequestParams);
