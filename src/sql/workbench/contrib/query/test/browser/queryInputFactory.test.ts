@@ -25,6 +25,7 @@ import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/commo
 import { isThenable } from 'vs/base/common/async';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
+import { extUri } from 'vs/base/common/resources';
 
 suite('Query Input Factory', () => {
 
@@ -104,7 +105,7 @@ suite('Query Input Factory', () => {
 		const response = queryEditorLanguageAssociation.convertInput(input);
 		assert(isThenable(response));
 		await response;
-		assert(newsqlEditorStub.calledWithExactly({ open: false, initalContent: '' }));
+		assert(newsqlEditorStub.calledWithExactly({ resource: undefined, open: false, initalContent: '' }));
 		assert(connectionManagementService.numberConnects === 1, 'Convert input should have called connect when active editor connection exists');
 	});
 
@@ -132,6 +133,27 @@ suite('Query Input Factory', () => {
 		assert(isThenable(response));
 		await response;
 		assert(connectionManagementService.numberConnects === 0, 'Convert input should not have been called connect when no global connections exist');
+	});
+
+	test('uses existing resource if provided', async () => {
+		const instantiationService = workbenchInstantiationService();
+		const editorService = new MockEditorService(instantiationService);
+		instantiationService.stub(IEditorService, editorService);
+		const queryEditorLanguageAssociation = instantiationService.createInstance(QueryEditorLanguageAssociation);
+		const untitledService = instantiationService.invokeFunction(accessor => accessor.get(IUntitledTextEditorService));
+		const queryeditorservice = instantiationService.invokeFunction(accessor => accessor.get(IQueryEditorService));
+		const input = instantiationService.createInstance(UntitledTextEditorInput, untitledService.create());
+		sinon.stub(editorService, 'isOpen', (editor: IEditorInput) => extUri.isEqual(editor.resource, input.resource));
+		const newsqlEditorStub = sinon.stub(queryeditorservice, 'newSqlEditor', () => {
+			const untitledInput = instantiationService.createInstance(UntitledTextEditorInput, untitledService.create());
+			const queryResultsInput: QueryResultsInput = instantiationService.createInstance(QueryResultsInput, untitledInput.resource.toString());
+			let queryInput = instantiationService.createInstance(UntitledQueryEditorInput, '', untitledInput, queryResultsInput);
+			return queryInput;
+		});
+		const response = queryEditorLanguageAssociation.convertInput(input);
+		assert(isThenable(response));
+		await response;
+		assert(newsqlEditorStub.calledWithExactly({ resource: input.resource, open: false, initalContent: '' }));
 	});
 
 });

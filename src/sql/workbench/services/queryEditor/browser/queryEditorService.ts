@@ -48,8 +48,7 @@ export class QueryEditorService implements IQueryEditorService {
 	public async newSqlEditor(options: INewSqlEditorOptions = {}, connectionProviderName?: string): Promise<IConnectableInput> {
 		options = mixin(options, defaults, false);
 		// Create file path and file URI
-		let filePath = await this.createUntitledSqlFilePath(connectionProviderName);
-		let docUri: URI = URI.from({ scheme: Schemas.untitled, path: filePath });
+		let docUri: URI = options.resource ?? URI.from({ scheme: Schemas.untitled, path: await this.createUntitledSqlFilePath(connectionProviderName) });
 
 		// Create a sql document pane with accoutrements
 		const fileInput = this._editorService.createEditorInput({ forceUntitled: true, resource: docUri, mode: this.getLanguageFlavor(connectionProviderName) }) as UntitledTextEditorInput;
