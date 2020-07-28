@@ -54,11 +54,13 @@ export async function load(profileUri: Uri): Promise<PublishProfile> {
  */
 export function readSqlCmdVariables(xmlDoc: any): Record<string, string> {
 	let sqlCmdVariables: Record<string, string> = {};
-	for (let i = 0; i < xmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable).length; i++) {
-		const sqlCmdVar = xmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable)[i];
+
+	const sqlCmdElements = xmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable);
+	for (let i = 0; i < sqlCmdElements.length; i++) {
+		const sqlCmdVar = sqlCmdElements[i];
 		const varName = sqlCmdVar.getAttribute(constants.Include);
 
-		const varValue = sqlCmdVar.getElementsByTagName(constants.DefaultValue)[0].childNodes[0].nodeValue;
+		const varValue = sqlCmdVar.getElementsByTagName(constants.DefaultValue)[0]?.childNodes[0].nodeValue;
 		sqlCmdVariables[varName] = varValue;
 	}
 

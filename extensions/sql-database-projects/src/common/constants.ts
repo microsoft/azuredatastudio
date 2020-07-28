@@ -81,6 +81,7 @@ export const profileWarningText = localize('profileWarningText', "⚠ Warning: O
 export const sqlCmdTableLabel = localize('sqlCmdTableLabel', "SQLCMD Variables");
 export const sqlCmdVariableColumn = localize('sqlCmdVariableColumn', "Variable");
 export const sqlCmdValueColumn = localize('sqlCmdValueColumn', "Value");
+export const loadSqlCmdVarsButtonTitle = localize('loadSqlCmdVarsButtonTitle', "Load values from .sqlproj");
 
 // Error messages
 
