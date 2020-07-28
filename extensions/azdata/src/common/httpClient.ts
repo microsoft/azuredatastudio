@@ -18,6 +18,7 @@ export namespace HttpClient {
 	 * @param downloadUrl The URL to download the file from
 	 * @param targetFolder The folder to download the file to
 	 * @param outputChannel Channel used to display diagnostic information
+	 * @returns Full path to the downloaded file
 	 */
 	export function download(downloadUrl: string, targetFolder: string, outputChannel: vscode.OutputChannel): Promise<string> {
 		return new Promise((resolve, reject) => {

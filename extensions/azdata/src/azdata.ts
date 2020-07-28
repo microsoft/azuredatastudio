@@ -76,8 +76,8 @@ export async function downloadAndInstallAzdata(outputChannel: vscode.OutputChann
  * @param outputChannel Channel used to display diagnostic information
  */
 async function downloadAndInstallAzdataWin32(outputChannel: vscode.OutputChannel): Promise<void> {
-	const downloadPath = os.tmpdir();
-	const downloadedFile = await HttpClient.download(`${azdataHostname}/${azdataUri}`, downloadPath, outputChannel);
+	const downloadFolder = os.tmpdir();
+	const downloadedFile = await HttpClient.download(`${azdataHostname}/${azdataUri}`, downloadFolder, outputChannel);
 	await executeCommand('msiexec', ['/qn', '/i', downloadedFile], outputChannel);
 }
 
