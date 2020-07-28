@@ -7,9 +7,9 @@ import { ConnectionManagementInfo } from 'sql/platform/connection/common/connect
 import { escape } from 'vs/base/common/strings';
 import { SqlAssessmentResult, SqlAssessmentResultItem } from 'azdata';
 import { SqlAssessmentTargetType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { LocalizedStrings } from 'sql/workbench/contrib/assessment/common/strings';
 
 export class HTMLReportBuilder {
-
 	constructor(
 		private _assessmentResult: SqlAssessmentResult,
 		private _dateUpdated: number,
@@ -17,17 +17,15 @@ export class HTMLReportBuilder {
 	) {
 	}
 
-
-
 	public Build(): string {
 		let mainContent = `
 		<html>
 		<head>
-			<title>SQL Assessment Report</title>
+			<title>${LocalizedStrings.REPORT_TITLE}</title>
 		</head>
 		<body>
 			<div class="header">
-				<div>SQL Assessment Report</div>
+				<div>${LocalizedStrings.REPORT_TITLE}</div>
 			</div>
 			<div style="font-style: italic;">${new Date(this._dateUpdated).toLocaleString(platform.locale)}</div>
 			${this.buildVersionDetails()}
@@ -40,16 +38,26 @@ export class HTMLReportBuilder {
 		return mainContent;
 	}
 
+	private instanceName(): string {
+		const serverName = this._connectionInfo.connectionProfile.serverName;
+		if (['local', '(local)', '(local);'].indexOf(serverName.toLowerCase()) >= 0) {
+			return this._connectionInfo.serverInfo !== undefined
+				? this._connectionInfo.serverInfo['machineName']
+				: serverName;
+		}
+		return serverName;
+	}
+
 	private buildVersionDetails(): string {
 		return `
 		<div class="details">
 			<div>
-				<span>API Version: ${this._assessmentResult.apiVersion}</span><br />
-				<span>Default Ruleset: ${this._assessmentResult.items[0].rulesetVersion}</span>
+				<span>${LocalizedStrings.API_VERSION} ${this._assessmentResult.apiVersion}</span><br />
+				<span>${LocalizedStrings.DEFAULT_RULESET_VERSION} ${this._assessmentResult.items[0].rulesetVersion}</span>
 			</div>
 			<div>
-				<span>SQL Server: ${this._connectionInfo.serverInfo?.serverEdition} ${this._connectionInfo.serverInfo?.serverVersion}</span><br>
-				<span>Instance name: ${this._connectionInfo.connectionProfile.serverName}</span>
+				<span>${LocalizedStrings.SECTION_TITLE_SQL_SERVER}: ${this._connectionInfo.serverInfo?.serverEdition} ${this._connectionInfo.serverInfo?.serverVersion}</span><br>
+				<span>${LocalizedStrings.SERVER_INSTANCENAME} ${this.instanceName()}</span>
 			</div>
 		</div>
 		`;
@@ -86,10 +94,10 @@ export class HTMLReportBuilder {
 	private buildTargetAssessmentSection(targetResults: SqlAssessmentResultItem[]): string {
 		let content = `
 		<div>
-			<div class="target">Results for ${targetResults[0].targetType === SqlAssessmentTargetType.Server ? 'instance' : 'database'}: ${targetResults[0].targetName}</div>
-			${this.buildSeveritySection('Errors', targetResults.filter(item => item.level === 'Error'))}
-			${this.buildSeveritySection('Warnings', targetResults.filter(item => item.level === 'Warning'))}
-			${this.buildSeveritySection('Informations', targetResults.filter(item => item.level === 'Information'))}
+			<div class="target">${targetResults[0].targetType === SqlAssessmentTargetType.Server ? LocalizedStrings.RESULTS_FOR_INSTANCE : LocalizedStrings.RESULTS_FOR_DATABASE}: ${targetResults[0].targetName}</div>
+			${this.buildSeveritySection(LocalizedStrings.REPORT_ERROR, targetResults.filter(item => item.level === 'Error'))}
+			${this.buildSeveritySection(LocalizedStrings.REPORT_WARNING, targetResults.filter(item => item.level === 'Warning'))}
+			${this.buildSeveritySection(LocalizedStrings.REPORT_INFO, targetResults.filter(item => item.level === 'Information'))}
 		</div>`;
 		return content;
 	}
@@ -100,9 +108,9 @@ export class HTMLReportBuilder {
 
 		return `
 		<div class="severityBlock">
-			<div>${severityName}: ${items.length} item(s)</div>
+			<div>${LocalizedStrings.REPORT_SEVERITY_MESSAGE(severityName, items.length)}</div>
 			<table>
-				<tr><th>Message</th><th>Help Link</th><th>Check ID</th></tr>
+				<tr><th>${LocalizedStrings.MESSAGE_COLUMN_NAME}</th><th>${LocalizedStrings.HELP_LINK_COLUMN_NAME}</th><th>${LocalizedStrings.CHECKID_COLUMN_NAME}</th></tr>
 				${this.buildItemsRows(items)}
 			</table>
 		</div>`;
@@ -112,7 +120,7 @@ export class HTMLReportBuilder {
 		items.forEach(item => {
 			content += `<tr>
 					<td>${escape(item.message)}</td>
-					<td><a href='${item.helpLink}' target='_blank;'>Learn More</a></td>
+					<td><a href='${item.helpLink}' target='_blank;'>${LocalizedStrings.LEARN_MORE_LINK}</a></td>
 					<td>${item.checkId}</td>
 				</tr>`;
 		});

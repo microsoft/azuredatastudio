@@ -8,21 +8,11 @@ import { Component, Inject, forwardRef, ChangeDetectorRef, ViewChild, Injectable
 import { ServerInfo } from 'azdata';
 //import { PanelComponent, IPanelOptions, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
-import { localize } from 'vs/nls';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { AsmtResultsViewComponent } from 'sql/workbench/contrib/assessment/browser/asmtResultsView.component';
+import { LocalizedStrings } from 'sql/workbench/contrib/assessment/common/strings';
 
 
-const LocalizedStrings = {
-	SECTION_TITLE_API: localize('asmt.section.api.title', "API information"),
-	API_VERSION: localize('asmt.apiversion', "API Version:"),
-	DEFAULT_RULESET_VERSION: localize('asmt.rulesetversion', "Default Ruleset Version:"),
-	SECTION_TITLE_SQL_SERVER: localize('asmt.section.instance.title', "SQL Server Instance Details"),
-	SERVER_VERSION: localize('asmt.serverversion', "Version:"),
-	SERVER_EDITION: localize('asmt.serveredition', "Edition:"),
-	SERVER_INSTANCENAME: localize('asmt.instancename', "Instance Name:"),
-	SERVER_OSVERSION: localize('asmt.osversion', "OS Version:")
-};
 
 export const DASHBOARD_SELECTOR: string = 'asmtview-component';
 
@@ -67,7 +57,10 @@ export class AsmtViewComponent extends AngularDisposable implements OnInit {
 	}
 
 	public layout() {
-		this._asmtResultView.layout();
+		if (this._asmtResultView.layout !== undefined) {
+			this._asmtResultView.layout();
+		}
+
 		//this._panel.layout();
 	}
 }

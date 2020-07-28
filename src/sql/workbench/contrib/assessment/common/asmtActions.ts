@@ -7,6 +7,7 @@ import { Action } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IAssessmentService } from 'sql/workbench/services/assessment/common/interfaces';
 import { SqlAssessmentResult } from 'azdata';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
@@ -19,6 +20,9 @@ import { VSBuffer } from 'vs/base/common/buffer';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import * as path from 'vs/base/common/path';
 import { HTMLReportBuilder } from 'sql/workbench/contrib/assessment/common/htmlReportGenerator';
+import Severity from 'vs/base/common/severity';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 export interface SqlAssessmentResultInfo {
 	result: SqlAssessmentResult;
@@ -239,29 +243,50 @@ export class AsmtSamplesLinkAction extends Action {
 export class AsmtGenerateHTMLReportAction extends Action {
 	public static readonly ID = 'asmtaction.generatehtmlreport';
 	public static readonly LABEL = nls.localize('asmtaction.generatehtmlreport', "Make HTML Report");
-	public static readonly ICON = 'asmt-learnmore';
+	public static readonly ICON = 'bookreport';
 
 	constructor(
 		@IFileService private _fileService: IFileService,
 		@IOpenerService private _openerService: IOpenerService,
 		@IEnvironmentService private _environmentService: IEnvironmentService,
-		//@IAdsTelemetryService private _telemetryService: IAdsTelemetryService
-
+		@IDialogService private readonly _dialogService: IDialogService,
+		@IClipboardService private readonly _clipboardService: IClipboardService,
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
+		@INotificationService private readonly _notificationService: INotificationService
 	) {
 		super(AsmtGenerateHTMLReportAction.ID, AsmtGenerateHTMLReportAction.LABEL, AsmtGenerateHTMLReportAction.ICON);
 	}
 
 	public async run(context: IAsmtActionInfo): Promise<boolean> {
 		const fileName = this.generateReportFileName(new Date(context.component.recentResult.dateUpdated));
-
+		const filePath = path.join(this._environmentService.userRoamingDataHome.fsPath, 'SqlAssessmentReports', fileName);
 		const result = await this._fileService.createFile(
-			URI.file(path.join(this._environmentService.userRoamingDataHome.fsPath, 'SqlAssessmentReports', fileName)),
+			URI.file(filePath),
 			VSBuffer.fromString(new HTMLReportBuilder(context.component.recentResult.result,
 				context.component.recentResult.dateUpdated,
 				context.component.recentResult.connectionInfo).Build()),
 			{ overwrite: true });
-
-		return this._openerService.open(result.resource.fsPath, { openExternal: true });
+		this._telemetryService.sendActionEvent(TelemetryView.SqlAssessment, AsmtGenerateHTMLReportAction.ID);
+		const { choice } = await this._dialogService.show(
+			Severity.Info,
+			nls.localize('asmtaction.openReport', "Report has been saved as an HTML file. Do you want to open it?"),
+			[
+				nls.localize('open', 'Open'),
+				nls.localize('asmtaction.copyPath', 'Copy Path'),
+				nls.localize('cancel', 'Cancel'),
+			],
+			{
+				detail: filePath,
+				cancelId: 2
+			}
+		);
+		if (choice === 0) {
+			return this._openerService.open(result.resource.fsPath, { openExternal: true });
+		} else if (choice === 1) {
+			await this._clipboardService.writeText(filePath);
+			this._notificationService.info(nls.localize('asmtaction.pathcopied', 'Path has been copied to clipboard'));
+		}
+		return true;
 	}
 
 	private generateReportFileName(resultDate): string {

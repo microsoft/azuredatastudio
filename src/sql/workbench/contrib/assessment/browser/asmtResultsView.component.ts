@@ -45,6 +45,7 @@ import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/bro
 import * as themeColors from 'vs/workbench/common/theme';
 import { ITableStyles } from 'sql/base/browser/ui/table/interfaces';
 import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
+import { LocalizedStrings } from 'sql/workbench/contrib/assessment/common/strings';
 
 export const ASMTRESULTSVIEW_SELECTOR: string = 'asmt-results-view-component';
 export const ROW_HEIGHT: number = 25;
@@ -55,7 +56,7 @@ const COLUMN_MESSAGE_ID: string = 'message';
 
 const COLUMN_MESSAGE_TITLE: { [mode: number]: string } = {
 	[AssessmentType.AvailableRules]: nls.localize('asmt.column.displayName', "Display Name"),
-	[AssessmentType.InvokeAssessment]: nls.localize('asmt.column.message', "Message"),
+	[AssessmentType.InvokeAssessment]: LocalizedStrings.MESSAGE_COLUMN_NAME,
 };
 
 enum AssessmentResultItemKind {
@@ -95,7 +96,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		},
 		{ name: nls.localize('asmt.column.severity', "Severity"), field: 'severity', maxWidth: 90, id: 'severity' },
 		{
-			name: nls.localize('asmt.column.message', "Message"),
+			name: LocalizedStrings.MESSAGE_COLUMN_NAME,
 			field: 'message',
 			width: 300,
 			id: COLUMN_MESSAGE_ID,
@@ -108,13 +109,14 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 			id: 'tags',
 			formatter: (row, cell, value, columnDef, dataContext) => this.renderTags(row, cell, value, columnDef, dataContext)
 		},
-		{ name: nls.localize('asmt.column.checkId', "Check ID"), field: 'checkId', maxWidth: 140, id: 'checkId' }
+		{ name: LocalizedStrings.CHECKID_COLUMN_NAME, field: 'checkId', maxWidth: 140, id: 'checkId' }
 	];
 	private dataView: any;
 	private filterPlugin: any;
 	private isServerMode: boolean;
 	private rowDetail: RowDetailView<Slick.SlickData>;
 	private exportActionItem: IAction;
+	private generateReportActionItem: IAction;
 	private placeholderElem: HTMLElement;
 	private placeholderNoResultsLabel: string;
 	private spinner: { [mode: number]: HTMLElement } = Object.create(null);
@@ -352,6 +354,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 
 	private initActionBar(invokeAction: IAction, selectAction: IAction) {
 		this.exportActionItem = this._register(this._instantiationService.createInstance(AsmtExportAsScriptAction));
+		this.generateReportActionItem = this._register(this._instantiationService.createInstance(AsmtGenerateHTMLReportAction));
 
 		let taskbar = <HTMLElement>this.actionBarContainer.nativeElement;
 		this._actionBar = this._register(new Taskbar(taskbar));
@@ -364,14 +367,15 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 			{ action: selectAction },
 			{ element: this.spinner[AssessmentType.AvailableRules] },
 			{ action: this.exportActionItem },
-			{ action: this._instantiationService.createInstance(AsmtSamplesLinkAction) },
-			{ action: this._instantiationService.createInstance(AsmtGenerateHTMLReportAction) }
+			{ action: this.generateReportActionItem },
+			{ action: this._instantiationService.createInstance(AsmtSamplesLinkAction) }
 		]);
 
 		let connectionInfo = this._commonService.connectionManagementService.connectionInfo;
 		let context: IAsmtActionInfo = { component: this, ownerUri: Utils.generateUri(connectionInfo.connectionProfile.clone(), 'dashboard'), connectionId: connectionInfo.connectionProfile.id };
 		this._actionBar.context = context;
 		this.exportActionItem.enabled = false;
+		this.generateReportActionItem.enabled = false;
 	}
 
 	private convertToDataViewItems(asmtResult: azdata.SqlAssessmentResultItem, index: number, method: AssessmentType) {
@@ -404,7 +408,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		this._table.autosizeColumns();
 		this._table.resizeCanvas();
 		this.exportActionItem.enabled = (results.length > 0 && method === AssessmentType.InvokeAssessment);
-
+		this.generateReportActionItem.enabled = (results.length > 0 && method === AssessmentType.InvokeAssessment);
 		if (results.length > 0) {
 			dom.hide(this.placeholderElem);
 		} else {
@@ -484,7 +488,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 
 	private appendHelplink(msg: string, helpLink: string, kind: AssessmentResultItemKind, wrapByKindFunc): string {
 		if (msg !== undefined) {
-			return `${wrapByKindFunc(kind, escape(msg))}<a class='helpLink' href='${helpLink}' \>${nls.localize('asmt.learnMore', "Learn More")}</a>`;
+			return `${wrapByKindFunc(kind, escape(msg))}<a class='helpLink' href='${helpLink}' \>${LocalizedStrings.LEARN_MORE_LINK}</a>`;
 		}
 		return undefined;
 	}
