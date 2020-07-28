@@ -4,114 +4,240 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as should from 'should';
-import * as os from 'os';
+import * as TypeMoq from 'typemoq';
+// import * as azdata from 'azdata';
+// import * as vscode from 'vscode';
+// import * as sinon from 'sinon';
 import 'mocha';
-import * as vscode from 'vscode';
-
-import { PromptFailedResult, AccountKey } from 'azdata';
-import { AzureAuth, AccessToken, RefreshToken, TokenClaims, TokenRefreshResponse } from '../../../account-provider/auths/azureAuth';
-import { AzureAccount, AzureAuthType, Deferred, Tenant } from '../../../account-provider/interfaces';
+import { AzureAuthCodeGrant } from '../../../account-provider/auths/azureAuthCodeGrant';
+// import { AzureDeviceCode } from '../../../account-provider/auths/azureDeviceCode';
+import { Token, TokenClaims, AccessToken, RefreshToken, OAuthTokenResponse, TokenPostData } from '../../../account-provider/auths/azureAuth';
+import { Tenant, AzureAccount } from '../../../account-provider/interfaces';
 import providerSettings from '../../../account-provider/providerSettings';
-import { SimpleTokenCache } from '../../../account-provider/simpleTokenCache';
-import { CredentialsTestProvider } from '../../stubs/credentialsTestProvider';
+import { AzureResource } from 'azdata';
+import { AxiosResponse } from 'axios';
 
-class BasicAzureAuth extends AzureAuth {
-	public async login(): Promise<AzureAccount | PromptFailedResult> {
-		throw new Error('Method not implemented.');
-	}
 
-	public async autoOAuthCancelled(): Promise<void> {
-		throw new Error('Method not implemented.');
-	}
+let azureAuthCodeGrant: TypeMoq.IMock<AzureAuthCodeGrant>;
+// let azureDeviceCode: TypeMoq.IMock<AzureDeviceCode>;
 
-	public async promptForConsent(): Promise<{ tokenRefreshResponse: TokenRefreshResponse, authCompleteDeferred: Deferred<void> } | undefined> {
-		throw new Error('Method not implemented.');
-	}
-}
+const mockToken: Token = {
+	key: 'someUniqueId',
+	token: 'test_token',
+	tokenType: 'Bearer'
+};
+let mockAccessToken: AccessToken;
+let mockRefreshToken: RefreshToken;
 
-let baseAuth: AzureAuth;
+const mockClaims = {
+	name: 'Name',
+	email: 'example@example.com',
+	sub: 'someUniqueId'
+} as TokenClaims;
 
-const accountKey: AccountKey = {
-	accountId: 'SomeAccountKey',
-	providerId: 'providerId',
+const mockTenant: Tenant = {
+	displayName: 'Tenant Name',
+	id: 'tenantID',
+	tenantCategory: 'Home',
+	userId: 'test_user'
 };
 
-const accessToken: AccessToken = {
-	key: accountKey.accountId,
-	token: '123'
-};
+let mockAccount: AzureAccount;
 
-const refreshToken: RefreshToken = {
-	key: accountKey.accountId,
-	token: '321'
-};
+const provider = providerSettings[0].metadata;
 
-const resourceId = 'resource';
-const tenantId = 'tenant';
+describe('Azure Authentication', function () {
+	beforeEach(function () {
+		azureAuthCodeGrant = TypeMoq.Mock.ofType<AzureAuthCodeGrant>(AzureAuthCodeGrant, TypeMoq.MockBehavior.Loose, true, provider);
+		// azureDeviceCode = TypeMoq.Mock.ofType<AzureDeviceCode>();
 
-const tenant: Tenant = {
-	id: tenantId,
-	displayName: 'common'
-};
+		azureAuthCodeGrant.callBase = true;
+		// authDeviceCode.callBase = true;
 
-// These tests don't work on Linux systems because gnome-keyring doesn't like running on headless machines.
-describe('AccountProvider.AzureAuth', function (): void {
-	beforeEach(async function (): Promise<void> {
-		const tokenCache = new SimpleTokenCache('testTokenService', os.tmpdir(), true, new CredentialsTestProvider());
-		await tokenCache.init();
-		baseAuth = new BasicAzureAuth(providerSettings[0].metadata, tokenCache, undefined, undefined, AzureAuthType.AuthCodeGrant, 'Auth Code Grant');
+		mockAccount = {
+			isStale: false,
+			properties: {
+				tenants: [mockTenant]
+			}
+		} as AzureAccount;
+
+		mockAccessToken = {
+			...mockToken
+		};
+		mockRefreshToken = {
+			...mockToken
+		};
 	});
 
-	it('Basic token set and get', async function (): Promise<void> {
-		await baseAuth.setCachedToken(accountKey, accessToken, refreshToken);
-		const result = await baseAuth.getCachedToken(accountKey);
+	it('accountHydration should yield a valid account', async function () {
 
-		should(JSON.stringify(result.accessToken)).be.equal(JSON.stringify(accessToken));
-		should(JSON.stringify(result.refreshToken)).be.equal(JSON.stringify(refreshToken));
+		azureAuthCodeGrant.setup(x => x.getTenants(mockToken)).returns((): Promise<Tenant[]> => {
+			return Promise.resolve([
+				mockTenant
+			]);
+		});
+
+		const response = await azureAuthCodeGrant.object.hydrateAccount(mockToken, mockClaims);
+		should(response.displayInfo.displayName).be.equal(`${mockClaims.name} - ${mockClaims.email}`, 'Account name should match');
+		should(response.displayInfo.userId).be.equal(mockClaims.sub, 'Account ID should match');
+		should(response.properties.tenants).be.deepEqual([mockTenant], 'Tenants should match');
 	});
 
-	it('Token set and get with tenant and resource id', async function (): Promise<void> {
-		await baseAuth.setCachedToken(accountKey, accessToken, refreshToken, resourceId, tenantId);
-		let result = await baseAuth.getCachedToken(accountKey, resourceId, tenantId);
+	describe('getAccountSecurityToken', function () {
+		it('should be undefined on stale account', async function () {
+			mockAccount.isStale = true;
+			const securityToken = await azureAuthCodeGrant.object.getAccountSecurityToken(mockAccount, TypeMoq.It.isAny(), TypeMoq.It.isAny());
+			should(securityToken).be.undefined();
+		});
+		it('dont find correct resources', async function () {
+			const securityToken = await azureAuthCodeGrant.object.getAccountSecurityToken(mockAccount, TypeMoq.It.isAny(), -1);
+			should(securityToken).be.undefined();
+		});
+		it('incorrect tenant', async function () {
+			await azureAuthCodeGrant.object.getAccountSecurityToken(mockAccount, 'invalid_tenant', AzureResource.MicrosoftResourceManagement).should.be.rejected();
+		});
 
-		should(JSON.stringify(result.accessToken)).be.equal(JSON.stringify(accessToken));
-		should(JSON.stringify(result.refreshToken)).be.equal(JSON.stringify(refreshToken));
+		it('saved token exists and can be reused', async function () {
+			delete (mockAccessToken as any).tokenType;
+			azureAuthCodeGrant.setup(x => x.getSavedToken(mockTenant, provider.settings.microsoftResource, mockAccount.key)).returns((): Promise<{ accessToken: AccessToken, refreshToken: RefreshToken, expiresOn: string }> => {
+				return Promise.resolve({
+					accessToken: mockAccessToken,
+					refreshToken: mockRefreshToken,
+					expiresOn: `${(new Date().getTime() / 1000) + (10 * 60)}`
+				})
+			});
+			const securityToken = await azureAuthCodeGrant.object.getAccountSecurityToken(mockAccount, mockTenant.id, AzureResource.MicrosoftResourceManagement);
 
-		await baseAuth.clearCredentials(accountKey);
-		result = await baseAuth.getCachedToken(accountKey, resourceId, tenantId);
-		should(result).be.undefined();
+			should(securityToken.tokenType).be.equal('Bearer', 'tokenType should be bearer on a successful getSecurityToken from cache')
+		});
+
+
+		it('saved token had invalid expiration', async function () {
+			delete (mockAccessToken as any).tokenType;
+			(mockAccessToken as any).invalidData = 'this should not exist on response';
+			azureAuthCodeGrant.setup(x => x.getSavedToken(mockTenant, provider.settings.microsoftResource, mockAccount.key)).returns((): Promise<{ accessToken: AccessToken, refreshToken: RefreshToken, expiresOn: string }> => {
+				return Promise.resolve({
+					accessToken: mockAccessToken,
+					refreshToken: mockRefreshToken,
+					expiresOn: undefined
+				});
+			});
+			azureAuthCodeGrant.setup(x => x.refreshToken(mockTenant, provider.settings.microsoftResource, mockRefreshToken)).returns((): Promise<OAuthTokenResponse> => {
+				const mockToken: AccessToken = JSON.parse(JSON.stringify(mockAccessToken));
+				delete (mockToken as any).invalidData;
+				return Promise.resolve({
+					accessToken: mockToken
+				} as OAuthTokenResponse);
+			});
+			const securityToken = await azureAuthCodeGrant.object.getAccountSecurityToken(mockAccount, mockTenant.id, AzureResource.MicrosoftResourceManagement);
+
+			should((securityToken as any).invalidData).be.undefined(); // Ensure its a new one
+			should(securityToken.tokenType).be.equal('Bearer', 'tokenType should be bearer on a successful getSecurityToken from cache')
+
+			azureAuthCodeGrant.verify(x => x.refreshToken(mockTenant, provider.settings.microsoftResource, mockRefreshToken), TypeMoq.Times.once());
+		});
+
+		describe('no saved token', function () {
+			it('no base token', async function () {
+				azureAuthCodeGrant.setup(x => x.getSavedToken(mockTenant, provider.settings.microsoftResource, mockAccount.key)).returns((): Promise<{ accessToken: AccessToken, refreshToken: RefreshToken, expiresOn: string }> => {
+					return Promise.resolve(undefined);
+				});
+
+				azureAuthCodeGrant.setup(x => x.getSavedToken(azureAuthCodeGrant.object.commonTenant, provider.settings.microsoftResource, mockAccount.key)).returns((): Promise<{ accessToken: AccessToken, refreshToken: RefreshToken, expiresOn: string }> => {
+					return Promise.resolve(undefined);
+				});
+
+				await azureAuthCodeGrant.object.getAccountSecurityToken(mockAccount, mockTenant.id, AzureResource.MicrosoftResourceManagement).should.be.rejected();
+			});
+
+			it('base token exists', async function () {
+				azureAuthCodeGrant.setup(x => x.getSavedToken(mockTenant, provider.settings.microsoftResource, mockAccount.key)).returns((): Promise<{ accessToken: AccessToken, refreshToken: RefreshToken, expiresOn: string }> => {
+					return Promise.resolve(undefined);
+				});
+
+				azureAuthCodeGrant.setup(x => x.getSavedToken(azureAuthCodeGrant.object.commonTenant, provider.settings.microsoftResource, mockAccount.key)).returns((): Promise<{ accessToken: AccessToken, refreshToken: RefreshToken, expiresOn: string }> => {
+					return Promise.resolve({
+						accessToken: mockAccessToken,
+						refreshToken: mockRefreshToken,
+						expiresOn: ''
+					});
+				});
+				delete (mockAccessToken as any).tokenType;
+
+				azureAuthCodeGrant.setup(x => x.refreshToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+					return Promise.resolve({
+						accessToken: mockAccessToken
+					} as OAuthTokenResponse);
+				});
+
+				const securityToken: Token = await azureAuthCodeGrant.object.getAccountSecurityToken(mockAccount, mockTenant.id, AzureResource.MicrosoftResourceManagement);
+				should(securityToken.tokenType).be.equal('Bearer', 'tokenType should be bearer on a successful getSecurityToken from cache')
+			});
+		});
+
 	});
 
-	it('Token set with resource ID and get without tenant and resource id', async function (): Promise<void> {
-		await baseAuth.setCachedToken(accountKey, accessToken, refreshToken, resourceId, tenantId);
-		const result = await baseAuth.getCachedToken(accountKey);
+	describe('getToken', function () {
 
-		should(JSON.stringify(result)).be.undefined();
-		should(JSON.stringify(result)).be.undefined();
+		it('calls handle interaction required', async function () {
+			azureAuthCodeGrant.setup(x => x.makePostRequest(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+				return Promise.resolve({
+					data: {
+						error: 'interaction_required'
+					}
+				} as AxiosResponse<any>);
+			});
+
+			azureAuthCodeGrant.setup(x => x.handleInteractionRequired(mockTenant, provider.settings.microsoftResource)).returns(() => {
+				return Promise.resolve({
+					accessToken: mockAccessToken
+				} as OAuthTokenResponse);
+			});
+
+
+			const result = await azureAuthCodeGrant.object.getToken(mockTenant, provider.settings.microsoftResource, {} as TokenPostData);
+
+			azureAuthCodeGrant.verify(x => x.handleInteractionRequired(mockTenant, provider.settings.microsoftResource), TypeMoq.Times.once());
+
+			should(result.accessToken).be.deepEqual(mockAccessToken);
+		});
+
+		it('unknown error should throw error', async function () {
+			azureAuthCodeGrant.setup(x => x.makePostRequest(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+				return Promise.resolve({
+					data: {
+						error: 'unknown error'
+					}
+				} as AxiosResponse<any>);
+			});
+
+			await azureAuthCodeGrant.object.getToken(mockTenant, provider.settings.microsoftResource, {} as TokenPostData).should.be.rejected();
+		});
+
+		it('calls getTokenHelper', async function () {
+			azureAuthCodeGrant.setup(x => x.makePostRequest(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+				return Promise.resolve({
+					data: {
+						access_token: mockAccessToken.token,
+						refresh_token: mockRefreshToken.token,
+						expires_on: `0`
+					}
+				} as AxiosResponse<any>);
+			});
+
+			azureAuthCodeGrant.setup(x => x.getTokenHelper(mockTenant, provider.settings.microsoftResource, TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+				return Promise.resolve({
+					accessToken: mockAccessToken
+				} as OAuthTokenResponse);
+			});
+
+
+			const result = await azureAuthCodeGrant.object.getToken(mockTenant, provider.settings.microsoftResource, {} as TokenPostData);
+
+			azureAuthCodeGrant.verify(x => x.getTokenHelper(mockTenant, provider.settings.microsoftResource, TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+
+			should(result.accessToken).be.deepEqual(mockAccessToken);
+		});
 	});
 
-	it('Create an account object', async function (): Promise<void> {
-		const tokenClaims = {
-			idp: 'live.com',
-			name: 'TestAccount',
-		} as TokenClaims;
-
-		const account = baseAuth.createAccount(tokenClaims, 'someKey', undefined);
-
-		should(account.properties.azureAuthType).be.equal(AzureAuthType.AuthCodeGrant);
-		should(account.key.accountId).be.equal('someKey');
-		should(account.properties.isMsAccount).be.equal(true);
-	});
-	it('Should handle ignored tenants', async function (): Promise<void> {
-		// Don't sit on the await openConsentDialog if test is failing
-		this.timeout(3000);
-
-		const configuration = vscode.workspace.getConfiguration('azure.tenant.config');
-		const values = [tenantId];
-
-		await configuration.update('filter', values, vscode.ConfigurationTarget.Global);
-		const x = await baseAuth.openConsentDialog(tenant, resourceId);
-
-		should(x).be.false();
-	});
 });

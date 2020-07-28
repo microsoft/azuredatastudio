@@ -8,7 +8,7 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 // CONFIG VALUES ///////////////////////////////////////////////////////////
-export const extensionOutputChannel = 'Notebooks';
+export const extensionOutputChannelName = 'Notebooks';
 
 // JUPYTER CONFIG //////////////////////////////////////////////////////////
 export const pythonBundleVersion = '0.0.1';
@@ -18,6 +18,7 @@ export const existingPythonConfigKey = 'useExistingPython';
 export const notebookConfigKey = 'notebook';
 export const trustedBooksConfigKey = 'trustedBooks';
 export const maxBookSearchDepth = 'maxBookSearchDepth';
+export const remoteBookDownloadTimeout = 'remoteBookDownloadTimeout';
 
 export const winPlatform = 'win32';
 

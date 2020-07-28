@@ -10,8 +10,7 @@ import { NotebookService } from 'sql/workbench/services/notebook/browser/noteboo
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
-import { TestLifecycleService, TestEnvironmentService } from 'vs/workbench/test/browser/workbenchTestServices';
-import { Separator } from 'vs/base/browser/ui/actionbar/actionbar';
+import { TestLifecycleService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
@@ -19,6 +18,8 @@ import * as DOM from 'vs/base/browser/dom';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { ContextMenuService } from 'vs/platform/contextview/browser/contextMenuService';
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
+import { IProductService } from 'vs/platform/product/common/productService';
+import { Separator } from 'vs/base/common/actions';
 
 suite('CellToolbarActions', function (): void {
 	suite('removeDuplicatedAndStartingSeparators', function (): void {
@@ -88,12 +89,24 @@ suite('CellToolbarActions', function (): void {
 		const contextMock = TypeMoq.Mock.ofType(CellContext);
 		const cellModelMock = TypeMoq.Mock.ofType(CellModel);
 
+		instantiationService.stub(IProductService, { quality: 'stable' });
+
 		suiteSetup(function (): void {
 			contextMock.setup(x => x.cell).returns(() => cellModelMock.object);
-			const mockNotebookService = TypeMoq.Mock.ofType(NotebookService, undefined, new TestLifecycleService(), undefined, undefined, undefined, instantiationService, new MockContextKeyService(),
-				undefined, instantiationService, undefined, undefined, undefined, undefined, TestEnvironmentService);
+			let notebookService = new NotebookService(
+				new TestLifecycleService(),
+				undefined,
+				undefined,
+				undefined,
+				instantiationService,
+				undefined,
+				undefined,
+				undefined,
+				new MockContextKeyService(),
+				instantiationService.get(IProductService)
+			);
 			instantiationService.stub(INotificationService, new TestNotificationService());
-			instantiationService.stub(INotebookService, mockNotebookService.object);
+			instantiationService.stub(INotebookService, notebookService);
 			instantiationService.stub(IContextMenuService, TypeMoq.Mock.ofType(ContextMenuService).object);
 		});
 

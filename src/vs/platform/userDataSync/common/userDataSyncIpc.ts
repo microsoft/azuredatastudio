@@ -53,7 +53,7 @@ export class UserDataSyncChannel implements IServerChannel {
 			case 'resetLocal': return this.service.resetLocal();
 			case 'hasPreviouslySynced': return this.service.hasPreviouslySynced();
 			case 'hasLocalData': return this.service.hasLocalData();
-			case 'acceptPreviewContent': return this.service.acceptPreviewContent(args[0], URI.revive(args[1]), args[2]);
+			case 'accept': return this.service.accept(args[0], URI.revive(args[1]), args[2], args[3]);
 			case 'resolveContent': return this.service.resolveContent(URI.revive(args[0]));
 			case 'getLocalSyncResourceHandles': return this.service.getLocalSyncResourceHandles(args[0]);
 			case 'getRemoteSyncResourceHandles': return this.service.getRemoteSyncResourceHandles(args[0]);
@@ -65,7 +65,7 @@ export class UserDataSyncChannel implements IServerChannel {
 
 	private async createManualSyncTask(): Promise<{ id: string, manifest: IUserDataManifest | null }> {
 		const manualSyncTask = await this.service.createManualSyncTask();
-		const manualSyncTaskChannel = new ManualSyncTaskChannel(manualSyncTask);
+		const manualSyncTaskChannel = new ManualSyncTaskChannel(manualSyncTask, this.logService);
 		this.server.registerChannel(`manualSyncTask-${manualSyncTask.id}`, manualSyncTaskChannel);
 		return { id: manualSyncTask.id, manifest: manualSyncTask.manifest };
 	}
@@ -73,7 +73,10 @@ export class UserDataSyncChannel implements IServerChannel {
 
 class ManualSyncTaskChannel implements IServerChannel {
 
-	constructor(private readonly manualSyncTask: IManualSyncTask) { }
+	constructor(
+		private readonly manualSyncTask: IManualSyncTask,
+		private readonly logService: ILogService
+	) { }
 
 	listen(_: unknown, event: string): Event<any> {
 		switch (event) {
@@ -83,10 +86,22 @@ class ManualSyncTaskChannel implements IServerChannel {
 	}
 
 	async call(context: any, command: string, args?: any): Promise<any> {
+		try {
+			const result = await this._call(context, command, args);
+			return result;
+		} catch (e) {
+			this.logService.error(e);
+			throw e;
+		}
+	}
+
+	private async _call(context: any, command: string, args?: any): Promise<any> {
 		switch (command) {
 			case 'preview': return this.manualSyncTask.preview();
 			case 'accept': return this.manualSyncTask.accept(URI.revive(args[0]), args[1]);
 			case 'merge': return this.manualSyncTask.merge(URI.revive(args[0]));
+			case 'discard': return this.manualSyncTask.discard(URI.revive(args[0]));
+			case 'apply': return this.manualSyncTask.apply();
 			case 'pull': return this.manualSyncTask.pull();
 			case 'push': return this.manualSyncTask.push();
 			case 'stop': return this.manualSyncTask.stop();

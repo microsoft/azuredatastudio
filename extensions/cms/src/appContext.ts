@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { ApiWrapper } from './apiWrapper';
 import { CmsUtils } from './cmsUtils';
 
 /**
@@ -14,7 +13,6 @@ export class AppContext {
 
 	constructor(
 		public readonly extensionContext: vscode.ExtensionContext,
-		public readonly apiWrapper: ApiWrapper,
 		public readonly cmsUtils: CmsUtils
 	) { }
 }

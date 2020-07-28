@@ -361,6 +361,7 @@ class DropOverlay extends Themable {
 			const editor = this.editorService.activeTextEditorControl as ICodeEditor;
 			if (untitledOrFileResources[0].resource.scheme === 'Column' || untitledOrFileResources[0].resource.scheme === 'Table') {
 				SnippetController2.get(editor).insert(untitledOrFileResources[0].resource.query);
+				editor.focus();
 				return;
 			}
 

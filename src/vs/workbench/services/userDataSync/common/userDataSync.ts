@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { IAuthenticationProvider, SyncStatus, SyncResource, Change } from 'vs/platform/userDataSync/common/userDataSync';
+import { IAuthenticationProvider, SyncStatus, SyncResource, Change, MergeState } from 'vs/platform/userDataSync/common/userDataSync';
 import { Event } from 'vs/base/common/event';
 import { RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { localize } from 'vs/nls';
@@ -17,25 +17,27 @@ export interface IUserDataSyncAccount {
 }
 
 export interface IUserDataSyncPreview {
-	readonly onDidChangeChanges: Event<ReadonlyArray<IUserDataSyncResourceGroup>>;
-	readonly changes: ReadonlyArray<IUserDataSyncResourceGroup>;
+	readonly onDidChangeResources: Event<ReadonlyArray<IUserDataSyncResource>>;
+	readonly resources: ReadonlyArray<IUserDataSyncResource>;
 
-	onDidChangeConflicts: Event<ReadonlyArray<IUserDataSyncResourceGroup>>;
-	readonly conflicts: ReadonlyArray<IUserDataSyncResourceGroup>;
-
-	accept(syncResource: SyncResource, resource: URI, content: string): Promise<void>;
+	accept(syncResource: SyncResource, resource: URI, content: string | null): Promise<void>;
 	merge(resource?: URI): Promise<void>;
+	discard(resource?: URI): Promise<void>;
 	pull(): Promise<void>;
 	push(): Promise<void>;
+	apply(): Promise<void>;
+	cancel(): Promise<void>;
 }
 
-export interface IUserDataSyncResourceGroup {
+export interface IUserDataSyncResource {
 	readonly syncResource: SyncResource;
 	readonly local: URI;
 	readonly remote: URI;
-	readonly preview: URI;
+	readonly merged: URI;
+	readonly accepted: URI;
 	readonly localChange: Change;
 	readonly remoteChange: Change;
+	readonly mergeState: MergeState;
 }
 
 export const IUserDataSyncWorkbenchService = createDecorator<IUserDataSyncWorkbenchService>('IUserDataSyncWorkbenchService');
@@ -80,7 +82,7 @@ export const CONTEXT_SYNC_STATE = new RawContextKey<string>('syncStatus', SyncSt
 export const CONTEXT_SYNC_ENABLEMENT = new RawContextKey<boolean>('syncEnabled', false);
 export const CONTEXT_ACCOUNT_STATE = new RawContextKey<string>('userDataSyncAccountStatus', AccountStatus.Uninitialized);
 export const CONTEXT_ENABLE_ACTIVITY_VIEWS = new RawContextKey<boolean>(`enableSyncActivityViews`, false);
-export const CONTEXT_ENABLE_MANUAL_SYNC_VIEW = new RawContextKey<boolean>(`enableManualSyncView`, false);
+export const CONTEXT_ENABLE_SYNC_MERGES_VIEW = new RawContextKey<boolean>(`enableSyncMergesView`, false);
 
 // Commands
 export const CONFIGURE_SYNC_COMMAND_ID = 'workbench.userDataSync.actions.configure';
@@ -88,4 +90,4 @@ export const SHOW_SYNC_LOG_COMMAND_ID = 'workbench.userDataSync.actions.showLog'
 
 // VIEWS
 export const SYNC_VIEW_CONTAINER_ID = 'workbench.view.sync';
-export const MANUAL_SYNC_VIEW_ID = 'workbench.views.manualSyncView';
+export const SYNC_MERGES_VIEW_ID = 'workbench.views.sync.merges';

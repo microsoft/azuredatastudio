@@ -4,8 +4,7 @@
 	"relativeCoverageDir": "../../coverage",
 	"ignorePatterns": [
 		"**/node_modules/**",
-		"**/test/**",
-		"**/apiWrapper.js"
+		"**/test/**"
 	],
 	"includePid": false,
 	"reports": [

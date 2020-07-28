@@ -58,12 +58,12 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 			throw new Error(nls.localize('componentTypeNotRegistered', "Could not find component for type {0}", ModelComponentTypes[component.type]));
 		}
 		let descriptor = this.modelStore.createComponentDescriptor(typeId, component.id);
-		this.setProperties(component.id, component.properties);
-		this.setLayout(component.id, component.layout);
-		this.registerEvent(component.id);
+		this.setProperties(component.id, component.properties, true);
+		this.setLayout(component.id, component.layout, true);
+		this.registerEvent(component.id, true);
 		if (component.itemConfigs) {
 			for (let item of component.itemConfigs) {
-				this.addToContainer(component.id, item);
+				this.addToContainer(component.id, item, undefined, true);
 			}
 		}
 
@@ -82,12 +82,12 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 		this.queueAction(componentId, (component) => component.clearContainer());
 	}
 
-	addToContainer(containerId: string, itemConfig: IItemConfig, index?: number): void {
+	addToContainer(containerId: string, itemConfig: IItemConfig, index?: number, isInitialization?: boolean): void {
 		// Do not return the promise as this should be non-blocking
 		this.queueAction(containerId, (component) => {
 			let childDescriptor = this.defineComponent(itemConfig.componentShape);
 			component.addToContainer(childDescriptor, itemConfig.config, index);
-		});
+		}, isInitialization);
 	}
 
 	removeFromContainer(containerId: string, itemConfig: IItemConfig): void {
@@ -98,11 +98,11 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 		});
 	}
 
-	setLayout(componentId: string, layout: any): void {
+	setLayout(componentId: string, layout: any, isInitialization?: boolean): void {
 		if (!layout) {
 			return;
 		}
-		this.queueAction(componentId, (component) => component.setLayout(layout));
+		this.queueAction(componentId, (component) => component.setLayout(layout), isInitialization);
 	}
 
 	setItemLayout(containerId: string, itemConfig: IItemConfig): void {
@@ -112,24 +112,24 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 		});
 	}
 
-	setProperties(componentId: string, properties: { [key: string]: any; }): void {
+	setProperties(componentId: string, properties: { [key: string]: any; }, isInitialization?: boolean): void {
 		if (!properties) {
 			return;
 		}
-		this.queueAction(componentId, (component) => component.setProperties(properties));
+		this.queueAction(componentId, (component) => component.setProperties(properties), isInitialization);
 	}
 
 	refreshDataProvider(componentId: string, item: any): void {
 		this.queueAction(componentId, (component) => component.refreshDataProvider(item));
 	}
 
-	private queueAction<T>(componentId: string, action: (component: IComponent) => T): void {
-		this.modelStore.eventuallyRunOnComponent(componentId, action).catch(err => {
+	private queueAction<T>(componentId: string, action: (component: IComponent) => T, isInitialization?: boolean): void {
+		this.modelStore.eventuallyRunOnComponent(componentId, action, isInitialization).catch(err => {
 			// TODO add error handling
 		});
 	}
 
-	registerEvent(componentId: string) {
+	registerEvent(componentId: string, isInitialization?: boolean) {
 		this.queueAction(componentId, (component) => {
 			this._register(component.registerEventHandler(e => {
 				let modelViewEvent: IModelViewEventArgs = assign({
@@ -138,7 +138,7 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 				}, e);
 				this._onEventEmitter.fire(modelViewEvent);
 			}));
-		});
+		}, isInitialization);
 	}
 
 	public get onEvent(): Event<IModelViewEventArgs> {

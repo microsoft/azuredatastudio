@@ -15,7 +15,7 @@ import { createContext, TestContext } from './testContext';
 let testContext: TestContext;
 
 describe('utils: Tests to verify getEndpointName', function (): void {
-	it('Should generate correct endpoint information', async () => {
+	it('Should generate correct endpoint information', () => {
 		let endpointInfo: mssql.SchemaCompareEndpointInfo;
 
 		should(getEndpointName(endpointInfo)).equal(' ');
@@ -23,14 +23,14 @@ describe('utils: Tests to verify getEndpointName', function (): void {
 		should(getEndpointName(mockDatabaseEndpoint)).equal(' ');
 	});
 
-	it('Should get endpoint information from ConnectionInfo', async () => {
+	it('Should get endpoint information from ConnectionInfo', () => {
 		let testDatabaseEndpoint: mssql.SchemaCompareEndpointInfo = {...mockDatabaseEndpoint};
 		testDatabaseEndpoint.connectionDetails = {...mockConnectionInfo};
 
 		should(getEndpointName(testDatabaseEndpoint)).equal('My Server.My Database');
 	});
 
-	it('Should get correct endpoint information from SchemaCompareEndpointInfo', async () => {
+	it('Should get correct endpoint information from SchemaCompareEndpointInfo', () => {
 		let dbName = 'My Database';
 		let serverName = 'My Server';
 		let testDatabaseEndpoint: mssql.SchemaCompareEndpointInfo = {...mockDatabaseEndpoint};
@@ -42,7 +42,7 @@ describe('utils: Tests to verify getEndpointName', function (): void {
 });
 
 describe('utils: Basic tests to verify verifyConnectionAndGetOwnerUri', function (): void {
-	before(async function (): Promise<void> {
+	before(function (): void {
 		testContext = createContext();
 	});
 
@@ -65,7 +65,7 @@ describe('utils: Basic tests to verify verifyConnectionAndGetOwnerUri', function
 });
 
 describe('utils: In-depth tests to verify verifyConnectionAndGetOwnerUri', function (): void {
-	before(async function (): Promise<void> {
+	before(function (): void {
 		testContext = createContext();
 	});
 
