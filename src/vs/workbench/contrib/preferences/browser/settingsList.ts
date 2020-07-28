@@ -391,7 +391,7 @@ function findGroup(rootGroup: SettingsTreeGroupElement, id: string): SettingsTre
 		}
 	}
 
-	return undefined;
+	return undefined; // {{ SQL CARBON EDIT }}
 }
 
 function themingParticipant(theme: IColorTheme, collector: ICssStyleCollector) {
