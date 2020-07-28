@@ -27,7 +27,7 @@ describe('azdata', function () {
 
 	describe('findAzdata', function () {
 		// Mock call to --version to simulate azdata being installed
-		sinon.stub(childProcess, 'executeCommand').returns(Promise.resolve('v1.0.0'));
+		sinon.stub(childProcess, 'executeCommand').returns(Promise.resolve({ stdout: 'v1.0.0', stderr: '' }));
 		it('successful', async function (): Promise<void> {
 			sinon.stub(utils, 'searchForCmd').returns(Promise.resolve('C:\\path\\to\\azdata.cmd'));
 			await should(azdata.findAzdata(outputChannelMock.object)).not.be.rejected();
