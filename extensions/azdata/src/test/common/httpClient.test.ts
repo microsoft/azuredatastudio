@@ -7,7 +7,6 @@ import * as vscode from 'vscode';
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
 import { HttpClient } from '../../common/httpClient';
-import * as path from 'path';
 import * as os from 'os';
 import * as fs from 'fs';
 import * as nock from 'nock';
