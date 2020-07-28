@@ -25,6 +25,6 @@ describe('ChildProcess', function () {
 	});
 
 	it('Invalid command errors', async function (): Promise<void> {
-		await should(executeCommand('sdfkslkf', [], outputChannelMock.object)).be.rejected();
+		await should(executeCommand('invalid_command', [], outputChannelMock.object)).be.rejected();
 	});
 });

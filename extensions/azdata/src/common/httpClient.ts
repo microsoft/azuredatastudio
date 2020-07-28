@@ -8,7 +8,6 @@ import * as fs from 'fs';
 import * as request from 'request';
 import * as path from 'path';
 import * as loc from '../localizedConstants';
-import { IncomingMessage } from 'http';
 
 const DownloadTimeout = 20000;
 
@@ -20,12 +19,12 @@ export namespace HttpClient {
 	 * @param targetFolder The folder to download the file to
 	 * @param outputChannel Channel used to display diagnostic information
 	 */
-	export function download(downloadUrl: string, targetFolder: string, outputChannel: vscode.OutputChannel, followRedirect?: (response: IncomingMessage) => boolean): Promise<string> {
+	export function download(downloadUrl: string, targetFolder: string, outputChannel: vscode.OutputChannel): Promise<string> {
 		return new Promise((resolve, reject) => {
 			let totalMegaBytes: number | undefined = undefined;
 			let receivedBytes = 0;
 			let printThreshold = 0.1;
-			let downloadRequest = request.get(downloadUrl, { timeout: DownloadTimeout, followRedirect: followRedirect })
+			let downloadRequest = request.get(downloadUrl, { timeout: DownloadTimeout })
 				.on('error', downloadError => {
 					outputChannel.appendLine(loc.downloadError);
 					outputChannel.appendLine(downloadError?.message ?? downloadError);
@@ -66,6 +65,30 @@ export namespace HttpClient {
 							printThreshold += 0.1;
 						}
 					}
+				});
+		});
+	}
+
+	/**
+	 * Gets the filename for the specified URL - following redirects as needed
+	 * @param url The URL to get the filename of
+	 */
+	export async function getFilename(url: string, outputChannel: vscode.OutputChannel): Promise<string> {
+		outputChannel.appendLine(loc.gettingFilenameOfUrl(url));
+		return new Promise((resolve, reject) => {
+			let httpRequest = request.get(url, { timeout: DownloadTimeout })
+				.on('error', downloadError => {
+					reject(downloadError);
+				})
+				.on('response', (response) => {
+					if (response.statusCode !== 200) {
+						return reject(response.statusMessage);
+					}
+					// We don't want to actually download the file so abort the request now
+					httpRequest.abort();
+					const filename = path.basename(response.request.path);
+					outputChannel.appendLine(loc.gotFilenameOfUrl(response.request.path, filename));
+					resolve(filename);
 				});
 		});
 	}

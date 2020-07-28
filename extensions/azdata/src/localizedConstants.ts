@@ -18,6 +18,8 @@ export function downloadingTo(name: string, location: string): string { return l
 export function executingCommand(command: string, args: string[]): string { return localize('azdata.executingCommand', "Executing command \"{0} {1}\"", command, args?.join(' ')); }
 export function stdoutOutput(stdout: string): string { return localize('azdat.stdoutOutput', "stdout : {0}", stdout); }
 export function stderrOutput(stderr: string): string { return localize('azdat.stderrOutput', "stderr : {0}", stderr); }
+export function gettingFilenameOfUrl(url: string): string { return localize('azdata.gettingFilenameOfUrl', "Getting filename of resource at URL {0}", url); }
+export function gotFilenameOfUrl(url: string, filename: string): string { return localize('azdata.gotFilenameOfUrl', "Got filename {0} from URL {1}", filename, url); }
 
 export function couldNotFindAzdata(err: any): string { return localize('azdata.couldNotFindAzdata', "Could not find azdata. Error : {0}", err.message ?? err); }
 export const couldNotFindAzdataWithPrompt = localize('azdata.couldNotFindAzdataWithPrompt', "Could not find azdata, install it now? If not then some features will not be able to function.");

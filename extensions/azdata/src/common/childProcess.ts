@@ -9,7 +9,7 @@ import * as sudo from 'sudo-prompt';
 import * as loc from '../localizedConstants';
 
 /**
- * Wrapper error for when an unexpected exit code was recieved
+ * Wrapper error for when an unexpected exit code was received
  */
 export class ExitCodeError extends Error {
 	constructor(public code: number) {
@@ -17,13 +17,15 @@ export class ExitCodeError extends Error {
 	}
 }
 
+export type ProcessOutput = { stdout: string, stderr: string };
+
 /**
  * Executes the specified command. Throws an error for a non-0 exit code or if stderr receives output
  * @param command The command to execute
  * @param args Optional args to pass, every arg and arg value must be a separate item in the array
  * @param outputChannel Channel used to display diagnostic information
  */
-export async function executeCommand(command: string, args: string[], outputChannel: vscode.OutputChannel): Promise<{ stdout: string, stderr: string }> {
+export async function executeCommand(command: string, args: string[], outputChannel: vscode.OutputChannel): Promise<ProcessOutput> {
 	return new Promise((resolve, reject) => {
 		outputChannel.appendLine(loc.executingCommand(command, args));
 		const stdoutBuffers: Buffer[] = [];
@@ -59,7 +61,7 @@ export async function executeCommand(command: string, args: string[], outputChan
  * @param args The additional args
  * @param outputChannel Channel used to display diagnostic information
  */
-export async function executeSudoCommand(command: string, outputChannel: vscode.OutputChannel): Promise<{ stdout: string, stderr: string }> {
+export async function executeSudoCommand(command: string, outputChannel: vscode.OutputChannel): Promise<ProcessOutput> {
 	return new Promise((resolve, reject) => {
 		outputChannel.appendLine(loc.executingCommand(`sudo ${command}`, []));
 		sudo.exec(command, { name: vscode.env.appName }, (error, stdout, stderr) => {
