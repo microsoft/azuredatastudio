@@ -391,7 +391,7 @@ function findGroup(rootGroup: SettingsTreeGroupElement, id: string): SettingsTre
 		}
 	}
 
-	return;
+	return undefined;
 }
 
 function themingParticipant(theme: IColorTheme, collector: ICssStyleCollector) {
