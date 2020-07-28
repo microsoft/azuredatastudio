@@ -83,7 +83,7 @@
 	-webkit-mask-size: 100%;
 	mask-size: 100%;
 }
-.markdown-toolbar li a.codicon.show-preview::before {
+.markdown-toolbar li a.codicon.show-text::before {
 	-webkit-mask-size: 100%;
 	mask-size: 100%;
 }

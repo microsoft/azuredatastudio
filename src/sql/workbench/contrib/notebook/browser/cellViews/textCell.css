@@ -25,7 +25,8 @@ text-cell-component .edit-mode code-component {
 	width: 100%;
 }
 text-cell-component .show-preview.edit-mode code-component {
-	width: 50%;
+	height: 1px;
+	width: 1px;
 }
 text-cell-component .edit-mode .notebook-preview {
 	border-color: transparent;
@@ -33,7 +34,7 @@ text-cell-component .edit-mode .notebook-preview {
 	border-style: solid;
 	border-top-width: 0;
 	flex-direction: column;
-	width: 50%;
+	width: 100%;
 }
 
 .notebook-preview.actionselect {
