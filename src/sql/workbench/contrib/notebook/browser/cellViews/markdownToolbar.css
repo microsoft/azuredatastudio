@@ -79,6 +79,15 @@
 	mask-size: 86% 100%;
 }
 
+.markdown-toolbar li a.codicon.show-markdown::before {
+	-webkit-mask-size: 100%;
+	mask-size: 100%;
+}
+.markdown-toolbar li a.codicon.show-preview::before {
+	-webkit-mask-size: 100%;
+	mask-size: 100%;
+}
+
 text-cell-component .offscreen {
 	height: 1px;
 	margin-top: -1px;

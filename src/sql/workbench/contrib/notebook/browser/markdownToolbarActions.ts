@@ -475,11 +475,11 @@ function getColumnOffsetForSelection(type: MarkdownButtonType, nothingSelected: 
 
 export class TogglePreviewAction extends ToggleableAction {
 
-	private static readonly previewShowLabel = localize('previewShowLabel', "Show Preview");
-	private static readonly previewHideLabel = localize('previewHideLabel', "Hide Preview");
+	private static readonly previewShowLabel = localize('previewShowLabel', "Show Text");
+	private static readonly previewHideLabel = localize('previewHideLabel', "Show Markdown");
 	private static readonly baseClass = 'codicon';
-	private static readonly previewShowCssClass = 'split-toggle-on';
-	private static readonly previewHideCssClass = 'split-toggle-off';
+	private static readonly previewShowCssClass = 'show-text';
+	private static readonly previewHideCssClass = 'show-markdown';
 	private static readonly maskedIconClass = 'masked-icon';
 
 	constructor(
