@@ -3,19 +3,20 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
+import * as fs from 'fs';
 import { EOL, homedir as os_homedir } from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { azureResource } from '../../../azurecore/src/azureResource/azure-resource';
-import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles, FilePickerFieldInfo } from '../interfaces';
+import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, FilePickerFieldInfo, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles } from '../interfaces';
 import * as loc from '../localizedConstants';
+import { apiService } from '../services/apiService';
 import { getDefaultKubeConfigPath, getKubeConfigClusterContexts } from '../services/kubeService';
 import { assert, getDateTimeString, getErrorMessage } from '../utils';
 import { WizardInfoBase } from './../interfaces';
 import { Model } from './model';
 import { RadioGroupLoadingComponentBuilder } from './radioGroupLoadingComponentBuilder';
-import { apiService } from '../services/apiService';
 
 const localize = nls.loadMessageBundle();
 
@@ -658,6 +659,7 @@ function processFilePickerField(context: FieldContext): FilePickerInputs {
  */
 function getClusterContexts(file: string): (() => Promise<OptionsInfo>) {
 	return async () => {
+		await throwIfNotExistsOrNotAFile(file);
 		try {
 			let currentClusterContext = '';
 			const clusterContexts: string[] = (await getKubeConfigClusterContexts(file)).map(kubeClusterContext => {
@@ -675,6 +677,23 @@ function getClusterContexts(file: string): (() => Promise<OptionsInfo>) {
 			throw Error(localize('getClusterContexts.errorFetchingClusters', "An error ocurred while loading or parsing the config file:{0}, error is:{1}", file, getErrorMessage(e)));
 		}
 	};
+}
+
+async function throwIfNotExistsOrNotAFile(file: string) {
+	try {
+		const stats = await fs.promises.stat(file); // this throws if the file does not exist with error.code = ENOENT
+		if (!stats.isFile()) {
+			throw Error(localize('fileChecker.NotFile', "Path: {0} is not a file, please select a valid kube config file.", file));
+		}
+	}
+	catch (e) {
+		if (e.code === 'ENOENT') {
+			throw Error(localize('fileChecker.FileNotFound', "File: {0} not found. Please select a kube config file.", file));
+		}
+		else {
+			throw e;
+		}
+	}
 }
 
 /**
