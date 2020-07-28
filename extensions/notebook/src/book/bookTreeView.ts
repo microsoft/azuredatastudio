@@ -41,6 +41,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	public viewId: string;
 	public books: BookModel[];
 	public currentBook: BookModel;
+	public bookQuantity: number;
 
 	constructor(workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext, openAsUntitled: boolean, view: string, public providerId: string) {
 		this._openAsUntitled = openAsUntitled;
@@ -171,7 +172,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	 * @param bookPath The path to the book folder to create the model for
 	 */
 	private async createAndAddBookModel(bookPath: string, isNotebook: boolean): Promise<void> {
-		const book: BookModel = new BookModel(bookPath, this._openAsUntitled, isNotebook, this._extensionContext);
+		const book: BookModel = new BookModel(bookPath, this._openAsUntitled, isNotebook, this.bookQuantity, this._extensionContext,);
 		await book.initializeContents();
 		this.books.push(book);
 		if (!this.currentBook) {
@@ -399,7 +400,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		});
 		if (uris && uris.length > 0) {
 			let bookPath = uris[0];
-			await this.openBook(bookPath.fsPath, undefined, true);
+			await this.openBook(bookPath.fsPath, undefined, true,);
 		}
 	}
 
@@ -426,6 +427,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	public async loadNotebooksInFolder(folderPath: string, urlToOpen?: string, showPreview?: boolean) {
 		let bookCollection = await this.getNotebooksInTree(folderPath);
 		for (let i = 0; i < bookCollection.bookPaths.length; i++) {
+			this.bookQuantity = bookCollection.bookPaths.length;
 			await this.openBook(bookCollection.bookPaths[i], urlToOpen, showPreview);
 		}
 		for (let i = 0; i < bookCollection.notebookPaths.length; i++) {

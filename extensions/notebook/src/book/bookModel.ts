@@ -6,6 +6,7 @@
 import * as vscode from 'vscode';
 import * as yaml from 'js-yaml';
 import { BookTreeItem, BookTreeItemType } from './bookTreeItem';
+import * as constants from '../common/constants';
 import * as path from 'path';
 import * as fileServices from 'fs';
 import * as fs from 'fs-extra';
@@ -26,6 +27,7 @@ export class BookModel {
 		public readonly bookPath: string,
 		public readonly openAsUntitled: boolean,
 		public readonly isNotebook: boolean,
+		public readonly bookQuantity: number,
 		private _extensionContext: vscode.ExtensionContext) {
 		this._bookItems = [];
 	}
@@ -102,6 +104,12 @@ export class BookModel {
 		if (this.isNotebook) {
 			return undefined;
 		}
+		let notebookConfig = vscode.workspace.getConfiguration(constants.notebookConfigKey);
+		let maxExpandedItems = notebookConfig[constants.maxExpandedBookItems];
+		let collapsibleState = vscode.TreeItemCollapsibleState.Expanded;
+		if (this.bookQuantity > maxExpandedItems) {
+			collapsibleState = vscode.TreeItemCollapsibleState.Collapsed; // If multiple books, collapse them
+		}
 
 		if (this._tableOfContentsPath) {
 			let root: string = path.dirname(path.dirname(this._tableOfContentsPath));
@@ -117,7 +125,7 @@ export class BookModel {
 					tableOfContents: { sections: this.parseJupyterSections(tableOfContents) },
 					page: tableOfContents,
 					type: BookTreeItemType.Book,
-					treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Expanded,
+					treeItemCollapsibleState: collapsibleState,
 					isUntitled: this.openAsUntitled,
 				},
 					{
