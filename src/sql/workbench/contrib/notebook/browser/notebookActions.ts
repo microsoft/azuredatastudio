@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 
-import { Action, ActionRunner, IAction } from 'vs/base/common/actions';
+import { Action } from 'vs/base/common/actions';
 import { localize } from 'vs/nls';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import { INotificationService, Severity, INotificationActions } from 'vs/platform/notification/common/notification';
@@ -25,7 +25,7 @@ import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/m
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 import { find, firstIndex } from 'vs/base/common/arrays';
-import { INotebookEditor, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { URI } from 'vs/base/common/uri';
