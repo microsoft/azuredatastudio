@@ -61,11 +61,11 @@ export class CellModel extends Disposable implements ICellModel {
 	private _isCollapsed: boolean;
 	private _onCollapseStateChanged = new Emitter<boolean>();
 	private _modelContentChangedEvent: IModelContentChangedEvent;
-	private _showPreview: boolean = true;
 	private _onCellPreviewChanged = new Emitter<boolean>();
 	private _isCommandExecutionSettingEnabled: boolean = false;
-	private _cellSourceChanged: boolean = false;
+	private _showPreview: boolean = false;
 	private _showTextView: boolean = true;
+	private _cellSourceChanged: boolean = false;
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
