@@ -75,7 +75,7 @@ suite('Scrollableview', () => {
 		scrollableView.addView(view3);
 
 		// we only update the scroll dimensions asynchronously
-		await timeout(50);
+		await timeout(100);
 
 		let viewQuery = getViewChildren(container);
 		assert.equal(viewQuery.length, 3, 'split view should have 3 views');
@@ -121,20 +121,20 @@ suite('Scrollableview', () => {
 
 		scrollableView.addView(view1);
 
-		await timeout(50);
+		await timeout(100);
 
 		assert.equal(view1.size, 200, 'view1 is entire size');
 
 		scrollableView.addView(view2);
 
-		await timeout(50);
+		await timeout(100);
 
 		assert.equal(view1.size, 100, 'view1 is half size');
 		assert.equal(view2.size, 100, 'view2 is half size');
 
 		scrollableView.addView(view3);
 
-		await timeout(50);
+		await timeout(100);
 
 		assert.equal(view1.size, 66, 'view1 is third size');
 		assert.equal(view2.size, 67, 'view2 is third size');
@@ -151,7 +151,7 @@ suite('Scrollableview', () => {
 
 		scrollableView.addViews([view1, view2, view3]);
 
-		await timeout(50);
+		await timeout(100);
 
 		assert.equal(view1.size, 100, 'view1 is minimum size');
 		assert.equal(view2.size, 100, 'view2 is minimum size');
@@ -168,12 +168,12 @@ suite('Scrollableview', () => {
 
 		scrollableView.addViews([view1, view2, view3]);
 
-		await timeout(50);
+		await timeout(100);
 
 		view1.minimumSize = 130;
 		view1.onDidChangeEmitter.fire(0);
 
-		await timeout(50);
+		await timeout(100);
 
 		assert.equal(view1.size, 130, 'view1 should be 130');
 		assert.equal(view2.size, 100, 'view2 should still be minimum size');
@@ -190,7 +190,7 @@ suite('Scrollableview', () => {
 
 		scrollableView.addViews([view1, view2, view3]);
 
-		await timeout(50);
+		await timeout(100);
 
 		assert.equal(view1.size, 100, 'view1 is minimum size');
 		assert.equal(view2.size, 100, 'view2 is minimum size');
@@ -199,7 +199,7 @@ suite('Scrollableview', () => {
 
 		scrollableView.setScrollTop(100);
 
-		await timeout(50);
+		await timeout(100);
 		assert.equal(view2.size, 100, 'view2 is minimum size');
 		assert.equal(view3.size, 100, 'view3 is minimum size');
 		assert.equal(getViewChildren(container).length, 2, 'only 2 views are rendered');
