@@ -23,7 +23,7 @@ import { ISearchWidgetService, ISearchViewPaneOptions } from 'sql/workbench/cont
 
 export class SearchViewPaneContainer extends ViewPaneContainer {
 	private root: HTMLElement;
-	private notebookSourcesBox: HTMLElement;
+	private searchSourcesBox: HTMLElement;
 	private searchWidgetsContainerElement!: HTMLElement;
 
 	constructor(
@@ -46,19 +46,15 @@ export class SearchViewPaneContainer extends ViewPaneContainer {
 	}
 
 	create(parent: HTMLElement): void {
-		addClass(parent, 'searchExplorer-viewlet');
+		addClass(parent, 'search-view-pane');
 		this.root = parent;
 
 		this.searchWidgetsContainerElement = append(this.root, $('.header'));
 		this.searchWidgetSerivce.registerSearchWidget(this.searchWidgetsContainerElement, this, this.params);
 
-		this.notebookSourcesBox = append(this.root, $('.searchSources'));
+		this.searchSourcesBox = append(this.root, $('.searchSources'));
 
-		return super.create(this.notebookSourcesBox);
-	}
-
-	public updateStyles(): void {
-		super.updateStyles();
+		return super.create(this.searchSourcesBox);
 	}
 
 	focus(): void {

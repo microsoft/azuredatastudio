@@ -265,15 +265,16 @@ export class NotebookSearchResultsView extends SearchView {
 	}
 
 	private async validateQry(query: ITextQuery): Promise<void> {
-		// Validate folderQueries
+		// Validate folders passed in the query exist.
 		const folderQueriesExistP =
 			query.folderQueries.map(fq => {
 				return this.fileService.exists(fq.folder);
 			});
 
-		return Promise.all(folderQueriesExistP).then(existResults => {
+		await folderQueriesExistP;
+		folderQueriesExistP.forEach((existResults, i) => {
 			// If no folders exist, show an error message about the first one
-			const existingFolderQueries = query.folderQueries.filter((folderQuery, i) => existResults[i]);
+			const existingFolderQueries = query.folderQueries.filter((folderQuery, j) => i === j && existResults);
 			if (!query.folderQueries.length || existingFolderQueries.length) {
 				query.folderQueries = existingFolderQueries;
 			} else {
@@ -281,7 +282,6 @@ export class NotebookSearchResultsView extends SearchView {
 				const searchPathNotFoundError = nls.localize('searchPathNotFoundError', "Search path not found: {0}", nonExistantPath);
 				return Promise.reject(new Error(searchPathNotFoundError));
 			}
-
 			return undefined;
 		});
 	}

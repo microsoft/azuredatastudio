@@ -28,7 +28,7 @@ import { ISearchWidgetOptions, stopPropagationForMultiLineUpwards, stopPropagati
 import { Delayer } from 'vs/base/common/async';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { QueryBuilder, ITextQueryBuilderOptions } from 'vs/workbench/contrib/search/common/queryBuilder';
-import { ITextQuery, IPatternInfo } from 'vs/workbench/services/search/common/search';
+import { ITextQuery, IPatternInfo, ISearchConfigurationProperties } from 'vs/workbench/services/search/common/search';
 import { getOutOfWorkspaceEditorResources } from 'vs/workbench/contrib/search/common/search';
 import { NotebookSearchResultsView } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/searchResultsViewPane';
 
@@ -160,7 +160,7 @@ export class SimpleSearchWidget extends Widget {
 		this._register(this.searchInputFocusTracker.onDidFocus(async () => {
 			this.searchInputBoxFocused.set(true);
 
-			const useGlobalFindBuffer = this.searchConfiguration.globalFindClipboard;
+			const useGlobalFindBuffer = this.searchConfig.globalFindClipboard;
 			if (!this.ignoreGlobalFindBufferOnNextFocus && useGlobalFindBuffer) {
 				const globalBufferText = await this.clipboardServce.readFindText();
 				if (this.previousGlobalFindBufferValue !== globalBufferText) {
@@ -180,7 +180,7 @@ export class SimpleSearchWidget extends Widget {
 	private onSearchInputChanged(): void {
 		this.searchInput.clearMessage();
 
-		if (this.searchConfiguration.searchOnType) {
+		if (this.searchConfig.searchOnType) {
 			if (this.searchInput.getRegex()) {
 				try {
 					const regex = new RegExp(this.searchInput.getValue(), 'ug');
@@ -199,12 +199,12 @@ export class SimpleSearchWidget extends Widget {
 							matchienessHeuristic < 100 ? 5 : // expressions like `.` or `\w`
 								10; // only things matching empty string
 
-					this.submitSearch(true, this.searchConfiguration.searchOnTypeDebouncePeriod * delayMultiplier);
+					this.submitSearch(true, this.searchConfig.searchOnTypeDebouncePeriod * delayMultiplier);
 				} catch {
 					// pass
 				}
 			} else {
-				this.submitSearch(true, this.searchConfiguration.searchOnTypeDebouncePeriod);
+				this.submitSearch(true, this.searchConfig.searchOnTypeDebouncePeriod);
 			}
 		}
 	}
@@ -216,7 +216,7 @@ export class SimpleSearchWidget extends Widget {
 		}
 
 		const value = this.searchInput.getValue();
-		const useGlobalFindBuffer = this.searchConfiguration.globalFindClipboard;
+		const useGlobalFindBuffer = this.searchConfig.globalFindClipboard;
 		if (value && useGlobalFindBuffer) {
 			this.clipboardServce.writeFindText(value);
 		}
@@ -385,10 +385,6 @@ export class SimpleSearchWidget extends Widget {
 		this.searchInput.setFocusInputOnOptionClick(!this.accessibilityService.isScreenReaderOptimized());
 	}
 
-	private get searchConfiguration(): Constants.INotebookSearchConfigurationProperties {
-		return this.configurationService.getValue<Constants.INotebookSearchConfigurationProperties>('notebookExplorerSearch');
-	}
-
 	cancelSearch(focus: boolean = true): boolean {
 		if (focus) {
 			this.searchView?.cancelSearch(focus);
@@ -398,8 +394,8 @@ export class SimpleSearchWidget extends Widget {
 		return false;
 	}
 
-	public get searchConfig(): Constants.INotebookSearchConfigurationProperties {
-		return this.configurationService.getValue<Constants.INotebookSearchConfigurationProperties>('notebookExplorerSearch');
+	private get searchConfig(): ISearchConfigurationProperties {
+		return this.configurationService.getValue<ISearchConfigurationProperties>('defaultSearch');
 	}
 
 	private trackInputBox(inputFocusTracker: IFocusTracker, contextKey?: IContextKey<boolean>): void {
