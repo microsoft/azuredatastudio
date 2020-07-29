@@ -464,7 +464,7 @@ export interface ICellModel {
 	showPreview: boolean;
 	readonly onCellPreviewChanged: Event<boolean>;
 	sendChangeToNotebook(change: NotebookChangeType): void;
-	readonly onCellSourceChanged: Event<boolean>;
+	cellSourceChanged: boolean;
 }
 
 export interface IModelFactory {

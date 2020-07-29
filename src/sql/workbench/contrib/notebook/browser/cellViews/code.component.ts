@@ -253,12 +253,12 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			this.onCellCollapse(isCollapsed);
 		}));
 
-		this._register(this.cellModel.onCellPreviewChanged(() => {
+		this._register(this.cellModel.onCellPreviewChanged((e) => {
+			if (!e && this._cellModel.cellSourceChanged) {
+				this.updateModel();
+				this._cellModel.cellSourceChanged = false;
+			}
 			this._layoutEmitter.fire();
-		}));
-
-		this._register(this.cellModel.onCellSourceChanged(() => {
-			this.updateModel();
 		}));
 
 		this.layout();
@@ -288,7 +288,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	/// Editor Functions
-	private updateModel() {
+	public updateModel() {
 		if (this._editorModel) {
 			let cellModelSource: string;
 			cellModelSource = Array.isArray(this.cellModel.source) ? this.cellModel.source.join('') : this.cellModel.source;

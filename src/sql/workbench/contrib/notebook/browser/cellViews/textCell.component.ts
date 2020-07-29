@@ -150,7 +150,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this._register(this.cellModel.onCellPreviewChanged(preview => {
 			this.previewMode = preview;
 		}));
-		//this.output.nativeElement.addEventListener('input', this.handleHtmlChanged());
 	}
 
 	ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
