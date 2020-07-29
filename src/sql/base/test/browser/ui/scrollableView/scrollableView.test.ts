@@ -111,7 +111,7 @@ suite('Scrollableview', () => {
 		scrollableView.dispose();
 	});
 
-	test('does shrink views correctly', async () => {
+	test('shrinks views correctly', async () => {
 		const view1 = new TestView(20, Number.POSITIVE_INFINITY);
 		const view2 = new TestView(20, Number.POSITIVE_INFINITY);
 		const view3 = new TestView(20, Number.POSITIVE_INFINITY);
@@ -141,7 +141,7 @@ suite('Scrollableview', () => {
 		assert.equal(view3.size, 67, 'view3 is third size');
 	});
 
-	test('does honor minimum size', async () => {
+	test('honors minimum size', async () => {
 		const view1 = new TestView(100, Number.POSITIVE_INFINITY);
 		const view2 = new TestView(100, Number.POSITIVE_INFINITY);
 		const view3 = new TestView(100, Number.POSITIVE_INFINITY);
@@ -158,7 +158,7 @@ suite('Scrollableview', () => {
 		assert.equal(view3.size, undefined, 'view3 should not have been layout yet');
 	});
 
-	test('does react to changes in views', async () => {
+	test('reacts to changes in views', async () => {
 		const view1 = new TestView(100, Number.POSITIVE_INFINITY);
 		const view2 = new TestView(100, Number.POSITIVE_INFINITY);
 		const view3 = new TestView(100, Number.POSITIVE_INFINITY);
@@ -180,7 +180,7 @@ suite('Scrollableview', () => {
 		assert.equal(view3.size, undefined, 'view3 should not have been layout yet');
 	});
 
-	test('dose programmatically scroll', async () => {
+	test('programmatically scrolls', async () => {
 		const view1 = new TestView(100, Number.POSITIVE_INFINITY);
 		const view2 = new TestView(100, Number.POSITIVE_INFINITY);
 		const view3 = new TestView(100, Number.POSITIVE_INFINITY);
