@@ -718,7 +718,7 @@ export namespace SerializeDataContinueRequest {
 
 // ------------------------------- <Accessibility> -----------------------------
 export class QueryInsightsGeneratorParams {
-	public ownerUri: string;
+	public data: azdata.IAccessibleChartData;
 }
 
 export class InsightsGeneratorResult {

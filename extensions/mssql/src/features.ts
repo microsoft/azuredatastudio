@@ -941,8 +941,8 @@ export class AccessibilityFeature extends SqlOpsFeature<undefined> {
 	protected registerProvider(options: undefined): Disposable {
 		const client = this._client;
 
-		let getAltText = async (target: azdata.AltTextTarget, ownerUri: string): Promise<string> => {
-			let params: contracts.QueryInsightsGeneratorParams = { ownerUri: ownerUri };
+		let getAltText = async (target: azdata.AltTextTarget, data: azdata.IAccessibleChartData): Promise<string> => {
+			let params: contracts.QueryInsightsGeneratorParams = { data: data };
 			try {
 				let result = await client.sendRequest(contracts.QueryInsightsGeneratorRequest.type, params);
 				return result.insightsText;

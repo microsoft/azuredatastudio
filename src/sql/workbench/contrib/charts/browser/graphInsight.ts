@@ -16,6 +16,7 @@ import { IInsightOptions, DataDirection, ChartType, LegendPosition, DataType } f
 import { values } from 'vs/base/common/collections';
 import { find } from 'vs/base/common/arrays';
 import { IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
+import { IAccessibilityTextService, AltTextTarget } from 'sql/platform/accessibility/common/interfaces';
 
 const noneLineGraphs = [ChartType.Doughnut, ChartType.Pie];
 
@@ -57,7 +58,8 @@ export class Graph implements IInsight {
 
 	constructor(
 		container: HTMLElement, options: IInsightOptions = defaultOptions,
-		@IThemeService themeService: IThemeService
+		@IThemeService themeService: IThemeService,
+		@IAccessibilityTextService private _accessibilityTextService: IAccessibilityTextService,
 	) {
 		this._theme = themeService.getColorTheme();
 		themeService.onDidColorThemeChange(e => {
@@ -92,90 +94,97 @@ export class Graph implements IInsight {
 		if (!data) {
 			return;
 		}
+
 		this._data = data;
-		let labels: Array<string>;
-		let chartData: Array<Chart.ChartDataSets>;
 
-		if (this.options.dataDirection === DataDirection.Horizontal) {
-			if (this.options.labelFirstColumn) {
-				labels = data.columns.slice(1);
-			} else {
-				labels = data.columns;
-			}
-		} else {
-			labels = data.rows.map(row => row[0]);
-		}
+		this._accessibilityTextService.getAltText(AltTextTarget.Query, data).then(altText => {
+			this.canvas.setAttribute('role', 'img');
+			this.canvas.setAttribute('aria-label', altText);
 
-		if (this.originalType === ChartType.TimeSeries) {
-			let dataSetMap: { [label: string]: IPointDataSet } = {};
-			this._data.rows.map(row => {
-				if (row && row.length >= 3) {
-					let legend = row[0];
-					if (!dataSetMap[legend]) {
-						dataSetMap[legend] = { label: legend, data: [], fill: false };
-					}
-					dataSetMap[legend].data.push({ x: row[1], y: Number(row[2]) });
-				}
-			});
-			chartData = values(dataSetMap);
-		} else {
+			let labels: Array<string>;
+			let chartData: Array<Chart.ChartDataSets>;
+
 			if (this.options.dataDirection === DataDirection.Horizontal) {
 				if (this.options.labelFirstColumn) {
-					chartData = data.rows.map((row) => {
-						return {
-							data: row.map(item => Number(item)).slice(1),
-							label: row[0]
-						};
-					});
+					labels = data.columns.slice(1);
 				} else {
-					chartData = data.rows.map((row, i) => {
-						return {
-							data: row.map(item => Number(item)),
-							label: localize('series', "Series {0}", i)
-						};
-					});
+					labels = data.columns;
 				}
 			} else {
-				if (this.options.columnsAsLabels) {
-					chartData = data.rows[0].slice(1).map((row, i) => {
-						return {
-							data: data.rows.map(row => Number(row[i + 1])),
-							label: data.columns[i + 1]
-						};
-					});
+				labels = data.rows.map(row => row[0]);
+			}
+
+			if (this.originalType === ChartType.TimeSeries) {
+				let dataSetMap: { [label: string]: IPointDataSet } = {};
+				this._data.rows.map(row => {
+					if (row && row.length >= 3) {
+						let legend = row[0];
+						if (!dataSetMap[legend]) {
+							dataSetMap[legend] = { label: legend, data: [], fill: false };
+						}
+						dataSetMap[legend].data.push({ x: row[1], y: Number(row[2]) });
+					}
+				});
+				chartData = values(dataSetMap);
+			} else {
+				if (this.options.dataDirection === DataDirection.Horizontal) {
+					if (this.options.labelFirstColumn) {
+						chartData = data.rows.map((row) => {
+							return {
+								data: row.map(item => Number(item)).slice(1),
+								label: row[0]
+							};
+						});
+					} else {
+						chartData = data.rows.map((row, i) => {
+							return {
+								data: row.map(item => Number(item)),
+								label: localize('series', "Series {0}", i)
+							};
+						});
+					}
 				} else {
-					chartData = data.rows[0].slice(1).map((row, i) => {
-						return {
-							data: data.rows.map(row => Number(row[i + 1])),
-							label: localize('series', "Series {0}", i + 1)
-						};
-					});
+					if (this.options.columnsAsLabels) {
+						chartData = data.rows[0].slice(1).map((row, i) => {
+							return {
+								data: data.rows.map(row => Number(row[i + 1])),
+								label: data.columns[i + 1]
+							};
+						});
+					} else {
+						chartData = data.rows[0].slice(1).map((row, i) => {
+							return {
+								data: data.rows.map(row => Number(row[i + 1])),
+								label: localize('series', "Series {0}", i + 1)
+							};
+						});
+					}
 				}
 			}
-		}
 
-		chartData = chartData.map((c, i) => {
-			return mixin(c, getColors(this.options.type, i, c.data.length), false);
-		});
-
-		if (this.chartjs) {
-			this.chartjs.data.datasets = chartData;
-			this.chartjs.config.type = this.options.type;
-			// we don't want to include lables for timeSeries
-			this.chartjs.data.labels = this.originalType === 'timeSeries' ? [] : labels;
-			this.chartjs.options = this.transformOptions(this.options);
-			this.chartjs.update({ duration: 0 });
-		} else {
-			this.chartjs = new chartjs.Chart(this.canvas.getContext('2d'), {
-				data: {
-					// we don't want to include lables for timeSeries
-					labels: this.originalType === 'timeSeries' ? [] : labels,
-					datasets: chartData
-				},
-				type: this.options.type,
-				options: this.transformOptions(this.options)
+			chartData = chartData.map((c, i) => {
+				return mixin(c, getColors(this.options.type, i, c.data.length), false);
 			});
-		}
+
+			if (this.chartjs) {
+				this.chartjs.data.datasets = chartData;
+				this.chartjs.config.type = this.options.type;
+				// we don't want to include lables for timeSeries
+				this.chartjs.data.labels = this.originalType === 'timeSeries' ? [] : labels;
+				this.chartjs.options = this.transformOptions(this.options);
+				this.chartjs.update({ duration: 0 });
+			} else {
+				this.chartjs = new chartjs.Chart(this.canvas.getContext('2d'), {
+					data: {
+						// we don't want to include lables for timeSeries
+						labels: this.originalType === 'timeSeries' ? [] : labels,
+						datasets: chartData
+					},
+					type: this.options.type,
+					options: this.transformOptions(this.options)
+				});
+			}
+		});
 	}
 
 	private transformOptions(options: IInsightOptions): Chart.ChartOptions {

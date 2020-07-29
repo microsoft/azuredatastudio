@@ -497,8 +497,8 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		const self = this;
 		this._accessibilityService.registerProvider(providerId, <azdata.AccessibilityProvider>{
 			providerId: providerId,
-			getAltText(target: azdata.AltTextTarget, ownerUri: string): Thenable<string> {
-				return self._proxy.$getAltText(handle, target, ownerUri);
+			getAltText(target: azdata.AltTextTarget, data: azdata.IAccessibleChartData): Thenable<string> {
+				return self._proxy.$getAltText(handle, target, data);
 			}
 		});
 

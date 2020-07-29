@@ -23,5 +23,5 @@ export interface IAccessibilityTextService {
 	registerProvider(providerId: string, provider: azdata.AccessibilityProvider): void;
 
 
-	getAltText(target: AltTextTarget, ownerUri: string): Thenable<string>;
+	getAltText(target: AltTextTarget, data: azdata.IAccessibleChartData): Thenable<string>;
 }

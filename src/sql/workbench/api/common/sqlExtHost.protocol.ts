@@ -517,7 +517,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	* Get an alttext string
 	*/
-	$getAltText(andle: number, target: azdata.AltTextTarget, ownerUri: string): Thenable<string> { throw ni(); }
+	$getAltText(andle: number, target: azdata.AltTextTarget, data: azdata.IAccessibleChartData): Thenable<string> { throw ni(); }
 }
 
 /**

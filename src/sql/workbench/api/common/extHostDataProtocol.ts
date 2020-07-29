@@ -862,7 +862,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 
 	// Accessibility methods
-	public $getAltText(handle: number, target: azdata.AltTextTarget, ownerUri: string): Thenable<string> {
-		return this._resolveProvider<azdata.AccessibilityProvider>(handle).getAltText(target, ownerUri);
+	public $getAltText(handle: number, target: azdata.AltTextTarget, data: azdata.IAccessibleChartData): Thenable<string> {
+		return this._resolveProvider<azdata.AccessibilityProvider>(handle).getAltText(target, data);
 	}
 }

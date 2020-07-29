@@ -15,18 +15,20 @@ export class AccessibilityTextService implements IAccessibilityTextService {
 
 
 	constructor(
-		@IConnectionManagementService private _connectionService: IConnectionManagementService
+		@IConnectionManagementService _connectionService: IConnectionManagementService
 	) { }
+
+
 
 	/**
 	 * Call the service for looking up an alt text string
 	 */
-	public getAltText(target: AltTextTarget, ownerUri: string): Thenable<string> {
-		let providerId: string = this._connectionService.getProviderIdFromUri(ownerUri);
+	public getAltText(target: AltTextTarget, data: azdata.IAccessibleChartData): Thenable<string> {
+		let providerId: string = 'MSSQL'; //this._connectionService.getProviderIdFromUri(ownerUri);
 		if (providerId) {
 			let provider = this._providers[providerId];
 			if (provider) {
-				return provider.getAltText(target, ownerUri);
+				return provider.getAltText(target, data);
 			}
 		}
 		return Promise.resolve(undefined);
