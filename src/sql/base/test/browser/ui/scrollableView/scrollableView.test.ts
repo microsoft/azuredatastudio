@@ -7,7 +7,6 @@ import { IView, ScrollableView } from 'sql/base/browser/ui/scrollableView/scroll
 import { Emitter } from 'vs/base/common/event';
 import * as assert from 'assert';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { timeout } from 'vs/base/common/async';
 import * as DOM from 'vs/base/browser/dom';
 
 class TestView extends Disposable implements IView {
