@@ -8,6 +8,7 @@ import { Emitter } from 'vs/base/common/event';
 import * as assert from 'assert';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { timeout } from 'vs/base/common/async';
+import * as DOM from 'vs/base/browser/dom';
 
 class TestView extends Disposable implements IView {
 
@@ -75,7 +76,7 @@ suite('ScrollableView', () => {
 		scrollableView.addView(view3);
 
 		// we only update the scroll dimensions asynchronously
-		await timeout(100);
+		await waitForAnimation();
 
 		let viewQuery = getViewChildren(container);
 		assert.equal(viewQuery.length, 3, 'split view should have 3 views');
@@ -121,20 +122,20 @@ suite('ScrollableView', () => {
 
 		scrollableView.addView(view1);
 
-		await timeout(100);
+		await waitForAnimation();
 
 		assert.equal(view1.size, 200, 'view1 is entire size');
 
 		scrollableView.addView(view2);
 
-		await timeout(100);
+		await waitForAnimation();
 
 		assert.equal(view1.size, 100, 'view1 is half size');
 		assert.equal(view2.size, 100, 'view2 is half size');
 
 		scrollableView.addView(view3);
 
-		await timeout(100);
+		await waitForAnimation();
 
 		assert.equal(view1.size, 66, 'view1 is third size');
 		assert.equal(view2.size, 67, 'view2 is third size');
@@ -151,7 +152,7 @@ suite('ScrollableView', () => {
 
 		scrollableView.addViews([view1, view2, view3]);
 
-		await timeout(100);
+		await waitForAnimation();
 
 		assert.equal(view1.size, 100, 'view1 is minimum size');
 		assert.equal(view2.size, 100, 'view2 is minimum size');
@@ -168,12 +169,12 @@ suite('ScrollableView', () => {
 
 		scrollableView.addViews([view1, view2, view3]);
 
-		await timeout(100);
+		await waitForAnimation();
 
 		view1.minimumSize = 130;
 		view1.onDidChangeEmitter.fire(0);
 
-		await timeout(100);
+		await waitForAnimation();
 
 		assert.equal(view1.size, 130, 'view1 should be 130');
 		assert.equal(view2.size, 100, 'view2 should still be minimum size');
@@ -190,7 +191,7 @@ suite('ScrollableView', () => {
 
 		scrollableView.addViews([view1, view2, view3]);
 
-		await timeout(100);
+		await waitForAnimation();
 
 		assert.equal(view1.size, 100, 'view1 is minimum size');
 		assert.equal(view2.size, 100, 'view2 is minimum size');
@@ -199,12 +200,16 @@ suite('ScrollableView', () => {
 
 		scrollableView.setScrollTop(100);
 
-		await timeout(100);
+		await waitForAnimation();
 		assert.equal(view2.size, 100, 'view2 is minimum size');
 		assert.equal(view3.size, 100, 'view3 is minimum size');
 		assert.equal(getViewChildren(container).length, 2, 'only 2 views are rendered');
 	});
 });
+
+function waitForAnimation(timeout: number = 50): Promise<void> {
+	return new Promise(r => DOM.scheduleAtNextAnimationFrame(() => DOM.scheduleAtNextAnimationFrame(() => setTimeout(r, timeout))));
+}
 
 function getViewChildren(container: HTMLElement): NodeListOf<Element> {
 	return container.querySelectorAll('.scrollable-view .scrollable-view-container > .scrollable-view-child');
