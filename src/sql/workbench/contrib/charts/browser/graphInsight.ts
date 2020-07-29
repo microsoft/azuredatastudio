@@ -100,6 +100,7 @@ export class Graph implements IInsight {
 		this._accessibilityTextService.getAltText(AltTextTarget.Query, data).then(altText => {
 			this.canvas.setAttribute('role', 'img');
 			this.canvas.setAttribute('aria-label', altText);
+			this.options.title = altText;
 
 			let labels: Array<string>;
 			let chartData: Array<Chart.ChartDataSets>;
@@ -272,6 +273,13 @@ export class Graph implements IInsight {
 						}, true, customMixin);
 					}
 				}
+			}
+
+			if (options.title) {
+				retval.title = <Chart.ChartTitleOptions>{
+					display: true,
+					text: options.title
+				};
 			}
 
 			retval.legend = <Chart.ChartLegendOptions>{

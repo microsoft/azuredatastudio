@@ -18,6 +18,7 @@ export interface IInsightOptions {
 	xAxisMax?: number;
 	encoding?: string;
 	imageFormat?: string;
+	title?: string;
 }
 
 export enum InsightType {
