@@ -80,26 +80,6 @@ suite('ScrollableView', () => {
 		let viewQuery = getViewChildren(container);
 		assert.equal(viewQuery.length, 3, 'split view should have 3 views');
 
-		scrollableView.removeView(2);
-
-		viewQuery = getViewChildren(container);
-		assert.equal(viewQuery.length, 2, 'split view should have 2 views');
-
-		scrollableView.removeView(0);
-
-		viewQuery = getViewChildren(container);
-		assert.equal(viewQuery.length, 1, 'split view should have 1 views');
-
-		scrollableView.removeView(0);
-
-		viewQuery = getViewChildren(container);
-		assert.equal(viewQuery.length, 0, 'split view should have no views');
-
-		scrollableView.addViews([view1, view2, view3]);
-
-		viewQuery = getViewChildren(container);
-		assert.equal(viewQuery.length, 3, 'split view should have 3 views');
-
 		scrollableView.clear();
 
 		viewQuery = getViewChildren(container);
@@ -207,7 +187,7 @@ suite('ScrollableView', () => {
 });
 
 function waitForAnimation(): Promise<void> {
-	return timeout(500);
+	return timeout(200);
 }
 
 function getViewChildren(container: HTMLElement): NodeListOf<Element> {

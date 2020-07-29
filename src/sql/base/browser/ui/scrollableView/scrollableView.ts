@@ -132,14 +132,14 @@ export class ScrollableView extends Disposable {
 		this.eventuallyUpdateScrollDimensions();
 	}
 
-	public addViews(views: IView[], index = this.items.length): void {
+	public addViews(views: IView[]): void { // @todo anthonydresser add ability to splice into the middle of the list and remove a particular index
 		const lastRenderRange = this.getRenderRange(this.lastRenderTop, this.lastRenderHeight);
 		const items = views.map(view => ({ size: view.minimumSize, view, disposables: [], index: 0 }));
 
 		items.map(i => i.disposables.push(i.view.onDidChange(() => this.rerender(this.getRenderRange(this.lastRenderTop, this.lastRenderHeight)))));
 
 		// calculate heights
-		this.splice(index, 0, items);
+		this.splice(this.items.length, 0, items);
 		this.rerender(lastRenderRange);
 	}
 
@@ -149,20 +149,8 @@ export class ScrollableView extends Disposable {
 		return ret;
 	}
 
-	public addView(view: IView, index = this.items.length): void {
-		this.addViews([view], index);
-	}
-
-	public removeView(index: number): void {
-		const lastRenderRange = this.getRenderRange(this.lastRenderTop, this.lastRenderHeight);
-		const item = this.splice(index, 1)[0];
-		if (item.domNode) {
-			DOM.clearNode(item.domNode);
-			DOM.removeNode(item.domNode);
-			item.domNode = undefined;
-		}
-		dispose(item.disposables);
-		this.rerender(lastRenderRange);
+	public addView(view: IView): void {
+		this.addViews([view]);
 	}
 
 	/**

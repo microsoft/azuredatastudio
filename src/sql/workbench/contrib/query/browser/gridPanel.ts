@@ -243,7 +243,7 @@ export class GridPanel extends Disposable {
 		}
 
 		if (isUndefinedOrNull(this.maximizedGrid)) {
-			this.scrollableView.addViews(tables, this.scrollableView.length);
+			this.scrollableView.addViews(tables);
 		}
 	}
 
@@ -280,7 +280,7 @@ export class GridPanel extends Disposable {
 		if (this.maximizedGrid) {
 			this.maximizedGrid.state.maximized = false;
 			this.maximizedGrid = undefined;
-			this.scrollableView.removeView(0);
+			this.scrollableView.clear();
 			this.scrollableView.addViews(this.tables);
 		}
 	}
