@@ -27,6 +27,7 @@ import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/
 import { NotebookRange, ICellEditorProvider } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import TurndownService = require('turndown');
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -78,6 +79,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private markdownRenderer: NotebookMarkdownRenderer;
 	private markdownResult: IMarkdownRenderResult;
 	public previewFeaturesEnabled: boolean = false;
+	public turnDownService = new TurndownService({ 'emDelimiter': '*' });
+	private _previewContent: string | string[];
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -144,6 +147,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this._register(this.cellModel.onCellPreviewChanged(preview => {
 			this.previewMode = preview;
 		}));
+		// this.output.nativeElement.addEventListener('input', this.handleHtmlChanged());
 	}
 
 	ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
@@ -198,12 +202,22 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				value: Array.isArray(this._content) ? this._content.join('') : this._content
 			});
 			this.markdownResult.element.innerHTML = this.sanitizeContent(this.markdownResult.element.innerHTML);
+			this._previewContent = this.turnDownService.turndown(this.markdownResult.element.innerHTML);
 			this.setLoading(false);
 			if (this.showPreview) {
 				let outputElement = <HTMLElement>this.output.nativeElement;
 				outputElement.innerHTML = this.markdownResult.element.innerHTML;
 				this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
 			}
+		}
+	}
+
+	private updateCellSource(): void {
+		let outputElement = <HTMLElement>this.output.nativeElement;
+		let newCellSource: string = this.turnDownService.turndown(outputElement.innerHTML);
+		if (this._previewContent !== newCellSource) {
+			this.cellModel.source = newCellSource;
+			this._previewContent = newCellSource;
 		}
 	}
 
@@ -228,6 +242,10 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	public handleContentChanged(): void {
 		this.updatePreview();
+	}
+
+	public handleHtmlChanged(): void {
+		this.updateCellSource();
 	}
 
 	public toggleEditMode(editMode?: boolean): void {

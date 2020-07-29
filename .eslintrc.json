@@ -717,7 +717,8 @@
 					"chart.js",
 					"plotly.js-dist-min",
 					"angular2-grid",
-					"html-query-plan"
+                    "html-query-plan",
+                    "turndown"
                 ]
             },
             {

@@ -9,7 +9,7 @@
 	<div class="notebook-text" [class.edit-mode]="isEditMode" [class.show-preview]="showPreview">
 		<code-component *ngIf="isEditMode" [cellModel]="cellModel" (onContentChanged)="handleContentChanged()" [model]="model" [activeCellId]="activeCellId">
 		</code-component>
-		<div #preview link-handler *ngIf="showPreview" contentEditable="true" [isTrusted]="isTrusted" [notebookUri]="notebookUri" class="notebook-preview">
+		<div #preview link-handler *ngIf="showPreview" contentEditable="true" [isTrusted]="isTrusted" [notebookUri]="notebookUri" class="notebook-preview" (input)="handleHtmlChanged()">
 		</div>
 	</div>
 </div>
