@@ -509,6 +509,15 @@ export abstract class ExtHostDataProtocolShape {
 	 * Generate an assessment script based on recent results
 	 */
 	$generateAssessmentScript(handle: number, items: azdata.SqlAssessmentResultItem[]): Thenable<azdata.ResultStatus> { throw ni(); }
+
+	/**
+	 * Accessibility Section
+	 */
+
+	/**
+	* Get an alttext string
+	*/
+	$getAltText(andle: number, target: azdata.AltTextTarget, ownerUri: string): Thenable<string> { throw ni(); }
 }
 
 /**
@@ -573,6 +582,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerAgentServicesProvider(providerId: string, handle: number): Promise<any>;
 	$registerSerializationProvider(providerId: string, handle: number): Promise<any>;
 	$registerSqlAssessmentServicesProvider(providerId: string, handle: number): Promise<any>;
+	$registerAccessibilityProvider(providerId: string, handle: number): Promise<any>;
 	$unregisterProvider(handle: number): Promise<any>;
 	$onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void;
 	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;

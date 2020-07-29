@@ -178,7 +178,11 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		this._proxy.$registerCapabilitiesServiceProvider(provider.providerId, provider.handle);
 		return rt;
 	}
-
+	$registerAccessibilityProvider(provider: azdata.AccessibilityProvider): vscode.Disposable {
+		let rt = this.registerProvider(provider, DataProviderType.AccessibilityProvider);
+		this._proxy.$registerAccessibilityProvider(provider.providerId, provider.handle);
+		return rt;
+	}
 	$registerSerializationProvider(provider: azdata.SerializationProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.QueryProvider);
 		this._proxy.$registerSerializationProvider(provider.providerId, provider.handle);
@@ -855,5 +859,10 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	public $generateAssessmentScript(handle: number, items: azdata.SqlAssessmentResultItem[]): Thenable<azdata.ResultStatus> {
 		return this._resolveProvider<azdata.SqlAssessmentServicesProvider>(handle).generateAssessmentScript(items);
+	}
+
+	// Accessibility methods
+	public $getAltText(handle: number, target: azdata.AltTextTarget, ownerUri: string): Thenable<string> {
+		return this._resolveProvider<azdata.AccessibilityProvider>(handle).getAltText(target, ownerUri);
 	}
 }

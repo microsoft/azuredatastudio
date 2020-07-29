@@ -28,6 +28,7 @@ import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { assign } from 'vs/base/common/objects';
 import { serializableToMap } from 'sql/base/common/map';
 import { IAssessmentService } from 'sql/workbench/services/assessment/common/interfaces';
+import { IAccessibilityTextService } from 'sql/platform/accessibility/common/interfaces';
 
 /**
  * Main thread class for handling data protocol management registration.
@@ -55,7 +56,8 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		@IProfilerService private _profilerService: IProfilerService,
 		@ISerializationService private _serializationService: ISerializationService,
 		@IFileBrowserService private _fileBrowserService: IFileBrowserService,
-		@IAssessmentService private _assessmentService: IAssessmentService
+		@IAssessmentService private _assessmentService: IAssessmentService,
+		@IAccessibilityTextService private _accessibilityService: IAccessibilityTextService,
 	) {
 		super();
 		if (extHostContext) {
@@ -486,6 +488,18 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 			continueSerialization(requestParams: azdata.SerializeDataContinueRequestParams): Thenable<azdata.SerializeDataResult> {
 				return self._proxy.$continueSerialization(handle, requestParams);
 			},
+		});
+
+		return undefined;
+	}
+
+	public $registerAccessibilityProvider(providerId: string, handle: number): Promise<any> {
+		const self = this;
+		this._accessibilityService.registerProvider(providerId, <azdata.AccessibilityProvider>{
+			providerId: providerId,
+			getAltText(target: azdata.AltTextTarget, ownerUri: string): Thenable<string> {
+				return self._proxy.$getAltText(handle, target, ownerUri);
+			}
 		});
 
 		return undefined;

@@ -4117,7 +4117,8 @@ declare module 'azdata' {
 		ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
 		IconProvider = 'IconProvider',
 		SerializationProvider = 'SerializationProvider',
-		SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider'
+		SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider',
+		AccessibilityProvider = 'AccessibilityProvider'
 	}
 
 	/**

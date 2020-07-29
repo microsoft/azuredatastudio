@@ -354,7 +354,8 @@ export enum DataProviderType {
 	ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
 	SerializationProvider = 'SerializationProvider',
 	IconProvider = 'IconProvider',
-	SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider'
+	SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider',
+	AccessibilityProvider = 'AccessibilityProvider'
 }
 
 export enum DeclarativeDataType {
@@ -859,4 +860,8 @@ export enum SqlAssessmentResultItemKind {
 	RealResult = 0,
 	Warning = 1,
 	Error = 2
+}
+
+export enum AltTextTarget {
+	Query = 0
 }

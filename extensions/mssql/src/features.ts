@@ -918,6 +918,45 @@ export class SqlAssessmentServicesFeature extends SqlOpsFeature<undefined> {
 			generateAssessmentScript
 		});
 	}
+}
 
+export class AccessibilityFeature extends SqlOpsFeature<undefined> {
+	private static readonly messagesTypes: RPCMessageType[] = [
+		contracts.QueryInsightsGeneratorRequest.type
+	];
+	constructor(client: SqlOpsDataClient) {
+		super(client, AccessibilityFeature.messagesTypes);
+	}
 
+	public fillClientCapabilities(capabilities: ClientCapabilities): void {
+	}
+
+	public initialize(capabilities: ServerCapabilities): void {
+		this.register(this.messages, {
+			id: UUID.generateUuid(),
+			registerOptions: undefined
+		});
+	}
+
+	protected registerProvider(options: undefined): Disposable {
+		const client = this._client;
+
+		let getAltText = async (target: azdata.AltTextTarget, ownerUri: string): Promise<string> => {
+			let params: contracts.QueryInsightsGeneratorParams = { ownerUri: ownerUri };
+			try {
+				let result = await client.sendRequest(contracts.QueryInsightsGeneratorRequest.type, params);
+				return result.insightsText;
+			}
+			catch (e) {
+				client.logFailedRequest(contracts.QueryInsightsGeneratorRequest.type, e);
+			}
+
+			return undefined;
+		};
+
+		return azdata.dataprotocol.registerAccessibilityProvider({
+			providerId: client.providerId,
+			getAltText
+		});
+	}
 }

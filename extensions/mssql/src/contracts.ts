@@ -716,6 +716,20 @@ export namespace SerializeDataContinueRequest {
 }
 // ------------------------------- <Serialization> -----------------------------
 
+// ------------------------------- <Accessibility> -----------------------------
+export class QueryInsightsGeneratorParams {
+	public ownerUri: string;
+}
+
+export class InsightsGeneratorResult {
+	public insightsText: string;
+}
+
+export namespace QueryInsightsGeneratorRequest {
+	export const type = new RequestType<QueryInsightsGeneratorParams, InsightsGeneratorResult, void, void>('insights/query');
+}
+// ------------------------------- <Accessibility> -----------------------------
+
 // ------------------------------- < Load Completion Extension Request > ------------------------------------
 /**
  * Completion extension load parameters

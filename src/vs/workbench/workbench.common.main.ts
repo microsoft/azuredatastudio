@@ -198,6 +198,8 @@ import { INotebookService } from 'sql/workbench/services/notebook/browser/notebo
 import { IScriptingService, ScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import { IAssessmentService } from 'sql/workbench/services/assessment/common/interfaces';
 import { AssessmentService } from 'sql/workbench/services/assessment/common/assessmentService';
+import { IAccessibilityTextService } from 'sql/platform/accessibility/common/interfaces';
+import { AccessibilityTextService } from 'sql/platform/accessibility/common/accessibilityTextService';
 
 registerSingleton(IDashboardService, DashboardService);
 registerSingleton(IDashboardViewService, DashboardViewService);
@@ -236,6 +238,7 @@ registerSingleton(IAdsTelemetryService, AdsTelemetryService);
 registerSingleton(IObjectExplorerService, ObjectExplorerService);
 registerSingleton(IOEShimService, OEShimService);
 registerSingleton(IAssessmentService, AssessmentService);
+registerSingleton(IAccessibilityTextService, AccessibilityTextService);
 
 //#endregion
 
