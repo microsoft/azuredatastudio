@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { localize } from 'vs/nls';
+// import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
 import { INotebookEditor, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
@@ -13,7 +13,7 @@ import { TextModel } from 'vs/editor/common/model/textModel';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import { Selection } from 'vs/editor/common/core/selection';
-import { ToggleableAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+// import { ToggleableAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { EditOperation } from 'vs/editor/common/core/editOperation';
 import { Position } from 'vs/editor/common/core/position';
 
@@ -473,39 +473,63 @@ function getColumnOffsetForSelection(type: MarkdownButtonType, nothingSelected: 
 	}
 }
 
-export class TogglePreviewAction extends ToggleableAction {
-
-	private static readonly previewShowLabel = localize('previewShowLabel', "Show Text");
-	private static readonly previewHideLabel = localize('previewHideLabel', "Show Markdown");
-	private static readonly baseClass = 'codicon';
-	private static readonly previewShowCssClass = 'show-text';
-	private static readonly previewHideCssClass = 'show-markdown';
-	private static readonly maskedIconClass = 'masked-icon';
-
+export class ToggleMarkdownViewAction extends Action {
 	constructor(
-		id: string, toggleTooltip: boolean, showPreview: boolean
+		id: string,
+		label: string,
+		cssClass: string,
+		tooltip: string,
+		private _cellModel: ICellModel,
+		private _type: MarkdownButtonType,
+		@INotebookService private _notebookService: INotebookService
 	) {
-		super(id, {
-			baseClass: TogglePreviewAction.baseClass,
-			toggleOffLabel: TogglePreviewAction.previewShowLabel,
-			toggleOffClass: TogglePreviewAction.previewShowCssClass,
-			toggleOnLabel: TogglePreviewAction.previewHideLabel,
-			toggleOnClass: TogglePreviewAction.previewHideCssClass,
-			maskedIconClass: TogglePreviewAction.maskedIconClass,
-			shouldToggleTooltip: toggleTooltip,
-			isOn: showPreview
-		});
+		super(id, label, cssClass);
+		this._tooltip = tooltip;
 	}
+	public async run(context: ICellModel): Promise<boolean> {
+		context = this._cellModel;
+		context.showPreview = false;
+		context.showTextView = false;
+		return true;
+	}
+}
 
-	public get previewMode(): boolean {
-		return this.state.isOn;
+export class ToggleSplitViewAction extends Action {
+	constructor(
+		id: string,
+		label: string,
+		cssClass: string,
+		tooltip: string,
+		private _cellModel: ICellModel,
+		private _type: MarkdownButtonType,
+		@INotebookService private _notebookService: INotebookService
+	) {
+		super(id, label, cssClass);
+		this._tooltip = tooltip;
 	}
-	public set previewMode(value: boolean) {
-		this.toggle(value);
+	public async run(context: ICellModel): Promise<boolean> {
+		context = this._cellModel;
+		context.showPreview = true;
+		return true;
 	}
-	public async run(context: any): Promise<boolean> {
-		this.previewMode = !this.previewMode;
-		context.cellModel.showPreview = this.previewMode;
+}
+export class ToggleTextViewAction extends Action {
+	constructor(
+		id: string,
+		label: string,
+		cssClass: string,
+		tooltip: string,
+		private _cellModel: ICellModel,
+		private _type: MarkdownButtonType,
+		@INotebookService private _notebookService: INotebookService
+	) {
+		super(id, label, cssClass);
+		this._tooltip = tooltip;
+	}
+	public async run(context: ICellModel): Promise<boolean> {
+		context = this._cellModel;
+		context.showPreview = false;
+		context.showTextView = true;
 		return true;
 	}
 }

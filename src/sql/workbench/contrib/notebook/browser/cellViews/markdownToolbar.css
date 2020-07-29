@@ -47,9 +47,15 @@
 	top: -3px;
 	width: 26px;
 }
-.markdown-toolbar .carbon-taskbar li:last-child {
-	margin-right: 0;
+.markdown-toolbar .carbon-taskbar li:nth-last-child(-n+3) {
 	position: absolute;
+	margin-right: 0;
+	right: 56px;
+}
+.markdown-toolbar .carbon-taskbar li:nth-last-child(-n+2) {
+	right: 27px;
+}
+.markdown-toolbar .carbon-taskbar li:nth-last-child(-n+1) {
 	right: 0;
 }
 
