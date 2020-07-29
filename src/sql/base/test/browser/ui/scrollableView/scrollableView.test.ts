@@ -45,7 +45,7 @@ class TestView extends Disposable implements IView {
 
 }
 
-suite('Scrollableview', () => {
+suite('ScrollableView', () => {
 	let container: HTMLElement;
 
 	setup(() => {
