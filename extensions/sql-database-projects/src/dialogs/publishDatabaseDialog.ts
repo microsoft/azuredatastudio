@@ -421,6 +421,7 @@ export class PublishDatabaseDialog {
 				this.connectionId = result.connectionId;
 				(<azdata.InputBoxComponent>this.targetConnectionTextBox).value = result.connectionString;
 
+				this.deploymentOptions = result.options;
 				this.profileSqlCmdVars = result.sqlCmdVariables;
 				const data = this.convertSqlCmdVarsToTableFormat(this.getSqlCmdVariablesForPublish());
 

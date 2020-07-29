@@ -452,6 +452,7 @@ export interface DeployParams {
 	databaseName: string;
 	upgradeExisting: boolean;
 	sqlCommandVariableValues?: Record<string, string>;
+	deploymentOptions?: mssql.DeploymentOptions;
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
 }
@@ -460,6 +461,7 @@ export interface GenerateDeployScriptParams {
 	packageFilePath: string;
 	databaseName: string;
 	sqlCommandVariableValues?: Record<string, string>;
+	deploymentOptions?: mssql.DeploymentOptions
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
 }

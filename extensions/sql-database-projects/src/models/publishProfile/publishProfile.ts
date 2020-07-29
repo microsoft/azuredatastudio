@@ -19,7 +19,7 @@ export interface PublishProfile {
 	connectionId: string;
 	connectionString: string;
 	sqlCmdVariables: Record<string, string>;
-	options: mssql.DeploymentOptions;
+	options?: mssql.DeploymentOptions;
 }
 
 /**
