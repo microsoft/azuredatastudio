@@ -480,8 +480,6 @@ export class ToggleMarkdownViewAction extends Action {
 		cssClass: string,
 		tooltip: string,
 		private _cellModel: ICellModel,
-		private _type: MarkdownButtonType,
-		@INotebookService private _notebookService: INotebookService
 	) {
 		super(id, label, cssClass);
 		this._tooltip = tooltip;
@@ -501,8 +499,6 @@ export class ToggleSplitViewAction extends Action {
 		cssClass: string,
 		tooltip: string,
 		private _cellModel: ICellModel,
-		private _type: MarkdownButtonType,
-		@INotebookService private _notebookService: INotebookService
 	) {
 		super(id, label, cssClass);
 		this._tooltip = tooltip;
@@ -520,8 +516,6 @@ export class ToggleTextViewAction extends Action {
 		cssClass: string,
 		tooltip: string,
 		private _cellModel: ICellModel,
-		private _type: MarkdownButtonType,
-		@INotebookService private _notebookService: INotebookService
 	) {
 		super(id, label, cssClass);
 		this._tooltip = tooltip;

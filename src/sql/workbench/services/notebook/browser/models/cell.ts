@@ -64,7 +64,8 @@ export class CellModel extends Disposable implements ICellModel {
 	private _showPreview: boolean = true;
 	private _onCellPreviewChanged = new Emitter<boolean>();
 	private _isCommandExecutionSettingEnabled: boolean = false;
-	public cellSourceChanged = false;
+	private _cellSourceChanged: boolean = false;
+	private _showTextView: boolean = true;
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -305,6 +306,24 @@ export class CellModel extends Disposable implements ICellModel {
 		if (val !== this._showPreview) {
 			this._showPreview = val;
 			this._onCellPreviewChanged.fire(this._showPreview);
+		}
+	}
+
+	public get showTextView(): boolean {
+		return this._showTextView;
+	}
+	public set showTextView(val: boolean) {
+		if (val !== this._showTextView) {
+			this._showTextView = val;
+		}
+	}
+
+	public get cellSourceChanged(): boolean {
+		return this._cellSourceChanged;
+	}
+	public set cellSourceChanged(val: boolean) {
+		if (val !== this._cellSourceChanged) {
+			this._cellSourceChanged = val;
 		}
 	}
 
