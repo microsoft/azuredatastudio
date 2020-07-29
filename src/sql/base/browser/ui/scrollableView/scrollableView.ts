@@ -32,8 +32,8 @@ export interface IView {
 	layout(height: number, width: number): void;
 	readonly onDidChange: Event<number>;
 	readonly element: HTMLElement;
-	readonly minHeight: number;
-	readonly maxHeight: number;
+	readonly minimumSize: number;
+	readonly maximumSize: number;
 	onDidInsert?(): void;
 	onDidRemove?(): void;
 }
@@ -132,9 +132,9 @@ export class ScrollableView extends Disposable {
 		this.eventuallyUpdateScrollDimensions();
 	}
 
-	public addViews(views: IView[], index = 0): void {
+	public addViews(views: IView[], index = this.items.length): void {
 		const lastRenderRange = this.getRenderRange(this.lastRenderTop, this.lastRenderHeight);
-		const items = views.map(view => ({ size: 0, view, disposables: [], index: 0 }));
+		const items = views.map(view => ({ size: view.minimumSize, view, disposables: [], index: 0 }));
 
 		items.map(i => i.disposables.push(i.view.onDidChange(() => this.rerender(this.getRenderRange(this.lastRenderTop, this.lastRenderHeight)))));
 
@@ -149,7 +149,7 @@ export class ScrollableView extends Disposable {
 		return ret;
 	}
 
-	public addView(view: IView, index = 0): void {
+	public addView(view: IView, index = this.items.length): void {
 		this.addViews([view], index);
 	}
 
@@ -185,15 +185,15 @@ export class ScrollableView extends Disposable {
 	private calculateItemHeights() {
 		let currentMin = 0;
 		for (const item of this.items) {
-			currentMin += item.view.minHeight;
-			if (this.renderHeight > currentMin) {
+			currentMin += item.view.minimumSize;
+			if (currentMin > this.renderHeight) {
 				break;
 			}
 		}
 		if (currentMin > this.renderHeight) { // the items will fill the render height, so just use min heights
 			this.items.forEach((item, index) => {
-				if (item.size !== item.view.minHeight) {
-					item.size = item.view.minHeight;
+				if (item.size !== item.view.minimumSize) {
+					item.size = item.view.minimumSize;
 					this.rangeMap.splice(index, 1, [item]);
 				}
 			});
@@ -202,7 +202,7 @@ export class ScrollableView extends Disposable {
 			let renderHeightRemaining = this.renderHeight;
 			this.items.forEach((item, index) => {
 				const desiredheight = Math.floor(renderHeightRemaining / (this.items.length - index));
-				const newSize = clamp(desiredheight, item.view.minHeight, item.view.maxHeight);
+				const newSize = clamp(desiredheight, item.view.minimumSize, item.view.maximumSize);
 				if (item.size !== newSize) {
 					item.size = newSize;
 					this.rangeMap.splice(index, 1, [item]);

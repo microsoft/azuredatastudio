@@ -646,13 +646,13 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.table.layout(size, Orientation.VERTICAL);
 	}
 
-	public get minHeight(): number {
+	public get minimumSize(): number {
 		// clamp between ensuring we can show the actionbar, while also making sure we don't take too much space
 		// if there is only one table then allow a minimum size of ROW_HEIGHT
 		return this.isOnlyTable ? ROW_HEIGHT : Math.max(Math.min(this.maxSize, MIN_GRID_HEIGHT), ACTIONBAR_HEIGHT + BOTTOM_PADDING);
 	}
 
-	public get maxHeight(): number {
+	public get maximumSize(): number {
 		return Math.max(this.maxSize, ACTIONBAR_HEIGHT + BOTTOM_PADDING);
 	}
 
