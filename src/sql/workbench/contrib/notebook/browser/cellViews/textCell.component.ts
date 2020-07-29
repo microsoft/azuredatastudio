@@ -38,6 +38,7 @@ const USER_SELECT_CLASS = 'actionselect';
 })
 export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	@ViewChild('preview', { read: ElementRef }) private output: ElementRef;
+	@ViewChild('textview', { read: ElementRef }) private texteditor: ElementRef;
 	@ViewChildren(CodeComponent) private markdowncodeCell: QueryList<CodeComponent>;
 
 	@Input() cellModel: ICellModel;
@@ -71,6 +72,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private _lastTrustedMode: boolean;
 	private isEditMode: boolean;
 	private showPreview: boolean;
+	private showTextView: boolean;
 	private _sanitizer: ISanitizer;
 	private _model: NotebookModel;
 	private _activeCellId: string;
@@ -80,7 +82,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private markdownResult: IMarkdownRenderResult;
 	public previewFeaturesEnabled: boolean = false;
 	public turnDownService = new TurndownService({ 'emDelimiter': '*' });
-	private _previewCellSource: string | string[];
+	private textCellSource: string | string[];
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -90,7 +92,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	) {
 		super();
 		this.isEditMode = true;
-		this.showPreview = true;
+		this.showPreview = false;
+		this.showTextView = true;
 		this.markdownRenderer = this._instantiationService.createInstance(NotebookMarkdownRenderer);
 		this._register(toDisposable(() => {
 			if (this.markdownResult) {
@@ -147,7 +150,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this._register(this.cellModel.onCellPreviewChanged(preview => {
 			this.previewMode = preview;
 		}));
-		// this.output.nativeElement.addEventListener('input', this.handleHtmlChanged());
+		//this.output.nativeElement.addEventListener('input', this.handleHtmlChanged());
 	}
 
 	ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
@@ -202,22 +205,27 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				value: Array.isArray(this._content) ? this._content.join('') : this._content
 			});
 			this.markdownResult.element.innerHTML = this.sanitizeContent(this.markdownResult.element.innerHTML);
-			this._previewCellSource = this.turnDownService.turndown(this.markdownResult.element.innerHTML);
+			this.textCellSource = this.turnDownService.turndown(this.markdownResult.element.innerHTML);
 			this.setLoading(false);
 			if (this.showPreview) {
 				let outputElement = <HTMLElement>this.output.nativeElement;
 				outputElement.innerHTML = this.markdownResult.element.innerHTML;
 				this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
 			}
+			if (this.showTextView) {
+				let textViewElement = <HTMLElement>this.texteditor.nativeElement;
+				textViewElement.innerHTML = this.markdownResult.element.innerHTML;
+				this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
+			}
 		}
 	}
 
 	private updateCellSource(): void {
-		let outputElement = <HTMLElement>this.output.nativeElement;
-		let newCellSource: string = this.turnDownService.turndown(outputElement.innerHTML);
-		if (this._previewCellSource !== newCellSource) {
+		let textOutputElement = <HTMLElement>this.texteditor.nativeElement;
+		let newCellSource: string = this.turnDownService.turndown(textOutputElement.innerHTML);
+		if (this.textCellSource !== newCellSource) {
 			this.cellModel.source = newCellSource;
-			this._previewCellSource = newCellSource;
+			this.textCellSource = newCellSource;
 		}
 	}
 
@@ -263,6 +271,15 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 	public set previewMode(value: boolean) {
 		this.showPreview = value;
+		this._changeRef.detectChanges();
+		this.updatePreview();
+	}
+
+	public get textViewMode(): boolean {
+		return this.showTextView;
+	}
+	public set textViewMode(value: boolean) {
+		this.showTextView = value;
 		this._changeRef.detectChanges();
 		this.updatePreview();
 	}

@@ -15,10 +15,17 @@ text-cell-component code-component {
 }
 text-cell-component .notebook-preview {
 	flex-direction: column;
-	width: 100%;
-	user-select: none;
 	padding-left: 8px;
 	padding-right: 8px;
+	user-select: none;
+	width: 100%;
+}
+text-cell-component .text-view {
+	flex-direction: column;
+	padding-left: 8px;
+	padding-right: 8px;
+	user-select: none;
+	width: 100%;
 }
 text-cell-component .edit-mode code-component {
 	display: block;
@@ -33,8 +40,18 @@ text-cell-component .edit-mode .notebook-preview {
 	border-left-width: 1px;
 	border-style: solid;
 	border-top-width: 0;
-	flex-direction: column;
-	width: 100%;
+	/* hiding for the moment */
+	visibility: hidden;
+}
+text-cell-component :not(.edit-mode) .text-view {
+	display: none;
+}
+text-cell-component .edit-mode .text-view {
+	border-color: transparent;
+	border-left-width: 1px;
+	border-style: solid;
+	border-top-width: 0;
+	display: block;
 }
 
 .notebook-preview.actionselect {
