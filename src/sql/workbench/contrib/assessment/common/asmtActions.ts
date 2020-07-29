@@ -211,8 +211,9 @@ export class AsmtExportAsScriptAction extends Action {
 
 	public async run(context: IAsmtActionInfo): Promise<boolean> {
 		this._telemetryService.sendActionEvent(TelemetryView.SqlAssessment, AsmtExportAsScriptAction.ID);
-		if (context && context.component && context.component.recentResult?.result.items) {
-			await this._assessmentService.generateAssessmentScript(context.ownerUri, context.component.recentResult?.result.items);
+		const items = context?.component?.recentResult?.result.items;
+		if (items) {
+			await this._assessmentService.generateAssessmentScript(context.ownerUri, items);
 			return true;
 		}
 		return false;
@@ -257,7 +258,7 @@ export class AsmtGenerateHTMLReportAction extends Action {
 	}
 
 	public async run(context: IAsmtActionInfo): Promise<boolean> {
-		const fileName = this.generateReportFileName(new Date(context.component.recentResult.dateUpdated));
+		const fileName = generateReportFileName(new Date(context.component.recentResult.dateUpdated));
 		const filePath = path.join(this._environmentService.userRoamingDataHome.fsPath, 'SqlAssessmentReports', fileName);
 		const result = await this._fileService.createFile(
 			URI.file(filePath),
@@ -287,11 +288,10 @@ export class AsmtGenerateHTMLReportAction extends Action {
 		}
 		return true;
 	}
+}
 
-	private generateReportFileName(resultDate): string {
-		const datetime = `${resultDate.toISOString().replace(/-/g, '').replace('T', '').replace(/:/g, '').split('.')[0]}`;
-		return `SqlAssessmentReport_${datetime}.html`;
-	}
-
+function generateReportFileName(resultDate): string {
+	const datetime = `${resultDate.toISOString().replace(/-/g, '').replace('T', '').replace(/:/g, '').split('.')[0]}`;
+	return `SqlAssessmentReport_${datetime}.html`;
 
 }

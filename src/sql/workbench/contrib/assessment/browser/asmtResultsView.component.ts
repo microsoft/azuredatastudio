@@ -46,6 +46,7 @@ import * as themeColors from 'vs/workbench/common/theme';
 import { ITableStyles } from 'sql/base/browser/ui/table/interfaces';
 import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 import { LocalizedStrings } from 'sql/workbench/contrib/assessment/common/strings';
+import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 
 export const ASMTRESULTSVIEW_SELECTOR: string = 'asmt-results-view-component';
 export const ROW_HEIGHT: number = 25;
@@ -121,7 +122,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 	private placeholderNoResultsLabel: string;
 	private spinner: { [mode: number]: HTMLElement } = Object.create(null);
 	private lastInvokedResult: SqlAssessmentResultInfo;
-	private initialConnectionInfo: any;
+	private initialConnectionInfo: ConnectionManagementInfo;
 
 	@ViewChild('resultsgrid') _gridEl: ElementRef;
 	@ViewChild('actionbarContainer') protected actionBarContainer: ElementRef;
@@ -223,7 +224,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 					connectionInfo: this.initialConnectionInfo
 				};
 			} else {
-				this.lastInvokedResult = null;
+				this.lastInvokedResult = undefined;
 			}
 
 			this.displayResults(result.items, method);

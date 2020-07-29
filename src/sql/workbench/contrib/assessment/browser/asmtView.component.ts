@@ -60,7 +60,5 @@ export class AsmtViewComponent extends AngularDisposable implements OnInit {
 		if (this._asmtResultView.layout !== undefined) {
 			this._asmtResultView.layout();
 		}
-
-		//this._panel.layout();
 	}
 }
