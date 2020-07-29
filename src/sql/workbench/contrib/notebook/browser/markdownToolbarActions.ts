@@ -16,6 +16,8 @@ import { Selection } from 'vs/editor/common/core/selection';
 // import { ToggleableAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { EditOperation } from 'vs/editor/common/core/editOperation';
 import { Position } from 'vs/editor/common/core/position';
+import { SelectImageDialog } from 'sql/workbench/contrib/notebook/browser/selectImageDialog';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 
 export class TransformMarkdownAction extends Action {
@@ -27,7 +29,8 @@ export class TransformMarkdownAction extends Action {
 		tooltip: string,
 		private _cellModel: ICellModel,
 		private _type: MarkdownButtonType,
-		@INotebookService private _notebookService: INotebookService
+		@INotebookService private _notebookService: INotebookService,
+		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		super(id, label, cssClass);
 		this._tooltip = tooltip;
@@ -35,7 +38,7 @@ export class TransformMarkdownAction extends Action {
 	public run(context: any): Promise<boolean> {
 		return new Promise<boolean>((resolve, reject) => {
 			try {
-				let markdownTextTransformer = new MarkdownTextTransformer(this._notebookService, this._cellModel);
+				let markdownTextTransformer = new MarkdownTextTransformer(this._notebookService, this._cellModel, this._instantiationService);
 				markdownTextTransformer.transformText(this._type);
 				resolve(true);
 			} catch (e) {
@@ -47,15 +50,22 @@ export class TransformMarkdownAction extends Action {
 
 export class MarkdownTextTransformer {
 
-	constructor(private _notebookService: INotebookService, private _cellModel: ICellModel, private _notebookEditor?: INotebookEditor) { }
+	private _selectImageDialog: SelectImageDialog;
+
+	constructor(
+		private _notebookService: INotebookService,
+		private _cellModel: ICellModel,
+		private _instantiationService: IInstantiationService,
+		private _notebookEditor?: INotebookEditor) { }
 
 	public get notebookEditor(): INotebookEditor {
 		return this._notebookEditor;
 	}
 
-	public transformText(type: MarkdownButtonType): void {
+	public async transformText(type: MarkdownButtonType): Promise<void> {
 		let editorControl = this.getEditorControl();
 		if (editorControl) {
+
 			let selections = editorControl.getSelections();
 			// TODO: Support replacement for multiple selections
 			let selection = selections[0];
@@ -67,8 +77,19 @@ export class MarkdownTextTransformer {
 				endLineNumber: selection.startLineNumber
 			};
 
-			let beginInsertedText = getStartTextToInsert(type);
-			let endInsertedText = getEndTextToInsert(type);
+			let beginInsertedText: string;
+			let endInsertedText: string;
+			if (type === MarkdownButtonType.IMAGE) {
+				if (!this._selectImageDialog) {
+					this._selectImageDialog = this._instantiationService.createInstance(SelectImageDialog);
+					this._selectImageDialog.render();
+				}
+				let selectImageOptions = await this._selectImageDialog.open();
+				beginInsertedText = selectImageOptions.imageHtml;
+			} else {
+				beginInsertedText = getStartTextToInsert(type);
+				endInsertedText = getEndTextToInsert(type);
+			}
 
 			let endRange: IRange = {
 				startColumn: selection.endColumn,
