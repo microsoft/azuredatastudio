@@ -80,7 +80,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private markdownResult: IMarkdownRenderResult;
 	public previewFeaturesEnabled: boolean = false;
 	public turnDownService = new TurndownService({ 'emDelimiter': '*' });
-	private _previewContent: string | string[];
+	private _previewCellSource: string | string[];
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -202,7 +202,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				value: Array.isArray(this._content) ? this._content.join('') : this._content
 			});
 			this.markdownResult.element.innerHTML = this.sanitizeContent(this.markdownResult.element.innerHTML);
-			this._previewContent = this.turnDownService.turndown(this.markdownResult.element.innerHTML);
+			this._previewCellSource = this.turnDownService.turndown(this.markdownResult.element.innerHTML);
 			this.setLoading(false);
 			if (this.showPreview) {
 				let outputElement = <HTMLElement>this.output.nativeElement;
@@ -215,9 +215,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private updateCellSource(): void {
 		let outputElement = <HTMLElement>this.output.nativeElement;
 		let newCellSource: string = this.turnDownService.turndown(outputElement.innerHTML);
-		if (this._previewContent !== newCellSource) {
+		if (this._previewCellSource !== newCellSource) {
 			this.cellModel.source = newCellSource;
-			this._previewContent = newCellSource;
+			this._previewCellSource = newCellSource;
 		}
 	}
 

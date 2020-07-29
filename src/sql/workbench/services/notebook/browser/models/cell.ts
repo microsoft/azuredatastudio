@@ -64,6 +64,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _showPreview: boolean = true;
 	private _onCellPreviewChanged = new Emitter<boolean>();
 	private _isCommandExecutionSettingEnabled: boolean = false;
+	private _onCellSourceChanged = new Emitter<boolean>();
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -234,6 +235,7 @@ export class CellModel extends Disposable implements ICellModel {
 		if (this._source !== newSource) {
 			this._source = newSource;
 			this.sendChangeToNotebook(NotebookChangeType.CellSourceUpdated);
+			this._onCellSourceChanged.fire(true);
 		}
 		this._modelContentChangedEvent = undefined;
 	}
@@ -308,6 +310,10 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public get onCellPreviewChanged(): Event<boolean> {
 		return this._onCellPreviewChanged.event;
+	}
+
+	public get onCellSourceChanged(): Event<boolean> {
+		return this._onCellSourceChanged.event;
 	}
 
 	private notifyExecutionComplete(): void {

@@ -257,6 +257,10 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			this._layoutEmitter.fire();
 		}));
 
+		this._register(this.cellModel.onCellSourceChanged(() => {
+			this.updateModel();
+		}));
+
 		this.layout();
 
 		if (this._cellModel.isCollapsed) {
