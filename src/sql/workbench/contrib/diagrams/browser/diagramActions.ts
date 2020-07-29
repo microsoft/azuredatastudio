@@ -6,10 +6,8 @@
 import * as nls from 'vs/nls';
 
 import { Action } from 'vs/base/common/actions';
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-
 import { IDiagramService } from 'sql/workbench/services/diagrams/common/interfaces';
-import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
+import { ObjectMetadata } from 'azdata';
 
 /**
  * ..
@@ -21,19 +19,16 @@ export class GetDiagramModelAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		@IDiagramService private _diagramService: IDiagramService,
-		@IEditorService private _editorService: IEditorService
+		@IDiagramService private _diagramService: IDiagramService
 	) {
 		super(id, label);
 		this.enabled = true;
 	}
 
-	public run(): Promise<void> {
-		const editor = this._editorService.activeEditor;
-		if (editor instanceof QueryEditorInput) {
-			this._diagramService.getDiagramModel(editor.uri).then(model => {
-				model = model;
-			});
+	public async run(ownerUri: string): Promise<ObjectMetadata[]> {
+		if (ownerUri) {
+			const model = await this._diagramService.getDiagramModel(ownerUri);
+			return model;
 		}
 		return Promise.resolve(null);
 	}

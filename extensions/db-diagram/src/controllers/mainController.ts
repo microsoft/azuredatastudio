@@ -32,7 +32,8 @@ export default class MainController extends ControllerBase {
 				let connection = await DiagramUtils.currentConnection();
 
 				let service = await DiagramUtils.getDiagramService();
-				await service.getDiagramModel(connection.connectionId);
+				let model = await service.getDiagramModel(connection.connectionId);
+				console.log(model);
 
 				//initialize data model
 				//set curr table to first table in dbModel
@@ -47,7 +48,7 @@ export default class MainController extends ControllerBase {
 					flexFlow: 'column'
 				};
 
-				const dashboard = azdata.window.createModelViewDashboard('DB Diagram');
+				const dashboard = azdata.window.createModelViewDashboard('db-diagram');
 				dashboard.registerTabs(async (view: azdata.ModelView) => {
 
 					const visualContainer = view.modelBuilder.flexContainer().withItems([]).withLayout(visualTabLayout).component();
