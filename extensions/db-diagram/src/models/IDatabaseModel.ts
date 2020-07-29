@@ -11,6 +11,6 @@ export default interface IDatabaseModel {
 
 	name: string;
 	summary: string;
-	tables: ITableModel[];
+	tables: Map<string, ITableModel>;
 
 }

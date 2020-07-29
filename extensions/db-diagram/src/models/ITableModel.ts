@@ -3,6 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import ISqlRelationship from './ISqlRelationship';
+import SqlColumn from './sqlColumn';
+import ISqlColumn from './ISqlColumn';
+
 export default interface ITableModel {
 
 	//Name of the table
@@ -12,7 +16,7 @@ export default interface ITableModel {
 	summary: string;
 
 	//Map containing column names pointing to their types
-	columns: Map<string, string>;
+	columns: ISqlColumn[];
 
 	//Map containing primary key (or composite primary) pointing to it(s) types
 	//Map containing foreign key pointing to it(s) types
@@ -21,19 +25,19 @@ export default interface ITableModel {
 	{departmentID: 'int'}
 	{'employeeHistory': 'varchar', employeeID: 'int'}
 	*/
-	primaryKey: Map<string, string>;
+	primaryKey: ISqlColumn[];
 
 	//Map containing foreign key pointing to it(s) types
 	/*
 	Example:
 	[{'employeeHistory': 'varchar', employeeID: 'int'}, {'departmentHistory': 'string'}]
 	*/
-	foreignKey: Map<string, string>[];
+	foreignKeys: ISqlColumn[][];
 
 	/*Map containing related tables and relationship information
 	Example:
 	<DepartmentTableModel, {cardinality: "1:Many", reference: "FK_EmployeeHistory_Employee_EmployeeID" }
 	*/
-	relationships: Map<ITableModel, JSON>;
+	relationships: ISqlRelationship[];
 
 }

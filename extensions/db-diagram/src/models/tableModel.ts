@@ -4,26 +4,28 @@
  *--------------------------------------------------------------------------------------------*/
 
 import ITableModel from './ITableModel';
+import ISqlRelationship from './ISqlRelationship';
+import ISqlColumn from './ISqlColumn';
 
 export default class TableModel implements ITableModel {
 
 	name: string;
 	summary: string;
-	relationships: Map<ITableModel, JSON>;
-	columns: Map<string, string>;
-	primaryKey: Map<string, string>;
-	foreignKey: Map<string, string>[];
+	relationships: ISqlRelationship[];
+	columns: ISqlColumn[];
+	primaryKey: ISqlColumn[];
+	foreignKeys: ISqlColumn[][];
 
 	//constructor
-	constructor(name: string, summary: string, relationships: Map<ITableModel, JSON>,
-		columns: Map<string, string>, primaryKey: Map<string, string>,
-		foreignKey: Map<string, string>[],) {
+	constructor(name: string, summary: string, relationships: ISqlRelationship[],
+		columns: ISqlColumn[], primaryKey: ISqlColumn[],
+		foreignKeys: ISqlColumn[][],) {
 		this.name = name;
 		this.summary = summary;
 		this.relationships = relationships;
 		this.columns = columns;
 		this.primaryKey = primaryKey;
-		this.foreignKey = foreignKey;
+		this.foreignKeys = foreignKeys;
 	}
 
 }

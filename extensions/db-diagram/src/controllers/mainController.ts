@@ -7,6 +7,7 @@
 import ControllerBase from './controllerBase';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
+import { DiagramUtils } from '../diagramUtils';
 
 /**
  * The main controller class that initializes the extension
@@ -27,6 +28,19 @@ export default class MainController extends ControllerBase {
 
 		return new Promise<boolean>(async (resolve) => {
 			vscode.commands.registerCommand('db-diagram.new', async () => {
+
+				let connection = await DiagramUtils.currentConnection();
+
+				let service = await DiagramUtils.getDiagramService();
+				await service.getDiagramModel(connection.connectionId);
+
+				//initialize data model
+				//set curr table to first table in dbModel
+				//onClick -> currTable becomes refreshes
+				//onKeyPressedEnter -> currTables refreshes
+				//onGranularityChange -> hide Table View, Show DB View
+				//onVisualTabView
+
 
 
 				let visualTabLayout: azdata.FlexLayout = {

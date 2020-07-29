@@ -3,21 +3,18 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import IDatabaseModel from './IDatabaseModel';
-import ITableModel from './ITableModel';
+import ISqlRelationship from './ISqlRelationship';
 
-export default class DatabaseModel implements IDatabaseModel {
-
-	name: string;
-	summary: string;
-	tables: Map<string, ITableModel>;
-
+export default class SqlRelationship implements ISqlRelationship {
+	relatedTableName: string;
+	cardinality: string;
+	reference: string;
 
 	//constructor
-	constructor(name: string, summary: string, tables: Map<string, ITableModel>) {
-		this.name = name;
-		this.summary = summary;
-		this.tables = tables;
+	constructor(relatedTableName: string, cardinality: string, reference: string) {
+		this.relatedTableName = relatedTableName;
+		this.cardinality = cardinality;
+		this.reference = reference;
 	}
 
 }

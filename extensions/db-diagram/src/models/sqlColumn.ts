@@ -2,13 +2,18 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import INodeModel from './INodeModel';
 
+import ISqlColumn from './ISqlColumn';
 
-export default interface INetworkGraphModel {
+export default class SqlColumn implements ISqlColumn {
+
 	name: string;
-	summary: string;
-	nodes: Map<string, INodeModel>;
-	metadata: JSON;
+	type: string;
+
+	//constructor
+	constructor(name: string, type: string) {
+		this.name = name;
+		this.type = type;
+	}
 
 }
