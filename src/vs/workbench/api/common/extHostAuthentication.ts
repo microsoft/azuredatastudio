@@ -176,7 +176,7 @@ export class ExtHostAuthentication implements ExtHostAuthenticationShape {
 	}
 
 	$onDidChangeAuthenticationSessions(id: string, label: string, event: modes.AuthenticationSessionsChangeEvent) {
-		this._onDidChangeSessions.fire({ provider: { id, label }, ...event });
+		this._onDidChangeSessions.fire(event); // {{ SQL CARBON EDIT }}
 		return Promise.resolve();
 	}
 
