@@ -57,6 +57,7 @@ import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/not
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { NoContextLabeledMenuItemActionItem } from 'sql/platform/actions/browser/menuEntryActionViewItem';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -556,6 +557,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			if (action.item.id.includes('jupyter.cmd') && this.previewFeaturesEnabled) {
 				action.tooltip = action.label;
 				action.label = '';
+				return new NoContextLabeledMenuItemActionItem(action, this.keybindingService, this.contextMenuService, this.notificationService, 'notebook-button fixed-width');
 			}
 			return new LabeledMenuItemActionItem(action, this.keybindingService, this.contextMenuService, this.notificationService, 'notebook-button fixed-width');
 		}
