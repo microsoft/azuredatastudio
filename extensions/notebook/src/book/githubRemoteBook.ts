@@ -22,7 +22,7 @@ export class GitHubRemoteBook extends RemoteBook {
 	public async createLocalCopy(): Promise<void> {
 		this.outputChannel.show(true);
 		this.setLocalPath();
-		this.outputChannel.appendLine(loc.msgDownloadLocation(this._localPath.href));
+		this.outputChannel.appendLine(loc.msgDownloadLocation(this.localPath.href));
 		this.outputChannel.appendLine(loc.msgRemoteBookDownloadProgress);
 		this.createDirectory();
 		let notebookConfig = vscode.workspace.getConfiguration(constants.notebookConfigKey);
@@ -47,7 +47,7 @@ export class GitHubRemoteBook extends RemoteBook {
 						return reject(new Error(loc.httpRequestError(response.statusCode, response.statusMessage)));
 					}
 				});
-			let remoteBookFullPath = new URL(this._localPath.href.concat('.zip'));
+			let remoteBookFullPath = new URL(this.localPath.href.concat('.zip'));
 			downloadRequest.pipe(fs.createWriteStream(remoteBookFullPath.href))
 				.on('close', async () => {
 					resolve(this.extractFiles(remoteBookFullPath));
@@ -62,13 +62,13 @@ export class GitHubRemoteBook extends RemoteBook {
 	}
 	public async createDirectory(): Promise<void> {
 		let fileName = this._asset.book.concat('-').concat(this._asset.version).concat('-').concat(this._asset.language);
-		this._localPath = new URL(path.join(this._localPath.href, fileName));
+		this.localPath = new URL(path.join(this.localPath.href, fileName));
 		try {
-			let exists = await fs.pathExists(this._localPath.href);
+			let exists = await fs.pathExists(this.localPath.href);
 			if (exists) {
-				await fs.remove(this._localPath.href);
+				await fs.remove(this.localPath.href);
 			}
-			await fs.promises.mkdir(this._localPath.href);
+			await fs.promises.mkdir(this.localPath.href);
 		} catch (error) {
 			this.outputChannel.appendLine(loc.msgRemoteBookDirectoryError);
 			this.outputChannel.appendLine(error.message);
@@ -78,16 +78,16 @@ export class GitHubRemoteBook extends RemoteBook {
 		try {
 			if (utils.getOSPlatform() === utils.Platform.Windows || utils.getOSPlatform() === utils.Platform.Mac) {
 				let zippedFile = new zip(remoteBookFullPath.href);
-				zippedFile.extractAllTo(this._localPath.href);
+				zippedFile.extractAllTo(this.localPath.href);
 			} else {
-				tar.extract({ file: remoteBookFullPath.href, cwd: this._localPath.href }).catch(error => {
+				tar.extract({ file: remoteBookFullPath.href, cwd: this.localPath.href }).catch(error => {
 					this.outputChannel.appendLine(loc.msgRemoteBookUnpackingError);
 					this.outputChannel.appendLine(error.message);
 				});
 			}
 			await fs.promises.unlink(remoteBookFullPath.href);
 			this.outputChannel.appendLine(loc.msgRemoteBookDownloadComplete);
-			vscode.commands.executeCommand('notebook.command.openNotebookFolder', this._localPath.href, undefined, true);
+			vscode.commands.executeCommand('notebook.command.openNotebookFolder', this.localPath.href, undefined, true);
 		}
 		catch (err) {
 			this.outputChannel.appendLine(err.message);
