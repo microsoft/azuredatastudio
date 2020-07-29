@@ -7,7 +7,7 @@ import { IView, ScrollableView } from 'sql/base/browser/ui/scrollableView/scroll
 import { Emitter } from 'vs/base/common/event';
 import * as assert from 'assert';
 import { Disposable } from 'vs/base/common/lifecycle';
-import * as DOM from 'vs/base/browser/dom';
+import { timeout } from 'vs/base/common/async';
 
 class TestView extends Disposable implements IView {
 
@@ -206,8 +206,8 @@ suite('ScrollableView', () => {
 	});
 });
 
-function waitForAnimation(timeout: number = 50): Promise<void> {
-	return new Promise(r => DOM.scheduleAtNextAnimationFrame(() => DOM.scheduleAtNextAnimationFrame(() => setTimeout(r, timeout))));
+function waitForAnimation(): Promise<void> {
+	return timeout(500);
 }
 
 function getViewChildren(container: HTMLElement): NodeListOf<Element> {
