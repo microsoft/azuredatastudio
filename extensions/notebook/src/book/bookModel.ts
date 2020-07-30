@@ -27,7 +27,6 @@ export class BookModel {
 		public readonly bookPath: string,
 		public readonly openAsUntitled: boolean,
 		public readonly isNotebook: boolean,
-		public readonly bookQuantity: number,
 		private _extensionContext: vscode.ExtensionContext) {
 		this._bookItems = [];
 	}
@@ -105,10 +104,10 @@ export class BookModel {
 			return undefined;
 		}
 		let notebookConfig = vscode.workspace.getConfiguration(constants.notebookConfigKey);
-		let maxExpandedItems = notebookConfig[constants.maxExpandedBookItems];
+		let collapsedItems = notebookConfig[constants.collapsedBookItems];
 		let collapsibleState = vscode.TreeItemCollapsibleState.Expanded;
-		if (this.bookQuantity > maxExpandedItems) {
-			collapsibleState = vscode.TreeItemCollapsibleState.Collapsed; // If multiple books, collapse them
+		if (collapsedItems) {
+			collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
 		}
 
 		if (this._tableOfContentsPath) {

@@ -17,10 +17,10 @@
       "type": "object",
       "title": "%notebook.configuration.title%",
       "properties": {
-        "notebook.maxExpandedBookItems": {
-          "type": "number",
-          "default": 5,
-          "description": "%notebook.maxExpandedBookItems.description%"
+        "notebook.collapsedBookItems": {
+          "type": "boolean",
+          "default": true,
+          "description": "%notebook.collapsedBookItems.description%"
         },
         "notebook.maxBookSearchDepth": {
           "type": "number",
