@@ -452,6 +452,7 @@ export interface DeployParams {
 	databaseName: string;
 	upgradeExisting: boolean;
 	sqlCommandVariableValues?: Record<string, string>;
+	deploymentOptions?: mssql.DeploymentOptions;
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
 }
@@ -460,6 +461,7 @@ export interface GenerateDeployScriptParams {
 	packageFilePath: string;
 	databaseName: string;
 	sqlCommandVariableValues?: Record<string, string>;
+	deploymentOptions?: mssql.DeploymentOptions
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
 }
@@ -471,6 +473,9 @@ export interface GenerateDeployPlanParams {
 	taskExecutionMode: TaskExecutionMode;
 }
 
+export interface GetOptionsFromProfileParams {
+	profilePath: string;
+}
 export namespace ExportRequest {
 	export const type = new RequestType<ExportParams, mssql.DacFxResult, void, void>('dacfx/export');
 }
@@ -493,6 +498,10 @@ export namespace GenerateDeployScriptRequest {
 
 export namespace GenerateDeployPlanRequest {
 	export const type = new RequestType<GenerateDeployPlanParams, mssql.GenerateDeployPlanResult, void, void>('dacfx/generateDeployPlan');
+}
+
+export namespace GetOptionsFromProfileRequest {
+	export const type = new RequestType<GetOptionsFromProfileParams, mssql.DacFxOptionsResult, void, void>('dacfx/getOptionsFromProfile');
 }
 // ------------------------------- < DacFx > ------------------------------------
 

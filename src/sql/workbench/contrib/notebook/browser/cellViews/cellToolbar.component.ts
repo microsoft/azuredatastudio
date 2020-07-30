@@ -56,12 +56,12 @@ export class CellToolbarComponent {
 		this._actionBar = new Taskbar(taskbar);
 		this._actionBar.context = context;
 
-		let addCellsButton = new AddCellAction('notebook.AddCodeCell', localize('codeCellsPreview', "Add cell"), 'notebook-button masked-pseudo code');
+		let addCellsButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('codeCellsPreview', "Add cell"), 'notebook-button masked-pseudo code');
 
-		let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('codePreview', "Code cell"), 'notebook-button masked-pseudo code');
+		let addCodeCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('codePreview', "Code cell"), 'notebook-button masked-pseudo code');
 		addCodeCellButton.cellType = CellTypes.Code;
 
-		let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('textPreview', "Text cell"), 'notebook-button masked-pseudo markdown');
+		let addTextCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddTextCell', localize('textPreview', "Text cell"), 'notebook-button masked-pseudo markdown');
 		addTextCellButton.cellType = CellTypes.Markdown;
 
 		let deleteButton = this.instantiationService.createInstance(DeleteCellAction, 'delete', 'codicon masked-icon delete', localize('delete', "Delete"));
