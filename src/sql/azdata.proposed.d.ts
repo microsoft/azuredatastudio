@@ -512,4 +512,18 @@ declare module 'azdata' {
 		getAccountSecurityToken(account: Account, tenant: string, resource: AzureResource): Thenable<{ token: string } | undefined>;
 	}
 
+	export interface AccountKey {
+		/**
+		 * A version string for an account
+		 */
+		accountVersion?: string;
+	}
+
+	export interface Account {
+		/**
+		 * Specifies if an account should be deleted
+		 */
+		delete?: boolean;
+	}
+
 }

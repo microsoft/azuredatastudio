@@ -372,6 +372,36 @@ export class AccountManagementService implements IAccountManagementService {
 		this._openerService.open(URI.parse(uri)).catch(err => onUnexpectedError(err));
 	}
 
+	private async _registerProvider(providerMetadata: azdata.AccountProviderMetadata, provider: azdata.AccountProvider): Promise<void> {
+		this._providers[providerMetadata.id] = {
+			metadata: providerMetadata,
+			provider: provider,
+			accounts: []
+		};
+
+		const accounts = await this._accountStore.getAccountsByProvider(providerMetadata.id);
+		const updatedAccounts = await provider.initialize(accounts);
+
+		// Don't add the accounts that are about to get deleted to the cache.
+		this._providers[providerMetadata.id].accounts = updatedAccounts.filter(s => s.delete === false);
+
+		const writePromises = updatedAccounts.map(async (account) => {
+			if (account.delete === true) {
+				return this._accountStore.remove(account.key);
+			}
+			return this._accountStore.addOrUpdate(account);
+		});
+		await Promise.all(writePromises);
+
+		const p = this._providers[providerMetadata.id];
+		this._addAccountProviderEmitter.fire({
+			addedProvider: p.metadata,
+			initialAccounts: p.accounts.slice(0)		// Slice here to make sure no one can modify our cache
+		});
+		// Notify listeners that the account has been updated
+		this.fireAccountListUpdate(p, false);
+	}
+
 	// SERVICE MANAGEMENT METHODS //////////////////////////////////////////
 	/**
 	 * Called by main thread to register an account provider from extension
@@ -379,43 +409,7 @@ export class AccountManagementService implements IAccountManagementService {
 	 * @param provider References to the methods of the provider
 	 */
 	public registerProvider(providerMetadata: azdata.AccountProviderMetadata, provider: azdata.AccountProvider): Thenable<void> {
-		let self = this;
-
-		// Store the account provider
-		this._providers[providerMetadata.id] = {
-			metadata: providerMetadata,
-			provider: provider,
-			accounts: []
-		};
-
-		// Initialize the provider:
-		// 1) Get all the accounts that were stored
-		// 2) Give those accounts to the provider for rehydration
-		// 3) Add the accounts to our local store of accounts
-		// 4) Write the accounts back to the store
-		// 5) Fire the event to let folks know we have another account provider now
-		return this._accountStore.getAccountsByProvider(providerMetadata.id)
-			.then((accounts: azdata.Account[]) => {
-				return provider.initialize(accounts);
-			})
-			.then((accounts: azdata.Account[]) => {
-				self._providers[providerMetadata.id].accounts = accounts;
-				let writePromises = accounts.map(account => {
-					return self._accountStore.addOrUpdate(account);
-				});
-				return Promise.all(writePromises);
-			})
-			.then(() => {
-				let provider = self._providers[providerMetadata.id];
-				self._addAccountProviderEmitter.fire({
-					addedProvider: provider.metadata,
-					initialAccounts: provider.accounts.slice(0)		// Slice here to make sure no one can modify our cache
-				});
-				// Notify listeners that the account has been updated
-				self.fireAccountListUpdate(provider, false);
-			});
-
-		// TODO: Add stale event handling to the providers
+		return this._registerProvider(providerMetadata, provider);
 	}
 
 	/**

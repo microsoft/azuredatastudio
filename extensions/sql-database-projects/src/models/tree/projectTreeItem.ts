@@ -12,6 +12,7 @@ import { Project, ProjectEntry, EntryType } from '../project';
 import * as utils from '../../common/utils';
 import { DatabaseReferencesTreeItem } from './databaseReferencesTreeItem';
 import { DatabaseProjectItemType, RelativeOuterPath } from '../../common/constants';
+import { IconPathHelper } from '../../common/iconHelper';
 
 /**
  * TreeNode root that represents an entire project
@@ -45,6 +46,8 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	public get treeItem(): vscode.TreeItem {
 		const projectItem = new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.Expanded);
 		projectItem.contextValue = DatabaseProjectItemType.project;
+		projectItem.iconPath = IconPathHelper.databaseProject;
+
 		return projectItem;
 	}
 

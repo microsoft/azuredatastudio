@@ -49,6 +49,11 @@
           "items": {
             "type": "string"
           }
+        },
+        "notebook.remoteBookDownloadTimeout": {
+          "type": "number",
+          "default": 60000,
+          "description": "%notebook.remoteBookDownloadTimeout.description%"
         }
       }
     },
@@ -223,6 +228,15 @@
       {
         "command": "notebook.command.createBook",
         "title": "%title.createJupyterBook%",
+        "category": "%books-preview-category%",
+        "icon": {
+          "dark": "resources/dark/open_notebook_inverse.svg",
+          "light": "resources/light/open_notebook.svg"
+        }
+      },
+      {
+        "command": "notebook.command.openRemoteBook",
+        "title": "%title.openRemoteJupyterBook%",
         "category": "%books-preview-category%",
         "icon": {
           "dark": "resources/dark/open_notebook_inverse.svg",
@@ -421,6 +435,9 @@
           "command": "notebook.command.openNotebookFolder",
           "when": "view == bookTreeView",
           "group": "navigation"
+        }, {
+          "command": "notebook.command.openRemoteBook",
+          "when": "view == bookTreeView"
         }
       ],
       "notebook/toolbar": [
