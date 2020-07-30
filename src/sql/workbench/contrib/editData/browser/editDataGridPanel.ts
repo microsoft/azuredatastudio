@@ -413,13 +413,13 @@ export class EditDataGridPanel extends GridParentComponent {
 		if (self.placeHolderDataSets[0]) {
 			this.refreshDatasets();
 		}
-		await self.refreshGrid();
-
-		// Setup the state of the selected cell
-		this.resetCurrentCell();
-		this.removingNewRow = false;
-		this.newRowVisible = false;
-		this.dirtyCells = [];
+		await self.refreshGrid().then(() => {
+			// Setup the state of the selected cell
+			this.resetCurrentCell();
+			this.removingNewRow = false;
+			this.newRowVisible = false;
+			this.dirtyCells = [];
+		});
 	}
 
 	/**
