@@ -51,7 +51,10 @@ export interface ViewTestContext {
 	onTextChanged: vscode.EventEmitter<any>;
 	onValueChanged: vscode.EventEmitter<any>;
 	compareButtonOnClick: vscode.EventEmitter<any>;
-	//updateExistingRadioOnClick: vscode.EventEmitter<any>;
+	selectButtonOnClick: vscode.EventEmitter<any>;
+	switchDirectionButtonOnClick: vscode.EventEmitter<any>;
+	cancelCompareButtonOnClick: vscode.EventEmitter<any>;
+	generateScriptButtonOnClick: vscode.EventEmitter<any>;
 }
 
 export function createViewContext(): ViewTestContext {
@@ -59,7 +62,10 @@ export function createViewContext(): ViewTestContext {
 	let onTextChanged: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
 	let onValueChanged: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
 	let compareButtonOnClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
-	//let updateExistingRadioOnClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
+	let selectButtonOnClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
+	let switchDirectionButtonOnClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
+	let cancelCompareButtonOnClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
+	let generateScriptButtonOnClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
 
 	let componentBase: azdata.Component = {
 		id: '',
@@ -71,22 +77,7 @@ export function createViewContext(): ViewTestContext {
 		validate: undefined!,
 		focus: () => Promise.resolve()
 	};
-	let button = () => {
-		let button: azdata.ButtonComponent = Object.assign({}, componentBase, {
-			name: '',
-			label: '',
-			onDidClick: onClick.event
-		});
-		return button;
-	};
-	let radioButton: azdata.RadioButtonComponent = Object.assign({}, componentBase, {
-		checked: false,
-		onDidClick: onClick.event,
-	});
-	let checkbox: azdata.CheckBoxComponent = Object.assign({}, componentBase, {
-		checked: true,
-		onChanged: onClick.event
-	});
+
 	let container = {
 		clearItems: () => { },
 		addItems: () => { },
@@ -97,14 +88,15 @@ export function createViewContext(): ViewTestContext {
 		setLayout: () => { },
 		setItemLayout: () => { }
 	};
-	let form: azdata.FormContainer = Object.assign({}, componentBase, container, {
-	});
-	let flex: azdata.FlexContainer = Object.assign({}, componentBase, container, {
-	});
-	let div: azdata.DivContainer = Object.assign({}, componentBase, container, {
-		onDidClick: onClick.event
-	});
 
+	let button = () => {
+		let button: azdata.ButtonComponent = Object.assign({}, componentBase, {
+			name: '',
+			label: '',
+			onDidClick: onClick.event
+		});
+		return button;
+	};
 	let buttonBuilder = () => {
 		let b = button();
 		let builder: azdata.ComponentBuilder<azdata.ButtonComponent> = {
@@ -113,7 +105,20 @@ export function createViewContext(): ViewTestContext {
 				if ((properties as any).label === loc.compare) {
 					b.label = loc.compare;
 					b.onDidClick = compareButtonOnClick.event;
+				} else if ((properties as any).label === '•••') {
+					b.label = '•••';
+					b.onDidClick = selectButtonOnClick.event;
+				} else if ((properties as any).label === loc.switchDirection) {
+					b.label = loc.switchDirection;
+					b.onDidClick = switchDirectionButtonOnClick.event;
+				} else if ((properties as any).label === loc.stop) {
+					b.label = loc.stop;
+					b.onDidClick = cancelCompareButtonOnClick.event;
+				} else if ((properties as any).label === loc.generateScript) {
+					b.label = loc.generateScript;
+					b.onDidClick = generateScriptButtonOnClick.event;
 				}
+
 				return builder;
 			},
 			withValidation: () => builder
@@ -121,74 +126,28 @@ export function createViewContext(): ViewTestContext {
 		return builder;
 	};
 
-	/*let radioButtonBuilder = () => {
-		let button = radioButton();
-		let builder: azdata.ComponentBuilder<azdata.RadioButtonComponent> = {
-			component: () => button,
-			withProperties: (properties) => {
-				if ((properties as any).label === loc.newDatabase) {
-					button.label = loc.newDatabase;
-					button.onDidClick = newDatabaseRadioOnClick.event;
-				}
-				else if ((properties as any).label === loc.upgradeExistingDatabase) {
-					button.label = loc.upgradeExistingDatabase;
-					button.onDidClick = updateExistingRadioOnClick.event;
-				}
-				return builder;
-			},
-			withValidation: () => builder
-		};
-		return builder;
-	};*/
+	let radioButton: azdata.RadioButtonComponent = Object.assign({}, componentBase, {
+		checked: false,
+		onDidClick: onClick.event,
+	});
 	let radioButtonBuilder: azdata.ComponentBuilder<azdata.ButtonComponent> = {
 		component: () => radioButton,
 		withProperties: () => radioButtonBuilder,
 		withValidation: () => radioButtonBuilder
 	};
 
+	let checkbox: azdata.CheckBoxComponent = Object.assign({}, componentBase, {
+		checked: true,
+		onChanged: onClick.event
+	});
 	let checkBoxBuilder: azdata.ComponentBuilder<azdata.CheckBoxComponent> = {
 		component: () => checkbox,
 		withProperties: () => checkBoxBuilder,
 		withValidation: () => checkBoxBuilder
 	};
-	let inputBox: () => azdata.InputBoxComponent = () => Object.assign({}, componentBase, {
-		onTextChanged: onTextChanged.event,
-		onEnterKeyPressed: onClick.event,
-		value: ''
+
+	let form: azdata.FormContainer = Object.assign({}, componentBase, container, {
 	});
-	let dropdown: () => azdata.DropDownComponent = () => Object.assign({}, componentBase, {
-		onValueChanged: onValueChanged.event,
-		value: {
-			name: '',
-			displayName: ''
-		},
-		values: []
-	});
-
-	let table: () => azdata.TableComponent = () => Object.assign({}, componentBase, {
-		data: [] as any[][],
-		columns: [] as string[],
-		onRowSelected: onClick.event,
-	});
-
-	let loadingComponent: () => azdata.LoadingComponent = () => Object.assign({}, componentBase, {
-		loading: false,
-		component: undefined!
-	});
-
-	let tableBuilder: azdata.ComponentBuilder<azdata.TableComponent> = {
-		component: () => table(),
-		withProperties: () => tableBuilder,
-		withValidation: () => tableBuilder
-	};
-
-	let loadingBuilder: azdata.LoadingComponentBuilder = {
-		component: () => loadingComponent(),
-		withProperties: () => loadingBuilder,
-		withValidation: () => loadingBuilder,
-		withItem: () => loadingBuilder
-	};
-
 	let formBuilder: azdata.FormBuilder = Object.assign({}, {
 		component: () => form,
 		addFormItem: () => { },
@@ -202,12 +161,31 @@ export function createViewContext(): ViewTestContext {
 		withLayout: () => formBuilder
 	});
 
+	let toolbar: azdata.ToolbarContainer = Object.assign({}, componentBase, container, {
+	});
+	let toolbarBuilder: azdata.ToolbarBuilder = Object.assign({}, {
+		component: () => toolbar,
+		withToolbarItems: () => toolbarBuilder,
+		addToolbarItems: () => { },
+		addToolbarItem: () => { },
+		withProperties: () => toolbarBuilder,
+		withValidation: () => toolbarBuilder,
+		withItems: () => toolbarBuilder,
+		withLayout: () => toolbarBuilder
+	});
+
+	let flex: azdata.FlexContainer = Object.assign({}, componentBase, container, {
+	});
 	let flexBuilder: azdata.FlexBuilder = Object.assign({}, {
 		component: () => flex,
 		withProperties: () => flexBuilder,
 		withValidation: () => flexBuilder,
 		withItems: () => flexBuilder,
 		withLayout: () => flexBuilder
+	});
+
+	let div: azdata.DivContainer = Object.assign({}, componentBase, container, {
+		onDidClick: onClick.event
 	});
 	let divBuilder: azdata.DivBuilder = Object.assign({}, {
 		component: () => div,
@@ -217,6 +195,39 @@ export function createViewContext(): ViewTestContext {
 		withLayout: () => divBuilder
 	});
 
+	let splitView: azdata.SplitViewContainer = Object.assign({}, componentBase, container, {
+		onDidClick: onClick.event
+	});
+	let splitViewBuilder: azdata.SplitViewBuilder = Object.assign({}, {
+		component: () => splitView,
+		withProperties: () => splitViewBuilder,
+		withValidation: () => splitViewBuilder,
+		withItems: () => splitViewBuilder,
+		withLayout: () => splitViewBuilder
+	});
+
+	let diffEditor: () => azdata.DiffEditorComponent = () => Object.assign({}, componentBase, {
+		contentLeft: '',
+		contentRight: '',
+		languageMode: '',
+		editorUriLeft: '',
+		editorUriRight: '',
+		onContentChanged: onClick.event,
+		onEditorCreated: onClick.event,
+		isAutoResizable: false,
+		minimumHeight: 0
+	});
+	let diffEditorBuilder: azdata.ComponentBuilder<azdata.DiffEditorComponent> = {
+		component: () => diffEditor(),
+		withProperties: () => diffEditorBuilder,
+		withValidation: () => diffEditorBuilder
+	};
+
+	let inputBox: () => azdata.InputBoxComponent = () => Object.assign({}, componentBase, {
+		onTextChanged: onTextChanged.event,
+		onEnterKeyPressed: onClick.event,
+		value: ''
+	});
 	let inputBoxBuilder: azdata.ComponentBuilder<azdata.InputBoxComponent> = {
 		component: () => {
 			let r = inputBox();
@@ -226,6 +237,14 @@ export function createViewContext(): ViewTestContext {
 		withValidation: () => inputBoxBuilder
 	};
 
+	let dropdown: () => azdata.DropDownComponent = () => Object.assign({}, componentBase, {
+		onValueChanged: onValueChanged.event,
+		value: {
+			name: '',
+			displayName: ''
+		},
+		values: []
+	});
 	let dropdownBuilder: azdata.ComponentBuilder<azdata.DropDownComponent> = {
 		component: () => {
 			let r = dropdown();
@@ -233,6 +252,29 @@ export function createViewContext(): ViewTestContext {
 		},
 		withProperties: () => dropdownBuilder,
 		withValidation: () => dropdownBuilder
+	};
+
+	let table: () => azdata.TableComponent = () => Object.assign({}, componentBase, {
+		data: [] as any[][],
+		columns: [] as string[],
+		onRowSelected: onClick.event,
+		onCellAction: onClick.event
+	});
+	let tableBuilder: azdata.ComponentBuilder<azdata.TableComponent> = {
+		component: () => table(),
+		withProperties: () => tableBuilder,
+		withValidation: () => tableBuilder
+	};
+
+	let loadingComponent: () => azdata.LoadingComponent = () => Object.assign({}, componentBase, {
+		loading: false,
+		component: undefined!
+	});
+	let loadingBuilder: azdata.LoadingComponentBuilder = {
+		component: () => loadingComponent(),
+		withProperties: () => loadingBuilder,
+		withValidation: () => loadingBuilder,
+		withItem: () => loadingBuilder
 	};
 
 	let view: azdata.ModelView = {
@@ -248,7 +290,7 @@ export function createViewContext(): ViewTestContext {
 			navContainer: undefined!,
 			divContainer: () => divBuilder,
 			flexContainer: () => flexBuilder,
-			splitViewContainer: undefined!,
+			splitViewContainer: () => splitViewBuilder,
 			dom: undefined!,
 			card: () => undefined!,
 			inputBox: () => inputBoxBuilder,
@@ -256,7 +298,7 @@ export function createViewContext(): ViewTestContext {
 			radioButton: () => radioButtonBuilder,
 			webView: undefined!,
 			editor: undefined!,
-			diffeditor: undefined!,
+			diffeditor: () => diffEditorBuilder,
 			text: () => inputBoxBuilder,
 			image: () => undefined!,
 			button: () => buttonBuilder(),
@@ -269,7 +311,7 @@ export function createViewContext(): ViewTestContext {
 			dashboardWebview: undefined!,
 			formContainer: () => formBuilder,
 			groupContainer: () => undefined!,
-			toolbarContainer: undefined!,
+			toolbarContainer: () => toolbarBuilder,
 			loadingComponent: () => loadingBuilder,
 			fileBrowserTree: undefined!,
 			hyperlink: () => undefined!,
@@ -284,5 +326,9 @@ export function createViewContext(): ViewTestContext {
 		onTextChanged: onTextChanged,
 		onValueChanged: onValueChanged,
 		compareButtonOnClick: compareButtonOnClick,
+		selectButtonOnClick: selectButtonOnClick,
+		switchDirectionButtonOnClick: switchDirectionButtonOnClick,
+		cancelCompareButtonOnClick: cancelCompareButtonOnClick,
+		generateScriptButtonOnClick: generateScriptButtonOnClick,
 	};
 }

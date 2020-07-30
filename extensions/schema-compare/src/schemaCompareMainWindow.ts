@@ -68,6 +68,8 @@ export class SchemaCompareMainWindow {
 	public sourceEndpointInfo: mssql.SchemaCompareEndpointInfo;
 	public targetEndpointInfo: mssql.SchemaCompareEndpointInfo;
 
+	public promise;
+
 	constructor(private schemaCompareService?: mssql.ISchemaCompareService, private extensionContext?: vscode.ExtensionContext, private view?: azdata.ModelView) {
 		this.SchemaCompareActionMap = new Map<Number, string>();
 		this.SchemaCompareActionMap[mssql.SchemaUpdateAction.Delete] = loc.deleteAction;
@@ -272,13 +274,15 @@ export class SchemaCompareMainWindow {
 		this.deploymentOptions = deploymentOptions;
 	}
 
-	public async execute(): Promise<void> {
+	public async execute() {
 		TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaComparisonStarted');
 		const service = await this.getService();
+
 		if (!this.operationId) {
 			// create once per page
 			this.operationId = generateGuid();
 		}
+
 		this.comparisonResult = await service.schemaCompare(this.operationId, this.sourceEndpointInfo, this.targetEndpointInfo, azdata.TaskExecutionMode.execute, this.deploymentOptions);
 		if (!this.comparisonResult || !this.comparisonResult.success) {
 			TelemetryReporter.createErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaComparisonFailed', undefined, getTelemetryErrorType(this.comparisonResult?.errorMessage))
@@ -608,7 +612,8 @@ export class SchemaCompareMainWindow {
 			this.tablelistenersToDispose.forEach(x => x.dispose());
 		}
 		this.resetButtons(ResetButtonState.comparing);
-		await this.execute();
+		this.promise = this.execute();
+		await this.promise;
 	}
 
 	private createCompareButton(): void {
