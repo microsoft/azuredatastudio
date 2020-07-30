@@ -28,8 +28,9 @@ import { IPackageManageProvider } from '../types';
 import { LocalPipPackageManageProvider } from './localPipPackageManageProvider';
 import { LocalCondaPackageManageProvider } from './localCondaPackageManageProvider';
 import { ManagePackagesDialogModel, ManagePackageDialogOptions } from '../dialog/managePackages/managePackagesDialogModel';
-import { PiPyClient } from './pipyClient';
+import { PyPiClient } from './pypiClient';
 import { ConfigurePythonDialog } from '../dialog/configurePython/configurePythonDialog';
+import { IconPathHelper } from '../common/iconHelper';
 
 let untitledCounter = 0;
 
@@ -39,13 +40,11 @@ export class JupyterController implements vscode.Disposable {
 	private _serverInstanceFactory: ServerInstanceFactory = new ServerInstanceFactory();
 	private _packageManageProviders = new Map<string, IPackageManageProvider>();
 
-	private outputChannel: vscode.OutputChannel;
 	private prompter: IPrompter;
 	private _notebookProvider: JupyterNotebookProvider;
 
 	constructor(private appContext: AppContext) {
 		this.prompter = new CodeAdapter();
-		this.outputChannel = vscode.window.createOutputChannel(constants.extensionOutputChannel);
 	}
 
 	public get extensionContext(): vscode.ExtensionContext {
@@ -64,8 +63,9 @@ export class JupyterController implements vscode.Disposable {
 	public async activate(): Promise<boolean> {
 		this._jupyterInstallation = new JupyterServerInstallation(
 			this.extensionContext.extensionPath,
-			this.outputChannel);
+			this.appContext.outputChannel);
 		await this._jupyterInstallation.configurePackagePaths();
+		IconPathHelper.setExtensionContext(this.extensionContext);
 
 		// Add command/task handlers
 		azdata.tasks.registerTask(constants.jupyterOpenNotebookTask, (profile: azdata.IConnectionProfile) => {
@@ -212,7 +212,7 @@ export class JupyterController implements vscode.Disposable {
 			let model = new ManagePackagesDialogModel(this._jupyterInstallation, this._packageManageProviders, options);
 
 			await model.init();
-			let packagesDialog = new ManagePackagesDialog(model);
+			let packagesDialog = new ManagePackagesDialog(model, this.extensionContext);
 			packagesDialog.showDialog();
 		} catch (error) {
 			let message = utils.getErrorMessage(error);
@@ -243,7 +243,7 @@ export class JupyterController implements vscode.Disposable {
 	}
 
 	private registerDefaultPackageManageProviders(): void {
-		this.registerPackageManager(LocalPipPackageManageProvider.ProviderId, new LocalPipPackageManageProvider(this._jupyterInstallation, new PiPyClient()));
+		this.registerPackageManager(LocalPipPackageManageProvider.ProviderId, new LocalPipPackageManageProvider(this._jupyterInstallation, new PyPiClient()));
 		this.registerPackageManager(LocalCondaPackageManageProvider.ProviderId, new LocalCondaPackageManageProvider(this._jupyterInstallation));
 	}
 

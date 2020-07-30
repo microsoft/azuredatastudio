@@ -27,6 +27,7 @@ let testContext: TestContext;
 before(function (): void {
 	testContext = createContext();
 });
+
 describe('SchemaCompareDialog.openDialog', function (): void {
 	before(() => {
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
@@ -232,7 +233,7 @@ describe('SchemaCompareMainWindow.updateSourceAndTarget', function (): void {
 		should(result.getComparisonResult() === undefined);
 
 		result.sourceEndpointInfo = {...endpointInfo};
-		result.targetEndpointInfo = await setDacpacEndpointInfo(mocktarget);
+		result.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
 
 		result.updateSourceAndTarget();
 

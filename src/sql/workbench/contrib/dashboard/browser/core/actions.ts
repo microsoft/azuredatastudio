@@ -101,7 +101,7 @@ export class ToolbarAction extends Action {
 export class ToggleMoreWidgetAction extends Action {
 
 	private static readonly ID = 'toggleMore';
-	private static readonly LABEL = nls.localize('toggleMore', "Toggle More");
+	private static readonly LABEL = nls.localize('toggleMore', "Show Actions");
 	private static readonly ICON = 'toggle-more';
 
 	constructor(

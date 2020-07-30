@@ -813,8 +813,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		const accounts = await this._accountManagementService.getAccounts();
 		const azureAccounts = accounts.filter(a => a.key.providerId.startsWith('azure'));
 		if (azureAccounts && azureAccounts.length > 0) {
-			let accountName = (connection.authenticationType === Constants.azureMFA || connection.authenticationType === Constants.azureMFAAndUser) ? connection.azureAccount : connection.userName;
-			let account = find(azureAccounts, account => account.key.accountId === accountName);
+			let accountId = (connection.authenticationType === Constants.azureMFA || connection.authenticationType === Constants.azureMFAAndUser) ? connection.azureAccount : connection.userName;
+			let account = find(azureAccounts, account => account.key.accountId === accountId);
 			if (account) {
 				this._logService.debug(`Getting security token for Azure account ${account.key.accountId}`);
 				if (account.isStale) {
@@ -827,26 +827,17 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 						return false;
 					}
 				}
-				const tokensByTenant = await this._accountManagementService.getSecurityToken(account, azureResource);
-				this._logService.debug(`Got tokens for tenants [${Object.keys(tokensByTenant).join(',')}]`);
-				let token: string;
 				const tenantId = connection.azureTenantId;
-				if (tenantId && tokensByTenant[tenantId]) {
-					token = tokensByTenant[tenantId].token;
-				} else {
-					this._logService.debug(`No security token found for specific tenant ${tenantId} - falling back to first one`);
-					const tokens = values(tokensByTenant);
-					if (tokens.length === 0) {
-						this._logService.info(`No security tokens found for account`);
-						return false;
-					}
-					token = tokens[0].token;
+				const token = await this._accountManagementService.getAccountSecurityToken(account, tenantId, azureResource);
+				this._logService.debug(`Got token for tenant ${token}`);
+				if (!token) {
+					this._logService.info(`No security tokens found for account`);
 				}
-				connection.options['azureAccountToken'] = token;
+				connection.options['azureAccountToken'] = token.token;
 				connection.options['password'] = '';
 				return true;
 			} else {
-				this._logService.info(`Could not find Azure account with name ${accountName}`);
+				this._logService.info(`Could not find Azure account with name ${accountId}`);
 			}
 		} else {
 			this._logService.info(`Could not find any Azure accounts from accounts : [${accounts.map(a => `${a.key.accountId} (${a.key.providerId})`).join(',')}]`);

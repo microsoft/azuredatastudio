@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
   "version": "1.21.0",
-  "distro": "e2e446ca4ccd7cad605bad3c8266fca3f8ee33c1",
+  "distro": "e639a9429632218aae8642e167736ff803370586",
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -85,6 +85,7 @@
     "slickgrid": "github:anthonydresser/SlickGrid#2.3.33",
     "spdlog": "^0.11.1",
     "sudo-prompt": "9.1.1",
+    "tas-client": "^0.0.950",
     "v8-inspect-profiler": "^0.0.20",
     "vscode-nsfw": "1.2.8",
     "vscode-oniguruma": "1.3.1",
@@ -135,7 +136,7 @@
     "css-loader": "^3.2.0",
     "debounce": "^1.0.0",
     "deemon": "^1.4.0",
-    "electron": "8.3.3",
+    "electron": "9.1.0",
     "eslint": "6.8.0",
     "eslint-plugin-jsdoc": "^19.1.0",
     "event-stream": "3.3.4",

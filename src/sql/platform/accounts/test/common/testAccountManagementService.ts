@@ -55,6 +55,10 @@ export class TestAccountManagementService implements IAccountManagementService {
 		return Promise.resolve([]);
 	}
 
+	getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Thenable<{ token: string }> {
+		return Promise.resolve(undefined);
+	}
+
 	removeAccount(accountKey: azdata.AccountKey): Thenable<boolean> {
 		throw new Error('Method not implemented');
 	}
@@ -100,6 +104,9 @@ export class AccountProviderStub implements azdata.AccountProvider {
 		return Promise.resolve({});
 	}
 
+	getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Thenable<{ token: string }> {
+		return Promise.resolve(undefined);
+	}
 	initialize(storedAccounts: azdata.Account[]): Thenable<azdata.Account[]> {
 		return Promise.resolve(storedAccounts);
 	}

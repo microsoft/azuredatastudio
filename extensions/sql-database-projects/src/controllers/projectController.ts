@@ -220,15 +220,16 @@ export class ProjectsController {
 		const dacFxService = await this.getDaxFxService();
 
 		if ((<IPublishSettings>settings).upgradeExisting) {
-			return await dacFxService.deployDacpac(tempPath, settings.databaseName, (<IPublishSettings>settings).upgradeExisting, settings.connectionUri, azdata.TaskExecutionMode.execute, settings.sqlCmdVariables);
+			return await dacFxService.deployDacpac(tempPath, settings.databaseName, (<IPublishSettings>settings).upgradeExisting, settings.connectionUri, azdata.TaskExecutionMode.execute, settings.sqlCmdVariables, settings.deploymentOptions);
 		}
 		else {
-			return await dacFxService.generateDeployScript(tempPath, settings.databaseName, settings.connectionUri, azdata.TaskExecutionMode.script, settings.sqlCmdVariables);
+			return await dacFxService.generateDeployScript(tempPath, settings.databaseName, settings.connectionUri, azdata.TaskExecutionMode.script, settings.sqlCmdVariables, settings.deploymentOptions);
 		}
 	}
 
 	public async readPublishProfileCallback(profileUri: vscode.Uri): Promise<PublishProfile> {
-		const profile = await load(profileUri);
+		const dacFxService = await this.getDaxFxService();
+		const profile = await load(profileUri, dacFxService);
 		return profile;
 	}
 
@@ -380,6 +381,13 @@ export class ProjectsController {
 	}
 
 	private getProjectEntry(project: Project, context: BaseProjectTreeItem): ProjectEntry | undefined {
+		const root = context.root as ProjectRootTreeItem;
+		const fileOrFolder = context as FileNode ? context as FileNode : context as FolderNode;
+
+		if (root && fileOrFolder) {
+			// use relative path and not tree paths for files and folder
+			return project.files.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(root.fileSystemUri, fileOrFolder.fileSystemUri)));
+		}
 		return project.files.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(context.root.uri, context.uri)));
 	}
 

@@ -24,7 +24,7 @@ import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
 import { exists } from '../common/utils';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
-import { FolderNode } from '../models/tree/fileFolderTreeItem';
+import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 
 let testContext: TestContext;
@@ -46,9 +46,12 @@ const mockConnectionProfile: azdata.IConnectionProfile = {
 	options: undefined as any
 };
 
+describe('ProjectsController', function (): void {
+	before(async function (): Promise<void> {
+		await templates.loadTemplates(path.join(__dirname, '..', '..', 'resources', 'templates'));
+		await baselines.loadBaselines();
+	});
 
-
-describe ('ProjectsController', function(): void {
 	beforeEach(function (): void {
 		testContext = createContext();
 	});
@@ -58,11 +61,6 @@ describe ('ProjectsController', function(): void {
 	});
 
 	describe('project controller operations', function (): void {
-		before(async function (): Promise<void> {
-			await templates.loadTemplates(path.join(__dirname, '..', '..', 'resources', 'templates'));
-			await baselines.loadBaselines();
-		});
-
 		describe('Project file operations and prompting', function (): void {
 			it('Should create new sqlproj file with correct values', async function (): Promise<void> {
 				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
@@ -85,7 +83,7 @@ describe ('ProjectsController', function(): void {
 
 				const project = await projController.openProject(vscode.Uri.file(sqlProjPath));
 
-				should(project.files.length).equal(8); // detailed sqlproj tests in their own test file
+				should(project.files.length).equal(9); // detailed sqlproj tests in their own test file
 				should(project.dataSources.length).equal(2); // detailed datasources tests in their own test file
 			});
 
@@ -201,6 +199,7 @@ describe ('ProjectsController', function(): void {
 				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
 
 				await projController.delete(projTreeRoot.children.find(x => x.friendlyName === 'UpperFolder')!.children[0] /* LowerFolder */);
+				await projController.delete(projTreeRoot.children.find(x => x.friendlyName === 'anotherScript.sql')!);
 
 				proj = await Project.openProject(proj.projectFilePath); // reload edited sqlproj from disk
 
@@ -219,6 +218,7 @@ describe ('ProjectsController', function(): void {
 				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
 
 				await projController.exclude(<FolderNode>projTreeRoot.children.find(x => x.friendlyName === 'UpperFolder')!.children[0] /* LowerFolder */);
+				await projController.exclude(<FileNode>projTreeRoot.children.find(x => x.friendlyName === 'anotherScript.sql')!);
 
 				proj = await Project.openProject(proj.projectFilePath); // reload edited sqlproj from disk
 
@@ -252,7 +252,6 @@ describe ('ProjectsController', function(): void {
 
 				const publishHoller = 'hello from callback for publish()';
 				const generateHoller = 'hello from callback for generateScript()';
-				const profileHoller = 'hello from callback for readPublishProfile()';
 
 				let holler = 'nothing';
 
@@ -266,15 +265,6 @@ describe ('ProjectsController', function(): void {
 				projController.setup(x => x.executionCallback(TypeMoq.It.isAny(), TypeMoq.It.is((_): _ is IPublishSettings => true))).returns(() => {
 					holler = publishHoller;
 					return Promise.resolve(undefined);
-				});
-				projController.setup(x => x.readPublishProfileCallback(TypeMoq.It.isAny())).returns(() => {
-					holler = profileHoller;
-					return Promise.resolve({
-						databaseName: '',
-						connectionId: '',
-						connectionString: '',
-						sqlCmdVariables: {}
-					});
 				});
 
 				projController.setup(x => x.executionCallback(TypeMoq.It.isAny(), TypeMoq.It.is((_): _ is IGenerateScriptSettings => true))).returns(() => {
@@ -291,13 +281,7 @@ describe ('ProjectsController', function(): void {
 				await dialog.generateScriptClick();
 
 				should(holler).equal(generateHoller, 'executionCallback() is supposed to have been setup and called for GenerateScript scenario');
-
-				dialog = await projController.object.publishProject(proj);
-				await projController.object.readPublishProfileCallback(vscode.Uri.parse('test'));
-
-				should(holler).equal(profileHoller, 'executionCallback() is supposed to have been setup and called for ReadPublishProfile scenario');
 			});
-
 
 			it('Should copy dacpac to temp folder before publishing', async function (): Promise<void> {
 				const fakeDacpacContents = 'SwiftFlewHiawathasArrow';
@@ -305,7 +289,7 @@ describe ('ProjectsController', function(): void {
 				let builtDacpacPath = '';
 				let publishedDacpacPath = '';
 
-				testContext.dacFxService.setup(x => x.generateDeployScript(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(async (p) => {
+				testContext.dacFxService.setup(x => x.generateDeployScript(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(async (p) => {
 					publishedDacpacPath = p;
 					postCopyContents = (await fs.readFile(publishedDacpacPath)).toString();
 					return Promise.resolve(mockDacFxResult);
@@ -417,7 +401,7 @@ describe ('ProjectsController', function(): void {
 			let projController = TypeMoq.Mock.ofType(ProjectsController, undefined, undefined, new SqlDatabaseProjectTreeViewProvider());
 			projController.callBase = true;
 
-			projController.setup(x => x.importApiCall(TypeMoq.It.isAny())).returns(async (model) => { console.log('CALLED'); importPath = model.filePath; });
+			projController.setup(x => x.importApiCall(TypeMoq.It.isAny())).returns(async (model) => { importPath = model.filePath; });
 
 			await projController.object.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
 			should(importPath).equal(vscode.Uri.file(path.join(folderPath, projectName, projectName + '.sql')).fsPath, `model.filePath should be set to a specific file for ExtractTarget === file, but was ${importPath}`);
@@ -447,11 +431,11 @@ describe ('ProjectsController', function(): void {
 
 			let result = await projController.getModelFromContext(undefined);
 
-			should(result).deepEqual({database: mockDbSelection, serverId: connectionId});
+			should(result).deepEqual({ database: mockDbSelection, serverId: connectionId });
 
 			// test launch via Object Explorer context
 			result = await projController.getModelFromContext(mockConnectionProfile);
-			should(result).deepEqual({database: 'My Database', serverId: 'My Id'});
+			should(result).deepEqual({ database: 'My Database', serverId: 'My Id' });
 		});
 	});
 
@@ -575,12 +559,13 @@ async function setupDeleteExcludeTest(proj: Project): Promise<[ProjectEntry, Pro
 	await proj.addFolderItem('UpperFolder/LowerFolder');
 	const scriptEntry = await proj.addScriptItem('UpperFolder/LowerFolder/someScript.sql', 'not a real script');
 	await proj.addScriptItem('UpperFolder/LowerFolder/someOtherScript.sql', 'Also not a real script');
+	await proj.addScriptItem('../anotherScript.sql', 'Also not a real script');
 
 	const projTreeRoot = new ProjectRootTreeItem(proj);
 	sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.yesString));
 
 	// confirm setup
-	should(proj.files.length).equal(4, 'number of file/folder entries');
+	should(proj.files.length).equal(5, 'number of file/folder entries');
 	should(path.parse(scriptEntry.fsUri.fsPath).base).equal('someScript.sql');
 	should((await fs.readFile(scriptEntry.fsUri.fsPath)).toString()).equal('not a real script');
 
