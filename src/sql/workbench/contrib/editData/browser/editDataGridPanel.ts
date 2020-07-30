@@ -78,6 +78,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	public loadDataFunction: (offset: number, count: number) => Promise<{}[]>;
 	public onBeforeAppendCell: (row: number, column: number) => string;
 	public onGridRendered: (event: Slick.OnRenderedEventArgs<any>) => void;
+	public onRefreshComplete: Promise<void>;
 
 	private savedViewState: {
 		gridSelections: Slick.Range[];
@@ -132,7 +133,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					self.handleMessage(self, event);
 					break;
 				case 'resultSet':
-					self.handleResultSet(self, event);
+					this.onRefreshComplete = self.handleResultSet(self, event);
 					break;
 				case 'editSessionReady':
 					self.handleEditSessionReady(self, event);
@@ -358,7 +359,9 @@ export class EditDataGridPanel extends GridParentComponent {
 		}
 	}
 
-	handleResultSet(self: EditDataGridPanel, event: any): void {
+
+
+	async handleResultSet(self: EditDataGridPanel, event: any): Promise<void> {
 		// Clone the data before altering it to avoid impacting other subscribers
 		let resultSet = assign({}, event.data);
 		if (!resultSet.complete) {
@@ -410,14 +413,13 @@ export class EditDataGridPanel extends GridParentComponent {
 		if (self.placeHolderDataSets[0]) {
 			this.refreshDatasets();
 		}
-		self.refreshGrid();
+		await self.refreshGrid();
 
 		// Setup the state of the selected cell
 		this.resetCurrentCell();
 		this.removingNewRow = false;
 		this.newRowVisible = false;
 		this.dirtyCells = [];
-
 	}
 
 	/**

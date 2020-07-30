@@ -6,6 +6,7 @@
 import { EditorInput } from 'vs/workbench/common/editor';
 import { Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
+import { EditDataGridPanel } from 'sql/workbench/contrib/editData/browser/editDataGridPanel';
 
 /**
  * Input for the EditDataResultsEditor. This input helps with logic for the viewing and editing of
@@ -25,11 +26,20 @@ export class EditDataResultsInput extends EditorInput {
 
 	public readonly onRestoreViewStateEmitter = new Emitter<void>();
 	public readonly onSaveViewStateEmitter = new Emitter<void>();
+	private _editDataGridPanel: EditDataGridPanel;
 
 	constructor(private _uri: string) {
 		super();
 		this._visible = false;
 		this._hasBootstrapped = false;
+	}
+
+	get editDataGridPanel(): EditDataGridPanel {
+		return this._editDataGridPanel;
+	}
+
+	set editDataGridPanel(gridPanel: EditDataGridPanel) {
+		this._editDataGridPanel = gridPanel;
 	}
 
 	getTypeId(): string {
