@@ -30,8 +30,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { TestFileService, TestEnvironmentService, TestFileDialogService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { URI } from 'vs/base/common/uri';
-
-
+import { IFileService } from 'vs/platform/files/common/files';
 /**
  * Class to test Assessment Management Actions
  */
@@ -225,12 +224,32 @@ suite('Assessment Actions', () => {
 	test('Make HTML Report Action', async () => {
 		const openerService = TypeMoq.Mock.ofType<IOpenerService>(OpenerServiceStub);
 		openerService.setup(s => s.open(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
+
+		const fileUri = URI.file('/user/home');
 		const fileDialogService = new TestFileDialogService();
-		fileDialogService.setPickFileToSave(URI.file('/user/home'));
+		fileDialogService.setPickFileToSave(fileUri);
+
 		const notificationService = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService);
 		notificationService.setup(s => s.prompt(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => null);
 
-		let action = new AsmtGenerateHTMLReportAction(new TestFileService(),
+		const fileService = TypeMoq.Mock.ofType<IFileService>(TestFileService);
+		fileService.setup(s => s.createFile(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+			return Promise.resolve({
+				ctime: Date.now(),
+				etag: 'index.txt',
+				isFile: true,
+				isDirectory: false,
+				isSymbolicLink: false,
+				mtime: Date.now(),
+				name: '',
+				resource: fileUri,
+				size: 42
+			});
+		});
+
+
+
+		let action = new AsmtGenerateHTMLReportAction(fileService.object,
 			openerService.object,
 			TestEnvironmentService,
 			new NullAdsTelemetryService(),
