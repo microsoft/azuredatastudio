@@ -298,7 +298,7 @@ export class FirewallRuleDialog extends Modal {
 	}
 
 	public onTenantSelectionChange(tenantId: string): void {
-
+		this.viewModel.selectedTenantId = tenantId;
 	}
 
 	public onServiceComplete() {

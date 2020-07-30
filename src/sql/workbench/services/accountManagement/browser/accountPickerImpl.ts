@@ -104,7 +104,9 @@ export class AccountPicker extends Disposable {
 		this._listContainer = DOM.$('div.account-list-container');
 		this._tenantListContainer = DOM.$('div.tenant-list-container');
 
-		this._accountList = new List<azdata.Account>('AccountPicker', this._listContainer, delegate, [accountRenderer]);
+		this._accountList = new List<azdata.Account>('AccountPicker', this._listContainer, delegate, [accountRenderer], {
+			setRowLineHeight: false,
+		});
 		this._tenantList = new List<Tenant>('TenantPicker', this._tenantListContainer, tenantDelegate, [tenantRenderer]);
 
 		this._register(attachListStyler(this._accountList, this._themeService));
@@ -198,14 +200,13 @@ export class AccountPicker extends Disposable {
 				}
 				DOM.show(this._tenantContainer);
 				this.updateTenantList(account);
-				this.onTenantSelectionChange(account?.properties?.tenants[0]);
 			} else {
 				if (this._tenantContainer?.parentElement?.parentElement) {
 					DOM.hide(this._tenantContainer.parentElement.parentElement);
 				}
 				DOM.hide(this._tenantContainer);
-
 			}
+			this.onTenantSelectionChange(account?.properties?.tenants[0]?.id);
 		}
 
 		this._onAccountSelectionChangeEvent.fire(account);
