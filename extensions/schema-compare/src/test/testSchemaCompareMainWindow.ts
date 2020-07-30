@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
@@ -25,8 +26,9 @@ export class SchemaCompareMainWindowTest extends SchemaCompareMainWindow {
 	constructor(
 		apiWrapper: ApiWrapper,
 		schemaCompareService: mssql.ISchemaCompareService,
-		extensionContext: vscode.ExtensionContext) {
-		super(apiWrapper, schemaCompareService, extensionContext);
+		extensionContext: vscode.ExtensionContext,
+		view: azdata.ModelView) {
+		super(apiWrapper, schemaCompareService, extensionContext, view);
 	}
 
 	// only for test
@@ -34,28 +36,7 @@ export class SchemaCompareMainWindowTest extends SchemaCompareMainWindow {
 		return this.comparisonResult;
 	}
 
-	// only for test
-	public getButtonsState(): ButtonState {
-
-		let buttonObject: ButtonState = {
-			compareButtonState: this.compareButton.enabled,
-			optionsButtonState: this.optionsButton.enabled,
-			switchButtonState: this.switchButton.enabled,
-			openScmpButtonState: this.openScmpButton.enabled,
-			saveScmpButtonState: this.saveScmpButton.enabled,
-			cancelCompareButtonState: this.cancelCompareButton.enabled,
-			selectSourceButtonState: this.selectSourceButton.enabled,
-			selectTargetButtonState: this.selectTargetButton.enabled,
-			generateScriptButtonState: this.generateScriptButton.enabled,
-			applyButtonState: this.applyButton.enabled
-		};
-
-		return buttonObject;
-	}
-
 	public verifyButtonsState(buttonState: ButtonState): boolean {
-		let result: boolean = false;
-
 		if (this.compareButton.enabled === buttonState.compareButtonState &&
 			this.optionsButton.enabled === buttonState.optionsButtonState &&
 			this.switchButton.enabled === buttonState.switchButtonState &&
@@ -66,9 +47,20 @@ export class SchemaCompareMainWindowTest extends SchemaCompareMainWindow {
 			this.selectTargetButton.enabled === buttonState.selectTargetButtonState &&
 			this.generateScriptButton.enabled === buttonState.generateScriptButtonState &&
 			this.applyButton.enabled === buttonState.applyButtonState) {
-			result = true;
+			return true;
 		}
 
-		return result;
+		console.log('CompareButton: (actual) ', this.compareButton.enabled, ', (expected)', buttonState.compareButtonState);
+		console.log('OptionsButton: (actual) ', this.optionsButton.enabled, ', (expected)', buttonState.optionsButtonState);
+		console.log('SwitchButton: (actual) ', this.switchButton.enabled, ', (expected)', buttonState.switchButtonState);
+		console.log('OpenScmpButton: (actual) ', this.openScmpButton.enabled, ', (expected)', buttonState.openScmpButtonState);
+		console.log('SaveScmpButton: (actual) ', this.saveScmpButton.enabled, ', (expected)', buttonState.saveScmpButtonState);
+		console.log('CancelCompareButton: (actual) ', this.cancelCompareButton.enabled, ', (expected)', buttonState.cancelCompareButtonState);
+		console.log('SelectSourceButton: (actual) ', this.selectSourceButton.enabled, ', (expected)', buttonState.selectSourceButtonState);
+		console.log('SelectTargetButton: (actual) ', this.selectTargetButton.enabled, ', (expected)', buttonState.selectTargetButtonState);
+		console.log('GenerateScriptButton: (actual) ', this.generateScriptButton.enabled, ', (expected)', buttonState.generateScriptButtonState);
+		console.log('ApplyButton: (actual) ', this.applyButton.enabled, ', (expected)', buttonState.applyButtonState);
+
+		return false;
 	}
 }
