@@ -17,7 +17,7 @@
       "type": "object",
       "title": "%notebook.configuration.title%",
       "properties": {
-        "notebook.collapsedBookItems": {
+        "notebook.collapseBookItems": {
           "type": "boolean",
           "default": true,
           "description": "%notebook.collapsedBookItems.description%"

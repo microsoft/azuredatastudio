@@ -19,7 +19,7 @@ export const notebookConfigKey = 'notebook';
 export const trustedBooksConfigKey = 'trustedBooks';
 export const maxBookSearchDepth = 'maxBookSearchDepth';
 export const remoteBookDownloadTimeout = 'remoteBookDownloadTimeout';
-export const collapsedBookItems = 'collapsedBookItems';
+export const collapseBookItems = 'collapseBookItems';
 
 export const winPlatform = 'win32';
 
