@@ -120,6 +120,8 @@ export class PackageManager {
 		await utils.executeTasks(this._apiWrapper, constants.installPackageMngDependenciesMsgTaskName, [
 			this.installRequiredPythonPackages(this._config.requiredSqlPythonPackages),
 			this.installRequiredRPackages()], true);
+
+		await this.verifyOdbcInstalled();
 	}
 
 	private async installRequiredRPackages(): Promise<void> {
@@ -177,6 +179,42 @@ export class PackageManager {
 			}
 		} else {
 			this._outputChannel.appendLine(constants.installDependenciesPackagesAlreadyInstalled);
+		}
+	}
+
+	private async verifyOdbcInstalled(): Promise<void> {
+		let connection = await this.getCurrentConnection();
+		if (connection) {
+			let credentials = await this._apiWrapper.getCredentials(connection.connectionId);
+			const separator = '=';
+			let connectionParts: string[] = [];
+			if (connection) {
+				connectionParts.push(utils.getKeuValueString('DRIVER', `{${constants.supportedODBCDriver}}`, separator));
+
+				if (connection.userName) {
+					connectionParts.push(utils.getKeuValueString('UID', connection.userName, separator));
+					connectionParts.push(utils.getKeuValueString('PWD', credentials[azdata.ConnectionOptionSpecialType.password], separator));
+				}
+
+				connectionParts.push(utils.getKeuValueString('SERVER', connection.serverName, separator));
+			}
+
+			let scripts: string[] = [
+				'import pyodbc',
+				`connection = pyodbc.connect('${connectionParts.join(';')}')`,
+				'cursor = connection.cursor()',
+				'cursor.execute("SELECT @@version;")'
+			];
+			let pythonExecutable = await this._config.getPythonExecutable(true);
+			try {
+				await this._processService.execScripts(pythonExecutable, scripts, [], this._outputChannel);
+			} catch (err) {
+				const result = await this._apiWrapper.showErrorMessage(constants.verifyOdbcDriverError, constants.learnMoreTitle);
+				if (result === constants.learnMoreTitle) {
+					await this._apiWrapper.openExternal(vscode.Uri.parse(constants.odbcDriverDocuments));
+				}
+				throw err;
+			}
 		}
 	}
 
