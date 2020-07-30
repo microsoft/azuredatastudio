@@ -28,6 +28,8 @@ import { NotebookRange, ICellEditorProvider } from 'sql/workbench/services/noteb
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import TurndownService = require('turndown');
+import { TextModel } from 'vs/editor/common/model/textModel';
+import { EditOperation } from 'vs/editor/common/core/editOperation';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -82,7 +84,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private markdownResult: IMarkdownRenderResult;
 	public previewFeaturesEnabled: boolean = false;
 	public turnDownService = new TurndownService({ 'emDelimiter': '*' });
-	private textCellSource: string | string[];
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -204,7 +205,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				value: Array.isArray(this._content) ? this._content.join('') : this._content
 			});
 			this.markdownResult.element.innerHTML = this.sanitizeContent(this.markdownResult.element.innerHTML);
-			this.textCellSource = this.turnDownService.turndown(this.markdownResult.element.innerHTML);
 			this.setLoading(false);
 			if (this.showPreview) {
 				let outputElement = <HTMLElement>this.output.nativeElement;
@@ -221,10 +221,16 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	private updateCellSource(): void {
 		let textOutputElement = <HTMLElement>this.texteditor.nativeElement;
-		let newCellSource: string = this.turnDownService.turndown(textOutputElement.innerHTML);
-		if (this.textCellSource !== newCellSource) {
-			this.cellModel.source = newCellSource;
-			this.textCellSource = newCellSource;
+		let editor = this.cellEditors.find(c => c.cellGuid() === this.cellModel.cellGuid);
+		if (editor) {
+			let textModel = (editor.getEditor().getControl()?.getModel() as TextModel);
+			if (textModel) {
+				let newCellSource: string = this.turnDownService.turndown(textOutputElement.innerHTML);
+				let selections = this.getEditor()?.getControl().getSelections();
+				// If selections are undefined, that's ok
+				textModel.pushEditOperations(selections, [EditOperation.replace(textModel.getFullModelRange(), newCellSource)], undefined);
+				this._changeRef.detectChanges();
+			}
 		}
 	}
 
@@ -338,23 +344,25 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	private getHtmlElements(): any[] {
-		let hostElem = this.output.nativeElement;
+		let hostElem = this.output?.nativeElement;
 		let children = [];
-		for (let element of hostElem.children) {
-			if (element.nodeName.toLowerCase() === 'table') {
-				// add table header and table rows.
-				if (element.children.length > 0) {
-					children.push(element.children[0]);
-					if (element.children.length > 1) {
-						for (let trow of element.children[1].children) {
-							children.push(trow);
+		if (hostElem) {
+			for (let element of hostElem.children) {
+				if (element.nodeName.toLowerCase() === 'table') {
+					// add table header and table rows.
+					if (element.children.length > 0) {
+						children.push(element.children[0]);
+						if (element.children.length > 1) {
+							for (let trow of element.children[1].children) {
+								children.push(trow);
+							}
 						}
 					}
+				} else if (element.children.length > 1) {
+					children = children.concat(this.getChildren(element));
+				} else {
+					children.push(element);
 				}
-			} else if (element.children.length > 1) {
-				children = children.concat(this.getChildren(element));
-			} else {
-				children.push(element);
 			}
 		}
 		return children;
