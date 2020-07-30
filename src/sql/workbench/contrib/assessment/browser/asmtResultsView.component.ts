@@ -361,6 +361,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		this._actionBar = this._register(new Taskbar(taskbar));
 		this.spinner[AssessmentType.InvokeAssessment] = Taskbar.createTaskbarSpinner();
 		this.spinner[AssessmentType.AvailableRules] = Taskbar.createTaskbarSpinner();
+		this.spinner[AssessmentType.ReportGeneration] = Taskbar.createTaskbarSpinner();
 
 		this._actionBar.setContent([
 			{ action: invokeAction },
@@ -369,6 +370,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 			{ element: this.spinner[AssessmentType.AvailableRules] },
 			{ action: this.exportActionItem },
 			{ action: this.generateReportActionItem },
+			{ element: this.spinner[AssessmentType.ReportGeneration] },
 			{ action: this._instantiationService.createInstance(AsmtSamplesLinkAction) }
 		]);
 

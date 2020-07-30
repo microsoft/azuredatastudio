@@ -262,7 +262,9 @@ export class AsmtGenerateHTMLReportAction extends Action {
 	}
 
 	public async run(context: IAsmtActionInfo): Promise<boolean> {
+		context.component.showProgress(AssessmentType.ReportGeneration);
 		const choosenPath = await this._fileDialogService.pickFileToSave(this.suggestReportFile(context.component.recentResult.dateUpdated));
+		context.component.stopProgress(AssessmentType.ReportGeneration);
 		if (!choosenPath) {
 			return false;
 		}

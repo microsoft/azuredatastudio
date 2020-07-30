@@ -197,6 +197,21 @@ export class HTMLReportBuilder {
 		div.severityBlock>div {
 			font-size: larger;
 		}
+		@media print {
+			body {
+				margin: 0;
+			}
+			table th:nth-child(2),
+			table td:nth-child(2) {
+				display:none;
+			}
+			table th:nth-child(3) {
+				width: 120px;
+			}
+			table th:nth-child(4) {
+				width: 150px;
+			}
+		}
 	</style>
 		`;
 	}
