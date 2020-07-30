@@ -86,6 +86,7 @@ export class QueryEditor extends BaseEditor {
 	private _actualQueryPlanAction: actions.ActualQueryPlanAction;
 	private _listDatabasesActionItem: actions.ListDatabasesActionItem;
 	private _toggleSqlcmdMode: actions.ToggleSqlCmdModeAction;
+	private _exportAsNotebookAction: actions.ExportAsNotebookAction;
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -183,6 +184,7 @@ export class QueryEditor extends BaseEditor {
 		this._estimatedQueryPlanAction = this.instantiationService.createInstance(actions.EstimatedQueryPlanAction, this);
 		this._actualQueryPlanAction = this.instantiationService.createInstance(actions.ActualQueryPlanAction, this);
 		this._toggleSqlcmdMode = this.instantiationService.createInstance(actions.ToggleSqlCmdModeAction, this, false);
+		this._exportAsNotebookAction = this.instantiationService.createInstance(actions.ExportAsNotebookAction, this);
 
 		this.setTaskbarContent();
 
@@ -266,13 +268,14 @@ export class QueryEditor extends BaseEditor {
 			{ action: this._listDatabasesAction },
 			{ element: separator },
 			{ action: this._estimatedQueryPlanAction },
-			{ action: this._toggleSqlcmdMode }
+			{ action: this._toggleSqlcmdMode },
+			{ action: this._exportAsNotebookAction }
 		];
 
 		// Remove the estimated query plan action if preview features are not enabled
 		let previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
 		if (!previewFeaturesEnabled) {
-			content = content.slice(0, -2);
+			content.splice(7, 1);
 		}
 
 		this.taskbar.setContent(content);
