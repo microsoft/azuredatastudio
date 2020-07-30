@@ -4,9 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { findAzdata, downloadAndInstallAzdata } from './azdata';
-import * as loc from './localizedConstants';
-import { ExitCodeError } from './common/childProcess';
+import { findAzdata } from './azdata';
 
 export async function activate(): Promise<void> {
 	const outputChannel = vscode.window.createOutputChannel('azdata');
@@ -15,8 +13,7 @@ export async function activate(): Promise<void> {
 
 async function checkForAzdata(outputChannel: vscode.OutputChannel): Promise<void> {
 	try {
-		const azdata = await findAzdata(outputChannel);
-		vscode.window.showInformationMessage(loc.foundExistingAzdata(azdata.path, azdata.version));
+		await findAzdata(outputChannel);
 	} catch (err) {
 		// Don't block on this since we want the extension to finish activating without needing user input.
 		// Calls will be made to handle azdata not being installed
@@ -24,7 +21,9 @@ async function checkForAzdata(outputChannel: vscode.OutputChannel): Promise<void
 	}
 }
 
-async function promptToInstallAzdata(outputChannel: vscode.OutputChannel): Promise<void> {
+async function promptToInstallAzdata(_outputChannel: vscode.OutputChannel): Promise<void> {
+	//TODO: Figure out better way to display/prompt
+	/*
 	const response = await vscode.window.showErrorMessage(loc.couldNotFindAzdataWithPrompt, loc.install, loc.cancel);
 	if (response === loc.install) {
 		try {
@@ -37,6 +36,7 @@ async function promptToInstallAzdata(outputChannel: vscode.OutputChannel): Promi
 			}
 		}
 	}
+	*/
 }
 
 export function deactivate(): void { }
