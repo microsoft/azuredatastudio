@@ -49,6 +49,10 @@
               {
                 "name": "azure-single-device",
                 "displayName": "%sql-edge-azure-single-device-display-name%"
+              },
+              {
+                "name": "azure-multi-device",
+                "displayName": "%sql-edge-azure-multi-device-display-name%"
               }
             ]
           }
@@ -388,7 +392,7 @@
             "dialog": {
               "notebook": "./notebooks/edge/deploy-sql-edge-single-device.ipynb",
               "title": "%sql-edge-azure-single-device-title%",
-              "name": "sql-edge-azure-dialog",
+              "name": "sql-edge-azure-single-device-dialog",
               "tabs": [
                 {
                   "title": "",
@@ -469,6 +473,95 @@
               }
             ],
             "when": "type=azure-single-device"
+          },
+          {
+            "dialog": {
+              "notebook": "./notebooks/edge/deploy-sql-edge-multi-device.ipynb",
+              "title": "%sql-edge-azure-multi-device-title%",
+              "name": "sql-edge-azure-multi-device-dialog",
+              "tabs": [
+                {
+                  "title": "",
+                  "sections": [
+                    {
+                      "title": "%azure-info-section-title%",
+                      "collapsible": true,
+                      "fields": [
+                        {
+                          "type": "azure_account",
+                          "subscriptionVariableName": "AZDATA_NB_VAR_ASDE_SUBSCRIPTIONID",
+                          "resourceGroupVariableName": "AZDATA_NB_VAR_ASDE_RESOURCEGROUP",
+                          "required": true
+                        },
+                        {
+                          "label": "%iot-hub-name%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_HUBNAME",
+                          "type": "text",
+                          "required": true
+                        },
+                        {
+                          "label": "%device-target-condition%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_TARGET_CONDITION",
+                          "type": "text",
+                          "required": true
+                        },
+                        {
+                          "type": "readonly_text",
+                          "label": "{0}",
+                          "links": [
+                            {
+                              "text": "%device-target-condition-learn-more%",
+                              "url": "https://docs.microsoft.com/azure/iot-edge/module-deployment-monitoring#target-condition"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "title": "%sqlserver-info-section-title%",
+                      "collapsible": true,
+                      "fields": [
+                        {
+                          "label": "%docker-sql-password-field%",
+                          "variableName": "AZDATA_NB_VAR_SA_PASSWORD",
+                          "type": "sql_password",
+                          "userName": "sa",
+                          "confirmationRequired": true,
+                          "confirmationLabel": "%docker-confirm-sql-password-field%",
+                          "defaultValue": "",
+                          "required": true
+                        },
+                        {
+                          "label": "%docker-sql-port-field%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_SQL_PORT",
+                          "type": "number",
+                          "defaultValue": 31433,
+                          "required": true
+                        },
+                        {
+                          "label": "%dacpac_path%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_DACPAC_PATH",
+                          "type": "file_picker",
+                          "required": false,
+                          "filter": {
+                            "displayName": "%dacpac-zip-files%",
+                            "fileTypes": [
+                              "zip"
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "requiredTools": [
+              {
+                "name": "azure-cli"
+              }
+            ],
+            "when": "type=azure-multi-device"
           }
         ],
         "agreement": {
