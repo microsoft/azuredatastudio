@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import * as xmldom from 'xmldom';
 import * as constants from '../../common/constants';
 import * as utils from '../../common/utils';
+import * as mssql from '../../../../mssql';
 
 import { promises as fs } from 'fs';
 import { Uri } from 'vscode';
@@ -18,12 +19,13 @@ export interface PublishProfile {
 	connectionId: string;
 	connectionString: string;
 	sqlCmdVariables: Record<string, string>;
+	options?: mssql.DeploymentOptions;
 }
 
 /**
  * parses the specified file to load publish settings
  */
-export async function load(profileUri: Uri): Promise<PublishProfile> {
+export async function load(profileUri: Uri, dacfxService: mssql.IDacFxService): Promise<PublishProfile> {
 	const profileText = await fs.readFile(profileUri.fsPath);
 	const profileXmlDoc = new xmldom.DOMParser().parseFromString(profileText.toString());
 
@@ -36,6 +38,7 @@ export async function load(profileUri: Uri): Promise<PublishProfile> {
 	}
 
 	const connectionInfo = await readConnectionString(profileXmlDoc);
+	const optionsResult = await dacfxService.getOptionsFromProfile(profileUri.fsPath);
 
 	// get all SQLCMD variables to include from the profile
 	const sqlCmdVariables = readSqlCmdVariables(profileXmlDoc);
@@ -44,7 +47,8 @@ export async function load(profileUri: Uri): Promise<PublishProfile> {
 		databaseName: targetDbName,
 		connectionId: connectionInfo.connectionId,
 		connectionString: connectionInfo.connectionString,
-		sqlCmdVariables: sqlCmdVariables
+		sqlCmdVariables: sqlCmdVariables,
+		options: optionsResult.deploymentOptions
 	};
 }
 
@@ -54,7 +58,7 @@ export async function load(profileUri: Uri): Promise<PublishProfile> {
  */
 export function readSqlCmdVariables(xmlDoc: any): Record<string, string> {
 	let sqlCmdVariables: Record<string, string> = {};
-	for (let i = 0; i < xmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable).length; i++) {
+	for (let i = 0; i < xmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable)?.length; i++) {
 		const sqlCmdVar = xmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable)[i];
 		const varName = sqlCmdVar.getAttribute(constants.Include);
 
