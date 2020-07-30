@@ -17,7 +17,7 @@ export class HTMLReportBuilder {
 	) {
 	}
 
-	public Build(): string {
+	public build(): string {
 		let mainContent = `
 		<html>
 		<head>
@@ -110,7 +110,7 @@ export class HTMLReportBuilder {
 		<div class="severityBlock">
 			<div>${LocalizedStrings.REPORT_SEVERITY_MESSAGE(severityName, items.length)}</div>
 			<table>
-				<tr><th>${LocalizedStrings.MESSAGE_COLUMN_NAME}</th><th>${LocalizedStrings.HELP_LINK_COLUMN_NAME}</th><th>${LocalizedStrings.CHECKID_COLUMN_NAME}</th></tr>
+				<tr><th>${LocalizedStrings.MESSAGE_COLUMN_NAME}</th><th>${LocalizedStrings.HELP_LINK_COLUMN_NAME}</th><th>${LocalizedStrings.TAGS_COLUMN_NAME}</th><th>${LocalizedStrings.CHECKID_COLUMN_NAME}</th></tr>
 				${this.buildItemsRows(items)}
 			</table>
 		</div>`;
@@ -121,10 +121,14 @@ export class HTMLReportBuilder {
 			content += `<tr>
 					<td>${escape(item.message)}</td>
 					<td><a href='${item.helpLink}' target='_blank;'>${LocalizedStrings.LEARN_MORE_LINK}</a></td>
+					<td>${this.formatTags(item.tags)}</td>
 					<td>${item.checkId}</td>
 				</tr>`;
 		});
 		return content;
+	}
+	private formatTags(tags: string[]): string {
+		return tags?.join(', ');
 	}
 
 	private buildStyleSection(): string {
@@ -168,8 +172,10 @@ export class HTMLReportBuilder {
 		table th:nth-child(2) {
 			width: 80px;
 		}
-
 		table th:nth-child(3) {
+			width: 200px;
+		}
+		table th:nth-child(4) {
 			width: 10%;
 		}
 

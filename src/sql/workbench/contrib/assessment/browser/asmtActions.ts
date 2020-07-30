@@ -7,7 +7,7 @@ import { Action } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IAssessmentService } from 'sql/workbench/services/assessment/common/interfaces';
 import { SqlAssessmentResult } from 'azdata';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
@@ -21,7 +21,6 @@ import { IEnvironmentService } from 'vs/platform/environment/common/environment'
 import * as path from 'vs/base/common/path';
 import { HTMLReportBuilder } from 'sql/workbench/contrib/assessment/common/htmlReportGenerator';
 import Severity from 'vs/base/common/severity';
-import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 
 export interface SqlAssessmentResultInfo {
@@ -249,42 +248,45 @@ export class AsmtGenerateHTMLReportAction extends Action {
 		@IFileService private _fileService: IFileService,
 		@IOpenerService private _openerService: IOpenerService,
 		@IEnvironmentService private _environmentService: IEnvironmentService,
-		@IDialogService private readonly _dialogService: IDialogService,
-		@IClipboardService private readonly _clipboardService: IClipboardService,
 		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
-		@INotificationService private readonly _notificationService: INotificationService
+		@INotificationService private readonly _notificationService: INotificationService,
+		@IFileDialogService private readonly _fileDialogService: IFileDialogService
 	) {
 		super(AsmtGenerateHTMLReportAction.ID, AsmtGenerateHTMLReportAction.LABEL, AsmtGenerateHTMLReportAction.ICON);
 	}
 
-	public async run(context: IAsmtActionInfo): Promise<boolean> {
-		const fileName = generateReportFileName(new Date(context.component.recentResult.dateUpdated));
+	private suggestReportFile(date: number): URI {
+		const fileName = generateReportFileName(new Date(date));
 		const filePath = path.join(this._environmentService.userRoamingDataHome.fsPath, 'SqlAssessmentReports', fileName);
+		return URI.file(filePath);
+	}
+
+	public async run(context: IAsmtActionInfo): Promise<boolean> {
+		const choosenPath = await this._fileDialogService.pickFileToSave(this.suggestReportFile(context.component.recentResult.dateUpdated));
+		if (!choosenPath) {
+			return false;
+		}
+
+		this._telemetryService.sendActionEvent(TelemetryView.SqlAssessment, AsmtGenerateHTMLReportAction.ID);
+
 		const result = await this._fileService.createFile(
-			URI.file(filePath),
+			choosenPath,
 			VSBuffer.fromString(new HTMLReportBuilder(context.component.recentResult.result,
 				context.component.recentResult.dateUpdated,
-				context.component.recentResult.connectionInfo).Build()),
+				context.component.recentResult.connectionInfo).build()),
 			{ overwrite: true });
-		this._telemetryService.sendActionEvent(TelemetryView.SqlAssessment, AsmtGenerateHTMLReportAction.ID);
-		const { choice } = await this._dialogService.show(
-			Severity.Info,
-			nls.localize('asmtaction.openReport', "Report has been saved as an HTML file. Do you want to open it?"),
-			[
-				nls.localize('open', 'Open'),
-				nls.localize('asmtaction.copyPath', 'Copy Path'),
-				nls.localize('cancel', 'Cancel'),
-			],
-			{
-				detail: filePath,
-				cancelId: 2
-			}
-		);
-		if (choice === 0) {
-			return this._openerService.open(result.resource.fsPath, { openExternal: true });
-		} else if (choice === 1) {
-			await this._clipboardService.writeText(filePath);
-			this._notificationService.info(nls.localize('asmtaction.pathcopied', 'The path has been copied to the clipboard'));
+		if (result) {
+			this._notificationService.prompt(Severity.Info, nls.localize('asmtaction.openReport', "Report has been saved. Do you want to open it?"),
+				[{
+					label: nls.localize('asmtaction.label.open', "Open"),
+					run: () => {
+						return this._openerService.open(result.resource.fsPath, { openExternal: true });
+					}
+				},
+				{
+					label: nls.localize('asmtaction.label.cancel', "Cancel"),
+					run: () => { }
+				}]);
 		}
 		return true;
 	}

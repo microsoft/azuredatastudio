@@ -4,15 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/asmt';
-import { Component, Inject, forwardRef, ChangeDetectorRef, ViewChild, Injectable, OnInit } from '@angular/core';
+import { Component, Inject, forwardRef, ChangeDetectorRef, Injectable, OnInit } from '@angular/core';
 import { ServerInfo } from 'azdata';
-//import { PanelComponent, IPanelOptions, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
-import { AsmtResultsViewComponent } from 'sql/workbench/contrib/assessment/browser/asmtResultsView.component';
 import { LocalizedStrings } from 'sql/workbench/contrib/assessment/common/strings';
-
-
 
 export const DASHBOARD_SELECTOR: string = 'asmtview-component';
 
@@ -23,16 +19,12 @@ export const DASHBOARD_SELECTOR: string = 'asmtview-component';
 @Injectable()
 export class AsmtViewComponent extends AngularDisposable implements OnInit {
 
-	@ViewChild('asmtresultcomponent') private _asmtResultView: AsmtResultsViewComponent;
 	protected localizedStrings = LocalizedStrings;
 
 	connectionInfo: ServerInfo = null;
 	instanceName: string = '';
 	ruleset: string = '';
 	api: string = '';
-
-
-
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
@@ -54,11 +46,5 @@ export class AsmtViewComponent extends AngularDisposable implements OnInit {
 		this.api = apiVersion;
 		this.ruleset = rulesetVersion;
 		this._cd.detectChanges();
-	}
-
-	public layout() {
-		if (this._asmtResultView.layout !== undefined) {
-			this._asmtResultView.layout();
-		}
 	}
 }

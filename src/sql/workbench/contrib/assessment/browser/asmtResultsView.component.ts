@@ -33,7 +33,7 @@ import {
 	AsmtExportAsScriptAction,
 	AsmtSamplesLinkAction,
 	AsmtGenerateHTMLReportAction
-} from 'sql/workbench/contrib/assessment/common/asmtActions';
+} from 'sql/workbench/contrib/assessment/browser/asmtActions';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IAction } from 'vs/base/common/actions';
 import * as Utils from 'sql/platform/connection/common/utils';
@@ -104,7 +104,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 			formatter: (_row, _cell, _value, _columnDef, dataContext) => this.appendHelplink(dataContext.message, dataContext.helpLink, dataContext.kind, this.wrapByKind),
 		},
 		{
-			name: nls.localize('asmt.column.tags', "Tags"),
+			name: LocalizedStrings.TAGS_COLUMN_NAME,
 			field: 'tags',
 			width: 80,
 			id: 'tags',

@@ -832,7 +832,19 @@ export class TestFileService implements IFileService {
 
 	move(_source: URI, _target: URI, _overwrite?: boolean): Promise<IFileStatWithMetadata> { return Promise.resolve(null!); }
 	copy(_source: URI, _target: URI, _overwrite?: boolean): Promise<IFileStatWithMetadata> { return Promise.resolve(null!); }
-	createFile(_resource: URI, _content?: VSBuffer | VSBufferReadable, _options?: ICreateFileOptions): Promise<IFileStatWithMetadata> { return Promise.resolve(null!); }
+	createFile(resource: URI, content?: VSBuffer | VSBufferReadable, _options?: ICreateFileOptions): Promise<IFileStatWithMetadata> {
+		return Promise.resolve({
+			ctime: Date.now(),
+			etag: 'index.txt',
+			isFile: true,
+			isDirectory: false,
+			isSymbolicLink: false,
+			mtime: Date.now(),
+			name: resources.basename(resource),
+			resource: resource,
+			size: 42
+		});
+	}
 	createFolder(_resource: URI): Promise<IFileStatWithMetadata> { throw new Error('not implemented'); }
 
 	onDidChangeFileSystemProviderRegistrations = Event.None;
