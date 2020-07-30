@@ -21,7 +21,7 @@ export function getErrorMessage(error: any): string {
 /**
  * removes any leading portion shared between the two URIs from outerUri.
  * e.g. [@param innerUri: 'this\is'; @param outerUri: '\this\is\my\path'] => 'my\path' OR
- * e.g. [@param innerUri: 'this\was'; @param outerUri: '\this\is\my\path'] => '..\my\path'
+ * e.g. [@param innerUri: 'this\was'; @param outerUri: '\this\is\my\path'] => '..\is\my\path'
  * @param innerUri the URI that will be cut away from the outer URI
  * @param outerUri the URI that will have any shared beginning portion removed
  */

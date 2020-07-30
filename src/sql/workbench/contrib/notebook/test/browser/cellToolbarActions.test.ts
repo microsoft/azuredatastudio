@@ -11,7 +11,6 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { TestLifecycleService } from 'vs/workbench/test/browser/workbenchTestServices';
-import { Separator } from 'vs/base/browser/ui/actionbar/actionbar';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
@@ -20,6 +19,7 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { ContextMenuService } from 'vs/platform/contextview/browser/contextMenuService';
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 import { IProductService } from 'vs/platform/product/common/productService';
+import { Separator } from 'vs/base/common/actions';
 
 suite('CellToolbarActions', function (): void {
 	suite('removeDuplicatedAndStartingSeparators', function (): void {

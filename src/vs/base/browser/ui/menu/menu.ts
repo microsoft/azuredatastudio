@@ -5,8 +5,8 @@
 
 import * as nls from 'vs/nls';
 import * as strings from 'vs/base/common/strings';
-import { IActionRunner, IAction, Action } from 'vs/base/common/actions';
-import { ActionBar, IActionViewItemProvider, ActionsOrientation, Separator, ActionViewItem, IActionViewItemOptions, BaseActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
+import { IActionRunner, IAction, SubmenuAction, Separator, IActionViewItemProvider } from 'vs/base/common/actions';
+import { ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { ResolvedKeybinding, KeyCode } from 'vs/base/common/keyCodes';
 import { addClass, EventType, EventHelper, EventLike, removeTabIndexAndUpdateFocus, isAncestor, hasClass, addDisposableListener, removeClass, append, $, addClasses, removeClasses, clearNode, createStyleSheet, isInShadowDOM } from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
@@ -19,6 +19,7 @@ import { Event } from 'vs/base/common/event';
 import { AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
 import { isLinux, isMacintosh } from 'vs/base/common/platform';
 import { Codicon, registerIcon, stripCodicons } from 'vs/base/common/codicons';
+import { BaseActionViewItem, ActionViewItem, IActionViewItemOptions } from 'vs/base/browser/ui/actionbar/actionViewItems';
 import { formatRule } from 'vs/base/browser/ui/codicons/codiconStyles';
 
 export const MENU_MNEMONIC_REGEX = /\(&([^\s&])\)|(^|[^&])&([^\s&])/;
@@ -42,6 +43,7 @@ export interface IMenuOptions {
 	anchorAlignment?: AnchorAlignment;
 	expandDirection?: Direction;
 	useEventAsContext?: boolean;
+	submenuIds?: Set<string>;
 }
 
 export interface IMenuStyles {
@@ -53,12 +55,6 @@ export interface IMenuStyles {
 	selectionBackgroundColor?: Color;
 	selectionBorderColor?: Color;
 	separatorColor?: Color;
-}
-
-export class SubmenuAction extends Action {
-	constructor(label: string, public entries: ReadonlyArray<SubmenuAction | IAction>, cssClass?: string) {
-		super(!!cssClass ? cssClass : 'submenu', label, '', true);
-	}
 }
 
 interface ISubMenuData {
@@ -209,6 +205,15 @@ export class Menu extends ActionBar {
 
 		menuElement.style.maxHeight = `${Math.max(10, window.innerHeight - container.getBoundingClientRect().top - 30)}px`;
 
+		actions = actions.filter(a => {
+			if (options.submenuIds?.has(a.id)) {
+				console.warn(`Found submenu cycle: ${a.id}`);
+				return false;
+			}
+
+			return true;
+		});
+
 		this.push(actions, { icon: true, label: true, isMenu: true });
 
 		container.appendChild(this.scrollableElement.getDomNode());
@@ -317,7 +322,8 @@ export class Menu extends ActionBar {
 		if (action instanceof Separator) {
 			return new MenuSeparatorActionViewItem(options.context, action, { icon: true });
 		} else if (action instanceof SubmenuAction) {
-			const menuActionViewItem = new SubmenuMenuActionViewItem(action, action.entries, parentData, options);
+			const actions = Array.isArray(action.actions) ? action.actions : action.actions();
+			const menuActionViewItem = new SubmenuMenuActionViewItem(action, actions, parentData, { ...options, submenuIds: new Set([...(options.submenuIds || []), action.id]) });
 
 			if (options.enableMnemonics) {
 				const mnemonic = menuActionViewItem.getMnemonic();

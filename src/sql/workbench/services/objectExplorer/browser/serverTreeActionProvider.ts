@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ITree } from 'vs/base/parts/tree/browser/tree';
-import { IAction } from 'vs/base/common/actions';
+import { IAction, Separator } from 'vs/base/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
@@ -24,7 +24,6 @@ import { TreeNodeContextKey } from 'sql/workbench/services/objectExplorer/common
 import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { ServerInfoContextKey } from 'sql/workbench/services/connection/common/serverInfoContextKey';
 import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
-import { Separator } from 'vs/base/browser/ui/actionbar/actionbar';
 import { firstIndex, find } from 'vs/base/common/arrays';
 
 /**

@@ -8,11 +8,11 @@ import * as azdata from 'azdata';
 import * as sinon from 'sinon';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 import { AddCellAction, ClearAllOutputsAction, CollapseCellsAction, KernelsDropdown, msgChanging, NewNotebookAction, noKernelName, RunAllCellsAction, TrustedAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
-import { ClientSessionStub, ContextViewProviderStub, NotebookComponentStub, NotebookModelStub } from 'sql/workbench/contrib/notebook/test/stubs';
+import { ClientSessionStub, ContextViewProviderStub, NotebookComponentStub, NotebookModelStub, NotebookServiceStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/testCommon';
 import { ICellModel, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
-import { INotebookEditor } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotebookEditor, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { CellType } from 'sql/workbench/services/notebook/common/contracts';
 import * as TypeMoq from 'typemoq';
 import { Emitter } from 'vs/base/common/event';
@@ -23,6 +23,7 @@ import { TestInstantiationService } from 'vs/platform/instantiation/test/common/
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { URI } from 'vs/base/common/uri';
 
 class TestClientSession extends ClientSessionStub {
 	private _errorState: boolean = false;
@@ -103,122 +104,139 @@ class TestNotebookModel extends NotebookModelStub {
 }
 
 suite('Notebook Actions', function (): void {
+
+	let mockNotebookEditor: TypeMoq.Mock<INotebookEditor>;
+	let mockNotebookService: TypeMoq.Mock<INotebookService>;
+	const testUri = URI.parse('untitled');
+
+	suiteSetup(function (): void {
+		mockNotebookEditor = TypeMoq.Mock.ofType<INotebookEditor>(NotebookEditorStub);
+		mockNotebookService = TypeMoq.Mock.ofType<INotebookService>(NotebookServiceStub);
+		mockNotebookService.setup(x => x.findNotebookEditor(TypeMoq.It.isAny())).returns(uri => mockNotebookEditor.object);
+	});
+
+	teardown(function (): void {
+		mockNotebookEditor.reset();
+	});
+
 	test('Add Cell Action', async function (): Promise<void> {
 		let testCellType: CellType = 'code';
 		let actualCellType: CellType;
 
-		let action = new AddCellAction('TestId', 'TestLabel', 'TestClass');
+
+		let action = new AddCellAction('TestId', 'TestLabel', 'TestClass', mockNotebookService.object);
 		action.cellType = testCellType;
 
 		// Normal use case
+		mockNotebookEditor.setup(x => x.addCell(TypeMoq.It.isAny(), TypeMoq.It.isAnyNumber())).returns((cellType, index) => { actualCellType = cellType; });
 		let mockNotebookComponent = TypeMoq.Mock.ofType<INotebookEditor>(NotebookComponentStub);
 		mockNotebookComponent.setup(c => c.addCell(TypeMoq.It.isAny(), TypeMoq.It.isAnyNumber())).returns(cellType => {
 			actualCellType = cellType;
 		});
 
-		assert.doesNotThrow(() => action.run(mockNotebookComponent.object));
+		assert.doesNotThrow(() => action.run(testUri));
 		assert.strictEqual(actualCellType, testCellType);
 
 		// Handle error case
-		mockNotebookComponent.reset();
-		mockNotebookComponent.setup(c => c.addCell(TypeMoq.It.isAny(), TypeMoq.It.isAnyNumber())).throws(new Error('Test Error'));
-		await assert.rejects(action.run(mockNotebookComponent.object));
+		mockNotebookEditor.reset();
+		mockNotebookEditor.setup(x => x.addCell(TypeMoq.It.isAny(), TypeMoq.It.isAnyNumber())).throws(new Error('Test Error'));
+		await assert.rejects(action.run(URI.parse('untitled')));
 	});
 
 	test('Clear All Outputs Action', async function (): Promise<void> {
-		let action = new ClearAllOutputsAction('TestId', true);
+		let action = new ClearAllOutputsAction('TestId', true, mockNotebookService.object);
 
 		// Normal use case
-		let mockNotebookComponent = TypeMoq.Mock.ofType<INotebookEditor>(NotebookComponentStub);
-		mockNotebookComponent.setup(c => c.clearAllOutputs()).returns(() => Promise.resolve(true));
+		mockNotebookEditor.setup(c => c.clearAllOutputs()).returns(() => Promise.resolve(true));
 
-		let result = await action.run(mockNotebookComponent.object);
+		let result = await action.run(testUri);
 		assert.ok(result, 'Clear All Outputs Action should succeed');
-		mockNotebookComponent.verify(c => c.clearAllOutputs(), TypeMoq.Times.once());
+		mockNotebookEditor.verify(c => c.clearAllOutputs(), TypeMoq.Times.once());
 
 		// Handle failure case
-		mockNotebookComponent.reset();
-		mockNotebookComponent.setup(c => c.clearAllOutputs()).returns(() => Promise.resolve(false));
+		mockNotebookEditor.reset();
+		mockNotebookEditor.setup(c => c.clearAllOutputs()).returns(() => Promise.resolve(false));
 
-		result = await action.run(mockNotebookComponent.object);
+		result = await action.run(testUri);
 		assert.strictEqual(result, false, 'Clear All Outputs Action should have failed');
-		mockNotebookComponent.verify(c => c.clearAllOutputs(), TypeMoq.Times.once());
+		mockNotebookEditor.verify(c => c.clearAllOutputs(), TypeMoq.Times.once());
 	});
 
 	test('Trusted Action', async function (): Promise<void> {
 		let mockNotification = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService);
 		mockNotification.setup(n => n.notify(TypeMoq.It.isAny()));
 
-		let action = new TrustedAction('TestId', true);
+		let action = new TrustedAction('TestId', true, mockNotebookService.object);
 		assert.strictEqual(action.trusted, false, 'Should not be trusted by default');
 
-		// Normal use case
-		let contextStub = <INotebookEditor>{
-			model: <INotebookModel>{
-				trustedMode: false
-			}
+		const testNotebookModel: INotebookModel = <INotebookModel>{
+			trustedMode: false
 		};
-		let result = await action.run(contextStub);
+
+		mockNotebookEditor.setup(x => x.model).returns(() => testNotebookModel);
+		// Normal use case
+		let result = await action.run(testUri);
 		assert.ok(result, 'Trusted Action should succeed');
 		assert.strictEqual(action.trusted, true, 'Should be trusted after toggling trusted state');
+		assert.strictEqual(testNotebookModel.trustedMode, true, 'Model should be true after toggling trusted state');
 
 		// Should toggle trusted to false on subsequent action
-		result = await action.run(contextStub);
+		result = await action.run(testUri);
 		assert.ok(result, 'Trusted Action should succeed again');
 		assert.strictEqual(action.trusted, false, 'Should toggle trusted to false');
+		assert.strictEqual(testNotebookModel.trustedMode, false, 'Model should be false again after toggling trusted state');
 	});
 
 	test('Run All Cells Action', async function (): Promise<void> {
 		let mockNotification = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService);
 		mockNotification.setup(n => n.notify(TypeMoq.It.isAny()));
 
-		let action = new RunAllCellsAction('TestId', 'TestLabel', 'TestClass', mockNotification.object);
+		let action = new RunAllCellsAction('TestId', 'TestLabel', 'TestClass', mockNotification.object, mockNotebookService.object);
 
 		// Normal use case
-		let mockNotebookComponent = TypeMoq.Mock.ofType<INotebookEditor>(NotebookComponentStub);
-		mockNotebookComponent.setup(c => c.runAllCells()).returns(() => Promise.resolve(true));
+		mockNotebookEditor.setup(c => c.runAllCells()).returns(() => Promise.resolve(true));
 
-		let result = await action.run(mockNotebookComponent.object);
+		let result = await action.run(testUri);
 		assert.ok(result, 'Run All Cells Action should succeed');
-		mockNotebookComponent.verify(c => c.runAllCells(), TypeMoq.Times.once());
+		mockNotebookEditor.verify(c => c.runAllCells(), TypeMoq.Times.once());
 
 		// Handle errors
-		mockNotebookComponent.reset();
-		mockNotebookComponent.setup(c => c.runAllCells()).returns(() => { throw new Error('Test Error'); });
+		mockNotebookEditor.reset();
+		mockNotebookEditor.setup(c => c.runAllCells()).throws(new Error('Test Error'));
 
-		result = await action.run(mockNotebookComponent.object);
+		result = await action.run(testUri);
 		assert.strictEqual(result, false, 'Run All Cells Action should fail on error');
 	});
 
 	test('Collapse Cells Action', async function (): Promise<void> {
-		let action = new CollapseCellsAction('TestId', true);
+		let action = new CollapseCellsAction('TestId', true, mockNotebookService.object);
 		assert.strictEqual(action.isCollapsed, false, 'Should not be collapsed by default');
 
-		let context = <INotebookEditor>{
-			cells: [<ICellModel>{
-				isCollapsed: false
-			}, <ICellModel>{
-				isCollapsed: true
-			}, <ICellModel>{
-				isCollapsed: false
-			}]
-		};
+		const testCells = [<ICellModel>{
+			isCollapsed: false
+		}, <ICellModel>{
+			isCollapsed: true
+		}, <ICellModel>{
+			isCollapsed: false
+		}];
+
+		mockNotebookEditor.setup(x => x.cells).returns(() => testCells);
 
 		// Collapse cells case
-		let result = await action.run(context);
+		let result = await action.run(testUri);
 		assert.ok(result, 'Collapse Cells Action should succeed');
 
 		assert.strictEqual(action.isCollapsed, true, 'Action should be collapsed after first toggle');
-		context.cells.forEach(cell => {
+		testCells.forEach(cell => {
 			assert.strictEqual(cell.isCollapsed, true, 'Cells should be collapsed after first toggle');
 		});
 
 		// Toggle cells to uncollapsed
-		result = await action.run(context);
+		result = await action.run(testUri);
 		assert.ok(result, 'Collapse Cells Action should succeed');
 
 		assert.strictEqual(action.isCollapsed, false, 'Action should not be collapsed after second toggle');
-		context.cells.forEach(cell => {
+		testCells.forEach(cell => {
 			assert.strictEqual(cell.isCollapsed, false, 'Cells should not be collapsed after second toggle');
 		});
 	});
@@ -238,7 +256,6 @@ suite('Notebook Actions', function (): void {
 
 		assert.strictEqual(actualCmdId, NewNotebookAction.INTERNAL_NEW_NOTEBOOK_CMD_ID);
 	});
-
 
 	suite('Kernels dropdown', async () => {
 		let kernelsDropdown: KernelsDropdown;
