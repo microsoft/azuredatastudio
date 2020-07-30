@@ -39,14 +39,12 @@ describe('SchemaCompareDialog.openDialog', function (): void {
 		let dialog = new SchemaCompareDialog(schemaCompareResult);
 		await dialog.openDialog();
 
-		should(dialog.dialog.title).equal('Schema Compare');
-		should(dialog.dialog.okButton.label).equal('OK');
+		should(dialog.dialog.title).equal(loc.SchemaCompareLabel);
+		should(dialog.dialog.okButton.label).equal(loc.OkButtonText);
 		should(dialog.dialog.okButton.enabled).equal(false); // Should be false when open
 	});
 
 	it('Simulate ok button- with both endpoints set to dacpac', async function (): Promise<void> {
-		//let getCurrentConnectionResult: azdata.connection.ConnectionProfile[] = {...mockConnectionProfile};
-
 		let schemaCompareResult = new SchemaCompareMainWindowTest(testContext.apiWrapper.object, undefined, mockExtensionContext.object);
 		await schemaCompareResult.start(undefined);
 		schemaCompareResult.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
@@ -58,9 +56,17 @@ describe('SchemaCompareDialog.openDialog', function (): void {
 		await dialog.execute();
 
 		// Confirm that ok button got clicked
-		should(schemaCompareResult.verifyButtonsState( {compareButtonState: true, optionsButtonState: true, switchButtonState: true,
-			openScmpButtonState: true, saveScmpButtonState: true, cancelCompareButtonState: false,
-			selectSourceButtonState: true, selectTargetButtonState: true, generateScriptButtonState: false,
-			applyButtonState: false} )).equal(true);
+		should(schemaCompareResult.verifyButtonsState( {
+			compareButtonState: true,
+			optionsButtonState: true,
+			switchButtonState: true,
+			openScmpButtonState: true,
+			saveScmpButtonState: true,
+			cancelCompareButtonState: false,
+			selectSourceButtonState: true,
+			selectTargetButtonState: true,
+			generateScriptButtonState: false,
+			applyButtonState: false
+		} )).equal(true);
 	});
 });

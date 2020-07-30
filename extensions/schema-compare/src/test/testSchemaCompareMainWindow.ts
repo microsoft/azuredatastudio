@@ -54,8 +54,6 @@ export class SchemaCompareMainWindowTest extends SchemaCompareMainWindow {
 	}
 
 	public verifyButtonsState(buttonState: ButtonState): boolean {
-		let result: boolean = false;
-
 		if (this.compareButton.enabled === buttonState.compareButtonState &&
 			this.optionsButton.enabled === buttonState.optionsButtonState &&
 			this.switchButton.enabled === buttonState.switchButtonState &&
@@ -66,22 +64,20 @@ export class SchemaCompareMainWindowTest extends SchemaCompareMainWindow {
 			this.selectTargetButton.enabled === buttonState.selectTargetButtonState &&
 			this.generateScriptButton.enabled === buttonState.generateScriptButtonState &&
 			this.applyButton.enabled === buttonState.applyButtonState) {
-			result = true;
+			return true;
 		}
 
-		if (result === false) {
-			console.log('CompareButton: (Actual) ', this.compareButton.enabled, '(Expected) ', buttonState.compareButtonState);
-			console.log('OptionsButton: (Actual) ', this.optionsButton.enabled, '(Expected) ', buttonState.optionsButtonState);
-			console.log('SwitchButton: (Actual) ', this.switchButton.enabled, '(Expected) ', buttonState.switchButtonState);
-			console.log('OpenScmpButton: (Actual) ', this.openScmpButton.enabled, '(Expected) ', buttonState.openScmpButtonState);
-			console.log('SaveScmpButton: (Actual) ', this.saveScmpButton.enabled, '(Expected) ', buttonState.saveScmpButtonState);
-			console.log('CancelCompareButton: (Actual) ', this.cancelCompareButton.enabled, '(Expected) ', buttonState.cancelCompareButtonState);
-			console.log('SelectSourceButton: (Actual) ', this.selectSourceButton.enabled, '(Expected) ', buttonState.selectSourceButtonState);
-			console.log('SelectTargetButton: (Actual) ', this.selectTargetButton.enabled, '(Expected) ', buttonState.selectTargetButtonState);
-			console.log('GenerateScriptButton: (Actual) ', this.generateScriptButton.enabled, '(Expected) ', buttonState.generateScriptButtonState);
-			console.log('ApplyButton: (Actual) ', this.applyButton.enabled, '(Expected) ', buttonState.applyButtonState);
-		}
+		console.log('CompareButton: (Actual) ', this.compareButton.enabled, '(Expected) ', buttonState.compareButtonState);
+		console.log('OptionsButton: (Actual) ', this.optionsButton.enabled, '(Expected) ', buttonState.optionsButtonState);
+		console.log('SwitchButton: (Actual) ', this.switchButton.enabled, '(Expected) ', buttonState.switchButtonState);
+		console.log('OpenScmpButton: (Actual) ', this.openScmpButton.enabled, '(Expected) ', buttonState.openScmpButtonState);
+		console.log('SaveScmpButton: (Actual) ', this.saveScmpButton.enabled, '(Expected) ', buttonState.saveScmpButtonState);
+		console.log('CancelCompareButton: (Actual) ', this.cancelCompareButton.enabled, '(Expected) ', buttonState.cancelCompareButtonState);
+		console.log('SelectSourceButton: (Actual) ', this.selectSourceButton.enabled, '(Expected) ', buttonState.selectSourceButtonState);
+		console.log('SelectTargetButton: (Actual) ', this.selectTargetButton.enabled, '(Expected) ', buttonState.selectTargetButtonState);
+		console.log('GenerateScriptButton: (Actual) ', this.generateScriptButton.enabled, '(Expected) ', buttonState.generateScriptButtonState);
+		console.log('ApplyButton: (Actual) ', this.applyButton.enabled, '(Expected) ', buttonState.applyButtonState);
 
-		return result;
+		return false;
 	}
 }
