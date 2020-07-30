@@ -22,7 +22,7 @@ import { appendKeyBindingLabel } from 'vs/workbench/contrib/search/browser/searc
 import { ContextScopedFindInput } from 'vs/platform/browser/contextScopedHistoryWidget';
 import { attachFindReplaceInputBoxStyler } from 'vs/platform/theme/common/styler';
 import { KeyCode } from 'vs/base/common/keyCodes';
-import { IViewDescriptorService } from 'vs/workbench/common/views';
+import { IViewDescriptorService, IView } from 'vs/workbench/common/views';
 import { ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 import { ISearchWidgetOptions, stopPropagationForMultiLineUpwards, stopPropagationForMultiLineDownwards, ctrlKeyMod } from 'vs/workbench/contrib/search/browser/searchWidget';
 import { Delayer } from 'vs/base/common/async';
@@ -31,10 +31,23 @@ import { QueryBuilder, ITextQueryBuilderOptions } from 'vs/workbench/contrib/sea
 import { ITextQuery, IPatternInfo, ISearchConfigurationProperties } from 'vs/workbench/services/search/common/search';
 import { getOutOfWorkspaceEditorResources } from 'vs/workbench/contrib/search/common/search';
 import { NotebookSearchResultsView } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/searchResultsViewPane';
+import { IChangeEvent, SearchModel } from 'vs/workbench/contrib/search/common/searchModel';
 
 export interface IViewExplorerSearchOptions extends ISearchWidgetOptions {
 	showSearchResultsPane?: boolean;
 }
+
+export interface ISearchResultsView extends IView {
+	parent: ViewPaneContainer;
+	searchViewModel: SearchModel;
+	validateAndSearch(query: ITextQuery, caller: any): Promise<void>;
+	clearSearchResults(clearInput: boolean): void;
+	cancelSearch(focus: boolean): boolean;
+	reLayout(): void;
+	updateActions(): void;
+	refreshTree(event?: IChangeEvent): Promise<void>;
+}
+
 export class SimpleSearchWidget extends Widget {
 
 	domNode!: HTMLElement;
@@ -105,7 +118,7 @@ export class SimpleSearchWidget extends Widget {
 		this.trackInputBox(this.searchInputFocusTracker);
 	}
 
-	public get searchView(): NotebookSearchResultsView | undefined {
+	public get searchView(): ISearchResultsView | undefined {
 		return <NotebookSearchResultsView>this.parentContainer.getView(NotebookSearchResultsView.ID) ?? undefined;
 	}
 
@@ -282,7 +295,7 @@ export class SimpleSearchWidget extends Widget {
 
 		const onQueryValidationError = (err: Error) => {
 			this.searchInput.showMessage({ content: err.message, type: MessageType.ERROR });
-			this.searchView?.clearSearchResults();
+			this.searchView?.clearSearchResults(false);
 		};
 
 		let query: ITextQuery;
@@ -318,7 +331,7 @@ export class SimpleSearchWidget extends Widget {
 				let allViews = containerModel.allViewDescriptors;
 				allViews.forEach(v => {
 					let view = this.parentContainer.getView(v.id);
-					if (view !== this.searchView) {
+					if (this.searchView && view.id !== this.searchView.id) {
 						view.setExpanded(false);
 					}
 				});

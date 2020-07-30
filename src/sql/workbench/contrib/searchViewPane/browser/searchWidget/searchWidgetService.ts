@@ -12,7 +12,7 @@ import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { localize } from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { MenuId } from 'vs/platform/actions/common/actions';
-import { SimpleSearchWidget, IViewExplorerSearchOptions } from 'sql/workbench/contrib/searchViewPane/browser/searchWidget/simpleSearchWidget';
+import { SimpleSearchWidget, IViewExplorerSearchOptions, ISearchResultsView } from 'sql/workbench/contrib/searchViewPane/browser/searchWidget/simpleSearchWidget';
 import { IConfigurationRegistry, Extensions as ConfigExtensions, ConfigurationScope } from 'vs/platform/configuration/common/configurationRegistry';
 import { isMacintosh } from 'vs/base/common/platform';
 import { SearchSortOrder } from 'vs/workbench/services/search/common/search';
@@ -115,7 +115,7 @@ export class SearchWidgetService extends Disposable implements ISearchWidgetServ
 		Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).registerViews(viewDescriptors, container);
 	}
 
-	getSearchResultsView(parentConatiner: ViewPaneContainer): any {
+	getSearchResultsView(parentConatiner: ViewPaneContainer): ISearchResultsView {
 		switch (parentConatiner.getId()) {
 			case 'workbench.view.notebooks': return <NotebookSearchResultsView>parentConatiner.getView(NotebookSearchResultsView.ID);
 			default: return undefined;

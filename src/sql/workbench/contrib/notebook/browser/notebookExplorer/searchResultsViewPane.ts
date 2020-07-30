@@ -45,12 +45,12 @@ import { Memento } from 'vs/workbench/common/memento';
 import { TreeViewPane } from 'sql/workbench/browser/parts/views/treeView';
 import { URI } from 'vs/base/common/uri';
 import * as path from 'vs/base/common/path';
-import { SimpleSearchWidget } from 'sql/workbench/contrib/searchViewPane/browser/searchWidget/simpleSearchWidget';
+import { SimpleSearchWidget, ISearchResultsView } from 'sql/workbench/contrib/searchViewPane/browser/searchWidget/simpleSearchWidget';
 import { isString } from 'vs/base/common/types';
 
 const $ = dom.$;
 
-export class NotebookSearchResultsView extends SearchView {
+export class NotebookSearchResultsView extends SearchView implements ISearchResultsView {
 	static readonly ID = 'notebookExplorer.searchResults';
 
 	private treeSelectionChangeListener: IDisposable;
@@ -242,25 +242,29 @@ export class NotebookSearchResultsView extends SearchView {
 	}
 
 	public async validateAndSearch(query: ITextQuery, searchWidget: SimpleSearchWidget): Promise<void> {
-		await this.validateQry(query).catch(e => errors.onUnexpectedError(e));
-		if (this.parentContainer.views.length > 1) {
-			let filesToIncludeFiltered: string = '';
-			this.parentContainer.views.forEach(async (v) => {
-				let booksViewPane = (<TreeViewPane>this.parentContainer.getView(v.id));
-				if (booksViewPane?.treeView?.root) {
-					let root = booksViewPane.treeView.root;
-					if (root.children) {
-						let items = root.children;
-						items?.forEach(async root => {
-							searchWidget.updateViewletsState();
-							let folderToSearch: IFolderQuery = { folder: URI.file(path.join(isString(root.tooltip) ? root.tooltip : root.tooltip.value, 'content')) };
-							query.folderQueries.push(folderToSearch);
-							filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
-							await this.startSearch(query, null, filesToIncludeFiltered, false, searchWidget);
-						});
+		try {
+			await this.validateQry(query);
+			if (this.parentContainer.views.length > 1) {
+				let filesToIncludeFiltered: string = '';
+				this.parentContainer.views.forEach(async (v) => {
+					let booksViewPane = (<TreeViewPane>this.parentContainer.getView(v.id));
+					if (booksViewPane?.treeView?.root) {
+						let root = booksViewPane.treeView.root;
+						if (root.children) {
+							let items = root.children;
+							items?.forEach(async root => {
+								searchWidget.updateViewletsState();
+								let folderToSearch: IFolderQuery = { folder: URI.file(path.join(isString(root.tooltip) ? root.tooltip : root.tooltip.value, 'content')) };
+								query.folderQueries.push(folderToSearch);
+								filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
+								await this.startSearch(query, null, filesToIncludeFiltered, false, searchWidget);
+							});
+						}
 					}
-				}
-			});
+				});
+			}
+		} catch (e) {
+			errors.onUnexpectedError(e);
 		}
 	}
 
@@ -280,7 +284,7 @@ export class NotebookSearchResultsView extends SearchView {
 			} else {
 				const nonExistantPath = query.folderQueries[0].folder.fsPath;
 				const searchPathNotFoundError = nls.localize('searchPathNotFoundError', "Search path not found: {0}", nonExistantPath);
-				return Promise.reject(new Error(searchPathNotFoundError));
+				throw new Error(searchPathNotFoundError);
 			}
 			return undefined;
 		});
