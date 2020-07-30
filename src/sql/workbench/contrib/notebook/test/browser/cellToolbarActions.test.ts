@@ -115,7 +115,7 @@ suite('CellToolbarActions', function (): void {
 			cellModelMock.setup(x => x.cellType).returns(() => 'code');
 			const action = new CellToggleMoreActions(instantiationService);
 			action.onInit(testContainer, contextMock.object);
-			assert(action['_moreActions']['viewItems'][0]['_action']['_actions'].length === 13, 'Unexpected number of valid elements');
+			assert.equal(action['_moreActions']['viewItems'][0]['_action']['_actions'].length, 15, 'Unexpected number of valid elements');
 		});
 
 		test('CellToggleMoreActions with Markdown CellType', function (): void {
@@ -124,7 +124,7 @@ suite('CellToolbarActions', function (): void {
 			const action = new CellToggleMoreActions(instantiationService);
 			action.onInit(testContainer, contextMock.object);
 			// Markdown elements don't show the code-cell related actions such as Run Cell
-			assert(action['_moreActions']['viewItems'][0]['_action']['_actions'].length === 5, 'Unexpected number of valid elements');
+			assert.equal(action['_moreActions']['viewItems'][0]['_action']['_actions'].length, 7, 'Unexpected number of valid elements');
 		});
 	});
 });
