@@ -322,7 +322,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._model = this._register(model);
 		await this._model.loadContents(trusted);
 		this.setLoading(false);
-		this.updateToolbarComponents(this._model.trustedMode);
+		this.updateToolbarComponents();
 		this.detectChanges();
 	}
 
@@ -348,11 +348,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		}
 	}
 
-	// Updates toolbar components
-	private updateToolbarComponents(isTrusted: boolean) {
-		if (this._trustedAction) {
+	private updateToolbarComponents() {
+		if (this.model.trustedMode) {
 			this._trustedAction.enabled = true;
-			this._trustedAction.trusted = isTrusted;
+			this._trustedAction.trusted = true;
 		}
 	}
 
@@ -417,26 +416,26 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			let spacerElement = document.createElement('li');
 			spacerElement.style.marginLeft = 'auto';
 
-			let addCellsButton = new AddCellAction('notebook.AddCodeCell', localize('codeCellsPreview', "Add cell"), 'notebook-button masked-pseudo code');
+			let addCellsButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('codeCellsPreview', "Add cell"), 'notebook-button masked-pseudo code');
 
-			let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('codePreview', "Code cell"), 'notebook-button masked-pseudo code');
+			let addCodeCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('codePreview', "Code cell"), 'notebook-button masked-pseudo code');
 			addCodeCellButton.cellType = CellTypes.Code;
 
-			let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('textPreview', "Text cell"), 'notebook-button masked-pseudo markdown');
+			let addTextCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddTextCell', localize('textPreview', "Text cell"), 'notebook-button masked-pseudo markdown');
 			addTextCellButton.cellType = CellTypes.Markdown;
 
 			this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAllPreview', "Run all"), 'notebook-button masked-pseudo start-outline');
 
 			let collapseCellsAction = this.instantiationService.createInstance(CollapseCellsAction, 'notebook.collapseCells', true);
 
-			let clearResultsButton = new ClearAllOutputsAction('notebook.ClearAllOutputs', true);
+			let clearResultsButton = this.instantiationService.createInstance(ClearAllOutputsAction, 'notebook.ClearAllOutputs', true);
 
 			this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted', true);
 			this._trustedAction.enabled = false;
 
 			let taskbar = <HTMLElement>this.toolbar.nativeElement;
 			this._actionBar = new Taskbar(taskbar, { actionViewItemProvider: action => this.actionItemProvider(action as Action) });
-			this._actionBar.context = this;
+			this._actionBar.context = this._notebookParams.notebookUri;
 			taskbar.classList.add('in-preview');
 
 			let buttonDropdownContainer = DOM.$('li.action-item');
@@ -453,7 +452,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				undefined
 			);
 			dropdownMenuActionViewItem.render(buttonDropdownContainer);
-			dropdownMenuActionViewItem.setActionContext(this);
+			dropdownMenuActionViewItem.setActionContext(this._notebookParams.notebookUri);
 
 			this._actionBar.setContent([
 				{ element: buttonDropdownContainer },
@@ -478,15 +477,15 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			attachToDropdown.render(attachToContainer);
 			attachSelectBoxStyler(attachToDropdown, this.themeService);
 
-			let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('code', "Code"), 'notebook-button icon-add');
+			let addCodeCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('code', "Code"), 'notebook-button icon-add');
 			addCodeCellButton.cellType = CellTypes.Code;
 
-			let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('text', "Text"), 'notebook-button icon-add');
+			let addTextCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddTextCell', localize('text', "Text"), 'notebook-button icon-add');
 			addTextCellButton.cellType = CellTypes.Markdown;
 
 			this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAll', "Run Cells"), 'notebook-button icon-run-cells');
 
-			let clearResultsButton = new ClearAllOutputsAction('notebook.ClearAllOutputs', false);
+			let clearResultsButton = this.instantiationService.createInstance(ClearAllOutputsAction, 'notebook.ClearAllOutputs', false);
 
 			this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted', false);
 			this._trustedAction.enabled = false;
@@ -495,7 +494,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 			let taskbar = <HTMLElement>this.toolbar.nativeElement;
 			this._actionBar = new Taskbar(taskbar, { actionViewItemProvider: action => this.actionItemProvider(action as Action) });
-			this._actionBar.context = this;
+			this._actionBar.context = this._notebookParams.notebookUri;
 
 			this._actionBar.setContent([
 				{ action: addCodeCellButton },

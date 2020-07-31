@@ -16,7 +16,8 @@
 	-webkit-user-select: text;
 }
 
-.message-tree.word-wrap .monaco-tl-contents .message {
+.message-tree.word-wrap .monaco-tl-contents .message,
+.message-tree.word-wrap .monaco-tl-contents .error-message {
 	/* Wrap words but also do not trim whitespace #6275 */
 	word-wrap: break-word;
 	white-space: pre-wrap;
