@@ -364,6 +364,10 @@ class DropOverlay extends Themable {
 				return;
 			}
 
+			if (untitledOrFileResources[0].resource.scheme === 'file') {
+
+			}
+
 			dropHandler.handleDrop(event, () => ensureTargetGroup(), targetGroup => {
 				if (targetGroup) {
 					targetGroup.focus();

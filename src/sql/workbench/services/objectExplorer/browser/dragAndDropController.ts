@@ -35,8 +35,9 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 				return (<ConnectionProfileGroup>element).id;
 			} else if (element.nodeTypeId === 'Table' || element.nodeTypeId === 'Column') {
 				return (<TreeNode>element).id;
-			}
-			else {
+			} else if (element.nodeTypeId === 'Folder' && element.label === 'Columns' && element.children) {
+				return (<TreeNode>element).id;
+			} else {
 				return undefined;
 			}
 		}
