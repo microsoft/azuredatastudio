@@ -71,19 +71,19 @@ export class TestObjectExplorerService implements IObjectExplorerService {
 
 	public async createNewSession(providerId: string, connection: ConnectionProfile): Promise<azdata.ObjectExplorerSessionResponse> { return undefined; }
 
-	public expandNode(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string): Thenable<azdata.ObjectExplorerExpandInfo> { return Promise.resolve(undefined); }
+	public expandNode(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string): Promise<azdata.ObjectExplorerExpandInfo> { return Promise.resolve(undefined); }
 
-	public refreshNode(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string): Thenable<azdata.ObjectExplorerExpandInfo> { return Promise.resolve(undefined); }
+	public refreshNode(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string): Promise<azdata.ObjectExplorerExpandInfo> { return Promise.resolve(undefined); }
 
-	public closeSession(providerId: string, session: azdata.ObjectExplorerSession): Thenable<azdata.ObjectExplorerCloseSessionResponse> { return Promise.resolve(undefined); }
+	public closeSession(providerId: string, session: azdata.ObjectExplorerSession): Promise<azdata.ObjectExplorerCloseSessionResponse> { return Promise.resolve(undefined); }
 
 	public registerProvider(providerId: string, provider: azdata.ObjectExplorerProvider): void { }
 
 	public registerNodeProvider(nodeProvider: azdata.ObjectExplorerNodeProvider): void { }
 
-	public resolveTreeNodeChildren(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]> { return Promise.resolve(undefined); }
+	public resolveTreeNodeChildren(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Promise<TreeNode[]> { return Promise.resolve(undefined); }
 
-	public refreshTreeNode(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]> { return Promise.resolve(undefined); }
+	public refreshTreeNode(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Promise<TreeNode[]> { return Promise.resolve(undefined); }
 
 	public registerServerTreeView(view: IServerTreeView): void { }
 
@@ -93,11 +93,11 @@ export class TestObjectExplorerService implements IObjectExplorerService {
 
 	public getServerTreeView(): IServerTreeView { return undefined; }
 
-	public findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames?: string[]): Thenable<azdata.NodeInfo[]> { return Promise.resolve(undefined); }
+	public findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames?: string[]): Promise<azdata.NodeInfo[]> { return Promise.resolve(undefined); }
 
 	public getActiveConnectionNodes(): TreeNode[] { return undefined; }
 
-	public getNodeActions(connectionId: string, nodePath: string): Thenable<string[]> { return Promise.resolve(undefined); }
+	public getNodeActions(connectionId: string, nodePath: string): Promise<string[]> { return Promise.resolve(undefined); }
 
 	public async refreshNodeInView(connectionId: string, nodePath: string): Promise<TreeNode> { return Promise.resolve(undefined); }
 
