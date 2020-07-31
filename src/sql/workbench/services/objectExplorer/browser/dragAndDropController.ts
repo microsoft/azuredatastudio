@@ -81,7 +81,7 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 			finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
 			originalEvent.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([`${element.nodeTypeId}:${element.id}?${finalString}`]));
 		}
-		if (element.nodeTypeId === 'Folder') {
+		if (element.nodeTypeId === 'Folder' && element.label === 'Columns') {
 			// get children
 			let returnString = '';
 			for (let child of element.children) {

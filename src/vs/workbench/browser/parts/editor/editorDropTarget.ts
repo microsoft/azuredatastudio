@@ -359,13 +359,7 @@ class DropOverlay extends Themable {
 
 			// {{SQL CARBON EDIT}}
 			const editor = this.editorService.activeTextEditorControl as ICodeEditor;
-			if (untitledOrFileResources[0].resource.scheme === 'Column' || untitledOrFileResources[0].resource.scheme === 'Table') {
-				SnippetController2.get(editor).insert(untitledOrFileResources[0].resource.query);
-				editor.focus();
-				return;
-			}
-
-			if (untitledOrFileResources[0].resource.scheme === 'Folder') {
+			if (untitledOrFileResources[0].resource.scheme === 'Column' || untitledOrFileResources[0].resource.scheme === 'Table' || untitledOrFileResources[0].resource.scheme === 'Folder') {
 				SnippetController2.get(editor).insert(untitledOrFileResources[0].resource.query);
 				editor.focus();
 				return;
