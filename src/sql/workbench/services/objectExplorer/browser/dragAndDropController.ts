@@ -33,7 +33,7 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 				return (<ConnectionProfile>element).id;
 			} else if (element instanceof ConnectionProfileGroup) {
 				return (<ConnectionProfileGroup>element).id;
-			} else if (element.nodeTypeId === 'Table' || element.nodeTypeId === 'Column' || element.nodeTypeId === 'View') {
+			} else if (this.checkNodeTypeSingle(element.nodeTypeId)) {
 				return (<TreeNode>element).id;
 			} else if (element.nodeTypeId === 'Folder' && element.label === 'Columns' && element.children) {
 				return (<TreeNode>element).id;
@@ -44,6 +44,13 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 		else {
 			return undefined;
 		}
+	}
+
+	private checkNodeTypeSingle(nodeId: string): boolean {
+		if (nodeId === 'Table' || nodeId === 'Column' || nodeId === 'View') {
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -75,9 +82,9 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 		TreeUpdateUtils.isInDragAndDrop = true;
 		const data = dragAndDropData.getData();
 		const element = data[0];
-		if (element.nodeTypeId === 'Column' || element.nodeTypeId === 'Table' || element.nodeTypeId === 'View') {
-			escapedSchema = this.dragDropHelper(element.metadata.schema);
-			escapedName = this.dragDropHelper(element.metadata.name);
+		if (this.checkNodeTypeSingle(element.nodeTypeId)) {
+			escapedSchema = this.escapeString(element.metadata.schema);
+			escapedName = this.escapeString(element.metadata.name);
 			finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
 			originalEvent.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([`${element.nodeTypeId}:${element.id}?${finalString}`]));
 		}
@@ -85,8 +92,8 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 			// get children
 			let returnString = '';
 			for (let child of element.children) {
-				escapedSchema = this.dragDropHelper(child.metadata.schema);
-				escapedName = this.dragDropHelper(child.metadata.name);
+				escapedSchema = this.escapeString(child.metadata.schema);
+				escapedName = this.escapeString(child.metadata.name);
 				finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
 				returnString = returnString ? `${returnString},${finalString}` : `${finalString}`;
 			}
@@ -96,12 +103,12 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 		return;
 	}
 
-	private dragDropHelper(input: string): string {
+	private escapeString(input: string): string | undefined {
 		if (input) {
 			let output = input.replace(/]/g, ']]');
 			return output;
 		}
-		return null;
+		return undefined;
 	}
 
 
