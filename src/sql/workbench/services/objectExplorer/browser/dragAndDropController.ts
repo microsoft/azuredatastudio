@@ -33,7 +33,7 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 				return (<ConnectionProfile>element).id;
 			} else if (element instanceof ConnectionProfileGroup) {
 				return (<ConnectionProfileGroup>element).id;
-			} else if (element.nodeTypeId === 'Table' || element.nodeTypeId === 'Column') {
+			} else if (element.nodeTypeId === 'Table' || element.nodeTypeId === 'Column' || element.nodeTypeId === 'View') {
 				return (<TreeNode>element).id;
 			} else if (element.nodeTypeId === 'Folder' && element.label === 'Columns' && element.children) {
 				return (<TreeNode>element).id;
@@ -75,7 +75,7 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 		TreeUpdateUtils.isInDragAndDrop = true;
 		const data = dragAndDropData.getData();
 		const element = data[0];
-		if (element.nodeTypeId === 'Column' || element.nodeTypeId === 'Table') {
+		if (element.nodeTypeId === 'Column' || element.nodeTypeId === 'Table' || element.nodeTypeId === 'View') {
 			escapedSchema = this.dragDropHelper(element.metadata.schema);
 			escapedName = this.dragDropHelper(element.metadata.name);
 			finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
