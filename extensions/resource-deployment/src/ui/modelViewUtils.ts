@@ -756,7 +756,18 @@ async function createRadioOptions(context: FieldContext, getRadioButtonInfo?: ((
 	return radioGroupLoadingComponentBuilder;
 }
 
+const enum AccountStatus {
+	notFound = 0,
+	isStale,
+	isNotStale,
+}
 
+async function getAccountStatus(account: azdata.Account): Promise<AccountStatus> {
+	const refreshedAccount = (await azdata.accounts.getAllAccounts()).filter(ac => ac.key.accountId === account.key.accountId).shift();
+	return (refreshedAccount === undefined)
+		? AccountStatus.notFound
+		: refreshedAccount.isStale ? AccountStatus.isStale : AccountStatus.isNotStale;
+}
 /**
  * An Azure Account field consists of 3 separate dropdown fields - Account, Subscription and Resource Group
  * @param context The context to use to create the field
@@ -803,14 +814,14 @@ async function processAzureAccountField(context: AzureAccountFieldContext): Prom
 			// Append a blank value for the "default" option if the field isn't required, context will clear all the dropdowns when selected
 			const dropdownValues = context.fieldInfo.required ? [] : [''];
 			accountDropdown.values = dropdownValues.concat(accounts.map(account => {
-				const displayName = `${account.displayInfo.displayName} (${account.displayInfo.userId})`;
+				const displayName = getAccountDisplayString(account);
 				accountValueToAccountMap.set(displayName, account);
 				return displayName;
 			}));
 			const selectedAccount = accountDropdown.value ? accountValueToAccountMap.get(accountDropdown.value.toString()) : undefined;
 			await handleSelectedAccountChanged(context, selectedAccount, subscriptionDropdown, subscriptionValueToSubscriptionMap, resourceGroupDropdown, locationDropdown);
 		} catch (error) {
-			vscode.window.showErrorMessage(localize('azure.accounts.unexpectedAccountsError', 'Unexpected error fetching accounts: ${0}', getErrorMessage(error)));
+			vscode.window.showErrorMessage(localize('azure.accounts.unexpectedAccountsError', 'Unexpected error fetching accounts: {0}', getErrorMessage(error)));
 		}
 	};
 
@@ -826,6 +837,10 @@ async function processAzureAccountField(context: AzureAccountFieldContext): Prom
 	setTimeout(async () => {
 		await populateAzureAccounts();
 	}, 0);
+}
+
+function getAccountDisplayString(account: azdata.Account) {
+	return `${account.displayInfo.displayName} (${account.displayInfo.userId})`;
 }
 
 function createAzureAccountDropdown(context: AzureAccountFieldContext): AzureAccountComponents {
@@ -942,14 +957,29 @@ async function handleSelectedAccountChanged(
 			}
 		}
 		subscriptionDropdown.values = response.subscriptions.map(subscription => {
-			const displayName = `${subscription.name} (${subscription.id})`;
+			const displayName = getSubscriptionDisplayString(subscription);
 			subscriptionValueToSubscriptionMap.set(displayName, subscription);
 			return displayName;
 		}).sort((a: string, b: string) => a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase()));
 		const selectedSubscription = subscriptionDropdown.values.length > 0 ? subscriptionValueToSubscriptionMap.get(subscriptionDropdown.values[0]) : undefined;
 		await handleSelectedSubscriptionChanged(context, selectedAccount, selectedSubscription, resourceGroupDropdown);
 	} catch (error) {
-		vscode.window.showErrorMessage(localize('azure.accounts.unexpectedSubscriptionsError', "Unexpected error fetching subscriptions for account {0} ({1}): {2}", selectedAccount?.displayInfo.displayName, selectedAccount?.key.accountId, getErrorMessage(error)));
+		await showAzureAccessError(selectedAccount, error, localize('azure.accounts.unexpectedSubscriptionsError', "Unexpected error fetching subscriptions for account {0}: {1}", getAccountDisplayString(selectedAccount), getErrorMessage(error)));
+	}
+}
+
+function getSubscriptionDisplayString(subscription: azureResource.AzureResourceSubscription) {
+	return `${subscription.name} (${subscription.id})`;
+}
+
+async function showAzureAccessError(selectedAccount: azdata.Account, error: any, unexpectedErrorMessage: string) {
+	switch (await getAccountStatus(selectedAccount)) {
+		case AccountStatus.notFound:
+			vscode.window.showErrorMessage(localize('azure.accounts.accountNotFoundError', "The selected account '{0}' is no longer available. Kindly add it back by signing in.\n Error Details: {1}.", getAccountDisplayString(selectedAccount), getErrorMessage(error)));
+		case AccountStatus.isStale:
+			vscode.window.showErrorMessage(localize('azure.accounts.accountStaleError', "The access token for selected account '{0}' is no longer valid. Kindly sign in again to refresh your credentials.\n Error Details: {1}.", getAccountDisplayString(selectedAccount), getErrorMessage(error)));
+		case AccountStatus.isNotStale:
+			vscode.window.showErrorMessage(unexpectedErrorMessage);
 	}
 }
 
@@ -1020,7 +1050,7 @@ async function handleSelectedSubscriptionChanged(context: AzureAccountFieldConte
 			? response.resourceGroups.map(resourceGroup => resourceGroup.name).sort((a: string, b: string) => a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase()))
 			: [''];
 	} catch (error) {
-		vscode.window.showErrorMessage(localize('azure.accounts.unexpectedResourceGroupsError', "Unexpected error fetching resource groups for subscription {0} ({1}): {2}", selectedSubscription?.name, selectedSubscription?.id, getErrorMessage(error)));
+		await showAzureAccessError(selectedAccount, error, localize('azure.accounts.unexpectedResourceGroupsError', "Unexpected error fetching resource groups for subscription {0}: {1}", getSubscriptionDisplayString(selectedSubscription), getErrorMessage(error)));
 	}
 }
 
