@@ -33,7 +33,8 @@ const mockClaims = {
 	name: 'Name',
 	email: 'example@example.com',
 	sub: 'someUniqueId',
-	idp: 'idp'
+	idp: 'idp',
+	oid: 'userUniqueKey'
 } as TokenClaims;
 
 const mockTenant: Tenant = {
@@ -56,6 +57,9 @@ describe('Azure Authentication', function () {
 		// authDeviceCode.callBase = true;
 
 		mockAccount = {
+			key: {
+				accountId: mockClaims.oid
+			},
 			isStale: false,
 			properties: {
 				tenants: [mockTenant]

@@ -142,7 +142,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	}
 
 	private verifyCorrectToken(responseToken: OAuthTokenResponse, account: AzureAccount): boolean {
-		return this.getUserKey(responseToken.tokenClaims) !== account.key.accountId;
+		return this.getUserKey(responseToken.tokenClaims) === account.key.accountId;
 	}
 
 	public async getAccountSecurityToken(account: AzureAccount, tenantId: string, azureResource: azdata.AzureResource): Promise<Token | undefined> {
