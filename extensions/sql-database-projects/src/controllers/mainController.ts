@@ -106,7 +106,8 @@ export default class MainController implements vscode.Disposable {
 		let results = await glob(sqlprojFilter);
 
 		for (let f in results) {
-			await this.projectsController.openProject(vscode.Uri.file(results[f]));
+			// open the project, but don't switch focus to the file explorer viewlet
+			await this.projectsController.openProject(vscode.Uri.file(results[f]), false);
 		}
 	}
 
