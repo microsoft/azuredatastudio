@@ -36,10 +36,10 @@ export class TransformMarkdownAction extends Action {
 		this._tooltip = tooltip;
 	}
 	public run(context: any): Promise<boolean> {
-		return new Promise<boolean>((resolve, reject) => {
+		return new Promise<boolean>(async (resolve, reject) => {
 			try {
 				let markdownTextTransformer = new MarkdownTextTransformer(this._notebookService, this._cellModel, this._instantiationService);
-				markdownTextTransformer.transformText(this._type);
+				await markdownTextTransformer.transformText(this._type);
 				resolve(true);
 			} catch (e) {
 				reject(e);
