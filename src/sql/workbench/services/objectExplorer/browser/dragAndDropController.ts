@@ -71,28 +71,37 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 	 * Called when the drag operation starts.
 	 */
 	public onDragStart(tree: ITree, dragAndDropData: IDragAndDropData, originalEvent: DragMouseEvent): void {
+		let escapedSchema, escapedName, finalString;
 		TreeUpdateUtils.isInDragAndDrop = true;
 		const data = dragAndDropData.getData();
 		const element = data[0];
 		if (element.nodeTypeId === 'Column' || element.nodeTypeId === 'Table') {
-			let escapedSchema = element.metadata.schema?.replace(/]/g, ']]');
-			let escapedName = element.metadata.name?.replace(/]/g, ']]');
-			let finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
+			escapedSchema = this.dragDropHelper(element.metadata.schema);
+			escapedName = this.dragDropHelper(element.metadata.name);
+			finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
 			originalEvent.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([`${element.nodeTypeId}:${element.id}?${finalString}`]));
 		}
 		if (element.nodeTypeId === 'Folder') {
 			// get children
 			let returnString = '';
 			for (let child of element.children) {
-				let escapedSchema = child.metadata.schema?.replace(/]/g, ']]');
-				let escapedName = child.metadata.name?.replace(/]/g, ']]');
-				let finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
+				escapedSchema = this.dragDropHelper(child.metadata.schema);
+				escapedName = this.dragDropHelper(child.metadata.name);
+				finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
 				returnString = returnString ? `${returnString},${finalString}` : `${finalString}`;
 			}
 
 			originalEvent.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([`${element.nodeTypeId}:${element.id}?${returnString}`]));
 		}
 		return;
+	}
+
+	private dragDropHelper(input: string): string {
+		if (input) {
+			let output = input.replace(/]/g, ']]');
+			return output;
+		}
+		return null;
 	}
 
 
