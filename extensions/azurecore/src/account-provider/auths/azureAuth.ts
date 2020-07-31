@@ -267,7 +267,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		return this.getTokenHelper(tenant, resource, accessTokenString, refreshTokenString, expiresOnString);
 	}
 
-	private getUserKey(tokenClaims: TokenClaims): string {
+	public getUserKey(tokenClaims: TokenClaims): string {
 		// Personal accounts don't have an oid when logging into the `common` tenant, but when logging into their home tenant they end up having an oid.
 		// This makes the key for the same account be different.
 		// We need to special case personal accounts.
