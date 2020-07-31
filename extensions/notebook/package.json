@@ -19,8 +19,8 @@
       "properties": {
         "notebook.collapseBookItems": {
           "type": "boolean",
-          "default": true,
-          "description": "%notebook.collapsedBookItems.description%"
+          "default": false,
+          "description": "%notebook.collapseBookItems.description%"
         },
         "notebook.maxBookSearchDepth": {
           "type": "number",
