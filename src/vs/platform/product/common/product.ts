@@ -26,7 +26,8 @@ if (isWeb) {
 			nameShort: 'Azure Data Studio Web Dev',
 			urlProtocol: 'azuredatastudio-oss',
 			extensionAllowedProposedApi: [
-				'ms-vscode.references-view'
+				'ms-vscode.references-view',
+				'ms-vscode.github-browser'
 			],
 		});
 	}

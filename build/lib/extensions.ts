@@ -271,7 +271,8 @@ const excludedWebExtensions = excludedCommonExtensions.concat([
 ]);
 
 const marketplaceWebExtensions = [
-	'ms-vscode.references-view'
+	'ms-vscode.references-view',
+	'ms-vscode.github-browser'
 ];
 
 interface IBuiltInExtension {
@@ -340,7 +341,7 @@ export function packageLocalExtensionsStream(forWeb: boolean): Stream {
 export function packageMarketplaceExtensionsStream(forWeb: boolean): Stream {
 	const marketplaceExtensionsDescriptions = (
 		builtInExtensions
-		.filter(({ name }) => (forWeb ? marketplaceWebExtensions.indexOf(name) >= 0 : true))
+			.filter(({ name }) => (forWeb ? marketplaceWebExtensions.indexOf(name) >= 0 : true))
 	);
 	const marketplaceExtensionsStream = minifyExtensionResources(
 		es.merge(
