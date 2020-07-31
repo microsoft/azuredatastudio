@@ -71,6 +71,8 @@ describe('DacFx Summary Page Tests', function (): void {
 		const onPageEnter = await summaryPage.onPageEnter();
 		should(onPageStart).equal(true);
 		should(onPageEnter).equal(true);
+		should(summaryPage.data).not.equal(undefined);
+		should(summaryPage.data.length).equal(summaryPage.WizardState.selectedOperation === Operation.extract ? 4 : 3);
 
 		return summaryPage;
 	}
