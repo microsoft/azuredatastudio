@@ -240,8 +240,8 @@ export class ViewItem implements IViewItem {
 		}
 
 		let uri = this.context.dnd!.getDragURI(this.context.tree, this.model.getElement());
-		if (uri !== this.uri) {
 
+		if (uri !== this.uri) {
 			if (this.unbindDragStart) {
 				this.unbindDragStart.dispose();
 			}
