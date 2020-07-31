@@ -75,10 +75,22 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 		const data = dragAndDropData.getData();
 		const element = data[0];
 		if (element.nodeTypeId === 'Column' || element.nodeTypeId === 'Table') {
-			const escapedSchema = element.metadata.schema?.replace(/]/g, ']]');
-			const escapedName = element.metadata.name?.replace(/]/g, ']]');
-			const finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
+			let escapedSchema = element.metadata.schema?.replace(/]/g, ']]');
+			let escapedName = element.metadata.name?.replace(/]/g, ']]');
+			let finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
 			originalEvent.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([`${element.nodeTypeId}:${element.id}?${finalString}`]));
+		}
+		if (element.nodeTypeId === 'Folder') {
+			// get children
+			let returnString = '';
+			for (let child of element.children) {
+				let escapedSchema = child.metadata.schema?.replace(/]/g, ']]');
+				let escapedName = child.metadata.name?.replace(/]/g, ']]');
+				let finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
+				returnString = returnString ? `${returnString},${finalString}` : `${finalString}`;
+			}
+
+			originalEvent.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([`${element.nodeTypeId}:${element.id}?${returnString}`]));
 		}
 		return;
 	}

@@ -365,8 +365,10 @@ class DropOverlay extends Themable {
 				return;
 			}
 
-			if (untitledOrFileResources[0].resource.scheme === 'file') {
-
+			if (untitledOrFileResources[0].resource.scheme === 'Folder') {
+				SnippetController2.get(editor).insert(untitledOrFileResources[0].resource.query);
+				editor.focus();
+				return;
 			}
 
 			dropHandler.handleDrop(event, () => ensureTargetGroup(), targetGroup => {
