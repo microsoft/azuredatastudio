@@ -5,6 +5,7 @@
 
 import 'vs/css!./media/accountPicker';
 import * as DOM from 'vs/base/browser/dom';
+import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
 import { List } from 'vs/base/browser/ui/list/listWidget';
 import { IDropdownOptions } from 'vs/base/browser/ui/dropdown/dropdown';
@@ -30,6 +31,8 @@ export class AccountPicker extends Disposable {
 	public static ACCOUNTPICKERLIST_HEIGHT = 47;
 	public viewModel: AccountPickerViewModel;
 	private _accountList: List<azdata.Account>;
+	private _rootContainer: HTMLElement;
+
 	private _accountContainer: HTMLElement;
 	private _refreshContainer: HTMLElement;
 	private _accountListContainer: HTMLElement;
@@ -84,9 +87,8 @@ export class AccountPicker extends Disposable {
 	/**
 	 * Render account picker
 	 */
-	public render(accountContainer: HTMLElement, tenantContainer: HTMLElement): void {
-		DOM.append(accountContainer, this._accountContainer);
-		DOM.append(tenantContainer, this._tenantContainer);
+	public render(rootContainer: HTMLElement): void {
+		DOM.append(rootContainer, this._rootContainer);
 	}
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
@@ -100,9 +102,17 @@ export class AccountPicker extends Disposable {
 
 		const accountRenderer = new AccountPickerListRenderer();
 		const tenantRenderer = new TenantPickerListRenderer();
+		this._rootContainer = DOM.$('div.account-picker-container');
 
-		this._accountListContainer = DOM.$('div.account-list-container');
-		this._tenantListContainer = DOM.$('div.tenant-list-container');
+		const azureAccountLabel = localize('azureAccount', "Azure account");
+		const azureTenantLabel = localize('azureTenant', "Azure tenant");
+
+		const accountLabel = this.createLabelElement(azureAccountLabel, true);
+		this._accountListContainer = DOM.append(accountLabel, DOM.$('div.account-list-container'));
+
+		const tenantLabel = this.createLabelElement(azureTenantLabel, true);
+		this._tenantListContainer = DOM.append(tenantLabel, DOM.$('div.tenant-list-container'));
+
 
 		this._accountList = new List<azdata.Account>('AccountPicker', this._accountListContainer, accountDelegate, [accountRenderer], {
 			setRowLineHeight: false,
@@ -115,6 +125,12 @@ export class AccountPicker extends Disposable {
 		this._accountContainer = DOM.$('div.account-picker');
 		this._tenantContainer = DOM.$('div.tenant-picker');
 
+		DOM.append(this._accountContainer, accountLabel);
+		DOM.append(this._tenantContainer, tenantLabel);
+
+
+		DOM.append(this._rootContainer, this._accountContainer);
+		DOM.append(this._rootContainer, this._tenantContainer);
 
 		// Create dropdowns for account and tenant pickers
 		const accountOptions: IDropdownOptions = {
@@ -185,6 +201,17 @@ export class AccountPicker extends Disposable {
 	}
 
 	// PRIVATE HELPERS /////////////////////////////////////////////////////
+
+	private createLabelElement(content: string, isHeader?: boolean) {
+		let className = 'dialog-label';
+		if (isHeader) {
+			className += ' header';
+		}
+		const element = DOM.$(`.${className}`);
+		element.innerText = content;
+		return element;
+	}
+
 	private onAccountSelectionChange(account: azdata.Account | undefined) {
 		this.viewModel.selectedAccount = account;
 		if (account && account.isStale) {
@@ -194,15 +221,9 @@ export class AccountPicker extends Disposable {
 			DOM.hide(this._refreshContainer);
 
 			if (account.properties.tenants?.length > 1) {
-				if (this._tenantContainer?.parentElement?.parentElement) {
-					DOM.show(this._tenantContainer.parentElement.parentElement);
-				}
 				DOM.show(this._tenantContainer);
 				this.updateTenantList(account);
 			} else {
-				if (this._tenantContainer?.parentElement?.parentElement) {
-					DOM.hide(this._tenantContainer.parentElement.parentElement);
-				}
 				DOM.hide(this._tenantContainer);
 			}
 			this.onTenantSelectionChange(account?.properties?.tenants[0]?.id);

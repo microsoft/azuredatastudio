@@ -11,7 +11,7 @@ import * as azdata from 'azdata';
 export const IAccountPickerService = createDecorator<IAccountPickerService>('AccountPickerService');
 export interface IAccountPickerService {
 	_serviceBrand: undefined;
-	renderAccountPicker(azureDropdownContainer: HTMLElement, azureTenantContainer: HTMLElement): void;
+	renderAccountPicker(rootContainer: HTMLElement): void;
 	addAccountCompleteEvent: Event<void>;
 	addAccountErrorEvent: Event<string>;
 	addAccountStartEvent: Event<void>;

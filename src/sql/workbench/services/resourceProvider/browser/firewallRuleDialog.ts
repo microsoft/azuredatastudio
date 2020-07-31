@@ -141,14 +141,7 @@ export class FirewallRuleDialog extends Modal {
 		this._accountPickerService.onTenantSelectionChangeEvent((tenantId) => this.onTenantSelectionChange(tenantId));
 
 		const azureAccountSection = DOM.append(body, DOM.$('.azure-account-section.new-section'));
-
-		const azureAccountLabel = localize('azureAccount', "Azure account");
-		const accountSection = this.createLabelElement(azureAccountSection, azureAccountLabel, true);
-
-		const azureTenantLabel = localize('azureTenant', "Azure tenant");
-		const tenantSection = this.createLabelElement(azureAccountSection, azureTenantLabel, true);
-
-		this._accountPickerService.renderAccountPicker(DOM.append(accountSection, DOM.$('.dialog-input')), DOM.append(tenantSection, DOM.$('.dialog-input')));
+		this._accountPickerService.renderAccountPicker(azureAccountSection);
 
 		const firewallRuleSection = DOM.append(body, DOM.$('.firewall-rule-section.new-section'));
 		const firewallRuleLabel = localize('filewallRule', "Firewall rule");
