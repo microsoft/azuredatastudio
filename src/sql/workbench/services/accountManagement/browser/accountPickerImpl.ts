@@ -32,7 +32,7 @@ export class AccountPicker extends Disposable {
 	private _accountList: List<azdata.Account>;
 	private _accountContainer: HTMLElement;
 	private _refreshContainer: HTMLElement;
-	private _listContainer: HTMLElement;
+	private _accountListContainer: HTMLElement;
 	private _dropdown: DropdownList;
 	private _tenantContainer: HTMLElement;
 	private _tenantListContainer: HTMLElement;
@@ -95,16 +95,16 @@ export class AccountPicker extends Disposable {
 	 */
 	public createAccountPickerComponent() {
 		// Create an account list
-		const delegate = new AccountListDelegate(AccountPicker.ACCOUNTPICKERLIST_HEIGHT);
+		const accountDelegate = new AccountListDelegate(AccountPicker.ACCOUNTPICKERLIST_HEIGHT);
 		const tenantDelegate = new TenantListDelegate(AccountPicker.ACCOUNTPICKERLIST_HEIGHT);
 
 		const accountRenderer = new AccountPickerListRenderer();
 		const tenantRenderer = new TenantPickerListRenderer();
 
-		this._listContainer = DOM.$('div.account-list-container');
+		this._accountListContainer = DOM.$('div.account-list-container');
 		this._tenantListContainer = DOM.$('div.tenant-list-container');
 
-		this._accountList = new List<azdata.Account>('AccountPicker', this._listContainer, delegate, [accountRenderer], {
+		this._accountList = new List<azdata.Account>('AccountPicker', this._accountListContainer, accountDelegate, [accountRenderer], {
 			setRowLineHeight: false,
 		});
 		this._tenantList = new List<Tenant>('TenantPicker', this._tenantListContainer, tenantDelegate, [tenantRenderer]);
@@ -112,15 +112,14 @@ export class AccountPicker extends Disposable {
 		this._register(attachListStyler(this._accountList, this._themeService));
 		this._register(attachListStyler(this._tenantList, this._themeService));
 
-		// this._rootElement = DOM.$('div.account-picker-container');
 		this._accountContainer = DOM.$('div.account-picker');
 		this._tenantContainer = DOM.$('div.tenant-picker');
 
 
-		// Create a dropdown for account picker
-		const option: IDropdownOptions = {
+		// Create dropdowns for account and tenant pickers
+		const accountOptions: IDropdownOptions = {
 			contextViewProvider: this._contextViewService,
-			labelRenderer: (container) => this.renderLabel(container)
+			labelRenderer: (container) => this.renderAccountLabel(container)
 		};
 
 		const tenantOption: IDropdownOptions = {
@@ -134,7 +133,7 @@ export class AccountPicker extends Disposable {
 		addAccountAction.addAccountErrorEvent((msg) => this._addAccountErrorEmitter.fire(msg));
 		addAccountAction.addAccountStartEvent(() => this._addAccountStartEmitter.fire());
 
-		this._dropdown = this._register(new DropdownList(this._accountContainer, option, this._listContainer, this._accountList, addAccountAction));
+		this._dropdown = this._register(new DropdownList(this._accountContainer, accountOptions, this._accountListContainer, this._accountList, addAccountAction));
 		this._tenantDropdown = this._register(new DropdownList(this._tenantContainer, tenantOption, this._tenantListContainer, this._tenantList));
 
 		this._register(attachDropdownStyler(this._dropdown, this._themeService));
@@ -217,7 +216,7 @@ export class AccountPicker extends Disposable {
 		this._onTenantSelectionChangeEvent.fire(tenantId);
 	}
 
-	private renderLabel(container: HTMLElement): IDisposable | null {
+	private renderAccountLabel(container: HTMLElement): IDisposable | null {
 		if (container.hasChildNodes()) {
 			for (let i = 0; i < container.childNodes.length; i++) {
 				container.removeChild(container.childNodes.item(i));

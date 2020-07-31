@@ -84,16 +84,12 @@ class AccountPanel extends ViewPane {
 		this.accountList = new List<azdata.Account>('AccountList', container, new AccountListDelegate(AccountDialog.ACCOUNTLIST_HEIGHT), [this.instantiationService.createInstance(AccountListRenderer)]);
 		this.tenantList = new List<Tenant>('TenantList', container, new TenantListDelegate(AccountDialog.ACCOUNTLIST_HEIGHT), [this.instantiationService.createInstance(TenantListRenderer)]);
 		this._register(attachListStyler(this.accountList, this.themeService));
+		this._register(attachListStyler(this.tenantList, this.themeService));
 	}
 
 	protected layoutBody(size: number): void {
-		if (this.accountList) {
-			this.accountList.layout(size);
-		}
-
-		if (this.tenantList) {
-			this.tenantList.layout(size);
-		}
+		this.accountList?.layout(size);
+		this.tenantList?.layout(size);
 	}
 
 	public get length(): number {
