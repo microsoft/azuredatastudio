@@ -65,11 +65,11 @@ export interface IObjectExplorerService {
 
 	refreshTreeNode(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Promise<TreeNode[]>;
 
-	onSessionCreated(handle: number, sessionResponse: azdata.ObjectExplorerSession);
+	onSessionCreated(handle: number, sessionResponse: azdata.ObjectExplorerSession): void;
 
-	onSessionDisconnected(handle: number, sessionResponse: azdata.ObjectExplorerSession);
+	onSessionDisconnected(handle: number, sessionResponse: azdata.ObjectExplorerSession): void;
 
-	onNodeExpanded(sessionResponse: NodeExpandInfoWithProviderId);
+	onNodeExpanded(sessionResponse: NodeExpandInfoWithProviderId): void;
 
 	/**
 	 * Register a ObjectExplorer provider
@@ -201,24 +201,20 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return this._onSelectionOrFocusChange.event;
 	}
 
-	public updateObjectExplorerNodes(connection: IConnectionProfile): Promise<void> {
-		return this._connectionManagementService.addSavedPassword(connection).then(withPassword => {
-			let connectionProfile = ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, withPassword);
-			return this.updateNewObjectExplorerNode(connectionProfile);
-		});
+	public async updateObjectExplorerNodes(connection: IConnectionProfile): Promise<void> {
+		const withPassword = await this._connectionManagementService.addSavedPassword(connection);
+		let connectionProfile = ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, withPassword);
+		return this.updateNewObjectExplorerNode(connectionProfile);
 	}
 
-	public deleteObjectExplorerNode(connection: IConnectionProfile): Promise<void> {
-		let self = this;
+	public async deleteObjectExplorerNode(connection: IConnectionProfile): Promise<void> {
 		let connectionUri = connection.id;
 		let nodeTree = this._activeObjectExplorerNodes[connectionUri];
 		if (nodeTree) {
-			return self.closeSession(connection.providerName, nodeTree.getSession()).then(() => {
-				delete self._activeObjectExplorerNodes[connectionUri];
-				delete self._sessions[nodeTree.getSession().sessionId];
-			});
+			await this.closeSession(connection.providerName, nodeTree.getSession());
+			delete this._activeObjectExplorerNodes[connectionUri];
+			delete this._sessions[nodeTree.getSession().sessionId];
 		}
-		return Promise.resolve();
 	}
 
 	/**
@@ -293,7 +289,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	/**
 	 * Gets called when session is disconnected
 	 */
-	public onSessionDisconnected(handle: number, session: azdata.ObjectExplorerSession) {
+	public onSessionDisconnected(handle: number, session: azdata.ObjectExplorerSession): void {
 		if (this._sessions[session.sessionId]) {
 			let connection: ConnectionProfile = this._sessions[session.sessionId].connection;
 			if (connection && this._connectionManagementService.isProfileConnected(connection)) {
@@ -680,11 +676,10 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	/**
 	* For Testing purpose only. Get the context menu actions for an object explorer node
 	*/
-	public getNodeActions(connectionId: string, nodePath: string): Promise<string[]> {
-		return this.getTreeNode(connectionId, nodePath).then(node => {
-			let actions = this._serverTreeView.treeActionProvider.getActions(this._serverTreeView.tree, this.getTreeItem(node));
-			return actions.filter(action => action.label).map(action => action.label);
-		});
+	public async getNodeActions(connectionId: string, nodePath: string): Promise<string[]> {
+		const node = await this.getTreeNode(connectionId, nodePath);
+		let actions = this._serverTreeView.treeActionProvider.getActions(this._serverTreeView.tree, this.getTreeItem(node));
+		return actions.filter(action => action.label).map(action => action.label);
 	}
 
 	public async refreshNodeInView(connectionId: string, nodePath: string): Promise<TreeNode> {
