@@ -976,8 +976,10 @@ async function showAzureAccessError(selectedAccount: azdata.Account, error: any,
 	switch (await getAccountStatus(selectedAccount)) {
 		case AccountStatus.notFound:
 			vscode.window.showErrorMessage(localize('azure.accounts.accountNotFoundError', "The selected account '{0}' is no longer available. Kindly add it back by signing in.\n Error Details: {1}.", getAccountDisplayString(selectedAccount), getErrorMessage(error)));
+			break;
 		case AccountStatus.isStale:
 			vscode.window.showErrorMessage(localize('azure.accounts.accountStaleError', "The access token for selected account '{0}' is no longer valid. Kindly sign in again to refresh your credentials.\n Error Details: {1}.", getAccountDisplayString(selectedAccount), getErrorMessage(error)));
+			break;
 		case AccountStatus.isNotStale:
 			vscode.window.showErrorMessage(unexpectedErrorMessage);
 	}
