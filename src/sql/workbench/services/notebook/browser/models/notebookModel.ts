@@ -9,7 +9,7 @@ import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
 
-import { IClientSession, INotebookModel, INotebookModelOptions, ICellModel, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { IClientSession, INotebookModel, INotebookModelOptions, ICellModel, NotebookContentChange, MoveDirection } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellType, CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { nbversion } from 'sql/workbench/services/notebook/common/notebookConstants';
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
@@ -59,6 +59,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _onProviderIdChanged = new Emitter<string>();
 	private _trustedMode: boolean;
 	private _onActiveCellChanged = new Emitter<ICellModel>();
+	private _onCellTypeChanged = new Emitter<ICellModel>();
 
 	private _cells: ICellModel[];
 	private _defaultLanguageInfo: nb.ILanguageInfo;
@@ -271,6 +272,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._onActiveCellChanged.event;
 	}
 
+	public get onCellTypeChanged(): Event<ICellModel> {
+		return this._onCellTypeChanged.event;
+	}
+
 	public get standardKernels(): notebookUtils.IStandardKernelWithProvider[] {
 		return this._standardKernels;
 	}
@@ -387,6 +392,40 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return cell;
 	}
 
+	moveCell(cell: ICellModel, direction: MoveDirection): void {
+		if (this.inErrorState) {
+			return null;
+		}
+		let index = this.findCellIndex(cell);
+
+		if ((index === 0 && direction === MoveDirection.Up) || ((index === this._cells.length - 1 && direction === MoveDirection.Down))) {
+			// Nothing to do
+			return;
+		}
+
+		if (direction === MoveDirection.Down) {
+			this._cells.splice(index, 1);
+			if (index + 1 < this._cells.length) {
+				this._cells.splice(index + 1, 0, cell);
+			} else {
+				this._cells.push(cell);
+			}
+		} else {
+			this._cells.splice(index, 1);
+			this._cells.splice(index - 1, 0, cell);
+		}
+
+		index = this.findCellIndex(cell);
+
+		// Set newly created cell as active cell
+		this.updateActiveCell(cell);
+		this._contentChangedEmitter.fire({
+			changeType: NotebookChangeType.CellsModified,
+			cells: [cell],
+			cellIndex: index
+		});
+	}
+
 	public updateActiveCell(cell: ICellModel): void {
 		if (this._activeCell) {
 			this._activeCell.active = false;
@@ -396,6 +435,21 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._activeCell.active = true;
 		}
 		this._onActiveCellChanged.fire(cell);
+	}
+
+	public convertCellType(cell: ICellModel): void {
+		if (cell) {
+			let index = this.findCellIndex(cell);
+			if (index > -1) {
+				cell.cellType = cell.cellType === CellTypes.Markdown ? CellTypes.Code : CellTypes.Markdown;
+				this._onCellTypeChanged.fire(cell);
+				this._contentChangedEmitter.fire({
+					changeType: NotebookChangeType.CellsModified,
+					cells: [cell],
+					cellIndex: index
+				});
+			}
+		}
 	}
 
 	private createCell(cellType: CellType): ICellModel {
