@@ -33,7 +33,7 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 				return (<ConnectionProfile>element).id;
 			} else if (element instanceof ConnectionProfileGroup) {
 				return (<ConnectionProfileGroup>element).id;
-			} else if (this.checkNodeTypeSingle(element.nodeTypeId)) {
+			} else if (ServerTreeDragAndDrop.checkNodeTypeSingle(element.nodeTypeId)) {
 				return (<TreeNode>element).id;
 			} else if (element.nodeTypeId === 'Folder' && element.label === 'Columns' && element.children) {
 				return (<TreeNode>element).id;
@@ -46,7 +46,7 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 		}
 	}
 
-	private checkNodeTypeSingle(nodeId: string): boolean {
+	public static checkNodeTypeSingle(nodeId: string): boolean {
 		if (nodeId === 'Table' || nodeId === 'Column' || nodeId === 'View') {
 			return true;
 		}
