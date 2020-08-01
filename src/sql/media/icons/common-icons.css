@@ -233,6 +233,15 @@
 	background: url("unpin.svg") center center no-repeat;
 }
 
+.hc-black .codicon.bookreport,
+.vs-dark .codicon.bookreport {
+	background: url("book_inverse.svg") center center no-repeat;
+}
+
+.vs .codicon.bookreport {
+	background: url("book.svg") center center no-repeat;
+}
+
 .vs .sql.codicon.pause {
 	background-image: url("pause.svg");
 }
@@ -282,27 +291,35 @@
 .codicon.toolbarIconRunInactive {
 	background-image: url("execute_cell_grey.svg");
 }
+
 .codicon.toolbarIconRun {
 	background-image: url("execute_cell.svg");
 }
+
 .codicon.toolbarIconRunError {
 	background-image: url("execute_cell_error.svg");
 }
+
 .codicon.toolbarIconStop {
 	background-image: url("stop_cell_solidanimation.svg");
 }
+
 .vs-dark .codicon.toolbarIconRunInactive {
 	background-image: url("execute_cell_dark.svg");
 }
+
 .vs-dark .codicon.toolbarIconRun {
 	background-image: url("execute_cell_white.svg");
 }
+
 .hc-black .codicon.toolbarIconRunInactive {
 	background-image: url("execute_cell_hc.svg");
 }
+
 .hc-black .codicon.toolbarIconRun {
 	background-image: url("execute_cell_orange_hc.svg");
 }
+
 .vs-dark .codicon.toolbarIconStop,
 .hc-black .codicon.toolbarIconStop {
 	background-image: url("stop_cell_solidanimation_inverse.svg");
@@ -387,6 +404,7 @@ Includes non-masked style declarations. */
 .codicon:not(.masked-icon).icon-expand-cells {
 	background-image: url("action-expand.svg");
 }
+
 .codicon.masked-icon.icon-expand-cells:before {
 	background-image: none;
 	-webkit-mask-image: url("action-expand.svg");
@@ -396,6 +414,7 @@ Includes non-masked style declarations. */
 .codicon:not(.masked-icon).icon-collapse-cells {
 	background-image: url("action-collapse.svg");
 }
+
 .codicon.masked-icon.icon-collapse-cells:before {
 	-webkit-mask-image: url("action-collapse.svg");
 	mask-image: url("action-collapse.svg");
@@ -404,6 +423,7 @@ Includes non-masked style declarations. */
 .codicon:not(.masked-icon).icon-clear-results {
 	background-image: url("clear.svg");
 }
+
 .codicon.masked-icon.icon-clear-results:before {
 	-webkit-mask-image: url("clear.svg");
 	mask-image: url("clear.svg");
@@ -412,6 +432,7 @@ Includes non-masked style declarations. */
 .codicon:not(.masked-icon).icon-shield {
 	background-image: url("shield.svg");
 }
+
 .codicon.masked-icon.icon-shield:before {
 	-webkit-mask-image: url("shield.svg");
 	mask-image: url("shield.svg");
@@ -420,6 +441,7 @@ Includes non-masked style declarations. */
 .codicon:not(.masked-icon).icon-shield-x {
 	background-image: url("shield-x.svg");
 }
+
 .codicon.masked-icon.icon-shield-x:before {
 	-webkit-mask-image: url("shield-x.svg");
 	mask-image: url("shield-x.svg");
@@ -428,6 +450,7 @@ Includes non-masked style declarations. */
 .codicon:not(.masked-icon).packages {
 	background-image: url("packages.svg");
 }
+
 .codicon.masked-icon.packages:before {
 	background-image: none;
 	-webkit-mask-image: url("packages.svg");
@@ -437,6 +460,7 @@ Includes non-masked style declarations. */
 .codicon.arrow-up {
 	background-image: url("chevron_up.svg");
 }
+
 .vs-dark .codicon.arrow-up,
 .hc-black .codicon.arrow-up {
 	background-image: url("chevron_up_inverse.svg");
@@ -445,10 +469,12 @@ Includes non-masked style declarations. */
 .codicon:not(.masked-icon).arrow-down {
 	background-image: url("chevron_down.svg");
 }
+
 .vs-dark .codicon:not(.masked-icon).arrow-down,
 .hc-black .codicon:not(.masked-icon).arrow-down {
 	background-image: url("chevron_down_inverse.svg");
 }
+
 .codicon.masked-icon.arrow-down {
 	background-image: none;
 	-webkit-mask-image: url("chevron_down.svg");
@@ -458,6 +484,7 @@ Includes non-masked style declarations. */
 .vs .codicon:not(.masked-icon).new-blue {
 	background-image: url('new-blue.svg');
 }
+
 .vs .codicon:not(.masked-icon).start-outline {
 	background-image: url('start-outline.svg');
 }
@@ -466,6 +493,7 @@ Includes non-masked style declarations. */
 .masked-pseudo {
 	background-image: none !important;
 }
+
 .masked-pseudo:before,
 .masked-pseudo-after:after {
 	content: "";
@@ -478,6 +506,7 @@ Includes non-masked style declarations. */
 	-webkit-mask-size: 50% 100%;
 	mask-size: 50% 100%;
 }
+
 .masked-pseudo:before {
 	height: 23px;
 	left: 0;
@@ -485,21 +514,25 @@ Includes non-masked style declarations. */
 	transform: translateY(-50%);
 	width: 30px;
 }
+
 .masked-pseudo-after:after {
 	height: 23px;
 	right: 0;
 	top: 2px;
 	width: 30px;
 }
+
 .masked-pseudo-after.dropdown-arrow:after {
 	background-image: none;
 	-webkit-mask-image: url("chevron_down.svg");
 	mask-image: url("chevron_down.svg");
 }
+
 .masked-pseudo.add-new:before {
 	-webkit-mask-image: url("new.svg");
 	mask-image: url("new.svg");
 }
+
 .masked-pseudo.start-outline:before {
 	-webkit-mask-image: url("start-outline.svg");
 	mask-image: url("start-outline.svg");
@@ -509,6 +542,7 @@ Includes non-masked style declarations. */
 	-webkit-mask-image: url("code.svg");
 	mask-image: url("code.svg");
 }
+
 .masked-pseudo.markdown:before {
 	-webkit-mask-image: url("markdown.svg");
 	mask-image: url("markdown.svg");
@@ -519,32 +553,38 @@ Includes non-masked style declarations. */
 	-webkit-mask-image: url('new.svg');
 	mask-image: url('new.svg');
 }
+
 .codicon.masked-icon.close:before {
 	background-image: none;
 	-webkit-mask-image: url('close-blue.svg');
 	mask-image: url('close-blue.svg');
 }
+
 .codicon.masked-icon.edit:before {
 	background-image: none;
 	-webkit-mask-image: url('edit.svg');
 	mask-image: url('edit.svg');
 }
+
 .codicon.masked-icon.move-up {
 	transform: scale(-1);
 	background-image: none;
 	-webkit-mask-image: url('down-arrow-blue.svg');
 	mask-image: url('down-arrow-blue.svg');
 }
+
 .codicon.masked-icon.move-down {
 	background-image: none;
 	-webkit-mask-image: url('down-arrow-blue.svg');
 	mask-image: url('down-arrow-blue.svg');
 }
+
 .codicon.masked-icon.delete:before {
 	background-image: none;
 	-webkit-mask-image: url('garbage-can-blue.svg');
 	mask-image: url('garbage-can-blue.svg');
 }
+
 .codicon.masked-icon.more:before {
 	background-image: none;
 	-webkit-mask-image: url('ellipsis-blue.svg');
