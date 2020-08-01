@@ -60,7 +60,7 @@ export class FirewallRuleDialogController {
 	private async handleOnCreateFirewallRule(): Promise<void> {
 		const resourceProviderId = this._resourceProviderId;
 		try {
-			const tenantId = this._connection.azureTenantId;
+			const tenantId = this._firewallRuleDialog.viewModel.selectedTenantId;
 			const token = await this._accountManagementService.getAccountSecurityToken(this._firewallRuleDialog.viewModel.selectedAccount!, tenantId, AzureResource.ResourceManagement);
 			const securityTokenMappings = {
 				[tenantId]: token
