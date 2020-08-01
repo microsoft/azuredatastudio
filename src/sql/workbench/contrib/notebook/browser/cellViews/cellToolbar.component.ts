@@ -10,7 +10,7 @@ import { localize } from 'vs/nls';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { DeleteCellAction, EditCellAction, CellToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/cellToolbarActions';
+import { DeleteCellAction, EditCellAction, CellToggleMoreActions, MoveCellAction } from 'sql/workbench/contrib/notebook/browser/cellToolbarActions';
 import { AddCellAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/buttonMenu';
@@ -27,10 +27,12 @@ export const CELL_TOOLBAR_SELECTOR: string = 'cell-toolbar-component';
 export class CellToolbarComponent {
 	@ViewChild('celltoolbar', { read: ElementRef }) private celltoolbar: ElementRef;
 
-	public buttonEdit = localize('buttonEdit', "Edit");
-	public buttonClose = localize('buttonClose', "Close");
-	public buttonAdd = localize('buttonAdd', "Add new cell");
-	public buttonDelete = localize('buttonDelete', "Delete cell");
+	public buttonAdd = localize('buttonAdd', "Add cell");
+	public optionCodeCell = localize('optionCodeCell', "Code cell");
+	public optionTextCell = localize('optionTextCell', "Text cell");
+	public buttonMoveDown = localize('buttonMoveDown', "Move cell down");
+	public buttonMoveUp = localize('buttonMoveUp', "Move cell up");
+	public buttonDelete = localize('buttonDelete', "Delete");
 
 	@Input() cellModel: ICellModel;
 	@Input() model: NotebookModel;
@@ -64,17 +66,20 @@ export class CellToolbarComponent {
 		let addTextCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddTextCell', localize('textPreview', "Text cell"), 'notebook-button masked-pseudo markdown');
 		addTextCellButton.cellType = CellTypes.Markdown;
 
-		let deleteButton = this.instantiationService.createInstance(DeleteCellAction, 'delete', 'codicon masked-icon delete', localize('delete', "Delete"));
+		let moveCellDownButton = this.instantiationService.createInstance(MoveCellAction, 'notebook.MoveCellDown', 'masked-icon move-down', this.buttonMoveDown);
+		let moveCellUpButton = this.instantiationService.createInstance(MoveCellAction, 'notebook.MoveCellUp', 'masked-icon move-up', this.buttonMoveUp);
+
+		let deleteButton = this.instantiationService.createInstance(DeleteCellAction, 'notebook.DeleteCell', 'masked-icon delete', this.buttonDelete);
 
 		let moreActionsContainer = DOM.$('li.action-item');
 		this._cellToggleMoreActions = this.instantiationService.createInstance(CellToggleMoreActions);
 		this._cellToggleMoreActions.onInit(moreActionsContainer, context);
 
-		this._editCellAction = this.instantiationService.createInstance(EditCellAction, 'notebook.editCell', true, this.cellModel.isEditMode);
+		this._editCellAction = this.instantiationService.createInstance(EditCellAction, 'notebook.EditCell', true, this.cellModel.isEditMode);
 		this._editCellAction.enabled = true;
 
-		let buttonDropdownContainer = DOM.$('li.action-item');
-		buttonDropdownContainer.setAttribute('role', 'presentation');
+		let addCellDropdownContainer = DOM.$('li.action-item');
+		addCellDropdownContainer.setAttribute('role', 'presentation');
 		let dropdownMenuActionViewItem = new DropdownMenuActionViewItem(
 			addCellsButton,
 			[addCodeCellButton, addTextCellButton],
@@ -86,14 +91,17 @@ export class CellToolbarComponent {
 			'',
 			undefined
 		);
-		dropdownMenuActionViewItem.render(buttonDropdownContainer);
+		dropdownMenuActionViewItem.render(addCellDropdownContainer);
 		dropdownMenuActionViewItem.setActionContext(context);
 
 		let taskbarContent: ITaskbarContent[] = [];
 		if (this.cellModel?.cellType === CellTypes.Markdown) {
 			taskbarContent.push({ action: this._editCellAction });
 		}
-		taskbarContent.push({ element: buttonDropdownContainer },
+		taskbarContent.push(
+			{ element: addCellDropdownContainer },
+			{ action: moveCellDownButton },
+			{ action: moveCellUpButton },
 			{ action: deleteButton },
 			{ element: moreActionsContainer });
 
