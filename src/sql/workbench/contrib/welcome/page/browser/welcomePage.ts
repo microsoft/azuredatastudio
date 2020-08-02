@@ -316,9 +316,15 @@ class WelcomePage extends Disposable {
 			}
 			const workspacesToShow = workspaces.slice(0, 5);
 			const updateEntries = async () => {
-				await this.mapListEntries(workspacesToShow, fileService, container);
+				while (ul.firstChild) {
+					ul.removeChild(ul.firstChild);
+					await this.mapListEntries(workspacesToShow, fileService, container);
+				}
 			};
-			await updateEntries();
+			while (ul.firstChild) {
+				ul.removeChild(ul.firstChild);
+				await updateEntries();
+			}
 			this._register(this.labelService.onDidChangeFormatters(updateEntries));
 		}).then(undefined, onUnexpectedError);
 		this.addExtensionList(container, '.extension-list');
@@ -677,32 +683,26 @@ class WelcomePage extends Disposable {
 		return result;
 	}
 
-	private called: boolean;
 	private async mapListEntries(recents: (IRecentWorkspace | IRecentFolder)[], fileService: IFileService, container: HTMLElement): Promise<HTMLElement[]> {
-		if (!this.called) {
-			this.called = true;
-			const result: HTMLElement[] = [];
-			for (let i = 0; i < recents.length; i++) {
-				const recent = recents[i];
-				let relativePath: string;
-				let fullPath: URI;
-				let windowOpenable: IWindowOpenable;
-				if (isRecentFolder(recent)) {
-					windowOpenable = { folderUri: recent.folderUri };
-					relativePath = recent.label || this.labelService.getWorkspaceLabel(recent.folderUri, { verbose: true });
-					fullPath = recent.folderUri;
-				} else {
-					relativePath = recent.label || this.labelService.getWorkspaceLabel(recent.workspace, { verbose: true });
-					windowOpenable = { workspaceUri: recent.workspace.configPath };
-				}
-				const elements = await this.createListEntries(container, fileService, fullPath, windowOpenable, relativePath);
-				result.push(...elements);
+		const result: HTMLElement[] = [];
+		for (let i = 0; i < recents.length; i++) {
+			const recent = recents[i];
+			let relativePath: string;
+			let fullPath: URI;
+			let windowOpenable: IWindowOpenable;
+			if (isRecentFolder(recent)) {
+				windowOpenable = { folderUri: recent.folderUri };
+				relativePath = recent.label || this.labelService.getWorkspaceLabel(recent.folderUri, { verbose: true });
+				fullPath = recent.folderUri;
+			} else {
+				relativePath = recent.label || this.labelService.getWorkspaceLabel(recent.workspace, { verbose: true });
+				windowOpenable = { workspaceUri: recent.workspace.configPath };
 			}
-			return result;
+			const elements = await this.createListEntries(container, fileService, fullPath, windowOpenable, relativePath);
+			result.push(...elements);
 		}
-		return null;
+		return result;
 	}
-
 	private addExtensionList(container: HTMLElement, listSelector: string): void {
 		const list = container.querySelector(listSelector);
 		if (list) {
