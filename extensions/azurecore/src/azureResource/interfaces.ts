@@ -8,10 +8,10 @@ import * as msRest from '@azure/ms-rest-js';
 import { Account } from 'azdata';
 
 import { azureResource } from './azure-resource';
-import { AzureAccount, AzureAccountSecurityToken, Tenant } from '../account-provider/interfaces';
+import { AzureAccount, Tenant } from '../account-provider/interfaces';
 
 export interface IAzureResourceSubscriptionService {
-	getSubscriptions(account: Account, credential: msRest.ServiceClientCredentials): Promise<azureResource.AzureResourceSubscription[]>;
+	getSubscriptions(account: Account, credential: msRest.ServiceClientCredentials, tenantId: string): Promise<azureResource.AzureResourceSubscription[]>;
 }
 
 export interface IAzureResourceSubscriptionFilterService {
@@ -20,7 +20,7 @@ export interface IAzureResourceSubscriptionFilterService {
 }
 
 export interface IAzureTerminalService {
-	getOrCreateCloudConsole(account: AzureAccount, tenant: Tenant, tokens: { [key: string]: AzureAccountSecurityToken }): Promise<void>;
+	getOrCreateCloudConsole(account: AzureAccount, tenant: Tenant): Promise<void>;
 }
 
 export interface IAzureResourceCacheService {
@@ -31,9 +31,6 @@ export interface IAzureResourceCacheService {
 	update<T>(key: string, value: T): void;
 }
 
-export interface IAzureResourceTenantService {
-	getTenantId(subscription: azureResource.AzureResourceSubscription, account: Account, credential: msRest.ServiceClientCredentials): Promise<string>;
-}
 
 export interface IAzureResourceNodeWithProviderId {
 	resourceProviderId: string;

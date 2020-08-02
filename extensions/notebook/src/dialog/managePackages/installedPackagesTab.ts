@@ -5,12 +5,14 @@
 
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 
 import { JupyterServerInstallation, PythonPkgDetails } from '../../jupyter/jupyterServerInstallation';
 import * as utils from '../../common/utils';
 import { ManagePackagesDialog } from './managePackagesDialog';
 import CodeAdapter from '../../prompts/adapter';
 import { IQuestion, confirm } from '../../prompts/question';
+import { IconPathHelper } from '../../common/iconHelper';
 
 const localize = nls.loadMessageBundle();
 
@@ -27,6 +29,7 @@ export class InstalledPackagesTab {
 	private uninstallPackageButton: azdata.ButtonComponent;
 	private view: azdata.ModelView | undefined;
 	private formBuilder: azdata.FormBuilder;
+	private disposables: vscode.Disposable[] = [];
 
 	constructor(private dialog: ManagePackagesDialog, private jupyterInstallation: JupyterServerInstallation) {
 		this.prompter = new CodeAdapter();
@@ -35,6 +38,13 @@ export class InstalledPackagesTab {
 
 		this.installedPkgTab.registerContent(async view => {
 			this.view = view;
+
+			// Dispose the resources
+			this.disposables.push(view.onClosed(() => {
+				this.disposables.forEach(d => {
+					try { d.dispose(); } catch { }
+				});
+			}));
 			let dropdownValues = this.dialog.model.getPackageTypes().map(x => {
 				return {
 					name: x.providerId,
@@ -67,20 +77,39 @@ export class InstalledPackagesTab {
 			this.installedPackagesTable = view.modelBuilder.table()
 				.withProperties({
 					columns: [
-						localize('managePackages.pkgNameColumn', "Name"),
-						localize('managePackages.newPkgVersionColumn', "Version")
+						{
+							value: localize('managePackages.pkgNameColumn', "Name"),
+							type: azdata.ColumnType.text
+						},
+						{
+							value: localize('managePackages.newPkgVersionColumn', "Version"),
+							type: azdata.ColumnType.text
+						},
+						{
+							value: localize('managePackages.deleteColumn', "Delete"),
+							type: azdata.ColumnType.button,
+							options: {
+								icon: IconPathHelper.delete
+							}
+						}
 					],
 					data: [[]],
 					height: '600px',
 					width: '400px'
 				}).component();
+			this.disposables.push(this.installedPackagesTable.onCellAction(async (rowState) => {
+				let buttonState = <azdata.ICellActionEventArgs>rowState;
+				if (buttonState) {
+					await this.doUninstallPackage([rowState.row]);
+				}
+			}));
 
 			this.uninstallPackageButton = view.modelBuilder.button()
 				.withProperties({
 					label: localize('managePackages.uninstallButtonText', "Uninstall selected packages"),
 					width: '200px'
 				}).component();
-			this.uninstallPackageButton.onDidClick(() => this.doUninstallPackage());
+			this.uninstallPackageButton.onDidClick(() => this.doUninstallPackage(this.installedPackagesTable.selectedRows));
 
 			this.formBuilder = view.modelBuilder.formContainer()
 				.withFormItems([{
@@ -214,8 +243,7 @@ export class InstalledPackagesTab {
 		}
 	}
 
-	private async doUninstallPackage(): Promise<void> {
-		let rowNums = this.installedPackagesTable.selectedRows;
+	private async doUninstallPackage(rowNums: number[]): Promise<void> {
 		if (!rowNums || rowNums.length === 0) {
 			return;
 		}

@@ -28,7 +28,7 @@ export interface SerializeDataParams {
 	 * @param rowStart Index in the array to start copying rows from
 	 * @param numberOfRows Total number of rows to copy. If 0 or undefined, will copy all
 	 */
-	getRowRange(rowStart: number, numberOfRows?: number): azdata.DbCellValue[][];
+	getRowRange(rowStart: number, includeHeaders: boolean, numberOfRows?: number): azdata.DbCellValue[][];
 	rowCount: number;
 	columns: azdata.IDbColumn[];
 	includeHeaders?: boolean;
@@ -157,7 +157,7 @@ export class SerializationService implements ISerializationService {
 
 	private createStartRequest(serializationRequest: SerializeDataParams, index: number): azdata.SerializeDataStartRequestParams {
 		let batchSize = getBatchSize(serializationRequest.rowCount, index);
-		let rows = serializationRequest.getRowRange(index, batchSize);
+		let rows = serializationRequest.getRowRange(index, serializationRequest.includeHeaders, batchSize);
 		let columns: azdata.SimpleColumnInfo[] = serializationRequest.columns.map(c => {
 			// For now treat all as strings. In the future, would like to use the
 			// type info for correct data type mapping
@@ -186,7 +186,7 @@ export class SerializationService implements ISerializationService {
 
 	private createContinueRequest(serializationRequest: SerializeDataParams, index: number): azdata.SerializeDataContinueRequestParams {
 		let numberOfRows = getBatchSize(serializationRequest.rowCount, index);
-		let rows = serializationRequest.getRowRange(index, numberOfRows);
+		let rows = serializationRequest.getRowRange(index, serializationRequest.includeHeaders, numberOfRows);
 		let isLastBatch = index + rows.length >= serializationRequest.rowCount;
 		let continueSerializeRequest: azdata.SerializeDataContinueRequestParams = {
 			filePath: serializationRequest.filePath,

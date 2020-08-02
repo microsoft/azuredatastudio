@@ -117,7 +117,7 @@ export class ExplorerTable extends Disposable {
 			};
 		} else {
 			context = {
-				profile: dataContext,
+				profile: dataContext.toIConnectionProfile(),
 				uri: this.bootStrapService.getUnderlyingUri()
 			};
 		}

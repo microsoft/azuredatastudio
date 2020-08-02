@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { TreeDataProvider, EventEmitter, Event, TreeItem } from 'vscode';
+import * as vscode from 'vscode';
 import { AppContext } from '../../appContext';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
@@ -14,7 +14,7 @@ import { ICmsResourceTreeChangeHandler } from './treeChangeHandler';
 import { CmsResourceMessageTreeNode } from '../messageTreeNode';
 import { CmsResourceTreeNode } from './cmsResourceTreeNode';
 
-export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICmsResourceTreeChangeHandler {
+export class CmsResourceTreeProvider implements vscode.TreeDataProvider<TreeNode>, ICmsResourceTreeChangeHandler {
 
 	private _appContext: AppContext;
 	private _children: TreeNode[] = [CmsResourceMessageTreeNode.create(CmsResourceTreeProvider.loadingLabel, undefined)];
@@ -32,7 +32,7 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 		}
 
 		if (!this.isSystemInitialized) {
-			this.loadSavedServers().catch(err => this._appContext.apiWrapper.showErrorMessage(localize('cms.resource.tree.treeProvider.loadError', "Unexpected error occurred while loading saved servers {0}", err)));
+			this.loadSavedServers().catch(err => vscode.window.showErrorMessage(localize('cms.resource.tree.treeProvider.loadError', "Unexpected error occurred while loading saved servers {0}", err)));
 			return this._children;
 		}
 		try {
@@ -56,7 +56,7 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 		return this._children;
 	}
 
-	public get onDidChangeTreeData(): Event<TreeNode> {
+	public get onDidChangeTreeData(): vscode.Event<TreeNode> {
 		return this._onDidChangeTreeData.event;
 	}
 
@@ -68,7 +68,7 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 		this._onDidChangeTreeData.fire(node);
 	}
 
-	public getTreeItem(element: TreeNode): TreeItem | Thenable<TreeItem> {
+	public getTreeItem(element: TreeNode): vscode.TreeItem | Thenable<vscode.TreeItem> {
 		return element.getTreeItem();
 	}
 
@@ -107,7 +107,7 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 	}
 
 	public isSystemInitialized: boolean = false;
-	private _onDidChangeTreeData = new EventEmitter<TreeNode>();
+	private _onDidChangeTreeData = new vscode.EventEmitter<TreeNode>();
 
 	private static readonly loadingLabel = localize('cms.resource.tree.treeProvider.loadingLabel', "Loading ...");
 }

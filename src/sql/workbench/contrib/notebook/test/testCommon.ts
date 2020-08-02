@@ -5,10 +5,9 @@
 
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import * as stubs from 'sql/workbench/contrib/notebook/test/stubs';
-import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { INotebookModel, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookParams } from 'sql/workbench/services/notebook/browser/notebookService';
 import * as dom from 'vs/base/browser/dom';
-import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { NullTelemetryService } from 'vs/platform/telemetry/common/telemetryUtils';
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
@@ -20,6 +19,7 @@ import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServic
 export class NotebookEditorStub extends stubs.NotebookEditorStub {
 	cellEditors: CellEditorProviderStub[];
 	model: INotebookModel | undefined;
+	cells?: ICellModel[] = [];
 
 	get id(): string {
 		return this.notebookParams?.notebookUri?.toString();
@@ -55,8 +55,7 @@ class CellEditorProviderStub extends stubs.CellEditorProviderStub {
 				new TestTextResourceConfigurationService(),
 				new TestThemeService(),
 				new TestEditorGroupsService(),
-				new TestEditorService(),
-				new TestConfigurationService()
+				new TestEditorService()
 			);
 		}
 		if (this._editor) {

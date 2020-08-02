@@ -16,11 +16,7 @@ import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { Project } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProjectTreeViewProvider';
 import { ProjectsController } from '../controllers/projectController';
-import { createContext, TestContext } from './testContext';
 import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
-
-
-let testContext: TestContext;
 
 describe.skip('Publish Database Dialog', () => {
 	before(async function (): Promise<void> {
@@ -28,36 +24,32 @@ describe.skip('Publish Database Dialog', () => {
 		await baselines.loadBaselines();
 	});
 
-	beforeEach(function (): void {
-		testContext = createContext();
-	});
-
 	it('Should open dialog successfully ', async function (): Promise<void> {
-		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+		const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
 		const projFileDir = path.join(os.tmpdir(), `TestProject_${new Date().getTime()}`);
 
 		const projFilePath = await projController.createNewProject('TestProjectName', vscode.Uri.file(projFileDir), true, 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575');
 		const project = new Project(projFilePath);
-		const publishDatabaseDialog = new PublishDatabaseDialog(testContext.apiWrapper.object, project);
+		const publishDatabaseDialog = new PublishDatabaseDialog(project);
 		publishDatabaseDialog.openDialog();
 		should.notEqual(publishDatabaseDialog.publishTab, undefined);
 	});
 
 	it('Should create default database name correctly ', async function (): Promise<void> {
-		const projController = new ProjectsController(testContext.apiWrapper.object, new SqlDatabaseProjectTreeViewProvider());
+		const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
 		const projFolder = `TestProject_${new Date().getTime()}`;
 		const projFileDir = path.join(os.tmpdir(), projFolder);
 
 		const projFilePath = await projController.createNewProject('TestProjectName', vscode.Uri.file(projFileDir), true, 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575');
 		const project = new Project(projFilePath);
 
-		const publishDatabaseDialog = new PublishDatabaseDialog(testContext.apiWrapper.object, project);
+		const publishDatabaseDialog = new PublishDatabaseDialog(project);
 		should.equal(publishDatabaseDialog.getDefaultDatabaseName(), project.projectFileName);
 	});
 
 	it('Should include all info in publish profile', async function (): Promise<void> {
 		const proj = await testUtils.createTestProject(baselines.openProjectFileBaseline);
-		const dialog = TypeMoq.Mock.ofType(PublishDatabaseDialog, undefined, undefined, testContext.apiWrapper.object, proj);
+		const dialog = TypeMoq.Mock.ofType(PublishDatabaseDialog, undefined, undefined, proj);
 		dialog.setup(x => x.getConnectionUri()).returns(() => { return Promise.resolve('Mock|Connection|Uri'); });
 		dialog.setup(x => x.getTargetDatabaseName()).returns(() => 'MockDatabaseName');
 		dialog.callBase = true;

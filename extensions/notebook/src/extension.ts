@@ -13,13 +13,13 @@ import { AppContext } from './common/appContext';
 import { IExtensionApi, IPackageManageProvider } from './types';
 import { CellType } from './contracts/content';
 import { NotebookUriHandler } from './protocol/notebookUriHandler';
-import { BookTreeViewProvider } from './book/bookTreeView';
-import { NavigationProviders, BuiltInCommands, unsavedBooksContextKey } from './common/constants';
+import { BuiltInCommands, unsavedBooksContextKey } from './common/constants';
+import { RemoteBookController } from './book/remoteBookController';
+import { RemoteBookDialog } from './dialog/remoteBookDialog';
+import { RemoteBookDialogModel } from './dialog/remoteBookDialogModel';
 
 const localize = nls.loadMessageBundle();
 
-const BOOKS_VIEWID = 'bookTreeView';
-const PROVIDED_BOOKS_VIEWID = 'providedBooksView';
 let controller: JupyterController;
 type ChooseCellType = { label: string, id: CellType };
 
@@ -38,8 +38,7 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openBook', () => bookTreeViewProvider.openNewBook()));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.closeBook', (book: any) => bookTreeViewProvider.closeBook(book)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.closeNotebook', (book: any) => bookTreeViewProvider.closeBook(book)));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openNotebookFolder', () => bookTreeViewProvider.openNotebookFolder()));
-
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openNotebookFolder', (folderPath?: string, urlToOpen?: string, showPreview?: boolean,) => bookTreeViewProvider.openNotebookFolder(folderPath, urlToOpen, showPreview)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.createBook', async () => {
 		let untitledFileName: vscode.Uri = vscode.Uri.parse(`untitled:${createBookPath}`);
 		await vscode.workspace.openTextDocument(createBookPath).then((document) => {
@@ -50,6 +49,15 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 			});
 		});
 	}));
+
+	let model = new RemoteBookDialogModel();
+	let remoteBookController = new RemoteBookController(model, appContext.outputChannel);
+
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openRemoteBook', async () => {
+		let dialog = new RemoteBookDialog(remoteBookController);
+		dialog.createDialog();
+	}));
+
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('_notebook.command.new', async (context?: azdata.ConnectedContext) => {
 		let connectionProfile: azdata.IConnectionProfile = undefined;
 		if (context && context.connectionProfile) {
@@ -115,10 +123,10 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 		return undefined;
 	}
 
-	let workspaceFolders = vscode.workspace.workspaceFolders?.slice() ?? [];
-	const bookTreeViewProvider = new BookTreeViewProvider(workspaceFolders, extensionContext, false, BOOKS_VIEWID, NavigationProviders.NotebooksNavigator);
+
+	const bookTreeViewProvider = appContext.bookTreeViewProvider;
 	await bookTreeViewProvider.initialized;
-	const providedBookTreeViewProvider = new BookTreeViewProvider([], extensionContext, true, PROVIDED_BOOKS_VIEWID, NavigationProviders.ProvidedBooksNavigator);
+	const providedBookTreeViewProvider = appContext.providedBookTreeViewProvider;
 	await providedBookTreeViewProvider.initialized;
 
 	azdata.nb.onDidChangeActiveNotebookEditor(e => {
@@ -146,6 +154,9 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 		},
 		getPackageManagers() {
 			return controller.packageManageProviders;
+		},
+		getAppContext() {
+			return appContext;
 		}
 	};
 }

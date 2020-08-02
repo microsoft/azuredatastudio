@@ -5,13 +5,12 @@
 
 import * as vscode from 'vscode';
 import MainController from './controllers/mainController';
-import { ApiWrapper } from './common/apiWrapper';
 
 let controllers: MainController[] = [];
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
 	// Start the main controller
-	const mainController = new MainController(context, new ApiWrapper());
+	const mainController = new MainController(context);
 	controllers.push(mainController);
 	context.subscriptions.push(mainController);
 

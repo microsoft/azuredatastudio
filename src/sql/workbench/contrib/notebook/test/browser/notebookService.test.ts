@@ -29,6 +29,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { ExtensionManagementService } from 'vs/workbench/services/extensionManagement/common/extensionManagementService';
 import { TestFileService, TestLifecycleService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { TestExtensionService, TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
+import { IProductService } from 'vs/platform/product/common/productService';
 
 /**
  * class to mock azdata.nb.ServerManager object
@@ -107,6 +108,7 @@ suite('NotebookService:', function (): void {
 	let extensionServiceMock: TypeMoq.Mock<TestExtensionService>;
 	let testNo = 0;
 	let sandbox: sinon.SinonSandbox;
+	let productService: IProductService;
 
 	let installExtensionEmitter: Emitter<InstallExtensionEvent>,
 		didInstallExtensionEmitter: Emitter<DidInstallExtensionEvent>,
@@ -143,7 +145,10 @@ suite('NotebookService:', function (): void {
 		instantiationService.stub(IExtensionManagementService, 'onDidUninstallExtension', didUninstallExtensionEmitter.event);
 		extensionManagementService = instantiationService.get(IExtensionManagementService);
 
-		notebookService = new NotebookService(lifecycleService, storageService, extensionServiceMock.object, extensionManagementService, instantiationService, fileService, logServiceMock.object, queryManagementService, contextService);
+		instantiationService.stub(IProductService, { quality: 'stable' });
+		productService = instantiationService.get(IProductService);
+
+		notebookService = new NotebookService(lifecycleService, storageService, extensionServiceMock.object, extensionManagementService, instantiationService, fileService, logServiceMock.object, queryManagementService, contextService, productService);
 		sandbox = sinon.sandbox.create();
 	});
 
@@ -440,7 +445,7 @@ suite('NotebookService:', function (): void {
 		};
 		errorHandler.setUnexpectedErrorHandler(onUnexpectedErrorVerifier);
 		// The following call throws an exception internally with queryManagementService parameter being undefined.
-		new NotebookService(lifecycleService, storageService, extensionService, extensionManagementService, instantiationService, fileService, logService, /* queryManagementService */ undefined, contextService);
+		new NotebookService(lifecycleService, storageService, extensionService, extensionManagementService, instantiationService, fileService, logService, /* queryManagementService */ undefined, contextService, productService);
 		await unexpectedErrorPromise;
 		assert.strictEqual(unexpectedErrorCalled, true, `onUnexpectedError must be have been raised when queryManagementService is undefined when calling NotebookService constructor`);
 	});

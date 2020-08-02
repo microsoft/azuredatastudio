@@ -20,6 +20,8 @@ export interface ButtonColumnOptions {
 export interface ButtonClickEventArgs<T extends Slick.SlickData> {
 	item: T;
 	position: { x: number, y: number };
+	row: number;
+	column: number;
 }
 
 export class ButtonColumn<T extends Slick.SlickData> implements Slick.Plugin<T> {
@@ -57,8 +59,10 @@ export class ButtonColumn<T extends Slick.SlickData> implements Slick.Plugin<T> 
 	private handleActiveCellChanged(args: Slick.OnActiveCellChangedEventArgs<T>): void {
 		if (this.isCurrentColumn(args.cell)) {
 			const cellElement = this._grid.getActiveCellNode();
-			const button = cellElement.children[0] as HTMLButtonElement;
-			button.focus();
+			if (cellElement && cellElement.children) {
+				const button = cellElement.children[0] as HTMLButtonElement;
+				button.focus();
+			}
 		}
 	}
 
@@ -92,6 +96,8 @@ export class ButtonColumn<T extends Slick.SlickData> implements Slick.Plugin<T> 
 		const activeCellPosition = this._grid.getActiveCellPosition();
 		if (activeCell && activeCellPosition) {
 			this._onClick.fire({
+				row: activeCell.row,
+				column: activeCell.cell,
 				item: this._grid.getDataItem(activeCell.row),
 				position: {
 					x: (activeCellPosition.left + activeCellPosition.right) / 2,
@@ -102,7 +108,7 @@ export class ButtonColumn<T extends Slick.SlickData> implements Slick.Plugin<T> 
 	}
 
 	private isCurrentColumn(columnIndex: number): boolean {
-		return this._grid.getColumns()[columnIndex].id === this.definition.id;
+		return this._grid?.getColumns()[columnIndex]?.id === this.definition.id;
 	}
 
 	private formatter(row: number, cell: number, value: any, columnDef: Slick.Column<T>, dataContext: T): string {

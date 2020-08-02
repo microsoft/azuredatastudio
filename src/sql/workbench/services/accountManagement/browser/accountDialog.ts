@@ -18,7 +18,6 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { SplitView, Sizing } from 'vs/base/browser/ui/splitview/splitview';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { values } from 'vs/base/common/map';
 
 import * as azdata from 'azdata';
 
@@ -44,6 +43,8 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
+import { Iterable } from 'vs/base/common/iterator';
+import { Tenant, TenantListDelegate, TenantListRenderer } from 'sql/workbench/services/accountManagement/browser/tenantListRenderer';
 
 export const VIEWLET_ID = 'workbench.view.accountpanel';
 
@@ -61,6 +62,8 @@ export const ACCOUNT_VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewC
 class AccountPanel extends ViewPane {
 	public index: number;
 	private accountList: List<azdata.Account>;
+	private tenantList: List<Tenant>;
+
 
 	constructor(
 		private options: IViewPaneOptions,
@@ -79,13 +82,14 @@ class AccountPanel extends ViewPane {
 
 	protected renderBody(container: HTMLElement): void {
 		this.accountList = new List<azdata.Account>('AccountList', container, new AccountListDelegate(AccountDialog.ACCOUNTLIST_HEIGHT), [this.instantiationService.createInstance(AccountListRenderer)]);
+		this.tenantList = new List<Tenant>('TenantList', container, new TenantListDelegate(AccountDialog.ACCOUNTLIST_HEIGHT), [this.instantiationService.createInstance(TenantListRenderer)]);
 		this._register(attachListStyler(this.accountList, this.themeService));
+		this._register(attachListStyler(this.tenantList, this.themeService));
 	}
 
 	protected layoutBody(size: number): void {
-		if (this.accountList) {
-			this.accountList.layout(size);
-		}
+		this.accountList?.layout(size);
+		this.tenantList?.layout(size);
 	}
 
 	public get length(): number {
@@ -102,6 +106,11 @@ class AccountPanel extends ViewPane {
 
 	public setSelection(indexes: number[]) {
 		this.accountList.setSelection(indexes);
+		this.updateTenants(this.accountList.getSelection[0]);
+	}
+
+	private updateTenants(account: azdata.Account) {
+		this.tenantList.splice(0, this.tenantList.length, account?.properties?.tenants ?? []);
 	}
 
 	public getActions(): IAction[] {
@@ -219,7 +228,7 @@ export class AccountDialog extends Modal {
 		this._addAccountButton.label = localize('accountDialog.addConnection', "Add an account");
 
 		this._register(this._addAccountButton.onDidClick(async () => {
-			const vals = values(this._providerViewsMap);
+			const vals = Iterable.consume(this._providerViewsMap.values())[0];
 
 			let pickedValue: string;
 			if (vals.length === 0) {
@@ -291,8 +300,8 @@ export class AccountDialog extends Modal {
 	private showSplitView() {
 		this._splitViewContainer.hidden = false;
 		this._noaccountViewContainer.hidden = true;
-		if (values(this._providerViewsMap).length > 0) {
-			const firstView = values(this._providerViewsMap)[0];
+		if (Iterable.consume(this._providerViewsMap.values()).length > 0) {
+			const firstView = this._providerViewsMap.values().next().value;
 			if (firstView instanceof AccountPanel) {
 				firstView.setSelection([0]);
 				firstView.focus();
@@ -301,7 +310,7 @@ export class AccountDialog extends Modal {
 	}
 
 	private isEmptyLinkedAccount(): boolean {
-		for (const provider of values(this._providerViewsMap)) {
+		for (const provider of this._providerViewsMap.values()) {
 			const listView = provider.view;
 			if (listView && listView.length > 0) {
 				return false;
@@ -312,7 +321,7 @@ export class AccountDialog extends Modal {
 
 	public dispose(): void {
 		super.dispose();
-		for (const provider of values(this._providerViewsMap)) {
+		for (const provider of this._providerViewsMap.values()) {
 			if (provider.addAccountAction) {
 				provider.addAccountAction.dispose();
 			}

@@ -22,13 +22,6 @@ interface CreateCmsResult {
 	ownerUri: string;
 }
 
-/**
- * Wrapper class to act as a facade over VSCode and Data APIs and allow us to test / mock callbacks into
- * this API from our code
- *
- * @export
- * ApiWrapper
- */
 export class CmsUtils {
 
 	constructor(private _memento: vscode.Memento) {
@@ -51,21 +44,12 @@ export class CmsUtils {
 		return credential ? credential.password : undefined;
 	}
 
-	public showErrorMessage(message: string, ...items: string[]): Thenable<string | undefined> {
-		return vscode.window.showErrorMessage(message, ...items);
-	}
-
 	public getSavedServers(): ICmsResourceNodeInfo[] {
 		return this._memento.get('centralManagementServers') || [];
 	}
 
 	public async saveServers(servers: ICmsResourceNodeInfo[]): Promise<void> {
 		await this._memento.update('centralManagementServers', servers);
-	}
-
-	// Connection APIs
-	public openConnectionDialog(providers: string[], initialConnectionProfile?: azdata.IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Thenable<azdata.connection.Connection> {
-		return azdata.connection.openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions);
 	}
 
 	public async getUriForConnection(connection: azdata.connection.Connection): Promise<string> {
@@ -187,12 +171,12 @@ export class CmsUtils {
 				authTypeChanged: true
 			}
 		};
-		let connection = await this.openConnectionDialog([cmsProvider], initialProfile, { saveConnection: false });
+		let connection = await azdata.connection.openConnectionDialog([cmsProvider], initialProfile, { saveConnection: false });
 		if (connection && connection.options) {
 			if (connection.options.server === parentServerName) {
 				// error out for same server registration
 				let errorText = localize('cms.errors.sameServerUnderCms', "You cannot add a shared registered server with the same name as the Configuration Server");
-				this.showErrorMessage(errorText);
+				vscode.window.showErrorMessage(errorText);
 				throw new Error(errorText);
 			} else {
 				let registeredServerName = connection.options.registeredServerName === '' ? connection.options.server : connection.options.registeredServerName;
@@ -251,7 +235,7 @@ export class CmsUtils {
 				options: {}
 			};
 		}
-		let connection = await this.openConnectionDialog([cmsProvider], initialConnectionProfile, { saveConnection: false });
+		let connection = await azdata.connection.openConnectionDialog([cmsProvider], initialConnectionProfile, { saveConnection: false });
 		if (connection) {
 			// remove group ID from connection if a user chose connection
 			// from the recent connections list
