@@ -3433,7 +3433,7 @@
 					"versions": [
 						{
 							"version": "0.1.2",
-							"lastUpdated": "06/24/2020",
+							"lastUpdated": "08/03/2020",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -3443,7 +3443,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/sql-database-projects/images/extension.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/sql-database-projects/images/sqlDatabaseProjects.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
@@ -3465,7 +3465,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.20.0"
+									"value": ">=1.21.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
