@@ -980,9 +980,9 @@ async function getAzureAccessError(selectedAccount: azdata.Account, error: any, 
 	}
 	switch (accountStatus) {
 		case AccountStatus.notFound:
-			return localize('azure.accounts.accountNotFoundError', "The selected account '{0}' is no longer available. Kindly add it back by signing in.\n Error Details: {1}.", getAccountDisplayString(selectedAccount), getErrorMessage(error));
+			return localize('azure.accounts.accountNotFoundError', "The selected account '{0}' is no longer available.  Click sign in to add it again or select a different account.\n Error Details: {1}.", getAccountDisplayString(selectedAccount), getErrorMessage(error));
 		case AccountStatus.isStale:
-			return localize('azure.accounts.accountStaleError', "The access token for selected account '{0}' is no longer valid. Kindly sign in again to refresh your credentials.\n Error Details: {1}.", getAccountDisplayString(selectedAccount), getErrorMessage(error));
+			return localize('azure.accounts.accountStaleError', "The access token for selected account '{0}' is no longer valid. Please click the sign in button and refresh the account or select a different account.\n Error Details: {1}.", getAccountDisplayString(selectedAccount), getErrorMessage(error));
 		case AccountStatus.isNotStale:
 			return defaultErrorMessage;
 	}
