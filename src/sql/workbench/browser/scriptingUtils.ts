@@ -127,7 +127,7 @@ export async function script(connectionProfile: IConnectionProfile, metadata: az
 
 		if (script) {
 			let description = (metadata.schema && metadata.schema !== '') ? `${metadata.schema}.${metadata.name}` : metadata.name;
-			const owner = await queryEditorService.newSqlEditor({ initalContent: script, description });
+			const owner = await queryEditorService.newSqlEditor({ initalContent: script, description }, connectionProfile.providerName);
 			// Connect our editor to the input connection
 			let options: IConnectionCompletionOptions = {
 				params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none, input: owner },

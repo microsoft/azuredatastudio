@@ -14,7 +14,7 @@ import { DataTransfers, IDragAndDropData } from 'vs/base/browser/dnd';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 
 export function supportsNodeNameDrop(nodeId: string): boolean {
-	if (nodeId === 'Table' || nodeId === 'Column' || nodeId === 'View') {
+	if (nodeId === 'Table' || nodeId === 'Column' || nodeId === 'View' || nodeId === 'Function') {
 		return true;
 	}
 	return false;
@@ -86,6 +86,9 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 			escapedSchema = this.escapeString(element.metadata.schema);
 			escapedName = this.escapeString(element.metadata.name);
 			finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
+			if (element.nodeTypeId === 'Function') {
+				finalString = escapedName;
+			}
 			originalEvent.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([`${element.nodeTypeId}:${element.id}?${finalString}`]));
 		}
 		if (element.nodeTypeId === 'Folder' && element.label === 'Columns') {

@@ -70,7 +70,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: commands.SCRIPT_AS_ALTER_COMMAND_ID,
 		title: localize('scriptAsAlter', "Script as Alter")
 	},
-	when: MssqlNodeContext.CanScriptAsAlter
+	when: ContextKeyExpr.or(MssqlNodeContext.CanScriptAsAlter, TreeNodeContextKey.NodeType.isEqualTo(NodeType.Function))
 });
 
 // Edit Data
@@ -164,6 +164,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 			ContextKeyExpr.and(
 				ConnectionContextKey.Provider.isEqualTo('MSSQL'),
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.TableValuedFunction)),
+			TreeNodeContextKey.NodeType.isEqualTo(NodeType.Function)
 		)
 });
 
