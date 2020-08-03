@@ -168,7 +168,8 @@ export class DiagramComponent extends AngularDisposable implements OnInit {
 			this.columnGridDataView.beginUpdate();
 			this.columnGridDataView.setItems(this.columnGridItems);
 			this.columnGridDataView.endUpdate();
-			this._register(this._columnGrid);
+			this._columnGrid.autosizeColumns();
+			this._columnGrid.resizeCanvas();
 			this._register(attachTableStyler(this._columnGrid, this.themeService));
 			this._cd.detectChanges();
 		}
