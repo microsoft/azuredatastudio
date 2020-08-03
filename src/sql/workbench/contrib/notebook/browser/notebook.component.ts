@@ -198,11 +198,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._scrollTop = (<HTMLElement>event.srcElement).scrollTop;
 	}
 
-	public selectTopCell() {
-		this.model.updateActiveCell(this._model.cells[0]);
-		this.detectChanges();
-	}
-
 	// Add cell based on cell type
 	public addCell(cellType: CellType, index?: number, event?: Event) {
 		if (event) {
@@ -211,26 +206,27 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._model.addCell(cellType, index);
 	}
 
-	public onKeyDown(event) {
-		if (!this.model.activeCell) {
-			this.selectTopCell();
-		}
-		switch (event.key) {
-			case 'ArrowDown':
-			case 'ArrowRight':
-				let nextIndex = (this.findCellIndex(this.model.activeCell) + 1) % this.cells.length;
-				this.selectCell(this.cells[nextIndex]);
-				break;
-			case 'ArrowUp':
-			case 'ArrowLeft':
-				let index = this.findCellIndex(this.model.activeCell);
-				if (index === 0) {
-					index = this.cells.length;
-				}
-				this.selectCell(this.cells[--index]);
-				break;
-			default:
-				break;
+	public onKeyDown(event, cellId) {
+		// Check to see if selected cell is active. This is active but not in edit mode.
+		// Next, need to make sure active cell in edit mode does NOT allow navigation.
+		if (cellId === this.model.activeCell) {
+			switch (event.key) {
+				case 'ArrowDown':
+				case 'ArrowRight':
+					let nextIndex = (this.findCellIndex(this.model.activeCell) + 1) % this.cells.length;
+					this.selectCell(this.cells[nextIndex]);
+					break;
+				case 'ArrowUp':
+				case 'ArrowLeft':
+					let index = this.findCellIndex(this.model.activeCell);
+					if (index === 0) {
+						index = this.cells.length;
+					}
+					this.selectCell(this.cells[--index]);
+					break;
+				default:
+					break;
+			}
 		}
 	}
 
