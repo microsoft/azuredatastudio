@@ -763,7 +763,7 @@ const enum AccountStatus {
 }
 
 async function getAccountStatus(account: azdata.Account): Promise<AccountStatus> {
-	const refreshedAccount = (await azdata.accounts.getAllAccounts()).filter(ac => ac.key.accountId === account.key.accountId).shift();
+	const refreshedAccount = (await azdata.accounts.getAllAccounts()).find(ac => ac.key.accountId === account.key.accountId);
 	return (refreshedAccount === undefined)
 		? AccountStatus.notFound
 		: refreshedAccount.isStale ? AccountStatus.isStale : AccountStatus.isNotStale;
