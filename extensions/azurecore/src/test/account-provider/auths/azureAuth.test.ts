@@ -39,7 +39,7 @@ const mockTenant: Tenant = {
 	displayName: 'Tenant Name',
 	id: 'tenantID',
 	tenantCategory: 'Home',
-	userId: 'test_user'
+	userId: 'test_user',
 };
 
 let mockAccount: AzureAccount;
@@ -109,7 +109,7 @@ describe('Azure Authentication', function () {
 				} as OAuthTokenResponse);
 			});
 
-			const securityToken = await azureAuthCodeGrant.object.getAccountSecurityToken(mockAccount, TypeMoq.It.isAny(), AzureResource.OssRdbms);
+			const securityToken = await azureAuthCodeGrant.object.getAccountSecurityToken(mockAccount, mockTenant.id, AzureResource.OssRdbms);
 			should(securityToken).be.equal(mockAccessToken, 'Token are similar');
 		});
 
