@@ -335,11 +335,12 @@ export class LanguagesRegistry extends Disposable {
 		return this.extractModeIds(mimeTypes.join(','));
 	}
 
+	// {{SQL Carbon Edit}} - return correct extension when language alias is passed from modeService
 	public getExtensions(languageName: string): string[] {
-		if (!hasOwnProperty.call(this._nameMap, languageName)) {
+		if (!hasOwnProperty.call(this._nameMap, languageName) && !hasOwnProperty.call(this._lowercaseNameMap, languageName)) {
 			return [];
 		}
-		const languageId = this._nameMap[languageName];
+		const languageId = this._nameMap[languageName] ?? this._lowercaseNameMap[languageName];
 		return this._languages[languageId.language].extensions;
 	}
 
