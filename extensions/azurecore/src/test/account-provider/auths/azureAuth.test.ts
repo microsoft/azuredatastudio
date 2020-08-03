@@ -97,6 +97,22 @@ describe('Azure Authentication', function () {
 			await azureAuthCodeGrant.object.getAccountSecurityToken(mockAccount, 'invalid_tenant', AzureResource.MicrosoftResourceManagement).should.be.rejected();
 		});
 
+		it('token recieved for ossRdbmns resource', async function () {
+			azureAuthCodeGrant.setup(x => x.getTenants(mockToken)).returns(() => {
+				return Promise.resolve([
+				mockTenant
+			]);
+			});
+			azureAuthCodeGrant.setup(x => x.getTokenHelper(mockTenant, provider.settings.microsoftResource, TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+				return Promise.resolve({
+					accessToken: mockAccessToken
+				} as OAuthTokenResponse);
+			});
+
+			const securityToken = await azureAuthCodeGrant.object.getAccountSecurityToken(mockAccount, TypeMoq.It.isAny(), AzureResource.OssRdbms);
+			should(securityToken).be.equal(mockAccessToken, 'Token are similar');
+		});
+
 		it('saved token exists and can be reused', async function () {
 			delete (mockAccessToken as any).tokenType;
 			azureAuthCodeGrant.setup(x => x.getSavedToken(mockTenant, provider.settings.microsoftResource, mockAccount.key)).returns((): Promise<{ accessToken: AccessToken, refreshToken: RefreshToken, expiresOn: string }> => {
@@ -104,11 +120,11 @@ describe('Azure Authentication', function () {
 					accessToken: mockAccessToken,
 					refreshToken: mockRefreshToken,
 					expiresOn: `${(new Date().getTime() / 1000) + (10 * 60)}`
-				})
+				});
 			});
 			const securityToken = await azureAuthCodeGrant.object.getAccountSecurityToken(mockAccount, mockTenant.id, AzureResource.MicrosoftResourceManagement);
 
-			should(securityToken.tokenType).be.equal('Bearer', 'tokenType should be bearer on a successful getSecurityToken from cache')
+			should(securityToken.tokenType).be.equal('Bearer', 'tokenType should be bearer on a successful getSecurityToken from cache');
 		});
 
 
@@ -132,7 +148,7 @@ describe('Azure Authentication', function () {
 			const securityToken = await azureAuthCodeGrant.object.getAccountSecurityToken(mockAccount, mockTenant.id, AzureResource.MicrosoftResourceManagement);
 
 			should((securityToken as any).invalidData).be.undefined(); // Ensure its a new one
-			should(securityToken.tokenType).be.equal('Bearer', 'tokenType should be bearer on a successful getSecurityToken from cache')
+			should(securityToken.tokenType).be.equal('Bearer', 'tokenType should be bearer on a successful getSecurityToken from cache');
 
 			azureAuthCodeGrant.verify(x => x.refreshToken(mockTenant, provider.settings.microsoftResource, mockRefreshToken), TypeMoq.Times.once());
 		});
@@ -171,7 +187,7 @@ describe('Azure Authentication', function () {
 				});
 
 				const securityToken: Token = await azureAuthCodeGrant.object.getAccountSecurityToken(mockAccount, mockTenant.id, AzureResource.MicrosoftResourceManagement);
-				should(securityToken.tokenType).be.equal('Bearer', 'tokenType should be bearer on a successful getSecurityToken from cache')
+				should(securityToken.tokenType).be.equal('Bearer', 'tokenType should be bearer on a successful getSecurityToken from cache');
 			});
 		});
 
