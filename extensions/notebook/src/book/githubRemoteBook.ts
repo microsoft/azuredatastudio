@@ -80,16 +80,14 @@ export class GitHubRemoteBook extends RemoteBook {
 				let zippedFile = new zip(remoteBookFullPath.fsPath);
 				zippedFile.extractAllTo(this._localPath.fsPath);
 			} else {
-				tar.extract({ file: remoteBookFullPath.fsPath, cwd: this._localPath.fsPath }).catch(error => {
-					this.outputChannel.appendLine(loc.msgRemoteBookUnpackingError);
-					this.outputChannel.appendLine(error.message);
-				});
+				await tar.extract({ file: remoteBookFullPath.fsPath, cwd: this._localPath.fsPath });
 			}
 			await fs.promises.unlink(remoteBookFullPath.fsPath);
 			this.outputChannel.appendLine(loc.msgRemoteBookDownloadComplete);
 			vscode.commands.executeCommand('notebook.command.openNotebookFolder', this._localPath.fsPath, undefined, true);
 		}
 		catch (err) {
+			this.outputChannel.appendLine(loc.msgRemoteBookUnpackingError);
 			this.outputChannel.appendLine(err.message);
 		}
 	}
