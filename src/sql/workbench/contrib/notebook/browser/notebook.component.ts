@@ -553,7 +553,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		// This is similar behavior that exists in MenuItemActionItem
 		if (action instanceof MenuItemAction) {
 
-			if (action.item.id.includes('jupyter.cmd') && this.previewFeaturesEnabled) {
+			if ((action.item.id.includes('jupyter.cmd') && this.previewFeaturesEnabled) || action.item.id.includes('mssql')) {
 				action.tooltip = action.label;
 				action.label = '';
 			}
