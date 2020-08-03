@@ -16,7 +16,7 @@ import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { attachSelectBoxStyler, attachTableStyler } from 'sql/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { PanelComponent, IPanelOptions, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
+import { IPanelOptions, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
 import { Table } from 'sql/base/browser/ui/table/table';
 
 const LocalizedStrings = {
@@ -54,7 +54,6 @@ export class DiagramComponent extends AngularDisposable implements OnInit {
 	public selectedOption = 'Database';
 	public granularityOptions = ['Database', 'Schema', 'Table'];
 
-	@ViewChild(PanelComponent) private _panel: PanelComponent;
 	@ViewChild('diagramActionbarContainer') protected actionBarContainer: ElementRef;
 	@ViewChild('dropDown', { read: ElementRef }) private _dropdownContainer: ElementRef;
 	@ViewChild('columnGrid') protected _columnGridContainer: ElementRef;
@@ -214,7 +213,7 @@ export class DiagramComponent extends AngularDisposable implements OnInit {
 	}
 
 	public layout() {
-		this._panel.layout();
+
 	}
 }
 
