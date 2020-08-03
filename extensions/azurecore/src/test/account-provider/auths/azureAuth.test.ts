@@ -39,7 +39,7 @@ const mockTenant: Tenant = {
 	displayName: 'Tenant Name',
 	id: 'tenantID',
 	tenantCategory: 'Home',
-	userId: 'test_user',
+	userId: 'test_user'
 };
 
 let mockAccount: AzureAccount;
@@ -103,13 +103,13 @@ describe('Azure Authentication', function () {
 				mockTenant
 			]);
 			});
-			azureAuthCodeGrant.setup(x => x.getTokenHelper(mockTenant, provider.settings.microsoftResource, TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+			azureAuthCodeGrant.setup(x => x.getTokenHelper(mockTenant, provider.settings.ossRdbmsResource, TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
 				return Promise.resolve({
 					accessToken: mockAccessToken
 				} as OAuthTokenResponse);
 			});
 
-			azureAuthCodeGrant.setup(x => x.refreshToken(mockTenant, provider.settings.microsoftResource, mockRefreshToken)).returns((): Promise<OAuthTokenResponse> => {
+			azureAuthCodeGrant.setup(x => x.refreshToken(mockTenant, provider.settings.ossRdbmsResource, mockRefreshToken)).returns((): Promise<OAuthTokenResponse> => {
 				const mockToken: AccessToken = JSON.parse(JSON.stringify(mockAccessToken));
 				delete (mockToken as any).invalidData;
 				return Promise.resolve({
@@ -117,7 +117,7 @@ describe('Azure Authentication', function () {
 				} as OAuthTokenResponse);
 			});
 
-			azureAuthCodeGrant.setup(x => x.getSavedToken(mockTenant, provider.settings.microsoftResource, mockAccount.key)).returns((): Promise<{ accessToken: AccessToken, refreshToken: RefreshToken, expiresOn: string }> => {
+			azureAuthCodeGrant.setup(x => x.getSavedToken(mockTenant, provider.settings.ossRdbmsResource, mockAccount.key)).returns((): Promise<{ accessToken: AccessToken, refreshToken: RefreshToken, expiresOn: string }> => {
 				return Promise.resolve({
 					accessToken: mockAccessToken,
 					refreshToken: mockRefreshToken,
@@ -126,7 +126,8 @@ describe('Azure Authentication', function () {
 			});
 
 			const securityToken = await azureAuthCodeGrant.object.getAccountSecurityToken(mockAccount, mockTenant.id, AzureResource.OssRdbms);
-			should(securityToken).be.equal(mockAccessToken, 'Token are not similar');
+			should(securityToken.token).be.equal(mockAccessToken.token, 'Token are not similar');
+
 		});
 
 		it('saved token exists and can be reused', async function () {
