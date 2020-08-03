@@ -319,6 +319,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._register(model.contentChanged((change) => this.handleContentChanged(change)));
 		this._register(model.onProviderIdChange((provider) => this.handleProviderIdChanged(provider)));
 		this._register(model.kernelChanged((kernelArgs) => this.handleKernelChanged(kernelArgs)));
+		this._register(model.onCellTypeChanged(() => this.detectChanges()));
 		this._model = this._register(model);
 		await this._model.loadContents(trusted);
 		this.setLoading(false);
