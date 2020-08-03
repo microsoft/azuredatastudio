@@ -47,7 +47,7 @@ export class GitHubRemoteBook extends RemoteBook {
 						return reject(new Error(loc.httpRequestError(response.statusCode, response.statusMessage)));
 					}
 				});
-			let remoteBookFullPath = vscode.Uri.parse(this._localPath.fsPath.concat('.', this._asset.format));
+			let remoteBookFullPath = vscode.Uri.file(this._localPath.fsPath.concat('.', this._asset.format));
 			downloadRequest.pipe(fs.createWriteStream(remoteBookFullPath.fsPath))
 				.on('close', async () => {
 					resolve(this.extractFiles(remoteBookFullPath));
