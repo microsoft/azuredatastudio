@@ -62,8 +62,14 @@ export function readSqlCmdVariables(xmlDoc: any): Record<string, string> {
 		const sqlCmdVar = xmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable)[i];
 		const varName = sqlCmdVar.getAttribute(constants.Include);
 
-		const varValue = sqlCmdVar.getElementsByTagName(constants.DefaultValue)[0].childNodes[0].nodeValue;
-		sqlCmdVariables[varName] = varValue;
+		if (sqlCmdVar.getElementsByTagName(constants.DefaultValue)[0] !== undefined) {
+			// project file path
+			sqlCmdVariables[varName] = sqlCmdVar.getElementsByTagName(constants.DefaultValue)[0].childNodes[0].nodeValue;
+		}
+		else {
+			// profile path
+			sqlCmdVariables[varName] = sqlCmdVar.getElementsByTagName(constants.Value)[0].childNodes[0].nodeValue;
+		}
 	}
 
 	return sqlCmdVariables;
