@@ -231,9 +231,15 @@ export class ProjectsController {
 	}
 
 	public async readPublishProfileCallback(profileUri: vscode.Uri): Promise<PublishProfile> {
-		const dacFxService = await this.getDaxFxService();
-		const profile = await load(profileUri, dacFxService);
-		return profile;
+		try {
+			const dacFxService = await this.getDaxFxService();
+			const profile = await load(profileUri, dacFxService);
+			return profile;
+		}
+		catch (e) {
+			vscode.window.showErrorMessage(constants.profileReadError);
+			throw e;
+		}
 	}
 
 	public async schemaCompare(treeNode: BaseProjectTreeItem): Promise<void> {
