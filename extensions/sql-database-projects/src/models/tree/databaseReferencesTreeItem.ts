@@ -10,7 +10,7 @@ import * as constants from '../../common/constants';
 import { BaseProjectTreeItem } from './baseTreeItem';
 import { ProjectRootTreeItem } from './projectTreeItem';
 import { IconPathHelper } from '../../common/iconHelper';
-import { DatabaseReferenceProjectEntry } from '../../models/project';
+import { IDatabaseReferenceProjectEntry } from '../../models/project';
 
 /**
  * Folder for containing references nodes in the tree
@@ -44,8 +44,8 @@ export class DatabaseReferencesTreeItem extends BaseProjectTreeItem {
 }
 
 export class DatabaseReferenceTreeItem extends BaseProjectTreeItem {
-	constructor(private reference: DatabaseReferenceProjectEntry, referencesTreeItem: DatabaseReferencesTreeItem) {
-		super(vscode.Uri.file(path.join(referencesTreeItem.uri.path, reference.databaseName)), referencesTreeItem);
+	constructor(private reference: IDatabaseReferenceProjectEntry, referencesTreeItem: DatabaseReferencesTreeItem) {
+		super(vscode.Uri.file(path.join(referencesTreeItem.uri.path, reference.databaseName())), referencesTreeItem);
 	}
 
 	public get children(): BaseProjectTreeItem[] {
@@ -54,7 +54,7 @@ export class DatabaseReferenceTreeItem extends BaseProjectTreeItem {
 
 	public get treeItem(): vscode.TreeItem {
 		const refItem = new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.None);
-		refItem.label = this.reference.databaseName;
+		refItem.label = this.reference.databaseName();
 		refItem.contextValue = constants.DatabaseProjectItemType.reference;
 		refItem.iconPath = IconPathHelper.referenceDatabase;
 

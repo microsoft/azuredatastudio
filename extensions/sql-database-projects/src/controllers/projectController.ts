@@ -16,7 +16,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { promises as fs } from 'fs';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
-import { Project, DatabaseReferenceLocation, SystemDatabase, TargetPlatform, ProjectEntry, reservedProjectFolders } from '../models/project';
+import { Project, DatabaseReferenceLocation, SystemDatabase, TargetPlatform, ProjectEntry, reservedProjectFolders, DatabaseReferenceType } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
 import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
@@ -61,6 +61,12 @@ export class ProjectsController {
 			// Read project file
 			newProject = await Project.openProject(projectFile.fsPath);
 			this.projects.push(newProject);
+
+			// open any reference projects
+			const referencedProjects = newProject.databaseReferences.filter(r => r.databaseReferenceType === DatabaseReferenceType.project);
+			for (const proj of referencedProjects) {
+				await this.openProject(vscode.Uri.file(path.join(newProject.projectFolderPath, proj.fsUri.fsPath)));
+			}
 
 			// Update for round tripping as needed
 			await this.updateProjectForRoundTrip(newProject);
