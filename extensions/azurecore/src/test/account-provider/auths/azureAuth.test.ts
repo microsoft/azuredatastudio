@@ -109,8 +109,24 @@ describe('Azure Authentication', function () {
 				} as OAuthTokenResponse);
 			});
 
+			azureAuthCodeGrant.setup(x => x.refreshToken(mockTenant, provider.settings.microsoftResource, mockRefreshToken)).returns((): Promise<OAuthTokenResponse> => {
+				const mockToken: AccessToken = JSON.parse(JSON.stringify(mockAccessToken));
+				delete (mockToken as any).invalidData;
+				return Promise.resolve({
+					accessToken: mockToken
+				} as OAuthTokenResponse);
+			});
+
+			azureAuthCodeGrant.setup(x => x.getSavedToken(mockTenant, provider.settings.microsoftResource, mockAccount.key)).returns((): Promise<{ accessToken: AccessToken, refreshToken: RefreshToken, expiresOn: string }> => {
+				return Promise.resolve({
+					accessToken: mockAccessToken,
+					refreshToken: mockRefreshToken,
+					expiresOn: `${(new Date().getTime() / 1000) + (10 * 60)}`
+				});
+			});
+
 			const securityToken = await azureAuthCodeGrant.object.getAccountSecurityToken(mockAccount, mockTenant.id, AzureResource.OssRdbms);
-			should(securityToken).be.equal(mockAccessToken, 'Token are similar');
+			should(securityToken).be.equal(mockAccessToken, 'Token are not similar');
 		});
 
 		it('saved token exists and can be reused', async function () {
