@@ -313,11 +313,8 @@ class WelcomePage extends Disposable {
 				return;
 			}
 			const workspacesToShow = workspaces.slice(0, 5);
-			const updateEntries = () => {
-				clearNode(ul);
-				this.mapListEntries(workspacesToShow, fileService, container, ul);
-			};
-			updateEntries();
+			clearNode(ul);
+			await this.mapListEntries(workspacesToShow, fileService, container, ul);
 		}).then(undefined, onUnexpectedError);
 		this.addExtensionList(container, '.extension-list');
 		this.addExtensionPack(container, '.extensionPack');
