@@ -80,7 +80,7 @@ export class DiagramComponent extends AngularDisposable implements OnInit {
 			id: 'columnType'
 		}
 	];
-	public columnGridData = [
+	public columnGridItems = [
 		{
 			id: 1,
 			iconImage: 'PK',
@@ -123,6 +123,10 @@ export class DiagramComponent extends AngularDisposable implements OnInit {
 		this.initColumnGrid();
 	}
 
+	ngAfterInit() {
+		this.initColumnGrid();
+	}
+
 	private initDropdown() {
 		if (this._dropdownContainer) {
 			this._selectBox = new SelectBox(['Database', 'Schema', 'Table'], 'Database',
@@ -154,8 +158,6 @@ export class DiagramComponent extends AngularDisposable implements OnInit {
 			inlineFilters: false
 		});
 
-		this.columnGridDataView.setItems(this.columnGridData);
-
 		if (this._columnGridContainer) {
 			this._columnGrid = new Table(
 				this._columnGridContainer.nativeElement,
@@ -163,6 +165,9 @@ export class DiagramComponent extends AngularDisposable implements OnInit {
 				columnGridOptions
 			);
 			this._columnGrid.grid.setData(this.columnGridDataView, true);
+			this.columnGridDataView.beginUpdate();
+			this.columnGridDataView.setItems(this.columnGridItems);
+			this.columnGridDataView.endUpdate();
 			this._register(this._columnGrid);
 			this._register(attachTableStyler(this._columnGrid, this.themeService));
 			this._cd.detectChanges();
@@ -190,6 +195,7 @@ export class DiagramComponent extends AngularDisposable implements OnInit {
 				this.showSchema = false;
 				this.showTable = true;
 				this._cd.detectChanges();
+				this.initColumnGrid();
 				break;
 			}
 			default: {
