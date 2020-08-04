@@ -19,10 +19,10 @@
 	display: none;
 }
 
-<<<<<<< HEAD
 .modelview-table-button-icon {
 	background-color: transparent;
-=======
+}
+
 .detailView-toggle {
 	display: inline-block;
 	cursor: pointer;
@@ -36,7 +36,6 @@
 	width: 100%;
 	overflow: auto;
 }
-
 
 .dynamic-cell-detail> :first-child {
 	vertical-align: middle;
@@ -55,5 +54,4 @@
 .dynamic-cell-detail>.detail-container>div,
 .dynamic-cell-detail>.detail-container>div>span {
 	white-space: normal;
->>>>>>> d588273fd... table component enhancement
 }

@@ -29,17 +29,10 @@ import { slickGridDataItemColumnValueWithNoData, textFormatter, htmlFormatter } 
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType, ModelViewAction } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSizeToNumber } from 'sql/base/browser/dom';
-<<<<<<< HEAD
 import { ButtonColumn, ButtonClickEventArgs } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
 import { createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
-=======
 import { find } from 'vs/base/common/arrays';
-<<<<<<< HEAD
->>>>>>> d588273fd... table component enhancement
-=======
 import { generateUuid } from 'vs/base/common/uuid';
-
->>>>>>> a7439d2e3... recent PR comments
 
 export enum ColumnSizingMode {
 	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
@@ -63,13 +56,9 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 	private _buttonsColumns: ButtonColumn<{}>[] = [];
 	private _pluginsRegisterStatus: boolean[] = [];
 	private _onCheckBoxChanged = new Emitter<ICheckboxCellActionEventArgs>();
-<<<<<<< HEAD
 	private _onButtonClicked = new Emitter<ButtonClickEventArgs<{}>>();
-=======
 	private _rowDetail: RowDetailView<Slick.SlickData>;
 	private _filterPlugin: HeaderFilter<Slick.SlickData>;
-
->>>>>>> d588273fd... table component enhancement
 	public readonly onCheckBoxChanged: vsEvent<ICheckboxCellActionEventArgs> = this._onCheckBoxChanged.event;
 	public readonly onButtonClicked: vsEvent<ButtonClickEventArgs<{}>> = this._onButtonClicked.event;
 
