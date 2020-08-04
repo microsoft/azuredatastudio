@@ -227,7 +227,7 @@ class DataResourceTable extends GridTableBase<any> {
 	}
 }
 
-class DataResourceDataProvider implements IGridDataProvider {
+export class DataResourceDataProvider implements IGridDataProvider {
 	private rows: ICellValue[][];
 	constructor(source: IDataResource,
 		private resultSet: ResultSetSummary,
@@ -309,10 +309,7 @@ class DataResourceDataProvider implements IGridDataProvider {
 		return serializer.handleSerialization(this.documentUri, format, (filePath) => this.doSerialize(serializer, filePath, format, selection));
 	}
 
-	private doSerialize(serializer: ResultSerializer, filePath: URI, format: SaveFormat, selection: Slick.Range[]): Promise<SaveResultsResponse | undefined> {
-		if (!this.canSerialize) {
-			return Promise.resolve(undefined);
-		}
+	getSerializeRequestParams(serializer: ResultSerializer, filePath: URI, format: SaveFormat, selection: Slick.Range[]) {
 		// TODO implement selection support
 		let columns = this.resultSet.columnInfo;
 		let rowLength = this.rows.length;
@@ -356,7 +353,6 @@ class DataResourceDataProvider implements IGridDataProvider {
 			}));
 			return result;
 		};
-
 		let serializeRequestParams: SerializeDataParams = <SerializeDataParams>assign(serializer.getBasicSaveParameters(format), <Partial<SerializeDataParams>>{
 			saveFormat: format,
 			columns: columns,
@@ -364,6 +360,14 @@ class DataResourceDataProvider implements IGridDataProvider {
 			getRowRange: (rowStart, includeHeaders, numberOfRows) => getRows(rowStart, includeHeaders, numberOfRows),
 			rowCount: rowLength
 		});
+		return serializeRequestParams;
+	}
+
+	doSerialize(serializer: ResultSerializer, filePath: URI, format: SaveFormat, selection: Slick.Range[]): Promise<SaveResultsResponse | undefined> {
+		if (!this.canSerialize) {
+			return Promise.resolve(undefined);
+		}
+		let serializeRequestParams = this.getSerializeRequestParams(serializer, filePath, format, selection);
 		return this._serializationService.serializeResults(serializeRequestParams);
 	}
 
