@@ -4,17 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as should from 'should';
-import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as mssql from '../../../mssql';
 import * as TypeMoq from 'typemoq';
 import * as loc from '../localizedConstants';
 import 'mocha';
 import { SchemaCompareDialog } from './../dialogs/schemaCompareDialog';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
-import { SchemaCompareTestService, testStateScmp } from './testSchemaCompareService';
 import { createContext, TestContext } from './testContext';
-import { setDacpacEndpointInfo, mockDatabaseEndpoint, mockFilePath, mockConnectionInfo, shouldThrowSpecificError, mockConnectionResult, mockConnectionProfile} from './testUtils';
+import { setDacpacEndpointInfo } from './testUtils';
 import { SchemaCompareMainWindowTest } from './testSchemaCompareMainWindow';
 
 // Mock test data
@@ -56,7 +53,7 @@ describe('SchemaCompareDialog.openDialog', function (): void {
 		await dialog.execute();
 
 		// Confirm that ok button got clicked
-		should(schemaCompareResult.verifyButtonsState( {
+		schemaCompareResult.verifyButtonsState( {
 			compareButtonState: true,
 			optionsButtonState: true,
 			switchButtonState: true,
@@ -67,6 +64,6 @@ describe('SchemaCompareDialog.openDialog', function (): void {
 			selectTargetButtonState: true,
 			generateScriptButtonState: false,
 			applyButtonState: false
-		} )).equal(true);
+		} );
 	});
 });

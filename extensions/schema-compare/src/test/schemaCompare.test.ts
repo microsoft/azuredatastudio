@@ -145,10 +145,18 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 		await result.execute();
 
 		//Generate script button and apply button should be disabled for dacpac comparison
-		should(result.verifyButtonsState( {compareButtonState: true, optionsButtonState: true, switchButtonState: true,
-			openScmpButtonState: true, saveScmpButtonState: true, cancelCompareButtonState: false,
-			selectSourceButtonState: true, selectTargetButtonState: true, generateScriptButtonState: false,
-			applyButtonState: false} )).equal(true);
+		result.verifyButtonsState( {
+			compareButtonState: true,
+			optionsButtonState: true,
+			switchButtonState: true,
+			openScmpButtonState: true,
+			saveScmpButtonState: true,
+			cancelCompareButtonState: false,
+			selectSourceButtonState: true,
+			selectTargetButtonState: true,
+			generateScriptButtonState: false,
+			applyButtonState: false
+		} );
 	});
 
 	it('Should disable script button and apply button for Schema Compare service for database', async function (): Promise<void> {
@@ -166,10 +174,18 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 		await result.execute();
 
 		//Generate script button and apply button should be enabled for database comparison
-		should(result.verifyButtonsState( {compareButtonState: true, optionsButtonState: true, switchButtonState: true,
-			openScmpButtonState: true, saveScmpButtonState: true, cancelCompareButtonState: false,
-			selectSourceButtonState: true, selectTargetButtonState: true, generateScriptButtonState: true,
-			applyButtonState: true} )).equal(true);
+		result.verifyButtonsState( {
+			compareButtonState: true,
+			optionsButtonState: true,
+			switchButtonState: true,
+			openScmpButtonState: true,
+			saveScmpButtonState: true,
+			cancelCompareButtonState: false,
+			selectSourceButtonState: true,
+			selectTargetButtonState: true,
+			generateScriptButtonState: true,
+			applyButtonState: true
+		} );
 	});
 
 });
@@ -196,10 +212,18 @@ describe('SchemaCompareMainWindow.updateSourceAndTarget', function (): void {
 
 		result.updateSourceAndTarget();
 
-		should(result.verifyButtonsState( {compareButtonState: false, optionsButtonState: false, switchButtonState: false,
-			openScmpButtonState: true, saveScmpButtonState: false, cancelCompareButtonState: false,
-			selectSourceButtonState: true, selectTargetButtonState: true, generateScriptButtonState: false,
-			applyButtonState: false} )).equal(true);
+		result.verifyButtonsState( {
+			compareButtonState: false,
+			optionsButtonState: false,
+			switchButtonState: false,
+			openScmpButtonState: true,
+			saveScmpButtonState: false,
+			cancelCompareButtonState: false,
+			selectSourceButtonState: true,
+			selectTargetButtonState: true,
+			generateScriptButtonState: false,
+			applyButtonState: false
+		} );
 	});
 
 	it('Should set buttons appropriately when source endpoint is empty and target endpoint is populated', async function (): Promise<void> {
@@ -217,10 +241,18 @@ describe('SchemaCompareMainWindow.updateSourceAndTarget', function (): void {
 
 		result.updateSourceAndTarget();
 
-		should(result.verifyButtonsState( {compareButtonState: false, optionsButtonState: false, switchButtonState: true,
-			openScmpButtonState: true, saveScmpButtonState: false, cancelCompareButtonState: false,
-			selectSourceButtonState: true, selectTargetButtonState: true, generateScriptButtonState: false,
-			applyButtonState: false} )).equal(true);
+		result.verifyButtonsState( {
+			compareButtonState: false,
+			optionsButtonState: false,
+			switchButtonState: true,
+			openScmpButtonState: true,
+			saveScmpButtonState: false,
+			cancelCompareButtonState: false,
+			selectSourceButtonState: true,
+			selectTargetButtonState: true,
+			generateScriptButtonState: false,
+			applyButtonState: false
+		} );
 	});
 
 	it('Should set buttons appropriately when source and target endpoints are populated', async function (): Promise<void> {
@@ -238,10 +270,18 @@ describe('SchemaCompareMainWindow.updateSourceAndTarget', function (): void {
 
 		result.updateSourceAndTarget();
 
-		should(result.verifyButtonsState( {compareButtonState: true, optionsButtonState: true, switchButtonState: true,
-			openScmpButtonState: true, saveScmpButtonState: true, cancelCompareButtonState: false,
-			selectSourceButtonState: true, selectTargetButtonState: true, generateScriptButtonState: false,
-			applyButtonState: false} )).equal(true);
+		result.verifyButtonsState( {
+			compareButtonState: true,
+			optionsButtonState: true,
+			switchButtonState: true,
+			openScmpButtonState: true,
+			saveScmpButtonState: true,
+			cancelCompareButtonState: false,
+			selectSourceButtonState: true,
+			selectTargetButtonState: true,
+			generateScriptButtonState: false,
+			applyButtonState: false
+		} );
 	});
 
 });
