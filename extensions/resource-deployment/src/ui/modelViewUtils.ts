@@ -947,15 +947,24 @@ async function handleSelectedAccountChanged(
 			// to not necessarily have access to all subscriptions on an account so displaying the errors
 			// in that case is usually just distracting and causes confusion
 			const accountStatus = await getAccountStatus(selectedAccount);
-			const errMsg = (await Promise.all(response.errors.map(async e => await getAzureAccessError(selectedAccount, e, e.message, accountStatus)))).join(EOL);
-			if (response.subscriptions.length === 0 || accountStatus !== AccountStatus.isNotStale) {
+			if (accountStatus === AccountStatus.isStale || accountStatus === AccountStatus.notFound) {
+				const errMsg = await getAzureAccessError(selectedAccount);
 				context.container.message = {
-					text: errMsg || '',
+					text: errMsg,
 					description: '',
 					level: azdata.window.MessageLevel.Error
 				};
 			} else {
-				console.log(errMsg);
+				const errMsg = response.errors.join(EOL);
+				if (response.subscriptions.length === 0) {
+					context.container.message = {
+						text: errMsg,
+						description: '',
+						level: azdata.window.MessageLevel.Error
+					};
+				} else {
+					console.log(errMsg);
+				}
 			}
 		}
 		subscriptionDropdown.values = response.subscriptions.map(subscription => {
@@ -966,7 +975,7 @@ async function handleSelectedAccountChanged(
 		const selectedSubscription = subscriptionDropdown.values.length > 0 ? subscriptionValueToSubscriptionMap.get(subscriptionDropdown.values[0]) : undefined;
 		await handleSelectedSubscriptionChanged(context, selectedAccount, selectedSubscription, resourceGroupDropdown);
 	} catch (error) {
-		await vscode.window.showErrorMessage(await getAzureAccessError(selectedAccount, error, localize('azure.accounts.unexpectedSubscriptionsError', "Unexpected error fetching subscriptions for account {0}: {1}", getAccountDisplayString(selectedAccount), getErrorMessage(error))));
+		await vscode.window.showErrorMessage(await getAzureAccessError(selectedAccount, localize('azure.accounts.unexpectedSubscriptionsError', "Unexpected error fetching subscriptions for account {0}: {1}", getAccountDisplayString(selectedAccount), getErrorMessage(error)), error));
 	}
 }
 
@@ -974,15 +983,17 @@ function getSubscriptionDisplayString(subscription: azureResource.AzureResourceS
 	return `${subscription.name} (${subscription.id})`;
 }
 
-async function getAzureAccessError(selectedAccount: azdata.Account, error: any, defaultErrorMessage: string, accountStatus: AccountStatus | undefined = undefined): Promise<string> {
+async function getAzureAccessError(selectedAccount: azdata.Account, defaultErrorMessage: string = '', error: any = undefined, accountStatus: AccountStatus | undefined = undefined): Promise<string> {
 	if (accountStatus === undefined) {
 		accountStatus = await getAccountStatus(selectedAccount);
 	}
 	switch (accountStatus) {
 		case AccountStatus.notFound:
-			return localize('azure.accounts.accountNotFoundError', "The selected account '{0}' is no longer available.  Click sign in to add it again or select a different account.\n Error Details: {1}.", getAccountDisplayString(selectedAccount), getErrorMessage(error));
+			return localize('azure.accounts.accountNotFoundError', "The selected account '{0}' is no longer available. Click sign in to add it again or select a different account.", getAccountDisplayString(selectedAccount))
+				+ error !== undefined ? localize('azure.accessError', "\n Error Details: {0}.", getErrorMessage(error)) : '';
 		case AccountStatus.isStale:
-			return localize('azure.accounts.accountStaleError', "The access token for selected account '{0}' is no longer valid. Please click the sign in button and refresh the account or select a different account.\n Error Details: {1}.", getAccountDisplayString(selectedAccount), getErrorMessage(error));
+			return localize('azure.accounts.accountStaleError', "The access token for selected account '{0}' is no longer valid. Please click the sign in button and refresh the account or select a different account.", getAccountDisplayString(selectedAccount))
+				+ error !== undefined ? localize('azure.accessError', "\n Error Details: {0}.", getErrorMessage(error)) : '';
 		case AccountStatus.isNotStale:
 			return defaultErrorMessage;
 	}
@@ -1041,23 +1052,31 @@ async function handleSelectedSubscriptionChanged(context: AzureAccountFieldConte
 			// to not necessarily have access to all Resource Groups on a subscription so displaying the errors
 			// in that case is usually just distracting and causes confusion
 			const accountStatus = await getAccountStatus(selectedAccount);
-			const errMsg = (await Promise.all(response.errors.map(async e => await getAzureAccessError(selectedAccount, e, e.message, accountStatus)))).join(EOL);
-			console.log(`errors getting Resource Groups:${errMsg}`);
-			if (response.resourceGroups.length === 0 || accountStatus !== AccountStatus.isNotStale) {
+			if (accountStatus === AccountStatus.isStale || accountStatus === AccountStatus.notFound) {
+				const errMsg = await getAzureAccessError(selectedAccount);
 				context.container.message = {
-					text: errMsg || '',
+					text: errMsg,
 					description: '',
 					level: azdata.window.MessageLevel.Error
 				};
 			} else {
-				console.log(errMsg);
+				const errMsg = response.errors.join(EOL);
+				if (response.resourceGroups.length === 0) {
+					context.container.message = {
+						text: errMsg,
+						description: '',
+						level: azdata.window.MessageLevel.Error
+					};
+				} else {
+					console.log(errMsg);
+				}
 			}
 		}
 		resourceGroupDropdown.values = (response.resourceGroups.length !== 0)
 			? response.resourceGroups.map(resourceGroup => resourceGroup.name).sort((a: string, b: string) => a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase()))
 			: [''];
 	} catch (error) {
-		await vscode.window.showErrorMessage(await getAzureAccessError(selectedAccount, error, localize('azure.accounts.unexpectedResourceGroupsError', "Unexpected error fetching resource groups for subscription {0}: {1}", getSubscriptionDisplayString(selectedSubscription), getErrorMessage(error))));
+		await vscode.window.showErrorMessage(await getAzureAccessError(selectedAccount, localize('azure.accounts.unexpectedResourceGroupsError', "Unexpected error fetching resource groups for subscription {0}: {1}", getSubscriptionDisplayString(selectedSubscription), getErrorMessage(error)), error));
 	}
 }
 
