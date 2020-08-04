@@ -90,5 +90,9 @@ describe('Remote Content Manager', function (): void {
 		let notebook = await contentManager.getNotebookContents(vscode.Uri.file(remotePath));
 		// then I expect notebook format to match
 		should(notebook).be.undefined();
+		// when I try to read content that doesn't exist
+		notebook = await contentManager.getNotebookContents(undefined);
+		// then I expect notebook contents to be undefined as well
+		should(notebook).be.undefined();
 	});
 });

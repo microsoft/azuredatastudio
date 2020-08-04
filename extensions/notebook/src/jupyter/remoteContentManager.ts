@@ -13,7 +13,7 @@ export class RemoteContentManager implements nb.ContentManager {
 	}
 
 	public getNotebookContents(notebookUri: vscode.Uri): Thenable<nb.INotebookContents> {
-		return this.getNotebookContentsAsync(notebookUri.fsPath);
+		return this.getNotebookContentsAsync(notebookUri?.fsPath);
 	}
 
 	private async getNotebookContentsAsync(path: string): Promise<nb.INotebookContents> {
