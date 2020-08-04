@@ -323,14 +323,14 @@ export class KernelsDropdown extends SelectBox {
 	updateModel(model: INotebookModel): void {
 		this.model = model as NotebookModel;
 		this._register(this.model.kernelChanged((changedArgs: azdata.nb.IKernelChangedArgs) => {
-			this.updateKernel(changedArgs.newValue);
+			this.updateKernel(changedArgs.newValue, changedArgs.nbkernelAlias);
 		}));
 		let kernel = this.model.clientSession && this.model.clientSession.kernel;
 		this.updateKernel(kernel);
 	}
 
 	// Update SelectBox values
-	public updateKernel(kernel: azdata.nb.IKernel) {
+	public updateKernel(kernel: azdata.nb.IKernel, nbkernelAlias?: string) {
 		let kernels: string[] = this._showAllKernels ? [...new Set(this.model.specs.kernels.map(a => a.display_name).concat(this.model.standardKernelsDisplayName()))]
 			: this.model.standardKernelsDisplayName();
 		if (kernelAlias !== undefined && kernelAlias.length !== 0) {
@@ -347,6 +347,9 @@ export class KernelsDropdown extends SelectBox {
 				} else {
 					let kernelSpec = this.model.specs.kernels.find(k => k.name === kernel.name);
 					index = firstIndex(kernels, k => k === kernelSpec.display_name);
+				}
+				if (nbkernelAlias) {
+					index = kernels.indexOf(nbkernelAlias);
 				}
 				// This is an error case that should never happen
 				// Just in case, setting index to 0
