@@ -55,16 +55,6 @@ export class DashboardWidget {
 						'height': '500px',
 					}
 				});
-				// const mainContainer = view.modelBuilder.flexContainer()
-				// 	.withLayout({
-				// 		flexFlow: 'column',
-				// 		width: '100%',
-				// 		height: '100%',
-				// 		position: 'absolute'
-				// 	}).component();
-				// mainContainer.addItem(container, {
-				// 	CSSStyles: { 'padding-top': '25px' }
-				// });
 				await view.initializeModel(container);
 				resolve();
 			});
@@ -93,8 +83,7 @@ export class DashboardWidget {
 		}).component();
 		header.addItems([titleComponent, descComponent], {
 			CSSStyles: {
-				'padding': '5px',
-				'width': `${maxWidth}px`
+				'padding': '12px 0 0 10px',
 			}
 		});
 		const tasksContainer = await this.createTasks(view);
@@ -574,21 +563,18 @@ export class DashboardWidget {
 		});
 		iconContainer.addItem(image, {
 			CSSStyles: {
-				// 'padding-top': '32px',
-				// 'padding-right': '32px'
 			}
 		});
 		iconContainer.addItem(labelsContainer, {
 			CSSStyles: {
-				// 'padding-top': '5px',
-				// 'padding-right': '10px'
 			}
 		});
 		mainContainer.addItems([iconContainer], {
 			CSSStyles: {
 				'background-color': '#FFFFFF',
 				'border-radius': '4px',
-				'box-shadow': '0px 3px 8px rgba(0, 0, 0, 0.14)',
+				'box-shadow': '0px 1px 4px rgba(0, 0, 0, 0.14)',
+				//'box-shadow': '0px 3px 8px rgba(0, 0, 0, 0.14)', --- hover
 				'padding': '10px'
 			}
 		});
