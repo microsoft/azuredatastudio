@@ -13,6 +13,13 @@ import { UNSAVED_GROUP_ID } from 'sql/platform/connection/common/constants';
 import { DataTransfers, IDragAndDropData } from 'vs/base/browser/dnd';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 
+export function supportsNodeNameDrop(nodeId: string): boolean {
+	if (nodeId === 'Table' || nodeId === 'Column' || nodeId === 'View') {
+		return true;
+	}
+	return false;
+}
+
 /**
  * Implements drag and drop for the server tree
  */
@@ -33,7 +40,7 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 				return (<ConnectionProfile>element).id;
 			} else if (element instanceof ConnectionProfileGroup) {
 				return (<ConnectionProfileGroup>element).id;
-			} else if (ServerTreeDragAndDrop.checkNodeTypeSingle(element.nodeTypeId)) {
+			} else if (supportsNodeNameDrop(element.nodeTypeId)) {
 				return (<TreeNode>element).id;
 			} else if (element.nodeTypeId === 'Folder' && element.label === 'Columns' && element.children) {
 				return (<TreeNode>element).id;
@@ -44,13 +51,6 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 		else {
 			return undefined;
 		}
-	}
-
-	public static checkNodeTypeSingle(nodeId: string): boolean {
-		if (nodeId === 'Table' || nodeId === 'Column' || nodeId === 'View') {
-			return true;
-		}
-		return false;
 	}
 
 	/**
@@ -82,7 +82,7 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 		TreeUpdateUtils.isInDragAndDrop = true;
 		const data = dragAndDropData.getData();
 		const element = data[0];
-		if (this.checkNodeTypeSingle(element.nodeTypeId)) {
+		if (supportsNodeNameDrop(element.nodeTypeId)) {
 			escapedSchema = this.escapeString(element.metadata.schema);
 			escapedName = this.escapeString(element.metadata.name);
 			finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
@@ -103,7 +103,7 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 		return;
 	}
 
-	private escapeString(input: string): string | undefined {
+	private escapeString(input: string | undefined): string | undefined {
 		if (input) {
 			let output = input.replace(/]/g, ']]');
 			return output;
