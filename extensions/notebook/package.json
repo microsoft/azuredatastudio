@@ -409,12 +409,12 @@
         },
         {
           "command": "notebook.command.searchProvidedBook",
-          "when": "view == providedBooksView && viewItem == providedBook && providedBooks",
+          "when": "view == providedBooksView && viewItem == providedBook",
           "group": "inline"
         },
         {
           "command": "notebook.command.saveBook",
-          "when": "view == providedBooksView && viewItem == providedBook && providedBooks",
+          "when": "view == providedBooksView && viewItem == providedBook",
           "group": "inline"
         },
         {
