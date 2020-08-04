@@ -943,10 +943,9 @@ async function handleSelectedAccountChanged(
 			return;
 		}
 		if (response.errors.length > 0) {
-			// If we got back some subscriptions then don't display the errors to the user - it's normal for users
-			// to not necessarily have access to all subscriptions on an account so displaying the errors
-			// in that case is usually just distracting and causes confusion
 			const accountStatus = await getAccountStatus(selectedAccount);
+			// If accountStatus is not found our stale then user needs to sign in again ignoring the errors received
+			// else bubble up errors received from the response.
 			if (accountStatus === AccountStatus.isStale || accountStatus === AccountStatus.notFound) {
 				const errMsg = await getAzureAccessError(selectedAccount);
 				context.container.message = {
@@ -955,6 +954,9 @@ async function handleSelectedAccountChanged(
 					level: azdata.window.MessageLevel.Error
 				};
 			} else {
+				// If we got back some subscriptions then don't display the errors to the user - it's normal for users
+				// to not necessarily have access to all subscriptions on an account so displaying the errors
+				// in that case is usually just distracting and causes confusion
 				const errMsg = response.errors.join(EOL);
 				if (response.subscriptions.length === 0) {
 					context.container.message = {
@@ -1048,10 +1050,9 @@ async function handleSelectedSubscriptionChanged(context: AzureAccountFieldConte
 			return;
 		}
 		if (response.errors.length > 0) {
-			// If we got back some Resource Groups then don't display the errors to the user - it's normal for users
-			// to not necessarily have access to all Resource Groups on a subscription so displaying the errors
-			// in that case is usually just distracting and causes confusion
 			const accountStatus = await getAccountStatus(selectedAccount);
+			// If accountStatus is not found our stale then user needs to sign in again ignoring the errors received
+			// else bubble up errors received from the response.
 			if (accountStatus === AccountStatus.isStale || accountStatus === AccountStatus.notFound) {
 				const errMsg = await getAzureAccessError(selectedAccount);
 				context.container.message = {
@@ -1060,6 +1061,9 @@ async function handleSelectedSubscriptionChanged(context: AzureAccountFieldConte
 					level: azdata.window.MessageLevel.Error
 				};
 			} else {
+				// If we got back some Resource Groups then don't display the errors to the user - it's normal for users
+				// to not necessarily have access to all Resource Groups on a subscription so displaying the errors
+				// in that case is usually just distracting and causes confusion
 				const errMsg = response.errors.join(EOL);
 				if (response.resourceGroups.length === 0) {
 					context.container.message = {
