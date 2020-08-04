@@ -341,7 +341,7 @@ export class PerFolderServerInstance implements IServerInstance {
 		if (urlMatch) {
 			// Legacy case: manually parse token info if no token/port were passed
 			return [vscode.Uri.parse(urlMatch[1]), urlMatch[2]];
-		} else if (this._uri && dataString.match(/jupyter notebook [.0-9]*\s?is running at:/im)) {
+		} else if (this._uri && dataString.match(/jupyter notebook .*is running at:/im)) {
 			// Default case: detect the notebook started message, indicating our preferred port and token were used
 			//
 			// Newer versions of the notebook package include a version number (e.g. 1.2.3) as part of the "notebook running"
