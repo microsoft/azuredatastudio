@@ -5,7 +5,7 @@
 
 import 'mocha';
 import * as TypeMoq from 'typemoq';
-import assert = require('assert');
+import * as should from 'should';
 import { IPlatformService, CommandOptions } from '../services/platformService';
 import { AzdataService } from '../services/azdataService';
 import { BdcDeploymentType } from '../interfaces';
@@ -26,13 +26,7 @@ suite('azdata service Tests', function (): void {
 		azdataService.getDeploymentProfiles(BdcDeploymentType.ExistingOpenShift);
 		azdataService.getDeploymentProfiles(BdcDeploymentType.NewAKS);
 
-		try {
-			azdataService.getDeploymentProfiles(<BdcDeploymentType>'no-such-type');
-			throw new Error('Expecting an error but the error is not thrown');
-		}
-		catch {
-		}
-
+		should(azdataService.getDeploymentProfiles(<BdcDeploymentType>'no-such-type')).rejected();
 		mockPlatformService.verify((service) => service.runCommand(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()), TypeMoq.Times.exactly(5));
 	});
 
@@ -48,46 +42,16 @@ suite('azdata service Tests', function (): void {
 			});
 		});
 		mockPlatformService.setup((service) => service.runCommand(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns((command: string, options: CommandOptions | undefined) => {
-			return new Promise<string>((resolve, reject) => {
-				if (command === 'azdata bdc config list -o json') {
-					resolve('{"result":["aks-1","profile-2"]}');
-				} else if (command.startsWith('azdata bdc config init')) {
-					resolve(undefined);
-				}
-				else {
-					reject(`unexpected command: ${command}`);
-				}
-			});
+			if (command === 'azdata bdc config list -o json') {
+				return Promise.resolve('{"result":["aks-1","profile-2"]}');
+			} else if (command.startsWith('azdata bdc config init')) {
+				return Promise.resolve('');
+			}
+			else {
+				return Promise.reject(`unexpected command: ${command}`);
+			}
 		});
 		const profiles = await azdataService.getDeploymentProfiles(BdcDeploymentType.NewAKS);
-		assert(profiles.length === 1);
-	});
-
-	test('get bdc endpoints', async () => {
-		const mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();
-		const azdataService = new AzdataService(mockPlatformService.object);
-		const testClusterName = 'testnamespace';
-		mockPlatformService.setup((service) => service.runCommand(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns((command: string, options: CommandOptions | undefined) => {
-			return new Promise<string>((resolve, reject) => {
-				if (command === `azdata login -n ${testClusterName}`) {
-					resolve('');
-				} else if (command === 'azdata bdc endpoint list') {
-					resolve(`[{
-							"name":"control",
-							"endpoint":""
-					},
-						{
-							"name":"sql",
-							"endpoint":""
-						}
-					]`);
-				} else {
-					reject(`unexpected command:${command}`);
-				}
-			});
-		});
-		const endpoints = await azdataService.getEndpoints(testClusterName, '', '');
-		assert(endpoints.length === 2, 'there should be 2 endpoints returned');
-		mockPlatformService.verify(service => service.runCommand(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()), TypeMoq.Times.exactly(2));
+		should(profiles.length).be.exactly(1);
 	});
 });
