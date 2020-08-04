@@ -15,7 +15,7 @@ import { IAsset } from './remoteBookController';
 import * as constants from '../common/constants';
 
 export class GitHubRemoteBook extends RemoteBook {
-	constructor(public remotePath: URL, public outputChannel: vscode.OutputChannel, protected _asset: IAsset) {
+	constructor(public remotePath: vscode.Uri, public outputChannel: vscode.OutputChannel, protected _asset: IAsset) {
 		super(remotePath, outputChannel, _asset);
 	}
 
@@ -35,7 +35,7 @@ export class GitHubRemoteBook extends RemoteBook {
 					'timeout': downloadTimeout
 				}
 			};
-			let downloadRequest = request.get(this._asset.browserDownloadUrl.href, options)
+			let downloadRequest = request.get(this._asset.browserDownloadUrl.toString(false), options)
 				.on('error', (error) => {
 					this.outputChannel.appendLine(loc.msgRemoteBookDownloadError);
 					this.outputChannel.appendLine(error.message);
