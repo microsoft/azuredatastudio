@@ -17,7 +17,7 @@ export class RemoteBookController {
 	constructor(public model: RemoteBookDialogModel, public outputChannel: vscode.OutputChannel) {
 	}
 
-	public async setRemoteBook(url: URL, remoteLocation: string, asset?: IAsset): Promise<void> {
+	public async setRemoteBook(url: vscode.Uri, remoteLocation: string, asset?: IAsset): Promise<void> {
 		if (remoteLocation === 'GitHub') {
 			this.model.remoteBook = new GitHubRemoteBook(url, this.outputChannel, asset);
 		} else {
@@ -26,7 +26,7 @@ export class RemoteBookController {
 		return await this.model.remoteBook.createLocalCopy();
 	}
 
-	public async getReleases(url?: URL): Promise<IRelease[]> {
+	public async getReleases(url?: vscode.Uri): Promise<IRelease[]> {
 		if (url) {
 			this.model.releases = [];
 			let options = {
@@ -35,7 +35,7 @@ export class RemoteBookController {
 				}
 			};
 			return new Promise<IRelease[]>((resolve, reject) => {
-				request.get(url.href, options, (error, response, body) => {
+				request.get(url.toString(false), options, (error, response, body) => {
 					if (error) {
 						return reject(error);
 					}
@@ -50,7 +50,7 @@ export class RemoteBookController {
 						let keys = Object.keys(releases);
 						keys.forEach(key => {
 							try {
-								bookReleases.push({ name: releases[key].name, assetsUrl: new URL(releases[key].assets_url) });
+								bookReleases.push({ name: releases[key].name, assetsUrl: vscode.Uri.parse(releases[key].assets_url) });
 							}
 							catch (error) {
 								return reject(error);
@@ -84,7 +84,7 @@ export class RemoteBookController {
 				}
 			};
 			return new Promise<IAsset[]>((resolve, reject) => {
-				request.get(release.assetsUrl.href, options, (error, response, body) => {
+				request.get(release.assetsUrl.toString(false), options, (error, response, body) => {
 					if (error) {
 						return reject(error);
 					}
@@ -98,9 +98,9 @@ export class RemoteBookController {
 						let keys = Object.keys(assets);
 						keys.forEach(key => {
 							let asset = {} as IAsset;
-							asset.url = new URL(assets[key].url);
+							asset.url = vscode.Uri.parse(assets[key].url);
 							asset.name = assets[key].name;
-							asset.browserDownloadUrl = new URL(assets[key].browser_download_url);
+							asset.browserDownloadUrl = vscode.Uri.parse(assets[key].browser_download_url);
 							let groupsRe = asset.name.match(assetNameRE);
 							if (groupsRe) {
 								asset.book = groupsRe[1];
@@ -128,7 +128,7 @@ export class RemoteBookController {
 
 export interface IRelease {
 	name: string;
-	assetsUrl: URL;
+	assetsUrl: vscode.Uri;
 }
 
 export interface IAsset {
@@ -137,6 +137,6 @@ export interface IAsset {
 	version: string;
 	language: string;
 	format: string;
-	url: URL;
-	browserDownloadUrl: URL;
+	url: vscode.Uri;
+	browserDownloadUrl: vscode.Uri;
 }
