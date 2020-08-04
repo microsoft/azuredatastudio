@@ -120,12 +120,8 @@ export class DiagramComponent extends AngularDisposable implements OnInit {
 	ngOnInit() {
 		this.initActionBar();
 		this.initDropdown();
-		this.initColumnGrid();
 	}
 
-	ngAfterInit() {
-		this.initColumnGrid();
-	}
 
 	private initDropdown() {
 		if (this._dropdownContainer) {
@@ -171,7 +167,6 @@ export class DiagramComponent extends AngularDisposable implements OnInit {
 			this._columnGrid.autosizeColumns();
 			this._columnGrid.resizeCanvas();
 			this._register(attachTableStyler(this._columnGrid, this.themeService));
-			this._cd.detectChanges();
 		}
 	}
 
@@ -203,6 +198,7 @@ export class DiagramComponent extends AngularDisposable implements OnInit {
 				this.showDatabase = true;
 				this.showSchema = false;
 				this.showTable = false;
+				this._cd.detectChanges();
 				break;
 			}
 		}

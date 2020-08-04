@@ -6,27 +6,14 @@
 -->
 <div #diagramActionbarContainer class="diagram-actionbar-container"></div>
 <div id="diagramDiv" class="fullsize">
-	<!--<panel class="dashboard-panel" [options]="panelOpt">
-		<tab [title]="visualTitle" [identifier]="visualTabIdentifier">
-			<ng-template>
-				<div id="visualViewDiv">
-				</div>
-			</ng-template>
-		</tab>
-		<tab [title]="contextualTitle" [identifier]="contextualTabIdentifier">
-			<ng-template>
-			</ng-template>
-		</tab>
-	</panel>-->
 	<div id="contextualDiv">
 		<div #dropDown style="width: 20%;"></div>
-		<div #columnGrid style="width: 80%; height: 200px"></div>
 		<div id="databaseView" *ngIf="showDatabase === true">
 			<div id="title">
 				<img ng-src="" alt="Title Icon">
-				<h1> Database </h1>
+				<h1 style="display: inline;"> Database </h1>
 				<div id="databaseOverview">
-					<p> This is a summary of a database</p>
+
 				</div>
 			</div>
 		</div>
@@ -37,9 +24,16 @@
 			</div>
 		</div>
 		<div id="tableView" *ngIf="showTable === true">
-			<div id="title">
+			<div id="title" style = "display: flex; align-items: center;">
 				<img ng-src="" alt="Title Icon">
 				<h1> Table </h1>
+			</div>
+			<div class = "columns-card">
+				<h2> Columns </h2>
+				<div #columnGrid style="width: 80%; height: 200px;"></div>
+			</div>
+			<div class = "relationships-card">
+				<h2> Relationships </h2>
 			</div>
 		</div>
 	</div>
