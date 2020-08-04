@@ -8,7 +8,6 @@ import * as vscode from 'vscode';
 import * as loc from '../../localizedConstants';
 import { AzureArcTreeDataProvider } from '../tree/azureArcTreeDataProvider';
 import { ControllerModel, ControllerInfo } from '../../models/controllerModel';
-import { Deferred } from '../../common/promise';
 import { InitializingComponent } from '../components/initializingComponent';
 
 export type ConnectToControllerDialogModel = { controllerModel: ControllerModel, password: string };
@@ -21,7 +20,7 @@ export class ConnectToControllerDialog extends InitializingComponent {
 	private passwordInputBox!: azdata.InputBoxComponent;
 	private rememberPwCheckBox!: azdata.CheckBoxComponent;
 
-	private _completionPromise = new Deferred<ConnectToControllerDialogModel | undefined>();
+	private _completionPromise = new azdata.Deferred<ConnectToControllerDialogModel | undefined>();
 
 	constructor(private _treeDataProvider: AzureArcTreeDataProvider) {
 		super();

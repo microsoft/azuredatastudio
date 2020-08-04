@@ -5,7 +5,6 @@
 
 import * as azdata from 'azdata';
 import { ClusterController, ControllerError, IEndPointsResponse } from '../controller/clusterControllerApi';
-import { Deferred } from '../../common/promise';
 import * as loc from '../localizedConstants';
 import { AuthType } from 'bdc';
 
@@ -115,13 +114,13 @@ export abstract class HdfsDialogBase<T extends HdfsDialogProperties, R> {
 	protected usernameInputBox!: azdata.InputBoxComponent;
 	protected passwordInputBox!: azdata.InputBoxComponent;
 
-	private returnPromise: Deferred<R>;
+	private returnPromise: azdata.Deferred<R>;
 
 	constructor(private title: string, protected model: HdfsDialogModelBase<T, R>) {
 	}
 
 	public async showDialog(): Promise<R> {
-		this.returnPromise = new Deferred<R>();
+		this.returnPromise = new azdata.Deferred<R>();
 		this.createDialog();
 		azdata.window.openDialog(this.dialog);
 		return this.returnPromise.promise;

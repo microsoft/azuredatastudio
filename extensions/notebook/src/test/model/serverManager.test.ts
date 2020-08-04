@@ -12,7 +12,6 @@ import 'mocha';
 import { JupyterServerInstanceStub } from '../common';
 import { LocalJupyterServerManager, ServerInstanceFactory } from '../../jupyter/jupyterServerManager';
 import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
-import { Deferred } from '../../common/promise';
 import * as testUtils from '../common/testUtils';
 import { IServerInstance } from '../../jupyter/common';
 import { MockExtensionContext } from '../common/stubs';
@@ -24,14 +23,14 @@ describe('Local Jupyter Server Manager', function (): void {
 	};
 	let expectedPath = 'my/notebook.ipynb';
 	let serverManager: LocalJupyterServerManager;
-	let deferredInstall: Deferred<void>;
+	let deferredInstall: azdata.Deferred<void>;
 	let mockExtensionContext: MockExtensionContext;
 	let mockFactory: TypeMoq.IMock<ServerInstanceFactory>;
 	beforeEach(() => {
 		mockExtensionContext = new MockExtensionContext();
 		mockFactory = TypeMoq.Mock.ofType(ServerInstanceFactory);
 
-		deferredInstall = new Deferred<void>();
+		deferredInstall = new azdata.Deferred<void>();
 		let mockInstall = TypeMoq.Mock.ofType(JupyterServerInstallation, undefined, undefined, '/root');
 		mockInstall.setup(j => j.promptForPythonInstall(TypeMoq.It.isAny())).returns(() => deferredInstall.promise);
 		mockInstall.object.execOptions = { env: Object.assign({}, process.env) };

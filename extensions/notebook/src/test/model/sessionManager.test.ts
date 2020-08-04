@@ -5,12 +5,11 @@
 
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
-import { nb } from 'azdata';
+import { nb, Deferred } from 'azdata';
 import { SessionManager, Session, Kernel } from '@jupyterlab/services';
 import 'mocha';
 
 import { JupyterSessionManager, JupyterSession } from '../../jupyter/jupyterSessionManager';
-import { Deferred } from '../../common/promise';
 import { SessionStub, KernelStub } from '../common';
 
 describe('Jupyter Session Manager', function (): void {

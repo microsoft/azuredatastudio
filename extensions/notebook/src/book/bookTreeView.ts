@@ -12,7 +12,6 @@ import { IPrompter, IQuestion, confirm } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
 import { BookTreeItem, BookTreeItemType } from './bookTreeItem';
 import { BookModel } from './bookModel';
-import { Deferred } from '../common/promise';
 import { IBookTrustManager, BookTrustManager } from './bookTrustManager';
 import * as loc from '../common/localizedConstants';
 import * as glob from 'fast-glob';
@@ -33,7 +32,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private _resource: string;
 	private _extensionContext: vscode.ExtensionContext;
 	private prompter: IPrompter;
-	private _initializeDeferred: Deferred<void> = new Deferred<void>();
+	private _initializeDeferred: azdata.Deferred<void> = new azdata.Deferred<void>();
 	private _openAsUntitled: boolean;
 	private _bookTrustManager: IBookTrustManager;
 

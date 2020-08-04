@@ -11,7 +11,6 @@ import { PickPackagesPage } from './pickPackagesPage';
 import { JupyterServerInstallation, PythonPkgDetails, PythonInstallSettings } from '../../jupyter/jupyterServerInstallation';
 import * as utils from '../../common/utils';
 import { promises as fs } from 'fs';
-import { Deferred } from '../../common/promise';
 import { PythonPathInfo, PythonPathLookup } from '../pythonPathLookup';
 
 const localize = nls.loadMessageBundle();
@@ -33,11 +32,11 @@ export class ConfigurePythonWizard {
 	private _wizard: azdata.window.Wizard;
 	private model: ConfigurePythonModel;
 
-	private _setupComplete: Deferred<void>;
+	private _setupComplete: azdata.Deferred<void>;
 	private pythonPathsPromise: Promise<PythonPathInfo[]>;
 
 	constructor(private jupyterInstallation: JupyterServerInstallation) {
-		this._setupComplete = new Deferred<void>();
+		this._setupComplete = new azdata.Deferred<void>();
 		this.pythonPathsPromise = (new PythonPathLookup()).getSuggestions();
 	}
 

@@ -11,7 +11,6 @@ import { Authentication } from '../controller/generated/v1/api';
 import { ResourceModel } from './resourceModel';
 import { ResourceInfo, Registration } from './controllerModel';
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
-import { Deferred } from '../common/promise';
 import * as loc from '../localizedConstants';
 import { UserCancelledError } from '../common/utils';
 
@@ -34,7 +33,7 @@ export class MiaaModel extends ResourceModel {
 	public statusLastUpdated?: Date;
 	public databasesLastUpdated?: Date;
 
-	private _refreshPromise: Deferred<void> | undefined = undefined;
+	private _refreshPromise: azdata.Deferred<void> | undefined = undefined;
 
 	constructor(controllerUrl: string, controllerAuth: Authentication, info: ResourceInfo, registration: Registration, private _treeDataProvider: AzureArcTreeDataProvider) {
 		super(info, registration);
@@ -73,7 +72,7 @@ export class MiaaModel extends ResourceModel {
 		if (this._refreshPromise) {
 			return this._refreshPromise.promise;
 		}
-		this._refreshPromise = new Deferred();
+		this._refreshPromise = new azdata.Deferred();
 		try {
 			const instanceRefresh = this._sqlInstanceRouter.apiV1HybridSqlNsNameGet(this.info.namespace, this.info.name).then(response => {
 				this._status = response.body;

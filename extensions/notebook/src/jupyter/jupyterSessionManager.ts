@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { nb, ServerInfo, connection, IConnectionProfile } from 'azdata';
+import { nb, ServerInfo, connection, IConnectionProfile, Deferred } from 'azdata';
 import { Session, Kernel } from '@jupyterlab/services';
 import * as fs from 'fs-extra';
 import * as nls from 'vscode-nls';
@@ -14,7 +14,6 @@ import * as utils from '../common/utils';
 const localize = nls.loadMessageBundle();
 
 import { JupyterKernel } from './jupyterKernel';
-import { Deferred } from '../common/promise';
 import { JupyterServerInstallation } from './jupyterServerInstallation';
 import * as bdc from 'bdc';
 

@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
+import { Deferred } from 'azdata';
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
 import { HttpClient } from '../../common/httpClient';
@@ -12,7 +13,6 @@ import * as fs from 'fs';
 import * as nock from 'nock';
 import * as sinon from 'sinon';
 import { PassThrough } from 'stream';
-import { Deferred } from '../../common/promise';
 
 describe('HttpClient', function (): void {
 

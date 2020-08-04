@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
+import { Deferred } from 'azdata';
 import { TreeNode } from './treeNode';
 import { MiaaTreeNode } from './miaaTreeNode';
 import { ResourceType } from '../../constants';
@@ -13,7 +14,6 @@ import { ControllerDashboard } from '../dashboards/controller/controllerDashboar
 import { PostgresModel } from '../../models/postgresModel';
 import { parseInstanceName, UserCancelledError } from '../../common/utils';
 import { MiaaModel } from '../../models/miaaModel';
-import { Deferred } from '../../common/promise';
 import { RefreshTreeNode } from './refreshTreeNode';
 import { ResourceTreeNode } from './resourceTreeNode';
 import { AzureArcTreeDataProvider } from './azureArcTreeDataProvider';

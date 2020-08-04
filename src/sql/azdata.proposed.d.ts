@@ -526,4 +526,38 @@ declare module 'azdata' {
 		delete?: boolean;
 	}
 
+	/**
+	 * Deferred promise
+	 */
+	export class Deferred<T> {
+		/**
+		 * The underlying promise
+		 */
+		readonly promise: Promise<T>;
+		/**
+		 * Resolves the underlying promise with the specified value
+		 */
+		resolve: (value?: T | PromiseLike<T>) => void;
+		/**
+		 * Rejects the underlying promise with the specified reason
+		 */
+		reject: (reason?: any) => void;
+		constructor();
+
+		/**
+		 * Chains a .then to the underlying promise which will be called when the promise is resolved or rejected.
+		 * @param onfulfilled The callback called when the promise is resolved
+		 * @param onrejected The callback called when the promise is rejected
+		 */
+		then<TResult>(onfulfilled?: (value: T) => TResult | Thenable<TResult>, onrejected?: (reason: any) => TResult | Thenable<TResult>): Thenable<TResult>;
+		then<TResult>(onfulfilled?: (value: T) => TResult | Thenable<TResult>, onrejected?: (reason: any) => void): Thenable<TResult>;
+		then<TResult>(onfulfilled?: (value: T) => TResult | Thenable<TResult>, onrejected?: (reason: any) => TResult | Thenable<TResult>): Thenable<TResult>;
+
+		catch<TResult = never>(onrejected?: (reason: any) => TResult | PromiseLike<TResult>): Promise<T | TResult>;
+		catch<U>(onRejected?: (error: any) => U | Thenable<U>): Promise<U>;
+		catch(onRejected?: any);
+
+		finally(onfinally?: () => void): Promise<T>;
+	}
+
 }

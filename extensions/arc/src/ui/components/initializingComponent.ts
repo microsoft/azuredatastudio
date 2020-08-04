@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Deferred } from '../../common/promise';
+import { Deferred } from 'azdata';
 
 export abstract class InitializingComponent {
 

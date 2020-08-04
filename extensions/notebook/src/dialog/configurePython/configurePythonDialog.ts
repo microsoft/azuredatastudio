@@ -10,7 +10,6 @@ import { promises as fs } from 'fs';
 import * as utils from '../../common/utils';
 
 import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
-import { Deferred } from '../../common/promise';
 import { PythonPathLookup, PythonPathInfo } from '../pythonPathLookup';
 
 const localize = nls.loadMessageBundle();
@@ -34,12 +33,12 @@ export class ConfigurePythonDialog {
 	private newInstallButton: azdata.RadioButtonComponent;
 	private existingInstallButton: azdata.RadioButtonComponent;
 
-	private setupComplete: Deferred<void>;
+	private setupComplete: azdata.Deferred<void>;
 	private pythonPathsPromise: Promise<PythonPathInfo[]>;
 	private usingCustomPath: boolean;
 
 	constructor(private jupyterInstallation: JupyterServerInstallation) {
-		this.setupComplete = new Deferred<void>();
+		this.setupComplete = new azdata.Deferred<void>();
 		this.pythonPathsPromise = (new PythonPathLookup()).getSuggestions();
 		this.usingCustomPath = false;
 	}

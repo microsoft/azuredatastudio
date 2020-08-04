@@ -15,7 +15,6 @@ import * as tar from 'tar';
 
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
-import { Deferred } from '../common/promise';
 import { ConfigurePythonWizard } from '../dialog/configurePython/configurePythonWizard';
 import { IPrompter, IQuestion, confirm } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
@@ -73,7 +72,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	private _usingConda: boolean;
 
 	private _installInProgress: boolean;
-	private _installCompletion: Deferred<void>;
+	private _installCompletion: azdata.Deferred<void>;
 
 	public static readonly DefaultPythonLocation = path.join(utils.getUserHome(), 'azuredatastudio-python');
 
@@ -429,7 +428,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}
 
 		this._installInProgress = true;
-		this._installCompletion = new Deferred<void>();
+		this._installCompletion = new azdata.Deferred<void>();
 
 		this._pythonInstallationPath = installSettings.installPath;
 		this._usingExistingPython = installSettings.existingPython;
@@ -510,7 +509,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}
 
 		this._installInProgress = true;
-		this._installCompletion = new Deferred<void>();
+		this._installCompletion = new azdata.Deferred<void>();
 		this.upgradePythonPackages(true, false, requiredPackages)
 			.then(() => {
 				this._installCompletion.resolve();
@@ -633,7 +632,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 						"Installing {0}",
 						packagesStr);
 
-					let backgroundTaskComplete = new Deferred<void>();
+					let backgroundTaskComplete = new azdata.Deferred<void>();
 					azdata.tasks.startBackgroundOperation({
 						displayName: taskName,
 						description: taskName,
