@@ -31,6 +31,8 @@ export const hdfsRootPath = '/';
 export const clusterEndpointsProperty = 'clusterEndpoints';
 export const isBigDataClusterProperty = 'isBigDataCluster';
 
+export const ViewType = 'view';
+
 // SERVICE NAMES //////////////////////////////////////////////////////////
 export const ObjectExplorerService = 'objectexplorer';
 export const CmsService = 'cmsService';
@@ -38,8 +40,8 @@ export const DacFxService = 'dacfxService';
 export const SchemaCompareService = 'schemaCompareService';
 export const LanguageExtensionService = 'languageExtensionService';
 export const objectExplorerPrefix: string = 'objectexplorer://';
-export const ViewType = 'view';
 export const SqlAssessmentService = 'sqlAssessmentService';
+export const NotebookConvertService = 'notebookConvertService';
 
 export enum BuiltInCommands {
 	SetContext = 'setContext'
