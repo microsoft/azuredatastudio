@@ -225,7 +225,7 @@ export function fromMarketplace(extensionName: string, version: string, metadata
 		.pipe(json({ __metadata: metadata }))
 		.pipe(packageJsonFilter.restore);
 }
-const excludedCommonExtensions = [
+const excludedExtensions = [
 	'vscode-api-tests',
 	'vscode-colorize-tests',
 	'vscode-test-resolver',
@@ -264,11 +264,6 @@ const rebuildExtensions = [
 	'big-data-cluster',
 	'mssql'
 ];
-const excludedDesktopExtensions = excludedCommonExtensions.concat([
-	'vscode-web-playground',
-]);
-const excludedWebExtensions = excludedCommonExtensions.concat([
-]);
 
 const marketplaceWebExtensions = [
 	'ms-vscode.references-view'
@@ -303,7 +298,6 @@ function isWebExtension(manifest: IExtensionManifest): boolean {
 }
 
 export function packageLocalExtensionsStream(forWeb: boolean): Stream {
-	const excludedLocalExtensions = (forWeb ? excludedWebExtensions : excludedDesktopExtensions);
 	const localExtensionsDescriptions = (
 		(<string[]>glob.sync('extensions/*/package.json'))
 			.map(manifestPath => {
@@ -312,7 +306,8 @@ export function packageLocalExtensionsStream(forWeb: boolean): Stream {
 				const extensionName = path.basename(extensionPath);
 				return { name: extensionName, path: extensionPath, manifestPath: absoluteManifestPath };
 			})
-			.filter(({ name }) => excludedLocalExtensions.indexOf(name) === -1)
+			.filter(({ name }) => (name === 'vscode-web-playground' ? forWeb : true)) // package vscode-web-playground only for web
+			.filter(({ name }) => excludedExtensions.indexOf(name) === -1)
 			.filter(({ name }) => builtInExtensions.every(b => b.name !== name))
 			.filter(({ name }) => externalExtensions.indexOf(name) === -1) // {{SQL CARBON EDIT}} Remove external Extensions with separate package
 	);
@@ -380,6 +375,9 @@ export function scanBuiltinExtensions(extensionsRoot: string, forWeb: boolean): 
 	try {
 		const extensionsFolders = fs.readdirSync(extensionsRoot);
 		for (const extensionFolder of extensionsFolders) {
+			if (extensionFolder === 'vscode-web-playground') {
+				// never inline vscode-web-playground (even if it was packaged)
+			}
 			const packageJSONPath = path.join(extensionsRoot, extensionFolder, 'package.json');
 			if (!fs.existsSync(packageJSONPath)) {
 				continue;
