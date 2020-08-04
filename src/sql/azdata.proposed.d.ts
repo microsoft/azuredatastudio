@@ -527,7 +527,10 @@ declare module 'azdata' {
 	}
 
 	/**
-	 * Deferred promise
+	 * Deferred promise. Note that this is generally considered an anti-pattern and so should only be
+	 * used in special circumstances.
+	 *
+	 * (https://github.com/petkaantonov/bluebird/wiki/Promise-anti-patterns#the-deferred-anti-pattern)
 	 */
 	export class Deferred<T> {
 		/**
