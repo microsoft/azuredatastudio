@@ -62,7 +62,7 @@ export class ProjectsController {
 			newProject = await Project.openProject(projectFile.fsPath);
 			this.projects.push(newProject);
 
-			// open any reference projects
+			// open any reference projects (don't need to worry about circular dependencies because those aren't allowed)
 			const referencedProjects = newProject.databaseReferences.filter(r => r.databaseReferenceType === DatabaseReferenceType.project);
 			for (const proj of referencedProjects) {
 				await this.openProject(vscode.Uri.file(path.join(newProject.projectFolderPath, proj.fsUri.fsPath)));
