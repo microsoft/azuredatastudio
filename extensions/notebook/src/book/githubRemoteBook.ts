@@ -62,7 +62,7 @@ export class GitHubRemoteBook extends RemoteBook {
 	}
 	public async createDirectory(): Promise<void> {
 		let fileName = this._asset.book.concat('-').concat(this._asset.version).concat('-').concat(this._asset.language);
-		this._localPath = vscode.Uri.parse(path.join(this._localPath.fsPath, fileName));
+		this._localPath = vscode.Uri.file(path.join(this._localPath.fsPath, fileName));
 		try {
 			let exists = await fs.pathExists(this._localPath.fsPath);
 			if (exists) {
