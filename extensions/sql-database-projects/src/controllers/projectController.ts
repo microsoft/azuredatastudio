@@ -143,7 +143,7 @@ export class ProjectsController {
 		catch { } // file doesn't already exist
 
 		if (fileExists) {
-			throw new Error(constants.projectAlreadyExists(newProjFileName, folderUri.fsPath));
+			throw new Error(constants.projectAlreadyExists(newProjFileName, path.parse(newProjFilePath).dir));
 		}
 
 		await fs.mkdir(path.dirname(newProjFilePath), { recursive: true });
@@ -237,9 +237,15 @@ export class ProjectsController {
 	}
 
 	public async readPublishProfileCallback(profileUri: vscode.Uri): Promise<PublishProfile> {
-		const dacFxService = await this.getDaxFxService();
-		const profile = await load(profileUri, dacFxService);
-		return profile;
+		try {
+			const dacFxService = await this.getDaxFxService();
+			const profile = await load(profileUri, dacFxService);
+			return profile;
+		}
+		catch (e) {
+			vscode.window.showErrorMessage(constants.profileReadError);
+			throw e;
+		}
 	}
 
 	public async schemaCompare(treeNode: BaseProjectTreeItem): Promise<void> {
