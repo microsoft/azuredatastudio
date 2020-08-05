@@ -361,6 +361,7 @@ class WelcomePage extends Disposable {
 			<li role="none"><a role="menuitem" tabIndex="-1" class="move" href="command:azdata.resource.deploy">${(localize('welcomePage.deployServer', "Deploy a Server"))}</a></li>
 			<li role="none" id="dropdown-mac-only"><a role="menuitem" tabIndex="-1" class="move mac-only" href="command:workbench.action.files.openLocalFileFolder">${openFileCopy}</a></li>
 			<li role="none" id="dropdown-windows-linux-only"><a role="menuitem" tabIndex="-1" class="move windows-only linux-only" href="command:workbench.action.files.openFile">${openFileCopy}</a></li`;
+
 		const getDropdownBtn = container.querySelector('#dropdown-btn-container .monaco-button') as HTMLElement;
 		getDropdownBtn.id = 'dropdown-btn';
 		getDropdownBtn.setAttribute('role', 'navigation');
@@ -373,8 +374,8 @@ class WelcomePage extends Disposable {
 		getDropdownBtn.appendChild(i);
 		nav.appendChild(dropdownUl);
 		dropdownButtonContainer.appendChild(nav);
-		const fileBtnWindowsClasses = ['windows-only', 'linux-only'];
-		const fileBtnMacClasses = ['mac-only'];
+		const fileBtnWindowsClasses = ['windows-only', 'linux-only', 'btn-secondary'];
+		const fileBtnMacClasses = ['mac-only', 'btn-secondary'];
 
 		const fileBtnContainer = container.querySelector('#open-file-btn-container') as HTMLElement;
 		const openFileText = openFileCopy;
