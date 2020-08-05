@@ -287,6 +287,15 @@
 	background-image: url("stop_inverse.svg");
 }
 
+.hc-black .codicon.export,
+.vs-dark .codicon.export {
+	background: url("export_inverse.svg") center center no-repeat;
+}
+
+.vs .codicon.export {
+	background: url("export.svg") center center no-repeat;
+}
+
 /* Notebook cells */
 .codicon.toolbarIconRunInactive {
 	background-image: url("execute_cell_grey.svg");
@@ -565,15 +574,13 @@ Includes non-masked style declarations. */
 	-webkit-mask-image: url('edit.svg');
 	mask-image: url('edit.svg');
 }
-
-.codicon.masked-icon.move-up {
+.codicon.masked-icon.move-up:before {
 	transform: scale(-1);
 	background-image: none;
 	-webkit-mask-image: url('down-arrow-blue.svg');
 	mask-image: url('down-arrow-blue.svg');
 }
-
-.codicon.masked-icon.move-down {
+.codicon.masked-icon.move-down:before {
 	background-image: none;
 	-webkit-mask-image: url('down-arrow-blue.svg');
 	mask-image: url('down-arrow-blue.svg');

@@ -13,6 +13,8 @@ import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStri
 import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
 import { DeploymentOptions } from '../../../mssql/src/mssql';
 
+const titleFontSize = 12;
+
 interface DataSourceDropdownValue extends azdata.CategoryValue {
 	dataSource: SqlConnectionDataSource;
 	database: string;
@@ -144,11 +146,7 @@ export class PublishDatabaseDialog {
 
 			// add SQLCMD variables table if the project has any
 			if (Object.keys(this.project.sqlCmdVariables).length > 0) {
-				this.formBuilder.insertFormItem({
-					title: constants.sqlCmdTableLabel,
-					component: <azdata.TableComponent>this.sqlCmdVariablesTable
-				},
-					6);
+				this.formBuilder.addFormItem(this.sqlCmdVariablesFormComponent, { titleFontSize: titleFontSize });
 			}
 
 			let formModel = this.formBuilder.component();
@@ -432,7 +430,7 @@ export class PublishDatabaseDialog {
 				if (Object.keys(result.sqlCmdVariables).length) {
 					// add SQLCMD Variables table if it wasn't there before
 					if (Object.keys(this.project.sqlCmdVariables).length === 0) {
-						this.formBuilder?.insertFormItem(<azdata.FormComponent>this.sqlCmdVariablesFormComponent, 6);
+						this.formBuilder?.addFormItem(<azdata.FormComponent>this.sqlCmdVariablesFormComponent, { titleFontSize: titleFontSize });
 					}
 				} else if (Object.keys(this.project.sqlCmdVariables).length === 0) {
 					// remove the table if there are no SQLCMD variables in the project and loaded profile
