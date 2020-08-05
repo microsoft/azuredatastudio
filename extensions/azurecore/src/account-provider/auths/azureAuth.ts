@@ -100,7 +100,9 @@ export abstract class AzureAuth implements vscode.Disposable {
 				}
 			}
 			Logger.error(ex);
-			return undefined;
+			return {
+				canceled: false
+			};
 		}
 	}
 
