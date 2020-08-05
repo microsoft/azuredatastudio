@@ -22,6 +22,18 @@
   "contributes": {
     "commands": [
       {
+        "command": "mssql.exportSqlAsNotebook",
+        "title": "%mssql.exportSqlAsNotebook%"
+      },
+      {
+        "command": "mssql.exportNotebookToSql",
+        "title": "%mssql.exportNotebookToSql%",
+        "icon": {
+          "dark": "resources/dark/export_blue_dark.svg",
+          "light": "resources/light/export_blue_light.svg"
+        }
+      },
+      {
         "command": "mssqlCluster.uploadFiles",
         "title": "%mssqlCluster.uploadFiles%"
       },
@@ -356,6 +368,14 @@
     "menus": {
       "commandPalette": [
         {
+          "command": "mssql.exportSqlAsNotebook",
+          "when": "false"
+        },
+        {
+          "command": "mssql.exportNotebookToSql",
+          "when": "false"
+        },
+        {
           "command": "mssqlCluster.uploadFiles",
           "when": "false"
         },
@@ -449,6 +469,12 @@
           "command": "mssqlCluster.livy.cmd.submitFileToSparkJob",
           "when": "nodeType == mssqlCluster:file && nodeSubType =~/:spark:/",
           "group": "1mssqlCluster@6"
+        }
+      ],
+      "notebook/toolbar": [
+        {
+          "command": "mssql.exportNotebookToSql",
+          "when": "providerId == sql"
         }
       ]
     },
