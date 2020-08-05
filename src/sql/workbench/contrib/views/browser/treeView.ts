@@ -42,6 +42,7 @@ import { ITreeItem, ITreeView } from 'sql/workbench/common/views';
 import { UserCancelledConnectionError } from 'sql/base/common/errors';
 import { IOEShimService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim';
 import { NodeContextKey } from 'sql/workbench/contrib/views/browser/nodeContext';
+import { ActionViewItem } from 'vs/base/browser/ui/actionbar/actionViewItems';
 
 class Root implements ITreeItem {
 	label = { label: 'root' };

@@ -39,6 +39,15 @@ import { ViewPane, IPaneColors } from 'vs/workbench/browser/parts/views/viewPane
 import { IViewletViewOptions } from 'vs/workbench/browser/parts/views/viewsViewlet';
 import { ITreeView } from 'sql/workbench/common/views';
 import { IConnectionProfile } from 'azdata';
+import { ITree } from 'vs/base/parts/tree/browser/tree';
+import { TreeUpdateUtils, IExpandableTree } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
+import { SavedConnectionTreeController } from 'sql/workbench/services/connection/browser/savedConnectionTreeController';
+import { TreeCreationUtils } from 'sql/workbench/services/objectExplorer/browser/treeCreationUtils';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ICancelableEvent } from 'vs/base/parts/tree/browser/treeDefaults';
+import { RecentConnectionTreeController, RecentConnectionActionsProvider } from 'sql/workbench/services/connection/browser/recentConnectionTreeController';
+import { ClearRecentConnectionsAction } from 'sql/workbench/services/connection/browser/connectionActions';
+import { combinedDisposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
 
 export interface OnShowUIResponse {
 	selectedProviderDisplayName: string;
@@ -56,8 +65,8 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 	private _closeButton: Button;
 	private _providerTypeSelectBox: SelectBox;
 	private _newConnectionParams: INewConnectionParams;
-	// private _recentConnectionTree: ITree;
-	// private _savedConnectionTree: ITree;
+	private _recentConnectionTree: ITree;
+	private _savedConnectionTree: ITree;
 	private _connectionUIContainer: HTMLElement;
 	private _databaseDropdownExpanded: boolean;
 	private _actionbar: ActionBar;
@@ -88,7 +97,7 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 
 	readonly viewContainer: ViewContainer;
 	protected readonly viewContainerModel: IViewContainerModel;
-	private paneItems: { pane: ViewPane }[] = [];
+	private paneItems: { pane: ViewPane, disposable: IDisposable }[] = [];
 	private orthogonalSize = 0;
 
 	constructor(
@@ -169,67 +178,67 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 		const connectTypeLabel = localize('connectType', "Connection type");
 		this._providerTypeSelectBox = new SelectBox(this.providerDisplayNameOptions, this.selectedProviderType, this.contextViewService, undefined, { ariaLabel: connectTypeLabel });
 		// Recent connection tab
-		// const recentConnectionTab = DOM.$('.connection-recent-tab');
-		// const recentConnectionContainer = DOM.append(recentConnectionTab, DOM.$('.connection-recent', { id: 'recentConnection' }));
-		// this._recentConnection = DOM.append(recentConnectionContainer, DOM.$('div'));
-		// this._recentConnection.style.height = '100%';
-		// this._noRecentConnection = DOM.append(recentConnectionContainer, DOM.$('div'));
-		// this.createRecentConnections();
-		// DOM.hide(this._recentConnection);
+		const recentConnectionTab = DOM.$('.connection-recent-tab');
+		const recentConnectionContainer = DOM.append(recentConnectionTab, DOM.$('.connection-recent', { id: 'recentConnection' }));
+		this._recentConnection = DOM.append(recentConnectionContainer, DOM.$('div'));
+		this._recentConnection.style.height = '100%';
+		this._noRecentConnection = DOM.append(recentConnectionContainer, DOM.$('div'));
+		this.createRecentConnections();
+		DOM.hide(this._recentConnection);
 
 		// Saved connection tab
-		// const savedConnectionTab = DOM.$('.connection-saved-tab');
-		// const savedConnectionContainer = DOM.append(savedConnectionTab, DOM.$('.connection-saved'));
-		// this._savedConnection = DOM.append(savedConnectionContainer, DOM.$('div'));
-		// this._savedConnection.style.height = '100%';
-		// this._noSavedConnection = DOM.append(savedConnectionContainer, DOM.$('div'));
-		// this.createSavedConnections();
-		// DOM.hide(this._savedConnection);
+		const savedConnectionTab = DOM.$('.connection-saved-tab');
+		const savedConnectionContainer = DOM.append(savedConnectionTab, DOM.$('.connection-saved'));
+		this._savedConnection = DOM.append(savedConnectionContainer, DOM.$('div'));
+		this._savedConnection.style.height = '100%';
+		this._noSavedConnection = DOM.append(savedConnectionContainer, DOM.$('div'));
+		this.createSavedConnections();
+		DOM.hide(this._savedConnection);
 
 		this._panel = new TabbedPanel(this._body);
 		attachTabbedPanelStyler(this._panel, this._themeService);
-		// this._recentConnectionTabId = this._panel.pushTab({
-		// 	identifier: 'recent_connection',
-		// 	title: localize('recentConnectionTitle', "Recent Connections"),
-		// 	view: {
-		// 		render: c => {
-		// 			c.append(recentConnectionTab);
-		// 		},
-		// 		layout: () => { },
-		// 		focus: () => this._recentConnectionTree.domFocus()
-		// 	}
-		// });
+		this._recentConnectionTabId = this._panel.pushTab({
+			identifier: 'recent_connection',
+			title: localize('recentConnectionTitle', "Recent Connections"),
+			view: {
+				render: c => {
+					c.append(recentConnectionTab);
+				},
+				layout: () => { },
+				focus: () => this._recentConnectionTree.domFocus()
+			}
+		});
 
-		// const savedConnectionTabId = this._panel.pushTab({
-		// 	identifier: 'saved_connection',
-		// 	title: localize('savedConnectionTitle', "Saved Connections"),
-		// 	view: {
-		// 		layout: () => { },
-		// 		render: c => {
-		// 			c.append(savedConnectionTab);
-		// 		},
-		// 		focus: () => this._savedConnectionTree.domFocus()
-		// 	}
-		// });
+		const savedConnectionTabId = this._panel.pushTab({
+			identifier: 'saved_connection',
+			title: localize('savedConnectionTitle', "Saved Connections"),
+			view: {
+				layout: () => { },
+				render: c => {
+					c.append(savedConnectionTab);
+				},
+				focus: () => this._savedConnectionTree.domFocus()
+			}
+		});
 
-		// this._panel.onTabChange(async c => {
-		// 	// convert to old VS Code tree interface with expandable methods
-		// 	const expandableTree: IExpandableTree = <IExpandableTree>this._savedConnectionTree;
+		this._panel.onTabChange(async c => {
+			// convert to old VS Code tree interface with expandable methods
+			const expandableTree: IExpandableTree = <IExpandableTree>this._savedConnectionTree;
 
-		// 	if (c === savedConnectionTabId && expandableTree.getContentHeight() === 0) {
-		// 		// Update saved connection tree
-		// 		await TreeUpdateUtils.structuralTreeUpdate(this._savedConnectionTree, 'saved', this.connectionManagementService, this._providers);
+			if (c === savedConnectionTabId && expandableTree.getContentHeight() === 0) {
+				// Update saved connection tree
+				await TreeUpdateUtils.structuralTreeUpdate(this._savedConnectionTree, 'saved', this.connectionManagementService, this._providers);
 
-		// 		if (expandableTree.getContentHeight() > 0) {
-		// 			DOM.hide(this._noSavedConnection);
-		// 			DOM.show(this._savedConnection);
-		// 		} else {
-		// 			DOM.show(this._noSavedConnection);
-		// 			DOM.hide(this._savedConnection);
-		// 		}
-		// 		this._savedConnectionTree.layout(DOM.getTotalHeight(this._savedConnectionTree.getHTMLElement()));
-		// 	}
-		// });
+				if (expandableTree.getContentHeight() > 0) {
+					DOM.hide(this._noSavedConnection);
+					DOM.show(this._savedConnection);
+				} else {
+					DOM.show(this._noSavedConnection);
+					DOM.hide(this._savedConnection);
+				}
+				this._savedConnectionTree.layout(DOM.getTotalHeight(this._savedConnectionTree.getHTMLElement()));
+			}
+		});
 
 		this._connectionDetailTitle = DOM.append(this._body, DOM.$('.connection-details-title'));
 
@@ -339,74 +348,74 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 		this.hide();
 	}
 
-	// private createRecentConnectionList(): void {
-	// 	const recentConnectionContainer = DOM.append(this._recentConnection, DOM.$('.connection-recent-content'));
-	// 	const container = DOM.append(recentConnectionContainer, DOM.$('.recent-titles-container'));
-	// 	const actionsContainer = DOM.append(container, DOM.$('.connection-history-actions'));
-	// 	this._actionbar = this._register(new ActionBar(actionsContainer, { animated: false }));
-	// 	const clearAction = this.instantiationService.createInstance(ClearRecentConnectionsAction, ClearRecentConnectionsAction.ID, ClearRecentConnectionsAction.LABEL);
-	// 	clearAction.useConfirmationMessage = true;
-	// 	clearAction.onRecentConnectionsRemoved(() => this.open(false));
-	// 	this._actionbar.push(clearAction, { icon: true, label: true });
-	// 	const divContainer = DOM.append(recentConnectionContainer, DOM.$('.server-explorer-viewlet'));
-	// 	const treeContainer = DOM.append(divContainer, DOM.$('.explorer-servers'));
-	// 	const leftClick = (element: any, eventish: ICancelableEvent, origin: string) => {
-	// 		// element will be a server group if the tree is clicked rather than a item
-	// 		if (element instanceof ConnectionProfile) {
-	// 			this.onConnectionClick(element);
-	// 		}
-	// 	};
-	// 	const actionProvider = this.instantiationService.createInstance(RecentConnectionActionsProvider);
-	// 	const controller = new RecentConnectionTreeController(leftClick, actionProvider, this.connectionManagementService, this.contextMenuService);
-	// 	actionProvider.onRecentConnectionRemoved(() => {
-	// 		const recentConnections: ConnectionProfile[] = this.connectionManagementService.getRecentConnections();
-	// 		this.open(recentConnections.length > 0).catch(err => this.logService.error(`Unexpected error opening connection widget after a recent connection was removed from action provider: ${err}`));
-	// 		// We're just using the connections to determine if there are connections to show, dispose them right after to clean up their handlers
-	// 		recentConnections.forEach(conn => conn.dispose());
-	// 	});
-	// 	controller.onRecentConnectionRemoved(() => {
-	// 		const recentConnections: ConnectionProfile[] = this.connectionManagementService.getRecentConnections();
-	// 		this.open(recentConnections.length > 0).catch(err => this.logService.error(`Unexpected error opening connection widget after a recent connection was removed from controller : ${err}`));
-	// 		// We're just using the connections to determine if there are connections to show, dispose them right after to clean up their handlers
-	// 		recentConnections.forEach(conn => conn.dispose());
-	// 	});
-	// 	this._recentConnectionTree = TreeCreationUtils.createConnectionTree(treeContainer, this.instantiationService, controller);
+	private createRecentConnectionList(): void {
+		const recentConnectionContainer = DOM.append(this._recentConnection, DOM.$('.connection-recent-content'));
+		const container = DOM.append(recentConnectionContainer, DOM.$('.recent-titles-container'));
+		const actionsContainer = DOM.append(container, DOM.$('.connection-history-actions'));
+		this._actionbar = this._register(new ActionBar(actionsContainer, { animated: false }));
+		const clearAction = this.instantiationService.createInstance(ClearRecentConnectionsAction, ClearRecentConnectionsAction.ID, ClearRecentConnectionsAction.LABEL);
+		clearAction.useConfirmationMessage = true;
+		clearAction.onRecentConnectionsRemoved(() => this.open(false));
+		this._actionbar.push(clearAction, { icon: true, label: true });
+		const divContainer = DOM.append(recentConnectionContainer, DOM.$('.server-explorer-viewlet'));
+		const treeContainer = DOM.append(divContainer, DOM.$('.explorer-servers'));
+		const leftClick = (element: any, eventish: ICancelableEvent, origin: string) => {
+			// element will be a server group if the tree is clicked rather than a item
+			if (element instanceof ConnectionProfile) {
+				this.onConnectionClick(element);
+			}
+		};
+		const actionProvider = this.instantiationService.createInstance(RecentConnectionActionsProvider);
+		const controller = new RecentConnectionTreeController(leftClick, actionProvider, this.connectionManagementService, this.contextMenuService);
+		actionProvider.onRecentConnectionRemoved(() => {
+			const recentConnections: ConnectionProfile[] = this.connectionManagementService.getRecentConnections();
+			this.open(recentConnections.length > 0).catch(err => this.logService.error(`Unexpected error opening connection widget after a recent connection was removed from action provider: ${err}`));
+			// We're just using the connections to determine if there are connections to show, dispose them right after to clean up their handlers
+			recentConnections.forEach(conn => conn.dispose());
+		});
+		controller.onRecentConnectionRemoved(() => {
+			const recentConnections: ConnectionProfile[] = this.connectionManagementService.getRecentConnections();
+			this.open(recentConnections.length > 0).catch(err => this.logService.error(`Unexpected error opening connection widget after a recent connection was removed from controller : ${err}`));
+			// We're just using the connections to determine if there are connections to show, dispose them right after to clean up their handlers
+			recentConnections.forEach(conn => conn.dispose());
+		});
+		this._recentConnectionTree = TreeCreationUtils.createConnectionTree(treeContainer, this.instantiationService, controller);
 
-	// 	// Theme styler
-	// 	this._register(styler.attachListStyler(this._recentConnectionTree, this._themeService));
-	// }
+		// Theme styler
+		this._register(styler.attachListStyler(this._recentConnectionTree, this._themeService));
+	}
 
-	// private createRecentConnections() {
-	// 	this.createRecentConnectionList();
-	// 	const noRecentConnectionContainer = DOM.append(this._noRecentConnection, DOM.$('.connection-recent-content'));
-	// 	const noRecentHistoryLabel = localize('noRecentConnections', "No recent connection");
-	// 	DOM.append(noRecentConnectionContainer, DOM.$('.no-recent-connections')).innerText = noRecentHistoryLabel;
-	// }
+	private createRecentConnections() {
+		this.createRecentConnectionList();
+		const noRecentConnectionContainer = DOM.append(this._noRecentConnection, DOM.$('.connection-recent-content'));
+		const noRecentHistoryLabel = localize('noRecentConnections', "No recent connection");
+		DOM.append(noRecentConnectionContainer, DOM.$('.no-recent-connections')).innerText = noRecentHistoryLabel;
+	}
 
-	// private createSavedConnectionList(): void {
-	// 	const savedConnectioncontainer = DOM.append(this._savedConnection, DOM.$('.connection-saved-content'));
-	// 	const divContainer = DOM.append(savedConnectioncontainer, DOM.$('.server-explorer-viewlet'));
-	// 	const treeContainer = DOM.append(divContainer, DOM.$('.explorer-servers'));
-	// 	const leftClick = (element: any, eventish: ICancelableEvent, origin: string) => {
-	// 		// element will be a server group if the tree is clicked rather than a item
-	// 		if (element instanceof ConnectionProfile) {
-	// 			this.onConnectionClick(element);
-	// 		}
-	// 	};
+	private createSavedConnectionList(): void {
+		const savedConnectioncontainer = DOM.append(this._savedConnection, DOM.$('.connection-saved-content'));
+		const divContainer = DOM.append(savedConnectioncontainer, DOM.$('.server-explorer-viewlet'));
+		const treeContainer = DOM.append(divContainer, DOM.$('.explorer-servers'));
+		const leftClick = (element: any, eventish: ICancelableEvent, origin: string) => {
+			// element will be a server group if the tree is clicked rather than a item
+			if (element instanceof ConnectionProfile) {
+				this.onConnectionClick(element);
+			}
+		};
 
-	// 	const controller = new SavedConnectionTreeController(leftClick);
-	// 	this._savedConnectionTree = TreeCreationUtils.createConnectionTree(treeContainer, this.instantiationService, controller);
+		const controller = new SavedConnectionTreeController(leftClick);
+		this._savedConnectionTree = TreeCreationUtils.createConnectionTree(treeContainer, this.instantiationService, controller);
 
-	// 	// Theme styler
-	// 	this._register(styler.attachListStyler(this._savedConnectionTree, this._themeService));
-	// }
+		// Theme styler
+		this._register(styler.attachListStyler(this._savedConnectionTree, this._themeService));
+	}
 
-	// private createSavedConnections() {
-	// 	this.createSavedConnectionList();
-	// 	const noSavedConnectionContainer = DOM.append(this._noSavedConnection, DOM.$('.connection-saved-content'));
-	// 	const noSavedConnectionLabel = localize('noSavedConnections', "No saved connection");
-	// 	DOM.append(noSavedConnectionContainer, DOM.$('.no-saved-connections')).innerText = noSavedConnectionLabel;
-	// }
+	private createSavedConnections() {
+		this.createSavedConnectionList();
+		const noSavedConnectionContainer = DOM.append(this._noSavedConnection, DOM.$('.connection-saved-content'));
+		const noSavedConnectionLabel = localize('noSavedConnections', "No saved connection");
+		DOM.append(noSavedConnectionContainer, DOM.$('.no-saved-connections')).innerText = noSavedConnectionLabel;
+	}
 
 	private onConnectionClick(element: IConnectionProfile) {
 		this._onFillinConnectionInputs.fire(element);
@@ -427,10 +436,10 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 			DOM.hide(this._recentConnection);
 			DOM.show(this._noRecentConnection);
 		}
-		// await TreeUpdateUtils.structuralTreeUpdate(this._recentConnectionTree, 'recent', this.connectionManagementService, this._providers);
+		await TreeUpdateUtils.structuralTreeUpdate(this._recentConnectionTree, 'recent', this.connectionManagementService, this._providers);
 
 		// // reset saved connection tree
-		// await this._savedConnectionTree.setInput([]);
+		await this._savedConnectionTree.setInput([]);
 
 		// call layout with view height
 		this.initDialog();
@@ -443,7 +452,7 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 		for (const { pane } of this.paneItems) {
 			pane.orthogonalSize = width;
 		}
-		this._panel.layout(new DOM.Dimension(this.orthogonalSize, 500));
+		this._panel.layout(new DOM.Dimension(this.orthogonalSize, height - 38 - 35 - 326)); // height - connection title - connection type input - connection widget
 	}
 
 	/**
@@ -536,8 +545,16 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 	saveState(): void {
 	}
 
-	private onDidRemoveViewDescriptors(removed: IViewDescriptorRef[]): any {
-		throw new Error('Method not implemented.');
+	private onDidRemoveViewDescriptors(removed: IViewDescriptorRef[]): void {
+		for (const ref of removed) {
+			this.removePane(ref);
+		}
+	}
+
+	private removePane(ref: IViewDescriptorRef): void {
+		const item = this.paneItems.find(p => p.pane.id === ref.viewDescriptor.id);
+		this._panel.removeTab(item.pane.id);
+		dispose(item.disposable);
 	}
 
 	protected onDidAddViewDescriptors(added: IAddedViewDescriptorRef[]): ViewPane[] {
@@ -590,8 +607,8 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 			leftBorder: PANEL_SECTION_BORDER
 		}, pane);
 
-		// const disposable = combinedDisposable(pane, paneStyler);
-		const paneItem = { pane };
+		const disposable = combinedDisposable(pane, paneStyler);
+		const paneItem = { pane, disposable };
 		treeView.onDidChangeSelection(e => {
 			if (e.length > 0 && e[0].payload) {
 				this.onConnectionClick(e[0].payload);
