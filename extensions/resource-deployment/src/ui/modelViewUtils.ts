@@ -944,10 +944,11 @@ async function handleSelectedAccountChanged(
 		}
 		if (response.errors.length > 0) {
 			const accountStatus = await getAccountStatus(selectedAccount);
-			// If accountStatus is not found our stale then user needs to sign in again ignoring the errors received
-			// else bubble up errors received from the response.
+
+			// If accountStatus is not found or stale then user needs to sign in again
+			// else individual errors received from the response are bubbled up.
 			if (accountStatus === AccountStatus.isStale || accountStatus === AccountStatus.notFound) {
-				const errMsg = await getAzureAccessError(selectedAccount);
+				const errMsg = await getAzureAccessError({ selectedAccount, accountStatus });
 				context.container.message = {
 					text: errMsg,
 					description: '',
@@ -977,7 +978,7 @@ async function handleSelectedAccountChanged(
 		const selectedSubscription = subscriptionDropdown.values.length > 0 ? subscriptionValueToSubscriptionMap.get(subscriptionDropdown.values[0]) : undefined;
 		await handleSelectedSubscriptionChanged(context, selectedAccount, selectedSubscription, resourceGroupDropdown);
 	} catch (error) {
-		await vscode.window.showErrorMessage(await getAzureAccessError(selectedAccount, localize('azure.accounts.unexpectedSubscriptionsError', "Unexpected error fetching subscriptions for account {0}: {1}", getAccountDisplayString(selectedAccount), getErrorMessage(error)), error));
+		await vscode.window.showErrorMessage(await getAzureAccessError({ selectedAccount, defaultErrorMessage: localize('azure.accounts.unexpectedSubscriptionsError', "Unexpected error fetching subscriptions for account {0}: {1}", getAccountDisplayString(selectedAccount), getErrorMessage(error)), error }));
 	}
 }
 
@@ -985,17 +986,24 @@ function getSubscriptionDisplayString(subscription: azureResource.AzureResourceS
 	return `${subscription.name} (${subscription.id})`;
 }
 
-async function getAzureAccessError(selectedAccount: azdata.Account, defaultErrorMessage: string = '', error: any = undefined, accountStatus: AccountStatus | undefined = undefined): Promise<string> {
+type AccountAccessParams = {
+	selectedAccount: azdata.Account;
+	defaultErrorMessage?: string;
+	error?: any;
+	accountStatus?: AccountStatus;
+};
+
+async function getAzureAccessError({ selectedAccount, defaultErrorMessage = '', error = undefined, accountStatus = undefined }: AccountAccessParams): Promise<string> {
 	if (accountStatus === undefined) {
 		accountStatus = await getAccountStatus(selectedAccount);
 	}
 	switch (accountStatus) {
 		case AccountStatus.notFound:
 			return localize('azure.accounts.accountNotFoundError', "The selected account '{0}' is no longer available. Click sign in to add it again or select a different account.", getAccountDisplayString(selectedAccount))
-				+ error !== undefined ? localize('azure.accessError', "\n Error Details: {0}.", getErrorMessage(error)) : '';
+				+ (error !== undefined ? localize('azure.accessError', "\n Error Details: {0}.", getErrorMessage(error)) : '');
 		case AccountStatus.isStale:
 			return localize('azure.accounts.accountStaleError', "The access token for selected account '{0}' is no longer valid. Please click the sign in button and refresh the account or select a different account.", getAccountDisplayString(selectedAccount))
-				+ error !== undefined ? localize('azure.accessError', "\n Error Details: {0}.", getErrorMessage(error)) : '';
+				+ (error !== undefined ? localize('azure.accessError', "\n Error Details: {0}.", getErrorMessage(error)) : '');
 		case AccountStatus.isNotStale:
 			return defaultErrorMessage;
 	}
@@ -1051,10 +1059,11 @@ async function handleSelectedSubscriptionChanged(context: AzureAccountFieldConte
 		}
 		if (response.errors.length > 0) {
 			const accountStatus = await getAccountStatus(selectedAccount);
-			// If accountStatus is not found our stale then user needs to sign in again ignoring the errors received
-			// else bubble up errors received from the response.
+
+			// If accountStatus is not found or stale then user needs to sign in again
+			// else individual errors received from the response are bubbled up.
 			if (accountStatus === AccountStatus.isStale || accountStatus === AccountStatus.notFound) {
-				const errMsg = await getAzureAccessError(selectedAccount);
+				const errMsg = await getAzureAccessError({ selectedAccount, accountStatus });
 				context.container.message = {
 					text: errMsg,
 					description: '',
@@ -1080,7 +1089,7 @@ async function handleSelectedSubscriptionChanged(context: AzureAccountFieldConte
 			? response.resourceGroups.map(resourceGroup => resourceGroup.name).sort((a: string, b: string) => a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase()))
 			: [''];
 	} catch (error) {
-		await vscode.window.showErrorMessage(await getAzureAccessError(selectedAccount, localize('azure.accounts.unexpectedResourceGroupsError', "Unexpected error fetching resource groups for subscription {0}: {1}", getSubscriptionDisplayString(selectedSubscription), getErrorMessage(error)), error));
+		await vscode.window.showErrorMessage(await getAzureAccessError({ selectedAccount, defaultErrorMessage: localize('azure.accounts.unexpectedResourceGroupsError', "Unexpected error fetching resource groups for subscription {0}: {1}", getSubscriptionDisplayString(selectedSubscription), getErrorMessage(error)), error }));
 	}
 }
 
