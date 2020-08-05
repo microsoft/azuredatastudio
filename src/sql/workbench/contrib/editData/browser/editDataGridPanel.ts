@@ -37,12 +37,6 @@ import * as DOM from 'vs/base/browser/dom';
 import { onUnexpectedError } from 'vs/base/common/errors';
 
 export class EditDataGridPanel extends GridParentComponent {
-	// The time(in milliseconds) we wait before refreshing the grid.
-	// We use clearTimeout and setTimeout pair to avoid unnecessary refreshes.
-	private refreshGridTimeoutInMs = 200;
-
-	// The timeout handle for the refresh grid task
-	private refreshGridTimeoutHandle: any;
 
 	// Optimized for the edit top 200 rows scenario, only need to retrieve the data once
 	// to make the scroll experience smoother
@@ -444,32 +438,27 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	private refreshGrid(): Thenable<void> {
 		return new Promise<void>(async (resolve, reject) => {
-
-			clearTimeout(this.refreshGridTimeoutHandle);
-
-			this.refreshGridTimeoutHandle = setTimeout(() => {
-				try {
-					if (this.dataSet) {
-						this.placeHolderDataSets[0].dataRows = this.dataSet.dataRows;
-						this.onResize();
-					}
-
-
-					if (this.placeHolderDataSets[0].dataRows && this.oldDataRows !== this.placeHolderDataSets[0].dataRows) {
-						this.detectChange();
-						this.oldDataRows = this.placeHolderDataSets[0].dataRows;
-					}
-				}
-				catch {
-					this.logService.error('data set is empty, refresh cancelled.');
-					reject();
+			try {
+				if (this.dataSet) {
+					this.placeHolderDataSets[0].dataRows = this.dataSet.dataRows;
+					this.onResize();
 				}
 
-				if (this.firstRender) {
-					setTimeout(() => this.setActive());
+
+				if (this.placeHolderDataSets[0].dataRows && this.oldDataRows !== this.placeHolderDataSets[0].dataRows) {
+					this.detectChange();
+					this.oldDataRows = this.placeHolderDataSets[0].dataRows;
 				}
-				resolve();
-			}, this.refreshGridTimeoutInMs);
+			}
+			catch {
+				this.logService.error('data set is empty, refresh cancelled.');
+				reject();
+			}
+
+			if (this.firstRender) {
+				setTimeout(() => this.setActive());
+			}
+			resolve();
 		});
 	}
 
