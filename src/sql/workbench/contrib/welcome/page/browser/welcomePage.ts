@@ -361,6 +361,7 @@ class WelcomePage extends Disposable {
 			<li role="none"><a role="menuitem" tabIndex="-1" class="move" href="command:azdata.resource.deploy">${(localize('welcomePage.deployServer', "Deploy a Server"))}</a></li>
 			<li role="none" id="dropdown-mac-only"><a role="menuitem" tabIndex="-1" class="move mac-only" href="command:workbench.action.files.openLocalFileFolder">${openFileCopy}</a></li>
 			<li role="none" id="dropdown-windows-linux-only"><a role="menuitem" tabIndex="-1" class="move windows-only linux-only" href="command:workbench.action.files.openFile">${openFileCopy}</a></li`;
+
 		const getDropdownBtn = container.querySelector('#dropdown-btn-container .monaco-button') as HTMLElement;
 		getDropdownBtn.id = 'dropdown-btn';
 		getDropdownBtn.setAttribute('role', 'navigation');
