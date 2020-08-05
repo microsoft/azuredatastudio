@@ -21,7 +21,6 @@ import * as ports from '../common/ports';
 const NotebookConfigFilename = 'jupyter_notebook_config.py';
 const CustomJsFilename = 'custom.js';
 const defaultPort = 8888;
-const JupyterStartedMessage = 'The Jupyter Notebook is running';
 
 type MessageListener = (data: string | Buffer) => void;
 type ErrorListener = (err: any) => void;
@@ -339,12 +338,14 @@ export class PerFolderServerInstance implements IServerInstance {
 		//                http://localhost:8888/?token=f5ee846e9bd61c3a8d835ecd9b965591511a331417b997b7
 		let dataString = data.toString();
 		let urlMatch = dataString.match(/\[C[\s\S]+ {8}(.+:(\d+)\/.*)$/m);
-
 		if (urlMatch) {
 			// Legacy case: manually parse token info if no token/port were passed
 			return [vscode.Uri.parse(urlMatch[1]), urlMatch[2]];
-		} else if (this._uri && dataString.indexOf(JupyterStartedMessage) > -1) {
+		} else if (this._uri && dataString.match(/jupyter notebook .*is running at:/im)) {
 			// Default case: detect the notebook started message, indicating our preferred port and token were used
+			//
+			// Newer versions of the notebook package include a version number (e.g. 1.2.3) as part of the "notebook running"
+			// message, thus the regex above.
 			return [this._uri, this._port];
 		}
 		return [undefined, undefined];
