@@ -221,7 +221,7 @@ export interface AzureAccountSecurityToken {
  */
 export type AzureAccountSecurityTokenCollection = { [tenantId: string]: AzureAccountSecurityToken };
 
-export interface Deferred<T, E extends Error> {
+export interface Deferred<T, E extends Error = Error> {
 	resolve: (result: T | Promise<T>) => void;
 	reject: (reason: E) => void;
 }
