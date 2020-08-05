@@ -374,7 +374,7 @@ class WelcomePage extends Disposable {
 		nav.appendChild(dropdownUl);
 		dropdownButtonContainer.appendChild(nav);
 		const fileBtnWindowsClasses = ['windows-only', 'linux-only', 'btn-secondary'];
-		const fileBtnMacClasses = ['mac-only'];
+		const fileBtnMacClasses = ['mac-only', 'btn-secondary'];
 
 		const fileBtnContainer = container.querySelector('#open-file-btn-container') as HTMLElement;
 		const openFileText = openFileCopy;
