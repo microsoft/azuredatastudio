@@ -5,6 +5,7 @@
 
 import 'vs/css!./media/accountPicker';
 import * as DOM from 'vs/base/browser/dom';
+import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
 import { List } from 'vs/base/browser/ui/list/listWidget';
 import { IDropdownOptions } from 'vs/base/browser/ui/dropdown/dropdown';
@@ -24,15 +25,22 @@ import { AddAccountAction, RefreshAccountAction } from 'sql/platform/accounts/co
 import { AccountPickerListRenderer, AccountListDelegate } from 'sql/workbench/services/accountManagement/browser/accountListRenderer';
 import { AccountPickerViewModel } from 'sql/platform/accounts/common/accountPickerViewModel';
 import { firstIndex } from 'vs/base/common/arrays';
+import { Tenant, TenantListDelegate, TenantPickerListRenderer } from 'sql/workbench/services/accountManagement/browser/tenantListRenderer';
 
 export class AccountPicker extends Disposable {
 	public static ACCOUNTPICKERLIST_HEIGHT = 47;
 	public viewModel: AccountPickerViewModel;
 	private _accountList: List<azdata.Account>;
-	private _rootElement: HTMLElement;
+	private _rootContainer: HTMLElement;
+
+	private _accountContainer: HTMLElement;
 	private _refreshContainer: HTMLElement;
-	private _listContainer: HTMLElement;
+	private _accountListContainer: HTMLElement;
 	private _dropdown: DropdownList;
+	private _tenantContainer: HTMLElement;
+	private _tenantListContainer: HTMLElement;
+	private _tenantList: List<Tenant>;
+	private _tenantDropdown: DropdownList;
 	private _refreshAccountAction: RefreshAccountAction;
 
 	// EVENTING ////////////////////////////////////////////////////////////
@@ -48,6 +56,9 @@ export class AccountPicker extends Disposable {
 	private _onAccountSelectionChangeEvent: Emitter<azdata.Account | undefined>;
 	public get onAccountSelectionChangeEvent(): Event<azdata.Account | undefined> { return this._onAccountSelectionChangeEvent.event; }
 
+	private _onTenantSelectionChangeEvent: Emitter<string | undefined>;
+	public get onTenantSelectionChangeEvent(): Event<string | undefined> { return this._onTenantSelectionChangeEvent.event; }
+
 	constructor(
 		private _providerId: string,
 		@IThemeService private _themeService: IThemeService,
@@ -61,6 +72,7 @@ export class AccountPicker extends Disposable {
 		this._addAccountErrorEmitter = new Emitter<string>();
 		this._addAccountStartEmitter = new Emitter<void>();
 		this._onAccountSelectionChangeEvent = new Emitter<azdata.Account>();
+		this._onTenantSelectionChangeEvent = new Emitter<string | undefined>();
 
 		// Create the view model, wire up the events, and initialize with baseline data
 		this.viewModel = this._instantiationService.createInstance(AccountPickerViewModel, this._providerId);
@@ -75,8 +87,8 @@ export class AccountPicker extends Disposable {
 	/**
 	 * Render account picker
 	 */
-	public render(container: HTMLElement): void {
-		DOM.append(container, this._rootElement);
+	public render(rootContainer: HTMLElement): void {
+		DOM.append(rootContainer, this._rootContainer);
 	}
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
@@ -85,18 +97,50 @@ export class AccountPicker extends Disposable {
 	 */
 	public createAccountPickerComponent() {
 		// Create an account list
-		const delegate = new AccountListDelegate(AccountPicker.ACCOUNTPICKERLIST_HEIGHT);
+		const accountDelegate = new AccountListDelegate(AccountPicker.ACCOUNTPICKERLIST_HEIGHT);
+		const tenantDelegate = new TenantListDelegate(AccountPicker.ACCOUNTPICKERLIST_HEIGHT);
+
 		const accountRenderer = new AccountPickerListRenderer();
-		this._listContainer = DOM.$('div.account-list-container');
-		this._accountList = new List<azdata.Account>('AccountPicker', this._listContainer, delegate, [accountRenderer]);
+		const tenantRenderer = new TenantPickerListRenderer();
+		this._rootContainer = DOM.$('div.account-picker-container');
+
+		const azureAccountLabel = localize('azureAccount', "Azure account");
+		const azureTenantLabel = localize('azureTenant', "Azure tenant");
+
+		const accountLabel = this.createLabelElement(azureAccountLabel, true);
+		this._accountListContainer = DOM.append(accountLabel, DOM.$('div.account-list-container'));
+
+		const tenantLabel = this.createLabelElement(azureTenantLabel, true);
+		this._tenantListContainer = DOM.append(tenantLabel, DOM.$('div.tenant-list-container'));
+
+
+		this._accountList = new List<azdata.Account>('AccountPicker', this._accountListContainer, accountDelegate, [accountRenderer], {
+			setRowLineHeight: false,
+		});
+		this._tenantList = new List<Tenant>('TenantPicker', this._tenantListContainer, tenantDelegate, [tenantRenderer]);
+
 		this._register(attachListStyler(this._accountList, this._themeService));
+		this._register(attachListStyler(this._tenantList, this._themeService));
 
-		this._rootElement = DOM.$('div.account-picker-container');
+		this._accountContainer = DOM.$('div.account-picker');
+		this._tenantContainer = DOM.$('div.tenant-picker');
 
-		// Create a dropdown for account picker
-		const option: IDropdownOptions = {
+		DOM.append(this._accountContainer, accountLabel);
+		DOM.append(this._tenantContainer, tenantLabel);
+
+
+		DOM.append(this._rootContainer, this._accountContainer);
+		DOM.append(this._rootContainer, this._tenantContainer);
+
+		// Create dropdowns for account and tenant pickers
+		const accountOptions: IDropdownOptions = {
 			contextViewProvider: this._contextViewService,
-			labelRenderer: (container) => this.renderLabel(container)
+			labelRenderer: (container) => this.renderAccountLabel(container)
+		};
+
+		const tenantOption: IDropdownOptions = {
+			contextViewProvider: this._contextViewService,
+			labelRenderer: (container) => this.renderTenantLabel(container)
 		};
 
 		// Create the add account action
@@ -105,8 +149,12 @@ export class AccountPicker extends Disposable {
 		addAccountAction.addAccountErrorEvent((msg) => this._addAccountErrorEmitter.fire(msg));
 		addAccountAction.addAccountStartEvent(() => this._addAccountStartEmitter.fire());
 
-		this._dropdown = this._register(new DropdownList(this._rootElement, option, this._listContainer, this._accountList, addAccountAction));
+		this._dropdown = this._register(new DropdownList(this._accountContainer, accountOptions, this._accountListContainer, this._accountList, addAccountAction));
+		this._tenantDropdown = this._register(new DropdownList(this._tenantContainer, tenantOption, this._tenantListContainer, this._tenantList));
+
 		this._register(attachDropdownStyler(this._dropdown, this._themeService));
+		this._register(attachDropdownStyler(this._tenantDropdown, this._themeService));
+
 		this._register(this._accountList.onDidChangeSelection((e: IListEvent<azdata.Account>) => {
 			if (e.elements.length === 1) {
 				this._dropdown.renderLabel();
@@ -114,8 +162,15 @@ export class AccountPicker extends Disposable {
 			}
 		}));
 
+		this._register(this._tenantList.onDidChangeSelection((e: IListEvent<Tenant>) => {
+			if (e.elements.length === 1) {
+				this._tenantDropdown.renderLabel();
+				this.onTenantSelectionChange(e.elements[0].id);
+			}
+		}));
+
 		// Create refresh account action
-		this._refreshContainer = DOM.append(this._rootElement, DOM.$('div.refresh-container'));
+		this._refreshContainer = DOM.append(this._accountContainer, DOM.$('div.refresh-container'));
 		DOM.append(this._refreshContainer, DOM.$('div.sql codicon warning'));
 		const actionBar = new ActionBar(this._refreshContainer, { animated: false });
 		this._refreshAccountAction = this._instantiationService.createInstance(RefreshAccountAction);
@@ -146,6 +201,17 @@ export class AccountPicker extends Disposable {
 	}
 
 	// PRIVATE HELPERS /////////////////////////////////////////////////////
+
+	private createLabelElement(content: string, isHeader?: boolean) {
+		let className = 'dialog-label';
+		if (isHeader) {
+			className += ' header';
+		}
+		const element = DOM.$(`.${className}`);
+		element.innerText = content;
+		return element;
+	}
+
 	private onAccountSelectionChange(account: azdata.Account | undefined) {
 		this.viewModel.selectedAccount = account;
 		if (account && account.isStale) {
@@ -153,12 +219,25 @@ export class AccountPicker extends Disposable {
 			DOM.show(this._refreshContainer);
 		} else {
 			DOM.hide(this._refreshContainer);
+
+			if (account.properties.tenants?.length > 1) {
+				DOM.show(this._tenantContainer);
+				this.updateTenantList(account);
+			} else {
+				DOM.hide(this._tenantContainer);
+			}
+			this.onTenantSelectionChange(account?.properties?.tenants[0]?.id);
 		}
 
 		this._onAccountSelectionChangeEvent.fire(account);
 	}
 
-	private renderLabel(container: HTMLElement): IDisposable | null {
+	private onTenantSelectionChange(tenantId: string | undefined) {
+		this.viewModel.selectedTenantId = tenantId;
+		this._onTenantSelectionChangeEvent.fire(tenantId);
+	}
+
+	private renderAccountLabel(container: HTMLElement): IDisposable | null {
 		if (container.hasChildNodes()) {
 			for (let i = 0; i < container.childNodes.length; i++) {
 				container.removeChild(container.childNodes.item(i));
@@ -191,6 +270,32 @@ export class AccountPicker extends Disposable {
 			row.innerText = AddAccountAction.LABEL + '...';
 		}
 		return null;
+	}
+
+	private renderTenantLabel(container: HTMLElement): IDisposable | null {
+		if (container.hasChildNodes()) {
+			for (let i = 0; i < container.childNodes.length; i++) {
+				container.removeChild(container.childNodes.item(i));
+			}
+		}
+
+		const selectedTenants = this._tenantList.getSelectedElements();
+		const tenant = selectedTenants ? selectedTenants[0] : undefined;
+		if (tenant) {
+			const row = DOM.append(container, DOM.$('div.selected-tenant-container'));
+			const label = DOM.append(row, DOM.$('div.label'));
+
+			// TODO: Pick between the light and dark logo
+			label.innerText = tenant.displayName;
+		}
+		return null;
+	}
+
+	private updateTenantList(account: azdata.Account): void {
+		this._tenantList.splice(0, this._tenantList.length, account?.properties?.tenants ?? []);
+		this._tenantList.setSelection([0]);
+		this._tenantDropdown.renderLabel();
+		this._tenantList.layout(this._tenantList.contentHeight);
 	}
 
 	private updateAccountList(accounts: azdata.Account[]): void {

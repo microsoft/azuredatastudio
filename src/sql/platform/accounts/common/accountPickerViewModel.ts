@@ -18,6 +18,7 @@ export class AccountPickerViewModel {
 	public get updateAccountListEvent(): Event<UpdateAccountListEventParams> { return this._updateAccountListEmitter.event; }
 
 	public selectedAccount: azdata.Account | undefined;
+	public selectedTenantId: string | undefined;
 
 	constructor(
 		_providerId: string,
@@ -35,13 +36,12 @@ export class AccountPickerViewModel {
 	 * Loads an initial list of accounts from the account management service
 	 * @return Promise to return the list of accounts
 	 */
-	public initialize(): Thenable<azdata.Account[]> {
-		// Load a baseline of the accounts for the provider
-		return this._accountManagementService.getAccounts()
-			.then(undefined, () => {
-				// In the event we failed to lookup accounts for the provider, just send
-				// back an empty collection
-				return [];
-			});
+	public async initialize(): Promise<azdata.Account[]> {
+		try {
+			const accounts = await this._accountManagementService.getAccounts();
+			return accounts;
+		} catch{
+			return [];
+		}
 	}
 }

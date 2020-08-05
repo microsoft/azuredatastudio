@@ -5,23 +5,36 @@
 
 import { Action } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
-
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IAssessmentService } from 'sql/workbench/services/assessment/common/interfaces';
-import { SqlAssessmentResult, SqlAssessmentResultItem } from 'azdata';
+import { SqlAssessmentResult } from 'azdata';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
+import { IFileService } from 'vs/platform/files/common/files';
 import { URI } from 'vs/base/common/uri';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { AssessmentType, AssessmentTargetType, TARGET_ICON_CLASS } from 'sql/workbench/contrib/assessment/common/consts';
 import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
+import { VSBuffer } from 'vs/base/common/buffer';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import * as path from 'vs/base/common/path';
+import { HTMLReportBuilder } from 'sql/workbench/contrib/assessment/common/htmlReportGenerator';
+import Severity from 'vs/base/common/severity';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+
+export interface SqlAssessmentResultInfo {
+	result: SqlAssessmentResult;
+	dateUpdated: number;
+	connectionInfo: any
+}
 
 export interface IAssessmentComponent {
 	showProgress(mode: AssessmentType): any;
 	showInitialResults(result: SqlAssessmentResult, method: AssessmentType): any;
 	appendResults(result: SqlAssessmentResult, method: AssessmentType): any;
 	stopProgress(mode: AssessmentType): any;
-	resultItems: SqlAssessmentResultItem[];
+	recentResult: SqlAssessmentResultInfo;
 	isActive: boolean;
 }
 
@@ -136,7 +149,6 @@ export class AsmtDatabaseSelectItemsAction extends Action {
 	}
 }
 
-
 export class AsmtServerInvokeItemsAction extends AsmtServerAction {
 	public static ID = 'asmtaction.server.invokeitems';
 	public static LABEL = nls.localize('asmtaction.server.invokeitems', "Invoke Assessment");
@@ -198,8 +210,9 @@ export class AsmtExportAsScriptAction extends Action {
 
 	public async run(context: IAsmtActionInfo): Promise<boolean> {
 		this._telemetryService.sendActionEvent(TelemetryView.SqlAssessment, AsmtExportAsScriptAction.ID);
-		if (context && context.component && context.component.resultItems) {
-			await this._assessmentService.generateAssessmentScript(context.ownerUri, context.component.resultItems);
+		const items = context?.component?.recentResult?.result.items;
+		if (items) {
+			await this._assessmentService.generateAssessmentScript(context.ownerUri, items);
 			return true;
 		}
 		return false;
@@ -224,4 +237,65 @@ export class AsmtSamplesLinkAction extends Action {
 		this._telemetryService.sendActionEvent(TelemetryView.SqlAssessment, AsmtSamplesLinkAction.ID);
 		return this._openerService.open(URI.parse(AsmtSamplesLinkAction.configHelpUri));
 	}
+}
+
+export class AsmtGenerateHTMLReportAction extends Action {
+	public static readonly ID = 'asmtaction.generatehtmlreport';
+	public static readonly LABEL = nls.localize('asmtaction.generatehtmlreport', "Make HTML Report");
+	public static readonly ICON = 'bookreport';
+
+	constructor(
+		@IFileService private _fileService: IFileService,
+		@IOpenerService private _openerService: IOpenerService,
+		@IEnvironmentService private _environmentService: IEnvironmentService,
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
+		@INotificationService private readonly _notificationService: INotificationService,
+		@IFileDialogService private readonly _fileDialogService: IFileDialogService
+	) {
+		super(AsmtGenerateHTMLReportAction.ID, AsmtGenerateHTMLReportAction.LABEL, AsmtGenerateHTMLReportAction.ICON);
+	}
+
+	private suggestReportFile(date: number): URI {
+		const fileName = generateReportFileName(new Date(date));
+		const filePath = path.join(this._environmentService.userRoamingDataHome.fsPath, 'SqlAssessmentReports', fileName);
+		return URI.file(filePath);
+	}
+
+	public async run(context: IAsmtActionInfo): Promise<boolean> {
+		context.component.showProgress(AssessmentType.ReportGeneration);
+		const choosenPath = await this._fileDialogService.pickFileToSave(this.suggestReportFile(context.component.recentResult.dateUpdated));
+		context.component.stopProgress(AssessmentType.ReportGeneration);
+		if (!choosenPath) {
+			return false;
+		}
+
+		this._telemetryService.sendActionEvent(TelemetryView.SqlAssessment, AsmtGenerateHTMLReportAction.ID);
+
+		const result = await this._fileService.createFile(
+			choosenPath,
+			VSBuffer.fromString(new HTMLReportBuilder(context.component.recentResult.result,
+				context.component.recentResult.dateUpdated,
+				context.component.recentResult.connectionInfo).build()),
+			{ overwrite: true });
+		if (result) {
+			this._notificationService.prompt(Severity.Info, nls.localize('asmtaction.openReport', "Report has been saved. Do you want to open it?"),
+				[{
+					label: nls.localize('asmtaction.label.open', "Open"),
+					run: () => {
+						return this._openerService.open(result.resource.fsPath, { openExternal: true });
+					}
+				},
+				{
+					label: nls.localize('asmtaction.label.cancel', "Cancel"),
+					run: () => { }
+				}]);
+		}
+		return true;
+	}
+}
+
+function generateReportFileName(resultDate): string {
+	const datetime = `${resultDate.toISOString().replace(/-/g, '').replace('T', '').replace(/:/g, '').split('.')[0]}`;
+	return `SqlAssessmentReport_${datetime}.html`;
+
 }

@@ -6,6 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
+import * as should from 'should';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
 import { ApiWrapper } from '../common/apiWrapper';
 
@@ -36,7 +37,9 @@ export class SchemaCompareMainWindowTest extends SchemaCompareMainWindow {
 		return this.comparisonResult;
 	}
 
-	public verifyButtonsState(buttonState: ButtonState): boolean {
+	public verifyButtonsState(buttonState: ButtonState): void {
+		let result: boolean = false;
+
 		if (this.compareButton.enabled === buttonState.compareButtonState &&
 			this.optionsButton.enabled === buttonState.optionsButtonState &&
 			this.switchButton.enabled === buttonState.switchButtonState &&
@@ -47,20 +50,18 @@ export class SchemaCompareMainWindowTest extends SchemaCompareMainWindow {
 			this.selectTargetButton.enabled === buttonState.selectTargetButtonState &&
 			this.generateScriptButton.enabled === buttonState.generateScriptButtonState &&
 			this.applyButton.enabled === buttonState.applyButtonState) {
-			return true;
+			result = true;
 		}
 
-		console.log('CompareButton: (actual) ', this.compareButton.enabled, ', (expected)', buttonState.compareButtonState);
-		console.log('OptionsButton: (actual) ', this.optionsButton.enabled, ', (expected)', buttonState.optionsButtonState);
-		console.log('SwitchButton: (actual) ', this.switchButton.enabled, ', (expected)', buttonState.switchButtonState);
-		console.log('OpenScmpButton: (actual) ', this.openScmpButton.enabled, ', (expected)', buttonState.openScmpButtonState);
-		console.log('SaveScmpButton: (actual) ', this.saveScmpButton.enabled, ', (expected)', buttonState.saveScmpButtonState);
-		console.log('CancelCompareButton: (actual) ', this.cancelCompareButton.enabled, ', (expected)', buttonState.cancelCompareButtonState);
-		console.log('SelectSourceButton: (actual) ', this.selectSourceButton.enabled, ', (expected)', buttonState.selectSourceButtonState);
-		console.log('SelectTargetButton: (actual) ', this.selectTargetButton.enabled, ', (expected)', buttonState.selectTargetButtonState);
-		console.log('GenerateScriptButton: (actual) ', this.generateScriptButton.enabled, ', (expected)', buttonState.generateScriptButtonState);
-		console.log('ApplyButton: (actual) ', this.applyButton.enabled, ', (expected)', buttonState.applyButtonState);
-
-		return false;
+		should(result).equal(true, `CompareButton: (Actual) ${this.compareButton.enabled} (Expected) ${buttonState.compareButtonState}
+		OptionsButton: (Actual) ${this.optionsButton.enabled} (Expected) ${buttonState.optionsButtonState}
+		SwitchButton: (Actual) ${this.switchButton.enabled} (Expected) ${buttonState.switchButtonState}
+		OpenScmpButton: (Actual) ${this.openScmpButton.enabled} (Expected) ${buttonState.openScmpButtonState}
+		SaveScmpButton: (Actual) ${this.saveScmpButton.enabled} (Expected) ${buttonState.saveScmpButtonState}
+		CancelCompareButton: (Actual) ${this.cancelCompareButton.enabled} (Expected) ${buttonState.cancelCompareButtonState}
+		SelectSourceButton: (Actual) ${this.selectSourceButton.enabled} (Expected) ${buttonState.selectSourceButtonState}
+		SelectTargetButton: (Actual) ${this.selectTargetButton.enabled} (Expected) ${buttonState.selectTargetButtonState}
+		GenerateScriptButton: (Actual) ${this.generateScriptButton.enabled} (Expected) ${buttonState.generateScriptButtonState}
+		ApplyButton: (Actual) ${this.applyButton.enabled} (Expected) ${buttonState.applyButtonState}`);
 	}
 }
