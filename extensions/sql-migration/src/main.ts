@@ -3,23 +3,37 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
-import { MainController } from './controllers/mainController';
-import { Controller } from './models/controller';
+import { ExtensionContext, Disposable, commands, window } from 'vscode';
 
-let controllers: Controller[] = [];
+class SQLMigration {
 
-export async function activate(context: vscode.ExtensionContext) {
-	let mainController = new MainController(context);
-	controllers.push(mainController);
+	constructor(private readonly context: ExtensionContext) {
+	}
 
-	await mainController.activate();
+	async start(): Promise<void> {
 
-	// Push all the disposable controllers to the context
-	controllers.forEach(c => context.subscriptions.push(c));
+	}
+
+	async registerCommands(): Promise<void> {
+		const commandDisposables: Disposable[] = [ // Array of disposables returned by registerCommand
+			commands.registerCommand('sqlmigration.start', () => {
+				window.showInformationMessage('Command ran');
+			}),
+		];
+
+		this.context.subscriptions.push(...commandDisposables);
+	}
+
+	stop(): void {
+
+	}
 }
 
-// this method is called when your extension is deactivated
+let sqlMigration: SQLMigration;
+export async function activate(context: ExtensionContext) {
+	sqlMigration = new SQLMigration(context);
+}
+
 export function deactivate(): void {
-	controllers.forEach(c => c.deactivate());
+	sqlMigration.stop();
 }
