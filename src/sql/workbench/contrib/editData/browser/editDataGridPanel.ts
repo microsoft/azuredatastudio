@@ -382,7 +382,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				self.windowSize,
 				index => { return {}; },
 				resultSet.rowCount,
-				this.loadDataFunction,
+				await this.loadDataFunction,
 			),
 			columnDefinitions: [rowNumberColumn.getColumnDefinition()].concat(resultSet.columnInfo.map((c, i) => {
 				let columnIndex = (i + 1).toString();
