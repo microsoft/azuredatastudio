@@ -102,7 +102,6 @@ describe('ProjectsController', function (): void {
 				should(projController.projects.length).equal(2, 'Referenced project should have been opened when the project referencing it was opened');
 			});
 
-
 			it('Should not keep failed to load project in project list.', async function (): Promise<void> {
 				const folderPath = await testUtils.generateTestFolderPath();
 				const sqlProjPath = await testUtils.createTestSqlProjFile('empty file with no valid xml', folderPath);

@@ -44,7 +44,7 @@ describe('Project: sqlproj content operations', function (): void {
 		// Database references
 		// should only have one database reference even though there are two master.dacpac references (1 for ADS and 1 for SSDT)
 		should(project.databaseReferences.length).equal(1);
-		should(project.databaseReferences[0].databaseName()).containEql(constants.master);
+		should(project.databaseReferences[0].databaseName).containEql(constants.master);
 		should(project.databaseReferences[0].databaseReferenceType).equal(DatabaseReferenceType.dacpac);
 	});
 
@@ -55,9 +55,9 @@ describe('Project: sqlproj content operations', function (): void {
 		// Database references
 		// should only have two database references even though there are two master.dacpac references (1 for ADS and 1 for SSDT)
 		should(project.databaseReferences.length).equal(2);
-		should(project.databaseReferences[0].databaseName()).containEql(constants.master);
+		should(project.databaseReferences[0].databaseName).containEql(constants.master);
 		should(project.databaseReferences[0].databaseReferenceType).equal(DatabaseReferenceType.dacpac);
-		should(project.databaseReferences[1].databaseName()).containEql('TestProjectName');
+		should(project.databaseReferences[1].databaseName).containEql('TestProjectName');
 		should(project.databaseReferences[1].databaseReferenceType).equal(DatabaseReferenceType.project);
 	});
 
@@ -165,21 +165,21 @@ describe('Project: sqlproj content operations', function (): void {
 		should(project.databaseReferences.length).equal(0, 'There should be no datbase references to start with');
 		await project.addSystemDatabaseReference(SystemDatabase.master);
 		should(project.databaseReferences.length).equal(1, 'There should be one database reference after adding a reference to master');
-		should(project.databaseReferences[0].databaseName()).equal(constants.master, 'The database reference should be master');
+		should(project.databaseReferences[0].databaseName).equal(constants.master, 'The database reference should be master');
 		// make sure reference to SSDT master dacpac was added
 		let projFileText = (await fs.readFile(projFilePath)).toString();
 		should(projFileText).containEql(convertSlashesForSqlProj(project.getSystemDacpacSsdtUri(constants.master).fsPath.substring(1)));
 
 		await project.addSystemDatabaseReference(SystemDatabase.msdb);
 		should(project.databaseReferences.length).equal(2, 'There should be two database references after adding a reference to msdb');
-		should(project.databaseReferences[1].databaseName()).equal(constants.msdb, 'The database reference should be msdb');
+		should(project.databaseReferences[1].databaseName).equal(constants.msdb, 'The database reference should be msdb');
 		// make sure reference to SSDT msdb dacpac was added
 		projFileText = (await fs.readFile(projFilePath)).toString();
 		should(projFileText).containEql(convertSlashesForSqlProj(project.getSystemDacpacSsdtUri(constants.msdb).fsPath.substring(1)));
 
 		await project.addDatabaseReference(Uri.parse('test.dacpac'), DatabaseReferenceLocation.sameDatabase);
 		should(project.databaseReferences.length).equal(3, 'There should be three database references after adding a reference to test');
-		should(project.databaseReferences[2].databaseName()).equal('test', 'The database reference should be test');
+		should(project.databaseReferences[2].databaseName).equal('test', 'The database reference should be test');
 	});
 
 	it('Should not allow adding duplicate database references', async function (): Promise<void> {
@@ -189,7 +189,7 @@ describe('Project: sqlproj content operations', function (): void {
 		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
 		await project.addSystemDatabaseReference(SystemDatabase.master);
 		should(project.databaseReferences.length).equal(1, 'There should be one database reference after adding a reference to master');
-		should(project.databaseReferences[0].databaseName()).equal(constants.master, 'project.databaseReferences[0].databaseName should be master');
+		should(project.databaseReferences[0].databaseName).equal(constants.master, 'project.databaseReferences[0].databaseName should be master');
 
 		// try to add reference to master again
 		await testUtils.shouldThrowSpecificError(async () => await project.addSystemDatabaseReference(SystemDatabase.master), constants.databaseReferenceAlreadyExists);
@@ -197,7 +197,7 @@ describe('Project: sqlproj content operations', function (): void {
 
 		await project.addDatabaseReference(Uri.parse('test.dacpac'), DatabaseReferenceLocation.sameDatabase);
 		should(project.databaseReferences.length).equal(2, 'There should be two database references after adding a reference to test.dacpac');
-		should(project.databaseReferences[1].databaseName()).equal('test', 'project.databaseReferences[1].databaseName should be test');
+		should(project.databaseReferences[1].databaseName).equal('test', 'project.databaseReferences[1].databaseName should be test');
 
 		// try to add reference to test.dacpac again
 		await testUtils.shouldThrowSpecificError(async () => await project.addDatabaseReference(Uri.parse('test.dacpac'), DatabaseReferenceLocation.sameDatabase), constants.databaseReferenceAlreadyExists);

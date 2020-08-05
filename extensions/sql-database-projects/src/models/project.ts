@@ -387,7 +387,7 @@ export class Project {
 		}
 
 		referenceNode.setAttribute(constants.Include, entry.pathForSqlProj());
-		this.addDatabaseReferenceChildren(referenceNode, entry.name);
+		this.addDatabaseReferenceChildren(referenceNode, entry.sqlCmdName);
 		this.findOrCreateItemGroup(constants.ArtifactReference).appendChild(referenceNode);
 		this.databaseReferences.push(entry);
 
@@ -396,7 +396,7 @@ export class Project {
 			let ssdtReferenceNode = this.projFileXmlDoc.createElement(constants.ArtifactReference);
 			ssdtReferenceNode.setAttribute(constants.Condition, constants.NotNetCoreCondition);
 			ssdtReferenceNode.setAttribute(constants.Include, (<SystemDatabaseReferenceProjectEntry>entry).ssdtPathForSqlProj());
-			this.addDatabaseReferenceChildren(ssdtReferenceNode, entry.name);
+			this.addDatabaseReferenceChildren(ssdtReferenceNode, entry.sqlCmdName);
 			this.findOrCreateItemGroup(constants.ArtifactReference).appendChild(ssdtReferenceNode);
 		}
 	}
@@ -476,7 +476,7 @@ export class Project {
 				}
 
 				// remove from database references because it'll get added again later
-				this.databaseReferences.splice(this.databaseReferences.findIndex(n => n.databaseName() === (name === SystemDatabase.master ? constants.master : constants.msdb)), 1);
+				this.databaseReferences.splice(this.databaseReferences.findIndex(n => n.databaseName === (name === SystemDatabase.master ? constants.master : constants.msdb)), 1);
 
 				await this.addSystemDatabaseReference(name);
 			}
@@ -582,22 +582,22 @@ export class ProjectEntry {
  */
 
 export interface IDatabaseReferenceProjectEntry extends ProjectEntry {
-	name: string | undefined;
 	databaseReferenceType: DatabaseReferenceType;
-	databaseName(): string;
+	databaseName: string;
+	sqlCmdName?: string | undefined;
 }
 
 export class DacpacReferenceProjectEntry extends ProjectEntry implements IDatabaseReferenceProjectEntry {
-	name: string | undefined;
+	sqlCmdName: string | undefined;
 	databaseReferenceType: DatabaseReferenceType;
 
 	constructor(uri: Uri, public databaseLocation: DatabaseReferenceLocation, name?: string) {
 		super(uri, '', EntryType.DatabaseReference);
-		this.name = name;
+		this.sqlCmdName = name;
 		this.databaseReferenceType = DatabaseReferenceType.dacpac;
 	}
 
-	public databaseName(): string {
+	public get databaseName(): string {
 		return path.parse(utils.getPlatformSafeFileEntryPath(this.fsUri.fsPath)).name;
 	}
 }
@@ -605,7 +605,7 @@ export class DacpacReferenceProjectEntry extends ProjectEntry implements IDataba
 class SystemDatabaseReferenceProjectEntry extends DacpacReferenceProjectEntry {
 	constructor(uri: Uri, public ssdtUri: Uri, name: string) {
 		super(uri, DatabaseReferenceLocation.differentDatabaseSameServer, name);
-		this.name = name;
+		this.sqlCmdName = name;
 		this.databaseReferenceType = DatabaseReferenceType.dacpac;
 	}
 
@@ -621,17 +621,17 @@ class SystemDatabaseReferenceProjectEntry extends DacpacReferenceProjectEntry {
 }
 
 export class SqlProjectReferenceProjectEntry extends ProjectEntry implements IDatabaseReferenceProjectEntry {
-	name: string;
+	projectName: string;
 	databaseReferenceType: DatabaseReferenceType;
 
 	constructor(uri: Uri, name: string) {
 		super(uri, '', EntryType.DatabaseReference);
-		this.name = name;
+		this.projectName = name;
 		this.databaseReferenceType = DatabaseReferenceType.project;
 	}
 
-	public databaseName(): string {
-		return <string>this.name;
+	public get databaseName(): string {
+		return this.projectName;
 	}
 }
 
