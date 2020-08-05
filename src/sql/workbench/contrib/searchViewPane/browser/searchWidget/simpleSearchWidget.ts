@@ -54,6 +54,7 @@ export class SimpleSearchWidget extends Widget {
 
 	searchInput!: FindInput;
 	searchInputFocusTracker!: IFocusTracker;
+	// searchView: ISearchResultsView;
 	private inputBoxFocused: IContextKey<boolean>;
 	public triggerQueryDelayer: Delayer<void>;
 	private pauseSearching = false;
@@ -120,6 +121,11 @@ export class SimpleSearchWidget extends Widget {
 
 	public get searchView(): ISearchResultsView | undefined {
 		return <NotebookSearchResultsView>this.parentContainer.getView(NotebookSearchResultsView.ID) ?? undefined;
+	}
+
+	public set SearchView(searchResultsView: ISearchResultsView) {
+		//this.searchView = searchResultsView;
+		// return <NotebookSearchResultsView>this.parentContainer.getView(NotebookSearchResultsView.ID) ?? undefined;
 	}
 
 	searchInputHasFocus(): boolean {
@@ -399,8 +405,8 @@ export class SimpleSearchWidget extends Widget {
 	}
 
 	cancelSearch(focus: boolean = true): boolean {
+		this.searchView?.cancelSearch(focus);
 		if (focus) {
-			this.searchView?.cancelSearch(focus);
 			this.focus();
 			return true;
 		}

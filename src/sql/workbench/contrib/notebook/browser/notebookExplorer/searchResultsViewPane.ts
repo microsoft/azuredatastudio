@@ -243,23 +243,19 @@ export class NotebookSearchResultsView extends SearchView implements ISearchResu
 
 	public async validateAndSearch(query: ITextQuery, searchWidget: SimpleSearchWidget): Promise<void> {
 		try {
-			await this.validateQry(query);
+			await this.validateQuery(query);
 			if (this.parentContainer.views.length > 1) {
 				let filesToIncludeFiltered: string = '';
 				this.parentContainer.views.forEach(async (v) => {
 					let booksViewPane = (<TreeViewPane>this.parentContainer.getView(v.id));
 					if (booksViewPane?.treeView?.root) {
-						let root = booksViewPane.treeView.root;
-						if (root.children) {
-							let items = root.children;
-							items?.forEach(async root => {
-								searchWidget.updateViewletsState();
-								let folderToSearch: IFolderQuery = { folder: URI.file(path.join(isString(root.tooltip) ? root.tooltip : root.tooltip.value, 'content')) };
-								query.folderQueries.push(folderToSearch);
-								filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
-								await this.startSearch(query, null, filesToIncludeFiltered, false, searchWidget);
-							});
-						}
+						booksViewPane.treeView.root.children?.forEach(async root => {
+							searchWidget.updateViewletsState();
+							let folderToSearch: IFolderQuery = { folder: URI.file(path.join(isString(root.tooltip) ? root.tooltip : root.tooltip.value, 'content')) };
+							query.folderQueries.push(folderToSearch);
+							filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
+							await this.startSearch(query, null, filesToIncludeFiltered, false, searchWidget);
+						});
 					}
 				});
 			}
@@ -268,14 +264,14 @@ export class NotebookSearchResultsView extends SearchView implements ISearchResu
 		}
 	}
 
-	private async validateQry(query: ITextQuery): Promise<void> {
+	protected async validateQuery(query: ITextQuery): Promise<void> {
 		// Validate folders passed in the query exist.
 		const folderQueriesExistP =
 			query.folderQueries.map(fq => {
 				return this.fileService.exists(fq.folder);
 			});
 
-		await folderQueriesExistP;
+		await Promise.all(folderQueriesExistP);
 		folderQueriesExistP.forEach((existResults, i) => {
 			// If no folders exist, show an error message about the first one
 			const existingFolderQueries = query.folderQueries.filter((folderQuery, j) => i === j && existResults);

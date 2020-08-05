@@ -1353,7 +1353,7 @@ export class SearchView extends ViewPane {
 		}, onQueryValidationError);
 	}
 
-	private validateQuery(query: ITextQuery): Promise<void> {
+	protected validateQuery(query: ITextQuery): Promise<void> { // {{SQL CARBON EDIT}}
 		// Validate folderQueries
 		const folderQueriesExistP =
 			query.folderQueries.map(fq => {

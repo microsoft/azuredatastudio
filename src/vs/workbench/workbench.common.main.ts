@@ -198,6 +198,7 @@ import { INotebookService } from 'sql/workbench/services/notebook/browser/notebo
 import { IScriptingService, ScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import { IAssessmentService } from 'sql/workbench/services/assessment/common/interfaces';
 import { AssessmentService } from 'sql/workbench/services/assessment/common/assessmentService';
+import { ISearchWidgetService, SearchWidgetService } from 'sql/workbench/contrib/searchViewPane/browser/searchWidget/searchWidgetService';
 
 registerSingleton(IDashboardService, DashboardService);
 registerSingleton(IDashboardViewService, DashboardViewService);
@@ -487,6 +488,5 @@ import 'sql/workbench/contrib/extensions/browser/extensions.contribution';
 
 // Azure
 import 'sql/workbench/contrib/azure/browser/azure.contribution';
-import { ISearchWidgetService, SearchWidgetService } from 'sql/workbench/contrib/searchViewPane/browser/searchWidget/searchWidgetService';
 
 //#endregion
