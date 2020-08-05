@@ -28,11 +28,7 @@ import { find, firstIndex } from 'vs/base/common/arrays';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
-<<<<<<< HEAD
 import { URI } from 'vs/base/common/uri';
-=======
-
->>>>>>> Get Kernel Alias through Capability Services
 
 const msgLoading = localize('loading', "Loading kernels...");
 export const msgChanging = localize('changing', "Changing kernel...");
@@ -279,18 +275,22 @@ export class CollapseCellsAction extends ToggleableAction {
 const showAllKernelsConfigName = 'notebook.showAllKernels';
 const workbenchPreviewConfigName = 'workbench.enablePreviewFeatures';
 export const noKernelName = localize('noKernel', "No Kernel");
+<<<<<<< HEAD
 =======
 const ShowAllKernelsConfigName = 'notebook.showAllKernels';
 const WorkbenchPreviewConfigName = 'workbench.enablePreviewFeatures';
 let kernelAlias = [];
 
 >>>>>>> Get Kernel Alias through Capability Services
+=======
+>>>>>>> Revert "Merge branch 'vabhog/kernel-alias-feature' into feature-AzureDataExplorer"
 export class KernelsDropdown extends SelectBox {
 	private model: NotebookModel;
 	private _showAllKernels: boolean = false;
-	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>, @IConfigurationService private _configurationService: IConfigurationService, @ICapabilitiesService private _capabilitiesService: ICapabilitiesService) {
+	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>, @IConfigurationService private _configurationService: IConfigurationService) {
 		super([msgLoading], msgLoading, contextViewProvider, container, { labelText: kernelLabel, labelOnTop: false, ariaLabel: kernelLabel } as ISelectBoxOptionsWithLabel);
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 		const providers = _capabilitiesService.providers;
@@ -305,6 +305,8 @@ export class KernelsDropdown extends SelectBox {
 		}
 
 >>>>>>> Get Kernel Alias through Capability Services
+=======
+>>>>>>> Revert "Merge branch 'vabhog/kernel-alias-feature' into feature-AzureDataExplorer"
 		if (modelReady) {
 			modelReady
 				.then((model) => this.updateModel(model))
@@ -325,21 +327,16 @@ export class KernelsDropdown extends SelectBox {
 	updateModel(model: INotebookModel): void {
 		this.model = model as NotebookModel;
 		this._register(this.model.kernelChanged((changedArgs: azdata.nb.IKernelChangedArgs) => {
-			this.updateKernel(changedArgs.newValue, changedArgs.nbkernelAlias);
+			this.updateKernel(changedArgs.newValue);
 		}));
 		let kernel = this.model.clientSession && this.model.clientSession.kernel;
 		this.updateKernel(kernel);
 	}
 
 	// Update SelectBox values
-	public updateKernel(kernel: azdata.nb.IKernel, nbkernelAlias?: string) {
+	public updateKernel(kernel: azdata.nb.IKernel) {
 		let kernels: string[] = this._showAllKernels ? [...new Set(this.model.specs.kernels.map(a => a.display_name).concat(this.model.standardKernelsDisplayName()))]
 			: this.model.standardKernelsDisplayName();
-		if (kernelAlias !== undefined && kernelAlias.length !== 0) {
-			for (let x in kernelAlias) {
-				kernels.splice(1, 0, kernelAlias[x]);
-			}
-		}
 		if (kernel && kernel.isReady) {
 			let standardKernel = this.model.getStandardKernelFromName(kernel.name);
 			if (kernels) {
@@ -349,9 +346,6 @@ export class KernelsDropdown extends SelectBox {
 				} else {
 					let kernelSpec = this.model.specs.kernels.find(k => k.name === kernel.name);
 					index = firstIndex(kernels, k => k === kernelSpec?.display_name);
-				}
-				if (nbkernelAlias) {
-					index = kernels.indexOf(nbkernelAlias);
 				}
 				// This is an error case that should never happen
 				// Just in case, setting index to 0
@@ -368,7 +362,7 @@ export class KernelsDropdown extends SelectBox {
 
 	public doChangeKernel(displayName: string): void {
 		this.setOptions([msgChanging], 0);
-		this.model.changeKernel(displayName, undefined, kernelAlias);
+		this.model.changeKernel(displayName);
 	}
 
 	private getAllKernelConfigValue(): void {
@@ -378,7 +372,6 @@ export class KernelsDropdown extends SelectBox {
 
 export class AttachToDropdown extends SelectBox {
 	private model: NotebookModel;
-	private kernels: KernelsDropdown;
 
 	constructor(
 		container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>,
