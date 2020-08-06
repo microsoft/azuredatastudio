@@ -38,13 +38,7 @@ const commit = util.getVersion(REPO_ROOT);
 const BUILD_ROOT = path.dirname(REPO_ROOT);
 const REMOTE_FOLDER = path.join(REPO_ROOT, 'remote');
 
-const productionDependencies = deps.getProductionDependencies(REMOTE_FOLDER)
-	.concat([
-		'rxjs/Observable',
-		'rxjs/add/observable/fromPromise',
-		'rxjs/Subject',
-		'rxjs/Observer',
-	]);
+const productionDependencies = deps.getProductionDependencies(REMOTE_FOLDER);
 
 // Targets
 

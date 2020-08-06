@@ -31,12 +31,7 @@ const commit = util.getVersion(REPO_ROOT);
 const quality = product.quality;
 const version = (quality && quality !== 'stable') ? `${packageJson.version}-${quality}` : packageJson.version;
 
-const productionDependencies = deps.getProductionDependencies(WEB_FOLDER).concat([
-	'rxjs/Observable',
-	'rxjs/add/observable/fromPromise',
-	'rxjs/Subject',
-	'rxjs/Observer',
-]);
+const productionDependencies = deps.getProductionDependencies(WEB_FOLDER);
 
 const vscodeWebResourceIncludes = [
 	// Workbench
