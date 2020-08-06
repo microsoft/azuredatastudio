@@ -38,6 +38,14 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 
 export class EditDataGridPanel extends GridParentComponent {
 
+	// The time(in milliseconds) we wait before refreshing the grid.
+	// We use clearTimeout and setTimeout pair to avoid unnecessary refreshes.
+	// Timeout is set to allow the grid to refresh fully before allowing a manual refresh.
+	private refreshGridTimeoutInMs = 1000;
+
+	// The timeout handle for the refresh grid task
+	private refreshGridTimeoutHandle: any;
+
 	// Optimized for the edit top 200 rows scenario, only need to retrieve the data once
 	// to make the scroll experience smoother
 	private windowSize = 200;
@@ -407,13 +415,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		if (self.placeHolderDataSets[0]) {
 			this.refreshDatasets();
 		}
-		await self.refreshGrid().then(() => {
-			// Setup the state of the selected cell
-			this.resetCurrentCell();
-			this.removingNewRow = false;
-			this.newRowVisible = false;
-			this.dirtyCells = [];
-		});
+		await self.refreshGrid(true);
 	}
 
 	/**
@@ -436,29 +438,41 @@ export class EditDataGridPanel extends GridParentComponent {
 		return inputStr.replace(/(\r\n|\n|\r)/g, '\u0000');
 	}
 
-	private refreshGrid(): Thenable<void> {
+	private refreshGrid(isManual?: boolean): Thenable<void> {
 		return new Promise<void>(async (resolve, reject) => {
-			try {
-				if (this.dataSet) {
-					this.placeHolderDataSets[0].dataRows = this.dataSet.dataRows;
-					this.onResize();
+
+			clearTimeout(this.refreshGridTimeoutHandle);
+
+			this.refreshGridTimeoutHandle = setTimeout(() => {
+				try {
+					if (this.dataSet) {
+						this.placeHolderDataSets[0].dataRows = this.dataSet.dataRows;
+						this.onResize();
+					}
+
+
+					if (this.placeHolderDataSets[0].dataRows && this.oldDataRows !== this.placeHolderDataSets[0].dataRows) {
+						this.detectChange();
+						this.oldDataRows = this.placeHolderDataSets[0].dataRows;
+					}
 				}
-
-
-				if (this.placeHolderDataSets[0].dataRows && this.oldDataRows !== this.placeHolderDataSets[0].dataRows) {
-					this.detectChange();
-					this.oldDataRows = this.placeHolderDataSets[0].dataRows;
+				catch {
+					this.logService.error('data set is empty, refresh cancelled.');
+					reject();
 				}
-			}
-			catch {
-				this.logService.error('data set is empty, refresh cancelled.');
-				reject();
-			}
-
-			if (this.firstRender) {
-				setTimeout(() => this.setActive());
-			}
-			resolve();
+				if (this.firstRender) {
+					this.resetCurrentCell();
+					this.setActive();
+				}
+				else if (isManual) {
+					this.resetCurrentCell();
+					this.removingNewRow = false;
+					this.newRowVisible = false;
+					this.dirtyCells = [];
+				}
+				//allow for the grid to render fully before returning.
+				setTimeout(() => resolve(), 300);
+			}, this.refreshGridTimeoutInMs);
 		});
 	}
 
