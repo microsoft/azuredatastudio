@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -31,13 +31,20 @@ const { compileExtensionsBuildTask } = require('./gulpfile.extensions');
 const { vscodeWebEntryPoints, vscodeWebResourceIncludes, createVSCodeWebFileContentMapper } = require('./gulpfile.vscode.web');
 const remote = require('gulp-remote-retry-src');
 const cp = require('child_process');
+const { rollupAngular } = require('./lib/rollup');
 
 const REPO_ROOT = path.dirname(__dirname);
 const commit = util.getVersion(REPO_ROOT);
 const BUILD_ROOT = path.dirname(REPO_ROOT);
 const REMOTE_FOLDER = path.join(REPO_ROOT, 'remote');
 
-const productionDependencies = deps.getProductionDependencies(REMOTE_FOLDER);
+const productionDependencies = deps.getProductionDependencies(REMOTE_FOLDER)
+	.concat([
+		'rxjs/Observable',
+		'rxjs/add/observable/fromPromise',
+		'rxjs/Subject',
+		'rxjs/Observer',
+	]);
 
 // Targets
 
@@ -338,7 +345,7 @@ function copyNativeTask(folder) {
 }
 
 function packagePkgTask(platform, arch, pkgTarget) {
-	const folder = path.join(BUILD_ROOT, 'vscode-reh') + (platform ? '-' + platform : '') + (arch ? '-' + arch : '');
+	const folder = path.join(BUILD_ROOT, 'azuredatastudio-reh') + (platform ? '-' + platform : '') + (arch ? '-' + arch : '');
 	return () => {
 		const cwd = process.cwd();
 		const config = path.join(cwd, 'out-vscode-reh-pkg', 'pkg-package.vscode-reh-' + platform + '-' + arch + '.json');
@@ -391,10 +398,42 @@ function packagePkgTask(platform, arch, pkgTarget) {
 
 		['', 'min'].forEach(minified => {
 			const sourceFolderName = `out-vscode-${type}${dashed(minified)}`;
-			const destinationFolderName = `vscode-${type}${dashed(platform)}${dashed(arch)}`;
+			const destinationFolderName = `azuredatastudio-${type}${dashed(platform)}${dashed(arch)}`;
+
+			const rollupAngularTask = task.define(`vscode-web-${type}${dashed(platform)}${dashed(arch)}-angular-rollup`, () => {
+				return rollupAngular(REMOTE_FOLDER);
+			});
+
+			const rebuildExtensions = ['big-data-cluster', 'mssql', 'notebook'];
+			const EXTENSIONS = path.join(REPO_ROOT, 'extensions');
+			function exec(cmdLine, cwd) {
+				console.log(cmdLine);
+				cp.execSync(cmdLine, { stdio: 'inherit', cwd: cwd });
+			}
+			const tasks = [];
+			rebuildExtensions.forEach(scope => {
+				const root = path.join(EXTENSIONS, scope);
+				tasks.push(
+					() => gulp.src(path.join(REMOTE_FOLDER, '.yarnrc')).pipe(gulp.dest(root)),
+					util.rimraf(path.join(root, 'node_modules')),
+					() => exec('yarn', root)
+				);
+			});
+			const yarnrcExtensions = task.define(`vscode-web-${type}${dashed(platform)}${dashed(arch)}-yarnrc-extensions`, task.series(...tasks));
+
+			const cleanupExtensions = task.define(`vscode-web-${type}${dashed(platform)}${dashed(arch)}-cleanup-extensions`, () => {
+				return Promise.all(rebuildExtensions.map(scope => {
+					const root = path.join(EXTENSIONS, scope);
+					return util.rimraf(path.join(root, '.yarnrc'))();
+				}));
+			});
 
 			const serverTaskCI = task.define(`vscode-${type}${dashed(platform)}${dashed(arch)}${dashed(minified)}-ci`, task.series(
 				gulp.task(`node-${platform}-${platform === 'darwin' ? 'x64' : arch}`),
+				yarnrcExtensions,
+				compileExtensionsBuildTask,
+				cleanupExtensions,
+				rollupAngularTask,
 				util.rimraf(path.join(BUILD_ROOT, destinationFolderName)),
 				packageTask(type, platform, arch, sourceFolderName, destinationFolderName)
 			));

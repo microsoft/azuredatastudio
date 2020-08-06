@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -31,11 +31,16 @@ const commit = util.getVersion(REPO_ROOT);
 const quality = product.quality;
 const version = (quality && quality !== 'stable') ? `${packageJson.version}-${quality}` : packageJson.version;
 
-const productionDependencies = deps.getProductionDependencies(WEB_FOLDER);
+const productionDependencies = deps.getProductionDependencies(WEB_FOLDER).concat([
+	'rxjs/Observable',
+	'rxjs/add/observable/fromPromise',
+	'rxjs/Subject',
+	'rxjs/Observer',
+]);
 
 const vscodeWebResourceIncludes = [
 	// Workbench
-	'out-build/vs/{base,platform,editor,workbench}/**/*.{svg,png}',
+	'out-build/{vs,sql}/{base,platform,editor,workbench}/**/*.{svg,png,html}',
 	'out-build/vs/code/browser/workbench/*.html',
 	'out-build/vs/base/browser/ui/codicons/codicon/**/*.ttf',
 	'out-build/vs/**/markdown.css',
@@ -54,7 +59,7 @@ const vscodeWebResources = [
 	...vscodeWebResourceIncludes,
 
 	// Excludes
-	'!out-build/vs/**/{node,electron-browser,electron-main}/**',
+	'!out-build/{vs,sql}/**/{node,electron-browser,electron-main}/**',
 	'!out-build/vs/editor/standalone/**',
 	'!out-build/vs/workbench/**/*-tb.png',
 	'!**/test/**'

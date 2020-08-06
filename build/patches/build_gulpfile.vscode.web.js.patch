@@ -1,5 +1,5 @@
 diff --git a/build/gulpfile.vscode.web.js b/build/gulpfile.vscode.web.js
-index 7a6b3cf9595..a323cade80c 100644
+index f3a95a3a1fe..8835e93611a 100644
 --- a/build/gulpfile.vscode.web.js
 +++ b/build/gulpfile.vscode.web.js
 @@ -1,6 +1,6 @@
@@ -10,38 +10,31 @@ index 7a6b3cf9595..a323cade80c 100644
   *--------------------------------------------------------------------------------------------*/
  
  'use strict';
-@@ -33,7 +33,12 @@ const version = (quality && quality !== 'stable') ? `${packageJson.version}-${qu
- const productionDependencies = deps.getProductionDependencies(WEB_FOLDER);
+@@ -31,11 +31,16 @@ const commit = util.getVersion(REPO_ROOT);
+ const quality = product.quality;
+ const version = (quality && quality !== 'stable') ? `${packageJson.version}-${quality}` : packageJson.version;
  
- const nodeModules = Object.keys(product.dependencies || {})
--	.concat(_.uniq(productionDependencies.map(d => d.name)));
-+	.concat(_.uniq(productionDependencies.map(d => d.name))).concat([
-+		'rxjs/Observable',
-+		'rxjs/add/observable/fromPromise',
-+		'rxjs/Subject',
-+		'rxjs/Observer',
-+	]);
+-const productionDependencies = deps.getProductionDependencies(WEB_FOLDER);
++const productionDependencies = deps.getProductionDependencies(WEB_FOLDER).concat([
++	'rxjs/Observable',
++	'rxjs/add/observable/fromPromise',
++	'rxjs/Subject',
++	'rxjs/Observer',
++]);
  
  const vscodeWebResourceIncludes = [
  	// Workbench
-@@ -46,7 +51,8 @@ const vscodeWebResourceIncludes = [
- 	'out-build/vs/workbench/contrib/webview/browser/pre/*.js',
+-	'out-build/vs/{base,platform,editor,workbench}/**/*.{svg,png}',
++	'out-build/{vs,sql}/{base,platform,editor,workbench}/**/*.{svg,png,html}',
+ 	'out-build/vs/code/browser/workbench/*.html',
+ 	'out-build/vs/base/browser/ui/codicons/codicon/**/*.ttf',
+ 	'out-build/vs/**/markdown.css',
+@@ -54,7 +59,7 @@ const vscodeWebResources = [
+ 	...vscodeWebResourceIncludes,
  
- 	// Extension Worker
--	'out-build/vs/workbench/services/extensions/worker/extensionHostWorkerMain.js'
-+	'out-build/vs/workbench/services/extensions/worker/extensionHostWorkerMain.js',
-+	'out-build/sql/{base,platform,workbench}/**/*.{svg,png,html}', // {{SQL CARBON EDIT}}
- ];
- exports.vscodeWebResourceIncludes = vscodeWebResourceIncludes;
- 
-@@ -59,7 +65,8 @@ const vscodeWebResources = [
- 	'!out-build/vs/**/{node,electron-browser,electron-main}/**',
+ 	// Excludes
+-	'!out-build/vs/**/{node,electron-browser,electron-main}/**',
++	'!out-build/{vs,sql}/**/{node,electron-browser,electron-main}/**',
  	'!out-build/vs/editor/standalone/**',
  	'!out-build/vs/workbench/**/*-tb.png',
--	'!**/test/**'
-+	'!**/test/**',
-+	'!out-build/sql/**/{node,electron-browser,electron-main}/**' // {{SQL CARBON EDIT}}
- ];
- 
- const buildfile = require('../src/buildfile');
- 
+ 	'!**/test/**'
