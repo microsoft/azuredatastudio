@@ -224,7 +224,6 @@ steps:
       SessionTimeout: 600
       MaxConcurrency: 5
       MaxRetryAttempts: 20
-    condition: and(succeeded(), eq(variables['signed'], true))
 
   - task: PublishTestResults@2
     displayName: 'Publish Test Results test-results.xml'
