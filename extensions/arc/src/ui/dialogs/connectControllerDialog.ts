@@ -17,6 +17,7 @@ export class ConnectToControllerDialog extends InitializingComponent {
 	private modelBuilder!: azdata.ModelBuilder;
 
 	private urlInputBox!: azdata.InputBoxComponent;
+	private nameInputBox!: azdata.InputBoxComponent;
 	private usernameInputBox!: azdata.InputBoxComponent;
 	private passwordInputBox!: azdata.InputBoxComponent;
 	private rememberPwCheckBox!: azdata.CheckBoxComponent;
@@ -38,6 +39,10 @@ export class ConnectToControllerDialog extends InitializingComponent {
 					value: controllerInfo?.url,
 					// If we have a model then we're editing an existing connection so don't let them modify the URL
 					readOnly: !!controllerInfo
+				}).component();
+			this.nameInputBox = this.modelBuilder.inputBox()
+				.withProperties<azdata.InputBoxProperties>({
+					value: controllerInfo?.name
 				}).component();
 			this.usernameInputBox = this.modelBuilder.inputBox()
 				.withProperties<azdata.InputBoxProperties>({
@@ -62,6 +67,10 @@ export class ConnectToControllerDialog extends InitializingComponent {
 							component: this.urlInputBox,
 							title: loc.controllerUrl,
 							required: true
+						}, {
+							component: this.nameInputBox,
+							title: loc.controllerName,
+							required: false
 						}, {
 							component: this.usernameInputBox,
 							title: loc.username,
@@ -108,6 +117,7 @@ export class ConnectToControllerDialog extends InitializingComponent {
 		}
 		const controllerInfo: ControllerInfo = {
 			url: url,
+			name: this.nameInputBox.value!,
 			username: this.usernameInputBox.value,
 			rememberPassword: this.rememberPwCheckBox.checked ?? false,
 			resources: []
@@ -116,6 +126,8 @@ export class ConnectToControllerDialog extends InitializingComponent {
 		try {
 			// Validate that we can connect to the controller
 			await controllerModel.refresh(false);
+			// Set controllerInfo.name if the user did not set it.
+			controllerModel.info.name = controllerModel.info.name ?? controllerModel.controllerRegistration?.instanceName;
 		} catch (err) {
 			vscode.window.showErrorMessage(loc.connectToControllerFailed(this.urlInputBox.value, err));
 			return false;

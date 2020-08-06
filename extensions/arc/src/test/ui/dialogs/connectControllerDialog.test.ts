@@ -29,7 +29,7 @@ describe('ConnectControllerDialog', function (): void {
 	it('validate returns false if controller refresh fails', async function (): Promise<void> {
 		sinon.stub(ControllerModel.prototype, 'refresh').returns(Promise.reject('Controller refresh failed'));
 		const connectControllerDialog = new ConnectToControllerDialog(undefined!);
-		const info = { url: 'https://127.0.0.1:30080', username: 'sa', rememberPassword: true, resources: [] };
+		const info = { url: 'https://127.0.0.1:30080', name: 'arc-cp1', username: 'sa', rememberPassword: true, resources: [] };
 		connectControllerDialog.showDialog(info, 'pwd');
 		await connectControllerDialog.isInitialized;
 		const validateResult = await connectControllerDialog.validate();
@@ -38,22 +38,22 @@ describe('ConnectControllerDialog', function (): void {
 
 	it('validate replaces http with https', async function (): Promise<void> {
 		await validateConnectControllerDialog(
-			{ url: 'http://127.0.0.1:30081', username: 'sa', rememberPassword: true, resources: [] },
+			{ url: 'http://127.0.0.1:30081', name: 'arc-cp1', username: 'sa', rememberPassword: true, resources: [] },
 			'https://127.0.0.1:30081');
 	});
 
 	it('validate appends https if missing', async function (): Promise<void> {
-		await validateConnectControllerDialog({ url: '127.0.0.1:30080', username: 'sa', rememberPassword: true, resources: [] },
+		await validateConnectControllerDialog({ url: '127.0.0.1:30080', name: 'arc-cp1', username: 'sa', rememberPassword: true, resources: [] },
 			'https://127.0.0.1:30080');
 	});
 
 	it('validate appends default port if missing', async function (): Promise<void> {
-		await validateConnectControllerDialog({ url: 'https://127.0.0.1', username: 'sa', rememberPassword: true, resources: [] },
+		await validateConnectControllerDialog({ url: 'https://127.0.0.1', name: 'arc-cp1', username: 'sa', rememberPassword: true, resources: [] },
 			'https://127.0.0.1:30080');
 	});
 
 	it('validate appends both port and https if missing', async function (): Promise<void> {
-		await validateConnectControllerDialog({ url: '127.0.0.1', username: 'sa', rememberPassword: true, resources: [] },
+		await validateConnectControllerDialog({ url: '127.0.0.1', name: 'arc-cp1', username: 'sa', rememberPassword: true, resources: [] },
 			'https://127.0.0.1:30080');
 	});
 });
