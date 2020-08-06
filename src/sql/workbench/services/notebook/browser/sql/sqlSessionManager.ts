@@ -213,6 +213,11 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		}
 	}
 
+	// Gets language info depending on connection provider.
+	private getLanguageFlavor(providerName: string): string {
+		return providerName === 'KUSTO' ? 'kusto' : 'sql';
+	}
+
 	public get id(): string {
 		if (this._id === undefined) {
 			this._id = (SqlKernel.kernelId++).toString();
@@ -247,7 +252,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 			implementation: '',
 			implementation_version: '',
 			language_info: {
-				name: 'sql',
+				name: this.getLanguageFlavor(this._currentConnection.providerName),
 				version: '',
 			},
 			banner: '',
