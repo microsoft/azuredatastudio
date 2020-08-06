@@ -208,7 +208,7 @@ steps:
     inputs:
       ConnectedServiceName: 'Code Signing'
       FolderPath: '.build'
-      Pattern: '*.exe, extensions/*.vsix'
+      Pattern: '*.exe'
       signConfigType: inlineSignParams
       inlineOperation: |
         [
@@ -259,7 +259,7 @@ steps:
     condition: and(succeeded(), eq(variables['signed'], true))
 
 
-    - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+  - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
     displayName: 'Sign extensions'
     inputs:
       ConnectedServiceName: 'Code Signing'
