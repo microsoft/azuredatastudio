@@ -22,7 +22,7 @@ $Root = "$Repo\.."
 # exec { .\node_modules\7zip\7zip-lite\7z.exe a -tzip $ServerZip $Server -r } "Zip Server"
 
 # Create server archive (web)
-exec { Rename-Item -Path $LegacyServerWeb -NewName $ServerNameWeb }
-exec { .\node_modules\7zip\7zip-lite\7z.exe a -tzip $ServerZipWeb $ServerWeb -r }
+# exec { Rename-Item -Path $LegacyServerWeb -NewName $ServerNameWeb }
+# exec { .\node_modules\7zip\7zip-lite\7z.exe a -tzip $ServerZipWeb $ServerWeb -r }
 
 exec { node build/azure-pipelines/common/copyArtifacts.js } "Copy Artifacts"
