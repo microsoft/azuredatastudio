@@ -44,6 +44,7 @@ import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { Iterable } from 'vs/base/common/iterator';
+import { Tenant, TenantListDelegate, TenantListRenderer } from 'sql/workbench/services/accountManagement/browser/tenantListRenderer';
 
 export const VIEWLET_ID = 'workbench.view.accountpanel';
 
@@ -61,6 +62,8 @@ export const ACCOUNT_VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewC
 class AccountPanel extends ViewPane {
 	public index: number;
 	private accountList: List<azdata.Account>;
+	private tenantList: List<Tenant>;
+
 
 	constructor(
 		private options: IViewPaneOptions,
@@ -79,13 +82,14 @@ class AccountPanel extends ViewPane {
 
 	protected renderBody(container: HTMLElement): void {
 		this.accountList = new List<azdata.Account>('AccountList', container, new AccountListDelegate(AccountDialog.ACCOUNTLIST_HEIGHT), [this.instantiationService.createInstance(AccountListRenderer)]);
+		this.tenantList = new List<Tenant>('TenantList', container, new TenantListDelegate(AccountDialog.ACCOUNTLIST_HEIGHT), [this.instantiationService.createInstance(TenantListRenderer)]);
 		this._register(attachListStyler(this.accountList, this.themeService));
+		this._register(attachListStyler(this.tenantList, this.themeService));
 	}
 
 	protected layoutBody(size: number): void {
-		if (this.accountList) {
-			this.accountList.layout(size);
-		}
+		this.accountList?.layout(size);
+		this.tenantList?.layout(size);
 	}
 
 	public get length(): number {
@@ -102,6 +106,11 @@ class AccountPanel extends ViewPane {
 
 	public setSelection(indexes: number[]) {
 		this.accountList.setSelection(indexes);
+		this.updateTenants(this.accountList.getSelection[0]);
+	}
+
+	private updateTenants(account: azdata.Account) {
+		this.tenantList.splice(0, this.tenantList.length, account?.properties?.tenants ?? []);
 	}
 
 	public getActions(): IAction[] {

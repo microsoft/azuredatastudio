@@ -9,6 +9,7 @@ export const developers: string[] = [
 	'aasimkhan30',
 	'abist',
 	'alanrenmsft',
+	'anjalia',
 	'anthonydresser',
 	'Charles-Gagnon',
 	'cssuh',

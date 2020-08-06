@@ -13,7 +13,6 @@ import * as os from 'os';
 import { Uri } from 'vscode';
 import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
-import { readSqlCmdVariables } from './publishProfile/publishProfile';
 
 /**
  * Class representing a Project, and providing functions for operating on it
@@ -81,7 +80,7 @@ export class Project {
 		}
 
 		// find all SQLCMD variables to include
-		this.sqlCmdVariables = readSqlCmdVariables(this.projFileXmlDoc);
+		this.sqlCmdVariables = utils.readSqlCmdVariables(this.projFileXmlDoc);
 
 		// find all database references to include
 		const references = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference);
@@ -568,7 +567,7 @@ export class ProjectEntry {
 /**
  * Represents a database reference entry in a project file
  */
-class DatabaseReferenceProjectEntry extends ProjectEntry {
+export class DatabaseReferenceProjectEntry extends ProjectEntry {
 	constructor(uri: Uri, public databaseLocation: DatabaseReferenceLocation, public name?: string) {
 		super(uri, '', EntryType.DatabaseReference);
 	}

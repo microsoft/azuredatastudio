@@ -74,14 +74,10 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	win: { primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_G },
 	linux: { primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_G },
 	mac: { primary: KeyMod.WinCtrl | KeyMod.Shift | KeyCode.KEY_G },
-	handler: accessor => {
+	handler: async accessor => {
 		const viewsService = accessor.get(IViewsService);
-
-		if (viewsService.isViewVisible(VIEW_PANE_ID)) {
-			viewsService.closeView(VIEW_PANE_ID);
-		} else {
-			viewsService.openView(VIEW_PANE_ID);
-		}
+		const view = await viewsService.openView(VIEW_PANE_ID);
+		view?.focus();
 	}
 });
 
@@ -167,6 +163,11 @@ Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration).regis
 			type: 'string',
 			markdownDescription: localize('inputFontFamily', "Controls the font for the input message. Use `default` for the workbench user interface font family, `editor` for the `#editor.fontFamily#`'s value, or a custom font family."),
 			default: 'default'
+		},
+		'scm.alwaysShowRepositories': {
+			type: 'boolean',
+			markdownDescription: localize('alwaysShowRepository', "Controls whether repositories should always be visible in the SCM view."),
+			default: false
 		}
 	}
 });

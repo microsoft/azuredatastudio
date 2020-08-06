@@ -131,9 +131,9 @@ export const enum Endpoints {
 	controller = 'controller'
 }
 
-export const enum Connectionmode {
-	connected = 'connected',
-	disconnected = 'disconnected'
+export const enum ConnectionMode {
+	direct = 'direct',
+	indirect = 'indirect'
 }
 
 export namespace cssStyles {

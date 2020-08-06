@@ -28,7 +28,7 @@ const fs = require('fs');
 const glob = require('glob');
 const { compileBuildTask } = require('./gulpfile.compile');
 const { compileExtensionsBuildTask } = require('./gulpfile.extensions');
-const { vscodeWebEntryPoints, vscodeWebResourceIncludes, vscodeWebPatchProductTask } = require('./gulpfile.vscode.web');
+const { vscodeWebEntryPoints, vscodeWebResourceIncludes, createVSCodeWebFileContentMapper } = require('./gulpfile.vscode.web');
 const remote = require('gulp-remote-retry-src');
 const cp = require('child_process');
 const { rollupAngular } = require('./lib/rollup');
@@ -52,19 +52,6 @@ const BUILD_TARGETS = [
 	{ platform: 'linux', arch: 'arm64', pkgTarget: 'node8-linux-arm64' },
 	{ platform: 'linux', arch: 'alpine', pkgTarget: 'node8-linux-alpine' },
 ];
-
-const baseModules = Object.keys(process.binding('natives')).filter(n => !/^_|\//.test(n));
-const nodeModules = ['electron', 'original-fs']
-	// @ts-ignore JSON checking: dependencies property is optional
-	.concat(Object.keys(product.dependencies || {}))
-	.concat(_.uniq(productionDependencies.map(d => d.name)))
-	.concat(baseModules)
-	.concat([
-		'rxjs/Observable',
-		'rxjs/add/observable/fromPromise',
-		'rxjs/Subject',
-		'rxjs/Observer',
-	]);
 
 const serverResources = [
 
@@ -372,15 +359,15 @@ function packagePkgTask(platform, arch, pkgTarget) {
 			entryPoints: _.flatten(type === 'reh' ? serverEntryPoints : serverWithWebEntryPoints),
 			otherSources: [],
 			resources: type === 'reh' ? serverResources : serverWithWebResources,
-			loaderConfig: common.loaderConfig(nodeModules),
+			loaderConfig: common.loaderConfig(),
 			out: `out-vscode-${type}`,
 			inlineAmdImages: true,
-			bundleInfo: undefined
+			bundleInfo: undefined,
+			fileContentMapper: createVSCodeWebFileContentMapper('.build/extensions')
 		})
 	));
 
 	const minifyTask = task.define(`minify-vscode-${type}`, task.series(
-		vscodeWebPatchProductTask,
 		optimizeTask,
 		util.rimraf(`out-vscode-${type}-min`),
 		common.minifyTask(`out-vscode-${type}`, `https://ticino.blob.core.windows.net/sourcemaps/${commit}/core`)

@@ -6,6 +6,7 @@
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectableInput } from 'sql/platform/connection/common/connectionManagement';
 import { IEditorOptions } from 'vs/platform/editor/common/editor';
+import { URI } from 'vs/base/common/uri';
 
 export interface IQueryEditorOptions extends IEditorOptions {
 
@@ -27,6 +28,10 @@ export interface INewSqlEditorOptions {
 	 * defaults to true
 	 */
 	open?: boolean;
+	/**
+	 * use an existing resource, if this matches a resource already open that resource will be opened instead
+	 */
+	resource?: URI
 }
 
 export interface IQueryEditorService {
