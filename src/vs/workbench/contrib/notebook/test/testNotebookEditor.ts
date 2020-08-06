@@ -62,6 +62,10 @@ export class TestNotebookEditor implements INotebookEditor {
 	constructor(
 	) { }
 
+	hideInset(output: IProcessedOutput): void {
+		throw new Error('Method not implemented.');
+	}
+
 	multipleKernelsAvailable: boolean = false;
 	onDidChangeAvailableKernels: Event<void> = new Emitter<void>().event;
 
@@ -77,6 +81,15 @@ export class TestNotebookEditor implements INotebookEditor {
 	hasFocus(): boolean {
 		return true;
 	}
+
+	hasWebviewFocus() {
+		return false;
+	}
+
+	hasOutputTextSelection() {
+		return false;
+	}
+
 	getId(): string {
 		return 'notebook.testEditor';
 	}

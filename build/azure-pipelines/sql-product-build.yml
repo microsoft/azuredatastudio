@@ -49,27 +49,27 @@ jobs:
       extensionsToUnitTest: ["admin-tool-ext-win", "agent", "azdata", "azurecore", "cms", "dacpac", "import", "schema-compare", "notebook", "resource-deployment", "machine-learning", "sql-database-projects"]
   timeoutInMinutes: 70
 
-- job: LinuxWeb
-  condition: and(succeeded(), eq(variables['VSCODE_BUILD_WEB'], 'true'))
-  pool:
-    vmImage: 'Ubuntu-16.04'
-  container: linux-x64
-  variables:
-    VSCODE_ARCH: x64
-  dependsOn:
-  - Compile
-  steps:
-  - template: web/sql-product-build-web.yml
+# - job: LinuxWeb
+#   condition: and(succeeded(), eq(variables['VSCODE_BUILD_WEB'], 'true'))
+#   pool:
+#     vmImage: 'Ubuntu-16.04'
+#   container: linux-x64
+#   variables:
+#     VSCODE_ARCH: x64
+#   dependsOn:
+#   - Compile
+#   steps:
+#   - template: web/sql-product-build-web.yml
 
-- job: Docker
-  condition: and(succeeded(), eq(variables['VSCODE_BUILD_DOCKER'], 'true'))
-  pool:
-    vmImage: 'Ubuntu-16.04'
-  container: linux-x64
-  dependsOn:
-  - Linux
-  steps:
-  - template: docker/sql-product-build-docker.yml
+# - job: Docker
+#   condition: and(succeeded(), eq(variables['VSCODE_BUILD_DOCKER'], 'true'))
+#   pool:
+#     vmImage: 'Ubuntu-16.04'
+#   container: linux-x64
+#   dependsOn:
+#   - Linux
+#   steps:
+#   - template: docker/sql-product-build-docker.yml
 
 - job: Windows
   condition: and(succeeded(), eq(variables['VSCODE_BUILD_WIN32'], 'true'))
@@ -98,10 +98,10 @@ jobs:
   dependsOn:
   - macOS
   - Linux
-  - Docker
+  # - Docker
   - Windows
   - Windows_Test
-  - LinuxWeb
+  # - LinuxWeb
   - macOS_Signing
   steps:
   - template: sql-release.yml
