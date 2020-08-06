@@ -108,11 +108,10 @@ export class AccountPicker extends Disposable {
 		const azureTenantLabel = localize('azureTenant', "Azure tenant");
 
 		const accountLabel = this.createLabelElement(azureAccountLabel, true);
-		this._accountListContainer = DOM.append(accountLabel, DOM.$('div.account-list-container'));
+		this._accountListContainer = DOM.$('div.account-list-container');
 
 		const tenantLabel = this.createLabelElement(azureTenantLabel, true);
-		this._tenantListContainer = DOM.append(tenantLabel, DOM.$('div.tenant-list-container'));
-
+		this._tenantListContainer = DOM.$('div.tenant-list-container');
 
 		this._accountList = new List<azdata.Account>('AccountPicker', this._accountListContainer, accountDelegate, [accountRenderer], {
 			setRowLineHeight: false,
