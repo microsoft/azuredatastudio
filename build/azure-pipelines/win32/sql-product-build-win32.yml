@@ -283,7 +283,6 @@ steps:
           {
             "keyCode": "CP-233016",
             "operationSetCode": "OpcVerify",
-            "parameters": null,
             "toolName": "Opcsigntool.exe",
             "toolVersion": "V6.2.8189.0"
           }
