@@ -258,7 +258,6 @@ steps:
       MaxRetryAttempts: 20
     condition: and(succeeded(), eq(variables['signed'], true))
 
-
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
     displayName: 'Sign extensions'
     inputs:
@@ -267,30 +266,30 @@ steps:
       Pattern: 'extensions/*.vsix'
       signConfigType: inlineSignParams
       inlineOperation: |
-        ​[
-          {
-            "keyCode": "CP-233016",
-            "operationSetCode": "OpcSign",
-            "parameters": [
-            {
-              "parameterName": "FileDigest",
-              "parameterValue": "/fd SHA256"
-            }
-            ],
-            "toolName": "Opcsigntool.exe",
-            "toolVersion": "V6.2.8189.0"
-          },
-          {
-            "keyCode": "CP-233016",
-            "operationSetCode": "OpcVerify",
-            "toolName": "Opcsigntool.exe",
-            "toolVersion": "V6.2.8189.0"
-          }
-        ]​
+        [
+          {
+            "keyCode": "CP-233016",
+            "operationSetCode": "OpcSign",
+            "parameters": [
+            {
+              "parameterName": "FileDigest",
+              "parameterValue": "/fd SHA256"
+            }
+            ],
+            "toolName": "Opcsigntool.exe",
+            "toolVersion": "6.2.8189.0"
+          },
+          {
+            "keyCode": "CP-233016",
+            "operationSetCode": "OpcVerify",
+            "parameters": null,
+            "toolName": "Opcsigntool.exe",
+            "toolVersion": "6.2.8189.0"
+          }
+        ]
       SessionTimeout: 600
       MaxConcurrency: 5
       MaxRetryAttempts: 20
-    condition: and(succeeded(), eq(variables['signed'], true))
 
   - task: ArchiveFiles@2
     displayName: 'Archive build scripts source'
