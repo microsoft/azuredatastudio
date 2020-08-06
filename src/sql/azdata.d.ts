@@ -5062,6 +5062,7 @@ declare module 'azdata' {
 		export interface IKernelChangedArgs {
 			oldValue: IKernel | null;
 			newValue: IKernel | null;
+			nbkernelAlias?: string
 		}
 
 		/// -------- JSON objects, and objects primarily intended not to have methods -----------
