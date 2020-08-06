@@ -514,7 +514,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._onErrorEmitter.fire({ message: error, severity: Severity.Error });
 	}
 
-	public async startSession(manager: INotebookManager, displayName?: string, setErrorStateOnFail?: boolean, kernelAlias?: string): Promise<void> {
+	public async startSession(manager: INotebookManager, displayName?: string, setErrorStateOnFail?: boolean): Promise<void> {
 		if (displayName && this._standardKernels) {
 			let standardKernel = find(this._standardKernels, kernel => kernel.displayName === displayName);
 			if (standardKernel) {
@@ -552,7 +552,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			await clientSession.ready;
 			if (clientSession.kernel) {
 				await clientSession.kernel.ready;
-				await this.updateKernelInfoOnKernelChange(clientSession.kernel, kernelAlias);
+				await this.updateKernelInfoOnKernelChange(clientSession.kernel);
 			}
 			if (clientSession.isInErrorState) {
 				if (setErrorStateOnFail) {
@@ -688,26 +688,21 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._language = language.toLowerCase();
 	}
 
-	public changeKernel(displayName: string, oldKernel?: nb.IKernel, kernelAlias?: string[]): void {
+	public changeKernel(displayName: string): void {
 		this._contextsLoadingEmitter.fire();
-		this.doChangeKernel(displayName, kernelAlias, true).catch(e => this.logService.error(e));
+		this.doChangeKernel(displayName, true).catch(e => this.logService.error(e));
 	}
 
-	private async doChangeKernel(displayName: string, kernelAlias?: string[], mustSetProvider: boolean = true, restoreOnFail: boolean = true): Promise<void> {
+	private async doChangeKernel(displayName: string, mustSetProvider: boolean = true, restoreOnFail: boolean = true): Promise<void> {
 		if (!displayName) {
 			// Can't change to an undefined kernel
 			return;
 		}
 		let oldDisplayName = this._activeClientSession && this._activeClientSession.kernel ? this._activeClientSession.kernel.name : undefined;
-		let nbKernelAlias: string;
-		if (kernelAlias[0] === displayName) {
-			displayName = 'SQL';
-			nbKernelAlias = 'Kusto';
-		}
 		try {
 			let changeKernelNeeded = true;
 			if (mustSetProvider) {
-				let providerChanged = await this.tryStartSessionByChangingProviders(displayName, nbKernelAlias);
+				let providerChanged = await this.tryStartSessionByChangingProviders(displayName);
 				// If provider was changed, a new session with new kernel is already created. We can skip calling changeKernel.
 				changeKernelNeeded = !providerChanged;
 			}
@@ -717,7 +712,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					let kernel = await this._activeClientSession.changeKernel(spec, this._oldKernel);
 					try {
 						await kernel.ready;
-						await this.updateKernelInfoOnKernelChange(kernel, nbKernelAlias);
+						await this.updateKernelInfoOnKernelChange(kernel);
 					} catch (err2) {
 						// TODO should we handle this in any way?
 						this.logService.error(`doChangeKernel: ignoring error ${getErrorMessage(err2)}`);
@@ -735,7 +730,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					// we would never reset the providers
 					this._oldKernel = undefined;
 				}
-				return this.doChangeKernel(oldDisplayName, kernelAlias, mustSetProvider, false);
+				return this.doChangeKernel(oldDisplayName, mustSetProvider, false);
 			} else {
 				this.notifyError(localize('changeKernelFailed', "Failed to change kernel due to error: {0}", getErrorMessage(err)));
 				this._kernelChangedEmitter.fire({
@@ -747,15 +742,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		// Else no need to do anything
 	}
 
-	private async updateKernelInfoOnKernelChange(kernel: nb.IKernel, kernelAlias?: string) {
+	private async updateKernelInfoOnKernelChange(kernel: nb.IKernel) {
 		await this.updateKernelInfo(kernel);
 		if (kernel.info) {
 			this.updateLanguageInfo(kernel.info.language_info);
 		}
 		this._kernelChangedEmitter.fire({
 			newValue: kernel,
-			oldValue: undefined,
-			nbkernelAlias: kernelAlias
+			oldValue: undefined
 		});
 	}
 
@@ -934,7 +928,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	 * Set _providerId and start session if it is new provider
 	 * @param displayName Kernel dispay name
 	 */
-	private async tryStartSessionByChangingProviders(displayName: string, kernelAlias?: string): Promise<boolean> {
+	private async tryStartSessionByChangingProviders(displayName: string): Promise<boolean> {
 		if (displayName) {
 			if (this._activeClientSession && this._activeClientSession.isReady) {
 				this._oldKernel = this._activeClientSession.kernel;
@@ -948,7 +942,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				await this.shutdownActiveSession();
 				let manager = this.getNotebookManager(providerId);
 				if (manager) {
-					await this.startSession(manager, displayName, false, kernelAlias);
+					await this.startSession(manager, displayName, false);
 				} else {
 					throw new Error(localize('ProviderNoManager', "Can't find notebook manager for provider {0}", providerId));
 				}
