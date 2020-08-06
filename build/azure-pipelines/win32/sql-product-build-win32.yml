@@ -195,12 +195,20 @@ steps:
       exec { yarn gulp "vscode-win32-x64-archive" }
     displayName: Archive & User & System setup
 
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      exec { yarn gulp "package-rebuild-extensions" }
+      exec { yarn gulp "compile-extensions" }
+      exec { yarn gulp "package-external-extensions" }
+    displayName: Package External extensions
+
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
-    displayName: 'Sign installers'
+    displayName: 'Sign installers and extensions'
     inputs:
       ConnectedServiceName: 'Code Signing'
       FolderPath: '.build'
-      Pattern: '*.exe'
+      Pattern: '*.exe, extensions/*.vsix'
       signConfigType: inlineSignParams
       inlineOperation: |
         [

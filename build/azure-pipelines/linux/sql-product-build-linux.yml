@@ -99,13 +99,6 @@ steps:
 
   - script: |
       set -e
-      yarn gulp package-rebuild-extensions
-      yarn gulp compile-extensions
-      yarn gulp package-external-extensions
-    displayName: Package External extensions
-
-  - script: |
-      set -e
       service xvfb start
     displayName: Start xvfb
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
@@ -170,60 +163,6 @@ steps:
       mkdir -p $(Build.ArtifactStagingDirectory)/test-results/coverage
       cp --parents -r $(Build.SourcesDirectory)/extensions/*/coverage/** $(Build.ArtifactStagingDirectory)/test-results/coverage
     displayName: Copy Coverage
-
-  - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
-    displayName: 'Sign extensions'
-    inputs:
-      ConnectedServiceName: 'Code Signing'
-      FolderPath: '.build'
-      Pattern: '*.vsix'
-      signConfigType: inlineSignParams
-      inlineOperation: |
-        [
-          {
-            "keyCode": "CP-230012",
-            "operationSetCode": "SigntoolSign",
-            "parameters": [
-            {
-              "parameterName": "OpusName",
-              "parameterValue": "Azure Data Studio"
-            },
-            {
-              "parameterName": "OpusInfo",
-              "parameterValue": "https://github.com/microsoft/azuredatastudio"
-            },
-            {
-              "parameterName": "PageHash",
-              "parameterValue": "/NPH"
-            },
-            {
-              "parameterName": "FileDigest",
-              "parameterValue": "/fd sha256"
-            },
-            {
-              "parameterName": "TimeStamp",
-              "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
-            }
-            ],
-            "toolName": "signtool.exe",
-            "toolVersion": "6.2.9304.0"
-          },
-          {
-            "keyCode": "CP-230012",
-            "operationSetCode": "SigntoolVerify",
-            "parameters": [
-            {
-              "parameterName": "VerifyAll",
-              "parameterValue": "/all"
-            }
-                ],
-            "toolName": "signtool.exe",
-            "toolVersion": "6.2.9304.0"
-          }
-        ]
-      SessionTimeout: 600
-      MaxConcurrency: 5
-      MaxRetryAttempts: 20
 
   - task: PublishTestResults@2
     displayName: 'Publish Test Results test-results.xml'
