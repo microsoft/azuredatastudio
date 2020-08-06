@@ -305,6 +305,10 @@ export class MainThreadNotebooks extends Disposable implements MainThreadNoteboo
 			this._proxy.$acceptNotebookActiveKernelChange(e);
 		}));
 
+		this._register(this._notebookService.onNotebookDocumentSaved(e => {
+			this._proxy.$acceptModelSaved(e);
+		}));
+
 		const updateOrder = () => {
 			let userOrder = this.configurationService.getValue<string[]>('notebook.displayOrder');
 			this._proxy.$acceptDisplayOrder({
@@ -547,7 +551,10 @@ export class MainThreadNotebooks extends Disposable implements MainThreadNoteboo
 			},
 			executeNotebook: (uri: URI, kernelId: string, cellHandle: number | undefined) => {
 				return that._proxy.$executeNotebookKernelFromProvider(handle, uri, kernelId, cellHandle);
-			}
+			},
+			cancelNotebook: (uri: URI, kernelId: string, cellHandle: number | undefined) => {
+				return that._proxy.$cancelNotebookKernelFromProvider(handle, uri, kernelId, cellHandle);
+			},
 		});
 		this._notebookKernelProviders.set(handle, {
 			extension,
