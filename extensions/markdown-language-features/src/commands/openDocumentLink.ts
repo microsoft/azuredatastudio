@@ -13,7 +13,7 @@ import { isMarkdownFile } from '../util/file';
 
 
 export interface OpenDocumentLinkArgs {
-	readonly path: {};
+	readonly path: string;
 	readonly fragment: string;
 	readonly fromResource: {};
 }
@@ -42,7 +42,7 @@ export class OpenDocumentLinkCommand implements Command {
 			};
 		};
 		return vscode.Uri.parse(`command:${OpenDocumentLinkCommand.id}?${encodeURIComponent(JSON.stringify(<OpenDocumentLinkArgs>{
-			path: toJson(path),
+			path: path.path,
 			fragment,
 			fromResource: toJson(fromResource),
 		}))}`);
@@ -58,7 +58,7 @@ export class OpenDocumentLinkCommand implements Command {
 
 	public static async execute(engine: MarkdownEngine, args: OpenDocumentLinkArgs) {
 		const fromResource = vscode.Uri.parse('').with(args.fromResource);
-		const targetResource = vscode.Uri.parse('').with(args.path);
+		const targetResource = vscode.Uri.file(args.path);
 		const column = this.getViewColumn(fromResource);
 		try {
 			return await this.tryOpen(engine, targetResource, args, column);
