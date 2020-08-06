@@ -98,10 +98,10 @@ jobs:
   dependsOn:
   - macOS
   - Linux
-  - Docker
+  # - Docker
   - Windows
   - Windows_Test
-  - LinuxWeb
+  # - LinuxWeb
   - macOS_Signing
   steps:
   - template: sql-release.yml
