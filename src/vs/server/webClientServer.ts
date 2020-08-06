@@ -18,6 +18,7 @@ import product from 'vs/platform/product/common/product';
 import { ServerEnvironmentService } from 'vs/server/remoteExtensionHostAgent';
 import { parsePathArg } from 'vs/platform/environment/node/environmentService';
 import { extname, dirname, join, normalize } from 'vs/base/common/path';
+import { WEB_WORKER_IFRAME } from 'vs/workbench/services/extensions/common/webWorkerIframe';
 
 const textMimeType = {
 	'.html': 'text/html',
@@ -196,10 +197,10 @@ export class WebClientServer {
 			'default-src \'self\';',
 			'img-src \'self\' https: data: blob:;',
 			'media-src \'none\';',
-			`script-src 'self' 'unsafe-eval' https://az416426.vo.msecnd.net ${this._getScriptCspHashes(data).join(' ')};`,
+			`script-src 'self' 'unsafe-eval' https://az416426.vo.msecnd.net ${this._getScriptCspHashes(data).join(' ')} '${WEB_WORKER_IFRAME.sha}' http://${remoteAuthority};`,
 			'child-src \'self\';',
-			'frame-src \'self\' https://*.vscode-webview-test.com;',
-			'worker-src \'self\';',
+			'frame-src \'self\' https://*.vscode-webview-test.com data:;',
+			'worker-src \'self\' data:;',
 			'style-src \'self\' \'unsafe-inline\';',
 			'connect-src \'self\' ws: wss: https:;',
 			'font-src \'self\' blob:;',
@@ -225,7 +226,8 @@ export class WebClientServer {
 		let match: RegExpExecArray | null;
 		while (match = regex.exec(content)) {
 			const hasher = crypto.createHash('sha256');
-			const script = match[1];
+			// This only works on Windows if we strip `\r` from `\r\n`.
+			const script = match[1].replace(/\r\n/g, '\n');
 			const hash = hasher
 				.update(Buffer.from(script))
 				.digest().toString('base64');

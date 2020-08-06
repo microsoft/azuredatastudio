@@ -6,7 +6,7 @@ import { Event } from 'vs/base/common/event';
 import * as platform from 'vs/base/common/platform';
 import { URI } from 'vs/base/common/uri';
 import { createRemoteURITransformer } from 'vs/server/remoteUriTransformer';
-import { IRemoteAgentEnvironmentDTO, IGetEnvironmentDataArguments } from 'vs/workbench/services/remote/common/remoteAgentEnvironmentChannel';
+import { IRemoteAgentEnvironmentDTO, IGetEnvironmentDataArguments, IScanExtensionsArguments } from 'vs/workbench/services/remote/common/remoteAgentEnvironmentChannel';
 import * as nls from 'vs/nls';
 import * as pfs from 'vs/base/node/pfs';
 import { Schemas } from 'vs/base/common/network';
@@ -76,20 +76,32 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 				this.telemetryService.setEnabled(false);
 				return;
 			}
+
 			case 'getEnvironmentData': {
 				const args = <IGetEnvironmentDataArguments>arg;
+				const uriTransformer = createRemoteURITransformer(args.remoteAuthority);
+
+				let environmentData = await this.getEnvironmentData();
+				environmentData = transformOutgoingURIs(environmentData, uriTransformer);
+
+				return environmentData;
+			}
+
+			case 'scanExtensions': {
+				const args = <IScanExtensionsArguments>arg;
 				const language = args.language;
 				this.logService.trace(`Scanning extensions using UI language: ${language}`);
 				const uriTransformer = createRemoteURITransformer(args.remoteAuthority);
 
 				const extensionDevelopmentLocations = args.extensionDevelopmentPath && args.extensionDevelopmentPath.map(url => URI.revive(uriTransformer.transformIncoming(url)));
+				const extensionDevelopmentPath = extensionDevelopmentLocations ? extensionDevelopmentLocations.filter(url => url.scheme === Schemas.file).map(url => url.fsPath) : undefined;
 
-				let environmentData = await this.getEnvironmentData(language, extensionDevelopmentLocations);
-				environmentData = transformOutgoingURIs(environmentData, uriTransformer);
+				let extensions = await this.scanExtensions(language, extensionDevelopmentPath);
+				extensions = transformOutgoingURIs(extensions, uriTransformer);
 
-				RemoteAgentEnvironmentChannel.massageWhenConditions(environmentData);
+				RemoteAgentEnvironmentChannel.massageWhenConditions(extensions);
 
-				return environmentData;
+				return extensions;
 			}
 
 			case 'getDiagnosticInfo': {
@@ -152,7 +164,7 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 		throw new Error('Not supported');
 	}
 
-	private static massageWhenConditions(environementData: IRemoteAgentEnvironmentDTO): void {
+	private static massageWhenConditions(extensions: IExtensionDescription[]): void {
 		// We must massage "when" conditions which mention `resourceScheme`
 		// See https://github.com/Microsoft/vscode-remote/issues/663
 
@@ -233,7 +245,7 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 			}
 		};
 
-		environementData.extensions.forEach((extension) => {
+		extensions.forEach((extension) => {
 			if (extension.contributes) {
 				if (extension.contributes.menus) {
 					_massageLocWhenUser(<LocWhenUser>extension.contributes.menus);
@@ -248,26 +260,20 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 		});
 	}
 
-	private getEnvironmentData(language: string, extensionDevelopmentLocation?: URI[]): Promise<IRemoteAgentEnvironmentDTO> {
-
-		const extensionDevelopmentPath = extensionDevelopmentLocation ? extensionDevelopmentLocation.filter(url => url.scheme === Schemas.file).map(url => url.fsPath) : undefined;
-
-		return this.scanExtensions(language, extensionDevelopmentPath).then((extensions): IRemoteAgentEnvironmentDTO => {
-			return {
-				pid: process.pid,
-				connectionToken: this._connectionToken,
-				appRoot: URI.file(this.environmentService.appRoot),
-				settingsPath: this.environmentService.machineSettingsResource,
-				logsPath: URI.file(this.environmentService.logsPath),
-				extensionsPath: URI.file(this.environmentService.extensionsPath!),
-				extensionHostLogsPath: URI.file(join(this.environmentService.logsPath, `exthost${RemoteAgentEnvironmentChannel._namePool++}`)),
-				globalStorageHome: this.environmentService.globalStorageHome,
-				workspaceStorageHome: this.environmentService.workspaceStorageHome,
-				userHome: this.environmentService.userHome,
-				extensions,
-				os: platform.OS
-			};
-		});
+	private async getEnvironmentData(): Promise<IRemoteAgentEnvironmentDTO> {
+		return {
+			pid: process.pid,
+			connectionToken: this._connectionToken,
+			appRoot: URI.file(this.environmentService.appRoot),
+			settingsPath: this.environmentService.machineSettingsResource,
+			logsPath: URI.file(this.environmentService.logsPath),
+			extensionsPath: URI.file(this.environmentService.extensionsPath!),
+			extensionHostLogsPath: URI.file(join(this.environmentService.logsPath, `exthost${RemoteAgentEnvironmentChannel._namePool++}`)),
+			globalStorageHome: this.environmentService.globalStorageHome,
+			workspaceStorageHome: this.environmentService.workspaceStorageHome,
+			userHome: this.environmentService.userHome,
+			os: platform.OS
+		};
 	}
 
 	private scanExtensions(language: string, extensionDevelopmentPath?: string[]): Promise<IExtensionDescription[]> {

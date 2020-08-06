@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -33,27 +33,18 @@ const version = (quality && quality !== 'stable') ? `${packageJson.version}-${qu
 
 const productionDependencies = deps.getProductionDependencies(WEB_FOLDER);
 
-const nodeModules = Object.keys(product.dependencies || {})
-	.concat(_.uniq(productionDependencies.map(d => d.name))).concat([
-		'rxjs/Observable',
-		'rxjs/add/observable/fromPromise',
-		'rxjs/Subject',
-		'rxjs/Observer',
-	]);
-
 const vscodeWebResourceIncludes = [
 	// Workbench
 	'out-build/vs/{base,platform,editor,workbench}/**/*.{svg,png}',
 	'out-build/vs/code/browser/workbench/*.html',
-	'out-build/vs/base/browser/ui/codicons/codicon/**',
+	'out-build/vs/base/browser/ui/codicons/codicon/**/*.ttf',
 	'out-build/vs/**/markdown.css',
 
 	// Webview
 	'out-build/vs/workbench/contrib/webview/browser/pre/*.js',
 
 	// Extension Worker
-	'out-build/vs/workbench/services/extensions/worker/extensionHostWorkerMain.js',
-	'out-build/sql/{base,platform,workbench}/**/*.{svg,png,html}', // {{SQL CARBON EDIT}}
+	'out-build/vs/workbench/services/extensions/worker/extensionHostWorkerMain.js'
 ];
 exports.vscodeWebResourceIncludes = vscodeWebResourceIncludes;
 
@@ -66,8 +57,7 @@ const vscodeWebResources = [
 	'!out-build/vs/**/{node,electron-browser,electron-main}/**',
 	'!out-build/vs/editor/standalone/**',
 	'!out-build/vs/workbench/**/*-tb.png',
-	'!**/test/**',
-	'!out-build/sql/**/{node,electron-browser,electron-main}/**' // {{SQL CARBON EDIT}}
+	'!**/test/**'
 ];
 
 const buildfile = require('../src/buildfile');
@@ -81,6 +71,42 @@ const vscodeWebEntryPoints = _.flatten([
 ]);
 exports.vscodeWebEntryPoints = vscodeWebEntryPoints;
 
+const buildDate = new Date().toISOString();
+
+/**
+ * @param extensionsRoot {string} The location where extension will be read from
+ */
+const createVSCodeWebFileContentMapper = (extensionsRoot) => {
+	/**
+	 * @param content {string} The contens of the file
+	 * @param path {string} The absolute file path, always using `/`, even on Windows
+	 */
+	const result = (content, path) => {
+		// (1) Patch product configuration
+		if (path.endsWith('vs/platform/product/common/product.js')) {
+			const productConfiguration = JSON.stringify({
+				...product,
+				extensionAllowedProposedApi: [...product.extensionAllowedProposedApi, 'sandy081.999-test-github-issue-notebooks'],
+				version,
+				commit,
+				date: buildDate
+			});
+			return content.replace('/*BUILD->INSERT_PRODUCT_CONFIGURATION*/', productConfiguration.substr(1, productConfiguration.length - 2) /* without { and }*/);
+		}
+
+		// (2) Patch builtin extensions
+		if (path.endsWith('vs/workbench/services/extensionManagement/browser/builtinExtensionsScannerService.js')) {
+			// Do not inline `vscode-web-playground` even if it has been packed!
+			const builtinExtensions = JSON.stringify(extensions.scanBuiltinExtensions(extensionsRoot, ['vscode-web-playground']));
+			return content.replace('/*BUILD->INSERT_BUILTIN_EXTENSIONS*/', builtinExtensions.substr(1, builtinExtensions.length - 2) /* without [ and ]*/);
+		}
+
+		return content;
+	};
+	return result;
+};
+exports.createVSCodeWebFileContentMapper = createVSCodeWebFileContentMapper;
+
 const optimizeVSCodeWebTask = task.define('optimize-vscode-web', task.series(
 	util.rimraf('out-vscode-web'),
 	common.optimizeTask({
@@ -88,40 +114,15 @@ const optimizeVSCodeWebTask = task.define('optimize-vscode-web', task.series(
 		entryPoints: _.flatten(vscodeWebEntryPoints),
 		otherSources: [],
 		resources: vscodeWebResources,
-		loaderConfig: common.loaderConfig(nodeModules),
+		loaderConfig: common.loaderConfig(),
 		out: 'out-vscode-web',
 		inlineAmdImages: true,
-		bundleInfo: undefined
+		bundleInfo: undefined,
+		fileContentMapper: createVSCodeWebFileContentMapper('.build/web/extensions')
 	})
 ));
 
-const vscodeWebPatchProductTask = () => {
-	const fullpath = path.join(process.cwd(), 'out-build', 'vs', 'platform', 'product', 'common', 'product.js');
-	const contents = fs.readFileSync(fullpath).toString();
-	const productConfiguration = JSON.stringify({
-		...product,
-		extensionAllowedProposedApi: [...product.extensionAllowedProposedApi, 'sandy081.999-test-github-issue-notebooks'],
-		version,
-		commit,
-		date: new Date().toISOString()
-	});
-	const newContents = contents.replace('/*BUILD->INSERT_PRODUCT_CONFIGURATION*/', productConfiguration.substr(1, productConfiguration.length - 2) /* without { and }*/);
-	fs.writeFileSync(fullpath, newContents);
-};
-exports.vscodeWebPatchProductTask = vscodeWebPatchProductTask;
-
-const vscodeWebPatchBuiltinExtensionsTask = () => {
-	const builtinExtensions = JSON.stringify(extensions.scanBuiltinExtensions('.build/web/extensions', true));
-	const fullpath = path.join(process.cwd(), 'out-build', 'vs', 'workbench', 'services', 'extensionManagement', 'browser', 'builtinExtensionsScannerService.js');
-	const contents = fs.readFileSync(fullpath).toString();
-	const newContents = contents.replace('/*BUILD->INSERT_BUILTIN_EXTENSIONS*/', builtinExtensions.substr(1, builtinExtensions.length - 2) /* without [ and ]*/);
-	fs.writeFileSync(fullpath, newContents);
-};
-exports.vscodeWebPatchBuiltinExtensionsTask = vscodeWebPatchBuiltinExtensionsTask;
-
 const minifyVSCodeWebTask = task.define('minify-vscode-web', task.series(
-	vscodeWebPatchProductTask,
-	vscodeWebPatchBuiltinExtensionsTask,
 	optimizeVSCodeWebTask,
 	util.rimraf('out-vscode-web-min'),
 	common.minifyTask('out-vscode-web', `https://ticino.blob.core.windows.net/sourcemaps/${commit}/core`)
@@ -133,12 +134,12 @@ function packageTask(sourceFolderName, destinationFolderName) {
 
 	return () => {
 		const src = gulp.src(sourceFolderName + '/**', { base: '.' })
-			.pipe(rename(function (path) { path.dirname = path.dirname.replace(new RegExp('^' + sourceFolderName), 'out'); }))
-			.pipe(filter(['**', '!**/*.js.map']));
+			.pipe(rename(function (path) { path.dirname = path.dirname.replace(new RegExp('^' + sourceFolderName), 'out'); }));
 
 		const extensions = gulp.src('.build/web/extensions/**', { base: '.build/web', dot: true });
 
-		const sources = es.merge(src, extensions);
+		const sources = es.merge(src, extensions)
+			.pipe(filter(['**', '!**/*.js.map'], { dot: true }));
 
 		const name = product.nameShort;
 		const packageJsonStream = gulp.src(['remote/web/package.json'], { base: 'remote/web' })
@@ -177,14 +178,10 @@ function packageTask(sourceFolderName, destinationFolderName) {
 	};
 }
 
-const builtInExtensions = product.builtInExtensions.filter(e => {
-	return e.name === 'ms-vscode.references-view';
-});
-
 const compileWebExtensionsBuildTask = task.define('compile-web-extensions-build', task.series(
 	task.define('clean-web-extensions-build', util.rimraf('.build/web/extensions')),
-	task.define('bundle-web-extensions-build', () => extensions.packageLocalWebExtensionsStream().pipe(gulp.dest('.build/web'))),
-	task.define('bundle-marketplace-web-extensions-build', () => extensions.packageMarketplaceWebExtensionsStream(builtInExtensions).pipe(gulp.dest('.build/web'))),
+	task.define('bundle-web-extensions-build', () => extensions.packageLocalExtensionsStream(true).pipe(gulp.dest('.build/web'))),
+	task.define('bundle-marketplace-web-extensions-build', () => extensions.packageMarketplaceExtensionsStream(true).pipe(gulp.dest('.build/web'))),
 ));
 
 
