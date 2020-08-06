@@ -47,7 +47,7 @@ export class ProjectsController {
 		this.projectTreeViewProvider.load(this.projects);
 	}
 
-	public async openProject(projectFile: vscode.Uri): Promise<Project> {
+	public async openProject(projectFile: vscode.Uri, focusProject: boolean = true): Promise<Project> {
 		for (const proj of this.projects) {
 			if (proj.projectFilePath === projectFile.fsPath) {
 				vscode.window.showInformationMessage(constants.projectAlreadyOpened(projectFile.fsPath));
@@ -81,7 +81,10 @@ export class ProjectsController {
 			}
 
 			this.refreshProjectsTree();
-			await this.focusProject(newProject);
+
+			if (focusProject) {
+				await this.focusProject(newProject);
+			}
 		}
 		catch (err) {
 			// if the project didnt load - remove it from the list of open projects
@@ -134,7 +137,7 @@ export class ProjectsController {
 		catch { } // file doesn't already exist
 
 		if (fileExists) {
-			throw new Error(constants.projectAlreadyExists(newProjFileName, folderUri.fsPath));
+			throw new Error(constants.projectAlreadyExists(newProjFileName, path.parse(newProjFilePath).dir));
 		}
 
 		await fs.mkdir(path.dirname(newProjFilePath), { recursive: true });
@@ -220,16 +223,23 @@ export class ProjectsController {
 		const dacFxService = await this.getDaxFxService();
 
 		if ((<IPublishSettings>settings).upgradeExisting) {
-			return await dacFxService.deployDacpac(tempPath, settings.databaseName, (<IPublishSettings>settings).upgradeExisting, settings.connectionUri, azdata.TaskExecutionMode.execute, settings.sqlCmdVariables);
+			return await dacFxService.deployDacpac(tempPath, settings.databaseName, (<IPublishSettings>settings).upgradeExisting, settings.connectionUri, azdata.TaskExecutionMode.execute, settings.sqlCmdVariables, settings.deploymentOptions);
 		}
 		else {
-			return await dacFxService.generateDeployScript(tempPath, settings.databaseName, settings.connectionUri, azdata.TaskExecutionMode.script, settings.sqlCmdVariables);
+			return await dacFxService.generateDeployScript(tempPath, settings.databaseName, settings.connectionUri, azdata.TaskExecutionMode.script, settings.sqlCmdVariables, settings.deploymentOptions);
 		}
 	}
 
 	public async readPublishProfileCallback(profileUri: vscode.Uri): Promise<PublishProfile> {
-		const profile = await load(profileUri);
-		return profile;
+		try {
+			const dacFxService = await this.getDaxFxService();
+			const profile = await load(profileUri, dacFxService);
+			return profile;
+		}
+		catch (e) {
+			vscode.window.showErrorMessage(constants.profileReadError);
+			throw e;
+		}
 	}
 
 	public async schemaCompare(treeNode: BaseProjectTreeItem): Promise<void> {

@@ -9,13 +9,15 @@ import * as sudo from 'sudo-prompt';
 import * as loc from '../localizedConstants';
 
 /**
- * Wrapper error for when an unexpected exit code was recieved
+ * Wrapper error for when an unexpected exit code was received
  */
 export class ExitCodeError extends Error {
 	constructor(public code: number) {
-		super(`Unexpected exit code ${code}`);
+		super(loc.unexpectedExitCode(code));
 	}
 }
+
+export type ProcessOutput = { stdout: string, stderr: string };
 
 /**
  * Executes the specified command. Throws an error for a non-0 exit code or if stderr receives output
@@ -23,9 +25,9 @@ export class ExitCodeError extends Error {
  * @param args Optional args to pass, every arg and arg value must be a separate item in the array
  * @param outputChannel Channel used to display diagnostic information
  */
-export async function executeCommand(command: string, args?: string[], outputChannel?: vscode.OutputChannel): Promise<string> {
+export async function executeCommand(command: string, args: string[], outputChannel: vscode.OutputChannel): Promise<ProcessOutput> {
 	return new Promise((resolve, reject) => {
-		outputChannel?.appendLine(loc.executingCommand(command, args ?? []));
+		outputChannel.appendLine(loc.executingCommand(command, args));
 		const stdoutBuffers: Buffer[] = [];
 		const stderrBuffers: Buffer[] = [];
 		const child = cp.spawn(command, args, { shell: true });
@@ -33,12 +35,20 @@ export async function executeCommand(command: string, args?: string[], outputCha
 		child.stderr.on('data', (b: Buffer) => stderrBuffers.push(b));
 		child.on('error', reject);
 		child.on('exit', code => {
-			if (stderrBuffers.length > 0) {
-				reject(new Error(Buffer.concat(stderrBuffers).toString('utf8').trim()));
-			} else if (code) {
-				reject(new ExitCodeError(code));
+			const stdout = Buffer.concat(stdoutBuffers).toString('utf8').trim();
+			const stderr = Buffer.concat(stderrBuffers).toString('utf8').trim();
+			if (stdout) {
+				outputChannel.appendLine(loc.stdoutOutput(stdout));
+			}
+			if (stderr) {
+				outputChannel.appendLine(loc.stdoutOutput(stderr));
+			}
+			if (code) {
+				const err = new ExitCodeError(code);
+				outputChannel.appendLine(err.message);
+				reject(err);
 			} else {
-				resolve(Buffer.concat(stdoutBuffers).toString('utf8').trim());
+				resolve({ stdout: stdout, stderr: stderr });
 			}
 		});
 	});
@@ -51,16 +61,23 @@ export async function executeCommand(command: string, args?: string[], outputCha
  * @param args The additional args
  * @param outputChannel Channel used to display diagnostic information
  */
-export async function executeSudoCommand(command: string, outputChannel?: vscode.OutputChannel): Promise<string> {
-	return new Promise<string>((resolve, reject) => {
-		outputChannel?.appendLine(loc.executingCommand(`sudo ${command}`, []));
+export async function executeSudoCommand(command: string, outputChannel: vscode.OutputChannel): Promise<ProcessOutput> {
+	return new Promise((resolve, reject) => {
+		outputChannel.appendLine(loc.executingCommand(`sudo ${command}`, []));
 		sudo.exec(command, { name: vscode.env.appName }, (error, stdout, stderr) => {
+			stdout = stdout?.toString() ?? '';
+			stderr = stderr?.toString() ?? '';
+			if (stdout) {
+				outputChannel.appendLine(loc.stdoutOutput(stdout));
+			}
+			if (stderr) {
+				outputChannel.appendLine(loc.stdoutOutput(stderr));
+			}
 			if (error) {
+				outputChannel.appendLine(loc.unexpectedCommandError(error.message));
 				reject(error);
-			} else if (stderr) {
-				reject(stderr.toString('utf8'));
 			} else {
-				resolve(stdout ? stdout.toString('utf8') : '');
+				resolve({ stdout: stdout, stderr: stderr });
 			}
 		});
 	});

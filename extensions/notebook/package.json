@@ -17,6 +17,11 @@
       "type": "object",
       "title": "%notebook.configuration.title%",
       "properties": {
+        "notebook.collapseBookItems": {
+          "type": "boolean",
+          "default": false,
+          "description": "%notebook.collapseBookItems.description%"
+        },
         "notebook.maxBookSearchDepth": {
           "type": "number",
           "default": 10,
@@ -49,6 +54,11 @@
           "items": {
             "type": "string"
           }
+        },
+        "notebook.remoteBookDownloadTimeout": {
+          "type": "number",
+          "default": 60000,
+          "description": "%notebook.remoteBookDownloadTimeout.description%"
         }
       }
     },
@@ -228,6 +238,15 @@
           "dark": "resources/dark/open_notebook_inverse.svg",
           "light": "resources/light/open_notebook.svg"
         }
+      },
+      {
+        "command": "notebook.command.openRemoteBook",
+        "title": "%title.openRemoteJupyterBook%",
+        "category": "%books-preview-category%",
+        "icon": {
+          "dark": "resources/dark/open_notebook_inverse.svg",
+          "light": "resources/light/open_notebook.svg"
+        }
       }
     ],
     "languages": [
@@ -390,12 +409,12 @@
         },
         {
           "command": "notebook.command.searchProvidedBook",
-          "when": "view == providedBooksView && viewItem == providedBook && providedBooks",
+          "when": "view == providedBooksView && viewItem == providedBook",
           "group": "inline"
         },
         {
           "command": "notebook.command.saveBook",
-          "when": "view == providedBooksView && viewItem == providedBook && providedBooks",
+          "when": "view == providedBooksView && viewItem == providedBook",
           "group": "inline"
         },
         {
@@ -421,6 +440,9 @@
           "command": "notebook.command.openNotebookFolder",
           "when": "view == bookTreeView",
           "group": "navigation"
+        }, {
+          "command": "notebook.command.openRemoteBook",
+          "when": "view == bookTreeView"
         }
       ],
       "notebook/toolbar": [

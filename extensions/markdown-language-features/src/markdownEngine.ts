@@ -129,7 +129,6 @@ export class MarkdownEngine {
 		}
 
 		this.currentDocument = document.uri;
-		this._slugCount = new Map<string, number>();
 
 		const tokens = this.tokenizeString(document.getText(), engine);
 		this._tokenCache.update(document, config, tokens);
@@ -144,6 +143,8 @@ export class MarkdownEngine {
 	}
 
 	private tokenizeString(text: string, engine: MarkdownIt) {
+		this._slugCount = new Map<string, number>();
+
 		return engine.parse(text.replace(UNICODE_NEWLINE_REGEX, ''), {});
 	}
 
@@ -362,4 +363,3 @@ function normalizeHighlightLang(lang: string | undefined) {
 			return lang;
 	}
 }
-
