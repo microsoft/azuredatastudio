@@ -155,7 +155,67 @@
       ]
     },
     "dashboard": {
-      "provider": "KUSTO"
+      "provider": "KUSTO",
+      "flavors": [
+        {
+          "flavor": "cloud",
+          "conditions": [
+            {
+              "field": "isCloud",
+              "operator": "==",
+              "value": true
+            }
+          ],
+          "databaseProperties": [
+            {
+              "displayName": "%cloud.databaseProperties.name%",
+              "value": "name"
+            },
+            {
+              "displayName": "%cloud.databaseProperties.size%",
+              "value": "sizeInMB"
+            }
+          ],
+          "serverProperties": [
+            {
+              "displayName": "%cloud.serverProperties.summary%",
+              "value": "summary"
+            },
+            {
+              "displayName": "%cloud.serverProperties.machinesTotal%",
+              "value": "machinesTotal"
+            },
+            {
+              "displayName": "%cloud.serverProperties.diskCacheCapacity%",
+              "value": "diskCacheCapacity"
+            }
+          ],
+          "databasesListProperties": [
+            {
+              "displayName": "%databasesListProperties.name%",
+              "value": "name",
+              "widthWeight": 60
+            },
+            {
+              "displayName": "%databasesListProperties.size%",
+              "value": "sizeInMB",
+              "widthWeight": 20
+            }
+          ],
+          "objectsListProperties": [
+            {
+              "displayName": "%objectsListProperties.name%",
+              "value": "name",
+              "widthWeight": 60
+            },
+            {
+              "displayName": "%objectsListProperties.metadataTypeName%",
+              "value": "metadataTypeName",
+              "widthWeight": 20
+            }
+          ]
+        }
+      ]
     },
     "connectionProvider": {
       "providerId": "KUSTO",
@@ -356,7 +416,7 @@
   "dependencies": {
     "buffer-stream-reader": "^0.1.1",
     "bytes": "^3.1.0",
-    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#1.0.0",
+    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#1.1.0",
     "error-ex": "^1.3.2",
     "figures": "^2.0.0",
     "find-remove": "1.2.1",
