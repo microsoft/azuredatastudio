@@ -132,10 +132,11 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 		});
 	}
 
-	private getValueOrDefault<T>(infoObject: ServerInfo | {}, propertyValue: string, defaultVal?: any): T {
+	private getValueOrDefault<T>(infoObject: ServerInfo | {}, propertyName: string, defaultVal?: any): T {
 		let val: T = undefined;
-		if (infoObject) {
-			val = infoObject[propertyValue];
+		let obj = propertyName in infoObject ? infoObject : ('options' in infoObject && propertyName in infoObject.options ? infoObject.options : undefined);
+		if (obj) {
+			val = obj[propertyName];
 		}
 		if (types.isUndefinedOrNull(val)) {
 			val = defaultVal;
