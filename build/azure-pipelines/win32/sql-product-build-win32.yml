@@ -267,27 +267,27 @@ steps:
       Pattern: 'extensions/*.vsix'
       signConfigType: inlineSignParams
       inlineOperation: |
-        [
-          {
-            "keyCode": "CP-233016",
-            "operationSetCode": "OpcSign",
-            "parameters": [
-            {
-              "parameterName": "FileDigest",
-              "parameterValue": "/fd sha256"
-            }
-            ],
-            "toolName": "Opcsigntool.exe",
-            "toolVersion": "V6.2.8189.0"
-          },
-          {
-            "keyCode": "CP-233016",
-            "operationSetCode": "Opcsigntool.exe",
-            "parameters": null,
-            "toolName": "Opcsigntool.exe",
-            "toolVersion": "V6.2.8189.0"
-          }
-        ]
+        ​[
+          {
+            "keyCode": "CP-233016",
+            "operationSetCode": "OpcSign",
+            "parameters": [
+            {
+              "parameterName": "FileDigest",
+              "parameterValue": "/fd SHA256"
+            }
+            ],
+            "toolName": "Opcsigntool.exe",
+            "toolVersion": "V6.2.8189.0"
+          },
+          {
+            "keyCode": "CP-233016",
+            "operationSetCode": "OpcVerify",
+            "parameters": null,
+            "toolName": "Opcsigntool.exe",
+            "toolVersion": "V6.2.8189.0"
+          }
+        ]​
       SessionTimeout: 600
       MaxConcurrency: 5
       MaxRetryAttempts: 20
