@@ -58,7 +58,7 @@ export class ExtHostTreeViews implements ExtHostTreeViewsShape {
 	) {
 
 		function isTreeViewItemHandleArg(arg: any): boolean {
-			return arg && arg.$treeViewId && arg.$treeItemHandle;
+			return arg && arg.$treeViewId && arg.$treeItemHandle && !arg.$treeItem?.payload;
 		}
 		commands.registerArgumentProcessor({
 			processArgument: arg => {
