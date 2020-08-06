@@ -617,6 +617,7 @@ export class ModelServiceImpl extends Disposable implements IModelService {
 	}
 
 	private _onDidChangeLanguage(model: ITextModel, e: IModelLanguageChangedEvent): void {
+		model.removeAllDecorationsWithOwnerId(0);
 		const oldModeId = e.oldLanguage;
 		const newModeId = model.getLanguageIdentifier().language;
 		const oldOptions = this.getCreationOptions(oldModeId, model.uri, model.isForSimpleWidget);
