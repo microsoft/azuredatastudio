@@ -880,7 +880,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
 				return undefined!;
 			},
-			stopDebugging(session: vscode.DebugSession | undefined) {
+			stopDebugging(session?: vscode.DebugSession) {
 				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
 				return undefined!;
 			},
