@@ -160,6 +160,7 @@
     "connectionProvider": {
       "providerId": "KUSTO",
       "displayName": "%kusto.provider.displayName%",
+      "notebookKernelAlias": "Kusto",
       "iconPath": [
         {
           "id": "kusto:cloud",
