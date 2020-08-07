@@ -20,6 +20,19 @@
 	"title.endpoints": "Service Endpoints",
 	"title.books": "Notebooks",
 
+	"cloud.databaseProperties.name": "Database Name",
+	"cloud.databaseProperties.size": "Size (MB)",
+
+	"cloud.serverProperties.summary": "Status",
+	"cloud.serverProperties.machinesTotal": "Total Machines in the cluster",
+	"cloud.serverProperties.diskCacheCapacity": "% of Cluster data capacity used",
+
+	"databasesListProperties.name": "Name",
+	"databasesListProperties.size": "Size (MB)",
+
+	"objectsListProperties.name": "Name",
+	"objectsListProperties.metadataTypeName": "Type",
+
 	"kusto.configuration.title": "KUSTO configuration",
 	"kusto.query.displayBitAsNumber": "Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'",
 	"kusto.format.alignColumnDefinitionsInColumns": "Should column definitions be aligned?",
