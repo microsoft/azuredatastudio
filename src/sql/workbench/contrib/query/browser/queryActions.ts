@@ -36,7 +36,7 @@ import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/q
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { getCurrentGlobalConnection } from 'sql/workbench/browser/taskUtilities';
 import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { CommandsRegistry } from 'vs/platform/commands/common/commands';
+import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
 import { OEAction } from 'sql/workbench/services/objectExplorer/browser/objectExplorerActions';
 import { TreeViewItemHandleArg } from 'sql/workbench/common/views';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
@@ -812,4 +812,28 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 		return this._currentDatabaseName;
 	}
 
+}
+
+/**
+ * Action class that sends the request to convert the contents of the sql editor
+ * into a Notebook document
+ */
+export class ExportAsNotebookAction extends QueryTaskbarAction {
+
+	public static IconClass = 'export';
+	public static ID = 'exportAsNotebookAction';
+
+	constructor(
+		editor: QueryEditor,
+		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
+		@ICommandService private _commandService: ICommandService
+	) {
+		super(connectionManagementService, editor, ConnectDatabaseAction.ID, ExportAsNotebookAction.IconClass);
+
+		this.label = nls.localize('queryEditor.exportSqlAsNotebook', "Export as Notebook");
+	}
+
+	public async run(): Promise<void> {
+		this._commandService.executeCommand('mssql.exportSqlAsNotebook', this.editor.input.uri);
+	}
 }
