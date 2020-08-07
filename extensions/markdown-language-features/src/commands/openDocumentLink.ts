@@ -10,10 +10,11 @@ import { Command } from '../commandManager';
 import { MarkdownEngine } from '../markdownEngine';
 import { TableOfContentsProvider } from '../tableOfContentsProvider';
 import { isMarkdownFile } from '../util/file';
+import { isString } from 'util';
 
 
 export interface OpenDocumentLinkArgs {
-	readonly path: string;
+	readonly path: {};
 	readonly fragment: string;
 	readonly fromResource: {};
 }
@@ -42,7 +43,7 @@ export class OpenDocumentLinkCommand implements Command {
 			};
 		};
 		return vscode.Uri.parse(`command:${OpenDocumentLinkCommand.id}?${encodeURIComponent(JSON.stringify(<OpenDocumentLinkArgs>{
-			path: path.path,
+			path: toJson(path),
 			fragment,
 			fromResource: toJson(fromResource),
 		}))}`);
@@ -58,7 +59,7 @@ export class OpenDocumentLinkCommand implements Command {
 
 	public static async execute(engine: MarkdownEngine, args: OpenDocumentLinkArgs) {
 		const fromResource = vscode.Uri.parse('').with(args.fromResource);
-		const targetResource = fromResource.scheme === 'file' ? vscode.Uri.file(args.path) : vscode.Uri.parse('').with(args.fromResource);
+		const targetResource = fromResource.scheme === 'file' && isString(args.path) ? vscode.Uri.file(args.path) : vscode.Uri.parse('').with(args.fromResource);
 		const column = this.getViewColumn(fromResource);
 		try {
 			return await this.tryOpen(engine, targetResource, args, column);
