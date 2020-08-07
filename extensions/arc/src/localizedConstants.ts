@@ -75,6 +75,7 @@ export const refreshToEnterCredentials = localize('arc.refreshToEnterCredentials
 export const connectToController = localize('arc.connectToController', "Connect to Existing Controller");
 export const controllerUrl = localize('arc.controllerUrl', "Controller URL");
 export const controllerName = localize('arc.controllerName', "Name");
+export const defaultControllerName = localize('arc.defaultControllerName', "arc-dc");
 export const username = localize('arc.username', "Username");
 export const password = localize('arc.password', "Password");
 export const rememberPassword = localize('arc.rememberPassword', "Remember Password");

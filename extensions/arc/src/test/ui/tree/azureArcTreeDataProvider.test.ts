@@ -3,12 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
-import * as should from 'should';
 import 'mocha';
+import * as should from 'should';
 import * as TypeMoq from 'typemoq';
-import { AzureArcTreeDataProvider } from '../../../ui/tree/azureArcTreeDataProvider';
+import * as vscode from 'vscode';
 import { ControllerModel } from '../../../models/controllerModel';
+import { AzureArcTreeDataProvider } from '../../../ui/tree/azureArcTreeDataProvider';
 import { ControllerTreeNode } from '../../../ui/tree/controllerTreeNode';
 
 describe('AzureArcTreeDataProvider tests', function (): void {

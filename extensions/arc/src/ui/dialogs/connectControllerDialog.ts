@@ -12,7 +12,6 @@ import { InitializingComponent } from '../components/initializingComponent';
 import { AzureArcTreeDataProvider } from '../tree/azureArcTreeDataProvider';
 
 export type ConnectToControllerDialogModel = { controllerModel: ControllerModel, password: string };
-
 export class ConnectToControllerDialog extends InitializingComponent {
 	private modelBuilder!: azdata.ModelBuilder;
 
@@ -126,11 +125,8 @@ export class ConnectToControllerDialog extends InitializingComponent {
 		try {
 			// Validate that we can connect to the controller, this also populates the controllerRegistration from the connection response.
 			await controllerModel.refresh(false);
-			if (!controllerModel.controllerRegistration?.instanceName) {
-				throw new Error(`Unknown Error. controllerRegistration.instanceName should be defined after controllerModel is refreshed`);
-			}
-			// default info.name to the name of the controller instance if the user did not specify their own
-			controllerModel.info.name = controllerModel.info.name || controllerModel.controllerRegistration.instanceName;
+			// default info.name to the name of the controller instance if the user did not specify their own and to a pre-canned default if for some weird reason controller endpoint returned instanceName is also not a valid value
+			controllerModel.info.name = controllerModel.info.name || controllerModel.controllerRegistration?.instanceName || loc.defaultControllerName;
 		} catch (err) {
 			vscode.window.showErrorMessage(loc.connectToControllerFailed(this.urlInputBox.value, err));
 			return false;

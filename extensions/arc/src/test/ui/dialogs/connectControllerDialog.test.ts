@@ -7,6 +7,7 @@ import * as should from 'should';
 import * as sinon from 'sinon';
 import { ControllerInfo, ControllerModel, Registration } from '../../../models/controllerModel';
 import { ConnectToControllerDialog } from '../../../ui/dialogs/connectControllerDialog';
+import * as loc from '../../../localizedConstants';
 
 describe('ConnectControllerDialog', function (): void {
 	afterEach(function (): void {
@@ -65,15 +66,21 @@ describe('ConnectControllerDialog', function (): void {
 		});
 	}
 
+	it(`validate display name gets set to default data controller name for user chosen name of:'' and instanceName in explicably returned as undefined from the controller endpoint`, async function (): Promise<void> {
+		await validateConnectControllerDialog(
+			{ url: 'http://127.0.0.1:30081', name: '', username: 'sa', rememberPassword: true, resources: [] },
+			'https://127.0.0.1:30081',
+			undefined);
+	});
 });
 
-async function validateConnectControllerDialog(info: ControllerInfo, expectedUrl: string): Promise<void> {
-	const arcInstanceName = 'arc-instance';
-	const expectedControllerInfoName = info.name || arcInstanceName;
-	// For first set of tests just stub out refresh calls - we'll test that separately
+async function validateConnectControllerDialog(info: ControllerInfo, expectedUrl: string, arcInstanceName: string = 'arc-instance'): Promise<void> {
+	const expectedControllerInfoName = info.name || arcInstanceName || loc.defaultControllerName;
 	const connectControllerDialog = new ConnectToControllerDialog(undefined!);
+	// Stub out refresh calls to controllerModel - we'll test those separately
 	sinon.stub(ControllerModel.prototype, 'refresh').returns(Promise.resolve());
-	sinon.stub(ControllerModel.prototype, 'controllerRegistration').get(function getterFunction() {
+	// stub out controller registration response to return a known instanceName for the dc.
+	sinon.stub(ControllerModel.prototype, 'controllerRegistration').get(() => {
 		return <Registration>{ instanceName: arcInstanceName };
 	});
 	connectControllerDialog.showDialog(info, 'pwd');
