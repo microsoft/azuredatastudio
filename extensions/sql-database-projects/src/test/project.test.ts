@@ -29,7 +29,7 @@ describe('Project: sqlproj content operations', function (): void {
 		const project: Project = await Project.openProject(projFilePath);
 
 		// Files and folders
-		should(project.files.filter(f => f.type === EntryType.File).length).equal(5);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(9);
 		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(4);
 
 		should(project.files.find(f => f.type === EntryType.Folder && f.relativePath === 'Views\\User')).not.equal(undefined); // mixed ItemGroup folder
@@ -45,6 +45,12 @@ describe('Project: sqlproj content operations', function (): void {
 		// should only have one database reference even though there are two master.dacpac references (1 for ADS and 1 for SSDT)
 		should(project.databaseReferences.length).equal(1);
 		should(project.databaseReferences[0].databaseName).containEql(constants.master);
+
+		// Pre-post deployment scripts
+		should(project.files.find(f => f.type === EntryType.File && f.relativePath === 'Script.PreDeployment1.sql')).not.equal(undefined, 'File Script.PreDeployment1.sql not read');
+		should(project.files.find(f => f.type === EntryType.File && f.relativePath === 'Script.PostDeployment1.sql')).not.equal(undefined, 'File Script.PostDeployment1.sql not read');
+		should(project.files.find(f => f.type === EntryType.File && f.relativePath === 'Script.PreDeployment2.sql')).not.equal(undefined, 'File Script.PostDeployment2.sql not read');
+		should(project.files.find(f => f.type === EntryType.File && f.relativePath === 'Tables\\Script.PostDeployment1.sql')).not.equal(undefined, 'File Tables\\Script.PostDeployment1.sql not read');
 	});
 
 	it('Should add Folder and Build entries to sqlproj', async function (): Promise<void> {

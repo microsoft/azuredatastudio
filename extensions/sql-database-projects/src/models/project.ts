@@ -70,6 +70,24 @@ export class Project {
 					this.files.push(this.createProjectEntry(folderElements[f].getAttribute(constants.Include), EntryType.Folder));
 				}
 			}
+
+			// find all pre-deployment scripts to include
+			const preDeploy = itemGroup.getElementsByTagName(constants.PreDeploy);
+			for (let p = 0; p < preDeploy.length; p++) {
+				this.files.push(this.createProjectEntry(preDeploy[p].getAttribute(constants.Include), EntryType.File));
+			}
+
+			// find all post-deployment scripts to include
+			const postDeploy = itemGroup.getElementsByTagName(constants.PostDeploy);
+			for (let p = 0; p < postDeploy.length; p++) {
+				this.files.push(this.createProjectEntry(postDeploy[p].getAttribute(constants.Include), EntryType.File));
+			}
+
+			// find all pre-deployment scripts to include
+			const noneItems = itemGroup.getElementsByTagName(constants.None);
+			for (let n = 0; n < noneItems.length; n++) {
+				this.files.push(this.createProjectEntry(noneItems[n].getAttribute(constants.Include), EntryType.File));
+			}
 		}
 
 		// find all import statements to include

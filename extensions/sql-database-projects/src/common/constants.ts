@@ -166,6 +166,9 @@ export const DatabaseVariableLiteralValue = 'DatabaseVariableLiteralValue';
 export const DSP = 'DSP';
 export const Properties = 'Properties';
 export const RelativeOuterPath = '..';
+export const PreDeploy = 'PreDeploy';
+export const PostDeploy = 'PostDeploy';
+export const None = 'None';
 
 // SqlProj File targets
 export const NetCoreTargets = '$(NETCoreTargetsPath)\\Microsoft.Data.Tools.Schema.SqlTasks.targets';
