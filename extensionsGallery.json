@@ -3127,7 +3127,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.18.0"
+									"value": ">=1.21.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
