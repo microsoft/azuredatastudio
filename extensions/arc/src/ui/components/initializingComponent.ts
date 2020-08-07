@@ -37,11 +37,7 @@ export abstract class InitializingComponent {
 		if (!this._initialized) {
 			this.onInitializedPromise.promise.then(() => action()).catch(error => console.error(`Unexpected error running onInitialized action: ${error}`));
 		} else {
-			try {
-				action();
-			} catch (error) {
-				console.error(`Unexpected error running onInitialized action: ${error}`);
-			}
+			action();
 		}
 	}
 }

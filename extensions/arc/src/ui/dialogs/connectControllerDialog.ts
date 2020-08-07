@@ -5,11 +5,11 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as loc from '../../localizedConstants';
-import { AzureArcTreeDataProvider } from '../tree/azureArcTreeDataProvider';
-import { ControllerModel, ControllerInfo } from '../../models/controllerModel';
 import { Deferred } from '../../common/promise';
+import * as loc from '../../localizedConstants';
+import { ControllerInfo, ControllerModel } from '../../models/controllerModel';
 import { InitializingComponent } from '../components/initializingComponent';
+import { AzureArcTreeDataProvider } from '../tree/azureArcTreeDataProvider';
 
 export type ConnectToControllerDialogModel = { controllerModel: ControllerModel, password: string };
 
@@ -117,17 +117,20 @@ export class ConnectToControllerDialog extends InitializingComponent {
 		}
 		const controllerInfo: ControllerInfo = {
 			url: url,
-			name: this.nameInputBox.value!,
+			name: this.nameInputBox.value ?? '',
 			username: this.usernameInputBox.value,
 			rememberPassword: this.rememberPwCheckBox.checked ?? false,
 			resources: []
 		};
 		const controllerModel = new ControllerModel(this._treeDataProvider, controllerInfo, this.passwordInputBox.value);
 		try {
-			// Validate that we can connect to the controller
+			// Validate that we can connect to the controller, this also populates the controllerRegistration from the connection response.
 			await controllerModel.refresh(false);
-			// Set controllerInfo.name if the user did not set it.
-			controllerModel.info.name = controllerModel.info.name ?? controllerModel.controllerRegistration?.instanceName;
+			if (!controllerModel.controllerRegistration?.instanceName) {
+				throw new Error(`Unknown Error. controllerRegistration.instanceName should be defined after controllerModel is refreshed`);
+			}
+			// default info.name to the name of the controller instance if the user did not specify their own
+			controllerModel.info.name = controllerModel.info.name || controllerModel.controllerRegistration.instanceName;
 		} catch (err) {
 			vscode.window.showErrorMessage(loc.connectToControllerFailed(this.urlInputBox.value, err));
 			return false;
