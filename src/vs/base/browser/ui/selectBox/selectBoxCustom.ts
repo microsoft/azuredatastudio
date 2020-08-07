@@ -217,7 +217,8 @@ export class SelectBoxList extends Disposable implements ISelectBoxDelegate, ILi
 
 		// Intercept keyboard handling
 
-		this._register(dom.addDisposableListener(this.selectElement, dom.EventType.KEY_DOWN, (e: KeyboardEvent) => {
+		// React on KEY_UP since the actionBar also reacts on KEY_UP so that appropriate events get canceled
+		this._register(dom.addDisposableListener(this.selectElement, dom.EventType.KEY_UP, (e: KeyboardEvent) => {
 			const event = new StandardKeyboardEvent(e);
 			let showDropDown = false;
 
@@ -234,7 +235,7 @@ export class SelectBoxList extends Disposable implements ISelectBoxDelegate, ILi
 
 			if (showDropDown) {
 				this.showSelectDropDown();
-				dom.EventHelper.stop(e);
+				dom.EventHelper.stop(e, true);
 			}
 		}));
 	}
