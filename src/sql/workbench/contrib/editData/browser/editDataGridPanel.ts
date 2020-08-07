@@ -37,7 +37,6 @@ import * as DOM from 'vs/base/browser/dom';
 import { onUnexpectedError } from 'vs/base/common/errors';
 
 export class EditDataGridPanel extends GridParentComponent {
-
 	// The time(in milliseconds) we wait before refreshing the grid.
 	// We use clearTimeout and setTimeout pair to avoid unnecessary refreshes.
 	// Timeout is set to allow the grid to refresh fully before allowing a manual refresh.
@@ -360,8 +359,6 @@ export class EditDataGridPanel extends GridParentComponent {
 			});
 		}
 	}
-
-
 
 	async handleResultSet(self: EditDataGridPanel, event: any): Promise<void> {
 		// Clone the data before altering it to avoid impacting other subscribers
