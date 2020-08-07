@@ -159,6 +159,8 @@
       "flavors": [
         {
           "flavor": "cloud",
+          "databaseListHintText": "Search databases",
+          "objectListHintText": "Search tables",
           "conditions": [
             {
               "field": "isCloud",
