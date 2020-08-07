@@ -59,7 +59,7 @@ export class OpenDocumentLinkCommand implements Command {
 
 	public static async execute(engine: MarkdownEngine, args: OpenDocumentLinkArgs) {
 		const fromResource = vscode.Uri.parse('').with(args.fromResource);
-		const targetResource = fromResource.scheme === 'file' && isString(args.path) ? vscode.Uri.file(args.path) : vscode.Uri.parse('').with(args.fromResource);
+		const targetResource = fromResource.scheme === 'file' && isString(args.path) ? vscode.Uri.file(args.path) : vscode.Uri.parse('').with(args.path);
 		const column = this.getViewColumn(fromResource);
 		try {
 			return await this.tryOpen(engine, targetResource, args, column);
