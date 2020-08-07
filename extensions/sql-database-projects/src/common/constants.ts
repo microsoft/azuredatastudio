@@ -140,6 +140,8 @@ export const scriptFriendlyName = localize('scriptFriendlyName', "Script");
 export const tableFriendlyName = localize('tableFriendlyName', "Table");
 export const viewFriendlyName = localize('viewFriendlyName', "View");
 export const storedProcedureFriendlyName = localize('storedProcedureFriendlyName', "Stored Procedure");
+export const preDeployScriptFriendlyName = localize('preDeployScriptFriendlyName', "PreDeployment Script");
+export const postDeployScriptFriendlyName = localize('postDeployScriptFriendlyName', "PostDeployment Script");
 
 // SqlProj file XML names
 export const ItemGroup = 'ItemGroup';
@@ -166,6 +168,9 @@ export const DatabaseVariableLiteralValue = 'DatabaseVariableLiteralValue';
 export const DSP = 'DSP';
 export const Properties = 'Properties';
 export const RelativeOuterPath = '..';
+export const PreDeploy = 'PreDeploy';
+export const PostDeploy = 'PostDeploy';
+export const None = 'None';
 
 // SqlProj File targets
 export const NetCoreTargets = '$(NETCoreTargetsPath)\\Microsoft.Data.Tools.Schema.SqlTasks.targets';
