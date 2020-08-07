@@ -276,15 +276,15 @@ steps:
               "parameterValue": "/fd SHA256"
             }
             ],
-            "toolName": "Opcsigntool.exe",
-            "toolVersion": "6.2.8189.0"
+            "toolName": "sign",
+            "toolVersion": "1.0"
           },
           {
             "keyCode": "CP-233016",
             "operationSetCode": "OpcVerify",
-            "parameters": null,
-            "toolName": "Opcsigntool.exe",
-            "toolVersion": "6.2.8189.0"
+            "parameters": [],
+            "toolName": "sign",
+            "toolVersion": "1.0"
           }
         ]
       SessionTimeout: 600
