@@ -26,15 +26,14 @@ describe('azdata', function () {
 	});
 
 	describe('findAzdata', function () {
+		sinon.stub(utils, 'searchForCmd').returns(Promise.resolve('C:\\path\\to\\azdata.cmd'));
 		// Mock call to --version to simulate azdata being installed
 		it('successful', async function (): Promise<void> {
 			sinon.stub(childProcess, 'executeCommand').returns(Promise.resolve({ stdout: 'v1.0.0', stderr: '' }));
-			sinon.stub(utils, 'searchForCmd').returns(Promise.resolve('C:\\path\\to\\azdata.cmd'));
 			await should(azdata.findAzdata(outputChannelMock.object)).not.be.rejected();
 		});
 		it('unsuccessful', async function (): Promise<void> {
 			sinon.stub(childProcess, 'executeCommand').returns(Promise.reject({ stdout: '', stderr: 'command not found: azdata' }));
-			sinon.stub(utils, 'searchForCmd').returns(Promise.reject(new Error('Could not find azdata')));
 			await should(azdata.findAzdata(outputChannelMock.object)).be.rejected();
 		});
 	});
