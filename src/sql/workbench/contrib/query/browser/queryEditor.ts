@@ -270,7 +270,7 @@ export class QueryEditor extends BaseEditor {
 				{ action: this._listDatabasesAction },
 				{ element: separator },
 				{ action: this._estimatedQueryPlanAction }, // Preview
-				{ action: this._toggleSqlcmdMode },
+				{ action: this._toggleSqlcmdMode }, // Preview
 				{ action: this._exportAsNotebookAction } // Preview
 			];
 		} else {
@@ -280,9 +280,7 @@ export class QueryEditor extends BaseEditor {
 				{ element: separator },
 				{ action: this._toggleConnectDatabaseAction },
 				{ action: this._changeConnectionAction },
-				{ action: this._listDatabasesAction },
-				{ element: separator },
-				{ action: this._toggleSqlcmdMode }
+				{ action: this._listDatabasesAction }
 			];
 		}
 
