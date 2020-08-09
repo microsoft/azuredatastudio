@@ -474,7 +474,7 @@
       "notebook/toolbar": [
         {
           "command": "mssql.exportNotebookToSql",
-          "when": "providerId == sql"
+          "when": "config.workbench.enablePreviewFeatures && providerId == sql"
         }
       ]
     },
