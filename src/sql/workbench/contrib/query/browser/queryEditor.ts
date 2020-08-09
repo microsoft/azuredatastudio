@@ -256,10 +256,9 @@ export class QueryEditor extends BaseEditor {
 
 	private setTaskbarContent(): void {
 		// Create HTML Elements for the taskbar
-		let separator = Taskbar.createTaskbarSeparator();
+		const separator = Taskbar.createTaskbarSeparator();
 		let content: ITaskbarContent[];
-		// Remove the estimated query plan action if preview features are not enabled
-		let previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
+		const previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
 		if (previewFeaturesEnabled) {
 			content = [
 				{ action: this._runQueryAction },
