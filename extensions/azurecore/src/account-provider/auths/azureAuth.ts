@@ -78,7 +78,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	}
 
 	public async startLogin(): Promise<AzureAccount | azdata.PromptFailedResult> {
-		let loginComplete: Deferred<void>;
+		let loginComplete: Deferred<void, Error>;
 		try {
 			const result = await this.login(this.commonTenant, this.metadata.settings.microsoftResource);
 			loginComplete = result.authComplete;
@@ -94,13 +94,17 @@ export abstract class AzureAuth implements vscode.Disposable {
 		} catch (ex) {
 			if (ex instanceof AzureAuthError) {
 				if (loginComplete) {
-					loginComplete.reject(ex.getPrintableString());
+					loginComplete.reject(ex);
 				} else {
 					vscode.window.showErrorMessage(ex.getPrintableString());
 				}
 			}
 			Logger.error(ex);
-			return undefined;
+			return {
+				canceled: false
+			};
+		} finally {
+			loginComplete?.reject(new AzureAuthError(localize('azureAuth.unidentifiedError', "Unidentified error with azure authentication"), 'Unidentified error with azure auth', undefined));
 		}
 	}
 
@@ -210,7 +214,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 
 
-	protected abstract async login(tenant: Tenant, resource: Resource): Promise<{ response: OAuthTokenResponse, authComplete: Deferred<void> }>;
+	protected abstract async login(tenant: Tenant, resource: Resource): Promise<{ response: OAuthTokenResponse, authComplete: Deferred<void, Error> }>;
 
 	/**
 	 * Refreshes a token, if a refreshToken is passed in then we use that. If it is not passed in then we will prompt the user for consent.

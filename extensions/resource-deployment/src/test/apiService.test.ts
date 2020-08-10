@@ -3,15 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-//@ts-check
+import 'mocha';
+import assert = require('assert');
+import { apiService } from '../services/apiService';
 
-'use strict';
+suite('API Service Tests', function (): void {
 
-const withDefaults = require('../shared.webpack.config');
-
-module.exports = withDefaults({
-	context: __dirname,
-	entry: {
-		extension: './src/extension.ts'
-	}
+	test('getAzurecoreApi returns azure api', async () => {
+		const api = await apiService.getAzurecoreApi();
+		assert(api !== undefined);
+	});
 });

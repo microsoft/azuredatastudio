@@ -98,7 +98,7 @@ export function getDatabaseStateDisplayText(state: string): string {
 		case 'SUSPECT':
 			return loc.suspect;
 		case 'EMERGENCY':
-			return loc.emergecy;
+			return loc.emergency;
 	}
 	return state;
 }

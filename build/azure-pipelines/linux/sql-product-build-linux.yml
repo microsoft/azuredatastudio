@@ -24,7 +24,7 @@ steps:
 
   - task: NodeTool@0
     inputs:
-      versionSpec: "12.14.1"
+      versionSpec: "12.13.0"
 
   - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
     inputs:
@@ -91,8 +91,8 @@ steps:
   - script: |
       set -e
       yarn gulp vscode-linux-x64-min-ci
-      yarn gulp vscode-reh-linux-x64-min-ci
-      yarn gulp vscode-reh-web-linux-x64-min-ci
+      # yarn gulp vscode-reh-linux-x64-min-ci
+      # yarn gulp vscode-reh-web-linux-x64-min-ci
     displayName: Build
     env:
       VSCODE_MIXIN_PASSWORD: $(github-distro-mixin-password)

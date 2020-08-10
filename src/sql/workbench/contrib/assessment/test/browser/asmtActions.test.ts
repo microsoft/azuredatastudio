@@ -8,13 +8,15 @@ import * as assert from 'assert';
 import { AssessmentType, AssessmentTargetType } from 'sql/workbench/contrib/assessment/common/consts';
 import {
 	IAssessmentComponent,
+	SqlAssessmentResultInfo,
 	AsmtServerInvokeItemsAction,
 	AsmtServerSelectItemsAction,
 	AsmtExportAsScriptAction,
 	AsmtSamplesLinkAction,
 	AsmtDatabaseInvokeItemsAction,
-	AsmtDatabaseSelectItemsAction
-} from 'sql/workbench/contrib/assessment/common/asmtActions';
+	AsmtDatabaseSelectItemsAction,
+	AsmtGenerateHTMLReportAction
+} from 'sql/workbench/contrib/assessment/browser/asmtActions';
 import { AssessmentService } from 'sql/workbench/services/assessment/common/assessmentService';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
@@ -23,34 +25,72 @@ import { TestConnectionManagementService } from 'sql/platform/connection/test/co
 import { NullLogService } from 'vs/platform/log/common/log';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { OpenerServiceStub } from 'sql/platform/opener/common/openerServiceStub';
+import { SqlAssessmentTargetType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import { TestFileService, TestEnvironmentService, TestFileDialogService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
+import { URI } from 'vs/base/common/uri';
+import { IFileService } from 'vs/platform/files/common/files';
 /**
  * Class to test Assessment Management Actions
  */
-
 let assessmentResultItems: azdata.SqlAssessmentResultItem[] = [
-	<azdata.SqlAssessmentResultItem>{ checkId: 'check1' },
-	<azdata.SqlAssessmentResultItem>{ checkId: 'check2' },
-	<azdata.SqlAssessmentResultItem>{ checkId: 'check3' }
+	<azdata.SqlAssessmentResultItem>{
+		checkId: 'check1',
+		rulesetVersion: '1.0.0',
+		targetType: SqlAssessmentTargetType.Database,
+		targetName: 'db1',
+		level: 'Warning',
+		message: '',
+		tags: ['tag2'],
+	},
+	<azdata.SqlAssessmentResultItem>{
+		checkId: 'check2',
+		rulesetVersion: '1.0.0',
+		targetType: SqlAssessmentTargetType.Database,
+		targetName: 'db1',
+		level: 'Error',
+		message: '',
+		tags: ['tag1', 'tag2']
+	},
+	<azdata.SqlAssessmentResultItem>{
+		checkId: 'check3',
+		rulesetVersion: '1.0.0',
+		targetType: SqlAssessmentTargetType.Database,
+		targetName: 'db1',
+		level: 'Information',
+		message: '',
+		tags: ['tag3', 'tag4']
+	}
 ];
-
-class AssessmentTestViewComponent implements IAssessmentComponent {
-	showProgress(mode: AssessmentType) { return undefined; }
-	showInitialResults(result: azdata.SqlAssessmentResult, method: AssessmentType) { return undefined; }
-	appendResults(result: azdata.SqlAssessmentResult, method: AssessmentType) { }
-	stopProgress(mode: AssessmentType) { return undefined; }
-	resultItems: azdata.SqlAssessmentResultItem[] = assessmentResultItems;
-	isActive: boolean = true;
-}
-
-let mockAssessmentService: TypeMoq.Mock<AssessmentService>;
-let mockAsmtViewComponent: TypeMoq.Mock<IAssessmentComponent>;
-
 let assessmentResult: azdata.SqlAssessmentResult = {
 	success: true,
 	errorMessage: '',
 	apiVersion: '',
 	items: assessmentResultItems
 };
+
+class AssessmentTestViewComponent implements IAssessmentComponent {
+	showProgress(mode: AssessmentType) { return undefined; }
+	showInitialResults(result: azdata.SqlAssessmentResult, method: AssessmentType) { return undefined; }
+	appendResults(result: azdata.SqlAssessmentResult, method: AssessmentType) { }
+	stopProgress(mode: AssessmentType) { return undefined; }
+	recentResult: SqlAssessmentResultInfo = {
+		result: assessmentResult,
+		connectionInfo: {
+			serverInfo: null,
+			connectionProfile: {
+				serverName: 'testServer'
+			}
+		},
+		dateUpdated: Date.now()
+	};
+	isActive: boolean = true;
+}
+
+let mockAssessmentService: TypeMoq.Mock<AssessmentService>;
+let mockAsmtViewComponent: TypeMoq.Mock<IAssessmentComponent>;
+
 
 // Tests
 suite('Assessment Actions', () => {
@@ -181,4 +221,46 @@ suite('Assessment Actions', () => {
 		openerService.verify(s => s.open(TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 
+	test('Make HTML Report Action', async () => {
+		const openerService = TypeMoq.Mock.ofType<IOpenerService>(OpenerServiceStub);
+		openerService.setup(s => s.open(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
+
+		const fileUri = URI.file('/user/home');
+		const fileDialogService = new TestFileDialogService();
+		fileDialogService.setPickFileToSave(fileUri);
+
+		const notificationService = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService);
+		notificationService.setup(s => s.prompt(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => null);
+
+		const fileService = TypeMoq.Mock.ofType<IFileService>(TestFileService);
+		fileService.setup(s => s.createFile(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+			return Promise.resolve({
+				ctime: Date.now(),
+				etag: 'index.txt',
+				isFile: true,
+				isDirectory: false,
+				isSymbolicLink: false,
+				mtime: Date.now(),
+				name: '',
+				resource: fileUri,
+				size: 42
+			});
+		});
+
+
+
+		let action = new AsmtGenerateHTMLReportAction(fileService.object,
+			openerService.object,
+			TestEnvironmentService,
+			new NullAdsTelemetryService(),
+			notificationService.object,
+			fileDialogService);
+		assert.equal(action.id, AsmtGenerateHTMLReportAction.ID, 'Generate HTML Report id action mismatch');
+		assert.equal(action.label, AsmtGenerateHTMLReportAction.LABEL, 'Generate HTML Report label action mismatch');
+
+		let result = await action.run({ ownerUri: '', component: mockAsmtViewComponent.object, connectionId: '' });
+		assert.ok(result, 'Generate HTML Report action should succeed');
+		notificationService.verify(s => s.prompt(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+	});
 });
+

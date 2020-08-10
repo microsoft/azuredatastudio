@@ -6,6 +6,7 @@
 import * as vscode from 'vscode';
 import * as yaml from 'js-yaml';
 import { BookTreeItem, BookTreeItemType } from './bookTreeItem';
+import * as constants from '../common/constants';
 import * as path from 'path';
 import * as fileServices from 'fs';
 import * as fs from 'fs-extra';
@@ -102,6 +103,12 @@ export class BookModel {
 		if (this.isNotebook) {
 			return undefined;
 		}
+		let notebookConfig = vscode.workspace.getConfiguration(constants.notebookConfigKey);
+		let collapsedItems = notebookConfig[constants.collapseBookItems];
+		let collapsibleState = vscode.TreeItemCollapsibleState.Expanded;
+		if (collapsedItems) {
+			collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
+		}
 
 		if (this._tableOfContentsPath) {
 			let root: string = path.dirname(path.dirname(this._tableOfContentsPath));
@@ -117,7 +124,7 @@ export class BookModel {
 					tableOfContents: { sections: this.parseJupyterSections(tableOfContents) },
 					page: tableOfContents,
 					type: BookTreeItemType.Book,
-					treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Expanded,
+					treeItemCollapsibleState: collapsibleState,
 					isUntitled: this.openAsUntitled,
 				},
 					{
