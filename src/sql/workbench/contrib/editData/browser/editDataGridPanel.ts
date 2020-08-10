@@ -435,6 +435,10 @@ export class EditDataGridPanel extends GridParentComponent {
 		return inputStr.replace(/(\r\n|\n|\r)/g, '\u0000');
 	}
 
+	/**
+	 * Code that handles the refresh of the grid.
+	 * @param isManual flag used when called by handleResultSet, for required additional processing.
+	 */
 	private refreshGrid(isManual?: boolean): Thenable<void> {
 		return new Promise<void>(async (resolve, reject) => {
 
