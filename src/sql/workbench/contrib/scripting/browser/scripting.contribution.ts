@@ -115,7 +115,8 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		title: localize('scriptCreate', "Script as Create")
 	},
 	when:
-		ContextKeyExpr.and(ConnectionContextKey.Provider.notEqualsTo('KUSTO'),
+		ContextKeyExpr.and(
+			ConnectionContextKey.Provider.notEqualsTo('KUSTO'),
 			ContextKeyExpr.or(
 				TreeNodeContextKey.NodeType.isEqualTo('Table'),
 				TreeNodeContextKey.NodeType.isEqualTo('View'),
@@ -179,7 +180,8 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		title: localize('scriptDelete', "Script as Drop")
 	},
 	when:
-		ContextKeyExpr.and(ConnectionContextKey.Provider.notEqualsTo('KUSTO'),
+		ContextKeyExpr.and(
+			ConnectionContextKey.Provider.notEqualsTo('KUSTO'),
 			ContextKeyExpr.or(
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.Table),
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.View),
