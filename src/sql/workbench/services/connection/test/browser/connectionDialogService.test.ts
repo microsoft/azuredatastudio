@@ -47,7 +47,7 @@ suite('ConnectionDialogService tests', () => {
 			undefined, // connectionManagementService
 			undefined, // contextMenuService
 			undefined, // contextViewService
-			undefined, // viewDescriptorService
+			{ getViewContainerById: () => ({}), getViewContainerModel: () => ({}) }, // viewDescriptorService
 			undefined, // themeService
 			undefined, // layoutService
 			undefined, // telemetryService
