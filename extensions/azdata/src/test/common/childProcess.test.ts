@@ -9,21 +9,22 @@ import * as TypeMoq from 'typemoq';
 import { executeCommand } from '../../common/childProcess';
 
 describe('ChildProcess', function () {
-	[undefined, [], ['test']].forEach(args => {
+	const outputChannelMock = TypeMoq.Mock.ofType<vscode.OutputChannel>();
+
+	[[], ['test']].forEach(args => {
 		it(`Output channel is used with ${JSON.stringify(args)} args`, async function (): Promise<void> {
-			const outputChannelMock = TypeMoq.Mock.ofType<vscode.OutputChannel>();
 			await executeCommand('echo', args, outputChannelMock.object);
-			outputChannelMock.verify(x => x.appendLine(TypeMoq.It.isAny()), TypeMoq.Times.once());
+			outputChannelMock.verify(x => x.appendLine(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
 		});
 	});
 
 	it('Gets expected output', async function (): Promise<void> {
 		const echoOutput = 'test';
-		const output = await executeCommand('echo', [echoOutput]);
-		should(output).equal(echoOutput);
+		const output = await executeCommand('echo', [echoOutput], outputChannelMock.object);
+		should(output.stdout).equal(echoOutput);
 	});
 
 	it('Invalid command errors', async function (): Promise<void> {
-		await should(executeCommand('sdfkslkf')).be.rejected();
+		await should(executeCommand('invalid_command', [], outputChannelMock.object)).be.rejected();
 	});
 });

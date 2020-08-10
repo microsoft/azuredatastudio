@@ -5,18 +5,18 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as loc from '../../localizedConstants';
-import { AzureArcTreeDataProvider } from '../tree/azureArcTreeDataProvider';
-import { ControllerModel, ControllerInfo } from '../../models/controllerModel';
 import { Deferred } from '../../common/promise';
+import * as loc from '../../localizedConstants';
+import { ControllerInfo, ControllerModel } from '../../models/controllerModel';
 import { InitializingComponent } from '../components/initializingComponent';
+import { AzureArcTreeDataProvider } from '../tree/azureArcTreeDataProvider';
 
 export type ConnectToControllerDialogModel = { controllerModel: ControllerModel, password: string };
-
 export class ConnectToControllerDialog extends InitializingComponent {
 	private modelBuilder!: azdata.ModelBuilder;
 
 	private urlInputBox!: azdata.InputBoxComponent;
+	private nameInputBox!: azdata.InputBoxComponent;
 	private usernameInputBox!: azdata.InputBoxComponent;
 	private passwordInputBox!: azdata.InputBoxComponent;
 	private rememberPwCheckBox!: azdata.CheckBoxComponent;
@@ -38,6 +38,10 @@ export class ConnectToControllerDialog extends InitializingComponent {
 					value: controllerInfo?.url,
 					// If we have a model then we're editing an existing connection so don't let them modify the URL
 					readOnly: !!controllerInfo
+				}).component();
+			this.nameInputBox = this.modelBuilder.inputBox()
+				.withProperties<azdata.InputBoxProperties>({
+					value: controllerInfo?.name
 				}).component();
 			this.usernameInputBox = this.modelBuilder.inputBox()
 				.withProperties<azdata.InputBoxProperties>({
@@ -62,6 +66,10 @@ export class ConnectToControllerDialog extends InitializingComponent {
 							component: this.urlInputBox,
 							title: loc.controllerUrl,
 							required: true
+						}, {
+							component: this.nameInputBox,
+							title: loc.controllerName,
+							required: false
 						}, {
 							component: this.usernameInputBox,
 							title: loc.username,
@@ -108,14 +116,17 @@ export class ConnectToControllerDialog extends InitializingComponent {
 		}
 		const controllerInfo: ControllerInfo = {
 			url: url,
+			name: this.nameInputBox.value ?? '',
 			username: this.usernameInputBox.value,
 			rememberPassword: this.rememberPwCheckBox.checked ?? false,
 			resources: []
 		};
 		const controllerModel = new ControllerModel(this._treeDataProvider, controllerInfo, this.passwordInputBox.value);
 		try {
-			// Validate that we can connect to the controller
+			// Validate that we can connect to the controller, this also populates the controllerRegistration from the connection response.
 			await controllerModel.refresh(false);
+			// default info.name to the name of the controller instance if the user did not specify their own and to a pre-canned default if for some weird reason controller endpoint returned instanceName is also not a valid value
+			controllerModel.info.name = controllerModel.info.name || controllerModel.controllerRegistration?.instanceName || loc.defaultControllerName;
 		} catch (err) {
 			vscode.window.showErrorMessage(loc.connectToControllerFailed(this.urlInputBox.value, err));
 			return false;

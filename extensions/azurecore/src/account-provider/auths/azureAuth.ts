@@ -29,6 +29,7 @@ const localize = nls.loadMessageBundle();
 
 
 export abstract class AzureAuth implements vscode.Disposable {
+	public static ACCOUNT_VERSION = '2.0';
 	protected readonly memdb = new MemoryDatabase<string>();
 
 	protected readonly WorkSchoolAccountType: string = 'work_school';
@@ -77,7 +78,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	}
 
 	public async startLogin(): Promise<AzureAccount | azdata.PromptFailedResult> {
-		let loginComplete: Deferred<void>;
+		let loginComplete: Deferred<void, Error>;
 		try {
 			const result = await this.login(this.commonTenant, this.metadata.settings.microsoftResource);
 			loginComplete = result.authComplete;
@@ -93,13 +94,17 @@ export abstract class AzureAuth implements vscode.Disposable {
 		} catch (ex) {
 			if (ex instanceof AzureAuthError) {
 				if (loginComplete) {
-					loginComplete.reject(ex.getPrintableString());
+					loginComplete.reject(ex);
 				} else {
 					vscode.window.showErrorMessage(ex.getPrintableString());
 				}
 			}
 			Logger.error(ex);
-			return undefined;
+			return {
+				canceled: false
+			};
+		} finally {
+			loginComplete?.reject(new AzureAuthError(localize('azureAuth.unidentifiedError', "Unidentified error with azure authentication"), 'Unidentified error with azure auth', undefined));
 		}
 	}
 
@@ -110,6 +115,11 @@ export abstract class AzureAuth implements vscode.Disposable {
 	}
 
 	public async refreshAccess(account: AzureAccount): Promise<AzureAccount> {
+		// Deprecated account - delete it.
+		if (account.key.accountVersion !== AzureAuth.ACCOUNT_VERSION) {
+			account.delete = true;
+			return account;
+		}
 		try {
 			const tenant = this.getHomeTenant(account);
 			const tokenResult = await this.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.MicrosoftResourceManagement);
@@ -204,7 +214,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 
 
-	protected abstract async login(tenant: Tenant, resource: Resource): Promise<{ response: OAuthTokenResponse, authComplete: Deferred<void> }>;
+	protected abstract async login(tenant: Tenant, resource: Resource): Promise<{ response: OAuthTokenResponse, authComplete: Deferred<void, Error> }>;
 
 	/**
 	 * Refreshes a token, if a refreshToken is passed in then we use that. If it is not passed in then we will prompt the user for consent.
@@ -255,8 +265,16 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 
 		const tokenClaims: TokenClaims = this.getTokenClaims(accessTokenString);
+		let userKey: string;
 
-		const userKey = tokenClaims.sub ?? tokenClaims.oid;
+		// Personal accounts don't have an oid when logging into the `common` tenant, but when logging into their home tenant they end up having an oid.
+		// This makes the key for the same account be different.
+		// We need to special case personal accounts.
+		if (tokenClaims.idp === 'live.com') { // Personal account
+			userKey = tokenClaims.unique_name ?? tokenClaims.email ?? tokenClaims.sub;
+		} else {
+			userKey = tokenClaims.home_oid ?? tokenClaims.oid ?? tokenClaims.unique_name ?? tokenClaims.email ?? tokenClaims.sub;
+		}
 
 		if (!userKey) {
 			const msg = localize('azure.noUniqueIdentifier', "The user had no unique identifier within AAD");
@@ -505,7 +523,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 		const account = {
 			key: {
 				providerId: this.metadata.id,
-				accountId: key
+				accountId: key,
+				accountVersion: AzureAuth.ACCOUNT_VERSION,
 			},
 			name: displayName,
 			displayInfo: {
@@ -659,6 +678,7 @@ export interface TokenClaims { // https://docs.microsoft.com/en-us/azure/active-
 	idp: string,
 	nbf: number;
 	exp: number;
+	home_oid?: string;
 	c_hash: string;
 	at_hash: string;
 	aio: string;

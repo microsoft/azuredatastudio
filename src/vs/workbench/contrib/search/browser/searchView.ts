@@ -802,7 +802,7 @@ export class SearchView extends ViewPane {
 			}
 		}
 
-		let navigator = this.tree.navigate(selected);
+		const navigator = this.tree.navigate(selected);
 
 		let next = navigator.next();
 		if (!next) {
@@ -1726,7 +1726,7 @@ export class SearchView extends ViewPane {
 					const selections = fileMatch.matches().map(m => new Selection(m.range().startLineNumber, m.range().startColumn, m.range().endLineNumber, m.range().endColumn));
 					const codeEditor = getCodeEditor(editor.getControl());
 					if (codeEditor) {
-						let multiCursorController = MultiCursorSelectionController.get(codeEditor);
+						const multiCursorController = MultiCursorSelectionController.get(codeEditor);
 						multiCursorController.selectAllUsingSelections(selections);
 					}
 				}

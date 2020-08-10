@@ -30,6 +30,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { IEditorProgressService } from 'vs/platform/progress/common/progress';
 import { attachInputBoxStyler } from 'vs/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { getFlavor } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
 
 @Component({
 	selector: 'explorer-widget',
@@ -67,8 +68,10 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 
 	ngOnInit() {
 		this._inited = true;
-
-		const placeholderLabel = this._config.context === 'database' ? nls.localize('seachObjects', "Search by name of type (t:, v:, f:, or sp:)") : nls.localize('searchDatabases', "Search databases");
+		const flavor = getFlavor(this._bootstrap.connectionManagementService.connectionInfo.serverInfo, this.logService, this._bootstrap.connectionManagementService.connectionInfo.providerId);
+		const placeholderLabel = this._config.context === 'database' ?
+			flavor && flavor.objectListHintText ? flavor.objectListHintText : nls.localize('seachObjects', "Search by name of type (t:, v:, f:, or sp:)")
+			: flavor && flavor.databaseListHintText ? flavor.databaseListHintText : nls.localize('searchDatabases', "Search databases");
 
 		const inputOptions: IInputOptions = {
 			placeholder: placeholderLabel,
