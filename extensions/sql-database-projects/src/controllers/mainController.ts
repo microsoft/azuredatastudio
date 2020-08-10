@@ -73,10 +73,15 @@ export default class MainController implements vscode.Disposable {
 		vscode.commands.registerCommand('sqlDatabaseProjects.delete', async (node: BaseProjectTreeItem) => { await this.projectsController.delete(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.exclude', async (node: FileNode | FolderNode) => { await this.projectsController.exclude(node); });
 
+		vscode.commands.registerCommand('sqlDatabaseProjects.expandAllNodes', async () => { await this.dbProjectTreeViewProvider.expandAllNodes(); });
+
 		IconPathHelper.setExtensionContext(this.extensionContext);
 
 		// init view
-		const treeView = vscode.window.createTreeView(SQL_DATABASE_PROJECTS_VIEW_ID, { treeDataProvider: this.dbProjectTreeViewProvider });
+		const treeView = vscode.window.createTreeView(SQL_DATABASE_PROJECTS_VIEW_ID, {
+			treeDataProvider: this.dbProjectTreeViewProvider,
+			showCollapseAll: true
+		});
 		this.dbProjectTreeViewProvider.setTreeView(treeView);
 
 		this.extensionContext.subscriptions.push(treeView);

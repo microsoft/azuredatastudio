@@ -39,6 +39,13 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 		return element.children;
 	}
 
+	public getParent(element: BaseProjectTreeItem): BaseProjectTreeItem {
+		if (!element.parent) {
+			throw new Error('Cannot access parent of provided tree item');
+		}
+		return element.parent;
+	}
+
 	/**
 	 * Constructs a new set of root nodes from a list of Projects
 	 * @param projects List of Projects
@@ -71,7 +78,13 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 		const projNode = this.roots.find(x => x instanceof ProjectRootTreeItem ? (<ProjectRootTreeItem>x).project === project : false);
 
 		if (projNode) {
-			this.treeView?.reveal(projNode, { focus: true, expand: true });
+			await this.treeView?.reveal(projNode, { focus: true, expand: true });
+		}
+	}
+
+	public async expandAllNodes(): Promise<void> {
+		for (const root of this.roots) {
+			await this.treeView?.reveal(root, { select: false, expand: true });
 		}
 	}
 }
