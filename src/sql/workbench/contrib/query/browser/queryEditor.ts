@@ -252,10 +252,10 @@ export class QueryEditor extends BaseEditor {
 			this.taskbar.pull(0);
 		}
 
-		// Create HTML Elements for the taskbar
 		const separator = Taskbar.createTaskbarSeparator();
 		let content: ITaskbarContent[];
 		const previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
+		// TODOKusto: needs to be changed appropriately
 		if (input.getDescription() === 'MSSQL') {
 			if (previewFeaturesEnabled) {
 				content = [
@@ -270,7 +270,8 @@ export class QueryEditor extends BaseEditor {
 					{ action: this._toggleSqlcmdMode }, // Preview
 					{ action: this._exportAsNotebookAction } // Preview
 				];
-			} else {
+			}
+			else {
 				content = [
 					{ action: this._runQueryAction },
 					{ action: this._cancelQueryAction },
@@ -280,7 +281,9 @@ export class QueryEditor extends BaseEditor {
 					{ action: this._listDatabasesAction }
 				];
 			}
-		} else { // TODOKusto: Add a proper check for Kusto
+		}
+		else {
+			// Actions without SQL specific actions.
 			content = [
 				{ action: this._runQueryAction },
 				{ action: this._cancelQueryAction },
