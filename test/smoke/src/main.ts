@@ -288,7 +288,6 @@ describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 		before(async function () {
 			const app = new Application(this.defaultOptions);
 			await app!.start(opts.web ? false : undefined);
-			await new Promise(r => setTimeout(r, 10000)); // add an arbrituary wait to address issues with timeouts from the extension host.
 			this.app = app;
 		});
 
