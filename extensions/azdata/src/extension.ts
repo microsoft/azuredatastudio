@@ -4,7 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { findAzdata } from './azdata';
+import { findAzdata, checkForAzdataUpdate } from './azdata';
+import * as loc from './localizedConstants';
 
 export async function activate(): Promise<void> {
 	const outputChannel = vscode.window.createOutputChannel('azdata');
@@ -13,7 +14,10 @@ export async function activate(): Promise<void> {
 
 async function checkForAzdata(outputChannel: vscode.OutputChannel): Promise<void> {
 	try {
-		await findAzdata(outputChannel);
+		const azdata = await findAzdata(outputChannel);
+		vscode.window.showInformationMessage(loc.foundExistingAzdata(azdata.path, azdata.version.raw));
+		// Don't block on this since we want the extension to finish activating without needing user input
+		checkForAzdataUpdate(azdata, outputChannel).catch(err => vscode.window.showWarningMessage(loc.updateError(err)));
 	} catch (err) {
 		// Don't block on this since we want the extension to finish activating without needing user input.
 		// Calls will be made to handle azdata not being installed

@@ -5,8 +5,10 @@
 
 import * as os from 'os';
 import * as vscode from 'vscode';
+import { SemVer } from 'semver';
 import { HttpClient } from './common/httpClient';
 import * as loc from './localizedConstants';
+
 import { executeCommand, executeSudoCommand } from './common/childProcess';
 import { searchForCmd } from './common/utils';
 
@@ -17,7 +19,7 @@ export const azdataUri = 'azdata-msi';
  */
 export interface IAzdata {
 	path: string,
-	version: string
+	version: SemVer
 }
 
 /**
@@ -36,7 +38,7 @@ export async function findAzdata(outputChannel: vscode.OutputChannel): Promise<I
 			default:
 				azdata = await findSpecificAzdata('azdata', outputChannel);
 		}
-		outputChannel.appendLine(loc.foundExistingAzdata(azdata.path, azdata.version));
+		outputChannel.appendLine(loc.foundExistingAzdata(azdata.path, azdata.version.raw));
 		return azdata;
 	} catch (err) {
 		outputChannel.appendLine(loc.couldNotFindAzdata(err));
@@ -69,6 +71,54 @@ export async function downloadAndInstallAzdata(outputChannel: vscode.OutputChann
 	} finally {
 		statusDisposable.dispose();
 	}
+}
+
+/**
+ * Checks whether a newer version of azdata is available - and if it is prompts the user to download and
+ * install it.
+ * @param currentAzdata The current version of azdata to check again
+ * @param outputChannel Channel used to display diagnostic information
+ */
+export async function checkForAzdataUpdate(currentAzdata: IAzdata, outputChannel: vscode.OutputChannel): Promise<void> {
+	const newVersion = await getLatestAzdataVersion(outputChannel);
+	switch (process.platform) {
+		case 'win32':
+			if (newVersion.compare(currentAzdata.version) === 1) {
+				const response = await vscode.window.showInformationMessage(loc.promptForAzdataUpgrade(newVersion.raw), loc.yes, loc.no);
+				if (response === loc.yes) {
+					await downloadAndInstallAzdata(outputChannel);
+				}
+			}
+			break;
+	}
+}
+
+/**
+ * Gets the latest azdata version available
+ * @param outputChannel Channel used to display diagnostic information
+ */
+async function getLatestAzdataVersion(outputChannel: vscode.OutputChannel): Promise<SemVer> {
+	outputChannel.appendLine(loc.checkingLatestAzdataVersion);
+	switch (process.platform) {
+		case 'win32':
+			return await getLatestAzdataVersionWin32(outputChannel);
+	}
+	return new SemVer('20.0.0'); // TODO Implement other platforms
+}
+
+/**
+ * Gets the latest azdata version for Windows clients
+ * @param outputChannel Channel used to display diagnostic information
+ */
+async function getLatestAzdataVersionWin32(outputChannel: vscode.OutputChannel): Promise<SemVer> {
+	// Get the filename of the resource for the aka.ms link that points to the latest azdata version.
+	// We don't want to actually download the file since that's going to be unnecessary most of the time
+	// so as an optimization just get the filename of the resource and check that.
+	const filename = await HttpClient.getFilename(`${azdataHostname}/${azdataUri}`, outputChannel);
+	// We expect the filename to be in a format similar to azdata-cli-20.0.0.msi,
+	// so to parse out the version trim off the starting text and the extension
+	const versionString = filename.replace(/^[^\d]*/, '').replace('.msi', '');
+	return new SemVer(versionString);
 }
 
 /**
@@ -114,7 +164,7 @@ async function installAzdataLinux(outputChannel: vscode.OutputChannel): Promise<
  */
 async function findAzdataWin32(outputChannel: vscode.OutputChannel): Promise<IAzdata> {
 	const promise = searchForCmd('azdata.cmd');
-	return findSpecificAzdata(await promise, outputChannel);
+	return findSpecificAzdata(`"${await promise}"`, outputChannel);
 }
 
 /**
@@ -134,9 +184,9 @@ async function findSpecificAzdata(path: string, outputChannel: vscode.OutputChan
  * Parses out the azdata version from the raw azdata version output
  * @param raw The raw version output from azdata --version
  */
-function parseVersion(raw: string): string {
+function parseVersion(raw: string): SemVer {
 	// Currently the version is a multi-line string that contains other version information such
 	// as the Python installation, with the first line being the version of azdata itself.
 	const lines = raw.split(os.EOL);
-	return lines[0].trim();
+	return new SemVer(lines[0].trim());
 }
