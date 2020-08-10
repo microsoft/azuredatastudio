@@ -30,14 +30,15 @@ export class RadioGroupLoadingComponentBuilder implements azdata.ComponentBuilde
 	}
 
 	async loadOptions(optionsInfo: OptionsInfo | (() => Promise<OptionsInfo>)): Promise<void> {
-		if (typeof optionsInfo !== 'object') {
-			optionsInfo = await optionsInfo();
-		}
 		this.component().loading = true;
 		this._optionsDivContainer.clearItems();
-		let options: (string[] | azdata.CategoryValue[]) = optionsInfo.values!;
-		let defaultValue: string = optionsInfo.defaultValue!;
 		try {
+			if (typeof optionsInfo !== 'object') {
+				optionsInfo = await optionsInfo();
+			}
+
+			let options: (string[] | azdata.CategoryValue[]) = optionsInfo.values!;
+			let defaultValue: string = optionsInfo.defaultValue!;
 			options.forEach((op: string | azdata.CategoryValue) => {
 				const option: azdata.CategoryValue = (typeof op === 'string')
 					? { name: op, displayName: op }

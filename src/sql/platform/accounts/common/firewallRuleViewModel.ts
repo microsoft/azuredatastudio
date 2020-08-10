@@ -11,6 +11,7 @@ import * as azdata from 'azdata';
 export class FirewallRuleViewModel {
 	public isIPAddressSelected: boolean;
 	public selectedAccount: azdata.Account | undefined;
+	public selectedTenantId: string | undefined;
 
 	private _defaultIPAddress?: string;
 	private _defaultFromSubnetIPRange?: string;
