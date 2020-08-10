@@ -67,7 +67,7 @@ steps:
   displayName: Run Unit Tests (Electron)
 
 # - script: |  {{SQL CARBON EDIT}} disable
-#     DISPLAY=:10 yarn test-browser --browser chromium
+#     DISPLAY=:10 yarn test-browser --browser chromium --tfs "Browser Unit Tests"
 #   displayName: Run Unit Tests (Browser)
 
 # - script: |  {{SQL CARBON EDIT}} disable
