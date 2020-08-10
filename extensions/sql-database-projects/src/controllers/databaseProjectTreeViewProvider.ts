@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import { BaseProjectTreeItem, SpacerTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { Project } from '../models/project';
+import * as constants from '../common/constants';
 
 /**
  * Tree view for database projects
@@ -41,7 +42,7 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 
 	public getParent(element: BaseProjectTreeItem): BaseProjectTreeItem {
 		if (!element.parent) {
-			throw new Error('Cannot access parent of provided tree item');
+			throw new Error(constants.parentTreeItemUnknown);
 		}
 		return element.parent;
 	}
