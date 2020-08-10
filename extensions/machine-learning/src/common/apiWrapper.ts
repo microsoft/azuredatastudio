@@ -99,7 +99,7 @@ export class ApiWrapper {
 		return azdata.accounts.getAllAccounts();
 	}
 
-	public getSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Thenable<{ token: string, tokenType?: string } | undefined> {
+	public getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Thenable<{ token: string, tokenType?: string } | undefined> {
 		return azdata.accounts.getAccountSecurityToken(account, tenant, resource);
 	}
 
