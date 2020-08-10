@@ -5,6 +5,7 @@
 
 import { ITreeViewDataProvider, ITreeItem as vsITreeItem, IViewDescriptor, ITreeView as vsITreeView } from 'vs/workbench/common/views';
 import { IConnectionProfile } from 'azdata';
+import { Event } from 'vs/base/common/event';
 
 export enum NodeType {
 	Server = 'Server',
@@ -31,10 +32,8 @@ export interface ITreeItem extends vsITreeItem {
 }
 
 export interface ITreeView extends vsITreeView {
-
 	collapse(element: ITreeItem): boolean
-	root: ITreeItem;
-
+	readonly onDidChangeSelection: Event<ITreeItem[]>;
 }
 
 export type TreeViewItemHandleArg = {

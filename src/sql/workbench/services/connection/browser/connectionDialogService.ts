@@ -450,11 +450,11 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				this.handleOnCancel(this._connectionDialog.newConnectionParams);
 			});
 			this._connectionDialog.onConnect((profile) => {
-				this.handleOnConnect(this._connectionDialog.newConnectionParams, profile);
+				this.handleOnConnect(this._connectionDialog.newConnectionParams, profile as IConnectionProfile);
 			});
 			this._connectionDialog.onShowUiComponent((input) => this.handleShowUiComponent(input));
 			this._connectionDialog.onInitDialog(() => this.handleInitDialog());
-			this._connectionDialog.onFillinConnectionInputs((input) => this.handleFillInConnectionInputs(input));
+			this._connectionDialog.onFillinConnectionInputs((input) => this.handleFillInConnectionInputs(input as IConnectionProfile));
 			this._connectionDialog.onResetConnection(() => this.handleProviderOnResetConnection());
 			this._connectionDialog.render();
 		}

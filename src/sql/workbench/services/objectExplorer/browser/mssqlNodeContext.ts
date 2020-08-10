@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { INodeContextValue } from 'sql/workbench/browser/parts/views/nodeContext';
+import { INodeContextValue } from 'sql/workbench/contrib/views/browser/nodeContext';
 import { RawContextKey, IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
