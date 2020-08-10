@@ -104,7 +104,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		id: commands.OE_EDIT_DATA_COMMAND_ID,
 		title: localize('editData', "Edit Data")
 	},
-	when: ContextKeyExpr.and(TreeNodeContextKey.NodeType.isEqualTo('Table'), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()))
+	when: ContextKeyExpr.and(TreeNodeContextKey.NodeType.isEqualTo('Table'), ConnectionContextKey.Provider.notEqualsTo('KUSTO'), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()))
 });
 
 MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
@@ -115,7 +115,9 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		title: localize('scriptCreate', "Script as Create")
 	},
 	when: ContextKeyExpr.or(
-		TreeNodeContextKey.NodeType.isEqualTo('Table'),
+		ContextKeyExpr.and(
+			TreeNodeContextKey.NodeType.isEqualTo(NodeType.Table),
+			ConnectionContextKey.Provider.notEqualsTo('KUSTO')),
 		TreeNodeContextKey.NodeType.isEqualTo('View'),
 		TreeNodeContextKey.NodeType.isEqualTo('Schema'),
 		TreeNodeContextKey.NodeType.isEqualTo('User'),
@@ -175,7 +177,9 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		title: localize('scriptDelete', "Script as Drop")
 	},
 	when: ContextKeyExpr.or(
-		TreeNodeContextKey.NodeType.isEqualTo(NodeType.Table),
+		ContextKeyExpr.and(
+			TreeNodeContextKey.NodeType.isEqualTo(NodeType.Table),
+			ConnectionContextKey.Provider.notEqualsTo('KUSTO')),
 		TreeNodeContextKey.NodeType.isEqualTo(NodeType.View),
 		TreeNodeContextKey.NodeType.isEqualTo(NodeType.Schema),
 		TreeNodeContextKey.NodeType.isEqualTo(NodeType.User),
