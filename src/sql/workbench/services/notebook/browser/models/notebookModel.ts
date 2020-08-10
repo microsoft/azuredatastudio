@@ -700,7 +700,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 		let oldDisplayName = this._activeClientSession && this._activeClientSession.kernel ? this._activeClientSession.kernel.name : undefined;
 		let nbKernelAlias: string;
-		if (kernelAlias[0] === displayName) {
+		if (kernelAlias.includes(displayName)) {
 			displayName = 'SQL';
 			nbKernelAlias = 'Kusto';
 		}

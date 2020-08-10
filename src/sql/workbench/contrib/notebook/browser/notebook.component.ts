@@ -410,7 +410,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 			let attachToContainer = document.createElement('li');
 			let attachToDropdown = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelReady,
-				this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService);
+				this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService, this._configurationService);
 			attachToDropdown.render(attachToContainer);
 			attachSelectBoxStyler(attachToDropdown, this.themeService);
 
@@ -474,7 +474,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 			let attachToContainer = document.createElement('div');
 			let attachToDropdown = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelReady,
-				this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService);
+				this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService, this._configurationService);
 			attachToDropdown.render(attachToContainer);
 			attachSelectBoxStyler(attachToDropdown, this.themeService);
 

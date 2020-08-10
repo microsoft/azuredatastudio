@@ -24,6 +24,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { URI } from 'vs/base/common/uri';
+import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 
 class TestClientSession extends ClientSessionStub {
 	private _errorState: boolean = false;
@@ -263,6 +264,7 @@ suite('Notebook Actions', function (): void {
 		let container: HTMLElement;
 		let notebookModel: TestNotebookModel;
 		let configurationService: TestConfigurationService;
+		let capabilitiesService: TestCapabilitiesService;
 		let notebookEditor: NotebookEditorStub;
 		let sandbox: sinon.SinonSandbox;
 		let setOptionsSpy: sinon.SinonSpy;
@@ -277,7 +279,7 @@ suite('Notebook Actions', function (): void {
 			notebookModel = new TestNotebookModel();
 			notebookEditor = new NotebookEditorStub({ model: notebookModel });
 			await notebookEditor.modelReady;
-			kernelsDropdown = new KernelsDropdown(container, contextViewProvider, notebookEditor.modelReady, configurationService);
+			kernelsDropdown = new KernelsDropdown(container, contextViewProvider, notebookEditor.modelReady, configurationService, capabilitiesService);
 			setOptionsSpy = sandbox.spy(kernelsDropdown, 'setOptions');
 		});
 
