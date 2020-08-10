@@ -205,12 +205,8 @@ export class ScrollableView extends Disposable {
 	}
 
 	private onScroll(e: ScrollEvent): void {
-		try {
-			const previousRenderRange = this.getRenderRange(this.lastRenderTop, this.lastRenderHeight);
-			this.render(previousRenderRange, e.scrollTop, e.height);
-		} catch (err) {
-			throw err;
-		}
+		const previousRenderRange = this.getRenderRange(this.lastRenderTop, this.lastRenderHeight);
+		this.render(previousRenderRange, e.scrollTop, e.height);
 	}
 
 	private getRenderRange(renderTop: number, renderHeight: number): IRange {
@@ -305,7 +301,7 @@ export class ScrollableView extends Disposable {
 			item.onDidInsertDisposable?.dispose();
 			if (item.view.onDidRemove) {
 				item.onDidRemoveDisposable = DOM.scheduleAtNextAnimationFrame(() => {
-					// we don't trust the items to be performant so don't interrupt our
+					// we don't trust the items to be performant so don't interrupt our operations
 					item.view.onDidRemove();
 				});
 			}
