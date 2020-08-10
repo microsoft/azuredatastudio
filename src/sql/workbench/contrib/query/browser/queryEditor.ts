@@ -253,27 +253,34 @@ export class QueryEditor extends BaseEditor {
 		}
 
 		// Create HTML Elements for the taskbar
-		let separator = Taskbar.createTaskbarSeparator();
-
-		// Set the content in the order we desire
+		const separator = Taskbar.createTaskbarSeparator();
 		let content: ITaskbarContent[];
-		// TODOKusto: needs to be changed appropriately
+		const previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
 		if (input.getDescription() === 'MSSQL') {
-			content = [
-				{ action: this._runQueryAction },
-				{ action: this._cancelQueryAction },
-				{ element: separator },
-				{ action: this._toggleConnectDatabaseAction },
-				{ action: this._changeConnectionAction },
-				{ action: this._listDatabasesAction },
-				{ element: separator },
-				{ action: this._estimatedQueryPlanAction },
-				{ action: this._toggleSqlcmdMode },
-				{ action: this._exportAsNotebookAction }
-			];
-		}
-		else {
-			// Actions without SQL specific actions.
+			if (previewFeaturesEnabled) {
+				content = [
+					{ action: this._runQueryAction },
+					{ action: this._cancelQueryAction },
+					{ element: separator },
+					{ action: this._toggleConnectDatabaseAction },
+					{ action: this._changeConnectionAction },
+					{ action: this._listDatabasesAction },
+					{ element: separator },
+					{ action: this._estimatedQueryPlanAction }, // Preview
+					{ action: this._toggleSqlcmdMode }, // Preview
+					{ action: this._exportAsNotebookAction } // Preview
+				];
+			} else {
+				content = [
+					{ action: this._runQueryAction },
+					{ action: this._cancelQueryAction },
+					{ element: separator },
+					{ action: this._toggleConnectDatabaseAction },
+					{ action: this._changeConnectionAction },
+					{ action: this._listDatabasesAction }
+				];
+			}
+		} else { // TODOKusto: Add a proper check for Kusto
 			content = [
 				{ action: this._runQueryAction },
 				{ action: this._cancelQueryAction },
@@ -282,12 +289,6 @@ export class QueryEditor extends BaseEditor {
 				{ action: this._changeConnectionAction },
 				{ action: this._listDatabasesAction }
 			];
-		}
-
-		// Remove the estimated query plan action if preview features are not enabled
-		let previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
-		if (!previewFeaturesEnabled) {
-			content.splice(7, 1);
 		}
 
 		this.taskbar.setContent(content);
