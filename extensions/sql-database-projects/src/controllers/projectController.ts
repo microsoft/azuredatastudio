@@ -65,7 +65,11 @@ export class ProjectsController {
 			// open any reference projects (don't need to worry about circular dependencies because those aren't allowed)
 			const referencedProjects = newProject.databaseReferences.filter(r => r.databaseReferenceType === DatabaseReferenceType.project);
 			for (const proj of referencedProjects) {
-				await this.openProject(vscode.Uri.file(path.join(newProject.projectFolderPath, proj.fsUri.fsPath)));
+				try {
+					await this.openProject(vscode.Uri.file(path.join(newProject.projectFolderPath, proj.fsUri.fsPath)));
+				} catch (e) {
+					vscode.window.showErrorMessage(e.message);
+				}
 			}
 
 			// Update for round tripping as needed
