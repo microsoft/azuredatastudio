@@ -116,7 +116,7 @@ describe('getDatabaseStateDisplayText Method Tests', function () {
 		should(getDatabaseStateDisplayText('RECOVERING')).equal(loc.recovering);
 		should(getDatabaseStateDisplayText('RECOVERY PENDING')).equal(loc.recoveryPending);
 		should(getDatabaseStateDisplayText('SUSPECT')).equal(loc.suspect);
-		should(getDatabaseStateDisplayText('EMERGENCY')).equal(loc.emergecy);
+		should(getDatabaseStateDisplayText('EMERGENCY')).equal(loc.emergency);
 	});
 
 	it('State should stay the same for unknown value', function (): void {

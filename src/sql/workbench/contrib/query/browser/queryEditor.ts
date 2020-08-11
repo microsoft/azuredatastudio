@@ -86,6 +86,7 @@ export class QueryEditor extends BaseEditor {
 	private _actualQueryPlanAction: actions.ActualQueryPlanAction;
 	private _listDatabasesActionItem: actions.ListDatabasesActionItem;
 	private _toggleSqlcmdMode: actions.ToggleSqlCmdModeAction;
+	private _exportAsNotebookAction: actions.ExportAsNotebookAction;
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -183,6 +184,7 @@ export class QueryEditor extends BaseEditor {
 		this._estimatedQueryPlanAction = this.instantiationService.createInstance(actions.EstimatedQueryPlanAction, this);
 		this._actualQueryPlanAction = this.instantiationService.createInstance(actions.ActualQueryPlanAction, this);
 		this._toggleSqlcmdMode = this.instantiationService.createInstance(actions.ToggleSqlCmdModeAction, this, false);
+		this._exportAsNotebookAction = this.instantiationService.createInstance(actions.ExportAsNotebookAction, this);
 
 		this.setTaskbarContent();
 
@@ -254,25 +256,31 @@ export class QueryEditor extends BaseEditor {
 
 	private setTaskbarContent(): void {
 		// Create HTML Elements for the taskbar
-		let separator = Taskbar.createTaskbarSeparator();
-
-		// Set the content in the order we desire
-		let content: ITaskbarContent[] = [
-			{ action: this._runQueryAction },
-			{ action: this._cancelQueryAction },
-			{ element: separator },
-			{ action: this._toggleConnectDatabaseAction },
-			{ action: this._changeConnectionAction },
-			{ action: this._listDatabasesAction },
-			{ element: separator },
-			{ action: this._estimatedQueryPlanAction },
-			{ action: this._toggleSqlcmdMode }
-		];
-
-		// Remove the estimated query plan action if preview features are not enabled
-		let previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
-		if (!previewFeaturesEnabled) {
-			content = content.slice(0, -2);
+		const separator = Taskbar.createTaskbarSeparator();
+		let content: ITaskbarContent[];
+		const previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
+		if (previewFeaturesEnabled) {
+			content = [
+				{ action: this._runQueryAction },
+				{ action: this._cancelQueryAction },
+				{ element: separator },
+				{ action: this._toggleConnectDatabaseAction },
+				{ action: this._changeConnectionAction },
+				{ action: this._listDatabasesAction },
+				{ element: separator },
+				{ action: this._estimatedQueryPlanAction }, // Preview
+				{ action: this._toggleSqlcmdMode }, // Preview
+				{ action: this._exportAsNotebookAction } // Preview
+			];
+		} else {
+			content = [
+				{ action: this._runQueryAction },
+				{ action: this._cancelQueryAction },
+				{ element: separator },
+				{ action: this._toggleConnectDatabaseAction },
+				{ action: this._changeConnectionAction },
+				{ action: this._listDatabasesAction }
+			];
 		}
 
 		this.taskbar.setContent(content);

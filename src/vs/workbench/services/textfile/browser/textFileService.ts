@@ -462,7 +462,9 @@ export abstract class AbstractTextFileService extends Disposable implements ITex
 	}
 
 	suggestFilename(mode: string, untitledName: string) {
-		const extension = this.modeService.getExtensions(mode)[0];
+		// {{SQL CARBON EDIT}} - pass language not mode for getting the extension.
+		const langName = this.modeService.getLanguageName(mode);
+		const extension = langName ? this.modeService.getExtensions(langName)[0] : undefined;
 		if (extension) {
 			if (!untitledName.endsWith(extension)) {
 				return untitledName + extension;
