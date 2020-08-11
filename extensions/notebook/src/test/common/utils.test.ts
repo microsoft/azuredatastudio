@@ -45,18 +45,8 @@ describe('Utils Tests', function () {
 		should(utils.getErrorMessage(errMsg)).equal(errMsg);
 	});
 
-	it('getOSPlatform', async () => {
-		should(utils.getOSPlatform()).not.throw();
-		should(utils.getOSPlatform('win32')).equal(utils.Platform.Windows);
-		should(utils.getOSPlatform('linux')).equal(utils.Platform.Linux);
-		should(utils.getOSPlatform('darwin')).equal(utils.Platform.Mac);
-	});
-
 	it('getOSPlatformId', async () => {
 		should(utils.getOSPlatformId()).not.throw();
-		should(utils.getOSPlatformId('win32')).equal('win-x64');
-		should(utils.getOSPlatformId('linux')).equal('linux-x64');
-		should(utils.getOSPlatformId('darwin')).equal('osx');
 	});
 
 	describe('comparePackageVersions', () => {
