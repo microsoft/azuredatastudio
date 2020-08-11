@@ -304,11 +304,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		try {
 			await vscode.commands.executeCommand(constants.BuiltInCommands.SetContext, constants.unsavedBooksContextKey, true);
 			let untitledFileName: vscode.Uri = this.getUntitledNotebookUri(resource);
-			let document = await vscode.workspace.openTextDocument(resource);
-			let initialContent = document.getText();
+			let document: vscode.TextDocument = await vscode.workspace.openTextDocument(resource);
 			await azdata.nb.showNotebookDocument(untitledFileName, {
 				connectionProfile: null,
-				initialContent: initialContent,
+				initialContent: document.getText(),
 				initialDirtyState: false
 			});
 		} catch (e) {
