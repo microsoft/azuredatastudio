@@ -222,7 +222,8 @@ const externalExtensions = [
     'sql-database-projects',
     'machine-learning',
     'sql-assessment',
-    'asde-deployment'
+    'asde-deployment',
+    'sql-migration'
 ];
 // extensions that require a rebuild since they have native parts
 const rebuildExtensions = [

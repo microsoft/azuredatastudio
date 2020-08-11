@@ -96,8 +96,8 @@ steps:
       set -e
       yarn gulp package-rebuild-extensions
       yarn gulp vscode-darwin-min-ci
-      # yarn gulp vscode-reh-darwin-min-ci
-      # yarn gulp vscode-reh-web-darwin-min-ci
+      yarn gulp vscode-reh-darwin-min-ci
+      yarn gulp vscode-reh-web-darwin-min-ci
     displayName: Build
     env:
       VSCODE_MIXIN_PASSWORD: $(github-distro-mixin-password)
