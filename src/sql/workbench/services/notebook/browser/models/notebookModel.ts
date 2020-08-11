@@ -635,7 +635,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._language = language.toLowerCase();
 	}
 
-	public changeKernel(displayName: string, oldKernel?: nb.IKernel, kernelAlias?: string[]): void {
+	public changeKernel(displayName: string, kernelAlias?: string[]): void {
 		this._contextsLoadingEmitter.fire();
 		this.doChangeKernel(displayName, kernelAlias, true).catch(e => this.logService.error(e));
 	}
@@ -647,7 +647,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 		let oldDisplayName = this._activeClientSession && this._activeClientSession.kernel ? this._activeClientSession.kernel.name : undefined;
 		let nbKernelAlias: string;
-		if (kernelAlias[0] === displayName) {
+		if (kernelAlias.includes(displayName)) {
 			displayName = 'SQL';
 			nbKernelAlias = 'Kusto';
 		}

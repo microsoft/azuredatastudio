@@ -368,7 +368,7 @@ export class KernelsDropdown extends SelectBox {
 
 	public doChangeKernel(displayName: string): void {
 		this.setOptions([msgChanging], 0);
-		this.model.changeKernel(displayName, undefined, kernelAlias);
+		this.model.changeKernel(displayName, kernelAlias);
 	}
 
 	private getAllKernelConfigValue(): void {
