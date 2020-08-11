@@ -284,7 +284,7 @@ export function getUserHome(): string | undefined {
 	return process.env.HOME || process.env.USERPROFILE;
 }
 
-export function getKeuValueString(key: string, value: string, separator: string = '='): string {
+export function getKeyValueString(key: string, value: string, separator: string = '='): string {
 	return `${key}${separator}${value}`;
 }
 
@@ -300,7 +300,7 @@ export function getServerPort(connection: azdata.connection.ConnectionProfile): 
 	}
 }
 
-export function getServeName(connection: azdata.connection.ConnectionProfile): string {
+export function getServerName(connection: azdata.connection.ConnectionProfile): string {
 	if (!connection) {
 		return '';
 	}

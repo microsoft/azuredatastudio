@@ -66,20 +66,20 @@ export class SqlPythonPackageManageProvider extends SqlPackageManageProviderBase
 		let connectionParts: string[] = [];
 
 		if (connection) {
-			connectionParts.push(utils.getKeuValueString('driver', constants.supportedODBCDriver));
+			connectionParts.push(utils.getKeyValueString('driver', `"${constants.supportedODBCDriver}"`));
 
 			let port = utils.getServerPort(connection);
-			let server = utils.getServeName(connection);
+			let server = utils.getServerName(connection);
 			if (databaseName) {
-				connectionParts.push(utils.getKeuValueString('database', `"${databaseName}"`));
+				connectionParts.push(utils.getKeyValueString('database', `"${databaseName}"`));
 			}
 			if (connection.userName) {
-				connectionParts.push(utils.getKeuValueString('uid', `"${connection.userName}"`));
-				connectionParts.push(utils.getKeuValueString('pwd', `"${credentials[azdata.ConnectionOptionSpecialType.password]}"`));
+				connectionParts.push(utils.getKeyValueString('uid', `"${connection.userName}"`));
+				connectionParts.push(utils.getKeyValueString('pwd', `"${credentials[azdata.ConnectionOptionSpecialType.password]}"`));
 			}
 
-			connectionParts.push(utils.getKeuValueString('server', `"${server}"`));
-			connectionParts.push(utils.getKeuValueString('port', port));
+			connectionParts.push(utils.getKeyValueString('server', `"${server}"`));
+			connectionParts.push(utils.getKeyValueString('port', port));
 
 			let pythonCommandScript = scriptMode === ScriptMode.Install ?
 				`pkgmanager.install(package="${packageDetails.name}", version="${packageDetails.version}")` :
@@ -87,7 +87,7 @@ export class SqlPythonPackageManageProvider extends SqlPackageManageProviderBase
 
 			let scripts: string[] = [
 				'import sqlmlutils',
-				`connection = sqlmlutils.ConnectionInfo(${connectionParts.join(',')}`,
+				`connection = sqlmlutils.ConnectionInfo(${connectionParts.join(',')})`,
 				'pkgmanager = sqlmlutils.SQLPackageManager(connection)',
 				pythonCommandScript
 			];

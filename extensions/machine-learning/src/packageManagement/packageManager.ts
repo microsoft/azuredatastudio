@@ -189,14 +189,17 @@ export class PackageManager {
 			const separator = '=';
 			let connectionParts: string[] = [];
 			if (connection) {
-				connectionParts.push(utils.getKeuValueString('DRIVER', `{${constants.supportedODBCDriver}}`, separator));
+				connectionParts.push(utils.getKeyValueString('DRIVER', `{${constants.supportedODBCDriver}}`, separator));
 
 				if (connection.userName) {
-					connectionParts.push(utils.getKeuValueString('UID', connection.userName, separator));
-					connectionParts.push(utils.getKeuValueString('PWD', credentials[azdata.ConnectionOptionSpecialType.password], separator));
+					connectionParts.push(utils.getKeyValueString('UID', connection.userName, separator));
+					connectionParts.push(utils.getKeyValueString('PWD', credentials[azdata.ConnectionOptionSpecialType.password], separator));
+				} else {
+					connectionParts.push(utils.getKeyValueString('Trusted_Connection', 'yes', separator));
+
 				}
 
-				connectionParts.push(utils.getKeuValueString('SERVER', connection.serverName, separator));
+				connectionParts.push(utils.getKeyValueString('SERVER', connection.serverName, separator));
 			}
 
 			let scripts: string[] = [
