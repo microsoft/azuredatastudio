@@ -9,15 +9,34 @@ import { HttpClient } from './common/httpClient';
 import * as loc from './localizedConstants';
 import { executeCommand, executeSudoCommand } from './common/childProcess';
 import { searchForCmd } from './common/utils';
+import { AzdataOutput } from './typings/azdata';
 
 export const azdataHostname = 'https://aka.ms';
 export const azdataUri = 'azdata-msi';
-/**
- * Information about an azdata installation
- */
+
 export interface IAzdata {
 	path: string,
-	version: string
+	version: string,
+	/**
+	 * Executes azdata with the specified arguments (e.g. --version) and returns the result
+	 * @param args The args to pass to azdata
+	 * @param parseResult A function used to parse out the raw result into the desired shape
+	 */
+	executeCommand<R>(args: string[], parseResult: (result: any) => R[]): Promise<AzdataOutput<R>>
+}
+
+class AzdataTool implements IAzdata {
+	constructor(public path: string, public version: string, private _outputChannel: vscode.OutputChannel) { }
+
+	public async executeCommand<R>(args: string[], parseResult: (result: any) => R[]): Promise<AzdataOutput<R>> {
+		const output = JSON.parse((await executeCommand(`"${this.path}"`, args.concat(['--output', 'json']), this._outputChannel)).stdout);
+		return {
+			logs: <string[]>output.log,
+			stdout: <string[]>output.stdout,
+			stderr: <string[]>output.stderr,
+			result: parseResult(output.result)
+		};
+	}
 }
 
 /**
@@ -124,10 +143,7 @@ async function findAzdataWin32(outputChannel: vscode.OutputChannel): Promise<IAz
  */
 async function findSpecificAzdata(path: string, outputChannel: vscode.OutputChannel): Promise<IAzdata> {
 	const versionOutput = await executeCommand(path, ['--version'], outputChannel);
-	return {
-		path: path,
-		version: parseVersion(versionOutput.stdout)
-	};
+	return new AzdataTool(path, parseVersion(versionOutput.stdout), outputChannel);
 }
 
 /**
