@@ -29,6 +29,20 @@ export class SourceConfigurationPage extends MigrationWizardPage {
 	}
 
 	private async registerContent(view: azdata.ModelView) {
+		let input = view.modelBuilder.inputBox();
+		input = input.withProperties<azdata.InputBoxProperties>({
+			placeHolder: 'some input'
+		});
+		const form = view.modelBuilder.formContainer().withFormItems(
+			[
+				{
+					component: input.component(),
+					title: 'input title'
+				}
+			]
+		).component();
 
+
+		await view.initializeModel(form);
 	}
 }
