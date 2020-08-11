@@ -8,7 +8,7 @@ import * as should from 'should';
 import * as sinon from 'sinon';
 import * as TypeMoq from 'typemoq';
 import { JupyterServerInstallation, PythonPkgDetails } from '../../jupyter/jupyterServerInstallation';
-import uuid = require('uuid');
+import * as uuid from 'uuid';
 
 describe('Jupyter Server Installation', function () {
 	let outputChannelStub: TypeMoq.IMock<vscode.OutputChannel>;
@@ -28,7 +28,7 @@ describe('Jupyter Server Installation', function () {
 
 	it('Get pip packages', async function() {
 		// Should return nothing if passed an invalid python path
-		let fakePath = uuid.v4().replace('-', '');
+		let fakePath = uuid.v4();
 		let pkgResult = await installation.getInstalledPipPackages(fakePath);
 		should(pkgResult).not.be.undefined();
 		should(pkgResult.length).be.equal(0);
@@ -40,6 +40,7 @@ describe('Jupyter Server Installation', function () {
 		should(pkgResult.length).be.equal(0);
 
 		// Should return nothing on error
+		sinon.restore();
 		sinon.stub(JupyterServerInstallation, 'isPythonInstalled').returns(true);
 		sinon.stub(installation, 'executeBufferedCommand').rejects(new Error('Expected test failure.'));
 		pkgResult = await installation.getInstalledPipPackages();
@@ -48,6 +49,7 @@ describe('Jupyter Server Installation', function () {
 		outputChannelStub.verify(c => c.appendLine(TypeMoq.It.isAnyString()), TypeMoq.Times.once());
 
 		// Normal use case
+		sinon.restore();
 		let testPackages: PythonPkgDetails[] = [{
 			name: 'TestPkg1',
 			version: '1.2.3'
@@ -55,6 +57,7 @@ describe('Jupyter Server Installation', function () {
 			name: 'TestPkg2',
 			version: '4.5.6'
 		}];
+		sinon.stub(JupyterServerInstallation, 'isPythonInstalled').returns(true);
 		sinon.stub(installation, 'executeBufferedCommand').returns(Promise.resolve(JSON.stringify(testPackages)));
 		pkgResult = await installation.getInstalledPipPackages();
 		should(pkgResult).be.deepEqual(testPackages);
