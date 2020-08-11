@@ -6,13 +6,13 @@
 import { ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService, createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { Extensions as ViewContainerExtensions, IViewsRegistry, IViewDescriptorService, IViewsService } from 'vs/workbench/common/views';
+import { Extensions as ViewContainerExtensions, IViewsRegistry, IViewDescriptorService } from 'vs/workbench/common/views';
 import { NotebookSearchResultsView } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/searchResultsViewPane';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { localize } from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { MenuId } from 'vs/platform/actions/common/actions';
-import { SimpleSearchWidget, IViewExplorerSearchOptions, ISearchResultsView } from 'sql/workbench/contrib/searchViewPane/browser/searchWidget/simpleSearchWidget';
+import { SimpleSearchWidget, IViewExplorerSearchOptions } from 'sql/workbench/contrib/searchViewPane/browser/searchWidget/simpleSearchWidget';
 import { IConfigurationRegistry, Extensions as ConfigExtensions, ConfigurationScope } from 'vs/platform/configuration/common/configurationRegistry';
 import { isMacintosh } from 'vs/base/common/platform';
 import { SearchSortOrder } from 'vs/workbench/services/search/common/search';
@@ -31,7 +31,7 @@ export interface ISearchWidgetService {
 	searchResultsView: Map<string, any>;
 	registerSearchWidget(container: HTMLElement, pane: ViewPaneContainer, params: ISearchViewPaneOptions): void;
 	getSearchWidget(VIEWLET_ID: string): any | undefined;
-	getSearchResultsView(parentConatiner: ViewPaneContainer): any | undefined;
+	getSearchResultsViewID(parentConatiner: ViewPaneContainer): string | undefined;
 }
 export class SearchWidgetService extends Disposable implements ISearchWidgetService {
 
@@ -41,7 +41,6 @@ export class SearchWidgetService extends Disposable implements ISearchWidgetServ
 	constructor(
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
 		@IViewDescriptorService protected viewDescriptorService: IViewDescriptorService,
-		@IViewsService private readonly viewsService: IViewsService,
 	) {
 		super();
 		this.searchWidgets = new Map<string, any>();
@@ -53,48 +52,34 @@ export class SearchWidgetService extends Disposable implements ISearchWidgetServ
 	}
 
 	registerSearchWidget(container: HTMLElement, pane: ViewPaneContainer, params: ISearchViewPaneOptions): void {
+		let searchWidget = this._register(this._instantiationService.createInstance(SimpleSearchWidget, container, <IViewExplorerSearchOptions>{
+			value: '',
+			replaceValue: undefined,
+			isRegex: false,
+			isCaseSensitive: false,
+			isWholeWords: false,
+			searchHistory: [],
+			replaceHistory: [],
+			preserveCase: false,
+			showSearchResultsPane: params.showSearchResultsPane,
+		}, pane, this.getSearchResultsViewID(pane)));
+
 		if (!this.searchWidgets.get(params.VIEWLET_ID)) {
-			let searchWidget = this._register(this._instantiationService.createInstance(SimpleSearchWidget, container, <IViewExplorerSearchOptions>{
-				value: '',
-				replaceValue: undefined,
-				isRegex: false,
-				isCaseSensitive: false,
-				isWholeWords: false,
-				searchHistory: [],
-				replaceHistory: [],
-				preserveCase: false,
-				showSearchResultsPane: params.showSearchResultsPane,
-			}, pane, params.VIEWLET_ID));
-
 			this.searchWidgets.set(params.VIEWLET_ID, searchWidget);
-			if (params.showSearchResultsPane) {
-				this.registerSearchResultsView(params);
-				searchWidget.SearchView = this.getSearchResultsView(pane);
+		}
 
-				//register search results view specific stuff.
-				if (searchWidget.searchView) {
-					this._register(searchWidget.onDidHeightChange(() => searchWidget.searchView?.reLayout()));
+		if (params.showSearchResultsPane) {
+			this.registerSearchResultsView(params);
+		}
 
-					this._register(searchWidget.onPreserveCaseChange(async (state) => {
-						if (searchWidget.searchView?.searchViewModel) {
-							searchWidget.searchView.searchViewModel.preserveCase = state;
-							await searchWidget.searchView.refreshTree();
-						}
-					}));
+		if (params.onSearchSubmit) {
+			searchWidget.onSearchSubmit(options => params.onSearchSubmit(options));
 
-					this._register(searchWidget.searchInput.onInput(() => searchWidget.searchView?.updateActions()));
-				}
-			}
+			searchWidget.searchInput.onDidOptionChange((options) => params.onSearchSubmit(options));
+		}
 
-			if (params.onSearchSubmit) {
-				searchWidget.onSearchSubmit(options => params.onSearchSubmit(options));
-
-				searchWidget.searchInput.onDidOptionChange((options) => params.onSearchSubmit(options));
-			}
-
-			if (params.onSearchCancel) {
-				searchWidget.onSearchCancel((focus) => params.onSearchCancel(focus));
-			}
+		if (params.onSearchCancel) {
+			searchWidget.onSearchCancel((focus) => params.onSearchCancel(focus));
 		}
 	}
 
@@ -106,7 +91,7 @@ export class SearchWidgetService extends Disposable implements ISearchWidgetServ
 				let searchResultsView = new SyncDescriptor(NotebookSearchResultsView);
 				viewDescriptors.push({
 					id: NotebookSearchResultsView.ID,
-					name: localize('notebookExplorer.searchResults', "Search Results"),
+					name: localize('notebookExplorer.searchResultsTitle', "Search Results"),
 					ctorDescriptor: searchResultsView,
 					weight: 100,
 					canToggleVisibility: true,
@@ -121,9 +106,9 @@ export class SearchWidgetService extends Disposable implements ISearchWidgetServ
 		}
 	}
 
-	getSearchResultsView(parentConatiner: ViewPaneContainer): ISearchResultsView {
+	getSearchResultsViewID(parentConatiner: ViewPaneContainer): string {
 		switch (parentConatiner.getId()) {
-			case 'workbench.view.notebooks': return this.viewsService.getActiveViewWithId(NotebookSearchResultsView.ID); //<NotebookSearchResultsView>this.searchResultsView.get(parentConatiner.getId()); //<NotebookSearchResultsView>parentConatiner.getView(NotebookSearchResultsView.ID);
+			case 'workbench.view.notebooks': return NotebookSearchResultsView.ID;
 			default: return undefined;
 		}
 	}

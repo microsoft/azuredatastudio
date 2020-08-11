@@ -30,7 +30,6 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { QueryBuilder, ITextQueryBuilderOptions } from 'vs/workbench/contrib/search/common/queryBuilder';
 import { ITextQuery, IPatternInfo, ISearchConfigurationProperties } from 'vs/workbench/services/search/common/search';
 import { getOutOfWorkspaceEditorResources } from 'vs/workbench/contrib/search/common/search';
-import { NotebookSearchResultsView } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/searchResultsViewPane';
 import { IChangeEvent, SearchModel } from 'vs/workbench/contrib/search/common/searchModel';
 
 export interface IViewExplorerSearchOptions extends ISearchWidgetOptions {
@@ -48,13 +47,18 @@ export interface ISearchResultsView extends IView {
 	refreshTree(event?: IChangeEvent): Promise<void>;
 }
 
+export function isSearchResultsView(object: any): ISearchResultsView {
+	return object?.searchViewModel ? object : undefined;
+}
 export class SimpleSearchWidget extends Widget {
 
 	domNode!: HTMLElement;
 
 	searchInput!: FindInput;
 	searchInputFocusTracker!: IFocusTracker;
-	// searchView: ISearchResultsView;
+
+	private searchView: ISearchResultsView;
+	private showSearchResultsView: boolean = false;
 	private inputBoxFocused: IContextKey<boolean>;
 	public triggerQueryDelayer: Delayer<void>;
 	private pauseSearching = false;
@@ -84,7 +88,7 @@ export class SimpleSearchWidget extends Widget {
 		container: HTMLElement,
 		options: IViewExplorerSearchOptions,
 		private parentContainer: ViewPaneContainer,
-		viewletId: string,
+		public searchViewID: string,
 		@IContextViewService private readonly contextViewService: IContextViewService,
 		@IThemeService private readonly themeService: IThemeService,
 		@IContextKeyService private readonly contextKeyService: IContextKeyService,
@@ -115,17 +119,25 @@ export class SimpleSearchWidget extends Widget {
 		this._register(this.onSearchCancel(({ focus }) => this.cancelSearch(focus)));
 		this._register(this.searchInput.onDidOptionChange(() => this.triggerQueryChange()));
 
-
 		this.trackInputBox(this.searchInputFocusTracker);
+		this.showSearchResultsView = options.showSearchResultsPane;
 	}
 
-	public get searchView(): ISearchResultsView | undefined {
-		return <NotebookSearchResultsView>this.parentContainer.getView(NotebookSearchResultsView.ID) ?? undefined;
-	}
+	private setSearchView(): void {
+		if (!this.searchView) {
+			this.searchView = isSearchResultsView(this.parentContainer.getView(this.searchViewID)) ?? undefined;
 
-	public set SearchView(searchResultsView: ISearchResultsView) {
-		//this.searchView = searchResultsView;
-		// return <NotebookSearchResultsView>this.parentContainer.getView(NotebookSearchResultsView.ID) ?? undefined;
+			this._register(this.onDidHeightChange(() => this.searchView?.reLayout()));
+
+			this._register(this.onPreserveCaseChange(async (state) => {
+				if (this.searchView?.searchViewModel) {
+					this.searchView.searchViewModel.preserveCase = state;
+					await this.searchView.refreshTree();
+				}
+			}));
+
+			this._register(this.searchInput.onInput(() => this.searchView?.updateActions()));
+		}
 	}
 
 	searchInputHasFocus(): boolean {
@@ -299,6 +311,11 @@ export class SimpleSearchWidget extends Widget {
 			expandPatterns: true
 		};
 
+		if (this.showSearchResultsView && !this.searchView) {
+			this.setSearchView();
+			this.searchView.parent = this.parentContainer;
+		}
+
 		const onQueryValidationError = (err: Error) => {
 			this.searchInput.showMessage({ content: err.message, type: MessageType.ERROR });
 			this.searchView?.clearSearchResults(false);
@@ -312,7 +329,7 @@ export class SimpleSearchWidget extends Widget {
 			return;
 		}
 
-		this.searchView.parent = this.parentContainer;
+
 		this.searchView?.validateAndSearch(query, this).then(() => {
 			if (!preserveFocus) {
 				this.focus(false); // focus back to input field
