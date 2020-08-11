@@ -7,9 +7,8 @@ import * as vscode from 'vscode';
 import * as should from 'should';
 import * as sinon from 'sinon';
 import * as TypeMoq from 'typemoq';
-import { JupyterServerInstallation, PythonPkgDetails } from '../../jupyter/jupyterServerInstallation';
 import * as uuid from 'uuid';
-import { Type } from 'js-yaml';
+import { JupyterServerInstallation, PythonPkgDetails } from '../../jupyter/jupyterServerInstallation';
 
 describe('Jupyter Server Installation', function () {
 	let outputChannelStub: TypeMoq.IMock<vscode.OutputChannel>;
@@ -65,7 +64,33 @@ describe('Jupyter Server Installation', function () {
 	});
 
 	it('Install pip package', async function() {
+		let commandStub = sinon.stub(installation, 'executeStreamedCommand').resolves();
 
+		// Should not execute any commands when passed an empty package list
+		await should(installation.installPipPackages(undefined, false)).be.resolved();
+		should(commandStub.called).be.false();
+
+		await should(installation.installPipPackages([], false)).be.resolved();
+		should(commandStub.called).be.false();
+
+		// Install package using exact version
+		let testPackages = [{
+			name: 'TestPkg1',
+			version: '1.2.3'
+		}, {
+			name: 'TestPkg2',
+			version: '4.5.6'
+		}];
+		await should(installation.installPipPackages(testPackages, false)).be.resolved();
+		should(commandStub.calledOnce).be.true();
+		let commandStr = commandStub.args[0][0] as string;
+		should(commandStr.includes('"TestPkg1==1.2.3" "TestPkg2==4.5.6"')).be.true();
+
+		// Install package using minimum version
+		await should(installation.installPipPackages(testPackages, true)).be.resolved();
+		should(commandStub.calledTwice).be.true();
+		commandStr = commandStub.args[1][0] as string;
+		should(commandStr.includes('"TestPkg1>=1.2.3" "TestPkg2>=4.5.6"')).be.true();
 	});
 
 	it('Get conda packages', async function() {
