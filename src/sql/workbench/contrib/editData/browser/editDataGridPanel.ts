@@ -472,7 +472,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					this.dirtyCells = [];
 				}
 				//allow for the grid to render fully before returning.
-				setTimeout(() => resolve(), 300);
+				setTimeout(() => resolve(), 500);
 			}, this.refreshGridTimeoutInMs);
 		});
 	}
