@@ -121,8 +121,8 @@ export interface IEndpoint {
 	protocol: string;
 }
 
-export function getOSPlatform(): Platform {
-	switch (process.platform) {
+export function getOSPlatform(platform?: NodeJS.Platform): Platform {
+	switch (platform || process.platform) {
 		case 'win32':
 			return Platform.Windows;
 		case 'darwin':
@@ -134,9 +134,9 @@ export function getOSPlatform(): Platform {
 	}
 }
 
-export function getOSPlatformId(): string {
+export function getOSPlatformId(platform?: NodeJS.Platform): string {
 	let platformId = undefined;
-	switch (process.platform) {
+	switch (platform || process.platform) {
 		case 'win32':
 			platformId = 'win-x64';
 			break;
