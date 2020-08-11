@@ -14,6 +14,7 @@ import * as loc from '../localizedConstants';
 
 export type ControllerInfo = {
 	url: string,
+	name: string,
 	username: string,
 	rememberPassword: boolean,
 	resources: ResourceInfo[]
@@ -74,7 +75,7 @@ export class ControllerModel {
 			if (password && !promptReconnect) {
 				this.setAuthentication(new BasicAuth(this.info.username, password));
 			} else {
-				// No password yet or we want to reprompt for credentials so prompt for it from the user
+				// No password yet or we want to re-prompt for credentials so prompt for it from the user
 				const dialog = new ConnectToControllerDialog(this.treeDataProvider);
 				dialog.showDialog(this.info, password);
 				const model = await dialog.waitForClose();
@@ -181,6 +182,13 @@ export class ControllerModel {
 		this._tokenRouter.setDefaultAuthentication(auth);
 		this._registrationRouter.setDefaultAuthentication(auth);
 		this._sqlInstanceRouter.setDefaultAuthentication(auth);
+	}
+
+	/**
+	 * property to for use a display label for this controller
+	 */
+	public get label(): string {
+		return `${this.info.name} (${this.info.url})`;
 	}
 }
 

@@ -256,26 +256,31 @@ export class QueryEditor extends BaseEditor {
 
 	private setTaskbarContent(): void {
 		// Create HTML Elements for the taskbar
-		let separator = Taskbar.createTaskbarSeparator();
-
-		// Set the content in the order we desire
-		let content: ITaskbarContent[] = [
-			{ action: this._runQueryAction },
-			{ action: this._cancelQueryAction },
-			{ element: separator },
-			{ action: this._toggleConnectDatabaseAction },
-			{ action: this._changeConnectionAction },
-			{ action: this._listDatabasesAction },
-			{ element: separator },
-			{ action: this._estimatedQueryPlanAction },
-			{ action: this._toggleSqlcmdMode },
-			{ action: this._exportAsNotebookAction }
-		];
-
-		// Remove the estimated query plan action if preview features are not enabled
-		let previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
-		if (!previewFeaturesEnabled) {
-			content.splice(7, 1);
+		const separator = Taskbar.createTaskbarSeparator();
+		let content: ITaskbarContent[];
+		const previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
+		if (previewFeaturesEnabled) {
+			content = [
+				{ action: this._runQueryAction },
+				{ action: this._cancelQueryAction },
+				{ element: separator },
+				{ action: this._toggleConnectDatabaseAction },
+				{ action: this._changeConnectionAction },
+				{ action: this._listDatabasesAction },
+				{ element: separator },
+				{ action: this._estimatedQueryPlanAction }, // Preview
+				{ action: this._toggleSqlcmdMode }, // Preview
+				{ action: this._exportAsNotebookAction } // Preview
+			];
+		} else {
+			content = [
+				{ action: this._runQueryAction },
+				{ action: this._cancelQueryAction },
+				{ element: separator },
+				{ action: this._toggleConnectDatabaseAction },
+				{ action: this._changeConnectionAction },
+				{ action: this._listDatabasesAction }
+			];
 		}
 
 		this.taskbar.setContent(content);
