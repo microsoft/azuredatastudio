@@ -9,6 +9,7 @@ import * as sinon from 'sinon';
 import * as TypeMoq from 'typemoq';
 import { JupyterServerInstallation, PythonPkgDetails } from '../../jupyter/jupyterServerInstallation';
 import * as uuid from 'uuid';
+import { Type } from 'js-yaml';
 
 describe('Jupyter Server Installation', function () {
 	let outputChannelStub: TypeMoq.IMock<vscode.OutputChannel>;
@@ -58,7 +59,7 @@ describe('Jupyter Server Installation', function () {
 			version: '4.5.6'
 		}];
 		sinon.stub(JupyterServerInstallation, 'isPythonInstalled').returns(true);
-		sinon.stub(installation, 'executeBufferedCommand').returns(Promise.resolve(JSON.stringify(testPackages)));
+		sinon.stub(installation, 'executeBufferedCommand').resolves(JSON.stringify(testPackages));
 		pkgResult = await installation.getInstalledPipPackages();
 		should(pkgResult).be.deepEqual(testPackages);
 	});
@@ -99,7 +100,7 @@ describe('Jupyter Server Installation', function () {
 			channel: 'conda'
 		}];
 		sinon.stub(installation, 'isCondaInstalled').returns(true);
-		sinon.stub(installation, 'executeBufferedCommand').returns(Promise.resolve(JSON.stringify(testPackages)));
+		sinon.stub(installation, 'executeBufferedCommand').resolves(JSON.stringify(testPackages));
 		pkgResult = await installation.getInstalledCondaPackages();
 		let filteredPackages = testPackages.filter(pkg => pkg.channel !== 'pypi');
 		should(pkgResult).be.deepEqual(filteredPackages);
