@@ -292,8 +292,9 @@ export class KernelsDropdown extends SelectBox {
 	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>, @IConfigurationService private _configurationService: IConfigurationService, @ICapabilitiesService private _capabilitiesService: ICapabilitiesService) {
 		super([msgLoading], msgLoading, contextViewProvider, container, { labelText: kernelLabel, labelOnTop: false, ariaLabel: kernelLabel } as ISelectBoxOptionsWithLabel);
 
-		const providers = _capabilitiesService.providers;
+		const providers = this._capabilitiesService.providers;
 
+		//Gets Notebook Kernel Alias from extension providers
 		if (providers) {
 			for (const server in providers) {
 				let alias = providers[server].connection.notebookKernelAlias;
@@ -377,7 +378,7 @@ export class KernelsDropdown extends SelectBox {
 
 export class AttachToDropdown extends SelectBox {
 	private model: NotebookModel;
-	private kernels: KernelsDropdown;
+	private kernelsDropdown: KernelsDropdown;
 
 	constructor(
 		container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>,
@@ -385,8 +386,13 @@ export class AttachToDropdown extends SelectBox {
 		@IConnectionDialogService private _connectionDialogService: IConnectionDialogService,
 		@INotificationService private _notificationService: INotificationService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
+		@IConfigurationService private _configurationService: IConfigurationService
+
 	) {
 		super([msgLoadingContexts], msgLoadingContexts, contextViewProvider, container, { labelText: attachToLabel, labelOnTop: false, ariaLabel: attachToLabel } as ISelectBoxOptionsWithLabel);
+
+		this.kernelsDropdown = new KernelsDropdown(container, contextViewProvider, modelReady, this._configurationService, this._capabilitiesService);
+
 		if (modelReady) {
 			modelReady
 				.then(model => {
@@ -510,6 +516,13 @@ export class AttachToDropdown extends SelectBox {
 			this.model.addAttachToConnectionsToBeDisposed(connectionUri);
 			// Call doChangeContext to set the newly chosen connection in the model
 			this.doChangeContext(connectionProfile);
+
+			//Changes kernel based on connection attached to
+			if (kernelAlias.includes(connectionProfile.serverCapabilities.notebookKernelAlias)) {
+				this.kernelsDropdown.doChangeKernel(connectionProfile.serverCapabilities.notebookKernelAlias);
+			} else {
+				this.kernelsDropdown.doChangeKernel('SQL');
+			}
 			return true;
 		}
 		catch (error) {
