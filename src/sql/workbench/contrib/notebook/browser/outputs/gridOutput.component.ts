@@ -309,7 +309,7 @@ export class DataResourceDataProvider implements IGridDataProvider {
 		return serializer.handleSerialization(this.documentUri, format, (filePath) => this.doSerialize(serializer, filePath, format, selection));
 	}
 
-	getSerializeRequestParams(serializer: ResultSerializer, filePath: URI, format: SaveFormat, selection: Slick.Range[]) {
+	getSerializeRequestParams(serializer: ResultSerializer, filePath: URI, format: SaveFormat, selection: Slick.Range[]): SerializeDataParams {
 		// TODO implement selection support
 		let columns = this.resultSet.columnInfo;
 		let rowLength = this.rows.length;
@@ -363,7 +363,7 @@ export class DataResourceDataProvider implements IGridDataProvider {
 		return serializeRequestParams;
 	}
 
-	doSerialize(serializer: ResultSerializer, filePath: URI, format: SaveFormat, selection: Slick.Range[]): Promise<SaveResultsResponse | undefined> {
+	private doSerialize(serializer: ResultSerializer, filePath: URI, format: SaveFormat, selection: Slick.Range[]): Promise<SaveResultsResponse | undefined> {
 		if (!this.canSerialize) {
 			return Promise.resolve(undefined);
 		}
