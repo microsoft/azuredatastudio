@@ -185,14 +185,6 @@ export class QueryEditor extends BaseEditor {
 		this._actualQueryPlanAction = this.instantiationService.createInstance(actions.ActualQueryPlanAction, this);
 		this._toggleSqlcmdMode = this.instantiationService.createInstance(actions.ToggleSqlCmdModeAction, this, false);
 		this._exportAsNotebookAction = this.instantiationService.createInstance(actions.ExportAsNotebookAction, this);
-
-		this.setTaskbarContent();
-
-		this._register(this.configurationService.onDidChangeConfiguration(e => {
-			if (e.affectsConfiguration('workbench.enablePreviewFeatures')) {
-				this.setTaskbarContent();
-			}
-		}));
 	}
 
 	/**
@@ -254,25 +246,44 @@ export class QueryEditor extends BaseEditor {
 		return this._listDatabasesActionItem;
 	}
 
-	private setTaskbarContent(): void {
-		// Create HTML Elements for the taskbar
+	private setTaskbarContent(input: QueryEditorInput): void {
+		// Remove current actions from the taskbar
+		while (this.taskbar.length() > 0) {
+			this.taskbar.pull(0);
+		}
+
 		const separator = Taskbar.createTaskbarSeparator();
 		let content: ITaskbarContent[];
 		const previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
-		if (previewFeaturesEnabled) {
-			content = [
-				{ action: this._runQueryAction },
-				{ action: this._cancelQueryAction },
-				{ element: separator },
-				{ action: this._toggleConnectDatabaseAction },
-				{ action: this._changeConnectionAction },
-				{ action: this._listDatabasesAction },
-				{ element: separator },
-				{ action: this._estimatedQueryPlanAction }, // Preview
-				{ action: this._toggleSqlcmdMode }, // Preview
-				{ action: this._exportAsNotebookAction } // Preview
-			];
-		} else {
+		// TODOKusto: needs to be changed appropriately
+		if (input.getDescription() === 'MSSQL') {
+			if (previewFeaturesEnabled) {
+				content = [
+					{ action: this._runQueryAction },
+					{ action: this._cancelQueryAction },
+					{ element: separator },
+					{ action: this._toggleConnectDatabaseAction },
+					{ action: this._changeConnectionAction },
+					{ action: this._listDatabasesAction },
+					{ element: separator },
+					{ action: this._estimatedQueryPlanAction }, // Preview
+					{ action: this._toggleSqlcmdMode }, // Preview
+					{ action: this._exportAsNotebookAction } // Preview
+				];
+			}
+			else {
+				content = [
+					{ action: this._runQueryAction },
+					{ action: this._cancelQueryAction },
+					{ element: separator },
+					{ action: this._toggleConnectDatabaseAction },
+					{ action: this._changeConnectionAction },
+					{ action: this._listDatabasesAction }
+				];
+			}
+		}
+		else {
+			// Actions without SQL specific actions.
 			content = [
 				{ action: this._runQueryAction },
 				{ action: this._cancelQueryAction },
@@ -299,6 +310,14 @@ export class QueryEditor extends BaseEditor {
 			this.currentTextEditor.clearInput();
 			this.resultsEditor.clearInput();
 		}
+
+		this.setTaskbarContent(newInput);
+
+		this._register(this.configurationService.onDidChangeConfiguration(e => {
+			if (e.affectsConfiguration('workbench.enablePreviewFeatures')) {
+				this.setTaskbarContent(newInput);
+			}
+		}));
 
 		// If we're switching editor types switch out the views
 		const newTextEditor = newInput.text instanceof FileEditorInput ? this.textFileEditor : this.textResourceEditor;

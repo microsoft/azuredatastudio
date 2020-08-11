@@ -43,15 +43,15 @@ export class QueryEditorService implements IQueryEditorService {
 	////// Public functions
 
 	/**
-	 * Creates new untitled document for SQL query and opens in new editor tab
+	 * Creates new untitled document for SQL/Kusto query and opens in new editor tab
 	 */
-	public async newSqlEditor(options: INewSqlEditorOptions = {}): Promise<IConnectableInput> {
+	public async newSqlEditor(options: INewSqlEditorOptions = {}, connectionProviderName?: string): Promise<IConnectableInput> {
 		options = mixin(options, defaults, false);
 		// Create file path and file URI
-		let docUri: URI = options.resource ?? URI.from({ scheme: Schemas.untitled, path: await this.createUntitledSqlFilePath() });
+		let docUri: URI = options.resource ?? URI.from({ scheme: Schemas.untitled, path: await this.createUntitledSqlFilePath(connectionProviderName) });
 
 		// Create a sql document pane with accoutrements
-		const fileInput = this._editorService.createEditorInput({ forceUntitled: true, resource: docUri, mode: 'sql' }) as UntitledTextEditorInput;
+		const fileInput = this._editorService.createEditorInput({ forceUntitled: true, resource: docUri, mode: this.getLanguageFlavor(connectionProviderName) }) as UntitledTextEditorInput;
 		let untitledEditorModel = await fileInput.resolve() as UntitledTextEditorModel;
 		if (options.initalContent) {
 			untitledEditorModel.textEditorModel.setValue(options.initalContent);
@@ -99,9 +99,17 @@ export class QueryEditorService implements IQueryEditorService {
 	}
 
 	////// Private functions
+	// Gets language depending on connection provider.
+	private getLanguageFlavor(providerName?: string): string {		//TODOKusto: temporary fix until Anthony's generic fix to make it language agnostic
+		return (providerName && providerName === 'KUSTO') ? 'kusto' : 'sql';
+	}
 
-	private createUntitledSqlFilePath(): Promise<string> {
-		return this.createPrefixedSqlFilePath('SQLQuery');
+	private createUntitledSqlFilePath(providerName?: string): Promise<string> {
+		if (!providerName || providerName === 'MSSQL') {
+			return this.createPrefixedSqlFilePath('SQLQuery');		//TODOKusto: Verify changes after merge.
+		}
+
+		return this.createPrefixedSqlFilePath(providerName + 'Query');
 	}
 
 	private async createPrefixedSqlFilePath(prefix: string): Promise<string> {
