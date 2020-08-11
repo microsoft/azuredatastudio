@@ -581,11 +581,9 @@ describe('BooksTreeViewTests', function () {
 
 		it('openNotebook should open notebook in the editor', async () => {
 			let notebookPath = path.join(rootFolderPath, 'content', 'notebook2.ipynb');
-			if (await fs.pathExists(notebookPath)) {
-				await bookTreeViewProvider.openNotebook(notebookPath);
-				should(azdata.nb.notebookDocuments.length).equal(1, `Should have opened the ${notebookPath} in the editor.`);
-				await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
-			}
+			await bookTreeViewProvider.openNotebook(notebookPath);
+			should(azdata.nb.notebookDocuments.length).equal(1, `Should have opened the notebook from ${notebookPath} in the editor.`);
+			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
 		});
 
 		it('openNotebookAsUntitled should open a notebook as untitled file in the editor', async () => {
