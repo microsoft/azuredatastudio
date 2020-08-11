@@ -506,12 +506,14 @@ describe('BooksTreeViewTests', function () {
 			let configFile = path.join(rootFolderPath, '_config.yml');
 			tableOfContentsFile = path.join(dataFolderPath, 'toc.yml');
 			let notebook2File = path.join(contentFolderPath, 'notebook2.ipynb');
+			let markdownFile = path.join(contentFolderPath, 'readme.md');
 			await fs.mkdir(rootFolderPath);
 			await fs.mkdir(dataFolderPath);
 			await fs.mkdir(contentFolderPath);
 			await fs.writeFile(configFile, 'title: Test Book');
-			await fs.writeFile(tableOfContentsFile, '- title: Notebook1\n  url: /notebook1\n- title: Notebook2\n  url: /notebook2');
+			await fs.writeFile(tableOfContentsFile, '- title: Home\n  url: /readme\n- title: Notebook1\n  url: /notebook1\n- title: Notebook2\n  url: /notebook2');
 			await fs.writeFile(notebook2File, '');
+			await fs.writeFile(markdownFile, '');
 
 			const mockExtensionContext = new MockExtensionContext();
 			bookTreeViewProvider = new BookTreeViewProvider([], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
@@ -567,6 +569,34 @@ describe('BooksTreeViewTests', function () {
 			should(notebookUri.scheme).equal('untitled', 'Failed to get untitled uri of the resource');
 		});
 
+		it('openMarkdown should open markdown in the editor', async () => {
+			let executeCommandSpy = sinon.spy(vscode.commands, 'executeCommand');
+			let notebookPath = path.join(rootFolderPath, 'content', 'readme.md');
+			bookTreeViewProvider.openMarkdown(notebookPath);
+			should(executeCommandSpy.calledWith('markdown.showPreview')).be.true('openMarkdown should have called markdown.showPreview');
+		});
+
+		it('openNotebook should open notebook in the editor', async () => {
+			let notebookPath = path.join(rootFolderPath, 'content', 'notebook2.ipynb');
+			await bookTreeViewProvider.openNotebook(notebookPath);
+			should(azdata.nb.notebookDocuments.length).equal(1, 'Should have opened the notebook in the editor.');
+			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+		});
+
+		it('openNotebookAsUntitled should open a notebook as untitled file in the editor', async () => {
+			let openExternalStub = sinon.stub(vscode.env, 'openExternal').returns(Promise.resolve(true));
+			let resource: string = 'https://github.com/microsoft/azuredatastudio';
+			await bookTreeViewProvider.openExternalLink(resource);
+			should(openExternalStub.calledWith(vscode.Uri.parse(resource))).be.true('openExternalLink should have called vscode.env.openExternalLink');
+		});
+
+		it('openExternalLink should open link', async () => {
+			let executeCommandSpy = sinon.spy(vscode.commands, 'executeCommand');
+			let notebookPath = path.join(rootFolderPath, 'content', 'readme.md');
+			bookTreeViewProvider.openMarkdown(notebookPath);
+			should(executeCommandSpy.calledWith('markdown.showPreview')).be.true('openMarkdown should have called markdown.showPreview');
+		});
+
 		it('openNotebookFolder without folderPath should prompt for folder path and invoke loadNotebooksInFolder', async () => {
 			sinon.stub(vscode.window, 'showOpenDialog').returns(Promise.resolve([vscode.Uri.file(rootFolderPath)]));
 			let loadNotebooksSpy = sinon.spy(bookTreeViewProvider, 'loadNotebooksInFolder');
@@ -619,6 +649,7 @@ describe('BooksTreeViewTests', function () {
 			if (await exists(rootFolderPath)) {
 				await promisify(rimraf)(rootFolderPath);
 			}
+			await vscode.commands.executeCommand('workbench.action.closeAllEditors');
 		});
 	});
 
