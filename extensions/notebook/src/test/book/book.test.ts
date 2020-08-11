@@ -170,7 +170,7 @@ describe('BooksTreeViewTests', function () {
 				await bookTreeViewProvider.openBook(bookFolderPath, undefined, false, false);
 			});
 
-			afterEach(function(): void {
+			afterEach(function (): void {
 				sinon.restore();
 			});
 
@@ -276,7 +276,7 @@ describe('BooksTreeViewTests', function () {
 				await providedbookTreeViewProvider.openBook(bookFolderPath, undefined, false, false);
 			});
 
-			afterEach(function(): void {
+			afterEach(function (): void {
 				sinon.restore();
 			});
 
@@ -521,7 +521,7 @@ describe('BooksTreeViewTests', function () {
 			await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
 		});
 
-		afterEach(function(): void {
+		afterEach(function (): void {
 			sinon.restore();
 		});
 
@@ -579,9 +579,11 @@ describe('BooksTreeViewTests', function () {
 
 		it('openNotebook should open notebook in the editor', async () => {
 			let notebookPath = path.join(rootFolderPath, 'content', 'notebook2.ipynb');
-			await bookTreeViewProvider.openNotebook(notebookPath);
-			should(azdata.nb.notebookDocuments.length).equal(1, 'Should have opened the notebook in the editor.');
-			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+			if (await fs.pathExists(notebookPath)) {
+				await bookTreeViewProvider.openNotebook(notebookPath);
+				should(azdata.nb.notebookDocuments.length).equal(1, `Should have opened the ${notebookPath} in the editor.`);
+				await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+			}
 		});
 
 		it('openNotebookAsUntitled should open a notebook as untitled file in the editor', async () => {
@@ -643,7 +645,7 @@ describe('BooksTreeViewTests', function () {
 		it('should remove book on closeBook', async () => {
 			let length: number = bookTreeViewProvider.books.length;
 			await bookTreeViewProvider.closeBook(bookTreeViewProvider.books[0].bookItems[0]);
-			should(bookTreeViewProvider.books.length).equal(length-1, 'Failed to remove the book on close');
+			should(bookTreeViewProvider.books.length).equal(length - 1, 'Failed to remove the book on close');
 		});
 
 		this.afterAll(async function (): Promise<void> {
