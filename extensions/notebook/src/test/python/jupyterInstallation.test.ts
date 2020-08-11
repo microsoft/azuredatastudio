@@ -132,6 +132,32 @@ describe('Jupyter Server Installation', function () {
 	});
 
 	it('Install conda package', async function() {
-		should(true);
+		let commandStub = sinon.stub(installation, 'executeStreamedCommand').resolves();
+
+		// Should not execute any commands when passed an empty package list
+		await should(installation.installCondaPackages(undefined, false)).be.resolved();
+		should(commandStub.called).be.false();
+
+		await should(installation.installCondaPackages([], false)).be.resolved();
+		should(commandStub.called).be.false();
+
+		// Install package using exact version
+		let testPackages = [{
+			name: 'TestPkg1',
+			version: '1.2.3'
+		}, {
+			name: 'TestPkg2',
+			version: '4.5.6'
+		}];
+		await should(installation.installCondaPackages(testPackages, false)).be.resolved();
+		should(commandStub.calledOnce).be.true();
+		let commandStr = commandStub.args[0][0] as string;
+		should(commandStr.includes('"TestPkg1==1.2.3" "TestPkg2==4.5.6"')).be.true();
+
+		// Install package using minimum version
+		await should(installation.installCondaPackages(testPackages, true)).be.resolved();
+		should(commandStub.calledTwice).be.true();
+		commandStr = commandStub.args[1][0] as string;
+		should(commandStr.includes('"TestPkg1>=1.2.3" "TestPkg2>=4.5.6"')).be.true();
 	});
 });
