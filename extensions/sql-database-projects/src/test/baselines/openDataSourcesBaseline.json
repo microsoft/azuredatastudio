@@ -16,8 +16,8 @@
             "data": {
                 "connectionString": "Data Source=.;Initial Catalog=testDb2;Integrated Security=False"
             }
-		},
-		{
+        },
+        {
             "name": "AAD Interactive Data Source",
             "type": "sql_connection_string",
             "version": "0.0.0",
