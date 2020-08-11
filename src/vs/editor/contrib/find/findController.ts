@@ -9,7 +9,7 @@ import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { Disposable } from 'vs/base/common/lifecycle';
 import * as strings from 'vs/base/common/strings';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
-import { EditorAction, EditorCommand, ServicesAccessor, registerEditorAction, registerEditorCommand, registerEditorContribution } from 'vs/editor/browser/editorExtensions';
+import { EditorAction, EditorCommand, ServicesAccessor, registerEditorAction, registerEditorCommand, registerEditorContribution, MultiEditorAction, registerMultiEditorAction } from 'vs/editor/browser/editorExtensions';
 import { IEditorContribution } from 'vs/editor/common/editorCommon';
 import { EditorContextKeys } from 'vs/editor/common/editorContextKeys';
 import { CONTEXT_FIND_INPUT_FOCUSED, CONTEXT_FIND_WIDGET_VISIBLE, FIND_IDS, FindModelBoundToEditorModel, ToggleCaseSensitiveKeybinding, ToggleRegexKeybinding, ToggleSearchScopeKeybinding, ToggleWholeWordKeybinding, CONTEXT_REPLACE_INPUT_FOCUSED } from 'vs/editor/contrib/find/findModel';
@@ -280,6 +280,12 @@ export class CommonFindController extends Disposable implements IEditorContribut
 
 		if (!stateChanges.searchString && opts.seedSearchStringFromGlobalClipboard) {
 			let selectionSearchString = await this.getGlobalBufferTerm();
+
+			if (!this._editor.hasModel()) {
+				// the editor has lost its model in the meantime
+				return;
+			}
+
 			if (selectionSearchString) {
 				stateChanges.searchString = selectionSearchString;
 			}
@@ -364,13 +370,14 @@ export class CommonFindController extends Disposable implements IEditorContribut
 		return '';
 	}
 
-	public async setGlobalBufferTerm(text: string) {
+	public setGlobalBufferTerm(text: string): void {
 		if (this._editor.getOption(EditorOption.find).globalFindClipboard
 			&& this._clipboardService
 			&& this._editor.hasModel()
 			&& !this._editor.getModel().isTooLargeForSyncing()
 		) {
-			await this._clipboardService.writeFindText(text);
+			// intentionally not awaited
+			this._clipboardService.writeFindText(text);
 		}
 	}
 }
@@ -424,10 +431,12 @@ export class FindController extends CommonFindController implements IFindControl
 
 		await super._start(opts);
 
-		if (opts.shouldFocus === FindStartFocusAction.FocusReplaceInput) {
-			this._widget!.focusReplaceInput();
-		} else if (opts.shouldFocus === FindStartFocusAction.FocusFindInput) {
-			this._widget!.focusFindInput();
+		if (this._widget) {
+			if (opts.shouldFocus === FindStartFocusAction.FocusReplaceInput) {
+				this._widget.focusReplaceInput();
+			} else if (opts.shouldFocus === FindStartFocusAction.FocusFindInput) {
+				this._widget.focusFindInput();
+			}
 		}
 	}
 
@@ -448,7 +457,7 @@ export class FindController extends CommonFindController implements IFindControl
 	}
 }
 
-export class StartFindAction extends EditorAction {
+export class StartFindAction extends MultiEditorAction {
 
 	constructor() {
 		super({
@@ -470,10 +479,10 @@ export class StartFindAction extends EditorAction {
 		});
 	}
 
-	public run(accessor: ServicesAccessor | null, editor: ICodeEditor): void {
+	public async run(accessor: ServicesAccessor | null, editor: ICodeEditor): Promise<void> {
 		let controller = CommonFindController.get(editor);
 		if (controller) {
-			controller.start({
+			await controller.start({
 				forceRevealReplace: false,
 				seedSearchStringFromSelection: editor.getOption(EditorOption.find).seedSearchStringFromSelection,
 				seedSearchStringFromGlobalClipboard: editor.getOption(EditorOption.find).globalFindClipboard,
@@ -508,7 +517,7 @@ export class StartFindWithSelectionAction extends EditorAction {
 	public async run(accessor: ServicesAccessor, editor: ICodeEditor): Promise<void> {
 		let controller = CommonFindController.get(editor);
 		if (controller) {
-			controller.start({
+			await controller.start({
 				forceRevealReplace: false,
 				seedSearchStringFromSelection: true,
 				seedSearchStringFromGlobalClipboard: false,
@@ -518,15 +527,15 @@ export class StartFindWithSelectionAction extends EditorAction {
 				loop: editor.getOption(EditorOption.find).loop
 			});
 
-			return controller.setGlobalBufferTerm(controller.getState().searchString);
+			controller.setGlobalBufferTerm(controller.getState().searchString);
 		}
 	}
 }
 export abstract class MatchFindAction extends EditorAction {
-	public run(accessor: ServicesAccessor | null, editor: ICodeEditor): void {
+	public async run(accessor: ServicesAccessor | null, editor: ICodeEditor): Promise<void> {
 		let controller = CommonFindController.get(editor);
 		if (controller && !this._run(controller)) {
-			controller.start({
+			await controller.start({
 				forceRevealReplace: false,
 				seedSearchStringFromSelection: (controller.getState().searchString.length === 0) && editor.getOption(EditorOption.find).seedSearchStringFromSelection,
 				seedSearchStringFromGlobalClipboard: true,
@@ -629,7 +638,7 @@ export class PreviousMatchFindAction2 extends MatchFindAction {
 }
 
 export abstract class SelectionMatchFindAction extends EditorAction {
-	public run(accessor: ServicesAccessor | null, editor: ICodeEditor): void {
+	public async run(accessor: ServicesAccessor | null, editor: ICodeEditor): Promise<void> {
 		let controller = CommonFindController.get(editor);
 		if (!controller) {
 			return;
@@ -639,7 +648,7 @@ export abstract class SelectionMatchFindAction extends EditorAction {
 			controller.setSearchString(selectionSearchString);
 		}
 		if (!this._run(controller)) {
-			controller.start({
+			await controller.start({
 				forceRevealReplace: false,
 				seedSearchStringFromSelection: editor.getOption(EditorOption.find).seedSearchStringFromSelection,
 				seedSearchStringFromGlobalClipboard: false,
@@ -697,7 +706,7 @@ export class PreviousSelectionMatchFindAction extends SelectionMatchFindAction {
 	}
 }
 
-export class StartFindReplaceAction extends EditorAction {
+export class StartFindReplaceAction extends MultiEditorAction {
 
 	constructor() {
 		super({
@@ -720,7 +729,7 @@ export class StartFindReplaceAction extends EditorAction {
 		});
 	}
 
-	public run(accessor: ServicesAccessor | null, editor: ICodeEditor): void {
+	public async run(accessor: ServicesAccessor | null, editor: ICodeEditor): Promise<void> {
 		if (!editor.hasModel() || editor.getOption(EditorOption.readOnly)) {
 			return;
 		}
@@ -745,7 +754,7 @@ export class StartFindReplaceAction extends EditorAction {
 
 
 		if (controller) {
-			controller.start({
+			await controller.start({
 				forceRevealReplace: true,
 				seedSearchStringFromSelection: seedSearchStringFromSelection,
 				seedSearchStringFromGlobalClipboard: editor.getOption(EditorOption.find).seedSearchStringFromSelection,
@@ -760,7 +769,8 @@ export class StartFindReplaceAction extends EditorAction {
 
 registerEditorContribution(CommonFindController.ID, FindController);
 
-registerEditorAction(StartFindAction);
+export const EditorStartFindAction = new StartFindAction();
+registerMultiEditorAction(EditorStartFindAction);
 registerEditorAction(StartFindWithSelectionAction);
 registerEditorAction(NextMatchFindAction);
 registerEditorAction(NextMatchFindAction2);
@@ -768,7 +778,8 @@ registerEditorAction(PreviousMatchFindAction);
 registerEditorAction(PreviousMatchFindAction2);
 registerEditorAction(NextSelectionMatchFindAction);
 registerEditorAction(PreviousSelectionMatchFindAction);
-registerEditorAction(StartFindReplaceAction);
+export const EditorStartFindReplaceAction = new StartFindReplaceAction();
+registerMultiEditorAction(EditorStartFindReplaceAction);
 
 const FindCommand = EditorCommand.bindToContribution<CommonFindController>(CommonFindController.get);
 

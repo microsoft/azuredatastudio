@@ -5,7 +5,7 @@
 
 import 'vs/css!./media/repl';
 import { URI as uri } from 'vs/base/common/uri';
-import { IAction, IActionViewItem, Action } from 'vs/base/common/actions';
+import { IAction, IActionViewItem, Action, Separator } from 'vs/base/common/actions';
 import * as dom from 'vs/base/browser/dom';
 import * as aria from 'vs/base/browser/ui/aria/aria';
 import { CancellationToken } from 'vs/base/common/cancellation';
@@ -41,7 +41,6 @@ import { first } from 'vs/base/common/arrays';
 import { ITreeNode, ITreeContextMenuEvent, IAsyncDataSource } from 'vs/base/browser/ui/tree/tree';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { LinkDetector } from 'vs/workbench/contrib/debug/browser/linkDetector';
-import { Separator } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { removeAnsiEscapeCodes } from 'vs/base/common/strings';
 import { WorkbenchAsyncDataTree } from 'vs/platform/list/browser/listService';
@@ -440,7 +439,7 @@ export class Repl extends ViewPane implements IHistoryNavigationWidget {
 			return this.instantiationService.createInstance(SelectReplActionViewItem, this.selectReplAction);
 		}
 
-		return undefined;
+		return super.getActionViewItem(action);
 	}
 
 	getActions(): IAction[] {
@@ -606,10 +605,17 @@ export class Repl extends ViewPane implements IHistoryNavigationWidget {
 			await this.clipboardService.writeText(this.getVisibleContent());
 			return Promise.resolve();
 		}));
-		actions.push(new Action('debug.replPaste', localize('paste', "Paste"), undefined, true, async () => {
+		actions.push(new Action('debug.replPaste', localize('paste', "Paste"), undefined, this.debugService.state !== State.Inactive, async () => {
 			const clipboardText = await this.clipboardService.readText();
 			if (clipboardText) {
 				this.replInput.setValue(this.replInput.getValue().concat(clipboardText));
+				this.replInput.focus();
+				const model = this.replInput.getModel();
+				const lineNumber = model ? model.getLineCount() : 0;
+				const column = model?.getLineMaxColumn(lineNumber);
+				if (typeof lineNumber === 'number' && typeof column === 'number') {
+					this.replInput.setPosition({ lineNumber, column });
+				}
 			}
 		}));
 		actions.push(new Separator());

@@ -27,7 +27,6 @@ import { IQueryManagementService } from 'sql/workbench/services/query/common/que
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
 import { SqlNotebookProvider } from 'sql/workbench/services/notebook/browser/sql/sqlNotebookProvider';
-import { keys } from 'vs/base/common/map';
 import { IFileService, IFileStatWithMetadata } from 'vs/platform/files/common/files';
 import { Schemas } from 'vs/base/common/network';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -36,6 +35,7 @@ import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contr
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IProductService } from 'vs/platform/product/common/productService';
 
 export interface NotebookProviderProperties {
 	provider: string;
@@ -119,6 +119,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		@ILogService private readonly _logService: ILogService,
 		@IQueryManagementService private readonly _queryManagementService: IQueryManagementService,
 		@IContextKeyService private contextKeyService: IContextKeyService,
+		@IProductService private readonly productService: IProductService
 	) {
 		super();
 		this._providersMemento = new Memento('notebookProviders', this._storageService);
@@ -265,11 +266,15 @@ export class NotebookService extends Disposable implements INotebookService {
 		} else {
 			standardKernels.push(provider.standardKernels);
 		}
+		// Filter out unusable kernels when running on a SAW
+		if (this.productService.quality === 'saw') {
+			standardKernels = standardKernels.filter(kernel => !kernel.blockedOnSAW);
+		}
 		this._providerToStandardKernels.set(providerUpperCase, standardKernels);
 	}
 
 	getSupportedFileExtensions(): string[] {
-		return Array.from(keys(this._fileToProviders));
+		return Array.from(this._fileToProviders.keys());
 	}
 
 	getProvidersForFileType(fileType: string): string[] {

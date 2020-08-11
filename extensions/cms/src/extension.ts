@@ -7,7 +7,6 @@ import * as vscode from 'vscode';
 import CmsResourceController from './controllers/cmsResourceController';
 import { AppContext } from './appContext';
 import ControllerBase from './controllers/controllerBase';
-import { ApiWrapper } from './apiWrapper';
 import { CmsUtils } from './cmsUtils';
 import { ICmsResourceNodeInfo } from './cmsResource/tree/baseTreeNodes';
 
@@ -16,9 +15,8 @@ let controllers: ControllerBase[] = [];
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export async function activate(extensionContext: vscode.ExtensionContext): Promise<void> {
-	const apiWrapper = new ApiWrapper();
 	const cmsUtils = new CmsUtils(extensionContext.globalState);
-	const appContext = new AppContext(extensionContext, apiWrapper, cmsUtils);
+	const appContext = new AppContext(extensionContext, cmsUtils);
 	const activations: Thenable<boolean>[] = [];
 
 	await portSavedConfigServers(appContext);

@@ -11,11 +11,10 @@ describe('Main Controller', function () {
 	let testExtensionContext: TestExtensionContext;
 
 	beforeEach(async function () {
-		// creating a mock Extension Context with current extensionPath
 		testExtensionContext = await ImportTestUtils.getTestExtensionContext();
 	});
 
-	it('Should register task flatFileImportStartCommand after activate is called', async function () {
+	it('Extension activates successfully', async function () {
 		let mainController = new MainController(testExtensionContext);
 		should.doesNotThrow(() => mainController.activate());
 	});

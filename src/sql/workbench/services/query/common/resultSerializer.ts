@@ -17,6 +17,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { getRootPath, resolveCurrentDirectory } from 'sql/platform/common/pathUtilities';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IFileDialogService, FileFilter } from 'vs/platform/dialogs/common/dialogs';
+import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 
 let prevSavePath: URI;
@@ -54,7 +55,8 @@ export class ResultSerializer {
 		@IEditorService private _editorService: IEditorService,
 		@IWorkspaceContextService private _contextService: IWorkspaceContextService,
 		@IFileDialogService private readonly fileDialogService: IFileDialogService,
-		@INotificationService private _notificationService: INotificationService
+		@INotificationService private _notificationService: INotificationService,
+		@IOpenerService private readonly openerService: IOpenerService
 	) { }
 
 	/**
@@ -321,6 +323,17 @@ export class ResultSerializer {
 					message: error
 				});
 			});
+		} else {
+			this._notificationService.prompt(
+				Severity.Info,
+				nls.localize('msgSaveSucceeded', "Successfully saved results to {0}", filePath.path),
+				[{
+					label: nls.localize('openFile', "Open file"),
+					run: () => {
+						this.openerService.open(filePath, { openExternal: true });
+					}
+				}]
+			);
 		}
 	}
 }

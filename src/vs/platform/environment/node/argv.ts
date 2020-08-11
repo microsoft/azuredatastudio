@@ -33,6 +33,7 @@ export interface ParsedArgs {
 	trace?: boolean;
 	'trace-category-filter'?: string;
 	'trace-options'?: string;
+	'open-devtools'?: boolean;
 	log?: string;
 	logExtensionHostCommunication?: boolean;
 	'extensions-dir'?: string;
@@ -69,12 +70,13 @@ export interface ParsedArgs {
 	'file-chmod'?: boolean;
 	'driver'?: string;
 	'driver-verbose'?: boolean;
-	remote?: string;
+	'remote'?: string;
 	'disable-user-env-probe'?: boolean;
 	'force'?: boolean;
 	'do-not-sync'?: boolean;
 	'force-user-env'?: boolean;
 	'sync'?: 'on' | 'off';
+	'__sandbox'?: boolean;
 
 	// {{SQL CARBON EDIT}} Start
 	aad?: boolean;
@@ -202,6 +204,8 @@ export const OPTIONS: OptionDescriptions<Required<ParsedArgs>> = {
 	'trace-category-filter': { type: 'string' },
 	'trace-options': { type: 'string' },
 	'force-user-env': { type: 'boolean' },
+	'open-devtools': { type: 'boolean' },
+	'__sandbox': { type: 'boolean' },
 
 	// {{SQL CARBON EDIT}} Start
 	'command': { type: 'string', alias: 'c', cat: 'o', args: 'command-name', description: localize('commandParameter', 'Name of command to run') },

@@ -50,7 +50,9 @@
 		"Microsoft.managed-instance-dashboard",
 		"Microsoft.powershell",
 		"Microsoft.profiler",
+		"Microsoft.query-history",
 		"Microsoft.schema-compare",
+		"Microsoft.sql-assessment",
 		"Microsoft.datavirtualization",
 		"Redgate.sql-prompt",
 		"Redgate.sql-search",
@@ -65,7 +67,8 @@
 	"extensionAllowedProposedApi": [
 		"ms-vscode.vscode-js-profile-flame",
 		"ms-vscode.vscode-js-profile-table",
-		"ms-vscode.references-view"
+		"ms-vscode.references-view",
+		"ms-vscode.github-browser"
 	],
 	"extensionsGallery": {
 		"serviceUrl": "https://sqlopsextensions.blob.core.windows.net/marketplace/v1/extensionsGallery.json"

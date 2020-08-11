@@ -802,7 +802,7 @@ export class SearchView extends ViewPane {
 			}
 		}
 
-		let navigator = this.tree.navigate(selected);
+		const navigator = this.tree.navigate(selected);
 
 		let next = navigator.next();
 		if (!next) {
@@ -977,7 +977,7 @@ export class SearchView extends ViewPane {
 	}
 
 	protected reLayout(): void { // {{SQL CARBON EDIT}}
-		if (this.isDisposed) {
+		if (this.isDisposed || !this.size) {
 			return;
 		}
 
@@ -1021,6 +1021,11 @@ export class SearchView extends ViewPane {
 			this.searchWidget.searchInput.getValue() === '';
 	}
 
+	allFilePatternFieldsClear(): boolean {
+		return this.searchExcludePattern.getValue() === '' &&
+			this.searchIncludePattern.getValue() === '';
+	}
+
 	hasSearchResults(): boolean {
 		return !this.viewModel.searchResult.isEmpty();
 	}
@@ -1036,6 +1041,9 @@ export class SearchView extends ViewPane {
 			this.showSearchWithoutFolderMessage();
 		}
 		if (clearInput) {
+			if (this.allSearchFieldsClear()) {
+				this.clearFilePatternFields();
+			}
 			this.searchWidget.clear();
 		}
 		this.viewModel.cancelSearch();
@@ -1043,6 +1051,11 @@ export class SearchView extends ViewPane {
 		this.tree.ariaLabel = nls.localize('emptySearch', "Empty Search");
 
 		aria.status(nls.localize('ariaSearchResultsClearStatus', "The search results have been cleared"));
+	}
+
+	clearFilePatternFields(): void {
+		this.searchExcludePattern.clear();
+		this.searchIncludePattern.clear();
 	}
 
 	cancelSearch(focus: boolean = true): boolean {
@@ -1713,7 +1726,7 @@ export class SearchView extends ViewPane {
 					const selections = fileMatch.matches().map(m => new Selection(m.range().startLineNumber, m.range().startColumn, m.range().endLineNumber, m.range().endColumn));
 					const codeEditor = getCodeEditor(editor.getControl());
 					if (codeEditor) {
-						let multiCursorController = MultiCursorSelectionController.get(codeEditor);
+						const multiCursorController = MultiCursorSelectionController.get(codeEditor);
 						multiCursorController.selectAllUsingSelections(selections);
 					}
 				}

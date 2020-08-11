@@ -10,8 +10,10 @@ import * as utils from '../common/utils';
 
 import { Project } from '../models/project';
 import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStringSource';
-import { ApiWrapper } from '../common/apiWrapper';
 import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
+import { DeploymentOptions } from '../../../mssql/src/mssql';
+
+const titleFontSize = 12;
 
 interface DataSourceDropdownValue extends azdata.CategoryValue {
 	dataSource: SqlConnectionDataSource;
@@ -30,11 +32,13 @@ export class PublishDatabaseDialog {
 	private dataSourcesRadioButton: azdata.RadioButtonComponent | undefined;
 	private loadProfileButton: azdata.ButtonComponent | undefined;
 	private sqlCmdVariablesTable: azdata.TableComponent | undefined;
+	private sqlCmdVariablesFormComponent: azdata.FormComponent | undefined;
 	private formBuilder: azdata.FormBuilder | undefined;
 
-	private connection: azdata.connection.Connection | undefined;
+	private connectionId: string | undefined;
 	private connectionIsDataSource: boolean | undefined;
 	private profileSqlCmdVars: Record<string, string> | undefined;
+	private deploymentOptions: DeploymentOptions | undefined;
 
 	private toDispose: vscode.Disposable[] = [];
 
@@ -42,7 +46,7 @@ export class PublishDatabaseDialog {
 	public generateScript: ((proj: Project, profile: IGenerateScriptSettings) => any) | undefined;
 	public readPublishProfile: ((profileUri: vscode.Uri) => any) | undefined;
 
-	constructor(private apiWrapper: ApiWrapper, private project: Project) {
+	constructor(private project: Project) {
 		this.dialog = azdata.window.createModelViewDialog(constants.publishDialogName);
 		this.publishTab = azdata.window.createTab(constants.publishDialogName);
 	}
@@ -107,6 +111,11 @@ export class PublishDatabaseDialog {
 				height: 400
 			}).component();
 
+			this.sqlCmdVariablesFormComponent = {
+				title: constants.sqlCmdTableLabel,
+				component: <azdata.TableComponent>this.sqlCmdVariablesTable
+			};
+
 			this.formBuilder = <azdata.FormBuilder>view.modelBuilder.formContainer()
 				.withFormItems([
 					{
@@ -137,11 +146,7 @@ export class PublishDatabaseDialog {
 
 			// add SQLCMD variables table if the project has any
 			if (Object.keys(this.project.sqlCmdVariables).length > 0) {
-				this.formBuilder.insertFormItem({
-					title: constants.sqlCmdTableLabel,
-					component: <azdata.TableComponent>this.sqlCmdVariablesTable
-				},
-					6);
+				this.formBuilder.addFormItem(this.sqlCmdVariablesFormComponent, { titleFontSize: titleFontSize });
 			}
 
 			let formModel = this.formBuilder.component();
@@ -156,37 +161,24 @@ export class PublishDatabaseDialog {
 
 			if (this.connectionIsDataSource) {
 				const dataSource = (this.dataSourcesDropDown!.value! as DataSourceDropdownValue).dataSource;
-
-				const connProfile: azdata.IConnectionProfile = {
-					serverName: dataSource.server,
-					databaseName: dataSource.database,
-					connectionName: dataSource.name,
-					userName: dataSource.username,
-					password: dataSource.password,
-					authenticationType: dataSource.integratedSecurity ? 'Integrated' : 'SqlAuth',
-					savePassword: false,
-					providerName: 'MSSQL',
-					saveProfile: true,
-					id: dataSource.name + '-dataSource',
-					options: []
-				};
+				const connProfile: azdata.IConnectionProfile = dataSource.getConnectionProfile();
 
 				if (dataSource.integratedSecurity) {
-					connId = (await this.apiWrapper.connectionConnect(connProfile, false, false)).connectionId;
+					connId = (await azdata.connection.connect(connProfile, false, false)).connectionId;
 				}
 				else {
-					connId = (await this.apiWrapper.openConnectionDialog(undefined, connProfile)).connectionId;
+					connId = (await azdata.connection.openConnectionDialog(undefined, connProfile)).connectionId;
 				}
 			}
 			else {
-				if (!this.connection) {
+				if (!this.connectionId) {
 					throw new Error('Connection not defined.');
 				}
 
-				connId = this.connection?.connectionId;
+				connId = this.connectionId;
 			}
 
-			return await this.apiWrapper.getUriForConnection(connId);
+			return await azdata.connection.getUriForConnection(connId);
 		}
 		catch (err) {
 			throw new Error(constants.unableToCreatePublishConnection + ': ' + utils.getErrorMessage(err));
@@ -199,10 +191,11 @@ export class PublishDatabaseDialog {
 			databaseName: this.getTargetDatabaseName(),
 			upgradeExisting: true,
 			connectionUri: await this.getConnectionUri(),
-			sqlCmdVariables: sqlCmdVars
+			sqlCmdVariables: sqlCmdVars,
+			deploymentOptions: this.deploymentOptions
 		};
 
-		this.apiWrapper.closeDialog(this.dialog);
+		azdata.window.closeDialog(this.dialog);
 		await this.publish!(this.project, settings);
 
 		this.dispose();
@@ -213,10 +206,11 @@ export class PublishDatabaseDialog {
 		const settings: IGenerateScriptSettings = {
 			databaseName: this.getTargetDatabaseName(),
 			connectionUri: await this.getConnectionUri(),
-			sqlCmdVariables: sqlCmdVars
+			sqlCmdVariables: sqlCmdVars,
+			deploymentOptions: this.deploymentOptions
 		};
 
-		this.apiWrapper.closeDialog(this.dialog);
+		azdata.window.closeDialog(this.dialog);
 
 		if (this.generateScript) {
 			await this.generateScript!(this.project, settings);
@@ -360,18 +354,19 @@ export class PublishDatabaseDialog {
 		}).component();
 
 		editConnectionButton.onDidClick(async () => {
-			this.connection = await this.apiWrapper.openConnectionDialog();
+			let connection = await azdata.connection.openConnectionDialog();
+			this.connectionId = connection.connectionId;
 
 			// show connection name if there is one, otherwise show connection string
-			if (this.connection.options['connectionName']) {
-				this.targetConnectionTextBox!.value = this.connection.options['connectionName'];
+			if (connection.options['connectionName']) {
+				this.targetConnectionTextBox!.value = connection.options['connectionName'];
 			} else {
-				this.targetConnectionTextBox!.value = await azdata.connection.getConnectionString(this.connection.connectionId, false);
+				this.targetConnectionTextBox!.value = await azdata.connection.getConnectionString(connection.connectionId, false);
 			}
 
 			// change the database inputbox value to the connection's database if there is one
-			if (this.connection.options.database && this.connection.options.database !== constants.master) {
-				this.targetDatabaseTextBox!.value = this.connection.options.database;
+			if (connection.options.database && connection.options.database !== constants.master) {
+				this.targetDatabaseTextBox!.value = connection.options.database;
 			}
 		});
 
@@ -401,12 +396,12 @@ export class PublishDatabaseDialog {
 		}).component();
 
 		loadProfileButton.onDidClick(async () => {
-			const fileUris = await this.apiWrapper.showOpenDialog(
+			const fileUris = await vscode.window.showOpenDialog(
 				{
 					canSelectFiles: true,
 					canSelectFolders: false,
 					canSelectMany: false,
-					defaultUri: vscode.Uri.parse(this.project.projectFolderPath),
+					defaultUri: vscode.workspace.workspaceFolders ? (vscode.workspace.workspaceFolders as vscode.WorkspaceFolder[])[0].uri : undefined,
 					filters: {
 						[constants.publishSettingsFiles]: ['publish.xml']
 					}
@@ -420,6 +415,11 @@ export class PublishDatabaseDialog {
 			if (this.readPublishProfile) {
 				const result = await this.readPublishProfile(fileUris[0]);
 				(<azdata.InputBoxComponent>this.targetDatabaseTextBox).value = result.databaseName;
+
+				this.connectionId = result.connectionId;
+				(<azdata.InputBoxComponent>this.targetConnectionTextBox).value = result.connectionString;
+
+				this.deploymentOptions = result.options;
 				this.profileSqlCmdVars = result.sqlCmdVariables;
 				const data = this.convertSqlCmdVarsToTableFormat(this.getSqlCmdVariablesForPublish());
 
@@ -427,13 +427,14 @@ export class PublishDatabaseDialog {
 					data: data
 				});
 
-				// add SQLCMD Variables table if it wasn't there before
-				if (Object.keys(this.project.sqlCmdVariables).length === 0) {
-					this.formBuilder?.insertFormItem({
-						title: constants.sqlCmdTableLabel,
-						component: <azdata.TableComponent>this.sqlCmdVariablesTable
-					},
-						6);
+				if (Object.keys(result.sqlCmdVariables).length) {
+					// add SQLCMD Variables table if it wasn't there before
+					if (Object.keys(this.project.sqlCmdVariables).length === 0) {
+						this.formBuilder?.addFormItem(<azdata.FormComponent>this.sqlCmdVariablesFormComponent, { titleFontSize: titleFontSize });
+					}
+				} else if (Object.keys(this.project.sqlCmdVariables).length === 0) {
+					// remove the table if there are no SQLCMD variables in the project and loaded profile
+					this.formBuilder?.removeFormItem(<azdata.FormComponent>this.sqlCmdVariablesFormComponent);
 				}
 			}
 		});

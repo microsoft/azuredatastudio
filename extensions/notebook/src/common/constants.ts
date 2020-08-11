@@ -8,7 +8,7 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 // CONFIG VALUES ///////////////////////////////////////////////////////////
-export const extensionOutputChannel = 'Notebooks';
+export const extensionOutputChannelName = 'Notebooks';
 
 // JUPYTER CONFIG //////////////////////////////////////////////////////////
 export const pythonBundleVersion = '0.0.1';
@@ -18,6 +18,8 @@ export const existingPythonConfigKey = 'useExistingPython';
 export const notebookConfigKey = 'notebook';
 export const trustedBooksConfigKey = 'trustedBooks';
 export const maxBookSearchDepth = 'maxBookSearchDepth';
+export const remoteBookDownloadTimeout = 'remoteBookDownloadTimeout';
+export const collapseBookItems = 'collapseBookItems';
 
 export const winPlatform = 'win32';
 
@@ -40,6 +42,8 @@ export const sparkScalaDisplayName = 'Spark | Scala';
 export const sparkRDisplayName = 'Spark | R';
 export const powershellDisplayName = 'PowerShell';
 export const allKernelsName = 'All Kernels';
+export const BOOKS_VIEWID = 'bookTreeView';
+export const PROVIDED_BOOKS_VIEWID = 'providedBooksView';
 
 export const visitedNotebooksMementoKey = 'notebooks.visited';
 

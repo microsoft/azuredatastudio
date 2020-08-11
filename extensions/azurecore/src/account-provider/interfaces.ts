@@ -65,11 +65,6 @@ interface Settings {
 	clientId?: string;
 
 	/**
-	 * Identifier of the resource to request when signing in
-	 */
-	signInResourceId?: string;
-
-	/**
 	 * Information that describes the Microsoft resource management resource
 	 */
 	microsoftResource?: Resource
@@ -177,10 +172,6 @@ interface AzureAccountProperties {
 	 */
 	tenants: Tenant[];
 
-	/**
-	 * A list of subscriptions the user belongs to
-	 */
-	subscriptions?: Subscription[];
 }
 
 export interface Subscription {
@@ -230,7 +221,7 @@ export interface AzureAccountSecurityToken {
  */
 export type AzureAccountSecurityTokenCollection = { [tenantId: string]: AzureAccountSecurityToken };
 
-export interface Deferred<T> {
+export interface Deferred<T, E extends Error = Error> {
 	resolve: (result: T | Promise<T>) => void;
-	reject: (reason: any) => void;
+	reject: (reason: E) => void;
 }
