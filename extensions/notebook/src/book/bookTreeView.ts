@@ -237,7 +237,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				if (this._visitedNotebooks.indexOf(normalizedResource) === -1
 					&& this._bookTrustManager.isNotebookTrustedByDefault(normalizedResource)) {
 					let document = azdata.nb.notebookDocuments.find(document => document.fileName === resource);
-					document.setTrusted(true);
+					document?.setTrusted(true);
 					this._visitedNotebooks = this._visitedNotebooks.concat([normalizedResource]);
 				}
 			}

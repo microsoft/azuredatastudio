@@ -585,10 +585,10 @@ describe('BooksTreeViewTests', function () {
 		});
 
 		it('openNotebookAsUntitled should open a notebook as untitled file in the editor', async () => {
-			let openExternalStub = sinon.stub(vscode.env, 'openExternal').returns(Promise.resolve(true));
-			let resource: string = 'https://github.com/microsoft/azuredatastudio';
-			await bookTreeViewProvider.openExternalLink(resource);
-			should(openExternalStub.calledWith(vscode.Uri.parse(resource))).be.true('openExternalLink should have called vscode.env.openExternalLink');
+			let notebookPath = path.join(rootFolderPath, 'content', 'notebook2.ipynb');
+			await bookTreeViewProvider.openNotebookAsUntitled(notebookPath);
+			should(azdata.nb.notebookDocuments.find(doc => doc.uri.scheme === 'untitled')).not.be.undefined();
+			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
 		});
 
 		it('openExternalLink should open link', async () => {
