@@ -173,7 +173,7 @@ WITH predict_input
 AS (
 	SELECT TOP 1000
 	${this.getInputColumnNames(columns, 'pi')}
-	FROM [${utils.doubleEscapeSingleBrackets(sourceTable.databaseName)}].[${sourceTable.schema}].[${utils.doubleEscapeSingleBrackets(sourceTable.tableName)}] as pi
+	FROM [${utils.doubleEscapeSingleBrackets(sourceTable.databaseName)}].[${sourceTable.schema}].[${utils.doubleEscapeSingleBrackets(sourceTable.tableName)}] AS pi
 )
 SELECT
 ${this.getPredictColumnNames(columns, 'predict_input')},
@@ -195,7 +195,7 @@ WITH predict_input
 AS (
 	SELECT TOP 1000
 	${this.getInputColumnNames(columns, 'pi')}
-	FROM [${utils.doubleEscapeSingleBrackets(databaseNameTable.databaseName)}].[${databaseNameTable.schema}].[${utils.doubleEscapeSingleBrackets(databaseNameTable.tableName)}] as pi
+	FROM [${utils.doubleEscapeSingleBrackets(databaseNameTable.databaseName)}].[${databaseNameTable.schema}].[${utils.doubleEscapeSingleBrackets(databaseNameTable.tableName)}] AS pi
 )
 SELECT
 ${this.getPredictColumnNames(columns, 'predict_input')},
@@ -214,16 +214,16 @@ WITH (
 
 		return columns.map(c => {
 			const column = this.getEscapedColumnName(tableName, c.columnName);
-			let columnName = c.dataType !== c.paramType ? `cast(${column} as ${c.paramType})`
+			let columnName = c.dataType !== c.paramType ? `CAST(${column} AS ${c.paramType})`
 				: `${column}`;
 			return `${columnName} AS ${c.paramName}`;
-		}).join(',\n');
+		}).join(',\n	');
 	}
 
 	private getPredictInputColumnNames(columns: PredictColumn[], tableName: string) {
 		return columns.map(c => {
 			return this.getColumnName(tableName, c.paramName || '', c.columnName);
-		}).join(',\n');
+		}).join(',\n	');
 	}
 
 	private getColumnName(tableName: string, columnName: string, displayName: string) {
