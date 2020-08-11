@@ -8,7 +8,7 @@ import { ExtHostObjectExplorerShape, SqlMainContext, MainThreadObjectExplorerSha
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { ExtHostCommands } from 'vs/workbench/api/common/extHostCommands';
-import { TreeViewItemHandleArg } from 'sql/workbench/common/views';
+import { TreeViewItemHandleArg, NodeType } from 'sql/workbench/common/views';
 
 export class ExtHostObjectExplorer implements ExtHostObjectExplorerShape {
 
@@ -27,7 +27,7 @@ export class ExtHostObjectExplorer implements ExtHostObjectExplorerShape {
 		function convertDataExplorerArgument(arg: TreeViewItemHandleArg): any {
 			return <azdata.ObjectExplorerContext>{
 				connectionProfile: arg.$treeItem.payload,
-				isConnectionNode: arg.$treeItem.type === 'Server',
+				isConnectionNode: arg.$treeItem?.type === NodeType.Server || arg.$treeItem?.type === NodeType.Database,
 				nodeInfo: arg.$treeItem.nodeInfo
 			};
 		}
