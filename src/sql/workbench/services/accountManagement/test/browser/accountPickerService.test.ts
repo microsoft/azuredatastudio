@@ -20,6 +20,7 @@ let mockAddAccountCompleteEmitter: Emitter<void>;
 let mockAddAccountErrorEmitter: Emitter<string>;
 let mockAddAccountStartEmitter: Emitter<void>;
 let mockOnAccountSelectionChangeEvent: Emitter<azdata.Account>;
+let mockOnTenantSelectionChangeEvent: Emitter<string>;
 
 // TESTS ///////////////////////////////////////////////////////////////////
 suite('Account picker service tests', () => {
@@ -29,6 +30,7 @@ suite('Account picker service tests', () => {
 		mockAddAccountErrorEmitter = new Emitter<string>();
 		mockAddAccountStartEmitter = new Emitter<void>();
 		mockOnAccountSelectionChangeEvent = new Emitter<azdata.Account>();
+		mockOnTenantSelectionChangeEvent = new Emitter<string>();
 	});
 
 	test('Construction - Events are properly defined', () => {
@@ -111,6 +113,8 @@ function createInstantiationService(): InstantiationService {
 		.returns(() => mockAddAccountStartEmitter.event);
 	mockAccountDialog.setup(x => x.onAccountSelectionChangeEvent)
 		.returns((account) => mockOnAccountSelectionChangeEvent.event);
+	mockAccountDialog.setup(x => x.onTenantSelectionChangeEvent)
+		.returns((tenant) => mockOnTenantSelectionChangeEvent.event);
 	mockAccountDialog.setup(x => x.render(TypeMoq.It.isAny()))
 		.returns((container) => undefined);
 	mockAccountDialog.setup(x => x.createAccountPickerComponent());

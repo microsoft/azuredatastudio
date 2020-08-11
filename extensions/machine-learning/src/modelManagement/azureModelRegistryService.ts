@@ -303,15 +303,12 @@ export class AzureModelRegistryService {
 		if (this._amlClient) {
 			return this._amlClient;
 		} else {
-			const tokens = await this._apiWrapper.getSecurityToken(account, azdata.AzureResource.ResourceManagement);
+			const tokens: { token: string, tokenType?: string } | undefined = await this._apiWrapper.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.ResourceManagement);
 			let token: string = '';
 			let tokenType: string | undefined = undefined;
-			if (tokens && tenant.id in tokens) {
-				const tokenForId = tokens[tenant.id];
-				if (tokenForId) {
-					token = tokenForId.token;
-					tokenType = tokenForId.tokenType;
-				}
+			if (tokens) {
+				token = tokens.token;
+				tokenType = tokens.tokenType;
 			}
 			const client = new AzureMachineLearningWorkspaces(new TokenCredentials(token, tokenType), subscription.id, options);
 			if (apiVersion) {

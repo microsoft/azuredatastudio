@@ -7,15 +7,39 @@ import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { ExtHostObjectExplorerShape, SqlMainContext, MainThreadObjectExplorerShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import { ExtHostCommands } from 'vs/workbench/api/common/extHostCommands';
+import { TreeViewItemHandleArg, NodeType } from 'sql/workbench/common/views';
 
 export class ExtHostObjectExplorer implements ExtHostObjectExplorerShape {
 
 	private _proxy: MainThreadObjectExplorerShape;
 
 	constructor(
-		mainContext: IMainContext
+		mainContext: IMainContext,
+		commands: ExtHostCommands
 	) {
 		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadObjectExplorer);
+
+		function isDataExplorerTreeViewItemHandleArg(arg: any): boolean {
+			return arg?.$treeItem?.payload;
+		}
+
+		function convertDataExplorerArgument(arg: TreeViewItemHandleArg): any {
+			return <azdata.ObjectExplorerContext>{
+				connectionProfile: arg.$treeItem.payload,
+				isConnectionNode: arg.$treeItem?.type === NodeType.Server || arg.$treeItem?.type === NodeType.Database,
+				nodeInfo: arg.$treeItem.nodeInfo
+			};
+		}
+
+		commands.registerArgumentProcessor({
+			processArgument: arg => {
+				if (isDataExplorerTreeViewItemHandleArg(arg)) {
+					return convertDataExplorerArgument(arg);
+				}
+				return arg;
+			}
+		});
 	}
 
 	public $getNode(connectionId: string, nodePath?: string): Thenable<azdata.objectexplorer.ObjectExplorerNode> {
