@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { SOURCE_CONFIGURATION_PAGE_TITLE } from '../models/strings';
+import { SOURCE_CONFIGURATION_PAGE_TITLE, COLLECTING_SOURCE_CONFIGURATIONS, COLLECTING_SOURCE_CONFIGURATIONS_INFO } from '../models/strings';
 import { MigrationStateModel } from '../models/stateMachine';
 
 export class SourceConfigurationPage extends MigrationWizardPage {
@@ -29,19 +29,25 @@ export class SourceConfigurationPage extends MigrationWizardPage {
 	}
 
 	private async registerContent(view: azdata.ModelView) {
-		let input = view.modelBuilder.inputBox();
-		input = input.withProperties<azdata.InputBoxProperties>({
-			placeHolder: 'some input'
+
+		let explaination = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			value: COLLECTING_SOURCE_CONFIGURATIONS_INFO,
+			CSSStyles: {
+				'font-size': '14px'
+			}
 		});
+
 		const form = view.modelBuilder.formContainer().withFormItems(
 			[
 				{
-					component: input.component(),
-					title: 'input title'
+					component: explaination.component(),
+					title: COLLECTING_SOURCE_CONFIGURATIONS,
 				}
-			]
+			],
+			{
+				titleFontSize: '20px'
+			}
 		).component();
-
 
 		await view.initializeModel(form);
 	}

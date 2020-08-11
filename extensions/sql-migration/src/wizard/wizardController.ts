@@ -22,6 +22,7 @@ export class WizardController {
 
 	private async createWizard(stateModel: MigrationStateModel): Promise<void> {
 		const wizard = azdata.window.createWizard(WIZARD_TITLE, 'wide');
+		wizard.generateScriptButton.enabled = false;
 		const sourceConfigurationPage = new SourceConfigurationPage(stateModel);
 
 		wizard.pages = [sourceConfigurationPage.getwizardPage()];
