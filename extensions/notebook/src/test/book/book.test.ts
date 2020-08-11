@@ -574,6 +574,7 @@ describe('BooksTreeViewTests', function () {
 			let notebookPath = path.join(rootFolderPath, 'content', 'readme.md');
 			bookTreeViewProvider.openMarkdown(notebookPath);
 			should(executeCommandSpy.calledWith('markdown.showPreview')).be.true('openMarkdown should have called markdown.showPreview');
+			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
 		});
 
 		it('openNotebook should open notebook in the editor', async () => {
