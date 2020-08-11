@@ -93,6 +93,22 @@ describe('Jupyter Server Installation', function () {
 		should(commandStr.includes('"TestPkg1>=1.2.3" "TestPkg2>=4.5.6"')).be.true();
 	});
 
+	it('Uninstall pip package', async function() {
+		let commandStub = sinon.stub(installation, 'executeStreamedCommand').resolves();
+
+		let testPackages = [{
+			name: 'jupyter',
+			version: '1.0.0'
+		}, {
+			name: 'TestPkg2',
+			version: '4.5.6'
+		}];
+		await should(installation.uninstallPipPackages(testPackages)).be.resolved();
+		should(commandStub.calledOnce).be.true();
+		let commandStr = commandStub.args[0][0] as string;
+		should(commandStr.includes('"jupyter==1.0.0" "TestPkg2==4.5.6"')).be.true();
+	});
+
 	it('Get conda packages', async function() {
 		// Should return nothing if conda is not installed
 		sinon.stub(installation, 'isCondaInstalled').returns(false);
@@ -159,5 +175,21 @@ describe('Jupyter Server Installation', function () {
 		should(commandStub.calledTwice).be.true();
 		commandStr = commandStub.args[1][0] as string;
 		should(commandStr.includes('"TestPkg1>=1.2.3" "TestPkg2>=4.5.6"')).be.true();
+	});
+
+	it('Uninstall conda package', async function() {
+		let commandStub = sinon.stub(installation, 'executeStreamedCommand').resolves();
+
+		let testPackages = [{
+			name: 'jupyter',
+			version: '1.0.0'
+		}, {
+			name: 'TestPkg2',
+			version: '4.5.6'
+		}];
+		await should(installation.uninstallCondaPackages(testPackages)).be.resolved();
+		should(commandStub.calledOnce).be.true();
+		let commandStr = commandStub.args[0][0] as string;
+		should(commandStr.includes('"jupyter==1.0.0" "TestPkg2==4.5.6"')).be.true();
 	});
 });
