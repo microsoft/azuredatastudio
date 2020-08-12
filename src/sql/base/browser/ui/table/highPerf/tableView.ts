@@ -329,17 +329,12 @@ export class TableView<T> implements IDisposable {
 	}
 
 	private onScroll(e: ScrollEvent): void {
-		try {
-			if (this.scheduledRender) {
-				this.scheduledRender.dispose();
-			}
-			this.scheduledRender = DOM.runAtThisOrScheduleAtNextAnimationFrame(() => {
-				this.render(e.scrollTop, e.height, e.scrollLeft, e.scrollWidth);
-			});
-		} catch (err) {
-			console.error('Got bad scroll event:', e);
-			throw err;
+		if (this.scheduledRender) {
+			this.scheduledRender.dispose();
 		}
+		this.scheduledRender = DOM.runAtThisOrScheduleAtNextAnimationFrame(() => {
+			this.render(e.scrollTop, e.height, e.scrollLeft, e.scrollWidth);
+		});
 	}
 
 	private getRenderRange(renderTop: number, renderHeight: number): IRange {
