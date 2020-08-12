@@ -708,16 +708,31 @@ export namespace GenerateSqlAssessmentScriptRequest {
 
 
 // ------------------------------- <Diagrams> -----------------------------
-export class DiagramSchemaParams {
-	public ownerUri: string;
+export enum DiagramObject {
+	Schema = 1,
+	Database = 2,
+	Table = 3
 }
 
-export class DiagramSchemaResult {
+export class DiagramRequestParams {
+	public ownerUri: string;
+	public schema: string;
+	public server: string;
+	public database: string;
+	public table: string;
+	public diagramView: DiagramObject;
+}
+
+export class DiagramRequestResult {
 	public metadata: azdata.ObjectMetadata[];
 }
 
-export namespace DiagramSchemaRequest {
-	export const type = new RequestType<DiagramSchemaParams, DiagramSchemaResult, void, void>('diagram/schema');
+export namespace DiagramModelRequest {
+	export const type = new RequestType<DiagramRequestParams, DiagramRequestResult, void, void>('diagram/model');
+}
+
+export namespace DiagramPropertiesRequest {
+	export const type = new RequestType<DiagramRequestParams, DiagramRequestResult, void, void>('diagram/properties');
 }
 // ------------------------------- <Diagrams> -----------------------------
 

@@ -861,3 +861,18 @@ export enum SqlAssessmentResultItemKind {
 	Warning = 1,
 	Error = 2
 }
+
+export enum DiagramObject {
+	Schema = 1,
+	Database = 2,
+	Table = 3
+}
+
+export class DiagramRequestParams {
+	public ownerUri: string;
+	public schema: string;
+	public server: string;
+	public database: string;
+	public table: string;
+	public diagramView: DiagramObject;
+}

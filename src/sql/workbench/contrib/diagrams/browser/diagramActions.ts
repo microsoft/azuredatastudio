@@ -4,13 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vs/nls';
-
 import { Action } from 'vs/base/common/actions';
-import { IDiagramService } from 'sql/workbench/services/diagrams/common/interfaces';
+import { IDiagramService, DiagramRequestParams, DiagramObject } from 'sql/workbench/services/diagrams/common/interfaces';
 import { ObjectMetadata } from 'azdata';
 
 /**
- * ..
+ * Action to get a Diagram Model for a Object Type
  */
 export class GetDiagramModelAction extends Action {
 	public static ID = 'getDiagramModel';
@@ -27,7 +26,15 @@ export class GetDiagramModelAction extends Action {
 
 	public async run(ownerUri: string): Promise<ObjectMetadata[]> {
 		if (ownerUri) {
-			const model = await this._diagramService.getDiagramModel(ownerUri);
+			let diagramModelParams: DiagramRequestParams = {
+				ownerUri: ownerUri,
+				schema: undefined,
+				server: undefined,
+				database: undefined,
+				table: undefined,
+				diagramView: DiagramObject.Schema
+			};
+			const model = await this._diagramService.getDiagramModel(diagramModelParams);
 			return model;
 		}
 		return Promise.resolve(null);

@@ -6,7 +6,6 @@
 // This is the place for API experiments and proposal.
 
 import * as vscode from 'vscode';
-import { ObjectMetadata } from 'azdata';
 
 declare module 'azdata' {
 	/**
@@ -481,8 +480,23 @@ declare module 'azdata' {
 		generateAssessmentScript(items: SqlAssessmentResultItem[]): Promise<ResultStatus>;
 	}
 
+	export enum DiagramObject {
+		Schema = 1,
+		Database = 2,
+		Table = 3
+	}
+
+	export class DiagramRequestParams {
+		public ownerUri: string;
+		public schema: string;
+		public server: string;
+		public database: string;
+		public table: string;
+		public diagramView: DiagramObject;
+	}
+
 	export interface DiagramServicesProvider extends DataProvider {
-		getDiagramModel(ownerUri: string): Promise<ObjectMetadata[]>;
+		getDiagramModel(params: DiagramRequestParams): Promise<ObjectMetadata[]>;
 	}
 
 	export interface TreeItem2 extends vscode.TreeItem2 {

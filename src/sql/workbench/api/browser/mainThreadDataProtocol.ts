@@ -472,8 +472,8 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		const self = this;
 		this._diagramService.registerProvider(providerId, <azdata.DiagramServicesProvider>{
 			providerId: providerId,
-			getDiagramModel(connectionUri: string): Thenable<azdata.ObjectMetadata[]> {
-				return self._proxy.$getDiagramModel(handle, connectionUri);
+			getDiagramModel(params: azdata.DiagramRequestParams): Thenable<azdata.ObjectMetadata[]> {
+				return self._proxy.$getDiagramModel(handle, params);
 			}
 		});
 

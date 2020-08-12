@@ -793,7 +793,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 
 export class DiagramServicesFeature extends SqlOpsFeature<undefined> {
 	private static readonly messagesTypes: RPCMessageType[] = [
-		contracts.DiagramSchemaRequest.type
+		contracts.DiagramModelRequest.type
 	];
 	constructor(client: SqlOpsDataClient) {
 		super(client, DiagramServicesFeature.messagesTypes);
@@ -812,14 +812,13 @@ export class DiagramServicesFeature extends SqlOpsFeature<undefined> {
 	protected registerProvider(options: undefined): Disposable {
 		const client = this._client;
 
-		let getDiagramModel = async(ownerUri: string): Promise<azdata.ObjectMetadata[]> => {
-			let params: contracts.DiagramSchemaParams = { ownerUri: ownerUri };
+		let getDiagramModel = async (params: contracts.DiagramRequestParams): Promise<azdata.ObjectMetadata[]> => {
 			try {
-				let result = await client.sendRequest(contracts.DiagramSchemaRequest.type, params);
+				let result = await client.sendRequest(contracts.DiagramModelRequest.type, params);
 				return result.metadata;
 			}
 			catch (e) {
-				client.logFailedRequest(contracts.DiagramSchemaRequest.type, e);
+				client.logFailedRequest(contracts.DiagramModelRequest.type, e);
 			}
 
 			return undefined;

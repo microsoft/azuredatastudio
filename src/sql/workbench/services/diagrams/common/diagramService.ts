@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { IDiagramService } from 'sql/workbench/services/diagrams/common/interfaces';
+import { IDiagramService, DiagramRequestParams } from 'sql/workbench/services/diagrams/common/interfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { localize } from 'vs/nls';
 
@@ -31,9 +31,9 @@ export class DiagramService implements IDiagramService {
 		}
 	}
 
-	public getDiagramModel(connectionUri: string): Thenable<azdata.ObjectMetadata[]> {
-		return this._runAction(connectionUri, (runner) => {
-			return runner.getDiagramModel(connectionUri);
+	public getDiagramModel(params: DiagramRequestParams): Thenable<azdata.ObjectMetadata[]> {
+		return this._runAction(params.ownerUri, (runner) => {
+			return runner.getDiagramModel(params);
 		});
 	}
 
