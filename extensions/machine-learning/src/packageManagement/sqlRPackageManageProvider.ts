@@ -69,16 +69,16 @@ export class SqlRPackageManageProvider extends SqlPackageManageProviderBase impl
 		let connectionParts: string[] = [];
 
 		if (connection) {
-			connectionParts.push(utils.getKeuValueString('driver', constants.supportedODBCDriver));
+			connectionParts.push(utils.getKeyValueString('driver', constants.supportedODBCDriver));
 			let server = connection.serverName.replace('\\', '\\\\');
 			if (databaseName) {
-				connectionParts.push(utils.getKeuValueString('database', `"${databaseName}"`));
+				connectionParts.push(utils.getKeyValueString('database', `"${databaseName}"`));
 			}
 			if (connection.userName) {
-				connectionParts.push(utils.getKeuValueString('uid', `"${connection.userName}"`));
-				connectionParts.push(utils.getKeuValueString('pwd', `"${credentials[azdata.ConnectionOptionSpecialType.password]}"`));
+				connectionParts.push(utils.getKeyValueString('uid', `"${connection.userName}"`));
+				connectionParts.push(utils.getKeyValueString('pwd', `"${credentials[azdata.ConnectionOptionSpecialType.password]}"`));
 			}
-			connectionParts.push(utils.getKeuValueString('server', `"${server}"`));
+			connectionParts.push(utils.getKeyValueString('server', `"${server}"`));
 
 			let rCommandScript = scriptMode === ScriptMode.Install ? 'sql_install.packages' : 'sql_remove.packages';
 
