@@ -25,8 +25,9 @@ export enum State {
 }
 
 export interface Model {
-	readonly sourceConnection: azdata.IConnectionProfile;
+	readonly sourceConnection: azdata.connection.Connection;
 	readonly currentState: State;
+	gatheringInformationError: string | undefined;
 }
 
 export interface StateChangeEvent {
@@ -37,12 +38,13 @@ export interface StateChangeEvent {
 export class MigrationStateModel implements Model, vscode.Disposable {
 	private _stateChangeEventEmitter = new vscode.EventEmitter<StateChangeEvent>();
 	private _currentState: State;
+	private _gatheringInformationError: string | undefined;
 
-	constructor(private readonly _sourceConnection: azdata.IConnectionProfile) {
+	constructor(private readonly _sourceConnection: azdata.connection.Connection) {
 		this._currentState = State.INIT;
 	}
 
-	public get sourceConnection(): azdata.IConnectionProfile {
+	public get sourceConnection(): azdata.connection.Connection {
 		return this._sourceConnection;
 	}
 
@@ -56,6 +58,14 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		this._currentState = newState;
 
 		this._stateChangeEventEmitter.fire({ oldState, newState: this.currentState });
+	}
+
+	public get gatheringInformationError(): string | undefined {
+		return this._gatheringInformationError;
+	}
+
+	public set gatheringInformationError(error: string | undefined) {
+		this._gatheringInformationError = error;
 	}
 
 	public get stateChangeEvent(): vscode.Event<StateChangeEvent> {
