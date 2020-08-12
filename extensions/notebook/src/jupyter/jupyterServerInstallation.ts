@@ -788,11 +788,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		return this._usingConda;
 	}
 
-	public isCondaInstalled(): boolean {
-		if (!this._usingExistingPython) {
-			return false;
-		}
-
+	private isCondaInstalled(): boolean {
 		let condaExePath = this.getCondaExePath();
 		// eslint-disable-next-line no-sync
 		return fs.existsSync(condaExePath);

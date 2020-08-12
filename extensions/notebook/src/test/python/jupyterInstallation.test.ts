@@ -8,6 +8,7 @@ import * as should from 'should';
 import * as sinon from 'sinon';
 import * as TypeMoq from 'typemoq';
 import * as uuid from 'uuid';
+import * as fs from 'fs-extra';
 import { JupyterServerInstallation, PythonPkgDetails } from '../../jupyter/jupyterServerInstallation';
 
 describe('Jupyter Server Installation', function () {
@@ -67,10 +68,10 @@ describe('Jupyter Server Installation', function () {
 		let commandStub = sinon.stub(installation, 'executeStreamedCommand').resolves();
 
 		// Should not execute any commands when passed an empty package list
-		await should(installation.installPipPackages(undefined, false)).be.resolved();
+		await installation.installPipPackages(undefined, false);
 		should(commandStub.called).be.false();
 
-		await should(installation.installPipPackages([], false)).be.resolved();
+		await installation.installPipPackages([], false);
 		should(commandStub.called).be.false();
 
 		// Install package using exact version
@@ -81,13 +82,13 @@ describe('Jupyter Server Installation', function () {
 			name: 'TestPkg2',
 			version: '4.5.6'
 		}];
-		await should(installation.installPipPackages(testPackages, false)).be.resolved();
+		await installation.installPipPackages(testPackages, false);
 		should(commandStub.calledOnce).be.true();
 		let commandStr = commandStub.args[0][0] as string;
 		should(commandStr.includes('"TestPkg1==1.2.3" "TestPkg2==4.5.6"')).be.true();
 
 		// Install package using minimum version
-		await should(installation.installPipPackages(testPackages, true)).be.resolved();
+		await installation.installPipPackages(testPackages, true);
 		should(commandStub.calledTwice).be.true();
 		commandStr = commandStub.args[1][0] as string;
 		should(commandStr.includes('"TestPkg1>=1.2.3" "TestPkg2>=4.5.6"')).be.true();
@@ -103,7 +104,7 @@ describe('Jupyter Server Installation', function () {
 			name: 'TestPkg2',
 			version: '4.5.6'
 		}];
-		await should(installation.uninstallPipPackages(testPackages)).be.resolved();
+		await installation.uninstallPipPackages(testPackages);
 		should(commandStub.calledOnce).be.true();
 		let commandStr = commandStub.args[0][0] as string;
 		should(commandStr.includes('"jupyter==1.0.0" "TestPkg2==4.5.6"')).be.true();
@@ -111,14 +112,14 @@ describe('Jupyter Server Installation', function () {
 
 	it('Get conda packages', async function() {
 		// Should return nothing if conda is not installed
-		sinon.stub(installation, 'isCondaInstalled').returns(false);
+		sinon.stub(fs, 'existsSync').returns(false);
 		let pkgResult = await installation.getInstalledCondaPackages();
 		should(pkgResult).not.be.undefined();
 		should(pkgResult.length).be.equal(0);
 
 		// Should return nothing on error
 		sinon.restore();
-		sinon.stub(installation, 'isCondaInstalled').returns(true);
+		sinon.stub(fs, 'existsSync').returns(true);
 		sinon.stub(installation, 'executeBufferedCommand').rejects(new Error('Expected test failure.'));
 		pkgResult = await installation.getInstalledCondaPackages();
 		should(pkgResult).not.be.undefined();
@@ -140,7 +141,7 @@ describe('Jupyter Server Installation', function () {
 			version: '7.8.9',
 			channel: 'conda'
 		}];
-		sinon.stub(installation, 'isCondaInstalled').returns(true);
+		sinon.stub(fs, 'existsSync').returns(true);
 		sinon.stub(installation, 'executeBufferedCommand').resolves(JSON.stringify(testPackages));
 		pkgResult = await installation.getInstalledCondaPackages();
 		let filteredPackages = testPackages.filter(pkg => pkg.channel !== 'pypi');
@@ -151,10 +152,10 @@ describe('Jupyter Server Installation', function () {
 		let commandStub = sinon.stub(installation, 'executeStreamedCommand').resolves();
 
 		// Should not execute any commands when passed an empty package list
-		await should(installation.installCondaPackages(undefined, false)).be.resolved();
+		await installation.installCondaPackages(undefined, false);
 		should(commandStub.called).be.false();
 
-		await should(installation.installCondaPackages([], false)).be.resolved();
+		await installation.installCondaPackages([], false);
 		should(commandStub.called).be.false();
 
 		// Install package using exact version
@@ -165,13 +166,13 @@ describe('Jupyter Server Installation', function () {
 			name: 'TestPkg2',
 			version: '4.5.6'
 		}];
-		await should(installation.installCondaPackages(testPackages, false)).be.resolved();
+		await installation.installCondaPackages(testPackages, false);
 		should(commandStub.calledOnce).be.true();
 		let commandStr = commandStub.args[0][0] as string;
 		should(commandStr.includes('"TestPkg1==1.2.3" "TestPkg2==4.5.6"')).be.true();
 
 		// Install package using minimum version
-		await should(installation.installCondaPackages(testPackages, true)).be.resolved();
+		await installation.installCondaPackages(testPackages, true);
 		should(commandStub.calledTwice).be.true();
 		commandStr = commandStub.args[1][0] as string;
 		should(commandStr.includes('"TestPkg1>=1.2.3" "TestPkg2>=4.5.6"')).be.true();
@@ -187,7 +188,7 @@ describe('Jupyter Server Installation', function () {
 			name: 'TestPkg2',
 			version: '4.5.6'
 		}];
-		await should(installation.uninstallCondaPackages(testPackages)).be.resolved();
+		await installation.uninstallCondaPackages(testPackages);
 		should(commandStub.calledOnce).be.true();
 		let commandStr = commandStub.args[0][0] as string;
 		should(commandStr.includes('"jupyter==1.0.0" "TestPkg2==4.5.6"')).be.true();
