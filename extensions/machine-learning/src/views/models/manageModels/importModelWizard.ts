@@ -46,7 +46,7 @@ export class ImportModelWizard extends ModelViewBase {
 		this.modelImportTargetPage = new ModelImportLocationPage(this._apiWrapper, this);
 		this.wizardView = new WizardView(this._apiWrapper);
 
-		let wizard = this.wizardView.createWizard(constants.registerModelTitle, [this.modelImportTargetPage, this.modelSourcePage, this.modelBrowsePage, this.modelDetailsPage]);
+		let wizard = this.wizardView.createWizard(constants.registerModelTitle, [this.modelSourcePage, this.modelBrowsePage, this.modelDetailsPage, this.modelImportTargetPage]);
 
 		this.mainViewPanel = wizard;
 		wizard.doneButton.label = constants.azureRegisterModel;
