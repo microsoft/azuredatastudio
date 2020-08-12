@@ -17,12 +17,15 @@ export interface IRowDetailViewOptions<T> {
 	postTemplate: (item: ExtendedItem<T>) => string;
 	detailsHtml?: boolean;
 	headerCssClass?: string;
+	idGetter?: (item: ExtendedItem<T>) => string;
+	idSetter?: (item: ExtendedItem<T>, value: string) => void
 }
-
 const defaultOptions = {
 	columnId: '_detail_selector',
 	toolTip: '',
-	width: 30
+	width: 30,
+	idGetter: item => item.id,
+	idSetter: (item, val) => item.id = val
 };
 
 export interface IExtendedItem<T extends Slick.SlickData> {
@@ -31,7 +34,6 @@ export interface IExtendedItem<T extends Slick.SlickData> {
 	_detailContent?: string;
 	_detailViewLoaded?: boolean;
 	_sizePadding?: number;
-	id?: string;
 	_height?: number;
 	_isPadding?: boolean;
 	name?: string;
@@ -68,6 +70,7 @@ export class RowDetailView<T extends Slick.SlickData> {
 	public init(grid: Slick.Grid<T>): void {
 		this._grid = grid;
 		this._dataView = this._grid.getData() as AugmentedDataView<T>; // this is a bad assumption but the code is written with this assumption
+
 
 		// Update the minRowBuffer so that the view doesn't disappear when it's at top of screen + the original default 3
 		this._grid.getOptions().minRowBuffer = this._options.panelRows + 3;
@@ -188,9 +191,9 @@ export class RowDetailView<T extends Slick.SlickData> {
 
 	// Saves the current state of the detail view
 	public saveDetailView(item: ExtendedItem<T>) {
-		const view = jQuery('#innerDetailView_' + item.id);
+		const view = jQuery('#innerDetailView_' + this._options.idGetter(item));
 		if (view) {
-			const html = jQuery('#innerDetailView_' + item.id).html();
+			const html = jQuery('#innerDetailView_' + this._options.idGetter(item)).html();
 			if (html !== undefined) {
 				item._detailContent = html;
 			}
@@ -207,14 +210,14 @@ export class RowDetailView<T extends Slick.SlickData> {
 
 		item._collapsed = true;
 		for (let idx = 1; idx <= item._sizePadding!; idx++) {
-			this._dataView.deleteItem(item.id + '.' + idx);
+			this._dataView.deleteItem(this._options.idGetter(item) + '.' + idx);
 		}
 		item._sizePadding = 0;
-		this._dataView.updateItem(item.id!, item);
+		this._dataView.updateItem(this._options.idGetter(item), item);
 
 		// Remove the item from the expandedRows
 		this._expandedRows = this._expandedRows.filter((r) => {
-			return r.id !== item.id;
+			return this._options.idGetter(r) !== this._options.idGetter(item);
 		});
 	}
 
@@ -237,13 +240,13 @@ export class RowDetailView<T extends Slick.SlickData> {
 				detailView: item._detailContent!
 			}, undefined, this);
 			this.applyTemplateNewLineHeight(item);
-			this._dataView.updateItem(item.id!, item);
+			this._dataView.updateItem(this._options.idGetter(item), item);
 
 			return;
 		}
 
 		this.applyTemplateNewLineHeight(item);
-		this._dataView.updateItem(item.id!, item);
+		this._dataView.updateItem(this._options.idGetter(item), item);
 
 		// async server call
 		this._options.process(item);
@@ -268,7 +271,7 @@ export class RowDetailView<T extends Slick.SlickData> {
 
 			args.itemDetail._detailViewLoaded = true;
 
-			this._dataView.updateItem(args.itemDetail.id!, args.itemDetail);
+			this._dataView.updateItem(this._options.idGetter(args.itemDetail), args.itemDetail);
 
 			// trigger an event once the post template is finished loading
 			this.onAsyncEndUpdate.notify({
@@ -296,7 +299,8 @@ export class RowDetailView<T extends Slick.SlickData> {
 		for (const prop in this._grid.getData()) {
 			item[prop] = null;
 		}
-		item.id = parent.id + '.' + offset;
+		this._options.idSetter(item, this._options.idGetter(parent) + '.' + offset);
+
 
 		//additional hidden padding metadata fields
 		item._collapsed = true;
@@ -308,7 +312,7 @@ export class RowDetailView<T extends Slick.SlickData> {
 
 	public getErrorItem(parent: ExtendedItem<T>, offset: number | string) {
 		const item: ExtendedItem<T> = Object.create(null);
-		item.id = parent.id + '.' + offset;
+		this._options.idSetter(item, parent.id + '.' + offset);
 		item._collapsed = true;
 		item._isPadding = false;
 		item._parent = parent;
@@ -330,7 +334,7 @@ export class RowDetailView<T extends Slick.SlickData> {
 		item._sizePadding = Math.ceil(((rowCount * 2) * lineHeight) / this._grid.getOptions().rowHeight!);
 		item._height = (item._sizePadding * this._grid.getOptions().rowHeight!);
 
-		const idxParent = this._dataView.getIdxById(item.id!);
+		const idxParent = this._dataView.getIdxById(this._options.idGetter(item));
 		for (let idx = 1; idx <= item._sizePadding; idx++) {
 			if (showError) {
 				this._dataView.insertItem(idxParent + idx, this.getErrorItem(item, 'error'));
@@ -385,14 +389,14 @@ export class RowDetailView<T extends Slick.SlickData> {
 			//sneaky extra </div> inserted here-----------------v
 			html.push('<div class="detailView-toggle collapse"></div></div>');
 
-			html.push(`<div id='cellDetailView_${dataContext.id}' class='dynamic-cell-detail' `);   //apply custom css to detail
+			html.push(`<div id='cellDetailView_${this._options.idGetter(dataContext)}' class='dynamic-cell-detail' `);   //apply custom css to detail
 			html.push(`style=\'height:${dataContext._height}px;`); //set total height of padding
 			html.push(`top:${rowHeight}px'>`);             //shift detail below 1st row
-			html.push(`<div id='detailViewContainer_${dataContext.id}"'  class='detail-container' style='max-height:${(dataContext._height! - rowHeight + bottomMargin)}px'>`); //sub ctr for custom styling
+			html.push(`<div id='detailViewContainer_${this._options.idGetter(dataContext)}"'  class='detail-container' style='max-height:${(dataContext._height! - rowHeight + bottomMargin)}px'>`); //sub ctr for custom styling
 			let detailsContent = this._options.detailsHtml
 				? dataContext._detailContent!
 				: escape(dataContext._detailContent!);
-			html.push(`<div id='innerDetailView_${dataContext.id}'>${detailsContent}</div></div>`);
+			html.push(`<div id='innerDetailView_${this._options.idGetter(dataContext)}'>${detailsContent}</div></div>`);
 			//&omit a final closing detail container </div> that would come next
 
 			return html.join('');

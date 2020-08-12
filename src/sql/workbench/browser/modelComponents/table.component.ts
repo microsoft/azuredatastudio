@@ -416,7 +416,9 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 			preTemplate: () => '',
 			loadOnce: true,
 			detailsHtml: settings.detailsHtml,
-			headerCssClass: settings.headerCssClass
+			headerCssClass: settings.headerCssClass,
+			idGetter: (item) => item.__id__,
+			idSetter: (item, val) => item.__id__ = val
 		});
 		this._rowDetail = rowDetail;
 		this._table.registerPlugin(<any>this._rowDetail);
