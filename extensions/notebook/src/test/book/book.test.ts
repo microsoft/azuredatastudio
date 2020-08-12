@@ -523,8 +523,9 @@ describe('BooksTreeViewTests', function () {
 			await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
 		});
 
-		afterEach(function (): void {
+		afterEach(async function (): Promise<void> {
 			sinon.restore();
+			await vscode.commands.executeCommand('workbench.action.closeAllEditors');
 		});
 
 		it('should add book and initialize book on openBook', async () => {
@@ -535,6 +536,33 @@ describe('BooksTreeViewTests', function () {
 			await bookTreeViewProvider.openBook(rootFolderPath);
 			should(bookTreeViewProvider.books.length).equal(1, 'Failed to initialize the book on open');
 			should(showPreviewSpy.notCalled).be.true('Should not call showPreviewFile when showPreview isn\' true');
+		});
+
+		it('openMarkdown should open markdown in the editor', async () => {
+			let executeCommandSpy = sinon.spy(vscode.commands, 'executeCommand');
+			let notebookPath = path.join(rootFolderPath, 'content', 'readme.md');
+			bookTreeViewProvider.openMarkdown(notebookPath);
+			should(executeCommandSpy.calledWith('markdown.showPreview')).be.true('openMarkdown should have called markdown.showPreview');
+		});
+
+		it('openNotebook should open notebook in the editor', async () => {
+			let showNotebookSpy = sinon.spy(azdata.nb, 'showNotebookDocument');
+			let notebookPath = path.join(rootFolderPath, 'content', 'notebook2.ipynb');
+			await bookTreeViewProvider.openNotebook(notebookPath);
+			should(showNotebookSpy.calledWith(vscode.Uri.file(notebookPath))).be.true(`Should have opened the notebook from ${notebookPath} in the editor.`);
+		});
+
+		it('openNotebookAsUntitled should open a notebook as untitled file in the editor', async () => {
+			let notebookPath = path.join(rootFolderPath, 'content', 'notebook2.ipynb');
+			await bookTreeViewProvider.openNotebookAsUntitled(notebookPath);
+			should(azdata.nb.notebookDocuments.find(doc => doc.uri.scheme === 'untitled')).not.be.undefined();
+		});
+
+		it('openExternalLink should open link', async () => {
+			let executeCommandSpy = sinon.spy(vscode.commands, 'executeCommand');
+			let notebookPath = path.join(rootFolderPath, 'content', 'readme.md');
+			bookTreeViewProvider.openMarkdown(notebookPath);
+			should(executeCommandSpy.calledWith('markdown.showPreview')).be.true('openMarkdown should have called markdown.showPreview');
 		});
 
 		it('should call showPreviewFile on openBook when showPreview flag is set', async () => {
@@ -569,35 +597,6 @@ describe('BooksTreeViewTests', function () {
 		it('should get notebook path with untitled schema on openNotebookAsUntitled', async () => {
 			let notebookUri = bookTreeViewProvider.getUntitledNotebookUri(path.join(rootFolderPath, 'content', 'notebook2.ipynb'));
 			should(notebookUri.scheme).equal('untitled', 'Failed to get untitled uri of the resource');
-		});
-
-		it('openMarkdown should open markdown in the editor', async () => {
-			let executeCommandSpy = sinon.spy(vscode.commands, 'executeCommand');
-			let notebookPath = path.join(rootFolderPath, 'content', 'readme.md');
-			bookTreeViewProvider.openMarkdown(notebookPath);
-			should(executeCommandSpy.calledWith('markdown.showPreview')).be.true('openMarkdown should have called markdown.showPreview');
-			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
-		});
-
-		it('openNotebook should open notebook in the editor', async () => {
-			let notebookPath = path.join(rootFolderPath, 'content', 'notebook2.ipynb');
-			await bookTreeViewProvider.openNotebook(notebookPath);
-			should(azdata.nb.notebookDocuments.length).equal(1, `Should have opened the notebook from ${notebookPath} in the editor.`);
-			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
-		});
-
-		it('openNotebookAsUntitled should open a notebook as untitled file in the editor', async () => {
-			let notebookPath = path.join(rootFolderPath, 'content', 'notebook2.ipynb');
-			await bookTreeViewProvider.openNotebookAsUntitled(notebookPath);
-			should(azdata.nb.notebookDocuments.find(doc => doc.uri.scheme === 'untitled')).not.be.undefined();
-			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
-		});
-
-		it('openExternalLink should open link', async () => {
-			let executeCommandSpy = sinon.spy(vscode.commands, 'executeCommand');
-			let notebookPath = path.join(rootFolderPath, 'content', 'readme.md');
-			bookTreeViewProvider.openMarkdown(notebookPath);
-			should(executeCommandSpy.calledWith('markdown.showPreview')).be.true('openMarkdown should have called markdown.showPreview');
 		});
 
 		it('openNotebookFolder without folderPath should prompt for folder path and invoke loadNotebooksInFolder', async () => {
@@ -652,7 +651,6 @@ describe('BooksTreeViewTests', function () {
 			if (await exists(rootFolderPath)) {
 				await promisify(rimraf)(rootFolderPath);
 			}
-			await vscode.commands.executeCommand('workbench.action.closeAllEditors');
 		});
 	});
 
