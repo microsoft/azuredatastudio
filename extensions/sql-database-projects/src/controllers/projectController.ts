@@ -692,7 +692,7 @@ export class ProjectsController {
 		}
 
 		// choose database if connection was to a server or master
-		if (!model.database || model.database === constants.master) {
+		if (!database || database === constants.master) {
 			const databaseList = await azdata.connection.listDatabases(connectionId);
 			database = (await vscode.window.showQuickPick(databaseList.map(dbName => { return { label: dbName }; }),
 				{
