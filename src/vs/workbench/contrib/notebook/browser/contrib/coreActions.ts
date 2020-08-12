@@ -390,6 +390,13 @@ MenuRegistry.appendMenuItem(MenuId.NotebookCellTitle, {
 	group: CellOverflowToolbarGroups.Insert
 });
 
+MenuRegistry.appendMenuItem(MenuId.EditorContext, {
+	submenu: MenuId.NotebookCellTitle,
+	title: localize('notebookMenu.cellTitle', "Notebook Cell"),
+	group: CellOverflowToolbarGroups.Insert,
+	when: NOTEBOOK_EDITOR_FOCUSED
+});
+
 MenuRegistry.appendMenuItem(MenuId.EditorTitle, {
 	command: {
 		id: EXECUTE_NOTEBOOK_COMMAND_ID,
@@ -1456,7 +1463,7 @@ registerAction2(class extends NotebookCellAction {
 			},
 			menu: {
 				id: MenuId.NotebookCellTitle,
-				when: ContextKeyExpr.and(NOTEBOOK_CELL_LIST_FOCUSED, NOTEBOOK_CELL_INPUT_COLLAPSED.toNegated()),
+				when: ContextKeyExpr.and(NOTEBOOK_CELL_INPUT_COLLAPSED.toNegated()),
 				group: CellOverflowToolbarGroups.Collapse,
 			}
 		});
@@ -1479,7 +1486,7 @@ registerAction2(class extends NotebookCellAction {
 			},
 			menu: {
 				id: MenuId.NotebookCellTitle,
-				when: ContextKeyExpr.and(NOTEBOOK_CELL_LIST_FOCUSED, NOTEBOOK_CELL_INPUT_COLLAPSED),
+				when: ContextKeyExpr.and(NOTEBOOK_CELL_INPUT_COLLAPSED),
 				group: CellOverflowToolbarGroups.Collapse,
 			}
 		});
@@ -1502,7 +1509,7 @@ registerAction2(class extends NotebookCellAction {
 			},
 			menu: {
 				id: MenuId.NotebookCellTitle,
-				when: ContextKeyExpr.and(NOTEBOOK_CELL_LIST_FOCUSED, NOTEBOOK_CELL_OUTPUT_COLLAPSED.toNegated(), NOTEBOOK_CELL_HAS_OUTPUTS),
+				when: ContextKeyExpr.and(NOTEBOOK_CELL_OUTPUT_COLLAPSED.toNegated(), NOTEBOOK_CELL_HAS_OUTPUTS),
 				group: CellOverflowToolbarGroups.Collapse,
 			}
 		});
@@ -1525,7 +1532,7 @@ registerAction2(class extends NotebookCellAction {
 			},
 			menu: {
 				id: MenuId.NotebookCellTitle,
-				when: ContextKeyExpr.and(NOTEBOOK_CELL_LIST_FOCUSED, NOTEBOOK_CELL_OUTPUT_COLLAPSED),
+				when: ContextKeyExpr.and(NOTEBOOK_CELL_OUTPUT_COLLAPSED),
 				group: CellOverflowToolbarGroups.Collapse,
 			}
 		});
