@@ -133,6 +133,9 @@ export class PackageManager {
 
 		await utils.createFolder(utils.getRPackagesFolderPath(this._rootFolder));
 		const packages = this._config.requiredSqlRPackages.filter(p => !p.platform || p.platform === process.platform);
+
+		// Install packages in order of listed in the config. The order specifies the dependency of the packages and
+		// packages cannot install as parallel because of the dependency for each other
 		for (let index = 0; index < packages.length; index++) {
 			const packageName = packages[index];
 			await this.installRPackage(packageName);
