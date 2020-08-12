@@ -89,6 +89,13 @@ const enum CellToolbarOrder {
 	DeleteCell
 }
 
+const enum CellOverflowToolbarGroups {
+	Copy = '1_copy',
+	Insert = '2_insert',
+	Edit = '3_edit',
+	Collapse = '4_collapse',
+}
+
 export interface INotebookActionContext {
 	readonly cellTemplate?: BaseCellRenderTemplate;
 	readonly cell?: ICellViewModel;
@@ -377,6 +384,12 @@ registerAction2(class extends NotebookAction {
 	}
 });
 
+MenuRegistry.appendMenuItem(MenuId.NotebookCellTitle, {
+	submenu: MenuId.NotebookCellInsert,
+	title: localize('notebookMenu.insertCell', "Insert Cell"),
+	group: CellOverflowToolbarGroups.Insert
+});
+
 MenuRegistry.appendMenuItem(MenuId.EditorTitle, {
 	command: {
 		id: EXECUTE_NOTEBOOK_COMMAND_ID,
@@ -413,7 +426,7 @@ registerAction2(class extends NotebookCellAction {
 			menu: {
 				id: MenuId.NotebookCellTitle,
 				when: ContextKeyExpr.and(NOTEBOOK_EDITOR_FOCUSED, NOTEBOOK_EDITOR_EDITABLE, NOTEBOOK_CELL_EDITABLE, NOTEBOOK_CELL_TYPE.isEqualTo('markdown')),
-				group: '2_edit',
+				group: CellOverflowToolbarGroups.Edit,
 			}
 		});
 	}
@@ -437,7 +450,7 @@ registerAction2(class extends NotebookCellAction {
 			menu: {
 				id: MenuId.NotebookCellTitle,
 				when: ContextKeyExpr.and(NOTEBOOK_EDITOR_FOCUSED, NOTEBOOK_EDITOR_EDITABLE, NOTEBOOK_CELL_EDITABLE, NOTEBOOK_CELL_TYPE.isEqualTo('code')),
-				group: '2_edit',
+				group: CellOverflowToolbarGroups.Edit,
 			}
 		});
 	}
@@ -530,6 +543,10 @@ registerAction2(class extends InsertCellCommand {
 					when: ContextKeyExpr.and(NOTEBOOK_CELL_LIST_FOCUSED, InputFocusedContext.toNegated()),
 					weight: KeybindingWeight.WorkbenchContrib
 				},
+				menu: {
+					id: MenuId.NotebookCellInsert,
+					order: 0
+				}
 			},
 			CellKind.Code,
 			'above');
@@ -547,6 +564,10 @@ registerAction2(class extends InsertCellCommand {
 					when: ContextKeyExpr.and(NOTEBOOK_CELL_LIST_FOCUSED, InputFocusedContext.toNegated()),
 					weight: KeybindingWeight.WorkbenchContrib
 				},
+				menu: {
+					id: MenuId.NotebookCellInsert,
+					order: 1
+				}
 			},
 			CellKind.Code,
 			'below');
@@ -569,6 +590,10 @@ registerAction2(class extends InsertCellCommand {
 			{
 				id: INSERT_MARKDOWN_CELL_ABOVE_COMMAND_ID,
 				title: localize('notebookActions.insertMarkdownCellAbove', "Insert Markdown Cell Above"),
+				menu: {
+					id: MenuId.NotebookCellInsert,
+					order: 2
+				}
 			},
 			CellKind.Markdown,
 			'above');
@@ -581,6 +606,10 @@ registerAction2(class extends InsertCellCommand {
 			{
 				id: INSERT_MARKDOWN_CELL_BELOW_COMMAND_ID,
 				title: localize('notebookActions.insertMarkdownCellBelow', "Insert Markdown Cell Below"),
+				menu: {
+					id: MenuId.NotebookCellInsert,
+					order: 3
+				}
 			},
 			CellKind.Markdown,
 			'below');
@@ -770,7 +799,7 @@ registerAction2(class extends NotebookCellAction {
 				menu: {
 					id: MenuId.NotebookCellTitle,
 					when: NOTEBOOK_EDITOR_FOCUSED,
-					group: '1_copy',
+					group: CellOverflowToolbarGroups.Copy,
 				}
 			});
 	}
@@ -792,7 +821,7 @@ registerAction2(class extends NotebookCellAction {
 				menu: {
 					id: MenuId.NotebookCellTitle,
 					when: ContextKeyExpr.and(NOTEBOOK_EDITOR_FOCUSED, NOTEBOOK_EDITOR_EDITABLE, NOTEBOOK_CELL_EDITABLE),
-					group: '1_copy',
+					group: CellOverflowToolbarGroups.Copy,
 				}
 			});
 	}
@@ -821,7 +850,7 @@ registerAction2(class extends NotebookAction {
 				menu: {
 					id: MenuId.NotebookCellTitle,
 					when: ContextKeyExpr.and(NOTEBOOK_EDITOR_FOCUSED, NOTEBOOK_EDITOR_EDITABLE),
-					group: '1_copy',
+					group: CellOverflowToolbarGroups.Copy,
 				}
 			});
 	}
@@ -1379,7 +1408,7 @@ registerAction2(class extends NotebookCellAction {
 				menu: {
 					id: MenuId.NotebookCellTitle,
 					when: ContextKeyExpr.and(NOTEBOOK_EDITOR_FOCUSED, NOTEBOOK_EDITOR_EDITABLE, NOTEBOOK_CELL_EDITABLE),
-					group: '2_edit',
+					group: CellOverflowToolbarGroups.Edit,
 				}
 			});
 	}
@@ -1423,7 +1452,7 @@ registerAction2(class extends NotebookCellAction {
 			menu: {
 				id: MenuId.NotebookCellTitle,
 				when: ContextKeyExpr.and(NOTEBOOK_CELL_LIST_FOCUSED, NOTEBOOK_CELL_INPUT_COLLAPSED.toNegated()),
-				group: '3_collapse',
+				group: CellOverflowToolbarGroups.Collapse,
 			}
 		});
 	}
@@ -1446,7 +1475,7 @@ registerAction2(class extends NotebookCellAction {
 			menu: {
 				id: MenuId.NotebookCellTitle,
 				when: ContextKeyExpr.and(NOTEBOOK_CELL_LIST_FOCUSED, NOTEBOOK_CELL_INPUT_COLLAPSED),
-				group: '3_collapse',
+				group: CellOverflowToolbarGroups.Collapse,
 			}
 		});
 	}
@@ -1469,7 +1498,7 @@ registerAction2(class extends NotebookCellAction {
 			menu: {
 				id: MenuId.NotebookCellTitle,
 				when: ContextKeyExpr.and(NOTEBOOK_CELL_LIST_FOCUSED, NOTEBOOK_CELL_OUTPUT_COLLAPSED.toNegated(), NOTEBOOK_CELL_HAS_OUTPUTS),
-				group: '3_collapse',
+				group: CellOverflowToolbarGroups.Collapse,
 			}
 		});
 	}
@@ -1492,7 +1521,7 @@ registerAction2(class extends NotebookCellAction {
 			menu: {
 				id: MenuId.NotebookCellTitle,
 				when: ContextKeyExpr.and(NOTEBOOK_CELL_LIST_FOCUSED, NOTEBOOK_CELL_OUTPUT_COLLAPSED),
-				group: '3_collapse',
+				group: CellOverflowToolbarGroups.Collapse,
 			}
 		});
 	}
