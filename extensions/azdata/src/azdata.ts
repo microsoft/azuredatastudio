@@ -9,12 +9,12 @@ import { HttpClient } from './common/httpClient';
 import * as loc from './localizedConstants';
 import { executeCommand, executeSudoCommand } from './common/childProcess';
 import { searchForCmd } from './common/utils';
-import { AzdataOutput } from './typings/azdata';
+import { AzdataOutput } from './typings/azdata-ext';
 
 export const azdataHostname = 'https://aka.ms';
 export const azdataUri = 'azdata-msi';
 
-export interface IAzdata {
+export interface IAzdataTool {
 	path: string,
 	version: string,
 	/**
@@ -25,7 +25,7 @@ export interface IAzdata {
 	executeCommand<R>(args: string[], parseResult: (result: any) => R[]): Promise<AzdataOutput<R>>
 }
 
-class AzdataTool implements IAzdata {
+class AzdataTool implements IAzdataTool {
 	constructor(public path: string, public version: string, private _outputChannel: vscode.OutputChannel) { }
 
 	public async executeCommand<R>(args: string[], parseResult: (result: any) => R[]): Promise<AzdataOutput<R>> {
@@ -44,10 +44,10 @@ class AzdataTool implements IAzdata {
  * or encountered an unexpected error.
  * @param outputChannel Channel used to display diagnostic information
  */
-export async function findAzdata(outputChannel: vscode.OutputChannel): Promise<IAzdata> {
+export async function findAzdata(outputChannel: vscode.OutputChannel): Promise<IAzdataTool> {
 	outputChannel.appendLine(loc.searchingForAzdata);
 	try {
-		let azdata: IAzdata | undefined = undefined;
+		let azdata: IAzdataTool | undefined = undefined;
 		switch (process.platform) {
 			case 'win32':
 				azdata = await findAzdataWin32(outputChannel);
@@ -131,7 +131,7 @@ async function installAzdataLinux(outputChannel: vscode.OutputChannel): Promise<
  * Finds azdata specifically on Windows
  * @param outputChannel Channel used to display diagnostic information
  */
-async function findAzdataWin32(outputChannel: vscode.OutputChannel): Promise<IAzdata> {
+async function findAzdataWin32(outputChannel: vscode.OutputChannel): Promise<IAzdataTool> {
 	const promise = searchForCmd('azdata.cmd');
 	return findSpecificAzdata(await promise, outputChannel);
 }
@@ -141,7 +141,7 @@ async function findAzdataWin32(outputChannel: vscode.OutputChannel): Promise<IAz
  * @param path The path to the azdata executable
  * @param outputChannel Channel used to display diagnostic information
  */
-async function findSpecificAzdata(path: string, outputChannel: vscode.OutputChannel): Promise<IAzdata> {
+async function findSpecificAzdata(path: string, outputChannel: vscode.OutputChannel): Promise<IAzdataTool> {
 	const versionOutput = await executeCommand(path, ['--version'], outputChannel);
 	return new AzdataTool(path, parseVersion(versionOutput.stdout), outputChannel);
 }

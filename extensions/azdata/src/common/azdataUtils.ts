@@ -3,11 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { PostgresServerListResult, SqlInstanceListResult } from '../typings/azdata';
+import { PostgresServerListResult, SqlInstanceListResult } from '../typings/azdata-ext';
 
 /**
  * Helper function to parse the raw output from the `azdata postgres server list` command
- * @param result
+ * @param result The raw JSON result array
  */
 export function parsePostgresServerListResult(result: any[]): PostgresServerListResult[] {
 	return result.map(r => {
@@ -24,7 +24,7 @@ export function parsePostgresServerListResult(result: any[]): PostgresServerList
 
 /**
  * Helper function to parse the raw output from the `azdata sql instance list` command
- * @param result
+ * @param result The raw JSON result array
  */
 export function parseSqlInstanceListResult(result: any[]): SqlInstanceListResult[] {
 	return result.map(r => {

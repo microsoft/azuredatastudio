@@ -3,12 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from './typings/azdata';
+import * as azdata from './typings/azdata-ext';
 import * as vscode from 'vscode';
-import { findAzdata, IAzdata } from './azdata';
+import { findAzdata, IAzdataTool } from './azdata';
 import { parsePostgresServerListResult, parseSqlInstanceListResult } from './common/azdataUtils';
 
-let localAzdata: IAzdata | undefined = undefined;
+let localAzdata: IAzdataTool | undefined = undefined;
 
 export async function activate(): Promise<azdata.IExtension> {
 	const outputChannel = vscode.window.createOutputChannel('azdata');
@@ -37,7 +37,7 @@ export async function activate(): Promise<azdata.IExtension> {
 	};
 }
 
-async function checkForAzdata(outputChannel: vscode.OutputChannel): Promise<IAzdata | undefined> {
+async function checkForAzdata(outputChannel: vscode.OutputChannel): Promise<IAzdataTool | undefined> {
 	try {
 		return await findAzdata(outputChannel);
 	} catch (err) {
