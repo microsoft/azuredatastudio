@@ -23,12 +23,12 @@
 	background-color: transparent;
 }
 
-.detailView-toggle {
+modelview-table .detailView-toggle {
 	display: inline-block;
 	cursor: pointer;
 }
 
-.dynamic-cell-detail {
+modelview-table .dynamic-cell-detail {
 	z-index: 101;
 	position: absolute;
 	margin: 0;
@@ -37,21 +37,21 @@
 	overflow: auto;
 }
 
-.dynamic-cell-detail> :first-child {
+modelview-table .dynamic-cell-detail> :first-child {
 	vertical-align: middle;
 	line-height: 13px;
 	padding: 10px;
 	margin-left: 20px;
 }
 
-.dynamic-cell-detail>.detail-container {
+modelview-table .dynamic-cell-detail>.detail-container {
 	overflow: auto;
 	display: block !important;
 	max-height: 100px !important;
 	line-height: 20px;
 }
 
-.dynamic-cell-detail>.detail-container>div,
-.dynamic-cell-detail>.detail-container>div>span {
+modelview-table .dynamic-cell-detail>.detail-container>div,
+modelview-table .dynamic-cell-detail>.detail-container>div>span {
 	white-space: normal;
 }
