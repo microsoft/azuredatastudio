@@ -1,5 +1,15 @@
 # Change Log
 
+## Version 1.21.0
+* Release date: August 12, 2020
+* Release status: General Availability
+* New Notebook Features
+   * Move cell locations changd
+   * Added action to convert cells to Text Cell or Code cell
+* Jupyter Books picker to open Jupyter Books directly from Github
+* Search bar added to Notebooks Viewlet for searching through Jupyter Books
+* Address issues in [August 2020 Milestone](https://github.com/microsoft/azuredatastudio/milestone/59?closed=1)
+
 ## Version 1.20.1
 * Release date: July 17, 2020
 * Release status: General Availability
