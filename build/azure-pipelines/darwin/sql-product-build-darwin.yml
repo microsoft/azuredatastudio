@@ -129,14 +129,13 @@ steps:
     displayName: Run smoke tests (Electron)
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
-  # - script: |
-  #     set -e
-  #     node ./node_modules/playwright/install.js
-  #     VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-web-darwin" \
-  #     yarn smoketest --web --headless  --screenshots "$(build.artifactstagingdirectory)/smokeshots"
-  #   displayName: Run smoke tests (Browser)
-  #   continueOnError: true
-  #   condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+  - script: |
+      set -e
+      node ./node_modules/playwright/install.js
+      VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-web-darwin" \
+      yarn smoketest --web --headless  --screenshots "$(build.artifactstagingdirectory)/smokeshots"
+    displayName: Run smoke tests (Browser)
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   - script: |
       set -e
