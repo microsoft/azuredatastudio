@@ -201,9 +201,9 @@ export class JupyterController implements vscode.Disposable {
 		});
 	}
 
-	public async doManagePackages(options?: ManagePackageDialogOptions): Promise<void> {
+	public async doManagePackages(options?: ManagePackageDialogOptions | vscode.Uri): Promise<void> {
 		try {
-			if (!options) {
+			if (!options || options instanceof vscode.Uri) {
 				options = {
 					defaultLocation: constants.localhostName,
 					defaultProviderId: LocalPipPackageManageProvider.ProviderId

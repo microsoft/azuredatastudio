@@ -6,20 +6,17 @@
 //@ts-check
 
 'use strict';
-const path = require('path');
-const withBrowserDefaults = require('../shared.webpack.config').browser;
 
-const config = withBrowserDefaults({
+const withBrowserDefaults = require('../shared.webpack.config').browser;
+const path = require('path');
+
+module.exports = withBrowserDefaults({
 	context: __dirname,
-	node: false,
 	entry: {
 		extension: './src/extension.ts'
 	},
-	resolve: {
-		alias: {
-			'node-fetch': path.resolve(__dirname, 'node_modules/node-fetch/browser.js')
-		}
+	output: {
+		filename: 'extension.js',
+		path: path.join(__dirname, 'dist')
 	}
 });
-
-module.exports = config;

@@ -21,7 +21,7 @@ steps:
 
   - task: NodeTool@0
     inputs:
-      versionSpec: "12.14.1"
+      versionSpec: "12.13.0"
 
   - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
     inputs:
@@ -95,13 +95,24 @@ steps:
       $ErrorActionPreference = "Stop"
       exec { yarn gulp "package-rebuild-extensions" }
       exec { yarn gulp "vscode-win32-x64-min-ci" }
-      exec { yarn gulp "vscode-reh-win32-x64-min-ci" }
-      exec { yarn gulp "vscode-reh-web-win32-x64-min-ci" }
+      # exec { yarn gulp "vscode-reh-win32-x64-min-ci" }
+      # exec { yarn gulp "vscode-reh-web-win32-x64-min-ci" }
       exec { yarn gulp "vscode-win32-x64-code-helper" }
       exec { yarn gulp "vscode-win32-x64-inno-updater" }
     displayName: Build
     env:
       VSCODE_MIXIN_PASSWORD: $(github-distro-mixin-password)
+
+  - task: UniversalPackages@0
+    displayName: Download SAW Python package
+    inputs:
+      command: 'download'
+      downloadDirectory: '$(agent.builddirectory)\azuredatastudio-win32-x64\resources\app\ads-python'
+      feedsToUse: 'internal'
+      vstsFeed: '2191dd5f-4aec-491b-ac50-568bbc331c8a'
+      vstsFeedPackage: '2e355f03-a97e-499a-949b-f02d62b6160c'
+      vstsPackageVersion: '*'
+    condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'saw'))
 
   # - powershell: | @anthonydresser unit tests timeout never existing the node process
   #     . build/azure-pipelines/win32/exec.ps1

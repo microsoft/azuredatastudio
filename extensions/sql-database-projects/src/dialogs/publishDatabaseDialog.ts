@@ -11,6 +11,9 @@ import * as utils from '../common/utils';
 import { Project } from '../models/project';
 import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStringSource';
 import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
+import { DeploymentOptions } from '../../../mssql/src/mssql';
+
+const titleFontSize = 12;
 
 interface DataSourceDropdownValue extends azdata.CategoryValue {
 	dataSource: SqlConnectionDataSource;
@@ -35,6 +38,7 @@ export class PublishDatabaseDialog {
 	private connectionId: string | undefined;
 	private connectionIsDataSource: boolean | undefined;
 	private profileSqlCmdVars: Record<string, string> | undefined;
+	private deploymentOptions: DeploymentOptions | undefined;
 
 	private toDispose: vscode.Disposable[] = [];
 
@@ -142,11 +146,7 @@ export class PublishDatabaseDialog {
 
 			// add SQLCMD variables table if the project has any
 			if (Object.keys(this.project.sqlCmdVariables).length > 0) {
-				this.formBuilder.insertFormItem({
-					title: constants.sqlCmdTableLabel,
-					component: <azdata.TableComponent>this.sqlCmdVariablesTable
-				},
-					6);
+				this.formBuilder.addFormItem(this.sqlCmdVariablesFormComponent, { titleFontSize: titleFontSize });
 			}
 
 			let formModel = this.formBuilder.component();
@@ -191,7 +191,8 @@ export class PublishDatabaseDialog {
 			databaseName: this.getTargetDatabaseName(),
 			upgradeExisting: true,
 			connectionUri: await this.getConnectionUri(),
-			sqlCmdVariables: sqlCmdVars
+			sqlCmdVariables: sqlCmdVars,
+			deploymentOptions: this.deploymentOptions
 		};
 
 		azdata.window.closeDialog(this.dialog);
@@ -205,7 +206,8 @@ export class PublishDatabaseDialog {
 		const settings: IGenerateScriptSettings = {
 			databaseName: this.getTargetDatabaseName(),
 			connectionUri: await this.getConnectionUri(),
-			sqlCmdVariables: sqlCmdVars
+			sqlCmdVariables: sqlCmdVars,
+			deploymentOptions: this.deploymentOptions
 		};
 
 		azdata.window.closeDialog(this.dialog);
@@ -399,7 +401,7 @@ export class PublishDatabaseDialog {
 					canSelectFiles: true,
 					canSelectFolders: false,
 					canSelectMany: false,
-					defaultUri: vscode.Uri.parse(this.project.projectFolderPath),
+					defaultUri: vscode.workspace.workspaceFolders ? (vscode.workspace.workspaceFolders as vscode.WorkspaceFolder[])[0].uri : undefined,
 					filters: {
 						[constants.publishSettingsFiles]: ['publish.xml']
 					}
@@ -417,6 +419,7 @@ export class PublishDatabaseDialog {
 				this.connectionId = result.connectionId;
 				(<azdata.InputBoxComponent>this.targetConnectionTextBox).value = result.connectionString;
 
+				this.deploymentOptions = result.options;
 				this.profileSqlCmdVars = result.sqlCmdVariables;
 				const data = this.convertSqlCmdVarsToTableFormat(this.getSqlCmdVariablesForPublish());
 
@@ -427,7 +430,7 @@ export class PublishDatabaseDialog {
 				if (Object.keys(result.sqlCmdVariables).length) {
 					// add SQLCMD Variables table if it wasn't there before
 					if (Object.keys(this.project.sqlCmdVariables).length === 0) {
-						this.formBuilder?.insertFormItem(<azdata.FormComponent>this.sqlCmdVariablesFormComponent, 6);
+						this.formBuilder?.addFormItem(<azdata.FormComponent>this.sqlCmdVariablesFormComponent, { titleFontSize: titleFontSize });
 					}
 				} else if (Object.keys(this.project.sqlCmdVariables).length === 0) {
 					// remove the table if there are no SQLCMD variables in the project and loaded profile

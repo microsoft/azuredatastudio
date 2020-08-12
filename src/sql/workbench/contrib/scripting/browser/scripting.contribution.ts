@@ -236,7 +236,7 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 		id: ExplorerEditDataActionID,
 		title: EditDataAction.LABEL
 	},
-	when: ContextKeyExpr.and(ItemContextKey.ItemType.isEqualTo('table'), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString())),
+	when: ContextKeyExpr.and(ItemContextKey.ItemType.isEqualTo('table'), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()), ItemContextKey.ConnectionProvider.notEqualsTo('kusto')),
 	order: 2
 });
 
@@ -296,7 +296,7 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 		id: commands.ExplorerScriptCreateAction.ID,
 		title: commands.ExplorerScriptCreateAction.LABEL
 	},
-	when: ItemContextKey.ItemType.notEqualsTo('database'),
+	when: ContextKeyExpr.and(ItemContextKey.ItemType.notEqualsTo('database'), ItemContextKey.ConnectionProvider.notEqualsTo('kusto')),
 	order: 2
 });
 //#endregion

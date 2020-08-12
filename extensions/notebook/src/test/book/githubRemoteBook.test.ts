@@ -28,15 +28,15 @@ describe('Github Remote Book', function () {
 	});
 
 	it('Verify GitHub Remote Book is created by controller', async function (): Promise<void> {
-		let releaseURL = new URL('https://api.github.com/repos/microsoft/test/releases/v1');
+		let releaseURL = vscode.Uri.parse('https://api.github.com/repos/microsoft/test/releases/v1');
 		let asset : IAsset = {
 			name: 'CU-1.0-EN.zip',
 			book: 'CU',
 			version: '1.0',
 			language: 'EN',
 			format: 'zip',
-			url: new URL('https://api.github.com/repos/microsoft/test/releases/v1/assets/1'),
-			browserDownloadUrl: new URL('https://github.com/microsoft/test/releases/download/v1/CU-1.0-EN.zip'),
+			url: vscode.Uri.parse('https://api.github.com/repos/microsoft/test/releases/v1/assets/1'),
+			browserDownloadUrl: vscode.Uri.parse('https://github.com/microsoft/test/releases/download/v1/CU-1.0-EN.zip'),
 		}
 		let remoteLocation = loc.onGitHub;
 		controller.setRemoteBook(releaseURL, remoteLocation, asset);
@@ -45,15 +45,15 @@ describe('Github Remote Book', function () {
 	});
 
 	it('Verify set local path is called when creating a GitHub Remote Book', async function (): Promise<void> {
-		let releaseURL = new URL('https://api.github.com/repos/microsoft/test/releases/v1');
+		let releaseURL = vscode.Uri.parse('https://api.github.com/repos/microsoft/test/releases/v1');
 		let asset : IAsset = {
 			name: 'CU-1.0-EN.zip',
 			book: 'CU',
 			version: '1.0',
 			language: 'EN',
 			format: 'zip',
-			url: new URL('https://api.github.com/repos/microsoft/test/releases/v1/assets/1'),
-			browserDownloadUrl: new URL('https://github.com/microsoft/test/releases/download/v1/CU-1.0-EN.zip'),
+			url: vscode.Uri.parse('https://api.github.com/repos/microsoft/test/releases/v1/assets/1'),
+			browserDownloadUrl: vscode.Uri.parse('https://github.com/microsoft/test/releases/download/v1/CU-1.0-EN.zip'),
 		}
 		let remoteLocation = loc.onGitHub;
 		const createCopySpy = sinon.spy(GitHubRemoteBook.prototype, 'createLocalCopy');
@@ -64,20 +64,20 @@ describe('Github Remote Book', function () {
 	});
 
 	it('Should download contents from Github', async function (): Promise<void> {
-		let releaseURL = new URL('https://api.github.com/repos/microsoft/test/releases/v1');
+		let releaseURL = vscode.Uri.parse('https://api.github.com/repos/microsoft/test/releases/v1');
 		let asset : IAsset = {
 			name: 'CU-1.0-EN.zip',
 			book: 'CU',
 			version: '1.0',
 			language: 'EN',
 			format: 'zip',
-			url: new URL('https://api.github.com/repos/microsoft/test/releases/v1/assets/1'),
-			browserDownloadUrl: new URL('https://github.com/microsoft/test/releases/download/v1/CU-1.0-EN.zip'),
+			url: vscode.Uri.parse('https://api.github.com/repos/microsoft/test/releases/v1/assets/1'),
+			browserDownloadUrl: vscode.Uri.parse('https://github.com/microsoft/test/releases/download/v1/CU-1.0-EN.zip'),
 		}
 		let remoteLocation = loc.onGitHub;
 		controller.setRemoteBook(releaseURL, remoteLocation, asset);
 
-		model.remoteBook.localPath = new URL(os.tmpdir());
+		model.remoteBook.localPath = vscode.Uri.file(os.tmpdir());
 		let setPathStub = sinon.stub(GitHubRemoteBook.prototype, 'setLocalPath');
 		setPathStub.callsFake(function() {
 			console.log(`Downloading book in ${model.remoteBook.localPath}`);
@@ -88,8 +88,8 @@ describe('Github Remote Book', function () {
 				.get('/microsoft/test/releases/download/v1/CU-1.0-EN.zip')
 				.replyWithFile(200, __filename);
 		await model.remoteBook.createLocalCopy();
-		should(setExtractSpy.calledOnceWith(new URL(model.remoteBook.localPath.href)));
-		await fs.promises.stat(model.remoteBook.localPath.href);
+		should(setExtractSpy.calledOnceWith(vscode.Uri.file(model.remoteBook.localPath.fsPath)));
+		await fs.promises.stat(model.remoteBook.localPath.fsPath);
 	});
 
 	it('Should reject if error', async function (): Promise<void> {
