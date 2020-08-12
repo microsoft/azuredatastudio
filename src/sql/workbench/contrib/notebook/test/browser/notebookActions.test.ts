@@ -383,13 +383,14 @@ suite('Notebook Actions', function (): void {
 
 		suite(`doChangeKernel`, () => {
 			for (const displayName of [undefined, '', 'Arbitrary Kernel Name']) {
+				const kernelAlias: string[] = [];
 				test(`verify for kernel displayName='${displayName}'`, () => {
 					const changeKernelStub = sandbox.stub(notebookModel, 'changeKernel');
 					kernelsDropdown.doChangeKernel(displayName);
 					assert.ok(setOptionsSpy.calledOnce, `setOptions should be called exactly once`);
 					assert.ok(setOptionsSpy.calledWithExactly([msgChanging], 0), `setOptions should be called with a options value of ${[msgChanging]} and selected value of 0`);
 					assert.ok(changeKernelStub.calledOnce, `notebookModel.changeKernel should be called exactly once`);
-					assert.ok(changeKernelStub.calledWithExactly(displayName), `notebookModel.changeKernel should be called with the kernel displayName that was passed to doChangeKernel`);
+					assert.ok(changeKernelStub.calledWithExactly(displayName, kernelAlias), `notebookModel.changeKernel should be called with the kernel displayName that was passed to doChangeKernel`);
 				});
 			}
 		});
@@ -399,11 +400,12 @@ suite('Notebook Actions', function (): void {
 			const e: azdata.nb.IKernelChangedArgs = <azdata.nb.IKernelChangedArgs>{
 				newValue: <azdata.nb.IKernel>{
 					name: 'StandardKernel2'
-				}
+				},
+				nbkernelAlias: ''
 			};
 			notebookModel.kernelChangedEmitter.fire(e);
 			assert.ok(updateKernelStub.calledOnce, `updateKernel should be called exactly once`);
-			assert.ok(updateKernelStub.calledWithExactly(e.newValue), `updateKernel should be called with the parameter: ${JSON.stringify(e.newValue)}`);
+			assert.ok(updateKernelStub.calledWithExactly(e.newValue, e.nbkernelAlias), `updateKernel should be called with the parameter: ${JSON.stringify(e.newValue), JSON.stringify(e.nbkernelAlias)}`);
 		});
 
 	});
