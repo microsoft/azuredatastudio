@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import { MigrationStateModel } from '../models/stateMachine';
 import { SourceConfigurationPage } from './sourceConfigurationPage';
 import { WIZARD_TITLE } from '../models/strings';
+import { MigrationWizardPage } from '../models/migrationWizardPage';
 
 export class WizardController {
 	constructor(private readonly extensionContext: vscode.ExtensionContext) {
@@ -25,12 +26,24 @@ export class WizardController {
 		wizard.generateScriptButton.enabled = false;
 		const sourceConfigurationPage = new SourceConfigurationPage(stateModel);
 
-		wizard.pages = [sourceConfigurationPage.getwizardPage()];
+		const pages: MigrationWizardPage[] = [sourceConfigurationPage];
+
+		wizard.pages = pages.map(p => p.getwizardPage());
 
 		const wizardSetupPromises: Thenable<void>[] = [];
 		wizardSetupPromises.push(sourceConfigurationPage.registerWizardContent());
 		wizardSetupPromises.push(wizard.open());
 
+		wizard.onPageChanged(async (pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
+			const newPage = pageChangeInfo.newPage;
+			const lastPage = pageChangeInfo.lastPage;
+
+			await pages[lastPage]?.onPageLeave();
+			await pages[newPage]?.onPageEnter();
+		});
+
+
 		await Promise.all(wizardSetupPromises);
+		await pages[0].onPageEnter();
 	}
 }

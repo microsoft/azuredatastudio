@@ -14,3 +14,7 @@ export const SOURCE_CONFIGURATION_PAGE_TITLE = localize('sql.migration.wizard.so
 
 export const COLLECTING_SOURCE_CONFIGURATIONS = localize('sql.migration.collecting_source_configurations', "Collecting source configurations");
 export const COLLECTING_SOURCE_CONFIGURATIONS_INFO = localize('sql.migration.collecting_source_configurations.info', "We need to collect some information about how your data is configured currently.\nThis may take some time.");
+export const COLLECTING_SOURCE_CONFIGURATIONS_ERROR = (error: string = ''): string => {
+	return localize('sql.migration.collecting_source_configurations.error', "There was an error when gathering information about your data configuration. {0}", error);
+};
+
