@@ -391,6 +391,98 @@
             "when": "version=sql2019"
           }
         ]
+      },
+      {
+        "name": "azure-sql-vm",
+        "displayName": "%azure-sqlvm-display-name%",
+        "description": "%azure-sqlvm-description%",
+        "platforms": "*",
+        "icon": {
+          "light": "./images/azure-sql-vm.svg",
+          "dark": "./images/azure-sql-vm.svg"
+        },
+        "providers": [
+          {
+            "dialog": {
+              "notebook": "./notebooks/azurevm/create-sqlvm.ipynb",
+              "runNotebook": true,
+              "taskName": "%azure-sqlvm-deploy-dialog-title%",
+              "actionText": "%azure-sqlvm-deploy-dialog-action-text%",
+              "title": "%azure-sqlvm-deploy-dialog-title%",
+              "name": "azure.sqlvm.new.dialog",
+              "tabs": [
+                {
+                  "title": "",
+                  "sections": [
+                    {
+                      "title": "Azure information",
+                      "fields": [
+                        {
+                          "subscriptionVariableName": "AZURE_SQLVM_NB_VAR_SUBSCRIPTION",
+                          "resourceGroupVariableName": "AZURE_SQLVM_NB_VAR__RESOURCE_GROUP_NAME",
+                          "type": "azure_account",
+                          "required": true
+                        }
+                      ]
+                    },
+                    {
+                      "title": "SQL Connection information",
+                      "fields": [
+                        {
+                          "label": "Instance name (lower case letters and digits only)",
+                          "variableName": "AZDATA_NB_VAR_SQL_INSTANCE_NAME",
+                          "type": "text",
+                          "defaultValue": "sqlinstance1",
+                          "required": true
+                        },
+                        {
+                          "label": "Username",
+                          "variableName": "AZDATA_NB_VAR_SQL_USERNAME",
+                          "type": "text",
+                          "defaultValue": "sa",
+                          "enabled": false
+                        },
+                        {
+                          "label": "Password",
+                          "variableName": "AZDATA_NB_VAR_SQL_PASSWORD",
+                          "type": "sql_password",
+                          "userName": "sa",
+                          "confirmationRequired": true,
+                          "confirmationLabel": "Confirm password",
+                          "defaultValue": "",
+                          "required": true
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "requiredTools": [
+              {
+                "name": "azure-cli"
+              }
+            ],
+            "when": true
+          }
+        ],
+        "agreement": {
+          "template": "%bdc-agreement%",
+          "links": [
+            {
+              "text": "%microsoft-privacy-statement%",
+              "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
+            },
+            {
+              "text": "%bdc-agreement-bdc-eula%",
+              "url": "https://go.microsoft.com/fwlink/?LinkId=2002534"
+            },
+            {
+              "text": "%bdc-agreement-azdata-eula%",
+              "url": "https://aka.ms/eula-azdata-en"
+            }
+          ]
+        }
       }
     ]
   },
