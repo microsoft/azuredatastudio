@@ -3,21 +3,26 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ExtensionContext, Disposable, commands, window } from 'vscode';
+import * as vscode from 'vscode';
+import * as azdata from 'azdata';
+import { WizardController } from './wizard/wizardController';
 
 class SQLMigration {
 
-	constructor(private readonly context: ExtensionContext) {
+	constructor(private readonly context: vscode.ExtensionContext) {
 	}
 
 	async start(): Promise<void> {
-
+		await this.registerCommands();
 	}
 
 	async registerCommands(): Promise<void> {
-		const commandDisposables: Disposable[] = [ // Array of disposables returned by registerCommand
-			commands.registerCommand('sqlmigration.start', () => {
-				window.showInformationMessage('Command ran');
+		const commandDisposables: vscode.Disposable[] = [ // Array of disposables returned by registerCommand
+			vscode.commands.registerCommand('sqlmigration.start', async () => {
+				const connection = await azdata.connection.openConnectionDialog();
+
+				const wizardController = new WizardController(this.context);
+				wizardController.openWizard(connection);
 			}),
 		];
 
@@ -30,8 +35,9 @@ class SQLMigration {
 }
 
 let sqlMigration: SQLMigration;
-export async function activate(context: ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
 	sqlMigration = new SQLMigration(context);
+	await sqlMigration.registerCommands();
 }
 
 export function deactivate(): void {
