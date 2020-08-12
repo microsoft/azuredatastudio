@@ -14,7 +14,6 @@ import { IProductService } from 'vs/platform/product/common/productService';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { AbstractTelemetryOptOut } from 'vs/workbench/contrib/welcome/telemetryOptOut/browser/telemetryOptOut';
 import { IElectronService } from 'vs/platform/electron/electron-sandbox/electron';
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 
 export class NativeTelemetryOptOut extends AbstractTelemetryOptOut {
 
@@ -28,10 +27,9 @@ export class NativeTelemetryOptOut extends AbstractTelemetryOptOut {
 		@IConfigurationService configurationService: IConfigurationService,
 		@IExtensionGalleryService galleryService: IExtensionGalleryService,
 		@IProductService productService: IProductService,
-		@IEnvironmentService environmentService: IEnvironmentService, // {{SQL CARBON EDIT}} add service
-		@IElectronService private readonly electronService: IElectronService,
+		@IElectronService private readonly electronService: IElectronService
 	) {
-		super(storageService, openerService, notificationService, hostService, telemetryService, experimentService, configurationService, galleryService, productService, environmentService);
+		super(storageService, openerService, notificationService, hostService, telemetryService, experimentService, configurationService, galleryService, productService);
 
 		this.handleTelemetryOptOut();
 	}

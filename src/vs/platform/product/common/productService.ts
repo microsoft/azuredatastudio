@@ -22,7 +22,12 @@ export interface IBuiltInExtension {
 	readonly metadata: any;
 }
 
-export type ConfigurationSyncStore = { url: string, authenticationProviders: IStringDictionary<{ scopes: string[] }> };
+export type ConfigurationSyncStore = {
+	url: string,
+	insidersUrl?: string,
+	stableUrl?: string,
+	authenticationProviders: IStringDictionary<{ scopes: string[] }>
+};
 
 export interface IProductConfiguration {
 	readonly version: string;
@@ -48,6 +53,13 @@ export interface IProductConfiguration {
 
 	readonly settingsSearchBuildId?: number;
 	readonly settingsSearchUrl?: string;
+
+	readonly tasConfig?: {
+		endpoint: string;
+		telemetryEventName: string;
+		featuresTelemetryPropertyName: string;
+		assignmentContextTelemetryPropertyName: string;
+	};
 
 	readonly experimentsUrl?: string;
 
@@ -137,9 +149,7 @@ export interface IConfigBasedExtensionTip {
 export interface IExeBasedExtensionTip {
 	friendlyName: string;
 	windowsPath?: string;
-	recommendations: readonly string[];
-	important?: boolean;
-	exeFriendlyName?: string;
+	recommendations: IStringDictionary<{ name: string, important?: boolean, isExtensionPack?: boolean }>;
 }
 
 export interface IRemoteExtensionTip {

@@ -31,12 +31,10 @@ import { getErrorMessage } from 'vs/base/common/errors';
 import { ISerializationService, SerializeDataParams } from 'sql/platform/serialization/common/serializationService';
 import { SaveResultAction, IGridActionContext } from 'sql/workbench/contrib/query/browser/actions';
 import { ResultSerializer, SaveResultsResponse, SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
-import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { values } from 'vs/base/common/collections';
 import { assign } from 'vs/base/common/objects';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { ChartView } from 'sql/workbench/contrib/charts/browser/chartView';
-import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { ToggleableAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
@@ -109,7 +107,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 			this._register(attachTableStyler(this._table, this.themeService));
 			this.layout();
 
-			this._table.onAdd();
+			this._table.onDidInsert();
 			this._initialized = true;
 		}
 	}
@@ -117,7 +115,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 	layout(): void {
 		if (this._table) {
 			let maxSize = Math.min(this._table.maximumSize, 500);
-			this._table.layout(maxSize, undefined, ActionsOrientation.HORIZONTAL);
+			this._table.layout(maxSize);
 		}
 	}
 }
@@ -181,8 +179,8 @@ class DataResourceTable extends GridTableBase<any> {
 		return Math.max(this.maxSize, /* ACTIONBAR_HEIGHT + BOTTOM_PADDING */ 0);
 	}
 
-	public layout(size?: number, orientation?: Orientation, actionsOrientation?: ActionsOrientation): void {
-		super.layout(size, orientation, actionsOrientation);
+	public layout(size?: number): void {
+		super.layout(size);
 
 		if (!this._chartContainer) {
 			this._chartContainer = document.createElement('div');
@@ -325,7 +323,7 @@ class DataResourceDataProvider implements IGridDataProvider {
 			maxRow = singleSelection.toRow + 1;
 			columns = columns.slice(singleSelection.fromCell, singleSelection.toCell + 1);
 		}
-		let getRows: ((index: number, rowCount: number) => ICellValue[][]) = (index, rowCount) => {
+		let getRows: ((index: number, includeHeaders: boolean, rowCount: number) => ICellValue[][]) = (index, includeHeaders, rowCount) => {
 			// Offset for selections by adding the selection startRow to the index
 			index = index + minRow;
 			if (rowLength === 0 || index < 0 || index >= maxRow) {
@@ -335,12 +333,25 @@ class DataResourceDataProvider implements IGridDataProvider {
 			if (endIndex > maxRow) {
 				endIndex = maxRow;
 			}
-			let result = this.rows.slice(index, endIndex).map(row => {
+			let result: ICellValue[][] = [];
+			if (includeHeaders) {
+				result.push(columns.map(col => {
+					let headerData: azdata.DbCellValue;
+					headerData = {
+						displayValue: col.columnName,
+						isNull: false,
+						invariantCultureDisplayValue: col.columnName
+					};
+					return headerData;
+				}));
+			}
+			result = result.concat(this.rows.slice(index, endIndex).map(row => {
 				if (this.isSelected(singleSelection)) {
 					return row.slice(singleSelection.fromCell, singleSelection.toCell + 1);
+				} else {
+					return row;
 				}
-				return row;
-			});
+			}));
 			return result;
 		};
 
@@ -348,7 +359,7 @@ class DataResourceDataProvider implements IGridDataProvider {
 			saveFormat: format,
 			columns: columns,
 			filePath: filePath.fsPath,
-			getRowRange: (rowStart, numberOfRows) => getRows(rowStart, numberOfRows),
+			getRowRange: (rowStart, includeHeaders, numberOfRows) => getRows(rowStart, includeHeaders, numberOfRows),
 			rowCount: rowLength
 		});
 		return this._serializationService.serializeResults(serializeRequestParams);

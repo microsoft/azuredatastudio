@@ -24,24 +24,8 @@ const mocktarget: string = 'target.dacpac';
 let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 let testContext: TestContext;
 
-before(async function (): Promise<void> {
+before(function (): void {
 	testContext = createContext();
-});
-describe('SchemaCompareDialog.openDialog', function (): void {
-	before(() => {
-		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
-		mockExtensionContext.setup(x => x.extensionPath).returns(() => '');
-	});
-
-	it('Should be correct when created.', async function (): Promise<void> {
-		let schemaCompareResult = new SchemaCompareMainWindow(testContext.apiWrapper.object, undefined, mockExtensionContext.object);
-		let dialog = new SchemaCompareDialog(schemaCompareResult);
-		await dialog.openDialog();
-
-		should(dialog.dialog.title).equal('Schema Compare');
-		should(dialog.dialog.okButton.label).equal('OK');
-		should(dialog.dialog.okButton.enabled).equal(false); // Should be false when open
-	});
 });
 
 describe('SchemaCompareMainWindow.start', function (): void {
@@ -57,8 +41,8 @@ describe('SchemaCompareMainWindow.start', function (): void {
 
 		should(result.getComparisonResult() === undefined);
 
-		result.sourceEndpointInfo = await setDacpacEndpointInfo(mocksource);
-		result.targetEndpointInfo = await setDacpacEndpointInfo(mocktarget);
+		result.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
+		result.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
 		await result.execute();
 
 		should(result.getComparisonResult() !== undefined);
@@ -109,7 +93,7 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 		testContext = createContext();
 	});
 
-	beforeEach(async function (): Promise<void> {
+	beforeEach(function (): void {
 		testContext.apiWrapper.reset();
 	});
 
@@ -123,8 +107,8 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 
 		should(result.getComparisonResult() === undefined);
 
-		result.sourceEndpointInfo = await setDacpacEndpointInfo(mocksource);
-		result.targetEndpointInfo = await setDacpacEndpointInfo(mocktarget);
+		result.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
+		result.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
 
 		await shouldThrowSpecificError(async () => await result.execute(), loc.compareErrorMessage('Test failure'));
 	});
@@ -139,8 +123,8 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 
 		should(result.getComparisonResult() === undefined);
 
-		result.sourceEndpointInfo = await setDacpacEndpointInfo(mocksource);
-		result.targetEndpointInfo = await setDacpacEndpointInfo(mocktarget);
+		result.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
+		result.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
 
 		await result.execute();
 		testContext.apiWrapper.verify(x => x.showErrorMessage(TypeMoq.It.isAny()), TypeMoq.Times.once());
@@ -155,16 +139,24 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 
 		should(result.getComparisonResult() === undefined);
 
-		result.sourceEndpointInfo = await setDacpacEndpointInfo(mocksource);
-		result.targetEndpointInfo = await setDacpacEndpointInfo(mocktarget);
+		result.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
+		result.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
 
 		await result.execute();
 
 		//Generate script button and apply button should be disabled for dacpac comparison
-		should(result.verifyButtonsState( {compareButtonState: true, optionsButtonState: true, switchButtonState: true,
-			openScmpButtonState: true, saveScmpButtonState: true, cancelCompareButtonState: false,
-			selectSourceButtonState: true, selectTargetButtonState: true, generateScriptButtonState: false,
-			applyButtonState: false} )).equal(true);
+		result.verifyButtonsState( {
+			compareButtonState: true,
+			optionsButtonState: true,
+			switchButtonState: true,
+			openScmpButtonState: true,
+			saveScmpButtonState: true,
+			cancelCompareButtonState: false,
+			selectSourceButtonState: true,
+			selectTargetButtonState: true,
+			generateScriptButtonState: false,
+			applyButtonState: false
+		} );
 	});
 
 	it('Should disable script button and apply button for Schema Compare service for database', async function (): Promise<void> {
@@ -176,16 +168,24 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 
 		should(result.getComparisonResult() === undefined);
 
-		result.sourceEndpointInfo = await setDacpacEndpointInfo(mocksource);
-		result.targetEndpointInfo = await setDatabaseEndpointInfo();
+		result.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
+		result.targetEndpointInfo = setDatabaseEndpointInfo();
 
 		await result.execute();
 
 		//Generate script button and apply button should be enabled for database comparison
-		should(result.verifyButtonsState( {compareButtonState: true, optionsButtonState: true, switchButtonState: true,
-			openScmpButtonState: true, saveScmpButtonState: true, cancelCompareButtonState: false,
-			selectSourceButtonState: true, selectTargetButtonState: true, generateScriptButtonState: true,
-			applyButtonState: true} )).equal(true);
+		result.verifyButtonsState( {
+			compareButtonState: true,
+			optionsButtonState: true,
+			switchButtonState: true,
+			openScmpButtonState: true,
+			saveScmpButtonState: true,
+			cancelCompareButtonState: false,
+			selectSourceButtonState: true,
+			selectTargetButtonState: true,
+			generateScriptButtonState: true,
+			applyButtonState: true
+		} );
 	});
 
 });
@@ -212,10 +212,18 @@ describe('SchemaCompareMainWindow.updateSourceAndTarget', function (): void {
 
 		result.updateSourceAndTarget();
 
-		should(result.verifyButtonsState( {compareButtonState: false, optionsButtonState: false, switchButtonState: false,
-			openScmpButtonState: true, saveScmpButtonState: false, cancelCompareButtonState: false,
-			selectSourceButtonState: true, selectTargetButtonState: true, generateScriptButtonState: false,
-			applyButtonState: false} )).equal(true);
+		result.verifyButtonsState( {
+			compareButtonState: false,
+			optionsButtonState: false,
+			switchButtonState: false,
+			openScmpButtonState: true,
+			saveScmpButtonState: false,
+			cancelCompareButtonState: false,
+			selectSourceButtonState: true,
+			selectTargetButtonState: true,
+			generateScriptButtonState: false,
+			applyButtonState: false
+		} );
 	});
 
 	it('Should set buttons appropriately when source endpoint is empty and target endpoint is populated', async function (): Promise<void> {
@@ -229,14 +237,22 @@ describe('SchemaCompareMainWindow.updateSourceAndTarget', function (): void {
 		should(result.getComparisonResult() === undefined);
 
 		result.sourceEndpointInfo = {...endpointInfo};
-		result.targetEndpointInfo = await setDacpacEndpointInfo(mocktarget);
+		result.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
 
 		result.updateSourceAndTarget();
 
-		should(result.verifyButtonsState( {compareButtonState: false, optionsButtonState: false, switchButtonState: true,
-			openScmpButtonState: true, saveScmpButtonState: false, cancelCompareButtonState: false,
-			selectSourceButtonState: true, selectTargetButtonState: true, generateScriptButtonState: false,
-			applyButtonState: false} )).equal(true);
+		result.verifyButtonsState( {
+			compareButtonState: false,
+			optionsButtonState: false,
+			switchButtonState: true,
+			openScmpButtonState: true,
+			saveScmpButtonState: false,
+			cancelCompareButtonState: false,
+			selectSourceButtonState: true,
+			selectTargetButtonState: true,
+			generateScriptButtonState: false,
+			applyButtonState: false
+		} );
 	});
 
 	it('Should set buttons appropriately when source and target endpoints are populated', async function (): Promise<void> {
@@ -249,15 +265,23 @@ describe('SchemaCompareMainWindow.updateSourceAndTarget', function (): void {
 
 		should(result.getComparisonResult() === undefined);
 
-		result.sourceEndpointInfo = await setDacpacEndpointInfo(mocksource);
-		result.targetEndpointInfo = await setDacpacEndpointInfo(mocktarget);
+		result.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
+		result.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
 
 		result.updateSourceAndTarget();
 
-		should(result.verifyButtonsState( {compareButtonState: true, optionsButtonState: true, switchButtonState: true,
-			openScmpButtonState: true, saveScmpButtonState: true, cancelCompareButtonState: false,
-			selectSourceButtonState: true, selectTargetButtonState: true, generateScriptButtonState: false,
-			applyButtonState: false} )).equal(true);
+		result.verifyButtonsState( {
+			compareButtonState: true,
+			optionsButtonState: true,
+			switchButtonState: true,
+			openScmpButtonState: true,
+			saveScmpButtonState: true,
+			cancelCompareButtonState: false,
+			selectSourceButtonState: true,
+			selectTargetButtonState: true,
+			generateScriptButtonState: false,
+			applyButtonState: false
+		} );
 	});
 
 });

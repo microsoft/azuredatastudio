@@ -9,7 +9,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { NetCoreTool, DBProjectConfigurationKey, NetCoreInstallLocationKey, NextCoreNonWindowsDefaultPath } from '../tools/netcoreTool';
-import { getSafePath } from '../common/utils';
+import { getQuotedPath } from '../common/utils';
 import { isNullOrUndefined } from 'util';
 import { generateTestFolderPath } from './testUtils';
 
@@ -52,7 +52,7 @@ describe.skip('NetCoreTool: Net core tests', function (): void {
 		const outputChannel = vscode.window.createOutputChannel('db project test');
 
 		try {
-			await netcoreTool.runStreamedCommand('echo test > ' + getSafePath(dummyFile), outputChannel, undefined);
+			await netcoreTool.runStreamedCommand('echo test > ' + getQuotedPath(dummyFile), outputChannel, undefined);
 			const text = await fs.promises.readFile(dummyFile);
 			should(text.toString().trim()).equal('test');
 		}

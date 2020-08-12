@@ -58,7 +58,7 @@ export class NotebookCellTextModel extends Disposable implements ICell {
 			return this._textBuffer;
 		}
 
-		let builder = new PieceTreeTextBufferBuilder();
+		const builder = new PieceTreeTextBufferBuilder();
 		builder.acceptChunk(Array.isArray(this._source) ? this._source.join('\n') : this._source);
 		const bufferFactory = builder.finish(true);
 		this._textBuffer = bufferFactory.create(model.DefaultEndOfLine.LF);
@@ -70,15 +70,6 @@ export class NotebookCellTextModel extends Disposable implements ICell {
 		return this._textBuffer;
 	}
 
-	private _textModel?: model.ITextModel;
-
-	get textModel(): model.ITextModel | undefined {
-		return this._textModel;
-	}
-
-	set textModel(m: model.ITextModel | undefined) {
-		this._textModel = m;
-	}
 
 	constructor(
 		readonly uri: URI,
@@ -144,10 +135,6 @@ export class NotebookCellTextModel extends Disposable implements ICell {
 
 	async resolveTextModelRef() {
 		const ref = await this._modelService.createModelReference(this.uri);
-
-		ref.object.textEditorModel.onWillDispose(() => {
-			this.textModel = undefined;
-		});
 		return ref;
 	}
 

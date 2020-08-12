@@ -11,12 +11,6 @@ import { DataTierApplicationWizard } from '../dataTierApplicationWizard';
 import { DacFxConfigPage } from '../api/dacFxConfigPage';
 
 export class ExportConfigPage extends DacFxConfigPage {
-
-	protected readonly wizardPage: azdata.window.WizardPage;
-	protected readonly instance: DataTierApplicationWizard;
-	protected readonly model: DacFxDataModel;
-	protected readonly view: azdata.ModelView;
-
 	private form: azdata.FormContainer;
 
 	public constructor(instance: DataTierApplicationWizard, wizardPage: azdata.window.WizardPage, model: DacFxDataModel, view: azdata.ModelView) {

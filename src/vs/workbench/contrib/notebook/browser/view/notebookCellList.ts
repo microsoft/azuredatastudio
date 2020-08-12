@@ -19,11 +19,20 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IListService, IWorkbenchListOptions, WorkbenchList } from 'vs/platform/list/browser/listService';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { CellRevealPosition, CellRevealType, CursorAtBoundary, getVisibleCells, ICellRange, ICellViewModel, INotebookCellList, reduceCellRanges, CellEditState, CellFocusMode, BaseCellRenderTemplate } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
+import { CellRevealPosition, CellRevealType, CursorAtBoundary, getVisibleCells, ICellRange, ICellViewModel, INotebookCellList, reduceCellRanges, CellEditState, CellFocusMode, BaseCellRenderTemplate, NOTEBOOK_CELL_LIST_FOCUSED } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
 import { CellViewModel, NotebookViewModel } from 'vs/workbench/contrib/notebook/browser/viewModel/notebookViewModel';
 import { diff, IProcessedOutput, NOTEBOOK_EDITOR_CURSOR_BOUNDARY, CellKind } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import { clamp } from 'vs/base/common/numbers';
 import { SCROLLABLE_ELEMENT_PADDING_TOP } from 'vs/workbench/contrib/notebook/browser/constants';
+
+export interface IFocusNextPreviousDelegate {
+	onFocusNext(applyFocusNext: () => void): void;
+	onFocusPrevious(applyFocusPrevious: () => void): void;
+}
+
+export interface INotebookCellListOptions extends IWorkbenchListOptions<CellViewModel> {
+	focusNextPreviousDelegate: IFocusNextPreviousDelegate;
+}
 
 export class NotebookCellList extends WorkbenchList<CellViewModel> implements IDisposable, IStyleController, INotebookCellList {
 	get onWillScroll(): Event<ScrollEvent> { return this.view.onWillScroll; }
@@ -51,19 +60,23 @@ export class NotebookCellList extends WorkbenchList<CellViewModel> implements ID
 		return this._isDisposed;
 	}
 
+	private readonly _focusNextPreviousDelegate: IFocusNextPreviousDelegate;
+
 	constructor(
 		private listUser: string,
 		container: HTMLElement,
 		delegate: IListVirtualDelegate<CellViewModel>,
 		renderers: IListRenderer<CellViewModel, BaseCellRenderTemplate>[],
 		contextKeyService: IContextKeyService,
-		options: IWorkbenchListOptions<CellViewModel>,
+		options: INotebookCellListOptions,
 		@IListService listService: IListService,
 		@IThemeService themeService: IThemeService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IKeybindingService keybindingService: IKeybindingService
 	) {
 		super(listUser, container, delegate, renderers, options, contextKeyService, listService, themeService, configurationService, keybindingService);
+		NOTEBOOK_CELL_LIST_FOCUSED.bindTo(this.contextKeyService).set(true);
+		this._focusNextPreviousDelegate = options.focusNextPreviousDelegate;
 		this._previousFocusedElements = this.getFocusedElements();
 		this._localDisposableStore.add(this.onDidChangeFocus((e) => {
 			this._previousFocusedElements.forEach(element => {
@@ -132,7 +145,8 @@ export class NotebookCellList extends WorkbenchList<CellViewModel> implements ID
 
 		this._localDisposableStore.add(this.view.onMouseDblClick(() => {
 			const focus = this.getFocusedElements()[0];
-			if (focus && focus.cellKind === CellKind.Markdown) {
+
+			if (focus && focus.cellKind === CellKind.Markdown && !focus.metadata?.inputCollapsed) {
 				focus.editState = CellEditState.Editing;
 				focus.focusMode = CellFocusMode.Editor;
 			}
@@ -150,7 +164,7 @@ export class NotebookCellList extends WorkbenchList<CellViewModel> implements ID
 	}
 
 	elementHeight(element: ICellViewModel): number {
-		let index = this._getViewIndexUpperBound(element);
+		const index = this._getViewIndexUpperBound(element);
 		if (index === undefined || index < 0 || index >= this.length) {
 			this._getViewIndexUpperBound(element);
 			throw new ListError(this.listUser, `Invalid index ${index}`);
@@ -287,7 +301,7 @@ export class NotebookCellList extends WorkbenchList<CellViewModel> implements ID
 		// set hidden ranges prefix sum
 		let start = 0;
 		let index = 0;
-		let ret: number[] = [];
+		const ret: number[] = [];
 
 		while (index < newRanges.length) {
 			for (let j = start; j < newRanges[index].start - 1; j++) {
@@ -356,6 +370,10 @@ export class NotebookCellList extends WorkbenchList<CellViewModel> implements ID
 
 	splice2(start: number, deleteCount: number, elements: CellViewModel[] = []): void {
 		// we need to convert start and delete count based on hidden ranges
+		if (start < 0 || start > this.view.length) {
+			return;
+		}
+
 		super.splice(start, deleteCount, elements);
 
 		const selectionsLeft = [];
@@ -416,6 +434,14 @@ export class NotebookCellList extends WorkbenchList<CellViewModel> implements ID
 			this.setSelection([index]);
 			this.setFocus([index]);
 		}
+	}
+
+	focusNext(n: number | undefined, loop: boolean | undefined, browserEvent?: UIEvent, filter?: (element: CellViewModel) => boolean): void {
+		this._focusNextPreviousDelegate.onFocusNext(() => super.focusNext(n, loop, browserEvent, filter));
+	}
+
+	focusPrevious(n: number | undefined, loop: boolean | undefined, browserEvent?: UIEvent, filter?: (element: CellViewModel) => boolean): void {
+		this._focusNextPreviousDelegate.onFocusPrevious(() => super.focusPrevious(n, loop, browserEvent, filter));
 	}
 
 	setFocus(indexes: number[], browserEvent?: UIEvent, ignoreTextModelUpdate?: boolean): void {
@@ -516,7 +542,7 @@ export class NotebookCellList extends WorkbenchList<CellViewModel> implements ID
 	}
 
 	getAbsoluteTopOfElement(element: ICellViewModel): number {
-		let index = this._getViewIndexUpperBound(element);
+		const index = this._getViewIndexUpperBound(element);
 		if (index === undefined || index < 0 || index >= this.length) {
 			this._getViewIndexUpperBound(element);
 			throw new ListError(this.listUser, `Invalid index ${index}`);
@@ -642,8 +668,8 @@ export class NotebookCellList extends WorkbenchList<CellViewModel> implements ID
 	private async _revealRangeInCenterInternalAsync(viewIndex: number, range: Range, revealType: CellRevealType): Promise<void> {
 		const reveal = (viewIndex: number, range: Range, revealType: CellRevealType) => {
 			const element = this.view.element(viewIndex);
-			let positionOffset = element.getPositionScrollTopOffset(range.startLineNumber, range.startColumn);
-			let positionOffsetInView = this.view.elementTop(viewIndex) + positionOffset;
+			const positionOffset = element.getPositionScrollTopOffset(range.startLineNumber, range.startColumn);
+			const positionOffsetInView = this.view.elementTop(viewIndex) + positionOffset;
 			this.view.setScrollTop(positionOffsetInView - this.view.renderHeight / 2);
 
 			if (revealType === CellRevealType.Range) {
@@ -674,8 +700,8 @@ export class NotebookCellList extends WorkbenchList<CellViewModel> implements ID
 	private async _revealRangeInCenterIfOutsideViewportInternalAsync(viewIndex: number, range: Range, revealType: CellRevealType): Promise<void> {
 		const reveal = (viewIndex: number, range: Range, revealType: CellRevealType) => {
 			const element = this.view.element(viewIndex);
-			let positionOffset = element.getPositionScrollTopOffset(range.startLineNumber, range.startColumn);
-			let positionOffsetInView = this.view.elementTop(viewIndex) + positionOffset;
+			const positionOffset = element.getPositionScrollTopOffset(range.startLineNumber, range.startColumn);
+			const positionOffsetInView = this.view.elementTop(viewIndex) + positionOffset;
 			this.view.setScrollTop(positionOffsetInView - this.view.renderHeight / 2);
 
 			if (revealType === CellRevealType.Range) {
@@ -730,10 +756,19 @@ export class NotebookCellList extends WorkbenchList<CellViewModel> implements ID
 		const scrollTop = this.getViewScrollTop();
 		const wrapperBottom = this.getViewScrollBottom();
 		const elementTop = this.view.elementTop(viewIndex);
+		const elementBottom = this.view.elementHeight(viewIndex) + elementTop;
 
-		if (ignoreIfInsideViewport && elementTop >= scrollTop && elementTop < wrapperBottom) {
-			// inside the viewport
-			return;
+		if (ignoreIfInsideViewport
+			&& elementTop >= scrollTop
+			&& elementTop < wrapperBottom) {
+
+			if (revealPosition === CellRevealPosition.Center
+				&& elementBottom > wrapperBottom
+				&& elementTop > (scrollTop + wrapperBottom) / 2) {
+				// the element is partially visible and it's below the center of the viewport
+			} else {
+				return;
+			}
 		}
 
 		// first render

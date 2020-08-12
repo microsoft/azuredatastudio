@@ -7,7 +7,7 @@ import { IPackageManageProvider, IPackageDetails, IPackageTarget, IPackageOvervi
 import { IJupyterServerInstallation } from './jupyterServerInstallation';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
-import { IPiPyClient } from './pipyClient';
+import { IPyPiClient } from './pypiClient';
 
 export class LocalPipPackageManageProvider implements IPackageManageProvider {
 
@@ -18,7 +18,7 @@ export class LocalPipPackageManageProvider implements IPackageManageProvider {
 
 	constructor(
 		private jupyterInstallation: IJupyterServerInstallation,
-		private pipyClient: IPiPyClient) {
+		private pipyClient: IPyPiClient) {
 	}
 
 	/**

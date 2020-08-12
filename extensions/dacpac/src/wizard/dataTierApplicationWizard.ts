@@ -31,8 +31,7 @@ export enum Operation {
 	deploy,
 	extract,
 	import,
-	export,
-	generateDeployScript
+	export
 }
 
 export enum DeployOperationPath {
@@ -79,15 +78,17 @@ export enum PageName {
 export class DataTierApplicationWizard {
 	public wizard: azdata.window.Wizard;
 	private connection: azdata.connection.ConnectionProfile;
+	private dacfxService: mssql.IDacFxService;
 	public model: DacFxDataModel;
 	public pages: Map<string, Page> = new Map<string, Page>();
 	public selectedOperation: Operation;
 
-	constructor() {
+	constructor(dacfxInputService?: mssql.IDacFxService) {
 		this.wizard = azdata.window.createWizard(loc.wizardTitle);
+		this.dacfxService = dacfxInputService;
 	}
 
-	public async start(p: any, ...args: any[]) {
+	public async start(p: any, ...args: any[]): Promise<boolean> {
 		this.model = <DacFxDataModel>{};
 
 		let profile = p ? <azdata.IConnectionProfile>p.connectionProfile : undefined;
@@ -109,18 +110,16 @@ export class DataTierApplicationWizard {
 			}
 			// don't open the wizard if connection dialog is cancelled
 			if (!this.connection) {
-				return;
+				return false;
 			}
 		}
 
 		this.model.serverId = this.connection.connectionId;
 		this.setPages();
-
-		this.wizard.generateScriptButton.hidden = true;
-		this.wizard.generateScriptButton.onClick(async () => await this.generateDeployScript());
-		this.wizard.doneButton.onClick(async () => await this.executeOperation());
+		this.configureButtons();
 
 		this.wizard.open();
+		return true;
 	}
 
 	public setPages(): void {
@@ -203,6 +202,12 @@ export class DataTierApplicationWizard {
 		this.wizard.pages = [selectOperationWizardPage, deployConfigWizardPage, deployPlanWizardPage, summaryWizardPage];
 	}
 
+	public configureButtons(): void {
+		this.wizard.generateScriptButton.hidden = true;
+		this.wizard.generateScriptButton.onClick(async () => await this.generateDeployScript());
+		this.wizard.doneButton.onClick(async () => await this.executeOperation());
+	}
+
 	public registerNavigationValidator(validator: (pageChangeInfo: azdata.window.WizardPageChangeInfo) => boolean) {
 		this.wizard.registerNavigationValidator(validator);
 	}
@@ -229,73 +234,60 @@ export class DataTierApplicationWizard {
 				this.selectedOperation = Operation.export;
 				break;
 			}
-			case Operation.generateDeployScript: {
-				this.wizard.doneButton.label = loc.generateScript;
-				this.selectedOperation = Operation.generateDeployScript;
-				break;
-			}
 		}
 
-		if (operation !== Operation.deploy && operation !== Operation.generateDeployScript) {
+		if (operation !== Operation.deploy) {
 			this.model.upgradeExisting = false;
 		}
 	}
 
-	private async executeOperation() {
+	public async executeOperation(): Promise<mssql.DacFxResult> {
 		switch (this.selectedOperation) {
 			case Operation.deploy: {
-				await this.deploy();
-				break;
+				return await this.deploy();
 			}
 			case Operation.extract: {
-				await this.extract();
-				break;
+				return await this.extract();
 			}
 			case Operation.import: {
-				await this.import();
-				break;
+				return await this.import();
 			}
 			case Operation.export: {
-				await this.export();
-				break;
-			}
-			case Operation.generateDeployScript: {
-				await this.generateDeployScript();
-				break;
+				return await this.export();
 			}
 		}
 	}
 
-	private async deploy(): Promise<void> {
-		const service = await DataTierApplicationWizard.getService(msSqlProvider);
+	public async deploy(): Promise<mssql.DacFxResult> {
+		const service = await this.getService(msSqlProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		await service.deployDacpac(this.model.filePath, this.model.database, this.model.upgradeExisting, ownerUri, azdata.TaskExecutionMode.execute);
+		return await service.deployDacpac(this.model.filePath, this.model.database, this.model.upgradeExisting, ownerUri, azdata.TaskExecutionMode.execute);
 	}
 
-	private async extract(): Promise<void> {
-		const service = await DataTierApplicationWizard.getService(msSqlProvider);
+	private async extract(): Promise<mssql.DacFxResult> {
+		const service = await this.getService(msSqlProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		await service.extractDacpac(this.model.database, this.model.filePath, this.model.database, this.model.version, ownerUri, azdata.TaskExecutionMode.execute);
+		return await service.extractDacpac(this.model.database, this.model.filePath, this.model.database, this.model.version, ownerUri, azdata.TaskExecutionMode.execute);
 	}
 
-	private async export(): Promise<void> {
-		const service = await DataTierApplicationWizard.getService(msSqlProvider);
+	private async export(): Promise<mssql.DacFxResult> {
+		const service = await this.getService(msSqlProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		await service.exportBacpac(this.model.database, this.model.filePath, ownerUri, azdata.TaskExecutionMode.execute);
+		return await service.exportBacpac(this.model.database, this.model.filePath, ownerUri, azdata.TaskExecutionMode.execute);
 	}
 
-	private async import(): Promise<void> {
-		const service = await DataTierApplicationWizard.getService(msSqlProvider);
+	private async import(): Promise<mssql.DacFxResult> {
+		const service = await this.getService(msSqlProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		await service.importBacpac(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
+		return await service.importBacpac(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
 	}
 
-	private async generateDeployScript(): Promise<void> {
-		const service = await DataTierApplicationWizard.getService(msSqlProvider);
+	private async generateDeployScript(): Promise<mssql.DacFxResult> {
+		const service = await this.getService(msSqlProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 		this.wizard.message = {
 			text: loc.generatingScriptMessage,
@@ -303,10 +295,10 @@ export class DataTierApplicationWizard {
 			description: ''
 		};
 
-		await service.generateDeployScript(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.script);
+		return await service.generateDeployScript(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.script);
 	}
 
-	private getPage(idx: number): Page {
+	public getPage(idx: number): Page {
 		let page: Page;
 
 		if (idx === 1) {
@@ -330,7 +322,7 @@ export class DataTierApplicationWizard {
 			}
 		} else if (this.isSummaryPage(idx)) {
 			page = this.pages.get(PageName.summary);
-		} else if ((this.selectedOperation === Operation.deploy || this.selectedOperation === Operation.generateDeployScript) && idx === DeployOperationPath.deployPlan) {
+		} else if ((this.selectedOperation === Operation.deploy) && idx === DeployOperationPath.deployPlan) {
 			page = this.pages.get(PageName.deployPlan);
 		}
 
@@ -342,11 +334,11 @@ export class DataTierApplicationWizard {
 			|| this.selectedOperation === Operation.export && idx === ExportOperationPath.summary
 			|| this.selectedOperation === Operation.extract && idx === ExtractOperationPath.summary
 			|| this.selectedOperation === Operation.deploy && !this.model.upgradeExisting && idx === DeployNewOperationPath.summary
-			|| (this.selectedOperation === Operation.deploy || this.selectedOperation === Operation.generateDeployScript) && idx === DeployOperationPath.summary;
+			|| (this.selectedOperation === Operation.deploy) && idx === DeployOperationPath.summary;
 	}
 
 	public async generateDeployPlan(): Promise<string> {
-		const service = await DataTierApplicationWizard.getService(msSqlProvider);
+		const service = await this.getService(msSqlProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
 		const result = await service.generateDeployPlan(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
@@ -358,8 +350,10 @@ export class DataTierApplicationWizard {
 		return result.report;
 	}
 
-	private static async getService(providerName: string): Promise<mssql.IDacFxService> {
-		const service = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).dacFx;
-		return service;
+	private async getService(providerName: string): Promise<mssql.IDacFxService> {
+		if (!this.dacfxService) {
+			this.dacfxService = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).dacFx;
+		}
+		return this.dacfxService;
 	}
 }

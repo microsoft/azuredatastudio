@@ -15,7 +15,7 @@
   "activationEvents": [
     "onCommand:schemaCompare.start"
   ],
-  "main": "./out/main",
+  "main": "./out/extension",
   "repository": {
     "type": "git",
     "url": "https://github.com/Microsoft/azuredatastudio.git"
@@ -50,6 +50,18 @@
     ],
     "menus": {
       "objectExplorer/item/context": [
+        {
+          "command": "schemaCompare.start",
+          "when": "connectionProvider == MSSQL && nodeType && nodeType == Database && mssql:engineedition != 11",
+          "group": "export"
+        },
+        {
+          "command": "schemaCompare.start",
+          "when": "connectionProvider == MSSQL && nodeType && nodeType == Server && mssql:engineedition != 11",
+          "group": "export"
+        }
+      ],
+      "dataExplorer/context": [
         {
           "command": "schemaCompare.start",
           "when": "connectionProvider == MSSQL && nodeType && nodeType == Database && mssql:engineedition != 11",
