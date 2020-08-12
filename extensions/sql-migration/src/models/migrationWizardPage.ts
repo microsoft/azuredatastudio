@@ -13,5 +13,8 @@ export abstract class MigrationWizardPage {
 	public getwizardPage(): azdata.window.WizardPage {
 		return this.wizardPage;
 	}
+
+	public abstract async onPageEnter(): Promise<void>;
+	public abstract async onPageLeave(): Promise<void>;
 }
 
