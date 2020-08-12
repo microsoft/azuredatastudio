@@ -30,7 +30,7 @@ export class ConnectionDialog extends Dialog {
 
 	private static readonly CONNECT_BUTTON_SELECTOR = '.modal .modal-footer a[aria-label="Connect"]:not(.disabled)';
 	async connect(): Promise<void> {
-		await this.code.waitAndClick(ConnectionDialog.CONNECT_BUTTON_SELECTOR, 50, 24); // adjust for potentially a notification being in the way
+		await this.code.waitAndClick(ConnectionDialog.CONNECT_BUTTON_SELECTOR, 0, 10); // adjust for potentially a notification being in the way
 
 		return this.waitForDialogGone();
 	}
