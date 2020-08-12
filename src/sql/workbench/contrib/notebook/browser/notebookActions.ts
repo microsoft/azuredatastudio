@@ -274,6 +274,7 @@ export class CollapseCellsAction extends ToggleableAction {
 
 const showAllKernelsConfigName = 'notebook.showAllKernels';
 const workbenchPreviewConfigName = 'workbench.enablePreviewFeatures';
+export const noKernelName = localize('noKernel', "No Kernel");
 let kernelAlias = [];
 
 export class KernelsDropdown extends SelectBox {
