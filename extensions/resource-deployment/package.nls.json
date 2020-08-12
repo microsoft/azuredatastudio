@@ -46,5 +46,9 @@
 	"bdc-agreement-azdata-eula": "azdata License Terms",
 	"bdc-agreement-bdc-eula": "SQL Server License Terms",
 	"deployment.configuration.title": "Deployment configuration",
-	"azdata-install-location-description": "Location of the azdata package used for the install command"
+	"azdata-install-location-description": "Location of the azdata package used for the install command",
+	"azure-sqlvm-display-name": "Azure SQL virtual machines",
+	"azure-sqlvm-description": "Best for migrations and applications requiring OS-level access. Lift-and-shift ready.",
+	"azure-sqlvm-deploy-dialog-title": "Deploy Azure SQL virtual machine",
+	"azure-sqlvm-deploy-dialog-action-text": "Script to notebook"
 }
