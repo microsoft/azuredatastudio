@@ -6,22 +6,21 @@
 import 'vs/css!./media/optimizedGridPanel';
 
 import { ITableRenderer, ITableColumn } from 'sql/base/browser/ui/table/highPerf/table';
-import { IView, Orientation } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 import { VirtualizedWindow } from 'sql/base/browser/ui/table/highPerf/virtualizedWindow';
 import { attachHighPerfTableStyler } from 'sql/platform/theme/common/styler';
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 import { GridTableState } from 'sql/workbench/common/editor/query/gridTableState';
 import { ResultSetSummary } from 'sql/workbench/services/query/common/query';
 
-import { append, $, getContentWidth, getContentHeight } from 'vs/base/browser/dom';
+import { append, $ } from 'vs/base/browser/dom';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { Emitter, Event } from 'vs/base/common/event';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { isUndefinedOrNull } from 'vs/base/common/types';
 import { WorkbenchTable } from 'sql/platform/table/browser/tableService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IView } from 'sql/base/browser/ui/scrollableView/scrollableView';
 
 type ICellTemplate = HTMLElement;
 
@@ -139,10 +138,9 @@ export class GridTable<T> extends Disposable implements IView {
 		this._onDidChange.fire(undefined);
 	}
 
-	public layout(size?: number, orientation?: Orientation, width?: number): void {
-		const layoutWidth = width || (!isUndefinedOrNull(orientation) && orientation === Orientation.VERTICAL ? getContentWidth(this.element) : getContentHeight(this.element)) || undefined;
-		this.tableContainer.style.width = `${layoutWidth - ESTIMATED_SCROLL_BAR_SIZE}px`;
-		this.table.layout(size, layoutWidth - ESTIMATED_SCROLL_BAR_SIZE);
+	public layout(height: number, width: number): void {
+		this.tableContainer.style.width = `${width - ESTIMATED_SCROLL_BAR_SIZE}px`;
+		this.table.layout(height, width - ESTIMATED_SCROLL_BAR_SIZE);
 	}
 
 	public get minimumSize(): number {

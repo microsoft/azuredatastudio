@@ -47,6 +47,7 @@ import { SaveFormat } from 'sql/workbench/services/query/common/resultSerializer
 import { Progress } from 'vs/platform/progress/common/progress';
 import { ScrollableView, IView } from 'sql/base/browser/ui/scrollableView/scrollableView';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
+import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -67,7 +68,6 @@ export class GridPanel extends Disposable {
 	private tables: Array<GridTable<any> | HighPerfGridTable<any>> = [];
 	private tableDisposable = this._register(new DisposableStore());
 	private queryRunnerDisposables = this._register(new DisposableStore());
-	private currentHeight: number;
 
 	private runner: QueryRunner;
 
@@ -97,12 +97,7 @@ export class GridPanel extends Disposable {
 	}
 
 	public layout(size: Dimension): void {
-		this.scrollableView.layout(size.height);
-		// if the size hasn't change it won't layout our table so we have to do it manually
-		if (size.height === this.currentHeight) {
-			this.tables.map(e => e.layout());
-		}
-		this.currentHeight = size.height;
+		this.scrollableView.layout(size.height, size.width);
 	}
 
 	public focus(): void {
@@ -774,7 +769,7 @@ class GridTable<T> extends GridTableBase<T> {
 		@IUntitledTextEditorService untitledEditorService: IUntitledTextEditorService,
 		@IConfigurationService configurationService: IConfigurationService
 	) {
-		super(state, resultSet, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
+		super(state, resultSet, undefined, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
 		this._gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, this._runner, resultSet.batchId, resultSet.id);
 	}
 
