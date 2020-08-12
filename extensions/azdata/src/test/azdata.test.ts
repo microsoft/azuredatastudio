@@ -48,8 +48,12 @@ describe('azdata', function () {
 	});
 
 	// TODO: Install not implemented on linux yet
-	describe.skip('downloadAndInstallAzdata', function (): void {
+	describe('downloadAndInstallAzdata', function (): void {
 		it('successful download & install', async function (): Promise<void> {
+			sinon.stub(childProcess, 'executeCommand').returns(Promise.resolve({ stdout: '', stderr: '' }));
+			if (process.platform === 'linux') {
+				sinon.stub(childProcess, 'executeSudoCommand').returns(Promise.resolve({ stdout: '', stderr: '' }));
+			}
 			nock(azdata.azdataHostname)
 				.get(`/${azdata.azdataUri}`)
 				.replyWithFile(200, __filename);
