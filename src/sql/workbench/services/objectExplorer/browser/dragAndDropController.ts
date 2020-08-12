@@ -14,7 +14,7 @@ import { DataTransfers, IDragAndDropData } from 'vs/base/browser/dnd';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 
 export function supportsNodeNameDrop(nodeId: string): boolean {
-	if (nodeId === 'Table' || nodeId === 'Column' || nodeId === 'View') {
+	if (nodeId === 'Table' || nodeId === 'Column' || nodeId === 'View' || nodeId === 'Function') {
 		return true;
 	}
 	return false;
