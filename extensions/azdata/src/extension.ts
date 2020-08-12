@@ -3,22 +3,49 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from './typings/azdata-ext';
 import * as vscode from 'vscode';
-import { findAzdata } from './azdata';
+import { findAzdata, IAzdataTool } from './azdata';
+import { parsePostgresServerListResult, parseSqlInstanceListResult } from './common/azdataUtils';
 
-export async function activate(): Promise<void> {
+let localAzdata: IAzdataTool | undefined = undefined;
+
+export async function activate(): Promise<azdata.IExtension> {
 	const outputChannel = vscode.window.createOutputChannel('azdata');
-	await checkForAzdata(outputChannel);
+	localAzdata = await checkForAzdata(outputChannel);
+	return {
+		postgres: {
+			server: {
+				list: async () => {
+					if (!localAzdata) {
+						throw new Error('No azdata');
+					}
+					return localAzdata.executeCommand(['postgres', 'server', 'list'], parsePostgresServerListResult);
+				}
+			}
+		},
+		sql: {
+			instance: {
+				list: async () => {
+					if (!localAzdata) {
+						throw new Error('No azdata');
+					}
+					return localAzdata.executeCommand(['sql', 'instance', 'list'], parseSqlInstanceListResult);
+				}
+			}
+		}
+	};
 }
 
-async function checkForAzdata(outputChannel: vscode.OutputChannel): Promise<void> {
+async function checkForAzdata(outputChannel: vscode.OutputChannel): Promise<IAzdataTool | undefined> {
 	try {
-		await findAzdata(outputChannel);
+		return await findAzdata(outputChannel);
 	} catch (err) {
 		// Don't block on this since we want the extension to finish activating without needing user input.
 		// Calls will be made to handle azdata not being installed
 		promptToInstallAzdata(outputChannel).catch(e => console.log(`Unexpected error prompting to install azdata ${e}`));
 	}
+	return undefined;
 }
 
 async function promptToInstallAzdata(_outputChannel: vscode.OutputChannel): Promise<void> {
