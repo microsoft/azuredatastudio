@@ -10,7 +10,6 @@ import QueryRunner, { QueryGridDataProvider } from 'sql/workbench/services/query
 import { ResultSetSummary, IColumn } from 'sql/workbench/services/query/common/query';
 import { VirtualizedCollection, AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 import { Table } from 'sql/base/browser/ui/table/table';
-import { ScrollableSplitView, IView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 import { MouseWheelSupport } from 'sql/base/browser/ui/table/plugins/mousewheelTableScroll.plugin';
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
 import { IGridActionContext, SaveResultAction, CopyResultAction, SelectAllGridAction, MaximizeTableAction, RestoreTableAction, ChartDataAction, VisualizerDataAction } from 'sql/workbench/contrib/query/browser/actions';
@@ -37,7 +36,6 @@ import { isInDOM, Dimension } from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IAction, Separator } from 'vs/base/common/actions';
-import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { ILogService } from 'vs/platform/log/common/log';
 import { localize } from 'vs/nls';
 import { IGridDataProvider } from 'sql/workbench/services/query/common/gridDataProvider';
@@ -47,6 +45,7 @@ import { GridPanelState, GridTableState } from 'sql/workbench/common/editor/quer
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
 import { Progress } from 'vs/platform/progress/common/progress';
+import { ScrollableView, IView } from 'sql/base/browser/ui/scrollableView/scrollableView';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 
 const ROW_HEIGHT = 29;
@@ -64,7 +63,7 @@ const MIN_GRID_HEIGHT = (MIN_GRID_HEIGHT_ROWS * ROW_HEIGHT) + HEADER_HEIGHT + ES
 
 export class GridPanel extends Disposable {
 	private container = document.createElement('div');
-	private splitView: ScrollableSplitView;
+	private scrollableView: ScrollableView;
 	private tables: GridTable<any>[] = [];
 	private tableDisposable = this._register(new DisposableStore());
 	private queryRunnerDisposables = this._register(new DisposableStore());
@@ -82,10 +81,10 @@ export class GridPanel extends Disposable {
 		@ILogService private readonly logService: ILogService
 	) {
 		super();
-		this.splitView = new ScrollableSplitView(this.container, { enableResizing: false, verticalScrollbarVisibility: ScrollbarVisibility.Visible });
-		this.splitView.onScroll(e => {
-			if (this.state && this.splitView.length !== 0) {
-				this.state.scrollPosition = e;
+		this.scrollableView = new ScrollableView(this.container);
+		this.scrollableView.onDidScroll(e => {
+			if (this.state && this.scrollableView.length !== 0) {
+				this.state.scrollPosition = e.scrollTop;
 			}
 		});
 	}
@@ -98,7 +97,7 @@ export class GridPanel extends Disposable {
 	}
 
 	public layout(size: Dimension): void {
-		this.splitView.layout(size.height);
+		this.scrollableView.layout(size.height);
 		// if the size hasn't change it won't layout our table so we have to do it manually
 		if (size.height === this.currentHeight) {
 			this.tables.map(e => e.layout());
@@ -133,12 +132,12 @@ export class GridPanel extends Disposable {
 		}, []));
 
 		if (this.state && this.state.scrollPosition) {
-			this.splitView.setScrollPosition(this.state.scrollPosition);
+			this.scrollableView.setScrollTop(this.state.scrollPosition);
 		}
 	}
 
 	public resetScrollPosition(): void {
-		this.splitView.setScrollPosition(this.state.scrollPosition);
+		this.scrollableView.setScrollTop(this.state.scrollPosition);
 	}
 
 	private onResultSet(resultSet: ResultSetSummary | ResultSetSummary[]) {
@@ -154,7 +153,7 @@ export class GridPanel extends Disposable {
 			});
 
 			if (this.state && this.state.scrollPosition) {
-				this.splitView.setScrollPosition(this.state.scrollPosition);
+				this.scrollableView.setScrollTop(this.state.scrollPosition);
 			}
 		};
 
@@ -180,7 +179,7 @@ export class GridPanel extends Disposable {
 
 		const sizeChanges = () => {
 			if (this.state && this.state.scrollPosition) {
-				this.splitView.setScrollPosition(this.state.scrollPosition);
+				this.scrollableView.setScrollTop(this.state.scrollPosition);
 			}
 		};
 
@@ -244,7 +243,7 @@ export class GridPanel extends Disposable {
 		}
 
 		if (isUndefinedOrNull(this.maximizedGrid)) {
-			this.splitView.addViews(tables, tables.map(i => i.minimumSize), this.splitView.length);
+			this.scrollableView.addViews(tables);
 		}
 	}
 
@@ -254,9 +253,7 @@ export class GridPanel extends Disposable {
 	}
 
 	private reset() {
-		for (let i = this.splitView.length - 1; i >= 0; i--) {
-			this.splitView.removeView(i);
-		}
+		this.scrollableView.clear();
 		dispose(this.tables);
 		this.tableDisposable.clear();
 		this.tables = [];
@@ -275,7 +272,7 @@ export class GridPanel extends Disposable {
 				continue;
 			}
 
-			this.splitView.removeView(i);
+			this.scrollableView.clear();
 		}
 	}
 
@@ -283,8 +280,8 @@ export class GridPanel extends Disposable {
 		if (this.maximizedGrid) {
 			this.maximizedGrid.state.maximized = false;
 			this.maximizedGrid = undefined;
-			this.splitView.removeView(0);
-			this.splitView.addViews(this.tables, this.tables.map(i => i.minimumSize));
+			this.scrollableView.clear();
+			this.scrollableView.addViews(this.tables);
 		}
 	}
 
@@ -317,6 +314,10 @@ export class GridPanel extends Disposable {
 export interface IDataSet {
 	rowCount: number;
 	columnInfo: IColumn[];
+}
+
+export interface IGridTableOptions {
+	actionOrientation: ActionsOrientation;
 }
 
 export abstract class GridTableBase<T> extends Disposable implements IView {
@@ -368,7 +369,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		protected instantiationService: IInstantiationService,
 		protected editorService: IEditorService,
 		protected untitledEditorService: IUntitledTextEditorService,
-		protected configurationService: IConfigurationService
+		protected configurationService: IConfigurationService,
+		private readonly options: IGridTableOptions = { actionOrientation: ActionsOrientation.VERTICAL }
 	) {
 		super();
 		let config = this.configurationService.getValue<{ rowHeight: number }>('resultsGrid');
@@ -398,7 +400,10 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		return this._resultSet;
 	}
 
-	public onAdd() {
+	public onDidInsert() {
+		if (!this.table) {
+			this.build();
+		}
 		this.visible = true;
 		let collection = new VirtualizedCollection(
 			50,
@@ -414,7 +419,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.setupState();
 	}
 
-	public onRemove() {
+	public onDidRemove() {
 		this.visible = false;
 		let collection = new VirtualizedCollection(
 			50,
@@ -429,17 +434,11 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	}
 
 	// actionsOrientation controls the orientation (horizontal or vertical) of the actionBar
-	private build(actionsOrientation?: ActionsOrientation): void {
-
-		// Default is VERTICAL
-		if (isUndefinedOrNull(actionsOrientation)) {
-			actionsOrientation = ActionsOrientation.VERTICAL;
-		}
-
+	private build(): void {
 		let actionBarContainer = document.createElement('div');
 
 		// Create a horizontal actionbar if orientation passed in is HORIZONTAL
-		if (actionsOrientation === ActionsOrientation.HORIZONTAL) {
+		if (this.options.actionOrientation === ActionsOrientation.HORIZONTAL) {
 			actionBarContainer.className = 'grid-panel action-bar horizontal';
 			this.container.appendChild(actionBarContainer);
 		}
@@ -490,7 +489,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			this.table.style(this.styles);
 		}
 		// If the actionsOrientation passed in is "VERTICAL" (or no actionsOrientation is passed in at all), create a vertical actionBar
-		if (actionsOrientation === ActionsOrientation.VERTICAL) {
+		if (this.options.actionOrientation === ActionsOrientation.VERTICAL) {
 			actionBarContainer.className = 'grid-panel action-bar vertical';
 			actionBarContainer.style.width = ACTIONBAR_WIDTH + 'px';
 			this.container.appendChild(actionBarContainer);
@@ -503,7 +502,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			resultId: this.resultSet.id
 		};
 		this.actionBar = new ActionBar(actionBarContainer, {
-			orientation: actionsOrientation, context: context
+			orientation: this.options.actionOrientation, context: context
 		});
 		// update context before we run an action
 		this.selectionModel.onSelectedRangesChanged.subscribe(e => {
@@ -637,10 +636,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	protected abstract getContextActions(): IAction[];
 
 	// The actionsOrientation passed in controls the actionBar orientation
-	public layout(size?: number, orientation?: Orientation, actionsOrientation?: ActionsOrientation): void {
-		if (!this.table) {
-			this.build(actionsOrientation);
-		}
+	public layout(size?: number): void {
 		if (!size) {
 			size = this.currentHeight;
 		} else {
