@@ -20,13 +20,13 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 	private _parameters: PredictColumn[] = [];
 	private _loader: azdata.LoadingComponent;
 	private _dataTypes: string[] = [
-		'bigint',
-		'int',
-		'smallint',
-		'real',
-		'float',
-		'varchar(MAX)',
-		'bit'
+		'BIGINT',
+		'INT',
+		'SMALLINT',
+		'REAL',
+		'FLOAT',
+		'VARCHAR(MAX)',
+		'BIT'
 	];
 
 
