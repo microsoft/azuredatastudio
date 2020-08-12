@@ -5,8 +5,8 @@
 
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
 import { EditDataInput } from 'sql/workbench/browser/editData/editDataInput';
-import { IConnectableInput } from 'sql/platform/connection/common/connectionManagement';
-import { IQueryEditorService, INewSqlEditorOptions } from 'sql/workbench/services/queryEditor/common/queryEditorService';
+import { IConnectableInput, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { IQueryEditorService, INewSqlEditorOptions, IConnectionProviderDetails } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { UntitledQueryEditorInput } from 'sql/workbench/common/editor/query/untitledQueryEditorInput';
 
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -36,7 +36,8 @@ export class QueryEditorService implements IQueryEditorService {
 		@IUntitledTextEditorService private _untitledEditorService: IUntitledTextEditorService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IEditorService private _editorService: IEditorService,
-		@IConfigurationService private _configurationService: IConfigurationService
+		@IConfigurationService private _configurationService: IConfigurationService,
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {
 	}
 
@@ -45,13 +46,13 @@ export class QueryEditorService implements IQueryEditorService {
 	/**
 	 * Creates new untitled document for SQL/Kusto query and opens in new editor tab
 	 */
-	public async newSqlEditor(options: INewSqlEditorOptions = {}, connectionProviderName?: string): Promise<IConnectableInput> {
+	public async newSqlEditor(options: INewSqlEditorOptions = {}, connectionProviderDetails?: IConnectionProviderDetails): Promise<IConnectableInput> {
 		options = mixin(options, defaults, false);
 		// Create file path and file URI
-		let docUri: URI = options.resource ?? URI.from({ scheme: Schemas.untitled, path: await this.createUntitledSqlFilePath(connectionProviderName) });
+		let docUri: URI = options.resource ?? URI.from({ scheme: Schemas.untitled, path: await this.createUntitledSqlFilePath(connectionProviderDetails.connectionProviderName) });
 
 		// Create a sql document pane with accoutrements
-		const fileInput = this._editorService.createEditorInput({ forceUntitled: true, resource: docUri, mode: this.getLanguageFlavor(connectionProviderName) }) as UntitledTextEditorInput;
+		const fileInput = this._editorService.createEditorInput({ forceUntitled: true, resource: docUri, mode: this._connectionManagementService.getProviderLanaguageMode(connectionProviderDetails.connectionProviderName) }) as UntitledTextEditorInput;
 		let untitledEditorModel = await fileInput.resolve() as UntitledTextEditorModel;
 		if (options.initalContent) {
 			untitledEditorModel.textEditorModel.setValue(options.initalContent);
@@ -96,12 +97,6 @@ export class QueryEditorService implements IQueryEditorService {
 		const editor = await this._editorService.openEditor(editDataInput, { pinned: true });
 		let params = editor.input as EditDataInput;
 		return params;
-	}
-
-	////// Private functions
-	// Gets language depending on connection provider.
-	private getLanguageFlavor(providerName: string): string {		//TODOKusto: temporary fix until Anthony's generic fix to make it language agnostic
-		return providerName === 'KUSTO' ? 'kusto' : 'sql';
 	}
 
 	private createUntitledSqlFilePath(providerName: string): Promise<string> {
