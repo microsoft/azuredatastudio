@@ -26,6 +26,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { find } from 'vs/base/common/arrays';
 import { IRange, Range } from 'vs/editor/common/core/range';
 import { BatchSummary, IQueryMessage, ResultSetSummary, QueryExecuteSubsetParams, CompleteBatchSummary, IResultMessage, ResultSetSubset, BatchStartSummary } from './query';
+import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 
 /*
 * Query Runner class which handles running a query, reports the results to the content manager,
@@ -442,7 +443,7 @@ export default class QueryRunner extends Disposable {
 
 	private sendBatchTimeMessage(batchId: number, executionTime: string): void {
 		// get config copyRemoveNewLine option from vscode config
-		let showBatchTime = this.configurationService.getValue<boolean>('sql.showBatchTime');
+		let showBatchTime = this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').messages.showBatchTime;
 		if (showBatchTime) {
 			let message: IQueryMessage = {
 				batchId: batchId,
@@ -538,13 +539,13 @@ export function shouldIncludeHeaders(includeHeaders: boolean, configurationServi
 		return includeHeaders;
 	}
 	// else get config option from vscode config
-	includeHeaders = configurationService.getValue<boolean>('sql.copyIncludeHeaders');
+	includeHeaders = configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.copyIncludeHeaders;
 	return !!includeHeaders;
 }
 
 export function shouldRemoveNewLines(configurationService: IConfigurationService): boolean {
 	// get config copyRemoveNewLine option from vscode config
-	let removeNewLines = configurationService.getValue<boolean>('sql.copyRemoveNewLine');
+	let removeNewLines = configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.copyRemoveNewLine;
 	return !!removeNewLines;
 }
 

@@ -75,6 +75,14 @@ export class FileBasedRecommendations extends ExtensionRecommendations {
 		return recommendations;
 	}
 
+	get importantRecommendations(): ReadonlyArray<ExtensionRecommendation> {
+		return this.recommendations.filter(e => this.importantExtensionTips[e.extensionId]);
+	}
+
+	get otherRecommendations(): ReadonlyArray<ExtensionRecommendation> {
+		return this.recommendations.filter(e => !this.importantExtensionTips[e.extensionId]);
+	}
+
 	constructor(
 		isExtensionAllowedToBeRecommended: (extensionId: string) => boolean,
 		@IExtensionManagementService private readonly extensionManagementService: IExtensionManagementService,
@@ -160,7 +168,9 @@ export class FileBasedRecommendations extends ExtensionRecommendations {
 			if (match(pattern, uri.toString())) {
 				for (const extensionId of extensionIds) {
 					// Add to recommendation to prompt if it is an important tip
-					if (this.importantExtensionTips[extensionId]) {
+					// Only prompt if the pattern matches the extensionImportantTips pattern
+					// Otherwise, assume pattern is from extensionTips, which means it should be a file based "passive" recommendation
+					if (this.importantExtensionTips[extensionId]?.pattern === pattern) {
 						recommendationsToPrompt.push(extensionId);
 					}
 					// Update file based recommendations
@@ -224,7 +234,7 @@ export class FileBasedRecommendations extends ExtensionRecommendations {
 			message = localize('reallyRecommendedExtensionPack', "The '{0}' extension pack is recommended for this file type.", extensionName);
 		}
 
-		this.promptImportantExtensionInstallNotification(extensionId, message);
+		this.promptImportantExtensionsInstallNotification([extensionId], message);
 		return true;
 	}
 

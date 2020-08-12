@@ -118,3 +118,9 @@
 	background-image: url('disable_sqlcmd_inverse.svg');
 	background-repeat: no-repeat;
 }
+
+.carbon-taskbar .codicon.export {
+	background-origin: initial;
+	background-position: left;
+	background-size: 11px
+}

@@ -3,21 +3,19 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { DeploymentOptions } from '../../../mssql/src/mssql';
+
 export interface IPublishSettings {
 	databaseName: string;
 	connectionUri: string;
 	upgradeExisting: boolean;
 	sqlCmdVariables?: Record<string, string>;
+	deploymentOptions?: DeploymentOptions;
 }
 
 export interface IGenerateScriptSettings {
 	databaseName: string;
 	connectionUri: string;
 	sqlCmdVariables?: Record<string, string>;
-}
-
-// only reading db name and SQLCMD vars from profile for now
-export interface PublishProfile {
-	databaseName: string;
-	sqlCmdVariables: Record<string, string>;
+	deploymentOptions?: DeploymentOptions;
 }

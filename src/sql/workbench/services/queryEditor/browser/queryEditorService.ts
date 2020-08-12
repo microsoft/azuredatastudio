@@ -19,6 +19,7 @@ import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/commo
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 import { mixin } from 'vs/base/common/objects';
+import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 
 const defaults: INewSqlEditorOptions = {
 	open: true
@@ -47,15 +48,14 @@ export class QueryEditorService implements IQueryEditorService {
 	public async newSqlEditor(options: INewSqlEditorOptions = {}): Promise<IConnectableInput> {
 		options = mixin(options, defaults, false);
 		// Create file path and file URI
-		let filePath = await this.createUntitledSqlFilePath();
-		let docUri: URI = URI.from({ scheme: Schemas.untitled, path: filePath });
+		let docUri: URI = options.resource ?? URI.from({ scheme: Schemas.untitled, path: await this.createUntitledSqlFilePath() });
 
 		// Create a sql document pane with accoutrements
 		const fileInput = this._editorService.createEditorInput({ forceUntitled: true, resource: docUri, mode: 'sql' }) as UntitledTextEditorInput;
 		let untitledEditorModel = await fileInput.resolve() as UntitledTextEditorModel;
 		if (options.initalContent) {
 			untitledEditorModel.textEditorModel.setValue(options.initalContent);
-			if (options.dirty === false || (options.dirty === undefined && !this._configurationService.getValue<boolean>('sql.promptToSaveGeneratedFiles'))) {
+			if (options.dirty === false || (options.dirty === undefined && !this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').promptToSaveGeneratedFiles)) {
 				untitledEditorModel.setDirty(false);
 			}
 		}

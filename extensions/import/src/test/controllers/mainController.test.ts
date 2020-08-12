@@ -3,29 +3,20 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
-import * as TypeMoq from 'typemoq';
-import { ApiWrapper } from '../../common/apiWrapper';
 import MainController from '../../controllers/mainController';
-import { TestExtensionContext } from '../utils.test';
+import { ImportTestUtils, TestExtensionContext } from '../utils.test';
+import * as should from 'should';
 
 describe('Main Controller', function () {
-	let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
-	let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
+	let testExtensionContext: TestExtensionContext;
 
-	this.beforeEach(function () {
-		mockExtensionContext = TypeMoq.Mock.ofType(TestExtensionContext, TypeMoq.MockBehavior.Loose);
-		mockApiWrapper = TypeMoq.Mock.ofType(ApiWrapper);
+	beforeEach(async function () {
+		testExtensionContext = await ImportTestUtils.getTestExtensionContext();
 	});
 
-	it('Should create new instance successfully', async function () {
-		// mocking createOutputChannel in API wrapper
-		mockApiWrapper.setup(x => x.createOutputChannel(TypeMoq.It.isAny()));
-
-		// creating a Main Controller
-		new MainController(mockExtensionContext.object, mockApiWrapper.object);
-
-		// verifying if the output channel is created
-		mockApiWrapper.verify(x => x.createOutputChannel(TypeMoq.It.isAny()), TypeMoq.Times.once());
+	it('Extension activates successfully', async function () {
+		let mainController = new MainController(testExtensionContext);
+		should.doesNotThrow(() => mainController.activate());
 	});
 });
+

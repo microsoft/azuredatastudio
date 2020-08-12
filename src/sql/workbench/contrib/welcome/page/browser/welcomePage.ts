@@ -29,8 +29,8 @@ import { ILifecycleService, StartupKind } from 'vs/platform/lifecycle/common/lif
 import { Disposable } from 'vs/base/common/lifecycle';
 import { splitName } from 'vs/base/common/labels';
 import { registerThemingParticipant } from 'vs/platform/theme/common/themeService';
-import { buttonSecondaryBackground, buttonSecondaryBorder, buttonSecondary, buttonSecondaryHoverColor, tileBorder, disabledButton, disabledButtonBackground, gradientOne, gradientTwo, gradientBackground, extensionPackHeaderShadow, extensionPackGradientColorOneColor, extensionPackGradientColorTwoColor, tileBoxShadow, buttonDropdownBackgroundHover, hoverShadow } from 'sql/platform/theme/common/colorRegistry';
-import { registerColor, foreground, textLinkActiveForeground, focusBorder, descriptionForeground, activeContrastBorder, buttonBackground, buttonForeground, menuBorder, menuForeground, menuSelectionForeground, editorWidgetBorder, selectBackground, buttonHoverBackground, selectBorder, iconForeground, textLinkForeground, inputBackground } from 'vs/platform/theme/common/colorRegistry';
+import { buttonSecondaryBackground, buttonSecondaryBorder, buttonSecondary, buttonSecondaryHoverColor, tileBorder, disabledButton, disabledButtonBackground, gradientOne, gradientTwo, gradientBackground, extensionPackHeaderShadow, extensionPackGradientColorOneColor, extensionPackGradientColorTwoColor, tileBoxShadow, hoverShadow } from 'sql/platform/theme/common/colorRegistry';
+import { registerColor, foreground, textLinkActiveForeground, descriptionForeground, activeContrastBorder, buttonForeground, menuBorder, menuForeground, editorWidgetBorder, selectBackground, buttonHoverBackground, selectBorder, iconForeground, textLinkForeground, inputBackground, focusBorder, listFocusBackground, listFocusForeground } from 'vs/platform/theme/common/colorRegistry';
 import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IEditorInputFactory, EditorInput } from 'vs/workbench/common/editor';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
@@ -45,7 +45,7 @@ import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { joinPath } from 'vs/base/common/resources';
-import { addStandardDisposableListener, EventHelper } from 'vs/base/browser/dom';
+import { addStandardDisposableListener, EventHelper, clearNode } from 'vs/base/browser/dom';
 import { GuidedTour } from 'sql/workbench/contrib/welcome/page/browser/gettingStartedTour';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
@@ -67,8 +67,7 @@ export class WelcomePageContribution implements IWorkbenchContribution {
 		@IWorkspaceContextService private readonly contextService: IWorkspaceContextService,
 		@ILifecycleService private readonly lifecycleService: ILifecycleService,
 		@ICommandService private readonly commandService: ICommandService,
-		@IWorkbenchLayoutService protected layoutService: IWorkbenchLayoutService,
-	) {
+		@IWorkbenchLayoutService protected layoutService: IWorkbenchLayoutService) {
 		this.enableWelcomePage().catch(onUnexpectedError);
 	}
 	private async enableWelcomePage(): Promise<void> {
@@ -229,8 +228,7 @@ class WelcomePage extends Disposable {
 		@IFileService fileService: IFileService,
 		@IProductService private readonly productService: IProductService,
 		@IWorkbenchLayoutService protected layoutService: IWorkbenchLayoutService,
-		@ICommandService private readonly commandService: ICommandService,
-	) {
+		@ICommandService private readonly commandService: ICommandService) {
 		super();
 		this._register(lifecycleService.onShutdown(() => this.dispose()));
 		const recentlyOpened = this.workspacesService.getRecentlyOpened();
@@ -310,19 +308,13 @@ class WelcomePage extends Disposable {
 				recent.classList.add('emptyRecent');
 				return;
 			}
-			const ul = container.querySelector('.recent ul');
+			const ul = container.querySelector('.recent ul') as HTMLElement;
 			if (!ul) {
 				return;
 			}
 			const workspacesToShow = workspaces.slice(0, 5);
-			const updateEntries = async () => {
-				while (ul.firstChild) {
-					ul.removeChild(ul.firstChild);
-				}
-				await this.mapListEntries(workspacesToShow, fileService, container);
-			};
-			await updateEntries();
-			this._register(this.labelService.onDidChangeFormatters(updateEntries));
+			clearNode(ul);
+			await this.mapListEntries(workspacesToShow, fileService, container, ul);
 		}).then(undefined, onUnexpectedError);
 		this.addExtensionList(container, '.extension-list');
 		this.addExtensionPack(container, '.extensionPack');
@@ -369,6 +361,7 @@ class WelcomePage extends Disposable {
 			<li role="none"><a role="menuitem" tabIndex="-1" class="move" href="command:azdata.resource.deploy">${(localize('welcomePage.deployServer', "Deploy a Server"))}</a></li>
 			<li role="none" id="dropdown-mac-only"><a role="menuitem" tabIndex="-1" class="move mac-only" href="command:workbench.action.files.openLocalFileFolder">${openFileCopy}</a></li>
 			<li role="none" id="dropdown-windows-linux-only"><a role="menuitem" tabIndex="-1" class="move windows-only linux-only" href="command:workbench.action.files.openFile">${openFileCopy}</a></li`;
+
 		const getDropdownBtn = container.querySelector('#dropdown-btn-container .monaco-button') as HTMLElement;
 		getDropdownBtn.id = 'dropdown-btn';
 		getDropdownBtn.setAttribute('role', 'navigation');
@@ -389,6 +382,7 @@ class WelcomePage extends Disposable {
 		let openFileButton = this._register(new Button(fileBtnContainer));
 		openFileButton.label = openFileText;
 		const getNewFileBtn = container.querySelector('#open-file-btn-container .monaco-button') as HTMLAnchorElement;
+		getNewFileBtn.setAttribute('role', 'button');
 		const body = document.querySelector('body');
 
 		if (body.classList.contains('windows') || body.classList.contains('linux')) {
@@ -418,6 +412,7 @@ class WelcomePage extends Disposable {
 		let startTourBtn = new Button(containerRight);
 		startTourBtn.label = localize('welcomePage.startTour', "Start Tour");
 		const removeTourBtn = document.createElement('a');
+		removeTourBtn.setAttribute('role', 'button');
 		const removeBtnClasses = ['btn-remove-tour', 'codicon', 'codicon-close'];
 		const flexClassesLeft = ['flex', 'flex-a-center'];
 		const flexClassesRight = ['flex', 'flex-a-start'];
@@ -430,9 +425,12 @@ class WelcomePage extends Disposable {
 		p.appendChild(b);
 		p.innerText = localize('WelcomePage.TakeATour', "Would you like to take a quick tour of Azure Data Studio?");
 		b.innerText = localize('WelcomePage.welcome', "Welcome!");
+
+
 		containerLeft.appendChild(icon);
 		containerLeft.appendChild(p);
 		containerRight.appendChild(removeTourBtn);
+
 		guidedTourNotificationContainer.appendChild(containerLeft);
 		guidedTourNotificationContainer.appendChild(containerRight);
 
@@ -651,11 +649,11 @@ class WelcomePage extends Disposable {
 		const icon = document.createElement('i');
 		const a = document.createElement('a');
 		const span = document.createElement('span');
-		const ul = container.querySelector('.list');
 		icon.title = relativePath;
 		a.innerText = name;
 		a.title = relativePath;
 		a.setAttribute('aria-label', localize('welcomePage.openFolderWithPath', "Open folder {0} with path {1}", name, parentPath));
+		a.setAttribute('role', 'button');
 		a.href = 'javascript:void(0)';
 
 		a.addEventListener('click', e => {
@@ -668,6 +666,7 @@ class WelcomePage extends Disposable {
 			e.stopPropagation();
 		});
 		icon.classList.add('themed-icon');
+
 		li.appendChild(icon);
 		li.appendChild(a);
 		span.classList.add('path');
@@ -675,12 +674,13 @@ class WelcomePage extends Disposable {
 		span.innerText = lastOpened;
 		span.title = relativePath;
 		li.appendChild(span);
+		const ul = container.querySelector('.list');
 		ul.appendChild(li);
 		result.push(li);
 		return result;
 	}
 
-	private async mapListEntries(recents: (IRecentWorkspace | IRecentFolder)[], fileService: IFileService, container: HTMLElement): Promise<HTMLElement[]> {
+	private async mapListEntries(recents: (IRecentWorkspace | IRecentFolder)[], fileService: IFileService, container: HTMLElement, ul: HTMLElement): Promise<HTMLElement[]> {
 		const result: HTMLElement[] = [];
 		for (let i = 0; i < recents.length; i++) {
 			const recent = recents[i];
@@ -700,7 +700,6 @@ class WelcomePage extends Disposable {
 		}
 		return result;
 	}
-
 	private addExtensionList(container: HTMLElement, listSelector: string): void {
 		const list = container.querySelector(listSelector);
 		if (list) {
@@ -715,6 +714,7 @@ class WelcomePage extends Disposable {
 				const bodyElm = document.createElement('p');
 				outerAnchorContainerElm.classList.add('extension');
 				outerAnchorContainerElm.classList.add('tile');
+				outerAnchorContainerElm.setAttribute('role', 'button');
 				outerAnchorContainerElm.href = extension.link;
 				flexDivContainerElm.classList.add(...flexDivContainerClasses);
 				descriptionContainerElm.classList.add('description');
@@ -743,13 +743,14 @@ class WelcomePage extends Disposable {
 				const installText = localize('welcomePage.install', "Install");
 				let dropdownBtn = this._register(new Button(btnContainer));
 				dropdownBtn.label = installText;
-				const classes = ['btn', 'btn-secondary'];
+				const classes = ['btn'];
 				const getDropdownBtn = container.querySelector('.extensionPack .monaco-button:first-of-type') as HTMLAnchorElement;
 				getDropdownBtn.id = 'dropdown-btn';
 				getDropdownBtn.classList.add(...classes);
 				getDropdownBtn.title = extension.title || (extension.isKeymap ? localize('welcomePage.installKeymap', "Install {0} keymap", extension.name) : localize('welcomePage.installExtensionPack', "Install additional support for {0}", extension.name));
 				getDropdownBtn.setAttribute('aria-haspopup', 'true');
 				getDropdownBtn.setAttribute('aria-controls', 'dropdown');
+				getDropdownBtn.setAttribute('role', 'navigation');
 				getDropdownBtn.id = 'dropdown-btn';
 				getDropdownBtn.classList.add('installExtension');
 				getDropdownBtn.setAttribute('data-extension', extension.id);
@@ -796,6 +797,7 @@ class WelcomePage extends Disposable {
 				const outerContainerClasses = ['extension-pack-extension-container', 'flex', 'flex-j-center'];
 				const flexContainerClasses = ['flex', 'flex-a-center'];
 				anchorElem.href = j.link;
+				anchorElem.setAttribute('role', 'button');
 				outerContainerElem.classList.add(...outerContainerClasses);
 				flexContainerElem.classList.add(...flexContainerClasses);
 				iconContainerElem.classList.add('icon');
@@ -1020,16 +1022,13 @@ registerThemingParticipant((theme, collector) => {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tool-tip .tool-tip-text:after { border-color: transparent transparent ${tileBorderColor}; transparent }`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tool-tip .tool-tip-text { border: 1px solid ${tileBorderColor};  }`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .modal-content { border: 1px solid ${tileBorderColor};  }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .dropdown-content{ border: 1px solid ${tileBorderColor};  }`);
 	}
 	const tileBoxShadowColor = theme.getColor(tileBoxShadow);
 	if (tileBoxShadowColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .tile:not(.extension):not(.extension-pack) { box-shadow: 0px 1px 4px ${tileBoxShadowColor}; }`);
 	}
-	const buttonPrimaryBackgroundColor = theme.getColor(buttonBackground);
-	if (buttonPrimaryBackgroundColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-primary { background-color: ${buttonPrimaryBackgroundColor};}`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-primary { border-color: ${buttonPrimaryBackgroundColor};}`);
-	}
+
 	const buttonForegroundColor = theme.getColor(buttonForeground);
 	if (buttonForegroundColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-primary { color: ${buttonForegroundColor};}`);
@@ -1037,25 +1036,33 @@ registerThemingParticipant((theme, collector) => {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .extension-pack-body { color: ${buttonForegroundColor};}`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .extension-pack-header { color: ${buttonForegroundColor};}`);
 	}
+	const listFocusForegroundColor = theme.getColor(listFocusForeground);
+	if (listFocusForegroundColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .dropdown-content a:hover, .monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .dropdown-content a:hover { color: ${buttonForegroundColor};}`);
+	}
+	const listFocusBackgroundColor = theme.getColor(listFocusBackground);
+	if (listFocusBackgroundColor) {
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .dropdown-content a:hover, .monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .dropdown-content a:focus { background: ${listFocusBackgroundColor};}`);
+	}
 	const buttonHoverBackgroundColor = theme.getColor(buttonHoverBackground);
 	if (buttonHoverBackgroundColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-primary:hover { background: ${buttonHoverBackgroundColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-primary:hover { background: ${buttonHoverBackgroundColor}}`);
 	}
 	const buttonSecondaryBackgroundColor = theme.getColor(buttonSecondaryBackground);
 	if (buttonSecondaryBackgroundColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary { background-color: ${buttonSecondaryBackgroundColor} !important;}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary { background-color: ${buttonSecondaryBackgroundColor}}`);
 	}
 	const buttonSecondaryBorderColor = theme.getColor(buttonSecondaryBorder);
 	if (buttonSecondaryBorderColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary { border: 1px solid ${buttonSecondaryBorderColor};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary .monaco-button{ border: 1px solid ${buttonSecondaryBorderColor}}`);
 	}
 	const buttonSecondaryColor = theme.getColor(buttonSecondary);
 	if (buttonSecondaryColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary { color: ${buttonSecondaryColor} !important;}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary { color: ${buttonSecondaryColor} !important}`);
 	}
 	const buttonSecondaryHover = theme.getColor(buttonSecondaryHoverColor);
 	if (buttonSecondaryColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary:hover { color: ${buttonSecondaryHover}; border: 1px solid ${buttonSecondaryHover};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary:hover:not(.disabled) { color: ${buttonSecondaryHover};}`);
 	}
 	const selectBackgroundColor = theme.getColor(selectBackground);
 	if (selectBackgroundColor) {
@@ -1076,15 +1083,6 @@ registerThemingParticipant((theme, collector) => {
 	if (menuBorderColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .dropdown-content a { border-color: ${menuBorderColor};}`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .ads-homepage .dropdown-content { border-color: ${menuBorderColor};}`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-primary { border-color: ${menuBorderColor};}`);
-	}
-	const buttonDropdownBackgroundHoverColor = theme.getColor(buttonDropdownBackgroundHover);
-	if (buttonDropdownBackgroundHoverColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .dropdown-content a:hover, .monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .dropdown-content a:focus { background: ${buttonDropdownBackgroundHoverColor};}`);
-	}
-	const buttonDropdownHoverColor = theme.getColor(menuSelectionForeground);
-	if (buttonDropdownHoverColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .dropdown-content a:hover, .monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .dropdown-content a:focus { color: ${buttonDropdownHoverColor};}`);
 	}
 	const editorWidgetBorderColor = theme.getColor(editorWidgetBorder);
 	if (editorWidgetBorderColor) {
@@ -1124,17 +1122,12 @@ registerThemingParticipant((theme, collector) => {
 	}
 	const link = theme.getColor(textLinkForeground);
 	if (link) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage a { color: ${link}; }`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .btn-primary .monaco-button { border: 1px solid ${link}; }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage a.ads-welcome-page-link { color: ${link}; }`);
 	}
 	const activeLink = theme.getColor(textLinkActiveForeground);
 	if (activeLink) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage a:hover, .monaco-workbench .part.editor > .content .welcomePage a:active { color: ${activeLink}; }`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads-homepage .themed-icon-alt { background-color: ${activeLink}; }`);
-	}
-	const focusColor = theme.getColor(focusBorder);
-	if (focusColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage a:focus { outline-color: ${focusColor}; }`);
 	}
 	const activeBorder = theme.getColor(activeContrastBorder);
 	if (activeBorder) {
@@ -1143,6 +1136,8 @@ registerThemingParticipant((theme, collector) => {
 	const focusBorderColor = theme.getColor(focusBorder);
 	if (focusBorderColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads-homepage #dropdown-btn:focus { outline-color: ${focusBorderColor}; }`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage *:focus { outline: 1px solid ${focusBorderColor}} `);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .header-bottom-nav-tile-link:focus { outline: 1px solid ${focusBorderColor}} `);
 	}
 	const iconForegroundColor = theme.getColor(iconForeground);
 	if (iconForegroundColor) {

@@ -5,6 +5,7 @@
 
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 
 import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
 import { InstalledPackagesTab } from './installedPackagesTab';
@@ -19,7 +20,7 @@ export class ManagePackagesDialog {
 	private addNewPkgTab: AddNewPackageTab;
 
 	constructor(
-		private _managePackageDialogModel: ManagePackagesDialogModel) {
+		private _managePackageDialogModel: ManagePackagesDialogModel, private _extensionContext: vscode.ExtensionContext) {
 	}
 
 	/**
@@ -56,6 +57,10 @@ export class ManagePackagesDialog {
 	 */
 	public get model(): ManagePackagesDialogModel {
 		return this._managePackageDialogModel;
+	}
+
+	public get extensionContext(): vscode.ExtensionContext {
+		return this._extensionContext;
 	}
 
 	/**

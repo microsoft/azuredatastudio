@@ -116,4 +116,22 @@ describe.skip('Project Tree tests', function (): void {
 			'MyNestedFolder2',
 			'MyFile2.sql']);
 	});
+
+	it('Should be able to parse and include relative paths outside project folder', function (): void {
+		const root = os.platform() === 'win32' ? 'Z:\\Level1\\Level2\\' : '/Root/Level1/Level2';
+		const proj = new Project(vscode.Uri.file(`${root}TestProj.sqlproj`).fsPath);
+
+		// nested entries before explicit top-level folder entry
+		// also, ordering of files/folders at all levels
+		proj.files.push(proj.createProjectEntry('..\\someFolder1\\MyNestedFolder1\\MyFile1.sql', EntryType.File));
+		proj.files.push(proj.createProjectEntry('..\\..\\someFolder2\\MyFile2.sql', EntryType.File));
+		proj.files.push(proj.createProjectEntry('..\\..\\someFolder3', EntryType.Folder)); // folder should not be counted (same as SSDT)
+
+		const tree = new ProjectRootTreeItem(proj);
+		should(tree.children.map(x => x.uri.path)).deepEqual([
+			'/TestProj.sqlproj/Data Sources',
+			'/TestProj.sqlproj/Database References',
+			'/TestProj.sqlproj/MyFile1.sql',
+			'/TestProj.sqlproj/MyFile2.sql']);
+	});
 });

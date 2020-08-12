@@ -16,7 +16,8 @@ export let SSDTUpdatedProjectBaseline: string;
 export let SSDTUpdatedProjectAfterSystemDbUpdateBaseline: string;
 export let SSDTProjectBaselineWithCleanTarget: string;
 export let SSDTProjectBaselineWithCleanTargetAfterUpdate: string;
-export let publishProfileBaseline: string;
+export let publishProfileIntegratedSecurityBaseline: string;
+export let publishProfileSqlLoginBaseline: string;
 
 const baselineFolderPath = __dirname;
 
@@ -30,7 +31,8 @@ export async function loadBaselines() {
 	SSDTUpdatedProjectAfterSystemDbUpdateBaseline = await loadBaseline(baselineFolderPath, 'SSDTUpdatedProjectAfterSystemDbUpdateBaseline.xml');
 	SSDTProjectBaselineWithCleanTarget = await loadBaseline(baselineFolderPath, 'SSDTProjectBaselineWithCleanTarget.xml');
 	SSDTProjectBaselineWithCleanTargetAfterUpdate = await loadBaseline(baselineFolderPath, 'SSDTProjectBaselineWithCleanTargetAfterUpdate.xml');
-	publishProfileBaseline = await loadBaseline(baselineFolderPath, 'publishProfileBaseline.publish.xml');
+	publishProfileIntegratedSecurityBaseline = await loadBaseline(baselineFolderPath, 'publishProfileIntegratedSecurityBaseline.publish.xml');
+	publishProfileSqlLoginBaseline = await loadBaseline(baselineFolderPath, 'publishProfileSqlLoginBaseline.publish.xml');
 }
 
 async function loadBaseline(baselineFolderPath: string, fileName: string): Promise<string> {
