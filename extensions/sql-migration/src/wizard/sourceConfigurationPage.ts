@@ -6,7 +6,8 @@
 import * as azdata from 'azdata';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { SOURCE_CONFIGURATION_PAGE_TITLE, COLLECTING_SOURCE_CONFIGURATIONS, COLLECTING_SOURCE_CONFIGURATIONS_INFO, COLLECTING_SOURCE_CONFIGURATIONS_ERROR } from '../models/strings';
-import { MigrationStateModel } from '../models/stateMachine';
+import { MigrationStateModel, StateChangeEvent, State } from '../models/stateMachine';
+import { Disposable } from 'vscode';
 
 export class SourceConfigurationPage extends MigrationWizardPage {
 	constructor(migrationStateModel: MigrationStateModel) {
@@ -29,19 +30,11 @@ export class SourceConfigurationPage extends MigrationWizardPage {
 	}
 
 	private async registerContent(view: azdata.ModelView) {
-		await this.createGatheringInformationPage(view);
-		setTimeout(async () => {
-			console.log('doing it');
-			try {
-				await this.createErrorInInformationGatheringPage(view);
-			} catch (ex) {
-				console.log(ex);
-			}
-		}, 5000);
+		await this.initialState(view);
 	}
 
 	private gatheringInfoComponent!: azdata.FormComponent;
-	private async createGatheringInformationPage(view: azdata.ModelView) {
+	private async initialState(view: azdata.ModelView) {
 		this.gatheringInfoComponent = this.createGatheringInfoComponent(view);
 		const form = view.modelBuilder.formContainer().withFormItems(
 			[
@@ -59,9 +52,13 @@ export class SourceConfigurationPage extends MigrationWizardPage {
 
 	// }
 
-	private async createErrorInInformationGatheringPage(view: azdata.ModelView) {
+	private async enterErrorState() {
 		const component = this.gatheringInfoComponent.component as azdata.TextComponent;
-		component.value = COLLECTING_SOURCE_CONFIGURATIONS_ERROR('Some error');
+		component.value = COLLECTING_SOURCE_CONFIGURATIONS_ERROR(this.migrationStateModel.gatheringInformationError);
+	}
+
+	private async enterTargetSelectionState() {
+
 	}
 
 	//#region component builders
@@ -79,11 +76,22 @@ export class SourceConfigurationPage extends MigrationWizardPage {
 		};
 	}
 	//#endregion
-	public async onPageEnter(): Promise<void> {
 
+	private eventListener: Disposable | undefined;
+	public async onPageEnter(): Promise<void> {
+		this.eventListener = this.migrationStateModel.stateChangeEvent(async (e) => this.onStateChangeEvent(e));
 	}
 
 	public async onPageLeave(): Promise<void> {
+		this.eventListener?.dispose();
+	}
 
+	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
+		switch (e.newState) {
+			case State.COLLECTION_SOURCE_INFO_ERROR:
+				return this.enterErrorState();
+			case State.TARGET_SELECTION:
+				return this.enterTargetSelectionState();
+		}
 	}
 }
