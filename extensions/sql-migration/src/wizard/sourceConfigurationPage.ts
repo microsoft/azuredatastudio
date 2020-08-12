@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { SOURCE_CONFIGURATION_PAGE_TITLE, COLLECTING_SOURCE_CONFIGURATIONS, COLLECTING_SOURCE_CONFIGURATIONS_INFO } from '../models/strings';
+import { SOURCE_CONFIGURATION_PAGE_TITLE, COLLECTING_SOURCE_CONFIGURATIONS, COLLECTING_SOURCE_CONFIGURATIONS_INFO, COLLECTING_SOURCE_CONFIGURATIONS_ERROR } from '../models/strings';
 import { MigrationStateModel } from '../models/stateMachine';
 
 export class SourceConfigurationPage extends MigrationWizardPage {
@@ -29,10 +29,23 @@ export class SourceConfigurationPage extends MigrationWizardPage {
 	}
 
 	private async registerContent(view: azdata.ModelView) {
-		const gatheringInfoComponent = this.createGatheringInfoComponent(view);
+		await this.createGatheringInformationPage(view);
+		setTimeout(async () => {
+			console.log('doing it');
+			try {
+				await this.createErrorInInformationGatheringPage(view);
+			} catch (ex) {
+				console.log(ex);
+			}
+		}, 5000);
+	}
+
+	private gatheringInfoComponent!: azdata.FormComponent;
+	private async createGatheringInformationPage(view: azdata.ModelView) {
+		this.gatheringInfoComponent = this.createGatheringInfoComponent(view);
 		const form = view.modelBuilder.formContainer().withFormItems(
 			[
-				gatheringInfoComponent
+				this.gatheringInfoComponent
 			],
 			{
 				titleFontSize: '20px'
@@ -42,6 +55,16 @@ export class SourceConfigurationPage extends MigrationWizardPage {
 		await view.initializeModel(form);
 	}
 
+	// private async createInformationGatheredPage(view: azdata.ModelView){
+
+	// }
+
+	private async createErrorInInformationGatheringPage(view: azdata.ModelView) {
+		const component = this.gatheringInfoComponent.component as azdata.TextComponent;
+		component.value = COLLECTING_SOURCE_CONFIGURATIONS_ERROR('Some error');
+	}
+
+	//#region component builders
 	private createGatheringInfoComponent(view: azdata.ModelView): azdata.FormComponent {
 		let explaination = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: COLLECTING_SOURCE_CONFIGURATIONS_INFO,
@@ -54,5 +77,13 @@ export class SourceConfigurationPage extends MigrationWizardPage {
 			component: explaination.component(),
 			title: COLLECTING_SOURCE_CONFIGURATIONS
 		};
+	}
+	//#endregion
+	public async onPageEnter(): Promise<void> {
+
+	}
+
+	public async onPageLeave(): Promise<void> {
+
 	}
 }
