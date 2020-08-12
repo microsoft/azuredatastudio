@@ -25,7 +25,7 @@ export enum State {
 }
 
 export interface Model {
-	readonly sourceConnection: azdata.IConnectionProfile;
+	readonly sourceConnection: azdata.connection.Connection;
 	readonly currentState: State;
 }
 
@@ -38,11 +38,11 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	private _stateChangeEventEmitter = new vscode.EventEmitter<StateChangeEvent>();
 	private _currentState: State;
 
-	constructor(private readonly _sourceConnection: azdata.IConnectionProfile) {
+	constructor(private readonly _sourceConnection: azdata.connection.Connection) {
 		this._currentState = State.INIT;
 	}
 
-	public get sourceConnection(): azdata.IConnectionProfile {
+	public get sourceConnection(): azdata.connection.Connection {
 		return this._sourceConnection;
 	}
 
