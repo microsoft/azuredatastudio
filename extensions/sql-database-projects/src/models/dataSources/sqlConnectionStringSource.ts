@@ -43,10 +43,10 @@ export class SqlConnectionDataSource extends DataSource {
 	}
 
 	public get authType(): string {
-		if (this.integratedSecurity) {
-			return constants.integratedAuth;
-		} else if (this.azureMFA) {
+		if (this.azureMFA) {
 			return constants.azureMfaAuth;
+		} else if (this.integratedSecurity) {
+			return constants.integratedAuth;
 		} else {
 			return constants.sqlAuth;
 		}
