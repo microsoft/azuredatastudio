@@ -31,12 +31,10 @@ import { getErrorMessage } from 'vs/base/common/errors';
 import { ISerializationService, SerializeDataParams } from 'sql/platform/serialization/common/serializationService';
 import { SaveResultAction, IGridActionContext } from 'sql/workbench/contrib/query/browser/actions';
 import { ResultSerializer, SaveResultsResponse, SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
-import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { values } from 'vs/base/common/collections';
 import { assign } from 'vs/base/common/objects';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { ChartView } from 'sql/workbench/contrib/charts/browser/chartView';
-import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { ToggleableAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
@@ -109,7 +107,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 			this._register(attachTableStyler(this._table, this.themeService));
 			this.layout();
 
-			this._table.onAdd();
+			this._table.onDidInsert();
 			this._initialized = true;
 		}
 	}
@@ -117,7 +115,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 	layout(): void {
 		if (this._table) {
 			let maxSize = Math.min(this._table.maximumSize, 500);
-			this._table.layout(maxSize, undefined, ActionsOrientation.HORIZONTAL);
+			this._table.layout(maxSize);
 		}
 	}
 }
@@ -181,8 +179,8 @@ class DataResourceTable extends GridTableBase<any> {
 		return Math.max(this.maxSize, /* ACTIONBAR_HEIGHT + BOTTOM_PADDING */ 0);
 	}
 
-	public layout(size?: number, orientation?: Orientation, actionsOrientation?: ActionsOrientation): void {
-		super.layout(size, orientation, actionsOrientation);
+	public layout(size?: number): void {
+		super.layout(size);
 
 		if (!this._chartContainer) {
 			this._chartContainer = document.createElement('div');
