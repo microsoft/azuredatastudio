@@ -138,7 +138,7 @@ describe('PredictService', () => {
 					invariantCultureDisplayValue: ''
 				},
 				{
-					displayValue: 'int',
+					displayValue: 'INT',
 					isNull: false,
 					invariantCultureDisplayValue: ''
 				}
@@ -149,7 +149,7 @@ describe('PredictService', () => {
 					invariantCultureDisplayValue: ''
 				},
 				{
-					displayValue: 'varchar',
+					displayValue: 'VARCHAR',
 					isNull: false,
 					invariantCultureDisplayValue: ''
 				}
