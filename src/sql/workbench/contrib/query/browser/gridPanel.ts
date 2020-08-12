@@ -74,6 +74,8 @@ export class GridPanel extends Disposable {
 	private maximizedGrid: GridTable<any> | HighPerfGridTable<any>;
 	private _state: GridPanelState | undefined;
 
+	private readonly optimized = this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.optimizedTable;
+
 	constructor(
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
@@ -81,7 +83,7 @@ export class GridPanel extends Disposable {
 		@IThemeService private readonly themeService: IThemeService,
 	) {
 		super();
-		this.scrollableView = new ScrollableView(this.container);
+		this.scrollableView = new ScrollableView(this.container, { scrollDebouce: this.optimized ? 0 : undefined });
 		this.scrollableView.onDidScroll(e => {
 			if (this.state && this.scrollableView.length !== 0) {
 				this.state.scrollPosition = e.scrollTop;
@@ -215,9 +217,8 @@ export class GridPanel extends Disposable {
 					this.state.tableStates.push(tableState);
 				}
 			}
-			const highPerf = this.configurationService.getValue<boolean>('sql.results.optimizedTable');
 			let table: GridTable<any> | HighPerfGridTable<any>;
-			if (highPerf) {
+			if (this.optimized) {
 				table = this.instantiationService.createInstance(HighPerfGridTable, this.runner, set, tableState);
 			} else {
 				table = this.instantiationService.createInstance(GridTable, this.runner, set, tableState);

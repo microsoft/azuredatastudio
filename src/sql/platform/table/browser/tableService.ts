@@ -14,6 +14,7 @@ import { InputFocusedContextKey } from 'vs/platform/contextkey/common/contextkey
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ITableDataSource, ITableColumn } from 'sql/base/browser/ui/table/highPerf/table';
 import { IColorMapping, computeStyles } from 'vs/platform/theme/common/styler';
+import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 
 export const ITableService = createDecorator<ITableService>('tableService');
 
@@ -200,3 +201,5 @@ export class WorkbenchTable<T> extends Table<T> {
 		return this._useAltAsMultipleSelectionModifier;
 	}
 }
+
+registerSingleton(ITableService, TableService, true);

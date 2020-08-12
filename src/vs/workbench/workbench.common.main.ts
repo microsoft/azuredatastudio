@@ -400,7 +400,6 @@ import 'vs/workbench/contrib/timeline/browser/timeline.contribution';
 // query
 import 'sql/workbench/contrib/query/browser/query.contribution';
 import 'sql/workbench/contrib/query/common/resultsGrid.contribution';
-import 'sql/workbench/contrib/tableTest/browser/tabletest.contribution';
 
 // data explorer
 import 'sql/workbench/contrib/dataExplorer/browser/dataExplorer.contribution';
