@@ -689,19 +689,19 @@ export class ProjectsController {
 			if (connection.options['database']) {
 				database = connection.options['database'];
 			}
+		}
 
-			// choose database if connection was to a server or master
-			if (!model.database || model.database === constants.master) {
-				const databaseList = await azdata.connection.listDatabases(connectionId);
-				database = (await vscode.window.showQuickPick(databaseList.map(dbName => { return { label: dbName }; }),
-					{
-						canPickMany: false,
-						placeHolder: constants.extractDatabaseSelection
-					}))?.label;
+		// choose database if connection was to a server or master
+		if (!database || database === constants.master) {
+			const databaseList = await azdata.connection.listDatabases(connectionId);
+			database = (await vscode.window.showQuickPick(databaseList.map(dbName => { return { label: dbName }; }),
+				{
+					canPickMany: false,
+					placeHolder: constants.extractDatabaseSelection
+				}))?.label;
 
-				if (!database) {
-					throw new Error(constants.databaseSelectionRequired);
-				}
+			if (!database) {
+				throw new Error(constants.databaseSelectionRequired);
 			}
 		}
 

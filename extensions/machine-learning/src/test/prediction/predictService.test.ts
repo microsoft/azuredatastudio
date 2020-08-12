@@ -114,11 +114,11 @@ describe('PredictService', () => {
 		const expected: TableColumn[] = [
 			{
 				columnName: 'c1',
-				dataType: 'int'
+				dataType: 'INT'
 			},
 			{
 				columnName: 'c2',
-				dataType: 'varchar'
+				dataType: 'VARCHAR'
 			}
 		];
 		const table: DatabaseTable =

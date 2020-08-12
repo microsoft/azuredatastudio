@@ -69,6 +69,13 @@
 					"when": "connectionProvider == MSSQL && nodeType && nodeType == Server && mssql:engineedition != 11",
 					"group": "profiler"
 				}
+			],
+			"dataExplorer/context": [
+				{
+					"command": "profiler.newProfiler",
+					"when": "connectionProvider == MSSQL && nodeType && nodeType == Server && mssql:engineedition != 11",
+					"group": "profiler"
+				}
 			]
 		},
 		"outputChannels": [
