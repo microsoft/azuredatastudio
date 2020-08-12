@@ -3,8 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as sqlcolors from './colors';
-import * as editorColors from 'vs/editor/common/view/editorColorRegistry';
+import * as colors from './colors';
 
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import * as cr from 'vs/platform/theme/common/colorRegistry';
@@ -30,7 +29,7 @@ export function attachDropdownStyler(widget: IThemable, themeService: IThemeServ
 		buttonBackground: (style && style.buttonBackground) || cr.buttonBackground,
 		buttonHoverBackground: (style && style.buttonHoverBackground) || cr.buttonHoverBackground,
 		buttonBorder: cr.contrastBorder,
-		buttonFocusOutline: (style && style.buttonFocusOutline) || sqlcolors.buttonFocusOutline
+		buttonFocusOutline: (style && style.buttonFocusOutline) || colors.buttonFocusOutline
 	}, widget);
 }
 
@@ -51,8 +50,8 @@ export function attachInputBoxStyler(widget: IThemable, themeService: IThemeServ
 	return attachStyler(themeService, {
 		inputBackground: (style && style.inputBackground) || cr.inputBackground,
 		inputForeground: (style && style.inputForeground) || cr.inputForeground,
-		disabledInputBackground: (style && style.disabledInputBackground) || sqlcolors.disabledInputBackground,
-		disabledInputForeground: (style && style.disabledInputForeground) || sqlcolors.disabledInputForeground,
+		disabledInputBackground: (style && style.disabledInputBackground) || colors.disabledInputBackground,
+		disabledInputForeground: (style && style.disabledInputForeground) || colors.disabledInputForeground,
 		inputBorder: (style && style.inputBorder) || cr.inputBorder,
 		inputValidationInfoBorder: (style && style.inputValidationInfoBorder) || cr.inputValidationInfoBorder,
 		inputValidationInfoBackground: (style && style.inputValidationInfoBackground) || cr.inputValidationInfoBackground,
@@ -89,8 +88,8 @@ export function attachSelectBoxStyler(widget: IThemable, themeService: IThemeSer
 		selectListBackground: (style && style.selectListBackground) || cr.selectListBackground,
 		selectForeground: (style && style.selectForeground) || cr.selectForeground,
 		selectBorder: (style && style.selectBorder) || cr.selectBorder,
-		disabledSelectBackground: (style && style.disabledSelectBackground) || sqlcolors.disabledInputBackground,
-		disabledSelectForeground: (style && style.disabledSelectForeground) || sqlcolors.disabledInputForeground,
+		disabledSelectBackground: (style && style.disabledSelectBackground) || colors.disabledInputBackground,
+		disabledSelectForeground: (style && style.disabledSelectForeground) || colors.disabledInputForeground,
 		inputValidationInfoBorder: (style && style.inputValidationInfoBorder) || cr.inputValidationInfoBorder,
 		inputValidationInfoBackground: (style && style.inputValidationInfoBackground) || cr.inputValidationInfoBackground,
 		inputValidationWarningBorder: (style && style.inputValidationWarningBorder) || cr.inputValidationWarningBorder,
@@ -157,7 +156,7 @@ export function attachTableStyler(widget: IThemable, themeService: IThemeService
 		listFocusForeground: (style && style.listFocusForeground) || cr.listFocusForeground,
 		listActiveSelectionBackground: (style && style.listActiveSelectionBackground) || cr.listActiveSelectionBackground,
 		listActiveSelectionForeground: (style && style.listActiveSelectionForeground) || cr.listActiveSelectionForeground,
-		listFocusAndSelectionBackground: style && style.listFocusAndSelectionBackground || sqlcolors.listFocusAndSelectionBackground,
+		listFocusAndSelectionBackground: style && style.listFocusAndSelectionBackground || colors.listFocusAndSelectionBackground,
 		listFocusAndSelectionForeground: (style && style.listFocusAndSelectionForeground) || cr.listActiveSelectionForeground,
 		listInactiveFocusBackground: (style && style.listInactiveFocusBackground),
 		listInactiveSelectionBackground: (style && style.listInactiveSelectionBackground) || cr.listInactiveSelectionBackground,
@@ -169,8 +168,8 @@ export function attachTableStyler(widget: IThemable, themeService: IThemeService
 		listSelectionOutline: (style && style.listSelectionOutline) || cr.activeContrastBorder,
 		listHoverOutline: (style && style.listHoverOutline) || cr.activeContrastBorder,
 		listInactiveFocusOutline: style && style.listInactiveFocusOutline,
-		tableHeaderBackground: (style && style.tableHeaderBackground) || sqlcolors.tableHeaderBackground,
-		tableHeaderForeground: (style && style.tableHeaderForeground) || sqlcolors.tableHeaderForeground
+		tableHeaderBackground: (style && style.tableHeaderBackground) || colors.tableHeaderBackground,
+		tableHeaderForeground: (style && style.tableHeaderForeground) || colors.tableHeaderForeground
 	}, widget);
 }
 
@@ -206,7 +205,7 @@ export const defaultHighPerfTableStyles: IColorMapping = {
 	listFocusForeground: cr.listFocusForeground,
 	listActiveSelectionBackground: cr.listActiveSelectionBackground,
 	listActiveSelectionForeground: cr.listActiveSelectionForeground,
-	listFocusAndSelectionBackground: sqlcolors.listFocusAndSelectionBackground,
+	listFocusAndSelectionBackground: colors.listFocusAndSelectionBackground,
 	listFocusAndSelectionForeground: cr.listActiveSelectionForeground,
 	listInactiveFocusBackground: cr.listInactiveFocusBackground,
 	listInactiveSelectionBackground: cr.listInactiveSelectionBackground,
@@ -217,10 +216,10 @@ export const defaultHighPerfTableStyles: IColorMapping = {
 	listFocusOutline: cr.activeContrastBorder,
 	listSelectionOutline: cr.activeContrastBorder,
 	listHoverOutline: cr.activeContrastBorder,
-	tableHeaderBackground: sqlcolors.tableHeaderBackground,
-	tableHeaderForeground: sqlcolors.tableHeaderForeground,
-	cellOutlineColor: editorColors.editorIndentGuides,
-	tableHeaderAndRowCountColor: editorColors.editorIndentGuides
+	tableHeaderBackground: colors.tableHeaderBackground,
+	tableHeaderForeground: colors.tableHeaderForeground,
+	cellOutlineColor: colors.tableCellOutline,
+	tableHeaderAndRowCountColor: colors.tableCellOutline
 };
 
 export function attachEditableDropdownStyler(widget: IThemable, themeService: IThemeService, style?: {
@@ -295,13 +294,13 @@ export function attachButtonStyler(widget: IThemable, themeService: IThemeServic
 		buttonBackground: (style && style.buttonBackground) || cr.buttonBackground,
 		buttonHoverBackground: (style && style.buttonHoverBackground) || cr.buttonHoverBackground,
 		buttonBorder: cr.contrastBorder,
-		buttonFocusOutline: (style && style.buttonFocusOutline) || sqlcolors.buttonFocusOutline
+		buttonFocusOutline: (style && style.buttonFocusOutline) || colors.buttonFocusOutline
 	}, widget);
 }
 
 export function attachCheckboxStyler(widget: IThemable, themeService: IThemeService, style?: { disabledCheckboxForeground?: cr.ColorIdentifier })
 	: IDisposable {
 	return attachStyler(themeService, {
-		disabledCheckboxForeground: (style && style.disabledCheckboxForeground) || sqlcolors.disabledCheckboxForeground
+		disabledCheckboxForeground: (style && style.disabledCheckboxForeground) || colors.disabledCheckboxForeground
 	}, widget);
 }
