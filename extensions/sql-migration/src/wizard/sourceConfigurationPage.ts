@@ -29,20 +29,10 @@ export class SourceConfigurationPage extends MigrationWizardPage {
 	}
 
 	private async registerContent(view: azdata.ModelView) {
-
-		let explaination = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: COLLECTING_SOURCE_CONFIGURATIONS_INFO,
-			CSSStyles: {
-				'font-size': '14px'
-			}
-		});
-
+		const gatheringInfoComponent = this.createGatheringInfoComponent(view);
 		const form = view.modelBuilder.formContainer().withFormItems(
 			[
-				{
-					component: explaination.component(),
-					title: COLLECTING_SOURCE_CONFIGURATIONS,
-				}
+				gatheringInfoComponent
 			],
 			{
 				titleFontSize: '20px'
@@ -50,5 +40,19 @@ export class SourceConfigurationPage extends MigrationWizardPage {
 		).component();
 
 		await view.initializeModel(form);
+	}
+
+	private createGatheringInfoComponent(view: azdata.ModelView): azdata.FormComponent {
+		let explaination = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			value: COLLECTING_SOURCE_CONFIGURATIONS_INFO,
+			CSSStyles: {
+				'font-size': '14px'
+			}
+		});
+
+		return {
+			component: explaination.component(),
+			title: COLLECTING_SOURCE_CONFIGURATIONS
+		};
 	}
 }
