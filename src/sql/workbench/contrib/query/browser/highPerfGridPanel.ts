@@ -114,7 +114,7 @@ export class GridTable<T> extends Disposable implements IView {
 
 		this.table = this._register(this.instantiationService.createInstance(WorkbenchTable, 'gridPanel', this.tableContainer, this.columns, {
 			getRow: index => this.virtWindow.getIndex(index)
-		}, { rowHeight: this.rowHeight, headerHeight: HEADER_HEIGHT, rowCountColumn: false }));
+		}, { rowHeight: this.rowHeight, headerHeight: HEADER_HEIGHT, rowCountColumn: false }) as WorkbenchTable<T>);
 
 		this.table.length = this.resultSet.rowCount;
 
