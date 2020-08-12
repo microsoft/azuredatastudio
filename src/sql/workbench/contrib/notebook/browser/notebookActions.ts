@@ -283,10 +283,9 @@ export class KernelsDropdown extends SelectBox {
 	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>, @IConfigurationService private _configurationService: IConfigurationService, @ICapabilitiesService private _capabilitiesService: ICapabilitiesService) {
 		super([msgLoading], msgLoading, contextViewProvider, container, { labelText: kernelLabel, labelOnTop: false, ariaLabel: kernelLabel } as ISelectBoxOptionsWithLabel);
 
-		const providers = this._capabilitiesService.providers;
-
 		//Gets Notebook Kernel Alias from extension providers
-		if (providers) {
+		if (this._capabilitiesService?.providers) {
+			let providers = this._capabilitiesService.providers;
 			for (const server in providers) {
 				let alias = providers[server].connection.notebookKernelAlias;
 				if (alias && kernelAlias.indexOf(alias) === -1) {
