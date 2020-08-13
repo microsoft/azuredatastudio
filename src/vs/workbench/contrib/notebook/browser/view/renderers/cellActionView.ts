@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as DOM from 'vs/base/browser/dom';
-import { Action, IAction } from 'vs/base/common/actions';
-import { BaseActionViewItem, Separator } from 'vs/base/browser/ui/actionbar/actionbar';
+import { Action, IAction, Separator } from 'vs/base/common/actions';
 import { IMenu, IMenuActionOptions, MenuItemAction, SubmenuItemAction } from 'vs/platform/actions/common/actions';
 import { DisposableStore, IDisposable } from 'vs/base/common/lifecycle';
+import { BaseActionViewItem } from 'vs/base/browser/ui/actionbar/actionViewItems';
 
 export class VerticalSeparator extends Action {
 	static readonly ID = 'vs.actions.verticalSeparator';
@@ -37,7 +37,7 @@ export function createAndFillInActionBarActionsWithVerticalSeparators(menu: IMen
 }
 
 function fillInActions(groups: ReadonlyArray<[string, ReadonlyArray<MenuItemAction | SubmenuItemAction>]>, target: IAction[] | { primary: IAction[]; secondary: IAction[]; }, useAlternativeActions: boolean, isPrimaryGroup: (group: string) => boolean = group => group === 'navigation'): void {
-	for (let tuple of groups) {
+	for (const tuple of groups) {
 		let [group, actions] = tuple;
 		if (useAlternativeActions) {
 			actions = actions.map(a => (a instanceof MenuItemAction) && !!a.alt ? a.alt : a);

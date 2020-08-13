@@ -4,22 +4,39 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as os from 'os';
-import * as path from 'path';
-import * as uuid from 'uuid';
 import * as vscode from 'vscode';
 import { HttpClient } from './common/httpClient';
 import * as loc from './localizedConstants';
 import { executeCommand, executeSudoCommand } from './common/childProcess';
 import { searchForCmd } from './common/utils';
+import { AzdataOutput } from './typings/azdata-ext';
 
 export const azdataHostname = 'https://aka.ms';
 export const azdataUri = 'azdata-msi';
-/**
- * Information about an azdata installation
- */
-export interface IAzdata {
+
+export interface IAzdataTool {
 	path: string,
-	version: string
+	version: string,
+	/**
+	 * Executes azdata with the specified arguments (e.g. --version) and returns the result
+	 * @param args The args to pass to azdata
+	 * @param parseResult A function used to parse out the raw result into the desired shape
+	 */
+	executeCommand<R>(args: string[], parseResult: (result: any) => R[]): Promise<AzdataOutput<R>>
+}
+
+class AzdataTool implements IAzdataTool {
+	constructor(public path: string, public version: string, private _outputChannel: vscode.OutputChannel) { }
+
+	public async executeCommand<R>(args: string[], parseResult: (result: any) => R[]): Promise<AzdataOutput<R>> {
+		const output = JSON.parse((await executeCommand(`"${this.path}"`, args.concat(['--output', 'json']), this._outputChannel)).stdout);
+		return {
+			logs: <string[]>output.log,
+			stdout: <string[]>output.stdout,
+			stderr: <string[]>output.stderr,
+			result: parseResult(output.result)
+		};
+	}
 }
 
 /**
@@ -27,14 +44,11 @@ export interface IAzdata {
  * or encountered an unexpected error.
  * @param outputChannel Channel used to display diagnostic information
  */
-export async function findAzdata(outputChannel: vscode.OutputChannel): Promise<IAzdata> {
+export async function findAzdata(outputChannel: vscode.OutputChannel): Promise<IAzdataTool> {
 	outputChannel.appendLine(loc.searchingForAzdata);
 	try {
-		let azdata: IAzdata | undefined = undefined;
+		let azdata: IAzdataTool | undefined = undefined;
 		switch (process.platform) {
-			case 'darwin':
-				azdata = await findAzdataDarwin(outputChannel);
-				break;
 			case 'win32':
 				azdata = await findAzdataWin32(outputChannel);
 				break;
@@ -55,6 +69,7 @@ export async function findAzdata(outputChannel: vscode.OutputChannel): Promise<I
  */
 export async function downloadAndInstallAzdata(outputChannel: vscode.OutputChannel): Promise<void> {
 	const statusDisposable = vscode.window.setStatusBarMessage(loc.installingAzdata);
+	outputChannel.show();
 	outputChannel.appendLine(loc.installingAzdata);
 	try {
 		switch (process.platform) {
@@ -62,13 +77,13 @@ export async function downloadAndInstallAzdata(outputChannel: vscode.OutputChann
 				await downloadAndInstallAzdataWin32(outputChannel);
 				break;
 			case 'darwin':
-				await installAzdataDarwin();
+				await installAzdataDarwin(outputChannel);
 				break;
 			case 'linux':
 				await installAzdataLinux(outputChannel);
 				break;
 			default:
-				throw new Error(`Platform ${process.platform} is unsupported`);
+				throw new Error(loc.platformUnsupported(process.platform));
 		}
 	} finally {
 		statusDisposable.dispose();
@@ -80,17 +95,18 @@ export async function downloadAndInstallAzdata(outputChannel: vscode.OutputChann
  * @param outputChannel Channel used to display diagnostic information
  */
 async function downloadAndInstallAzdataWin32(outputChannel: vscode.OutputChannel): Promise<void> {
-	const downloadPath = path.join(os.tmpdir(), `azdata-msi-${uuid.v4()}.msi`);
-	outputChannel.appendLine(loc.downloadingTo('azdata-cli.msi', downloadPath));
-	await HttpClient.download(`${azdataHostname}/${azdataUri}`, downloadPath, outputChannel);
-	await executeCommand('msiexec', ['/i', downloadPath], outputChannel);
+	const downloadFolder = os.tmpdir();
+	const downloadedFile = await HttpClient.download(`${azdataHostname}/${azdataUri}`, downloadFolder, outputChannel);
+	await executeCommand('msiexec', ['/qn', '/i', downloadedFile], outputChannel);
 }
 
 /**
  * Runs commands to install azdata on MacOS
  */
-async function installAzdataDarwin(): Promise<void> {
-	throw new Error('Not yet implemented');
+async function installAzdataDarwin(outputChannel: vscode.OutputChannel): Promise<void> {
+	await executeCommand('brew', ['tap', 'microsoft/azdata-cli-release'], outputChannel);
+	await executeCommand('brew', ['update'], outputChannel);
+	await executeCommand('brew', ['install', 'azdata-cli'], outputChannel);
 }
 
 /**
@@ -104,7 +120,7 @@ async function installAzdataLinux(outputChannel: vscode.OutputChannel): Promise<
 	// Download and install the signing key
 	await executeSudoCommand('curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/microsoft.asc.gpg > /dev/null', outputChannel);
 	// Add the azdata repository information
-	const release = (await executeCommand('lsb_release', ['-rs'], outputChannel)).trim();
+	const release = (await executeCommand('lsb_release', ['-rs'], outputChannel)).stdout.trim();
 	await executeSudoCommand(`add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/${release}/mssql-server-2019.list)"`, outputChannel);
 	// Update repository information and install azdata
 	await executeSudoCommand('apt-get update', outputChannel);
@@ -115,17 +131,9 @@ async function installAzdataLinux(outputChannel: vscode.OutputChannel): Promise<
  * Finds azdata specifically on Windows
  * @param outputChannel Channel used to display diagnostic information
  */
-async function findAzdataWin32(outputChannel: vscode.OutputChannel): Promise<IAzdata> {
+async function findAzdataWin32(outputChannel: vscode.OutputChannel): Promise<IAzdataTool> {
 	const promise = searchForCmd('azdata.cmd');
 	return findSpecificAzdata(await promise, outputChannel);
-}
-
-/**
- * Finds azdata specifically on MacOS
- * @param outputChannel Channel used to display diagnostic information
- */
-async function findAzdataDarwin(_outputChannel: vscode.OutputChannel): Promise<IAzdata> {
-	throw new Error('Not yet implemented');
 }
 
 /**
@@ -133,12 +141,9 @@ async function findAzdataDarwin(_outputChannel: vscode.OutputChannel): Promise<I
  * @param path The path to the azdata executable
  * @param outputChannel Channel used to display diagnostic information
  */
-async function findSpecificAzdata(path: string, outputChannel: vscode.OutputChannel): Promise<IAzdata> {
+async function findSpecificAzdata(path: string, outputChannel: vscode.OutputChannel): Promise<IAzdataTool> {
 	const versionOutput = await executeCommand(path, ['--version'], outputChannel);
-	return {
-		path: path,
-		version: parseVersion(versionOutput)
-	};
+	return new AzdataTool(path, parseVersion(versionOutput.stdout), outputChannel);
 }
 
 /**

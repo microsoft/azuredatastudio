@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import * as loc from '../common/localizedConstants';
 import { RemoteBookController, IAsset } from '../book/remoteBookController';
 import * as utils from '../common/utils';
+import * as vscode from 'vscode';
 
 const tigerToolboxRepo = 'repos/microsoft/tigertoolbox';
 const urlGithubRE = /^(?:https:\/\/(?:github\.com|api\.github\.com\/repos)|(?:\/)?(?:\/)?repos)([\w-.?!=&%*+:@\/]*)/g;
@@ -185,7 +186,7 @@ export class RemoteBookDialog {
 				let groupsRe = url.match(urlGithubRE);
 				if (groupsRe?.length > 0) {
 					url = apiGitHub(groupsRe[0]);
-					let releases = await this.controller.getReleases(new URL(url));
+					let releases = await this.controller.getReleases(vscode.Uri.parse(url));
 					if (releases) {
 						this.releaseDropdown.enabled = true;
 						await this.fillReleasesDropdown();
@@ -232,7 +233,7 @@ export class RemoteBookDialog {
 				await this.controller.setRemoteBook(selected_asset.url, this.remoteLocationValue, selected_asset);
 			} else {
 				let url = utils.getDropdownValue(this.githubRepoDropdown);
-				let newUrl = new URL(url);
+				let newUrl = vscode.Uri.parse(url);
 				await this.controller.setRemoteBook(newUrl, this.remoteLocationValue);
 			}
 			return true;

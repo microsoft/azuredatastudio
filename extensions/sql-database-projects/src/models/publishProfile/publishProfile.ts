@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import * as xmldom from 'xmldom';
 import * as constants from '../../common/constants';
 import * as utils from '../../common/utils';
+import * as mssql from '../../../../mssql';
 
 import { promises as fs } from 'fs';
 import { Uri } from 'vscode';
@@ -18,12 +19,13 @@ export interface PublishProfile {
 	connectionId: string;
 	connectionString: string;
 	sqlCmdVariables: Record<string, string>;
+	options?: mssql.DeploymentOptions;
 }
 
 /**
  * parses the specified file to load publish settings
  */
-export async function load(profileUri: Uri): Promise<PublishProfile> {
+export async function load(profileUri: Uri, dacfxService: mssql.IDacFxService): Promise<PublishProfile> {
 	const profileText = await fs.readFile(profileUri.fsPath);
 	const profileXmlDoc = new xmldom.DOMParser().parseFromString(profileText.toString());
 
@@ -36,35 +38,18 @@ export async function load(profileUri: Uri): Promise<PublishProfile> {
 	}
 
 	const connectionInfo = await readConnectionString(profileXmlDoc);
+	const optionsResult = await dacfxService.getOptionsFromProfile(profileUri.fsPath);
 
 	// get all SQLCMD variables to include from the profile
-	const sqlCmdVariables = readSqlCmdVariables(profileXmlDoc);
+	const sqlCmdVariables = utils.readSqlCmdVariables(profileXmlDoc);
 
 	return {
 		databaseName: targetDbName,
 		connectionId: connectionInfo.connectionId,
 		connectionString: connectionInfo.connectionString,
-		sqlCmdVariables: sqlCmdVariables
+		sqlCmdVariables: sqlCmdVariables,
+		options: optionsResult.deploymentOptions
 	};
-}
-
-/**
- * Read SQLCMD variables from xmlDoc and return them
- * @param xmlDoc xml doc to read SQLCMD variables from. Format must be the same that sqlproj and publish profiles use
- */
-export function readSqlCmdVariables(xmlDoc: any): Record<string, string> {
-	let sqlCmdVariables: Record<string, string> = {};
-
-	const sqlCmdElements = xmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable);
-	for (let i = 0; i < sqlCmdElements.length; i++) {
-		const sqlCmdVar = sqlCmdElements[i];
-		const varName = sqlCmdVar.getAttribute(constants.Include);
-
-		const varValue = sqlCmdVar.getElementsByTagName(constants.DefaultValue)[0]?.childNodes[0].nodeValue;
-		sqlCmdVariables[varName] = varValue;
-	}
-
-	return sqlCmdVariables;
 }
 
 async function readConnectionString(xmlDoc: any): Promise<{ connectionId: string, connectionString: string }> {

@@ -45,7 +45,7 @@ import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { joinPath } from 'vs/base/common/resources';
-import { addStandardDisposableListener, EventHelper } from 'vs/base/browser/dom';
+import { addStandardDisposableListener, EventHelper, clearNode } from 'vs/base/browser/dom';
 import { GuidedTour } from 'sql/workbench/contrib/welcome/page/browser/gettingStartedTour';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
@@ -308,19 +308,13 @@ class WelcomePage extends Disposable {
 				recent.classList.add('emptyRecent');
 				return;
 			}
-			const ul = container.querySelector('.recent ul');
+			const ul = container.querySelector('.recent ul') as HTMLElement;
 			if (!ul) {
 				return;
 			}
 			const workspacesToShow = workspaces.slice(0, 5);
-			const updateEntries = async () => {
-				while (ul.firstChild) {
-					ul.removeChild(ul.firstChild);
-				}
-				await this.mapListEntries(workspacesToShow, fileService, container);
-			};
-			await updateEntries();
-			this._register(this.labelService.onDidChangeFormatters(updateEntries));
+			clearNode(ul);
+			await this.mapListEntries(workspacesToShow, fileService, container, ul);
 		}).then(undefined, onUnexpectedError);
 		this.addExtensionList(container, '.extension-list');
 		this.addExtensionPack(container, '.extensionPack');
@@ -367,6 +361,7 @@ class WelcomePage extends Disposable {
 			<li role="none"><a role="menuitem" tabIndex="-1" class="move" href="command:azdata.resource.deploy">${(localize('welcomePage.deployServer', "Deploy a Server"))}</a></li>
 			<li role="none" id="dropdown-mac-only"><a role="menuitem" tabIndex="-1" class="move mac-only" href="command:workbench.action.files.openLocalFileFolder">${openFileCopy}</a></li>
 			<li role="none" id="dropdown-windows-linux-only"><a role="menuitem" tabIndex="-1" class="move windows-only linux-only" href="command:workbench.action.files.openFile">${openFileCopy}</a></li`;
+
 		const getDropdownBtn = container.querySelector('#dropdown-btn-container .monaco-button') as HTMLElement;
 		getDropdownBtn.id = 'dropdown-btn';
 		getDropdownBtn.setAttribute('role', 'navigation');
@@ -380,7 +375,7 @@ class WelcomePage extends Disposable {
 		nav.appendChild(dropdownUl);
 		dropdownButtonContainer.appendChild(nav);
 		const fileBtnWindowsClasses = ['windows-only', 'linux-only', 'btn-secondary'];
-		const fileBtnMacClasses = ['mac-only'];
+		const fileBtnMacClasses = ['mac-only', 'btn-secondary'];
 
 		const fileBtnContainer = container.querySelector('#open-file-btn-container') as HTMLElement;
 		const openFileText = openFileCopy;
@@ -685,7 +680,7 @@ class WelcomePage extends Disposable {
 		return result;
 	}
 
-	private async mapListEntries(recents: (IRecentWorkspace | IRecentFolder)[], fileService: IFileService, container: HTMLElement): Promise<HTMLElement[]> {
+	private async mapListEntries(recents: (IRecentWorkspace | IRecentFolder)[], fileService: IFileService, container: HTMLElement, ul: HTMLElement): Promise<HTMLElement[]> {
 		const result: HTMLElement[] = [];
 		for (let i = 0; i < recents.length; i++) {
 			const recent = recents[i];
@@ -705,7 +700,6 @@ class WelcomePage extends Disposable {
 		}
 		return result;
 	}
-
 	private addExtensionList(container: HTMLElement, listSelector: string): void {
 		const list = container.querySelector(listSelector);
 		if (list) {

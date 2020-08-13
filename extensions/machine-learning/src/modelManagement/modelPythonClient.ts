@@ -64,13 +64,13 @@ export class ModelPythonClient {
 			'float', 'uint8', 'int8', 'uint16', 'int16', 'int32', 'int64', 'string', 'bool', 'double',
 			'uint32', 'uint64', 'complex64', 'complex128', 'bfloat16']`,
 			`type_map = {
-				onnx.TensorProto.DataType.FLOAT: 'real',
-				onnx.TensorProto.DataType.UINT8: 'tinyint',
-				onnx.TensorProto.DataType.INT16: 'smallint',
-				onnx.TensorProto.DataType.INT32: 'int',
-				onnx.TensorProto.DataType.INT64: 'bigint',
-				onnx.TensorProto.DataType.STRING: 'varchar(MAX)',
-				onnx.TensorProto.DataType.DOUBLE: 'float'}`,
+				onnx.TensorProto.DataType.FLOAT: 'REAL',
+				onnx.TensorProto.DataType.UINT8: 'TINYINT',
+				onnx.TensorProto.DataType.INT16: 'SMALLINT',
+				onnx.TensorProto.DataType.INT32: 'INT',
+				onnx.TensorProto.DataType.INT64: 'BIGINT',
+				onnx.TensorProto.DataType.STRING: 'VARCHAR(MAX)',
+				onnx.TensorProto.DataType.DOUBLE: 'FLOAT'}`,
 			`parameters = {
 				"inputs": [],
 				"outputs": []

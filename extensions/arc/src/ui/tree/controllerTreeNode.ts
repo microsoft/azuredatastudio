@@ -28,7 +28,7 @@ export class ControllerTreeNode extends TreeNode {
 	private _childrenRefreshPromise = new Deferred();
 
 	constructor(public model: ControllerModel, private _context: vscode.ExtensionContext, private _treeDataProvider: AzureArcTreeDataProvider) {
-		super(model.info.url, vscode.TreeItemCollapsibleState.Collapsed, ResourceType.dataControllers);
+		super(model.label, vscode.TreeItemCollapsibleState.Collapsed, ResourceType.dataControllers);
 		model.onRegistrationsUpdated(registrations => this.refreshChildren(registrations));
 	}
 
@@ -49,7 +49,7 @@ export class ControllerTreeNode extends TreeNode {
 				}
 				// Couldn't get the children and TreeView doesn't have a way to collapse a node
 				// in a way that will refetch its children when expanded again so instead we
-				// display a tempory node that will prompt the user to re-enter credentials
+				// display a temporary node that will prompt the user to re-enter credentials
 				return [new RefreshTreeNode(this)];
 			}
 		}
