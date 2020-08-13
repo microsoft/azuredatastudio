@@ -133,12 +133,6 @@
         "command": "sqlDatabaseProjects.openContainingFolder",
         "title": "%sqlDatabaseProjects.openContainingFolder%",
         "category": "%sqlDatabaseProjects.displayName%"
-      },
-      {
-        "command": "sqlDatabaseProjects.expandAllNodes",
-        "title": "%sqlDatabaseProjects.expandAllNodes%",
-        "category": "%sqlDatabaseProjects.displayName%",
-        "icon": "$(expand-all)"
       }
     ],
     "menus": {
@@ -207,17 +201,6 @@
         {
           "command": "sqlDatabaseProjects.openContainingFolder",
           "when": "false"
-        },
-        {
-          "command": "sqlDatabaseProjects.expandAllNodes",
-          "when": "false"
-        }
-      ],
-      "view/title": [
-        {
-          "command": "sqlDatabaseProjects.expandAllNodes",
-          "when": "view == sqlDatabaseProjectsView",
-          "group" : "navigation"
         }
       ],
       "view/item/context": [

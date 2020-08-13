@@ -82,10 +82,4 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 			await this.treeView?.reveal(projNode, { focus: true, expand: true });
 		}
 	}
-
-	public async expandAllNodes(): Promise<void> {
-		for (const root of this.roots) {
-			await this.treeView?.reveal(root, { select: false, expand: true });
-		}
-	}
 }
