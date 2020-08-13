@@ -19,7 +19,9 @@ import { ExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/brow
 import {
 	OpenExtensionsViewletAction, InstallExtensionsAction, ShowOutdatedExtensionsAction, ShowRecommendedExtensionsAction, ShowRecommendedKeymapExtensionsAction, ShowPopularExtensionsAction,
 	ShowEnabledExtensionsAction, ShowInstalledExtensionsAction, ShowDisabledExtensionsAction, ShowBuiltInExtensionsAction, UpdateAllAction,
-	EnableAllAction, EnableAllWorkspaceAction, DisableAllAction, DisableAllWorkspaceAction, CheckForUpdatesAction, ShowLanguageExtensionsAction, ShowAzureExtensionsAction, EnableAutoUpdateAction, DisableAutoUpdateAction, ConfigureRecommendedExtensionsCommandsContributor, InstallVSIXAction, ReinstallAction, InstallSpecificVersionOfExtensionAction, ClearExtensionsSearchResultsAction
+	EnableAllAction, EnableAllWorkspaceAction, DisableAllAction, DisableAllWorkspaceAction, CheckForUpdatesAction, ShowLanguageExtensionsAction, ShowAzureExtensionsAction, EnableAutoUpdateAction,
+	DisableAutoUpdateAction, ConfigureRecommendedExtensionsCommandsContributor, InstallVSIXAction, ReinstallAction, InstallSpecificVersionOfExtensionAction, ClearExtensionsSearchResultsAction,
+	OpenExtensionAuthoringDocsAction
 } from 'vs/workbench/contrib/extensions/browser/extensionsActions';
 import { ExtensionsInput } from 'vs/workbench/contrib/extensions/common/extensionsInput';
 import { ExtensionEditor } from 'vs/workbench/contrib/extensions/browser/extensionEditor';
@@ -159,6 +161,8 @@ actionRegistry.registerWorkbenchAction(SyncActionDescriptor.from(EnableAutoUpdat
 actionRegistry.registerWorkbenchAction(SyncActionDescriptor.from(DisableAutoUpdateAction), `Extensions: Disable Auto Updating Extensions`, ExtensionsLabel);
 actionRegistry.registerWorkbenchAction(SyncActionDescriptor.from(InstallSpecificVersionOfExtensionAction), 'Install Specific Version of Extension...', ExtensionsLabel);
 actionRegistry.registerWorkbenchAction(SyncActionDescriptor.from(ReinstallAction), 'Reinstall Extension...', localize({ key: 'developer', comment: ['A developer on Code itself or someone diagnosing issues in Code'] }, "Developer"));
+
+actionRegistry.registerWorkbenchAction(SyncActionDescriptor.from(OpenExtensionAuthoringDocsAction), 'Extensions: Author an Extension...', ExtensionsLabel);
 
 Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration)
 	.registerConfiguration({

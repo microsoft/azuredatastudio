@@ -22,7 +22,7 @@ import {
 	ClearExtensionsInputAction, ChangeSortAction, UpdateAllAction, CheckForUpdatesAction, DisableAllAction, EnableAllAction,
 	EnableAutoUpdateAction, DisableAutoUpdateAction, ShowBuiltInExtensionsAction, InstallVSIXAction, SearchCategoryAction,
 	/*RecentlyPublishedExtensionsAction, */ShowInstalledExtensionsAction, ShowOutdatedExtensionsAction, ShowDisabledExtensionsAction,
-	ShowEnabledExtensionsAction, PredefinedExtensionFilterAction
+	ShowEnabledExtensionsAction, PredefinedExtensionFilterAction, OpenExtensionAuthoringDocsAction
 } from 'vs/workbench/contrib/extensions/browser/extensionsActions';
 import { IExtensionManagementService, IExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IWorkbenchExtensionEnablementService, IExtensionManagementServerService, IExtensionManagementServer } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
@@ -555,6 +555,7 @@ export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IE
 
 		actions.push(new Separator());
 		actions.push(this.instantiationService.createInstance(InstallVSIXAction, InstallVSIXAction.ID, InstallVSIXAction.LABEL));
+		actions.push(this.instantiationService.createInstance(OpenExtensionAuthoringDocsAction, OpenExtensionAuthoringDocsAction.ID, OpenExtensionAuthoringDocsAction.LABEL));
 
 		return actions;
 	}
