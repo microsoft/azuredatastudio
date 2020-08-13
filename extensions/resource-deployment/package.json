@@ -419,7 +419,7 @@
                       "fields": [
                         {
                           "subscriptionVariableName": "AZURE_SQLVM_NB_VAR_SUBSCRIPTION",
-                          "resourceGroupVariableName": "AZURE_SQLVM_NB_VAR__RESOURCE_GROUP_NAME",
+                          "resourceGroupVariableName": "AZURE_SQLVM_NB_VAR_RESOURCE_GROUP_NAME",
                           "type": "azure_account",
                           "required": true
                         }
@@ -429,22 +429,57 @@
                       "title": "SQL Connection information",
                       "fields": [
                         {
-                          "label": "Instance name (lower case letters and digits only)",
-                          "variableName": "AZDATA_NB_VAR_SQL_INSTANCE_NAME",
+                          "label": "Location",
+                          "variableName": "AZURE_SQLVM_LOCATION",
                           "type": "text",
-                          "defaultValue": "sqlinstance1",
+                          "defaultValue": "",
                           "required": true
                         },
                         {
-                          "label": "Username",
-                          "variableName": "AZDATA_NB_VAR_SQL_USERNAME",
+                          "label": "VM Name (lower case letters and digits only)",
+                          "variableName": "AZURE_SQLVM_VMNAME",
                           "type": "text",
-                          "defaultValue": "sa",
-                          "enabled": false
+                          "defaultValue": "",
+                          "required": true
+                        },
+                        {
+                          "label": "Publisher Name",
+                          "variableName": "AZURE_SQLVM_PUBLISHERNAME",
+                          "type": "text",
+                          "defaultValue": "",
+                          "required": true
+                        },
+                        {
+                          "label": "Version",
+                          "variableName": "AZURE_SQLVM_VERSION",
+                          "type": "text",
+                          "defaultValue": "",
+                          "required": true
+                        },
+                        {
+                          "label": "StorageAccountNames",
+                          "variableName": "AZURE_SQLVM_STORAGEACCOUNTNAME",
+                          "type": "text",
+                          "defaultValue": "",
+                          "required": true
+                        },
+                        {
+                          "label": "StorageSKU",
+                          "variableName": "AZURE_SQLVM_STORAGESKU",
+                          "type": "text",
+                          "defaultValue": "",
+                          "required": true
+                        },
+                        {
+                          "label": "Storage Name",
+                          "variableName": "AZURE_SQLVM_STORAGE_NAME",
+                          "type": "text",
+                          "defaultValue": "",
+                          "required": true
                         },
                         {
                           "label": "Password",
-                          "variableName": "AZDATA_NB_VAR_SQL_PASSWORD",
+                          "variableName": "AZURE_SQLVM_PASSWORD",
                           "type": "sql_password",
                           "userName": "sa",
                           "confirmationRequired": true,
