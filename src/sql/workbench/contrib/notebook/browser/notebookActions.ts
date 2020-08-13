@@ -30,7 +30,6 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { URI } from 'vs/base/common/uri';
 
-
 const msgLoading = localize('loading', "Loading kernels...");
 export const msgChanging = localize('changing', "Changing kernel...");
 const attachToLabel: string = localize('AttachTo', "Attach to ");
@@ -275,24 +274,12 @@ export class CollapseCellsAction extends ToggleableAction {
 const showAllKernelsConfigName = 'notebook.showAllKernels';
 const workbenchPreviewConfigName = 'workbench.enablePreviewFeatures';
 export const noKernelName = localize('noKernel', "No Kernel");
-let kernelAlias = [];
 
 export class KernelsDropdown extends SelectBox {
 	private model: NotebookModel;
 	private _showAllKernels: boolean = false;
-	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>, @IConfigurationService private _configurationService: IConfigurationService, @ICapabilitiesService private _capabilitiesService: ICapabilitiesService) {
+	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>, @IConfigurationService private _configurationService: IConfigurationService) {
 		super([msgLoading], msgLoading, contextViewProvider, container, { labelText: kernelLabel, labelOnTop: false, ariaLabel: kernelLabel } as ISelectBoxOptionsWithLabel);
-
-		//Gets Notebook Kernel Alias from extension providers
-		if (this._capabilitiesService?.providers) {
-			let providers = this._capabilitiesService.providers;
-			for (const server in providers) {
-				let alias = providers[server].connection.notebookKernelAlias;
-				if (alias && kernelAlias.indexOf(alias) === -1) {
-					kernelAlias.push(providers[server].connection.notebookKernelAlias);
-				}
-			}
-		}
 
 		if (modelReady) {
 			modelReady
@@ -314,19 +301,19 @@ export class KernelsDropdown extends SelectBox {
 	updateModel(model: INotebookModel): void {
 		this.model = model as NotebookModel;
 		this._register(this.model.kernelChanged((changedArgs: azdata.nb.IKernelChangedArgs) => {
-			this.updateKernel(changedArgs.newValue, changedArgs.nbkernelAlias);
+			this.updateKernel(changedArgs.newValue, changedArgs.nbKernelAlias);
 		}));
 		let kernel = this.model.clientSession && this.model.clientSession.kernel;
 		this.updateKernel(kernel);
 	}
 
 	// Update SelectBox values
-	public updateKernel(kernel: azdata.nb.IKernel, nbkernelAlias?: string) {
+	public updateKernel(kernel: azdata.nb.IKernel, nbKernelAlias?: string) {
 		let kernels: string[] = this._showAllKernels ? [...new Set(this.model.specs.kernels.map(a => a.display_name).concat(this.model.standardKernelsDisplayName()))]
 			: this.model.standardKernelsDisplayName();
-		if (kernelAlias !== undefined && kernelAlias.length !== 0) {
-			for (let x in kernelAlias) {
-				kernels.splice(1, 0, kernelAlias[x]);
+		if (this.model.kernelAliases !== undefined && this.model.kernelAliases?.length !== 0) {
+			for (let x in this.model.kernelAliases) {
+				kernels.splice(1, 0, this.model.kernelAliases[x]);
 			}
 		}
 		if (kernel && kernel.isReady) {
@@ -339,8 +326,8 @@ export class KernelsDropdown extends SelectBox {
 					let kernelSpec = this.model.specs.kernels.find(k => k.name === kernel.name);
 					index = firstIndex(kernels, k => k === kernelSpec?.display_name);
 				}
-				if (nbkernelAlias) {
-					index = kernels.indexOf(nbkernelAlias);
+				if (nbKernelAlias) {
+					index = kernels.indexOf(nbKernelAlias);
 				}
 				// This is an error case that should never happen
 				// Just in case, setting index to 0
@@ -357,7 +344,7 @@ export class KernelsDropdown extends SelectBox {
 
 	public doChangeKernel(displayName: string): void {
 		this.setOptions([msgChanging], 0);
-		this.model.changeKernel(displayName, kernelAlias);
+		this.model.changeKernel(displayName);
 	}
 
 	private getAllKernelConfigValue(): void {
@@ -367,7 +354,6 @@ export class KernelsDropdown extends SelectBox {
 
 export class AttachToDropdown extends SelectBox {
 	private model: NotebookModel;
-	private kernelsDropdown: KernelsDropdown;
 
 	constructor(
 		container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>,
@@ -375,12 +361,9 @@ export class AttachToDropdown extends SelectBox {
 		@IConnectionDialogService private _connectionDialogService: IConnectionDialogService,
 		@INotificationService private _notificationService: INotificationService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
-		@IConfigurationService private _configurationService: IConfigurationService
-
 	) {
 		super([msgLoadingContexts], msgLoadingContexts, contextViewProvider, container, { labelText: attachToLabel, labelOnTop: false, ariaLabel: attachToLabel } as ISelectBoxOptionsWithLabel);
 
-		this.kernelsDropdown = new KernelsDropdown(container, contextViewProvider, modelReady, this._configurationService, this._capabilitiesService);
 
 		if (modelReady) {
 			modelReady
@@ -507,10 +490,10 @@ export class AttachToDropdown extends SelectBox {
 			this.doChangeContext(connectionProfile);
 
 			//Changes kernel based on connection attached to
-			if (kernelAlias.includes(connectionProfile.serverCapabilities.notebookKernelAlias)) {
-				this.kernelsDropdown.doChangeKernel(connectionProfile.serverCapabilities.notebookKernelAlias);
+			if (this.model.kernelAliases.includes(connectionProfile.serverCapabilities.notebookKernelAlias)) {
+				this.model.changeKernel(connectionProfile.serverCapabilities.notebookKernelAlias);
 			} else {
-				this.kernelsDropdown.doChangeKernel('SQL');
+				this.model.changeKernel('SQL');
 			}
 			return true;
 		}

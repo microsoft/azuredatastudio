@@ -28,7 +28,7 @@ const ConnectionProviderContrib: IJSONSchema = {
 		},
 		notebookKernelAlias: {
 			type: 'string',
-			description: localize('schema.notebookKernelAlias', "Display Kernel Alias for the provider")
+			description: localize('schema.notebookKernelAlias', "Kernel Alias for the provider")
 		},
 		iconPath: {
 			description: localize('schema.iconPath', "Icon path for the server type"),

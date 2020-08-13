@@ -24,8 +24,6 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { URI } from 'vs/base/common/uri';
-import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
-
 
 class TestClientSession extends ClientSessionStub {
 	private _errorState: boolean = false;
@@ -265,7 +263,6 @@ suite('Notebook Actions', function (): void {
 		let container: HTMLElement;
 		let notebookModel: TestNotebookModel;
 		let configurationService: TestConfigurationService;
-		let capabilitiesService: TestCapabilitiesService;
 		let notebookEditor: NotebookEditorStub;
 		let sandbox: sinon.SinonSandbox;
 		let setOptionsSpy: sinon.SinonSpy;
@@ -280,7 +277,7 @@ suite('Notebook Actions', function (): void {
 			notebookModel = new TestNotebookModel();
 			notebookEditor = new NotebookEditorStub({ model: notebookModel });
 			await notebookEditor.modelReady;
-			kernelsDropdown = new KernelsDropdown(container, contextViewProvider, notebookEditor.modelReady, configurationService, capabilitiesService);
+			kernelsDropdown = new KernelsDropdown(container, contextViewProvider, notebookEditor.modelReady, configurationService);
 			setOptionsSpy = sandbox.spy(kernelsDropdown, 'setOptions');
 		});
 
@@ -383,14 +380,13 @@ suite('Notebook Actions', function (): void {
 
 		suite(`doChangeKernel`, () => {
 			for (const displayName of [undefined, '', 'Arbitrary Kernel Name']) {
-				const kernelAlias: string[] = [];
 				test(`verify for kernel displayName='${displayName}'`, () => {
 					const changeKernelStub = sandbox.stub(notebookModel, 'changeKernel');
 					kernelsDropdown.doChangeKernel(displayName);
 					assert.ok(setOptionsSpy.calledOnce, `setOptions should be called exactly once`);
 					assert.ok(setOptionsSpy.calledWithExactly([msgChanging], 0), `setOptions should be called with a options value of ${[msgChanging]} and selected value of 0`);
 					assert.ok(changeKernelStub.calledOnce, `notebookModel.changeKernel should be called exactly once`);
-					assert.ok(changeKernelStub.calledWithExactly(displayName, kernelAlias), `notebookModel.changeKernel should be called with the kernel displayName that was passed to doChangeKernel`);
+					assert.ok(changeKernelStub.calledWithExactly(displayName), `notebookModel.changeKernel should be called with the kernel displayName that was passed to doChangeKernel`);
 				});
 			}
 		});
@@ -401,11 +397,11 @@ suite('Notebook Actions', function (): void {
 				newValue: <azdata.nb.IKernel>{
 					name: 'StandardKernel2'
 				},
-				nbkernelAlias: ''
+				nbKernelAlias: ''
 			};
 			notebookModel.kernelChangedEmitter.fire(e);
 			assert.ok(updateKernelStub.calledOnce, `updateKernel should be called exactly once`);
-			assert.ok(updateKernelStub.calledWithExactly(e.newValue, e.nbkernelAlias), `updateKernel should be called with the parameter: ${JSON.stringify(e.newValue), JSON.stringify(e.nbkernelAlias)}`);
+			assert.ok(updateKernelStub.calledWithExactly(e.newValue, e.nbKernelAlias), `updateKernel should be called with the parameter: ${JSON.stringify(e.newValue), JSON.stringify(e.nbKernelAlias)}`);
 		});
 
 	});

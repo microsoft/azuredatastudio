@@ -29,6 +29,7 @@ import { startsWith } from 'vs/base/common/strings';
 import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { Deferred } from 'sql/base/common/promise';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -81,6 +82,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _connectionUrisToDispose: string[] = [];
 	private _textCellsLoading: number = 0;
 	private _standardKernels: notebookUtils.IStandardKernelWithProvider[];
+	private _kernelAliases: string[] = [];
 
 	public requestConnectionHandler: () => Promise<boolean>;
 
@@ -89,7 +91,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		public connectionProfile: IConnectionProfile | undefined,
 		@ILogService private readonly logService: ILogService,
 		@INotificationService private readonly notificationService: INotificationService,
-		@IAdsTelemetryService private readonly adstelemetryService: IAdsTelemetryService
+		@IAdsTelemetryService private readonly adstelemetryService: IAdsTelemetryService,
+		@ICapabilitiesService private _capabilitiesService?: ICapabilitiesService
+
 	) {
 		super();
 		if (!_notebookOptions || !_notebookOptions.notebookUri || !_notebookOptions.notebookManagers) {
@@ -230,6 +234,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public get providerId(): string {
 		return this._providerId;
+	}
+
+	public get kernelAliases(): string[] {
+		return this._kernelAliases;
 	}
 
 	public set trustedMode(isTrusted: boolean) {
@@ -571,6 +579,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public setDefaultKernelAndProviderId() {
+		if (this._capabilitiesService?.providers) {
+			let providers = this._capabilitiesService.providers;
+			for (const server in providers) {
+				let alias = providers[server].connection.notebookKernelAlias;
+				if (alias && this._kernelAliases.indexOf(alias) === -1) {
+					this._kernelAliases.push(providers[server].connection.notebookKernelAlias);
+				}
+			}
+		}
 		if (this._savedKernelInfo) {
 			this.sanitizeSavedKernelInfo();
 			let provider = this._kernelDisplayNameToNotebookProviderIds.get(this._savedKernelInfo.display_name);
@@ -688,19 +705,19 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._language = language.toLowerCase();
 	}
 
-	public changeKernel(displayName: string, kernelAlias?: string[]): void {
+	public changeKernel(displayName: string): void {
 		this._contextsLoadingEmitter.fire();
-		this.doChangeKernel(displayName, kernelAlias, true).catch(e => this.logService.error(e));
+		this.doChangeKernel(displayName, true).catch(e => this.logService.error(e));
 	}
 
-	private async doChangeKernel(displayName: string, kernelAlias?: string[], mustSetProvider: boolean = true, restoreOnFail: boolean = true): Promise<void> {
+	private async doChangeKernel(displayName: string, mustSetProvider: boolean = true, restoreOnFail: boolean = true): Promise<void> {
 		if (!displayName) {
 			// Can't change to an undefined kernel
 			return;
 		}
 		let oldDisplayName = this._activeClientSession && this._activeClientSession.kernel ? this._activeClientSession.kernel.name : undefined;
 		let nbKernelAlias: string;
-		if (kernelAlias.includes(displayName)) {
+		if (this.kernelAliases.includes(displayName)) {
 			displayName = 'SQL';
 			nbKernelAlias = 'Kusto';
 		}
@@ -735,7 +752,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					// we would never reset the providers
 					this._oldKernel = undefined;
 				}
-				return this.doChangeKernel(oldDisplayName, kernelAlias, mustSetProvider, false);
+				return this.doChangeKernel(oldDisplayName, mustSetProvider, false);
 			} else {
 				this.notifyError(localize('changeKernelFailed', "Failed to change kernel due to error: {0}", getErrorMessage(err)));
 				this._kernelChangedEmitter.fire({
@@ -755,7 +772,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._kernelChangedEmitter.fire({
 			newValue: kernel,
 			oldValue: undefined,
-			nbkernelAlias: kernelAlias
+			nbKernelAlias: kernelAlias
 		});
 	}
 
