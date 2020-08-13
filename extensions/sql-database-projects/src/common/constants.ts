@@ -80,9 +80,9 @@ export const loadProfileButtonText = localize('loadProfileButtonText', "Load Pro
 export const profileWarningText = localize('profileWarningText', "⚠ Warning: Connection strings using AAD Authentication are not supported at this time");
 export const profileReadError = localize('profileReadError', "Could not load the profile file.");
 export const sqlCmdTableLabel = localize('sqlCmdTableLabel', "SQLCMD Variables");
-export const sqlCmdVariableColumn = localize('sqlCmdVariableColumn', "Variable");
+export const sqlCmdVariableColumn = localize('sqlCmdVariableColumn', "Name");
 export const sqlCmdValueColumn = localize('sqlCmdValueColumn', "Value");
-export const loadSqlCmdVarsButtonTitle = localize('loadSqlCmdVarsButtonTitle', "Load values from .sqlproj");
+export const loadSqlCmdVarsButtonTitle = localize('reloadValuesFromProjectButtonTitle', "Reload values from project");
 
 // Error messages
 

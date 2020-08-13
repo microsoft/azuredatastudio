@@ -12,8 +12,9 @@ import { Project } from '../models/project';
 import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStringSource';
 import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
 import { DeploymentOptions } from '../../../mssql/src/mssql';
+import { IconPathHelper } from '../common/iconHelper';
 
-const titleFontSize = 12;
+const titleFontSize = 13;
 
 interface DataSourceDropdownValue extends azdata.CategoryValue {
 	dataSource: SqlConnectionDataSource;
@@ -22,8 +23,8 @@ interface DataSourceDropdownValue extends azdata.CategoryValue {
 
 export namespace cssStyles {
 	export const text = { 'user-select': 'text', 'cursor': 'text' };
-	export const tableHeader = { ...text, 'text-align': 'left', 'border': 'none' };
-	export const tableRow = { ...text, 'border-top': 'solid 1px #ccc', 'border-bottom': 'solid 1px #ccc', 'border-left': 'none', 'border-right': 'none' };
+	export const tableHeader = { ...text, 'text-align': 'left', 'border': 'none', 'font-size': '12px', 'font-weight': 'normal', 'color': '#666666' };
+	export const tableRow = { ...text, 'border-top': 'solid 1px #ccc', 'border-bottom': 'solid 1px #ccc', 'border-left': 'none', 'border-right': 'none', 'font-size': '12px' };
 }
 
 export class PublishDatabaseDialog {
@@ -388,7 +389,10 @@ export class PublishDatabaseDialog {
 			label: constants.loadSqlCmdVarsButtonTitle,
 			title: constants.loadSqlCmdVarsButtonTitle,
 			ariaLabel: constants.loadSqlCmdVarsButtonTitle,
-			width: '150px'
+			width: '210px',
+			iconPath: IconPathHelper.refresh,
+			height: '18px',
+			CSSStyles: { 'font-size': '13px' }
 		}).component();
 
 		loadSqlCmdVarsButton.onDidClick(async () => {
