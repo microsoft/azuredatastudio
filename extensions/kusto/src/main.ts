@@ -6,7 +6,6 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as path from 'path';
-import * as os from 'os';
 
 import * as Constants from './constants';
 import ContextProvider from './contextProvider';
@@ -23,9 +22,6 @@ import { createKustoApi } from './kustoApiFactory';
 import { localize } from './localize';
 import { KustoServer } from './KustoServer';
 import { promises as fs } from 'fs';
-
-const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', "This sample code loads the file into a data frame and shows the first 10 results.");
-
 
 export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
 	// lets make sure we support this platform first
