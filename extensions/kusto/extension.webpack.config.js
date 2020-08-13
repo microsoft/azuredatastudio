@@ -13,8 +13,5 @@ module.exports = withDefaults({
 	context: __dirname,
 	entry: {
 		main: './src/main.ts'
-	},
-	externals: {
-		kerberos: "commonjs kerberos"
 	}
 });

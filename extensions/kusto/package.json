@@ -11,9 +11,6 @@
   },
   "main": "./out/main",
   "typings": "./src/kusto",
-  "extensionDependencies": [
-    "vscode.sql"
-  ],
   "scripts": {
     "compile": "gulp compile-extension:kusto-client",
     "update-grammar": "node ../../build/npm/update-grammar.js Microsoft/vscode-kusto syntaxes/SQL.plist ./syntaxes/sql.tmLanguage.json"
@@ -34,14 +31,6 @@
         "icon": {
           "dark": "resources/dark/open_notebook_inverse.svg",
           "light": "resources/light/open_notebook.svg"
-        }
-      },
-      {
-        "command": "kustoCluster.task.openClusterStatusNotebook",
-        "title": "%title.openClusterStatusNotebook%",
-        "icon": {
-          "dark": "resources/dark/cluster_status_inverse.svg",
-          "light": "resources/light/cluster_status.svg"
         }
       }
     ],
@@ -75,7 +64,7 @@
       }
     ],
     "outputChannels": [
-      "KUSTO"
+      "Kusto"
     ],
     "snippets": [
       {
@@ -146,10 +135,6 @@
         },
         {
           "command": "kustoCluster.task.openNotebook",
-          "when": "false"
-        },
-        {
-          "command": "kustoCluster.task.openClusterStatusNotebook",
           "when": "false"
         }
       ]

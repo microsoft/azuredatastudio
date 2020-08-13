@@ -84,9 +84,6 @@ function activateNotebookTask(appContext: AppContext): void {
 	apiWrapper.registerTaskHandler(Constants.kustoClusterOpenNotebookTask, (profile: azdata.IConnectionProfile) => {
 		return handleOpenNotebookTask(profile);
 	});
-	apiWrapper.registerTaskHandler(Constants.kustoopenClusterStatusNotebook, (profile: azdata.IConnectionProfile) => {
-		return handleOpenClusterStatusNotebookTask(profile, appContext);
-	});
 }
 
 function saveProfileAndCreateNotebook(profile: azdata.IConnectionProfile): Promise<void> {
@@ -111,25 +108,10 @@ async function handleNewNotebookTask(oeContext?: azdata.ObjectExplorerContext, p
 	// to handle this. We should look into improving this in the future
 	let title = findNextUntitledEditorName();
 	let untitledUri = vscode.Uri.parse(`untitled:${title}`);
-	let editor = await azdata.nb.showNotebookDocument(untitledUri, {
+	await azdata.nb.showNotebookDocument(untitledUri, {
 		connectionProfile: profile,
 		preview: false
 	});
-	if (oeContext && oeContext.nodeInfo && oeContext.nodeInfo.nodePath) {
-		// Get the file path after '/HDFS'
-		let hdfsPath: string = oeContext.nodeInfo.nodePath.substring(oeContext.nodeInfo.nodePath.indexOf('/HDFS') + '/HDFS'.length);
-		if (hdfsPath.length > 0) {
-			let analyzeCommand = '#' + msgSampleCodeDataFrame + os.EOL + 'df = (spark.read.option("inferSchema", "true")'
-				+ os.EOL + '.option("header", "true")' + os.EOL + '.csv("{0}"))' + os.EOL + 'df.show(10)';
-			editor.edit(editBuilder => {
-				editBuilder.replace(0, {
-					cell_type: 'code',
-					source: analyzeCommand.replace('{0}', hdfsPath)
-				});
-			});
-
-		}
-	}
 }
 
 async function handleOpenNotebookTask(profile: azdata.IConnectionProfile): Promise<void> {
@@ -153,26 +135,6 @@ async function handleOpenNotebookTask(profile: azdata.IConnectionProfile): Promi
 				preview: false
 			});
 		}
-	}
-}
-
-async function handleOpenClusterStatusNotebookTask(profile: azdata.IConnectionProfile, appContext: AppContext): Promise<void> {
-	const notebookRelativePath: string = 'notebooks/tsg/cluster-status.ipynb';
-	const notebookFullPath: string = path.join(appContext.extensionContext.extensionPath, notebookRelativePath);
-	if (!(await Utils.exists(notebookFullPath))) {
-		vscode.window.showErrorMessage(localize("fileNotFound", "Unable to find the file specified"));
-	} else {
-		const title: string = Utils.findNextUntitledEditorName(notebookFullPath);
-		const untitledFileName: vscode.Uri = vscode.Uri.parse(`untitled:${title}`);
-		vscode.workspace.openTextDocument(notebookFullPath).then((document) => {
-			let initialContent = document.getText();
-			azdata.nb.showNotebookDocument(untitledFileName, {
-				connectionProfile: profile,
-				preview: true,
-				initialContent: initialContent,
-				initialDirtyState: false
-			});
-		});
 	}
 }
 
