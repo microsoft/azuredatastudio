@@ -87,6 +87,21 @@ describe('ProjectsController', function (): void {
 				should(project.dataSources.length).equal(2); // detailed datasources tests in their own test file
 			});
 
+			it('Should load both project and referenced project', async function (): Promise<void> {
+				// setup test projects
+				const folderPath = await testUtils.generateTestFolderPath();
+				await fs.mkdir(path.join(folderPath, 'proj1'));
+				await fs.mkdir(path.join(folderPath, 'ReferencedProject'));
+
+				const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.openProjectWithProjectReferencesBaseline, path.join(folderPath, 'proj1'));
+				await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline, path.join(folderPath, 'ReferencedProject'));
+
+				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+				await projController.openProject(vscode.Uri.file(sqlProjPath));
+
+				should(projController.projects.length).equal(2, 'Referenced project should have been opened when the project referencing it was opened');
+			});
+
 			it('Should not keep failed to load project in project list.', async function (): Promise<void> {
 				const folderPath = await testUtils.generateTestFolderPath();
 				const sqlProjPath = await testUtils.createTestSqlProjFile('empty file with no valid xml', folderPath);
