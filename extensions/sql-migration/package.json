@@ -1,0 +1,41 @@
+{
+  "name": "sql-migration",
+  "displayName": "%displayName%",
+  "description": "%description%",
+  "version": "0.0.1",
+  "publisher": "Microsoft",
+  "preview": true,
+  "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
+  "icon": "images/extension.png",
+  "engines": {
+    "vscode": "^1.25.0",
+    "azdata": ">=1.19.0"
+  },
+  "activationEvents": [
+    "onCommand:sqlmigration.start"
+  ],
+  "main": "./out/main",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/azuredatastudio.git"
+  },
+  "extensionDependencies": [
+    "Microsoft.mssql"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "sqlmigration.start",
+        "title": "SQL Migration Start",
+        "category": "SQL Migration"
+      }
+    ]
+  },
+  "dependencies": {
+    "vscode-nls": "^3.2.1"
+  },
+  "__metadata": {
+    "publisherDisplayName": "Microsoft",
+    "publisherId": "Microsoft"
+  }
+}

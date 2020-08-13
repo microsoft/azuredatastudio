@@ -756,6 +756,18 @@ async function createRadioOptions(context: FieldContext, getRadioButtonInfo?: ((
 	return radioGroupLoadingComponentBuilder;
 }
 
+const enum AccountStatus {
+	notFound = 0,
+	isStale,
+	isNotStale,
+}
+
+async function getAccountStatus(account: azdata.Account): Promise<AccountStatus> {
+	const refreshedAccount = (await azdata.accounts.getAllAccounts()).find(ac => ac.key.accountId === account.key.accountId);
+	return (refreshedAccount === undefined)
+		? AccountStatus.notFound
+		: refreshedAccount.isStale ? AccountStatus.isStale : AccountStatus.isNotStale;
+}
 
 /**
  * An Azure Account field consists of 3 separate dropdown fields - Account, Subscription and Resource Group
@@ -803,14 +815,14 @@ async function processAzureAccountField(context: AzureAccountFieldContext): Prom
 			// Append a blank value for the "default" option if the field isn't required, context will clear all the dropdowns when selected
 			const dropdownValues = context.fieldInfo.required ? [] : [''];
 			accountDropdown.values = dropdownValues.concat(accounts.map(account => {
-				const displayName = `${account.displayInfo.displayName} (${account.displayInfo.userId})`;
+				const displayName = getAccountDisplayString(account);
 				accountValueToAccountMap.set(displayName, account);
 				return displayName;
 			}));
 			const selectedAccount = accountDropdown.value ? accountValueToAccountMap.get(accountDropdown.value.toString()) : undefined;
 			await handleSelectedAccountChanged(context, selectedAccount, subscriptionDropdown, subscriptionValueToSubscriptionMap, resourceGroupDropdown, locationDropdown);
 		} catch (error) {
-			vscode.window.showErrorMessage(localize('azure.accounts.unexpectedAccountsError', 'Unexpected error fetching accounts: ${0}', getErrorMessage(error)));
+			vscode.window.showErrorMessage(localize('azure.accounts.unexpectedAccountsError', 'Unexpected error fetching accounts: {0}', getErrorMessage(error)));
 		}
 	};
 
@@ -826,6 +838,10 @@ async function processAzureAccountField(context: AzureAccountFieldContext): Prom
 	setTimeout(async () => {
 		await populateAzureAccounts();
 	}, 0);
+}
+
+function getAccountDisplayString(account: azdata.Account) {
+	return `${account.displayInfo.displayName} (${account.displayInfo.userId})`;
 }
 
 function createAzureAccountDropdown(context: AzureAccountFieldContext): AzureAccountComponents {
@@ -927,29 +943,69 @@ async function handleSelectedAccountChanged(
 			return;
 		}
 		if (response.errors.length > 0) {
-			// If we got back some subscriptions then don't display the errors to the user - it's normal for users
-			// to not necessarily have access to all subscriptions on an account so displaying the errors
-			// in that case is usually just distracting and causes confusion
-			const errMsg = response.errors.join(EOL);
-			if (response.subscriptions.length === 0) {
+			const accountStatus = await getAccountStatus(selectedAccount);
+
+			// If accountStatus is not found or stale then user needs to sign in again
+			// else individual errors received from the response are bubbled up.
+			if (accountStatus === AccountStatus.isStale || accountStatus === AccountStatus.notFound) {
+				const errMsg = await getAzureAccessError({ selectedAccount, accountStatus });
 				context.container.message = {
-					text: errMsg || '',
+					text: errMsg,
 					description: '',
 					level: azdata.window.MessageLevel.Error
 				};
 			} else {
-				console.log(errMsg);
+				// If we got back some subscriptions then don't display the errors to the user - it's normal for users
+				// to not necessarily have access to all subscriptions on an account so displaying the errors
+				// in that case is usually just distracting and causes confusion
+				const errMsg = response.errors.join(EOL);
+				if (response.subscriptions.length === 0) {
+					context.container.message = {
+						text: errMsg,
+						description: '',
+						level: azdata.window.MessageLevel.Error
+					};
+				} else {
+					console.log(errMsg);
+				}
 			}
 		}
 		subscriptionDropdown.values = response.subscriptions.map(subscription => {
-			const displayName = `${subscription.name} (${subscription.id})`;
+			const displayName = getSubscriptionDisplayString(subscription);
 			subscriptionValueToSubscriptionMap.set(displayName, subscription);
 			return displayName;
 		}).sort((a: string, b: string) => a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase()));
 		const selectedSubscription = subscriptionDropdown.values.length > 0 ? subscriptionValueToSubscriptionMap.get(subscriptionDropdown.values[0]) : undefined;
 		await handleSelectedSubscriptionChanged(context, selectedAccount, selectedSubscription, resourceGroupDropdown);
 	} catch (error) {
-		vscode.window.showErrorMessage(localize('azure.accounts.unexpectedSubscriptionsError', "Unexpected error fetching subscriptions for account {0} ({1}): {2}", selectedAccount?.displayInfo.displayName, selectedAccount?.key.accountId, getErrorMessage(error)));
+		await vscode.window.showErrorMessage(await getAzureAccessError({ selectedAccount, defaultErrorMessage: localize('azure.accounts.unexpectedSubscriptionsError', "Unexpected error fetching subscriptions for account {0}: {1}", getAccountDisplayString(selectedAccount), getErrorMessage(error)), error }));
+	}
+}
+
+function getSubscriptionDisplayString(subscription: azureResource.AzureResourceSubscription) {
+	return `${subscription.name} (${subscription.id})`;
+}
+
+type AccountAccessParams = {
+	selectedAccount: azdata.Account;
+	defaultErrorMessage?: string;
+	error?: any;
+	accountStatus?: AccountStatus;
+};
+
+async function getAzureAccessError({ selectedAccount, defaultErrorMessage = '', error = undefined, accountStatus = undefined }: AccountAccessParams): Promise<string> {
+	if (accountStatus === undefined) {
+		accountStatus = await getAccountStatus(selectedAccount);
+	}
+	switch (accountStatus) {
+		case AccountStatus.notFound:
+			return localize('azure.accounts.accountNotFoundError', "The selected account '{0}' is no longer available. Click sign in to add it again or select a different account.", getAccountDisplayString(selectedAccount))
+				+ (error !== undefined ? localize('azure.accessError', "\n Error Details: {0}.", getErrorMessage(error)) : '');
+		case AccountStatus.isStale:
+			return localize('azure.accounts.accountStaleError', "The access token for selected account '{0}' is no longer valid. Please click the sign in button and refresh the account or select a different account.", getAccountDisplayString(selectedAccount))
+				+ (error !== undefined ? localize('azure.accessError', "\n Error Details: {0}.", getErrorMessage(error)) : '');
+		case AccountStatus.isNotStale:
+			return defaultErrorMessage;
 	}
 }
 
@@ -1002,25 +1058,38 @@ async function handleSelectedSubscriptionChanged(context: AzureAccountFieldConte
 			return;
 		}
 		if (response.errors.length > 0) {
-			// If we got back some Resource Groups then don't display the errors to the user - it's normal for users
-			// to not necessarily have access to all Resource Groups on a subscription so displaying the errors
-			// in that case is usually just distracting and causes confusion
-			const errMsg = response.errors.join(EOL);
-			if (response.resourceGroups.length === 0) {
+			const accountStatus = await getAccountStatus(selectedAccount);
+
+			// If accountStatus is not found or stale then user needs to sign in again
+			// else individual errors received from the response are bubbled up.
+			if (accountStatus === AccountStatus.isStale || accountStatus === AccountStatus.notFound) {
+				const errMsg = await getAzureAccessError({ selectedAccount, accountStatus });
 				context.container.message = {
-					text: errMsg || '',
+					text: errMsg,
 					description: '',
 					level: azdata.window.MessageLevel.Error
 				};
 			} else {
-				console.log(errMsg);
+				// If we got back some Resource Groups then don't display the errors to the user - it's normal for users
+				// to not necessarily have access to all Resource Groups on a subscription so displaying the errors
+				// in that case is usually just distracting and causes confusion
+				const errMsg = response.errors.join(EOL);
+				if (response.resourceGroups.length === 0) {
+					context.container.message = {
+						text: errMsg,
+						description: '',
+						level: azdata.window.MessageLevel.Error
+					};
+				} else {
+					console.log(errMsg);
+				}
 			}
 		}
 		resourceGroupDropdown.values = (response.resourceGroups.length !== 0)
 			? response.resourceGroups.map(resourceGroup => resourceGroup.name).sort((a: string, b: string) => a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase()))
 			: [''];
 	} catch (error) {
-		vscode.window.showErrorMessage(localize('azure.accounts.unexpectedResourceGroupsError', "Unexpected error fetching resource groups for subscription {0} ({1}): {2}", selectedSubscription?.name, selectedSubscription?.id, getErrorMessage(error)));
+		await vscode.window.showErrorMessage(await getAzureAccessError({ selectedAccount, defaultErrorMessage: localize('azure.accounts.unexpectedResourceGroupsError', "Unexpected error fetching resource groups for subscription {0}: {1}", getSubscriptionDisplayString(selectedSubscription), getErrorMessage(error)), error }));
 	}
 }
 

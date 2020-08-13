@@ -29,6 +29,7 @@ import { localize } from 'vs/nls';
 // {{SQL CARBON EDIT}}
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { SnippetController2 } from 'vs/editor/contrib/snippet/snippetController2';
+import { supportsNodeNameDrop } from 'sql/workbench/services/objectExplorer/browser/dragAndDropController';
 
 interface IDropOperation {
 	splitDirection?: GroupDirection;
@@ -359,7 +360,7 @@ class DropOverlay extends Themable {
 
 			// {{SQL CARBON EDIT}}
 			const editor = this.editorService.activeTextEditorControl as ICodeEditor;
-			if (untitledOrFileResources[0].resource.scheme === 'Column' || untitledOrFileResources[0].resource.scheme === 'Table') {
+			if (supportsNodeNameDrop(untitledOrFileResources[0].resource.scheme) || untitledOrFileResources[0].resource.scheme === 'Folder') {
 				SnippetController2.get(editor).insert(untitledOrFileResources[0].resource.query);
 				editor.focus();
 				return;
