@@ -3494,25 +3494,6 @@ export class InstallLocalExtensionsInRemoteAction extends Action {
 	}
 }
 
-export class OpenExtensionAuthoringDocsAction extends Action {
-
-	static readonly ID = 'workbench.extensions.action.openExtensionAuthoringDocs';
-	static readonly LABEL = localize('openExtensionAuthoringDocs', "Author an Extension...");
-	private static readonly extensionAuthoringDocsURI = 'https://docs.microsoft.com/sql/azure-data-studio/extension-authoring';
-
-	constructor(
-		id: string = OpenExtensionAuthoringDocsAction.ID,
-		label: string = OpenExtensionAuthoringDocsAction.LABEL,
-		@IOpenerService private readonly openerService: IOpenerService,
-	) {
-		super(id, label);
-	}
-
-	run(): Promise<boolean> {
-		return this.openerService.open(URI.parse(OpenExtensionAuthoringDocsAction.extensionAuthoringDocsURI));
-	}
-}
-
 CommandsRegistry.registerCommand('workbench.extensions.action.showExtensionsForLanguage', function (accessor: ServicesAccessor, fileExtension: string) {
 	const viewletService = accessor.get(IViewletService);
 
