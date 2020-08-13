@@ -48,4 +48,3 @@ export enum KustoClusterItems {
 
 export const kustoClusterNewNotebookTask = 'kustoCluster.task.newNotebook';
 export const kustoClusterOpenNotebookTask = 'kustoCluster.task.openNotebook';
-export const kustoopenClusterStatusNotebook = 'kustoCluster.task.openClusterStatusNotebook';
