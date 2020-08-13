@@ -10,7 +10,7 @@ import * as testUtils from './testUtils';
 import * as constants from '../common/constants';
 
 import { promises as fs } from 'fs';
-import { Project, EntryType, TargetPlatform, SystemDatabase, DatabaseReferenceLocation, DatabaseReferenceType } from '../models/project';
+import { Project, EntryType, TargetPlatform, SystemDatabase, DatabaseReferenceLocation, DacpacReferenceProjectEntry, SqlProjectReferenceProjectEntry } from '../models/project';
 import { exists, convertSlashesForSqlProj } from '../common/utils';
 import { Uri } from 'vscode';
 
@@ -45,7 +45,7 @@ describe('Project: sqlproj content operations', function (): void {
 		// should only have one database reference even though there are two master.dacpac references (1 for ADS and 1 for SSDT)
 		should(project.databaseReferences.length).equal(1);
 		should(project.databaseReferences[0].databaseName).containEql(constants.master);
-		should(project.databaseReferences[0].databaseReferenceType).equal(DatabaseReferenceType.dacpac);
+		should(project.databaseReferences[0] instanceof DacpacReferenceProjectEntry).equal(true);
 	});
 
 	it('Should read Project with Project reference from sqlproj', async function (): Promise<void> {
@@ -56,9 +56,9 @@ describe('Project: sqlproj content operations', function (): void {
 		// should only have two database references even though there are two master.dacpac references (1 for ADS and 1 for SSDT)
 		should(project.databaseReferences.length).equal(2);
 		should(project.databaseReferences[0].databaseName).containEql(constants.master);
-		should(project.databaseReferences[0].databaseReferenceType).equal(DatabaseReferenceType.dacpac);
+		should(project.databaseReferences[0] instanceof DacpacReferenceProjectEntry).equal(true);
 		should(project.databaseReferences[1].databaseName).containEql('TestProjectName');
-		should(project.databaseReferences[1].databaseReferenceType).equal(DatabaseReferenceType.project);
+		should(project.databaseReferences[1] instanceof SqlProjectReferenceProjectEntry).equal(true);
 	});
 
 	it('Should add Folder and Build entries to sqlproj', async function (): Promise<void> {

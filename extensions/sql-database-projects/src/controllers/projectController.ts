@@ -16,7 +16,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { promises as fs } from 'fs';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
-import { Project, DatabaseReferenceLocation, SystemDatabase, TargetPlatform, ProjectEntry, reservedProjectFolders, DatabaseReferenceType } from '../models/project';
+import { Project, DatabaseReferenceLocation, SystemDatabase, TargetPlatform, ProjectEntry, reservedProjectFolders, SqlProjectReferenceProjectEntry } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
 import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
@@ -63,7 +63,7 @@ export class ProjectsController {
 			this.projects.push(newProject);
 
 			// open any reference projects (don't need to worry about circular dependencies because those aren't allowed)
-			const referencedProjects = newProject.databaseReferences.filter(r => r.databaseReferenceType === DatabaseReferenceType.project);
+			const referencedProjects = newProject.databaseReferences.filter(r => r instanceof SqlProjectReferenceProjectEntry);
 			for (const proj of referencedProjects) {
 				try {
 					await this.openProject(vscode.Uri.file(path.join(newProject.projectFolderPath, proj.fsUri.fsPath)));

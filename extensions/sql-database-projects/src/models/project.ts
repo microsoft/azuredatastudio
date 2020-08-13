@@ -582,19 +582,16 @@ export class ProjectEntry {
  */
 
 export interface IDatabaseReferenceProjectEntry extends ProjectEntry {
-	databaseReferenceType: DatabaseReferenceType;
 	databaseName: string;
 	sqlCmdName?: string | undefined;
 }
 
 export class DacpacReferenceProjectEntry extends ProjectEntry implements IDatabaseReferenceProjectEntry {
 	sqlCmdName: string | undefined;
-	databaseReferenceType: DatabaseReferenceType;
 
 	constructor(uri: Uri, public databaseLocation: DatabaseReferenceLocation, name?: string) {
 		super(uri, '', EntryType.DatabaseReference);
 		this.sqlCmdName = name;
-		this.databaseReferenceType = DatabaseReferenceType.dacpac;
 	}
 
 	public get databaseName(): string {
@@ -606,7 +603,6 @@ class SystemDatabaseReferenceProjectEntry extends DacpacReferenceProjectEntry {
 	constructor(uri: Uri, public ssdtUri: Uri, name: string) {
 		super(uri, DatabaseReferenceLocation.differentDatabaseSameServer, name);
 		this.sqlCmdName = name;
-		this.databaseReferenceType = DatabaseReferenceType.dacpac;
 	}
 
 	public pathForSqlProj(): string {
@@ -622,12 +618,10 @@ class SystemDatabaseReferenceProjectEntry extends DacpacReferenceProjectEntry {
 
 export class SqlProjectReferenceProjectEntry extends ProjectEntry implements IDatabaseReferenceProjectEntry {
 	projectName: string;
-	databaseReferenceType: DatabaseReferenceType;
 
 	constructor(uri: Uri, name: string) {
 		super(uri, '', EntryType.DatabaseReference);
 		this.projectName = name;
-		this.databaseReferenceType = DatabaseReferenceType.project;
 	}
 
 	public get databaseName(): string {
@@ -660,11 +654,6 @@ export enum TargetPlatform {
 export enum SystemDatabase {
 	master,
 	msdb
-}
-
-export enum DatabaseReferenceType {
-	dacpac,
-	project
 }
 
 export const reservedProjectFolders = ['Properties', 'Data Sources', 'Database References'];
