@@ -13,18 +13,11 @@ import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStri
 import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
 import { DeploymentOptions } from '../../../mssql/src/mssql';
 import { IconPathHelper } from '../common/iconHelper';
-
-const titleFontSize = 13;
+import { cssStyles } from '../common/UiConstants';
 
 interface DataSourceDropdownValue extends azdata.CategoryValue {
 	dataSource: SqlConnectionDataSource;
 	database: string;
-}
-
-export namespace cssStyles {
-	export const text = { 'user-select': 'text', 'cursor': 'text' };
-	export const tableHeader = { ...text, 'text-align': 'left', 'border': 'none', 'font-size': '12px', 'font-weight': 'normal', 'color': '#666666' };
-	export const tableRow = { ...text, 'border-top': 'solid 1px #ccc', 'border-bottom': 'solid 1px #ccc', 'border-left': 'none', 'border-right': 'none', 'font-size': '12px' };
 }
 
 export class PublishDatabaseDialog {
@@ -152,7 +145,7 @@ export class PublishDatabaseDialog {
 
 			// add SQLCMD variables table if the project has any
 			if (Object.keys(this.project.sqlCmdVariables).length > 0) {
-				this.formBuilder.addFormItem(this.sqlCmdVariablesFormComponentGroup, { titleFontSize: titleFontSize });
+				this.formBuilder.addFormItem(this.sqlCmdVariablesFormComponentGroup, { titleFontSize: cssStyles.titleFontSize });
 			}
 
 			let formModel = this.formBuilder.component();
@@ -496,7 +489,7 @@ export class PublishDatabaseDialog {
 				if (Object.keys(result.sqlCmdVariables).length) {
 					// add SQLCMD Variables table if it wasn't there before
 					if (Object.keys(this.project.sqlCmdVariables).length === 0) {
-						this.formBuilder?.addFormItem(<azdata.FormComponentGroup>this.sqlCmdVariablesFormComponentGroup, { titleFontSize: titleFontSize });
+						this.formBuilder?.addFormItem(<azdata.FormComponentGroup>this.sqlCmdVariablesFormComponentGroup, { titleFontSize: cssStyles.titleFontSize });
 					}
 				} else if (Object.keys(this.project.sqlCmdVariables).length === 0) {
 					// remove the table if there are no SQLCMD variables in the project and loaded profile
