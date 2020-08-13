@@ -12,7 +12,9 @@ export function downloadingProgressMb(currentMb: string, totalMb: string): strin
 export const downloadFinished = localize('azdata.downloadFinished', "Download finished");
 export const install = localize('azdata.install', "Install");
 export const installingAzdata = localize('azdata.installingAzdata', "Installing azdata...");
+export const upgradingAzdata = localize('azdata.upgradingAzdata', "Upgrading azdata...");
 export const azdataInstalled = localize('azdata.azdataInstalled', "azdata was successfully installed. Restarting Azure Data Studio is required to complete configuration - features will not be activated until this is done.");
+export const azdataUpgraded = localize('azdata.azdataUpgraded', "azdata was successfully upgraded.");
 export const cancel = localize('azdata.cancel', "Cancel");
 export const yes = localize('azdata.yes', "Yes");
 export const no = localize('azdata.no', "No");

@@ -185,7 +185,7 @@ export class ControllerModel {
 	}
 
 	/**
-	 * property to for use a display label for this controller
+	 * property for d label for this controller
 	 */
 	public get label(): string {
 		return `${this.info.name} (${this.info.url})`;
