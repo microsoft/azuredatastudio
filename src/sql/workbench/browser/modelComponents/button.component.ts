@@ -20,6 +20,7 @@ import { Button } from 'sql/base/browser/ui/button/button';
 import { Color } from 'vs/base/common/color';
 import { IComponentDescriptor, IComponent, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSize } from 'sql/base/browser/dom';
+//import { Type } from '@angular/compiler/src/output/output_ast';
 
 @Component({
 	selector: 'modelview-button',
@@ -27,7 +28,8 @@ import { convertSize } from 'sql/base/browser/dom';
 	<div>
 		<label for={{this.label}}>
 			<div #input style="width: 100%">
-				<input #fileInput *ngIf="this.isFile === true" id={{this.label}} type="file" accept="{{ this.fileType }}" style="display: none">
+				<input #fileInput *ngIf="this.buttonType === 'File'" id={{this.label}} type="file" accept="{{ this.fileType }}" style="display: none">
+				<input #description *ngIf="this.buttonType === 'Informational'" id={{this.label}} type="button" style="display: none">
 			</div>
 		</label>
 	</div>
@@ -41,6 +43,7 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
 	@ViewChild('fileInput', { read: ElementRef }) private _fileInputContainer: ElementRef;
+	@ViewChild('description', { read: ElementRef }) private _descriptionContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
@@ -109,13 +112,15 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 			this.fileType = properties.fileType;
 		}
 		this._button.title = this.title;
+		if (this.properties.description && this.buttonType === 'Informational') {
+			this.description = properties.description;
+		}
 
 		// Button's ariaLabel gets set to the label by default.
 		// We only want to override that if buttonComponent's ariaLabel is set explicitly.
 		if (this.ariaLabel) {
 			this._button.ariaLabel = this.ariaLabel;
 		}
-
 		if (this.width) {
 			this._button.setWidth(convertSize(this.width.toString()));
 		}
@@ -149,7 +154,6 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 	}
 
 	// CSS-bound properties
-
 	private get label(): string {
 		return this.getPropertyOrDefault<azdata.ButtonProperties, string>((props) => props.label, '');
 	}
@@ -158,12 +162,20 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 		this.setPropertyFromUI<azdata.ButtonProperties, string>(this.setValueProperties, newValue);
 	}
 
-	public get isFile(): boolean {
-		return this.getPropertyOrDefault<azdata.ButtonProperties, boolean>((props) => props.isFile, false);
+	public get buttonType(): azdata.ButtonType {
+		return this.getPropertyOrDefault<azdata.ButtonProperties, azdata.ButtonType>((props) => props.buttonType, this.buttonType);
 	}
 
-	public set isFile(newValue: boolean) {
-		this.setPropertyFromUI<azdata.ButtonProperties, boolean>(this.setFileProperties, newValue);
+	public set buttonType(newValue: azdata.ButtonType) {
+		this.setPropertyFromUI<azdata.ButtonProperties, azdata.ButtonType>(this.setButtonTypeProperties, newValue);
+	}
+
+	public get description(): string {
+		return this.getPropertyOrDefault<azdata.ButtonProperties, string>((props) => props.description, this.description);
+	}
+
+	public set description(newValue: string) {
+		this.setPropertyFromUI<azdata.ButtonProperties, string>(this.setDescriptionProperties, newValue);
 	}
 
 	private get fileContent(): string {
@@ -174,6 +186,14 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 		this.setPropertyFromUI<azdata.ButtonProperties, string>(this.setFileContentProperties, newValue);
 	}
 
+	private setButtonTypeProperties(properties: azdata.ButtonProperties, buttonType: azdata.ButtonType): void {
+		properties.buttonType = buttonType;
+	}
+
+	private setDescriptionProperties(properties: azdata.ButtonProperties, description: azdata.ButtonType): void {
+		properties.description = description;
+	}
+
 	private setFileContentProperties(properties: azdata.ButtonProperties, fileContent: string): void {
 		properties.fileContent = fileContent;
 	}
@@ -182,7 +202,7 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 		properties.label = label;
 	}
 
-	private setFileProperties(properties: azdata.ButtonProperties, isFile: boolean): void {
-		properties.isFile = isFile;
-	}
+	// private setFileProperties(properties: azdata.ButtonProperties, isFile: boolean): void {
+	// 	properties.isFile = isFile;
+	// }
 }

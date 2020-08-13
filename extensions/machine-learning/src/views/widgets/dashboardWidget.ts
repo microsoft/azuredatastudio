@@ -37,6 +37,7 @@ export class DashboardWidget {
 					height: '100%'
 				}).component();
 				const header = await this.createHeader(view);
+				const customCard = await this.createCard(view);
 				const footerContainer = this.createFooter(view);
 				container.addItem(header, {
 					CSSStyles: {
@@ -53,6 +54,12 @@ export class DashboardWidget {
 					CSSStyles: {
 						'width': `${maxWidth}px`,
 						'height': '500px',
+					}
+				});
+				container.addItem(customCard, {
+					CSSStyles: {
+						'width': `${maxWidth}px`,
+						'height': '200px',
 					}
 				});
 				await view.initializeModel(container);
@@ -93,8 +100,46 @@ export class DashboardWidget {
 				'width': `${maxWidth}px`
 			}
 		});
-
 		return header;
+	}
+
+	private async createCard(view: azdata.ModelView): Promise<azdata.Component> {
+		let flexModel = view.modelBuilder.flexContainer()
+			.withLayout({
+				flexFlow: 'row',
+				alignItems: 'center'
+			}).withItems([
+				// 1st child panel with N cards
+				view.modelBuilder.flexContainer()
+					.withLayout({
+						flexFlow: 'column',
+						alignItems: 'center',
+						justifyContent: 'center'
+					})
+					.withItems([
+						view.modelBuilder.radioCardGroup()
+							.withProperties<azdata.CardProperties>({
+								label: 'label1',
+								value: 'value1',
+								actions: [{ label: 'action' }]
+							})
+							.component()
+					]).component(),
+				// 2nd child panel with N cards
+				view.modelBuilder.flexContainer()
+					.withLayout({ flexFlow: 'column' })
+					.withItems([
+						view.modelBuilder.radioCardGroup()
+							.withProperties<azdata.CardProperties>({
+								label: 'label2',
+								value: 'value2',
+								actions: [{ label: 'action' }]
+							})
+							.component()
+					]).component()
+			], { flex: '1 1 50%' })
+			.component();
+		return flexModel;
 	}
 
 	private createFooter(view: azdata.ModelView): azdata.Component {
@@ -462,18 +507,6 @@ export class DashboardWidget {
 				'margin-top': '87px'
 			}
 		);
-		const predictionMetadata: IActionMetadata = {
-			title: constants.makePredictionTitle,
-			description: constants.makePredictionDesc,
-			iconPath: {
-				dark: this.asAbsolutePath('images/makePredictions.svg'),
-				light: this.asAbsolutePath('images/makePredictions.svg'),
-			},
-			link: 'https://go.microsoft.com/fwlink/?linkid=2129795',
-			command: constants.mlsPredictModelCommand
-		};
-		const predictionButton = this.createTaskButton(view, predictionMetadata);
-
 		const importMetadata: IActionMetadata = {
 			title: constants.importModelTitle,
 			description: constants.importModelDesc,
@@ -485,6 +518,18 @@ export class DashboardWidget {
 			command: constants.mlManageModelsCommand
 		};
 		const importModelsButton = this.createTaskButton(view, importMetadata);
+
+		const predictionMetadata: IActionMetadata = {
+			title: constants.makePredictionTitle,
+			description: constants.makePredictionDesc,
+			iconPath: {
+				dark: this.asAbsolutePath('images/makePredictions.svg'),
+				light: this.asAbsolutePath('images/makePredictions.svg'),
+			},
+			link: 'https://go.microsoft.com/fwlink/?linkid=2129795',
+			command: constants.mlsPredictModelCommand
+		};
+		const predictionButton = this.createTaskButton(view, predictionMetadata);
 
 		const notebookMetadata: IActionMetadata = {
 			title: constants.createNotebookTitle,
@@ -505,84 +550,88 @@ export class DashboardWidget {
 		if (!await this._predictService.serverSupportOnnxModel()) {
 			console.log(constants.onnxNotSupportedError);
 		}
-
 		return tasksContainer;
 	}
 
 	private createTaskButton(view: azdata.ModelView, taskMetaData: IActionMetadata): azdata.Component {
 		const maxHeight = 84;
 		const maxWidth = 256;
-		const mainContainer = view.modelBuilder.divContainer().withLayout({
-			width: maxWidth,
-			height: maxHeight
-		}).withProperties({
+		const buttonContainer = view.modelBuilder.button().withProperties({
+			ariaRole: 'button',
 			clickable: true,
-			ariaRole: taskMetaData.title
-		}).component();
-		const iconContainer = view.modelBuilder.flexContainer().withLayout({
-			flexFlow: 'row',
-			width: maxWidth,
-			height: maxHeight - 23,
-			alignItems: 'flex-start'
-		}).component();
-		const labelsContainer = view.modelBuilder.flexContainer().withLayout({
-			flexFlow: 'column',
-			width: maxWidth - 50,
-			height: maxHeight - 20,
-			justifyContent: 'space-between'
-		}).component();
-		const titleComponent = view.modelBuilder.text().withProperties({
-			value: taskMetaData.title,
-			CSSStyles: {
-				'font-size': '14px',
-				'font-weight': 'bold',
-				'margin': '0px'
-			}
-		}).component();
-		const descriptionComponent = view.modelBuilder.text().withProperties({
-			value: taskMetaData.description,
-			CSSStyles: {
-				'font-size': '13px',
-				'margin': '0px'
-			}
-		}).component();
-		const image = view.modelBuilder.image().withProperties({
-			width: '32px',
-			height: '32px',
-			iconPath: taskMetaData.iconPath,
+			description: taskMetaData.description,
+			height: maxHeight,
 			iconHeight: '32px',
-			iconWidth: '32px'
+			iconPath: taskMetaData.iconPath,
+			iconWidth: '32px',
+			title: taskMetaData.title,
+			bType: 'File',
+			width: maxWidth
 		}).component();
-		labelsContainer.addItems([titleComponent, descriptionComponent], {
-			CSSStyles: {
-				'padding': '0 0 5px 12px',
-				'width': '200px',
-				'margin': '0px',
-				'color': '#006ab1'
-			}
-		});
-		iconContainer.addItem(image, {
-			CSSStyles: {
-			}
-		});
-		iconContainer.addItem(labelsContainer, {
-			CSSStyles: {
-			}
-		});
-		mainContainer.addItems([iconContainer], {
-			CSSStyles: {
-				'background-color': '#FFFFFF',
-				'border-radius': '4px',
-				'box-shadow': '0px 1px 4px rgba(0, 0, 0, 0.14)',
-				//'box-shadow': '0px 3px 8px rgba(0, 0, 0, 0.14)', --- hover
-				'padding': '10px'
-			}
-		});
-		mainContainer.onDidClick(async () => {
-			if (mainContainer.enabled && taskMetaData.command) {
+		// const iconContainer = view.modelBuilder.flexContainer().withLayout({
+		// 	flexFlow: 'row',
+		// 	width: maxWidth,
+		// 	height: maxHeight - 23,
+		// 	alignItems: 'flex-start'
+		// }).component();
+		// const labelsContainer = view.modelBuilder.flexContainer().withLayout({
+		// 	flexFlow: 'column',
+		// 	width: maxWidth - 50,
+		// 	height: maxHeight - 20,
+		// 	justifyContent: 'space-between'
+		// }).component();
+		// const titleComponent = view.modelBuilder.text().withProperties({
+		// 	value: taskMetaData.title,
+		// 	CSSStyles: {
+		// 		'font-size': '14px',
+		// 		'font-weight': 'bold',
+		// 		'margin': '0px'
+		// 	}
+		// }).component();
+		// const descriptionComponent = view.modelBuilder.text().withProperties({
+		// 	value: taskMetaData.description,
+		// 	CSSStyles: {
+		// 		'font-size': '13px',
+		// 		'margin': '0px'
+		// 	}
+		// }).component();
+		// const image = view.modelBuilder.image().withProperties({
+		// 	width: '32px',
+		// 	height: '32px',
+		// 	iconPath: taskMetaData.iconPath,
+		// 	iconHeight: '32px',
+		// 	iconWidth: '32px'
+		// }).component();
+		// labelsContainer.addItems([titleComponent, descriptionComponent], {
+		// 	CSSStyles: {
+		// 		'padding': '0 0 5px 12px',
+		// 		'width': '200px',
+		// 		'margin': '0px',
+		// 		'color': '#006ab1'
+		// 	}
+		// });
+		// iconContainer.addItem(image, {
+		// 	CSSStyles: {
+		// 	}
+		// });
+		// iconContainer.addItem(labelsContainer, {
+		// 	CSSStyles: {
+		// 	}
+		// });
+		// mainContainer.addItems([iconContainer], {
+		// 	CSSStyles: {
+		// 		'background-color': '#FFFFFF',
+		// 		'border-radius': '4px',
+		// 		'box-shadow': '0px 1px 4px rgba(0, 0, 0, 0.14)',
+		// 		//'box-shadow': '0px 3px 8px rgba(0, 0, 0, 0.14)', --- hover
+		// 		'padding': '10px'
+		// 	}
+		// });
+		buttonContainer.onDidClick(async () => {
+			if (buttonContainer.enabled && taskMetaData.command) {
 				await this._apiWrapper.executeCommand(taskMetaData.command);
 			}
 		});
-		return mainContainer;
+		return buttonContainer;
 	}
 }

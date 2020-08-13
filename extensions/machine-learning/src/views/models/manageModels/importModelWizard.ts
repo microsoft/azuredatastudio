@@ -40,13 +40,16 @@ export class ImportModelWizard extends ModelViewBase {
 	 * Opens a dialog to manage packages used by notebooks.
 	 */
 	public async open(): Promise<void> {
+		// Wizard panels:
+		//
 		this.modelSourcePage = new ModelSourcePage(this._apiWrapper, this);
-		this.modelDetailsPage = new ModelDetailsPage(this._apiWrapper, this);
 		this.modelBrowsePage = new ModelBrowsePage(this._apiWrapper, this);
+		this.modelDetailsPage = new ModelDetailsPage(this._apiWrapper, this);
 		this.modelImportTargetPage = new ModelImportLocationPage(this._apiWrapper, this);
+
 		this.wizardView = new WizardView(this._apiWrapper);
 
-		let wizard = this.wizardView.createWizard(constants.registerModelTitle, [this.modelImportTargetPage, this.modelSourcePage, this.modelBrowsePage, this.modelDetailsPage]);
+		let wizard = this.wizardView.createWizard(constants.registerModelTitle, [this.modelSourcePage, this.modelBrowsePage, this.modelDetailsPage, this.modelImportTargetPage]);
 
 		this.mainViewPanel = wizard;
 		wizard.doneButton.label = constants.azureRegisterModel;

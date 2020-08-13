@@ -158,14 +158,13 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 				label: this.OpenCommandText,
 				title: this.OpenCommandText,
 				width: '80px',
-				isFile: true
+				isFile: azdata.ButtonType.File
 			}).component();
 		this.parseButton = view.modelBuilder.button()
 			.withProperties({
 				label: this.ParseCommandText,
 				title: this.ParseCommandText,
-				width: '80px',
-				isFile: false
+				width: '80px'
 			}).component();
 		this.openButton.onDidClick(e => {
 			let queryContent = e.fileContent;

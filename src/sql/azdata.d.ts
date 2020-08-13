@@ -3355,12 +3355,14 @@ declare module 'azdata' {
 		minimumHeight?: number;
 	}
 
-	export interface ButtonProperties extends ComponentProperties, ComponentWithIcon {
+	export interface ButtonProperties extends ComponentProperties, ComponentWithIconProperties {
 		/**
 		 * The label for the button
 		 */
 		label?: string;
 		/**
+		 * @deprecated This is replaced by enum: type.
+		 *
 		 * Whether the button opens the file browser dialog
 		 */
 		isFile?: boolean;
