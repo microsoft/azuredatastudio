@@ -13,6 +13,7 @@ export const managePackagesCommand = 'jupyter.cmd.managePackages';
 export const pythonLanguageName = 'Python';
 export const rLanguageName = 'R';
 export const rLPackagedFolderName = 'r_packages';
+export const supportedODBCDriver = 'ODBC Driver 17 for SQL Server';
 
 export const mlEnableMlsCommand = 'ml.command.enableMls';
 export const mlDisableMlsCommand = 'ml.command.disableMls';
@@ -48,6 +49,7 @@ export const adsPythonBundleVersion = '0.0.1';
 export const msgYes = localize('msgYes', "Yes");
 export const msgNo = localize('msgNo', "No");
 export const managePackageCommandError = localize('mls.managePackages.error', "Package management is not supported for the server. Make sure you have Python or R installed.");
+export const verifyOdbcDriverError = localize('mls.verifyOdbcDriverError.error', "'{0}' is required  for package management. Please make sure it is installed and set up correctly.", supportedODBCDriver);
 export function taskFailedError(taskName: string, err: string): string { return localize('mls.taskFailedError.error', "Failed to complete task '{0}'. Error: {1}", taskName, err); }
 export function cannotFindPython(path: string): string { return localize('mls.cannotFindPython.error', "Cannot find Python executable '{0}'. Please make sure Python is installed and configured correctly", path); }
 export function cannotFindR(path: string): string { return localize('mls.cannotFindR.error', "Cannot find R executable '{0}'. Please make sure R is installed and configured correctly", path); }
