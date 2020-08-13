@@ -670,11 +670,14 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 			let cmd = `"${pythonExePath ?? this.pythonExecutable}" -m pip list --format=json`;
 			let packagesInfo = await this.executeBufferedCommand(cmd);
-			let packagesResult: PythonPkgDetails[] = [];
+			let packages: PythonPkgDetails[] = [];
 			if (packagesInfo) {
-				packagesResult = <PythonPkgDetails[]>JSON.parse(packagesInfo);
+				let parsedResult = <PythonPkgDetails[]>JSON.parse(packagesInfo);
+				if (parsedResult) {
+					packages = parsedResult;
+				}
 			}
-			return packagesResult;
+			return packages;
 		}
 		catch (err) {
 			this.outputChannel.appendLine(msgPackageRetrievalFailed(utils.getErrorMessage(err)));
@@ -716,15 +719,14 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			let cmd = `"${condaExe}" list --json`;
 			let packagesInfo = await this.executeBufferedCommand(cmd);
 
+			let packages: PythonPkgDetails[] = [];
 			if (packagesInfo) {
-				let packagesResult = JSON.parse(packagesInfo);
-				if (Array.isArray(packagesResult)) {
-					return packagesResult
-						.filter(pkg => pkg && pkg.channel && pkg.channel !== 'pypi')
-						.map(pkg => <PythonPkgDetails>{ name: pkg.name, version: pkg.version });
+				let parsedResult = <PythonPkgDetails[]>JSON.parse(packagesInfo);
+				if (parsedResult) {
+					packages = parsedResult.filter(pkg => pkg && pkg.channel && pkg.channel !== 'pypi');
 				}
 			}
-			return [];
+			return packages;
 		}
 		catch (err) {
 			this.outputChannel.appendLine(msgPackageRetrievalFailed(utils.getErrorMessage(err)));
@@ -787,10 +789,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	}
 
 	private isCondaInstalled(): boolean {
-		if (!this._usingExistingPython) {
-			return false;
-		}
-
 		let condaExePath = this.getCondaExePath();
 		// eslint-disable-next-line no-sync
 		return fs.existsSync(condaExePath);
@@ -886,6 +884,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 export interface PythonPkgDetails {
 	name: string;
 	version: string;
+	channel?: string;
 }
 
 export interface PipPackageOverview {
