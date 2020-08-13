@@ -361,8 +361,9 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 		const treeContainer = DOM.append(divContainer, DOM.$('.explorer-servers'));
 		const leftClick = (element: any, eventish: ICancelableEvent, origin: string) => {
 			// element will be a server group if the tree is clicked rather than a item
+			const isDoubleClick = origin === 'mouse' && (eventish as MouseEvent).detail === 2;
 			if (element instanceof ConnectionProfile) {
-				this.onConnectionClick(element);
+				this.onConnectionClick(element, isDoubleClick);
 			}
 		};
 		const actionProvider = this.instantiationService.createInstance(RecentConnectionActionsProvider);
@@ -398,8 +399,9 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 		const treeContainer = DOM.append(divContainer, DOM.$('.explorer-servers'));
 		const leftClick = (element: any, eventish: ICancelableEvent, origin: string) => {
 			// element will be a server group if the tree is clicked rather than a item
+			const isDoubleClick = origin === 'mouse' && (eventish as MouseEvent).detail === 2;
 			if (element instanceof ConnectionProfile) {
-				this.onConnectionClick(element);
+				this.onConnectionClick(element, isDoubleClick);
 			}
 		};
 
@@ -417,8 +419,12 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 		DOM.append(noSavedConnectionContainer, DOM.$('.no-saved-connections')).innerText = noSavedConnectionLabel;
 	}
 
-	private onConnectionClick(element: IConnectionProfile) {
-		this._onFillinConnectionInputs.fire(element);
+	private onConnectionClick(element: IConnectionProfile, connect: boolean = false) {
+		if (connect) {
+			this.connect(element);
+		} else {
+			this._onFillinConnectionInputs.fire(element);
+		}
 	}
 
 	/**
