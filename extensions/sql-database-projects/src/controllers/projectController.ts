@@ -47,11 +47,15 @@ export class ProjectsController {
 		this.projectTreeViewProvider.load(this.projects);
 	}
 
-	public async openProject(projectFile: vscode.Uri, focusProject: boolean = true): Promise<Project> {
+	public async openProject(projectFile: vscode.Uri, focusProject: boolean = true, isReferencedProject: boolean = false): Promise<Project> {
 		for (const proj of this.projects) {
 			if (proj.projectFilePath === projectFile.fsPath) {
-				vscode.window.showInformationMessage(constants.projectAlreadyOpened(projectFile.fsPath));
-				return proj;
+				if (!isReferencedProject) {
+					vscode.window.showInformationMessage(constants.projectAlreadyOpened(projectFile.fsPath));
+					return proj;
+				} else {
+					throw new Error(constants.projectAlreadyOpened(projectFile.fsPath));
+				}
 			}
 		}
 
@@ -65,10 +69,11 @@ export class ProjectsController {
 			// open any reference projects (don't need to worry about circular dependencies because those aren't allowed)
 			const referencedProjects = newProject.databaseReferences.filter(r => r instanceof SqlProjectReferenceProjectEntry);
 			for (const proj of referencedProjects) {
+				const projUri = vscode.Uri.file(path.join(newProject.projectFolderPath, proj.fsUri.fsPath));
 				try {
-					await this.openProject(vscode.Uri.file(path.join(newProject.projectFolderPath, proj.fsUri.fsPath)));
+					await this.openProject(projUri, false, true);
 				} catch (e) {
-					vscode.window.showErrorMessage(e.message);
+					vscode.window.showErrorMessage(e.message === constants.projectAlreadyOpened(projUri.fsPath) ? constants.circularProjectReference(newProject.projectFileName, proj.databaseName) : e.message);
 				}
 			}
 
