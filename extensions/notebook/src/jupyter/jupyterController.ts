@@ -29,7 +29,6 @@ import { LocalPipPackageManageProvider } from './localPipPackageManageProvider';
 import { LocalCondaPackageManageProvider } from './localCondaPackageManageProvider';
 import { ManagePackagesDialogModel, ManagePackageDialogOptions } from '../dialog/managePackages/managePackagesDialogModel';
 import { PyPiClient } from './pypiClient';
-import { ConfigurePythonDialog } from '../dialog/configurePython/configurePythonDialog';
 import { IconPathHelper } from '../common/iconHelper';
 
 let untitledCounter = 0;
@@ -248,20 +247,13 @@ export class JupyterController implements vscode.Disposable {
 	}
 
 	public doConfigurePython(jupyterInstaller: JupyterServerInstallation): void {
-		if (jupyterInstaller.previewFeaturesEnabled) {
-			let pythonWizard = new ConfigurePythonWizard(jupyterInstaller);
-			pythonWizard.start().catch((err: any) => {
-				vscode.window.showErrorMessage(utils.getErrorMessage(err));
-			});
-			pythonWizard.setupComplete.catch((err: any) => {
-				vscode.window.showErrorMessage(utils.getErrorMessage(err));
-			});
-		} else {
-			let pythonDialog = new ConfigurePythonDialog(jupyterInstaller);
-			pythonDialog.showDialog().catch((err: any) => {
-				vscode.window.showErrorMessage(utils.getErrorMessage(err));
-			});
-		}
+		let pythonWizard = new ConfigurePythonWizard(jupyterInstaller);
+		pythonWizard.start().catch((err: any) => {
+			vscode.window.showErrorMessage(utils.getErrorMessage(err));
+		});
+		pythonWizard.setupComplete.catch((err: any) => {
+			vscode.window.showErrorMessage(utils.getErrorMessage(err));
+		});
 	}
 
 	public get jupyterInstallation() {
