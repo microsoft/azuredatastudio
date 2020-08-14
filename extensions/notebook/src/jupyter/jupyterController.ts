@@ -13,7 +13,6 @@ const localize = nls.loadMessageBundle();
 import * as constants from '../common/constants';
 import * as localizedConstants from '../common/localizedConstants';
 import { JupyterServerInstallation } from './jupyterServerInstallation';
-import { IServerInstance } from './common';
 import * as utils from '../common/utils';
 import { IPrompter, IQuestion, confirm } from '../prompts/question';
 
@@ -33,9 +32,8 @@ import { IconPathHelper } from '../common/iconHelper';
 
 let untitledCounter = 0;
 
-export class JupyterController implements vscode.Disposable {
+export class JupyterController {
 	private _jupyterInstallation: JupyterServerInstallation;
-	private _notebookInstances: IServerInstance[] = [];
 	private _serverInstanceFactory: ServerInstanceFactory = new ServerInstanceFactory();
 	private _packageManageProviders = new Map<string, IPackageManageProvider>();
 
@@ -52,10 +50,6 @@ export class JupyterController implements vscode.Disposable {
 
 	public get notebookProvider(): JupyterNotebookProvider {
 		return this._notebookProvider;
-	}
-
-	public dispose(): void {
-		this.deactivate();
 	}
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
@@ -110,11 +104,6 @@ export class JupyterController implements vscode.Disposable {
 
 	private saveProfileAndAnalyzeNotebook(oeContext: azdata.ObjectExplorerContext): Promise<void> {
 		return this.handleNewNotebookTask(oeContext, oeContext.connectionProfile);
-	}
-
-	public deactivate(): void {
-		// Shutdown any open notebooks
-		this._notebookInstances.forEach(async (instance) => { await instance.stop(); });
 	}
 
 	// EVENT HANDLERS //////////////////////////////////////////////////////
