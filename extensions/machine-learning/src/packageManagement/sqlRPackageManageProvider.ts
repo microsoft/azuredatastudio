@@ -14,7 +14,7 @@ import { SqlPackageManageProviderBase, ScriptMode } from './packageManageProvide
 import { HttpClient } from '../common/httpClient';
 import * as constants from '../common/constants';
 import { PackageManagementService } from './packageManagementService';
-
+import * as utils from '../common/utils';
 
 
 /**
@@ -66,18 +66,26 @@ export class SqlRPackageManageProvider extends SqlPackageManageProviderBase impl
 	protected async executeScripts(scriptMode: ScriptMode, packageDetails: nbExtensionApis.IPackageDetails, databaseName: string): Promise<void> {
 		let connection = await this.getCurrentConnection();
 		let credentials = await this._apiWrapper.getCredentials(connection.connectionId);
+		let connectionParts: string[] = [];
 
 		if (connection) {
+			connectionParts.push(utils.getKeyValueString('driver', constants.supportedODBCDriver));
 			let server = connection.serverName.replace('\\', '\\\\');
-			let database = databaseName ? `, database="${databaseName}"` : '';
-			const auth = connection.userName ? `, uid="${connection.userName}", pwd="${credentials[azdata.ConnectionOptionSpecialType.password]}"` : '';
-			let connectionParts = `server="${server}"${auth}${database}`;
+			if (databaseName) {
+				connectionParts.push(utils.getKeyValueString('database', `"${databaseName}"`));
+			}
+			if (connection.userName) {
+				connectionParts.push(utils.getKeyValueString('uid', `"${connection.userName}"`));
+				connectionParts.push(utils.getKeyValueString('pwd', `"${credentials[azdata.ConnectionOptionSpecialType.password]}"`));
+			}
+			connectionParts.push(utils.getKeyValueString('server', `"${server}"`));
+
 			let rCommandScript = scriptMode === ScriptMode.Install ? 'sql_install.packages' : 'sql_remove.packages';
 
 			let scripts: string[] = [
 				'formals(quit)$save <- formals(q)$save <- "no"',
 				'library(sqlmlutils)',
-				`connection <- connectionInfo(driver= "ODBC Driver 17 for SQL Server", ${connectionParts})`,
+				`connection <- connectionInfo(${connectionParts.join(', ')})`,
 				`r = getOption("repos")`,
 				`r["CRAN"] = "${this._config.rPackagesRepository}"`,
 				`options(repos = r)`,
