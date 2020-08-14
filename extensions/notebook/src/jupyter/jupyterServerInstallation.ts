@@ -19,7 +19,6 @@ import { Deferred } from '../common/promise';
 import { ConfigurePythonWizard } from '../dialog/configurePython/configurePythonWizard';
 import { IPrompter, IQuestion, confirm } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
-import { ConfigurePythonDialog } from '../dialog/configurePython/configurePythonDialog';
 
 const localize = nls.loadMessageBundle();
 const msgInstallPkgProgress = localize('msgInstallPkgProgress', "Notebook dependencies installation is in progress");
@@ -476,53 +475,12 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		let isPythonInstalled = JupyterServerInstallation.isPythonInstalled();
 		let areRequiredPackagesInstalled = await this.areRequiredPackagesInstalled(kernelDisplayName);
 		if (!isPythonInstalled || !areRequiredPackagesInstalled) {
-			if (this.previewFeaturesEnabled) {
-				let pythonWizard = new ConfigurePythonWizard(this);
-				await pythonWizard.start(kernelDisplayName, true);
-				return pythonWizard.setupComplete.then(() => {
-					this._kernelSetupCache.set(kernelDisplayName, true);
-				});
-			} else {
-				let pythonDialog = new ConfigurePythonDialog(this);
-				return pythonDialog.showDialog(true);
-			}
-		}
-	}
-
-	/**
-	 * Prompts user to upgrade certain python packages if they're below the minimum expected version.
-	 */
-	public async promptForPackageUpgrade(kernelName: string): Promise<void> {
-		if (this._runningOnSAW) {
-			return Promise.resolve();
-		}
-		if (this._installInProgress) {
-			vscode.window.showInformationMessage(msgWaitingForInstall);
-			return this._installCompletion.promise;
-		}
-
-		let requiredPackages: PythonPkgDetails[];
-		if (this.previewFeaturesEnabled) {
-			if (this._kernelSetupCache.get(kernelName)) {
-				return;
-			}
-			requiredPackages = this.getRequiredPackagesForKernel(kernelName);
-		}
-
-		this._installInProgress = true;
-		this._installCompletion = new Deferred<void>();
-		this.upgradePythonPackages(true, false, requiredPackages)
-			.then(() => {
-				this._installCompletion.resolve();
-				this._installInProgress = false;
-				this._kernelSetupCache.set(kernelName, true);
-			})
-			.catch(err => {
-				let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));
-				this._installCompletion.reject(errorMsg);
-				this._installInProgress = false;
+			let pythonWizard = new ConfigurePythonWizard(this);
+			await pythonWizard.start(kernelDisplayName, true);
+			return pythonWizard.setupComplete.then(() => {
+				this._kernelSetupCache.set(kernelDisplayName, true);
 			});
-		return this._installCompletion.promise;
+		}
 	}
 
 	private async areRequiredPackagesInstalled(kernelDisplayName: string): Promise<boolean> {
@@ -874,10 +832,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 	public getRequiredPackagesForKernel(kernelName: string): PythonPkgDetails[] {
 		return this._requiredKernelPackages.get(kernelName) ?? [];
-	}
-
-	public get previewFeaturesEnabled(): boolean {
-		return vscode.workspace.getConfiguration('workbench').get('enablePreviewFeatures');
 	}
 }
 
