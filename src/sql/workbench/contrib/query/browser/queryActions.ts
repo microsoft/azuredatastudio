@@ -121,7 +121,6 @@ export function openNewQuery(accessor: ServicesAccessor, profile?: IConnectionPr
 	if (!profile) {
 		profile = getCurrentGlobalConnection(objectExplorerService, connectionManagementService, editorService);
 	}
-
 	return queryEditorService.newSqlEditor({ initalContent }, profile.providerName).then((owner: IConnectableInput) => {
 		// Connect our editor to the input connection
 		let options: IConnectionCompletionOptions = {
