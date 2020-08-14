@@ -7,32 +7,23 @@ import 'vs/css!./media/connectionDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import { IConnectionManagementService, INewConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
-import { TreeCreationUtils } from 'sql/workbench/services/objectExplorer/browser/treeCreationUtils';
-import { TreeUpdateUtils, IExpandableTree } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { TabbedPanel, PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel';
-import { RecentConnectionTreeController, RecentConnectionActionsProvider } from 'sql/workbench/services/connection/browser/recentConnectionTreeController';
-import { SavedConnectionTreeController } from 'sql/workbench/services/connection/browser/savedConnectionTreeController';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { ClearRecentConnectionsAction } from 'sql/workbench/services/connection/browser/connectionActions';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
 import { Event, Emitter } from 'vs/base/common/event';
-import { ICancelableEvent } from 'vs/base/parts/tree/browser/treeDefaults';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { localize } from 'vs/nls';
-import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as styler from 'vs/platform/theme/common/styler';
 import * as DOM from 'vs/base/browser/dom';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
+import { SIDE_BAR_BACKGROUND, PANEL_SECTION_HEADER_BACKGROUND, PANEL_SECTION_HEADER_FOREGROUND, PANEL_SECTION_HEADER_BORDER, PANEL_SECTION_DRAG_AND_DROP_BACKGROUND, PANEL_SECTION_BORDER } from 'vs/workbench/common/theme';
 import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
@@ -40,13 +31,30 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { entries } from 'sql/base/common/collections';
 import { attachTabbedPanelStyler, attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { IViewPaneContainer, IView, IViewContainersRegistry, Extensions as ViewContainerExtensions, ViewContainerLocation, IViewDescriptorService, ViewContainer, IViewContainerModel, IAddedViewDescriptorRef, IViewDescriptorRef, ITreeViewDescriptor } from 'vs/workbench/common/views';
+import { IAction, IActionViewItem } from 'vs/base/common/actions';
+import { Registry } from 'vs/platform/registry/common/platform';
+import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
+import { ViewPane, IPaneColors } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { IViewletViewOptions } from 'vs/workbench/browser/parts/views/viewsViewlet';
+import { ITreeView } from 'sql/workbench/common/views';
+import { IConnectionProfile } from 'azdata';
+import { ITree } from 'vs/base/parts/tree/browser/tree';
+import { TreeUpdateUtils, IExpandableTree } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
+import { SavedConnectionTreeController } from 'sql/workbench/services/connection/browser/savedConnectionTreeController';
+import { TreeCreationUtils } from 'sql/workbench/services/objectExplorer/browser/treeCreationUtils';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ICancelableEvent } from 'vs/base/parts/tree/browser/treeDefaults';
+import { RecentConnectionTreeController, RecentConnectionActionsProvider } from 'sql/workbench/services/connection/browser/recentConnectionTreeController';
+import { ClearRecentConnectionsAction } from 'sql/workbench/services/connection/browser/connectionActions';
+import { combinedDisposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
 
 export interface OnShowUIResponse {
 	selectedProviderDisplayName: string;
 	container: HTMLElement;
 }
 
-export class ConnectionDialogWidget extends Modal {
+export class ConnectionDialogWidget extends Modal implements IViewPaneContainer {
 	private _body: HTMLElement;
 	private _recentConnection: HTMLElement;
 	private _noRecentConnection: HTMLElement;
@@ -87,18 +95,24 @@ export class ConnectionDialogWidget extends Modal {
 
 	private _connecting = false;
 
+	readonly viewContainer: ViewContainer;
+	protected readonly viewContainerModel: IViewContainerModel;
+	private paneItems: { pane: ViewPane, disposable: IDisposable }[] = [];
+	private orthogonalSize = 0;
+
 	constructor(
 		private providerDisplayNameOptions: string[],
 		private selectedProviderType: string,
 		private providerNameToDisplayNameMap: { [providerDisplayName: string]: string },
-		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@IInstantiationService private readonly instantiationService: IInstantiationService,
+		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
+		@IContextMenuService private readonly contextMenuService: IContextMenuService,
+		@IContextViewService private readonly contextViewService: IContextViewService,
+		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
 		@IThemeService themeService: IThemeService,
 		@ILayoutService layoutService: ILayoutService,
 		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IContextMenuService private _contextMenuService: IContextMenuService,
-		@IContextViewService private _contextViewService: IContextViewService,
 		@IClipboardService clipboardService: IClipboardService,
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
@@ -114,6 +128,14 @@ export class ConnectionDialogWidget extends Modal {
 			textResourcePropertiesService,
 			contextKeyService,
 			{ hasSpinner: true, spinnerTitle: localize('connecting', "Connecting"), hasErrors: true });
+
+		const container = viewDescriptorService.getViewContainerById(VIEW_CONTAINER.id);
+		if (!container) {
+			throw new Error('Could not find container');
+		}
+
+		this.viewContainer = container;
+		this.viewContainerModel = viewDescriptorService.getViewContainerModel(container);
 	}
 
 	/**
@@ -142,7 +164,7 @@ export class ConnectionDialogWidget extends Modal {
 		}
 
 		// Remove duplicate listings (CMS uses the same display name)
-		let uniqueProvidersMap = this._connectionManagementService.getUniqueConnectionProvidersByNameMap(filteredProviderMap);
+		let uniqueProvidersMap = this.connectionManagementService.getUniqueConnectionProvidersByNameMap(filteredProviderMap);
 		this._providerTypeSelectBox.setOptions(Object.keys(uniqueProvidersMap).map(k => uniqueProvidersMap[k]));
 	}
 
@@ -154,7 +176,7 @@ export class ConnectionDialogWidget extends Modal {
 		this._body = DOM.append(container, DOM.$('.connection-dialog'));
 
 		const connectTypeLabel = localize('connectType', "Connection type");
-		this._providerTypeSelectBox = new SelectBox(this.providerDisplayNameOptions, this.selectedProviderType, this._contextViewService, undefined, { ariaLabel: connectTypeLabel });
+		this._providerTypeSelectBox = new SelectBox(this.providerDisplayNameOptions, this.selectedProviderType, this.contextViewService, undefined, { ariaLabel: connectTypeLabel });
 		// Recent connection tab
 		const recentConnectionTab = DOM.$('.connection-recent-tab');
 		const recentConnectionContainer = DOM.append(recentConnectionTab, DOM.$('.connection-recent', { id: 'recentConnection' }));
@@ -205,7 +227,7 @@ export class ConnectionDialogWidget extends Modal {
 
 			if (c === savedConnectionTabId && expandableTree.getContentHeight() === 0) {
 				// Update saved connection tree
-				await TreeUpdateUtils.structuralTreeUpdate(this._savedConnectionTree, 'saved', this._connectionManagementService, this._providers);
+				await TreeUpdateUtils.structuralTreeUpdate(this._savedConnectionTree, 'saved', this.connectionManagementService, this._providers);
 
 				if (expandableTree.getContentHeight() > 0) {
 					DOM.hide(this._noSavedConnection);
@@ -229,6 +251,17 @@ export class ConnectionDialogWidget extends Modal {
 
 		this._connectionUIContainer = DOM.$('.connection-provider-info', { id: 'connectionProviderInfo' });
 		this._body.append(this._connectionUIContainer);
+
+		this._register(this.viewContainerModel.onDidAddVisibleViewDescriptors(added => this.onDidAddViewDescriptors(added)));
+		this._register(this.viewContainerModel.onDidRemoveVisibleViewDescriptors(removed => this.onDidRemoveViewDescriptors(removed)));
+		const addedViews: IAddedViewDescriptorRef[] = this.viewContainerModel.visibleViewDescriptors.map((viewDescriptor, index) => {
+			const size = this.viewContainerModel.getSize(viewDescriptor.id);
+			const collapsed = this.viewContainerModel.isCollapsed(viewDescriptor.id);
+			return ({ viewDescriptor, index, size, collapsed });
+		});
+		if (addedViews.length) {
+			this.onDidAddViewDescriptors(addedViews);
+		}
 
 		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme(e)));
 		this.updateTheme(this._themeService.getColorTheme());
@@ -320,7 +353,7 @@ export class ConnectionDialogWidget extends Modal {
 		const container = DOM.append(recentConnectionContainer, DOM.$('.recent-titles-container'));
 		const actionsContainer = DOM.append(container, DOM.$('.connection-history-actions'));
 		this._actionbar = this._register(new ActionBar(actionsContainer, { animated: false }));
-		const clearAction = this._instantiationService.createInstance(ClearRecentConnectionsAction, ClearRecentConnectionsAction.ID, ClearRecentConnectionsAction.LABEL);
+		const clearAction = this.instantiationService.createInstance(ClearRecentConnectionsAction, ClearRecentConnectionsAction.ID, ClearRecentConnectionsAction.LABEL);
 		clearAction.useConfirmationMessage = true;
 		clearAction.onRecentConnectionsRemoved(() => this.open(false));
 		this._actionbar.push(clearAction, { icon: true, label: true });
@@ -328,25 +361,26 @@ export class ConnectionDialogWidget extends Modal {
 		const treeContainer = DOM.append(divContainer, DOM.$('.explorer-servers'));
 		const leftClick = (element: any, eventish: ICancelableEvent, origin: string) => {
 			// element will be a server group if the tree is clicked rather than a item
+			const isDoubleClick = origin === 'mouse' && (eventish as MouseEvent).detail === 2;
 			if (element instanceof ConnectionProfile) {
-				this.onConnectionClick({ payload: { origin: origin, originalEvent: eventish } }, element);
+				this.onConnectionClick(element, isDoubleClick);
 			}
 		};
-		const actionProvider = this._instantiationService.createInstance(RecentConnectionActionsProvider);
-		const controller = new RecentConnectionTreeController(leftClick, actionProvider, this._connectionManagementService, this._contextMenuService);
+		const actionProvider = this.instantiationService.createInstance(RecentConnectionActionsProvider);
+		const controller = new RecentConnectionTreeController(leftClick, actionProvider, this.connectionManagementService, this.contextMenuService);
 		actionProvider.onRecentConnectionRemoved(() => {
-			const recentConnections: ConnectionProfile[] = this._connectionManagementService.getRecentConnections();
+			const recentConnections: ConnectionProfile[] = this.connectionManagementService.getRecentConnections();
 			this.open(recentConnections.length > 0).catch(err => this.logService.error(`Unexpected error opening connection widget after a recent connection was removed from action provider: ${err}`));
 			// We're just using the connections to determine if there are connections to show, dispose them right after to clean up their handlers
 			recentConnections.forEach(conn => conn.dispose());
 		});
 		controller.onRecentConnectionRemoved(() => {
-			const recentConnections: ConnectionProfile[] = this._connectionManagementService.getRecentConnections();
+			const recentConnections: ConnectionProfile[] = this.connectionManagementService.getRecentConnections();
 			this.open(recentConnections.length > 0).catch(err => this.logService.error(`Unexpected error opening connection widget after a recent connection was removed from controller : ${err}`));
 			// We're just using the connections to determine if there are connections to show, dispose them right after to clean up their handlers
 			recentConnections.forEach(conn => conn.dispose());
 		});
-		this._recentConnectionTree = TreeCreationUtils.createConnectionTree(treeContainer, this._instantiationService, controller);
+		this._recentConnectionTree = TreeCreationUtils.createConnectionTree(treeContainer, this.instantiationService, controller);
 
 		// Theme styler
 		this._register(styler.attachListStyler(this._recentConnectionTree, this._themeService));
@@ -365,13 +399,14 @@ export class ConnectionDialogWidget extends Modal {
 		const treeContainer = DOM.append(divContainer, DOM.$('.explorer-servers'));
 		const leftClick = (element: any, eventish: ICancelableEvent, origin: string) => {
 			// element will be a server group if the tree is clicked rather than a item
+			const isDoubleClick = origin === 'mouse' && (eventish as MouseEvent).detail === 2;
 			if (element instanceof ConnectionProfile) {
-				this.onConnectionClick({ payload: { origin: origin, originalEvent: eventish } }, element);
+				this.onConnectionClick(element, isDoubleClick);
 			}
 		};
 
 		const controller = new SavedConnectionTreeController(leftClick);
-		this._savedConnectionTree = TreeCreationUtils.createConnectionTree(treeContainer, this._instantiationService, controller);
+		this._savedConnectionTree = TreeCreationUtils.createConnectionTree(treeContainer, this.instantiationService, controller);
 
 		// Theme styler
 		this._register(styler.attachListStyler(this._savedConnectionTree, this._themeService));
@@ -384,15 +419,11 @@ export class ConnectionDialogWidget extends Modal {
 		DOM.append(noSavedConnectionContainer, DOM.$('.no-saved-connections')).innerText = noSavedConnectionLabel;
 	}
 
-	private onConnectionClick(event: any, element: IConnectionProfile) {
-		const isMouseOrigin = event.payload && (event.payload.origin === 'mouse');
-		const isDoubleClick = isMouseOrigin && event.payload.originalEvent && event.payload.originalEvent.detail === 2;
-		if (isDoubleClick) {
+	private onConnectionClick(element: IConnectionProfile, connect: boolean = false) {
+		if (connect) {
 			this.connect(element);
 		} else {
-			if (element) {
-				this._onFillinConnectionInputs.fire(element);
-			}
+			this._onFillinConnectionInputs.fire(element);
 		}
 	}
 
@@ -411,19 +442,23 @@ export class ConnectionDialogWidget extends Modal {
 			DOM.hide(this._recentConnection);
 			DOM.show(this._noRecentConnection);
 		}
-		await TreeUpdateUtils.structuralTreeUpdate(this._recentConnectionTree, 'recent', this._connectionManagementService, this._providers);
+		await TreeUpdateUtils.structuralTreeUpdate(this._recentConnectionTree, 'recent', this.connectionManagementService, this._providers);
 
-		// reset saved connection tree
+		// // reset saved connection tree
 		await this._savedConnectionTree.setInput([]);
 
 		// call layout with view height
-		this.layout();
 		this.initDialog();
 	}
 
-	protected layout(height?: number): void {
+	protected layout(height: number): void {
 		// Height is the overall height. Since we're laying out a specific component, always get its actual height
-		this._recentConnectionTree.layout(DOM.getTotalHeight(this._recentConnectionTree.getHTMLElement()));
+		const width = DOM.getContentWidth(this._body);
+		this.orthogonalSize = width;
+		for (const { pane } of this.paneItems) {
+			pane.orthogonalSize = width;
+		}
+		this._panel.layout(new DOM.Dimension(this.orthogonalSize, height - 38 - 35 - 326)); // height - connection title - connection type input - connection widget
 	}
 
 	/**
@@ -478,4 +513,132 @@ export class ConnectionDialogWidget extends Modal {
 	public get databaseDropdownExpanded(): boolean {
 		return this._databaseDropdownExpanded;
 	}
+
+	//#region ViewletContainer
+	public readonly onDidAddViews: Event<IView[]> = Event.None;
+	public readonly onDidRemoveViews: Event<IView[]> = Event.None;
+	public readonly onDidChangeViewVisibility: Event<IView> = Event.None;
+	public get views(): IView[] {
+		return [];
+	}
+
+	setVisible(visible: boolean): void {
+	}
+
+	isVisible(): boolean {
+		return true;
+	}
+
+	focus(): void {
+	}
+
+	getActions(): IAction[] {
+		return [];
+	}
+
+	getSecondaryActions(): IAction[] {
+		return [];
+	}
+
+	getActionViewItem(action: IAction): IActionViewItem {
+		throw new Error('Method not implemented.');
+	}
+
+	getView(viewId: string): IView {
+		throw new Error('Method not implemented.');
+	}
+
+	saveState(): void {
+	}
+
+	private onDidRemoveViewDescriptors(removed: IViewDescriptorRef[]): void {
+		for (const ref of removed) {
+			this.removePane(ref);
+		}
+	}
+
+	private removePane(ref: IViewDescriptorRef): void {
+		const item = this.paneItems.find(p => p.pane.id === ref.viewDescriptor.id);
+		this._panel.removeTab(item.pane.id);
+		dispose(item.disposable);
+	}
+
+	protected onDidAddViewDescriptors(added: IAddedViewDescriptorRef[]): ViewPane[] {
+		const panesToAdd: { pane: ViewPane, size: number, treeView: ITreeView }[] = [];
+
+		for (const { viewDescriptor, size } of added) {
+			const treeViewDescriptor = viewDescriptor as ITreeViewDescriptor;
+			const pane = this.createView(treeViewDescriptor,
+				{
+					id: viewDescriptor.id,
+					title: viewDescriptor.name,
+					expanded: true
+				});
+
+			pane.render();
+
+			panesToAdd.push({ pane, size: size || pane.minimumSize, treeView: treeViewDescriptor.treeView as ITreeView });
+		}
+
+		this.addPanes(panesToAdd);
+
+		const panes: ViewPane[] = [];
+		for (const { pane } of panesToAdd) {
+			pane.setVisible(this.isVisible());
+			pane.headerVisible = false;
+			panes.push(pane);
+		}
+		return panes;
+	}
+
+	protected createView(viewDescriptor: ITreeViewDescriptor, options: IViewletViewOptions): ViewPane {
+		return (this.instantiationService as any).createInstance(viewDescriptor.ctorDescriptor.ctor, ...(viewDescriptor.ctorDescriptor.staticArguments || []), options) as ViewPane;
+	}
+
+	private addPanes(panes: { pane: ViewPane, treeView: ITreeView, size: number }[]): void {
+
+		for (const { pane, treeView, size } of panes) {
+			this.addPane({ pane, treeView }, size);
+		}
+
+		// this._onDidAddViews.fire(panes.map(({ pane }) => pane));
+	}
+
+	private addPane({ pane, treeView }: { pane: ViewPane, treeView: ITreeView }, size: number): void {
+		const paneStyler = styler.attachStyler<IPaneColors>(this._themeService, {
+			headerForeground: PANEL_SECTION_HEADER_FOREGROUND,
+			headerBackground: PANEL_SECTION_HEADER_BACKGROUND,
+			headerBorder: PANEL_SECTION_HEADER_BORDER,
+			dropBackground: PANEL_SECTION_DRAG_AND_DROP_BACKGROUND,
+			leftBorder: PANEL_SECTION_BORDER
+		}, pane);
+
+		const disposable = combinedDisposable(pane, paneStyler);
+		const paneItem = { pane, disposable };
+		treeView.onDidChangeSelection(e => {
+			if (e.length > 0 && e[0].payload) {
+				this.onConnectionClick(e[0].payload);
+			}
+		});
+
+		this.paneItems.push(paneItem);
+		this._panel.pushTab({
+			identifier: pane.id,
+			title: pane.title,
+			view: {
+				focus: () => pane.focus(),
+				layout: d => pane.layout(d.height),
+				render: e => e.appendChild(pane.element),
+			}
+		});
+	}
+	//#endregion
 }
+
+export const VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
+	id: 'dialog/connection',
+	name: 'ConnectionDialog',
+	ctorDescriptor: new SyncDescriptor(class { }),
+	order: 0,
+	storageId: `dialog/connection.state`
+}, ViewContainerLocation.Dialog);

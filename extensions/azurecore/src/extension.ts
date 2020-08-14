@@ -82,6 +82,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 	registerAzureServices(appContext);
 	const azureResourceTree = new AzureResourceTreeProvider(appContext);
 	pushDisposable(vscode.window.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
+	pushDisposable(vscode.window.registerTreeDataProvider('azureResourceExplorer_dialog', azureResourceTree));
 	pushDisposable(vscode.workspace.onDidChangeConfiguration(e => onDidChangeConfiguration(e), this));
 	registerAzureResourceCommands(appContext, azureResourceTree);
 
