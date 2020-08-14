@@ -31,7 +31,7 @@ export class DiagramService implements IDiagramService {
 		}
 	}
 
-	public getDiagramModel(params: DiagramRequestParams): Thenable<azdata.ObjectMetadata[]> {
+	public getDiagramModel(params: DiagramRequestParams): Thenable<azdata.DiagramRequestResult> {
 		return this._runAction(params.ownerUri, (runner) => {
 			return runner.getDiagramModel(params);
 		});

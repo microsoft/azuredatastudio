@@ -863,8 +863,8 @@ export enum SqlAssessmentResultItemKind {
 }
 
 export enum DiagramObject {
-	Schema = 1,
-	Database = 2,
+	Database = 1,
+	Schema = 2,
 	Table = 3
 }
 
@@ -875,4 +875,14 @@ export class DiagramRequestParams {
 	public database: string;
 	public table: string;
 	public diagramView: DiagramObject;
+}
+
+export class GridData {
+	public rows: Map<string, string>[];
+}
+
+export class DiagramRequestResult {
+	public name: string;
+	public properties: Map<string, string>;
+	public grids: Map<string, GridData>;
 }

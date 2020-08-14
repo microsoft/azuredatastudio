@@ -516,7 +516,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	* Perform an assessment
 	*/
-	$getDiagramModel(handle: number, params: azdata.DiagramRequestParams): Thenable<azdata.ObjectMetadata[]> { throw ni(); }
+	$getDiagramModel(handle: number, params: azdata.DiagramRequestParams): Thenable<azdata.DiagramRequestResult> { throw ni(); }
 }
 
 /**

@@ -709,8 +709,8 @@ export namespace GenerateSqlAssessmentScriptRequest {
 
 // ------------------------------- <Diagrams> -----------------------------
 export enum DiagramObject {
-	Schema = 1,
-	Database = 2,
+	Database = 1,
+	Schema = 2,
 	Table = 3
 }
 
@@ -723,8 +723,14 @@ export class DiagramRequestParams {
 	public diagramView: DiagramObject;
 }
 
+export class GridData {
+	public rows: Map<string, string>[];
+}
+
 export class DiagramRequestResult {
-	public metadata: azdata.ObjectMetadata[];
+	public name: string;
+	public properties: Map<string, string>;
+	public grids: Map<string, GridData>;
 }
 
 export namespace DiagramModelRequest {

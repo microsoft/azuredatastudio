@@ -863,7 +863,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 
 	// Diagram methods
-	public $getDiagramModel(handle: number, params: azdata.DiagramRequestParams): Thenable<azdata.ObjectMetadata[]> {
+	public $getDiagramModel(handle: number, params: azdata.DiagramRequestParams): Thenable<azdata.DiagramRequestResult> {
 		return this._resolveProvider<azdata.DiagramServicesProvider>(handle).getDiagramModel(params);
 	}
 }

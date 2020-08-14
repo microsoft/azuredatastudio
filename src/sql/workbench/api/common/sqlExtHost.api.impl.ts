@@ -581,7 +581,9 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				TabOrientation: sqlExtHostTypes.TabOrientation,
 				sqlAssessment,
 				DiagramObject: sqlExtHostTypes.DiagramObject,
-				DiagramRequestParams: sqlExtHostTypes.DiagramRequestParams
+				DiagramRequestParams: sqlExtHostTypes.DiagramRequestParams,
+				DiagramRequestResult: sqlExtHostTypes.DiagramRequestResult,
+				GridData: sqlExtHostTypes.GridData
 			};
 		}
 	};

@@ -812,10 +812,10 @@ export class DiagramServicesFeature extends SqlOpsFeature<undefined> {
 	protected registerProvider(options: undefined): Disposable {
 		const client = this._client;
 
-		let getDiagramModel = async (params: contracts.DiagramRequestParams): Promise<azdata.ObjectMetadata[]> => {
+		let getDiagramModel = async (params: contracts.DiagramRequestParams): Promise<contracts.DiagramRequestResult> => {
 			try {
 				let result = await client.sendRequest(contracts.DiagramModelRequest.type, params);
-				return result.metadata;
+				return result;
 			}
 			catch (e) {
 				client.logFailedRequest(contracts.DiagramModelRequest.type, e);

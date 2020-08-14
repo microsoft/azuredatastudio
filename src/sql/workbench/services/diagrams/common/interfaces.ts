@@ -30,5 +30,5 @@ export interface IDiagramService {
 
 	registerProvider(providerId: string, provider: azdata.DiagramServicesProvider): void;
 
-	getDiagramModel(diagramRequestParams: DiagramRequestParams): Thenable<azdata.ObjectMetadata[]>;
+	getDiagramModel(diagramRequestParams: DiagramRequestParams): Thenable<azdata.DiagramRequestResult>;
 }

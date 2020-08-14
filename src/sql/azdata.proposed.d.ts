@@ -481,8 +481,8 @@ declare module 'azdata' {
 	}
 
 	export enum DiagramObject {
-		Schema = 1,
-		Database = 2,
+		Database = 1,
+		Schema = 2,
 		Table = 3
 	}
 
@@ -495,8 +495,18 @@ declare module 'azdata' {
 		public diagramView: DiagramObject;
 	}
 
+	export class GridData {
+		public rows: Map<string, string>[];
+	}
+
+	export class DiagramRequestResult {
+		public name: string;
+		public properties: Map<string, string>;
+		public grids: Map<string, GridData>;
+	}
+
 	export interface DiagramServicesProvider extends DataProvider {
-		getDiagramModel(params: DiagramRequestParams): Promise<ObjectMetadata[]>;
+		getDiagramModel(params: DiagramRequestParams): Promise<DiagramRequestResult>;
 	}
 
 	export interface TreeItem2 extends vscode.TreeItem2 {

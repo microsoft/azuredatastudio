@@ -6,7 +6,7 @@
 import * as nls from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
 import { IDiagramService, DiagramRequestParams, DiagramObject } from 'sql/workbench/services/diagrams/common/interfaces';
-import { ObjectMetadata } from 'azdata';
+import { DiagramRequestResult } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 /**
  * Action to get a Diagram Model for a Object Type
@@ -24,7 +24,7 @@ export class GetDiagramModelAction extends Action {
 		this.enabled = true;
 	}
 
-	public async run(ownerUri: string): Promise<ObjectMetadata[]> {
+	public async run(ownerUri: string): Promise<DiagramRequestResult> {
 		if (ownerUri) {
 			let diagramModelParams: DiagramRequestParams = {
 				ownerUri: ownerUri,
