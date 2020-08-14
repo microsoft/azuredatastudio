@@ -5,13 +5,13 @@
 
 import * as azdata from 'azdata';
 import * as TypeMoq from 'typemoq';
-import { ConfigurePythonWizard, ConfigurePythonModel } from '../dialog/configurePython/configurePythonWizard';
-import { JupyterServerInstallation } from '../jupyter/jupyterServerInstallation';
-import { ConfigurePathPage } from '../dialog/configurePython/configurePathPage';
+import { ConfigurePythonWizard, ConfigurePythonModel } from '../../dialog/configurePython/configurePythonWizard';
+import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
+import { ConfigurePathPage } from '../../dialog/configurePython/configurePathPage';
 import * as should from 'should';
-import { PickPackagesPage } from '../dialog/configurePython/pickPackagesPage';
-import { python3DisplayName, allKernelsName } from '../common/constants';
-import { TestContext, createViewContext, TestButton } from './common';
+import { PickPackagesPage } from '../../dialog/configurePython/pickPackagesPage';
+import { python3DisplayName, allKernelsName } from '../../common/constants';
+import { TestContext, createViewContext, TestButton } from '../common';
 import { EventEmitter } from 'vscode';
 
 describe('Configure Python Wizard', function () {
