@@ -34,20 +34,12 @@ export interface INewSqlEditorOptions {
 	resource?: URI
 }
 
-export interface IConnectionProviderDetails {
-	connectionProviderName?: string;
-	/**
-	 * Defaults to 'sql'
-	 */
-	languageMode?: string;
-}
-
 export interface IQueryEditorService {
 
 	_serviceBrand: undefined;
 
 	// Creates new untitled document for SQL/KUSTO queries and opens it in a new editor tab
-	newSqlEditor(options?: INewSqlEditorOptions, connectionProviderDetails?: IConnectionProviderDetails): Promise<IConnectableInput>;		//TODOKusto: Verify after Anthony's fix.
+	newSqlEditor(options?: INewSqlEditorOptions, connectionProviderName?: string): Promise<IConnectableInput>;		//TODOKusto: Verify after Anthony's fix.
 
 	// Creates new edit data session
 	newEditDataEditor(schemaName: string, tableName: string, queryString: string): Promise<IConnectableInput>;
