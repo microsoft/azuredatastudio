@@ -77,7 +77,6 @@ export const selectConnectionRadioButtonsTitle = localize('selectconnectionRadio
 export const dataSourceDropdownTitle = localize('dataSourceDropdownTitle', "Data source");
 export const noDataSourcesText = localize('noDataSourcesText', "No data sources in this project");
 export const loadProfileButtonText = localize('loadProfileButtonText', "Load Profile...");
-export const profileWarningText = localize('profileWarningText', "⚠ Warning: Connection strings using AAD Authentication are not supported at this time");
 export const profileReadError = localize('profileReadError', "Could not load the profile file.");
 export const sqlCmdTableLabel = localize('sqlCmdTableLabel', "SQLCMD Variables");
 export const sqlCmdVariableColumn = localize('sqlCmdVariableColumn', "Variable");
@@ -197,8 +196,15 @@ export const targetConnectionString = 'TargetConnectionString';
 export const initialCatalogSetting = 'Initial Catalog';
 export const dataSourceSetting = 'Data Source';
 export const integratedSecuritySetting = 'Integrated Security';
+export const authenticationSetting = 'Authentication';
+export const activeDirectoryInteractive = 'active directory interactive';
 export const userIdSetting = 'User ID';
 export const passwordSetting = 'Password';
+
+// Authentication types
+export const integratedAuth = 'Integrated';
+export const azureMfaAuth = 'AzureMFA';
+export const sqlAuth = 'SqlAuth';
 
 // Tree item types
 export enum DatabaseProjectItemType {
