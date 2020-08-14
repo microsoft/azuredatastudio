@@ -22,6 +22,7 @@ export const remoteBookDownloadTimeout = 'remoteBookDownloadTimeout';
 export const collapseBookItems = 'collapseBookItems';
 
 export const winPlatform = 'win32';
+export const macPlatform = 'darwin';
 
 export const jupyterNotebookProviderId = 'jupyter';
 export const jupyterConfigRootFolder = 'jupyter_config';

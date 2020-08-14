@@ -28,7 +28,7 @@ export class FolderNode extends BaseProjectTreeItem {
 	}
 
 	public get treeItem(): vscode.TreeItem {
-		const folderItem = new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.Expanded);
+		const folderItem = new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.Collapsed);
 		folderItem.contextValue = DatabaseProjectItemType.folder;
 		return folderItem;
 	}

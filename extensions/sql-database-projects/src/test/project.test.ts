@@ -10,7 +10,7 @@ import * as testUtils from './testUtils';
 import * as constants from '../common/constants';
 
 import { promises as fs } from 'fs';
-import { Project, EntryType, TargetPlatform, SystemDatabase, DatabaseReferenceLocation } from '../models/project';
+import { Project, EntryType, TargetPlatform, SystemDatabase, DatabaseReferenceLocation, DacpacReferenceProjectEntry, SqlProjectReferenceProjectEntry } from '../models/project';
 import { exists, convertSlashesForSqlProj } from '../common/utils';
 import { Uri } from 'vscode';
 
@@ -45,12 +45,26 @@ describe('Project: sqlproj content operations', function (): void {
 		// should only have one database reference even though there are two master.dacpac references (1 for ADS and 1 for SSDT)
 		should(project.databaseReferences.length).equal(1);
 		should(project.databaseReferences[0].databaseName).containEql(constants.master);
+		should(project.databaseReferences[0] instanceof DacpacReferenceProjectEntry).equal(true);
 
 		// Pre-post deployment scripts
 		should(project.files.find(f => f.type === EntryType.File && f.relativePath === 'Script.PreDeployment1.sql')).not.equal(undefined, 'File Script.PreDeployment1.sql not read');
 		should(project.files.find(f => f.type === EntryType.File && f.relativePath === 'Script.PostDeployment1.sql')).not.equal(undefined, 'File Script.PostDeployment1.sql not read');
 		should(project.files.find(f => f.type === EntryType.File && f.relativePath === 'Script.PreDeployment2.sql')).not.equal(undefined, 'File Script.PostDeployment2.sql not read');
 		should(project.files.find(f => f.type === EntryType.File && f.relativePath === 'Tables\\Script.PostDeployment1.sql')).not.equal(undefined, 'File Tables\\Script.PostDeployment1.sql not read');
+	});
+
+	it('Should read Project with Project reference from sqlproj', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openProjectWithProjectReferencesBaseline);
+		const project: Project = await Project.openProject(projFilePath);
+
+		// Database references
+		// should only have two database references even though there are two master.dacpac references (1 for ADS and 1 for SSDT)
+		should(project.databaseReferences.length).equal(2);
+		should(project.databaseReferences[0].databaseName).containEql(constants.master);
+		should(project.databaseReferences[0] instanceof DacpacReferenceProjectEntry).equal(true);
+		should(project.databaseReferences[1].databaseName).containEql('TestProjectName');
+		should(project.databaseReferences[1] instanceof SqlProjectReferenceProjectEntry).equal(true);
 	});
 
 	it('Should add Folder and Build entries to sqlproj', async function (): Promise<void> {
