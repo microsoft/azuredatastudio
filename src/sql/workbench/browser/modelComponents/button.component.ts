@@ -27,7 +27,7 @@ import { convertSize } from 'sql/base/browser/dom';
 	<div>
 		<label for={{this.label}}>
 			<div #input style="width: 100%">
-				<input #fileInput *ngIf="this.isFile === true" id={{this.label}} type="file" accept="{{ this.fileType }}" style="display: none">
+				<input #fileInput *ngIf="this.buttonType === 'File'" id={{this.label}} type="file" accept="{{ this.fileType }}" style="display: none">
 			</div>
 		</label>
 	</div>
@@ -156,6 +156,14 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 
 	private set label(newValue: string) {
 		this.setPropertyFromUI<azdata.ButtonProperties, string>(this.setValueProperties, newValue);
+	}
+
+	public get buttonType(): azdata.ButtonType {
+		return this.getPropertyOrDefault<azdata.ButtonProperties, azdata.ButtonType>((props) => props.buttonType, azdata.ButtonType.Normal);
+	}
+
+	public get description(): string {
+		return this.getPropertyOrDefault<azdata.ButtonProperties, string>((props) => props.description, this.description);
 	}
 
 	public get isFile(): boolean {
