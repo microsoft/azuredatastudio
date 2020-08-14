@@ -122,7 +122,7 @@ export class PublishDatabaseDialog {
 						title: constants.targetDatabaseSettings,
 						components: [
 							{
-								title: constants.profileWarningText,
+								title: '',
 								component: <azdata.ButtonComponent>this.loadProfileButton
 							},
 							/* TODO : enable using this when data source creation is enabled
