@@ -17,8 +17,6 @@ import * as constants from '../common/constants';
 import * as utils from '../common/utils';
 import { Deferred } from '../common/promise';
 import { ConfigurePythonWizard } from '../dialog/configurePython/configurePythonWizard';
-import { IPrompter, IQuestion, confirm } from '../prompts/question';
-import CodeAdapter from '../prompts/adapter';
 
 const localize = nls.loadMessageBundle();
 const msgInstallPkgProgress = localize('msgInstallPkgProgress', "Notebook dependencies installation is in progress");
@@ -76,8 +74,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 	public static readonly DefaultPythonLocation = path.join(utils.getUserHome(), 'azuredatastudio-python');
 
-	private _prompter: IPrompter;
-
 	private readonly _commonPackages: PythonPkgDetails[] = [
 		{
 			name: 'jupyter',
@@ -127,8 +123,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}
 		this._usingConda = false;
 		this._installInProgress = false;
-
-		this._prompter = new CodeAdapter();
 
 		if (process.platform !== constants.winPlatform) {
 			this._expectedCondaPackages = this._commonPackages.concat([{ name: 'pykerberos', version: '1.2.1' }]);
@@ -188,7 +182,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			if (!pythonExists || forceInstall) {
 				await this.installPythonPackage(backgroundOperation, this._usingExistingPython, this._pythonInstallationPath, this.outputChannel);
 			}
-			await this.upgradePythonPackages(false, forceInstall, specificPackages);
+			await this.upgradePythonPackages(forceInstall, specificPackages);
 		} catch (err) {
 			this.outputChannel.appendLine(msgDependenciesInstallationFailed(utils.getErrorMessage(err)));
 			throw err;
@@ -504,7 +498,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		return true;
 	}
 
-	private async upgradePythonPackages(promptForUpgrade: boolean, forceInstall: boolean, specificPackages?: PythonPkgDetails[]): Promise<void> {
+	private async upgradePythonPackages(forceInstall: boolean, specificPackages?: PythonPkgDetails[]): Promise<void> {
 		let expectedCondaPackages: PythonPkgDetails[];
 		let expectedPipPackages: PythonPkgDetails[];
 		if (specificPackages) {
@@ -556,63 +550,18 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}
 
 		if (condaPackagesToInstall.length > 0 || pipPackagesToInstall.length > 0) {
-			let doUpgrade: boolean;
-			if (promptForUpgrade) {
-				doUpgrade = await this._prompter.promptSingle<boolean>(<IQuestion>{
-					type: confirm,
-					message: localize('confirmPackageUpgrade', "Some required python packages need to be installed. Would you like to install them now?"),
-					default: true
-				});
-				if (!doUpgrade) {
-					throw new Error(localize('configurePython.packageInstallDeclined', "Package installation was declined."));
-				}
-			} else {
-				doUpgrade = true;
-			}
-
-			if (doUpgrade) {
-				let installPromise = new Promise(async (resolve, reject) => {
-					try {
-						if (this._usingConda) {
-							await this.installCondaPackages(condaPackagesToInstall, true);
-						}
-						await this.installPipPackages(pipPackagesToInstall, true);
-						resolve();
-					} catch (err) {
-						reject(err);
+			let installPromise = new Promise(async (resolve, reject) => {
+				try {
+					if (this._usingConda) {
+						await this.installCondaPackages(condaPackagesToInstall, true);
 					}
-				});
-
-				if (promptForUpgrade) {
-					let packagesStr = condaPackagesToInstall.concat(pipPackagesToInstall).map(pkg => {
-						return `${pkg.name}>=${pkg.version}`;
-					}).join(' ');
-					let taskName = localize('upgradePackages.pipInstall',
-						"Installing {0}",
-						packagesStr);
-
-					let backgroundTaskComplete = new Deferred<void>();
-					azdata.tasks.startBackgroundOperation({
-						displayName: taskName,
-						description: taskName,
-						isCancelable: false,
-						operation: async op => {
-							try {
-								await installPromise;
-								op.updateStatus(azdata.TaskStatus.Succeeded);
-								backgroundTaskComplete.resolve();
-							} catch (err) {
-								let errorMsg = utils.getErrorMessage(err);
-								op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
-								backgroundTaskComplete.reject(errorMsg);
-							}
-						}
-					});
-					await backgroundTaskComplete.promise;
-				} else {
-					await installPromise;
+					await this.installPipPackages(pipPackagesToInstall, true);
+					resolve();
+				} catch (err) {
+					reject(err);
 				}
-			}
+			});
+			await installPromise;
 		}
 	}
 
