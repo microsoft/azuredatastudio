@@ -414,7 +414,8 @@ const initialShortcuts = [
 ];
 
 const shortCutConfiguration: IConfigurationNode = {
-	...queryEditorConfigurationBaseNode
+	...queryEditorConfigurationBaseNode,
+	properties: {}
 };
 
 for (let i = 0; i < 9; i++) {
@@ -432,7 +433,7 @@ for (let i = 0; i < 9; i++) {
 			accessor.get(IInstantiationService).createInstance(RunQueryShortcutAction).run(queryIndex);
 		}
 	});
-	shortCutConfiguration[settingKey] = {
+	shortCutConfiguration.properties[settingKey] = {
 		'type': 'string',
 		'default': defaultVal,
 		'description': localize('queryShortcutDescription',
