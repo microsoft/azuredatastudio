@@ -61,6 +61,16 @@
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
+        "command": "sqlDatabaseProjects.newPreDeployScript",
+        "title": "%sqlDatabaseProjects.newPreDeployScript%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.newPostDeployScript",
+        "title": "%sqlDatabaseProjects.newPostDeployScript%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
         "command": "sqlDatabaseProjects.newTable",
         "title": "%sqlDatabaseProjects.newTable%",
         "category": "%sqlDatabaseProjects.displayName%"
@@ -149,6 +159,14 @@
         },
         {
           "command": "sqlDatabaseProjects.newScript",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.newPreDeployScript",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.newPostDeployScript",
           "when": "false"
         },
         {
@@ -246,6 +264,16 @@
         },
         {
           "command": "sqlDatabaseProjects.newScript",
+          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
+          "group": "3_dbProjects_newItem@7"
+        },
+        {
+          "command": "sqlDatabaseProjects.newPreDeployScript",
+          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
+          "group": "3_dbProjects_newItem@8"
+        },
+        {
+          "command": "sqlDatabaseProjects.newPostDeployScript",
           "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
           "group": "3_dbProjects_newItem@9"
         },
