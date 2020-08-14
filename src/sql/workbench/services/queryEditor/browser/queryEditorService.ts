@@ -5,7 +5,7 @@
 
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
 import { EditDataInput } from 'sql/workbench/browser/editData/editDataInput';
-import { IConnectableInput } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectableInput, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryEditorService, INewSqlEditorOptions } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { UntitledQueryEditorInput } from 'sql/workbench/common/editor/query/untitledQueryEditorInput';
 
@@ -36,7 +36,8 @@ export class QueryEditorService implements IQueryEditorService {
 		@IUntitledTextEditorService private _untitledEditorService: IUntitledTextEditorService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IEditorService private _editorService: IEditorService,
-		@IConfigurationService private _configurationService: IConfigurationService
+		@IConfigurationService private _configurationService: IConfigurationService,
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {
 	}
 
@@ -51,7 +52,7 @@ export class QueryEditorService implements IQueryEditorService {
 		let docUri: URI = options.resource ?? URI.from({ scheme: Schemas.untitled, path: await this.createUntitledSqlFilePath(connectionProviderName) });
 
 		// Create a sql document pane with accoutrements
-		const fileInput = this._editorService.createEditorInput({ forceUntitled: true, resource: docUri, mode: this.getLanguageFlavor(connectionProviderName) }) as UntitledTextEditorInput;
+		const fileInput = this._editorService.createEditorInput({ forceUntitled: true, resource: docUri, mode: this._connectionManagementService.getProviderLanaguageMode(connectionProviderName) }) as UntitledTextEditorInput;
 		let untitledEditorModel = await fileInput.resolve() as UntitledTextEditorModel;
 		if (options.initalContent) {
 			untitledEditorModel.textEditorModel.setValue(options.initalContent);
@@ -98,15 +99,9 @@ export class QueryEditorService implements IQueryEditorService {
 		return params;
 	}
 
-	////// Private functions
-	// Gets language depending on connection provider.
-	private getLanguageFlavor(providerName: string): string {		//TODOKusto: temporary fix until Anthony's generic fix to make it language agnostic
-		return providerName === 'KUSTO' ? 'kusto' : 'sql';
-	}
-
 	private createUntitledSqlFilePath(providerName: string): Promise<string> {
 		if (providerName === 'MSSQL') {
-			return this.createPrefixedSqlFilePath('SQLQuery');		//TODOKusto: Verify changes after merge.
+			return this.createPrefixedSqlFilePath('SQLQuery');
 		}
 
 		return this.createPrefixedSqlFilePath(providerName + 'Query');
