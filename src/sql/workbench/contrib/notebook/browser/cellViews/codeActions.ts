@@ -15,6 +15,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ILogService } from 'vs/platform/log/common/log';
 import { getErrorMessage } from 'vs/base/common/errors';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 
 let notebookMoreActionMsg = localize('notebook.failed', "Please select active cell and try again");
 const emptyExecutionCountLabel = '[ ]';
@@ -161,7 +162,8 @@ export class RunCellAction extends MultiStateAction<CellExecutionState> {
 	constructor(context: CellContext, @INotificationService private notificationService: INotificationService,
 		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
 		@IKeybindingService keybindingService: IKeybindingService,
-		@ILogService logService: ILogService
+		@ILogService logService: ILogService,
+		@ICommandService private commandService: ICommandService
 	) {
 		super(RunCellAction.ID, new IMultiStateData<CellExecutionState>([
 			{ key: CellExecutionState.Hidden, value: { label: emptyExecutionCountLabel, className: '', tooltip: '', hideIcon: true } },
@@ -183,6 +185,7 @@ export class RunCellAction extends MultiStateAction<CellExecutionState> {
 			return;
 		}
 		try {
+			await this.commandService.executeCommand('hideSuggestWidget');
 			await this._context.cell.runCell(this.notificationService, this.connectionManagementService);
 		} catch (error) {
 			let message = getErrorMessage(error);
