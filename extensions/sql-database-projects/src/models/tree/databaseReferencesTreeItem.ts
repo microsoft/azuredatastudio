@@ -10,7 +10,7 @@ import * as constants from '../../common/constants';
 import { BaseProjectTreeItem } from './baseTreeItem';
 import { ProjectRootTreeItem } from './projectTreeItem';
 import { IconPathHelper } from '../../common/iconHelper';
-import { DatabaseReferenceProjectEntry } from '../../models/project';
+import { IDatabaseReferenceProjectEntry } from '../../models/project';
 
 /**
  * Folder for containing references nodes in the tree
@@ -44,7 +44,7 @@ export class DatabaseReferencesTreeItem extends BaseProjectTreeItem {
 }
 
 export class DatabaseReferenceTreeItem extends BaseProjectTreeItem {
-	constructor(private reference: DatabaseReferenceProjectEntry, referencesTreeItem: DatabaseReferencesTreeItem) {
+	constructor(private reference: IDatabaseReferenceProjectEntry, referencesTreeItem: DatabaseReferencesTreeItem) {
 		super(vscode.Uri.file(path.join(referencesTreeItem.uri.path, reference.databaseName)), referencesTreeItem);
 	}
 
