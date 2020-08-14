@@ -67,6 +67,23 @@
           "when": "isWindows && connectionProvider == MSSQL && serverInfo && nodeType && mssql:engineedition != 11 && nodeType =~ /^(Database|Table|Column|Index|Statistic|View|ServerLevelLogin|ServerLevelServerRole|ServerLevelCredential|ServerLevelServerAudit|ServerLevelServerAuditSpecification|StoredProcedure|ScalarValuedFunction|TableValuedFunction|AggregateFunction|Synonym|Assembly|UserDefinedDataType|UserDefinedType|UserDefinedTableType|Sequence|User|DatabaseRole|ApplicationRole|Schema|SecurityPolicy|ServerLevelLinkedServer)$/",
           "group": "z-AdminToolExt@2"
         }
+      ],
+      "dataExplorer/context": [
+        {
+          "command": "adminToolExtWin.launchSsmsMinGswDialog",
+          "when": "isWindows && connectionProvider == MSSQL && nodeType && nodeType == Database && mssql:engineedition != 11",
+          "group": "z-AdminToolExt@1"
+        },
+        {
+          "command": "adminToolExtWin.launchSsmsMinPropertiesDialog",
+          "when": "isWindows && connectionProvider == MSSQL && !isCloud && nodeType && nodeType == Server && mssql:engineedition != 11",
+          "group": "z-AdminToolExt@2"
+        },
+        {
+          "command": "adminToolExtWin.launchSsmsMinPropertiesDialog",
+          "when": "isWindows && connectionProvider == MSSQL && nodeType && mssql:engineedition != 11 && nodeType =~ /^(Database|Table|Column|Index|Statistic|View|ServerLevelLogin|ServerLevelServerRole|ServerLevelCredential|ServerLevelServerAudit|ServerLevelServerAuditSpecification|StoredProcedure|ScalarValuedFunction|TableValuedFunction|AggregateFunction|Synonym|Assembly|UserDefinedDataType|UserDefinedType|UserDefinedTableType|Sequence|User|DatabaseRole|ApplicationRole|Schema|SecurityPolicy|ServerLevelLinkedServer)$/",
+          "group": "z-AdminToolExt@2"
+        }
       ]
     },
     "outputChannels": [

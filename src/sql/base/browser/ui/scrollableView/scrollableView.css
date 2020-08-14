@@ -3,11 +3,22 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.split-view-container {
+.scrollable-view {
 	position: relative;
+	height: 100%;
+	width: 100%;
+	white-space: nowrap;
 }
 
-.monaco-scroll-split-view {
+.scrollable-view .scrollable-view-container {
+	position: relative;
+	width: 100%;
 	height: 100%;
+}
+
+.scrollable-view .scrollable-view-child {
+	position: absolute;
+	box-sizing:	border-box;
+	overflow: hidden;
 	width: 100%;
 }

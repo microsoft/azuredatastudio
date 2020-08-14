@@ -282,6 +282,14 @@
           "group": "export"
         }
       ],
+
+      "dataExplorer/context": [
+        {
+          "command": "sqlDatabaseProjects.importDatabase",
+          "when": "connectionProvider == MSSQL && nodeType && nodeType == Database && mssql:engineedition != 11",
+          "group": "export"
+        }
+      ],
       "dashboard/toolbar": [
         {
             "command": "sqlDatabaseProjects.importDatabase",

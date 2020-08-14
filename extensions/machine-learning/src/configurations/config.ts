@@ -35,14 +35,14 @@ export class Config {
 	}
 
 	/**
-	 * Returns the config value of required python packages
+	 * Returns the config value of required python packages. The order of the packages is based on the order they should install
 	 */
 	public get requiredSqlPythonPackages(): PackageConfigModel[] {
 		return this._configValues.sqlPackageManagement.requiredPythonPackages;
 	}
 
 	/**
-	 * Returns the config value of required r packages
+	 * Returns the config value of required r packages. The order of the packages is based on the order they should install
 	 */
 	public get requiredSqlRPackages(): PackageConfigModel[] {
 		return this._configValues.sqlPackageManagement.requiredRPackages;
