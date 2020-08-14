@@ -29,7 +29,7 @@ import { createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUt
 	<ng-container *ngIf="!this.buttonType === 'Informational'"; else elseBlock>
 		<label for={{this.label}}>
 			<div #input style="width: 100%">
-				<input #fileInput *ngIf="this.isFile === true" id={{this.label}} type="file" accept="{{ this.fileType }}" style="display: none">
+				<input #fileInput *ngIf="this.buttonType === 'File'" id={{this.label}} type="file" accept="{{ this.fileType }}" style="display: none">
 			</div>
 		</label>
 	</ng-container>
@@ -183,6 +183,7 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 	}
 
 	public get buttonType(): azdata.ButtonType {
+<<<<<<< HEAD
 		if (this.isFile === true) {
 			return 'File' as azdata.ButtonType;
 		} else {
@@ -192,6 +193,13 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 
 	public get description(): string {
 		return this.getPropertyOrDefault((props) => props.description, '');
+=======
+		return this.getPropertyOrDefault<azdata.ButtonProperties, azdata.ButtonType>((props) => props.buttonType, azdata.ButtonType.Normal);
+	}
+
+	public get description(): string {
+		return this.getPropertyOrDefault<azdata.ButtonProperties, string>((props) => props.description, this.description);
+>>>>>>> dashboardWidget to use updated button component - added an enum for buttonType.
 	}
 
 	public get isFile(): boolean {
