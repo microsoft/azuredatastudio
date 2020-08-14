@@ -221,6 +221,7 @@
     },
     "connectionProvider": {
       "providerId": "KUSTO",
+      "languageMode": "kusto",
       "displayName": "%kusto.provider.displayName%",
       "iconPath": [
         {
