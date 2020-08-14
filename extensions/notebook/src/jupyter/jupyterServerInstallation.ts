@@ -207,11 +207,11 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		let extension = process.platform === constants.winPlatform ? 'zip' : 'tar.gz';
 		packageName = `python-${pythonVersion}-${platformId}-${bundleVersion}.${extension}`;
 
-		switch (utils.getOSPlatform()) {
-			case utils.Platform.Windows:
+		switch (process.platform) {
+			case constants.winPlatform:
 				pythonDownloadUrl = constants.pythonWindowsInstallUrl;
 				break;
-			case utils.Platform.Mac:
+			case constants.macPlatform:
 				pythonDownloadUrl = constants.pythonMacInstallUrl;
 				break;
 			default:
@@ -274,7 +274,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 								return reject(err);
 							}
 						}
-						if (utils.getOSPlatform() === utils.Platform.Windows) {
+						if (process.platform === constants.winPlatform) {
 							try {
 								let zippedFile = new zip(pythonPackagePathLocal);
 								zippedFile.extractAllTo(installPath);
