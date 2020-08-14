@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ExtensionNodeType, TreeItem, Account } from 'azdata';
-import { TreeItemCollapsibleState, ExtensionContext } from 'vscode';
+import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
@@ -20,7 +20,7 @@ export class AzureResourceDatabaseServerTreeDataProvider extends ResourceTreeDat
 
 	public constructor(
 		databaseServerService: IAzureResourceService<azureResource.AzureResourceDatabaseServer>,
-		private _extensionContext: ExtensionContext
+		private _extensionContext: vscode.ExtensionContext
 	) {
 		super(databaseServerService);
 	}
@@ -34,7 +34,7 @@ export class AzureResourceDatabaseServerTreeDataProvider extends ResourceTreeDat
 				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_server_inverse.svg'),
 				light: this._extensionContext.asAbsolutePath('resources/light/sql_server.svg')
 			},
-			collapsibleState: TreeItemCollapsibleState.Collapsed,
+			collapsibleState: vscode.workspace.getConfiguration('workbench').get<boolean>('enablePreviewFeatures') ? vscode.TreeItemCollapsibleState.None : vscode.TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.databaseServer,
 			payload: {
 				id: generateGuid(),
@@ -72,7 +72,7 @@ export class AzureResourceDatabaseServerTreeDataProvider extends ResourceTreeDat
 					dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
 					light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
 				},
-				collapsibleState: TreeItemCollapsibleState.Collapsed,
+				collapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
 				contextValue: AzureResourceItemType.databaseServerContainer
 			}
 		};

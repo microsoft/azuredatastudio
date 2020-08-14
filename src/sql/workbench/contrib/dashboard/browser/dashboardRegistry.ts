@@ -35,7 +35,9 @@ export interface FlavorProperties {
 	databaseProperties: Array<Property>;
 	serverProperties: Array<Property>;
 	databasesListProperties?: Array<ObjectListViewProperty>;
+	databaseListHintText?: string;
 	objectsListProperties?: Array<ObjectListViewProperty>;
+	objectListHintText?: string;
 }
 
 export interface ConditionProperties {

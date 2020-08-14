@@ -13,6 +13,7 @@ import { SqlPackageManageProviderBase, ScriptMode } from './packageManageProvide
 import { HttpClient } from '../common/httpClient';
 import * as utils from '../common/utils';
 import { PackageManagementService } from './packageManagementService';
+import * as constants from '../common/constants';
 
 /**
  * Manage Package Provider for python packages inside SQL server databases
@@ -62,26 +63,31 @@ export class SqlPythonPackageManageProvider extends SqlPackageManageProviderBase
 	protected async executeScripts(scriptMode: ScriptMode, packageDetails: nbExtensionApis.IPackageDetails, databaseName: string): Promise<void> {
 		let connection = await this.getCurrentConnection();
 		let credentials = await this._apiWrapper.getCredentials(connection.connectionId);
+		let connectionParts: string[] = [];
 
 		if (connection) {
-			let port = '1433';
-			let server = connection.serverName;
-			let database = databaseName ? `, database="${databaseName}"` : '';
-			const auth = connection.userName ? `, uid="${connection.userName}", pwd="${credentials[azdata.ConnectionOptionSpecialType.password]}"` : '';
-			let index = connection.serverName.indexOf(',');
-			if (index > 0) {
-				port = connection.serverName.substring(index + 1);
-				server = connection.serverName.substring(0, index);
+			connectionParts.push(utils.getKeyValueString('driver', `"${constants.supportedODBCDriver}"`));
+
+			let port = utils.getServerPort(connection);
+			let server = utils.getServerName(connection);
+			if (databaseName) {
+				connectionParts.push(utils.getKeyValueString('database', `"${databaseName}"`));
+			}
+			if (connection.userName) {
+				connectionParts.push(utils.getKeyValueString('uid', `"${connection.userName}"`));
+				connectionParts.push(utils.getKeyValueString('pwd', `"${credentials[azdata.ConnectionOptionSpecialType.password]}"`));
 			}
 
-			let pythonConnectionParts = `server="${server}", port=${port}${auth}${database})`;
+			connectionParts.push(utils.getKeyValueString('server', `"${server}"`));
+			connectionParts.push(utils.getKeyValueString('port', port));
+
 			let pythonCommandScript = scriptMode === ScriptMode.Install ?
 				`pkgmanager.install(package="${packageDetails.name}", version="${packageDetails.version}")` :
 				`pkgmanager.uninstall(package_name="${packageDetails.name}")`;
 
 			let scripts: string[] = [
 				'import sqlmlutils',
-				`connection = sqlmlutils.ConnectionInfo(driver="ODBC Driver 17 for SQL Server", ${pythonConnectionParts}`,
+				`connection = sqlmlutils.ConnectionInfo(${connectionParts.join(',')})`,
 				'pkgmanager = sqlmlutils.SQLPackageManager(connection)',
 				pythonCommandScript
 			];
