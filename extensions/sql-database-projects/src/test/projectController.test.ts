@@ -84,7 +84,7 @@ describe('ProjectsController', function (): void {
 				const project = await projController.openProject(vscode.Uri.file(sqlProjPath));
 
 				should(project.files.length).equal(9); // detailed sqlproj tests in their own test file
-				should(project.dataSources.length).equal(2); // detailed datasources tests in their own test file
+				should(project.dataSources.length).equal(3); // detailed datasources tests in their own test file
 			});
 
 			it('Should load both project and referenced project', async function (): Promise<void> {
