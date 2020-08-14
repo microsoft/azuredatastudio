@@ -127,6 +127,7 @@ steps:
       APP_NAME="`ls $APP_ROOT | head -n 1`"
       yarn smoketest --build "$APP_ROOT/$APP_NAME" --screenshots "$(build.artifactstagingdirectory)/smokeshots"
     displayName: Run smoke tests (Electron)
+    continueOnError: true
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   - script: |
@@ -135,6 +136,7 @@ steps:
       VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-web-darwin" \
       yarn smoketest --web --headless  --screenshots "$(build.artifactstagingdirectory)/smokeshots"
     displayName: Run smoke tests (Browser)
+    continueOnError: true
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   - script: |
