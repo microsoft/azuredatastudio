@@ -1431,6 +1431,12 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return connectionProvider && connectionProvider.properties;
 	}
 
+	// Gets languageMode property of provider if it exists. Defaults to 'sql'
+	public getProviderLanaguageMode(providerName: string): string {
+		let connectionProvider = this._providers.get(providerName);
+		return (connectionProvider && connectionProvider.properties && connectionProvider.properties['languageMode']) || 'sql';
+	}
+
 	/**
 	 * Get known connection profiles including active connections, recent connections and saved connections.
 	 * @param activeConnectionsOnly Indicates whether only get the active connections, default value is false.
