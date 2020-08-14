@@ -13,7 +13,7 @@ import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStri
 import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
 import { DeploymentOptions } from '../../../mssql/src/mssql';
 import { IconPathHelper } from '../common/iconHelper';
-import { cssStyles } from '../common/UiConstants';
+import { cssStyles } from '../common/uiConstants';
 
 interface DataSourceDropdownValue extends azdata.CategoryValue {
 	dataSource: SqlConnectionDataSource;
