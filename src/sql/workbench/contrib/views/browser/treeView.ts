@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Event, Emitter } from 'vs/base/common/event';
-import { IDisposable, Disposable, toDisposable } from 'vs/base/common/lifecycle';
+import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IAction, ActionRunner, IActionViewItemProvider } from 'vs/base/common/actions';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
@@ -12,8 +12,7 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { IMenuService, MenuId, MenuItemAction, registerAction2, Action2, SubmenuItemAction } from 'vs/platform/actions/common/actions';
 import { MenuEntryActionViewItem, createAndFillInContextMenuActions, SubmenuEntryActionViewItem } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { IContextKeyService, ContextKeyExpr, ContextKeyEqualsExpr, RawContextKey, IContextKey } from 'vs/platform/contextkey/common/contextkey';
-import { TreeItemCollapsibleState, ITreeViewDataProvider, TreeViewItemHandleArg, ITreeViewDescriptor, IViewsRegistry, ITreeItemLabel, Extensions, IViewDescriptorService, ViewContainer, ViewContainerLocation } from 'vs/workbench/common/views';
-import { IViewletViewOptions } from 'vs/workbench/browser/parts/views/viewsViewlet';
+import { TreeItemCollapsibleState, ITreeViewDataProvider, TreeViewItemHandleArg, ITreeItemLabel, IViewDescriptorService, ViewContainer, ViewContainerLocation } from 'vs/workbench/common/views';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IProgressService } from 'vs/platform/progress/common/progress';
@@ -27,85 +26,23 @@ import { dirname, basename } from 'vs/base/common/resources';
 import { LIGHT, FileThemeIcon, FolderThemeIcon, registerThemingParticipant, ThemeIcon, IThemeService } from 'vs/platform/theme/common/themeService';
 import { FileKind } from 'vs/platform/files/common/files';
 import { WorkbenchAsyncDataTree } from 'vs/platform/list/browser/listService';
-import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 import { localize } from 'vs/nls';
 import { timeout } from 'vs/base/common/async';
 import { textLinkForeground, textCodeBlockBackground, focusBorder, listFilterMatchHighlight, listFilterMatchHighlightBorder } from 'vs/platform/theme/common/colorRegistry';
 import { isString } from 'vs/base/common/types';
 import { ILabelService } from 'vs/platform/label/common/label';
-import { Registry } from 'vs/platform/registry/common/platform';
 import { IListVirtualDelegate, IIdentityProvider } from 'vs/base/browser/ui/list/list';
 import { ITreeRenderer, ITreeNode, IAsyncDataSource, ITreeContextMenuEvent } from 'vs/base/browser/ui/tree/tree';
 import { FuzzyScore, createMatches } from 'vs/base/common/filters';
 import { CollapseAllAction } from 'vs/base/browser/ui/tree/treeDefaults';
 import { isFalsyOrWhitespace } from 'vs/base/common/strings';
 import { SIDE_BAR_BACKGROUND, PANEL_BACKGROUND } from 'vs/workbench/common/theme';
-import { IOpenerService } from 'vs/platform/opener/common/opener';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { firstIndex } from 'vs/base/common/arrays';
 import { ITreeItem, ITreeView } from 'sql/workbench/common/views';
 import { UserCancelledConnectionError } from 'sql/base/common/errors';
 import { IOEShimService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim';
-import { NodeContextKey } from 'sql/workbench/browser/parts/views/nodeContext';
+import { NodeContextKey } from 'sql/workbench/contrib/views/browser/nodeContext';
 import { ActionViewItem } from 'vs/base/browser/ui/actionbar/actionViewItems';
-
-export class TreeViewPane extends ViewPane {
-
-	public readonly treeView: ITreeView;
-
-	constructor(
-		options: IViewletViewOptions,
-		@IKeybindingService keybindingService: IKeybindingService,
-		@IContextMenuService contextMenuService: IContextMenuService,
-		@IConfigurationService configurationService: IConfigurationService,
-		@IContextKeyService contextKeyService: IContextKeyService,
-		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
-		@IInstantiationService instantiationService: IInstantiationService,
-		@IOpenerService openerService: IOpenerService,
-		@IThemeService themeService: IThemeService,
-		@ITelemetryService telemetryService: ITelemetryService,
-	) {
-		super({ ...(options as IViewPaneOptions), titleMenuId: MenuId.ViewTitle }, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService, telemetryService);
-		const { treeView } = (<ITreeViewDescriptor>Registry.as<IViewsRegistry>(Extensions.ViewsRegistry).getView(options.id));
-		this.treeView = treeView as ITreeView;
-		this._register(this.treeView.onDidChangeActions(() => this.updateActions(), this));
-		this._register(this.treeView.onDidChangeTitle((newTitle) => this.updateTitle(newTitle)));
-		this._register(toDisposable(() => this.treeView.setVisibility(false)));
-		this._register(this.onDidChangeBodyVisibility(() => this.updateTreeVisibility()));
-		this._register(this.treeView.onDidChangeWelcomeState(() => this._onDidChangeViewWelcomeState.fire()));
-		this.updateTreeVisibility();
-	}
-
-	focus(): void {
-		super.focus();
-		this.treeView.focus();
-	}
-
-	renderBody(container: HTMLElement): void {
-		super.renderBody(container);
-
-		if (this.treeView instanceof TreeView) {
-			this.treeView.show(container);
-		}
-	}
-
-	shouldShowWelcome(): boolean {
-		return ((this.treeView.dataProvider === undefined) || !!this.treeView.dataProvider.isTreeEmpty) && (this.treeView.message === undefined);
-	}
-
-	layoutBody(height: number, width: number): void {
-		super.layoutBody(height, width);
-		this.treeView.layout(height, width);
-	}
-
-	getOptimalWidth(): number {
-		return this.treeView.getOptimalWidth();
-	}
-
-	private updateTreeVisibility(): void {
-		this.treeView.setVisibility(this.isBodyVisible());
-	}
-}
 
 class Root implements ITreeItem {
 	label = { label: 'root' };

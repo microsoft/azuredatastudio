@@ -28,7 +28,7 @@ import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { URI } from 'vs/base/common/uri';
 import { IWorkspaceEditingService } from 'vs/workbench/services/workspaces/common/workspaceEditing';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
-import { NodeContextKey } from 'sql/workbench/browser/parts/views/nodeContext';
+import { NodeContextKey } from 'sql/workbench/contrib/views/browser/nodeContext';
 import { MssqlNodeContext } from 'sql/workbench/services/objectExplorer/browser/mssqlNodeContext';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
