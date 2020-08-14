@@ -24,10 +24,10 @@ export class GetDiagramModelAction extends Action {
 		this.enabled = true;
 	}
 
-	public async run(ownerUri: string): Promise<DiagramRequestResult> {
-		if (ownerUri) {
+	public async run(context: any): Promise<DiagramRequestResult> {
+		if (context.ownerUri) {
 			let diagramModelParams: DiagramRequestParams = {
-				ownerUri: ownerUri,
+				ownerUri: context.ownerUri,
 				schema: undefined,
 				server: undefined,
 				database: undefined,
@@ -35,6 +35,7 @@ export class GetDiagramModelAction extends Action {
 				diagramView: DiagramObject.Schema
 			};
 			const model = await this._diagramService.getDiagramModel(diagramModelParams);
+			context.component.exampleModel = model;
 			return model;
 		}
 		return Promise.resolve(null);

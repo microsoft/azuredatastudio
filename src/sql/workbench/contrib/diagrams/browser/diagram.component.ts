@@ -18,6 +18,7 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IPanelOptions, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
 import { Table } from 'sql/base/browser/ui/table/table';
+import { DiagramRequestResult } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 const LocalizedStrings = {
 	SECTION_TITLE_API: localize('asmt.section.api.title', "API information"),
@@ -53,6 +54,8 @@ export class DiagramComponent extends AngularDisposable implements OnInit {
 	public showTable = false;
 	public selectedOption = 'Database';
 	public granularityOptions = ['Database', 'Schema', 'Table'];
+
+	public exampleModel: DiagramRequestResult;
 
 	@ViewChild('diagramActionbarContainer') protected actionBarContainer: ElementRef;
 	@ViewChild('dropDown', { read: ElementRef }) private _dropdownContainer: ElementRef;
@@ -212,7 +215,10 @@ export class DiagramComponent extends AngularDisposable implements OnInit {
 		this._actionBar.setContent([
 			{ action: getModelAction },
 		]);
-		this._actionBar.context = this._commonService.connectionManagementService.connectionInfo.ownerUri;
+		this._actionBar.context = {
+			ownerUri: this._commonService.connectionManagementService.connectionInfo.ownerUri,
+			component: this
+		};
 	}
 
 	public layout() {
