@@ -11,7 +11,7 @@ import * as types from 'vs/workbench/api/common/extHostTypes';
 import { IExtHostWorkspace } from 'vs/workbench/api/common/extHostWorkspace';
 import type * as vscode from 'vscode';
 import * as tasks from '../common/shared/tasks';
-import { ExtHostVariableResolverService } from 'vs/workbench/api/common/extHostDebugService';
+// import { ExtHostVariableResolverService } from 'vs/workbench/api/common/extHostDebugService';
 import { IExtHostDocumentsAndEditors } from 'vs/workbench/api/common/extHostDocumentsAndEditors';
 import { IExtHostConfiguration } from 'vs/workbench/api/common/extHostConfiguration';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
@@ -21,7 +21,7 @@ import { IExtHostInitDataService } from 'vs/workbench/api/common/extHostInitData
 import { ExtHostTaskBase, TaskHandleDTO, TaskDTO, CustomExecutionDTO, HandlerData } from 'vs/workbench/api/common/extHostTask';
 import { Schemas } from 'vs/base/common/network';
 import { ILogService } from 'vs/platform/log/common/log';
-// import { IExtHostApiDeprecationService } from 'vs/workbench/api/common/extHostApiDeprecationService'; {{ SQL CARBON EDIT }}
+import { IExtHostApiDeprecationService } from 'vs/workbench/api/common/extHostApiDeprecationService';
 
 export class ExtHostTask extends ExtHostTaskBase {
 	// private _variableResolver: ExtHostVariableResolverService | undefined; {{ SQL CARBON EDIT }}
