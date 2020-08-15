@@ -5,6 +5,7 @@
 
 import * as should from 'should';
 import * as path from 'path';
+import * as sinon from 'sinon';
 import * as baselines from './baselines/baselines';
 import * as testUtils from './testUtils';
 import * as constants from '../common/constants';
@@ -12,7 +13,7 @@ import * as constants from '../common/constants';
 import { promises as fs } from 'fs';
 import { Project, EntryType, TargetPlatform, SystemDatabase, DatabaseReferenceLocation, DacpacReferenceProjectEntry, SqlProjectReferenceProjectEntry } from '../models/project';
 import { exists, convertSlashesForSqlProj } from '../common/utils';
-import { Uri } from 'vscode';
+import { Uri, window } from 'vscode';
 
 let projFilePath: string;
 
@@ -29,7 +30,7 @@ describe('Project: sqlproj content operations', function (): void {
 		const project: Project = await Project.openProject(projFilePath);
 
 		// Files and folders
-		should(project.files.filter(f => f.type === EntryType.File).length).equal(9);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(5);
 		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(4);
 
 		should(project.files.find(f => f.type === EntryType.Folder && f.relativePath === 'Views\\User')).not.equal(undefined); // mixed ItemGroup folder
@@ -48,10 +49,13 @@ describe('Project: sqlproj content operations', function (): void {
 		should(project.databaseReferences[0] instanceof DacpacReferenceProjectEntry).equal(true);
 
 		// Pre-post deployment scripts
-		should(project.files.find(f => f.type === EntryType.File && f.relativePath === 'Script.PreDeployment1.sql')).not.equal(undefined, 'File Script.PreDeployment1.sql not read');
-		should(project.files.find(f => f.type === EntryType.File && f.relativePath === 'Script.PostDeployment1.sql')).not.equal(undefined, 'File Script.PostDeployment1.sql not read');
-		should(project.files.find(f => f.type === EntryType.File && f.relativePath === 'Script.PreDeployment2.sql')).not.equal(undefined, 'File Script.PostDeployment2.sql not read');
-		should(project.files.find(f => f.type === EntryType.File && f.relativePath === 'Tables\\Script.PostDeployment1.sql')).not.equal(undefined, 'File Tables\\Script.PostDeployment1.sql not read');
+		should(project.preDeployScripts.length).equal(1);
+		should(project.postDeployScripts.length).equal(1);
+		should(project.nonDeployScripts.length).equal(2);
+		should(project.preDeployScripts.find(f => f.type === EntryType.File && f.relativePath === 'Script.PreDeployment1.sql')).not.equal(undefined, 'File Script.PreDeployment1.sql not read');
+		should(project.postDeployScripts.find(f => f.type === EntryType.File && f.relativePath === 'Script.PostDeployment1.sql')).not.equal(undefined, 'File Script.PostDeployment1.sql not read');
+		should(project.nonDeployScripts.find(f => f.type === EntryType.File && f.relativePath === 'Script.PreDeployment2.sql')).not.equal(undefined, 'File Script.PostDeployment2.sql not read');
+		should(project.nonDeployScripts.find(f => f.type === EntryType.File && f.relativePath === 'Tables\\Script.PostDeployment1.sql')).not.equal(undefined, 'File Tables\\Script.PostDeployment1.sql not read');
 	});
 
 	it('Should read Project with Project reference from sqlproj', async function (): Promise<void> {
@@ -65,6 +69,24 @@ describe('Project: sqlproj content operations', function (): void {
 		should(project.databaseReferences[0] instanceof DacpacReferenceProjectEntry).equal(true);
 		should(project.databaseReferences[1].databaseName).containEql('TestProjectName');
 		should(project.databaseReferences[1] instanceof SqlProjectReferenceProjectEntry).equal(true);
+	});
+
+	it('Should show warning message while reading Project with more than 1 pre-deploy script from sqlproj', async function (): Promise<void> {
+		const stub = sinon.stub(window, 'showInformationMessage').returns(<any>Promise.resolve());
+
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSqlProjectWithPrePostDeploymentError);
+		const project: Project = await Project.openProject(projFilePath);
+
+		should(stub.calledOnce).be.true('showInformationMessage should have been called exactly once');
+		should(stub.calledWith(constants.prePostDeployCount)).be.true(`showInformationMessage not called with expected message '${constants.prePostDeployCount}' Actual '${stub.getCall(0).args[0]}'`);
+
+		should(project.preDeployScripts.length).equal(2);
+		should(project.postDeployScripts.length).equal(1);
+		should(project.nonDeployScripts.length).equal(1);
+		should(project.preDeployScripts.find(f => f.type === EntryType.File && f.relativePath === 'Script.PreDeployment1.sql')).not.equal(undefined, 'File Script.PreDeployment1.sql not read');
+		should(project.postDeployScripts.find(f => f.type === EntryType.File && f.relativePath === 'Script.PostDeployment1.sql')).not.equal(undefined, 'File Script.PostDeployment1.sql not read');
+		should(project.preDeployScripts.find(f => f.type === EntryType.File && f.relativePath === 'Script.PreDeployment2.sql')).not.equal(undefined, 'File Script.PostDeployment2.sql not read');
+		should(project.nonDeployScripts.find(f => f.type === EntryType.File && f.relativePath === 'Tables\\Script.PostDeployment1.sql')).not.equal(undefined, 'File Tables\\Script.PostDeployment1.sql not read');
 	});
 
 	it('Should add Folder and Build entries to sqlproj', async function (): Promise<void> {
