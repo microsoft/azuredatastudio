@@ -27,7 +27,7 @@ export interface IAzdataTool {
 	executeCommand<R>(args: string[], parseResult: (result: any) => R[]): Promise<AzdataOutput<R>>
 }
 
-class AzdataTool implements IAzdataTool {
+export class AzdataTool implements IAzdataTool {
 	constructor(public path: string, public version: SemVer, private _outputChannel: vscode.OutputChannel) { }
 
 	public async executeCommand<R>(args: string[], parseResult: (result: any) => R[]): Promise<AzdataOutput<R>> {
@@ -117,9 +117,9 @@ export async function upgradeAzdata(outputChannel: vscode.OutputChannel): Promis
 			case 'darwin':
 				await upgradeAzdataDarwin(outputChannel);
 				break;
-			// case 'linux':
-			// 	await installAzdataLinux(outputChannel);
-			// 	break;
+			case 'linux':
+				await installAzdataLinux(outputChannel);
+				break;
 			default:
 				throw new Error(loc.platformUnsupported(process.platform));
 		}

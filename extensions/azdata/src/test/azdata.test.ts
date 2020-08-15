@@ -15,13 +15,14 @@ import * as childProcess from '../common/childProcess';
 import * as utils from '../common/utils';
 import * as loc from '../localizedConstants';
 
-const oldAzdata: azdata.IAzdata = { path: '', version: new SemVer('0.0.0') };
+const outputChannelMock = TypeMoq.Mock.ofType<vscode.OutputChannel>();
+const oldAzdata = new azdata.AzdataTool('', new SemVer('0.0.0'), outputChannelMock.object);
 describe('azdata', function () {
+	// let outputChannelMock: TypeMoq.IMock<vscode.OutputChannel>;
+	// let oldAzdata: azdata.IAzdataTool;
+	// beforeEach(function (): void {
 
-	let outputChannelMock: TypeMoq.IMock<vscode.OutputChannel>;
-	beforeEach(function (): void {
-		outputChannelMock = TypeMoq.Mock.ofType<vscode.OutputChannel>();
-	});
+	// });
 	afterEach(function (): void {
 		sinon.restore();
 		nock.cleanAll();
@@ -166,7 +167,7 @@ describe('azdata', function () {
 	});
 
 	describe('upgradeAzdata', function (): void {
-		const currentAzdata: azdata.IAzdata = { path: '', version: new SemVer('0.0.0') };
+		//const currentAzdata: azdata.IAzdataTool = { path: '', version: new SemVer('0.0.0'), executeCommand: ()=>{} };
 		beforeEach(function (): void {
 			sinon.stub(utils, 'discoverLatestAvailableAzdataVersion').returns(Promise.resolve(new SemVer('9999.999.999')));
 			sinon.stub(vscode.window, 'showInformationMessage').returns(Promise.resolve(<any>loc.yes));
@@ -190,7 +191,7 @@ describe('azdata', function () {
 					should(command).be.equal('brew');
 					return { stdout: 'success', stderr: '' };
 				});
-				await azdata.checkAndUpdateAzdata(currentAzdata, outputChannelMock.object);
+				await azdata.checkAndUpdateAzdata(oldAzdata, outputChannelMock.object);
 				should(executeCommandStub.calledThrice);
 			} finally {
 				Object.defineProperty(process, 'platform', { value: originalPlatform });
@@ -239,7 +240,7 @@ describe('azdata', function () {
 					.get(`/${azdata.azdataUri}`)
 					.replyWithFile(200, __filename);
 				sinon.stub(childProcess, 'executeCommand').rejects();
-				const upgradePromise = azdata.checkAndUpdateAzdata(currentAzdata, outputChannelMock.object);
+				const upgradePromise = azdata.checkAndUpdateAzdata(oldAzdata, outputChannelMock.object);
 				await should(upgradePromise).be.rejected();
 			} finally {
 				Object.defineProperty(process, 'platform', { value: originalPlatform });
@@ -251,7 +252,7 @@ describe('azdata', function () {
 			try {
 				Object.defineProperty(process, 'platform', { value: 'darwin' });
 				const executeCommandStub = sinon.stub(childProcess, 'executeCommand').rejects();
-				const upgradePromise = azdata.checkAndUpdateAzdata(currentAzdata, outputChannelMock.object);
+				const upgradePromise = azdata.checkAndUpdateAzdata(oldAzdata, outputChannelMock.object);
 				await should(upgradePromise).be.rejected();
 				should(executeCommandStub.calledOnce).be.true();
 			} finally {
@@ -264,7 +265,7 @@ describe('azdata', function () {
 			try {
 				Object.defineProperty(process, 'platform', { value: 'linux' });
 				const executeSudoCommandStub = sinon.stub(childProcess, 'executeSudoCommand').rejects();
-				const upgradePromise = azdata.checkAndUpdateAzdata(currentAzdata, outputChannelMock.object);
+				const upgradePromise = azdata.checkAndUpdateAzdata(oldAzdata, outputChannelMock.object);
 				await should(upgradePromise).be.rejected();
 
 				should(executeSudoCommandStub.calledOnce).be.true();
