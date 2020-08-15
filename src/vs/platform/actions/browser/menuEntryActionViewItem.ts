@@ -304,7 +304,7 @@ export class SubmenuEntryActionViewItem extends DropdownMenuActionViewItem {
 			}
 		}
 
-		super(action, Array.isArray(action.actions) ? action.actions : action.actions(), _contextMenuService, { classNames });
+		super(action, action.actions, _contextMenuService, { classNames });
 	}
 }
 

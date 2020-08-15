@@ -21,7 +21,7 @@ import { NotebookCellTextModel } from 'vs/workbench/contrib/notebook/common/mode
 import { INotebookService, IMainNotebookController } from 'vs/workbench/contrib/notebook/common/notebookService';
 import * as glob from 'vs/base/common/glob';
 import { basename } from 'vs/base/common/path';
-import { getActiveNotebookEditor, INotebookEditor } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
+import { getActiveNotebookEditor, INotebookEditor, NotebookEditorOptions } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { Memento } from 'vs/workbench/common/memento';
@@ -298,7 +298,7 @@ export class NotebookService extends Disposable implements INotebookService, ICu
 					}));
 
 					if (notebookContribution.entrypoint) {
-						this._notebookRenderers.set(notebookContribution.viewType, new PureNotebookOutputRenderer(notebookContribution.viewType, extension.description, notebookContribution.entrypoint));
+						this._notebookRenderers.set(notebookContribution.viewType, new PureNotebookOutputRenderer(notebookContribution.viewType, notebookContribution.displayName, extension.description, notebookContribution.entrypoint));
 					}
 				}
 			}
@@ -342,7 +342,11 @@ export class NotebookService extends Disposable implements INotebookService, ICu
 		this._register(UndoCommand.addImplementation(PRIORITY, () => {
 			const { editor } = getContext();
 			if (editor?.viewModel) {
-				editor?.viewModel.undo();
+				editor?.viewModel.undo().then(cellResources => {
+					if (cellResources?.length) {
+						editor?.setOptions(new NotebookEditorOptions({ cellOptions: { resource: cellResources[0] } }));
+					}
+				});
 				return true;
 			}
 
@@ -352,7 +356,11 @@ export class NotebookService extends Disposable implements INotebookService, ICu
 		this._register(RedoCommand.addImplementation(PRIORITY, () => {
 			const { editor } = getContext();
 			if (editor?.viewModel) {
-				editor?.viewModel.redo();
+				editor?.viewModel.redo().then(cellResources => {
+					if (cellResources?.length) {
+						editor?.setOptions(new NotebookEditorOptions({ cellOptions: { resource: cellResources[0] } }));
+					}
+				});
 				return true;
 			}
 
@@ -361,6 +369,11 @@ export class NotebookService extends Disposable implements INotebookService, ICu
 
 		if (CopyAction) {
 			this._register(CopyAction.addImplementation(PRIORITY, accessor => {
+				const activeElement = <HTMLElement>document.activeElement;
+				if (activeElement && ['input', 'textarea'].indexOf(activeElement.tagName.toLowerCase()) >= 0) {
+					return false;
+				}
+
 				const { editor, activeCell } = getContext();
 				if (!editor || !activeCell) {
 					return false;
@@ -382,6 +395,11 @@ export class NotebookService extends Disposable implements INotebookService, ICu
 
 		if (PasteAction) {
 			PasteAction.addImplementation(PRIORITY, () => {
+				const activeElement = <HTMLElement>document.activeElement;
+				if (activeElement && ['input', 'textarea'].indexOf(activeElement.tagName.toLowerCase()) >= 0) {
+					return false;
+				}
+
 				const pasteCells = this.getToCopy();
 
 				if (!pasteCells) {
@@ -389,7 +407,7 @@ export class NotebookService extends Disposable implements INotebookService, ICu
 				}
 
 				const { editor, activeCell } = getContext();
-				if (!editor || !activeCell) {
+				if (!editor) {
 					return false;
 				}
 
@@ -399,31 +417,73 @@ export class NotebookService extends Disposable implements INotebookService, ICu
 					return false;
 				}
 
-				const currCellIndex = viewModel.getCellIndex(activeCell);
-
-				let topPastedCell: CellViewModel | undefined = undefined;
-				pasteCells.items.reverse().map(cell => {
-					const data = CellUri.parse(cell.uri);
-
-					if (pasteCells.isCopy || data?.notebook.toString() !== viewModel.uri.toString()) {
-						return viewModel.notebookDocument.createCellTextModel(
-							cell.getValue(),
-							cell.language,
-							cell.cellKind,
-							[],
-							cell.metadata
-						);
-					} else {
-						return cell;
-					}
-				}).forEach(pasteCell => {
-					const newIdx = typeof currCellIndex === 'number' ? currCellIndex + 1 : 0;
-					topPastedCell = viewModel.insertCell(newIdx, pasteCell, true);
-				});
-
-				if (topPastedCell) {
-					editor.focusNotebookCell(topPastedCell, 'container');
+				if (!viewModel.metadata.editable) {
+					return false;
 				}
+
+				if (activeCell) {
+					const currCellIndex = viewModel.getCellIndex(activeCell);
+
+					let topPastedCell: CellViewModel | undefined = undefined;
+					pasteCells.items.reverse().map(cell => {
+						const data = CellUri.parse(cell.uri);
+
+						if (pasteCells.isCopy || data?.notebook.toString() !== viewModel.uri.toString()) {
+							return viewModel.notebookDocument.createCellTextModel(
+								cell.getValue(),
+								cell.language,
+								cell.cellKind,
+								[],
+								{
+									editable: cell.metadata?.editable,
+									runnable: cell.metadata?.runnable,
+									breakpointMargin: cell.metadata?.breakpointMargin,
+									hasExecutionOrder: cell.metadata?.hasExecutionOrder,
+									inputCollapsed: cell.metadata?.inputCollapsed,
+									outputCollapsed: cell.metadata?.outputCollapsed,
+									custom: cell.metadata?.custom
+								}
+							);
+						} else {
+							return cell;
+						}
+					}).forEach(pasteCell => {
+						const newIdx = typeof currCellIndex === 'number' ? currCellIndex + 1 : 0;
+						topPastedCell = viewModel.insertCell(newIdx, pasteCell, true);
+					});
+
+					if (topPastedCell) {
+						editor.focusNotebookCell(topPastedCell, 'container');
+					}
+				} else {
+					if (viewModel.length !== 0) {
+						return false;
+					}
+
+					let topPastedCell: CellViewModel | undefined = undefined;
+					pasteCells.items.reverse().map(cell => {
+						const data = CellUri.parse(cell.uri);
+
+						if (pasteCells.isCopy || data?.notebook.toString() !== viewModel.uri.toString()) {
+							return viewModel.notebookDocument.createCellTextModel(
+								cell.getValue(),
+								cell.language,
+								cell.cellKind,
+								[],
+								cell.metadata
+							);
+						} else {
+							return cell;
+						}
+					}).forEach(pasteCell => {
+						topPastedCell = viewModel.insertCell(0, pasteCell, true);
+					});
+
+					if (topPastedCell) {
+						editor.focusNotebookCell(topPastedCell, 'container');
+					}
+				}
+
 
 				return true;
 			});
@@ -431,6 +491,11 @@ export class NotebookService extends Disposable implements INotebookService, ICu
 
 		if (CutAction) {
 			CutAction.addImplementation(PRIORITY, accessor => {
+				const activeElement = <HTMLElement>document.activeElement;
+				if (activeElement && ['input', 'textarea'].indexOf(activeElement.tagName.toLowerCase()) >= 0) {
+					return false;
+				}
+
 				const { editor, activeCell } = getContext();
 				if (!editor || !activeCell) {
 					return false;
@@ -439,6 +504,10 @@ export class NotebookService extends Disposable implements INotebookService, ICu
 				const viewModel = editor.viewModel;
 
 				if (!viewModel) {
+					return false;
+				}
+
+				if (!viewModel.metadata.editable) {
 					return false;
 				}
 
@@ -486,6 +555,11 @@ export class NotebookService extends Disposable implements INotebookService, ICu
 
 	registerNotebookRenderer(id: string, renderer: INotebookRendererInfo) {
 		this._notebookRenderers.set(id, renderer);
+		const staticInfo = this.notebookRenderersInfoStore.get(id);
+
+		if (staticInfo) {
+
+		}
 	}
 
 	unregisterNotebookRenderer(id: string) {
@@ -934,8 +1008,8 @@ export class NotebookService extends Disposable implements INotebookService, ICu
 		return this.notebookProviderInfoStore.get(viewType);
 	}
 
-	getContributedNotebookOutputRenderers(mimeType: string): readonly NotebookOutputRendererInfo[] {
-		return this.notebookRenderersInfoStore.getContributedRenderer(mimeType);
+	getContributedNotebookOutputRenderers(viewType: string): NotebookOutputRendererInfo | undefined {
+		return this.notebookRenderersInfoStore.get(viewType);
 	}
 
 	getNotebookProviderResourceRoots(): URI[] {
