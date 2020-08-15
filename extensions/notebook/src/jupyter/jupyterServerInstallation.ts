@@ -38,7 +38,7 @@ function msgPackageRetrievalFailed(errorMessage: string): string { return locali
 export interface PythonInstallSettings {
 	installPath: string;
 	existingPython: boolean;
-	specificPackages: PythonPkgDetails[];
+	packages: PythonPkgDetails[];
 }
 export interface IJupyterServerInstallation {
 	installCondaPackages(packages: PythonPkgDetails[], useMinVersion: boolean): Promise<void>;
@@ -137,7 +137,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		});
 	}
 
-	private async installDependencies(backgroundOperation: azdata.BackgroundOperation, forceInstall: boolean, specificPackages: PythonPkgDetails[]): Promise<void> {
+	private async installDependencies(backgroundOperation: azdata.BackgroundOperation, forceInstall: boolean, packages: PythonPkgDetails[]): Promise<void> {
 		vscode.window.showInformationMessage(msgInstallPkgStart);
 
 		this.outputChannel.show(true);
@@ -149,7 +149,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			if (!pythonExists || forceInstall) {
 				await this.installPythonPackage(backgroundOperation, this._usingExistingPython, this._pythonInstallationPath, this.outputChannel);
 			}
-			await this.upgradePythonPackages(forceInstall, specificPackages);
+			await this.upgradePythonPackages(forceInstall, packages);
 		} catch (err) {
 			this.outputChannel.appendLine(msgDependenciesInstallationFailed(utils.getErrorMessage(err)));
 			throw err;
@@ -369,7 +369,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			installSettings = {
 				installPath: this._pythonInstallationPath,
 				existingPython: this._usingExistingPython,
-				specificPackages: this.getRequiredPackagesForKernel(constants.python3DisplayName)
+				packages: this.getRequiredPackagesForKernel(constants.python3DisplayName)
 			};
 		}
 
@@ -401,7 +401,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			description: msgTaskName,
 			isCancelable: false,
 			operation: op => {
-				this.installDependencies(op, forceInstall, installSettings.specificPackages)
+				this.installDependencies(op, forceInstall, installSettings.packages)
 					.then(async () => {
 						let notebookConfig = vscode.workspace.getConfiguration(constants.notebookConfigKey);
 						await notebookConfig.update(constants.pythonPathConfigKey, this._pythonInstallationPath, vscode.ConfigurationTarget.Global);
