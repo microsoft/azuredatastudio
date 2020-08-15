@@ -15,7 +15,7 @@ import { IViewletViewOptions } from 'vs/workbench/browser/parts/views/viewsViewl
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { Extensions as ViewContainerExtensions, IViewDescriptor, IViewsRegistry, IViewContainersRegistry, ViewContainerLocation, IViewDescriptorService } from 'vs/workbench/common/views';
+import { Extensions as ViewContainerExtensions, IViewDescriptor, IViewsRegistry, IViewContainersRegistry, ViewContainerLocation, IViewDescriptorService, ITreeViewDescriptor } from 'vs/workbench/common/views';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { Registry } from 'vs/platform/registry/common/platform';
@@ -35,7 +35,6 @@ import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { QueryBuilder, ITextQueryBuilderOptions } from 'vs/workbench/contrib/search/common/queryBuilder';
 import { IFileService } from 'vs/platform/files/common/files';
 import { getOutOfWorkspaceEditorResources } from 'vs/workbench/contrib/search/common/search';
-import { TreeViewPane } from 'sql/workbench/browser/parts/views/treeView';
 import { NotebookSearchView } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearch';
 import * as path from 'vs/base/common/path';
 import { URI } from 'vs/base/common/uri';
@@ -265,20 +264,15 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 			if (this.views.length > 1) {
 				let filesToIncludeFiltered: string = '';
 				this.views.forEach(async (v) => {
-					let booksViewPane = (<TreeViewPane>this.getView(v.id));
-					if (booksViewPane?.treeView?.root) {
-						let root = booksViewPane.treeView.root;
-						if (root.children) {
-							let items = root.children;
-							items?.forEach(root => {
-								this.updateViewletsState();
-								let folderToSearch: IFolderQuery = { folder: URI.file(path.join(isString(root.tooltip) ? root.tooltip : root.tooltip.value, 'content')) };
-								query.folderQueries.push(folderToSearch);
-								filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
-								this.searchView.startSearch(query, null, filesToIncludeFiltered, false, this.searchWidget);
-							});
-						}
-					}
+					const { treeView } = (<ITreeViewDescriptor>Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).getView(v.id));
+					let items = await treeView?.dataProvider.getChildren();
+					items?.forEach(root => {
+						this.updateViewletsState();
+						let folderToSearch: IFolderQuery = { folder: URI.file(path.join(isString(root.tooltip) ? root.tooltip : root.tooltip.value, 'content')) };
+						query.folderQueries.push(folderToSearch);
+						filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
+						this.searchView.startSearch(query, null, filesToIncludeFiltered, false, this.searchWidget);
+					});
 				});
 			}
 

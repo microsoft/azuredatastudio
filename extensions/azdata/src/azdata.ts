@@ -4,22 +4,41 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as os from 'os';
-import * as vscode from 'vscode';
 import { SemVer } from 'semver';
-import { HttpClient } from './common/httpClient';
-import * as loc from './localizedConstants';
-
+import * as vscode from 'vscode';
 import { executeCommand, executeSudoCommand } from './common/childProcess';
-import { searchForCmd, discoverLatestAvailableAzdataVersion } from './common/utils';
+import { HttpClient } from './common/httpClient';
+import { discoverLatestAvailableAzdataVersion, searchForCmd } from './common/utils';
+import * as loc from './localizedConstants';
+import { AzdataOutput } from './typings/azdata-ext';
+
 
 export const azdataHostname = 'https://aka.ms';
 export const azdataUri = 'azdata-msi';
-/**
- * Information about an azdata installation
- */
-export interface IAzdata {
+
+export interface IAzdataTool {
 	path: string,
 	version: SemVer
+	/**
+	 * Executes azdata with the specified arguments (e.g. --version) and returns the result
+	 * @param args The args to pass to azdata
+	 * @param parseResult A function used to parse out the raw result into the desired shape
+	 */
+	executeCommand<R>(args: string[], parseResult: (result: any) => R[]): Promise<AzdataOutput<R>>
+}
+
+class AzdataTool implements IAzdataTool {
+	constructor(public path: string, public version: SemVer, private _outputChannel: vscode.OutputChannel) { }
+
+	public async executeCommand<R>(args: string[], parseResult: (result: any) => R[]): Promise<AzdataOutput<R>> {
+		const output = JSON.parse((await executeCommand(`"${this.path}"`, args.concat(['--output', 'json']), this._outputChannel)).stdout);
+		return {
+			logs: <string[]>output.log,
+			stdout: <string[]>output.stdout,
+			stderr: <string[]>output.stderr,
+			result: parseResult(output.result)
+		};
+	}
 }
 
 export type AzdataLatestVersionInfo = {
@@ -36,10 +55,10 @@ export type AzdataLatestVersionInfo = {
  * @param outputChannel Channel used to display diagnostic information
  * The promise is rejected when Azdata is not found.
  */
-export async function findAzdata(outputChannel: vscode.OutputChannel): Promise<IAzdata> {
+export async function findAzdata(outputChannel: vscode.OutputChannel): Promise<IAzdataTool> {
 	outputChannel.appendLine(loc.searchingForAzdata);
 	try {
-		let azdata: IAzdata | undefined = undefined;
+		let azdata: IAzdataTool | undefined = undefined;
 		switch (process.platform) {
 			case 'win32':
 				azdata = await findAzdataWin32(outputChannel);
@@ -115,7 +134,7 @@ export async function upgradeAzdata(outputChannel: vscode.OutputChannel): Promis
  * @param currentAzdata The current version of azdata to check again
  * @param outputChannel Channel used to display diagnostic information
  */
-export async function checkAndUpdateAzdata(currentAzdata: IAzdata, outputChannel: vscode.OutputChannel): Promise<void> {
+export async function checkAndUpdateAzdata(currentAzdata: IAzdataTool, outputChannel: vscode.OutputChannel): Promise<void> {
 	const newVersion = await discoverLatestAvailableAzdataVersion(outputChannel);
 	if (newVersion.compare(currentAzdata.version) === 1) {
 		const response = await vscode.window.showInformationMessage(loc.promptForAzdataUpgrade(newVersion.raw), loc.yes, loc.no);
@@ -176,7 +195,7 @@ async function installAzdataLinux(outputChannel: vscode.OutputChannel): Promise<
  * Finds azdata specifically on Windows
  * @param outputChannel Channel used to display diagnostic information
  */
-async function findAzdataWin32(outputChannel: vscode.OutputChannel): Promise<IAzdata> {
+async function findAzdataWin32(outputChannel: vscode.OutputChannel): Promise<IAzdataTool> {
 	const promise = searchForCmd('azdata.cmd');
 	return findSpecificAzdata(`"${await promise}"`, outputChannel);
 }
@@ -186,12 +205,13 @@ async function findAzdataWin32(outputChannel: vscode.OutputChannel): Promise<IAz
  * @param path The path to the azdata executable
  * @param outputChannel Channel used to display diagnostic information
  */
-async function findSpecificAzdata(path: string, outputChannel: vscode.OutputChannel): Promise<IAzdata> {
+async function findSpecificAzdata(path: string, outputChannel: vscode.OutputChannel): Promise<IAzdataTool> {
 	const versionOutput = await executeCommand(path, ['--version'], outputChannel);
-	return {
-		path: path,
-		version: getVersionFromAzdataOutput(versionOutput.stdout)
-	};
+	// return {
+	// 	path: path,
+	// 	version: getVersionFromAzdataOutput(versionOutput.stdout)
+	// };
+	return new AzdataTool(path, getVersionFromAzdataOutput(versionOutput.stdout), outputChannel);
 }
 
 /**

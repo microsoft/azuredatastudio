@@ -4,25 +4,53 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { findAzdata, checkAndUpdateAzdata } from './azdata';
+import { checkAndUpdateAzdata, findAzdata, IAzdataTool } from './azdata';
+import { parsePostgresServerListResult, parseSqlInstanceListResult } from './common/azdataUtils';
 import * as loc from './localizedConstants';
+import * as azdata from './typings/azdata-ext';
 
-export async function activate(): Promise<void> {
+let localAzdata: IAzdataTool | undefined = undefined;
+
+export async function activate(): Promise<azdata.IExtension> {
 	const outputChannel = vscode.window.createOutputChannel('azdata');
-	await checkForAzdata(outputChannel);
+	localAzdata = await checkForAzdata(outputChannel);
+	return {
+		postgres: {
+			server: {
+				list: async () => {
+					if (!localAzdata) {
+						throw new Error('No azdata');
+					}
+					return localAzdata.executeCommand(['postgres', 'server', 'list'], parsePostgresServerListResult);
+				}
+			}
+		},
+		sql: {
+			instance: {
+				list: async () => {
+					if (!localAzdata) {
+						throw new Error('No azdata');
+					}
+					return localAzdata.executeCommand(['sql', 'instance', 'list'], parseSqlInstanceListResult);
+				}
+			}
+		}
+	};
 }
 
-async function checkForAzdata(outputChannel: vscode.OutputChannel): Promise<void> {
+async function checkForAzdata(outputChannel: vscode.OutputChannel): Promise<IAzdataTool | undefined> {
 	try {
-		const azdata = await findAzdata(outputChannel);
+		const azdata = await findAzdata(outputChannel); // find currently installed Azdata
 		vscode.window.showInformationMessage(loc.foundExistingAzdata(azdata.path, azdata.version.raw));
 		// Don't block on this since we want the extension to finish activating without needing user input
-		checkAndUpdateAzdata(azdata, outputChannel).catch(err => vscode.window.showWarningMessage(loc.updateError(err)));
+		checkAndUpdateAzdata(azdata, outputChannel).catch(err => vscode.window.showWarningMessage(loc.updateError(err))); //update if available and user wants it.
+		return findAzdata(outputChannel); // now again find and return the currently installed azdata
 	} catch (err) {
 		// Don't block on this since we want the extension to finish activating without needing user input.
 		// Calls will be made to handle azdata not being installed
 		promptToInstallAzdata(outputChannel).catch(e => console.log(`Unexpected error prompting to install azdata ${e}`));
 	}
+	return undefined;
 }
 
 async function promptToInstallAzdata(_outputChannel: vscode.OutputChannel): Promise<void> {
