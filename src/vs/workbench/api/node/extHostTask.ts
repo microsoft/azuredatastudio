@@ -21,11 +21,10 @@ import { IExtHostInitDataService } from 'vs/workbench/api/common/extHostInitData
 import { ExtHostTaskBase, TaskHandleDTO, TaskDTO, CustomExecutionDTO, HandlerData } from 'vs/workbench/api/common/extHostTask';
 import { Schemas } from 'vs/base/common/network';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IProcessEnvironment } from 'vs/base/common/platform';
-import { IExtHostApiDeprecationService } from 'vs/workbench/api/common/extHostApiDeprecationService';
+// import { IExtHostApiDeprecationService } from 'vs/workbench/api/common/extHostApiDeprecationService'; {{ SQL CARBON EDIT }}
 
 export class ExtHostTask extends ExtHostTaskBase {
-	private _variableResolver: ExtHostVariableResolverService | undefined;
+	// private _variableResolver: ExtHostVariableResolverService | undefined; {{ SQL CARBON EDIT }}
 
 	constructor(
 		@IExtHostRpcService extHostRpc: IExtHostRpcService,
