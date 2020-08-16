@@ -75,7 +75,7 @@ export class MiaaModel extends ResourceModel {
 		}
 		this._refreshPromise = new Deferred();
 		try {
-			const instanceRefresh = this._sqlInstanceRouter.apiV1HybridSqlNsNameGet(this.info.namespace, this.info.name).then(response => {
+			const instanceRefresh = this._sqlInstanceRouter.apiV1HybridSqlNsNameGet(/*this.info.namespace*/'test', this.info.name).then(response => {
 				this._status = response.body;
 				this.statusLastUpdated = new Date();
 				this._onStatusUpdated.fire(this._status);

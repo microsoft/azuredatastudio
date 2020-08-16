@@ -13,21 +13,24 @@ export const enum extension {
 	name = 'Microsoft.azdata'
 }
 
-export interface SqlInstanceListResult {
-	clusterEndpoint: string,
-	externalEndpoint: string,
+export interface DcEndpointListResult {
+	description: string,
+	endpoint: string,
 	name: string,
-	status: string,
-	vCores: string
+	protocol: string
+}
+
+export interface SqlInstanceListResult {
+	name: string,
+	replicas: string,
+	serverEndpoint: string,
+	state: string
 }
 
 export interface PostgresServerListResult {
-	id: string,
-	clusterIP: string,
-	externalIP: string,
-	mustRestart: boolean,
 	name: string,
-	status: string
+	state: string,
+	workers: number
 }
 
 export interface AzdataOutput<R> {
@@ -38,6 +41,11 @@ export interface AzdataOutput<R> {
 }
 
 export interface IExtension {
+	dc: {
+		endpoint: {
+			list(): Promise<AzdataOutput<DcEndpointListResult>>
+		}
+	}
 	postgres: {
 		server: {
 			list(): Promise<AzdataOutput<PostgresServerListResult>>

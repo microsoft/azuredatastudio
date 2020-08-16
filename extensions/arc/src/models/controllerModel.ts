@@ -6,11 +6,12 @@
 import * as vscode from 'vscode';
 import { Authentication, BasicAuth } from '../controller/auth';
 import { EndpointsRouterApi, EndpointModel, RegistrationRouterApi, RegistrationResponse, TokenRouterApi, SqlInstanceRouterApi } from '../controller/generated/v1/api';
-import { getAzurecoreApi, parseEndpoint, parseInstanceName, UserCancelledError } from '../common/utils';
+import { parseInstanceName, UserCancelledError } from '../common/utils';
 import { ResourceType } from '../constants';
 import { ConnectToControllerDialog } from '../ui/dialogs/connectControllerDialog';
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 import * as loc from '../localizedConstants';
+import * as azdataExt from '../../../azdata/src/typings/azdata-ext';
 
 export type ControllerInfo = {
 	url: string,
@@ -21,9 +22,9 @@ export type ControllerInfo = {
 };
 
 export type ResourceInfo = {
-	namespace: string,
 	name: string,
 	resourceType: ResourceType | string,
+	namespace?: string,
 	connectionId?: string
 };
 
@@ -38,7 +39,7 @@ export class ControllerModel {
 	private _tokenRouter: TokenRouterApi;
 	private _registrationRouter: RegistrationRouterApi;
 	private _sqlInstanceRouter: SqlInstanceRouterApi;
-	private _endpoints: EndpointModel[] = [];
+	private _endpoints: azdataExt.DcEndpointListResult[] = [];
 	private _namespace: string = '';
 	private _registrations: Registration[] = [];
 	private _controllerRegistration: Registration | undefined = undefined;
@@ -88,9 +89,11 @@ export class ControllerModel {
 			}
 
 		}
+		const azdataApi = <azdataExt.IExtension>vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
+		this._registrations = [];
 		await Promise.all([
-			this._endpointsRouter.apiV1BdcEndpointsGet().then(response => {
-				this._endpoints = response.body;
+			azdataApi.dc.endpoint.list().then(result => {
+				this._endpoints = result.result;
 				this.endpointsLastUpdated = new Date();
 				this._onEndpointsUpdated.fire(this._endpoints);
 			}).catch(err => {
@@ -103,6 +106,29 @@ export class ControllerModel {
 				this._onEndpointsUpdated.fire(this._endpoints);
 				throw err;
 			}),
+			Promise.all([
+				azdataApi.postgres.server.list().then(result => {
+					this._registrations.push(...result.result.map(r => {
+						return {
+							instanceName: r.name,
+							instanceType: ResourceType.postgresInstances
+						};
+					}));
+				}),
+				azdataApi.sql.instance.list().then(result => {
+					this._registrations.push(...result.result.map(r => {
+						return {
+							instanceName: r.name,
+							instanceType: ResourceType.sqlManagedInstances
+						};
+					}));
+				})
+			]).then(() => {
+				this.registrationsLastUpdated = new Date();
+				this._onRegistrationsUpdated.fire(this._registrations);
+			})
+
+			/*
 			this._tokenRouter.apiV1TokenPost().then(async response => {
 				this._namespace = response.body.namespace!;
 				const registrationResponse = await this._registrationRouter.apiV1RegistrationListResourcesNsGet(this._namespace);
@@ -121,6 +147,7 @@ export class ControllerModel {
 				this._onRegistrationsUpdated.fire(this._registrations);
 				throw err;
 			}),
+			*/
 		]);
 	}
 
@@ -190,18 +217,4 @@ export class ControllerModel {
 	public get label(): string {
 		return `${this.info.name} (${this.info.url})`;
 	}
-}
-
-/**
- * Maps a RegistrationResponse to a Registration,
- * @param response The RegistrationResponse to map
- */
-async function mapRegistrationResponse(response: RegistrationResponse): Promise<Registration> {
-	const parsedEndpoint = parseEndpoint(response.externalEndpoint);
-	return {
-		...response,
-		externalIp: parsedEndpoint.ip,
-		externalPort: parsedEndpoint.port,
-		region: (await getAzurecoreApi()).getRegionDisplayName(response.location)
-	};
 }

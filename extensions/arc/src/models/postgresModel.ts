@@ -34,7 +34,7 @@ export class PostgresModel extends ResourceModel {
 	}
 
 	/** Returns the service's Kubernetes namespace */
-	public get namespace(): string {
+	public get namespace(): string | undefined {
 		return this.info.namespace;
 	}
 
@@ -61,12 +61,12 @@ export class PostgresModel extends ResourceModel {
 	/** Refreshes the model */
 	public async refresh() {
 		await Promise.all([
-			this._databaseRouter.getDuskyDatabaseService(this.info.namespace, this.info.name).then(response => {
+			this._databaseRouter.getDuskyDatabaseService(this.info.namespace || 'test', this.info.name).then(response => {
 				this._service = response.body;
 				this.serviceLastUpdated = new Date();
 				this._onServiceUpdated.fire(this._service);
 			}),
-			this._databaseRouter.getDuskyPods(this.info.namespace, this.info.name).then(response => {
+			this._databaseRouter.getDuskyPods(this.info.namespace || 'test', this.info.name).then(response => {
 				this._pods = response.body;
 				this.podsLastUpdated = new Date();
 				this._onPodsUpdated.fire(this._pods!);
@@ -80,11 +80,11 @@ export class PostgresModel extends ResourceModel {
 	 */
 	public async update(func: (service: DuskyObjectModelsDatabaseService) => void): Promise<DuskyObjectModelsDatabaseService> {
 		// Get the latest spec of the service in case it has changed
-		const service = (await this._databaseRouter.getDuskyDatabaseService(this.info.namespace, this.info.name)).body;
+		const service = (await this._databaseRouter.getDuskyDatabaseService(this.info.namespace || 'test', this.info.name)).body;
 		service.status = undefined; // can't update the status
 		func(service);
 
-		return await this._databaseRouter.updateDuskyDatabaseService(this.namespace, this.name, service).then(r => {
+		return await this._databaseRouter.updateDuskyDatabaseService(this.namespace || 'test', this.name, service).then(r => {
 			this._service = r.body;
 			return this._service;
 		});
@@ -92,12 +92,12 @@ export class PostgresModel extends ResourceModel {
 
 	/** Deletes the service */
 	public async delete(): Promise<V1Status> {
-		return (await this._databaseRouter.deleteDuskyDatabaseService(this.info.namespace, this.info.name)).body;
+		return (await this._databaseRouter.deleteDuskyDatabaseService(this.info.namespace || 'test', this.info.name)).body;
 	}
 
 	/** Creates a SQL database in the service */
 	public async createDatabase(db: DuskyObjectModelsDatabase): Promise<DuskyObjectModelsDatabase> {
-		return (await this._databaseRouter.createDuskyDatabase(this.namespace, this.name, db)).body;
+		return (await this._databaseRouter.createDuskyDatabase(this.namespace || 'test', this.name, db)).body;
 	}
 
 	/**

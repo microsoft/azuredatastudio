@@ -6,7 +6,6 @@
 import * as azdata from './typings/azdata-ext';
 import * as vscode from 'vscode';
 import { findAzdata, IAzdataTool } from './azdata';
-import { parsePostgresServerListResult, parseSqlInstanceListResult } from './common/azdataUtils';
 
 let localAzdata: IAzdataTool | undefined = undefined;
 
@@ -14,27 +13,35 @@ export async function activate(): Promise<azdata.IExtension> {
 	const outputChannel = vscode.window.createOutputChannel('azdata');
 	localAzdata = await checkForAzdata(outputChannel);
 	return {
+		dc: {
+			endpoint: {
+				list: async () => {
+					return executeLocalAzdataCommand(['arc', 'dc', 'endpoint', 'list']);
+				}
+			}
+		},
 		postgres: {
 			server: {
 				list: async () => {
-					if (!localAzdata) {
-						throw new Error('No azdata');
-					}
-					return localAzdata.executeCommand(['postgres', 'server', 'list'], parsePostgresServerListResult);
+					return executeLocalAzdataCommand(['arc', 'postgres', 'server', 'list']);
 				}
 			}
 		},
 		sql: {
 			instance: {
 				list: async () => {
-					if (!localAzdata) {
-						throw new Error('No azdata');
-					}
-					return localAzdata.executeCommand(['sql', 'instance', 'list'], parseSqlInstanceListResult);
+					return executeLocalAzdataCommand(['arc', 'sql', 'mi', 'list']);
 				}
 			}
 		}
 	};
+}
+
+async function executeLocalAzdataCommand<R>(args: string[]): Promise<azdata.AzdataOutput<R>> {
+	if (!localAzdata) {
+		throw new Error('No azdata');
+	}
+	return localAzdata.executeCommand(args);
 }
 
 async function checkForAzdata(outputChannel: vscode.OutputChannel): Promise<IAzdataTool | undefined> {

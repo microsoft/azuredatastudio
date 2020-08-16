@@ -22,19 +22,19 @@ export interface IAzdataTool {
 	 * @param args The args to pass to azdata
 	 * @param parseResult A function used to parse out the raw result into the desired shape
 	 */
-	executeCommand<R>(args: string[], parseResult: (result: any) => R[]): Promise<AzdataOutput<R>>
+	executeCommand<R>(args: string[]): Promise<AzdataOutput<R>>
 }
 
 class AzdataTool implements IAzdataTool {
 	constructor(public path: string, public version: string, private _outputChannel: vscode.OutputChannel) { }
 
-	public async executeCommand<R>(args: string[], parseResult: (result: any) => R[]): Promise<AzdataOutput<R>> {
+	public async executeCommand<R>(args: string[]): Promise<AzdataOutput<R>> {
 		const output = JSON.parse((await executeCommand(`"${this.path}"`, args.concat(['--output', 'json']), this._outputChannel)).stdout);
 		return {
 			logs: <string[]>output.log,
 			stdout: <string[]>output.stdout,
 			stderr: <string[]>output.stderr,
-			result: parseResult(output.result)
+			result: <R[]>output.result
 		};
 	}
 }
