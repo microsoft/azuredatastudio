@@ -11,15 +11,14 @@ export const SERVICE_ID = 'diagramService';
 export const IDiagramService = createDecorator<IDiagramService>(SERVICE_ID);
 
 export enum DiagramObject {
-	Schema = 1,
-	Database = 2,
+	Database = 1,
+	Schema = 2,
 	Table = 3
 }
 
 export class DiagramRequestParams {
 	public ownerUri: string;
 	public schema: string;
-	public server: string;
 	public database: string;
 	public table: string;
 	public diagramView: DiagramObject;

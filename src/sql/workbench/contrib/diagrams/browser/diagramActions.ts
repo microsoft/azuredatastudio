@@ -28,11 +28,10 @@ export class GetDiagramModelAction extends Action {
 		if (ownerUri) {
 			let diagramModelParams: DiagramRequestParams = {
 				ownerUri: ownerUri,
-				schema: undefined,
-				server: undefined,
-				database: undefined,
-				table: undefined,
-				diagramView: DiagramObject.Schema
+				schema: 'Application',
+				database: 'Keep_WideWorldImporters',
+				table: 'Cities',
+				diagramView: DiagramObject.Database
 			};
 			const model = await this._diagramService.getDiagramModel(diagramModelParams);
 			return model;

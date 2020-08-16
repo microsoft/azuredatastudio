@@ -6,35 +6,166 @@
 -->
 <div #diagramActionbarContainer class="diagram-actionbar-container"></div>
 <div id="diagramDiv" class="fullsize">
-	<div id="contextualDiv">
-		<div #dropDown style="width: 20%;"></div>
-		<div id="databaseView" *ngIf="showDatabase === true">
-			<div id="title">
-				<img ng-src="" alt="Title Icon">
-				<h1 style="display: inline;"> Database </h1>
-				<div id="databaseOverview">
+	<div id="contextualDiv" style="padding: 30px;">
+		<div id = "contextualForm" style = "
+			display: flex;
+			align-items: flex-end;
+		">
+			<div #dropDown style = "width: 15%; margin-right: 10px;"></div>
+			<div #searchBar style = "width: 35%;"></div>
+		</div>
+		<div id="databaseView" *ngIf="showDatabase === true" style = "margin-top: 30px;">
+			<div class = "db-title-card" style="
+				display: flex;
+				align-items: center;
+				margin-top: 10px;">
+				<div style = "
+				vertical-align: -2px;
+				display: inline;">
+					<svg  width="67" height="68" viewBox="0 0 67 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<g clip-path="url(#clip0)">
+						<path d="M35.7332 28.5524C28.2888 28.5524 22.2588 26.453 22.2588 23.6763V49.6574C22.2588 52.3262 28.1883 54.4963 35.5434 54.5335H35.7332C43.1777 54.5335 49.2077 52.4304 49.2077 49.6574V23.6763C49.2077 26.3898 43.1777 28.5524 35.7332 28.5524Z" fill="url(#paint0_linear)"/>
+						<path d="M49.2082 23.6764C49.2082 26.3899 43.1782 28.5525 35.7337 28.5525C28.2893 28.5525 22.2593 26.4532 22.2593 23.6764C22.2593 20.8996 28.2893 18.8003 35.7337 18.8003C43.1782 18.8003 49.2082 20.9033 49.2082 23.6764Z" fill="#E8E8E8"/>
+						<path d="M46.0732 23.267C46.0732 24.9904 41.4279 26.3788 35.7329 26.3788C30.0379 26.3788 25.3926 25.0016 25.3926 23.267C25.3926 21.5324 30.0379 20.1887 35.7329 20.1887C41.4279 20.1887 46.0732 21.5734 46.0732 23.267Z" fill="#50E6FF"/>
+						<path d="M35.7333 24.0562C32.9552 23.9846 30.1855 24.39 27.5444 25.2548C30.1882 26.1025 32.9587 26.4866 35.7333 26.3901C38.5137 26.4716 41.2865 26.0582 43.9222 25.1692C41.2735 24.3453 38.5059 23.9692 35.7333 24.0562Z" fill="#198AB3"/>
+						</g>
+						<defs>
+						<linearGradient id="paint0_linear" x1="22.2588" y1="39.1049" x2="49.2077" y2="39.1049" gradientUnits="userSpaceOnUse">
+						<stop stop-color="#005BA1"/>
+						<stop offset="0.07" stop-color="#0060A9"/>
+						<stop offset="0.36" stop-color="#0071C8"/>
+						<stop offset="0.52" stop-color="#0078D4"/>
+						<stop offset="0.64" stop-color="#0074CD"/>
+						<stop offset="0.82" stop-color="#006ABB"/>
+						<stop offset="1" stop-color="#005BA1"/>
+						</linearGradient>
+						<clipPath id="clip0">
+						<rect width="35.7333" height="35.7333" fill="white" transform="translate(17.8667 18.8003)"/>
+						</clipPath>
+						</defs>
+						</svg>
 
+				</div>
+				<h1> {{this.dbModel.name}} </h1>
+			</div>
+			<modelview-separator></modelview-separator>
+
+				<div class="db-properties-card" style="
+							border: solid 1px #555453;
+							width: 35%;
+							padding: 10px;
+							border-radius: 5px;
+							margin-top: 20px;
+							height: 130px;">
+							<h2> Properties </h2>
+							<modelview-properties-container #dbProperties tabindex="0"> </modelview-properties-container>
+				</div>
+			<div class="main-content" style="
+				margin-top: 40px;
+				display: flex;
+				width: 50%;
+				">
+				<div class = "db-schema-card" style="
+						width: 25%;
+						border: solid 1px #555453;
+						border-radius: 5px;
+						padding: 10px;
+						margin-right: 30px;">
+					<h2> Schemas </h2>
+					<div #dbSchemaGrid tabindex="0" style="width: 100%; height: 125px;"></div>
+				</div>
+				<div class="db-tables-card" style="
+						width: 65%;
+						border: solid 1px #555453;
+						border-radius: 5px;
+						padding: 10px;">
+					<h2> Tables </h2>
+					<div #dbTableGrid tabindex="0" style="width: 100%; height: 125px;"></div>
 				</div>
 			</div>
 		</div>
-		<div id="schemaView" *ngIf="showSchema === true">
-			<div id="title">
-				<img ng-src="" alt="Title Icon">
-				<h1> Schema </h1>
+		<div id="schemaView" *ngIf="showSchema === true" style="margin-top: 30px;">
+			<div class="schema-title-card">
+				<svg width="20" height="20" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<path
+						d="M12.059 10L10.059 6H12V1H4V6H5.941L3.941 10H1V15H7V10H5.059L7.059 6H8.941L10.941 10H9V15H15V10H12.059ZM6 11V14H2V11H6ZM5 5V2H11V5H5ZM14 14H10V11H14V14Z"
+						fill="white" />
+				</svg>
+				<h1 tabindex="0" style="display: inline;"> {{this.currSchemaModel.name}} </h1>
+				<modelview-separator></modelview-separator>
 			</div>
+
+			<div class="schema-properties-card" style="
+					height: 90px;
+					width: 25%;
+					margin-top: 40px;
+					border: solid 1px #555453;
+					border-radius: 5px;
+					padding: 10px;">
+				<h2> Properties </h2>
+				<modelview-properties-container tabindex="0" #schemaProperties> </modelview-properties-container>
+			</div>
+			<div class = "main-content">
+				<div class="schema-tables-card" style = "
+						margin-top: 30px;
+						border: solid 1px #555453;
+						border-radius: 5px;
+						padding: 10px;
+						width: 40%;">
+					<h2> Tables </h2>
+					<div #schemaTableGrid tabindex="0"  style="width: 100%; height: 125px;"></div>
+				</div>
+			</div>
+
 		</div>
-		<div id="tableView" *ngIf="showTable === true">
-			<div id="title" style = "display: flex; align-items: center;">
-				<img ng-src="" alt="Title Icon">
-				<h1> Table </h1>
+		<div id="tableView" *ngIf="showTable === true" style="margin-top: 30px;">
+			<div class="table-title-card">
+				<svg width="20" height="17" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<path
+						d="M0 0H13V12H0V0ZM1 2H12V1H1V2ZM4 5V3H1V5H4ZM1 6V8H4V6H1ZM4 11V9H1V11H4ZM8 5V3H5V5H8ZM5 6V8H8V6H5ZM8 11V9H5V11H8ZM12 5V3H9V5H12ZM12 8V6H9V8H12ZM12 11V9H9V11H12Z"
+						fill="white" />
+				</svg>
+				<h1 tabindex="0" style="display: inline;"> {{this.currTableModel.name}} </h1>
+				<modelview-separator></modelview-separator>
 			</div>
-			<div class = "columns-card">
-				<h2> Columns </h2>
-				<div #columnGrid style="width: 80%; height: 200px;"></div>
+
+			<div class="table-properties-card" style="
+					height: 130px;
+					width: 30%;
+					margin-top: 40px;
+					border: solid 1px #555453;
+					border-radius: 5px;
+					padding: 10px;
+				">
+				<h2> Properties </h2>
+				<modelview-properties-container tabindex="0"  #tableProperties>
+				</modelview-properties-container>
 			</div>
-			<div class = "relationships-card">
-				<h2> Relationships </h2>
+
+			<div class="main-content" style="
+				margin-top: 30px;
+				display: flex;
+				width: 60%;
+				justify-content: space-between;
+				">
+				<div class="columns-card" style = "
+					width: 25%;
+					border: solid 1px #555453;
+					border-radius: 5px;
+					padding: 10px;">
+					<h2> Columns </h2>
+					<div #columnGrid tabindex="0" style="width: 100%; height: 125px;"></div>
+				</div>
+				<div class="relationships-card"  style = "
+						width: 67%;
+						border: solid 1px #555453;
+						border-radius: 5px;
+						padding: 10px;">
+					<h2> Relationships </h2>
+					<div #relationshipGrid tabindex="0" style="width: 100%; height: 125px;"></div>
+				</div>
 			</div>
 		</div>
 	</div>
 </div>
+

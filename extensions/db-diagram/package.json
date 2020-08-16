@@ -27,11 +27,10 @@
     "dashboard.tabs": [
       {
         "id": "db-diagram",
-        "description": "Database Diagram",
+        "description": "Schema Explorer",
         "provider": "MSSQL",
-        "title": "Database Diagram",
-        "group": "administration",
-        "when": "connectionProvider == 'MSSQL' && dashboardContext == 'server'",
+        "title": "Schema Explorer",
+        "when": "connectionProvider == 'MSSQL' && dashboardContext == 'database'",
         "container": {
           "controlhost-container": {
             "type": "diagram"
