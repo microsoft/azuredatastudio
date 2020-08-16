@@ -120,7 +120,7 @@
 }
 
 .carbon-taskbar .codicon.export {
-	background-origin: initial;
-	background-position: left;
-	background-size: 11px
+	background-origin: initial !important;
+	background-position: left !important;
+	background-size: 11px !important;
 }
