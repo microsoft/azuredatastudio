@@ -21,7 +21,7 @@ import { ICommandObjectExplorerContext } from './command';
 
 export const kustoOutputChannel = vscode.window.createOutputChannel(constants.providerId);
 
-export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azdata.ObjectExplorerNodeProvider, ITreeChangeHandler {
+export class KustoObjectExplorerNodeProvider extends ProviderBase implements azdata.ObjectExplorerNodeProvider, ITreeChangeHandler {
 	public readonly supportedProviderId: string = constants.providerId;
 	private sessionMap: Map<string, SqlClusterSession>;
 	private expandCompleteEmitter = new vscode.EventEmitter<azdata.ObjectExplorerExpandInfo>();
@@ -29,7 +29,7 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 	constructor(private appContext: AppContext) {
 		super();
 		this.sessionMap = new Map<string, SqlClusterSession>();
-		this.appContext.registerService<MssqlObjectExplorerNodeProvider>(constants.ObjectExplorerService, this);
+		this.appContext.registerService<KustoObjectExplorerNodeProvider>(constants.ObjectExplorerService, this);
 	}
 
 	handleSessionOpen(session: azdata.ObjectExplorerSession): Thenable<boolean> {

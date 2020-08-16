@@ -10,7 +10,7 @@ import { AppContext } from './appContext';
 import { SqlClusterConnection } from './objectExplorerNodeProvider/connection';
 import { ICommandObjectExplorerContext } from './objectExplorerNodeProvider/command';
 import { IEndpoint, getClusterEndpoints } from './utils';
-import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
+import { KustoObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
 
 export function findSqlClusterConnection(
 	obj: ICommandObjectExplorerContext | azdata.IConnectionProfile,
@@ -36,7 +36,7 @@ export function findSqlClusterConnection(
 function findSqlClusterConnectionBySqlConnProfile(sqlConnProfile: azdata.IConnectionProfile, appContext: AppContext): SqlClusterConnection {
 	if (!sqlConnProfile || !appContext) { return undefined; }
 
-	let sqlOeNodeProvider = appContext.getService<MssqlObjectExplorerNodeProvider>(constants.ObjectExplorerService);
+	let sqlOeNodeProvider = appContext.getService<KustoObjectExplorerNodeProvider>(constants.ObjectExplorerService);
 	if (!sqlOeNodeProvider) { return undefined; }
 
 	let sqlClusterSession = sqlOeNodeProvider.findSqlClusterSessionBySqlConnProfile(sqlConnProfile);

@@ -13,7 +13,7 @@ import * as Utils from './utils';
 import { AppContext } from './appContext';
 import { ApiWrapper } from './apiWrapper';
 import { IExtension } from './kusto';
-import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
+import { KustoObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
 import { registerSearchServerCommand } from './objectExplorerNodeProvider/command';
 import { MssqlIconProvider } from './iconProvider';
 //import { getBookExtensionContributions } from './dashboard/bookExtensions';
@@ -39,7 +39,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 
 	let appContext = new AppContext(context, new ApiWrapper());
 
-	let nodeProvider = new MssqlObjectExplorerNodeProvider(appContext);
+	let nodeProvider = new KustoObjectExplorerNodeProvider(appContext);
 	azdata.dataprotocol.registerObjectExplorerNodeProvider(nodeProvider);
 	let iconProvider = new MssqlIconProvider();
 	azdata.dataprotocol.registerIconProvider(iconProvider);

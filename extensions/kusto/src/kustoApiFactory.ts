@@ -6,7 +6,7 @@
 import { AppContext } from './appContext';
 import { IExtension, MssqlObjectExplorerBrowser } from './kusto';
 import * as constants from './constants';
-import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
+import { KustoObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
 import * as azdata from 'azdata';
 
 export function createKustoApi(context: AppContext): IExtension {
@@ -14,7 +14,7 @@ export function createKustoApi(context: AppContext): IExtension {
 		getMssqlObjectExplorerBrowser(): MssqlObjectExplorerBrowser {
 			return {
 				getNode: (explorerContext: azdata.ObjectExplorerContext) => {
-					let oeProvider = context.getService<MssqlObjectExplorerNodeProvider>(constants.ObjectExplorerService);
+					let oeProvider = context.getService<KustoObjectExplorerNodeProvider>(constants.ObjectExplorerService);
 					return <any>oeProvider.findSqlClusterNodeByContext(explorerContext);
 				}
 			};
