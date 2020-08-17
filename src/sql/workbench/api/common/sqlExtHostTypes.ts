@@ -881,8 +881,13 @@ export class GridData {
 	public rows: Map<string, string>[];
 }
 
-export class DiagramRequestResult {
+export class DiagramMetadata {
 	public name: string;
 	public properties: Map<string, string>;
 	public grids: Map<string, GridData>;
+}
+
+
+export class DiagramRequestResult {
+	public metadata: DiagramMetadata;
 }

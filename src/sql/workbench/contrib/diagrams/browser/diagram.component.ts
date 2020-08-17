@@ -17,22 +17,20 @@ import { attachSelectBoxStyler, attachTableStyler, attachInputBoxStyler } from '
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { Table } from 'sql/base/browser/ui/table/table';
+import { DiagramRequestResult } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import PropertiesContainerComponent from 'sql/workbench/browser/modelComponents/propertiesContainer.component';
 import { PropertyItem } from 'sql/base/browser/ui/propertiesContainer/propertiesContainer.component';
-import { KeyCode } from 'vs/base/common/keyCodes';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
-
+import { KeyCode } from 'vs/base/common/keyCodes';
+import { IDiagramService, DiagramRequestParams, DiagramObject } from 'sql/workbench/services/diagrams/common/interfaces';
+import GraphModel from 'sql/workbench/contrib/diagrams/browser/graphModel';
+import { TitledComponent } from 'sql/workbench/browser/modelComponents/titledComponent';
+import GroupModel from 'sql/workbench/contrib/diagrams/browser/groupModel';
+import NodeModel from 'sql/workbench/contrib/diagrams/browser/nodeModel';
 
 const LocalizedStrings = {
-	SECTION_TITLE_API: localize('asmt.section.api.title', "API information"),
-	API_VERSION: localize('asmt.apiversion', "API Version:"),
-	DEFAULT_RULESET_VERSION: localize('asmt.rulesetversion', "Default Ruleset Version:"),
-	SECTION_TITLE_SQL_SERVER: localize('asmt.section.instance.title', "SQL Server Instance Details"),
-	SERVER_VERSION: localize('asmt.serverversion', "Version:"),
-	SERVER_EDITION: localize('asmt.serveredition', "Edition:"),
-	SERVER_INSTANCENAME: localize('asmt.instancename', "Instance Name:"),
-	SERVER_OSVERSION: localize('asmt.osversion', "OS Version:")
+	//SECTION_TITLE_API: localize('asmt.section.api.title', "API information"),
 };
 
 export const DASHBOARD_SELECTOR: string = 'diagram-component';
@@ -56,10 +54,12 @@ export class DiagramComponent extends AngularDisposable implements OnInit {
 	private _actionBar: Taskbar;
 	private _selectBox: SelectBox;
 	private _searchBar: InputBox;
+	private _graphTitle: TitledComponent;
 
 	private _schemaTableGrid: Table<any>;
 	public schemaTableGridDataView: Slick.Data.DataView<Slick.SlickData>;
 
+	public graphInit = false;
 	public showDatabase = true;
 	public showSchema = false;
 	public showTable = false;
@@ -68,20 +68,36 @@ export class DiagramComponent extends AngularDisposable implements OnInit {
 	public row: number;
 	public cell: number;
 
+	public diagramMetadata: DiagramRequestResult;
+	public graphModel: GraphModel;
+	public groupModel: GroupModel;
+	public nodeModel: NodeModel;
+
 	@ViewChild('diagramActionbarContainer') protected actionBarContainer: ElementRef;
 	@ViewChild('dropDown', { read: ElementRef }) private _dropdownContainer: ElementRef;
 	@ViewChild('searchBar') protected _searchBarContainer: ElementRef;
 
-	@ViewChild('columnGrid') protected _columnGridContainer: ElementRef;
-	@ViewChild('relationshipGrid') protected _relationshipGridContainer: ElementRef;
-	@ViewChild('tableProperties') private _tableProperties: PropertiesContainerComponent;
+	@ViewChild('nodeInfoGrid') protected _nodeInfoContainer: ElementRef;
+	@ViewChild('relatedNodesGrid') protected _relatedNodesContainer: ElementRef;
+	@ViewChild('nodeProperties') private _nodeProperties: PropertiesContainerComponent;
 
-	@ViewChild('schemaProperties') private _schemaProperties: PropertiesContainerComponent;
-	@ViewChild('schemaTableGrid') protected _schemaTableGridContainer: ElementRef;
+	@ViewChild('groupProperties') private _groupProperties: PropertiesContainerComponent;
+	@ViewChild('groupNodesGrid') protected _groupNodesContainer: ElementRef;
 
-	@ViewChild('dbProperties') private _dbProperties: PropertiesContainerComponent;
-	@ViewChild('dbTableGrid') protected _dbTableGridContainer: ElementRef;
-	@ViewChild('dbSchemaGrid') protected _dbSchemaGridContainer: ElementRef;
+	@ViewChild('graphProperties') private _graphProperties: PropertiesContainerComponent;
+	@ViewChild('graphNodesGrid') protected _graphNodesContainer: ElementRef;
+	@ViewChild('graphGroupsGrid') protected _graphGroupsContainer: ElementRef;
+
+	/*const LocalizedStrings = {
+		SECTION_TITLE_API: localize('asmt.section.api.title', "API information"),
+		API_VERSION: localize('asmt.apiversion', "API Version:"),
+		DEFAULT_RULESET_VERSION: localize('asmt.rulesetversion', "Default Ruleset Version:"),
+		SECTION_TITLE_SQL_SERVER: localize('asmt.section.instance.title', "SQL Server Instance Details"),
+		SERVER_VERSION: localize('asmt.serverversion', "Version:"),
+		SERVER_EDITION: localize('asmt.serveredition', "Edition:"),
+		SERVER_INSTANCENAME: localize('asmt.instancename', "Instance Name:"),
+		SERVER_OSVERSION: localize('asmt.osversion', "OS Version:")
+	};*/
 
 
 	public readonly visualTitle: string = 'Visual';
@@ -363,21 +379,6 @@ export class DiagramComponent extends AngularDisposable implements OnInit {
 		}
 	];
 
-	public dbPropertyItems: PropertyItem[] = [
-		{
-			displayName: 'Server',
-			value: 'SQL Server'
-		},
-		{
-			displayName: 'Table Count',
-			value: '3'
-		},
-		{
-			displayName: 'Size',
-			value: '60 Bytes'
-		}
-	];
-
 	public dbTableItems = [
 		{
 			id: 1,
@@ -409,6 +410,14 @@ export class DiagramComponent extends AngularDisposable implements OnInit {
 		}
 	];
 
+	public gridOptions = <Slick.GridOptions<any>>{
+		syncColumnCellResize: true,
+		enableColumnReorder: false,
+		rowHeight: 25,
+		enableCellNavigation: true,
+		forceFitColumns: false
+	};
+
 	public schemaModels: Map<string, any> =
 		new Map()
 			.set(this.dboSchemaModel.name, this.dboSchemaModel)
@@ -422,10 +431,19 @@ export class DiagramComponent extends AngularDisposable implements OnInit {
 
 	public dbModel = {
 		name: 'Adventure Works',
-		propertyItems: this.dbPropertyItems,
 		schemaItems: this.dbSchemaItems,
 		tableItems: this.dbTableItems
 	};
+	private _graphGroups: Table<any>;
+	graphGroupsDataView: Slick.Data.DataView<Slick.SlickData>;
+	graphNodesDataView: Slick.Data.DataView<Slick.SlickData>;
+	private _graphNodes: Table<any>;
+	groupNodesDataView: Slick.Data.DataView<Slick.SlickData>;
+	private _groupNodes: Table<any>;
+	nodeInfoDataView: Slick.Data.DataView<Slick.SlickData>;
+	private _nodeInfo: Table<any>;
+	relatedNodesDataView: Slick.Data.DataView<Slick.SlickData>;
+	private _relatedNodes: Table<any>;
 
 
 
@@ -434,21 +452,19 @@ export class DiagramComponent extends AngularDisposable implements OnInit {
 		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
-		@Inject(IInstantiationService) private _instantiationService: IInstantiationService
+		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
+		@Inject(IDiagramService) private diagramService: IDiagramService,
 	) {
 		super();
 	}
 
 	ngOnInit() {
-		this.initActionBar();
-		this.initDropdown();
 		this.initSearchBar();
+		this.initDropdown();
 	}
 
 	ngAfterViewInit() {
-		this.initDbProperties();
-		this.initDbSchemaGrid();
-		this.initDbTableGrid();
+		this.initGraphView();
 	}
 
 	private initDropdown() {
@@ -571,7 +587,6 @@ export class DiagramComponent extends AngularDisposable implements OnInit {
 		this.relationshipGridDataView.setItems(this.currTableModel.relationshipItems);
 		this.relationshipGridDataView.endUpdate();
 		this.relationshipGridDataView.refresh();
-		this._relationshipGrid.grid.setData(this.relationshipGridDataView, true);
 		this._relationshipGrid.autosizeColumns();
 		this._relationshipGrid.resizeCanvas();
 
@@ -650,51 +665,155 @@ export class DiagramComponent extends AngularDisposable implements OnInit {
 		this.updateTablePage(tableName);
 	}
 
-	private initDbProperties() {
-		this._dbProperties.propertyItems = this.dbPropertyItems;
-		this._cd.detectChanges();
+	private changeGranularityView(view: any) {
+		switch (view) {
+			case 'Database': {
+				this.showDatabase = true;
+				this.showSchema = false;
+				this.showTable = false;
+				this._cd.detectChanges();
+				this._graphProperties.propertyItems = this.graphModel.propertyItems;
+				this.initGraphGroupsGrid();
+				this.initGraphNodesGrid();
+				break;
+			}
+			case 'Schema': {
+				this.showDatabase = false;
+				this.showTable = false;
+				this._cd.detectChanges();
+				if (this.groupModel === undefined) {
+					this.initGroupView();
+					this.showSchema = true;
+				}
+				else {
+					this.showSchema = true;
+					this._cd.detectChanges();
+					this.initGroupProperties();
+					this.initGroupNodesGrid();
+				}
+				this._cd.detectChanges();
+				break;
+			}
+			case 'Table': {
+				this.showDatabase = false;
+				this.showSchema = false;
+				this._cd.detectChanges();
+				if (this.nodeModel === undefined) {
+					this.initNodeView();
+					this.showTable = true;
+				}
+				else {
+					this.showTable = true;
+					this._cd.detectChanges();
+					this.initNodeProperties();
+					this.initNodeInfoGrid();
+					this.initRelatedNodesGrid();
+				}
+				this._cd.detectChanges();
+				break;
+			}
+		}
 	}
 
-	private initDbSchemaGrid() {
-		let columns = this.dbSchemaGridColumns.map((column) => {
+	private initActionBar(): void {
+		const getModelAction: Action = this._instantiationService.createInstance(GetDiagramModelAction,
+			GetDiagramModelAction.ID, GetDiagramModelAction.LABEL);
+		const taskbar: HTMLElement = <HTMLElement>this.actionBarContainer.nativeElement;
+		this._actionBar = new Taskbar(taskbar);
+		this._actionBar.setContent([
+			{ action: getModelAction },
+		]);
+		this._actionBar.context = {
+			ownerUri: this._commonService.connectionManagementService.connectionInfo.ownerUri,
+			component: this,
+			databaseName: 'Keep_WideWorldImporters',
+			schemaName: undefined,
+			tableName: undefined,
+			diagramView: DiagramObject.Database
+		};
+
+	}
+
+	private async initNodeView(): Promise<void> {
+		let diagramModelParams: DiagramRequestParams = {
+			ownerUri: this._commonService.connectionManagementService.connectionInfo.ownerUri,
+			schema: 'Application',
+			server: undefined,
+			database: 'Keep_WideWorldImporters',
+			table: 'Cities',
+			diagramView: DiagramObject.Table
+		};
+		const result: DiagramRequestResult = await this.diagramService.getDiagramModel(diagramModelParams);
+		this.nodeModel = new NodeModel('Cities', result.metadata);
+		this._cd.detectChanges();
+		this.initNodeProperties();
+		this.initNodeInfoGrid();
+		this.initRelatedNodesGrid();
+	}
+
+	private initNodeProperties() {
+		this._nodeProperties.propertyItems = this.nodeModel.propertyItems;
+	}
+
+	private initNodeInfoGrid() {
+		let columns = this.nodeModel.infoColumns.map((column) => {
 			column.rerenderOnResize = true;
 			return column;
 		});
 
-		let dbSchemaGridOptions = <Slick.GridOptions<any>>{
-			syncColumnCellResize: true,
-			enableColumnReorder: false,
-			rowHeight: 25,
-			enableCellNavigation: true,
-			forceFitColumns: false
-		};
-
-		this.dbSchemaGridDataView = new Slick.Data.DataView({
+		this.nodeInfoDataView = new Slick.Data.DataView({
 			inlineFilters: false
 		});
 
-		if (this._dbSchemaGridContainer) {
-			this._dbSchemaGrid = new Table(
-				this._dbSchemaGridContainer.nativeElement,
+		if (this._nodeInfoContainer) {
+			this._nodeInfo = new Table(
+				this._nodeInfoContainer.nativeElement,
 				{ columns },
-				dbSchemaGridOptions
+				this.gridOptions
 			);
-			this._dbSchemaGrid.grid.setData(this.dbSchemaGridDataView, true);
-			this.dbSchemaGridDataView.beginUpdate();
-			this.dbSchemaGridDataView.setItems(this.dbModel.schemaItems);
-			this.dbSchemaGridDataView.endUpdate();
-			this._dbSchemaGrid.autosizeColumns();
-			this._dbSchemaGrid.resizeCanvas();
-			this._dbSchemaGrid.ariaLabel = 'Schemas Grid';
-			this._dbSchemaGrid.grid.onKeyDown.subscribe(e => {
+			this._nodeInfo.grid.setData(this.nodeInfoDataView, true);
+			this.nodeInfoDataView.beginUpdate();
+			this.nodeInfoDataView.setItems(this.nodeModel.infoItems);
+			this.nodeInfoDataView.endUpdate();
+			this._nodeInfo.autosizeColumns();
+			this._nodeInfo.resizeCanvas();
+			this._nodeInfo.ariaLabel = this.nodeModel.infoName + ' Grid';
+			this._register(attachTableStyler(this._nodeInfo, this.themeService));
+		}
+	}
+
+	private initRelatedNodesGrid() {
+		let columns = this.nodeModel.relatedNodesColumns.map((column) => {
+			column.rerenderOnResize = true;
+			return column;
+		});
+
+		this.relatedNodesDataView = new Slick.Data.DataView({
+			inlineFilters: false
+		});
+
+		if (this._relatedNodesContainer) {
+			this._relatedNodes = new Table(
+				this._relatedNodesContainer.nativeElement,
+				{ columns },
+				this.gridOptions
+			);
+			this._relatedNodes.grid.setData(this.relatedNodesDataView, true);
+			this.relatedNodesDataView.beginUpdate();
+			this.relatedNodesDataView.setItems(this.nodeModel.relatedNodesItems);
+			this.relatedNodesDataView.endUpdate();
+			this._relatedNodes.autosizeColumns();
+			this._relatedNodes.resizeCanvas();
+			this._relatedNodes.ariaLabel = this.nodeModel.relatedNodesName + ' Grid';
+			/*this._graphGroups.grid.onKeyDown.subscribe(e => {
 				let event = new StandardKeyboardEvent(<unknown>e as KeyboardEvent);
 				if (event.equals(KeyCode.Enter)) {
 					this._selectBox.select(1);
 					this.changeGranularityView('Schema');
 				}
-			});
-			this._register(attachTableStyler(this._dbSchemaGrid, this.themeService));
-			this._register(this._dbSchemaGrid.onClick((e) => {
+			});*/
+			this._register(attachTableStyler(this._relatedNodes, this.themeService));
+			/*this._register(this._dbSchemaGrid.onClick((e) => {
 				if (e.cell) {
 					let row = this._dbSchemaGrid.grid.getDataItem(e.cell.row);
 					let field = this._dbSchemaGrid.grid.getColumns()[e.cell.cell].field;
@@ -709,104 +828,200 @@ export class DiagramComponent extends AngularDisposable implements OnInit {
 						this._cd.detectChanges();
 					}
 				}
-			}));
+			}));*/
 		}
 	}
 
-	private initDbTableGrid() {
-		let columns = this.dbTableGridColumns.map((column) => {
+	private async initGroupView(): Promise<void> {
+		let diagramModelParams: DiagramRequestParams = {
+			ownerUri: this._commonService.connectionManagementService.connectionInfo.ownerUri,
+			schema: 'Application',
+			server: undefined,
+			database: 'Keep_WideWorldImporters',
+			table: undefined,
+			diagramView: DiagramObject.Schema
+		};
+		const result: DiagramRequestResult = await this.diagramService.getDiagramModel(diagramModelParams);
+		this.groupModel = new GroupModel('Application', result.metadata);
+		this._cd.detectChanges();
+		this.initGroupProperties();
+		this.initGroupNodesGrid();
+	}
+
+	private initGroupNodesGrid() {
+		let columns = this.groupModel.nodesColumns.map((column) => {
 			column.rerenderOnResize = true;
 			return column;
 		});
 
-		let dbTableGridOptions = <Slick.GridOptions<any>>{
-			syncColumnCellResize: true,
-			enableColumnReorder: false,
-			rowHeight: 25,
-			enableCellNavigation: true,
-			forceFitColumns: false
-		};
-
-		this.dbTableGridDataView = new Slick.Data.DataView({
+		this.groupNodesDataView = new Slick.Data.DataView({
 			inlineFilters: false
 		});
 
-		if (this._dbTableGridContainer) {
-			this._dbTableGrid = new Table(
-				this._dbTableGridContainer.nativeElement,
+		if (this._groupNodesContainer) {
+			this._groupNodes = new Table(
+				this._groupNodesContainer.nativeElement,
 				{ columns },
-				dbTableGridOptions
+				this.gridOptions
 			);
-			this._dbTableGrid.grid.setData(this.dbTableGridDataView, true);
-			this.dbTableGridDataView.beginUpdate();
-			this.dbTableGridDataView.setItems(this.dbModel.tableItems);
-			this.dbTableGridDataView.endUpdate();
-			this._dbTableGrid.autosizeColumns();
-			this._dbTableGrid.resizeCanvas();
-			this._register(attachTableStyler(this._dbTableGrid, this.themeService));
-			this._register(this._dbTableGrid.onClick((e) => {
+			this._groupNodes.grid.setData(this.groupNodesDataView, true);
+			this.groupNodesDataView.beginUpdate();
+			this.groupNodesDataView.setItems(this.groupModel.nodeItems);
+			this.groupNodesDataView.endUpdate();
+			this._groupNodes.autosizeColumns();
+			this._groupNodes.resizeCanvas();
+			this._groupNodes.ariaLabel = this.groupModel.nodesName + ' Grid';
+			/*this._graphGroups.grid.onKeyDown.subscribe(e => {
+				let event = new StandardKeyboardEvent(<unknown>e as KeyboardEvent);
+				if (event.equals(KeyCode.Enter)) {
+					this._selectBox.select(1);
+					this.changeGranularityView('Schema');
+				}
+			});*/
+			this._register(attachTableStyler(this._groupNodes, this.themeService));
+			/*this._register(this._dbSchemaGrid.onClick((e) => {
 				if (e.cell) {
-					let row = this._dbTableGrid.grid.getDataItem(e.cell.row);
-					let field = this._dbTableGrid.grid.getColumns()[e.cell.cell].field;
+					let row = this._dbSchemaGrid.grid.getDataItem(e.cell.row);
+					let field = this._dbSchemaGrid.grid.getColumns()[e.cell.cell].field;
 					let value = row[field];
 					this.row = e.cell.row;
 					this.cell = e.cell.cell;
-					this._cd.detectChanges();
 					if (e.cell.cell === 0) {
 						this._cd.detectChanges();
-						this._selectBox.select(2);
-						this.currTableModel = this.tableModels.get(value);
-						this.changeGranularityView('Table');
+						this._selectBox.select(1);
+						this.currSchemaModel = this.schemaModels.get(value);
+						this.changeGranularityView('Schema');
 						this._cd.detectChanges();
 					}
 				}
-			}));
+			}));*/
 		}
 	}
 
-	private changeGranularityView(view: any) {
-		switch (view) {
-			case 'Database': {
-				this.showDatabase = true;
-				this.showSchema = false;
-				this.showTable = false;
-				this._cd.detectChanges();
-				this.initDbProperties();
-				this.initDbSchemaGrid();
-				this.initDbTableGrid();
-				break;
-			}
-			case 'Schema': {
-				this.showSchema = true;
-				this.showDatabase = false;
-				this.showTable = false;
-				this._cd.detectChanges();
-				this.initSchemaProperties();
-				this.initSchemaTablesGrid();
-				break;
-			}
-			case 'Table': {
-				this.showTable = true;
-				this.showDatabase = false;
-				this.showSchema = false;
-				this._cd.detectChanges();
-				this.initColumnGrid();
-				this.initRelationshipGrid();
-				this.initTableProperties();
-				break;
-			}
+	private initGroupProperties() {
+		this._groupProperties.propertyItems = this.groupModel.propertyItems;
+	}
+
+	private async initGraphView(): Promise<void> {
+		let diagramModelParams: DiagramRequestParams = {
+			ownerUri: this._commonService.connectionManagementService.connectionInfo.ownerUri,
+			schema: undefined,
+			server: undefined,
+			database: 'Keep_WideWorldImporters',
+			table: undefined,
+			diagramView: DiagramObject.Database
+		};
+		const result: DiagramRequestResult = await this.diagramService.getDiagramModel(diagramModelParams);
+		this.graphModel = new GraphModel('Keep_WideWorldImporters', result.metadata);
+		this.graphInit = true;
+		this._cd.detectChanges();
+		this._graphProperties.propertyItems = this.graphModel.propertyItems;
+		this.initGraphGroupsGrid();
+		this.initGraphNodesGrid();
+		this._cd.detectChanges();
+	}
+	private initGraphProperties() {
+		this._graphProperties.propertyItems = this.graphModel.propertyItems;
+	}
+
+	private initGraphGroupsGrid() {
+		let columns = this.graphModel.groupsColumns.map((column) => {
+			column.rerenderOnResize = true;
+			return column;
+		});
+
+		this.graphGroupsDataView = new Slick.Data.DataView({
+			inlineFilters: false
+		});
+
+		if (this._graphGroupsContainer) {
+			this._graphGroups = new Table(
+				this._graphGroupsContainer.nativeElement,
+				{ columns },
+				this.gridOptions
+			);
+			this._graphGroups.grid.setData(this.graphGroupsDataView, true);
+			this.graphGroupsDataView.beginUpdate();
+			this.graphGroupsDataView.setItems(this.graphModel.groupsItems);
+			this.graphGroupsDataView.endUpdate();
+			this._graphGroups.autosizeColumns();
+			this._graphGroups.resizeCanvas();
+			this._graphGroups.ariaLabel = this.graphModel.groupsName + ' Grid';
+			/*this._graphGroups.grid.onKeyDown.subscribe(e => {
+				let event = new StandardKeyboardEvent(<unknown>e as KeyboardEvent);
+				if (event.equals(KeyCode.Enter)) {
+					this._selectBox.select(1);
+					this.changeGranularityView('Schema');
+				}
+			});*/
+			this._register(attachTableStyler(this._graphGroups, this.themeService));
+			/*this._register(this._dbSchemaGrid.onClick((e) => {
+				if (e.cell) {
+					let row = this._dbSchemaGrid.grid.getDataItem(e.cell.row);
+					let field = this._dbSchemaGrid.grid.getColumns()[e.cell.cell].field;
+					let value = row[field];
+					this.row = e.cell.row;
+					this.cell = e.cell.cell;
+					if (e.cell.cell === 0) {
+						this._cd.detectChanges();
+						this._selectBox.select(1);
+						this.currSchemaModel = this.schemaModels.get(value);
+						this.changeGranularityView('Schema');
+						this._cd.detectChanges();
+					}
+				}
+			}));*/
 		}
 	}
 
-	private initActionBar(): void {
-		const getModelAction: Action = this._instantiationService.createInstance(GetDiagramModelAction,
-			GetDiagramModelAction.ID, GetDiagramModelAction.LABEL);
-		const taskbar: HTMLElement = <HTMLElement>this.actionBarContainer.nativeElement;
-		this._actionBar = new Taskbar(taskbar);
-		this._actionBar.setContent([
-			{ action: getModelAction },
-		]);
-		this._actionBar.context = this._commonService.connectionManagementService.connectionInfo.ownerUri;
+	private initGraphNodesGrid() {
+		let columns = this.graphModel.nodesColumns.map((column) => {
+			column.rerenderOnResize = true;
+			return column;
+		});
+
+		this.graphNodesDataView = new Slick.Data.DataView({
+			inlineFilters: false
+		});
+
+		if (this._graphNodesContainer) {
+			this._graphNodes = new Table(
+				this._graphNodesContainer.nativeElement,
+				{ columns },
+				this.gridOptions
+			);
+			this._graphNodes.grid.setData(this.graphNodesDataView, true);
+			this.graphNodesDataView.beginUpdate();
+			this.graphNodesDataView.setItems(this.graphModel.nodeItems);
+			this.graphNodesDataView.endUpdate();
+			this._graphNodes.autosizeColumns();
+			this._graphNodes.resizeCanvas();
+			this._graphNodes.ariaLabel = this.graphModel.nodesName + ' Grid';
+			/*this._graphGroups.grid.onKeyDown.subscribe(e => {
+				let event = new StandardKeyboardEvent(<unknown>e as KeyboardEvent);
+				if (event.equals(KeyCode.Enter)) {
+					this._selectBox.select(1);
+					this.changeGranularityView('Schema');
+				}
+			});*/
+			this._register(attachTableStyler(this._graphNodes, this.themeService));
+			/*this._register(this._dbSchemaGrid.onClick((e) => {
+				if (e.cell) {
+					let row = this._dbSchemaGrid.grid.getDataItem(e.cell.row);
+					let field = this._dbSchemaGrid.grid.getColumns()[e.cell.cell].field;
+					let value = row[field];
+					this.row = e.cell.row;
+					this.cell = e.cell.cell;
+					if (e.cell.cell === 0) {
+						this._cd.detectChanges();
+						this._selectBox.select(1);
+						this.currSchemaModel = this.schemaModels.get(value);
+						this.changeGranularityView('Schema');
+						this._cd.detectChanges();
+					}
+				}
+			}));*/
+		}
 	}
 
 	public layout() {

@@ -24,16 +24,18 @@ export class GetDiagramModelAction extends Action {
 		this.enabled = true;
 	}
 
-	public async run(ownerUri: string): Promise<DiagramRequestResult> {
-		if (ownerUri) {
+	public async run(context: any): Promise<DiagramRequestResult> {
+		if (context.ownerUri) {
 			let diagramModelParams: DiagramRequestParams = {
-				ownerUri: ownerUri,
-				schema: 'Application',
-				database: 'Keep_WideWorldImporters',
-				table: 'Cities',
-				diagramView: DiagramObject.Database
+				ownerUri: context.ownerUri,
+				schema: context.schemaName,
+				server: undefined,
+				database: context.databaseName,
+				table: context.tableName,
+				diagramView: context.diagramView
 			};
 			const model = await this._diagramService.getDiagramModel(diagramModelParams);
+			context.component.diagramMetadata = model;
 			return model;
 		}
 		return Promise.resolve(null);

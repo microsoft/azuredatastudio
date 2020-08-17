@@ -19,6 +19,7 @@ export enum DiagramObject {
 export class DiagramRequestParams {
 	public ownerUri: string;
 	public schema: string;
+	public server: string;
 	public database: string;
 	public table: string;
 	public diagramView: DiagramObject;
