@@ -24,33 +24,44 @@ import { convertSize } from 'sql/base/browser/dom';
 @Component({
 	selector: 'modelview-button',
 	template: `
+	<p>BT: {{this._buttonType}}</p>
 	<div>
 		<label for={{this.label}}>
 			<div #input style="width: 100%">
-				<input #fileInput *ngIf="this.buttonType === 'File'" id={{this.label}} type="file" accept="{{this.fileType}}" style="display: none">
+				<input #fileInput *ngIf="this.isFile === true" id={{this.label}} type="file" accept="{{ this.fileType }}" style="display: none">
 			</div>
 		</label>
 	</div>
+
 	`
 })
+
 export default class ButtonComponent extends ComponentWithIconBase implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	private _button: Button;
+	public _buttonType = <azdata.ButtonType>'Normal';
 	public fileType: string = '.sql';
 
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
 	@ViewChild('fileInput', { read: ElementRef }) private _fileInputContainer: ElementRef;
+
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef
 	) {
 		super(changeRef, el);
+
+		if (this.isFile === true || this.buttonType === 'File') {
+			this.setPropertyFromUI<azdata.ButtonProperties, boolean>(this.setFileProperties, true);
+			this._buttonType = <azdata.ButtonType>'File';
+		}
 	}
 
 	ngOnInit(): void {
 		this.baseInit();
+
 	}
 
 	ngAfterViewInit(): void {
@@ -105,6 +116,7 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 		super.setProperties(properties);
 		this._button.enabled = this.enabled;
 		this._button.label = this.label;
+
 		if (this.properties.fileType) {
 			this.fileType = properties.fileType;
 		}
@@ -163,7 +175,7 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 	}
 
 	public get description(): string {
-		return this.getPropertyOrDefault<azdata.ButtonProperties, string>((props) => props.description, this.description);
+		return this.getPropertyOrDefault<azdata.ButtonProperties, string>((props) => props.description, '');
 	}
 
 	public get isFile(): boolean {

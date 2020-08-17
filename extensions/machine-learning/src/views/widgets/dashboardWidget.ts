@@ -524,7 +524,7 @@ export class DashboardWidget {
 			iconPath: taskMetaData.iconPath,
 			iconWidth: '32px',
 			title: taskMetaData.title,
-			buttonType: azdata.ButtonType.File,
+			buttonType: azdata.ButtonType.Informational,
 			width: maxWidth
 		}).component();
 		buttonContainer.onDidClick(async () => {
