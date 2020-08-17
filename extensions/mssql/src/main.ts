@@ -19,7 +19,6 @@ import { IExtension } from './mssql';
 import { OpenSparkJobSubmissionDialogCommand, OpenSparkJobSubmissionDialogFromFileCommand, OpenSparkJobSubmissionDialogTask } from './sparkFeature/dialog/dialogCommands';
 import { OpenSparkYarnHistoryTask } from './sparkFeature/historyTask';
 import { MssqlObjectExplorerNodeProvider, mssqlOutputChannel } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
-import { registerSearchServerCommand } from './objectExplorerNodeProvider/command';
 import { MssqlIconProvider } from './iconProvider';
 import { registerServiceEndpoints, Endpoint } from './dashboard/serviceEndpoints';
 import { getBookExtensionContributions } from './dashboard/bookExtensions';
@@ -62,7 +61,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	activateSparkFeatures(appContext);
 	activateNotebookTask(appContext);
 
-	registerSearchServerCommand(appContext);
 	context.subscriptions.push(new ContextProvider());
 	registerHdfsCommands(context, prompter, appContext);
 

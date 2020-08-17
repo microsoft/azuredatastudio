@@ -44,10 +44,10 @@ export class ServerTreeRenderer implements IRenderer {
 
 	public static CONNECTION_HEIGHT = 23;
 	public static CONNECTION_GROUP_HEIGHT = 38;
-	private static CONNECTION_TEMPLATE_ID = 'connectionProfile';
-	private static CONNECTION_GROUP_TEMPLATE_ID = 'connectionProfileGroup';
+	public static CONNECTION_TEMPLATE_ID = 'connectionProfile';
+	public static CONNECTION_GROUP_TEMPLATE_ID = 'connectionProfileGroup';
 	public static OBJECTEXPLORER_HEIGHT = 23;
-	private static OBJECTEXPLORER_TEMPLATE_ID = 'objectExplorer';
+	public static OBJECTEXPLORER_TEMPLATE_ID = 'objectExplorer';
 	/**
 	 * _isCompact is used to render connections tiles with and without the action buttons.
 	 * When set to true, like in the connection dialog recent connections tree, the connection

@@ -16,6 +16,7 @@ import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServic
 import { TreeItemCollapsibleState } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
 import * as assert from 'assert';
+import { NullLogService } from 'vs/platform/log/common/log';
 
 suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 
@@ -39,7 +40,7 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 		);
 		mockConnectionManagementService.setup(x => x.getConnectionGroups()).returns(x => []);
 		mockConnectionManagementService.setup(x => x.hasRegisteredServers()).returns(() => true);
-		serverTreeView = new ServerTreeView(mockConnectionManagementService.object, instantiationService, undefined, new TestThemeService(), undefined, undefined, capabilitiesService);
+		serverTreeView = new ServerTreeView(mockConnectionManagementService.object, instantiationService, undefined, new TestThemeService(), undefined, undefined, capabilitiesService, new NullLogService(), undefined, undefined);
 		mockTree = TypeMoq.Mock.ofType(TestTree);
 		(serverTreeView as any)._tree = mockTree.object;
 		mockRefreshTreeMethod = TypeMoq.Mock.ofType(Function);
@@ -62,15 +63,6 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 		mockTree.setup(x => x.layout(TypeMoq.It.isAnyNumber()));
 		serverTreeView.layout(1);
 		mockTree.verify(x => x.layout(TypeMoq.It.isAnyNumber()), TypeMoq.Times.once());
-	});
-
-	test('setVisibility', async () => {
-		mockTree.setup(x => x.onVisible());
-		mockTree.setup(x => x.onHidden());
-		serverTreeView.setVisible(true);
-		mockTree.verify(x => x.onVisible(), TypeMoq.Times.once());
-		serverTreeView.setVisible(false);
-		mockTree.verify(x => x.onHidden(), TypeMoq.Times.once());
 	});
 
 	test('getSelection', async () => {
