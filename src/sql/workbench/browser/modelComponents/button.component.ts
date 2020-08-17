@@ -27,7 +27,7 @@ import { convertSize } from 'sql/base/browser/dom';
 	<div>
 		<label for={{this.label}}>
 			<div #input style="width: 100%">
-				<input #fileInput *ngIf="this.buttonType === 'File'" id={{this.label}} type="file" accept="{{ this.fileType }}" style="display: none">
+				<input #fileInput *ngIf="this.buttonType === 'File'" id={{this.label}} type="file" accept="{{this.fileType}}" style="display: none">
 			</div>
 		</label>
 	</div>

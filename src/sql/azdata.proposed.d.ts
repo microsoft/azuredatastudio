@@ -528,12 +528,12 @@ declare module 'azdata' {
 
 	export interface ButtonProperties {
 		/**
-			* Specifies whether to use expanded layout or not.
-			*/
+		* Specifies whether to use expanded layout or not.
+		*/
 		buttonType?: ButtonType;
 		/**
-			* Description text to display inside button element.
-			*/
+		* Description text to display inside button element.
+		*/
 		description?: string;
 	}
 
