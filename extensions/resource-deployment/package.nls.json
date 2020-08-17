@@ -57,5 +57,8 @@
 	"azure-sqlvm-display-name": "Azure SQL virtual machines",
 	"azure-sqlvm-description": "Best for migrations and applications requiring OS-level access. Lift-and-shift ready.",
 	"azure-sqlvm-deploy-dialog-title": "Deploy Azure SQL virtual machine",
-	"azure-sqlvm-deploy-dialog-action-text": "Script to notebook"
+	"azure-sqlvm-deploy-dialog-action-text": "Script to notebook",
+	"azure-sqlvm-agreement": "I accept {0}, {1} and {2}.",
+	"azure-sqlvm-agreement-sqlvm-eula": "Azure SQL VM License Terms",
+	"azure-sqlvm-agreement-azdata-eula": "azdata License Terms"
 }
