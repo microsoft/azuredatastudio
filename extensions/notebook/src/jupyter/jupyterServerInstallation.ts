@@ -38,7 +38,7 @@ function msgPackageRetrievalFailed(errorMessage: string): string { return locali
 export interface PythonInstallSettings {
 	installPath: string;
 	existingPython: boolean;
-	specificPackages?: PythonPkgDetails[];
+	packages: PythonPkgDetails[];
 }
 export interface IJupyterServerInstallation {
 	installCondaPackages(packages: PythonPkgDetails[], useMinVersion: boolean): Promise<void>;
@@ -74,33 +74,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 	public static readonly DefaultPythonLocation = path.join(utils.getUserHome(), 'azuredatastudio-python');
 
-	private readonly _commonPackages: PythonPkgDetails[] = [
-		{
-			name: 'jupyter',
-			version: '1.0.0'
-		}, {
-			name: 'pandas',
-			version: '0.24.2'
-		}, {
-			name: 'sparkmagic',
-			version: '0.12.9'
-		}
-	];
-
-	private readonly _commonPipPackages: PythonPkgDetails[] = [
-		{
-			name: 'prose-codeaccelerator',
-			version: '1.3.0'
-		}, {
-			name: 'powershell-kernel',
-			version: '0.1.3'
-		}
-	];
-
-	private readonly _expectedPythonPackages = this._commonPackages.concat(this._commonPipPackages);
-	private readonly _expectedCondaPipPackages = this._commonPipPackages;
-	private readonly _expectedCondaPackages: PythonPkgDetails[];
-
 	private _kernelSetupCache: Map<string, boolean>;
 	private readonly _requiredKernelPackages: Map<string, PythonPkgDetails[]>;
 	private readonly _requiredPackagesSet: Set<string>;
@@ -123,12 +96,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}
 		this._usingConda = false;
 		this._installInProgress = false;
-
-		if (process.platform !== constants.winPlatform) {
-			this._expectedCondaPackages = this._commonPackages.concat([{ name: 'pykerberos', version: '1.2.1' }]);
-		} else {
-			this._expectedCondaPackages = this._commonPackages;
-		}
 
 		this._kernelSetupCache = new Map<string, boolean>();
 		this._requiredKernelPackages = new Map<string, PythonPkgDetails[]>();
@@ -170,7 +137,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		});
 	}
 
-	private async installDependencies(backgroundOperation: azdata.BackgroundOperation, forceInstall: boolean, specificPackages?: PythonPkgDetails[]): Promise<void> {
+	private async installDependencies(backgroundOperation: azdata.BackgroundOperation, forceInstall: boolean, packages: PythonPkgDetails[]): Promise<void> {
 		vscode.window.showInformationMessage(msgInstallPkgStart);
 
 		this.outputChannel.show(true);
@@ -182,7 +149,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			if (!pythonExists || forceInstall) {
 				await this.installPythonPackage(backgroundOperation, this._usingExistingPython, this._pythonInstallationPath, this.outputChannel);
 			}
-			await this.upgradePythonPackages(forceInstall, specificPackages);
+			await this.upgradePythonPackages(forceInstall, packages);
 		} catch (err) {
 			this.outputChannel.appendLine(msgDependenciesInstallationFailed(utils.getErrorMessage(err)));
 			throw err;
@@ -401,7 +368,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		if (!installSettings) {
 			installSettings = {
 				installPath: this._pythonInstallationPath,
-				existingPython: this._usingExistingPython
+				existingPython: this._usingExistingPython,
+				packages: this.getRequiredPackagesForKernel(constants.python3DisplayName)
 			};
 		}
 
@@ -433,7 +401,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			description: msgTaskName,
 			isCancelable: false,
 			operation: op => {
-				this.installDependencies(op, forceInstall, installSettings.specificPackages)
+				this.installDependencies(op, forceInstall, installSettings.packages)
 					.then(async () => {
 						let notebookConfig = vscode.workspace.getConfiguration(constants.notebookConfigKey);
 						await notebookConfig.update(constants.pythonPathConfigKey, this._pythonInstallationPath, vscode.ConfigurationTarget.Global);
@@ -498,70 +466,28 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		return true;
 	}
 
-	private async upgradePythonPackages(forceInstall: boolean, specificPackages?: PythonPkgDetails[]): Promise<void> {
-		let expectedCondaPackages: PythonPkgDetails[];
-		let expectedPipPackages: PythonPkgDetails[];
-		if (specificPackages) {
-			// Always install generic packages with pip, since conda may not have them.
-			expectedCondaPackages = [];
-			expectedPipPackages = specificPackages;
-		} else if (this._usingConda) {
-			expectedCondaPackages = this._expectedCondaPackages;
-			expectedPipPackages = this._expectedCondaPipPackages;
-		} else {
-			expectedCondaPackages = [];
-			expectedPipPackages = this._expectedPythonPackages;
-		}
-
-		let condaPackagesToInstall: PythonPkgDetails[];
-		let pipPackagesToInstall: PythonPkgDetails[];
+	private async upgradePythonPackages(forceInstall: boolean, packages: PythonPkgDetails[]): Promise<void> {
+		let packagesToInstall: PythonPkgDetails[];
 		if (forceInstall) {
-			condaPackagesToInstall = expectedCondaPackages;
-			pipPackagesToInstall = expectedPipPackages;
+			packagesToInstall = packages;
 		} else {
-			condaPackagesToInstall = [];
-			pipPackagesToInstall = [];
+			packagesToInstall = [];
 
-			// Conda packages
-			if (this._usingConda) {
-				let installedCondaPackages = await this.getInstalledCondaPackages();
-				let condaVersionMap = new Map<string, string>();
-				installedCondaPackages.forEach(pkg => condaVersionMap.set(pkg.name, pkg.version));
-
-				expectedCondaPackages.forEach(expectedPkg => {
-					let installedPkgVersion = condaVersionMap.get(expectedPkg.name);
-					if (!installedPkgVersion || utils.comparePackageVersions(installedPkgVersion, expectedPkg.version) < 0) {
-						condaPackagesToInstall.push(expectedPkg);
-					}
-				});
-			}
-
-			// Pip packages
 			let installedPipPackages = await this.getInstalledPipPackages();
 			let pipVersionMap = new Map<string, string>();
 			installedPipPackages.forEach(pkg => pipVersionMap.set(pkg.name, pkg.version));
 
-			expectedPipPackages.forEach(expectedPkg => {
-				let installedPkgVersion = pipVersionMap.get(expectedPkg.name);
-				if (!installedPkgVersion || utils.comparePackageVersions(installedPkgVersion, expectedPkg.version) < 0) {
-					pipPackagesToInstall.push(expectedPkg);
+			packages.forEach(pkg => {
+				let installedPkgVersion = pipVersionMap.get(pkg.name);
+				if (!installedPkgVersion || utils.comparePackageVersions(installedPkgVersion, pkg.version) < 0) {
+					packagesToInstall.push(pkg);
 				}
 			});
 		}
 
-		if (condaPackagesToInstall.length > 0 || pipPackagesToInstall.length > 0) {
-			let installPromise = new Promise(async (resolve, reject) => {
-				try {
-					if (this._usingConda) {
-						await this.installCondaPackages(condaPackagesToInstall, true);
-					}
-					await this.installPipPackages(pipPackagesToInstall, true);
-					resolve();
-				} catch (err) {
-					reject(err);
-				}
-			});
-			await installPromise;
+		if (packagesToInstall.length > 0) {
+			// Always install generic packages with pip, since conda may not have them (like powershell-kernel).
+			await this.installPipPackages(packagesToInstall, true);
 		}
 	}
 
