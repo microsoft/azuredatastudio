@@ -257,6 +257,7 @@ export class QueryEditor extends BaseEditor {
 		const previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
 		// TODOKusto: needs to be changed appropriately
 		if (input.getDescription() === 'MSSQL') {
+			const notebookConvertActionsEnabled = this.configurationService.getValue('notebook')['showNotebookConvertActions'];
 			if (previewFeaturesEnabled) {
 				content = [
 					{ action: this._runQueryAction },
@@ -270,6 +271,10 @@ export class QueryEditor extends BaseEditor {
 					{ action: this._toggleSqlcmdMode }, // Preview
 					{ action: this._exportAsNotebookAction } // Preview
 				];
+
+				if (notebookConvertActionsEnabled) {
+					content.push({ action: this._exportAsNotebookAction });
+				}
 			}
 			else {
 				content = [
@@ -292,6 +297,12 @@ export class QueryEditor extends BaseEditor {
 				{ action: this._changeConnectionAction },
 				{ action: this._listDatabasesAction }
 			];
+			const notebookConvertActionsEnabled = this.configurationService.getValue('notebook')['notebook.showNotebookConvertActions'];
+			if (notebookConvertActionsEnabled) {
+				content.push(
+					{ element: separator },
+					{ action: this._exportAsNotebookAction });
+			}
 		}
 
 		this.taskbar.setContent(content);
