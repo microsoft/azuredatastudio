@@ -8,7 +8,7 @@ import * as constants from './constants';
 
 const cloudIcon = 'kusto:cloud';
 
-export class MssqlIconProvider implements azdata.IconProvider {
+export class KustoIconProvider implements azdata.IconProvider {
 	public readonly providerId: string = constants.sqlProviderName;
 	public handle: number;
 	getConnectionIconId(connection: azdata.IConnectionProfile, serverInfo: azdata.ServerInfo): Thenable<string> {

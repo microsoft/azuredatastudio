@@ -15,7 +15,7 @@ import { ApiWrapper } from './apiWrapper';
 import { IExtension } from './kusto';
 import { KustoObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
 import { registerSearchServerCommand } from './objectExplorerNodeProvider/command';
-import { MssqlIconProvider } from './iconProvider';
+import { KustoIconProvider } from './iconProvider';
 //import { getBookExtensionContributions } from './dashboard/bookExtensions';
 //import { registerBooksWidget } from './dashboard/bookWidget';
 import { createKustoApi } from './kustoApiFactory';
@@ -41,7 +41,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 
 	let nodeProvider = new KustoObjectExplorerNodeProvider(appContext);
 	azdata.dataprotocol.registerObjectExplorerNodeProvider(nodeProvider);
-	let iconProvider = new MssqlIconProvider();
+	let iconProvider = new KustoIconProvider();
 	azdata.dataprotocol.registerIconProvider(iconProvider);
 
 	activateNotebookTask(appContext);
