@@ -405,11 +405,13 @@
           {
             "dialog": {
               "notebook": "./notebooks/azurevm/create-sqlvm.ipynb",
-              "runNotebook": true,
+              "runNotebook": false,
+              "codeCellInsertionPosition": 4,
               "taskName": "%azure-sqlvm-deploy-dialog-title%",
               "actionText": "%azure-sqlvm-deploy-dialog-action-text%",
               "title": "%azure-sqlvm-deploy-dialog-title%",
-              "name": "azure.sqlvm.new.dialog",
+              "name": "azure.sqlvm.new.wizard",
+              "generateSummaryPage": false,
               "tabs": [
                 {
                   "title": "",
@@ -418,10 +420,33 @@
                       "title": "Azure information",
                       "fields": [
                         {
-                          "subscriptionVariableName": "AZURE_SQLVM_NB_VAR_SUBSCRIPTION",
-                          "resourceGroupVariableName": "AZURE_SQLVM_NB_VAR_RESOURCE_GROUP_NAME",
+                          "subscriptionVariableName": "AZDATA_NB_VAR_AZURE_SQLVM_NB_VAR_SUBSCRIPTION",
+                          "resourceGroupVariableName": "AZDATA_NB_VAR_AZURE_SQLVM_NB_VAR_RESOURCE_GROUP_NAME",
                           "type": "azure_account",
                           "required": true
+                        },
+                        {
+                          "type": "azure_locations",
+                          "label": "Azure Locations",
+                          "defaultValue": "eastus",
+                          "required": true,
+                          "locationVariableName": "AZDATA_NB_VAR_AZURE_SQLVM_LOCATION",
+                          "displayLocationVariableName": "AZURE_SQLVM_DISPLAY_LOCATION",
+                          "locations": [
+                            "eastus",
+                            "eastus2",
+                            "northcentralus",
+                            "southcentralus",
+                            "westcentralus",
+                            "westus",
+                            "canadacentral",
+                            "canadaeast",
+                            "brazilsouth",
+                            "westus",
+                            "westus2",
+                            "southeastasia",
+                            "westeurope"
+                          ]
                         }
                       ]
                     },
@@ -429,62 +454,82 @@
                       "title": "SQL Connection information",
                       "fields": [
                         {
-                          "label": "Location",
-                          "variableName": "AZURE_SQLVM_LOCATION",
+                          "label": "VM Image",
+                          "variableName": "AZDATA_NB_VAR_AZURE_SQLVM_IMAGE",
                           "type": "text",
-                          "defaultValue": "",
+                          "defaultValue": "sql2019-ws2019",
+                          "required": true
+                        },
+                        {
+                          "label": "VM Image SKU",
+                          "variableName": "AZDATA_NB_VAR_AZURE_SQLVM_IMAGE_SKU",
+                          "type": "text",
+                          "defaultValue": "sqldev",
+                          "required": true
+                        },
+                        {
+                          "label": "VM Image Version",
+                          "variableName": "AZDATA_NB_VAR_AZURE_SQLVM_IMAGE_VERSION",
+                          "type": "text",
+                          "defaultValue": "latest",
                           "required": true
                         },
                         {
                           "label": "VM Name (lower case letters and digits only)",
-                          "variableName": "AZURE_SQLVM_VMNAME",
+                          "variableName": "AZDATA_NB_VAR_AZURE_SQLVM_VMNAME",
                           "type": "text",
-                          "defaultValue": "",
+                          "defaultValue": "aaskhanvm",
                           "required": true
                         },
                         {
-                          "label": "Publisher Name",
-                          "variableName": "AZURE_SQLVM_PUBLISHERNAME",
+                          "label": "Publisher",
+                          "variableName": "AZDATA_NB_VAR_AZURE_SQLVM_PUBLISHER",
                           "type": "text",
-                          "defaultValue": "",
-                          "required": true
+                          "defaultValue": "MicrosoftSQLServer",
+                          "required": true,
+                          "enabled": false
                         },
                         {
                           "label": "Version",
-                          "variableName": "AZURE_SQLVM_VERSION",
+                          "variableName": "AZDATA_NB_VAR_AZURE_SQLVM_VERSION",
                           "type": "text",
-                          "defaultValue": "",
+                          "defaultValue": "latest",
                           "required": true
                         },
                         {
                           "label": "StorageAccountNames",
-                          "variableName": "AZURE_SQLVM_STORAGEACCOUNTNAME",
+                          "variableName": "AZDATA_NB_VAR_AZURE_SQLVM_STORAGEACCOUNTNAME",
                           "type": "text",
-                          "defaultValue": "",
+                          "defaultValue": "aaskhanstorage",
                           "required": true
                         },
                         {
                           "label": "StorageSKU",
-                          "variableName": "AZURE_SQLVM_STORAGESKU",
-                          "type": "text",
-                          "defaultValue": "",
+                          "variableName": "AZDATA_NB_VAR_AZURE_SQLVM_STORAGESKU",
+                          "type": "options",
+                          "defaultValue": "Standard_LRS",
+                          "options":[
+                            "Standard_LRS",
+                            "Standard_GRS",
+                            "Standard_RAGRS",
+                            "Standard_ZRS",
+                            "Premium_LRS",
+                            "Premium_ZRS"
+                          ],
                           "required": true
                         },
                         {
                           "label": "Storage Name",
-                          "variableName": "AZURE_SQLVM_STORAGE_NAME",
+                          "variableName": "AZDATA_NB_VAR_AZURE_SQLVM_STORAGE_NAME",
                           "type": "text",
-                          "defaultValue": "",
+                          "defaultValue": "StorageName",
                           "required": true
                         },
                         {
                           "label": "Password",
-                          "variableName": "AZURE_SQLVM_PASSWORD",
-                          "type": "sql_password",
-                          "userName": "sa",
-                          "confirmationRequired": true,
-                          "confirmationLabel": "Confirm password",
-                          "defaultValue": "",
+                          "variableName": "AZDATA_NB_VAR_AZURE_SQLVM_PASSWORD",
+                          "type": "text",
+                          "defaultValue": "Aasimkhan30@",
                           "required": true
                         }
                       ]
@@ -502,18 +547,18 @@
           }
         ],
         "agreement": {
-          "template": "%bdc-agreement%",
+          "template": "%azure-sqlvm-agreement%",
           "links": [
             {
               "text": "%microsoft-privacy-statement%",
               "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
             },
             {
-              "text": "%bdc-agreement-bdc-eula%",
+              "text": "%azure-sqlvm-agreement-sqlvm-eula%",
               "url": "https://go.microsoft.com/fwlink/?LinkId=2002534"
             },
             {
-              "text": "%bdc-agreement-azdata-eula%",
+              "text": "%azure-sqlvm-agreement-azdata-eula%",
               "url": "https://aka.ms/eula-azdata-en"
             }
           ]
