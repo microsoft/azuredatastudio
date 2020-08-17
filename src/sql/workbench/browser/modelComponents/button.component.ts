@@ -159,7 +159,7 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 	}
 
 	public get buttonType(): azdata.ButtonType {
-		return this.getPropertyOrDefault<azdata.ButtonProperties, azdata.ButtonType>((props) => props.buttonType, azdata.ButtonType.Normal);
+		return this.getPropertyOrDefault<azdata.ButtonProperties, azdata.ButtonType>((props) => props.buttonType, <azdata.ButtonType>'Normal');
 	}
 
 	public get description(): string {
