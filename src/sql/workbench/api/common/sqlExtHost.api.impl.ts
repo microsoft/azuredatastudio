@@ -539,11 +539,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 
 			return {
 				accounts,
-<<<<<<< HEAD
 				ButtonType: sqlExtHostTypes.ButtonType,
-=======
-				ButtonType: azdata.ButtonType,
->>>>>>> dashboardWidget to use updated button component - added an enum for buttonType.
 				connection,
 				credentials,
 				objectexplorer: objectExplorer,

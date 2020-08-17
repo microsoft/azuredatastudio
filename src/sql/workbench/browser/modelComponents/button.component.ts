@@ -183,7 +183,6 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 	}
 
 	public get buttonType(): azdata.ButtonType {
-<<<<<<< HEAD
 		if (this.isFile === true) {
 			return 'File' as azdata.ButtonType;
 		} else {
@@ -193,13 +192,6 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 
 	public get description(): string {
 		return this.getPropertyOrDefault((props) => props.description, '');
-=======
-		return this.getPropertyOrDefault<azdata.ButtonProperties, azdata.ButtonType>((props) => props.buttonType, azdata.ButtonType.Normal);
-	}
-
-	public get description(): string {
-		return this.getPropertyOrDefault<azdata.ButtonProperties, string>((props) => props.description, this.description);
->>>>>>> dashboardWidget to use updated button component - added an enum for buttonType.
 	}
 
 	public get isFile(): boolean {
