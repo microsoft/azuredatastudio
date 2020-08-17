@@ -73,9 +73,9 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 	});
 
 	test('isFocused', async () => {
-		mockTree.setup(x => x.isDOMFocused());
+		mockTree.setup(x => x.getHTMLElement());
 		serverTreeView.isFocused();
-		mockTree.verify(x => x.isDOMFocused(), TypeMoq.Times.once());
+		mockTree.verify(x => x.getHTMLElement(), TypeMoq.Times.once());
 	});
 
 	test('reveal', async () => {

@@ -14,16 +14,13 @@ import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/c
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
-
-
-
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
 import { AsyncServerTreeDragAndDrop } from 'sql/workbench/services/objectExplorer/browser/asyncServerTreeDragAndDrop';
 
 
 
-suite('SQL Drag And Drop Controller tests', () => {
+suite('AsyncServerTreeDragAndDrop', () => {
 	let serverTreeDragAndDrop: AsyncServerTreeDragAndDrop;
 	let msSQLCapabilities: ConnectionProviderProperties;
 	let capabilitiesService: TestCapabilitiesService;

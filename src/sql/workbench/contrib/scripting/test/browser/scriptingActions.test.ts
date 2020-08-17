@@ -67,7 +67,7 @@ suite('Scripting Actions', () => {
 		const connectionManagementServiceMock = TypeMoq.Mock.ofType(TestConnectionManagementService, TypeMoq.MockBehavior.Loose);
 		const serverTreeViewMock = TypeMoq.Mock.ofType(ServerTreeView, TypeMoq.MockBehavior.Loose, connectionManagementServiceMock.object, instantiationService, undefined, undefined, undefined, undefined, capabilitiesService);
 		treeMock = TypeMoq.Mock.ofType(TestTree);
-		// serverTreeViewMock.setup(x => x.tree).returns(() => treeMock.object);
+		serverTreeViewMock.setup(x => x.tree).returns(() => treeMock.object);
 		collection.set(IObjectExplorerService, createObjectExplorerServiceMock({ serverTreeView: serverTreeViewMock.object, treeNode: treeNode }).object);
 		logServiceMock = TypeMoq.Mock.ofInstance(new NullLogService());
 		collection.set(ILogService, logServiceMock.object);

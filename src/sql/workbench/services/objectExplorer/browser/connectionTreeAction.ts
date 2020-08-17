@@ -66,7 +66,7 @@ export class RefreshAction extends Action {
 					return true;
 				}
 				if (this._tree instanceof AsyncServerTree) {
-					this._tree.updateChildren(this.element);
+					await this._tree.updateChildren(this.element);
 				} else {
 					await this._tree.refresh(this.element);
 				}
