@@ -29,7 +29,7 @@ import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { URI } from 'vs/base/common/uri';
 import { IFileService, FileChangesEvent } from 'vs/platform/files/common/files';
-
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { QueryEditorInput, IQueryEditorStateChange } from 'sql/workbench/common/editor/query/queryEditorInput';
 import { QueryResultsEditor } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
 import * as queryContext from 'sql/workbench/contrib/query/common/queryContext';
@@ -95,6 +95,7 @@ export class QueryEditor extends BaseEditor {
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IEditorGroupsService editorGroupService: IEditorGroupsService,
 		@IFileService fileService: IFileService,
+		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IEditorService private readonly editorService: IEditorService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IConfigurationService private readonly configurationService: IConfigurationService
@@ -196,6 +197,12 @@ export class QueryEditor extends BaseEditor {
 			this._changeConnectionAction.enabled = this.input.state.connected;
 			if (this.input.state.connected) {
 				this.listDatabasesActionItem.onConnected();
+				this.setTaskbarContent();
+				this._register(this.configurationService.onDidChangeConfiguration(e => {
+					if (e.affectsConfiguration('workbench.enablePreviewFeatures')) {
+						this.setTaskbarContent();
+					}
+				}));
 			} else {
 				this.listDatabasesActionItem.onDisconnect();
 			}
@@ -246,7 +253,7 @@ export class QueryEditor extends BaseEditor {
 		return this._listDatabasesActionItem;
 	}
 
-	private setTaskbarContent(input: QueryEditorInput): void {
+	private setTaskbarContent(): void {
 		// Remove current actions from the taskbar
 		while (this.taskbar.length() > 0) {
 			this.taskbar.pull(0);
@@ -255,8 +262,10 @@ export class QueryEditor extends BaseEditor {
 		const separator = Taskbar.createTaskbarSeparator();
 		let content: ITaskbarContent[];
 		const previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
-		// TODOKusto: needs to be changed appropriately
-		if (input.getDescription() === 'MSSQL') {
+		let connectionProfile = this.connectionManagementService.getConnectionProfile(this.input.uri);
+
+		// TODO: Make it more generic, some way for extensions to register the commands it supports
+		if (connectionProfile?.providerName === 'KUSTO') {
 			const notebookConvertActionsEnabled = this.configurationService.getValue('notebook')['showNotebookConvertActions'];
 			if (previewFeaturesEnabled) {
 				content = [
@@ -321,14 +330,6 @@ export class QueryEditor extends BaseEditor {
 			this.currentTextEditor.clearInput();
 			this.resultsEditor.clearInput();
 		}
-
-		this.setTaskbarContent(newInput);
-
-		this._register(this.configurationService.onDidChangeConfiguration(e => {
-			if (e.affectsConfiguration('workbench.enablePreviewFeatures')) {
-				this.setTaskbarContent(newInput);
-			}
-		}));
 
 		// If we're switching editor types switch out the views
 		const newTextEditor = newInput.text instanceof FileEditorInput ? this.textFileEditor : this.textResourceEditor;
