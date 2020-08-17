@@ -9,7 +9,6 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { ITreeNode } from './types';
 import { IFileSource } from './fileSources';
-import { SqlClusterConnection } from './connection';
 
 type TreeNodePredicate = (node: TreeNode) => boolean;
 
@@ -78,9 +77,6 @@ export abstract class TreeNode implements ITreeNode {
 		return undefined;
 	}
 
-	public async updateFileSource(connection: SqlClusterConnection): Promise<void> {
-		this.fileSource = await connection.createHdfsFileSource();
-	}
 	/**
 	 * The value to use for this node in the node path
 	 */

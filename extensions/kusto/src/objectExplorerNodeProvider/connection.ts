@@ -10,7 +10,7 @@ const localize = nls.loadMessageBundle();
 import * as constants from '../constants';
 import { IFileSource, IHdfsOptions, FileSourceFactory } from './fileSources';
 
-export class SqlClusterConnection {
+export class KustoClusterConnection {
 	private _connection: azdata.connection.Connection;
 	private _profile: azdata.IConnectionProfile;
 	private _host: string;
@@ -27,32 +27,26 @@ export class SqlClusterConnection {
 		} else {
 			this._connection = connectionInfo;
 		}
-		this._host = this._connection.options[constants.hostPropName];
-		this._port = this._connection.options[constants.knoxPortPropName];
 		this._user = this._connection.options[constants.userPropName];
 		this._password = this._connection.options[constants.passwordPropName];
 	}
 
 	public get connection(): azdata.connection.Connection { return this._connection; }
-	public get host(): string { return this._host; }
-	public get port(): number { return this._port ? Number.parseInt(this._port) : constants.defaultKnoxPort; }
 	public get user(): string { return this._user; }
 	public get password(): string { return this._password; }
 
-	public isMatch(connection: SqlClusterConnection | azdata.ConnectionInfo): boolean {
+	public isMatch(connection: KustoClusterConnection | azdata.ConnectionInfo): boolean {
 		if (!connection) { return false; }
-		let options1 = connection instanceof SqlClusterConnection ?
+		let options1 = connection instanceof KustoClusterConnection ?
 			connection._connection.options : connection.options;
 		let options2 = this._connection.options;
-		return [constants.hostPropName, constants.knoxPortPropName, constants.userPropName]
+		return [constants.serverPropName, constants.userPropName]
 			.every(e => options1[e] === options2[e]);
 	}
 
 	public async createHdfsFileSource(): Promise<IFileSource> {
 		let options: IHdfsOptions = {
 			protocol: 'https',
-			host: this.host,
-			port: this.port,
 			user: this.user,
 			path: 'gateway/default/webhdfs/v1',
 			requestParams: {
@@ -99,11 +93,8 @@ export class SqlClusterConnection {
 
 	private getMissingProperties(connectionInfo: azdata.ConnectionInfo): string[] {
 		if (!connectionInfo || !connectionInfo.options) { return undefined; }
-		let requiredProps = [constants.hostPropName, constants.knoxPortPropName];
-		let authType = connectionInfo.options[constants.authenticationTypePropName] && connectionInfo.options[constants.authenticationTypePropName].toLowerCase();
-		if (authType !== constants.integratedAuth) {
-			requiredProps.push(constants.userPropName, constants.passwordPropName);
-		}
+		let requiredProps = [constants.serverPropName];
+		requiredProps.push(constants.userPropName);
 		return requiredProps.filter(e => connectionInfo.options[e] === undefined);
 	}
 
