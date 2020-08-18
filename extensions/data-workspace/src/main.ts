@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
-	vscode.commands.registerCommand('dataworkspace.addExistingProject', () => {
+	vscode.commands.registerCommand('dataworkspace.addProject', () => {
 	});
 }
 
