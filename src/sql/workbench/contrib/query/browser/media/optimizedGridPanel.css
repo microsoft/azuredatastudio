@@ -3,18 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.monaco-workbench .binarydiff-left {
-	float: left;
+.grid-panel.optimized {
+	width: 100%;
+	height: 100%;
 }
 
-.monaco-workbench .binarydiff-right {
-	border-left: 3px solid #DDD;
-}
-
-.monaco-workbench.vs-dark .binarydiff-right {
-	border-left: 3px solid rgb(20, 20, 20);
-}
-
-.monaco-workbench.hc-black .binarydiff-right {
-	border-left: 3px solid #6FC3DF;
+.grid-panel.optimized > .table-panel {
+	width: 100%;
+	height: 100%;
 }
