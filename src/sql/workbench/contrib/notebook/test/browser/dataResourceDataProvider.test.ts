@@ -10,71 +10,82 @@ import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as uuid from 'uuid';
-// import * as pfs from 'vs/base/node/pfs';
+import * as sinon from 'sinon';
 import { DataResourceDataProvider } from '../../browser/outputs/gridOutput.component';
 import { IDataResource } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
 import { ResultSetSummary } from 'sql/workbench/services/query/common/query';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
-import { TestFileDialogService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { TestFileDialogService, TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { SerializationService } from 'sql/platform/serialization/common/serializationService';
 import { SaveFormat, ResultSerializer } from 'sql/workbench/services/query/common/resultSerializer';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { URI } from 'vs/base/common/uri';
 
 export class TestSerializationProvider implements azdata.SerializationProvider {
-	handle?: number;
 	providerId: string;
 	constructor(providerId: string = 'providerId') { }
 
+	// Write data to file
 	startSerialization(requestParams: azdata.SerializeDataStartRequestParams): Thenable<azdata.SerializeDataResult> {
-		return Promise.resolve(undefined);
+		let data: string = '';
+		requestParams.rows.forEach((row) => {
+			row.forEach((element) => {
+				data += element.displayValue + ' ';
+			});
+			data += '\n';
+		});
+		fs.writeFile(requestParams.filePath, data);
+		return Promise.resolve(<azdata.SerializeDataResult>{
+			succeeded: true,
+			messages: undefined
+		});
 	}
 
 	continueSerialization(requestParams: azdata.SerializeDataContinueRequestParams): Thenable<azdata.SerializeDataResult> {
 		return Promise.resolve(undefined);
 	}
-
 }
 
 suite('Data Resource Data Provider', function () {
-	let _notificationService: TestNotificationService;
-	let dataResourceDataProvider: DataResourceDataProvider;
+	let tempFolderPath: string;
 	let fileDialogService: TypeMoq.Mock<TestFileDialogService>;
-	let saveFile: URI;
 	let serializer: ResultSerializer;
+	let dataResourceDataProvider: DataResourceDataProvider;
 
 	suiteSetup(async () => {
+		// Create test data with two rows and two columns
 		let source: IDataResource = {
-			data: [{ 0: '1' }],
-			schema: { fields: [{ name: 'col1' }] }
+			data: [{ 0: '1', 1: '2' }, { 0: '3', 1: '4' }],
+			schema: { fields: [{ name: 'col1' }, { name: 'col2' }] }
 		};
 		let resultSet: ResultSetSummary = {
 			batchId: 0,
-			columnInfo: [{ columnName: 'col1' }],
+			columnInfo: [{ columnName: 'col1' }, { columnName: 'col2' }],
 			complete: true,
 			id: 0,
-			rowCount: 1
+			rowCount: 2
 		};
+
 		let documentUri = 'untitled:Notebook-0';
-		let tempFolderPath = path.join(os.tmpdir(), `TestDataResourceDataProvider_${uuid.v4()}`);
+		tempFolderPath = path.join(os.tmpdir(), `TestDataResourceDataProvider_${uuid.v4()}`);
 		await fs.mkdir(tempFolderPath);
-		saveFile = URI.file(path.join(tempFolderPath, 'results.csv'));
+
+		// Mock services
+		let editorService = TypeMoq.Mock.ofType(TestEditorService, TypeMoq.MockBehavior.Strict);
+		editorService.setup(x => x.openEditor(TypeMoq.It.isAny())).returns(() => Promise.resolve(undefined));
+		fileDialogService = TypeMoq.Mock.ofType(TestFileDialogService, TypeMoq.MockBehavior.Strict);
+		let _notificationService = new TestNotificationService();
+		let _serializationService = new SerializationService(undefined, undefined); //_connectionService _capabilitiesService
+		_serializationService.registerProvider('testProviderId', new TestSerializationProvider());
 		serializer = new ResultSerializer(
 			undefined, // IQueryManagementService
 			undefined, // IConfigurationService
-			undefined, // IEditorService
+			editorService.object,
 			undefined, // IWorkspaceContextService
 			fileDialogService.object,
 			_notificationService,
 			undefined // IOpenerService
 		);
-
-		fileDialogService = TypeMoq.Mock.ofType(TestFileDialogService, TypeMoq.MockBehavior.Strict);
-		fileDialogService.setup(x => x.showSaveDialog(TypeMoq.It.isAny()))
-			.returns(() => Promise.resolve(saveFile));
-		_notificationService = new TestNotificationService();
-		let _serializationService = new SerializationService(undefined, undefined); //_connectionService _capabilitiesService
-		_serializationService.registerProvider('testProviderId', new TestSerializationProvider());
 		let _instantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Strict);
 		_instantiationService.setup(x => x.createInstance(TypeMoq.It.isValue(ResultSerializer)))
 			.returns(() => serializer);
@@ -92,18 +103,26 @@ suite('Data Resource Data Provider', function () {
 		);
 	});
 
-	test('getRowData returns correct rows', function (): void {
-		dataResourceDataProvider.getRowData(0, 1).then((result) => {
-			assert(result.rowCount === 1, 'rowCount should be correct');
-			assert(result.rows[0][0].displayValue === '1', 'rows should have correct value');
-		});
-	});
-
 	test('serializeResults call is successful', async function (): Promise<void> {
-		assert.ok(dataResourceDataProvider.serializeResults(SaveFormat.CSV, undefined));
-		// const data = await pfs.readFile(saveFile.path, 'utf-8');
-		// assert.equal(data.toString(), JSON.stringify({ col1: 1 }));
-	});
+		let noHeadersFile = URI.file(path.join(tempFolderPath, 'result_noHeaders.csv'));
+		let fileDialogServiceStub = sinon.stub(fileDialogService.object, 'showSaveDialog').returns(Promise.resolve(noHeadersFile));
+		let serializerStub = sinon.stub(serializer, 'getBasicSaveParameters').returns({ resultFormat: SaveFormat.CSV as string, includeHeaders: false });
+		await dataResourceDataProvider.serializeResults(SaveFormat.CSV, undefined);
+		fileDialogServiceStub.restore();
+		serializerStub.restore();
 
+		let withHeadersFile = URI.file(path.join(tempFolderPath, 'result_withHeaders.csv'));
+		fileDialogServiceStub = sinon.stub(fileDialogService.object, 'showSaveDialog').returns(Promise.resolve(withHeadersFile));
+		serializerStub = sinon.stub(serializer, 'getBasicSaveParameters').returns({ resultFormat: SaveFormat.CSV as string, includeHeaders: true });
+		await dataResourceDataProvider.serializeResults(SaveFormat.CSV, undefined);
+		fileDialogServiceStub.restore();
+		serializerStub.restore();
+
+		const noHeadersResult = await fs.readFile(noHeadersFile.path);
+		assert.equal(noHeadersResult.toString(), '1 2 \n3 4 \n', 'result data should not include headers');
+
+		const withHeadersResult = await fs.readFile(withHeadersFile.path);
+		assert.equal(withHeadersResult.toString(), 'col1 col2 \n1 2 \n3 4 \n', 'result data should include headers');
+	});
 });
 
