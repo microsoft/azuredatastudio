@@ -298,8 +298,8 @@ export class ScrollableView extends Disposable {
 	private removeItemFromDOM(index: number): void {
 		const item = this.items[index];
 
-		if (item && item.domNode) {
-			item.domNode.remove();
+		if (item) {
+			item.domNode!.remove();
 			item.onDidInsertDisposable?.dispose();
 			if (item.view.onDidRemove) {
 				item.onDidRemoveDisposable = DOM.scheduleAtNextAnimationFrame(() => {
