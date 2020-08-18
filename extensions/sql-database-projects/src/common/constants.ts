@@ -79,8 +79,9 @@ export const noDataSourcesText = localize('noDataSourcesText', "No data sources 
 export const loadProfileButtonText = localize('loadProfileButtonText', "Load Profile...");
 export const profileReadError = localize('profileReadError', "Could not load the profile file.");
 export const sqlCmdTableLabel = localize('sqlCmdTableLabel', "SQLCMD Variables");
-export const sqlCmdVariableColumn = localize('sqlCmdVariableColumn', "Variable");
+export const sqlCmdVariableColumn = localize('sqlCmdVariableColumn', "Name");
 export const sqlCmdValueColumn = localize('sqlCmdValueColumn', "Value");
+export const loadSqlCmdVarsButtonTitle = localize('reloadValuesFromProjectButtonTitle', "Reload values from project");
 
 // Error messages
 
