@@ -742,6 +742,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		// Else no need to do anything
 	}
 
+	// do similar thing on connection change
 	private async updateKernelInfoOnKernelChange(kernel: nb.IKernel) {
 		await this.updateKernelInfo(kernel);
 		if (kernel.info) {
