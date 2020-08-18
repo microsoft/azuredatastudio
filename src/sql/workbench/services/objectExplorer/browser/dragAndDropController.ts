@@ -87,7 +87,7 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 			escapedName = this.escapeString(element.metadata.name);
 			let providerName = this.getProviderNameFromElement(element);
 			if (providerName === 'KUSTO') {
-				finalString = escapedName;
+				finalString = this.getFinalStringForKusto(element.nodeTypeId, escapedName);
 			} else {
 				finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
 			}
@@ -109,12 +109,19 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 	}
 
 	private getProviderNameFromElement(element: TreeNode): string | undefined {
-
 		if (element.connection) {
 			return element.connection.providerName;
 		}
 
 		return this.getProviderNameFromElement(element.parent);
+	}
+
+	private getFinalStringForKusto(nodeTypeId: string, escapedName: string) {
+		if (nodeTypeId === 'Table' && escapedName.indexOf(' ') > 0) {
+			return `[@"${escapedName}"]`;
+		}
+
+		return escapedName;
 	}
 
 	private escapeString(input: string | undefined): string | undefined {
