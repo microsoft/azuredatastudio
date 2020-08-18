@@ -66,7 +66,6 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@ICapabilitiesService capabilitiesService: ICapabilitiesService,
-		@ILogService private _logService: ILogService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IKeybindingService private _keybindingService: IKeybindingService
 	) {
@@ -343,7 +342,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 	public addObjectExplorerNodeAndRefreshTree(connection: IConnectionProfile): void {
 		hide(this.messages);
 		if (!this._objectExplorerService.getObjectExplorerNode(connection)) {
-			this._objectExplorerService.updateObjectExplorerNodes(connection).catch(e => this._logService.error(`Unexpected error in addObjectExplorerNodeAndRefreshTree : ${e}`));
+			this._objectExplorerService.updateObjectExplorerNodes(connection).catch(e => errors.onUnexpectedError(e));
 		}
 	}
 

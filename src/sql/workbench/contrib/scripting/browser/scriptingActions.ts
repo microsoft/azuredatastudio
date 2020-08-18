@@ -323,7 +323,9 @@ export async function handleOeRefreshCommand(accessor: ServicesAccessor, args: O
 	const tree = objectExplorerService.getServerTreeView().tree;
 	try {
 		await objectExplorerService.refreshTreeNode(treeNode.getSession(), treeNode);
-		if (!(tree instanceof AsyncServerTree)) {
+		if (tree instanceof AsyncServerTree) {
+			await tree.updateChildren(treeNode);
+		} else {
 			await tree.refresh(treeNode);
 		}
 	} catch (err) {
