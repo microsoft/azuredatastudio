@@ -76,7 +76,10 @@ export default class MainController implements vscode.Disposable {
 		IconPathHelper.setExtensionContext(this.extensionContext);
 
 		// init view
-		const treeView = vscode.window.createTreeView(SQL_DATABASE_PROJECTS_VIEW_ID, { treeDataProvider: this.dbProjectTreeViewProvider });
+		const treeView = vscode.window.createTreeView(SQL_DATABASE_PROJECTS_VIEW_ID, {
+			treeDataProvider: this.dbProjectTreeViewProvider,
+			showCollapseAll: true
+		});
 		this.dbProjectTreeViewProvider.setTreeView(treeView);
 
 		this.extensionContext.subscriptions.push(treeView);

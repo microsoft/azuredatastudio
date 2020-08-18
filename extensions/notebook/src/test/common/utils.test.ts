@@ -45,10 +45,6 @@ describe('Utils Tests', function () {
 		should(utils.getErrorMessage(errMsg)).equal(errMsg);
 	});
 
-	it('getOSPlatform', async () => {
-		should(utils.getOSPlatform()).not.throw();
-	});
-
 	it('getOSPlatformId', async () => {
 		should(utils.getOSPlatformId()).not.throw();
 	});
