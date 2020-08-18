@@ -254,6 +254,7 @@ export class QueryEditor extends BaseEditor {
 	}
 
 	private setTaskbarContent(): void {
+		// Create HTML Elements for the taskbar
 		const separator = Taskbar.createTaskbarSeparator();
 		let content: ITaskbarContent[];
 		const previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
