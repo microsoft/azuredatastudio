@@ -83,7 +83,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _textCellsLoading: number = 0;
 	private _standardKernels: notebookUtils.IStandardKernelWithProvider[];
 	private _kernelAliases: string[] = [];
+<<<<<<< HEAD
 	private _currentKernelAlias: string;
+=======
+>>>>>>> Kusto Notebook Kernel Changes  (#11760)
 
 	public requestConnectionHandler: () => Promise<boolean>;
 
@@ -241,10 +244,13 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._kernelAliases;
 	}
 
+<<<<<<< HEAD
 	public get currentKernelAlias(): string {
 		return this._currentKernelAlias;
 	}
 
+=======
+>>>>>>> Kusto Notebook Kernel Changes  (#11760)
 	public set trustedMode(isTrusted: boolean) {
 		this._trustedMode = isTrusted;
 
@@ -732,9 +738,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		let oldDisplayName = this._activeClientSession && this._activeClientSession.kernel ? this._activeClientSession.kernel.name : undefined;
 		let nbKernelAlias: string;
 		if (this.kernelAliases.includes(displayName)) {
+<<<<<<< HEAD
 			this._currentKernelAlias = displayName;
 			displayName = 'SQL';
 			nbKernelAlias = this.currentKernelAlias;
+=======
+			displayName = 'SQL';
+			nbKernelAlias = 'Kusto';
+>>>>>>> Kusto Notebook Kernel Changes  (#11760)
 		}
 		try {
 			let changeKernelNeeded = true;
