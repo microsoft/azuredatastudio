@@ -29,7 +29,6 @@ import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import TurndownService = require('turndown');
 import { TextModel } from 'vs/editor/common/model/textModel';
-import { EditOperation } from 'vs/editor/common/core/editOperation';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -226,10 +225,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			let textModel = (editor.getEditor().getControl()?.getModel() as TextModel);
 			if (textModel) {
 				let newCellSource: string = this.turnDownService.turndown(textOutputElement.innerHTML);
-				let selections = this.getEditor()?.getControl().getSelections();
-				// If selections are undefined, that's ok
-				textModel.pushEditOperations(selections, [EditOperation.replace(textModel.getFullModelRange(), newCellSource)], undefined);
-				this._changeRef.detectChanges();
+				if (textModel.getValue() !== newCellSource) {
+					this.cellModel.source = newCellSource;
+				}
 			}
 		}
 	}
