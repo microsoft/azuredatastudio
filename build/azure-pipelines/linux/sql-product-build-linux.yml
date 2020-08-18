@@ -196,6 +196,7 @@ steps:
         ]
       SessionTimeout: 120
     displayName: 'Signing Extensions'
+    condition: and(succeeded(), eq(variables['signed'], true))
 
   - script: |
       set -e
