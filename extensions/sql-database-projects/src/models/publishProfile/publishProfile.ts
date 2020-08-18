@@ -52,7 +52,6 @@ export async function load(profileUri: Uri, dacfxService: mssql.IDacFxService): 
 	};
 }
 
-
 async function readConnectionString(xmlDoc: any): Promise<{ connectionId: string, connectionString: string }> {
 	let targetConnectionString: string = '';
 	let connId: string = '';

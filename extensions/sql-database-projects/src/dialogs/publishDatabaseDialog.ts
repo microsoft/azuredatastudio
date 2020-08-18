@@ -12,8 +12,8 @@ import { Project } from '../models/project';
 import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStringSource';
 import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
 import { DeploymentOptions } from '../../../mssql/src/mssql';
-
-const titleFontSize = 12;
+import { IconPathHelper } from '../common/iconHelper';
+import { cssStyles } from '../common/uiConstants';
 
 interface DataSourceDropdownValue extends azdata.CategoryValue {
 	dataSource: SqlConnectionDataSource;
@@ -31,13 +31,14 @@ export class PublishDatabaseDialog {
 	private connectionsRadioButton: azdata.RadioButtonComponent | undefined;
 	private dataSourcesRadioButton: azdata.RadioButtonComponent | undefined;
 	private loadProfileButton: azdata.ButtonComponent | undefined;
-	private sqlCmdVariablesTable: azdata.TableComponent | undefined;
-	private sqlCmdVariablesFormComponent: azdata.FormComponent | undefined;
+	private sqlCmdVariablesTable: azdata.DeclarativeTableComponent | undefined;
+	private sqlCmdVariablesFormComponentGroup: azdata.FormComponentGroup | undefined;
+	private loadSqlCmdVarsButton: azdata.ButtonComponent | undefined;
 	private formBuilder: azdata.FormBuilder | undefined;
 
 	private connectionId: string | undefined;
 	private connectionIsDataSource: boolean | undefined;
-	private profileSqlCmdVars: Record<string, string> | undefined;
+	private sqlCmdVars: Record<string, string> | undefined;
 	private deploymentOptions: DeploymentOptions | undefined;
 
 	private toDispose: vscode.Disposable[] = [];
@@ -97,23 +98,21 @@ export class PublishDatabaseDialog {
 			});
 
 			this.loadProfileButton = this.createLoadProfileButton(view);
-			this.sqlCmdVariablesTable = view.modelBuilder.table().withProperties({
-				title: constants.sqlCmdTableLabel,
-				data: this.convertSqlCmdVarsToTableFormat(this.project.sqlCmdVariables),
-				columns: [
+			this.sqlCmdVariablesTable = this.createSqlCmdTable(view);
+			this.loadSqlCmdVarsButton = this.createLoadSqlCmdVarsButton(view);
+
+			this.sqlCmdVariablesFormComponentGroup = {
+				components: [
 					{
-						value: constants.sqlCmdVariableColumn
+						title: '',
+						component: this.loadSqlCmdVarsButton
 					},
 					{
-						value: constants.sqlCmdValueColumn,
-					}],
-				width: 400,
-				height: 400
-			}).component();
-
-			this.sqlCmdVariablesFormComponent = {
-				title: constants.sqlCmdTableLabel,
-				component: <azdata.TableComponent>this.sqlCmdVariablesTable
+						title: '',
+						component: <azdata.DeclarativeTableComponent>this.sqlCmdVariablesTable
+					}
+				],
+				title: constants.sqlCmdTableLabel
 			};
 
 			this.formBuilder = <azdata.FormBuilder>view.modelBuilder.formContainer()
@@ -146,7 +145,7 @@ export class PublishDatabaseDialog {
 
 			// add SQLCMD variables table if the project has any
 			if (Object.keys(this.project.sqlCmdVariables).length > 0) {
-				this.formBuilder.addFormItem(this.sqlCmdVariablesFormComponent, { titleFontSize: titleFontSize });
+				this.formBuilder.addFormItem(this.sqlCmdVariablesFormComponentGroup, { titleFontSize: cssStyles.titleFontSize });
 			}
 
 			let formModel = this.formBuilder.component();
@@ -220,14 +219,8 @@ export class PublishDatabaseDialog {
 	}
 
 	private getSqlCmdVariablesForPublish(): Record<string, string> {
-		// get SQLCMD variables from project
-		let sqlCmdVariables = { ...this.project.sqlCmdVariables };
-
-		// update with SQLCMD variables loaded from profile if there are any
-		for (const key in this.profileSqlCmdVars) {
-			sqlCmdVariables[key] = this.profileSqlCmdVars[key];
-		}
-
+		// get SQLCMD variables from table
+		let sqlCmdVariables = { ...this.sqlCmdVars };
 		return sqlCmdVariables;
 	}
 
@@ -346,6 +339,69 @@ export class PublishDatabaseDialog {
 		}
 	}
 
+	private createSqlCmdTable(view: azdata.ModelView): azdata.DeclarativeTableComponent {
+		this.sqlCmdVars = { ...this.project.sqlCmdVariables };
+
+		const table = view.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
+			ariaLabel: constants.sqlCmdTableLabel,
+			data: this.convertSqlCmdVarsToTableFormat(this.sqlCmdVars),
+			columns: [
+				{
+					displayName: constants.sqlCmdVariableColumn,
+					valueType: azdata.DeclarativeDataType.string,
+					width: '50%',
+					isReadOnly: true,
+					headerCssStyles: cssStyles.tableHeader,
+					rowCssStyles: cssStyles.tableRow
+				},
+				{
+					displayName: constants.sqlCmdValueColumn,
+					valueType: azdata.DeclarativeDataType.string,
+					width: '50%',
+					isReadOnly: false,
+					headerCssStyles: cssStyles.tableHeader,
+					rowCssStyles: cssStyles.tableRow
+				}],
+			width: '100%'
+		}).component();
+
+		table.onDataChanged(() => {
+			this.sqlCmdVars = {};
+			table.data.forEach((row) => {
+				(<Record<string, string>>this.sqlCmdVars)[row[0]] = row[1];
+			});
+
+			this.tryEnableGenerateScriptAndOkButtons();
+		});
+
+		return table;
+	}
+
+	private createLoadSqlCmdVarsButton(view: azdata.ModelView): azdata.ButtonComponent {
+		let loadSqlCmdVarsButton: azdata.ButtonComponent = view.modelBuilder.button().withProperties({
+			label: constants.loadSqlCmdVarsButtonTitle,
+			title: constants.loadSqlCmdVarsButtonTitle,
+			ariaLabel: constants.loadSqlCmdVarsButtonTitle,
+			width: '210px',
+			iconPath: IconPathHelper.refresh,
+			height: '18px',
+			CSSStyles: { 'font-size': '13px' }
+		}).component();
+
+		loadSqlCmdVarsButton.onDidClick(async () => {
+			this.sqlCmdVars = { ...this.project.sqlCmdVariables };
+
+			const data = this.convertSqlCmdVarsToTableFormat(this.getSqlCmdVariablesForPublish());
+			await (<azdata.DeclarativeTableComponent>this.sqlCmdVariablesTable).updateProperties({
+				data: data
+			});
+
+			this.tryEnableGenerateScriptAndOkButtons();
+		});
+
+		return loadSqlCmdVarsButton;
+	}
+
 	private createEditConnectionButton(view: azdata.ModelView): azdata.Component {
 		let editConnectionButton: azdata.ButtonComponent = view.modelBuilder.button().withProperties({
 			label: constants.editConnectionButtonText,
@@ -419,22 +475,25 @@ export class PublishDatabaseDialog {
 				this.connectionId = result.connectionId;
 				(<azdata.InputBoxComponent>this.targetConnectionTextBox).value = result.connectionString;
 
-				this.deploymentOptions = result.options;
-				this.profileSqlCmdVars = result.sqlCmdVariables;
-				const data = this.convertSqlCmdVarsToTableFormat(this.getSqlCmdVariablesForPublish());
+				for (let key in result.sqlCmdVariables) {
+					(<Record<string, string>>this.sqlCmdVars)[key] = result.sqlCmdVariables[key];
+				}
 
-				await (<azdata.TableComponent>this.sqlCmdVariablesTable).updateProperties({
+				this.deploymentOptions = result.options;
+
+				const data = this.convertSqlCmdVarsToTableFormat(this.getSqlCmdVariablesForPublish());
+				await (<azdata.DeclarativeTableComponent>this.sqlCmdVariablesTable).updateProperties({
 					data: data
 				});
 
 				if (Object.keys(result.sqlCmdVariables).length) {
 					// add SQLCMD Variables table if it wasn't there before
 					if (Object.keys(this.project.sqlCmdVariables).length === 0) {
-						this.formBuilder?.addFormItem(<azdata.FormComponent>this.sqlCmdVariablesFormComponent, { titleFontSize: titleFontSize });
+						this.formBuilder?.addFormItem(<azdata.FormComponentGroup>this.sqlCmdVariablesFormComponentGroup, { titleFontSize: cssStyles.titleFontSize });
 					}
 				} else if (Object.keys(this.project.sqlCmdVariables).length === 0) {
 					// remove the table if there are no SQLCMD variables in the project and loaded profile
-					this.formBuilder?.removeFormItem(<azdata.FormComponent>this.sqlCmdVariablesFormComponent);
+					this.formBuilder?.removeFormItem(<azdata.FormComponentGroup>this.sqlCmdVariablesFormComponentGroup);
 				}
 			}
 		});
@@ -453,13 +512,24 @@ export class PublishDatabaseDialog {
 
 	// only enable Generate Script and Ok buttons if all fields are filled
 	private tryEnableGenerateScriptAndOkButtons(): void {
-		if (this.targetConnectionTextBox!.value && this.targetDatabaseTextBox!.value
-			|| this.connectionIsDataSource && this.targetDatabaseTextBox!.value) {
+		if ((this.targetConnectionTextBox!.value && this.targetDatabaseTextBox!.value
+			|| this.connectionIsDataSource && this.targetDatabaseTextBox!.value)
+			&& this.allSqlCmdVariablesFilled()) {
 			this.dialog.okButton.enabled = true;
 			this.dialog.customButtons[0].enabled = true;
 		} else {
 			this.dialog.okButton.enabled = false;
 			this.dialog.customButtons[0].enabled = false;
 		}
+	}
+
+	private allSqlCmdVariablesFilled(): boolean {
+		for (let key in this.sqlCmdVars) {
+			if (this.sqlCmdVars[key] === '' || this.sqlCmdVars[key] === undefined) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 }
