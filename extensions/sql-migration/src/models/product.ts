@@ -3,18 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.monaco-workbench .binarydiff-left {
-	float: left;
+export interface Product {
+	name: string;
+	learnMoreLink: string | undefined;
+	icon: string;
 }
 
-.monaco-workbench .binarydiff-right {
-	border-left: 3px solid #DDD;
-}
-
-.monaco-workbench.vs-dark .binarydiff-right {
-	border-left: 3px solid rgb(20, 20, 20);
-}
-
-.monaco-workbench.hc-black .binarydiff-right {
-	border-left: 3px solid #6FC3DF;
+export interface SKURecommendation {
+	product: Product;
+	migratableDatabases: number;
+	totalDatabases: number;
 }

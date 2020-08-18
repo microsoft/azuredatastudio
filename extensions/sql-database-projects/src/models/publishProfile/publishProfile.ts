@@ -52,13 +52,12 @@ export async function load(profileUri: Uri, dacfxService: mssql.IDacFxService): 
 	};
 }
 
-
 async function readConnectionString(xmlDoc: any): Promise<{ connectionId: string, connectionString: string }> {
 	let targetConnectionString: string = '';
 	let connId: string = '';
 
-	if (xmlDoc.documentElement.getElementsByTagName('TargetConnectionString').length > 0) {
-		targetConnectionString = xmlDoc.documentElement.getElementsByTagName('TargetConnectionString')[0].textContent;
+	if (xmlDoc.documentElement.getElementsByTagName(constants.targetConnectionString).length > 0) {
+		targetConnectionString = xmlDoc.documentElement.getElementsByTagName(constants.TargetConnectionString)[0].textContent;
 		const dataSource = new SqlConnectionDataSource('temp', targetConnectionString);
 		const connectionProfile = dataSource.getConnectionProfile();
 

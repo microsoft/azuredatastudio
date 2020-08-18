@@ -17,6 +17,7 @@ import { IExtensionGalleryService } from 'vs/platform/extensionManagement/common
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 
 export abstract class AbstractTelemetryOptOut implements IWorkbenchContribution {
 
@@ -33,10 +34,11 @@ export abstract class AbstractTelemetryOptOut implements IWorkbenchContribution 
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@IExtensionGalleryService private readonly galleryService: IExtensionGalleryService,
 		@IProductService private readonly productService: IProductService,
+		@IEnvironmentService private readonly environmentService: IEnvironmentService
 	) { }
 
 	protected async handleTelemetryOptOut(): Promise<void> {
-		if (this.productService.telemetryOptOutUrl && !this.storageService.get(AbstractTelemetryOptOut.TELEMETRY_OPT_OUT_SHOWN, StorageScope.GLOBAL)) {
+		if (this.productService.telemetryOptOutUrl && !this.storageService.get(AbstractTelemetryOptOut.TELEMETRY_OPT_OUT_SHOWN, StorageScope.GLOBAL) && !this.environmentService.disableTelemetry) { // {{SQL CARBON EDIT}} add check for disable telemetry
 			const experimentId = 'telemetryOptOut';
 
 			const [count, experimentState] = await Promise.all([this.getWindowCount(), this.experimentService.getExperimentById(experimentId)]);
@@ -164,9 +166,10 @@ export class BrowserTelemetryOptOut extends AbstractTelemetryOptOut {
 		@IExperimentService experimentService: IExperimentService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IExtensionGalleryService galleryService: IExtensionGalleryService,
-		@IProductService productService: IProductService
+		@IProductService productService: IProductService,
+		@IEnvironmentService environmentService: IEnvironmentService
 	) {
-		super(storageService, openerService, notificationService, hostService, telemetryService, experimentService, configurationService, galleryService, productService);
+		super(storageService, openerService, notificationService, hostService, telemetryService, experimentService, configurationService, galleryService, productService, environmentService);
 
 		this.handleTelemetryOptOut();
 	}
