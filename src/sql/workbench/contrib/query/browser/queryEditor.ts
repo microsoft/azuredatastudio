@@ -254,11 +254,6 @@ export class QueryEditor extends BaseEditor {
 	}
 
 	private setTaskbarContent(): void {
-		// Remove current actions from the taskbar
-		while (this.taskbar.length() > 0) {
-			this.taskbar.pull(0);
-		}
-
 		const separator = Taskbar.createTaskbarSeparator();
 		let content: ITaskbarContent[];
 		const previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
