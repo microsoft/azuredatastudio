@@ -167,7 +167,6 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 	});
 
 	vscode.commands.registerCommand('azure.resource.openInAzurePortal', async (connectionProfile: azdata.IConnectionProfile) => {
-
 		if (
 			!connectionProfile.azureResourceId ||
 			!connectionProfile.azurePortalEndpoint ||

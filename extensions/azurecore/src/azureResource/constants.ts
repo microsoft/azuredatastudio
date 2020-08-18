@@ -10,6 +10,8 @@ export enum AzureResourceItemType {
 	database = 'azure.resource.itemType.database',
 	databaseServerContainer = 'azure.resource.itemType.databaseServerContainer',
 	databaseServer = 'azure.resource.itemType.databaseServer',
+	azureDataExplorerContainer = 'azure.resource.itemType.azureDataExplorerContainer',
+	azureDataExplorer = 'azure.resource.itemType.azureDataExplorer',
 	sqlInstance = 'azure.resource.itemType.sqlInstance',
 	message = 'azure.resource.itemType.message'
 }
