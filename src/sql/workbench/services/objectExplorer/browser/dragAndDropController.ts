@@ -85,7 +85,12 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 		if (supportsNodeNameDrop(element.nodeTypeId)) {
 			escapedSchema = this.escapeString(element.metadata.schema);
 			escapedName = this.escapeString(element.metadata.name);
-			finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
+			let providerName = this.getProviderNameFromElement(element);
+			if (providerName === 'KUSTO') {
+				finalString = escapedName;
+			} else {
+				finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
+			}
 			originalEvent.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([`${element.nodeTypeId}:${element.id}?${finalString}`]));
 		}
 		if (element.nodeTypeId === 'Folder' && element.label === 'Columns') {
@@ -101,6 +106,15 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 			originalEvent.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([`${element.nodeTypeId}:${element.id}?${returnString}`]));
 		}
 		return;
+	}
+
+	private getProviderNameFromElement(element: TreeNode): string | undefined {
+
+		if (element.connection) {
+			return element.connection.providerName;
+		}
+
+		return this.getProviderNameFromElement(element.parent);
 	}
 
 	private escapeString(input: string | undefined): string | undefined {
