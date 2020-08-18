@@ -15,6 +15,7 @@ import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode'
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import { badgeRenderer, iconRenderer } from 'sql/workbench/services/objectExplorer/browser/iconRenderer';
 import { URI } from 'vs/base/common/uri';
+import { DefaultServerGroupColor } from 'sql/workbench/services/serverGroup/common/serverGroupViewModel';
 
 export interface IConnectionTemplateData {
 	root: HTMLElement;
@@ -238,7 +239,7 @@ export class ServerTreeRenderer implements IRenderer {
 				rowElement.style.background = connectionProfileGroup.color;
 			} else {
 				// If the group doesn't contain specific color, assign the default color
-				rowElement.style.background = '#515151';
+				rowElement.style.background = DefaultServerGroupColor;
 			}
 		}
 		if (connectionProfileGroup.description && (connectionProfileGroup.description !== '')) {

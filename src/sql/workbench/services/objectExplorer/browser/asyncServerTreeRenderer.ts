@@ -21,6 +21,7 @@ import { IKeyboardNavigationLabelProvider } from 'vs/base/browser/ui/list/list';
 import { IListAccessibilityProvider } from 'vs/base/browser/ui/list/listWidget';
 import { ServerTreeRenderer } from 'sql/workbench/services/objectExplorer/browser/serverTreeRenderer';
 import { ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
+import { DefaultServerGroupColor } from 'sql/workbench/services/serverGroup/common/serverGroupViewModel';
 
 class ConnectionProfileGroupTemplate extends Disposable {
 	private _root: HTMLElement;
@@ -43,7 +44,7 @@ class ConnectionProfileGroupTemplate extends Disposable {
 				rowElement.style.background = element.color;
 			} else {
 				// If the group doesn't contain specific color, assign the default color
-				rowElement.style.background = '#515151';
+				rowElement.style.background = DefaultServerGroupColor;
 			}
 		}
 		if (element.description && (element.description !== '')) {
