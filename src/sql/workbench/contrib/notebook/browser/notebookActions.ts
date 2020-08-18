@@ -311,7 +311,7 @@ export class KernelsDropdown extends SelectBox {
 	public updateKernel(kernel: azdata.nb.IKernel, nbKernelAlias?: string) {
 		let kernels: string[] = this._showAllKernels ? [...new Set(this.model.specs.kernels.map(a => a.display_name).concat(this.model.standardKernelsDisplayName()))]
 			: this.model.standardKernelsDisplayName();
-		if (this.model.kernelAliases !== undefined && this.model.kernelAliases?.length !== 0) {
+		if (this.model.kernelAliases?.length) {
 			for (let x in this.model.kernelAliases) {
 				kernels.splice(1, 0, this.model.kernelAliases[x]);
 			}
@@ -363,8 +363,6 @@ export class AttachToDropdown extends SelectBox {
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 	) {
 		super([msgLoadingContexts], msgLoadingContexts, contextViewProvider, container, { labelText: attachToLabel, labelOnTop: false, ariaLabel: attachToLabel } as ISelectBoxOptionsWithLabel);
-
-
 		if (modelReady) {
 			modelReady
 				.then(model => {
