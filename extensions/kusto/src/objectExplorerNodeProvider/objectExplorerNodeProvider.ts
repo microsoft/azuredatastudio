@@ -9,27 +9,23 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import { ProviderBase } from './providerBase';
-import { SqlClusterConnection } from './connection';
-import * as utils from '../utils';
+import { KustoClusterConnection } from './connection';
 import { TreeNode } from './treeNodes';
-import { ConnectionNode, TreeDataContext, ITreeChangeHandler } from './hdfsProvider';
-import { IFileSource } from './fileSources';
 import { AppContext } from '../appContext';
 import * as constants from '../constants';
-import * as SqlClusterLookUp from '../sqlClusterLookUp';
 import { ICommandObjectExplorerContext } from './command';
 
 export const kustoOutputChannel = vscode.window.createOutputChannel(constants.providerId);
-
-export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azdata.ObjectExplorerNodeProvider, ITreeChangeHandler {
+export interface ITreeChangeHandler {
+	notifyNodeChanged(node: TreeNode): void;
+}
+export class KustoObjectExplorerNodeProvider extends ProviderBase implements azdata.ObjectExplorerNodeProvider, ITreeChangeHandler {
 	public readonly supportedProviderId: string = constants.providerId;
-	private sessionMap: Map<string, SqlClusterSession>;
 	private expandCompleteEmitter = new vscode.EventEmitter<azdata.ObjectExplorerExpandInfo>();
 
 	constructor(private appContext: AppContext) {
 		super();
-		this.sessionMap = new Map<string, SqlClusterSession>();
-		this.appContext.registerService<MssqlObjectExplorerNodeProvider>(constants.ObjectExplorerService, this);
+		this.appContext.registerService<KustoObjectExplorerNodeProvider>(constants.ObjectExplorerService, this);
 	}
 
 	handleSessionOpen(session: azdata.ObjectExplorerSession): Thenable<boolean> {
@@ -45,15 +41,9 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 	private async doSessionOpen(session: azdata.ObjectExplorerSession): Promise<boolean> {
 		if (!session || !session.sessionId) { return false; }
 
-		let sqlConnProfile = await azdata.objectexplorer.getSessionConnectionProfile(session.sessionId);
-		if (!sqlConnProfile) { return false; }
+		let connProfile = await azdata.objectexplorer.getSessionConnectionProfile(session.sessionId);
+		if (!connProfile) { return false; }
 
-		let clusterConnInfo = await SqlClusterLookUp.getSqlClusterConnection(sqlConnProfile);
-		if (!clusterConnInfo) { return false; }
-
-		let clusterConnection = new SqlClusterConnection(clusterConnInfo);
-		let clusterSession = new SqlClusterSession(clusterConnection, session, sqlConnProfile, this.appContext, this);
-		this.sessionMap.set(session.sessionId, clusterSession);
 		return true;
 	}
 
@@ -68,7 +58,6 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 	}
 
 	private async doExpandNode(nodeInfo: azdata.ExpandNodeInfo, isRefresh: boolean = false): Promise<boolean> {
-		let session = this.sessionMap.get(nodeInfo.sessionId);
 		let response = {
 			sessionId: nodeInfo.sessionId,
 			nodePath: nodeInfo.nodePath,
@@ -76,53 +65,19 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 			nodes: []
 		};
 
-		if (!session) {
-			// This is not an error case. Just fire reponse with empty nodes for example: request from standalone SQL instance
-			this.expandCompleteEmitter.fire(response);
-			return false;
-		} else {
-			setTimeout(() => {
+		this.expandCompleteEmitter.fire(response);
 
-				// Running after promise resolution as we need the Ops Studio-side map to have been updated
-				// Intentionally not awaiting or catching errors.
-				// Any failure in startExpansion should be emitted in the expand complete result
-				// We want this to be async and ideally return true before it completes
-				this.startExpansion(session, nodeInfo, isRefresh);
-			}, 10);
-		}
 		return true;
 	}
 
-	private async startExpansion(session: SqlClusterSession, nodeInfo: azdata.ExpandNodeInfo, isRefresh: boolean = false): Promise<void> {
-		let expandResult: azdata.ObjectExplorerExpandInfo = {
-			sessionId: session.sessionId,
-			nodePath: nodeInfo.nodePath,
-			errorMessage: undefined,
-			nodes: []
-		};
-		try {
-			let node = await session.rootNode.findNodeByPath(nodeInfo.nodePath, true);
-			if (node) {
-				expandResult.errorMessage = node.getNodeInfo().errorMessage;
-				node.getChildren(true);
-			}
-		} catch (error) {
-			expandResult.errorMessage = utils.getErrorMessage(error);
-		}
-		this.expandCompleteEmitter.fire(expandResult);
-	}
-
 	refreshNode(nodeInfo: azdata.ExpandNodeInfo): Thenable<boolean> {
-		// TODO #3815 implement properly
 		return this.expandNode(nodeInfo, true);
 	}
 
 	handleSessionClose(closeSessionInfo: azdata.ObjectExplorerCloseSessionInfo): void {
-		this.sessionMap.delete(closeSessionInfo.sessionId);
 	}
 
 	findNodes(findNodesInfo: azdata.FindNodesInfo): Thenable<azdata.ObjectExplorerFindNodesResponse> {
-		// TODO #3814 implement
 		let response: azdata.ObjectExplorerFindNodesResponse = {
 			nodes: []
 		};
@@ -186,11 +141,6 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 	}
 
 	public findSqlClusterSessionBySqlConnProfile(connectionProfile: azdata.IConnectionProfile): SqlClusterSession {
-		for (let session of this.sessionMap.values()) {
-			if (session.isMatchedSqlConnection(connectionProfile)) {
-				return session;
-			}
-		}
 		return undefined;
 	}
 }
@@ -199,18 +149,15 @@ export class SqlClusterSession {
 	private _rootNode: SqlClusterRootNode;
 
 	constructor(
-		private _sqlClusterConnection: SqlClusterConnection,
+		private _sqlClusterConnection: KustoClusterConnection,
 		private _sqlSession: azdata.ObjectExplorerSession,
-		private _sqlConnectionProfile: azdata.IConnectionProfile,
-		private _appContext: AppContext,
-		private _changeHandler: ITreeChangeHandler
+		private _sqlConnectionProfile: azdata.IConnectionProfile
 	) {
 		this._rootNode = new SqlClusterRootNode(this,
-			new TreeDataContext(this._appContext.extensionContext, this._changeHandler),
 			this._sqlSession.rootNode.nodePath);
 	}
 
-	public get sqlClusterConnection(): SqlClusterConnection { return this._sqlClusterConnection; }
+	public get sqlClusterConnection(): KustoClusterConnection { return this._sqlClusterConnection; }
 	public get sqlSession(): azdata.ObjectExplorerSession { return this._sqlSession; }
 	public get sqlConnectionProfile(): azdata.IConnectionProfile { return this._sqlConnectionProfile; }
 	public get sessionId(): string { return this._sqlSession.sessionId; }
@@ -225,7 +172,6 @@ class SqlClusterRootNode extends TreeNode {
 	private _children: TreeNode[];
 	constructor(
 		private _session: SqlClusterSession,
-		private _treeDataContext: TreeDataContext,
 		private _nodePathValue: string
 	) {
 		super();
@@ -248,10 +194,6 @@ class SqlClusterRootNode extends TreeNode {
 
 	private async refreshChildren(): Promise<TreeNode[]> {
 		this._children = [];
-		let fileSource: IFileSource = await this.session.sqlClusterConnection.createHdfsFileSource();
-		let hdfsNode = new ConnectionNode(this._treeDataContext, localize('hdfsFolder', "HDFS"), fileSource);
-		hdfsNode.parent = this;
-		this._children.push(hdfsNode);
 		return this._children;
 	}
 
