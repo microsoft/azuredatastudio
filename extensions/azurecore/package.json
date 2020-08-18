@@ -172,14 +172,6 @@
           "dark": "resources/dark/add_to_server_list_inverse.svg",
           "light": "resources/light/add_to_server_list.svg"
         }
-      },
-      {
-        "command": "azure.resource.connectazureDataExplorer",
-        "title": "%azure.resource.connectazureDataExplorer.title%",
-        "icon": {
-          "dark": "resources/dark/connect_to_inverse.svg",
-          "light": "resources/light/connect_to.svg"
-        }
       }
     ],
     "dataExplorer": {
@@ -218,10 +210,6 @@
         },
         {
           "command": "azure.resource.connectsqlserver",
-          "when": "false"
-        },
-        {
-          "command": "azure.resource.connectazureDataExplorer",
           "when": "false"
         }
       ],
@@ -274,7 +262,7 @@
           "group": "inline"
         },
         {
-          "command": "azure.resource.connectazureDataExplorer",
+          "command": "azure.resource.connectsqlserver",
           "when": "viewItem == azure.resource.itemType.azureDataExplorer",
           "group": "inline"
         },
