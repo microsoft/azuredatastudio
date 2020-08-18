@@ -5,67 +5,91 @@
 
 import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
+import * as azdata from 'azdata';
+import * as os from 'os';
+import * as path from 'path';
+import * as fs from 'fs-extra';
+import * as uuid from 'uuid';
+// import * as pfs from 'vs/base/node/pfs';
 import { DataResourceDataProvider } from '../../browser/outputs/gridOutput.component';
 import { IDataResource } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
 import { ResultSetSummary } from 'sql/workbench/services/query/common/query';
-import { INotificationService } from 'vs/platform/notification/common/notification';
-import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
+import { TestFileDialogService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { SerializationService } from 'sql/platform/serialization/common/serializationService';
 import { SaveFormat, ResultSerializer } from 'sql/workbench/services/query/common/resultSerializer';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
+import { URI } from 'vs/base/common/uri';
+
+export class TestSerializationProvider implements azdata.SerializationProvider {
+	handle?: number;
+	providerId: string;
+	constructor(providerId: string = 'providerId') { }
+
+	startSerialization(requestParams: azdata.SerializeDataStartRequestParams): Thenable<azdata.SerializeDataResult> {
+		return Promise.resolve(undefined);
+	}
+
+	continueSerialization(requestParams: azdata.SerializeDataContinueRequestParams): Thenable<azdata.SerializeDataResult> {
+		return Promise.resolve(undefined);
+	}
+
+}
 
 suite('Data Resource Data Provider', function () {
-	let source: IDataResource;
-	let resultSet: ResultSetSummary;
-	let documentUri: string;
-	let _notificationService: INotificationService;
-	let _clipboardService: IClipboardService;
-	let _configurationService: IConfigurationService;
-	let _textResourcePropertiesService: ITextResourcePropertiesService;
-	let _serializationService: TypeMoq.Mock<SerializationService>;
-	let _instantiationService: TypeMoq.Mock<InstantiationService>;
+	let _notificationService: TestNotificationService;
 	let dataResourceDataProvider: DataResourceDataProvider;
-	let mockResultSerializer: TypeMoq.Mock<ResultSerializer>;
-	let format: SaveFormat;
-	let selection: Slick.Range[];
+	let fileDialogService: TypeMoq.Mock<TestFileDialogService>;
+	let saveFile: URI;
+	let serializer: ResultSerializer;
 
-	suiteSetup(() => {
-		source = {
+	suiteSetup(async () => {
+		let source: IDataResource = {
 			data: [{ 0: '1' }],
 			schema: { fields: [{ name: 'col1' }] }
 		};
-		resultSet = {
+		let resultSet: ResultSetSummary = {
 			batchId: 0,
 			columnInfo: [{ columnName: 'col1' }],
 			complete: true,
 			id: 0,
 			rowCount: 1
 		};
-		documentUri = 'untitled:Notebook-0';
-		_notificationService = undefined;
-		_clipboardService = undefined;
-		_configurationService = undefined;
-		_textResourcePropertiesService = undefined;
-		_serializationService = TypeMoq.Mock.ofType(SerializationService);
-		mockResultSerializer = TypeMoq.Mock.ofType(ResultSerializer);
-		_instantiationService = TypeMoq.Mock.ofType(InstantiationService);
+		let documentUri = 'untitled:Notebook-0';
+		let tempFolderPath = path.join(os.tmpdir(), `TestDataResourceDataProvider_${uuid.v4()}`);
+		await fs.mkdir(tempFolderPath);
+		saveFile = URI.file(path.join(tempFolderPath, 'results.csv'));
+		serializer = new ResultSerializer(
+			undefined, // IQueryManagementService
+			undefined, // IConfigurationService
+			undefined, // IEditorService
+			undefined, // IWorkspaceContextService
+			fileDialogService.object,
+			_notificationService,
+			undefined // IOpenerService
+		);
+
+		fileDialogService = TypeMoq.Mock.ofType(TestFileDialogService, TypeMoq.MockBehavior.Strict);
+		fileDialogService.setup(x => x.showSaveDialog(TypeMoq.It.isAny()))
+			.returns(() => Promise.resolve(saveFile));
+		_notificationService = new TestNotificationService();
+		let _serializationService = new SerializationService(undefined, undefined); //_connectionService _capabilitiesService
+		_serializationService.registerProvider('testProviderId', new TestSerializationProvider());
+		let _instantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Strict);
 		_instantiationService.setup(x => x.createInstance(TypeMoq.It.isValue(ResultSerializer)))
-			.returns(() => mockResultSerializer.object);
+			.returns(() => serializer);
+
 		dataResourceDataProvider = new DataResourceDataProvider(
 			source,
 			resultSet,
 			documentUri,
 			_notificationService,
-			_clipboardService,
-			_configurationService,
-			_textResourcePropertiesService,
-			_serializationService.object,
+			undefined, // IClipboardService
+			undefined, // IConfigurationService
+			undefined, // ITextResourcePropertiesService
+			_serializationService,
 			_instantiationService.object
 		);
-		format = SaveFormat.CSV;
-		selection = undefined;
 	});
 
 	test('getRowData returns correct rows', function (): void {
@@ -75,14 +99,10 @@ suite('Data Resource Data Provider', function () {
 		});
 	});
 
-	test('getColumnHeaders returns correct headers', function (): void {
-		// let headers = dataResourceDataProvider.getColumnHeaders(new Slick.Range(0, 0, 1, 1));
-		// assert(headers === ['col1']);
-	});
-
-	test('serializeResults call is successful', function (): void {
-		dataResourceDataProvider.serializeResults(SaveFormat.CSV, selection);
-		mockResultSerializer.verify(x => x.handleSerialization(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+	test('serializeResults call is successful', async function (): Promise<void> {
+		assert.ok(dataResourceDataProvider.serializeResults(SaveFormat.CSV, undefined));
+		// const data = await pfs.readFile(saveFile.path, 'utf-8');
+		// assert.equal(data.toString(), JSON.stringify({ col1: 1 }));
 	});
 
 });
