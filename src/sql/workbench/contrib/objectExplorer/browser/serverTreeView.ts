@@ -179,7 +179,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 				}
 			}));
 			this._register(this._connectionManagementService.onConnectionChanged(() => {
-				this.refreshTree();
+				this.refreshTree().catch(err => errors.onUnexpectedError);
 			}));
 		}
 
@@ -205,7 +205,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 					this.showError(args.errorMessage);
 				}
 				if (args.connection) {
-					this.onObjectExplorerSessionCreated(args.connection);
+					this.onObjectExplorerSessionCreated(args.connection).catch(err => errors.onUnexpectedError);
 				}
 			}));
 		}
