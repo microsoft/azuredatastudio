@@ -21,11 +21,13 @@ export interface IScrollableViewOptions {
 	smoothScrolling?: boolean;
 	verticalScrollMode?: ScrollbarVisibility;
 	additionalScrollHeight?: number;
+	scrollDebouce?: number;
 }
 
 const DefaultOptions: IScrollableViewOptions = {
 	useShadows: true,
-	verticalScrollMode: ScrollbarVisibility.Auto
+	verticalScrollMode: ScrollbarVisibility.Auto,
+	scrollDebouce: 25
 };
 
 export interface IView {
@@ -83,7 +85,7 @@ export class ScrollableView extends Disposable {
 		this.domNode.appendChild(this.scrollableElement.getDomNode());
 		container.appendChild(this.domNode);
 
-		this._register(Event.debounce(this.scrollableElement.onScroll, (l, e) => e, 25)(this.onScroll, this));
+		this._register(Event.debounce(this.scrollableElement.onScroll, (l, e) => e, getOrDefault(options, o => o.scrollDebouce, DefaultOptions.scrollDebouce))(this.onScroll, this));
 
 		// Prevent the monaco-scrollable-element from scrolling
 		// https://github.com/Microsoft/vscode/issues/44181
