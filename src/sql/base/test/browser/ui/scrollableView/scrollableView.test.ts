@@ -20,7 +20,7 @@ class TestView extends Disposable implements IView {
 		this._onDidLayout.fire({ height, width });
 	}
 
-	private _size: number;
+	private _size: number = 0;
 	public get size(): number {
 		return this._size;
 	}

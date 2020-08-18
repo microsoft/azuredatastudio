@@ -102,7 +102,7 @@ export class ScrollableView extends Disposable {
 			height: typeof height === 'number' ? height : DOM.getContentHeight(this.domNode)
 		};
 
-		this.renderHeight = scrollDimensions.height;
+		this.renderHeight = scrollDimensions.height!;
 
 		this.width = width ?? DOM.getContentWidth(this.domNode);
 
@@ -110,7 +110,7 @@ export class ScrollableView extends Disposable {
 
 		if (this.scrollableElementUpdateDisposable) {
 			this.scrollableElementUpdateDisposable.dispose();
-			this.scrollableElementUpdateDisposable = null;
+			this.scrollableElementUpdateDisposable = undefined;
 			scrollDimensions.scrollHeight = this.scrollHeight;
 		}
 
@@ -120,7 +120,7 @@ export class ScrollableView extends Disposable {
 	setScrollTop(scrollTop: number): void {
 		if (this.scrollableElementUpdateDisposable) {
 			this.scrollableElementUpdateDisposable.dispose();
-			this.scrollableElementUpdateDisposable = null;
+			this.scrollableElementUpdateDisposable = undefined;
 			this.scrollableElement.setScrollDimensions({ scrollHeight: this.scrollHeight });
 		}
 
@@ -136,7 +136,7 @@ export class ScrollableView extends Disposable {
 
 	public addViews(views: IView[]): void { // @todo anthonydresser add ability to splice into the middle of the list and remove a particular index
 		const lastRenderRange = this.getRenderRange(this.lastRenderTop, this.lastRenderHeight);
-		const items = views.map(view => ({ size: view.minimumSize, view, disposables: [], index: 0 }));
+		const items: IItem[] = views.map(view => ({ size: view.minimumSize, view, disposables: [], index: 0 }));
 
 		items.map(i => i.disposables.push(i.view.onDidChange(() => this.rerender(this.getRenderRange(this.lastRenderTop, this.lastRenderHeight)))));
 
@@ -256,7 +256,7 @@ export class ScrollableView extends Disposable {
 
 	// DOM operations
 
-	private insertItemInDOM(index: number, beforeElement: HTMLElement | null): void {
+	private insertItemInDOM(index: number, beforeElement: HTMLElement | undefined): void {
 		const item = this.items[index];
 
 		if (!item.domNode) {
@@ -298,29 +298,29 @@ export class ScrollableView extends Disposable {
 	private removeItemFromDOM(index: number): void {
 		const item = this.items[index];
 
-		if (item) {
+		if (item && item.domNode) {
 			item.domNode.remove();
 			item.onDidInsertDisposable?.dispose();
 			if (item.view.onDidRemove) {
 				item.onDidRemoveDisposable = DOM.scheduleAtNextAnimationFrame(() => {
 					// we don't trust the items to be performant so don't interrupt our operations
-					item.view.onDidRemove();
+					item.view.onDidRemove!();
 				});
 			}
 		}
 	}
 
-	private getNextToLastElement(ranges: IRange[]): HTMLElement | null {
+	private getNextToLastElement(ranges: IRange[]): HTMLElement | undefined {
 		const lastRange = ranges[ranges.length - 1];
 
 		if (!lastRange) {
-			return null;
+			return undefined;
 		}
 
 		const nextToLastItem = this.items[lastRange.end];
 
 		if (!nextToLastItem) {
-			return null;
+			return undefined;
 		}
 
 		return nextToLastItem.domNode;
@@ -333,7 +333,7 @@ export class ScrollableView extends Disposable {
 		if (!this.scrollableElementUpdateDisposable) {
 			this.scrollableElementUpdateDisposable = DOM.scheduleAtNextAnimationFrame(() => {
 				this.scrollableElement.setScrollDimensions({ scrollHeight: this.scrollHeight });
-				this.scrollableElementUpdateDisposable = null;
+				this.scrollableElementUpdateDisposable = undefined;
 			});
 		}
 	}
