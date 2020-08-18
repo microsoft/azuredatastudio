@@ -8,7 +8,6 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import * as constants from '../constants';
-import { IFileSource, IHdfsOptions, FileSourceFactory } from './fileSources';
 
 export class KustoClusterConnection {
 	private _connection: azdata.connection.Connection;
@@ -40,27 +39,6 @@ export class KustoClusterConnection {
 		let options2 = this._connection.options;
 		return [constants.serverPropName, constants.userPropName]
 			.every(e => options1[e] === options2[e]);
-	}
-
-	public async createHdfsFileSource(): Promise<IFileSource> {
-		let options: IHdfsOptions = {
-			protocol: 'https',
-			user: this.user,
-			path: 'gateway/default/webhdfs/v1',
-			requestParams: {
-			}
-		};
-		if (this.isIntegratedAuth()) {
-			options.requestParams.isKerberos = this.isIntegratedAuth();
-			options.requestParams.auth = undefined;
-		} else {
-			options.requestParams.auth = {
-				user: this.user,
-				pass: this.password
-			};
-		}
-		let fileSource = await FileSourceFactory.instance.createHdfsFileSource(options);
-		return fileSource;
 	}
 
 	public isIntegratedAuth(): boolean {

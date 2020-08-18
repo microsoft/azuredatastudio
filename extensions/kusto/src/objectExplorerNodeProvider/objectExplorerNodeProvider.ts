@@ -11,12 +11,15 @@ const localize = nls.loadMessageBundle();
 import { ProviderBase } from './providerBase';
 import { KustoClusterConnection } from './connection';
 import { TreeNode } from './treeNodes';
-import { ITreeChangeHandler } from './hdfsProvider';
 import { AppContext } from '../appContext';
 import * as constants from '../constants';
 import { ICommandObjectExplorerContext } from './command';
 
 export const kustoOutputChannel = vscode.window.createOutputChannel(constants.providerId);
+
+export interface ITreeChangeHandler {
+	notifyNodeChanged(node: TreeNode): void;
+}
 
 export class KustoObjectExplorerNodeProvider extends ProviderBase implements azdata.ObjectExplorerNodeProvider, ITreeChangeHandler {
 	public readonly supportedProviderId: string = constants.providerId;
