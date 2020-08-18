@@ -99,10 +99,10 @@ export class AsyncRecentConnectionsDragAndDrop implements ITreeDragAndDrop<Serve
 	 */
 	public getDragLabel(elements: ServerTreeElement[]): string {
 		if (elements[0] instanceof ConnectionProfile) {
-			return (<ConnectionProfile>elements[0]).serverName;
+			return elements[0].serverName;
 		}
 		else if (elements[0] instanceof ConnectionProfileGroup) {
-			return (<ConnectionProfileGroup>elements[0]).name;
+			return elements[0].name;
 		}
 		return undefined;
 	}

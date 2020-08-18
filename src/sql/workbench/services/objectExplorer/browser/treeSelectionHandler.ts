@@ -96,12 +96,8 @@ export class TreeSelectionHandler {
 	 */
 	private handleTreeItemSelected(connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, isDoubleClick: boolean, isKeyboard: boolean, selection: any[], tree: AsyncServerTree | ITree, connectionCompleteCallback: () => void): void {
 		if (tree instanceof AsyncServerTree) {
-			let connectionProfile: ConnectionProfile = undefined;
 			if (selection && selection.length > 0 && (selection[0] instanceof ConnectionProfile)) {
-				connectionProfile = <ConnectionProfile>selection[0];
-				if (connectionProfile) {
-					this.onTreeActionStateChange(true);
-				}
+				this.onTreeActionStateChange(true);
 			}
 		} else {
 			let connectionProfile: ConnectionProfile = undefined;
