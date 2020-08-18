@@ -12,11 +12,9 @@ export const kustoClusterProviderName = 'kustoCluster';
 export const protocolVersion = '1.0';
 export const authenticationTypePropName = 'authenticationType';
 export const integratedAuth = 'integrated';
-export const hostPropName = 'host';
+export const serverPropName = 'server';
 export const userPropName = 'user';
 export const passwordPropName = 'password';
-export const knoxPortPropName = 'knoxport';
-export const defaultKnoxPort = 30443;
 export const groupIdPropName = 'groupId';
 export const groupIdName = 'groupId';
 export const sqlProviderName = 'KUSTO';
@@ -48,4 +46,3 @@ export enum KustoClusterItems {
 
 export const kustoClusterNewNotebookTask = 'kustoCluster.task.newNotebook';
 export const kustoClusterOpenNotebookTask = 'kustoCluster.task.openNotebook';
-export const kustoopenClusterStatusNotebook = 'kustoCluster.task.openClusterStatusNotebook';

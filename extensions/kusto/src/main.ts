@@ -6,7 +6,6 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as path from 'path';
-import * as os from 'os';
 
 import * as Constants from './constants';
 import ContextProvider from './contextProvider';
@@ -14,18 +13,15 @@ import * as Utils from './utils';
 import { AppContext } from './appContext';
 import { ApiWrapper } from './apiWrapper';
 import { IExtension } from './kusto';
-import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
+import { KustoObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
 import { registerSearchServerCommand } from './objectExplorerNodeProvider/command';
-import { MssqlIconProvider } from './iconProvider';
+import { KustoIconProvider } from './iconProvider';
 //import { getBookExtensionContributions } from './dashboard/bookExtensions';
 //import { registerBooksWidget } from './dashboard/bookWidget';
 import { createKustoApi } from './kustoApiFactory';
 import { localize } from './localize';
 import { KustoServer } from './KustoServer';
 import { promises as fs } from 'fs';
-
-const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', "This sample code loads the file into a data frame and shows the first 10 results.");
-
 
 export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
 	// lets make sure we support this platform first
@@ -43,9 +39,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 
 	let appContext = new AppContext(context, new ApiWrapper());
 
-	let nodeProvider = new MssqlObjectExplorerNodeProvider(appContext);
+	let nodeProvider = new KustoObjectExplorerNodeProvider(appContext);
 	azdata.dataprotocol.registerObjectExplorerNodeProvider(nodeProvider);
-	let iconProvider = new MssqlIconProvider();
+	let iconProvider = new KustoIconProvider();
 	azdata.dataprotocol.registerIconProvider(iconProvider);
 
 	activateNotebookTask(appContext);
@@ -84,9 +80,6 @@ function activateNotebookTask(appContext: AppContext): void {
 	apiWrapper.registerTaskHandler(Constants.kustoClusterOpenNotebookTask, (profile: azdata.IConnectionProfile) => {
 		return handleOpenNotebookTask(profile);
 	});
-	apiWrapper.registerTaskHandler(Constants.kustoopenClusterStatusNotebook, (profile: azdata.IConnectionProfile) => {
-		return handleOpenClusterStatusNotebookTask(profile, appContext);
-	});
 }
 
 function saveProfileAndCreateNotebook(profile: azdata.IConnectionProfile): Promise<void> {
@@ -111,25 +104,10 @@ async function handleNewNotebookTask(oeContext?: azdata.ObjectExplorerContext, p
 	// to handle this. We should look into improving this in the future
 	let title = findNextUntitledEditorName();
 	let untitledUri = vscode.Uri.parse(`untitled:${title}`);
-	let editor = await azdata.nb.showNotebookDocument(untitledUri, {
+	await azdata.nb.showNotebookDocument(untitledUri, {
 		connectionProfile: profile,
 		preview: false
 	});
-	if (oeContext && oeContext.nodeInfo && oeContext.nodeInfo.nodePath) {
-		// Get the file path after '/HDFS'
-		let hdfsPath: string = oeContext.nodeInfo.nodePath.substring(oeContext.nodeInfo.nodePath.indexOf('/HDFS') + '/HDFS'.length);
-		if (hdfsPath.length > 0) {
-			let analyzeCommand = '#' + msgSampleCodeDataFrame + os.EOL + 'df = (spark.read.option("inferSchema", "true")'
-				+ os.EOL + '.option("header", "true")' + os.EOL + '.csv("{0}"))' + os.EOL + 'df.show(10)';
-			editor.edit(editBuilder => {
-				editBuilder.replace(0, {
-					cell_type: 'code',
-					source: analyzeCommand.replace('{0}', hdfsPath)
-				});
-			});
-
-		}
-	}
 }
 
 async function handleOpenNotebookTask(profile: azdata.IConnectionProfile): Promise<void> {
@@ -153,26 +131,6 @@ async function handleOpenNotebookTask(profile: azdata.IConnectionProfile): Promi
 				preview: false
 			});
 		}
-	}
-}
-
-async function handleOpenClusterStatusNotebookTask(profile: azdata.IConnectionProfile, appContext: AppContext): Promise<void> {
-	const notebookRelativePath: string = 'notebooks/tsg/cluster-status.ipynb';
-	const notebookFullPath: string = path.join(appContext.extensionContext.extensionPath, notebookRelativePath);
-	if (!(await Utils.exists(notebookFullPath))) {
-		vscode.window.showErrorMessage(localize("fileNotFound", "Unable to find the file specified"));
-	} else {
-		const title: string = Utils.findNextUntitledEditorName(notebookFullPath);
-		const untitledFileName: vscode.Uri = vscode.Uri.parse(`untitled:${title}`);
-		vscode.workspace.openTextDocument(notebookFullPath).then((document) => {
-			let initialContent = document.getText();
-			azdata.nb.showNotebookDocument(untitledFileName, {
-				connectionProfile: profile,
-				preview: true,
-				initialContent: initialContent,
-				initialDirtyState: false
-			});
-		});
 	}
 }
 
