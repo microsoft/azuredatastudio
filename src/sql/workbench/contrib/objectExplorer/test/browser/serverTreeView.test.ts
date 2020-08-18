@@ -16,7 +16,6 @@ import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServic
 import { TreeItemCollapsibleState } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
 import * as assert from 'assert';
-import { NullLogService } from 'vs/platform/log/common/log';
 
 suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 

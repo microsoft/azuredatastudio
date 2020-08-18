@@ -38,7 +38,6 @@ import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { startsWith } from 'vs/base/common/strings';
 import { SERVER_GROUP_CONFIG } from 'sql/workbench/services/serverGroup/common/interfaces';
 import { horizontalScrollingKey } from 'vs/platform/list/browser/listService';
-import { ILogService } from 'vs/platform/log/common/log';
 import { ITreeContextMenuEvent } from 'vs/base/browser/ui/tree/tree';
 import { ObjectExplorerActionsContext } from 'sql/workbench/services/objectExplorer/browser/objectExplorerActions';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
