@@ -35,7 +35,21 @@ export class SqlConnectionDataSource extends DataSource {
 	}
 
 	public get integratedSecurity(): boolean {
-		return this.getSetting(constants.integratedSecuritySetting).toLowerCase() === 'true';
+		return this.getSetting(constants.integratedSecuritySetting)?.toLowerCase() === 'true';
+	}
+
+	public get azureMFA(): boolean {
+		return this.getSetting(constants.authenticationSetting)?.toLowerCase().includes(constants.activeDirectoryInteractive);
+	}
+
+	public get authType(): string {
+		if (this.azureMFA) {
+			return constants.azureMfaAuth;
+		} else if (this.integratedSecurity) {
+			return constants.integratedAuth;
+		} else {
+			return constants.sqlAuth;
+		}
 	}
 
 	public get username(): string {
@@ -79,7 +93,7 @@ export class SqlConnectionDataSource extends DataSource {
 			connectionName: this.name,
 			userName: this.username,
 			password: this.password,
-			authenticationType: this.integratedSecurity ? 'Integrated' : 'SqlAuth',
+			authenticationType: this.authType,
 			savePassword: false,
 			providerName: 'MSSQL',
 			saveProfile: true,

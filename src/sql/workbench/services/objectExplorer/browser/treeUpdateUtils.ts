@@ -47,7 +47,7 @@ export class TreeUpdateUtils {
 	/**
 	 * Set input for the tree.
 	 */
-	public static structuralTreeUpdate(tree: ITree, viewKey: string, connectionManagementService: IConnectionManagementService, providers?: string[]): Promise<void> {
+	public static structuralTreeUpdate(tree: ITree, viewKey: 'recent' | 'active' | 'saved', connectionManagementService: IConnectionManagementService, providers?: string[]): Promise<void> {
 		// convert to old VS Code tree interface with expandable methods
 		let expandableTree: IExpandableTree = <IExpandableTree>tree;
 
@@ -61,7 +61,7 @@ export class TreeUpdateUtils {
 			targetsToExpand = expandableTree.getExpandedElements();
 		}
 		let groups;
-		let treeInput = new ConnectionProfileGroup('root', null, undefined, undefined, undefined);
+		let treeInput = new ConnectionProfileGroup('root', null, undefined);
 		if (viewKey === 'recent') {
 			groups = connectionManagementService.getRecentConnections(providers);
 			treeInput.addConnections(groups);
@@ -71,7 +71,7 @@ export class TreeUpdateUtils {
 		} else if (viewKey === 'saved') {
 			treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService, providers);
 		}
-		const previousTreeInput: any = tree.getInput();
+		const previousTreeInput = tree.getInput();
 		return tree.setInput(treeInput).then(async () => {
 			if (previousTreeInput instanceof Disposable) {
 				previousTreeInput.dispose();
@@ -83,7 +83,6 @@ export class TreeUpdateUtils {
 			if (selectedElement) {
 				tree.select(selectedElement);
 			}
-			tree.getFocus();
 		});
 	}
 

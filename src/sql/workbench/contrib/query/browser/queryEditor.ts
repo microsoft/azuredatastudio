@@ -270,8 +270,15 @@ export class QueryEditor extends BaseEditor {
 				{ action: this._changeConnectionAction },
 				{ action: this._listDatabasesAction }
 			];
+			const notebookConvertActionsEnabled = this.configurationService.getValue('notebook')['notebook.showNotebookConvertActions'];
+			if (notebookConvertActionsEnabled) {
+				content.push(
+					{ element: separator },
+					{ action: this._exportAsNotebookAction });
+			}
 		}
 		else {
+			const notebookConvertActionsEnabled = this.configurationService.getValue('notebook')['showNotebookConvertActions'];
 			if (previewFeaturesEnabled) {
 				content = [
 					{ action: this._runQueryAction },
@@ -283,10 +290,12 @@ export class QueryEditor extends BaseEditor {
 					{ element: separator },
 					{ action: this._estimatedQueryPlanAction }, // Preview
 					{ action: this._toggleSqlcmdMode }, // Preview
-					{ action: this._exportAsNotebookAction } // Preview
 				];
-			}
-			else {
+
+				if (notebookConvertActionsEnabled) {
+					content.push({ action: this._exportAsNotebookAction });
+				}
+			} else {
 				content = [
 					{ action: this._runQueryAction },
 					{ action: this._cancelQueryAction },
@@ -295,6 +304,12 @@ export class QueryEditor extends BaseEditor {
 					{ action: this._changeConnectionAction },
 					{ action: this._listDatabasesAction }
 				];
+				const notebookConvertActionsEnabled = this.configurationService.getValue('notebook')['notebook.showNotebookConvertActions'];
+				if (notebookConvertActionsEnabled) {
+					content.push(
+						{ element: separator },
+						{ action: this._exportAsNotebookAction });
+				}
 			}
 		}
 
