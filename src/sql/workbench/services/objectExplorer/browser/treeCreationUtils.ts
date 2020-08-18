@@ -140,5 +140,5 @@ export class TreeCreationUtils {
 }
 
 function useAsyncServerTree(configurationService: IConfigurationService): boolean {
-	return configurationService.getValue('serverTree.useAsyncServerTree') || false;
+	return configurationService.getValue('workbench.enablePreviewFeatures') && configurationService.getValue('serverTree.useAsyncServerTree');
 }
