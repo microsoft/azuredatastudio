@@ -40,4 +40,18 @@ const serverGroupConfig: IConfigurationNode = {
 	}
 };
 
+const serverTreeConfig: IConfigurationNode = {
+	'id': 'serverTree',
+	'title': 'Server Tree',
+	'type': 'object',
+	'properties': {
+		'serverTree.useAsyncServerTree': {
+			'type': 'boolean',
+			'default': true,
+			'description': localize('serverTree.useAsyncServerTree', "(Preview) Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering.")
+		}
+	}
+};
+
 configurationRegistry.registerConfiguration(serverGroupConfig);
+configurationRegistry.registerConfiguration(serverTreeConfig);

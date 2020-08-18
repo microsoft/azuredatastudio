@@ -24,15 +24,14 @@ import { AsyncRecentConnectionsDragAndDrop, AsyncServerTreeDragAndDrop } from 's
 import { AsyncRecentConnectionTreeDataSource } from 'sql/workbench/services/objectExplorer/browser/asyncRecentConnectionTreeDataSource';
 import { AsyncServerTreeDataSource } from 'sql/workbench/services/objectExplorer/browser/asyncServerTreeDataSource';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
-
-let inPreview = true;
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export class TreeCreationUtils {
 	/**
 	 * Create a Recent Connections tree
 	 */
-	public static createConnectionTree(treeContainer: HTMLElement, instantiationService: IInstantiationService, ariaLabel: string, useController?: IController): Tree | AsyncServerTree {
-		if (inPreview) {
+	public static createConnectionTree(treeContainer: HTMLElement, instantiationService: IInstantiationService, configurationService: IConfigurationService, ariaLabel: string, useController?: IController): Tree | AsyncServerTree {
+		if (useAsyncServerTree(configurationService)) {
 			const dataSource = instantiationService.createInstance(AsyncRecentConnectionTreeDataSource);
 			const connectionProfileGroupRender = instantiationService.createInstance(ConnectionProfileGroupRenderer);
 			const connectionProfileRenderer = instantiationService.createInstance(ConnectionProfileRenderer, true);
@@ -82,9 +81,12 @@ export class TreeCreationUtils {
 	/**
 	 * Create a Servers viewlet tree
 	 */
-	public static createServersTree(treeContainer: HTMLElement, instantiationService: IInstantiationService, horizontalScrollMode: boolean = false): Tree | AsyncServerTree {
+	public static createServersTree(treeContainer: HTMLElement,
+		instantiationService: IInstantiationService,
+		configurationService: IConfigurationService,
+		horizontalScrollMode: boolean = false): Tree | AsyncServerTree {
 
-		if (inPreview) {
+		if (useAsyncServerTree(configurationService)) {
 			const dataSource = instantiationService.createInstance(AsyncServerTreeDataSource);
 			const connectionProfileGroupRender = instantiationService.createInstance(ConnectionProfileGroupRenderer);
 			const connectionProfileRenderer = instantiationService.createInstance(ConnectionProfileRenderer, false);
@@ -135,4 +137,8 @@ export class TreeCreationUtils {
 		}
 
 	}
+}
+
+function useAsyncServerTree(configurationService: IConfigurationService): boolean {
+	return configurationService.getValue('serverTree.useAsyncServerTree') || false;
 }

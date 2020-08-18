@@ -160,7 +160,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		}
 
 		const horizontalScrollEnabled: boolean = this._configurationService.getValue(horizontalScrollingKey) || false;
-		this._tree = this._register(TreeCreationUtils.createServersTree(container, this._instantiationService, horizontalScrollEnabled));
+		this._tree = this._register(TreeCreationUtils.createServersTree(container, this._instantiationService, this._configurationService, horizontalScrollEnabled));
 		this._register(this._tree.onDidChangeSelection((event) => this.onSelected(event)));
 		this._register(this._tree.onDidBlur(() => this._onSelectionOrFocusChange.fire()));
 		this._register(this._tree.onDidChangeFocus(() => this._onSelectionOrFocusChange.fire()));

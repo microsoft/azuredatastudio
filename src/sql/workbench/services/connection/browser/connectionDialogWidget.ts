@@ -49,6 +49,7 @@ import { ClearRecentConnectionsAction } from 'sql/workbench/services/connection/
 import { combinedDisposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export interface OnShowUIResponse {
 	selectedProviderDisplayName: string;
@@ -116,7 +117,8 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IClipboardService clipboardService: IClipboardService,
 		@ILogService logService: ILogService,
-		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
+		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 		super(
 			localize('connection', "Connection"),
@@ -395,7 +397,7 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 			// We're just using the connections to determine if there are connections to show, dispose them right after to clean up their handlers
 			recentConnections.forEach(conn => conn.dispose());
 		});
-		this._recentConnectionTree = TreeCreationUtils.createConnectionTree(treeContainer, this.instantiationService, localize('connectionDialog.recentConnections', "Recent Connections"), controller);
+		this._recentConnectionTree = TreeCreationUtils.createConnectionTree(treeContainer, this.instantiationService, this._configurationService, localize('connectionDialog.recentConnections', "Recent Connections"), controller);
 		if (this._recentConnectionTree instanceof AsyncServerTree) {
 			this._recentConnectionTree.onMouseClick(e => this.onConnectionClick(e.element, false));
 			this._recentConnectionTree.onMouseDblClick(e => this.onConnectionClick(e.element, true));
@@ -425,7 +427,7 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 		};
 
 		const controller = new SavedConnectionTreeController(leftClick);
-		this._savedConnectionTree = TreeCreationUtils.createConnectionTree(treeContainer, this.instantiationService, localize('connectionDialog.savedConnections', "Saved Connections"), controller);
+		this._savedConnectionTree = TreeCreationUtils.createConnectionTree(treeContainer, this.instantiationService, this._configurationService, localize('connectionDialog.savedConnections', "Saved Connections"), controller);
 		if (this._savedConnectionTree instanceof AsyncServerTree) {
 			this._savedConnectionTree.onMouseClick(e => this.onConnectionClick(e.element, false));
 			this._savedConnectionTree.onMouseDblClick(e => this.onConnectionClick(e.element, true));

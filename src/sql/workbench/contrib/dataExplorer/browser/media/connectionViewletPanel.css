@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 /* --- Registered servers tree viewlet --- */
+.server-explorer-viewlet .monaco-tree .monaco-tree-row .content .server-group,
 .server-explorer-viewlet .monaco-list .monaco-list-row .content .server-group {
 	cursor: default;
 	width: 100%;
@@ -12,10 +13,16 @@
 }
 
 /* Bold font style does not go well with CJK fonts */
+.server-explorer-viewlet:lang(zh-Hans) .monaco-tree .monaco-tree-row .server-group,
+.server-explorer-viewlet:lang(zh-Hant) .monaco-tree .monaco-tree-row .server-group,
+.server-explorer-viewlet:lang(ja) .monaco-tree .monaco-tree-row .server-group,
+.server-explorer-viewlet:lang(ko) .monaco-tree .monaco-tree-row .server-group,
 .server-explorer-viewlet:lang(zh-Hans) .monaco-list .monaco-list-row .server-group,
 .server-explorer-viewlet:lang(zh-Hant) .monaco-list .monaco-list-row .server-group,
 .server-explorer-viewlet:lang(ja) .monaco-list .monaco-list-row .server-group,
-.server-explorer-viewlet:lang(ko) .monaco-list .monaco-list-row .server-group { font-weight: normal; }
+.server-explorer-viewlet:lang(ko) .monaco-list .monaco-list-row .server-group {
+	font-weight: normal;
+}
 
 /* High Contrast Theming */
 .monaco-workbench.hc-black .server-explorer-viewlet .server-group {
@@ -48,10 +55,11 @@
 
 /* Add space beneath the button */
 .new-connection .monaco-text-button {
-margin-bottom: 2px;
+	margin-bottom: 2px;
 }
 
 /* display action buttons on hover */
+.server-explorer-viewlet .monaco-tree .monaco-tree-row > .content,
 .server-explorer-viewlet .monaco-list .monaco-list-row {
 	display: flex;
 }
@@ -77,8 +85,11 @@ margin-bottom: 2px;
 }
 
 /* OE and connection element group */
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile,
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .object-element-group,
 .monaco-list .monaco-list-rows > .monaco-list-row .connection-tile,
 .monaco-list .monaco-list-rows > .monaco-list-row .object-element-group {
+	padding-left: 5px;
 	padding-right: 5px;
 	padding-top: 3px;
 	padding-bottom: 3px;
@@ -86,6 +97,8 @@ margin-bottom: 2px;
 }
 
 /* OE and connection label */
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile > .label,
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .object-element-group > .label,
 .monaco-list .monaco-list-rows > .monaco-list-row .connection-tile > .label,
 .monaco-list .monaco-list-rows > .monaco-list-row .object-element-group > .label {
 	text-overflow: ellipsis;
@@ -93,6 +106,8 @@ margin-bottom: 2px;
 }
 
 /* OE and connection icon */
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile > .icon,
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .object-element-group > .icon,
 .monaco-list .monaco-list-rows > .monaco-list-row .connection-tile > .icon,
 .monaco-list .monaco-list-rows > .monaco-list-row .object-element-group > .icon {
 	float: left;
@@ -101,13 +116,27 @@ margin-bottom: 2px;
 	padding-right: 10px;
 }
 
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile > .icon.server-page,
 .monaco-list .monaco-list-rows > .monaco-list-row .connection-tile > .icon.server-page {
 	background: url('default_server.svg') center center no-repeat;
 }
 
+.vs-dark .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile > .icon.server-page,
+.hc-black .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile > .icon.server-page,
 .vs-dark .monaco-list .monaco-list-rows > .monaco-list-row .connection-tile > .icon.server-page,
-.hc-black .monaco-list .monaco-list-rows > .monaco-list-row .connection-tile > .icon.server-page{
+.hc-black .monaco-list .monaco-list-rows > .monaco-list-row .connection-tile > .icon.server-page {
 	background: url('default_server_inverse.svg') center center no-repeat;
+}
+
+/* loading for OE node */
+.server-explorer-viewlet .monaco-tree .monaco-tree-rows > .monaco-tree-row > .codicon.in-progress .connection-tile:before,
+.server-explorer-viewlet .monaco-tree .monaco-tree-rows > .monaco-tree-row > .codicon.in-progress .object-element-group:before {
+	position: absolute;
+	display: block;
+	width: 36px;
+	height: 100%;
+	top: 0;
+	left: -35px;
 }
 
 .monaco-list .connection-tile > .icon.server-page::after {
@@ -125,20 +154,24 @@ margin-bottom: 2px;
 	vertical-align:middle;
 }
 
+/* Connected badge */
 .monaco-list .connection-tile > .icon.server-page.connected::after {
 	border: 0.12rem solid rgba(59, 180, 74, 100%);
 	background: rgba(59, 180, 74, 100%);
 }
 
+/* Disconnected badge */
 .monaco-list .connection-tile > .icon.server-page.disconnected::after {
 	border: 0.12rem solid rgba(208, 46, 0, 100%);
 	background: rgba(255, 255, 255, 80%);
 }
 
+.monaco-tree .monaco-tree-rows.show-twisties > .monaco-tree-row.expanded.has-children > .content.server-group:before,
 .monaco-list .monaco-list-rows.show-twisties > .monaco-list-row.expanded.has-children > .content.server-group:before {
 	background: url('expanded-dark.svg') 50% 50% no-repeat;
 }
 
+.monaco-tree .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children > .content.server-group:before,
 .monaco-list .monaco-list-rows.show-twisties > .monaco-list-row.has-children > .content.server-group:before {
 	background: url('collapsed-dark.svg') 50% 50% no-repeat;
 }
