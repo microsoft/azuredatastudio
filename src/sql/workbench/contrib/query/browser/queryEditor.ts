@@ -285,12 +285,6 @@ export class QueryEditor extends BaseEditor {
 				{ action: this._changeConnectionAction },
 				{ action: this._listDatabasesAction }
 			];
-			const notebookConvertActionsEnabled = this.configurationService.getValue('notebook')['notebook.showNotebookConvertActions'];
-			if (notebookConvertActionsEnabled) {
-				content.push(
-					{ element: separator },
-					{ action: this._exportAsNotebookAction });
-			}
 		}
 
 		this.taskbar.setContent(content);
