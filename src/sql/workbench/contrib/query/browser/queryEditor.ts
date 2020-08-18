@@ -261,6 +261,16 @@ export class QueryEditor extends BaseEditor {
 
 		// TODO: Make it more generic, some way for extensions to register the commands it supports
 		if (connectionProfile?.providerName === 'KUSTO') {
+			content = [
+				{ action: this._runQueryAction },
+				{ action: this._cancelQueryAction },
+				{ element: separator },
+				{ action: this._toggleConnectDatabaseAction },
+				{ action: this._changeConnectionAction },
+				{ action: this._listDatabasesAction }
+			];
+		}
+		else {
 			const notebookConvertActionsEnabled = this.configurationService.getValue('notebook')['showNotebookConvertActions'];
 			if (previewFeaturesEnabled) {
 				content = [
@@ -273,14 +283,12 @@ export class QueryEditor extends BaseEditor {
 					{ element: separator },
 					{ action: this._estimatedQueryPlanAction }, // Preview
 					{ action: this._toggleSqlcmdMode }, // Preview
-					{ action: this._exportAsNotebookAction } // Preview
 				];
 
 				if (notebookConvertActionsEnabled) {
 					content.push({ action: this._exportAsNotebookAction });
 				}
-			}
-			else {
+			} else {
 				content = [
 					{ action: this._runQueryAction },
 					{ action: this._cancelQueryAction },
@@ -289,23 +297,12 @@ export class QueryEditor extends BaseEditor {
 					{ action: this._changeConnectionAction },
 					{ action: this._listDatabasesAction }
 				];
-			}
-		}
-		else {
-			// Actions without SQL specific actions.
-			content = [
-				{ action: this._runQueryAction },
-				{ action: this._cancelQueryAction },
-				{ element: separator },
-				{ action: this._toggleConnectDatabaseAction },
-				{ action: this._changeConnectionAction },
-				{ action: this._listDatabasesAction }
-			];
-			const notebookConvertActionsEnabled = this.configurationService.getValue('notebook')['notebook.showNotebookConvertActions'];
-			if (notebookConvertActionsEnabled) {
-				content.push(
-					{ element: separator },
-					{ action: this._exportAsNotebookAction });
+				const notebookConvertActionsEnabled = this.configurationService.getValue('notebook')['notebook.showNotebookConvertActions'];
+				if (notebookConvertActionsEnabled) {
+					content.push(
+						{ element: separator },
+						{ action: this._exportAsNotebookAction });
+				}
 			}
 		}
 
