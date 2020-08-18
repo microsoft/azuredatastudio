@@ -62,15 +62,13 @@ export function deleteConfirmationContents(toDelete: string) { return localize('
 
 // Publish dialog strings
 
-export const publishDialogName = localize('publishDialogName', "Publish Database");
+export const publishDialogName = localize('publishDialogName', "Publish project");
 export const publishDialogOkButtonText = localize('publishDialogOkButtonText', "Publish");
 export const cancelButtonText = localize('cancelButtonText', "Cancel");
 export const generateScriptButtonText = localize('generateScriptButtonText', "Generate Script");
-export const targetDatabaseSettings = localize('targetDatabaseSettings', "Target Database Settings");
 export const databaseNameLabel = localize('databaseNameLabel', "Database");
-export const targetConnectionLabel = localize('targetConnectionLabel', "Target Connection");
+export const targetConnectionLabel = localize('targetConnectionLabel', "Connection");
 export const editConnectionButtonText = localize('editConnectionButtonText', "Edit");
-export const clearButtonText = localize('clearButtonText', "Clear");
 export const dataSourceRadioButtonLabel = localize('dataSourceRadioButtonLabel', "Data sources");
 export const connectionRadioButtonLabel = localize('connectionRadioButtonLabel', "Connections");
 export const selectConnectionRadioButtonsTitle = localize('selectconnectionRadioButtonsTitle', "Specify connection from:");
@@ -82,6 +80,8 @@ export const sqlCmdTableLabel = localize('sqlCmdTableLabel', "SQLCMD Variables")
 export const sqlCmdVariableColumn = localize('sqlCmdVariableColumn', "Name");
 export const sqlCmdValueColumn = localize('sqlCmdValueColumn', "Value");
 export const loadSqlCmdVarsButtonTitle = localize('reloadValuesFromProjectButtonTitle', "Reload values from project");
+export const profile = localize('profile', "Profile");
+export const selectConnection = localize('selectConnection', "Select connection");
 
 // Error messages
 

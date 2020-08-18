@@ -34,6 +34,7 @@ export class PublishDatabaseDialog {
 	private sqlCmdVariablesTable: azdata.DeclarativeTableComponent | undefined;
 	private sqlCmdVariablesFormComponentGroup: azdata.FormComponentGroup | undefined;
 	private loadSqlCmdVarsButton: azdata.ButtonComponent | undefined;
+	private loadProfileTextBox: azdata.InputBoxComponent | undefined;
 	private formBuilder: azdata.FormBuilder | undefined;
 
 	private connectionId: string | undefined;
@@ -88,7 +89,8 @@ export class PublishDatabaseDialog {
 
 			this.targetDatabaseTextBox = view.modelBuilder.inputBox().withProperties({
 				value: this.getDefaultDatabaseName(),
-				ariaLabel: constants.databaseNameLabel
+				ariaLabel: constants.databaseNameLabel,
+				required: true
 			}).component();
 
 			this.dataSourcesFormComponent = this.createDataSourcesFormComponent(view);
@@ -97,7 +99,15 @@ export class PublishDatabaseDialog {
 				this.tryEnableGenerateScriptAndOkButtons();
 			});
 
+			this.loadProfileTextBox = view.modelBuilder.inputBox().withProperties({
+				placeHolder: constants.loadProfileButtonText,
+				ariaLabel: 'profile text box'
+			}).component();
 			this.loadProfileButton = this.createLoadProfileButton(view);
+			let profileComponent = view.modelBuilder.flexContainer().withItems([
+				this.loadProfileTextBox, this.loadProfileButton
+			]).component();
+
 			this.sqlCmdVariablesTable = this.createSqlCmdTable(view);
 			this.loadSqlCmdVarsButton = this.createLoadSqlCmdVarsButton(view);
 
@@ -118,11 +128,11 @@ export class PublishDatabaseDialog {
 			this.formBuilder = <azdata.FormBuilder>view.modelBuilder.formContainer()
 				.withFormItems([
 					{
-						title: constants.targetDatabaseSettings,
+						title: '',
 						components: [
 							{
-								title: '',
-								component: <azdata.ButtonComponent>this.loadProfileButton
+								title: constants.profile,
+								component: profileComponent,
 							},
 							/* TODO : enable using this when data source creation is enabled
 							{
@@ -132,20 +142,22 @@ export class PublishDatabaseDialog {
 							this.targetConnectionFormComponent,
 							{
 								title: constants.databaseNameLabel,
-								component: this.targetDatabaseTextBox
+								component: this.targetDatabaseTextBox,
 							}
 						]
 					}
 				], {
-					horizontal: false
+					horizontal: false,
+					titleFontSize: cssStyles.titleFontSize,
+					componentWidth: '100%'
 				})
 				.withLayout({
-					width: '100%'
+					width: '100%',
 				});
 
 			// add SQLCMD variables table if the project has any
 			if (Object.keys(this.project.sqlCmdVariables).length > 0) {
-				this.formBuilder.addFormItem(this.sqlCmdVariablesFormComponentGroup, { titleFontSize: cssStyles.titleFontSize });
+				this.formBuilder.addFormItem(this.sqlCmdVariablesFormComponentGroup);
 			}
 
 			let formModel = this.formBuilder.component();
@@ -274,7 +286,9 @@ export class PublishDatabaseDialog {
 		this.targetConnectionTextBox = view.modelBuilder.inputBox().withProperties({
 			value: '',
 			ariaLabel: constants.targetConnectionLabel,
-			enabled: false
+			enabled: false,
+			required: true,
+			placeHolder: constants.selectConnection
 		}).component();
 
 		this.targetConnectionTextBox.onTextChanged(() => {
@@ -282,12 +296,11 @@ export class PublishDatabaseDialog {
 		});
 
 		let editConnectionButton: azdata.Component = this.createEditConnectionButton(view);
-		let clearButton: azdata.Component = this.createClearButton(view);
 
 		return {
 			title: constants.targetConnectionLabel,
 			component: this.targetConnectionTextBox,
-			actions: [editConnectionButton, clearButton]
+			actions: [editConnectionButton]
 		};
 	}
 
@@ -404,9 +417,10 @@ export class PublishDatabaseDialog {
 
 	private createEditConnectionButton(view: azdata.ModelView): azdata.Component {
 		let editConnectionButton: azdata.ButtonComponent = view.modelBuilder.button().withProperties({
-			label: constants.editConnectionButtonText,
-			title: constants.editConnectionButtonText,
-			ariaLabel: constants.editConnectionButtonText
+			ariaLabel: constants.editConnectionButtonText,
+			iconPath: IconPathHelper.disconnect,
+			height: '16px',
+			width: '16px'
 		}).component();
 
 		editConnectionButton.onDidClick(async () => {
@@ -429,26 +443,11 @@ export class PublishDatabaseDialog {
 		return editConnectionButton;
 	}
 
-	private createClearButton(view: azdata.ModelView): azdata.Component {
-		let clearButton: azdata.ButtonComponent = view.modelBuilder.button().withProperties({
-			label: constants.clearButtonText,
-			title: constants.clearButtonText,
-			ariaLabel: constants.clearButtonText
-		}).component();
-
-		clearButton.onDidClick(() => {
-			this.targetConnectionTextBox!.value = '';
-		});
-
-		return clearButton;
-	}
-
 	private createLoadProfileButton(view: azdata.ModelView): azdata.ButtonComponent {
 		let loadProfileButton: azdata.ButtonComponent = view.modelBuilder.button().withProperties({
-			label: constants.loadProfileButtonText,
-			title: constants.loadProfileButtonText,
 			ariaLabel: constants.loadProfileButtonText,
-			width: '120px'
+			iconPath: IconPathHelper.folder,
+			height: '16px'
 		}).component();
 
 		loadProfileButton.onDidClick(async () => {
@@ -489,7 +488,7 @@ export class PublishDatabaseDialog {
 				if (Object.keys(result.sqlCmdVariables).length) {
 					// add SQLCMD Variables table if it wasn't there before
 					if (Object.keys(this.project.sqlCmdVariables).length === 0) {
-						this.formBuilder?.addFormItem(<azdata.FormComponentGroup>this.sqlCmdVariablesFormComponentGroup, { titleFontSize: cssStyles.titleFontSize });
+						this.formBuilder?.addFormItem(<azdata.FormComponentGroup>this.sqlCmdVariablesFormComponentGroup);
 					}
 				} else if (Object.keys(this.project.sqlCmdVariables).length === 0) {
 					// remove the table if there are no SQLCMD variables in the project and loaded profile
