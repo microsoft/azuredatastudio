@@ -13,8 +13,6 @@ import { IFileSource, IHdfsOptions, FileSourceFactory } from './fileSources';
 export class KustoClusterConnection {
 	private _connection: azdata.connection.Connection;
 	private _profile: azdata.IConnectionProfile;
-	private _host: string;
-	private _port: string;
 	private _user: string;
 	private _password: string;
 
