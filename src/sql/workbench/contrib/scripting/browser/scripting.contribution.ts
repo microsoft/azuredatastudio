@@ -169,6 +169,10 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 			ContextKeyExpr.and(
 				ConnectionContextKey.Provider.isEqualTo('MSSQL'),
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.TableValuedFunction)),
+			ContextKeyExpr.and(
+				ConnectionContextKey.Provider.isEqualTo('KUSTO'),
+				TreeNodeContextKey.NodeType.isEqualTo(NodeType.Function)
+			)
 		)
 });
 
