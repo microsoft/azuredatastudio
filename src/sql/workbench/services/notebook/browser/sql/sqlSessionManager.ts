@@ -247,7 +247,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 			implementation: '',
 			implementation_version: '',
 			language_info: {
-				name: 'sql',
+				name: this._connectionManagementService.getProviderLanguageMode(this._currentConnection?.providerName),
 				version: '',
 			},
 			banner: '',

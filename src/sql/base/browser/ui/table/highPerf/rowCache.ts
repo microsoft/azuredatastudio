@@ -3,10 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.vs-dark .side-by-side-editor > .master-editor-container {
-	box-shadow: -6px 0 5px -5px black;
+import { IDisposable } from 'vs/base/common/lifecycle';
+
+
+export class RowCache implements IDisposable {
+	dispose(): void {
+
+	}
 }
 
-.side-by-side-editor > .master-editor-container {
-	box-shadow: -6px 0 5px -5px #DDD;
+export interface IRow {
+	domNode: HTMLElement | null;
 }

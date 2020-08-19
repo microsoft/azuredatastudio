@@ -300,6 +300,8 @@ export interface IConnectionManagementService {
 
 	getProviderProperties(providerName: string): ConnectionProviderProperties;
 
+	getProviderLanguageMode(providerName?: string): string;
+
 	getConnectionIconId(connectionId: string): string;
 
 	/**

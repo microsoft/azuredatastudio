@@ -25,7 +25,7 @@ export type TabType = 'tab' | 'group-header';
 export class TabComponent implements OnDestroy {
 	private _child?: TabChild;
 	@ContentChild(TemplateRef) templateRef!: TemplateRef<any>;
-	@Input() public title!: string;
+	@Input() public title?: string;
 	@Input() public canClose!: boolean;
 	@Input() public actions?: Array<Action>;
 	@Input() public iconClass?: string;
