@@ -321,7 +321,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			}
 		}
 
-		if (await utils.exists(this._pythonExecutable)) {
+		// Skip adding user package directory on SAWs, since packages will already be included with ADS
+		if (!this._runningOnSAW && await utils.exists(this._pythonExecutable)) {
 			let pythonUserDir = await this.getPythonUserDir(this._pythonExecutable);
 			if (pythonUserDir) {
 				this.pythonEnvVarPath = pythonUserDir + delimiter + this.pythonEnvVarPath;
