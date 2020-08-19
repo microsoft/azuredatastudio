@@ -92,7 +92,7 @@ export class Project {
 			}
 
 			if (preDeployScriptCount > 1 || postDeployScriptCount > 1) {
-				window.showInformationMessage(constants.prePostDeployCount);
+				window.showWarningMessage(constants.prePostDeployCount, constants.okString);
 			}
 
 			// find all none-deployment scripts to include

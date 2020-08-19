@@ -18,7 +18,8 @@ export interface IQueryEditorConfiguration {
 		},
 		readonly streaming: boolean,
 		readonly copyIncludeHeaders: boolean,
-		readonly copyRemoveNewLine: boolean
+		readonly copyRemoveNewLine: boolean,
+		readonly optimizedTable: boolean
 	},
 	readonly messages: {
 		readonly showBatchTime: boolean,

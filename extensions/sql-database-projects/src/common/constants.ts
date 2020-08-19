@@ -38,6 +38,7 @@ export const newDatabaseProjectName = localize('newDatabaseProjectName', "New da
 export const sqlDatabaseProject = localize('sqlDatabaseProject', "SQL database project");
 export const yesString = localize('yesString', "Yes");
 export const noString = localize('noString', "No");
+export const okString = localize('okString', "Ok");
 export const extractTargetInput = localize('extractTargetInput', "Select folder structure for SQL files");
 export const extractDatabaseSelection = localize('extractDatabaseSelection', "Select database to import");
 export const selectString = localize('selectString', "Select");
@@ -79,8 +80,9 @@ export const noDataSourcesText = localize('noDataSourcesText', "No data sources 
 export const loadProfileButtonText = localize('loadProfileButtonText', "Load Profile...");
 export const profileReadError = localize('profileReadError', "Could not load the profile file.");
 export const sqlCmdTableLabel = localize('sqlCmdTableLabel', "SQLCMD Variables");
-export const sqlCmdVariableColumn = localize('sqlCmdVariableColumn', "Variable");
+export const sqlCmdVariableColumn = localize('sqlCmdVariableColumn', "Name");
 export const sqlCmdValueColumn = localize('sqlCmdValueColumn', "Value");
+export const loadSqlCmdVarsButtonTitle = localize('reloadValuesFromProjectButtonTitle', "Reload values from project");
 
 // Error messages
 
@@ -175,6 +177,9 @@ export const PostDeploy = 'PostDeploy';
 export const None = 'None';
 export const ProjectReference = 'ProjectReference';
 export const TargetConnectionString = 'TargetConnectionString';
+export const PreDeploy = 'PreDeploy';
+export const PostDeploy = 'PostDeploy';
+export const None = 'None';
 
 // SqlProj File targets
 export const NetCoreTargets = '$(NETCoreTargetsPath)\\Microsoft.Data.Tools.Schema.SqlTasks.targets';
