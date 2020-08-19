@@ -262,6 +262,11 @@
           "group": "inline"
         },
         {
+          "command": "azure.resource.connectsqlserver",
+          "when": "viewItem == azure.resource.itemType.azureDataExplorer",
+          "group": "inline"
+        },
+        {
           "command": "azure.resource.startterminal",
           "when": "viewItem == azure.resource.itemType.account",
           "group": "azurecore"
