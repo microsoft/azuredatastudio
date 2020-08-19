@@ -263,4 +263,3 @@ suite('Assessment Actions', () => {
 		notificationService.verify(s => s.prompt(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 });
-

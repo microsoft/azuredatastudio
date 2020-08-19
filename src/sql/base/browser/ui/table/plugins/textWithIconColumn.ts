@@ -37,7 +37,7 @@ export class TextWithIconColumn<T extends Slick.SlickData> {
 	}
 	private formatter(row: number, cell: number, value: any, columnDef: Slick.Column<T>, dataContext: T): string {
 		const iconColumn = columnDef as TextWithIconColumnDefinition<T>;
-		return `<div class="icon codicon slick-icon-cell-content ${dataContext[iconColumn.iconCssClassField]}">${value}</div>`;
+		return `<div class="icon codicon slick-icon-cell-content ${iconColumn.iconCssClassField ? dataContext[iconColumn.iconCssClassField] : ''}">${value}</div>`;
 	}
 
 	public get definition(): TextWithIconColumnDefinition<T> {
