@@ -166,7 +166,7 @@ export class ConfigurePythonWizard {
 		let installSettings: PythonInstallSettings = {
 			installPath: pythonLocation,
 			existingPython: useExistingPython,
-			specificPackages: this.model.packagesToInstall
+			packages: this.model.packagesToInstall
 		};
 		this.jupyterInstallation.startInstallProcess(false, installSettings)
 			.then(() => {
