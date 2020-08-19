@@ -132,7 +132,7 @@ export class PublishDatabaseDialog {
 					titleFontSize: cssStyles.titleFontSize
 				})
 				.withLayout({
-					width: '100%',
+					width: '100%'
 				});
 
 			// add SQLCMD variables table if the project has any
@@ -234,6 +234,7 @@ export class PublishDatabaseDialog {
 		this.connectionsRadioButton.checked = true;
 		this.connectionsRadioButton.onDidClick(() => {
 			this.formBuilder!.removeFormItem(<azdata.FormComponent>this.dataSourcesFormComponent);
+			// TODO: fix this when data sources are enabled again
 			// this.formBuilder!.insertFormItem(<azdata.FormComponent>this.targetConnectionTextBox, 2);
 			this.connectionIsDataSource = false;
 			this.targetDatabaseDropDown!.value = this.getDefaultDatabaseName();
@@ -246,6 +247,7 @@ export class PublishDatabaseDialog {
 			}).component();
 
 		this.dataSourcesRadioButton.onDidClick(() => {
+			// TODO: fix this when data sources are enabled again
 			// this.formBuilder!.removeFormItem(<azdata.FormComponent>this.targetConnectionTextBox);
 			this.formBuilder!.insertFormItem(<azdata.FormComponent>this.dataSourcesFormComponent, 2);
 			this.connectionIsDataSource = true;
@@ -267,7 +269,6 @@ export class PublishDatabaseDialog {
 			value: '',
 			ariaLabel: constants.targetConnectionLabel,
 			enabled: false,
-			required: true,
 			placeHolder: constants.selectConnection,
 			width: cssStyles.publishDialogTextboxWidth
 		}).component();
@@ -329,7 +330,7 @@ export class PublishDatabaseDialog {
 
 	private createProfileRow(view: azdata.ModelView): azdata.FlexContainer {
 		const loadProfileButton = this.createLoadProfileButton(view);
-		const loadProfileTextBox = view.modelBuilder.inputBox().withProperties({
+		this.loadProfileTextBox = view.modelBuilder.inputBox().withProperties({
 			placeHolder: constants.loadProfilePlaceholderText,
 			ariaLabel: constants.profile,
 			enabled: false,
@@ -341,7 +342,7 @@ export class PublishDatabaseDialog {
 			width: cssStyles.publishDialogLabelWidth
 		}).component();
 
-		const profileRow = view.modelBuilder.flexContainer().withItems([profileLabel, loadProfileTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		const profileRow = view.modelBuilder.flexContainer().withItems([profileLabel, this.loadProfileTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 		profileRow.insertItem(loadProfileButton, 2, { CSSStyles: { 'margin-right': '0px' } });
 
 		return profileRow;
@@ -451,14 +452,14 @@ export class PublishDatabaseDialog {
 	}
 
 	private createSelectConnectionButton(view: azdata.ModelView): azdata.Component {
-		let editConnectionButton: azdata.ButtonComponent = view.modelBuilder.button().withProperties({
+		let selectConnectionButton: azdata.ButtonComponent = view.modelBuilder.button().withProperties({
 			ariaLabel: constants.selectConnection,
 			iconPath: IconPathHelper.disconnect,
 			height: '16px',
 			width: '16px'
 		}).component();
 
-		editConnectionButton.onDidClick(async () => {
+		selectConnectionButton.onDidClick(async () => {
 			let connection = await azdata.connection.openConnectionDialog();
 			this.connectionId = connection.connectionId;
 
@@ -482,7 +483,7 @@ export class PublishDatabaseDialog {
 			}
 		});
 
-		return editConnectionButton;
+		return selectConnectionButton;
 	}
 
 	private createLoadProfileButton(view: azdata.ModelView): azdata.ButtonComponent {
