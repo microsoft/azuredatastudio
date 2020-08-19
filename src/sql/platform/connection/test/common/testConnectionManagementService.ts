@@ -260,7 +260,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	}
 
 	getConnectionCredentials(profileId: string): Promise<{ [name: string]: string }> {
-		return Promise.resolve(undefined);
+		return Promise.resolve(undefined!);
 	}
 
 	getServerInfo(profileId: string): azdata.ServerInfo {

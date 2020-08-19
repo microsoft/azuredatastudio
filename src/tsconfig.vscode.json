@@ -7,7 +7,10 @@
 		"noUnusedLocals": true,
 		"strict": true,
 		"forceConsistentCasingInFileNames": true,
-		"skipLibCheck": true
+		"strictNullChecks": true,
+		"strictPropertyInitialization": true,
+		"skipLibCheck": true,
+		"noImplicitAny": true
 	},
 	"include": [
 		"./typings",
@@ -20,12 +23,12 @@
 		// "./vs/code/**/*.ts",
 		"./vs/editor/**/*.ts",
 		"./vs/platform/**/*.ts",
-		"./vs/workbench/contrib/debug/common/debugProtocol.d.ts",
-		"./vs/workbench/services/**/*.ts",
-		"./sql/workbench/services/**/*.ts",
+		// "./vs/workbench/contrib/debug/common/debugProtocol.d.ts",
+		// "./vs/workbench/services/**/*.ts",
 		"./sql/base/**/*.ts",
 		"./sql/editor/**/*.ts",
-		"./sql/platform/**/*.ts"
+		"./sql/platform/**/*.ts",
+		// "./sql/workbench/services/**/*.ts"
 	],
 	"exclude": [
 		"./vs/platform/workspaces/test/electron-main/workspacesMainService.test.ts",

@@ -58,6 +58,7 @@ export class AddAccountAction extends Action {
 				this.logService.error(`Error while adding account: ${err}`);
 				this._addAccountErrorEmitter.fire(err);
 				this._addAccountCompleteEmitter.fire();
+				return false;
 			}));
 	}
 }

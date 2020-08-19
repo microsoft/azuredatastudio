@@ -56,7 +56,7 @@ export class TestAccountManagementService implements IAccountManagementService {
 	}
 
 	getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Thenable<{ token: string }> {
-		return Promise.resolve(undefined);
+		return Promise.resolve(undefined!);
 	}
 
 	removeAccount(accountKey: azdata.AccountKey): Thenable<boolean> {
@@ -105,7 +105,7 @@ export class AccountProviderStub implements azdata.AccountProvider {
 	}
 
 	getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Thenable<{ token: string }> {
-		return Promise.resolve(undefined);
+		return Promise.resolve(undefined!);
 	}
 	initialize(storedAccounts: azdata.Account[]): Thenable<azdata.Account[]> {
 		return Promise.resolve(storedAccounts);
