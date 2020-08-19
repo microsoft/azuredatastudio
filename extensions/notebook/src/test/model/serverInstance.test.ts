@@ -6,14 +6,14 @@
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
 import * as stream from 'stream';
-import { ChildProcess } from 'child_process';
+import * as cp from 'child_process';
+import * as si from '../../jupyter/serverInstance'
 import 'mocha';
 import * as sinon from 'sinon';
 import * as utils from '../../common/utils';
 import * as fs from 'fs-extra';
 
 import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
-import { PerFolderServerInstance } from '../../jupyter/serverInstance';
 import { MockOutputChannel } from '../common/stubs';
 import * as testUtils from '../common/testUtils';
 import { LocalJupyterServerManager } from '../../jupyter/jupyterServerManager';
@@ -27,7 +27,7 @@ describe('Jupyter server instance', function (): void {
 	let expectedPath = 'mydir/notebook.ipynb';
 	let mockInstall: TypeMoq.IMock<JupyterServerInstallation>;
 	let mockOutputChannel: TypeMoq.IMock<MockOutputChannel>;
-	let serverInstance: PerFolderServerInstance;
+	let serverInstance: si.PerFolderServerInstance;
 
 	beforeEach(() => {
 		mockInstall = TypeMoq.Mock.ofType(JupyterServerInstallation, undefined, undefined, '/root');
@@ -35,11 +35,11 @@ describe('Jupyter server instance', function (): void {
 		mockInstall.setup(i => i.outputChannel).returns(() => mockOutputChannel.object);
 		mockInstall.setup(i => i.pythonExecutable).returns(() => 'python3');
 		mockInstall.object.execOptions = { env: Object.assign({}, process.env) };
-		serverInstance = new PerFolderServerInstance({
+		serverInstance = new si.PerFolderServerInstance({
 			documentPath: expectedPath,
 			install: mockInstall.object
 		});
-		sinon.stub(serverInstance,'ensureProcessEnded').withArgs(sinon.match.any).returns(undefined);
+		sinon.stub(si,'ensureProcessEnded').returns(undefined);
 	});
 
 	this.afterEach(function () {
@@ -73,12 +73,12 @@ describe('Jupyter server instance', function (): void {
 			sdtout: (listener: (msg: string) => void) => { },
 			stderr: (listener: (msg: string) => void) => listener(successMessage)
 		});
-		let spanwStub = sinon.stub(serverInstance, 'spawn').withArgs(sinon.match.any,sinon.match.any).returns(<ChildProcess>process.object);
-		should(spanwStub.calledOnce).be.false();
+		let spawnStub = sinon.stub(cp,'spawn').returns(<cp.ChildProcess>process.object);
+		should(spawnStub.calledOnce).be.false();
 
 		// When I call start
 		await serverInstance.start();
-		should(spanwStub.calledOnce).be.true();
+		should(spawnStub.calledOnce).be.true();
 
 		// Then I expect all parts of the URI to be defined
 		should(serverInstance.uri).not.be.undefined();
@@ -105,7 +105,7 @@ describe('Jupyter server instance', function (): void {
 			stderr: (listener: (msg: string) => void) => listener(successMessage),
 			error: (listener: (msg: string | Error) => void) => setTimeout(() => listener(new Error(error)), 10)
 		});
-		sinon.stub(serverInstance, 'spawn').withArgs(sinon.match.any,sinon.match.any).returns(<ChildProcess>process.object);
+		sinon.stub(cp,'spawn').returns(<cp.ChildProcess>process.object);
 
 		// When I call start then I expect it to pass
 		await serverInstance.start();
@@ -116,7 +116,7 @@ describe('Jupyter server instance', function (): void {
 		let process = setupSpawn({
 			exit: (listener: (msg: string | number) => void) => listener(code)
 		});
-		sinon.stub(serverInstance, 'spawn').withArgs(sinon.match.any,sinon.match.any).returns(<ChildProcess>process.object);
+		sinon.stub(cp,'spawn').returns(<cp.ChildProcess>process.object);
 
 		// When I call start then I expect the error to be thrown
 		await testUtils.assertThrowsAsync(() => serverInstance.start(), undefined);
@@ -129,7 +129,7 @@ describe('Jupyter server instance', function (): void {
 			sdtout: (listener: (msg: string) => void) => { },
 			stderr: (listener: (msg: string) => void) => listener(successMessage)
 		});
-		sinon.stub(serverInstance, 'spawn').withArgs(sinon.match.any,sinon.match.any).returns(<ChildProcess>process.object);
+		sinon.stub(cp,'spawn').returns(<cp.ChildProcess>process.object);
 
 		let actualCommand: string = undefined;
 		let commandStub = sinon.stub(utils, 'executeBufferedCommand').withArgs(sinon.match.any, sinon.match.any,sinon.match.any)
@@ -158,7 +158,7 @@ describe('Jupyter server instance', function (): void {
 			stderr: (listener: (msg: string) => void) => listener(successMessage)
 		});
 
-		sinon.stub(serverInstance, 'spawn').withArgs(sinon.match.any,sinon.match.any).returns(<ChildProcess>process.object);
+		sinon.stub(cp,'spawn').returns(<cp.ChildProcess>process.object);
 
 		sinon.stub(utils, 'executeBufferedCommand').withArgs(sinon.match.any, sinon.match.any,sinon.match.any)
 			.returns(Promise.resolve(undefined));

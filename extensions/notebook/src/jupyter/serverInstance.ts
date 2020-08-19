@@ -25,6 +25,26 @@ const defaultPort = 8888;
 type MessageListener = (data: string | Buffer) => void;
 type ErrorListener = (err: any) => void;
 
+/**
+ * Helper function to enable testing
+ */
+export function ensureProcessEnded(childProcess: ChildProcess): void {
+	if (!childProcess) {
+		return;
+	}
+	// Wait 5 seconds and then force kill. Jupyter stop is slow so this seems a reasonable time limit
+	setTimeout(() => {
+		// Test if the process is still alive. Throws an exception if not
+		try {
+			process.kill(childProcess.pid, 'SIGKILL');
+		} catch (error) {
+			if (!error || !error.code || (typeof error.code === 'string' && error.code !== 'ESRCH')) {
+				console.log(error);
+			}
+		}
+	}, 5000);
+}
+
 export interface IInstanceOptions {
 	/**
 	 * The path to the initial document we want to start this server for
@@ -70,6 +90,7 @@ export class PerFolderServerInstance implements IServerInstance {
 	private _isStopping: boolean = false;
 	private childProcess: ChildProcess;
 	private errorHandler: ErrorHandler = new ErrorHandler();
+	// private utils: ServerInstanceUtils;
 
 	private readonly notebookScriptPath: string;
 
@@ -97,27 +118,6 @@ export class PerFolderServerInstance implements IServerInstance {
 		await this.startInternal();
 	}
 
-	public spawn(command: string, args?: ReadonlyArray<string>, options?: SpawnOptions): ChildProcess {
-		return spawn(command, args, options);
-	}
-
-	public ensureProcessEnded(childProcess: ChildProcess): void {
-		if (!childProcess) {
-			return;
-		}
-		// Wait 5 seconds and then force kill. Jupyter stop is slow so this seems a reasonable time limit
-		setTimeout(() => {
-			// Test if the process is still alive. Throws an exception if not
-			try {
-				process.kill(childProcess.pid, 'SIGKILL');
-			} catch (error) {
-				if (!error || !error.code || (typeof error.code === 'string' && error.code !== 'ESRCH')) {
-					console.log(error);
-				}
-			}
-		}, 5000);
-	}
-
 	public async stop(): Promise<void> {
 		try {
 			this._isStopping = true;
@@ -137,7 +137,7 @@ export class PerFolderServerInstance implements IServerInstance {
 			this.notify(this.options.install, localize('serverStopError', "Error stopping Notebook Server: {0}", utils.getErrorMessage(error)));
 		} finally {
 			this._isStarted = false;
-			this.ensureProcessEnded(this.childProcess);
+			ensureProcessEnded(this.childProcess);
 			this.handleConnectionClosed();
 
 		}
@@ -348,7 +348,7 @@ export class PerFolderServerInstance implements IServerInstance {
 			env: env,
 			detached: false
 		};
-		let childProcess = this.spawn(startCommand, [], options);
+		let childProcess = spawn(startCommand, [], options);
 		return childProcess;
 	}
 
