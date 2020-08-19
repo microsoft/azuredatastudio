@@ -333,7 +333,6 @@ declare module 'azdata' {
 		saveProfile: boolean;
 		id: string;
 		azureTenantId?: string;
-
 	}
 
 	/**
@@ -1799,8 +1798,6 @@ declare module 'azdata' {
 		deleteJobSchedule(ownerUri: string, scheduleInfo: AgentJobScheduleInfo): Thenable<ResultStatus>;
 
 		registerOnUpdated(handler: () => any): void;
-
-
 	}
 	// DacFx interfaces  -----------------------------------------------------------------------
 
@@ -2736,8 +2733,8 @@ declare module 'azdata' {
 		focus(): Thenable<void>;
 	}
 
-	export interface FormComponent {
-		component: Component;
+	export interface FormComponent<T extends Component = Component> {
+		component: T;
 		title: string;
 		actions?: Component[];
 		required?: boolean;
@@ -4701,7 +4698,7 @@ declare module 'azdata' {
 			output_type: OutputTypeName;
 			metadata?: {
 				azdata_chartOptions?: any;
-			}
+			};
 		}
 
 		/**

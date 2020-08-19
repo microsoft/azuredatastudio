@@ -27,7 +27,7 @@ export interface ButtonClickEventArgs<T extends Slick.SlickData> {
 export class ButtonColumn<T extends Slick.SlickData> implements Slick.Plugin<T> {
 	private _handler = new Slick.EventHandler();
 	private _definition: ButtonColumnDefinition<T>;
-	private _grid: Slick.Grid<T>;
+	private _grid!: Slick.Grid<T>;
 	private _onClick = new Emitter<ButtonClickEventArgs<T>>();
 	public onClick = this._onClick.event;
 
