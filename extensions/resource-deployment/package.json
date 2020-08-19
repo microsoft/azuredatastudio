@@ -411,13 +411,15 @@
               "actionText": "%azure-sqlvm-deploy-dialog-action-text%",
               "title": "%azure-sqlvm-deploy-dialog-title%",
               "name": "azure.sqlvm.new.wizard",
-              "generateSummaryPage": false,
+              "generateSummaryPage": true,
               "pages": [
                 {
-                  "title": "",
-                  "sections": [
+                  "title": "%azure-sqlvm-azure-account-page-label%",
+                  "sections":
+                  [
                     {
-                      "title": "%azure-sqlvm-azure-account-section-label%",
+                      "title": "",
+                      "collapsible": false,
                       "fields": [
                         {
                           "subscriptionVariableName": "AZDATA_NB_VAR_AZURE_SQLVM_NB_VAR_SUBSCRIPTION",
@@ -462,10 +464,26 @@
                           ]
                         }
                       ]
-                    },
+                    }
+                  ]
+                },
+                {
+                  "title": "%azure-sqlvm-vm-information-page-label%",
+                  "sections":[
                     {
-                      "title": "%azure-sqlvm-vm-information-section-label%",
+                      "title": "",
+                      "collapsible": false,
                       "fields": [
+                        {
+                          "label": "%azure-sqlvm-vmname-label%",
+                          "variableName": "AZDATA_NB_VAR_AZURE_SQLVM_VMNAME",
+                          "type": "text",
+                          "defaultValue": "",
+                          "required": true,
+                          "textValidationRequired": true,
+                          "textValidationRegex": "^[a-z0-9]([-a-z0-9_-]{0,13}[a-z0-9])?$",
+                          "textValidationDescription": "%azure-sqlvm-vm-azure-resource-name-validation-description%"
+                        },
                         {
                           "label": "%azure-sqlvm-image-label%",
                           "variableName": "AZDATA_NB_VAR_AZURE_SQLVM_IMAGE",
@@ -536,13 +554,6 @@
                           "enabled": false
                         },
                         {
-                          "label": "%azure-sqlvm-vmname-label%",
-                          "variableName": "AZDATA_NB_VAR_AZURE_SQLVM_VMNAME",
-                          "type": "text",
-                          "defaultValue": "",
-                          "required": true
-                        },
-                        {
                           "label": "%azure-sqlvm-vmsize-label%",
                           "variableName": "AZDATA_NB_VAR_AZURE_SQLVM_VMSIZE",
                           "type": "options",
@@ -563,13 +574,22 @@
                           ]
                         }
                       ]
-                    },
+                    }
+                  ]
+                },
+                {
+                  "title": "%azure-sqlvm-storage-page-lable%",
+                  "sections":[
                     {
-                      "title": "%azure-sqlvm-storage-section-lable%",
+                      "title": "",
+                      "collapsible": false,
                       "fields": [
                         {
                           "label": "%azure-sqlvm-storage-accountname-label%",
                           "variableName": "AZDATA_NB_VAR_AZURE_SQLVM_STORAGEACCOUNTNAME",
+                          "textValidationRequired": true,
+                          "textValidationRegex": "^[a-z0-9]([-a-z0-9_-]{0,13}[a-z0-9])?$",
+                          "textValidationDescription": "%azure-sqlvm-vm-azure-resource-name-validation-description%",
                           "type": "text",
                           "required": true
                         },
@@ -591,24 +611,86 @@
                           "required": true
                         }
                       ]
-                    },
+                    }
+                  ]
+                },
+                {
+                  "title": "%azure-sqlvm-vm-administrator-account-page-label%",
+                  "sections":[
                     {
-                      "title": "%azure-sqlvm-vm-administrator-account-section-label%",
+                      "title": "",
+                      "collapsible": false,
                       "fields": [
                         {
                           "label": "%azure-sqlvm-username-label%",
                           "variableName": "AZDATA_NB_VAR_AZURE_SQLVM_USERNAME",
                           "type": "text",
-                          "required": true
+                          "required": true,
+                          "textValidationRequired": true,
+                          "textValidationRegex": "^[a-z0-9]([-a-z0-9_-]{0,13}[a-z0-9])?$",
+                          "textValidationDescription": "%azure-sqlvm-vm-azure-resource-name-validation-description%"
                         },
                         {
                           "label": "%azure-sqlvm-password-label%",
                           "variableName": "AZDATA_NB_VAR_AZURE_SQLVM_PASSWORD",
                           "type": "sql_password",
-                          "userName": "sa",
                           "confirmationRequired": true,
                           "confirmationLabel": "%azure-sqlvm-password-confirm-label%",
                           "required": true
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "title": "%azure-sqlvm-vm-summary-page-label%",
+                  "fieldHeight": "16px",
+                  "isSummaryPage": true,
+                  "sections": [
+                    {
+                      "title": "",
+                      "fields": [
+                        {
+                          "label": "%azure-sqlvm-image-label%",
+                          "defaultValue": "$(AZDATA_NB_VAR_AZURE_SQLVM_IMAGE)",
+                          "type": "readonly_text",
+                          "isEvaluated": true
+                        },
+                        {
+                          "label": "%azure-sqlvm-image-sku-label%",
+                          "defaultValue": "$(AZDATA_NB_VAR_AZURE_SQLVM_IMAGE_SKU)",
+                          "type": "readonly_text",
+                          "isEvaluated": true
+                        },
+                        {
+                          "label": "%azure-sqlvm-vmname-label%",
+                          "defaultValue": "$(AZDATA_NB_VAR_AZURE_SQLVM_VMNAME)",
+                          "type": "readonly_text",
+                          "isEvaluated": true
+                        },
+                        {
+                          "label": "%azure-sqlvm-vmsize-label%",
+                          "defaultValue": "$(AZDATA_NB_VAR_AZURE_SQLVM_VMSIZE)",
+                          "type": "readonly_text",
+                          "isEvaluated": true
+                        },
+                        {
+                          "label": "%azure-sqlvm-storage-accountname-label%",
+                          "defaultValue": "$(AZDATA_NB_VAR_AZURE_SQLVM_STORAGEACCOUNTNAME)",
+                          "type": "readonly_text",
+                          "isEvaluated": true
+                        },
+                        {
+                          "label": "%azure-sqlvm-storage-sku-label%",
+                          "defaultValue": "$(AZDATA_NB_VAR_AZURE_SQLVM_STORAGESKU)",
+                          "type": "readonly_text",
+                          "isEvaluated": true
+                        },
+                        {
+                          "label": "%azure-sqlvm-username-label%",
+                          "defaultValue": "$(AZDATA_NB_VAR_AZURE_SQLVM_USERNAME)",
+                          "type": "readonly_text",
+                          "isEvaluated": true
                         }
                       ]
                     }
