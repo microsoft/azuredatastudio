@@ -27,7 +27,7 @@ export class Project {
 	public sqlCmdVariables: Record<string, string> = {};
 	public preDeployScripts: ProjectEntry[] = [];
 	public postDeployScripts: ProjectEntry[] = [];
-	public nonDeployScripts: ProjectEntry[] = [];
+	public noneDeployScripts: ProjectEntry[] = [];
 
 	public get projectFolderPath() {
 		return Uri.file(path.dirname(this.projectFilePath)).fsPath;
@@ -91,13 +91,13 @@ export class Project {
 			}
 
 			if (preDeployScriptCount > 1 || postDeployScriptCount > 1) {
-				window.showInformationMessage(constants.prePostDeployCount);
+				window.showWarningMessage(constants.prePostDeployCount, constants.okString);
 			}
 
 			// find all none-deployment scripts to include
 			const noneItems = itemGroup.getElementsByTagName(constants.None);
 			for (let n = 0; n < noneItems.length; n++) {
-				this.nonDeployScripts.push(this.createProjectEntry(noneItems[n].getAttribute(constants.Include), EntryType.File));
+				this.noneDeployScripts.push(this.createProjectEntry(noneItems[n].getAttribute(constants.Include), EntryType.File));
 			}
 		}
 

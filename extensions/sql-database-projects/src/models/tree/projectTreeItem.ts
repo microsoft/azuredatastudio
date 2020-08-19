@@ -58,7 +58,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 		let treeItemList = this.project.files
 			.concat(this.project.preDeployScripts)
 			.concat(this.project.postDeployScripts)
-			.concat(this.project.nonDeployScripts);
+			.concat(this.project.noneDeployScripts);
 
 		for (const entry of treeItemList) {
 			if (entry.type !== EntryType.File && entry.relativePath.startsWith(RelativeOuterPath)) {
