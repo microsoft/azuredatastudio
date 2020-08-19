@@ -5,6 +5,7 @@
 
 import 'vs/css!./media/gridPanel';
 
+import { ITableStyles, ITableMouseEvent } from 'sql/base/browser/ui/table/interfaces';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import QueryRunner, { QueryGridDataProvider } from 'sql/workbench/services/query/common/queryRunner';
 import { ResultSetSummary, IColumn } from 'sql/workbench/services/query/common/query';
@@ -17,9 +18,9 @@ import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelect
 import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
 import { escape } from 'sql/base/common/strings';
 import { hyperLinkFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
-import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugin';
 import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
-import { ITableStyles, ITableMouseEvent } from 'sql/base/browser/ui/table/interfaces';
+import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugin';
+import { GridTable as HighPerfGridTable } from 'sql/workbench/contrib/query/browser/highPerfGridPanel';
 
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -27,9 +28,8 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { Emitter, Event } from 'vs/base/common/event';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
-import { range, find } from 'vs/base/common/arrays';
-import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { Disposable, dispose, DisposableStore } from 'vs/base/common/lifecycle';
+import { range, find } from 'vs/base/common/arrays';
 import { generateUuid } from 'vs/base/common/uuid';
 import { ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { isInDOM, Dimension } from 'vs/base/browser/dom';
@@ -47,6 +47,7 @@ import { SaveFormat } from 'sql/workbench/services/query/common/resultSerializer
 import { Progress } from 'vs/platform/progress/common/progress';
 import { ScrollableView, IView } from 'sql/base/browser/ui/scrollableView/scrollableView';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
+import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -64,24 +65,25 @@ const MIN_GRID_HEIGHT = (MIN_GRID_HEIGHT_ROWS * ROW_HEIGHT) + HEADER_HEIGHT + ES
 export class GridPanel extends Disposable {
 	private container = document.createElement('div');
 	private scrollableView: ScrollableView;
-	private tables: GridTable<any>[] = [];
+	private tables: Array<GridTable<any> | HighPerfGridTable<any>> = [];
 	private tableDisposable = this._register(new DisposableStore());
 	private queryRunnerDisposables = this._register(new DisposableStore());
-	private currentHeight: number;
 
 	private runner: QueryRunner;
 
-	private maximizedGrid: GridTable<any>;
+	private maximizedGrid: GridTable<any> | HighPerfGridTable<any>;
 	private _state: GridPanelState | undefined;
+
+	private readonly optimized = this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.optimizedTable;
 
 	constructor(
 		@IConfigurationService private readonly configurationService: IConfigurationService,
-		@IThemeService private readonly themeService: IThemeService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
-		@ILogService private readonly logService: ILogService
+		@ILogService private readonly logService: ILogService,
+		@IThemeService private readonly themeService: IThemeService,
 	) {
 		super();
-		this.scrollableView = new ScrollableView(this.container);
+		this.scrollableView = new ScrollableView(this.container, { scrollDebouce: this.optimized ? 0 : undefined });
 		this.scrollableView.onDidScroll(e => {
 			if (this.state && this.scrollableView.length !== 0) {
 				this.state.scrollPosition = e.scrollTop;
@@ -97,12 +99,7 @@ export class GridPanel extends Disposable {
 	}
 
 	public layout(size: Dimension): void {
-		this.scrollableView.layout(size.height);
-		// if the size hasn't change it won't layout our table so we have to do it manually
-		if (size.height === this.currentHeight) {
-			this.tables.map(e => e.layout());
-		}
-		this.currentHeight = size.height;
+		this.scrollableView.layout(size.height, size.width);
 	}
 
 	public focus(): void {
@@ -203,9 +200,9 @@ export class GridPanel extends Disposable {
 	}
 
 	private addResultSet(resultSet: ResultSetSummary[]) {
-		let tables: GridTable<any>[] = [];
+		const tables: Array<GridTable<any> | HighPerfGridTable<any>> = [];
 
-		for (let set of resultSet) {
+		for (const set of resultSet) {
 			// ensure we aren't adding a resultSet that is already visible
 			if (find(this.tables, t => t.resultSet.batchId === set.batchId && t.resultSet.id === set.id)) {
 				continue;
@@ -220,7 +217,12 @@ export class GridPanel extends Disposable {
 					this.state.tableStates.push(tableState);
 				}
 			}
-			let table = this.instantiationService.createInstance(GridTable, this.runner, set, tableState);
+			let table: GridTable<any> | HighPerfGridTable<any>;
+			if (this.optimized) {
+				table = this.instantiationService.createInstance(HighPerfGridTable, this.runner, set, tableState);
+			} else {
+				table = this.instantiationService.createInstance(GridTable, this.runner, set, tableState);
+			}
 			this.tableDisposable.add(tableState.onMaximizedChange(e => {
 				if (e) {
 					this.maximizeTable(table.id);
@@ -365,12 +367,12 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	constructor(
 		state: GridTableState,
 		protected _resultSet: ResultSetSummary,
-		protected contextMenuService: IContextMenuService,
-		protected instantiationService: IInstantiationService,
-		protected editorService: IEditorService,
-		protected untitledEditorService: IUntitledTextEditorService,
-		protected configurationService: IConfigurationService,
-		private readonly options: IGridTableOptions = { actionOrientation: ActionsOrientation.VERTICAL }
+		private readonly options: IGridTableOptions = { actionOrientation: ActionsOrientation.VERTICAL },
+		@IContextMenuService private readonly contextMenuService: IContextMenuService,
+		@IInstantiationService protected readonly instantiationService: IInstantiationService,
+		@IEditorService private readonly editorService: IEditorService,
+		@IUntitledTextEditorService private readonly untitledEditorService: IUntitledTextEditorService,
+		@IConfigurationService private readonly configurationService: IConfigurationService
 	) {
 		super();
 		let config = this.configurationService.getValue<{ rowHeight: number }>('resultsGrid');
@@ -768,7 +770,7 @@ class GridTable<T> extends GridTableBase<T> {
 		@IUntitledTextEditorService untitledEditorService: IUntitledTextEditorService,
 		@IConfigurationService configurationService: IConfigurationService
 	) {
-		super(state, resultSet, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
+		super(state, resultSet, undefined, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
 		this._gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, this._runner, resultSet.batchId, resultSet.id);
 	}
 

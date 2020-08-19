@@ -3,6 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.monaco-workbench .quick-open-widget .quick-open-tree .quick-open-entry.editor-preview {
-	font-style: italic;
+import { IDisposable } from 'vs/base/common/lifecycle';
+
+
+export class RowCache implements IDisposable {
+	dispose(): void {
+
+	}
+}
+
+export interface IRow {
+	domNode: HTMLElement | null;
 }
