@@ -12,7 +12,7 @@ import { getCommonLaunchArgsAndCleanupOldLogFiles } from './utils';
 import { localize } from './localize';
 import { Telemetry, LanguageClientErrorHandler } from './telemetry';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
-import { TelemetryFeature, AgentServicesFeature, SerializationFeature } from './features';
+import { TelemetryFeature, SerializationFeature } from './features';
 import { CredentialStore } from './credentialstore/credentialstore';
 import { AzureResourceProvider } from './resourceProvider/resourceProvider';
 import { AppContext } from './appContext';
@@ -146,7 +146,6 @@ function getClientOptions(context: AppContext): ClientOptions {
 			// we only want to add new features
 			...SqlOpsDataClient.defaultFeatures,
 			TelemetryFeature,
-			AgentServicesFeature,
 			SerializationFeature
 		],
 		outputChannel: new CustomOutputChannel()
