@@ -2733,8 +2733,8 @@ declare module 'azdata' {
 		focus(): Thenable<void>;
 	}
 
-	export interface FormComponent {
-		component: Component;
+	export interface FormComponent<T extends Component = Component> {
+		component: T;
 		title: string;
 		actions?: Component[];
 		required?: boolean;
