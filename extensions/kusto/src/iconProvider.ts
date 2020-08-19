@@ -9,11 +9,11 @@ import * as constants from './constants';
 const cloudIcon = 'kusto:cloud';
 
 export class KustoIconProvider implements azdata.IconProvider {
-	public readonly providerId: string = constants.sqlProviderName;
+	public readonly providerId: string = constants.kustoProviderName;
 	public handle: number;
 	getConnectionIconId(connection: azdata.IConnectionProfile, serverInfo: azdata.ServerInfo): Thenable<string> {
 		let iconName: string = undefined;
-		if (connection.providerName === 'KUSTO') {
+		if (connection.providerName === this.providerId) {
 			iconName = cloudIcon;
 		}
 		return Promise.resolve(iconName);

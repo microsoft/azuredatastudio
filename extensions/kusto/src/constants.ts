@@ -17,7 +17,7 @@ export const userPropName = 'user';
 export const passwordPropName = 'password';
 export const groupIdPropName = 'groupId';
 export const groupIdName = 'groupId';
-export const sqlProviderName = 'KUSTO';
+export const kustoProviderName = 'KUSTO';
 
 export const UNTITLED_SCHEMA = 'untitled';
 

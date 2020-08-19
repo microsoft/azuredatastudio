@@ -15,14 +15,3 @@ export interface ITreeNode {
 	getNodeInfo(): azdata.NodeInfo;
 	getChildren(refreshChildren: boolean): ITreeNode[] | Promise<ITreeNode[]>;
 }
-
-/**
- * A HDFS file node. This is a leaf node in the object explorer tree, and its contents
- * can be queried
- *
- * @export
- * @extends {ITreeNode}
- */
-export interface IFileNode extends ITreeNode {
-	getFileContentsAsString(maxBytes?: number): Promise<string>;
-}
