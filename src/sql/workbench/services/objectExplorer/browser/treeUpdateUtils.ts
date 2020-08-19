@@ -11,9 +11,9 @@ import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/br
 import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
 
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
-import * as errors from 'vs/base/common/errors';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Disposable } from 'vs/base/common/lifecycle';
+import { onUnexpectedError } from 'vs/base/common/errors';
+import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 
 export interface IExpandableTree extends ITree {
 	/**
@@ -47,13 +47,13 @@ export class TreeUpdateUtils {
 	/**
 	 * Set input for the tree.
 	 */
-	public static structuralTreeUpdate(tree: ITree, viewKey: 'recent' | 'active' | 'saved', connectionManagementService: IConnectionManagementService, providers?: string[]): Promise<void> {
+	public static async structuralTreeUpdate(tree: AsyncServerTree | ITree, viewKey: 'recent' | 'active' | 'saved', connectionManagementService: IConnectionManagementService, providers?: string[]): Promise<void> {
 		// convert to old VS Code tree interface with expandable methods
 		let expandableTree: IExpandableTree = <IExpandableTree>tree;
 
 		let selectedElement: any;
 		let targetsToExpand: any[];
-		if (tree) {
+		if (tree && !(tree instanceof AsyncServerTree)) {
 			let selection = tree.getSelection();
 			if (selection && selection.length === 1) {
 				selectedElement = <any>selection[0];
@@ -72,10 +72,13 @@ export class TreeUpdateUtils {
 			treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService, providers);
 		}
 		const previousTreeInput = tree.getInput();
-		return tree.setInput(treeInput).then(async () => {
-			if (previousTreeInput instanceof Disposable) {
-				previousTreeInput.dispose();
-			}
+		await tree.setInput(treeInput);
+
+		if (previousTreeInput instanceof Disposable) {
+			previousTreeInput.dispose();
+		}
+
+		if (tree && !(tree instanceof AsyncServerTree)) {
 			// Make sure to expand all folders that where expanded in the previous session
 			if (targetsToExpand) {
 				await tree.expandAll(targetsToExpand);
@@ -83,64 +86,64 @@ export class TreeUpdateUtils {
 			if (selectedElement) {
 				tree.select(selectedElement);
 			}
-		});
+		}
 	}
 
 	/**
 	 * Set input for the registered servers tree.
 	 */
-	public static registeredServerUpdate(tree: ITree, connectionManagementService: IConnectionManagementService, elementToSelect?: any): Promise<void> {
-		// convert to old VS Code tree interface with expandable methods
-		let expandableTree: IExpandableTree = <IExpandableTree>tree;
+	public static async registeredServerUpdate(tree: ITree | AsyncServerTree, connectionManagementService: IConnectionManagementService, elementToSelect?: any): Promise<void> {
+		if (tree instanceof AsyncServerTree) {
+			const treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService);
+			await tree.setInput(treeInput);
+			tree.rerender();
+		} else {
+			// convert to old VS Code tree interface with expandable methods
+			let expandableTree: IExpandableTree = <IExpandableTree>tree;
 
-		let selectedElement: any = elementToSelect;
-		let targetsToExpand: any[];
+			let selectedElement: any = elementToSelect;
+			let targetsToExpand: any[];
 
-		// Focus
-		tree.domFocus();
+			// Focus
+			tree.domFocus();
 
-		if (tree) {
-			let selection = tree.getSelection();
-			if (!selectedElement) {
-				if (selection && selection.length === 1) {
-					selectedElement = <any>selection[0];
+			if (tree) {
+				let selection = tree.getSelection();
+				if (!selectedElement) {
+					if (selection && selection.length === 1) {
+						selectedElement = <any>selection[0];
+					}
+				}
+				targetsToExpand = expandableTree.getExpandedElements();
+				if (selectedElement && targetsToExpand.indexOf(selectedElement) === -1) {
+					targetsToExpand.push(selectedElement);
 				}
 			}
-			targetsToExpand = expandableTree.getExpandedElements();
-			if (selectedElement && targetsToExpand.indexOf(selectedElement) === -1) {
-				targetsToExpand.push(selectedElement);
-			}
-		}
 
-		let treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService);
-		if (treeInput) {
-			if (treeInput !== tree.getInput()) {
-				return tree.setInput(treeInput).then(async () => {
-					// Make sure to expand all folders that where expanded in the previous session
-					if (targetsToExpand) {
-						await tree.expandAll(targetsToExpand);
-					}
-					if (selectedElement) {
-						tree.select(selectedElement);
-					}
-					tree.getFocus();
-				}, errors.onUnexpectedError);
+			let treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService);
+			if (treeInput) {
+				if (treeInput !== tree.getInput()) {
+					return tree.setInput(treeInput).then(async () => {
+						// Make sure to expand all folders that where expanded in the previous session
+						if (targetsToExpand) {
+							await tree.expandAll(targetsToExpand);
+						}
+						if (selectedElement) {
+							tree.select(selectedElement);
+						}
+						tree.getFocus();
+					}, onUnexpectedError);
+				}
 			}
 		}
-		return Promise.resolve();
 	}
 
-	public static getTreeInput(connectionManagementService: IConnectionManagementService, providers?: string[]): ConnectionProfileGroup {
-
-		let groups = connectionManagementService.getConnectionGroups(providers);
-		if (groups && groups.length > 0) {
-			let treeInput = groups[0];
-			treeInput.name = 'root';
-			groups.forEach(cpg => cpg.dispose());
-			return treeInput;
-		}
-		// Should never get to this case.
-		return undefined;
+	public static getTreeInput(connectionManagementService: IConnectionManagementService, providers?: string[]): ConnectionProfileGroup | undefined {
+		const groups = connectionManagementService.getConnectionGroups(providers);
+		const input = groups.find(group => group.isRoot);
+		// Dispose of the unused groups to clean up their handlers
+		groups.filter(g => g !== input).forEach(g => g.dispose());
+		return input;
 	}
 
 	public static hasObjectExplorerNode(connection: ConnectionProfile, connectionManagementService: IConnectionManagementService): boolean {
@@ -149,10 +152,10 @@ export class TreeUpdateUtils {
 	}
 
 	public static async connectIfNotConnected(
-		connection: IConnectionProfile,
+		connection: ConnectionProfile,
 		options: IConnectionCompletionOptions,
 		connectionManagementService: IConnectionManagementService,
-		tree: ITree): Promise<ConnectionProfile | undefined> {
+		tree: AsyncServerTree | ITree): Promise<ConnectionProfile | undefined> {
 		if (!connectionManagementService.isProfileConnected(connection)) {
 			// don't try to reconnect if currently connecting
 			if (connectionManagementService.isProfileConnecting(connection)) {
@@ -161,7 +164,15 @@ export class TreeUpdateUtils {
 				// else if we aren't connected or connecting then try to connect
 			} else {
 				let callbacks: IConnectionCallbacks = undefined;
-				if (tree) {
+				if (tree instanceof AsyncServerTree) {
+					callbacks = {
+						onConnectStart: undefined,
+						onConnectReject: undefined,
+						onConnectSuccess: undefined,
+						onDisconnect: undefined,
+						onConnectCanceled: undefined,
+					};
+				} else if (tree) {
 					// Show the spinner in OE by adding the 'loading' trait to the connection, and set up callbacks to hide the spinner
 					tree.addTraits('loading', [connection]);
 					let rejectOrCancelCallback = () => {
@@ -176,12 +187,13 @@ export class TreeUpdateUtils {
 						onConnectCanceled: rejectOrCancelCallback,
 					};
 				}
+
 				const result = await connectionManagementService.connect(connection, undefined, options, callbacks);
 				if (result.connected) {
 					let existingConnection = connectionManagementService.findExistingConnection(connection);
 					return existingConnection;
 				} else {
-					throw new Error('connection failed');
+					throw new Error(result.errorMessage);
 				}
 			}
 		} else {
@@ -202,8 +214,8 @@ export class TreeUpdateUtils {
 	 * @param connectionManagementService Connection management service instance
 	 * @param objectExplorerService Object explorer service instance
 	 */
-	public static async connectAndCreateOeSession(connection: IConnectionProfile, options: IConnectionCompletionOptions,
-		connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, tree: ITree): Promise<boolean> {
+	public static async connectAndCreateOeSession(connection: ConnectionProfile, options: IConnectionCompletionOptions,
+		connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, tree: AsyncServerTree | ITree): Promise<boolean> {
 		const connectedConnection = await TreeUpdateUtils.connectIfNotConnected(connection, options, connectionManagementService, tree);
 		if (connectedConnection) {
 			// append group ID and original display name to build unique OE session ID
@@ -213,7 +225,6 @@ export class TreeUpdateUtils {
 			let rootNode: TreeNode = objectExplorerService.getObjectExplorerNode(connectedConnection);
 			if (!rootNode) {
 				await objectExplorerService.updateObjectExplorerNodes(connectedConnection);
-				rootNode = objectExplorerService.getObjectExplorerNode(connectedConnection);
 				return true;
 				// The oe request is sent. an event will be raised when the session is created
 			} else {
@@ -224,50 +235,75 @@ export class TreeUpdateUtils {
 		}
 	}
 
-	public static getObjectExplorerNode(connection: ConnectionProfile, connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService): Promise<TreeNode[]> {
-		return new Promise<TreeNode[]>((resolve, reject) => {
-			if (connection.isDisconnecting) {
-				resolve([]);
-			} else {
-				let rootNode = objectExplorerService.getObjectExplorerNode(connection);
-				if (rootNode) {
-					objectExplorerService.resolveTreeNodeChildren(rootNode.getSession(), rootNode).then(() => {
-						resolve(rootNode.children);
-					}, expandError => {
-						resolve([]);
-					});
-
-				} else {
-					resolve([]);
+	public static async getConnectionNodeChildren(connection: ConnectionProfile, objectExplorerService: IObjectExplorerService): Promise<TreeNode[]> {
+		if (connection.isDisconnecting) {
+			return [];
+		} else {
+			let rootNode = objectExplorerService.getObjectExplorerNode(connection);
+			if (rootNode) {
+				try {
+					await objectExplorerService.resolveTreeNodeChildren(rootNode.getSession(), rootNode);
+					return rootNode.children;
+				} catch (err) {
+					onUnexpectedError(err);
+					return [];
 				}
+
+			} else {
+				return [];
 			}
-		});
+		}
 	}
 
-	public static getObjectExplorerParent(objectExplorerNode: TreeNode, connectionManagementService: IConnectionManagementService): any {
+	public static async getAsyncConnectionNodeChildren(connection: ConnectionProfile, connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService): Promise<TreeNode[]> {
+		if (connection.isDisconnecting) {
+			return [];
+		} else {
+			let rootNode = objectExplorerService.getObjectExplorerNode(connection);
+			if (rootNode) {
+				await objectExplorerService.resolveTreeNodeChildren(rootNode.getSession(), rootNode);
+				return rootNode.children;
+			} else {
+				const options: IConnectionCompletionOptions = {
+					params: undefined,
+					saveTheConnection: true,
+					showConnectionDialogOnError: true,
+					showFirewallRuleOnError: true,
+					showDashboard: false
+				};
+				// Need to wait for the OE service to update its nodes in order to resolve the children
+				const nodesUpdatedPromise = new Promise((resolve, reject) => {
+					objectExplorerService.onUpdateObjectExplorerNodes(e => {
+						if (e.errorMessage) {
+							reject(new Error(e.errorMessage));
+						}
+						if (e.connection.id === connection.id) {
+							resolve();
+						}
+					});
+				});
+				await TreeUpdateUtils.connectAndCreateOeSession(connection, options, connectionManagementService, objectExplorerService, undefined);
+				await nodesUpdatedPromise;
+				let rootNode = objectExplorerService.getObjectExplorerNode(connection);
+				await objectExplorerService.resolveTreeNodeChildren(rootNode.getSession(), rootNode);
+				return rootNode.children;
+			}
+		}
+	}
+
+	public static getObjectExplorerParent(objectExplorerNode: TreeNode, connectionManagementService: IConnectionManagementService): ServerTreeElement | undefined {
 		if (objectExplorerNode && objectExplorerNode.parent) {
 			// if object explorer node's parent is root, return connection profile
 			if (!objectExplorerNode.parent.parent) {
-				let connectionId = objectExplorerNode.getConnectionProfile().id;
-
+				const connectionId = objectExplorerNode.getConnectionProfile().id;
 				// get connection profile from connection profile groups
-				let root = TreeUpdateUtils.getTreeInput(connectionManagementService);
-				let connections = ConnectionProfileGroup.getConnectionsInGroup(root);
-				let results = connections.filter(con => {
-					if (connectionId === con.id) {
-						return true;
-					} else {
-						return false;
-					}
-				});
-				if (results && results.length > 0) {
-					return results[0];
-				}
+				const root = TreeUpdateUtils.getTreeInput(connectionManagementService);
+				return ConnectionProfileGroup.getConnectionsInGroup(root).find(conn => connectionId === conn.id);
 			} else {
 				return objectExplorerNode.parent;
 			}
 		}
-		return null;
+		return undefined;
 	}
 
 	/**
