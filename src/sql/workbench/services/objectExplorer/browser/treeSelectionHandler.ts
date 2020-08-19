@@ -11,6 +11,7 @@ import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/br
 // import { IProgressRunner, IProgressService } from 'vs/platform/progress/common/progress';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
+import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 
 export class TreeSelectionHandler {
 	// progressRunner: IProgressRunner;
@@ -44,9 +45,9 @@ export class TreeSelectionHandler {
 	}
 
 	/**
-	 * Handle select	ion of tree element
+	 * Handle selection of tree element
 	 */
-	public onTreeSelect(event: any, tree: ITree, connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, connectionCompleteCallback: () => void) {
+	public onTreeSelect(event: any, tree: AsyncServerTree | ITree, connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, connectionCompleteCallback: () => void) {
 		let sendSelectionEvent = ((event: any, selection: any, isDoubleClick: boolean, userInteraction: boolean) => {
 			// userInteraction: defensive - don't touch this something else is handling it.
 			if (userInteraction === true && this._lastClicked && this._lastClicked[0] === selection[0]) {
@@ -93,44 +94,50 @@ export class TreeSelectionHandler {
 	 *
 	 * @param connectionCompleteCallback A function that gets called after a connection is established due to the selection, if needed
 	 */
-	private handleTreeItemSelected(connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, isDoubleClick: boolean, isKeyboard: boolean, selection: any[], tree: ITree, connectionCompleteCallback: () => void): void {
-		let connectionProfile: ConnectionProfile = undefined;
-		let options: IConnectionCompletionOptions = {
-			params: undefined,
-			saveTheConnection: true,
-			showConnectionDialogOnError: true,
-			showFirewallRuleOnError: true,
-			showDashboard: isDoubleClick // only show the dashboard if the action is double click
-		};
-		if (selection && selection.length > 0 && (selection[0] instanceof ConnectionProfile)) {
-			connectionProfile = <ConnectionProfile>selection[0];
-
-			if (connectionProfile) {
+	private handleTreeItemSelected(connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, isDoubleClick: boolean, isKeyboard: boolean, selection: any[], tree: AsyncServerTree | ITree, connectionCompleteCallback: () => void): void {
+		if (tree instanceof AsyncServerTree) {
+			if (selection && selection.length > 0 && (selection[0] instanceof ConnectionProfile)) {
 				this.onTreeActionStateChange(true);
-
-				TreeUpdateUtils.connectAndCreateOeSession(connectionProfile, options, connectionManagementService, objectExplorerService, tree).then(sessionCreated => {
-					if (!sessionCreated) {
-						this.onTreeActionStateChange(false);
-					}
-					if (connectionCompleteCallback) {
-						connectionCompleteCallback();
-					}
-				}, error => {
-					this.onTreeActionStateChange(false);
-				});
 			}
-		} else if (isDoubleClick && selection && selection.length > 0 && (selection[0] instanceof TreeNode)) {
-			let treeNode = selection[0];
-			if (TreeUpdateUtils.isAvailableDatabaseNode(treeNode)) {
-				connectionProfile = TreeUpdateUtils.getConnectionProfile(treeNode);
+		} else {
+			let connectionProfile: ConnectionProfile = undefined;
+			let options: IConnectionCompletionOptions = {
+				params: undefined,
+				saveTheConnection: true,
+				showConnectionDialogOnError: true,
+				showFirewallRuleOnError: true,
+				showDashboard: isDoubleClick // only show the dashboard if the action is double click
+			};
+			if (selection && selection.length > 0 && (selection[0] instanceof ConnectionProfile)) {
+				connectionProfile = <ConnectionProfile>selection[0];
+
 				if (connectionProfile) {
-					connectionManagementService.showDashboard(connectionProfile);
+					this.onTreeActionStateChange(true);
+
+					TreeUpdateUtils.connectAndCreateOeSession(connectionProfile, options, connectionManagementService, objectExplorerService, tree).then(sessionCreated => {
+						if (!sessionCreated) {
+							this.onTreeActionStateChange(false);
+						}
+						if (connectionCompleteCallback) {
+							connectionCompleteCallback();
+						}
+					}, error => {
+						this.onTreeActionStateChange(false);
+					});
+				}
+			} else if (isDoubleClick && selection && selection.length > 0 && (selection[0] instanceof TreeNode)) {
+				let treeNode = selection[0];
+				if (TreeUpdateUtils.isAvailableDatabaseNode(treeNode)) {
+					connectionProfile = TreeUpdateUtils.getConnectionProfile(treeNode);
+					if (connectionProfile) {
+						connectionManagementService.showDashboard(connectionProfile);
+					}
 				}
 			}
-		}
 
-		if (isKeyboard) {
-			tree.toggleExpansion(selection[0]);
+			if (isKeyboard) {
+				tree.toggleExpansion(selection[0]);
+			}
 		}
 	}
 }

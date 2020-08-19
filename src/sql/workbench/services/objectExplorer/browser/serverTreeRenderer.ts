@@ -15,6 +15,7 @@ import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode'
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import { badgeRenderer, iconRenderer } from 'sql/workbench/services/objectExplorer/browser/iconRenderer';
 import { URI } from 'vs/base/common/uri';
+import { DefaultServerGroupColor } from 'sql/workbench/services/serverGroup/common/serverGroupViewModel';
 
 export interface IConnectionTemplateData {
 	root: HTMLElement;
@@ -44,10 +45,10 @@ export class ServerTreeRenderer implements IRenderer {
 
 	public static CONNECTION_HEIGHT = 23;
 	public static CONNECTION_GROUP_HEIGHT = 38;
-	private static CONNECTION_TEMPLATE_ID = 'connectionProfile';
-	private static CONNECTION_GROUP_TEMPLATE_ID = 'connectionProfileGroup';
+	public static CONNECTION_TEMPLATE_ID = 'connectionProfile';
+	public static CONNECTION_GROUP_TEMPLATE_ID = 'connectionProfileGroup';
 	public static OBJECTEXPLORER_HEIGHT = 23;
-	private static OBJECTEXPLORER_TEMPLATE_ID = 'objectExplorer';
+	public static OBJECTEXPLORER_TEMPLATE_ID = 'objectExplorer';
 	/**
 	 * _isCompact is used to render connections tiles with and without the action buttons.
 	 * When set to true, like in the connection dialog recent connections tree, the connection
@@ -238,7 +239,7 @@ export class ServerTreeRenderer implements IRenderer {
 				rowElement.style.background = connectionProfileGroup.color;
 			} else {
 				// If the group doesn't contain specific color, assign the default color
-				rowElement.style.background = '#515151';
+				rowElement.style.background = DefaultServerGroupColor;
 			}
 		}
 		if (connectionProfileGroup.description && (connectionProfileGroup.description !== '')) {

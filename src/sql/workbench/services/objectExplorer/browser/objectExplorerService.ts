@@ -21,7 +21,9 @@ import { values } from 'vs/base/common/collections';
 import { startsWith } from 'vs/base/common/strings';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IAction } from 'vs/base/common/actions';
+import { ServerTreeActionProvider } from 'sql/workbench/services/objectExplorer/browser/serverTreeActionProvider';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
+import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -32,22 +34,22 @@ export interface NodeExpandInfoWithProviderId extends azdata.ObjectExplorerExpan
 }
 
 export interface IServerTreeView {
-	readonly tree: ITree;
+	readonly tree: ITree | AsyncServerTree;
 	readonly onSelectionOrFocusChange: Event<void>;
 	isObjectExplorerConnectionUri(uri: string): boolean;
 	deleteObjectExplorerNodeAndRefreshTree(profile: ConnectionProfile): Promise<void>;
-	getSelection(): Array<ConnectionProfile | TreeNode>;
+	getSelection(): Array<ServerTreeElement>;
 	isFocused(): boolean;
 	refreshElement(node: TreeNode): Promise<void>;
-	readonly treeActionProvider: { getActions: (tree: ITree, node: TreeNode | ConnectionProfile) => IAction[] }
-	isExpanded(node: TreeNode | ConnectionProfile): boolean;
-	reveal(node: TreeNode | ConnectionProfile): Promise<void>;
-	setExpandedState(node: TreeNode | ConnectionProfile, state: TreeItemCollapsibleState): Promise<void>;
-	setSelected(node: TreeNode | ConnectionProfile, selected: boolean, clearOtherSelections: boolean): Promise<void>;
+	readonly treeActionProvider: ServerTreeActionProvider;
+	isExpanded(node: ServerTreeElement): boolean;
+	reveal(node: ServerTreeElement): Promise<void>;
+	setExpandedState(node: ServerTreeElement, state: TreeItemCollapsibleState): Promise<void>;
+	setSelected(node: ServerTreeElement, selected: boolean, clearOtherSelections: boolean): Promise<void>;
 	refreshTree(): Promise<void>;
 	readonly activeConnectionsFilterAction: IAction;
 	renderBody(container: HTMLElement): Promise<void>;
-	layout(size: number);
+	layout(size: number): void;
 }
 
 export interface IObjectExplorerService {
@@ -78,7 +80,7 @@ export interface IObjectExplorerService {
 
 	registerNodeProvider(expander: azdata.ObjectExplorerNodeProvider): void;
 
-	getObjectExplorerNode(connection: IConnectionProfile): TreeNode;
+	getObjectExplorerNode(connection: IConnectionProfile): TreeNode | undefined;
 
 	updateObjectExplorerNodes(connectionProfile: IConnectionProfile): Promise<void>;
 
@@ -203,7 +205,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	public async updateObjectExplorerNodes(connection: IConnectionProfile): Promise<void> {
 		const withPassword = await this._connectionManagementService.addSavedPassword(connection);
-		let connectionProfile = ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, withPassword);
+		const connectionProfile = ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, withPassword);
 		return this.updateNewObjectExplorerNode(connectionProfile);
 	}
 
@@ -330,7 +332,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		}
 	}
 
-	public getObjectExplorerNode(connection: IConnectionProfile): TreeNode {
+	public getObjectExplorerNode(connection: IConnectionProfile): TreeNode | undefined {
 		return this._activeObjectExplorerNodes[connection.id];
 	}
 
@@ -678,7 +680,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	*/
 	public async getNodeActions(connectionId: string, nodePath: string): Promise<string[]> {
 		const node = await this.getTreeNode(connectionId, nodePath);
-		let actions = this._serverTreeView.treeActionProvider.getActions(this._serverTreeView.tree, this.getTreeItem(node));
+		const actions = this._serverTreeView.treeActionProvider.getActions(this._serverTreeView.tree, this.getTreeItem(node));
 		return actions.filter(action => action.label).map(action => action.label);
 	}
 
