@@ -29,7 +29,7 @@
         "command": "dataworkspace.addProject",
         "title": "%add-project-command%",
         "category": "data workspace",
-        "icon":{
+        "icon": {
           "light": "images/new.svg",
           "dark": "images/new-inverse.svg"
         }
