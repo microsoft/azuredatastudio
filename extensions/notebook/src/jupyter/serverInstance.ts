@@ -26,7 +26,7 @@ type MessageListener = (data: string | Buffer) => void;
 type ErrorListener = (err: any) => void;
 
 /**
- * Helper function to enable testing
+ * Helper function ensures server instance process stops
  */
 export function ensureProcessEnded(childProcess: ChildProcess): void {
 	if (!childProcess) {
@@ -90,7 +90,6 @@ export class PerFolderServerInstance implements IServerInstance {
 	private _isStopping: boolean = false;
 	private childProcess: ChildProcess;
 	private errorHandler: ErrorHandler = new ErrorHandler();
-	// private utils: ServerInstanceUtils;
 
 	private readonly notebookScriptPath: string;
 
