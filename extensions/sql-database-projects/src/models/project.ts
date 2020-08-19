@@ -9,6 +9,7 @@ import * as constants from '../common/constants';
 import * as utils from '../common/utils';
 import * as xmlFormat from 'xml-formatter';
 import * as os from 'os';
+import * as templates from '../templates/templates';
 
 import { Uri, window } from 'vscode';
 import { promises as fs } from 'fs';
@@ -27,7 +28,7 @@ export class Project {
 	public sqlCmdVariables: Record<string, string> = {};
 	public preDeployScripts: ProjectEntry[] = [];
 	public postDeployScripts: ProjectEntry[] = [];
-	public nonDeployScripts: ProjectEntry[] = [];
+	public noneDeployScripts: ProjectEntry[] = [];
 
 	public get projectFolderPath() {
 		return Uri.file(path.dirname(this.projectFilePath)).fsPath;
@@ -97,7 +98,7 @@ export class Project {
 			// find all none-deployment scripts to include
 			const noneItems = itemGroup.getElementsByTagName(constants.None);
 			for (let n = 0; n < noneItems.length; n++) {
-				this.nonDeployScripts.push(this.createProjectEntry(noneItems[n].getAttribute(constants.Include), EntryType.File));
+				this.noneDeployScripts.push(this.createProjectEntry(noneItems[n].getAttribute(constants.Include), EntryType.File));
 			}
 		}
 
@@ -230,9 +231,21 @@ export class Project {
 		}
 
 		const fileEntry = this.createProjectEntry(relativeFilePath, EntryType.File);
-		this.files.push(fileEntry);
 
-		await this.addToProjFile(fileEntry, itemType);
+		let xmlTag;
+		if (itemType && itemType === templates.preDeployScript) {
+			xmlTag = constants.PreDeploy;
+			this.preDeployScripts.push(fileEntry);
+		}
+		else if (itemType && itemType === templates.postDeployScript) {
+			xmlTag = constants.PostDeploy;
+			this.postDeployScripts.push(fileEntry);
+		} else {
+			xmlTag = constants.Build;
+			this.files.push(fileEntry);
+		}
+
+		await this.addToProjFile(fileEntry, xmlTag);
 
 		return fileEntry;
 	}
@@ -371,7 +384,7 @@ export class Project {
 			let prePostScriptExist = { scriptExist: true };
 			itemGroup = this.findOrCreateItemGroup(xmlTag, prePostScriptExist);
 			if (prePostScriptExist.scriptExist === true) {
-				window.showInformationMessage(constants.scriptExists(xmlTag));
+				window.showInformationMessage(constants.deployScriptExists(xmlTag));
 				xmlTag = constants.None;	// Add only one pre-deploy and post-deploy script. All additional ones get added in the same item group with None tag
 			}
 		}
@@ -528,18 +541,10 @@ export class Project {
 		}
 	}
 
-	private async addToProjFile(entry: ProjectEntry, itemType?: string) {
+	private async addToProjFile(entry: ProjectEntry, xmlTag?: string) {
 		switch (entry.type) {
 			case EntryType.File:
-				let xmlTag = constants.Build;
-				if (itemType) {
-					if (itemType === 'preDeployScript') {
-						xmlTag = constants.PreDeploy;
-					} else if (itemType === 'postDeployScript') {
-						xmlTag = constants.PostDeploy;
-					}
-				}
-				this.addFileToProjFile(entry.relativePath, xmlTag);
+				this.addFileToProjFile(entry.relativePath, xmlTag ? xmlTag : constants.Build);
 				break;
 			case EntryType.Folder:
 				this.addFolderToProjFile(entry.relativePath);
@@ -681,13 +686,6 @@ export class SqlProjectReferenceProjectEntry extends ProjectEntry implements IDa
 		return this.projectName;
 	}
 }
-
-/*class PreDeployScriptProjectEntry extends ProjectEntry {
-	constructor(uri: Uri, public relativePath: string, public name?: string) {
-		super(uri, relativePath, EntryType.File);
-	}
-}*/
-
 
 export enum EntryType {
 	File,

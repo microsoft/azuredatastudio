@@ -5,14 +5,16 @@
 
 import * as should from 'should';
 import * as path from 'path';
+import * as sinon from 'sinon';
 import * as baselines from './baselines/baselines';
+import * as templates from '../templates/templates';
 import * as testUtils from './testUtils';
 import * as constants from '../common/constants';
 
 import { promises as fs } from 'fs';
 import { Project, EntryType, TargetPlatform, SystemDatabase, DatabaseReferenceLocation, DacpacReferenceProjectEntry, SqlProjectReferenceProjectEntry } from '../models/project';
 import { exists, convertSlashesForSqlProj } from '../common/utils';
-import { Uri } from 'vscode';
+import { Uri, window } from 'vscode';
 
 let projFilePath: string;
 
@@ -202,6 +204,55 @@ describe('Project: sqlproj content operations', function (): void {
 		// try to add reference to test.dacpac again
 		await testUtils.shouldThrowSpecificError(async () => await project.addDatabaseReference(Uri.parse('test.dacpac'), DatabaseReferenceLocation.sameDatabase), constants.databaseReferenceAlreadyExists);
 		should(project.databaseReferences.length).equal(2, 'There should be two database references after trying to add a reference to test.dacpac again');
+	});
+
+	it('Should add pre and post deployment scripts as entries to sqlproj', async function (): Promise<void> {
+		const project = await Project.openProject(projFilePath);
+
+		const folderPath = 'Pre-Post Deployment Scripts';
+		const preDeploymentScriptFilePath = path.join(folderPath, 'PreDeploymentScript.sql');
+		const postDeploymentScriptFilePath = path.join(folderPath, 'PostDeploymentScript.sql');
+		const fileContents = ' ';
+
+		await project.addFolderItem(folderPath);
+		await project.addScriptItem(preDeploymentScriptFilePath, fileContents, 'preDeployScript');
+		await project.addScriptItem(postDeploymentScriptFilePath, fileContents, 'postDeployScript');
+
+		const newProject = await Project.openProject(projFilePath);
+
+		should(newProject.preDeployScripts.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(preDeploymentScriptFilePath))).not.equal(undefined, 'File PreDeploymentScript.sql not read');
+		should(newProject.postDeployScripts.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(postDeploymentScriptFilePath))).not.equal(undefined, 'File PostDeploymentScript.sql not read');
+	});
+
+	it('Should show information messages when adding more than one pre/post deployment scripts to sqlproj', async function (): Promise<void> {
+		const stub = sinon.stub(window, 'showInformationMessage').returns(<any>Promise.resolve());
+		const project = await Project.openProject(projFilePath);
+
+		const folderPath = 'Pre-Post Deployment Scripts';
+		const preDeploymentScriptFilePath = path.join(folderPath, 'PreDeploymentScript.sql');
+		const postDeploymentScriptFilePath = path.join(folderPath, 'PostDeploymentScript.sql');
+		const preDeploymentScriptFilePath2 = path.join(folderPath, 'PreDeploymentScript2.sql');
+		const postDeploymentScriptFilePath2 = path.join(folderPath, 'PostDeploymentScript2.sql');
+		const fileContents = ' ';
+
+		await project.addFolderItem(folderPath);
+		await project.addScriptItem(preDeploymentScriptFilePath, fileContents, templates.preDeployScript);
+		await project.addScriptItem(postDeploymentScriptFilePath, fileContents, templates.postDeployScript);
+
+		await project.addScriptItem(preDeploymentScriptFilePath2, fileContents, templates.preDeployScript);
+		should(stub.calledWith(constants.deployScriptExists(constants.PreDeploy))).be.true(`showInformationMessage not called with expected message '${constants.deployScriptExists(constants.PreDeploy)}' Actual '${stub.getCall(0).args[0]}'`);
+
+		await project.addScriptItem(postDeploymentScriptFilePath2, fileContents, templates.postDeployScript);
+		should(stub.calledWith(constants.deployScriptExists(constants.PostDeploy))).be.true(`showInformationMessage not called with expected message '${constants.deployScriptExists(constants.PostDeploy)}' Actual '${stub.getCall(0).args[0]}'`);
+
+		const newProject = await Project.openProject(projFilePath);
+
+		should(newProject.preDeployScripts.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(preDeploymentScriptFilePath))).not.equal(undefined, 'File PreDeploymentScript.sql not read');
+		should(newProject.postDeployScripts.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(postDeploymentScriptFilePath))).not.equal(undefined, 'File PostDeploymentScript.sql not read');
+		should(newProject.noneDeployScripts.length).equal(2);
+		should(newProject.noneDeployScripts.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(preDeploymentScriptFilePath2))).not.equal(undefined, 'File PreDeploymentScript2.sql not read');
+		should(newProject.noneDeployScripts.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(preDeploymentScriptFilePath2))).not.equal(undefined, 'File PreDeploymentScript2.sql not read');
+
 	});
 });
 

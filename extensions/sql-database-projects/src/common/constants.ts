@@ -125,7 +125,7 @@ export function projBuildFailed(errorMessage: string) { return localize('projBui
 export function unexpectedProjectContext(uri: string) { return localize('unexpectedProjectContext', "Unable to establish project context.  Command invoked from unexpected location: {0}", uri); }
 export function unableToPerformAction(action: string, uri: string) { return localize('unableToPerformAction', "Unable to locate '{0}' target: '{1}'", action, uri); }
 export function unableToFindObject(path: string, objType: string) { return localize('unableToFindFile', "Unable to find {1} with path '{0}'", path, objType); }
-export function scriptExists(scriptType: string) { return localize('scriptExists', "A {0} script already exists. The new script will be added as None and not included in Build.", scriptType); }
+export function deployScriptExists(scriptType: string) { return localize('deployScriptExists', "A {0} script already exists. The new script will be added as None and not included in Build.", scriptType); }
 
 // Action types
 export const deleteAction = localize('deleteAction', 'Delete');
