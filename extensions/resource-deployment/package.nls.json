@@ -60,5 +60,20 @@
 	"azure-sqlvm-deploy-dialog-action-text": "Script to notebook",
 	"azure-sqlvm-agreement": "I accept {0}, {1} and {2}.",
 	"azure-sqlvm-agreement-sqlvm-eula": "Azure SQL VM License Terms",
-	"azure-sqlvm-agreement-azdata-eula": "azdata License Terms"
+	"azure-sqlvm-agreement-azdata-eula": "azdata License Terms",
+	"azure-sqlvm-azure-account-section-label":"Azure information",
+	"azure-sqlvm-azure-location-label": "Azure locations",
+	"azure-sqlvm-vm-information-section-label": "VM information",
+	"azure-sqlvm-image-label": "Image",
+	"azure-sqlvm-image-sku-label": "VM image SKU",
+	"azure-sqlvm-publisher-label": "Publisher",
+	"azure-sqlvm-vmname-label": "Virtual machine name (between 1 and 15 characters)",
+	"azure-sqlvm-vmsize-label": "Size",
+	"azure-sqlvm-storage-section-lable": "Storage account",
+	"azure-sqlvm-storage-accountname-label": "Storage account name (between 3 and 24 characters in length and may contain numbers and lowercase letters only)",
+	"azure-sqlvm-storage-sku-label": "Storage account SKU types",
+	"azure-sqlvm-vm-administrator-account-section-label": "Administrator account",
+	"azure-sqlvm-username-label": "Username",
+	"azure-sqlvm-password-label": "Password",
+	"azure-sqlvm-password-confirm-label": "Confirm password"
 }
