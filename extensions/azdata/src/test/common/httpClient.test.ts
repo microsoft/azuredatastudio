@@ -20,6 +20,9 @@ describe('HttpClient', function (): void {
 
 	before(function (): void {
 		outputChannelMock = TypeMoq.Mock.ofType<vscode.OutputChannel>();
+		outputChannelMock.setup(x => x.appendLine(TypeMoq.It.isAnyString())).callback((x => {
+			console.log(`Output Channel:${x}`);
+		}))
 	});
 
 	afterEach(function (): void {
@@ -27,13 +30,13 @@ describe('HttpClient', function (): void {
 		nock.enableNetConnect();
 	});
 
-	describe('download', function(): void {
+	describe('downloadFile', function (): void {
 		it('downloads file successfully', async function (): Promise<void> {
 			nock('https://127.0.0.1')
 				.get('/README.md')
 				.replyWithFile(200, __filename);
 			const downloadFolder = os.tmpdir();
-			const downloadPath = await HttpClient.download('https://127.0.0.1/README.md', downloadFolder, outputChannelMock.object);
+			const downloadPath = await HttpClient.downloadFile('https://127.0.0.1/README.md', outputChannelMock.object, downloadFolder);
 			// Verify file was downloaded correctly
 			await fs.promises.stat(downloadPath);
 		});
@@ -43,8 +46,7 @@ describe('HttpClient', function (): void {
 			nock('https://127.0.0.1')
 				.get('/')
 				.replyWithError('Unexpected Error');
-			const downloadPromise = HttpClient.download('https://127.0.0.1', downloadFolder, outputChannelMock.object);
-
+			const downloadPromise = HttpClient.downloadFile('https://127.0.0.1', outputChannelMock.object, downloadFolder);
 			await should(downloadPromise).be.rejected();
 		});
 
@@ -53,8 +55,7 @@ describe('HttpClient', function (): void {
 			nock('https://127.0.0.1')
 				.get('/')
 				.reply(404, '');
-			const downloadPromise = HttpClient.download('https://127.0.0.1', downloadFolder, outputChannelMock.object);
-
+			const downloadPromise = HttpClient.downloadFile('https://127.0.0.1', outputChannelMock.object, downloadFolder);
 			await should(downloadPromise).be.rejected();
 		});
 
@@ -69,7 +70,7 @@ describe('HttpClient', function (): void {
 			nock('https://127.0.0.1')
 				.get('/')
 				.reply(200, '');
-			const downloadPromise = HttpClient.download('https://127.0.0.1', downloadFolder, outputChannelMock.object);
+			const downloadPromise = HttpClient.downloadFile('https://127.0.0.1', outputChannelMock.object, downloadFolder);
 			// Wait for the stream to be created before throwing the error or HttpClient will miss the event
 			await deferredPromise;
 			try {
@@ -81,23 +82,21 @@ describe('HttpClient', function (): void {
 		});
 	});
 
-	describe('getFilename', function(): void {
+	describe('getFilename', function (): void {
 		it('Gets filename correctly', async function (): Promise<void> {
 			const filename = 'azdata-cli-20.0.0.msi';
 			nock('https://127.0.0.1')
 				.get(`/${filename}`)
 				.reply(200);
 			const receivedFilename = await HttpClient.getFilename(`https://127.0.0.1/${filename}`, outputChannelMock.object);
-
 			should(receivedFilename).equal(filename);
 		});
 
-		it('errors on response error', async function (): Promise<void> {
+		it('rejects on response error', async function (): Promise<void> {
 			nock('https://127.0.0.1')
 				.get('/')
 				.replyWithError('Unexpected Error');
 			const getFilenamePromise = HttpClient.getFilename('https://127.0.0.1', outputChannelMock.object);
-
 			await should(getFilenamePromise).be.rejected();
 		});
 
@@ -106,9 +105,34 @@ describe('HttpClient', function (): void {
 				.get('/')
 				.reply(404, '');
 			const getFilenamePromise = HttpClient.getFilename('https://127.0.0.1', outputChannelMock.object);
-
 			await should(getFilenamePromise).be.rejected();
 		});
 	});
 
+	describe('getFileContents', function (): void {
+		it('Gets file contents correctly', async function (): Promise<void> {
+			const fileContents = JSON.stringify({ foo1: 'bar1', foo2: 'bar2' });
+			nock('https://127.0.0.1')
+				.get(`/`)
+				.reply(200, fileContents)
+			const receivedFileContents = await HttpClient.getFileContents(`https://127.0.0.1/`, outputChannelMock.object);
+			should(receivedFileContents).equal(fileContents);
+		});
+
+		it('rejects on response error', async function (): Promise<void> {
+			nock('https://127.0.0.1')
+				.get('/')
+				.replyWithError('Unexpected Error');
+			const getFileContentsPromise = HttpClient.getFileContents('https://127.0.0.1/', outputChannelMock.object);
+			await should(getFileContentsPromise).be.rejected();
+		});
+
+		it('rejects on non-OK status code', async function (): Promise<void> {
+			nock('https://127.0.0.1')
+				.get('/')
+				.reply(404, '');
+			const getFileContentsPromise = HttpClient.getFileContents('https://127.0.0.1/', outputChannelMock.object);
+			await should(getFileContentsPromise).be.rejected();
+		});
+	});
 });

@@ -15,7 +15,12 @@ import { AzdataOutput } from './typings/azdata-ext';
 
 export const azdataHostname = 'https://aka.ms';
 export const azdataUri = 'azdata-msi';
+export const azdataReleaseJson = 'release.json';
 
+
+/**
+ * Information about an azdata installation
+ */
 export interface IAzdataTool {
 	path: string,
 	version: SemVer
@@ -151,7 +156,7 @@ export async function checkAndUpdateAzdata(currentAzdata: IAzdataTool, outputCha
  */
 async function downloadAndInstallAzdataWin32(outputChannel: vscode.OutputChannel): Promise<void> {
 	const downloadFolder = os.tmpdir();
-	const downloadedFile = await HttpClient.download(`${azdataHostname}/${azdataUri}`, downloadFolder, outputChannel);
+	const downloadedFile = await HttpClient.downloadFile(`${azdataHostname}/${azdataUri}`, outputChannel, downloadFolder);
 	await executeCommand('msiexec', ['/qn', '/i', downloadedFile], outputChannel);
 }
 

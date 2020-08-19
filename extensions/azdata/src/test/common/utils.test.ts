@@ -20,7 +20,7 @@ describe('utils', function () {
 	});
 
 	describe('discoverLatestAvailableAzdataVersion', function (): void {
-		for (const platform of [/* 'win32',  */'darwin'/* , 'linux' */]) {
+		for (const platform of ['win32', 'darwin', 'linux']) {
 			it(`finds latest version successfully on '${platform}'`, async function (): Promise<void> {
 				const outputChannelMock = TypeMoq.Mock.ofType<vscode.OutputChannel>();
 				const originalPlatform = process.platform;
@@ -31,7 +31,7 @@ describe('utils', function () {
 						//No mocks needed for win32 based discovery of latest version as it can be tested on all platforms
 						if (platform !== 'win32') {
 							// for mac and linux platforms mock executeCommand to return a valid discovered version
-							sinon.stub(childProcess, 'executeCommand').returns(Promise.resolve({ stdout: 'v9999.999.999', stderr: '' }));
+							sinon.stub(childProcess, 'executeCommand').returns(Promise.resolve({ stdout: '9999.999.999', stderr: '' }));
 						}
 					}
 					// if the latest version is not discovered then the following call throws failing the test
