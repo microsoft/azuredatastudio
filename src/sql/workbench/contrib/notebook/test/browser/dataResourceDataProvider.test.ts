@@ -26,7 +26,7 @@ export class TestSerializationProvider implements azdata.SerializationProvider {
 	constructor(providerId: string = 'providerId') { }
 
 	// Write data to file
-	startSerialization(requestParams: azdata.SerializeDataStartRequestParams): Thenable<azdata.SerializeDataResult> {
+	async startSerialization(requestParams: azdata.SerializeDataStartRequestParams): Promise<azdata.SerializeDataResult> {
 		let data: string = '';
 		requestParams.rows.forEach((row) => {
 			row.forEach((element) => {
@@ -34,12 +34,8 @@ export class TestSerializationProvider implements azdata.SerializationProvider {
 			});
 			data += '\n';
 		});
-		return fs.promises.writeFile(requestParams.filePath, data).then(() => {
-			return Promise.resolve(<azdata.SerializeDataResult>{
-				succeeded: true,
-				messages: undefined
-			});
-		});
+		await fs.promises.writeFile(requestParams.filePath, data);
+		return Promise.resolve({ succeeded: true, messages: undefined });
 	}
 
 	continueSerialization(requestParams: azdata.SerializeDataContinueRequestParams): Thenable<azdata.SerializeDataResult> {
