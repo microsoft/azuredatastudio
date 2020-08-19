@@ -356,7 +356,7 @@ export class AccountManagementService implements IAccountManagementService {
 	 * Called from the UI when a user cancels the auto OAuth dialog
 	 */
 	public cancelAutoOAuthDeviceCode(providerId: string): void {
-		this.doWithProvider(providerId, provider => Promise.resolve(provider.provider.autoOAuthCancelled()))
+		void this.doWithProvider(providerId, provider => Promise.resolve(provider.provider.autoOAuthCancelled()))
 			.then(	// Swallow errors
 				undefined,
 				err => { this._logService.warn(`Error when cancelling auto OAuth: ${err}`); }
