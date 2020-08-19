@@ -187,7 +187,7 @@ suite('SQL ConnectionProfileInfo tests', () => {
 	});
 
 	test('createFromStoredProfile should set the id to new guid if not set in stored profile', () => {
-		let savedProfile = assign({}, storedProfile, { id: undefined });
+		let savedProfile: IConnectionProfileStore = assign({}, storedProfile, { id: undefined });
 		let connectionProfile = ConnectionProfile.createFromStoredProfile(savedProfile, capabilitiesService);
 		assert.equal(savedProfile.groupId, connectionProfile.groupId);
 		assert.deepEqual(savedProfile.providerName, connectionProfile.providerName);
