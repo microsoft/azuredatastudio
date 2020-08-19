@@ -353,7 +353,7 @@ export class PublishDatabaseDialog {
 		const selectConnectionButton: azdata.Component = this.createSelectConnectionButton(view);
 
 		const connectionLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: constants.selectConnection,
+			value: constants.connection,
 			requiredIndicator: true,
 			width: cssStyles.publishDialogLabelWidth
 		}).component();

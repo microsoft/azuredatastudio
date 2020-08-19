@@ -81,6 +81,7 @@ export const sqlCmdValueColumn = localize('sqlCmdValueColumn', "Value");
 export const loadSqlCmdVarsButtonTitle = localize('reloadValuesFromProjectButtonTitle', "Reload values from project");
 export const profile = localize('profile', "Profile");
 export const selectConnection = localize('selectConnection', "Select connection");
+export const connection = localize('connection', "Connection");
 
 // Error messages
 
