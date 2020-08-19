@@ -53,7 +53,7 @@ export class AccountViewModel {
 						.then(accounts => <AccountProviderAddedEventParams>{
 							addedProvider: provider,
 							initialAccounts: accounts
-						});
+						}, () => undefined);
 				});
 				return Promise.all(promises).then(accounts => coalesce(accounts));
 			}, () => {
