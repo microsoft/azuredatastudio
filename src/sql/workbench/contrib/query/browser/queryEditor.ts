@@ -29,7 +29,7 @@ import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { URI } from 'vs/base/common/uri';
 import { IFileService, FileChangesEvent } from 'vs/platform/files/common/files';
-
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { QueryEditorInput, IQueryEditorStateChange } from 'sql/workbench/common/editor/query/queryEditorInput';
 import { QueryResultsEditor } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
 import * as queryContext from 'sql/workbench/contrib/query/common/queryContext';
@@ -95,6 +95,7 @@ export class QueryEditor extends BaseEditor {
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IEditorGroupsService editorGroupService: IEditorGroupsService,
 		@IFileService fileService: IFileService,
+		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IEditorService private readonly editorService: IEditorService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IConfigurationService private readonly configurationService: IConfigurationService
@@ -185,14 +186,6 @@ export class QueryEditor extends BaseEditor {
 		this._actualQueryPlanAction = this.instantiationService.createInstance(actions.ActualQueryPlanAction, this);
 		this._toggleSqlcmdMode = this.instantiationService.createInstance(actions.ToggleSqlCmdModeAction, this, false);
 		this._exportAsNotebookAction = this.instantiationService.createInstance(actions.ExportAsNotebookAction, this);
-
-		this.setTaskbarContent();
-
-		this._register(this.configurationService.onDidChangeConfiguration(e => {
-			if (e.affectsConfiguration('workbench.enablePreviewFeatures')) {
-				this.setTaskbarContent();
-			}
-		}));
 	}
 
 	/**
@@ -204,6 +197,12 @@ export class QueryEditor extends BaseEditor {
 			this._changeConnectionAction.enabled = this.input.state.connected;
 			if (this.input.state.connected) {
 				this.listDatabasesActionItem.onConnected();
+				this.setTaskbarContent();
+				this._register(this.configurationService.onDidChangeConfiguration(e => {
+					if (e.affectsConfiguration('workbench.enablePreviewFeatures')) {
+						this.setTaskbarContent();
+					}
+				}));
 			} else {
 				this.listDatabasesActionItem.onDisconnect();
 			}
@@ -259,24 +258,10 @@ export class QueryEditor extends BaseEditor {
 		const separator = Taskbar.createTaskbarSeparator();
 		let content: ITaskbarContent[];
 		const previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
-		const notebookConvertActionsEnabled = this.configurationService.getValue('notebook')['showNotebookConvertActions'];
-		if (previewFeaturesEnabled) {
-			content = [
-				{ action: this._runQueryAction },
-				{ action: this._cancelQueryAction },
-				{ element: separator },
-				{ action: this._toggleConnectDatabaseAction },
-				{ action: this._changeConnectionAction },
-				{ action: this._listDatabasesAction },
-				{ element: separator },
-				{ action: this._estimatedQueryPlanAction }, // Preview
-				{ action: this._toggleSqlcmdMode }, // Preview
-			];
+		let connectionProfile = this.connectionManagementService.getConnectionProfile(this.input.uri);
 
-			if (notebookConvertActionsEnabled) {
-				content.push({ action: this._exportAsNotebookAction });
-			}
-		} else {
+		// TODO: Make it more generic, some way for extensions to register the commands it supports
+		if (connectionProfile?.providerName === 'KUSTO') {
 			content = [
 				{ action: this._runQueryAction },
 				{ action: this._cancelQueryAction },
@@ -285,11 +270,40 @@ export class QueryEditor extends BaseEditor {
 				{ action: this._changeConnectionAction },
 				{ action: this._listDatabasesAction }
 			];
-			const notebookConvertActionsEnabled = this.configurationService.getValue('notebook')['notebook.showNotebookConvertActions'];
-			if (notebookConvertActionsEnabled) {
-				content.push(
+		}
+		else {
+			const notebookConvertActionsEnabled = this.configurationService.getValue('notebook')['showNotebookConvertActions'];
+			if (previewFeaturesEnabled) {
+				content = [
+					{ action: this._runQueryAction },
+					{ action: this._cancelQueryAction },
 					{ element: separator },
-					{ action: this._exportAsNotebookAction });
+					{ action: this._toggleConnectDatabaseAction },
+					{ action: this._changeConnectionAction },
+					{ action: this._listDatabasesAction },
+					{ element: separator },
+					{ action: this._estimatedQueryPlanAction }, // Preview
+					{ action: this._toggleSqlcmdMode }, // Preview
+				];
+
+				if (notebookConvertActionsEnabled) {
+					content.push({ action: this._exportAsNotebookAction });
+				}
+			} else {
+				content = [
+					{ action: this._runQueryAction },
+					{ action: this._cancelQueryAction },
+					{ element: separator },
+					{ action: this._toggleConnectDatabaseAction },
+					{ action: this._changeConnectionAction },
+					{ action: this._listDatabasesAction }
+				];
+				const notebookConvertActionsEnabled = this.configurationService.getValue('notebook')['notebook.showNotebookConvertActions'];
+				if (notebookConvertActionsEnabled) {
+					content.push(
+						{ element: separator },
+						{ action: this._exportAsNotebookAction });
+				}
 			}
 		}
 
