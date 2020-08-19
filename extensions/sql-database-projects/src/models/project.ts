@@ -10,7 +10,7 @@ import * as utils from '../common/utils';
 import * as xmlFormat from 'xml-formatter';
 import * as os from 'os';
 
-import { Uri } from 'vscode';
+import { Uri, window } from 'vscode';
 import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
 
@@ -25,6 +25,9 @@ export class Project {
 	public importedTargets: string[] = [];
 	public databaseReferences: IDatabaseReferenceProjectEntry[] = [];
 	public sqlCmdVariables: Record<string, string> = {};
+	public preDeployScripts: ProjectEntry[] = [];
+	public postDeployScripts: ProjectEntry[] = [];
+	public noneDeployScripts: ProjectEntry[] = [];
 
 	public get projectFolderPath() {
 		return Uri.file(path.dirname(this.projectFilePath)).fsPath;
@@ -69,6 +72,32 @@ export class Project {
 				if (folderElements[f].getAttribute(constants.Include) !== constants.Properties) {
 					this.files.push(this.createProjectEntry(folderElements[f].getAttribute(constants.Include), EntryType.Folder));
 				}
+			}
+
+			// find all pre-deployment scripts to include
+			let preDeployScriptCount: number = 0;
+			const preDeploy = itemGroup.getElementsByTagName(constants.PreDeploy);
+			for (let pre = 0; pre < preDeploy.length; pre++) {
+				this.preDeployScripts.push(this.createProjectEntry(preDeploy[pre].getAttribute(constants.Include), EntryType.File));
+				preDeployScriptCount++;
+			}
+
+			// find all post-deployment scripts to include
+			let postDeployScriptCount: number = 0;
+			const postDeploy = itemGroup.getElementsByTagName(constants.PostDeploy);
+			for (let post = 0; post < postDeploy.length; post++) {
+				this.postDeployScripts.push(this.createProjectEntry(postDeploy[post].getAttribute(constants.Include), EntryType.File));
+				postDeployScriptCount++;
+			}
+
+			if (preDeployScriptCount > 1 || postDeployScriptCount > 1) {
+				window.showWarningMessage(constants.prePostDeployCount, constants.okString);
+			}
+
+			// find all none-deployment scripts to include
+			const noneItems = itemGroup.getElementsByTagName(constants.None);
+			for (let n = 0; n < noneItems.length; n++) {
+				this.noneDeployScripts.push(this.createProjectEntry(noneItems[n].getAttribute(constants.Include), EntryType.File));
 			}
 		}
 
