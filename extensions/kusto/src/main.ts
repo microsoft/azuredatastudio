@@ -16,11 +16,9 @@ import { IExtension } from './kusto';
 import { KustoObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
 import { registerSearchServerCommand } from './objectExplorerNodeProvider/command';
 import { KustoIconProvider } from './iconProvider';
-//import { getBookExtensionContributions } from './dashboard/bookExtensions';
-//import { registerBooksWidget } from './dashboard/bookWidget';
 import { createKustoApi } from './kustoApiFactory';
 import { localize } from './localize';
-import { KustoServer } from './KustoServer';
+import { KustoServer } from './kustoServer';
 import { promises as fs } from 'fs';
 
 export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
