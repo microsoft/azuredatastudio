@@ -160,7 +160,7 @@ steps:
     displayName: Build Rpm
 
   - task: UseDotNet@2
-    displayName: 'Use .NET Core sdk'
+    displayName: 'Install .NET Core sdk for signing'
     inputs:
       packageType: sdk
       version: 2.1.x
