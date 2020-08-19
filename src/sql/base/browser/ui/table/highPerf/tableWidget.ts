@@ -482,7 +482,7 @@ export class MouseController<T> implements IDisposable {
 		if (document.activeElement !== e.browserEvent.target) {
 			this.table.domFocus();
 		}
-		const merger = (lastEvent: ITableMouseEvent<T>, currentEvent: MouseEvent): ITableMouseEvent<T> => {
+		const merger = (lastEvent: ITableMouseEvent<T> | null, currentEvent: MouseEvent): ITableMouseEvent<T> => {
 			return this.view.toMouseEvent(currentEvent);
 		};
 		this._mouseMoveMonitor.startMonitoring(e.browserEvent.target as HTMLElement, e.buttons, merger, e => this.onMouseMove(e), () => this.onMouseStop());
