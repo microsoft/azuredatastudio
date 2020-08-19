@@ -15,15 +15,15 @@ export class TestAccountManagementService implements IAccountManagementService {
 	public get removeAccountProviderEvent(): Event<azdata.AccountProviderMetadata> { return Event.None; }
 	public get updateAccountListEvent(): Event<UpdateAccountListEventParams> { return Event.None; }
 
-	accountUpdated(account: azdata.Account): Thenable<void> {
+	accountUpdated(account: azdata.Account): Promise<void> {
 		return Promise.resolve();
 	}
 
-	addAccount(providerId: string): Thenable<void> {
+	addAccount(providerId: string): Promise<void> {
 		return Promise.resolve();
 	}
 
-	beginAutoOAuthDeviceCode(title: string, message: string, userCode: string, uri: string): Thenable<void> {
+	beginAutoOAuthDeviceCode(title: string, message: string, userCode: string, uri: string): Promise<void> {
 		return Promise.resolve();
 	}
 
@@ -39,35 +39,35 @@ export class TestAccountManagementService implements IAccountManagementService {
 		return undefined;
 	}
 
-	getAccountProviderMetadata(): Thenable<azdata.AccountProviderMetadata[]> {
+	getAccountProviderMetadata(): Promise<azdata.AccountProviderMetadata[]> {
 		return Promise.resolve([]);
 	}
 
-	getAccounts(): Thenable<azdata.Account[]> {
+	getAccounts(): Promise<azdata.Account[]> {
 		return Promise.resolve([]);
 	}
 
-	getAccountsForProvider(providerId: string): Thenable<azdata.Account[]> {
+	getAccountsForProvider(providerId: string): Promise<azdata.Account[]> {
 		return Promise.resolve([]);
 	}
 
-	getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Thenable<{}> {
+	getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Promise<{}> {
 		return Promise.resolve([]);
 	}
 
-	getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Thenable<{ token: string }> {
+	getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Promise<{ token: string }> {
 		return Promise.resolve(undefined!);
 	}
 
-	removeAccount(accountKey: azdata.AccountKey): Thenable<boolean> {
+	removeAccount(accountKey: azdata.AccountKey): Promise<boolean> {
 		throw new Error('Method not implemented');
 	}
 
-	removeAccounts(): Thenable<boolean> {
+	removeAccounts(): Promise<boolean> {
 		throw new Error('Method not implemented');
 	}
 
-	refreshAccount(account: azdata.Account): Thenable<azdata.Account> {
+	refreshAccount(account: azdata.Account): Promise<azdata.Account> {
 		throw new Error('Method not implemented');
 	}
 

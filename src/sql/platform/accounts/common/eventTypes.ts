@@ -22,7 +22,7 @@ export interface AccountAdditionResult {
 	/**
 	 * The account that was added/updated (with any updates applied)
 	 */
-	changedAccount: azdata.Account | undefined;
+	changedAccount: azdata.Account;
 }
 
 /**
