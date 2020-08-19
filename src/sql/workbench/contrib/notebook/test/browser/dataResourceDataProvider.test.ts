@@ -16,6 +16,7 @@ import { IDataResource } from 'sql/workbench/services/notebook/browser/sql/sqlSe
 import { ResultSetSummary } from 'sql/workbench/services/query/common/query';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { TestFileDialogService, TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { TestContextService } from 'vs/workbench/test/common/workbenchTestServices';
 import { SerializationService } from 'sql/platform/serialization/common/serializationService';
 import { SaveFormat, ResultSerializer } from 'sql/workbench/services/query/common/resultSerializer';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
@@ -70,6 +71,7 @@ suite('Data Resource Data Provider', function () {
 		// Mock services
 		let editorService = TypeMoq.Mock.ofType(TestEditorService, TypeMoq.MockBehavior.Strict);
 		editorService.setup(x => x.openEditor(TypeMoq.It.isAny())).returns(() => Promise.resolve(undefined));
+		let contextService = new TestContextService();
 		fileDialogService = TypeMoq.Mock.ofType(TestFileDialogService, TypeMoq.MockBehavior.Strict);
 		let _notificationService = new TestNotificationService();
 		let _serializationService = new SerializationService(undefined, undefined); //_connectionService _capabilitiesService
@@ -78,7 +80,7 @@ suite('Data Resource Data Provider', function () {
 			undefined, // IQueryManagementService
 			undefined, // IConfigurationService
 			editorService.object,
-			undefined, // IWorkspaceContextService
+			contextService,
 			fileDialogService.object,
 			_notificationService,
 			undefined // IOpenerService
