@@ -24,7 +24,7 @@ export class WizardController {
 	private async createWizard(stateModel: MigrationStateModel): Promise<void> {
 		const wizard = azdata.window.createWizard(WIZARD_TITLE, 'wide');
 		wizard.generateScriptButton.enabled = false;
-		const sourceConfigurationPage = new SourceConfigurationPage(stateModel);
+		const sourceConfigurationPage = new SourceConfigurationPage(wizard, stateModel);
 
 		const pages: MigrationWizardPage[] = [sourceConfigurationPage];
 
@@ -42,6 +42,14 @@ export class WizardController {
 			await pages[newPage]?.onPageEnter();
 		});
 
+		wizard.registerNavigationValidator(async validator => {
+			const lastPage = validator.lastPage;
+
+			const canLeave = await pages[lastPage]?.canLeave() ?? true;
+			const canEnter = await pages[lastPage]?.canEnter() ?? true;
+
+			return canEnter && canLeave;
+		});
 
 		await Promise.all(wizardSetupPromises);
 		await pages[0].onPageEnter();

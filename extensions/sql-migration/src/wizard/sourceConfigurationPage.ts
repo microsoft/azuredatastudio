@@ -10,26 +10,12 @@ import { MigrationStateModel, StateChangeEvent, State } from '../models/stateMac
 import { Disposable } from 'vscode';
 
 export class SourceConfigurationPage extends MigrationWizardPage {
-	constructor(migrationStateModel: MigrationStateModel) {
-		super(azdata.window.createWizardPage(SOURCE_CONFIGURATION_PAGE_TITLE), migrationStateModel);
+	// For future reference: DO NOT EXPOSE WIZARD DIRECTLY THROUGH HERE.
+	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
+		super(wizard, azdata.window.createWizardPage(SOURCE_CONFIGURATION_PAGE_TITLE), migrationStateModel);
 	}
 
-	public async registerWizardContent(): Promise<void> {
-		return new Promise<void>(async (resolve, reject) => {
-			this.wizardPage.registerContent(async (view) => {
-				try {
-					await this.registerContent(view);
-					resolve();
-				} catch (ex) {
-					reject(ex);
-				} finally {
-					reject(new Error());
-				}
-			});
-		});
-	}
-
-	private async registerContent(view: azdata.ModelView) {
+	protected async registerContent(view: azdata.ModelView) {
 		await this.initialState(view);
 	}
 
@@ -58,7 +44,7 @@ export class SourceConfigurationPage extends MigrationWizardPage {
 	}
 
 	private async enterTargetSelectionState() {
-
+		this.goToNextPage();
 	}
 
 	//#region component builders
@@ -91,8 +77,11 @@ export class SourceConfigurationPage extends MigrationWizardPage {
 			case State.COLLECTION_SOURCE_INFO_ERROR:
 				return this.enterErrorState();
 			case State.TARGET_SELECTION:
-				// TODO: Allow pressing next in this state
 				return this.enterTargetSelectionState();
 		}
+	}
+
+	public async canLeave(): Promise<boolean> {
+		return this.migrationStateModel.currentState === State.TARGET_SELECTION;
 	}
 }
