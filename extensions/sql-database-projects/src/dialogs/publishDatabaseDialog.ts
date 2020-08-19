@@ -26,10 +26,9 @@ export class PublishDatabaseDialog {
 	private targetConnectionTextBox: azdata.InputBoxComponent | undefined;
 	private dataSourcesFormComponent: azdata.FormComponent | undefined;
 	private dataSourcesDropDown: azdata.DropDownComponent | undefined;
-	private targetDatabaseTextBox: azdata.InputBoxComponent | undefined;
+	private targetDatabaseDropDown: azdata.DropDownComponent | undefined;
 	private connectionsRadioButton: azdata.RadioButtonComponent | undefined;
 	private dataSourcesRadioButton: azdata.RadioButtonComponent | undefined;
-	private loadProfileButton: azdata.ButtonComponent | undefined;
 	private sqlCmdVariablesTable: azdata.DeclarativeTableComponent | undefined;
 	private sqlCmdVariablesFormComponentGroup: azdata.FormComponentGroup | undefined;
 	private loadSqlCmdVarsButton: azdata.ButtonComponent | undefined;
@@ -84,47 +83,8 @@ export class PublishDatabaseDialog {
 
 			// TODO : enable using this when data source creation is enabled
 			this.createRadioButtons(view);
-			this.targetConnectionTextBox = this.createTargetConnectionComponent(view);
-
-			let editConnectionButton: azdata.Component = this.createEditConnectionButton(view);
-
-			this.targetDatabaseTextBox = view.modelBuilder.inputBox().withProperties({
-				value: this.getDefaultDatabaseName(),
-				ariaLabel: constants.databaseNameLabel,
-				required: true,
-				width: '190px'
-			}).component();
 
 			this.dataSourcesFormComponent = this.createDataSourcesFormComponent(view);
-
-			this.targetDatabaseTextBox.onTextChanged(() => {
-				this.tryEnableGenerateScriptAndOkButtons();
-			});
-
-			this.loadProfileButton = this.createLoadProfileButton(view);
-			this.loadProfileTextBox = view.modelBuilder.inputBox().withProperties({
-				placeHolder: constants.loadProfileButtonText,
-				ariaLabel: 'profile text box',
-				enabled: false,
-				width: '190px'
-			}).component();
-
-			const profileLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-				value: constants.profile,
-				width: '205px'
-			}).component();
-
-			const connectionLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-				value: constants.selectConnection,
-				requiredIndicator: true,
-				width: '205px'
-			}).component();
-
-			const databaseLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-				value: constants.databaseNameLabel,
-				requiredIndicator: true,
-				width: '205px'
-			}).component();
 
 			this.sqlCmdVariablesTable = this.createSqlCmdTable(view);
 			this.loadSqlCmdVarsButton = this.createLoadSqlCmdVarsButton(view);
@@ -143,17 +103,12 @@ export class PublishDatabaseDialog {
 				title: constants.sqlCmdTableLabel
 			};
 
-			let horizontalPart = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
+			const profileRow = this.createProfileRow(view);
+			const connectionRow = this.createConnectionRow(view);
+			const databaseRow = this.createDatabaseRow(view);
 
-			let row1 = view.modelBuilder.flexContainer().withItems([profileLabel, this.loadProfileTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
-			row1.insertItem(this.loadProfileButton, 2, { CSSStyles: { 'margin-right': '0px' } });
-
-			let row2 = view.modelBuilder.flexContainer().withItems([connectionLabel, this.targetConnectionTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
-			row2.insertItem(editConnectionButton, 2, { CSSStyles: { 'margin-right': '0px' } });
-
-			let row3 = view.modelBuilder.flexContainer().withItems([databaseLabel, <azdata.InputBoxComponent>this.targetDatabaseTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
-
-			horizontalPart.addItems([row1, row2, row3]);
+			const horizontalFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
+			horizontalFormSection.addItems([profileRow, connectionRow, databaseRow]);
 
 
 			this.formBuilder = <azdata.FormBuilder>view.modelBuilder.formContainer()
@@ -162,7 +117,7 @@ export class PublishDatabaseDialog {
 						title: '',
 						components: [
 							{
-								component: horizontalPart,
+								component: horizontalFormSection,
 								title: ''
 							},
 							/* TODO : enable using this when data source creation is enabled
@@ -262,7 +217,7 @@ export class PublishDatabaseDialog {
 	}
 
 	public getTargetDatabaseName(): string {
-		return this.targetDatabaseTextBox?.value ?? '';
+		return <string>this.targetDatabaseDropDown?.value ?? '';
 	}
 
 	public getDefaultDatabaseName(): string {
@@ -281,7 +236,7 @@ export class PublishDatabaseDialog {
 			this.formBuilder!.removeFormItem(<azdata.FormComponent>this.dataSourcesFormComponent);
 			// this.formBuilder!.insertFormItem(<azdata.FormComponent>this.targetConnectionTextBox, 2);
 			this.connectionIsDataSource = false;
-			this.targetDatabaseTextBox!.value = this.getDefaultDatabaseName();
+			this.targetDatabaseDropDown!.value = this.getDefaultDatabaseName();
 		});
 
 		this.dataSourcesRadioButton = view.modelBuilder.radioButton()
@@ -314,7 +269,7 @@ export class PublishDatabaseDialog {
 			enabled: false,
 			required: true,
 			placeHolder: constants.selectConnection,
-			width: '190px'
+			width: cssStyles.publishDialogTextboxWidth
 		}).component();
 
 		this.targetConnectionTextBox.onTextChanged(() => {
@@ -368,8 +323,68 @@ export class PublishDatabaseDialog {
 
 	private setDatabaseToSelectedDataSourceDatabase(): void {
 		if ((<DataSourceDropdownValue>this.dataSourcesDropDown!.value)?.database) {
-			this.targetDatabaseTextBox!.value = (<DataSourceDropdownValue>this.dataSourcesDropDown!.value).database;
+			this.targetDatabaseDropDown!.value = (<DataSourceDropdownValue>this.dataSourcesDropDown!.value).database;
 		}
+	}
+
+	private createProfileRow(view: azdata.ModelView): azdata.FlexContainer {
+		const loadProfileButton = this.createLoadProfileButton(view);
+		const loadProfileTextBox = view.modelBuilder.inputBox().withProperties({
+			placeHolder: constants.loadProfilePlaceholderText,
+			ariaLabel: constants.profile,
+			enabled: false,
+			width: cssStyles.publishDialogTextboxWidth
+		}).component();
+
+		const profileLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			value: constants.profile,
+			width: cssStyles.publishDialogLabelWidth
+		}).component();
+
+		const profileRow = view.modelBuilder.flexContainer().withItems([profileLabel, loadProfileTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		profileRow.insertItem(loadProfileButton, 2, { CSSStyles: { 'margin-right': '0px' } });
+
+		return profileRow;
+	}
+
+	private createConnectionRow(view: azdata.ModelView): azdata.FlexContainer {
+		this.targetConnectionTextBox = this.createTargetConnectionComponent(view);
+		const selectConnectionButton: azdata.Component = this.createSelectConnectionButton(view);
+
+		const connectionLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			value: constants.selectConnection,
+			requiredIndicator: true,
+			width: cssStyles.publishDialogLabelWidth
+		}).component();
+
+		const connectionRow = view.modelBuilder.flexContainer().withItems([connectionLabel, this.targetConnectionTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		connectionRow.insertItem(selectConnectionButton, 2, { CSSStyles: { 'margin-right': '0px' } });
+
+		return connectionRow;
+	}
+
+	private createDatabaseRow(view: azdata.ModelView): azdata.FlexContainer {
+		this.targetDatabaseDropDown = view.modelBuilder.dropDown().withProperties({
+			value: this.getDefaultDatabaseName(),
+			ariaLabel: constants.databaseNameLabel,
+			required: true,
+			width: cssStyles.publishDialogTextboxWidth,
+			editable: true
+		}).component();
+
+		this.targetDatabaseDropDown.onValueChanged(() => {
+			this.tryEnableGenerateScriptAndOkButtons();
+		});
+
+		const databaseLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			value: constants.databaseNameLabel,
+			requiredIndicator: true,
+			width: cssStyles.publishDialogLabelWidth
+		}).component();
+
+		const databaseRow = view.modelBuilder.flexContainer().withItems([databaseLabel, <azdata.DropDownComponent>this.targetDatabaseDropDown], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+
+		return databaseRow;
 	}
 
 	private createSqlCmdTable(view: azdata.ModelView): azdata.DeclarativeTableComponent {
@@ -435,9 +450,9 @@ export class PublishDatabaseDialog {
 		return loadSqlCmdVarsButton;
 	}
 
-	private createEditConnectionButton(view: azdata.ModelView): azdata.Component {
+	private createSelectConnectionButton(view: azdata.ModelView): azdata.Component {
 		let editConnectionButton: azdata.ButtonComponent = view.modelBuilder.button().withProperties({
-			ariaLabel: constants.editConnectionButtonText,
+			ariaLabel: constants.selectConnection,
 			iconPath: IconPathHelper.disconnect,
 			height: '16px',
 			width: '16px'
@@ -454,9 +469,16 @@ export class PublishDatabaseDialog {
 				this.targetConnectionTextBox!.value = await azdata.connection.getConnectionString(connection.connectionId, false);
 			}
 
+			// populate database dropdown with the databases for this connection
+			const databaseValues = (await azdata.connection.listDatabases(this.connectionId))
+				// filter out system dbs
+				.filter(db => constants.systemDbs.find(systemdb => db === systemdb) === undefined);
+
+			this.targetDatabaseDropDown!.values = databaseValues;
+
 			// change the database inputbox value to the connection's database if there is one
 			if (connection.options.database && connection.options.database !== constants.master) {
-				this.targetDatabaseTextBox!.value = connection.options.database;
+				this.targetDatabaseDropDown!.value = connection.options.database;
 			}
 		});
 
@@ -465,7 +487,7 @@ export class PublishDatabaseDialog {
 
 	private createLoadProfileButton(view: azdata.ModelView): azdata.ButtonComponent {
 		let loadProfileButton: azdata.ButtonComponent = view.modelBuilder.button().withProperties({
-			ariaLabel: constants.loadProfileButtonText,
+			ariaLabel: constants.loadProfilePlaceholderText,
 			iconPath: IconPathHelper.folder,
 			height: '16px',
 			width: '15px'
@@ -490,7 +512,7 @@ export class PublishDatabaseDialog {
 
 			if (this.readPublishProfile) {
 				const result = await this.readPublishProfile(fileUris[0]);
-				(<azdata.InputBoxComponent>this.targetDatabaseTextBox).value = result.databaseName;
+				(<azdata.DropDownComponent>this.targetDatabaseDropDown).value = result.databaseName;
 
 				this.connectionId = result.connectionId;
 				(<azdata.InputBoxComponent>this.targetConnectionTextBox).value = result.connectionString;
@@ -535,8 +557,8 @@ export class PublishDatabaseDialog {
 
 	// only enable Generate Script and Ok buttons if all fields are filled
 	private tryEnableGenerateScriptAndOkButtons(): void {
-		if ((this.targetConnectionTextBox!.value && this.targetDatabaseTextBox!.value
-			|| this.connectionIsDataSource && this.targetDatabaseTextBox!.value)
+		if ((this.targetConnectionTextBox!.value && this.targetDatabaseDropDown!.value
+			|| this.connectionIsDataSource && this.targetDatabaseDropDown!.value)
 			&& this.allSqlCmdVariablesFilled()) {
 			this.dialog.okButton.enabled = true;
 			this.dialog.customButtons[0].enabled = true;

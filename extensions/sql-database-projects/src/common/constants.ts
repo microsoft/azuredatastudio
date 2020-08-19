@@ -68,13 +68,12 @@ export const cancelButtonText = localize('cancelButtonText', "Cancel");
 export const generateScriptButtonText = localize('generateScriptButtonText', "Generate Script");
 export const databaseNameLabel = localize('databaseNameLabel', "Database");
 export const targetConnectionLabel = localize('targetConnectionLabel', "Connection");
-export const editConnectionButtonText = localize('editConnectionButtonText', "Edit");
 export const dataSourceRadioButtonLabel = localize('dataSourceRadioButtonLabel', "Data sources");
 export const connectionRadioButtonLabel = localize('connectionRadioButtonLabel', "Connections");
 export const selectConnectionRadioButtonsTitle = localize('selectconnectionRadioButtonsTitle', "Specify connection from:");
 export const dataSourceDropdownTitle = localize('dataSourceDropdownTitle', "Data source");
 export const noDataSourcesText = localize('noDataSourcesText', "No data sources in this project");
-export const loadProfileButtonText = localize('loadProfileButtonText', "Load profile...");
+export const loadProfilePlaceholderText = localize('loadProfilePlaceholderText', "Load profile...");
 export const profileReadError = localize('profileReadError', "Could not load the profile file.");
 export const sqlCmdTableLabel = localize('sqlCmdTableLabel', "SQLCMD Variables");
 export const sqlCmdVariableColumn = localize('sqlCmdVariableColumn', "Name");
@@ -217,3 +216,6 @@ export enum DatabaseProjectItemType {
 	dataSourceRoot = 'databaseProject.itemType.dataSourceRoot',
 	dataSource = 'databaseProject.itemType.dataSource'
 }
+
+// System dbs
+export const systemDbs = ['master', 'msdb', 'tempdb', 'model'];
