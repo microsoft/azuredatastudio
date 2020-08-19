@@ -29,9 +29,8 @@ import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { URI } from 'vs/base/common/uri';
 import { IFileService, FileChangesEvent } from 'vs/platform/files/common/files';
-
-import { QueryEditorInput, IQueryEditorStateChange } from 'sql/workbench/common/editor/query/queryEditorInput';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { QueryEditorInput, IQueryEditorStateChange } from 'sql/workbench/common/editor/query/queryEditorInput';
 import { QueryResultsEditor } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
 import * as queryContext from 'sql/workbench/contrib/query/common/queryContext';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
@@ -92,11 +91,11 @@ export class QueryEditor extends BaseEditor {
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IThemeService themeService: IThemeService,
-		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IStorageService storageService: IStorageService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IEditorGroupsService editorGroupService: IEditorGroupsService,
 		@IFileService fileService: IFileService,
+		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IEditorService private readonly editorService: IEditorService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IConfigurationService private readonly configurationService: IConfigurationService
@@ -255,6 +254,7 @@ export class QueryEditor extends BaseEditor {
 	}
 
 	private setTaskbarContent(): void {
+		// Create HTML Elements for the taskbar
 		const separator = Taskbar.createTaskbarSeparator();
 		let content: ITaskbarContent[];
 		const previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
