@@ -403,7 +403,7 @@
         },
         "providers": [
           {
-            "dialog": {
+            "notebookWizard": {
               "notebook": "./notebooks/azurevm/create-sqlvm.ipynb",
               "runNotebook": false,
               "codeCellInsertionPosition": 4,
@@ -412,12 +412,12 @@
               "title": "%azure-sqlvm-deploy-dialog-title%",
               "name": "azure.sqlvm.new.wizard",
               "generateSummaryPage": false,
-              "tabs": [
+              "pages": [
                 {
                   "title": "",
                   "sections": [
                     {
-                      "title": "Azure information",
+                      "title": "%azure-sqlvm-azure-account-section-label%",
                       "fields": [
                         {
                           "subscriptionVariableName": "AZDATA_NB_VAR_AZURE_SQLVM_NB_VAR_SUBSCRIPTION",
@@ -427,62 +427,108 @@
                         },
                         {
                           "type": "azure_locations",
-                          "label": "Azure Locations",
+                          "label": "%azure-sqlvm-azure-location-label%",
                           "defaultValue": "eastus",
                           "required": true,
                           "locationVariableName": "AZDATA_NB_VAR_AZURE_SQLVM_LOCATION",
                           "displayLocationVariableName": "AZURE_SQLVM_DISPLAY_LOCATION",
                           "locations": [
-                            "eastus",
-                            "eastus2",
-                            "northcentralus",
-                            "southcentralus",
-                            "westcentralus",
-                            "westus",
+                            "australiaeast",
+                            "australiasoutheast",
+                            "brazilsouth",
                             "canadacentral",
                             "canadaeast",
-                            "brazilsouth",
-                            "westus",
-                            "westus2",
+                            "centralindia",
+                            "centralus",
+                            "eastasia",
+                            "eastus",
+                            "eastus2",
+                            "francecentral",
+                            "japaneast",
+                            "japanwest",
+                            "koreacentral",
+                            "koreasouth",
+                            "northcentralus",
+                            "northeurope",
+                            "southcentralus",
+                            "southindia",
                             "southeastasia",
-                            "westeurope"
+                            "uksouth",
+                            "ukwest",
+                            "westcentralus",
+                            "westeurope",
+                            "westus",
+                            "westus2"
                           ]
                         }
                       ]
                     },
                     {
-                      "title": "SQL Connection information",
+                      "title": "%azure-sqlvm-vm-information-section-label%",
                       "fields": [
                         {
-                          "label": "VM Image",
+                          "label": "%azure-sqlvm-image-label%",
                           "variableName": "AZDATA_NB_VAR_AZURE_SQLVM_IMAGE",
-                          "type": "text",
+                          "type": "options",
                           "defaultValue": "sql2019-ws2019",
-                          "required": true
+                          "required": true,
+                          "options":
+                          [
+                            "SQL2008R2SP3-WS2008R2SP1",
+                            "sql2008r2sp3-ws2008r2sp1-byol",
+                            "sql2008r2sp3-ws2008r2sp1-byol",
+                            "SQL2012SP3-WS2012R2",
+                            "SQL2012SP3-WS2012R2-BYOL",
+                            "SQL2012SP4-WS2012R2",
+                            "SQL2012SP4-WS2012R2-BYOL",
+                            "SQL2014SP2-WS2012R2",
+                            "SQL2014SP2-WS2012R2-BYOL",
+                            "sql2014sp3-ws2012r2",
+                            "sql2014sp3-ws2012r2-byol",
+                            "SQL2016SP1-WS2012R2",
+                            "SQL2016SP1-WS2016",
+                            "SQL2016SP1-WS2016-BYOL",
+                            "SQL2016SP2-WS2012R2",
+                            "SQL2016SP2-WS2016",
+                            "SQL2016SP2-WS2016-BYOL",
+                            "sql2016sp2-ws2019",
+                            "sql2016sp2-ws2019-byol",
+                            "SQL2017-RHEL7",
+                            "SQL2017-SLES12SP2",
+                            "SQL2017-Ubuntu1604",
+                            "SQL2017-WS2016",
+                            "SQL2017-WS2016-BYOL",
+                            "sql2017-ws2019",
+                            "sql2017-ws2019-byol",
+                            "SQL2019-RHEL7",
+                            "sql2019-rhel8",
+                            "sql2019-sles12sp5",
+                            "SQL2019-Ubuntu1604",
+                            "sql2019-ubuntu1804",
+                            "SQL2019-WS2016",
+                            "sql2019-ws2019",
+                            "sql2019-ws2019-byol"
+                          ]
                         },
                         {
-                          "label": "VM Image SKU",
+                          "label": "%azure-sqlvm-image-sku-label%",
                           "variableName": "AZDATA_NB_VAR_AZURE_SQLVM_IMAGE_SKU",
-                          "type": "text",
+                          "type": "options",
                           "defaultValue": "sqldev",
-                          "required": true
+                          "required": true,
+                          "options":
+                          [
+                            "enterprise",
+                            "enterprisedbengineonly",
+                            "enterprisedbengineonly-gen2",
+                            "sqldev",
+                            "standard",
+                            "standarddbengineonly",
+                            "web"
+                          ]
                         },
                         {
-                          "label": "VM Image Version",
-                          "variableName": "AZDATA_NB_VAR_AZURE_SQLVM_IMAGE_VERSION",
-                          "type": "text",
-                          "defaultValue": "latest",
-                          "required": true
-                        },
-                        {
-                          "label": "VM Name (lower case letters and digits only)",
-                          "variableName": "AZDATA_NB_VAR_AZURE_SQLVM_VMNAME",
-                          "type": "text",
-                          "defaultValue": "aaskhanvm",
-                          "required": true
-                        },
-                        {
-                          "label": "Publisher",
+                          "label": "%azure-sqlvm-publisher-label%",
                           "variableName": "AZDATA_NB_VAR_AZURE_SQLVM_PUBLISHER",
                           "type": "text",
                           "defaultValue": "MicrosoftSQLServer",
@@ -490,21 +536,45 @@
                           "enabled": false
                         },
                         {
-                          "label": "Version",
-                          "variableName": "AZDATA_NB_VAR_AZURE_SQLVM_VERSION",
+                          "label": "%azure-sqlvm-vmname-label%",
+                          "variableName": "AZDATA_NB_VAR_AZURE_SQLVM_VMNAME",
                           "type": "text",
-                          "defaultValue": "latest",
+                          "defaultValue": "",
                           "required": true
                         },
                         {
-                          "label": "StorageAccountNames",
+                          "label": "%azure-sqlvm-vmsize-label%",
+                          "variableName": "AZDATA_NB_VAR_AZURE_SQLVM_VMSIZE",
+                          "type": "options",
+                          "defaultValue": "Standard_DS1_v2",
+                          "required": true,
+                          "options": [
+                            "Standard_DS1_v2",
+                            "Standard_D2s_v3",
+                            "Standard_B2s",
+                            "Standard_B1s",
+                            "Standard_B2ms",
+                            "Standard_B1ms",
+                            "Standard_DS2_v2",
+                            "Standard_B4ms",
+                            "Standard_D4s_v3",
+                            "Standard_DS3_v2",
+                            "Standard_D8s_v3"
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "title": "%azure-sqlvm-storage-section-lable%",
+                      "fields": [
+                        {
+                          "label": "%azure-sqlvm-storage-accountname-label%",
                           "variableName": "AZDATA_NB_VAR_AZURE_SQLVM_STORAGEACCOUNTNAME",
                           "type": "text",
-                          "defaultValue": "aaskhanstorage",
                           "required": true
                         },
                         {
-                          "label": "StorageSKU",
+                          "label": "%azure-sqlvm-storage-sku-label%",
                           "variableName": "AZDATA_NB_VAR_AZURE_SQLVM_STORAGESKU",
                           "type": "options",
                           "defaultValue": "Standard_LRS",
@@ -514,22 +584,30 @@
                             "Standard_RAGRS",
                             "Standard_ZRS",
                             "Premium_LRS",
-                            "Premium_ZRS"
+                            "Premium_ZRS",
+                            "Standard_GZRS",
+                            "Standard_RAGZRS"
                           ],
                           "required": true
-                        },
+                        }
+                      ]
+                    },
+                    {
+                      "title": "%azure-sqlvm-vm-administrator-account-section-label%",
+                      "fields": [
                         {
-                          "label": "Storage Name",
-                          "variableName": "AZDATA_NB_VAR_AZURE_SQLVM_STORAGE_NAME",
+                          "label": "%azure-sqlvm-username-label%",
+                          "variableName": "AZDATA_NB_VAR_AZURE_SQLVM_USERNAME",
                           "type": "text",
-                          "defaultValue": "StorageName",
                           "required": true
                         },
                         {
-                          "label": "Password",
+                          "label": "%azure-sqlvm-password-label%",
                           "variableName": "AZDATA_NB_VAR_AZURE_SQLVM_PASSWORD",
-                          "type": "text",
-                          "defaultValue": "Aasimkhan30@",
+                          "type": "sql_password",
+                          "userName": "sa",
+                          "confirmationRequired": true,
+                          "confirmationLabel": "%azure-sqlvm-password-confirm-label%",
                           "required": true
                         }
                       ]
