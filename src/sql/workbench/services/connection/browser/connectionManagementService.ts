@@ -1431,10 +1431,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return connectionProvider && connectionProvider.properties;
 	}
 
-	// Gets languageMode property of provider if it exists. Defaults to 'sql'
-	public getProviderLanaguageMode(providerName: string): string {
-		let connectionProvider = this._providers.get(providerName);
-		return (connectionProvider && connectionProvider.properties && connectionProvider.properties['languageMode']) || 'sql';
+	/**
+	 * Gets languageMode property of provider if it exists. Defaults to 'sql'
+	*/
+	public getProviderLanguageMode(providerName?: string): string {
+		return this._providers.get(providerName)?.properties?.['languageMode'] || 'sql';
 	}
 
 	/**

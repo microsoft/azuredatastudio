@@ -300,7 +300,7 @@ export interface IConnectionManagementService {
 
 	getProviderProperties(providerName: string): ConnectionProviderProperties;
 
-	getProviderLanaguageMode(providerName: string): string;
+	getProviderLanguageMode(providerName?: string): string;
 
 	getConnectionIconId(connectionId: string): string;
 

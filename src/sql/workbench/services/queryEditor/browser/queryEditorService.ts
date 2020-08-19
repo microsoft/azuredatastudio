@@ -52,7 +52,7 @@ export class QueryEditorService implements IQueryEditorService {
 		let docUri: URI = options.resource ?? URI.from({ scheme: Schemas.untitled, path: await this.createUntitledSqlFilePath(connectionProviderName) });
 
 		// Create a sql document pane with accoutrements
-		const fileInput = this._editorService.createEditorInput({ forceUntitled: true, resource: docUri, mode: this._connectionManagementService.getProviderLanaguageMode(connectionProviderName) }) as UntitledTextEditorInput;
+		const fileInput = this._editorService.createEditorInput({ forceUntitled: true, resource: docUri, mode: this._connectionManagementService.getProviderLanguageMode(connectionProviderName) }) as UntitledTextEditorInput;
 		let untitledEditorModel = await fileInput.resolve() as UntitledTextEditorModel;
 		if (options.initalContent) {
 			untitledEditorModel.textEditorModel.setValue(options.initalContent);

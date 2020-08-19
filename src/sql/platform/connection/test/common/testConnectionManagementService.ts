@@ -287,7 +287,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined!;
 	}
 
-	getProviderLanaguageMode(providerName: string): string {
+	getProviderLanguageMode(providerName?: string): string {
 		return undefined!;
 	}
 
