@@ -39,6 +39,7 @@ import { ToggleableAction } from 'sql/workbench/contrib/notebook/browser/noteboo
 import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { URI } from 'vs/base/common/uri';
+import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
