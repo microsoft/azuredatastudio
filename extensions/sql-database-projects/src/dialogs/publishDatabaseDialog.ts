@@ -92,7 +92,7 @@ export class PublishDatabaseDialog {
 				value: this.getDefaultDatabaseName(),
 				ariaLabel: constants.databaseNameLabel,
 				required: true,
-				width: '205px'
+				width: '190px'
 			}).component();
 
 			this.dataSourcesFormComponent = this.createDataSourcesFormComponent(view);
@@ -106,24 +106,24 @@ export class PublishDatabaseDialog {
 				placeHolder: constants.loadProfileButtonText,
 				ariaLabel: 'profile text box',
 				enabled: false,
-				width: '205px'
+				width: '190px'
 			}).component();
 
 			const profileLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 				value: constants.profile,
-				width: '215px'
+				width: '205px'
 			}).component();
 
 			const connectionLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 				value: constants.selectConnection,
 				requiredIndicator: true,
-				width: '215px'
+				width: '205px'
 			}).component();
 
 			const databaseLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 				value: constants.databaseNameLabel,
 				requiredIndicator: true,
-				width: '215px'
+				width: '205px'
 			}).component();
 
 			this.sqlCmdVariablesTable = this.createSqlCmdTable(view);
@@ -144,8 +144,13 @@ export class PublishDatabaseDialog {
 			};
 
 			let horizontalPart = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-			let row1 = view.modelBuilder.flexContainer().withItems([profileLabel, this.loadProfileTextBox, this.loadProfileButton], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
-			let row2 = view.modelBuilder.flexContainer().withItems([connectionLabel, this.targetConnectionTextBox, editConnectionButton], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+
+			let row1 = view.modelBuilder.flexContainer().withItems([profileLabel, this.loadProfileTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+			row1.insertItem(this.loadProfileButton, 2, { CSSStyles: { 'margin-right': '0px' } });
+
+			let row2 = view.modelBuilder.flexContainer().withItems([connectionLabel, this.targetConnectionTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+			row2.insertItem(editConnectionButton, 2, { CSSStyles: { 'margin-right': '0px' } });
+
 			let row3 = view.modelBuilder.flexContainer().withItems([databaseLabel, <azdata.InputBoxComponent>this.targetDatabaseTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 			horizontalPart.addItems([row1, row2, row3]);
@@ -309,7 +314,7 @@ export class PublishDatabaseDialog {
 			enabled: false,
 			required: true,
 			placeHolder: constants.selectConnection,
-			width: '205px'
+			width: '190px'
 		}).component();
 
 		this.targetConnectionTextBox.onTextChanged(() => {
@@ -390,7 +395,7 @@ export class PublishDatabaseDialog {
 					headerCssStyles: cssStyles.tableHeader,
 					rowCssStyles: cssStyles.tableRow
 				}],
-			width: '440px'
+			width: '410px'
 		}).component();
 
 		table.onDataChanged(() => {
