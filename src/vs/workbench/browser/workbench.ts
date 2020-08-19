@@ -41,6 +41,7 @@ import { InstantiationService } from 'vs/platform/instantiation/common/instantia
 import { Layout } from 'vs/workbench/browser/layout';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { ILanguageAssociationRegistry, Extensions as LanguageExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
+import { initializeExtensions } from 'vs/workbench/services/userData/browser/userDataInit';
 
 export class Workbench extends Layout {
 
@@ -194,7 +195,7 @@ export class Workbench extends Layout {
 		const instantiationService = new InstantiationService(serviceCollection, true);
 
 		// Wrap up
-		instantiationService.invokeFunction(accessor => {
+		instantiationService.invokeFunction(async accessor => {
 			const lifecycleService = accessor.get(ILifecycleService);
 
 			// TODO@Sandeep debt around cyclic dependencies
@@ -203,6 +204,11 @@ export class Workbench extends Layout {
 				setTimeout(() => {
 					configurationService.acquireInstantiationService(instantiationService);
 				}, 0);
+			}
+
+			// Initialize extensions (only in web)
+			if (isWeb) {
+				await initializeExtensions(instantiationService);
 			}
 
 			// Signal to lifecycle that services are set
