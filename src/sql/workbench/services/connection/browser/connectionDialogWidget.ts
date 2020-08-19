@@ -10,6 +10,7 @@ import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import { IConnectionManagementService, INewConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
+import { TreeCreationUtils } from 'sql/workbench/services/objectExplorer/browser/treeCreationUtils';
 import { TabbedPanel, PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -39,15 +40,16 @@ import { ViewPane, IPaneColors } from 'vs/workbench/browser/parts/views/viewPane
 import { IViewletViewOptions } from 'vs/workbench/browser/parts/views/viewsViewlet';
 import { ITreeView } from 'sql/workbench/common/views';
 import { IConnectionProfile } from 'azdata';
-import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { TreeUpdateUtils, IExpandableTree } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 import { SavedConnectionTreeController } from 'sql/workbench/services/connection/browser/savedConnectionTreeController';
-import { TreeCreationUtils } from 'sql/workbench/services/objectExplorer/browser/treeCreationUtils';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ICancelableEvent } from 'vs/base/parts/tree/browser/treeDefaults';
-import { RecentConnectionTreeController, RecentConnectionActionsProvider } from 'sql/workbench/services/connection/browser/recentConnectionTreeController';
+import { RecentConnectionActionsProvider, RecentConnectionTreeController } from 'sql/workbench/services/connection/browser/recentConnectionTreeController';
 import { ClearRecentConnectionsAction } from 'sql/workbench/services/connection/browser/connectionActions';
 import { combinedDisposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { ITree } from 'vs/base/parts/tree/browser/tree';
+import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export interface OnShowUIResponse {
 	selectedProviderDisplayName: string;
@@ -65,8 +67,8 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 	private _closeButton: Button;
 	private _providerTypeSelectBox: SelectBox;
 	private _newConnectionParams: INewConnectionParams;
-	private _recentConnectionTree: ITree;
-	private _savedConnectionTree: ITree;
+	private _recentConnectionTree: AsyncServerTree | ITree;
+	private _savedConnectionTree: AsyncServerTree | ITree;
 	private _connectionUIContainer: HTMLElement;
 	private _databaseDropdownExpanded: boolean;
 	private _actionbar: ActionBar;
@@ -115,7 +117,8 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IClipboardService clipboardService: IClipboardService,
 		@ILogService logService: ILogService,
-		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
+		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 		super(
 			localize('connection', "Connection"),
@@ -222,21 +225,37 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 		});
 
 		this._panel.onTabChange(async c => {
-			// convert to old VS Code tree interface with expandable methods
-			const expandableTree: IExpandableTree = <IExpandableTree>this._savedConnectionTree;
+			if (this._savedConnectionTree instanceof AsyncServerTree) {
+				if (c === savedConnectionTabId && this._savedConnectionTree.contentHeight === 0) {
+					// Update saved connection tree
+					await TreeUpdateUtils.structuralTreeUpdate(this._savedConnectionTree, 'saved', this.connectionManagementService, this._providers);
 
-			if (c === savedConnectionTabId && expandableTree.getContentHeight() === 0) {
-				// Update saved connection tree
-				await TreeUpdateUtils.structuralTreeUpdate(this._savedConnectionTree, 'saved', this.connectionManagementService, this._providers);
-
-				if (expandableTree.getContentHeight() > 0) {
-					DOM.hide(this._noSavedConnection);
-					DOM.show(this._savedConnection);
-				} else {
-					DOM.show(this._noSavedConnection);
-					DOM.hide(this._savedConnection);
+					if (this._savedConnectionTree.contentHeight > 0) {
+						DOM.hide(this._noSavedConnection);
+						DOM.show(this._savedConnection);
+					} else {
+						DOM.show(this._noSavedConnection);
+						DOM.hide(this._savedConnection);
+					}
+					this._savedConnectionTree.layout(DOM.getTotalHeight(this._savedConnectionTree.getHTMLElement()));
 				}
-				this._savedConnectionTree.layout(DOM.getTotalHeight(this._savedConnectionTree.getHTMLElement()));
+			} else {
+				// convert to old VS Code tree interface with expandable methods
+				const expandableTree: IExpandableTree = <IExpandableTree>this._savedConnectionTree;
+
+				if (c === savedConnectionTabId && expandableTree.getContentHeight() === 0) {
+					// Update saved connection tree
+					await TreeUpdateUtils.structuralTreeUpdate(this._savedConnectionTree, 'saved', this.connectionManagementService, this._providers);
+
+					if (expandableTree.getContentHeight() > 0) {
+						DOM.hide(this._noSavedConnection);
+						DOM.show(this._savedConnection);
+					} else {
+						DOM.show(this._noSavedConnection);
+						DOM.hide(this._savedConnection);
+					}
+					this._savedConnectionTree.layout(DOM.getTotalHeight(this._savedConnectionTree.getHTMLElement()));
+				}
 			}
 		});
 
@@ -362,9 +381,7 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 		const leftClick = (element: any, eventish: ICancelableEvent, origin: string) => {
 			// element will be a server group if the tree is clicked rather than a item
 			const isDoubleClick = origin === 'mouse' && (eventish as MouseEvent).detail === 2;
-			if (element instanceof ConnectionProfile) {
-				this.onConnectionClick(element, isDoubleClick);
-			}
+			this.onConnectionClick(element, isDoubleClick);
 		};
 		const actionProvider = this.instantiationService.createInstance(RecentConnectionActionsProvider);
 		const controller = new RecentConnectionTreeController(leftClick, actionProvider, this.connectionManagementService, this.contextMenuService);
@@ -380,7 +397,11 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 			// We're just using the connections to determine if there are connections to show, dispose them right after to clean up their handlers
 			recentConnections.forEach(conn => conn.dispose());
 		});
-		this._recentConnectionTree = TreeCreationUtils.createConnectionTree(treeContainer, this.instantiationService, controller);
+		this._recentConnectionTree = TreeCreationUtils.createConnectionTree(treeContainer, this.instantiationService, this._configurationService, localize('connectionDialog.recentConnections', "Recent Connections"), controller);
+		if (this._recentConnectionTree instanceof AsyncServerTree) {
+			this._recentConnectionTree.onMouseClick(e => this.onConnectionClick(e.element, false));
+			this._recentConnectionTree.onMouseDblClick(e => this.onConnectionClick(e.element, true));
+		}
 
 		// Theme styler
 		this._register(styler.attachListStyler(this._recentConnectionTree, this._themeService));
@@ -406,7 +427,11 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 		};
 
 		const controller = new SavedConnectionTreeController(leftClick);
-		this._savedConnectionTree = TreeCreationUtils.createConnectionTree(treeContainer, this.instantiationService, controller);
+		this._savedConnectionTree = TreeCreationUtils.createConnectionTree(treeContainer, this.instantiationService, this._configurationService, localize('connectionDialog.savedConnections', "Saved Connections"), controller);
+		if (this._savedConnectionTree instanceof AsyncServerTree) {
+			this._savedConnectionTree.onMouseClick(e => this.onConnectionClick(e.element, false));
+			this._savedConnectionTree.onMouseDblClick(e => this.onConnectionClick(e.element, true));
+		}
 
 		// Theme styler
 		this._register(styler.attachListStyler(this._savedConnectionTree, this._themeService));
@@ -419,7 +444,10 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 		DOM.append(noSavedConnectionContainer, DOM.$('.no-saved-connections')).innerText = noSavedConnectionLabel;
 	}
 
-	private onConnectionClick(element: IConnectionProfile, connect: boolean = false) {
+	private onConnectionClick(element: ServerTreeElement, connect: boolean = false): void {
+		if (!(element instanceof ConnectionProfile)) {
+			return;
+		}
 		if (connect) {
 			this.connect(element);
 		} else {
@@ -443,9 +471,12 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 			DOM.show(this._noRecentConnection);
 		}
 		await TreeUpdateUtils.structuralTreeUpdate(this._recentConnectionTree, 'recent', this.connectionManagementService, this._providers);
+		this._recentConnectionTree.layout(DOM.getTotalHeight(this._recentConnectionTree.getHTMLElement()));
 
-		// // reset saved connection tree
-		await this._savedConnectionTree.setInput([]);
+		if (!(this._savedConnectionTree instanceof AsyncServerTree)) {
+			// reset saved connection tree
+			await this._savedConnectionTree.setInput([]);
+		}
 
 		// call layout with view height
 		this.initDialog();
@@ -616,7 +647,7 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 		const disposable = combinedDisposable(pane, paneStyler);
 		const paneItem = { pane, disposable };
 		treeView.onDidChangeSelection(e => {
-			if (e.length > 0 && e[0].payload) {
+			if (e.length > 0 && e[0].payload instanceof ConnectionProfile) {
 				this.onConnectionClick(e[0].payload);
 			}
 		});

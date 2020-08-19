@@ -23,6 +23,7 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 	private _childConnections: ConnectionProfile[] = [];
 	public parentId?: string;
 	private _isRenamed = false;
+	public readonly isRoot: boolean = false;
 	public constructor(
 		public name: string,
 		public parent: ConnectionProfileGroup | undefined,
@@ -34,6 +35,7 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 		this.parentId = parent ? parent.id : undefined;
 		if (this.name === ConnectionProfileGroup.RootGroupName) {
 			this.name = '';
+			this.isRoot = true;
 		}
 	}
 
