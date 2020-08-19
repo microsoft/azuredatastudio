@@ -159,6 +159,45 @@ steps:
       yarn gulp vscode-linux-x64-build-rpm
     displayName: Build Rpm
 
+  - task: UseDotNet@2
+    displayName: 'Install .NET Core sdk for signing'
+    inputs:
+      packageType: sdk
+      version: 2.1.x
+      installationPath: $(Agent.ToolsDirectory)/dotnet
+
+  - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+    inputs:
+      ConnectedServiceName: 'Code Signing'
+      FolderPath: '$(Build.SourcesDirectory)/.build'
+      Pattern: 'extensions/*.vsix'
+      signConfigType: inlineSignParams
+      inlineOperation: |
+        [
+          {
+            "keyCode": "CP-233016",
+            "operationSetCode": "OpcSign",
+            "parameters": [
+              {
+                "parameterName": "FileDigest",
+                "parameterValue": "/fd \"SHA256\""
+              }
+            ],
+            "toolName": "sign",
+            "toolVersion": "1.0"
+          },
+          {
+            "keyCode": "CP-233016",
+            "operationSetCode": "OpcVerify",
+            "parameters": [],
+            "toolName": "sign",
+            "toolVersion": "1.0"
+          }
+        ]
+      SessionTimeout: 120
+    displayName: 'Signing Extensions'
+    condition: and(succeeded(), eq(variables['signed'], true))
+
   - script: |
       set -e
       ./build/azure-pipelines/linux/createDrop.sh
