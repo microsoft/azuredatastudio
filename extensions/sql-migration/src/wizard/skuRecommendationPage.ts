@@ -62,7 +62,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			};
 		});
 
-		const migratableDatabases = 10;
+		const migratableDatabases: number = products?.length ?? 10; // force it to be used
+
 		const allDatabases = 10;
 
 		if (allDatabases === migratableDatabases) {
@@ -76,6 +77,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private allMigratable(databaseCount: number): void {
 		this.igComponent!.title = CONGRATULATIONS;
 		this.igComponent!.component.value = SKU_RECOMMENDATION_ALL_SUCCESSFUL(databaseCount);
+		this.detailsComponent!.component.value = ''; // force it to be used
 		// fill in some of that information
 	}
 
