@@ -3,10 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.vs-dark .side-by-side-editor > .master-editor-container {
-	box-shadow: -6px 0 5px -5px black;
+.grid-panel.optimized {
+	width: 100%;
+	height: 100%;
 }
 
-.side-by-side-editor > .master-editor-container {
-	box-shadow: -6px 0 5px -5px #DDD;
+.grid-panel.optimized > .table-panel {
+	width: 100%;
+	height: 100%;
 }
