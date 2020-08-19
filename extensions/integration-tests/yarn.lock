@@ -1181,10 +1181,9 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-vscodetestcover@^1.0.9:
+"vscodetestcover@github:aaomidi/vscodetestcover#amir/testCoverage":
   version "1.0.9"
-  resolved "https://registry.yarnpkg.com/vscodetestcover/-/vscodetestcover-1.0.9.tgz#0191f403dd59ba1153fc57979e281e992ce63731"
-  integrity sha512-8z2961KF9Tuz5XdHAC6RMV3CrzAoUcfIK7wLYjLIXD4dbHIT7ceZMhoxToW1olyi3pFnThlS4lRXtx8Q5iyMMQ==
+  resolved "https://codeload.github.com/aaomidi/vscodetestcover/tar.gz/22e05ab58dca4d69d20a9f39c0dba0531f8ff4dd"
   dependencies:
     decache "^4.4.0"
     glob "^7.1.2"

@@ -1256,10 +1256,9 @@ vscode-nls@^4.1.2:
   resolved "https://registry.yarnpkg.com/vscode-nls/-/vscode-nls-4.1.2.tgz#ca8bf8bb82a0987b32801f9fddfdd2fb9fd3c167"
   integrity sha512-7bOHxPsfyuCqmP+hZXscLhiHwe7CSuFE4hyhbs22xPIhQ4jv99FcR4eBzfYYVLP356HNFpdvz63FFb/xw6T4Iw==
 
-vscodetestcover@^1.0.9:
+"vscodetestcover@github:aaomidi/vscodetestcover#amir/testCoverage":
   version "1.0.9"
-  resolved "https://registry.yarnpkg.com/vscodetestcover/-/vscodetestcover-1.0.9.tgz#0191f403dd59ba1153fc57979e281e992ce63731"
-  integrity sha512-8z2961KF9Tuz5XdHAC6RMV3CrzAoUcfIK7wLYjLIXD4dbHIT7ceZMhoxToW1olyi3pFnThlS4lRXtx8Q5iyMMQ==
+  resolved "https://codeload.github.com/aaomidi/vscodetestcover/tar.gz/22e05ab58dca4d69d20a9f39c0dba0531f8ff4dd"
   dependencies:
     decache "^4.4.0"
     glob "^7.1.2"
