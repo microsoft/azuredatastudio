@@ -45,7 +45,7 @@ export async function scriptSelect(connectionProfile: IConnectionProfile, metada
 	let paramDetails: azdata.ScriptingParamDetails = getScriptingParamDetails(connectionService, connectionResult, metadata);
 	const result = await scriptingService.script(connectionResult, metadata, ScriptOperation.Select, paramDetails);
 	if (result && result.script) {
-		const owner = await queryEditorService.newSqlEditor({ initalContent: result.script });
+		const owner = await queryEditorService.newSqlEditor({ initalContent: result.script }, connectionProfile?.providerName);
 		// Connect our editor to the input connection
 		let options: IConnectionCompletionOptions = {
 			params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.executeQuery, input: owner },
