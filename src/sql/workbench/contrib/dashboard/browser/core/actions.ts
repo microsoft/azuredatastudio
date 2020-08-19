@@ -234,6 +234,7 @@ export class CollapseWidgetAction extends Action {
 			collpasedState ? CollapseWidgetAction.EXPAND_LABEL : CollapseWidgetAction.COLLPASE_LABEL,
 			collpasedState ? CollapseWidgetAction.EXPAND_ICON : CollapseWidgetAction.COLLAPSE_ICON
 		);
+		this.expanded = !this.collpasedState;
 	}
 
 	run(): Promise<boolean> {
@@ -251,8 +252,9 @@ export class CollapseWidgetAction extends Action {
 			return;
 		}
 		this.collpasedState = collapsed;
-		this._setClass(this.collpasedState ? CollapseWidgetAction.EXPAND_ICON : CollapseWidgetAction.COLLAPSE_ICON);
+		this.class = this.collpasedState ? CollapseWidgetAction.EXPAND_ICON : CollapseWidgetAction.COLLAPSE_ICON;
 		this.label = this.collpasedState ? CollapseWidgetAction.EXPAND_LABEL : CollapseWidgetAction.COLLPASE_LABEL;
+		this.expanded = !this.collpasedState;
 	}
 
 	public set state(collapsed: boolean) {

@@ -71,6 +71,11 @@ export class BaseActionViewItem extends Disposable implements IActionViewItem {
 		if (event.tooltip !== undefined) {
 			this.updateTooltip();
 		}
+
+		// {{SQL CARBON EDIT}}
+		if (event.expanded !== undefined) {
+			this.updateExpanded();
+		}
 	}
 
 	get actionRunner(): IActionRunner {
@@ -194,6 +199,11 @@ export class BaseActionViewItem extends Disposable implements IActionViewItem {
 	}
 
 	protected updateChecked(): void {
+		// implement in subclass
+	}
+
+	// {{SQL CARBON EDIT}}
+	protected updateExpanded(): void {
 		// implement in subclass
 	}
 
@@ -345,6 +355,17 @@ export class ActionViewItem extends BaseActionViewItem {
 				DOM.addClass(this.label, 'checked');
 			} else {
 				DOM.removeClass(this.label, 'checked');
+			}
+		}
+	}
+
+	// {{SQL CARBON EDIT}}
+	updateExpanded(): void {
+		if (this.label) {
+			if (this.getAction().expanded !== undefined) {
+				this.label.setAttribute('aria-expanded', `${this.getAction().expanded}`);
+			} else {
+				this.label.removeAttribute('aria-expanded');
 			}
 		}
 	}
