@@ -34,10 +34,11 @@ export class TestSerializationProvider implements azdata.SerializationProvider {
 			});
 			data += '\n';
 		});
-		fs.writeFile(requestParams.filePath, data);
-		return Promise.resolve(<azdata.SerializeDataResult>{
-			succeeded: true,
-			messages: undefined
+		return fs.promises.writeFile(requestParams.filePath, data).then(() => {
+			return Promise.resolve(<azdata.SerializeDataResult>{
+				succeeded: true,
+				messages: undefined
+			});
 		});
 	}
 

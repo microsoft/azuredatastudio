@@ -38,7 +38,7 @@ export function resolveFilePath(uri: string, filePath: string, rootPath?: string
 	return undefined;
 }
 
-export function getRootPath(contextService: IWorkspaceContextService): string | undefined {
+export function getRootPath(contextService: IWorkspaceContextService | undefined): string | undefined {
 	if (contextService) {
 		let isWorkspace = contextService.getWorkbenchState() === WorkbenchState.WORKSPACE;
 		if (isWorkspace) {
