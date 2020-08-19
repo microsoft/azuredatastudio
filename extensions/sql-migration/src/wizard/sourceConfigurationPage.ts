@@ -91,6 +91,7 @@ export class SourceConfigurationPage extends MigrationWizardPage {
 			case State.COLLECTION_SOURCE_INFO_ERROR:
 				return this.enterErrorState();
 			case State.TARGET_SELECTION:
+				// TODO: Allow pressing next in this state
 				return this.enterTargetSelectionState();
 		}
 	}
