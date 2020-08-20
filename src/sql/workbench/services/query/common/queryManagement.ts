@@ -41,7 +41,7 @@ export interface IQueryManagementService {
 	registerRunner(runner: QueryRunner, uri: string): void;
 
 	cancelQuery(ownerUri: string): Promise<QueryCancelResult>;
-	runQuery(ownerUri: string, range: IRange, runOptions?: ExecutionPlanOptions): Promise<void>;
+	runQuery(ownerUri: string, range?: IRange, runOptions?: ExecutionPlanOptions): Promise<void>;
 	runQueryStatement(ownerUri: string, line: number, column: number): Promise<void>;
 	runQueryString(ownerUri: string, queryString: string): Promise<void>;
 	runQueryAndReturn(ownerUri: string, queryString: string): Promise<azdata.SimpleExecuteResult>;
@@ -79,7 +79,7 @@ export interface IQueryManagementService {
  */
 export interface IQueryRequestHandler {
 	cancelQuery(ownerUri: string): Promise<azdata.QueryCancelResult>;
-	runQuery(ownerUri: string, selection: azdata.ISelectionData, runOptions?: ExecutionPlanOptions): Promise<void>;
+	runQuery(ownerUri: string, selection?: azdata.ISelectionData, runOptions?: ExecutionPlanOptions): Promise<void>;
 	runQueryStatement(ownerUri: string, line: number, column: number): Promise<void>;
 	runQueryString(ownerUri: string, queryString: string): Promise<void>;
 	runQueryAndReturn(ownerUri: string, queryString: string): Promise<azdata.SimpleExecuteResult>;
