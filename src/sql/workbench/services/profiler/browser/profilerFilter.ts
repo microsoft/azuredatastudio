@@ -68,7 +68,7 @@ function matches(item: any, clauses: ProfilerFilterClause[]): boolean {
 						match = actualValue !== undefined && actualValue !== null && actualValue !== '';
 						break;
 					case ProfilerFilterClauseOperator.Contains:
-						match = actualValueString && actualValueString.indexOf(expectedValueString) > -1;
+						match = !!actualValueString && actualValueString.indexOf(expectedValueString) > -1;
 						break;
 					case ProfilerFilterClauseOperator.NotContains:
 						match = !actualValueString || !(actualValueString.indexOf(expectedValueString) > -1);

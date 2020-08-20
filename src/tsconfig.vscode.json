@@ -33,25 +33,26 @@
 		"./sql/workbench/services/admin/**/*.ts",
 		"./sql/workbench/services/assessment/**/*.ts",
 		"./sql/workbench/services/bootstrap/**/*.ts",
-		// "./sql/workbench/services/connection/**/*.ts",
+		// "./sql/workbench/services/connection/**/*.ts", // 3464 errors
 		"./sql/workbench/services/dashboard/**/*.ts",
-		// "./sql/workbench/services/dialog/**/*.ts",
+		// "./sql/workbench/services/dialog/**/*.ts", // 3322 errors
 		"./sql/workbench/services/editData/**/*.ts",
 		"./sql/workbench/services/errorMessage/**/*.ts",
-		// "./sql/workbench/services/fileBrowser/**/*.ts",
-		// "./sql/workbench/services/insights/**/*.ts",
+		// "./sql/workbench/services/fileBrowser/**/*.ts", // 3315 errors
+		// "./sql/workbench/services/insights/**/*.ts", // 3326 errors
 		"./sql/workbench/services/jobManagement/**/*.ts",
 		"./sql/workbench/services/languageAssociation/**/*.ts",
-		// "./sql/workbench/services/notebook/**/*.ts", 201 errors
-		// "./sql/workbench/services/objectExplorer/**/*.ts", 326 errors
-		// "./sql/workbench/services/profiler/**/*.ts", 66 errors
+		// "./sql/workbench/services/notebook/**/*.ts", // 201 errors
+		// "./sql/workbench/services/objectExplorer/**/*.ts", // 326 errors
+		"./sql/workbench/services/profiler/**/*.ts", // 66 errors
 		"./sql/workbench/services/progress/**/*.ts",
-		// "./sql/workbench/services/query/**/*.ts",
-		// "./sql/workbench/services/queryEditor/**/*.ts",
+		// "./sql/workbench/services/query/**/*.ts", // 3340 errors
+		// "./sql/workbench/services/queryEditor/**/*.ts", // 3340 errors
 		"./sql/workbench/services/queryHistory/**/*.ts",
 		"./sql/workbench/services/resourceProvider/**/*.ts",
-		// "./sql/workbench/services/restore/**/*.ts", 125 errors
+		// "./sql/workbench/services/restore/**/*.ts", // 125 errors
 		"./sql/workbench/services/serverGroup/**/*.ts",
 		"./sql/workbench/services/tasks/**/*.ts",
+		// "./sql/workbench/update/**/*.ts", // 3315 errors
 	]
 }

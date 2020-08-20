@@ -2000,7 +2000,7 @@ declare module 'azdata' {
 		/**
 		 * Event values
 		 */
-		values: {};
+		values: { [key: string]: any };
 	}
 
 	/**
