@@ -35,6 +35,10 @@
           "sqlDatabaseProjects.netCoreSDKLocation": {
             "type": "string",
             "description": "%sqlDatabaseProjects.netCoreInstallLocation%"
+          },
+          "sqlDatabaseProjects.defaultProjectSaveLocation": {
+            "type": "string",
+            "description": "%sqlDatabaseProjects.defaultProjectSaveLocation%"
           }
         }
       }

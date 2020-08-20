@@ -15,6 +15,7 @@ import { getErrorMessage } from '../common/utils';
 import { ProjectsController } from './projectController';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { NetCoreTool } from '../tools/netcoreTool';
+import { NewProjectTool } from '../tools/newProjectTool';
 import { Project } from '../models/project';
 import { FileNode, FolderNode } from '../models/tree/fileFolderTreeItem';
 import { IconPathHelper } from '../common/iconHelper';
@@ -28,10 +29,12 @@ export default class MainController implements vscode.Disposable {
 	protected dbProjectTreeViewProvider: SqlDatabaseProjectTreeViewProvider = new SqlDatabaseProjectTreeViewProvider();
 	protected projectsController: ProjectsController;
 	protected netcoreTool: NetCoreTool;
+	protected newProjectTool: NewProjectTool;
 
 	public constructor(private context: vscode.ExtensionContext) {
 		this.projectsController = new ProjectsController(this.dbProjectTreeViewProvider);
 		this.netcoreTool = new NetCoreTool();
+		this.newProjectTool = new NewProjectTool();
 	}
 
 	public get extensionContext(): vscode.ExtensionContext {
@@ -141,8 +144,7 @@ export default class MainController implements vscode.Disposable {
 		try {
 			let newProjName = await vscode.window.showInputBox({
 				prompt: constants.newDatabaseProjectName,
-				value: `DatabaseProject${this.projectsController.projects.length + 1}`
-				// TODO: Smarter way to suggest a name.  Easy if we prompt for location first, but that feels odd...
+				value: this.newProjectTool.defaultProjectName
 			});
 
 			newProjName = newProjName?.trim();
@@ -157,7 +159,7 @@ export default class MainController implements vscode.Disposable {
 				canSelectFiles: false,
 				canSelectFolders: true,
 				canSelectMany: false,
-				defaultUri: vscode.workspace.workspaceFolders ? (vscode.workspace.workspaceFolders as vscode.WorkspaceFolder[])[0].uri : undefined
+				defaultUri: this.newProjectTool.defaultProjectSaveLocation
 			});
 
 			if (!selectionResult) {
@@ -170,6 +172,9 @@ export default class MainController implements vscode.Disposable {
 			const newProjFolderUri = (selectionResult as vscode.Uri[])[0];
 			const newProjFilePath = await this.projectsController.createNewProject(<string>newProjName, newProjFolderUri, true);
 			const proj = await this.projectsController.openProject(vscode.Uri.file(newProjFilePath));
+
+			// TODO: figure out best timing for this
+			await this.newProjectTool.updateSaveLocationSetting();
 
 			return proj;
 		}

@@ -55,6 +55,7 @@ export const flat = localize('flat', "Flat");
 export const objectType = localize('objectType', "Object Type");
 export const schema = localize('schema', "Schema");
 export const schemaObjectType = localize('schemaObjectType', "Schema/Object Type");
+export const defaultProjectNameStarter = localize('defaultProjectNameStarter', "DatabaseProject");
 export function newObjectNamePrompt(objectType: string) { return localize('newObjectNamePrompt', 'New {0} name:', objectType); }
 export function deleteConfirmation(toDelete: string) { return localize('deleteConfirmation', "Are you sure you want to delete {0}?", toDelete); }
 export function deleteConfirmationContents(toDelete: string) { return localize('deleteConfirmationContents', "Are you sure you want to delete {0} and all of its contents?", toDelete); }

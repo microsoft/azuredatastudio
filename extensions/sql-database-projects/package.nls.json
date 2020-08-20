@@ -27,5 +27,6 @@
 
 	"sqlDatabaseProjects.Settings": "Database Projects",
 	"sqlDatabaseProjects.netCoreInstallLocation": "Full Path to .Net Core SDK on the machine.",
+	"sqlDatabaseProjects.defaultProjectSaveLocation": "Full Path to folder where new Database Projects are saved by default.",
 	"sqlDatabaseProjects.welcome": "No database projects currently open.\n[New Project](command:sqlDatabaseProjects.new)\n[Open Project](command:sqlDatabaseProjects.open)\n[Import Project from Database](command:sqlDatabaseProjects.importDatabase)"
 }
