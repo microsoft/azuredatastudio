@@ -5,41 +5,38 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { SqlInstanceRouterApi } from '../controller/generated/v1/api/sqlInstanceRouterApi';
-import { HybridSqlNsNameGetResponse } from '../controller/generated/v1/model/hybridSqlNsNameGetResponse';
-import { Authentication } from '../controller/generated/v1/api';
 import { ResourceModel } from './resourceModel';
 import { ResourceInfo, Registration } from './controllerModel';
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 import { Deferred } from '../common/promise';
 import * as loc from '../localizedConstants';
 import { UserCancelledError } from '../common/utils';
+import * as azdataExt from '../../../azdata/src/typings/azdata-ext';
 
 export type DatabaseModel = { name: string, status: string };
 
 export class MiaaModel extends ResourceModel {
 
-	private _sqlInstanceRouter: SqlInstanceRouterApi;
-	private _status: HybridSqlNsNameGetResponse | undefined;
+	private _config: azdataExt.SqlMiShowResult | undefined;
 	private _databases: DatabaseModel[] = [];
 	// The saved connection information
 	private _connectionProfile: azdata.IConnectionProfile | undefined = undefined;
 	// The ID of the active connection used to query the server
 	private _activeConnectionId: string | undefined = undefined;
 
-	private readonly _onStatusUpdated = new vscode.EventEmitter<HybridSqlNsNameGetResponse | undefined>();
+	private readonly _onConfigUpdated = new vscode.EventEmitter<azdataExt.SqlMiShowResult | undefined>();
 	private readonly _onDatabasesUpdated = new vscode.EventEmitter<DatabaseModel[]>();
-	public onStatusUpdated = this._onStatusUpdated.event;
+	private readonly _azdataApi: azdataExt.IExtension;
+	public onConfigUpdated = this._onConfigUpdated.event;
 	public onDatabasesUpdated = this._onDatabasesUpdated.event;
-	public statusLastUpdated?: Date;
+	public configLastUpdated?: Date;
 	public databasesLastUpdated?: Date;
 
 	private _refreshPromise: Deferred<void> | undefined = undefined;
 
-	constructor(controllerUrl: string, controllerAuth: Authentication, info: ResourceInfo, registration: Registration, private _treeDataProvider: AzureArcTreeDataProvider) {
+	constructor(info: ResourceInfo, registration: Registration, private _treeDataProvider: AzureArcTreeDataProvider) {
 		super(info, registration);
-		this._sqlInstanceRouter = new SqlInstanceRouterApi(controllerUrl);
-		this._sqlInstanceRouter.setDefaultAuthentication(controllerAuth);
+		this._azdataApi = <azdataExt.IExtension>vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 	}
 
 	/**
@@ -52,15 +49,16 @@ export class MiaaModel extends ResourceModel {
 	/**
 	 * The status of this instance
 	 */
-	public get status(): string {
-		return this._status?.status || '';
+	public get config(): azdataExt.SqlMiShowResult | undefined {
+		return this._config;
 	}
 
 	/**
 	 * The cluster endpoint of this instance
 	 */
 	public get clusterEndpoint(): string {
-		return this._status?.cluster_endpoint || '';
+		return ''; // TODO chgagnon
+		// return this._config?.cluster_endpoint || '';
 	}
 
 	public get databases(): DatabaseModel[] {
@@ -75,17 +73,17 @@ export class MiaaModel extends ResourceModel {
 		}
 		this._refreshPromise = new Deferred();
 		try {
-			const instanceRefresh = this._sqlInstanceRouter.apiV1HybridSqlNsNameGet(this.info.namespace, this.info.name).then(response => {
-				this._status = response.body;
-				this.statusLastUpdated = new Date();
-				this._onStatusUpdated.fire(this._status);
+			const instanceRefresh = this._azdataApi.sql.mi.show(this.info.name).then(result => {
+				this._config = result.result;
+				this.configLastUpdated = new Date();
+				this._onConfigUpdated.fire(this._config);
 			}).catch(err => {
 				// If an error occurs show a message so the user knows something failed but still
 				// fire the event so callers can know to update (e.g. so dashboards don't show the
 				// loading icon forever)
-				vscode.window.showErrorMessage(loc.fetchStatusFailed(this.info.name, err));
-				this.statusLastUpdated = new Date();
-				this._onStatusUpdated.fire(undefined);
+				vscode.window.showErrorMessage(loc.fetchConfigFailed(this.info.name, err));
+				this.configLastUpdated = new Date();
+				this._onConfigUpdated.fire(undefined);
 				throw err;
 			});
 			const promises: Thenable<any>[] = [instanceRefresh];
@@ -125,7 +123,7 @@ export class MiaaModel extends ResourceModel {
 				if (err instanceof UserCancelledError) {
 					vscode.window.showWarningMessage(loc.connectionRequired);
 				} else {
-					vscode.window.showErrorMessage(loc.fetchStatusFailed(this.info.name, err));
+					vscode.window.showErrorMessage(loc.fetchDatabasesFailed(this.info.name, err));
 				}
 				this.databasesLastUpdated = new Date();
 				this._onDatabasesUpdated.fire(this._databases);
@@ -189,7 +187,9 @@ export class MiaaModel extends ResourceModel {
 		if (!connection) {
 			// We need the password so prompt the user for it
 			const connectionProfile: azdata.IConnectionProfile = {
-				serverName: (this.registration.externalIp && this.registration.externalPort) ? `${this.registration.externalIp},${this.registration.externalPort}` : '',
+				// TODO chgagnon fill in external IP and port
+				// serverName: (this.registration.externalIp && this.registration.externalPort) ? `${this.registration.externalIp},${this.registration.externalPort}` : '',
+				serverName: '',
 				databaseName: '',
 				authenticationType: 'SqlLogin',
 				providerName: 'MSSQL',

@@ -17,6 +17,9 @@
     "onCommand:arc.managePostgres",
     "onView:azureArc"
   ],
+  "extensionDependencies": [
+    "Microsoft.azdata"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/Microsoft/azuredatastudio.git"
@@ -125,17 +128,6 @@
         }
       ]
     },
-    "configuration": {
-      "type": "object",
-      "title": "%arc.configuration.title%",
-      "properties": {
-        "arc.ignoreSslVerification": {
-          "type": "boolean",
-          "default": true,
-          "description": "%arc.ignoreSslVerification.desc%"
-        }
-      }
-    },
     "viewsWelcome": [
       {
         "view": "azureArc",
@@ -223,11 +215,15 @@
                           "editable": false,
                           "options": {
                             "values": [
-                              "azure-arc-aks-private-preview",
-                              "azure-arc-eks-private-preview",
-                              "azure-arc-kubeadm-private-preview"
+                              "azure-arc-ake",
+                              "azure-arc-aks-default-storage",
+                              "azure-arc-aks-premium-storage",
+                              "azure-arc-azure-openshift",
+                              "azure-arc-eks",
+                              "azure-arc-kubeadm",
+                              "azure-arc-openshift"
                             ],
-                            "defaultValue": "azure-arc-aks-private-preview",
+                            "defaultValue": "azure-arc-aks-default-storage",
                             "optionsType": "radio"
                           }
                         }

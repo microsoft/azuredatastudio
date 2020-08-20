@@ -7,7 +7,7 @@ import * as os from 'os';
 import * as vscode from 'vscode';
 import { HttpClient } from './common/httpClient';
 import * as loc from './localizedConstants';
-import { executeCommand, executeSudoCommand } from './common/childProcess';
+import { executeCommand, executeSudoCommand, ExitCodeError } from './common/childProcess';
 import { searchForCmd } from './common/utils';
 import { AzdataOutput } from './typings/azdata-ext';
 
@@ -22,20 +22,30 @@ export interface IAzdataTool {
 	 * @param args The args to pass to azdata
 	 * @param parseResult A function used to parse out the raw result into the desired shape
 	 */
-	executeCommand<R>(args: string[], parseResult: (result: any) => R[]): Promise<AzdataOutput<R>>
+	executeCommand<R>(args: string[], additionalEnvVars?: { [key: string]: string }): Promise<AzdataOutput<R>>
 }
 
 class AzdataTool implements IAzdataTool {
 	constructor(public path: string, public version: string, private _outputChannel: vscode.OutputChannel) { }
 
-	public async executeCommand<R>(args: string[], parseResult: (result: any) => R[]): Promise<AzdataOutput<R>> {
-		const output = JSON.parse((await executeCommand(`"${this.path}"`, args.concat(['--output', 'json']), this._outputChannel)).stdout);
-		return {
-			logs: <string[]>output.log,
-			stdout: <string[]>output.stdout,
-			stderr: <string[]>output.stderr,
-			result: parseResult(output.result)
-		};
+	public async executeCommand<R>(args: string[], additionalEnvVars?: { [key: string]: string }): Promise<AzdataOutput<R>> {
+		try {
+			const output = JSON.parse((await executeCommand(`"${this.path}"`, args.concat(['--output', 'json']), this._outputChannel, additionalEnvVars)).stdout);
+			return {
+				logs: <string[]>output.log,
+				stdout: <string[]>output.stdout,
+				stderr: <string[]>output.stderr,
+				result: <R>output.result
+			};
+		} catch (err) {
+			// Since the output is JSON we need to do some extra parsing here to get the correct stderr out.
+			// The actual value we get is something like ERROR: { stderr: '...' } so we also need to trim
+			// off the start that isn't a valid JSON blob
+			if (err instanceof ExitCodeError) {
+				err.stderr = JSON.parse(err.stderr.substring(err.stderr.indexOf('{'))).stderr;
+			}
+			throw err;
+		}
 	}
 }
 
@@ -142,7 +152,7 @@ async function findAzdataWin32(outputChannel: vscode.OutputChannel): Promise<IAz
  * @param outputChannel Channel used to display diagnostic information
  */
 async function findSpecificAzdata(path: string, outputChannel: vscode.OutputChannel): Promise<IAzdataTool> {
-	const versionOutput = await executeCommand(path, ['--version'], outputChannel);
+	const versionOutput = await executeCommand(`"${path}"`, ['--version'], outputChannel);
 	return new AzdataTool(path, parseVersion(versionOutput.stdout), outputChannel);
 }
 
