@@ -370,7 +370,8 @@ export class PublishDatabaseDialog {
 			ariaLabel: constants.databaseNameLabel,
 			required: true,
 			width: cssStyles.publishDialogTextboxWidth,
-			editable: true
+			editable: true,
+			fireOnTextChange: true
 		}).component();
 
 		this.targetDatabaseDropDown.onValueChanged(() => {
