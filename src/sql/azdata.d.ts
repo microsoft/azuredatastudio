@@ -2735,7 +2735,7 @@ declare module 'azdata' {
 
 	export interface FormComponent<T extends Component = Component> {
 		component: T;
-		title: string;
+		title?: string;
 		actions?: Component[];
 		required?: boolean;
 	}
