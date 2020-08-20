@@ -255,7 +255,7 @@ describe('getErrorMessage Method Tests', function () {
 
 	it('Error with no message', function (): void {
 		const error = new Error();
-		should(getErrorMessage(error)).equal(error);
+		should(getErrorMessage(error)).equal(error.message);
 	});
 });
 

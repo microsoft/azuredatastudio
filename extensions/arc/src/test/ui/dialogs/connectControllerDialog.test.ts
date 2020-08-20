@@ -59,14 +59,14 @@ describe('ConnectControllerDialog', function (): void {
 	});
 
 	for (const name of ['', undefined]) {
-		it(`validate display name gets set to arc instance name for user chosen name of:${name}`, async function (): Promise<void> {
+		it.skip(`validate display name gets set to arc instance name for user chosen name of:${name}`, async function (): Promise<void> {
 			await validateConnectControllerDialog(
 				{ url: 'http://127.0.0.1:30081', name: name!, username: 'sa', rememberPassword: true, resources: [] },
 				'https://127.0.0.1:30081');
 		});
 	}
 
-	it(`validate display name gets set to default data controller name for user chosen name of:'' and instanceName in explicably returned as undefined from the controller endpoint`, async function (): Promise<void> {
+	it.skip(`validate display name gets set to default data controller name for user chosen name of:'' and instanceName in explicably returned as undefined from the controller endpoint`, async function (): Promise<void> {
 		await validateConnectControllerDialog(
 			{ url: 'http://127.0.0.1:30081', name: '', username: 'sa', rememberPassword: true, resources: [] },
 			'https://127.0.0.1:30081',
