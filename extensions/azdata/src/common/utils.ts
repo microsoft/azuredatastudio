@@ -27,9 +27,9 @@ export async function discoverLatestAvailableAzdataVersion(outputChannel: vscode
 	outputChannel.appendLine(loc.checkingLatestAzdataVersion);
 	switch (process.platform) {
 		case 'darwin':
-			return await getLatestStableAzdataVersionDarwin(outputChannel);
+			return await discoverLatestStableAzdataVersionDarwin(outputChannel);
 		default:
-			return await getLatestAzdataVersionJson(outputChannel);
+			return await discoverLatestAzdataVersionFromJson(outputChannel);
 	}
 }
 
@@ -37,7 +37,7 @@ export async function discoverLatestAvailableAzdataVersion(outputChannel: vscode
  * Gets the latest azdata version from a json document published by azdata release
  * @param outputChannel Channel used to display diagnostic information
  */
-async function getLatestAzdataVersionJson(outputChannel: vscode.OutputChannel): Promise<SemVer> {
+async function discoverLatestAzdataVersionFromJson(outputChannel: vscode.OutputChannel): Promise<SemVer> {
 	// get version information for current platform from http://aka.ms/azdata/release.json
 	const fileContents = await HttpClient.getTextContent(`${azdataHostname}/${azdataReleaseJson}`, outputChannel);
 	const versionString = JSON.parse(fileContents)[process.platform]['version'];
@@ -48,7 +48,7 @@ async function getLatestAzdataVersionJson(outputChannel: vscode.OutputChannel): 
  * Gets the latest azdata version for MacOs clients
  * @param outputChannel Channel used to display diagnostic information
  */
-async function getLatestStableAzdataVersionDarwin(outputChannel: vscode.OutputChannel): Promise<SemVer> {
+async function discoverLatestStableAzdataVersionDarwin(outputChannel: vscode.OutputChannel): Promise<SemVer> {
 	// set brew tap to azdata-cli repository
 	await executeCommand('brew', ['tap', 'microsoft/azdata-cli-release'], outputChannel);
 	// Get the 'info' about 'azdata-cli' from 'brew' as a json object
