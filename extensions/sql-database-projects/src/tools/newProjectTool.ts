@@ -8,15 +8,16 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as nls from 'vscode-nls';
 import * as path from 'path';
-
 import * as constants from '../common/constants';
+
 const localize = nls.loadMessageBundle();
+const MaxDefaultProjectNameCounter: number = 99;
 
 export const DBProjectConfigurationKey: string = 'sqlDatabaseProjects';
 export const ProjectSaveLocationKey: string = 'defaultProjectSaveLocation';
 export const NewDefaultProjectSaveLocation: string = localize('sqlDatabaseProjects.newDefaultProjectSaveLocation', "Would you like to set the default location to save new Database Projects?");
+export const InvalidDefaultProjectSaveLocation: string = localize('sqlDatabaseProjects.invalidDefaultProjectSaveLocation', "Default location to save new Database Projects is invalid. Would you like to update it?");
 export const OpenWorkspaceSettings: string = localize('sqlDatabaseProjects.openWorkspaceSettings', "Yes, open Settings");
-const MaxDefaultProjectNameCounter: number = 99;
 
 export class NewProjectTool {
 	/* Returns the default location to save a new database project*/
@@ -29,10 +30,16 @@ export class NewProjectTool {
 		return vscode.workspace.getConfiguration(DBProjectConfigurationKey)[ProjectSaveLocationKey];
 	}
 
-	/* Returns if the default save location for new database projects workspace setting is valid*/
+	/* Returns if the default save location for new database projects workspace setting exists and is
+		a valid path*/
 	private get projectSaveLocationSettingIsValid(): boolean {
-		return (this.projectSaveLocationSetting !== null) && (this.projectSaveLocationSetting !== undefined) &&
-			(fs.existsSync(this.projectSaveLocationSetting));
+		return this.projectSaveLocationSettingExists && fs.existsSync(this.projectSaveLocationSetting);
+	}
+
+	/* Returns if a value for the default save location for new database projects exists*/
+	private get projectSaveLocationSettingExists(): boolean {
+		return this.projectSaveLocationSetting !== null && this.projectSaveLocationSetting !== undefined
+			&& this.projectSaveLocationSetting.trim() !== '';
 	}
 
 	/* Returns default project name for a fresh new project, such as 'DatabaseProject1'. Auto-increments
@@ -71,10 +78,11 @@ export class NewProjectTool {
 	/* Prompts user to update workspace settings*/
 	public async updateDefaultSaveLocationSetting(): Promise<void> {
 		if (!this.projectSaveLocationSettingIsValid) {
-			let result = await vscode.window.showInformationMessage(NewDefaultProjectSaveLocation, OpenWorkspaceSettings);
+			let openSettingsMessage = this.projectSaveLocationSettingExists ? InvalidDefaultProjectSaveLocation : NewDefaultProjectSaveLocation;
+			let result = await vscode.window.showInformationMessage(openSettingsMessage, OpenWorkspaceSettings);
+
 			if (result === OpenWorkspaceSettings) {
-				//open settings
-				await vscode.commands.executeCommand('workbench.action.openGlobalSettings');
+				await vscode.commands.executeCommand('workbench.action.openGlobalSettings'); //open settings
 			}
 		}
 	}
