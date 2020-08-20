@@ -4,14 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AppContext } from './appContext';
-import { IExtension, MssqlObjectExplorerBrowser } from './kusto';
+import { IExtension, KustoObjectExplorerBrowser } from './kusto';
 import * as constants from './constants';
 import { KustoObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
 import * as azdata from 'azdata';
 
 export function createKustoApi(context: AppContext): IExtension {
 	return {
-		getMssqlObjectExplorerBrowser(): MssqlObjectExplorerBrowser {
+		getKustoObjectExplorerBrowser(): KustoObjectExplorerBrowser {
 			return {
 				getNode: (explorerContext: azdata.ObjectExplorerContext) => {
 					let oeProvider = context.getService<KustoObjectExplorerNodeProvider>(constants.ObjectExplorerService);
