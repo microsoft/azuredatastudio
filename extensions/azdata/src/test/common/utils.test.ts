@@ -20,16 +20,22 @@ describe('utils', function () {
 	});
 
 	describe('discoverLatestAvailableAzdataVersion', function (): void {
+		this.timeout(20000);
 		for (const platform of ['win32', 'darwin', 'linux']) {
 			it(`finds latest version successfully on '${platform}'`, async function (): Promise<void> {
 				const outputChannelMock = TypeMoq.Mock.ofType<vscode.OutputChannel>();
+				if (process.env.SendOutputChannelToConsole) {
+					outputChannelMock.setup(x => x.appendLine(TypeMoq.It.isAnyString())).callback((x => {
+						console.log(`Output Channel:${x}`);
+					}));
+				}
 				const originalPlatform = process.platform;
 				try {
 					Object.defineProperty(process, 'platform', { value: platform });
 					if (originalPlatform !== platform) {
 						// If our test is running on a foreign platform then we need to mock the calls intended for that platform
-						//No mocks needed for win32 based discovery of latest version as it can be tested on all platforms
-						if (platform !== 'win32') {
+						// No mocks needed for win32 based discovery of latest version as it can be tested on all platforms
+						if (platform !== 'win32' && platform !== 'linux') {
 							// for mac and linux platforms mock executeCommand to return a valid discovered version
 							sinon.stub(childProcess, 'executeCommand').returns(Promise.resolve({ stdout: '9999.999.999', stderr: '' }));
 						}

@@ -18,43 +18,37 @@ export namespace HttpClient {
 	 * @param downloadUrl The URL to download the file from
 	 * @param targetFolder The folder to download the file to
 	 * @param outputChannel Channel used to display diagnostic information
-	 * @returns Full path to the downloaded file
+	 * @returns a promise to a full path to the downloaded file
 	 */
 	export function downloadFile(downloadUrl: string, outputChannel: vscode.OutputChannel, targetFolder: string): Promise<string> {
-		return dowload(downloadUrl, outputChannel, targetFolder);
+		return download(downloadUrl, outputChannel, targetFolder);
 	}
 
 	/**
-	 * Downloads a file from the given URL, resolving to the full path of the downloaded file when complete
-	 * @param downloadUrl The URL to download the file from
-	 * @param targetFolder The folder to download the file to
+	 * Downloads the text contents of the document at the given URL, resolving to a string containing the text when complete
+	 * @param url The URL of the document whose contents need to be fetched
 	 * @param outputChannel Channel used to display diagnostic information
-	 * @returns Full path to the downloaded file
+	 * @returns a promise to a string that has the contents of document at the provided url
 	 */
-	export async function getFileContents(downloadUrl: string, outputChannel: vscode.OutputChannel): Promise<string> {
-		console.log(`downloadUrl`, downloadUrl);
-		const fileContents = await dowload(downloadUrl, outputChannel);
-		console.log(`TCL::: fileContents`, fileContents);
-		return fileContents;
+	export async function getTextContent(url: string, outputChannel: vscode.OutputChannel): Promise<string> {
+		outputChannel.appendLine(loc.gettingTextContentsOfUrl(url));
+		return await download(url, outputChannel);
 	}
 
-	function dowload(downloadUrl: string, outputChannel: vscode.OutputChannel, targetFolder?: string): Promise<string> {
+	function download(url: string, outputChannel: vscode.OutputChannel, targetFolder?: string): Promise<string> {
 		return new Promise((resolve, reject) => {
 			let totalMegaBytes: number | undefined = undefined;
 			let receivedBytes = 0;
 			let printThreshold = 0.1;
 			let strings: string[] = [];
-			let downloadRequest = request.get(downloadUrl, { timeout: DownloadTimeout })
+			let downloadRequest = request.get(url, { timeout: DownloadTimeout })
 				.on('error', downloadError => {
-					console.log(`in downloader's on error callback`);
-					console.log(`downloadError: ${downloadError}`);
 					outputChannel.appendLine(loc.downloadError);
 					outputChannel.appendLine(downloadError?.message ?? downloadError);
 
 					reject(downloadError);
 				})
 				.on('response', (response) => {
-					//					console.log(`in downloader's on response callback`);
 					if (response.statusCode !== 200) {
 						outputChannel.appendLine(loc.downloadError);
 						outputChannel.appendLine(response.statusMessage);
@@ -86,7 +80,6 @@ export namespace HttpClient {
 					//console.log(`in downloader's on data callback`);
 					if (targetFolder === undefined) {
 						strings.push(data.toString('utf-8'));
-						//						console.log(`in downloader's on data callback: strings.length:${strings.length}`);
 					}
 					receivedBytes += data.length;
 					if (totalMegaBytes) {
@@ -99,14 +92,10 @@ export namespace HttpClient {
 					}
 				})
 				.on('close', async () => {
-					console.log(`in downloader's on close callback, targetfolder:${targetFolder}`);
 					if (targetFolder === undefined) {
-						console.log(`in downloader's on close callback: strings.length:${strings.length}`);
-						console.log(`in downloader's on close callback: strings:${JSON.stringify(strings)}`);
+
 						outputChannel.appendLine(loc.downloadFinished);
-						const fileContents = strings.join('');
-						console.log(`fileContents: ${fileContents}`);
-						resolve(fileContents);
+						resolve(strings.join(''));
 					}
 				});
 		});

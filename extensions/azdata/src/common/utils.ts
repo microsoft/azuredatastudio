@@ -34,13 +34,13 @@ export async function discoverLatestAvailableAzdataVersion(outputChannel: vscode
 }
 
 /**
- * Gets the latest azdata version from a json document publised by azdata release
+ * Gets the latest azdata version from a json document published by azdata release
  * @param outputChannel Channel used to display diagnostic information
  */
 async function getLatestAzdataVersionJson(outputChannel: vscode.OutputChannel): Promise<SemVer> {
 	// get version information for current platform from http://aka.ms/azdata/release.json
-	const versionString = JSON.parse(await HttpClient.getFileContents(`${azdataHostname}/${azdataReleaseJson}`, outputChannel))[process.platform]['version'];
-	console.log(`getLatestAzdataVersionJson -> versionString: ${versionString}`);
+	const fileContents = await HttpClient.getTextContent(`${azdataHostname}/${azdataReleaseJson}`, outputChannel);
+	const versionString = JSON.parse(fileContents)[process.platform]['version'];
 	return new SemVer(versionString);
 }
 

@@ -234,8 +234,8 @@
 			"env": {
 				"ADS_TEST_GREP": "discoverLatest",
 				"ADS_TEST_INVERT": 0
-			}
-			"timeout": 45000
+			},
+			"timeout": 450000
 		},
 		{
 			"type": "chrome",
@@ -267,7 +267,8 @@
 			"configurations": [
 				"Attach to Extension Host",
 				"Run Extension Unit Tests"
-			]
+			],
+			"timeout": 45000
 		},
 		{
 			"name": "Azure Data Studio",

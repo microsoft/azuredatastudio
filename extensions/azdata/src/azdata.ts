@@ -15,7 +15,7 @@ import { AzdataOutput } from './typings/azdata-ext';
 
 export const azdataHostname = 'https://aka.ms';
 export const azdataUri = 'azdata-msi';
-export const azdataReleaseJson = 'release.json';
+export const azdataReleaseJson = 'azdata/release.json';
 
 
 /**

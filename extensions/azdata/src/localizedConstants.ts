@@ -24,6 +24,7 @@ export function stdoutOutput(stdout: string): string { return localize('azdata.s
 export function stderrOutput(stderr: string): string { return localize('azdata.stderrOutput', "stderr : {0}", stderr); }
 export const checkingLatestAzdataVersion = localize('azdata.checkingLatestAzdataVersion', "Checking for latest version of azdata");
 export function gettingFilenameOfUrl(url: string): string { return localize('azdata.gettingFilenameOfUrl', "Getting filename of resource at URL {0}", url); }
+export function gettingTextContentsOfUrl(url: string): string { return localize('azdata.gettingTextContentsOfUrl', "Getting text contents of resource at URL {0}", url); }
 export function gotFilenameOfUrl(url: string, filename: string): string { return localize('azdata.gotFilenameOfUrl', "Got filename {0} from URL {1}", filename, url); }
 
 export function promptForAzdataUpgrade(version: string): string { return localize('azdata.promptForAzdataUpgrade', "An updated version of azdata ( {0} ) is available, do you wish to install it now?", version); }

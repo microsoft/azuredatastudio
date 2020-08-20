@@ -17,12 +17,12 @@ import * as loc from '../localizedConstants';
 
 const outputChannelMock = TypeMoq.Mock.ofType<vscode.OutputChannel>();
 const oldAzdata = new azdata.AzdataTool('', new SemVer('0.0.0'), outputChannelMock.object);
+if (process.env.SendOutputChannelToConsole) {
+	outputChannelMock.setup(x => x.appendLine(TypeMoq.It.isAnyString())).callback((x => {
+		console.log(`Output Channel:${x}`);
+	}));
+}
 describe('azdata', function () {
-	// let outputChannelMock: TypeMoq.IMock<vscode.OutputChannel>;
-	// let oldAzdata: azdata.IAzdataTool;
-	// beforeEach(function (): void {
-
-	// });
 	afterEach(function (): void {
 		sinon.restore();
 		nock.cleanAll();
