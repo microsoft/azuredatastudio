@@ -186,6 +186,12 @@ export class QueryEditor extends BaseEditor {
 		this._actualQueryPlanAction = this.instantiationService.createInstance(actions.ActualQueryPlanAction, this);
 		this._toggleSqlcmdMode = this.instantiationService.createInstance(actions.ToggleSqlCmdModeAction, this, false);
 		this._exportAsNotebookAction = this.instantiationService.createInstance(actions.ExportAsNotebookAction, this);
+		this.setTaskbarContent();
+		this._register(this.configurationService.onDidChangeConfiguration(e => {
+			if (e.affectsConfiguration('workbench.enablePreviewFeatures')) {
+				this.setTaskbarContent();
+			}
+		}));
 	}
 
 	/**
@@ -198,11 +204,6 @@ export class QueryEditor extends BaseEditor {
 			if (this.input.state.connected) {
 				this.listDatabasesActionItem.onConnected();
 				this.setTaskbarContent();
-				this._register(this.configurationService.onDidChangeConfiguration(e => {
-					if (e.affectsConfiguration('workbench.enablePreviewFeatures')) {
-						this.setTaskbarContent();
-					}
-				}));
 			} else {
 				this.listDatabasesActionItem.onDisconnect();
 			}
@@ -258,7 +259,7 @@ export class QueryEditor extends BaseEditor {
 		const separator = Taskbar.createTaskbarSeparator();
 		let content: ITaskbarContent[];
 		const previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
-		let connectionProfile = this.connectionManagementService.getConnectionProfile(this.input.uri);
+		let connectionProfile = this.connectionManagementService.getConnectionProfile(this.input?.uri);
 
 		// TODO: Make it more generic, some way for extensions to register the commands it supports
 		if (connectionProfile?.providerName === 'KUSTO') {
