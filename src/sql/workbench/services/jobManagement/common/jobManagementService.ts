@@ -34,32 +34,32 @@ export class JobManagementService implements IJobManagementService {
 	}
 
 	// Jobs
-	public getJobs(connectionUri: string): Thenable<azdata.AgentJobsResult> {
+	public getJobs(connectionUri: string): Promise<azdata.AgentJobsResult> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getJobs(connectionUri);
 		});
 	}
 
-	public deleteJob(connectionUri: string, job: azdata.AgentJobInfo): Thenable<azdata.ResultStatus> {
+	public deleteJob(connectionUri: string, job: azdata.AgentJobInfo): Promise<azdata.ResultStatus> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.deleteJob(connectionUri, job);
 		});
 	}
 
-	public getJobHistory(connectionUri: string, jobID: string, jobName: string): Thenable<azdata.AgentJobHistoryResult> {
+	public getJobHistory(connectionUri: string, jobID: string, jobName: string): Promise<azdata.AgentJobHistoryResult> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getJobHistory(connectionUri, jobID, jobName);
 		});
 	}
 
-	public jobAction(connectionUri: string, jobName: string, action: string): Thenable<azdata.ResultStatus> {
+	public jobAction(connectionUri: string, jobName: string, action: string): Promise<azdata.ResultStatus> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.jobAction(connectionUri, jobName, action);
 		});
 	}
 
 	// Steps
-	public deleteJobStep(connectionUri: string, stepInfo: azdata.AgentJobStepInfo): Thenable<azdata.ResultStatus> {
+	public deleteJobStep(connectionUri: string, stepInfo: azdata.AgentJobStepInfo): Promise<azdata.ResultStatus> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.deleteJobStep(connectionUri, stepInfo);
 		});
@@ -71,100 +71,100 @@ export class JobManagementService implements IJobManagementService {
 	}
 
 	// Notebooks
-	public getNotebooks(connectionUri: string): Thenable<azdata.AgentNotebooksResult> {
+	public getNotebooks(connectionUri: string): Promise<azdata.AgentNotebooksResult> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getNotebooks(connectionUri);
 		});
 	}
 
-	public getNotebookHistory(connectionUri: string, jobID: string, jobName: string, targetDatabase: string): Thenable<azdata.AgentNotebookHistoryResult> {
+	public getNotebookHistory(connectionUri: string, jobID: string, jobName: string, targetDatabase: string): Promise<azdata.AgentNotebookHistoryResult> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getNotebookHistory(connectionUri, jobID, jobName, targetDatabase);
 		});
 	}
 
-	public getMaterialziedNotebook(connectionUri: string, targetDatabase: string, notebookMaterializedId: number): Thenable<azdata.AgentNotebookMaterializedResult> {
+	public getMaterialziedNotebook(connectionUri: string, targetDatabase: string, notebookMaterializedId: number): Promise<azdata.AgentNotebookMaterializedResult> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getMaterializedNotebook(connectionUri, targetDatabase, notebookMaterializedId);
 		});
 	}
 
-	public getTemplateNotebook(connectionUri: string, targetDatabase: string, jobId: string): Thenable<azdata.AgentNotebookTemplateResult> {
+	public getTemplateNotebook(connectionUri: string, targetDatabase: string, jobId: string): Promise<azdata.AgentNotebookTemplateResult> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getTemplateNotebook(connectionUri, targetDatabase, jobId);
 		});
 	}
 
-	public deleteNotebook(connectionUri: string, notebook: azdata.AgentNotebookInfo): Thenable<azdata.ResultStatus> {
+	public deleteNotebook(connectionUri: string, notebook: azdata.AgentNotebookInfo): Promise<azdata.ResultStatus> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.deleteNotebook(connectionUri, notebook);
 		});
 	}
 
-	public deleteMaterializedNotebook(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string): Thenable<azdata.ResultStatus> {
+	public deleteMaterializedNotebook(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string): Promise<azdata.ResultStatus> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.deleteMaterializedNotebook(connectionUri, agentNotebookHistory, targetDatabase);
 		});
 	}
 
-	public updateNotebookMaterializedName(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, name: string): Thenable<azdata.ResultStatus> {
+	public updateNotebookMaterializedName(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, name: string): Promise<azdata.ResultStatus> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.updateNotebookMaterializedName(connectionUri, agentNotebookHistory, targetDatabase, name);
 		});
 	}
 
-	public updateNotebookMaterializedPin(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, pin: boolean): Thenable<azdata.ResultStatus> {
+	public updateNotebookMaterializedPin(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, pin: boolean): Promise<azdata.ResultStatus> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.updateNotebookMaterializedPin(connectionUri, agentNotebookHistory, targetDatabase, pin);
 		});
 	}
 
 	// Alerts
-	public getAlerts(connectionUri: string): Thenable<azdata.AgentAlertsResult> {
+	public getAlerts(connectionUri: string): Promise<azdata.AgentAlertsResult> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getAlerts(connectionUri);
 		});
 	}
 
-	public deleteAlert(connectionUri: string, alert: azdata.AgentAlertInfo): Thenable<azdata.ResultStatus> {
+	public deleteAlert(connectionUri: string, alert: azdata.AgentAlertInfo): Promise<azdata.ResultStatus> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.deleteAlert(connectionUri, alert);
 		});
 	}
 
 	// Operators
-	public getOperators(connectionUri: string): Thenable<azdata.AgentOperatorsResult> {
+	public getOperators(connectionUri: string): Promise<azdata.AgentOperatorsResult> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getOperators(connectionUri);
 		});
 	}
 
-	public deleteOperator(connectionUri: string, operator: azdata.AgentOperatorInfo): Thenable<azdata.ResultStatus> {
+	public deleteOperator(connectionUri: string, operator: azdata.AgentOperatorInfo): Promise<azdata.ResultStatus> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.deleteOperator(connectionUri, operator);
 		});
 	}
 
 	// Proxies
-	public getProxies(connectionUri: string): Thenable<azdata.AgentProxiesResult> {
+	public getProxies(connectionUri: string): Promise<azdata.AgentProxiesResult> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getProxies(connectionUri);
 		});
 	}
 
-	public deleteProxy(connectionUri: string, proxy: azdata.AgentProxyInfo): Thenable<azdata.ResultStatus> {
+	public deleteProxy(connectionUri: string, proxy: azdata.AgentProxyInfo): Promise<azdata.ResultStatus> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.deleteProxy(connectionUri, proxy);
 		});
 	}
 
-	public getCredentials(connectionUri: string): Thenable<azdata.GetCredentialsResult> {
+	public getCredentials(connectionUri: string): Promise<azdata.GetCredentialsResult> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getCredentials(connectionUri);
 		});
 	}
 
-	private _runAction<T>(uri: string, action: (handler: azdata.AgentServicesProvider) => Thenable<T>): Thenable<T> {
+	private _runAction<T>(uri: string, action: (handler: azdata.AgentServicesProvider) => Thenable<T>): Promise<T> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(uri);
 
 		if (!providerId) {
@@ -172,7 +172,7 @@ export class JobManagementService implements IJobManagementService {
 		}
 		let handler = this._providers[providerId];
 		if (handler) {
-			return action(handler);
+			return Promise.resolve(action(handler));
 		} else {
 			return Promise.reject(new Error(localize('noHandlerRegistered', "No Handler Registered")));
 		}
