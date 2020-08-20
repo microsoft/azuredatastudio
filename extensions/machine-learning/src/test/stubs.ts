@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as azurecore from '../../../azurecore/src/azurecore';
-import { azureResource } from '../../../azurecore/src/azureResource/azure-resource';
+import * as azurecore from 'azurecore';
+import { azureResource } from 'azureResource';
 
 export class AzurecoreApiStub implements azurecore.IExtension {
 	getSubscriptions(_account?: azdata.Account | undefined, _ignoreErrors?: boolean | undefined): Thenable<azurecore.GetSubscriptionsResult> {
