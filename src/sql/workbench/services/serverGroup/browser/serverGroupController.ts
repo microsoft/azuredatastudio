@@ -12,7 +12,7 @@ import { IServerGroupController, IServerGroupDialogCallbacks } from 'sql/platfor
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ServerGroupDialog } from 'sql/workbench/services/serverGroup/browser/serverGroupDialog';
 import { ServerGroupViewModel } from 'sql/workbench/services/serverGroup/common/serverGroupViewModel';
-import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import { ConnectionProfileGroup, INewConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { SERVER_GROUP_CONFIG, SERVER_GROUP_COLORS_CONFIG } from 'sql/workbench/services/serverGroup/common/interfaces';
 
 export class ServerGroupController implements IServerGroupController {
@@ -47,12 +47,11 @@ export class ServerGroupController implements IServerGroupController {
 			});
 
 		} else {
-			let newGroup: IConnectionProfileGroup = {
-				name: this._viewModel.groupName,
-				id: undefined,
+			let newGroup: INewConnectionProfileGroup = {
+				name: viewModel.groupName,
 				parentId: undefined,
-				color: this._viewModel.groupColor,
-				description: this._viewModel.groupDescription
+				color: viewModel.groupColor,
+				description: viewModel.groupDescription
 			};
 			this.connectionManagementService.saveProfileGroup(newGroup).then(groupId => {
 				if (this._callbacks) {

@@ -29,14 +29,14 @@ const maxActions = 1;
 
 export class ErrorMessageDialog extends Modal {
 
-	private _body: HTMLElement;
-	private _okButton: Button;
-	private _copyButton: Button;
-	private _actionButtons: Button[];
-	private _actions: IAction[];
-	private _severity: Severity;
-	private _message: string;
-	private _messageDetails: string;
+	private _body?: HTMLElement;
+	private _okButton?: Button;
+	private _copyButton?: Button;
+	private _actionButtons: Button[] = [];
+	private _actions: IAction[] = [];
+	private _severity?: Severity;
+	private _message?: string;
+	private _messageDetails?: string;
 	private _okLabel: string;
 	private _closeLabel: string;
 
@@ -75,10 +75,12 @@ export class ErrorMessageDialog extends Modal {
 
 	private createCopyButton() {
 		let copyButtonLabel = localize('copyDetails', "Copy details");
-		this._copyButton = this.addFooterButton(copyButtonLabel, () => this._clipboardService.writeText(this._messageDetails).catch(err => onUnexpectedError(err)), 'left');
-		this._copyButton.icon = 'codicon scriptToClipboard';
-		this._copyButton.element.title = copyButtonLabel;
-		this._register(attachButtonStyler(this._copyButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND, buttonForeground: SIDE_BAR_FOREGROUND }));
+		if (this._messageDetails) {
+			this._copyButton = this.addFooterButton(copyButtonLabel, () => this._clipboardService.writeText(this._messageDetails!).catch(err => onUnexpectedError(err)), 'left');
+		}
+		this._copyButton!.icon = 'codicon scriptToClipboard';
+		this._copyButton!.element.title = copyButtonLabel;
+		this._register(attachButtonStyler(this._copyButton!, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND, buttonForeground: SIDE_BAR_FOREGROUND }));
 	}
 
 	private createStandardButton(label: string, onSelect: () => void): Button {
@@ -101,8 +103,8 @@ export class ErrorMessageDialog extends Modal {
 	}
 
 	private updateDialogBody(): void {
-		DOM.clearNode(this._body);
-		DOM.append(this._body, DOM.$('div.error-message')).innerText = this._message;
+		DOM.clearNode(this._body!);
+		DOM.append(this._body!, DOM.$('div.error-message')).innerText = this._message!;
 	}
 
 	private updateIconTitle(): void {
@@ -138,15 +140,15 @@ export class ErrorMessageDialog extends Modal {
 		this.hide();
 	}
 
-	public open(severity: Severity, headerTitle: string, message: string, messageDetails: string, actions: IAction[]) {
+	public open(severity: Severity, headerTitle: string, message: string, messageDetails?: string, actions?: IAction[]) {
 		this._severity = severity;
 		this._message = message;
 		this.title = headerTitle;
 		this._messageDetails = messageDetails;
 		if (this._messageDetails) {
-			this._copyButton.element.style.visibility = 'visible';
+			this._copyButton!.element.style.visibility = 'visible';
 		} else {
-			this._copyButton.element.style.visibility = 'hidden';
+			this._copyButton!.element.style.visibility = 'hidden';
 		}
 		this.resetActions();
 		if (actions && actions.length > 0) {
@@ -156,14 +158,14 @@ export class ErrorMessageDialog extends Modal {
 				button.label = actions[i].label;
 				button.element.style.visibility = 'visible';
 			}
-			this._okButton.label = this._closeLabel;
+			this._okButton!.label = this._closeLabel;
 		} else {
-			this._okButton.label = this._okLabel;
+			this._okButton!.label = this._okLabel;
 		}
 		this.updateIconTitle();
 		this.updateDialogBody();
 		this.show();
-		this._okButton.focus();
+		this._okButton!.focus();
 	}
 
 	private resetActions(): void {

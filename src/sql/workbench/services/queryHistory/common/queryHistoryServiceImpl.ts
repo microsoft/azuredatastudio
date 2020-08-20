@@ -26,7 +26,7 @@ export class QueryHistoryService extends Disposable implements IQueryHistoryServ
 	private _infos: QueryHistoryInfo[] = [];
 	private _onInfosUpdated: Emitter<QueryHistoryInfo[]> = new Emitter<QueryHistoryInfo[]>();
 	private _onQueryHistoryCaptureChanged: Emitter<boolean> = new Emitter<boolean>();
-	private _captureEnabled;
+	private _captureEnabled: boolean;
 	// EVENTS //////////////////////////////////////////////////////////////
 	public get onInfosUpdated(): Event<QueryHistoryInfo[]> { return this._onInfosUpdated.event; }
 	public get onQueryHistoryCaptureChanged(): Event<boolean> { return this._onQueryHistoryCaptureChanged.event; }
@@ -50,29 +50,32 @@ export class QueryHistoryService extends Disposable implements IQueryHistoryServ
 		this._register(_queryModelService.onQueryEvent((e: IQueryEvent) => {
 			if (this._captureEnabled && e.type === 'queryStop') {
 				const uri: URI = URI.parse(e.uri);
-				// VS Range is 1 based so offset values by 1. The endLine we get back from SqlToolsService is incremented
-				// by 1 from the original input range sent in as well so take that into account and don't modify
-				const text: string = e.queryInfo.range && e.queryInfo.range.length > 0 ?
-					_modelService.getModel(uri).getValueInRange(new Range(
-						e.queryInfo.range[0].startLineNumber,
-						e.queryInfo.range[0].startColumn,
-						e.queryInfo.range[0].endLineNumber,
-						e.queryInfo.range[0].endColumn)) :
-					// If no specific selection get the entire text
-					_modelService.getModel(uri).getValue();
+				const model = _modelService.getModel(uri);
+				if (model) {
+					// VS Range is 1 based so offset values by 1. The endLine we get back from SqlToolsService is incremented
+					// by 1 from the original input range sent in as well so take that into account and don't modify
+					const text: string = e.queryInfo.range && e.queryInfo.range.length > 0 ?
+						model.getValueInRange(new Range(
+							e.queryInfo.range[0].startLineNumber,
+							e.queryInfo.range[0].startColumn,
+							e.queryInfo.range[0].endLineNumber,
+							e.queryInfo.range[0].endColumn)) :
+						// If no specific selection get the entire text
+						model.getValue();
 
-				const newInfo = new QueryHistoryInfo(text, _connectionManagementService.getConnectionProfile(e.uri), new Date(), QueryStatus.Succeeded);
+					const newInfo = new QueryHistoryInfo(text, _connectionManagementService.getConnectionProfile(e.uri), new Date(), QueryStatus.Succeeded);
 
-				// icon as required (for now logic is if any message has error query has error)
-				let error: boolean = false;
-				e.queryInfo.messages.forEach(x => error = error || x.isError);
-				if (error) {
-					newInfo.status = QueryStatus.Failed;
+					// icon as required (for now logic is if any message has error query has error)
+					let error: boolean = false;
+					e.queryInfo.messages.forEach(x => error = error || x.isError);
+					if (error) {
+						newInfo.status = QueryStatus.Failed;
+					}
+
+					// Append new node to beginning of array so the newest ones are at the top
+					this._infos.unshift(newInfo);
+					this._onInfosUpdated.fire(this._infos);
 				}
-
-				// Append new node to beginning of array so the newest ones are at the top
-				this._infos.unshift(newInfo);
-				this._onInfosUpdated.fire(this._infos);
 			}
 		}));
 	}

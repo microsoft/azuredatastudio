@@ -237,7 +237,7 @@ function getMockResourceProvider(resolveCreateFirewallRule: boolean, response?: 
 	let resourceProviderStub = new TestResourceProvider();
 	let mockResourceProvider = TypeMoq.Mock.ofInstance(resourceProviderStub);
 	mockResourceProvider.setup(x => x.createFirewallRule(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()))
-		.returns(() => resolveCreateFirewallRule ? Promise.resolve(response) : Promise.reject(null));
+		.returns(() => resolveCreateFirewallRule ? Promise.resolve(response!) : Promise.reject(null));
 	return mockResourceProvider;
 }
 

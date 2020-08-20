@@ -15,7 +15,7 @@ export class ErrorMessageService implements IErrorMessageService {
 
 	_serviceBrand: undefined;
 
-	private _errorDialog: ErrorMessageDialog;
+	private _errorDialog?: ErrorMessageDialog;
 
 	private handleOnOk(): void {
 	}
@@ -28,7 +28,7 @@ export class ErrorMessageService implements IErrorMessageService {
 		this.doShowDialog(severity, headerTitle, message, messageDetails, actions);
 	}
 
-	private doShowDialog(severity: Severity, headerTitle: string, message: string, messageDetails: string, actions?: IAction[]): void {
+	private doShowDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string, actions?: IAction[]): void {
 		if (!this._errorDialog) {
 			this._errorDialog = this._instantiationService.createInstance(ErrorMessageDialog);
 			this._errorDialog.onOk(() => this.handleOnOk());
@@ -40,17 +40,15 @@ export class ErrorMessageService implements IErrorMessageService {
 	}
 
 	private getDefaultTitle(severity: Severity) {
-		let defaultTitle: string;
 		switch (severity) {
 			case Severity.Error:
-				defaultTitle = localize('error', "Error");
-				break;
+				return localize('error', "Error");
 			case Severity.Warning:
-				defaultTitle = localize('warning', "Warning");
-				break;
+				return localize('warning', "Warning");
 			case Severity.Info:
-				defaultTitle = localize('info', "Info");
+				return localize('info', "Info");
+			case Severity.Ignore:
+				return localize('ignore', "Ignore");
 		}
-		return defaultTitle;
 	}
 }
