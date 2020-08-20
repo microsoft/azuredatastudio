@@ -48,7 +48,7 @@ import { RecentConnectionActionsProvider, RecentConnectionTreeController } from 
 import { ClearRecentConnectionsAction } from 'sql/workbench/services/connection/browser/connectionActions';
 import { combinedDisposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
-import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
+import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export interface OnShowUIResponse {
@@ -399,8 +399,16 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 		});
 		this._recentConnectionTree = TreeCreationUtils.createConnectionTree(treeContainer, this.instantiationService, this._configurationService, localize('connectionDialog.recentConnections', "Recent Connections"), controller);
 		if (this._recentConnectionTree instanceof AsyncServerTree) {
-			this._recentConnectionTree.onMouseClick(e => this.onConnectionClick(e.element, false));
-			this._recentConnectionTree.onMouseDblClick(e => this.onConnectionClick(e.element, true));
+			this._recentConnectionTree.onMouseClick(e => {
+				if (e.element instanceof ConnectionProfile) {
+					this.onConnectionClick(e.element, false);
+				}
+			});
+			this._recentConnectionTree.onMouseDblClick(e => {
+				if (e.element instanceof ConnectionProfile) {
+					this.onConnectionClick(e.element, true);
+				}
+			});
 		}
 
 		// Theme styler
@@ -429,8 +437,16 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 		const controller = new SavedConnectionTreeController(leftClick);
 		this._savedConnectionTree = TreeCreationUtils.createConnectionTree(treeContainer, this.instantiationService, this._configurationService, localize('connectionDialog.savedConnections', "Saved Connections"), controller);
 		if (this._savedConnectionTree instanceof AsyncServerTree) {
-			this._savedConnectionTree.onMouseClick(e => this.onConnectionClick(e.element, false));
-			this._savedConnectionTree.onMouseDblClick(e => this.onConnectionClick(e.element, true));
+			this._savedConnectionTree.onMouseClick(e => {
+				if (e.element instanceof ConnectionProfile) {
+					this.onConnectionClick(e.element, false);
+				}
+			});
+			this._savedConnectionTree.onMouseDblClick(e => {
+				if (e.element instanceof ConnectionProfile) {
+					this.onConnectionClick(e.element, true);
+				}
+			});
 		}
 
 		// Theme styler
@@ -444,10 +460,7 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 		DOM.append(noSavedConnectionContainer, DOM.$('.no-saved-connections')).innerText = noSavedConnectionLabel;
 	}
 
-	private onConnectionClick(element: ServerTreeElement, connect: boolean = false): void {
-		if (!(element instanceof ConnectionProfile)) {
-			return;
-		}
+	private onConnectionClick(element: IConnectionProfile, connect: boolean = false): void {
 		if (connect) {
 			this.connect(element);
 		} else {
@@ -647,7 +660,7 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 		const disposable = combinedDisposable(pane, paneStyler);
 		const paneItem = { pane, disposable };
 		treeView.onDidChangeSelection(e => {
-			if (e.length > 0 && e[0].payload instanceof ConnectionProfile) {
+			if (e.length > 0 && e[0].payload) {
 				this.onConnectionClick(e[0].payload);
 			}
 		});
