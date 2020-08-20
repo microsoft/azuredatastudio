@@ -76,7 +76,7 @@ class ExtensionListRenderer implements IListRenderer<IDashboardUITab, ExtensionL
 			templateData.icon.classList.add(ExtensionListRenderer.OPENED_TAB_CLASS);
 		}
 		templateData.title.innerText = dashboardTab.tabConfig.title;
-		templateData.description.innerText = dashboardTab.tabConfig.description;
+		templateData.description.innerText = dashboardTab.tabConfig.description ?? '';
 		templateData.publisher.innerText = dashboardTab.tabConfig.publisher;
 	}
 
@@ -92,11 +92,11 @@ class ExtensionListRenderer implements IListRenderer<IDashboardUITab, ExtensionL
 export class NewDashboardTabDialog extends Modal {
 
 	// MEMBER letIABLES ////////////////////////////////////////////////////
-	private _addNewTabButton: Button;
-	private _cancelButton: Button;
-	private _extensionList: List<IDashboardUITab>;
-	private _extensionViewContainer: HTMLElement;
-	private _noExtensionViewContainer: HTMLElement;
+	private _addNewTabButton?: Button;
+	private _cancelButton?: Button;
+	private _extensionList?: List<IDashboardUITab>;
+	private _extensionViewContainer?: HTMLElement;
+	private _noExtensionViewContainer?: HTMLElement;
 
 	private _viewModel: NewDashboardTabViewModel;
 
@@ -139,7 +139,7 @@ export class NewDashboardTabDialog extends Modal {
 
 	// MODAL OVERRIDE METHODS //////////////////////////////////////////////
 	protected layout(height?: number): void {
-		this._extensionList.layout(height);
+		this._extensionList!.layout(height);
 	}
 
 	public render() {
@@ -188,8 +188,8 @@ export class NewDashboardTabDialog extends Modal {
 
 	private registerListeners(): void {
 		// Theme styler
-		this._register(attachButtonStyler(this._cancelButton, this._themeService));
-		this._register(attachButtonStyler(this._addNewTabButton, this._themeService));
+		this._register(attachButtonStyler(this._cancelButton!, this._themeService));
+		this._register(attachButtonStyler(this._addNewTabButton!, this._themeService));
 	}
 
 	/* Overwrite escape key behavior */
@@ -207,8 +207,8 @@ export class NewDashboardTabDialog extends Modal {
 	}
 
 	private addNewTabs() {
-		if (this._addNewTabButton.enabled) {
-			let selectedTabs = this._extensionList.getSelectedElements();
+		if (this._addNewTabButton!.enabled) {
+			let selectedTabs = this._extensionList!.getSelectedElements();
 			this._onAddTabs.fire(selectedTabs);
 		}
 	}
@@ -223,19 +223,19 @@ export class NewDashboardTabDialog extends Modal {
 	}
 
 	private onUpdateTabList(tabs: IDashboardUITab[]) {
-		this._extensionList.splice(0, this._extensionList.length, tabs);
+		this._extensionList!.splice(0, this._extensionList!.length, tabs);
 		this.layout();
-		if (this._extensionList.length > 0) {
-			this._extensionViewContainer.hidden = false;
-			this._noExtensionViewContainer.hidden = true;
-			this._extensionList.setSelection([0]);
-			this._extensionList.domFocus();
-			this._addNewTabButton.enabled = true;
+		if (this._extensionList!.length > 0) {
+			this._extensionViewContainer!.hidden = false;
+			this._noExtensionViewContainer!.hidden = true;
+			this._extensionList!.setSelection([0]);
+			this._extensionList!.domFocus();
+			this._addNewTabButton!.enabled = true;
 		} else {
-			this._extensionViewContainer.hidden = true;
-			this._noExtensionViewContainer.hidden = false;
-			this._addNewTabButton.enabled = false;
-			this._cancelButton.focus();
+			this._extensionViewContainer!.hidden = true;
+			this._noExtensionViewContainer!.hidden = false;
+			this._addNewTabButton!.enabled = false;
+			this._cancelButton!.focus();
 		}
 	}
 
