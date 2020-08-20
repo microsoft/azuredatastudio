@@ -119,10 +119,7 @@
         "command": "sqlDatabaseProjects.importDatabase",
         "title": "%sqlDatabaseProjects.importDatabase%",
         "category": "%sqlDatabaseProjects.displayName%",
-          "icon": {
-            "dark": "images/databaseProjectToolbar.svg",
-            "light": "images/databaseProjectToolbar.svg"
-          }
+          "icon": "images/databaseProjectToolbar.svg"
       },
       {
         "command": "sqlDatabaseProjects.addDatabaseReference",
