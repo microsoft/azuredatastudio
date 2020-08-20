@@ -236,8 +236,7 @@ export class Project {
 		if (itemType && itemType === templates.preDeployScript) {
 			xmlTag = constants.PreDeploy;
 			this.preDeployScripts.push(fileEntry);
-		}
-		else if (itemType && itemType === templates.postDeployScript) {
+		} else if (itemType && itemType === templates.postDeployScript) {
 			xmlTag = constants.PostDeploy;
 			this.postDeployScripts.push(fileEntry);
 		} else {

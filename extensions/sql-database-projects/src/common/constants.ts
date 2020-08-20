@@ -127,7 +127,7 @@ export function projBuildFailed(errorMessage: string) { return localize('projBui
 export function unexpectedProjectContext(uri: string) { return localize('unexpectedProjectContext', "Unable to establish project context.  Command invoked from unexpected location: {0}", uri); }
 export function unableToPerformAction(action: string, uri: string) { return localize('unableToPerformAction', "Unable to locate '{0}' target: '{1}'", action, uri); }
 export function unableToFindObject(path: string, objType: string) { return localize('unableToFindFile', "Unable to find {1} with path '{0}'", path, objType); }
-export function deployScriptExists(scriptType: string) { return localize('deployScriptExists', "A {0} script already exists. The new script will be added as None and not included in Build.", scriptType); }
+export function deployScriptExists(scriptType: string) { return localize('deployScriptExists', "A {0} script already exists. The new script will not be included in build.", scriptType); }
 
 // Action types
 export const deleteAction = localize('deleteAction', 'Delete');
@@ -144,8 +144,8 @@ export const scriptFriendlyName = localize('scriptFriendlyName', "Script");
 export const tableFriendlyName = localize('tableFriendlyName', "Table");
 export const viewFriendlyName = localize('viewFriendlyName', "View");
 export const storedProcedureFriendlyName = localize('storedProcedureFriendlyName', "Stored Procedure");
-export const preDeployScriptFriendlyName = localize('preDeployScriptFriendlyName', "PreDeployment Script");
-export const postDeployScriptFriendlyName = localize('postDeployScriptFriendlyName', "PostDeployment Script");
+export const preDeployScriptFriendlyName = localize('preDeployScriptFriendlyName', "Script.PreDeployment");
+export const postDeployScriptFriendlyName = localize('postDeployScriptFriendlyName', "Script.PostDeployment");
 
 // SqlProj file XML names
 export const ItemGroup = 'ItemGroup';
