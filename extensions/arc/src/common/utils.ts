@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as azurecore from '../../../azurecore/src/azurecore';
+import * as azurecore from 'azurecore';
 import * as loc from '../localizedConstants';
 import { IconPathHelper, IconPath, ResourceType, ConnectionMode } from '../constants';
 

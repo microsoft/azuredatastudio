@@ -10,7 +10,7 @@ import * as vscode from 'vscode';
 import 'mocha';
 import { AppContext } from '../../../appContext';
 
-import { azureResource } from '../../../azureResource/azure-resource';
+import { azureResource } from 'azureResource';
 import { IAzureResourceTreeChangeHandler } from '../../../azureResource/tree/treeChangeHandler';
 import { AzureResourceSubscriptionTreeNode } from '../../../azureResource/tree/subscriptionTreeNode';
 import { AzureResourceItemType, AzureResourceServiceNames } from '../../../azureResource/constants';

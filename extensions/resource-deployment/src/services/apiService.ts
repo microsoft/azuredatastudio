@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azurecore from '../../../azurecore/src/azurecore';
+import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 
 export interface IApiService {
