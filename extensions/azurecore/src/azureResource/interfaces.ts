@@ -7,7 +7,7 @@ import * as msRest from '@azure/ms-rest-js';
 
 import { Account } from 'azdata';
 
-import { azureResource } from './azure-resource';
+import { azureResource } from 'azureResource';
 import { AzureAccount, Tenant } from '../account-provider/interfaces';
 
 export interface IAzureResourceSubscriptionService {

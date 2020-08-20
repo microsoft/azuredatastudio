@@ -6,7 +6,7 @@
 import { extensions, TreeItem } from 'vscode';
 import { Account } from 'azdata';
 
-import { azureResource } from './azure-resource';
+import { azureResource } from 'azureResource';
 import { IAzureResourceNodeWithProviderId } from './interfaces';
 
 export class AzureResourceService {

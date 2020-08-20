@@ -8,7 +8,7 @@ import * as TypeMoq from 'typemoq';
 import * as vscode from 'vscode';
 import 'mocha';
 
-import { azureResource } from '../../azureResource/azure-resource';
+import { azureResource } from 'azureResource';
 import { AzureResourceService } from '../../azureResource/resourceService';
 import { AzureResourceResourceTreeNode } from '../../azureResource/resourceTreeNode';
 import { AppContext } from '../../appContext';
