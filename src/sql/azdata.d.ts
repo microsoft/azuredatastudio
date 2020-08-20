@@ -189,6 +189,22 @@ declare module 'azdata' {
 		 * @param connectionProfile connection profile
 		 */
 		export function connect(connectionProfile: IConnectionProfile, saveConnection?: boolean, showDashboard?: boolean): Thenable<ConnectionResult>;
+
+		export type ConnectionEventType =
+			| 'onConnect'
+			| 'onDisconnect'
+			| 'onConnectionChanged';
+
+		export interface ConnectionEventListener {
+			onConnectionEvent(type: ConnectionEventType, ownerUri: string, args: IConnectionProfile): void;
+		}
+
+		/**
+		 * Register a connection event listener
+		 */
+		export function registerConnectionEventListener(listener: connection.ConnectionEventListener): void;
+
+		export function getConnection(uri: string): Thenable<ConnectionProfile>;
 	}
 
 	/**
