@@ -83,44 +83,44 @@ const tabbableElementsQuerySelector = 'a[href], area[href], input:not([disabled]
 
 export abstract class Modal extends Disposable implements IThemable {
 	protected _useDefaultMessageBoxLocation: boolean = true;
-	protected _messageElement: HTMLElement;
+	protected _messageElement?: HTMLElement;
 	protected _modalOptions: IModalOptions;
 	protected readonly disposableStore = this._register(new DisposableStore());
-	private _detailsButtonContainer: HTMLElement;
-	private _messageIcon: HTMLElement;
-	private _messageSeverity: HTMLElement;
-	private _messageSummary: HTMLElement;
-	private _messageBody: HTMLElement;
-	private _messageDetail: HTMLElement;
-	private _toggleMessageDetailButton: Button;
-	private _copyMessageButton: Button;
-	private _closeMessageButton: Button;
-	private _messageSummaryText: string;
-	private _messageDetailText: string;
+	private _detailsButtonContainer?: HTMLElement;
+	private _messageIcon?: HTMLElement;
+	private _messageSeverity?: HTMLElement;
+	private _messageSummary?: HTMLElement;
+	private _messageBody?: HTMLElement;
+	private _messageDetail?: HTMLElement;
+	private _toggleMessageDetailButton?: Button;
+	private _copyMessageButton?: Button;
+	private _closeMessageButton?: Button;
+	private _messageSummaryText?: string;
+	private _messageDetailText?: string;
 
-	private _spinnerElement: HTMLElement;
-	private _firstTabbableElement: HTMLElement; // The first element in the dialog the user could tab to
-	private _lastTabbableElement: HTMLElement; // The last element in the dialog the user could tab to
-	private _focusedElementBeforeOpen: HTMLElement;
+	private _spinnerElement?: HTMLElement;
+	private _firstTabbableElement?: HTMLElement; // The first element in the dialog the user could tab to
+	private _lastTabbableElement?: HTMLElement; // The last element in the dialog the user could tab to
+	private _focusedElementBeforeOpen?: HTMLElement;
 
 	private _dialogForeground?: Color;
 	private _dialogBorder?: Color;
 	private _dialogHeaderAndFooterBackground?: Color;
 	private _dialogBodyBackground?: Color;
 
-	private _modalDialog: HTMLElement;
-	private _modalContent: HTMLElement;
-	private _modalHeaderSection: HTMLElement;
-	private _modalBodySection: HTMLElement;
-	private _modalFooterSection: HTMLElement;
-	private _closeButtonInHeader: HTMLElement;
-	private _bodyContainer: HTMLElement;
-	private _modalTitle: HTMLElement;
-	private _modalTitleIcon: HTMLElement;
-	private _leftFooter: HTMLElement;
-	private _rightFooter: HTMLElement;
-	private _footerButtons: Button[];
-	private _backButton: Button;
+	private _modalDialog?: HTMLElement;
+	private _modalContent?: HTMLElement;
+	private _modalHeaderSection?: HTMLElement;
+	private _modalBodySection?: HTMLElement;
+	private _modalFooterSection?: HTMLElement;
+	private _closeButtonInHeader?: HTMLElement;
+	private _bodyContainer?: HTMLElement;
+	private _modalTitle?: HTMLElement;
+	private _modalTitleIcon?: HTMLElement;
+	private _leftFooter?: HTMLElement;
+	private _rightFooter?: HTMLElement;
+	private _footerButtons: Button[] = [];
+	private _backButton?: Button;
 
 	private _modalShowingContext: IContextKey<Array<string>>;
 	private readonly _staticKey: string;
@@ -128,7 +128,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	/**
 	 * Get the back button, only available after render and if the hasBackButton option is true
 	 */
-	protected get backButton(): Button {
+	protected get backButton(): Button | undefined {
 		return this._backButton;
 	}
 
@@ -139,7 +139,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * (hyoshi - 10/2/2017 tracked by https://github.com/Microsoft/carbon/issues/1836)
 	 */
 	public setWide(isWide: boolean): void {
-		DOM.toggleClass(this._bodyContainer, 'wide', isWide);
+		DOM.toggleClass(this._bodyContainer!, 'wide', isWide);
 	}
 
 	/**
@@ -165,7 +165,6 @@ export abstract class Modal extends Disposable implements IThemable {
 		mixin(this._modalOptions, defaultOptions, false);
 		this._staticKey = generateUuid();
 		this._modalShowingContext = MODAL_SHOWING_CONTEXT.bindTo(_contextKeyService);
-		this._footerButtons = [];
 	}
 
 	/**
@@ -248,7 +247,7 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._modalFooterSection = DOM.append(this._modalContent, DOM.$('.modal-footer'));
 			if (this._modalOptions.hasSpinner) {
 				this._spinnerElement = DOM.append(this._modalFooterSection, DOM.$('.codicon.in-progress'));
-				this._spinnerElement.setAttribute('title', this._modalOptions.spinnerTitle);
+				this._spinnerElement.setAttribute('title', this._modalOptions.spinnerTitle ?? '');
 				DOM.hide(this._spinnerElement);
 			}
 			this._leftFooter = DOM.append(this._modalFooterSection, DOM.$('.left-footer'));
@@ -294,42 +293,42 @@ export abstract class Modal extends Disposable implements IThemable {
 
 	private getTextForClipboard(): string {
 		const eol = this.textResourcePropertiesService.getEOL(URI.from({ scheme: Schemas.untitled }));
-		return this._messageDetailText === '' ? this._messageSummaryText : `${this._messageSummaryText}${eol}========================${eol}${this._messageDetailText}`;
+		return this._messageDetailText === '' ? this._messageSummaryText! : `${this._messageSummaryText}${eol}========================${eol}${this._messageDetailText}`;
 	}
 
 	private updateExpandMessageState() {
-		this._messageSummary.style.cursor = this.shouldShowExpandMessageButton ? 'pointer' : 'default';
-		DOM.removeClass(this._messageSummary, MESSAGE_EXPANDED_MODE_CLASS);
+		this._messageSummary!.style.cursor = this.shouldShowExpandMessageButton ? 'pointer' : 'default';
+		DOM.removeClass(this._messageSummary!, MESSAGE_EXPANDED_MODE_CLASS);
 		if (this.shouldShowExpandMessageButton) {
-			DOM.append(this._detailsButtonContainer, this._toggleMessageDetailButton.element);
+			DOM.append(this._detailsButtonContainer!, this._toggleMessageDetailButton!.element);
 		} else {
-			DOM.removeNode(this._toggleMessageDetailButton.element);
+			DOM.removeNode(this._toggleMessageDetailButton!.element);
 		}
 	}
 
 	private toggleMessageDetail() {
-		const isExpanded = DOM.hasClass(this._messageSummary, MESSAGE_EXPANDED_MODE_CLASS);
-		DOM.toggleClass(this._messageSummary, MESSAGE_EXPANDED_MODE_CLASS, !isExpanded);
-		this._toggleMessageDetailButton.label = isExpanded ? SHOW_DETAILS_TEXT : localize('hideMessageDetails', "Hide Details");
+		const isExpanded = DOM.hasClass(this._messageSummary!, MESSAGE_EXPANDED_MODE_CLASS);
+		DOM.toggleClass(this._messageSummary!, MESSAGE_EXPANDED_MODE_CLASS, !isExpanded);
+		this._toggleMessageDetailButton!.label = isExpanded ? SHOW_DETAILS_TEXT : localize('hideMessageDetails', "Hide Details");
 
 		if (this._messageDetailText) {
 			if (isExpanded) {
-				DOM.removeNode(this._messageDetail);
+				DOM.removeNode(this._messageDetail!);
 			} else {
-				DOM.append(this._messageBody, this._messageDetail);
+				DOM.append(this._messageBody!, this._messageDetail!);
 			}
 		}
 	}
 
 	private get shouldShowExpandMessageButton(): boolean {
-		return this._messageDetailText !== '' || this._messageSummary.scrollWidth > this._messageSummary.offsetWidth;
+		return this._messageDetailText !== '' || this._messageSummary!.scrollWidth > this._messageSummary!.offsetWidth;
 	}
 
 	/**
 	 * Figures out the first and last elements which the user can tab to in the dialog
 	 */
 	public setFirstLastTabbableElement() {
-		const tabbableElements = this._bodyContainer.querySelectorAll(tabbableElementsQuerySelector);
+		const tabbableElements = this._bodyContainer!.querySelectorAll(tabbableElementsQuerySelector);
 		if (tabbableElements && tabbableElements.length > 0) {
 			this._firstTabbableElement = <HTMLElement>tabbableElements[0];
 			this._lastTabbableElement = <HTMLElement>tabbableElements[tabbableElements.length - 1];
@@ -344,7 +343,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		// This ensures that we are setting the focus on a useful element in the form when possible.
 		const focusableElements = this._modalBodySection ?
 			this._modalBodySection.querySelectorAll(tabbableElementsQuerySelector) :
-			this._bodyContainer.querySelectorAll(tabbableElementsQuerySelector);
+			this._bodyContainer!.querySelectorAll(tabbableElementsQuerySelector);
 
 		if (focusableElements && focusableElements.length > 0) {
 			(<HTMLElement>focusableElements[0]).focus();
@@ -357,7 +356,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	protected show() {
 		this._focusedElementBeforeOpen = <HTMLElement>document.activeElement;
 		this._modalShowingContext.get()!.push(this._staticKey);
-		DOM.append(this.layoutService.container, this._bodyContainer);
+		DOM.append(this.layoutService.container, this._bodyContainer!);
 		this.setInitialFocusedElement();
 
 		this.disposableStore.add(DOM.addDisposableListener(document, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
@@ -376,10 +375,10 @@ export abstract class Modal extends Disposable implements IThemable {
 			}
 		}));
 		this.disposableStore.add(DOM.addDisposableListener(window, DOM.EventType.RESIZE, (e: Event) => {
-			this.layout(DOM.getTotalHeight(this._modalBodySection));
+			this.layout(DOM.getTotalHeight(this._modalBodySection!));
 		}));
 
-		this.layout(DOM.getTotalHeight(this._modalBodySection));
+		this.layout(DOM.getTotalHeight(this._modalBodySection!));
 		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.ModalDialogOpened)
 			.withAdditionalProperties({ name: this._name })
 			.send();
@@ -395,7 +394,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 */
 	protected hide() {
 		this._modalShowingContext.get()!.pop();
-		this._bodyContainer.remove();
+		this._bodyContainer!.remove();
 		this.disposableStore.clear();
 		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.ModalDialogClosed)
 			.withAdditionalProperties({ name: this._name })
@@ -420,9 +419,9 @@ export abstract class Modal extends Disposable implements IThemable {
 		button.label = label;
 		button.onDidClick(() => onSelect()); // @todo this should be registered to dispose but that brakes some dialogs
 		if (orientation === 'left') {
-			DOM.append(this._leftFooter, footerButton);
+			DOM.append(this._leftFooter!, footerButton);
 		} else {
-			DOM.append(this._rightFooter, footerButton);
+			DOM.append(this._rightFooter!, footerButton);
 		}
 		this._footerButtons.push(button);
 		return button;
@@ -433,7 +432,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * @param label Label to show on the button
 	 * @param onSelect The callback to call when the button is selected
 	 */
-	protected findFooterButton(label: string): Button {
+	protected findFooterButton(label: string): Button | undefined {
 		return find(this._footerButtons, e => {
 			try {
 				return e && e.element.innerText === label;
@@ -482,17 +481,17 @@ export abstract class Modal extends Disposable implements IThemable {
 					severityText = WARNING_ALT_TEXT;
 				}
 				levelClasses.forEach(level => {
-					DOM.toggleClass(this._messageIcon, level, selectedLevel === level);
-					DOM.toggleClass(this._messageElement, level, selectedLevel === level);
+					DOM.toggleClass(this._messageIcon!, level, selectedLevel === level);
+					DOM.toggleClass(this._messageElement!, level, selectedLevel === level);
 				});
 
-				this._messageIcon.title = severityText;
-				this._messageSeverity.innerText = severityText;
-				this._messageSummary.innerText = message!;
-				this._messageSummary.title = message!;
-				this._messageDetail.innerText = description;
+				this._messageIcon!.title = severityText;
+				this._messageSeverity!.innerText = severityText;
+				this._messageSummary!.innerText = message!;
+				this._messageSummary!.title = message!;
+				this._messageDetail!.innerText = description;
 			}
-			DOM.removeNode(this._messageDetail);
+			DOM.removeNode(this._messageDetail!);
 			this.messagesElementVisible = !!this._messageSummaryText;
 			this.updateExpandMessageState();
 		}
@@ -501,12 +500,12 @@ export abstract class Modal extends Disposable implements IThemable {
 	protected set messagesElementVisible(visible: boolean) {
 		if (visible) {
 			if (this._useDefaultMessageBoxLocation) {
-				DOM.prepend(this._modalContent, (this._messageElement));
+				DOM.prepend(this._modalContent!, this._messageElement!);
 			}
 		} else {
-			DOM.removeNode(this._messageElement);
+			DOM.removeNode(this._messageElement!);
 			// Set the focus to first focus element if the focus is not within the dialog
-			if (!DOM.isAncestor(document.activeElement, this._bodyContainer)) {
+			if (!DOM.isAncestor(document.activeElement, this._bodyContainer!)) {
 				this.setInitialFocusedElement();
 			}
 		}
@@ -518,12 +517,12 @@ export abstract class Modal extends Disposable implements IThemable {
 	public set spinner(show: boolean) {
 		if (this._modalOptions.hasSpinner) {
 			if (show) {
-				DOM.show(this._spinnerElement);
+				DOM.show(this._spinnerElement!);
 				if (this._modalOptions.spinnerTitle) {
 					alert(this._modalOptions.spinnerTitle);
 				}
 			} else {
-				DOM.hide(this._spinnerElement);
+				DOM.hide(this._spinnerElement!);
 			}
 		}
 	}
@@ -573,34 +572,34 @@ export abstract class Modal extends Disposable implements IThemable {
 	}
 
 	private applyStyles(): void {
-		const foreground = this._dialogForeground ? this._dialogForeground.toString() : null;
-		const border = this._dialogBorder ? this._dialogBorder.toString() : null;
-		const headerAndFooterBackground = this._dialogHeaderAndFooterBackground ? this._dialogHeaderAndFooterBackground.toString() : null;
-		const bodyBackground = this._dialogBodyBackground ? this._dialogBodyBackground.toString() : null;
-		const footerBorderTopWidth = border ? '1px' : null;
-		const footerBorderTopStyle = border ? 'solid' : null;
+		const foreground = this._dialogForeground ? this._dialogForeground.toString() : '';
+		const border = this._dialogBorder ? this._dialogBorder.toString() : '';
+		const headerAndFooterBackground = this._dialogHeaderAndFooterBackground ? this._dialogHeaderAndFooterBackground.toString() : '';
+		const bodyBackground = this._dialogBodyBackground ? this._dialogBodyBackground.toString() : '';
+		const footerBorderTopWidth = border ? '1px' : '';
+		const footerBorderTopStyle = border ? 'solid' : '';
 
 		if (this._closeButtonInHeader) {
 			this._closeButtonInHeader.style.color = foreground;
 		}
 		if (this._modalDialog) {
 			this._modalDialog.style.color = foreground;
-			this._modalDialog.style.borderWidth = border ? '1px' : null;
-			this._modalDialog.style.borderStyle = border ? 'solid' : null;
+			this._modalDialog.style.borderWidth = border ? '1px' : '';
+			this._modalDialog.style.borderStyle = border ? 'solid' : '';
 			this._modalDialog.style.borderColor = border;
 		}
 
 		if (this._modalHeaderSection) {
 			this._modalHeaderSection.style.backgroundColor = headerAndFooterBackground;
-			this._modalHeaderSection.style.borderBottomWidth = border ? '1px' : null;
-			this._modalHeaderSection.style.borderBottomStyle = border ? 'solid' : null;
+			this._modalHeaderSection.style.borderBottomWidth = border ? '1px' : '';
+			this._modalHeaderSection.style.borderBottomStyle = border ? 'solid' : '';
 			this._modalHeaderSection.style.borderBottomColor = border;
 		}
 
 		if (this._messageElement) {
 			this._messageElement.style.backgroundColor = headerAndFooterBackground;
-			this._messageElement.style.borderBottomWidth = border ? '1px' : null;
-			this._messageElement.style.borderBottomStyle = border ? 'solid' : null;
+			this._messageElement.style.borderBottomWidth = border ? '1px' : '';
+			this._messageElement.style.borderBottomStyle = border ? 'solid' : '';
 			this._messageElement.style.borderBottomColor = border;
 		}
 
