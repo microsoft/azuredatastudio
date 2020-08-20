@@ -79,7 +79,7 @@ suite('Account picker service tests', () => {
 			properties: [],
 			isStale: false
 		};
-		let evOnAccountSelectionChangeEvent = new EventVerifierSingle<azdata.Account>();
+		let evOnAccountSelectionChangeEvent = new EventVerifierSingle<azdata.Account | undefined>();
 		service.onAccountSelectionChangeEvent(evOnAccountSelectionChangeEvent.eventHandler);
 		mockOnAccountSelectionChangeEvent.fire(account);
 		evOnAccountSelectionChangeEvent.assertFired(account);

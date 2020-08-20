@@ -25,8 +25,8 @@ type ILanguageAssociationSignature<Services extends BrandedService[]> = new (...
 
 export interface ILanguageAssociationRegistry {
 	registerLanguageAssociation<Services extends BrandedService[]>(languages: string[], contribution: ILanguageAssociationSignature<Services>, isDefault?: boolean): IDisposable;
-	getAssociationForLanguage(language: string): ILanguageAssociation;
-	readonly defaultAssociation: [string, ILanguageAssociation];
+	getAssociationForLanguage(language: string): ILanguageAssociation | undefined;
+	readonly defaultAssociation: [string, ILanguageAssociation] | undefined;
 
 	/**
 	 * Starts the registry by providing the required services.

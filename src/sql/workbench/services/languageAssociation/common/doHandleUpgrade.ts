@@ -13,15 +13,17 @@ const languageRegistry = Registry.as<ILanguageAssociationRegistry>(ILanguageAsso
 
 export function doHandleUpgrade(editor?: EditorInput): EditorInput | undefined {
 	if (editor instanceof UntitledTextEditorInput || editor instanceof FileEditorInput) {
-		let language: string;
+		let language: string | undefined;
 		if (editor instanceof UntitledTextEditorInput) {
 			language = editor.getMode();
 		} else {
-			editor.getPreferredMode();
+			language = editor.getPreferredMode();
 		}
-		const association = languageRegistry.getAssociationForLanguage(language);
-		if (association && association.syncConvertinput) {
-			return association.syncConvertinput(editor);
+		if (language) {
+			const association = languageRegistry.getAssociationForLanguage(language);
+			if (association && association.syncConvertinput) {
+				return association.syncConvertinput(editor);
+			}
 		}
 	}
 	return editor;
