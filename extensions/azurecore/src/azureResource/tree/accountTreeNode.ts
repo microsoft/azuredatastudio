@@ -11,7 +11,7 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import { AppContext } from '../../appContext';
-import { azureResource } from '../azure-resource';
+import { azureResource } from 'azureResource';
 import { TreeNode } from '../treeNode';
 import { AzureResourceCredentialError } from '../errors';
 import { AzureResourceContainerTreeNodeBase } from './baseTreeNodes';
