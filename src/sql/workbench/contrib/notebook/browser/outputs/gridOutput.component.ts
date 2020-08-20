@@ -225,7 +225,7 @@ class DataResourceTable extends GridTableBase<any> {
 	}
 }
 
-class DataResourceDataProvider implements IGridDataProvider {
+export class DataResourceDataProvider implements IGridDataProvider {
 	private rows: ICellValue[][];
 	constructor(source: IDataResource,
 		private resultSet: ResultSetSummary,
