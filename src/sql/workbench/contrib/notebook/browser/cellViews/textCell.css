@@ -19,6 +19,7 @@ text-cell-component .notebook-preview {
 	user-select: none;
 	padding-left: 8px;
 	padding-right: 8px;
+	overflow: hidden;
 }
 text-cell-component .edit-mode code-component {
 	display: block;
