@@ -9,7 +9,7 @@ import { AppContext } from '../../appContext';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-import { azureResource } from '../azure-resource';
+import { azureResource } from 'azureResource';
 import { TreeNode } from '../treeNode';
 import { IAzureResourceNodeWithProviderId } from '../interfaces';
 import { AzureResourceContainerTreeNodeBase } from './baseTreeNodes';

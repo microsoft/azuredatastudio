@@ -5,8 +5,8 @@
 
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
-import { azureResource } from './azure-resource';
-import { GetResourceGroupsResult, GetSubscriptionsResult } from '../azurecore';
+import { azureResource } from 'azureResource';
+import { GetResourceGroupsResult, GetSubscriptionsResult } from 'azurecore';
 import { isArray } from 'util';
 import { AzureResourceGroupService } from './providers/resourceGroup/resourceGroupService';
 import { TokenCredentials } from '@azure/ms-rest-js';

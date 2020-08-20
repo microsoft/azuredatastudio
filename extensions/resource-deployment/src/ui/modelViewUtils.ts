@@ -8,7 +8,7 @@ import { EOL, homedir as os_homedir } from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { azureResource } from '../../../azurecore/src/azureResource/azure-resource';
+import { azureResource } from 'azureResource';
 import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, FilePickerFieldInfo, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles } from '../interfaces';
 import * as loc from '../localizedConstants';
 import { apiService } from '../services/apiService';
