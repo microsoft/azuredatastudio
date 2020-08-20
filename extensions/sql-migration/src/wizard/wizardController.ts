@@ -8,6 +8,8 @@ import { MigrationStateModel } from '../models/stateMachine';
 import { SourceConfigurationPage } from './sourceConfigurationPage';
 import { WIZARD_TITLE } from '../models/strings';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
+import { SKURecommendationPage } from './skuRecommendationPage';
+import { SubscriptionSelectionPage } from './subscriptionSelectionPage';
 
 export class WizardController {
 	constructor(private readonly extensionContext: vscode.ExtensionContext) {
@@ -25,13 +27,15 @@ export class WizardController {
 		const wizard = azdata.window.createWizard(WIZARD_TITLE, 'wide');
 		wizard.generateScriptButton.enabled = false;
 		const sourceConfigurationPage = new SourceConfigurationPage(wizard, stateModel);
+		const skuRecommendationPage = new SKURecommendationPage(wizard, stateModel);
+		const subscriptionSelectionPage = new SubscriptionSelectionPage(wizard, stateModel);
 
-		const pages: MigrationWizardPage[] = [sourceConfigurationPage];
+		const pages: MigrationWizardPage[] = [sourceConfigurationPage, skuRecommendationPage, subscriptionSelectionPage];
 
 		wizard.pages = pages.map(p => p.getwizardPage());
 
 		const wizardSetupPromises: Thenable<void>[] = [];
-		wizardSetupPromises.push(sourceConfigurationPage.registerWizardContent());
+		wizardSetupPromises.push(...pages.map(p => p.registerWizardContent()));
 		wizardSetupPromises.push(wizard.open());
 
 		wizard.onPageChanged(async (pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
@@ -49,6 +53,7 @@ export class WizardController {
 			const canEnter = await pages[lastPage]?.canEnter() ?? true;
 
 			return canEnter && canLeave;
+			// return true;
 		});
 
 		await Promise.all(wizardSetupPromises);
