@@ -144,7 +144,7 @@ export default class MainController implements vscode.Disposable {
 		try {
 			let newProjName = await vscode.window.showInputBox({
 				prompt: constants.newDatabaseProjectName,
-				value: this.newProjectTool.defaultProjectName
+				value: this.newProjectTool.defaultProjectNameNewProj()
 			});
 
 			newProjName = newProjName?.trim();
@@ -173,8 +173,7 @@ export default class MainController implements vscode.Disposable {
 			const newProjFilePath = await this.projectsController.createNewProject(<string>newProjName, newProjFolderUri, true);
 			const proj = await this.projectsController.openProject(vscode.Uri.file(newProjFilePath));
 
-			// TODO: figure out best timing for this
-			await this.newProjectTool.updateSaveLocationSetting();
+			this.newProjectTool.updateDefaultSaveLocationSetting();
 
 			return proj;
 		}

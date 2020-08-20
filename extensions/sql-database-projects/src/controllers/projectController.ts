@@ -24,6 +24,7 @@ import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { ImportDataModel } from '../models/api/import';
 import { NetCoreTool, DotNetCommandOptions } from '../tools/netcoreTool';
+import { NewProjectTool } from '../tools/newProjectTool';
 import { BuildHelper } from '../tools/buildHelper';
 import { PublishProfile, load } from '../models/publishProfile/publishProfile';
 
@@ -34,6 +35,7 @@ export class ProjectsController {
 	private projectTreeViewProvider: SqlDatabaseProjectTreeViewProvider;
 	private netCoreTool: NetCoreTool;
 	private buildHelper: BuildHelper;
+	private newProjectTool: NewProjectTool;
 
 	projects: Project[] = [];
 
@@ -41,6 +43,7 @@ export class ProjectsController {
 		this.projectTreeViewProvider = projTreeViewProvider;
 		this.netCoreTool = new NetCoreTool();
 		this.buildHelper = new BuildHelper();
+		this.newProjectTool = new NewProjectTool();
 	}
 
 	public refreshProjectsTree() {
@@ -646,6 +649,8 @@ export class ProjectsController {
 			model.extractTarget = await this.getExtractTarget();
 			model.version = '1.0.0.0';
 
+			this.newProjectTool.updateDefaultSaveLocationSetting();
+
 			const newProjFilePath = await this.createNewProject(model.projName, vscode.Uri.file(newProjFolderUri), true);
 			model.filePath = path.dirname(newProjFilePath);
 
@@ -724,7 +729,7 @@ export class ProjectsController {
 	private async getProjectName(dbName: string): Promise<string> {
 		let projName = await vscode.window.showInputBox({
 			prompt: constants.newDatabaseProjectName,
-			value: `DatabaseProject${dbName}`
+			value: this.newProjectTool.defaultProjectNameFromDb(dbName)
 		});
 
 		projName = projName?.trim();
@@ -782,7 +787,7 @@ export class ProjectsController {
 			canSelectFolders: true,
 			canSelectMany: false,
 			openLabel: constants.selectString,
-			defaultUri: vscode.workspace.workspaceFolders ? (vscode.workspace.workspaceFolders as vscode.WorkspaceFolder[])[0].uri : undefined
+			defaultUri: this.newProjectTool.defaultProjectSaveLocation
 		});
 
 		if (selectionResult) {

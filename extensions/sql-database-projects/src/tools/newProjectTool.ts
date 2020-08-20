@@ -16,7 +16,7 @@ export const DBProjectConfigurationKey: string = 'sqlDatabaseProjects';
 export const ProjectSaveLocationKey: string = 'defaultProjectSaveLocation';
 export const NewDefaultProjectSaveLocation: string = localize('sqlDatabaseProjects.newDefaultProjectSaveLocation', "Would you like to set the default location to save new Database Projects?");
 export const OpenWorkspaceSettings: string = localize('sqlDatabaseProjects.openWorkspaceSettings', "Yes, open Settings");
-const DefaultProjectNameMax: number = 99;
+const MaxDefaultProjectNameCounter: number = 99;
 
 export class NewProjectTool {
 	/* Returns the default location to save a new database project*/
@@ -35,14 +35,31 @@ export class NewProjectTool {
 			(fs.existsSync(this.projectSaveLocationSetting));
 	}
 
-	/* Returns a default project name, such as 'DatabaseProject1'. Auto-increments the suggestion if
-		a project of that name already exists in the default save location for new projects*/
-	public get defaultProjectName(): string {
-		let counter: number = 1;
-		while (counter < DefaultProjectNameMax) {
-			let name: string = constants.defaultProjectNameStarter + counter;
-			let projectPath: string = path.join(this.defaultProjectSaveLocation.fsPath, name);
+	/* Returns default project name for a fresh new project, such as 'DatabaseProject1'. Auto-increments
+		the suggestion if a project of that name already exists in the default save location */
+	public defaultProjectNameNewProj(): string {
+		return this.defaultProjectName(constants.defaultProjectNameStarter, 1);
+	}
 
+	/* Returns default project name for a new project based on given dbName. Auto-increments
+		the suggestion if a project of that name already exists in the default save location */
+	public defaultProjectNameFromDb(dbName: string): string {
+		let projectNameStarter = constants.defaultProjectNameStarter + dbName;
+		let projectPath: string = path.join(this.defaultProjectSaveLocation.fsPath, projectNameStarter);
+		if (!fs.existsSync(projectPath)) {
+			return projectNameStarter;
+		}
+
+		return this.defaultProjectName(projectNameStarter, 2);
+	}
+
+	/* Returns a project name that begins with the given nameStarter, and ends in a number, such as
+		'DatabaseProject1'. Number begins at the given counter, but auto-increments if a project of
+		that name already exists in the default save location. */
+	private defaultProjectName(nameStarter: string, counter: number): string {
+		while (counter < MaxDefaultProjectNameCounter) {
+			let name: string = nameStarter + counter;
+			let projectPath: string = path.join(this.defaultProjectSaveLocation.fsPath, name);
 			if (!fs.existsSync(projectPath)) {
 				return name;
 			}
@@ -52,7 +69,7 @@ export class NewProjectTool {
 	}
 
 	/* Prompts user to update workspace settings*/
-	public async updateSaveLocationSetting(): Promise<void> {
+	public async updateDefaultSaveLocationSetting(): Promise<void> {
 		if (!this.projectSaveLocationSettingIsValid) {
 			let result = await vscode.window.showInformationMessage(NewDefaultProjectSaveLocation, OpenWorkspaceSettings);
 			if (result === OpenWorkspaceSettings) {
