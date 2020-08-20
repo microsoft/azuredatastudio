@@ -128,17 +128,6 @@
         }
       ]
     },
-    "configuration": {
-      "type": "object",
-      "title": "%arc.configuration.title%",
-      "properties": {
-        "arc.ignoreSslVerification": {
-          "type": "boolean",
-          "default": true,
-          "description": "%arc.ignoreSslVerification.desc%"
-        }
-      }
-    },
     "viewsWelcome": [
       {
         "view": "azureArc",

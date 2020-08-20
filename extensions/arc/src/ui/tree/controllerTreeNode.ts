@@ -77,7 +77,7 @@ export class ControllerTreeNode extends TreeNode {
 
 	private refreshChildren(registrations: Registration[]): void {
 		const newChildren: ResourceTreeNode[] = [];
-		registrations.filter(r => !r.isDeleted).forEach(registration => {
+		registrations.forEach(registration => {
 			if (!registration.instanceName) {
 				console.warn('Registration is missing required name value, skipping');
 				return;
@@ -101,11 +101,11 @@ export class ControllerTreeNode extends TreeNode {
 
 				switch (registration.instanceType) {
 					case ResourceType.postgresInstances:
-						const postgresModel = new PostgresModel(this.model.info.url, this.model.auth!, resourceInfo, registration);
+						const postgresModel = new PostgresModel(resourceInfo, registration);
 						node = new PostgresTreeNode(postgresModel, this.model, this._context);
 						break;
 					case ResourceType.sqlManagedInstances:
-						const miaaModel = new MiaaModel(this.model.info.url, this.model.auth!, resourceInfo, registration, this._treeDataProvider);
+						const miaaModel = new MiaaModel(resourceInfo, registration, this._treeDataProvider);
 						node = new MiaaTreeNode(miaaModel, this.model);
 						break;
 				}

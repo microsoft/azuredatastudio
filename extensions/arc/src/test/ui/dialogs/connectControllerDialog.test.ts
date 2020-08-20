@@ -5,7 +5,7 @@
 
 import * as should from 'should';
 import * as sinon from 'sinon';
-import { ControllerInfo, ControllerModel, Registration } from '../../../models/controllerModel';
+import { ControllerInfo, ControllerModel } from '../../../models/controllerModel';
 import { ConnectToControllerDialog } from '../../../ui/dialogs/connectControllerDialog';
 import * as loc from '../../../localizedConstants';
 
@@ -80,9 +80,11 @@ async function validateConnectControllerDialog(info: ControllerInfo, expectedUrl
 	// Stub out refresh calls to controllerModel - we'll test those separately
 	sinon.stub(ControllerModel.prototype, 'refresh').returns(Promise.resolve());
 	// stub out controller registration response to return a known instanceName for the dc.
+	/*
 	sinon.stub(ControllerModel.prototype, 'controllerRegistration').get(() => {
 		return <Registration>{ instanceName: arcInstanceName };
 	});
+	*/
 	connectControllerDialog.showDialog(info, 'pwd');
 	await connectControllerDialog.isInitialized;
 	const validateResult = await connectControllerDialog.validate();

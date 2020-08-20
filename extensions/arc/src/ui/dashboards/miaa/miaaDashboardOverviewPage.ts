@@ -7,9 +7,9 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as loc from '../../../localizedConstants';
 import { DashboardPage } from '../../components/dashboardPage';
-import { IconPathHelper, cssStyles, ResourceType, Endpoints } from '../../../constants';
+import { IconPathHelper, cssStyles, Endpoints } from '../../../constants';
 import { ControllerModel } from '../../../models/controllerModel';
-import { promptForResourceDeletion, getDatabaseStateDisplayText } from '../../../common/utils';
+import { getDatabaseStateDisplayText } from '../../../common/utils';
 import { MiaaModel } from '../../../models/miaaModel';
 
 export class MiaaDashboardOverviewPage extends DashboardPage {
@@ -41,7 +41,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		this.disposables.push(
 			this._controllerModel.onRegistrationsUpdated(() => this.handleRegistrationsUpdated()),
 			this._controllerModel.onEndpointsUpdated(() => this.eventuallyRunOnInitialized(() => this.handleEndpointsUpdated())),
-			this._miaaModel.onStatusUpdated(() => this.eventuallyRunOnInitialized(() => this.handleMiaaStatusUpdated())),
+			this._miaaModel.onConfigUpdated(() => this.eventuallyRunOnInitialized(() => this.handleMiaaConfigUpdated())),
 			this._miaaModel.onDatabasesUpdated(() => this.eventuallyRunOnInitialized(() => this.handleDatabasesUpdated()))
 		);
 	}
@@ -99,7 +99,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 
 		// Update loaded components with data
 		this.handleRegistrationsUpdated();
-		this.handleMiaaStatusUpdated();
+		this.handleMiaaConfigUpdated();
 		this.handleEndpointsUpdated();
 		this.handleDatabasesUpdated();
 
@@ -182,10 +182,12 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 			deleteButton.onDidClick(async () => {
 				deleteButton.enabled = false;
 				try {
+					/* TODO chgagnon enable delete
 					if (await promptForResourceDeletion(this._miaaModel.info.namespace, this._miaaModel.info.name)) {
 						await this._controllerModel.miaaDelete(this._miaaModel.info.namespace, this._miaaModel.info.name);
 						vscode.window.showInformationMessage(loc.resourceDeleted(this._miaaModel.info.name));
 					}
+					*/
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.resourceDeletionFailed(this._miaaModel.info.name, error));
 				} finally {
@@ -221,6 +223,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 
 		this.disposables.push(
 			openInAzurePortalButton.onDidClick(async () => {
+				/* TODO chgagnon enable open in Azure
 				const r = this._controllerModel.getRegistration(ResourceType.sqlManagedInstances, this._miaaModel.info.namespace, this._miaaModel.info.name);
 				if (r) {
 					vscode.env.openExternal(vscode.Uri.parse(
@@ -228,6 +231,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 				} else {
 					vscode.window.showErrorMessage(loc.couldNotFindRegistration(this._miaaModel.info.namespace, this._miaaModel.info.name));
 				}
+				*/
 			}));
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems(
@@ -240,20 +244,23 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 	}
 
 	private handleRegistrationsUpdated(): void {
-		const reg = this._controllerModel.getRegistration(ResourceType.sqlManagedInstances, this._miaaModel.info.namespace, this._miaaModel.info.name);
+		// TODO chgagnon
+		/*
+		const reg = this._controllerModel.getRegistration(ResourceType.sqlManagedInstances, this._miaaModel.info.namespace || '', this._miaaModel.info.name);
 		if (reg) {
 			this._instanceProperties.resourceGroup = reg.resourceGroupName || '-';
-			this._instanceProperties.dataController = this._controllerModel.controllerRegistration?.instanceName || '-';
+			this._instanceProperties.dataController = this._controllerModel.controllerConfig?.metadata.name || '-';
 			this._instanceProperties.region = reg.region || '-';
 			this._instanceProperties.subscriptionId = reg.subscriptionId || '-';
 			this._instanceProperties.vCores = reg.vCores || '';
 			this._instanceProperties.host = reg.externalEndpoint || '-';
 			this.refreshDisplayedProperties();
 		}
+		*/
 	}
 
-	private handleMiaaStatusUpdated(): void {
-		this._instanceProperties.status = this._miaaModel.status;
+	private handleMiaaConfigUpdated(): void {
+		this._instanceProperties.status = this._miaaModel.config?.status.state || '-';
 		this.refreshDisplayedProperties();
 	}
 
@@ -320,7 +327,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 
 		this._propertiesLoading.loading =
 			!this._controllerModel.registrationsLastUpdated &&
-			!this._miaaModel.statusLastUpdated &&
+			!this._miaaModel.configLastUpdated &&
 			!this._miaaModel.databasesLastUpdated;
 	}
 }
