@@ -11,8 +11,6 @@ import { resourceTypeToDisplayName, parseEndpoint, parseInstanceName, getAzureco
 import * as loc from '../../localizedConstants';
 import { ResourceType, IconPathHelper, ConnectionMode as ConnectionMode } from '../../constants';
 import { MockInputBox } from '../stubs';
-import { HttpError } from '../../controller/generated/v1/api';
-import { IncomingMessage } from 'http';
 
 describe('resourceTypeToDisplayName Method Tests', function (): void {
 	it('Display Name should be correct for valid ResourceType', function (): void {
@@ -249,16 +247,6 @@ describe('promptAndConfirmPassword Method Tests', function (): void {
 });
 
 describe('getErrorMessage Method Tests', function () {
-	it('HttpError with reason', function (): void {
-		const httpReason = 'Test Reason';
-		should(getErrorMessage(new HttpError(<IncomingMessage>{ }, { reason: 'Test Reason' }))).equal(httpReason);
-	});
-
-	it('HttpError with status message', function (): void {
-		const httpStatusMessage = 'Test Status Message';
-		should(getErrorMessage(new HttpError(<IncomingMessage>{ statusMessage: httpStatusMessage}, { }))).containEql(`(${httpStatusMessage})`);
-	});
-
 	it('Error with message', function (): void {
 		const errorMessage = 'Test Message';
 		const error = new Error(errorMessage);
@@ -267,7 +255,7 @@ describe('getErrorMessage Method Tests', function () {
 
 	it('Error with no message', function (): void {
 		const error = new Error();
-		should(getErrorMessage(error)).equal(error);
+		should(getErrorMessage(error)).equal(error.message);
 	});
 });
 

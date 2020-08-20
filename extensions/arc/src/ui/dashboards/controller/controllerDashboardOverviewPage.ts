@@ -9,7 +9,7 @@ import * as loc from '../../../localizedConstants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { IconPathHelper, cssStyles, iconSize, ResourceType, Endpoints } from '../../../constants';
 import { ControllerModel } from '../../../models/controllerModel';
-import { resourceTypeToDisplayName, getResourceTypeIcon, getConnectionModeDisplayText, parseInstanceName } from '../../../common/utils';
+import { resourceTypeToDisplayName, getResourceTypeIcon, parseInstanceName } from '../../../common/utils';
 
 export class ControllerDashboardOverviewPage extends DashboardPage {
 
@@ -167,10 +167,12 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 
 		this.disposables.push(
 			openInAzurePortalButton.onDidClick(async () => {
-				const r = this._controllerModel.controllerRegistration;
-				if (r) {
+				const config = this._controllerModel.controllerConfig;
+				if (config) {
+					/* TODO CHGAGNON CONFIG
 					vscode.env.openExternal(vscode.Uri.parse(
-						`https://portal.azure.com/#resource/subscriptions/${r.subscriptionId}/resourceGroups/${r.resourceGroupName}/providers/Microsoft.AzureData/${ResourceType.dataControllers}/${r.instanceName}`));
+						`https://portal.azure.com/#resource/subscriptions/${config.subscriptionId}/resourceGroups/${config.resourceGroupName}/providers/Microsoft.AzureData/${ResourceType.dataControllers}/${config.instanceName}`));
+						*/
 				} else {
 					vscode.window.showErrorMessage(loc.couldNotFindRegistration(this._controllerModel.namespace, 'controller'));
 				}
@@ -186,17 +188,17 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 	}
 
 	private handleRegistrationsUpdated(): void {
-		const reg = this._controllerModel.controllerRegistration;
-		this.controllerProperties.instanceName = reg?.instanceName || this.controllerProperties.instanceName;
-		this.controllerProperties.resourceGroupName = reg?.resourceGroupName || this.controllerProperties.resourceGroupName;
-		this.controllerProperties.location = reg?.region || this.controllerProperties.location;
-		this.controllerProperties.subscriptionId = reg?.subscriptionId || this.controllerProperties.subscriptionId;
-		this.controllerProperties.connectionMode = getConnectionModeDisplayText(reg?.connectionMode) || this.controllerProperties.connectionMode;
-		this.controllerProperties.instanceNamespace = reg?.instanceNamespace || this.controllerProperties.instanceNamespace;
+		const config = this._controllerModel.controllerConfig;
+		this.controllerProperties.instanceName = config?.metadata.name || this.controllerProperties.instanceName;
+		this.controllerProperties.resourceGroupName = /* TODO CHGAGNON RG */ this.controllerProperties.resourceGroupName;
+		this.controllerProperties.location = /* TODO CHGAGNON LOCATION */ this.controllerProperties.location;
+		this.controllerProperties.subscriptionId = /* TODO CHGAGNON LOCATION */ this.controllerProperties.subscriptionId;
+		this.controllerProperties.connectionMode = /* TODO CHGAGNON MODE getConnectionModeDisplayText(config?.connectionMode) || */ this.controllerProperties.connectionMode;
+		this.controllerProperties.instanceNamespace = config?.metadata.namespace || this.controllerProperties.instanceNamespace;
 		this.refreshDisplayedProperties();
 
 		this._arcResourcesTable.data = this._controllerModel.registrations
-			.filter(r => r.instanceType !== ResourceType.dataControllers && !r.isDeleted)
+			.filter(r => r.instanceType !== ResourceType.dataControllers)
 			.map(r => {
 				const iconPath = getResourceTypeIcon(r.instanceType ?? '');
 				const imageComponent = this.modelView.modelBuilder.image()
@@ -213,9 +215,11 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 						url: ''
 					}).component();
 				nameLink.onDidClick(async () => {
-					await this._controllerModel.treeDataProvider.openResourceDashboard(this._controllerModel, r.instanceType || '', r.instanceNamespace || '', parseInstanceName(r.instanceName));
+					// TODO chgagnon
+					await this._controllerModel.treeDataProvider.openResourceDashboard(this._controllerModel, r.instanceType || '', /* r.instanceNamespace || */ '', parseInstanceName(r.instanceName));
 				});
-				return [imageComponent, nameLink, resourceTypeToDisplayName(r.instanceType), loc.numVCores(r.vCores)];
+				// TODO chgagnon
+				return [imageComponent, nameLink, resourceTypeToDisplayName(r.instanceType), '-'/* loc.numVCores(r.vCores) */];
 			});
 		this._arcResourcesLoadingComponent.loading = !this._controllerModel.registrationsLastUpdated;
 	}
