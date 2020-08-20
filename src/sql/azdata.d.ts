@@ -3207,7 +3207,6 @@ declare module 'azdata' {
 	}
 
 	export interface TextColumnOption {
-		hasHtml?: boolean
 	}
 
 	export enum ActionOnCellCheckboxCheck {
@@ -3232,8 +3231,6 @@ declare module 'azdata' {
 		ariaColumnCount?: number;
 		updateCells?: TableCell[];
 		moveFocusOutWithTab?: boolean; // accessibility requirement for tables with no actionable cells
-		headerFilter?: boolean,
-		rowDetails?: RowDetailsOptions
 	}
 
 	export interface CheckBoxCell extends TableCell {
@@ -3493,7 +3490,6 @@ declare module 'azdata' {
 	export interface TableComponent extends Component, TableComponentProperties {
 		onRowSelected: vscode.Event<any>;
 		onCellAction?: vscode.Event<ICellActionEventArgs>;
-		appendData(data: any[][]);
 	}
 
 	export interface FileBrowserTreeComponent extends Component, FileBrowserTreeProperties {

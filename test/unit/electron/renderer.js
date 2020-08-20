@@ -13,14 +13,14 @@ const util = require('util');
 const bootstrap = require('../../../src/bootstrap');
 const coverage = require('../coverage');
 
-const jquerylib = require('jquery');
-window['jQuery'] = jquerylib;
-require('slickgrid/lib/jquery.event.drag-2.3.0');
-require('slickgrid/lib/jquery-ui-1.9.2');
-require('slickgrid/slick.core');
-require('slickgrid/slick.grid');
-require('slickgrid/slick.editors');
-require('slickgrid/slick.dataview');
+const jquerylib = require('jquery'); // {{ SQL CARBON EDIT }}
+window['jQuery'] = jquerylib; // {{ SQL CARBON EDIT }}
+require('slickgrid/lib/jquery.event.drag-2.3.0'); // {{ SQL CARBON EDIT }}
+require('slickgrid/lib/jquery-ui-1.9.2'); // {{ SQL CARBON EDIT }}
+require('slickgrid/slick.core'); // {{ SQL CARBON EDIT }}
+require('slickgrid/slick.grid'); // {{ SQL CARBON EDIT }}
+require('slickgrid/slick.editors'); // {{ SQL CARBON EDIT }}
+require('slickgrid/slick.dataview'); // {{ SQL CARBON EDIT }}
 require('reflect-metadata'); // {{SQL CARBON EDIT}}
 
 // Disabled custom inspect. See #38847
