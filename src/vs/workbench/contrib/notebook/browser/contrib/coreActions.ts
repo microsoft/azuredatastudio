@@ -1482,7 +1482,8 @@ registerAction2(class extends NotebookCellAction {
 				menu: {
 					id: MenuId.NotebookCellTitle,
 					when: ContextKeyExpr.and(NOTEBOOK_EDITOR_FOCUSED, NOTEBOOK_EDITOR_EDITABLE, NOTEBOOK_CELL_EDITABLE),
-					group: '2_edit',
+					group: CellOverflowToolbarGroups.Edit,
+					order: 10
 				}
 			});
 	}
@@ -1507,6 +1508,7 @@ registerAction2(class extends NotebookCellAction {
 					id: MenuId.NotebookCellTitle,
 					when: ContextKeyExpr.and(NOTEBOOK_EDITOR_FOCUSED, NOTEBOOK_EDITOR_EDITABLE, NOTEBOOK_CELL_EDITABLE),
 					group: CellOverflowToolbarGroups.Edit,
+					order: 11
 				}
 			});
 	}
