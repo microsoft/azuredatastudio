@@ -12,6 +12,8 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { TransformMarkdownAction, MarkdownButtonType, ToggleMarkdownViewAction, ToggleSplitViewAction, ToggleTextViewAction } from 'sql/workbench/contrib/notebook/browser/markdownToolbarActions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/buttonMenu';
+import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
+
 
 export const MARKDOWN_TOOLBAR_SELECTOR: string = 'markdown-toolbar-component';
 
@@ -77,6 +79,37 @@ export class MarkdownToolbarComponent {
 		let toggleSplitView = this._instantiationService.createInstance(ToggleSplitViewAction, 'notebook.toggleSplitView', '', 'masked-icon split-toggle-on', this.splitViewButton, this.cellModel);
 		let toggleTextView = this._instantiationService.createInstance(ToggleTextViewAction, 'notebook.toggleTextView', '', 'masked-icon show-text', this.textViewButton, this.cellModel);
 
+		const radioButtonGoupName: string = 'textview-button-group';
+
+		let markdownRadioButtonContainer = DOM.$('li.action-item');
+		let markdownViewButton = new RadioButton(
+			markdownRadioButtonContainer,
+			{
+				checked: true,
+				label: this.markdownButton
+			}
+		);
+		markdownViewButton.name = radioButtonGoupName;
+
+		let splitViewRadioButtonContainer = DOM.$('li.action-item');
+		let splitViewButton = new RadioButton(
+			splitViewRadioButtonContainer,
+			{
+				checked: false,
+				label: this.splitViewButton
+			}
+		);
+		splitViewButton.name = radioButtonGoupName;
+
+		let textViewRadioButtonContainer = DOM.$('li.action-item');
+		let textViewButton = new RadioButton(
+			textViewRadioButtonContainer,
+			{
+				checked: false,
+				label: this.textViewButton
+			}
+		);
+		textViewButton.name = radioButtonGoupName;
 
 		let taskbar = <HTMLElement>this.mdtoolbar.nativeElement;
 		this._actionBar = new Taskbar(taskbar);
@@ -109,9 +142,9 @@ export class MarkdownToolbarComponent {
 			{ action: orderedListButton },
 			{ action: imageButton },
 			{ element: buttonDropdownContainer },
-			{ action: toggleMarkdownView },
-			{ action: toggleSplitView },
-			{ action: toggleTextView }
+			{ element: markdownRadioButtonContainer },
+			{ element: splitViewRadioButtonContainer },
+			{ element: textViewRadioButtonContainer }
 		]);
 	}
 }
