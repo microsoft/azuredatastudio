@@ -87,7 +87,7 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 			escapedName = this.escapeString(element.metadata.name);
 			let providerName = this.getProviderNameFromElement(element);
 			if (providerName === 'KUSTO') {
-				finalString = escapedName;
+				finalString = escapedName.indexOf(' ') > 0 ? `[@"${escapedName}"]` : escapedName;
 			} else {
 				finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
 			}
