@@ -55,7 +55,7 @@ export class ControllerModel {
 	}
 
 	/**
-	 *
+	 * Calls azdata login to set the context to this controller
 	 * @param promptReconnect
 	 */
 	public async azdataLogin(promptReconnect: boolean = false): Promise<void> {
