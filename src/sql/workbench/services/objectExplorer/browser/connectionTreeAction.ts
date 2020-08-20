@@ -18,6 +18,7 @@ import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMess
 import { UNSAVED_GROUP_ID } from 'sql/platform/connection/common/constants';
 import { IServerGroupController } from 'sql/platform/serverGroup/common/serverGroupController';
 import { ILogService } from 'vs/platform/log/common/log';
+import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 
 export interface IServerView {
 	showFilteredTree(filter: string): void;
@@ -28,20 +29,18 @@ export class RefreshAction extends Action {
 
 	public static ID = 'objectExplorer.refresh';
 	public static LABEL = localize('connectionTree.refresh', "Refresh");
-	private _tree: ITree;
 
 	constructor(
 		id: string,
 		label: string,
-		tree: ITree,
-		private element: IConnectionProfile | TreeNode,
+		private _tree: AsyncServerTree | ITree,
+		private element: ServerTreeElement,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@ILogService private _logService: ILogService
 	) {
 		super(id, label);
-		this._tree = tree;
 	}
 	public async run(): Promise<boolean> {
 		let treeNode: TreeNode;
@@ -66,7 +65,11 @@ export class RefreshAction extends Action {
 					this.showError(error);
 					return true;
 				}
-				await this._tree.refresh(this.element);
+				if (this._tree instanceof AsyncServerTree) {
+					await this._tree.updateChildren(this.element);
+				} else {
+					await this._tree.refresh(this.element);
+				}
 			} catch (ex) {
 				this._logService.error(ex);
 				return true;

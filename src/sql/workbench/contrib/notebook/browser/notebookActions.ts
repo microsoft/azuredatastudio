@@ -252,6 +252,7 @@ export class CollapseCellsAction extends ToggleableAction {
 			shouldToggleTooltip: toggleTooltip,
 			isOn: false
 		});
+		this.expanded = true;
 	}
 
 	public get isCollapsed(): boolean {
@@ -259,6 +260,7 @@ export class CollapseCellsAction extends ToggleableAction {
 	}
 	private setCollapsed(value: boolean) {
 		this.toggle(value);
+		this.expanded = !value;
 	}
 
 	public async run(context: URI): Promise<boolean> {
