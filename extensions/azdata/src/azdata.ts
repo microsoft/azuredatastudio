@@ -86,7 +86,7 @@ export async function findAzdata(outputChannel: vscode.OutputChannel): Promise<I
 export async function installAzdata(outputChannel: vscode.OutputChannel): Promise<void> {
 	const statusDisposable = vscode.window.setStatusBarMessage(loc.upgradingAzdata);
 	outputChannel.show();
-	outputChannel.appendLine(loc.upgradingAzdata);
+	outputChannel.appendLine(loc.installingAzdata);
 	try {
 		switch (process.platform) {
 			case 'win32':
