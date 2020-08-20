@@ -120,8 +120,8 @@
         "title": "%sqlDatabaseProjects.importDatabase%",
         "category": "%sqlDatabaseProjects.displayName%",
           "icon": {
-            "dark": "images/dark/databaseProject.svg",
-            "light": "images/light/databaseProject.svg"
+            "dark": "images/databaseProjectToolbar.svg",
+            "light": "images/databaseProjectToolbar.svg"
           }
       },
       {
