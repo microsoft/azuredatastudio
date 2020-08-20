@@ -2361,8 +2361,8 @@ declare module 'azdata' {
 	}
 
 	export interface FirewallRuleInfo {
-		startIpAddress: string;
-		endIpAddress: string;
+		startIpAddress?: string;
+		endIpAddress?: string;
 		serverName: string;
 		securityTokenMappings: {};
 	}
