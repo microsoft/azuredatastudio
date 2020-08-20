@@ -41,27 +41,24 @@ export class AccountViewModel {
 	 * and fires an event after each provider/accounts has been loaded.
 	 *
 	 */
-	public initialize(): Thenable<AccountProviderAddedEventParams[]> {
+	public initialize(): Promise<AccountProviderAddedEventParams[]> {
 		// Load a baseline of the account provider metadata and accounts
 		// 1) Get all the providers from the account management service
 		// 2) For each provider, get the accounts
 		// 3) Build parameters to add a provider and return it
 		return this._accountManagementService.getAccountProviderMetadata()
-			.then(
-				(providers: azdata.AccountProviderMetadata[]) => {
-					const promises = providers.map(provider => {
-						return this._accountManagementService.getAccountsForProvider(provider.id)
-							.then(
-								accounts => <AccountProviderAddedEventParams>{
-									addedProvider: provider,
-									initialAccounts: accounts
-								},
-								() => { /* Swallow failures at getting accounts, we'll just hide that provider */ });
-					});
-					return Promise.all(promises).then(accounts => coalesce(accounts));
-				}, () => {
-					/* Swallow failures and just pretend we don't have any providers */
-					return [];
+			.then(providers => {
+				const promises = providers.map(provider => {
+					return this._accountManagementService.getAccountsForProvider(provider.id)
+						.then(accounts => <AccountProviderAddedEventParams>{
+							addedProvider: provider,
+							initialAccounts: accounts
+						}, () => undefined);
 				});
+				return Promise.all(promises).then(accounts => coalesce(accounts));
+			}, () => {
+				/* Swallow failures and just pretend we don't have any providers */
+				return [];
+			});
 	}
 }

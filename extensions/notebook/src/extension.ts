@@ -160,10 +160,3 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 		}
 	};
 }
-
-// this method is called when your extension is deactivated
-export function deactivate() {
-	if (controller) {
-		controller.deactivate();
-	}
-}

@@ -14,8 +14,8 @@ export class AccountDialogController {
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
 	private _addAccountErrorTitle = localize('accountDialog.addAccountErrorTitle', "Error adding account");
 
-	private _accountDialog: AccountDialog;
-	public get accountDialog(): AccountDialog { return this._accountDialog; }
+	private _accountDialog?: AccountDialog;
+	public get accountDialog(): AccountDialog | undefined { return this._accountDialog; }
 
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,

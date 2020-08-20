@@ -18,13 +18,14 @@ import {
 } from 'sql/workbench/services/objectExplorer/browser/connectionTreeAction';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 import { IViewDescriptorService } from 'vs/workbench/common/views';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { ITree } from 'vs/base/parts/tree/browser/tree';
+import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 
 export class ConnectionViewletPanel extends ViewPane {
 
@@ -82,7 +83,7 @@ export class ConnectionViewletPanel extends ViewPane {
 		this._root = container;
 	}
 
-	get serversTree(): ITree {
+	get serversTree(): ITree | AsyncServerTree {
 		return this._serverTreeView.tree;
 	}
 

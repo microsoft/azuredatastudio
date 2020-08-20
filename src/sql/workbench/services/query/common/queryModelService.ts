@@ -254,6 +254,7 @@ export class QueryModelService implements IQueryModelService {
 						text: strings.format(nls.localize('runQueryBatchStartLine', "Line {0}"), b.range.startLineNumber)
 					};
 				}
+				info.range!.push(b.range);
 			}
 			let message = {
 				message: messageText,
@@ -263,7 +264,6 @@ export class QueryModelService implements IQueryModelService {
 				link: link
 			};
 			this._fireQueryEvent(uri, 'message', message);
-			info.range!.push(b.range);
 		});
 		queryRunner.onMessage(m => {
 			this._fireQueryEvent(uri, 'message', m);

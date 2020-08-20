@@ -27,6 +27,7 @@ import { getErrorMessage } from 'vs/base/common/errors';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { localize } from 'vs/nls';
 import { ServicesAccessor } from 'vs/editor/browser/editorExtensions';
+import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 
 //#region -- Data Explorer
 export const SCRIPT_AS_CREATE_COMMAND_ID = 'dataExplorer.scriptAsCreate';
@@ -322,7 +323,11 @@ export async function handleOeRefreshCommand(accessor: ServicesAccessor, args: O
 	const tree = objectExplorerService.getServerTreeView().tree;
 	try {
 		await objectExplorerService.refreshTreeNode(treeNode.getSession(), treeNode);
-		await tree.refresh(treeNode);
+		if (tree instanceof AsyncServerTree) {
+			await tree.updateChildren(treeNode);
+		} else {
+			await tree.refresh(treeNode);
+		}
 	} catch (err) {
 		// Display message to the user but also log the entire error to the console for the stack trace
 		notificationService.error(localize('refreshError', "An error occurred refreshing node '{0}': {1}", args.nodeInfo.label, getErrorMessage(err)));
