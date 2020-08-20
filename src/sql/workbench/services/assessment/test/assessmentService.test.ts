@@ -12,7 +12,7 @@ suite('Assessment service tests', () => {
 	});
 
 	test('Construction - Assessment service Initialization', () => {
-		let service = new AssessmentService(undefined);
+		let service = new AssessmentService(undefined!);
 		assert(service);
 	});
 

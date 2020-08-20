@@ -18,7 +18,7 @@ export class ResourceProviderService implements IResourceProviderService {
 
 	public _serviceBrand: undefined;
 	private _providers: { [handle: string]: azdata.ResourceProvider; } = Object.create(null);
-	private _firewallRuleDialogController: FirewallRuleDialogController;
+	private _firewallRuleDialogController?: FirewallRuleDialogController;
 
 	constructor(
 		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
