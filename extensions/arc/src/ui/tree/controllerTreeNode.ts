@@ -77,38 +77,35 @@ export class ControllerTreeNode extends TreeNode {
 
 	private refreshChildren(registrations: Registration[]): void {
 		const newChildren: ResourceTreeNode[] = [];
-		registrations.filter(r => !r.isDeleted).forEach(registration => {
-			if (!registration.instanceNamespace || !registration.instanceName) {
-				console.warn('Registration is missing required namespace and name values, skipping');
+		registrations.forEach(registration => {
+			if (!registration.instanceName) {
+				console.warn('Registration is missing required name value, skipping');
 				return;
 			}
 
 			const resourceInfo: ResourceInfo = {
-				namespace: registration.instanceNamespace,
 				name: parseInstanceName(registration.instanceName),
 				resourceType: registration.instanceType ?? ''
 			};
 
 			let node = this._children.find(n =>
 				n.model?.info?.name === resourceInfo.name &&
-				n.model?.info?.namespace === resourceInfo.namespace &&
 				n.model?.info?.resourceType === resourceInfo.resourceType);
 
 			// If we don't have this child already then create a new node for it
 			if (!node) {
 				// If we had a stored connectionId copy that over
 				resourceInfo.connectionId = this.model.info.resources.find(info =>
-					info.namespace === resourceInfo.namespace &&
 					info.name === resourceInfo.name &&
 					info.resourceType === resourceInfo.resourceType)?.connectionId;
 
 				switch (registration.instanceType) {
 					case ResourceType.postgresInstances:
-						const postgresModel = new PostgresModel(this.model.info.url, this.model.auth!, resourceInfo, registration);
+						const postgresModel = new PostgresModel(resourceInfo, registration);
 						node = new PostgresTreeNode(postgresModel, this.model, this._context);
 						break;
 					case ResourceType.sqlManagedInstances:
-						const miaaModel = new MiaaModel(this.model.info.url, this.model.auth!, resourceInfo, registration, this._treeDataProvider);
+						const miaaModel = new MiaaModel(resourceInfo, registration, this._treeDataProvider);
 						node = new MiaaTreeNode(miaaModel, this.model);
 						break;
 				}
