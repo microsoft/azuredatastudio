@@ -5,8 +5,6 @@
 
 import * as vscode from 'vscode';
 import * as loc from '../localizedConstants';
-import { DuskyObjectModelsDatabaseService, DatabaseRouterApi, DuskyObjectModelsDatabase, V1Status, V1Pod } from '../controller/generated/dusky/api';
-import { Authentication } from '../controller/auth';
 import { ResourceInfo, Registration } from './controllerModel';
 import { ResourceModel } from './resourceModel';
 
@@ -16,8 +14,70 @@ export enum PodRole {
 	Shard
 }
 
+export interface V1Pod {
+	'apiVersion'?: string;
+	'kind'?: string;
+	'metadata'?: any; // V1ObjectMeta;
+	'spec'?: any; // V1PodSpec;
+	'status'?: V1PodStatus;
+}
+
+export interface V1PodStatus {
+	'conditions'?: any[]; // Array<V1PodCondition>;
+	'containerStatuses'?: Array<V1ContainerStatus>;
+	'ephemeralContainerStatuses'?: any[]; // Array<V1ContainerStatus>;
+	'hostIP'?: string;
+	'initContainerStatuses'?: any[]; // Array<V1ContainerStatus>;
+	'message'?: string;
+	'nominatedNodeName'?: string;
+	'phase'?: string;
+	'podIP'?: string;
+	'podIPs'?: any[]; // Array<V1PodIP>;
+	'qosClass'?: string;
+	'reason'?: string;
+	'startTime'?: Date | null;
+}
+
+export interface V1ContainerStatus {
+	'containerID'?: string;
+	'image'?: string;
+	'imageID'?: string;
+	'lastState'?: any; // V1ContainerState;
+	'name'?: string;
+	'ready'?: boolean;
+	'restartCount'?: number;
+	'started'?: boolean | null;
+	'state'?: any; // V1ContainerState;
+}
+
+export interface DuskyObjectModelsDatabaseService {
+	'apiVersion'?: string;
+	'kind'?: string;
+	'metadata'?: any; // V1ObjectMeta;
+	'spec'?: any; // DuskyObjectModelsDatabaseServiceSpec;
+	'status'?: any; // DuskyObjectModelsDatabaseServiceStatus;
+	'arc'?: any; // DuskyObjectModelsDatabaseServiceArcPayload;
+}
+
+export interface V1Status {
+	'apiVersion'?: string;
+	'code'?: number | null;
+	'details'?: any; // V1StatusDetails;
+	'kind'?: string;
+	'message'?: string;
+	'metadata'?: any; // V1ListMeta;
+	'reason'?: string;
+	'status'?: string;
+	'hasObject'?: boolean;
+}
+
+export interface DuskyObjectModelsDatabase {
+	'name'?: string;
+	'owner'?: string;
+	'sharded'?: boolean | null;
+}
+
 export class PostgresModel extends ResourceModel {
-	private _databaseRouter: DatabaseRouterApi;
 	private _service?: DuskyObjectModelsDatabaseService;
 	private _pods?: V1Pod[];
 	private readonly _onServiceUpdated = new vscode.EventEmitter<DuskyObjectModelsDatabaseService>();
@@ -27,14 +87,12 @@ export class PostgresModel extends ResourceModel {
 	public serviceLastUpdated?: Date;
 	public podsLastUpdated?: Date;
 
-	constructor(controllerUrl: string, auth: Authentication, info: ResourceInfo, registration: Registration) {
+	constructor(info: ResourceInfo, registration: Registration) {
 		super(info, registration);
-		this._databaseRouter = new DatabaseRouterApi(controllerUrl);
-		this._databaseRouter.setDefaultAuthentication(auth);
 	}
 
 	/** Returns the service's Kubernetes namespace */
-	public get namespace(): string {
+	public get namespace(): string | undefined {
 		return this.info.namespace;
 	}
 
@@ -61,16 +119,18 @@ export class PostgresModel extends ResourceModel {
 	/** Refreshes the model */
 	public async refresh() {
 		await Promise.all([
-			this._databaseRouter.getDuskyDatabaseService(this.info.namespace, this.info.name).then(response => {
+			/* TODO enable
+			this._databaseRouter.getDuskyDatabaseService(this.info.namespace || 'test', this.info.name).then(response => {
 				this._service = response.body;
 				this.serviceLastUpdated = new Date();
 				this._onServiceUpdated.fire(this._service);
 			}),
-			this._databaseRouter.getDuskyPods(this.info.namespace, this.info.name).then(response => {
+			this._databaseRouter.getDuskyPods(this.info.namespace || 'test', this.info.name).then(response => {
 				this._pods = response.body;
 				this.podsLastUpdated = new Date();
 				this._onPodsUpdated.fire(this._pods!);
 			})
+			*/
 		]);
 	}
 
@@ -78,26 +138,31 @@ export class PostgresModel extends ResourceModel {
 	 * Updates the service
 	 * @param func A function of modifications to apply to the service
 	 */
-	public async update(func: (service: DuskyObjectModelsDatabaseService) => void): Promise<DuskyObjectModelsDatabaseService> {
+	public async update(_func: (service: DuskyObjectModelsDatabaseService) => void): Promise<DuskyObjectModelsDatabaseService> {
+		return <any>undefined;
+		/*
 		// Get the latest spec of the service in case it has changed
-		const service = (await this._databaseRouter.getDuskyDatabaseService(this.info.namespace, this.info.name)).body;
+		const service = (await this._databaseRouter.getDuskyDatabaseService(this.info.namespace || 'test', this.info.name)).body;
 		service.status = undefined; // can't update the status
 		func(service);
 
-		return await this._databaseRouter.updateDuskyDatabaseService(this.namespace, this.name, service).then(r => {
+		return await this._databaseRouter.updateDuskyDatabaseService(this.namespace || 'test', this.name, service).then(r => {
 			this._service = r.body;
 			return this._service;
 		});
+		*/
 	}
 
 	/** Deletes the service */
 	public async delete(): Promise<V1Status> {
-		return (await this._databaseRouter.deleteDuskyDatabaseService(this.info.namespace, this.info.name)).body;
+		return <any>undefined;
+		// return (await this._databaseRouter.deleteDuskyDatabaseService(this.info.namespace || 'test', this.info.name)).body;
 	}
 
 	/** Creates a SQL database in the service */
-	public async createDatabase(db: DuskyObjectModelsDatabase): Promise<DuskyObjectModelsDatabase> {
-		return (await this._databaseRouter.createDuskyDatabase(this.namespace, this.name, db)).body;
+	public async createDatabase(_db: DuskyObjectModelsDatabase): Promise<DuskyObjectModelsDatabase> {
+		return <any>undefined;
+		// return (await this._databaseRouter.createDuskyDatabase(this.namespace || 'test', this.name, db)).body;
 	}
 
 	/**

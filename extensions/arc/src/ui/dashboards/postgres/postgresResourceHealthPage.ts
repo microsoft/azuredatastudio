@@ -191,6 +191,7 @@ export class PostgresResourceHealthPage extends DashboardPage {
 	}
 
 	private getConditionsTable(): (string | azdata.ImageComponent)[][] {
+		/* TODO chgagnon
 		return this._postgresModel.service?.status?.conditions?.map(c => {
 			const healthy = c.type === 'Ready' ? c.status === 'True' : c.status === 'False';
 
@@ -209,6 +210,8 @@ export class PostgresResourceHealthPage extends DashboardPage {
 				c.lastTransitionTime ? fromNow(c.lastTransitionTime!, true) : ''
 			];
 		}) ?? [];
+		*/
+		return [];
 	}
 
 	private handleServiceUpdated() {

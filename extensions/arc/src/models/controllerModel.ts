@@ -4,13 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { Authentication, BasicAuth } from '../controller/auth';
-import { EndpointsRouterApi, EndpointModel, RegistrationRouterApi, RegistrationResponse, TokenRouterApi, SqlInstanceRouterApi } from '../controller/generated/v1/api';
-import { getAzurecoreApi, parseEndpoint, parseInstanceName, UserCancelledError } from '../common/utils';
+import { parseInstanceName, UserCancelledError } from '../common/utils';
 import { ResourceType } from '../constants';
-import { ConnectToControllerDialog } from '../ui/dialogs/connectControllerDialog';
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 import * as loc from '../localizedConstants';
+import * as azdataExt from '../../../azdata/src/typings/azdata-ext';
+import { ConnectToControllerDialog } from '../ui/dialogs/connectControllerDialog';
 
 export type ControllerInfo = {
 	url: string,
@@ -21,76 +20,82 @@ export type ControllerInfo = {
 };
 
 export type ResourceInfo = {
-	namespace: string,
 	name: string,
 	resourceType: ResourceType | string,
+	namespace?: string,
 	connectionId?: string
 };
 
-export interface Registration extends RegistrationResponse {
-	externalIp?: string;
-	externalPort?: string;
-	region?: string
-}
+export type Registration = {
+	instanceName: string,
+	state: string,
+	instanceType: ResourceType,
+};
 
 export class ControllerModel {
-	private _endpointsRouter: EndpointsRouterApi;
-	private _tokenRouter: TokenRouterApi;
-	private _registrationRouter: RegistrationRouterApi;
-	private _sqlInstanceRouter: SqlInstanceRouterApi;
-	private _endpoints: EndpointModel[] = [];
+	private readonly _azdataApi: azdataExt.IExtension;
+	private _endpoints: azdataExt.DcEndpointListResult[] = [];
 	private _namespace: string = '';
 	private _registrations: Registration[] = [];
-	private _controllerRegistration: Registration | undefined = undefined;
-	private _auth: Authentication | undefined = undefined;
+	private _controllerConfig: azdataExt.DcConfigShowResult | undefined = undefined;
 
-	private readonly _onEndpointsUpdated = new vscode.EventEmitter<EndpointModel[]>();
+	private readonly _onConfigUpdated = new vscode.EventEmitter<azdataExt.DcConfigShowResult | undefined>();
+	private readonly _onEndpointsUpdated = new vscode.EventEmitter<azdataExt.DcEndpointListResult[]>();
 	private readonly _onRegistrationsUpdated = new vscode.EventEmitter<Registration[]>();
+
+	public onConfigUpdated = this._onConfigUpdated.event;
 	public onEndpointsUpdated = this._onEndpointsUpdated.event;
 	public onRegistrationsUpdated = this._onRegistrationsUpdated.event;
+
+	public configLastUpdated?: Date;
 	public endpointsLastUpdated?: Date;
 	public registrationsLastUpdated?: Date;
-	public get auth(): Authentication | undefined {
-		return this._auth;
-	}
 
-	constructor(public treeDataProvider: AzureArcTreeDataProvider, public info: ControllerInfo, password?: string) {
-		this._endpointsRouter = new EndpointsRouterApi(this.info.url);
-		this._tokenRouter = new TokenRouterApi(this.info.url);
-		this._registrationRouter = new RegistrationRouterApi(this.info.url);
-		this._sqlInstanceRouter = new SqlInstanceRouterApi(this.info.url);
-		if (password) {
-			this.setAuthentication(new BasicAuth(this.info.username, password));
-		}
+	constructor(public treeDataProvider: AzureArcTreeDataProvider, public info: ControllerInfo, private _password?: string) {
+		this._azdataApi = <azdataExt.IExtension>vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 	}
 
 	public async refresh(showErrors: boolean = true, promptReconnect: boolean = false): Promise<void> {
 		// We haven't gotten our password yet or we want to prompt for a reconnect
-		if (!this._auth || promptReconnect) {
-			let password = '';
+		if (!this._password || promptReconnect) {
+			this._password = '';
 			if (this.info.rememberPassword) {
 				// It should be in the credentials store, get it from there
-				password = await this.treeDataProvider.getPassword(this.info);
+				this._password = await this.treeDataProvider.getPassword(this.info);
 			}
-			if (password && !promptReconnect) {
-				this.setAuthentication(new BasicAuth(this.info.username, password));
-			} else {
+			if (promptReconnect) {
 				// No password yet or we want to re-prompt for credentials so prompt for it from the user
 				const dialog = new ConnectToControllerDialog(this.treeDataProvider);
-				dialog.showDialog(this.info, password);
+				dialog.showDialog(this.info, this._password);
 				const model = await dialog.waitForClose();
 				if (model) {
 					this.treeDataProvider.addOrUpdateController(model.controllerModel, model.password, false);
-					this.setAuthentication(new BasicAuth(this.info.username, model.password));
 				} else {
 					throw new UserCancelledError();
 				}
 			}
-
 		}
+
+		await this._azdataApi.login(this.info.url, this.info.username, this._password);
+
+		this._registrations = [];
 		await Promise.all([
-			this._endpointsRouter.apiV1BdcEndpointsGet().then(response => {
-				this._endpoints = response.body;
+			this._azdataApi.dc.config.show().then(result => {
+				this._controllerConfig = result.result;
+				this.configLastUpdated = new Date();
+				this._onConfigUpdated.fire(this._controllerConfig);
+			}).catch(err => {
+				// If an error occurs show a message so the user knows something failed but still
+				// fire the event so callers can know to update (e.g. so dashboards don't show the
+				// loading icon forever)
+				if (showErrors) {
+					vscode.window.showErrorMessage(loc.fetchConfigFailed(this.info.name, err));
+				}
+				this._onConfigUpdated.fire(this._controllerConfig);
+				throw err;
+			}),
+			this._azdataApi.dc.endpoint.list().then(result => {
+				this._endpoints = result.result;
 				this.endpointsLastUpdated = new Date();
 				this._onEndpointsUpdated.fire(this._endpoints);
 			}).catch(err => {
@@ -98,37 +103,42 @@ export class ControllerModel {
 				// fire the event so callers can know to update (e.g. so dashboards don't show the
 				// loading icon forever)
 				if (showErrors) {
-					vscode.window.showErrorMessage(loc.fetchEndpointsFailed(this.info.url, err));
+					vscode.window.showErrorMessage(loc.fetchEndpointsFailed(this.info.name, err));
 				}
 				this._onEndpointsUpdated.fire(this._endpoints);
 				throw err;
 			}),
-			this._tokenRouter.apiV1TokenPost().then(async response => {
-				this._namespace = response.body.namespace!;
-				const registrationResponse = await this._registrationRouter.apiV1RegistrationListResourcesNsGet(this._namespace);
-				this._registrations = await Promise.all(registrationResponse.body.map(mapRegistrationResponse));
-
-				this._controllerRegistration = this._registrations.find(r => r.instanceType === ResourceType.dataControllers);
+			Promise.all([
+				this._azdataApi.postgres.server.list().then(result => {
+					this._registrations.push(...result.result.map(r => {
+						return {
+							instanceName: r.name,
+							state: r.state,
+							instanceType: ResourceType.postgresInstances
+						};
+					}));
+				}),
+				this._azdataApi.sql.mi.list().then(result => {
+					this._registrations.push(...result.result.map(r => {
+						return {
+							instanceName: r.name,
+							state: r.state,
+							instanceType: ResourceType.sqlManagedInstances
+						};
+					}));
+				})
+			]).then(() => {
 				this.registrationsLastUpdated = new Date();
 				this._onRegistrationsUpdated.fire(this._registrations);
-			}).catch(err => {
-				// If an error occurs show a message so the user knows something failed but still
-				// fire the event so callers can know to update (e.g. so dashboards don't show the
-				// loading icon forever)
-				if (showErrors) {
-					vscode.window.showErrorMessage(loc.fetchRegistrationsFailed(this.info.url, err));
-				}
-				this._onRegistrationsUpdated.fire(this._registrations);
-				throw err;
-			}),
+			})
 		]);
 	}
 
-	public get endpoints(): EndpointModel[] {
+	public get endpoints(): azdataExt.DcEndpointListResult[] {
 		return this._endpoints;
 	}
 
-	public getEndpoint(name: string): EndpointModel | undefined {
+	public getEndpoint(name: string): azdataExt.DcEndpointListResult | undefined {
 		return this._endpoints.find(e => e.name === name);
 	}
 
@@ -140,21 +150,24 @@ export class ControllerModel {
 		return this._registrations;
 	}
 
-	public get controllerRegistration(): Registration | undefined {
-		return this._controllerRegistration;
+	public get controllerConfig(): azdataExt.DcConfigShowResult | undefined {
+		return this._controllerConfig;
 	}
 
-	public getRegistration(type: ResourceType, namespace: string, name: string): Registration | undefined {
+	public getRegistration(type: ResourceType, name: string): Registration | undefined {
 		return this._registrations.find(r => {
-			return r.instanceType === type && r.instanceNamespace === namespace && parseInstanceName(r.instanceName) === name;
+			// TODO chgagnon namespace
+			return r.instanceType === type && /* r.instanceNamespace === namespace && */ parseInstanceName(r.instanceName) === name;
 		});
 	}
 
-	public async deleteRegistration(type: ResourceType, namespace: string, name: string) {
-		const r = this.getRegistration(type, namespace, name);
+	public async deleteRegistration(_type: ResourceType, _name: string) {
+		/* TODO chgagnon
 		if (r && !r.isDeleted && r.customObjectName) {
+			const r = this.getRegistration(type, name);
 			await this._registrationRouter.apiV1RegistrationNsNameIsDeletedDelete(this._namespace, r.customObjectName, true);
 		}
+		*/
 	}
 
 	/**
@@ -162,9 +175,10 @@ export class ControllerModel {
 	 * @param namespace The namespace of the resource
 	 * @param name The name of the resource
 	 */
-	public async miaaDelete(namespace: string, name: string): Promise<void> {
-		await this._sqlInstanceRouter.apiV1HybridSqlNsNameDelete(namespace, name);
-		await this.deleteRegistration(ResourceType.sqlManagedInstances, namespace, name);
+	public async miaaDelete(name: string): Promise<void> {
+		// TODO chgagnon Fix delete
+		//await this._sqlInstanceRouter.apiV1HybridSqlNsNameDelete(namespace, name);
+		await this.deleteRegistration(ResourceType.sqlManagedInstances, name);
 	}
 
 	/**
@@ -176,32 +190,10 @@ export class ControllerModel {
 			this.info.username === other.info.username;
 	}
 
-	private setAuthentication(auth: Authentication): void {
-		this._auth = auth;
-		this._endpointsRouter.setDefaultAuthentication(auth);
-		this._tokenRouter.setDefaultAuthentication(auth);
-		this._registrationRouter.setDefaultAuthentication(auth);
-		this._sqlInstanceRouter.setDefaultAuthentication(auth);
-	}
-
 	/**
 	 * property to for use a display label for this controller
 	 */
 	public get label(): string {
 		return `${this.info.name} (${this.info.url})`;
 	}
-}
-
-/**
- * Maps a RegistrationResponse to a Registration,
- * @param response The RegistrationResponse to map
- */
-async function mapRegistrationResponse(response: RegistrationResponse): Promise<Registration> {
-	const parsedEndpoint = parseEndpoint(response.externalEndpoint);
-	return {
-		...response,
-		externalIp: parsedEndpoint.ip,
-		externalPort: parsedEndpoint.port,
-		region: (await getAzurecoreApi()).getRegionDisplayName(response.location)
-	};
 }

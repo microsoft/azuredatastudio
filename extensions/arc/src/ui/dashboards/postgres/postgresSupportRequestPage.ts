@@ -3,16 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as loc from '../../../localizedConstants';
-import { IconPathHelper, cssStyles, ResourceType } from '../../../constants';
+import { IconPathHelper, cssStyles } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
-import { ControllerModel } from '../../../models/controllerModel';
-import { PostgresModel } from '../../../models/postgresModel';
 
 export class PostgresSupportRequestPage extends DashboardPage {
-	constructor(protected modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
+	constructor(protected modelView: azdata.ModelView) {
 		super(modelView);
 	}
 
@@ -51,6 +48,7 @@ export class PostgresSupportRequestPage extends DashboardPage {
 
 		this.disposables.push(
 			supportRequestButton.onDidClick(() => {
+				/*
 				const r = this._controllerModel.getRegistration(ResourceType.postgresInstances, this._postgresModel.namespace, this._postgresModel.name);
 				if (!r) {
 					vscode.window.showErrorMessage(loc.couldNotFindAzureResource(this._postgresModel.fullName));
@@ -58,6 +56,7 @@ export class PostgresSupportRequestPage extends DashboardPage {
 					vscode.env.openExternal(vscode.Uri.parse(
 						`https://portal.azure.com/#resource/subscriptions/${r.subscriptionId}/resourceGroups/${r.resourceGroupName}/providers/Microsoft.AzureData/${ResourceType.postgresInstances}/${r.instanceName}/supportrequest`));
 				}
+				*/
 			}));
 
 		content.addItem(supportRequestButton);
