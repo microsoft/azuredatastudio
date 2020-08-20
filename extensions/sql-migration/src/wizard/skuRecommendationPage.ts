@@ -8,6 +8,7 @@ import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import { Product } from '../models/product';
 import { CONGRATULATIONS, SKU_RECOMMENDATION_PAGE_TITLE, SKU_RECOMMENDATION_ALL_SUCCESSFUL } from '../models/strings';
+import { Disposable } from 'vscode';
 
 export class SKURecommendationPage extends MigrationWizardPage {
 	// For future reference: DO NOT EXPOSE WIZARD DIRECTLY THROUGH HERE.
@@ -81,12 +82,14 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		// fill in some of that information
 	}
 
+	private eventListener: Disposable | undefined;
 	public async onPageEnter(): Promise<void> {
+		this.eventListener = this.migrationStateModel.stateChangeEvent(async (e) => this.onStateChangeEvent(e));
 		this.constructDetails();
 	}
 
 	public async onPageLeave(): Promise<void> {
-
+		this.eventListener?.dispose();
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {

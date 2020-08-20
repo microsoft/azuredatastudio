@@ -6,7 +6,11 @@
 import * as azdata from 'azdata';
 import { MigrationStateModel, StateChangeEvent } from './stateMachine';
 export abstract class MigrationWizardPage {
-	constructor(private readonly wizard: azdata.window.Wizard, protected readonly wizardPage: azdata.window.WizardPage, protected readonly migrationStateModel: MigrationStateModel) { }
+	constructor(
+		private readonly wizard: azdata.window.Wizard,
+		protected readonly wizardPage: azdata.window.WizardPage,
+		protected readonly migrationStateModel: MigrationStateModel
+	) { }
 
 	public registerWizardContent(): Promise<void> {
 		return new Promise<void>(async (resolve, reject) => {
