@@ -168,7 +168,6 @@ describe('azdata', function () {
 	});
 
 	describe('upgradeAzdata', function (): void {
-		//const currentAzdata: azdata.IAzdataTool = { path: '', version: new SemVer('0.0.0'), executeCommand: ()=>{} };
 		beforeEach(function (): void {
 			sinon.stub(utils, 'discoverLatestAvailableAzdataVersion').returns(Promise.resolve(new SemVer('9999.999.999')));
 			sinon.stub(vscode.window, 'showInformationMessage').returns(Promise.resolve(<any>loc.yes));

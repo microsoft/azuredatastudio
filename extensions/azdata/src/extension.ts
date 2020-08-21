@@ -24,6 +24,7 @@ export async function activate(): Promise<azdata.IExtension> {
 			checkAndUpgradeAzdata(currentAzdata, outputChannel, true);
 		} else {
 			vscode.window.showErrorMessage(loc.notFoundExistingAzdata);
+			outputChannel.appendLine(loc.notFoundExistingAzdata);
 		}
 	});
 

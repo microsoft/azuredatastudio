@@ -42,7 +42,7 @@ async function discoverLatestAzdataVersionFromJson(outputChannel: vscode.OutputC
 	// get version information for current platform from http://aka.ms/azdata/release.json
 	const fileContents = await HttpClient.getTextContent(`${azdataHostname}/${azdataReleaseJson}`, outputChannel);
 	const version = JSON.parse(fileContents)[process.platform]['version'];
-	outputChannel.appendLine(loc.foundAzdataVersionToUpgradeTo(version));
+	outputChannel.appendLine(loc.latestAzdataVersionAvailable(version));
 	return new SemVer(version);
 }
 
@@ -55,7 +55,7 @@ async function discoverLatestStableAzdataVersionDarwin(outputChannel: vscode.Out
 	await executeCommand('brew', ['tap', 'microsoft/azdata-cli-release'], outputChannel);
 	// Get the 'info' about 'azdata-cli' from 'brew' as a json object
 	const azdataInfo: AzdataLatestVersionInfo = (JSON.parse((await executeCommand('brew', ['info', 'azdata-cli', '--json'], outputChannel)).stdout)).shift();
-	outputChannel.appendLine(loc.foundAzdataVersionToUpgradeTo(azdataInfo.versions.stable));
+	outputChannel.appendLine(loc.latestAzdataVersionAvailable(azdataInfo.versions.stable));
 	return new SemVer(azdataInfo.versions.stable);
 }
 
@@ -72,6 +72,6 @@ async function discoverLatestStableAzdataVersionDarwin(outputChannel: vscode.Out
 // 	const packageName = output.split('\n')[1].split(' ')[1];
 // 	// the version string is the first part of the package sting before '~'
 // 	const version = packageName.split('~')[0];
-// 	outputChannel.appendLine(loc.foundAzdataVersionToUpgradeTo(version));
+// 	outputChannel.appendLine(loc.latestAzdataVersionAvailable(version));
 // 	return new SemVer(version);
 // }
