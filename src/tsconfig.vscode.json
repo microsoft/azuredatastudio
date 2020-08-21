@@ -23,35 +23,88 @@
 		// "./vs/code/**/*.ts",
 		"./vs/editor/**/*.ts",
 		"./vs/platform/**/*.ts",
-		// "./vs/workbench/contrib/debug/common/debugProtocol.d.ts",
-		// "./vs/workbench/services/**/*.ts",
+		"./vs/workbench/services/**/*.ts",
 		"./sql/base/**/*.ts",
 		"./sql/editor/**/*.ts",
 		"./sql/platform/**/*.ts",
 		"./sql/workbench/common/**/*.ts",
-		"./sql/workbench/services/accountManagement/**/*.ts",
-		"./sql/workbench/services/admin/**/*.ts",
-		"./sql/workbench/services/assessment/**/*.ts",
-		"./sql/workbench/services/bootstrap/**/*.ts",
-		// "./sql/workbench/services/connection/**/*.ts",
-		"./sql/workbench/services/dashboard/**/*.ts",
-		// "./sql/workbench/services/dialog/**/*.ts",
-		"./sql/workbench/services/editData/**/*.ts",
-		"./sql/workbench/services/errorMessage/**/*.ts",
-		// "./sql/workbench/services/fileBrowser/**/*.ts",
-		// "./sql/workbench/services/insights/**/*.ts",
-		"./sql/workbench/services/jobManagement/**/*.ts",
-		"./sql/workbench/services/languageAssociation/**/*.ts",
-		// "./sql/workbench/services/notebook/**/*.ts", 201 errors
-		// "./sql/workbench/services/objectExplorer/**/*.ts", 326 errors
-		// "./sql/workbench/services/profiler/**/*.ts", 66 errors
-		"./sql/workbench/services/progress/**/*.ts",
-		// "./sql/workbench/services/query/**/*.ts",
-		// "./sql/workbench/services/queryEditor/**/*.ts",
-		"./sql/workbench/services/queryHistory/**/*.ts",
-		"./sql/workbench/services/resourceProvider/**/*.ts",
-		// "./sql/workbench/services/restore/**/*.ts", 125 errors
-		"./sql/workbench/services/serverGroup/**/*.ts",
-		"./sql/workbench/services/tasks/**/*.ts",
+		"./sql/workbench/services/**/*.ts",
+		"./sql/workbench/contrib/**/*.ts",
+	],
+	"exclude": [
+		"./sql/workbench/contrib/assessment/**/*.ts", // 3255 errors
+		"./sql/workbench/contrib/azure/**/*.ts", // 118 errors
+		"./sql/workbench/contrib/backup/**/*.ts", // 249 errors
+		"./sql/workbench/contrib/charts/**/*.ts", // 3253 errors
+		"./sql/workbench/contrib/commandLine/**/*.ts", // 3276 errors
+		"./sql/workbench/contrib/configuration/**/*.ts", // 2 errors
+		"./sql/workbench/contrib/connection/**/*.ts", // 355 errors
+		"./sql/workbench/contrib/dashboard/**/*.ts", // 1292 errors
+		"./sql/workbench/contrib/dataExplorer/**/*.ts", // 3275 errors
+		"./sql/workbench/contrib/editData/**/*.ts", // 579 errors
+		"./sql/workbench/contrib/editorReplacement/**/*.ts", // 3315 errors
+		"./sql/workbench/contrib/extensions/**/*.ts", // 45 errors
+		"./sql/workbench/contrib/jobManagement/**/*.ts", // 315 errors
+		"./sql/workbench/contrib/modelView/**/*.ts", // 3253 errors
+		"./sql/workbench/contrib/notebook/**/*.ts", // 3740 errors
+		"./sql/workbench/contrib/objectExplorer/**/*.ts", // 3330 errors
+		"./sql/workbench/contrib/preferences/**/*.ts", // 1 errors
+		"./sql/workbench/contrib/profiler/**/*.ts", // 204 errors
+		"./sql/workbench/contrib/query/**/*.ts", // 3342 errors
+		"./sql/workbench/contrib/queryHistory/**/*.ts", // 432 errors
+		"./sql/workbench/contrib/queryPlan/**/*.ts", // 52 errors
+		"./sql/workbench/contrib/restore/**/*.ts", // 142 errors
+		"./sql/workbench/contrib/scripting/**/*.ts", // 280 errors
+		"./sql/workbench/contrib/tasks/**/*.ts", // 100 errors
+		"./sql/workbench/contrib/views/**/*.ts", // 133 errors
+		"./sql/workbench/contrib/webview/**/*.ts", // 6 errors
+		"./sql/workbench/contrib/welcome/**/*.ts", // 66 errors
+		"./sql/workbench/services/connection/**/*.ts", // 3402 errors
+		"./sql/workbench/services/dialog/**/*.ts", // 3260 errors
+		"./sql/workbench/services/fileBrowser/**/*.ts", // 3253 errors
+		"./sql/workbench/services/insights/**/*.ts", // 3264 errors
+		"./sql/workbench/services/notebook/**/*.ts", // 201 errors
+		"./sql/workbench/services/objectExplorer/**/*.ts", // 384 errors
+		"./sql/workbench/services/query/**/*.ts", // 3278 errors
+		"./sql/workbench/services/queryEditor/**/*.ts", // 3278 errors
+		"./sql/workbench/services/restore/**/*.ts", // 173 errors
+		"./sql/workbench/update/**/*.ts", // 3253 errors
+		"./vs/workbench/services/accessibility/**/*.ts", // 3143 errors
+		"./vs/workbench/services/authentication/**/*.ts", // 3143 errors
+		"./vs/workbench/services/backup/**/*.ts", // 3143 errors
+		"./vs/workbench/services/configuration/**/*.ts", // 3143 errors
+		"./vs/workbench/services/configurationResolver/**/*.ts", // 3143 errors
+		"./vs/workbench/services/credentials/**/*.ts", // 3143 errors
+		"./vs/workbench/services/dialogs/**/*.ts", // 3143 errors
+		"./vs/workbench/services/editor/**/*.ts", // 3143 errors
+		"./vs/workbench/services/environment/**/*.ts", // 3143 errors
+		"./vs/workbench/services/extensionManagement/**/*.ts", // 3143 errors
+		"./vs/workbench/services/extensions/**/*.ts", // 3368 errors
+		"./vs/workbench/services/history/**/*.ts", // 3143 errors
+		"./vs/workbench/services/host/**/*.ts", // 3143 errors
+		"./vs/workbench/services/keybinding/**/*.ts", // 3143 errors
+		"./vs/workbench/services/label/**/*.ts", // 3143 errors
+		"./vs/workbench/services/log/**/*.ts", // 3143 errors
+		"./vs/workbench/services/output/**/*.ts", // 3143 errors
+		"./vs/workbench/services/path/**/*.ts", // 3143 errors
+		"./vs/workbench/services/progress/**/*.ts", // 3143 errors
+		"./vs/workbench/services/remote/**/*.ts", // 3143 errors
+		"./vs/workbench/services/sharedProcess/**/*.ts", // 3143 errors
+		"./vs/workbench/services/telemetry/**/*.ts", // 3143 errors
+		"./vs/workbench/services/textfile/**/*.ts", // 3143 errors
+		"./vs/workbench/services/textMate/**/*.ts", // 3143 errors
+		"./vs/workbench/services/textmodelResolver/**/*.ts", // 3143 errors
+		"./vs/workbench/services/textresourceProperties/**/*.ts", // 3143 errors
+		"./vs/workbench/services/themes/**/*.ts", // 3143 errors
+		"./vs/workbench/services/timer/**/*.ts", // 3143 errors
+		"./vs/workbench/services/title/**/*.ts", // 3143 errors
+		"./vs/workbench/services/untitled/**/*.ts", // 3143 errors
+		"./vs/workbench/services/update/**/*.ts", // 3143 errors
+		"./vs/workbench/services/url/**/*.ts", // 3143 errors
+		"./vs/workbench/services/userData/**/*.ts", // 3143 errors
+		"./vs/workbench/services/userDataSync/**/*.ts", // 3143 errors
+		"./vs/workbench/services/views/**/*.ts", // 3143 errors
+		"./vs/workbench/services/workingCopy/**/*.ts", // 3143 errors
+		"./vs/workbench/services/workspaces/**/*.ts", // 3143 errors
 	]
 }
