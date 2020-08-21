@@ -114,7 +114,6 @@ describe('HttpClient', function (): void {
 
 	describe('getTextContent', function (): void {
 		it.skip('Gets file contents correctly', async function (): Promise<void> {
-			//const urlBody = 'An arbitrary test string';
 			nock('https://127.0.0.1')
 				.get('/arbitraryFile')
 				.replyWithFile(200, __filename);
