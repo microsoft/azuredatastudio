@@ -264,14 +264,14 @@ export abstract class Modal extends Disposable implements IThemable {
 	/**
 	 * Overridable to change behavior of escape key
 	 */
-	protected onClose(e: StandardKeyboardEvent) {
+	protected onClose(e?: StandardKeyboardEvent) {
 		this.hide();
 	}
 
 	/**
 	 * Overridable to change behavior of enter key
 	 */
-	protected onAccept(e: StandardKeyboardEvent) {
+	protected onAccept(e?: StandardKeyboardEvent) {
 		this.hide();
 	}
 
