@@ -81,7 +81,6 @@ code-component .monaco-editor .decorationsOverviewRuler {
 code-component .carbon-taskbar .codicon {
 	background-size: 20px;
 	width: 40px;
-	position: sticky;
 }
 
 code-component .carbon-taskbar .codicon.hideIcon {
