@@ -212,10 +212,6 @@ async function findAzdataWin32(outputChannel: vscode.OutputChannel): Promise<IAz
  */
 async function findSpecificAzdata(path: string, outputChannel: vscode.OutputChannel): Promise<IAzdataTool> {
 	const versionOutput = await executeCommand(path, ['--version'], outputChannel);
-	// return {
-	// 	path: path,
-	// 	version: getVersionFromAzdataOutput(versionOutput.stdout)
-	// };
 	return new AzdataTool(path, getVersionFromAzdataOutput(versionOutput.stdout), outputChannel);
 }
 
