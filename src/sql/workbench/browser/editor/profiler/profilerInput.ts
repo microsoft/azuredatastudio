@@ -12,7 +12,6 @@ import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
 
 import { EditorInput } from 'vs/workbench/common/editor';
-import { IEditorModel } from 'vs/platform/editor/common/editor';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { Event, Emitter } from 'vs/base/common/event';
 import { generateUuid } from 'vs/base/common/uuid';
@@ -22,16 +21,20 @@ import { FilterData } from 'sql/workbench/services/profiler/browser/profilerFilt
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
 import { find } from 'vs/base/common/arrays';
 
+export interface ColumnDefinition extends Slick.Column<Slick.SlickData> {
+	name: string;
+}
+
 export class ProfilerInput extends EditorInput implements IProfilerSession {
 
 	public static ID: string = 'workbench.editorinputs.profilerinputs';
 	public static SCHEMA: string = 'profiler';
 	private _data: TableDataView<Slick.SlickData>;
-	private _id: ProfilerSessionID;
+	private _id?: ProfilerSessionID;
 	private _state: ProfilerState;
 	private _columns: string[] = [];
-	private _sessionName: string;
-	private _viewTemplate: IProfilerViewTemplate;
+	private _sessionName?: string;
+	private _viewTemplate?: IProfilerViewTemplate;
 	// mapping of event categories to what column they display under
 	// used for coallescing multiple events with different names to the same column
 	private _columnMapping: { [event: string]: string } = {};
@@ -79,11 +82,11 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		this._data = new TableDataView<Slick.SlickData>(undefined, searchFn, undefined, filterFn);
 	}
 
-	public get providerType(): string {
+	public get providerType(): string | undefined {
 		return this.connection ? this.connection.providerName : undefined;
 	}
 
-	public set viewTemplate(template: IProfilerViewTemplate) {
+	public setViewTemplate(template: IProfilerViewTemplate) {
 		this._data.clear();
 		this._viewTemplate = template;
 
@@ -101,26 +104,22 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		this.setColumnMapping(newColumns, newMapping);
 	}
 
-	public get viewTemplate(): IProfilerViewTemplate {
+	public get viewTemplate(): IProfilerViewTemplate | undefined {
 		return this._viewTemplate;
 	}
 
-	public set sessionName(name: string) {
+	public setSessionName(name: string) {
 		if (!this.state.isRunning || !this.state.isPaused) {
 			this._sessionName = name;
 		}
 	}
 
-	public get sessionName(): string {
+	public get sessionName(): string | undefined {
 		return this._sessionName;
 	}
 
 	public getTypeId(): string {
 		return ProfilerInput.ID;
-	}
-
-	public resolve(refresh?: boolean): Promise<IEditorModel> {
-		return undefined;
 	}
 
 	public getName(): string {
@@ -143,10 +142,10 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		return this._data;
 	}
 
-	public get columns(): Slick.Column<Slick.SlickData>[] {
+	public get columns(): ColumnDefinition[] {
 		if (this._columns) {
 			return this._columns.map(i => {
-				return <Slick.Column<Slick.SlickData>>{
+				return <ColumnDefinition>{
 					id: i,
 					field: i,
 					name: i,
@@ -183,7 +182,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	}
 
 	public get id(): ProfilerSessionID {
-		return this._id;
+		return this._id!;
 	}
 
 	public get state(): ProfilerState {
@@ -214,10 +213,10 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			});
 			if (!types.isUndefinedOrNull(sessionTemplate)) {
 				let newView = find(this._profilerService.getViewTemplates(), (view) => {
-					return view.name === sessionTemplate.defaultView;
+					return view.name === sessionTemplate!.defaultView;
 				});
 				if (!types.isUndefinedOrNull(newView)) {
-					this.viewTemplate = newView;
+					this.setViewTemplate(newView);
 				}
 			}
 
@@ -242,7 +241,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		let newEvents = [];
 		for (let i: number = 0; i < eventMessage.events.length && i < 500; ++i) {
 			let e: azdata.ProfilerEvent = eventMessage.events[i];
-			let data = {};
+			let data: { [key: string]: any } = {};
 			data['EventClass'] = e.name;
 			data['StartTime'] = e.timestamp;
 
@@ -280,7 +279,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	}
 
 	isDirty(): boolean {
-		return this.state.isRunning || this.state.isPaused;
+		return this.state.isRunning || !!this.state.isPaused;
 	}
 
 	dispose() {

@@ -239,7 +239,7 @@ export class ProfilerEditor extends BaseEditor {
 		this._viewTemplateSelector.setAriaLabel(nls.localize('profiler.viewSelectAccessibleName', "Select View"));
 		this._register(this._viewTemplateSelector.onDidSelect(e => {
 			if (this.input) {
-				this.input.viewTemplate = find(this._viewTemplates, i => i.name === e.selected);
+				this.input.setViewTemplate(find(this._viewTemplates, i => i.name === e.selected));
 			}
 		}));
 		let viewTemplateContainer = document.createElement('div');
@@ -252,7 +252,7 @@ export class ProfilerEditor extends BaseEditor {
 		this._sessionSelector.setAriaLabel(nls.localize('profiler.sessionSelectAccessibleName', "Select Session"));
 		this._register(this._sessionSelector.onDidSelect(e => {
 			if (this.input) {
-				this.input.sessionName = e.selected;
+				this.input.setSessionName(e.selected);
 			}
 		}));
 		let sessionsContainer = document.createElement('div');
@@ -466,7 +466,7 @@ export class ProfilerEditor extends BaseEditor {
 			if (input.viewTemplate) {
 				this._viewTemplateSelector.selectWithOptionName(input.viewTemplate.name);
 			} else {
-				input.viewTemplate = find(this._viewTemplates, i => i.name === 'Standard View');
+				input.setViewTemplate(find(this._viewTemplates, i => i.name === 'Standard View'));
 			}
 
 			this._actionBar.context = input;
@@ -581,11 +581,11 @@ export class ProfilerEditor extends BaseEditor {
 			this._sessionsList = r;
 			if (this._sessionsList.length > 0) {
 				if (!this.input.sessionName) {
-					this.input.sessionName = previousSessionName;
+					this.input.setSessionName(previousSessionName);
 				}
 
 				if (this._sessionsList.indexOf(this.input.sessionName) === -1) {
-					this.input.sessionName = this._sessionsList[0];
+					this.input.setSessionName(this._sessionsList[0]);
 				}
 
 				this._sessionSelector.selectWithOptionName(this.input.sessionName);

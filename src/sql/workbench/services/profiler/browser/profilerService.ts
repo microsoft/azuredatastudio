@@ -29,11 +29,19 @@ class TwoWayMap<T, K> {
 		this.reverseMap = new Map<K, T>();
 	}
 
-	get(input: T): K {
+	has(input: T): boolean {
+		return this.forwardMap.has(input);
+	}
+
+	reverseHas(input: K): boolean {
+		return this.reverseMap.has(input);
+	}
+
+	get(input: T): K | undefined {
 		return this.forwardMap.get(input);
 	}
 
-	reverseGet(input: K): T {
+	reverseGet(input: K): T | undefined {
 		return this.reverseMap.get(input);
 	}
 
@@ -51,7 +59,7 @@ export class ProfilerService implements IProfilerService {
 	private _idMap = new TwoWayMap<ProfilerSessionID, string>();
 	private _sessionMap = new Map<ProfilerSessionID, IProfilerSession>();
 	private _connectionMap = new Map<ProfilerSessionID, IConnectionProfile>();
-	private _editColumnDialog: ProfilerColumnEditorDialog;
+	private _editColumnDialog?: ProfilerColumnEditorDialog;
 	private _memento: any;
 	private _context: Memento;
 
@@ -91,67 +99,100 @@ export class ProfilerService implements IProfilerService {
 	}
 
 	public onMoreRows(params: azdata.ProfilerSessionEvents): void {
-		this._sessionMap.get(this._idMap.reverseGet(params.sessionId)).onMoreRows(params);
+		if (this._idMap.reverseHas(params.sessionId)) {
+			this._sessionMap.get(this._idMap.reverseGet(params.sessionId)!)!.onMoreRows(params);
+		}
 	}
 
 	public onSessionStopped(params: azdata.ProfilerSessionStoppedParams): void {
-		this._sessionMap.get(this._idMap.reverseGet(params.ownerUri)).onSessionStopped(params);
+		if (this._idMap.reverseHas(params.ownerUri)) {
+			this._sessionMap.get(this._idMap.reverseGet(params.ownerUri)!)!.onSessionStopped(params);
+		}
 	}
 
 	public onProfilerSessionCreated(params: azdata.ProfilerSessionCreatedParams): void {
-		this._sessionMap.get(this._idMap.reverseGet(params.ownerUri)).onProfilerSessionCreated(params);
-		this.updateMemento(params.ownerUri, { previousSessionName: params.sessionName });
+		if (this._idMap.reverseHas(params.ownerUri)) {
+			this._sessionMap.get(this._idMap.reverseGet(params.ownerUri)!)!.onProfilerSessionCreated(params);
+			this.updateMemento(params.ownerUri, { previousSessionName: params.sessionName });
+		}
 	}
 
-	public connectSession(id: ProfilerSessionID): Thenable<boolean> {
-		return this._runAction(id, provider => provider.connectSession(this._idMap.get(id)));
+	public async connectSession(id: ProfilerSessionID): Promise<boolean> {
+		if (this._idMap.has(id)) {
+			return this._runAction(id, provider => provider.connectSession(this._idMap.get(id)!));
+		}
+		return false;
 	}
 
-	public disconnectSession(id: ProfilerSessionID): Thenable<boolean> {
-		return this._runAction(id, provider => provider.disconnectSession(this._idMap.get(id)));
+	public async disconnectSession(id: ProfilerSessionID): Promise<boolean> {
+		if (this._idMap.has(id)) {
+			return this._runAction(id, provider => provider.disconnectSession(this._idMap.get(id)!));
+		}
+		return false;
 	}
 
-	public createSession(id: string, createStatement: string, template: azdata.ProfilerSessionTemplate): Thenable<boolean> {
-		return this._runAction(id, provider => provider.createSession(this._idMap.get(id), createStatement, template)).then(() => {
-			this._sessionMap.get(this._idMap.reverseGet(id)).onSessionStateChanged({ isRunning: true, isStopped: false, isPaused: false });
-			return true;
-		}, (reason) => {
-			this._notificationService.error(reason.message);
-		});
+	public async createSession(id: string, createStatement: string, template: azdata.ProfilerSessionTemplate): Promise<boolean> {
+		if (this._idMap.has(id)) {
+			try {
+				await this._runAction(id, provider => provider.createSession(this._idMap.get(id)!, createStatement, template));
+				this._sessionMap.get(this._idMap.reverseGet(id)!)!.onSessionStateChanged({ isRunning: true, isStopped: false, isPaused: false });
+				return true;
+			} catch (reason) {
+				this._notificationService.error(reason.message);
+				return false;
+			}
+		}
+		return false;
 	}
 
-	public startSession(id: ProfilerSessionID, sessionName: string): Thenable<boolean> {
-		this.updateMemento(id, { previousSessionName: sessionName });
-		return this._runAction(id, provider => provider.startSession(this._idMap.get(id), sessionName)).then(() => {
-			this._sessionMap.get(this._idMap.reverseGet(id)).onSessionStateChanged({ isRunning: true, isStopped: false, isPaused: false });
-			return true;
-		}, (reason) => {
-			this._notificationService.error(reason.message);
-		});
+	public async startSession(id: ProfilerSessionID, sessionName: string): Promise<boolean> {
+		if (this._idMap.has(id)) {
+			this.updateMemento(id, { previousSessionName: sessionName });
+			try {
+				await this._runAction(id, provider => provider.startSession(this._idMap.get(id)!, sessionName));
+				this._sessionMap.get(this._idMap.reverseGet(id)!)!.onSessionStateChanged({ isRunning: true, isStopped: false, isPaused: false });
+				return true;
+			} catch (reason) {
+				this._notificationService.error(reason.message);
+				return false;
+			}
+		}
+		return false;
 	}
 
-	public pauseSession(id: ProfilerSessionID): Thenable<boolean> {
-		return this._runAction(id, provider => provider.pauseSession(this._idMap.get(id)));
+	public async pauseSession(id: ProfilerSessionID): Promise<boolean> {
+		if (this._idMap.has(id)) {
+			return this._runAction(id, provider => provider.pauseSession(this._idMap.get(id)!));
+		} else {
+			return false;
+		}
 	}
 
-	public stopSession(id: ProfilerSessionID): Thenable<boolean> {
-		return this._runAction(id, provider => provider.stopSession(this._idMap.get(id))).then(() => {
-			this._sessionMap.get(this._idMap.reverseGet(id)).onSessionStateChanged({ isStopped: true, isPaused: false, isRunning: false });
-			return true;
-		}, (reason) => {
-			// The error won't be actionable to the user, so only log it to console.
-			// In case of error, the state of the UI is not usable, makes more sense to
-			// set it to stopped so that user can restart it or pick a different session
-			this._sessionMap.get(this._idMap.reverseGet(id)).onSessionStateChanged({ isStopped: true, isPaused: false, isRunning: false });
-		});
+	public async stopSession(id: ProfilerSessionID): Promise<boolean> {
+		if (this._idMap.has(id)) {
+			try {
+				await this._runAction(id, provider => provider.stopSession(this._idMap.get(id)!));
+				this._sessionMap.get(this._idMap.reverseGet(id)!)!.onSessionStateChanged({ isStopped: true, isPaused: false, isRunning: false });
+				return true;
+			} catch (e) {
+				this._sessionMap.get(this._idMap.reverseGet(id)!)!.onSessionStateChanged({ isStopped: true, isPaused: false, isRunning: false });
+				return false;
+			}
+		} else {
+			return false;
+		}
 	}
 
-	public getXEventSessions(id: ProfilerSessionID): Thenable<string[]> {
-		return this._runAction(id, provider => provider.getXEventSessions(this._idMap.get(id))).then((r) => {
-			return r;
-		}, (reason) => {
-			this._notificationService.error(reason.message);
-		});
+	public async getXEventSessions(id: ProfilerSessionID): Promise<string[] | undefined> {
+		if (this._idMap.get(id)) {
+			return this._runAction(id, provider => provider.getXEventSessions(this._idMap.get(id)!)).then((r) => {
+				return r;
+			}, (reason) => {
+				this._notificationService.error(reason.message);
+				return undefined;
+			});
+		}
+		return undefined;
 	}
 
 	private _runAction<T>(id: ProfilerSessionID, action: (handler: azdata.ProfilerProvider) => Thenable<T>): Thenable<T> {
@@ -192,9 +233,9 @@ export class ProfilerService implements IProfilerService {
 		return undefined;
 	}
 
-	private getMementoKey(ownerUri: string): string {
+	private getMementoKey(ownerUri: string): string | undefined {
 		let mementoKey = undefined;
-		let connectionProfile: IConnectionProfile = this._connectionMap.get(ownerUri);
+		let connectionProfile = this._connectionMap.get(ownerUri);
 		if (connectionProfile) {
 			mementoKey = connectionProfile.serverName;
 		}
@@ -219,7 +260,7 @@ export class ProfilerService implements IProfilerService {
 		}
 
 		this._editColumnDialog.open(input);
-		return Promise.resolve(null);
+		return Promise.resolve();
 	}
 
 	public launchCreateSessionDialog(input: ProfilerInput): Thenable<void> {
