@@ -34,6 +34,16 @@ declare module 'azureResource' {
 			loginName: string;
 		}
 
+		export interface AzureGraphResource extends Omit<AzureResource, 'tenant'> {
+			tenantId: string;
+			type: string;
+			location: string;
+		}
+
+		export interface AzureSqlManagedInstanceResource extends AzureGraphResource {
+
+		}
+
 		export interface AzureResourceResourceGroup extends AzureResource {
 		}
 

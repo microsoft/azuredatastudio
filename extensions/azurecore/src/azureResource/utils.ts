@@ -140,7 +140,7 @@ export async function getResourceGroups(appContext: AppContext, account?: azdata
 	return result;
 }
 
-export async function runResourceQuery<T>(appContext: AppContext, account: azdata.Account, subscription: azureResource.AzureResourceSubscription, ignoreErrors: boolean = false, query: string) {
+export async function runResourceQuery<T extends azureResource.AzureGraphResource>(appContext: AppContext, account: azdata.Account, subscription: azureResource.AzureResourceSubscription, ignoreErrors: boolean = false, query: string) {
 	const result: ResourceQueryResult<T> = { resources: [], errors: [] };
 	if (!account?.properties?.tenants || !isArray(account.properties.tenants)) {
 		const error = new Error(localize('azure.accounts.runResourceQuery.errors.invalidAccount', "Invalid account"));

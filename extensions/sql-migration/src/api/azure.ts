@@ -24,9 +24,12 @@ export async function getSubscriptions(account: azdata.Account): Promise<Subscri
 	return subscriptions.subscriptions;
 }
 
-export async function getAvailableAzureProducts(account: azdata.Account, subscription: Subscription) {
+export type AzureProduct = azureResource.AzureGraphResource;
+export type SqlManagedInstance = azureResource.AzureSqlManagedInstanceResource;
+export async function getAvailableManagedInstanceProducts(account: azdata.Account, subscription: Subscription): Promise<SqlManagedInstance[]> {
 	const api = await getAzureCoreAPI();
 
-	const result = await api.runGraphQuery(account, subscription, false, 'where type == "microsoft.sql/managedinstances"');
-	console.log(result);
+	const result = await api.runGraphQuery<azureResource.AzureSqlManagedInstanceResource>(account, subscription, false, 'where type == "microsoft.sql/managedinstances"');
+
+	return result.resources;
 }

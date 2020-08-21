@@ -109,7 +109,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			return providers;
 		},
 		getRegionDisplayName: utils.getRegionDisplayName,
-		runGraphQuery<T>(account: azdata.Account,
+		runGraphQuery<T extends azureResource.AzureGraphResource>(account: azdata.Account,
 			subscription: azureResource.AzureResourceSubscription,
 			ignoreErrors: boolean,
 			query: string): Promise<azurecore.ResourceQueryResult<T>> {

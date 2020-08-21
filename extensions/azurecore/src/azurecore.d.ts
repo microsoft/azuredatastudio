@@ -72,11 +72,11 @@ declare module 'azurecore' {
 		getRegionDisplayName(region?: string): string;
 		provideResources(): azureResource.IAzureResourceProvider[];
 
-		runGraphQuery<T>(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, ignoreErrors: boolean, query: string): Promise<ResourceQueryResult<T>>;
+		runGraphQuery<T extends azureResource.AzureGraphResource>(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, ignoreErrors: boolean, query: string): Promise<ResourceQueryResult<T>>;
 	}
 
 	export type GetSubscriptionsResult = { subscriptions: azureResource.AzureResourceSubscription[], errors: Error[] };
 	export type GetResourceGroupsResult = { resourceGroups: azureResource.AzureResourceResourceGroup[], errors: Error[] };
 
-	export type ResourceQueryResult<T> = { resources: T[], errors: Error[] };
+	export type ResourceQueryResult<T extends azureResource.AzureGraphResource> = { resources: T[], errors: Error[] };
 }
