@@ -306,6 +306,7 @@
                             "defaultValue": "Indirect",
                             "optionsType": "radio"
                           },
+                          "enabled": false,
                           "required": true,
                           "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE"
                         }
