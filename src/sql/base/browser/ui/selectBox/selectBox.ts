@@ -172,8 +172,11 @@ export class SelectBox extends vsSelectBox {
 		this.applyStyles();
 	}
 
-	public selectWithOptionName(optionName: string): void {
-		const option = this._optionsDictionary.get(optionName);
+	public selectWithOptionName(optionName?: string): void {
+		let option: number | undefined;
+		if (optionName) {
+			option = this._optionsDictionary.get(optionName);
+		}
 		if (option) {
 			this.select(option);
 		} else {
