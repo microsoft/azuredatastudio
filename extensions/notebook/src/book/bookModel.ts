@@ -11,8 +11,7 @@ import * as path from 'path';
 import * as fileServices from 'fs';
 import * as fs from 'fs-extra';
 import * as loc from '../common/localizedConstants';
-import { IJupyterBookToc, IJupyterBookSection } from '../contracts/content';
-
+import { IJupyterBookToc, JupyterBookSection, IJupyterBookSectionV2, IJupyterBookSectionV1 } from '../contracts/content';
 
 const fsPromises = fileServices.promises;
 
@@ -20,7 +19,10 @@ export class BookModel {
 	private _bookItems: BookTreeItem[];
 	private _allNotebooks = new Map<string, BookTreeItem>();
 	private _tableOfContentsPath: string;
-
+	private _contentFolderPath: string;
+	private _configPath: string;
+	private _bookVersion: string;
+	private _rootPath: string;
 	private _errorMessage: string;
 
 	constructor(
@@ -37,8 +39,35 @@ export class BookModel {
 		if (this.isNotebook) {
 			this.readNotebook();
 		} else {
-			await this.loadTableOfContentFiles(this.bookPath);
+			await this.readBookStructure(this.bookPath);
+			await this.loadTableOfContentFiles();
 			await this.readBooks();
+		}
+	}
+
+	public async readBookStructure(folderPath: string): Promise<void> {
+		// check book structure to determine version
+		let isOlderVersion: boolean;
+		this._configPath = path.posix.join(folderPath, '_config.yml');
+		try {
+			isOlderVersion = (await fs.stat(path.posix.join(folderPath, '_data'))).isDirectory();
+		} catch {
+			isOlderVersion = false;
+		}
+
+		if (isOlderVersion) {
+			let isTocFile = (await fs.stat(path.posix.join(folderPath, '_data', 'toc.yml'))).isFile();
+			if (isTocFile) {
+				this._tableOfContentsPath = path.posix.join(folderPath, '_data', 'toc.yml');
+			}
+			this._bookVersion = 'v1';
+			this._contentFolderPath = path.posix.join(folderPath, 'content/');
+			this._rootPath = path.dirname(path.dirname(this._tableOfContentsPath));
+		} else {
+			this._contentFolderPath = folderPath;
+			this._tableOfContentsPath = path.posix.join(folderPath, '_toc.yml');
+			this._rootPath = path.dirname(this._tableOfContentsPath);
+			this._bookVersion = 'v2';
 		}
 	}
 
@@ -50,14 +79,12 @@ export class BookModel {
 		return this._allNotebooks.get(this.openAsUntitled ? path.basename(uri) : uri);
 	}
 
-	public async loadTableOfContentFiles(folderPath: string): Promise<void> {
+	public async loadTableOfContentFiles(): Promise<void> {
 		if (this.isNotebook) {
 			return;
 		}
 
-		let tableOfContentsPath: string = path.posix.join(folderPath, '_data', 'toc.yml');
-		if (await fs.pathExists(tableOfContentsPath)) {
-			this._tableOfContentsPath = tableOfContentsPath;
+		if (await fs.pathExists(this._tableOfContentsPath)) {
 			vscode.commands.executeCommand('setContext', 'bookOpened', true);
 		} else {
 			this._errorMessage = loc.missingTocError;
@@ -111,16 +138,16 @@ export class BookModel {
 		}
 
 		if (this._tableOfContentsPath) {
-			let root: string = path.dirname(path.dirname(this._tableOfContentsPath));
 			try {
-				let fileContents = await fsPromises.readFile(path.join(root, '_config.yml'), 'utf-8');
+				let fileContents = await fsPromises.readFile(this._configPath, 'utf-8');
 				const config = yaml.safeLoad(fileContents.toString());
 				fileContents = await fsPromises.readFile(this._tableOfContentsPath, 'utf-8');
 				const tableOfContents: any = yaml.safeLoad(fileContents.toString());
 				let book: BookTreeItem = new BookTreeItem({
+					version: this._bookVersion,
 					title: config.title,
 					contentPath: this._tableOfContentsPath,
-					root: root,
+					root: this._rootPath,
 					tableOfContents: { sections: this.parseJupyterSections(tableOfContents) },
 					page: tableOfContents,
 					type: BookTreeItemType.Book,
@@ -145,88 +172,97 @@ export class BookModel {
 		return this._bookItems;
 	}
 
-	public async getSections(tableOfContents: IJupyterBookToc, sections: IJupyterBookSection[], root: string): Promise<BookTreeItem[]> {
+	public async getSections(tableOfContents: IJupyterBookToc, sections: JupyterBookSection[], root: string): Promise<BookTreeItem[]> {
 		let notebooks: BookTreeItem[] = [];
 		for (let i = 0; i < sections.length; i++) {
-			if (sections[i].url) {
-				if (sections[i].external) {
-					let externalLink: BookTreeItem = new BookTreeItem({
-						title: sections[i].title,
-						contentPath: undefined,
+			if (sections[i].url && ((sections[i] as IJupyterBookSectionV1).external || this._bookVersion === 'v2')) {
+				let externalLink: BookTreeItem = new BookTreeItem({
+					title: sections[i].title,
+					contentPath: undefined,
+					root: root,
+					tableOfContents: tableOfContents,
+					page: sections[i],
+					type: BookTreeItemType.ExternalLink,
+					treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
+					isUntitled: this.openAsUntitled
+				},
+					{
+						light: this._extensionContext.asAbsolutePath('resources/light/link.svg'),
+						dark: this._extensionContext.asAbsolutePath('resources/dark/link_inverse.svg')
+					}
+				);
+
+				notebooks.push(externalLink);
+			} else {
+				let pathToNotebook: string;
+				let pathToMarkdown: string;
+				if (this._bookVersion === 'v2') {
+					pathToNotebook = path.join(this._contentFolderPath, (sections[i] as IJupyterBookSectionV2).file.concat('.ipynb'));
+					pathToMarkdown = path.join(this._contentFolderPath, (sections[i] as IJupyterBookSectionV2).file.concat('.md'));
+				} else if (sections[i].url) {
+					pathToNotebook = path.join(this._contentFolderPath, (sections[i] as IJupyterBookSectionV1).url.concat('.ipynb'));
+					pathToMarkdown = path.join(this._contentFolderPath, (sections[i] as IJupyterBookSectionV1).url.concat('.md'));
+				}
+
+				// Note: Currently, if there is an ipynb and a md file with the same name, Jupyter Books only shows the notebook.
+				// Following Jupyter Books behavior for now
+				if (await fs.pathExists(pathToNotebook)) {
+					let notebook = new BookTreeItem({
+						title: sections[i].title ? sections[i].title : (sections[i] as IJupyterBookSectionV2).file,
+						contentPath: pathToNotebook,
 						root: root,
 						tableOfContents: tableOfContents,
 						page: sections[i],
-						type: BookTreeItemType.ExternalLink,
+						type: BookTreeItemType.Notebook,
 						treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
-						isUntitled: this.openAsUntitled
+						isUntitled: this.openAsUntitled,
+						version: this._bookVersion
 					},
 						{
-							light: this._extensionContext.asAbsolutePath('resources/light/link.svg'),
-							dark: this._extensionContext.asAbsolutePath('resources/dark/link_inverse.svg')
+							light: this._extensionContext.asAbsolutePath('resources/light/notebook.svg'),
+							dark: this._extensionContext.asAbsolutePath('resources/dark/notebook_inverse.svg')
 						}
 					);
 
-					notebooks.push(externalLink);
-				} else {
-					let pathToNotebook = path.join(root, 'content', sections[i].url.concat('.ipynb'));
-					let pathToMarkdown = path.join(root, 'content', sections[i].url.concat('.md'));
-					// Note: Currently, if there is an ipynb and a md file with the same name, Jupyter Books only shows the notebook.
-					// Following Jupyter Books behavior for now
-					if (await fs.pathExists(pathToNotebook)) {
-						let notebook = new BookTreeItem({
-							title: sections[i].title,
-							contentPath: pathToNotebook,
-							root: root,
-							tableOfContents: tableOfContents,
-							page: sections[i],
-							type: BookTreeItemType.Notebook,
-							treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
-							isUntitled: this.openAsUntitled
-						},
-							{
-								light: this._extensionContext.asAbsolutePath('resources/light/notebook.svg'),
-								dark: this._extensionContext.asAbsolutePath('resources/dark/notebook_inverse.svg')
-							}
-						);
-
-						if (this.openAsUntitled) {
-							if (!this._allNotebooks.get(path.basename(pathToNotebook))) {
-								this._allNotebooks.set(path.basename(pathToNotebook), notebook);
-							}
-							notebooks.push(notebook);
-						} else {
-							// convert to URI to avoid casing issue with drive letters when getting navigation links
-							let uriToNotebook: vscode.Uri = vscode.Uri.file(pathToNotebook);
-							if (!this._allNotebooks.get(uriToNotebook.fsPath)) {
-								this._allNotebooks.set(uriToNotebook.fsPath, notebook);
-							}
-							notebooks.push(notebook);
+					if (this.openAsUntitled) {
+						if (!this._allNotebooks.get(path.basename(pathToNotebook))) {
+							this._allNotebooks.set(path.basename(pathToNotebook), notebook);
 						}
-					} else if (await fs.pathExists(pathToMarkdown)) {
-						let markdown: BookTreeItem = new BookTreeItem({
-							title: sections[i].title,
-							contentPath: pathToMarkdown,
-							root: root,
-							tableOfContents: tableOfContents,
-							page: sections[i],
-							type: BookTreeItemType.Markdown,
-							treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
-							isUntitled: this.openAsUntitled
-						},
-							{
-								light: this._extensionContext.asAbsolutePath('resources/light/markdown.svg'),
-								dark: this._extensionContext.asAbsolutePath('resources/dark/markdown_inverse.svg')
-							}
-						);
-						notebooks.push(markdown);
+						notebooks.push(notebook);
 					} else {
-						this._errorMessage = loc.missingFileError(sections[i].title);
-						vscode.window.showErrorMessage(this._errorMessage);
+						// convert to URI to avoid casing issue with drive letters when getting navigation links
+						let uriToNotebook: vscode.Uri = vscode.Uri.file(pathToNotebook);
+						if (!this._allNotebooks.get(uriToNotebook.fsPath)) {
+							this._allNotebooks.set(uriToNotebook.fsPath, notebook);
+						}
+						notebooks.push(notebook);
 					}
+				} else if (await fs.pathExists(pathToMarkdown)) {
+					let markdown: BookTreeItem = new BookTreeItem({
+						title: sections[i].title ? sections[i].title : (sections[i] as IJupyterBookSectionV2).file,
+						contentPath: pathToMarkdown,
+						root: root,
+						tableOfContents: tableOfContents,
+						page: sections[i],
+						type: BookTreeItemType.Markdown,
+						treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
+						isUntitled: this.openAsUntitled,
+						version: this._bookVersion
+					},
+						{
+							light: this._extensionContext.asAbsolutePath('resources/light/markdown.svg'),
+							dark: this._extensionContext.asAbsolutePath('resources/dark/markdown_inverse.svg')
+						}
+					);
+					notebooks.push(markdown);
+				} else {
+					this._errorMessage = loc.missingFileError(sections[i].title);
+					vscode.window.showErrorMessage(this._errorMessage);
 				}
-			} else {
-				// TODO: search functionality (#6160)
 			}
+			// } else {
+			// 	// TODO: search functionality (#6160)
+			// }
 		}
 		return notebooks;
 	}
@@ -235,10 +271,11 @@ export class BookModel {
 	 * Recursively parses out a section of a Jupyter Book.
 	 * @param section The input data to parse
 	 */
-	private parseJupyterSections(section: any[]): IJupyterBookSection[] {
+	private parseJupyterSections(section: any[]): JupyterBookSection[] {
 		try {
 			return section.reduce((acc, val) => Array.isArray(val.sections) ?
 				acc.concat(val).concat(this.parseJupyterSections(val.sections)) : acc.concat(val), []);
+
 		} catch (e) {
 			this._errorMessage = loc.invalidTocFileError();
 			if (section.length > 0) {
@@ -253,8 +290,20 @@ export class BookModel {
 		return this._tableOfContentsPath;
 	}
 
+	public get contentFolderPath(): string {
+		return this._contentFolderPath;
+	}
+
+	public get configPath(): string {
+		return this._configPath;
+	}
+
 	public get errorMessage(): string {
 		return this._errorMessage;
+	}
+
+	public get version(): string {
+		return this._bookVersion;
 	}
 
 }

@@ -18,8 +18,9 @@ import * as loc from '../common/localizedConstants';
 import * as glob from 'fast-glob';
 import { isNullOrUndefined } from 'util';
 import { debounce } from '../common/utils';
+import { IJupyterBookSectionV2 } from '../contracts/content';
 
-const Content = 'content';
+//const Content = 'content';
 
 interface BookSearchResults {
 	notebookPaths: string[];
@@ -120,7 +121,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 			// add file watcher on toc file.
 			if (!isNotebook) {
-				fs.watchFile(path.join(bookPath, '_data', 'toc.yml'), async (curr, prev) => {
+				fs.watchFile(this.currentBook.tableOfContentsPath, async (curr, prev) => {
 					if (curr.mtime > prev.mtime) {
 						let book = this.books.find(book => book.bookPath === bookPath);
 						if (book) {
@@ -160,7 +161,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		} finally {
 			// remove watch on toc file.
 			if (deletedBook && !deletedBook.isNotebook) {
-				fs.unwatchFile(path.join(deletedBook.bookPath, '_data', 'toc.yml'));
+				fs.unwatchFile(deletedBook.tableOfContentsPath);
 			}
 		}
 	}
@@ -174,9 +175,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		const book: BookModel = new BookModel(bookPath, this._openAsUntitled, isNotebook, this._extensionContext);
 		await book.initializeContents();
 		this.books.push(book);
-		if (!this.currentBook) {
-			this.currentBook = book;
-		}
+		this.currentBook = book;
+		// if (!this.currentBook) {
+		// 	this.currentBook = book;
+		// }
 		this._bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
 		this._bookViewer.onDidChangeVisibility(e => {
 			let openDocument = azdata.nb.activeNotebookEditor;
@@ -199,7 +201,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					const sectionToOpen = bookRoot.findChildSection(urlToOpen);
 					urlPath = sectionToOpen?.url;
 				} else {
-					urlPath = this.currentBook.bookItems[0].tableOfContents.sections[0].url;
+					urlPath = this.currentBook.version === 'v1' ? this.currentBook.bookItems[0].tableOfContents.sections[0].url : (this.currentBook.bookItems[0].tableOfContents.sections[0] as IJupyterBookSectionV2).file;
 				}
 			}
 			if (urlPath) {
@@ -212,8 +214,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					}
 				} else {
 					// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
-					const sectionToOpenMarkdown: string = path.posix.join(this.currentBook.bookPath, Content, urlPath.concat('.md'));
-					const sectionToOpenNotebook: string = path.posix.join(this.currentBook.bookPath, Content, urlPath.concat('.ipynb'));
+					const sectionToOpenMarkdown: string = path.posix.join(this.currentBook.contentFolderPath, urlPath.concat('.md'));
+					const sectionToOpenNotebook: string = path.posix.join(this.currentBook.contentFolderPath, urlPath.concat('.ipynb'));
 					if (await fs.pathExists(sectionToOpenMarkdown)) {
 						this.openMarkdown(sectionToOpenMarkdown);
 					}
@@ -370,12 +372,12 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		let folderToSearch: string;
 		if (treeItem && treeItem.sections !== undefined) {
 			if (treeItem.uri) {
-				folderToSearch = path.join(treeItem.root, Content, path.dirname(treeItem.uri));
+				folderToSearch = path.join(treeItem.book.contentPath, path.dirname(treeItem.uri));
 			} else {
-				folderToSearch = path.join(treeItem.root, Content);
+				folderToSearch = path.join(treeItem.book.contentPath);
 			}
 		} else if (this.currentBook && !this.currentBook.isNotebook) {
-			folderToSearch = path.join(this.currentBook.bookPath, Content);
+			folderToSearch = path.join(this.currentBook.contentFolderPath);
 		} else {
 			vscode.window.showErrorMessage(loc.noBooksSelectedError);
 		}
@@ -512,7 +514,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	getParent(element?: BookTreeItem): vscode.ProviderResult<BookTreeItem> {
 		if (element?.uri) {
 			let parentPath: string;
-			parentPath = path.join(element.root, Content, element.uri.substring(0, element.uri.lastIndexOf(path.posix.sep)));
+			parentPath = path.join(element.book.contentPath, element.uri.substring(0, element.uri.lastIndexOf(path.posix.sep)));
 			if (parentPath === element.root) {
 				return undefined;
 			}
