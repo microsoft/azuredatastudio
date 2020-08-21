@@ -8,9 +8,14 @@ import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import { SUBSCRIPTION_SELECTION_PAGE_TITLE, SUBSCRIPTION_SELECTION_AZURE_ACCOUNT_TITLE, SUBSCRIPTION_SELECTION_AZURE_PRODUCT_TITLE, SUBSCRIPTION_SELECTION_AZURE_SUBSCRIPTION_TITLE } from '../models/strings';
 import { Disposable } from 'vscode';
+import { getSubscriptions, Subscription, getAvailableAzureProducts } from '../api/azure';
 
 interface AccountValue extends azdata.CategoryValue {
 	account: azdata.Account;
+}
+
+interface SubscriptionValue extends azdata.CategoryValue {
+	subscription: Subscription;
 }
 
 export class SubscriptionSelectionPage extends MigrationWizardPage {
@@ -50,6 +55,10 @@ export class SubscriptionSelectionPage extends MigrationWizardPage {
 			values: [],
 		});
 
+		this.disposables.push(dropDown.component().onValueChanged(() => {
+			this.accountValueChanged().catch(console.error);
+		}));
+
 		return {
 			component: dropDown.component(),
 			title: SUBSCRIPTION_SELECTION_AZURE_ACCOUNT_TITLE
@@ -60,7 +69,10 @@ export class SubscriptionSelectionPage extends MigrationWizardPage {
 		const dropDown = view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
 			values: [],
 		});
-		this.setupSubscriptionListener();
+
+		this.disposables.push(dropDown.component().onValueChanged(() => {
+			this.subscriptionValueChanged().catch(console.error);
+		}));
 
 		return {
 			component: dropDown.component(),
@@ -72,7 +84,6 @@ export class SubscriptionSelectionPage extends MigrationWizardPage {
 		const dropDown = view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
 			values: [],
 		});
-		this.setupProductListener();
 
 		return {
 			component: dropDown.component(),
@@ -80,22 +91,32 @@ export class SubscriptionSelectionPage extends MigrationWizardPage {
 		};
 	}
 
-
-	private setupSubscriptionListener(): void {
-		this.disposables.push(this.accountDropDown!.component.onValueChanged((event) => {
-			console.log(event);
-		}));
+	private async accountValueChanged(): Promise<void> {
+		const account = this.getPickedAccount();
+		if (account) {
+			const subscriptions = await getSubscriptions(account);
+			await this.populateSubscriptionValues(subscriptions);
+		}
 	}
 
-	private setupProductListener(): void {
-		this.disposables.push(this.subscriptionDropDown!.component.onValueChanged((event) => {
-			console.log(event);
-		}));
+	private async subscriptionValueChanged(): Promise<void> {
+		const account = this.getPickedAccount();
+		const subscription = this.getPickedSubscription();
+
+		await getAvailableAzureProducts(account!, subscription!);
+	}
+
+	private getPickedAccount(): azdata.Account | undefined {
+		const accountValue: AccountValue | undefined = this.accountDropDown?.component.value as AccountValue;
+		return accountValue?.account;
+	}
+
+	private getPickedSubscription(): Subscription | undefined {
+		const accountValue: SubscriptionValue | undefined = this.subscriptionDropDown?.component.value as SubscriptionValue;
+		return accountValue?.subscription;
 	}
 
 	private async populateAccountValues(): Promise<void> {
-
-
 		let accounts = await azdata.accounts.getAllAccounts();
 		accounts = accounts.filter(a => a.key.providerId.startsWith('azure') && !a.isStale);
 
@@ -108,6 +129,20 @@ export class SubscriptionSelectionPage extends MigrationWizardPage {
 		});
 
 		this.accountDropDown!.component.values = values;
+		await this.accountValueChanged();
+	}
+
+	private async populateSubscriptionValues(subscriptions: Subscription[]): Promise<void> {
+		const values: SubscriptionValue[] = subscriptions.map(sub => {
+			return {
+				displayName: sub.name,
+				name: sub.id,
+				subscription: sub
+			};
+		});
+
+		this.subscriptionDropDown!.component.values = values;
+		await this.subscriptionValueChanged();
 	}
 
 	public async onPageEnter(): Promise<void> {
