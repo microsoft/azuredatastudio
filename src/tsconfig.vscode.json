@@ -10,7 +10,8 @@
 		"strictNullChecks": true,
 		"strictPropertyInitialization": true,
 		"skipLibCheck": true,
-		"noImplicitAny": true
+		"noImplicitAny": true,
+		"allowUnreachableCode": false,
 	},
 	"include": [
 		"./typings",
@@ -53,5 +54,8 @@
 		// "./sql/workbench/services/restore/**/*.ts", 125 errors
 		"./sql/workbench/services/serverGroup/**/*.ts",
 		"./sql/workbench/services/tasks/**/*.ts",
+	],
+	"exclude": [
+		"./vs/platform/userDataSync/**/*.ts" // needed because of the differences between the compile options
 	]
 }
