@@ -35,6 +35,14 @@ export abstract class SqlPackageManageProviderBase {
 		return [];
 	}
 
+	/**
+	 * Returns database name as current location
+	 */
+	public async getCurrentLocation(): Promise<string | undefined> {
+		let connection = await this.getCurrentConnection();
+		return connection?.databaseName;
+	}
+
 	protected async getCurrentConnection(): Promise<azdata.connection.ConnectionProfile> {
 		return await this._apiWrapper.getCurrentConnection();
 	}

@@ -170,16 +170,18 @@ export class InstalledPackagesTab {
 			component = view.modelBuilder.text().withProperties({
 				value: locations[0].displayName
 			}).component();
-		} else if (locations) {
+		} else if (locations && locations.length > 1) {
 			let dropdownValues = locations.map(x => {
 				return {
 					name: x.name,
 					displayName: x.displayName
 				};
 			});
+			const currentLocation = await dialog.model.getCurrentLocation();
+			const selectedLocation = dropdownValues.find(x => x.name === currentLocation);
 			let locationDropDown = view.modelBuilder.dropDown().withProperties({
 				values: dropdownValues,
-				value: dropdownValues[0]
+				value: selectedLocation || dropdownValues[0]
 			}).component();
 
 			locationDropDown.onValueChanged(async () => {
