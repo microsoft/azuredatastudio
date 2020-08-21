@@ -19,6 +19,47 @@
     "url": "https://github.com/Microsoft/azuredatastudio.git"
   },
   "main": "./out/extension",
+  "contributes": {
+    "configuration": [
+      {
+        "title": "%deployment.configuration.title%",
+        "properties": {
+          "deployment.azdata.auto.install": {
+            "type": "string",
+            "default": "userPrompt",
+            "enum": [
+              "always",
+              "never",
+              "userPrompt"
+            ],
+            "description": "%azdata.auto.install.description%"
+          },
+          "deployment.azdata.auto.upgrade": {
+            "type": "string",
+            "default": "userPrompt",
+            "enum": [
+              "always",
+              "never",
+              "userPrompt"
+            ],
+            "description": "%azdata.auto.upgrade.description%"
+          }
+        }
+      }
+    ],
+    "commands": [
+      {
+        "command": "azdata.install",
+        "title": "%azdata.install.command.name%",
+        "category": "%deployment.category%"
+      },
+      {
+        "command": "azdata.upgrade",
+        "title": "%azdata.upgrade.command.name%",
+        "category": "%deployment.category%"
+      }
+    ]
+  },
   "dependencies": {
     "request": "^2.88.2",
     "semver": "^7.3.2",

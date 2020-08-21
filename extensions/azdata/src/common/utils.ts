@@ -6,8 +6,9 @@
 import { SemVer } from 'semver';
 import * as vscode from 'vscode';
 import * as which from 'which';
-import { azdataHostname, AzdataLatestVersionInfo, azdataReleaseJson } from '../azdata';
+import { AzdataLatestVersionInfo } from '../azdata';
 import { HttpClient } from '../common/httpClient';
+import { azdataHostname, azdataReleaseJson } from '../constants';
 import * as loc from '../localizedConstants';
 import { executeCommand } from './childProcess';
 /**

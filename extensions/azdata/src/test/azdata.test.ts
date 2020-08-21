@@ -14,6 +14,7 @@ import * as azdata from '../azdata';
 import * as childProcess from '../common/childProcess';
 import * as utils from '../common/utils';
 import * as loc from '../localizedConstants';
+import * as constants from '../constants';
 
 const outputChannelMock = TypeMoq.Mock.ofType<vscode.OutputChannel>();
 const oldAzdata = new azdata.AzdataTool('', new SemVer('0.0.0'), outputChannelMock.object);
@@ -113,8 +114,8 @@ describe('azdata', function () {
 			const originalPlatform = process.platform;
 			try {
 				Object.defineProperty(process, 'platform', { value: 'win32' });
-				nock(azdata.azdataHostname)
-					.get(`/${azdata.azdataUri}`)
+				nock(constants.azdataHostname)
+					.get(`/${constants.azdataUri}`)
 					.reply(404);
 				const downloadPromise = azdata.installAzdata(outputChannelMock.object);
 				await should(downloadPromise).be.rejected();
@@ -128,8 +129,8 @@ describe('azdata', function () {
 			try {
 				Object.defineProperty(process, 'platform', { value: 'win32' });
 				const executeCommandStub = sinon.stub(childProcess, 'executeCommand').rejects();
-				nock(azdata.azdataHostname)
-					.get(`/${azdata.azdataUri}`)
+				nock(constants.azdataHostname)
+					.get(`/${constants.azdataUri}`)
 					.replyWithFile(200, __filename);
 				const downloadPromise = azdata.installAzdata(outputChannelMock.object);
 				await should(downloadPromise).be.rejected();
@@ -191,7 +192,7 @@ describe('azdata', function () {
 					should(command).be.equal('brew');
 					return { stdout: 'success', stderr: '' };
 				});
-				await azdata.checkAndUpdateAzdata(oldAzdata, outputChannelMock.object);
+				await azdata.checkAndUpgradeAzdata(oldAzdata, outputChannelMock.object);
 				should(executeCommandStub.calledThrice);
 			} finally {
 				Object.defineProperty(process, 'platform', { value: originalPlatform });
@@ -236,11 +237,11 @@ describe('azdata', function () {
 			const originalPlatform = process.platform;
 			try {
 				Object.defineProperty(process, 'platform', { value: 'win32' });
-				nock(azdata.azdataHostname)
-					.get(`/${azdata.azdataUri}`)
+				nock(constants.azdataHostname)
+					.get(`/${constants.azdataUri}`)
 					.replyWithFile(200, __filename);
 				sinon.stub(childProcess, 'executeCommand').rejects();
-				const upgradePromise = azdata.checkAndUpdateAzdata(oldAzdata, outputChannelMock.object);
+				const upgradePromise = azdata.checkAndUpgradeAzdata(oldAzdata, outputChannelMock.object);
 				await should(upgradePromise).be.rejected();
 			} finally {
 				Object.defineProperty(process, 'platform', { value: originalPlatform });
@@ -252,7 +253,7 @@ describe('azdata', function () {
 			try {
 				Object.defineProperty(process, 'platform', { value: 'darwin' });
 				const executeCommandStub = sinon.stub(childProcess, 'executeCommand').rejects();
-				const upgradePromise = azdata.checkAndUpdateAzdata(oldAzdata, outputChannelMock.object);
+				const upgradePromise = azdata.checkAndUpgradeAzdata(oldAzdata, outputChannelMock.object);
 				await should(upgradePromise).be.rejected();
 				should(executeCommandStub.calledOnce).be.true();
 			} finally {
@@ -265,7 +266,7 @@ describe('azdata', function () {
 			try {
 				Object.defineProperty(process, 'platform', { value: 'linux' });
 				const executeSudoCommandStub = sinon.stub(childProcess, 'executeSudoCommand').rejects();
-				const upgradePromise = azdata.checkAndUpdateAzdata(oldAzdata, outputChannelMock.object);
+				const upgradePromise = azdata.checkAndUpgradeAzdata(oldAzdata, outputChannelMock.object);
 				await should(upgradePromise).be.rejected();
 
 				should(executeSudoCommandStub.calledOnce).be.true();
@@ -281,16 +282,16 @@ async function testInstallOrUpgradeAzdataWin32(outputChannelMock: TypeMoq.IMock<
 		should(command).be.equal('msiexec');
 		should(args[0]).be.equal('/qn');
 		should(args[1]).be.equal('/i');
-		should(path.basename(args[2])).be.equal(azdata.azdataUri);
+		should(path.basename(args[2])).be.equal(constants.azdataUri);
 		return { stdout: 'success', stderr: '' };
 	});
-	nock(azdata.azdataHostname)
-		.get(`/${azdata.azdataUri}`)
+	nock(constants.azdataHostname)
+		.get(`/${constants.azdataUri}`)
 		.replyWithFile(200, __filename);
 	if (operation === 'install') {
 		await azdata.installAzdata(outputChannelMock.object);
 	} else {
-		await azdata.checkAndUpdateAzdata(oldAzdata, outputChannelMock.object);
+		await azdata.checkAndUpgradeAzdata(oldAzdata, outputChannelMock.object);
 	}
 	should(executeCommandStub.calledOnce).be.true();
 }

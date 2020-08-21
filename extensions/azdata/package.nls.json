@@ -1,4 +1,13 @@
 {
 	"azdata.displayName": "azdata",
-	"azdata.description": "Support for azdata"
+	"azdata.description": "Support for azdata",
+
+	"azdata.install.command.name": "Install azdata",
+	"azdata.upgrade.command.name": "Upgrade azdata",
+	"deployment.category": "Deployment",
+
+	"deployment.configuration.title": "Deployment configuration",
+	"azdata.auto.install.description": "Choose how install of azdata tool is done: always/never/userPrompt",
+	"azdata.auto.upgrade.description": "Choose how upgrade of azdata tool is done: always/never/userPrompt"
+
 }

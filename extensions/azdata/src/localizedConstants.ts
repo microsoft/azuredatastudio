@@ -4,10 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vscode-nls';
+import { deploymentConfigurationKey, azdataAutoInstallKey, azdataAutoUpgradeKey } from './constants';
 const localize = nls.loadMessageBundle();
 
 export const searchingForAzdata = localize('azdata.searchingForAzdata', "Searching for existing azdata installation...");
 export function foundExistingAzdata(path: string, version: string): string { return localize('azdata.foundExistingAzdata', "Found existing azdata installation at {0} (v{1})", path, version); }
+export const notFoundExistingAzdata = localize('azdata.notFoundExistingAzdata', "Could not find existing azdata installation. Upgrade cannot be performed. Try installing instead");
 export function downloadingProgressMb(currentMb: string, totalMb: string): string { return localize('azdata.downloadingProgressMb', "Downloading ({0} / {1} MB)", currentMb, totalMb); }
 export const downloadFinished = localize('azdata.downloadFinished', "Download finished");
 export const install = localize('azdata.install', "Install");
@@ -18,6 +20,8 @@ export const azdataUpgraded = localize('azdata.azdataUpgraded', "azdata was succ
 export const cancel = localize('azdata.cancel', "Cancel");
 export const yes = localize('azdata.yes', "Yes");
 export const no = localize('azdata.no', "No");
+export const always = localize('azdata.always', "Always");
+export const never = localize('azdata.never', "Never");
 export function downloadingTo(name: string, location: string): string { return localize('azdata.downloadingTo', "Downloading {0} to {1}", name, location); }
 export function executingCommand(command: string, args: string[]): string { return localize('azdata.executingCommand', "Executing command \"{0} {1}\"", command, args?.join(' ')); }
 export function stdoutOutput(stdout: string): string { return localize('azdata.stdoutOutput', "stdout : {0}", stdout); }
@@ -31,9 +35,13 @@ export function foundAzdataVersionToUpgradeTo(version: string): string { return 
 export function promptForAzdataUpgrade(version: string): string { return localize('azdata.promptForAzdataUpgrade', "An updated version of azdata ( {0} ) is available, do you wish to install it now?", version); }
 export function couldNotFindAzdata(err: any): string { return localize('azdata.couldNotFindAzdata', "Could not find azdata. Error : {0}", err.message ?? err); }
 export const couldNotFindAzdataWithPrompt = localize('azdata.couldNotFindAzdataWithPrompt', "Could not find azdata, install it now? If not then some features will not be able to function.");
+export const foundAzdataUpgradePrompt = localize('azdata.foundAzdataUpgradePrompt', "Found an upgrade available for azdata, upgrade it now?");
 export const downloadError = localize('azdata.downloadError', "Error while downloading");
 export function installError(err: any): string { return localize('azdata.installError', "Error installing azdata : {0}", err.message ?? err); }
+export function upgradeError(err: any): string { return localize('azdata.upgradeError', "Error upgrading azdata : {0}", err.message ?? err); }
 export function platformUnsupported(platform: string): string { return localize('azdata.platformUnsupported', "Platform '{0}' is currently unsupported", platform); }
 export function unexpectedCommandError(errMsg: string): string { return localize('azdata.unexpectedCommandError', "Unexpected error executing command : {0}", errMsg); }
 export function unexpectedExitCode(code: number): string { return localize('azdata.unexpectedExitCode', "Unexpected exit code from command ({0})", code); }
 export function updateError(err: any): string { return localize('azdata.updateError', "Error updating azdata : {0}", err.message ?? err); }
+export function skipInstall(config: string): string { return localize('azdata.skipInstall', "Skipping installation of azdata, since the operation was not user requested and config option:{0}.{1} is {2}", deploymentConfigurationKey, azdataAutoInstallKey, config); }
+export function skipUpgrade(config: string): string { return localize('azdata.skipUpgrade', "Skipping upgrade of azdata, since the operation was not user requested and config option:{0}.{1} is {2}", deploymentConfigurationKey, azdataAutoUpgradeKey, config); }

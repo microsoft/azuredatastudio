@@ -6,18 +6,19 @@
 import * as os from 'os';
 import { SemVer } from 'semver';
 import * as vscode from 'vscode';
-import { executeCommand, executeSudoCommand } from './common/childProcess';
+import { executeCommand, executeSudoCommand, ExitCodeError } from './common/childProcess';
 import { HttpClient } from './common/httpClient';
 import { discoverLatestAvailableAzdataVersion, searchForCmd } from './common/utils';
+import { azdataAutoInstallKey, azdataAutoUpgradeKey, azdataHostname, azdataUri, deploymentConfigurationKey } from './constants';
 import * as loc from './localizedConstants';
 import { AzdataOutput } from './typings/azdata-ext';
 
 
-export const azdataHostname = 'https://aka.ms';
-export const azdataUri = 'azdata-msi';
-export const azdataReleaseJson = 'azdata/release.json';
-
-
+const enum AzdataDeployOption {
+	always = 'always',
+	never = 'never',
+	userPrompt = 'userPrompt'
+}
 /**
  * Information about an azdata installation
  */
@@ -133,19 +134,79 @@ export async function upgradeAzdata(outputChannel: vscode.OutputChannel): Promis
 	}
 }
 
+
+export async function checkAndInstallAzdata(outputChannel: vscode.OutputChannel, userRequested: boolean = false): Promise<IAzdataTool | undefined> {
+	try {
+		const azdata = await findAzdata(outputChannel); // find currently installed Azdata
+		vscode.window.showInformationMessage(loc.foundExistingAzdata(azdata.path, azdata.version.raw));
+		// Don't block on this since we want the extension to finish activating without needing user input
+		checkAndUpgradeAzdata(azdata, outputChannel, userRequested).catch(err => vscode.window.showWarningMessage(loc.updateError(err))); //update if available and user wants it.
+		return findAzdata(outputChannel); // now again find and return the currently installed azdata
+	} catch (err) {
+		// Don't block on this since we want the extension to finish activating without needing user input.
+		// Calls will be made to handle azdata not being installed
+		promptToInstallAzdata(outputChannel, userRequested).catch(e => console.log(`Unexpected error prompting to install azdata ${e}`));
+	}
+	return undefined;
+}
+
 /**
- * Checks whether a newer version of azdata is available - and if it is prompts the user to download and
- * install it.
+ * Checks whether a newer version of azdata is available - and if it is prompts the user to install it.
  * @param currentAzdata The current version of azdata to check again
  * @param outputChannel Channel used to display diagnostic information
  */
-export async function checkAndUpdateAzdata(currentAzdata: IAzdataTool, outputChannel: vscode.OutputChannel): Promise<void> {
+export async function checkAndUpgradeAzdata(currentAzdata: IAzdataTool, outputChannel: vscode.OutputChannel, userRequested: boolean = false): Promise<void> {
 	const newVersion = await discoverLatestAvailableAzdataVersion(outputChannel);
 	if (newVersion.compare(currentAzdata.version) === 1) {
-		const response = await vscode.window.showInformationMessage(loc.promptForAzdataUpgrade(newVersion.raw), loc.yes, loc.no);
-		if (response === loc.yes) {
-			await upgradeAzdata(outputChannel);
+		promptToUpgradeAzdata(outputChannel, userRequested).catch(e => console.log(`Unexpected error prompting to upgrade azdata ${e}`));
+	}
+}
+
+async function promptToInstallAzdata(outputChannel: vscode.OutputChannel, userRequested: boolean = false): Promise<void> {
+	let response: string | undefined = loc.yes;
+	const config = getConfig(azdataAutoInstallKey);
+	if (config === AzdataDeployOption.userPrompt) {
+		response = await vscode.window.showErrorMessage(loc.couldNotFindAzdataWithPrompt, loc.yes, loc.no, loc.always, loc.never);
+	} else if (config === AzdataDeployOption.never && !userRequested) {
+		outputChannel.appendLine(loc.skipInstall(config));
+		return;
+	}
+	if (response === loc.yes) {
+		try {
+			await installAzdata(outputChannel);
+			vscode.window.showInformationMessage(loc.azdataInstalled);
+		} catch (err) {
+			// Windows: 1602 is User Cancelling installation - not unexpected so don't display
+			if (!(err instanceof ExitCodeError) || err.code !== 1602) {
+				vscode.window.showWarningMessage(loc.installError(err));
+			}
 		}
+	} else if (response === loc.always || response === loc.never) {
+		await setConfig(azdataAutoInstallKey, response);
+	}
+}
+
+async function promptToUpgradeAzdata(outputChannel: vscode.OutputChannel, userRequested: boolean = false): Promise<void> {
+	let response: string | undefined = loc.yes;
+	const config = getConfig(azdataAutoInstallKey);
+	if (config === AzdataDeployOption.userPrompt) {
+		response = await vscode.window.showInformationMessage(loc.foundAzdataUpgradePrompt, loc.yes, loc.no, loc.always, loc.never);
+	} else if (config === AzdataDeployOption.never && !userRequested) {
+		outputChannel.appendLine(loc.skipUpgrade(config));
+		return;
+	}
+	if (response === loc.yes) {
+		try {
+			await upgradeAzdata(outputChannel);
+			vscode.window.showInformationMessage(loc.azdataUpgraded);
+		} catch (err) {
+			// Windows: 1602 is User Cancelling installation - not unexpected so don't display
+			if (!(err instanceof ExitCodeError) || err.code !== 1602) {
+				vscode.window.showWarningMessage(loc.upgradeError(err));
+			}
+		}
+	} else if (response === loc.always || response === loc.never) {
+		await setConfig(azdataAutoUpgradeKey, response);
 	}
 }
 
@@ -224,4 +285,14 @@ function getVersionFromAzdataOutput(raw: string): SemVer {
 	// as the Python installation, with the first line being the version of azdata itself.
 	const lines = raw.split(os.EOL);
 	return new SemVer(lines[0].trim());
+}
+
+
+function getConfig(key: string) {
+	return vscode.workspace.getConfiguration(deploymentConfigurationKey)[key];
+}
+
+async function setConfig(key: string, value: string) {
+	const config = vscode.workspace.getConfiguration(deploymentConfigurationKey);
+	await config.update(key, value);
 }
