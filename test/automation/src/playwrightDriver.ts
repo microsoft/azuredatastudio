@@ -114,7 +114,7 @@ export async function launch(userDataDir: string, _workspacePath: string, codeSe
 	}
 	server = spawn(
 		serverLocation,
-		['--browser', 'none', '--driver', 'web', '--extensions-dir', extPath],
+		['--browser', 'none', '--driver', 'web', '--extensions-dir', extPath, '--disable-telemetry', 'true'], // {{SQL CARBON EDIT}} disable telemetry
 		{ env }
 	);
 	server.stderr?.on('data', error => console.log(`Server stderr: ${error}`));

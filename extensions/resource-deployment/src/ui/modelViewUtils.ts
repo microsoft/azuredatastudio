@@ -8,7 +8,7 @@ import { EOL, homedir as os_homedir } from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { azureResource } from '../../../azurecore/src/azureResource/azure-resource';
+import { azureResource } from 'azureResource';
 import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, FilePickerFieldInfo, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles } from '../interfaces';
 import * as loc from '../localizedConstants';
 import { apiService } from '../services/apiService';
@@ -746,7 +746,7 @@ async function createRadioOptions(context: FieldContext, getRadioButtonInfo?: ((
 		context.fieldInfo.fieldAlignItems = 'flex-start'; // by default align the items to the top.
 	}
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
-	const radioGroupLoadingComponentBuilder = new RadioGroupLoadingComponentBuilder(context.view, context.onNewDisposableCreated);
+	const radioGroupLoadingComponentBuilder = new RadioGroupLoadingComponentBuilder(context.view, context.onNewDisposableCreated, context.fieldInfo);
 	context.fieldInfo.labelPosition = LabelPosition.Left;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, { component: radioGroupLoadingComponentBuilder });
 	addLabelInputPairToContainer(context.view, context.components, label, radioGroupLoadingComponentBuilder.component(), context.fieldInfo);

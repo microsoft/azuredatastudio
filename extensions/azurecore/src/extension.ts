@@ -26,6 +26,8 @@ import { registerAzureResourceCommands } from './azureResource/commands';
 import { AzureResourceTreeProvider } from './azureResource/tree/treeProvider';
 import { SqlInstanceResourceService } from './azureResource/providers/sqlinstance/sqlInstanceService';
 import { SqlInstanceProvider } from './azureResource/providers/sqlinstance/sqlInstanceProvider';
+import { KustoResourceService } from './azureResource/providers/kusto/kustoService';
+import { KustoProvider } from './azureResource/providers/kusto/kustoProvider';
 import { PostgresServerProvider } from './azureResource/providers/postgresServer/postgresServerProvider';
 import { PostgresServerService } from './azureResource/providers/postgresServer/postgresServerService';
 import { AzureTerminalService } from './azureResource/services/terminalService';
@@ -33,8 +35,8 @@ import { SqlInstanceArcProvider } from './azureResource/providers/sqlinstanceArc
 import { SqlInstanceArcResourceService } from './azureResource/providers/sqlinstanceArc/sqlInstanceArcService';
 import { PostgresServerArcProvider } from './azureResource/providers/postgresArcServer/postgresServerProvider';
 import { PostgresServerArcService } from './azureResource/providers/postgresArcServer/postgresServerService';
-import { azureResource } from './azureResource/azure-resource';
-import * as azurecore from './azurecore';
+import { azureResource } from 'azureResource';
+import * as azurecore from 'azurecore';
 import * as azureResourceUtils from './azureResource/utils';
 import * as utils from './utils';
 import * as loc from './localizedConstants';
@@ -82,6 +84,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 	registerAzureServices(appContext);
 	const azureResourceTree = new AzureResourceTreeProvider(appContext);
 	pushDisposable(vscode.window.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
+	pushDisposable(vscode.window.registerTreeDataProvider('azureResourceExplorer_dialog', azureResourceTree));
 	pushDisposable(vscode.workspace.onDidChangeConfiguration(e => onDidChangeConfiguration(e), this));
 	registerAzureResourceCommands(appContext, azureResourceTree);
 
@@ -91,6 +94,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 		provideResources(): azureResource.IAzureResourceProvider[] {
 			const arcFeaturedEnabled = vscode.workspace.getConfiguration(constants.extensionConfigSectionName).get('enableArcFeatures');
 			const providers: azureResource.IAzureResourceProvider[] = [
+				new KustoProvider(new KustoResourceService(), extensionContext),
 				new AzureResourceDatabaseServerProvider(new AzureResourceDatabaseServerService(), extensionContext),
 				new AzureResourceDatabaseProvider(new AzureResourceDatabaseService(), extensionContext),
 				new SqlInstanceProvider(new SqlInstanceResourceService(), extensionContext),

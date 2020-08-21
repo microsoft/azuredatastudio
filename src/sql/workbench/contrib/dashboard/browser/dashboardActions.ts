@@ -14,7 +14,6 @@ import { Action } from 'vs/base/common/actions';
 import { TreeSelectionHandler } from 'sql/workbench/services/objectExplorer/browser/treeSelectionHandler';
 import { ObjectExplorerActionsContext, getTreeNode } from 'sql/workbench/services/objectExplorer/browser/objectExplorerActions';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
@@ -91,7 +90,7 @@ export class OEManageConnectionAction extends Action {
 
 	private async doManage(actionContext: ObjectExplorerActionsContext): Promise<boolean> {
 		let treeNode: TreeNode = undefined;
-		let connectionProfile: IConnectionProfile = undefined;
+		let connectionProfile: ConnectionProfile = undefined;
 		if (actionContext instanceof ObjectExplorerActionsContext) {
 			// Must use a real connection profile for this action due to lookup
 			connectionProfile = ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, actionContext.connectionProfile);

@@ -38,6 +38,7 @@ export const newDatabaseProjectName = localize('newDatabaseProjectName', "New da
 export const sqlDatabaseProject = localize('sqlDatabaseProject', "SQL database project");
 export const yesString = localize('yesString', "Yes");
 export const noString = localize('noString', "No");
+export const okString = localize('okString', "Ok");
 export const extractTargetInput = localize('extractTargetInput', "Select folder structure for SQL files");
 export const extractDatabaseSelection = localize('extractDatabaseSelection', "Select database to import");
 export const selectString = localize('selectString', "Select");
@@ -77,11 +78,11 @@ export const selectConnectionRadioButtonsTitle = localize('selectconnectionRadio
 export const dataSourceDropdownTitle = localize('dataSourceDropdownTitle', "Data source");
 export const noDataSourcesText = localize('noDataSourcesText', "No data sources in this project");
 export const loadProfileButtonText = localize('loadProfileButtonText', "Load Profile...");
-export const profileWarningText = localize('profileWarningText', "⚠ Warning: Connection strings using AAD Authentication are not supported at this time");
 export const profileReadError = localize('profileReadError', "Could not load the profile file.");
 export const sqlCmdTableLabel = localize('sqlCmdTableLabel', "SQLCMD Variables");
-export const sqlCmdVariableColumn = localize('sqlCmdVariableColumn', "Variable");
+export const sqlCmdVariableColumn = localize('sqlCmdVariableColumn', "Name");
 export const sqlCmdValueColumn = localize('sqlCmdValueColumn', "Value");
+export const loadSqlCmdVarsButtonTitle = localize('reloadValuesFromProjectButtonTitle', "Reload values from project");
 
 // Error messages
 
@@ -110,6 +111,8 @@ export const invalidDatabaseReference = localize('invalidDatabaseReference', "In
 export const databaseSelectionRequired = localize('databaseSelectionRequired', "Database selection is required to import a project");
 export const databaseReferenceAlreadyExists = localize('databaseReferenceAlreadyExists', "A reference to this database already exists in this project");
 export const ousiderFolderPath = localize('outsideFolderPath', "Items with absolute path outside project folder are not supported. Please make sure the paths in the project file are relative to project folder.");
+export const parentTreeItemUnknown = localize('parentTreeItemUnknown', "Cannot access parent of provided tree item");
+export const prePostDeployCount = localize('prePostDeployCount', "To successfully build, update the project to have one pre-deployment script and/or one post-deployment script");
 export function projectAlreadyOpened(path: string) { return localize('projectAlreadyOpened', "Project '{0}' is already opened.", path); }
 export function projectAlreadyExists(name: string, path: string) { return localize('projectAlreadyExists', "A project named {0} already exists in {1}.", name, path); }
 export function noFileExist(fileName: string) { return localize('noFileExist', "File {0} doesn't exist", fileName); }
@@ -118,6 +121,7 @@ export function fileAlreadyExists(filename: string) { return localize('fileAlrea
 export function folderAlreadyExists(filename: string) { return localize('folderAlreadyExists', "A folder with the name '{0}' already exists on disk at this location. Please choose another name.", filename); }
 export function invalidInput(input: string) { return localize('invalidInput', "Invalid input: {0}", input); }
 export function unableToCreatePublishConnection(input: string) { return localize('unableToCreatePublishConnection', "Unable to construct connection: {0}", input); }
+export function circularProjectReference(project1: string, project2: string) { return localize('cicularProjectReference', "Circular reference from project {0} to project {1}", project1, project2); }
 
 export function mssqlNotFound(mssqlConfigDir: string) { return localize('mssqlNotFound', "Could not get mssql extension's install location at {0}", mssqlConfigDir); }
 export function projBuildFailed(errorMessage: string) { return localize('projBuildFailed', "Build failed. Check output pane for more details. {0}", errorMessage); }
@@ -166,6 +170,11 @@ export const DatabaseVariableLiteralValue = 'DatabaseVariableLiteralValue';
 export const DSP = 'DSP';
 export const Properties = 'Properties';
 export const RelativeOuterPath = '..';
+export const ProjectReference = 'ProjectReference';
+export const TargetConnectionString = 'TargetConnectionString';
+export const PreDeploy = 'PreDeploy';
+export const PostDeploy = 'PostDeploy';
+export const None = 'None';
 
 // SqlProj File targets
 export const NetCoreTargets = '$(NETCoreTargetsPath)\\Microsoft.Data.Tools.Schema.SqlTasks.targets';
@@ -193,8 +202,15 @@ export const targetConnectionString = 'TargetConnectionString';
 export const initialCatalogSetting = 'Initial Catalog';
 export const dataSourceSetting = 'Data Source';
 export const integratedSecuritySetting = 'Integrated Security';
+export const authenticationSetting = 'Authentication';
+export const activeDirectoryInteractive = 'active directory interactive';
 export const userIdSetting = 'User ID';
 export const passwordSetting = 'Password';
+
+// Authentication types
+export const integratedAuth = 'Integrated';
+export const azureMfaAuth = 'AzureMFA';
+export const sqlAuth = 'SqlAuth';
 
 // Tree item types
 export enum DatabaseProjectItemType {

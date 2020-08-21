@@ -104,7 +104,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		id: commands.OE_EDIT_DATA_COMMAND_ID,
 		title: localize('editData', "Edit Data")
 	},
-	when: ContextKeyExpr.and(TreeNodeContextKey.NodeType.isEqualTo('Table'), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()))
+	when: ContextKeyExpr.and(TreeNodeContextKey.NodeType.isEqualTo('Table'), ConnectionContextKey.Provider.notEqualsTo('KUSTO'), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()))
 });
 
 MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
@@ -114,17 +114,22 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		id: commands.OE_SCRIPT_AS_CREATE_COMMAND_ID,
 		title: localize('scriptCreate', "Script as Create")
 	},
-	when: ContextKeyExpr.or(
-		TreeNodeContextKey.NodeType.isEqualTo('Table'),
-		TreeNodeContextKey.NodeType.isEqualTo('View'),
-		TreeNodeContextKey.NodeType.isEqualTo('Schema'),
-		TreeNodeContextKey.NodeType.isEqualTo('User'),
-		TreeNodeContextKey.NodeType.isEqualTo('UserDefinedTableType'),
-		TreeNodeContextKey.NodeType.isEqualTo('StoredProcedure'),
-		TreeNodeContextKey.NodeType.isEqualTo('AggregateFunction'),
-		TreeNodeContextKey.NodeType.isEqualTo('PartitionFunction'),
-		TreeNodeContextKey.NodeType.isEqualTo('ScalarValuedFunction'),
-		TreeNodeContextKey.NodeType.isEqualTo('TableValuedFunction'))
+	when:
+		ContextKeyExpr.and(
+			ConnectionContextKey.Provider.notEqualsTo('KUSTO'),
+			ContextKeyExpr.or(
+				TreeNodeContextKey.NodeType.isEqualTo('Table'),
+				TreeNodeContextKey.NodeType.isEqualTo('View'),
+				TreeNodeContextKey.NodeType.isEqualTo('Schema'),
+				TreeNodeContextKey.NodeType.isEqualTo('User'),
+				TreeNodeContextKey.NodeType.isEqualTo('UserDefinedTableType'),
+				TreeNodeContextKey.NodeType.isEqualTo('StoredProcedure'),
+				TreeNodeContextKey.NodeType.isEqualTo('AggregateFunction'),
+				TreeNodeContextKey.NodeType.isEqualTo('PartitionFunction'),
+				TreeNodeContextKey.NodeType.isEqualTo('ScalarValuedFunction'),
+				TreeNodeContextKey.NodeType.isEqualTo('TableValuedFunction')
+			)
+		)
 });
 
 MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
@@ -174,17 +179,22 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		id: commands.OE_SCRIPT_AS_DELETE_COMMAND_ID,
 		title: localize('scriptDelete', "Script as Drop")
 	},
-	when: ContextKeyExpr.or(
-		TreeNodeContextKey.NodeType.isEqualTo(NodeType.Table),
-		TreeNodeContextKey.NodeType.isEqualTo(NodeType.View),
-		TreeNodeContextKey.NodeType.isEqualTo(NodeType.Schema),
-		TreeNodeContextKey.NodeType.isEqualTo(NodeType.User),
-		TreeNodeContextKey.NodeType.isEqualTo(NodeType.UserDefinedTableType),
-		TreeNodeContextKey.NodeType.isEqualTo(NodeType.StoredProcedure),
-		TreeNodeContextKey.NodeType.isEqualTo(NodeType.AggregateFunction),
-		TreeNodeContextKey.NodeType.isEqualTo(NodeType.PartitionFunction),
-		TreeNodeContextKey.NodeType.isEqualTo(NodeType.ScalarValuedFunction),
-		TreeNodeContextKey.NodeType.isEqualTo(NodeType.TableValuedFunction))
+	when:
+		ContextKeyExpr.and(
+			ConnectionContextKey.Provider.notEqualsTo('KUSTO'),
+			ContextKeyExpr.or(
+				TreeNodeContextKey.NodeType.isEqualTo(NodeType.Table),
+				TreeNodeContextKey.NodeType.isEqualTo(NodeType.View),
+				TreeNodeContextKey.NodeType.isEqualTo(NodeType.Schema),
+				TreeNodeContextKey.NodeType.isEqualTo(NodeType.User),
+				TreeNodeContextKey.NodeType.isEqualTo(NodeType.UserDefinedTableType),
+				TreeNodeContextKey.NodeType.isEqualTo(NodeType.StoredProcedure),
+				TreeNodeContextKey.NodeType.isEqualTo(NodeType.AggregateFunction),
+				TreeNodeContextKey.NodeType.isEqualTo(NodeType.PartitionFunction),
+				TreeNodeContextKey.NodeType.isEqualTo(NodeType.ScalarValuedFunction),
+				TreeNodeContextKey.NodeType.isEqualTo(NodeType.TableValuedFunction)
+			)
+		)
 });
 
 MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
