@@ -37,7 +37,6 @@
 		"./sql/workbench/contrib/backup/**/*.ts", // 249 errors
 		"./sql/workbench/contrib/charts/**/*.ts", // 3253 errors
 		"./sql/workbench/contrib/commandLine/**/*.ts", // 3276 errors
-		"./sql/workbench/contrib/configuration/**/*.ts", // 2 errors
 		"./sql/workbench/contrib/connection/**/*.ts", // 355 errors
 		"./sql/workbench/contrib/dashboard/**/*.ts", // 1292 errors
 		"./sql/workbench/contrib/dataExplorer/**/*.ts", // 3275 errors
@@ -48,7 +47,6 @@
 		"./sql/workbench/contrib/modelView/**/*.ts", // 3253 errors
 		"./sql/workbench/contrib/notebook/**/*.ts", // 3740 errors
 		"./sql/workbench/contrib/objectExplorer/**/*.ts", // 3330 errors
-		"./sql/workbench/contrib/preferences/**/*.ts", // 1 errors
 		"./sql/workbench/contrib/profiler/**/*.ts", // 204 errors
 		"./sql/workbench/contrib/query/**/*.ts", // 3342 errors
 		"./sql/workbench/contrib/queryHistory/**/*.ts", // 432 errors
