@@ -5,17 +5,16 @@
 
 import * as azdata from 'azdata';
 import * as loc from '../../../localizedConstants';
-import { IconPathHelper, cssStyles, ResourceType } from '../../../constants';
-import { KeyValueContainer, KeyValue, InputKeyValue, MultilineInputKeyValue } from '../../components/keyValueContainer';
+import { IconPathHelper, cssStyles } from '../../../constants';
+import { KeyValueContainer, KeyValue } from '../../components/keyValueContainer';
 import { DashboardPage } from '../../components/dashboardPage';
 import { ControllerModel } from '../../../models/controllerModel';
-import { MiaaModel } from '../../../models/miaaModel';
 
 export class MiaaConnectionStringsPage extends DashboardPage {
 
 	private _keyValueContainer!: KeyValueContainer;
 
-	constructor(modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _miaaModel: MiaaModel) {
+	constructor(modelView: azdata.ModelView, private _controllerModel: ControllerModel) {
 		super(modelView);
 		this.disposables.push(this._controllerModel.onRegistrationsUpdated(_ =>
 			this.eventuallyRunOnInitialized(() => this.updateConnectionStrings())));
@@ -64,6 +63,7 @@ export class MiaaConnectionStringsPage extends DashboardPage {
 	}
 
 	private getConnectionStrings(): KeyValue[] {
+		/*
 		const instanceRegistration = this._controllerModel.getRegistration(ResourceType.sqlManagedInstances, this._miaaModel.info.namespace, this._miaaModel.info.name);
 		if (!instanceRegistration) {
 			return [];
@@ -87,6 +87,8 @@ $conn = sqlsrv_connect($serverName, $connectionInfo);`),
 			new InputKeyValue(this.modelView.modelBuilder, 'Ruby', `host=${ip}; user=${username} password={your_password_here} port=${port} sslmode=require`),
 			new InputKeyValue(this.modelView.modelBuilder, 'Web App', `Database=master; Data Source=${ip}; User Id=${username}; Password={your_password_here}`)
 		];
+		*/
+		return [];
 	}
 
 	private updateConnectionStrings(): void {

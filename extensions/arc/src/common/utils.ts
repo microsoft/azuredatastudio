@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as azurecore from '../../../azurecore/src/azurecore';
+import * as azurecore from 'azurecore';
 import * as loc from '../localizedConstants';
 import { IconPathHelper, IconPath, ResourceType, ConnectionMode } from '../constants';
 
@@ -191,19 +191,7 @@ export async function promptAndConfirmPassword(validate: (input: string) => stri
  * @param error The error object
  */
 export function getErrorMessage(error: any): string {
-	if (error.body?.reason) {
-		// For HTTP Errors with a body pull out the reason message since that's usually the most helpful
-		return error.body.reason;
-	} else if (error.message) {
-		if (error.response?.statusMessage) {
-			// Some Http errors just have a status message as additional detail, but it's not enough on its
-			// own to be useful so append to the message as well
-			return `${error.message} (${error.response.statusMessage})`;
-		}
-		return error.message;
-	} else {
-		return error;
-	}
+	return error.message ?? error;
 }
 
 /**

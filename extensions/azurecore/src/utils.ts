@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as loc from './localizedConstants';
-import { AzureRegion } from './azurecore';
+import { AzureRegion } from 'azurecore';
 
 /**
  * Converts a region value (@see AzureRegion) into the localized Display Name

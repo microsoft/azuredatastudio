@@ -12,8 +12,30 @@ import * as loc from '../localizedConstants';
  * Wrapper error for when an unexpected exit code was received
  */
 export class ExitCodeError extends Error {
-	constructor(public code: number) {
-		super(loc.unexpectedExitCode(code));
+	constructor(private _code: number, private _stderr: string) {
+		super();
+		this.setMessage();
+	}
+
+	public get code(): number {
+		return this._code;
+	}
+
+	public set code(value: number) {
+		this._code = value;
+	}
+
+	public get stderr(): string {
+		return this._stderr;
+	}
+
+	public set stderr(value: string) {
+		this._stderr = value;
+		this.setMessage();
+	}
+
+	private setMessage(): void {
+		this.message = loc.unexpectedExitCode(this._code, this._stderr);
 	}
 }
 
@@ -23,14 +45,16 @@ export type ProcessOutput = { stdout: string, stderr: string };
  * Executes the specified command. Throws an error for a non-0 exit code or if stderr receives output
  * @param command The command to execute
  * @param args Optional args to pass, every arg and arg value must be a separate item in the array
+ * @param additionalEnvVars Additional environment variables to add to the process environment
  * @param outputChannel Channel used to display diagnostic information
  */
-export async function executeCommand(command: string, args: string[], outputChannel: vscode.OutputChannel): Promise<ProcessOutput> {
+export async function executeCommand(command: string, args: string[], outputChannel: vscode.OutputChannel, additionalEnvVars?: { [key: string]: string },): Promise<ProcessOutput> {
 	return new Promise((resolve, reject) => {
 		outputChannel.appendLine(loc.executingCommand(command, args));
 		const stdoutBuffers: Buffer[] = [];
 		const stderrBuffers: Buffer[] = [];
-		const child = cp.spawn(command, args, { shell: true });
+		const env = Object.assign({}, process.env, additionalEnvVars);
+		const child = cp.spawn(command, args, { shell: true, env: env });
 		child.stdout.on('data', (b: Buffer) => stdoutBuffers.push(b));
 		child.stderr.on('data', (b: Buffer) => stderrBuffers.push(b));
 		child.on('error', reject);
@@ -44,7 +68,7 @@ export async function executeCommand(command: string, args: string[], outputChan
 				outputChannel.appendLine(loc.stdoutOutput(stderr));
 			}
 			if (code) {
-				const err = new ExitCodeError(code);
+				const err = new ExitCodeError(code, stderr);
 				outputChannel.appendLine(err.message);
 				reject(err);
 			} else {
