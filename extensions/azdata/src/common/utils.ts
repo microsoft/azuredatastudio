@@ -61,6 +61,7 @@ async function discoverLatestStableAzdataVersionDarwin(outputChannel: vscode.Out
 /**
  * Gets the latest azdata version for linux clients
  * @param outputChannel Channel used to display diagnostic information
+ * This method requires sudo permission so not suitable to be run during startup.
  */
 // async function discoverLatestStableAzdataVersionLinux(outputChannel: vscode.OutputChannel): Promise<SemVer> {
 // 	// Update repository information and install azdata
