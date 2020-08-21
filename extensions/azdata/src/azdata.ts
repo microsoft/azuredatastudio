@@ -3,13 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { AzdataOutput } from 'azdata-ext';
 import * as os from 'os';
 import * as vscode from 'vscode';
 import { HttpClient } from './common/httpClient';
 import * as loc from './localizedConstants';
 import { executeCommand, executeSudoCommand, ExitCodeError } from './common/childProcess';
 import { searchForCmd } from './common/utils';
-import { AzdataOutput } from './typings/azdata-ext';
 
 export const azdataHostname = 'https://aka.ms';
 export const azdataUri = 'azdata-msi';

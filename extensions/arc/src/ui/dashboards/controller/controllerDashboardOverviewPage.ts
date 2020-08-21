@@ -162,7 +162,8 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 
 		const openInAzurePortalButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: loc.openInAzurePortal,
-			iconPath: IconPathHelper.openInTab
+			iconPath: IconPathHelper.openInTab,
+			enabled: false
 		}).component();
 
 		this.disposables.push(
@@ -215,8 +216,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 						url: ''
 					}).component();
 				nameLink.onDidClick(async () => {
-					// TODO chgagnon
-					await this._controllerModel.treeDataProvider.openResourceDashboard(this._controllerModel, r.instanceType || '', /* r.instanceNamespace || */ '', parseInstanceName(r.instanceName));
+					await this._controllerModel.treeDataProvider.openResourceDashboard(this._controllerModel, r.instanceType || '', parseInstanceName(r.instanceName));
 				});
 				// TODO chgagnon
 				return [imageComponent, nameLink, resourceTypeToDisplayName(r.instanceType), '-'/* loc.numVCores(r.vCores) */];

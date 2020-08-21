@@ -4,12 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as azdataExt from 'azdata-ext';
 import * as vscode from 'vscode';
 import * as loc from '../../../localizedConstants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { IconPathHelper, cssStyles, Endpoints } from '../../../constants';
 import { ControllerModel } from '../../../models/controllerModel';
-import { getDatabaseStateDisplayText } from '../../../common/utils';
+import { getDatabaseStateDisplayText, promptForResourceDeletion } from '../../../common/utils';
 import { MiaaModel } from '../../../models/miaaModel';
 
 export class MiaaDashboardOverviewPage extends DashboardPage {
@@ -24,6 +25,8 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 	private _grafanaLink!: azdata.HyperlinkComponent;
 	private _databasesTable!: azdata.DeclarativeTableComponent;
 
+	private readonly _azdataApi: azdataExt.IExtension;
+
 	private _instanceProperties = {
 		resourceGroup: '-',
 		status: '-',
@@ -37,6 +40,8 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 
 	constructor(modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _miaaModel: MiaaModel) {
 		super(modelView);
+		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
+
 		this._instanceProperties.miaaAdmin = this._miaaModel.username || this._instanceProperties.miaaAdmin;
 		this.disposables.push(
 			this._controllerModel.onRegistrationsUpdated(() => this.handleRegistrationsUpdated()),
@@ -182,12 +187,11 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 			deleteButton.onDidClick(async () => {
 				deleteButton.enabled = false;
 				try {
-					/* TODO chgagnon enable delete
-					if (await promptForResourceDeletion(this._miaaModel.info.namespace, this._miaaModel.info.name)) {
-						await this._controllerModel.miaaDelete(this._miaaModel.info.namespace, this._miaaModel.info.name);
+					if (await promptForResourceDeletion(this._miaaModel.info.name)) {
+						await this._azdataApi.sql.mi.delete(this._miaaModel.info.name);
+						await this._controllerModel.refreshTreeNode();
 						vscode.window.showInformationMessage(loc.resourceDeleted(this._miaaModel.info.name));
 					}
-					*/
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.resourceDeletionFailed(this._miaaModel.info.name, error));
 				} finally {
@@ -266,7 +270,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 
 	private handleEndpointsUpdated(): void {
 		const kibanaEndpoint = this._controllerModel.getEndpoint(Endpoints.logsui);
-		const kibanaQuery = `kubernetes_namespace:"${this._miaaModel.info.namespace}" and instance_name :"${this._miaaModel.info.name}"`;
+		const kibanaQuery = `kubernetes_namespace:"${this._miaaModel.config?.metadata.namespace}" and instance_name :"${this._miaaModel.config?.metadata.name}"`;
 		const kibanaUrl = kibanaEndpoint ? `${kibanaEndpoint.endpoint}/app/kibana#/discover?_a=(query:(language:kuery,query:'${kibanaQuery}'))` : '';
 		this._kibanaLink.label = kibanaUrl;
 		this._kibanaLink.url = kibanaUrl;
