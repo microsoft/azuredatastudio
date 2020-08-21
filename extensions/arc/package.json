@@ -9,7 +9,7 @@
   "icon": "images/extension.png",
   "engines": {
     "vscode": "*",
-    "azdata": ">=1.20.0"
+    "azdata": ">=1.21.0"
   },
   "activationEvents": [
     "onCommand:arc.manageArcController",
