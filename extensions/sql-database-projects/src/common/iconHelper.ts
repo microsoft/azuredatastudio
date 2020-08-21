@@ -22,7 +22,7 @@ export class IconPathHelper {
 
 	public static refresh: IconPath;
 	public static folder: IconPath;
-	public static disconnect: IconPath;
+	public static edit: IconPath;
 
 	public static setExtensionContext(extensionContext: vscode.ExtensionContext) {
 		IconPathHelper.extensionContext = extensionContext;
@@ -37,7 +37,7 @@ export class IconPathHelper {
 
 		IconPathHelper.refresh = IconPathHelper.makeIcon('refresh');
 		IconPathHelper.folder = IconPathHelper.makeIcon('folder');
-		IconPathHelper.disconnect = IconPathHelper.makeIcon('disconnect');
+		IconPathHelper.edit = IconPathHelper.makeIcon('edit');
 	}
 
 	private static makeIcon(name: string) {

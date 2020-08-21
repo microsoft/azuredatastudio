@@ -268,7 +268,6 @@ export class PublishDatabaseDialog {
 		this.targetConnectionTextBox = view.modelBuilder.inputBox().withProperties({
 			value: '',
 			ariaLabel: constants.targetConnectionLabel,
-			enabled: false,
 			placeHolder: constants.selectConnection,
 			width: cssStyles.publishDialogTextboxWidth
 		}).component();
@@ -333,7 +332,6 @@ export class PublishDatabaseDialog {
 		this.loadProfileTextBox = view.modelBuilder.inputBox().withProperties({
 			placeHolder: constants.loadProfilePlaceholderText,
 			ariaLabel: constants.profile,
-			enabled: false,
 			width: cssStyles.publishDialogTextboxWidth
 		}).component();
 
@@ -455,7 +453,7 @@ export class PublishDatabaseDialog {
 	private createSelectConnectionButton(view: azdata.ModelView): azdata.Component {
 		let selectConnectionButton: azdata.ButtonComponent = view.modelBuilder.button().withProperties({
 			ariaLabel: constants.selectConnection,
-			iconPath: IconPathHelper.disconnect,
+			iconPath: IconPathHelper.edit,
 			height: '16px',
 			width: '16px'
 		}).component();
