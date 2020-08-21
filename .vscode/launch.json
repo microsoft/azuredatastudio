@@ -231,11 +231,7 @@
 				"runtimeExecutable": "${workspaceFolder}/scripts/test-extensions-unit.sh"
 			},
 			"webRoot": "${workspaceFolder}",
-			"env": {
-				"ADS_TEST_GREP": "discoverLatest",
-				"ADS_TEST_INVERT": 0
-			},
-			"timeout": 450000
+			"timeout": 45000
 		},
 		{
 			"type": "chrome",
