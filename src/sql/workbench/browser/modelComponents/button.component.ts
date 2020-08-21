@@ -52,11 +52,6 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef
 	) {
 		super(changeRef, el);
-
-		if (this.isFile === true || this.buttonType === 'File') {
-			this.setPropertyFromUI<azdata.ButtonProperties, boolean>(this.setFileProperties, true);
-			this._buttonType = <azdata.ButtonType>'File';
-		}
 	}
 
 	ngOnInit(): void {
@@ -171,7 +166,12 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 	}
 
 	public get buttonType(): azdata.ButtonType {
-		return this.getPropertyOrDefault<azdata.ButtonProperties, azdata.ButtonType>((props) => props.buttonType, <azdata.ButtonType>'Normal');
+		if (this.isFile === true) {
+			return <azdata.ButtonType>'File';
+		} else {
+			return <azdata.ButtonType>'Informational';
+			//return this.getPropertyOrDefault<azdata.ButtonProperties, azdata.ButtonType>((props) => props.buttonType, <azdata.ButtonType>'File');
+		}
 	}
 
 	public get description(): string {
