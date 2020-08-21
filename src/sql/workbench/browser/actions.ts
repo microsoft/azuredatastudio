@@ -14,11 +14,11 @@ import { ObjectMetadata } from 'azdata';
 import { Action } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
-import { IInsightsConfig } from 'sql/platform/dashboard/browser/insightRegistry';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { URI } from 'vs/base/common/uri';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IInsightsConfig } from 'sql/platform/extensions/common/extensions';
 
 export interface BaseActionContext {
 	object?: ObjectMetadata;

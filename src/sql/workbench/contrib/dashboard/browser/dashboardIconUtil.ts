@@ -3,12 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IUserFriendlyIcon } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
 import { asCSSUrl, createCSSRule } from 'vs/base/browser/dom';
 import { IdGenerator } from 'vs/base/common/idGenerator';
 import * as resources from 'vs/base/common/resources';
 import * as nls from 'vs/nls';
 import { IExtensionPointUser } from 'vs/workbench/services/extensions/common/extensionsRegistry';
+import { IUserFriendlyIcon } from 'sql/platform/extensions/common/extensions';
 
 const ids = new IdGenerator('contrib-dashboard-icon-');
 export function createCSSRuleForIcon(icon: IUserFriendlyIcon, extension: IExtensionPointUser<any>): string {
