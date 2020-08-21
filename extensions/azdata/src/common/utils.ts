@@ -9,7 +9,7 @@ import * as which from 'which';
 import { azdataHostname, AzdataLatestVersionInfo, azdataReleaseJson } from '../azdata';
 import { HttpClient } from '../common/httpClient';
 import * as loc from '../localizedConstants';
-import { executeCommand, executeSudoCommand } from './childProcess';
+import { executeCommand } from './childProcess';
 /**
  * Searches for the first instance of the specified executable in the PATH environment variable
  * @param exe The executable to search for
@@ -26,8 +26,6 @@ export function searchForCmd(exe: string): Promise<string> {
 export async function discoverLatestAvailableAzdataVersion(outputChannel: vscode.OutputChannel): Promise<SemVer> {
 	outputChannel.appendLine(loc.checkingLatestAzdataVersion);
 	switch (process.platform) {
-		case 'linux':
-			return await discoverLatestStableAzdataVersionLinux(outputChannel);
 		case 'darwin':
 			return await discoverLatestStableAzdataVersionDarwin(outputChannel);
 		default:
@@ -64,14 +62,14 @@ async function discoverLatestStableAzdataVersionDarwin(outputChannel: vscode.Out
  * Gets the latest azdata version for linux clients
  * @param outputChannel Channel used to display diagnostic information
  */
-async function discoverLatestStableAzdataVersionLinux(outputChannel: vscode.OutputChannel): Promise<SemVer> {
-	// Update repository information and install azdata
-	await executeSudoCommand('apt-get update', outputChannel);
-	const output = (await executeCommand('apt', ['list', 'azdata-cli', '--upgradeable'], outputChannel)).stdout;
-	// the packageName (with version) string is the second space delimited token on the 2nd line
-	const packageName = output.split('\n')[1].split(' ')[1];
-	// the version string is the first part of the package sting before '~'
-	const version = packageName.split('~')[0];
-	outputChannel.appendLine(loc.foundAzdataVersionToUpgradeTo(version));
-	return new SemVer(version);
-}
+// async function discoverLatestStableAzdataVersionLinux(outputChannel: vscode.OutputChannel): Promise<SemVer> {
+// 	// Update repository information and install azdata
+// 	await executeSudoCommand('apt-get update', outputChannel);
+// 	const output = (await executeCommand('apt', ['list', 'azdata-cli', '--upgradeable'], outputChannel)).stdout;
+// 	// the packageName (with version) string is the second space delimited token on the 2nd line
+// 	const packageName = output.split('\n')[1].split(' ')[1];
+// 	// the version string is the first part of the package sting before '~'
+// 	const version = packageName.split('~')[0];
+// 	outputChannel.appendLine(loc.foundAzdataVersionToUpgradeTo(version));
+// 	return new SemVer(version);
+// }
