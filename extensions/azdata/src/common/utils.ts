@@ -42,8 +42,9 @@ export async function discoverLatestAvailableAzdataVersion(outputChannel: vscode
 async function discoverLatestAzdataVersionFromJson(outputChannel: vscode.OutputChannel): Promise<SemVer> {
 	// get version information for current platform from http://aka.ms/azdata/release.json
 	const fileContents = await HttpClient.getTextContent(`${azdataHostname}/${azdataReleaseJson}`, outputChannel);
-	const versionString = JSON.parse(fileContents)[process.platform]['version'];
-	return new SemVer(versionString);
+	const version = JSON.parse(fileContents)[process.platform]['version'];
+	outputChannel.appendLine(loc.foundAzdataVersionToUpgradeTo(version));
+	return new SemVer(version);
 }
 
 /**
@@ -55,6 +56,7 @@ async function discoverLatestStableAzdataVersionDarwin(outputChannel: vscode.Out
 	await executeCommand('brew', ['tap', 'microsoft/azdata-cli-release'], outputChannel);
 	// Get the 'info' about 'azdata-cli' from 'brew' as a json object
 	const azdataInfo: AzdataLatestVersionInfo = (JSON.parse((await executeCommand('brew', ['info', 'azdata-cli', '--json'], outputChannel)).stdout)).shift();
+	outputChannel.appendLine(loc.foundAzdataVersionToUpgradeTo(azdataInfo.versions.stable));
 	return new SemVer(azdataInfo.versions.stable);
 }
 
@@ -63,19 +65,13 @@ async function discoverLatestStableAzdataVersionDarwin(outputChannel: vscode.Out
  * @param outputChannel Channel used to display diagnostic information
  */
 async function discoverLatestStableAzdataVersionLinux(outputChannel: vscode.OutputChannel): Promise<SemVer> {
-	// https://docs.microsoft.com/en-us/sql/big-data-cluster/deploy-install-azdata-linux-package
-	// Get packages needed for install process
-	await executeSudoCommand('apt-get update', outputChannel);
-	await executeSudoCommand('apt-get install gnupg ca-certificates curl wget software-properties-common apt-transport-https lsb-release -y', outputChannel);
-	// Download and install the signing key
-	await executeSudoCommand('curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/microsoft.asc.gpg > /dev/null', outputChannel);
-	// Add the azdata repository information
-	const release = (await executeCommand('lsb_release', ['-rs'], outputChannel)).stdout.trim();
-	await executeSudoCommand(`add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/${release}/mssql-server-2019.list)"`, outputChannel);
 	// Update repository information and install azdata
 	await executeSudoCommand('apt-get update', outputChannel);
-	const output = (await executeSudoCommand('apt list azdata-cli --upgradeable', outputChannel)).stdout;
-	// the version string is the second spade delimited token on the 2nd line
-	const version = output.split('\n')[1].split(' ')[1];
+	const output = (await executeCommand('apt', ['list', 'azdata-cli', '--upgradeable'], outputChannel)).stdout;
+	// the packageName (with version) string is the second space delimited token on the 2nd line
+	const packageName = output.split('\n')[1].split(' ')[1];
+	// the version string is the first part of the package sting before '~'
+	const version = packageName.split('~')[0];
+	outputChannel.appendLine(loc.foundAzdataVersionToUpgradeTo(version));
 	return new SemVer(version);
 }

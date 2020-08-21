@@ -27,6 +27,7 @@ export function gettingFilenameOfUrl(url: string): string { return localize('azd
 export function gettingTextContentsOfUrl(url: string): string { return localize('azdata.gettingTextContentsOfUrl', "Getting text contents of resource at URL {0}", url); }
 export function gotFilenameOfUrl(url: string, filename: string): string { return localize('azdata.gotFilenameOfUrl', "Got filename {0} from URL {1}", filename, url); }
 
+export function foundAzdataVersionToUpgradeTo(version: string): string { return localize('azdata.versionForUpgrade', "Found version {0} that azdata-cli can be upgraded to.", version); }
 export function promptForAzdataUpgrade(version: string): string { return localize('azdata.promptForAzdataUpgrade', "An updated version of azdata ( {0} ) is available, do you wish to install it now?", version); }
 export function couldNotFindAzdata(err: any): string { return localize('azdata.couldNotFindAzdata', "Could not find azdata. Error : {0}", err.message ?? err); }
 export const couldNotFindAzdataWithPrompt = localize('azdata.couldNotFindAzdataWithPrompt', "Could not find azdata, install it now? If not then some features will not be able to function.");
