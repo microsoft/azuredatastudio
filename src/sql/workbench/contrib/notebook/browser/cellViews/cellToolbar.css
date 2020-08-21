@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 cell-toolbar-component {
+	z-index: 2;
 	border-width: 1px;
 	border-style: solid;
 	position: absolute;
