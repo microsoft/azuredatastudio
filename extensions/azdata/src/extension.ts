@@ -3,13 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from './typings/azdata-ext';
+import * as azdataExt from 'azdata-ext';
 import * as vscode from 'vscode';
 import { findAzdata, IAzdataTool } from './azdata';
 
 let localAzdata: IAzdataTool | undefined = undefined;
 
-export async function activate(): Promise<azdata.IExtension> {
+export async function activate(): Promise<azdataExt.IExtension> {
 	const outputChannel = vscode.window.createOutputChannel('azdata');
 	localAzdata = await checkForAzdata(outputChannel);
 	return {
@@ -40,6 +40,9 @@ export async function activate(): Promise<azdata.IExtension> {
 		},
 		sql: {
 			mi: {
+				delete: async (name: string) => {
+					return executeLocalAzdataCommand(['arc', 'sql', 'mi', 'delete', '-n', name]);
+				},
 				list: async () => {
 					return executeLocalAzdataCommand(['arc', 'sql', 'mi', 'list']);
 				},
@@ -51,7 +54,7 @@ export async function activate(): Promise<azdata.IExtension> {
 	};
 }
 
-async function executeLocalAzdataCommand<R>(args: string[], additionalEnvVars?: { [key: string]: string }): Promise<azdata.AzdataOutput<R>> {
+async function executeLocalAzdataCommand<R>(args: string[], additionalEnvVars?: { [key: string]: string }): Promise<azdataExt.AzdataOutput<R>> {
 	if (!localAzdata) {
 		throw new Error('No azdata');
 	}

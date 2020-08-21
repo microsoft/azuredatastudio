@@ -4,14 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as azdataExt from 'azdata-ext';
 import * as vscode from 'vscode';
 import { ResourceModel } from './resourceModel';
-import { ResourceInfo, Registration } from './controllerModel';
+import { ResourceInfo, Registration, ControllerModel } from './controllerModel';
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 import { Deferred } from '../common/promise';
 import * as loc from '../localizedConstants';
 import { UserCancelledError } from '../common/utils';
-import * as azdataExt from '../../../azdata/src/typings/azdata-ext';
 
 export type DatabaseModel = { name: string, status: string };
 
@@ -34,7 +34,7 @@ export class MiaaModel extends ResourceModel {
 
 	private _refreshPromise: Deferred<void> | undefined = undefined;
 
-	constructor(info: ResourceInfo, registration: Registration, private _treeDataProvider: AzureArcTreeDataProvider) {
+	constructor(private _controllerModel: ControllerModel, info: ResourceInfo, registration: Registration, private _treeDataProvider: AzureArcTreeDataProvider) {
 		super(info, registration);
 		this._azdataApi = <azdataExt.IExtension>vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 	}
@@ -73,6 +73,7 @@ export class MiaaModel extends ResourceModel {
 		}
 		this._refreshPromise = new Deferred();
 		try {
+			await this._controllerModel.azdataLogin();
 			const instanceRefresh = this._azdataApi.sql.mi.show(this.info.name).then(result => {
 				this._config = result.result;
 				this.configLastUpdated = new Date();
