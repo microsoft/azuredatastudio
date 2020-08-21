@@ -629,7 +629,7 @@ export class ProjectsController {
 
 	private async promptForNewObjectName(itemType: templates.ProjectScriptType, _project: Project): Promise<string | undefined> {
 		// TODO: ask project for suggested name that doesn't conflict
-		const suggestedName = itemType.friendlyName.replace(new RegExp('/\s', 'g'), '') + '1';
+		const suggestedName = itemType.friendlyName.replace(/\s+/g, '') + '1';
 
 		const itemObjectName = await vscode.window.showInputBox({
 			prompt: constants.newObjectNamePrompt(itemType.friendlyName),
