@@ -16,8 +16,28 @@ import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { IActivityService, NumberBadge } from 'vs/workbench/services/activity/common/activity';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
+import { IProductService } from 'vs/platform/product/common/productService';
+import { isString } from 'vs/base/common/types';
 
 export function getAuthenticationProviderActivationEvent(id: string): string { return `onAuthenticationRequest:${id}`; }
+
+export type AuthenticationSessionInfo = { readonly id: string, readonly accessToken: string, readonly providerId: string };
+export async function getCurrentAuthenticationSessionInfo(environmentService: IWorkbenchEnvironmentService, productService: IProductService): Promise<AuthenticationSessionInfo | undefined> {
+	if (environmentService.options?.credentialsProvider) {
+		const authenticationSessionValue = await environmentService.options.credentialsProvider.getPassword(`${productService.urlProtocol}.login`, 'account');
+		if (authenticationSessionValue) {
+			const authenticationSessionInfo: AuthenticationSessionInfo = JSON.parse(authenticationSessionValue);
+			if (authenticationSessionInfo
+				&& isString(authenticationSessionInfo.id)
+				&& isString(authenticationSessionInfo.accessToken)
+				&& isString(authenticationSessionInfo.providerId)
+			) {
+				return authenticationSessionInfo;
+			}
+		}
+	}
+	return undefined;
+}
 
 export const IAuthenticationService = createDecorator<IAuthenticationService>('IAuthenticationService');
 
@@ -227,8 +247,22 @@ export class AuthenticationService extends Disposable implements IAuthentication
 		}
 	}
 
-	requestNewSession(providerId: string, scopes: string[], extensionId: string, extensionName: string): void {
-		const provider = this._authenticationProviders.get(providerId);
+	async requestNewSession(providerId: string, scopes: string[], extensionId: string, extensionName: string): Promise<void> {
+		let provider = this._authenticationProviders.get(providerId);
+		if (!provider) {
+			// Activate has already been called for the authentication provider, but it cannot block on registering itself
+			// since this is sync and returns a disposable. So, wait for registration event to fire that indicates the
+			// provider is now in the map.
+			await new Promise((resolve, _) => {
+				this.onDidRegisterAuthenticationProvider(e => {
+					if (e.id === providerId) {
+						provider = this._authenticationProviders.get(providerId);
+						resolve();
+					}
+				});
+			});
+		}
+
 		if (provider) {
 			const providerRequests = this._signInRequestItems.get(providerId);
 			const scopesList = scopes.sort().join('');

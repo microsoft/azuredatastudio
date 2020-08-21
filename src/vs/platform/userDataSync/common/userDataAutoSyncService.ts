@@ -58,6 +58,7 @@ export class UserDataAutoSyncEnablementService extends Disposable {
 			case 'off':
 				return false;
 		}
+		//@ts-expect-error
 		return this.storageService.getBoolean(enablementKey, StorageScope.GLOBAL, this.environmentService.enableSyncByDefault);
 	}
 

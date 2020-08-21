@@ -132,6 +132,9 @@ export class TestQueryProvider implements azdata.QueryProvider {
 }
 
 export class TestExtensionContext implements vscode.ExtensionContext {
+	storageUri: vscode.Uri;
+	globalStorageUri: vscode.Uri;
+	logUri: vscode.Uri;
 	extensionMode: vscode.ExtensionMode;
 	subscriptions: { dispose(): any; }[];
 	workspaceState: vscode.Memento;

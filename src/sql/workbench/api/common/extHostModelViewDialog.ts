@@ -205,7 +205,6 @@ class TabImpl extends ModelViewPanelImpl implements azdata.window.DialogTab {
 
 	public title: string;
 	public content: string;
-	public handle: number;
 
 	public setModelViewId(value: string) {
 		super.setModelViewId(value);
