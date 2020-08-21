@@ -11,7 +11,6 @@ import * as Constants from './constants';
 import ContextProvider from './contextProvider';
 import * as Utils from './utils';
 import { AppContext } from './appContext';
-import { ApiWrapper } from './apiWrapper';
 import { IExtension } from './kusto';
 import { KustoObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
 import { registerSearchServerCommand } from './objectExplorerNodeProvider/command';
@@ -35,16 +34,16 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 		await fs.mkdir(context.logPath);
 	}
 
-	let appContext = new AppContext(context, new ApiWrapper());
+	let appContext = new AppContext(context);
 
 	let nodeProvider = new KustoObjectExplorerNodeProvider(appContext);
 	azdata.dataprotocol.registerObjectExplorerNodeProvider(nodeProvider);
 	let iconProvider = new KustoIconProvider();
 	azdata.dataprotocol.registerIconProvider(iconProvider);
 
-	activateNotebookTask(appContext);
+	activateNotebookTask();
 
-	registerSearchServerCommand(appContext);
+	registerSearchServerCommand();
 	context.subscriptions.push(new ContextProvider());
 
 	registerLogCommand(context);
@@ -70,12 +69,11 @@ function registerLogCommand(context: vscode.ExtensionContext) {
 	}));
 }
 
-function activateNotebookTask(appContext: AppContext): void {
-	let apiWrapper = appContext.apiWrapper;
-	apiWrapper.registerTaskHandler(Constants.kustoClusterNewNotebookTask, (profile: azdata.IConnectionProfile) => {
+function activateNotebookTask(): void {
+	azdata.tasks.registerTask(Constants.kustoClusterNewNotebookTask, (profile: azdata.IConnectionProfile) => {
 		return saveProfileAndCreateNotebook(profile);
 	});
-	apiWrapper.registerTaskHandler(Constants.kustoClusterOpenNotebookTask, (profile: azdata.IConnectionProfile) => {
+	azdata.tasks.registerTask(Constants.kustoClusterOpenNotebookTask, (profile: azdata.IConnectionProfile) => {
 		return handleOpenNotebookTask(profile);
 	});
 }
