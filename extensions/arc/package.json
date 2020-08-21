@@ -547,7 +547,7 @@
               },
               {
                 "name": "azdata",
-                "version": "20.0.0"
+                "version": "20.1.0"
               }
             ],
             "when": true
@@ -602,17 +602,6 @@
                   "title": "",
                   "sections": [
                     {
-                      "title": "%arc.azure.section.title%",
-                      "fields": [
-                        {
-                          "subscriptionVariableName": "AZDATA_NB_VAR_ARC_SUBSCRIPTION",
-                          "resourceGroupVariableName": "AZDATA_NB_VAR_ARC_RESOURCE_GROUP_NAME",
-                          "type": "azure_account",
-                          "required": true
-                        }
-                      ]
-                    },
-                    {
                       "title": "%arc.sql.settings.section.title%",
                       "fields": [
                         {
@@ -620,7 +609,8 @@
                           "variableName": "AZDATA_NB_VAR_SQL_INSTANCE_NAME",
                           "type": "text",
                           "defaultValue": "sqlinstance1",
-                          "required": true
+                          "required": true,
+                          "labelWidth": "100%"
                         },
                         {
                           "label": "%arc.sql.username%",
@@ -630,7 +620,7 @@
                           "enabled": false
                         },
                         {
-                          "label": "%arc.sql.password%",
+                          "label": "%arc.password%",
                           "variableName": "AZDATA_NB_VAR_SQL_PASSWORD",
                           "type": "sql_password",
                           "userName": "sa",
@@ -651,7 +641,7 @@
               },
               {
                 "name": "azdata",
-                "version": "20.0.0"
+                "version": "20.1.0"
               }
             ],
             "when": "resourceType=sql.managed.instance"
@@ -723,10 +713,12 @@
                           "required": true
                         },
                         {
-                          "label": "%arc.postgres.server.group.namespace%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_NAMESPACE",
-                          "type": "text",
-                          "defaultValue": "default",
+                          "label": "%arc.password%",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_PASSWORD",
+                          "type": "password",
+                          "confirmationRequired": true,
+                          "confirmationLabel": "%arc.confirm.password%",
+                          "defaultValue": "",
                           "required": true
                         },
                         {
@@ -734,35 +726,7 @@
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_WORKERS",
                           "type": "number",
                           "defaultValue": "1",
-                          "required": true,
                           "min": 1
-                        },
-                        {
-                          "label": "%arc.postgres.server.group.service.type%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_SERVICE_TYPE",
-                          "type": "options",
-                          "options": [
-                            "ClusterIP",
-                            "NodePort",
-                            "LoadBalancer"
-                          ],
-                          "defaultValue": "NodePort",
-                          "required": true
-                        },
-                        {
-                          "label": "%arc.postgres.server.group.data.size%",
-                          "description": "%arc.postgres.server.group.data.size.description%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_DATA_SIZE",
-                          "type": "number",
-                          "defaultValue": "1024",
-                          "required": true,
-                          "min": 1
-                        },
-                        {
-                          "label": "%arc.postgres.server.group.data.class%",
-                          "description": "%arc.postgres.server.group.data.class.description%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_DATA_CLASS",
-                          "type": "text"
                         },
                         {
                           "label": "%arc.postgres.server.group.port%",
@@ -771,16 +735,6 @@
                           "defaultValue": "5432",
                           "min": 1,
                           "max": 65535
-                        },
-                        {
-                          "label": "%arc.postgres.server.group.extensions%",
-                          "description": "%arc.postgres.server.group.extensions.description%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_EXTENSIONS",
-                          "type": "text",
-                          "textValidationRequired": true,
-                          "textValidationRegex": "^(?:(?:pg_cron|postgis|postgis_raster|postgis_topology)(?!\\s*,\\s*$)(?:\\s*,\\s*|$))*$",
-                          "textValidationDescription": "%arc.postgres.server.group.extensions.validation.description%",
-                          "defaultValue": ""
                         }
                       ]
                     },
@@ -788,83 +742,28 @@
                       "title": "%arc.postgres.settings.scheduling.title%",
                       "fields": [
                         {
-                          "label": "%arc.postgres.server.group.cpu.min%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_CPU_MIN",
+                          "label": "%arc.postgres.server.group.cores.request%",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_CORES_REQUEST",
                           "type": "number",
                           "min": 0
                         },
                         {
-                          "label": "%arc.postgres.server.group.cpu.max%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_CPU_MAX",
+                          "label": "%arc.postgres.server.group.cores.limit%",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_CORES_LIMIT",
                           "type": "number",
                           "min": 0
                         },
                         {
-                          "label": "%arc.postgres.server.group.memory.min%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_MEMORY_MIN",
+                          "label": "%arc.postgres.server.group.memory.request%",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_MEMORY_REQUEST",
                           "type": "number",
                           "min": 0
                         },
                         {
-                          "label": "%arc.postgres.server.group.memory.max%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_MEMORY_MAX",
+                          "label": "%arc.postgres.server.group.memory.limit%",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_MEMORY_LIMIT",
                           "type": "number",
                           "min": 0
-                        }
-                      ]
-                    },
-                    {
-                      "title": "%arc.postgres.settings.backups.title%",
-                      "fields": [
-                        {
-                          "label": "%arc.postgres.server.group.backup.classes%",
-                          "description": "%arc.postgres.server.group.backup.classes.description%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_BACKUP_CLASSES",
-                          "type": "text"
-                        },
-                        {
-                          "label": "%arc.postgres.server.group.backup.sizes%",
-                          "description": "%arc.postgres.server.group.backup.sizes.description%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_BACKUP_SIZES",
-                          "type": "text"
-                        },
-                        {
-                          "label": "%arc.postgres.server.group.backup.claims%",
-                          "description": "%arc.postgres.server.group.backup.claims.description%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_BACKUP_CLAIMS",
-                          "type": "text"
-                        },
-                        {
-                          "label": "%arc.postgres.server.group.backup.full.interval%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_BACKUP_FULL_INTERVAL",
-                          "type": "number",
-                          "min": 0
-                        },
-                        {
-                          "label": "%arc.postgres.server.group.backup.delta.interval%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_BACKUP_DELTA_INTERVAL",
-                          "type": "number",
-                          "min": 0
-                        },
-                        {
-                          "label": "%arc.postgres.server.group.backup.retention.min%",
-                          "description": "%arc.postgres.server.group.backup.retention.min.description%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_BACKUP_RETENTION_MIN",
-                          "type": "text",
-                          "textValidationRequired": true,
-                          "textValidationRegex": "^(?:(?:\\d+|(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[mMhHdDwW]|[mMgGtTpPeE][bB]))(?!\\s*[,;]\\s*$)(?:\\s*[,;]\\s*|$))*$",
-                          "textValidationDescription": "%arc.postgres.server.group.backup.retention.min.validation.description%",
-                          "defaultValue": ""
-                        },
-                        {
-                          "label": "%arc.postgres.server.group.backup.retention.max%",
-                          "description": "%arc.postgres.server.group.backup.retention.max.description%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_BACKUP_RETENTION_MAX",
-                          "type": "text",
-                          "textValidationRequired": true,
-                          "textValidationRegex": "^(?:(?:\\d+|(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[mMhHdDwW]|[mMgGtTpPeE][bB]))(?!\\s*[,;]\\s*$)(?:\\s*[,;]\\s*|$))*$",
-                          "textValidationDescription": "%arc.postgres.server.group.backup.retention.max.validation.description%",
-                          "defaultValue": ""
                         }
                       ]
                     }
@@ -878,7 +777,7 @@
               },
               {
                 "name": "azdata",
-                "version": "20.0.0"
+                "version": "20.1.0"
               }
             ],
             "when": "resourceType=postgres"
