@@ -3,12 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdataExt from 'azdata-ext';
 import * as vscode from 'vscode';
 import { parseInstanceName, UserCancelledError } from '../common/utils';
 import { ResourceType } from '../constants';
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 import * as loc from '../localizedConstants';
-import * as azdataExt from '../../../azdata/src/typings/azdata-ext';
 import { ConnectToControllerDialog } from '../ui/dialogs/connectControllerDialog';
 
 export type ControllerInfo = {
@@ -22,7 +22,6 @@ export type ControllerInfo = {
 export type ResourceInfo = {
 	name: string,
 	resourceType: ResourceType | string,
-	namespace?: string,
 	connectionId?: string
 };
 
@@ -55,7 +54,11 @@ export class ControllerModel {
 		this._azdataApi = <azdataExt.IExtension>vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 	}
 
-	public async refresh(showErrors: boolean = true, promptReconnect: boolean = false): Promise<void> {
+	/**
+	 * Calls azdata login to set the context to this controller
+	 * @param promptReconnect
+	 */
+	public async azdataLogin(promptReconnect: boolean = false): Promise<void> {
 		// We haven't gotten our password yet or we want to prompt for a reconnect
 		if (!this._password || promptReconnect) {
 			this._password = '';
@@ -70,6 +73,7 @@ export class ControllerModel {
 				const model = await dialog.waitForClose();
 				if (model) {
 					this.treeDataProvider.addOrUpdateController(model.controllerModel, model.password, false);
+					this._password = model.password;
 				} else {
 					throw new UserCancelledError();
 				}
@@ -77,7 +81,21 @@ export class ControllerModel {
 		}
 
 		await this._azdataApi.login(this.info.url, this.info.username, this._password);
+	}
 
+	/**
+	 * Refreshes the Tree Node for this model. This will also result in the model being refreshed.
+	 */
+	public async refreshTreeNode(): Promise<void> {
+		const node = this.treeDataProvider.getControllerNode(this);
+		if (node) {
+			this.treeDataProvider.refreshNode(node);
+		} else {
+			await this.refresh(false);
+		}
+	}
+	public async refresh(showErrors: boolean = true, promptReconnect: boolean = false): Promise<void> {
+		await this.azdataLogin(promptReconnect);
 		this._registrations = [];
 		await Promise.all([
 			this._azdataApi.dc.config.show().then(result => {
@@ -156,8 +174,7 @@ export class ControllerModel {
 
 	public getRegistration(type: ResourceType, name: string): Registration | undefined {
 		return this._registrations.find(r => {
-			// TODO chgagnon namespace
-			return r.instanceType === type && /* r.instanceNamespace === namespace && */ parseInstanceName(r.instanceName) === name;
+			return r.instanceType === type && parseInstanceName(r.instanceName) === name;
 		});
 	}
 
@@ -168,17 +185,6 @@ export class ControllerModel {
 			await this._registrationRouter.apiV1RegistrationNsNameIsDeletedDelete(this._namespace, r.customObjectName, true);
 		}
 		*/
-	}
-
-	/**
-	 * Deletes the specified MIAA resource from the controller
-	 * @param namespace The namespace of the resource
-	 * @param name The name of the resource
-	 */
-	public async miaaDelete(name: string): Promise<void> {
-		// TODO chgagnon Fix delete
-		//await this._sqlInstanceRouter.apiV1HybridSqlNsNameDelete(namespace, name);
-		await this.deleteRegistration(ResourceType.sqlManagedInstances, name);
 	}
 
 	/**
