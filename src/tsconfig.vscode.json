@@ -1,16 +1,42 @@
 {
-	"extends": "./tsconfig.json",
 	"compilerOptions": {
-		"noEmit": true,
+		"target": "es2017",
+		"module": "amd",
+		"moduleResolution": "node",
 		"experimentalDecorators": true,
 		"noImplicitReturns": true,
 		"noUnusedLocals": true,
 		"strict": true,
 		"forceConsistentCasingInFileNames": true,
-		"strictNullChecks": true,
-		"strictPropertyInitialization": true,
+		"baseUrl": ".",
+		"removeComments": false,
+		"preserveConstEnums": true,
+		"sourceMap": false,
+		"noEmit": true,
 		"skipLibCheck": true,
-		"noImplicitAny": true
+		"paths": {
+			"vs/*": [
+				"./vs/*"
+			],
+			"sql/*": [
+				"./sql/*"
+			]
+		},
+		"lib": [
+			"ES2015",
+			"ES2017.String",
+			"ES2018.Promise",
+			"DOM",
+			"DOM.Iterable",
+			"WebWorker.ImportScripts"
+		],
+		"types": [
+			"keytar",
+			"mocha",
+			"semver",
+			"sinon",
+			"winreg"
+		]
 	},
 	"include": [
 		"./**/*.d.ts",
