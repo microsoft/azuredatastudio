@@ -15,7 +15,7 @@
 		"Ubuntu_16": "rhel-x64-netcoreapp2.2.tar.gz"
 	},
 	"installDirectory": "../sqltoolsservice/{#platform#}/{#version#}",
-	"executableFiles": ["MicrosoftSqlToolsServiceLayer.exe", "MicrosoftSqlToolsServiceLayer"],
+	"executableFiles": ["MicrosoftKustoServiceLayer.exe", "MicrosoftKustoServiceLayer"],
 	"retry": {
 		"retries": 15,
 		"factor": 2,

@@ -26,7 +26,7 @@ export class KustoServer {
 
 	private client: SqlOpsDataClient;
 	private config: IConfig;
-	private disposables = new Array<{ dispose: () => void }>();
+	private disposables: vscode.Disposable[] = [];
 
 	public async start(context: AppContext): Promise<SqlOpsDataClient> {
 		try {
