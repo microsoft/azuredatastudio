@@ -478,7 +478,7 @@ export class FindModelBoundToEditorModel {
 	}
 
 	private _findMatches(findScopes: Range[] | null, captureMatches: boolean, limitResultCount: number): FindMatch[] {
-		const searchRanges = (findScopes as []).map((scope: Range | null) => // {{SQL CARBON EDIT}} strict-null-check
+		const searchRanges = (findScopes as [] || [null] as unknown as []).map((scope: Range | null) => // {{SQL CARBON EDIT}} strict-null-check
 			FindModelBoundToEditorModel._getSearchRange(this._editor.getModel(), scope)
 		);
 
