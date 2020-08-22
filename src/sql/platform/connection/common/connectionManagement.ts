@@ -51,7 +51,7 @@ export interface IConnectionCompletionOptions {
 	/**
 	 * Parameters to be used if connecting from an editor
 	 */
-	params: INewConnectionParams;
+	params?: INewConnectionParams;
 
 	/**
 	 * Open the connection dialog if connection fails
@@ -112,7 +112,7 @@ export interface IConnectionManagementService {
 	/**
 	 * Load the password and opens a new connection
 	 */
-	connect(connection: IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult>;
+	connect(connection: IConnectionProfile, uri?: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult>;
 
 	/**
 	 * Opens a new connection and save the profile in settings
@@ -183,7 +183,7 @@ export interface IConnectionManagementService {
 
 	isRecent(connectionProfile: ConnectionProfile): boolean;
 
-	isConnected(fileUri: string, connectionProfile?: ConnectionProfile): boolean;
+	isConnected(fileUri?: string, connectionProfile?: ConnectionProfile): boolean;
 
 	disconnectEditor(owner: IConnectableInput, force?: boolean): Promise<boolean>;
 
