@@ -11,7 +11,7 @@ import { AuthenticationSession, AuthenticationSessionsChangeEvent } from 'vs/edi
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { Emitter, Event } from 'vs/base/common/event';
 import { flatten, equals } from 'vs/base/common/arrays';
-import { getAuthenticationProviderActivationEvent, IAuthenticationService } from 'vs/workbench/services/authentication/browser/authenticationService';
+import { getAuthenticationProviderActivationEvent, getCurrentAuthenticationSessionInfo, IAuthenticationService } from 'vs/workbench/services/authentication/browser/authenticationService';
 import { IUserDataSyncAccountService } from 'vs/platform/userDataSync/common/userDataSyncAccount';
 import { IQuickInputService, IQuickPickSeparator } from 'vs/platform/quickinput/common/quickInput';
 import { IStorageService, IWorkspaceStorageChangeEvent, StorageScope } from 'vs/platform/storage/common/storage';
@@ -153,8 +153,9 @@ export class UserDataSyncWorkbenchService extends Disposable implements IUserDat
 	}
 
 	private async initialize(): Promise<void> {
-		if (this.currentSessionId === undefined && this.useWorkbenchSessionId && this.environmentService.options?.authenticationSessionId) {
-			this.currentSessionId = this.environmentService.options.authenticationSessionId;
+		const authenticationSession = this.environmentService.options?.credentialsProvider ? await getCurrentAuthenticationSessionInfo(this.environmentService, this.productService) : undefined;
+		if (this.currentSessionId === undefined && this.useWorkbenchSessionId && (authenticationSession?.id || this.environmentService.options?.authenticationSessionId)) {
+			this.currentSessionId = authenticationSession?.id || this.environmentService.options?.authenticationSessionId;
 			this.useWorkbenchSessionId = false;
 		}
 
@@ -331,9 +332,14 @@ export class UserDataSyncWorkbenchService extends Disposable implements IUserDat
 				}
 			});
 			if (manualSyncTask.status === SyncStatus.HasConflicts) {
-				await this.dialogService.show(Severity.Warning, localize('conflicts detected', "Conflicts Detected"), [], {
-					detail: localize('resolve', "Unable to merge due to conflicts. Please merge manually to continue...")
-				});
+				await this.dialogService.show(
+					Severity.Warning,
+					localize('conflicts detected', "Conflicts Detected"),
+					[localize('merge Manually', "Merge Manually...")],
+					{
+						detail: localize('resolve', "Unable to merge due to conflicts. Please merge manually to continue..."),
+					}
+				);
 				await manualSyncTask.discardConflicts();
 				action = 'manual';
 			}
