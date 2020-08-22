@@ -20,7 +20,7 @@ import { NullLogService } from 'vs/platform/log/common/log';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import type { IDisposable } from 'vs/base/common/lifecycle';
 
-suite('ExtHostTreeView', function () {
+suite.skip('ExtHostTreeView', function () {
 
 	class RecordingShape extends mock<MainThreadTreeViewsShape>() {
 

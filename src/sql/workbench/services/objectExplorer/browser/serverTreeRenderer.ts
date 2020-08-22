@@ -98,7 +98,7 @@ export class ServerTreeRenderer implements IRenderer {
 		if (templateId === ServerTreeRenderer.CONNECTION_TEMPLATE_ID) {
 			const connectionTemplate: IObjectExplorerTemplateData = Object.create(null);
 			connectionTemplate.root = dom.append(container, dom.$('.connection-tile'));
-			connectionTemplate.icon = dom.append(connectionTemplate.root, dom.$('div.icon server-page'));
+			connectionTemplate.icon = dom.append(connectionTemplate.root, dom.$('div.icon.server-page'));
 			connectionTemplate.label = dom.append(connectionTemplate.root, dom.$('div.label'));
 			return connectionTemplate;
 		} else if (templateId === ServerTreeRenderer.CONNECTION_GROUP_TEMPLATE_ID) {
