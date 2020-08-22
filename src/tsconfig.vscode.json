@@ -17,21 +17,23 @@
 		"./vs/vscode.d.ts",
 		"./vs/vscode.proposed.d.ts",
 		"./vs/monaco.d.ts",
-		"./sql/azdata.d.ts",
-		"./sql/azdata.proposed.d.ts",
+		"./sql/**/*.ts",
 		"./vs/base/**/*.ts",
 		// "./vs/code/**/*.ts",
 		"./vs/editor/**/*.ts",
 		"./vs/platform/**/*.ts",
-		"./vs/workbench/services/**/*.ts",
-		"./sql/base/**/*.ts",
-		"./sql/editor/**/*.ts",
-		"./sql/platform/**/*.ts",
-		"./sql/workbench/common/**/*.ts",
-		"./sql/workbench/services/**/*.ts",
-		"./sql/workbench/contrib/**/*.ts",
+		"./vs/workbench/api/**/*.ts",
+		// "./vs/workbench/browser/**/*.ts", // 3246 errors
+		"./vs/workbench/common/**/*.ts",
+		"./vs/workbench/contrib/**/*.ts",
+		// "./vs/workbench/electron-browser/**/*.ts", // 3246 errors
+		// "./vs/workbench/electron-sandbox/**/*.ts", // 3246 errors
+		"./vs/workbench/services/**/*.ts"
 	],
 	"exclude": [
+		"./sql/workbench/api/browser/**/*.ts", // 1135 errors
+		"./sql/workbench/api/common/**/*.ts", // 296 errors
+		"./sql/workbench/browser/**/*.ts", // 3246 errors
 		"./sql/workbench/contrib/assessment/**/*.ts", // 3255 errors
 		"./sql/workbench/contrib/azure/**/*.ts", // 118 errors
 		"./sql/workbench/contrib/backup/**/*.ts", // 249 errors
@@ -65,7 +67,43 @@
 		"./sql/workbench/services/query/**/*.ts", // 3278 errors
 		"./sql/workbench/services/queryEditor/**/*.ts", // 3278 errors
 		"./sql/workbench/services/restore/**/*.ts", // 173 errors
-		"./sql/workbench/update/**/*.ts", // 3253 errors
+		"./sql/workbench/test/**/*.ts", // 3609 errors
+		"./sql/workbench/update/**/*.ts", // 3246 errors
+		"./vs/workbench/api/browser/**/*.ts", // 3271 errors
+		"./vs/workbench/api/common/**/*.ts", // 323 errors
+		"./vs/workbench/api/node/**/*.ts", // 328 errors
+		"./vs/workbench/api/worker/**/*.ts", // 294 errors
+		"./vs/workbench/contrib/backup/**/*.ts", // 3246 errors
+		"./vs/workbench/contrib/codeEditor/**/*.ts", // 3246 errors
+		"./vs/workbench/contrib/comments/**/*.ts", // 64 errors
+		"./vs/workbench/contrib/configExporter/**/*.ts", // 3246 errors
+		"./vs/workbench/contrib/customEditor/**/*.ts", // 99 errors
+		"./vs/workbench/contrib/debug/**/*.ts", // 3136 errors
+		"./vs/workbench/contrib/experiments/**/*.ts", // 3246 errors
+		"./vs/workbench/contrib/extensions/**/*.ts", // 3246 errors
+		"./vs/workbench/contrib/files/**/*.ts", // 3246 errors
+		"./vs/workbench/contrib/issue/**/*.ts", // 3246 errors
+		"./vs/workbench/contrib/logs/**/*.ts", // 3246 errors
+		"./vs/workbench/contrib/notebook/**/*.ts", // 3246 errors
+		"./vs/workbench/contrib/outline/**/*.ts", // 3246 errors
+		"./vs/workbench/contrib/performance/**/*.ts", // 3246 errors
+		"./vs/workbench/contrib/preferences/**/*.ts", // 3246 errors
+		"./vs/workbench/contrib/relauncher/**/*.ts", // 3246 errors
+		"./vs/workbench/contrib/remote/**/*.ts", // 3246 errors
+		"./vs/workbench/contrib/search/**/*.ts", // 3246 errors
+		"./vs/workbench/contrib/searchEditor/**/*.ts", // 3246 errors
+		"./vs/workbench/contrib/splash/**/*.ts", // 3246 errors
+		"./vs/workbench/contrib/tags/**/*.ts", // 3246 errors
+		"./vs/workbench/contrib/tasks/**/*.ts", // 3246 errors
+		"./vs/workbench/contrib/telemetry/**/*.ts", // 3246 errors
+		"./vs/workbench/contrib/terminal/**/*.ts", // 3246 errors
+		"./vs/workbench/contrib/timeline/**/*.ts", // 3246 errors
+		"./vs/workbench/contrib/update/**/*.ts", // 3246 errors
+		"./vs/workbench/contrib/url/**/*.ts", // 3246 errors
+		"./vs/workbench/contrib/userDataSync/**/*.ts", // 3246 errors
+		"./vs/workbench/contrib/watermark/**/*.ts", // 3246 errors
+		"./vs/workbench/contrib/webview/**/*.ts", // 3246 errors
+		"./vs/workbench/contrib/welcome/**/*.ts", // 65 errors
 		"./vs/workbench/services/accessibility/**/*.ts", // 3143 errors
 		"./vs/workbench/services/authentication/**/*.ts", // 3143 errors
 		"./vs/workbench/services/backup/**/*.ts", // 3143 errors
