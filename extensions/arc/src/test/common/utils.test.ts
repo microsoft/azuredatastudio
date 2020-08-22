@@ -11,8 +11,6 @@ import { resourceTypeToDisplayName, parseEndpoint, parseInstanceName, getAzureco
 import * as loc from '../../localizedConstants';
 import { ResourceType, IconPathHelper, ConnectionMode as ConnectionMode } from '../../constants';
 import { MockInputBox } from '../stubs';
-import { HttpError } from '../../controller/generated/v1/api';
-import { IncomingMessage } from 'http';
 
 describe('resourceTypeToDisplayName Method Tests', function (): void {
 	it('Display Name should be correct for valid ResourceType', function (): void {
@@ -141,7 +139,7 @@ describe('promptForResourceDeletion Method Tests', function (): void {
 	});
 
 	it('Resolves as true when value entered is correct', function (done): void {
-		promptForResourceDeletion('mynamespace', 'myname').then((value: boolean) => {
+		promptForResourceDeletion('myname').then((value: boolean) => {
 			value ? done() : done(new Error('Expected return value to be true'));
 		});
 		mockInputBox.value = 'myname';
@@ -149,14 +147,14 @@ describe('promptForResourceDeletion Method Tests', function (): void {
 	});
 
 	it('Resolves as false when input box is closed early', function (done): void {
-		promptForResourceDeletion('mynamespace', 'myname').then((value: boolean) => {
+		promptForResourceDeletion('myname').then((value: boolean) => {
 			!value ? done() : done(new Error('Expected return value to be false'));
 		});
 		mockInputBox.hide();
 	});
 
 	it('Validation message is set when value entered is incorrect', async function (): Promise<void> {
-		promptForResourceDeletion('mynamespace', 'myname');
+		promptForResourceDeletion('myname');
 		mockInputBox.value = 'wrong value';
 		await mockInputBox.triggerAccept();
 		should(mockInputBox.validationMessage).not.be.equal('', 'Validation message should not be empty after incorrect value entered');
@@ -249,16 +247,6 @@ describe('promptAndConfirmPassword Method Tests', function (): void {
 });
 
 describe('getErrorMessage Method Tests', function () {
-	it('HttpError with reason', function (): void {
-		const httpReason = 'Test Reason';
-		should(getErrorMessage(new HttpError(<IncomingMessage>{ }, { reason: 'Test Reason' }))).equal(httpReason);
-	});
-
-	it('HttpError with status message', function (): void {
-		const httpStatusMessage = 'Test Status Message';
-		should(getErrorMessage(new HttpError(<IncomingMessage>{ statusMessage: httpStatusMessage}, { }))).containEql(`(${httpStatusMessage})`);
-	});
-
 	it('Error with message', function (): void {
 		const errorMessage = 'Test Message';
 		const error = new Error(errorMessage);
@@ -267,7 +255,7 @@ describe('getErrorMessage Method Tests', function () {
 
 	it('Error with no message', function (): void {
 		const error = new Error();
-		should(getErrorMessage(error)).equal(error);
+		should(getErrorMessage(error)).equal(error.message);
 	});
 });
 
