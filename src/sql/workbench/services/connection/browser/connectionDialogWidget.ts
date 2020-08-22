@@ -140,6 +140,9 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 		this.viewContainer = container;
 		this.viewContainerModel = viewDescriptorService.getViewContainerModel(container);
 	}
+	getActionsContext(): unknown {
+		throw new Error('Method not implemented.');
+	}
 
 	/**
 	 * Update the available connection providers, this is called when new providers are registered

@@ -62,6 +62,13 @@ export class BookTreeItem extends vscode.TreeItem {
 			this.setCommand();
 		}
 		this.iconPath = icons;
+
+		if (this.book.type === BookTreeItemType.ExternalLink) {
+			this.tooltip = `${this._uri}`;
+		}
+		else {
+			this.tooltip = this.book.type === BookTreeItemType.Book ? this.book.root : this.book.contentPath;
+		}
 	}
 
 	private setPageVariables() {
@@ -151,14 +158,7 @@ export class BookTreeItem extends vscode.TreeItem {
 		return this._nextUri;
 	}
 
-	get tooltip(): string {
-		if (this.book.type === BookTreeItemType.ExternalLink) {
-			return `${this._uri}`;
-		}
-		else {
-			return this.book.type === BookTreeItemType.Book ? this.book.root : this.book.contentPath;
-		}
-	}
+	public readonly tooltip: string;
 
 	/**
 	 * Helper method to find a child section with a specified URL

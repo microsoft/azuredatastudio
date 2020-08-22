@@ -9,7 +9,6 @@ import * as Lifecycle from 'vs/base/common/lifecycle';
 import * as DOM from 'vs/base/browser/dom';
 import * as Diff from 'vs/base/common/diff/diff';
 import * as Touch from 'vs/base/browser/touch';
-import * as strings from 'vs/base/common/strings';
 import * as Mouse from 'vs/base/browser/mouseEvent';
 import * as Keyboard from 'vs/base/browser/keyboardEvent';
 import * as Model from 'vs/base/parts/tree/browser/treeModel';
@@ -218,7 +217,7 @@ export class ViewItem implements IViewItem {
 			this.element.setAttribute('aria-posinset', accessibility.getPosInSet(this.context.tree, this.model.getElement()));
 		}
 		if (this.model.hasTrait('focused')) {
-			const base64Id = strings.safeBtoa(this.model.id);
+			const base64Id = btoa(encodeURIComponent(this.model.id));
 			this.element.setAttribute('id', base64Id);
 			this.element.setAttribute('aria-selected', 'true');
 		} else {
@@ -1061,7 +1060,7 @@ export class TreeView extends HeightMap {
 
 		// ARIA
 		if (focus) {
-			this.domNode.setAttribute('aria-activedescendant', strings.safeBtoa(this.context.dataSource.getId(this.context.tree, focus)));
+			this.domNode.setAttribute('aria-activedescendant', btoa(encodeURIComponent(this.context.dataSource.getId(this.context.tree, focus))));
 		} else {
 			this.domNode.removeAttribute('aria-activedescendant');
 		}
