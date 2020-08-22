@@ -409,7 +409,7 @@ suite('Test class NotebookEditor:', () => {
 		const searchString = getRandomString(1, 10);
 		const matchCase = true;
 		const wholeWord = true;
-		const searchScope = new NotebookRange(<ICellModel>{}, 1, 1, 1, 1);
+		const searchScope = [new NotebookRange(<ICellModel>{}, 1, 1, 1, 1)];
 		const currentMatch = <NotebookRange>{};
 		test(`Verifies _onFindStateChange callback when searchScope is defined,  visibility='${visibility}', searchString='${searchString}', matchCase='${matchCase}', wholeWord='${wholeWord}'`, async () => {
 			const { findReplaceStateChangedEvent, notebookFindModelMock, findDecorationsMock, notebookFindModel, notebookEditor } = await findStateChangeSetup(instantiationService, workbenchThemeService, notebookService, untitledNotebookInput, undefined, currentMatch, searchString, wholeWord, matchCase, searchScope);
@@ -444,7 +444,7 @@ suite('Test class NotebookEditor:', () => {
 		const searchString = getRandomString(1, 10);
 		const matchCase = true;
 		const wholeWord = true;
-		const searchScope = new NotebookRange(<ICellModel>{}, 1, 1, 1, 1);
+		const searchScope = [new NotebookRange(<ICellModel>{}, 1, 1, 1, 1)];
 		const currentMatch = <NotebookRange>{};
 		const { notebookFindModelMock, notebookEditor } = await findStateChangeSetup(instantiationService, workbenchThemeService, notebookService, untitledNotebookInput, undefined, currentMatch, searchString, wholeWord, matchCase, searchScope);
 		notebookFindModelMock.setup(x => x.getIndexByRange(TypeMoq.It.isAny())).returns((_range: NotebookRange) => {
@@ -469,7 +469,7 @@ suite('Test class NotebookEditor:', () => {
 		const searchString = getRandomString(1, 10);
 		const matchCase = true;
 		const wholeWord = true;
-		const searchScope = new NotebookRange(<ICellModel>{}, 1, 1, 1, 1);
+		const searchScope = [new NotebookRange(<ICellModel>{}, 1, 1, 1, 1)];
 		const currentMatch = <NotebookRange>{};
 		const { notebookEditor } = await findStateChangeSetup(instantiationService, workbenchThemeService, notebookService, untitledNotebookInput, undefined, currentMatch, searchString, wholeWord, matchCase, searchScope);
 		untitledNotebookInput.notebookFindModel.notebookModel = undefined; // clear preexisting notebookModel
@@ -499,7 +499,7 @@ suite('Test class NotebookEditor:', () => {
 			searchString: getRandomString(1, 10),
 			matchCase: true,
 			wholeWord: true,
-			searchScope: <NotebookRange>{}
+			searchScope: [<NotebookRange>{}]
 		};
 		findState.change(newState, false);
 		untitledNotebookInput.notebookFindModel.notebookModel = undefined; // clear preexisting notebookModel
@@ -530,7 +530,7 @@ suite('Test class NotebookEditor:', () => {
 			searchString: getRandomString(1, 10),
 			matchCase: true,
 			wholeWord: true,
-			searchScope: <NotebookRange>{}
+			searchScope: [<NotebookRange>{}]
 		};
 		findState.change(newState, false); //installs _updateFinderMatchState as event handler for onFindCountChange event
 		let updateFinderMatchStateCalled = false;
@@ -596,7 +596,7 @@ async function verifyFindCallsWhenFindStateChangeCallbackFires(instantiationServ
 	findDecorationsMock.verify(x => x.clearDecorations(), TypeMoq.Times.once());
 }
 
-async function findStateChangeSetup(instantiationService: TestInstantiationService, workbenchThemeService: any, notebookService: NotebookService, untitledNotebookInput: UntitledNotebookInput, modelFindExpression: string, currentMatch: NotebookRange, searchString: string, wholeWord: boolean, matchCase: boolean, searchScope: NotebookRange | null = undefined, findMatches: Array<NotebookFindMatch> = []) {
+async function findStateChangeSetup(instantiationService: TestInstantiationService, workbenchThemeService: any, notebookService: NotebookService, untitledNotebookInput: UntitledNotebookInput, modelFindExpression: string, currentMatch: NotebookRange, searchString: string, wholeWord: boolean, matchCase: boolean, searchScope: NotebookRange[] | null = undefined, findMatches: Array<NotebookFindMatch> = []) {
 	const findReplaceStateChangedEvent: FindReplaceStateChangedEvent = {
 		searchString: searchString !== undefined,
 		matchCase: matchCase,
@@ -752,4 +752,3 @@ function createEditor(notebookEditor: NotebookEditor) {
 	let parentHtmlElement = document.createElement('div');
 	notebookEditor.create(parentHtmlElement); // adds notebookEditor to new htmlElement as parent
 }
-
