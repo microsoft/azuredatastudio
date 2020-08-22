@@ -42,7 +42,6 @@
 		"./sql/workbench/contrib/dataExplorer/**/*.ts", // 3275 errors
 		"./sql/workbench/contrib/editData/**/*.ts", // 579 errors
 		"./sql/workbench/contrib/editorReplacement/**/*.ts", // 3315 errors
-		"./sql/workbench/contrib/extensions/**/*.ts", // 45 errors
 		"./sql/workbench/contrib/jobManagement/**/*.ts", // 315 errors
 		"./sql/workbench/contrib/modelView/**/*.ts", // 3253 errors
 		"./sql/workbench/contrib/notebook/**/*.ts", // 3740 errors
