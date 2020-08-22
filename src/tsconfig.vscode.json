@@ -56,7 +56,6 @@
 		"./sql/workbench/contrib/scripting/**/*.ts", // 280 errors
 		"./sql/workbench/contrib/tasks/**/*.ts", // 100 errors
 		"./sql/workbench/contrib/views/**/*.ts", // 133 errors
-		"./sql/workbench/contrib/webview/**/*.ts", // 6 errors
 		"./sql/workbench/contrib/welcome/**/*.ts", // 66 errors
 		"./sql/workbench/services/connection/**/*.ts", // 3402 errors
 		"./sql/workbench/services/dialog/**/*.ts", // 3260 errors
