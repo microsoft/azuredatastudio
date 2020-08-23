@@ -80,7 +80,7 @@ export class ControllerModel {
 			}
 		}
 
-		await this._azdataApi.login(this.info.url, this.info.username, this._password);
+		await this._azdataApi.azdata.login(this.info.url, this.info.username, this._password);
 	}
 
 	/**
@@ -98,7 +98,7 @@ export class ControllerModel {
 		await this.azdataLogin(promptReconnect);
 		this._registrations = [];
 		await Promise.all([
-			this._azdataApi.dc.config.show().then(result => {
+			this._azdataApi.azdata.arc.dc.config.show().then(result => {
 				this._controllerConfig = result.result;
 				this.configLastUpdated = new Date();
 				this._onConfigUpdated.fire(this._controllerConfig);
@@ -112,7 +112,7 @@ export class ControllerModel {
 				this._onConfigUpdated.fire(this._controllerConfig);
 				throw err;
 			}),
-			this._azdataApi.dc.endpoint.list().then(result => {
+			this._azdataApi.azdata.arc.dc.endpoint.list().then(result => {
 				this._endpoints = result.result;
 				this.endpointsLastUpdated = new Date();
 				this._onEndpointsUpdated.fire(this._endpoints);
@@ -127,7 +127,7 @@ export class ControllerModel {
 				throw err;
 			}),
 			Promise.all([
-				this._azdataApi.postgres.server.list().then(result => {
+				this._azdataApi.azdata.arc.postgres.server.list().then(result => {
 					this._registrations.push(...result.result.map(r => {
 						return {
 							instanceName: r.name,
@@ -136,7 +136,7 @@ export class ControllerModel {
 						};
 					}));
 				}),
-				this._azdataApi.sql.mi.list().then(result => {
+				this._azdataApi.azdata.arc.sql.mi.list().then(result => {
 					this._registrations.push(...result.result.map(r => {
 						return {
 							instanceName: r.name,

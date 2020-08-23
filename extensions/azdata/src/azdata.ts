@@ -3,32 +3,99 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzdataOutput } from 'azdata-ext';
 import * as os from 'os';
 import * as vscode from 'vscode';
 import { HttpClient } from './common/httpClient';
 import * as loc from './localizedConstants';
 import { executeCommand, executeSudoCommand, ExitCodeError } from './common/childProcess';
 import { searchForCmd } from './common/utils';
+import * as azdataExt from 'azdata-ext';
 
 export const azdataHostname = 'https://aka.ms';
 export const azdataUri = 'azdata-msi';
 
-export interface IAzdataTool {
+export interface IAzdataTool extends azdataExt.IAzdataApi {
 	path: string,
-	version: string,
+	toolVersion: string,
 	/**
 	 * Executes azdata with the specified arguments (e.g. --version) and returns the result
 	 * @param args The args to pass to azdata
 	 * @param parseResult A function used to parse out the raw result into the desired shape
 	 */
-	executeCommand<R>(args: string[], additionalEnvVars?: { [key: string]: string }): Promise<AzdataOutput<R>>
+	executeCommand<R>(args: string[], additionalEnvVars?: { [key: string]: string }): Promise<azdataExt.AzdataOutput<R>>
 }
 
 class AzdataTool implements IAzdataTool {
-	constructor(public path: string, public version: string, private _outputChannel: vscode.OutputChannel) { }
+	constructor(public path: string, public toolVersion: string, private _outputChannel: vscode.OutputChannel) { }
 
-	public async executeCommand<R>(args: string[], additionalEnvVars?: { [key: string]: string }): Promise<AzdataOutput<R>> {
+	public arc = {
+		dc: {
+			create: async (namespace: string, name: string, connectivityMode: string, resourceGroup: string, location: string, subscription: string, profileName?: string, storageClass?: string): Promise<azdataExt.AzdataOutput<void>> => {
+				const args = ['arc', 'dc', 'create',
+					'--namespace', namespace,
+					'--name', name,
+					'--connectivity-mode', connectivityMode,
+					'--resource-group', resourceGroup,
+					'--location', location,
+					'--subscription', subscription];
+				if (profileName) {
+					args.push('--profile-name', profileName);
+				}
+				if (storageClass) {
+					args.push('--storage-class', storageClass);
+				}
+				return this.executeCommand<void>(args);
+			},
+			endpoint: {
+				list: async () => {
+					return this.executeCommand<azdataExt.DcEndpointListResult[]>(['arc', 'dc', 'endpoint', 'list']);
+				}
+			},
+			config: {
+				list: async () => {
+					return this.executeCommand<azdataExt.DcConfigListResult[]>(['arc', 'dc', 'config', 'list']);
+				},
+				show: async () => {
+					return this.executeCommand<azdataExt.DcConfigShowResult>(['arc', 'dc', 'config', 'show']);
+				}
+			}
+		},
+		postgres: {
+			server: {
+				list: async () => {
+					return this.executeCommand<azdataExt.PostgresServerListResult[]>(['arc', 'postgres', 'server', 'list']);
+				},
+				show: async (name: string) => {
+					return this.executeCommand<azdataExt.PostgresServerShowResult>(['arc', 'postgres', 'server', 'show', '-n', name]);
+				}
+			}
+		},
+		sql: {
+			mi: {
+				delete: async (name: string) => {
+					return this.executeCommand<void>(['arc', 'sql', 'mi', 'delete', '-n', name]);
+				},
+				list: async () => {
+					return this.executeCommand<azdataExt.SqlMiListResult[]>(['arc', 'sql', 'mi', 'list']);
+				},
+				show: async (name: string) => {
+					return this.executeCommand<azdataExt.SqlMiShowResult>(['arc', 'sql', 'mi', 'show', '-n', name]);
+				}
+			}
+		}
+	};
+
+	public async login(endpoint: string, username: string, password: string): Promise<azdataExt.AzdataOutput<void>> {
+		return this.executeCommand<void>(['login', '-e', endpoint, '-u', username], { 'AZDATA_PASSWORD': password });
+	}
+
+	public async version(): Promise<azdataExt.AzdataOutput<string>> {
+		const output = await this.executeCommand<string>(['--version']);
+		this.toolVersion = parseVersion(output.stdout[0]);
+		return output;
+	}
+
+	public async executeCommand<R>(args: string[], additionalEnvVars?: { [key: string]: string }): Promise<azdataExt.AzdataOutput<R>> {
 		try {
 			const output = JSON.parse((await executeCommand(`"${this.path}"`, args.concat(['--output', 'json']), this._outputChannel, additionalEnvVars)).stdout);
 			return {
@@ -65,7 +132,7 @@ export async function findAzdata(outputChannel: vscode.OutputChannel): Promise<I
 			default:
 				azdata = await findSpecificAzdata('azdata', outputChannel);
 		}
-		outputChannel.appendLine(loc.foundExistingAzdata(azdata.path, azdata.version));
+		outputChannel.appendLine(loc.foundExistingAzdata(azdata.path, azdata.toolVersion));
 		return azdata;
 	} catch (err) {
 		outputChannel.appendLine(loc.couldNotFindAzdata(err));
