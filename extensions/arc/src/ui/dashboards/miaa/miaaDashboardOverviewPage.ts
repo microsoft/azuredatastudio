@@ -188,7 +188,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 				deleteButton.enabled = false;
 				try {
 					if (await promptForResourceDeletion(this._miaaModel.info.name)) {
-						await this._azdataApi.sql.mi.delete(this._miaaModel.info.name);
+						await this._azdataApi.azdata.arc.sql.mi.delete(this._miaaModel.info.name);
 						await this._controllerModel.refreshTreeNode();
 						vscode.window.showInformationMessage(loc.resourceDeleted(this._miaaModel.info.name));
 					}

@@ -6,6 +6,7 @@
 import * as azdataExt from 'azdata-ext';
 import * as vscode from 'vscode';
 import { findAzdata, IAzdataTool } from './azdata';
+import * as loc from './localizedConstants';
 
 let localAzdata: IAzdataTool | undefined = undefined;
 
@@ -13,52 +14,75 @@ export async function activate(): Promise<azdataExt.IExtension> {
 	const outputChannel = vscode.window.createOutputChannel('azdata');
 	localAzdata = await checkForAzdata(outputChannel);
 	return {
-		dc: {
-			endpoint: {
-				list: async () => {
-					return executeLocalAzdataCommand(['arc', 'dc', 'endpoint', 'list']);
+		azdata: {
+			arc: {
+				dc: {
+					create: async (namespace: string, name: string, connectivityMode: string, resourceGroup: string, location: string, subscription: string, profileName?: string, storageClass?: string) => {
+						throwIfNoAzdata();
+						return localAzdata!.arc.dc.create(namespace, name, connectivityMode, resourceGroup, location, subscription, profileName, storageClass);
+					},
+					endpoint: {
+						list: async () => {
+							throwIfNoAzdata();
+							return localAzdata!.arc.dc.endpoint.list();
+						}
+					},
+					config: {
+						list: async () => {
+							throwIfNoAzdata();
+							return localAzdata!.arc.dc.config.list();
+						},
+						show: async () => {
+							throwIfNoAzdata();
+							return localAzdata!.arc.dc.config.show();
+						}
+					}
+				},
+				postgres: {
+					server: {
+						list: async () => {
+							throwIfNoAzdata();
+							return localAzdata!.arc.postgres.server.list();
+						},
+						show: async (name: string) => {
+							throwIfNoAzdata();
+							return localAzdata!.arc.postgres.server.show(name);
+						}
+					}
+				},
+				sql: {
+					mi: {
+						delete: async (name: string) => {
+							throwIfNoAzdata();
+							return localAzdata!.arc.sql.mi.delete(name);
+						},
+						list: async () => {
+							throwIfNoAzdata();
+							return localAzdata!.arc.sql.mi.list();
+						},
+						show: async (name: string) => {
+							throwIfNoAzdata();
+							return localAzdata!.arc.sql.mi.show(name);
+						}
+					}
 				}
 			},
-			config: {
-				show: async () => {
-					return executeLocalAzdataCommand(['arc', 'dc', 'config', 'show']);
-				}
-			}
-		},
-		login: async (endpoint: string, username: string, password: string) => {
-			return executeLocalAzdataCommand(['login', '-e', endpoint, '-u', username], { 'AZDATA_PASSWORD': password });
-		},
-		postgres: {
-			server: {
-				list: async () => {
-					return executeLocalAzdataCommand(['arc', 'postgres', 'server', 'list']);
-				},
-				show: async (name: string) => {
-					return executeLocalAzdataCommand(['arc', 'postgres', 'server', 'show', '-n', name]);
-				}
-			}
-		},
-		sql: {
-			mi: {
-				delete: async (name: string) => {
-					return executeLocalAzdataCommand(['arc', 'sql', 'mi', 'delete', '-n', name]);
-				},
-				list: async () => {
-					return executeLocalAzdataCommand(['arc', 'sql', 'mi', 'list']);
-				},
-				show: async (name: string) => {
-					return executeLocalAzdataCommand(['arc', 'sql', 'mi', 'show', '-n', name]);
-				}
+			login: async (endpoint: string, username: string, password: string) => {
+				throwIfNoAzdata();
+				return localAzdata!.login(endpoint, username, password);
+			},
+			version: async () => {
+				throwIfNoAzdata();
+				return localAzdata!.version();
 			}
 		}
 	};
 }
 
-async function executeLocalAzdataCommand<R>(args: string[], additionalEnvVars?: { [key: string]: string }): Promise<azdataExt.AzdataOutput<R>> {
+function throwIfNoAzdata(): void {
 	if (!localAzdata) {
-		throw new Error('No azdata');
+		throw new Error(loc.noAzdata);
 	}
-	return localAzdata.executeCommand(args, additionalEnvVars);
 }
 
 async function checkForAzdata(outputChannel: vscode.OutputChannel): Promise<IAzdataTool | undefined> {
