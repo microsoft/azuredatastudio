@@ -13,7 +13,7 @@ import { IconPathHelper } from '../common/iconHelper';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { isEmptyOrUndefined } from '../common/utils';
 
-enum ReferenceType {
+export enum ReferenceType {
 	project,
 	systemDb,
 	dacpac
@@ -31,15 +31,15 @@ export class AddDatabaseReferenceDialog {
 	private formBuilder: azdata.FormBuilder | undefined;
 	private systemDatabaseDropdown: azdata.DropDownComponent | undefined;
 	private systemDatabaseFormComponent: azdata.FormComponent | undefined;
-	private dacpacTextbox: azdata.InputBoxComponent | undefined;
+	public dacpacTextbox: azdata.InputBoxComponent | undefined;
 	private dacpacFormComponent: azdata.FormComponent | undefined;
-	private locationDropdown: azdata.DropDownComponent | undefined;
-	private databaseNameTextbox: azdata.InputBoxComponent | undefined;
-	private databaseVariableTextbox: azdata.InputBoxComponent | undefined;
-	private serverNameTextbox: azdata.InputBoxComponent | undefined;
-	private serverVariableTextbox: azdata.InputBoxComponent | undefined;
+	public locationDropdown: azdata.DropDownComponent | undefined;
+	public databaseNameTextbox: azdata.InputBoxComponent | undefined;
+	public databaseVariableTextbox: azdata.InputBoxComponent | undefined;
+	public serverNameTextbox: azdata.InputBoxComponent | undefined;
+	public serverVariableTextbox: azdata.InputBoxComponent | undefined;
 
-	private currentReferenceType: ReferenceType | undefined;
+	public currentReferenceType: ReferenceType | undefined;
 	private referenceLocationMap: Map<string, DatabaseReferenceLocation>;
 
 	private toDispose: vscode.Disposable[] = [];
@@ -147,13 +147,7 @@ export class AddDatabaseReferenceDialog {
 
 		systemDatabaseRadioButton.checked = true;
 		systemDatabaseRadioButton.onDidClick(() => {
-			this.formBuilder!.removeFormItem(<azdata.FormComponent>this.dacpacFormComponent);
-			this.formBuilder!.insertFormItem(<azdata.FormComponent>this.systemDatabaseFormComponent, 2);
-
-			this.locationDropdown!.values = constants.systemDbLocationDropdownValues;
-			this.updateEnabledInputBoxes(constants.differentDbSameServer, true);
-
-			this.currentReferenceType = ReferenceType.systemDb;
+			this.systemDbRadioButtonClick();
 		});
 
 		const dacpacRadioButton = this.view!.modelBuilder.radioButton()
@@ -163,14 +157,7 @@ export class AddDatabaseReferenceDialog {
 			}).component();
 
 		dacpacRadioButton.onDidClick(() => {
-			this.formBuilder!.removeFormItem(<azdata.FormComponent>this.systemDatabaseFormComponent);
-			this.formBuilder!.insertFormItem(<azdata.FormComponent>this.dacpacFormComponent, 2);
-
-			this.locationDropdown!.values = constants.locationDropdownValues;
-			this.locationDropdown!.value = constants.differentDbSameServer;
-			this.updateEnabledInputBoxes(constants.differentDbSameServer);
-
-			this.currentReferenceType = ReferenceType.dacpac;
+			this.dacpacRadioButtonClick();
 		});
 
 		this.currentReferenceType = ReferenceType.systemDb;
@@ -184,6 +171,29 @@ export class AddDatabaseReferenceDialog {
 			component: flexRadioButtonsModel,
 			title: constants.referenceRadioButtonsGroupTitle
 		};
+	}
+
+	public systemDbRadioButtonClick(): void {
+		this.formBuilder!.removeFormItem(<azdata.FormComponent>this.dacpacFormComponent);
+		this.formBuilder!.insertFormItem(<azdata.FormComponent>this.systemDatabaseFormComponent, 2);
+
+		this.locationDropdown!.values = constants.systemDbLocationDropdownValues;
+
+		this.currentReferenceType = ReferenceType.systemDb;
+		this.updateEnabledInputBoxes(true);
+		this.tryEnableAddReferenceButton();
+	}
+
+	public dacpacRadioButtonClick(): void {
+		this.formBuilder!.removeFormItem(<azdata.FormComponent>this.systemDatabaseFormComponent);
+		this.formBuilder!.insertFormItem(<azdata.FormComponent>this.dacpacFormComponent, 2);
+
+		this.locationDropdown!.values = constants.locationDropdownValues;
+		this.locationDropdown!.value = constants.differentDbSameServer;
+
+		this.currentReferenceType = ReferenceType.dacpac;
+		this.updateEnabledInputBoxes();
+		this.tryEnableAddReferenceButton();
 	}
 
 	private createSystemDatabaseDropdown(): azdata.FormComponent {
@@ -261,8 +271,8 @@ export class AddDatabaseReferenceDialog {
 			values: constants.systemDbLocationDropdownValues//constants.locationDropdownValues
 		}).component();
 
-		this.locationDropdown.onValueChanged((v) => {
-			this.updateEnabledInputBoxes(v.selected);
+		this.locationDropdown.onValueChanged(() => {
+			this.updateEnabledInputBoxes();
 			this.tryEnableAddReferenceButton();
 		});
 
@@ -274,11 +284,10 @@ export class AddDatabaseReferenceDialog {
 
 	/**
 	 * Update the enabled input boxes based on what the location of the database reference selected in the dropdown is
-	 * @param dropdownValue
 	 * @param isSystemDb
 	 */
-	private updateEnabledInputBoxes(dropdownValue: string, isSystemDb: boolean = false): void {
-		if (dropdownValue === constants.sameDatabase) {
+	public updateEnabledInputBoxes(isSystemDb: boolean = false): void {
+		if (this.locationDropdown?.value === constants.sameDatabase) {
 			this.databaseNameTextbox!.enabled = false;
 			this.databaseVariableTextbox!.enabled = false;
 			this.serverNameTextbox!.enabled = false;
@@ -289,7 +298,7 @@ export class AddDatabaseReferenceDialog {
 			this.databaseVariableTextbox!.value = '';
 			this.serverNameTextbox!.value = '';
 			this.serverVariableTextbox!.value = '';
-		} else if (dropdownValue === constants.differentDbSameServer) {
+		} else if (this.locationDropdown?.value === constants.differentDbSameServer) {
 			this.databaseNameTextbox!.enabled = true;
 			this.databaseVariableTextbox!.enabled = !isSystemDb; // database variable is only enabled for non-system database references
 			this.serverNameTextbox!.enabled = false;
@@ -299,7 +308,7 @@ export class AddDatabaseReferenceDialog {
 			this.databaseVariableTextbox!.value = isSystemDb ? '' : this.databaseVariableTextbox!.value;
 			this.serverNameTextbox!.value = '';
 			this.serverVariableTextbox!.value = '';
-		} else if (dropdownValue === constants.differentDbDifferentServer) {
+		} else if (this.locationDropdown?.value === constants.differentDbDifferentServer) {
 			this.databaseNameTextbox!.enabled = true;
 			this.databaseVariableTextbox!.enabled = true;
 			this.serverNameTextbox!.enabled = true;
@@ -357,7 +366,7 @@ export class AddDatabaseReferenceDialog {
 	}
 
 	// only enable Add reference button if all enabled fields are filled
-	private tryEnableAddReferenceButton(): void {
+	public tryEnableAddReferenceButton(): void {
 		switch (this.currentReferenceType) {
 			case ReferenceType.systemDb: {
 				this.dialog.okButton.enabled = !isEmptyOrUndefined(<string>this.databaseNameTextbox?.value);
