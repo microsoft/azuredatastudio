@@ -26,7 +26,6 @@ import { ImportDataModel } from '../models/api/import';
 import { NetCoreTool, DotNetCommandOptions } from '../tools/netcoreTool';
 import { BuildHelper } from '../tools/buildHelper';
 import { PublishProfile, load } from '../models/publishProfile/publishProfile';
-import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
 
 /**
  * Controller for managing project lifecycle
@@ -431,34 +430,32 @@ export class ProjectsController {
 	 */
 	public async addDatabaseReference(context: Project | BaseProjectTreeItem): Promise<void> {
 		const project = this.getProjectFromContext(context);
-		let addDatabaseReferenceDialog = new AddDatabaseReferenceDialog(project);
-		addDatabaseReferenceDialog.openDialog();
 
-		// try {
-		// 	// choose if reference is to master or a dacpac
-		// 	const databaseReferenceType = await this.getDatabaseReferenceType();
+		try {
+			// choose if reference is to master or a dacpac
+			const databaseReferenceType = await this.getDatabaseReferenceType();
 
-		// 	// if master is selected, we know which dacpac needs to be added
-		// 	if (databaseReferenceType === constants.systemDatabase) {
-		// 		const systemDatabase = await this.getSystemDatabaseName(project);
-		// 		await project.addSystemDatabaseReference(systemDatabase);
-		// 	} else {
-		// 		// get other information needed to add a reference to the dacpac
-		// 		const dacpacFileLocation = await this.getDacpacFileLocation();
-		// 		const databaseLocation = await this.getDatabaseLocation();
+			// if master is selected, we know which dacpac needs to be added
+			if (databaseReferenceType === constants.systemDatabase) {
+				const systemDatabase = await this.getSystemDatabaseName(project);
+				await project.addSystemDatabaseReference(systemDatabase);
+			} else {
+				// get other information needed to add a reference to the dacpac
+				const dacpacFileLocation = await this.getDacpacFileLocation();
+				const databaseLocation = await this.getDatabaseLocation();
 
-		// 		if (databaseLocation === DatabaseReferenceLocation.differentDatabaseSameServer) {
-		// 			const databaseName = await this.getDatabaseName(dacpacFileLocation);
-		// 			await project.addDatabaseReference(dacpacFileLocation, databaseLocation, databaseName);
-		// 		} else {
-		// 			await project.addDatabaseReference(dacpacFileLocation, databaseLocation);
-		// 		}
-		// 	}
+				if (databaseLocation === DatabaseReferenceLocation.differentDatabaseSameServer) {
+					const databaseName = await this.getDatabaseName(dacpacFileLocation);
+					await project.addDatabaseReference(dacpacFileLocation, databaseLocation, databaseName);
+				} else {
+					await project.addDatabaseReference(dacpacFileLocation, databaseLocation);
+				}
+			}
 
-		// 	this.refreshProjectsTree();
-		// } catch (err) {
-		// 	vscode.window.showErrorMessage(utils.getErrorMessage(err));
-		// }
+			this.refreshProjectsTree();
+		} catch (err) {
+			vscode.window.showErrorMessage(utils.getErrorMessage(err));
+		}
 	}
 
 	private async getDatabaseReferenceType(): Promise<string> {

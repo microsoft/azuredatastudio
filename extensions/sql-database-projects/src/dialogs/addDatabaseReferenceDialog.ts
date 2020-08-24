@@ -122,13 +122,14 @@ export class AddDatabaseReferenceDialog {
 				databaseName: <string>this.databaseNameTextbox?.value,
 				systemDb: <string>this.systemDatabaseDropdown?.value === constants.master ? SystemDatabase.master : SystemDatabase.msdb
 			};
-		} else {// if (this.currentReferenceType === ReferenceType.dacpac) {
+		} else { // this.currentReferenceType === ReferenceType.dacpac
 			referenceSettings = {
 				databaseName: <string>this.databaseNameTextbox?.value,
 				databaseLocation: <DatabaseReferenceLocation>this.referenceLocationMap.get(<string>this.locationDropdown?.value),
 				dacpacFileLocation: vscode.Uri.file(<string>this.dacpacTextbox?.value),
 				databaseVariable: <string>this.databaseVariableTextbox?.value
 			};
+			// TODO: add project reference support
 		}
 
 		await this.addReference!(this.project, referenceSettings);
@@ -138,7 +139,6 @@ export class AddDatabaseReferenceDialog {
 
 	private createRadioButtons(): azdata.FormComponent {
 		// TODO: add project reference button
-
 		const systemDatabaseRadioButton = this.view!.modelBuilder.radioButton()
 			.withProperties({
 				name: 'referenceType',
@@ -177,6 +177,7 @@ export class AddDatabaseReferenceDialog {
 		this.formBuilder!.removeFormItem(<azdata.FormComponent>this.dacpacFormComponent);
 		this.formBuilder!.insertFormItem(<azdata.FormComponent>this.systemDatabaseFormComponent, 2);
 
+		// update dropdown values because only different database, same server is a valid location for system db references
 		this.locationDropdown!.values = constants.systemDbLocationDropdownValues;
 
 		this.currentReferenceType = ReferenceType.systemDb;
@@ -202,6 +203,7 @@ export class AddDatabaseReferenceDialog {
 			ariaLabel: constants.databaseNameLabel
 		}).component();
 
+		// only master is a valid system db reference for projects targetting Azure
 		if (this.project.getProjectTargetPlatform().toLowerCase().includes('azure')) {
 			this.systemDatabaseDropdown.values?.splice(1);
 		}
@@ -268,7 +270,7 @@ export class AddDatabaseReferenceDialog {
 	private createLocationDropdown(): azdata.FormComponent {
 		this.locationDropdown = this.view!.modelBuilder.dropDown().withProperties({
 			ariaLabel: constants.locationDropdown,
-			values: constants.systemDbLocationDropdownValues//constants.locationDropdownValues
+			values: constants.systemDbLocationDropdownValues
 		}).component();
 
 		this.locationDropdown.onValueChanged(() => {
@@ -365,7 +367,9 @@ export class AddDatabaseReferenceDialog {
 		return inputBox;
 	}
 
-	// only enable Add reference button if all enabled fields are filled
+	/**
+	 * Only enable Add reference button if all enabled fields are filled
+	 */
 	public tryEnableAddReferenceButton(): void {
 		switch (this.currentReferenceType) {
 			case ReferenceType.systemDb: {
