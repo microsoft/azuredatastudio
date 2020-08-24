@@ -6,7 +6,7 @@
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { ITree, IDragAndDrop, IDragOverReaction, DRAG_OVER_ACCEPT_BUBBLE_DOWN, DRAG_OVER_REJECT } from 'vs/base/parts/tree/browser/tree';
+import { ITree, IDragAndDrop, IDragOverReaction, DRAG_OVER_ACCEPT_BUBBLE_DOWN, DRAG_OVER_REJECT, DRAG_OVER_ACCEPT } from 'vs/base/parts/tree/browser/tree';
 import { DragMouseEvent } from 'vs/base/browser/mouseEvent';
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 import { UNSAVED_GROUP_ID } from 'sql/platform/connection/common/constants';
@@ -156,8 +156,13 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 			canDragOver = true;
 		}
 
-		if (canDragOver) {
+		if (canDragOver && targetElement instanceof ConnectionProfileGroup) {
+			// Auto-expand the group so that sub-groups can be exposed
 			return DRAG_OVER_ACCEPT_BUBBLE_DOWN(true);
+		} else if (canDragOver) {
+			// Don't auto-expand connections - doing so will try to connect the connection
+			// when expanded which is not something we want to support currently
+			return DRAG_OVER_ACCEPT_BUBBLE_DOWN(false);
 		} else {
 			return DRAG_OVER_REJECT;
 		}
