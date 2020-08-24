@@ -55,11 +55,6 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef
 	) {
 		super(changeRef, el);
-
-		if (this.isFile === true || this.buttonType === 'File') {
-			this.setPropertyFromUI<azdata.ButtonProperties, boolean>(this.setFileProperties, true);
-			this._buttonType = <azdata.ButtonType>'File';
-		}
 	}
 
 	ngOnInit(): void {
