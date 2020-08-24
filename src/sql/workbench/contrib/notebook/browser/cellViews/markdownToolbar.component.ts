@@ -9,7 +9,9 @@ import { localize } from 'vs/nls';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { TransformMarkdownAction, MarkdownButtonType, ToggleMarkdownViewAction, ToggleSplitViewAction, ToggleTextViewAction } from 'sql/workbench/contrib/notebook/browser/markdownToolbarActions';
+import { TransformMarkdownAction, MarkdownButtonType } from 'sql/workbench/contrib/notebook/browser/markdownToolbarActions';
+//import { TransformMarkdownAction, MarkdownButtonType, ToggleMarkdownViewAction, ToggleSplitViewAction, ToggleTextViewAction } from 'sql/workbench/contrib/notebook/browser/markdownToolbarActions';
+
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/buttonMenu';
 import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
@@ -40,9 +42,9 @@ export class MarkdownToolbarComponent {
 	public optionHeading3 = localize('optionHeading3', "Heading 3");
 	public optionParagraph = localize('optionParagraph', "Paragraph");
 
-	public markdownButton = localize('markdownButton', "View as Markdown");
-	public splitViewButton = localize('splitViewButton', "View splitview");
 	public textViewButton = localize('textViewButton', "View as Text");
+	public splitViewButton = localize('splitViewButton', "View splitview");
+	public markdownButton = localize('markdownButton', "View as Markdown");
 
 
 
@@ -75,41 +77,55 @@ export class MarkdownToolbarComponent {
 		let heading3 = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading3', this.optionHeading3, 'heading 3', this.optionHeading3, this.cellModel, MarkdownButtonType.HEADING3);
 		let paragraph = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.paragraph', this.optionParagraph, 'paragraph', this.optionParagraph, this.cellModel, MarkdownButtonType.PARAGRAPH);
 
-		let toggleMarkdownView = this._instantiationService.createInstance(ToggleMarkdownViewAction, 'notebook.toggleMarkdownView', '', 'masked-icon show-markdown', this.markdownButton, this.cellModel);
-		let toggleSplitView = this._instantiationService.createInstance(ToggleSplitViewAction, 'notebook.toggleSplitView', '', 'masked-icon split-toggle-on', this.splitViewButton, this.cellModel);
-		let toggleTextView = this._instantiationService.createInstance(ToggleTextViewAction, 'notebook.toggleTextView', '', 'masked-icon show-text', this.textViewButton, this.cellModel);
+		// let toggleTextView = this._instantiationService.createInstance(ToggleTextViewAction, 'notebook.toggleTextView', '', 'masked-icon show-text', this.textViewButton, this.cellModel);
+		// let toggleSplitView = this._instantiationService.createInstance(ToggleSplitViewAction, 'notebook.toggleSplitView', '', 'masked-icon split-toggle-on', this.splitViewButton, this.cellModel);
+		// let toggleMarkdownView = this._instantiationService.createInstance(ToggleMarkdownViewAction, 'notebook.toggleMarkdownView', '', 'masked-icon show-markdown', this.markdownButton, this.cellModel);
 
 		const radioButtonGoupName: string = 'textview-button-group';
 
-		let markdownRadioButtonContainer = DOM.$('li.action-item');
-		let markdownViewButton = new RadioButton(
-			markdownRadioButtonContainer,
-			{
-				checked: true,
-				label: this.markdownButton
-			}
-		);
-		markdownViewButton.name = radioButtonGoupName;
-
-		let splitViewRadioButtonContainer = DOM.$('li.action-item');
-		let splitViewButton = new RadioButton(
-			splitViewRadioButtonContainer,
-			{
-				checked: false,
-				label: this.splitViewButton
-			}
-		);
-		splitViewButton.name = radioButtonGoupName;
-
 		let textViewRadioButtonContainer = DOM.$('li.action-item');
+		textViewRadioButtonContainer.setAttribute('role', 'presentation');
 		let textViewButton = new RadioButton(
 			textViewRadioButtonContainer,
 			{
-				checked: false,
-				label: this.textViewButton
+				checked: true,
+				iconClass: 'show-text',
+				label: this.textViewButton,
+				name: radioButtonGoupName,
+				tooltip: true
 			}
 		);
-		textViewButton.name = radioButtonGoupName;
+
+		let splitViewRadioButtonContainer = DOM.$('li.action-item');
+		splitViewRadioButtonContainer.setAttribute('role', 'presentation');
+		let splitViewButton = new RadioButton(
+			splitViewRadioButtonContainer,
+			{
+				iconClass: 'split-toggle-on',
+				label: this.splitViewButton,
+				name: radioButtonGoupName,
+				tooltip: true
+			}
+		);
+
+		let markdownRadioButtonContainer = DOM.$('li.action-item');
+		markdownRadioButtonContainer.setAttribute('role', 'presentation');
+		let markdownViewButton = new RadioButton(
+			markdownRadioButtonContainer,
+			{
+				iconClass: 'show-markdown',
+				label: this.markdownButton,
+				name: radioButtonGoupName,
+				tooltip: true
+			}
+		);
+
+		let viewButtonContainer = DOM.$('li.action-item');
+		let viewButtonGroup = DOM.$('ul.view-button-group');
+		viewButtonContainer.append(viewButtonGroup);
+		viewButtonGroup.append(textViewRadioButtonContainer);
+		viewButtonGroup.append(splitViewRadioButtonContainer);
+		viewButtonGroup.append(markdownRadioButtonContainer);
 
 		let taskbar = <HTMLElement>this.mdtoolbar.nativeElement;
 		this._actionBar = new Taskbar(taskbar);
@@ -142,9 +158,7 @@ export class MarkdownToolbarComponent {
 			{ action: orderedListButton },
 			{ action: imageButton },
 			{ element: buttonDropdownContainer },
-			{ element: markdownRadioButtonContainer },
-			{ element: splitViewRadioButtonContainer },
-			{ element: textViewRadioButtonContainer }
+			{ element: viewButtonContainer }
 		]);
 	}
 }

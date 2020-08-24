@@ -11,6 +11,9 @@ export interface IRadioButtonOptions {
 	label: string;
 	enabled?: boolean;
 	checked?: boolean;
+	tooltip?: boolean;
+	iconClass?: string;
+	name?: string;
 }
 
 export class RadioButton extends Widget {
@@ -24,19 +27,31 @@ export class RadioButton extends Widget {
 		super();
 		this.inputElement = document.createElement('input');
 		this.inputElement.type = 'radio';
-		this.inputElement.style.verticalAlign = 'middle';
-		this.inputElement.style.margin = '3px';
 
-		this._label = document.createElement('span');
-		this._label.style.verticalAlign = 'middle';
+		if (!opts.tooltip) {
+			this._label = document.createElement('span');
+			this._label.style.verticalAlign = 'middle';
+			this.inputElement.style.verticalAlign = 'middle';
+			this.inputElement.style.margin = '3px';
+			this.label = opts.label;
+		} else {
+			this.inputElement.setAttribute('title', opts.label);
+			this.inputElement.className += `codicon masked-icon ${opts.iconClass}`;
+		}
 
-		this.label = opts.label;
+		if (opts.name) {
+			this.inputElement.setAttribute('name', opts.name);
+		}
+
 		this.enabled = opts.enabled || true;
 		this.checked = opts.checked || false;
 		this.onclick(this.inputElement, () => this._onClicked.fire());
 
 		container.appendChild(this.inputElement);
-		container.appendChild(this._label);
+
+		if (!opts.tooltip) {
+			container.appendChild(this._label);
+		}
 	}
 
 	public set name(value: string | undefined) {
