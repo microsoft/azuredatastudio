@@ -24,7 +24,6 @@ import { convertSize } from 'sql/base/browser/dom';
 @Component({
 	selector: 'modelview-button',
 	template: `
-	<p>BT: {{this._buttonType}}</p>
 	<div>
 		<label for={{this.label}}>
 			<div #input style="width: 100%">
@@ -32,7 +31,6 @@ import { convertSize } from 'sql/base/browser/dom';
 			</div>
 		</label>
 	</div>
-
 	`
 })
 
@@ -40,7 +38,6 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	private _button: Button;
-	public _buttonType = <azdata.ButtonType>'Normal';
 	public fileType: string = '.sql';
 
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
@@ -169,8 +166,7 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 		if (this.isFile === true) {
 			return <azdata.ButtonType>'File';
 		} else {
-			return <azdata.ButtonType>'Informational';
-			//return this.getPropertyOrDefault<azdata.ButtonProperties, azdata.ButtonType>((props) => props.buttonType, <azdata.ButtonType>'File');
+			return this.getPropertyOrDefault<azdata.ButtonProperties, azdata.ButtonType>((props) => props.buttonType, <azdata.ButtonType>'Normal');
 		}
 	}
 
