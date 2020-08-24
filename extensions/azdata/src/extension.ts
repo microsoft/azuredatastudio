@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdataExt from 'azdata-ext';
-import * as vscode from 'vscode';
 import { findAzdata, IAzdataTool } from './azdata';
 import * as loc from './localizedConstants';
 

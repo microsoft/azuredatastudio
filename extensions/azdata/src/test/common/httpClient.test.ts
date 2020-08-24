@@ -3,9 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
 import * as should from 'should';
-import * as TypeMoq from 'typemoq';
 import { HttpClient } from '../../common/httpClient';
 import * as os from 'os';
 import * as fs from 'fs';
