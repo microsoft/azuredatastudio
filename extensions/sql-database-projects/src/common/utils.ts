@@ -143,3 +143,7 @@ export function readSqlCmdVariables(xmlDoc: any): Record<string, string> {
 
 	return sqlCmdVariables;
 }
+
+export function isEmptyOrUndefined(value: string): boolean {
+	return !value || value === '';
+}

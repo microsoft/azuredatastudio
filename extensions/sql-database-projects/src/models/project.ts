@@ -666,7 +666,8 @@ export enum EntryType {
 
 export enum DatabaseReferenceLocation {
 	sameDatabase,
-	differentDatabaseSameServer
+	differentDatabaseSameServer,
+	differentDatabaseDifferentServer
 }
 
 export enum TargetPlatform {
