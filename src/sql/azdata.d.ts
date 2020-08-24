@@ -2000,7 +2000,7 @@ declare module 'azdata' {
 		/**
 		 * Event values
 		 */
-		values: {};
+		values: { [key: string]: any };
 	}
 
 	/**
@@ -2361,8 +2361,8 @@ declare module 'azdata' {
 	}
 
 	export interface FirewallRuleInfo {
-		startIpAddress: string;
-		endIpAddress: string;
+		startIpAddress?: string;
+		endIpAddress?: string;
 		serverName: string;
 		securityTokenMappings: {};
 	}
@@ -3255,7 +3255,7 @@ declare module 'azdata' {
 		editableCategory = 'editableCategory'
 	}
 
-	export interface RadioButtonProperties {
+	export interface RadioButtonProperties extends ComponentProperties {
 		name?: string;
 		label?: string;
 		value?: string;

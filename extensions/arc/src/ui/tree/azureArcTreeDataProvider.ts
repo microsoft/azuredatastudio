@@ -51,7 +51,7 @@ export class AzureArcTreeDataProvider implements vscode.TreeDataProvider<TreeNod
 	}
 
 	public async addOrUpdateController(model: ControllerModel, password: string, refreshTree = true): Promise<void> {
-		const controllerNode = this._controllerNodes.find(node => model.equals(node.model));
+		const controllerNode = this.getControllerNode(model);
 		if (controllerNode) {
 			controllerNode.model.info = model.info;
 		} else {
@@ -62,6 +62,10 @@ export class AzureArcTreeDataProvider implements vscode.TreeDataProvider<TreeNod
 			this._onDidChangeTreeData.fire(undefined);
 		}
 		await this.saveControllers();
+	}
+
+	public getControllerNode(model: ControllerModel): ControllerTreeNode | undefined {
+		return this._controllerNodes.find(node => model.equals(node.model));
 	}
 
 	public async removeController(controllerNode: ControllerTreeNode): Promise<void> {
@@ -115,17 +119,16 @@ export class AzureArcTreeDataProvider implements vscode.TreeDataProvider<TreeNod
 	 * Opens the dashboard for the specified resource
 	 * @param controllerModel The model for the controller containing the resource we want to open the dashboard for
 	 * @param resourceType The resourceType for the resource
-	 * @param namespace The namespace of the resource
 	 * @param name The name of the resource
 	 */
-	public async openResourceDashboard(controllerModel: ControllerModel, resourceType: string, namespace: string, name: string): Promise<void> {
+	public async openResourceDashboard(controllerModel: ControllerModel, resourceType: string, name: string): Promise<void> {
 		const controllerNode = this._controllerNodes.find(n => n.model === controllerModel);
 		if (controllerNode) {
-			const resourceNode = controllerNode.getResourceNode(resourceType, namespace, name);
+			const resourceNode = controllerNode.getResourceNode(resourceType, name);
 			if (resourceNode) {
 
 			} else {
-				console.log(`Couldn't find resource node for ${namespace}.${name} (${resourceType})`);
+				console.log(`Couldn't find resource node for ${name} (${resourceType})`);
 			}
 			await resourceNode?.openDashboard();
 		} else {

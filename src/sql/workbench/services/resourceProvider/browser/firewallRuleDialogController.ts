@@ -17,13 +17,13 @@ import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMess
 
 export class FirewallRuleDialogController {
 
-	private _firewallRuleDialog: FirewallRuleDialog;
-	private _connection: IConnectionProfile;
-	private _resourceProviderId: string;
+	private _firewallRuleDialog?: FirewallRuleDialog;
+	private _connection?: IConnectionProfile;
+	private _resourceProviderId?: string;
 
 	private _addAccountErrorTitle = localize('firewallDialog.addAccountErrorTitle', "Error adding account");
 	private _firewallRuleErrorTitle = localize('firewallRuleError', "Firewall rule error");
-	private _deferredPromise: Deferred<boolean>;
+	private _deferredPromise?: Deferred<boolean>;
 
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
@@ -58,29 +58,29 @@ export class FirewallRuleDialogController {
 	}
 
 	private async handleOnCreateFirewallRule(): Promise<void> {
-		const resourceProviderId = this._resourceProviderId;
+		const resourceProviderId = this._resourceProviderId!;
 		try {
-			const tenantId = this._firewallRuleDialog.viewModel.selectedTenantId;
-			const token = await this._accountManagementService.getAccountSecurityToken(this._firewallRuleDialog.viewModel.selectedAccount!, tenantId, AzureResource.ResourceManagement);
+			const tenantId = this._firewallRuleDialog!.viewModel.selectedTenantId!;
+			const token = await this._accountManagementService.getAccountSecurityToken(this._firewallRuleDialog!.viewModel.selectedAccount!, tenantId, AzureResource.ResourceManagement);
 			const securityTokenMappings = {
 				[tenantId]: token
 			};
 
 			const firewallRuleInfo: azdata.FirewallRuleInfo = {
-				startIpAddress: this._firewallRuleDialog.viewModel.isIPAddressSelected ? this._firewallRuleDialog.viewModel.defaultIPAddress : this._firewallRuleDialog.viewModel.fromSubnetIPRange,
-				endIpAddress: this._firewallRuleDialog.viewModel.isIPAddressSelected ? this._firewallRuleDialog.viewModel.defaultIPAddress : this._firewallRuleDialog.viewModel.toSubnetIPRange,
-				serverName: this._connection.serverName,
+				startIpAddress: this._firewallRuleDialog!.viewModel.isIPAddressSelected ? this._firewallRuleDialog!.viewModel.defaultIPAddress : this._firewallRuleDialog!.viewModel.fromSubnetIPRange,
+				endIpAddress: this._firewallRuleDialog!.viewModel.isIPAddressSelected ? this._firewallRuleDialog!.viewModel.defaultIPAddress : this._firewallRuleDialog!.viewModel.toSubnetIPRange,
+				serverName: this._connection!.serverName,
 				securityTokenMappings
 			};
 
-			const response = await this._resourceProviderService.createFirewallRule(this._firewallRuleDialog.viewModel.selectedAccount!, firewallRuleInfo, resourceProviderId);
+			const response = await this._resourceProviderService.createFirewallRule(this._firewallRuleDialog!.viewModel.selectedAccount!, firewallRuleInfo, resourceProviderId);
 			if (response.result) {
-				this._firewallRuleDialog.close();
-				this._deferredPromise.resolve(true);
+				this._firewallRuleDialog!.close();
+				this._deferredPromise!.resolve(true);
 			} else {
 				this._errorMessageService.showDialog(Severity.Error, this._firewallRuleErrorTitle, response.errorMessage);
 			}
-			this._firewallRuleDialog.onServiceComplete();
+			this._firewallRuleDialog!.onServiceComplete();
 		} catch (e) {
 			this.showError(e);
 		}
@@ -88,12 +88,12 @@ export class FirewallRuleDialogController {
 
 	private showError(error: any): void {
 		this._errorMessageService.showDialog(Severity.Error, this._firewallRuleErrorTitle, error);
-		this._firewallRuleDialog.onServiceComplete();
+		this._firewallRuleDialog!.onServiceComplete();
 		// Note: intentionally not rejecting the promise as we want users to be able to choose a different account
 	}
 
 	private handleOnCancel(): void {
-		this._deferredPromise.resolve(false);
+		this._deferredPromise!.resolve(false);
 	}
 
 }
