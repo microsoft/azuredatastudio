@@ -25,6 +25,7 @@ import { IQueryManagementService } from 'sql/workbench/services/query/common/que
 import { ServerInfoContextKey } from 'sql/workbench/services/connection/common/serverInfoContextKey';
 import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { firstIndex, find } from 'vs/base/common/arrays';
+import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 
 /**
  *  Provides actions for the server tree elements
@@ -40,19 +41,15 @@ export class ServerTreeActionProvider {
 	) {
 	}
 
-	public hasActions(tree: ITree, element: any): boolean {
-		return element instanceof ConnectionProfileGroup || (element instanceof ConnectionProfile) || (element instanceof TreeNode);
-	}
-
 	/**
 	 * Return actions given an element in the tree
 	 */
-	public getActions(tree: ITree, element: any): IAction[] {
+	public getActions(tree: AsyncServerTree | ITree, element: ServerTreeElement): IAction[] {
 		if (element instanceof ConnectionProfile) {
 			return this.getConnectionActions(tree, element);
 		}
 		if (element instanceof ConnectionProfileGroup) {
-			return this.getConnectionProfileGroupActions(tree, element);
+			return this.getConnectionProfileGroupActions(element);
 		}
 		if (element instanceof TreeNode) {
 			return this.getObjectExplorerNodeActions({
@@ -61,18 +58,13 @@ export class ServerTreeActionProvider {
 				treeNode: element
 			});
 		}
-
 		return [];
-	}
-
-	public hasSecondaryActions(tree: ITree, element: any): boolean {
-		return false;
 	}
 
 	/**
 	 * Return actions for connection elements
 	 */
-	public getConnectionActions(tree: ITree, profile: ConnectionProfile): IAction[] {
+	private getConnectionActions(tree: AsyncServerTree | ITree, profile: ConnectionProfile): IAction[] {
 		let node = new TreeNode(NodeType.Server, '', false, '', '', '', undefined, undefined, undefined, undefined);
 		return this.getAllActions({
 			tree: tree,
@@ -158,7 +150,7 @@ export class ServerTreeActionProvider {
 	/**
 	 * Return actions for connection group elements
 	 */
-	public getConnectionProfileGroupActions(tree: ITree, element: ConnectionProfileGroup): IAction[] {
+	private getConnectionProfileGroupActions(element: ConnectionProfileGroup): IAction[] {
 		return [
 			this._instantiationService.createInstance(AddServerAction, AddServerAction.ID, AddServerAction.LABEL),
 			this._instantiationService.createInstance(EditServerGroupAction, EditServerGroupAction.ID, EditServerGroupAction.LABEL, element),
@@ -202,7 +194,7 @@ export class ServerTreeActionProvider {
 }
 
 interface ObjectExplorerContext {
-	tree: ITree;
+	tree: AsyncServerTree | ITree;
 	profile: ConnectionProfile;
 	treeNode?: TreeNode;
 }

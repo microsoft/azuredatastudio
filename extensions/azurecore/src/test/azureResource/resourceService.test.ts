@@ -8,7 +8,7 @@ import * as TypeMoq from 'typemoq';
 import 'mocha';
 import { fail } from 'assert';
 
-import { azureResource } from '../../azureResource/azure-resource';
+import { azureResource } from 'azureResource';
 import { AzureResourceService } from '../../azureResource/resourceService';
 import { AzureAccount } from '../../account-provider/interfaces';
 import settings from '../../account-provider/providerSettings';

@@ -12,7 +12,7 @@ import 'mocha';
 import { TokenCredentials } from '@azure/ms-rest-js';
 import { AppContext } from '../../../appContext';
 
-import { azureResource } from '../../../azureResource/azure-resource';
+import { azureResource } from 'azureResource';
 import {
 	IAzureResourceCacheService,
 	IAzureResourceSubscriptionService,

@@ -20,6 +20,17 @@ export function supportsNodeNameDrop(nodeId: string): boolean {
 	return false;
 }
 
+export function supportsFolderNodeNameDrop(nodeId: string, label: string): boolean {
+	if (nodeId === 'Folder' && label === 'Columns') {
+		return true;
+	}
+	return false;
+}
+
+function escapeString(input: string | undefined): string | undefined {
+	return input?.replace(/]/g, ']]');
+}
+
 /**
  * Implements drag and drop for the server tree
  */
@@ -42,7 +53,7 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 				return (<ConnectionProfileGroup>element).id;
 			} else if (supportsNodeNameDrop(element.nodeTypeId)) {
 				return (<TreeNode>element).id;
-			} else if (element.nodeTypeId === 'Folder' && element.label === 'Columns' && element.children) {
+			} else if (supportsFolderNodeNameDrop(element.nodeTypeId, element.label) && element.children) {
 				return (<TreeNode>element).id;
 			} else {
 				return undefined;
@@ -93,12 +104,12 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 			}
 			originalEvent.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([`${element.nodeTypeId}:${element.id}?${finalString}`]));
 		}
-		if (element.nodeTypeId === 'Folder' && element.label === 'Columns') {
+		if (supportsFolderNodeNameDrop(element.nodeTypeId, element.label)) {
 			// get children
 			let returnString = '';
 			for (let child of element.children) {
-				escapedSchema = this.escapeString(child.metadata.schema);
-				escapedName = this.escapeString(child.metadata.name);
+				escapedSchema = escapeString(child.metadata.schema);
+				escapedName = escapeString(child.metadata.name);
 				finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
 				returnString = returnString ? `${returnString},${finalString}` : `${finalString}`;
 			}
@@ -191,12 +202,18 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 				if (source instanceof ConnectionProfile) {
 					// Change group id of profile
 					this._connectionManagementService.changeGroupIdForConnection(source, targetConnectionProfileGroup.id).then(() => {
-						TreeUpdateUtils.registeredServerUpdate(tree, self._connectionManagementService, targetConnectionProfileGroup);
+						if (tree) {
+							TreeUpdateUtils.registeredServerUpdate(tree, self._connectionManagementService, targetConnectionProfileGroup);
+						}
+
 					});
 				} else if (source instanceof ConnectionProfileGroup) {
 					// Change parent id of group
 					this._connectionManagementService.changeGroupIdForConnectionGroup(source, targetConnectionProfileGroup).then(() => {
-						TreeUpdateUtils.registeredServerUpdate(tree, self._connectionManagementService);
+						if (tree) {
+							TreeUpdateUtils.registeredServerUpdate(tree, self._connectionManagementService);
+						}
+
 					});
 				}
 			}

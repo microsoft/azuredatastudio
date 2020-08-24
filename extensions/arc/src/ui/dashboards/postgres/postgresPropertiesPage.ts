@@ -6,8 +6,8 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as loc from '../../../localizedConstants';
-import { IconPathHelper, cssStyles, ResourceType } from '../../../constants';
-import { KeyValueContainer, InputKeyValue, TextKeyValue, KeyValue } from '../../components/keyValueContainer';
+import { IconPathHelper, cssStyles } from '../../../constants';
+import { KeyValueContainer, KeyValue } from '../../components/keyValueContainer';
 import { DashboardPage } from '../../components/dashboardPage';
 import { ControllerModel } from '../../../models/controllerModel';
 import { PostgresModel } from '../../../models/postgresModel';
@@ -91,6 +91,7 @@ export class PostgresPropertiesPage extends DashboardPage {
 	}
 
 	private getProperties(): KeyValue[] {
+		/*
 		const endpoint: { ip?: string, port?: number } = this._postgresModel.endpoint;
 		const connectionString = `postgresql://postgres@${endpoint.ip}:${endpoint.port}`;
 		const registration = this._controllerModel.getRegistration(ResourceType.postgresInstances, this._postgresModel.namespace, this._postgresModel.name);
@@ -106,6 +107,8 @@ export class PostgresPropertiesPage extends DashboardPage {
 			new TextKeyValue(this.modelView.modelBuilder, loc.resourceGroup, registration?.resourceGroupName ?? ''),
 			new TextKeyValue(this.modelView.modelBuilder, loc.subscriptionId, registration?.subscriptionId ?? '')
 		];
+		*/
+		return [];
 	}
 
 	private handleRegistrationsUpdated() {

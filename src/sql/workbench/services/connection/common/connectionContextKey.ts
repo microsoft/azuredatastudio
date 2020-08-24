@@ -43,7 +43,7 @@ export class ConnectionContextKey implements IContextKey<IConnectionProfile> {
 		this._providerKey.set(value && value.providerName);
 		this._serverKey.set(value && value.serverName);
 		this._databaseKey.set(value && value.databaseName);
-		this._isQueryProviderKey.set(value && value.providerName && queryProviders.indexOf(value.providerName) !== -1);
+		this._isQueryProviderKey.set(!!value && !!value.providerName && queryProviders.indexOf(value.providerName) !== -1);
 	}
 
 	private setCanOpenInPortal(connectionProfile: IConnectionProfile): void {
@@ -64,7 +64,7 @@ export class ConnectionContextKey implements IContextKey<IConnectionProfile> {
 		this._canOpenInAzurePortal.reset();
 	}
 
-	public get(): IConnectionProfile {
+	public get(): IConnectionProfile | undefined {
 		return this._connectionKey.get();
 	}
 }
