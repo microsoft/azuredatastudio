@@ -14,6 +14,7 @@ import * as azdata from '../azdata';
 import * as childProcess from '../common/childProcess';
 import * as utils from '../common/utils';
 import * as loc from '../localizedConstants';
+import { HttpClient } from '../common/httpClient';
 
 const outputChannelMock = TypeMoq.Mock.ofType<vscode.OutputChannel>();
 const oldAzdata = new azdata.AzdataTool('', new SemVer('0.0.0'), outputChannelMock.object);
@@ -52,246 +53,250 @@ describe('azdata', function () {
 	});
 
 	describe('installAzdata', function (): void {
-		it('successful install - win32', async function (): Promise<void> {
-			const originalPlatform = process.platform;
-			try {
-				Object.defineProperty(process, 'platform', { value: 'win32' });
-				await testInstallOrUpgradeAzdataWin32(outputChannelMock);
-			} finally {
-				Object.defineProperty(process, 'platform', { value: originalPlatform });
-			}
-		});
+		it('successful install', async function (): Promise<void> {
+			switch (process.platform) {
+				case 'win32':
+					{
+						const executeCommandStub = sinon.stub(childProcess, 'executeCommand').callsFake(async (command: string, args: string[]) => {
+							should(command).be.equal('msiexec');
+							should(args[0]).be.equal('/qn');
+							should(args[1]).be.equal('/i');
+							should(path.basename(args[2])).be.equal(azdata.azdataUri);
+							return { stdout: 'success', stderr: '' };
+						});
+						nock(azdata.azdataHostname)
+							.get(`/${azdata.azdataUri}`)
+							.replyWithFile(200, __filename);
+						await azdata.installAzdata(outputChannelMock.object);
 
-		it('successful install - macos', async function (): Promise<void> {
-			const originalPlatform = process.platform;
-			try {
-				Object.defineProperty(process, 'platform', { value: 'darwin' });
-				const executeCommandStub = sinon.stub(childProcess, 'executeCommand').callsFake(async (command: string, _args: string[]) => {
-					should(command).be.equal('brew');
-					return { stdout: 'success', stderr: '' };
-				});
-				await azdata.installAzdata(outputChannelMock.object);
-				should(executeCommandStub.calledThrice).be.true();
-			} finally {
-				Object.defineProperty(process, 'platform', { value: originalPlatform });
-			}
-		});
-
-		it('successful install - linux', async function (): Promise<void> {
-			const originalPlatform = process.platform;
-			try {
-				Object.defineProperty(process, 'platform', { value: 'linux' });
-				const executeCommandStub = sinon.stub(childProcess, 'executeCommand').callsFake(async (command: string, _args: string[]) => {
-					should(command).be.equal('lsb_release');
-					return { stdout: 'success', stderr: '' };
-				});
-				let callNumber = 0;
-				const executeSudoCommandStub = sinon.stub(childProcess, 'executeSudoCommand').callsFake(async (command: string) => {
-					++callNumber;
-					switch (callNumber) {
-						case 3:
-							should(command).match(/^curl/);
-							break;
-						case 4:
-							should(command).match(/^add-apt-repository/);
-							break;
-						default:
-							should(command).match(/^apt-get/);
-							break;
+						should(executeCommandStub.calledOnce).be.true();
 					}
-					return { stdout: 'success', stderr: '' };
-				});
-				await azdata.installAzdata(outputChannelMock.object);
-				should(executeSudoCommandStub.callCount).be.equal(6);
-				should(executeCommandStub.calledOnce).be.true();
-			} finally {
-				Object.defineProperty(process, 'platform', { value: originalPlatform });
+					break;
+				case 'darwin':
+					{
+						const executeCommandStub = sinon.stub(childProcess, 'executeCommand').callsFake(async (command: string, _args: string[]) => {
+							should(command).be.equal('brew');
+							return { stdout: 'success', stderr: '' };
+						});
+						await azdata.installAzdata(outputChannelMock.object);
+						should(executeCommandStub.calledThrice).be.true();
+					}
+					break;
+				case 'linux':
+					{
+						const executeCommandStub = sinon.stub(childProcess, 'executeCommand').callsFake(async (command: string, _args: string[]) => {
+							should(command).be.equal('lsb_release');
+							return { stdout: 'success', stderr: '' };
+						});
+						let callNumber = 0;
+						const executeSudoCommandStub = sinon.stub(childProcess, 'executeSudoCommand').callsFake(async (command: string) => {
+							++callNumber;
+							switch (callNumber) {
+								case 3:
+									should(command).match(/^curl/);
+									break;
+								case 4:
+									should(command).match(/^add-apt-repository/);
+									break;
+								default:
+									should(command).match(/^apt-get/);
+									break;
+							}
+							return { stdout: 'success', stderr: '' };
+						});
+						await azdata.installAzdata(outputChannelMock.object);
+						should(executeSudoCommandStub.callCount).be.equal(6);
+						should(executeCommandStub.calledOnce).be.true();
+					}
+					break;
 			}
 		});
 
-		it('unsuccessful download - win32', async function (): Promise<void> {
-			const originalPlatform = process.platform;
-			try {
-				Object.defineProperty(process, 'platform', { value: 'win32' });
+		if (process.platform === 'win32') {
+			it('unsuccessful download - win32', async function (): Promise<void> {
 				nock(azdata.azdataHostname)
 					.get(`/${azdata.azdataUri}`)
 					.reply(404);
 				const downloadPromise = azdata.installAzdata(outputChannelMock.object);
 				await should(downloadPromise).be.rejected();
-			} finally {
-				Object.defineProperty(process, 'platform', { value: originalPlatform });
-			}
-		});
+			});
+		}
 
-		it('unsuccessful install - win32', async function (): Promise<void> {
-			const originalPlatform = process.platform;
-			try {
-				Object.defineProperty(process, 'platform', { value: 'win32' });
-				const executeCommandStub = sinon.stub(childProcess, 'executeCommand').rejects();
-				nock(azdata.azdataHostname)
-					.get(`/${azdata.azdataUri}`)
-					.replyWithFile(200, __filename);
-				const downloadPromise = azdata.installAzdata(outputChannelMock.object);
-				await should(downloadPromise).be.rejected();
-				should(executeCommandStub.calledOnce).be.true();
-			} finally {
-				Object.defineProperty(process, 'platform', { value: originalPlatform });
-			}
-		});
-
-		it('unsuccessful install - macos', async function (): Promise<void> {
-			const originalPlatform = process.platform;
-			try {
-				Object.defineProperty(process, 'platform', { value: 'darwin' });
-				const executeCommandStub = sinon.stub(childProcess, 'executeCommand').rejects();
-				const downloadPromise = azdata.installAzdata(outputChannelMock.object);
-				await should(downloadPromise).be.rejected();
-				should(executeCommandStub.calledOnce).be.true();
-			} finally {
-				Object.defineProperty(process, 'platform', { value: originalPlatform });
-			}
-		});
-
-		it('unsuccessful install - linux', async function (): Promise<void> {
-			const originalPlatform = process.platform;
-			try {
-				Object.defineProperty(process, 'platform', { value: 'linux' });
-				const executeSudoCommandStub = sinon.stub(childProcess, 'executeSudoCommand').rejects();
-				const downloadPromise = azdata.installAzdata(outputChannelMock.object);
-				await should(downloadPromise).be.rejected();
-				should(executeSudoCommandStub.calledOnce).be.true();
-			} finally {
-				Object.defineProperty(process, 'platform', { value: originalPlatform });
+		it('unsuccessful install', async function (): Promise<void> {
+			switch (process.platform) {
+				case 'win32':
+					{
+						const executeCommandStub = sinon.stub(childProcess, 'executeCommand').rejects();
+						nock(azdata.azdataHostname)
+							.get(`/${azdata.azdataUri}`)
+							.replyWithFile(200, __filename);
+						const downloadPromise = azdata.installAzdata(outputChannelMock.object);
+						await should(downloadPromise).be.rejected();
+						should(executeCommandStub.calledOnce).be.true();
+					}
+					break;
+				case 'darwin':
+					{
+						const executeCommandStub = sinon.stub(childProcess, 'executeCommand').rejects();
+						const downloadPromise = azdata.installAzdata(outputChannelMock.object);
+						await should(downloadPromise).be.rejected();
+						should(executeCommandStub.calledOnce).be.true();
+					}
+					break;
+				case 'linux':
+					{
+						const executeSudoCommandStub = sinon.stub(childProcess, 'executeSudoCommand').rejects();
+						const downloadPromise = azdata.installAzdata(outputChannelMock.object);
+						await should(downloadPromise).be.rejected();
+						should(executeSudoCommandStub.calledOnce).be.true();
+					}
+					break;
 			}
 		});
 	});
 
 	describe('upgradeAzdata', function (): void {
-		//const currentAzdata: azdata.IAzdataTool = { path: '', version: new SemVer('0.0.0'), executeCommand: ()=>{} };
 		beforeEach(function (): void {
-			sinon.stub(utils, 'discoverLatestAvailableAzdataVersion').returns(Promise.resolve(new SemVer('9999.999.999')));
+			// const mock = TypeMoq.Mock.ofInstance(azdata.discoverLatestAvailableAzdataVersion)
+			// 	.setup(x => x(TypeMoq.It.isAny()))
+			// 	.returns(() => Promise.resolve(Promise.resolve(new SemVer('9999.999.999'))));
+			// mock.
+			sinon.stub(azdata, 'discoverLatestAvailableAzdataVersion').returns(Promise.resolve(new SemVer('9999.999.999')));
 			sinon.stub(vscode.window, 'showInformationMessage').returns(Promise.resolve(<any>loc.yes));
 		});
 
-		it('successful upgrade - win32', async function (): Promise<void> {
-			const originalPlatform = process.platform;
-			try {
-				Object.defineProperty(process, 'platform', { value: 'win32' });
-				await testInstallOrUpgradeAzdataWin32(outputChannelMock, 'upgrade');
-			} finally {
-				Object.defineProperty(process, 'platform', { value: originalPlatform });
+		it('successful upgrade', async function (): Promise<void> {
+			const releaseJson = {
+				win32: {
+					'version': '9999.999.999',
+					'link': 'https://download.com/azdata-20.0.1.msi'
+				},
+				darwin: {
+					'version': '9999.999.999'
+				},
+				linux: {
+					'version': '9999.999.999'
+				}
+			};
+			switch (process.platform) {
+				case 'win32':
+					{
+						sinon.stub(HttpClient, 'getTextContent').returns(Promise.resolve(JSON.stringify(releaseJson)));
+						sinon.stub(HttpClient, 'downloadFile').returns(Promise.resolve(__filename));
+						const executeCommandStub = sinon.stub(childProcess, 'executeCommand').callsFake(async (command: string, args: string[]) => {
+							should(command).be.equal('msiexec');
+							should(args[0]).be.equal('/qn');
+							should(args[1]).be.equal('/i');
+							should(path.basename(args[2])).be.equal(azdata.azdataUri);
+							return { stdout: 'success', stderr: '' };
+						});
+						await azdata.checkAndUpdateAzdata(oldAzdata, outputChannelMock.object);
+						should(executeCommandStub.calledOnce).be.true();
+					}
+					break;
+
+				case 'darwin':
+					{
+						const brewInfoOutput =
+							[{
+								name: 'azdata-cli',
+								full_name: 'microsoft/azdata-cli-release/azdata-cli',
+								versions: {
+									'stable': '20.0.1',
+									'devel': null,
+									'head': null,
+									'bottle': true
+								}
+							}];
+						const executeCommandStub = sinon.stub(childProcess, 'executeCommand')
+							.onSecondCall() //second call is brew info azdata-cli --json which needs to return json of new available azdata versions.
+							.callsFake(async (command: string, args: string[]) => {
+								should(command).be.equal('brew');
+								should(args).deepEqual(['info', 'azdata-cli', '--json']);
+								return Promise.resolve({
+									stderr: '',
+									stdout: JSON.stringify(brewInfoOutput)
+								});
+							})
+							.callsFake(async (command: string, _args: string[]) => { //return success on all remaining calls to executeCommand
+								should(command).be.equal('brew');
+								return Promise.resolve({ stdout: 'success', stderr: '' });
+							});
+						await azdata.checkAndUpdateAzdata(oldAzdata, outputChannelMock.object);
+						should(executeCommandStub.calledThrice);
+					}
+					break;
+				case 'linux':
+					{
+						sinon.stub(HttpClient, 'getTextContent').returns(Promise.resolve(JSON.stringify(releaseJson)));
+						const executeCommandStub = sinon.stub(childProcess, 'executeCommand').callsFake(async (command: string, _args: string[]) => {
+							should(command).be.equal('add-apt-repository');
+							return { stdout: 'success', stderr: '' };
+						});
+						let callNumber = 0;
+						const executeSudoCommandStub = sinon.stub(childProcess, 'executeSudoCommand').callsFake(async (command: string) => {
+							callNumber++;
+							switch (callNumber) {
+								case 3:
+									should(command).match('/^curl/');
+									break;
+								case 4:
+									should(command).match('/^add-apt-repository/');
+									break;
+								default:
+									should(command).match('/^apt-get/');
+									break;
+							}
+							should(command).be.equal('brew');
+							return { stdout: 'success', stderr: '' };
+						});
+						await azdata.checkAndUpdateAzdata(oldAzdata, outputChannelMock.object);
+						should(executeSudoCommandStub.callCount).be.equal(6);
+						should(executeCommandStub.calledOnce).be.true();
+					}
+					break;
 			}
 		});
 
-		it('successful upgrade - macos', async function (): Promise<void> {
-			const originalPlatform = process.platform;
-			try {
-				Object.defineProperty(process, 'platform', { value: 'darwin' });
-				const executeCommandStub = sinon.stub(childProcess, 'executeCommand').callsFake(async (command: string, _args: string[]) => {
-					should(command).be.equal('brew');
-					return { stdout: 'success', stderr: '' };
-				});
-				await azdata.checkAndUpdateAzdata(oldAzdata, outputChannelMock.object);
-				should(executeCommandStub.calledThrice);
-			} finally {
-				Object.defineProperty(process, 'platform', { value: originalPlatform });
+
+		it('unsuccessful upgrade', async function (): Promise<void> {
+			switch (process.platform) {
+				case 'win32':
+					{
+						nock(azdata.azdataHostname)
+							.get(`/${azdata.azdataUri}`)
+							.replyWithFile(200, __filename);
+						sinon.stub(childProcess, 'executeCommand').rejects();
+						const upgradePromise = azdata.checkAndUpdateAzdata(oldAzdata, outputChannelMock.object);
+						await should(upgradePromise).be.rejected();
+					}
+					break;
+				case 'darwin':
+					{
+						const executeCommandStub = sinon.stub(childProcess, 'executeCommand').rejects();
+						const upgradePromise = azdata.checkAndUpdateAzdata(oldAzdata, outputChannelMock.object);
+						await should(upgradePromise).be.rejected();
+						should(executeCommandStub.calledOnce).be.true();
+					}
+					break;
+
+				case 'linux':
+					{
+						const executeSudoCommandStub = sinon.stub(childProcess, 'executeSudoCommand').rejects();
+						const upgradePromise = azdata.checkAndUpdateAzdata(oldAzdata, outputChannelMock.object);
+						await should(upgradePromise).be.rejected();
+
+						should(executeSudoCommandStub.calledOnce).be.true();
+					}
 			}
 		});
 
-		it.skip('successful upgrade - linux', async function (): Promise<void> {
-			const originalPlatform = process.platform;
-			try {
-				Object.defineProperty(process, 'platform', { value: 'darwin' });
-				// const executeCommandStub = sinon.stub(childProcess, 'executeCommand').callsFake(async (command: string, _args: string[]) => {
-				// 	should(command).be.equal('add-apt-repository');
-				// 	return { stdout: 'success', stderr: '' };
-				// });
-				// let callNumber = 0;
-				// const executeSudoCommandStub = sinon.stub(childProcess, 'executeSudoCommand').callsFake(async (command: string) => {
-				// 	callNumber++;
-				// 	switch (callNumber) {
-				// 		case 3:
-				// 			should(command).match('/^curl/');
-				// 			break;
-				// 		case 4:
-				// 			should(command).match('/^add-apt-repository/');
-				// 			break;
-				// 		default:
-				// 			should(command).match('/^apt-get/');
-				// 			break;
-				// 	}
-				// 	should(command).be.equal('brew');
-				// 	return { stdout: 'success', stderr: '' };
-				// });
-				// await azdata.checkAndUpdateAzdata(currentAzdata, outputChannelMock.object);
-				// should(executeSudoCommandStub.callCount).be.equal(6);
-				// should(executeCommandStub.calledOnce).be.true();
-			} finally {
-				Object.defineProperty(process, 'platform', { value: originalPlatform });
-			}
-		});
-
-
-		it('unsuccessful upgrade - win32', async function (): Promise<void> {
-			const originalPlatform = process.platform;
-			try {
-				Object.defineProperty(process, 'platform', { value: 'win32' });
-				nock(azdata.azdataHostname)
-					.get(`/${azdata.azdataUri}`)
-					.replyWithFile(200, __filename);
-				sinon.stub(childProcess, 'executeCommand').rejects();
-				const upgradePromise = azdata.checkAndUpdateAzdata(oldAzdata, outputChannelMock.object);
-				await should(upgradePromise).be.rejected();
-			} finally {
-				Object.defineProperty(process, 'platform', { value: originalPlatform });
-			}
-		});
-
-		it('unsuccessful upgrade - macos', async function (): Promise<void> {
-			const originalPlatform = process.platform;
-			try {
-				Object.defineProperty(process, 'platform', { value: 'darwin' });
-				const executeCommandStub = sinon.stub(childProcess, 'executeCommand').rejects();
-				const upgradePromise = azdata.checkAndUpdateAzdata(oldAzdata, outputChannelMock.object);
-				await should(upgradePromise).be.rejected();
-				should(executeCommandStub.calledOnce).be.true();
-			} finally {
-				Object.defineProperty(process, 'platform', { value: originalPlatform });
-			}
-		});
-
-		it.skip('unsuccessful upgrade - linux', async function (): Promise<void> {
-			const originalPlatform = process.platform;
-			try {
-				Object.defineProperty(process, 'platform', { value: 'linux' });
-				const executeSudoCommandStub = sinon.stub(childProcess, 'executeSudoCommand').rejects();
-				const upgradePromise = azdata.checkAndUpdateAzdata(oldAzdata, outputChannelMock.object);
-				await should(upgradePromise).be.rejected();
-
-				should(executeSudoCommandStub.calledOnce).be.true();
-			} finally {
-				Object.defineProperty(process, 'platform', { value: originalPlatform });
-			}
+		describe('discoverLatestAvailableAzdataVersion', function (): void {
+			this.timeout(20000);
+			it(`finds latest available version of azdata successfully`, async function (): Promise<void> {
+				// if the latest version is not discovered then the following call throws failing the test
+				await azdata.discoverLatestAvailableAzdataVersion(outputChannelMock.object);
+			});
 		});
 	});
 });
-
-async function testInstallOrUpgradeAzdataWin32(outputChannelMock: TypeMoq.IMock<vscode.OutputChannel>, operation: 'install' | 'upgrade' = 'install') {
-	const executeCommandStub = sinon.stub(childProcess, 'executeCommand').callsFake(async (command: string, args: string[]) => {
-		should(command).be.equal('msiexec');
-		should(args[0]).be.equal('/qn');
-		should(args[1]).be.equal('/i');
-		should(path.basename(args[2])).be.equal(azdata.azdataUri);
-		return { stdout: 'success', stderr: '' };
-	});
-	nock(azdata.azdataHostname)
-		.get(`/${azdata.azdataUri}`)
-		.replyWithFile(200, __filename);
-	if (operation === 'install') {
-		await azdata.installAzdata(outputChannelMock.object);
-	} else {
-		await azdata.checkAndUpdateAzdata(oldAzdata, outputChannelMock.object);
-	}
-	should(executeCommandStub.calledOnce).be.true();
-}
-

@@ -263,8 +263,7 @@
 			"configurations": [
 				"Attach to Extension Host",
 				"Run Extension Unit Tests"
-			],
-			"timeout": 45000
+			]
 		},
 		{
 			"name": "Azure Data Studio",

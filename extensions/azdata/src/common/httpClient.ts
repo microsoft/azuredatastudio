@@ -77,7 +77,6 @@ export namespace HttpClient {
 					outputChannel.appendLine(loc.downloadingProgressMb('0', totalMegaBytes.toFixed(2)));
 				})
 				.on('data', (data) => {
-					//console.log(`in downloader's on data callback`);
 					if (targetFolder === undefined) {
 						strings.push(data.toString('utf-8'));
 					}
@@ -97,30 +96,6 @@ export namespace HttpClient {
 						outputChannel.appendLine(loc.downloadFinished);
 						resolve(strings.join(''));
 					}
-				});
-		});
-	}
-
-	/**
-	 * Gets the filename for the specified URL - following redirects as needed
-	 * @param url The URL to get the filename of
-	 */
-	export async function getFilename(url: string, outputChannel: vscode.OutputChannel): Promise<string> {
-		outputChannel.appendLine(loc.gettingFilenameOfUrl(url));
-		return new Promise((resolve, reject) => {
-			let httpRequest = request.get(url, { timeout: DownloadTimeout })
-				.on('error', downloadError => {
-					reject(downloadError);
-				})
-				.on('response', (response) => {
-					if (response.statusCode !== 200) {
-						return reject(response.statusMessage);
-					}
-					// We don't want to actually download the file so abort the request now
-					httpRequest.abort();
-					const filename = path.basename(response.request.path);
-					outputChannel.appendLine(loc.gotFilenameOfUrl(response.request.path, filename));
-					resolve(filename);
 				});
 		});
 	}

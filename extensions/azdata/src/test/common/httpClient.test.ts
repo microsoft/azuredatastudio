@@ -85,33 +85,6 @@ describe('HttpClient', function (): void {
 		});
 	});
 
-	describe('getFilename', function (): void {
-		it('Gets filename correctly', async function (): Promise<void> {
-			const filename = 'azdata-cli-20.0.0.msi';
-			nock('https://127.0.0.1')
-				.get(`/${filename}`)
-				.reply(200);
-			const receivedFilename = await HttpClient.getFilename(`https://127.0.0.1/${filename}`, outputChannelMock.object);
-			should(receivedFilename).equal(filename);
-		});
-
-		it('rejects on response error', async function (): Promise<void> {
-			nock('https://127.0.0.1')
-				.get('/')
-				.replyWithError('Unexpected Error');
-			const getFilenamePromise = HttpClient.getFilename('https://127.0.0.1', outputChannelMock.object);
-			await should(getFilenamePromise).be.rejected();
-		});
-
-		it('rejects on non-OK status code', async function (): Promise<void> {
-			nock('https://127.0.0.1')
-				.get('/')
-				.reply(404, '');
-			const getFilenamePromise = HttpClient.getFilename('https://127.0.0.1', outputChannelMock.object);
-			await should(getFilenamePromise).be.rejected();
-		});
-	});
-
 	describe('getTextContent', function (): void {
 		it.skip('Gets file contents correctly', async function (): Promise<void> {
 			nock('https://127.0.0.1')

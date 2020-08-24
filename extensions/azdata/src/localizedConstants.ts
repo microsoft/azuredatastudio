@@ -10,7 +10,6 @@ export const searchingForAzdata = localize('azdata.searchingForAzdata', "Searchi
 export function foundExistingAzdata(path: string, version: string): string { return localize('azdata.foundExistingAzdata', "Found existing azdata installation at {0} (v{1})", path, version); }
 export function downloadingProgressMb(currentMb: string, totalMb: string): string { return localize('azdata.downloadingProgressMb', "Downloading ({0} / {1} MB)", currentMb, totalMb); }
 export const downloadFinished = localize('azdata.downloadFinished', "Download finished");
-export const install = localize('azdata.install', "Install");
 export const installingAzdata = localize('azdata.installingAzdata', "Installing azdata...");
 export const upgradingAzdata = localize('azdata.upgradingAzdata', "Upgrading azdata...");
 export const azdataInstalled = localize('azdata.azdataInstalled', "azdata was successfully installed. Restarting Azure Data Studio is required to complete configuration - features will not be activated until this is done.");
@@ -23,10 +22,7 @@ export function executingCommand(command: string, args: string[]): string { retu
 export function stdoutOutput(stdout: string): string { return localize('azdata.stdoutOutput', "stdout : {0}", stdout); }
 export function stderrOutput(stderr: string): string { return localize('azdata.stderrOutput', "stderr : {0}", stderr); }
 export const checkingLatestAzdataVersion = localize('azdata.checkingLatestAzdataVersion', "Checking for latest version of azdata");
-export function gettingFilenameOfUrl(url: string): string { return localize('azdata.gettingFilenameOfUrl', "Getting filename of resource at URL {0}", url); }
 export function gettingTextContentsOfUrl(url: string): string { return localize('azdata.gettingTextContentsOfUrl', "Getting text contents of resource at URL {0}", url); }
-export function gotFilenameOfUrl(url: string, filename: string): string { return localize('azdata.gotFilenameOfUrl', "Got filename {0} from URL {1}", filename, url); }
-
 export function foundAzdataVersionToUpgradeTo(version: string): string { return localize('azdata.versionForUpgrade', "Found version {0} that azdata-cli can be upgraded to.", version); }
 export function promptForAzdataUpgrade(version: string): string { return localize('azdata.promptForAzdataUpgrade', "An updated version of azdata ( {0} ) is available, do you wish to install it now?", version); }
 export function couldNotFindAzdata(err: any): string { return localize('azdata.couldNotFindAzdata', "Could not find azdata. Error : {0}", err.message ?? err); }
