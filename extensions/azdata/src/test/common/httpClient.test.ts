@@ -86,7 +86,6 @@ describe('HttpClient', function (): void {
 				.get('/arbitraryFile')
 				.replyWithFile(200, __filename);
 			const receivedContents = await HttpClient.getTextContent(`https://127.0.0.1/arbitraryFile`, outputChannelMock.object);
-			console.log(`received fileContents:${receivedContents}`);
 			should(receivedContents).equal(await fs.promises.readFile(__filename));
 		});
 

@@ -55,7 +55,7 @@ export class AzdataTool implements IAzdataTool {
 	}
 }
 
-export type AzdataLatestVersionInfo = {
+export type AzdataDarwinPackageVersionInfo = {
 	versions: {
 		stable: string,
 		devel: string,
@@ -278,14 +278,13 @@ async function discoverLatestStableAzdataVersionDarwin(outputChannel: vscode.Out
 	await executeCommand('brew', ['tap', 'microsoft/azdata-cli-release'], outputChannel);
 	let brewInfoAzdataCliJson;
 	const brewInfoOutput = (await executeCommand('brew', ['info', 'azdata-cli', '--json'], outputChannel)).stdout;
-	console.log(`##############brewInfoOutput:`, brewInfoOutput);
 	try {
 		brewInfoAzdataCliJson = JSON.parse(brewInfoOutput);
 	} catch (e) {
 		throw Error(`failed to parse the JSON contents output of: 'brew info azdata-cli --json', error:${getErrorMessage(e)}`);
 	}
 	// Get the 'info' about 'azdata-cli' from 'brew' as a json object
-	const azdataInfo: AzdataLatestVersionInfo = brewInfoAzdataCliJson.shift();
+	const azdataInfo: AzdataDarwinPackageVersionInfo = brewInfoAzdataCliJson.shift();
 	outputChannel.appendLine(loc.foundAzdataVersionToUpgradeTo(azdataInfo.versions.stable));
 	return new SemVer(azdataInfo.versions.stable);
 }
