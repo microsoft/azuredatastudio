@@ -5,7 +5,7 @@
 
 import { window, InputBoxOptions } from 'vscode';
 import Prompt from './prompt';
-import EscapeException from '../escapeException';
+import EscapeException from './escapeException';
 
 const figures = require('figures');
 

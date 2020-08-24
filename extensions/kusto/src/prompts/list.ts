@@ -5,7 +5,7 @@
 
 import { window } from 'vscode';
 import Prompt from './prompt';
-import EscapeException from '../escapeException';
+import EscapeException from './escapeException';
 
 export default class ListPrompt extends Prompt {
 	constructor(question: any, ignoreFocusOut?: boolean) {

@@ -8,7 +8,7 @@ const localize = nls.loadMessageBundle();
 
 import { window } from 'vscode';
 import Prompt from './prompt';
-import EscapeException from '../escapeException';
+import EscapeException from './escapeException';
 
 export default class ConfirmPrompt extends Prompt {
 

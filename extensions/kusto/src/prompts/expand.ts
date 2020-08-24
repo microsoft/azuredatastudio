@@ -5,7 +5,7 @@
 
 import vscode = require('vscode');
 import Prompt from './prompt';
-import EscapeException from '../escapeException';
+import EscapeException from './escapeException';
 import { INameValueChoice } from './question';
 
 const figures = require('figures');

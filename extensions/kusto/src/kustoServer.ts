@@ -13,8 +13,6 @@ import { localize } from './localize';
 import { Telemetry, LanguageClientErrorHandler } from './telemetry';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { TelemetryFeature, SerializationFeature } from './features';
-import { CredentialStore } from './credentialstore/credentialstore';
-import { AzureResourceProvider } from './resourceProvider/resourceProvider';
 import { AppContext } from './appContext';
 import { CompletionExtensionParams, CompletionExtLoadRequest } from './contracts';
 import { promises as fs } from 'fs';
@@ -57,7 +55,7 @@ export class KustoServer {
 			statusView.show();
 			statusView.text = localize('startingServiceStatusMsg', "Starting {0}", Constants.serviceName);
 			this.client.start();
-			await Promise.all([this.activateFeatures(context), clientReadyPromise]);
+			await Promise.all([clientReadyPromise]);
 			return this.client;
 		} catch (e) {
 			Telemetry.sendTelemetryEvent('ServiceInitializingFailed');
@@ -76,14 +74,6 @@ export class KustoServer {
 		const serverdownloader = new ServerProvider(this.config);
 		serverdownloader.eventEmitter.onAny(generateHandleServerProviderEvent());
 		return serverdownloader.getOrDownloadServer();
-	}
-
-	private activateFeatures(context: AppContext): Promise<void> {
-		const credsStore = new CredentialStore(context.extensionContext.logPath, this.config);
-		const resourceProvider = new AzureResourceProvider(context.extensionContext.logPath, this.config);
-		this.disposables.push(credsStore);
-		this.disposables.push(resourceProvider);
-		return Promise.all([credsStore.start(), resourceProvider.start()]).then();
 	}
 
 	dispose() {

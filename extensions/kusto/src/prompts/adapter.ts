@@ -3,7 +3,7 @@
 
 import { window } from 'vscode';
 import PromptFactory from './factory';
-import EscapeException from '../escapeException';
+import EscapeException from './escapeException';
 import { IQuestion, IPrompter, IPromptCallback } from './question';
 
 // Supports simple pattern for prompting for user input and acting on this
@@ -58,6 +58,7 @@ export default class CodeAdapter implements IPrompter {
 				return answers;
 			});
 		}, Promise.resolve());
+
 
 		return promptResult.catch(err => {
 			if (err instanceof EscapeException || err instanceof TypeError) {
