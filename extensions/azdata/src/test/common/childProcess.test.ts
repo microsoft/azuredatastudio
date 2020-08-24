@@ -3,11 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
 import * as should from 'should';
-import * as TypeMoq from 'typemoq';
 import * as sudo from 'sudo-prompt';
 import * as sinon from 'sinon';
+import Logger from '../../common/logger';
 
 import { executeCommand, executeSudoCommand } from '../../common/childProcess';
 
@@ -20,10 +19,9 @@ describe('ChildProcess', function (): void {
 	describe('executeCommand', function(): void {
 		[[], ['test']].forEach(args => {
 			it(`Output channel is used with ${JSON.stringify(args)} args`, async function (): Promise<void> {
-				const outputChannelMock = TypeMoq.Mock.ofType<vscode.OutputChannel>();
-				sinon.stub(vscode.window, 'createOutputChannel').returns(outputChannelMock.object);
+				const logStub = sinon.stub(Logger, 'log');
 				await executeCommand('echo', args);
-				outputChannelMock.verify(x => x.appendLine(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
+				should(logStub.called).be.true('Log should have been called');
 			});
 		});
 
