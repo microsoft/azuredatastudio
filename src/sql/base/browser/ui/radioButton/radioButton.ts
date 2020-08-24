@@ -15,7 +15,6 @@ export interface IRadioButtonOptions {
 	iconClass?: string;
 	name?: string;
 }
-
 export class RadioButton extends Widget {
 
 	private inputElement: HTMLInputElement;

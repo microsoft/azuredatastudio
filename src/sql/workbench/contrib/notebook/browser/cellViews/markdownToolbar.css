@@ -54,9 +54,12 @@
 	list-style: none;
 	padding: 0;
 }
+.monaco-workbench.vs-dark .markdown-toolbar .view-button-group input,
+.monaco-workbench.hc-black .markdown-toolbar .view-button-group input {
+	background-color: transparent;
+}
 .markdown-toolbar .view-button-group li {
-	justify-content: space-between;
-	margin: 0 8px;
+	margin: 0 6px;
 }
 
 .markdown-toolbar .carbon-taskbar a,

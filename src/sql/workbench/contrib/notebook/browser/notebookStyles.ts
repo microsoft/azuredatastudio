@@ -188,8 +188,8 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 		}
 		const toolbarIconColor = theme.getColor(toolbarIcon);
 		if (toolbarIconColor) {
-			collector.addRule(`.markdown-toolbar a:before { background-color: ${toolbarIconColor};}`);
-			collector.addRule(`.markdown-toolbar input:before { background-color: ${toolbarIconColor};}`);
+			collector.addRule(`.markdown-toolbar a::before { background-color: ${toolbarIconColor};}`);
+			collector.addRule(`.markdown-toolbar input::before { background-color: ${toolbarIconColor};}`);
 		}
 		const toolbarBottomBorderColor = theme.getColor(toolbarBottomBorder);
 		if (toolbarBottomBorderColor) {
