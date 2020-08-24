@@ -15,8 +15,8 @@
 	"sqlDatabaseProjects.exclude": "Exclude from project",
 
 	"sqlDatabaseProjects.newScript": "Add Script",
-	"sqlDatabaseProjects.newPreDeployScript": "Add Pre-Deployment Script",
-	"sqlDatabaseProjects.newPostDeployScript": "Add Post-Deployment Script",
+	"sqlDatabaseProjects.newPreDeploymentScript": "Add Pre-Deployment Script",
+	"sqlDatabaseProjects.newPostDeploymentScript": "Add Post-Deployment Script",
 	"sqlDatabaseProjects.newTable": "Add Table",
 	"sqlDatabaseProjects.newView": "Add View",
 	"sqlDatabaseProjects.newStoredProcedure": "Add Stored Procedure",

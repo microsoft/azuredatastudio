@@ -233,15 +233,18 @@ export class Project {
 		const fileEntry = this.createProjectEntry(relativeFilePath, EntryType.File);
 
 		let xmlTag;
-		if (itemType && itemType === templates.preDeployScript) {
-			xmlTag = constants.PreDeploy;
-			this.preDeployScripts.push(fileEntry);
-		} else if (itemType && itemType === templates.postDeployScript) {
-			xmlTag = constants.PostDeploy;
-			this.postDeployScripts.push(fileEntry);
-		} else {
-			xmlTag = constants.Build;
-			this.files.push(fileEntry);
+		switch (itemType) {
+			case templates.preDeployScript:
+				xmlTag = constants.PreDeploy;
+				this.preDeployScripts.push(fileEntry);
+				break;
+			case templates.postDeployScript:
+				xmlTag = constants.PostDeploy;
+				this.postDeployScripts.push(fileEntry);
+				break;
+			default:
+				xmlTag = constants.Build;
+				this.files.push(fileEntry);
 		}
 
 		await this.addToProjFile(fileEntry, xmlTag);

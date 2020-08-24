@@ -1,1 +1,1 @@
--- This file contains SQL statements that will be appended to the build script.
+-- This file contains SQL statements that will be executed after the build script.
