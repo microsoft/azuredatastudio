@@ -58,7 +58,7 @@ import './mainThreadWebview';
 import './mainThreadWorkspace';
 import './mainThreadComments';
 import './mainThreadNotebook';
-// import './mainThreadTask'; {{SQL CARBON EDIT}} @anthonydresser comment out task
+import './mainThreadTask';
 import './mainThreadLabelService';
 import './mainThreadTunnelService';
 import './mainThreadAuthentication';

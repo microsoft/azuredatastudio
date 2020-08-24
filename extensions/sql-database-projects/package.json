@@ -16,7 +16,8 @@
     "onCommand:sqlDatabaseProjects.new",
     "onCommand:sqlDatabaseProjects.open",
     "onCommand:sqlDatabaseProjects.importDatabase",
-    "workspaceContains:**/*.sqlproj"
+    "workspaceContains:**/*.sqlproj",
+    "*"
   ],
   "main": "./out/extension",
   "repository": {
@@ -28,6 +29,11 @@
     "Microsoft.schema-compare"
   ],
   "contributes": {
+    "taskDefinitions": [
+      {
+        "type": "sqlDatabaseProjects.taskProvider"
+      }
+    ],
     "configuration": [
       {
         "title": "%sqlDatabaseProjects.Settings%",
