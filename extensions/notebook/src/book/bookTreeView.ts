@@ -18,6 +18,7 @@ import * as loc from '../common/localizedConstants';
 import * as glob from 'fast-glob';
 import { isNullOrUndefined } from 'util';
 import { debounce } from '../common/utils';
+import { IBookPinManager, BookPinManager } from './bookPinManager';
 
 const Content = 'content';
 
@@ -36,6 +37,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private _initializeDeferred: Deferred<void> = new Deferred<void>();
 	private _openAsUntitled: boolean;
 	private _bookTrustManager: IBookTrustManager;
+	private _bookPinManager: IBookPinManager;
 
 	private _bookViewer: vscode.TreeView<BookTreeItem>;
 	public viewId: string;
@@ -46,7 +48,12 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		this._openAsUntitled = openAsUntitled;
 		this._extensionContext = extensionContext;
 		this.books = [];
-		this.initialize(workspaceFolders).catch(e => console.error(e));
+		this._bookPinManager = new BookPinManager(this.books);
+		if (view === constants.PINNED_BOOKS_VIEWID) {
+			this.initializePinnedNotebooks().catch(e => console.error(e));
+		} else {
+			this.initialize(workspaceFolders).catch(e => console.error(e));
+		}
 		this.viewId = view;
 		this.prompter = new CodeAdapter();
 		this._bookTrustManager = new BookTrustManager(this.books);
@@ -67,6 +74,17 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	public get initialized(): Promise<void> {
 		return this._initializeDeferred.promise;
+	}
+
+	private async initializePinnedNotebooks(): Promise<void> {
+		await Promise.all(this._bookPinManager.getPinnedNotebooks().map(async (notebookPath) => {
+			try {
+				await this.createAndAddBookModel(notebookPath, true);
+			} catch {
+				// no-op, not all workspace folders are going to be valid books
+			}
+		}));
+		this._initializeDeferred.resolve();
 	}
 
 	get _visitedNotebooks(): string[] {
@@ -95,6 +113,17 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				vscode.window.showInformationMessage(loc.msgBookTrusted);
 			} else {
 				vscode.window.showInformationMessage(loc.msgBookAlreadyTrusted);
+			}
+		}
+	}
+
+	async pinNotebook(bookTreeItem: BookTreeItem, unpin: boolean = false): Promise<void> {
+		let bookPathToUpdate = bookTreeItem.book?.contentPath;
+		if (bookPathToUpdate) {
+			let pinStatusChanged = unpin ? this._bookPinManager.unpinNotebook(bookTreeItem) : this._bookPinManager.pinNotebook(bookTreeItem);
+			if (pinStatusChanged) {
+				bookTreeItem.contextValue = unpin ? 'savedNotebook' : 'pinnedNotebook';
+				vscode.window.showInformationMessage(unpin ? loc.msgBookUnpinned : loc.msgBookPinned);
 			}
 		}
 	}
@@ -131,6 +160,18 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			}
 		} catch (e) {
 			vscode.window.showErrorMessage(loc.openFileError(bookPath, e instanceof Error ? e.message : e));
+		}
+	}
+
+	async addRemoveNotebookFromPinned(bookItem: BookTreeItem, pin: boolean = true): Promise<void> {
+		let notebookPath: string = bookItem.book.contentPath;
+		if (notebookPath) {
+			if (pin) {
+				await this.createAndAddBookModel(notebookPath, true);
+			} else {
+				this.closeBook(bookItem);
+			}
+
 		}
 	}
 

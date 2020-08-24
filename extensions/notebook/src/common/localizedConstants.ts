@@ -25,6 +25,8 @@ export const msgBookTrusted = localize('msgBookTrusted', "Book is now trusted in
 export const msgBookAlreadyTrusted = localize('msgBookAlreadyTrusted', "Book is already trusted in this workspace.");
 export const msgBookUntrusted = localize('msgBookUntrusted', "Book is no longer trusted in this workspace");
 export const msgBookAlreadyUntrusted = localize('msgBookAlreadyUntrusted', "Book is already untrusted in this workspace.");
+export const msgBookPinned = localize('msgBookPinned', "Book is now pinned in the workspace.");
+export const msgBookUnpinned = localize('msgBookUnpinned', "Book is no longer pinned in this workspace");
 export const missingTocError = localize('bookInitializeFailed', "Failed to find a Table of Contents file in the specified book.");
 export const noBooksSelectedError = localize('noBooksSelected', "No books are currently selected in the viewlet.");
 
