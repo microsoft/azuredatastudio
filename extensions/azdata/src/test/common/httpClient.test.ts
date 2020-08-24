@@ -20,11 +20,6 @@ describe('HttpClient', function (): void {
 
 	before(function (): void {
 		outputChannelMock = TypeMoq.Mock.ofType<vscode.OutputChannel>();
-		if (process.env.SendOutputChannelToConsole) {
-			outputChannelMock.setup(x => x.appendLine(TypeMoq.It.isAnyString())).callback((x => {
-				console.log(`Output Channel:${x}`);
-			}));
-		}
 	});
 
 	afterEach(function (): void {
