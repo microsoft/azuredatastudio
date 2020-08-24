@@ -12,7 +12,6 @@ import * as sinon from 'sinon';
 import { executeCommand, executeSudoCommand } from '../../common/childProcess';
 
 describe('ChildProcess', function (): void {
-	const outputChannelMock = TypeMoq.Mock.ofType<vscode.OutputChannel>();
 
 	afterEach(function(): void {
 		sinon.restore();
@@ -21,19 +20,21 @@ describe('ChildProcess', function (): void {
 	describe('executeCommand', function(): void {
 		[[], ['test']].forEach(args => {
 			it(`Output channel is used with ${JSON.stringify(args)} args`, async function (): Promise<void> {
-				await executeCommand('echo', args, outputChannelMock.object);
+				const outputChannelMock = TypeMoq.Mock.ofType<vscode.OutputChannel>();
+				sinon.stub(vscode.window, 'createOutputChannel').returns(outputChannelMock.object);
+				await executeCommand('echo', args);
 				outputChannelMock.verify(x => x.appendLine(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
 			});
 		});
 
 		it('Gets expected output', async function (): Promise<void> {
 			const echoOutput = 'test';
-			const output = await executeCommand('echo', [echoOutput], outputChannelMock.object);
+			const output = await executeCommand('echo', [echoOutput]);
 			should(output.stdout).equal(echoOutput);
 		});
 
 		it('Invalid command errors', async function (): Promise<void> {
-			await should(executeCommand('invalid_command', [], outputChannelMock.object)).be.rejected();
+			await should(executeCommand('invalid_command', [])).be.rejected();
 		});
 	});
 
@@ -43,7 +44,7 @@ describe('ChildProcess', function (): void {
 			sinon.stub(sudo, 'exec').callsFake( (_cmd, _options, callback) => {
 				callback!(undefined, stdout);
 			});
-			const result = await executeSudoCommand('echo', outputChannelMock.object);
+			const result = await executeSudoCommand('echo');
 			should(result.stdout).equal(stdout);
 			should(result.stderr).equal('');
 		});
@@ -53,7 +54,7 @@ describe('ChildProcess', function (): void {
 			sinon.stub(sudo, 'exec').callsFake( (_cmd, _options, callback) => {
 				callback!(undefined, undefined, stderr);
 			});
-			const result = await executeSudoCommand('echo', outputChannelMock.object);
+			const result = await executeSudoCommand('echo');
 			should(result.stdout).equal('');
 			should(result.stderr).equal(stderr);
 		});
@@ -62,7 +63,7 @@ describe('ChildProcess', function (): void {
 			sinon.stub(sudo, 'exec').callsFake( (_cmd, _options, callback) => {
 				callback!(new Error('error'));
 			});
-			await should(executeSudoCommand('invalid_command', outputChannelMock.object)).be.rejected();
+			await should(executeSudoCommand('invalid_command')).be.rejected();
 		});
 	});
 
