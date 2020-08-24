@@ -27,6 +27,15 @@ export function supportsFolderNodeNameDrop(nodeId: string, label: string): boole
 	return false;
 }
 
+function getProviderNameFromElement(element: TreeNode): string | undefined {
+
+	if (element.connection) {
+		return element.connection.providerName;
+	}
+
+	return getProviderNameFromElement(element.parent);
+}
+
 function escapeString(input: string | undefined): string | undefined {
 	return input?.replace(/]/g, ']]');
 }
@@ -94,9 +103,9 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 		const data = dragAndDropData.getData();
 		const element = data[0];
 		if (supportsNodeNameDrop(element.nodeTypeId)) {
-			escapedSchema = this.escapeString(element.metadata.schema);
-			escapedName = this.escapeString(element.metadata.name);
-			let providerName = this.getProviderNameFromElement(element);
+			escapedSchema = escapeString(element.metadata.schema);
+			escapedName = escapeString(element.metadata.name);
+			let providerName = getProviderNameFromElement(element);
 			if (providerName === 'KUSTO') {
 				finalString = element.nodeTypeId !== 'Function' && escapedName.indexOf(' ') > 0 ? `[@"${escapedName}"]` : escapedName;
 			} else {
