@@ -29,8 +29,6 @@ interface BookSearchResults {
 export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeItem>, azdata.nb.NavigationProvider {
 	private _onDidChangeTreeData: vscode.EventEmitter<BookTreeItem | undefined> = new vscode.EventEmitter<BookTreeItem | undefined>();
 	readonly onDidChangeTreeData: vscode.Event<BookTreeItem | undefined> = this._onDidChangeTreeData.event;
-	private _throttleTimer: any;
-	private _resource: string;
 	private _extensionContext: vscode.ExtensionContext;
 	private prompter: IPrompter;
 	private _initializeDeferred: Deferred<void> = new Deferred<void>();
@@ -231,19 +229,17 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			if (this._openAsUntitled) {
 				await this.openNotebookAsUntitled(resource);
 			} else {
+				await azdata.nb.showNotebookDocument(vscode.Uri.file(resource));
 				// let us keep a list of already visited notebooks so that we do not trust them again, potentially
 				// overriding user changes
 				let normalizedResource = path.normalize(resource);
 
 				if (this._visitedNotebooks.indexOf(normalizedResource) === -1
 					&& this._bookTrustManager.isNotebookTrustedByDefault(normalizedResource)) {
-					let openDocumentListenerUnsubscriber = azdata.nb.onDidOpenNotebookDocument((document: azdata.nb.NotebookDocument) => {
-						document.setTrusted(true);
-						this._visitedNotebooks = this._visitedNotebooks.concat([normalizedResource]);
-						openDocumentListenerUnsubscriber.dispose();
-					});
+					let document = azdata.nb.notebookDocuments.find(document => document.fileName === resource);
+					document?.setTrusted(true);
+					this._visitedNotebooks = this._visitedNotebooks.concat([normalizedResource]);
 				}
-				azdata.nb.showNotebookDocument(vscode.Uri.file(resource));
 			}
 		} catch (e) {
 			vscode.window.showErrorMessage(loc.openNotebookError(resource, e instanceof Error ? e.message : e));
@@ -297,26 +293,22 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	openMarkdown(resource: string): void {
-		this.runThrottledAction(resource, () => {
-			try {
-				vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(resource));
-			} catch (e) {
-				vscode.window.showErrorMessage(loc.openMarkdownError(resource, e instanceof Error ? e.message : e));
-			}
-		});
+		try {
+			vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(resource));
+		} catch (e) {
+			vscode.window.showErrorMessage(loc.openMarkdownError(resource, e instanceof Error ? e.message : e));
+		}
 	}
 
 	async openNotebookAsUntitled(resource: string): Promise<void> {
 		try {
 			await vscode.commands.executeCommand(constants.BuiltInCommands.SetContext, constants.unsavedBooksContextKey, true);
 			let untitledFileName: vscode.Uri = this.getUntitledNotebookUri(resource);
-			vscode.workspace.openTextDocument(resource).then((document) => {
-				let initialContent = document.getText();
-				azdata.nb.showNotebookDocument(untitledFileName, {
-					connectionProfile: null,
-					initialContent: initialContent,
-					initialDirtyState: false
-				});
+			let document: vscode.TextDocument = await vscode.workspace.openTextDocument(resource);
+			await azdata.nb.showNotebookDocument(untitledFileName, {
+				connectionProfile: null,
+				initialContent: document.getText(),
+				initialDirtyState: false
 			});
 		} catch (e) {
 			vscode.window.showErrorMessage(loc.openUntitledNotebookError(resource, e instanceof Error ? e.message : e));
@@ -455,35 +447,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		return { notebookPaths: notebookPaths, bookPaths: bookPaths };
 	}
 
-	private runThrottledAction(resource: string, action: () => void) {
-		const isResourceChange = resource !== this._resource;
-		if (isResourceChange) {
-			this.clearAndResetThrottleTimer();
-		}
-
-		this._resource = resource;
-
-		// Schedule update if none is pending
-		if (!this._throttleTimer) {
-			if (isResourceChange) {
-				action();
-			} else {
-				this._throttleTimer = setTimeout(() => {
-					action();
-					this.clearAndResetThrottleTimer();
-				}, 300);
-			}
-		}
-	}
-
-	private clearAndResetThrottleTimer(): void {
-		clearTimeout(this._throttleTimer);
-		this._throttleTimer = undefined;
-	}
-
-	openExternalLink(resource: string): void {
+	async openExternalLink(resource: string): Promise<void> {
 		try {
-			vscode.env.openExternal(vscode.Uri.parse(resource));
+			await vscode.env.openExternal(vscode.Uri.parse(resource));
 		} catch (e) {
 			vscode.window.showErrorMessage(loc.openExternalLinkError(resource, e instanceof Error ? e.message : e));
 		}
