@@ -27,7 +27,7 @@ export class MssqlNodeContext extends Disposable {
 	static readonly canCreateOrDelete = new Set([NodeType.AggregateFunction, NodeType.PartitionFunction, NodeType.ScalarValuedFunction,
 	NodeType.Schema, NodeType.StoredProcedure, NodeType.Table, NodeType.TableValuedFunction,
 	NodeType.User, NodeType.UserDefinedTableType, NodeType.View]);
-	static readonly canExecute = new Set([NodeType.StoredProcedure]);
+	static readonly canExecute = new Set([NodeType.StoredProcedure, NodeType.Function]);
 	static readonly canAlter = new Set([NodeType.AggregateFunction, NodeType.PartitionFunction, NodeType.ScalarValuedFunction,
 	NodeType.StoredProcedure, NodeType.TableValuedFunction, NodeType.View]);
 

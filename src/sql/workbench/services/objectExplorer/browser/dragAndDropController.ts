@@ -94,9 +94,14 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 		const data = dragAndDropData.getData();
 		const element = data[0];
 		if (supportsNodeNameDrop(element.nodeTypeId)) {
-			escapedSchema = escapeString(element.metadata.schema);
-			escapedName = escapeString(element.metadata.name);
-			finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
+			escapedSchema = this.escapeString(element.metadata.schema);
+			escapedName = this.escapeString(element.metadata.name);
+			let providerName = this.getProviderNameFromElement(element);
+			if (providerName === 'KUSTO') {
+				finalString = element.nodeTypeId !== 'Function' && escapedName.indexOf(' ') > 0 ? `[@"${escapedName}"]` : escapedName;
+			} else {
+				finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
+			}
 			originalEvent.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([`${element.nodeTypeId}:${element.id}?${finalString}`]));
 		}
 		if (supportsFolderNodeNameDrop(element.nodeTypeId, element.label)) {
