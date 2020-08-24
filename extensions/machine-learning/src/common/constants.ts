@@ -56,7 +56,7 @@ export function cannotFindR(path: string): string { return localize('mls.cannotF
 export const installPackageMngDependenciesMsgTaskName = localize('mls.installPackageMngDependencies.msgTaskName', "Verifying package management dependencies");
 export const installModelMngDependenciesMsgTaskName = localize('mls.installModelMngDependencies.msgTaskName', "Verifying model management dependencies");
 export const noResultError = localize('mls.noResultError', "No Result returned");
-export const requiredPackagesNotInstalled = localize('mls.requiredPackagesNotInstalled', "The required dependencies are not installed");
+export const requiredPackagesNotInstalled = localize('mls.requiredPackagesNotInstalled', "The required packages are not installed");
 export const confirmEnableExternalScripts = localize('mls.confirmEnableExternalScripts', "External script is required for package management. Are you sure you want to enable that.");
 export const enableExternalScriptsError = localize('mls.enableExternalScriptsError', "Failed to enable External script.");
 export const externalScriptsIsRequiredError = localize('mls.externalScriptsIsRequiredError', "External script configuration is required for this action.");
@@ -64,6 +64,10 @@ export const confirmInstallPythonPackages = localize('mls.confirmInstallPythonPa
 export function confirmInstallPythonPackagesDetails(packages: string): string {
 	return localize('mls.installDependencies.confirmInstallPythonPackages'
 		, "The following Python packages are required to install: {0}", packages);
+}
+export function confirmInstallRPackagesDetails(packages: string): string {
+	return localize('mls.installDependencies.confirmInstallRPackages'
+		, "The following R packages are required to install: {0}", packages);
 }
 export function confirmDeleteModel(modelName: string): string {
 	return localize('models.confirmDeleteModel'
