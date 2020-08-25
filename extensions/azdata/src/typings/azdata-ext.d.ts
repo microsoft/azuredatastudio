@@ -112,6 +112,9 @@ declare module 'azdata-ext' {
 			uid: string // "cea737aa-3f82-4f6a-9bed-2b51c2c33dff"
 		},
 		spec: {
+			service: {
+				type: string // "NodePort"
+			}
 			storage: {
 				data: {
 					className: string, // "local-storage"
@@ -125,7 +128,8 @@ declare module 'azdata-ext' {
 		},
 		status: {
 			readyReplicas: string, // "1/1"
-			state: string // "Ready"
+			state: string, // "Ready"
+			externalEndpoint?: string // "10.91.86.39:32718"
 		}
 	}
 
