@@ -115,6 +115,11 @@ class ConnectionProfileTemplate extends Disposable {
 			label = localize('loading', "Loading...");
 		}
 
+		if (element.providerName === 'KUSTO') {
+			let iconPath = getIconPath(element, this._connectionManagementService);
+			renderServerIcon(this._icon, iconPath);
+		}
+
 		this._label.textContent = label;
 		this._root.title = element.serverInfo;
 	}
