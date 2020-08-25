@@ -9,7 +9,7 @@ import * as sinon from 'sinon';
 import * as TypeMoq from 'typemoq';
 import * as vscode from 'vscode';
 import * as should from 'should';
-import { ConnectToControllerDialog, ConnectToControllerDialogModel } from '../../ui/dialogs/connectControllerDialog';
+import { ConnectToControllerDialog } from '../../ui/dialogs/connectControllerDialog';
 import { ControllerModel } from '../../models/controllerModel';
 import { AzureArcTreeDataProvider } from '../../ui/tree/azureArcTreeDataProvider';
 import { UserCancelledError } from '../../common/utils';
