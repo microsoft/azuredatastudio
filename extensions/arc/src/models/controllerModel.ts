@@ -66,13 +66,13 @@ export class ControllerModel {
 				// It should be in the credentials store, get it from there
 				this._password = await this.treeDataProvider.getPassword(this.info);
 			}
-			if (promptReconnect) {
+			if (promptReconnect || !this._password) {
 				// No password yet or we want to re-prompt for credentials so prompt for it from the user
 				const dialog = new ConnectToControllerDialog(this.treeDataProvider);
 				dialog.showDialog(this.info, this._password);
 				const model = await dialog.waitForClose();
 				if (model) {
-					this.treeDataProvider.addOrUpdateController(model.controllerModel, model.password, false);
+					await this.treeDataProvider.addOrUpdateController(model.controllerModel, model.password, false);
 					this._password = model.password;
 				} else {
 					throw new UserCancelledError();
