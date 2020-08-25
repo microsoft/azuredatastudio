@@ -11,7 +11,6 @@ import { Project, SystemDatabase, DatabaseReferenceLocation } from '../models/pr
 import { cssStyles } from '../common/uiConstants';
 import { IconPathHelper } from '../common/iconHelper';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings } from '../models/IDatabaseReferenceSettings';
-import { isEmptyOrUndefined } from '../common/utils';
 
 export enum ReferenceType {
 	project,
@@ -373,7 +372,7 @@ export class AddDatabaseReferenceDialog {
 	public tryEnableAddReferenceButton(): void {
 		switch (this.currentReferenceType) {
 			case ReferenceType.systemDb: {
-				this.dialog.okButton.enabled = !isEmptyOrUndefined(<string>this.databaseNameTextbox?.value);
+				this.dialog.okButton.enabled = !!this.databaseNameTextbox?.value;
 				break;
 			}
 			case ReferenceType.dacpac: {
@@ -387,17 +386,17 @@ export class AddDatabaseReferenceDialog {
 	}
 
 	private dacpacFieldsRequiredFieldsFilled(): boolean {
-		return !isEmptyOrUndefined(<string>this.dacpacTextbox?.value) &&
+		return !!this.dacpacTextbox?.value &&
 			((this.locationDropdown?.value === constants.sameDatabase)
 				|| (this.locationDropdown?.value === constants.differentDbSameServer && this.differentDatabaseSameServerRequiredFieldsFilled())
 				|| ((this.locationDropdown?.value === constants.differentDbDifferentServer && this.differentDatabaseDifferentServerRequiredFieldsFilled())));
 	}
 
 	private differentDatabaseSameServerRequiredFieldsFilled(): boolean {
-		return !isEmptyOrUndefined(<string>this.databaseNameTextbox?.value);
+		return !!this.databaseNameTextbox?.value;
 	}
 
 	private differentDatabaseDifferentServerRequiredFieldsFilled(): boolean {
-		return !isEmptyOrUndefined(<string>this.databaseNameTextbox?.value) && !isEmptyOrUndefined(<string>this.serverNameTextbox?.value) && !isEmptyOrUndefined(<string>this.serverVariableTextbox?.value);
+		return !!this.databaseNameTextbox?.value && !!this.serverNameTextbox?.value && !!this.serverVariableTextbox?.value;
 	}
 }

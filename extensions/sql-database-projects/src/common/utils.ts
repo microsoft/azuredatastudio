@@ -143,11 +143,3 @@ export function readSqlCmdVariables(xmlDoc: any): Record<string, string> {
 
 	return sqlCmdVariables;
 }
-
-/**
- * Check if the string is empty or undefined
- * @param value string to check
- */
-export function isEmptyOrUndefined(value: string): boolean {
-	return !value || value === '';
-}
