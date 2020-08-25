@@ -157,6 +157,14 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 		}
 
 		if (canDragOver) {
+			if (targetElement instanceof ConnectionProfile) {
+				const isConnected = this._connectionManagementService.isProfileConnected(targetElement);
+				// Don't auto-expand disconnected connections - doing so will try to connect the connection
+				// when expanded which is not something we want to support currently
+				return DRAG_OVER_ACCEPT_BUBBLE_DOWN(isConnected);
+			}
+			// Auto-expand other elements (groups, tree nodes) so their children can be
+			// exposed for further dragging
 			return DRAG_OVER_ACCEPT_BUBBLE_DOWN(true);
 		} else {
 			return DRAG_OVER_REJECT;
