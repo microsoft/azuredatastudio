@@ -126,6 +126,10 @@ describe('Jupyter Session', function (): void {
 		session = new JupyterSession(mockJupyterSession.object, undefined, true);
 	});
 
+	afterEach(() => {
+		sinon.restore();
+	});
+
 	it('should always be able to change kernels', function (): void {
 		should(session.canChangeKernels).be.true();
 	});
@@ -183,8 +187,8 @@ describe('Jupyter Session', function (): void {
 	});
 
 	it('should write configuration to config.json file', async function (): Promise<void> {
-		let tempDir = path.join(os.tmpdir(), '.sparkmagic');
-		let configPath = path.join(tempDir, 'config.json');
+		let tempDir = os.tmpdir();
+		let configPath = path.join(tempDir, '.sparkmagic', 'config.json');
 		const expectedResult = {
 			'kernel_python_credentials': {
 				'url': 'http://localhost:8088'
@@ -221,12 +225,11 @@ describe('Jupyter Session', function (): void {
 			},
 			'ignore_ssl_errors': true,
 		};
-		expectedResult.logging_config.handlers.magicsHandler.home_path = tempDir;
+		expectedResult.logging_config.handlers.magicsHandler.home_path = path.join(tempDir, '.sparkmagic');
 		sinon.stub(utils, 'getUserHome').returns(tempDir);
 		await session.configureKernel();
 		let result = await fs.promises.readFile(configPath, 'utf-8');
 		should(JSON.parse(result) === expectedResult);
-		sinon.restore();
 	});
 
 	it('should configure connection correctly', async function (): Promise<void> {
