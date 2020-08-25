@@ -9,116 +9,114 @@ import * as os from 'os';
 import * as path from 'path';
 import * as constants from '../common/constants';
 
-export class NewProjectTool {
-	/**
-	 * Sets workspace setting on the default save location to the user's home directory
-	 */
-	public async initializeSaveLocationSetting() {
-		if (!this.projectSaveLocationSettingExists) {
-			await this.config.update(constants.projectSaveLocationKey, os.homedir(), true);
+/**
+ * Sets workspace setting on the default save location to the user's home directory
+ */
+export async function initializeSaveLocationSetting() {
+	if (!projectSaveLocationSettingExists()) {
+		await config().update(constants.projectSaveLocationKey, os.homedir(), true);
+	}
+}
+
+/**
+ * Returns the default location to save a new database project
+ */
+export function defaultProjectSaveLocation(): vscode.Uri {
+	return projectSaveLocationSettingIsValid() ? vscode.Uri.file(projectSaveLocationSetting()) : vscode.Uri.file(os.homedir());
+}
+
+/**
+ * Returns default project name for a fresh new project, such as 'DatabaseProject1'. Auto-increments
+ * the suggestion if a project of that name already exists in the default save location
+ */
+export function defaultProjectNameNewProj(): string {
+	return defaultProjectName(constants.defaultProjectNameStarter, 1);
+}
+
+/**
+ * Returns default project name for a new project based on given dbName. Auto-increments
+ * the suggestion if a project of that name already exists in the default save location
+ *
+ * @param dbName the database name to base the default project name off of
+ */
+export function defaultProjectNameFromDb(dbName: string): string {
+	const projectNameStarter = constants.defaultProjectNameStarter + dbName;
+	const projectPath: string = path.join(defaultProjectSaveLocation().fsPath, projectNameStarter);
+	if (!fs.existsSync(projectPath)) {
+		return projectNameStarter;
+	}
+
+	return defaultProjectName(projectNameStarter, 2);
+}
+
+/**
+ * Prompts user to update workspace settings
+ */
+export async function updateSaveLocationSetting(): Promise<void> {
+	const showPrompt: boolean = config()[constants.showUpdatePromptKey];
+	if (showPrompt) {
+		const openSettingsMessage = projectSaveLocationSettingIsValid() ?
+			constants.newDefaultProjectSaveLocation : constants.invalidDefaultProjectSaveLocation;
+		const result = await vscode.window.showInformationMessage(openSettingsMessage, constants.openWorkspaceSettings,
+			constants.doNotPromptAgain);
+
+		if (result === constants.openWorkspaceSettings || result === constants.doNotPromptAgain) {
+			// if user either opens settings or clicks "don't ask again", do not prompt for save location again
+			await config().update(constants.showUpdatePromptKey, false, true);
+
+			if (result === constants.openWorkspaceSettings) {
+				await vscode.commands.executeCommand('workbench.action.openGlobalSettings'); //open settings
+			}
 		}
 	}
+}
 
-	/**
-	 * Returns the default location to save a new database project
-	 */
-	public get defaultProjectSaveLocation(): vscode.Uri {
-		return this.projectSaveLocationSettingIsValid ? vscode.Uri.file(this.projectSaveLocationSetting) : vscode.Uri.file(os.homedir());
-	}
+/**
+ * Get workspace configurations for this extension
+ */
+function config(): vscode.WorkspaceConfiguration {
+	return vscode.workspace.getConfiguration(constants.dbProjectConfigurationKey);
+}
 
-	/**
-	 * Returns default project name for a fresh new project, such as 'DatabaseProject1'. Auto-increments
-	 * the suggestion if a project of that name already exists in the default save location
-	 */
-	public defaultProjectNameNewProj(): string {
-		return this.defaultProjectName(constants.defaultProjectNameStarter, 1);
-	}
+/**
+ * Returns the workspace setting on the default location to save new database projects
+ */
+function projectSaveLocationSetting(): string {
+	return config()[constants.projectSaveLocationKey];
+}
 
-	/**
-	 * Returns default project name for a new project based on given dbName. Auto-increments
-	 * the suggestion if a project of that name already exists in the default save location
-	 *
-	 * @param dbName the database name to base the default project name off of
-	 */
-	public defaultProjectNameFromDb(dbName: string): string {
-		const projectNameStarter = constants.defaultProjectNameStarter + dbName;
-		const projectPath: string = path.join(this.defaultProjectSaveLocation.fsPath, projectNameStarter);
+/**
+ * Returns if the default save location for new database projects workspace setting exists and is
+ * a valid path
+ */
+function projectSaveLocationSettingIsValid(): boolean {
+	return projectSaveLocationSettingExists() && fs.existsSync(projectSaveLocationSetting());
+}
+
+/**
+ * Returns if a value for the default save location for new database projects exists
+ */
+function projectSaveLocationSettingExists(): boolean {
+	return projectSaveLocationSetting() !== undefined && projectSaveLocationSetting() !== null
+		&& projectSaveLocationSetting().trim() !== '';
+}
+
+/**
+ * Returns a project name that begins with the given nameStarter, and ends in a number, such as
+ * 'DatabaseProject1'. Number begins at the given counter, but auto-increments if a project of
+ * that name already exists in the default save location.
+ *
+ * @param nameStarter the beginning of the default project name, such as 'DatabaseProject'
+ * @param counter the starting value of of the number appended to the nameStarter
+ */
+function defaultProjectName(nameStarter: string, counter: number): string {
+	while (counter < Number.MAX_SAFE_INTEGER) {
+		const name: string = nameStarter + counter;
+		const projectPath: string = path.join(defaultProjectSaveLocation().fsPath, name);
 		if (!fs.existsSync(projectPath)) {
-			return projectNameStarter;
+			return name;
 		}
-
-		return this.defaultProjectName(projectNameStarter, 2);
+		counter++;
 	}
-
-	/**
-	 * Prompts user to update workspace settings
-	 */
-	public async updateSaveLocationSetting(): Promise<void> {
-		const showPrompt: boolean = this.config[constants.showUpdatePromptKey];
-		if (showPrompt) {
-			const openSettingsMessage = this.projectSaveLocationSettingIsValid ?
-				constants.newDefaultProjectSaveLocation : constants.invalidDefaultProjectSaveLocation;
-			const result = await vscode.window.showInformationMessage(openSettingsMessage, constants.openWorkspaceSettings,
-				constants.doNotPromptAgain);
-
-			if (result === constants.openWorkspaceSettings || result === constants.doNotPromptAgain) {
-				// if user either opens settings or clicks "don't ask again", do not prompt for save location again
-				await this.config.update(constants.showUpdatePromptKey, false, true);
-
-				if (result === constants.openWorkspaceSettings) {
-					await vscode.commands.executeCommand('workbench.action.openGlobalSettings'); //open settings
-				}
-			}
-		}
-	}
-
-	/**
-	 * Get workspace configurations for this extension
-	 */
-	private get config(): vscode.WorkspaceConfiguration {
-		return vscode.workspace.getConfiguration(constants.dbProjectConfigurationKey);
-	}
-
-	/**
-	 * Returns the workspace setting on the default location to save new database projects
-	 */
-	private get projectSaveLocationSetting(): string {
-		return this.config[constants.projectSaveLocationKey];
-	}
-
-	/**
-	 * Returns if the default save location for new database projects workspace setting exists and is
-	 * a valid path
-	 */
-	private get projectSaveLocationSettingIsValid(): boolean {
-		return this.projectSaveLocationSettingExists && fs.existsSync(this.projectSaveLocationSetting);
-	}
-
-	/**
-	 * Returns if a value for the default save location for new database projects exists
-	 */
-	private get projectSaveLocationSettingExists(): boolean {
-		return this.projectSaveLocationSetting !== undefined && this.projectSaveLocationSetting !== null
-			&& this.projectSaveLocationSetting.trim() !== '';
-	}
-
-	/**
-	 * Returns a project name that begins with the given nameStarter, and ends in a number, such as
-	 * 'DatabaseProject1'. Number begins at the given counter, but auto-increments if a project of
-	 * that name already exists in the default save location.
-	 *
-	 * @param nameStarter the beginning of the default project name, such as 'DatabaseProject'
-	 * @param counter the starting value of of the number appended to the nameStarter
-	 */
-	private defaultProjectName(nameStarter: string, counter: number): string {
-		while (counter < Number.MAX_SAFE_INTEGER) {
-			const name: string = nameStarter + counter;
-			const projectPath: string = path.join(this.defaultProjectSaveLocation.fsPath, name);
-			if (!fs.existsSync(projectPath)) {
-				return name;
-			}
-			counter++;
-		}
-		return constants.defaultProjectNameStarter + counter;
-	}
+	return constants.defaultProjectNameStarter + counter;
 }

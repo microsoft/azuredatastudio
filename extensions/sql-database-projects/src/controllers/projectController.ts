@@ -11,9 +11,10 @@ import * as path from 'path';
 import * as utils from '../common/utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as templates from '../templates/templates';
-
+import * as newProjectTool from '../tools/newProjectTool';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
+
 import { promises as fs } from 'fs';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { Project, DatabaseReferenceLocation, SystemDatabase, TargetPlatform, ProjectEntry, reservedProjectFolders } from '../models/project';
@@ -24,7 +25,6 @@ import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { ImportDataModel } from '../models/api/import';
 import { NetCoreTool, DotNetCommandOptions } from '../tools/netcoreTool';
-import { NewProjectTool } from '../tools/newProjectTool';
 import { BuildHelper } from '../tools/buildHelper';
 import { PublishProfile, load } from '../models/publishProfile/publishProfile';
 
@@ -35,7 +35,6 @@ export class ProjectsController {
 	private projectTreeViewProvider: SqlDatabaseProjectTreeViewProvider;
 	private netCoreTool: NetCoreTool;
 	private buildHelper: BuildHelper;
-	private newProjectTool: NewProjectTool;
 
 	projects: Project[] = [];
 
@@ -43,7 +42,6 @@ export class ProjectsController {
 		this.projectTreeViewProvider = projTreeViewProvider;
 		this.netCoreTool = new NetCoreTool();
 		this.buildHelper = new BuildHelper();
-		this.newProjectTool = new NewProjectTool();
 	}
 
 	public refreshProjectsTree() {
@@ -649,7 +647,7 @@ export class ProjectsController {
 			model.extractTarget = await this.getExtractTarget();
 			model.version = '1.0.0.0';
 
-			this.newProjectTool.updateSaveLocationSetting();
+			newProjectTool.updateSaveLocationSetting();
 
 			const newProjFilePath = await this.createNewProject(model.projName, vscode.Uri.file(newProjFolderUri), true);
 			model.filePath = path.dirname(newProjFilePath);
@@ -729,7 +727,7 @@ export class ProjectsController {
 	private async getProjectName(dbName: string): Promise<string> {
 		let projName = await vscode.window.showInputBox({
 			prompt: constants.newDatabaseProjectName,
-			value: this.newProjectTool.defaultProjectNameFromDb(dbName)
+			value: newProjectTool.defaultProjectNameFromDb(dbName)
 		});
 
 		projName = projName?.trim();
@@ -787,7 +785,7 @@ export class ProjectsController {
 			canSelectFolders: true,
 			canSelectMany: false,
 			openLabel: constants.selectString,
-			defaultUri: this.newProjectTool.defaultProjectSaveLocation
+			defaultUri: newProjectTool.defaultProjectSaveLocation()
 		});
 
 		if (selectionResult) {
