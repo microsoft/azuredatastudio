@@ -32,7 +32,6 @@ describe('BookPinManagerTests', function () {
 			let workspaceConfigurtionMock: TypeMoq.IMock<vscode.WorkspaceConfiguration> = TypeMoq.Mock.ofType<vscode.WorkspaceConfiguration>();
 			workspaceConfigurtionMock.setup(config => config.get(TypeMoq.It.isValue(constants.pinnedBooksConfigKey))).returns(() => [].concat(pinnedNotebooks));
 			workspaceConfigurtionMock.setup(config => config.update(TypeMoq.It.isValue(constants.pinnedBooksConfigKey), TypeMoq.It.isAny(), TypeMoq.It.isValue(false))).returns((key: string, newValues: string[]) => {
-				// pinnedNotebooks.push(...newValues);
 				pinnedNotebooks.splice(0, pinnedNotebooks.length, ...newValues);
 				return Promise.resolve();
 			});
@@ -125,10 +124,9 @@ describe('BookPinManagerTests', function () {
 			bookPinManager = new BookPinManager();
 		});
 
-		it('should pin notebooks in a Pinned books view within a workspace', async () => {
-			let notebookUri1 = path.join(path.sep, 'temp', 'SubFolder', 'content', 'sample', 'notebook1.ipynb');
+		it('should have notebooks in the pinnedBooksConfigKey when pinned within a workspace', async () => {
+			let notebookUri1 = books[0].bookItems[0].book.contentPath;
 
-			// bookPinManager.pinNotebook(books[0].bookItems[0]);
 			let isNotebook1Pinned = isBookItemPinned(notebookUri1);
 
 			should(isNotebook1Pinned).be.true('Notebook 1 should be pinned');
@@ -141,22 +139,21 @@ describe('BookPinManagerTests', function () {
 			should(isNotebookPinned).be.false('Notebook should not be pinned');
 		});
 
-		it('should pin notebook after book has been pinned from Notebooks viewlet', async () => {
-			let notebookUri = path.join(path.sep, 'temp', 'SubFolder2', 'content', 'sample', 'notebook.ipynb');
-			let isNotebookPinnedBeforeChange = isBookItemPinned(notebookUri);
+		it('should pin notebook after book has been pinned from viewlet within a workspace', async () => {
+			let notebookUri = books[0].bookItems[1].book.contentPath;
 
+			let isNotebookPinnedBeforeChange = isBookItemPinned(notebookUri);
 			should(isNotebookPinnedBeforeChange).be.false('Notebook should NOT be pinned');
 
-			// pin book item
+			// mock pin book item from viewlet
 			bookPinManager.pinNotebook(books[0].bookItems[1]);
 
 			let isNotebookPinnedAfterChange = isBookItemPinned(notebookUri);
-
 			should(isNotebookPinnedAfterChange).be.true('Notebook should be pinned');
 		});
 
-		it('should NOT pin a notebook when unpinned a notebook within a workspace', async () => {
-			let notebookUri = path.join(path.sep, 'temp', 'SubFolder', 'content', 'sample', 'notebook1.ipynb');
+		it('should NOT pin a notebook when unpinned from viewlet within a workspace', async () => {
+			let notebookUri = books[0].bookItems[0].book.contentPath;
 			let isNotebookPinned = isBookItemPinned(notebookUri);
 
 			should(isNotebookPinned).be.true('Notebook should be pinned');
@@ -165,13 +162,6 @@ describe('BookPinManagerTests', function () {
 			let isNotebookPinnedAfterChange = isBookItemPinned(notebookUri);
 
 			should(isNotebookPinnedAfterChange).be.false('Notebook should not be pinned after notebook is unpinned');
-		});
-
-		it('should NOT trust an unknown book within a workspace', async () => {
-			let notebookUri = path.join(path.sep, 'randomfolder', 'randomsubfolder', 'content', 'randomnotebook.ipynb');
-			let isNotebookPinned = isBookItemPinned(notebookUri);
-
-			should(isNotebookPinned).be.false('Random notebooks should not be pinned');
 		});
 	});
 });

@@ -6,11 +6,11 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import * as constants from './../common/constants';
 import { BookTreeItem } from './bookTreeItem';
+import { getPinnedNotebooks } from '../common/utils';
 
 export interface IBookPinManager {
 	pinNotebook(notebook: BookTreeItem): boolean;
 	unpinNotebook(notebook: BookTreeItem): boolean;
-	getPinnedNotebooks(): string[];
 }
 
 enum PinBookOperation {
@@ -25,22 +25,15 @@ export class BookPinManager implements IBookPinManager {
 	}
 
 	setPinnedSectionContext(): void {
-		if (this.getPinnedNotebooks().length > 0) {
+		if (getPinnedNotebooks().length > 0) {
 			vscode.commands.executeCommand(constants.BuiltInCommands.SetContext, constants.showPinnedBooksContextKey, true);
 		} else {
 			vscode.commands.executeCommand(constants.BuiltInCommands.SetContext, constants.showPinnedBooksContextKey, false);
 		}
 	}
 
-	getPinnedNotebooks(): string[] {
-		let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(constants.notebookConfigKey);
-		let pinnedNotebooks: string[] = config.get(constants.pinnedBooksConfigKey) ?? [];
-
-		return pinnedNotebooks;
-	}
-
 	isNotebookPinned(notebookPath: string): boolean {
-		if (this.getPinnedNotebooks().findIndex(x => x === notebookPath) > -1) {
+		if (getPinnedNotebooks().findIndex(x => x === notebookPath) > -1) {
 			return true;
 		}
 		return false;

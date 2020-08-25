@@ -17,7 +17,7 @@ import { IBookTrustManager, BookTrustManager } from './bookTrustManager';
 import * as loc from '../common/localizedConstants';
 import * as glob from 'fast-glob';
 import { isNullOrUndefined } from 'util';
-import { debounce } from '../common/utils';
+import { debounce, getPinnedNotebooks } from '../common/utils';
 import { IBookPinManager, BookPinManager } from './bookPinManager';
 
 const Content = 'content';
@@ -35,7 +35,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private _initializeDeferred: Deferred<void> = new Deferred<void>();
 	private _openAsUntitled: boolean;
 	private _bookTrustManager: IBookTrustManager;
-	private _bookPinManager: IBookPinManager;
+	public bookPinManager: IBookPinManager;
 
 	private _bookViewer: vscode.TreeView<BookTreeItem>;
 	public viewId: string;
@@ -46,7 +46,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		this._openAsUntitled = openAsUntitled;
 		this._extensionContext = extensionContext;
 		this.books = [];
-		this._bookPinManager = new BookPinManager();
+		this.bookPinManager = new BookPinManager();
 		if (view === constants.PINNED_BOOKS_VIEWID) {
 			this.initializePinnedNotebooks().catch(e => console.error(e));
 		} else {
@@ -75,7 +75,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	private async initializePinnedNotebooks(): Promise<void> {
-		await Promise.all(this._bookPinManager.getPinnedNotebooks().map(async (notebookPath) => {
+		await Promise.all(getPinnedNotebooks().map(async (notebookPath) => {
 			try {
 				await this.createAndAddBookModel(notebookPath, true);
 			} catch {
@@ -118,7 +118,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	async pinNotebook(bookTreeItem: BookTreeItem, unpin: boolean = false): Promise<void> {
 		let bookPathToUpdate = bookTreeItem.book?.contentPath;
 		if (bookPathToUpdate) {
-			let pinStatusChanged = unpin ? this._bookPinManager.unpinNotebook(bookTreeItem) : this._bookPinManager.pinNotebook(bookTreeItem);
+			let pinStatusChanged = unpin ? this.bookPinManager.unpinNotebook(bookTreeItem) : this.bookPinManager.pinNotebook(bookTreeItem);
 			if (pinStatusChanged) {
 				bookTreeItem.contextValue = unpin ? 'savedNotebook' : 'pinnedNotebook';
 				vscode.window.showInformationMessage(unpin ? loc.msgBookUnpinned(bookTreeItem.title) : loc.msgBookPinned(bookTreeItem.title));
