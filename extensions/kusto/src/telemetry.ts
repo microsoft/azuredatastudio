@@ -88,7 +88,7 @@ export class Telemetry {
 	 * Send a telemetry event using application insights
 	 */
 	public static sendTelemetryEvent(
-		eventName: string | undefined,
+		eventName: string,
 		properties?: ITelemetryEventProperties,
 		measures?: ITelemetryEventMeasures): void {
 

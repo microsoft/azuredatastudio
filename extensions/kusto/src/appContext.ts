@@ -16,7 +16,7 @@ export class AppContext {
 
 	constructor(public readonly extensionContext: vscode.ExtensionContext) { }
 
-	public getService<T>(serviceName: string): T {
+	public getService<T>(serviceName: string): T | undefined {
 		const service = this.serviceMap.get(serviceName) as T;
 		if (!service) {
 			console.warn('Service ', serviceName, ' is not registered');

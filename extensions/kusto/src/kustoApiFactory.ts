@@ -15,7 +15,7 @@ export function createKustoApi(context: AppContext): IExtension {
 			return {
 				getNode: (explorerContext: azdata.ObjectExplorerContext) => {
 					let oeProvider = context.getService<KustoObjectExplorerNodeProvider>(constants.ObjectExplorerService);
-					return <any>oeProvider.findSqlClusterNodeByContext(explorerContext);
+					return <any>oeProvider?.findSqlClusterNodeByContext(explorerContext);
 				}
 			};
 		}
