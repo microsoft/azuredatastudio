@@ -14,9 +14,9 @@ import { azdataAutoInstallKey, azdataAutoUpgradeKey, azdataHostname, azdataRelea
 import * as loc from './localizedConstants';
 
 const enum AzdataDeployOption {
-	always = 'always',
-	never = 'never',
-	userPrompt = 'userPrompt'
+	always = 'Always',
+	never = 'Never',
+	userPrompt = 'UserPrompt'
 }
 /**
  * Information about an azdata installation
@@ -155,10 +155,12 @@ export async function checkAndInstallAzdata(outputChannel: vscode.OutputChannel,
 		const azdata = await findAzdata(outputChannel); // find currently installed Azdata
 		// Don't block on this since we want the extension to finish activating without needing user input
 		checkAndUpgradeAzdata(azdata, outputChannel, userRequested).catch(err => {
+			//update if one is available and user wants it.
 			vscode.window.showWarningMessage(loc.updateError(err));
 			outputChannel.appendLine(loc.updateError(err));
-		}); //update if available and user wants it.
-		return findAzdata(outputChannel); // now again find and return the currently installed azdata
+		}).then(() => {
+			return findAzdata(outputChannel); // now again find and return the currently installed azdata
+		});
 	} catch (err) {
 		// Don't block on this since we want the extension to finish activating without needing user input.
 		// Calls will be made to handle azdata not being installed
@@ -326,15 +328,16 @@ function getVersionFromAzdataOutput(raw: string): SemVer {
 	return new SemVer(lines[0].trim());
 }
 
-function getConfig(key: string) {
+function getConfig(key: string): AzdataDeployOption | undefined {
 	const config = vscode.workspace.getConfiguration(deploymentConfigurationKey);
 	return config.get<AzdataDeployOption>(key);
 }
 
-async function setConfig(key: string, value: string) {
+async function setConfig(key: string, value: string): Promise<void> {
 	const config = vscode.workspace.getConfiguration(deploymentConfigurationKey);
-	await config.update(key, value.toLocaleLowerCase(), vscode.ConfigurationTarget.Global);
+	await config.update(key, value, vscode.ConfigurationTarget.Global);
 }
+
 /**
  * Gets the latest azdata version available for a given platform
  * @param outputChannel Channel used to display diagnostic information

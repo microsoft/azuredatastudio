@@ -26,7 +26,9 @@ export async function activate(): Promise<azdataExt.IExtension> {
 		}
 	});
 
-	localAzdata = await checkAndInstallAzdata(outputChannel);
+	checkAndInstallAzdata(outputChannel).then(azdataTool => {
+		localAzdata = azdataTool;
+	});
 	return {
 		dc: {
 			endpoint: {
