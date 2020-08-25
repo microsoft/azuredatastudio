@@ -164,7 +164,7 @@ export async function checkAndInstallAzdata(outputChannel: vscode.OutputChannel,
 	} catch (err) {
 		// Don't block on this since we want the extension to finish activating without needing user input.
 		// Calls will be made to handle azdata not being installed
-		promptToInstallAzdata(outputChannel, userRequested).catch(e => console.log(`Unexpected error prompting to install azdata ${e}`));
+		await promptToInstallAzdata(outputChannel, userRequested).catch(e => console.log(`Unexpected error prompting to install azdata ${e}`));
 	}
 	return undefined;
 }
