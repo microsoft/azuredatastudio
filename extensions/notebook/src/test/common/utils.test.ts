@@ -337,4 +337,12 @@ describe('Utils Tests', function () {
 			should(isNotebookPinned).be.false('Random notebooks should not be pinned');
 		});
 	});
+
+	describe('getPinnedNotebooks', function (): void {
+		it('Should NOT have any pinned notebooks', async function (): Promise<void> {
+			let pinnedNotebooks: string[] = utils.getPinnedNotebooks();
+
+			should(pinnedNotebooks.length).equal(0, 'Should not have any pinned notebooks');
+		});
+	});
 });
