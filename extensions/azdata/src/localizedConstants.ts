@@ -42,7 +42,7 @@ export function installError(err: any): string { return localize('azdata.install
 export function upgradeError(err: any): string { return localize('azdata.upgradeError', "Error upgrading azdata: {0}", err.message ?? err); }
 export function platformUnsupported(platform: string): string { return localize('azdata.platformUnsupported', "Platform '{0}' is currently unsupported", platform); }
 export function unexpectedCommandError(errMsg: string): string { return localize('azdata.unexpectedCommandError', "Unexpected error executing command: {0}", errMsg); }
-export function unexpectedExitCode(code: number): string { return localize('azdata.unexpectedExitCode', "Unexpected exit code from command ({0})", code); }
+export function unexpectedExitCode(code: number, stderr: string): string { return localize('azdata.unexpectedExitCode', "Unexpected exit code from command ({0}), stderr: '${1}'", code, stderr); }
 export function updateError(err: any): string { return localize('azdata.updateError', "Error updating azdata: {0}", err.message ?? err); }
 export function skipInstall(config: string): string { return localize('azdata.skipInstall', "Skipping installation of azdata, since the operation was not user requested and config option: {0}.{1} is {2}", deploymentConfigurationKey, azdataAutoInstallKey, config); }
 export function skipUpgrade(config: string): string { return localize('azdata.skipUpgrade', "Skipping upgrade of azdata, since the operation was not user requested and config option: {0}.{1} is {2}", deploymentConfigurationKey, azdataAutoUpgradeKey, config); }
