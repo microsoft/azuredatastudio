@@ -17,7 +17,7 @@ export enum TreeItemCollapsibleState {
 }
 
 export interface ObjectExplorerCallbacks {
-	getChildren(treeNode?: TreeNode): Thenable<TreeNode[] | undefined>;
+	getChildren(treeNode?: TreeNode): Thenable<TreeNode[]>;
 	isExpanded(treeNode: TreeNode): Thenable<boolean>;
 	setNodeExpandedState(TreeNode: TreeNode, expandedState: TreeItemCollapsibleState): Thenable<void>;
 	setNodeSelected(TreeNode: TreeNode, selected: boolean, clearOtherSelections?: boolean): Thenable<void>;
@@ -160,8 +160,8 @@ export class TreeNode {
 		};
 	}
 
-	public getChildren(): Thenable<TreeNode[] | undefined> {
-		return this._objectExplorerCallbacks?.getChildren(this) ?? Promise.resolve(undefined);
+	public getChildren(): Thenable<TreeNode[]> {
+		return this._objectExplorerCallbacks?.getChildren(this) ?? Promise.resolve([]);
 	}
 
 	public isExpanded(): Thenable<boolean> {

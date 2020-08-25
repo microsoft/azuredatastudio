@@ -238,7 +238,7 @@ export class TreeUpdateUtils {
 		}
 	}
 
-	public static async getConnectionNodeChildren(connection: ConnectionProfile, objectExplorerService: IObjectExplorerService): Promise<TreeNode[] | undefined> {
+	public static async getConnectionNodeChildren(connection: ConnectionProfile, objectExplorerService: IObjectExplorerService): Promise<TreeNode[]> {
 		if (connection.isDisconnecting) {
 			return [];
 		} else {
@@ -247,7 +247,7 @@ export class TreeUpdateUtils {
 			if (rootNode && session) {
 				try {
 					await objectExplorerService.resolveTreeNodeChildren(session, rootNode);
-					return rootNode.children;
+					return rootNode.children ?? [];
 				} catch (err) {
 					onUnexpectedError(err);
 					return [];
@@ -259,7 +259,7 @@ export class TreeUpdateUtils {
 		}
 	}
 
-	public static async getAsyncConnectionNodeChildren(connection: ConnectionProfile, connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService): Promise<TreeNode[] | undefined> {
+	public static async getAsyncConnectionNodeChildren(connection: ConnectionProfile, connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService): Promise<TreeNode[]> {
 		if (connection.isDisconnecting) {
 			return [];
 		} else {
@@ -267,7 +267,7 @@ export class TreeUpdateUtils {
 			const session = rootNode?.getSession();
 			if (rootNode && session) {
 				await objectExplorerService.resolveTreeNodeChildren(session, rootNode);
-				return rootNode.children;
+				return rootNode.children ?? [];
 			} else {
 				const options: IConnectionCompletionOptions = {
 					params: undefined,
@@ -294,7 +294,7 @@ export class TreeUpdateUtils {
 				if (rootNode && session) {
 					await objectExplorerService.resolveTreeNodeChildren(session, rootNode);
 				}
-				return rootNode?.children;
+				return rootNode?.children ?? [];
 			}
 		}
 	}

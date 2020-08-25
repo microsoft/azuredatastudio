@@ -755,7 +755,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return this._serverTreeView?.setSelected(selectNode, selected, clearOtherSelections);
 	}
 
-	private async getChildren(treeNode?: TreeNode): Promise<TreeNode[] | undefined> {
+	private async getChildren(treeNode?: TreeNode): Promise<TreeNode[]> {
 		treeNode = await this.getUpdatedTreeNode(treeNode);
 		if (!treeNode) {
 			return Promise.resolve([]);
@@ -769,7 +769,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				await this.resolveTreeNodeChildren(session, treeNode);
 			}
 		}
-		return treeNode.children;
+		return treeNode.children ?? [];
 	}
 
 	private async isExpanded(treeNode?: TreeNode): Promise<boolean> {
