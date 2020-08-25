@@ -6,20 +6,46 @@
 import * as azdata from 'azdata';
 import { Model } from '../model';
 import { ITool } from '../../interfaces';
-import { subscription } from '../../localizedConstants';
 
-export class AzureSubscription {
+export interface AzureSubscription {
 	subscriptionName: string;
 	subscriptionId: string;
 }
 
 export class DeployAzureSQLVMWizardModel extends Model {
-	private _azureAccount: azdata.Account;
-	private _azureSubscription: Azure;
+	private _azureAccount!: azdata.Account;
+	private _securityToken!: string;
+	private _azureSubscription!: AzureSubscription;
+
+	public set azureAccount(account: azdata.Account) {
+		this._azureAccount = account;
+	}
+
+	public get azureAccount(): azdata.Account {
+		return this._azureAccount;
+	}
+
+	public set securityToken(token: string) {
+		this._securityToken = token;
+	}
+
+	public get securityToken(): string {
+		return this._securityToken;
+	}
+
+	public set azureSubscription(subscription: AzureSubscription) {
+		this._azureSubscription = subscription;
+	}
+
+	public get azureSubscription(): AzureSubscription {
+		return this._azureSubscription;
+	}
 
 	constructor() {
 		super();
 	}
+
+
 
 	public getCodeCellContentForNotebook(tools: ITool[]): string[] {
 		// const profile = this.createTargetProfile();
