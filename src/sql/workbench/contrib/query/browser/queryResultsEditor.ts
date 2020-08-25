@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EditorOptions } from 'vs/workbench/common/editor';
+import { EditorOptions, IEditorOpenContext } from 'vs/workbench/common/editor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
@@ -131,8 +131,8 @@ export class QueryResultsEditor extends BaseEditor {
 		this.resultsView.layout(dimension);
 	}
 
-	setInput(input: QueryResultsInput, options: EditorOptions): Promise<void> {
-		super.setInput(input, options, CancellationToken.None);
+	setInput(input: QueryResultsInput, options: EditorOptions, context: IEditorOpenContext): Promise<void> {
+		super.setInput(input, options, context, CancellationToken.None);
 		this.resultsView.input = input;
 		return Promise.resolve<void>(null);
 	}

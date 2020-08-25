@@ -440,7 +440,7 @@ export class ProfilerEditor extends BaseEditor {
 		this._editor.setVisible(true);
 		this._untitledTextEditorModel = this._instantiationService.createInstance(UntitledTextEditorModel, URI.from({ scheme: Schemas.untitled }), false, undefined, 'sql', undefined);
 		this._editorInput = this._instantiationService.createInstance(UntitledTextEditorInput, this._untitledTextEditorModel);
-		this._editor.setInput(this._editorInput, undefined);
+		this._editor.setInput(this._editorInput, undefined, undefined);
 		this._editorInput.resolve().then(model => this._editorModel = model.textEditorModel);
 		return editorContainer;
 	}
@@ -460,7 +460,7 @@ export class ProfilerEditor extends BaseEditor {
 			return Promise.resolve(null);
 		}
 
-		return super.setInput(input, options, CancellationToken.None).then(() => {
+		return super.setInput(input, options, undefined, CancellationToken.None).then(() => {
 			this._profilerTableEditor.setInput(input);
 
 			if (input.viewTemplate) {

@@ -5,7 +5,7 @@
 
 import * as DOM from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { EditorOptions } from 'vs/workbench/common/editor';
+import { EditorOptions, IEditorOpenContext } from 'vs/workbench/common/editor';
 import { getZoomLevel } from 'vs/base/browser/browser';
 import { Configuration } from 'vs/editor/browser/config/configuration';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -63,8 +63,8 @@ export class EditDataResultsEditor extends BaseEditor {
 	public layout(dimension: DOM.Dimension): void {
 	}
 
-	public setInput(input: EditDataResultsInput, options: EditorOptions): Promise<void> {
-		super.setInput(input, options, CancellationToken.None);
+	public setInput(input: EditDataResultsInput, options: EditorOptions, context: IEditorOpenContext): Promise<void> {
+		super.setInput(input, options, context, CancellationToken.None);
 		this._applySettings();
 		if (!input.hasBootstrapped) {
 			this.createGridPanel();

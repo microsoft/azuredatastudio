@@ -6,7 +6,7 @@
 import 'vs/css!./media/queryEditor';
 
 import * as DOM from 'vs/base/browser/dom';
-import { EditorOptions, IEditorControl, IEditorMemento } from 'vs/workbench/common/editor';
+import { EditorOptions, IEditorControl, IEditorMemento, IEditorOpenContext } from 'vs/workbench/common/editor';
 import { BaseEditor, EditorMemento } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { Orientation } from 'vs/base/browser/ui/sash/sash';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -311,7 +311,7 @@ export class QueryEditor extends BaseEditor {
 		this.taskbar.setContent(content);
 	}
 
-	public async setInput(newInput: QueryEditorInput, options: EditorOptions, token: CancellationToken): Promise<void> {
+	public async setInput(newInput: QueryEditorInput, options: EditorOptions, context: IEditorOpenContext, token: CancellationToken): Promise<void> {
 		const oldInput = this.input;
 
 		if (newInput.matches(oldInput)) {
@@ -341,9 +341,9 @@ export class QueryEditor extends BaseEditor {
 		}
 
 		await Promise.all([
-			super.setInput(newInput, options, token),
-			this.currentTextEditor.setInput(newInput.text, options, token),
-			this.resultsEditor.setInput(newInput.results, options)
+			super.setInput(newInput, options, context, token),
+			this.currentTextEditor.setInput(newInput.text, options, context, token),
+			this.resultsEditor.setInput(newInput.results, options, context)
 		]);
 
 		this.inputDisposables.clear();

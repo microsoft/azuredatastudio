@@ -126,7 +126,7 @@ suite('Test class NotebookEditor:', () => {
 			const testNotebookEditor = new NotebookEditorStub({ cellGuid: cellTextEditorGuid, editor: queryTextEditor, model: notebookModel, notebookParams: <INotebookParams>{ notebookUri: untitledNotebookInput.notebookUri } });
 			notebookService.addNotebookEditor(testNotebookEditor);
 			notebookEditor.clearInput();
-			await notebookEditor.setInput(untitledNotebookInput, EditorOptions.create({ pinned: true }));
+			await notebookEditor.setInput(untitledNotebookInput, EditorOptions.create({ pinned: true }), undefined);
 			untitledNotebookInput.notebookFindModel.notebookModel = undefined; // clear preexisting notebookModel
 			const result = await notebookEditor.getNotebookModel();
 			assert.strictEqual(result, notebookModel, `getNotebookModel() should return the model set in the INotebookEditor object`);
@@ -214,7 +214,7 @@ suite('Test class NotebookEditor:', () => {
 			untitledNotebookInput /* set to a known input */,
 			untitledNotebookInput /* tries to set the same input that was previously set */
 		]) {
-			await notebookEditor.setInput(input, editorOptions);
+			await notebookEditor.setInput(input, editorOptions, undefined);
 			assert.strictEqual(notebookEditor.input, input, `notebookEditor.input should be the one that we set`);
 		}
 	});
@@ -225,7 +225,7 @@ suite('Test class NotebookEditor:', () => {
 		for (const isRevealed of [true, false]) {
 			notebookEditor['_findState']['_isRevealed'] = isRevealed;
 			notebookEditor.clearInput();
-			await notebookEditor.setInput(untitledNotebookInput, editorOptions);
+			await notebookEditor.setInput(untitledNotebookInput, editorOptions, undefined);
 			assert.strictEqual(notebookEditor.input, untitledNotebookInput, `notebookEditor.input should be the one that we set`);
 		}
 	});
@@ -744,7 +744,7 @@ async function setupNotebookEditor(notebookEditor: NotebookEditor, untitledNoteb
 
 async function setInputDocument(notebookEditor: NotebookEditor, untitledNotebookInput: UntitledNotebookInput): Promise<void> {
 	const editorOptions = EditorOptions.create({ pinned: true });
-	await notebookEditor.setInput(untitledNotebookInput, editorOptions);
+	await notebookEditor.setInput(untitledNotebookInput, editorOptions, undefined);
 	assert.strictEqual(notebookEditor.options, editorOptions, 'NotebookEditor options must be the ones that we set');
 }
 

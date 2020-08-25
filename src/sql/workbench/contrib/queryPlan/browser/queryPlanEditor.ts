@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as DOM from 'vs/base/browser/dom';
-import { EditorOptions } from 'vs/workbench/common/editor';
+import { EditorOptions, IEditorOpenContext } from 'vs/workbench/common/editor';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -60,13 +60,13 @@ export class QueryPlanEditor extends BaseEditor {
 		this.view.layout(dimension);
 	}
 
-	public async setInput(input: QueryPlanInput, options: EditorOptions): Promise<void> {
+	public async setInput(input: QueryPlanInput, options: EditorOptions, context: IEditorOpenContext): Promise<void> {
 		if (this.input instanceof QueryPlanInput && this.input.matches(input)) {
 			return Promise.resolve(undefined);
 		}
 		await input.resolve();
 
-		await super.setInput(input, options, CancellationToken.None);
+		await super.setInput(input, options, context, CancellationToken.None);
 
 		this.view.showPlan(input.planXml!);
 	}
