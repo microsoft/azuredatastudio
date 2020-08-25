@@ -958,7 +958,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			},
 			get notebookDocuments(): vscode.NotebookDocument[] {
 				checkProposedApiEnabled(extension);
-				return extHostNotebook.notebookDocuments;
+				return extHostNotebook.notebookDocuments.map(d => d.notebookDocument);
 			},
 			get visibleNotebookEditors() {
 				checkProposedApiEnabled(extension);
