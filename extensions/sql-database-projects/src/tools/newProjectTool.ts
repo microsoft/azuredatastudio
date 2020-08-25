@@ -11,37 +11,24 @@ import * as constants from '../common/constants';
 
 export const DBProjectConfigurationKey: string = 'sqlDatabaseProjects';
 export const ProjectSaveLocationKey: string = 'defaultProjectSaveLocation';
-const MaxDefaultProjectNameCounter: number = 99;
+export const ShowUpdatePromptKey: string = 'showUpdateSaveLocationPrompt';
 
 export class NewProjectTool {
+
+	/**
+	 * Sets workspace setting on the default save location to the user's home directory
+	 */
+	public async initializeSaveLocationSetting() {
+		if (!this.projectSaveLocationSettingExists) {
+			await this.config.update(ProjectSaveLocationKey, os.homedir(), true);
+		}
+	}
+
 	/**
 	 * Returns the default location to save a new database project
 	 */
 	public get defaultProjectSaveLocation(): vscode.Uri {
 		return this.projectSaveLocationSettingIsValid ? vscode.Uri.file(this.projectSaveLocationSetting) : vscode.Uri.file(os.homedir());
-	}
-
-	/**
-	 * Returns the workspace setting on the default location to save new database projects
-	 */
-	private get projectSaveLocationSetting(): string {
-		return vscode.workspace.getConfiguration(DBProjectConfigurationKey)[ProjectSaveLocationKey];
-	}
-
-	/**
-	 * Returns if the default save location for new database projects workspace setting exists and is
-	 * a valid path
-	 */
-	private get projectSaveLocationSettingIsValid(): boolean {
-		return this.projectSaveLocationSettingExists && fs.existsSync(this.projectSaveLocationSetting);
-	}
-
-	/**
-	 * Returns if a value for the default save location for new database projects exists
-	 */
-	private get projectSaveLocationSettingExists(): boolean {
-		return this.projectSaveLocationSetting !== undefined && this.projectSaveLocationSetting !== null
-			&& this.projectSaveLocationSetting.trim() !== '';
 	}
 
 	/**
@@ -69,6 +56,58 @@ export class NewProjectTool {
 	}
 
 	/**
+	 * Prompts user to update workspace settings
+	 */
+	public async updateSaveLocationSetting(): Promise<void> {
+		const showPrompt: boolean = this.config[ShowUpdatePromptKey];
+		if (showPrompt) {
+			const openSettingsMessage = this.projectSaveLocationSettingIsValid ?
+				constants.newDefaultProjectSaveLocation : constants.invalidDefaultProjectSaveLocation;
+			const result = await vscode.window.showInformationMessage(openSettingsMessage, constants.openWorkspaceSettings,
+				constants.doNotPromptAgain);
+
+			if (result === constants.openWorkspaceSettings || result === constants.doNotPromptAgain) {
+				// if user either opens settings or clicks "don't ask again", do not prompt for save location again
+				await this.config.update(ShowUpdatePromptKey, false, true);
+
+				if (result === constants.openWorkspaceSettings) {
+					await vscode.commands.executeCommand('workbench.action.openGlobalSettings'); //open settings
+				}
+			}
+		}
+	}
+
+	/**
+	 * Get workspace configurations for this extension
+	 */
+	private get config(): vscode.WorkspaceConfiguration {
+		return vscode.workspace.getConfiguration(DBProjectConfigurationKey);
+	}
+
+	/**
+	 * Returns the workspace setting on the default location to save new database projects
+	 */
+	private get projectSaveLocationSetting(): string {
+		return this.config[ProjectSaveLocationKey];
+	}
+
+	/**
+	 * Returns if the default save location for new database projects workspace setting exists and is
+	 * a valid path
+	 */
+	private get projectSaveLocationSettingIsValid(): boolean {
+		return this.projectSaveLocationSettingExists && fs.existsSync(this.projectSaveLocationSetting);
+	}
+
+	/**
+	 * Returns if a value for the default save location for new database projects exists
+	 */
+	private get projectSaveLocationSettingExists(): boolean {
+		return this.projectSaveLocationSetting !== undefined && this.projectSaveLocationSetting !== null
+			&& this.projectSaveLocationSetting.trim() !== '';
+	}
+
+	/**
 	 * Returns a project name that begins with the given nameStarter, and ends in a number, such as
 	 * 'DatabaseProject1'. Number begins at the given counter, but auto-increments if a project of
 	 * that name already exists in the default save location.
@@ -77,7 +116,7 @@ export class NewProjectTool {
 	 * @param counter the starting value of of the number appended to the nameStarter
 	 */
 	private defaultProjectName(nameStarter: string, counter: number): string {
-		while (counter < MaxDefaultProjectNameCounter) {
+		while (counter < Number.MAX_SAFE_INTEGER) {
 			const name: string = nameStarter + counter;
 			const projectPath: string = path.join(this.defaultProjectSaveLocation.fsPath, name);
 			if (!fs.existsSync(projectPath)) {
@@ -86,20 +125,5 @@ export class NewProjectTool {
 			counter++;
 		}
 		return constants.defaultProjectNameStarter + counter;
-	}
-
-	/**
-	 * Prompts user to update workspace settings
-	 */
-	public async updateDefaultSaveLocationSetting(): Promise<void> {
-		if (!this.projectSaveLocationSettingIsValid) {
-			const openSettingsMessage = this.projectSaveLocationSettingExists ?
-				constants.invalidDefaultProjectSaveLocation : constants.newDefaultProjectSaveLocation;
-			const result = await vscode.window.showInformationMessage(openSettingsMessage, constants.openWorkspaceSettings);
-
-			if (result === constants.openWorkspaceSettings) {
-				await vscode.commands.executeCommand('workbench.action.openGlobalSettings'); //open settings
-			}
-		}
 	}
 }

@@ -89,6 +89,9 @@ export default class MainController implements vscode.Disposable {
 		// ensure .net core is installed
 		await this.netcoreTool.findOrInstallNetCore();
 
+		// set the user settings around saving new projects to default value
+		await this.newProjectTool.initializeSaveLocationSetting();
+
 		// load any sql projects that are open in workspace folder
 		await this.loadProjectsInWorkspace();
 	}
@@ -173,7 +176,7 @@ export default class MainController implements vscode.Disposable {
 			const newProjFilePath = await this.projectsController.createNewProject(<string>newProjName, newProjFolderUri, true);
 			const proj = await this.projectsController.openProject(vscode.Uri.file(newProjFilePath));
 
-			this.newProjectTool.updateDefaultSaveLocationSetting();
+			this.newProjectTool.updateSaveLocationSetting();
 
 			return proj;
 		}
