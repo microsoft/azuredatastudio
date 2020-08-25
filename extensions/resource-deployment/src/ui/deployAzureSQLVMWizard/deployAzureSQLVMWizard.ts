@@ -3,19 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as nls from 'vscode-nls';
+import * as constants from './constants';
 import { INotebookService } from '../../services/notebookService';
 import { IToolsService } from '../../services/toolsService';
 import { WizardBase } from '../wizardBase';
 import { WizardPageBase } from '../wizardPageBase';
 import { DeployAzureSQLVMWizardModel } from './deployAzureSQLVMWizardModel';
 import { AzureSQLVMWizardInfo } from '../../interfaces';
-import { InputComponents } from '../modelViewUtils';
 import { AzureSettingsPage } from './pages/azureSettingsPage';
-const localize = nls.loadMessageBundle();
 
 export class DeployAzureSQLVMWizard extends WizardBase<DeployAzureSQLVMWizard, WizardPageBase<DeployAzureSQLVMWizard>, DeployAzureSQLVMWizardModel> {
-	private _inputComponents: InputComponents = {};
 
 	public get notebookService(): INotebookService {
 		return this._notebookService;
@@ -25,14 +22,9 @@ export class DeployAzureSQLVMWizard extends WizardBase<DeployAzureSQLVMWizard, W
 		return this._toolsService;
 	}
 
-
-	public get inputComponents(): InputComponents {
-		return this._inputComponents;
-	}
-
 	constructor(private wizardInfo: AzureSQLVMWizardInfo, private _notebookService: INotebookService, private _toolsService: IToolsService) {
 		super(
-			localize('deployAzureSQLVM.NewSQLVMTitle', "Deploy Azure SQL VM"),
+			constants.WizardTitle,
 			new DeployAzureSQLVMWizardModel()
 		);
 	}
@@ -40,11 +32,13 @@ export class DeployAzureSQLVMWizard extends WizardBase<DeployAzureSQLVMWizard, W
 	protected initialize(): void {
 		this.setPages(this.getPages());
 		this.wizardObject.generateScriptButton.hidden = true;
-		this.wizardObject.doneButton.label = localize('deployAzureSQLVM.ScriptToNotebook', "Script to Notebook");
+		this.wizardObject.doneButton.label = constants.WizardDoneButtonLabel;
 	}
+
 	protected async onOk(): Promise<void> {
 		await this.scriptToNotebook();
 	}
+
 	protected onCancel(): void {
 		throw new Error('Method not implemented.');
 	}
