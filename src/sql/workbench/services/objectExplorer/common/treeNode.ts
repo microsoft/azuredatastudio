@@ -160,12 +160,12 @@ export class TreeNode {
 		};
 	}
 
-	public getChildren(): Thenable<TreeNode[] | void> {
-		return this._objectExplorerCallbacks?.getChildren(this) ?? Promise.resolve();
+	public getChildren(): Thenable<TreeNode[] | undefined> {
+		return this._objectExplorerCallbacks?.getChildren(this) ?? Promise.resolve(undefined);
 	}
 
-	public isExpanded(): Thenable<boolean | void> {
-		return this._objectExplorerCallbacks?.isExpanded(this) ?? Promise.resolve();
+	public isExpanded(): Thenable<boolean> {
+		return this._objectExplorerCallbacks?.isExpanded(this) ?? Promise.resolve(false);
 	}
 
 	public setExpandedState(expandedState: TreeItemCollapsibleState): Thenable<void | undefined> {
