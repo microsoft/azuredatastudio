@@ -246,6 +246,10 @@ export async function discoverLatestAvailableAzdataVersion(outputChannel: vscode
 	switch (process.platform) {
 		case 'darwin':
 			return await discoverLatestStableAzdataVersionDarwin(outputChannel);
+		// case 'linux':
+		// ideally we would not to discover linux package availability using the apt/apt-get/apt-cache package manager commands.
+		// However, doing discovery that way required apt update to be performed which requires sudo privileges. At least currently this code path
+		// gets invoked on extension start up and prompt user for sudo privileges is annoying at best. So for now basing linux discovery also on a releaseJson file.
 		default:
 			return await discoverLatestAzdataVersionFromJson(outputChannel);
 	}
