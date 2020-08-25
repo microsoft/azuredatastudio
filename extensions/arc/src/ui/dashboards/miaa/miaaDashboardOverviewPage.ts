@@ -257,7 +257,6 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 			this._instanceProperties.region = reg.region || '-';
 			this._instanceProperties.subscriptionId = reg.subscriptionId || '-';
 			this._instanceProperties.vCores = reg.vCores || '';
-			this._instanceProperties.host = reg.externalEndpoint || '-';
 			this.refreshDisplayedProperties();
 		}
 		*/
@@ -265,6 +264,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 
 	private handleMiaaConfigUpdated(): void {
 		this._instanceProperties.status = this._miaaModel.config?.status.state || '-';
+		this._instanceProperties.host = this._miaaModel.config?.status.externalEndpoint || '-';
 		this.refreshDisplayedProperties();
 	}
 
