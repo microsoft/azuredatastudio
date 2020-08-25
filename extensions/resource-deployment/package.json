@@ -408,7 +408,7 @@
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "^1.0.9",
+    "vscodetestcover": "^1.1.0",
     "should": "^13.2.3"
   }
 }

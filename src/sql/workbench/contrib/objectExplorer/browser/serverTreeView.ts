@@ -38,6 +38,11 @@ import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { startsWith } from 'vs/base/common/strings';
 import { SERVER_GROUP_CONFIG } from 'sql/workbench/services/serverGroup/common/interfaces';
 import { horizontalScrollingKey } from 'vs/platform/list/browser/listService';
+import { ITreeContextMenuEvent } from 'vs/base/browser/ui/tree/tree';
+import { ObjectExplorerActionsContext } from 'sql/workbench/services/objectExplorer/browser/objectExplorerActions';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
+import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 
 /**
  * ServerTreeview implements the dynamic tree view.
@@ -48,7 +53,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 	private _buttonSection: HTMLElement;
 	private _treeSelectionHandler: TreeSelectionHandler;
 	private _activeConnectionsFilterAction: ActiveConnectionsFilterAction;
-	private _tree: ITree;
+	private _tree: ITree | AsyncServerTree;
 	private _onSelectionOrFocusChange: Emitter<void>;
 	private _actionProvider: ServerTreeActionProvider;
 
@@ -59,7 +64,9 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		@IThemeService private _themeService: IThemeService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IConfigurationService private _configurationService: IConfigurationService,
-		@ICapabilitiesService capabilitiesService: ICapabilitiesService
+		@ICapabilitiesService capabilitiesService: ICapabilitiesService,
+		@IContextMenuService private _contextMenuService: IContextMenuService,
+		@IKeybindingService private _keybindingService: IKeybindingService
 	) {
 		super();
 		this._activeConnectionsFilterAction = this._instantiationService.createInstance(
@@ -71,9 +78,17 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		this._onSelectionOrFocusChange = new Emitter();
 		this._actionProvider = this._instantiationService.createInstance(ServerTreeActionProvider);
 		capabilitiesService.onCapabilitiesRegistered(async () => {
-			if (this._connectionManagementService.hasRegisteredServers()) {
-				await this.refreshTree();
+			if (this._tree instanceof AsyncServerTree) {
+				// Refresh the tree input now that the capabilities are registered so that we can
+				// get the full ConnectionProfiles with the server info updated properly
+				const treeInput = TreeUpdateUtils.getTreeInput(this._connectionManagementService);
+				await this._tree.setInput(treeInput);
 				this._treeSelectionHandler.onTreeActionStateChange(false);
+			} else {
+				if (this._connectionManagementService.hasRegisteredServers()) {
+					await this.refreshTree();
+					this._treeSelectionHandler.onTreeActionStateChange(false);
+				}
 			}
 		});
 		this.registerCommands();
@@ -97,7 +112,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		return this._actionProvider;
 	}
 
-	public get tree(): ITree {
+	public get tree(): ITree | AsyncServerTree {
 		return this._tree;
 	}
 
@@ -143,11 +158,30 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		}
 
 		const horizontalScrollEnabled: boolean = this._configurationService.getValue(horizontalScrollingKey) || false;
-		this._tree = this._register(TreeCreationUtils.createRegisteredServersTree(container, this._instantiationService, horizontalScrollEnabled));
-		//this._tree.setInput(undefined);
+		this._tree = this._register(TreeCreationUtils.createServersTree(container, this._instantiationService, this._configurationService, horizontalScrollEnabled));
 		this._register(this._tree.onDidChangeSelection((event) => this.onSelected(event)));
 		this._register(this._tree.onDidBlur(() => this._onSelectionOrFocusChange.fire()));
 		this._register(this._tree.onDidChangeFocus(() => this._onSelectionOrFocusChange.fire()));
+		if (this._tree instanceof AsyncServerTree) {
+			this._register(this._tree.onContextMenu(e => this.onContextMenu(e)));
+			this._register(this._tree.onMouseDblClick(e => {
+				// Open dashboard on double click for server and database nodes
+				let connectionProfile: ConnectionProfile;
+				if (e.element instanceof ConnectionProfile) {
+					connectionProfile = e.element;
+				} else if (e.element instanceof TreeNode) {
+					if (TreeUpdateUtils.isAvailableDatabaseNode(e.element)) {
+						connectionProfile = TreeUpdateUtils.getConnectionProfile(e.element);
+					}
+				}
+				if (connectionProfile) {
+					this._connectionManagementService.showDashboard(connectionProfile);
+				}
+			}));
+			this._register(this._connectionManagementService.onConnectionChanged(() => {
+				this.refreshTree().catch(err => errors.onUnexpectedError);
+			}));
+		}
 
 		// Theme styler
 		this._register(attachListStyler(this._tree, this._themeService));
@@ -171,7 +205,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 					this.showError(args.errorMessage);
 				}
 				if (args.connection) {
-					this.onObjectExplorerSessionCreated(args.connection);
+					this.onObjectExplorerSessionCreated(args.connection).catch(err => errors.onUnexpectedError);
 				}
 			}));
 		}
@@ -182,7 +216,14 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 
 			const expandGroups: boolean = this._configurationService.getValue(SERVER_GROUP_CONFIG)[SERVER_GROUP_AUTOEXPAND_CONFIG];
 			if (expandGroups) {
-				await this._tree.expandAll(ConnectionProfileGroup.getSubgroups(root));
+				if (this._tree instanceof AsyncServerTree) {
+					await Promise.all(ConnectionProfileGroup.getSubgroups(root).map(subgroup => {
+						return this._tree.expand(subgroup);
+					}));
+				} else {
+					await this._tree.expandAll(ConnectionProfileGroup.getSubgroups(root));
+				}
+
 			}
 
 			if (root && !root.hasValidConnections) {
@@ -200,30 +241,55 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		return uri && startsWith(uri, ConnectionUtils.uriPrefixes.default) && !isBackupRestoreUri;
 	}
 
-	private async handleAddConnectionProfile(newProfile: IConnectionProfile): Promise<void> {
-		if (newProfile) {
-			const groups = this._connectionManagementService.getConnectionGroups();
-			const profile = ConnectionUtils.findProfileInGroup(newProfile, groups);
-			if (profile) {
-				newProfile = profile;
-			}
-		}
-
+	private async handleAddConnectionProfile(newProfile?: IConnectionProfile): Promise<void> {
 		if (this._buttonSection) {
 			hide(this._buttonSection);
 			this._activeConnectionsFilterAction.enabled = true;
 		}
-		const currentSelections = this._tree.getSelection();
-		const currentSelectedElement = currentSelections && currentSelections.length >= 1 ? currentSelections[0] : undefined;
-		const newProfileIsSelected = currentSelectedElement && newProfile ? currentSelectedElement.id === newProfile.id : false;
-		if (newProfile && currentSelectedElement && !newProfileIsSelected) {
-			this._tree.clearSelection();
+
+		if (this._tree instanceof AsyncServerTree) {
+			// When new connection groups are added the event is fired with undefined so
+			// we still want to refresh the tree in that case to pick up the changes
+			await this.refreshTree();
+			if (newProfile) {
+				const currentSelections = this._tree.getSelection();
+				const currentSelectedElement = currentSelections && currentSelections.length >= 1 ? currentSelections[0] : undefined;
+				const newProfileIsSelected = currentSelectedElement && currentSelectedElement.id === newProfile.id;
+				// Clear any other selected elements first
+				if (currentSelectedElement && !newProfileIsSelected) {
+					this._tree.setSelection([]);
+				}
+				const newConnectionProfile = this.getConnectionInTreeInput(newProfile.id);
+				if (newConnectionProfile) {
+					// Re-render to update the connection status badge
+					this._tree.rerender(newConnectionProfile);
+					this._tree.setSelection([newConnectionProfile]);
+					this._tree.expand(newConnectionProfile);
+				}
+			}
+
+		} else {
+			if (newProfile) {
+				const groups = this._connectionManagementService.getConnectionGroups();
+				const profile = ConnectionUtils.findProfileInGroup(newProfile, groups);
+				if (profile) {
+					newProfile = profile;
+				}
+			}
+
+			const currentSelections = this._tree.getSelection();
+			const currentSelectedElement = currentSelections && currentSelections.length >= 1 ? currentSelections[0] : undefined;
+			const newProfileIsSelected = currentSelectedElement && newProfile ? currentSelectedElement.id === newProfile.id : false;
+			if (newProfile && currentSelectedElement && !newProfileIsSelected) {
+				this._tree.clearSelection();
+			}
+			await this.refreshTree();
+			if (newProfile && !newProfileIsSelected) {
+				await this._tree.reveal(newProfile);
+				this._tree.select(newProfile);
+			}
 		}
-		await this.refreshTree();
-		if (newProfile && !newProfileIsSelected) {
-			await this._tree.reveal(newProfile);
-			this._tree.select(newProfile);
-		}
+
 	}
 
 	private showError(errorMessage: string) {
@@ -232,66 +298,83 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		}
 	}
 
-	private getConnectionInTreeInput(connectionId: string): ConnectionProfile {
-		const root = TreeUpdateUtils.getTreeInput(this._connectionManagementService);
-		const connections = ConnectionProfileGroup.getConnectionsInGroup(root);
-		const results = connections.filter(con => {
-			if (connectionId === con.id) {
-				return true;
-			} else {
-				return false;
+	/**
+	 * Gets the ConnectionProfile object in the tree for the specified ID, or undefined if it doesn't exist.
+	 * @param connectionId The connection ID to search for
+	 */
+	private getConnectionInTreeInput(connectionId: string): ConnectionProfile | undefined {
+		if (this._tree instanceof AsyncServerTree) {
+			const root = this._tree.getInput();
+			const connections = ConnectionProfileGroup.getConnectionsInGroup(root);
+			return connections.find(conn => conn.id === connectionId);
+		} else {
+			const root = TreeUpdateUtils.getTreeInput(this._connectionManagementService);
+			const connections = ConnectionProfileGroup.getConnectionsInGroup(root);
+			const results = connections.filter(con => {
+				if (connectionId === con.id) {
+					return true;
+				} else {
+					return false;
+				}
+			});
+			if (results && results.length > 0) {
+				return results[0];
 			}
-		});
-		if (results && results.length > 0) {
-			return results[0];
+			return undefined;
 		}
-		return null;
 	}
 
-	private onObjectExplorerSessionCreated(connection: IConnectionProfile) {
-		const conn = this.getConnectionInTreeInput(connection.id);
-		if (conn) {
-			this._tree.refresh(conn).then(() => {
-				return this._tree.expand(conn).then(() => {
-					return this._tree.reveal(conn, 0.5).then(() => {
-						this._treeSelectionHandler.onTreeActionStateChange(false);
-					});
-				});
-			}).then(null, errors.onUnexpectedError);
+	private async onObjectExplorerSessionCreated(connection: IConnectionProfile): Promise<void> {
+		const element = this.getConnectionInTreeInput(connection.id);
+		if (element) {
+			if (this._tree instanceof AsyncServerTree) {
+				this._tree.rerender(element);
+			} else {
+				await this._tree.refresh(element);
+			}
+			await this._tree.expand(element);
+			await this._tree.reveal(element, 0.5);
+			this._treeSelectionHandler.onTreeActionStateChange(false);
 		}
 	}
 
 	public addObjectExplorerNodeAndRefreshTree(connection: IConnectionProfile): void {
 		hide(this.messages);
 		if (!this._objectExplorerService.getObjectExplorerNode(connection)) {
-			this._objectExplorerService.updateObjectExplorerNodes(connection).then(() => {
-				// The oe request is sent. an event will be raised when the session is created
-			}, error => {
-			});
+			this._objectExplorerService.updateObjectExplorerNodes(connection).catch(e => errors.onUnexpectedError(e));
 		}
 	}
 
-	public deleteObjectExplorerNodeAndRefreshTree(connection: IConnectionProfile): Promise<void> {
+	public async deleteObjectExplorerNodeAndRefreshTree(connection: IConnectionProfile): Promise<void> {
 		if (connection) {
 			const conn = this.getConnectionInTreeInput(connection.id);
 			if (conn) {
-				return this._objectExplorerService.deleteObjectExplorerNode(conn).then(async () => {
+				await this._objectExplorerService.deleteObjectExplorerNode(conn);
+				if (this._tree instanceof AsyncServerTree) {
+					// Collapse the node before refreshing so the refresh doesn't try to fetch
+					// the children again (which causes it to try and connect)
+					this._tree.collapse(conn);
+					await this.refreshTree();
+				} else {
 					await this._tree.collapse(conn);
 					return this._tree.refresh(conn);
-				});
+				}
 			}
 		}
-		return Promise.resolve();
 	}
 
-	public refreshTree(): Promise<void> {
+	public async refreshTree(): Promise<void> {
 		hide(this.messages);
 		this.clearOtherActions();
 		return TreeUpdateUtils.registeredServerUpdate(this._tree, this._connectionManagementService);
 	}
 
-	public refreshElement(element: any): Promise<void> {
-		return this._tree.refresh(element);
+	public async refreshElement(element: ServerTreeElement): Promise<void> {
+		if (this._tree instanceof AsyncServerTree) {
+			return this._tree.updateChildren(element);
+		} else {
+			return this._tree.refresh(element);
+		}
 	}
 
 	/**
@@ -350,9 +433,19 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 			this._tree.setInput(treeInput).then(async () => {
 				if (isHidden(this.messages)) {
 					this._tree.getFocus();
-					await this._tree.expandAll(ConnectionProfileGroup.getSubgroups(treeInput));
+					if (this._tree instanceof AsyncServerTree) {
+						await Promise.all(ConnectionProfileGroup.getSubgroups(treeInput).map(subgroup => {
+							this._tree.expand(subgroup);
+						}));
+					} else {
+						await this._tree.expandAll(ConnectionProfileGroup.getSubgroups(treeInput));
+					}
 				} else {
-					this._tree.clearFocus();
+					if (this._tree instanceof AsyncServerTree) {
+						this._tree.setFocus([]);
+					} else {
+						this._tree.clearFocus();
+					}
 				}
 			}, errors.onUnexpectedError);
 		} else {
@@ -382,9 +475,19 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		this._tree.setInput(treeInput).then(async () => {
 			if (isHidden(this.messages)) {
 				this._tree.getFocus();
-				await this._tree.expandAll(ConnectionProfileGroup.getSubgroups(treeInput));
+				if (this._tree instanceof AsyncServerTree) {
+					await Promise.all(ConnectionProfileGroup.getSubgroups(treeInput).map(subgroup => {
+						this._tree.expand(subgroup);
+					}));
+				} else {
+					await this._tree.expandAll(ConnectionProfileGroup.getSubgroups(treeInput));
+				}
 			} else {
-				this._tree.clearFocus();
+				if (this._tree instanceof AsyncServerTree) {
+					this._tree.setFocus([]);
+				} else {
+					this._tree.clearFocus();
+				}
 			}
 		}, errors.onUnexpectedError);
 	}
@@ -451,17 +554,6 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 	}
 
 	/**
-	 * set the visibility of the view
-	 */
-	public setVisible(visible: boolean): void {
-		if (visible) {
-			this._tree.onVisible();
-		} else {
-			this._tree.onHidden();
-		}
-	}
-
-	/**
 	 * Get the list of selected nodes in the tree
 	*/
 	public getSelection(): any[] {
@@ -472,48 +564,108 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 	 * Get whether the tree view currently has focus
 	*/
 	public isFocused(): boolean {
-		return this._tree.isDOMFocused();
+		return this._tree.getHTMLElement() === document.activeElement;
 	}
 
 	/**
 	 * Set whether the given element is expanded or collapsed
 	 */
-	public setExpandedState(element: TreeNode | ConnectionProfile, expandedState: TreeItemCollapsibleState): Promise<void> {
+	public async setExpandedState(element: ServerTreeElement, expandedState: TreeItemCollapsibleState): Promise<void> {
 		if (expandedState === TreeItemCollapsibleState.Collapsed) {
 			return this._tree.collapse(element);
 		} else if (expandedState === TreeItemCollapsibleState.Expanded) {
 			return this._tree.expand(element);
 		}
-		return Promise.resolve();
 	}
 
 	/**
 	 * Reveal the given element in the tree
 	 */
-	public reveal(element: TreeNode | ConnectionProfile): Promise<void> {
+	public async reveal(element: ServerTreeElement): Promise<void> {
 		return this._tree.reveal(element);
 	}
 
 	/**
 	 * Select the given element in the tree and clear any other selections
 	 */
-	public setSelected(element: TreeNode | ConnectionProfile, selected: boolean, clearOtherSelections: boolean): Promise<void> {
+	public async setSelected(element: ServerTreeElement, selected: boolean, clearOtherSelections: boolean): Promise<void> {
 		if (clearOtherSelections || (selected && clearOtherSelections !== false)) {
-			this._tree.clearSelection();
+			if (this._tree instanceof AsyncServerTree) {
+				this._tree.setSelection([]);
+			} else {
+				this._tree.clearSelection();
+			}
+
 		}
 		if (selected) {
-			this._tree.select(element);
-			return this._tree.reveal(element);
+			if (this._tree instanceof AsyncServerTree) {
+				this._tree.setSelection(this._tree.getSelection().concat(element));
+				this._tree.reveal(element);
+			} else {
+				this._tree.select(element);
+				return this._tree.reveal(element);
+			}
 		} else {
-			this._tree.deselect(element);
-			return Promise.resolve();
+			if (this._tree instanceof AsyncServerTree) {
+				this._tree.setSelection(this._tree.getSelection().filter(item => item !== element));
+			} else {
+				this._tree.deselect(element);
+			}
 		}
 	}
 
 	/**
 	 * Check if the given element in the tree is expanded
 	 */
-	public isExpanded(element: TreeNode | ConnectionProfile): boolean {
-		return this._tree.isExpanded(element);
+	public isExpanded(element: ServerTreeElement): boolean {
+		if (this._tree instanceof AsyncServerTree) {
+			return !this._tree.getNode(element).collapsed;
+		} else {
+			return this._tree.isExpanded(element);
+		}
+
+	}
+
+	/**
+	 * Return actions in the context menu
+	 */
+	private onContextMenu(e: ITreeContextMenuEvent<ServerTreeElement>): boolean {
+		e.browserEvent.preventDefault();
+		e.browserEvent.stopPropagation();
+		this._tree.setSelection([e.element]);
+
+		let actionContext: any;
+		if (e.element instanceof TreeNode) {
+			let context = new ObjectExplorerActionsContext();
+			context.nodeInfo = e.element.toNodeInfo();
+			// Note: getting DB name before, but intentionally not using treeUpdateUtils.getConnectionProfile as it replaces
+			// the connection ID with a new one. This breaks a number of internal tasks
+			context.connectionProfile = e.element.getConnectionProfile().toIConnectionProfile();
+			context.connectionProfile.databaseName = e.element.getDatabaseName();
+			actionContext = context;
+		} else if (e.element instanceof ConnectionProfile) {
+			let context = new ObjectExplorerActionsContext();
+			context.connectionProfile = e.element.toIConnectionProfile();
+			context.isConnectionNode = true;
+			actionContext = context;
+		} else {
+			// TODO: because the connection group is used as a context object and isn't serializable,
+			// the Group-level context menu is not currently extensible
+			actionContext = e.element;
+		}
+
+		this._contextMenuService.showContextMenu({
+			getAnchor: () => e.anchor,
+			getActions: () => this._actionProvider.getActions(this._tree, e.element),
+			getKeyBinding: (action) => this._keybindingService.lookupKeybinding(action.id),
+			onHide: (wasCancelled?: boolean) => {
+				if (wasCancelled) {
+					this._tree.domFocus();
+				}
+			},
+			getActionsContext: () => (actionContext)
+		});
+
+		return true;
 	}
 }

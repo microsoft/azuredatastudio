@@ -6,12 +6,11 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as loc from '../../../localizedConstants';
-import { IconPathHelper, cssStyles, ResourceType, Endpoints } from '../../../constants';
-import { V1Pod, DuskyObjectModelsDatabaseServiceArcPayload } from '../../../controller/generated/dusky/api';
+import { IconPathHelper, cssStyles, Endpoints } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { ControllerModel } from '../../../models/controllerModel';
-import { PostgresModel, PodRole } from '../../../models/postgresModel';
-import { promptForResourceDeletion, promptAndConfirmPassword } from '../../../common/utils';
+import { PostgresModel } from '../../../models/postgresModel';
+import { promptAndConfirmPassword } from '../../../common/utils';
 
 export class PostgresOverviewPage extends DashboardPage {
 
@@ -207,7 +206,8 @@ export class PostgresOverviewPage extends DashboardPage {
 					const password = await promptAndConfirmPassword(input => !input ? loc.enterANonEmptyPassword : '');
 					if (password) {
 						await this._postgresModel.update(s => {
-							s.arc = s.arc ?? new DuskyObjectModelsDatabaseServiceArcPayload();
+							// TODO chgagnon
+							// s.arc = s.arc ?? new DuskyObjectModelsDatabaseServiceArcPayload();
 							s.arc.servicePassword = password;
 						});
 						vscode.window.showInformationMessage(loc.passwordReset);
@@ -229,11 +229,13 @@ export class PostgresOverviewPage extends DashboardPage {
 			deleteButton.onDidClick(async () => {
 				deleteButton.enabled = false;
 				try {
+					/*
 					if (await promptForResourceDeletion(this._postgresModel.namespace, this._postgresModel.name)) {
 						await this._postgresModel.delete();
 						await this._controllerModel.deleteRegistration(ResourceType.postgresInstances, this._postgresModel.namespace, this._postgresModel.name);
 						vscode.window.showInformationMessage(loc.resourceDeleted(this._postgresModel.fullName));
 					}
+					*/
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.resourceDeletionFailed(this._postgresModel.fullName, error));
 				} finally {
@@ -276,6 +278,7 @@ export class PostgresOverviewPage extends DashboardPage {
 
 		this.disposables.push(
 			openInAzurePortalButton.onDidClick(async () => {
+				/*
 				const r = this._controllerModel.getRegistration(ResourceType.postgresInstances, this._postgresModel.namespace, this._postgresModel.name);
 				if (!r) {
 					vscode.window.showErrorMessage(loc.couldNotFindAzureResource(this._postgresModel.fullName));
@@ -283,6 +286,7 @@ export class PostgresOverviewPage extends DashboardPage {
 					vscode.env.openExternal(vscode.Uri.parse(
 						`https://portal.azure.com/#resource/subscriptions/${r.subscriptionId}/resourceGroups/${r.resourceGroupName}/providers/Microsoft.AzureData/${ResourceType.postgresInstances}/${r.instanceName}`));
 				}
+				*/
 			}));
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems([
@@ -294,6 +298,7 @@ export class PostgresOverviewPage extends DashboardPage {
 	}
 
 	private getProperties(): azdata.PropertiesContainerItem[] {
+		/*
 		const registration = this._controllerModel.getRegistration(ResourceType.postgresInstances, this._postgresModel.namespace, this._postgresModel.name);
 		const endpoint: { ip?: string, port?: number } = this._postgresModel.endpoint;
 
@@ -307,6 +312,8 @@ export class PostgresOverviewPage extends DashboardPage {
 			{ displayName: loc.subscriptionId, value: registration?.subscriptionId ?? '' },
 			{ displayName: loc.postgresVersion, value: this._postgresModel.service?.spec?.engine?.version?.toString() ?? '' }
 		];
+		*/
+		return [];
 	}
 
 	private getKibanaLink(): string {
@@ -321,8 +328,8 @@ export class PostgresOverviewPage extends DashboardPage {
 	}
 
 	private getNodes(): string[][] {
+		/* TODO chgagnon
 		const endpoint: { ip?: string, port?: number } = this._postgresModel.endpoint;
-
 		return this._postgresModel.pods?.map((pod: V1Pod) => {
 			const name = pod.metadata?.name ?? '';
 			const role: PodRole | undefined = PostgresModel.getPodRole(pod);
@@ -336,6 +343,8 @@ export class PostgresOverviewPage extends DashboardPage {
 				role === PodRole.Router ? `${endpoint.ip}:${endpoint.port}` : internalDns
 			];
 		}) ?? [];
+		*/
+		return [];
 	}
 
 	private handleEndpointsUpdated() {

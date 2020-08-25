@@ -6,7 +6,7 @@
 import { Account } from 'azdata';
 import { SubscriptionClient } from '@azure/arm-subscriptions';
 
-import { azureResource } from '../azure-resource';
+import { azureResource } from 'azureResource';
 import { IAzureResourceSubscriptionService } from '../interfaces';
 
 export class AzureResourceSubscriptionService implements IAzureResourceSubscriptionService {

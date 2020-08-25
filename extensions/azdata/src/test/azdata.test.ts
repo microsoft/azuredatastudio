@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
-import * as TypeMoq from 'typemoq';
 import * as azdata from '../azdata';
 import * as sinon from 'sinon';
 import * as childProcess from '../common/childProcess';
@@ -14,11 +12,6 @@ import * as nock from 'nock';
 
 describe('azdata', function () {
 
-	let outputChannelMock: TypeMoq.IMock<vscode.OutputChannel>;
-	beforeEach(function (): void {
-		outputChannelMock = TypeMoq.Mock.ofType<vscode.OutputChannel>();
-
-	});
 	afterEach(function (): void {
 		sinon.restore();
 		nock.cleanAll();
@@ -33,7 +26,7 @@ describe('azdata', function () {
 			}
 			// Mock call to --version to simulate azdata being installed
 			sinon.stub(childProcess, 'executeCommand').returns(Promise.resolve({ stdout: 'v1.0.0', stderr: '' }));
-			await should(azdata.findAzdata(outputChannelMock.object)).not.be.rejected();
+			await should(azdata.findAzdata()).not.be.rejected();
 		});
 		it('unsuccessful', async function (): Promise<void> {
 			if (process.platform === 'win32') {
@@ -43,7 +36,7 @@ describe('azdata', function () {
 				// Mock call to executeCommand to simulate azdata --version returning error
 				sinon.stub(childProcess, 'executeCommand').returns(Promise.reject({ stdout: '', stderr: 'command not found: azdata' }));
 			}
-			await should(azdata.findAzdata(outputChannelMock.object)).be.rejected();
+			await should(azdata.findAzdata()).be.rejected();
 		});
 	});
 
@@ -57,7 +50,7 @@ describe('azdata', function () {
 			nock(azdata.azdataHostname)
 				.get(`/${azdata.azdataUri}`)
 				.replyWithFile(200, __filename);
-			const downloadPromise = azdata.downloadAndInstallAzdata(outputChannelMock.object);
+			const downloadPromise = azdata.downloadAndInstallAzdata();
 			await downloadPromise;
 		});
 
@@ -65,7 +58,7 @@ describe('azdata', function () {
 			nock('https://aka.ms')
 				.get('/azdata-msi')
 				.reply(404);
-			const downloadPromise = azdata.downloadAndInstallAzdata(outputChannelMock.object);
+			const downloadPromise = azdata.downloadAndInstallAzdata();
 			await should(downloadPromise).be.rejected();
 		});
 	});

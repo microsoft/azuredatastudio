@@ -183,7 +183,12 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 		// Markdown editor toolbar
 		const toolbarBackgroundColor = theme.getColor(toolbarBackground);
 		if (toolbarBackgroundColor) {
-			collector.addRule(`markdown-toolbar-component { background: ${toolbarBackgroundColor};}`);
+			collector.addRule(`markdown-toolbar-component {
+				background: ${toolbarBackgroundColor};
+				position: sticky;
+				top: -16px;
+				z-index: 1;
+			}`);
 		}
 		const toolbarIconColor = theme.getColor(toolbarIcon);
 		if (toolbarIconColor) {

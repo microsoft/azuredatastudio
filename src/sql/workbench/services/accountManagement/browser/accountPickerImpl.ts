@@ -30,18 +30,18 @@ import { Tenant, TenantListDelegate, TenantPickerListRenderer } from 'sql/workbe
 export class AccountPicker extends Disposable {
 	public static ACCOUNTPICKERLIST_HEIGHT = 47;
 	public viewModel: AccountPickerViewModel;
-	private _accountList: List<azdata.Account>;
-	private _rootContainer: HTMLElement;
+	private _accountList?: List<azdata.Account>;
+	private _rootContainer?: HTMLElement;
 
-	private _accountContainer: HTMLElement;
-	private _refreshContainer: HTMLElement;
-	private _accountListContainer: HTMLElement;
-	private _dropdown: DropdownList;
-	private _tenantContainer: HTMLElement;
-	private _tenantListContainer: HTMLElement;
-	private _tenantList: List<Tenant>;
-	private _tenantDropdown: DropdownList;
-	private _refreshAccountAction: RefreshAccountAction;
+	private _accountContainer?: HTMLElement;
+	private _refreshContainer?: HTMLElement;
+	private _accountListContainer?: HTMLElement;
+	private _dropdown?: DropdownList;
+	private _tenantContainer?: HTMLElement;
+	private _tenantListContainer?: HTMLElement;
+	private _tenantList?: List<Tenant>;
+	private _tenantDropdown?: DropdownList;
+	private _refreshAccountAction?: RefreshAccountAction;
 
 	// EVENTING ////////////////////////////////////////////////////////////
 	private _addAccountCompleteEmitter: Emitter<void>;
@@ -71,7 +71,7 @@ export class AccountPicker extends Disposable {
 		this._addAccountCompleteEmitter = new Emitter<void>();
 		this._addAccountErrorEmitter = new Emitter<string>();
 		this._addAccountStartEmitter = new Emitter<void>();
-		this._onAccountSelectionChangeEvent = new Emitter<azdata.Account>();
+		this._onAccountSelectionChangeEvent = new Emitter<azdata.Account | undefined>();
 		this._onTenantSelectionChangeEvent = new Emitter<string | undefined>();
 
 		// Create the view model, wire up the events, and initialize with baseline data
@@ -88,7 +88,7 @@ export class AccountPicker extends Disposable {
 	 * Render account picker
 	 */
 	public render(rootContainer: HTMLElement): void {
-		DOM.append(rootContainer, this._rootContainer);
+		DOM.append(rootContainer, this._rootContainer!);
 	}
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
@@ -156,14 +156,14 @@ export class AccountPicker extends Disposable {
 
 		this._register(this._accountList.onDidChangeSelection((e: IListEvent<azdata.Account>) => {
 			if (e.elements.length === 1) {
-				this._dropdown.renderLabel();
+				this._dropdown!.renderLabel();
 				this.onAccountSelectionChange(e.elements[0]);
 			}
 		}));
 
 		this._register(this._tenantList.onDidChangeSelection((e: IListEvent<Tenant>) => {
 			if (e.elements.length === 1) {
-				this._tenantDropdown.renderLabel();
+				this._tenantDropdown!.renderLabel();
 				this.onTenantSelectionChange(e.elements[0].id);
 			}
 		}));
@@ -214,16 +214,16 @@ export class AccountPicker extends Disposable {
 	private onAccountSelectionChange(account: azdata.Account | undefined) {
 		this.viewModel.selectedAccount = account;
 		if (account && account.isStale) {
-			this._refreshAccountAction.account = account;
-			DOM.show(this._refreshContainer);
-		} else {
-			DOM.hide(this._refreshContainer);
+			this._refreshAccountAction!.account = account;
+			DOM.show(this._refreshContainer!);
+		} else if (account) {
+			DOM.hide(this._refreshContainer!);
 
 			if (account.properties.tenants?.length > 1) {
-				DOM.show(this._tenantContainer);
+				DOM.show(this._tenantContainer!);
 				this.updateTenantList(account);
 			} else {
-				DOM.hide(this._tenantContainer);
+				DOM.hide(this._tenantContainer!);
 			}
 			this.onTenantSelectionChange(account?.properties?.tenants[0]?.id);
 		}
@@ -243,7 +243,7 @@ export class AccountPicker extends Disposable {
 			}
 		}
 
-		const selectedAccounts = this._accountList.getSelectedElements();
+		const selectedAccounts = this._accountList!.getSelectedElements();
 		const account = selectedAccounts ? selectedAccounts[0] : undefined;
 		if (account) {
 			const badge = DOM.$('div.badge');
@@ -278,7 +278,7 @@ export class AccountPicker extends Disposable {
 			}
 		}
 
-		const selectedTenants = this._tenantList.getSelectedElements();
+		const selectedTenants = this._tenantList!.getSelectedElements();
 		const tenant = selectedTenants ? selectedTenants[0] : undefined;
 		if (tenant) {
 			const row = DOM.append(container, DOM.$('div.selected-tenant-container'));
@@ -291,15 +291,15 @@ export class AccountPicker extends Disposable {
 	}
 
 	private updateTenantList(account: azdata.Account): void {
-		this._tenantList.splice(0, this._tenantList.length, account?.properties?.tenants ?? []);
-		this._tenantList.setSelection([0]);
-		this._tenantDropdown.renderLabel();
-		this._tenantList.layout(this._tenantList.contentHeight);
+		this._tenantList!.splice(0, this._tenantList!.length, account?.properties?.tenants ?? []);
+		this._tenantList!.setSelection([0]);
+		this._tenantDropdown!.renderLabel();
+		this._tenantList!.layout(this._tenantList!.contentHeight);
 	}
 
 	private updateAccountList(accounts: azdata.Account[]): void {
 		// keep the selection to the current one
-		const selectedElements = this._accountList.getSelectedElements();
+		const selectedElements = this._accountList!.getSelectedElements();
 
 		// find selected index
 		let selectedIndex: number | undefined;
@@ -310,21 +310,21 @@ export class AccountPicker extends Disposable {
 		}
 
 		// Replace the existing list with the new one
-		this._accountList.splice(0, this._accountList.length, accounts);
+		this._accountList!.splice(0, this._accountList!.length, accounts);
 
-		if (this._accountList.length > 0) {
+		if (this._accountList!.length > 0) {
 			if (selectedIndex && selectedIndex !== -1) {
-				this._accountList.setSelection([selectedIndex]);
+				this._accountList!.setSelection([selectedIndex]);
 			} else {
-				this._accountList.setSelection([0]);
+				this._accountList!.setSelection([0]);
 			}
 		} else {
 			// if the account is empty, re-render dropdown label
 			this.onAccountSelectionChange(undefined);
-			this._dropdown.renderLabel();
+			this._dropdown!.renderLabel();
 		}
 
-		this._accountList.layout(this._accountList.contentHeight);
+		this._accountList!.layout(this._accountList!.contentHeight);
 	}
 
 	/**
@@ -333,9 +333,8 @@ export class AccountPicker extends Disposable {
 	private updateTheme(theme: IColorTheme): void {
 		const linkColor = theme.getColor(buttonBackground);
 		const link = linkColor ? linkColor.toString() : null;
-		this._refreshContainer.style.color = link;
 		if (this._refreshContainer) {
-			this._refreshContainer.style.color = link;
+			this._refreshContainer.style.color = link ?? '';
 		}
 	}
 }
