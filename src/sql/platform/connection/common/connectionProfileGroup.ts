@@ -9,12 +9,16 @@ import { isUndefinedOrNull } from 'vs/base/common/types';
 import { assign } from 'vs/base/common/objects';
 import { find } from 'vs/base/common/arrays';
 
-export interface IConnectionProfileGroup {
-	id: string;
+export interface INewConnectionProfileGroup {
+	id?: string;
 	parentId?: string;
 	name: string;
 	color?: string;
 	description?: string;
+}
+
+export interface IConnectionProfileGroup extends INewConnectionProfileGroup {
+	id: string;
 }
 
 export class ConnectionProfileGroup extends Disposable implements IConnectionProfileGroup {

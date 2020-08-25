@@ -12,7 +12,6 @@ export function foundExistingAzdata(path: string, version: string): string { ret
 export const notFoundExistingAzdata = localize('azdata.notFoundExistingAzdata', "Could not find existing azdata installation. Upgrade cannot be performed. Try installing instead");
 export function downloadingProgressMb(currentMb: string, totalMb: string): string { return localize('azdata.downloadingProgressMb', "Downloading ({0} / {1} MB)", currentMb, totalMb); }
 export const downloadFinished = localize('azdata.downloadFinished', "Download finished");
-export const install = localize('azdata.install', "Install");
 export const installingAzdata = localize('azdata.installingAzdata', "Installing azdata...");
 export const upgradingAzdata = localize('azdata.upgradingAzdata', "Upgrading azdata...");
 export const azdataInstalled = localize('azdata.azdataInstalled', "azdata was successfully installed. Restarting Azure Data Studio is required to complete configuration - features will not be activated until this is done.");
