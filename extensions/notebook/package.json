@@ -466,7 +466,7 @@
         },
         {
           "command": "notebook.command.unpinNotebook",
-          "when": "viewItem == pinnedNotebook || view == pinnedBooksView",
+          "when": "view == pinnedBooksView || view == bookTreeView && viewItem == pinnedNotebook",
           "group": "inline"
         }
       ],

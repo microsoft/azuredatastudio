@@ -48,7 +48,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		this._openAsUntitled = openAsUntitled;
 		this._extensionContext = extensionContext;
 		this.books = [];
-		this._bookPinManager = new BookPinManager(this.books);
+		this._bookPinManager = new BookPinManager();
 		if (view === constants.PINNED_BOOKS_VIEWID) {
 			this.initializePinnedNotebooks().catch(e => console.error(e));
 		} else {
@@ -123,7 +123,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			let pinStatusChanged = unpin ? this._bookPinManager.unpinNotebook(bookTreeItem) : this._bookPinManager.pinNotebook(bookTreeItem);
 			if (pinStatusChanged) {
 				bookTreeItem.contextValue = unpin ? 'savedNotebook' : 'pinnedNotebook';
-				vscode.window.showInformationMessage(unpin ? loc.msgBookUnpinned : loc.msgBookPinned);
+				vscode.window.showInformationMessage(unpin ? loc.msgBookUnpinned(bookTreeItem.title) : loc.msgBookPinned(bookTreeItem.title));
 			}
 		}
 	}
@@ -212,21 +212,23 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	 * @param bookPath The path to the book folder to create the model for
 	 */
 	private async createAndAddBookModel(bookPath: string, isNotebook: boolean): Promise<void> {
-		const book: BookModel = new BookModel(bookPath, this._openAsUntitled, isNotebook, this._extensionContext);
-		await book.initializeContents();
-		this.books.push(book);
-		if (!this.currentBook) {
-			this.currentBook = book;
-		}
-		this._bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
-		this._bookViewer.onDidChangeVisibility(e => {
-			let openDocument = azdata.nb.activeNotebookEditor;
-			let notebookPath = openDocument?.document.uri;
-			// call reveal only once on the correct view
-			if (e.visible && ((!this._openAsUntitled && notebookPath?.scheme !== 'untitled') || (this._openAsUntitled && notebookPath?.scheme === 'untitled'))) {
-				this.revealActiveDocumentInViewlet();
+		if (!this.books.find(x => x.bookPath === bookPath)) {
+			const book: BookModel = new BookModel(bookPath, this._openAsUntitled, isNotebook, this._extensionContext);
+			await book.initializeContents();
+			this.books.push(book);
+			if (!this.currentBook) {
+				this.currentBook = book;
 			}
-		});
+			this._bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
+			this._bookViewer.onDidChangeVisibility(e => {
+				let openDocument = azdata.nb.activeNotebookEditor;
+				let notebookPath = openDocument?.document.uri;
+				// call reveal only once on the correct view
+				if (e.visible && ((!this._openAsUntitled && notebookPath?.scheme !== 'untitled') || (this._openAsUntitled && notebookPath?.scheme === 'untitled'))) {
+					this.revealActiveDocumentInViewlet();
+				}
+			});
+		}
 	}
 
 	async showPreviewFile(urlToOpen?: string): Promise<void> {
