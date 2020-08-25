@@ -28,33 +28,28 @@ describe('Notebook URI Handler', function (): void {
 		notebookUriHandler.handleUri(vscode.Uri.parse(''));
 		sinon.assert.calledOnce(showErrorMessageSpy);
 
-		// sinon.stub(notebookUriHandler,'handleUri').returns(vscode.Uri.parse(''))
-		// notebookUriHandler.handleUri();
-		// sinon.assert.calledOnce(showErrorMessageSpy);
+		notebookUriHandler.handleUri(null);
+		sinon.assert.calledTwice(showErrorMessageSpy);
 
-		// sinon.assert.calledTwice(showErrorMessageSpy);
+		notebookUriHandler.handleUri(undefined);
+		sinon.assert.calledThrice(showErrorMessageSpy);
 
-		// notebookUriHandler.handleUri(undefined);
-		// sinon.assert.calledThrice(showErrorMessageSpy);
-
-		// sinon.assert.neverCalledWith(executeCommandSpy, 'notebook.command.new');
-
+		sinon.assert.neverCalledWith(executeCommandSpy, 'notebook.command.new');
+		done();
 	});
 
-	// it('should create new notebook when new passed in', function (done): void {
-	// 	notebookUriHandler.handleUri(vscode.Uri.parse('azuredatastudio://microsoft.notebook/new'));
-	// 	sinon.assert.calledOnce(executeCommandSpy);
-	// });
+	it('should create new notebook when new passed in', function (): void {
+		notebookUriHandler.handleUri(vscode.Uri.parse('azuredatastudio://microsoft.notebook/new'));
+		sinon.assert.calledOnce(executeCommandSpy);
+	});
 
-	// it('should show error message when no query passed into open', function (done): void {
-	// 	notebookUriHandler.handleUri(vscode.Uri.parse('azuredatastudio://microsoft.notebook/open'));
-	// 	sinon.assert.calledOnce(showErrorMessageSpy);
-	// });
+	it('should show error message when no query passed into open', function (): void {
+		notebookUriHandler.handleUri(vscode.Uri.parse('azuredatastudio://microsoft.notebook/open'));
+		sinon.assert.calledOnce(showErrorMessageSpy);
+	});
 
-	// it('should show error message when file uri scheme is not https or http', function (done): void {
-	// 	notebookUriHandler.handleUri(vscode.Uri.parse('azuredatastudio://microsoft.notebook/open?file://hello.ipynb'));
-	// 	sinon.assert.calledOnce(showErrorMessageSpy);
-	// });
-
-
+	it('should show error message when file uri scheme is not https or http', function (): void {
+		notebookUriHandler.handleUri(vscode.Uri.parse('azuredatastudio://microsoft.notebook/open?file://hello.ipynb'));
+		sinon.assert.calledOnce(showErrorMessageSpy);
+	});
 });

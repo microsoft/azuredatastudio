@@ -29,7 +29,7 @@ export class NotebookUriHandler implements vscode.UriHandler {
 				return this.open(uri);
 			default:
 				vscode.window.showErrorMessage(localize('notebook.unsupportedAction', "Action {0} is not supported for this handler", uri?.path));
-				return;
+				return Promise.reject(`Action ${uri?.path} is not supported for this handler`);
 		}
 	}
 
