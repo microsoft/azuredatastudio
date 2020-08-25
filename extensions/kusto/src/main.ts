@@ -25,7 +25,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	let supported = await Utils.verifyPlatform();
 
 	if (!supported) {
-		vscode.window.showErrorMessage('Unsupported platform');
+		vscode.window.showErrorMessage(localize('kusto.unsupportedPlatform', 'Unsupported platform'));
 		return undefined;
 	}
 
