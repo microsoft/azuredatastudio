@@ -15,8 +15,8 @@ export class NewDashboardTabDialogService implements INewDashboardTabDialogServi
 	_serviceBrand: undefined;
 
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
-	private _addNewTabDialog: NewDashboardTabDialog;
-	private _uri: string;
+	private _addNewTabDialog?: NewDashboardTabDialog;
+	private _uri?: string;
 
 	constructor(
 		@IAngularEventingService private _angularEventService: IAngularEventingService,
@@ -45,8 +45,8 @@ export class NewDashboardTabDialogService implements INewDashboardTabDialogServi
 	// PRIVATE HELPERS /////////////////////////////////////////////////////
 	private handleOnAddTabs(selectedUiTabs: Array<IDashboardUITab>): void {
 		let selectedTabs = selectedUiTabs.map(tab => tab.tabConfig);
-		this._angularEventService.sendAngularEvent(this._uri, AngularEventType.NEW_TABS, { dashboardTabs: selectedTabs });
-		this._addNewTabDialog.close();
+		this._angularEventService.sendAngularEvent(this._uri!, AngularEventType.NEW_TABS, { dashboardTabs: selectedTabs });
+		this._addNewTabDialog!.close();
 	}
 
 	private handleOnCancel(): void { }

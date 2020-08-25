@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { azureResource } from '../../azure-resource';
+import { azureResource } from 'azureResource';
 import { ResourceServiceBase, GraphData } from '../resourceTreeDataProviderBase';
 
 export interface KustoGraphData extends GraphData {

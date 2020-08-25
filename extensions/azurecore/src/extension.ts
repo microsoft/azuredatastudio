@@ -35,8 +35,8 @@ import { SqlInstanceArcProvider } from './azureResource/providers/sqlinstanceArc
 import { SqlInstanceArcResourceService } from './azureResource/providers/sqlinstanceArc/sqlInstanceArcService';
 import { PostgresServerArcProvider } from './azureResource/providers/postgresArcServer/postgresServerProvider';
 import { PostgresServerArcService } from './azureResource/providers/postgresArcServer/postgresServerService';
-import { azureResource } from './azureResource/azure-resource';
-import * as azurecore from './azurecore';
+import { azureResource } from 'azureResource';
+import * as azurecore from 'azurecore';
 import * as azureResourceUtils from './azureResource/utils';
 import * as utils from './utils';
 import * as loc from './localizedConstants';
@@ -108,7 +108,13 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			}
 			return providers;
 		},
-		getRegionDisplayName: utils.getRegionDisplayName
+		getRegionDisplayName: utils.getRegionDisplayName,
+		runGraphQuery<T extends azureResource.AzureGraphResource>(account: azdata.Account,
+			subscription: azureResource.AzureResourceSubscription,
+			ignoreErrors: boolean,
+			query: string): Promise<azurecore.ResourceQueryResult<T>> {
+			return azureResourceUtils.runResourceQuery(appContext, account, subscription, ignoreErrors, query);
+		}
 	};
 }
 

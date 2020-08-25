@@ -235,7 +235,7 @@ export class BrowserWorkbenchEnvironmentService implements IWorkbenchEnvironment
 		return `${uri.scheme}://${uri.authority}`;
 	}
 
-	get disableTelemetry(): boolean { return false; }
+	get disableTelemetry(): boolean { return true; } // {{SQL CARBON EDIT}} permanently disable telemetry for web instead of perminently enable
 
 	get verbose(): boolean { return this.payload?.get('verbose') === 'true'; }
 	get logExtensionHostCommunication(): boolean { return this.payload?.get('logExtensionHostCommunication') === 'true'; }
