@@ -12,6 +12,7 @@ import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/t
 import { UNSAVED_GROUP_ID } from 'sql/platform/connection/common/constants';
 import { DataTransfers, IDragAndDropData } from 'vs/base/browser/dnd';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
+import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 
 export function supportsNodeNameDrop(nodeId: string): boolean {
 	if (nodeId === 'Table' || nodeId === 'Column' || nodeId === 'View') {
@@ -45,7 +46,7 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 	 * Returns a uri if the given element should be allowed to drag.
 	 * Returns null, otherwise.
 	 */
-	public getDragURI(tree: ITree, element: any): string {
+	public getDragURI(tree: AsyncServerTree | ITree, element: any): string {
 		if (element) {
 			if (element instanceof ConnectionProfile) {
 				return (<ConnectionProfile>element).id;
@@ -67,7 +68,7 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 	/**
 	 * Returns a label(name) to display when dragging the element.
 	 */
-	public getDragLabel(tree: ITree, elements: any[]): string {
+	public getDragLabel(tree: AsyncServerTree | ITree, elements: any[]): string {
 		if (elements) {
 			if (elements[0] instanceof ConnectionProfile) {
 				return (<ConnectionProfile>elements[0]).serverName;
@@ -88,7 +89,7 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 	/**
 	 * Called when the drag operation starts.
 	 */
-	public onDragStart(tree: ITree, dragAndDropData: IDragAndDropData, originalEvent: DragMouseEvent): void {
+	public onDragStart(tree: AsyncServerTree | ITree, dragAndDropData: IDragAndDropData, originalEvent: DragMouseEvent): void {
 		let escapedSchema, escapedName, finalString;
 		TreeUpdateUtils.isInDragAndDrop = true;
 		const data = dragAndDropData.getData();
@@ -136,7 +137,7 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 	 * dropped into target or some parent of the target.
 	 * Returns DRAG_OVER_ACCEPT_BUBBLE_DOWN when element is a connection group or connection
 	 */
-	public onDragOver(tree: ITree, data: IDragAndDropData, targetElement: any, originalEvent: DragMouseEvent): IDragOverReaction {
+	public onDragOver(tree: AsyncServerTree | ITree, data: IDragAndDropData, targetElement: any, originalEvent: DragMouseEvent): IDragOverReaction {
 		let canDragOver: boolean = true;
 
 		if (targetElement instanceof ConnectionProfile || targetElement instanceof ConnectionProfileGroup) {
@@ -174,7 +175,7 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 	/**
 	 * Handle a drop in the server tree.
 	 */
-	public drop(tree: ITree, data: IDragAndDropData, targetElement: any, originalEvent: DragMouseEvent): void {
+	public drop(tree: AsyncServerTree | ITree, data: IDragAndDropData, targetElement: any, originalEvent: DragMouseEvent): void {
 		TreeUpdateUtils.isInDragAndDrop = false;
 
 		let targetConnectionProfileGroup: ConnectionProfileGroup = this.getTargetGroup(targetElement);
