@@ -262,7 +262,7 @@ async function discoverLatestAzdataVersionFromJson(outputChannel: vscode.OutputC
 	try {
 		azdataReleaseInfo = JSON.parse(fileContents);
 	} catch (e) {
-		throw Error(`failed to parse the JSON of contents at: ${azdataHostname}/${azdataReleaseJson}, error:${getErrorMessage(e)}`);
+		throw Error(`failed to parse the JSON of contents at: ${azdataHostname}/${azdataReleaseJson}, text being parsed: '${fileContents}', error:${getErrorMessage(e)}`);
 	}
 	const version = azdataReleaseInfo[process.platform]['version'];
 	outputChannel.appendLine(loc.foundAzdataVersionToUpgradeTo(version));
@@ -281,7 +281,7 @@ async function discoverLatestStableAzdataVersionDarwin(outputChannel: vscode.Out
 	try {
 		brewInfoAzdataCliJson = JSON.parse(brewInfoOutput);
 	} catch (e) {
-		throw Error(`failed to parse the JSON contents output of: 'brew info azdata-cli --json', error:${getErrorMessage(e)}`);
+		throw Error(`failed to parse the JSON contents output of: 'brew info azdata-cli --json', text being parsed: '${brewInfoOutput}', error:${getErrorMessage(e)}`);
 	}
 	// Get the 'info' about 'azdata-cli' from 'brew' as a json object
 	const azdataInfo: AzdataDarwinPackageVersionInfo = brewInfoAzdataCliJson.shift();

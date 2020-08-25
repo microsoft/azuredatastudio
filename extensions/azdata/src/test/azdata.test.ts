@@ -166,29 +166,10 @@ async function testWin32UnsuccessfulUpgrade() {
 	await should(upgradePromise).be.rejected();
 }
 
-async function testLinuxSuccessfulUpgrade(releaseJson: { win32: { version: string; link: string; }; darwin: { version: string; }; linux: { version: string; }; }) {
+async function testLinuxSuccessfulUpgrade(releaseJson: { win32: { version: string; }; darwin: { version: string; }; linux: { version: string; }; }) {
 	sinon.stub(HttpClient, 'getTextContent').returns(Promise.resolve(JSON.stringify(releaseJson)));
-	const executeCommandStub = sinon.stub(childProcess, 'executeCommand').callsFake(async (command: string, _args: string[]) => {
-		should(command).be.equal('add-apt-repository');
-		return { stdout: 'success', stderr: '' };
-	});
-	let callNumber = 0;
-	const executeSudoCommandStub = sinon.stub(childProcess, 'executeSudoCommand').callsFake(async (command: string) => {
-		callNumber++;
-		switch (callNumber) {
-			case 3:
-				should(command).match('/^curl/');
-				break;
-			case 4:
-				should(command).match('/^add-apt-repository/');
-				break;
-			default:
-				should(command).match('/^apt-get/');
-				break;
-		}
-		should(command).be.equal('brew');
-		return { stdout: 'success', stderr: '' };
-	});
+	const executeCommandStub = sinon.stub(childProcess, 'executeCommand').returns(Promise.resolve({ stdout: 'success', stderr: '' }));
+	const executeSudoCommandStub = sinon.stub(childProcess, 'executeSudoCommand').returns(Promise.resolve({ stdout: 'success', stderr: '' }));
 	await azdata.checkAndUpdateAzdata(oldAzdata, outputChannelMock.object);
 	should(executeSudoCommandStub.callCount).be.equal(6);
 	should(executeCommandStub.calledOnce).be.true();
@@ -199,7 +180,7 @@ async function testDarwinSuccessfulUpgrade() {
 		name: 'azdata-cli',
 		full_name: 'microsoft/azdata-cli-release/azdata-cli',
 		versions: {
-			'stable': '20.0.1',
+			'stable': '9999.999.999',
 			'devel': null,
 			'head': null,
 			'bottle': true
@@ -215,8 +196,7 @@ async function testDarwinSuccessfulUpgrade() {
 				stdout: JSON.stringify(brewInfoOutput)
 			});
 		})
-		.callsFake(async (command: string, _args: string[]) => { // return success on all other executions of 'brew'
-			should(command).be.equal('brew');
+		.callsFake(async (_command: string, _args: string[]) => { // return success on all other command executions
 			return Promise.resolve({ stdout: 'success', stderr: '' });
 		});
 	await azdata.checkAndUpdateAzdata(oldAzdata, outputChannelMock.object);
@@ -260,26 +240,8 @@ async function testDarwinSuccessfulInstall() {
 }
 
 async function testLinuxSuccessfulInstall() {
-	const executeCommandStub = sinon.stub(childProcess, 'executeCommand').callsFake(async (command: string, _args: string[]) => {
-		should(command).be.equal('lsb_release');
-		return { stdout: 'success', stderr: '' };
-	});
-	let callNumber = 0;
-	const executeSudoCommandStub = sinon.stub(childProcess, 'executeSudoCommand').callsFake(async (command: string) => {
-		++callNumber;
-		switch (callNumber) {
-			case 3:
-				should(command).match(/^curl/);
-				break;
-			case 4:
-				should(command).match(/^add-apt-repository/);
-				break;
-			default:
-				should(command).match(/^apt-get/);
-				break;
-		}
-		return { stdout: 'success', stderr: '' };
-	});
+	const executeCommandStub = sinon.stub(childProcess, 'executeCommand').returns(Promise.resolve({ stdout: 'success', stderr: '' }));
+	const executeSudoCommandStub = sinon.stub(childProcess, 'executeSudoCommand').returns(Promise.resolve({ stdout: 'success', stderr: '' }));
 	await azdata.installAzdata(outputChannelMock.object);
 	should(executeSudoCommandStub.callCount).be.equal(6);
 	should(executeCommandStub.calledOnce).be.true();
