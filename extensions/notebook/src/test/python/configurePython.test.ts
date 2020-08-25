@@ -40,8 +40,6 @@ describe('Configure Python Wizard', function () {
 		viewContext = createViewContext();
 	});
 
-	// These wizard tests are disabled due to errors with disposable objects
-	//
 	it('Start wizard test', async () => {
 		let wizard = new ConfigurePythonWizard(testInstallation);
 		await wizard.start();
