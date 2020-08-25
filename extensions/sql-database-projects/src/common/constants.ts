@@ -201,6 +201,11 @@ export const integratedSecuritySetting = 'Integrated Security';
 export const userIdSetting = 'User ID';
 export const passwordSetting = 'Password';
 
+// Workspace settings for saving new database projects
+export const dbProjectConfigurationKey = 'sqlDatabaseProjects';
+export const projectSaveLocationKey = 'defaultProjectSaveLocation';
+export const showUpdatePromptKey = 'showUpdateSaveLocationPrompt';
+
 // Tree item types
 export enum DatabaseProjectItemType {
 	project = 'databaseProject.itemType.project',

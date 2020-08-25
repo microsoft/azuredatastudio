@@ -9,18 +9,13 @@ import * as os from 'os';
 import * as path from 'path';
 import * as constants from '../common/constants';
 
-export const DBProjectConfigurationKey: string = 'sqlDatabaseProjects';
-export const ProjectSaveLocationKey: string = 'defaultProjectSaveLocation';
-export const ShowUpdatePromptKey: string = 'showUpdateSaveLocationPrompt';
-
 export class NewProjectTool {
-
 	/**
 	 * Sets workspace setting on the default save location to the user's home directory
 	 */
 	public async initializeSaveLocationSetting() {
 		if (!this.projectSaveLocationSettingExists) {
-			await this.config.update(ProjectSaveLocationKey, os.homedir(), true);
+			await this.config.update(constants.projectSaveLocationKey, os.homedir(), true);
 		}
 	}
 
@@ -59,7 +54,7 @@ export class NewProjectTool {
 	 * Prompts user to update workspace settings
 	 */
 	public async updateSaveLocationSetting(): Promise<void> {
-		const showPrompt: boolean = this.config[ShowUpdatePromptKey];
+		const showPrompt: boolean = this.config[constants.showUpdatePromptKey];
 		if (showPrompt) {
 			const openSettingsMessage = this.projectSaveLocationSettingIsValid ?
 				constants.newDefaultProjectSaveLocation : constants.invalidDefaultProjectSaveLocation;
@@ -68,7 +63,7 @@ export class NewProjectTool {
 
 			if (result === constants.openWorkspaceSettings || result === constants.doNotPromptAgain) {
 				// if user either opens settings or clicks "don't ask again", do not prompt for save location again
-				await this.config.update(ShowUpdatePromptKey, false, true);
+				await this.config.update(constants.showUpdatePromptKey, false, true);
 
 				if (result === constants.openWorkspaceSettings) {
 					await vscode.commands.executeCommand('workbench.action.openGlobalSettings'); //open settings
@@ -81,14 +76,14 @@ export class NewProjectTool {
 	 * Get workspace configurations for this extension
 	 */
 	private get config(): vscode.WorkspaceConfiguration {
-		return vscode.workspace.getConfiguration(DBProjectConfigurationKey);
+		return vscode.workspace.getConfiguration(constants.dbProjectConfigurationKey);
 	}
 
 	/**
 	 * Returns the workspace setting on the default location to save new database projects
 	 */
 	private get projectSaveLocationSetting(): string {
-		return this.config[ProjectSaveLocationKey];
+		return this.config[constants.projectSaveLocationKey];
 	}
 
 	/**
