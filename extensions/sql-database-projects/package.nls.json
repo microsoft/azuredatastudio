@@ -8,7 +8,7 @@
 	"sqlDatabaseProjects.close": "Close Database Project",
 	"sqlDatabaseProjects.build": "Build",
 	"sqlDatabaseProjects.publish": "Publish",
-	"sqlDatabaseProjects.importDatabase": "Import New Database Project",
+	"sqlDatabaseProjects.importDatabase": "Create Database Project",
 	"sqlDatabaseProjects.properties": "Properties",
 	"sqlDatabaseProjects.schemaCompare": "Schema Compare",
 	"sqlDatabaseProjects.delete": "Delete",
@@ -27,5 +27,5 @@
 
 	"sqlDatabaseProjects.Settings": "Database Projects",
 	"sqlDatabaseProjects.netCoreInstallLocation": "Full Path to .Net Core SDK on the machine.",
-	"sqlDatabaseProjects.welcome": "No database projects currently open.\n[New Project](command:sqlDatabaseProjects.new)\n[Open Project](command:sqlDatabaseProjects.open)\n[Import Project from Database](command:sqlDatabaseProjects.importDatabase)"
+	"sqlDatabaseProjects.welcome": "No database projects currently open.\n[New Project](command:sqlDatabaseProjects.new)\n[Open Project](command:sqlDatabaseProjects.open)\n[Create Database Project](command:sqlDatabaseProjects.importDatabase)"
 }
