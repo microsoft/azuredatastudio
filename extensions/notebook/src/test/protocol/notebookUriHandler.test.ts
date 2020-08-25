@@ -52,4 +52,15 @@ describe('Notebook URI Handler', function (): void {
 		notebookUriHandler.handleUri(vscode.Uri.parse('azuredatastudio://microsoft.notebook/open?file://hello.ipynb'));
 		sinon.assert.calledOnce(showErrorMessageSpy);
 	});
+
+	it('should open notebook when file uri scheme is https', function (): void {
+		notebookUriHandler.handleUri(vscode.Uri.parse('azuredatastudio://microsoft.notebook/open?url=https%3A%2F%2FHello.ipynb'));
+		sinon.assert.callCount(showErrorMessageSpy,0);
+	});
+
+	it('should open notebook when file uri scheme is http', function (): void {
+		notebookUriHandler.handleUri(vscode.Uri.parse('azuredatastudio://microsoft.notebook/open?url=http%3A%2F%2FHello.ipynb'));
+		sinon.assert.callCount(showErrorMessageSpy,0);
+	});
+
 });
