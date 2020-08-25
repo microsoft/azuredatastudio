@@ -107,7 +107,7 @@ export interface IConnectionManagementService {
 	/**
 	 * Opens the connection dialog to create new connection
 	 */
-	showConnectionDialog(params?: INewConnectionParams, options?: IConnectionCompletionOptions, model?: IConnectionProfile, connectionResult?: IConnectionResult): Promise<void>;
+	showConnectionDialog(params?: INewConnectionParams, options?: IConnectionCompletionOptions, model?: Partial<IConnectionProfile>, connectionResult?: IConnectionResult): Promise<void>;
 
 	/**
 	 * Load the password and opens a new connection

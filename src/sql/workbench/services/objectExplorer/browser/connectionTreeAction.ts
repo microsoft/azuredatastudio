@@ -164,7 +164,7 @@ export class AddServerAction extends Action {
 
 	public async run(element: ConnectionProfileGroup): Promise<boolean> {
 		// Not sure how to fix this....
-		let connection: IConnectionProfile | undefined = element === undefined ? undefined : {
+		let connection: Partial<IConnectionProfile> | undefined = element === undefined ? undefined : {
 			connectionName: undefined,
 			serverName: undefined,
 			databaseName: undefined,
@@ -180,7 +180,7 @@ export class AddServerAction extends Action {
 			options: {},
 			saveProfile: true,
 			id: element.id!
-		} as IConnectionProfile;
+		} as Partial<IConnectionProfile>;
 		await this._connectionManagementService.showConnectionDialog(undefined, undefined, connection);
 		return true;
 	}
