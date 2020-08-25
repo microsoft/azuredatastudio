@@ -18,6 +18,18 @@ import * as constants from '../constants';
 
 const outputChannelMock = TypeMoq.Mock.ofType<vscode.OutputChannel>();
 const oldAzdata = new azdata.AzdataTool('', new SemVer('0.0.0'), outputChannelMock.object);
+const releaseJson = {
+	win32: {
+		'version': '9999.999.999',
+		'link': 'https://download.com/azdata-20.0.1.msi'
+	},
+	darwin: {
+		'version': '9999.999.999'
+	},
+	linux: {
+		'version': '9999.999.999'
+	}
+};
 
 describe('azdata', function () {
 	afterEach(function (): void {
@@ -86,37 +98,21 @@ describe('azdata', function () {
 
 	describe('upgradeAzdata', function (): void {
 		beforeEach(function (): void {
-			// const mock = TypeMoq.Mock.ofInstance(azdata.discoverLatestAvailableAzdataVersion)
-			// 	.setup(x => x(TypeMoq.It.isAny()))
-			// 	.returns(() => Promise.resolve(Promise.resolve(new SemVer('9999.999.999'))));
-			// mock.
 			sinon.stub(azdata, 'discoverLatestAvailableAzdataVersion').returns(Promise.resolve(new SemVer('9999.999.999')));
 			sinon.stub(vscode.window, 'showInformationMessage').returns(Promise.resolve(<any>loc.yes));
 		});
 
 		it('successful upgrade', async function (): Promise<void> {
-			const releaseJson = {
-				win32: {
-					'version': '9999.999.999',
-					'link': 'https://download.com/azdata-20.0.1.msi'
-				},
-				darwin: {
-					'version': '9999.999.999'
-				},
-				linux: {
-					'version': '9999.999.999'
-				}
-			};
 			switch (process.platform) {
 				case 'win32':
-					await testWin32SuccessfulUpgrade(releaseJson);
+					await testWin32SuccessfulUpgrade();
 					break;
 
 				case 'darwin':
 					await testDarwinSuccessfulUpgrade();
 					break;
 				case 'linux':
-					await testLinuxSuccessfulUpgrade(releaseJson);
+					await testLinuxSuccessfulUpgrade();
 					break;
 			}
 		});
@@ -167,7 +163,7 @@ async function testWin32UnsuccessfulUpgrade() {
 	await should(upgradePromise).be.rejected();
 }
 
-async function testLinuxSuccessfulUpgrade(releaseJson: { win32: { version: string; }; darwin: { version: string; }; linux: { version: string; }; }) {
+async function testLinuxSuccessfulUpgrade() {
 	sinon.stub(HttpClient, 'getTextContent').returns(Promise.resolve(JSON.stringify(releaseJson)));
 	const executeCommandStub = sinon.stub(childProcess, 'executeCommand').returns(Promise.resolve({ stdout: 'success', stderr: '' }));
 	const executeSudoCommandStub = sinon.stub(childProcess, 'executeSudoCommand').returns(Promise.resolve({ stdout: 'success', stderr: '' }));
@@ -204,7 +200,7 @@ async function testDarwinSuccessfulUpgrade() {
 	should(executeCommandStub.calledThrice);
 }
 
-async function testWin32SuccessfulUpgrade(releaseJson: { win32: { version: string; link: string; }; darwin: { version: string; }; linux: { version: string; }; }) {
+async function testWin32SuccessfulUpgrade() {
 	sinon.stub(HttpClient, 'getTextContent').returns(Promise.resolve(JSON.stringify(releaseJson)));
 	sinon.stub(HttpClient, 'downloadFile').returns(Promise.resolve(__filename));
 	const executeCommandStub = sinon.stub(childProcess, 'executeCommand').callsFake(async (command: string, args: string[]) => {
