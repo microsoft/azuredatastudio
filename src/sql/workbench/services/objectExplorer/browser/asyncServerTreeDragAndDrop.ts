@@ -56,7 +56,7 @@ export class AsyncServerTreeDragAndDrop implements ITreeDragAndDrop<ServerTreeEl
 		const canDragOver = this._dragAndDrop.onDragOver(undefined, data, targetElement, <any>originalEvent);
 
 		if (canDragOver.accept) {
-			return TreeDragOverReactions.acceptBubbleDown(true);
+			return TreeDragOverReactions.acceptBubbleDown(canDragOver.autoExpand);
 		} else {
 			return { accept: false };
 		}
