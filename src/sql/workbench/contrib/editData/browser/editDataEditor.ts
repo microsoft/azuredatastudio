@@ -8,7 +8,7 @@ import * as DOM from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
 
 import { EditorOptions, EditorInput, IEditorControl, IEditorPane, IEditorOpenContext } from 'vs/workbench/common/editor';
-import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
+import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -41,7 +41,7 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 /**
  * Editor that hosts an action bar and a resultSetInput for an edit data session
  */
-export class EditDataEditor extends BaseEditor {
+export class EditDataEditor extends EditorPane {
 
 	public static ID: string = 'workbench.editor.editDataEditor';
 
@@ -251,7 +251,7 @@ export class EditDataEditor extends BaseEditor {
 	}
 
 	// PRIVATE METHODS ////////////////////////////////////////////////////////////
-	private _createEditor(editorInput: EditorInput, container: HTMLElement): Promise<BaseEditor> {
+	private _createEditor(editorInput: EditorInput, container: HTMLElement): Promise<EditorPane> {
 		const descriptor = this._editorDescriptorService.getEditor(editorInput);
 		if (!descriptor) {
 			return Promise.reject(new Error(strings.format('Can not find a registered editor for the input {0}', editorInput)));

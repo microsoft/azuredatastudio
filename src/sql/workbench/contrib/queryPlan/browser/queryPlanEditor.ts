@@ -5,7 +5,7 @@
 
 import * as DOM from 'vs/base/browser/dom';
 import { EditorOptions, IEditorOpenContext } from 'vs/workbench/common/editor';
-import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
+import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { QueryPlanInput } from 'sql/workbench/contrib/queryPlan/common/queryPlanInput';
@@ -13,7 +13,7 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { QueryPlanView } from 'sql/workbench/contrib/queryPlan/browser/queryPlan';
 
-export class QueryPlanEditor extends BaseEditor {
+export class QueryPlanEditor extends EditorPane {
 
 	public static ID: string = 'workbench.editor.queryplan';
 

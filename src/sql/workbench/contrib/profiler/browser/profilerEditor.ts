@@ -38,7 +38,7 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IView, SplitView, Sizing } from 'vs/base/browser/ui/splitview/splitview';
 import * as DOM from 'vs/base/browser/dom';
-import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
+import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IWorkbenchThemeService, VS_DARK_THEME, VS_HC_THEME } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -117,7 +117,7 @@ export interface IDetailData {
 	value: string;
 }
 
-export class ProfilerEditor extends BaseEditor {
+export class ProfilerEditor extends EditorPane {
 	public static readonly ID: string = 'workbench.editor.profiler';
 
 	private _untitledTextEditorModel: UntitledTextEditorModel;

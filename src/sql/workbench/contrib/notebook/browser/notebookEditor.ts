@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
+import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 import { EditorOptions, IEditorOpenContext } from 'vs/workbench/common/editor';
 import * as DOM from 'vs/base/browser/dom';
 import { bootstrapAngular } from 'sql/workbench/services/bootstrap/browser/bootstrapService';
@@ -35,7 +35,7 @@ import { TimeoutTimer } from 'vs/base/common/async';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 import { onUnexpectedError } from 'vs/base/common/errors';
 
-export class NotebookEditor extends BaseEditor implements IFindNotebookController {
+export class NotebookEditor extends EditorPane implements IFindNotebookController {
 
 	public static ID: string = 'workbench.editor.notebookEditor';
 	private _notebookContainer: HTMLElement;

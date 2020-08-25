@@ -6,7 +6,7 @@
 import { EditorOptions, IEditorOpenContext } from 'vs/workbench/common/editor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { RawContextKey } from 'vs/platform/contextkey/common/contextkey';
-import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
+import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { BareFontInfo } from 'vs/editor/common/config/fontInfo';
 import { getZoomLevel } from 'vs/base/browser/browser';
@@ -71,7 +71,7 @@ export function getBareResultsGridInfoStyles(info: BareResultsGridInfo): string 
 /**
  * Editor associated with viewing and editing the data of a query results grid.
  */
-export class QueryResultsEditor extends BaseEditor {
+export class QueryResultsEditor extends EditorPane {
 
 	public static ID: string = 'workbench.editor.queryResultsEditor';
 	protected _rawOptions: BareResultsGridInfo;

@@ -11,7 +11,7 @@ import { Configuration } from 'vs/editor/browser/config/configuration';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
+import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 import * as types from 'vs/base/common/types';
 
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
@@ -21,7 +21,7 @@ import { EditDataResultsInput } from 'sql/workbench/browser/editData/editDataRes
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 
-export class EditDataResultsEditor extends BaseEditor {
+export class EditDataResultsEditor extends EditorPane {
 
 	public static ID: string = 'workbench.editor.editDataResultsEditor';
 	protected _input: EditDataResultsInput;

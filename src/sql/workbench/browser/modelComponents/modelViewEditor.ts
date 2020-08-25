@@ -6,7 +6,7 @@ import 'vs/css!./media/modelViewEditor';
 
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
+import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 import { EditorOptions, IEditorOpenContext } from 'vs/workbench/common/editor';
 import * as DOM from 'vs/base/browser/dom';
 
@@ -14,7 +14,7 @@ import { ModelViewInput } from 'sql/workbench/browser/modelComponents/modelViewI
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 
-export class ModelViewEditor extends BaseEditor {
+export class ModelViewEditor extends EditorPane {
 
 	public static ID: string = 'workbench.editor.modelViewEditor';
 
