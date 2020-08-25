@@ -65,6 +65,10 @@ export interface CommandDeploymentProvider extends DeploymentProviderBase {
 	command: string;
 }
 
+export interface AzureSQLVMDeploymentProvider extends DeploymentProviderBase {
+	azureSQLVMWizard: AzureSQLVMWizardInfo;
+}
+
 export function instanceOfDialogDeploymentProvider(obj: any): obj is DialogDeploymentProvider {
 	return obj && 'dialog' in obj;
 }
@@ -93,12 +97,16 @@ export function instanceOfCommandDeploymentProvider(obj: any): obj is CommandDep
 	return obj && 'command' in obj;
 }
 
+export function instanceOfAzureSQLVMDeploymentProvider(obj: any): obj is AzureSQLVMDeploymentProvider {
+	return obj && 'azureSQLVMWizard' in obj;
+}
+
 export interface DeploymentProviderBase {
 	requiredTools: ToolRequirementInfo[];
 	when: string;
 }
 
-export type DeploymentProvider = DialogDeploymentProvider | BdcWizardDeploymentProvider | NotebookWizardDeploymentProvider | NotebookDeploymentProvider | WebPageDeploymentProvider | DownloadDeploymentProvider | CommandDeploymentProvider;
+export type DeploymentProvider = DialogDeploymentProvider | BdcWizardDeploymentProvider | NotebookWizardDeploymentProvider | NotebookDeploymentProvider | WebPageDeploymentProvider | DownloadDeploymentProvider | CommandDeploymentProvider | AzureSQLVMDeploymentProvider;
 
 export interface BdcWizardInfo {
 	notebook: string | NotebookPathInfo;
@@ -132,6 +140,10 @@ export interface NotebookBasedDialogInfo extends DialogInfoBase {
 
 export interface CommandBasedDialogInfo extends DialogInfoBase {
 	command: string;
+}
+
+export interface AzureSQLVMWizardInfo {
+	notebook: string | NotebookPathInfo;
 }
 
 export type DialogInfo = NotebookBasedDialogInfo | CommandBasedDialogInfo;
@@ -227,6 +239,8 @@ export interface FieldInfo extends SubFieldInfo, FieldInfoBase {
 	editable?: boolean; // for editable drop-down,
 	enabled?: boolean;
 	isEvaluated?: boolean;
+	valueLookup?: string; // for fetching dropdown options
+	validationLookup?: string // for fetching text field validations
 }
 
 export interface KubeClusterContextFieldInfo extends FieldInfo {
