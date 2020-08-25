@@ -60,6 +60,18 @@
           "when": "connectionProvider == MSSQL && nodeType && nodeType == Server && mssql:engineedition != 11",
           "group": "export"
         }
+      ],
+      "dataExplorer/context": [
+        {
+          "command": "schemaCompare.start",
+          "when": "connectionProvider == MSSQL && nodeType && nodeType == Database && mssql:engineedition != 11",
+          "group": "export"
+        },
+        {
+          "command": "schemaCompare.start",
+          "when": "connectionProvider == MSSQL && nodeType && nodeType == Server && mssql:engineedition != 11",
+          "group": "export"
+        }
       ]
     }
   },
@@ -75,7 +87,7 @@
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.1",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "^1.0.9"
+    "vscodetestcover": "^1.1.0"
   },
   "__metadata": {
     "id": "37",

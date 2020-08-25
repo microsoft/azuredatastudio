@@ -9,14 +9,13 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as zip from 'adm-zip';
 import * as tar from 'tar';
-import * as utils from '../common/utils';
 import { RemoteBook } from './remoteBook';
 import { IAsset } from './remoteBookController';
 import * as constants from '../common/constants';
 
 export class GitHubRemoteBook extends RemoteBook {
-	constructor(public remotePath: vscode.Uri, public outputChannel: vscode.OutputChannel, protected _asset: IAsset) {
-		super(remotePath, outputChannel, _asset);
+	constructor(public remotePath: vscode.Uri, public outputChannel: vscode.OutputChannel, public asset: IAsset) {
+		super(remotePath, outputChannel, asset);
 	}
 
 	public async createLocalCopy(): Promise<void> {
@@ -35,7 +34,7 @@ export class GitHubRemoteBook extends RemoteBook {
 					'timeout': downloadTimeout
 				}
 			};
-			let downloadRequest = request.get(this._asset.browserDownloadUrl.toString(false), options)
+			let downloadRequest = request.get(this.asset.browserDownloadUrl.toString(false), options)
 				.on('error', (error) => {
 					this.outputChannel.appendLine(loc.msgRemoteBookDownloadError);
 					this.outputChannel.appendLine(error.message);
@@ -47,7 +46,7 @@ export class GitHubRemoteBook extends RemoteBook {
 						return reject(new Error(loc.httpRequestError(response.statusCode, response.statusMessage)));
 					}
 				});
-			let remoteBookFullPath = vscode.Uri.file(this.localPath.fsPath.concat('.', this._asset.format));
+			let remoteBookFullPath = vscode.Uri.file(this.localPath.fsPath.concat('.', this.asset.format));
 			downloadRequest.pipe(fs.createWriteStream(remoteBookFullPath.fsPath))
 				.on('close', async () => {
 					resolve(this.extractFiles(remoteBookFullPath));
@@ -61,7 +60,7 @@ export class GitHubRemoteBook extends RemoteBook {
 		});
 	}
 	public async createDirectory(): Promise<void> {
-		let fileName = this._asset.book.concat('-').concat(this._asset.version).concat('-').concat(this._asset.language);
+		let fileName = this.asset.book.concat('-').concat(this.asset.version).concat('-').concat(this.asset.language);
 		this.localPath = vscode.Uri.file(path.join(this.localPath.fsPath, fileName));
 		try {
 			let exists = await fs.pathExists(this.localPath.fsPath);
@@ -76,7 +75,7 @@ export class GitHubRemoteBook extends RemoteBook {
 	}
 	public async extractFiles(remoteBookFullPath: vscode.Uri): Promise<void> {
 		try {
-			if (utils.getOSPlatform() === utils.Platform.Windows || utils.getOSPlatform() === utils.Platform.Mac) {
+			if (process.platform === constants.winPlatform || process.platform === constants.macPlatform) {
 				let zippedFile = new zip(remoteBookFullPath.fsPath);
 				zippedFile.extractAllTo(this.localPath.fsPath);
 			} else {

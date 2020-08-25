@@ -20,8 +20,6 @@ import * as  LocalizedConstants from 'sql/workbench/services/connection/browser/
 import { ObjectExplorerService, ObjectExplorerNodeEventArgs } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
-import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
-import { ServerTreeDataSource } from 'sql/workbench/services/objectExplorer/browser/serverTreeDataSource';
 import { Emitter, Event } from 'vs/base/common/event';
 import Severity from 'vs/base/common/severity';
 import { ObjectExplorerActionsContext } from 'sql/workbench/services/objectExplorer/browser/objectExplorerActions';
@@ -35,6 +33,12 @@ import { IViewsService, IView, ViewContainerLocation, ViewContainer, IViewPaneCo
 import { ConsoleLogService } from 'vs/platform/log/common/log';
 import { IProgressIndicator } from 'vs/platform/progress/common/progress';
 import { IPaneComposite } from 'vs/workbench/common/panecomposite';
+import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
+import { TestAccessibilityService, TestListService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
+import { ServerTreeDataSource } from 'sql/workbench/services/objectExplorer/browser/serverTreeDataSource';
+import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
+import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 
 suite('SQL Connection Tree Action tests', () => {
 	let errorMessageService: TypeMoq.Mock<TestErrorMessageService>;
@@ -152,8 +156,14 @@ suite('SQL Connection Tree Action tests', () => {
 			}
 		};
 
-		let manageConnectionAction: OEManageConnectionAction = new OEManageConnectionAction(OEManageConnectionAction.ID,
-			OEManageConnectionAction.LABEL, connectionManagementService.object, capabilitiesService, instantiationService.object, objectExplorerService.object, viewsService);
+		let manageConnectionAction: OEManageConnectionAction = new OEManageConnectionAction(
+			OEManageConnectionAction.ID,
+			OEManageConnectionAction.LABEL,
+			connectionManagementService.object,
+			capabilitiesService,
+			instantiationService.object,
+			objectExplorerService.object,
+			viewsService);
 
 		let actionContext = new ObjectExplorerActionsContext();
 		actionContext.connectionProfile = connection.toIConnectionProfile();
@@ -190,8 +200,14 @@ suite('SQL Connection Tree Action tests', () => {
 			return treeSelectionMock.object;
 		});
 
-		let manageConnectionAction: OEManageConnectionAction = new OEManageConnectionAction(OEManageConnectionAction.ID,
-			OEManageConnectionAction.LABEL, connectionManagementService.object, capabilitiesService, instantiationService.object, objectExplorerService.object, undefined);
+		let manageConnectionAction: OEManageConnectionAction = new OEManageConnectionAction(
+			OEManageConnectionAction.ID,
+			OEManageConnectionAction.LABEL,
+			connectionManagementService.object,
+			capabilitiesService,
+			instantiationService.object,
+			objectExplorerService.object,
+			undefined);
 
 		let actionContext = new ObjectExplorerActionsContext();
 		actionContext.connectionProfile = connection.toIConnectionProfile();
@@ -444,7 +460,7 @@ suite('SQL Connection Tree Action tests', () => {
 		tree.setup(x => x.refresh(TypeMoq.It.isAny())).returns(() => Promise.resolve(null));
 		tree.setup(x => x.expand(TypeMoq.It.isAny())).returns(() => Promise.resolve(null));
 		tree.setup(x => x.collapse(TypeMoq.It.isAny())).returns(() => Promise.resolve(null));
-		let connectionAction: RefreshAction = new RefreshAction(RefreshAction.ID,
+		let refreshAction: RefreshAction = new RefreshAction(RefreshAction.ID,
 			RefreshAction.LABEL,
 			tree.object,
 			connection,
@@ -453,7 +469,7 @@ suite('SQL Connection Tree Action tests', () => {
 			undefined,
 			logService);
 
-		return connectionAction.run().then((value) => {
+		return refreshAction.run().then((value) => {
 			connectionManagementService.verify(x => x.isConnected(undefined, TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
 			objectExplorerService.verify(x => x.getObjectExplorerNode(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
 			objectExplorerService.verify(x => x.refreshTreeNode(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
@@ -543,6 +559,200 @@ suite('SQL Connection Tree Action tests', () => {
 			objectExplorerService.verify(x => x.getObjectExplorerNode(TypeMoq.It.isAny()), TypeMoq.Times.exactly(0));
 			objectExplorerService.verify(x => x.refreshTreeNode(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.exactly(0));
 			tree.verify(x => x.refresh(TypeMoq.It.isAny()), TypeMoq.Times.exactly(0));
+			tree.verify(x => x.expand(TypeMoq.It.isAny()), TypeMoq.Times.exactly(0));
+		});
+	});
+
+	// chgagnon TODO - skipping for now since mocking and instanceof don't work well together. Will re-enable once old tree is removed
+	test.skip('RefreshConnectionAction - AsyncServerTree - refresh should be called if connection status is connect', () => {
+		let isConnectedReturnValue: boolean = true;
+		let sqlProvider = {
+			providerId: mssqlProviderName,
+			displayName: 'MSSQL',
+			connectionOptions: [],
+		};
+
+		capabilitiesService.capabilities[mssqlProviderName] = { connection: sqlProvider };
+
+		let connection = new ConnectionProfile(capabilitiesService, {
+			connectionName: 'Test',
+			savePassword: false,
+			groupFullName: 'testGroup',
+			serverName: 'testServerName',
+			databaseName: 'testDatabaseName',
+			authenticationType: 'inetgrated',
+			password: 'test',
+			userName: 'testUsername',
+			groupId: undefined,
+			providerName: mssqlProviderName,
+			options: {},
+			saveProfile: true,
+			id: 'testID'
+		});
+		let conProfGroup = new ConnectionProfileGroup('testGroup', undefined, 'testGroup', undefined, undefined);
+		conProfGroup.connections = [connection];
+		let connectionManagementService = TypeMoq.Mock.ofType(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
+		connectionManagementService.callBase = true;
+		connectionManagementService.setup(x => x.getConnectionGroups()).returns(() => [conProfGroup]);
+		connectionManagementService.setup(x => x.getActiveConnections()).returns(() => [connection]);
+		connectionManagementService.setup(x => x.addSavedPassword(TypeMoq.It.isAny())).returns(() => new Promise<ConnectionProfile>((resolve) => {
+			resolve(connection);
+		}));
+		connectionManagementService.setup(x => x.isConnected(undefined, TypeMoq.It.isAny())).returns(() => isConnectedReturnValue);
+
+		let objectExplorerSession = {
+			success: true,
+			sessionId: '1234',
+			rootNode: {
+				nodePath: 'testServerName\tables',
+				nodeType: NodeType.Folder,
+				label: 'Tables',
+				isLeaf: false,
+				metadata: null,
+				nodeSubType: '',
+				nodeStatus: '',
+				errorMessage: ''
+			},
+			errorMessage: ''
+		};
+
+		let tablesNode = new TreeNode(NodeType.Folder, 'Tables', false, 'testServerName\Db1\tables', '', '', null, null, undefined, undefined);
+		tablesNode.connection = connection;
+		tablesNode.session = objectExplorerSession;
+		let table1Node = new TreeNode(NodeType.Table, 'dbo.Table1', false, 'testServerName\tables\dbo.Table1', '', '', tablesNode, null, undefined, undefined);
+		let table2Node = new TreeNode(NodeType.Table, 'dbo.Table1', false, 'testServerName\tables\dbo.Table1', '', '', tablesNode, null, undefined, undefined);
+		tablesNode.children = [table1Node, table2Node];
+		let objectExplorerService = TypeMoq.Mock.ofType(ObjectExplorerService, TypeMoq.MockBehavior.Loose, connectionManagementService.object);
+		objectExplorerService.callBase = true;
+		objectExplorerService.setup(x => x.getObjectExplorerNode(TypeMoq.It.isAny())).returns(() => tablesNode);
+		objectExplorerService.setup(x => x.refreshTreeNode(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve([table1Node, table2Node]));
+		const treeMock = TypeMoq.Mock.ofType(AsyncServerTree, TypeMoq.MockBehavior.Strict,
+			'ConnectionTreeActionsTest', // user
+			$('div'), // container
+			{}, // delegate
+			[], // renderers
+			{}, // data source
+			{}, // options
+			new MockContextKeyService(), // IContextKeyService
+			new TestListService(), // IListService,
+			undefined, // IThemeService,
+			new TestConfigurationService(), // IConfigurationService,
+			undefined, // IKeybindingService,
+			new TestAccessibilityService()); // IAccessibilityService
+		treeMock.callBase = true;
+		treeMock.setup(x => x.expand(TypeMoq.It.isAny())).returns(() => Promise.resolve(null));
+		treeMock.setup(x => x.collapse(TypeMoq.It.isAny())).returns(() => true);
+		treeMock.setup(x => x.updateChildren(TypeMoq.It.isAny())).returns(() => Promise.resolve());
+		let refreshAction: RefreshAction = new RefreshAction(RefreshAction.ID,
+			RefreshAction.LABEL,
+			treeMock.instance,
+			connection,
+			connectionManagementService.object,
+			objectExplorerService.object,
+			undefined,
+			logService);
+
+		return refreshAction.run().then((value) => {
+			connectionManagementService.verify(x => x.isConnected(undefined, TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
+			objectExplorerService.verify(x => x.getObjectExplorerNode(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
+			objectExplorerService.verify(x => x.refreshTreeNode(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
+			treeMock.verify(x => x.updateChildren(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
+		});
+	});
+
+	test('RefreshConnectionAction - AsyncServerTree - refresh should not be called if connection status is not connect', () => {
+		let isConnectedReturnValue: boolean = false;
+		let sqlProvider = {
+			providerId: mssqlProviderName,
+			displayName: 'MSSQL',
+			connectionOptions: []
+		};
+
+		capabilitiesService.capabilities[mssqlProviderName] = { connection: sqlProvider };
+
+		let connection = new ConnectionProfile(capabilitiesService, {
+			connectionName: 'Test',
+			savePassword: false,
+			groupFullName: 'testGroup',
+			serverName: 'testServerName',
+			databaseName: 'testDatabaseName',
+			authenticationType: 'inetgrated',
+			password: 'test',
+			userName: 'testUsername',
+			groupId: undefined,
+			providerName: mssqlProviderName,
+			options: {},
+			saveProfile: true,
+			id: 'testID'
+		});
+		let conProfGroup = new ConnectionProfileGroup('testGroup', undefined, 'testGroup', undefined, undefined);
+		conProfGroup.connections = [connection];
+		let connectionManagementService = TypeMoq.Mock.ofType(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
+		connectionManagementService.callBase = true;
+		connectionManagementService.setup(x => x.getConnectionGroups()).returns(() => [conProfGroup]);
+		connectionManagementService.setup(x => x.getActiveConnections()).returns(() => [connection]);
+		connectionManagementService.setup(x => x.addSavedPassword(TypeMoq.It.isAny())).returns(() => new Promise<ConnectionProfile>((resolve) => {
+			resolve(connection);
+		}));
+		connectionManagementService.setup(x => x.isConnected(undefined, TypeMoq.It.isAny())).returns(() => isConnectedReturnValue);
+
+		let objectExplorerSession = {
+			success: true,
+			sessionId: '1234',
+			rootNode: {
+				nodePath: 'testServerName\tables',
+				nodeType: NodeType.Folder,
+				label: 'Tables',
+				isLeaf: false,
+				metadata: null,
+				nodeSubType: '',
+				nodeStatus: '',
+				errorMessage: ''
+			},
+			errorMessage: ''
+		};
+
+		let tablesNode = new TreeNode(NodeType.Folder, 'Tables', false, 'testServerName\Db1\tables', '', '', null, null, undefined, undefined);
+		tablesNode.connection = connection;
+		tablesNode.session = objectExplorerSession;
+		let table1Node = new TreeNode(NodeType.Table, 'dbo.Table1', false, 'testServerName\tables\dbo.Table1', '', '', tablesNode, null, undefined, undefined);
+		let table2Node = new TreeNode(NodeType.Table, 'dbo.Table1', false, 'testServerName\tables\dbo.Table1', '', '', tablesNode, null, undefined, undefined);
+		tablesNode.children = [table1Node, table2Node];
+		let objectExplorerService = TypeMoq.Mock.ofType(ObjectExplorerService, TypeMoq.MockBehavior.Loose, connectionManagementService.object);
+		objectExplorerService.callBase = true;
+		objectExplorerService.setup(x => x.getObjectExplorerNode(TypeMoq.It.isAny())).returns(() => tablesNode);
+		objectExplorerService.setup(x => x.refreshTreeNode(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve([table1Node, table2Node]));
+		let tree = TypeMoq.Mock.ofType<AsyncServerTree>(AsyncServerTree, TypeMoq.MockBehavior.Loose,
+			'ConnectionTreeActionsTest', // user
+			$('div'), // container
+			{}, // delegate
+			[], // renderers
+			{}, // data source
+			{}, // options
+			new MockContextKeyService(), // IContextKeyService
+			new TestListService(), // IListService,
+			undefined, // IThemeService,
+			new TestConfigurationService(), // IConfigurationService,
+			undefined, // IKeybindingService,
+			new TestAccessibilityService()); // IAccessibilityService
+		tree.callBase = true;
+
+		tree.setup(x => x.updateChildren(TypeMoq.It.isAny())).returns(() => Promise.resolve());
+		tree.setup(x => x.expand(TypeMoq.It.isAny())).returns(() => Promise.resolve(null));
+		let connectionAction: RefreshAction = new RefreshAction(RefreshAction.ID,
+			RefreshAction.LABEL,
+			tree.object,
+			connection,
+			connectionManagementService.object,
+			objectExplorerService.object,
+			undefined,
+			logService);
+
+		return connectionAction.run().then((value) => {
+			connectionManagementService.verify(x => x.isConnected(undefined, TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
+			objectExplorerService.verify(x => x.getObjectExplorerNode(TypeMoq.It.isAny()), TypeMoq.Times.exactly(0));
+			objectExplorerService.verify(x => x.refreshTreeNode(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.exactly(0));
+			tree.verify(x => x.updateChildren(TypeMoq.It.isAny()), TypeMoq.Times.exactly(0));
 			tree.verify(x => x.expand(TypeMoq.It.isAny()), TypeMoq.Times.exactly(0));
 		});
 	});

@@ -105,6 +105,7 @@ export class EditDataResultsEditor extends BaseEditor {
 		// to events from the backing data service
 		this._applySettings();
 		let editGridPanel = this._register(this._instantiationService.createInstance(EditDataGridPanel, dataService, input.onSaveViewStateEmitter.event, input.onRestoreViewStateEmitter.event));
+		input.editDataGridPanel = editGridPanel;
 		editGridPanel.render(this.getContainer());
 	}
 }

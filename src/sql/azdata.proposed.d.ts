@@ -40,6 +40,10 @@ declare module 'azdata' {
 		export interface IStandardKernel {
 			readonly blockedOnSAW?: boolean;
 		}
+
+		export interface IKernelChangedArgs {
+			nbKernelAlias?: string
+		}
 	}
 
 	export type SqlDbType = 'BigInt' | 'Binary' | 'Bit' | 'Char' | 'DateTime' | 'Decimal'

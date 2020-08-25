@@ -16,23 +16,23 @@ export interface IAccountManagementService {
 	_serviceBrand: undefined;
 
 	// ACCOUNT MANAGEMENT METHODS //////////////////////////////////////////
-	accountUpdated(account: azdata.Account): Thenable<void>;
-	addAccount(providerId: string): Thenable<void>;
-	getAccountProviderMetadata(): Thenable<azdata.AccountProviderMetadata[]>;
-	getAccountsForProvider(providerId: string): Thenable<azdata.Account[]>;
-	getAccounts(): Thenable<azdata.Account[]>;
+	accountUpdated(account: azdata.Account): Promise<void>;
+	addAccount(providerId: string): Promise<void>;
+	getAccountProviderMetadata(): Promise<azdata.AccountProviderMetadata[]>;
+	getAccountsForProvider(providerId: string): Promise<azdata.Account[]>;
+	getAccounts(): Promise<azdata.Account[]>;
 	/**
 	 * @deprecated
 	 */
-	getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Thenable<{ [key: string]: { token: string } }>;
-	getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Thenable<{ token: string }>;
-	removeAccount(accountKey: azdata.AccountKey): Thenable<boolean>;
-	removeAccounts(): Thenable<boolean>;
-	refreshAccount(account: azdata.Account): Thenable<azdata.Account>;
+	getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Promise<{ [key: string]: { token: string } } | undefined>;
+	getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Promise<{ token: string } | undefined>;
+	removeAccount(accountKey: azdata.AccountKey): Promise<boolean>;
+	removeAccounts(): Promise<boolean>;
+	refreshAccount(account: azdata.Account): Promise<azdata.Account>;
 
 	// UI METHODS //////////////////////////////////////////////////////////
-	openAccountListDialog(): Thenable<void>;
-	beginAutoOAuthDeviceCode(providerId: string, title: string, message: string, userCode: string, uri: string): Thenable<void>;
+	openAccountListDialog(): Promise<void>;
+	beginAutoOAuthDeviceCode(providerId: string, title: string, message: string, userCode: string, uri: string): Promise<void>;
 	endAutoOAuthDeviceCode(): void;
 	cancelAutoOAuthDeviceCode(providerId: string): void;
 	copyUserCodeAndOpenBrowser(userCode: string, uri: string): void;
@@ -61,20 +61,20 @@ export interface IAccountStore {
 	 * @param account Account to add/update
 	 * @return Results of the add/update operation
 	 */
-	addOrUpdate(account: azdata.Account): Thenable<AccountAdditionResult>;
+	addOrUpdate(account: azdata.Account): Promise<AccountAdditionResult>;
 
 	/**
 	 * Retrieves all accounts, filtered by provider ID
 	 * @param providerId ID of the provider to filter by
 	 * @return Promise to return all accounts that belong to the provided provider
 	 */
-	getAccountsByProvider(providerId: string): Thenable<azdata.Account[]>;
+	getAccountsByProvider(providerId: string): Promise<azdata.Account[]>;
 
 	/**
 	 * Retrieves all accounts in the store. Returns empty array if store is not initialized
 	 * @return Promise to return all accounts
 	 */
-	getAllAccounts(): Thenable<azdata.Account[]>;
+	getAllAccounts(): Promise<azdata.Account[]>;
 
 	/**
 	 * Removes an account.
@@ -83,7 +83,7 @@ export interface IAccountStore {
 	 * @param key - The key of an account.
 	 * @returns	True if the account was removed, false if the account doesn't exist
 	 */
-	remove(key: azdata.AccountKey): Thenable<boolean>;
+	remove(key: azdata.AccountKey): Promise<boolean>;
 
 	/**
 	 * Updates the custom properties stored with an account.
@@ -93,5 +93,5 @@ export interface IAccountStore {
 	 * @param updateOperation - Operation to perform on the matching account
 	 * @returns True if the account was modified, false if the account doesn't exist
 	 */
-	update(key: azdata.AccountKey, updateOperation: (account: azdata.Account) => void): Thenable<boolean>;
+	update(key: azdata.AccountKey, updateOperation: (account: azdata.Account) => void): Promise<boolean>;
 }

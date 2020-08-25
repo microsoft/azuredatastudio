@@ -225,7 +225,7 @@ export class NotebookSearchView extends SearchView {
 			this.toggleCollapseStateDelayer.trigger(() => this.toggleExpandAction.onTreeCollapseStateChange())
 		));
 		this.treeSelectionChangeListener = this._register(this.tree.onDidChangeSelection(async (e) => {
-			if (this.tree.getSelection().length) {
+			if (this.tree.getSelection().length && this.tree.getSelection()[0] instanceof FileMatch) {
 				let element = this.tree.getSelection()[0] as Match;
 				const resource = element instanceof Match ? element.parent().resource : (<FileMatch>element).resource;
 				if (resource.fsPath.endsWith('.md')) {

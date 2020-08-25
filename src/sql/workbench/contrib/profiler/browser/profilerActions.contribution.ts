@@ -12,7 +12,6 @@ import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 import { IProfilerService } from 'sql/workbench/services/profiler/browser/interfaces';
 import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { ProfilerEditor } from 'sql/workbench/contrib/profiler/browser/profilerEditor';
-import { ObjectExplorerActionsContext } from 'sql/workbench/services/objectExplorer/browser/objectExplorerActions';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
@@ -32,9 +31,12 @@ CommandsRegistry.registerCommand({
 		let capabilitiesService: ICapabilitiesService = accessor.get(ICapabilitiesService);
 
 		// If a context is available if invoked from the context menu, we will use the connection profiler of the server node
-		if (args && args.length === 1 && args[0] && args[0] instanceof ObjectExplorerActionsContext) {
-			let context = args[0] as ObjectExplorerActionsContext;
-			connectionProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, context.connectionProfile);
+		if (args[0]?.connectionProfile) {
+			connectionProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, args[0].connectionProfile);
+		} else if (args[0]?.$treeItem.payload) {
+			// Because this is contributed from core it doesn't go through the argument processor that extension commands do
+			// so we just pull out the payload directly
+			connectionProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, args[0].$treeItem.payload);
 		}
 		else {
 			// No context available, we will try to get the current global active connection

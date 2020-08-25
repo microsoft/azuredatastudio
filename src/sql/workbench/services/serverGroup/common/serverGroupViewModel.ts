@@ -9,17 +9,18 @@ import * as TypeChecker from 'vs/base/common/types';
 import { localize } from 'vs/nls';
 import * as strings from 'vs/base/common/strings';
 
+export const DefaultServerGroupColor = '#515151';
+
 export class ServerGroupViewModel {
 	public groupName: string;
 	public groupDescription?: string;
 	public groupColor?: string;
-	public colors: string[] = ['#515151', '#004760', '#771b00', '#700060', '#a17d01', '#006749', '#654502', '#3A0293'];
+	public colors: string[] = [DefaultServerGroupColor, '#004760', '#771b00', '#700060', '#a17d01', '#006749', '#654502', '#3A0293'];
 
 	private _domainModel?: IConnectionProfileGroup;
 	private _editMode: boolean;
 	private readonly _addServerGroupTitle: string = localize('serverGroup.addServerGroup', "Add server group");
 	private readonly _editServerGroupTitle: string = localize('serverGroup.editServerGroup', "Edit server group");
-	private readonly _defaultColor: string = '#515151';
 
 	constructor(domainModel?: IConnectionProfileGroup, colors?: string[]) {
 		// keep reference to domain model to be able to see if there are pending changes
@@ -37,7 +38,7 @@ export class ServerGroupViewModel {
 			// initialize defaults for a new group
 			this.groupName = '';
 			this.groupDescription = '';
-			this.groupColor = this._defaultColor;
+			this.groupColor = DefaultServerGroupColor;
 
 			this._editMode = false;
 		}

@@ -283,3 +283,34 @@ export function getPythonExeName(): string {
 export function getUserHome(): string | undefined {
 	return process.env.HOME || process.env.USERPROFILE;
 }
+
+export function getKeyValueString(key: string, value: string, separator: string = '='): string {
+	return `${key}${separator}${value}`;
+}
+
+export function getServerPort(connection: azdata.connection.ConnectionProfile): string {
+	if (!connection) {
+		return '';
+	}
+	let index = connection.serverName.indexOf(',');
+	if (index > 0) {
+		return connection.serverName.substring(index + 1);
+	} else {
+		return '1433';
+	}
+}
+
+export function getServerName(connection: azdata.connection.ConnectionProfile): string {
+	if (!connection) {
+		return '';
+	}
+	let index = connection.serverName.indexOf(',');
+	if (index > 0) {
+		return connection.serverName.substring(0, index);
+	} else {
+		return connection.serverName;
+	}
+}
+
+
+

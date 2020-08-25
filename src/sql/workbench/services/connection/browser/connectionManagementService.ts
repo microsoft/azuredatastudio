@@ -995,6 +995,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		let id = Utils.generateUri(source);
 		this._telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.MoveServerGroup);
 		return this._connectionStore.changeGroupIdForConnection(source, targetGroupId).then(result => {
+			this._onAddConnectionProfile.fire(source);
 			if (id && targetGroupId) {
 				source.groupId = targetGroupId;
 			}
@@ -1429,6 +1430,13 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	public getProviderProperties(providerName: string): ConnectionProviderProperties {
 		let connectionProvider = this._providers.get(providerName);
 		return connectionProvider && connectionProvider.properties;
+	}
+
+	/**
+	 * Gets languageMode property of provider if it exists. Defaults to 'sql'
+	*/
+	public getProviderLanguageMode(providerName?: string): string {
+		return this._providers.get(providerName)?.properties?.['languageMode'] || 'sql';
 	}
 
 	/**

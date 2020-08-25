@@ -12,7 +12,6 @@ import { Action } from 'vs/base/common/actions';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { URI } from 'vs/base/common/uri';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IInsightsConfig } from 'sql/platform/dashboard/browser/insightRegistry';
 import { IInsightOptions } from 'sql/workbench/contrib/charts/common/interfaces';
 import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
 import { IFileService } from 'vs/platform/files/common/files';
@@ -25,6 +24,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { ChartView } from 'sql/workbench/contrib/charts/browser/chartView';
 import { ConfigureChartDialog } from 'sql/workbench/contrib/charts/browser/configureChartDialog';
+import { IInsightsConfig } from 'sql/platform/extensions/common/extensions';
 
 export interface IChartActionContext {
 	options: IInsightOptions;
