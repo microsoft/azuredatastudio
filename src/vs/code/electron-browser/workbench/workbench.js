@@ -80,7 +80,6 @@ bootstrapWindow.load([
  * @param {{
  *	partsSplashPath?: string,
  *	highContrast?: boolean,
- *	defaultThemeType?: string,
  *	extensionDevelopmentPath?: string[],
  *	folderUri?: object,
  *	workspace?: object
@@ -114,14 +113,10 @@ function showPartsSplash(configuration) {
 		baseTheme = data.baseTheme;
 		shellBackground = data.colorInfo.editorBackground;
 		shellForeground = data.colorInfo.foreground;
-	} else if (configuration.highContrast || configuration.defaultThemeType === 'hc') {
+	} else if (configuration.highContrast) {
 		baseTheme = 'hc-black';
 		shellBackground = '#000000';
 		shellForeground = '#FFFFFF';
-	} else if (configuration.defaultThemeType === 'vs') {
-		baseTheme = 'vs';
-		shellBackground = '#FFFFFF';
-		shellForeground = '#000000';
 	} else {
 		baseTheme = 'vs-dark';
 		shellBackground = '#1E1E1E';
