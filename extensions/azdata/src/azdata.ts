@@ -347,6 +347,10 @@ export async function discoverLatestAvailableAzdataVersion(outputChannel: vscode
 	switch (process.platform) {
 		case 'darwin':
 			return await discoverLatestStableAzdataVersionDarwin(outputChannel);
+		// case 'linux':
+		// ideally we would not to discover linux package availability using the apt/apt-get/apt-cache package manager commands.
+		// However, doing discovery that way required apt update to be performed which requires sudo privileges. At least currently this code path
+		// gets invoked on extension start up and prompt user for sudo privileges is annoying at best. So for now basing linux discovery also on a releaseJson file.
 		default:
 			return await discoverLatestAzdataVersionFromJson(outputChannel);
 	}
@@ -363,7 +367,7 @@ async function discoverLatestAzdataVersionFromJson(outputChannel: vscode.OutputC
 	try {
 		azdataReleaseInfo = JSON.parse(fileContents);
 	} catch (e) {
-		throw Error(`failed to parse the JSON of contents at: ${azdataHostname}/${azdataReleaseJson}, error:${getErrorMessage(e)}`);
+		throw Error(`failed to parse the JSON of contents at: ${azdataHostname}/${azdataReleaseJson}, text being parsed: '${fileContents}', error:${getErrorMessage(e)}`);
 	}
 	const version = azdataReleaseInfo[process.platform]['version'];
 	outputChannel.appendLine(loc.latestAzdataVersionAvailable(version));
@@ -382,7 +386,7 @@ async function discoverLatestStableAzdataVersionDarwin(outputChannel: vscode.Out
 	try {
 		brewInfoAzdataCliJson = JSON.parse(brewInfoOutput);
 	} catch (e) {
-		throw Error(`failed to parse the JSON contents output of: 'brew info azdata-cli --json', error:${getErrorMessage(e)}`);
+		throw Error(`failed to parse the JSON contents output of: 'brew info azdata-cli --json', text being parsed: '${brewInfoOutput}', error:${getErrorMessage(e)}`);
 	}
 	// Get the 'info' about 'azdata-cli' from 'brew' as a json object
 	const azdataInfo: AzdataDarwinPackageVersionInfo = brewInfoAzdataCliJson.shift();
