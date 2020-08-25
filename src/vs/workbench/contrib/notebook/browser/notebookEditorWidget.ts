@@ -152,13 +152,20 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 			return;
 		}
 
+		if (this._activeKernel === kernel) {
+			return;
+		}
+
 		this._activeKernel = kernel;
+		this._activeKernelResolvePromise = undefined;
 
 		const memento = this._activeKernelMemento.getMemento(StorageScope.GLOBAL);
 		memento[this.viewModel!.viewType] = this._activeKernel?.id;
 		this._activeKernelMemento.saveMemento();
 		this._onDidChangeKernel.fire();
 	}
+
+	private _activeKernelResolvePromise: Promise<void> | undefined = undefined;
 
 	private _currentKernelTokenSource: CancellationTokenSource | undefined = undefined;
 	private _multipleKernelsAvailable: boolean = false;
@@ -265,6 +272,45 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 
 	hasFocus() {
 		return this._editorFocus?.get() || false;
+	}
+
+	hasWebviewFocus() {
+		return this._webiewFocused;
+	}
+
+	hasOutputTextSelection() {
+		if (!this.hasFocus()) {
+			return false;
+		}
+
+		const windowSelection = window.getSelection();
+		if (windowSelection?.rangeCount !== 1) {
+			return false;
+		}
+
+		const activeSelection = windowSelection.getRangeAt(0);
+		if (activeSelection.endOffset - activeSelection.startOffset === 0) {
+			return false;
+		}
+
+		let container: any = activeSelection.commonAncestorContainer;
+
+		if (!this._body.contains(container)) {
+			return false;
+		}
+
+		while (container
+			&&
+			container !== this._body) {
+
+			if (DOM.hasClass(container as HTMLElement, 'output')) {
+				return true;
+			}
+
+			container = container.parentNode;
+		}
+
+		return false;
 	}
 
 	createEditor(): void {
@@ -638,7 +684,17 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 
 			if (this.activeKernel) {
 				await this._loadKernelPreloads(this.activeKernel.extensionLocation, this.activeKernel);
-				await (this.activeKernel as INotebookKernelInfo2).resolve(this.viewModel!.uri, this.getId(), tokenSource.token); // {{SQL CARBON EDIT}} strict-null-checks
+
+				if (tokenSource.token.isCancellationRequested) {
+					return undefined; // {{ SQL CARBON EDIT }}
+				}
+
+				this._activeKernelResolvePromise = (this.activeKernel as INotebookKernelInfo2).resolve(this.viewModel!.uri, this.getId(), tokenSource.token);
+				await this._activeKernelResolvePromise;
+
+				if (tokenSource.token.isCancellationRequested) {
+					return undefined; // {{ SQL CARBON EDIT }}
+				}
 			}
 
 			memento[provider.id] = this._activeKernel?.id;
@@ -658,7 +714,16 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 				|| kernelsFromSameExtension[0];
 			this.activeKernel = preferedKernel;
 			await this._loadKernelPreloads(this.activeKernel.extensionLocation, this.activeKernel);
+
+			if (tokenSource.token.isCancellationRequested) {
+				return;
+			}
+
 			await preferedKernel.resolve(this.viewModel!.uri, this.getId(), tokenSource.token);
+
+			if (tokenSource.token.isCancellationRequested) {
+				return;
+			}
 
 			memento[provider.id] = this._activeKernel?.id;
 			this._activeKernelMemento.saveMemento();
@@ -670,7 +735,14 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 		this.activeKernel = kernels[0];
 		if (this.activeKernel) {
 			await this._loadKernelPreloads(this.activeKernel.extensionLocation, this.activeKernel);
+			if (tokenSource.token.isCancellationRequested) {
+				return;
+			}
+
 			await this.activeKernel.resolve(this.viewModel!.uri, this.getId(), tokenSource.token);
+			if (tokenSource.token.isCancellationRequested) {
+				return;
+			}
 		}
 
 		tokenSource.dispose();
@@ -793,7 +865,7 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 				return;
 			}
 
-			this._webview?.updateViewScrollTop(-e.scrollTop, []);
+			this._webview?.updateViewScrollTop(-e.scrollTop, true, []);
 			this._webviewTransparentCover!.style.top = `${e.scrollTop}px`;
 		}));
 
@@ -813,8 +885,8 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 				this._webview!.element.style.height = `${scrollHeight}px`;
 
 				if (this._webview?.insetMapping) {
-					let updateItems: { cell: CodeCellViewModel, output: IProcessedOutput, cellTop: number }[] = [];
-					let removedItems: IProcessedOutput[] = [];
+					const updateItems: { cell: CodeCellViewModel, output: IProcessedOutput, cellTop: number }[] = [];
+					const removedItems: IProcessedOutput[] = [];
 					this._webview?.insetMapping.forEach((value, key) => {
 						const cell = value.cell;
 						const viewIndex = this._list?.getViewIndex(cell);
@@ -841,7 +913,7 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 					removedItems.forEach(output => this._webview?.removeInset(output));
 
 					if (updateItems.length) {
-						this._webview?.updateViewScrollTop(-scrollTop, updateItems);
+						this._webview?.updateViewScrollTop(-scrollTop, false, updateItems);
 					}
 				}
 			});
@@ -898,7 +970,7 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 
 		if (this._list) {
 			state.scrollPosition = { left: this._list.scrollLeft, top: this._list.scrollTop };
-			let cellHeights: { [key: number]: number } = {};
+			const cellHeights: { [key: number]: number } = {};
 			for (let i = 0; i < this.viewModel!.length; i++) {
 				const elm = this.viewModel!.viewCells[i] as CellViewModel;
 				if (elm.cellKind === CellKind.Code) {
@@ -915,7 +987,7 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 				const element = this._notebookViewModel!.viewCells[focus];
 				if (element) {
 					const itemDOM = this._list?.domElementOfElement(element);
-					let editorFocused = !!(document.activeElement && itemDOM && itemDOM.contains(document.activeElement));
+					const editorFocused = !!(document.activeElement && itemDOM && itemDOM.contains(document.activeElement));
 
 					state.editorFocused = editorFocused;
 					state.focus = focus;
@@ -1071,7 +1143,7 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 			return;
 		}
 
-		let relayout = (cell: ICellViewModel, height: number) => {
+		const relayout = (cell: ICellViewModel, height: number) => {
 			if (this._isDisposed) {
 				return;
 			}
@@ -1168,7 +1240,7 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 			return null;
 		}
 
-		const newIdx = index + 1;
+		const newIdx = index + 2; // This is the adjustment for the index before the cell has been "removed" from its original index
 		return this._moveCellToIndex(index, newIdx);
 	}
 
@@ -1198,11 +1270,7 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 		const originalIdx = this._notebookViewModel!.getCellIndex(cell);
 		const relativeToIndex = this._notebookViewModel!.getCellIndex(relativeToCell);
 
-		let newIdx = direction === 'above' ? relativeToIndex : relativeToIndex + 1;
-		if (originalIdx < newIdx) {
-			newIdx--;
-		}
-
+		const newIdx = direction === 'above' ? relativeToIndex : relativeToIndex + 1;
 		return this._moveCellToIndex(originalIdx, newIdx);
 	}
 
@@ -1215,7 +1283,17 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 		return this._moveCellToIndex(originalIdx, index);
 	}
 
+	/**
+	 * @param index The current index of the cell
+	 * @param newIdx The desired index, in an index scheme for the state of the tree before the current cell has been "removed".
+	 * @example to move the cell from index 0 down one spot, call with (0, 2)
+	 */
 	private async _moveCellToIndex(index: number, newIdx: number): Promise<ICellViewModel | null> {
+		if (index < newIdx) {
+			// The cell is moving "down", it will free up one index spot and consume a new one
+			newIdx--;
+		}
+
 		if (index === newIdx) {
 			return null;
 		}
@@ -1249,7 +1327,7 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 	}
 
 	getActiveCell() {
-		let elements = this._list?.getFocusedElements();
+		const elements = this._list?.getFocusedElements();
 
 		if (elements && elements.length) {
 			return elements[0];
@@ -1297,6 +1375,10 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 			if (this._activeKernel) {
 				// TODO@rebornix temp any cast, should be removed once we remove legacy kernel support
 				if ((this._activeKernel as INotebookKernelInfo2).executeNotebookCell) {
+					if (this._activeKernelResolvePromise) {
+						await this._activeKernelResolvePromise;
+					}
+
 					await (this._activeKernel as INotebookKernelInfo2).executeNotebookCell!(this._notebookViewModel!.uri, undefined);
 				} else {
 					await this.notebookService.executeNotebook2(this._notebookViewModel!.viewType, this._notebookViewModel!.uri, this._activeKernel.id);
@@ -1396,7 +1478,7 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 			cell.focusMode = CellFocusMode.Container;
 			this.revealInCenterIfOutsideViewport(cell);
 		} else {
-			let itemDOM = this._list?.domElementOfElement(cell);
+			const itemDOM = this._list?.domElementOfElement(cell);
 			if (document.activeElement && itemDOM && itemDOM.contains(document.activeElement)) {
 				(document.activeElement as HTMLElement).blur();
 			}
@@ -1445,16 +1527,16 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 
 		await this._resolveWebview();
 
-		let preloads = this._notebookViewModel!.renderers;
+		const preloads = this._notebookViewModel!.renderers;
 
 		if (!this._webview!.insetMapping.has(output)) {
-			let cellTop = this._list?.getAbsoluteTopOfElement(cell) || 0;
+			const cellTop = this._list?.getAbsoluteTopOfElement(cell) || 0;
 			await this._webview!.createInset(cell, output, cellTop, offset, shadowContent, preloads);
 		} else {
-			let cellTop = this._list?.getAbsoluteTopOfElement(cell) || 0;
-			let scrollTop = this._list?.scrollTop || 0;
+			const cellTop = this._list?.getAbsoluteTopOfElement(cell) || 0;
+			const scrollTop = this._list?.scrollTop || 0;
 
-			this._webview!.updateViewScrollTop(-scrollTop, [{ cell: cell, output: output, cellTop: cellTop }]);
+			this._webview!.updateViewScrollTop(-scrollTop, true, [{ cell: cell, output: output, cellTop: cellTop }]);
 		}
 	}
 
@@ -1701,13 +1783,14 @@ registerThemingParticipant((theme, collector) => {
 		collector.addRule(`.notebookOverlay .monaco-list-row > .monaco-toolbar { border: solid 1px ${cellToolbarSeperator}; }`);
 		collector.addRule(`.notebookOverlay .cell-bottom-toolbar-container .action-item { border: solid 1px ${cellToolbarSeperator} }`);
 		collector.addRule(`.monaco-workbench .notebookOverlay > .cell-list-container > .monaco-list > .monaco-scrollable-element > .monaco-list-rows > .monaco-list-row .cell-collapsed-part { border-bottom: solid 1px ${cellToolbarSeperator} }`);
+		collector.addRule(`.notebookOverlay .monaco-action-bar .action-item.verticalSeparator { background-color: ${cellToolbarSeperator} }`);
 	}
 
 	const focusedCellBackgroundColor = theme.getColor(focusedCellBackground);
 	if (focusedCellBackgroundColor) {
 		collector.addRule(`.notebookOverlay .code-cell-row.focused .cell-focus-indicator,
 			.notebookOverlay .markdown-cell-row.focused { background-color: ${focusedCellBackgroundColor} !important; }`);
-		collector.addRule(`.notebookOverlay .code-cell-row.focused.collapsed .cell-collapsed-part { background-color: ${focusedCellBackgroundColor} !important; }`);
+		collector.addRule(`.notebookOverlay .code-cell-row.focused .cell-collapsed-part { background-color: ${focusedCellBackgroundColor} !important; }`);
 	}
 
 	const cellHoverBackgroundColor = theme.getColor(cellHoverBackground);
@@ -1715,8 +1798,8 @@ registerThemingParticipant((theme, collector) => {
 		collector.addRule(`.notebookOverlay .code-cell-row:not(.focused):hover .cell-focus-indicator,
 			.notebookOverlay .code-cell-row:not(.focused).cell-output-hover .cell-focus-indicator,
 			.notebookOverlay .markdown-cell-row:not(.focused):hover { background-color: ${cellHoverBackgroundColor} !important; }`);
-		collector.addRule(`.notebookOverlay .code-cell-row:not(.focused).cell-output-hover .cell-collapsed-part,
-		.notebookOverlay .code-cell-row:not(.focused):hover.collapsed .cell-collapsed-part { background-color: ${cellHoverBackgroundColor} !important; }`);
+		collector.addRule(`.notebookOverlay .code-cell-row:not(.focused):hover .cell-collapsed-part,
+			.notebookOverlay .code-cell-row:not(.focused).cell-output-hover .cell-collapsed-part { background-color: ${cellHoverBackgroundColor}; }`);
 	}
 
 	const focusedCellBorderColor = theme.getColor(focusedCellBorder);
@@ -1805,8 +1888,9 @@ registerThemingParticipant((theme, collector) => {
 	collector.addRule(`.notebookOverlay .monaco-list .monaco-list-row.code-cell-row .cell-focus-indicator-left { width: ${CODE_CELL_LEFT_MARGIN + CELL_RUN_GUTTER}px; }`);
 	collector.addRule(`.notebookOverlay .monaco-list .monaco-list-row.markdown-cell-row .cell-focus-indicator-left { width: ${CODE_CELL_LEFT_MARGIN}px; }`);
 	collector.addRule(`.notebookOverlay .monaco-list .monaco-list-row .cell-focus-indicator.cell-focus-indicator-right { width: ${CELL_MARGIN * 2}px; }`);
+	// collector.addRule(`.notebookOverlay .monaco-list .monaco-list-row.collapsed .cell-focus-indicator.cell-focus-indicator-right { width: initial; left: ${CODE_CELL_LEFT_MARGIN + CELL_RUN_GUTTER}px }`);
 	collector.addRule(`.notebookOverlay .monaco-list .monaco-list-row .cell-focus-indicator-bottom { height: ${CELL_BOTTOM_MARGIN}px; }`);
 	collector.addRule(`.notebookOverlay .monaco-list .monaco-list-row .cell-shadow-container-bottom { top: ${CELL_BOTTOM_MARGIN}px; }`);
 
-	collector.addRule(`.monaco-workbench .notebookOverlay > .cell-list-container > .monaco-list > .monaco-scrollable-element > .monaco-list-rows > .monaco-list-row.collapsed .cell-collapsed-part { margin-left: ${CODE_CELL_LEFT_MARGIN + CELL_RUN_GUTTER}px; height: ${COLLAPSED_INDICATOR_HEIGHT}px; }`);
+	collector.addRule(`.monaco-workbench .notebookOverlay > .cell-list-container > .monaco-list > .monaco-scrollable-element > .monaco-list-rows > .monaco-list-row .cell-collapsed-part { margin-left: ${CODE_CELL_LEFT_MARGIN + CELL_RUN_GUTTER}px; height: ${COLLAPSED_INDICATOR_HEIGHT}px; }`);
 });

@@ -18,6 +18,10 @@ function getFocusedElectronBasedWebviewDelegate(accessor: ServicesAccessor): Ele
 		return undefined; // {{SQL CARBON EDIT}} struct-null-checks
 	}
 
+	if (!editor?.hasWebviewFocus()) {
+		return undefined; // {{SQL CARBON EDIT}} struct-null-checks
+	}
+
 	const webview = editor?.getInnerWebview();
 	if (webview && webview instanceof ElectronWebviewBasedWebview) {
 		return webview;

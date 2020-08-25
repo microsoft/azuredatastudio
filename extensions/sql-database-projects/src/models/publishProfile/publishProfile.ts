@@ -41,7 +41,7 @@ export async function load(profileUri: Uri, dacfxService: mssql.IDacFxService): 
 	const optionsResult = await dacfxService.getOptionsFromProfile(profileUri.fsPath);
 
 	// get all SQLCMD variables to include from the profile
-	const sqlCmdVariables = readSqlCmdVariables(profileXmlDoc);
+	const sqlCmdVariables = utils.readSqlCmdVariables(profileXmlDoc);
 
 	return {
 		databaseName: targetDbName,
@@ -52,29 +52,12 @@ export async function load(profileUri: Uri, dacfxService: mssql.IDacFxService): 
 	};
 }
 
-/**
- * Read SQLCMD variables from xmlDoc and return them
- * @param xmlDoc xml doc to read SQLCMD variables from. Format must be the same that sqlproj and publish profiles use
- */
-export function readSqlCmdVariables(xmlDoc: any): Record<string, string> {
-	let sqlCmdVariables: Record<string, string> = {};
-	for (let i = 0; i < xmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable)?.length; i++) {
-		const sqlCmdVar = xmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable)[i];
-		const varName = sqlCmdVar.getAttribute(constants.Include);
-
-		const varValue = sqlCmdVar.getElementsByTagName(constants.DefaultValue)[0].childNodes[0].nodeValue;
-		sqlCmdVariables[varName] = varValue;
-	}
-
-	return sqlCmdVariables;
-}
-
 async function readConnectionString(xmlDoc: any): Promise<{ connectionId: string, connectionString: string }> {
 	let targetConnectionString: string = '';
 	let connId: string = '';
 
-	if (xmlDoc.documentElement.getElementsByTagName('TargetConnectionString').length > 0) {
-		targetConnectionString = xmlDoc.documentElement.getElementsByTagName('TargetConnectionString')[0].textContent;
+	if (xmlDoc.documentElement.getElementsByTagName(constants.targetConnectionString).length > 0) {
+		targetConnectionString = xmlDoc.documentElement.getElementsByTagName(constants.TargetConnectionString)[0].textContent;
 		const dataSource = new SqlConnectionDataSource('temp', targetConnectionString);
 		const connectionProfile = dataSource.getConnectionProfile();
 

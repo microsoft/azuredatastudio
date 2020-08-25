@@ -21,6 +21,7 @@ export const clientCapabilities = {
 export interface ConnectionProviderProperties {
 	providerId: string;
 	displayName: string;
+	notebookKernelAlias?: string;
 	azureResource?: string;
 	connectionOptions: azdata.ConnectionOption[];
 }

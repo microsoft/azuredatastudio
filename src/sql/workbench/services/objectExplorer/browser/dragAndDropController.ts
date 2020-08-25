@@ -13,6 +13,24 @@ import { UNSAVED_GROUP_ID } from 'sql/platform/connection/common/constants';
 import { DataTransfers, IDragAndDropData } from 'vs/base/browser/dnd';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 
+export function supportsNodeNameDrop(nodeId: string): boolean {
+	if (nodeId === 'Table' || nodeId === 'Column' || nodeId === 'View') {
+		return true;
+	}
+	return false;
+}
+
+export function supportsFolderNodeNameDrop(nodeId: string, label: string): boolean {
+	if (nodeId === 'Folder' && label === 'Columns') {
+		return true;
+	}
+	return false;
+}
+
+function escapeString(input: string | undefined): string | undefined {
+	return input?.replace(/]/g, ']]');
+}
+
 /**
  * Implements drag and drop for the server tree
  */
@@ -33,10 +51,11 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 				return (<ConnectionProfile>element).id;
 			} else if (element instanceof ConnectionProfileGroup) {
 				return (<ConnectionProfileGroup>element).id;
-			} else if (element.nodeTypeId === 'Table' || element.nodeTypeId === 'Column') {
+			} else if (supportsNodeNameDrop(element.nodeTypeId)) {
 				return (<TreeNode>element).id;
-			}
-			else {
+			} else if (supportsFolderNodeNameDrop(element.nodeTypeId, element.label) && element.children) {
+				return (<TreeNode>element).id;
+			} else {
 				return undefined;
 			}
 		}
@@ -70,14 +89,27 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 	 * Called when the drag operation starts.
 	 */
 	public onDragStart(tree: ITree, dragAndDropData: IDragAndDropData, originalEvent: DragMouseEvent): void {
+		let escapedSchema, escapedName, finalString;
 		TreeUpdateUtils.isInDragAndDrop = true;
 		const data = dragAndDropData.getData();
 		const element = data[0];
-		if (element.nodeTypeId === 'Column' || element.nodeTypeId === 'Table') {
-			const escapedSchema = element.metadata.schema?.replace(/]/g, ']]');
-			const escapedName = element.metadata.name?.replace(/]/g, ']]');
-			const finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
+		if (supportsNodeNameDrop(element.nodeTypeId)) {
+			escapedSchema = escapeString(element.metadata.schema);
+			escapedName = escapeString(element.metadata.name);
+			finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
 			originalEvent.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([`${element.nodeTypeId}:${element.id}?${finalString}`]));
+		}
+		if (supportsFolderNodeNameDrop(element.nodeTypeId, element.label)) {
+			// get children
+			let returnString = '';
+			for (let child of element.children) {
+				escapedSchema = escapeString(child.metadata.schema);
+				escapedName = escapeString(child.metadata.name);
+				finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
+				returnString = returnString ? `${returnString},${finalString}` : `${finalString}`;
+			}
+
+			originalEvent.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([`${element.nodeTypeId}:${element.id}?${returnString}`]));
 		}
 		return;
 	}
@@ -148,12 +180,18 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 				if (source instanceof ConnectionProfile) {
 					// Change group id of profile
 					this._connectionManagementService.changeGroupIdForConnection(source, targetConnectionProfileGroup.id).then(() => {
-						TreeUpdateUtils.registeredServerUpdate(tree, self._connectionManagementService, targetConnectionProfileGroup);
+						if (tree) {
+							TreeUpdateUtils.registeredServerUpdate(tree, self._connectionManagementService, targetConnectionProfileGroup);
+						}
+
 					});
 				} else if (source instanceof ConnectionProfileGroup) {
 					// Change parent id of group
 					this._connectionManagementService.changeGroupIdForConnectionGroup(source, targetConnectionProfileGroup).then(() => {
-						TreeUpdateUtils.registeredServerUpdate(tree, self._connectionManagementService);
+						if (tree) {
+							TreeUpdateUtils.registeredServerUpdate(tree, self._connectionManagementService);
+						}
+
 					});
 				}
 			}

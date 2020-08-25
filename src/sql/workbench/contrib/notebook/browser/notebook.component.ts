@@ -313,7 +313,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			layoutChanged: this._notebookParams.input.layoutChanged,
 			capabilitiesService: this.capabilitiesService,
 			editorLoadedTimestamp: this._notebookParams.input.editorOpenedTimestamp
-		}, this.profile, this.logService, this.notificationService, this.adstelemetryService);
+		}, this.profile, this.logService, this.notificationService, this.adstelemetryService, this.capabilitiesService);
 		let trusted = await this.notebookService.isNotebookTrustCached(this._notebookParams.notebookUri, this.isDirty());
 		this._register(model.onError((errInfo: INotification) => this.handleModelError(errInfo)));
 		this._register(model.contentChanged((change) => this.handleContentChanged(change)));
@@ -553,7 +553,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		// This is similar behavior that exists in MenuItemActionItem
 		if (action instanceof MenuItemAction) {
 
-			if (action.item.id.includes('jupyter.cmd') && this.previewFeaturesEnabled) {
+			if ((action.item.id.includes('jupyter.cmd') && this.previewFeaturesEnabled) || action.item.id.includes('mssql')) {
 				action.tooltip = action.label;
 				action.label = '';
 			}

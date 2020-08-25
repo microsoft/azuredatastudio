@@ -10,6 +10,7 @@ import { Command } from '../commandManager';
 import { MarkdownEngine } from '../markdownEngine';
 import { TableOfContentsProvider } from '../tableOfContentsProvider';
 import { isMarkdownFile } from '../util/file';
+import { isString } from 'util'; // {{ SQL CARBON EDIT }}
 
 
 export interface OpenDocumentLinkArgs {
@@ -58,7 +59,7 @@ export class OpenDocumentLinkCommand implements Command {
 
 	public static async execute(engine: MarkdownEngine, args: OpenDocumentLinkArgs) {
 		const fromResource = vscode.Uri.parse('').with(args.fromResource);
-		const targetResource = vscode.Uri.parse('').with(args.path);
+		const targetResource = fromResource.scheme === 'file' && isString(args.path) ? vscode.Uri.file(args.path) : vscode.Uri.parse('').with(args.path); // {{ SQL CARBON EDIT }} Fix markdown relative links https://github.com/microsoft/azuredatastudio/issues/11657
 		const column = this.getViewColumn(fromResource);
 		try {
 			return await this.tryOpen(engine, targetResource, args, column);

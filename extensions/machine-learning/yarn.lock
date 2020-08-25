@@ -1242,10 +1242,10 @@ vscode-nls@^4.0.0:
   resolved "https://registry.yarnpkg.com/vscode-nls/-/vscode-nls-4.1.1.tgz#f9916b64e4947b20322defb1e676a495861f133c"
   integrity sha512-4R+2UoUUU/LdnMnFjePxfLqNhBS8lrAFyX7pjb2ud/lqDkrUavFUTcG7wR0HBZFakae0Q6KLBFjMS6W93F403A==
 
-vscodetestcover@^1.0.9:
-  version "1.0.9"
-  resolved "https://registry.yarnpkg.com/vscodetestcover/-/vscodetestcover-1.0.9.tgz#0191f403dd59ba1153fc57979e281e992ce63731"
-  integrity sha512-8z2961KF9Tuz5XdHAC6RMV3CrzAoUcfIK7wLYjLIXD4dbHIT7ceZMhoxToW1olyi3pFnThlS4lRXtx8Q5iyMMQ==
+vscodetestcover@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/vscodetestcover/-/vscodetestcover-1.1.0.tgz#ea2bc2fb0c54ca4084057883e7e1614a20533e14"
+  integrity sha512-b/5mYqWC4yPxPUM1G8MD8ZnRt7eYd1IxAg/vdTE6JiNZlpGtxkDv91eXbF4TbQVlOPoqTzfhpY5GxbZbHVv+DQ==
   dependencies:
     decache "^4.4.0"
     glob "^7.1.2"

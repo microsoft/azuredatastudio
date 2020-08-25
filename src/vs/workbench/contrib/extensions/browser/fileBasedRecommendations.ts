@@ -75,6 +75,14 @@ export class FileBasedRecommendations extends ExtensionRecommendations {
 		return recommendations;
 	}
 
+	get importantRecommendations(): ReadonlyArray<ExtensionRecommendation> {
+		return this.recommendations.filter(e => this.importantExtensionTips[e.extensionId]);
+	}
+
+	get otherRecommendations(): ReadonlyArray<ExtensionRecommendation> {
+		return this.recommendations.filter(e => !this.importantExtensionTips[e.extensionId]);
+	}
+
 	constructor(
 		isExtensionAllowedToBeRecommended: (extensionId: string) => boolean,
 		@IExtensionManagementService private readonly extensionManagementService: IExtensionManagementService,
@@ -226,7 +234,7 @@ export class FileBasedRecommendations extends ExtensionRecommendations {
 			message = localize('reallyRecommendedExtensionPack', "The '{0}' extension pack is recommended for this file type.", extensionName);
 		}
 
-		this.promptImportantExtensionInstallNotification(extensionId, message);
+		this.promptImportantExtensionsInstallNotification([extensionId], message);
 		return true;
 	}
 

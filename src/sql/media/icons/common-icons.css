@@ -287,6 +287,15 @@
 	background-image: url("stop_inverse.svg");
 }
 
+.hc-black .codicon.export,
+.vs-dark .codicon.export {
+	background: url("export_inverse.svg") center center no-repeat;
+}
+
+.vs .codicon.export {
+	background: url("export.svg") center center no-repeat;
+}
+
 /* Notebook cells */
 .codicon.toolbarIconRunInactive {
 	background-image: url("execute_cell_grey.svg");

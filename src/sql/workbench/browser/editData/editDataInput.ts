@@ -85,8 +85,10 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 
 			this._register(
 				this._queryModelService.onEditSessionReady((result) => {
-					if (self.uri === result.ownerUri) {
-						self.initEditEnd(result);
+					if (this.uri === result.ownerUri) {
+						this._results.editDataGridPanel.onRefreshComplete.then(() => {
+							this.initEditEnd(result);
+						});
 					}
 				})
 			);

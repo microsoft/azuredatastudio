@@ -24,6 +24,7 @@ import {
 	/*RecentlyPublishedExtensionsAction, */ShowInstalledExtensionsAction, ShowOutdatedExtensionsAction, ShowDisabledExtensionsAction,
 	ShowEnabledExtensionsAction, PredefinedExtensionFilterAction
 } from 'vs/workbench/contrib/extensions/browser/extensionsActions';
+import { OpenExtensionAuthoringDocsAction } from 'sql/workbench/contrib/extensions/browser/extensionsActions'; // {{ SQL CARBON EDIT }}
 import { IExtensionManagementService, IExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IWorkbenchExtensionEnablementService, IExtensionManagementServerService, IExtensionManagementServer } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { ExtensionsInput } from 'vs/workbench/contrib/extensions/common/extensionsInput';
@@ -129,6 +130,9 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 		}
 		if (this.extensionManagementServerService.remoteExtensionManagementServer) {
 			servers.push(this.extensionManagementServerService.remoteExtensionManagementServer);
+		}
+		if (servers.length === 0 && this.extensionManagementServerService.webExtensionManagementServer) {
+			servers.push(this.extensionManagementServerService.webExtensionManagementServer);
 		}
 		const getViewName = (viewTitle: string, server: IExtensionManagementServer): string => {
 			return servers.length > 1 ? `${server.label} - ${viewTitle}` : viewTitle;
@@ -337,6 +341,7 @@ export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IE
 	private root: HTMLElement | undefined;
 	private searchBox: SuggestEnabledInput | undefined;
 	private readonly searchViewletState: MementoObject;
+	private readonly sortActions: ChangeSortAction[];
 
 	constructor(
 		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
@@ -384,6 +389,13 @@ export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IE
 				this.updateTitleArea();
 			}
 		}, this));
+
+		this.sortActions = [
+			// this._register(this.instantiationService.createInstance(ChangeSortAction, 'extensions.sort.install', localize('sort by installs', "Install Count"), this.onSearchChange, 'installs')), // {{SQL CARBON EDIT}}
+			// this._register(this.instantiationService.createInstance(ChangeSortAction, 'extensions.sort.rating', localize('sort by rating', "Rating"), this.onSearchChange, 'rating')), // {{SQL CARBON EDIT}}
+			this._register(this.instantiationService.createInstance(ChangeSortAction, 'extensions.sort.name', localize('sort by name', "Name"), this.onSearchChange, 'name')),
+			this._register(this.instantiationService.createInstance(ChangeSortAction, 'extensions.sort.publishedDate', localize('sort by date', "Published Date"), this.onSearchChange, 'publishedDate')),
+		];
 	}
 
 	create(parent: HTMLElement): void {
@@ -518,12 +530,7 @@ export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IE
 			]);
 			filterActions.push(...[
 				new Separator(),
-				new SubmenuAction('workbench.extensions.action.sortBy', localize('sorty by', "Sort By"), [
-					// this.instantiationService.createInstance(ChangeSortAction, 'extensions.sort.install', localize('sort by installs', "Install Count"), this.onSearchChange, 'installs'), // {{SQL CARBON EDIT}}
-					// this.instantiationService.createInstance(ChangeSortAction, 'extensions.sort.rating', localize('sort by rating', "Rating"), this.onSearchChange, 'rating'), // {{SQL CARBON EDIT}}
-					this.instantiationService.createInstance(ChangeSortAction, 'extensions.sort.name', localize('sort by name', "Name"), this.onSearchChange, 'name'),
-					this.instantiationService.createInstance(ChangeSortAction, 'extensions.sort.publishedDate', localize('sort by date', "Published Date"), this.onSearchChange, 'publishedDate'),
-				]),
+				new SubmenuAction('workbench.extensions.action.sortBy', localize('sorty by', "Sort By"), this.sortActions),
 			]);
 		}
 
@@ -549,6 +556,7 @@ export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IE
 
 		actions.push(new Separator());
 		actions.push(this.instantiationService.createInstance(InstallVSIXAction, InstallVSIXAction.ID, InstallVSIXAction.LABEL));
+		actions.push(this.instantiationService.createInstance(OpenExtensionAuthoringDocsAction, OpenExtensionAuthoringDocsAction.ID, OpenExtensionAuthoringDocsAction.LABEL)); // {{SQL CARBON EDIT}}
 
 		return actions;
 	}

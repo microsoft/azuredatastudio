@@ -90,10 +90,10 @@
 			"port": 9222,
 			"timeout": 20000,
 			"env": {
-				"VSCODE_EXTHOST_WILL_SEND_SOCKET": null
+				"VSCODE_EXTHOST_WILL_SEND_SOCKET": null,
+				"VSCODE_SKIP_PRELAUNCH": "1"
 			},
 			"cleanUp": "wholeBrowser",
-			"breakOnLoad": false,
 			"urlFilter": "*workbench.html*",
 			"runtimeArgs": [
 				"--inspect=5875",
@@ -106,7 +106,8 @@
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
 			],
-			"browserLaunchLocation": "workspace"
+			"browserLaunchLocation": "workspace",
+			"preLaunchTask": "Ensure Prelaunch Dependencies",
 		},
 		{
 			"type": "chrome",

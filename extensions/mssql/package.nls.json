@@ -39,6 +39,8 @@
 	"mssql.disabled": "Disabled",
 	"mssql.enabled": "Enabled",
 
+	"mssql.exportNotebookToSql": "Export Notebook as SQL",
+	"mssql.exportSqlAsNotebook": "Export SQL as Notebook",
 	"mssql.configuration.title": "MSSQL configuration",
 	"mssql.query.displayBitAsNumber": "Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'",
 	"mssql.query.maxXmlCharsToStore": "Number of XML characters to store after running a query",

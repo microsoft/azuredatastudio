@@ -163,6 +163,7 @@ export interface MainThreadCommentsShape extends IDisposable {
 export interface MainThreadAuthenticationShape extends IDisposable {
 	$registerAuthenticationProvider(id: string, label: string, supportsMultipleAccounts: boolean): void;
 	$unregisterAuthenticationProvider(id: string): void;
+	$ensureProvider(id: string): Promise<void>;
 	$getProviderIds(): Promise<string[]>;
 	$sendDidChangeSessions(providerId: string, event: modes.AuthenticationSessionsChangeEvent): void;
 	$getSession(providerId: string, scopes: string[], extensionId: string, extensionName: string, options: { createIfNone?: boolean, clearSessionPreference?: boolean }): Promise<modes.AuthenticationSession | undefined>;
@@ -1388,6 +1389,7 @@ export interface IShellLaunchConfigDto {
 	args?: string[] | string;
 	cwd?: string | UriComponents;
 	env?: { [key: string]: string | null; };
+	hideFromUser?: boolean;
 }
 
 export interface IShellDefinitionDto {
@@ -1624,6 +1626,7 @@ export interface ExtHostNotebookShape {
 	$executeNotebookByAttachedKernel(viewType: string, uri: UriComponents, cellHandle: number | undefined): Promise<void>;
 	$cancelNotebookByAttachedKernel(viewType: string, uri: UriComponents, cellHandle: number | undefined): Promise<void>;
 	$executeNotebookKernelFromProvider(handle: number, uri: UriComponents, kernelId: string, cellHandle: number | undefined): Promise<void>;
+	$cancelNotebookKernelFromProvider(handle: number, uri: UriComponents, kernelId: string, cellHandle: number | undefined): Promise<void>;
 	$executeNotebook2(kernelId: string, viewType: string, uri: UriComponents, cellHandle: number | undefined): Promise<void>;
 	$saveNotebook(viewType: string, uri: UriComponents, token: CancellationToken): Promise<boolean>;
 	$saveNotebookAs(viewType: string, uri: UriComponents, target: UriComponents, token: CancellationToken): Promise<boolean>;
@@ -1634,6 +1637,7 @@ export interface ExtHostNotebookShape {
 	$renderOutputs2<T>(uriComponents: UriComponents, id: string, request: IOutputRenderRequest<T>): Promise<IOutputRenderResponse<T> | undefined>;
 	$onDidReceiveMessage(editorId: string, rendererId: string | undefined, message: unknown): void;
 	$acceptModelChanged(uriComponents: UriComponents, event: NotebookCellsChangedEvent): void;
+	$acceptModelSaved(uriComponents: UriComponents): void;
 	$acceptEditorPropertiesChanged(uriComponents: UriComponents, data: INotebookEditorPropertiesChangeData): void;
 	$acceptDocumentAndEditorsDelta(delta: INotebookDocumentsAndEditorsDelta): Promise<void>;
 	$undoNotebook(viewType: string, uri: UriComponents, editId: number, isDirty: boolean): Promise<void>;

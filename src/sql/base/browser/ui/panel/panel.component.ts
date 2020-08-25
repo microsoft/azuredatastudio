@@ -107,7 +107,7 @@ export class PanelComponent extends Disposable implements IThemable {
 	private _actionbar?: ActionBar;
 	private _mru: TabComponent[] = [];
 	private _tabExpanded: boolean = true;
-	private _styleElement: HTMLStyleElement;
+	private _styleElement!: HTMLStyleElement;
 
 	protected AutoScrollbarVisibility = ScrollbarVisibility.Auto; // used by angular template
 	protected HiddenScrollbarVisibility = ScrollbarVisibility.Hidden; // used by angular template
@@ -266,7 +266,7 @@ export class PanelComponent extends Disposable implements IThemable {
 	public updateTab(tabId: string, config: { title?: string, iconClass?: string }): void {
 		// First find the tab and update it with the new values. Then manually refresh the
 		// tab header since it won't detect changes made to the corresponding tab by itself.
-		let tabHeader: TabHeaderComponent;
+		let tabHeader: TabHeaderComponent | undefined;
 		const tabHeaders = this._tabHeaders.toArray();
 		const tab = this._tabs.find((item, i) => {
 			if (item.identifier === tabId) {

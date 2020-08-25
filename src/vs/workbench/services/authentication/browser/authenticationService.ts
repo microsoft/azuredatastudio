@@ -5,7 +5,7 @@
 
 import * as nls from 'vs/nls';
 import { Emitter, Event } from 'vs/base/common/event';
-import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
+import { Disposable, IDisposable, MutableDisposable } from 'vs/base/common/lifecycle';
 import { AuthenticationSession, AuthenticationSessionsChangeEvent, AuthenticationProviderInformation } from 'vs/editor/common/modes';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
@@ -15,6 +15,9 @@ import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { IActivityService, NumberBadge } from 'vs/workbench/services/activity/common/activity';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
+
+export function getAuthenticationProviderActivationEvent(id: string): string { return `onAuthenticationRequest:${id}`; }
 
 export const IAuthenticationService = createDecorator<IAuthenticationService>('IAuthenticationService');
 
@@ -68,12 +71,17 @@ export interface SessionRequestInfo {
 	[scopes: string]: SessionRequest;
 }
 
+CommandsRegistry.registerCommand('workbench.getCodeExchangeProxyEndpoints', function (accessor, _) {
+	const environmentService = accessor.get(IWorkbenchEnvironmentService);
+	return environmentService.options?.codeExchangeProxyEndpoints;
+});
+
 export class AuthenticationService extends Disposable implements IAuthenticationService {
 	declare readonly _serviceBrand: undefined;
 	private _placeholderMenuItem: IDisposable | undefined;
 	private _noAccountsMenuItem: IDisposable | undefined;
 	private _signInRequestItems = new Map<string, SessionRequestInfo>();
-	private _badgeDisposable: IDisposable | undefined;
+	private _accountBadgeDisposable = this._register(new MutableDisposable());
 
 	private _authenticationProviders: Map<string, MainThreadAuthenticationProvider> = new Map<string, MainThreadAuthenticationProvider>();
 
@@ -203,10 +211,9 @@ export class AuthenticationService extends Disposable implements IAuthentication
 		});
 
 		if (changed) {
-			if (this._signInRequestItems.size === 0) {
-				this._badgeDisposable?.dispose();
-				this._badgeDisposable = undefined;
-			} else {
+			this._accountBadgeDisposable.clear();
+
+			if (this._signInRequestItems.size > 0) {
 				let numberOfRequests = 0;
 				this._signInRequestItems.forEach(providerRequests => {
 					Object.keys(providerRequests).forEach(request => {
@@ -215,7 +222,7 @@ export class AuthenticationService extends Disposable implements IAuthentication
 				});
 
 				const badge = new NumberBadge(numberOfRequests, () => nls.localize('sign in', "Sign in requested"));
-				this._badgeDisposable = this.activityService.showAccountsActivity({ badge });
+				this._accountBadgeDisposable.value = this.activityService.showAccountsActivity({ badge });
 			}
 		}
 	}
@@ -284,6 +291,8 @@ export class AuthenticationService extends Disposable implements IAuthentication
 				});
 			}
 
+			this._accountBadgeDisposable.clear();
+
 			let numberOfRequests = 0;
 			this._signInRequestItems.forEach(providerRequests => {
 				Object.keys(providerRequests).forEach(request => {
@@ -292,7 +301,7 @@ export class AuthenticationService extends Disposable implements IAuthentication
 			});
 
 			const badge = new NumberBadge(numberOfRequests, () => nls.localize('sign in', "Sign in requested"));
-			this._badgeDisposable = this.activityService.showAccountsActivity({ badge });
+			this._accountBadgeDisposable.value = this.activityService.showAccountsActivity({ badge });
 		}
 	}
 	getLabel(id: string): string {
