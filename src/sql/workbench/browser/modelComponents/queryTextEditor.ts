@@ -58,7 +58,7 @@ export class QueryTextEditor extends BaseTextEditor {
 	protected getConfigurationOverrides(): IEditorOptions {
 		const options = super.getConfigurationOverrides();
 		if (this.input) {
-			options.inDiffEditor = true;
+			options.inDiffEditor = false;
 			options.scrollBeyondLastLine = false;
 			options.folding = false;
 			options.renderIndentGuides = false;
