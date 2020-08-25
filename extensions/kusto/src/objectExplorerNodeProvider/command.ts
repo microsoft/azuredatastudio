@@ -163,11 +163,11 @@ export abstract class ProgressCommand extends Command {
 	}
 
 	private async confirmCancel(): Promise<boolean> {
-		return await this.prompter.promptSingle<boolean>(<IQuestion>{
+		return (await this.prompter.promptSingle<boolean>(<IQuestion>{
 			type: QuestionTypes.confirm,
 			message: localize('cancel', 'Cancel operation?'),
 			default: true
-		});
+		}))!;
 	}
 }
 

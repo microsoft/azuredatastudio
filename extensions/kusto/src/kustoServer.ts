@@ -22,8 +22,8 @@ const statusView = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.L
 
 export class KustoServer {
 
-	private client: SqlOpsDataClient;
-	private config: IConfig;
+	private client!: SqlOpsDataClient;
+	private config!: IConfig;
 	private disposables: vscode.Disposable[] = [];
 
 	public async start(context: AppContext): Promise<SqlOpsDataClient> {
@@ -66,13 +66,13 @@ export class KustoServer {
 
 	private async download(context: AppContext): Promise<string> {
 		const rawConfig = await fs.readFile(path.join(context.extensionContext.extensionPath, 'config.json')); // TodoKusto: Update config.json to refer to the right exe
-		this.config = JSON.parse(rawConfig.toString());
+		this.config = JSON.parse(rawConfig.toString())!;
 		this.config.installDirectory = path.join(__dirname, this.config.installDirectory);
-		this.config.proxy = vscode.workspace.getConfiguration('http').get('proxy');
+		this.config.proxy = vscode.workspace.getConfiguration('http').get<string>('proxy')!;
 		this.config.strictSSL = vscode.workspace.getConfiguration('http').get('proxyStrictSSL') || true;
 
 		const serverdownloader = new ServerProvider(this.config);
-		serverdownloader.eventEmitter.onAny(generateHandleServerProviderEvent());
+		serverdownloader.eventEmitter.onAny(() => generateHandleServerProviderEvent());
 		return serverdownloader.getOrDownloadServer();
 	}
 
@@ -143,7 +143,7 @@ function getClientOptions(context: AppContext): ClientOptions {
 }
 
 class CustomOutputChannel implements vscode.OutputChannel {
-	name: string;
+	name!: string;
 	append(value: string): void {
 		console.log(value);
 	}

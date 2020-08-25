@@ -36,10 +36,10 @@ export default class ContextProvider {
 	}
 
 	public onDashboardOpen(e: azdata.DashboardDocument): void {
-		let iscloud: boolean;
-		let edition: number;
+		let iscloud: boolean = false;
+		let edition: number | undefined;
 		let isCluster: boolean = false; // TODO: Do we even need this for Kusto
-		let serverMajorVersion: number;
+		let serverMajorVersion: number | undefined;
 		if (e.profile.providerName.toLowerCase() === 'kusto' && !types.isUndefinedOrNull(e.serverInfo) && !types.isUndefinedOrNull(e.serverInfo.engineEditionId)) {
 			if (isCloudEditions.some(i => i === e.serverInfo.engineEditionId)) {
 				iscloud = true;

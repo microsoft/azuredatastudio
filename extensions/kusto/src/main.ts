@@ -20,7 +20,7 @@ import { localize } from './localize';
 import { KustoServer } from './kustoServer';
 import { promises as fs } from 'fs';
 
-export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
+export async function activate(context: vscode.ExtensionContext): Promise<IExtension | undefined> {
 	// lets make sure we support this platform first
 	let supported = await Utils.verifyPlatform();
 

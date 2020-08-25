@@ -25,7 +25,7 @@ export interface ITelemetryEventMeasures {
 /**
  * Filters error paths to only include source files. Exported to support testing
  */
-export function FilterErrorPath(line: string): string {
+export function FilterErrorPath(line: string): string | undefined {
 	if (line) {
 		let values: string[] = line.split('/out/');
 		if (values.length <= 1) {
@@ -60,7 +60,7 @@ export class Telemetry {
 				return;
 			}
 
-			let packageInfo = Utils.getPackageInfo(packageJson);
+			let packageInfo = Utils.getPackageInfo(packageJson)!;
 			this.reporter = new TelemetryReporter(packageInfo.name, packageInfo.version, packageInfo.aiKey);
 		}
 	}
@@ -76,7 +76,7 @@ export class Telemetry {
 			stackArray = err.stack.split('\n');
 			if (stackArray !== undefined && stackArray.length >= 2) {
 				firstLine = stackArray[1]; // The fist line is the error message and we don't want to send that telemetry event
-				firstLine = FilterErrorPath(firstLine);
+				firstLine = FilterErrorPath(firstLine)!;
 			}
 		}
 
@@ -88,7 +88,7 @@ export class Telemetry {
 	 * Send a telemetry event using application insights
 	 */
 	public static sendTelemetryEvent(
-		eventName: string,
+		eventName: string | undefined,
 		properties?: ITelemetryEventProperties,
 		measures?: ITelemetryEventMeasures): void {
 

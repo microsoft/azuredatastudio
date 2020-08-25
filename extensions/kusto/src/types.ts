@@ -4,24 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-const _typeof = {
-	number: 'number',
-	string: 'string',
-	undefined: 'undefined',
-	object: 'object',
-	function: 'function'
-};
-
 /**
  * @returns whether the provided parameter is undefined or null.
  */
 export function isUndefinedOrNull(obj: any): boolean {
-	return isUndefined(obj) || obj === null;
-}
-
-/**
- * @returns whether the provided parameter is undefined.
- */
-export function isUndefined(obj: any): boolean {
-	return typeof (obj) === _typeof.undefined;
+	// Intentional ==
+	// eslint-disable-next-line eqeqeq
+	return obj == undefined;
 }

@@ -10,9 +10,9 @@ const cloudIcon = 'kusto:cloud';
 
 export class KustoIconProvider implements azdata.IconProvider {
 	public readonly providerId: string = constants.kustoProviderName;
-	public handle: number;
-	getConnectionIconId(connection: azdata.IConnectionProfile, serverInfo: azdata.ServerInfo): Thenable<string> {
-		let iconName: string = undefined;
+	public handle?: number;
+	getConnectionIconId(connection: azdata.IConnectionProfile, serverInfo: azdata.ServerInfo): Thenable<string | undefined> {
+		let iconName: string | undefined;
 		if (connection.providerName === this.providerId) {
 			iconName = cloudIcon;
 		}

@@ -11,7 +11,7 @@ import * as constants from '../constants';
 
 export class KustoClusterConnection {
 	private _connection: azdata.connection.Connection;
-	private _profile: azdata.IConnectionProfile;
+	private _profile!: azdata.IConnectionProfile;
 	private _user: string;
 	private _password: string;
 
@@ -43,7 +43,7 @@ export class KustoClusterConnection {
 
 	public isIntegratedAuth(): boolean {
 		let authType: string = this._connection.options[constants.authenticationTypePropName];
-		return authType && authType.toLowerCase() === constants.integratedAuth;
+		return authType?.toLowerCase() === constants.integratedAuth;
 	}
 
 	public updatePassword(password: string): void {
@@ -59,7 +59,7 @@ export class KustoClusterConnection {
 		if (!connectionInfo.options) {
 			throw new Error(localize('connectionInfoOptionsUndefined', 'ConnectionInfo.options is undefined.'));
 		}
-		let missingProperties: string[] = this.getMissingProperties(connectionInfo);
+		let missingProperties: string[] = this.getMissingProperties(connectionInfo)!;
 		if (missingProperties && missingProperties.length > 0) {
 			throw new Error(localize('connectionInfoOptionsMissingProperties',
 				'Some missing properties in connectionInfo.options: {0}',
@@ -67,7 +67,7 @@ export class KustoClusterConnection {
 		}
 	}
 
-	private getMissingProperties(connectionInfo: azdata.ConnectionInfo): string[] {
+	private getMissingProperties(connectionInfo: azdata.ConnectionInfo): string[] | undefined {
 		if (!connectionInfo || !connectionInfo.options) { return undefined; }
 		let requiredProps = [constants.serverPropName];
 		requiredProps.push(constants.userPropName);

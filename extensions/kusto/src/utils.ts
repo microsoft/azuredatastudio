@@ -24,7 +24,7 @@ export function getConfiguration(config: string = extensionConfigSectionName): v
 	return vscode.workspace.getConfiguration(extensionConfigSectionName);
 }
 
-export function getConfigLogFilesRemovalLimit(): number {
+export function getConfigLogFilesRemovalLimit(): number | undefined {
 	let config = getConfiguration();
 	if (config && config[configLogFilesRemovalLimit]) {
 		return Number((config[configLogFilesRemovalLimit]).toFixed(0));
@@ -34,7 +34,7 @@ export function getConfigLogFilesRemovalLimit(): number {
 	}
 }
 
-export function getConfigLogRetentionSeconds(): number {
+export function getConfigLogRetentionSeconds(): number | undefined {
 	let config = getConfiguration();
 	if (config && config[configLogRetentionMinutes]) {
 		return Number((config[configLogRetentionMinutes] * 60).toFixed(0));
@@ -44,7 +44,7 @@ export function getConfigLogRetentionSeconds(): number {
 	}
 }
 
-export function getConfigTracingLevel(): string {
+export function getConfigTracingLevel(): string | undefined {
 	let config = getConfiguration();
 	if (config) {
 		return config[configTracingLevel];
@@ -59,7 +59,7 @@ export function getLogFileName(prefix: string, pid: number): string {
 }
 
 export function getCommonLaunchArgsAndCleanupOldLogFiles(logPath: string, fileName: string, executablePath: string): string[] {
-	let launchArgs = [];
+	let launchArgs: string[] = [];
 	launchArgs.push('--log-file');
 	let logFile = path.join(logPath, fileName);
 	launchArgs.push(logFile);
@@ -69,8 +69,11 @@ export function getCommonLaunchArgsAndCleanupOldLogFiles(logPath: string, fileNa
 	// Delete old log files
 	let deletedLogFiles = removeOldLogFiles(logPath, fileName);
 	console.log(`Old log files deletion report: ${JSON.stringify(deletedLogFiles)}`);
-	launchArgs.push('--tracing-level');
-	launchArgs.push(getConfigTracingLevel());
+	let config = getConfigTracingLevel();
+	if (config) {
+		launchArgs.push('--tracing-level');
+		launchArgs.push(config);
+	}
 	return launchArgs;
 }
 
@@ -87,7 +90,7 @@ export interface IPackageInfo {
 	aiKey: string;
 }
 
-export function getPackageInfo(packageJson: any): IPackageInfo {
+export function getPackageInfo(packageJson: IPackageInfo): IPackageInfo | undefined {
 	if (packageJson) {
 		return {
 			name: packageJson.name,

@@ -61,8 +61,8 @@ export class KustoObjectExplorerNodeProvider extends ProviderBase implements azd
 
 	private async doExpandNode(nodeInfo: azdata.ExpandNodeInfo, isRefresh: boolean = false): Promise<boolean> {
 		let response = {
-			sessionId: nodeInfo.sessionId,
-			nodePath: nodeInfo.nodePath,
+			sessionId: nodeInfo.sessionId!,
+			nodePath: nodeInfo.nodePath!,
 			errorMessage: undefined,
 			nodes: []
 		};
@@ -112,8 +112,8 @@ export class KustoObjectExplorerNodeProvider extends ProviderBase implements azd
 		}
 	}
 
-	private getSqlClusterSessionForNode(node: TreeNode): SqlClusterSession {
-		let sqlClusterSession: SqlClusterSession = undefined;
+	private getSqlClusterSessionForNode(node?: TreeNode): SqlClusterSession | undefined {
+		let sqlClusterSession: SqlClusterSession | undefined = undefined;
 		while (node !== undefined) {
 			if (node instanceof SqlClusterRootNode) {
 				sqlClusterSession = node.session;
@@ -125,8 +125,8 @@ export class KustoObjectExplorerNodeProvider extends ProviderBase implements azd
 		return sqlClusterSession;
 	}
 
-	async findSqlClusterNodeByContext<T extends TreeNode>(context: ICommandObjectExplorerContext | azdata.ObjectExplorerContext): Promise<T> {
-		let node: T = undefined;
+	async findSqlClusterNodeByContext<T extends TreeNode>(context: ICommandObjectExplorerContext | azdata.ObjectExplorerContext): Promise<T | undefined> {
+		let node: T | undefined = undefined;
 		let explorerContext = 'explorerContext' in context ? context.explorerContext : context;
 		let sqlConnProfile = explorerContext.connectionProfile;
 		let session = this.findSqlClusterSessionBySqlConnProfile(sqlConnProfile);
@@ -136,13 +136,13 @@ export class KustoObjectExplorerNodeProvider extends ProviderBase implements azd
 				node = <T><any>session.rootNode;
 			} else {
 				// Find the node under the session
-				node = <T><any>await session.rootNode.findNodeByPath(explorerContext.nodeInfo.nodePath, true);
+				node = <T><any>await session.rootNode.findNodeByPath(explorerContext.nodeInfo.nodePath!, true);
 			}
 		}
 		return node;
 	}
 
-	public findSqlClusterSessionBySqlConnProfile(connectionProfile: azdata.IConnectionProfile): SqlClusterSession {
+	public findSqlClusterSessionBySqlConnProfile(connectionProfile: azdata.IConnectionProfile): SqlClusterSession | undefined {
 		return undefined;
 	}
 }
@@ -156,13 +156,13 @@ export class SqlClusterSession {
 		private _sqlConnectionProfile: azdata.IConnectionProfile
 	) {
 		this._rootNode = new SqlClusterRootNode(this,
-			this._sqlSession.rootNode.nodePath);
+			this._sqlSession.rootNode.nodePath!);
 	}
 
 	public get sqlClusterConnection(): KustoClusterConnection { return this._sqlClusterConnection; }
 	public get sqlSession(): azdata.ObjectExplorerSession { return this._sqlSession; }
 	public get sqlConnectionProfile(): azdata.IConnectionProfile { return this._sqlConnectionProfile; }
-	public get sessionId(): string { return this._sqlSession.sessionId; }
+	public get sessionId(): string { return this._sqlSession.sessionId!; }
 	public get rootNode(): SqlClusterRootNode { return this._rootNode; }
 
 	public isMatchedSqlConnection(sqlConnProfile: azdata.IConnectionProfile): boolean {
@@ -171,7 +171,7 @@ export class SqlClusterSession {
 }
 
 class SqlClusterRootNode extends TreeNode {
-	private _children: TreeNode[];
+	private _children: TreeNode[] = [];
 	constructor(
 		private _session: SqlClusterSession,
 		private _nodePathValue: string
@@ -205,11 +205,11 @@ class SqlClusterRootNode extends TreeNode {
 
 	getNodeInfo(): azdata.NodeInfo {
 		let nodeInfo: azdata.NodeInfo = {
-			label: localize('rootLabel', "Root"),
+			label: localize('rootLabel', "Root")!,
 			isLeaf: false,
 			errorMessage: undefined,
 			metadata: undefined,
-			nodePath: this.generateNodePath(),
+			nodePath: this.generateNodePath()!,
 			nodeStatus: undefined,
 			nodeType: 'sqlCluster:root',
 			nodeSubType: undefined,

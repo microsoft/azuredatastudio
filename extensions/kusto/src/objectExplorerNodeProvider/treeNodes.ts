@@ -12,27 +12,27 @@ import { ITreeNode } from './types';
 type TreeNodePredicate = (node: TreeNode) => boolean;
 
 export abstract class TreeNode implements ITreeNode {
-	private _parent: TreeNode = undefined;
-	private _errorStatusCode: number;
+	private _parent?: TreeNode;
+	private _errorStatusCode?: number;
 
-	public get parent(): TreeNode {
+	public get parent(): TreeNode | undefined {
 		return this._parent;
 	}
 
-	public set parent(node: TreeNode) {
+	public set parent(node: TreeNode | undefined) {
 		this._parent = node;
 	}
 
-	public get errorStatusCode(): number {
+	public get errorStatusCode(): number | undefined {
 		return this._errorStatusCode;
 	}
 
-	public set errorStatusCode(error: number) {
+	public set errorStatusCode(error: number | undefined) {
 		this._errorStatusCode = error;
 	}
 
-	public generateNodePath(): string {
-		let path = undefined;
+	public generateNodePath(): string | undefined {
+		let path: string | undefined;
 		if (this.parent) {
 			path = this.parent.generateNodePath();
 		}
@@ -40,13 +40,13 @@ export abstract class TreeNode implements ITreeNode {
 		return path;
 	}
 
-	public findNodeByPath(path: string, expandIfNeeded: boolean = false): Promise<TreeNode> {
+	public findNodeByPath(path: string, expandIfNeeded: boolean = false): Promise<TreeNode | undefined> {
 		let condition: TreeNodePredicate = (node: TreeNode) => node.getNodeInfo().nodePath === path || node.getNodeInfo().nodePath.startsWith(path);
 		let filter: TreeNodePredicate = (node: TreeNode) => path.startsWith(node.getNodeInfo().nodePath);
 		return TreeNode.findNode(this, condition, filter, true);
 	}
 
-	public static async findNode(node: TreeNode, condition: TreeNodePredicate, filter: TreeNodePredicate, expandIfNeeded: boolean): Promise<TreeNode> {
+	public static async findNode(node: TreeNode, condition: TreeNodePredicate, filter: TreeNodePredicate, expandIfNeeded: boolean): Promise<TreeNode | undefined> {
 		if (!node) {
 			return undefined;
 		}

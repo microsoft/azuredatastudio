@@ -9,5 +9,5 @@ import * as constants from '../constants';
 
 export abstract class ProviderBase {
 	public readonly providerId: string = constants.kustoClusterProviderName;
-	public handle: number;
+	public handle?: number;
 }

@@ -20,7 +20,7 @@ export namespace TelemetryNotification {
  * Update event parameters
  */
 export class TelemetryParams {
-	public params: {
+	public params!: {
 		eventName: string;
 		properties: ITelemetryEventProperties;
 		measures: ITelemetryEventMeasures;
@@ -47,15 +47,15 @@ export class CompletionExtensionParams {
 	/// <summary>
 	/// Absolute path for the assembly containing the completion extension
 	/// </summary>
-	public assemblyPath: string;
+	public assemblyPath?: string;
 	/// <summary>
 	/// The type name for the completion extension
 	/// </summary>
-	public typeName: string;
+	public typeName?: string;
 	/// <summary>
 	/// Property bag for initializing the completion extension
 	/// </summary>
-	public properties: {};
+	public properties?: {};
 }
 
 export namespace CompletionExtLoadRequest {
