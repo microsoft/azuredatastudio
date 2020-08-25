@@ -44,7 +44,9 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 		this.rootDescriptor = descriptor;
 		this.modelStore.registerValidationCallback(validationCallback);
 		// Kick off the build by detecting changes to the model
-		this.changeRef.detectChanges();
+		if (!(this.changeRef['destroyed'])) {
+			this.changeRef.detectChanges();
+		}
 	}
 
 	private defineComponent(component: IComponentShape): IComponentDescriptor {
