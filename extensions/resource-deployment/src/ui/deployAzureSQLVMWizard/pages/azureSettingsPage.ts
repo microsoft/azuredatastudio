@@ -4,95 +4,67 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as nls from 'vscode-nls';
-import { getDropdownComponent, InputComponents, setModelValues } from '../../modelViewUtils';
+import * as constants from '../constants';
 import { WizardPageBase } from '../../wizardPageBase';
 import { DeployAzureSQLVMWizard } from '../deployAzureSQLVMWizard';
-const localize = nls.loadMessageBundle();
-const MissingRequiredInformationErrorMessage = localize('deployCluster.MissingRequiredInfoError', "Please fill out the required fields marked with red asterisks.");
+import { apiService } from '../../../services/apiService';
 
 export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
-	private inputComponents: InputComponents = {};
+
+
+	private _azureAccountsDropdown!: azdata.DropDownComponent;
+	private _azureSubscriptionsDropdown!: azdata.DropDownComponent;
+	private _azureRegionsDropdown!: azdata.DropDownComponent;
+	private _form!: azdata.FormContainer;
+
+	private _accountsMap!: Map<azdata.CategoryValue, azdata.Account>;
 
 	constructor(wizard: DeployAzureSQLVMWizard) {
-		super(localize('deployAzureSQLVM.AzureSettingsPageTitle', "Azure settings"),
-			localize('deployAzureSQLVM.AzureSettingsPageDescription', "Configure the settings to create an Azure SQL Virtual Machine"), wizard);
+		super(
+			constants.AzureSettingsPageTitle,
+			constants.AzureSettingsPageDescription,
+			wizard
+		);
+		this._accountsMap = new Map();
 	}
 
 	public initialize(): void {
 		this.pageObject.registerContent(async (view: azdata.ModelView) => {
-			let accounts = await azdata.accounts.getAllAccounts();
-			let azureAccountsSubscriptionMap: Map<string | CategoryValue, azdata.Account> = new Map();
-			accounts.map((account) => {
-				azureAccountsSubscriptionMap.set(account.displayInfo.displayName, account);
-			});
-			const azureAccountsDropdown = view.modelBuilder.dropDown()
-				.withProperties({
-					value: accounts[0].displayInfo,
-					values: accounts.map((account) => {
-						return account.displayInfo;
+
+			this.createAzureAccountsDropdown(view);
+			this.createAzureSubscriptionsDropdown(view);
+			this.createAzureRegionsDropdown(view);
+
+			this._form = view.modelBuilder.formContainer()
+				.withFormItems(
+					[
+						{
+							title: constants.AzureAccountDropdownLabel,
+							component: this._azureAccountsDropdown
+						},
+						{
+							title: constants.AzureAccountSubscriptionDropdownLabel,
+							component: this._azureSubscriptionsDropdown
+						},
+						{
+							title: constants.AzureAccountRegionDropdownLabel,
+							component: this._azureRegionsDropdown
+						}
+					],
+					{
+						horizontal: false,
+						componentWidth: '100%'
 					})
-				}).component();
+				.withLayout({ width: '100%' })
+				.component();
 
-			const azureSubscriptionDropdown = view.modelBuilder.dropDown()
-				.withProperties({
-					values: []
-				}).component();
-
-			let defaultAccount;
-			if (azureAccountsDropdown.values) {
-				defaultAccount = azureAccountsDropdown.values[0];
-			}
-			if (defaultAccount) {
-				this.setSubscriptionFromAzureAccount(azureAccountsSubscriptionMap.get(defaultAccount));
-			}
-
-
-			azureAccountsDropdown.onValueChanged((account) => {
-				azureSubscriptionDropdown.values = await this.setSubscriptionFromAzureAccount(account);
-			});
-			const formBuilder = view.modelBuilder.formContainer().withFormItems(
-				[
-					{
-						title: 'Azure Account',
-						component: azureAccountsDropdown
-					},
-					{
-						title: 'Account Subscription',
-						component: azureSubscriptionDropdown
-					}
-				],
-				{
-					horizontal: false,
-					componentWidth: '100%'
-				}
-			);
-			const form = formBuilder.withLayout({ width: '100%' }).component();
-			return view.initializeModel(form);
+			return view.initializeModel(this._form);
 		});
-	}
-
-	public async setSubscriptionFromAzureAccount(account: any): string[] {
-		if (account) {
-			return await azdata.accounts.getSecurityToken(account);
-		}
 	}
 
 	public async onEnter(): Promise<void> {
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
-			this.wizard.wizardObject.message = { text: '' };
-			if (pcInfo.newPage > pcInfo.lastPage) {
-				const location = getDropdownComponent('Temp2', this.inputComponents).value;
-				if (!location) {
-					this.wizard.wizardObject.message = {
-						text: MissingRequiredInformationErrorMessage,
-						level: azdata.window.MessageLevel.Error
-					};
-				}
-				return !!location;
-			} else {
-				return true;
-			}
+			return true;
 		});
 	}
 
@@ -100,7 +72,82 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			return true;
 		});
-		setModelValues(this.inputComponents, this.wizard.model);
-		Object.assign(this.wizard.inputComponents, this.inputComponents);
+	}
+
+	private async createAzureAccountsDropdown(view: azdata.ModelView) {
+		this._azureAccountsDropdown = view.modelBuilder.dropDown().withProperties({
+			required: true
+		}).component();
+
+		await this.populateAzureAccountsDropdown();
+
+		this._azureAccountsDropdown.onValueChanged(function (value) {
+
+		});
+	}
+
+	private async populateAzureAccountsDropdown() {
+		let accounts = await azdata.accounts.getAllAccounts();
+		this._azureAccountsDropdown.updateProperties({
+			values: accounts.map((account): azdata.CategoryValue => {
+				let accountCategoryValue = {
+					displayName: account.displayInfo.displayName,
+					name: account.displayInfo.name!
+				};
+				this._accountsMap.set(accountCategoryValue, account);
+				return accountCategoryValue;
+			})
+		});
+
+		if (!(this.wizard.model.azureAccount === accounts[0])) {
+			this.wizard.model.azureAccount = accounts[0];
+			await this.populateAzureSubscriptionsDropdown();
+		}
+	}
+
+	private async createAzureSubscriptionsDropdown(view: azdata.ModelView) {
+		this._azureSubscriptionsDropdown = view.modelBuilder.dropDown().withProperties({
+			required: true
+		}).component();
+
+		await this.populateAzureSubscriptionsDropdown();
+
+		this._azureSubscriptionsDropdown.onValueChanged(function (value) {
+
+		});
+	}
+
+	private async populateAzureSubscriptionsDropdown() {
+		let subService = await apiService.getAzurecoreApi();
+		let currentAccount = this._accountsMap.get(this._azureAccountsDropdown.value as azdata.CategoryValue);
+		let subscriptions = (await subService.getSubscriptions(currentAccount, true)).subscriptions;
+		console.log(subscriptions);
+		this._azureSubscriptionsDropdown.updateProperties({
+			values: subscriptions.map(function (subscription): azdata.CategoryValue {
+				return {
+					displayName: subscription.name,
+					name: subscription.name
+				};
+			})
+		});
+	}
+
+	private async createAzureRegionsDropdown(view: azdata.ModelView) {
+		this._azureRegionsDropdown = view.modelBuilder.dropDown().withProperties({
+			required: true
+		}).component();
+
+		await this.populateAzureRegionsDropdown();
+
+		this._azureRegionsDropdown.onValueChanged(function (value) {
+
+		});
+	}
+
+	private async populateAzureRegionsDropdown() {
+		let accounts = await azdata.accounts.getAllAccounts();
+		this._azureAccountsDropdown.updateProperties({
+			values: accounts.map((value) => { return value.displayInfo; })
+		});
 	}
 }
