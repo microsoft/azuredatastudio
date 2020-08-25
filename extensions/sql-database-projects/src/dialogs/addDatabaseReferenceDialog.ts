@@ -217,7 +217,7 @@ export class AddDatabaseReferenceDialog {
 	private createDacpacTextbox(): azdata.FormComponent {
 		this.dacpacTextbox = this.view!.modelBuilder.inputBox().withProperties({
 			ariaLabel: constants.dacpacText,
-			placeholder: constants.dacpacPlaceholder,
+			placeHolder: constants.dacpacPlaceholder,
 			width: '405px'
 		}).component();
 
