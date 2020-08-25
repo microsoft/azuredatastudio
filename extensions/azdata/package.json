@@ -26,21 +26,21 @@
         "properties": {
           "deployment.azdata.auto.install": {
             "type": "string",
-            "default": "userPrompt",
+            "default": "UserPrompt",
             "enum": [
-              "always",
-              "never",
-              "userPrompt"
+              "Always",
+              "Never",
+              "UserPrompt"
             ],
             "description": "%azdata.auto.install.description%"
           },
           "deployment.azdata.auto.upgrade": {
             "type": "string",
-            "default": "userPrompt",
+            "default": "UserPrompt",
             "enum": [
-              "always",
-              "never",
-              "userPrompt"
+              "Always",
+              "Never",
+              "UserPrompt"
             ],
             "description": "%azdata.auto.upgrade.description%"
           }
@@ -51,12 +51,14 @@
       {
         "command": "azdata.install",
         "title": "%azdata.install.command.name%",
-        "category": "%deployment.category%"
+        "category": "%deployment.category%",
+        "when": "!config.deployment.azdataFound"
       },
       {
         "command": "azdata.upgrade",
         "title": "%azdata.upgrade.command.name%",
-        "category": "%deployment.category%"
+        "category": "%deployment.category%",
+        "when": "config.deployment.azdataFound"
       }
     ]
   },

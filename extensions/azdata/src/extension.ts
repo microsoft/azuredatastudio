@@ -12,6 +12,7 @@ let localAzdata: IAzdataTool | undefined = undefined;
 
 export async function activate(): Promise<azdataExt.IExtension> {
 	const outputChannel = vscode.window.createOutputChannel('azdata');
+	vscode.commands.executeCommand('setContext', 'config.deployment.azdataFound', false);
 	vscode.commands.registerCommand('azdata.install', () => {
 		checkAndInstallAzdata(outputChannel, true);
 	});
@@ -28,6 +29,7 @@ export async function activate(): Promise<azdataExt.IExtension> {
 
 	checkAndInstallAzdata(outputChannel).then(azdataTool => {
 		localAzdata = azdataTool;
+		vscode.commands.executeCommand('setContext', 'config.deployment.azdataFound', true);
 	});
 	return {
 		dc: {
