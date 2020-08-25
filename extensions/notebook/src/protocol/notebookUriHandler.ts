@@ -21,27 +21,26 @@ export class NotebookUriHandler implements vscode.UriHandler {
 	constructor() {
 	}
 
-	handleUri(uri: vscode.Uri): vscode.ProviderResult<void> {
-		switch (uri.path) {
+	handleUri(uri: vscode.Uri): Thenable<void> {
+		switch (uri?.path) {
 			case '/new':
-				vscode.commands.executeCommand('notebook.command.new');
-				break;
+				return vscode.commands.executeCommand('notebook.command.new');
 			case '/open':
-				this.open(uri);
-				break;
+				return this.open(uri);
 			default:
-				vscode.window.showErrorMessage(localize('notebook.unsupportedAction', "Action {0} is not supported for this handler", uri.path));
+				vscode.window.showErrorMessage(localize('notebook.unsupportedAction', "Action {0} is not supported for this handler", uri?.path));
+				return;
 		}
 	}
 
-	private open(uri: vscode.Uri): void {
+	private open(uri: vscode.Uri): Promise<void> {
 		const data = querystring.parse(uri.query);
 
 		if (!data.url) {
 			console.warn('Failed to open URI:', uri);
 		}
 
-		this.openNotebook(data.url);
+		return this.openNotebook(data.url);
 	}
 
 	private async openNotebook(url: string | string[]): Promise<void> {
