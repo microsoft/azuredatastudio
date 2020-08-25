@@ -25,6 +25,8 @@ describe('Github Remote Book', function () {
 
 	afterEach(function (): void {
 		sinon.restore();
+		nock.cleanAll();
+		nock.enableNetConnect();
 	});
 
 	it('Verify GitHub Remote Book is created by controller', async function (): Promise<void> {
@@ -42,6 +44,8 @@ describe('Github Remote Book', function () {
 		controller.setRemoteBook(releaseURL, remoteLocation, asset);
 		should(controller.model.remoteBook).not.null();
 		should(controller.model.remoteBook instanceof GitHubRemoteBook).be.true;
+		let book = model.remoteBook as GitHubRemoteBook;
+		should(book.asset.browserDownloadUrl.toString(false)).equal('https://github.com/microsoft/test/releases/download/v1/CU-1.0-EN.zip');
 	});
 
 	it('Verify set local path is called when creating a GitHub Remote Book', async function (): Promise<void> {
@@ -87,18 +91,17 @@ describe('Github Remote Book', function () {
 				.persist()
 				.get('/microsoft/test/releases/download/v1/CU-1.0-EN.zip')
 				.replyWithFile(200, __filename);
-		await model.remoteBook.createLocalCopy();
+		await should(model.remoteBook.createLocalCopy()).be.fulfilled();
 		should(setExtractSpy.calledOnceWith(vscode.Uri.file(model.remoteBook.localPath.fsPath)));
 		await fs.promises.stat(model.remoteBook.localPath.fsPath);
 	});
 
-	it('Should reject if error', async function (): Promise<void> {
+	it('Should reject if unexpected error', async function (): Promise<void> {
 		nock('https://github.com')
 				.persist()
 				.get('/microsoft/test/releases/download/v1/CU-1.0-EN.zip')
 				.replyWithError(new Error('Unexpected Error'));
-		const createLocalCopy =  model.remoteBook.createLocalCopy();
-		await should(createLocalCopy).be.rejected();
+		await should(model.remoteBook.createLocalCopy()).be.rejected();
 	});
 
 	it('Should reject if response status code is not 200', async function (): Promise<void> {
@@ -107,7 +110,8 @@ describe('Github Remote Book', function () {
 				.get('/microsoft/test/releases/download/v1/CU-1.0-EN.zip')
 				.reply(404)
 		const createLocalCopy =  model.remoteBook.createLocalCopy();
-		await should(createLocalCopy).be.rejected;
+		await should(createLocalCopy).be.rejected();
+
 	});
 });
 
