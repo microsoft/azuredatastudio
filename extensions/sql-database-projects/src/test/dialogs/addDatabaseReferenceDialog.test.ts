@@ -65,6 +65,11 @@ describe('Add Database Reference Dialog', () => {
 		dialog.locationDropdown!.value = constants.sameDatabase;
 		dialog.tryEnableAddReferenceButton();
 		should(dialog.dialog.okButton.enabled).equal(true, 'Ok button should be enabled because only dacpac location is needed for a reference located on the same database');
+
+		// change reference type back to system db
+		dialog.systemDbRadioButtonClick();
+		should(dialog.databaseNameTextbox?.value).equal('', `Database name textbox should be empty. Actual:${dialog.databaseNameTextbox?.value}`);
+		should(dialog.dialog.okButton.enabled).equal(false, 'Ok button should not be enabled because database name is not filled out');
 	});
 
 	it('Should enable and disable input boxes depending on the reference type', async function (): Promise<void> {
