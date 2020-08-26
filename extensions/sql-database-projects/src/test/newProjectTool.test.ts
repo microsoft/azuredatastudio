@@ -13,7 +13,6 @@ let previousSetting : string;
 let testFolderPath : string;
 
 describe('NewProjectTool: New project tool tests', function (): void {
-
 	beforeEach(async function () {
 		previousSetting = await vscode.workspace.getConfiguration(constants.dbProjectConfigurationKey)[constants.projectSaveLocationKey];
 		testFolderPath = await generateTestFolderPath();
