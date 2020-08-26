@@ -21,6 +21,8 @@ export class IconPathHelper {
 	public static referenceDatabase: IconPath;
 
 	public static refresh: IconPath;
+	public static folder: IconPath;
+	public static edit: IconPath;
 
 	public static setExtensionContext(extensionContext: vscode.ExtensionContext) {
 		IconPathHelper.extensionContext = extensionContext;
@@ -34,6 +36,8 @@ export class IconPathHelper {
 		IconPathHelper.referenceDatabase = IconPathHelper.makeIcon('reference-database');
 
 		IconPathHelper.refresh = IconPathHelper.makeIcon('refresh');
+		IconPathHelper.folder = IconPathHelper.makeIcon('folder');
+		IconPathHelper.edit = IconPathHelper.makeIcon('edit');
 	}
 
 	private static makeIcon(name: string) {

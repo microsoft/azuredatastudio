@@ -320,7 +320,7 @@ declare module 'azdata' {
 	}
 
 	export interface IConnectionProfile extends ConnectionInfo {
-		connectionName: string;
+		connectionName?: string;
 		serverName: string;
 		databaseName: string;
 		userName: string;
@@ -427,11 +427,11 @@ declare module 'azdata' {
 		/**
 		 * The major version of the instance.
 		 */
-		serverMajorVersion: number;
+		serverMajorVersion?: number;
 		/**
 		 * The minor version of the instance.
 		 */
-		serverMinorVersion: number;
+		serverMinorVersion?: number;
 		/**
 		 * The build of the instance.
 		 */
@@ -1249,7 +1249,7 @@ declare module 'azdata' {
 	}
 
 	export interface ObjectExplorerCloseSessionInfo {
-		sessionId: string;
+		sessionId?: string;
 	}
 
 	export interface ObjectExplorerCloseSessionResponse {
@@ -2000,7 +2000,7 @@ declare module 'azdata' {
 		/**
 		 * Event values
 		 */
-		values: {};
+		values: { [key: string]: any };
 	}
 
 	/**
@@ -3255,7 +3255,7 @@ declare module 'azdata' {
 		editableCategory = 'editableCategory'
 	}
 
-	export interface RadioButtonProperties {
+	export interface RadioButtonProperties extends ComponentProperties {
 		name?: string;
 		label?: string;
 		value?: string;
@@ -4130,7 +4130,7 @@ declare module 'azdata' {
 		 * Note that the connection is not guaranteed to be in a connected
 		 * state on click.
 		 */
-		connectionProfile: IConnectionProfile;
+		connectionProfile?: IConnectionProfile;
 	}
 
 	/**
@@ -4149,7 +4149,7 @@ declare module 'azdata' {
 		 * Node info for objects below a specific connection. This
 		 * may be null for a Connection-level object
 		 */
-		nodeInfo: NodeInfo;
+		nodeInfo?: NodeInfo;
 	}
 
 	/**

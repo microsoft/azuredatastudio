@@ -33,8 +33,10 @@ export class ServerInfoContextKey implements IContextKey<ServerInfo> {
 
 	set(value: ServerInfo) {
 		this._serverInfo.set(value);
-		let majorVersion = value && value.serverMajorVersion;
-		this._serverMajorVersion.set(majorVersion && `${majorVersion}`);
+		let majorVersion = value.serverMajorVersion;
+		if (majorVersion) {
+			this._serverMajorVersion.set(`${majorVersion}`);
+		}
 		this._isCloud.set(value && value.isCloud);
 		this._isBigDataCluster.set(value && value.options && value.options['isBigDataCluster']);
 		let engineEditionId = value && value.engineEditionId;
@@ -48,7 +50,7 @@ export class ServerInfoContextKey implements IContextKey<ServerInfo> {
 		this._engineEdition.reset();
 	}
 
-	public get(): ServerInfo {
+	public get(): ServerInfo | undefined {
 		return this._serverInfo.get();
 	}
 }

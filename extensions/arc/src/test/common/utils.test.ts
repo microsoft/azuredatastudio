@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 import * as should from 'should';
 import 'mocha';
-import { resourceTypeToDisplayName, parseEndpoint, parseInstanceName, getAzurecoreApi, getResourceTypeIcon, getConnectionModeDisplayText, getDatabaseStateDisplayText, promptForResourceDeletion, promptAndConfirmPassword, getErrorMessage } from '../../common/utils';
+import { resourceTypeToDisplayName, parseEndpoint, parseInstanceName, getAzurecoreApi, getResourceTypeIcon, getConnectionModeDisplayText, getDatabaseStateDisplayText, promptForResourceDeletion, promptAndConfirmPassword, getErrorMessage, parseIpAndPort } from '../../common/utils';
 
 import * as loc from '../../localizedConstants';
 import { ResourceType, IconPathHelper, ConnectionMode as ConnectionMode } from '../../constants';
@@ -139,7 +139,7 @@ describe('promptForResourceDeletion Method Tests', function (): void {
 	});
 
 	it('Resolves as true when value entered is correct', function (done): void {
-		promptForResourceDeletion('mynamespace', 'myname').then((value: boolean) => {
+		promptForResourceDeletion('myname').then((value: boolean) => {
 			value ? done() : done(new Error('Expected return value to be true'));
 		});
 		mockInputBox.value = 'myname';
@@ -147,14 +147,14 @@ describe('promptForResourceDeletion Method Tests', function (): void {
 	});
 
 	it('Resolves as false when input box is closed early', function (done): void {
-		promptForResourceDeletion('mynamespace', 'myname').then((value: boolean) => {
+		promptForResourceDeletion('myname').then((value: boolean) => {
 			!value ? done() : done(new Error('Expected return value to be false'));
 		});
 		mockInputBox.hide();
 	});
 
 	it('Validation message is set when value entered is incorrect', async function (): Promise<void> {
-		promptForResourceDeletion('mynamespace', 'myname');
+		promptForResourceDeletion('myname');
 		mockInputBox.value = 'wrong value';
 		await mockInputBox.triggerAccept();
 		should(mockInputBox.validationMessage).not.be.equal('', 'Validation message should not be empty after incorrect value entered');
@@ -185,7 +185,7 @@ describe('promptAndConfirmPassword Method Tests', function (): void {
 			}
 		});
 		mockInputBox.value = password;
-		mockInputBox.triggerAccept().then( () => {
+		mockInputBox.triggerAccept().then(() => {
 			mockInputBox.value = password;
 			mockInputBox.triggerAccept();
 		});
@@ -212,7 +212,7 @@ describe('promptAndConfirmPassword Method Tests', function (): void {
 			}
 		});
 		mockInputBox.value = password;
-		mockInputBox.triggerAccept().then( () => {
+		mockInputBox.triggerAccept().then(() => {
 			mockInputBox.hide();
 		});
 	});
@@ -221,8 +221,8 @@ describe('promptAndConfirmPassword Method Tests', function (): void {
 		const testError = 'Test Error';
 		promptAndConfirmPassword((_: string) => { return testError; }).catch(err => done(err));
 		mockInputBox.value = '';
-		mockInputBox.triggerAccept().then( () => {
-			if(mockInputBox.validationMessage === testError) {
+		mockInputBox.triggerAccept().then(() => {
+			if (mockInputBox.validationMessage === testError) {
 				done();
 			} else {
 				done(new Error(`Validation message '${mockInputBox.validationMessage}' was expected to be '${testError}'`));
@@ -233,10 +233,10 @@ describe('promptAndConfirmPassword Method Tests', function (): void {
 	it('Error message displayed when passwords do not match', function (done): void {
 		promptAndConfirmPassword((_: string) => { return ''; }).catch(err => done(err));
 		mockInputBox.value = 'MyPassword';
-		mockInputBox.triggerAccept().then( () => {
+		mockInputBox.triggerAccept().then(() => {
 			mockInputBox.value = 'WrongPassword';
-			mockInputBox.triggerAccept().then( () => {
-				if(mockInputBox.validationMessage === loc.thePasswordsDoNotMatch) {
+			mockInputBox.triggerAccept().then(() => {
+				if (mockInputBox.validationMessage === loc.thePasswordsDoNotMatch) {
 					done();
 				} else {
 					done(new Error(`Validation message '${mockInputBox.validationMessage} was not the expected message`));
@@ -272,5 +272,18 @@ describe('parseInstanceName Method Tests', function () {
 
 	it('Invalid name', function (): void {
 		should(() => parseInstanceName('Some_Invalid_Name')).throwError();
+	});
+});
+
+describe('parseIpAndPort', function (): void {
+	it('Valid address', function (): void {
+		const ip = '127.0.0.1';
+		const port = '80';
+		should(parseIpAndPort(`${ip}:${port}`)).deepEqual({ ip: ip, port: port });
+	});
+
+	it('invalid address - no port', function (): void {
+		const ip = '127.0.0.1';
+		should(() => parseIpAndPort(ip)).throwError();
 	});
 });

@@ -122,7 +122,7 @@ export class ConfigurePythonWizard {
 
 		this._wizard.generateScriptButton.hidden = true;
 		this._wizard.pages = [page0, page1];
-		this._wizard.open();
+		await this._wizard.open();
 	}
 
 	public async close(): Promise<void> {

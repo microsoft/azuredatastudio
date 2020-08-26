@@ -76,6 +76,7 @@ class ConnectionProfileTemplate extends Disposable {
 
 	private _root: HTMLElement;
 	private _icon: HTMLElement;
+	private _connectionStatusBadge: HTMLElement;
 	private _label: HTMLElement;
 	/**
 	 * _isCompact is used to render connections tiles with and without the action buttons.
@@ -91,6 +92,7 @@ class ConnectionProfileTemplate extends Disposable {
 		container.parentElement.classList.add('connection-profile');
 		this._root = dom.append(container, dom.$('.connection-tile'));
 		this._icon = dom.append(this._root, dom.$('div.icon server-page'));
+		this._connectionStatusBadge = dom.append(this._icon, dom.$('div.connection-status-badge'));
 		this._label = dom.append(this._root, dom.$('div.label'));
 	}
 
@@ -98,13 +100,13 @@ class ConnectionProfileTemplate extends Disposable {
 		if (!this._isCompact) {
 			let iconPath: IconPath = getIconPath(element, this._connectionManagementService);
 			if (this._connectionManagementService.isConnected(undefined, element)) {
-				this._icon.classList.remove('disconnected');
-				this._icon.classList.add('connected');
-				renderServerIcon(this._icon, iconPath, true);
+				this._connectionStatusBadge.classList.remove('disconnected');
+				this._connectionStatusBadge.classList.add('connected');
+				renderServerIcon(this._icon, iconPath);
 			} else {
-				this._icon.classList.remove('connected');
-				this._icon.classList.add('disconnected');
-				renderServerIcon(this._icon, iconPath, false);
+				this._connectionStatusBadge.classList.remove('connected');
+				this._connectionStatusBadge.classList.add('disconnected');
+				renderServerIcon(this._icon, iconPath);
 			}
 		}
 
@@ -283,7 +285,7 @@ function getIconPath(connection: ConnectionProfile, connectionManagementService:
 	return iconPath;
 }
 
-function renderServerIcon(element: HTMLElement, iconPath: IconPath, isConnected: boolean): void {
+function renderServerIcon(element: HTMLElement, iconPath: IconPath): void {
 	if (!element) { return; }
 	if (iconPath) {
 		iconRenderer.putIcon(element, iconPath);

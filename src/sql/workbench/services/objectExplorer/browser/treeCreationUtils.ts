@@ -104,7 +104,7 @@ export class TreeCreationUtils {
 				identityProvider: identityProvider
 			};
 
-			return instantiationService.createInstance(
+			const tree = instantiationService.createInstance(
 				AsyncServerTree,
 				'ServerTreeView',
 				treeContainer,
@@ -117,6 +117,8 @@ export class TreeCreationUtils {
 				dataSource,
 				treeOptions
 			);
+			dnd.tree = tree;
+			return tree;
 		} else {
 			const dataSource = instantiationService.createInstance(ServerTreeDataSource);
 			const actionProvider = instantiationService.createInstance(ServerTreeActionProvider);
