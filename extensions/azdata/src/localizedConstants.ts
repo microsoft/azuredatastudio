@@ -33,3 +33,4 @@ export function platformUnsupported(platform: string): string { return localize(
 export function unexpectedCommandError(errMsg: string): string { return localize('azdata.unexpectedCommandError', "Unexpected error executing command : {0}", errMsg); }
 export function updateError(err: any): string { return localize('azdata.updateError', "Error updating azdata : {0}", err.message ?? err); }
 export function unexpectedExitCode(code: number, err: string): string { return localize('azdata.unexpectedExitCode', "Unexpected exit code from command : {1} ({0})", code, err); }
+export const noAzdata = localize('azdata.NoAzdata', "No azdata available");

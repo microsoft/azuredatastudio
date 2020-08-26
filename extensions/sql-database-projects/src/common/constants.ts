@@ -63,26 +63,26 @@ export function deleteConfirmationContents(toDelete: string) { return localize('
 
 // Publish dialog strings
 
-export const publishDialogName = localize('publishDialogName', "Publish Database");
+export const publishDialogName = localize('publishDialogName', "Publish project");
 export const publishDialogOkButtonText = localize('publishDialogOkButtonText', "Publish");
 export const cancelButtonText = localize('cancelButtonText', "Cancel");
 export const generateScriptButtonText = localize('generateScriptButtonText', "Generate Script");
-export const targetDatabaseSettings = localize('targetDatabaseSettings', "Target Database Settings");
 export const databaseNameLabel = localize('databaseNameLabel', "Database");
-export const targetConnectionLabel = localize('targetConnectionLabel', "Target Connection");
-export const editConnectionButtonText = localize('editConnectionButtonText', "Edit");
-export const clearButtonText = localize('clearButtonText', "Clear");
+export const targetConnectionLabel = localize('targetConnectionLabel', "Connection");
 export const dataSourceRadioButtonLabel = localize('dataSourceRadioButtonLabel', "Data sources");
 export const connectionRadioButtonLabel = localize('connectionRadioButtonLabel', "Connections");
 export const selectConnectionRadioButtonsTitle = localize('selectconnectionRadioButtonsTitle', "Specify connection from:");
 export const dataSourceDropdownTitle = localize('dataSourceDropdownTitle', "Data source");
 export const noDataSourcesText = localize('noDataSourcesText', "No data sources in this project");
-export const loadProfileButtonText = localize('loadProfileButtonText', "Load Profile...");
+export const loadProfilePlaceholderText = localize('loadProfilePlaceholderText', "Load profile...");
 export const profileReadError = localize('profileReadError', "Could not load the profile file.");
 export const sqlCmdTableLabel = localize('sqlCmdTableLabel', "SQLCMD Variables");
 export const sqlCmdVariableColumn = localize('sqlCmdVariableColumn', "Name");
 export const sqlCmdValueColumn = localize('sqlCmdValueColumn', "Value");
 export const loadSqlCmdVarsButtonTitle = localize('reloadValuesFromProjectButtonTitle', "Reload values from project");
+export const profile = localize('profile', "Profile");
+export const selectConnection = localize('selectConnection', "Select connection");
+export const connection = localize('connection', "Connection");
 
 // Error messages
 
@@ -222,3 +222,6 @@ export enum DatabaseProjectItemType {
 	dataSourceRoot = 'databaseProject.itemType.dataSourceRoot',
 	dataSource = 'databaseProject.itemType.dataSource'
 }
+
+// System dbs
+export const systemDbs = ['master', 'msdb', 'tempdb', 'model'];
