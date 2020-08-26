@@ -7,39 +7,18 @@ import * as azdata from 'azdata';
 import { Model } from '../model';
 import { ITool } from '../../interfaces';
 
-export interface AzureSubscription {
-	subscriptionName: string;
-	subscriptionId: string;
-}
-
 export class DeployAzureSQLVMWizardModel extends Model {
-	private _azureAccount!: azdata.Account;
-	private _securityToken!: string;
-	private _azureSubscription!: AzureSubscription;
+	public azureAccount!: azdata.Account;
+	public securityToken!: any;
+	public azureSubscription!: string;
+	public azureResouceGroup!: string;
+	public azureRegion!: string;
 
-	public set azureAccount(account: azdata.Account) {
-		this._azureAccount = account;
-	}
-
-	public get azureAccount(): azdata.Account {
-		return this._azureAccount;
-	}
-
-	public set securityToken(token: string) {
-		this._securityToken = token;
-	}
-
-	public get securityToken(): string {
-		return this._securityToken;
-	}
-
-	public set azureSubscription(subscription: AzureSubscription) {
-		this._azureSubscription = subscription;
-	}
-
-	public get azureSubscription(): AzureSubscription {
-		return this._azureSubscription;
-	}
+	public vmName!: string;
+	public vmImage!: string;
+	public vmImageSKU!: string;
+	public vmImageVersion!: string;
+	public vmSize!: string;
 
 	constructor() {
 		super();
