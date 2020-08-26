@@ -83,6 +83,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _textCellsLoading: number = 0;
 	private _standardKernels: notebookUtils.IStandardKernelWithProvider[];
 	private _kernelAliases: string[] = [];
+	private _currentKernelAlias: string;
 
 	public requestConnectionHandler: () => Promise<boolean>;
 
@@ -240,6 +241,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._kernelAliases;
 	}
 
+	public get currentKernelAlias(): string {
+		return this._currentKernelAlias;
+	}
+
 	public set trustedMode(isTrusted: boolean) {
 		this._trustedMode = isTrusted;
 
@@ -296,6 +301,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	public getApplicableConnectionProviderIds(kernelDisplayName: string): string[] {
 		let ids = [];
 		if (kernelDisplayName) {
+			if (kernelDisplayName === this.context?.serverCapabilities.notebookKernelAlias) {
+				kernelDisplayName = 'SQL';
+			}
 			ids = this._kernelDisplayNameToConnectionProviderIds.get(kernelDisplayName);
 		}
 		return !ids ? [] : ids;
@@ -706,8 +714,13 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public changeKernel(displayName: string): void {
-		this._contextsLoadingEmitter.fire();
-		this.doChangeKernel(displayName, true).catch(e => this.logService.error(e));
+		this._currentKernelAlias = this.context?.serverCapabilities.notebookKernelAlias;
+		if (this.kernelAliases.includes(this.currentKernelAlias) && displayName === this.currentKernelAlias) {
+			this.doChangeKernel(displayName, true).catch(e => this.logService.error(e));
+		} else {
+			this._contextsLoadingEmitter.fire();
+			this.doChangeKernel(displayName, true).catch(e => this.logService.error(e));
+		}
 	}
 
 	private async doChangeKernel(displayName: string, mustSetProvider: boolean = true, restoreOnFail: boolean = true): Promise<void> {
