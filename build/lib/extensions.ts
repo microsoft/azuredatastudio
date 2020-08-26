@@ -252,6 +252,7 @@ const externalExtensions = [
 	'schema-compare',
 	'cms',
 	'query-history',
+	'kusto',
 	'liveshare',
 	'sql-database-projects',
 	'machine-learning',
