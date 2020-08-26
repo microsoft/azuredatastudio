@@ -151,6 +151,7 @@ export class CellToggleMoreActions {
 
 	public onInit(elementRef: HTMLElement, context: CellContext) {
 		this._moreActionsElement = elementRef;
+		this._moreActionsElement.setAttribute('role', 'button');
 		if (this._moreActionsElement.childNodes.length > 0) {
 			this._moreActionsElement.removeChild(this._moreActionsElement.childNodes[0]);
 		}
