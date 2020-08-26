@@ -72,9 +72,9 @@ export class PackageManager {
 			//
 			let connection = await this.getCurrentConnection();
 			let defaultProvider: SqlRPackageManageProvider | SqlPythonPackageManageProvider | undefined;
-			if (connection && this._sqlPythonPackagePackageManager.canUseProvider) {
+			if (connection && await this._sqlPythonPackagePackageManager.canUseProvider()) {
 				defaultProvider = this._sqlPythonPackagePackageManager;
-			} else if (connection && this._sqlRPackageManager.canUseProvider) {
+			} else if (connection && await this._sqlRPackageManager.canUseProvider()) {
 				defaultProvider = this._sqlRPackageManager;
 			}
 			if (connection && defaultProvider) {
