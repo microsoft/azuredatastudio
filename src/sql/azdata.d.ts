@@ -1228,7 +1228,7 @@ declare module 'azdata' {
 	}
 
 	export interface ObjectExplorerExpandInfo {
-		sessionId: string;
+		sessionId?: string;
 		nodePath: string;
 		nodes: NodeInfo[];
 		errorMessage?: string;
