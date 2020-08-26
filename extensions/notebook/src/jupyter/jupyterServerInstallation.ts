@@ -17,6 +17,7 @@ import * as constants from '../common/constants';
 import * as utils from '../common/utils';
 import { Deferred } from '../common/promise';
 import { ConfigurePythonWizard } from '../dialog/configurePython/configurePythonWizard';
+import { IKernelInfo } from '../contracts/content';
 
 const localize = nls.loadMessageBundle();
 const msgInstallPkgProgress = localize('msgInstallPkgProgress', "Notebook dependencies installation is in progress");
@@ -79,6 +80,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	private readonly _requiredPackagesSet: Set<string>;
 
 	private readonly _runningOnSAW: boolean;
+
+	private _kernelSpecsUpdated = false;
 
 	constructor(extensionPath: string, outputChannel: vscode.OutputChannel) {
 		this.extensionPath = extensionPath;
@@ -708,6 +711,35 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 	public getRequiredPackagesForKernel(kernelName: string): PythonPkgDetails[] {
 		return this._requiredKernelPackages.get(kernelName) ?? [];
+	}
+
+	public get runningOnSaw(): boolean {
+		return this._runningOnSAW;
+	}
+
+	public async updateKernelSpecPaths(kernelsFolder: string): Promise<void> {
+		if (!this._runningOnSAW || this._kernelSpecsUpdated) {
+			return;
+		}
+
+		let fileNames = await fs.readdir(kernelsFolder);
+		let filePaths = fileNames.map(name => path.join(kernelsFolder, name));
+		let fileStats = await Promise.all(filePaths.map(path => fs.stat(path)));
+		let folderPaths = filePaths.filter((value, index) => value && fileStats[index].isDirectory());
+
+		let kernelFiles = folderPaths.map(folder => path.join(folder, 'kernel.json'));
+		kernelFiles.push(path.join(this._pythonInstallationPath, 'share', 'jupyter', 'kernels', 'python3', 'kernel.json'));
+
+		await Promise.all(kernelFiles.map(file => this.updateKernelSpecPath(file)));
+
+		this._kernelSpecsUpdated = true;
+	}
+
+	private async updateKernelSpecPath(kernelPath: string): Promise<void> {
+		let fileContents = await fs.readFile(kernelPath);
+		let kernelSpec = <IKernelInfo>JSON.parse(fileContents.toString());
+		kernelSpec.argv = kernelSpec.argv?.map(arg => arg.replace('{ADS_PYTHONDIR}', this._pythonInstallationPath));
+		await fs.writeFile(kernelPath, JSON.stringify(kernelSpec));
 	}
 }
 

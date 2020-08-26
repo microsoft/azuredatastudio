@@ -20,6 +20,7 @@ export interface IKernelInfo {
 	name: string;
 	language?: string;
 	display_name?: string;
+	argv?: string[];
 }
 
 export interface ILanguageInfo {
