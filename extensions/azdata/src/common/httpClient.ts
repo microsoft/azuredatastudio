@@ -26,7 +26,6 @@ export namespace HttpClient {
 	/**
 	 * Downloads the text contents of the document at the given URL, resolving to a string containing the text when complete
 	 * @param url The URL of the document whose contents need to be fetched
-	 * @param outputChannel Channel used to display diagnostic information
 	 * @returns a promise to a string that has the contents of document at the provided url
 	 */
 	export async function getTextContent(url: string): Promise<string> {

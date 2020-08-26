@@ -5,7 +5,7 @@
 
 import * as azdataExt from 'azdata-ext';
 import * as vscode from 'vscode';
-import { checkAndUpdateAzdata, findAzdata, IAzdataTool } from './azdata';
+import { checkAndUpgradeAzdata, findAzdata, IAzdataTool } from './azdata';
 import * as loc from './localizedConstants';
 
 let localAzdata: IAzdataTool | undefined = undefined;
@@ -87,9 +87,9 @@ function throwIfNoAzdata(): void {
 async function checkForAzdata(): Promise<IAzdataTool | undefined> {
 	try {
 		const azdata = await findAzdata(); // find currently installed Azdata
-		vscode.window.showInformationMessage(loc.foundExistingAzdata(azdata.path, (await azdata.semVersion()).raw));
+		vscode.window.showInformationMessage(loc.foundExistingAzdata(azdata.path, azdata.cachedVersion.raw));
 		// Don't block on this since we want the extension to finish activating without needing user input
-		checkAndUpdateAzdata(azdata).catch(err => vscode.window.showWarningMessage(loc.updateError(err))); //update if available and user wants it.
+		checkAndUpgradeAzdata(azdata).catch(err => vscode.window.showWarningMessage(loc.updateError(err))); //update if available and user wants it.
 		return findAzdata(); // now again find and return the currently installed azdata
 	} catch (err) {
 		// Don't block on this since we want the extension to finish activating without needing user input.
