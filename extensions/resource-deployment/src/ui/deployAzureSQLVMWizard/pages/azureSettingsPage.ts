@@ -28,7 +28,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 		this._accountsMap = new Map();
 	}
 
-	public initialize(): void {
+	public async initialize() {
 		this.pageObject.registerContent(async (view: azdata.ModelView) => {
 
 			this.createAzureAccountsDropdown(view);
@@ -40,7 +40,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 					[
 						{
 							title: constants.AzureAccountDropdownLabel,
-							component: this._azureAccountsDropdown
+							component: this._azureAccountsDropdown,
 						},
 						{
 							title: constants.AzureAccountSubscriptionDropdownLabel,
@@ -146,7 +146,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 	private async populateAzureRegionsDropdown() {
 		let accounts = await azdata.accounts.getAllAccounts();
-		this._azureAccountsDropdown.updateProperties({
+		this._azureRegionsDropdown.updateProperties({
 			values: accounts.map((value) => { return value.displayInfo; })
 		});
 	}
