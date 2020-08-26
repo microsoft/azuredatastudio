@@ -318,7 +318,6 @@ export class JupyterSession implements nb.ISession {
 			if (this.isIntegratedAuth(connectionProfile)) {
 				doNotCallChangeEndpointParams = `%_do_not_call_change_endpoint --server=${server} --auth=Kerberos`;
 			} else {
-
 				doNotCallChangeEndpointParams = `%_do_not_call_change_endpoint --username=${connectionProfile.options[USER]} --password=${credentials.password} --server=${server} --auth=Basic_Access`;
 			}
 			let future = this.sessionImpl.kernel.requestExecute({
