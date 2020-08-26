@@ -9,6 +9,7 @@ import * as templates from '../templates/templates';
 import * as constants from '../common/constants';
 import * as path from 'path';
 import * as glob from 'fast-glob';
+import * as newProjectTool from '../tools/newProjectTool';
 
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { getErrorMessage } from '../common/utils';
@@ -89,6 +90,9 @@ export default class MainController implements vscode.Disposable {
 		// ensure .net core is installed
 		await this.netcoreTool.findOrInstallNetCore();
 
+		// set the user settings around saving new projects to default value
+		await newProjectTool.initializeSaveLocationSetting();
+
 		// load any sql projects that are open in workspace folder
 		await this.loadProjectsInWorkspace();
 	}
@@ -144,8 +148,7 @@ export default class MainController implements vscode.Disposable {
 		try {
 			let newProjName = await vscode.window.showInputBox({
 				prompt: constants.newDatabaseProjectName,
-				value: `DatabaseProject${this.projectsController.projects.length + 1}`
-				// TODO: Smarter way to suggest a name.  Easy if we prompt for location first, but that feels odd...
+				value: newProjectTool.defaultProjectNameNewProj()
 			});
 
 			newProjName = newProjName?.trim();
@@ -160,7 +163,7 @@ export default class MainController implements vscode.Disposable {
 				canSelectFiles: false,
 				canSelectFolders: true,
 				canSelectMany: false,
-				defaultUri: vscode.workspace.workspaceFolders ? (vscode.workspace.workspaceFolders as vscode.WorkspaceFolder[])[0].uri : undefined
+				defaultUri: newProjectTool.defaultProjectSaveLocation()
 			});
 
 			if (!selectionResult) {
@@ -173,6 +176,8 @@ export default class MainController implements vscode.Disposable {
 			const newProjFolderUri = (selectionResult as vscode.Uri[])[0];
 			const newProjFilePath = await this.projectsController.createNewProject(<string>newProjName, newProjFolderUri, true);
 			const proj = await this.projectsController.openProject(vscode.Uri.file(newProjFilePath));
+
+			newProjectTool.updateSaveLocationSetting();
 
 			return proj;
 		}

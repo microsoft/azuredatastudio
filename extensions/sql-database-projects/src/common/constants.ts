@@ -40,7 +40,7 @@ export const yesString = localize('yesString', "Yes");
 export const noString = localize('noString', "No");
 export const okString = localize('okString', "Ok");
 export const extractTargetInput = localize('extractTargetInput', "Select folder structure for SQL files");
-export const extractDatabaseSelection = localize('extractDatabaseSelection', "Select database to import");
+export const extractDatabaseSelection = localize('extractDatabaseSelection', "Select database to create project from");
 export const selectString = localize('selectString', "Select");
 export const addDatabaseReferenceInput = localize('addDatabaseReferenceInput', "Add database reference for:");
 export const systemDatabaseReferenceInput = localize('systemDatabaseReferenceInput', "System Database:");
@@ -56,6 +56,11 @@ export const flat = localize('flat', "Flat");
 export const objectType = localize('objectType', "Object Type");
 export const schema = localize('schema', "Schema");
 export const schemaObjectType = localize('schemaObjectType', "Schema/Object Type");
+export const defaultProjectNameStarter = localize('defaultProjectNameStarter', "DatabaseProject");
+export const newDefaultProjectSaveLocation = localize('newDefaultProjectSaveLocation', "Would you like to update the default location to save new database projects?");
+export const invalidDefaultProjectSaveLocation = localize('invalidDefaultProjectSaveLocation', "Default location to save new database projects is invalid. Would you like to update it?");
+export const openWorkspaceSettings = localize('openWorkspaceSettings', "Yes, open Settings");
+export const doNotPromptAgain = localize('doNotPromptAgain', "Don't ask again");
 export function newObjectNamePrompt(objectType: string) { return localize('newObjectNamePrompt', 'New {0} name:', objectType); }
 export function deleteConfirmation(toDelete: string) { return localize('deleteConfirmation', "Are you sure you want to delete {0}?", toDelete); }
 export function deleteConfirmationContents(toDelete: string) { return localize('deleteConfirmationContents', "Are you sure you want to delete {0} and all of its contents?", toDelete); }
@@ -96,7 +101,7 @@ export const invalidSqlConnectionString = localize('invalidSqlConnectionString',
 export const projectNameRequired = localize('projectNameRequired', "Name is required to create a new database project.");
 export const projectLocationRequired = localize('projectLocationRequired', "Location is required to create a new database project.");
 export const projectLocationNotEmpty = localize('projectLocationNotEmpty', "Current project location is not empty. Select an empty folder for precise extraction.");
-export const extractTargetRequired = localize('extractTargetRequired', "Target information for extract is required to import database to project.");
+export const extractTargetRequired = localize('extractTargetRequired', "Target information for extract is required to create database project.");
 export const schemaCompareNotInstalled = localize('schemaCompareNotInstalled', "Schema compare extension installation is required to run schema compare");
 export const buildDacpacNotFound = localize('buildDacpacNotFound', "Dacpac created from build not found");
 export const updateProjectForRoundTrip = localize('updateProjectForRoundTrip', "To build this project, Azure Data Studio needs to update targets, references, and system database references. If the project is created in SSDT, it will continue to work in both tools. Do you want Azure Data Studio to update the project?");
@@ -108,7 +113,7 @@ export const databaseLocationRequired = localize('databaseLocation', "Database l
 export const databaseNameRequired = localize('databaseNameRequired', "Database name is required for adding a reference to a different database");
 export const invalidDataSchemaProvider = localize('invalidDataSchemaProvider', "Invalid DSP in .sqlproj file");
 export const invalidDatabaseReference = localize('invalidDatabaseReference', "Invalid database reference in .sqlproj file");
-export const databaseSelectionRequired = localize('databaseSelectionRequired', "Database selection is required to import a project");
+export const databaseSelectionRequired = localize('databaseSelectionRequired', "Database selection is required to create a project from a database");
 export const databaseReferenceAlreadyExists = localize('databaseReferenceAlreadyExists', "A reference to this database already exists in this project");
 export const ousiderFolderPath = localize('outsideFolderPath', "Items with absolute path outside project folder are not supported. Please make sure the paths in the project file are relative to project folder.");
 export const parentTreeItemUnknown = localize('parentTreeItemUnknown', "Cannot access parent of provided tree item");
@@ -206,6 +211,11 @@ export const authenticationSetting = 'Authentication';
 export const activeDirectoryInteractive = 'active directory interactive';
 export const userIdSetting = 'User ID';
 export const passwordSetting = 'Password';
+
+// Workspace settings for saving new database projects
+export const dbProjectConfigurationKey = 'sqlDatabaseProjects';
+export const projectSaveLocationKey = 'defaultProjectSaveLocation';
+export const showUpdatePromptKey = 'showUpdateSaveLocationPrompt';
 
 // Authentication types
 export const integratedAuth = 'Integrated';

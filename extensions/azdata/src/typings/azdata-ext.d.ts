@@ -112,6 +112,9 @@ declare module 'azdata-ext' {
 			uid: string // "cea737aa-3f82-4f6a-9bed-2b51c2c33dff"
 		},
 		spec: {
+			service: {
+				type: string // "NodePort"
+			}
 			storage: {
 				data: {
 					className: string, // "local-storage"
@@ -125,7 +128,22 @@ declare module 'azdata-ext' {
 		},
 		status: {
 			readyReplicas: string, // "1/1"
-			state: string // "Ready"
+			state: string, // "Ready"
+			externalEndpoint?: string // "10.91.86.39:32718"
+		}
+	}
+
+	export interface PostgresServerShowResult {
+		apiVersion: string, // "arcdata.microsoft.com/v1alpha1"
+		kind: string, // "postgresql-12"
+		metadata: {
+			creationTimestamp: string, // "2020-08-19T20:25:11Z"
+			generation: number, // 1
+			name: string, // "chgagnon-pg"
+			namespace: string, // "arc",
+			resourceVersion: string, // "214944",
+			selfLink: string, // "/apis/arcdata.microsoft.com/v1alpha1/namespaces/arc/postgresql-12s/chgagnon-pg",
+			uid: string, // "26d0f5bb-0c0b-4225-a6b5-5be2bf6feac0"
 		}
 	}
 

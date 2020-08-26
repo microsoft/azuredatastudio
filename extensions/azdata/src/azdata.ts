@@ -18,7 +18,7 @@ export const azdataUri = 'azdata-msi';
 export const azdataReleaseJson = 'azdata/release.json';
 
 /**
- * Information about an azdata installation
+ * Interface for an object to interact with the azdata tool installed on the box.
  */
 export interface IAzdataTool extends azdataExt.IAzdataApi {
 	path: string,
@@ -32,6 +32,9 @@ export interface IAzdataTool extends azdataExt.IAzdataApi {
 	executeCommand<R>(args: string[], additionalEnvVars?: { [key: string]: string }): Promise<azdataExt.AzdataOutput<R>>
 }
 
+/**
+ * An object to interact with the azdata tool installed on the box.
+ */
 export class AzdataTool implements IAzdataTool {
 	public cachedVersion: SemVer;
 	constructor(public path: string, version: string) {
@@ -219,7 +222,10 @@ export async function upgradeAzdata(): Promise<void> {
  * install it.
  * @param currentAzdata The current version of azdata to check against
  */
-export async function checkAndUpgradeAzdata(currentAzdata: IAzdataTool): Promise<void> {
+export async function checkAndUpgradeAzdata(currentAzdata?: IAzdataTool): Promise<void> {
+	if (currentAzdata === undefined) {
+		currentAzdata = await findAzdata();
+	}
 	const newVersion = await discoverLatestAvailableAzdataVersion();
 	if (newVersion.compare(currentAzdata.cachedVersion) === 1) {
 		const response = await vscode.window.showInformationMessage(loc.promptForAzdataUpgrade(newVersion.raw), loc.yes, loc.no);
@@ -276,7 +282,6 @@ async function installAzdataLinux(): Promise<void> {
 }
 
 /**
- * Returns AzdataTool object that enables one to interact with 'azdata' tool installed on the box.
  */
 async function findSpecificAzdata(): Promise<IAzdataTool> {
 	const promise = ((process.platform === 'win32') ? searchForCmd('azdata.cmd') : searchForCmd('azdata'));
@@ -319,7 +324,6 @@ async function discoverLatestAzdataVersionFromJson(): Promise<SemVer> {
 	return new SemVer(version);
 }
 
-
 /**
  * Parses out the azdata version from the raw azdata version output
  * @param raw The raw version output from azdata --version
@@ -338,16 +342,16 @@ async function discoverLatestStableAzdataVersionDarwin(): Promise<SemVer> {
 	await executeCommand('brew', ['tap', 'microsoft/azdata-cli-release']);
 	await executeCommand('brew', ['update']);
 	let brewInfoAzdataCliJson;
+	// Get the package version 'info' about 'azdata-cli' from 'brew' as a json object
 	const brewInfoOutput = (await executeCommand('brew', ['info', 'azdata-cli', '--json'])).stdout;
 	try {
 		brewInfoAzdataCliJson = JSON.parse(brewInfoOutput);
 	} catch (e) {
 		throw Error(`failed to parse the JSON contents output of: 'brew info azdata-cli --json', text being parsed: '${brewInfoOutput}', error:${getErrorMessage(e)}`);
 	}
-	// Get the 'info' about 'azdata-cli' from 'brew' as a json object
-	const azdataInfo: AzdataDarwinPackageVersionInfo = brewInfoAzdataCliJson.shift();
-	Logger.log(loc.foundAzdataVersionToUpgradeTo(azdataInfo.versions.stable));
-	return new SemVer(azdataInfo.versions.stable);
+	const azdataPackageVersionInfo: AzdataDarwinPackageVersionInfo = brewInfoAzdataCliJson.shift();
+	Logger.log(loc.foundAzdataVersionToUpgradeTo(azdataPackageVersionInfo.versions.stable));
+	return new SemVer(azdataPackageVersionInfo.versions.stable);
 }
 
 /**
