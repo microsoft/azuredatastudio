@@ -201,9 +201,9 @@ export class QueryEditor extends BaseEditor {
 		if (stateChangeEvent.connectedChange) {
 			this._toggleConnectDatabaseAction.connected = this.input.state.connected;
 			this._changeConnectionAction.enabled = this.input.state.connected;
+			this.setTaskbarContent();
 			if (this.input.state.connected) {
 				this.listDatabasesActionItem.onConnected();
-				this.setTaskbarContent();
 			} else {
 				this.listDatabasesActionItem.onDisconnect();
 			}
@@ -260,9 +260,10 @@ export class QueryEditor extends BaseEditor {
 		let content: ITaskbarContent[];
 		const previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
 		let connectionProfile = this.connectionManagementService.getConnectionProfile(this.input?.uri);
+		let fileExtension = this.input?.uri.substr(this.input?.uri.lastIndexOf('.') + 1);
 
 		// TODO: Make it more generic, some way for extensions to register the commands it supports
-		if (connectionProfile?.providerName === 'KUSTO') {
+		if (connectionProfile?.providerName === 'KUSTO' || fileExtension === 'kql' || fileExtension === 'kusto') {
 			content = [
 				{ action: this._runQueryAction },
 				{ action: this._cancelQueryAction },
