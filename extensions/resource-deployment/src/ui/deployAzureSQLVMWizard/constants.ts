@@ -16,7 +16,15 @@ export const AzureSettingsPageTitle = localize('deployAzureSQLVM.AzureSettingsPa
 export const AzureSettingsPageDescription = localize('deployAzureSQLVM.AzureSettingsPageDescription', "Configure the settings to create an Azure SQL Virtual Machine");
 export const AzureAccountDropdownLabel = localize('deployAzureSQLVM.AzureAccountDropdownLabel', "Azure Account");
 export const AzureAccountSubscriptionDropdownLabel = localize('deployAzureSQLVM.AzureSubscriptionDropdownLabel', "Azure Subscription");
+export const AzureAccountResourceGroupDropdownLabel = localize('deployAzureSQLVM.ResourceGroup', "Resource Group");
 export const AzureAccountRegionDropdownLabel = localize('deployAzureSQLVM.AzureRegionDropdownLabel', "Azure Region");
 
 
-
+// VM settings page constants
+export const VmSettingsPageTitle = localize('deployeAzureSQLVM.VmSettingsPageTitle', "Virtual machine settings");
+export const VmSettingsPageDescription = localize('deployAzureSQLVM.VmSettingsPageDescription', "Configure the settings to create an Azure SQL Virtual Machine");
+export const VmNameTextBoxLabel = localize('deployAzureSQLVM.VmNameTextBoxLabel', "Virtual machine name");
+export const VmImageDropdownLabel = localize('deployAzureSQLVM.VmImageDropdownLabel', "Image");
+export const VmSkuDropdownLabel = localize('deployAzureSQLVM.VmSkuDropdownLabel', "Image SKU");
+export const VmVersionDropdownLabel = localize('deployAzureSQLVM.VmImageVersionDropdownLabel', "Image Version");
+export const VmSizeDropdownLabel = localize('deployAzureSQLVM.VmSizeDropdownLabel', "Size");
