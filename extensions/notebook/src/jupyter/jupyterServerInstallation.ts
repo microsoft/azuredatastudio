@@ -739,7 +739,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		let fileContents = await fs.readFile(kernelPath);
 		let kernelSpec = <IKernelInfo>JSON.parse(fileContents.toString());
 		kernelSpec.argv = kernelSpec.argv?.map(arg => arg.replace('{ADS_PYTHONDIR}', this._pythonInstallationPath));
-		await fs.writeFile(kernelPath, JSON.stringify(kernelSpec));
+		await fs.writeFile(kernelPath, JSON.stringify(kernelSpec, undefined, '\t'));
 	}
 }
 
