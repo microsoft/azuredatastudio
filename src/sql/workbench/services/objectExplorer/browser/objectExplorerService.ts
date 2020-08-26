@@ -219,7 +219,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			}
 			await this.closeSession(connection.providerName, session);
 			delete this._activeObjectExplorerNodes[connectionUri];
-			delete this._sessions[session.sessionId];
+			delete this._sessions[session.sessionId!];
 		}
 	}
 
@@ -232,10 +232,10 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			this.logService.error(expandResponse.errorMessage);
 		}
 
-		let sessionStatus = this._sessions[expandResponse.sessionId];
+		let sessionStatus = this._sessions[expandResponse.sessionId!];
 		let foundSession = false;
 		if (sessionStatus) {
-			let nodeStatus = this._sessions[expandResponse.sessionId].nodes[expandResponse.nodePath];
+			let nodeStatus = this._sessions[expandResponse.sessionId!].nodes[expandResponse.nodePath];
 			foundSession = !!nodeStatus;
 			if (foundSession && nodeStatus.expandEmitter) {
 				nodeStatus.expandEmitter.fire(expandResponse);
@@ -261,22 +261,22 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	private async handleSessionCreated(session: azdata.ObjectExplorerSession): Promise<void> {
 		let connection: ConnectionProfile | undefined = undefined;
 		let errorMessage: string | undefined = undefined;
-		if (this._sessions[session.sessionId]) {
-			connection = this._sessions[session.sessionId].connection;
+		if (this._sessions[session.sessionId!]) {
+			connection = this._sessions[session.sessionId!].connection;
 
 			try {
 				if (session.success && session.rootNode) {
 					let server = this.toTreeNode(session.rootNode, undefined);
 					server.connection = connection;
 					server.session = session;
-					this._activeObjectExplorerNodes[connection.id] = server;
+					this._activeObjectExplorerNodes[connection!.id] = server;
 				}
 				else {
 					errorMessage = session && session.errorMessage ? session.errorMessage : errSessionCreateFailed;
 					this.logService.error(errorMessage);
 				}
 				// Send on session created about the session to all node providers so they can prepare for node expansion
-				let nodeProviders = this._nodeProviders[connection.providerName];
+				let nodeProviders = this._nodeProviders[connection!.providerName];
 				if (nodeProviders) {
 					const promises = nodeProviders.map(p => p.handleSessionOpen(session));
 					await Promise.all(promises);
@@ -284,7 +284,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			} catch (error) {
 				this.logService.warn(`cannot handle the session ${session.sessionId} in all nodeProviders`);
 			} finally {
-				this.sendUpdateNodeEvent(connection, errorMessage);
+				this.sendUpdateNodeEvent(connection!, errorMessage);
 			}
 		}
 		else {
@@ -296,8 +296,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	 * Gets called when session is disconnected
 	 */
 	public onSessionDisconnected(handle: number, session: azdata.ObjectExplorerSession): void {
-		if (this._sessions[session.sessionId]) {
-			let connection: ConnectionProfile = this._sessions[session.sessionId].connection;
+		if (this._sessions[session.sessionId!]) {
+			let connection: ConnectionProfile = this._sessions[session.sessionId!].connection;
 			if (connection && this._connectionManagementService.isProfileConnected(connection)) {
 				let uri: string = Utils.generateUri(connection);
 				if (this._serverTreeView?.isObjectExplorerConnectionUri(uri)) {
@@ -383,10 +383,10 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		refresh: boolean = false): Promise<azdata.ObjectExplorerExpandInfo> {
 		let self = this;
 		return new Promise<azdata.ObjectExplorerExpandInfo>((resolve, reject) => {
-			if (session.sessionId in self._sessions && self._sessions[session.sessionId]) {
+			if (session.sessionId! in self._sessions && self._sessions[session.sessionId!]) {
 				let newRequest = false;
-				if (!self._sessions[session.sessionId].nodes[nodePath]) {
-					self._sessions[session.sessionId].nodes[nodePath] = {
+				if (!self._sessions[session.sessionId!].nodes[nodePath]) {
+					self._sessions[session.sessionId!].nodes[nodePath] = {
 						expandEmitter: new Emitter<NodeExpandInfoWithProviderId>()
 					};
 					newRequest = true;
@@ -402,7 +402,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 						allProviders.push(...nodeProviders);
 					}
 
-					self._sessions[session.sessionId].nodes[nodePath].expandEmitter.event((expandResult) => {
+					self._sessions[session.sessionId!].nodes[nodePath].expandEmitter.event((expandResult: NodeExpandInfoWithProviderId) => {
 						if (expandResult && expandResult.providerId) {
 							resultMap.set(expandResult.providerId, expandResult);
 						} else {
@@ -415,14 +415,14 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 							// Have to delete it after get all reponses otherwise couldn't find session for not the first response
 							if (newRequest) {
-								delete self._sessions[session.sessionId].nodes[nodePath];
+								delete self._sessions[session.sessionId!].nodes[nodePath];
 							}
 						}
 					});
 					if (newRequest) {
 						allProviders.forEach(provider => {
 							self.callExpandOrRefreshFromProvider(provider, {
-								sessionId: session.sessionId,
+								sessionId: session.sessionId!,
 								nodePath: nodePath
 							}, refresh).then(isExpanding => {
 								if (!isExpanding) {
@@ -506,9 +506,12 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	public closeSession(providerId: string, session: azdata.ObjectExplorerSession): Promise<azdata.ObjectExplorerCloseSessionResponse | undefined> {
 		// Complete any requests that are still open for the session
-		let sessionStatus = this._sessions[session.sessionId];
+		let sessionStatus = this._sessions[session.sessionId!];
 		if (sessionStatus && sessionStatus.nodes) {
-			entries(sessionStatus.nodes).forEach(([nodePath, nodeStatus]: [string, NodeStatus]) => {
+			entries(sessionStatus.nodes).forEach((entry) => {
+				const nodePath: string = entry[0];
+				const nodeStatus: NodeStatus = entry[1] as NodeStatus;
+
 				if (nodeStatus.expandEmitter) {
 					nodeStatus.expandEmitter.fire({
 						sessionId: session.sessionId,
@@ -606,7 +609,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		}
 
 		let node = new TreeNode(nodeInfo.nodeType, nodeInfo.label, isLeaf, nodeInfo.nodePath,
-			nodeInfo.nodeSubType, nodeInfo.nodeStatus, parent, nodeInfo.metadata, nodeInfo.iconType, {
+			nodeInfo.nodeSubType!, nodeInfo.nodeStatus, parent, nodeInfo.metadata, nodeInfo.iconType, {
 			getChildren: (treeNode?: TreeNode) => this.getChildren(treeNode),
 			isExpanded: treeNode => this.isExpanded(treeNode),
 			setNodeExpandedState: async (treeNode, expandedState) => await this.setNodeExpandedState(treeNode, expandedState),
