@@ -129,14 +129,14 @@ export class KustoObjectExplorerNodeProvider extends ProviderBase implements azd
 		let node: T | undefined = undefined;
 		let explorerContext = 'explorerContext' in context ? context.explorerContext : context;
 		let sqlConnProfile = explorerContext.connectionProfile;
-		let session = this.findSqlClusterSessionBySqlConnProfile(sqlConnProfile);
+		let session = this.findSqlClusterSessionBySqlConnProfile(sqlConnProfile!);
 		if (session) {
 			if (explorerContext.isConnectionNode) {
 				// Note: ideally fix so we verify T matches RootNode and go from there
 				node = <T><any>session.rootNode;
 			} else {
 				// Find the node under the session
-				node = <T><any>await session.rootNode.findNodeByPath(explorerContext.nodeInfo.nodePath!, true);
+				node = <T><any>await session.rootNode.findNodeByPath(explorerContext?.nodeInfo?.nodePath!, true);
 			}
 		}
 		return node;
