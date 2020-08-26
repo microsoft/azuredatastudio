@@ -648,6 +648,7 @@ export class NotebookEditorStub implements INotebookEditor {
 	cellEditors: CellEditorProviderStub[];
 	modelReady: Promise<INotebookModel>;
 	model: INotebookModel;
+	notebookFindModel: INotebookFindModel;
 	isDirty(): boolean {
 		throw new Error('Method not implemented.');
 	}

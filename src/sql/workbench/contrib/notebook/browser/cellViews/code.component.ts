@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./code';
 
-import { OnInit, Component, Input, Inject, ElementRef, ViewChild, Output, EventEmitter, OnChanges, SimpleChange, forwardRef, ChangeDetectorRef } from '@angular/core';
+import { OnInit, Component, Input, Inject, ElementRef, ViewChild, Output, EventEmitter, OnChanges, SimpleChange, forwardRef, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import { ICellModel, CellExecutionState } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
@@ -42,7 +42,8 @@ const DEFAULT_OR_LOCAL_CONTEXT_ID = '-1';
 
 @Component({
 	selector: CODE_SELECTOR,
-	templateUrl: decodeURI(require.toUrl('./code.component.html'))
+	templateUrl: decodeURI(require.toUrl('./code.component.html')),
+	changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CodeComponent extends CellView implements OnInit, OnChanges {
 	@ViewChild('toolbar', { read: ElementRef }) private toolbarElement: ElementRef;
@@ -117,15 +118,17 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
-		this.updateLanguageMode();
+		// this.updateLanguageMode();
 		this.updateModel();
 		for (let propName in changes) {
 			if (propName === 'activeCellId') {
 				let changedProp = changes[propName];
 				let isActive = this.cellModel.id === changedProp.currentValue;
-				this.updateConnectionState(isActive);
-				if (this._editor) {
-					this._editor.toggleEditorSelected(isActive);
+				if (isActive !== this.isActive()) {
+					this.updateConnectionState(isActive);
+					if (this._editor) {
+						this._editor.toggleEditorSelected(isActive);
+					}
 				}
 				break;
 			}

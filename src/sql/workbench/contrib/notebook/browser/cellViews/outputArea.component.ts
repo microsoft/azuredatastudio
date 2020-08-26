@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./code';
 import 'vs/css!./outputArea';
-import { OnInit, Component, Input, Inject, ElementRef, ViewChild, forwardRef, ChangeDetectorRef } from '@angular/core';
+import { OnInit, Component, Input, Inject, ElementRef, ViewChild, forwardRef, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import * as themeColors from 'vs/workbench/common/theme';
@@ -16,7 +16,8 @@ export const OUTPUT_AREA_SELECTOR: string = 'output-area-component';
 
 @Component({
 	selector: OUTPUT_AREA_SELECTOR,
-	templateUrl: decodeURI(require.toUrl('./outputArea.component.html'))
+	templateUrl: decodeURI(require.toUrl('./outputArea.component.html')),
+	changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OutputAreaComponent extends AngularDisposable implements OnInit {
 	@ViewChild('outputarea', { read: ElementRef }) private outputArea: ElementRef;

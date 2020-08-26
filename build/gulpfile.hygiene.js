@@ -112,7 +112,8 @@ const indentationFilter = [
 	'!extensions/sql-database-projects/BuildDirectory/SystemDacpacs/**',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts',
-	'!resources/linux/snap/electron-launch'
+	'!resources/linux/snap/electron-launch',
+	'!src/sql/workbench/common/markjs/**'
 ];
 
 const copyrightFilter = [
@@ -209,7 +210,8 @@ const tsHygieneFilter = [
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts', // {{SQL CARBON EDIT}},
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/tokenApiGenerated.ts', // {{SQL CARBON EDIT}},
 	'!src/vs/workbench/services/themes/common/textMateScopeMatcher.ts', // {{SQL CARBON EDIT}} skip this because we have no plans on touching this and its not ours
-	'!src/vs/workbench/contrib/extensions/browser/extensionRecommendationsService.ts' // {{SQL CARBON EDIT}} skip this because known issue
+	'!src/vs/workbench/contrib/extensions/browser/extensionRecommendationsService.ts', // {{SQL CARBON EDIT}} skip this because known issue
+	'!src/sql/workbench/common/markjs/**' // {{SQL CARBON EDIT}} markjs
 ];
 
 const copyrightHeaderLines = [
