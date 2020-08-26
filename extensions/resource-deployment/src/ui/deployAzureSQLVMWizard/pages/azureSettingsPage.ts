@@ -80,18 +80,21 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 	private async createAzureAccountsDropdown(view: azdata.ModelView) {
 		this._azureAccountsDropdown = view.modelBuilder.dropDown().withProperties({
+			required: true,
 		}).component();
 
-		this._azureAccountsLoader = view.modelBuilder.loadingComponent().withItem(this._azureAccountsLoader).component();
-		await this.populateAzureAccountsDropdown();
-
-		this._azureAccountsDropdown.onValueChanged(function (value) {
-
+		this._azureAccountsDropdown.onValueChanged((value) => {
+			this.wizard.model.azureAccount = value;
+			this.populateAzureSubscriptionsDropdown();
 		});
+
+		this._azureAccountsLoader = view.modelBuilder.loadingComponent().withItem(this._azureAccountsDropdown).component();
+
+		await this.populateAzureAccountsDropdown();
 	}
 
 	private async populateAzureAccountsDropdown() {
-		this._azureRegionsLoader.loading = true;
+		this._azureAccountsLoader.loading = true;
 		let accounts = await azdata.accounts.getAllAccounts();
 		this._azureAccountsDropdown.updateProperties({
 			values: accounts.map((account): azdata.CategoryValue => {
@@ -104,19 +107,18 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 			})
 		});
 
-		if (!(this.wizard.model.azureAccount === accounts[0])) {
-			this.wizard.model.azureAccount = accounts[0];
-			await this.populateAzureSubscriptionsDropdown();
-		}
-		this._azureRegionsLoader.loading = true;
+		this.wizard.model.azureAccount = accounts[0];
+		this._azureAccountsLoader.loading = false;
+		await this.populateAzureSubscriptionsDropdown();
+
 	}
 
 	private async createAzureSubscriptionsDropdown(view: azdata.ModelView) {
 		this._azureSubscriptionsDropdown = view.modelBuilder.dropDown().withProperties({
+			required: true
 		}).component();
 
 		this._azureSubscriptionLoader = view.modelBuilder.loadingComponent().withItem(this._azureSubscriptionsDropdown).component();
-		await this.populateAzureSubscriptionsDropdown();
 
 		this._azureSubscriptionsDropdown.onValueChanged(function (value) {
 
@@ -142,14 +144,11 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 	private async createAzureRegionsDropdown(view: azdata.ModelView) {
 		this._azureRegionsDropdown = view.modelBuilder.dropDown().withProperties({
+			required: true
 		}).component();
 
 		this._azureRegionsLoader = view.modelBuilder.loadingComponent().withItem(this._azureRegionsDropdown).component();
 		await this.populateAzureRegionsDropdown();
-
-		this._azureRegionsDropdown.onValueChanged(function (value) {
-
-		});
 	}
 
 	private async populateAzureRegionsDropdown() {
