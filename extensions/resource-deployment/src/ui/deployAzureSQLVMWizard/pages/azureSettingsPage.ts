@@ -13,8 +13,12 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 
 	private _azureAccountsDropdown!: azdata.DropDownComponent;
+	private _azureAccountsLoader!: azdata.LoadingComponent;
 	private _azureSubscriptionsDropdown!: azdata.DropDownComponent;
+	private _azureSubscriptionLoader!: azdata.LoadingComponent;
 	private _azureRegionsDropdown!: azdata.DropDownComponent;
+	private _azureRegionsLoader!: azdata.LoadingComponent;
+
 	private _form!: azdata.FormContainer;
 
 	private _accountsMap!: Map<azdata.CategoryValue, azdata.Account>;
@@ -40,15 +44,15 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 					[
 						{
 							title: constants.AzureAccountDropdownLabel,
-							component: this._azureAccountsDropdown,
+							component: this._azureAccountsLoader,
 						},
 						{
 							title: constants.AzureAccountSubscriptionDropdownLabel,
-							component: this._azureSubscriptionsDropdown
+							component: this._azureSubscriptionLoader
 						},
 						{
 							title: constants.AzureAccountRegionDropdownLabel,
-							component: this._azureRegionsDropdown
+							component: this._azureRegionsLoader
 						}
 					],
 					{
@@ -76,9 +80,9 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 	private async createAzureAccountsDropdown(view: azdata.ModelView) {
 		this._azureAccountsDropdown = view.modelBuilder.dropDown().withProperties({
-			required: true
 		}).component();
 
+		this._azureAccountsLoader = view.modelBuilder.loadingComponent().withItem(this._azureAccountsLoader).component();
 		await this.populateAzureAccountsDropdown();
 
 		this._azureAccountsDropdown.onValueChanged(function (value) {
@@ -87,6 +91,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 	}
 
 	private async populateAzureAccountsDropdown() {
+		this._azureRegionsLoader.loading = true;
 		let accounts = await azdata.accounts.getAllAccounts();
 		this._azureAccountsDropdown.updateProperties({
 			values: accounts.map((account): azdata.CategoryValue => {
@@ -103,13 +108,14 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 			this.wizard.model.azureAccount = accounts[0];
 			await this.populateAzureSubscriptionsDropdown();
 		}
+		this._azureRegionsLoader.loading = true;
 	}
 
 	private async createAzureSubscriptionsDropdown(view: azdata.ModelView) {
 		this._azureSubscriptionsDropdown = view.modelBuilder.dropDown().withProperties({
-			required: true
 		}).component();
 
+		this._azureSubscriptionLoader = view.modelBuilder.loadingComponent().withItem(this._azureSubscriptionsDropdown).component();
 		await this.populateAzureSubscriptionsDropdown();
 
 		this._azureSubscriptionsDropdown.onValueChanged(function (value) {
@@ -118,6 +124,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 	}
 
 	private async populateAzureSubscriptionsDropdown() {
+		this._azureSubscriptionLoader.loading = true;
 		let subService = await apiService.getAzurecoreApi();
 		let currentAccount = this._accountsMap.get(this._azureAccountsDropdown.value as azdata.CategoryValue);
 		let subscriptions = (await subService.getSubscriptions(currentAccount, true)).subscriptions;
@@ -130,13 +137,14 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 				};
 			})
 		});
+		this._azureSubscriptionLoader.loading = false;
 	}
 
 	private async createAzureRegionsDropdown(view: azdata.ModelView) {
 		this._azureRegionsDropdown = view.modelBuilder.dropDown().withProperties({
-			required: true
 		}).component();
 
+		this._azureRegionsLoader = view.modelBuilder.loadingComponent().withItem(this._azureRegionsDropdown).component();
 		await this.populateAzureRegionsDropdown();
 
 		this._azureRegionsDropdown.onValueChanged(function (value) {
@@ -145,9 +153,11 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 	}
 
 	private async populateAzureRegionsDropdown() {
+		this._azureRegionsLoader.loading = true;
 		let accounts = await azdata.accounts.getAllAccounts();
 		this._azureRegionsDropdown.updateProperties({
 			values: accounts.map((value) => { return value.displayInfo; })
 		});
+		this._azureRegionsLoader.loading = false;
 	}
 }
