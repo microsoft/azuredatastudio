@@ -718,6 +718,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (this.kernelAliases.includes(this.currentKernelAlias) && displayName === this.currentKernelAlias) {
 			this.doChangeKernel(displayName, true).catch(e => this.logService.error(e));
 		} else {
+			// this._currentKernelAlias = undefined;
 			this._contextsLoadingEmitter.fire();
 			this.doChangeKernel(displayName, true).catch(e => this.logService.error(e));
 		}
@@ -731,6 +732,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		let oldDisplayName = this._activeClientSession && this._activeClientSession.kernel ? this._activeClientSession.kernel.name : undefined;
 		let nbKernelAlias: string;
 		if (this.kernelAliases.includes(displayName)) {
+			this._currentKernelAlias = displayName;
 			displayName = 'SQL';
 			nbKernelAlias = 'Kusto';
 		}
