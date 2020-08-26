@@ -33,6 +33,15 @@
 	background: url("database_inverse.svg") center center no-repeat;
 }
 
+.vs .codicon.icon-dashboard-view {
+	background: url("dashboard_view.svg") center center no-repeat;
+}
+
+.vs .codicon.icon-dashboard-view::before {
+	-webkit-mask-image: url("dashboard_view.svg");
+	mask-image: url("dashboard_view.svg");
+}
+
 .vs .codicon.error,
 .vs-dark .codicon.error,
 .hc-black .codicon.error {
@@ -201,6 +210,15 @@
 .vs-dark .codicon.new-query,
 .hc-black .codicon.new-query {
 	background: url("newquery.svg") center center no-repeat;
+}
+
+.vs .codicon.icon-notebook-view {
+	background: url("notebook_view.svg") center center no-repeat;
+}
+
+.vs .codicon.icon-notebook-view::before {
+	-webkit-mask-image: url("notebook_view.svg");
+	mask-image: url("notebook_view.svg");
 }
 
 .vs .codicon.info,

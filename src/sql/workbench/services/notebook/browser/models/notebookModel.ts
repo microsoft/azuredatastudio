@@ -245,6 +245,25 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	/**
+	 * Add custom metadata values to the notebook
+	 */
+	public setMetaValue(key: string, value: any) {
+		this._existingMetadata[key] = value;
+		let changeInfo: NotebookContentChange = {
+			changeType: NotebookChangeType.MetadataChanged,
+			isDirty: true
+		};
+		this._contentChangedEmitter.fire(changeInfo);
+	}
+
+	/**
+	 * Get a custom metadata value from the notebook
+	 */
+	public getMetaValue(key: string): any {
+		return this._existingMetadata[key];
+	}
+
+	/**
 	 * Indicates the server has finished loading. It may have failed to load in
 	 * which case the view will be in an error state.
 	 */

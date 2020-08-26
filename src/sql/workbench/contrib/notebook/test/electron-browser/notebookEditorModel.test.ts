@@ -129,6 +129,7 @@ suite('Notebook Editor Model', function (): void {
 			id: '0',
 			notebookParams: undefined,
 			modelReady: undefined,
+			viewMode: undefined,
 			model: notebookModel,
 			isDirty: undefined,
 			isActive: undefined,

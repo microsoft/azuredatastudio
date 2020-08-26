@@ -21,6 +21,7 @@ import { IContextViewProvider, IDelegate } from 'vs/base/browser/ui/contextview/
 export class NotebookModelStub implements INotebookModel {
 	constructor(private _languageInfo?: nb.ILanguageInfo) {
 	}
+
 	trustedMode: boolean;
 	language: string;
 	standardKernels: IStandardKernelWithProvider[];
@@ -89,6 +90,12 @@ export class NotebookModelStub implements INotebookModel {
 		throw new Error('Method not implemented.');
 	}
 	findCellIndex(cellModel: ICellModel): number {
+		throw new Error('Method not implemented.');
+	}
+	setMetaValue(key: string, value: any) {
+		throw new Error('Method not implemented.');
+	}
+	getMetaValue(key: string) {
 		throw new Error('Method not implemented.');
 	}
 	addCell(cellType: CellType, index?: number): void {
@@ -430,6 +437,7 @@ export class FutureStub implements nb.IFuture {
 
 export class NotebookComponentStub implements INotebookEditor {
 	cellEditors: ICellEditorProvider[];
+	viewMode: string;
 	deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void {
 		throw new Error('Method not implemented.');
 	}
@@ -642,6 +650,7 @@ export class NotebookEditorStub implements INotebookEditor {
 	cellEditors: CellEditorProviderStub[];
 	modelReady: Promise<INotebookModel>;
 	model: INotebookModel;
+	viewMode: string;
 	isDirty(): boolean {
 		throw new Error('Method not implemented.');
 	}

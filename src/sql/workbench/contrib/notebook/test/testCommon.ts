@@ -19,6 +19,7 @@ import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServic
 export class NotebookEditorStub extends stubs.NotebookEditorStub {
 	cellEditors: CellEditorProviderStub[];
 	model: INotebookModel | undefined;
+	viewMode: string;
 	cells?: ICellModel[] = [];
 
 	get id(): string {

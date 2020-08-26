@@ -167,6 +167,106 @@ export abstract class ToggleableAction extends Action {
 	}
 }
 
+export class DashboardViewAction extends ToggleableAction {
+	// Constants
+	private static readonly baseClass = 'notebook-button';
+	private static readonly notActiveCssClass = 'icon-dashboard-view';
+	private static readonly activeCssClass = 'icon-dashboard-view';
+	private static readonly maskedIconClass = 'masked-pseudo masked-icon';
+
+	private static readonly dashboardViewLabel = localize('dashboardViewLabel', "Dashboard View");
+	private static readonly notDashboardViewLabel = localize('notDashboardViewLabel', "Activate Dashboard View");
+
+	constructor(
+		id: string, toggleTooltip: boolean,
+		@INotebookService private _notebookService: INotebookService
+	) {
+		super(id, {
+			baseClass: DashboardViewAction.baseClass,
+			toggleOnLabel: DashboardViewAction.dashboardViewLabel,
+			toggleOnClass: toggleTooltip === true ? DashboardViewAction.notActiveCssClass : DashboardViewAction.activeCssClass,
+			toggleOffLabel: DashboardViewAction.notDashboardViewLabel,
+			toggleOffClass: toggleTooltip === true ? DashboardViewAction.activeCssClass : DashboardViewAction.notActiveCssClass,
+			maskedIconClass: DashboardViewAction.maskedIconClass,
+			shouldToggleTooltip: toggleTooltip,
+			isOn: false
+		});
+	}
+
+	public get mode(): boolean {
+		return this.state.isOn;
+	}
+	public set mode(value: boolean) {
+		this.toggle(value);
+	}
+
+	public run(context: URI): Promise<void> {
+		let self = this;
+		return new Promise<void>((resolve, reject) => {
+			try {
+				if (!self.mode) {
+					//console.log(self.viewMode.toString());
+					//context.viewModel.viewMode = NotebookViewMode.DashboardView;
+					const editor = this._notebookService.findNotebookEditor(context);
+					editor.viewMode = 'dashboard';
+				}
+				resolve();
+			} catch (e) {
+				reject(e);
+			}
+		});
+	}
+}
+
+export class NotebookViewAction extends ToggleableAction {
+	// Constants
+	private static readonly baseClass = 'notebook-button';
+	private static readonly notActiveCssClass = 'icon-notebook-view';
+	private static readonly activeCssClass = 'icon-notebook-view';
+	private static readonly maskedIconClass = 'masked-icon';
+
+	private static readonly notebookViewLabel = localize('notebookViewLabel', 'Notebook View');
+	private static readonly notNotebookViewLabel = localize('notNotebookViewLabel', 'Activate Notebook View');
+
+	constructor(
+		id: string, toggleTooltip: boolean,
+		@INotebookService private _notebookService: INotebookService
+	) {
+		super(id, {
+			baseClass: NotebookViewAction.baseClass,
+			toggleOnLabel: NotebookViewAction.notebookViewLabel,
+			toggleOnClass: toggleTooltip === true ? NotebookViewAction.notActiveCssClass : NotebookViewAction.activeCssClass,
+			toggleOffLabel: NotebookViewAction.notNotebookViewLabel,
+			toggleOffClass: toggleTooltip === true ? NotebookViewAction.activeCssClass : NotebookViewAction.notActiveCssClass,
+			maskedIconClass: NotebookViewAction.maskedIconClass,
+			shouldToggleTooltip: toggleTooltip,
+			isOn: false,
+		});
+	}
+
+	public get mode(): boolean {
+		return this.state.isOn;
+	}
+	public set mode(value: boolean) {
+		this.toggle(value);
+	}
+
+	public run(context: URI): Promise<boolean> {
+		let self = this;
+		return new Promise<boolean>((resolve, reject) => {
+			try {
+				if (!self.mode) {
+					const editor = this._notebookService.findNotebookEditor(context);
+					editor.viewMode = 'notebook';
+				}
+				resolve(true);
+			} catch (e) {
+				reject(e);
+			}
+		});
+	}
+}
+
 export class TrustedAction extends ToggleableAction {
 	// Constants
 	private static readonly trustedLabel = localize('trustLabel', "Trusted");

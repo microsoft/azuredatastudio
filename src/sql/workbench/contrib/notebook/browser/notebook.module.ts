@@ -32,6 +32,10 @@ import { ICellComponenetRegistry, Extensions as OutputComponentExtensions } from
 import { CollapseComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/collapse.component';
 import { MarkdownToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component';
 import { CellToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/cellToolbar.component';
+import { NotebookViewComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookView.component';
+import { DashboardViewComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/dashboardView.component';
+import { GridStackComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/gridstack.component';
+import { GridStackItemComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/gridstackItem.component';
 
 const outputComponentRegistry = Registry.as<ICellComponenetRegistry>(OutputComponentExtensions.CellComponentContributions);
 
@@ -52,6 +56,10 @@ export const NotebookModule = (params, selector: string, instantiationService: I
 			MarkdownToolbarComponent,
 			PlaceholderCellComponent,
 			NotebookComponent,
+			NotebookViewComponent,
+			DashboardViewComponent,
+			GridStackComponent,
+			GridStackItemComponent,
 			ComponentHostDirective,
 			OutputAreaComponent,
 			OutputComponent,

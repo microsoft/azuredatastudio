@@ -31,7 +31,7 @@ import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/n
 import { Deferred } from 'sql/base/common/promise';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { AddCellAction, KernelsDropdown, AttachToDropdown, TrustedAction, RunAllCellsAction, ClearAllOutputsAction, CollapseCellsAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { AddCellAction, KernelsDropdown, AttachToDropdown, TrustedAction, RunAllCellsAction, ClearAllOutputsAction, CollapseCellsAction, NotebookViewAction, DashboardViewAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/buttonMenu';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
@@ -66,6 +66,7 @@ export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 })
 export class NotebookComponent extends AngularDisposable implements OnInit, OnDestroy, INotebookEditor {
 	@ViewChild('toolbar', { read: ElementRef }) private toolbar: ElementRef;
+	@ViewChild('viewsToolbar', { read: ElementRef }) private viewsToolbar: ElementRef;
 	@ViewChild('container', { read: ElementRef }) private container: ElementRef;
 	@ViewChild('bookNav', { read: ElementRef }) private bookNav: ElementRef;
 
@@ -85,6 +86,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private _navProvider: INavigationProvider;
 	private navigationResult: nb.NavigationResult;
 	public previewFeaturesEnabled: boolean = false;
+	private _viewMode: string = '';
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -123,6 +125,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
 		this.initActionBar();
+		this.initViewsToolbar();
 		this.setScrollPosition();
 		this.doLoad().catch(e => onUnexpectedError(e));
 		this.initNavSection();
@@ -135,9 +138,20 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		}
 	}
 
+	get viewMode(): string {
+		return this._viewMode;
+
+	}
+
+	set viewMode(viewMode: string) {
+		this._viewMode = viewMode;
+		this.detectChanges();
+	}
+
 	public get model(): NotebookModel | null {
 		return this._model;
 	}
+
 
 	public get activeCellId(): string {
 		return this._model && this._model.activeCell ? this._model.activeCell.id : '';
@@ -433,6 +447,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted', true);
 			this._trustedAction.enabled = false;
 
+			let dashboardViewAction = this.instantiationService.createInstance(DashboardViewAction, 'notebook.dashboardMode', true);
+			let notebookViewAction = this.instantiationService.createInstance(NotebookViewAction, 'notebook.notebookMode', true);
+
 			let taskbar = <HTMLElement>this.toolbar.nativeElement;
 			this._actionBar = new Taskbar(taskbar, { actionViewItemProvider: action => this.actionItemProvider(action as Action) });
 			this._actionBar.context = this._notebookParams.notebookUri;
@@ -461,6 +478,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				{ element: kernelContainer },
 				{ element: attachToContainer },
 				{ element: spacerElement },
+				{ element: Taskbar.createTaskbarText(localize('viewMode', "Presentation Mode ")) },
+				{ action: notebookViewAction },
+				{ action: dashboardViewAction },
+				{ element: Taskbar.createTaskbarSeparator() },
 				{ action: collapseCellsAction },
 				{ action: clearResultsButton },
 				{ action: this._trustedAction },
@@ -508,6 +529,18 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			]);
 		}
 
+	}
+
+	protected initViewsToolbar() {
+		let taskbar = <HTMLElement>this.viewsToolbar.nativeElement;
+		this._actionBar = new Taskbar(taskbar, { actionViewItemProvider: action => this.actionItemProvider(action as Action) });
+		this._actionBar.context = this._notebookParams.notebookUri;
+
+		let collapseCellsAction = this.instantiationService.createInstance(CollapseCellsAction, 'notebook.collapseCells', true);
+
+		this._actionBar.setContent([
+			{ action: collapseCellsAction },
+		]);
 	}
 
 	protected initNavSection(): void {

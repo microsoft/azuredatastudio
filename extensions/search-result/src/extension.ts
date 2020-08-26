@@ -90,6 +90,7 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 		}),
 
+		/*
 		vscode.languages.registerDocumentLinkProvider(SEARCH_RESULT_SELECTOR, {
 			async provideDocumentLinks(document: vscode.TextDocument, token: vscode.CancellationToken): Promise<vscode.DocumentLink[]> {
 				return parseSearchResults(document, token)
@@ -97,6 +98,7 @@ export function activate(context: vscode.ExtensionContext) {
 					.map(({ location }) => ({ range: location.originSelectionRange!, target: location.targetUri }));
 			}
 		}),
+		*/
 
 		vscode.window.onDidChangeActiveTextEditor(editor => {
 			if (editor?.document.languageId === 'search-result') {
