@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as msRest from '@azure/ms-rest-js';
 
-import { azureResource } from '../azure-resource';
+import { azureResource } from 'azureResource';
 import { IAzureResourceService } from '../interfaces';
 import { AzureResourceErrorMessageUtil } from '../utils';
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';

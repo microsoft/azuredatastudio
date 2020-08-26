@@ -19,7 +19,7 @@ export class QueryHistoryInfo {
 
 	public database: string;
 
-	public status: QueryStatus;
+	public status?: QueryStatus;
 
 	public readonly id = generateUuid();
 

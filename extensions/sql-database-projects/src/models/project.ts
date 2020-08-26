@@ -10,7 +10,7 @@ import * as utils from '../common/utils';
 import * as xmlFormat from 'xml-formatter';
 import * as os from 'os';
 
-import { Uri } from 'vscode';
+import { Uri, window } from 'vscode';
 import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
 
@@ -23,8 +23,11 @@ export class Project {
 	public files: ProjectEntry[] = [];
 	public dataSources: DataSource[] = [];
 	public importedTargets: string[] = [];
-	public databaseReferences: DatabaseReferenceProjectEntry[] = [];
+	public databaseReferences: IDatabaseReferenceProjectEntry[] = [];
 	public sqlCmdVariables: Record<string, string> = {};
+	public preDeployScripts: ProjectEntry[] = [];
+	public postDeployScripts: ProjectEntry[] = [];
+	public noneDeployScripts: ProjectEntry[] = [];
 
 	public get projectFolderPath() {
 		return Uri.file(path.dirname(this.projectFilePath)).fsPath;
@@ -70,6 +73,32 @@ export class Project {
 					this.files.push(this.createProjectEntry(folderElements[f].getAttribute(constants.Include), EntryType.Folder));
 				}
 			}
+
+			// find all pre-deployment scripts to include
+			let preDeployScriptCount: number = 0;
+			const preDeploy = itemGroup.getElementsByTagName(constants.PreDeploy);
+			for (let pre = 0; pre < preDeploy.length; pre++) {
+				this.preDeployScripts.push(this.createProjectEntry(preDeploy[pre].getAttribute(constants.Include), EntryType.File));
+				preDeployScriptCount++;
+			}
+
+			// find all post-deployment scripts to include
+			let postDeployScriptCount: number = 0;
+			const postDeploy = itemGroup.getElementsByTagName(constants.PostDeploy);
+			for (let post = 0; post < postDeploy.length; post++) {
+				this.postDeployScripts.push(this.createProjectEntry(postDeploy[post].getAttribute(constants.Include), EntryType.File));
+				postDeployScriptCount++;
+			}
+
+			if (preDeployScriptCount > 1 || postDeployScriptCount > 1) {
+				window.showWarningMessage(constants.prePostDeployCount, constants.okString);
+			}
+
+			// find all none-deployment scripts to include
+			const noneItems = itemGroup.getElementsByTagName(constants.None);
+			for (let n = 0; n < noneItems.length; n++) {
+				this.noneDeployScripts.push(this.createProjectEntry(noneItems[n].getAttribute(constants.Include), EntryType.File));
+			}
 		}
 
 		// find all import statements to include
@@ -91,10 +120,23 @@ export class Project {
 					throw new Error(constants.invalidDatabaseReference);
 				}
 
-				let nameNodes = references[r].getElementsByTagName(constants.DatabaseVariableLiteralValue);
-				let name = nameNodes.length === 1 ? nameNodes[0].childNodes[0].nodeValue : undefined;
-				this.databaseReferences.push(new DatabaseReferenceProjectEntry(Uri.parse(filepath), name ? DatabaseReferenceLocation.differentDatabaseSameServer : DatabaseReferenceLocation.sameDatabase, name));
+				const nameNodes = references[r].getElementsByTagName(constants.DatabaseVariableLiteralValue);
+				const name = nameNodes.length === 1 ? nameNodes[0].childNodes[0].nodeValue : undefined;
+				this.databaseReferences.push(new DacpacReferenceProjectEntry(Uri.file(filepath), name ? DatabaseReferenceLocation.differentDatabaseSameServer : DatabaseReferenceLocation.sameDatabase, name));
 			}
+		}
+
+		// find project references
+		const projectReferences = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ProjectReference);
+		for (let r = 0; r < projectReferences.length; r++) {
+			const filepath = projectReferences[r].getAttribute(constants.Include);
+			if (!filepath) {
+				throw new Error(constants.invalidDatabaseReference);
+			}
+
+			const nameNodes = projectReferences[r].getElementsByTagName(constants.Name);
+			const name = nameNodes[0].childNodes[0].nodeValue;
+			this.databaseReferences.push(new SqlProjectReferenceProjectEntry(Uri.file(utils.getPlatformSafeFileEntryPath(filepath)), name));
 		}
 	}
 
@@ -284,7 +326,7 @@ export class Project {
 	 * @param databaseName name of the database
 	 */
 	public async addDatabaseReference(uri: Uri, databaseLocation: DatabaseReferenceLocation, databaseName?: string): Promise<void> {
-		let databaseReferenceEntry = new DatabaseReferenceProjectEntry(uri, databaseLocation, databaseName);
+		let databaseReferenceEntry = new DacpacReferenceProjectEntry(uri, databaseLocation, databaseName);
 		await this.addToProjFile(databaseReferenceEntry);
 	}
 
@@ -359,7 +401,7 @@ export class Project {
 		throw new Error(constants.unableToFindObject(path, constants.folderObject));
 	}
 
-	private addDatabaseReferenceToProjFile(entry: DatabaseReferenceProjectEntry): void {
+	private addDatabaseReferenceToProjFile(entry: IDatabaseReferenceProjectEntry): void {
 		// check if reference to this database already exists
 		if (this.databaseReferenceExists(entry)) {
 			throw new Error(constants.databaseReferenceAlreadyExists);
@@ -374,7 +416,7 @@ export class Project {
 		}
 
 		referenceNode.setAttribute(constants.Include, entry.pathForSqlProj());
-		this.addDatabaseReferenceChildren(referenceNode, entry.name);
+		this.addDatabaseReferenceChildren(referenceNode, entry.sqlCmdName);
 		this.findOrCreateItemGroup(constants.ArtifactReference).appendChild(referenceNode);
 		this.databaseReferences.push(entry);
 
@@ -383,12 +425,12 @@ export class Project {
 			let ssdtReferenceNode = this.projFileXmlDoc.createElement(constants.ArtifactReference);
 			ssdtReferenceNode.setAttribute(constants.Condition, constants.NotNetCoreCondition);
 			ssdtReferenceNode.setAttribute(constants.Include, (<SystemDatabaseReferenceProjectEntry>entry).ssdtPathForSqlProj());
-			this.addDatabaseReferenceChildren(ssdtReferenceNode, entry.name);
+			this.addDatabaseReferenceChildren(ssdtReferenceNode, entry.sqlCmdName);
 			this.findOrCreateItemGroup(constants.ArtifactReference).appendChild(ssdtReferenceNode);
 		}
 	}
 
-	private databaseReferenceExists(entry: DatabaseReferenceProjectEntry): boolean {
+	private databaseReferenceExists(entry: IDatabaseReferenceProjectEntry): boolean {
 		const found = this.databaseReferences.find(reference => reference.fsUri.fsPath === entry.fsUri.fsPath) !== undefined;
 		return found;
 	}
@@ -479,7 +521,7 @@ export class Project {
 				this.addFolderToProjFile(entry.relativePath);
 				break;
 			case EntryType.DatabaseReference:
-				this.addDatabaseReferenceToProjFile(<DatabaseReferenceProjectEntry>entry);
+				this.addDatabaseReferenceToProjFile(<IDatabaseReferenceProjectEntry>entry);
 				break; // not required but adding so that we dont miss when we add new items
 		}
 
@@ -567,9 +609,18 @@ export class ProjectEntry {
 /**
  * Represents a database reference entry in a project file
  */
-export class DatabaseReferenceProjectEntry extends ProjectEntry {
-	constructor(uri: Uri, public databaseLocation: DatabaseReferenceLocation, public name?: string) {
+
+export interface IDatabaseReferenceProjectEntry extends ProjectEntry {
+	databaseName: string;
+	sqlCmdName?: string | undefined;
+}
+
+export class DacpacReferenceProjectEntry extends ProjectEntry implements IDatabaseReferenceProjectEntry {
+	sqlCmdName: string | undefined;
+
+	constructor(uri: Uri, public databaseLocation: DatabaseReferenceLocation, name?: string) {
 		super(uri, '', EntryType.DatabaseReference);
+		this.sqlCmdName = name;
 	}
 
 	public get databaseName(): string {
@@ -577,9 +628,10 @@ export class DatabaseReferenceProjectEntry extends ProjectEntry {
 	}
 }
 
-class SystemDatabaseReferenceProjectEntry extends DatabaseReferenceProjectEntry {
-	constructor(uri: Uri, public ssdtUri: Uri, public name: string) {
+class SystemDatabaseReferenceProjectEntry extends DacpacReferenceProjectEntry {
+	constructor(uri: Uri, public ssdtUri: Uri, name: string) {
 		super(uri, DatabaseReferenceLocation.differentDatabaseSameServer, name);
+		this.sqlCmdName = name;
 	}
 
 	public pathForSqlProj(): string {
@@ -590,6 +642,19 @@ class SystemDatabaseReferenceProjectEntry extends DatabaseReferenceProjectEntry 
 	public ssdtPathForSqlProj(): string {
 		// need to remove the leading slash for system database path for build to work on Windows
 		return utils.convertSlashesForSqlProj(this.ssdtUri.path.substring(1));
+	}
+}
+
+export class SqlProjectReferenceProjectEntry extends ProjectEntry implements IDatabaseReferenceProjectEntry {
+	projectName: string;
+
+	constructor(uri: Uri, name: string) {
+		super(uri, '', EntryType.DatabaseReference);
+		this.projectName = name;
+	}
+
+	public get databaseName(): string {
+		return this.projectName;
 	}
 }
 

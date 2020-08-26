@@ -34,7 +34,9 @@ export class TreeNodeContextKey implements IContextKey<TreeNode> {
 		this._treeNodeKey.set(value);
 		this._nodeTypeKey.set(value && value.nodeTypeId);
 		this._subTypeKey.set(value && value.nodeSubType);
-		this._statusKey.set(value && value.nodeStatus);
+		if (value.nodeStatus) {
+			this._statusKey.set(value && value.nodeStatus);
+		}
 		this._nodeLabelKey.set(value && value.label);
 	}
 
@@ -46,7 +48,7 @@ export class TreeNodeContextKey implements IContextKey<TreeNode> {
 		this._nodeLabelKey.reset();
 	}
 
-	public get(): TreeNode {
+	public get(): TreeNode | undefined {
 		return this._treeNodeKey.get();
 	}
 }

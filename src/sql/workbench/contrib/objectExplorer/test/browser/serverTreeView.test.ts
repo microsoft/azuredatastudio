@@ -39,7 +39,7 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 		);
 		mockConnectionManagementService.setup(x => x.getConnectionGroups()).returns(x => []);
 		mockConnectionManagementService.setup(x => x.hasRegisteredServers()).returns(() => true);
-		serverTreeView = new ServerTreeView(mockConnectionManagementService.object, instantiationService, undefined, new TestThemeService(), undefined, undefined, capabilitiesService);
+		serverTreeView = new ServerTreeView(mockConnectionManagementService.object, instantiationService, undefined, new TestThemeService(), undefined, undefined, capabilitiesService, undefined, undefined);
 		mockTree = TypeMoq.Mock.ofType(TestTree);
 		(serverTreeView as any)._tree = mockTree.object;
 		mockRefreshTreeMethod = TypeMoq.Mock.ofType(Function);
@@ -64,15 +64,6 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 		mockTree.verify(x => x.layout(TypeMoq.It.isAnyNumber()), TypeMoq.Times.once());
 	});
 
-	test('setVisibility', async () => {
-		mockTree.setup(x => x.onVisible());
-		mockTree.setup(x => x.onHidden());
-		serverTreeView.setVisible(true);
-		mockTree.verify(x => x.onVisible(), TypeMoq.Times.once());
-		serverTreeView.setVisible(false);
-		mockTree.verify(x => x.onHidden(), TypeMoq.Times.once());
-	});
-
 	test('getSelection', async () => {
 		mockTree.setup(x => x.getSelection());
 
@@ -81,9 +72,9 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 	});
 
 	test('isFocused', async () => {
-		mockTree.setup(x => x.isDOMFocused());
+		mockTree.setup(x => x.getHTMLElement());
 		serverTreeView.isFocused();
-		mockTree.verify(x => x.isDOMFocused(), TypeMoq.Times.once());
+		mockTree.verify(x => x.getHTMLElement(), TypeMoq.Times.once());
 	});
 
 	test('reveal', async () => {
