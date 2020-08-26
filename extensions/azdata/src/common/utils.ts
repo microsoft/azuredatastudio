@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as which from 'which';
+
 /**
  * Searches for the first instance of the specified executable in the PATH environment variable
  * @param exe The executable to search for

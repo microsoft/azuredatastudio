@@ -89,8 +89,11 @@ async function checkForAzdata(): Promise<IAzdataTool | undefined> {
 		const azdata = await findAzdata(); // find currently installed Azdata
 		vscode.window.showInformationMessage(loc.foundExistingAzdata(azdata.path, azdata.cachedVersion.raw));
 		// Don't block on this since we want the extension to finish activating without needing user input
-		checkAndUpgradeAzdata(azdata).catch(err => vscode.window.showWarningMessage(loc.updateError(err))); //update if available and user wants it.
-		return findAzdata(); // now again find and return the currently installed azdata
+		checkAndUpgradeAzdata(azdata)
+			.then(() => {
+				return findAzdata(); // now again find and return the currently installed azdata
+			})
+			.catch(err => vscode.window.showWarningMessage(loc.updateError(err))); //update if available and user wants it.
 	} catch (err) {
 		// Don't block on this since we want the extension to finish activating without needing user input.
 		// Calls will be made to handle azdata not being installed

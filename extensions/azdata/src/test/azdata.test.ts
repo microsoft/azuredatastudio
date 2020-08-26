@@ -184,12 +184,9 @@ async function testDarwinSuccessfulUpgrade() {
 			'bottle': true
 		}
 	}];
-	let callNo = 0;
 	const executeCommandStub = sinon.stub(childProcess, 'executeCommand')
 		.onThirdCall() //third call is brew info azdata-cli --json which needs to return json of new available azdata versions.
 		.callsFake(async (command: string, args: string[]) => {
-			++callNo;
-			console.log(`testDarwinSuccessfulUpgrade, callNo:${callNo}, command: ${command} with args: [${args}], returning brewInfoOutput`);
 			should(command).be.equal('brew');
 			should(args).deepEqual(['info', 'azdata-cli', '--json']);
 			return Promise.resolve({
@@ -198,8 +195,6 @@ async function testDarwinSuccessfulUpgrade() {
 			});
 		})
 		.callsFake(async (_command: string, _args: string[]) => { // return success on all other command executions
-			++callNo;
-			console.log(`testDarwinSuccessfulUpgrade, callNo:${callNo}, command: ${_command} with args: [${_args}],  returning success`);
 			return Promise.resolve({ stdout: 'success', stderr: '' });
 		});
 	await azdata.checkAndUpgradeAzdata(oldAzdataMock);
