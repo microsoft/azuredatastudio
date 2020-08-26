@@ -11,6 +11,8 @@ import { WizardPageBase } from '../wizardPageBase';
 import { DeployAzureSQLVMWizardModel } from './deployAzureSQLVMWizardModel';
 import { AzureSQLVMWizardInfo } from '../../interfaces';
 import { AzureSettingsPage } from './pages/azureSettingsPage';
+import { VmSettingsPage } from './pages/vmSettingsPage';
+import axios, { AxiosRequestConfig } from 'axios';
 
 export class DeployAzureSQLVMWizard extends WizardBase<DeployAzureSQLVMWizard, WizardPageBase<DeployAzureSQLVMWizard>, DeployAzureSQLVMWizardModel> {
 
@@ -46,6 +48,9 @@ export class DeployAzureSQLVMWizard extends WizardBase<DeployAzureSQLVMWizard, W
 	private getPages(): WizardPageBase<DeployAzureSQLVMWizard>[] {
 		const pages: WizardPageBase<DeployAzureSQLVMWizard>[] = [];
 		pages.push(new AzureSettingsPage(this));
+		pages.push(new VmSettingsPage(this));
+		// pages.push(new StorageSettingsPage(this));
+		// pages.push(new AdministratorSettingsPage(this));
 		return pages;
 	}
 
@@ -66,5 +71,24 @@ export class DeployAzureSQLVMWizard extends WizardBase<DeployAzureSQLVMWizard, W
 		// if (this.model.authenticationMode === AuthenticationMode.ActiveDirectory) {
 		// 	env[VariableNames.DomainServiceAccountPassword_VariableName] = this.model.getStringValue(VariableNames.DomainServiceAccountPassword_VariableName);
 		// }
+	}
+
+	public async getRequest(url: string): Promise<any> {
+		let token: any;
+		let tokens = Object.entries(this.model.securityToken);
+		tokens.map((value) => {
+			token = value[1];
+			token = token.token;
+		});
+
+		const config: AxiosRequestConfig = {
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${token}`
+			},
+			validateStatus: () => true // Never throw
+		};
+		const response = await axios.get(url, config);
+		return response;
 	}
 }
