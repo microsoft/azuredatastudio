@@ -495,3 +495,18 @@ export interface ISqlAssessmentService {
 	getAssessmentItems(ownerUri: string, targetType: azdata.sqlAssessment.SqlAssessmentTargetType): Promise<azdata.SqlAssessmentResult>;
 	generateAssessmentScript(items: azdata.SqlAssessmentResultItem[], targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Promise<azdata.ResultStatus>;
 }
+
+// Profiler interfaces
+
+export interface IProfilerService {
+	createSession(sessionId: string, sessionName: string, template: azdata.ProfilerSessionTemplate): Thenable<boolean>;
+	startSession(sessionId: string, sessionName: string): Thenable<boolean>;
+	stopSession(sessionId: string): Thenable<boolean>;
+	pauseSession(sessionId: string): Thenable<boolean>;
+	getXEventSessions(sessionId: string): Thenable<string[]>;
+	connectSession(sessionId: string): Thenable<boolean>;
+	disconnectSession(sessionId: string): Thenable<boolean>;
+	registerOnSessionEventsAvailable(handler: (response: azdata.ProfilerSessionEvents) => any): void;
+	registerOnSessionStopped(handler: (response: azdata.ProfilerSessionStoppedParams) => any): void;
+	registerOnProfilerSessionCreated(handler: (response: azdata.ProfilerSessionCreatedParams) => any): void;
+}
