@@ -263,9 +263,10 @@ export class QueryEditor extends BaseEditor {
 		let content: ITaskbarContent[];
 		const previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
 		let connectionProfile = this.connectionManagementService.getConnectionProfile(this.input?.uri);
+		let fileExtension = path.extname(this.input?.uri || '');
 
 		// TODO: Make it more generic, some way for extensions to register the commands it supports
-		if (connectionProfile?.providerName === 'KUSTO' || this.modeService.getExtensions('Kusto').indexOf(path.extname(this.input?.uri || '')) > -1) {
+		if ((!fileExtension && connectionProfile?.providerName === 'KUSTO') || this.modeService.getExtensions('Kusto').indexOf(fileExtension) > -1) {
 			content = [
 				{ action: this._runQueryAction },
 				{ action: this._cancelQueryAction },
