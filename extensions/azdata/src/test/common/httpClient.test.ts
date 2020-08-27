@@ -3,13 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as should from 'should';
-import { HttpClient } from '../../common/httpClient';
-import * as os from 'os';
 import * as fs from 'fs';
 import * as nock from 'nock';
+import * as os from 'os';
+import * as should from 'should';
 import * as sinon from 'sinon';
 import { PassThrough } from 'stream';
+import { HttpClient } from '../../common/httpClient';
 import { Deferred } from '../../common/promise';
 
 describe('HttpClient', function (): void {
@@ -17,15 +17,16 @@ describe('HttpClient', function (): void {
 	afterEach(function (): void {
 		nock.cleanAll();
 		nock.enableNetConnect();
+		sinon.restore();
 	});
 
-	describe('download', function(): void {
+	describe('downloadFile', function (): void {
 		it('downloads file successfully', async function (): Promise<void> {
 			nock('https://127.0.0.1')
 				.get('/README.md')
 				.replyWithFile(200, __filename);
 			const downloadFolder = os.tmpdir();
-			const downloadPath = await HttpClient.download('https://127.0.0.1/README.md', downloadFolder);
+			const downloadPath = await HttpClient.downloadFile('https://127.0.0.1/README.md', downloadFolder);
 			// Verify file was downloaded correctly
 			await fs.promises.stat(downloadPath);
 		});
@@ -35,8 +36,7 @@ describe('HttpClient', function (): void {
 			nock('https://127.0.0.1')
 				.get('/')
 				.replyWithError('Unexpected Error');
-			const downloadPromise = HttpClient.download('https://127.0.0.1', downloadFolder);
-
+			const downloadPromise = HttpClient.downloadFile('https://127.0.0.1', downloadFolder);
 			await should(downloadPromise).be.rejected();
 		});
 
@@ -45,8 +45,7 @@ describe('HttpClient', function (): void {
 			nock('https://127.0.0.1')
 				.get('/')
 				.reply(404, '');
-			const downloadPromise = HttpClient.download('https://127.0.0.1', downloadFolder);
-
+			const downloadPromise = HttpClient.downloadFile('https://127.0.0.1', downloadFolder);
 			await should(downloadPromise).be.rejected();
 		});
 
@@ -61,7 +60,7 @@ describe('HttpClient', function (): void {
 			nock('https://127.0.0.1')
 				.get('/')
 				.reply(200, '');
-			const downloadPromise = HttpClient.download('https://127.0.0.1', downloadFolder);
+			const downloadPromise = HttpClient.downloadFile('https://127.0.0.1', downloadFolder);
 			// Wait for the stream to be created before throwing the error or HttpClient will miss the event
 			await deferredPromise;
 			try {
@@ -73,34 +72,29 @@ describe('HttpClient', function (): void {
 		});
 	});
 
-	describe('getFilename', function(): void {
-		it('Gets filename correctly', async function (): Promise<void> {
-			const filename = 'azdata-cli-20.0.0.msi';
+	describe('getTextContent', function (): void {
+		it.skip('Gets file contents correctly', async function (): Promise<void> {
 			nock('https://127.0.0.1')
-				.get(`/${filename}`)
-				.reply(200);
-			const receivedFilename = await HttpClient.getFilename(`https://127.0.0.1/${filename}`);
-
-			should(receivedFilename).equal(filename);
+				.get('/arbitraryFile')
+				.replyWithFile(200, __filename);
+			const receivedContents = await HttpClient.getTextContent(`https://127.0.0.1/arbitraryFile`);
+			should(receivedContents).equal(await fs.promises.readFile(__filename));
 		});
 
-		it('errors on response error', async function (): Promise<void> {
+		it('rejects on response error', async function (): Promise<void> {
 			nock('https://127.0.0.1')
 				.get('/')
 				.replyWithError('Unexpected Error');
-			const getFilenamePromise = HttpClient.getFilename('https://127.0.0.1');
-
-			await should(getFilenamePromise).be.rejected();
+			const getFileContentsPromise = HttpClient.getTextContent('https://127.0.0.1/', );
+			await should(getFileContentsPromise).be.rejected();
 		});
 
 		it('rejects on non-OK status code', async function (): Promise<void> {
 			nock('https://127.0.0.1')
 				.get('/')
 				.reply(404, '');
-			const getFilenamePromise = HttpClient.getFilename('https://127.0.0.1');
-
-			await should(getFilenamePromise).be.rejected();
+			const getFileContentsPromise = HttpClient.getTextContent('https://127.0.0.1/', );
+			await should(getFileContentsPromise).be.rejected();
 		});
 	});
-
 });

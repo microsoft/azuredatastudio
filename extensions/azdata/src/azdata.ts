@@ -3,21 +3,27 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as os from 'os';
-import * as vscode from 'vscode';
-import { HttpClient } from './common/httpClient';
-import * as loc from './localizedConstants';
-import { executeCommand, executeSudoCommand, ExitCodeError } from './common/childProcess';
-import { searchForCmd } from './common/utils';
 import * as azdataExt from 'azdata-ext';
+import * as os from 'os';
+import { SemVer } from 'semver';
+import * as vscode from 'vscode';
+import { executeCommand, executeSudoCommand, ExitCodeError } from './common/childProcess';
+import { HttpClient } from './common/httpClient';
 import Logger from './common/logger';
+import { getErrorMessage, searchForCmd } from './common/utils';
+import * as loc from './localizedConstants';
 
 export const azdataHostname = 'https://aka.ms';
 export const azdataUri = 'azdata-msi';
+export const azdataReleaseJson = 'azdata/release.json';
 
+/**
+ * Interface for an object to interact with the azdata tool installed on the box.
+ */
 export interface IAzdataTool extends azdataExt.IAzdataApi {
 	path: string,
-	toolVersion: string,
+	cachedVersion: SemVer
+
 	/**
 	 * Executes azdata with the specified arguments (e.g. --version) and returns the result
 	 * @param args The args to pass to azdata
@@ -26,8 +32,14 @@ export interface IAzdataTool extends azdataExt.IAzdataApi {
 	executeCommand<R>(args: string[], additionalEnvVars?: { [key: string]: string }): Promise<azdataExt.AzdataOutput<R>>
 }
 
-class AzdataTool implements IAzdataTool {
-	constructor(public path: string, public toolVersion: string) { }
+/**
+ * An object to interact with the azdata tool installed on the box.
+ */
+export class AzdataTool implements IAzdataTool {
+	public cachedVersion: SemVer;
+	constructor(public path: string, version: string) {
+		this.cachedVersion = new SemVer(version);
+	}
 
 	public arc = {
 		dc: {
@@ -90,10 +102,19 @@ class AzdataTool implements IAzdataTool {
 		return this.executeCommand<void>(['login', '-e', endpoint, '-u', username], { 'AZDATA_PASSWORD': password });
 	}
 
+	/**
+	 * Gets the output of running '--version' command on the azdata tool.
+	 * It also updates the cachedVersion property based on the return value from the tool.
+	 */
 	public async version(): Promise<azdataExt.AzdataOutput<string>> {
-		const output = await this.executeCommand<string>(['--version']);
-		this.toolVersion = parseVersion(output.stdout[0]);
-		return output;
+		const output = await executeCommand(`"${this.path}"`, ['--version']);
+		this.cachedVersion = new SemVer(parseVersion(output.stdout));
+		return {
+			logs: [],
+			stdout: output.stdout.split(os.EOL),
+			stderr: output.stderr.split(os.EOL),
+			result: ''
+		};
 	}
 
 	public async executeCommand<R>(args: string[], additionalEnvVars?: { [key: string]: string }): Promise<azdataExt.AzdataOutput<R>> {
@@ -117,22 +138,24 @@ class AzdataTool implements IAzdataTool {
 	}
 }
 
+export type AzdataDarwinPackageVersionInfo = {
+	versions: {
+		stable: string,
+		devel: string,
+		head: string,
+		bottle: boolean
+	}
+};
 /**
  * Finds the existing installation of azdata, or throws an error if it couldn't find it
  * or encountered an unexpected error.
+ * The promise is rejected when Azdata is not found.
  */
 export async function findAzdata(): Promise<IAzdataTool> {
 	Logger.log(loc.searchingForAzdata);
 	try {
-		let azdata: IAzdataTool | undefined = undefined;
-		switch (process.platform) {
-			case 'win32':
-				azdata = await findAzdataWin32();
-				break;
-			default:
-				azdata = await findSpecificAzdata('azdata');
-		}
-		Logger.log(loc.foundExistingAzdata(azdata.path, azdata.toolVersion));
+		const azdata = await findSpecificAzdata();
+		Logger.log(loc.foundExistingAzdata(azdata.path, azdata.cachedVersion.raw));
 		return azdata;
 	} catch (err) {
 		Logger.log(loc.couldNotFindAzdata(err));
@@ -141,9 +164,9 @@ export async function findAzdata(): Promise<IAzdataTool> {
 }
 
 /**
- * Downloads the appropriate installer and/or runs the command to install azdata
+ * runs the commands to install azdata, downloading the installation package if needed
  */
-export async function downloadAndInstallAzdata(): Promise<void> {
+export async function installAzdata(): Promise<void> {
 	const statusDisposable = vscode.window.setStatusBarMessage(loc.installingAzdata);
 	Logger.show();
 	Logger.log(loc.installingAzdata);
@@ -161,17 +184,64 @@ export async function downloadAndInstallAzdata(): Promise<void> {
 			default:
 				throw new Error(loc.platformUnsupported(process.platform));
 		}
+		Logger.log(loc.azdataInstalled);
 	} finally {
 		statusDisposable.dispose();
 	}
 }
 
 /**
+ * Upgrades the azdata using os appropriate method
+ */
+export async function upgradeAzdata(): Promise<void> {
+	const statusDisposable = vscode.window.setStatusBarMessage(loc.upgradingAzdata);
+	Logger.show();
+	Logger.log(loc.upgradingAzdata);
+	try {
+		switch (process.platform) {
+			case 'win32':
+				await downloadAndInstallAzdataWin32();
+				break;
+			case 'darwin':
+				await upgradeAzdataDarwin();
+				break;
+			case 'linux':
+				await installAzdataLinux();
+				break;
+			default:
+				throw new Error(loc.platformUnsupported(process.platform));
+		}
+		Logger.log(loc.azdataUpgraded);
+	} finally {
+		statusDisposable.dispose();
+	}
+}
+
+/**
+ * Checks whether a newer version of azdata is available - and if it is prompts the user to download and
+ * install it.
+ * @param currentAzdata The current version of azdata to check against
+ */
+export async function checkAndUpgradeAzdata(currentAzdata?: IAzdataTool): Promise<void> {
+	if (currentAzdata === undefined) {
+		currentAzdata = await findAzdata();
+	}
+	const newVersion = await discoverLatestAvailableAzdataVersion();
+	if (newVersion.compare(currentAzdata.cachedVersion) === 1) {
+		const response = await vscode.window.showInformationMessage(loc.promptForAzdataUpgrade(newVersion.raw), loc.yes, loc.no);
+		if (response === loc.yes) {
+			await upgradeAzdata();
+		}
+	}
+}
+
+
+/**
  * Downloads the Windows installer and runs it
  */
 async function downloadAndInstallAzdataWin32(): Promise<void> {
 	const downloadFolder = os.tmpdir();
-	const downloadedFile = await HttpClient.download(`${azdataHostname}/${azdataUri}`, downloadFolder);
+	const downloadedFile = await HttpClient.downloadFile(`${azdataHostname}/${azdataUri}`, downloadFolder);
 	await executeCommand('msiexec', ['/qn', '/i', downloadedFile]);
 }
 
@@ -182,6 +252,15 @@ async function installAzdataDarwin(): Promise<void> {
 	await executeCommand('brew', ['tap', 'microsoft/azdata-cli-release']);
 	await executeCommand('brew', ['update']);
 	await executeCommand('brew', ['install', 'azdata-cli']);
+}
+
+/**
+ * Runs commands to upgrade azdata on MacOS
+ */
+async function upgradeAzdataDarwin(): Promise<void> {
+	await executeCommand('brew', ['tap', 'microsoft/azdata-cli-release']);
+	await executeCommand('brew', ['update']);
+	await executeCommand('brew', ['upgrade', 'azdata-cli']);
 }
 
 /**
@@ -203,20 +282,46 @@ async function installAzdataLinux(): Promise<void> {
 }
 
 /**
- * Finds azdata specifically on Windows
  */
-async function findAzdataWin32(): Promise<IAzdataTool> {
-	const promise = searchForCmd('azdata.cmd');
-	return findSpecificAzdata(await promise);
+async function findSpecificAzdata(): Promise<IAzdataTool> {
+	const promise = ((process.platform === 'win32') ? searchForCmd('azdata.cmd') : searchForCmd('azdata'));
+	const path = `"${await promise}"`; // throws if azdata is not found
+	const versionOutput = await executeCommand(`"${path}"`, ['--version']);
+	return new AzdataTool(path, parseVersion(versionOutput.stdout));
 }
 
 /**
- * Gets the version using a known azdata path
- * @param path The path to the azdata executable
+ * Gets the latest azdata version available for a given platform
  */
-async function findSpecificAzdata(path: string): Promise<IAzdataTool> {
-	const versionOutput = await executeCommand(`"${path}"`, ['--version']);
-	return new AzdataTool(path, parseVersion(versionOutput.stdout));
+export async function discoverLatestAvailableAzdataVersion(): Promise<SemVer> {
+	Logger.log(loc.checkingLatestAzdataVersion);
+	switch (process.platform) {
+		case 'darwin':
+			return await discoverLatestStableAzdataVersionDarwin();
+		// case 'linux':
+		// ideally we would not to discover linux package availability using the apt/apt-get/apt-cache package manager commands.
+		// However, doing discovery that way required apt update to be performed which requires sudo privileges. At least currently this code path
+		// gets invoked on extension start up and prompt user for sudo privileges is annoying at best. So for now basing linux discovery also on a releaseJson file.
+		default:
+			return await discoverLatestAzdataVersionFromJson();
+	}
+}
+
+/**
+ * Gets the latest azdata version from a json document published by azdata release
+ */
+async function discoverLatestAzdataVersionFromJson(): Promise<SemVer> {
+	// get version information for current platform from http://aka.ms/azdata/release.json
+	const fileContents = await HttpClient.getTextContent(`${azdataHostname}/${azdataReleaseJson}`);
+	let azdataReleaseInfo;
+	try {
+		azdataReleaseInfo = JSON.parse(fileContents);
+	} catch (e) {
+		throw Error(`failed to parse the JSON of contents at: ${azdataHostname}/${azdataReleaseJson}, text being parsed: '${fileContents}', error:${getErrorMessage(e)}`);
+	}
+	const version = azdataReleaseInfo[process.platform]['version'];
+	Logger.log(loc.foundAzdataVersionToUpgradeTo(version));
+	return new SemVer(version);
 }
 
 /**
@@ -229,3 +334,38 @@ function parseVersion(raw: string): string {
 	const lines = raw.split(os.EOL);
 	return lines[0].trim();
 }
+/**
+ * Gets the latest azdata version for MacOs clients
+ */
+async function discoverLatestStableAzdataVersionDarwin(): Promise<SemVer> {
+	// set brew tap to azdata-cli repository
+	await executeCommand('brew', ['tap', 'microsoft/azdata-cli-release']);
+	await executeCommand('brew', ['update']);
+	let brewInfoAzdataCliJson;
+	// Get the package version 'info' about 'azdata-cli' from 'brew' as a json object
+	const brewInfoOutput = (await executeCommand('brew', ['info', 'azdata-cli', '--json'])).stdout;
+	try {
+		brewInfoAzdataCliJson = JSON.parse(brewInfoOutput);
+	} catch (e) {
+		throw Error(`failed to parse the JSON contents output of: 'brew info azdata-cli --json', text being parsed: '${brewInfoOutput}', error:${getErrorMessage(e)}`);
+	}
+	const azdataPackageVersionInfo: AzdataDarwinPackageVersionInfo = brewInfoAzdataCliJson.shift();
+	Logger.log(loc.foundAzdataVersionToUpgradeTo(azdataPackageVersionInfo.versions.stable));
+	return new SemVer(azdataPackageVersionInfo.versions.stable);
+}
+
+/**
+ * Gets the latest azdata version for linux clients
+ * This method requires sudo permission so not suitable to be run during startup.
+ */
+// async function discoverLatestStableAzdataVersionLinux(): Promise<SemVer> {
+// 	// Update repository information and install azdata
+// 	await executeSudoCommand('apt-get update');
+// 	const output = (await executeCommand('apt', ['list', 'azdata-cli', '--upgradeable'])).stdout;
+// 	// the packageName (with version) string is the second space delimited token on the 2nd line
+// 	const packageName = output.split('\n')[1].split(' ')[1];
+// 	// the version string is the first part of the package sting before '~'
+// 	const version = packageName.split('~')[0];
+// 	Logger.log(loc.foundAzdataVersionToUpgradeTo(version));
+// 	return new SemVer(version);
+// }
