@@ -31,7 +31,7 @@ export const foundAzdataVersionToUpgradeTo = (newVersion: string, currentVersion
 export const latestAzdataVersionAvailable = (version: string): string => localize('azdata.latestAzdataVersionAvailable', "Latest available azdata version: {0}.", version);
 export const promptForAzdataUpgrade = (version: string): string => localize('azdata.promptForAzdataUpgrade', "An updated version of azdata ( {0} ) is available, do you wish to install it now?", version);
 export const couldNotFindAzdata = (err: any): string => localize('azdata.couldNotFindAzdata', "Could not find azdata. Error: {0}", err.message ?? err);
-export const couldNotFindAzdataWithPrompt = localize('azdata.couldNotFindAzdataWithPrompt', "Could not find azdata, install it now? If not then some features will not be able to const.");
+export const couldNotFindAzdataWithPrompt = localize('azdata.couldNotFindAzdataWithPrompt', "Could not find azdata, install it now? If not then some features will not be able to function.");
 export const foundAzdataUpgradePrompt = localize('azdata.foundAzdataUpgradePrompt', "Found an upgrade available for azdata, upgrade it now?");
 export const downloadError = localize('azdata.downloadError', "Error while downloading");
 export const installError = (err: any): string => localize('azdata.installError', "Error installing azdata: {0}", err.message ?? err);
