@@ -40,7 +40,7 @@ export const subscriptionId = localize('arc.subscriptionId', "Subscription ID");
 export const state = localize('arc.state', "State");
 export const connectionMode = localize('arc.connectionMode', "Connection Mode");
 export const namespace = localize('arc.namespace', "Namespace");
-export const host = localize('arc.host', "Host");
+export const externalEndpoint = localize('arc.externalEndpoint', "External Endpoint");
 export const name = localize('arc.name', "Name");
 export const type = localize('arc.type', "Type");
 export const status = localize('arc.status', "Status");
@@ -81,6 +81,7 @@ export const password = localize('arc.password', "Password");
 export const rememberPassword = localize('arc.rememberPassword', "Remember Password");
 export const connect = localize('arc.connect', "Connect");
 export const cancel = localize('arc.cancel', "Cancel");
+export const notConfigured = localize('arc.notConfigured', "Not Configured");
 
 // Database States - see https://docs.microsoft.com/sql/relational-databases/databases/database-states
 export const online = localize('arc.online', "Online");
@@ -119,6 +120,7 @@ export const podOverview = localize('arc.podOverview', "Pod overview");
 export const condition = localize('arc.condition', "Condition");
 export const details = localize('arc.details', "Details");
 export const lastUpdated = localize('arc.lastUpdated', "Last updated");
+export const noExternalEndpoint = localize('arc.noExternalEndpoint', "No External Endpoint has been configured so this information isn't available.");
 
 export function databaseCreated(name: string): string { return localize('arc.databaseCreated', "Database {0} created", name); }
 export function resourceDeleted(name: string): string { return localize('arc.resourceDeleted', "Resource '{0}' deleted", name); }
