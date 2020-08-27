@@ -105,6 +105,11 @@ export interface NotebookCellMetadata {
 
 export type TransientMetadata = { [K in keyof NotebookCellMetadata]?: boolean };
 
+export interface TransientOptions {
+	transientOutputs: boolean;
+	transientMetadata: TransientMetadata;
+}
+
 export interface INotebookDisplayOrder {
 	defaultOrder: string[];
 	userOrder?: string[];
@@ -761,3 +766,4 @@ export interface INotebookDiffResult {
 }
 export const DisplayOrderKey = 'notebook.displayOrder';
 export const CellToolbarLocKey = 'notebook.cellToolbarLocation';
+export const ShowCellStatusbarKey = 'notebook.showCellStatusbar';
