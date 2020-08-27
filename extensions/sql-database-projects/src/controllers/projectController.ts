@@ -11,9 +11,10 @@ import * as path from 'path';
 import * as utils from '../common/utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as templates from '../templates/templates';
-
+import * as newProjectTool from '../tools/newProjectTool';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
+
 import { promises as fs } from 'fs';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { Project, DatabaseReferenceLocation, SystemDatabase, TargetPlatform, ProjectEntry, reservedProjectFolders, SqlProjectReferenceProjectEntry } from '../models/project';
@@ -661,6 +662,8 @@ export class ProjectsController {
 			model.extractTarget = await this.getExtractTarget();
 			model.version = '1.0.0.0';
 
+			newProjectTool.updateSaveLocationSetting();
+
 			const newProjFilePath = await this.createNewProject(model.projName, vscode.Uri.file(newProjFolderUri), true);
 			model.filePath = path.dirname(newProjFilePath);
 
@@ -739,7 +742,7 @@ export class ProjectsController {
 	private async getProjectName(dbName: string): Promise<string> {
 		let projName = await vscode.window.showInputBox({
 			prompt: constants.newDatabaseProjectName,
-			value: `DatabaseProject${dbName}`
+			value: newProjectTool.defaultProjectNameFromDb(dbName)
 		});
 
 		projName = projName?.trim();
@@ -797,7 +800,7 @@ export class ProjectsController {
 			canSelectFolders: true,
 			canSelectMany: false,
 			openLabel: constants.selectString,
-			defaultUri: vscode.workspace.workspaceFolders ? (vscode.workspace.workspaceFolders as vscode.WorkspaceFolder[])[0].uri : undefined
+			defaultUri: newProjectTool.defaultProjectSaveLocation()
 		});
 
 		if (selectionResult) {
