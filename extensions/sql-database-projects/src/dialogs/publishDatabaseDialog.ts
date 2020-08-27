@@ -488,7 +488,7 @@ export class PublishDatabaseDialog {
 	private createLoadProfileButton(view: azdata.ModelView): azdata.ButtonComponent {
 		let loadProfileButton: azdata.ButtonComponent = view.modelBuilder.button().withProperties({
 			ariaLabel: constants.loadProfilePlaceholderText,
-			iconPath: IconPathHelper.folder,
+			iconPath: IconPathHelper.folder_blue,
 			height: '16px',
 			width: '15px'
 		}).component();
