@@ -734,7 +734,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (this.kernelAliases.includes(displayName)) {
 			this._currentKernelAlias = displayName;
 			displayName = 'SQL';
-			nbKernelAlias = 'Kusto';
+			nbKernelAlias = this.currentKernelAlias;
 		}
 		try {
 			let changeKernelNeeded = true;
