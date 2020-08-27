@@ -321,7 +321,7 @@ async function promptToUpgradeAzdata(userRequested: boolean = false): Promise<vo
 			// Windows: 1602 is User cancelling installation/upgrade - not unexpected so don't display
 			if (!(err instanceof ExitCodeError) || err.code !== 1602) {
 				vscode.window.showWarningMessage(loc.upgradeError(err));
-				Logger.log(loc.installError(err));
+				Logger.log(loc.upgradeError(err));
 			}
 		}
 	}

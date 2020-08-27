@@ -77,7 +77,7 @@ describe('azdata', function () {
 		if (process.platform === 'win32') {
 			it('unsuccessful download - win32', async function (): Promise<void> {
 				sinon.stub(HttpClient, 'downloadFile').rejects();
-				const downloadPromise = azdata.installAzdata();
+				const downloadPromise = azdata.checkAndInstallAzdata();
 				await should(downloadPromise).be.rejected();
 			});
 		}
@@ -223,7 +223,7 @@ async function testWin32SuccessfulInstall() {
 		should(path.basename(args[2])).be.equal(constants.azdataUri);
 		return { stdout: 'success', stderr: '' };
 	});
-	await azdata.installAzdata();
+	await azdata.checkAndInstallAzdata();
 	should(executeCommandStub.calledOnce).be.true();
 }
 
@@ -232,28 +232,28 @@ async function testDarwinSuccessfulInstall() {
 		should(command).be.equal('brew');
 		return { stdout: 'success', stderr: '' };
 	});
-	await azdata.installAzdata();
+	await azdata.checkAndInstallAzdata();
 	should(executeCommandStub.calledThrice).be.true();
 }
 
 async function testLinuxSuccessfulInstall() {
 	const executeCommandStub = sinon.stub(childProcess, 'executeCommand').returns(Promise.resolve({ stdout: 'success', stderr: '' }));
 	const executeSudoCommandStub = sinon.stub(childProcess, 'executeSudoCommand').returns(Promise.resolve({ stdout: 'success', stderr: '' }));
-	await azdata.installAzdata();
+	await azdata.checkAndInstallAzdata();
 	should(executeSudoCommandStub.callCount).be.equal(6);
 	should(executeCommandStub.calledOnce).be.true();
 }
 
 async function testLinuxUnsuccessfulInstall() {
 	const executeSudoCommandStub = sinon.stub(childProcess, 'executeSudoCommand').rejects();
-	const downloadPromise = azdata.installAzdata();
+	const downloadPromise = azdata.checkAndInstallAzdata();
 	await should(downloadPromise).be.rejected();
 	should(executeSudoCommandStub.calledOnce).be.true();
 }
 
 async function testDarwinUnsuccessfulInstall() {
 	const executeCommandStub = sinon.stub(childProcess, 'executeCommand').rejects();
-	const downloadPromise = azdata.installAzdata();
+	const downloadPromise = azdata.checkAndInstallAzdata();
 	await should(downloadPromise).be.rejected();
 	should(executeCommandStub.calledOnce).be.true();
 }
@@ -261,7 +261,7 @@ async function testDarwinUnsuccessfulInstall() {
 async function testWin32UnsuccessfulInstall() {
 	const executeCommandStub = sinon.stub(childProcess, 'executeCommand').rejects();
 	sinon.stub(HttpClient, 'downloadFile').returns(Promise.resolve(__filename));
-	const downloadPromise = azdata.installAzdata();
+	const downloadPromise = azdata.checkAndInstallAzdata();
 	await should(downloadPromise).be.rejected();
 	should(executeCommandStub.calledOnce).be.true();
 }
