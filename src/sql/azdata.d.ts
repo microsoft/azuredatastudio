@@ -284,9 +284,9 @@ declare module 'azdata' {
 	// Object Explorer interfaces  -----------------------------------------------------------------------
 	export interface ObjectExplorerSession {
 		success: boolean;
-		sessionId: string;
+		sessionId?: string;
 		rootNode: NodeInfo;
-		errorMessage: string;
+		errorMessage?: string;
 	}
 
 	/**
@@ -296,12 +296,12 @@ declare module 'azdata' {
 	export interface NodeInfo {
 		nodePath: string;
 		nodeType: string;
-		nodeSubType: string;
+		nodeSubType?: string;
 		nodeStatus?: string;
 		label: string;
 		isLeaf: boolean;
 		metadata?: ObjectMetadata;
-		errorMessage: string;
+		errorMessage?: string;
 		/**
 		 * Optional iconType for the object in the tree. Currently this only supports
 		 * an icon name or SqlThemeIcon name, rather than a path to an icon.
@@ -1228,7 +1228,7 @@ declare module 'azdata' {
 	}
 
 	export interface ObjectExplorerExpandInfo {
-		sessionId: string;
+		sessionId?: string;
 		nodePath: string;
 		nodes: NodeInfo[];
 		errorMessage?: string;
@@ -1236,7 +1236,7 @@ declare module 'azdata' {
 
 	export interface ExpandNodeInfo {
 		sessionId: string;
-		nodePath: string;
+		nodePath: string | undefined;
 	}
 
 	export interface FindNodesInfo {
@@ -1299,7 +1299,7 @@ declare module 'azdata' {
 	}
 
 	export interface IconProvider extends DataProvider {
-		getConnectionIconId(connection: IConnectionProfile, serverInfo: ServerInfo): Thenable<string>;
+		getConnectionIconId(connection: IConnectionProfile, serverInfo: ServerInfo): Thenable<string | undefined>;
 	}
 
 	// Admin Services interfaces  -----------------------------------------------------------------------
