@@ -682,13 +682,18 @@ declare module 'azdata' {
 =======
 
 	export interface TextColumnOption {
-		hasHtml?: boolean
+		content?: string
 	}
 
 	export interface RowDetailsOptions {
 		panelRows: number,
 		detailsHtml: boolean,
-		headerCssClass?: string
+		headerCssClass?: string,
+		dataPropertyName: string
+	}
+
+	export interface TableColumn {
+		field?: string
 	}
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -706,11 +711,12 @@ declare module 'azdata' {
 
 	export interface TableComponentProperties extends ComponentProperties {
 		headerFilter?: boolean,
-		rowDetails?: RowDetailsOptions
+		rowDetails?: RowDetailsOptions,
+		dataObjects?: any[]
 	}
 
 	export interface TableComponent extends Component, TableComponentProperties {
-		appendData(data: any[][]);
+		appendData(data: any[]);
 	}
 >>>>>>> 5141322aa7... addressing PR comments
 >>>>>>> 5077a506b9... addressing PR comments

@@ -25,7 +25,7 @@ import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plu
 import { Emitter, Event as vsEvent } from 'vs/base/common/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
-import { slickGridDataItemColumnValueWithNoData, textFormatter, htmlFormatter } from 'sql/base/browser/ui/table/formatters';
+import { slickGridDataItemColumnValueWithNoData, textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType, ModelViewAction } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSizeToNumber } from 'sql/base/browser/dom';
@@ -75,6 +75,11 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 
 	}
 
+	private contentFormatter(dataValue: string, row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
+		let cellClasses = 'grid-cell-value-container';
+		return `<div class="${cellClasses}">${dataContext[dataValue]}</div>`;
+	}
+
 	transformColumns(columns: string[] | azdata.TableColumn[]): Slick.Column<any>[] {
 		let tableColumns: any[] = <any[]>columns;
 		if (tableColumns) {
@@ -91,13 +96,13 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 					mycolumns.push(<Slick.Column<any>>{
 						name: col.value,
 						id: col.value,
-						field: col.value,
+						field: col.field ?? col.value,
 						width: col.width,
 						cssClass: col.cssClass,
 						headerCssClass: col.headerCssClass,
 						toolTip: col.toolTip,
-						formatter: col.options?.hasHtml
-							? htmlFormatter
+						formatter: col.options?.content
+							? (row, cell, value, columnDef, dataContext) => this.contentFormatter(col.options.content, row, cell, value, columnDef, dataContext)
 							: textFormatter,
 					});
 				} else {
@@ -128,9 +133,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 				let object: { [key: string]: string } = {};
 				if (row.forEach) {
 					row.forEach((val, index) => {
-						let columnName: string = index < columns.length
-							? (columns[index].value) ? columns[index].value : <string>columns[index]
-							: '__detailsData__';
+						let columnName: string = (columns[index].value) ? columns[index].value : <string>columns[index];
 						object[columnName] = val;
 					});
 				}
@@ -250,9 +253,19 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		this.layout();
 	}
 
-	private appendData(data: any[][]) {
-		this._tableData.push(TableComponent.transformData(data, this.columns, true));
-		this.data.push(...data);
+	private appendData(data: any[]) {
+		let dataObjects;
+		if (data && data.length > 0) {
+			if (data[0] instanceof Array) {
+				dataObjects = TableComponent.transformData(data, this.columns, true);
+			} else {
+				dataObjects = data;
+			}
+		}
+		if (dataObjects) {
+			this._tableData.push(dataObjects);
+			this.properties['dataObjects'].push(...dataObjects);
+		}
 	}
 
 	public setProperties(properties: { [key: string]: any; }): void {
@@ -265,7 +278,11 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		}
 		this._table.columns = this._tableColumns;
 
-		this._tableData.setData(TableComponent.transformData(this.data, this.columns, true));
+		if (this.properties['dataObjects']) {
+			this._tableData.setData(this.properties['dataObjects']);
+		} else if (this.data) {
+			this._tableData.setData(TableComponent.transformData(this.data, this.columns, true));
+		}
 
 		if (this.properties['headerFilter'] === true) {
 			this.registerFilterPlugin();
@@ -412,7 +429,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 			},
 			useRowClick: true,
 			panelRows: settings.panelRows,
-			postTemplate: (itemDetail) => itemDetail.__detailsData__,
+			postTemplate: (itemDetail) => itemDetail[settings.dataPropertyName],
 			preTemplate: () => '',
 			loadOnce: true,
 			detailsHtml: settings.detailsHtml,
@@ -423,6 +440,8 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		this._rowDetail = rowDetail;
 		this._table.registerPlugin(<any>this._rowDetail);
 	}
+
+
 
 	private registerFilterPlugin() {
 		const filterPlugin = new HeaderFilter<Slick.SlickData>();
@@ -435,12 +454,24 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 				this._table.grid.resetActiveCell();
 			}
 		});
+
+		this._filterPlugin.onCommand.subscribe((e, args: any) => {
+			this.columnSort(args.column.field, args.command === 'sort-asc');
+		});
+
 		filterPlugin['getFilterValues'] = this.getFilterValues;
 		filterPlugin['getAllFilterValues'] = this.getAllFilterValues;
 		filterPlugin['getFilterValuesByInput'] = this.getFilterValuesByInput;
 		this._table.registerPlugin(filterPlugin);
 
 	}
+
+	private columnSort(field: string, isAscending: boolean) {
+		this._tableData.sort((item1, item2) => {
+			return item1[field].toString().localeCompare(item2[field].toString());
+		}, isAscending);
+	}
+
 	private filter(item: any) {
 		let columns = this._table.grid.getColumns();
 		let value = true;
@@ -462,6 +493,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		}
 		return value;
 	}
+
 	private getFilterValues(dataView: Slick.DataProvider<Slick.SlickData>, column: Slick.Column<any>): Array<any> {
 		const seen: Array<string> = [];
 		for (let i = 0; i < dataView.getLength(); i++) {
