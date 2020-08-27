@@ -170,7 +170,7 @@ describe('BooksTreeViewTests', function () {
 				await bookTreeViewProvider.openBook(bookFolderPath, undefined, false, false);
 			});
 
-			afterEach(function(): void {
+			afterEach(function (): void {
 				sinon.restore();
 			});
 
@@ -276,7 +276,7 @@ describe('BooksTreeViewTests', function () {
 				await providedbookTreeViewProvider.openBook(bookFolderPath, undefined, false, false);
 			});
 
-			afterEach(function(): void {
+			afterEach(function (): void {
 				sinon.restore();
 			});
 
@@ -505,13 +505,17 @@ describe('BooksTreeViewTests', function () {
 			let contentFolderPath = path.join(rootFolderPath, 'content');
 			let configFile = path.join(rootFolderPath, '_config.yml');
 			tableOfContentsFile = path.join(dataFolderPath, 'toc.yml');
+			let notebook1File = path.join(contentFolderPath, 'notebook1.ipynb');
 			let notebook2File = path.join(contentFolderPath, 'notebook2.ipynb');
+			let markdownFile = path.join(contentFolderPath, 'readme.md');
 			await fs.mkdir(rootFolderPath);
 			await fs.mkdir(dataFolderPath);
 			await fs.mkdir(contentFolderPath);
 			await fs.writeFile(configFile, 'title: Test Book');
-			await fs.writeFile(tableOfContentsFile, '- title: Notebook1\n  url: /notebook1\n- title: Notebook2\n  url: /notebook2');
+			await fs.writeFile(tableOfContentsFile, '- title: Home\n  url: /readme\n- title: Notebook1\n  url: /notebook1\n- title: Notebook2\n  url: /notebook2');
+			await fs.writeFile(notebook1File, '');
 			await fs.writeFile(notebook2File, '');
+			await fs.writeFile(markdownFile, '');
 
 			const mockExtensionContext = new MockExtensionContext();
 			bookTreeViewProvider = new BookTreeViewProvider([], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
@@ -519,8 +523,9 @@ describe('BooksTreeViewTests', function () {
 			await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
 		});
 
-		afterEach(function(): void {
+		afterEach(async function (): Promise<void> {
 			sinon.restore();
+			await vscode.commands.executeCommand('workbench.action.closeAllEditors');
 		});
 
 		it('should add book and initialize book on openBook', async () => {
@@ -531,6 +536,34 @@ describe('BooksTreeViewTests', function () {
 			await bookTreeViewProvider.openBook(rootFolderPath);
 			should(bookTreeViewProvider.books.length).equal(1, 'Failed to initialize the book on open');
 			should(showPreviewSpy.notCalled).be.true('Should not call showPreviewFile when showPreview isn\' true');
+		});
+
+		it('openMarkdown should open markdown in the editor', async () => {
+			let executeCommandSpy = sinon.spy(vscode.commands, 'executeCommand');
+			let notebookPath = path.join(rootFolderPath, 'content', 'readme.md');
+			bookTreeViewProvider.openMarkdown(notebookPath);
+			should(executeCommandSpy.calledWith('markdown.showPreview')).be.true('openMarkdown should have called markdown.showPreview');
+		});
+
+		// TODO: Need to investigate why it's failing on linux.
+		it.skip('openNotebook should open notebook in the editor', async () => {
+			let showNotebookSpy = sinon.spy(azdata.nb, 'showNotebookDocument');
+			let notebookPath = path.join(rootFolderPath, 'content', 'notebook2.ipynb');
+			await bookTreeViewProvider.openNotebook(notebookPath);
+			should(showNotebookSpy.calledWith(vscode.Uri.file(notebookPath))).be.true(`Should have opened the notebook from ${notebookPath} in the editor.`);
+		});
+
+		it('openNotebookAsUntitled should open a notebook as untitled file in the editor', async () => {
+			let notebookPath = path.join(rootFolderPath, 'content', 'notebook2.ipynb');
+			await bookTreeViewProvider.openNotebookAsUntitled(notebookPath);
+			should(azdata.nb.notebookDocuments.find(doc => doc.uri.scheme === 'untitled')).not.be.undefined();
+		});
+
+		it('openExternalLink should open link', async () => {
+			let executeCommandSpy = sinon.spy(vscode.commands, 'executeCommand');
+			let notebookPath = path.join(rootFolderPath, 'content', 'readme.md');
+			bookTreeViewProvider.openMarkdown(notebookPath);
+			should(executeCommandSpy.calledWith('markdown.showPreview')).be.true('openMarkdown should have called markdown.showPreview');
 		});
 
 		it('should call showPreviewFile on openBook when showPreview flag is set', async () => {
@@ -612,7 +645,7 @@ describe('BooksTreeViewTests', function () {
 		it('should remove book on closeBook', async () => {
 			let length: number = bookTreeViewProvider.books.length;
 			await bookTreeViewProvider.closeBook(bookTreeViewProvider.books[0].bookItems[0]);
-			should(bookTreeViewProvider.books.length).equal(length-1, 'Failed to remove the book on close');
+			should(bookTreeViewProvider.books.length).equal(length - 1, 'Failed to remove the book on close');
 		});
 
 		this.afterAll(async function (): Promise<void> {

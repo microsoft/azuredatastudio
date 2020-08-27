@@ -209,3 +209,18 @@ export function parseInstanceName(instanceName: string | undefined): string {
 	}
 	return instanceName;
 }
+
+/**
+ * Parses an address into its separate ip and port values. Address must be in the form <ip>:<port>
+ * @param address The address to parse
+ */
+export function parseIpAndPort(address: string): { ip: string, port: string } {
+	const sections = address.split(':');
+	if (sections.length !== 2) {
+		throw new Error(`Invalid address format for ${address}. Address must be in the form <ip>:<port>`);
+	}
+	return {
+		ip: sections[0],
+		port: sections[1]
+	};
+}

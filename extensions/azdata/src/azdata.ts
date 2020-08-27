@@ -3,12 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzdataOutput } from 'azdata-ext';
+import * as azdataExt from 'azdata-ext';
 import * as os from 'os';
 import { SemVer } from 'semver';
 import * as vscode from 'vscode';
 import { executeCommand, executeSudoCommand, ExitCodeError } from './common/childProcess';
 import { HttpClient } from './common/httpClient';
+import Logger from './common/logger';
 import { getErrorMessage, searchForCmd } from './common/utils';
 import { azdataAutoInstallKey, azdataAutoUpgradeKey, azdataHostname, azdataReleaseJson, azdataUri, deploymentConfigurationKey } from './constants';
 import * as loc from './localizedConstants';
@@ -19,25 +20,108 @@ const enum AzdataDeployOption {
 	userPrompt = 'UserPrompt'
 }
 /**
- * Information about an azdata installation
+ * Interface for an object to interact with the azdata tool installed on the box.
  */
-export interface IAzdataTool {
+export interface IAzdataTool extends azdataExt.IAzdataApi {
 	path: string,
-	version: SemVer
+	cachedVersion: SemVer
+
 	/**
 	 * Executes azdata with the specified arguments (e.g. --version) and returns the result
 	 * @param args The args to pass to azdata
 	 * @param parseResult A function used to parse out the raw result into the desired shape
 	 */
-	executeCommand<R>(args: string[], additionalEnvVars?: { [key: string]: string }): Promise<AzdataOutput<R>>
+	executeCommand<R>(args: string[], additionalEnvVars?: { [key: string]: string }): Promise<azdataExt.AzdataOutput<R>>
 }
 
+/**
+ * An object to interact with the azdata tool installed on the box.
+ */
 export class AzdataTool implements IAzdataTool {
-	constructor(public path: string, public version: SemVer, private _outputChannel: vscode.OutputChannel) { }
+	public cachedVersion: SemVer;
+	constructor(public path: string, version: string) {
+		this.cachedVersion = new SemVer(version);
+	}
 
-	public async executeCommand<R>(args: string[], additionalEnvVars?: { [key: string]: string }): Promise<AzdataOutput<R>> {
+	public arc = {
+		dc: {
+			create: async (namespace: string, name: string, connectivityMode: string, resourceGroup: string, location: string, subscription: string, profileName?: string, storageClass?: string): Promise<azdataExt.AzdataOutput<void>> => {
+				const args = ['arc', 'dc', 'create',
+					'--namespace', namespace,
+					'--name', name,
+					'--connectivity-mode', connectivityMode,
+					'--resource-group', resourceGroup,
+					'--location', location,
+					'--subscription', subscription];
+				if (profileName) {
+					args.push('--profile-name', profileName);
+				}
+				if (storageClass) {
+					args.push('--storage-class', storageClass);
+				}
+				return this.executeCommand<void>(args);
+			},
+			endpoint: {
+				list: async () => {
+					return this.executeCommand<azdataExt.DcEndpointListResult[]>(['arc', 'dc', 'endpoint', 'list']);
+				}
+			},
+			config: {
+				list: async () => {
+					return this.executeCommand<azdataExt.DcConfigListResult[]>(['arc', 'dc', 'config', 'list']);
+				},
+				show: async () => {
+					return this.executeCommand<azdataExt.DcConfigShowResult>(['arc', 'dc', 'config', 'show']);
+				}
+			}
+		},
+		postgres: {
+			server: {
+				list: async () => {
+					return this.executeCommand<azdataExt.PostgresServerListResult[]>(['arc', 'postgres', 'server', 'list']);
+				},
+				show: async (name: string) => {
+					return this.executeCommand<azdataExt.PostgresServerShowResult>(['arc', 'postgres', 'server', 'show', '-n', name]);
+				}
+			}
+		},
+		sql: {
+			mi: {
+				delete: async (name: string) => {
+					return this.executeCommand<void>(['arc', 'sql', 'mi', 'delete', '-n', name]);
+				},
+				list: async () => {
+					return this.executeCommand<azdataExt.SqlMiListResult[]>(['arc', 'sql', 'mi', 'list']);
+				},
+				show: async (name: string) => {
+					return this.executeCommand<azdataExt.SqlMiShowResult>(['arc', 'sql', 'mi', 'show', '-n', name]);
+				}
+			}
+		}
+	};
+
+	public async login(endpoint: string, username: string, password: string): Promise<azdataExt.AzdataOutput<void>> {
+		return this.executeCommand<void>(['login', '-e', endpoint, '-u', username], { 'AZDATA_PASSWORD': password });
+	}
+
+	/**
+	 * Gets the output of running '--version' command on the azdata tool.
+	 * It also updates the cachedVersion property based on the return value from the tool.
+	 */
+	public async version(): Promise<azdataExt.AzdataOutput<string>> {
+		const output = await executeCommand(`"${this.path}"`, ['--version']);
+		this.cachedVersion = new SemVer(parseVersion(output.stdout[0]));
+		return {
+			logs: [],
+			stdout: output.stdout.split(os.EOL),
+			stderr: output.stderr.split(os.EOL),
+			result: ''
+		};
+	}
+
+	public async executeCommand<R>(args: string[], additionalEnvVars?: { [key: string]: string }): Promise<azdataExt.AzdataOutput<R>> {
 		try {
-			const output = JSON.parse((await executeCommand(`"${this.path}"`, args.concat(['--output', 'json']), this._outputChannel, additionalEnvVars)).stdout);
+			const output = JSON.parse((await executeCommand(`"${this.path}"`, args.concat(['--output', 'json']), additionalEnvVars)).stdout);
 			return {
 				logs: <string[]>output.log,
 				stdout: <string[]>output.stdout,
@@ -67,51 +151,42 @@ export type AzdataDarwinPackageVersionInfo = {
 /**
  * Finds the existing installation of azdata, or throws an error if it couldn't find it
  * or encountered an unexpected error.
- * @param outputChannel Channel used to display diagnostic information
  * The promise is rejected when Azdata is not found.
  */
-export async function findAzdata(outputChannel: vscode.OutputChannel): Promise<IAzdataTool> {
-	outputChannel.appendLine(loc.searchingForAzdata);
+export async function findAzdata(): Promise<IAzdataTool> {
+	Logger.log(loc.searchingForAzdata);
 	try {
-		let azdata: IAzdataTool | undefined = undefined;
-		switch (process.platform) {
-			case 'win32':
-				azdata = await findAzdataWin32(outputChannel);
-				break;
-			default:
-				azdata = await findSpecificAzdata('azdata', outputChannel);
-		}
-		outputChannel.appendLine(loc.foundExistingAzdata(azdata.path, azdata.version.raw));
+		const azdata = await findSpecificAzdata();
+		Logger.log(loc.foundExistingAzdata(azdata.path, azdata.cachedVersion.raw));
 		return azdata;
 	} catch (err) {
-		outputChannel.appendLine(loc.couldNotFindAzdata(err));
+		Logger.log(loc.couldNotFindAzdata(err));
 		throw err;
 	}
 }
 
 /**
  * runs the commands to install azdata, downloading the installation package if needed
- * @param outputChannel Channel used to display diagnostic information
  */
-export async function installAzdata(outputChannel: vscode.OutputChannel): Promise<void> {
+export async function installAzdata(): Promise<void> {
 	const statusDisposable = vscode.window.setStatusBarMessage(loc.installingAzdata);
-	outputChannel.show();
-	outputChannel.appendLine(loc.installingAzdata);
+	Logger.show();
+	Logger.log(loc.installingAzdata);
 	try {
 		switch (process.platform) {
 			case 'win32':
-				await downloadAndInstallAzdataWin32(outputChannel);
+				await downloadAndInstallAzdataWin32();
 				break;
 			case 'darwin':
-				await installAzdataDarwin(outputChannel);
+				await installAzdataDarwin();
 				break;
 			case 'linux':
-				await installAzdataLinux(outputChannel);
+				await installAzdataLinux();
 				break;
 			default:
 				throw new Error(loc.platformUnsupported(process.platform));
 		}
-		outputChannel.appendLine(loc.azdataInstalled);
+		Logger.log(loc.azdataInstalled);
 	} finally {
 		statusDisposable.dispose();
 	}
@@ -119,27 +194,26 @@ export async function installAzdata(outputChannel: vscode.OutputChannel): Promis
 
 /**
  * Upgrades the azdata using os appropriate method
- * @param outputChannel Channel used to display diagnostic information
  */
-export async function upgradeAzdata(outputChannel: vscode.OutputChannel): Promise<void> {
+export async function upgradeAzdata(): Promise<void> {
 	const statusDisposable = vscode.window.setStatusBarMessage(loc.upgradingAzdata);
-	outputChannel.show();
-	outputChannel.appendLine(loc.upgradingAzdata);
+	Logger.show();
+	Logger.log(loc.upgradingAzdata);
 	try {
 		switch (process.platform) {
 			case 'win32':
-				await downloadAndInstallAzdataWin32(outputChannel);
+				await downloadAndInstallAzdataWin32();
 				break;
 			case 'darwin':
-				await upgradeAzdataDarwin(outputChannel);
+				await upgradeAzdataDarwin();
 				break;
 			case 'linux':
-				await installAzdataLinux(outputChannel);
+				await installAzdataLinux();
 				break;
 			default:
 				throw new Error(loc.platformUnsupported(process.platform));
 		}
-		outputChannel.appendLine(loc.azdataUpgraded);
+		Logger.log(loc.azdataUpgraded);
 	} finally {
 		statusDisposable.dispose();
 	}
@@ -147,24 +221,23 @@ export async function upgradeAzdata(outputChannel: vscode.OutputChannel): Promis
 
 /**
  * Checks whether azdata is installed - and if it is not then invokes the process of azdata installation.
- * @param outputChannel Channel used to display diagnostic information
  * @param userRequested true means that this operation by was requested by a user by executing an ads command.
  */
-export async function checkAndInstallAzdata(outputChannel: vscode.OutputChannel, userRequested: boolean = false): Promise<IAzdataTool | undefined> {
+export async function checkAndInstallAzdata(userRequested: boolean = false): Promise<IAzdataTool | undefined> {
 	try {
-		const azdata = await findAzdata(outputChannel); // find currently installed Azdata
+		const azdata = await findAzdata(); // find currently installed Azdata
 		// Don't block on this since we want the extension to finish activating without needing user input
-		checkAndUpgradeAzdata(azdata, outputChannel, userRequested).catch(err => {
+		checkAndUpgradeAzdata(azdata, userRequested).catch(err => {
 			//update if one is available and user wants it.
 			vscode.window.showWarningMessage(loc.updateError(err));
-			outputChannel.appendLine(loc.updateError(err));
+			Logger.log(loc.updateError(err));
 		}).then(() => {
-			return findAzdata(outputChannel); // now again find and return the currently installed azdata
+			return findAzdata(); // now again find and return the currently installed azdata
 		});
 	} catch (err) {
 		// Don't block on this since we want the extension to finish activating without needing user input.
 		// Calls will be made to handle azdata not being installed
-		await promptToInstallAzdata(outputChannel, userRequested).catch(e => console.log(`Unexpected error prompting to install azdata ${e}`));
+		await promptToInstallAzdata(userRequested).catch(e => console.log(`Unexpected error prompting to install azdata ${e}`));
 	}
 	return undefined;
 }
@@ -175,78 +248,80 @@ export async function checkAndInstallAzdata(outputChannel: vscode.OutputChannel,
  * Checks whether a newer version of azdata is available - and if it is prompts the user to download and
  * install it.
  * @param currentAzdata The current version of azdata to check against
- * @param outputChannel Channel used to display diagnostic information
  * @param userRequested true means that this operation by was requested by a user by executing an ads command.
  */
-export async function checkAndUpgradeAzdata(currentAzdata: IAzdataTool, outputChannel: vscode.OutputChannel, userRequested: boolean = false): Promise<void> {
-	const newVersion = await discoverLatestAvailableAzdataVersion(outputChannel);
-	if (newVersion.compare(currentAzdata.version) === 1) {
-		outputChannel.appendLine(loc.foundAzdataVersionToUpgradeTo(newVersion.raw, currentAzdata.version.raw));
-		promptToUpgradeAzdata(outputChannel, userRequested).catch(e => console.log(`Unexpected error prompting to upgrade azdata ${e}`));
+export async function checkAndUpgradeAzdata(currentAzdata?: IAzdataTool, userRequested: boolean = false): Promise<void> {
+	if (currentAzdata === undefined) {
+		currentAzdata = await findAzdata();
+	}
+	const newVersion = await discoverLatestAvailableAzdataVersion();
+	if (newVersion.compare(currentAzdata.cachedVersion) === 1) {
+		Logger.log(loc.foundAzdataVersionToUpgradeTo(newVersion.raw, currentAzdata.cachedVersion.raw));
+		promptToUpgradeAzdata(userRequested).catch(e => console.log(`Unexpected error prompting to upgrade azdata ${e}`));
 	}
 }
 
-async function promptToInstallAzdata(outputChannel: vscode.OutputChannel, userRequested: boolean = false): Promise<void> {
+async function promptToInstallAzdata(userRequested: boolean = false): Promise<void> {
 	let response: string | undefined = loc.yes;
 	const config = <AzdataDeployOption>getConfig(azdataAutoInstallKey);
-	outputChannel.appendLine(loc.autoDeployConfig(azdataAutoInstallKey, config));
+	Logger.log(loc.autoDeployConfig(azdataAutoInstallKey, config));
 	if (userRequested) {
-		outputChannel.appendLine(loc.userRequestedInstall);
+		Logger.log(loc.userRequestedInstall);
 	}
 	if (config === AzdataDeployOption.never && !userRequested) {
-		outputChannel.appendLine(loc.skipInstall(config));
+		Logger.log(loc.skipInstall(config));
 		return;
 	}
 	if (config === AzdataDeployOption.userPrompt) {
 		response = await vscode.window.showErrorMessage(loc.couldNotFindAzdataWithPrompt, loc.yes, loc.no, loc.always, loc.never);
-		outputChannel.appendLine(loc.userResponseToInstallPrompt(response));
+		Logger.log(loc.userResponseToInstallPrompt(response));
 	}
 	if (response === loc.always || response === loc.never) {
 		await setConfig(azdataAutoInstallKey, response);
 	}
 	if (response === loc.yes || response === loc.always) {
 		try {
-			await installAzdata(outputChannel);
+			await installAzdata();
 			vscode.window.showInformationMessage(loc.azdataInstalled);
-			outputChannel.appendLine(loc.azdataInstalled);
+			Logger.log(loc.azdataInstalled);
 		} catch (err) {
 			// Windows: 1602 is User cancelling installation/upgrade - not unexpected so don't display
 			if (!(err instanceof ExitCodeError) || err.code !== 1602) {
 				vscode.window.showWarningMessage(loc.installError(err));
-				outputChannel.appendLine(loc.installError(err));
+				Logger.log(loc.installError(err));
 			}
 		}
 	}
 }
 
-async function promptToUpgradeAzdata(outputChannel: vscode.OutputChannel, userRequested: boolean = false): Promise<void> {
+async function promptToUpgradeAzdata(userRequested: boolean = false): Promise<void> {
 	let response: string | undefined = loc.yes;
 	const config = <AzdataDeployOption>getConfig(azdataAutoUpgradeKey);
-	outputChannel.appendLine(loc.autoDeployConfig(azdataAutoUpgradeKey, config));
+	Logger.log(loc.autoDeployConfig(azdataAutoUpgradeKey, config));
 	if (userRequested) {
-		outputChannel.appendLine(loc.userRequestedUpgrade);
+		Logger.log(loc.userRequestedUpgrade);
 	}
 	if (config === AzdataDeployOption.never && !userRequested) {
-		outputChannel.appendLine(loc.skipUpgrade(config));
+		Logger.log(loc.skipUpgrade(config));
 		return;
 	}
 	if (config === AzdataDeployOption.userPrompt) {
 		response = await vscode.window.showInformationMessage(loc.foundAzdataUpgradePrompt, loc.yes, loc.no, loc.always, loc.never);
-		outputChannel.appendLine(loc.userResponseToUpgradePrompt(response));
+		Logger.log(loc.userResponseToUpgradePrompt(response));
 	}
 	if (response === loc.always || response === loc.never) {
 		await setConfig(azdataAutoUpgradeKey, response);
 	}
 	if (response === loc.yes || response === loc.always) {
 		try {
-			await upgradeAzdata(outputChannel);
+			await upgradeAzdata();
 			vscode.window.showInformationMessage(loc.azdataUpgraded);
-			outputChannel.appendLine(loc.azdataUpgraded);
+			Logger.log(loc.azdataUpgraded);
 		} catch (err) {
 			// Windows: 1602 is User cancelling installation/upgrade - not unexpected so don't display
 			if (!(err instanceof ExitCodeError) || err.code !== 1602) {
 				vscode.window.showWarningMessage(loc.upgradeError(err));
-				outputChannel.appendLine(loc.installError(err));
+				Logger.log(loc.installError(err));
 			}
 		}
 	}
@@ -254,78 +329,56 @@ async function promptToUpgradeAzdata(outputChannel: vscode.OutputChannel, userRe
 
 /**
  * Downloads the Windows installer and runs it
- * @param outputChannel Channel used to display diagnostic information
  */
-async function downloadAndInstallAzdataWin32(outputChannel: vscode.OutputChannel): Promise<void> {
+async function downloadAndInstallAzdataWin32(): Promise<void> {
 	const downloadFolder = os.tmpdir();
-	const downloadedFile = await HttpClient.downloadFile(`${azdataHostname}/${azdataUri}`, outputChannel, downloadFolder);
-	await executeCommand('msiexec', ['/qn', '/i', downloadedFile], outputChannel);
+	const downloadedFile = await HttpClient.downloadFile(`${azdataHostname}/${azdataUri}`, downloadFolder);
+	await executeCommand('msiexec', ['/qn', '/i', downloadedFile]);
 }
 
 /**
  * Runs commands to install azdata on MacOS
  */
-async function installAzdataDarwin(outputChannel: vscode.OutputChannel): Promise<void> {
-	await executeCommand('brew', ['tap', 'microsoft/azdata-cli-release'], outputChannel);
-	await executeCommand('brew', ['update'], outputChannel);
-	await executeCommand('brew', ['install', 'azdata-cli'], outputChannel);
+async function installAzdataDarwin(): Promise<void> {
+	await executeCommand('brew', ['tap', 'microsoft/azdata-cli-release']);
+	await executeCommand('brew', ['update']);
+	await executeCommand('brew', ['install', 'azdata-cli']);
 }
 
 /**
  * Runs commands to upgrade azdata on MacOS
  */
-async function upgradeAzdataDarwin(outputChannel: vscode.OutputChannel): Promise<void> {
-	await executeCommand('brew', ['tap', 'microsoft/azdata-cli-release'], outputChannel);
-	await executeCommand('brew', ['update'], outputChannel);
-	await executeCommand('brew', ['upgrade', 'azdata-cli'], outputChannel);
+async function upgradeAzdataDarwin(): Promise<void> {
+	await executeCommand('brew', ['tap', 'microsoft/azdata-cli-release']);
+	await executeCommand('brew', ['update']);
+	await executeCommand('brew', ['upgrade', 'azdata-cli']);
 }
 
 /**
  * Runs commands to install azdata on Linux
  */
-async function installAzdataLinux(outputChannel: vscode.OutputChannel): Promise<void> {
+async function installAzdataLinux(): Promise<void> {
 	// https://docs.microsoft.com/en-us/sql/big-data-cluster/deploy-install-azdata-linux-package
 	// Get packages needed for install process
-	await executeSudoCommand('apt-get update', outputChannel);
-	await executeSudoCommand('apt-get install gnupg ca-certificates curl wget software-properties-common apt-transport-https lsb-release -y', outputChannel);
+	await executeSudoCommand('apt-get update');
+	await executeSudoCommand('apt-get install gnupg ca-certificates curl wget software-properties-common apt-transport-https lsb-release -y');
 	// Download and install the signing key
-	await executeSudoCommand('curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/microsoft.asc.gpg > /dev/null', outputChannel);
+	await executeSudoCommand('curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/microsoft.asc.gpg > /dev/null');
 	// Add the azdata repository information
-	const release = (await executeCommand('lsb_release', ['-rs'], outputChannel)).stdout.trim();
-	await executeSudoCommand(`add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/${release}/mssql-server-2019.list)"`, outputChannel);
+	const release = (await executeCommand('lsb_release', ['-rs'])).stdout.trim();
+	await executeSudoCommand(`add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/${release}/mssql-server-2019.list)"`);
 	// Update repository information and install azdata
-	await executeSudoCommand('apt-get update', outputChannel);
-	await executeSudoCommand('apt-get install -y azdata-cli', outputChannel);
+	await executeSudoCommand('apt-get update');
+	await executeSudoCommand('apt-get install -y azdata-cli');
 }
 
 /**
- * Finds azdata specifically on Windows
- * @param outputChannel Channel used to display diagnostic information
  */
-async function findAzdataWin32(outputChannel: vscode.OutputChannel): Promise<IAzdataTool> {
-	const promise = searchForCmd('azdata.cmd');
-	return findSpecificAzdata(`"${await promise}"`, outputChannel);
-}
-
-/**
- * Gets the version using a known azdata path
- * @param path The path to the azdata executable
- * @param outputChannel Channel used to display diagnostic information
- */
-async function findSpecificAzdata(path: string, outputChannel: vscode.OutputChannel): Promise<IAzdataTool> {
-	const versionOutput = await executeCommand(`"${path}"`, ['--version'], outputChannel);
-	return new AzdataTool(path, getVersionFromAzdataOutput(versionOutput.stdout), outputChannel);
-}
-
-/**
- * Parses out the azdata version from the raw azdata version output
- * @param raw The raw version output from azdata --version
- */
-function getVersionFromAzdataOutput(raw: string): SemVer {
-	// Currently the version is a multi-line string that contains other version information such
-	// as the Python installation, with the first line being the version of azdata itself.
-	const lines = raw.split(os.EOL);
-	return new SemVer(lines[0].trim());
+async function findSpecificAzdata(): Promise<IAzdataTool> {
+	const promise = ((process.platform === 'win32') ? searchForCmd('azdata.cmd') : searchForCmd('azdata'));
+	const path = `"${await promise}"`; // throws if azdata is not found
+	const versionOutput = await executeCommand(`"${path}"`, ['--version']);
+	return new AzdataTool(path, parseVersion(versionOutput.stdout));
 }
 
 function getConfig(key: string): AzdataDeployOption | undefined {
@@ -340,29 +393,27 @@ async function setConfig(key: string, value: string): Promise<void> {
 
 /**
  * Gets the latest azdata version available for a given platform
- * @param outputChannel Channel used to display diagnostic information
  */
-export async function discoverLatestAvailableAzdataVersion(outputChannel: vscode.OutputChannel): Promise<SemVer> {
-	outputChannel.appendLine(loc.checkingLatestAzdataVersion);
+export async function discoverLatestAvailableAzdataVersion(): Promise<SemVer> {
+	Logger.log(loc.checkingLatestAzdataVersion);
 	switch (process.platform) {
 		case 'darwin':
-			return await discoverLatestStableAzdataVersionDarwin(outputChannel);
+			return await discoverLatestStableAzdataVersionDarwin();
 		// case 'linux':
 		// ideally we would not to discover linux package availability using the apt/apt-get/apt-cache package manager commands.
 		// However, doing discovery that way required apt update to be performed which requires sudo privileges. At least currently this code path
 		// gets invoked on extension start up and prompt user for sudo privileges is annoying at best. So for now basing linux discovery also on a releaseJson file.
 		default:
-			return await discoverLatestAzdataVersionFromJson(outputChannel);
+			return await discoverLatestAzdataVersionFromJson();
 	}
 }
 
 /**
  * Gets the latest azdata version from a json document published by azdata release
- * @param outputChannel Channel used to display diagnostic information
  */
-async function discoverLatestAzdataVersionFromJson(outputChannel: vscode.OutputChannel): Promise<SemVer> {
+async function discoverLatestAzdataVersionFromJson(): Promise<SemVer> {
 	// get version information for current platform from http://aka.ms/azdata/release.json
-	const fileContents = await HttpClient.getTextContent(`${azdataHostname}/${azdataReleaseJson}`, outputChannel);
+	const fileContents = await HttpClient.getTextContent(`${azdataHostname}/${azdataReleaseJson}`);
 	let azdataReleaseInfo;
 	try {
 		azdataReleaseInfo = JSON.parse(fileContents);
@@ -370,43 +421,53 @@ async function discoverLatestAzdataVersionFromJson(outputChannel: vscode.OutputC
 		throw Error(`failed to parse the JSON of contents at: ${azdataHostname}/${azdataReleaseJson}, text being parsed: '${fileContents}', error:${getErrorMessage(e)}`);
 	}
 	const version = azdataReleaseInfo[process.platform]['version'];
-	outputChannel.appendLine(loc.latestAzdataVersionAvailable(version));
+	Logger.log(loc.latestAzdataVersionAvailable(version));
 	return new SemVer(version);
 }
 
 /**
- * Gets the latest azdata version for MacOs clients
- * @param outputChannel Channel used to display diagnostic information
+ * Parses out the azdata version from the raw azdata version output
+ * @param raw The raw version output from azdata --version
  */
-async function discoverLatestStableAzdataVersionDarwin(outputChannel: vscode.OutputChannel): Promise<SemVer> {
+function parseVersion(raw: string): string {
+	// Currently the version is a multi-line string that contains other version information such
+	// as the Python installation, with the first line being the version of azdata itself.
+	const lines = raw.split(os.EOL);
+	return lines[0].trim();
+}
+/**
+ * Gets the latest azdata version for MacOs clients
+ */
+async function discoverLatestStableAzdataVersionDarwin(): Promise<SemVer> {
 	// set brew tap to azdata-cli repository
-	await executeCommand('brew', ['tap', 'microsoft/azdata-cli-release'], outputChannel);
+	await executeCommand('brew', ['tap', 'microsoft/azdata-cli-release']);
+	await executeCommand('brew', ['update']);
 	let brewInfoAzdataCliJson;
-	const brewInfoOutput = (await executeCommand('brew', ['info', 'azdata-cli', '--json'], outputChannel)).stdout;
+	// Get the package version 'info' about 'azdata-cli' from 'brew' as a json object
+	const brewInfoOutput = (await executeCommand('brew', ['info', 'azdata-cli', '--json'])).stdout;
 	try {
 		brewInfoAzdataCliJson = JSON.parse(brewInfoOutput);
 	} catch (e) {
 		throw Error(`failed to parse the JSON contents output of: 'brew info azdata-cli --json', text being parsed: '${brewInfoOutput}', error:${getErrorMessage(e)}`);
 	}
 	// Get the 'info' about 'azdata-cli' from 'brew' as a json object
-	const azdataInfo: AzdataDarwinPackageVersionInfo = brewInfoAzdataCliJson.shift();
-	outputChannel.appendLine(loc.latestAzdataVersionAvailable(azdataInfo.versions.stable));
-	return new SemVer(azdataInfo.versions.stable);
+	const azdataPackageVersionInfo: AzdataDarwinPackageVersionInfo = brewInfoAzdataCliJson.shift();
+	Logger.log(loc.latestAzdataVersionAvailable(azdataPackageVersionInfo.versions.stable));
+	return new SemVer(azdataPackageVersionInfo.versions.stable);
 }
 
 /**
  * Gets the latest azdata version for linux clients
- * @param outputChannel Channel used to display diagnostic information
  * This method requires sudo permission so not suitable to be run during startup.
  */
-// async function discoverLatestStableAzdataVersionLinux(outputChannel: vscode.OutputChannel): Promise<SemVer> {
+// async function discoverLatestStableAzdataVersionLinux(): Promise<SemVer> {
 // 	// Update repository information and install azdata
-// 	await executeSudoCommand('apt-get update', outputChannel);
-// 	const output = (await executeCommand('apt', ['list', 'azdata-cli', '--upgradeable'], outputChannel)).stdout;
+// 	await executeSudoCommand('apt-get update');
+// 	const output = (await executeCommand('apt', ['list', 'azdata-cli', '--upgradeable'])).stdout;
 // 	// the packageName (with version) string is the second space delimited token on the 2nd line
 // 	const packageName = output.split('\n')[1].split(' ')[1];
 // 	// the version string is the first part of the package sting before '~'
 // 	const version = packageName.split('~')[0];
-// 	outputChannel.appendLine(loc.foundAzdataVersionToUpgradeTo(version));
+// 	Logger.log(loc.foundAzdataVersionToUpgradeTo(version));
 // 	return new SemVer(version);
 // }

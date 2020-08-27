@@ -12,9 +12,8 @@
     "azdata": ">=1.21.0"
   },
   "activationEvents": [
-    "onCommand:arc.manageArcController",
-    "onCommand:arc.manageMiaa",
-    "onCommand:arc.managePostgres",
+    "onCommand:arc.connectToController",
+    "onCommand:arc.createController",
     "onView:azureArc"
   ],
   "extensionDependencies": [
@@ -36,18 +35,6 @@
       ]
     },
     "commands": [
-      {
-        "command": "arc.manageArcController",
-        "title": "%arc.manageArcController%"
-      },
-      {
-        "command": "arc.manageMiaa",
-        "title": "%arc.manageMiaa%"
-      },
-      {
-        "command": "arc.managePostgres",
-        "title": "%arc.managePostgres%"
-      },
       {
         "command": "arc.openDashboard",
         "title": "%arc.openDashboard%"
@@ -73,18 +60,6 @@
     ],
     "menus": {
       "commandPalette": [
-        {
-          "command": "arc.manageArcController",
-          "when": "false"
-        },
-        {
-          "command": "arc.manageMiaa",
-          "when": "false"
-        },
-        {
-          "command": "arc.managePostgres",
-          "when": "false"
-        },
         {
           "command": "arc.openDashboard",
           "when": "false"
@@ -113,7 +88,7 @@
       "view/item/context": [
         {
           "command": "arc.openDashboard",
-          "when": "view == azureArc && viewItem != loading",
+          "when": "view == azureArc && viewItem != postgresInstances",
           "group": "navigation@1"
         },
         {

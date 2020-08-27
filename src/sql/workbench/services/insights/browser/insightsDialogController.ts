@@ -20,7 +20,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { IFileService } from 'vs/platform/files/common/files';
 import { URI } from 'vs/base/common/uri';
 import { IInsightsDialogModel } from 'sql/workbench/services/insights/browser/insightsDialogService';
-import { IInsightsConfigDetails } from 'sql/platform/dashboard/browser/insightRegistry';
+import { IInsightsConfigDetails } from 'sql/platform/extensions/common/extensions';
 
 export class InsightsDialogController {
 	private _queryRunner: QueryRunner;
