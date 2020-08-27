@@ -269,7 +269,8 @@ export class PublishDatabaseDialog {
 			value: '',
 			ariaLabel: constants.targetConnectionLabel,
 			placeHolder: constants.selectConnection,
-			width: cssStyles.publishDialogTextboxWidth
+			width: cssStyles.publishDialogTextboxWidth,
+			enabled: false
 		}).component();
 
 		this.targetConnectionTextBox.onTextChanged(() => {
@@ -453,7 +454,7 @@ export class PublishDatabaseDialog {
 	private createSelectConnectionButton(view: azdata.ModelView): azdata.Component {
 		let selectConnectionButton: azdata.ButtonComponent = view.modelBuilder.button().withProperties({
 			ariaLabel: constants.selectConnection,
-			iconPath: IconPathHelper.edit,
+			iconPath: IconPathHelper.selectConnection,
 			height: '16px',
 			width: '16px'
 		}).component();
@@ -480,6 +481,9 @@ export class PublishDatabaseDialog {
 			if (connection.options.database && connection.options.database !== constants.master) {
 				this.targetDatabaseDropDown!.value = connection.options.database;
 			}
+
+			// change icon to the one without a plus sign
+			selectConnectionButton.iconPath = IconPathHelper.connect;
 		});
 
 		return selectConnectionButton;

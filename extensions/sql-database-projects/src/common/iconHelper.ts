@@ -22,7 +22,8 @@ export class IconPathHelper {
 
 	public static refresh: IconPath;
 	public static folder_blue: IconPath;
-	public static edit: IconPath;
+	public static selectConnection: IconPath;
+	public static connect: IconPath;
 
 	public static folder: IconPath;
 
@@ -39,7 +40,8 @@ export class IconPathHelper {
 
 		IconPathHelper.refresh = IconPathHelper.makeIcon('refresh');
 		IconPathHelper.folder_blue = IconPathHelper.makeIcon('folder_blue');
-		IconPathHelper.edit = IconPathHelper.makeIcon('edit');
+		IconPathHelper.selectConnection = IconPathHelper.makeIcon('selectConnection');
+		IconPathHelper.connect = IconPathHelper.makeIcon('connect');
 
 		IconPathHelper.folder = IconPathHelper.makeIcon('folder');
 	}
