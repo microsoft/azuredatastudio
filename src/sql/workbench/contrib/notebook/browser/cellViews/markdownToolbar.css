@@ -20,36 +20,48 @@
 	padding: 10px 16px 4px 16px;
 }
 
-.markdown-toolbar .carbon-taskbar ul.actions-container > li {
-	display: inline-block;
+.markdown-toolbar .carbon-taskbar ul.actions-container li {
+	/* display: inline-block; */
 	margin-right: 14px;
 }
-.markdown-toolbar .carbon-taskbar ul.actions-container > li:nth-child(1) {
+.markdown-toolbar .carbon-taskbar ul.actions-container li:nth-child(1) {
 	margin-right: 9px;
 }
-.markdown-toolbar .carbon-taskbar ul.actions-container > li:nth-child(2) {
+.markdown-toolbar .carbon-taskbar ul.actions-container li:nth-child(2) {
 	margin-right: 9px;
 }
-.markdown-toolbar .carbon-taskbar ul.actions-container > li:last-child {
+.markdown-toolbar .carbon-taskbar ul.actions-container li:last-child {
 	margin-right: 0;
 	position: absolute;
 	right: 0;
 }
-.markdown-toolbar .carbon-taskbar ul.actions-container > li.action-item .masked-pseudo-after.dropdown-arrow {
+.markdown-toolbar .carbon-taskbar ul.actions-container li:nth-last-child(-n+3) {
+	position: absolute;
+	margin-right: 0;
+	right: 56px;
+}
+.markdown-toolbar .carbon-taskbar ul.actions-container li:nth-last-child(-n+2) {
+	right: 27px;
+}
+.markdown-toolbar .carbon-taskbar ul.actions-container li:nth-last-child(-n+1) {
+	right: 0;
+}
+
+.markdown-toolbar .carbon-taskbar ul.actions-container li.action-item .masked-pseudo-after.dropdown-arrow {
 	background-color: transparent;
 	font-size: 14px;
 	height: 100%;
 	line-height: 20px;
 	width: 100%;
 }
-.markdown-toolbar .carbon-taskbar ul.actions-container > li.action-item .masked-pseudo-after.dropdown-arrow:after {
+.markdown-toolbar .carbon-taskbar ul.actions-container li.action-item .masked-pseudo-after.dropdown-arrow:after {
 	position: relative;
 	right: -6px;
 	top: -3px;
 	width: 26px;
 }
 
-.markdown-toolbar .view-button-group {
+/* .markdown-toolbar .view-button-group {
 	display: flex;
 	list-style: none;
 	padding: 0;
@@ -57,24 +69,23 @@
 .monaco-workbench.vs-dark .markdown-toolbar .view-button-group input,
 .monaco-workbench.hc-black .markdown-toolbar .view-button-group input {
 	background-color: transparent;
-}
-.markdown-toolbar .view-button-group li {
+} */
+/* .markdown-toolbar .view-button-group li {
 	margin: 0 6px;
-}
+} */
 
-.markdown-toolbar .carbon-taskbar a,
-.markdown-toolbar .carbon-taskbar input {
+
+
+/* .markdown-toolbar .carbon-taskbar input {
+	margin: 0;
+	-webkit-appearance: none;
+} */
+.markdown-toolbar .carbon-taskbar a {
 	display: flex;
 	height: 20px;
 	width: 20px;
 }
-
-.markdown-toolbar .carbon-taskbar input {
-	margin: 0;
-	-webkit-appearance: none;
-}
-
-.markdown-toolbar input:checked::after {
+.markdown-toolbar a.active::after {
 	border-bottom-style: solid;
 	border-bottom-width: 2px;
 	bottom: -6px;

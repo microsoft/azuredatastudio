@@ -505,6 +505,7 @@ export class ToggleMarkdownViewAction extends Action {
 		super(id, label, cssClass);
 		this._tooltip = tooltip;
 	}
+
 	public async run(context: ICellModel): Promise<boolean> {
 		context = this._cellModel;
 		context.showPreview = false;
@@ -542,6 +543,9 @@ export class ToggleTextViewAction extends Action {
 		this._tooltip = tooltip;
 	}
 	public async run(context: ICellModel): Promise<boolean> {
+		// Higher up, the remaining need to be set to unselected.
+		// Set self as selected
+
 		context = this._cellModel;
 		context.showPreview = false;
 		context.showTextView = true;

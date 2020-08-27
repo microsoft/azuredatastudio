@@ -173,7 +173,7 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 			collector.addRule(`.notebookEditor .notebook-cell.active { border-color: ${cellBorderColor};}`);
 			collector.addRule(`.notebookEditor .notebook-cell.active cell-toolbar-component { border-color: ${cellBorderColor};}`);
 			collector.addRule(`.notebookEditor .notebook-cell.active cell-toolbar-component .codicon:before { background-color: ${cellBorderColor};}`);
-			collector.addRule(`.markdown-toolbar input:checked::after { border-bottom-color: ${cellBorderColor};}`);
+			collector.addRule(`.markdown-toolbar a.active::after { border-bottom-color: ${cellBorderColor};}`);
 		}
 		// Cell toolbar background
 		const notebookToolbarSelectBackgroundColor = theme.getColor(notebookToolbarSelectBackground);
@@ -189,7 +189,7 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 		const toolbarIconColor = theme.getColor(toolbarIcon);
 		if (toolbarIconColor) {
 			collector.addRule(`.markdown-toolbar a::before { background-color: ${toolbarIconColor};}`);
-			collector.addRule(`.markdown-toolbar input::before { background-color: ${toolbarIconColor};}`);
+			//collector.addRule(`.markdown-toolbar input::before { background-color: ${toolbarIconColor};}`);
 		}
 		const toolbarBottomBorderColor = theme.getColor(toolbarBottomBorder);
 		if (toolbarBottomBorderColor) {
