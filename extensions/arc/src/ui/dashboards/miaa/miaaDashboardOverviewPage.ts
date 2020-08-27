@@ -24,6 +24,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 	private _kibanaLink!: azdata.HyperlinkComponent;
 	private _grafanaLink!: azdata.HyperlinkComponent;
 	private _databasesTable!: azdata.DeclarativeTableComponent;
+	private _databasesMessage!: azdata.TextComponent;
 
 	private readonly _azdataApi: azdataExt.IExtension;
 
@@ -34,7 +35,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		region: '-',
 		subscriptionId: '-',
 		miaaAdmin: '-',
-		host: '-',
+		externalEndpoint: '-',
 		vCores: ''
 	};
 
@@ -101,6 +102,10 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 			],
 			data: []
 		}).component();
+
+		this._databasesMessage = this.modelView.modelBuilder.text()
+			.withProperties<azdata.TextComponentProperties>({ CSSStyles: { 'text-align': 'center' } })
+			.component();
 
 		// Update loaded components with data
 		this.handleRegistrationsUpdated();
@@ -171,6 +176,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		// Databases
 		rootContainer.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.databases, CSSStyles: titleCSS }).component());
 		rootContainer.addItem(this._databasesTableLoading, { CSSStyles: { 'margin-bottom': '20px' } });
+		rootContainer.addItem(this._databasesMessage);
 
 		this.initialized = true;
 		return rootContainer;
@@ -263,8 +269,12 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 	}
 
 	private handleMiaaConfigUpdated(): void {
-		this._instanceProperties.status = this._miaaModel.config?.status.state || '-';
-		this._instanceProperties.host = this._miaaModel.config?.status.externalEndpoint || '-';
+		if (this._miaaModel.config) {
+			this._instanceProperties.status = this._miaaModel.config.status.state || '-';
+			this._instanceProperties.externalEndpoint = this._miaaModel.config.status.externalEndpoint || loc.notConfigured;
+			this._databasesMessage.value = !this._miaaModel.config.status.externalEndpoint ? loc.noExternalEndpoint : '';
+		}
+
 		this.refreshDisplayedProperties();
 	}
 
@@ -320,8 +330,8 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 				value: this._instanceProperties.miaaAdmin
 			},
 			{
-				displayName: loc.host,
-				value: this._instanceProperties.host
+				displayName: loc.externalEndpoint,
+				value: this._instanceProperties.externalEndpoint
 			},
 			{
 				displayName: loc.compute,
