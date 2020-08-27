@@ -21,7 +21,7 @@ export async function activate(): Promise<azdataExt.IExtension> {
 	vscode.commands.registerCommand('azdata.upgrade', async () => {
 		const currentAzdata = await findAzdata();
 		if (currentAzdata !== undefined) {
-			checkAndUpgradeAzdata(currentAzdata, true);
+			await checkAndUpgradeAzdata(currentAzdata, true);
 		} else {
 			vscode.window.showErrorMessage(loc.notFoundExistingAzdata);
 			Logger.log(loc.notFoundExistingAzdata);
@@ -34,14 +34,13 @@ export async function activate(): Promise<azdataExt.IExtension> {
 			localAzdata = azdataTool;
 			if (localAzdata !== undefined) {
 				await vscode.commands.executeCommand('setContext', 'config.deployment.azdataFound', true);
-			}
-		})
-		.then(async () => {
-			checkAndUpgradeAzdata(localAzdata) //update if available and user wants it.
-				.then(async () => {
+				try {
+					await checkAndUpgradeAzdata(localAzdata); //update if available and user wants it.
 					localAzdata = await findAzdata(); // now again find and save the currently installed azdata
-				})
-				.catch(err => vscode.window.showWarningMessage(loc.updateError(err)));
+				} catch (err) {
+					vscode.window.showWarningMessage(loc.updateError(err));
+				}
+			}
 		});
 
 	return {
