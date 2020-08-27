@@ -235,7 +235,7 @@ abstract class AbstractCellRenderer extends Disposable {
 			{
 				updateInfoRendering: this.updateMetadataRendering.bind(this),
 				checkIfModified: (cell) => {
-					return cell.type === 'modified' && hash(cell.original?.metadata ?? {}) !== hash(cell.modified?.metadata ?? {});
+					return cell.type === 'modified' && hash(this._getFormatedMetadataJSON(cell.original?.metadata || {})) !== hash(this._getFormatedMetadataJSON(cell.modified?.metadata ?? {}));
 				},
 				getFoldingState: (cell) => {
 					return cell.metadataFoldingState;
@@ -321,10 +321,25 @@ abstract class AbstractCellRenderer extends Disposable {
 		}
 	}
 
-	private _getFormatedMetadataJSON(metadata: NotebookCellMetadata, language?: string) {
+	protected _getFormatedMetadataJSON(metadata: NotebookCellMetadata, language?: string) {
+		let filteredMetadata: { [key: string]: any } = {};
+		if (this.notebookEditor.textModel) {
+			const transientMetadata = this.notebookEditor.textModel!.transientMetadata;
+
+			const keys = new Set([...Object.keys(metadata)]);
+			for (let key of keys) {
+				if (!(transientMetadata[key as keyof NotebookCellMetadata])
+				) {
+					filteredMetadata[key] = metadata[key as keyof NotebookCellMetadata];
+				}
+			}
+		} else {
+			filteredMetadata = metadata;
+		}
+
 		const content = JSON.stringify({
 			language,
-			...metadata
+			...filteredMetadata
 		});
 
 		const edits = format(content, undefined, {});
@@ -339,7 +354,9 @@ abstract class AbstractCellRenderer extends Disposable {
 			const modifiedMetadataSource = this._getFormatedMetadataJSON(this.cell.modified?.metadata || {}, this.cell.modified?.language);
 			if (originalMetadataSource !== modifiedMetadataSource) {
 				this._metadataEditor = this.instantiationService.createInstance(DiffEditorWidget, this._metadataEditorContainer!, {
-					...fixedDiffEditorOptions
+					...fixedDiffEditorOptions,
+					overflowWidgetsDomNode: this.notebookEditor.getOverflowContainerDomNode()
+
 				});
 
 				DOM.addClass(this._metadataEditorContainer!, 'diff');
@@ -371,7 +388,8 @@ abstract class AbstractCellRenderer extends Disposable {
 			dimension: {
 				width: this.cell.getComputedCellContainerWidth(this.notebookEditor.getLayoutInfo(), false, true),
 				height: 0
-			}
+			},
+			overflowWidgetsDomNode: this.notebookEditor.getOverflowContainerDomNode()
 		}, {});
 
 		const mode = this.modeService.create('json');
@@ -408,7 +426,8 @@ abstract class AbstractCellRenderer extends Disposable {
 			const modifiedOutputsSource = this._getFormatedOutputJSON(this.cell.modified?.outputs || []);
 			if (originalOutputsSource !== modifiedOutputsSource) {
 				this._outputEditor = this.instantiationService.createInstance(DiffEditorWidget, this._outputEditorContainer!, {
-					...fixedDiffEditorOptions
+					...fixedDiffEditorOptions,
+					overflowWidgetsDomNode: this.notebookEditor.getOverflowContainerDomNode()
 				});
 
 				DOM.addClass(this._outputEditorContainer!, 'diff');
@@ -440,7 +459,8 @@ abstract class AbstractCellRenderer extends Disposable {
 			dimension: {
 				width: this.cell.getComputedCellContainerWidth(this.notebookEditor.getLayoutInfo(), false, true),
 				height: 0
-			}
+			},
+			overflowWidgetsDomNode: this.notebookEditor.getOverflowContainerDomNode()
 		}, {});
 
 		const mode = this.modeService.create('json');
@@ -514,7 +534,8 @@ export class UnchangedCell extends AbstractCellRenderer {
 			dimension: {
 				width: this.notebookEditor.getLayoutInfo().width - 2 * DIFF_CELL_MARGIN,
 				height: editorHeight
-			}
+			},
+			overflowWidgetsDomNode: this.notebookEditor.getOverflowContainerDomNode()
 		}, {});
 
 		this._register(this._editor.onDidContentSizeChange((e) => {
@@ -601,7 +622,8 @@ export class DeletedCell extends AbstractCellRenderer {
 			dimension: {
 				width: (this.notebookEditor.getLayoutInfo().width - 2 * DIFF_CELL_MARGIN) / 2 - 18,
 				height: editorHeight
-			}
+			},
+			overflowWidgetsDomNode: this.notebookEditor.getOverflowContainerDomNode()
 		}, {});
 		this._layoutInfo.editorHeight = editorHeight;
 
@@ -686,7 +708,8 @@ export class InsertCell extends AbstractCellRenderer {
 			dimension: {
 				width: (this.notebookEditor.getLayoutInfo().width - 2 * DIFF_CELL_MARGIN) / 2 - 18,
 				height: editorHeight
-			}
+			},
+			overflowWidgetsDomNode: this.notebookEditor.getOverflowContainerDomNode()
 		}, {});
 
 		this._layoutInfo.editorHeight = editorHeight;
@@ -768,7 +791,8 @@ export class ModifiedCell extends AbstractCellRenderer {
 		this._editorContainer = DOM.append(sourceContainer, DOM.$('.editor-container'));
 
 		this._editor = this.instantiationService.createInstance(DiffEditorWidget, this._editorContainer, {
-			...fixedDiffEditorOptions
+			...fixedDiffEditorOptions,
+			overflowWidgetsDomNode: this.notebookEditor.getOverflowContainerDomNode()
 		});
 		DOM.addClass(this._editorContainer, 'diff');
 

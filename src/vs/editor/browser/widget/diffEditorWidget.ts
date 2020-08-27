@@ -233,7 +233,7 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 
 	constructor(
 		domElement: HTMLElement,
-		options: IDiffEditorOptions,
+		options: editorBrowser.IDiffEditorConstructionOptions,
 		@IClipboardService clipboardService: IClipboardService,
 		@IEditorWorkerService editorWorkerService: IEditorWorkerService,
 		@IContextKeyService contextKeyService: IContextKeyService,
@@ -492,7 +492,7 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 		this._layoutOverviewRulers();
 	}
 
-	private _createLeftHandSideEditor(options: IDiffEditorOptions, instantiationService: IInstantiationService): CodeEditorWidget {
+	private _createLeftHandSideEditor(options: editorBrowser.IDiffEditorConstructionOptions, instantiationService: IInstantiationService): CodeEditorWidget {
 		const editor = this._createInnerEditor(instantiationService, this._originalDomNode, this._adjustOptionsForLeftHandSide(options, this._originalIsEditable, this._originalCodeLens));
 
 		this._register(editor.onDidScrollChange((e) => {
@@ -537,7 +537,7 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 		return editor;
 	}
 
-	private _createRightHandSideEditor(options: IDiffEditorOptions, instantiationService: IInstantiationService): CodeEditorWidget {
+	private _createRightHandSideEditor(options: editorBrowser.IDiffEditorConstructionOptions, instantiationService: IInstantiationService): CodeEditorWidget {
 		const editor = this._createInnerEditor(instantiationService, this._modifiedDomNode, this._adjustOptionsForRightHandSide(options, this._modifiedCodeLens));
 
 		this._register(editor.onDidScrollChange((e) => {
@@ -1095,8 +1095,8 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 		}
 	}
 
-	private _adjustOptionsForSubEditor(options: IDiffEditorOptions): IDiffEditorOptions {
-		let clonedOptions: IDiffEditorOptions = objects.deepClone(options || {});
+	private _adjustOptionsForSubEditor(options: editorBrowser.IDiffEditorConstructionOptions): editorBrowser.IDiffEditorConstructionOptions {
+		let clonedOptions: editorBrowser.IDiffEditorConstructionOptions = objects.deepClone(options || {});
 		clonedOptions.inDiffEditor = true;
 		clonedOptions.wordWrap = 'off';
 		clonedOptions.wordWrapMinified = false;
@@ -1106,6 +1106,7 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 		clonedOptions.folding = false;
 		clonedOptions.codeLens = false;
 		clonedOptions.fixedOverflowWidgets = true;
+		clonedOptions.overflowWidgetsDomNode = options.overflowWidgetsDomNode;
 		// clonedOptions.lineDecorationsWidth = '2ch';
 		if (!clonedOptions.minimap) {
 			clonedOptions.minimap = {};
@@ -1114,7 +1115,7 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 		return clonedOptions;
 	}
 
-	private _adjustOptionsForLeftHandSide(options: IDiffEditorOptions, isEditable: boolean, isCodeLensEnabled: boolean): IEditorOptions {
+	private _adjustOptionsForLeftHandSide(options: editorBrowser.IDiffEditorConstructionOptions, isEditable: boolean, isCodeLensEnabled: boolean): editorBrowser.IEditorConstructionOptions {
 		let result = this._adjustOptionsForSubEditor(options);
 		if (isCodeLensEnabled) {
 			result.codeLens = true;
@@ -1124,7 +1125,7 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 		return result;
 	}
 
-	private _adjustOptionsForRightHandSide(options: IDiffEditorOptions, isCodeLensEnabled: boolean): IEditorOptions {
+	private _adjustOptionsForRightHandSide(options: editorBrowser.IDiffEditorConstructionOptions, isCodeLensEnabled: boolean): editorBrowser.IEditorConstructionOptions {
 		let result = this._adjustOptionsForSubEditor(options);
 		if (isCodeLensEnabled) {
 			result.codeLens = true;

@@ -51,7 +51,7 @@ import { TunnelDto } from 'vs/workbench/api/common/extHostTunnelService';
 import { TunnelOptions } from 'vs/platform/remote/common/tunnel';
 import { Timeline, TimelineChangeEvent, TimelineOptions, TimelineProviderDescriptor, InternalTimelineOptions } from 'vs/workbench/contrib/timeline/common/timeline';
 import { revive } from 'vs/base/common/marshalling';
-import { IProcessedOutput, INotebookDisplayOrder, NotebookCellMetadata, NotebookDocumentMetadata, ICellEditOperation, NotebookCellsChangedEvent, NotebookDataDto, INotebookKernelInfoDto, IMainCellDto, INotebookDocumentFilter, INotebookKernelInfoDto2 } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import { IProcessedOutput, INotebookDisplayOrder, NotebookCellMetadata, NotebookDocumentMetadata, ICellEditOperation, NotebookCellsChangedEvent, NotebookDataDto, INotebookKernelInfoDto, IMainCellDto, INotebookDocumentFilter, INotebookKernelInfoDto2, TransientMetadata } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import { CallHierarchyItem } from 'vs/workbench/contrib/callHierarchy/common/callHierarchy';
 import { Dto } from 'vs/base/common/types';
 import { ISerializableEnvironmentVariableCollection } from 'vs/workbench/contrib/terminal/common/environmentVariable';
@@ -719,7 +719,7 @@ export type NotebookCellOutputsSplice = [
 ];
 
 export interface MainThreadNotebookShape extends IDisposable {
-	$registerNotebookProvider(extension: NotebookExtensionDescription, viewType: string, supportBackup: boolean, kernelInfoDto: INotebookKernelInfoDto | undefined): Promise<void>;
+	$registerNotebookProvider(extension: NotebookExtensionDescription, viewType: string, supportBackup: boolean, kernelInfoDto: INotebookKernelInfoDto | undefined, options: { transientMetadata: TransientMetadata }): Promise<void>;
 	$onNotebookChange(viewType: string, resource: UriComponents): Promise<void>;
 	$unregisterNotebookProvider(viewType: string): Promise<void>;
 	$registerNotebookKernel(extension: NotebookExtensionDescription, id: string, label: string, selectors: (string | IRelativePattern)[], preloads: UriComponents[]): Promise<void>;
@@ -1237,7 +1237,13 @@ export interface IWorkspaceEditEntryMetadataDto {
 	iconPath?: { id: string } | UriComponents | { light: UriComponents, dark: UriComponents };
 }
 
+export const enum WorkspaceEditType {
+	File = 1,
+	Text = 2,
+}
+
 export interface IWorkspaceFileEditDto {
+	_type: WorkspaceEditType.File;
 	oldUri?: UriComponents;
 	newUri?: UriComponents;
 	options?: modes.WorkspaceFileEditOptions
@@ -1245,6 +1251,7 @@ export interface IWorkspaceFileEditDto {
 }
 
 export interface IWorkspaceTextEditDto {
+	_type: WorkspaceEditType.Text;
 	resource: UriComponents;
 	edit: modes.TextEdit;
 	modelVersionId?: number;

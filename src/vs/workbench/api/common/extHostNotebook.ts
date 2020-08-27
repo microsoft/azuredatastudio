@@ -428,9 +428,9 @@ export class ExtHostNotebookDocument extends Disposable {
 		this._emitter.emitCellLanguageChange(event);
 	}
 
-	private _changeCellMetadata(index: number, newMetadata: NotebookCellMetadata): void {
+	private _changeCellMetadata(index: number, newMetadata: NotebookCellMetadata | undefined): void {
 		const cell = this._cells[index];
-		cell.setMetadata(newMetadata);
+		cell.setMetadata(newMetadata || {});
 		const event: vscode.NotebookCellMetadataChangeEvent = { document: this.notebookDocument, cell: cell.cell };
 		this._emitter.emitCellMetadataChange(event);
 	}
@@ -954,6 +954,9 @@ export class ExtHostNotebookController implements ExtHostNotebookShape, ExtHostN
 		extension: IExtensionDescription,
 		viewType: string,
 		provider: vscode.NotebookContentProvider & { kernel?: vscode.NotebookKernel },
+		options?: {
+			transientMetadata?: { [K in keyof NotebookCellMetadata]?: boolean }
+		}
 	): vscode.Disposable {
 
 		if (this._notebookContentProviders.has(viewType)) {
@@ -985,7 +988,7 @@ export class ExtHostNotebookController implements ExtHostNotebookShape, ExtHostN
 
 		const supportBackup = !!provider.backupNotebook;
 
-		this._proxy.$registerNotebookProvider({ id: extension.identifier, location: extension.extensionLocation, description: extension.description }, viewType, supportBackup, provider.kernel ? { id: viewType, label: provider.kernel.label, extensionLocation: extension.extensionLocation, preloads: provider.kernel.preloads } : undefined);
+		this._proxy.$registerNotebookProvider({ id: extension.identifier, location: extension.extensionLocation, description: extension.description }, viewType, supportBackup, provider.kernel ? { id: viewType, label: provider.kernel.label, extensionLocation: extension.extensionLocation, preloads: provider.kernel.preloads } : undefined, { transientMetadata: options?.transientMetadata || {} });
 
 		return new extHostTypes.Disposable(() => {
 			listener.dispose();

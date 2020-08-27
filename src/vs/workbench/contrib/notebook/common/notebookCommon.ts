@@ -103,6 +103,8 @@ export interface NotebookCellMetadata {
 	custom?: { [key: string]: unknown };
 }
 
+export type TransientMetadata = { [K in keyof NotebookCellMetadata]?: boolean };
+
 export interface INotebookDisplayOrder {
 	defaultOrder: string[];
 	userOrder?: string[];
@@ -395,7 +397,7 @@ export interface NotebookCellsChangeMetadataEvent {
 	readonly kind: NotebookCellsChangeType.ChangeMetadata;
 	readonly versionId: number;
 	readonly index: number;
-	readonly metadata: NotebookCellMetadata;
+	readonly metadata: NotebookCellMetadata | undefined;
 }
 
 export type NotebookCellsChangedEvent = NotebookCellsInitializeEvent | NotebookCellsModelChangedEvent | NotebookCellsModelMoveEvent | NotebookCellClearOutputEvent | NotebookCellsClearOutputEvent | NotebookCellsChangeLanguageEvent | NotebookCellsChangeMetadataEvent;
