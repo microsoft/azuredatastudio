@@ -14,7 +14,6 @@ export class Log {
 
 	log(msg: string): void {
 		this._output.appendLine(msg);
-		console.log(msg);
 	}
 
 	show(): void {
