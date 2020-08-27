@@ -14,6 +14,8 @@ const localize = nls.loadMessageBundle();
 import { IQuestion, confirm } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
 import { getErrorMessage, isEditorTitleFree } from '../common/utils';
+import * as constants from '../common/constants';
+
 
 export class NotebookUriHandler implements vscode.UriHandler {
 	private prompter = new CodeAdapter();
@@ -21,15 +23,14 @@ export class NotebookUriHandler implements vscode.UriHandler {
 	constructor() {
 	}
 
-	handleUri(uri: vscode.Uri): Thenable<void> {
-		switch (uri?.path) {
+	handleUri(uri: vscode.Uri): vscode.ProviderResult<void> {
+		switch (uri.path) {
 			case '/new':
-				return vscode.commands.executeCommand('notebook.command.new');
+				return vscode.commands.executeCommand(constants.notebookCommandNew);
 			case '/open':
 				return this.open(uri);
 			default:
-				vscode.window.showErrorMessage(localize('notebook.unsupportedAction', "Action {0} is not supported for this handler", uri?.path));
-				return Promise.reject(`Action ${uri?.path} is not supported for this handler`);
+				vscode.window.showErrorMessage(localize('notebook.unsupportedAction', "Action {0} is not supported for this handler", uri.path));
 		}
 	}
 
