@@ -42,7 +42,6 @@ export const LanguageExtensionService = 'languageExtensionService';
 export const objectExplorerPrefix: string = 'objectexplorer://';
 export const SqlAssessmentService = 'sqlAssessmentService';
 export const NotebookConvertService = 'notebookConvertService';
-export const ProfilerService = 'profilerService';
 
 export enum BuiltInCommands {
 	SetContext = 'setContext'

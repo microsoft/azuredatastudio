@@ -11,7 +11,7 @@ import * as path from 'path';
 import { getCommonLaunchArgsAndCleanupOldLogFiles } from './utils';
 import { Telemetry, LanguageClientErrorHandler } from './telemetry';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
-import { TelemetryFeature, AgentServicesFeature, SerializationFeature, AccountFeature, SqlAssessmentServicesFeature } from './features';
+import { TelemetryFeature, AgentServicesFeature, SerializationFeature, AccountFeature, SqlAssessmentServicesFeature, ProfilerFeature } from './features';
 import { CredentialStore } from './credentialstore/credentialstore';
 import { AzureResourceProvider } from './resourceProvider/resourceProvider';
 import { SchemaCompareService } from './schemaCompare/schemaCompareService';
@@ -159,7 +159,7 @@ function getClientOptions(context: AppContext): ClientOptions {
 			DacFxService.asFeature(context),
 			LanguageExtensionService.asFeature(context),
 			NotebookConvertService.asFeature(context),
-			ProfilerService.asFeature(context),
+			ProfilerFeature,
 			SchemaCompareService.asFeature(context),
 			SerializationFeature,
 			SqlAssessmentService.asFeature(context),
