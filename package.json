@@ -192,12 +192,8 @@
     "style-loader": "^1.0.0",
     "temp-write": "^3.4.0",
     "ts-loader": "^4.4.2",
-<<<<<<< HEAD
     "typemoq": "^0.3.2",
     "typescript": "^4.0.1-rc",
-=======
-    "typescript": "^4.1.0-dev.20200824",
->>>>>>> bd4e3c30a7c20b2f858101a5de1a1bf5af1e89b3
     "typescript-formatter": "7.1.0",
     "underscore": "^1.8.2",
     "vinyl": "^2.0.0",
