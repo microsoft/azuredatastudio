@@ -47,12 +47,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		this._extensionContext = extensionContext;
 		this.books = [];
 		this.bookPinManager = new BookPinManager();
-		if (view === constants.PINNED_BOOKS_VIEWID) {
-			this.initializePinnedNotebooks().catch(e => console.error(e));
-		} else {
-			this.initialize(workspaceFolders).catch(e => console.error(e));
-		}
 		this.viewId = view;
+		this.initialize(workspaceFolders).catch(e => console.error(e));
 		this.prompter = new CodeAdapter();
 		this._bookTrustManager = new BookTrustManager(this.books);
 
@@ -60,29 +56,29 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	private async initialize(workspaceFolders: vscode.WorkspaceFolder[]): Promise<void> {
-		await Promise.all(workspaceFolders.map(async (workspaceFolder) => {
-			try {
-				await this.loadNotebooksInFolder(workspaceFolder.uri.fsPath);
-			} catch {
-				// no-op, not all workspace folders are going to be valid books
-			}
-		}));
+		if (this.viewId === constants.PINNED_BOOKS_VIEWID) {
+			await Promise.all(getPinnedNotebooks().map(async (notebookPath) => {
+				try {
+					await this.createAndAddBookModel(notebookPath, true);
+				} catch {
+					// no-op, not all workspace folders are going to be valid books
+				}
+			}));
+		} else {
+			await Promise.all(workspaceFolders.map(async (workspaceFolder) => {
+				try {
+					await this.loadNotebooksInFolder(workspaceFolder.uri.fsPath);
+				} catch {
+					// no-op, not all workspace folders are going to be valid books
+				}
+			}));
+		}
+
 		this._initializeDeferred.resolve();
 	}
 
 	public get initialized(): Promise<void> {
 		return this._initializeDeferred.promise;
-	}
-
-	private async initializePinnedNotebooks(): Promise<void> {
-		await Promise.all(getPinnedNotebooks().map(async (notebookPath) => {
-			try {
-				await this.createAndAddBookModel(notebookPath, true);
-			} catch {
-				// no-op, not all workspace folders are going to be valid books
-			}
-		}));
-		this._initializeDeferred.resolve();
 	}
 
 	get _visitedNotebooks(): string[] {
@@ -118,10 +114,19 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	async pinNotebook(bookTreeItem: BookTreeItem, unpin: boolean = false): Promise<void> {
 		let bookPathToUpdate = bookTreeItem.book?.contentPath;
 		if (bookPathToUpdate) {
-			let pinStatusChanged = unpin ? this.bookPinManager.unpinNotebook(bookTreeItem) : this.bookPinManager.pinNotebook(bookTreeItem);
+			let pinStatusChanged = this.bookPinManager.pinNotebook(bookTreeItem);
 			if (pinStatusChanged) {
-				bookTreeItem.contextValue = unpin ? 'savedNotebook' : 'pinnedNotebook';
-				vscode.window.showInformationMessage(unpin ? loc.msgBookUnpinned(bookTreeItem.title) : loc.msgBookPinned(bookTreeItem.title));
+				bookTreeItem.contextValue = 'pinnedNotebook';
+			}
+		}
+	}
+
+	async unpinNotebook(bookTreeItem: BookTreeItem): Promise<void> {
+		let bookPathToUpdate = bookTreeItem.book?.contentPath;
+		if (bookPathToUpdate) {
+			let pinStatusChanged = this.bookPinManager.unpinNotebook(bookTreeItem);
+			if (pinStatusChanged) {
+				bookTreeItem.contextValue = 'savedNotebook';
 			}
 		}
 	}
@@ -161,15 +166,17 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	async addRemoveNotebookFromPinned(bookItem: BookTreeItem, pin: boolean = true): Promise<void> {
+	async addNotebookToPinnedView(bookItem: BookTreeItem): Promise<void> {
 		let notebookPath: string = bookItem.book.contentPath;
 		if (notebookPath) {
-			if (pin) {
-				await this.createAndAddBookModel(notebookPath, true);
-			} else {
-				this.closeBook(bookItem);
-			}
+			await this.createAndAddBookModel(notebookPath, true);
+		}
+	}
 
+	async removeNotebookFromPinnedView(bookItem: BookTreeItem): Promise<void> {
+		let notebookPath: string = bookItem.book.contentPath;
+		if (notebookPath) {
+			await this.closeBook(bookItem);
 		}
 	}
 

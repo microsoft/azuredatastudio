@@ -260,10 +260,7 @@
         "command": "notebook.command.pinNotebook",
         "title": "%title.pinNotebook%",
         "category": "%books-preview-category%",
-        "icon": {
-          "dark": "resources/dark/pin_inverse.svg",
-          "light": "resources/light/pin.svg"
-        }
+        "icon": "$(pinned)"
       },
       {
         "command": "notebook.command.unpinNotebook",
