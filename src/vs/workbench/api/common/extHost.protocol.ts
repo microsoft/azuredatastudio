@@ -1248,6 +1248,7 @@ export interface IWorkspaceEditEntryMetadataDto {
 export const enum WorkspaceEditType {
 	File = 1,
 	Text = 2,
+	Cell = 3,
 }
 
 export interface IWorkspaceFileEditDto {
@@ -1266,8 +1267,16 @@ export interface IWorkspaceTextEditDto {
 	metadata?: IWorkspaceEditEntryMetadataDto;
 }
 
+export interface IWorkspaceCellEditDto {
+	_type: WorkspaceEditType.Cell;
+	resource: UriComponents;
+	edit: ICellEditOperation;
+	modelVersionId?: number;
+	metadata?: IWorkspaceEditEntryMetadataDto;
+}
+
 export interface IWorkspaceEditDto {
-	edits: Array<IWorkspaceFileEditDto | IWorkspaceTextEditDto>;
+	edits: Array<IWorkspaceFileEditDto | IWorkspaceTextEditDto | IWorkspaceCellEditDto>;
 
 	// todo@joh reject should go into rename
 	rejectReason?: string;
