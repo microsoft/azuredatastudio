@@ -104,7 +104,7 @@ export class SubscriptionSelectionPage extends MigrationWizardPage {
 		const subscription = this.getPickedSubscription();
 
 		const results = await getAvailableManagedInstanceProducts(account!, subscription!);
-		// const results = await getAvailableSqlServers(account!,  subscription!);
+		await getAvailableSqlServers(account!, subscription!);
 
 		this.populateProductValues(results);
 	}
