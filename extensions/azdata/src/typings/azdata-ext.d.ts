@@ -158,20 +158,6 @@ declare module 'azdata-ext' {
 			resourceVersion: string, // "214944",
 			selfLink: string, // "/apis/arcdata.microsoft.com/v1alpha1/namespaces/arc/postgresql-12s/chgagnon-pg",
 			uid: string, // "26d0f5bb-0c0b-4225-a6b5-5be2bf6feac0"
-		}
-	}
-
-	export interface PostgresServerShowResult {
-		apiVersion: string, // "arcdata.microsoft.com/v1alpha1"
-		kind: string, // "postgresql-12"
-		metadata: {
-			creationTimestamp: string, // "2020-08-19T20:25:11Z"
-			generation: number, // 1
-			name: string, // "chgagnon-pg"
-			namespace: string, // "arc",
-			resourceVersion: string, // "214944",
-			selfLink: string, // "/apis/arcdata.microsoft.com/v1alpha1/namespaces/arc/postgresql-12s/chgagnon-pg",
-			uid: string, // "26d0f5bb-0c0b-4225-a6b5-5be2bf6feac0"
 		},
 		spec: {
 			backups: {

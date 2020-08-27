@@ -23,10 +23,8 @@ describe('azdata', function () {
 
 	describe('findAzdata', function () {
 		it('successful', async function (): Promise<void> {
-			if (process.platform === 'win32') {
-				// Mock searchForCmd to return a path to azdata.cmd
-				sinon.stub(utils, 'searchForCmd').returns(Promise.resolve('C:\\path\\to\\azdata.cmd'));
-			}
+			// Mock searchForCmd to return a path to azdata.cmd
+			sinon.stub(utils, 'searchForCmd').returns(Promise.resolve('/path/to/azdata'));
 			// Mock call to --version to simulate azdata being installed
 			sinon.stub(childProcess, 'executeCommand').returns(Promise.resolve({ stdout: '1.0.0', stderr: '' }));
 			await should(azdata.findAzdata()).not.be.rejected();
@@ -83,11 +81,6 @@ describe('azdata', function () {
 
 	describe('upgradeAzdata', function (): void {
 		beforeEach(function (): void {
-			// const mock = TypeMoq.Mock.ofInstance(azdata.discoverLatestAvailableAzdataVersion)
-			// 	.setup(x => x(TypeMoq.It.isAny()))
-			// 	.returns(() => Promise.resolve(Promise.resolve(new SemVer('9999.999.999'))));
-			// mock.
-			sinon.stub(azdata, 'discoverLatestAvailableAzdataVersion').returns(Promise.resolve(new SemVer('9999.999.999')));
 			sinon.stub(vscode.window, 'showInformationMessage').returns(Promise.resolve(<any>loc.yes));
 		});
 
@@ -198,7 +191,6 @@ async function testDarwinSuccessfulUpgrade() {
 			return Promise.resolve({ stdout: 'success', stderr: '' });
 		});
 	await azdata.checkAndUpgradeAzdata(oldAzdataMock);
-	console.log(`executeCommandStub - no of calls: ${executeCommandStub.callCount}}`);
 	should(executeCommandStub.callCount).be.equal(6);
 }
 

@@ -92,12 +92,11 @@ function throwIfNoAzdata(): void {
 
 async function checkForAzdata(): Promise<IAzdataTool | undefined> {
 	try {
-		const azdata = await findAzdata(); // find currently installed Azdata
-		vscode.window.showInformationMessage(loc.foundExistingAzdata(azdata.path, azdata.cachedVersion.raw));
+		return await findAzdata(); // find currently installed Azdata
 	} catch (err) {
 		// Don't block on this since we want the extension to finish activating without needing user input.
 		// Calls will be made to handle azdata not being installed
-		promptToInstallAzdata().catch(e => console.log(`Unexpected error prompting to install azdata ${e}`));
+		await promptToInstallAzdata().catch(e => console.log(`Unexpected error prompting to install azdata ${e}`));
 	}
 	return undefined;
 }

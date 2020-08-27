@@ -108,7 +108,7 @@ export class AzdataTool implements IAzdataTool {
 	 */
 	public async version(): Promise<azdataExt.AzdataOutput<string>> {
 		const output = await executeCommand(`"${this.path}"`, ['--version']);
-		this.cachedVersion = new SemVer(parseVersion(output.stdout[0]));
+		this.cachedVersion = new SemVer(parseVersion(output.stdout));
 		return {
 			logs: [],
 			stdout: output.stdout.split(os.EOL),
