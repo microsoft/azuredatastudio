@@ -8,7 +8,7 @@ import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import { SUBSCRIPTION_SELECTION_PAGE_TITLE, SUBSCRIPTION_SELECTION_AZURE_ACCOUNT_TITLE, SUBSCRIPTION_SELECTION_AZURE_PRODUCT_TITLE, SUBSCRIPTION_SELECTION_AZURE_SUBSCRIPTION_TITLE } from '../models/strings';
 import { Disposable } from 'vscode';
-import { getSubscriptions, Subscription, getAvailableManagedInstanceProducts, AzureProduct } from '../api/azure';
+import { getSubscriptions, Subscription, getAvailableManagedInstanceProducts, AzureProduct, getAvailableSqlServers } from '../api/azure';
 
 interface GenericValue<T> extends azdata.CategoryValue {
 	value: T;
@@ -104,6 +104,7 @@ export class SubscriptionSelectionPage extends MigrationWizardPage {
 		const subscription = this.getPickedSubscription();
 
 		const results = await getAvailableManagedInstanceProducts(account!, subscription!);
+		// const results = await getAvailableSqlServers(account!,  subscription!);
 
 		this.populateProductValues(results);
 	}
