@@ -99,10 +99,10 @@ echo *** starting machine-learning tests ***
 echo ************************************************
 "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_NO_SANDBOX --extensionDevelopmentPath=$ROOT/extensions/machine-learning --extensionTestsPath=$ROOT/extensions/machine-learning/out/test --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR --disable-telemetry --disable-crash-reporter --disable-updates --nogpu
 
-echo ******************************************
-echo *** starting mssql tests ***
-echo ******************************************
-"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_NO_SANDBOX --extensionDevelopmentPath=$ROOT/extensions/mssql --extensionTestsPath=$ROOT/extensions/mssql/out/test --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR --disable-telemetry --disable-crash-reporter --disable-updates --nogpu
+# echo ******************************************
+# echo *** starting mssql tests ***
+# echo ******************************************
+# "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_NO_SANDBOX --extensionDevelopmentPath=$ROOT/extensions/mssql --extensionTestsPath=$ROOT/extensions/mssql/out/test --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR --disable-telemetry --disable-crash-reporter --disable-updates --nogpu
 
 if [[ "$RUN_DBPROJECT_TESTS" == "true" ]]; then
 	echo ********************************************
