@@ -15,7 +15,7 @@ import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode'
 import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 
 export function supportsNodeNameDrop(nodeId: string): boolean {
-	if (nodeId === 'Table' || nodeId === 'Column' || nodeId === 'View') {
+	if (nodeId === 'Table' || nodeId === 'Column' || nodeId === 'View' || nodeId === 'Function') {
 		return true;
 	}
 	return false;
@@ -97,7 +97,12 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 		if (supportsNodeNameDrop(element.nodeTypeId)) {
 			escapedSchema = escapeString(element.metadata.schema);
 			escapedName = escapeString(element.metadata.name);
-			finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
+			let providerName = this.getProviderNameFromElement(element);
+			if (providerName === 'KUSTO') {
+				finalString = element.nodeTypeId !== 'Function' && escapedName.indexOf(' ') > 0 ? `[@"${escapedName}"]` : escapedName;
+			} else {
+				finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
+			}
 			originalEvent.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([`${element.nodeTypeId}:${element.id}?${finalString}`]));
 		}
 		if (supportsFolderNodeNameDrop(element.nodeTypeId, element.label)) {
@@ -113,6 +118,14 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 			originalEvent.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([`${element.nodeTypeId}:${element.id}?${returnString}`]));
 		}
 		return;
+	}
+
+	private getProviderNameFromElement(element: TreeNode): string | undefined {
+		if (element.connection) {
+			return element.connection.providerName;
+		}
+
+		return this.getProviderNameFromElement(element.parent);
 	}
 
 
