@@ -79,13 +79,13 @@ class ConnectionProfileTemplate extends Disposable {
 	private _connectionStatusBadge: HTMLElement;
 	private _label: HTMLElement;
 	/**
-	 * _isCompact is used to render connections tiles with and without the action buttons.
+	 * _showStatusBadge is used to render connections tiles with and without the action buttons.
 	 * When set to true, like in the connection dialog recent connections tree, the connection
 	 * tile is rendered without the action buttons( such as connect, new query).
 	 */
 	constructor(
 		container: HTMLElement,
-		private _isCompact: boolean,
+		private _showStatusBadge: boolean,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {
 		super();
@@ -97,18 +97,19 @@ class ConnectionProfileTemplate extends Disposable {
 	}
 
 	set(element: ConnectionProfile) {
-		if (!this._isCompact) {
-			let iconPath: IconPath = getIconPath(element, this._connectionManagementService);
+		if (!this._showStatusBadge) {
 			if (this._connectionManagementService.isConnected(undefined, element)) {
 				this._connectionStatusBadge.classList.remove('disconnected');
 				this._connectionStatusBadge.classList.add('connected');
-				renderServerIcon(this._icon, iconPath);
+
 			} else {
 				this._connectionStatusBadge.classList.remove('connected');
 				this._connectionStatusBadge.classList.add('disconnected');
-				renderServerIcon(this._icon, iconPath);
 			}
 		}
+
+		let iconPath: IconPath = getIconPath(element, this._connectionManagementService);
+		renderServerIcon(this._icon, iconPath);
 
 		let label = element.title;
 		if (!element.isConnectionOptionsValid) {
