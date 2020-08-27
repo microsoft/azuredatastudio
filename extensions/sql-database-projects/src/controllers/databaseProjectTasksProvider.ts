@@ -2,10 +2,11 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
+import * as path from 'path';
 import * as vscode from 'vscode';
 import { ProjectsController } from './projectController';
-import { Project } from '../models/project';
+import * as utils from '../common/utils';
+import { DotNetCommandOptions, dotnet } from '../tools/netcoreTool';
 
 interface SqlProjTaskDefinition extends vscode.TaskDefinition {
 	/**
@@ -32,17 +33,7 @@ export class SqlDatabaseProjectTasksProvider implements vscode.TaskProvider {
 	public provideTasks(cancellationToken?: vscode.CancellationToken): vscode.ProviderResult<vscode.Task[]> {
 		let tasks: vscode.Task[] = [];
 		for (const project of this.projectsController.projects) {
-			const type: SqlProjTaskDefinition = {
-				type: SqlDatabaseProjectTasksProvider.SqlProjType,
-				task: 'Build',
-				projectFileName: project.projectFileName
-			};
-
-			const execution: vscode.ShellExecution = new vscode.ShellExecution(`echo ${project.projectFileName}`);
-			const task = new vscode.Task(type, vscode.TaskScope.Workspace,
-				`Build ${project.projectFileName}`, 'SQL Database Projects', execution);
-			task.group = vscode.TaskGroup.Build;
-			tasks.push(task);
+			tasks.push(new SqlDatabaseProjectBuildTask(this.projectsController, project.projectFileName));
 		}
 		return tasks;
 	}
@@ -75,8 +66,22 @@ class SqlDatabaseProjectBuildTask extends vscode.Task {
 		};
 		super(type, vscode.TaskScope.Workspace, `${SqlDatabaseProjectBuildTask.taskType}: ${projectFileName}`,
 			'SQL Database Projects');
-		this.projectsController = projectsController;
 		this.group = vscode.TaskGroup.Build;
+
+		this.projectsController = projectsController;
+		let buildHelper = this.projectsController.buildHelper;
+		let netCoreTool = this.projectsController.netCoreTool;
 		const project = this.projectsController.projectMap.get(projectFileName);
+		if (project) {
+			const options: DotNetCommandOptions = {
+				commandTitle: 'Build',
+				workingDirectory: project.projectFolderPath,
+				argument: buildHelper.constructBuildArguments(project.projectFilePath,
+					buildHelper.extensionBuildDirPath)
+			};
+			const dotnetPath = utils.getQuotedPath(path.join(netCoreTool.netcoreInstallLocation, dotnet));
+			const command = path.join(netCoreTool.netcoreInstallLocation, dotnet) + ' ' + options.argument;
+			this.execution = new vscode.ShellExecution(command);
+		}
 	}
 }

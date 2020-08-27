@@ -32,16 +32,24 @@ import { PublishProfile, load } from '../models/publishProfile/publishProfile';
  */
 export class ProjectsController {
 	private projectTreeViewProvider: SqlDatabaseProjectTreeViewProvider;
-	private netCoreTool: NetCoreTool;
-	private buildHelper: BuildHelper;
+	private _netCoreTool: NetCoreTool;
+	private _buildHelper: BuildHelper;
 
 	projects: Project[] = [];
 	projectMap: Map<string, Project> = new Map<string, Project>();
 
 	constructor(projTreeViewProvider: SqlDatabaseProjectTreeViewProvider) {
 		this.projectTreeViewProvider = projTreeViewProvider;
-		this.netCoreTool = new NetCoreTool();
-		this.buildHelper = new BuildHelper();
+		this._netCoreTool = new NetCoreTool();
+		this._buildHelper = new BuildHelper();
+	}
+
+	public get buildHelper(): BuildHelper {
+		return this._buildHelper;
+	}
+
+	public get netCoreTool(): NetCoreTool {
+		return this._netCoreTool;
 	}
 
 	public refreshProjectsTree() {
