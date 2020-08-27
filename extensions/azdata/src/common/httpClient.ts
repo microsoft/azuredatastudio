@@ -34,8 +34,10 @@ export namespace HttpClient {
 	}
 
 	/**
-	 * @returns Full path to the downloaded file.
-	 * If the targetFolder is not defined then it returns the contents of the downloaded file.
+	 * Gets a file/fileContents at the given URL.
+	 * @param downloadUrl The URL to download the file from
+	 * @param targetFolder The folder to download the file to. If not defined then return value is the contents of the downloaded file.
+	 * @returns Full path to the downloaded file or the contents of the file at the given downloadUrl
 	 */
 	function download(downloadUrl: string, targetFolder?: string): Promise<string> {
 		return new Promise((resolve, reject) => {
