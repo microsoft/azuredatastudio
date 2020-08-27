@@ -604,6 +604,7 @@ export class DeletedCell extends AbstractCellRenderer {
 	}
 
 	styleContainer(container: HTMLElement) {
+		DOM.addClass(container, 'removed');
 	}
 
 	buildSourceEditor(sourceContainer: HTMLElement): void {
@@ -689,6 +690,7 @@ export class InsertCell extends AbstractCellRenderer {
 	}
 
 	styleContainer(container: HTMLElement): void {
+		DOM.addClass(container, 'inserted');
 	}
 
 	buildSourceEditor(sourceContainer: HTMLElement): void {
