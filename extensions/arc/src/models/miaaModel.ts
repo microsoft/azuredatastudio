@@ -74,11 +74,12 @@ export class MiaaModel extends ResourceModel {
 		this._refreshPromise = new Deferred();
 		try {
 			await this._controllerModel.azdataLogin();
-			const instanceRefresh = this._azdataApi.azdata.arc.sql.mi.show(this.info.name).then(result => {
+			try {
+				const result = await this._azdataApi.azdata.arc.sql.mi.show(this.info.name);
 				this._config = result.result;
 				this.configLastUpdated = new Date();
 				this._onConfigUpdated.fire(this._config);
-			}).catch(err => {
+			} catch (err) {
 				// If an error occurs show a message so the user knows something failed but still
 				// fire the event so callers can know to update (e.g. so dashboards don't show the
 				// loading icon forever)
@@ -86,52 +87,29 @@ export class MiaaModel extends ResourceModel {
 				this.configLastUpdated = new Date();
 				this._onConfigUpdated.fire(undefined);
 				throw err;
-			});
-			const promises: Thenable<any>[] = [instanceRefresh];
-			try {
-				await this.getConnectionProfile();
-				if (this._connectionProfile) {
-					// We haven't connected yet so do so now and then store the ID for the active connection
-					if (!this._activeConnectionId) {
-						const result = await azdata.connection.connect(this._connectionProfile, false, false);
-						if (!result.connected) {
-							throw new Error(result.errorMessage);
-						}
-						this._activeConnectionId = result.connectionId;
-					}
-
-					const provider = azdata.dataprotocol.getProvider<azdata.MetadataProvider>(this._connectionProfile.providerName, azdata.DataProviderType.MetadataProvider);
-					const databasesRefresh = azdata.connection.getUriForConnection(this._activeConnectionId).then(ownerUri => {
-						provider.getDatabases(ownerUri).then(databases => {
-							if (!databases) {
-								throw new Error('Could not fetch databases');
-							}
-							if (databases.length > 0 && typeof (databases[0]) === 'object') {
-								this._databases = (<azdata.DatabaseInfo[]>databases).map(db => { return { name: db.options['name'], status: db.options['state'] }; });
-							} else {
-								this._databases = (<string[]>databases).map(db => { return { name: db, status: '-' }; });
-							}
-							this.databasesLastUpdated = new Date();
-							this._onDatabasesUpdated.fire(this._databases);
-						});
-					});
-					promises.push(databasesRefresh);
-				}
-			} catch (err) {
-				// If an error occurs show a message so the user knows something failed but still
-				// fire the event so callers can know to update (e.g. so dashboards don't show the
-				// loading icon forever)
-				if (err instanceof UserCancelledError) {
-					vscode.window.showWarningMessage(loc.connectionRequired);
-				} else {
-					vscode.window.showErrorMessage(loc.fetchDatabasesFailed(this.info.name, err));
-				}
-				this.databasesLastUpdated = new Date();
-				this._onDatabasesUpdated.fire(this._databases);
-				throw err;
 			}
 
-			await Promise.all(promises);
+			// If we have an external endpoint configured then fetch the databases now
+			if (this._config.status.externalEndpoint) {
+				this.getDatabases().catch(err => {
+					// If an error occurs show a message so the user knows something failed but still
+					// fire the event so callers can know to update (e.g. so dashboards don't show the
+					// loading icon forever)
+					if (err instanceof UserCancelledError) {
+						vscode.window.showWarningMessage(loc.connectionRequired);
+					} else {
+						vscode.window.showErrorMessage(loc.fetchDatabasesFailed(this.info.name, err));
+					}
+					this.databasesLastUpdated = new Date();
+					this._onDatabasesUpdated.fire(this._databases);
+					throw err;
+				});
+			} else {
+				// Otherwise just fire the event so dashboards can update appropriately
+				this.databasesLastUpdated = new Date();
+				this._onDatabasesUpdated.fire(this._databases);
+			}
+
 			this._refreshPromise.resolve();
 		} catch (err) {
 			this._refreshPromise.reject(err);
@@ -141,6 +119,33 @@ export class MiaaModel extends ResourceModel {
 		}
 	}
 
+	private async getDatabases(): Promise<void> {
+		await this.getConnectionProfile();
+		if (this._connectionProfile) {
+			// We haven't connected yet so do so now and then store the ID for the active connection
+			if (!this._activeConnectionId) {
+				const result = await azdata.connection.connect(this._connectionProfile, false, false);
+				if (!result.connected) {
+					throw new Error(result.errorMessage);
+				}
+				this._activeConnectionId = result.connectionId;
+			}
+
+			const provider = azdata.dataprotocol.getProvider<azdata.MetadataProvider>(this._connectionProfile.providerName, azdata.DataProviderType.MetadataProvider);
+			const ownerUri = await azdata.connection.getUriForConnection(this._activeConnectionId);
+			const databases = await provider.getDatabases(ownerUri);
+			if (!databases) {
+				throw new Error('Could not fetch databases');
+			}
+			if (databases.length > 0 && typeof (databases[0]) === 'object') {
+				this._databases = (<azdata.DatabaseInfo[]>databases).map(db => { return { name: db.options['name'], status: db.options['state'] }; });
+			} else {
+				this._databases = (<string[]>databases).map(db => { return { name: db, status: '-' }; });
+			}
+			this.databasesLastUpdated = new Date();
+			this._onDatabasesUpdated.fire(this._databases);
+		}
+	}
 	/**
 	 * Loads the saved connection profile associated with this model. Will prompt for one if
 	 * we don't have one or can't find it (it was deleted)
