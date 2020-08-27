@@ -19,13 +19,15 @@ import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProje
 import { ProjectsController } from '../controllers/projectController';
 import { promises as fs } from 'fs';
 import { createContext, TestContext, mockDacFxResult } from './testContext';
-import { Project, SystemDatabase, ProjectEntry, reservedProjectFolders } from '../models/project';
+import { Project, ProjectEntry, reservedProjectFolders, SystemDatabase } from '../models/project';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
 import { exists } from '../common/utils';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
+import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
+import { IDacpacReferenceSettings } from '../models/IDatabaseReferenceSettings';
 
 let testContext: TestContext;
 
@@ -454,119 +456,115 @@ describe('ProjectsController', function (): void {
 		});
 	});
 
-	describe('add database reference operations', function (): void {
-		it('Should show error when no reference type is selected', async function (): Promise<void> {
-			sinon.stub(vscode.window, 'showQuickPick').resolves(undefined);
-			const spy = sinon.spy(vscode.window, 'showErrorMessage');
+	describe('Add database reference', function (): void {
+		it('Add database reference dialog should open from ProjectController', async function (): Promise<void> {
+			let opened = false;
 
-			const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
-			await projController.addDatabaseReference(new Project('FakePath'));
-			should(spy.calledOnce).be.true('showErrorMessage should have been called exactly once');
-			should(spy.calledWith(constants.databaseReferenceTypeRequired)).be.true(`showErrorMessage not called with expected message '${constants.databaseReferenceTypeRequired}' Actual '${spy.getCall(0).args[0]}'`);
+			let addDbReferenceDialog = TypeMoq.Mock.ofType(AddDatabaseReferenceDialog);
+			addDbReferenceDialog.setup(x => x.openDialog()).returns(() => { opened = true; return Promise.resolve(undefined) });
+
+			let projController = TypeMoq.Mock.ofType(ProjectsController);
+			projController.callBase = true;
+			projController.setup(x => x.getAddDatabaseReferenceDialog(TypeMoq.It.isAny())).returns(() => addDbReferenceDialog.object);
+
+			await projController.object.addDatabaseReference(new Project('FakePath'));
+			should(opened).equal(true);
 		});
 
-		it('Should show error when no file is selected', async function (): Promise<void> {
-			sinon.stub(vscode.window, 'showQuickPick').resolves({ label: constants.dacpac });
-			sinon.stub(vscode.window, 'showOpenDialog').resolves(undefined);
-			const spy = sinon.spy(vscode.window, 'showErrorMessage');
+		it('Callbacks are hooked up and called from Add database reference dialog', async function (): Promise<void> {
+			const projPath = path.dirname(await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline));
+			await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, projPath);
+			const proj = new Project(projPath);
 
-			const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
-			await projController.addDatabaseReference(new Project('FakePath'));
-			should(spy.calledOnce).be.true('showErrorMessage should have been called exactly once');
-			should(spy.calledWith(constants.dacpacFileLocationRequired)).be.true(`showErrorMessage not called with expected message '${constants.dacpacFileLocationRequired}' Actual '${spy.getCall(0).args[0]}'`);
+			const addDbRefHoller = 'hello from callback for addDatabaseReference()';
+
+			let holler = 'nothing';
+
+			const addDbReferenceDialog = TypeMoq.Mock.ofType(AddDatabaseReferenceDialog, undefined, undefined, proj);
+			addDbReferenceDialog.callBase = true;
+			addDbReferenceDialog.setup(x => x.addReferenceClick()).returns(() => {
+				projController.object.addDatabaseReferenceCallback(proj, { systemDb: SystemDatabase.master, databaseName: 'master' });
+				return Promise.resolve(undefined);
+			})
+
+			const projController = TypeMoq.Mock.ofType(ProjectsController);
+			projController.callBase = true;
+			projController.setup(x => x.getAddDatabaseReferenceDialog(TypeMoq.It.isAny())).returns(() => addDbReferenceDialog.object);
+			projController.setup(x => x.addDatabaseReferenceCallback(TypeMoq.It.isAny(), TypeMoq.It.is((_): _ is IDacpacReferenceSettings => true))).returns(() => {
+				holler = addDbRefHoller;
+				return Promise.resolve(undefined);
+			});
+
+			let dialog = await projController.object.addDatabaseReference(proj);
+			await dialog.addReferenceClick();
+
+			should(holler).equal(addDbRefHoller, 'executionCallback() is supposed to have been setup and called for add database reference scenario');
 		});
 
-		it('Should show error when no database name is provided', async function (): Promise<void> {
-			sinon.stub(vscode.window, 'showInputBox').resolves(undefined);
-			sinon.stub(vscode.window, 'showQuickPick').resolves({ label: constants.dacpac });
-			sinon.stub(vscode.window, 'showOpenDialog').resolves([vscode.Uri.file('FakePath')]);
-			const spy = sinon.spy(vscode.window, 'showErrorMessage');
-
-			const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
-			await projController.addDatabaseReference(new Project('FakePath'));
-			should(spy.calledOnce).be.true('showErrorMessage should have been called exactly once');
-			should(spy.calledWith(constants.databaseNameRequired)).be.true(`showErrorMessage not called with expected message '${constants.databaseNameRequired}' Actual '${spy.getCall(0).args[0]}'`);
-		});
-
-		it('Should return the correct system database', async function (): Promise<void> {
-			const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
-			const projFilePath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
-			const project = await Project.openProject(projFilePath);
-
-			const stub = sinon.stub(vscode.window, 'showQuickPick').resolves({ label: constants.master });
-			let systemDb = await projController.getSystemDatabaseName(project);
-			should.equal(systemDb, SystemDatabase.master);
-
-			stub.resolves({ label: constants.msdb });
-			systemDb = await projController.getSystemDatabaseName(project);
-			should.equal(systemDb, SystemDatabase.msdb);
-
-			stub.resolves(undefined);
-			await testUtils.shouldThrowSpecificError(async () => await projController.getSystemDatabaseName(project), constants.systemDatabaseReferenceRequired);
-		});
-	});
-
-	describe.skip('ProjectsController: round trip feature with SSDT', function (): void {
-		it('Should show warning message for SSDT project opened in Azure Data Studio', async function (): Promise<void> {
-			const stub = sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.noString));
-
-			// setup test files
-			const folderPath = await testUtils.generateTestFolderPath();
-			const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.SSDTProjectFileBaseline, folderPath);
-			await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, folderPath);
-
-			const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
-
-			await projController.openProject(vscode.Uri.file(sqlProjPath));
-			should(stub.calledOnce).be.true('showWarningMessage should have been called exactly once');
-			should(stub.calledWith(constants.updateProjectForRoundTrip)).be.true(`showWarningMessage not called with expected message '${constants.updateProjectForRoundTrip}' Actual '${stub.getCall(0).args[0]}'`);
-		});
-
-		it('Should not show warning message for non-SSDT projects that have the additional information for Build', async function (): Promise<void> {
-			// setup test files
-			const folderPath = await testUtils.generateTestFolderPath();
-			const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline, folderPath);
-			await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, folderPath);
-
-			const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
-
-			const project = await projController.openProject(vscode.Uri.file(sqlProjPath));	// no error thrown
-
-			should(project.importedTargets.length).equal(3); // additional target should exist by default
-		});
-
-		it('Should not update project and no backup file should be created when update to project is rejected', async function (): Promise<void> {
-			sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.noString));
-			// setup test files
-			const folderPath = await testUtils.generateTestFolderPath();
-			const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.SSDTProjectFileBaseline, folderPath);
-			await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, folderPath);
-
-			const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
-
-			const project = await projController.openProject(vscode.Uri.file(sqlProjPath));
-
-			should(await exists(sqlProjPath + '_backup')).equal(false);	// backup file should not be generated
-			should(project.importedTargets.length).equal(2); // additional target should not be added by updateProjectForRoundTrip method
-		});
-
-		it('Should load Project and associated import targets when update to project is accepted', async function (): Promise<void> {
-			sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.yesString));
-
-			// setup test files
-			const folderPath = await testUtils.generateTestFolderPath();
-			const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.SSDTProjectFileBaseline, folderPath);
-			await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, folderPath);
-
-			const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
-
-			const project = await projController.openProject(vscode.Uri.file(sqlProjPath));
-
-			should(await exists(sqlProjPath + '_backup')).equal(true);	// backup file should be generated before the project is updated
-			should(project.importedTargets.length).equal(3); // additional target added by updateProjectForRoundTrip method
-		});
 	});
 });
+
+describe.skip('ProjectsController: round trip feature with SSDT', function (): void {
+	it('Should show warning message for SSDT project opened in Azure Data Studio', async function (): Promise<void> {
+		const stub = sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.noString));
+
+		// setup test files
+		const folderPath = await testUtils.generateTestFolderPath();
+		const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.SSDTProjectFileBaseline, folderPath);
+		await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, folderPath);
+
+		const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+
+		await projController.openProject(vscode.Uri.file(sqlProjPath));
+		should(stub.calledOnce).be.true('showWarningMessage should have been called exactly once');
+		should(stub.calledWith(constants.updateProjectForRoundTrip)).be.true(`showWarningMessage not called with expected message '${constants.updateProjectForRoundTrip}' Actual '${stub.getCall(0).args[0]}'`);
+	});
+
+	it('Should not show warning message for non-SSDT projects that have the additional information for Build', async function (): Promise<void> {
+		// setup test files
+		const folderPath = await testUtils.generateTestFolderPath();
+		const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline, folderPath);
+		await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, folderPath);
+
+		const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+
+		const project = await projController.openProject(vscode.Uri.file(sqlProjPath));	// no error thrown
+
+		should(project.importedTargets.length).equal(3); // additional target should exist by default
+	});
+
+	it('Should not update project and no backup file should be created when update to project is rejected', async function (): Promise<void> {
+		sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.noString));
+		// setup test files
+		const folderPath = await testUtils.generateTestFolderPath();
+		const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.SSDTProjectFileBaseline, folderPath);
+		await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, folderPath);
+
+		const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+
+		const project = await projController.openProject(vscode.Uri.file(sqlProjPath));
+
+		should(await exists(sqlProjPath + '_backup')).equal(false);	// backup file should not be generated
+		should(project.importedTargets.length).equal(2); // additional target should not be added by updateProjectForRoundTrip method
+	});
+
+	it('Should load Project and associated import targets when update to project is accepted', async function (): Promise<void> {
+		sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.yesString));
+
+		// setup test files
+		const folderPath = await testUtils.generateTestFolderPath();
+		const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.SSDTProjectFileBaseline, folderPath);
+		await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, folderPath);
+
+		const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+
+		const project = await projController.openProject(vscode.Uri.file(sqlProjPath));
+
+		should(await exists(sqlProjPath + '_backup')).equal(true);	// backup file should be generated before the project is updated
+		should(project.importedTargets.length).equal(3); // additional target added by updateProjectForRoundTrip method
+	});
+});
+
 
 
 async function setupDeleteExcludeTest(proj: Project): Promise<[ProjectEntry, ProjectRootTreeItem]> {
