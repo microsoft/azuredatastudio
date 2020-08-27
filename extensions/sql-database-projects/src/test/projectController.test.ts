@@ -243,6 +243,25 @@ describe('ProjectsController', function (): void {
 
 				should(await exists(scriptEntry.fsUri.fsPath)).equal(true, 'script is supposed to still exist on disk');
 			});
+
+			it('Should be able to add pre deploy and post deploy script', async function (): Promise<void> {
+				const preDeployScriptName = 'PreDeployScript1.sql';
+				const postDeployScriptName = 'PostDeployScript1.sql';
+
+				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+				const project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
+
+				sinon.stub(vscode.window, 'showInputBox').resolves(preDeployScriptName);
+				should(project.preDeployScripts.length).equal(0, 'There should be no pre deploy scripts');
+				await projController.addItemPrompt(project, '', templates.preDeployScript);
+				should(project.preDeployScripts.length).equal(1, `Pre deploy script should be successfully added. ${project.preDeployScripts.length}, ${project.files.length}`);
+
+				sinon.restore();
+				sinon.stub(vscode.window, 'showInputBox').resolves(postDeployScriptName);
+				should(project.postDeployScripts.length).equal(0, 'There should be no post deploy scripts');
+				await projController.addItemPrompt(project, '', templates.postDeployScript);
+				should(project.postDeployScripts.length).equal(1, 'Post deploy script should be successfully added');
+			});
 		});
 
 		describe('Publishing and script generation', function (): void {
