@@ -4,11 +4,10 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "type": "gulp",
-            "task": "build",
-            "problemMatcher": [
-                "$gulp-tsc"
-            ]
+            "label": "echo folder",
+            "type": "shell",
+            "command": "echo 'Hello'",
+            "problemMatcher": []
         }
     ]
 }

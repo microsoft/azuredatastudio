@@ -75,8 +75,8 @@ export default class MainController implements vscode.Disposable {
 		vscode.commands.registerCommand('sqlDatabaseProjects.exclude', async (node: FileNode | FolderNode) => { await this.projectsController.exclude(node); });
 
 		// init tasks
-		const tasksProvider = new SqlDatabaseProjectTasksProvider();
-		vscode.tasks.registerTaskProvider('sqlDatabaseProjects.taskProvider', tasksProvider);
+		const tasksProvider = new SqlDatabaseProjectTasksProvider(this.projectsController);
+		vscode.tasks.registerTaskProvider('sqlproj', tasksProvider);
 
 		IconPathHelper.setExtensionContext(this.extensionContext);
 

@@ -16,8 +16,7 @@
     "onCommand:sqlDatabaseProjects.new",
     "onCommand:sqlDatabaseProjects.open",
     "onCommand:sqlDatabaseProjects.importDatabase",
-    "workspaceContains:**/*.sqlproj",
-    "*"
+    "workspaceContains:**/*.sqlproj"
   ],
   "main": "./out/extension",
   "repository": {
@@ -29,9 +28,28 @@
     "Microsoft.schema-compare"
   ],
   "contributes": {
+    "problemMatchers": [
+      {
+        "name": "sqlproj"
+      }
+    ],
     "taskDefinitions": [
       {
-        "type": "sqlDatabaseProjects.taskProvider"
+        "type": "sqlproj",
+        "required":[
+          "task",
+          "project"
+        ],
+        "properties": {
+          "task": {
+            "type": "string",
+            "description": "The sqlproj task to customize"
+          },
+          "project": {
+            "type": "object",
+            "description": "The .sqlproj project object"
+          }
+        }
       }
     ],
     "configuration": [
