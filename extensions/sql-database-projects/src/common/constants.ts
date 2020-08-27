@@ -61,6 +61,7 @@ export const newDefaultProjectSaveLocation = localize('newDefaultProjectSaveLoca
 export const invalidDefaultProjectSaveLocation = localize('invalidDefaultProjectSaveLocation', "Default location to save new database projects is invalid. Would you like to update it?");
 export const openWorkspaceSettings = localize('openWorkspaceSettings', "Yes, open Settings");
 export const doNotPromptAgain = localize('doNotPromptAgain', "Don't ask again");
+export const refreshProject = localize('refreshProject', "Would you like to refresh your database project?");
 export function newObjectNamePrompt(objectType: string) { return localize('newObjectNamePrompt', 'New {0} name:', objectType); }
 export function deleteConfirmation(toDelete: string) { return localize('deleteConfirmation', "Are you sure you want to delete {0}?", toDelete); }
 export function deleteConfirmationContents(toDelete: string) { return localize('deleteConfirmationContents', "Are you sure you want to delete {0} and all of its contents?", toDelete); }

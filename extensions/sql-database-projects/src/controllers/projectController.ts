@@ -426,6 +426,34 @@ export class ProjectsController {
 	}
 
 	/**
+	 * Opens the .sqlproj file for the given project. Upon update of file, prompts user to
+	 * reload their project.
+	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project
+	 */
+	public async editProjectFile(context: BaseProjectTreeItem): Promise<void> {
+		const project = this.getProjectFromContext(context);
+
+		try {
+			await vscode.commands.executeCommand(constants.vscodeOpenCommand, vscode.Uri.file(project.projectFilePath));
+			const projFileWatcher: vscode.FileSystemWatcher = vscode.workspace.createFileSystemWatcher(project.projectFilePath);
+
+			projFileWatcher.onDidChange(async () => {
+				const result = await vscode.window.showInformationMessage(constants.refreshProject, constants.yesString, constants.noString);
+
+				if (result === constants.yesString) {
+					// Is there a better way to refresh a project with a changed .sqlproj file than close
+					//	and open project again?
+					this.projects = this.projects.filter((e) => { return e !== project; });
+					await this.openProject(vscode.Uri.file(project.projectFilePath));
+				}
+			});
+		} catch (err) {
+			vscode.window.showErrorMessage(utils.getErrorMessage(err));
+		}
+
+	}
+
+	/**
 	 * Adds a database reference to the project
 	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project
 	 */
