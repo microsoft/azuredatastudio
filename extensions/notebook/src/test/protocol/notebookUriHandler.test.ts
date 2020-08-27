@@ -13,7 +13,6 @@ import * as constants from '../../common/constants';
 
 import { NotebookUriHandler } from '../../protocol/notebookUriHandler';
 
-
 describe('Notebook URI Handler', function (): void {
 	let notebookUriHandler: NotebookUriHandler;
 	let showErrorMessageSpy: sinon.SinonSpy;
@@ -22,14 +21,11 @@ describe('Notebook URI Handler', function (): void {
 	const notebookUri = vscode.Uri.parse('azuredatastudio://microsoft.notebook/open?url=https%3A%2F%2F127.0.0.1/Hello.ipynb');
 	const notebookContent = 'test content';
 
-
-
 	beforeEach(() => {
 		showErrorMessageSpy = sinon.spy(vscode.window, 'showErrorMessage');
 		executeCommandSpy = sinon.spy(vscode.commands, 'executeCommand');
 		notebookUriHandler = new NotebookUriHandler();
 		showNotebookDocumentStub = sinon.stub(azdata.nb, 'showNotebookDocument');
-
 	});
 
 	afterEach(function (): void {
@@ -40,7 +36,6 @@ describe('Notebook URI Handler', function (): void {
 
 	it('should handle empty string null undefined gracefully', async function (): Promise<void> {
 		await notebookUriHandler.handleUri(vscode.Uri.parse(''));
-
 		sinon.assert.calledOnce(showErrorMessageSpy);
 		sinon.assert.neverCalledWith(executeCommandSpy, constants.notebookCommandNew);
 		sinon.assert.notCalled(showNotebookDocumentStub);
@@ -63,7 +58,7 @@ describe('Notebook URI Handler', function (): void {
 
 	it('should show error when file is not found given file uri scheme https', async function (): Promise<void> {
 		let showQuickPickStub = sinon.stub(vscode.window, 'showQuickPick').resolves(Promise.resolve(loc.msgYes) as any);
-
+		
 		await notebookUriHandler.handleUri(notebookUri);
 
 		sinon.assert.calledOnce(showQuickPickStub);
@@ -112,6 +107,7 @@ describe('Notebook URI Handler', function (): void {
 				.reply(httpErrorCode);
 
 			await notebookUriHandler.handleUri(notebookUri);
+			
 			sinon.assert.callCount(showErrorMessageSpy, 1);
 			sinon.assert.notCalled(showNotebookDocumentStub);
 		});
