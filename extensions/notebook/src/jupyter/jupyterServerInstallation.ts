@@ -728,7 +728,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		let folderPaths = filePaths.filter((value, index) => value && fileStats[index].isDirectory());
 
 		let kernelFiles = folderPaths.map(folder => path.join(folder, 'kernel.json'));
-		kernelFiles.push(path.join(this._pythonInstallationPath, 'share', 'jupyter', 'kernels', 'python3', 'kernel.json'));
+		kernelFiles.push(path.join(this._pythonInstallationPath, 'Lib', 'site-packages', 'share', 'jupyter', 'kernels', 'python3', 'kernel.json'));
 
 		await Promise.all(kernelFiles.map(file => this.updateKernelSpecPath(file)));
 
