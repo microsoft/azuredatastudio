@@ -37,10 +37,8 @@ describe('azdata', function () {
 
 	describe('findAzdata', function () {
 		it('successful', async function (): Promise<void> {
-			if (process.platform === 'win32') {
-				// Mock searchForCmd to return a path to azdata.cmd
-				sinon.stub(utils, 'searchForCmd').returns(Promise.resolve('C:\\path\\to\\azdata.cmd'));
-			}
+			// Mock searchForCmd to return a path to azdata.cmd
+			sinon.stub(utils, 'searchForCmd').returns(Promise.resolve('/path/to/azdata'));
 			// Mock call to --version to simulate azdata being installed
 			sinon.stub(childProcess, 'executeCommand').returns(Promise.resolve({ stdout: '1.0.0', stderr: '' }));
 			await should(azdata.findAzdata()).not.be.rejected();
