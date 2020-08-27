@@ -9,6 +9,7 @@ import * as vscode from 'vscode';
 import * as sinon from 'sinon';
 import * as nock from 'nock';
 import * as loc from '../../common/localizedConstants';
+import * as constants from '../../common/constants';
 
 import { NotebookUriHandler } from '../../protocol/notebookUriHandler';
 
@@ -32,13 +33,15 @@ describe('Notebook URI Handler', function (): void {
 	it('should handle empty string gracefully', async function (): Promise<void> {
 		await notebookUriHandler.handleUri(vscode.Uri.parse(''));
 		sinon.assert.calledOnce(showErrorMessageSpy);
+		const showNotebookDocumentStub = sinon.stub(azdata.nb, 'showNotebookDocument');
 
-		sinon.assert.neverCalledWith(executeCommandSpy, 'notebook.command.new');
+		sinon.assert.neverCalledWith(executeCommandSpy, constants.notebookCommandNew);
+		sinon.assert.notCalled(showNotebookDocumentStub);
 	});
 
 	it('should create new notebook when new passed in', async function (): Promise<void> {
 		await notebookUriHandler.handleUri(vscode.Uri.parse('azuredatastudio://microsoft.notebook/new'));
-		sinon.assert.calledOnce(executeCommandSpy);
+		sinon.assert.calledWith(executeCommandSpy, constants.notebookCommandNew);
 	});
 
 	it('should show error message when no query passed into open', async function (): Promise<void> {
