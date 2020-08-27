@@ -21,8 +21,8 @@ export class NotebookUriHandler implements vscode.UriHandler {
 	constructor() {
 	}
 
-	handleUri(uri: vscode.Uri): Thenable<void> {
-		switch (uri?.path) {
+	handleUri(uri: vscode.Uri): vscode.ProviderResult<void> {
+		switch (uri.path) {
 			case '/new':
 				return vscode.commands.executeCommand('notebook.command.new');
 			case '/open':
