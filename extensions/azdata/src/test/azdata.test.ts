@@ -58,6 +58,10 @@ describe('azdata', function () {
 	});
 
 	describe('installAzdata', function (): void {
+		beforeEach(function (): void {
+			sinon.stub(vscode.window, 'showWarningMessage').returns(Promise.resolve(<any>loc.yes));
+		});
+
 		it('successful install', async function (): Promise<void> {
 			switch (process.platform) {
 				case 'win32':
@@ -97,7 +101,6 @@ describe('azdata', function () {
 
 	describe('upgradeAzdata', function (): void {
 		beforeEach(function (): void {
-			sinon.stub(azdata, 'discoverLatestAvailableAzdataVersion').returns(Promise.resolve(new SemVer('9999.999.999')));
 			sinon.stub(vscode.window, 'showInformationMessage').returns(Promise.resolve(<any>loc.yes));
 		});
 
@@ -196,7 +199,6 @@ async function testDarwinSuccessfulUpgrade() {
 			return Promise.resolve({ stdout: 'success', stderr: '' });
 		});
 	await azdata.checkAndUpgradeAzdata(oldAzdataMock);
-	console.log(`executeCommandStub - no of calls: ${executeCommandStub.callCount}}`);
 	should(executeCommandStub.callCount).be.equal(6);
 }
 

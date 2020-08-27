@@ -257,7 +257,7 @@ export async function checkAndUpgradeAzdata(currentAzdata?: IAzdataTool, userReq
 	const newVersion = await discoverLatestAvailableAzdataVersion();
 	if (newVersion.compare(currentAzdata.cachedVersion) === 1) {
 		Logger.log(loc.foundAzdataVersionToUpgradeTo(newVersion.raw, currentAzdata.cachedVersion.raw));
-		promptToUpgradeAzdata(userRequested).catch(e => console.log(`Unexpected error prompting to upgrade azdata ${e}`));
+		await promptToUpgradeAzdata(userRequested).catch(e => console.log(`Unexpected error prompting to upgrade azdata ${e}`));
 	}
 }
 
