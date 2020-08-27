@@ -16,7 +16,8 @@
     "onCommand:sqlDatabaseProjects.new",
     "onCommand:sqlDatabaseProjects.open",
     "onCommand:sqlDatabaseProjects.importDatabase",
-    "workspaceContains:**/*.sqlproj"
+    "workspaceContains:**/*.sqlproj",
+    "onCommand:workbench.action.tasks.runTask"
   ],
   "main": "./out/extension",
   "repository": {
@@ -38,16 +39,16 @@
         "type": "sqlproj",
         "required":[
           "task",
-          "project"
+          "projectFileName"
         ],
         "properties": {
           "task": {
             "type": "string",
-            "description": "The sqlproj task to customize"
+            "description": "The database project task to customize"
           },
-          "project": {
-            "type": "object",
-            "description": "The .sqlproj project object"
+          "projectFileName": {
+            "type": "string",
+            "description": "The .sqlproj file name"
           }
         }
       }

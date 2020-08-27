@@ -36,6 +36,7 @@ export class ProjectsController {
 	private buildHelper: BuildHelper;
 
 	projects: Project[] = [];
+	projectMap: Map<string, Project> = new Map<string, Project>();
 
 	constructor(projTreeViewProvider: SqlDatabaseProjectTreeViewProvider) {
 		this.projectTreeViewProvider = projTreeViewProvider;
@@ -45,6 +46,10 @@ export class ProjectsController {
 
 	public refreshProjectsTree() {
 		this.projectTreeViewProvider.load(this.projects);
+		this.projectMap.clear();
+		for (const project of this.projects) {
+			this.projectMap.set(project.projectFileName, project);
+		}
 	}
 
 	public async openProject(projectFile: vscode.Uri, focusProject: boolean = true, isReferencedProject: boolean = false): Promise<Project> {
@@ -104,7 +109,6 @@ export class ProjectsController {
 		catch (err) {
 			// if the project didnt load - remove it from the list of open projects
 			this.projects = this.projects.filter((e) => { return e !== newProject; });
-
 			throw err;
 		}
 

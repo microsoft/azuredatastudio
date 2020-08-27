@@ -14,66 +14,69 @@ interface SqlProjTaskDefinition extends vscode.TaskDefinition {
 	task: string;
 
 	/**
-	 * The assoiated database project for a task
+	 * The project file name
 	 */
-	project: Project;
-}
-
-export class SqlDatabaseProjectQuickPickItem implements vscode.QuickPickItem {
-
-	public label: string;
-	public project: Project;
-
-	constructor(
-		label: string,
-		project: Project
-	) {
-		this.label = label;
-		this.project = project;
-	}
+	projectFileName: string;
 }
 
 export class SqlDatabaseProjectTasksProvider implements vscode.TaskProvider {
 
-	projects: Project[];
-	projectItems: SqlDatabaseProjectQuickPickItem[];
+	static SqlProjType: string = 'sqlproj';
 
 	constructor(
 		private projectsController: ProjectsController
 	) {
-		this.projects = this.projectsController.projects;
-		this.projectItems = this.projects.map(p =>
-			new SqlDatabaseProjectQuickPickItem(p.projectFileName, p));
+
 	}
 
 	public provideTasks(cancellationToken?: vscode.CancellationToken): vscode.ProviderResult<vscode.Task[]> {
-		vscode.window.showQuickPick(this.projectItems).then((projectItem) => {
-			if (projectItem instanceof SqlDatabaseProjectQuickPickItem) {
-				const type: SqlProjTaskDefinition = {
-					type: 'sqlproj',
-					task: 'Build',
-					project: projectItem.project
-				};
-				const problemMatcher = ['$sqlproj'];
-				const execution: vscode.ShellExecution = new vscode.ShellExecution(`echo '${projectItem.project.projectFileName}'`);
-				return [
-					new vscode.Task(type, vscode.TaskScope.Workspace,
-						'Build', 'Database Projects', execution, problemMatcher)
-				];
-			} else {
-				return undefined;
-			}
-		});
-		return undefined;
+		let tasks: vscode.Task[] = [];
+		for (const project of this.projectsController.projects) {
+			const type: SqlProjTaskDefinition = {
+				type: SqlDatabaseProjectTasksProvider.SqlProjType,
+				task: 'Build',
+				projectFileName: project.projectFileName
+			};
+
+			const execution: vscode.ShellExecution = new vscode.ShellExecution(`echo ${project.projectFileName}`);
+			const task = new vscode.Task(type, vscode.TaskScope.Workspace,
+				`Build ${project.projectFileName}`, 'SQL Database Projects', execution);
+			task.group = vscode.TaskGroup.Build;
+			tasks.push(task);
+		}
+		return tasks;
 	}
 
 	public resolveTask(task: vscode.Task, cancellationToken?: vscode.CancellationToken): vscode.ProviderResult<vscode.Task> {
-		const databaseProjectTask = task.definition.task;
-		if (task) {
-			const definition: SqlProjTaskDefinition = <any>task.definition;
-			return new vscode.Task(definition, definition.task, 'sqlproj', new vscode.ShellExecution(`echo "test`));
-		} else {
-			return undefined;
-		}
+		// const databaseProjectTask = task.definition.task;
+		// if (task) {
+		// 	const definition: SqlProjTaskDefinition = <any>task.definition;
+		// 	return new vscode.Task(definition, definition.task, 'sqlproj', new vscode.ShellExecution(`echo 'test'`));
+		// } else {
+		// 	return undefined;
+		// }
+		return task;
+	}
+}
+
+class SqlDatabaseProjectBuildTask extends vscode.Task {
+
+	static readonly taskType: string = 'Build';
+	private projectsController: ProjectsController;
+
+	constructor(
+		projectsController: ProjectsController,
+		projectFileName: string
+	) {
+		const type: SqlProjTaskDefinition = {
+			type: SqlDatabaseProjectTasksProvider.SqlProjType,
+			task: SqlDatabaseProjectBuildTask.taskType,
+			projectFileName: projectFileName
+		};
+		super(type, vscode.TaskScope.Workspace, `${SqlDatabaseProjectBuildTask.taskType}: ${projectFileName}`,
+			'SQL Database Projects');
+		this.projectsController = projectsController;
+		this.group = vscode.TaskGroup.Build;
+		const project = this.projectsController.projectMap.get(projectFileName);
 	}
 }
