@@ -11,17 +11,20 @@ import { apiService } from '../../../services/apiService';
 import { azureResource } from 'azureResource';
 
 export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
-
-
+	// <- means depends on
+	//dropdown for azure accounts
 	private _azureAccountsDropdown!: azdata.DropDownComponent;
 	private _azureAccountsLoader!: azdata.LoadingComponent;
 
+	//dropdown for subscription accounts <- azure account dropdown
 	private _azureSubscriptionsDropdown!: azdata.DropDownComponent;
 	private _azureSubscriptionLoader!: azdata.LoadingComponent;
 
+	//dropdown for resource groups <- subscription dropdown
 	private _resourceGroupDropdown!: azdata.DropDownComponent;
 	private _resourceGroupLoader!: azdata.LoadingComponent;
 
+	//dropdown for azure regions <- subscription dropdown
 	private _azureRegionsDropdown!: azdata.DropDownComponent;
 	private _azureRegionsLoader!: azdata.LoadingComponent;
 
@@ -42,11 +45,11 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 	public async initialize() {
 		this.pageObject.registerContent(async (view: azdata.ModelView) => {
-
-			this.createAzureAccountsDropdown(view);
-			this.createAzureSubscriptionsDropdown(view);
-			this.createResourceDropdown(view);
-			this.createAzureRegionsDropdown(view);
+			await this.createAzureAccountsDropdown(view);
+			await this.createAzureSubscriptionsDropdown(view);
+			await this.createResourceDropdown(view);
+			await this.createAzureRegionsDropdown(view);
+			this.populateAzureAccountsDropdown();
 
 			this._form = view.modelBuilder.formContainer()
 				.withFormItems(
@@ -101,10 +104,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 			this.wizard.model.securityToken = await azdata.accounts.getSecurityToken(this.wizard.model.azureAccount);
 			this.populateAzureSubscriptionsDropdown();
 		});
-
 		this._azureAccountsLoader = view.modelBuilder.loadingComponent().withItem(this._azureAccountsDropdown).component();
-
-		await this.populateAzureAccountsDropdown();
 	}
 
 	private async populateAzureAccountsDropdown() {
@@ -237,9 +237,8 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 	}
 
 	private async populateAzureRegionsDropdown() {
-
 		this._azureRegionsLoader.loading = true;
-		let url = 'https://management.azure.com/subscriptions/' + this.wizard.model.azureSubscription + '/locations?api-version=2020-01-01';
+		let url = `https://management.azure.com/subscriptions/${this.wizard.model.azureSubscription}/locations?api-version=2020-01-01`;
 		const response = await this.wizard.getRequest(url);
 		this._azureRegionsDropdown.updateProperties({
 			values: response.data.value.map((value: any) => {
