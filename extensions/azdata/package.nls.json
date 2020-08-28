@@ -1,4 +1,4 @@
 {
 	"azdata.displayName": "azdata",
-	"azdata.description": "Support for azdata"
+	"azdata.description": "Support for Azure Data CLI. See https://docs.microsoft.com/cli/azure/?view=azure-cli-latest for more information."
 }
