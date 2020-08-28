@@ -37,7 +37,7 @@ export class AzdataTool extends ToolBase {
 	}
 
 	get displayName(): string {
-		return localize('resourceDeployment.AzdataDisplayName', "azdata");
+		return localize('resourceDeployment.AzdataDisplayName', "Azure Data CLI");
 	}
 
 	get homePage(): string {
