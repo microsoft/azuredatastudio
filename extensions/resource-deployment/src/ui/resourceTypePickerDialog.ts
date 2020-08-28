@@ -94,7 +94,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			this._agreementContainer = view.modelBuilder.divContainer().component();
 			const toolColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolNameColumnHeader', "Tool"),
-				width: 55
+				width: 80
 			};
 			const descriptionColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolDescriptionColumnHeader', "Description"),
