@@ -5,6 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import { v4 as uuid } from 'uuid';
 import { Deferred } from '../../common/promise';
 import * as loc from '../../localizedConstants';
 import { ControllerInfo, ControllerModel } from '../../models/controllerModel';
@@ -23,11 +24,14 @@ export class ConnectToControllerDialog extends InitializingComponent {
 
 	private _completionPromise = new Deferred<ConnectToControllerDialogModel | undefined>();
 
+	private _id!: string;
+
 	constructor(private _treeDataProvider: AzureArcTreeDataProvider) {
 		super();
 	}
 
 	public showDialog(controllerInfo?: ControllerInfo, password?: string): azdata.window.Dialog {
+		this._id = controllerInfo?.id ?? uuid();
 		const dialog = azdata.window.createModelViewDialog(loc.connectToController);
 		dialog.cancelButton.onClick(() => this.handleCancel());
 		dialog.registerContent(async view => {
@@ -115,6 +119,7 @@ export class ConnectToControllerDialog extends InitializingComponent {
 			url = `${url}:30080`;
 		}
 		const controllerInfo: ControllerInfo = {
+			id: this._id,
 			url: url,
 			name: this.nameInputBox.value ?? '',
 			username: this.usernameInputBox.value,
