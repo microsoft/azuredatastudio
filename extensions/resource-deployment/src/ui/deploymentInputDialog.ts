@@ -13,6 +13,7 @@ import { IPlatformService } from '../services/platformService';
 import { DialogBase } from './dialogBase';
 import { Model } from './model';
 import { initializeDialog, InputComponentInfo, InputComponents, setModelValues, Validator } from './modelViewUtils';
+import { IToolsService } from '../services/toolsService';
 
 const localize = nls.loadMessageBundle();
 
@@ -22,6 +23,7 @@ export class DeploymentInputDialog extends DialogBase {
 
 	constructor(private notebookService: INotebookService,
 		private platformService: IPlatformService,
+		private toolsService: IToolsService,
 		private dialogInfo: DialogInfo) {
 		super(dialogInfo.title, dialogInfo.name, false);
 		let okButtonText: string;
@@ -51,7 +53,8 @@ export class DeploymentInputDialog extends DialogBase {
 			},
 			onNewValidatorCreated: (validator: Validator): void => {
 				validators.push(validator);
-			}
+			},
+			toolsService: this.toolsService
 		});
 		this._dialogObject.registerCloseValidator(() => {
 			const messages: string[] = [];

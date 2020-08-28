@@ -5,11 +5,12 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
+import * as utils from '../../common/utils';
 import { BaseProjectTreeItem } from './baseTreeItem';
 import { ProjectRootTreeItem } from './projectTreeItem';
 import { Project } from '../project';
 import { DatabaseProjectItemType } from '../../common/constants';
-import * as utils from '../../common/utils';
+import { IconPathHelper } from '../../common/iconHelper';
 
 /**
  * Node representing a folder in a project
@@ -30,6 +31,8 @@ export class FolderNode extends BaseProjectTreeItem {
 	public get treeItem(): vscode.TreeItem {
 		const folderItem = new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.Collapsed);
 		folderItem.contextValue = DatabaseProjectItemType.folder;
+		folderItem.iconPath = IconPathHelper.folder;
+
 		return folderItem;
 	}
 

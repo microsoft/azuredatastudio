@@ -284,6 +284,7 @@ export enum FieldType {
 	AzureLocations = 'azure_locations',
 	FilePicker = 'file_picker',
 	KubeClusterContextPicker = 'kube_cluster_context_picker',
+	KubeStorageClass = 'kube_storage_class'
 }
 
 export enum OptionsType {
