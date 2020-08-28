@@ -357,7 +357,7 @@ async function discoverLatestStableAzdataVersionDarwin(): Promise<SemVer> {
 		throw Error(`failed to parse the JSON contents output of: 'brew info azdata-cli --json', text being parsed: '${brewInfoOutput}', error:${getErrorMessage(e)}`);
 	}
 	const azdataPackageVersionInfo: AzdataDarwinPackageVersionInfo = brewInfoAzdataCliJson.shift();
-	Logger.log(loc.foundAzdataVersionToUpgradeTo(azdataPackageVersionInfo.versions.stable));
+	Logger.log(loc.latestAzdataVersionAvailable(azdataPackageVersionInfo.versions.stable));
 	return new SemVer(azdataPackageVersionInfo.versions.stable);
 }
 
@@ -373,6 +373,6 @@ async function discoverLatestStableAzdataVersionDarwin(): Promise<SemVer> {
 // 	const packageName = output.split('\n')[1].split(' ')[1];
 // 	// the version string is the first part of the package sting before '~'
 // 	const version = packageName.split('~')[0];
-// 	Logger.log(loc.foundAzdataVersionToUpgradeTo(version));
+// 	Logger.log(loc.latestAzdataVersionAvailable(version));
 // 	return new SemVer(version);
 // }
