@@ -7,7 +7,7 @@ import * as azdataExt from 'azdata-ext';
 import * as os from 'os';
 import { SemVer } from 'semver';
 import * as vscode from 'vscode';
-import { executeCommand, executeSudoCommand, ExitCodeError } from './common/childProcess';
+import { executeCommand, executeSudoCommand, ExitCodeError, ProcessOutput } from './common/childProcess';
 import { HttpClient } from './common/httpClient';
 import Logger from './common/logger';
 import { getErrorMessage, searchForCmd } from './common/utils';
@@ -108,23 +108,19 @@ export class AzdataTool implements IAzdataTool {
 	 * It also updates the cachedVersion property based on the return value from the tool.
 	 */
 	public async version(): Promise<azdataExt.AzdataOutput<string>> {
-		const output = await executeCommand(`"${this.path}"`, ['--version']);
+		const output = await executeAzdataCommand(`"${this.path}"`, ['--version']);
 		this.cachedVersion = new SemVer(parseVersion(output.stdout));
 		return {
 			logs: [],
 			stdout: output.stdout.split(os.EOL),
 			stderr: output.stderr.split(os.EOL),
-			result: ''
+			result: output.stdout
 		};
 	}
 
 	public async executeCommand<R>(args: string[], additionalEnvVars?: { [key: string]: string }): Promise<azdataExt.AzdataOutput<R>> {
-		const debug = vscode.workspace.getConfiguration(azdataConfigSection).get(debugConfigKey);
-		if (debug) {
-			args.push('--debug');
-		}
 		try {
-			const output = JSON.parse((await executeCommand(`"${this.path}"`, args.concat(['--output', 'json']), additionalEnvVars)).stdout);
+			const output = JSON.parse((await executeAzdataCommand(`"${this.path}"`, args.concat(['--output', 'json']), additionalEnvVars)).stdout);
 			return {
 				logs: <string[]>output.log,
 				stdout: <string[]>output.stdout,
@@ -291,7 +287,7 @@ async function installAzdataLinux(): Promise<void> {
 async function findSpecificAzdata(): Promise<IAzdataTool> {
 	const promise = ((process.platform === 'win32') ? searchForCmd('azdata.cmd') : searchForCmd('azdata'));
 	const path = `"${await promise}"`; // throws if azdata is not found
-	const versionOutput = await executeCommand(`${path}`, ['--version']);
+	const versionOutput = await executeAzdataCommand(path, ['--version']);
 	return new AzdataTool(path, parseVersion(versionOutput.stdout));
 }
 
@@ -357,6 +353,15 @@ async function discoverLatestStableAzdataVersionDarwin(): Promise<SemVer> {
 	const azdataPackageVersionInfo: AzdataDarwinPackageVersionInfo = brewInfoAzdataCliJson.shift();
 	Logger.log(loc.foundAzdataVersionToUpgradeTo(azdataPackageVersionInfo.versions.stable));
 	return new SemVer(azdataPackageVersionInfo.versions.stable);
+}
+
+async function executeAzdataCommand(command: string, args: string[], additionalEnvVars: { [key: string]: string } = {}): Promise<ProcessOutput> {
+	additionalEnvVars = Object.assign(additionalEnvVars, { 'ACCEPT_EULA': 'yes' });
+	const debug = vscode.workspace.getConfiguration(azdataConfigSection).get(debugConfigKey);
+	if (debug) {
+		args.push('--debug');
+	}
+	return executeCommand(command, args, additionalEnvVars);
 }
 
 /**
