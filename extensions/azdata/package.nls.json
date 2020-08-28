@@ -1,4 +1,6 @@
 {
 	"azdata.displayName": "azdata",
-	"azdata.description": "Support for azdata"
+	"azdata.description": "Support for azdata",
+	"azdata.config.title": "azdata Configuration",
+	"azdata.config.debug": "Log debug info to the output channel for all executed azdata commands"
 }
