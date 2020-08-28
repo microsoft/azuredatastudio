@@ -128,11 +128,18 @@ export class AzdataTool implements IAzdataTool {
 				result: <R>output.result
 			};
 		} catch (err) {
-			// Since the output is JSON we need to do some extra parsing here to get the correct stderr out.
-			// The actual value we get is something like ERROR: { stderr: '...' } so we also need to trim
-			// off the start that isn't a valid JSON blob
+
 			if (err instanceof ExitCodeError) {
-				err.stderr = JSON.parse(err.stderr.substring(err.stderr.indexOf('{'))).stderr;
+				try {
+					// For azdata internal errors the output is JSON and so we need to do some extra parsing here
+					// to get the correct stderr out. The actual value we get is something like
+					// ERROR: { stderr: '...' }
+					// so we also need to trim off the start that isn't a valid JSON blob
+					err.stderr = JSON.parse(err.stderr.substring(err.stderr.indexOf('{'))).stderr;
+				} catch (err) {
+					// no op - it means this was probably some other generic error (such as command not being found)
+				}
+
 			}
 			throw err;
 		}
@@ -285,9 +292,8 @@ async function installAzdataLinux(): Promise<void> {
 /**
  */
 async function findSpecificAzdata(): Promise<IAzdataTool> {
-	const promise = ((process.platform === 'win32') ? searchForCmd('azdata.cmd') : searchForCmd('azdata'));
-	const path = `"${await promise}"`; // throws if azdata is not found
-	const versionOutput = await executeAzdataCommand(path, ['--version']);
+	const path = await ((process.platform === 'win32') ? searchForCmd('azdata.cmd') : searchForCmd('azdata'));
+	const versionOutput = await executeAzdataCommand(`"${path}"`, ['--version']);
 	return new AzdataTool(path, parseVersion(versionOutput.stdout));
 }
 
