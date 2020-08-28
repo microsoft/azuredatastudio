@@ -13,6 +13,7 @@ import { AzureSQLVMWizardInfo } from '../../interfaces';
 import { AzureSettingsPage } from './pages/azureSettingsPage';
 import { VmSettingsPage } from './pages/vmSettingsPage';
 import axios, { AxiosRequestConfig } from 'axios';
+import { NetworkSettingsPage } from './pages/networkSettingsPage';
 
 export class DeployAzureSQLVMWizard extends WizardBase<DeployAzureSQLVMWizard, WizardPageBase<DeployAzureSQLVMWizard>, DeployAzureSQLVMWizardModel> {
 
@@ -49,14 +50,14 @@ export class DeployAzureSQLVMWizard extends WizardBase<DeployAzureSQLVMWizard, W
 		const pages: WizardPageBase<DeployAzureSQLVMWizard>[] = [];
 		pages.push(new AzureSettingsPage(this));
 		pages.push(new VmSettingsPage(this));
-		// pages.push(new StorageSettingsPage(this));
-		// pages.push(new AdministratorSettingsPage(this));
+		pages.push(new NetworkSettingsPage(this));
+		//pages.push(new StorageSettingsPage(this));
 		return pages;
 	}
 
 	private async scriptToNotebook(): Promise<void> {
 		this.setEnvironmentVariables(process.env);
-		const variableValueStatements = this.model.getCodeCellContentForNotebook(this._toolsService.toolsForCurrentProvider);
+		const variableValueStatements = this.model.getCodeCellContentForNotebook();
 		const insertionPosition = 5; // Cell number 5 is the position where the python variable setting statements need to be inserted in this.wizardInfo.notebook.
 		try {
 			await this.notebookService.launchNotebookWithEdits(this.wizardInfo.notebook, variableValueStatements, insertionPosition);
@@ -66,7 +67,7 @@ export class DeployAzureSQLVMWizard extends WizardBase<DeployAzureSQLVMWizard, W
 	}
 
 	private setEnvironmentVariables(env: NodeJS.ProcessEnv): void {
-		// env[VariableNames.AdminPassword_VariableName] = this.model.getStringValue(VariableNames.AdminPassword_VariableName);
+		env['AZDATA_NB_VAR_AZURE_SQLVM_PASSWORD'] = this.model.vmPassword;
 		// env[VariableNames.DockerPassword_VariableName] = this.model.getStringValue(VariableNames.DockerPassword_VariableName);
 		// if (this.model.authenticationMode === AuthenticationMode.ActiveDirectory) {
 		// 	env[VariableNames.DomainServiceAccountPassword_VariableName] = this.model.getStringValue(VariableNames.DomainServiceAccountPassword_VariableName);
