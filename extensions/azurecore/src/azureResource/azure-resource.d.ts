@@ -40,10 +40,6 @@ declare module 'azureResource' {
 			location: string;
 		}
 
-		export interface AzureSqlManagedInstanceResource extends AzureGraphResource {
-
-		}
-
 		export interface AzureResourceResourceGroup extends AzureResource {
 		}
 
