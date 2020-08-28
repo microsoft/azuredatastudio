@@ -128,7 +128,8 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 						this.inputComponents[name] = { component: inputComponentInfo.component };
 					},
 					onNewValidatorCreated: (validator: Validator): void => {
-					}
+					},
+					toolsService: this.wizard.toolsService
 				});
 			};
 			const scaleSection = await createSectionFunc(scaleSectionInfo);
