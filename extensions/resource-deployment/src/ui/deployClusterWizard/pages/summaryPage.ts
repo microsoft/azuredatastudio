@@ -296,7 +296,8 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 					view: this.view,
 					onNewDisposableCreated: () => { },
 					onNewInputComponentCreated: () => { },
-					onNewValidatorCreated: () => { }
+					onNewValidatorCreated: () => { },
+					toolsService: this.wizard.toolsService
 				})
 			};
 		};
