@@ -286,7 +286,7 @@ async function installAzdataLinux(): Promise<void> {
 async function findSpecificAzdata(): Promise<IAzdataTool> {
 	const promise = ((process.platform === 'win32') ? searchForCmd('azdata.cmd') : searchForCmd('azdata'));
 	const path = `"${await promise}"`; // throws if azdata is not found
-	const versionOutput = await executeCommand(`"${path}"`, ['--version']);
+	const versionOutput = await executeCommand(`${path}`, ['--version']);
 	return new AzdataTool(path, parseVersion(versionOutput.stdout));
 }
 
