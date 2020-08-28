@@ -57,7 +57,7 @@ describe('azdata', function () {
 
 	describe('installAzdata', function (): void {
 		beforeEach(function (): void {
-			sinon.stub(vscode.window, 'showWarningMessage').returns(Promise.resolve(<any>loc.yes));
+			sinon.stub(vscode.window, 'showErrorMessage').returns(Promise.resolve(<any>loc.yes));
 		});
 
 		it('successful install', async function (): Promise<void> {
@@ -233,7 +233,7 @@ async function testDarwinSuccessfulInstall() {
 		return { stdout: 'success', stderr: '' };
 	});
 	await azdata.checkAndInstallAzdata();
-	should(executeCommandStub.calledThrice).be.true();
+	should(executeCommandStub.callCount).be.equal(4);
 }
 
 async function testLinuxSuccessfulInstall() {
@@ -241,19 +241,19 @@ async function testLinuxSuccessfulInstall() {
 	const executeSudoCommandStub = sinon.stub(childProcess, 'executeSudoCommand').returns(Promise.resolve({ stdout: 'success', stderr: '' }));
 	await azdata.checkAndInstallAzdata();
 	should(executeSudoCommandStub.callCount).be.equal(6);
-	should(executeCommandStub.calledOnce).be.true();
+	should(executeCommandStub.calledTwice).be.true();
 }
 
 async function testLinuxUnsuccessfulInstall() {
 	const executeSudoCommandStub = sinon.stub(childProcess, 'executeSudoCommand').rejects();
-	const downloadPromise = azdata.checkAndInstallAzdata();
+	const downloadPromise = azdata.installAzdata();
 	await should(downloadPromise).be.rejected();
 	should(executeSudoCommandStub.calledOnce).be.true();
 }
 
 async function testDarwinUnsuccessfulInstall() {
 	const executeCommandStub = sinon.stub(childProcess, 'executeCommand').rejects();
-	const downloadPromise = azdata.checkAndInstallAzdata();
+	const downloadPromise = azdata.installAzdata();
 	await should(downloadPromise).be.rejected();
 	should(executeCommandStub.calledOnce).be.true();
 }
@@ -261,7 +261,7 @@ async function testDarwinUnsuccessfulInstall() {
 async function testWin32UnsuccessfulInstall() {
 	const executeCommandStub = sinon.stub(childProcess, 'executeCommand').rejects();
 	sinon.stub(HttpClient, 'downloadFile').returns(Promise.resolve(__filename));
-	const downloadPromise = azdata.checkAndInstallAzdata();
+	const downloadPromise = azdata.installAzdata();
 	await should(downloadPromise).be.rejected();
 	should(executeCommandStub.calledOnce).be.true();
 }

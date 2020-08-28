@@ -186,7 +186,6 @@ export async function installAzdata(): Promise<void> {
 			default:
 				throw new Error(loc.platformUnsupported(process.platform));
 		}
-		Logger.log(loc.azdataInstalled);
 	} finally {
 		statusDisposable.dispose();
 	}
@@ -213,7 +212,6 @@ export async function upgradeAzdata(): Promise<void> {
 			default:
 				throw new Error(loc.platformUnsupported(process.platform));
 		}
-		Logger.log(loc.azdataUpgraded);
 	} finally {
 		statusDisposable.dispose();
 	}
@@ -225,18 +223,9 @@ export async function upgradeAzdata(): Promise<void> {
  */
 export async function checkAndInstallAzdata(userRequested: boolean = false): Promise<IAzdataTool | undefined> {
 	try {
-		const azdata = await findAzdata(); // find currently installed Azdata
-		// Don't block on this since we want the extension to finish activating without needing user input
-		checkAndUpgradeAzdata(azdata, userRequested).catch(err => {
-			//update if one is available and user wants it.
-			vscode.window.showWarningMessage(loc.updateError(err));
-			Logger.log(loc.updateError(err));
-		}).then(() => {
-			return findAzdata(); // now again find and return the currently installed azdata
-		});
+		return await findAzdata(); // find currently installed Azdata
 	} catch (err) {
-		// Don't block on this since we want the extension to finish activating without needing user input.
-		// Calls will be made to handle azdata not being installed
+		// Calls will be made to handle azdata not being installed if user declines to install on the prompt
 		await promptToInstallAzdata(userRequested).catch(e => console.log(`Unexpected error prompting to install azdata ${e}`));
 	}
 	return undefined;
