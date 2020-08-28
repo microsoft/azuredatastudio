@@ -681,7 +681,7 @@ export class DacpacReferenceProjectEntry extends ProjectEntry implements IDataba
 	}
 
 	/**
-	 * this is the file name that gets displayed in the project tree
+	 * File name that gets displayed in the project tree
 	 */
 	public get databaseName(): string {
 		return path.parse(utils.getPlatformSafeFileEntryPath(this.fsUri.fsPath)).name;
@@ -694,7 +694,7 @@ class SystemDatabaseReferenceProjectEntry extends ProjectEntry implements IDatab
 	}
 
 	/**
-	 * this is the file name that gets displayed in the project tree
+	 * File name that gets displayed in the project tree
 	 */
 	public get databaseName(): string {
 		return path.parse(utils.getPlatformSafeFileEntryPath(this.fsUri.fsPath)).name;

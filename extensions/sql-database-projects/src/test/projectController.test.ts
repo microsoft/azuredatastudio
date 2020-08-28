@@ -519,7 +519,6 @@ describe('ProjectsController', function (): void {
 
 			should(holler).equal(addDbRefHoller, 'executionCallback() is supposed to have been setup and called for add database reference scenario');
 		});
-
 	});
 });
 
@@ -583,7 +582,6 @@ describe.skip('ProjectsController: round trip feature with SSDT', function (): v
 		should(project.importedTargets.length).equal(3); // additional target added by updateProjectForRoundTrip method
 	});
 });
-
 
 
 async function setupDeleteExcludeTest(proj: Project): Promise<[ProjectEntry, ProjectRootTreeItem]> {
