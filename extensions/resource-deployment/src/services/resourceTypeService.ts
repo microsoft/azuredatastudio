@@ -250,7 +250,7 @@ export class ResourceTypeService implements IResourceTypeService {
 			const wizard = new NotebookWizard(provider.notebookWizard, this.notebookService, this.platformService, this.toolsService);
 			wizard.open();
 		} else if (instanceOfDialogDeploymentProvider(provider)) {
-			const dialog = new DeploymentInputDialog(this.notebookService, this.platformService, provider.dialog);
+			const dialog = new DeploymentInputDialog(this.notebookService, this.platformService, this.toolsService, provider.dialog);
 			dialog.open();
 		} else if (instanceOfNotebookDeploymentProvider(provider)) {
 			this.notebookService.launchNotebook(provider.notebook);
