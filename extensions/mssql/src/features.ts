@@ -932,7 +932,6 @@ export class ProfilerFeature extends SqlOpsFeature<undefined> {
 	}
 
 	public fillClientCapabilities(capabilities: ClientCapabilities): void {
-		//Utils.ensure(Utils.ensure(capabilities, 'connection')!, 'profiler')!.dynamicRegistration = true;
 	}
 
 	public initialize(capabilities: ServerCapabilities): void {
