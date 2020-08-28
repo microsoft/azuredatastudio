@@ -468,7 +468,12 @@ export class PublishDatabaseDialog {
 			if (connection.options['connectionName']) {
 				connectionTextboxValue = connection.options['connectionName'];
 			} else {
-				connectionTextboxValue = `${connection.options['server']} (${connection.options['user']})`;
+				let user = connection.options['user'];
+				if (!user) {
+					user = constants.defaultUser;
+				}
+
+				connectionTextboxValue = `${connection.options['server']} (${user})`;
 			}
 
 			this.updateConnectionComponents(connectionTextboxValue, this.connectionId);
