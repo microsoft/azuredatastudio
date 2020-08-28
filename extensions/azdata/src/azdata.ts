@@ -234,7 +234,7 @@ export async function checkAndUpgradeAzdata(currentAzdata: IAzdataTool | undefin
 				return true;
 			}
 		} else {
-			Logger.log(loc.currentlyInstalledVersionIsLatest(newVersion.raw, currentAzdata.cachedVersion.raw));
+			Logger.log(loc.currentlyInstalledVersionIsLatest(currentAzdata.cachedVersion.raw));
 		}
 	} else {
 		Logger.log(loc.upgradeCheckSkipped);
