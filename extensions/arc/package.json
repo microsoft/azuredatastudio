@@ -603,6 +603,20 @@
                           "confirmationLabel": "%arc.confirm.password%",
                           "defaultValue": "",
                           "required": true
+                        },
+                        {
+                          "label": "%arc.sql.storage-class.data.label%",
+                          "description": "%arc.sql.storage-class.data.description%",
+                          "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_DATA",
+                          "type": "kube_storage_class",
+                          "required": true
+                        },
+                        {
+                          "label": "%arc.sql.storage-class.logs.label%",
+                          "description": "%arc.sql.storage-class.logs.description%",
+                          "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_LOGS",
+                          "type": "kube_storage_class",
+                          "required": true
                         }
                       ]
                     }

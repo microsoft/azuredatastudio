@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { WizardPageBase } from './wizardPageBase';
 import { Model } from './model';
+import { IToolsService } from '../services/toolsService';
 const localize = nls.loadMessageBundle();
 
 export abstract class WizardBase<T, P extends WizardPageBase<T>, M extends Model> {
@@ -20,7 +21,7 @@ export abstract class WizardBase<T, P extends WizardPageBase<T>, M extends Model
 		return this._model;
 	}
 
-	constructor(private title: string, private _model: M) {
+	constructor(private title: string, private _model: M, public toolsService: IToolsService) {
 		this.wizardObject = azdata.window.createWizard(title);
 	}
 
