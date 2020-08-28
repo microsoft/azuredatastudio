@@ -11,6 +11,10 @@
     "azdata": ">=1.22.0"
   },
   "main": "./out/main",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/azuredatastudio.git"
+  },
   "typings": "./src/kusto",
   "scripts": {
     "compile": "gulp compile-extension:kusto-client",
