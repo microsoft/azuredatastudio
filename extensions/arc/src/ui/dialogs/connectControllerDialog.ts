@@ -121,7 +121,7 @@ export class ConnectToControllerDialog extends InitializingComponent {
 			rememberPassword: this.rememberPwCheckBox.checked ?? false,
 			resources: []
 		};
-		const controllerModel = new ControllerModel(this._treeDataProvider, controllerInfo);
+		const controllerModel = new ControllerModel(this._treeDataProvider, controllerInfo, this.passwordInputBox.value);
 		try {
 			// Validate that we can connect to the controller, this also populates the controllerRegistration from the connection response.
 			await controllerModel.refresh(false);
