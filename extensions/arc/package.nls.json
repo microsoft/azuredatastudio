@@ -9,6 +9,7 @@
 	"command.connectToController.title": "Connect to Existing Azure Arc Controller",
 	"command.removeController.title": "Remove Controller",
 	"command.refresh.title": "Refresh",
+	"command.editConnection.title": "Edit Connection",
 	"arc.openDashboard": "Manage",
 
 	"resource.type.azure.arc.display.name": "Azure Arc data controller",
