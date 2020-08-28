@@ -13,3 +13,11 @@ export function searchForCmd(exe: string): Promise<string> {
 	// Note : This is separated out to allow for easy test stubbing
 	return new Promise<string>((resolve, reject) => which(exe, (err, path) => err ? reject(err) : resolve(path)));
 }
+
+/**
+ * Gets the message to display for a given error object that may be a variety of types.
+ * @param error The error object
+ */
+export function getErrorMessage(error: any): string {
+	return error.message ?? error;
+}

@@ -213,7 +213,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * @param params Include the uri, type of connection
 	 * @param model the existing connection profile to create a new one from
 	 */
-	public showConnectionDialog(params?: INewConnectionParams, options?: IConnectionCompletionOptions, model?: interfaces.IConnectionProfile, connectionResult?: IConnectionResult): Promise<void> {
+	public showConnectionDialog(params?: INewConnectionParams, options?: IConnectionCompletionOptions, model?: Partial<interfaces.IConnectionProfile>, connectionResult?: IConnectionResult): Promise<void> {
 		if (!params) {
 			params = { connectionType: ConnectionType.default };
 		}

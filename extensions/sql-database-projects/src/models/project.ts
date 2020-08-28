@@ -9,6 +9,7 @@ import * as constants from '../common/constants';
 import * as utils from '../common/utils';
 import * as xmlFormat from 'xml-formatter';
 import * as os from 'os';
+import * as templates from '../templates/templates';
 
 import { Uri, window } from 'vscode';
 import { promises as fs } from 'fs';
@@ -221,7 +222,7 @@ export class Project {
 	 * @param relativeFilePath Relative path of the file
 	 * @param contents Contents to be written to the new file
 	 */
-	public async addScriptItem(relativeFilePath: string, contents?: string): Promise<ProjectEntry> {
+	public async addScriptItem(relativeFilePath: string, contents?: string, itemType?: string): Promise<ProjectEntry> {
 		const absoluteFilePath = path.join(this.projectFolderPath, relativeFilePath);
 
 		if (contents) {
@@ -236,9 +237,23 @@ export class Project {
 		}
 
 		const fileEntry = this.createProjectEntry(relativeFilePath, EntryType.File);
-		this.files.push(fileEntry);
 
-		await this.addToProjFile(fileEntry);
+		let xmlTag;
+		switch (itemType) {
+			case templates.preDeployScript:
+				xmlTag = constants.PreDeploy;
+				this.preDeployScripts.push(fileEntry);
+				break;
+			case templates.postDeployScript:
+				xmlTag = constants.PostDeploy;
+				this.postDeployScripts.push(fileEntry);
+				break;
+			default:
+				xmlTag = constants.Build;
+				this.files.push(fileEntry);
+		}
+
+		await this.addToProjFile(fileEntry, xmlTag);
 
 		return fileEntry;
 	}
@@ -339,7 +354,7 @@ export class Project {
 		return new ProjectEntry(Uri.file(path.join(this.projectFolderPath, platformSafeRelativePath)), relativePath, entryType);
 	}
 
-	private findOrCreateItemGroup(containedTag?: string): any {
+	private findOrCreateItemGroup(containedTag?: string, prePostScriptExist?: { scriptExist: boolean; }): any {
 		let outputItemGroup = undefined;
 
 		// search for a particular item goup if a child type is provided
@@ -360,16 +375,32 @@ export class Project {
 		if (!outputItemGroup) {
 			outputItemGroup = this.projFileXmlDoc.createElement(constants.ItemGroup);
 			this.projFileXmlDoc.documentElement.appendChild(outputItemGroup);
+			if (prePostScriptExist) {
+				prePostScriptExist.scriptExist = false;
+			}
 		}
 
 		return outputItemGroup;
 	}
 
-	private addFileToProjFile(path: string) {
-		const newFileNode = this.projFileXmlDoc.createElement(constants.Build);
-		newFileNode.setAttribute(constants.Include, utils.convertSlashesForSqlProj(path));
+	private addFileToProjFile(path: string, xmlTag: string) {
+		let itemGroup;
 
-		this.findOrCreateItemGroup(constants.Build).appendChild(newFileNode);
+		if (xmlTag === constants.PreDeploy || xmlTag === constants.PostDeploy) {
+			let prePostScriptExist = { scriptExist: true };
+			itemGroup = this.findOrCreateItemGroup(xmlTag, prePostScriptExist);
+			if (prePostScriptExist.scriptExist === true) {
+				window.showInformationMessage(constants.deployScriptExists(xmlTag));
+				xmlTag = constants.None;	// Add only one pre-deploy and post-deploy script. All additional ones get added in the same item group with None tag
+			}
+		}
+		else {
+			itemGroup = this.findOrCreateItemGroup(xmlTag);
+		}
+
+		const newFileNode = this.projFileXmlDoc.createElement(xmlTag);
+		newFileNode.setAttribute(constants.Include, utils.convertSlashesForSqlProj(path));
+		itemGroup.appendChild(newFileNode);
 	}
 
 	private removeFileFromProjFile(path: string) {
@@ -536,10 +567,10 @@ export class Project {
 		}
 	}
 
-	private async addToProjFile(entry: ProjectEntry) {
+	private async addToProjFile(entry: ProjectEntry, xmlTag?: string) {
 		switch (entry.type) {
 			case EntryType.File:
-				this.addFileToProjFile(entry.relativePath);
+				this.addFileToProjFile(entry.relativePath, xmlTag ? xmlTag : constants.Build);
 				break;
 			case EntryType.Folder:
 				this.addFolderToProjFile(entry.relativePath);

@@ -11,9 +11,10 @@ import * as path from 'path';
 import * as utils from '../common/utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as templates from '../templates/templates';
-
+import * as newProjectTool from '../tools/newProjectTool';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
+
 import { promises as fs } from 'fs';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { Project, ProjectEntry, reservedProjectFolders, SqlProjectReferenceProjectEntry } from '../models/project';
@@ -354,7 +355,7 @@ export class ProjectsController {
 				throw new Error(constants.fileAlreadyExists(path.parse(absoluteFilePath).name));
 			}
 
-			const newEntry = await project.addScriptItem(relativeFilePath, newFileText);
+			const newEntry = await project.addScriptItem(relativeFilePath, newFileText, itemType.type);
 
 			await vscode.commands.executeCommand(constants.vscodeOpenCommand, newEntry.fsUri);
 
@@ -522,7 +523,7 @@ export class ProjectsController {
 
 	private async promptForNewObjectName(itemType: templates.ProjectScriptType, _project: Project): Promise<string | undefined> {
 		// TODO: ask project for suggested name that doesn't conflict
-		const suggestedName = itemType.friendlyName.replace(new RegExp('\s', 'g'), '') + '1';
+		const suggestedName = itemType.friendlyName.replace(/\s+/g, '') + '1';
 
 		const itemObjectName = await vscode.window.showInputBox({
 			prompt: constants.newObjectNamePrompt(itemType.friendlyName),
@@ -553,6 +554,8 @@ export class ProjectsController {
 			let newProjFolderUri = (await this.getFolderLocation()).fsPath;
 			model.extractTarget = await this.getExtractTarget();
 			model.version = '1.0.0.0';
+
+			newProjectTool.updateSaveLocationSetting();
 
 			const newProjFilePath = await this.createNewProject(model.projName, vscode.Uri.file(newProjFolderUri), true);
 			model.filePath = path.dirname(newProjFilePath);
@@ -632,7 +635,7 @@ export class ProjectsController {
 	private async getProjectName(dbName: string): Promise<string> {
 		let projName = await vscode.window.showInputBox({
 			prompt: constants.newDatabaseProjectName,
-			value: `DatabaseProject${dbName}`
+			value: newProjectTool.defaultProjectNameFromDb(dbName)
 		});
 
 		projName = projName?.trim();
@@ -690,7 +693,7 @@ export class ProjectsController {
 			canSelectFolders: true,
 			canSelectMany: false,
 			openLabel: constants.selectString,
-			defaultUri: vscode.workspace.workspaceFolders ? (vscode.workspace.workspaceFolders as vscode.WorkspaceFolder[])[0].uri : undefined
+			defaultUri: newProjectTool.defaultProjectSaveLocation()
 		});
 
 		if (selectionResult) {
