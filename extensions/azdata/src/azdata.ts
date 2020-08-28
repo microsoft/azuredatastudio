@@ -228,19 +228,26 @@ export async function upgradeAzdata(): Promise<void> {
 /**
  * Checks whether a newer version of azdata is available - and if it is prompts the user to download and
  * install it.
- * @param currentAzdata The current version of azdata to check against
+ * @param currentAzdata The current version of azdata to check . This function  is a no-o if currentAzdata is undefined.
+ * returns true if an upgrade was performed and false otherwise.
  */
-export async function checkAndUpgradeAzdata(currentAzdata?: IAzdataTool): Promise<void> {
-	if (currentAzdata === undefined) {
-		currentAzdata = await findAzdata();
-	}
-	const newVersion = await discoverLatestAvailableAzdataVersion();
-	if (newVersion.compare(currentAzdata.cachedVersion) === 1) {
-		const response = await vscode.window.showInformationMessage(loc.promptForAzdataUpgrade(newVersion.raw), loc.yes, loc.no);
-		if (response === loc.yes) {
-			await upgradeAzdata();
+export async function checkAndUpgradeAzdata(currentAzdata: IAzdataTool | undefined): Promise<boolean> {
+	if (currentAzdata !== undefined) {
+		const newVersion = await discoverLatestAvailableAzdataVersion();
+		if (newVersion.compare(currentAzdata.cachedVersion) === 1) {
+			//update if available and user wants it.
+			const response = await vscode.window.showInformationMessage(loc.promptForAzdataUpgrade(newVersion.raw), loc.yes, loc.no);
+			if (response === loc.yes) {
+				await upgradeAzdata();
+				return true;
+			}
+		} else {
+			Logger.log(loc.currentlyInstalledVersionIsLatest(currentAzdata.cachedVersion.raw));
 		}
+	} else {
+		Logger.log(loc.upgradeCheckSkipped);
 	}
+	return false;
 }
 
 
@@ -327,7 +334,7 @@ async function discoverLatestAzdataVersionFromJson(): Promise<SemVer> {
 		throw Error(`failed to parse the JSON of contents at: ${azdataHostname}/${azdataReleaseJson}, text being parsed: '${fileContents}', error:${getErrorMessage(e)}`);
 	}
 	const version = azdataReleaseInfo[process.platform]['version'];
-	Logger.log(loc.foundAzdataVersionToUpgradeTo(version));
+	Logger.log(loc.latestAzdataVersionAvailable(version));
 	return new SemVer(version);
 }
 
@@ -357,7 +364,7 @@ async function discoverLatestStableAzdataVersionDarwin(): Promise<SemVer> {
 		throw Error(`failed to parse the JSON contents output of: 'brew info azdata-cli --json', text being parsed: '${brewInfoOutput}', error:${getErrorMessage(e)}`);
 	}
 	const azdataPackageVersionInfo: AzdataDarwinPackageVersionInfo = brewInfoAzdataCliJson.shift();
-	Logger.log(loc.foundAzdataVersionToUpgradeTo(azdataPackageVersionInfo.versions.stable));
+	Logger.log(loc.latestAzdataVersionAvailable(azdataPackageVersionInfo.versions.stable));
 	return new SemVer(azdataPackageVersionInfo.versions.stable);
 }
 
@@ -382,6 +389,6 @@ async function executeAzdataCommand(command: string, args: string[], additionalE
 // 	const packageName = output.split('\n')[1].split(' ')[1];
 // 	// the version string is the first part of the package sting before '~'
 // 	const version = packageName.split('~')[0];
-// 	Logger.log(loc.foundAzdataVersionToUpgradeTo(version));
+// 	Logger.log(loc.latestAzdataVersionAvailable(version));
 // 	return new SemVer(version);
 // }
