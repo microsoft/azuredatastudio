@@ -115,6 +115,11 @@ export interface ICodeActionContribution {
 	readonly actions: readonly ICodeActionContributionAction[];
 }
 
+export interface IAuthenticationContribution {
+	readonly id: string;
+	readonly label: string;
+}
+
 export interface IExtensionContributions {
 	commands?: ICommand[];
 	configuration?: IConfiguration | IConfiguration[];
@@ -133,6 +138,7 @@ export interface IExtensionContributions {
 	localizations?: ILocalization[];
 	readonly customEditors?: readonly IWebviewEditor[];
 	readonly codeActions?: readonly ICodeActionContribution[];
+	authentication?: IAuthenticationContribution[];
 }
 
 export type ExtensionKind = 'ui' | 'workspace' | 'web';

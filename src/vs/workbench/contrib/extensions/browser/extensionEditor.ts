@@ -927,6 +927,7 @@ export class ExtensionEditor extends EditorPane {
 					this.renderLocalizations(content, manifest, layout),
 					renderDashboardContributions(content, manifest, layout), // {{SQL CARBON EDIT}}
 					this.renderCustomEditors(content, manifest, layout),
+					this.renderAuthentication(content, manifest, layout),
 				];
 
 				scrollableContent.scanDomNode();
@@ -1167,6 +1168,32 @@ export class ExtensionEditor extends EditorPane {
 						$('td', undefined, $('code', undefined, action.kind)),
 						$('td', undefined, action.description ?? ''),
 						$('td', undefined, ...action.languages.map(language => $('code', undefined, language)))))
+			)
+		);
+
+		append(container, details);
+		return true;
+	}
+
+	private renderAuthentication(container: HTMLElement, manifest: IExtensionManifest, onDetailsToggle: Function): boolean {
+		const authentication = manifest.contributes?.authentication || [];
+		if (!authentication.length) {
+			return false;
+		}
+
+		const details = $('details', { open: true, ontoggle: onDetailsToggle },
+			$('summary', { tabindex: '0' }, localize('authentication', "Authentication ({0})", authentication.length)),
+			$('table', undefined,
+				$('tr', undefined,
+					$('th', undefined, localize('authentication.label', "Label")),
+					$('th', undefined, localize('authentication.id', "Id"))
+				),
+				...authentication.map(action =>
+					$('tr', undefined,
+						$('td', undefined, action.label),
+						$('td', undefined, action.id)
+					)
+				)
 			)
 		);
 
