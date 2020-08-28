@@ -19,7 +19,7 @@ import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProje
 import { ProjectsController } from '../controllers/projectController';
 import { promises as fs } from 'fs';
 import { createContext, TestContext, mockDacFxResult } from './testContext';
-import { Project, SystemDatabase, ProjectEntry, reservedProjectFolders } from '../models/project';
+import { Project, reservedProjectFolders, SystemDatabase, FileProjectEntry } from '../models/project';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
 import { exists } from '../common/utils';
@@ -588,7 +588,7 @@ describe('ProjectsController', function (): void {
 });
 
 
-async function setupDeleteExcludeTest(proj: Project): Promise<[ProjectEntry, ProjectRootTreeItem]> {
+async function setupDeleteExcludeTest(proj: Project): Promise<[FileProjectEntry, ProjectRootTreeItem]> {
 	await proj.addFolderItem('UpperFolder');
 	await proj.addFolderItem('UpperFolder/LowerFolder');
 	const scriptEntry = await proj.addScriptItem('UpperFolder/LowerFolder/someScript.sql', 'not a real script');

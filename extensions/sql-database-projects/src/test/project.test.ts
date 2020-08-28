@@ -286,6 +286,31 @@ describe('Project: sqlproj content operations', function (): void {
 	});
 });
 
+describe('Project: add SQLCMD Variables', function (): void {
+	before(async function (): Promise<void> {
+		await baselines.loadBaselines();
+	});
+
+	it('Should update .sqlproj with new sqlcmd variables', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
+		const project = await Project.openProject(projFilePath);
+		should(Object.keys(project.sqlCmdVariables).length).equal(2);
+
+		// add a new variable
+		await project.addSqlCmdVariable('TestDatabaseName', 'TestDb');
+
+		// add a variable with the same name as an existing sqlcmd variable and the old entry should be replaced with the new one
+		await project.addSqlCmdVariable('ProdDatabaseName', 'NewProdName');
+
+		should(Object.keys(project.sqlCmdVariables).length).equal(3);
+		should(project.sqlCmdVariables['TestDatabaseName']).equal('TestDb');
+		should(project.sqlCmdVariables['ProdDatabaseName']).equal('NewProdName', 'ProdDatabaseName value should have been updated to the new value');
+
+		const projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText).equal(baselines.openSqlProjectWithAdditionalSqlCmdVariablesBaseline.trim());
+	});
+});
+
 describe('Project: round trip updates', function (): void {
 	before(async function (): Promise<void> {
 		await baselines.loadBaselines();
