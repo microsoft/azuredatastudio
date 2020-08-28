@@ -13,7 +13,6 @@ import { IconPathHelper, cssStyles, Endpoints, ResourceType } from '../../../con
 import { ControllerModel } from '../../../models/controllerModel';
 import { getDatabaseStateDisplayText, promptForResourceDeletion } from '../../../common/utils';
 import { MiaaModel } from '../../../models/miaaModel';
-import { timeStamp } from 'console';
 
 export class MiaaDashboardOverviewPage extends DashboardPage {
 
