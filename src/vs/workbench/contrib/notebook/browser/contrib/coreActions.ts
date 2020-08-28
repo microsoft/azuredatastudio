@@ -1554,7 +1554,7 @@ registerAction2(class extends NotebookCellAction {
 			title: localize('notebookActions.collapseCellInput', "Collapse Cell Input"),
 			keybinding: {
 				when: ContextKeyExpr.and(NOTEBOOK_CELL_LIST_FOCUSED, NOTEBOOK_CELL_INPUT_COLLAPSED.toNegated(), InputFocusedContext.toNegated()),
-				primary: KeyChord(KeyCode.KEY_C, KeyCode.KEY_C),
+				primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyCode.KEY_C),
 				weight: KeybindingWeight.WorkbenchContrib
 			},
 			menu: {
@@ -1577,7 +1577,7 @@ registerAction2(class extends NotebookCellAction {
 			title: localize('notebookActions.expandCellContent', "Expand Cell Content"),
 			keybinding: {
 				when: ContextKeyExpr.and(NOTEBOOK_CELL_LIST_FOCUSED, NOTEBOOK_CELL_INPUT_COLLAPSED),
-				primary: KeyChord(KeyCode.KEY_C, KeyCode.KEY_C),
+				primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyCode.KEY_C),
 				weight: KeybindingWeight.WorkbenchContrib
 			},
 			menu: {
@@ -1600,7 +1600,7 @@ registerAction2(class extends NotebookCellAction {
 			title: localize('notebookActions.collapseCellOutput', "Collapse Cell Output"),
 			keybinding: {
 				when: ContextKeyExpr.and(NOTEBOOK_CELL_LIST_FOCUSED, NOTEBOOK_CELL_OUTPUT_COLLAPSED.toNegated(), InputFocusedContext.toNegated(), NOTEBOOK_CELL_HAS_OUTPUTS),
-				primary: KeyChord(KeyCode.KEY_C, KeyCode.KEY_O),
+				primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyCode.KEY_T),
 				weight: KeybindingWeight.WorkbenchContrib
 			},
 			menu: {
@@ -1623,7 +1623,7 @@ registerAction2(class extends NotebookCellAction {
 			title: localize('notebookActions.expandCellOutput', "Expand Cell Output"),
 			keybinding: {
 				when: ContextKeyExpr.and(NOTEBOOK_CELL_LIST_FOCUSED, NOTEBOOK_CELL_OUTPUT_COLLAPSED),
-				primary: KeyChord(KeyCode.KEY_C, KeyCode.KEY_O),
+				primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyCode.KEY_T),
 				weight: KeybindingWeight.WorkbenchContrib
 			},
 			menu: {
