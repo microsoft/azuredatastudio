@@ -34,7 +34,7 @@ describe('Notebook URI Handler', function (): void {
 		nock.enableNetConnect();
 	});
 
-	it('should handle empty string null undefined gracefully', async function (): Promise<void> {
+	it('should handle empty string gracefully', async function (): Promise<void> {
 		await notebookUriHandler.handleUri(vscode.Uri.parse(''));
 		sinon.assert.calledOnce(showErrorMessageSpy);
 		sinon.assert.neverCalledWith(executeCommandSpy, constants.notebookCommandNew);
