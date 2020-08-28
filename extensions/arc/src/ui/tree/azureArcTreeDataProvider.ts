@@ -70,7 +70,7 @@ export class AzureArcTreeDataProvider implements vscode.TreeDataProvider<TreeNod
 
 	public async removeController(controllerNode: ControllerTreeNode): Promise<void> {
 		this._controllerNodes = this._controllerNodes.filter(node => node !== controllerNode);
-		this.deletePassword(controllerNode.model.info);
+		await this.deletePassword(controllerNode.model.info);
 		this._onDidChangeTreeData.fire(undefined);
 		await this.saveControllers();
 	}
