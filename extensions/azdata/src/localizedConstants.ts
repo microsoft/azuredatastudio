@@ -24,7 +24,7 @@ export const stderrOutput = (stderr: string): string => localize('azdata.stderrO
 export const checkingLatestAzdataVersion = localize('azdata.checkingLatestAzdataVersion', "Checking for latest version of azdata");
 export const gettingTextContentsOfUrl = (url: string): string => localize('azdata.gettingTextContentsOfUrl', "Getting text contents of resource at URL {0}", url);
 export const latestAzdataVersionAvailable = (version: string): string => localize('azdata.latestAzdataVersionAvailable', "Latest available azdata version: {0}.", version);
-export const currentlyInstalledVersionIsLatest = (currentVersion: string): string => localize('azdata.currentlyInstalledVersionIsLatest', "Currently installed version of azdata:{0} is same or newer than any other version avalailble", currentVersion);
+export const currentlyInstalledVersionIsLatest = (currentVersion: string): string => localize('azdata.currentlyInstalledVersionIsLatest', "Currently installed version of azdata: {0} is same or newer than any other version available", currentVersion);
 export const promptForAzdataUpgrade = (version: string): string => localize('azdata.promptForAzdataUpgrade', "A new version of azdata ( {0} ) is available, do you wish to upgrade to it now?", version);
 export const couldNotFindAzdata = (err: any): string => localize('azdata.couldNotFindAzdata', "Could not find azdata. Error : {0}", err.message ?? err);
 export const couldNotFindAzdataWithPrompt = localize('azdata.couldNotFindAzdataWithPrompt', "Could not find azdata, install it now? If not then some features will not be able to function.");

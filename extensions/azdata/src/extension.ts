@@ -16,12 +16,8 @@ export async function activate(): Promise<azdataExt.IExtension> {
 	// upgrade if available and user wants it.
 	checkAndUpgradeAzdata(localAzdata)
 		.then(async upgradePerformed => {
-			try {
-				if (upgradePerformed) { // If upgrade was performed then find the new azdata and save the new azdata
-					localAzdata = await findAzdata();
-				}
-			} catch (_err) {
-				//Do nothing, it is expected that if user did not accept upgrade of azdata then findAzdata will still fail throwing an error.
+			if (upgradePerformed) { // If upgrade was performed then find and save the new azdata
+				localAzdata = await findAzdata();
 			}
 		})
 		.catch(err => vscode.window.showWarningMessage(loc.upgradeError(err)));
