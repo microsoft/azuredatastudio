@@ -10,6 +10,8 @@ const localize = nls.loadMessageBundle();
 // CONFIG VALUES ///////////////////////////////////////////////////////////
 export const extensionOutputChannelName = 'Notebooks';
 
+export const notebookCommandNew = 'notebook.command.new';
+
 // JUPYTER CONFIG //////////////////////////////////////////////////////////
 export const pythonBundleVersion = '0.0.1';
 export const pythonVersion = '3.6.6';
