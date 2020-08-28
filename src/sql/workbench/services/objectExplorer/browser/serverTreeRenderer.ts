@@ -54,7 +54,7 @@ export class ServerTreeRenderer implements IRenderer {
 	 * When set to true, like in the connection dialog recent connections tree, the connection
 	 * tile is rendered without the action buttons( such as connect, new query).
 	 */
-	private _isCompact: boolean = false;
+	private _showStatusBadge: boolean = false;
 
 	constructor(
 		isCompact: boolean,
@@ -62,7 +62,7 @@ export class ServerTreeRenderer implements IRenderer {
 	) {
 		// isCompact defaults to false unless explicitly set by instantiation call.
 		if (isCompact) {
-			this._isCompact = isCompact;
+			this._showStatusBadge = isCompact;
 		}
 	}
 
@@ -208,18 +208,19 @@ export class ServerTreeRenderer implements IRenderer {
 	}
 
 	private renderConnection(connection: ConnectionProfile, templateData: IConnectionTemplateData): void {
-		if (!this._isCompact) {
-			let iconPath: IconPath = this.getIconPath(connection);
-			if (this._connectionManagementService.isConnected(undefined, connection)) {
+		let isConnected = this._connectionManagementService.isConnected(undefined, connection);
+		if (!this._showStatusBadge) {
+			if (isConnected) {
 				templateData.icon.classList.remove('disconnected');
 				templateData.icon.classList.add('connected');
-				this.renderServerIcon(templateData.icon, iconPath, true);
 			} else {
 				templateData.icon.classList.remove('connected');
 				templateData.icon.classList.add('disconnected');
-				this.renderServerIcon(templateData.icon, iconPath, false);
 			}
 		}
+
+		let iconPath: IconPath = this.getIconPath(connection);
+		this.renderServerIcon(templateData.icon, iconPath, isConnected);
 
 		let label = connection.title;
 		if (!connection.isConnectionOptionsValid) {
