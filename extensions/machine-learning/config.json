@@ -8,25 +8,29 @@
 		],
 		"requiredRPackages": [
 			{
-				"name": "RODBCext",
-				"repository": "https://mran.microsoft.com/snapshot/2019-02-01/"
+				"name": "vctrs",
+				"repository": "https://cran.r-project.org"
+			},
+			{
+				"name": "odbc",
+				"repository": "https://cran.r-project.org"
 			},
 			{
 				"name": "sqlmlutils",
-				"fileName": "sqlmlutils_0.7.1.zip",
-				"downloadUrl": "https://github.com/microsoft/sqlmlutils/blob/master/R/dist/sqlmlutils_0.7.1.zip?raw=true",
+				"fileName": "sqlmlutils_0.7.3.zip",
+				"downloadUrl": "https://github.com/microsoft/sqlmlutils/releases/download/R-0.7.3/sqlmlutils_0.7.3.zip",
 				"platform" : "win32"
 			},
 			{
 				"name": "sqlmlutils",
-				"fileName": "sqlmlutils_0.7.1.tar.gz",
-				"downloadUrl": "https://github.com/microsoft/sqlmlutils/blob/master/R/dist/sqlmlutils_0.7.1.tar.gz?raw=true",
+				"fileName": "sqlmlutils_0.7.3.tar.gz",
+				"downloadUrl": "https://github.com/microsoft/sqlmlutils/releases/download/R-0.7.3/sqlmlutils_0.7.3.tar.gz",
 				"platform" : "darwin"
 			},
 			{
 				"name": "sqlmlutils",
-				"fileName": "sqlmlutils_0.7.1.tar.gz",
-				"downloadUrl": "https://github.com/microsoft/sqlmlutils/blob/master/R/dist/sqlmlutils_0.7.1.tar.gz?raw=true",
+				"fileName": "sqlmlutils_0.7.3.tar.gz",
+				"downloadUrl": "https://github.com/microsoft/sqlmlutils/releases/download/R-0.7.3/sqlmlutils_0.7.3.tar.gz",
 				"platform" : "linux"
 			}
 		],

@@ -25,13 +25,15 @@ import { RowDetailView, ExtendedItem } from 'sql/base/browser/ui/table/plugins/r
 import {
 	IAssessmentComponent,
 	IAsmtActionInfo,
+	SqlAssessmentResultInfo,
 	AsmtServerSelectItemsAction,
 	AsmtServerInvokeItemsAction,
 	AsmtDatabaseSelectItemsAction,
 	AsmtDatabaseInvokeItemsAction,
 	AsmtExportAsScriptAction,
-	AsmtSamplesLinkAction
-} from 'sql/workbench/contrib/assessment/common/asmtActions';
+	AsmtSamplesLinkAction,
+	AsmtGenerateHTMLReportAction
+} from 'sql/workbench/contrib/assessment/browser/asmtActions';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IAction } from 'vs/base/common/actions';
 import * as Utils from 'sql/platform/connection/common/utils';
@@ -43,6 +45,8 @@ import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/bro
 import * as themeColors from 'vs/workbench/common/theme';
 import { ITableStyles } from 'sql/base/browser/ui/table/interfaces';
 import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
+import { LocalizedStrings } from 'sql/workbench/contrib/assessment/common/strings';
+import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 
 export const ASMTRESULTSVIEW_SELECTOR: string = 'asmt-results-view-component';
 export const ROW_HEIGHT: number = 25;
@@ -53,7 +57,7 @@ const COLUMN_MESSAGE_ID: string = 'message';
 
 const COLUMN_MESSAGE_TITLE: { [mode: number]: string } = {
 	[AssessmentType.AvailableRules]: nls.localize('asmt.column.displayName', "Display Name"),
-	[AssessmentType.InvokeAssessment]: nls.localize('asmt.column.message', "Message"),
+	[AssessmentType.InvokeAssessment]: LocalizedStrings.MESSAGE_COLUMN_NAME,
 };
 
 enum AssessmentResultItemKind {
@@ -93,30 +97,32 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		},
 		{ name: nls.localize('asmt.column.severity', "Severity"), field: 'severity', maxWidth: 90, id: 'severity' },
 		{
-			name: nls.localize('asmt.column.message', "Message"),
+			name: LocalizedStrings.MESSAGE_COLUMN_NAME,
 			field: 'message',
 			width: 300,
 			id: COLUMN_MESSAGE_ID,
 			formatter: (_row, _cell, _value, _columnDef, dataContext) => this.appendHelplink(dataContext.message, dataContext.helpLink, dataContext.kind, this.wrapByKind),
 		},
 		{
-			name: nls.localize('asmt.column.tags', "Tags"),
+			name: LocalizedStrings.TAGS_COLUMN_NAME,
 			field: 'tags',
 			width: 80,
 			id: 'tags',
 			formatter: (row, cell, value, columnDef, dataContext) => this.renderTags(row, cell, value, columnDef, dataContext)
 		},
-		{ name: nls.localize('asmt.column.checkId', "Check ID"), field: 'checkId', maxWidth: 140, id: 'checkId' }
+		{ name: LocalizedStrings.CHECKID_COLUMN_NAME, field: 'checkId', maxWidth: 140, id: 'checkId' }
 	];
 	private dataView: any;
 	private filterPlugin: any;
 	private isServerMode: boolean;
 	private rowDetail: RowDetailView<Slick.SlickData>;
 	private exportActionItem: IAction;
+	private generateReportActionItem: IAction;
 	private placeholderElem: HTMLElement;
 	private placeholderNoResultsLabel: string;
 	private spinner: { [mode: number]: HTMLElement } = Object.create(null);
-	private lastInvokedResults: azdata.SqlAssessmentResultItem[];
+	private lastInvokedResult: SqlAssessmentResultInfo;
+	private initialConnectionInfo: ConnectionManagementInfo;
 
 	@ViewChild('resultsgrid') _gridEl: ElementRef;
 	@ViewChild('actionbarContainer') protected actionBarContainer: ElementRef;
@@ -134,7 +140,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 	) {
 		super();
 		let self = this;
-		let profile = this._commonService.connectionManagementService.connectionInfo.connectionProfile;
+		const profile = this._commonService.connectionManagementService.connectionInfo.connectionProfile;
 
 		this.isServerMode = !profile.databaseName || Utils.isMaster(profile);
 
@@ -146,6 +152,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 
 		this._register(_dashboardService.onLayout(d => self.layout()));
 		this._register(_themeService.onDidColorThemeChange(this._updateStyles, this));
+		this.initialConnectionInfo = this._commonService.connectionManagementService.connectionInfo;
 	}
 
 	ngOnInit(): void {
@@ -156,6 +163,8 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 
 	ngOnDestroy(): void {
 		this.isVisible = false;
+		this.rowDetail?.destroy();
+		this.filterPlugin.destroy();
 	}
 
 	ngAfterContentChecked(): void {
@@ -173,8 +182,8 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		}
 	}
 
-	public get resultItems(): azdata.SqlAssessmentResultItem[] {
-		return this.lastInvokedResults;
+	public get recentResult(): SqlAssessmentResultInfo {
+		return this.lastInvokedResult;
 	}
 
 	public get isActive(): boolean {
@@ -209,9 +218,13 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 	public showInitialResults(result: azdata.SqlAssessmentResult, method: AssessmentType) {
 		if (result) {
 			if (method === AssessmentType.InvokeAssessment) {
-				this.lastInvokedResults = result.items;
+				this.lastInvokedResult = {
+					result: result,
+					dateUpdated: Date.now(),
+					connectionInfo: this.initialConnectionInfo
+				};
 			} else {
-				this.lastInvokedResults = [];
+				this.lastInvokedResult = undefined;
 			}
 
 			this.displayResults(result.items, method);
@@ -229,7 +242,8 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 
 	public appendResults(result: azdata.SqlAssessmentResult, method: AssessmentType) {
 		if (method === AssessmentType.InvokeAssessment) {
-			this.lastInvokedResults.push(...result.items);
+			this.lastInvokedResult.dateUpdated = Date.now();
+			this.lastInvokedResult.result.items.push(...result.items);
 		}
 
 		if (result) {
@@ -341,11 +355,13 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 
 	private initActionBar(invokeAction: IAction, selectAction: IAction) {
 		this.exportActionItem = this._register(this._instantiationService.createInstance(AsmtExportAsScriptAction));
+		this.generateReportActionItem = this._register(this._instantiationService.createInstance(AsmtGenerateHTMLReportAction));
 
 		let taskbar = <HTMLElement>this.actionBarContainer.nativeElement;
 		this._actionBar = this._register(new Taskbar(taskbar));
 		this.spinner[AssessmentType.InvokeAssessment] = Taskbar.createTaskbarSpinner();
 		this.spinner[AssessmentType.AvailableRules] = Taskbar.createTaskbarSpinner();
+		this.spinner[AssessmentType.ReportGeneration] = Taskbar.createTaskbarSpinner();
 
 		this._actionBar.setContent([
 			{ action: invokeAction },
@@ -353,6 +369,8 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 			{ action: selectAction },
 			{ element: this.spinner[AssessmentType.AvailableRules] },
 			{ action: this.exportActionItem },
+			{ action: this.generateReportActionItem },
+			{ element: this.spinner[AssessmentType.ReportGeneration] },
 			{ action: this._instantiationService.createInstance(AsmtSamplesLinkAction) }
 		]);
 
@@ -360,6 +378,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		let context: IAsmtActionInfo = { component: this, ownerUri: Utils.generateUri(connectionInfo.connectionProfile.clone(), 'dashboard'), connectionId: connectionInfo.connectionProfile.id };
 		this._actionBar.context = context;
 		this.exportActionItem.enabled = false;
+		this.generateReportActionItem.enabled = false;
 	}
 
 	private convertToDataViewItems(asmtResult: azdata.SqlAssessmentResultItem, index: number, method: AssessmentType) {
@@ -392,7 +411,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		this._table.autosizeColumns();
 		this._table.resizeCanvas();
 		this.exportActionItem.enabled = (results.length > 0 && method === AssessmentType.InvokeAssessment);
-
+		this.generateReportActionItem.enabled = (results.length > 0 && method === AssessmentType.InvokeAssessment);
 		if (results.length > 0) {
 			dom.hide(this.placeholderElem);
 		} else {
@@ -472,7 +491,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 
 	private appendHelplink(msg: string, helpLink: string, kind: AssessmentResultItemKind, wrapByKindFunc): string {
 		if (msg !== undefined) {
-			return `${wrapByKindFunc(kind, escape(msg))}<a class='helpLink' href='${helpLink}' \>${nls.localize('asmt.learnMore', "Learn More")}</a>`;
+			return `${wrapByKindFunc(kind, escape(msg))}<a class='helpLink' href='${helpLink}' \>${LocalizedStrings.LEARN_MORE_LINK}</a>`;
 		}
 		return undefined;
 	}

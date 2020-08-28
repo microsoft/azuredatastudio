@@ -208,13 +208,13 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			get providers(): ReadonlyArray<vscode.AuthenticationProviderInformation> {
 				return extHostAuthentication.providers;
 			},
-			getSession(providerId: string, scopes: string[], options: vscode.AuthenticationGetSessionOptions) {
+			getSession(providerId: string, scopes: string[], options?: vscode.AuthenticationGetSessionOptions) {
 				return extHostAuthentication.getSession(extension, providerId, scopes, options as any);
 			},
 			logout(providerId: string, sessionId: string): Thenable<void> {
 				return extHostAuthentication.logout(providerId, sessionId);
 			},
-			get onDidChangeSessions(): Event<vscode.AuthenticationProviderAuthenticationSessionsChangeEvent> {
+			get onDidChangeSessions(): Event<vscode.AuthenticationSessionsChangeEvent> {
 				return extHostAuthentication.onDidChangeSessions;
 			},
 		};
@@ -943,6 +943,10 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 				checkProposedApiEnabled(extension);
 				return extHostNotebook.onDidCloseNotebookDocument;
 			},
+			get onDidSaveNotebookDocument(): Event<vscode.NotebookDocument> {
+				checkProposedApiEnabled(extension);
+				return extHostNotebook.onDidSaveNotebookDocument;
+			},
 			get notebookDocuments(): vscode.NotebookDocument[] {
 				checkProposedApiEnabled(extension);
 				return extHostNotebook.notebookDocuments;
@@ -994,6 +998,10 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			onDidChangeCellLanguage(listener, thisArgs?, disposables?) {
 				checkProposedApiEnabled(extension);
 				return extHostNotebook.onDidChangeCellLanguage(listener, thisArgs, disposables);
+			},
+			onDidChangeCellMetadata(listener, thisArgs?, disposables?) {
+				checkProposedApiEnabled(extension);
+				return extHostNotebook.onDidChangeCellMetadata(listener, thisArgs, disposables);
 			},
 			createConcatTextDocument(notebook, selector) {
 				checkProposedApiEnabled(extension);

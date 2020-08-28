@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { OptionsInfo } from '../interfaces';
+import { OptionsInfo, FieldInfo } from '../interfaces';
 import { getErrorMessage } from '../utils';
 
 export class RadioGroupLoadingComponentBuilder implements azdata.ComponentBuilder<azdata.LoadingComponent> {
@@ -12,7 +12,7 @@ export class RadioGroupLoadingComponentBuilder implements azdata.ComponentBuilde
 	private _optionsLoadingBuilder: azdata.LoadingComponentBuilder;
 	private _onValueChangedEmitter: vscode.EventEmitter<void> = new vscode.EventEmitter();
 	private _currentRadioOption!: azdata.RadioButtonComponent;
-	constructor(private _view: azdata.ModelView, private _onNewDisposableCreated: (disposable: vscode.Disposable) => void) {
+	constructor(private _view: azdata.ModelView, private _onNewDisposableCreated: (disposable: vscode.Disposable) => void, private _fieldInfo: FieldInfo) {
 		this._optionsDivContainer = this._view!.modelBuilder.divContainer().withProperties<azdata.DivContainerProperties>({ clickable: false }).component();
 		this._optionsLoadingBuilder = this._view!.modelBuilder.loadingComponent().withItem(this._optionsDivContainer);
 	}
@@ -30,14 +30,15 @@ export class RadioGroupLoadingComponentBuilder implements azdata.ComponentBuilde
 	}
 
 	async loadOptions(optionsInfo: OptionsInfo | (() => Promise<OptionsInfo>)): Promise<void> {
-		if (typeof optionsInfo !== 'object') {
-			optionsInfo = await optionsInfo();
-		}
 		this.component().loading = true;
 		this._optionsDivContainer.clearItems();
-		let options: (string[] | azdata.CategoryValue[]) = optionsInfo.values!;
-		let defaultValue: string = optionsInfo.defaultValue!;
 		try {
+			if (typeof optionsInfo !== 'object') {
+				optionsInfo = await optionsInfo();
+			}
+
+			let options: (string[] | azdata.CategoryValue[]) = optionsInfo.values!;
+			let defaultValue: string = optionsInfo.defaultValue!;
 			options.forEach((op: string | azdata.CategoryValue) => {
 				const option: azdata.CategoryValue = (typeof op === 'string')
 					? { name: op, displayName: op }
@@ -46,6 +47,7 @@ export class RadioGroupLoadingComponentBuilder implements azdata.ComponentBuilde
 					label: option.displayName,
 					checked: option.displayName === defaultValue,
 					name: option.name,
+					enabled: this._fieldInfo.enabled
 				}).component();
 				if (radioOption.checked) {
 					this._currentRadioOption = radioOption;

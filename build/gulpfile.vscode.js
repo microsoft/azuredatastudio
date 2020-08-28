@@ -77,7 +77,6 @@ const vscodeResources = [
 	'out-build/vs/code/electron-browser/workbench/**',
 	'out-build/vs/code/electron-browser/sharedProcess/sharedProcess.js',
 	'out-build/vs/code/electron-browser/issue/issueReporter.js',
-	'out-build/vs/code/electron-browser/processExplorer/processExplorer.js',
 	'out-build/sql/workbench/electron-browser/splashscreen/*', // {{SQL CARBON EDIT}} STart
 	'out-build/sql/**/*.{svg,png,cur,html}',
 	'out-build/sql/base/browser/ui/table/media/*.{gif,png,svg}',

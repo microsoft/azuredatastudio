@@ -247,6 +247,13 @@
     "@types/tough-cookie" "*"
     form-data "^2.5.0"
 
+"@types/semver@^7.3.1":
+  version "7.3.1"
+  resolved "https://registry.yarnpkg.com/@types/semver/-/semver-7.3.1.tgz#7a9a5d595b6d873f338c867dcef64df289468cfa"
+  integrity sha512-ooD/FJ8EuwlDKOI6D9HWxgIgJjMg2cuziXm/42npDC8y4NjxplBUn9loewZiBNCt44450lHAU0OSb51/UqXeag==
+  dependencies:
+    "@types/node" "*"
+
 "@types/sinon@^9.0.4":
   version "9.0.4"
   resolved "https://registry.yarnpkg.com/@types/sinon/-/sinon-9.0.4.tgz#e934f904606632287a6e7f7ab0ce3f08a0dad4b1"
@@ -1071,6 +1078,11 @@ semver@^6.0.0, semver@^6.3.0:
   resolved "https://registry.yarnpkg.com/semver/-/semver-6.3.0.tgz#ee0a64c8af5e8ceea67687b133761e1becbd1d3d"
   integrity sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==
 
+semver@^7.3.2:
+  version "7.3.2"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-7.3.2.tgz#604962b052b81ed0786aae84389ffba70ffd3938"
+  integrity sha512-OrOb32TeeambH6UrhtShmF7CRDqhL6/5XpPNp2DuRH6+9QLw/orhp72j87v8Qa1ScDkvrrBNpZcDejAirJmfXQ==
+
 should-equal@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/should-equal/-/should-equal-2.0.0.tgz#6072cf83047360867e68e98b09d71143d04ee0c3"
@@ -1242,11 +1254,6 @@ uuid@^3.3.2:
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.4.0.tgz#b23e4358afa8a202fe7a100af1f5f883f02007ee"
   integrity sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==
 
-uuid@^8.2.0:
-  version "8.2.0"
-  resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.2.0.tgz#cb10dd6b118e2dada7d0cd9730ba7417c93d920e"
-  integrity sha512-CYpGiFTUrmI6OBMkAdjSDM0k5h8SkkiTP4WAjQgDgNB1S3Ou9VBEvr6q0Kv2H1mMk7IWfxYGpMH5sd5AvcIV2Q==
-
 verror@1.10.0:
   version "1.10.0"
   resolved "https://registry.yarnpkg.com/verror/-/verror-1.10.0.tgz#3a105ca17053af55d6e270c1f8288682e18da400"
@@ -1261,10 +1268,10 @@ vscode-nls@^4.1.2:
   resolved "https://registry.yarnpkg.com/vscode-nls/-/vscode-nls-4.1.2.tgz#ca8bf8bb82a0987b32801f9fddfdd2fb9fd3c167"
   integrity sha512-7bOHxPsfyuCqmP+hZXscLhiHwe7CSuFE4hyhbs22xPIhQ4jv99FcR4eBzfYYVLP356HNFpdvz63FFb/xw6T4Iw==
 
-vscodetestcover@^1.0.9:
-  version "1.0.9"
-  resolved "https://registry.yarnpkg.com/vscodetestcover/-/vscodetestcover-1.0.9.tgz#0191f403dd59ba1153fc57979e281e992ce63731"
-  integrity sha512-8z2961KF9Tuz5XdHAC6RMV3CrzAoUcfIK7wLYjLIXD4dbHIT7ceZMhoxToW1olyi3pFnThlS4lRXtx8Q5iyMMQ==
+vscodetestcover@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/vscodetestcover/-/vscodetestcover-1.1.0.tgz#ea2bc2fb0c54ca4084057883e7e1614a20533e14"
+  integrity sha512-b/5mYqWC4yPxPUM1G8MD8ZnRt7eYd1IxAg/vdTE6JiNZlpGtxkDv91eXbF4TbQVlOPoqTzfhpY5GxbZbHVv+DQ==
   dependencies:
     decache "^4.4.0"
     glob "^7.1.2"

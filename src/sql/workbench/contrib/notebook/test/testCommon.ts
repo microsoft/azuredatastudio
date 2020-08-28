@@ -5,7 +5,7 @@
 
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import * as stubs from 'sql/workbench/contrib/notebook/test/stubs';
-import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { INotebookModel, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookParams } from 'sql/workbench/services/notebook/browser/notebookService';
 import * as dom from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -19,6 +19,7 @@ import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServic
 export class NotebookEditorStub extends stubs.NotebookEditorStub {
 	cellEditors: CellEditorProviderStub[];
 	model: INotebookModel | undefined;
+	cells?: ICellModel[] = [];
 
 	get id(): string {
 		return this.notebookParams?.notebookUri?.toString();

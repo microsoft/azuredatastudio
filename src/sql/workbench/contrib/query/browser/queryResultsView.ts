@@ -300,8 +300,8 @@ export class QueryResultsView extends Disposable {
 		this.dynamicModelViewTabs.forEach(t => t.clear());
 
 		this.resultsTab.view.state = this.input.state.gridPanelState;
-		this.qpTab.view.state = this.input.state.queryPlanState;
-		this.topOperationsTab.view.state = this.input.state.topOperationsState;
+		this.qpTab.view.setState(this.input.state.queryPlanState);
+		this.topOperationsTab.view.setState(this.input.state.topOperationsState);
 		this.chartTab.view.state = this.input.state.chartState;
 		this.dynamicModelViewTabs.forEach((dynamicTab: QueryModelViewTab) => {
 			dynamicTab.captureState(this.input.state.dynamicModelViewTabsState);

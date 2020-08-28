@@ -39,7 +39,7 @@ describe('Notebook Extension Python Installation', function () {
 		jupyterController = notebookExtension.exports.getJupyterController() as JupyterController;
 
 		console.log('Start Jupyter Installation');
-		await jupyterController.jupyterInstallation.startInstallProcess(false, { installPath: pythonInstallDir, existingPython: false });
+		await jupyterController.jupyterInstallation.startInstallProcess(false, { installPath: pythonInstallDir, existingPython: false, packages: [] });
 		installComplete = true;
 		console.log('Jupyter Installation is done');
 	});
@@ -66,14 +66,14 @@ describe('Notebook Extension Python Installation', function () {
 
 		console.log('Start Existing Python Installation');
 		let existingPythonPath = path.join(pythonInstallDir, pythonBundleVersion);
-		await install.startInstallProcess(false, { installPath: existingPythonPath, existingPython: true });
+		await install.startInstallProcess(false, { installPath: existingPythonPath, existingPython: true, packages: [] });
 		should(JupyterServerInstallation.isPythonInstalled()).be.true();
 		should(JupyterServerInstallation.getPythonInstallPath()).be.equal(existingPythonPath);
 		should(JupyterServerInstallation.getExistingPythonSetting()).be.true();
 
 		// Redo "new" install to restore original settings.
 		// The actual install should get skipped since it already exists.
-		await install.startInstallProcess(false, { installPath: pythonInstallDir, existingPython: false });
+		await install.startInstallProcess(false, { installPath: pythonInstallDir, existingPython: false, packages: [] });
 		should(JupyterServerInstallation.isPythonInstalled()).be.true();
 		should(JupyterServerInstallation.getPythonInstallPath()).be.equal(pythonInstallDir);
 		should(JupyterServerInstallation.getExistingPythonSetting()).be.false();

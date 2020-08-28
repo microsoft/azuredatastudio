@@ -21,7 +21,7 @@ export function getErrorMessage(error: any): string {
 /**
  * removes any leading portion shared between the two URIs from outerUri.
  * e.g. [@param innerUri: 'this\is'; @param outerUri: '\this\is\my\path'] => 'my\path' OR
- * e.g. [@param innerUri: 'this\was'; @param outerUri: '\this\is\my\path'] => '..\my\path'
+ * e.g. [@param innerUri: 'this\was'; @param outerUri: '\this\is\my\path'] => '..\is\my\path'
  * @param innerUri the URI that will be cut away from the outer URI
  * @param outerUri the URI that will have any shared beginning portion removed
  */
@@ -127,12 +127,18 @@ export function convertSlashesForSqlProj(filePath: string): string {
  */
 export function readSqlCmdVariables(xmlDoc: any): Record<string, string> {
 	let sqlCmdVariables: Record<string, string> = {};
-	for (let i = 0; i < xmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable).length; i++) {
+	for (let i = 0; i < xmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable)?.length; i++) {
 		const sqlCmdVar = xmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable)[i];
 		const varName = sqlCmdVar.getAttribute(constants.Include);
 
-		const varValue = sqlCmdVar.getElementsByTagName(constants.DefaultValue)[0].childNodes[0].nodeValue;
-		sqlCmdVariables[varName] = varValue;
+		if (sqlCmdVar.getElementsByTagName(constants.DefaultValue)[0] !== undefined) {
+			// project file path
+			sqlCmdVariables[varName] = sqlCmdVar.getElementsByTagName(constants.DefaultValue)[0].childNodes[0].nodeValue;
+		}
+		else {
+			// profile path
+			sqlCmdVariables[varName] = sqlCmdVar.getElementsByTagName(constants.Value)[0].childNodes[0].nodeValue;
+		}
 	}
 
 	return sqlCmdVariables;

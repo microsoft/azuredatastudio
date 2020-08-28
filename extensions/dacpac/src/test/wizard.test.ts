@@ -74,10 +74,6 @@ describe('Dacfx wizard', function (): void {
 		wizard.model.upgradeExisting = true;
 		should.equal(wizard.isSummaryPage(3), true);
 
-		// summary page should be 3 for generate deploy script
-		wizard.selectedOperation = Operation.generateDeployScript;
-		should.equal(wizard.isSummaryPage(3), true);
-
 		// summary page should be 2 for import
 		wizard.selectedOperation = Operation.import;
 		should.equal(wizard.isSummaryPage(2), true);
@@ -94,9 +90,6 @@ describe('Dacfx wizard', function (): void {
 	it('Should set Done button and operation correctly', async () => {
 		wizard.setDoneButton(Operation.deploy);
 		should.equal(wizard.selectedOperation, Operation.deploy);
-
-		wizard.setDoneButton(Operation.generateDeployScript);
-		should.equal(wizard.selectedOperation, Operation.generateDeployScript);
 
 		wizard.setDoneButton(Operation.extract);
 		should.equal(wizard.selectedOperation, Operation.extract);

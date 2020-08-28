@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { INodeContextValue } from 'sql/workbench/browser/parts/views/nodeContext';
 import { RawContextKey, IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -12,6 +11,7 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
 import { isWindows } from 'vs/base/common/platform';
+import { INodeContextValue } from 'sql/workbench/services/objectExplorer/browser/mssqlNodeContext';
 
 export class NodeContextUtils extends Disposable {
 

@@ -3,17 +3,18 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IAction, IActionRunner, ActionRunner } from 'vs/base/common/actions';
+import { IAction, IActionRunner, ActionRunner, IActionViewItem } from 'vs/base/common/actions';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import {
-	IActionBarOptions, ActionsOrientation, IActionViewItem,
-	IActionOptions, ActionViewItem, BaseActionViewItem
+	IActionBarOptions, ActionsOrientation,
+	IActionOptions
 } from 'vs/base/browser/ui/actionbar/actionbar';
 import * as lifecycle from 'vs/base/common/lifecycle';
 import * as DOM from 'vs/base/browser/dom';
 import * as types from 'vs/base/common/types';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { ActionViewItem, BaseActionViewItem } from 'vs/base/browser/ui/actionbar/actionViewItems';
 
 const defaultOptions: IActionBarOptions = {
 	orientation: ActionsOrientation.HORIZONTAL,

@@ -23,6 +23,7 @@ import { promises as fs } from 'fs';
 import * as nls from 'vscode-nls';
 import { LanguageExtensionService } from './languageExtension/languageExtensionService';
 import { SqlAssessmentService } from './sqlAssessment/sqlAssessmentService';
+import { NotebookConvertService } from './notebookConvert/notebookConvertService';
 
 const localize = nls.loadMessageBundle();
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -160,7 +161,8 @@ function getClientOptions(context: AppContext): ClientOptions {
 			LanguageExtensionService.asFeature(context),
 			DacFxService.asFeature(context),
 			CmsService.asFeature(context),
-			SqlAssessmentService.asFeature(context)
+			SqlAssessmentService.asFeature(context),
+			NotebookConvertService.asFeature(context)
 		],
 		outputChannel: new CustomOutputChannel()
 	};

@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as os from 'os';
-import { spawn, ExecOptions, SpawnOptions, ChildProcess } from 'child_process';
+import { spawn, SpawnOptions, ChildProcess } from 'child_process';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
@@ -21,10 +21,29 @@ import * as ports from '../common/ports';
 const NotebookConfigFilename = 'jupyter_notebook_config.py';
 const CustomJsFilename = 'custom.js';
 const defaultPort = 8888;
-const JupyterStartedMessage = 'The Jupyter Notebook is running';
 
 type MessageListener = (data: string | Buffer) => void;
 type ErrorListener = (err: any) => void;
+
+/**
+ * Helper function ensures server instance process stops
+ */
+export function ensureProcessEnded(childProcess: ChildProcess): void {
+	if (!childProcess) {
+		return;
+	}
+	// Wait 5 seconds and then force kill. Jupyter stop is slow so this seems a reasonable time limit
+	setTimeout(() => {
+		// Test if the process is still alive. Throws an exception if not
+		try {
+			process.kill(childProcess.pid, 'SIGKILL');
+		} catch (error) {
+			if (!error || !error.code || (typeof error.code === 'string' && error.code !== 'ESRCH')) {
+				console.log(error);
+			}
+		}
+	}, 5000);
+}
 
 export interface IInstanceOptions {
 	/**
@@ -42,60 +61,6 @@ export interface IInstanceOptions {
 	 * path relative to the initial document
 	 */
 	notebookDirectory?: string;
-}
-
-/**
- * Helper class to enable testing without calling into file system or
- * commandline shell APIs
- */
-export class ServerInstanceUtils {
-	public mkDir(dirPath: string, outputChannel?: vscode.OutputChannel): Promise<void> {
-		return utils.mkDir(dirPath, outputChannel);
-	}
-	public removeDir(dirPath: string): Promise<void> {
-		return fs.remove(dirPath);
-	}
-	public pathExists(dirPath: string): Promise<boolean> {
-		return fs.pathExists(dirPath);
-	}
-	public copy(src: string, dest: string): Promise<void> {
-		return fs.copy(src, dest);
-	}
-	public async exists(path: string): Promise<boolean> {
-		try {
-			await fs.access(path);
-			return true;
-		} catch (e) {
-			return false;
-		}
-	}
-	public generateUuid(): string {
-		return UUID.generateUuid();
-	}
-	public executeBufferedCommand(cmd: string, options: ExecOptions, outputChannel?: vscode.OutputChannel): Thenable<string> {
-		return utils.executeBufferedCommand(cmd, options, outputChannel);
-	}
-
-	public spawn(command: string, args?: ReadonlyArray<string>, options?: SpawnOptions): ChildProcess {
-		return spawn(command, args, options);
-	}
-
-	public ensureProcessEnded(childProcess: ChildProcess): void {
-		if (!childProcess) {
-			return;
-		}
-		// Wait 5 seconds and then force kill. Jupyter stop is slow so this seems a reasonable time limit
-		setTimeout(() => {
-			// Test if the process is still alive. Throws an exception if not
-			try {
-				process.kill(childProcess.pid, 'SIGKILL');
-			} catch (error) {
-				if (!error || !error.code || (typeof error.code === 'string' && error.code !== 'ESRCH')) {
-					console.log(error);
-				}
-			}
-		}, 5000);
-	}
 }
 
 export class PerFolderServerInstance implements IServerInstance {
@@ -123,14 +88,12 @@ export class PerFolderServerInstance implements IServerInstance {
 	private _uri: vscode.Uri;
 	private _isStarted: boolean = false;
 	private _isStopping: boolean = false;
-	private utils: ServerInstanceUtils;
 	private childProcess: ChildProcess;
 	private errorHandler: ErrorHandler = new ErrorHandler();
 
 	private readonly notebookScriptPath: string;
 
-	constructor(private options: IInstanceOptions, fsUtils?: ServerInstanceUtils) {
-		this.utils = fsUtils || new ServerInstanceUtils();
+	constructor(private options: IInstanceOptions) {
 		this.notebookScriptPath = path.join(this.options.install.extensionPath, 'resources', 'pythonScripts', 'startNotebook.py');
 	}
 
@@ -158,27 +121,26 @@ export class PerFolderServerInstance implements IServerInstance {
 		try {
 			this._isStopping = true;
 			if (this.baseDir) {
-				let exists = await this.utils.pathExists(this.baseDir);
+				let exists = await fs.pathExists(this.baseDir);
 				if (exists) {
-					await this.utils.removeDir(this.baseDir);
+					await fs.remove(this.baseDir);
 				}
 			}
 			if (this._isStarted) {
 				let install = this.options.install;
 				let stopCommand = `"${install.pythonExecutable}" "${this.notebookScriptPath}" stop ${this._port}`;
-				await this.utils.executeBufferedCommand(stopCommand, install.execOptions, install.outputChannel);
+				await utils.executeBufferedCommand(stopCommand, install.execOptions, install.outputChannel);
 			}
 		} catch (error) {
 			// For now, we don't care as this is non-critical
 			this.notify(this.options.install, localize('serverStopError', "Error stopping Notebook Server: {0}", utils.getErrorMessage(error)));
 		} finally {
 			this._isStarted = false;
-			this.utils.ensureProcessEnded(this.childProcess);
+			ensureProcessEnded(this.childProcess);
 			this.handleConnectionClosed();
 
 		}
 	}
-
 
 	private async configureJupyter(): Promise<void> {
 		await this.createInstanceFolders();
@@ -189,35 +151,35 @@ export class PerFolderServerInstance implements IServerInstance {
 	}
 
 	private async createInstanceFolders(): Promise<void> {
-		this.baseDir = path.join(this.getSystemJupyterHomeDir(), 'instances', `${this.utils.generateUuid()}`);
+		this.baseDir = path.join(this.getSystemJupyterHomeDir(), 'instances', `${UUID.generateUuid()}`);
 		this.instanceConfigRoot = path.join(this.baseDir, 'config');
 		this.instanceDataRoot = path.join(this.baseDir, 'data');
-		await this.utils.mkDir(this.baseDir, this.options.install.outputChannel);
-		await this.utils.mkDir(this.instanceConfigRoot, this.options.install.outputChannel);
-		await this.utils.mkDir(this.instanceDataRoot, this.options.install.outputChannel);
+		await utils.mkDir(this.baseDir, this.options.install.outputChannel);
+		await utils.mkDir(this.instanceConfigRoot, this.options.install.outputChannel);
+		await utils.mkDir(this.instanceDataRoot, this.options.install.outputChannel);
 	}
 
 	private async copyInstanceConfig(resourcesFolder: string): Promise<void> {
 		let configSource = path.join(resourcesFolder, NotebookConfigFilename);
 		let configDest = path.join(this.instanceConfigRoot, NotebookConfigFilename);
-		await this.utils.copy(configSource, configDest);
+		await fs.copy(configSource, configDest);
 	}
 
 	private async CopyCustomJs(resourcesFolder: string): Promise<void> {
 		let customPath = path.join(this.instanceConfigRoot, 'custom');
-		await this.utils.mkDir(customPath, this.options.install.outputChannel);
+		await utils.mkDir(customPath, this.options.install.outputChannel);
 		let customSource = path.join(resourcesFolder, CustomJsFilename);
 		let customDest = path.join(customPath, CustomJsFilename);
-		await this.utils.copy(customSource, customDest);
+		await fs.copy(customSource, customDest);
 	}
 
 	private async copyKernelsToSystemJupyterDirs(): Promise<void> {
 		let kernelsExtensionSource = path.join(this.options.install.extensionPath, 'kernels');
 		this._systemJupyterDir = path.join(this.getSystemJupyterHomeDir(), 'kernels');
-		if (!(await this.utils.exists(this._systemJupyterDir))) {
-			await this.utils.mkDir(this._systemJupyterDir, this.options.install.outputChannel);
+		if (!(await utils.exists(this._systemJupyterDir))) {
+			await utils.mkDir(this._systemJupyterDir, this.options.install.outputChannel);
 		}
-		await this.utils.copy(kernelsExtensionSource, this._systemJupyterDir);
+		await fs.copy(kernelsExtensionSource, this._systemJupyterDir);
 	}
 
 	private getSystemJupyterHomeDir(): string {
@@ -339,12 +301,14 @@ export class PerFolderServerInstance implements IServerInstance {
 		//                http://localhost:8888/?token=f5ee846e9bd61c3a8d835ecd9b965591511a331417b997b7
 		let dataString = data.toString();
 		let urlMatch = dataString.match(/\[C[\s\S]+ {8}(.+:(\d+)\/.*)$/m);
-
 		if (urlMatch) {
 			// Legacy case: manually parse token info if no token/port were passed
 			return [vscode.Uri.parse(urlMatch[1]), urlMatch[2]];
-		} else if (this._uri && dataString.indexOf(JupyterStartedMessage) > -1) {
+		} else if (this._uri && dataString.match(/jupyter notebook .*is running at:/im)) {
 			// Default case: detect the notebook started message, indicating our preferred port and token were used
+			//
+			// Newer versions of the notebook package include a version number (e.g. 1.2.3) as part of the "notebook running"
+			// message, thus the regex above.
 			return [this._uri, this._port];
 		}
 		return [undefined, undefined];
@@ -383,7 +347,7 @@ export class PerFolderServerInstance implements IServerInstance {
 			env: env,
 			detached: false
 		};
-		let childProcess = this.utils.spawn(startCommand, [], options);
+		let childProcess = spawn(startCommand, [], options);
 		return childProcess;
 	}
 

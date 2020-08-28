@@ -5,6 +5,7 @@
 
 import * as nls from 'vs/nls';
 import * as path from 'vs/base/common/path';
+import * as platform from 'vs/base/common/platform';
 import { originalFSPath, joinPath } from 'vs/base/common/resources';
 import { Barrier, timeout } from 'vs/base/common/async';
 import { dispose, toDisposable, DisposableStore, Disposable } from 'vs/base/common/lifecycle';
@@ -193,8 +194,6 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 		}
 	}
 
-	protected abstract _beforeAlmostReadyToRunExtensions(): Promise<void>;
-
 	public async deactivateAll(): Promise<void> {
 		let allPromises: Promise<void>[] = [];
 		try {
@@ -254,7 +253,7 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 		if (!this._extensionPathIndex) {
 			const tree = TernarySearchTree.forPaths<IExtensionDescription>();
 			const extensions = this._registry.getAllExtensionDescriptions().map(ext => {
-				if (!ext.main) {
+				if (!this._getEntryPoint(ext)) {
 					return undefined;
 				}
 				return this._hostUtils.realpath(ext.extensionLocation.fsPath).then(value => tree.set(URI.file(value).fsPath, ext));
@@ -345,7 +344,8 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 		const event = getTelemetryActivationEvent(extensionDescription, reason);
 		type ActivatePluginClassification = {} & TelemetryActivationEventFragment;
 		this._mainThreadTelemetryProxy.$publicLog2<TelemetryActivationEvent, ActivatePluginClassification>('activatePlugin', event);
-		if (!extensionDescription.main) {
+		const entryPoint = this._getEntryPoint(extensionDescription);
+		if (!entryPoint) {
 			// Treat the extension as being empty => NOT AN ERROR CASE
 			return Promise.resolve(new EmptyExtension(ExtensionActivationTimes.NONE));
 		}
@@ -355,14 +355,12 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 
 		const activationTimesBuilder = new ExtensionActivationTimesBuilder(reason.startup);
 		return Promise.all([
-			this._loadCommonJSModule<IExtensionModule>(joinPath(extensionDescription.extensionLocation, extensionDescription.main), activationTimesBuilder),
+			this._loadCommonJSModule<IExtensionModule>(joinPath(extensionDescription.extensionLocation, entryPoint), activationTimesBuilder),
 			this._loadExtensionContext(extensionDescription)
 		]).then(values => {
 			return AbstractExtHostExtensionService._callActivate(this._logService, extensionDescription.identifier, values[0], values[1], activationTimesBuilder);
 		});
 	}
-
-	protected abstract _loadCommonJSModule<T>(module: URI, activationTimesBuilder: ExtensionActivationTimesBuilder): Promise<T>;
 
 	private _loadExtensionContext(extensionDescription: IExtensionDescription): Promise<vscode.ExtensionContext> {
 
@@ -386,7 +384,14 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 				subscriptions: [],
 				get extensionUri() { return extensionDescription.extensionLocation; },
 				get extensionPath() { return extensionDescription.extensionLocation.fsPath; },
-				asAbsolutePath(relativePath: string) { return path.join(extensionDescription.extensionLocation.fsPath, relativePath); },
+				asAbsolutePath(relativePath: string) {
+					if (platform.isWeb) {
+						// web worker
+						return URI.joinPath(extensionDescription.extensionLocation, relativePath).toString();
+					} else {
+						return path.join(extensionDescription.extensionLocation.fsPath, relativePath);
+					}
+				},
 				get storagePath() { return that._storagePath.workspaceValue(extensionDescription)?.fsPath; },
 				get globalStoragePath() { return that._storagePath.globalValue(extensionDescription).fsPath; },
 				get logPath() { return path.join(that._initData.logsLocation.fsPath, extensionDescription.identifier.value); },
@@ -747,6 +752,9 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 		this._onDidChangeRemoteConnectionData.fire();
 	}
 
+	protected abstract _beforeAlmostReadyToRunExtensions(): Promise<void>;
+	protected abstract _getEntryPoint(extensionDescription: IExtensionDescription): string | undefined;
+	protected abstract _loadCommonJSModule<T>(module: URI, activationTimesBuilder: ExtensionActivationTimesBuilder): Promise<T>;
 	public abstract async $setRemoteEnvironment(env: { [key: string]: string | null }): Promise<void>;
 }
 

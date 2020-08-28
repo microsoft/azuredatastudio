@@ -42,8 +42,8 @@ const indentationFilter = [
 	'**',
 
 	// except specific files
-	'!ThirdPartyNotices.txt',
-	'!LICENSE.{txt,rtf}',
+	'!**/ThirdPartyNotices.txt',
+	'!**/LICENSE.{txt,rtf}',
 	'!LICENSES.chromium.html',
 	'!**/LICENSE',
 	'!src/vs/nls.js',
@@ -172,6 +172,7 @@ const copyrightFilter = [
 	'!extensions/import/flatfileimportservice/**',
 	'!extensions/notebook/src/prompts/**',
 	'!extensions/mssql/src/prompts/**',
+	'!extensions/kusto/src/prompts/**',
 	'!extensions/notebook/resources/jupyter_config/**',
 	'!extensions/query-history/images/**',
 	'!**/*.gif',

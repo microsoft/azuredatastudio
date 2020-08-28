@@ -10,6 +10,8 @@ const localize = nls.loadMessageBundle();
 // CONFIG VALUES ///////////////////////////////////////////////////////////
 export const extensionOutputChannelName = 'Notebooks';
 
+export const notebookCommandNew = 'notebook.command.new';
+
 // JUPYTER CONFIG //////////////////////////////////////////////////////////
 export const pythonBundleVersion = '0.0.1';
 export const pythonVersion = '3.6.6';
@@ -19,8 +21,10 @@ export const notebookConfigKey = 'notebook';
 export const trustedBooksConfigKey = 'trustedBooks';
 export const maxBookSearchDepth = 'maxBookSearchDepth';
 export const remoteBookDownloadTimeout = 'remoteBookDownloadTimeout';
+export const collapseBookItems = 'collapseBookItems';
 
 export const winPlatform = 'win32';
+export const macPlatform = 'darwin';
 
 export const jupyterNotebookProviderId = 'jupyter';
 export const jupyterConfigRootFolder = 'jupyter_config';

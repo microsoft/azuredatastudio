@@ -46,8 +46,8 @@ export class AzureAuthCodeGrant extends AzureAuth {
 	}
 
 
-	protected async login(tenant: Tenant, resource: Resource): Promise<{ response: OAuthTokenResponse, authComplete: Deferred<void> }> {
-		let authCompleteDeferred: Deferred<void>;
+	protected async login(tenant: Tenant, resource: Resource): Promise<{ response: OAuthTokenResponse, authComplete: Deferred<void, Error> }> {
+		let authCompleteDeferred: Deferred<void, Error>;
 		let authCompletePromise = new Promise<void>((resolve, reject) => authCompleteDeferred = { resolve, reject });
 		let authResponse: AuthCodeResponse;
 
@@ -103,7 +103,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 			resource: resource.id
 		};
 
-		const signInUrl = `${this.loginEndpointUrl}${tenant}/oauth2/authorize?${qs.stringify(loginQuery)}`;
+		const signInUrl = `${this.loginEndpointUrl}${tenant.id}/oauth2/authorize?${qs.stringify(loginQuery)}`;
 		await vscode.env.openExternal(vscode.Uri.parse(signInUrl));
 
 		const authCode = await this.handleWebResponse(state);

@@ -13,7 +13,7 @@ import { AccountPicker } from 'sql/workbench/services/accountManagement/browser/
 export class AccountPickerService implements IAccountPickerService {
 	_serviceBrand: undefined;
 
-	private _accountPicker: AccountPicker;
+	private _accountPicker?: AccountPicker;
 
 	// EVENTING ////////////////////////////////////////////////////////////
 	private _addAccountCompleteEmitter: Emitter<void>;
@@ -28,6 +28,9 @@ export class AccountPickerService implements IAccountPickerService {
 	private _onAccountSelectionChangeEvent: Emitter<azdata.Account | undefined>;
 	public get onAccountSelectionChangeEvent(): Event<azdata.Account | undefined> { return this._onAccountSelectionChangeEvent.event; }
 
+	private _onTenantSelectionChangeEvent: Emitter<string | undefined>;
+	public get onTenantSelectionChangeEvent(): Event<string | undefined> { return this._onTenantSelectionChangeEvent.event; }
+
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
@@ -35,20 +38,25 @@ export class AccountPickerService implements IAccountPickerService {
 		this._addAccountCompleteEmitter = new Emitter<void>();
 		this._addAccountErrorEmitter = new Emitter<string>();
 		this._addAccountStartEmitter = new Emitter<void>();
-		this._onAccountSelectionChangeEvent = new Emitter<azdata.Account>();
+		this._onAccountSelectionChangeEvent = new Emitter<azdata.Account | undefined>();
+		this._onTenantSelectionChangeEvent = new Emitter<string | undefined>();
 	}
 
 	/**
 	 * Get selected account
 	 */
 	public get selectedAccount(): azdata.Account | undefined {
-		return this._accountPicker.viewModel.selectedAccount;
+		if (this._accountPicker) {
+			return this._accountPicker.viewModel.selectedAccount;
+		} else {
+			return undefined;
+		}
 	}
 
 	/**
 	 * Render account picker
 	 */
-	public renderAccountPicker(container: HTMLElement): void {
+	public renderAccountPicker(rootContainer: HTMLElement): void {
 		if (!this._accountPicker) {
 			// TODO: expand support to multiple providers
 			const providerId: string = 'azure_publicCloud';
@@ -60,6 +68,7 @@ export class AccountPickerService implements IAccountPickerService {
 		this._accountPicker.addAccountErrorEvent((msg) => this._addAccountErrorEmitter.fire(msg));
 		this._accountPicker.addAccountStartEvent(() => this._addAccountStartEmitter.fire());
 		this._accountPicker.onAccountSelectionChangeEvent((account) => this._onAccountSelectionChangeEvent.fire(account));
-		this._accountPicker.render(container);
+		this._accountPicker.onTenantSelectionChangeEvent((tenantId) => this._onTenantSelectionChangeEvent.fire(tenantId));
+		this._accountPicker.render(rootContainer);
 	}
 }

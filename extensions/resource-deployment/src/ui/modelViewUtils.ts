@@ -3,19 +3,22 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
+import * as fs from 'fs';
 import { EOL, homedir as os_homedir } from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { azureResource } from '../../../azurecore/src/azureResource/azure-resource';
-import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles, FilePickerFieldInfo } from '../interfaces';
+import { azureResource } from 'azureResource';
+import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, FilePickerFieldInfo, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles } from '../interfaces';
 import * as loc from '../localizedConstants';
+import { apiService } from '../services/apiService';
 import { getDefaultKubeConfigPath, getKubeConfigClusterContexts } from '../services/kubeService';
 import { assert, getDateTimeString, getErrorMessage } from '../utils';
 import { WizardInfoBase } from './../interfaces';
 import { Model } from './model';
 import { RadioGroupLoadingComponentBuilder } from './radioGroupLoadingComponentBuilder';
-import { apiService } from '../services/apiService';
+import { IToolsService } from '../services/toolsService';
+import { KubeCtlToolName, KubeCtlTool } from '../services/tools/kubeCtlTool';
 
 const localize = nls.loadMessageBundle();
 
@@ -106,6 +109,7 @@ interface AzureAccountComponents {
 
 interface ContextBase {
 	container: azdata.window.Dialog | azdata.window.Wizard;
+	toolsService: IToolsService,
 	inputComponents: InputComponents;
 	onNewValidatorCreated: (validator: Validator) => void;
 	onNewDisposableCreated: (disposable: vscode.Disposable) => void;
@@ -196,7 +200,8 @@ export function initializeDialog(dialogContext: DialogContext): void {
 					onNewInputComponentCreated: dialogContext.onNewInputComponentCreated,
 					onNewValidatorCreated: dialogContext.onNewValidatorCreated,
 					container: dialogContext.container,
-					inputComponents: dialogContext.inputComponents
+					inputComponents: dialogContext.inputComponents,
+					toolsService: dialogContext.toolsService
 				});
 			}));
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
@@ -228,6 +233,7 @@ export function initializeWizardPage(context: WizardPageContext): void {
 			return createSection({
 				view: view,
 				container: context.container,
+				toolsService: context.toolsService,
 				inputComponents: context.inputComponents,
 				onNewDisposableCreated: context.onNewDisposableCreated,
 				onNewInputComponentCreated: context.onNewInputComponentCreated,
@@ -298,7 +304,8 @@ async function processFields(fieldInfoArray: FieldInfo[], components: azdata.Com
 			fieldInfo: fieldInfo,
 			container: context.container,
 			inputComponents: context.inputComponents,
-			components: components
+			components: components,
+			toolsService: context.toolsService
 		});
 		if (spaceBetweenFields && i < fieldInfoArray.length - 1) {
 			components.push(context.view.modelBuilder.divContainer().withLayout({ width: spaceBetweenFields }).component());
@@ -378,6 +385,9 @@ async function processField(context: FieldContext): Promise<void> {
 			break;
 		case FieldType.KubeClusterContextPicker:
 			processKubeConfigClusterPickerField(context);
+			break;
+		case FieldType.KubeStorageClass:
+			await processKubeStorageClassField(context);
 			break;
 		default:
 			throw new Error(localize('UnknownFieldTypeError', "Unknown field type: \"{0}\"", context.fieldInfo.type));
@@ -658,6 +668,7 @@ function processFilePickerField(context: FieldContext): FilePickerInputs {
  */
 function getClusterContexts(file: string): (() => Promise<OptionsInfo>) {
 	return async () => {
+		await throwIfNotExistsOrNotAFile(file);
 		try {
 			let currentClusterContext = '';
 			const clusterContexts: string[] = (await getKubeConfigClusterContexts(file)).map(kubeClusterContext => {
@@ -675,6 +686,23 @@ function getClusterContexts(file: string): (() => Promise<OptionsInfo>) {
 			throw Error(localize('getClusterContexts.errorFetchingClusters', "An error ocurred while loading or parsing the config file:{0}, error is:{1}", file, getErrorMessage(e)));
 		}
 	};
+}
+
+async function throwIfNotExistsOrNotAFile(file: string) {
+	try {
+		const stats = await fs.promises.stat(file); // this throws if the file does not exist with error.code = ENOENT
+		if (!stats.isFile()) {
+			throw Error(localize('fileChecker.NotFile', "Path: {0} is not a file, please select a valid kube config file.", file));
+		}
+	}
+	catch (e) {
+		if (e.code === 'ENOENT') {
+			throw Error(localize('fileChecker.FileNotFound', "File: {0} not found. Please select a kube config file.", file));
+		}
+		else {
+			throw e;
+		}
+	}
 }
 
 /**
@@ -700,7 +728,8 @@ async function processKubeConfigClusterPickerField(context: KubeClusterContextFi
 			variableName: kubeConfigFilePathVariableName,
 			labelPosition: LabelPosition.Left,
 			required: true
-		}
+		},
+		toolsService: context.toolsService
 	};
 	const filePicker = processFilePickerField(filePickerContext);
 	context.fieldInfo.subFields = context.fieldInfo.subFields || [];
@@ -727,7 +756,7 @@ async function createRadioOptions(context: FieldContext, getRadioButtonInfo?: ((
 		context.fieldInfo.fieldAlignItems = 'flex-start'; // by default align the items to the top.
 	}
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
-	const radioGroupLoadingComponentBuilder = new RadioGroupLoadingComponentBuilder(context.view, context.onNewDisposableCreated);
+	const radioGroupLoadingComponentBuilder = new RadioGroupLoadingComponentBuilder(context.view, context.onNewDisposableCreated, context.fieldInfo);
 	context.fieldInfo.labelPosition = LabelPosition.Left;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, { component: radioGroupLoadingComponentBuilder });
 	addLabelInputPairToContainer(context.view, context.components, label, radioGroupLoadingComponentBuilder.component(), context.fieldInfo);
@@ -737,6 +766,18 @@ async function createRadioOptions(context: FieldContext, getRadioButtonInfo?: ((
 	return radioGroupLoadingComponentBuilder;
 }
 
+const enum AccountStatus {
+	notFound = 0,
+	isStale,
+	isNotStale,
+}
+
+async function getAccountStatus(account: azdata.Account): Promise<AccountStatus> {
+	const refreshedAccount = (await azdata.accounts.getAllAccounts()).find(ac => ac.key.accountId === account.key.accountId);
+	return (refreshedAccount === undefined)
+		? AccountStatus.notFound
+		: refreshedAccount.isStale ? AccountStatus.isStale : AccountStatus.isNotStale;
+}
 
 /**
  * An Azure Account field consists of 3 separate dropdown fields - Account, Subscription and Resource Group
@@ -784,14 +825,14 @@ async function processAzureAccountField(context: AzureAccountFieldContext): Prom
 			// Append a blank value for the "default" option if the field isn't required, context will clear all the dropdowns when selected
 			const dropdownValues = context.fieldInfo.required ? [] : [''];
 			accountDropdown.values = dropdownValues.concat(accounts.map(account => {
-				const displayName = `${account.displayInfo.displayName} (${account.displayInfo.userId})`;
+				const displayName = getAccountDisplayString(account);
 				accountValueToAccountMap.set(displayName, account);
 				return displayName;
 			}));
 			const selectedAccount = accountDropdown.value ? accountValueToAccountMap.get(accountDropdown.value.toString()) : undefined;
 			await handleSelectedAccountChanged(context, selectedAccount, subscriptionDropdown, subscriptionValueToSubscriptionMap, resourceGroupDropdown, locationDropdown);
 		} catch (error) {
-			vscode.window.showErrorMessage(localize('azure.accounts.unexpectedAccountsError', 'Unexpected error fetching accounts: ${0}', getErrorMessage(error)));
+			vscode.window.showErrorMessage(localize('azure.accounts.unexpectedAccountsError', 'Unexpected error fetching accounts: {0}', getErrorMessage(error)));
 		}
 	};
 
@@ -807,6 +848,46 @@ async function processAzureAccountField(context: AzureAccountFieldContext): Prom
 	setTimeout(async () => {
 		await populateAzureAccounts();
 	}, 0);
+}
+
+async function processKubeStorageClassField(context: FieldContext): Promise<void> {
+	const label = createLabel(context.view, {
+		text: context.fieldInfo.label,
+		description: context.fieldInfo.description,
+		required: context.fieldInfo.required,
+		width: context.fieldInfo.labelWidth,
+		cssStyles: context.fieldInfo.labelCSSStyles
+	});
+
+	// Try to query for the available storage classes - but if this fails the dropdown is editable
+	// so users can still enter their own
+	let storageClasses: string[] = [];
+	let defaultStorageClass = '';
+	try {
+		const kubeCtlTool = context.toolsService.getToolByName(KubeCtlToolName) as KubeCtlTool;
+		const response = await kubeCtlTool.getStorageClasses();
+		storageClasses = response.storageClasses;
+		defaultStorageClass = response.defaultStorageClass;
+	} catch (err) {
+		vscode.window.showErrorMessage(localize('resourceDeployment.errorFetchingStorageClasses', "Unexpected error fetching available kubectl storage classes : {0}", err.message ?? err));
+	}
+
+	const storageClassDropdown = createDropdown(context.view, {
+		width: context.fieldInfo.inputWidth,
+		editable: true,
+		required: context.fieldInfo.required,
+		label: context.fieldInfo.label,
+		values: storageClasses,
+		defaultValue: defaultStorageClass
+	});
+	storageClassDropdown.fireOnTextChange = true;
+	context.onNewInputComponentCreated(context.fieldInfo.variableName!, { component: storageClassDropdown });
+	addLabelInputPairToContainer(context.view, context.components, label, storageClassDropdown, context.fieldInfo);
+}
+
+
+function getAccountDisplayString(account: azdata.Account) {
+	return `${account.displayInfo.displayName} (${account.displayInfo.userId})`;
 }
 
 function createAzureAccountDropdown(context: AzureAccountFieldContext): AzureAccountComponents {
@@ -908,29 +989,69 @@ async function handleSelectedAccountChanged(
 			return;
 		}
 		if (response.errors.length > 0) {
-			// If we got back some subscriptions then don't display the errors to the user - it's normal for users
-			// to not necessarily have access to all subscriptions on an account so displaying the errors
-			// in that case is usually just distracting and causes confusion
-			const errMsg = response.errors.join(EOL);
-			if (response.subscriptions.length === 0) {
+			const accountStatus = await getAccountStatus(selectedAccount);
+
+			// If accountStatus is not found or stale then user needs to sign in again
+			// else individual errors received from the response are bubbled up.
+			if (accountStatus === AccountStatus.isStale || accountStatus === AccountStatus.notFound) {
+				const errMsg = await getAzureAccessError({ selectedAccount, accountStatus });
 				context.container.message = {
-					text: errMsg || '',
+					text: errMsg,
 					description: '',
 					level: azdata.window.MessageLevel.Error
 				};
 			} else {
-				console.log(errMsg);
+				// If we got back some subscriptions then don't display the errors to the user - it's normal for users
+				// to not necessarily have access to all subscriptions on an account so displaying the errors
+				// in that case is usually just distracting and causes confusion
+				const errMsg = response.errors.join(EOL);
+				if (response.subscriptions.length === 0) {
+					context.container.message = {
+						text: errMsg,
+						description: '',
+						level: azdata.window.MessageLevel.Error
+					};
+				} else {
+					console.log(errMsg);
+				}
 			}
 		}
 		subscriptionDropdown.values = response.subscriptions.map(subscription => {
-			const displayName = `${subscription.name} (${subscription.id})`;
+			const displayName = getSubscriptionDisplayString(subscription);
 			subscriptionValueToSubscriptionMap.set(displayName, subscription);
 			return displayName;
 		}).sort((a: string, b: string) => a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase()));
 		const selectedSubscription = subscriptionDropdown.values.length > 0 ? subscriptionValueToSubscriptionMap.get(subscriptionDropdown.values[0]) : undefined;
 		await handleSelectedSubscriptionChanged(context, selectedAccount, selectedSubscription, resourceGroupDropdown);
 	} catch (error) {
-		vscode.window.showErrorMessage(localize('azure.accounts.unexpectedSubscriptionsError', "Unexpected error fetching subscriptions for account {0} ({1}): {2}", selectedAccount?.displayInfo.displayName, selectedAccount?.key.accountId, getErrorMessage(error)));
+		await vscode.window.showErrorMessage(await getAzureAccessError({ selectedAccount, defaultErrorMessage: localize('azure.accounts.unexpectedSubscriptionsError', "Unexpected error fetching subscriptions for account {0}: {1}", getAccountDisplayString(selectedAccount), getErrorMessage(error)), error }));
+	}
+}
+
+function getSubscriptionDisplayString(subscription: azureResource.AzureResourceSubscription) {
+	return `${subscription.name} (${subscription.id})`;
+}
+
+type AccountAccessParams = {
+	selectedAccount: azdata.Account;
+	defaultErrorMessage?: string;
+	error?: any;
+	accountStatus?: AccountStatus;
+};
+
+async function getAzureAccessError({ selectedAccount, defaultErrorMessage = '', error = undefined, accountStatus = undefined }: AccountAccessParams): Promise<string> {
+	if (accountStatus === undefined) {
+		accountStatus = await getAccountStatus(selectedAccount);
+	}
+	switch (accountStatus) {
+		case AccountStatus.notFound:
+			return localize('azure.accounts.accountNotFoundError', "The selected account '{0}' is no longer available. Click sign in to add it again or select a different account.", getAccountDisplayString(selectedAccount))
+				+ (error !== undefined ? localize('azure.accessError', "\n Error Details: {0}.", getErrorMessage(error)) : '');
+		case AccountStatus.isStale:
+			return localize('azure.accounts.accountStaleError', "The access token for selected account '{0}' is no longer valid. Please click the sign in button and refresh the account or select a different account.", getAccountDisplayString(selectedAccount))
+				+ (error !== undefined ? localize('azure.accessError', "\n Error Details: {0}.", getErrorMessage(error)) : '');
+		case AccountStatus.isNotStale:
+			return defaultErrorMessage;
 	}
 }
 
@@ -983,25 +1104,38 @@ async function handleSelectedSubscriptionChanged(context: AzureAccountFieldConte
 			return;
 		}
 		if (response.errors.length > 0) {
-			// If we got back some Resource Groups then don't display the errors to the user - it's normal for users
-			// to not necessarily have access to all Resource Groups on a subscription so displaying the errors
-			// in that case is usually just distracting and causes confusion
-			const errMsg = response.errors.join(EOL);
-			if (response.resourceGroups.length === 0) {
+			const accountStatus = await getAccountStatus(selectedAccount);
+
+			// If accountStatus is not found or stale then user needs to sign in again
+			// else individual errors received from the response are bubbled up.
+			if (accountStatus === AccountStatus.isStale || accountStatus === AccountStatus.notFound) {
+				const errMsg = await getAzureAccessError({ selectedAccount, accountStatus });
 				context.container.message = {
-					text: errMsg || '',
+					text: errMsg,
 					description: '',
 					level: azdata.window.MessageLevel.Error
 				};
 			} else {
-				console.log(errMsg);
+				// If we got back some Resource Groups then don't display the errors to the user - it's normal for users
+				// to not necessarily have access to all Resource Groups on a subscription so displaying the errors
+				// in that case is usually just distracting and causes confusion
+				const errMsg = response.errors.join(EOL);
+				if (response.resourceGroups.length === 0) {
+					context.container.message = {
+						text: errMsg,
+						description: '',
+						level: azdata.window.MessageLevel.Error
+					};
+				} else {
+					console.log(errMsg);
+				}
 			}
 		}
 		resourceGroupDropdown.values = (response.resourceGroups.length !== 0)
 			? response.resourceGroups.map(resourceGroup => resourceGroup.name).sort((a: string, b: string) => a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase()))
 			: [''];
 	} catch (error) {
-		vscode.window.showErrorMessage(localize('azure.accounts.unexpectedResourceGroupsError', "Unexpected error fetching resource groups for subscription {0} ({1}): {2}", selectedSubscription?.name, selectedSubscription?.id, getErrorMessage(error)));
+		await vscode.window.showErrorMessage(await getAzureAccessError({ selectedAccount, defaultErrorMessage: localize('azure.accounts.unexpectedResourceGroupsError', "Unexpected error fetching resource groups for subscription {0}: {1}", getSubscriptionDisplayString(selectedSubscription), getErrorMessage(error)), error }));
 	}
 }
 
@@ -1033,13 +1167,14 @@ async function processAzureLocationsField(context: AzureLocationsFieldContext): 
 			label: label.value!,
 			variableName: context.fieldInfo.locationVariableName
 		});
+		context.onNewInputComponentCreated(context.fieldInfo.locationVariableName, { component: locationDropdown });
 	}
 	if (context.fieldInfo.displayLocationVariableName) {
 		context.fieldInfo.subFields!.push({
 			label: label.value!,
 			variableName: context.fieldInfo.displayLocationVariableName
 		});
-		context.onNewInputComponentCreated(context.fieldInfo.displayLocationVariableName, { component: locationDropdown });
+		context.onNewInputComponentCreated(context.fieldInfo.displayLocationVariableName, { component: locationDropdown, inputValueTransformer: (value => azurecoreApi.getRegionDisplayName(value)) });
 	}
 	addLabelInputPairToContainer(context.view, context.components, label, locationDropdown, context.fieldInfo);
 	return locationDropdown;

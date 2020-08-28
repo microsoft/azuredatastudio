@@ -313,6 +313,11 @@ export interface INotebookModel {
 	readonly onActiveCellChanged: Event<ICellModel>;
 
 	/**
+	 * Event fired on cell type change
+	 */
+	readonly onCellTypeChanged: Event<ICellModel>;
+
+	/**
 	 * The trusted mode of the Notebook
 	 */
 	trustedMode: boolean;
@@ -342,6 +347,12 @@ export interface INotebookModel {
 	 * Adds a cell to the index of the model
 	 */
 	addCell(cellType: CellType, index?: number): void;
+
+	/**
+	 * Moves a cell up/down
+	 */
+	moveCell(cellModel: ICellModel, direction: MoveDirection): void;
+
 
 	/**
 	 * Deletes a cell
@@ -422,6 +433,11 @@ export enum CellExecutionState {
 	Stopped = 1,
 	Running = 2,
 	Error = 3
+}
+
+export enum MoveDirection {
+	Up,
+	Down
 }
 
 export interface IOutputChangedEvent {

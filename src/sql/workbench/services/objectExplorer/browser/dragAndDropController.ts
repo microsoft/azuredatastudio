@@ -12,6 +12,25 @@ import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/t
 import { UNSAVED_GROUP_ID } from 'sql/platform/connection/common/constants';
 import { DataTransfers, IDragAndDropData } from 'vs/base/browser/dnd';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
+import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
+
+export function supportsNodeNameDrop(nodeId: string): boolean {
+	if (nodeId === 'Table' || nodeId === 'Column' || nodeId === 'View') {
+		return true;
+	}
+	return false;
+}
+
+export function supportsFolderNodeNameDrop(nodeId: string, label: string): boolean {
+	if (nodeId === 'Folder' && label === 'Columns') {
+		return true;
+	}
+	return false;
+}
+
+function escapeString(input: string | undefined): string | undefined {
+	return input?.replace(/]/g, ']]');
+}
 
 /**
  * Implements drag and drop for the server tree
@@ -27,16 +46,17 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 	 * Returns a uri if the given element should be allowed to drag.
 	 * Returns null, otherwise.
 	 */
-	public getDragURI(tree: ITree, element: any): string {
+	public getDragURI(tree: AsyncServerTree | ITree, element: any): string {
 		if (element) {
 			if (element instanceof ConnectionProfile) {
 				return (<ConnectionProfile>element).id;
 			} else if (element instanceof ConnectionProfileGroup) {
 				return (<ConnectionProfileGroup>element).id;
-			} else if (element.nodeTypeId === 'Table' || element.nodeTypeId === 'Column') {
+			} else if (supportsNodeNameDrop(element.nodeTypeId)) {
 				return (<TreeNode>element).id;
-			}
-			else {
+			} else if (supportsFolderNodeNameDrop(element.nodeTypeId, element.label) && element.children) {
+				return (<TreeNode>element).id;
+			} else {
 				return undefined;
 			}
 		}
@@ -48,7 +68,7 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 	/**
 	 * Returns a label(name) to display when dragging the element.
 	 */
-	public getDragLabel(tree: ITree, elements: any[]): string {
+	public getDragLabel(tree: AsyncServerTree | ITree, elements: any[]): string {
 		if (elements) {
 			if (elements[0] instanceof ConnectionProfile) {
 				return (<ConnectionProfile>elements[0]).serverName;
@@ -69,15 +89,28 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 	/**
 	 * Called when the drag operation starts.
 	 */
-	public onDragStart(tree: ITree, dragAndDropData: IDragAndDropData, originalEvent: DragMouseEvent): void {
+	public onDragStart(tree: AsyncServerTree | ITree, dragAndDropData: IDragAndDropData, originalEvent: DragMouseEvent): void {
+		let escapedSchema, escapedName, finalString;
 		TreeUpdateUtils.isInDragAndDrop = true;
 		const data = dragAndDropData.getData();
 		const element = data[0];
-		if (element.nodeTypeId === 'Column' || element.nodeTypeId === 'Table') {
-			const escapedSchema = element.metadata.schema?.replace(/]/g, ']]');
-			const escapedName = element.metadata.name?.replace(/]/g, ']]');
-			const finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
+		if (supportsNodeNameDrop(element.nodeTypeId)) {
+			escapedSchema = escapeString(element.metadata.schema);
+			escapedName = escapeString(element.metadata.name);
+			finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
 			originalEvent.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([`${element.nodeTypeId}:${element.id}?${finalString}`]));
+		}
+		if (supportsFolderNodeNameDrop(element.nodeTypeId, element.label)) {
+			// get children
+			let returnString = '';
+			for (let child of element.children) {
+				escapedSchema = escapeString(child.metadata.schema);
+				escapedName = escapeString(child.metadata.name);
+				finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
+				returnString = returnString ? `${returnString},${finalString}` : `${finalString}`;
+			}
+
+			originalEvent.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([`${element.nodeTypeId}:${element.id}?${returnString}`]));
 		}
 		return;
 	}
@@ -104,7 +137,7 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 	 * dropped into target or some parent of the target.
 	 * Returns DRAG_OVER_ACCEPT_BUBBLE_DOWN when element is a connection group or connection
 	 */
-	public onDragOver(tree: ITree, data: IDragAndDropData, targetElement: any, originalEvent: DragMouseEvent): IDragOverReaction {
+	public onDragOver(tree: AsyncServerTree | ITree, data: IDragAndDropData, targetElement: any, originalEvent: DragMouseEvent): IDragOverReaction {
 		let canDragOver: boolean = true;
 
 		if (targetElement instanceof ConnectionProfile || targetElement instanceof ConnectionProfileGroup) {
@@ -125,6 +158,14 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 		}
 
 		if (canDragOver) {
+			if (targetElement instanceof ConnectionProfile) {
+				const isConnected = this._connectionManagementService.isProfileConnected(targetElement);
+				// Don't auto-expand disconnected connections - doing so will try to connect the connection
+				// when expanded which is not something we want to support currently
+				return DRAG_OVER_ACCEPT_BUBBLE_DOWN(isConnected);
+			}
+			// Auto-expand other elements (groups, tree nodes) so their children can be
+			// exposed for further dragging
 			return DRAG_OVER_ACCEPT_BUBBLE_DOWN(true);
 		} else {
 			return DRAG_OVER_REJECT;
@@ -134,7 +175,7 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 	/**
 	 * Handle a drop in the server tree.
 	 */
-	public drop(tree: ITree, data: IDragAndDropData, targetElement: any, originalEvent: DragMouseEvent): void {
+	public drop(tree: AsyncServerTree | ITree, data: IDragAndDropData, targetElement: any, originalEvent: DragMouseEvent): void {
 		TreeUpdateUtils.isInDragAndDrop = false;
 
 		let targetConnectionProfileGroup: ConnectionProfileGroup = this.getTargetGroup(targetElement);
@@ -148,12 +189,18 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 				if (source instanceof ConnectionProfile) {
 					// Change group id of profile
 					this._connectionManagementService.changeGroupIdForConnection(source, targetConnectionProfileGroup.id).then(() => {
-						TreeUpdateUtils.registeredServerUpdate(tree, self._connectionManagementService, targetConnectionProfileGroup);
+						if (tree) {
+							TreeUpdateUtils.registeredServerUpdate(tree, self._connectionManagementService, targetConnectionProfileGroup);
+						}
+
 					});
 				} else if (source instanceof ConnectionProfileGroup) {
 					// Change parent id of group
 					this._connectionManagementService.changeGroupIdForConnectionGroup(source, targetConnectionProfileGroup).then(() => {
-						TreeUpdateUtils.registeredServerUpdate(tree, self._connectionManagementService);
+						if (tree) {
+							TreeUpdateUtils.registeredServerUpdate(tree, self._connectionManagementService);
+						}
+
 					});
 				}
 			}

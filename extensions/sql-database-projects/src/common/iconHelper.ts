@@ -20,6 +20,12 @@ export class IconPathHelper {
 	public static referenceGroup: IconPath;
 	public static referenceDatabase: IconPath;
 
+	public static refresh: IconPath;
+	public static folder_blue: IconPath;
+	public static edit: IconPath;
+
+	public static folder: IconPath;
+
 	public static setExtensionContext(extensionContext: vscode.ExtensionContext) {
 		IconPathHelper.extensionContext = extensionContext;
 
@@ -30,6 +36,12 @@ export class IconPathHelper {
 
 		IconPathHelper.referenceGroup = IconPathHelper.makeIcon('referenceGroup');
 		IconPathHelper.referenceDatabase = IconPathHelper.makeIcon('reference-database');
+
+		IconPathHelper.refresh = IconPathHelper.makeIcon('refresh');
+		IconPathHelper.folder_blue = IconPathHelper.makeIcon('folder_blue');
+		IconPathHelper.edit = IconPathHelper.makeIcon('edit');
+
+		IconPathHelper.folder = IconPathHelper.makeIcon('folder');
 	}
 
 	private static makeIcon(name: string) {

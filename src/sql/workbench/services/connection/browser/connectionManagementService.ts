@@ -213,7 +213,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * @param params Include the uri, type of connection
 	 * @param model the existing connection profile to create a new one from
 	 */
-	public showConnectionDialog(params?: INewConnectionParams, options?: IConnectionCompletionOptions, model?: interfaces.IConnectionProfile, connectionResult?: IConnectionResult): Promise<void> {
+	public showConnectionDialog(params?: INewConnectionParams, options?: IConnectionCompletionOptions, model?: Partial<interfaces.IConnectionProfile>, connectionResult?: IConnectionResult): Promise<void> {
 		if (!params) {
 			params = { connectionType: ConnectionType.default };
 		}
@@ -933,7 +933,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				serverVersion: connection.serverInfo ? connection.serverInfo.serverVersion : '',
 				serverEdition: connection.serverInfo ? connection.serverInfo.serverEdition : '',
 				serverEngineEdition: connection.serverInfo ? connection.serverInfo.engineEditionId : '',
-				isBigDataCluster: connection.serverInfo?.options['isBigDataCluster'] ?? false,
+				isBigDataCluster: connection.serverInfo?.options?.isBigDataCluster ?? false,
 				extensionConnectionTime: connection.extensionTimer.elapsed() - connection.serviceTimer.elapsed(),
 				serviceConnectionTime: connection.serviceTimer.elapsed()
 			})
@@ -995,6 +995,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		let id = Utils.generateUri(source);
 		this._telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.MoveServerGroup);
 		return this._connectionStore.changeGroupIdForConnection(source, targetGroupId).then(result => {
+			this._onAddConnectionProfile.fire(source);
 			if (id && targetGroupId) {
 				source.groupId = targetGroupId;
 			}
@@ -1429,6 +1430,13 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	public getProviderProperties(providerName: string): ConnectionProviderProperties {
 		let connectionProvider = this._providers.get(providerName);
 		return connectionProvider && connectionProvider.properties;
+	}
+
+	/**
+	 * Gets languageMode property of provider if it exists. Defaults to 'sql'
+	*/
+	public getProviderLanguageMode(providerName?: string): string {
+		return this._providers.get(providerName)?.properties?.['languageMode'] || 'sql';
 	}
 
 	/**

@@ -25,10 +25,10 @@ import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/m
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 import { find, firstIndex } from 'vs/base/common/arrays';
-import { INotebookEditor } from 'sql/workbench/services/notebook/browser/notebookService';
-import { NotebookComponent } from 'sql/workbench/contrib/notebook/browser/notebook.component';
+import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
+import { URI } from 'vs/base/common/uri';
 
 const msgLoading = localize('loading', "Loading kernels...");
 export const msgChanging = localize('changing', "Changing kernel...");
@@ -46,11 +46,12 @@ export class AddCellAction extends Action {
 	public cellType: CellType;
 
 	constructor(
-		id: string, label: string, cssClass: string
+		id: string, label: string, cssClass: string,
+		@INotebookService private _notebookService: INotebookService
 	) {
 		super(id, label, cssClass);
 	}
-	public async run(context: INotebookEditor | CellContext): Promise<void> {
+	public async run(context: URI | CellContext): Promise<void> {
 		let index = 0;
 		if (context instanceof CellContext) {
 			if (context?.model?.cells) {
@@ -64,14 +65,9 @@ export class AddCellAction extends Action {
 			}
 		} else {
 			//Add Cell after current selected cell.
-			if (context?.cells) {
-				let notebookcomponent = context as NotebookComponent;
-				let id = notebookcomponent.activeCellId;
-				if (id) {
-					index = context.cells.findIndex(cell => cell.id === id) + 1;
-				}
-			}
-			context.addCell(this.cellType, index);
+			const editor = this._notebookService.findNotebookEditor(context);
+			const index = editor.cells?.findIndex(cell => cell.active) ?? 0;
+			editor.addCell(this.cellType, index);
 		}
 	}
 }
@@ -110,7 +106,8 @@ export class ClearAllOutputsAction extends TooltipFromLabelAction {
 	private static readonly iconClass = 'icon-clear-results';
 	private static readonly maskedIconClass = 'masked-icon';
 
-	constructor(id: string, toggleTooltip: boolean) {
+	constructor(id: string, toggleTooltip: boolean,
+		@INotebookService private _notebookService: INotebookService) {
 		super(id, {
 			label: ClearAllOutputsAction.label,
 			baseClass: ClearAllOutputsAction.baseClass,
@@ -120,8 +117,9 @@ export class ClearAllOutputsAction extends TooltipFromLabelAction {
 		});
 	}
 
-	public run(context: INotebookEditor): Promise<boolean> {
-		return context.clearAllOutputs();
+	public run(context: URI): Promise<boolean> {
+		const editor = this._notebookService.findNotebookEditor(context);
+		return editor.clearAllOutputs();
 	}
 }
 
@@ -181,7 +179,8 @@ export class TrustedAction extends ToggleableAction {
 	private static readonly maskedIconClass = 'masked-icon';
 
 	constructor(
-		id: string, toggleTooltip: boolean
+		id: string, toggleTooltip: boolean,
+		@INotebookService private _notebookService: INotebookService
 	) {
 		super(id, {
 			baseClass: TrustedAction.baseClass,
@@ -202,17 +201,11 @@ export class TrustedAction extends ToggleableAction {
 		this.toggle(value);
 	}
 
-	public run(context: INotebookEditor): Promise<boolean> {
-		let self = this;
-		return new Promise<boolean>((resolve, reject) => {
-			try {
-				self.trusted = !self.trusted;
-				context.model.trustedMode = self.trusted;
-				resolve(true);
-			} catch (e) {
-				reject(e);
-			}
-		});
+	public async run(context: URI): Promise<boolean> {
+		const editor = this._notebookService.findNotebookEditor(context);
+		this.trusted = !this.trusted;
+		editor.model.trustedMode = this.trusted;
+		return true;
 	}
 }
 
@@ -220,13 +213,15 @@ export class TrustedAction extends ToggleableAction {
 export class RunAllCellsAction extends Action {
 	constructor(
 		id: string, label: string, cssClass: string,
-		@INotificationService private notificationService: INotificationService
+		@INotificationService private notificationService: INotificationService,
+		@INotebookService private _notebookService: INotebookService
 	) {
 		super(id, label, cssClass);
 	}
-	public async run(context: INotebookEditor): Promise<boolean> {
+	public async run(context: URI): Promise<boolean> {
 		try {
-			await context.runAllCells();
+			const editor = this._notebookService.findNotebookEditor(context);
+			await editor.runAllCells();
 			return true;
 		} catch (e) {
 			this.notificationService.error(getErrorMessage(e));
@@ -245,7 +240,8 @@ export class CollapseCellsAction extends ToggleableAction {
 	private static readonly expandCssClass = 'icon-show-cells';
 	private static readonly maskedIconClass = 'masked-icon';
 
-	constructor(id: string, toggleTooltip: boolean) {
+	constructor(id: string, toggleTooltip: boolean,
+		@INotebookService private _notebookService: INotebookService) {
 		super(id, {
 			baseClass: CollapseCellsAction.baseClass,
 			toggleOnLabel: CollapseCellsAction.expandCells,
@@ -256,6 +252,7 @@ export class CollapseCellsAction extends ToggleableAction {
 			shouldToggleTooltip: toggleTooltip,
 			isOn: false
 		});
+		this.expanded = true;
 	}
 
 	public get isCollapsed(): boolean {
@@ -263,27 +260,23 @@ export class CollapseCellsAction extends ToggleableAction {
 	}
 	private setCollapsed(value: boolean) {
 		this.toggle(value);
+		this.expanded = !value;
 	}
 
-	public run(context: INotebookEditor): Promise<boolean> {
-		let self = this;
-		return new Promise<boolean>((resolve, reject) => {
-			try {
-				self.setCollapsed(!self.isCollapsed);
-				context.cells.forEach(cell => {
-					cell.isCollapsed = self.isCollapsed;
-				});
-				resolve(true);
-			} catch (e) {
-				reject(e);
-			}
+	public async run(context: URI): Promise<boolean> {
+		const editor = this._notebookService.findNotebookEditor(context);
+		this.setCollapsed(!this.isCollapsed);
+		editor.cells.forEach(cell => {
+			cell.isCollapsed = this.isCollapsed;
 		});
+		return true;
 	}
 }
 
 const showAllKernelsConfigName = 'notebook.showAllKernels';
 const workbenchPreviewConfigName = 'workbench.enablePreviewFeatures';
 export const noKernelName = localize('noKernel', "No Kernel");
+
 export class KernelsDropdown extends SelectBox {
 	private model: NotebookModel;
 	private _showAllKernels: boolean = false;
@@ -310,16 +303,21 @@ export class KernelsDropdown extends SelectBox {
 	updateModel(model: INotebookModel): void {
 		this.model = model as NotebookModel;
 		this._register(this.model.kernelChanged((changedArgs: azdata.nb.IKernelChangedArgs) => {
-			this.updateKernel(changedArgs.newValue);
+			this.updateKernel(changedArgs.newValue, changedArgs.nbKernelAlias);
 		}));
 		let kernel = this.model.clientSession && this.model.clientSession.kernel;
 		this.updateKernel(kernel);
 	}
 
 	// Update SelectBox values
-	public updateKernel(kernel: azdata.nb.IKernel) {
+	public updateKernel(kernel: azdata.nb.IKernel, nbKernelAlias?: string) {
 		let kernels: string[] = this._showAllKernels ? [...new Set(this.model.specs.kernels.map(a => a.display_name).concat(this.model.standardKernelsDisplayName()))]
 			: this.model.standardKernelsDisplayName();
+		if (this.model.kernelAliases?.length) {
+			for (let x in this.model.kernelAliases) {
+				kernels.splice(1, 0, this.model.kernelAliases[x]);
+			}
+		}
 		if (kernel && kernel.isReady) {
 			let standardKernel = this.model.getStandardKernelFromName(kernel.name);
 			if (kernels) {
@@ -329,6 +327,9 @@ export class KernelsDropdown extends SelectBox {
 				} else {
 					let kernelSpec = this.model.specs.kernels.find(k => k.name === kernel.name);
 					index = firstIndex(kernels, k => k === kernelSpec?.display_name);
+				}
+				if (nbKernelAlias) {
+					index = kernels.indexOf(nbKernelAlias);
 				}
 				// This is an error case that should never happen
 				// Just in case, setting index to 0
@@ -487,6 +488,13 @@ export class AttachToDropdown extends SelectBox {
 			this.model.addAttachToConnectionsToBeDisposed(connectionUri);
 			// Call doChangeContext to set the newly chosen connection in the model
 			this.doChangeContext(connectionProfile);
+
+			//Changes kernel based on connection attached to
+			if (this.model.kernelAliases.includes(connectionProfile.serverCapabilities.notebookKernelAlias)) {
+				this.model.changeKernel(connectionProfile.serverCapabilities.notebookKernelAlias);
+			} else {
+				this.model.changeKernel('SQL');
+			}
 			return true;
 		}
 		catch (error) {

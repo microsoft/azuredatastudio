@@ -11,10 +11,11 @@ import * as azdata from 'azdata';
 export const IAccountPickerService = createDecorator<IAccountPickerService>('AccountPickerService');
 export interface IAccountPickerService {
 	_serviceBrand: undefined;
-	renderAccountPicker(container: HTMLElement): void;
+	renderAccountPicker(rootContainer: HTMLElement): void;
 	addAccountCompleteEvent: Event<void>;
 	addAccountErrorEvent: Event<string>;
 	addAccountStartEvent: Event<void>;
 	onAccountSelectionChangeEvent: Event<azdata.Account | undefined>;
+	onTenantSelectionChangeEvent: Event<string | undefined>;
 	selectedAccount: azdata.Account | undefined;
 }

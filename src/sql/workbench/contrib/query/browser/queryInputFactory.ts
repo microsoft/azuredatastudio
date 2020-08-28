@@ -28,7 +28,8 @@ const editorInputFactoryRegistry = Registry.as<IEditorInputFactoryRegistry>(Edit
 
 export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 	static readonly isDefault = true;
-	static readonly languages = ['sql'];
+	static readonly languages = ['sql', 'kusto'];	//TODO Add language id here for new languages supported in query editor. Make it easier to contribute new extension's languageID
+
 
 	constructor(@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IObjectExplorerService private readonly objectExplorerService: IObjectExplorerService,
@@ -43,7 +44,7 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 			queryEditorInput = this.instantiationService.createInstance(FileQueryEditorInput, '', activeEditor, queryResultsInput);
 		} else if (activeEditor instanceof UntitledTextEditorInput) {
 			const content = (await activeEditor.resolve()).textEditorModel.getValue();
-			queryEditorInput = await this.queryEditorService.newSqlEditor({ open: false, initalContent: content }) as UntitledQueryEditorInput;
+			queryEditorInput = await this.queryEditorService.newSqlEditor({ resource: this.editorService.isOpen(activeEditor) ? activeEditor.resource : undefined, open: false, initalContent: content }) as UntitledQueryEditorInput;
 		} else {
 			return undefined;
 		}

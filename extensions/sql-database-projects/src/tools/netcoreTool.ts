@@ -32,7 +32,7 @@ export interface DotNetCommandOptions {
 
 export class NetCoreTool {
 
-	private _outputChannel: vscode.OutputChannel = vscode.window.createOutputChannel(projectsOutputChannel);
+	private static _outputChannel: vscode.OutputChannel = vscode.window.createOutputChannel(projectsOutputChannel);
 
 	public async findOrInstallNetCore(): Promise<boolean> {
 		if (!this.isNetCoreInstallationPresent) {
@@ -93,7 +93,7 @@ export class NetCoreTool {
 
 	public async runDotnetCommand(options: DotNetCommandOptions): Promise<string> {
 		if (options && options.commandTitle !== undefined && options.commandTitle !== null) {
-			this._outputChannel.appendLine(`\t[ ${options.commandTitle} ]`);
+			NetCoreTool._outputChannel.appendLine(`\t[ ${options.commandTitle} ]`);
 		}
 
 		if (!this.findOrInstallNetCore()) {
@@ -104,9 +104,9 @@ export class NetCoreTool {
 		const command = dotnetPath + ' ' + options.argument;
 
 		try {
-			return await this.runStreamedCommand(command, this._outputChannel, options);
+			return await this.runStreamedCommand(command, NetCoreTool._outputChannel, options);
 		} catch (error) {
-			this._outputChannel.append(localize('sqlDatabaseProject.RunCommand.ErroredOut', "\t>>> {0}   … errored out: {1}", command, utils.getErrorMessage(error))); //errors are localized in our code where emitted, other errors are pass through from external components that are not easily localized
+			NetCoreTool._outputChannel.append(localize('sqlDatabaseProject.RunCommand.ErroredOut', "\t>>> {0}   … errored out: {1}", command, utils.getErrorMessage(error))); //errors are localized in our code where emitted, other errors are pass through from external components that are not easily localized
 			throw error;
 		}
 	}

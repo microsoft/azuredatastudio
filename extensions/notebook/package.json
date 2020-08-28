@@ -17,6 +17,11 @@
       "type": "object",
       "title": "%notebook.configuration.title%",
       "properties": {
+        "notebook.collapseBookItems": {
+          "type": "boolean",
+          "default": false,
+          "description": "%notebook.collapseBookItems.description%"
+        },
         "notebook.maxBookSearchDepth": {
           "type": "number",
           "default": 10,
@@ -404,12 +409,12 @@
         },
         {
           "command": "notebook.command.searchProvidedBook",
-          "when": "view == providedBooksView && viewItem == providedBook && providedBooks",
+          "when": "view == providedBooksView && viewItem == providedBook",
           "group": "inline"
         },
         {
           "command": "notebook.command.saveBook",
-          "when": "view == providedBooksView && viewItem == providedBook && providedBooks",
+          "when": "view == providedBooksView && viewItem == providedBook",
           "group": "inline"
         },
         {
@@ -588,10 +593,11 @@
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
+    "nock": "^13.0.2",
     "should": "^13.2.3",
     "sinon": "^9.0.2",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "^1.0.9"
+    "vscodetestcover": "^1.1.0"
   },
   "enableProposedApi": true
 }

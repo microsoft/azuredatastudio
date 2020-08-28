@@ -52,6 +52,7 @@ suite('Firewall rule dialog controller tests', () => {
 		mockFirewallRuleViewModel.setup(x => x.updateDefaultValues(TypeMoq.It.isAny()))
 			.returns((ipAddress) => undefined);
 		mockFirewallRuleViewModel.object.selectedAccount = account;
+		mockFirewallRuleViewModel.object.selectedTenantId = 'tenantId';
 		mockFirewallRuleViewModel.object.isIPAddressSelected = true;
 
 		// Create a mocked out instantiation service
@@ -236,7 +237,7 @@ function getMockResourceProvider(resolveCreateFirewallRule: boolean, response?: 
 	let resourceProviderStub = new TestResourceProvider();
 	let mockResourceProvider = TypeMoq.Mock.ofInstance(resourceProviderStub);
 	mockResourceProvider.setup(x => x.createFirewallRule(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()))
-		.returns(() => resolveCreateFirewallRule ? Promise.resolve(response) : Promise.reject(null));
+		.returns(() => resolveCreateFirewallRule ? Promise.resolve(response!) : Promise.reject(null));
 	return mockResourceProvider;
 }
 

@@ -58,7 +58,7 @@ export class ServerTreeDataSource implements IDataSource {
 	 */
 	public async getChildren(tree: ITree, element: any): Promise<(ConnectionProfile | ConnectionProfileGroup | TreeNode)[]> {
 		if (element instanceof ConnectionProfile) {
-			return TreeUpdateUtils.getObjectExplorerNode(<ConnectionProfile>element, this._connectionManagementService, this._objectExplorerService);
+			return TreeUpdateUtils.getConnectionNodeChildren(<ConnectionProfile>element, this._objectExplorerService);
 		} else if (element instanceof ConnectionProfileGroup) {
 			return (element as ConnectionProfileGroup).getChildren();
 		} else if (element instanceof TreeNode) {

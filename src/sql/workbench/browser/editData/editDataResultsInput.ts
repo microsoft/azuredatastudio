@@ -7,6 +7,10 @@ import { EditorInput } from 'vs/workbench/common/editor';
 import { Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 
+export interface IGridPanel {
+	readonly onRefreshComplete: Promise<void>;
+}
+
 /**
  * Input for the EditDataResultsEditor. This input helps with logic for the viewing and editing of
  * data in the results grid.
@@ -25,11 +29,20 @@ export class EditDataResultsInput extends EditorInput {
 
 	public readonly onRestoreViewStateEmitter = new Emitter<void>();
 	public readonly onSaveViewStateEmitter = new Emitter<void>();
+	private _editDataGridPanel: IGridPanel;
 
 	constructor(private _uri: string) {
 		super();
 		this._visible = false;
 		this._hasBootstrapped = false;
+	}
+
+	get editDataGridPanel(): IGridPanel {
+		return this._editDataGridPanel;
+	}
+
+	set editDataGridPanel(gridPanel: IGridPanel) {
+		this._editDataGridPanel = gridPanel;
 	}
 
 	getTypeId(): string {

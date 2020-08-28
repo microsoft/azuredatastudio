@@ -16,7 +16,7 @@ export default class AccountStore implements IAccountStore {
 	public static MEMENTO_KEY: string = 'Microsoft.SqlTools.Accounts';
 
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
-	private _activeOperation?: Thenable<any>;
+	private _activeOperation?: Promise<any>;
 
 	constructor(
 		private _memento: { [key: string]: any },
@@ -24,7 +24,7 @@ export default class AccountStore implements IAccountStore {
 	) { }
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
-	public addOrUpdate(newAccount: azdata.Account): Thenable<AccountAdditionResult> {
+	public addOrUpdate(newAccount: azdata.Account): Promise<AccountAdditionResult> {
 		return this.doOperation(() => {
 			return this.readFromMemento()
 				.then(accounts => {
@@ -35,18 +35,18 @@ export default class AccountStore implements IAccountStore {
 						: this.updateAccountList(accounts, newAccount.key, matchAccount => AccountStore.mergeAccounts(newAccount, matchAccount));
 				})
 				.then(result => this.writeToMemento(result.updatedAccounts).then(() => result))
-				.then(result => <AccountAdditionResult>result);
+				.then(result => ({ accountAdded: result.accountAdded, accountModified: result.accountModified, changedAccount: result.changedAccount! }));
 		});
 	}
 
-	public getAccountsByProvider(providerId: string): Thenable<azdata.Account[]> {
+	public getAccountsByProvider(providerId: string): Promise<azdata.Account[]> {
 		return this.doOperation(() => {
 			return this.readFromMemento()
 				.then(accounts => accounts.filter(account => account.key.providerId === providerId));
 		});
 	}
 
-	public getAllAccounts(): Thenable<azdata.Account[]> {
+	public getAllAccounts(): Promise<azdata.Account[]> {
 		return this.doOperation(() => {
 			return this.cleanupDeprecatedAccounts().then(() => {
 				return this.readFromMemento();
@@ -54,7 +54,7 @@ export default class AccountStore implements IAccountStore {
 		});
 	}
 
-	public cleanupDeprecatedAccounts(): Thenable<void> {
+	public cleanupDeprecatedAccounts(): Promise<void> {
 		return this.readFromMemento()
 			.then(accounts => {
 				// No need to waste cycles
@@ -80,7 +80,7 @@ export default class AccountStore implements IAccountStore {
 			});
 	}
 
-	public remove(key: azdata.AccountKey): Thenable<boolean> {
+	public remove(key: azdata.AccountKey): Promise<boolean> {
 		return this.doOperation(() => {
 			return this.readFromMemento()
 				.then(accounts => this.removeFromAccountList(accounts, key))
@@ -89,7 +89,7 @@ export default class AccountStore implements IAccountStore {
 		});
 	}
 
-	public update(key: azdata.AccountKey, updateOperation: (account: azdata.Account) => void): Thenable<boolean> {
+	public update(key: azdata.AccountKey, updateOperation: (account: azdata.Account) => void): Promise<boolean> {
 		return this.doOperation(() => {
 			return this.readFromMemento()
 				.then(accounts => this.updateAccountList(accounts, key, updateOperation))
@@ -115,7 +115,7 @@ export default class AccountStore implements IAccountStore {
 		target.isStale = source.isStale;
 	}
 
-	private doOperation<T>(op: () => Thenable<T>) {
+	private doOperation<T>(op: () => Promise<T>) {
 		// Initialize the active operation to an empty promise if necessary
 		let activeOperation = this._activeOperation || Promise.resolve<any>(null);
 
@@ -201,7 +201,7 @@ export default class AccountStore implements IAccountStore {
 	}
 
 	// MEMENTO IO METHODS //////////////////////////////////////////////////
-	private readFromMemento(): Thenable<azdata.Account[]> {
+	private readFromMemento(): Promise<azdata.Account[]> {
 		// Initialize the account list if it isn't already
 		let accounts = this._memento[AccountStore.MEMENTO_KEY];
 		if (!accounts) {
@@ -214,14 +214,17 @@ export default class AccountStore implements IAccountStore {
 		return Promise.resolve(accounts);
 	}
 
-	private writeToMemento(accounts: azdata.Account[]): Thenable<void> {
+	private writeToMemento(accounts: azdata.Account[]): Promise<void> {
 		// Store a shallow copy of the account list to disconnect the memento list from the active list
 		this._memento[AccountStore.MEMENTO_KEY] = deepClone(accounts);
 		return Promise.resolve();
 	}
 }
 
-interface AccountListOperationResult extends AccountAdditionResult {
+interface AccountListOperationResult {
 	accountRemoved: boolean;
 	updatedAccounts: azdata.Account[];
+	changedAccount: azdata.Account | undefined;
+	accountAdded: boolean;
+	accountModified: boolean;
 }

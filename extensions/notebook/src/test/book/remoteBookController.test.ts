@@ -30,7 +30,7 @@ describe('Remote Book Controller', function () {
 
 	it('Verify that errorMessage is thrown, when fetchReleases call returns empty', async function (): Promise<void> {
 		let expectedBody = JSON.stringify([]);
-		let expectedURL = new URL('https://api.github.com/repos/microsoft/test/releases');
+		let expectedURL = vscode.Uri.parse('https://api.github.com/repos/microsoft/test/releases');
 		getStub.yields(null, { statusCode: 200 }, expectedBody);
 
 		try {
@@ -72,7 +72,7 @@ describe('Remote Book Controller', function () {
 				browser_download_url: 'https://api.github.com/repos/microsoft/test/releases/download/1/test-1.1-FR.tgz',
 			}
 		]);
-		let expectedURL = new URL('https://api.github.com/repos/microsoft/test/releases/1/assets');
+		let expectedURL = vscode.Uri.parse('https://api.github.com/repos/microsoft/test/releases/1/assets');
 		let expectedRelease: IRelease = {
 			name: 'Test Release',
 			assetsUrl: expectedURL
@@ -102,7 +102,7 @@ describe('Remote Book Controller', function () {
 				browser_download_url: 'https://api.github.com/repos/microsoft/test/releases/download/1/test-1.2.zip',
 			},
 		]);
-		let expectedURL = new URL('https://api.github.com/repos/microsoft/test/releases/1/assets');
+		let expectedURL = vscode.Uri.parse('https://api.github.com/repos/microsoft/test/releases/1/assets');
 		let expectedRelease: IRelease = {
 			name: 'Test Release',
 			assetsUrl: expectedURL

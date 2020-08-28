@@ -25,8 +25,7 @@ import { attachBadgeStyler } from 'vs/platform/theme/common/styler';
 import { IViewletViewOptions } from 'vs/workbench/browser/parts/views/viewsViewlet';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { CountBadge } from 'vs/base/browser/ui/countBadge/countBadge';
-import { Separator } from 'vs/base/browser/ui/actionbar/actionbar';
-import { InstallWorkspaceRecommendedExtensionsAction, ConfigureWorkspaceFolderRecommendedExtensionsAction, ManageExtensionAction, InstallLocalExtensionsInRemoteAction, getContextMenuActions } from 'vs/workbench/contrib/extensions/browser/extensionsActions';
+import { InstallWorkspaceRecommendedExtensionsAction, ConfigureWorkspaceFolderRecommendedExtensionsAction, ManageExtensionAction, InstallLocalExtensionsInRemoteAction, getContextMenuActions, ExtensionAction } from 'vs/workbench/contrib/extensions/browser/extensionsActions';
 import { WorkbenchPagedList, ListResourceNavigator } from 'vs/platform/list/browser/listService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
@@ -38,7 +37,7 @@ import { alert } from 'vs/base/browser/ui/aria/aria';
 import { IListContextMenuEvent } from 'vs/base/browser/ui/list/list';
 import { createErrorWithActions } from 'vs/base/common/errorsWithActions';
 import { CancellationToken } from 'vs/base/common/cancellation';
-import { IAction, Action } from 'vs/base/common/actions';
+import { IAction, Action, Separator } from 'vs/base/common/actions';
 import { ExtensionType, ExtensionIdentifier, IExtensionDescription, isLanguagePackExtension } from 'vs/platform/extensions/common/extensions';
 import { CancelablePromise, createCancelablePromise } from 'vs/base/common/async';
 import { IProductService } from 'vs/platform/product/common/productService';
@@ -140,7 +139,7 @@ export class ExtensionsListView extends ViewPane {
 			horizontalScrolling: false,
 			accessibilityProvider: <IListAccessibilityProvider<IExtension | null>>{
 				getAriaLabel(extension: IExtension | null): string {
-					return extension ? localize('extension-arialabel', "{0}. Press enter for extension details.", extension.displayName) : '';
+					return extension ? localize('extension-arialabel', "{0}, {1}, {2}, press enter for extension details.", extension.displayName, extension.version, extension.publisherDisplayName) : '';
 				},
 				getWidgetAriaLabel(): string {
 					return localize('extensions', "Extensions");
@@ -248,7 +247,11 @@ export class ExtensionsListView extends ViewPane {
 				});
 			} else if (e.element) {
 				const groups = getContextMenuActions(this.menuService, this.contextKeyService.createScoped(), this.instantiationService, e.element);
-				groups.forEach(group => group.forEach(extensionAction => extensionAction.extension = e.element!));
+				groups.forEach(group => group.forEach(extensionAction => {
+					if (extensionAction instanceof ExtensionAction) {
+						extensionAction.extension = e.element!;
+					}
+				}));
 				let actions: IAction[] = [];
 				for (const menuActions of groups) {
 					actions = [...actions, ...menuActions, new Separator()];
@@ -565,10 +568,11 @@ export class ExtensionsListView extends ViewPane {
 				const configBasedRecommendationsPromise = this.tipsService.getConfigBasedRecommendations();
 				const othersPromise = this.tipsService.getOtherRecommendations();
 				const workspacePromise = this.tipsService.getWorkspaceRecommendations();
+				const importantRecommendationsPromise = this.tipsService.getImportantRecommendations();
 
-				return Promise.all([othersPromise, workspacePromise, configBasedRecommendationsPromise])
-					.then(([others, workspaceRecommendations, configBasedRecommendations]) => {
-						const names = this.getTrimmedRecommendations(local, value, fileBasedRecommendations, configBasedRecommendations, others, workspaceRecommendations);
+				return Promise.all([othersPromise, workspacePromise, configBasedRecommendationsPromise, importantRecommendationsPromise])
+					.then(([others, workspaceRecommendations, configBasedRecommendations, importantRecommendations]) => {
+						const names = this.getTrimmedRecommendations(local, value, importantRecommendations, fileBasedRecommendations, configBasedRecommendations, others, workspaceRecommendations);
 						const recommendationsWithReason = this.tipsService.getAllRecommendationsWithReason();
 						/* __GDPR__
 							"extensionAllRecommendations:open" : {
@@ -621,14 +625,15 @@ export class ExtensionsListView extends ViewPane {
 				const configBasedRecommendationsPromise = this.tipsService.getConfigBasedRecommendations();
 				const othersPromise = this.tipsService.getOtherRecommendations();
 				const workspacePromise = this.tipsService.getWorkspaceRecommendations();
+				const importantRecommendationsPromise = this.tipsService.getImportantRecommendations();
 
-				return Promise.all([othersPromise, workspacePromise, configBasedRecommendationsPromise])
-					.then(([others, workspaceRecommendations, configBasedRecommendations]) => {
+				return Promise.all([othersPromise, workspacePromise, configBasedRecommendationsPromise, importantRecommendationsPromise])
+					.then(([others, workspaceRecommendations, configBasedRecommendations, importantRecommendations]) => {
 						configBasedRecommendations = configBasedRecommendations.filter(x => workspaceRecommendations.every(({ extensionId }) => x.extensionId !== extensionId));
 						fileBasedRecommendations = fileBasedRecommendations.filter(x => workspaceRecommendations.every(({ extensionId }) => x.extensionId !== extensionId));
 						others = others.filter(x => workspaceRecommendations.every(({ extensionId }) => x.extensionId !== extensionId));
 
-						const names = this.getTrimmedRecommendations(local, value, fileBasedRecommendations, configBasedRecommendations, others, []);
+						const names = this.getTrimmedRecommendations(local, value, importantRecommendations, fileBasedRecommendations, configBasedRecommendations, others, []);
 						const recommendationsWithReason = this.tipsService.getAllRecommendationsWithReason();
 
 						/* __GDPR__
@@ -722,22 +727,30 @@ export class ExtensionsListView extends ViewPane {
 	// {{SQL CARBON EDIT}} - End
 
 	// Given all recommendations, trims and returns recommendations in the relevant order after filtering out installed extensions
-	private getTrimmedRecommendations(installedExtensions: IExtension[], value: string, fileBasedRecommendations: IExtensionRecommendation[], configBasedRecommendations: IExtensionRecommendation[], otherRecommendations: IExtensionRecommendation[], workspaceRecommendations: IExtensionRecommendation[]): string[] {
+	private getTrimmedRecommendations(installedExtensions: IExtension[], value: string, importantRecommendations: IExtensionRecommendation[], fileBasedRecommendations: IExtensionRecommendation[], configBasedRecommendations: IExtensionRecommendation[], otherRecommendations: IExtensionRecommendation[], workspaceRecommendations: IExtensionRecommendation[]): string[] {
 		const totalCount = 10;
 		workspaceRecommendations = workspaceRecommendations
 			.filter(recommendation => {
 				return !this.isRecommendationInstalled(recommendation, installedExtensions)
 					&& recommendation.extensionId.toLowerCase().indexOf(value) > -1;
 			});
-		configBasedRecommendations = configBasedRecommendations
+		importantRecommendations = importantRecommendations
 			.filter(recommendation => {
 				return !this.isRecommendationInstalled(recommendation, installedExtensions)
 					&& workspaceRecommendations.every(workspaceRecommendation => workspaceRecommendation.extensionId !== recommendation.extensionId)
 					&& recommendation.extensionId.toLowerCase().indexOf(value) > -1;
 			});
+		configBasedRecommendations = configBasedRecommendations
+			.filter(recommendation => {
+				return !this.isRecommendationInstalled(recommendation, installedExtensions)
+					&& workspaceRecommendations.every(workspaceRecommendation => workspaceRecommendation.extensionId !== recommendation.extensionId)
+					&& importantRecommendations.every(importantRecommendation => importantRecommendation.extensionId !== recommendation.extensionId)
+					&& recommendation.extensionId.toLowerCase().indexOf(value) > -1;
+			});
 		fileBasedRecommendations = fileBasedRecommendations.filter(recommendation => {
 			return !this.isRecommendationInstalled(recommendation, installedExtensions)
 				&& workspaceRecommendations.every(workspaceRecommendation => workspaceRecommendation.extensionId !== recommendation.extensionId)
+				&& importantRecommendations.every(importantRecommendation => importantRecommendation.extensionId !== recommendation.extensionId)
 				&& configBasedRecommendations.every(configBasedRecommendation => configBasedRecommendation.extensionId !== recommendation.extensionId)
 				&& recommendation.extensionId.toLowerCase().indexOf(value) > -1;
 		});
@@ -745,13 +758,14 @@ export class ExtensionsListView extends ViewPane {
 			return !this.isRecommendationInstalled(recommendation, installedExtensions)
 				&& fileBasedRecommendations.every(fileBasedRecommendation => fileBasedRecommendation.extensionId !== recommendation.extensionId)
 				&& workspaceRecommendations.every(workspaceRecommendation => workspaceRecommendation.extensionId !== recommendation.extensionId)
+				&& importantRecommendations.every(importantRecommendation => importantRecommendation.extensionId !== recommendation.extensionId)
 				&& configBasedRecommendations.every(configBasedRecommendation => configBasedRecommendation.extensionId !== recommendation.extensionId)
 				&& recommendation.extensionId.toLowerCase().indexOf(value) > -1;
 		});
 
 		const otherCount = Math.min(2, otherRecommendations.length);
-		const fileBasedCount = Math.min(fileBasedRecommendations.length, totalCount - workspaceRecommendations.length - configBasedRecommendations.length - otherCount);
-		const recommendations = [...workspaceRecommendations, ...configBasedRecommendations];
+		const fileBasedCount = Math.min(fileBasedRecommendations.length, totalCount - workspaceRecommendations.length - importantRecommendations.length - configBasedRecommendations.length - otherCount);
+		const recommendations = [...workspaceRecommendations, ...importantRecommendations, ...configBasedRecommendations];
 		recommendations.push(...fileBasedRecommendations.splice(0, fileBasedCount));
 		recommendations.push(...otherRecommendations.splice(0, otherCount));
 
@@ -1112,7 +1126,7 @@ export class WorkspaceRecommendedExtensionsView extends ExtensionsListView {
 
 	getActions(): IAction[] {
 		if (!this.installAllAction) {
-			this.installAllAction = this._register(this.instantiationService.createInstance(InstallWorkspaceRecommendedExtensionsAction, InstallWorkspaceRecommendedExtensionsAction.ID, InstallWorkspaceRecommendedExtensionsAction.LABEL, []));
+			this.installAllAction = this._register(this.instantiationService.createInstance(InstallWorkspaceRecommendedExtensionsAction, []));
 			this.installAllAction.class = 'codicon codicon-cloud-download';
 		}
 

@@ -84,7 +84,22 @@ describe('ProjectsController', function (): void {
 				const project = await projController.openProject(vscode.Uri.file(sqlProjPath));
 
 				should(project.files.length).equal(9); // detailed sqlproj tests in their own test file
-				should(project.dataSources.length).equal(2); // detailed datasources tests in their own test file
+				should(project.dataSources.length).equal(3); // detailed datasources tests in their own test file
+			});
+
+			it('Should load both project and referenced project', async function (): Promise<void> {
+				// setup test projects
+				const folderPath = await testUtils.generateTestFolderPath();
+				await fs.mkdir(path.join(folderPath, 'proj1'));
+				await fs.mkdir(path.join(folderPath, 'ReferencedProject'));
+
+				const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.openProjectWithProjectReferencesBaseline, path.join(folderPath, 'proj1'));
+				await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline, path.join(folderPath, 'ReferencedProject'));
+
+				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+				await projController.openProject(vscode.Uri.file(sqlProjPath));
+
+				should(projController.projects.length).equal(2, 'Referenced project should have been opened when the project referencing it was opened');
 			});
 
 			it('Should not keep failed to load project in project list.', async function (): Promise<void> {
@@ -228,6 +243,25 @@ describe('ProjectsController', function (): void {
 
 				should(await exists(scriptEntry.fsUri.fsPath)).equal(true, 'script is supposed to still exist on disk');
 			});
+
+			it('Should be able to add pre deploy and post deploy script', async function (): Promise<void> {
+				const preDeployScriptName = 'PreDeployScript1.sql';
+				const postDeployScriptName = 'PostDeployScript1.sql';
+
+				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+				const project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
+
+				sinon.stub(vscode.window, 'showInputBox').resolves(preDeployScriptName);
+				should(project.preDeployScripts.length).equal(0, 'There should be no pre deploy scripts');
+				await projController.addItemPrompt(project, '', templates.preDeployScript);
+				should(project.preDeployScripts.length).equal(1, `Pre deploy script should be successfully added. ${project.preDeployScripts.length}, ${project.files.length}`);
+
+				sinon.restore();
+				sinon.stub(vscode.window, 'showInputBox').resolves(postDeployScriptName);
+				should(project.postDeployScripts.length).equal(0, 'There should be no post deploy scripts');
+				await projController.addItemPrompt(project, '', templates.postDeployScript);
+				should(project.postDeployScripts.length).equal(1, 'Post deploy script should be successfully added');
+			});
 		});
 
 		describe('Publishing and script generation', function (): void {
@@ -252,7 +286,6 @@ describe('ProjectsController', function (): void {
 
 				const publishHoller = 'hello from callback for publish()';
 				const generateHoller = 'hello from callback for generateScript()';
-				const profileHoller = 'hello from callback for readPublishProfile()';
 
 				let holler = 'nothing';
 
@@ -266,15 +299,6 @@ describe('ProjectsController', function (): void {
 				projController.setup(x => x.executionCallback(TypeMoq.It.isAny(), TypeMoq.It.is((_): _ is IPublishSettings => true))).returns(() => {
 					holler = publishHoller;
 					return Promise.resolve(undefined);
-				});
-				projController.setup(x => x.readPublishProfileCallback(TypeMoq.It.isAny())).returns(() => {
-					holler = profileHoller;
-					return Promise.resolve({
-						databaseName: '',
-						connectionId: '',
-						connectionString: '',
-						sqlCmdVariables: {}
-					});
 				});
 
 				projController.setup(x => x.executionCallback(TypeMoq.It.isAny(), TypeMoq.It.is((_): _ is IGenerateScriptSettings => true))).returns(() => {
@@ -291,13 +315,7 @@ describe('ProjectsController', function (): void {
 				await dialog.generateScriptClick();
 
 				should(holler).equal(generateHoller, 'executionCallback() is supposed to have been setup and called for GenerateScript scenario');
-
-				dialog = await projController.object.publishProject(proj);
-				await projController.object.readPublishProfileCallback(vscode.Uri.parse('test'));
-
-				should(holler).equal(profileHoller, 'executionCallback() is supposed to have been setup and called for ReadPublishProfile scenario');
 			});
-
 
 			it('Should copy dacpac to temp folder before publishing', async function (): Promise<void> {
 				const fakeDacpacContents = 'SwiftFlewHiawathasArrow';
@@ -305,7 +323,7 @@ describe('ProjectsController', function (): void {
 				let builtDacpacPath = '';
 				let publishedDacpacPath = '';
 
-				testContext.dacFxService.setup(x => x.generateDeployScript(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(async (p) => {
+				testContext.dacFxService.setup(x => x.generateDeployScript(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(async (p) => {
 					publishedDacpacPath = p;
 					postCopyContents = (await fs.readFile(publishedDacpacPath)).toString();
 					return Promise.resolve(mockDacFxResult);
@@ -417,7 +435,7 @@ describe('ProjectsController', function (): void {
 			let projController = TypeMoq.Mock.ofType(ProjectsController, undefined, undefined, new SqlDatabaseProjectTreeViewProvider());
 			projController.callBase = true;
 
-			projController.setup(x => x.importApiCall(TypeMoq.It.isAny())).returns(async (model) => { console.log('CALLED'); importPath = model.filePath; });
+			projController.setup(x => x.importApiCall(TypeMoq.It.isAny())).returns(async (model) => { importPath = model.filePath; });
 
 			await projController.object.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
 			should(importPath).equal(vscode.Uri.file(path.join(folderPath, projectName, projectName + '.sql')).fsPath, `model.filePath should be set to a specific file for ExtractTarget === file, but was ${importPath}`);
