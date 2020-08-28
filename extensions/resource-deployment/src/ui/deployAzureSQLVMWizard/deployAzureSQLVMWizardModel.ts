@@ -3,9 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { EOL } from 'os';
 import * as azdata from 'azdata';
 import { Model } from '../model';
-import { ITool } from '../../interfaces';
 
 export class DeployAzureSQLVMWizardModel extends Model {
 	public azureAccount!: azdata.Account;
@@ -15,10 +15,21 @@ export class DeployAzureSQLVMWizardModel extends Model {
 	public azureRegion!: string;
 
 	public vmName!: string;
+	public vmUsername!: string;
+	public vmPassword!: string;
 	public vmImage!: string;
 	public vmImageSKU!: string;
 	public vmImageVersion!: string;
 	public vmSize!: string;
+
+	public virtualNetworkName!: string;
+	public publicIPName!: string;
+	public allowRDP!: 'True' | 'False';
+
+	public storageAccountName!: string;
+	public storageAccountSKU!: string;
+
+
 
 	constructor() {
 		super();
@@ -26,7 +37,20 @@ export class DeployAzureSQLVMWizardModel extends Model {
 
 
 
-	public getCodeCellContentForNotebook(tools: ITool[]): string[] {
+	public getCodeCellContentForNotebook(): string[] {
+		const statements: string[] = [];
+		statements.push(`azure_sqlvm_nb_var_subscription = '${this.azureSubscription}'`);
+		statements.push(`azure_sqlvm_nb_var_resource_group_name = '${this.azureResouceGroup}'`);
+		statements.push(`azure_sqlvm_location = '${this.azureRegion}'`);
+		statements.push(`azure_sqlvm_vmname = '${this.vmName}'`);
+		statements.push(`azure_sqlvm_image = '${this.vmImage}'`);
+		statements.push(`azure_sqlvm_image_sku = '${this.vmImageSKU}'`);
+		statements.push(`azure_sqlvm_image_version = '${this.vmImageVersion}'`);
+		statements.push(`azure_sqlvm_vmsize = '${this.vmSize}'`);
+		statements.push(`azure_sqlvm_storageaccountname = '${this.storageAccountName}'`);
+		statements.push(`azure_sqlvm_storagesku = '${this.storageAccountSKU}'`);
+		statements.push(`azure_sqlvm_username = '${this.vmUsername}'`);
+		return statements.map(line => line + EOL);
 		// const profile = this.createTargetProfile();
 		// const statements: string[] = [];
 		// if (this.deploymentTarget === BdcDeploymentType.NewAKS) {
@@ -63,6 +87,6 @@ export class DeployAzureSQLVMWizardModel extends Model {
 		// statements.push(`os.environ["PATH"] = os.environ["PATH"] + "${delimiter}" + "${this.escapeForNotebookCodeCell(env[ToolsInstallPath]!)}"`);
 		// statements.push(`print('Variables have been set successfully.')`);
 		// return statements.map(line => line + EOL);
-		return [];
+		// return [];
 	}
 }
