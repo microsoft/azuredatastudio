@@ -12,6 +12,7 @@ import { HttpClient } from './common/httpClient';
 import Logger from './common/logger';
 import { getErrorMessage, searchForCmd } from './common/utils';
 import * as loc from './localizedConstants';
+import { azdataConfigSection, debugConfigKey } from './constants';
 
 export const azdataHostname = 'https://aka.ms';
 export const azdataUri = 'azdata-msi';
@@ -118,6 +119,10 @@ export class AzdataTool implements IAzdataTool {
 	}
 
 	public async executeCommand<R>(args: string[], additionalEnvVars?: { [key: string]: string }): Promise<azdataExt.AzdataOutput<R>> {
+		const debug = vscode.workspace.getConfiguration(azdataConfigSection).get(debugConfigKey);
+		if (debug) {
+			args.push('--debug');
+		}
 		try {
 			const output = JSON.parse((await executeCommand(`"${this.path}"`, args.concat(['--output', 'json']), additionalEnvVars)).stdout);
 			return {
