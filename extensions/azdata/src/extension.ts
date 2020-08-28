@@ -13,11 +13,18 @@ let localAzdata: IAzdataTool | undefined = undefined;
 export async function activate(): Promise<azdataExt.IExtension> {
 	localAzdata = await checkForAzdata();
 	// Don't block on this since we want the extension to finish activating without needing user input
+	// upgrade if available and user wants it.
 	checkAndUpgradeAzdata(localAzdata)
-		.then(async () => {
-			localAzdata = await findAzdata(); // now again find and return the currently installed azdata
+		.then(async upgradePerformed => {
+			try {
+				if (upgradePerformed) { // If upgrade was performed then find the new azdata and save the new azdata
+					localAzdata = await findAzdata();
+				}
+			} catch (_err) {
+				//Do nothing, it is expected that if user did not accept upgrade of azdata then findAzdata will still fail throwing an error.
+			}
 		})
-		.catch(err => vscode.window.showWarningMessage(loc.updateError(err))); //update if available and user wants it.
+		.catch(err => vscode.window.showWarningMessage(loc.upgradeError(err)));
 	return {
 		azdata: {
 			arc: {
