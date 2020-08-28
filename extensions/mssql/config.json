@@ -1,5 +1,5 @@
 {
-	"downloadUrl": "https://adslivesitetooling.blob.core.windows.net/kusto/sqlservicetools/4.0.0-release.16/microsoft.sqltools.servicelayer-{#fileName#}?st=2020-08-27T23%3A26%3A39Z&se=2020-09-28T23%3A26%3A00Z&sp=rl&sv=2018-03-28&sr=c&sig=nUjp%2FgqPyD6FkxM%2Fi9TMcY3Nihu0MAP4VEVAjne0vKw%3D",
+	"downloadUrl": "https://adslivesitetooling.blob.core.windows.net/kusto/sqlservicetools/4.0.0-release.16/microsoft.sqltools.servicelayer-{#fileName#}",
 	"version": "3.0.0-release.16",
 	"downloadFileNames": {
 		"Windows_86": "win-x86-netcoreapp3.1.zip",
