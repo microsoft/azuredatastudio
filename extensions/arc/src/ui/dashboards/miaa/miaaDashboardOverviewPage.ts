@@ -7,11 +7,13 @@ import * as azdata from 'azdata';
 import * as azdataExt from 'azdata-ext';
 import * as vscode from 'vscode';
 import * as loc from '../../../localizedConstants';
+import * as azurecore from 'azurecore';
 import { DashboardPage } from '../../components/dashboardPage';
-import { IconPathHelper, cssStyles, Endpoints } from '../../../constants';
+import { IconPathHelper, cssStyles, Endpoints, ResourceType } from '../../../constants';
 import { ControllerModel } from '../../../models/controllerModel';
 import { getDatabaseStateDisplayText, promptForResourceDeletion } from '../../../common/utils';
 import { MiaaModel } from '../../../models/miaaModel';
+import { timeStamp } from 'console';
 
 export class MiaaDashboardOverviewPage extends DashboardPage {
 
@@ -25,8 +27,10 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 	private _grafanaLink!: azdata.HyperlinkComponent;
 	private _databasesTable!: azdata.DeclarativeTableComponent;
 	private _databasesMessage!: azdata.TextComponent;
+	private _openInAzurePortalButton!: azdata.ButtonComponent;
 
 	private readonly _azdataApi: azdataExt.IExtension;
+	private readonly _azurecoreApi: azurecore.IExtension;
 
 	private _instanceProperties = {
 		resourceGroup: '-',
@@ -42,6 +46,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 	constructor(modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _miaaModel: MiaaModel) {
 		super(modelView);
 		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
+		this._azurecoreApi = vscode.extensions.getExtension(azurecore.extension.name)?.exports;
 
 		this._instanceProperties.miaaAdmin = this._miaaModel.username || this._instanceProperties.miaaAdmin;
 		this.disposables.push(
@@ -226,46 +231,43 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 				}
 			}));
 
-		const openInAzurePortalButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		this._openInAzurePortalButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: loc.openInAzurePortal,
-			iconPath: IconPathHelper.openInTab
+			iconPath: IconPathHelper.openInTab,
+			enabled: !!this._controllerModel.controllerConfig
 		}).component();
 
 		this.disposables.push(
-			openInAzurePortalButton.onDidClick(async () => {
-				/* TODO chgagnon enable open in Azure
-				const r = this._controllerModel.getRegistration(ResourceType.sqlManagedInstances, this._miaaModel.info.namespace, this._miaaModel.info.name);
-				if (r) {
+			this._openInAzurePortalButton.onDidClick(async () => {
+				const config = this._controllerModel.controllerConfig;
+				if (config) {
 					vscode.env.openExternal(vscode.Uri.parse(
-						`https://portal.azure.com/#resource/subscriptions/${r.subscriptionId}/resourceGroups/${r.resourceGroupName}/providers/Microsoft.AzureData/${ResourceType.sqlManagedInstances}/${r.instanceName}`));
+						`https://portal.azure.com/#resource/subscriptions/${config.spec.settings.azure.subscription}/resourceGroups/${config.spec.settings.azure.resourceGroup}/providers/Microsoft.AzureData/${ResourceType.sqlManagedInstances}/${this._miaaModel.info.name}`));
 				} else {
-					vscode.window.showErrorMessage(loc.couldNotFindRegistration(this._miaaModel.info.namespace, this._miaaModel.info.name));
+					vscode.window.showErrorMessage(loc.couldNotFindControllerRegistration);
 				}
-				*/
 			}));
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems(
 			[
 				{ component: deleteButton },
 				{ component: refreshButton, toolbarSeparatorAfter: true },
-				{ component: openInAzurePortalButton }
+				{ component: this._openInAzurePortalButton }
 			]
 		).component();
 	}
 
 	private handleRegistrationsUpdated(): void {
-		// TODO chgagnon
-		/*
-		const reg = this._controllerModel.getRegistration(ResourceType.sqlManagedInstances, this._miaaModel.info.namespace || '', this._miaaModel.info.name);
-		if (reg) {
-			this._instanceProperties.resourceGroup = reg.resourceGroupName || '-';
-			this._instanceProperties.dataController = this._controllerModel.controllerConfig?.metadata.name || '-';
-			this._instanceProperties.region = reg.region || '-';
-			this._instanceProperties.subscriptionId = reg.subscriptionId || '-';
-			this._instanceProperties.vCores = reg.vCores || '';
-			this.refreshDisplayedProperties();
+		const config = this._controllerModel.controllerConfig;
+		if (this._openInAzurePortalButton) {
+			this._openInAzurePortalButton.enabled = !!config;
 		}
-		*/
+		this._instanceProperties.resourceGroup = config?.spec.settings.azure.resourceGroup || this._instanceProperties.resourceGroup;
+		this._instanceProperties.dataController = config?.metadata.name || this._instanceProperties.dataController;
+		this._instanceProperties.region = this._azurecoreApi.getRegionDisplayName(config?.spec.settings.azure.location) || this._instanceProperties.region;
+		this._instanceProperties.subscriptionId = config?.spec.settings.azure.subscription || this._instanceProperties.subscriptionId;
+		// this._instanceProperties.vCores = reg.vCores || '';
+		this.refreshDisplayedProperties();
 	}
 
 	private handleMiaaConfigUpdated(): void {
