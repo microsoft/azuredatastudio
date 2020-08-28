@@ -89,6 +89,26 @@ export const profile = localize('profile', "Profile");
 export const selectConnection = localize('selectConnection', "Select connection");
 export const connection = localize('connection', "Connection");
 
+// Add Database Reference dialog strings
+
+export const addDatabaseReferenceDialogName = localize('addDatabaseReferencedialogName', "Add database reference");
+export const addDatabaseReferenceOkButtonText = localize('addDatabaseReferenceOkButtonText', "Add reference");
+export const referenceRadioButtonsGroupTitle = localize('referenceRadioButtonsGroupTitle', "Type");
+export const systemDatabaseRadioButtonTitle = localize('systemDatabaseRadioButtonTitle', "System database");
+export const dacpacText = localize('dacpacText', "Data-tier application (.dacpac)");
+export const dacpacPlaceholder = localize('dacpacPlaceholder', "Select .dacpac");
+export const loadDacpacButton = localize('loadDacpacButton', "Select .dacpac");
+export const locationDropdown = localize('locationDropdown', "Location");
+export const sameDatabase = localize('sameDatabase', "Same database");
+export const differentDbSameServer = localize('differentDbSameServer', "Different database, same server");
+export const differentDbDifferentServer = localize('differentDbDifferentServer', "Different database, different server");
+export const systemDbLocationDropdownValues = [differentDbSameServer];
+export const locationDropdownValues = [sameDatabase, differentDbSameServer, differentDbDifferentServer];
+export const databaseName = localize('databaseName', "Database name");
+export const databaseVariable = localize('databaseVariable', "Database variable");
+export const serverName = localize('serverName', "Server name");
+export const serverVariable = localize('serverVariable', "Server variable");
+
 // Error messages
 
 export const multipleSqlProjFiles = localize('multipleSqlProjFilesSelected', "Multiple .sqlproj files selected; please select only one.");
