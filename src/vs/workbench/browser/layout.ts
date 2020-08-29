@@ -1065,9 +1065,9 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 				return !this.state.activityBar.hidden;
 			case Parts.EDITOR_PART:
 				return !this.state.editor.hidden;
+			default:
+				return true; // any other part cannot be hidden
 		}
-
-		return true; // any other part cannot be hidden
 	}
 
 	focus(): void {
@@ -1543,6 +1543,11 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 	setPanelHidden(hidden: boolean, skipLayout?: boolean): void {
 		this.state.panel.hidden = hidden;
 
+		// Return if not initialized fully #105480
+		if (!this.workbenchGrid) {
+			return;
+		}
+
 		// Adjust CSS
 		if (hidden) {
 			addClass(this.container, Classes.PANEL_HIDDEN);
@@ -1636,7 +1641,7 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 			this.state.menuBar.visibility = visibility;
 
 			// Layout
-			if (!skipLayout) {
+			if (!skipLayout && this.workbenchGrid) {
 				this.workbenchGrid.setViewVisible(this.titleBarPartView, this.isVisible(Parts.TITLEBAR_PART));
 			}
 		}

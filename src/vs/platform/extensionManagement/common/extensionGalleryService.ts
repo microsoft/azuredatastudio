@@ -121,7 +121,8 @@ const PropertyType = {
 	Engine: 'Microsoft.VisualStudio.Code.Engine',
 	// {{SQL CARBON EDIT}}
 	AzDataEngine: 'Microsoft.AzDataEngine',
-	LocalizedLanguages: 'Microsoft.VisualStudio.Code.LocalizedLanguages'
+	LocalizedLanguages: 'Microsoft.VisualStudio.Code.LocalizedLanguages',
+	WebExtension: 'Microsoft.VisualStudio.Code.WebExtension'
 };
 
 interface ICriterium {
@@ -308,6 +309,11 @@ function getIsPreview(flags: string): boolean {
 	return flags.indexOf('preview') !== -1;
 }
 
+function getIsWebExtension(version: IRawGalleryExtensionVersion): boolean {
+	const webExtensionProperty = version.properties ? version.properties.find(p => p.key === PropertyType.WebExtension) : undefined;
+	return !!webExtensionProperty && webExtensionProperty.value === 'true';
+}
+
 function toExtension(galleryExtension: IRawGalleryExtension, version: IRawGalleryExtensionVersion, index: number, query: Query, querySource?: string): IGalleryExtension {
 	const assets = <IGalleryExtensionAssets>{
 		manifest: getVersionAsset(version, AssetType.Manifest),
@@ -347,7 +353,8 @@ function toExtension(galleryExtension: IRawGalleryExtension, version: IRawGaller
 			engine: getEngine(version),
 			// {{SQL CARBON EDIT}}
 			azDataEngine: getAzureDataStudioEngine(version),
-			localizedLanguages: getLocalizedLanguages(version)
+			localizedLanguages: getLocalizedLanguages(version),
+			webExtension: getIsWebExtension(version)
 		},
 		/* __GDPR__FRAGMENT__
 			"GalleryExtensionTelemetryData2" : {

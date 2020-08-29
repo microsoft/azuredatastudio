@@ -23,6 +23,9 @@ export function clearNode(node: HTMLElement): void {
 	}
 }
 
+/**
+ * @deprecated use `node.remove()` instead
+ */
 export function removeNode(node: HTMLElement): void {
 	if (node.parentNode) {
 		node.parentNode.removeChild(node);
@@ -1004,7 +1007,19 @@ export function prepend<T extends Node>(parent: HTMLElement, child: T): T {
 	return child;
 }
 
-const SELECTOR_REGEX = /([\w\-]+)?(#([\w\-]+))?((.([\w\-]+))*)/;
+const SELECTOR_REGEX = /([\w\-]+)?(#([\w\-]+))?((\.([\w\-]+))*)/;
+
+export function reset<T extends Node>(parent: HTMLElement, ...children: Array<Node | string>) {
+	parent.innerText = '';
+	coalesce(children)
+		.forEach(child => {
+			if (child instanceof Node) {
+				parent.appendChild(child);
+			} else {
+				parent.appendChild(document.createTextNode(child as string));
+			}
+		});
+}
 
 export enum Namespace {
 	HTML = 'http://www.w3.org/1999/xhtml',
