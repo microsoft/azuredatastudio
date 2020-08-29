@@ -928,7 +928,7 @@ export class EnableForWorkspaceAction extends ExtensionAction {
 		if (this.extension && this.extension.local) {
 			this.enabled = this.extension.state === ExtensionState.Installed
 				&& !this.extensionEnablementService.isEnabled(this.extension.local)
-				&& this.extensionEnablementService.canChangeEnablement(this.extension.local);
+				&& this.extensionEnablementService.canChangeWorkspaceEnablement(this.extension.local);
 		}
 	}
 
