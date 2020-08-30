@@ -123,7 +123,7 @@ export class VmSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 	private async createVmNameTextBox(view: azdata.ModelView) {
 		this._vmNameTextBox = view.modelBuilder.inputBox().withProperties({
-			required: true
+			//required: true
 		}).component();
 
 		this._vmNameTextBox.onTextChanged((value) => {
@@ -133,7 +133,7 @@ export class VmSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 	private async createAdminUsernameTextBox(view: azdata.ModelView) {
 		this._adminUsernameTextBox = view.modelBuilder.inputBox().withProperties({
-			required: true
+			//required: true
 		}).component();
 
 		this._adminUsernameTextBox.onTextChanged((value) => {
@@ -143,7 +143,7 @@ export class VmSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 	private async createAdminPasswordTextBox(view: azdata.ModelView) {
 		this._adminPasswordTextBox = view.modelBuilder.inputBox().withProperties({
-			required: true,
+			//required: true,
 			inputType: 'password',
 		}).component();
 
@@ -154,7 +154,7 @@ export class VmSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 	private async createAdminPasswordConfirmTextBox(view: azdata.ModelView) {
 		this._adminComfirmPasswordTextBox = view.modelBuilder.inputBox().withProperties({
-			required: true,
+			//required: true,
 			inputType: 'password',
 		}).component();
 
@@ -164,7 +164,7 @@ export class VmSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 	private async createVmImageDropdown(view: azdata.ModelView) {
 		this._vmImageDropdown = view.modelBuilder.dropDown().withProperties({
-			required: true,
+			//required: true,
 		}).component();
 
 		this._vmImageDropdown.onValueChanged((value) => {
@@ -204,7 +204,7 @@ export class VmSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 	private async createVMImageSkuDropdown(view: azdata.ModelView) {
 		this._vmImageSkuDropdown = view.modelBuilder.dropDown().withProperties({
-			required: true,
+			//required: true,
 		}).component();
 
 		this._vmImageSkuDropdown.onValueChanged((value) => {
@@ -243,7 +243,7 @@ export class VmSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 	private async createVMImageVersionDropdown(view: azdata.ModelView) {
 		this._vmImageVersionDropdown = view.modelBuilder.dropDown().withProperties({
-			required: true,
+			//required: true,
 		}).component();
 
 		this._vmImageVersionDropdown.onValueChanged((value) => {
@@ -281,7 +281,7 @@ export class VmSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 	private async createVmSizeDropdown(view: azdata.ModelView) {
 		this._vmSizeDropdown = view.modelBuilder.dropDown().withProperties({
-			required: true,
+			//required: true,
 			editable: true
 		}).component();
 
