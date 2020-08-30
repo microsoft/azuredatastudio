@@ -96,7 +96,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 	private async createAzureAccountsDropdown(view: azdata.ModelView) {
 		this._azureAccountsDropdown = view.modelBuilder.dropDown().withProperties({
-			required: true,
+			//required: true,
 		}).component();
 
 		this._azureAccountsDropdown.onValueChanged(async (value) => {
@@ -129,7 +129,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 	private async createAzureSubscriptionsDropdown(view: azdata.ModelView) {
 		this._azureSubscriptionsDropdown = view.modelBuilder.dropDown().withProperties({
-			required: true
+			//required: true
 		}).component();
 
 		this._azureSubscriptionLoader = view.modelBuilder.loadingComponent().withItem(this._azureSubscriptionsDropdown).component();
@@ -182,7 +182,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 	private async createResourceDropdown(view: azdata.ModelView) {
 		this._resourceGroupDropdown = view.modelBuilder.dropDown().withProperties({
-			required: true
+			//required: true
 		}).component();
 		this._resourceGroupLoader = view.modelBuilder.loadingComponent().withItem(this._resourceGroupDropdown).component();
 		this._resourceGroupDropdown.onValueChanged((value) => {
@@ -226,7 +226,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 	private async createAzureRegionsDropdown(view: azdata.ModelView) {
 		this._azureRegionsDropdown = view.modelBuilder.dropDown().withProperties({
-			required: true
+			//required: true
 		}).component();
 
 		this._azureRegionsLoader = view.modelBuilder.loadingComponent().withItem(this._azureRegionsDropdown).component();

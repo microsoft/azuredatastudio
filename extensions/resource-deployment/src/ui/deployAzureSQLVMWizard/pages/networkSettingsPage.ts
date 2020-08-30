@@ -11,8 +11,11 @@ import * as constants from '../constants';
 export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 	// dropdown for virtual network
+	private _existingVirtualNetworkCheckbox!: azdata.CheckBoxComponent;
+	private _virtualNetworkFlexContainer !: azdata.FlexContainer;
 	private _virtualNetworkDropdown!: azdata.DropDownComponent;
-	private __virtualNetworkDropdownLoader!: azdata.LoadingComponent;
+	private _virtualNetworkDropdownLoader!: azdata.LoadingComponent;
+	private _newVirtualNetworkText!: azdata.InputBoxComponent;
 
 	// dropdown for public network
 	private _publicIPDropdown!: azdata.DropDownComponent;
@@ -43,8 +46,11 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 				.withFormItems(
 					[
 						{
+							component: this._existingVirtualNetworkCheckbox,
+						},
+						{
 							title: constants.VirtualNetworkDropdownLabel,
-							component: this.__virtualNetworkDropdownLoader
+							component: this._virtualNetworkFlexContainer
 						},
 						{
 							title: constants.PublicIPDropdownLabel,
@@ -79,47 +85,89 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 	}
 
 	private async createVirtualNetworkDropdown(view: azdata.ModelView) {
-		this._virtualNetworkDropdown = view.modelBuilder.dropDown().withProperties({
-			required: true,
-			editable: true,
 
+		this._existingVirtualNetworkCheckbox = view.modelBuilder.checkBox().withProperties(<azdata.CheckBoxProperties>{
+			label: 'Use Existing Virtual Network',
+			checked: true
 		}).component();
 
-		this._virtualNetworkDropdown.fireOnTextChange = true;
+		this._existingVirtualNetworkCheckbox.onChanged((event) => {
+			if (event) {
+				this._virtualNetworkDropdown.updateCssStyles({
+					display: 'block',
+				});
+				this._newVirtualNetworkText.updateCssStyles({
+					display: 'none',
+				});
+				this.wizard.model.newVirtualNetwork = false;
+			} else {
+				this._virtualNetworkDropdown.updateCssStyles({
+					display: 'none',
+				});
+				this._newVirtualNetworkText.updateCssStyles({
+					display: 'block',
+				});
+				this.wizard.model.newVirtualNetwork = true;
+			}
+		});
+
+		this._virtualNetworkDropdown = view.modelBuilder.dropDown().withProperties({
+			//required: true,
+		}).component();
 
 		this._virtualNetworkDropdown.onValueChanged((value) => {
-			console.log(value);
+			this.wizard.model.virtualNetworkName = value.name;
 			//this.wizard.model.vmImageSKU = (this._virtualNetworkDropdown.value as azdata.CategoryValue).name;
 		});
 
-		this.__virtualNetworkDropdownLoader = view.modelBuilder.loadingComponent().withItem(this._virtualNetworkDropdown).component();
+		this._virtualNetworkDropdownLoader = view.modelBuilder.loadingComponent().withItem(this._virtualNetworkDropdown).component();
+
+		this._newVirtualNetworkText = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
+		}).component();
+
+		this._newVirtualNetworkText.onTextChanged((e) => {
+			this.wizard.model.virtualNetworkName = e;
+			this.wizard.model.newVirtualNetwork = true;
+		});
+
+		this._newVirtualNetworkText.updateCssStyles({
+			display: 'none',
+		});
+
+		this._virtualNetworkFlexContainer = view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'column',
+		}).withItems(
+			[this._virtualNetworkDropdown, this._newVirtualNetworkText]
+		).component();
 	}
 
 	private async populateVirtualNetworkDropdown() {
-		this.__virtualNetworkDropdownLoader.loading = true;
+		this._virtualNetworkDropdownLoader.loading = true;
 		let url = `https://management.azure.com` +
 			`/subscriptions/${this.wizard.model.azureSubscription}` +
 			`/providers/Microsoft.Network/virtualNetworks?api-version=2020-05-01`;
 
 		let response = await this.wizard.getRequest(url);
 
-		console.log(response);
+		let dropdownValues = response.data.value.map((value: any) => {
+			let resourceGroupName = value.id.replace(RegExp('^(.*?)/resourceGroups/'), '').replace(RegExp('/providers/.*'), '');
+			return {
+				name: value.id,
+				displayName: `(${resourceGroupName})\t${value.name}`
+			};
+		});
 
-		// this._vmImageVersionDropdown.updateProperties({
-		// 	values: response.data.value.map((value: any) => {
-		// 		return {
-		// 			name: value.id,
-		// 			displayName: value.id
-		// 		};
-		// 	})
-		// });
-		// this.wizard.model.vmImageVersion = (this._vmImageVersionDropdown.value as azdata.CategoryValue).name;
-		this.__virtualNetworkDropdownLoader.loading = false;
+		this._virtualNetworkDropdown.updateProperties({
+			value: dropdownValues[0],
+			values: dropdownValues
+		});
+		this.wizard.model.virtualNetworkName = (this._virtualNetworkDropdown.value as azdata.CategoryValue).name;
+		this._virtualNetworkDropdownLoader.loading = false;
 	}
 
 	private async createPublicIPDropdown(view: azdata.ModelView) {
 		this._publicIPDropdown = view.modelBuilder.dropDown().withProperties({
-			required: true,
+			//required: true,
 			editable: true
 		}).component();
 

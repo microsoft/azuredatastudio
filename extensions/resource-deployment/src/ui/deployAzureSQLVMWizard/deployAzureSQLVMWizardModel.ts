@@ -23,6 +23,7 @@ export class DeployAzureSQLVMWizardModel extends Model {
 	public vmSize!: string;
 
 	public virtualNetworkName!: string;
+	public newVirtualNetwork!: boolean;
 	public publicIPName!: string;
 	public allowRDP!: 'True' | 'False';
 
