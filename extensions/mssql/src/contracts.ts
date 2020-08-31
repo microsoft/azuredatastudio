@@ -1004,12 +1004,41 @@ export namespace ProfilerSessionCreatedNotification {
 
 /// ------------------------------- <Sql Migration> -----------------------------
 
+export interface SqlMigrationImpactedObjectInfo {
+	name: string;
+	impactDetail: string;
+	objectType: string;
+}
+
+export interface SqlMigrationAssessmentResultItem {
+	rulesetVersion: string;
+	rulesetName: string;
+	targetType: azdata.sqlAssessment.SqlAssessmentTargetType;
+	targetName: string;
+	checkId: string;
+	tags: string[];
+	displayName: string;
+	description: string;
+	helpLink: string;
+	level: string;
+	timestamp: string;
+	kind: azdata.sqlAssessment.SqlAssessmentResultItemKind;
+	message: string;
+	appliesToMigrationTargetPlatform: string;
+	issueCategory: string;
+	impactedObjects: SqlMigrationImpactedObjectInfo;
+}
+
+export interface SqlAssessmentResult extends azdata.ResultStatus {
+	items: SqlMigrationAssessmentResultItem[];
+}
+
 export interface SqlMigrationAssessmentParams {
 	ownerUri: string;
 }
 
 export namespace GetSqlMigrationAssessmentItemsRequest {
-	export const type = new RequestType<SqlAssessmentParams, azdata.SqlAssessmentResult, void, void>('migration/getassessment');
+	export const type = new RequestType<SqlAssessmentParams, azdata.SqlAssessmentResult, void, void>('migration/getassessments');
 }
 
 // ------------------------------- <Sql Migration> -----------------------------

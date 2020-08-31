@@ -43,6 +43,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	private _currentState: State;
 	private _gatheringInformationError: string | undefined;
 	private _skuRecommendations: SKURecommendations | undefined;
+	private _assessmentResults: azdata.SqlAssessmentResultItem[] | undefined;
 
 	constructor(private readonly _sourceConnection: azdata.connection.Connection,
 		public readonly migrationService: mssql.ISqlMigrationService) {
@@ -63,6 +64,14 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		this._currentState = newState;
 
 		this._stateChangeEventEmitter.fire({ oldState, newState: this.currentState });
+	}
+
+	public get assessmentResults(): azdata.SqlAssessmentResultItem[] | undefined {
+		return this._assessmentResults;
+	}
+
+	public set assessmentResults(assessmentResults: azdata.SqlAssessmentResultItem[] | undefined) {
+		this._assessmentResults = assessmentResults;
 	}
 
 	public get gatheringInformationError(): string | undefined {
