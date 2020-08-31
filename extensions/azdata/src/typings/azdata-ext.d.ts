@@ -75,6 +75,12 @@ declare module 'azdata-ext' {
 				ElasticSearch: {
 					'vm.max_map_count': string // "-1"
 				},
+				azure: {
+					connectionMode: string, // "indirect",
+					location: string, // "eastus2euap",
+					resourceGroup: string, // "my-rg",
+					subscription: string, // "a5082b29-8c6e-4bc5-8ddd-8ef39dfebc39"
+				  },
 				controller: {
 					'enableBilling': string, // "True"
 					'logs.rotation.days': string, // "7"

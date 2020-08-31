@@ -141,6 +141,7 @@ export function updated(when: string): string { return localize('arc.updated', "
 
 // Errors
 export const connectionRequired = localize('arc.connectionRequired', "A connection is required to show all properties. Click refresh to re-enter connection information");
+export const couldNotFindControllerRegistration = localize('arc.couldNotFindControllerRegistration', "Could not find controller registration.");
 export function refreshFailed(error: any): string { return localize('arc.refreshFailed', "Refresh failed. {0}", getErrorMessage(error)); }
 export function openDashboardFailed(error: any): string { return localize('arc.openDashboardFailed', "Error opening dashboard. {0}", getErrorMessage(error)); }
 export function resourceDeletionFailed(name: string, error: any): string { return localize('arc.resourceDeletionFailed', "Failed to delete resource {0}. {1}", name, getErrorMessage(error)); }
@@ -150,7 +151,6 @@ export function fetchConfigFailed(name: string, error: any): string { return loc
 export function fetchEndpointsFailed(name: string, error: any): string { return localize('arc.fetchEndpointsFailed', "An unexpected error occurred retrieving the endpoints for '{0}'. {1}", name, getErrorMessage(error)); }
 export function fetchRegistrationsFailed(name: string, error: any): string { return localize('arc.fetchRegistrationsFailed', "An unexpected error occurred retrieving the registrations for '{0}'. {1}", name, getErrorMessage(error)); }
 export function fetchDatabasesFailed(name: string, error: any): string { return localize('arc.fetchDatabasesFailed', "An unexpected error occurred retrieving the databases for '{0}'. {1}", name, getErrorMessage(error)); }
-export function couldNotFindRegistration(namespace: string, name: string) { return localize('arc.couldNotFindRegistration', "Could not find controller registration for {0} ({1})", name, namespace); }
 export function resourceDeletionWarning(name: string): string { return localize('arc.resourceDeletionWarning', "Warning! Deleting a resource is permanent and cannot be undone. To delete the resource '{0}' type the name '{0}' below to proceed.", name); }
 export function invalidResourceDeletionName(name: string): string { return localize('arc.invalidResourceDeletionName', "The value '{0}' does not match the instance name. Try again or press escape to exit", name); }
 export function couldNotFindAzureResource(name: string): string { return localize('arc.couldNotFindAzureResource', "Could not find Azure resource for {0}", name); }
