@@ -48,12 +48,12 @@ export class MainThreadModalDialog implements MainThreadModalDialogShape {
 
 	$setTitle(handle: number, value: string): void {
 		const dialog = this._dialogs.get(handle);
-		dialog.headerTitle = value;
+		dialog.setHeaderTitle(value);
 	}
 
 	$setHtml(handle: number, value: string): void {
 		const dialog = this._dialogs.get(handle);
-		dialog.html = value;
+		dialog.setHtml(value);
 	}
 
 	$show(handle: number): void {

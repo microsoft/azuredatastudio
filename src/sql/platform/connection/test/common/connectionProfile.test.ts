@@ -136,7 +136,7 @@ suite('SQL ConnectionProfileInfo tests', () => {
 	test('set properties should set the values correctly', () => {
 		let conn = new ConnectionProfile(capabilitiesService, undefined!);
 		assert.equal(conn.serverName, undefined);
-		conn.connectionName = connectionProfile.connectionName;
+		conn.connectionName = connectionProfile.connectionName!;
 		conn.serverName = connectionProfile.serverName;
 		conn.databaseName = connectionProfile.databaseName;
 		conn.authenticationType = connectionProfile.authenticationType;

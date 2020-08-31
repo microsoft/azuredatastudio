@@ -93,7 +93,7 @@ export class PostgresModel extends ResourceModel {
 
 	/** Returns the service's Kubernetes namespace */
 	public get namespace(): string | undefined {
-		return this.info.namespace;
+		return ''; // TODO chgagnon return this.info.namespace;
 	}
 
 	/** Returns the service's name */
@@ -103,7 +103,7 @@ export class PostgresModel extends ResourceModel {
 
 	/** Returns the service's fully qualified name in the format namespace.name */
 	public get fullName(): string {
-		return `${this.info.namespace}.${this.info.name}`;
+		return `${this.namespace}.${this.name}`;
 	}
 
 	/** Returns the service's spec */

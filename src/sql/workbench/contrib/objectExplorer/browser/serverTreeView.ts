@@ -570,7 +570,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 	/**
 	 * Set whether the given element is expanded or collapsed
 	 */
-	public async setExpandedState(element: ServerTreeElement, expandedState: TreeItemCollapsibleState): Promise<void> {
+	public async setExpandedState(element: ServerTreeElement, expandedState?: TreeItemCollapsibleState): Promise<void> {
 		if (expandedState === TreeItemCollapsibleState.Collapsed) {
 			return this._tree.collapse(element);
 		} else if (expandedState === TreeItemCollapsibleState.Expanded) {
@@ -588,7 +588,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 	/**
 	 * Select the given element in the tree and clear any other selections
 	 */
-	public async setSelected(element: ServerTreeElement, selected: boolean, clearOtherSelections: boolean): Promise<void> {
+	public async setSelected(element: ServerTreeElement, selected?: boolean, clearOtherSelections?: boolean): Promise<void> {
 		if (clearOtherSelections || (selected && clearOtherSelections !== false)) {
 			if (this._tree instanceof AsyncServerTree) {
 				this._tree.setSelection([]);

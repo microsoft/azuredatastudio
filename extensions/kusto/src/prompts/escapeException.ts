@@ -3,9 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IInsightsConfig } from 'sql/platform/dashboard/browser/insightRegistry';
+export default class EscapeException extends Error {
 
-export interface IInsightTypeContrib {
-	id: string;
-	contrib: IInsightsConfig;
 }

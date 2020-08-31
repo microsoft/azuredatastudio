@@ -6,13 +6,14 @@
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import { azureResource } from 'azureResource';
-import { GetResourceGroupsResult, GetSubscriptionsResult } from 'azurecore';
+import { GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult } from 'azurecore';
 import { isArray } from 'util';
 import { AzureResourceGroupService } from './providers/resourceGroup/resourceGroupService';
 import { TokenCredentials } from '@azure/ms-rest-js';
 import { AppContext } from '../appContext';
 import { IAzureResourceSubscriptionService } from './interfaces';
 import { AzureResourceServiceNames } from './constants';
+import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 
 const localize = nls.loadMessageBundle();
 
@@ -137,6 +138,64 @@ export async function getResourceGroups(appContext: AppContext, account?: azdata
 		}
 	}));
 	return result;
+}
+
+export async function runResourceQuery<T extends azureResource.AzureGraphResource>(appContext: AppContext, account: azdata.Account, subscription: azureResource.AzureResourceSubscription, ignoreErrors: boolean = false, query: string) {
+	const result: ResourceQueryResult<T> = { resources: [], errors: [] };
+	if (!account?.properties?.tenants || !isArray(account.properties.tenants)) {
+		const error = new Error(localize('azure.accounts.runResourceQuery.errors.invalidAccount', "Invalid account"));
+		if (!ignoreErrors) {
+			throw error;
+		}
+		result.errors.push(error);
+		return result;
+	}
+
+	if (!subscription.tenant) {
+		const error = new Error(localize('azure.accounts.runResourceQuery.errors.noTenantSpecifiedForSubscription', "Invalid tenant for subscription"));
+		if (!ignoreErrors) {
+			throw error;
+		}
+		result.errors.push(error);
+		return result;
+	}
+
+	const tokenResponse = await azdata.accounts.getAccountSecurityToken(account, subscription.tenant, azdata.AzureResource.ResourceManagement);
+	const token = tokenResponse.token;
+	const tokenType = tokenResponse.tokenType;
+	const credential = new TokenCredentials(token, tokenType);
+
+	const resourceClient = new ResourceGraphClient(credential, { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
+
+	const allResources: T[] = [];
+	let totalProcessed = 0;
+
+	const doQuery = async (skipToken?: string) => {
+		const response = await resourceClient.resources({
+			subscriptions: [subscription.id],
+			query,
+			options: {
+				resultFormat: 'objectArray',
+				skipToken: skipToken
+			}
+		});
+		const resources: T[] = response.data;
+		totalProcessed += resources.length;
+		allResources.push(...resources);
+		if (response.skipToken && totalProcessed < response.totalRecords) {
+			await doQuery(response.skipToken);
+		}
+	};
+	try {
+		await doQuery();
+	} catch (err) {
+		console.error(err);
+		const error = new Error(localize('azure.accounts.runResourceQuery.errors.invalidQuery', "Invalid query"));
+		result.errors.push(error);
+	}
+	result.resources = allResources;
+	return result;
+
 }
 
 export async function getSubscriptions(appContext: AppContext, account?: azdata.Account, ignoreErrors: boolean = false): Promise<GetSubscriptionsResult> {
