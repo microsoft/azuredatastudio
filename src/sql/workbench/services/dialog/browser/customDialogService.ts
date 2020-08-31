@@ -34,16 +34,14 @@ export class CustomDialogService {
 	}
 
 	public closeDialog(dialog: Dialog): void {
-		let dialogModal = this._dialogModals.get(dialog);
-		if (dialogModal) {
-			dialogModal.cancel();
-		}
+		this._dialogModals.get(dialog)?.cancel();
 	}
 
 	public closeWizard(wizard: Wizard): void {
-		let wizardModal = this._wizardModals.get(wizard);
-		if (wizardModal) {
-			wizardModal.cancel();
-		}
+		this._wizardModals.get(wizard)?.cancel();
+	}
+
+	public getWizardModal(wizard: Wizard): WizardModal | undefined {
+		return this._wizardModals.get(wizard);
 	}
 }

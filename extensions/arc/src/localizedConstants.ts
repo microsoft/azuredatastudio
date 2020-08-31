@@ -8,9 +8,9 @@ import { getErrorMessage } from './common/utils';
 const localize = nls.loadMessageBundle();
 
 export const arcDeploymentDeprecation = localize('arc.arcDeploymentDeprecation', "The Arc Deployment extension has been replaced by the Arc extension and has been uninstalled.");
-export const arcControllerDashboard = localize('arc.controllerDashboard', "Azure Arc Controller Dashboard (Preview)");
-export const miaaDashboard = localize('arc.miaaDashboard', "Managed Instance Dashboard (Preview)");
-export const postgresDashboard = localize('arc.postgresDashboard', "Postgres Dashboard (Preview)");
+export function arcControllerDashboard(name: string): string { return localize('arc.controllerDashboard', "Azure Arc Controller Dashboard (Preview) - {0}", name); }
+export function miaaDashboard(name: string): string { return localize('arc.miaaDashboard', "Managed Instance Dashboard (Preview) - {0}", name); }
+export function postgresDashboard(name: string): string { return localize('arc.postgresDashboard', "Postgres Dashboard (Preview) - {0}", name); }
 
 export const dataControllersType = localize('arc.dataControllersType', "Azure Arc Data Controller");
 export const pgSqlType = localize('arc.pgSqlType', "PostgreSQL Server group - Azure Arc");

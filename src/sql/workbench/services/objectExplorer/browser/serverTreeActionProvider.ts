@@ -143,7 +143,9 @@ export class ServerTreeActionProvider {
 		let serverInfoContextKey = new ServerInfoContextKey(scopedContextService);
 		if (connectionProfile.id) {
 			let serverInfo = this._connectionManagementService.getServerInfo(connectionProfile.id);
-			serverInfoContextKey.set(serverInfo);
+			if (serverInfo) {
+				serverInfoContextKey.set(serverInfo);
+			}
 		}
 		let treeNodeContextKey = new TreeNodeContextKey(scopedContextService);
 		if (context.treeNode) {
