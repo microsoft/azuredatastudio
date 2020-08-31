@@ -17,6 +17,7 @@ import { SIDE_BAR_BACKGROUND, SIDE_BAR_TITLE_FOREGROUND } from 'vs/workbench/com
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { focusBorder, foreground } from 'vs/platform/theme/common/colorRegistry';
 import { Button } from 'sql/base/browser/ui/button/button';
+import { InfoButton } from 'sql/base/browser/ui/infoButton/infoButton';
 import { Color } from 'vs/base/common/color';
 import { IComponentDescriptor, IComponent, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSize } from 'sql/base/browser/dom';
@@ -24,13 +25,16 @@ import { convertSize } from 'sql/base/browser/dom';
 @Component({
 	selector: 'modelview-button',
 	template: `
-	<div>
+	<ng-container *ngIf="!this.buttonType === 'Informational'"; else elseBlock>
 		<label for={{this.label}}>
 			<div #input style="width: 100%">
 				<input #fileInput *ngIf="this.isFile === true" id={{this.label}} type="file" accept="{{ this.fileType }}" style="display: none">
 			</div>
 		</label>
-	</div>
+	</ng-container>
+	<ng-container #elseBlock>
+		<div #informationalInput style="width: 100%;"></div>
+	</ng-container>
 	`
 })
 
@@ -38,9 +42,11 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	private _button: Button;
+	private _infoButton: InfoButton;
 	public fileType: string = '.sql';
 
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
+	@ViewChild('informationalInput', { read: ElementRef }) private _informationalInputContainer: ElementRef;
 	@ViewChild('fileInput', { read: ElementRef }) private _fileInputContainer: ElementRef;
 
 	constructor(
@@ -91,6 +97,24 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 				}
 			}));
 		}
+		if (this._informationalInputContainer) {
+			this._infoButton = new InfoButton(this._informationalInputContainer.nativeElement, {
+				'description': this.description,
+				'iconClass': this._iconClass,
+				'iconHeight': this.iconHeight,
+				'iconPath': this.iconPath,
+				'iconWidth': this.iconWidth,
+				'title': this.title
+			});
+
+			this._register(this._infoButton);
+			this._register(this._infoButton.onDidClick(e => {
+				this.fireEvent({
+					eventType: ComponentEventType.onDidClick,
+					args: e
+				});
+			}));
+		}
 	}
 
 	ngOnDestroy(): void {
@@ -136,18 +160,34 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 
 	protected updateIcon() {
 		if (this.iconPath) {
-			if (!this._iconClass) {
-				super.updateIcon();
-				this._button.icon = this._iconClass + ' icon';
-				// Styling for icon button
-				this._register(attachButtonStyler(this._button, this.themeService, {
-					buttonBackground: Color.transparent.toString(),
-					buttonHoverBackground: Color.transparent.toString(),
-					buttonFocusOutline: focusBorder,
-					buttonForeground: foreground
-				}));
+			if (this.buttonType !== 'Informational') {
+				if (!this._iconClass) {
+					super.updateIcon();
+					this._button.icon = this._iconClass + ' icon';
+					// Styling for icon button
+					this._register(attachButtonStyler(this._button, this.themeService, {
+						buttonBackground: Color.transparent.toString(),
+						buttonHoverBackground: Color.transparent.toString(),
+						buttonFocusOutline: focusBorder,
+						buttonForeground: foreground
+					}));
+				} else {
+					super.updateIcon();
+				}
 			} else {
-				super.updateIcon();
+				if (!this._iconClass) {
+					super.updateIcon();
+					this._infoButton.icon = this._iconClass + ' icon';
+					// Styling for icon button
+					this._register(attachButtonStyler(this._infoButton, this.themeService, {
+						buttonBackground: Color.transparent.toString(),
+						buttonHoverBackground: Color.transparent.toString(),
+						buttonFocusOutline: focusBorder,
+						buttonForeground: foreground
+					}));
+				} else {
+					super.updateIcon();
+				}
 			}
 		}
 	}
