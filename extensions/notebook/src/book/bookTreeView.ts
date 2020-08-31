@@ -175,10 +175,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		const book: BookModel = new BookModel(bookPath, this._openAsUntitled, isNotebook, this._extensionContext);
 		await book.initializeContents();
 		this.books.push(book);
-		this.currentBook = book;
-		// if (!this.currentBook) {
-		// 	this.currentBook = book;
-		// }
+		//this.currentBook = book;
+		if (!this.currentBook) {
+			this.currentBook = book;
+		}
 		this._bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
 		this._bookViewer.onDidChangeVisibility(e => {
 			let openDocument = azdata.nb.activeNotebookEditor;
@@ -507,7 +507,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	getChildren(element?: BookTreeItem): Thenable<BookTreeItem[]> {
 		if (element) {
 			if (element.sections) {
-				return Promise.resolve(this.currentBook.getSections(element.tableOfContents, element.sections, element.root).then(sections => { return sections; }));
+				return Promise.resolve(this.currentBook.getSections(element.tableOfContents, element.sections, element.root, element.book).then(sections => { return sections; }));
 			} else {
 				return Promise.resolve([]);
 			}

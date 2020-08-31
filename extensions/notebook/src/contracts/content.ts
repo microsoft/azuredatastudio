@@ -118,7 +118,7 @@ export interface IJupyterBookSectionV1 {
 /**
  * A section of a Jupyter book.
  *
- * This is taken from https://github.com/jupyter/jupyter-book/blob/master/jupyter_book/book_template/toc.yml but is not
+ * This is taken from https://github.com/jupyter/jupyter-book/blob/master/jupyter_book/book_template/_toc.yml but is not
  * enforced so invalid JSON may result in expected values being undefined.
  */
 export interface IJupyterBookSectionV2 {
@@ -127,7 +127,7 @@ export interface IJupyterBookSectionV2 {
 	 */
 	title?: string;
 	/**
-	 * URL of section relative to the root folder.
+	 * Path to notebook relative to root folder.
 	 */
 	file?: string;
 	/**
@@ -137,7 +137,7 @@ export interface IJupyterBookSectionV2 {
 	/**
 	 * If the section shouldn't have a number in the sidebar
 	 */
-	numbered?: string;
+	numbered?: boolean;
 	/**
 	 * If you'd like the sections of this chapter to always be expanded in the sidebar.
 	 */
