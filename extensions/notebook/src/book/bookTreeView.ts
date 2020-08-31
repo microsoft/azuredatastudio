@@ -17,7 +17,8 @@ import { IBookTrustManager, BookTrustManager } from './bookTrustManager';
 import * as loc from '../common/localizedConstants';
 import * as glob from 'fast-glob';
 import { isNullOrUndefined } from 'util';
-import { debounce } from '../common/utils';
+import { debounce, getPinnedNotebooks } from '../common/utils';
+import { IBookPinManager, BookPinManager } from './bookPinManager';
 
 const Content = 'content';
 
@@ -34,6 +35,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private _initializeDeferred: Deferred<void> = new Deferred<void>();
 	private _openAsUntitled: boolean;
 	private _bookTrustManager: IBookTrustManager;
+	public bookPinManager: IBookPinManager;
 
 	private _bookViewer: vscode.TreeView<BookTreeItem>;
 	public viewId: string;
@@ -44,8 +46,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		this._openAsUntitled = openAsUntitled;
 		this._extensionContext = extensionContext;
 		this.books = [];
-		this.initialize(workspaceFolders).catch(e => console.error(e));
+		this.bookPinManager = new BookPinManager();
 		this.viewId = view;
+		this.initialize(workspaceFolders).catch(e => console.error(e));
 		this.prompter = new CodeAdapter();
 		this._bookTrustManager = new BookTrustManager(this.books);
 
@@ -53,13 +56,24 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	private async initialize(workspaceFolders: vscode.WorkspaceFolder[]): Promise<void> {
-		await Promise.all(workspaceFolders.map(async (workspaceFolder) => {
-			try {
-				await this.loadNotebooksInFolder(workspaceFolder.uri.fsPath);
-			} catch {
-				// no-op, not all workspace folders are going to be valid books
-			}
-		}));
+		if (this.viewId === constants.PINNED_BOOKS_VIEWID) {
+			await Promise.all(getPinnedNotebooks().map(async (notebookPath) => {
+				try {
+					await this.createAndAddBookModel(notebookPath, true);
+				} catch {
+					// no-op, not all workspace folders are going to be valid books
+				}
+			}));
+		} else {
+			await Promise.all(workspaceFolders.map(async (workspaceFolder) => {
+				try {
+					await this.loadNotebooksInFolder(workspaceFolder.uri.fsPath);
+				} catch {
+					// no-op, not all workspace folders are going to be valid books
+				}
+			}));
+		}
+
 		this._initializeDeferred.resolve();
 	}
 
@@ -97,6 +111,26 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
+	async pinNotebook(bookTreeItem: BookTreeItem): Promise<void> {
+		let bookPathToUpdate = bookTreeItem.book?.contentPath;
+		if (bookPathToUpdate) {
+			let pinStatusChanged = this.bookPinManager.pinNotebook(bookTreeItem);
+			if (pinStatusChanged) {
+				bookTreeItem.contextValue = 'pinnedNotebook';
+			}
+		}
+	}
+
+	async unpinNotebook(bookTreeItem: BookTreeItem): Promise<void> {
+		let bookPathToUpdate = bookTreeItem.book?.contentPath;
+		if (bookPathToUpdate) {
+			let pinStatusChanged = this.bookPinManager.unpinNotebook(bookTreeItem);
+			if (pinStatusChanged) {
+				bookTreeItem.contextValue = 'savedNotebook';
+			}
+		}
+	}
+
 	async openBook(bookPath: string, urlToOpen?: string, showPreview?: boolean, isNotebook?: boolean): Promise<void> {
 		try {
 			// Convert path to posix style for easier comparisons
@@ -129,6 +163,20 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			}
 		} catch (e) {
 			vscode.window.showErrorMessage(loc.openFileError(bookPath, e instanceof Error ? e.message : e));
+		}
+	}
+
+	async addNotebookToPinnedView(bookItem: BookTreeItem): Promise<void> {
+		let notebookPath: string = bookItem.book.contentPath;
+		if (notebookPath) {
+			await this.createAndAddBookModel(notebookPath, true);
+		}
+	}
+
+	async removeNotebookFromPinnedView(bookItem: BookTreeItem): Promise<void> {
+		let notebookPath: string = bookItem.book.contentPath;
+		if (notebookPath) {
+			await this.closeBook(bookItem);
 		}
 	}
 
@@ -169,21 +217,23 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	 * @param bookPath The path to the book folder to create the model for
 	 */
 	private async createAndAddBookModel(bookPath: string, isNotebook: boolean): Promise<void> {
-		const book: BookModel = new BookModel(bookPath, this._openAsUntitled, isNotebook, this._extensionContext);
-		await book.initializeContents();
-		this.books.push(book);
-		if (!this.currentBook) {
-			this.currentBook = book;
-		}
-		this._bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
-		this._bookViewer.onDidChangeVisibility(e => {
-			let openDocument = azdata.nb.activeNotebookEditor;
-			let notebookPath = openDocument?.document.uri;
-			// call reveal only once on the correct view
-			if (e.visible && ((!this._openAsUntitled && notebookPath?.scheme !== 'untitled') || (this._openAsUntitled && notebookPath?.scheme === 'untitled'))) {
-				this.revealActiveDocumentInViewlet();
+		if (!this.books.find(x => x.bookPath === bookPath)) {
+			const book: BookModel = new BookModel(bookPath, this._openAsUntitled, isNotebook, this._extensionContext);
+			await book.initializeContents();
+			this.books.push(book);
+			if (!this.currentBook) {
+				this.currentBook = book;
 			}
-		});
+			this._bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
+			this._bookViewer.onDidChangeVisibility(e => {
+				let openDocument = azdata.nb.activeNotebookEditor;
+				let notebookPath = openDocument?.document.uri;
+				// call reveal only once on the correct view
+				if (e.visible && ((!this._openAsUntitled && notebookPath?.scheme !== 'untitled') || (this._openAsUntitled && notebookPath?.scheme === 'untitled'))) {
+					this.revealActiveDocumentInViewlet();
+				}
+			});
+		}
 	}
 
 	async showPreviewFile(urlToOpen?: string): Promise<void> {
