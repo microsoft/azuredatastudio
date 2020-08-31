@@ -24,8 +24,13 @@ export class DeployAzureSQLVMWizardModel extends Model {
 
 	public virtualNetworkName!: string;
 	public newVirtualNetwork!: boolean;
+	public subnetName!: string;
 	public publicIPName!: string;
+	public newPublicIPName!: boolean;
 	public allowRDP!: 'True' | 'False';
+
+	public sqlConnectivityType!: string;
+	public port!: number;
 
 	public storageAccountName!: string;
 	public storageAccountSKU!: string;
