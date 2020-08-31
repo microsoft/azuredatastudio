@@ -14,6 +14,7 @@ import { AzureSettingsPage } from './pages/azureSettingsPage';
 import { VmSettingsPage } from './pages/vmSettingsPage';
 import axios, { AxiosRequestConfig } from 'axios';
 import { NetworkSettingsPage } from './pages/networkSettingsPage';
+import { SqlServerSettingsPage } from './pages/sqlServerSettingsPage';
 
 export class DeployAzureSQLVMWizard extends WizardBase<DeployAzureSQLVMWizard, WizardPageBase<DeployAzureSQLVMWizard>, DeployAzureSQLVMWizardModel> {
 
@@ -52,7 +53,7 @@ export class DeployAzureSQLVMWizard extends WizardBase<DeployAzureSQLVMWizard, W
 		pages.push(new AzureSettingsPage(this));
 		pages.push(new VmSettingsPage(this));
 		pages.push(new NetworkSettingsPage(this));
-		pages.push(new StorageSettingsPage(this));
+		pages.push(new SqlServerSettingsPage(this));
 		return pages;
 	}
 
