@@ -12,7 +12,7 @@ import { HttpClient } from './common/httpClient';
 import Logger from './common/logger';
 import { getErrorMessage, searchForCmd } from './common/utils';
 import * as loc from './localizedConstants';
-import { azdataConfigSection, debugConfigKey } from './constants';
+import { azdataConfigSection, debugConfigKey, requiredVersion as requiredVersion, installationReadmeUrl } from './constants';
 
 export const azdataHostname = 'https://aka.ms';
 export const azdataUri = 'azdata-msi';
@@ -228,7 +228,7 @@ export async function upgradeAzdata(): Promise<void> {
 /**
  * Checks whether a newer version of azdata is available - and if it is prompts the user to download and
  * install it.
- * @param currentAzdata The current version of azdata to check . This function  is a no-o if currentAzdata is undefined.
+ * @param currentAzdata The current version of azdata to check . This function  is a no-op if currentAzdata is undefined.
  * returns true if an upgrade was performed and false otherwise.
  */
 export async function checkAndUpgradeAzdata(currentAzdata: IAzdataTool | undefined): Promise<boolean> {
@@ -250,6 +250,28 @@ export async function checkAndUpgradeAzdata(currentAzdata: IAzdataTool | undefin
 	return false;
 }
 
+/**
+ * Prompts user to install azdata using opened documentation if it is not installed.
+ * If it is installed it verifies that the installed version is correct else it prompts user
+ * to install the correct version using opened documentation
+ * @param currentAzdata The current version of azdata to check.
+ */
+export async function manuallyInstallOrUpgradeAzdata(currentAzdata: IAzdataTool | undefined): Promise<void> {
+	if (currentAzdata === undefined) {
+		vscode.window.showInformationMessage(loc.installManually(requiredVersion, installationReadmeUrl), 'Ok');
+		Logger.log(loc.installManually(requiredVersion, installationReadmeUrl));
+	} else {
+		const requiredSemVersion = new SemVer(requiredVersion);
+		if (requiredSemVersion.compare(currentAzdata.cachedVersion) === 0) {
+			return; // if we have the required version then nothing more needs to be eon.
+		}
+		vscode.window.showInformationMessage(loc.installCorrectVersionManually(currentAzdata.cachedVersion.raw, requiredVersion, installationReadmeUrl), 'Ok');
+		Logger.log(loc.installCorrectVersionManually(currentAzdata.cachedVersion.raw, requiredVersion, installationReadmeUrl));
+	}
+	// display the instructions document in a new editor window.
+	// const downloadedFile = await HttpClient.downloadFile(installationInstructionDoc, os.tmpdir());
+	// await vscode.window.showTextDocument(vscode.Uri.parse(downloadedFile));
+}
 
 /**
  * Downloads the Windows installer and runs it
