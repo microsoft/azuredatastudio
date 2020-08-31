@@ -125,10 +125,14 @@ export class Project {
 				const nameNodes = references[r].getElementsByTagName(constants.DatabaseVariableLiteralValue);
 				const name = nameNodes.length === 1 ? nameNodes[0].childNodes[0].nodeValue : undefined;
 
+				const suppressMissingDependenciesErrorNode = references[r].getElementsByTagName(constants.SuppressMissingDependenciesErrors);
+				const suppressMissingDependences = suppressMissingDependenciesErrorNode[0].childNodes[0].nodeValue === true ?? false;
+
 				this.databaseReferences.push(new DacpacReferenceProjectEntry({
 					dacpacFileLocation: Uri.file(utils.getPlatformSafeFileEntryPath(filepath)),
 					databaseLocation: name ? DatabaseReferenceLocation.differentDatabaseSameServer : DatabaseReferenceLocation.sameDatabase,
-					databaseName: name
+					databaseName: name,
+					suppressMissingDependenciesErrors: suppressMissingDependences
 				}));
 			}
 		}
@@ -143,7 +147,11 @@ export class Project {
 
 			const nameNodes = projectReferences[r].getElementsByTagName(constants.Name);
 			const name = nameNodes[0].childNodes[0].nodeValue;
-			this.databaseReferences.push(new SqlProjectReferenceProjectEntry(Uri.file(utils.getPlatformSafeFileEntryPath(filepath)), name));
+
+			const suppressMissingDependenciesErrorNode = projectReferences[r].getElementsByTagName(constants.SuppressMissingDependenciesErrors);
+			const suppressMissingDependences = suppressMissingDependenciesErrorNode[0].childNodes[0].nodeValue === true ?? false;
+
+			this.databaseReferences.push(new SqlProjectReferenceProjectEntry(Uri.file(utils.getPlatformSafeFileEntryPath(filepath)), name, suppressMissingDependences));
 		}
 	}
 
@@ -303,7 +311,7 @@ export class Project {
 			ssdtUri = this.getSystemDacpacSsdtUri(constants.msdbDacpac);
 		}
 
-		const systemDatabaseReferenceProjectEntry = new SystemDatabaseReferenceProjectEntry(uri, ssdtUri, <string>settings.databaseName);
+		const systemDatabaseReferenceProjectEntry = new SystemDatabaseReferenceProjectEntry(uri, ssdtUri, <string>settings.databaseName, settings.suppressMissingDependenciesErrors);
 		await this.addToProjFile(systemDatabaseReferenceProjectEntry);
 	}
 
@@ -480,10 +488,9 @@ export class Project {
 	}
 
 	private addDatabaseReferenceChildren(referenceNode: any, entry: IDatabaseReferenceProjectEntry): void {
-		// TODO: create checkbox for this setting
 		const suppressMissingDependenciesErrorNode = this.projFileXmlDoc.createElement(constants.SuppressMissingDependenciesErrors);
-		const falseTextNode = this.projFileXmlDoc.createTextNode('False');
-		suppressMissingDependenciesErrorNode.appendChild(falseTextNode);
+		const suppressMissingDependenciesErrorTextNode = this.projFileXmlDoc.createTextNode(entry.suppressMissingDependenciesErrors ? constants.True : constants.False);
+		suppressMissingDependenciesErrorNode.appendChild(suppressMissingDependenciesErrorTextNode);
 		referenceNode.appendChild(suppressMissingDependenciesErrorNode);
 
 		// TODO: add support for sqlcmd vars and server https://github.com/microsoft/azuredatastudio/issues/12036
@@ -551,6 +558,10 @@ export class Project {
 				const nameNodes = currentNode.getElementsByTagName(constants.DatabaseVariableLiteralValue);
 				const databaseVariableName = nameNodes[0].childNodes[0]?.nodeValue;
 
+				// get suppressMissingDependenciesErrors
+				const suppressMissingDependenciesErrorNode = currentNode.getElementsByTagName(constants.SuppressMissingDependenciesErrors);
+				const suppressMissingDependences = suppressMissingDependenciesErrorNode[0].childNodes[0].nodeValue === true ?? false;
+
 				// remove this node
 				this.projFileXmlDoc.documentElement.removeChild(currentNode);
 
@@ -562,7 +573,7 @@ export class Project {
 				// remove from database references because it'll get added again later
 				this.databaseReferences.splice(this.databaseReferences.findIndex(n => n.databaseName === (systemDb === SystemDatabase.master ? constants.master : constants.msdb)), 1);
 
-				await this.addSystemDatabaseReference({ databaseName: databaseVariableName, systemDb: systemDb });
+				await this.addSystemDatabaseReference({ databaseName: databaseVariableName, systemDb: systemDb, suppressMissingDependenciesErrors: suppressMissingDependences });
 			}
 		}
 	}
@@ -668,16 +679,19 @@ export class ProjectEntry {
 export interface IDatabaseReferenceProjectEntry extends ProjectEntry {
 	databaseName: string;
 	databaseVariableLiteralValue?: string;
+	suppressMissingDependenciesErrors: boolean;
 }
 
 export class DacpacReferenceProjectEntry extends ProjectEntry implements IDatabaseReferenceProjectEntry {
 	databaseLocation: DatabaseReferenceLocation;
 	databaseVariableLiteralValue?: string;
+	suppressMissingDependenciesErrors: boolean;
 
 	constructor(settings: IDacpacReferenceSettings) {
 		super(settings.dacpacFileLocation, '', EntryType.DatabaseReference);
 		this.databaseLocation = settings.databaseLocation;
 		this.databaseVariableLiteralValue = settings.databaseName;
+		this.suppressMissingDependenciesErrors = settings.suppressMissingDependenciesErrors;
 	}
 
 	/**
@@ -689,7 +703,7 @@ export class DacpacReferenceProjectEntry extends ProjectEntry implements IDataba
 }
 
 class SystemDatabaseReferenceProjectEntry extends ProjectEntry implements IDatabaseReferenceProjectEntry {
-	constructor(uri: Uri, public ssdtUri: Uri, public databaseVariableLiteralValue: string) {
+	constructor(uri: Uri, public ssdtUri: Uri, public databaseVariableLiteralValue: string, public suppressMissingDependenciesErrors: boolean) {
 		super(uri, '', EntryType.DatabaseReference);
 	}
 
@@ -712,11 +726,8 @@ class SystemDatabaseReferenceProjectEntry extends ProjectEntry implements IDatab
 }
 
 export class SqlProjectReferenceProjectEntry extends ProjectEntry implements IDatabaseReferenceProjectEntry {
-	projectName: string;
-
-	constructor(uri: Uri, name: string) {
+	constructor(uri: Uri, public projectName: string, public suppressMissingDependenciesErrors: boolean) {
 		super(uri, '', EntryType.DatabaseReference);
-		this.projectName = name;
 	}
 
 	public get databaseName(): string {

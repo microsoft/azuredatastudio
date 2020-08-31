@@ -109,6 +109,7 @@ export const databaseName = localize('databaseName', "Database name");
 export const databaseVariable = localize('databaseVariable', "Database variable");
 export const serverName = localize('serverName', "Server name");
 export const serverVariable = localize('serverVariable', "Server variable");
+export const suppressMissingDependenciesErrors = localize('suppressMissingDependenciesErrors', "Suppress errors caused by unresolved references in the referenced project");
 
 // Error messages
 
@@ -203,6 +204,8 @@ export const TargetConnectionString = 'TargetConnectionString';
 export const PreDeploy = 'PreDeploy';
 export const PostDeploy = 'PostDeploy';
 export const None = 'None';
+export const True = 'True';
+export const False = 'False';
 
 // SqlProj File targets
 export const NetCoreTargets = '$(NETCoreTargetsPath)\\Microsoft.Data.Tools.Schema.SqlTasks.targets';

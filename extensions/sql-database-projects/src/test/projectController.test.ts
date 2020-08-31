@@ -502,9 +502,9 @@ describe('ProjectsController', function (): void {
 			const addDbReferenceDialog = TypeMoq.Mock.ofType(AddDatabaseReferenceDialog, undefined, undefined, proj);
 			addDbReferenceDialog.callBase = true;
 			addDbReferenceDialog.setup(x => x.addReferenceClick()).returns(() => {
-				projController.object.addDatabaseReferenceCallback(proj, { systemDb: SystemDatabase.master, databaseName: 'master' });
+				projController.object.addDatabaseReferenceCallback(proj, { systemDb: SystemDatabase.master, databaseName: 'master', suppressMissingDependenciesErrors: false });
 				return Promise.resolve(undefined);
-			})
+			});
 
 			const projController = TypeMoq.Mock.ofType(ProjectsController);
 			projController.callBase = true;

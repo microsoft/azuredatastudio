@@ -37,6 +37,7 @@ export class AddDatabaseReferenceDialog {
 	public databaseVariableTextbox: azdata.InputBoxComponent | undefined;
 	public serverNameTextbox: azdata.InputBoxComponent | undefined;
 	public serverVariableTextbox: azdata.InputBoxComponent | undefined;
+	public suppressMissingDependenciesErrorsCheckbox: azdata.CheckBoxComponent | undefined;
 
 	public currentReferenceType: ReferenceType | undefined;
 	private referenceLocationMap: Map<string, DatabaseReferenceLocation>;
@@ -87,6 +88,10 @@ export class AddDatabaseReferenceDialog {
 			this.dacpacFormComponent = this.createDacpacTextbox();
 			const locationDropdown = this.createLocationDropdown();
 			const variableSection = this.createVariableSection();
+			this.suppressMissingDependenciesErrorsCheckbox = view.modelBuilder.checkBox().withProperties({
+				label: constants.suppressMissingDependenciesErrors
+			}).component();
+
 
 			this.formBuilder = <azdata.FormBuilder>view.modelBuilder.formContainer()
 				.withFormItems([
@@ -96,7 +101,10 @@ export class AddDatabaseReferenceDialog {
 							radioButtonGroup,
 							this.systemDatabaseFormComponent,
 							locationDropdown,
-							variableSection
+							variableSection,
+							{
+								component: this.suppressMissingDependenciesErrorsCheckbox
+							}
 						]
 					}
 				], {
@@ -119,14 +127,16 @@ export class AddDatabaseReferenceDialog {
 		if (this.currentReferenceType === ReferenceType.systemDb) {
 			referenceSettings = {
 				databaseName: <string>this.databaseNameTextbox?.value,
-				systemDb: <string>this.systemDatabaseDropdown?.value === constants.master ? SystemDatabase.master : SystemDatabase.msdb
+				systemDb: <string>this.systemDatabaseDropdown?.value === constants.master ? SystemDatabase.master : SystemDatabase.msdb,
+				suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
 			};
 		} else { // this.currentReferenceType === ReferenceType.dacpac
 			referenceSettings = {
 				databaseName: <string>this.databaseNameTextbox?.value,
 				databaseLocation: <DatabaseReferenceLocation>this.referenceLocationMap.get(<string>this.locationDropdown?.value),
 				dacpacFileLocation: vscode.Uri.file(<string>this.dacpacTextbox?.value),
-				databaseVariable: <string>this.databaseVariableTextbox?.value
+				databaseVariable: <string>this.databaseVariableTextbox?.value,
+				suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
 			};
 			// TODO: add project reference support
 		}
