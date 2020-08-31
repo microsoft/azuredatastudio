@@ -13,7 +13,7 @@ let localAzdata: IAzdataTool | undefined = undefined;
 export async function activate(context: vscode.ExtensionContext): Promise<azdataExt.IExtension> {
 	localAzdata = await checkForAzdata();
 	// Don't block on this since we want the extension to finish activating without user actions
-	manuallyInstallOrUpgradeAzdata(context, undefined)
+	manuallyInstallOrUpgradeAzdata(context, localAzdata)
 		.catch(err => console.log(err));
 	return {
 		azdata: {
