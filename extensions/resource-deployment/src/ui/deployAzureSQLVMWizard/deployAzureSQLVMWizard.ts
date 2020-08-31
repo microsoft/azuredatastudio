@@ -28,7 +28,8 @@ export class DeployAzureSQLVMWizard extends WizardBase<DeployAzureSQLVMWizard, W
 	constructor(private wizardInfo: AzureSQLVMWizardInfo, private _notebookService: INotebookService, private _toolsService: IToolsService) {
 		super(
 			constants.WizardTitle,
-			new DeployAzureSQLVMWizardModel()
+			new DeployAzureSQLVMWizardModel(),
+			_toolsService
 		);
 	}
 
@@ -51,7 +52,7 @@ export class DeployAzureSQLVMWizard extends WizardBase<DeployAzureSQLVMWizard, W
 		pages.push(new AzureSettingsPage(this));
 		pages.push(new VmSettingsPage(this));
 		pages.push(new NetworkSettingsPage(this));
-		//pages.push(new StorageSettingsPage(this));
+		pages.push(new StorageSettingsPage(this));
 		return pages;
 	}
 

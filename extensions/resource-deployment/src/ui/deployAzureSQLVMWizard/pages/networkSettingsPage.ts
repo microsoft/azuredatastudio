@@ -10,16 +10,21 @@ import * as constants from '../constants';
 
 export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
-	// dropdown for virtual network
+	// virtual network components
 	private _existingVirtualNetworkCheckbox!: azdata.CheckBoxComponent;
 	private _virtualNetworkFlexContainer !: azdata.FlexContainer;
 	private _virtualNetworkDropdown!: azdata.DropDownComponent;
 	private _virtualNetworkDropdownLoader!: azdata.LoadingComponent;
 	private _newVirtualNetworkText!: azdata.InputBoxComponent;
 
-	// dropdown for public network
-	private _publicIPDropdown!: azdata.DropDownComponent;
-	private _publicIPDropdownLoader!: azdata.LoadingComponent;
+	// subnet network components
+
+	// public ip components
+	private _existingPublicIpCheckbox!: azdata.CheckBoxComponent;
+	private _publicIpFlexContainer !: azdata.FlexContainer;
+	private _publicIpDropdown!: azdata.DropDownComponent;
+	private _publicIpDropdownLoader!: azdata.LoadingComponent;
+	private _publicIpNetworkText!: azdata.InputBoxComponent;
 
 	// checkbox for RDP
 	private _vmRDPAllowCheckbox!: azdata.CheckBoxComponent;
@@ -53,8 +58,11 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 							component: this._virtualNetworkFlexContainer
 						},
 						{
+							component: this._existingPublicIpCheckbox,
+						},
+						{
 							title: constants.PublicIPDropdownLabel,
-							component: this._publicIPDropdownLoader
+							component: this._publicIpFlexContainer
 						},
 						{
 							component: this._vmRDPAllowCheckbox
@@ -73,6 +81,7 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 
 	public async onEnter(): Promise<void> {
 		this.populateVirtualNetworkDropdown();
+		this.populatePublicIpkDropdown();
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			return true;
 		});
@@ -153,7 +162,7 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 			let resourceGroupName = value.id.replace(RegExp('^(.*?)/resourceGroups/'), '').replace(RegExp('/providers/.*'), '');
 			return {
 				name: value.id,
-				displayName: `(${resourceGroupName})\t${value.name}`
+				displayName: `${value.name} \t\t resource group: (${resourceGroupName})`
 			};
 		});
 
@@ -166,17 +175,86 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 	}
 
 	private async createPublicIPDropdown(view: azdata.ModelView) {
-		this._publicIPDropdown = view.modelBuilder.dropDown().withProperties({
-			//required: true,
-			editable: true
+
+		this._existingPublicIpCheckbox = view.modelBuilder.checkBox().withProperties(<azdata.CheckBoxProperties>{
+			label: 'Use Existing Public IP',
+			checked: true
 		}).component();
 
-		this._publicIPDropdown.onValueChanged((value) => {
-			this.wizard.model.publicIPName = (this._virtualNetworkDropdown.value as azdata.CategoryValue).name;
+		this._existingPublicIpCheckbox.onChanged((event) => {
+			if (event) {
+				this._publicIpDropdownLoader.updateCssStyles({
+					display: 'block',
+				});
+				this._publicIpNetworkText.updateCssStyles({
+					display: 'none',
+				});
+				this.wizard.model.newPublicIPName = false;
+			} else {
+				this._publicIpDropdownLoader.updateCssStyles({
+					display: 'none',
+				});
+				this._publicIpNetworkText.updateCssStyles({
+					display: 'block',
+				});
+				this.wizard.model.newPublicIPName = true;
+			}
 		});
 
-		this._publicIPDropdownLoader = view.modelBuilder.loadingComponent().withItem(this._publicIPDropdown).component();
+		this._publicIpDropdown = view.modelBuilder.dropDown().withProperties({
+			//required: true,
+		}).component();
+
+		this._publicIpDropdown.onValueChanged((value) => {
+			this.wizard.model.publicIPName = value.name;
+			//this.wizard.model.vmImageSKU = (this._virtualNetworkDropdown.value as azdata.CategoryValue).name;
+		});
+
+		this._publicIpDropdownLoader = view.modelBuilder.loadingComponent().withItem(this._publicIpDropdown).component();
+
+		this._publicIpNetworkText = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
+		}).component();
+
+		this._publicIpNetworkText.onTextChanged((e) => {
+			this.wizard.model.publicIPName = e;
+			this.wizard.model.newPublicIPName = true;
+		});
+
+		this._publicIpNetworkText.updateCssStyles({
+			display: 'none',
+		});
+
+		this._publicIpFlexContainer = view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'column',
+		}).withItems(
+			[this._publicIpDropdownLoader, this._publicIpNetworkText]
+		).component();
 	}
+
+	private async populatePublicIpkDropdown() {
+		this._publicIpDropdownLoader.loading = true;
+		let url = `https://management.azure.com` +
+			`/subscriptions/${this.wizard.model.azureSubscription}` +
+			`/providers/Microsoft.Network/publicIPAddresses?api-version=2020-05-01`;
+
+		let response = await this.wizard.getRequest(url);
+
+		let dropdownValues = response.data.value.map((value: any) => {
+			let resourceGroupName = value.id.replace(RegExp('^(.*?)/resourceGroups/'), '').replace(RegExp('/providers/.*'), '');
+			return {
+				name: value.id,
+				displayName: `${value.name} \t\t resource group: (${resourceGroupName})`
+			};
+		});
+
+		this._publicIpDropdown.updateProperties({
+			value: dropdownValues[0],
+			values: dropdownValues
+		});
+		this.wizard.model.publicIPName = (this._publicIpDropdown.value as azdata.CategoryValue).name;
+		this._publicIpDropdownLoader.loading = false;
+	}
+
 
 
 	private async createVmRDPAllowCheckbox(view: azdata.ModelView) {
