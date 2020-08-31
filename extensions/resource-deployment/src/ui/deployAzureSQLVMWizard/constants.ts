@@ -39,3 +39,4 @@ export const PublicIPDropdownLabel = localize('deployAzureSQLVM.PublicIPDropdown
 export const RDPAllowCheckboxLabel = localize('deployAzureSQLVM.VmRDPAllowCheckboxLabel', "Enable RDP(3389) inbound Port");
 
 // SQL Server settings page constants
+export const SqlServerSettingsPageTitle = localize('deployAzureSQLVM', "SQL Servers settings");
