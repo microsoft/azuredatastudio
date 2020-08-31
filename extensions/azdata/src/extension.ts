@@ -4,13 +4,23 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdataExt from 'azdata-ext';
-import { findAzdata, IAzdataTool } from './azdata';
+import * as vscode from 'vscode';
+import { checkAndUpgradeAzdata, findAzdata, IAzdataTool } from './azdata';
 import * as loc from './localizedConstants';
 
 let localAzdata: IAzdataTool | undefined = undefined;
 
 export async function activate(): Promise<azdataExt.IExtension> {
 	localAzdata = await checkForAzdata();
+	// Don't block on this since we want the extension to finish activating without needing user input
+	// upgrade if available and user wants it.
+	checkAndUpgradeAzdata(localAzdata)
+		.then(async upgradePerformed => {
+			if (upgradePerformed) { // If upgrade was performed then find and save the new azdata
+				localAzdata = await findAzdata();
+			}
+		})
+		.catch(err => vscode.window.showWarningMessage(loc.upgradeError(err)));
 	return {
 		azdata: {
 			arc: {
@@ -85,11 +95,11 @@ function throwIfNoAzdata(): void {
 
 async function checkForAzdata(): Promise<IAzdataTool | undefined> {
 	try {
-		return await findAzdata();
+		return await findAzdata(); // find currently installed Azdata
 	} catch (err) {
 		// Don't block on this since we want the extension to finish activating without needing user input.
 		// Calls will be made to handle azdata not being installed
-		promptToInstallAzdata().catch(e => console.log(`Unexpected error prompting to install azdata ${e}`));
+		await promptToInstallAzdata().catch(e => console.log(`Unexpected error prompting to install azdata ${e}`));
 	}
 	return undefined;
 }

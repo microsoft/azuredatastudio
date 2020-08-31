@@ -124,6 +124,7 @@ describe('BooksTreeViewTests', function () {
 			should(appContext).not.be.undefined();
 			should(appContext.bookTreeViewProvider).not.be.undefined();
 			should(appContext.providedBookTreeViewProvider).not.be.undefined();
+			should(appContext.pinnedBookTreeViewProvider).not.be.undefined();
 		});
 
 		it('should initialize correctly with empty workspace array', async () => {
@@ -344,6 +345,67 @@ describe('BooksTreeViewTests', function () {
 				await vscode.commands.executeCommand('workbench.action.closeAllEditors');
 			});
 
+		});
+
+		describe('pinnedBookTreeViewProvider', function (): void {
+			let pinnedTreeViewProvider: BookTreeViewProvider;
+			let bookTreeViewProvider: BookTreeViewProvider;
+			let bookItem: BookTreeItem;
+
+			this.beforeAll(async () => {
+				pinnedTreeViewProvider = appContext.pinnedBookTreeViewProvider;
+				bookTreeViewProvider = appContext.bookTreeViewProvider;
+				let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
+				await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
+				await Promise.race([pinnedTreeViewProvider.initialized, errorCase.then(() => { throw new Error('PinnedTreeViewProvider did not initialize in time'); })]);
+				await bookTreeViewProvider.openBook(bookFolderPath, undefined, false, false);
+				bookItem = bookTreeViewProvider.books[0].bookItems[0];
+			});
+
+			afterEach(function (): void {
+				sinon.restore();
+			});
+
+			it('pinnedBookTreeViewProvider should not have any books when there are no pinned notebooks', async function (): Promise<void> {
+				const notebooks = pinnedTreeViewProvider.books;
+				should(notebooks.length).equal(0, 'Pinned Notebooks view should not have any notebooks');
+			});
+
+			it('pinNotebook should add notebook to pinnedBookTreeViewProvider', async function (): Promise<void> {
+				await vscode.commands.executeCommand('notebook.command.pinNotebook', bookItem);
+				const notebooks = pinnedTreeViewProvider.books;
+				should(notebooks.length).equal(1, 'Pinned Notebooks view should have a notebook');
+			});
+
+			it('unpinNotebook should remove notebook from pinnedBookTreeViewProvider', async function (): Promise<void> {
+				await vscode.commands.executeCommand('notebook.command.unpinNotebook', pinnedTreeViewProvider.books[0].bookItems[0]);
+				const notebooks = pinnedTreeViewProvider.books;
+				should(notebooks.length).equal(0, 'Pinned Notebooks view should not have any notebooks');
+			});
+
+			it('pinNotebook should invoke bookPinManagers pinNotebook method', async function (): Promise<void> {
+				let pinBookSpy = sinon.spy(bookTreeViewProvider.bookPinManager, 'pinNotebook');
+				await bookTreeViewProvider.pinNotebook(bookItem);
+				should(pinBookSpy.calledOnce).be.true('Should invoke bookPinManagers pinNotebook to update pinnedNotebooks config');
+			});
+
+			it('unpinNotebook should invoke bookPinManagers unpinNotebook method', async function (): Promise<void> {
+				let unpinNotebookSpy = sinon.spy(bookTreeViewProvider.bookPinManager, 'unpinNotebook');
+				await bookTreeViewProvider.unpinNotebook(bookItem);
+				should(unpinNotebookSpy.calledOnce).be.true('Should invoke bookPinManagers unpinNotebook to update pinnedNotebooks config');
+			});
+
+			it('addNotebookToPinnedView should add notebook to the TreeViewProvider', async function (): Promise<void> {
+				let notebooks = pinnedTreeViewProvider.books.length;
+				await pinnedTreeViewProvider.addNotebookToPinnedView(bookItem);
+				should(pinnedTreeViewProvider.books.length).equal(notebooks + 1, 'Should add the notebook as new item to the TreeViewProvider');
+			});
+
+			it('removeNotebookFromPinnedView should remove notebook from the TreeViewProvider', async function (): Promise<void> {
+				let notebooks = pinnedTreeViewProvider.books.length;
+				await pinnedTreeViewProvider.removeNotebookFromPinnedView(pinnedTreeViewProvider.books[0].bookItems[0]);
+				should(pinnedTreeViewProvider.books.length).equal(notebooks - 1, 'Should remove the notebook from the TreeViewProvider');
+			});
 		});
 
 		this.afterAll(async function (): Promise<void> {

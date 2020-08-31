@@ -35,6 +35,15 @@
           "sqlDatabaseProjects.netCoreSDKLocation": {
             "type": "string",
             "description": "%sqlDatabaseProjects.netCoreInstallLocation%"
+          },
+          "sqlDatabaseProjects.defaultProjectSaveLocation": {
+            "type": "string",
+            "description": "%sqlDatabaseProjects.defaultProjectSaveLocation%"
+          },
+          "sqlDatabaseProjects.showUpdateSaveLocationPrompt": {
+            "type": "boolean",
+            "description": "%sqlDatabaseProjects.showUpdateSaveLocationPrompt%",
+            "default": true
           }
         }
       }
@@ -58,6 +67,16 @@
       {
         "command": "sqlDatabaseProjects.newScript",
         "title": "%sqlDatabaseProjects.newScript%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.newPreDeploymentScript",
+        "title": "%sqlDatabaseProjects.newPreDeploymentScript%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.newPostDeploymentScript",
+        "title": "%sqlDatabaseProjects.newPostDeploymentScript%",
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
@@ -146,6 +165,14 @@
         },
         {
           "command": "sqlDatabaseProjects.newScript",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.newPreDeploymentScript",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.newPostDeploymentScript",
           "when": "false"
         },
         {
@@ -243,6 +270,16 @@
         },
         {
           "command": "sqlDatabaseProjects.newScript",
+          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
+          "group": "3_dbProjects_newItem@7"
+        },
+        {
+          "command": "sqlDatabaseProjects.newPreDeploymentScript",
+          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
+          "group": "3_dbProjects_newItem@8"
+        },
+        {
+          "command": "sqlDatabaseProjects.newPostDeploymentScript",
           "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
           "group": "3_dbProjects_newItem@9"
         },
