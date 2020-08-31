@@ -3362,7 +3362,7 @@
 				{
 				"extensionId": "72",
 				"extensionName": "eltsnap-simple-data-flow",
-				"displayName": "eltsnap: Simple Data Flow",
+				"displayName": "eltsnap: Simple Dataflow",
 				"shortDescription": "Easily copy a table from one SQL Server to Another",
 				"publisher": {
 				  "displayName":"Jim-BITracks",
@@ -3394,9 +3394,12 @@
 						},
 						{
 							"assetType": "Microsoft.VisualStudio.Services.Content.License",
-							"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt"
+							"source": "https://raw.githubusercontent.com/Jim-BITracks/eltsnap-simpleDataFlow/master/LICENSE"
 						}
-					],
+
+
+							],
+							
 					"properties": [
 						{
 							"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
@@ -3405,6 +3408,10 @@
 						{
 							"key": "Microsoft.VisualStudio.Code.Engine",
 							"value": "*"
+						},
+						{
+						"key": "Microsoft.AzDataEngine",
+						"value": ">=1.21.0"
 						},
 						{
 							"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -3423,7 +3430,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 57
+							"count": 58
 						}
 					]
 				}
