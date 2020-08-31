@@ -38,6 +38,7 @@ export class AddDatabaseReferenceDialog {
 	public serverNameTextbox: azdata.InputBoxComponent | undefined;
 	public serverVariableTextbox: azdata.InputBoxComponent | undefined;
 	public suppressMissingDependenciesErrorsCheckbox: azdata.CheckBoxComponent | undefined;
+	public exampleUsage: azdata.TextComponent | undefined;
 
 	public currentReferenceType: ReferenceType | undefined;
 	private referenceLocationMap: Map<string, DatabaseReferenceLocation>;
@@ -91,7 +92,7 @@ export class AddDatabaseReferenceDialog {
 			this.suppressMissingDependenciesErrorsCheckbox = view.modelBuilder.checkBox().withProperties({
 				label: constants.suppressMissingDependenciesErrors
 			}).component();
-
+			const exampleUsage = this.createExampleUsage();
 
 			this.formBuilder = <azdata.FormBuilder>view.modelBuilder.formContainer()
 				.withFormItems([
@@ -102,6 +103,7 @@ export class AddDatabaseReferenceDialog {
 							this.systemDatabaseFormComponent,
 							locationDropdown,
 							variableSection,
+							exampleUsage,
 							{
 								component: this.suppressMissingDependenciesErrorsCheckbox
 							}
@@ -192,6 +194,7 @@ export class AddDatabaseReferenceDialog {
 		this.currentReferenceType = ReferenceType.systemDb;
 		this.updateEnabledInputBoxes(true);
 		this.tryEnableAddReferenceButton();
+		this.updateExampleUsage();
 	}
 
 	public dacpacRadioButtonClick(): void {
@@ -204,6 +207,7 @@ export class AddDatabaseReferenceDialog {
 		this.currentReferenceType = ReferenceType.dacpac;
 		this.updateEnabledInputBoxes();
 		this.tryEnableAddReferenceButton();
+		this.updateExampleUsage();
 	}
 
 	private createSystemDatabaseDropdown(): azdata.FormComponent {
@@ -232,6 +236,7 @@ export class AddDatabaseReferenceDialog {
 
 		this.dacpacTextbox.onTextChanged(() => {
 			this.tryEnableAddReferenceButton();
+			this.updateExampleUsage();
 		});
 
 		const loadDacpacButton = this.createLoadDacpacButton();
@@ -285,6 +290,7 @@ export class AddDatabaseReferenceDialog {
 		this.locationDropdown.onValueChanged(() => {
 			this.updateEnabledInputBoxes();
 			this.tryEnableAddReferenceButton();
+			this.updateExampleUsage();
 		});
 
 		return {
@@ -371,9 +377,55 @@ export class AddDatabaseReferenceDialog {
 
 		inputBox.onTextChanged(() => {
 			this.tryEnableAddReferenceButton();
+			this.updateExampleUsage();
 		});
 
 		return inputBox;
+	}
+
+	private createExampleUsage(): azdata.FormComponent {
+		this.exampleUsage = this.view!.modelBuilder.text().withProperties({
+			value: constants.systemDatabaseReferenceRequired
+		}).component();
+
+		const exampleUsageWrapper = this.view!.modelBuilder.flexContainer().withItems([this.exampleUsage], { CSSStyles: { 'width': '415px', 'height': '80px', 'padding': '0 10px', 'border': '1px solid #8a8886', 'font-style': 'italic' } }).component();
+
+		return {
+			component: exampleUsageWrapper,
+			title: constants.exampleUsage
+		};
+	}
+
+	private updateExampleUsage(): void {
+		let newText = '';
+
+		switch (this.locationDropdown!.value) {
+			case constants.sameDatabase: {
+				newText = constants.sameDatabaseExampleUsage;
+				break;
+			}
+			case constants.differentDbSameServer: {
+				if (!this.databaseNameTextbox?.value) {
+					newText = this.currentReferenceType === ReferenceType.systemDb ? constants.enterSystemDbName : constants.databaseNameRequiredVariableOptional;
+				} else {
+					const db = this.databaseVariableTextbox?.value ?? this.databaseNameTextbox.value;
+					newText = constants.differentDbSameServerExampleUsage(db);
+				}
+				break;
+			}
+			case constants.differentDbDifferentServer: {
+				if (!this.databaseNameTextbox?.value || !this.serverNameTextbox?.value || !this.serverVariableTextbox?.value) {
+					newText = constants.databaseNameServerNameVariableRequired;
+				} else {
+					const server = this.serverVariableTextbox.value ?? this.serverNameTextbox.value;
+					const db = this.databaseVariableTextbox?.value ?? this.databaseNameTextbox.value;
+					newText = constants.differentDbDifferentServerExampleUsage(server, db);
+				}
+				break;
+			}
+		}
+
+		this.exampleUsage!.value = newText;
 	}
 
 	/**
