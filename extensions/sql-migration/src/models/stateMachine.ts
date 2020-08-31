@@ -66,11 +66,11 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		this._stateChangeEventEmitter.fire({ oldState, newState: this.currentState });
 	}
 
-	public get assessmentResults(): azdata.SqlAssessmentResultItem[] | undefined {
+	public get assessmentResults(): mssql.SqlMigrationAssessmentResultItem[] | undefined {
 		return this._assessmentResults;
 	}
 
-	public set assessmentResults(assessmentResults: azdata.SqlAssessmentResultItem[] | undefined) {
+	public set assessmentResults(assessmentResults: mssql.SqlMigrationAssessmentResultItem[] | undefined) {
 		this._assessmentResults = assessmentResults;
 	}
 
