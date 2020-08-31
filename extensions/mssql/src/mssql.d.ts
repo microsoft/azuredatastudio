@@ -43,6 +43,8 @@ export interface IExtension {
 	readonly dacFx: IDacFxService;
 
 	readonly sqlAssessment: ISqlAssessmentService;
+
+	readonly sqlMigration: ISqlMigrationService;
 }
 
 /**
@@ -494,4 +496,35 @@ export interface ISqlAssessmentService {
 	assessmentInvoke(ownerUri: string, targetType: azdata.sqlAssessment.SqlAssessmentTargetType): Promise<azdata.SqlAssessmentResult>;
 	getAssessmentItems(ownerUri: string, targetType: azdata.sqlAssessment.SqlAssessmentTargetType): Promise<azdata.SqlAssessmentResult>;
 	generateAssessmentScript(items: azdata.SqlAssessmentResultItem[], targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Promise<azdata.ResultStatus>;
+}
+
+
+/**
+ * Sql Migration
+ */
+
+// SqlMigration interfaces  -----------------------------------------------------------------------
+
+export interface SqlMigrationAssessmentResultItem {
+	rulesetVersion: string;
+	rulesetName: string;
+	targetType: azdata.sqlAssessment.SqlAssessmentTargetType;
+	targetName: string;
+	checkId: string;
+	tags: string[];
+	displayName: string;
+	description: string;
+	message: string;
+	helpLink: string;
+	level: string;
+	timestamp: string;
+	kind: azdata.sqlAssessment.SqlAssessmentResultItemKind;
+}
+
+export interface SqlMigrationAssessmentResult extends azdata.ResultStatus {
+	items: SqlMigrationAssessmentResultItem[];
+}
+
+export interface ISqlMigrationService {
+	getAssessments(ownerUri: string): Promise<SqlMigrationAssessmentResult>;
 }

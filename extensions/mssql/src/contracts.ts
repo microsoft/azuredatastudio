@@ -1001,3 +1001,15 @@ export namespace ProfilerSessionCreatedNotification {
 }
 
 // ------------------------------- < SQL Profiler > ------------------------------------
+
+/// ------------------------------- <Sql Migration> -----------------------------
+
+export interface SqlMigrationAssessmentParams {
+	ownerUri: string;
+}
+
+export namespace GetSqlMigrationAssessmentItemsRequest {
+	export const type = new RequestType<SqlAssessmentParams, azdata.SqlAssessmentResult, void, void>('migration/getassessment');
+}
+
+// ------------------------------- <Sql Migration> -----------------------------

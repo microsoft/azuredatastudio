@@ -32,6 +32,8 @@ export class SourceConfigurationPage extends MigrationWizardPage {
 		).component();
 
 		await view.initializeModel(form);
+
+		await this.migrationStateModel.migrationService.getAssessments(this.migrationStateModel.sourceConnection.connectionId);
 	}
 
 	// private async createInformationGatheredPage(view: azdata.ModelView){

@@ -5,6 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import * as mssql from '../../../mssql';
 import { SKURecommendations } from './externalContract';
 
 export enum State {
@@ -43,7 +44,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	private _gatheringInformationError: string | undefined;
 	private _skuRecommendations: SKURecommendations | undefined;
 
-	constructor(private readonly _sourceConnection: azdata.connection.Connection) {
+	constructor(private readonly _sourceConnection: azdata.connection.Connection,
+		public readonly migrationService: mssql.ISqlMigrationService) {
 		this._currentState = State.INIT;
 	}
 

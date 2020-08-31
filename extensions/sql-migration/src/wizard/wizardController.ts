@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import * as mssql from '../../../mssql';
 import { MigrationStateModel } from '../models/stateMachine';
 import { SourceConfigurationPage } from './sourceConfigurationPage';
 import { WIZARD_TITLE } from '../models/strings';
@@ -13,14 +14,15 @@ import { SubscriptionSelectionPage } from './subscriptionSelectionPage';
 
 export class WizardController {
 	constructor(private readonly extensionContext: vscode.ExtensionContext) {
-
 	}
 
 	public async openWizard(profile: azdata.connection.Connection): Promise<void> {
-		const stateModel = new MigrationStateModel(profile);
-		this.extensionContext.subscriptions.push(stateModel);
-
-		this.createWizard(stateModel);
+		const api = (await vscode.extensions.getExtension(mssql.extension.name)?.activate()) as mssql.IExtension;
+		if (api) {
+			const stateModel = new MigrationStateModel(profile, api.sqlMigration);
+			this.extensionContext.subscriptions.push(stateModel);
+			this.createWizard(stateModel);
+		}
 	}
 
 	private async createWizard(stateModel: MigrationStateModel): Promise<void> {
