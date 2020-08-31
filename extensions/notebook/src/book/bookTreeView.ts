@@ -111,7 +111,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	async pinNotebook(bookTreeItem: BookTreeItem, unpin: boolean = false): Promise<void> {
+	async pinNotebook(bookTreeItem: BookTreeItem): Promise<void> {
 		let bookPathToUpdate = bookTreeItem.book?.contentPath;
 		if (bookPathToUpdate) {
 			let pinStatusChanged = this.bookPinManager.pinNotebook(bookTreeItem);

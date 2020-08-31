@@ -325,8 +325,7 @@ export async function getRandomToken(size: number = 24): Promise<string> {
 }
 
 export function isBookItemPinned(notebookPath: string): boolean {
-	let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(notebookConfigKey);
-	let pinnedNotebooks: string[] = config.get(pinnedBooksConfigKey);
+	let pinnedNotebooks: string[] = getPinnedNotebooks();
 	if (pinnedNotebooks?.indexOf(notebookPath) > -1) {
 		return true;
 	}
