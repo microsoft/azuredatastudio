@@ -5,7 +5,6 @@
 
 import MainController from '../../controllers/mainController';
 import { ImportTestUtils, TestExtensionContext } from '../utils.test';
-import * as should from 'should';
 
 describe('Main Controller', function () {
 	let testExtensionContext: TestExtensionContext;
@@ -16,7 +15,7 @@ describe('Main Controller', function () {
 
 	it('Extension activates successfully', async function () {
 		let mainController = new MainController(testExtensionContext);
-		should.doesNotThrow(() => mainController.activate());
+		await mainController.activate().should.not.be.rejected();
 	});
 });
 

@@ -15,6 +15,7 @@ import { parseIpAndPort } from '../../../common/utils';
 export class MiaaConnectionStringsPage extends DashboardPage {
 
 	private _keyValueContainer!: KeyValueContainer;
+	private _connectionStringsMessage!: azdata.TextComponent;
 
 	constructor(modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _miaaModel: MiaaModel) {
 		super(modelView);
@@ -56,6 +57,12 @@ export class MiaaConnectionStringsPage extends DashboardPage {
 		this._keyValueContainer = new KeyValueContainer(this.modelView.modelBuilder, this.getConnectionStrings());
 		this.disposables.push(this._keyValueContainer);
 		content.addItem(this._keyValueContainer.container);
+
+		this._connectionStringsMessage = this.modelView.modelBuilder.text()
+			.withProperties<azdata.TextComponentProperties>({ CSSStyles: { 'text-align': 'center' } })
+			.component();
+		content.addItem(this._connectionStringsMessage);
+
 		this.initialized = true;
 		return root;
 	}
@@ -90,6 +97,7 @@ $conn = sqlsrv_connect($serverName, $connectionInfo);`),
 	}
 
 	private updateConnectionStrings(): void {
+		this._connectionStringsMessage.value = !this._miaaModel.config?.status.externalEndpoint ? loc.noExternalEndpoint : '';
 		this._keyValueContainer.refresh(this.getConnectionStrings());
 	}
 }
