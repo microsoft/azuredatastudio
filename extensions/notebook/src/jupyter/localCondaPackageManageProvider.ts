@@ -49,6 +49,13 @@ export class LocalCondaPackageManageProvider implements IPackageManageProvider {
 	}
 
 	/**
+	 * Returns current location
+	 */
+	public async getCurrentLocation(): Promise<string | undefined> {
+		return Promise.resolve(constants.localhostName);
+	}
+
+	/**
 	 * Uninstalls given packages
 	 * @param packages Packages to uninstall
 	 */

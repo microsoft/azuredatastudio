@@ -7,12 +7,12 @@ import * as azdataExt from 'azdata-ext';
 import * as os from 'os';
 import { SemVer } from 'semver';
 import * as vscode from 'vscode';
-import { executeCommand, executeSudoCommand, ExitCodeError } from './common/childProcess';
+import { executeCommand, executeSudoCommand, ExitCodeError, ProcessOutput } from './common/childProcess';
 import { HttpClient } from './common/httpClient';
 import Logger from './common/logger';
 import { getErrorMessage, searchForCmd } from './common/utils';
 import * as loc from './localizedConstants';
-import { azdataConfigSection, debugConfigKey } from './constants';
+import { azdataConfigSection, debugConfigKey, requiredVersion as requiredVersion, installationReadmeUrl } from './constants';
 
 export const azdataHostname = 'https://aka.ms';
 export const azdataUri = 'azdata-msi';
@@ -108,23 +108,19 @@ export class AzdataTool implements IAzdataTool {
 	 * It also updates the cachedVersion property based on the return value from the tool.
 	 */
 	public async version(): Promise<azdataExt.AzdataOutput<string>> {
-		const output = await executeCommand(`"${this.path}"`, ['--version']);
+		const output = await executeAzdataCommand(`"${this.path}"`, ['--version']);
 		this.cachedVersion = new SemVer(parseVersion(output.stdout));
 		return {
 			logs: [],
 			stdout: output.stdout.split(os.EOL),
 			stderr: output.stderr.split(os.EOL),
-			result: ''
+			result: output.stdout
 		};
 	}
 
 	public async executeCommand<R>(args: string[], additionalEnvVars?: { [key: string]: string }): Promise<azdataExt.AzdataOutput<R>> {
-		const debug = vscode.workspace.getConfiguration(azdataConfigSection).get(debugConfigKey);
-		if (debug) {
-			args.push('--debug');
-		}
 		try {
-			const output = JSON.parse((await executeCommand(`"${this.path}"`, args.concat(['--output', 'json']), additionalEnvVars)).stdout);
+			const output = JSON.parse((await executeAzdataCommand(`"${this.path}"`, args.concat(['--output', 'json']), additionalEnvVars)).stdout);
 			return {
 				logs: <string[]>output.log,
 				stdout: <string[]>output.stdout,
@@ -132,11 +128,18 @@ export class AzdataTool implements IAzdataTool {
 				result: <R>output.result
 			};
 		} catch (err) {
-			// Since the output is JSON we need to do some extra parsing here to get the correct stderr out.
-			// The actual value we get is something like ERROR: { stderr: '...' } so we also need to trim
-			// off the start that isn't a valid JSON blob
+
 			if (err instanceof ExitCodeError) {
-				err.stderr = JSON.parse(err.stderr.substring(err.stderr.indexOf('{'))).stderr;
+				try {
+					// For azdata internal errors the output is JSON and so we need to do some extra parsing here
+					// to get the correct stderr out. The actual value we get is something like
+					// ERROR: { stderr: '...' }
+					// so we also need to trim off the start that isn't a valid JSON blob
+					err.stderr = JSON.parse(err.stderr.substring(err.stderr.indexOf('{'))).stderr;
+				} catch (err) {
+					// no op - it means this was probably some other generic error (such as command not being found)
+				}
+
 			}
 			throw err;
 		}
@@ -225,21 +228,52 @@ export async function upgradeAzdata(): Promise<void> {
 /**
  * Checks whether a newer version of azdata is available - and if it is prompts the user to download and
  * install it.
- * @param currentAzdata The current version of azdata to check against
+ * @param currentAzdata The current version of azdata to check . This function  is a no-op if currentAzdata is undefined.
+ * returns true if an upgrade was performed and false otherwise.
  */
-export async function checkAndUpgradeAzdata(currentAzdata?: IAzdataTool): Promise<void> {
-	if (currentAzdata === undefined) {
-		currentAzdata = await findAzdata();
-	}
-	const newVersion = await discoverLatestAvailableAzdataVersion();
-	if (newVersion.compare(currentAzdata.cachedVersion) === 1) {
-		const response = await vscode.window.showInformationMessage(loc.promptForAzdataUpgrade(newVersion.raw), loc.yes, loc.no);
-		if (response === loc.yes) {
-			await upgradeAzdata();
+export async function checkAndUpgradeAzdata(currentAzdata: IAzdataTool | undefined): Promise<boolean> {
+	if (currentAzdata !== undefined) {
+		const newVersion = await discoverLatestAvailableAzdataVersion();
+		if (newVersion.compare(currentAzdata.cachedVersion) === 1) {
+			//update if available and user wants it.
+			const response = await vscode.window.showInformationMessage(loc.promptForAzdataUpgrade(newVersion.raw), loc.yes, loc.no);
+			if (response === loc.yes) {
+				await upgradeAzdata();
+				return true;
+			}
+		} else {
+			Logger.log(loc.currentlyInstalledVersionIsLatest(currentAzdata.cachedVersion.raw));
 		}
+	} else {
+		Logger.log(loc.upgradeCheckSkipped);
 	}
+	return false;
 }
 
+/**
+ * Prompts user to install azdata using opened documentation if it is not installed.
+ * If it is installed it verifies that the installed version is correct else it prompts user
+ * to install the correct version using opened documentation
+ * @param currentAzdata The current version of azdata to check.
+ */
+export async function manuallyInstallOrUpgradeAzdata(currentAzdata: IAzdataTool | undefined): Promise<void> {
+	if (currentAzdata === undefined) {
+		vscode.window.showInformationMessage(loc.installManually(requiredVersion, installationReadmeUrl), 'Ok');
+		Logger.show();
+		Logger.log(loc.installManually(requiredVersion, installationReadmeUrl));
+	} else {
+		const requiredSemVersion = new SemVer(requiredVersion);
+		if (requiredSemVersion.compare(currentAzdata.cachedVersion) === 0) {
+			return; // if we have the required version then nothing more needs to be eon.
+		}
+		vscode.window.showInformationMessage(loc.installCorrectVersionManually(currentAzdata.cachedVersion.raw, requiredVersion, installationReadmeUrl), 'Ok');
+		Logger.show();
+		Logger.log(loc.installCorrectVersionManually(currentAzdata.cachedVersion.raw, requiredVersion, installationReadmeUrl));
+	}
+	// display the instructions document in a new editor window.
+	// const downloadedFile = await HttpClient.downloadFile(installationInstructionDoc, os.tmpdir());
+	// await vscode.window.showTextDocument(vscode.Uri.parse(downloadedFile));
+}
 
 /**
  * Downloads the Windows installer and runs it
@@ -289,9 +323,8 @@ async function installAzdataLinux(): Promise<void> {
 /**
  */
 async function findSpecificAzdata(): Promise<IAzdataTool> {
-	const promise = ((process.platform === 'win32') ? searchForCmd('azdata.cmd') : searchForCmd('azdata'));
-	const path = `"${await promise}"`; // throws if azdata is not found
-	const versionOutput = await executeCommand(`${path}`, ['--version']);
+	const path = await ((process.platform === 'win32') ? searchForCmd('azdata.cmd') : searchForCmd('azdata'));
+	const versionOutput = await executeAzdataCommand(`"${path}"`, ['--version']);
 	return new AzdataTool(path, parseVersion(versionOutput.stdout));
 }
 
@@ -325,7 +358,7 @@ async function discoverLatestAzdataVersionFromJson(): Promise<SemVer> {
 		throw Error(`failed to parse the JSON of contents at: ${azdataHostname}/${azdataReleaseJson}, text being parsed: '${fileContents}', error:${getErrorMessage(e)}`);
 	}
 	const version = azdataReleaseInfo[process.platform]['version'];
-	Logger.log(loc.foundAzdataVersionToUpgradeTo(version));
+	Logger.log(loc.latestAzdataVersionAvailable(version));
 	return new SemVer(version);
 }
 
@@ -355,8 +388,17 @@ async function discoverLatestStableAzdataVersionDarwin(): Promise<SemVer> {
 		throw Error(`failed to parse the JSON contents output of: 'brew info azdata-cli --json', text being parsed: '${brewInfoOutput}', error:${getErrorMessage(e)}`);
 	}
 	const azdataPackageVersionInfo: AzdataDarwinPackageVersionInfo = brewInfoAzdataCliJson.shift();
-	Logger.log(loc.foundAzdataVersionToUpgradeTo(azdataPackageVersionInfo.versions.stable));
+	Logger.log(loc.latestAzdataVersionAvailable(azdataPackageVersionInfo.versions.stable));
 	return new SemVer(azdataPackageVersionInfo.versions.stable);
+}
+
+async function executeAzdataCommand(command: string, args: string[], additionalEnvVars: { [key: string]: string } = {}): Promise<ProcessOutput> {
+	additionalEnvVars = Object.assign(additionalEnvVars, { 'ACCEPT_EULA': 'yes' });
+	const debug = vscode.workspace.getConfiguration(azdataConfigSection).get(debugConfigKey);
+	if (debug) {
+		args.push('--debug');
+	}
+	return executeCommand(command, args, additionalEnvVars);
 }
 
 /**
@@ -371,6 +413,6 @@ async function discoverLatestStableAzdataVersionDarwin(): Promise<SemVer> {
 // 	const packageName = output.split('\n')[1].split(' ')[1];
 // 	// the version string is the first part of the package sting before '~'
 // 	const version = packageName.split('~')[0];
-// 	Logger.log(loc.foundAzdataVersionToUpgradeTo(version));
+// 	Logger.log(loc.latestAzdataVersionAvailable(version));
 // 	return new SemVer(version);
 // }

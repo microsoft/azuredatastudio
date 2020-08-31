@@ -2,7 +2,7 @@
   "name": "arc",
   "displayName": "%arc.displayName%",
   "description": "%arc.description%",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
@@ -56,6 +56,10 @@
       {
         "command": "arc.refresh",
         "title": "%command.refresh.title%"
+      },
+      {
+        "command": "arc.editConnection",
+        "title": "%command.editConnection.title%"
       }
     ],
     "menus": {
@@ -70,6 +74,10 @@
         },
         {
           "command": "arc.refresh",
+          "when": "false"
+        },
+        {
+          "command": "arc.editConnection",
           "when": "false"
         }
       ],
@@ -92,14 +100,19 @@
           "group": "navigation@1"
         },
         {
-          "command": "arc.refresh",
+          "command": "arc.editConnection",
           "when": "view == azureArc && viewItem == dataControllers",
           "group": "navigation@2"
         },
         {
-          "command": "arc.removeController",
+          "command": "arc.refresh",
           "when": "view == azureArc && viewItem == dataControllers",
           "group": "navigation@3"
+        },
+        {
+          "command": "arc.removeController",
+          "when": "view == azureArc && viewItem == dataControllers",
+          "group": "navigation@4"
         }
       ]
     },
@@ -794,6 +807,7 @@
   },
   "dependencies": {
     "request": "^2.88.0",
+    "uuid": "^8.3.0",
     "vscode-nls": "^4.1.2"
   },
   "devDependencies": {
@@ -801,6 +815,7 @@
     "@types/node": "^12.11.7",
     "@types/request": "^2.48.3",
     "@types/sinon": "^9.0.4",
+    "@types/uuid": "^8.3.0",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
