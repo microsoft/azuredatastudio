@@ -259,6 +259,7 @@ export async function checkAndUpgradeAzdata(currentAzdata: IAzdataTool | undefin
 export async function manuallyInstallOrUpgradeAzdata(currentAzdata: IAzdataTool | undefined): Promise<void> {
 	if (currentAzdata === undefined) {
 		vscode.window.showInformationMessage(loc.installManually(requiredVersion, installationReadmeUrl), 'Ok');
+		Logger.show();
 		Logger.log(loc.installManually(requiredVersion, installationReadmeUrl));
 	} else {
 		const requiredSemVersion = new SemVer(requiredVersion);
@@ -266,6 +267,7 @@ export async function manuallyInstallOrUpgradeAzdata(currentAzdata: IAzdataTool 
 			return; // if we have the required version then nothing more needs to be eon.
 		}
 		vscode.window.showInformationMessage(loc.installCorrectVersionManually(currentAzdata.cachedVersion.raw, requiredVersion, installationReadmeUrl), 'Ok');
+		Logger.show();
 		Logger.log(loc.installCorrectVersionManually(currentAzdata.cachedVersion.raw, requiredVersion, installationReadmeUrl));
 	}
 	// display the instructions document in a new editor window.
