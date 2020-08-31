@@ -58,7 +58,6 @@
 		"./sql/workbench/api/common/**/*.ts", // 294 errors
 		"./sql/workbench/browser/**/*.ts", // 3162 errors
 		"./sql/workbench/contrib/assessment/**/*.ts", // 3164 errors
-		"./sql/workbench/contrib/azure/**/*.ts", // 118 errors
 		"./sql/workbench/contrib/backup/**/*.ts", // 249 errors
 		"./sql/workbench/contrib/charts/**/*.ts", // 3162 errors
 		"./sql/workbench/contrib/commandLine/**/*.ts", // 3185 errors
