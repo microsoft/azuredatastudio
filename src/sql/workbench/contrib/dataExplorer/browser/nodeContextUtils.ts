@@ -22,7 +22,7 @@ export class NodeContextUtils extends Disposable {
 	NodeType.User, NodeType.UserDefinedTableType, NodeType.View]);
 	static readonly canExecute = new Set([NodeType.StoredProcedure]);
 	static readonly canAlter = new Set([NodeType.AggregateFunction, NodeType.PartitionFunction, NodeType.ScalarValuedFunction,
-	NodeType.StoredProcedure, NodeType.TableValuedFunction, NodeType.View]);
+	NodeType.StoredProcedure, NodeType.TableValuedFunction, NodeType.View, NodeType.Function]);
 
 	// General node context keys
 	static NodeProvider = new RawContextKey<string>('nodeProvider', undefined);
