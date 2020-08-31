@@ -3552,7 +3552,7 @@
 						"fallbackAssetUri": "fallbackAssetUri",
 						"files": [
 							{
-								"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+								"assetType": "Microsoft.SQLOps.DownloadPage",
 								"source": "https://github.com/Jim-BITracks/eltsnap-simpleDataFlow/releases/tag/v1.0.0"
 							},
 							{
