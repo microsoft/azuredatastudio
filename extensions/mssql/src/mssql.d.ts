@@ -505,6 +505,12 @@ export interface ISqlAssessmentService {
 
 // SqlMigration interfaces  -----------------------------------------------------------------------
 
+export interface SqlMigrationImpactedObjectInfo {
+	name: string;
+	impactDetail: string;
+	objectType: string;
+}
+
 export interface SqlMigrationAssessmentResultItem {
 	rulesetVersion: string;
 	rulesetName: string;
@@ -514,11 +520,14 @@ export interface SqlMigrationAssessmentResultItem {
 	tags: string[];
 	displayName: string;
 	description: string;
-	message: string;
 	helpLink: string;
 	level: string;
 	timestamp: string;
 	kind: azdata.sqlAssessment.SqlAssessmentResultItemKind;
+	message: string;
+	appliesToMigrationTargetPlatform: string;
+	issueCategory: string;
+	impactedObjects: SqlMigrationImpactedObjectInfo;
 }
 
 export interface SqlMigrationAssessmentResult extends azdata.ResultStatus {

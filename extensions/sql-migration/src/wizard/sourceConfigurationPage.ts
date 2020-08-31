@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as mssql from '../../../mssql';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { SOURCE_CONFIGURATION_PAGE_TITLE, COLLECTING_SOURCE_CONFIGURATIONS, COLLECTING_SOURCE_CONFIGURATIONS_INFO, COLLECTING_SOURCE_CONFIGURATIONS_ERROR } from '../models/strings';
 import { MigrationStateModel, StateChangeEvent, State } from '../models/stateMachine';
@@ -39,10 +40,6 @@ export class SourceConfigurationPage extends MigrationWizardPage {
 			this.migrationStateModel.currentState = State.TARGET_SELECTION;
 		});
 	}
-
-	// private async createInformationGatheredPage(view: azdata.ModelView){
-
-	// }
 
 	private async enterErrorState() {
 		const component = this.gatheringInfoComponent.component as azdata.TextComponent;

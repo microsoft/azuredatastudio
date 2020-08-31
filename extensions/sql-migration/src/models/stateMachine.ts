@@ -43,7 +43,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	private _currentState: State;
 	private _gatheringInformationError: string | undefined;
 	private _skuRecommendations: SKURecommendations | undefined;
-	private _assessmentResults: azdata.SqlAssessmentResultItem[] | undefined;
+	private _assessmentResults: mssql.SqlMigrationAssessmentResultItem[] | undefined;
 
 	constructor(private readonly _sourceConnection: azdata.connection.Connection,
 		public readonly migrationService: mssql.ISqlMigrationService) {
