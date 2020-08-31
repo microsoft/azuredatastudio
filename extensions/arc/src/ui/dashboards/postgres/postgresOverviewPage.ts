@@ -317,7 +317,7 @@ export class PostgresOverviewPage extends DashboardPage {
 	}
 
 	private getKibanaLink(): string {
-		const kibanaQuery = `kubernetes_namespace:"${this._postgresModel.namespace}" and cluster_name:"${this._postgresModel.name}"`;
+		const kibanaQuery = `kubernetes_namespace:"${this._postgresModel.namespace}" and custom_resource_name:"${this._postgresModel.name}"`;
 		return `${this._controllerModel.getEndpoint(Endpoints.logsui)?.endpoint}/app/kibana#/discover?_a=(query:(language:kuery,query:'${kibanaQuery}'))`;
 
 	}

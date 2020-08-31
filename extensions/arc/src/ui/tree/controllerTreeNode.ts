@@ -30,6 +30,9 @@ export class ControllerTreeNode extends TreeNode {
 		model.onInfoUpdated(_ => {
 			this.label = model.label;
 		});
+		model.onRegistrationsUpdated(registrations => {
+			this.updateChildren(registrations);
+		});
 	}
 
 	public async getChildren(): Promise<TreeNode[]> {
