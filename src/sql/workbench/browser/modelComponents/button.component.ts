@@ -157,18 +157,34 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 
 	protected updateIcon() {
 		if (this.iconPath) {
-			if (!this._iconClass) {
-				super.updateIcon();
-				this._button.icon = this._iconClass + ' icon';
-				// Styling for icon button
-				this._register(attachButtonStyler(this._button, this.themeService, {
-					buttonBackground: Color.transparent.toString(),
-					buttonHoverBackground: Color.transparent.toString(),
-					buttonFocusOutline: focusBorder,
-					buttonForeground: foreground
-				}));
+			if (this.buttonType !== 'Informational') {
+				if (!this._iconClass) {
+					super.updateIcon();
+					this._button.icon = this._iconClass + ' icon';
+					// Styling for icon button
+					this._register(attachButtonStyler(this._button, this.themeService, {
+						buttonBackground: Color.transparent.toString(),
+						buttonHoverBackground: Color.transparent.toString(),
+						buttonFocusOutline: focusBorder,
+						buttonForeground: foreground
+					}));
+				} else {
+					super.updateIcon();
+				}
 			} else {
-				super.updateIcon();
+				if (!this._iconClass) {
+					super.updateIcon();
+					this._infoButton.icon = this._iconClass + ' icon';
+					// Styling for icon button
+					this._register(attachButtonStyler(this._infoButton, this.themeService, {
+						buttonBackground: Color.transparent.toString(),
+						buttonHoverBackground: Color.transparent.toString(),
+						buttonFocusOutline: focusBorder,
+						buttonForeground: foreground
+					}));
+				} else {
+					super.updateIcon();
+				}
 			}
 		}
 	}
