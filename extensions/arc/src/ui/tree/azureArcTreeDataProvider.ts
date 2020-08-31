@@ -132,11 +132,10 @@ export class AzureArcTreeDataProvider implements vscode.TreeDataProvider<TreeNod
 		if (controllerNode) {
 			const resourceNode = controllerNode.getResourceNode(resourceType, name);
 			if (resourceNode) {
-
+				await resourceNode.openDashboard();
 			} else {
 				console.log(`Couldn't find resource node for ${name} (${resourceType})`);
 			}
-			await resourceNode?.openDashboard();
 		} else {
 			console.log('Couldn\'t find controller node for opening dashboard');
 		}
