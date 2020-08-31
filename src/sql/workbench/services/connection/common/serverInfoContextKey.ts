@@ -31,10 +31,12 @@ export class ServerInfoContextKey implements IContextKey<ServerInfo> {
 		this._engineEdition = ServerInfoContextKey.EngineEdition.bindTo(contextKeyService);
 	}
 
-	set(value: ServerInfo | undefined) {
+	set(value: ServerInfo) {
 		this._serverInfo.set(value);
-		let majorVersion = value?.serverMajorVersion;
-		this._serverMajorVersion.set(majorVersion && `${majorVersion}`);
+		let majorVersion = value.serverMajorVersion;
+		if (majorVersion) {
+			this._serverMajorVersion.set(`${majorVersion}`);
+		}
 		this._isCloud.set(value && value.isCloud);
 		this._isBigDataCluster.set(value && value.options && value.options['isBigDataCluster']);
 		let engineEditionId = value && value.engineEditionId;
