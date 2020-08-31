@@ -16,6 +16,7 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 	private _virtualNetworkDropdown!: azdata.DropDownComponent;
 	private _virtualNetworkDropdownLoader!: azdata.LoadingComponent;
 	private _newVirtualNetworkText!: azdata.InputBoxComponent;
+	private _subnetDropdown!: azdata.DropDownComponent;
 
 	// subnet network components
 
@@ -56,6 +57,10 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 						{
 							title: constants.VirtualNetworkDropdownLabel,
 							component: this._virtualNetworkFlexContainer
+						},
+						{
+							title: 'Subnet',
+							component: this._subnetDropdown
 						},
 						{
 							component: this._existingPublicIpCheckbox,
@@ -125,8 +130,8 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 		}).component();
 
 		this._virtualNetworkDropdown.onValueChanged((value) => {
-			this.wizard.model.virtualNetworkName = value.name;
-			//this.wizard.model.vmImageSKU = (this._virtualNetworkDropdown.value as azdata.CategoryValue).name;
+			this.wizard.model.virtualNetworkName = (this._virtualNetworkDropdown.value as azdata.CategoryValue).name;
+			this.populateSubnetDropdown();
 		});
 
 		this._virtualNetworkDropdownLoader = view.modelBuilder.loadingComponent().withItem(this._virtualNetworkDropdown).component();
@@ -148,6 +153,9 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 		}).withItems(
 			[this._virtualNetworkDropdown, this._newVirtualNetworkText]
 		).component();
+
+		this._subnetDropdown = view.modelBuilder.dropDown().withProperties(<azdata.DropDownProperties>{
+		}).component();
 	}
 
 	private async populateVirtualNetworkDropdown() {
@@ -172,6 +180,33 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 		});
 		this.wizard.model.virtualNetworkName = (this._virtualNetworkDropdown.value as azdata.CategoryValue).name;
 		this._virtualNetworkDropdownLoader.loading = false;
+		await this.populateSubnetDropdown();
+	}
+
+
+	private async populateSubnetDropdown() {
+		let url = `https://management.azure.com` +
+			`/subscriptions/${this.wizard.model.azureSubscription}` +
+			`/providers/Microsoft.Network` +
+			`/virtualNetworks/${this.wizard.model.virtualNetworkName}` +
+			`/subnets?api-version=2020-05-01`;
+		console.log(url);
+		let response = await this.wizard.getRequest(url);
+		console.log(response.data);
+
+		// let dropdownValues = response.data.value.map((value: any) => {
+		// 	let resourceGroupName = value.id.replace(RegExp('^(.*?)/resourceGroups/'), '').replace(RegExp('/providers/.*'), '');
+		// 	return {
+		// 		name: value.id,
+		// 		displayName: `${value.name} \t\t resource group: (${resourceGroupName})`
+		// 	};
+		// });
+
+		// this._subnetDropdown.updateProperties({
+		// 	value: dropdownValues[0],
+		// 	values: dropdownValues
+		// });
+		this.wizard.model.subnetName = (this._subnetDropdown.value as azdata.CategoryValue).name;
 	}
 
 	private async createPublicIPDropdown(view: azdata.ModelView) {

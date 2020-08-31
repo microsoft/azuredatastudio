@@ -10,18 +10,19 @@ import { DeployAzureSQLVMWizard } from '../deployAzureSQLVMWizard';
 
 export class SqlServerSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
-	private _sqlConnectivityTypeDropdown!: azdata.DropDownComponent;
-	private _portTextBox!: azdata.InputBoxComponent;
-	private _enableSqlAuthenticationCheckbox!: azdata.CheckBoxComponent;
-	private _loginNameTextBox!: azdata.InputBoxComponent;
-	private _passwordTextBox!: azdata.InputBoxComponent;
+	private sqlConnectivityDropdown!: azdata.DropDownComponent;
+	private portTextBox!: azdata.InputBoxComponent;
+	private sqlAuthenticationCheckbox!: azdata.CheckBoxComponent;
+	private sqlAuthenticationTextbox!: azdata.InputBoxComponent;
+	private sqlAuthenticationPasswordTextbox!: azdata.InputBoxComponent;
+	//private sqlStorageContainer!: azdata.FlexContainer;
 
 	private _form!: azdata.FormContainer;
 
 	constructor(wizard: DeployAzureSQLVMWizard) {
 		super(
-			constants.AzureSettingsPageTitle,
-			constants.AzureSettingsPageDescription,
+			constants.SqlServerSettingsPageTitle,
+			'',
 			wizard
 		);
 
@@ -30,30 +31,97 @@ export class SqlServerSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard
 	public async initialize() {
 		this.pageObject.registerContent(async (view: azdata.ModelView) => {
 
-			this.createSQLConnectivityDropdown(view);
-			this.createSQLAuthenticationComponents(view);
+			this.sqlConnectivityDropdown = view.modelBuilder.dropDown().withProperties(<azdata.DropDownProperties>
+				{
+					values: [
+						{
+							name: 'local',
+							displayName: 'Local (inside VM only)'
+						},
+						{
+							name: 'private',
+							displayName: 'Private (within Virtual Network)'
+						},
+						{
+							name: 'public',
+							displayName: 'Public (Internet)'
+						}
+					]
+				}).component();
+
+
+			this.sqlConnectivityDropdown.onValueChanged((value) => {
+				if (value.name === 'local') {
+					this.portTextBox.updateCssStyles({
+						display: 'none'
+					});
+				} else {
+					this.portTextBox.updateCssStyles({
+						display: 'block'
+					});
+				}
+			});
+
+			this.portTextBox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxComponent>{
+				inputType: 'number',
+				max: 65535,
+				min: 1024
+			}).component();
+
+			this.portTextBox.onTextChanged((value) => {
+				this.wizard.model.port = value;
+			});
+
+			this.sqlAuthenticationCheckbox = view.modelBuilder.checkBox().withProperties(<azdata.CheckBoxComponent>{
+				label: 'Enable SQL authentication',
+				checked: true
+			}).component();
+
+			this.sqlAuthenticationCheckbox.onChanged((value) => {
+				this.sqlAuthenticationTextbox.updateCssStyles({
+					display: value ? 'block' : 'none'
+				});
+				this.sqlAuthenticationPasswordTextbox.updateCssStyles({
+					display: value ? 'block' : 'none'
+				});
+				this.wizard.model.enableSqlAuthentication = value;
+			});
+
+
+			this.sqlAuthenticationTextbox = view.modelBuilder.inputBox().component();
+
+			this.sqlAuthenticationPasswordTextbox = view.modelBuilder.inputBox().component();
+
+			this.sqlAuthenticationTextbox.onTextChanged((value) => {
+				this.wizard.model.sqlAuthenticationUsername = value;
+			});
+
+			this.sqlAuthenticationTextbox.onTextChanged((value) => {
+				this.wizard.model.sqlAuthenticationPassword = value;
+			});
 
 			this._form = view.modelBuilder.formContainer()
 				.withFormItems(
 					[
 						{
-							title: 'SQL Connectivity Type',
-							component: this._sqlConnectivityTypeDropdown
+							title: 'SQL connectivity',
+							component: this.sqlConnectivityDropdown
 						},
 						{
 							title: 'Port',
-							component: this._portTextBox
+							component: this.portTextBox
 						},
 						{
-							component: this._enableSqlAuthenticationCheckbox
+							title: 'Sql Authentication',
+							component: this.sqlAuthenticationCheckbox
 						},
 						{
-							title: 'SQL Username',
-							component: this._loginNameTextBox
+							title: ' Username',
+							component: this.sqlAuthenticationTextbox
 						},
 						{
-							title: 'SQL Password',
-							component: this._passwordTextBox
+							title: ' Password',
+							component: this.sqlAuthenticationPasswordTextbox
 						}
 					],
 					{
@@ -79,74 +147,5 @@ export class SqlServerSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard
 		});
 	}
 
-	private createSQLConnectivityDropdown(view: azdata.ModelView) {
-		this._sqlConnectivityTypeDropdown = view.modelBuilder.dropDown().withProperties(<azdata.DropDownProperties>{
-			values: [
-				{
-					name: 'local',
-					displayName: 'Local (inside VM only)'
-				},
-				{
-					name: 'private',
-					displayName: 'Private (within Virtual Network)'
-				},
-				{
-					name: 'public',
-					displayName: 'Public (Internet)'
-				}
-			]
-		}).component();
 
-		this._sqlConnectivityTypeDropdown.onValueChanged((value) => {
-			if (value.name === 'private' || value.name === 'public') {
-				this._portTextBox.updateCssStyles({
-					display: 'block'
-				});
-			} else {
-				this._portTextBox.updateCssStyles({
-					display: 'none'
-				});
-			}
-			this.wizard.model.sqlConnectivityType = value.name;
-		});
-
-		this._portTextBox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
-			inputType: 'number',
-			min: 1024,
-			max: 65535,
-			value: '1433'
-		}).component();
-
-		this._portTextBox.onTextChanged((value: string) => {
-			this.wizard.model.port = Number.parseInt(value);
-		});
-
-
-	}
-
-	private createSQLAuthenticationComponents(view: azdata.ModelView) {
-		this._enableSqlAuthenticationCheckbox = view.modelBuilder.checkBox().withProperties(
-			<azdata.CheckBoxProperties>{
-				checked: true,
-				label: 'Enable SQL Authentication'
-			}
-		).component();
-
-		this._enableSqlAuthenticationCheckbox.onChanged((value) => {
-			let elementDisplay = value ? 'block' : 'none';
-			this._loginNameTextBox.updateCssStyles(
-				{
-					display: elementDisplay
-				}
-			);
-
-			this._passwordTextBox.updateCssStyles(
-				{
-					display: elementDisplay
-				}
-			);
-		});
-		this._loginNameTextBox = view.modelBuilder.inputBox().component();
-		this._passwordTextBox = view.modelBuilder.inputBox().component();
-	}
 }

@@ -31,9 +31,9 @@ export class DeployAzureSQLVMWizardModel extends Model {
 
 	public sqlConnectivityType!: string;
 	public port!: number;
-
-	public storageAccountName!: string;
-	public storageAccountSKU!: string;
+	public enableSqlAuthentication!: boolean;
+	public sqlAuthenticationUsername!: string;
+	public sqlAuthenticationPassword!: string;
 
 
 
@@ -53,8 +53,6 @@ export class DeployAzureSQLVMWizardModel extends Model {
 		statements.push(`azure_sqlvm_image_sku = '${this.vmImageSKU}'`);
 		statements.push(`azure_sqlvm_image_version = '${this.vmImageVersion}'`);
 		statements.push(`azure_sqlvm_vmsize = '${this.vmSize}'`);
-		statements.push(`azure_sqlvm_storageaccountname = '${this.storageAccountName}'`);
-		statements.push(`azure_sqlvm_storagesku = '${this.storageAccountSKU}'`);
 		statements.push(`azure_sqlvm_username = '${this.vmUsername}'`);
 		return statements.map(line => line + EOL);
 		// const profile = this.createTargetProfile();
