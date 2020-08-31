@@ -113,11 +113,13 @@ export interface INotebookMimeTypeSelector {
 
 export interface INotebookRendererInfo {
 	id: string;
+	displayName: string;
+	entrypoint: URI;
+	preloads: ReadonlyArray<URI>;
+	extensionLocation: URI;
 	extensionId: ExtensionIdentifier;
-	extensionLocation: URI,
-	preloads: URI[],
-	render(uri: URI, request: IOutputRenderRequest<UriComponents>): Promise<IOutputRenderResponse<UriComponents> | undefined>;
-	render2<T>(uri: URI, request: IOutputRenderRequest<T>): Promise<IOutputRenderResponse<T> | undefined>;
+
+	matches(mimeType: string): boolean;
 }
 
 export interface INotebookKernelInfo {
@@ -189,9 +191,7 @@ export enum MimeTypeRendererResolver {
 
 export interface IOrderedMimeType {
 	mimeType: string;
-	isResolved: boolean;
-	rendererId?: string;
-	output?: string;
+	rendererId: string;
 }
 
 export interface ITransformedDisplayOutputDto {
@@ -279,16 +279,40 @@ export interface INotebookTextModel {
 	readonly versionId: number;
 	languages: string[];
 	cells: ICell[];
-	renderers: Set<string>;
 	onDidChangeCells?: Event<{ synchronous: boolean, splices: NotebookCellTextModelSplice[] }>;
 	onDidChangeContent: Event<void>;
 	onWillDispose(listener: () => void): IDisposable;
 }
 
-export interface IRenderOutput {
-	shadowContent?: string;
+export const enum RenderOutputType {
+	None,
+	Html,
+	Extension
+}
+
+export interface IRenderNoOutput {
+	type: RenderOutputType.None;
 	hasDynamicHeight: boolean;
 }
+
+export interface IRenderPlainHtmlOutput {
+	type: RenderOutputType.Html;
+	source: IProcessedOutput;
+	htmlContent: string;
+	hasDynamicHeight: boolean;
+}
+
+export interface IRenderOutputViaExtension {
+	type: RenderOutputType.Extension;
+	source: IProcessedOutput;
+	mimeType: string;
+	renderer: INotebookRendererInfo;
+}
+
+export type IInsetRenderOutput = IRenderPlainHtmlOutput | IRenderOutputViaExtension;
+export type IRenderOutput = IRenderNoOutput | IInsetRenderOutput;
+
+export const outputHasDynamicHeight = (o: IRenderOutput) => o.type === RenderOutputType.Extension || o.hasDynamicHeight;
 
 export type NotebookCellTextModelSplice = [
 	number /* start */,
@@ -425,7 +449,7 @@ export function getCellUndoRedoComparisonKey(uri: URI) {
 
 export namespace CellUri {
 
-	export const scheme = 'vscode-notebook-cell';
+	export const scheme = Schemas.vscodeNotebookCell;
 	const _regex = /^\d{7,}/;
 
 	export function generate(notebook: URI, handle: number): URI {
@@ -691,3 +715,6 @@ export interface INotebookKernelProvider {
 	executeNotebook(uri: URI, kernelId: string, handle: number | undefined): Promise<void>;
 	cancelNotebook(uri: URI, kernelId: string, handle: number | undefined): Promise<void>;
 }
+
+export const DisplayOrderKey = 'notebook.displayOrder';
+export const CellToolbarLocKey = 'notebook.cellToolbarLocation';
