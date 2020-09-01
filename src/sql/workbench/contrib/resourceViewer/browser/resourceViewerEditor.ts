@@ -20,7 +20,7 @@ import { IWorkbenchThemeService, VS_DARK_THEME, VS_HC_THEME } from 'vs/workbench
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IResourceViewerStateChangedEvent } from 'sql/workbench/common/editor/resourceViewer/resourceViewerState';
 import { ResourceViewerInput } from 'sql/workbench/browser/editor/resourceViewer/resourceViewerInput';
-import { ResourceViewerTableEditor } from 'sql/workbench/contrib/resourceViewer/browser/resourceViewerTableEditor';
+import { ResourceViewerTable } from 'sql/workbench/contrib/resourceViewer/browser/resourceViewerTable';
 
 export interface ResourceViewerTableViewState {
 	scrollTop: number;
@@ -33,8 +33,9 @@ export class ResourceViewerEditor extends BaseEditor {
 	private _container: HTMLElement;
 	private _header: HTMLElement;
 	private _actionBar: Taskbar;
-	private _resourceViewerTableEditor: ResourceViewerTableEditor;
+	private _resourceViewerTable: ResourceViewerTable;
 	private _stateListener: IDisposable;
+	private _columnChangeListener: IDisposable;
 
 	private _resourceViewerEditorContextKey: IContextKey<boolean>;
 
@@ -107,8 +108,7 @@ export class ResourceViewerEditor extends BaseEditor {
 				DOM.addClass(resourceViewerTableContainer, VS_HC_THEME);
 			}
 		});
-		this._resourceViewerTableEditor = this._instantiationService.createInstance(ResourceViewerTableEditor);
-		this._resourceViewerTableEditor.createEditor(resourceViewerTableContainer);
+		this._resourceViewerTable = this._instantiationService.createInstance(ResourceViewerTable, resourceViewerTableContainer);
 		return resourceViewerTableContainer;
 	}
 
@@ -122,14 +122,27 @@ export class ResourceViewerEditor extends BaseEditor {
 		this._resourceViewerEditorContextKey.set(true);
 		if (input instanceof ResourceViewerInput && input.matches(this.input)) {
 			if (savedViewState) {
-				this._resourceViewerTableEditor.restoreViewState(savedViewState);
+				this._resourceViewerTable.restoreViewState(savedViewState);
 			}
 			return undefined;
 		}
 
 		await super.setInput(input, options, CancellationToken.None);
 
-		this._resourceViewerTableEditor.setInput(input);
+		this._resourceViewerTable.data = input.data;
+		this._columnChangeListener?.dispose();
+		this._columnChangeListener = input.onColumnsChanged(columns => {
+			this._resourceViewerTable.columns = columns;
+		});
+
+		input.data.onRowCountChange(() => {
+			this._resourceViewerTable.updateRowCount();
+		});
+
+		input.data.onFilterStateChange(() => {
+			this._resourceViewerTable.invalidateAllRows();
+			this._resourceViewerTable.updateRowCount();
+		});
 
 		this._actionBar.context = input;
 		if (this._stateListener) {
@@ -138,10 +151,9 @@ export class ResourceViewerEditor extends BaseEditor {
 		this._stateListener = input.state.onResourceViewerStateChange(e => this.onStateChange(e));
 		this.onStateChange({
 		});
-		this._resourceViewerTableEditor.updateState();
-		this._resourceViewerTableEditor.focus();
+		this._resourceViewerTable.focus();
 		if (savedViewState) {
-			this._resourceViewerTableEditor.restoreViewState(savedViewState);
+			this._resourceViewerTable.restoreViewState(savedViewState);
 		}
 	}
 
@@ -160,8 +172,8 @@ export class ResourceViewerEditor extends BaseEditor {
 	}
 
 	private saveEditorViewState(): void {
-		if (this.input && this._resourceViewerTableEditor) {
-			this._savedTableViewStates.set(this.input, this._resourceViewerTableEditor.saveViewState());
+		if (this.input && this._resourceViewerTable) {
+			this._savedTableViewStates.set(this.input, this._resourceViewerTable.saveViewState());
 		}
 	}
 
@@ -170,7 +182,7 @@ export class ResourceViewerEditor extends BaseEditor {
 		super.focus();
 		let savedViewState = this._savedTableViewStates.get(this.input);
 		if (savedViewState) {
-			this._resourceViewerTableEditor.restoreViewState(savedViewState);
+			this._resourceViewerTable.restoreViewState(savedViewState);
 		}
 	}
 }

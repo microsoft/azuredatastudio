@@ -63,10 +63,10 @@ export class ResourceViewerInput extends EditorInput {
 		return this._data;
 	}
 
-	public get columns(): ColumnDefinition[] {
+	public get columnDefinitions(): ColumnDefinition[] {
 		if (this._columns) {
 			return this._columns.map(i => {
-				return <ColumnDefinition>{
+				return {
 					id: i,
 					field: i,
 					name: i,
@@ -78,9 +78,9 @@ export class ResourceViewerInput extends EditorInput {
 		}
 	}
 
-	public setColumns(columns: Array<string>) {
+	public set columns(columns: Array<string>) {
 		this._columns = columns;
-		this._onColumnsChanged.fire(this.columns);
+		this._onColumnsChanged.fire(this.columnDefinitions);
 	}
 
 	public get state(): ResourceViewerState {
