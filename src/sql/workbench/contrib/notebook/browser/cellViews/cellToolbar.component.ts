@@ -5,7 +5,7 @@
 
 import 'vs/css!./cellToolbar';
 import * as DOM from 'vs/base/browser/dom';
-import { Component, Inject, ViewChild, ElementRef, Input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Inject, ViewChild, ElementRef, Input } from '@angular/core';
 import { localize } from 'vs/nls';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
@@ -22,8 +22,7 @@ export const CELL_TOOLBAR_SELECTOR: string = 'cell-toolbar-component';
 
 @Component({
 	selector: CELL_TOOLBAR_SELECTOR,
-	template: `<div #celltoolbar></div>`,
-	changeDetection: ChangeDetectionStrategy.OnPush
+	template: `<div #celltoolbar></div>`
 })
 export class CellToolbarComponent {
 	@ViewChild('celltoolbar', { read: ElementRef }) private celltoolbar: ElementRef;

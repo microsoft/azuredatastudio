@@ -5,7 +5,7 @@
 import 'vs/css!./code';
 import 'vs/css!./media/output';
 
-import { OnInit, Component, Input, Inject, ElementRef, ViewChild, SimpleChange, AfterViewInit, forwardRef, ChangeDetectorRef, ComponentRef, ComponentFactoryResolver, ChangeDetectionStrategy } from '@angular/core';
+import { OnInit, Component, Input, Inject, ElementRef, ViewChild, SimpleChange, AfterViewInit, forwardRef, ChangeDetectorRef, ComponentRef, ComponentFactoryResolver } from '@angular/core';
 import { Event } from 'vs/base/common/event';
 import { nb } from 'azdata';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
@@ -29,8 +29,7 @@ const componentRegistry = <IMimeComponentRegistry>Registry.as(Extensions.MimeCom
 
 @Component({
 	selector: OUTPUT_SELECTOR,
-	templateUrl: decodeURI(require.toUrl('./output.component.html')),
-	changeDetection: ChangeDetectionStrategy.OnPush
+	templateUrl: decodeURI(require.toUrl('./output.component.html'))
 })
 export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 	@ViewChild('output', { read: ElementRef }) private outputElement: ElementRef;

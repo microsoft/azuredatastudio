@@ -6,7 +6,7 @@ import 'vs/css!./textCell';
 import 'vs/css!./media/markdown';
 import 'vs/css!./media/highlight';
 
-import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnChanges, SimpleChange, HostListener, ViewChildren, QueryList, ChangeDetectionStrategy } from '@angular/core';
+import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnChanges, SimpleChange, HostListener, ViewChildren, QueryList } from '@angular/core';
 
 import { localize } from 'vs/nls';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -34,8 +34,7 @@ const USER_SELECT_CLASS = 'actionselect';
 
 @Component({
 	selector: TEXT_SELECTOR,
-	templateUrl: decodeURI(require.toUrl('./textCell.component.html')),
-	changeDetection: ChangeDetectionStrategy.OnPush
+	templateUrl: decodeURI(require.toUrl('./textCell.component.html'))
 })
 export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	@ViewChild('preview', { read: ElementRef }) private output: ElementRef;
@@ -286,44 +285,26 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	private addDecoration(range: NotebookRange): void {
 		if (range && this.output && this.output.nativeElement) {
-			let m = new Mark(this.output.nativeElement as HTMLElement);
-			// let notebookEditor = this._notebookService?.findNotebookEditor(this.cellModel?.notebookModel?.notebookUri);
-			// let findModel = notebookEditor?.notebookFindModel;
-			// let searchString = findModel?.findExpression || '';
-
-			// let children = this.getHtmlElements();
-			// // m.mark
-			// // range.
-			// let ele = children[range.startLineNumber - 1];
+			let elements = this.getHtmlElements();
+			let ele = elements[range.startLineNumber - 1];
+			let m = new Mark(ele as HTMLElement);
 			let renderedText = this.getRenderedTextOutput();
 			let textElement = renderedText[range.startLineNumber - 1];
 
 			let searchString = textElement.substr(range.startColumn - 1, range.endColumn - range.startColumn);
-			// let rendered = this.getRenderedTextOutput();
-			// let ele = rendered[range.startLineNumber - 1];
-			// let text = '';
-			// if (ele && ele.length) {
-			// 	// ele.substr()
-			// 	// DOM.addClass(ele, 'rangeHighlight');
-			// 	// ele.scrollIntoView({ behavior: 'smooth' });
-			// }
+
+			// Need to find which # this is to avoid highlighting everything
 			if (m) {
 				let elementsAndRanges = m.getElementsAndRanges(searchString);
 				elementsAndRanges.forEach(er => {
-					const hEl = 'mark';
-					const startNode = er.node.splitText(er.start);
-					const ret = startNode.splitText(er.end - er.start);
-					if (ret) { }
-					// ret = startNode.splitText(er.end - er.start);
-					let repl = document.createElement(hEl);
-					// repl.setAttribute('data-markjs', 'true');
-					repl.textContent = startNode.textContent;
-					repl.setAttribute('class', 'rangeHightlight');
+					const node = er.node.nextSibling;
+					let repl = document.createElement('mark');
+					repl.setAttribute('data-markjs', 'true');
+					repl.textContent = node.textContent;
+					repl.setAttribute('class', 'rangeHighlight');
 					// DOM.addClass(repl, 'rangeHighlight');
-					startNode.parentNode.replaceChild(repl, startNode);
+					node.parentNode.replaceChild(repl, node);
 				});
-				let elements = this.getHtmlElements();
-				let ele = elements[range.startLineNumber - 1];
 				ele.scrollIntoView({ behavior: 'smooth' });
 			}
 		}
@@ -333,10 +314,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		if (range && this.output && this.output.nativeElement) {
 			let children = this.getHtmlElements();
 			let ele = children[range.startLineNumber - 1];
-			if (ele) {
-				DOM.removeClass(ele, 'rangeHighlight');
-			}
-			let m = new Mark(this.output.nativeElement as HTMLElement);
+			let m = new Mark(ele as HTMLElement);
 			m.unmark();
 		}
 	}
