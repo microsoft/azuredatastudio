@@ -141,7 +141,10 @@ export default class RadioCardGroup extends ComponentBase implements IComponent,
 		this._changeRef.detectChanges();
 		this.fireEvent({
 			eventType: ComponentEventType.onDidChange,
-			args: cardId
+			args: {
+				cardId,
+				card: this.getCardById(cardId)
+			}
 		});
 	}
 

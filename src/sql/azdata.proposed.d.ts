@@ -174,7 +174,7 @@ declare module 'azdata' {
 	}
 
 	export interface RadioCardGroupComponent extends Component, RadioCardGroupComponentProperties {
-		onSelectionChanged: vscode.Event<any>;
+		onSelectionChanged: vscode.Event<{ cardId: string; card?: RadioCard }>;
 	}
 
 	export interface SeparatorComponent extends Component {
