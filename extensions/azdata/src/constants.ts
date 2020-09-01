@@ -5,6 +5,9 @@
 
 export const azdataConfigSection = 'azdata';
 export const debugConfigKey = 'logDebugInfo';
+export const acceptEula = 'acceptEula';
+export const microsoftPrivacyStatementUrl = 'https://privacy.microsoft.com/en-us/privacystatement';
+export const eulaUrl = 'https://aka.ms/eula-azdata-en';
 export const requiredVersion = '20.1.1';
 export const doNotPromptInstallMemento = 'azdata.doNotPromptInstall';
 export const doNotPromptUpdateMemento = 'azdata.doNotPromptUpdate';
