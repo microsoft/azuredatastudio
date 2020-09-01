@@ -288,7 +288,7 @@ export async function promptForEula(memento: vscode.Memento): Promise<boolean> {
 	const reply = await vscode.window.showInformationMessage(loc.promptForEula(microsoftPrivacyStatementUrl, eulaUrl), loc.yes, loc.no);
 	Logger.log(loc.userResponseToEulaPrompt(reply));
 	if (reply === loc.yes) {
-		memento.update(acceptEula, true);
+		await memento.update(acceptEula, true);
 		return true;
 	} else {
 		return false;

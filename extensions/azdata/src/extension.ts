@@ -31,22 +31,22 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 			arc: {
 				dc: {
 					create: async (namespace: string, name: string, connectivityMode: string, resourceGroup: string, location: string, subscription: string, profileName?: string, storageClass?: string) => {
-						throwIfNoAzdataOrEulaNotAccepted(context);
+						await throwIfNoAzdataOrEulaNotAccepted(context);
 						return localAzdata!.arc.dc.create(namespace, name, connectivityMode, resourceGroup, location, subscription, profileName, storageClass);
 					},
 					endpoint: {
 						list: async () => {
-							throwIfNoAzdataOrEulaNotAccepted(context);
+							await throwIfNoAzdataOrEulaNotAccepted(context);
 							return localAzdata!.arc.dc.endpoint.list();
 						}
 					},
 					config: {
 						list: async () => {
-							throwIfNoAzdataOrEulaNotAccepted(context);
+							await throwIfNoAzdataOrEulaNotAccepted(context);
 							return localAzdata!.arc.dc.config.list();
 						},
 						show: async () => {
-							throwIfNoAzdataOrEulaNotAccepted(context);
+							await throwIfNoAzdataOrEulaNotAccepted(context);
 							return localAzdata!.arc.dc.config.show();
 						}
 					}
@@ -54,11 +54,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 				postgres: {
 					server: {
 						list: async () => {
-							throwIfNoAzdataOrEulaNotAccepted(context);
+							await throwIfNoAzdataOrEulaNotAccepted(context);
 							return localAzdata!.arc.postgres.server.list();
 						},
 						show: async (name: string) => {
-							throwIfNoAzdataOrEulaNotAccepted(context);
+							await throwIfNoAzdataOrEulaNotAccepted(context);
 							return localAzdata!.arc.postgres.server.show(name);
 						}
 					}
@@ -66,26 +66,26 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 				sql: {
 					mi: {
 						delete: async (name: string) => {
-							throwIfNoAzdataOrEulaNotAccepted(context);
+							await throwIfNoAzdataOrEulaNotAccepted(context);
 							return localAzdata!.arc.sql.mi.delete(name);
 						},
 						list: async () => {
-							throwIfNoAzdataOrEulaNotAccepted(context);
+							await throwIfNoAzdataOrEulaNotAccepted(context);
 							return localAzdata!.arc.sql.mi.list();
 						},
 						show: async (name: string) => {
-							throwIfNoAzdataOrEulaNotAccepted(context);
+							await throwIfNoAzdataOrEulaNotAccepted(context);
 							return localAzdata!.arc.sql.mi.show(name);
 						}
 					}
 				}
 			},
 			login: async (endpoint: string, username: string, password: string) => {
-				await throwIfNoAzdataOrEulaNotAccepted(context);
+				await await throwIfNoAzdataOrEulaNotAccepted(context);
 				return localAzdata!.login(endpoint, username, password);
 			},
 			version: async () => {
-				throwIfNoAzdataOrEulaNotAccepted(context);
+				await throwIfNoAzdataOrEulaNotAccepted(context);
 				return localAzdata!.version();
 			}
 		}
