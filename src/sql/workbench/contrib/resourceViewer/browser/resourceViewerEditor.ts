@@ -30,14 +30,13 @@ export interface ResourceViewerTableViewState {
 export class ResourceViewerEditor extends BaseEditor {
 	public static readonly ID: string = 'workbench.editor.resource-viewer';
 
-	private _container: HTMLElement;
-	private _header: HTMLElement;
-	private _actionBar: Taskbar;
-	private _resourceViewerTable: ResourceViewerTable;
-	private _stateListener: IDisposable;
-	private _columnChangeListener: IDisposable;
-	private _rowCountChangeListener: IDisposable;
-	private _filterStateChangeListener: IDisposable;
+	private _container!: HTMLElement;
+	private _actionBar!: Taskbar;
+	private _resourceViewerTable!: ResourceViewerTable;
+	private _stateListener: IDisposable | undefined;
+	private _columnChangeListener: IDisposable | undefined;
+	private _rowCountChangeListener: IDisposable | undefined;
+	private _filterStateChangeListener: IDisposable | undefined;
 
 	private _resourceViewerEditorContextKey: IContextKey<boolean>;
 
@@ -79,10 +78,10 @@ export class ResourceViewerEditor extends BaseEditor {
 	}
 
 	private _createHeader(): void {
-		this._header = document.createElement('div');
-		this._header.className = 'resource-viewer-header';
-		this._container.appendChild(this._header);
-		this._actionBar = new Taskbar(this._header);
+		const header = document.createElement('div');
+		header.className = 'resource-viewer-header';
+		this._container.appendChild(header);
+		this._actionBar = new Taskbar(header);
 
 		this._actionBar.setContent([
 			// TODO - chgagnon add actions

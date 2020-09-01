@@ -11,6 +11,7 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 import { Dimension } from 'vs/base/browser/dom';
 import { textFormatter, slickGridDataItemColumnValueExtractor } from 'sql/base/browser/ui/table/formatters';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
+import { PillFilter } from 'sql/base/browser/ui/table/plugins/pillFilter.plugin';
 
 export interface ResourceViewerTableViewState {
 	scrollTop: number;
@@ -19,7 +20,7 @@ export interface ResourceViewerTableViewState {
 
 export class ResourceViewerTable {
 
-	private _resourceViewerTable: Table<Slick.SlickData>;
+	private _resourceViewerTable!: Table<Slick.SlickData>;
 	private _data: TableDataView<Slick.SlickData> | undefined;
 	private _overlay: HTMLElement;
 
@@ -32,13 +33,13 @@ export class ResourceViewerTable {
 
 		this._resourceViewerTable = new Table(parent, {
 			sorter: (args) => {
-				this._data.sort(args);
+				this._data?.sort(args);
 			}
 		}, {
 			dataItemColumnValueExtractor: slickGridDataItemColumnValueExtractor
 		});
 		this._resourceViewerTable.setSelectionModel(new RowSelectionModel());
-
+		this._resourceViewerTable.registerPlugin(new PillFilter());
 		attachTableStyler(this._resourceViewerTable, this._themeService);
 	}
 
@@ -77,16 +78,19 @@ export class ResourceViewerTable {
 	}
 
 	public saveViewState(): ResourceViewerTableViewState {
-		let viewElement = this._resourceViewerTable.grid.getCanvasNode().parentElement;
+		const viewElement = this._resourceViewerTable.grid.getCanvasNode().parentElement;
 		return {
-			scrollTop: viewElement.scrollTop,
-			scrollLeft: viewElement.scrollLeft
+			scrollTop: viewElement?.scrollTop ?? -1,
+			scrollLeft: viewElement?.scrollLeft ?? -1
 		};
 	}
 
 	public restoreViewState(state: ResourceViewerTableViewState): void {
-		let viewElement = this._resourceViewerTable.grid.getCanvasNode().parentElement;
-		viewElement.scrollTop = state.scrollTop;
-		viewElement.scrollLeft = state.scrollLeft;
+		const viewElement = this._resourceViewerTable.grid.getCanvasNode().parentElement;
+		if (viewElement) {
+			viewElement.scrollTop = state.scrollTop;
+			viewElement.scrollLeft = state.scrollLeft;
+		}
+
 	}
 }
