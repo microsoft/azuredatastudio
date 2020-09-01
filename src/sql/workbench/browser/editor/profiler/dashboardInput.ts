@@ -140,10 +140,6 @@ export class DashboardInput extends EditorInput {
 		return this._connectionService.getConnectionProfile(this._uri!);
 	}
 
-	public async resolve(): Promise<IEditorModel | null> {
-		return null;
-	}
-
 	public get hasInitialized(): boolean {
 		return !!this._uniqueSelector;
 	}
