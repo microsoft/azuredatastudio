@@ -116,6 +116,7 @@ export class VmSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 	}
 
 	public onLeave(): void {
+		console.log(this.wizard.model);
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			return true;
 		});
