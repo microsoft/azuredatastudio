@@ -11,7 +11,6 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 import { Dimension } from 'vs/base/browser/dom';
 import { textFormatter, slickGridDataItemColumnValueExtractor } from 'sql/base/browser/ui/table/formatters';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
-import { PillFilter } from 'sql/base/browser/ui/table/plugins/pillFilter.plugin';
 
 export interface ResourceViewerTableViewState {
 	scrollTop: number;
@@ -39,7 +38,6 @@ export class ResourceViewerTable {
 			dataItemColumnValueExtractor: slickGridDataItemColumnValueExtractor
 		});
 		this._resourceViewerTable.setSelectionModel(new RowSelectionModel());
-		this._resourceViewerTable.registerPlugin(new PillFilter());
 		attachTableStyler(this._resourceViewerTable, this._themeService);
 	}
 
