@@ -26,9 +26,9 @@
   "contributes": {
     "commands": [
       {
-        "command": "dataworkspace.addProject",
+        "command": "projects.addProject",
         "title": "%add-project-command%",
-        "category": "data workspace",
+        "category": "",
         "icon": {
           "light": "images/new.svg",
           "dark": "images/new-inverse.svg"
@@ -38,12 +38,18 @@
     "menus": {
       "view/title": [
         {
-          "command": "dataworkspace.addProject",
+          "command": "projects.addProject",
           "when": "view == dataworkspace.views.main",
           "group": "navigation"
         }
       ]
     },
+    "commandPalette": [
+      {
+        "command": "projects.addProject",
+        "when": "false"
+      }
+    ],
     "viewsContainers": {
       "activitybar": [
         {
