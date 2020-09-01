@@ -3358,6 +3358,67 @@
 					],
 					"statistics": [],
 					"flags": ""
+				},
+				{
+					"extensionId": "72",
+					"extensionName": "eltsnap-simple-data-flow",
+					"displayName": "eltsnap: Simple Dataflow",
+					"shortDescription": "Easily copy a table from one SQL Server to Another",
+					"publisher": {
+						"displayName":"Jim-BITracks",
+						"publisherId": "bitracks",
+						"publisherName":"bitracks"
+					},
+					"versions": [
+				  		{
+							"version": "1.0.0",
+							"lastUpdated": "8/31/2020",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/Jim-BITracks/eltsnap-simpleDataFlow/releases/tag/v1.0.0"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/Jim-BITracks/eltsnap-simpleDataFlow/v1.0.0/images/bitracks.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/Jim-BITracks/eltsnap-simpleDataFlow/v1.0.0/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/Jim-BITracks/eltsnap-simpleDataFlow/v1.0.0/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/Jim-BITracks/eltsnap-simpleDataFlow/master/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.21.0"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/Jim-BITracks/eltsnap-simpleDataFlow"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": ""
 				}
 			],
 			"resultMetadata": [
@@ -3366,7 +3427,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 57
+							"count": 58
 						}
 					]
 				}
