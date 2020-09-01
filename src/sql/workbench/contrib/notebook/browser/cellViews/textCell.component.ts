@@ -286,27 +286,72 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private addDecoration(range: NotebookRange): void {
 		if (range && this.output && this.output.nativeElement) {
 			let elements = this.getHtmlElements();
-			let ele = elements[range.startLineNumber - 1];
-			let m = new Mark(ele as HTMLElement);
+			let ele = elements[range.startLineNumber - 1] as HTMLElement;
+			// let m = new Mark(ele as HTMLElement);
 			let renderedText = this.getRenderedTextOutput();
 			let textElement = renderedText[range.startLineNumber - 1];
 
 			let searchString = textElement.substr(range.startColumn - 1, range.endColumn - range.startColumn);
 
-			// Need to find which # this is to avoid highlighting everything
-			if (m) {
-				let elementsAndRanges = m.getElementsAndRanges(searchString);
-				elementsAndRanges.forEach(er => {
-					const node = er.node.nextSibling;
-					let repl = document.createElement('mark');
-					repl.setAttribute('data-markjs', 'true');
-					repl.textContent = node.textContent;
-					repl.setAttribute('class', 'rangeHighlight');
-					// DOM.addClass(repl, 'rangeHighlight');
-					node.parentNode.replaceChild(repl, node);
-				});
-				ele.scrollIntoView({ behavior: 'smooth' });
+			let numOccurrencesBefore = (textElement.substr(0, range.startColumn - 1).match('/' + searchString + '/g') || []).length;
+			if (searchString) { }
+			let nodeIterator = document.createNodeIterator(ele, NodeFilter.SHOW_TEXT);
+
+			// const matches = [];
+			let currentNode;
+
+			let counter = 0;
+			while (currentNode = nodeIterator.nextNode()) {
+				let occurrencesInNode = currentNode.textContent.match('/' + searchString + '/g') || [].length;
+				if (occurrencesInNode > 0) {
+					let firstPosition = 0;
+					for (let innerCounter = 0; innerCounter < occurrencesInNode; innerCounter++) {
+						counter++;
+						let index = currentNode.textContent.indexOf(searchString, firstPosition);
+						firstPosition = index + 1;
+						if (counter > numOccurrencesBefore) {
+							let newNode = currentNode.splitText(index);
+							let markNode = document.createElement('mark');
+							markNode.textContent = newNode.textContent;
+							markNode.classList.add('rangeHighlight');
+							markNode.setAttribute('ads-highlight', 'true');
+							newNode.parentNode.replaceChild(markNode, newNode);
+							break;
+						}
+					}
+					// if (currentNode.textContent.includes(searchString)) {
+					// 	counter++;
+					// 	if (counter > numOccurrencesBefore) {
+					// 		let markNode = document.createElement('mark');
+					// 		markNode.textContent = currentNode.textContent;
+					// 		markNode.classList.add('rangeHighlight');
+					// 		markNode.setAttribute('ads-highlight', 'true');
+					// 		currentNode.parentNode.replaceChild(markNode, currentNode);
+					// 		break;
+					// 	}
+					// 	// matches.push(currentNode);
+					// }
+				}
 			}
+
+			// if (matches) { }
+			// currentNode.parentNode;
+
+
+			// Need to find which # this is to avoid highlighting everything
+			// if (m) {
+			// 	let elementsAndRanges = m.getElementsAndRanges(searchString);
+			// 	elementsAndRanges.forEach(er => {
+			// 		const node = er.node.nextSibling;
+			// 		let repl = document.createElement('mark');
+			// 		repl.setAttribute('data-markjs', 'true');
+			// 		repl.textContent = node.textContent;
+			// 		repl.setAttribute('class', 'rangeHighlight');
+			// 		// DOM.addClass(repl, 'rangeHighlight');
+			// 		node.parentNode.replaceChild(repl, node);
+			// 	});
+			// 	ele.scrollIntoView({ behavior: 'smooth' });
+			// }
 		}
 	}
 
