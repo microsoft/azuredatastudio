@@ -1,6 +1,6 @@
 {
-	"azdata.displayName": "azdata",
-	"azdata.description": "Support for Azure Data CLI. See https://docs.microsoft.com/cli/azure/?view=azure-cli-latest for more information.",
-	"azdata.config.title": "azdata Configuration",
+	"azdata.displayName": "Azure Data CLI",
+	"azdata.description": "Support for Azure Data CLI.",
+	"azdata.config.title": "Azure Data CLI Configuration",
 	"azdata.config.debug": "Log debug info to the output channel for all executed azdata commands"
 }

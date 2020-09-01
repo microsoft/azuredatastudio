@@ -17,7 +17,7 @@ import * as azdata from 'azdata';
 
 import { promises as fs } from 'fs';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
-import { Project, DatabaseReferenceLocation, SystemDatabase, TargetPlatform, FileProjectEntry, reservedProjectFolders, SqlProjectReferenceProjectEntry } from '../models/project';
+import { Project, reservedProjectFolders, FileProjectEntry, SqlProjectReferenceProjectEntry } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
 import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
@@ -27,6 +27,8 @@ import { ImportDataModel } from '../models/api/import';
 import { NetCoreTool, DotNetCommandOptions } from '../tools/netcoreTool';
 import { BuildHelper } from '../tools/buildHelper';
 import { PublishProfile, load } from '../models/publishProfile/publishProfile';
+import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
+import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings } from '../models/IDatabaseReferenceSettings';
 
 /**
  * Controller for managing project lifecycle
@@ -429,28 +431,23 @@ export class ProjectsController {
 	 * Adds a database reference to the project
 	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project
 	 */
-	public async addDatabaseReference(context: Project | BaseProjectTreeItem): Promise<void> {
+	public async addDatabaseReference(context: Project | BaseProjectTreeItem): Promise<AddDatabaseReferenceDialog> {
 		const project = this.getProjectFromContext(context);
 
+		const addDatabaseReferenceDialog = this.getAddDatabaseReferenceDialog(project);
+		addDatabaseReferenceDialog.addReference = async (proj, prof) => await this.addDatabaseReferenceCallback(proj, prof);
+
+		addDatabaseReferenceDialog.openDialog();
+
+		return addDatabaseReferenceDialog;
+	}
+
+	public async addDatabaseReferenceCallback(project: Project, settings: ISystemDatabaseReferenceSettings | IDacpacReferenceSettings): Promise<void> {
 		try {
-			// choose if reference is to master or a dacpac
-			const databaseReferenceType = await this.getDatabaseReferenceType();
-
-			// if master is selected, we know which dacpac needs to be added
-			if (databaseReferenceType === constants.systemDatabase) {
-				const systemDatabase = await this.getSystemDatabaseName(project);
-				await project.addSystemDatabaseReference(systemDatabase);
+			if ((<ISystemDatabaseReferenceSettings>settings).systemDb !== undefined) {
+				await project.addSystemDatabaseReference(<ISystemDatabaseReferenceSettings>settings);
 			} else {
-				// get other information needed to add a reference to the dacpac
-				const dacpacFileLocation = await this.getDacpacFileLocation();
-				const databaseLocation = await this.getDatabaseLocation();
-
-				if (databaseLocation === DatabaseReferenceLocation.differentDatabaseSameServer) {
-					const databaseName = await this.getDatabaseName(dacpacFileLocation);
-					await project.addDatabaseReference(dacpacFileLocation, databaseLocation, databaseName);
-				} else {
-					await project.addDatabaseReference(dacpacFileLocation, databaseLocation);
-				}
+				await project.addDatabaseReference(<IDacpacReferenceSettings>settings);
 			}
 
 			this.refreshProjectsTree();
@@ -459,118 +456,14 @@ export class ProjectsController {
 		}
 	}
 
-	private async getDatabaseReferenceType(): Promise<string> {
-		let databaseReferenceOptions: vscode.QuickPickItem[] = [
-			{
-				label: constants.systemDatabase
-			},
-			{
-				label: constants.dacpac
-			}
-		];
-
-		let input = await vscode.window.showQuickPick(databaseReferenceOptions, {
-			canPickMany: false,
-			placeHolder: constants.addDatabaseReferenceInput
-		});
-
-		if (!input) {
-			throw new Error(constants.databaseReferenceTypeRequired);
-		}
-
-		return input.label;
-	}
-
-	public async getSystemDatabaseName(project: Project): Promise<SystemDatabase> {
-		let databaseReferenceOptions: vscode.QuickPickItem[] = [
-			{
-				label: constants.master
-			}
-		];
-
-		// Azure dbs can only reference master
-		if (project.getProjectTargetPlatform() !== TargetPlatform.SqlAzureV12) {
-			databaseReferenceOptions.push(
-				{
-					label: constants.msdb
-				});
-		}
-
-		let input = await vscode.window.showQuickPick(databaseReferenceOptions, {
-			canPickMany: false,
-			placeHolder: constants.systemDatabaseReferenceInput
-		});
-
-		if (!input) {
-			throw new Error(constants.systemDatabaseReferenceRequired);
-		}
-
-		return input.label === constants.master ? SystemDatabase.master : SystemDatabase.msdb;
-	}
-
-	private async getDacpacFileLocation(): Promise<vscode.Uri> {
-		let fileUris = await vscode.window.showOpenDialog(
-			{
-				canSelectFiles: true,
-				canSelectFolders: false,
-				canSelectMany: false,
-				defaultUri: vscode.workspace.workspaceFolders ? (vscode.workspace.workspaceFolders as vscode.WorkspaceFolder[])[0].uri : undefined,
-				openLabel: constants.selectString,
-				filters: {
-					[constants.dacpacFiles]: ['dacpac'],
-				}
-			}
-		);
-
-		if (!fileUris || fileUris.length === 0) {
-			throw new Error(constants.dacpacFileLocationRequired);
-		}
-
-		return fileUris[0];
-	}
-
-	private async getDatabaseLocation(): Promise<DatabaseReferenceLocation> {
-		let databaseReferenceOptions: vscode.QuickPickItem[] = [
-			{
-				label: constants.databaseReferenceSameDatabase
-			},
-			{
-				label: constants.databaseReferenceDifferentDabaseSameServer
-			}
-		];
-
-		let input = await vscode.window.showQuickPick(databaseReferenceOptions, {
-			canPickMany: false,
-			placeHolder: constants.databaseReferenceLocation
-		});
-
-		if (input === undefined) {
-			throw new Error(constants.databaseLocationRequired);
-		}
-
-		const location = input?.label === constants.databaseReferenceSameDatabase ? DatabaseReferenceLocation.sameDatabase : DatabaseReferenceLocation.differentDatabaseSameServer;
-		return location;
-	}
-
-	private async getDatabaseName(dacpac: vscode.Uri): Promise<string | undefined> {
-		const dacpacName = path.parse(dacpac.toString()).name;
-		let databaseName = await vscode.window.showInputBox({
-			prompt: constants.databaseReferenceDatabaseName,
-			value: `${dacpacName}`
-		});
-
-		if (!databaseName) {
-			throw new Error(constants.databaseNameRequired);
-		}
-
-		databaseName = databaseName?.trim();
-		return databaseName;
-	}
-
 	//#region Helper methods
 
 	public getPublishDialog(project: Project): PublishDatabaseDialog {
 		return new PublishDatabaseDialog(project);
+	}
+
+	public getAddDatabaseReferenceDialog(project: Project): AddDatabaseReferenceDialog {
+		return new AddDatabaseReferenceDialog(project);
 	}
 
 	public async updateProjectForRoundTrip(project: Project) {
