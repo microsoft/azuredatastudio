@@ -59,6 +59,14 @@
           "type": "number",
           "default": 60000,
           "description": "%notebook.remoteBookDownloadTimeout.description%"
+        },
+        "notebook.pinnedNotebooks": {
+          "type": "array",
+          "default": [],
+          "description": "%notebook.pinnedNotebooks.description%",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -247,6 +255,21 @@
           "dark": "resources/dark/open_notebook_inverse.svg",
           "light": "resources/light/open_notebook.svg"
         }
+      },
+      {
+        "command": "notebook.command.pinNotebook",
+        "title": "%title.pinNotebook%",
+        "category": "%books-preview-category%",
+        "icon": "$(pinned)"
+      },
+      {
+        "command": "notebook.command.unpinNotebook",
+        "title": "%title.unpinNotebook%",
+        "category": "%books-preview-category%",
+        "icon": {
+          "dark": "resources/dark/unpin_inverse.svg",
+          "light": "resources/light/unpin.svg"
+        }
       }
     ],
     "languages": [
@@ -364,6 +387,14 @@
         {
           "command": "notebook.command.revealInBooksViewlet",
           "when": "false"
+        },
+        {
+          "command": "notebook.command.pinNotebook",
+          "when": "false"
+        },
+        {
+          "command": "notebook.command.unpinNotebook",
+          "when": "false"
         }
       ],
       "notebooks/title": [
@@ -424,6 +455,16 @@
         {
           "command": "notebook.command.closeNotebook",
           "when": "view == bookTreeView && viewItem == savedNotebook"
+        },
+        {
+          "command": "notebook.command.pinNotebook",
+          "when": "view == bookTreeView && viewItem  == savedNotebook",
+          "group": "inline"
+        },
+        {
+          "command": "notebook.command.unpinNotebook",
+          "when": "view == pinnedBooksView || view == bookTreeView && viewItem == pinnedNotebook",
+          "group": "inline"
         }
       ],
       "view/title": [
@@ -454,6 +495,11 @@
     },
     "views": {
       "notebooks": [
+        {
+          "id": "pinnedBooksView",
+          "name": "%title.PinnedBooks%",
+          "when": "showPinnedbooks"
+        },
         {
           "id": "bookTreeView",
           "name": "%title.SavedBooks%"
@@ -593,6 +639,7 @@
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
+    "nock": "^13.0.2",
     "should": "^13.2.3",
     "sinon": "^9.0.2",
     "typemoq": "^2.1.0",

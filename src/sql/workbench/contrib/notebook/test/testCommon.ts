@@ -21,13 +21,9 @@ export class NotebookEditorStub extends stubs.NotebookEditorStub {
 	model: INotebookModel | undefined;
 	cells?: ICellModel[] = [];
 
-	get id(): string {
-		return this.notebookParams?.notebookUri?.toString();
-	}
+	public readonly id = this.notebookParams?.notebookUri?.toString();
 
-	get modelReady(): Promise<INotebookModel> {
-		return Promise.resolve(this.model);
-	}
+	public readonly modelReady: Promise<INotebookModel> = Promise.resolve(this.model);
 
 	// Normally one needs to provide either the editor or the instantiationService as the constructor parameter
 	constructor({ cellGuid, instantiationService, editor, model, notebookParams }: { cellGuid?: string; instantiationService?: IInstantiationService; editor?: QueryTextEditor; model?: INotebookModel, notebookParams?: INotebookParams } = {}) {

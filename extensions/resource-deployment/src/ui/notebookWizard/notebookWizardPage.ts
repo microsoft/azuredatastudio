@@ -53,6 +53,7 @@ export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
 			onNewValidatorCreated: (validator: Validator): void => {
 				this.validators.push(validator);
 			},
+			toolsService: this.wizard.toolsService
 		});
 	}
 

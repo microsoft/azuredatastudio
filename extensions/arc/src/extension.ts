@@ -44,6 +44,15 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 		await treeNode.openDashboard().catch(err => vscode.window.showErrorMessage(loc.openDashboardFailed(err)));
 	});
 
+	vscode.commands.registerCommand('arc.editConnection', async (treeNode: ControllerTreeNode) => {
+		const dialog = new ConnectToControllerDialog(treeDataProvider);
+		dialog.showDialog(treeNode.model.info, await treeDataProvider.getPassword(treeNode.model.info));
+		const model = await dialog.waitForClose();
+		if (model) {
+			await treeDataProvider.addOrUpdateController(model.controllerModel, model.password, true);
+		}
+	});
+
 	await checkArcDeploymentExtension();
 }
 

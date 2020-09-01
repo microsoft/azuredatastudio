@@ -257,7 +257,7 @@ suite('Notebook Actions', function (): void {
 		assert.strictEqual(actualCmdId, NewNotebookAction.INTERNAL_NEW_NOTEBOOK_CMD_ID);
 	});
 
-	suite('Kernels dropdown', async () => {
+	suite.skip('Kernels dropdown', async () => {
 		let kernelsDropdown: KernelsDropdown;
 		let contextViewProvider: ContextViewProviderStub;
 		let container: HTMLElement;
@@ -460,4 +460,3 @@ function verifyUpdateKernelForKernelDefinedAndReadyCase(notebookModel: TestNoteb
 	assert.ok(setOptionsSpy.calledOnce, `setOptions should be be called exactly once when kernel is not defined or ready and clientSession is in error state`);
 	assert.ok(setOptionsSpy.calledWithExactly(expectedSetOptionsArgs.kernels, expectedSetOptionsArgs.selected), `setOptions should be called with a options value of ${JSON.stringify(expectedSetOptionsArgs.kernels)} and selected value of ${expectedSetOptionsArgs.selected}`);
 }
-

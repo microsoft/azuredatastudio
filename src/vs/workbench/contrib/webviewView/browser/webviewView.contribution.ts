@@ -3,16 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-//@ts-check
+import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
+import { IWebviewViewService, WebviewViewService } from 'vs/workbench/contrib/webviewView/browser/webviewViewService';
 
-'use strict';
-const path = require('path');
-const withBrowserDefaults = require('../shared.webpack.config').browser;
-
-module.exports = withBrowserDefaults({
-	context: __dirname,
-	node: false,
-	entry: {
-		extension: './src/extension.ts',
-	}
-});
+registerSingleton(IWebviewViewService, WebviewViewService, true);
