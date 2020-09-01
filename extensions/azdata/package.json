@@ -12,7 +12,7 @@
     "azdata": ">=1.20.0"
   },
   "activationEvents": [
-    "*"
+    "never"
   ],
   "repository": {
     "type": "git",

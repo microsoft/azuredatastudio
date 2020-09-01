@@ -8,6 +8,7 @@ import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { SOURCE_CONFIGURATION_PAGE_TITLE, COLLECTING_SOURCE_CONFIGURATIONS, COLLECTING_SOURCE_CONFIGURATIONS_INFO, COLLECTING_SOURCE_CONFIGURATIONS_ERROR } from '../models/strings';
 import { MigrationStateModel, StateChangeEvent, State } from '../models/stateMachine';
 import { Disposable } from 'vscode';
+import { AssessmentResultsDialog } from './assessmentResultsDialog';
 
 export class SourceConfigurationPage extends MigrationWizardPage {
 	// For future reference: DO NOT EXPOSE WIZARD DIRECTLY THROUGH HERE.
@@ -37,6 +38,9 @@ export class SourceConfigurationPage extends MigrationWizardPage {
 		this.migrationStateModel.migrationService.getAssessments(connectionUri).then(results => {
 			this.migrationStateModel.assessmentResults = results.items;
 			this.migrationStateModel.currentState = State.TARGET_SELECTION;
+
+			let dialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, 'Assessment Dialog');
+			dialog.openDialog();
 		});
 	}
 
