@@ -20,7 +20,16 @@ export type Subscription = azureResource.AzureResourceSubscription;
 export async function getSubscriptions(account: azdata.Account): Promise<Subscription[]> {
 	const api = await getAzureCoreAPI();
 	const subscriptions = await api.getSubscriptions(account, false);
-
+	let listOfSubscriptions = subscriptions.subscriptions;
+	listOfSubscriptions.sort((a, b) => {
+		if (a.name < b.name) {
+			return -1;
+		}
+		if (a.name > b.name) {
+			return 1;
+		}
+		return 0;
+	});
 	return subscriptions.subscriptions;
 }
 
@@ -38,5 +47,13 @@ export async function getAvailableSqlServers(account: azdata.Account, subscripti
 	const api = await getAzureCoreAPI();
 
 	const result = await api.runGraphQuery<azureResource.AzureGraphResource>(account, subscription, false, 'where type == "microsoft.sql/servers"');
+	return result.resources;
+}
+
+export type SqlVMServer = azureResource.AzureGraphResource;
+export async function getAvailableSqlVMs(account: azdata.Account, subscription: Subscription): Promise<SqlVMServer[]> {
+	const api = await getAzureCoreAPI();
+
+	const result = await api.runGraphQuery<azureResource.AzureGraphResource>(account, subscription, false, 'where type == "microsoft.compute/virtualmachines" and properties.storageProfile.imageReference.publisher == "microsoftsqlserver"');
 	return result.resources;
 }

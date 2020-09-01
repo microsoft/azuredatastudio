@@ -326,7 +326,7 @@ export class UserDataSyncWorkbenchContribution extends Disposable implements IWo
 				if (isEqual(this.userDataSyncStoreManagementService.userDataSyncStore?.url, this.userDataSyncStoreManagementService.userDataSyncStore?.insidersUrl)) {
 					this.notificationService.notify({
 						severity: Severity.Info,
-						message: localize('switched to insiders', "Settings sync now uses a separate service, more information is available in the [release notes](command:update.showCurrentReleaseNotes)."),
+						message: localize('switched to insiders', "Settings sync now uses a separate service, more information is available in the [release notes](https://code.visualstudio.com/updates/v1_48#_settings-sync)."),
 					});
 				}
 				return;
@@ -997,7 +997,7 @@ export class UserDataSyncWorkbenchContribution extends Disposable implements IWo
 
 	private registerEnableSyncViewsAction(): void {
 		const that = this;
-		const when = ContextKeyExpr.and(CONTEXT_SYNC_ENABLEMENT, CONTEXT_ACCOUNT_STATE.isEqualTo(AccountStatus.Available), CONTEXT_SYNC_STATE.notEqualsTo(SyncStatus.Uninitialized));
+		const when = ContextKeyExpr.and(CONTEXT_ACCOUNT_STATE.isEqualTo(AccountStatus.Available), CONTEXT_SYNC_STATE.notEqualsTo(SyncStatus.Uninitialized));
 		this._register(registerAction2(class SyncStatusAction extends Action2 {
 			constructor() {
 				super({

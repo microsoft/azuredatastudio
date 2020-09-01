@@ -5,43 +5,50 @@
 
 import * as azdataExt from 'azdata-ext';
 import * as vscode from 'vscode';
-import { checkAndUpgradeAzdata, findAzdata, IAzdataTool } from './azdata';
+import { findAzdata, IAzdataTool, manuallyInstallOrUpgradeAzdata, promptForEula } from './azdata';
+import Logger from './common/logger';
+import * as constants from './constants';
 import * as loc from './localizedConstants';
 
 let localAzdata: IAzdataTool | undefined = undefined;
+let eulaAccepted: boolean = false;
 
-export async function activate(): Promise<azdataExt.IExtension> {
+export async function activate(context: vscode.ExtensionContext): Promise<azdataExt.IExtension> {
 	localAzdata = await checkForAzdata();
-	// Don't block on this since we want the extension to finish activating without needing user input
-	// upgrade if available and user wants it.
-	checkAndUpgradeAzdata(localAzdata)
-		.then(async upgradePerformed => {
-			if (upgradePerformed) { // If upgrade was performed then find and save the new azdata
-				localAzdata = await findAzdata();
-			}
-		})
-		.catch(err => vscode.window.showWarningMessage(loc.upgradeError(err)));
+	eulaAccepted = !!context.globalState.get(constants.acceptEula);
+	if (!eulaAccepted) {
+		// Don't block on this since we want extension to finish activating without requiring user actions.
+		// If EULA has not been accepted then we will check again while executing azdata commands.
+		promptForEula(context.globalState)
+			.then(userResponse => {
+				eulaAccepted = userResponse;
+			})
+			.catch(err => console.log(err));
+	}
+	// Don't block on this since we want the extension to finish activating without user actions
+	manuallyInstallOrUpgradeAzdata(context, localAzdata)
+		.catch(err => console.log(err));
 	return {
 		azdata: {
 			arc: {
 				dc: {
 					create: async (namespace: string, name: string, connectivityMode: string, resourceGroup: string, location: string, subscription: string, profileName?: string, storageClass?: string) => {
-						throwIfNoAzdata();
+						await throwIfNoAzdataOrEulaNotAccepted(context);
 						return localAzdata!.arc.dc.create(namespace, name, connectivityMode, resourceGroup, location, subscription, profileName, storageClass);
 					},
 					endpoint: {
 						list: async () => {
-							throwIfNoAzdata();
+							await throwIfNoAzdataOrEulaNotAccepted(context);
 							return localAzdata!.arc.dc.endpoint.list();
 						}
 					},
 					config: {
 						list: async () => {
-							throwIfNoAzdata();
+							await throwIfNoAzdataOrEulaNotAccepted(context);
 							return localAzdata!.arc.dc.config.list();
 						},
 						show: async () => {
-							throwIfNoAzdata();
+							await throwIfNoAzdataOrEulaNotAccepted(context);
 							return localAzdata!.arc.dc.config.show();
 						}
 					}
@@ -49,11 +56,11 @@ export async function activate(): Promise<azdataExt.IExtension> {
 				postgres: {
 					server: {
 						list: async () => {
-							throwIfNoAzdata();
+							await throwIfNoAzdataOrEulaNotAccepted(context);
 							return localAzdata!.arc.postgres.server.list();
 						},
 						show: async (name: string) => {
-							throwIfNoAzdata();
+							await throwIfNoAzdataOrEulaNotAccepted(context);
 							return localAzdata!.arc.postgres.server.show(name);
 						}
 					}
@@ -61,35 +68,42 @@ export async function activate(): Promise<azdataExt.IExtension> {
 				sql: {
 					mi: {
 						delete: async (name: string) => {
-							throwIfNoAzdata();
+							await throwIfNoAzdataOrEulaNotAccepted(context);
 							return localAzdata!.arc.sql.mi.delete(name);
 						},
 						list: async () => {
-							throwIfNoAzdata();
+							await throwIfNoAzdataOrEulaNotAccepted(context);
 							return localAzdata!.arc.sql.mi.list();
 						},
 						show: async (name: string) => {
-							throwIfNoAzdata();
+							await throwIfNoAzdataOrEulaNotAccepted(context);
 							return localAzdata!.arc.sql.mi.show(name);
 						}
 					}
 				}
 			},
 			login: async (endpoint: string, username: string, password: string) => {
-				throwIfNoAzdata();
+				await throwIfNoAzdataOrEulaNotAccepted(context);
 				return localAzdata!.login(endpoint, username, password);
 			},
 			version: async () => {
-				throwIfNoAzdata();
+				await throwIfNoAzdataOrEulaNotAccepted(context);
 				return localAzdata!.version();
 			}
 		}
 	};
 }
 
-function throwIfNoAzdata(): void {
+async function throwIfNoAzdataOrEulaNotAccepted(context: vscode.ExtensionContext): Promise<void> {
 	if (!localAzdata) {
 		throw new Error(loc.noAzdata);
+	}
+	if (!eulaAccepted) {
+		eulaAccepted = await promptForEula(context.globalState);
+	}
+	if (!eulaAccepted) {
+		Logger.log(loc.eulaNotAccepted);
+		throw new Error(loc.eulaNotAccepted);
 	}
 }
 
