@@ -4,10 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as path from 'path';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
-import { Product } from '../models/product';
-import { CONGRATULATIONS, SKU_RECOMMENDATION_PAGE_TITLE, SKU_RECOMMENDATION_ALL_SUCCESSFUL } from '../models/strings';
+import { Product, ProductLookupTable } from '../models/product';
+import { SKU_RECOMMENDATION_PAGE_TITLE, SKU_RECOMMENDATION_CHOOSE_A_TARGET } from '../models/strings';
 import { Disposable } from 'vscode';
 
 export class SKURecommendationPage extends MigrationWizardPage {
@@ -22,12 +23,28 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 	private igComponent: azdata.FormComponent<azdata.TextComponent> | undefined;
 	private detailsComponent: azdata.FormComponent<azdata.TextComponent> | undefined;
+	private chooseTargetComponent: azdata.FormComponent<azdata.DivContainer> | undefined;
+	private view: azdata.ModelView | undefined;
+
 	private async initialState(view: azdata.ModelView) {
-		this.igComponent = this.createIGComponent(view);
-		this.detailsComponent = this.createDetailsComponent(view);
+		this.igComponent = this.createStatusComponent(view); // The first component giving basic information
+		this.detailsComponent = this.createDetailsComponent(view); // The details of what can be moved
+		this.chooseTargetComponent = this.createChooseTargetComponent(view);
+		this.view = view;
+
+
+		const form = view.modelBuilder.formContainer().withFormItems(
+			[
+				this.igComponent,
+				this.detailsComponent,
+				this.chooseTargetComponent
+			]
+		);
+
+		await view.initializeModel(form.component());
 	}
 
-	private createIGComponent(view: azdata.ModelView): azdata.FormComponent<azdata.TextComponent> {
+	private createStatusComponent(view: azdata.ModelView): azdata.FormComponent<azdata.TextComponent> {
 		const component = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: '',
 		});
@@ -49,37 +66,40 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		};
 	}
 
-	private constructDetails(): void {
-		const recommendations = this.migrationStateModel.skuRecommendations?.recommendations;
+	private createChooseTargetComponent(view: azdata.ModelView) {
+		const component = view.modelBuilder.divContainer();
 
-		if (!recommendations) {
-			return;
-		}
-
-		const products = recommendations.map(recommendation => {
-			return {
-				checks: recommendation.checks,
-				product: Product.FromMigrationProduct(recommendation.product)
-			};
-		});
-
-		const migratableDatabases: number = products?.length ?? 10; // force it to be used
-
-		const allDatabases = 10;
-
-		if (allDatabases === migratableDatabases) {
-			this.allMigratable(migratableDatabases);
-		}
-
-		// TODO handle other situations
-
+		return {
+			title: SKU_RECOMMENDATION_CHOOSE_A_TARGET,
+			component: component.component()
+		};
 	}
 
-	private allMigratable(databaseCount: number): void {
-		this.igComponent!.title = CONGRATULATIONS;
-		this.igComponent!.component.value = SKU_RECOMMENDATION_ALL_SUCCESSFUL(databaseCount);
-		this.detailsComponent!.component.value = ''; // force it to be used
-		// fill in some of that information
+	private constructDetails(): void {
+		this.chooseTargetComponent?.component.clearItems();
+
+		this.igComponent!.component.value = 'Test';
+		this.detailsComponent!.component.value = 'Test';
+		this.constructTargets();
+	}
+
+	private constructTargets(): void {
+		const products: Product[] = Object.values(ProductLookupTable);
+
+		const rbg = this.view!.modelBuilder.radioCardGroup();
+		rbg.component().cards = [];
+
+		products.forEach((product) => {
+			const imagePath = path.resolve(this.migrationStateModel.getExtensionPath(), 'media', product.icon ?? 'ads.svg');
+
+			rbg.component().cards.push({
+				id: product.name,
+				icon: imagePath,
+				label: 'Some Label'
+			});
+		});
+
+		this.chooseTargetComponent?.component.addItem(rbg.component());
 	}
 
 	private eventListener: Disposable | undefined;
