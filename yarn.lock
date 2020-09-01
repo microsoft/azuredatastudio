@@ -319,6 +319,11 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.12.14.tgz#1c1d6e3c75dba466e0326948d56e8bd72a1903d2"
   integrity sha512-u/SJDyXwuihpwjXy7hOOghagLEV1KdAST6syfnOk6QZAMzZuWZqXy5aYYZbh8Jdpd4escVFP0MvftHNDb9pruA==
 
+"@types/node@^13.13.5":
+  version "13.13.15"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-13.13.15.tgz#fe1cc3aa465a3ea6858b793fd380b66c39919766"
+  integrity sha512-kwbcs0jySLxzLsa2nWUAGOd/s21WU1jebrEdtzhsj1D4Yps1EOuyI1Qcu+FD56dL7NRNIJtDDjcqIG22NwkgLw==
+
 "@types/plotly.js@^1.44.9":
   version "1.44.9"
   resolved "https://registry.yarnpkg.com/@types/plotly.js/-/plotly.js-1.44.9.tgz#d20bd229b409f83b5e9bc06df0c948a27b8fbc0d"
@@ -9531,6 +9536,12 @@ ts-loader@^4.4.2:
     micromatch "^3.1.4"
     semver "^5.0.1"
 
+tsec@googleinterns/tsec:
+  version "0.0.1"
+  resolved "https://codeload.github.com/googleinterns/tsec/tar.gz/eb8abc0a58b16f97bb499833c21467fc6425260f"
+  dependencies:
+    "@types/node" "^13.13.5"
+
 tslib@^1.8.1, tslib@^1.9.0:
   version "1.9.3"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.9.3.tgz#d7e4dd79245d85428c4d7e4822a79917954ca286"
@@ -9615,10 +9626,10 @@ typescript@^2.6.2:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.6.2.tgz#3c5b6fd7f6de0914269027f03c0946758f7673a4"
   integrity sha1-PFtv1/beCRQmkCfwPAlGdY92c6Q=
 
-typescript@^4.0.1-rc:
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.0.2.tgz#7ea7c88777c723c681e33bf7988be5d008d05ac2"
-  integrity sha512-e4ERvRV2wb+rRZ/IQeb3jm2VxBsirQLpQhdxplZ2MEzGvDkkMmPglecnNDfSUBivMjP93vRbngYYDQqQ/78bcQ==
+typescript@^4.1.0-dev.20200824:
+  version "4.1.0-dev.20200901"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.1.0-dev.20200901.tgz#26eeb80e8c6e3c8712b1db51643507096590c15d"
+  integrity sha512-hh0i9TSQtEhHg7HqbOFvAczleOwZu9xSYL1vi4se1ruHLTKafT1+pecOC/TOIPz4RZNJ8I820ORBlOnDWWOPfg==
 
 uc.micro@^1.0.1, uc.micro@^1.0.3:
   version "1.0.3"
