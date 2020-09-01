@@ -195,20 +195,25 @@ describe('Project: sqlproj content operations', function (): void {
 		await project.addSystemDatabaseReference({ databaseName: 'master', systemDb: SystemDatabase.master });
 		should(project.databaseReferences.length).equal(1, 'There should be one database reference after adding a reference to master');
 		should(project.databaseReferences[0].databaseName).equal(constants.master, 'The database reference should be master');
-		// make sure reference to SSDT master dacpac was added
+		// make sure reference to ADS master dacpac and SSDT master dacpac was added
 		let projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText).containEql(convertSlashesForSqlProj(project.getSystemDacpacUri(constants.master).fsPath.substring(1)));
 		should(projFileText).containEql(convertSlashesForSqlProj(project.getSystemDacpacSsdtUri(constants.master).fsPath.substring(1)));
 
 		await project.addSystemDatabaseReference({ databaseName: 'msdb', systemDb: SystemDatabase.msdb });
 		should(project.databaseReferences.length).equal(2, 'There should be two database references after adding a reference to msdb');
 		should(project.databaseReferences[1].databaseName).equal(constants.msdb, 'The database reference should be msdb');
-		// make sure reference to SSDT msdb dacpac was added
+		// make sure reference to ADS msdb dacpac and SSDT msdb dacpac was added
 		projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText).containEql(convertSlashesForSqlProj(project.getSystemDacpacUri(constants.msdb).fsPath.substring(1)));
 		should(projFileText).containEql(convertSlashesForSqlProj(project.getSystemDacpacSsdtUri(constants.msdb).fsPath.substring(1)));
 
 		await project.addDatabaseReference({ dacpacFileLocation: Uri.file('test.dacpac'), databaseLocation: DatabaseReferenceLocation.sameDatabase });
 		should(project.databaseReferences.length).equal(3, 'There should be three database references after adding a reference to test');
 		should(project.databaseReferences[2].databaseName).equal('test', 'The database reference should be test');
+		// make sure reference to test.dacpac was added
+		projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText).containEql('test.dacpac');
 	});
 
 	it('Should not allow adding duplicate database references', async function (): Promise<void> {

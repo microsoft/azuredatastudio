@@ -486,7 +486,7 @@ export class Project {
 		suppressMissingDependenciesErrorNode.appendChild(falseTextNode);
 		referenceNode.appendChild(suppressMissingDependenciesErrorNode);
 
-		// TODO: add support for sqlcmd vars and server
+		// TODO: add support for sqlcmd vars and server https://github.com/microsoft/azuredatastudio/issues/12036
 		if (entry.databaseVariableLiteralValue) {
 			const databaseVariableLiteralValueElement = this.projFileXmlDoc.createElement(constants.DatabaseVariableLiteralValue);
 			const databaseTextNode = this.projFileXmlDoc.createTextNode(entry.databaseVariableLiteralValue);
