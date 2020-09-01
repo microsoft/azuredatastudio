@@ -3,16 +3,17 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as vscode from 'vscode';
 import * as azdataExt from 'azdata-ext';
 import { findAzdata, IAzdataTool, manuallyInstallOrUpgradeAzdata } from './azdata';
 import * as loc from './localizedConstants';
 
 let localAzdata: IAzdataTool | undefined = undefined;
 
-export async function activate(): Promise<azdataExt.IExtension> {
+export async function activate(context: vscode.ExtensionContext): Promise<azdataExt.IExtension> {
 	localAzdata = await checkForAzdata();
 	// Don't block on this since we want the extension to finish activating without user actions
-	manuallyInstallOrUpgradeAzdata(localAzdata)
+	manuallyInstallOrUpgradeAzdata(context, localAzdata)
 		.catch(err => console.log(err));
 	return {
 		azdata: {
