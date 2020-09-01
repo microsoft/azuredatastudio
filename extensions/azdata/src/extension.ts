@@ -83,7 +83,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 				}
 			},
 			login: async (endpoint: string, username: string, password: string) => {
-				await await throwIfNoAzdataOrEulaNotAccepted(context);
+				await throwIfNoAzdataOrEulaNotAccepted(context);
 				return localAzdata!.login(endpoint, username, password);
 			},
 			version: async () => {
