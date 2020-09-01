@@ -508,8 +508,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				tocTrimLength = '/_data/toc.yml'.length * -1;
 				ignoreNotebook = ['/**/*.ipynb'];
 			} else {
-				tocTrimLength = '_toc.yml'.length * -1;
-				ignoreNotebook = ['**/*.ipynb', '*.ipynb'];
+				tocTrimLength = '/_toc.yml'.length * -1;
+				ignoreNotebook = ['/**/*.ipynb', '/*.ipynb'];
 			}
 			path = path.slice(0, tocTrimLength);
 			ignoreNotebook.map(notebook => ignorePaths.push(glob.escapePath(path) + notebook));
