@@ -29,7 +29,7 @@ export function convertSize(size: number | string | undefined, defaultValue?: st
 }
 
 /**
- * Converts a size value into its number representation. Supports px, em and unspecified units. 
+ * Converts a size value into its number representation. Supports px, em and unspecified units.
  * @param size The size value to convert
  */
 export function convertSizeToNumber(size: number | string | undefined): number {
