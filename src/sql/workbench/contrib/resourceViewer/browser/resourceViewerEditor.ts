@@ -4,11 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { ProfilerTableViewState } from 'sql/workbench/contrib/profiler/browser/profilerTableEditor';
-import { CONTEXT_PROFILER_EDITOR } from 'sql/workbench/contrib/profiler/common/interfaces';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
+import { IContextKeyService, IContextKey, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { DARK, HIGH_CONTRAST } from 'vs/platform/theme/common/themeService';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
@@ -21,6 +19,8 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IResourceViewerStateChangedEvent } from 'sql/workbench/common/editor/resourceViewer/resourceViewerState';
 import { ResourceViewerInput } from 'sql/workbench/browser/editor/resourceViewer/resourceViewerInput';
 import { ResourceViewerTable } from 'sql/workbench/contrib/resourceViewer/browser/resourceViewerTable';
+
+export const CONTEXT_RESOURCE_VIEWER_EDITOR = new RawContextKey<boolean>('inResourceViewerEditor', false);
 
 export interface ResourceViewerTableViewState {
 	scrollTop: number;
@@ -40,7 +40,7 @@ export class ResourceViewerEditor extends BaseEditor {
 
 	private _resourceViewerEditorContextKey: IContextKey<boolean>;
 
-	private _savedTableViewStates = new Map<ResourceViewerInput, ProfilerTableViewState>();
+	private _savedTableViewStates = new Map<ResourceViewerInput, ResourceViewerTableViewState>();
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -51,7 +51,7 @@ export class ResourceViewerEditor extends BaseEditor {
 		@IStorageService storageService: IStorageService
 	) {
 		super(ResourceViewerEditor.ID, telemetryService, themeService, storageService);
-		this._resourceViewerEditorContextKey = CONTEXT_PROFILER_EDITOR.bindTo(this._contextKeyService);
+		this._resourceViewerEditorContextKey = CONTEXT_RESOURCE_VIEWER_EDITOR.bindTo(this._contextKeyService);
 
 		if (editorService) {
 			editorService.overrideOpenEditor({

@@ -3,14 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
-
 import * as nls from 'vs/nls';
-
 import { EditorInput } from 'vs/workbench/common/editor';
 import { Event, Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import { ResourceViewerState } from 'sql/workbench/common/editor/resourceViewer/resourceViewerState';
+import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 
 export interface ColumnDefinition extends Slick.Column<Slick.SlickData> {
 	name: string;
