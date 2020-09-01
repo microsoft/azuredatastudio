@@ -209,20 +209,44 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 	private createOutputTableRow(modelParameter: ModelParameter, dataTypes: string[]): any[] {
 		if (this._modelBuilder) {
 
-			let nameInput = this._modelBuilder.dropDown().withProperties({
-				values: dataTypes,
-				width: this.componentMaxLength
+			const outputContainer = this._modelBuilder.flexContainer().withLayout({
+				flexFlow: 'row',
+				width: this.componentMaxLength + 20,
+				justifyContent: 'flex-start'
 			}).component();
+			const warningButton = this.createWarningButton(constants.outputColumnDataTypeNotSupportedWarning);
+			warningButton.onDidClick(() => {
+			});
+			const css = {
+				'padding-top': '5px',
+				'padding-right': '5px',
+				'margin': '0px'
+			};
 			const name = modelParameter.name;
-			const dataType = dataTypes.find(x => x === modelParameter.type);
-			if (dataType) {
-				nameInput.value = dataType;
-			} else {
+			let dataType = dataTypes.find(x => x === modelParameter.type);
+			if (!dataType) {
 				// Output type not supported
 				//
-				modelParameter.type = dataTypes[0];
+				dataType = dataTypes[0];
+				outputContainer.addItem(warningButton, {
+					CSSStyles: css
+				});
 			}
-			this._parameters.push({ columnName: name, paramName: name, dataType: modelParameter.type });
+			let nameInput = this._modelBuilder.dropDown().withProperties({
+				values: dataTypes,
+				width: this.componentMaxLength,
+				value: dataType
+			}).component();
+			outputContainer.addItem(nameInput, {
+				CSSStyles: {
+					'padding': '0px',
+					'padding-right': '5px',
+					'margin': '0px'
+				}
+			});
+
+
+			this._parameters.push({ columnName: name, paramName: name, dataType: dataType });
 
 			nameInput.onValueChanged(() => {
 				const value = <string>nameInput.value;
@@ -231,8 +255,14 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 					if (selectedRow) {
 						selectedRow.dataType = value;
 					}
+					outputContainer.addItem(warningButton, {
+						CSSStyles: css
+					});
+				} else {
+					outputContainer.removeItem(warningButton);
 				}
 			});
+
 			let displayNameInput = this._modelBuilder.inputBox().withProperties({
 				value: name,
 				width: 200
@@ -243,7 +273,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 					selectedRow.columnName = displayNameInput.value || name;
 				}
 			});
-			return [`${name}(${modelParameter.originalType ? modelParameter.originalType : constants.unsupportedModelParameterType})`, displayNameInput, nameInput];
+			return [`${name}(${modelParameter.originalType ? modelParameter.originalType : constants.unsupportedModelParameterType})`, displayNameInput, outputContainer];
 		}
 
 		return [];
@@ -276,7 +306,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 				width: this.componentMaxLength + 20,
 				justifyContent: 'flex-start'
 			}).component();
-			const warningButton = this.createWarningButton();
+			const warningButton = this.createWarningButton(constants.columnDataTypeMismatchWarning);
 			warningButton.onDidClick(() => {
 			});
 
@@ -296,7 +326,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 				}
 
 				const currentColumn = columns.find(x => x.columnName === value);
-				if (currentColumn && modelParameter.type === currentColumn?.dataType) {
+				if (currentColumn && modelParameter.type !== currentColumn?.dataType) {
 					inputContainer.removeItem(warningButton);
 				} else {
 					inputContainer.addItem(warningButton, {
@@ -341,11 +371,11 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 		return [];
 	}
 
-	private createWarningButton(): azdata.ButtonComponent {
+	private createWarningButton(message: string): azdata.ButtonComponent {
 		const warningButton = this._modelBuilder.button().withProperties({
 			width: '10px',
 			height: '10px',
-			title: constants.columnDataTypeMismatchWarning,
+			title: message,
 			iconPath: {
 				dark: this.asAbsolutePath('images/dark/warning_notification_inverse.svg'),
 				light: this.asAbsolutePath('images/light/warning_notification.svg'),

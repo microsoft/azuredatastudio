@@ -16,19 +16,25 @@ const opn = require('opn');
 const minimist = require('minimist');
 const fancyLog = require('fancy-log');
 const ansiColors = require('ansi-colors');
+const remote = require('gulp-remote-retry-src');
+const vfs = require('vinyl-fs');
 
 const extensions = require('../../build/lib/extensions');
 
 const APP_ROOT = path.join(__dirname, '..', '..');
 const BUILTIN_EXTENSIONS_ROOT = path.join(APP_ROOT, 'extensions');
 const BUILTIN_MARKETPLACE_EXTENSIONS_ROOT = path.join(APP_ROOT, '.build', 'builtInExtensions');
+const WEB_DEV_EXTENSIONS_ROOT = path.join(APP_ROOT, '.build', 'builtInWebDevExtensions');
 const WEB_MAIN = path.join(APP_ROOT, 'src', 'vs', 'code', 'browser', 'workbench', 'workbench-dev.html');
+
+const WEB_PLAYGROUND_VERSION = '0.0.2';
 
 const args = minimist(process.argv, {
 	boolean: [
 		'no-launch',
 		'help',
-		'verbose'
+		'verbose',
+		'wrap-iframe'
 	],
 	string: [
 		'scheme',
@@ -43,6 +49,7 @@ if (args.help) {
 	console.log(
 		'yarn web [options]\n' +
 		' --no-launch      Do not open VSCode web in the browser\n' +
+		' --wrap-iframe    Wrap the Web Worker Extension Host in an iframe\n' +
 		' --scheme         Protocol (https or http)\n' +
 		' --host           Remote host\n' +
 		' --port           Remote/Local port\n' +
@@ -70,9 +77,10 @@ async function getBuiltInExtensionInfos() {
 	/** @type {Object.<string, string>} */
 	const locations = {};
 
-	const [localExtensions, marketplaceExtensions] = await Promise.all([
+	const [localExtensions, marketplaceExtensions, webDevExtensions] = await Promise.all([
 		extensions.scanBuiltinExtensions(BUILTIN_EXTENSIONS_ROOT),
 		extensions.scanBuiltinExtensions(BUILTIN_MARKETPLACE_EXTENSIONS_ROOT),
+		ensureWebDevExtensions().then(() => extensions.scanBuiltinExtensions(WEB_DEV_EXTENSIONS_ROOT))
 	]);
 	for (const ext of localExtensions) {
 		allExtensions.push(ext);
@@ -82,10 +90,61 @@ async function getBuiltInExtensionInfos() {
 		allExtensions.push(ext);
 		locations[ext.extensionPath] = path.join(BUILTIN_MARKETPLACE_EXTENSIONS_ROOT, ext.extensionPath);
 	}
+	for (const ext of webDevExtensions) {
+		allExtensions.push(ext);
+		locations[ext.extensionPath] = path.join(WEB_DEV_EXTENSIONS_ROOT, ext.extensionPath);
+	}
+	for (const ext of allExtensions) {
+		if (ext.packageJSON.browser) {
+			let mainFilePath = path.join(locations[ext.extensionPath], ext.packageJSON.browser);
+			if (path.extname(mainFilePath) !== '.js') {
+				mainFilePath += '.js';
+			}
+			if (!await exists(mainFilePath)) {
+				fancyLog(`${ansiColors.red('Error')}: Could not find ${mainFilePath}. Use ${ansiColors.cyan('yarn watch-web')} to build the built-in extensions.`);
+			}
+		}
+	}
 	return { extensions: allExtensions, locations };
 }
 
-async function getDefaultExtensionInfos() {
+async function ensureWebDevExtensions() {
+
+	// Playground (https://github.com/microsoft/vscode-web-playground)
+	const webDevPlaygroundRoot = path.join(WEB_DEV_EXTENSIONS_ROOT, 'vscode-web-playground');
+	const webDevPlaygroundExists = await exists(webDevPlaygroundRoot);
+
+	let downloadPlayground = false;
+	if (webDevPlaygroundExists) {
+		try {
+			const webDevPlaygroundPackageJson = JSON.parse(((await readFile(path.join(webDevPlaygroundRoot, 'package.json'))).toString()));
+			if (webDevPlaygroundPackageJson.version !== WEB_PLAYGROUND_VERSION) {
+				downloadPlayground = true;
+			}
+		} catch (error) {
+			downloadPlayground = true;
+		}
+	} else {
+		downloadPlayground = true;
+	}
+
+	if (downloadPlayground) {
+		if (args.verbose) {
+			fancyLog(`${ansiColors.magenta('Web Development extensions')}: Downloading vscode-web-playground to ${webDevPlaygroundRoot}`);
+		}
+		await new Promise((resolve, reject) => {
+			remote(['package.json', 'dist/extension.js', 'dist/extension.js.map'], {
+				base: 'https://raw.githubusercontent.com/microsoft/vscode-web-playground/main/'
+			}).pipe(vfs.dest(webDevPlaygroundRoot)).on('end', resolve).on('error', reject);
+		});
+	} else {
+		if (args.verbose) {
+			fancyLog(`${ansiColors.magenta('Web Development extensions')}: Using existing vscode-web-playground in ${webDevPlaygroundRoot}`);
+		}
+	}
+}
+
+async function getCommandlineProvidedExtensionInfos() {
 	const extensions = [];
 
 	/** @type {Object.<string, string>} */
@@ -122,16 +181,6 @@ async function getExtensionPackageJSON(extensionPath) {
 				return; // unsupported
 			}
 
-			if (packageJSON.browser) {
-				let mainFilePath = path.join(extensionPath, packageJSON.browser);
-				if (path.extname(mainFilePath) !== '.js') {
-					mainFilePath += '.js';
-				}
-				if (!await exists(mainFilePath)) {
-					fancyLog(`${ansiColors.yellow('Warning')}: Could not find ${mainFilePath}. Use ${ansiColors.cyan('yarn gulp watch-web')} to build the built-in extensions.`);
-				}
-			}
-
 			const packageNLSPath = path.join(extensionPath, 'package.nls.json');
 			const packageNLSExists = await exists(packageNLSPath);
 			if (packageNLSExists) {
@@ -147,7 +196,7 @@ async function getExtensionPackageJSON(extensionPath) {
 }
 
 const builtInExtensionsPromise = getBuiltInExtensionInfos();
-const defaultExtensionsPromise = getDefaultExtensionInfos();
+const commandlineProvidedExtensionsPromise = getCommandlineProvidedExtensionInfos();
 
 const mapCallbackUriToRequestId = new Map();
 
@@ -178,10 +227,6 @@ const server = http.createServer((req, res) => {
 		if (/^\/extension\//.test(pathname)) {
 			// default extension requests
 			return handleExtension(req, res, parsedUrl);
-		}
-		if (/^\/builtin-extension\//.test(pathname)) {
-			// built-in extension requests
-			return handleBuiltInExtension(req, res, parsedUrl);
 		}
 		if (pathname === '/') {
 			// main web
@@ -219,7 +264,18 @@ server.on('error', err => {
  * @param {import('http').ServerResponse} res
  * @param {import('url').UrlWithParsedQuery} parsedUrl
  */
-function handleStatic(req, res, parsedUrl) {
+async function handleStatic(req, res, parsedUrl) {
+
+	if (/^\/static\/extensions\//.test(parsedUrl.pathname)) {
+		const relativePath = decodeURIComponent(parsedUrl.pathname.substr('/static/extensions/'.length));
+		const filePath = getExtensionFilePath(relativePath, (await builtInExtensionsPromise).locations);
+		if (!filePath) {
+			return serveError(req, res, 400, `Bad request.`);
+		}
+		return serveFile(req, res, filePath, {
+			'Access-Control-Allow-Origin': '*'
+		});
+	}
 
 	// Strip `/static/` from the path
 	const relativeFilePath = path.normalize(decodeURIComponent(parsedUrl.pathname.substr('/static/'.length)));
@@ -235,24 +291,7 @@ function handleStatic(req, res, parsedUrl) {
 async function handleExtension(req, res, parsedUrl) {
 	// Strip `/extension/` from the path
 	const relativePath = decodeURIComponent(parsedUrl.pathname.substr('/extension/'.length));
-	const filePath = getExtensionFilePath(relativePath, (await defaultExtensionsPromise).locations);
-	if (!filePath) {
-		return serveError(req, res, 400, `Bad request.`);
-	}
-	return serveFile(req, res, filePath, {
-		'Access-Control-Allow-Origin': '*'
-	});
-}
-
-/**
- * @param {import('http').IncomingMessage} req
- * @param {import('http').ServerResponse} res
- * @param {import('url').UrlWithParsedQuery} parsedUrl
- */
-async function handleBuiltInExtension(req, res, parsedUrl) {
-	// Strip `/builtin-extension/` from the path
-	const relativePath = decodeURIComponent(parsedUrl.pathname.substr('/builtin-extension/'.length));
-	const filePath = getExtensionFilePath(relativePath, (await builtInExtensionsPromise).locations);
+	const filePath = getExtensionFilePath(relativePath, (await commandlineProvidedExtensionsPromise).locations);
 	if (!filePath) {
 		return serveError(req, res, 400, `Bad request.`);
 	}
@@ -296,22 +335,35 @@ async function handleRoot(req, res) {
 	}
 
 	const { extensions: builtInExtensions } = await builtInExtensionsPromise;
-	const { extensions: staticExtensions } = await defaultExtensionsPromise;
+	const { extensions: staticExtensions, locations: staticLocations } = await commandlineProvidedExtensionsPromise;
+
+	const dedupedBuiltInExtensions = [];
+	for (const builtInExtension of builtInExtensions) {
+		const extensionId = `${builtInExtension.packageJSON.publisher}.${builtInExtension.packageJSON.name}`;
+		if (staticLocations[extensionId]) {
+			fancyLog(`${ansiColors.magenta('BuiltIn extensions')}: Ignoring built-in ${extensionId} because it was overridden via --extension argument`);
+			continue;
+		}
+
+		dedupedBuiltInExtensions.push(builtInExtension);
+	}
 
 	if (args.verbose) {
-		fancyLog(`${ansiColors.magenta('BuiltIn extensions')}: ${builtInExtensions.map(e => path.basename(e.extensionPath)).join(', ')}`);
+		fancyLog(`${ansiColors.magenta('BuiltIn extensions')}: ${dedupedBuiltInExtensions.map(e => path.basename(e.extensionPath)).join(', ')}`);
 		fancyLog(`${ansiColors.magenta('Additional extensions')}: ${staticExtensions.map(e => path.basename(e.extensionLocation.path)).join(', ') || 'None'}`);
 	}
 
-	const webConfigJSON = escapeAttribute(JSON.stringify({
+	const webConfigJSON = {
 		folderUri: folderUri,
 		staticExtensions,
-		builtinExtensionsServiceUrl: `${SCHEME}://${AUTHORITY}/builtin-extension`
-	}));
+	};
+	if (args['wrap-iframe']) {
+		webConfigJSON._wrapWebWorkerExtHostInIframe = true;
+	}
 
 	const data = (await readFile(WEB_MAIN)).toString()
-		.replace('{{WORKBENCH_WEB_CONFIGURATION}}', () => webConfigJSON) // use a replace function to avoid that regexp replace patterns ($&, $0, ...) are applied
-		.replace('{{WORKBENCH_BUILTIN_EXTENSIONS}}', () => escapeAttribute(JSON.stringify(builtInExtensions)))
+		.replace('{{WORKBENCH_WEB_CONFIGURATION}}', () => escapeAttribute(JSON.stringify(webConfigJSON))) // use a replace function to avoid that regexp replace patterns ($&, $0, ...) are applied
+		.replace('{{WORKBENCH_BUILTIN_EXTENSIONS}}', () => escapeAttribute(JSON.stringify(dedupedBuiltInExtensions)))
 		.replace('{{WEBVIEW_ENDPOINT}}', '')
 		.replace('{{REMOTE_USER_DATA_URI}}', '');
 
@@ -356,7 +408,7 @@ async function handleCallback(req, res, parsedUrl) {
 
 	// add to map of known callbacks
 	mapCallbackUriToRequestId.set(requestId, JSON.stringify({ scheme: vscodeScheme || 'code-oss', authority: vscodeAuthority, path: vscodePath, query, fragment: vscodeFragment }));
-	return serveFile(req, res, path.join(APP_ROOT, 'resources', 'serverless', 'callback.html'), { 'Content-Type': 'text/html' });
+	return serveFile(req, res, path.join(APP_ROOT, 'resources', 'web', 'callback.html'), { 'Content-Type': 'text/html' });
 }
 
 /**

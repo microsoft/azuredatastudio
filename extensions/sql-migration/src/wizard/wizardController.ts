@@ -55,7 +55,7 @@ export class WizardController {
 			const canEnter = await pages[lastPage]?.canEnter() ?? true;
 
 			return canEnter && canLeave;
-			// return true
+			// return true;
 		});
 
 		await Promise.all(wizardSetupPromises);

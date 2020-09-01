@@ -11,8 +11,8 @@ import { executeCommand, executeSudoCommand, ExitCodeError, ProcessOutput } from
 import { HttpClient } from './common/httpClient';
 import Logger from './common/logger';
 import { getErrorMessage, searchForCmd } from './common/utils';
+import { acceptEula, azdataConfigSection, debugConfigKey, doNotPromptInstallMemento, doNotPromptUpdateMemento, eulaUrl, installationReadmeUrl, microsoftPrivacyStatementUrl, requiredVersion } from './constants';
 import * as loc from './localizedConstants';
-import { azdataConfigSection, debugConfigKey, requiredVersion as requiredVersion, installationReadmeUrl } from './constants';
 
 export const azdataHostname = 'https://aka.ms';
 export const azdataUri = 'azdata-msi';
@@ -256,23 +256,59 @@ export async function checkAndUpgradeAzdata(currentAzdata: IAzdataTool | undefin
  * to install the correct version using opened documentation
  * @param currentAzdata The current version of azdata to check.
  */
-export async function manuallyInstallOrUpgradeAzdata(currentAzdata: IAzdataTool | undefined): Promise<void> {
+export async function manuallyInstallOrUpgradeAzdata(context: vscode.ExtensionContext, currentAzdata: IAzdataTool | undefined): Promise<void> {
+	// Note - not localizing since this is temporary behavior
+	const dontShow = 'Don\'t Show Again';
 	if (currentAzdata === undefined) {
-		vscode.window.showInformationMessage(loc.installManually(requiredVersion, installationReadmeUrl), 'Ok');
+		const doNotPromptInstall = context.globalState.get(doNotPromptInstallMemento);
+		if (doNotPromptInstall) {
+			return;
+		}
+		const response = await vscode.window.showInformationMessage(loc.installManually(requiredVersion, installationReadmeUrl), 'OK', dontShow);
+		if (response === dontShow) {
+			context.globalState.update(doNotPromptInstallMemento, true);
+		}
 		Logger.show();
 		Logger.log(loc.installManually(requiredVersion, installationReadmeUrl));
 	} else {
+		const doNotPromptUpgrade = context.globalState.get(doNotPromptUpdateMemento);
+		if (doNotPromptUpgrade) {
+			return;
+		}
 		const requiredSemVersion = new SemVer(requiredVersion);
 		if (requiredSemVersion.compare(currentAzdata.cachedVersion) === 0) {
 			return; // if we have the required version then nothing more needs to be eon.
 		}
-		vscode.window.showInformationMessage(loc.installCorrectVersionManually(currentAzdata.cachedVersion.raw, requiredVersion, installationReadmeUrl), 'Ok');
+		const response = await vscode.window.showInformationMessage(loc.installCorrectVersionManually(currentAzdata.cachedVersion.raw, requiredVersion, installationReadmeUrl), 'OK', dontShow);
+		if (response === dontShow) {
+			context.globalState.update(doNotPromptUpdateMemento, true);
+		}
 		Logger.show();
 		Logger.log(loc.installCorrectVersionManually(currentAzdata.cachedVersion.raw, requiredVersion, installationReadmeUrl));
 	}
 	// display the instructions document in a new editor window.
 	// const downloadedFile = await HttpClient.downloadFile(installationInstructionDoc, os.tmpdir());
 	// await vscode.window.showTextDocument(vscode.Uri.parse(downloadedFile));
+}
+
+/**
+ * Prompts user to accept EULA it if was not previously accepted. Stores and returns the user response to EULA prompt.
+ * @param memento - memento where the user response is stored.
+ * pre-requisite, the calling code has to ensure that the eula has not yet been previously accepted by the user.
+ * returns true if the user accepted the EULA.
+ */
+
+export async function promptForEula(memento: vscode.Memento): Promise<boolean> {
+	Logger.show();
+	Logger.log(loc.promptForEulaLog(microsoftPrivacyStatementUrl, eulaUrl));
+	const reply = await vscode.window.showInformationMessage(loc.promptForEula(microsoftPrivacyStatementUrl, eulaUrl), loc.yes, loc.no);
+	Logger.log(loc.userResponseToEulaPrompt(reply));
+	if (reply === loc.yes) {
+		await memento.update(acceptEula, true);
+		return true;
+	} else {
+		return false;
+	}
 }
 
 /**

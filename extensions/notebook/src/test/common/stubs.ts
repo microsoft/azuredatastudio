@@ -23,6 +23,9 @@ export class MockExtensionContext implements vscode.ExtensionContext {
 	constructor() {
 		this.subscriptions = [];
 	}
+	storageUri: vscode.Uri;
+	globalStorageUri: vscode.Uri;
+	logUri: vscode.Uri;
 	environmentVariableCollection: vscode.EnvironmentVariableCollection;
 }
 
