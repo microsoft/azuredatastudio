@@ -643,7 +643,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	handler: async (accessor, args?: { viewType: string }) => {
 		const editorService = accessor.get(IEditorService);
 
-		if (args && args.viewType) { // {{SQL CARBON EDIT}} explicitly check for viewtype
+		if (typeof args?.viewType === 'string') {
 			const editorGroupsService = accessor.get(IEditorGroupsService);
 			const configurationService = accessor.get(IConfigurationService);
 			const quickInputService = accessor.get(IQuickInputService);
