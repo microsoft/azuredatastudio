@@ -34,7 +34,7 @@ export class DeployAzureSQLVMWizardModel extends Model {
 	public enableSqlAuthentication!: boolean;
 	public sqlAuthenticationUsername!: string;
 	public sqlAuthenticationPassword!: string;
-
+	public sqlOptimizationDropdown!: string;
 
 
 	constructor() {
@@ -45,15 +45,21 @@ export class DeployAzureSQLVMWizardModel extends Model {
 
 	public getCodeCellContentForNotebook(): string[] {
 		const statements: string[] = [];
-		statements.push(`azure_sqlvm_nb_var_subscription = '${this.azureSubscription}'`);
-		statements.push(`azure_sqlvm_nb_var_resource_group_name = '${this.azureResouceGroup}'`);
-		statements.push(`azure_sqlvm_location = '${this.azureRegion}'`);
-		statements.push(`azure_sqlvm_vmname = '${this.vmName}'`);
-		statements.push(`azure_sqlvm_image = '${this.vmImage}'`);
-		statements.push(`azure_sqlvm_image_sku = '${this.vmImageSKU}'`);
-		statements.push(`azure_sqlvm_image_version = '${this.vmImageVersion}'`);
-		statements.push(`azure_sqlvm_vmsize = '${this.vmSize}'`);
-		statements.push(`azure_sqlvm_username = '${this.vmUsername}'`);
+
+		try {
+			statements.push(`azure_sqlvm_nb_var_subscription = '${this.azureSubscription}'`);
+			statements.push(`azure_sqlvm_nb_var_resource_group_name = '${this.azureResouceGroup}'`);
+			statements.push(`azure_sqlvm_location = '${this.azureRegion}'`);
+			statements.push(`azure_sqlvm_vmname = '${this.vmName}'`);
+			statements.push(`azure_sqlvm_image = '${this.vmImage}'`);
+			statements.push(`azure_sqlvm_image_sku = '${this.vmImageSKU}'`);
+			statements.push(`azure_sqlvm_image_version = '${this.vmImageVersion}'`);
+			statements.push(`azure_sqlvm_vmsize = '${this.vmSize}'`);
+			statements.push(`azure_sqlvm_username = '${this.vmUsername}'`);
+		}
+		catch (error) {
+
+		}
 		return statements.map(line => line + EOL);
 		// const profile = this.createTargetProfile();
 		// const statements: string[] = [];

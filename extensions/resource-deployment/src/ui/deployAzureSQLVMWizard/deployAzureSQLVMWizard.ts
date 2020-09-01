@@ -60,12 +60,14 @@ export class DeployAzureSQLVMWizard extends WizardBase<DeployAzureSQLVMWizard, W
 	private async scriptToNotebook(): Promise<void> {
 		this.setEnvironmentVariables(process.env);
 		const variableValueStatements = this.model.getCodeCellContentForNotebook();
-		const insertionPosition = 5; // Cell number 5 is the position where the python variable setting statements need to be inserted in this.wizardInfo.notebook.
-		try {
-			await this.notebookService.launchNotebookWithEdits(this.wizardInfo.notebook, variableValueStatements, insertionPosition);
-		} catch (error) {
-			// vscode.window.showErrorMessage(getErrorMessage(error));
-		}
+		console.log(variableValueStatements);
+		console.log(this.wizardInfo);
+		//const insertionPosition = 5; // Cell number 5 is the position where the python variable setting statements need to be inserted in this.wizardInfo.notebook.
+		// try {
+		// 	await this.notebookService.launchNotebookWithEdits(this.wizardInfo.notebook, variableValueStatements, insertionPosition);
+		// } catch (error) {
+		// 	// vscode.window.showErrorMessage(getErrorMessage(error));
+		// }
 	}
 
 	private setEnvironmentVariables(env: NodeJS.ProcessEnv): void {
@@ -77,13 +79,7 @@ export class DeployAzureSQLVMWizard extends WizardBase<DeployAzureSQLVMWizard, W
 	}
 
 	public async getRequest(url: string): Promise<any> {
-		let token: any;
-		let tokens = Object.entries(this.model.securityToken);
-		tokens.map((value) => {
-			token = value[1];
-			token = token.token;
-		});
-
+		let token = this.model.securityToken.token;
 		const config: AxiosRequestConfig = {
 			headers: {
 				'Content-Type': 'application/json',
