@@ -635,17 +635,15 @@ export class ProjectsController {
 	private async promptForNewObjectName(itemType: templates.ProjectScriptType, _project: Project, folderPath: string, fileExtension?: string): Promise<string | undefined> {
 		const suggestedName = itemType.friendlyName.replace(/\s+/g, '');
 		let counter: number = 0;
-		let pathExists;
 
 		do {
 			counter++;
-			const extension: string = fileExtension ? fileExtension : '';
-			pathExists = await utils.exists(path.join(folderPath, suggestedName + counter + extension));
-		} while (counter < Number.MAX_SAFE_INTEGER && pathExists);
+		} while (counter < Number.MAX_SAFE_INTEGER
+			&& await utils.exists(path.join(folderPath, `${suggestedName}${counter}${(fileExtension ?? '')}`)));
 
 		const itemObjectName = await vscode.window.showInputBox({
 			prompt: constants.newObjectNamePrompt(itemType.friendlyName),
-			value: suggestedName + counter,
+			value: `${suggestedName}${counter}`,
 		});
 
 		return itemObjectName;
