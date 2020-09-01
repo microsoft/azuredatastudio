@@ -231,7 +231,7 @@ export class AddDatabaseReferenceDialog {
 		this.dacpacTextbox = this.view!.modelBuilder.inputBox().withProperties({
 			ariaLabel: constants.dacpacText,
 			placeHolder: constants.dacpacPlaceholder,
-			width: '405px'
+			width: '400px'
 		}).component();
 
 		this.dacpacTextbox.onTextChanged(() => {
@@ -252,9 +252,9 @@ export class AddDatabaseReferenceDialog {
 	private createLoadDacpacButton(): azdata.ButtonComponent {
 		const loadDacpacButton = this.view!.modelBuilder.button().withProperties({
 			ariaLabel: constants.loadDacpacButton,
-			iconPath: IconPathHelper.folder,
+			iconPath: IconPathHelper.folder_blue,
 			height: '16px',
-			width: '15px'
+			width: '16px'
 		}).component();
 
 		loadDacpacButton.onDidClick(async () => {
@@ -350,7 +350,7 @@ export class AddDatabaseReferenceDialog {
 		this.serverVariableTextbox = this.createInputBox(constants.serverVariable, false);
 		const serverVariableRow = this.view!.modelBuilder.flexContainer().withItems([this.createLabel(constants.serverVariable, true), this.serverVariableTextbox], { flex: '0 0 auto' }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
-		const variableSection = this.view!.modelBuilder.flexContainer().withItems([databaseNameRow, databaseVariableRow, serverNameRow, serverVariableRow]).withLayout({ flexFlow: 'column' }).component();
+		const variableSection = this.view!.modelBuilder.flexContainer().withItems([databaseNameRow, databaseVariableRow, serverNameRow, serverVariableRow]).withLayout({ flexFlow: 'column' }).withProperties({ CSSStyles: { 'margin-bottom': '25px' } }).component();
 
 		return {
 			component: variableSection,
@@ -398,6 +398,7 @@ export class AddDatabaseReferenceDialog {
 
 	private updateExampleUsage(): void {
 		let newText = '';
+		let fontStyle = cssStyles.fontStyle.normal; // font-style should be normal for example usage and italics if showing message that a required field needs to be filled
 
 		switch (this.locationDropdown!.value) {
 			case constants.sameDatabase: {
@@ -407,8 +408,9 @@ export class AddDatabaseReferenceDialog {
 			case constants.differentDbSameServer: {
 				if (!this.databaseNameTextbox?.value) {
 					newText = this.currentReferenceType === ReferenceType.systemDb ? constants.enterSystemDbName : constants.databaseNameRequiredVariableOptional;
+					fontStyle = cssStyles.fontStyle.italics;
 				} else {
-					const db = this.databaseVariableTextbox?.value ?? this.databaseNameTextbox.value;
+					const db = this.databaseVariableTextbox?.value ? this.databaseVariableTextbox?.value : this.databaseNameTextbox.value;
 					newText = constants.differentDbSameServerExampleUsage(db);
 				}
 				break;
@@ -416,9 +418,10 @@ export class AddDatabaseReferenceDialog {
 			case constants.differentDbDifferentServer: {
 				if (!this.databaseNameTextbox?.value || !this.serverNameTextbox?.value || !this.serverVariableTextbox?.value) {
 					newText = constants.databaseNameServerNameVariableRequired;
+					fontStyle = cssStyles.fontStyle.italics;
 				} else {
-					const server = this.serverVariableTextbox.value ?? this.serverNameTextbox.value;
-					const db = this.databaseVariableTextbox?.value ?? this.databaseNameTextbox.value;
+					const server = this.serverVariableTextbox.value;
+					const db = this.databaseVariableTextbox?.value ? this.databaseVariableTextbox?.value : this.databaseNameTextbox.value;
 					newText = constants.differentDbDifferentServerExampleUsage(server, db);
 				}
 				break;
@@ -426,6 +429,7 @@ export class AddDatabaseReferenceDialog {
 		}
 
 		this.exampleUsage!.value = newText;
+		this.exampleUsage?.updateCssStyles({ 'font-style': fontStyle });
 	}
 
 	/**

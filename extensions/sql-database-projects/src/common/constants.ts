@@ -115,7 +115,7 @@ export const enterSystemDbName = localize('enterSystemDbName', "Enter a database
 export const databaseNameRequiredVariableOptional = localize('databaseNameRequiredVariableOptional', "A database name is required. The databaes variable is optional.");
 export const databaseNameServerNameVariableRequired = localize('databaseNameServerNameVariableRequired', "A database name, server name, and server variable are required. The database variable is optional");
 export const sameDatabaseExampleUsage = localize('sameDatabaseExampleUsage', "SELECT * FROM [Schema1].[Table1]");
-export function differentDbSameServerExampleUsage(db: string) { return localize('differentDbSameServerExampleUsage', "SELECT * FROM {0}.[Schema1].[Table1]", db); }
+export function differentDbSameServerExampleUsage(db: string) { return localize('differentDbSameServerExampleUsage', "SELECT * FROM [{0}].[Schema1].[Table1]", db); }
 export function differentDbDifferentServerExampleUsage(server: string, db: string) { return localize('differentDbDifferentServerExampleUsage', "SELECT * FROM [{0}].[{1}].[Schema1].[Table1]", server, db); }
 
 // Error messages
