@@ -27,6 +27,12 @@ export class ControllerTreeNode extends TreeNode {
 
 	constructor(public model: ControllerModel, private _context: vscode.ExtensionContext, private _treeDataProvider: AzureArcTreeDataProvider) {
 		super(model.label, vscode.TreeItemCollapsibleState.Collapsed, ResourceType.dataControllers);
+		model.onInfoUpdated(_ => {
+			this.label = model.label;
+		});
+		model.onRegistrationsUpdated(registrations => {
+			this.updateChildren(registrations);
+		});
 	}
 
 	public async getChildren(): Promise<TreeNode[]> {

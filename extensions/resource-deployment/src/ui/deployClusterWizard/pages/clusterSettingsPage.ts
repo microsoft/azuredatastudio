@@ -222,7 +222,8 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				},
 				onNewValidatorCreated: (validator: Validator): void => {
 					self.validators.push(validator);
-				}
+				},
+				toolsService: this.wizard.toolsService
 			});
 			const activeDirectorySettingsGroup = await createSection({
 				view: view,
@@ -237,7 +238,8 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				},
 				onNewValidatorCreated: (validator: Validator): void => {
 					self.validators.push(validator);
-				}
+				},
+				toolsService: this.wizard.toolsService
 			});
 			const dockerSettingsGroup = await createSection({
 				view: view,
@@ -252,7 +254,8 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				},
 				onNewValidatorCreated: (validator: Validator): void => {
 					self.validators.push(validator);
-				}
+				},
+				toolsService: this.wizard.toolsService
 			});
 			const basicSettingsFormItem = { title: '', component: basicSettingsGroup };
 			const dockerSettingsFormItem = { title: '', component: dockerSettingsGroup };

@@ -139,7 +139,8 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					self.validators.push(validator);
 				},
 				container: this.wizard.wizardObject,
-				inputComponents: this.wizard.inputComponents
+				inputComponents: this.wizard.inputComponents,
+				toolsService: this.wizard.toolsService
 			});
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[{

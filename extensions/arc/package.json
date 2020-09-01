@@ -2,7 +2,7 @@
   "name": "arc",
   "displayName": "%arc.displayName%",
   "description": "%arc.description%",
-  "version": "0.3.0",
+  "version": "0.3.4",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
@@ -12,9 +12,8 @@
     "azdata": ">=1.21.0"
   },
   "activationEvents": [
-    "onCommand:arc.manageArcController",
-    "onCommand:arc.manageMiaa",
-    "onCommand:arc.managePostgres",
+    "onCommand:arc.connectToController",
+    "onCommand:arc.createController",
     "onView:azureArc"
   ],
   "extensionDependencies": [
@@ -37,18 +36,6 @@
     },
     "commands": [
       {
-        "command": "arc.manageArcController",
-        "title": "%arc.manageArcController%"
-      },
-      {
-        "command": "arc.manageMiaa",
-        "title": "%arc.manageMiaa%"
-      },
-      {
-        "command": "arc.managePostgres",
-        "title": "%arc.managePostgres%"
-      },
-      {
         "command": "arc.openDashboard",
         "title": "%arc.openDashboard%"
       },
@@ -69,22 +56,14 @@
       {
         "command": "arc.refresh",
         "title": "%command.refresh.title%"
+      },
+      {
+        "command": "arc.editConnection",
+        "title": "%command.editConnection.title%"
       }
     ],
     "menus": {
       "commandPalette": [
-        {
-          "command": "arc.manageArcController",
-          "when": "false"
-        },
-        {
-          "command": "arc.manageMiaa",
-          "when": "false"
-        },
-        {
-          "command": "arc.managePostgres",
-          "when": "false"
-        },
         {
           "command": "arc.openDashboard",
           "when": "false"
@@ -95,6 +74,10 @@
         },
         {
           "command": "arc.refresh",
+          "when": "false"
+        },
+        {
+          "command": "arc.editConnection",
           "when": "false"
         }
       ],
@@ -113,18 +96,23 @@
       "view/item/context": [
         {
           "command": "arc.openDashboard",
-          "when": "view == azureArc && viewItem != loading",
+          "when": "view == azureArc && viewItem != postgresInstances",
           "group": "navigation@1"
         },
         {
-          "command": "arc.refresh",
+          "command": "arc.editConnection",
           "when": "view == azureArc && viewItem == dataControllers",
           "group": "navigation@2"
         },
         {
-          "command": "arc.removeController",
+          "command": "arc.refresh",
           "when": "view == azureArc && viewItem == dataControllers",
           "group": "navigation@3"
+        },
+        {
+          "command": "arc.removeController",
+          "when": "view == azureArc && viewItem == dataControllers",
+          "group": "navigation@4"
         }
       ]
     },
@@ -628,6 +616,20 @@
                           "confirmationLabel": "%arc.confirm.password%",
                           "defaultValue": "",
                           "required": true
+                        },
+                        {
+                          "label": "%arc.storage-class.data.label%",
+                          "description": "%arc.sql.storage-class.data.description%",
+                          "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_DATA",
+                          "type": "kube_storage_class",
+                          "required": true
+                        },
+                        {
+                          "label": "%arc.storage-class.logs.label%",
+                          "description": "%arc.sql.storage-class.logs.description%",
+                          "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_LOGS",
+                          "type": "kube_storage_class",
+                          "required": true
                         }
                       ]
                     }
@@ -735,11 +737,32 @@
                           "defaultValue": "5432",
                           "min": 1,
                           "max": 65535
+                        },
+                        {
+                          "label": "%arc.storage-class.data.label%",
+                          "description": "%arc.postgres.storage-class.data.description%",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_STORAGE_CLASS_DATA",
+                          "type": "kube_storage_class",
+                          "required": true
+                        },
+                        {
+                          "label": "%arc.storage-class.logs.label%",
+                          "description": "%arc.postgres.storage-class.logs.description%",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_STORAGE_CLASS_LOGS",
+                          "type": "kube_storage_class",
+                          "required": true
+                        },
+                        {
+                          "label": "%arc.storage-class.backups.label%",
+                          "description": "%arc.postgres.storage-class.backups.description%",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_STORAGE_CLASS_BACKUPS",
+                          "type": "kube_storage_class",
+                          "required": true
                         }
                       ]
                     },
                     {
-                      "title": "%arc.postgres.settings.scheduling.title%",
+                      "title": "%arc.postgres.settings.resource.title%",
                       "fields": [
                         {
                           "label": "%arc.postgres.server.group.cores.request%",
@@ -805,6 +828,7 @@
   },
   "dependencies": {
     "request": "^2.88.0",
+    "uuid": "^8.3.0",
     "vscode-nls": "^4.1.2"
   },
   "devDependencies": {
@@ -812,6 +836,7 @@
     "@types/node": "^12.11.7",
     "@types/request": "^2.48.3",
     "@types/sinon": "^9.0.4",
+    "@types/uuid": "^8.3.0",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
