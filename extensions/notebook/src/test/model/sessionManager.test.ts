@@ -18,6 +18,7 @@ import 'mocha';
 import { JupyterSessionManager, JupyterSession } from '../../jupyter/jupyterSessionManager';
 import { Deferred } from '../../common/promise';
 import { SessionStub, KernelStub, FutureStub } from '../common';
+import { noBDCConnectionError, providerNotValidError } from '../../common/localizedConstants';
 
 export class TestClusterController implements bdc.IClusterController {
 	getClusterConfig(): Promise<any> {
@@ -327,10 +328,10 @@ describe('Jupyter Session', function (): void {
 		mockJupyterSession.setup(s => s.kernel).returns(() => kernelMock.object);
 		let credentials = { [ConnectionOptionSpecialType.password]: 'password' };
 		sinon.stub(connection, 'getCredentials').returns(Promise.resolve(credentials));
-		await should(session.configureConnection(connectionProfile)).be.rejectedWith('Spark kernels require a connection to a SQL Server Big Data Cluster master instance.');
+		await should(session.configureConnection(connectionProfile)).be.rejectedWith(noBDCConnectionError);
 	});
 
-	it('configure connection should throw error if provider is not MSSQL', async function (): Promise<void> {
+	it('configure connection should throw error if provider is not MSSQL for spark kernel', async function (): Promise<void> {
 		let connectionProfile: IConnectionProfile = {
 			authenticationType: '',
 			connectionName: '',
@@ -351,7 +352,7 @@ describe('Jupyter Session', function (): void {
 		kernelMock.setup(k => k.name).returns(() => 'spark');
 		kernelMock.setup(m => m.requestExecute(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => futureMock.object);
 		mockJupyterSession.setup(s => s.kernel).returns(() => kernelMock.object);
-		await should(session.configureConnection(connectionProfile)).be.rejectedWith('Only MSSQL provider is supported for spark kernels.');
+		await should(session.configureConnection(connectionProfile)).be.rejectedWith(providerNotValidError);
 	});
 
 	it('should set environment variables correctly', function (): void {
@@ -361,8 +362,10 @@ describe('Jupyter Session', function (): void {
 		let spy = sinon.spy(kernelMock.object, 'requestExecute');
 		mockJupyterSession.setup(s => s.kernel).returns(() => kernelMock.object);
 		mockJupyterSession.setup(s => s.path).returns(() => 'path');
-		let newSession = new JupyterSession(mockJupyterSession.object, undefined, false);
+		let newSession = new JupyterSession(mockJupyterSession.object, undefined, false, 'pythonEnvVarPath');
 		should(newSession).not.be.undefined();
 		sinon.assert.calledOnce(spy);
+		let args = spy.getCall(0).args;
+		should(args[0].code.includes('pythonEnvVarPath'));
 	});
 });

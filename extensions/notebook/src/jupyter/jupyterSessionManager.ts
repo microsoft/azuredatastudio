@@ -17,6 +17,7 @@ import { JupyterKernel } from './jupyterKernel';
 import { Deferred } from '../common/promise';
 import { JupyterServerInstallation } from './jupyterServerInstallation';
 import * as bdc from 'bdc';
+import { noBDCConnectionError, providerNotValidError } from '../common/localizedConstants';
 
 const configBase = {
 	'kernel_python_credentials': {
@@ -287,7 +288,7 @@ export class JupyterSession implements nb.ISession {
 				const endpoints = await this.getClusterEndpoints(connectionProfile.id);
 				const gatewayEndpoint: utils.IEndpoint = endpoints?.find(ep => ep.serviceName.toLowerCase() === KNOX_ENDPOINT_GATEWAY);
 				if (!gatewayEndpoint) {
-					return Promise.reject(new Error(localize('connectionNotValid', "Spark kernels require a connection to a SQL Server Big Data Cluster master instance.")));
+					throw new Error(noBDCConnectionError);
 				}
 				let gatewayHostAndPort = utils.getHostAndPortFromEndpoint(gatewayEndpoint.endpoint);
 				connectionProfile.options[KNOX_ENDPOINT_SERVER] = gatewayHostAndPort.host;
@@ -308,7 +309,7 @@ export class JupyterSession implements nb.ISession {
 				}
 			}
 			else {
-				return Promise.reject(new Error(localize('providerNotValid', "Non-MSSQL providers are not supported for spark kernels.")));
+				throw new Error(providerNotValidError);
 			}
 			this.setHostAndPort(':', connectionProfile);
 			this.setHostAndPort(',', connectionProfile);
