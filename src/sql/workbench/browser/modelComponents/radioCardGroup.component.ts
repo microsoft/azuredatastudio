@@ -11,6 +11,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import 'vs/css!./media/card';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
+import { deepClone } from 'vs/base/common/objects';
 
 @Component({
 	templateUrl: decodeURI(require.toUrl('./radioCardGroup.component.html'))
@@ -143,7 +144,7 @@ export default class RadioCardGroup extends ComponentBase implements IComponent,
 			eventType: ComponentEventType.onDidChange,
 			args: {
 				cardId,
-				card: Object.assign({}, this.getCardById(cardId))
+				card: deepClone(this.getCardById(cardId))
 			}
 		});
 	}
