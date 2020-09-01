@@ -256,9 +256,6 @@ describe('Jupyter Session', function (): void {
 		let credentials = { [ConnectionOptionSpecialType.password]: 'password' };
 		sinon.stub(connection, 'getCredentials').returns(Promise.resolve(credentials));
 
-		// Should throw error if there is no connection to big data cluster
-		await should(session.configureConnection(connectionProfile)).be.rejectedWith('Spark kernels require a connection to a SQL Server Big Data Cluster master instance.');
-
 		// Set up connection info to big data cluster
 		const mockServerInfo: ServerInfo = {
 			serverMajorVersion: 0,
@@ -307,15 +304,15 @@ describe('Jupyter Session', function (): void {
 		should(connectionProfile.options['user']).equal('knoxUsername');
 	});
 
-	it('should configure connection correctly for PGSQL and integrated auth type', async function (): Promise<void> {
+	it('configure connection should throw error if there is no connection to big data cluster', async function (): Promise<void> {
 		let connectionProfile: IConnectionProfile = {
 			authenticationType: '',
 			connectionName: '',
 			databaseName: '',
 			id: 'id',
-			providerName: 'PGSQL',
+			providerName: 'MSSQL',
 			options: {
-				authenticationType: 'integrated',
+				authenticationType: 'SqlLogin',
 			},
 			password: '',
 			savePassword: false,
@@ -328,11 +325,33 @@ describe('Jupyter Session', function (): void {
 		kernelMock.setup(k => k.name).returns(() => 'spark');
 		kernelMock.setup(m => m.requestExecute(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => futureMock.object);
 		mockJupyterSession.setup(s => s.kernel).returns(() => kernelMock.object);
+		let credentials = { [ConnectionOptionSpecialType.password]: 'password' };
+		sinon.stub(connection, 'getCredentials').returns(Promise.resolve(credentials));
+		await should(session.configureConnection(connectionProfile)).be.rejectedWith('Spark kernels require a connection to a SQL Server Big Data Cluster master instance.');
+	});
 
-		await session.configureConnection(connectionProfile);
-		should(connectionProfile.options['host']).be.undefined();
-		should(connectionProfile.options['knoxport']).equal('30443');
-		should(connectionProfile.options['user']).be.undefined();
+	it('configure connection should throw error if provider is not MSSQL', async function (): Promise<void> {
+		let connectionProfile: IConnectionProfile = {
+			authenticationType: '',
+			connectionName: '',
+			databaseName: '',
+			id: 'id',
+			providerName: 'provider',
+			options: {
+				authenticationType: 'SqlLogin',
+			},
+			password: '',
+			savePassword: false,
+			saveProfile: false,
+			serverName: '',
+			userName: ''
+		};
+		let futureMock = TypeMoq.Mock.ofType(FutureStub);
+		let kernelMock = TypeMoq.Mock.ofType(KernelStub);
+		kernelMock.setup(k => k.name).returns(() => 'spark');
+		kernelMock.setup(m => m.requestExecute(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => futureMock.object);
+		mockJupyterSession.setup(s => s.kernel).returns(() => kernelMock.object);
+		await should(session.configureConnection(connectionProfile)).be.rejectedWith('Only MSSQL provider is supported for spark kernels.');
 	});
 
 	it('should set environment variables correctly', function (): void {
@@ -344,6 +363,6 @@ describe('Jupyter Session', function (): void {
 		mockJupyterSession.setup(s => s.path).returns(() => 'path');
 		let newSession = new JupyterSession(mockJupyterSession.object, undefined, false);
 		should(newSession).not.be.undefined();
-		should(spy.calledOnce);
+		sinon.assert.calledOnce(spy);
 	});
 });

@@ -308,7 +308,7 @@ export class JupyterSession implements nb.ISession {
 				}
 			}
 			else {
-				connectionProfile.options[KNOX_ENDPOINT_PORT] = this.getKnoxPortOrDefault(connectionProfile);
+				return Promise.reject(new Error(localize('providerNotValid', "Non-MSSQL providers are not supported for spark kernels.")));
 			}
 			this.setHostAndPort(':', connectionProfile);
 			this.setHostAndPort(',', connectionProfile);
@@ -353,14 +353,6 @@ export class JupyterSession implements nb.ISession {
 		config.kernel_r_credentials = creds;
 		config.logging_config.handlers.magicsHandler.home_path = homePath;
 		config.ignore_ssl_errors = utils.getIgnoreSslVerificationConfigSetting();
-	}
-
-	private getKnoxPortOrDefault(connectionProfile: IConnectionProfile): string {
-		let port = connectionProfile.options[KNOX_ENDPOINT_PORT];
-		if (!port) {
-			port = '30443';
-		}
-		return port;
 	}
 
 	private async getClusterEndpoints(profileId: string): Promise<utils.IEndpoint[]> {
