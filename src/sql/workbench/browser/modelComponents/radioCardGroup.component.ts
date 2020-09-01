@@ -143,7 +143,7 @@ export default class RadioCardGroup extends ComponentBase implements IComponent,
 			eventType: ComponentEventType.onDidChange,
 			args: {
 				cardId,
-				card: this.getCardById(cardId)
+				card: Object.assign({}, this.getCardById(cardId))
 			}
 		});
 	}
