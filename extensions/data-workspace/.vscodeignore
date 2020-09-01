@@ -1,6 +1,5 @@
 coverageConfig.json
 coverage
-out
 src
 tsconfig.json
 yarn.lock
