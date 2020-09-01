@@ -307,7 +307,7 @@ describe('Jupyter Session', function (): void {
 		should(connectionProfile.options['user']).equal('knoxUsername');
 	});
 
-	it('should configure connection correctly for PGSQL integrated auth type', async function (): Promise<void> {
+	it('should configure connection correctly for PGSQL and integrated auth type', async function (): Promise<void> {
 		let connectionProfile: IConnectionProfile = {
 			authenticationType: '',
 			connectionName: '',
@@ -342,7 +342,6 @@ describe('Jupyter Session', function (): void {
 		let spy = sinon.spy(kernelMock.object, 'requestExecute');
 		mockJupyterSession.setup(s => s.kernel).returns(() => kernelMock.object);
 		mockJupyterSession.setup(s => s.path).returns(() => 'path');
-		// newSession.path = 'Notebook-0';
 		let newSession = new JupyterSession(mockJupyterSession.object, undefined, false);
 		should(newSession).not.be.undefined();
 		should(spy.calledOnce);
