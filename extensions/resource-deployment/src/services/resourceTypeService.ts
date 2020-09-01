@@ -42,7 +42,7 @@ export class ResourceTypeService implements IResourceTypeService {
 			vscode.extensions.all.forEach((extension) => {
 				const extensionResourceTypes = extension.packageJSON.contributes && extension.packageJSON.contributes.resourceDeploymentTypes as ResourceType[];
 				if (extensionResourceTypes) {
-					extensionResourceTypes.forEach((resourceType) => {
+					extensionResourceTypes.forEach((resourceType: ResourceType) => {
 						this.updatePathProperties(resourceType, extension.extensionPath);
 						resourceType.getProvider = (selectedOptions) => { return this.getProvider(resourceType, selectedOptions); };
 						this._resourceTypes.push(resourceType);
