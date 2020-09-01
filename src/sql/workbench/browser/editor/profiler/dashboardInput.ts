@@ -12,7 +12,6 @@ import { IModeService } from 'vs/editor/common/services/modeService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
-import { IEditorModel } from 'vs/platform/editor/common/editor';
 
 export class DashboardInput extends EditorInput {
 
