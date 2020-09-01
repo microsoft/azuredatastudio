@@ -185,27 +185,25 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 
 
 	private async populateSubnetDropdown() {
+		console.log((this._virtualNetworkDropdown.value as azdata.CategoryValue).name);
 		let url = `https://management.azure.com` +
-			`/subscriptions/${this.wizard.model.azureSubscription}` +
-			`/providers/Microsoft.Network` +
-			`/virtualNetworks/${this.wizard.model.virtualNetworkName}` +
+			`${this.wizard.model.virtualNetworkName}` +
 			`/subnets?api-version=2020-05-01`;
 		console.log(url);
 		let response = await this.wizard.getRequest(url);
 		console.log(response.data);
 
-		// let dropdownValues = response.data.value.map((value: any) => {
-		// 	let resourceGroupName = value.id.replace(RegExp('^(.*?)/resourceGroups/'), '').replace(RegExp('/providers/.*'), '');
-		// 	return {
-		// 		name: value.id,
-		// 		displayName: `${value.name} \t\t resource group: (${resourceGroupName})`
-		// 	};
-		// });
+		let dropdownValues = response.data.value.map((value: any) => {
+			return {
+				name: value.id,
+				displayName: `${value.name}`
+			};
+		});
 
-		// this._subnetDropdown.updateProperties({
-		// 	value: dropdownValues[0],
-		// 	values: dropdownValues
-		// });
+		this._subnetDropdown.updateProperties({
+			value: dropdownValues[0],
+			values: dropdownValues
+		});
 		this.wizard.model.subnetName = (this._subnetDropdown.value as azdata.CategoryValue).name;
 	}
 

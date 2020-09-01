@@ -15,6 +15,7 @@ export class SqlServerSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard
 	private sqlAuthenticationCheckbox!: azdata.CheckBoxComponent;
 	private sqlAuthenticationTextbox!: azdata.InputBoxComponent;
 	private sqlAuthenticationPasswordTextbox!: azdata.InputBoxComponent;
+	private sqlStorageOptimiazationDropdown!: azdata.DropDownComponent;
 	//private sqlStorageContainer!: azdata.FlexContainer;
 
 	private _form!: azdata.FormContainer;
@@ -46,12 +47,17 @@ export class SqlServerSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard
 							name: 'public',
 							displayName: 'Public (Internet)'
 						}
-					]
+					],
+					value: {
+						name: 'private',
+						displayName: 'Private (within Virtual Network)'
+					}
 				}).component();
 
 
 			this.sqlConnectivityDropdown.onValueChanged((value) => {
-				if (value.name === 'local') {
+				let connectivityValue = (this.sqlConnectivityDropdown.value as azdata.CategoryValue).name;
+				if (connectivityValue === 'local') {
 					this.portTextBox.updateCssStyles({
 						display: 'none'
 					});
@@ -100,6 +106,25 @@ export class SqlServerSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard
 				this.wizard.model.sqlAuthenticationPassword = value;
 			});
 
+			this.sqlStorageOptimiazationDropdown = view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
+				values: [{
+					displayName: 'General',
+					name: 'GENERAL',
+				},
+				{
+					displayName: 'Transactional Processing',
+					name: 'OLTP',
+				},
+				{
+					displayName: 'Data Warehousing',
+					name: 'DW',
+				}]
+			}).component();
+
+			this.sqlStorageOptimiazationDropdown.onValueChanged((value) => {
+				this.wizard.model.sqlOptimizationDropdown = (this.sqlStorageOptimiazationDropdown.value as azdata.CategoryValue).name;
+			});
+
 			this._form = view.modelBuilder.formContainer()
 				.withFormItems(
 					[
@@ -122,6 +147,10 @@ export class SqlServerSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard
 						{
 							title: ' Password',
 							component: this.sqlAuthenticationPasswordTextbox
+						},
+						{
+							title: 'SQL Storage Optimization Type',
+							component: this.sqlStorageOptimiazationDropdown
 						}
 					],
 					{
