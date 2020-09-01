@@ -10,7 +10,9 @@
 		"strictNullChecks": true,
 		"strictPropertyInitialization": true,
 		"skipLibCheck": true,
-		"noImplicitAny": true
+		"noImplicitAny": true,
+		"jsx": "react",
+		"jsxFactory": "$"
 	},
 	"include": [
 		"./**/*.d.ts",
