@@ -21,7 +21,6 @@
 }
 
 .markdown-toolbar .carbon-taskbar ul.actions-container li {
-	/* display: inline-block; */
 	margin-right: 14px;
 }
 .markdown-toolbar .carbon-taskbar ul.actions-container li:nth-child(1) {
@@ -30,21 +29,15 @@
 .markdown-toolbar .carbon-taskbar ul.actions-container li:nth-child(2) {
 	margin-right: 9px;
 }
-.markdown-toolbar .carbon-taskbar ul.actions-container li:last-child {
-	margin-right: 0;
-	position: absolute;
-	right: 0;
-}
 .markdown-toolbar .carbon-taskbar ul.actions-container li:nth-last-child(-n+3) {
-	position: absolute;
-	margin-right: 0;
-	right: 56px;
+	margin-left: auto;
 }
 .markdown-toolbar .carbon-taskbar ul.actions-container li:nth-last-child(-n+2) {
-	right: 27px;
+	margin-left: initial;
 }
 .markdown-toolbar .carbon-taskbar ul.actions-container li:nth-last-child(-n+1) {
-	right: 0;
+	margin-left: initial;
+	margin-right: 0;
 }
 
 .markdown-toolbar .carbon-taskbar ul.actions-container li.action-item .masked-pseudo-after.dropdown-arrow {
@@ -61,25 +54,6 @@
 	width: 26px;
 }
 
-/* .markdown-toolbar .view-button-group {
-	display: flex;
-	list-style: none;
-	padding: 0;
-}
-.monaco-workbench.vs-dark .markdown-toolbar .view-button-group input,
-.monaco-workbench.hc-black .markdown-toolbar .view-button-group input {
-	background-color: transparent;
-} */
-/* .markdown-toolbar .view-button-group li {
-	margin: 0 6px;
-} */
-
-
-
-/* .markdown-toolbar .carbon-taskbar input {
-	margin: 0;
-	-webkit-appearance: none;
-} */
 .markdown-toolbar .carbon-taskbar a {
 	display: flex;
 	height: 20px;
@@ -88,7 +62,7 @@
 .markdown-toolbar a.active::after {
 	border-bottom-style: solid;
 	border-bottom-width: 2px;
-	bottom: -6px;
+	bottom: -2px;
 	content: '';
 	display: block;
 	left: 50%;

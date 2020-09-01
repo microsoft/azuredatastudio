@@ -167,7 +167,7 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 			collector.addRule(`.notebookEditor .notebook-button.masked-pseudo-after:after { background-color: ${buttonMenuArrowColor};}`);
 		}
 
-		// Active cell border, cell toolbar border, cell toolbar icons, actiuve radio button bottom border
+		// Active cell border, cell toolbar border, cell toolbar icons, view toggle active button bottom border
 		const cellBorderColor = theme.getColor(cellBorder);
 		if (cellBorderColor) {
 			collector.addRule(`.notebookEditor .notebook-cell.active { border-color: ${cellBorderColor};}`);

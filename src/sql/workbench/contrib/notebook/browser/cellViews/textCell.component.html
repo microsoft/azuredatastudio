@@ -4,14 +4,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 -->
-<div style="width: 100%; height: 100%; display: flex; flex-flow: column" (mouseover)="hover=true" (mouseleave)="hover=false">
+<div style="width: 100%; height: 100%; display: flex; flex-flow: column; position: relative;" (mouseover)="hover=true" (mouseleave)="hover=false">
 	<markdown-toolbar-component #markdownToolbar *ngIf="previewFeaturesEnabled === true && isEditMode" [cellModel]="cellModel"></markdown-toolbar-component>
 	<div class="notebook-text" [class.edit-mode]="isEditMode" [class.show-preview]="showPreview" [class.show-text]="showTextView">
 		<code-component *ngIf="isEditMode" [cellModel]="cellModel" (onContentChanged)="handleContentChanged()" [model]="model" [activeCellId]="activeCellId">
 		</code-component>
-		<div #textview link-handler *ngIf="showTextView" contentEditable="{{showPreview ? 'true' : 'false'}}" [isTrusted]="isTrusted" [notebookUri]="notebookUri" class="text-view" (input)="handleHtmlChanged()">
+		<div #textview link-handler *ngIf="showTextView" contentEditable="{{isEditMode && !showPreview ? 'true' : 'false'}}" [isTrusted]="isTrusted" [notebookUri]="notebookUri" class="text-view" (input)="handleHtmlChanged()">
 		</div>
 		<div #preview link-handler *ngIf="showPreview" [isTrusted]="isTrusted" [notebookUri]="notebookUri" class="notebook-preview">
 		</div>
 	</div>
+	<div style="position: absolute; bottom: -80px;"><strong>showPreview: </strong><i>{{showPreview}}</i><br /><strong>showTextView: </strong><i>{{showTextView}}</i></div>
 </div>

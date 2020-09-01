@@ -108,9 +108,9 @@ export class MarkdownToolbarComponent {
 			{ action: orderedListButton },
 			{ action: imageButton },
 			{ element: buttonDropdownContainer },
-			{ action: toggleMarkdownView },
+			{ action: toggleTextView },
 			{ action: toggleSplitView },
-			{ action: toggleTextView }
+			{ action: toggleMarkdownView }
 		]);
 	}
 }

@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-// import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
 import { INotebookEditor, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
@@ -13,7 +12,6 @@ import { TextModel } from 'vs/editor/common/model/textModel';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import { Selection } from 'vs/editor/common/core/selection';
-// import { ToggleableAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { EditOperation } from 'vs/editor/common/core/editOperation';
 import { Position } from 'vs/editor/common/core/position';
 import { SelectImageDialog } from 'sql/workbench/contrib/notebook/browser/selectImageDialog';
@@ -508,8 +506,10 @@ export class ToggleMarkdownViewAction extends Action {
 
 	public async run(context: ICellModel): Promise<boolean> {
 		context = this._cellModel;
+		this.class += ' active';
 		context.showPreview = false;
 		context.showTextView = false;
+		// When this button is clicked, the perceived results are the same as when the textview button is clicked. However, the above values set are different than that of ToggleTextViewAction.
 		return true;
 	}
 }
@@ -527,7 +527,9 @@ export class ToggleSplitViewAction extends Action {
 	}
 	public async run(context: ICellModel): Promise<boolean> {
 		context = this._cellModel;
+		this.class += ' active';
 		context.showPreview = true;
+		context.showTextView = false;
 		return true;
 	}
 }
@@ -543,10 +545,8 @@ export class ToggleTextViewAction extends Action {
 		this._tooltip = tooltip;
 	}
 	public async run(context: ICellModel): Promise<boolean> {
-		// Higher up, the remaining need to be set to unselected.
-		// Set self as selected
-
 		context = this._cellModel;
+		this.class += ' active';
 		context.showPreview = false;
 		context.showTextView = true;
 		return true;

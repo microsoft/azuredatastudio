@@ -27,26 +27,27 @@ text-cell-component .text-view {
 	user-select: none;
 	width: 100%;
 }
+
+/* Hide Markdown view initially */
 text-cell-component .edit-mode code-component {
-	display: block;
+	display: none;
 	width: 100%;
 }
+
 text-cell-component .show-preview.edit-mode code-component {
-	height: 1px;
-	width: 1px;
+	display: initial;
 }
+text-cell-component .show-preview .text-view {
+	display: none;
+}
+
 text-cell-component .edit-mode .notebook-preview {
 	border-color: transparent;
 	border-left-width: 1px;
 	border-style: solid;
 	border-top-width: 0;
-	/* hiding for the moment */
-	visibility: hidden;
 }
-text-cell-component :not(.edit-mode) .text-view {
-	display: none;
-}
-text-cell-component .edit-mode .text-view {
+text-cell-component .edit-mode:not(.show-preview) .text-view {
 	border-color: transparent;
 	border-left-width: 1px;
 	border-style: solid;
