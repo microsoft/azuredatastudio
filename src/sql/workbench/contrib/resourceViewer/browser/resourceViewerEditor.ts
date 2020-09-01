@@ -36,6 +36,8 @@ export class ResourceViewerEditor extends BaseEditor {
 	private _resourceViewerTable: ResourceViewerTable;
 	private _stateListener: IDisposable;
 	private _columnChangeListener: IDisposable;
+	private _rowCountChangeListener: IDisposable;
+	private _filterStateChangeListener: IDisposable;
 
 	private _resourceViewerEditorContextKey: IContextKey<boolean>;
 
@@ -135,22 +137,24 @@ export class ResourceViewerEditor extends BaseEditor {
 			this._resourceViewerTable.columns = columns;
 		});
 
-		input.data.onRowCountChange(() => {
+		this._rowCountChangeListener?.dispose();
+		this._rowCountChangeListener = input.data.onRowCountChange(() => {
 			this._resourceViewerTable.updateRowCount();
 		});
 
-		input.data.onFilterStateChange(() => {
+		this._filterStateChangeListener?.dispose();
+		this._filterStateChangeListener = input.data.onFilterStateChange(() => {
 			this._resourceViewerTable.invalidateAllRows();
 			this._resourceViewerTable.updateRowCount();
 		});
 
 		this._actionBar.context = input;
-		if (this._stateListener) {
-			this._stateListener.dispose();
-		}
+
+		this._stateListener?.dispose();
 		this._stateListener = input.state.onResourceViewerStateChange(e => this.onStateChange(e));
 		this.onStateChange({
 		});
+
 		this._resourceViewerTable.focus();
 		if (savedViewState) {
 			this._resourceViewerTable.restoreViewState(savedViewState);
