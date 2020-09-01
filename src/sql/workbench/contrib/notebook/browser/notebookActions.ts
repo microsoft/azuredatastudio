@@ -433,7 +433,7 @@ export class AttachToDropdown extends SelectBox {
 			this.setOptions(connections, 0);
 			this.enable();
 
-			if (this.model.kernelAliases.includes(currentKernel) && this.model.currentKernelAlias !== currentKernel) {
+			if (this.model.kernelAliases.includes(currentKernel) && this.model.currentKernel !== currentKernel) {
 				this.model.changeKernel(currentKernel);
 			}
 		}

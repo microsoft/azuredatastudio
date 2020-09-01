@@ -84,6 +84,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _standardKernels: notebookUtils.IStandardKernelWithProvider[];
 	private _kernelAliases: string[] = [];
 	private _currentKernelAlias: string;
+	private _currentKernel: string;
 
 	public requestConnectionHandler: () => Promise<boolean>;
 
@@ -243,6 +244,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public get currentKernelAlias(): string {
 		return this._currentKernelAlias;
+	}
+
+	public get currentKernel(): string {
+		return this._currentKernel;
 	}
 
 	public set trustedMode(isTrusted: boolean) {
@@ -711,6 +716,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public changeKernel(displayName: string): void {
+		this._currentKernel = displayName;
 		this._currentKernelAlias = this.context?.serverCapabilities.notebookKernelAlias;
 		if (this.kernelAliases.includes(this.currentKernelAlias) && displayName === this.currentKernelAlias) {
 			this.doChangeKernel(displayName, true).catch(e => this.logService.error(e));
@@ -811,7 +817,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 			if (newConnection) {
 				if (newConnection.serverCapabilities.notebookKernelAlias) {
-					// this._currentKernelAlias = newConnection.serverCapabilities.notebookKernelAlias;
+					this._currentKernelAlias = newConnection.serverCapabilities.notebookKernelAlias;
 					let sqlConnectionProvider = this._kernelDisplayNameToConnectionProviderIds.get('SQL');
 					let index = sqlConnectionProvider.indexOf(newConnection.serverCapabilities.notebookKernelAlias.toUpperCase());
 					if (index > -1) {
