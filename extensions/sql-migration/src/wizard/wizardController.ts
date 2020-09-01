@@ -19,7 +19,7 @@ export class WizardController {
 	public async openWizard(profile: azdata.connection.Connection): Promise<void> {
 		const api = (await vscode.extensions.getExtension(mssql.extension.name)?.activate()) as mssql.IExtension;
 		if (api) {
-			const stateModel = new MigrationStateModel(profile, api.sqlMigration);
+			const stateModel = new MigrationStateModel(this.extensionContext, profile, api.sqlMigration);
 			this.extensionContext.subscriptions.push(stateModel);
 			this.createWizard(stateModel);
 		}
@@ -28,6 +28,8 @@ export class WizardController {
 	private async createWizard(stateModel: MigrationStateModel): Promise<void> {
 		const wizard = azdata.window.createWizard(WIZARD_TITLE, 'wide');
 		wizard.generateScriptButton.enabled = false;
+		wizard.generateScriptButton.hidden = true;
+
 		const sourceConfigurationPage = new SourceConfigurationPage(wizard, stateModel);
 		const skuRecommendationPage = new SKURecommendationPage(wizard, stateModel);
 		const subscriptionSelectionPage = new SubscriptionSelectionPage(wizard, stateModel);
@@ -49,13 +51,13 @@ export class WizardController {
 		});
 
 		wizard.registerNavigationValidator(async validator => {
-			const lastPage = validator.lastPage;
+			// const lastPage = validator.lastPage;
 
-			const canLeave = await pages[lastPage]?.canLeave() ?? true;
-			const canEnter = await pages[lastPage]?.canEnter() ?? true;
+			// const canLeave = await pages[lastPage]?.canLeave() ?? true;
+			// const canEnter = await pages[lastPage]?.canEnter() ?? true;
 
-			return canEnter && canLeave;
-			// return true;
+			// return canEnter && canLeave;
+			return true;
 		});
 
 		await Promise.all(wizardSetupPromises);
