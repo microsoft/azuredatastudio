@@ -237,11 +237,7 @@ export class JupyterSession implements nb.ISession {
 	public async changeKernel(kernelInfo: nb.IKernelSpec): Promise<nb.IKernel> {
 		if (this._installation) {
 			try {
-				if (this._installation.previewFeaturesEnabled) {
-					await this._installation.promptForPythonInstall(kernelInfo.display_name);
-				} else {
-					await this._installation.promptForPackageUpgrade(kernelInfo.display_name);
-				}
+				await this._installation.promptForPythonInstall(kernelInfo.display_name);
 			} catch (err) {
 				// Have to swallow the error here to prevent hangs when changing back to the old kernel.
 				console.error(err.toString());
@@ -322,7 +318,6 @@ export class JupyterSession implements nb.ISession {
 			if (this.isIntegratedAuth(connectionProfile)) {
 				doNotCallChangeEndpointParams = `%_do_not_call_change_endpoint --server=${server} --auth=Kerberos`;
 			} else {
-
 				doNotCallChangeEndpointParams = `%_do_not_call_change_endpoint --username=${connectionProfile.options[USER]} --password=${credentials.password} --server=${server} --auth=Basic_Access`;
 			}
 			let future = this.sessionImpl.kernel.requestExecute({

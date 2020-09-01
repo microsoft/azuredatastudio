@@ -17,8 +17,9 @@ import { IBookTrustManager, BookTrustManager } from './bookTrustManager';
 import * as loc from '../common/localizedConstants';
 import * as glob from 'fast-glob';
 import { isNullOrUndefined } from 'util';
-import { debounce } from '../common/utils';
 import { IJupyterBookSectionV2 } from '../contracts/content';
+import { debounce, getPinnedNotebooks } from '../common/utils';
+import { IBookPinManager, BookPinManager } from './bookPinManager';
 
 //const Content = 'content';
 
@@ -30,13 +31,12 @@ interface BookSearchResults {
 export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeItem>, azdata.nb.NavigationProvider {
 	private _onDidChangeTreeData: vscode.EventEmitter<BookTreeItem | undefined> = new vscode.EventEmitter<BookTreeItem | undefined>();
 	readonly onDidChangeTreeData: vscode.Event<BookTreeItem | undefined> = this._onDidChangeTreeData.event;
-	private _throttleTimer: any;
-	private _resource: string;
 	private _extensionContext: vscode.ExtensionContext;
 	private prompter: IPrompter;
 	private _initializeDeferred: Deferred<void> = new Deferred<void>();
 	private _openAsUntitled: boolean;
 	private _bookTrustManager: IBookTrustManager;
+	public bookPinManager: IBookPinManager;
 
 	private _bookViewer: vscode.TreeView<BookTreeItem>;
 	public viewId: string;
@@ -47,8 +47,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		this._openAsUntitled = openAsUntitled;
 		this._extensionContext = extensionContext;
 		this.books = [];
-		this.initialize(workspaceFolders).catch(e => console.error(e));
+		this.bookPinManager = new BookPinManager();
 		this.viewId = view;
+		this.initialize(workspaceFolders).catch(e => console.error(e));
 		this.prompter = new CodeAdapter();
 		this._bookTrustManager = new BookTrustManager(this.books);
 
@@ -56,13 +57,24 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	private async initialize(workspaceFolders: vscode.WorkspaceFolder[]): Promise<void> {
-		await Promise.all(workspaceFolders.map(async (workspaceFolder) => {
-			try {
-				await this.loadNotebooksInFolder(workspaceFolder.uri.fsPath);
-			} catch {
-				// no-op, not all workspace folders are going to be valid books
-			}
-		}));
+		if (this.viewId === constants.PINNED_BOOKS_VIEWID) {
+			await Promise.all(getPinnedNotebooks().map(async (notebookPath) => {
+				try {
+					await this.createAndAddBookModel(notebookPath, true);
+				} catch {
+					// no-op, not all workspace folders are going to be valid books
+				}
+			}));
+		} else {
+			await Promise.all(workspaceFolders.map(async (workspaceFolder) => {
+				try {
+					await this.loadNotebooksInFolder(workspaceFolder.uri.fsPath);
+				} catch {
+					// no-op, not all workspace folders are going to be valid books
+				}
+			}));
+		}
+
 		this._initializeDeferred.resolve();
 	}
 
@@ -100,6 +112,26 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
+	async pinNotebook(bookTreeItem: BookTreeItem): Promise<void> {
+		let bookPathToUpdate = bookTreeItem.book?.contentPath;
+		if (bookPathToUpdate) {
+			let pinStatusChanged = this.bookPinManager.pinNotebook(bookTreeItem);
+			if (pinStatusChanged) {
+				bookTreeItem.contextValue = 'pinnedNotebook';
+			}
+		}
+	}
+
+	async unpinNotebook(bookTreeItem: BookTreeItem): Promise<void> {
+		let bookPathToUpdate = bookTreeItem.book?.contentPath;
+		if (bookPathToUpdate) {
+			let pinStatusChanged = this.bookPinManager.unpinNotebook(bookTreeItem);
+			if (pinStatusChanged) {
+				bookTreeItem.contextValue = 'savedNotebook';
+			}
+		}
+	}
+
 	async openBook(bookPath: string, urlToOpen?: string, showPreview?: boolean, isNotebook?: boolean): Promise<void> {
 		try {
 			// Convert path to posix style for easier comparisons
@@ -132,6 +164,20 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			}
 		} catch (e) {
 			vscode.window.showErrorMessage(loc.openFileError(bookPath, e instanceof Error ? e.message : e));
+		}
+	}
+
+	async addNotebookToPinnedView(bookItem: BookTreeItem): Promise<void> {
+		let notebookPath: string = bookItem.book.contentPath;
+		if (notebookPath) {
+			await this.createAndAddBookModel(notebookPath, true);
+		}
+	}
+
+	async removeNotebookFromPinnedView(bookItem: BookTreeItem): Promise<void> {
+		let notebookPath: string = bookItem.book.contentPath;
+		if (notebookPath) {
+			await this.closeBook(bookItem);
 		}
 	}
 
@@ -172,22 +218,23 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	 * @param bookPath The path to the book folder to create the model for
 	 */
 	private async createAndAddBookModel(bookPath: string, isNotebook: boolean): Promise<void> {
-		const book: BookModel = new BookModel(bookPath, this._openAsUntitled, isNotebook, this._extensionContext);
-		await book.initializeContents();
-		this.books.push(book);
-		//this.currentBook = book;
-		if (!this.currentBook) {
-			this.currentBook = book;
-		}
-		this._bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
-		this._bookViewer.onDidChangeVisibility(e => {
-			let openDocument = azdata.nb.activeNotebookEditor;
-			let notebookPath = openDocument?.document.uri;
-			// call reveal only once on the correct view
-			if (e.visible && ((!this._openAsUntitled && notebookPath?.scheme !== 'untitled') || (this._openAsUntitled && notebookPath?.scheme === 'untitled'))) {
-				this.revealActiveDocumentInViewlet();
+		if (!this.books.find(x => x.bookPath === bookPath)) {
+			const book: BookModel = new BookModel(bookPath, this._openAsUntitled, isNotebook, this._extensionContext);
+			await book.initializeContents();
+			this.books.push(book);
+			if (!this.currentBook) {
+				this.currentBook = book;
 			}
-		});
+			this._bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
+			this._bookViewer.onDidChangeVisibility(e => {
+				let openDocument = azdata.nb.activeNotebookEditor;
+				let notebookPath = openDocument?.document.uri;
+				// call reveal only once on the correct view
+				if (e.visible && ((!this._openAsUntitled && notebookPath?.scheme !== 'untitled') || (this._openAsUntitled && notebookPath?.scheme === 'untitled'))) {
+					this.revealActiveDocumentInViewlet();
+				}
+			});
+		}
 	}
 
 	async showPreviewFile(urlToOpen?: string): Promise<void> {
@@ -233,19 +280,17 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			if (this._openAsUntitled) {
 				await this.openNotebookAsUntitled(resource);
 			} else {
+				await azdata.nb.showNotebookDocument(vscode.Uri.file(resource));
 				// let us keep a list of already visited notebooks so that we do not trust them again, potentially
 				// overriding user changes
 				let normalizedResource = path.normalize(resource);
 
 				if (this._visitedNotebooks.indexOf(normalizedResource) === -1
 					&& this._bookTrustManager.isNotebookTrustedByDefault(normalizedResource)) {
-					let openDocumentListenerUnsubscriber = azdata.nb.onDidOpenNotebookDocument((document: azdata.nb.NotebookDocument) => {
-						document.setTrusted(true);
-						this._visitedNotebooks = this._visitedNotebooks.concat([normalizedResource]);
-						openDocumentListenerUnsubscriber.dispose();
-					});
+					let document = azdata.nb.notebookDocuments.find(document => document.fileName === resource);
+					document?.setTrusted(true);
+					this._visitedNotebooks = this._visitedNotebooks.concat([normalizedResource]);
 				}
-				azdata.nb.showNotebookDocument(vscode.Uri.file(resource));
 			}
 		} catch (e) {
 			vscode.window.showErrorMessage(loc.openNotebookError(resource, e instanceof Error ? e.message : e));
@@ -299,26 +344,22 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	openMarkdown(resource: string): void {
-		this.runThrottledAction(resource, () => {
-			try {
-				vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(resource));
-			} catch (e) {
-				vscode.window.showErrorMessage(loc.openMarkdownError(resource, e instanceof Error ? e.message : e));
-			}
-		});
+		try {
+			vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(resource));
+		} catch (e) {
+			vscode.window.showErrorMessage(loc.openMarkdownError(resource, e instanceof Error ? e.message : e));
+		}
 	}
 
 	async openNotebookAsUntitled(resource: string): Promise<void> {
 		try {
 			await vscode.commands.executeCommand(constants.BuiltInCommands.SetContext, constants.unsavedBooksContextKey, true);
 			let untitledFileName: vscode.Uri = this.getUntitledNotebookUri(resource);
-			vscode.workspace.openTextDocument(resource).then((document) => {
-				let initialContent = document.getText();
-				azdata.nb.showNotebookDocument(untitledFileName, {
-					connectionProfile: null,
-					initialContent: initialContent,
-					initialDirtyState: false
-				});
+			let document: vscode.TextDocument = await vscode.workspace.openTextDocument(resource);
+			await azdata.nb.showNotebookDocument(untitledFileName, {
+				connectionProfile: null,
+				initialContent: document.getText(),
+				initialDirtyState: false
 			});
 		} catch (e) {
 			vscode.window.showErrorMessage(loc.openUntitledNotebookError(resource, e instanceof Error ? e.message : e));
@@ -377,7 +418,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				} else {
 					folderToSearch = path.join(treeItem.root, 'content');
 				}
-			} else {
+			} else if (treeItem.version === 'v2') {
 				if (treeItem.uri) {
 					folderToSearch = path.join(treeItem.book.root, path.dirname(treeItem.uri));
 				} else {
@@ -445,6 +486,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	private async getNotebooksInTree(folderPath: string): Promise<BookSearchResults> {
+		let tocTrimLength: number;
+		let ignorePaths: string[] = [];
+
 		let notebookConfig = vscode.workspace.getConfiguration(constants.notebookConfigKey);
 		let maxDepth = notebookConfig[constants.maxBookSearchDepth];
 		// Use default value if user enters an invalid value
@@ -455,46 +499,33 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 
 		let escapedPath = glob.escapePath(folderPath.replace(/\\/g, '/'));
-		let bookFilter = path.posix.join(escapedPath, '**', '_data', 'toc.yml');
-		let bookPaths = await glob(bookFilter, { deep: maxDepth });
-		let tocTrimLength = '/_data/toc.yml'.length * -1;
-		bookPaths = bookPaths.map(path => path.slice(0, tocTrimLength));
+		let bookV1Filter = path.posix.join(escapedPath, '**', '_data', 'toc.yml');
+		let bookV2Filter = path.posix.join(escapedPath, '**', '_toc.yml');
+		let bookPaths = await glob([bookV1Filter, bookV2Filter], { deep: maxDepth });
+		let ignoreNotebook: string[];
+		bookPaths = bookPaths.map(function (path) {
+			if (path.includes('/_data/toc.yml')) {
+				tocTrimLength = '/_data/toc.yml'.length * -1;
+				ignoreNotebook = ['/**/*.ipynb'];
+			} else {
+				tocTrimLength = '_toc.yml'.length * -1;
+				ignoreNotebook = ['**/*.ipynb', '*.ipynb'];
+			}
+			path = path.slice(0, tocTrimLength);
+			ignoreNotebook.map(notebook => ignorePaths.push(glob.escapePath(path) + notebook));
+			return path;
+		});
 
 		let notebookFilter = path.posix.join(escapedPath, '**', '*.ipynb');
-		let notebookPaths = await glob(notebookFilter, { ignore: bookPaths.map(path => glob.escapePath(path) + '/**/*.ipynb'), deep: maxDepth });
+
+		let notebookPaths = await glob(notebookFilter, { ignore: ignorePaths, deep: maxDepth });
 
 		return { notebookPaths: notebookPaths, bookPaths: bookPaths };
 	}
 
-	private runThrottledAction(resource: string, action: () => void) {
-		const isResourceChange = resource !== this._resource;
-		if (isResourceChange) {
-			this.clearAndResetThrottleTimer();
-		}
-
-		this._resource = resource;
-
-		// Schedule update if none is pending
-		if (!this._throttleTimer) {
-			if (isResourceChange) {
-				action();
-			} else {
-				this._throttleTimer = setTimeout(() => {
-					action();
-					this.clearAndResetThrottleTimer();
-				}, 300);
-			}
-		}
-	}
-
-	private clearAndResetThrottleTimer(): void {
-		clearTimeout(this._throttleTimer);
-		this._throttleTimer = undefined;
-	}
-
-	openExternalLink(resource: string): void {
+	async openExternalLink(resource: string): Promise<void> {
 		try {
-			vscode.env.openExternal(vscode.Uri.parse(resource));
+			await vscode.env.openExternal(vscode.Uri.parse(resource));
 		} catch (e) {
 			vscode.window.showErrorMessage(loc.openExternalLinkError(resource, e instanceof Error ? e.message : e));
 		}

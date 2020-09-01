@@ -6,11 +6,14 @@
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
 import * as stream from 'stream';
-import { ChildProcess } from 'child_process';
+import * as cp from 'child_process';
+import * as si from '../../jupyter/serverInstance'
 import 'mocha';
+import * as sinon from 'sinon';
+import * as utils from '../../common/utils';
+import * as fs from 'fs-extra';
 
 import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
-import { PerFolderServerInstance, ServerInstanceUtils } from '../../jupyter/serverInstance';
 import { MockOutputChannel } from '../common/stubs';
 import * as testUtils from '../common/testUtils';
 import { LocalJupyterServerManager } from '../../jupyter/jupyterServerManager';
@@ -24,8 +27,7 @@ describe('Jupyter server instance', function (): void {
 	let expectedPath = 'mydir/notebook.ipynb';
 	let mockInstall: TypeMoq.IMock<JupyterServerInstallation>;
 	let mockOutputChannel: TypeMoq.IMock<MockOutputChannel>;
-	let mockUtils: TypeMoq.IMock<ServerInstanceUtils>;
-	let serverInstance: PerFolderServerInstance;
+	let serverInstance: si.PerFolderServerInstance;
 
 	beforeEach(() => {
 		mockInstall = TypeMoq.Mock.ofType(JupyterServerInstallation, undefined, undefined, '/root');
@@ -33,14 +35,16 @@ describe('Jupyter server instance', function (): void {
 		mockInstall.setup(i => i.outputChannel).returns(() => mockOutputChannel.object);
 		mockInstall.setup(i => i.pythonExecutable).returns(() => 'python3');
 		mockInstall.object.execOptions = { env: Object.assign({}, process.env) };
-		mockUtils = TypeMoq.Mock.ofType(ServerInstanceUtils);
-		mockUtils.setup(u => u.ensureProcessEnded(TypeMoq.It.isAny())).returns(() => undefined);
-		serverInstance = new PerFolderServerInstance({
+		serverInstance = new si.PerFolderServerInstance({
 			documentPath: expectedPath,
 			install: mockInstall.object
-		}, mockUtils.object);
+		});
+		sinon.stub(si,'ensureProcessEnded').returns(undefined);
 	});
 
+	this.afterEach(function () {
+		sinon.restore();
+	});
 
 	it('Should not be started initially', function (): void {
 		// Given a new instance It should not be started
@@ -50,17 +54,17 @@ describe('Jupyter server instance', function (): void {
 
 	it('Should create config and data directories on configure', async function (): Promise<void> {
 		// Given a server instance
-		mockUtils.setup(u => u.mkDir(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns(() => Promise.resolve());
-		mockUtils.setup(u => u.copy(TypeMoq.It.isAnyString(), TypeMoq.It.isAnyString())).returns(() => Promise.resolve());
-		mockUtils.setup(u => u.exists(TypeMoq.It.isAnyString())).returns(() => Promise.resolve(false));
+		let mkdirStub = sinon.stub(utils,'mkDir').withArgs(sinon.match.any,sinon.match.any).returns(Promise.resolve());
+		let copyStub = sinon.stub(fs,'copy').returns();
+		let pathStub = sinon.stub(utils,'exists').withArgs(sinon.match.any).returns(Promise.resolve(false));
 
 		// When I run configure
 		await serverInstance.configure();
 
 		// Then I expect a folder to have been created with config and data subdirs
-		mockUtils.verify(u => u.mkDir(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()), TypeMoq.Times.exactly(5));
-		mockUtils.verify(u => u.copy(TypeMoq.It.isAnyString(), TypeMoq.It.isAnyString()), TypeMoq.Times.exactly(3));
-		mockUtils.verify(u => u.exists(TypeMoq.It.isAnyString()), TypeMoq.Times.exactly(1));
+		sinon.assert.callCount(mkdirStub,5);
+		sinon.assert.callCount(copyStub,3);
+		sinon.assert.callCount(pathStub,1);
 	});
 
 	it('Should have URI info after start', async function (): Promise<void> {
@@ -69,11 +73,12 @@ describe('Jupyter server instance', function (): void {
 			sdtout: (listener: (msg: string) => void) => { },
 			stderr: (listener: (msg: string) => void) => listener(successMessage)
 		});
-		mockUtils.setup(u => u.spawn(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()))
-			.returns(() => <ChildProcess>process.object);
+		let spawnStub = sinon.stub(cp,'spawn').returns(<cp.ChildProcess>process.object);
+		should(spawnStub.calledOnce).be.false();
 
 		// When I call start
 		await serverInstance.start();
+		should(spawnStub.calledOnce).be.true();
 
 		// Then I expect all parts of the URI to be defined
 		should(serverInstance.uri).not.be.undefined();
@@ -100,8 +105,7 @@ describe('Jupyter server instance', function (): void {
 			stderr: (listener: (msg: string) => void) => listener(successMessage),
 			error: (listener: (msg: string | Error) => void) => setTimeout(() => listener(new Error(error)), 10)
 		});
-		mockUtils.setup(u => u.spawn(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()))
-			.returns(() => <ChildProcess>process.object);
+		sinon.stub(cp,'spawn').returns(<cp.ChildProcess>process.object);
 
 		// When I call start then I expect it to pass
 		await serverInstance.start();
@@ -112,8 +116,7 @@ describe('Jupyter server instance', function (): void {
 		let process = setupSpawn({
 			exit: (listener: (msg: string | number) => void) => listener(code)
 		});
-		mockUtils.setup(u => u.spawn(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()))
-			.returns(() => <ChildProcess>process.object);
+		sinon.stub(cp,'spawn').returns(<cp.ChildProcess>process.object);
 
 		// When I call start then I expect the error to be thrown
 		await testUtils.assertThrowsAsync(() => serverInstance.start(), undefined);
@@ -126,41 +129,44 @@ describe('Jupyter server instance', function (): void {
 			sdtout: (listener: (msg: string) => void) => { },
 			stderr: (listener: (msg: string) => void) => listener(successMessage)
 		});
-		mockUtils.setup(u => u.spawn(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()))
-			.returns(() => <ChildProcess>process.object);
+		sinon.stub(cp,'spawn').returns(<cp.ChildProcess>process.object);
 
 		let actualCommand: string = undefined;
-		mockUtils.setup(u => u.executeBufferedCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()))
-			.returns((cmd) => {
-				actualCommand = cmd;
-				return Promise.resolve(undefined);
-			});
-		mockUtils.setup(u => u.pathExists(TypeMoq.It.isAny())).returns(() => Promise.resolve(false));
-		mockUtils.setup(u => u.removeDir(TypeMoq.It.isAny())).returns(() => Promise.resolve());
+		let commandStub = sinon.stub(utils, 'executeBufferedCommand').withArgs(sinon.match.any, sinon.match.any,sinon.match.any)
+			.returns(Promise.resolve(undefined));
+
+		sinon.stub(fs,'pathExists').withArgs(sinon.match.any,sinon.match.any).returns();
+		let removeStub = sinon.stub(fs,'remove').withArgs(sinon.match.any,sinon.match.any).returns();
+
 		// When I call start and then stop
 		await serverInstance.start();
 		await serverInstance.stop();
 
 		// Then I expect stop to be called on the child process
+		actualCommand = commandStub.args[0][0] as string;
 		should(actualCommand.includes(`stop ${serverInstance.port}`)).be.true('Command did not contain specified port.');
-		mockUtils.verify(u => u.removeDir(TypeMoq.It.isAny()), TypeMoq.Times.never());
+		sinon.assert.callCount(removeStub,0);
 	});
 
 	it('Should remove directory on close', async function (): Promise<void> {
 		// Given configure and startup are done
-		mockUtils.setup(u => u.mkDir(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns(() => Promise.resolve());
-		mockUtils.setup(u => u.copy(TypeMoq.It.isAnyString(), TypeMoq.It.isAnyString())).returns(() => Promise.resolve());
+		sinon.stub(utils,'mkDir').withArgs(sinon.match.any,sinon.match.any).returns(Promise.resolve());
+		sinon.stub(fs,'copy').returns();
 
 		let process = setupSpawn({
 			sdtout: (listener: (msg: string) => void) => { },
 			stderr: (listener: (msg: string) => void) => listener(successMessage)
 		});
-		mockUtils.setup(u => u.spawn(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()))
-			.returns(() => <ChildProcess>process.object);
-		mockUtils.setup(u => u.executeBufferedCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()))
-			.returns((cmd) => Promise.resolve(undefined));
-		mockUtils.setup(u => u.pathExists(TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
-		mockUtils.setup(u => u.removeDir(TypeMoq.It.isAny())).returns(() => Promise.resolve());
+
+		sinon.stub(cp,'spawn').returns(<cp.ChildProcess>process.object);
+
+		sinon.stub(utils, 'executeBufferedCommand').withArgs(sinon.match.any, sinon.match.any,sinon.match.any)
+			.returns(Promise.resolve(undefined));
+
+		let pathStub = sinon.stub(fs,'pathExists');
+		pathStub.resolves(true);
+
+		let removeStub = sinon.stub(fs,'remove').returns();
 
 		await serverInstance.configure();
 		await serverInstance.start();
@@ -169,7 +175,7 @@ describe('Jupyter server instance', function (): void {
 		await serverInstance.stop();
 
 		// Then I expect the directory to be cleaned up
-		mockUtils.verify(u => u.removeDir(TypeMoq.It.isAny()), TypeMoq.Times.once());
+		sinon.assert.callCount(removeStub,1);
 	});
 
 	function setupSpawn(callbacks: IProcessCallbacks): TypeMoq.IMock<ChildProcessStub> {

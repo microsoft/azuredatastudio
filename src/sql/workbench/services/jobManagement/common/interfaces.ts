@@ -41,8 +41,8 @@ export interface IJobManagementService {
 	getTemplateNotebook(connectionUri: string, targetDatabase: string, jobId: string): Thenable<azdata.AgentNotebookTemplateResult>;
 	deleteNotebook(connectionUri: string, notebook: azdata.AgentNotebookInfo): Thenable<azdata.ResultStatus>;
 	deleteMaterializedNotebook(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string): Thenable<azdata.ResultStatus>;
-	updateNotebookMaterializedName(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, name: string);
-	updateNotebookMaterializedPin(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, pin: boolean);
+	updateNotebookMaterializedName(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, name: string): Promise<azdata.ResultStatus>;
+	updateNotebookMaterializedPin(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, pin: boolean): Promise<azdata.ResultStatus>;
 
 	getAlerts(connectionUri: string): Thenable<azdata.AgentAlertsResult>;
 	deleteAlert(connectionUri: string, alert: azdata.AgentAlertInfo): Thenable<azdata.ResultStatus>;
@@ -56,11 +56,11 @@ export interface IJobManagementService {
 	getCredentials(connectionUri: string): Thenable<azdata.GetCredentialsResult>;
 
 	jobAction(connectionUri: string, jobName: string, action: string): Thenable<azdata.ResultStatus>;
-	addToCache(server: string, cache: JobCacheObject | OperatorsCacheObject | NotebookCacheObject);
+	addToCache(server: string, cache: JobCacheObject | OperatorsCacheObject | NotebookCacheObject): void;
 	jobCacheObjectMap: { [server: string]: JobCacheObject; };
 	notebookCacheObjectMap: { [server: string]: NotebookCacheObject; };
 	operatorsCacheObjectMap: { [server: string]: OperatorsCacheObject; };
 	alertsCacheObjectMap: { [server: string]: AlertsCacheObject; };
 	proxiesCacheObjectMap: { [server: string]: ProxiesCacheObject };
-	addToCache(server: string, cache: JobCacheObject | ProxiesCacheObject | AlertsCacheObject | OperatorsCacheObject | NotebookCacheObject);
+	addToCache(server: string, cache: JobCacheObject | ProxiesCacheObject | AlertsCacheObject | OperatorsCacheObject | NotebookCacheObject): void;
 }

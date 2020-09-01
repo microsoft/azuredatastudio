@@ -8,6 +8,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { JupyterBookSection, IJupyterBookToc, IJupyterBookSectionV2, IJupyterBookSectionV1 } from '../contracts/content';
 import * as loc from '../common/localizedConstants';
+import { isBookItemPinned } from '../common/utils';
 
 export enum BookTreeItemType {
 	Book = 'Book',
@@ -57,6 +58,8 @@ export class BookTreeItem extends vscode.TreeItem {
 				} else {
 					this.contextValue = 'savedNotebook';
 				}
+			} else {
+				this.contextValue = book.type === BookTreeItemType.Notebook ? (isBookItemPinned(book.contentPath) ? 'pinnedNotebook' : 'savedNotebook') : 'section';
 			}
 			this.setPageVariables();
 			this.setCommand();

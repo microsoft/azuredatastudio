@@ -4,12 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as azdataExt from 'azdata-ext';
 import * as vscode from 'vscode';
 import * as loc from '../../../localizedConstants';
+import * as azurecore from 'azurecore';
 import { DashboardPage } from '../../components/dashboardPage';
-import { IconPathHelper, cssStyles, ResourceType, Endpoints } from '../../../constants';
+import { IconPathHelper, cssStyles, Endpoints, ResourceType } from '../../../constants';
 import { ControllerModel } from '../../../models/controllerModel';
-import { promptForResourceDeletion, getDatabaseStateDisplayText } from '../../../common/utils';
+import { getDatabaseStateDisplayText, promptForResourceDeletion } from '../../../common/utils';
 import { MiaaModel } from '../../../models/miaaModel';
 
 export class MiaaDashboardOverviewPage extends DashboardPage {
@@ -23,6 +25,11 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 	private _kibanaLink!: azdata.HyperlinkComponent;
 	private _grafanaLink!: azdata.HyperlinkComponent;
 	private _databasesTable!: azdata.DeclarativeTableComponent;
+	private _databasesMessage!: azdata.TextComponent;
+	private _openInAzurePortalButton!: azdata.ButtonComponent;
+
+	private readonly _azdataApi: azdataExt.IExtension;
+	private readonly _azurecoreApi: azurecore.IExtension;
 
 	private _instanceProperties = {
 		resourceGroup: '-',
@@ -31,17 +38,20 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		region: '-',
 		subscriptionId: '-',
 		miaaAdmin: '-',
-		host: '-',
+		externalEndpoint: '-',
 		vCores: ''
 	};
 
 	constructor(modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _miaaModel: MiaaModel) {
 		super(modelView);
+		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
+		this._azurecoreApi = vscode.extensions.getExtension(azurecore.extension.name)?.exports;
+
 		this._instanceProperties.miaaAdmin = this._miaaModel.username || this._instanceProperties.miaaAdmin;
 		this.disposables.push(
 			this._controllerModel.onRegistrationsUpdated(() => this.handleRegistrationsUpdated()),
 			this._controllerModel.onEndpointsUpdated(() => this.eventuallyRunOnInitialized(() => this.handleEndpointsUpdated())),
-			this._miaaModel.onStatusUpdated(() => this.eventuallyRunOnInitialized(() => this.handleMiaaStatusUpdated())),
+			this._miaaModel.onConfigUpdated(() => this.eventuallyRunOnInitialized(() => this.handleMiaaConfigUpdated())),
 			this._miaaModel.onDatabasesUpdated(() => this.eventuallyRunOnInitialized(() => this.handleDatabasesUpdated()))
 		);
 	}
@@ -97,9 +107,13 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 			data: []
 		}).component();
 
+		this._databasesMessage = this.modelView.modelBuilder.text()
+			.withProperties<azdata.TextComponentProperties>({ CSSStyles: { 'text-align': 'center' } })
+			.component();
+
 		// Update loaded components with data
 		this.handleRegistrationsUpdated();
-		this.handleMiaaStatusUpdated();
+		this.handleMiaaConfigUpdated();
 		this.handleEndpointsUpdated();
 		this.handleDatabasesUpdated();
 
@@ -166,6 +180,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		// Databases
 		rootContainer.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.databases, CSSStyles: titleCSS }).component());
 		rootContainer.addItem(this._databasesTableLoading, { CSSStyles: { 'margin-bottom': '20px' } });
+		rootContainer.addItem(this._databasesMessage);
 
 		this.initialized = true;
 		return rootContainer;
@@ -182,8 +197,9 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 			deleteButton.onDidClick(async () => {
 				deleteButton.enabled = false;
 				try {
-					if (await promptForResourceDeletion(this._miaaModel.info.namespace, this._miaaModel.info.name)) {
-						await this._controllerModel.miaaDelete(this._miaaModel.info.namespace, this._miaaModel.info.name);
+					if (await promptForResourceDeletion(this._miaaModel.info.name)) {
+						await this._azdataApi.azdata.arc.sql.mi.delete(this._miaaModel.info.name);
+						await this._controllerModel.refreshTreeNode();
 						vscode.window.showInformationMessage(loc.resourceDeleted(this._miaaModel.info.name));
 					}
 				} catch (error) {
@@ -214,19 +230,20 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 				}
 			}));
 
-		const openInAzurePortalButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		this._openInAzurePortalButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: loc.openInAzurePortal,
-			iconPath: IconPathHelper.openInTab
+			iconPath: IconPathHelper.openInTab,
+			enabled: !!this._controllerModel.controllerConfig
 		}).component();
 
 		this.disposables.push(
-			openInAzurePortalButton.onDidClick(async () => {
-				const r = this._controllerModel.getRegistration(ResourceType.sqlManagedInstances, this._miaaModel.info.namespace, this._miaaModel.info.name);
-				if (r) {
+			this._openInAzurePortalButton.onDidClick(async () => {
+				const config = this._controllerModel.controllerConfig;
+				if (config) {
 					vscode.env.openExternal(vscode.Uri.parse(
-						`https://portal.azure.com/#resource/subscriptions/${r.subscriptionId}/resourceGroups/${r.resourceGroupName}/providers/Microsoft.AzureData/${ResourceType.sqlManagedInstances}/${r.instanceName}`));
+						`https://portal.azure.com/#resource/subscriptions/${config.spec.settings.azure.subscription}/resourceGroups/${config.spec.settings.azure.resourceGroup}/providers/Microsoft.AzureData/${ResourceType.sqlManagedInstances}/${this._miaaModel.info.name}`));
 				} else {
-					vscode.window.showErrorMessage(loc.couldNotFindRegistration(this._miaaModel.info.namespace, this._miaaModel.info.name));
+					vscode.window.showErrorMessage(loc.couldNotFindControllerRegistration);
 				}
 			}));
 
@@ -234,32 +251,37 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 			[
 				{ component: deleteButton },
 				{ component: refreshButton, toolbarSeparatorAfter: true },
-				{ component: openInAzurePortalButton }
+				{ component: this._openInAzurePortalButton }
 			]
 		).component();
 	}
 
 	private handleRegistrationsUpdated(): void {
-		const reg = this._controllerModel.getRegistration(ResourceType.sqlManagedInstances, this._miaaModel.info.namespace, this._miaaModel.info.name);
-		if (reg) {
-			this._instanceProperties.resourceGroup = reg.resourceGroupName || '-';
-			this._instanceProperties.dataController = this._controllerModel.controllerRegistration?.instanceName || '-';
-			this._instanceProperties.region = reg.region || '-';
-			this._instanceProperties.subscriptionId = reg.subscriptionId || '-';
-			this._instanceProperties.vCores = reg.vCores || '';
-			this._instanceProperties.host = reg.externalEndpoint || '-';
-			this.refreshDisplayedProperties();
+		const config = this._controllerModel.controllerConfig;
+		if (this._openInAzurePortalButton) {
+			this._openInAzurePortalButton.enabled = !!config;
 		}
+		this._instanceProperties.resourceGroup = config?.spec.settings.azure.resourceGroup || this._instanceProperties.resourceGroup;
+		this._instanceProperties.dataController = config?.metadata.name || this._instanceProperties.dataController;
+		this._instanceProperties.region = this._azurecoreApi.getRegionDisplayName(config?.spec.settings.azure.location) || this._instanceProperties.region;
+		this._instanceProperties.subscriptionId = config?.spec.settings.azure.subscription || this._instanceProperties.subscriptionId;
+		// this._instanceProperties.vCores = reg.vCores || '';
+		this.refreshDisplayedProperties();
 	}
 
-	private handleMiaaStatusUpdated(): void {
-		this._instanceProperties.status = this._miaaModel.status;
+	private handleMiaaConfigUpdated(): void {
+		if (this._miaaModel.config) {
+			this._instanceProperties.status = this._miaaModel.config.status.state || '-';
+			this._instanceProperties.externalEndpoint = this._miaaModel.config.status.externalEndpoint || loc.notConfigured;
+			this._databasesMessage.value = !this._miaaModel.config.status.externalEndpoint ? loc.noExternalEndpoint : '';
+		}
+
 		this.refreshDisplayedProperties();
 	}
 
 	private handleEndpointsUpdated(): void {
 		const kibanaEndpoint = this._controllerModel.getEndpoint(Endpoints.logsui);
-		const kibanaQuery = `kubernetes_namespace:"${this._miaaModel.info.namespace}" and instance_name :"${this._miaaModel.info.name}"`;
+		const kibanaQuery = `kubernetes_namespace:"${this._miaaModel.config?.metadata.namespace}" and instance_name :"${this._miaaModel.config?.metadata.name}"`;
 		const kibanaUrl = kibanaEndpoint ? `${kibanaEndpoint.endpoint}/app/kibana#/discover?_a=(query:(language:kuery,query:'${kibanaQuery}'))` : '';
 		this._kibanaLink.label = kibanaUrl;
 		this._kibanaLink.url = kibanaUrl;
@@ -309,8 +331,8 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 				value: this._instanceProperties.miaaAdmin
 			},
 			{
-				displayName: loc.host,
-				value: this._instanceProperties.host
+				displayName: loc.externalEndpoint,
+				value: this._instanceProperties.externalEndpoint
 			},
 			{
 				displayName: loc.compute,
@@ -320,7 +342,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 
 		this._propertiesLoading.loading =
 			!this._controllerModel.registrationsLastUpdated &&
-			!this._miaaModel.statusLastUpdated &&
+			!this._miaaModel.configLastUpdated &&
 			!this._miaaModel.databasesLastUpdated;
 	}
 }

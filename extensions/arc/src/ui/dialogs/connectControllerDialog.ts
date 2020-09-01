@@ -5,6 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import { v4 as uuid } from 'uuid';
 import { Deferred } from '../../common/promise';
 import * as loc from '../../localizedConstants';
 import { ControllerInfo, ControllerModel } from '../../models/controllerModel';
@@ -23,11 +24,14 @@ export class ConnectToControllerDialog extends InitializingComponent {
 
 	private _completionPromise = new Deferred<ConnectToControllerDialogModel | undefined>();
 
+	private _id!: string;
+
 	constructor(private _treeDataProvider: AzureArcTreeDataProvider) {
 		super();
 	}
 
 	public showDialog(controllerInfo?: ControllerInfo, password?: string): azdata.window.Dialog {
+		this._id = controllerInfo?.id ?? uuid();
 		const dialog = azdata.window.createModelViewDialog(loc.connectToController);
 		dialog.cancelButton.onClick(() => this.handleCancel());
 		dialog.registerContent(async view => {
@@ -115,6 +119,7 @@ export class ConnectToControllerDialog extends InitializingComponent {
 			url = `${url}:30080`;
 		}
 		const controllerInfo: ControllerInfo = {
+			id: this._id,
 			url: url,
 			name: this.nameInputBox.value ?? '',
 			username: this.usernameInputBox.value,
@@ -126,7 +131,7 @@ export class ConnectToControllerDialog extends InitializingComponent {
 			// Validate that we can connect to the controller, this also populates the controllerRegistration from the connection response.
 			await controllerModel.refresh(false);
 			// default info.name to the name of the controller instance if the user did not specify their own and to a pre-canned default if for some weird reason controller endpoint returned instanceName is also not a valid value
-			controllerModel.info.name = controllerModel.info.name || controllerModel.controllerRegistration?.instanceName || loc.defaultControllerName;
+			controllerModel.info.name = controllerModel.info.name || controllerModel.controllerConfig?.metadata.name || loc.defaultControllerName;
 		} catch (err) {
 			vscode.window.showErrorMessage(loc.connectToControllerFailed(this.urlInputBox.value, err));
 			return false;

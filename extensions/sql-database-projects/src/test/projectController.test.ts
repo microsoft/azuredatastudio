@@ -84,7 +84,22 @@ describe('ProjectsController', function (): void {
 				const project = await projController.openProject(vscode.Uri.file(sqlProjPath));
 
 				should(project.files.length).equal(9); // detailed sqlproj tests in their own test file
-				should(project.dataSources.length).equal(2); // detailed datasources tests in their own test file
+				should(project.dataSources.length).equal(3); // detailed datasources tests in their own test file
+			});
+
+			it('Should load both project and referenced project', async function (): Promise<void> {
+				// setup test projects
+				const folderPath = await testUtils.generateTestFolderPath();
+				await fs.mkdir(path.join(folderPath, 'proj1'));
+				await fs.mkdir(path.join(folderPath, 'ReferencedProject'));
+
+				const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.openProjectWithProjectReferencesBaseline, path.join(folderPath, 'proj1'));
+				await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline, path.join(folderPath, 'ReferencedProject'));
+
+				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+				await projController.openProject(vscode.Uri.file(sqlProjPath));
+
+				should(projController.projects.length).equal(2, 'Referenced project should have been opened when the project referencing it was opened');
 			});
 
 			it('Should not keep failed to load project in project list.', async function (): Promise<void> {
@@ -227,6 +242,25 @@ describe('ProjectsController', function (): void {
 				should(proj.files[0].relativePath).equal('UpperFolder'); // UpperFolder should still be there
 
 				should(await exists(scriptEntry.fsUri.fsPath)).equal(true, 'script is supposed to still exist on disk');
+			});
+
+			it('Should be able to add pre deploy and post deploy script', async function (): Promise<void> {
+				const preDeployScriptName = 'PreDeployScript1.sql';
+				const postDeployScriptName = 'PostDeployScript1.sql';
+
+				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+				const project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
+
+				sinon.stub(vscode.window, 'showInputBox').resolves(preDeployScriptName);
+				should(project.preDeployScripts.length).equal(0, 'There should be no pre deploy scripts');
+				await projController.addItemPrompt(project, '', templates.preDeployScript);
+				should(project.preDeployScripts.length).equal(1, `Pre deploy script should be successfully added. ${project.preDeployScripts.length}, ${project.files.length}`);
+
+				sinon.restore();
+				sinon.stub(vscode.window, 'showInputBox').resolves(postDeployScriptName);
+				should(project.postDeployScripts.length).equal(0, 'There should be no post deploy scripts');
+				await projController.addItemPrompt(project, '', templates.postDeployScript);
+				should(project.postDeployScripts.length).equal(1, 'Post deploy script should be successfully added');
 			});
 		});
 

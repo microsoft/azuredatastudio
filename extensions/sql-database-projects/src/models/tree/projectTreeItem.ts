@@ -55,7 +55,12 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	 * Processes the list of files in a project file to constructs the tree
 	 */
 	private construct() {
-		for (const entry of this.project.files) {
+		let treeItemList = this.project.files
+			.concat(this.project.preDeployScripts)
+			.concat(this.project.postDeployScripts)
+			.concat(this.project.noneDeployScripts);
+
+		for (const entry of treeItemList) {
 			if (entry.type !== EntryType.File && entry.relativePath.startsWith(RelativeOuterPath)) {
 				continue;
 			}

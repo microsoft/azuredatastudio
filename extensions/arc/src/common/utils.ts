@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as azurecore from '../../../azurecore/src/azurecore';
+import * as azurecore from 'azurecore';
 import * as loc from '../localizedConstants';
 import { IconPathHelper, IconPath, ResourceType, ConnectionMode } from '../constants';
 
@@ -148,12 +148,11 @@ async function promptInputBox(title: string, options: vscode.InputBoxOptions): P
 
 /**
  * Opens an input box prompting the user to enter in the name of a resource to delete
- * @param namespace The namespace of the resource to delete
  * @param name The name of the resource to delete
  * @returns Promise resolving to true if the user confirmed the name, false if the input box was closed for any other reason
  */
-export async function promptForResourceDeletion(namespace: string, name: string): Promise<boolean> {
-	const title = loc.resourceDeletionWarning(namespace, name);
+export async function promptForResourceDeletion(name: string): Promise<boolean> {
+	const title = loc.resourceDeletionWarning(name);
 	const options: vscode.InputBoxOptions = {
 		placeHolder: name,
 		validateInput: input => input !== name ? loc.invalidResourceDeletionName(name) : ''
@@ -191,19 +190,7 @@ export async function promptAndConfirmPassword(validate: (input: string) => stri
  * @param error The error object
  */
 export function getErrorMessage(error: any): string {
-	if (error.body?.reason) {
-		// For HTTP Errors with a body pull out the reason message since that's usually the most helpful
-		return error.body.reason;
-	} else if (error.message) {
-		if (error.response?.statusMessage) {
-			// Some Http errors just have a status message as additional detail, but it's not enough on its
-			// own to be useful so append to the message as well
-			return `${error.message} (${error.response.statusMessage})`;
-		}
-		return error.message;
-	} else {
-		return error;
-	}
+	return error.message ?? error;
 }
 
 /**
@@ -221,4 +208,19 @@ export function parseInstanceName(instanceName: string | undefined): string {
 		throw new Error(`Cannot parse resource '${instanceName}'. Acceptable formats are 'namespace_name' or 'name'.`);
 	}
 	return instanceName;
+}
+
+/**
+ * Parses an address into its separate ip and port values. Address must be in the form <ip>:<port>
+ * @param address The address to parse
+ */
+export function parseIpAndPort(address: string): { ip: string, port: string } {
+	const sections = address.split(':');
+	if (sections.length !== 2) {
+		throw new Error(`Invalid address format for ${address}. Address must be in the form <ip>:<port>`);
+	}
+	return {
+		ip: sections[0],
+		port: sections[1]
+	};
 }

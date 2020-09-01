@@ -284,9 +284,9 @@ declare module 'azdata' {
 	// Object Explorer interfaces  -----------------------------------------------------------------------
 	export interface ObjectExplorerSession {
 		success: boolean;
-		sessionId: string;
+		sessionId?: string;
 		rootNode: NodeInfo;
-		errorMessage: string;
+		errorMessage?: string;
 	}
 
 	/**
@@ -296,12 +296,12 @@ declare module 'azdata' {
 	export interface NodeInfo {
 		nodePath: string;
 		nodeType: string;
-		nodeSubType: string;
-		nodeStatus: string;
+		nodeSubType?: string;
+		nodeStatus?: string;
 		label: string;
 		isLeaf: boolean;
-		metadata: ObjectMetadata;
-		errorMessage: string;
+		metadata?: ObjectMetadata;
+		errorMessage?: string;
 		/**
 		 * Optional iconType for the object in the tree. Currently this only supports
 		 * an icon name or SqlThemeIcon name, rather than a path to an icon.
@@ -320,7 +320,7 @@ declare module 'azdata' {
 	}
 
 	export interface IConnectionProfile extends ConnectionInfo {
-		connectionName: string;
+		connectionName?: string;
 		serverName: string;
 		databaseName: string;
 		userName: string;
@@ -333,7 +333,6 @@ declare module 'azdata' {
 		saveProfile: boolean;
 		id: string;
 		azureTenantId?: string;
-
 	}
 
 	/**
@@ -428,11 +427,11 @@ declare module 'azdata' {
 		/**
 		 * The major version of the instance.
 		 */
-		serverMajorVersion: number;
+		serverMajorVersion?: number;
 		/**
 		 * The minor version of the instance.
 		 */
-		serverMinorVersion: number;
+		serverMinorVersion?: number;
 		/**
 		 * The build of the instance.
 		 */
@@ -1229,15 +1228,15 @@ declare module 'azdata' {
 	}
 
 	export interface ObjectExplorerExpandInfo {
-		sessionId: string;
+		sessionId?: string;
 		nodePath: string;
 		nodes: NodeInfo[];
-		errorMessage: string;
+		errorMessage?: string;
 	}
 
 	export interface ExpandNodeInfo {
 		sessionId: string;
-		nodePath: string;
+		nodePath: string | undefined;
 	}
 
 	export interface FindNodesInfo {
@@ -1250,7 +1249,7 @@ declare module 'azdata' {
 	}
 
 	export interface ObjectExplorerCloseSessionInfo {
-		sessionId: string;
+		sessionId?: string;
 	}
 
 	export interface ObjectExplorerCloseSessionResponse {
@@ -1300,7 +1299,7 @@ declare module 'azdata' {
 	}
 
 	export interface IconProvider extends DataProvider {
-		getConnectionIconId(connection: IConnectionProfile, serverInfo: ServerInfo): Thenable<string>;
+		getConnectionIconId(connection: IConnectionProfile, serverInfo: ServerInfo): Thenable<string | undefined>;
 	}
 
 	// Admin Services interfaces  -----------------------------------------------------------------------
@@ -1799,8 +1798,6 @@ declare module 'azdata' {
 		deleteJobSchedule(ownerUri: string, scheduleInfo: AgentJobScheduleInfo): Thenable<ResultStatus>;
 
 		registerOnUpdated(handler: () => any): void;
-
-
 	}
 	// DacFx interfaces  -----------------------------------------------------------------------
 
@@ -2003,7 +2000,7 @@ declare module 'azdata' {
 		/**
 		 * Event values
 		 */
-		values: {};
+		values: { [key: string]: any };
 	}
 
 	/**
@@ -2364,8 +2361,8 @@ declare module 'azdata' {
 	}
 
 	export interface FirewallRuleInfo {
-		startIpAddress: string;
-		endIpAddress: string;
+		startIpAddress?: string;
+		endIpAddress?: string;
 		serverName: string;
 		securityTokenMappings: {};
 	}
@@ -2736,9 +2733,9 @@ declare module 'azdata' {
 		focus(): Thenable<void>;
 	}
 
-	export interface FormComponent {
-		component: Component;
-		title: string;
+	export interface FormComponent<T extends Component = Component> {
+		component: T;
+		title?: string;
 		actions?: Component[];
 		required?: boolean;
 	}
@@ -3258,7 +3255,7 @@ declare module 'azdata' {
 		editableCategory = 'editableCategory'
 	}
 
-	export interface RadioButtonProperties {
+	export interface RadioButtonProperties extends ComponentProperties {
 		name?: string;
 		label?: string;
 		value?: string;
@@ -4133,7 +4130,7 @@ declare module 'azdata' {
 		 * Note that the connection is not guaranteed to be in a connected
 		 * state on click.
 		 */
-		connectionProfile: IConnectionProfile;
+		connectionProfile?: IConnectionProfile;
 	}
 
 	/**
@@ -4152,7 +4149,7 @@ declare module 'azdata' {
 		 * Node info for objects below a specific connection. This
 		 * may be null for a Connection-level object
 		 */
-		nodeInfo: NodeInfo;
+		nodeInfo?: NodeInfo;
 	}
 
 	/**
@@ -4701,7 +4698,7 @@ declare module 'azdata' {
 			output_type: OutputTypeName;
 			metadata?: {
 				azdata_chartOptions?: any;
-			}
+			};
 		}
 
 		/**

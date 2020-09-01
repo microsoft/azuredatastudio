@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
+import * as constants from '../common/constants';
 
 import { BaseProjectTreeItem, SpacerTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
@@ -39,6 +40,13 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 		return element.children;
 	}
 
+	public getParent(element: BaseProjectTreeItem): BaseProjectTreeItem {
+		if (!element.parent) {
+			throw new Error(constants.parentTreeItemUnknown);
+		}
+		return element.parent;
+	}
+
 	/**
 	 * Constructs a new set of root nodes from a list of Projects
 	 * @param projects List of Projects
@@ -71,7 +79,7 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 		const projNode = this.roots.find(x => x instanceof ProjectRootTreeItem ? (<ProjectRootTreeItem>x).project === project : false);
 
 		if (projNode) {
-			this.treeView?.reveal(projNode, { focus: true, expand: true });
+			await this.treeView?.reveal(projNode, { focus: true, expand: true });
 		}
 	}
 }

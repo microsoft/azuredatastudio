@@ -40,14 +40,17 @@ suite('ConnectionDialogService tests', () => {
 			new TestCapabilitiesService());
 		(connectionDialogService as any)._connectionManagementService = mockConnectionManagementService.object;
 		mockConnectionDialog = TypeMoq.Mock.ofType(ConnectionDialogWidget, TypeMoq.MockBehavior.Strict,
-			undefined,
-			undefined,
-			undefined,
-			undefined,
-			undefined,
-			undefined,
-			undefined,
-			undefined,
+			undefined, // providerDisplayNameOptions
+			undefined, // selectedProviderType
+			undefined, // providerNameToDisplayNameMap
+			undefined, // instantiationService
+			undefined, // connectionManagementService
+			undefined, // contextMenuService
+			undefined, // contextViewService
+			{ getViewContainerById: () => ({}), getViewContainerModel: () => ({}) }, // viewDescriptorService
+			undefined, // themeService
+			undefined, // layoutService
+			undefined, // telemetryService
 			new MockContextKeyService()
 		);
 		mockConnectionDialog.setup(c => c.resetConnection());

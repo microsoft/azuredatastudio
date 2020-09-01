@@ -13,7 +13,7 @@ export interface IConnectionDialogService {
 	/**
 	 * Opens the connection dialog and returns the promise for successfully opening the dialog
 	 */
-	showDialog(connectionManagementService: IConnectionManagementService, params: INewConnectionParams, model: IConnectionProfile, connectionResult?: IConnectionResult, connectionOptions?: IConnectionCompletionOptions): Promise<void>;
+	showDialog(connectionManagementService: IConnectionManagementService, params: INewConnectionParams, model: Partial<IConnectionProfile>, connectionResult?: IConnectionResult, connectionOptions?: IConnectionCompletionOptions): Promise<void>;
 
 	/**
 	 * Opens the connection dialog and returns the promise when connection is made

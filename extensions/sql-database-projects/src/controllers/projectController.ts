@@ -11,12 +11,13 @@ import * as path from 'path';
 import * as utils from '../common/utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as templates from '../templates/templates';
-
+import * as newProjectTool from '../tools/newProjectTool';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
+
 import { promises as fs } from 'fs';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
-import { Project, DatabaseReferenceLocation, SystemDatabase, TargetPlatform, ProjectEntry, reservedProjectFolders } from '../models/project';
+import { Project, DatabaseReferenceLocation, SystemDatabase, TargetPlatform, ProjectEntry, reservedProjectFolders, SqlProjectReferenceProjectEntry } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
 import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
@@ -47,11 +48,15 @@ export class ProjectsController {
 		this.projectTreeViewProvider.load(this.projects);
 	}
 
-	public async openProject(projectFile: vscode.Uri, focusProject: boolean = true): Promise<Project> {
+	public async openProject(projectFile: vscode.Uri, focusProject: boolean = true, isReferencedProject: boolean = false): Promise<Project> {
 		for (const proj of this.projects) {
 			if (proj.projectFilePath === projectFile.fsPath) {
-				vscode.window.showInformationMessage(constants.projectAlreadyOpened(projectFile.fsPath));
-				return proj;
+				if (!isReferencedProject) {
+					vscode.window.showInformationMessage(constants.projectAlreadyOpened(projectFile.fsPath));
+					return proj;
+				} else {
+					throw new Error(constants.projectAlreadyOpened(projectFile.fsPath));
+				}
 			}
 		}
 
@@ -61,6 +66,17 @@ export class ProjectsController {
 			// Read project file
 			newProject = await Project.openProject(projectFile.fsPath);
 			this.projects.push(newProject);
+
+			// open any reference projects (don't need to worry about circular dependencies because those aren't allowed)
+			const referencedProjects = newProject.databaseReferences.filter(r => r instanceof SqlProjectReferenceProjectEntry);
+			for (const proj of referencedProjects) {
+				const projUri = vscode.Uri.file(path.join(newProject.projectFolderPath, proj.fsUri.fsPath));
+				try {
+					await this.openProject(projUri, false, true);
+				} catch (e) {
+					vscode.window.showErrorMessage(e.message === constants.projectAlreadyOpened(projUri.fsPath) ? constants.circularProjectReference(newProject.projectFileName, proj.databaseName) : e.message);
+				}
+			}
 
 			// Update for round tripping as needed
 			await this.updateProjectForRoundTrip(newProject);
@@ -337,7 +353,7 @@ export class ProjectsController {
 				throw new Error(constants.fileAlreadyExists(path.parse(absoluteFilePath).name));
 			}
 
-			const newEntry = await project.addScriptItem(relativeFilePath, newFileText);
+			const newEntry = await project.addScriptItem(relativeFilePath, newFileText, itemType.type);
 
 			await vscode.commands.executeCommand(constants.vscodeOpenCommand, newEntry.fsUri);
 
@@ -614,7 +630,7 @@ export class ProjectsController {
 
 	private async promptForNewObjectName(itemType: templates.ProjectScriptType, _project: Project): Promise<string | undefined> {
 		// TODO: ask project for suggested name that doesn't conflict
-		const suggestedName = itemType.friendlyName.replace(new RegExp('\s', 'g'), '') + '1';
+		const suggestedName = itemType.friendlyName.replace(/\s+/g, '') + '1';
 
 		const itemObjectName = await vscode.window.showInputBox({
 			prompt: constants.newObjectNamePrompt(itemType.friendlyName),
@@ -645,6 +661,8 @@ export class ProjectsController {
 			let newProjFolderUri = (await this.getFolderLocation()).fsPath;
 			model.extractTarget = await this.getExtractTarget();
 			model.version = '1.0.0.0';
+
+			newProjectTool.updateSaveLocationSetting();
 
 			const newProjFilePath = await this.createNewProject(model.projName, vscode.Uri.file(newProjFolderUri), true);
 			model.filePath = path.dirname(newProjFilePath);
@@ -724,7 +742,7 @@ export class ProjectsController {
 	private async getProjectName(dbName: string): Promise<string> {
 		let projName = await vscode.window.showInputBox({
 			prompt: constants.newDatabaseProjectName,
-			value: `DatabaseProject${dbName}`
+			value: newProjectTool.defaultProjectNameFromDb(dbName)
 		});
 
 		projName = projName?.trim();
@@ -782,7 +800,7 @@ export class ProjectsController {
 			canSelectFolders: true,
 			canSelectMany: false,
 			openLabel: constants.selectString,
-			defaultUri: vscode.workspace.workspaceFolders ? (vscode.workspace.workspaceFolders as vscode.WorkspaceFolder[])[0].uri : undefined
+			defaultUri: newProjectTool.defaultProjectSaveLocation()
 		});
 
 		if (selectionResult) {

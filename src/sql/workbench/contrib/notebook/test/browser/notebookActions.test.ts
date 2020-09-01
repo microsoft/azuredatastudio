@@ -396,11 +396,12 @@ suite('Notebook Actions', function (): void {
 			const e: azdata.nb.IKernelChangedArgs = <azdata.nb.IKernelChangedArgs>{
 				newValue: <azdata.nb.IKernel>{
 					name: 'StandardKernel2'
-				}
+				},
+				nbKernelAlias: ''
 			};
 			notebookModel.kernelChangedEmitter.fire(e);
 			assert.ok(updateKernelStub.calledOnce, `updateKernel should be called exactly once`);
-			assert.ok(updateKernelStub.calledWithExactly(e.newValue), `updateKernel should be called with the parameter: ${JSON.stringify(e.newValue)}`);
+			assert.ok(updateKernelStub.calledWithExactly(e.newValue, e.nbKernelAlias), `updateKernel should be called with the parameter: ${JSON.stringify(e.newValue), JSON.stringify(e.nbKernelAlias)}`);
 		});
 
 	});

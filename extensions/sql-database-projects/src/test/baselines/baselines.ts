@@ -18,6 +18,8 @@ export let SSDTProjectBaselineWithCleanTarget: string;
 export let SSDTProjectBaselineWithCleanTargetAfterUpdate: string;
 export let publishProfileIntegratedSecurityBaseline: string;
 export let publishProfileSqlLoginBaseline: string;
+export let openProjectWithProjectReferencesBaseline: string;
+export let openSqlProjectWithPrePostDeploymentError: string;
 
 const baselineFolderPath = __dirname;
 
@@ -33,6 +35,8 @@ export async function loadBaselines() {
 	SSDTProjectBaselineWithCleanTargetAfterUpdate = await loadBaseline(baselineFolderPath, 'SSDTProjectBaselineWithCleanTargetAfterUpdate.xml');
 	publishProfileIntegratedSecurityBaseline = await loadBaseline(baselineFolderPath, 'publishProfileIntegratedSecurityBaseline.publish.xml');
 	publishProfileSqlLoginBaseline = await loadBaseline(baselineFolderPath, 'publishProfileSqlLoginBaseline.publish.xml');
+	openProjectWithProjectReferencesBaseline = await loadBaseline(baselineFolderPath, 'openSqlProjectWithProjectReferenceBaseline.xml');
+	openSqlProjectWithPrePostDeploymentError = await loadBaseline(baselineFolderPath, 'openSqlProjectWithPrePostDeploymentError.xml');
 }
 
 async function loadBaseline(baselineFolderPath: string, fileName: string): Promise<string> {
