@@ -762,7 +762,7 @@
                       ]
                     },
                     {
-                      "title": "%arc.postgres.settings.scheduling.title%",
+                      "title": "%arc.postgres.settings.resource.title%",
                       "fields": [
                         {
                           "label": "%arc.postgres.server.group.cores.request%",
