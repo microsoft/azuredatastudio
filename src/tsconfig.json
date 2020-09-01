@@ -12,7 +12,9 @@
 			"semver",
 			"sinon",
 			"winreg"
-		]
+		],
+		"jsx": "react",
+		"jsxFactory": "$"
 	},
 	"include": [
 		"./typings",

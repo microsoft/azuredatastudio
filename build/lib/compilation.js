@@ -41,7 +41,7 @@ function createCompile(src, build, emitError) {
     const compilation = tsb.create(projectPath, overrideOptions, false, err => reporter(err));
     function pipeline(token) {
         const utf8Filter = util.filter(data => /(\/|\\)test(\/|\\).*utf8/.test(data.path));
-        const tsFilter = util.filter(data => /\.ts$/.test(data.path));
+        const tsFilter = util.filter(data => /\.ts$|\.tsx$/.test(data.path));
         const noDeclarationsFilter = util.filter(data => !(/\.d\.ts$/.test(data.path)));
         const input = es.through();
         const output = input

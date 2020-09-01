@@ -9,6 +9,7 @@ import { Color } from 'vs/base/common/color';
 import { Event, Emitter } from 'vs/base/common/event';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { Widget } from 'vs/base/browser/ui/widget';
+import { $ } from 'vs/base/browser/dom';
 
 export interface ICheckboxOptions {
 	label: string;
@@ -33,9 +34,7 @@ export class Checkbox extends Widget {
 	constructor(container: HTMLElement, opts: ICheckboxOptions) {
 		super();
 
-		this._el = document.createElement('input');
-		this._el.type = 'checkbox';
-		this._el.style.verticalAlign = 'middle';
+		this._el = <input type='checkbox' style='vertical-align: middle'></input>;
 
 		if (opts.ariaLabel) {
 			this.ariaLabel = opts.ariaLabel;
@@ -52,8 +51,7 @@ export class Checkbox extends Widget {
 			}
 		});
 
-		this._label = document.createElement('span');
-		this._label.style.verticalAlign = 'middle';
+		this._label = <span style='vertical-align: middle'></span>;
 
 		this.label = opts.label;
 		this.enabled = opts.enabled || true;
