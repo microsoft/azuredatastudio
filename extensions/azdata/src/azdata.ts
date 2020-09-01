@@ -257,15 +257,13 @@ export async function checkAndUpgradeAzdata(currentAzdata: IAzdataTool | undefin
  * @param currentAzdata The current version of azdata to check.
  */
 export async function manuallyInstallOrUpgradeAzdata(context: vscode.ExtensionContext, currentAzdata: IAzdataTool | undefined): Promise<void> {
-	// Note - not localizing since this is temporary behavior
-	const dontShow = 'Don\'t Show Again';
 	if (currentAzdata === undefined) {
 		const doNotPromptInstall = context.globalState.get(doNotPromptInstallMemento);
 		if (doNotPromptInstall) {
 			return;
 		}
-		const response = await vscode.window.showInformationMessage(loc.installManually(requiredVersion, installationReadmeUrl), 'OK', dontShow);
-		if (response === dontShow) {
+		const response = await vscode.window.showInformationMessage(loc.installManually(requiredVersion, installationReadmeUrl), loc.ok, loc.doNotShowAgain);
+		if (response === loc.doNotShowAgain) {
 			context.globalState.update(doNotPromptInstallMemento, true);
 		}
 		Logger.show();
@@ -279,16 +277,13 @@ export async function manuallyInstallOrUpgradeAzdata(context: vscode.ExtensionCo
 		if (requiredSemVersion.compare(currentAzdata.cachedVersion) === 0) {
 			return; // if we have the required version then nothing more needs to be eon.
 		}
-		const response = await vscode.window.showInformationMessage(loc.installCorrectVersionManually(currentAzdata.cachedVersion.raw, requiredVersion, installationReadmeUrl), 'OK', dontShow);
-		if (response === dontShow) {
+		const response = await vscode.window.showInformationMessage(loc.installCorrectVersionManually(currentAzdata.cachedVersion.raw, requiredVersion, installationReadmeUrl), loc.ok, loc.doNotShowAgain);
+		if (response === loc.doNotShowAgain) {
 			context.globalState.update(doNotPromptUpdateMemento, true);
 		}
 		Logger.show();
 		Logger.log(loc.installCorrectVersionManually(currentAzdata.cachedVersion.raw, requiredVersion, installationReadmeUrl));
 	}
-	// display the instructions document in a new editor window.
-	// const downloadedFile = await HttpClient.downloadFile(installationInstructionDoc, os.tmpdir());
-	// await vscode.window.showTextDocument(vscode.Uri.parse(downloadedFile));
 }
 
 /**
