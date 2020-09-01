@@ -5,10 +5,10 @@
 
 import * as azdataExt from 'azdata-ext';
 import * as vscode from 'vscode';
-import * as constants from './constants';
 import { findAzdata, IAzdataTool, manuallyInstallOrUpgradeAzdata, promptForEula } from './azdata';
-import * as loc from './localizedConstants';
 import Logger from './common/logger';
+import * as constants from './constants';
+import * as loc from './localizedConstants';
 
 let localAzdata: IAzdataTool | undefined = undefined;
 let eulaAccepted: boolean = false;
@@ -24,7 +24,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 		});
 	}
 	// Don't block on this since we want the extension to finish activating without user actions
-	manuallyInstallOrUpgradeAzdata(localAzdata)
+	manuallyInstallOrUpgradeAzdata(context, localAzdata)
 		.catch(err => console.log(err));
 	return {
 		azdata: {
