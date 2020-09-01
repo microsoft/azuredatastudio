@@ -21,6 +21,7 @@ import { localize } from 'vs/nls';
 import * as types from 'vs/base/common/types';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { CellView } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
+import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 
 export const OUTPUT_SELECTOR: string = 'output-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -41,6 +42,7 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 	private _initialized: boolean = false;
 	private _activeCellId: string;
 	private _componentInstance: IMimeComponent;
+	private _queryRunner?: QueryRunner;
 	public errorText: string;
 
 	constructor(
@@ -100,6 +102,10 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 			this.loadComponent();
 		}
 		return this._componentInstance;
+	}
+
+	@Input() set queryRunner(value: QueryRunner) {
+		this._queryRunner = value;
 	}
 
 	get trustedMode(): boolean {
@@ -174,6 +180,9 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 			this._componentInstance.cellModel = this.cellModel;
 			this._componentInstance.cellOutput = this.cellOutput;
 			this._componentInstance.bundleOptions = options;
+			if (this._queryRunner) {
+				this._componentInstance.queryRunner = this._queryRunner;
+			}
 			this._changeref.detectChanges();
 			let el = <HTMLElement>componentRef.location.nativeElement;
 

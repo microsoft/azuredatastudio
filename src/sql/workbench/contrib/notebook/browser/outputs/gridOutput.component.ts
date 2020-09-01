@@ -13,7 +13,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IDataResource } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
-import { getEolString, shouldIncludeHeaders, shouldRemoveNewLines } from 'sql/workbench/services/query/common/queryRunner';
+import QueryRunner, { getEolString, shouldIncludeHeaders, shouldRemoveNewLines } from 'sql/workbench/services/query/common/queryRunner';
 import { ICellValue, ResultSetSummary, ResultSetSubset } from 'sql/workbench/services/query/common/query';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
@@ -55,6 +55,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 	private _cellOutput: azdata.nb.ICellOutput;
 	private _bundleOptions: MimeModel.IOptions;
 	private _table: DataResourceTable;
+	private _queryRunner: QueryRunner;
 
 	constructor(
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
@@ -91,6 +92,10 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 		this._cellOutput = value;
 	}
 
+	@Input() set queryRunner(value: QueryRunner) {
+		this._queryRunner = value;
+	}
+
 	ngOnInit() {
 		this.renderGrid();
 	}
@@ -102,14 +107,20 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 		if (!this._table) {
 			let source = <IDataResource><any>this._bundleOptions.data[this.mimeType];
 			let state = new GridTableState(0, 0);
-			this._table = this.instantiationService.createInstance(DataResourceTable, source, this.cellModel, this.cellOutput, state);
+			this._table = this.instantiationService.createInstance(DataResourceTable, this._queryRunner, source, this.cellModel, this.cellOutput, state);
 			let outputElement = <HTMLElement>this.output.nativeElement;
 			outputElement.appendChild(this._table.element);
 			this._register(attachTableStyler(this._table, this.themeService));
 			this._table.onDidInsert();
 			this.layout();
+			this._register(this._queryRunner.onResultSetUpdate(resultSet => { this.updateResultSet(resultSet); }));
 			this._initialized = true;
 		}
+	}
+
+	updateResultSet(resultSet: ResultSetSummary): void {
+		this._table.updateResult(resultSet);
+		this.layout();
 	}
 
 	layout(): void {
@@ -125,8 +136,10 @@ class DataResourceTable extends GridTableBase<any> {
 	private _gridDataProvider: IGridDataProvider;
 	private _chart: ChartView;
 	private _chartContainer: HTMLElement;
+	private _queryRunner: QueryRunner;
 
-	constructor(source: IDataResource,
+	constructor(queryRunner: QueryRunner,
+		source: IDataResource,
 		private cellModel: ICellModel,
 		private cellOutput: azdata.nb.ICellOutput,
 		state: GridTableState,
@@ -137,7 +150,8 @@ class DataResourceTable extends GridTableBase<any> {
 		@IConfigurationService configurationService: IConfigurationService
 	) {
 		super(state, createResultSet(source), { actionOrientation: ActionsOrientation.HORIZONTAL }, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
-		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, this.cellModel.notebookModel.notebookUri.toString());
+		this._queryRunner = queryRunner;
+		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, this._queryRunner, source, this.resultSet, this.cellModel.notebookModel.notebookUri.toString());
 		this._chart = this.instantiationService.createInstance(ChartView, false);
 
 		if (!this.cellOutput.metadata) {
@@ -227,7 +241,9 @@ class DataResourceTable extends GridTableBase<any> {
 
 export class DataResourceDataProvider implements IGridDataProvider {
 	private rows: ICellValue[][];
-	constructor(source: IDataResource,
+	private _queryRunner: QueryRunner;
+	constructor(queryRunner: QueryRunner,
+		source: IDataResource,
 		private resultSet: ResultSetSummary,
 		private documentUri: string,
 		@INotificationService private _notificationService: INotificationService,
@@ -237,6 +253,7 @@ export class DataResourceDataProvider implements IGridDataProvider {
 		@ISerializationService private _serializationService: ISerializationService,
 		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
+		this._queryRunner = queryRunner;
 		this.transformSource(source);
 	}
 
@@ -257,15 +274,17 @@ export class DataResourceDataProvider implements IGridDataProvider {
 	}
 
 	getRowData(rowStart: number, numberOfRows: number): Thenable<ResultSetSubset> {
-		let rowEnd = rowStart + numberOfRows;
-		if (rowEnd > this.rows.length) {
-			rowEnd = this.rows.length;
-		}
-		let resultSubset: ResultSetSubset = {
-			rowCount: rowEnd - rowStart,
-			rows: this.rows.slice(rowStart, rowEnd)
-		};
-		return Promise.resolve(resultSubset);
+		// let rowEnd = rowStart + numberOfRows;
+		// if (rowEnd > this.rows.length) {
+		// 	rowEnd = this.rows.length;
+		// }
+		// let resultSubset: ResultSetSubset = {
+		// 	rowCount: rowEnd - rowStart,
+		// 	rows: this.rows.slice(rowStart, rowEnd)
+		// };
+		// return Promise.resolve(resultSubset);
+		return this._queryRunner.getQueryRows(rowStart, numberOfRows, this.resultSet.batchId, this.resultSet.id);
+
 	}
 
 	async copyResults(selection: Slick.Range[], includeHeaders?: boolean): Promise<void> {

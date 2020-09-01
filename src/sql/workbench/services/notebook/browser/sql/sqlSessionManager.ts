@@ -6,7 +6,7 @@
 import { nb, IResultMessage } from 'azdata';
 import { localize } from 'vs/nls';
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
-import { BatchSummary, ResultSetSummary, IColumn, ResultSetSubset } from 'sql/workbench/services/query/common/query';
+import { ResultSetSummary, IColumn } from 'sql/workbench/services/query/common/query';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import Severity from 'vs/base/common/severity';
@@ -349,9 +349,9 @@ class SqlKernel extends Disposable implements nb.IKernel {
 				}
 			}
 		}));
-		this._register(queryRunner.onBatchEnd(batch => {
+		this._register(queryRunner.onResultSet(resultSet => {
 			if (this._future) {
-				this._future.handleBatchEnd(batch);
+				this._future.onResultSet(resultSet);
 			}
 		}));
 	}
@@ -382,9 +382,9 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	private ioHandler: nb.MessageHandler<nb.IIOPubMessage>;
 	private doneHandler: nb.MessageHandler<nb.IShellMessage>;
 	private doneDeferred = new Deferred<nb.IShellMessage>();
-	private configuredMaxRows: number = MAX_ROWS;
+	// private configuredMaxRows: number = MAX_ROWS;
 	private _outputAddedPromises: Promise<void>[] = [];
-	private _querySubsetResultMap: Map<number, ResultSetSubset> = new Map<number, ResultSetSubset>();
+	// private _querySubsetResultMap: Map<number, ResultSetSubset> = new Map<number, ResultSetSubset>();
 	private _errorOccurred: boolean = false;
 	private _stopOnError: boolean = true;
 	constructor(
@@ -394,14 +394,14 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		private readonly logService: ILogService
 	) {
 		super();
-		let config = configurationService.getValue(NotebookConfigSectionName);
-		if (config) {
-			let maxRows = config[MaxTableRowsConfigName] ? config[MaxTableRowsConfigName] : undefined;
-			if (maxRows && maxRows > 0) {
-				this.configuredMaxRows = maxRows;
-			}
-			this._stopOnError = !!config[SqlStopOnErrorConfigName];
-		}
+		// let config = configurationService.getValue(NotebookConfigSectionName);
+		// if (config) {
+		// 	let maxRows = config[MaxTableRowsConfigName] ? config[MaxTableRowsConfigName] : undefined;
+		// 	if (maxRows && maxRows > 0) {
+		// 		this.configuredMaxRows = maxRows;
+		// 	}
+		// 	this._stopOnError = !!config[SqlStopOnErrorConfigName];
+		// }
 	}
 
 	get inProgress(): boolean {
@@ -442,7 +442,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			this.doneHandler.handle(msg);
 		}
 		this.doneDeferred.resolve(msg);
-		this._querySubsetResultMap.clear();
+		// this._querySubsetResultMap.clear();
 	}
 
 	sendInputReply(content: nb.IInputReply): void {
@@ -473,60 +473,69 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		}
 	}
 
-	public handleBatchEnd(batch: BatchSummary): void {
+	public onResultSet(resultSet: ResultSetSummary | ResultSetSummary[]): void {
 		if (this.ioHandler) {
-			this._outputAddedPromises.push(this.processResultSets(batch));
+			this._outputAddedPromises.push(this.processResultSets(resultSet));
 		}
 	}
 
-	private async processResultSets(batch: BatchSummary): Promise<void> {
+	private async processResultSets(resultSet: ResultSetSummary | ResultSetSummary[]): Promise<void> {
 		try {
-			let queryRowsPromises: Promise<void>[] = [];
-			for (let resultSet of batch.resultSetSummaries) {
-				let rowCount = resultSet.rowCount > this.configuredMaxRows ? this.configuredMaxRows : resultSet.rowCount;
-				if (rowCount === this.configuredMaxRows) {
-					this.handleMessage(localize('sqlMaxRowsDisplayed', "Displaying Top {0} rows.", rowCount));
-				}
-				queryRowsPromises.push(this.getAllQueryRows(rowCount, resultSet));
+			// let queryRowsPromises: Promise<void>[] = [];
+			let resultsToAdd: ResultSetSummary[];
+			if (!Array.isArray(resultSet)) {
+				resultsToAdd = [resultSet];
+			} else {
+				resultsToAdd = resultSet.splice(0);
 			}
+			for (let set of resultsToAdd) {
+				this.sendIOPubMessage(set);
+			}
+			// for (let resultSet of batch.resultSetSummaries) {
+			// let rowCount = resultSet.rowCount > this.configuredMaxRows ? this.configuredMaxRows : resultSet.rowCount;
+			// if (rowCount === this.configuredMaxRows) {
+			// 	this.handleMessage(localize('sqlMaxRowsDisplayed', "Displaying Top {0} rows.", rowCount));
+			// }
+			// queryRowsPromises.push(this.getAllQueryRows(rowCount, resultSet));
+			// }
 			// We want to display table in the same order
-			let i = 0;
-			for (let resultSet of batch.resultSetSummaries) {
-				await queryRowsPromises[i];
-				this.sendResultSetAsIOPub(resultSet);
-				i++;
-			}
+			// let i = 0;
+			// for (let resultSet of batch.resultSetSummaries) {
+			// 	await queryRowsPromises[i];
+			// 	this.sendResultSetAsIOPub(resultSet);
+			// 	i++;
+			// }
 		} catch (err) {
 			// TODO should we output this somewhere else?
 			this.logService.error(`Error outputting result sets from Notebook query: ${err}`);
 		}
 	}
 
-	private async getAllQueryRows(rowCount: number, resultSet: ResultSetSummary): Promise<void> {
-		let deferred: Deferred<void> = new Deferred<void>();
-		if (rowCount > 0) {
-			this._queryRunner.getQueryRows(0, rowCount, resultSet.batchId, resultSet.id).then((result) => {
-				this._querySubsetResultMap.set(resultSet.id, result);
-				deferred.resolve();
-			}, (err) => {
-				this._querySubsetResultMap.set(resultSet.id, { rowCount: 0, rows: [] });
-				deferred.reject(err);
-			});
-		} else {
-			this._querySubsetResultMap.set(resultSet.id, { rowCount: 0, rows: [] });
-			deferred.resolve();
-		}
-		return deferred;
-	}
+	// private async getAllQueryRows(rowCount: number, resultSet: ResultSetSummary): Promise<void> {
+	// 	let deferred: Deferred<void> = new Deferred<void>();
+	// 	if (rowCount > 0) {
+	// 		this._queryRunner.getQueryRows(0, rowCount, resultSet.batchId, resultSet.id).then((result) => {
+	// 			this._querySubsetResultMap.set(resultSet.id, result);
+	// 			deferred.resolve();
+	// 		}, (err) => {
+	// 			this._querySubsetResultMap.set(resultSet.id, { rowCount: 0, rows: [] });
+	// 			deferred.reject(err);
+	// 		});
+	// 	} else {
+	// 		this._querySubsetResultMap.set(resultSet.id, { rowCount: 0, rows: [] });
+	// 		deferred.resolve();
+	// 	}
+	// 	return deferred;
+	// }
 
-	private sendResultSetAsIOPub(resultSet: ResultSetSummary): void {
-		if (this._querySubsetResultMap && this._querySubsetResultMap.get(resultSet.id)) {
-			let subsetResult = this._querySubsetResultMap.get(resultSet.id);
-			this.sendIOPubMessage(subsetResult, resultSet);
-		}
-	}
+	// private sendResultSetAsIOPub(set: ResultSetSummary): void {
+	// 	if (this._querySubsetResultMap && this._querySubsetResultMap.get(resultSet.id)) {
+	// 		let subsetResult = this._querySubsetResultMap.get(resultSet.id);
+	// 		this.sendIOPubMessage(subsetResult, resultSet);
+	// 	}
+	// }
 
-	private sendIOPubMessage(subsetResult: ResultSetSubset, resultSet: ResultSetSummary): void {
+	private sendIOPubMessage(resultSet: ResultSetSummary): void {
 		let msg: nb.IIOPubMessage = {
 			channel: 'iopub',
 			type: 'iopub',
@@ -539,15 +548,16 @@ export class SQLFuture extends Disposable implements FutureInternal {
 				metadata: {},
 				execution_count: this._executionCount,
 				data: {
-					'application/vnd.dataresource+json': this.convertToDataResource(resultSet.columnInfo, subsetResult),
-					'text/html': this.convertToHtmlTable(resultSet.columnInfo, subsetResult)
-				}
+					'application/vnd.dataresource+json': this.convertToDataResource(resultSet.columnInfo),
+					'text/html': this.convertToHtmlTable(resultSet.columnInfo)
+				},
+				queryRunner: this._queryRunner
 			},
 			metadata: undefined,
-			parent_header: undefined
+			parent_header: undefined,
 		};
 		this.ioHandler.handle(msg);
-		this._querySubsetResultMap.delete(resultSet.id);
+		// this._querySubsetResultMap.delete(resultSet.id);
 	}
 
 	setIOPubHandler(handler: nb.MessageHandler<nb.IIOPubMessage>): void {
@@ -561,7 +571,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		// no-op
 	}
 
-	private convertToDataResource(columns: IColumn[], subsetResult: ResultSetSubset): IDataResource {
+	private convertToDataResource(columns: IColumn[]): IDataResource {
 		let columnsResources: IDataResourceSchema[] = [];
 		columns.forEach(column => {
 			columnsResources.push({ name: escape(column.columnName) });
@@ -570,19 +580,20 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		columnsFields.fields = columnsResources;
 		return {
 			schema: columnsFields,
-			data: subsetResult.rows.map(row => {
-				let rowObject: { [key: string]: any; } = {};
-				row.forEach((val, index) => {
-					rowObject[index] = val.displayValue;
-				});
-				return rowObject;
-			})
+			data: []
+			// data: [subsetResult.rows.map(row => {
+			// 	let rowObject: { [key: string]: any; } = {};
+			// 	row.forEach((val, index) => {
+			// 		rowObject[index] = val.displayValue;
+			// 	});
+			// 	return rowObject;]
+			// })
 		};
 	}
 
-	private convertToHtmlTable(columns: IColumn[], d: ResultSetSubset): string[] {
+	private convertToHtmlTable(columns: IColumn[]): string[] {
 		// Adding 3 for <table>, column title rows, </table>
-		let htmlStringArr: string[] = new Array(d.rowCount + 3);
+		let htmlStringArr: string[] = new Array(3);
 		htmlStringArr[0] = '<table>';
 		if (columns.length > 0) {
 			let columnHeaders = '<tr>';
@@ -592,16 +603,16 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			columnHeaders += '</tr>';
 			htmlStringArr[1] = columnHeaders;
 		}
-		let i = 2;
-		for (const row of d.rows) {
-			let rowData = '<tr>';
-			for (let columnIndex = 0; columnIndex < columns.length; columnIndex++) {
-				rowData += `<td>${escape(row[columnIndex].displayValue)}</td>`;
-			}
-			rowData += '</tr>';
-			htmlStringArr[i] = rowData;
-			i++;
-		}
+		// let i = 2;
+		// for (const row of d.rows) {
+		// 	let rowData = '<tr>';
+		// 	for (let columnIndex = 0; columnIndex < columns.length; columnIndex++) {
+		// 		rowData += `<td>${escape(row[columnIndex].displayValue)}</td>`;
+		// 	}
+		// 	rowData += '</tr>';
+		// 	htmlStringArr[i] = rowData;
+		// 	i++;
+		// }
 		htmlStringArr[htmlStringArr.length - 1] = '</table>';
 		return htmlStringArr;
 	}

@@ -21,6 +21,7 @@ import { SerializationService } from 'sql/platform/serialization/common/serializ
 import { SaveFormat, ResultSerializer } from 'sql/workbench/services/query/common/resultSerializer';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { URI } from 'vs/base/common/uri';
+import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 
 export class TestSerializationProvider implements azdata.SerializationProvider {
 	providerId: string;
@@ -51,6 +52,7 @@ suite('Data Resource Data Provider', function () {
 	let dataResourceDataProvider: DataResourceDataProvider;
 
 	suiteSetup(async () => {
+		let queryRunner: TypeMoq.Mock<QueryRunner> = TypeMoq.Mock.ofType(QueryRunner);
 		// Create test data with two rows and two columns
 		let source: IDataResource = {
 			data: [{ 0: '1', 1: '2' }, { 0: '3', 1: '4' }],
@@ -88,8 +90,8 @@ suite('Data Resource Data Provider', function () {
 		let _instantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Strict);
 		_instantiationService.setup(x => x.createInstance(TypeMoq.It.isValue(ResultSerializer)))
 			.returns(() => serializer);
-
 		dataResourceDataProvider = new DataResourceDataProvider(
+			queryRunner.object,
 			source,
 			resultSet,
 			documentUri,
