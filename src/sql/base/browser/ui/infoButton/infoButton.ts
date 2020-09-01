@@ -6,7 +6,7 @@
 import { Button as sqlButton } from 'sql/base/browser/ui/button/button';
 // import * as DOM from 'vs/base/browser/dom';
 
-let template: string = `
+let template: any = `
 <div class="divContainer" style="cursor: pointer; height: 116px; width: 250px;">
 	<div style="padding: 10px; border-radius: 5px; border: 1px solid;">
 		<div class="flexContainer" role="" style="flex-direction: row; align-items: flex-start; height: 93px; width: 250px;">
