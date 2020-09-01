@@ -181,6 +181,7 @@ suite('ScrollableView', () => {
 		scrollableView.setScrollTop(100);
 
 		await waitForAnimation();
+
 		assert.equal(view2.size, 100, 'view2 is minimum size');
 		assert.equal(view3.size, 100, 'view3 is minimum size');
 		assert.equal(getViewChildren(container).length, 2, 'only 2 views are rendered');
@@ -188,6 +189,7 @@ suite('ScrollableView', () => {
 });
 
 async function waitForAnimation(): Promise<void> {
+	await new Promise<void>(r => scheduleAtNextAnimationFrame(r));
 	await new Promise<void>(r => scheduleAtNextAnimationFrame(r));
 	await timeout(50);
 }
