@@ -34,26 +34,27 @@ export async function getSubscriptions(account: azdata.Account): Promise<Subscri
 }
 
 export type AzureProduct = azureResource.AzureGraphResource;
-export type SqlManagedInstance = azureResource.AzureGraphResource;
+
+export type SqlManagedInstance = AzureProduct;
 export async function getAvailableManagedInstanceProducts(account: azdata.Account, subscription: Subscription): Promise<SqlManagedInstance[]> {
 	const api = await getAzureCoreAPI();
 
-	const result = await api.runGraphQuery<azureResource.AzureGraphResource>(account, subscription, false, 'where type == "microsoft.sql/managedinstances"');
+	const result = await api.runGraphQuery<SqlManagedInstance>(account, subscription, false, 'where type == "microsoft.sql/managedinstances"');
 	return result.resources;
 }
 
-export type SqlServer = azureResource.AzureGraphResource;
+export type SqlServer = AzureProduct;
 export async function getAvailableSqlServers(account: azdata.Account, subscription: Subscription): Promise<SqlServer[]> {
 	const api = await getAzureCoreAPI();
 
-	const result = await api.runGraphQuery<azureResource.AzureGraphResource>(account, subscription, false, 'where type == "microsoft.sql/servers"');
+	const result = await api.runGraphQuery<SqlServer>(account, subscription, false, 'where type == "microsoft.sql/servers"');
 	return result.resources;
 }
 
-export type SqlVMServer = azureResource.AzureGraphResource;
+export type SqlVMServer = AzureProduct;
 export async function getAvailableSqlVMs(account: azdata.Account, subscription: Subscription): Promise<SqlVMServer[]> {
 	const api = await getAzureCoreAPI();
 
-	const result = await api.runGraphQuery<azureResource.AzureGraphResource>(account, subscription, false, 'where type == "microsoft.compute/virtualmachines" and properties.storageProfile.imageReference.publisher == "microsoftsqlserver"');
+	const result = await api.runGraphQuery<SqlVMServer>(account, subscription, false, 'where type == "microsoft.compute/virtualmachines" and properties.storageProfile.imageReference.publisher == "microsoftsqlserver"');
 	return result.resources;
 }
