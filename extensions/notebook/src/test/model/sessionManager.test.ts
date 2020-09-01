@@ -232,7 +232,7 @@ describe('Jupyter Session', function (): void {
 		should(JSON.parse(result) === expectedResult);
 	});
 
-	it('should configure connection correctly', async function (): Promise<void> {
+	it('should configure connection correctly for MSSQL and SqlLogin auth type', async function (): Promise<void> {
 		let connectionProfile: IConnectionProfile = {
 			authenticationType: '',
 			connectionName: '',
@@ -305,5 +305,46 @@ describe('Jupyter Session', function (): void {
 		should(connectionProfile.options['host']).equal('host');
 		should(connectionProfile.options['knoxport']).equal('port');
 		should(connectionProfile.options['user']).equal('knoxUsername');
+	});
+
+	it('should configure connection correctly for PGSQL integrated auth type', async function (): Promise<void> {
+		let connectionProfile: IConnectionProfile = {
+			authenticationType: '',
+			connectionName: '',
+			databaseName: '',
+			id: 'id',
+			providerName: 'PGSQL',
+			options: {
+				authenticationType: 'integrated',
+			},
+			password: '',
+			savePassword: false,
+			saveProfile: false,
+			serverName: '',
+			userName: ''
+		};
+		let futureMock = TypeMoq.Mock.ofType(FutureStub);
+		let kernelMock = TypeMoq.Mock.ofType(KernelStub);
+		kernelMock.setup(k => k.name).returns(() => 'spark');
+		kernelMock.setup(m => m.requestExecute(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => futureMock.object);
+		mockJupyterSession.setup(s => s.kernel).returns(() => kernelMock.object);
+
+		await session.configureConnection(connectionProfile);
+		should(connectionProfile.options['host']).be.undefined();
+		should(connectionProfile.options['knoxport']).equal('30443');
+		should(connectionProfile.options['user']).be.undefined();
+	});
+
+	it('should set environment variables correctly', function (): void {
+		let futureMock = TypeMoq.Mock.ofType(FutureStub);
+		let kernelMock = TypeMoq.Mock.ofType(KernelStub);
+		kernelMock.setup(m => m.requestExecute(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => futureMock.object);
+		let spy = sinon.spy(kernelMock.object, 'requestExecute');
+		mockJupyterSession.setup(s => s.kernel).returns(() => kernelMock.object);
+		mockJupyterSession.setup(s => s.path).returns(() => 'path');
+		// newSession.path = 'Notebook-0';
+		let newSession = new JupyterSession(mockJupyterSession.object, undefined, false);
+		should(newSession).not.be.undefined();
+		should(spy.calledOnce);
 	});
 });
