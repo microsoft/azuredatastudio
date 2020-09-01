@@ -83,6 +83,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _textCellsLoading: number = 0;
 	private _standardKernels: notebookUtils.IStandardKernelWithProvider[];
 	private _kernelAliases: string[] = [];
+	private _currentKernelAlias: string;
 
 	public requestConnectionHandler: () => Promise<boolean>;
 
@@ -238,6 +239,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public get kernelAliases(): string[] {
 		return this._kernelAliases;
+	}
+
+	public get currentKernelAlias(): string {
+		return this._currentKernelAlias;
 	}
 
 	public set trustedMode(isTrusted: boolean) {
@@ -706,8 +711,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public changeKernel(displayName: string): void {
-		this._contextsLoadingEmitter.fire();
-		this.doChangeKernel(displayName, true).catch(e => this.logService.error(e));
+		this._currentKernelAlias = this.context?.serverCapabilities.notebookKernelAlias;
+		if (this.kernelAliases.includes(this.currentKernelAlias) && displayName === this.currentKernelAlias) {
+			this.doChangeKernel(displayName, true).catch(e => this.logService.error(e));
+		} else {
+			this._currentKernelAlias = undefined;
+			this._contextsLoadingEmitter.fire();
+			this.doChangeKernel(displayName, true).catch(e => this.logService.error(e));
+		}
 	}
 
 	private async doChangeKernel(displayName: string, mustSetProvider: boolean = true, restoreOnFail: boolean = true): Promise<void> {
@@ -718,8 +729,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		let oldDisplayName = this._activeClientSession && this._activeClientSession.kernel ? this._activeClientSession.kernel.name : undefined;
 		let nbKernelAlias: string;
 		if (this.kernelAliases.includes(displayName)) {
+			this._currentKernelAlias = displayName;
 			displayName = 'SQL';
-			nbKernelAlias = 'Kusto';
+			nbKernelAlias = this._currentKernelAlias;
 		}
 		try {
 			let changeKernelNeeded = true;
@@ -798,6 +810,16 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			}
 
 			if (newConnection) {
+				if (newConnection.serverCapabilities.notebookKernelAlias) {
+					// this._currentKernelAlias = newConnection.serverCapabilities.notebookKernelAlias;
+					let sqlConnectionProvider = this._kernelDisplayNameToConnectionProviderIds.get('SQL');
+					let index = sqlConnectionProvider.indexOf(newConnection.serverCapabilities.notebookKernelAlias.toUpperCase());
+					if (index > -1) {
+						sqlConnectionProvider.splice(index, 1);
+					}
+					this._kernelDisplayNameToConnectionProviderIds.set('SQL', sqlConnectionProvider);
+					this._kernelDisplayNameToConnectionProviderIds.set(newConnection.serverCapabilities.notebookKernelAlias, [newConnection.providerName]);
+				}
 				this._activeConnection = newConnection;
 				this.setActiveConnectionIfDifferent(newConnection);
 				this._activeClientSession.updateConnection(newConnection.toIConnectionProfile()).then(

@@ -409,7 +409,12 @@ export class AttachToDropdown extends SelectBox {
 			let currentKernelName = this.model.clientSession.kernel.name.toLowerCase();
 			let currentKernelSpec = find(this.model.specs.kernels, kernel => kernel.name && kernel.name.toLowerCase() === currentKernelName);
 			if (currentKernelSpec) {
-				kernelDisplayName = currentKernelSpec.display_name;
+				//KernelDisplay Name should be Kusto when connecting to Kusto connection
+				if (this.model.context?.serverCapabilities.notebookKernelAlias && this.model.currentKernelAlias === this.model.context?.serverCapabilities.notebookKernelAlias) {
+					kernelDisplayName = this.model.context?.serverCapabilities.notebookKernelAlias;
+				} else {
+					kernelDisplayName = currentKernelSpec.display_name;
+				}
 			}
 		}
 		return kernelDisplayName;
@@ -420,14 +425,17 @@ export class AttachToDropdown extends SelectBox {
 		let connProviderIds = this.model.getApplicableConnectionProviderIds(currentKernel);
 		if ((connProviderIds && connProviderIds.length === 0) || currentKernel === noKernel) {
 			this.setOptions([msgLocalHost]);
-		}
-		else {
-			let connections: string[] = model.context && model.context.title ? [model.context.title] : [msgSelectConnection];
+		} else {
+			let connections: string[] = model.context && model.context.title && connProviderIds.includes(this.model.context.providerName) ? [model.context.title] : [msgSelectConnection];
 			if (!find(connections, x => x === msgChangeConnection)) {
 				connections.push(msgChangeConnection);
 			}
 			this.setOptions(connections, 0);
 			this.enable();
+
+			if (this.model.kernelAliases.includes(currentKernel) && this.model.currentKernelAlias !== currentKernel) {
+				this.model.changeKernel(currentKernel);
+			}
 		}
 	}
 
