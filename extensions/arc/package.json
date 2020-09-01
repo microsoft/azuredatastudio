@@ -2,7 +2,7 @@
   "name": "arc",
   "displayName": "%arc.displayName%",
   "description": "%arc.description%",
-  "version": "0.3.1",
+  "version": "0.3.4",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
@@ -618,14 +618,14 @@
                           "required": true
                         },
                         {
-                          "label": "%arc.sql.storage-class.data.label%",
+                          "label": "%arc.storage-class.data.label%",
                           "description": "%arc.sql.storage-class.data.description%",
                           "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_DATA",
                           "type": "kube_storage_class",
                           "required": true
                         },
                         {
-                          "label": "%arc.sql.storage-class.logs.label%",
+                          "label": "%arc.storage-class.logs.label%",
                           "description": "%arc.sql.storage-class.logs.description%",
                           "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_LOGS",
                           "type": "kube_storage_class",
@@ -737,11 +737,32 @@
                           "defaultValue": "5432",
                           "min": 1,
                           "max": 65535
+                        },
+                        {
+                          "label": "%arc.storage-class.data.label%",
+                          "description": "%arc.postgres.storage-class.data.description%",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_STORAGE_CLASS_DATA",
+                          "type": "kube_storage_class",
+                          "required": true
+                        },
+                        {
+                          "label": "%arc.storage-class.logs.label%",
+                          "description": "%arc.postgres.storage-class.logs.description%",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_STORAGE_CLASS_LOGS",
+                          "type": "kube_storage_class",
+                          "required": true
+                        },
+                        {
+                          "label": "%arc.storage-class.backups.label%",
+                          "description": "%arc.postgres.storage-class.backups.description%",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_STORAGE_CLASS_BACKUPS",
+                          "type": "kube_storage_class",
+                          "required": true
                         }
                       ]
                     },
                     {
-                      "title": "%arc.postgres.settings.scheduling.title%",
+                      "title": "%arc.postgres.settings.resource.title%",
                       "fields": [
                         {
                           "label": "%arc.postgres.server.group.cores.request%",

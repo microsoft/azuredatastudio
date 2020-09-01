@@ -37,7 +37,8 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 
 	public get children(): BaseProjectTreeItem[] {
 		const output: BaseProjectTreeItem[] = [];
-		output.push(this.dataSourceNode);
+		// [8/31/2020] Hiding Data source for Preview since we do not have a way to add or update those.
+		// output.push(this.dataSourceNode);
 		output.push(this.databaseReferencesNode);
 
 		return output.concat(Object.values(this.fileChildren).sort(fileTree.sortFileFolderNodes));
