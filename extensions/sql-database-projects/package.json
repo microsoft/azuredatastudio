@@ -225,6 +225,10 @@
         {
           "command": "sqlDatabaseProjects.openContainingFolder",
           "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.exclude",
+          "when": "false"
         }
       ],
       "view/item/context": [

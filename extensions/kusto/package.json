@@ -11,6 +11,10 @@
     "azdata": ">=1.22.0"
   },
   "main": "./out/main",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/azuredatastudio.git"
+  },
   "typings": "./src/kusto",
   "scripts": {
     "compile": "gulp compile-extension:kusto-client",
@@ -405,7 +409,7 @@
     "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#1.1.0",
     "figures": "^2.0.0",
     "find-remove": "1.2.1",
-    "service-downloader": "github:anthonydresser/service-downloader#0.1.6",
+    "service-downloader": "0.2.1",
     "vscode-extension-telemetry": "0.1.0",
     "vscode-languageclient": "5.2.1",
     "vscode-nls": "^4.0.0"

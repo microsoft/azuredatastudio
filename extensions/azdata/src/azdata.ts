@@ -7,11 +7,11 @@ import * as azdataExt from 'azdata-ext';
 import * as os from 'os';
 import { SemVer } from 'semver';
 import * as vscode from 'vscode';
-import { executeCommand, executeSudoCommand, ExitCodeError } from './common/childProcess';
+import { executeCommand, executeSudoCommand, ExitCodeError, ProcessOutput } from './common/childProcess';
 import { HttpClient } from './common/httpClient';
 import Logger from './common/logger';
 import { getErrorMessage, searchForCmd } from './common/utils';
-import { azdataAutoInstallKey, azdataAutoUpgradeKey, azdataHostname, azdataReleaseJson, azdataUri, deploymentConfigurationKey } from './constants';
+import { acceptEula, azdataAutoInstallKey, azdataAutoUpgradeKey, azdataConfigSection, azdataHostname, azdataReleaseJson, azdataUri, debugConfigKey, deploymentConfigurationKey, eulaUrl, microsoftPrivacyStatementUrl } from './constants';
 import * as loc from './localizedConstants';
 
 const enum AzdataDeployOption {
@@ -109,19 +109,19 @@ export class AzdataTool implements IAzdataTool {
 	 * It also updates the cachedVersion property based on the return value from the tool.
 	 */
 	public async version(): Promise<azdataExt.AzdataOutput<string>> {
-		const output = await executeCommand(`"${this.path}"`, ['--version']);
+		const output = await executeAzdataCommand(`"${this.path}"`, ['--version']);
 		this.cachedVersion = new SemVer(parseVersion(output.stdout));
 		return {
 			logs: [],
 			stdout: output.stdout.split(os.EOL),
 			stderr: output.stderr.split(os.EOL),
-			result: ''
+			result: output.stdout
 		};
 	}
 
 	public async executeCommand<R>(args: string[], additionalEnvVars?: { [key: string]: string }): Promise<azdataExt.AzdataOutput<R>> {
 		try {
-			const output = JSON.parse((await executeCommand(`"${this.path}"`, args.concat(['--output', 'json']), additionalEnvVars)).stdout);
+			const output = JSON.parse((await executeAzdataCommand(`"${this.path}"`, args.concat(['--output', 'json']), additionalEnvVars)).stdout);
 			return {
 				logs: <string[]>output.log,
 				stdout: <string[]>output.stdout,
@@ -129,11 +129,18 @@ export class AzdataTool implements IAzdataTool {
 				result: <R>output.result
 			};
 		} catch (err) {
-			// Since the output is JSON we need to do some extra parsing here to get the correct stderr out.
-			// The actual value we get is something like ERROR: { stderr: '...' } so we also need to trim
-			// off the start that isn't a valid JSON blob
+
 			if (err instanceof ExitCodeError) {
-				err.stderr = JSON.parse(err.stderr.substring(err.stderr.indexOf('{'))).stderr;
+				try {
+					// For azdata internal errors the output is JSON and so we need to do some extra parsing here
+					// to get the correct stderr out. The actual value we get is something like
+					// ERROR: { stderr: '...' }
+					// so we also need to trim off the start that isn't a valid JSON blob
+					err.stderr = JSON.parse(err.stderr.substring(err.stderr.indexOf('{'))).stderr;
+				} catch (err) {
+					// no op - it means this was probably some other generic error (such as command not being found)
+				}
+
 			}
 			throw err;
 		}
@@ -233,21 +240,22 @@ export async function checkAndInstallAzdata(userRequested: boolean = false): Pro
 
 /**
  * Checks whether a newer version of azdata is available - and if it is then invokes the process of azdata upgrade.
- * @param currentAzdata The current version of azdata to check again
- * Checks whether a newer version of azdata is available - and if it is prompts the user to download and
- * install it.
  * @param currentAzdata The current version of azdata to check against
  * @param userRequested true means that this operation by was requested by a user by executing an ads command.
  */
-export async function checkAndUpgradeAzdata(currentAzdata?: IAzdataTool, userRequested: boolean = false): Promise<void> {
-	if (currentAzdata === undefined) {
-		currentAzdata = await findAzdata();
+export async function checkAndUpgradeAzdata(currentAzdata?: IAzdataTool, userRequested: boolean = false): Promise<boolean> {
+	if (currentAzdata !== undefined) {
+		const newVersion = await discoverLatestAvailableAzdataVersion();
+		if (newVersion.compare(currentAzdata.cachedVersion) === 1) {
+			Logger.log(loc.foundAzdataVersionToUpgradeTo(newVersion.raw, currentAzdata.cachedVersion.raw));
+			await promptToUpgradeAzdata(userRequested).catch(e => console.log(`Unexpected error prompting to upgrade azdata ${e}`));
+		} else {
+			Logger.log(loc.currentlyInstalledVersionIsLatest(currentAzdata.cachedVersion.raw));
+		}
+	} else {
+		Logger.log(loc.upgradeCheckSkipped);
 	}
-	const newVersion = await discoverLatestAvailableAzdataVersion();
-	if (newVersion.compare(currentAzdata.cachedVersion) === 1) {
-		Logger.log(loc.foundAzdataVersionToUpgradeTo(newVersion.raw, currentAzdata.cachedVersion.raw));
-		await promptToUpgradeAzdata(userRequested).catch(e => console.log(`Unexpected error prompting to upgrade azdata ${e}`));
-	}
+	return false;
 }
 
 async function promptToInstallAzdata(userRequested: boolean = false): Promise<void> {
@@ -317,6 +325,26 @@ async function promptToUpgradeAzdata(userRequested: boolean = false): Promise<vo
 }
 
 /**
+ * Prompts user to accept EULA it if was not previously accepted. Stores and returns the user response to EULA prompt.
+ * @param memento - memento where the user response is stored.
+ * pre-requisite, the calling code has to ensure that the eula has not yet been previously accepted by the user.
+ * returns true if the user accepted the EULA.
+ */
+
+export async function promptForEula(memento: vscode.Memento): Promise<boolean> {
+	Logger.show();
+	Logger.log(loc.promptForEulaLog(microsoftPrivacyStatementUrl, eulaUrl));
+	const reply = await vscode.window.showInformationMessage(loc.promptForEula(microsoftPrivacyStatementUrl, eulaUrl), loc.yes, loc.no);
+	Logger.log(loc.userResponseToEulaPrompt(reply));
+	if (reply === loc.yes) {
+		await memento.update(acceptEula, true);
+		return true;
+	} else {
+		return false;
+	}
+}
+
+/**
  * Downloads the Windows installer and runs it
  */
 async function downloadAndInstallAzdataWin32(): Promise<void> {
@@ -364,9 +392,8 @@ async function installAzdataLinux(): Promise<void> {
 /**
  */
 async function findSpecificAzdata(): Promise<IAzdataTool> {
-	const promise = ((process.platform === 'win32') ? searchForCmd('azdata.cmd') : searchForCmd('azdata'));
-	const path = `"${await promise}"`; // throws if azdata is not found
-	const versionOutput = await executeCommand(`"${path}"`, ['--version']);
+	const path = await ((process.platform === 'win32') ? searchForCmd('azdata.cmd') : searchForCmd('azdata'));
+	const versionOutput = await executeAzdataCommand(`"${path}"`, ['--version']);
 	return new AzdataTool(path, parseVersion(versionOutput.stdout));
 }
 
@@ -445,6 +472,15 @@ async function discoverLatestStableAzdataVersionDarwin(): Promise<SemVer> {
 	return new SemVer(azdataPackageVersionInfo.versions.stable);
 }
 
+async function executeAzdataCommand(command: string, args: string[], additionalEnvVars: { [key: string]: string } = {}): Promise<ProcessOutput> {
+	additionalEnvVars = Object.assign(additionalEnvVars, { 'ACCEPT_EULA': 'yes' });
+	const debug = vscode.workspace.getConfiguration(azdataConfigSection).get(debugConfigKey);
+	if (debug) {
+		args.push('--debug');
+	}
+	return executeCommand(command, args, additionalEnvVars);
+}
+
 /**
  * Gets the latest azdata version for linux clients
  * This method requires sudo permission so not suitable to be run during startup.
@@ -457,6 +493,6 @@ async function discoverLatestStableAzdataVersionDarwin(): Promise<SemVer> {
 // 	const packageName = output.split('\n')[1].split(' ')[1];
 // 	// the version string is the first part of the package sting before '~'
 // 	const version = packageName.split('~')[0];
-// 	Logger.log(loc.foundAzdataVersionToUpgradeTo(version));
+// 	Logger.log(loc.latestAzdataVersionAvailable(version));
 // 	return new SemVer(version);
 // }

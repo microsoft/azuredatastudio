@@ -1,6 +1,8 @@
 {
-	"azdata.displayName": "azdata",
-	"azdata.description": "Support for azdata",
+	"azdata.displayName": "Azure Data CLI",
+	"azdata.description": "Support for Azure Data CLI.",
+	"azdata.config.title": "Azure Data CLI Configuration",
+	"azdata.config.debug": "Log debug info to the output channel for all executed azdata commands",
 
 	"azdata.install.command.name": "Install Azdata",
 	"azdata.upgrade.command.name": "Upgrade Azdata",
@@ -9,5 +11,4 @@
 	"deployment.configuration.title": "Deployment configuration",
 	"azdata.auto.install.description": "Choose how automatic install of azdata tool is done",
 	"azdata.auto.upgrade.description": "Choose how automatic upgrade of azdata tool is done"
-
 }

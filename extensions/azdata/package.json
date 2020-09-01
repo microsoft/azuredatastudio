@@ -2,7 +2,7 @@
   "name": "azdata",
   "displayName": "%azdata.displayName%",
   "description": "%azdata.description%",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
@@ -22,8 +22,14 @@
   "contributes": {
     "configuration": [
       {
-        "title": "%deployment.configuration.title%",
+        "type": "object",
+        "title": "%azdata.config.title%",
         "properties": {
+          "azdata.logDebugInfo": {
+          "type": "boolean",
+          "default": false,
+          "description": "%azdata.config.debug%"
+        },
           "deployment.azdata.auto.install": {
             "type": "string",
             "default": "UserPrompt",
