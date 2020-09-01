@@ -85,7 +85,6 @@
 		"./sql/workbench/services/objectExplorer/**/*.ts", // 301 errors
 		"./sql/workbench/services/query/**/*.ts", // 3127 errors
 		"./sql/workbench/services/queryEditor/**/*.ts", // 3127 errors
-		"./sql/workbench/services/restore/**/*.ts", // 83 errors
 		"./sql/workbench/test/**/*.ts", // 3461 errors
 		"./sql/workbench/update/**/*.ts", // 3102 errors
 		"./vs/workbench/api/browser/**/*.ts", // 3187 errors
