@@ -28,7 +28,7 @@ export class SqlDatabaseProjectTasksProvider implements vscode.TaskProvider {
 	) {
 	}
 
-	public provideTasks(cancellationToken?: vscode.CancellationToken): vscode.ProviderResult<vscode.Task[]> {
+	public provideTasks(): vscode.ProviderResult<vscode.Task[]> {
 		let tasks: vscode.Task[] = [];
 		for (const project of this.projectsController.projects) {
 			tasks.push(new SqlDatabaseProjectBuildTask(this.projectsController, project.projectFileName));
@@ -36,7 +36,7 @@ export class SqlDatabaseProjectTasksProvider implements vscode.TaskProvider {
 		return tasks;
 	}
 
-	public resolveTask(task: vscode.Task, cancellationToken?: vscode.CancellationToken): vscode.ProviderResult<vscode.Task> {
+	public resolveTask(task: vscode.Task): vscode.ProviderResult<vscode.Task> {
 		return task;
 	}
 }
@@ -58,6 +58,7 @@ class SqlDatabaseProjectBuildTask extends vscode.Task {
 		super(type, vscode.TaskScope.Workspace, `${SqlDatabaseProjectBuildTask.taskType}: ${projectFileName}`,
 			SqlDatabaseProjectTasksProvider.SqlProjType);
 		this.group = vscode.TaskGroup.Build;
+		this.presentationOptions.reveal = vscode.TaskRevealKind.Always;
 
 		this.projectsController = projectsController;
 		let buildHelper: BuildHelper = this.projectsController.buildHelper;
