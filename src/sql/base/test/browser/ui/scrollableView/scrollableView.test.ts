@@ -189,8 +189,9 @@ suite('ScrollableView', () => {
 });
 
 async function waitForAnimation(): Promise<void> {
-	await new Promise<void>(r => scheduleAtNextAnimationFrame(r));
-	await new Promise<void>(r => scheduleAtNextAnimationFrame(r));
+	await timeout(50);
+	await new Promise<void>(r => scheduleAtNextAnimationFrame(r, -1000));
+	await new Promise<void>(r => scheduleAtNextAnimationFrame(r, -1000));
 	await timeout(50);
 }
 
