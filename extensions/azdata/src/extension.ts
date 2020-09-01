@@ -19,9 +19,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 	if (!eulaAccepted) {
 		// Don't block on this since we want extension to finish activating without requiring user actions.
 		// If EULA has not been accepted then we will check again while executing azdata commands.
-		promptForEula(context.globalState).then(userResponse => {
-			eulaAccepted = userResponse;
-		});
+		promptForEula(context.globalState)
+			.then(userResponse => {
+				eulaAccepted = userResponse;
+			})
+			.catch(err => console.log(err));
 	}
 	// Don't block on this since we want the extension to finish activating without user actions
 	manuallyInstallOrUpgradeAzdata(context, localAzdata)
