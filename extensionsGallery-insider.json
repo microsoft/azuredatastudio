@@ -3651,6 +3651,59 @@
 					],
 					"statistics": [],
 					"flags": "preview"
+				},
+				{
+					"extensionId": "74",
+					"extensionName": "kusto",
+					"displayName": "Kusto",
+					"shortDescription": "Kusto extension for Azure Data Studio",
+					"publisher": {
+						"displayName": "Microsoft",
+						"publisherId": "Microsoft",
+						"publisherName": "Microsoft"
+					},
+					"versions": [
+						{
+							"version": "0.1.0",
+							"lastUpdated": "9/1/2020",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/kusto/kusto-0.1.0.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/kusto/resources/images/azure_data_explorer_query_124x124.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/kusto/readme.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/kusto/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": ">=1.22.0"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/Microsoft/azuredatastudio"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
 				}
 			],
 			"resultMetadata": [
@@ -3659,7 +3712,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 62
+							"count": 63
 						}
 					]
 				}
