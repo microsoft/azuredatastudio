@@ -95,7 +95,7 @@ export class DeployAzureSQLVMWizard extends WizardBase<DeployAzureSQLVMWizard, W
 	public createFormRowComponent(view: azdata.ModelView, title: string, description: string, component: azdata.Component, required: boolean): azdata.FlexContainer {
 
 		component.updateProperties({
-			required: required,
+			required: false,
 			width: '480px'
 		});
 
@@ -141,7 +141,14 @@ export class DeployAzureSQLVMWizard extends WizardBase<DeployAzureSQLVMWizard, W
 	public addDropdownValues(component: azdata.DropDownComponent, values: azdata.CategoryValue[], width?: number) {
 		component.updateProperties({
 			values: values,
-			width: (width) ? '480px' : width
+			width: '480px'
 		});
+	}
+
+	public showErrorMessage(message: string) {
+		this.wizardObject.message = {
+			text: message,
+			level: azdata.window.MessageLevel.Error
+		};
 	}
 }
