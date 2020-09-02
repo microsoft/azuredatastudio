@@ -64,24 +64,19 @@ export class VmSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 				.withFormItems(
 					[
 						{
-							title: constants.VmNameTextBoxLabel,
-							component: this._vmNameTextBox,
+							component: this.wizard.createFormRowComponent(view, constants.VmNameTextBoxLabel, '', this._vmNameTextBox, true)
 						},
 						{
-							title: constants.VmAdminUsernameTextBoxLabel,
-							component: this._adminUsernameTextBox,
+							component: this.wizard.createFormRowComponent(view, constants.VmAdminUsernameTextBoxLabel, '', this._adminUsernameTextBox, true)
 						},
 						{
-							title: constants.VmAdminPasswordTextBoxLabel,
-							component: this._adminPasswordTextBox,
+							component: this.wizard.createFormRowComponent(view, constants.VmAdminPasswordTextBoxLabel, '', this._adminPasswordTextBox, true)
 						},
 						{
-							title: constants.VmAdminConfirmPasswordTextBoxLabel,
-							component: this._adminComfirmPasswordTextBox,
+							component: this.wizard.createFormRowComponent(view, constants.VmAdminConfirmPasswordTextBoxLabel, '', this._adminComfirmPasswordTextBox, true)
 						},
 						{
-							title: constants.VmImageDropdownLabel,
-							component: this._vmImageDropdownLoader,
+							component: this.wizard.createFormRowComponent(view, constants.VmImageDropdownLabel, '', this._vmImageDropdownLoader, true)
 						},
 						{
 							title: constants.VmSkuDropdownLabel,
