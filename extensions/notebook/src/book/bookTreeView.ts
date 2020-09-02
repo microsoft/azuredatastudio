@@ -21,7 +21,6 @@ import { IJupyterBookSectionV2 } from '../contracts/content';
 import { debounce, getPinnedNotebooks } from '../common/utils';
 import { IBookPinManager, BookPinManager } from './bookPinManager';
 
-//const Content = 'content';
 
 interface BookSearchResults {
 	notebookPaths: string[];
