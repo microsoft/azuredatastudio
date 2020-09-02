@@ -49,8 +49,8 @@ export function getBooleanValueFromStringOrBoolean(value: any): boolean {
 	return false;
 }
 
-export function getCategoryDisplayName(categories: azdata.CategoryValue[], categoryName: string) {
-	let displayName: string;
+export function getCategoryDisplayName(categories: azdata.CategoryValue[], categoryName: string): string | undefined {
+	let displayName: string | undefined;
 	categories.forEach(c => {
 		if (c.name === categoryName) {
 			displayName = c.displayName;
@@ -59,8 +59,8 @@ export function getCategoryDisplayName(categories: azdata.CategoryValue[], categ
 	return displayName;
 }
 
-export function getCategoryName(categories: azdata.CategoryValue[], categoryDisplayName: string) {
-	let categoryName: string;
+export function getCategoryName(categories: azdata.CategoryValue[], categoryDisplayName: string): string | undefined {
+	let categoryName: string | undefined;
 	categories.forEach(c => {
 		if (c.displayName === categoryDisplayName) {
 			categoryName = c.name;
