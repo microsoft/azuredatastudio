@@ -17,7 +17,7 @@ import * as azdata from 'azdata';
 
 import { promises as fs } from 'fs';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
-import { Project, ProjectEntry, reservedProjectFolders, SqlProjectReferenceProjectEntry } from '../models/project';
+import { Project, reservedProjectFolders, FileProjectEntry, SqlProjectReferenceProjectEntry } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
 import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
@@ -372,7 +372,7 @@ export class ProjectsController {
 	public async exclude(context: FileNode | FolderNode): Promise<void> {
 		const project = this.getProjectFromContext(context);
 
-		const fileEntry = this.getProjectEntry(project, context);
+		const fileEntry = this.getFileProjectEntry(project, context);
 
 		if (fileEntry) {
 			await project.exclude(fileEntry);
@@ -396,7 +396,7 @@ export class ProjectsController {
 		let success = false;
 
 		if (context instanceof FileNode || FolderNode) {
-			const fileEntry = this.getProjectEntry(project, context);
+			const fileEntry = this.getFileProjectEntry(project, context);
 
 			if (fileEntry) {
 				await project.deleteFileFolder(fileEntry);
@@ -411,7 +411,7 @@ export class ProjectsController {
 		}
 	}
 
-	private getProjectEntry(project: Project, context: BaseProjectTreeItem): ProjectEntry | undefined {
+	private getFileProjectEntry(project: Project, context: BaseProjectTreeItem): FileProjectEntry | undefined {
 		const root = context.root as ProjectRootTreeItem;
 		const fileOrFolder = context as FileNode ? context as FileNode : context as FolderNode;
 
