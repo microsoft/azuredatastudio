@@ -38,6 +38,7 @@ import * as queryContext from 'sql/workbench/contrib/query/common/queryContext';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import * as actions from 'sql/workbench/contrib/query/browser/queryActions';
 import { IRange } from 'vs/editor/common/core/range';
+import { UntitledQueryEditorInput } from 'sql/workbench/common/editor/query/untitledQueryEditorInput';
 
 const QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY = 'queryEditorViewState';
 
@@ -267,6 +268,10 @@ export class QueryEditor extends EditorPane {
 
 		// TODO: Make it more generic, some way for extensions to register the commands it supports
 		if ((!fileExtension && connectionProfile?.providerName === 'KUSTO') || this.modeService.getExtensions('Kusto').indexOf(fileExtension) > -1) {
+			if (this.input instanceof UntitledQueryEditorInput) {		// Sets proper language mode for untitled query editor based on the connection selected by user.
+				this.input.setMode('kusto');
+			}
+
 			content = [
 				{ action: this._runQueryAction },
 				{ action: this._cancelQueryAction },
