@@ -84,7 +84,7 @@
 		"./sql/workbench/services/query/**/*.ts", // 3013 errors
 		"./sql/workbench/services/queryEditor/**/*.ts", // 3013 errors
 		"./sql/workbench/test/**/*.ts", // 3347 errors
-		// "./sql/workbench/update/**/*.ts", // 2988 errors
+		"./sql/workbench/update/**/*.ts", // 2988 errors
 		"./vs/workbench/api/browser/**/*.ts", // 3187 errors
 		"./vs/workbench/api/common/**/*.ts", // 323 errors
 		"./vs/workbench/api/node/**/*.ts", // 328 errors
