@@ -16,7 +16,7 @@ import * as loc from './localizedConstants';
 
 const enum AzdataDeployOption {
 	doNotAskAgain = 'Don\'t Ask Again',
-	askAgain = 'Ask Later'
+	askLater = 'Ask Later'
 }
 
 /**
@@ -278,7 +278,7 @@ async function promptToInstallAzdata(userRequested: boolean = false): Promise<bo
 		Logger.log(loc.skipInstall(config));
 		return false;
 	}
-	if (config === AzdataDeployOption.askAgain) {
+	if (config === AzdataDeployOption.askLater) {
 		response = await vscode.window.showErrorMessage(loc.promptForAzdataInstall, ...getResponses(userRequested));
 		Logger.log(loc.userResponseToInstallPrompt(response));
 	}
@@ -320,7 +320,7 @@ async function promptToUpgradeAzdata(newVersion: string, userRequested: boolean 
 		Logger.log(loc.skipUpgrade(config));
 		return false;
 	}
-	if (config === AzdataDeployOption.askAgain) {
+	if (config === AzdataDeployOption.askLater) {
 		response = await vscode.window.showInformationMessage(loc.promptForAzdataUpgrade(newVersion), ...getResponses(userRequested));
 		Logger.log(loc.userResponseToUpgradePrompt(response));
 	}
@@ -372,7 +372,7 @@ export async function promptForEula(memento: vscode.Memento, userRequested: bool
 function getResponses(userRequested: boolean): string[] {
 	return userRequested
 		? [loc.yes, loc.no]
-		: [loc.yes, loc.askAgain, loc.doNotAskAgain];
+		: [loc.yes, loc.askLater, loc.doNotAskAgain];
 }
 
 /**
