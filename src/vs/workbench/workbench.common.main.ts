@@ -440,7 +440,6 @@ import 'sql/workbench/contrib/profiler/browser/profilerActions.contribution';
 
 // resource viewer
 import 'sql/workbench/contrib/resourceViewer/browser/resourceViewer.contribution';
-import 'sql/workbench/contrib/resourceViewer/browser/resourceViewerActions.contribution';
 
 // dashboard
 import 'sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/types/barChart.contribution';
