@@ -83,7 +83,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 				ariaLabel: localize('deploymentDialog.deploymentOptions', "Deployment options"),
 				width: '1100px'
 			}).component();
-			this._toDispose.push(this._cardGroup.onSelectionChanged((cardId: string) => {
+			this._toDispose.push(this._cardGroup.onSelectionChanged(({ cardId }) => {
 				const resourceType = resourceTypes.find(rt => { return rt.name === cardId; });
 				if (resourceType) {
 					this.selectResourceType(resourceType);
