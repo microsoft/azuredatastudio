@@ -410,7 +410,7 @@ export class AttachToDropdown extends SelectBox {
 			let currentKernelSpec = find(this.model.specs.kernels, kernel => kernel.name && kernel.name.toLowerCase() === currentKernelName);
 			if (currentKernelSpec) {
 				//KernelDisplay Name should be Kusto when connecting to Kusto connection
-				if ((this.model.context?.serverCapabilities.notebookKernelAlias && this.model.currentKernelAlias === this.model.context?.serverCapabilities.notebookKernelAlias) || (this.model.currentKernel === this.model.currentKernelAlias && this.model.currentKernel)) {
+				if ((this.model.context?.serverCapabilities.notebookKernelAlias && this.model.currentKernelAlias === this.model.context?.serverCapabilities.notebookKernelAlias) || (this.model.kernelAliases.includes(this.model.currentKernel) && this.model.currentKernel)) {
 					kernelDisplayName = this.model.context?.serverCapabilities.notebookKernelAlias || this.model.currentKernel;
 				} else {
 					kernelDisplayName = currentKernelSpec.display_name;
@@ -426,7 +426,7 @@ export class AttachToDropdown extends SelectBox {
 		if ((connProviderIds && connProviderIds.length === 0) || currentKernel === noKernel) {
 			this.setOptions([msgLocalHost]);
 		} else {
-			let connections: string[] = model.context && model.context.title && connProviderIds.includes(this.model.context.providerName) ? [model.context.title] : [msgSelectConnection];
+			let connections: string[] = model.context && model.context.title && (connProviderIds.includes(this.model.context.providerName)) ? [model.context.title] : [msgSelectConnection];
 			if (!find(connections, x => x === msgChangeConnection)) {
 				connections.push(msgChangeConnection);
 			}
