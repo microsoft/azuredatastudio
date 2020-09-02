@@ -276,7 +276,6 @@
 				"Attach to Extension Host",
 				"Attach to Shared Process",
 			],
-			"preLaunchTask": "Ensure Prelaunch Dependencies",
 			"presentation": {
 				"group": "0_vscode",
 				"order": 1

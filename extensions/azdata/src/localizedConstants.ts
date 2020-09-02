@@ -9,7 +9,6 @@ const localize = nls.loadMessageBundle();
 
 export const searchingForAzdata = localize('azdata.searchingForAzdata', "Searching for existing azdata installation...");
 export const foundExistingAzdata = (path: string, version: string): string => localize('azdata.foundExistingAzdata', "Found existing azdata installation of version (v{0}) at path:{1}", version, path);
-export const notFoundExistingAzdata = localize('azdata.notFoundExistingAzdata', "Could not find existing azdata installation. Upgrade cannot be performed. Try installing instead");
 
 export const downloadingProgressMb = (currentMb: string, totalMb: string): string => localize('azdata.downloadingProgressMb', "Downloading ({0} / {1} MB)", currentMb, totalMb);
 export const downloadFinished = localize('azdata.downloadFinished', "Download finished");
@@ -19,15 +18,15 @@ export const azdataInstalled = localize('azdata.azdataInstalled', "azdata was su
 export const azdataUpgraded = localize('azdata.azdataUpgraded', "azdata was successfully upgraded.");
 export const yes = localize('azdata.yes', "Yes");
 export const no = localize('azdata.no', "No");
-export const always = localize('azdata.always', "Always");
-export const never = localize('azdata.never', "Never");
+export const doNotAskAgain = localize('azdata.never', "Don't Ask Again");
+export const askAgain = localize('azdata.never', "Don't Ask Again");
 export const downloadingTo = (name: string, location: string): string => localize('azdata.downloadingTo', "Downloading {0} to {1}", name, location);
 export const executingCommand = (command: string, args: string[]): string => localize('azdata.executingCommand', "Executing command \"{0} {1}\"", command, args?.join(' '));
 export const stdoutOutput = (stdout: string): string => localize('azdata.stdoutOutput', "stdout: {0}", stdout);
 export const stderrOutput = (stderr: string): string => localize('azdata.stderrOutput', "stderr: {0}", stderr);
 export const checkingLatestAzdataVersion = localize('azdata.checkingLatestAzdataVersion', "Checking for latest available version of azdata");
 export const gettingTextContentsOfUrl = (url: string): string => localize('azdata.gettingTextContentsOfUrl', "Getting text contents of resource at URL {0}", url);
-export const foundAzdataVersionToUpgradeTo = (newVersion: string, currentVersion: string): string => localize('azdata.versionForUpgrade', "Found version: {0} that azdata-cli can be upgraded to from current version: {1}.", newVersion, currentVersion);
+export const foundAzdataVersionToUpgradeTo = (newVersion: string, currentVersion: string): string => localize('azdata.versionForUpgrade', "Found version: {0} that azdata can be upgraded to from current version: {1}.", newVersion, currentVersion);
 export const latestAzdataVersionAvailable = (version: string): string => localize('azdata.latestAzdataVersionAvailable', "Latest available azdata version: {0}.", version);
 export const couldNotFindAzdata = (err: any): string => localize('azdata.couldNotFindAzdata', "Could not find azdata. Error: {0}", err.message ?? err);
 export const currentlyInstalledVersionIsLatest = (currentVersion: string): string => localize('azdata.currentlyInstalledVersionIsLatest', "Currently installed version of azdata: {0} is same or newer than any other version available", currentVersion);
@@ -46,8 +45,9 @@ export const skipUpgrade = (config: string): string => localize('azdata.skipUpgr
 export const autoDeployConfig = (configName: string, configValue: string): string => localize('azdata.autoDeployConfig', "Azdata auto deployment setting: {0}.{1} is {2}", deploymentConfigurationKey, configName, configValue);
 export const userResponseToInstallPrompt = (response: string | undefined): string => localize('azdata.userResponseInstall', "User Response on prompt to install azdata: {0}", response);
 export const userResponseToUpgradePrompt = (response: string | undefined): string => localize('azdata.userResponseUpgrade', "User Response on prompt to upgrade azdata: {0}", response);
-export const userRequestedInstall = localize('azdata.userRequestedInstall', "User requested to install azdata using 'Install Azdata' command");
-export const userRequestedUpgrade = localize('azdata.userRequestedUpgrade', "User requested to upgrade azdata using 'Upgrade Azdata' command");
+export const userRequestedInstall = localize('azdata.userRequestedInstall', "User requested to install azdata using 'Azdata: Install' command");
+export const userRequestedUpgrade = localize('azdata.userRequestedUpgrade', "User requested to upgrade azdata using 'Azdata: Upgrade' command");
+export const userRequestedAcceptEula = localize('azdata.acceptEula', "User requested to invoke accept eula prompts 'Azdata: Accept Eula' command");
 export const upgradeCheckSkipped = localize('azdata.updateCheckSkipped', "No check for new azdata version availability performed as azdata was not found to be installed");
 export const eulaNotAccepted = localize('azdata.eulaNotAccepted', "Microsoft Privacy statement and Azure Data CLI license terms have not been accepted");
 export const installManually = (expectedVersion: string, instructionsUrl: string) => localize('azdata.installManually', "azdata is not installed. Version: {0} needs to be installed or some features may not work. Please install it manually using these [instructions]({1}). Restart ADS when installation is done.", expectedVersion, instructionsUrl);

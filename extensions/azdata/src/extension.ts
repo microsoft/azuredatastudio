@@ -14,19 +14,20 @@ let localAzdata: IAzdataTool | undefined = undefined;
 let eulaAccepted: boolean = false;
 
 export async function activate(context: vscode.ExtensionContext): Promise<azdataExt.IExtension> {
-	await vscode.commands.executeCommand('setContext', 'config.deployment.azdataFound', false);
+	vscode.commands.registerCommand('azdata.acceptEula', async () => {
+		eulaAccepted = await promptForEula(context.globalState, true /* userRequested */);
+		await vscode.commands.executeCommand('setContext', 'azdata.eulaAccepted', eulaAccepted);
+	});
 
 	vscode.commands.registerCommand('azdata.install', async () => {
 		await checkAndInstallAzdata(true);
 	});
 
+
+
 	vscode.commands.registerCommand('azdata.upgrade', async () => {
-		const currentAzdata = await findAzdata();
-		if (currentAzdata !== undefined) {
-			await checkAndUpgradeAzdata(currentAzdata, true);
-		} else {
-			vscode.window.showErrorMessage(loc.notFoundExistingAzdata);
-			Logger.log(loc.notFoundExistingAzdata);
+		if (await checkAndUpgradeAzdata(localAzdata, true /* userRequested */)) { // if an upgrade was performed
+			localAzdata = await findAzdata(); // find and save the currently installed azdata
 		}
 	});
 
@@ -35,10 +36,12 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 		.then(async azdataTool => {
 			localAzdata = azdataTool;
 			if (localAzdata !== undefined) {
-				await vscode.commands.executeCommand('setContext', 'config.deployment.azdataFound', true);
+				await vscode.commands.executeCommand('setContext', 'azdata.found', true /* userRequested */);
 				try {
-					await checkAndUpgradeAzdata(localAzdata); //update if available and user wants it.
-					localAzdata = await findAzdata(); // now again find and save the currently installed azdata
+					//update if available and user wants it.
+					if (await checkAndUpgradeAzdata(localAzdata)) { // if an upgrade was performed
+						localAzdata = await findAzdata(); // find and save the currently installed azdata
+					}
 				} catch (err) {
 					vscode.window.showWarningMessage(loc.upgradeError(err));
 				}
@@ -50,8 +53,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 		// Don't block on this since we want extension to finish activating without requiring user actions.
 		// If EULA has not been accepted then we will check again while executing azdata commands.
 		promptForEula(context.globalState)
-			.then((userResponse: boolean) => {
+			.then(async (userResponse: boolean) => {
 				eulaAccepted = userResponse;
+				await vscode.commands.executeCommand('setContext', 'azdata.eulaAccepted', true);
 			})
 			.catch((err: any) => console.log(err));
 	}

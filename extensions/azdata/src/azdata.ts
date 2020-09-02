@@ -15,10 +15,10 @@ import { acceptEula, azdataAutoInstallKey, azdataAutoUpgradeKey, azdataConfigSec
 import * as loc from './localizedConstants';
 
 const enum AzdataDeployOption {
-	always = 'Always',
-	never = 'Never',
-	userPrompt = 'UserPrompt'
+	doNotAskAgain = 'Don\'t Ask Again',
+	askAgain = 'Ask Later'
 }
+
 /**
  * Interface for an object to interact with the azdata tool installed on the box.
  */
@@ -233,7 +233,9 @@ export async function checkAndInstallAzdata(userRequested: boolean = false): Pro
 		return await findAzdata(); // find currently installed Azdata
 	} catch (err) {
 		// Calls will be made to handle azdata not being installed if user declines to install on the prompt
-		await promptToInstallAzdata(userRequested).catch(e => console.log(`Unexpected error prompting to install azdata ${e}`));
+		if (await promptToInstallAzdata(userRequested)) {
+			return await findAzdata();
+		}
 	}
 	return undefined;
 }
@@ -242,13 +244,14 @@ export async function checkAndInstallAzdata(userRequested: boolean = false): Pro
  * Checks whether a newer version of azdata is available - and if it is then invokes the process of azdata upgrade.
  * @param currentAzdata The current version of azdata to check against
  * @param userRequested true means that this operation by was requested by a user by executing an ads command.
+ * returns true if upgrade was done and false otherwise.
  */
 export async function checkAndUpgradeAzdata(currentAzdata?: IAzdataTool, userRequested: boolean = false): Promise<boolean> {
 	if (currentAzdata !== undefined) {
 		const newVersion = await discoverLatestAvailableAzdataVersion();
 		if (newVersion.compare(currentAzdata.cachedVersion) === 1) {
 			Logger.log(loc.foundAzdataVersionToUpgradeTo(newVersion.raw, currentAzdata.cachedVersion.raw));
-			await promptToUpgradeAzdata(userRequested).catch(e => console.log(`Unexpected error prompting to upgrade azdata ${e}`));
+			return await promptToUpgradeAzdata(userRequested);
 		} else {
 			Logger.log(loc.currentlyInstalledVersionIsLatest(currentAzdata.cachedVersion.raw));
 		}
@@ -258,29 +261,36 @@ export async function checkAndUpgradeAzdata(currentAzdata?: IAzdataTool, userReq
 	return false;
 }
 
-async function promptToInstallAzdata(userRequested: boolean = false): Promise<void> {
+/**
+ * prompt user to install Azdata.
+ * @param userRequested - if true this operation was requested in response to a user issued command, if false it was issued at startup by system
+ * @param responses - list of choices to present to the user when issuing the prompt
+ * returns true if installation was done and false otherwise.
+ */
+async function promptToInstallAzdata(userRequested: boolean = false): Promise<boolean> {
 	let response: string | undefined = loc.yes;
 	const config = <AzdataDeployOption>getConfig(azdataAutoInstallKey);
 	Logger.log(loc.autoDeployConfig(azdataAutoInstallKey, config));
 	if (userRequested) {
 		Logger.log(loc.userRequestedInstall);
 	}
-	if (config === AzdataDeployOption.never && !userRequested) {
+	if (config === AzdataDeployOption.doNotAskAgain && !userRequested) {
 		Logger.log(loc.skipInstall(config));
-		return;
+		return false;
 	}
-	if (config === AzdataDeployOption.userPrompt) {
-		response = await vscode.window.showErrorMessage(loc.couldNotFindAzdataWithPrompt, loc.yes, loc.no, loc.always, loc.never);
+	if (config === AzdataDeployOption.askAgain) {
+		response = await vscode.window.showErrorMessage(loc.couldNotFindAzdataWithPrompt, ...getResponses(userRequested));
 		Logger.log(loc.userResponseToInstallPrompt(response));
 	}
-	if (response === loc.always || response === loc.never) {
+	if (response === loc.doNotAskAgain) {
 		await setConfig(azdataAutoInstallKey, response);
 	}
-	if (response === loc.yes || response === loc.always) {
+	if (response === loc.yes) {
 		try {
 			await installAzdata();
 			vscode.window.showInformationMessage(loc.azdataInstalled);
 			Logger.log(loc.azdataInstalled);
+			return true;
 		} catch (err) {
 			// Windows: 1602 is User cancelling installation/upgrade - not unexpected so don't display
 			if (!(err instanceof ExitCodeError) || err.code !== 1602) {
@@ -289,31 +299,39 @@ async function promptToInstallAzdata(userRequested: boolean = false): Promise<vo
 			}
 		}
 	}
+	return false;
 }
 
-async function promptToUpgradeAzdata(userRequested: boolean = false): Promise<void> {
+/**
+ * prompt user to upgrade Azdata.
+ * @param userRequested - if true this operation was requested in response to a user issued command, if false it was issued at startup by system
+ * @param responses - list of choices to present to the user when issuing the prompt
+ * returns true if upgrade was done and false otherwise.
+ */
+async function promptToUpgradeAzdata(userRequested: boolean = false): Promise<boolean> {
 	let response: string | undefined = loc.yes;
 	const config = <AzdataDeployOption>getConfig(azdataAutoUpgradeKey);
 	Logger.log(loc.autoDeployConfig(azdataAutoUpgradeKey, config));
 	if (userRequested) {
 		Logger.log(loc.userRequestedUpgrade);
 	}
-	if (config === AzdataDeployOption.never && !userRequested) {
+	if (config === AzdataDeployOption.doNotAskAgain && !userRequested) {
 		Logger.log(loc.skipUpgrade(config));
-		return;
+		return false;
 	}
-	if (config === AzdataDeployOption.userPrompt) {
-		response = await vscode.window.showInformationMessage(loc.foundAzdataUpgradePrompt, loc.yes, loc.no, loc.always, loc.never);
+	if (config === AzdataDeployOption.askAgain) {
+		response = await vscode.window.showInformationMessage(loc.foundAzdataUpgradePrompt, ...getResponses(userRequested));
 		Logger.log(loc.userResponseToUpgradePrompt(response));
 	}
-	if (response === loc.always || response === loc.never) {
+	if (response === loc.doNotAskAgain) {
 		await setConfig(azdataAutoUpgradeKey, response);
 	}
-	if (response === loc.yes || response === loc.always) {
+	if (response === loc.yes) {
 		try {
 			await upgradeAzdata();
 			vscode.window.showInformationMessage(loc.azdataUpgraded);
 			Logger.log(loc.azdataUpgraded);
+			return true;
 		} catch (err) {
 			// Windows: 1602 is User cancelling installation/upgrade - not unexpected so don't display
 			if (!(err instanceof ExitCodeError) || err.code !== 1602) {
@@ -322,19 +340,25 @@ async function promptToUpgradeAzdata(userRequested: boolean = false): Promise<vo
 			}
 		}
 	}
+	return false;
 }
 
 /**
  * Prompts user to accept EULA it if was not previously accepted. Stores and returns the user response to EULA prompt.
  * @param memento - memento where the user response is stored.
+ * @param userRequested - if true this operation was requested in response to a user issued command, if false it was issued at startup by system
+ * @param responses - list of choices to present to the user when issuing the prompt
  * pre-requisite, the calling code has to ensure that the eula has not yet been previously accepted by the user.
  * returns true if the user accepted the EULA.
  */
 
-export async function promptForEula(memento: vscode.Memento): Promise<boolean> {
+export async function promptForEula(memento: vscode.Memento, userRequested: boolean = false): Promise<boolean> {
+	if (userRequested) {
+		Logger.log(loc.userRequestedAcceptEula);
+	}
 	Logger.show();
 	Logger.log(loc.promptForEulaLog(microsoftPrivacyStatementUrl, eulaUrl));
-	const reply = await vscode.window.showInformationMessage(loc.promptForEula(microsoftPrivacyStatementUrl, eulaUrl), loc.yes, loc.no);
+	const reply = await vscode.window.showInformationMessage(loc.promptForEula(microsoftPrivacyStatementUrl, eulaUrl), ...getResponses(userRequested));
 	Logger.log(loc.userResponseToEulaPrompt(reply));
 	if (reply === loc.yes) {
 		await memento.update(acceptEula, true);
@@ -342,6 +366,12 @@ export async function promptForEula(memento: vscode.Memento): Promise<boolean> {
 	} else {
 		return false;
 	}
+}
+
+function getResponses(userRequested: boolean): string[] {
+	return userRequested
+		? [loc.yes, loc.no]
+		: [loc.yes, loc.askAgain, loc.doNotAskAgain];
 }
 
 /**

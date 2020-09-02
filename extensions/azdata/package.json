@@ -26,27 +26,34 @@
         "title": "%azdata.config.title%",
         "properties": {
           "azdata.logDebugInfo": {
-          "type": "boolean",
-          "default": false,
-          "description": "%azdata.config.debug%"
-        },
-          "deployment.azdata.auto.install": {
+            "type": "boolean",
+            "default": false,
+            "description": "%azdata.config.debug%"
+          },
+          "azdata.acceptEula": {
             "type": "string",
-            "default": "UserPrompt",
+            "default": "Ask Later",
             "enum": [
-              "Always",
-              "Never",
-              "UserPrompt"
+              "Don't Ask Again",
+              "Ask Later"
+            ],
+            "description": "%azdata.acceptEula.description%"
+          },
+          "azdata.auto.install": {
+            "type": "string",
+            "default": "Ask Later",
+            "enum": [
+              "Don't Ask Again",
+              "Ask Later"
             ],
             "description": "%azdata.auto.install.description%"
           },
-          "deployment.azdata.auto.upgrade": {
+          "azdata.auto.upgrade": {
             "type": "string",
-            "default": "UserPrompt",
+            "default": "Ask Later",
             "enum": [
-              "Always",
-              "Never",
-              "UserPrompt"
+              "Don't Ask Again",
+              "Ask Later"
             ],
             "description": "%azdata.auto.upgrade.description%"
           }
@@ -55,16 +62,22 @@
     ],
     "commands": [
       {
+        "command": "azdata.acceptEula",
+        "title": "%azdata.acceptEula.command.name%",
+        "category": "%deployment.category%",
+        "when": "!azdata.eulaAccepted"
+      },
+      {
         "command": "azdata.install",
         "title": "%azdata.install.command.name%",
         "category": "%deployment.category%",
-        "when": "!config.deployment.azdataFound"
+        "when": "!azdata.found"
       },
       {
         "command": "azdata.upgrade",
         "title": "%azdata.upgrade.command.name%",
         "category": "%deployment.category%",
-        "when": "config.deployment.azdataFound"
+        "when": "azdata.found"
       }
     ]
   },
