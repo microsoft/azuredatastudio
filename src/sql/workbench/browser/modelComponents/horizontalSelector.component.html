@@ -16,7 +16,7 @@
 				<a *ngIf="textContent.linkDisplayValue"  class="horizontal-link-value" href="#"
 					(click)="onLinkClick(card.id, textContent);$event.stopPropagation()" [ngStyle]="textContent.linkStyles">
 					{{textContent.linkDisplayValue}}
-					<span *ngIf="textContent.displayLinkCodicon" class="codicon codicon-link-external"
+					<span *ngIf="textContent.displayLinkCodicon && textContent.linkDisplayValue" class="codicon codicon-link-external"
 						[ngStyle]="textContent.linkCodiconStyles"></span>
 				</a>
 			</div>
