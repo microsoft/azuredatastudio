@@ -7,14 +7,13 @@ import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IContextKeyService, IContextKey, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
-import { DARK, HIGH_CONTRAST } from 'vs/platform/theme/common/themeService';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import * as DOM from 'vs/base/browser/dom';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { IWorkbenchThemeService, VS_DARK_THEME, VS_HC_THEME } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IResourceViewerStateChangedEvent } from 'sql/workbench/common/editor/resourceViewer/resourceViewerState';
 import { ResourceViewerInput } from 'sql/workbench/browser/editor/resourceViewer/resourceViewerInput';
@@ -95,20 +94,6 @@ export class ResourceViewerEditor extends BaseEditor {
 		resourceViewerTableContainer.style.height = '100%';
 		resourceViewerTableContainer.style.overflow = 'hidden';
 		resourceViewerTableContainer.style.position = 'relative';
-		let theme = this.themeService.getColorTheme();
-		if (theme.type === DARK) {
-			DOM.addClass(resourceViewerTableContainer, VS_DARK_THEME);
-		} else if (theme.type === HIGH_CONTRAST) {
-			DOM.addClass(resourceViewerTableContainer, VS_HC_THEME);
-		}
-		this.themeService.onDidColorThemeChange(e => {
-			DOM.removeClasses(resourceViewerTableContainer, VS_DARK_THEME, VS_HC_THEME);
-			if (e.type === DARK) {
-				DOM.addClass(resourceViewerTableContainer, VS_DARK_THEME);
-			} else if (e.type === HIGH_CONTRAST) {
-				DOM.addClass(resourceViewerTableContainer, VS_HC_THEME);
-			}
-		});
 		this._resourceViewerTable = this._instantiationService.createInstance(ResourceViewerTable, resourceViewerTableContainer);
 		return resourceViewerTableContainer;
 	}
