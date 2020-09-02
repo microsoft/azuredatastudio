@@ -564,7 +564,7 @@ export class Project {
 	 */
 	private getNextSqlCmdVariableCounter(): number {
 		const sqlCmdVariableNodes = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable);
-		let highestNumber = 1;
+		let highestNumber = 0;
 
 		for (let i = 0; i < sqlCmdVariableNodes.length; i++) {
 			const value: string = sqlCmdVariableNodes[i].getElementsByTagName(constants.Value)[0].childNodes[0].nodeValue;
