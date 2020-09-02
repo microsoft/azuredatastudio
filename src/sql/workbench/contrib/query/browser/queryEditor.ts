@@ -6,6 +6,7 @@
 import 'vs/css!./media/queryEditor';
 
 import * as DOM from 'vs/base/browser/dom';
+import * as path from 'vs/base/common/path';
 import { EditorOptions, IEditorControl, IEditorMemento, IEditorOpenContext } from 'vs/workbench/common/editor';
 import { EditorPane, EditorMemento } from 'vs/workbench/browser/parts/editor/editorPane';
 import { Orientation } from 'vs/base/browser/ui/sash/sash';
@@ -30,6 +31,7 @@ import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileE
 import { URI } from 'vs/base/common/uri';
 import { IFileService, FileChangesEvent } from 'vs/platform/files/common/files';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { IModeService } from 'vs/editor/common/services/modeService';
 import { QueryEditorInput, IQueryEditorStateChange } from 'sql/workbench/common/editor/query/queryEditorInput';
 import { QueryResultsEditor } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
 import * as queryContext from 'sql/workbench/contrib/query/common/queryContext';
@@ -98,7 +100,8 @@ export class QueryEditor extends EditorPane {
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IEditorService private readonly editorService: IEditorService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
-		@IConfigurationService private readonly configurationService: IConfigurationService
+		@IConfigurationService private readonly configurationService: IConfigurationService,
+		@IModeService private readonly modeService: IModeService,
 	) {
 		super(QueryEditor.ID, telemetryService, themeService, storageService);
 
@@ -201,9 +204,9 @@ export class QueryEditor extends EditorPane {
 		if (stateChangeEvent.connectedChange) {
 			this._toggleConnectDatabaseAction.connected = this.input.state.connected;
 			this._changeConnectionAction.enabled = this.input.state.connected;
+			this.setTaskbarContent();
 			if (this.input.state.connected) {
 				this.listDatabasesActionItem.onConnected();
-				this.setTaskbarContent();
 			} else {
 				this.listDatabasesActionItem.onDisconnect();
 			}
@@ -260,9 +263,10 @@ export class QueryEditor extends EditorPane {
 		let content: ITaskbarContent[];
 		const previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
 		let connectionProfile = this.connectionManagementService.getConnectionProfile(this.input?.uri);
+		let fileExtension = path.extname(this.input?.uri || '');
 
 		// TODO: Make it more generic, some way for extensions to register the commands it supports
-		if (connectionProfile?.providerName === 'KUSTO') {
+		if ((!fileExtension && connectionProfile?.providerName === 'KUSTO') || this.modeService.getExtensions('Kusto').indexOf(fileExtension) > -1) {
 			content = [
 				{ action: this._runQueryAction },
 				{ action: this._cancelQueryAction },
