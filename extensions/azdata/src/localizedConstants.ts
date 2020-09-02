@@ -18,8 +18,8 @@ export const azdataInstalled = localize('azdata.azdataInstalled', "azdata was su
 export const azdataUpgraded = (version: string) => localize('azdata.azdataUpgraded', "azdata was successfully upgraded to version: ${0}.", version);
 export const yes = localize('azdata.yes', "Yes");
 export const no = localize('azdata.no', "No");
-export const doNotAskAgain = localize('azdata.never', "Don't Ask Again");
-export const askAgain = localize('azdata.never', "Don't Ask Again");
+export const doNotAskAgain = localize('azdata.doNotAskAgain', "Don't Ask Again");
+export const askAgain = localize('azdata.askAgain', "Ask Again");
 export const downloadingTo = (name: string, location: string): string => localize('azdata.downloadingTo', "Downloading {0} to {1}", name, location);
 export const executingCommand = (command: string, args: string[]): string => localize('azdata.executingCommand', "Executing command \"{0} {1}\"", command, args?.join(' '));
 export const stdoutOutput = (stdout: string): string => localize('azdata.stdoutOutput', "stdout: {0}", stdout);
