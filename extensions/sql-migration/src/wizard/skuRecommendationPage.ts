@@ -86,16 +86,51 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private constructTargets(): void {
 		const products: Product[] = Object.values(ProductLookupTable);
 
-		const rbg = this.view!.modelBuilder.radioCardGroup();
+		const rbg = this.view!.modelBuilder.horizontalSelector();
+
+		rbg.component().onSelectionChanged(({ cardId, card }) => {
+			console.log(cardId, card);
+		});
+
+		rbg.component().onLinkClick(({ cardId, card, selectorText }) => {
+			console.log(cardId, card, selectorText);
+		});
+
 		rbg.component().cards = [];
+		rbg.component().iconHeight = '30px';
+		rbg.component().iconWidth = '30px';
 
 		products.forEach((product) => {
 			const imagePath = path.resolve(this.migrationStateModel.getExtensionPath(), 'media', product.icon ?? 'ads.svg');
+			const texts: azdata.HorizontalSelectorText[] = [
+				{
+					textValue: product.name,
+					linkDisplayValue: 'Learn more',
+					displayLinkCodicon: true,
+					textStyles: {
+						'font-size': '1rem',
+						'font-weight': '550'
+					},
+					linkCodiconStyles: {
+						'font-size': '1em',
+						'color': 'royalblue'
+					}
+				},
+				{
+					textValue: '9 databases will be migrated',
+					linkDisplayValue: 'View/Change',
+					displayLinkCodicon: true,
+					linkCodiconStyles: {
+						'font-size': '1em',
+						'color': 'royalblue'
+					}
+				}
+			];
 
 			rbg.component().cards.push({
 				id: product.name,
 				icon: imagePath,
-				label: 'Some Label'
+				textContents: texts
 			});
 		});
 

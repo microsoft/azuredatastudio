@@ -292,7 +292,8 @@ export function createViewContext(): ViewTestContext {
 			hyperlink: () => undefined!,
 			tabbedPanel: undefined!,
 			separator: undefined!,
-			propertiesContainer: undefined!
+			propertiesContainer: undefined!,
+			horizontalSelector: undefined!
 		}
 	};
 	return {

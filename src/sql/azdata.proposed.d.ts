@@ -140,6 +140,7 @@ declare module 'azdata' {
 
 	export interface ModelBuilder {
 		radioCardGroup(): ComponentBuilder<RadioCardGroupComponent>;
+		horizontalSelector(): ComponentBuilder<HorizontalSelectorComponent>;
 		tabbedPanel(): TabbedPanelComponentBuilder;
 		separator(): ComponentBuilder<SeparatorComponent>;
 		propertiesContainer(): ComponentBuilder<PropertiesContainerComponent>;
@@ -178,6 +179,45 @@ declare module 'azdata' {
 		 * The card object returned from this function is a clone of the internal representation - changes will not impact the original object
 		 */
 		onSelectionChanged: vscode.Event<{ cardId: string; card?: RadioCard }>;
+	}
+
+	export type CssStyles = { [key: string]: string };
+
+	export interface HorizontalSelectorComponent extends Component, HorizontalSelectorComponentProperties {
+		/**
+		 * The card object returned from this function is a clone of the internal representation - changes will not impact the original object
+		 */
+		onSelectionChanged: vscode.Event<{ cardId: string; card: HorizontalSelectorCard }>;
+
+		/**
+		 * Fires when the link in the text gets clicked
+		 */
+		onLinkClick: vscode.Event<{ cardId: string, card: HorizontalSelectorCard, selectorText: HorizontalSelectorText }>;
+	}
+
+	export interface HorizontalSelectorCard {
+		id: string;
+
+		icon?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+
+		textContents: HorizontalSelectorText[];
+	}
+	export interface HorizontalSelectorText {
+		textValue: string;
+		linkDisplayValue?: string;
+		displayLinkCodicon?: boolean;
+		textStyles?: CssStyles;
+		linkStyles?: CssStyles;
+		linkCodiconStyles?: CssStyles;
+	}
+
+	export interface HorizontalSelectorComponentProperties extends ComponentProperties, TitledComponentProperties {
+		cards: HorizontalSelectorCard[];
+		cardWidth: string;
+		cardHeight: string;
+		iconWidth?: string;
+		iconHeight?: string;
+		selectedCardId?: string;
 	}
 
 	export interface SeparatorComponent extends Component {

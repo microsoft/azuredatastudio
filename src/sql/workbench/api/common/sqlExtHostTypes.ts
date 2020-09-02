@@ -174,6 +174,7 @@ export enum ModelComponentTypes {
 	Hyperlink,
 	Image,
 	RadioCardGroup,
+	HorizontalSelector,
 	TabbedPanel,
 	Separator,
 	PropertiesContainer

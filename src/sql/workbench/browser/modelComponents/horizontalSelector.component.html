@@ -1,0 +1,26 @@
+<div role="radiogroup" *ngIf="cards" class="horizontal-selector" style="flex-wrap:wrap" [style.height]="height"
+	[style.width]="width" [attr.aria-label]="ariaLabel" (keydown)="onKeyDown($event)">
+	<div #selectorDiv role="radio" *ngFor="let card of cards" class="horizontal-card" (click)="selectCard(card.id)"
+		[attr.aria-checked]="isCardSelected(card.id)" [tabIndex]="getTabIndex(card.id)" [style.width]="cardWidth"
+		[style.height]="cardHeight" (focus)="onCardFocus(card.id)" (blur)="onCardBlur(card.id)" style="flex:0 0 auto;">
+
+		<div class="horizontal-selection-indicator" [class.selected]="isCardSelected(card.id)"></div>
+
+		<div *ngIf="card.icon" class="horizontal-icon-container">
+			<div [class]="getIconClass(card.id)" [style.width]="iconWidth" [style.height]="iconHeight"> </div>
+		</div>
+
+		<div class="horizontal-text-container">
+			<div *ngFor="let textContent of card.textContents" class="inner-text-content">
+				<span class="horizontal-text-value" [ngStyle]="textContent.textStyles">{{textContent.textValue}}</span>
+				<a class="horizontal-link-value" *ngIf="textContent.linkDisplayValue" href="#"
+					(click)="onLinkClick(card.id, textContent)" [ngStyle]="textContent.linkStyles">
+					{{textContent.linkDisplayValue}}
+					<span *ngIf="textContent.displayLinkCodicon" class="codicon codicon-link-external"
+						[ngStyle]="textContent.linkCodiconStyles"></span>
+				</a>
+			</div>
+		</div>
+
+	</div>
+</div>

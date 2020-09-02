@@ -30,6 +30,7 @@ import { registerComponentType } from 'sql/platform/dashboard/browser/modelCompo
 import HyperlinkComponent from 'sql/workbench/browser/modelComponents/hyperlink.component';
 import SplitViewContainer from 'sql/workbench/browser/modelComponents/splitviewContainer.component';
 import RadioCardGroup from 'sql/workbench/browser/modelComponents/radioCardGroup.component';
+import HorizontalSelector from 'sql/workbench/browser/modelComponents/horizontalSelector.component';
 import TabbedPanelComponent from 'sql/workbench/browser/modelComponents/tabbedPanel.component';
 import SeparatorComponent from 'sql/workbench/browser/modelComponents/separator.component';
 import { ModelComponentTypes } from 'sql/platform/dashboard/browser/interfaces';
@@ -112,6 +113,9 @@ registerComponentType(HYPERLINK_COMPONENT, ModelComponentTypes.Hyperlink, Hyperl
 
 export const RADIOCARDGROUP_COMPONENT = 'radiocardgroup-component';
 registerComponentType(RADIOCARDGROUP_COMPONENT, ModelComponentTypes.RadioCardGroup, RadioCardGroup);
+
+export const HORIZONTALSELECTOR_COMPONENT = 'horizontalSelector-component';
+registerComponentType(RADIOCARDGROUP_COMPONENT, ModelComponentTypes.HorizontalSelector, HorizontalSelector);
 
 export const TABBEDPANEL_COMPONENT = 'tabbedpanel-component';
 registerComponentType(TABBEDPANEL_COMPONENT, ModelComponentTypes.TabbedPanel, TabbedPanelComponent);

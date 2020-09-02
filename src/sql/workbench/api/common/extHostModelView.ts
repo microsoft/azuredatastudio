@@ -250,6 +250,13 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return builder;
 	}
 
+	horizontalSelector(): azdata.ComponentBuilder<azdata.HorizontalSelectorComponent> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<azdata.HorizontalSelectorComponent> = this.getComponentBuilder(new HorizontalSelectorComponentWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
 	tabbedPanel(): azdata.TabbedPanelComponentBuilder {
 		let id = this.getNextComponentId();
 		let builder = new TabbedPanelComponentBuilder(new TabbedPanelComponentWrapper(this._proxy, this._handle, id));
@@ -1748,6 +1755,71 @@ class RadioCardGroupComponentWrapper extends ComponentWrapper implements azdata.
 
 	public get onSelectionChanged(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
+		return emitter && emitter.event;
+	}
+}
+class HorizontalSelectorComponentWrapper extends ComponentWrapper implements azdata.HorizontalSelectorComponent {
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.HorizontalSelector, id);
+		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<string>());
+		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<string>());
+	}
+
+	public get iconWidth(): string | undefined {
+		return this.properties['iconWidth'];
+	}
+
+	public set iconWidth(v: string | undefined) {
+		this.setProperty('iconWidth', v);
+	}
+
+	public get iconHeight(): string | undefined {
+		return this.properties['iconHeight'];
+	}
+
+	public set iconHeight(v: string | undefined) {
+		this.setProperty('iconHeight', v);
+	}
+
+	public get cardWidth(): string | undefined {
+		return this.properties['cardWidth'];
+	}
+
+	public set cardWidth(v: string | undefined) {
+		this.setProperty('cardWidth', v);
+	}
+
+	public get cardHeight(): string | undefined {
+		return this.properties['cardHeight'];
+	}
+
+	public set cardHeight(v: string | undefined) {
+		this.setProperty('cardHeight', v);
+	}
+
+	public get cards(): azdata.HorizontalSelectorCard[] {
+		return this.properties['cards'];
+	}
+	public set cards(v: azdata.HorizontalSelectorCard[]) {
+		this.setProperty('cards', v);
+	}
+
+	public get selectedCardId(): string | undefined {
+		return this.properties['selectedCardId'];
+	}
+
+	public set selectedCardId(v: string | undefined) {
+		this.setProperty('selectedCardId', v);
+	}
+
+	public get onSelectionChanged(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
+		return emitter && emitter.event;
+	}
+
+	public get onLinkClick(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
 		return emitter && emitter.event;
 	}
 }

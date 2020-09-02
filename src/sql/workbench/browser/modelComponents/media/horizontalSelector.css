@@ -1,0 +1,80 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+/*
+	!!!!NOTICE!!!!
+	This CSS file is only to be used with horizontal selector.
+	If you want to reuse some of the stuff here, just copy/paste them.
+ */
+
+.horizontal-selector {
+	display: flex;
+	flex-direction: column;
+}
+
+.horizontal-card {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	padding: 10px;
+}
+
+.horizontal-card>* {
+	margin: 5px;
+}
+
+.horizontal-card .horizontal-selection-indicator {
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	background-color: white;
+	border-width: 1px;
+	border-color: rgb(214, 214, 214);
+	border-style: solid;
+}
+
+.horizontal-card .horizontal-selection-indicator.selected {
+	border-radius: 50%;
+	background-color: rgb(0, 120, 215);
+}
+
+/* Icon container */
+.horizontal-card .horizontal-icon-container {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+/* The icon itself */
+.horizontal-card .horizontal-icon-container .horizontal-icon {
+	display: inline-block;
+	width: 100%;
+	height: 100%;
+	max-width: 50px;
+	max-height: 50px;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: contain;
+}
+
+.horizontal-text-container {
+	display: flex;
+	flex-direction: column;
+}
+
+.horizontal-text-container .inner-text-content {
+	display: flex;
+	flex-direction: row;
+	padding-bottom: 5px;
+}
+
+.horizontal-text-value {
+	padding-right: 5px;
+}
+
+.horizontal-link-value .codicon {
+	padding-left: 5px;
+}
