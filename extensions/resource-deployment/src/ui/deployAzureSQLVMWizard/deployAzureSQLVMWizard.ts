@@ -95,8 +95,8 @@ export class DeployAzureSQLVMWizard extends WizardBase<DeployAzureSQLVMWizard, W
 	public createFormRowComponent(view: azdata.ModelView, title: string, description: string, component: azdata.Component, required: boolean): azdata.FlexContainer {
 
 		component.updateProperties({
-			width: '480px',
-			required: required
+			required: required,
+			width: '480px'
 		});
 
 		const labelText = view.modelBuilder.text()
@@ -105,9 +105,14 @@ export class DeployAzureSQLVMWizard extends WizardBase<DeployAzureSQLVMWizard, W
 					value: title,
 					width: '250px',
 					description: description,
-					requiredIndicator: required
+					requiredIndicator: required,
 				})
 			.component();
+
+		labelText.updateCssStyles({
+			'font-weight': '400',
+			'font-size': '13px',
+		});
 
 		const flexContainer = view.modelBuilder.flexContainer()
 			.withLayout(
@@ -124,7 +129,7 @@ export class DeployAzureSQLVMWizard extends WizardBase<DeployAzureSQLVMWizard, W
 		return flexContainer;
 	}
 
-	public changeRowDisplay(container: FlexContainer, display: ('none' | 'block')) {
+	public changeRowDisplay(container: azdata.FlexContainer, display: ('none' | 'block')) {
 		container.items.map((component) => {
 			component.display = display;
 			component.updateProperties({
