@@ -20,7 +20,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 	});
 
 	vscode.commands.registerCommand('azdata.install', async () => {
-		await checkAndInstallAzdata(true);
+		await checkAndInstallAzdata(true /* userRequested */);
 	});
 
 	vscode.commands.registerCommand('azdata.upgrade', async () => {
@@ -34,7 +34,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 		.then(async azdataTool => {
 			localAzdata = azdataTool;
 			if (localAzdata !== undefined) {
-				await vscode.commands.executeCommand('setContext', 'azdata.found', true /* userRequested */);
+				await vscode.commands.executeCommand('setContext', 'azdata.found', true);
 				try {
 					//update if available and user wants it.
 					if (await checkAndUpgradeAzdata(localAzdata)) { // if an upgrade was performed
@@ -58,6 +58,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 			})
 			.catch((err: any) => console.log(err));
 	}
+
 	return {
 		azdata: {
 			arc: {
