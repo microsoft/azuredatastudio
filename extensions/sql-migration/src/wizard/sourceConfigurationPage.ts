@@ -35,8 +35,10 @@ export class SourceConfigurationPage extends MigrationWizardPage {
 
 		let connectionUri: string = await azdata.connection.getUriForConnection(this.migrationStateModel.sourceConnection.connectionId);
 		this.migrationStateModel.migrationService.getAssessments(connectionUri).then(results => {
-			this.migrationStateModel.assessmentResults = results.items;
-			this.migrationStateModel.currentState = State.TARGET_SELECTION;
+			if (results) {
+				this.migrationStateModel.assessmentResults = results.items;
+				this.migrationStateModel.currentState = State.TARGET_SELECTION;
+			}
 		});
 	}
 
