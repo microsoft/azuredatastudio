@@ -86,8 +86,8 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 		this.exeBasedRecommendations = instantiationService.createInstance(ExeBasedRecommendations, this.promptedExtensionRecommendations);
 		this.dynamicWorkspaceRecommendations = instantiationService.createInstance(DynamicWorkspaceRecommendations, this.promptedExtensionRecommendations);
 		this.keymapRecommendations = instantiationService.createInstance(KeymapRecommendations, this.promptedExtensionRecommendations);
-		this.staticRecommendations = instantiationService.createInstance(StaticRecommendations, isExtensionAllowedToBeRecommended); // {{SQL CARBON EDIT}} add ours
-		this.scenarioRecommendations = instantiationService.createInstance(ScenarioRecommendations, isExtensionAllowedToBeRecommended); // {{SQL CARBON EDIT}} add ours
+		this.staticRecommendations = instantiationService.createInstance(StaticRecommendations, this.promptedExtensionRecommendations); // {{SQL CARBON EDIT}} add ours
+		this.scenarioRecommendations = instantiationService.createInstance(ScenarioRecommendations, this.promptedExtensionRecommendations); // {{SQL CARBON EDIT}} add ours
 
 		if (!this.isEnabled()) {
 			this.sessionSeed = 0;
