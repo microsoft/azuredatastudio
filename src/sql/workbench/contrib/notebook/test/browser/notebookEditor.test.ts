@@ -86,7 +86,7 @@ class NotebookModelStub extends stubs.NotebookModelStub {
 	}
 }
 
-suite('Test class NotebookEditor:', () => {
+suite.skip('Test class NotebookEditor:', () => {
 	let instantiationService = <TestInstantiationService>workbenchInstantiationService();
 	let workbenchThemeService = instantiationService.createInstance(WorkbenchThemeService);
 	let notebookEditor: NotebookEditor;
@@ -171,7 +171,7 @@ suite('Test class NotebookEditor:', () => {
 		});
 	}
 
-	test('Verifies that getCellEditor() returns a valid text editor object for valid guid input', async () => {
+	test.skip('Verifies that getCellEditor() returns a valid text editor object for valid guid input', async () => {
 		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 		const result = notebookEditor.getCellEditor(cellTextEditorGuid);
 		assert.strictEqual(result, queryTextEditor, 'notebookEditor.getCellEditor() should return an expected QueryTextEditor when a guid corresponding to that editor is passed in.');
