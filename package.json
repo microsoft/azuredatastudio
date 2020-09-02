@@ -13,7 +13,7 @@
     "test-browser": "node test/unit/browser/index.js",
     "preinstall": "node build/npm/preinstall.js",
     "postinstall": "node build/npm/postinstall.js",
-    "compile": "gulp compile --max_old_space_size=4095",
+    "compile": "gulp compile --max_old_space_size=8190",
     "watch": "concurrently \"npm:watch-client\" \"npm:watch-extensions\"",
     "watchd": "deemon yarn watch",
     "watch-webd": "deemon yarn watch-web",

@@ -2,7 +2,7 @@
 // License: https://github.com/DonJayamanne/bowerVSCode/blob/master/LICENSE
 
 import Prompt from './prompt';
-import LocalizedConstants = require('../common/localizedConstants');
+import * as LocalizedConstants from '../common/localizedConstants';
 import EscapeException from './escapeException';
 import * as vscode from 'vscode';
 
