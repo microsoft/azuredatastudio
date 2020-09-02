@@ -68,7 +68,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 							component: this.wizard.createFormRowComponent(view, constants.AzureAccountSubscriptionDropdownLabel, '', this._azureSubscriptionLoader, true)
 						},
 						{
-							component: this.wizard.createFormRowComponent(view, constants.AzureAccountRegionDropdownLabel, '', this._resourceGroupDropdown, true)
+							component: this.wizard.createFormRowComponent(view, constants.AzureAccountResourceGroupDropdownLabel, '', this._resourceGroupDropdown, true)
 						},
 						{
 							component: this.wizard.createFormRowComponent(view, constants.AzureAccountRegionDropdownLabel, '', this._azureRegionsLoader, true)
@@ -100,7 +100,6 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 	}
 
 	public onLeave(): void {
-		console.log(this.wizard.model);
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			return true;
 		});
@@ -164,7 +163,6 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 		this.wizard.model.azureAccount = accounts[0];
 		this._azureAccountsLoader.loading = false;
 		await this.populateAzureSubscriptionsDropdown();
-
 	}
 
 	private async createAzureSubscriptionsDropdown(view: azdata.ModelView) {
@@ -211,6 +209,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 		}
 		subscriptions.sort((a, b) => a.name.toLocaleLowerCase().localeCompare(b.name.toLocaleLowerCase()));
 		this._azureSubscriptionsDropdown.updateProperties({
+			width: '480px',
 			values: subscriptions.map((subscription): azdata.CategoryValue => {
 				let subscriptionCategoryValue = {
 					displayName: subscription.name + ' - ' + subscription.id,
