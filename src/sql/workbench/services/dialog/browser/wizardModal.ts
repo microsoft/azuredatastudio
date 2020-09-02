@@ -176,7 +176,7 @@ export class WizardModal extends Modal {
 		page.onUpdate(() => this.setButtonsForPage(this._wizard.currentPage));
 	}
 
-	private async showPage(index: number, validate: boolean = true, focus: boolean = false): Promise<void> {
+	public async showPage(index: number, validate: boolean = true, focus: boolean = false): Promise<void> {
 		let pageToShow = this._wizard.pages[index];
 		if (!pageToShow) {
 			this.done(validate).catch(err => onUnexpectedError(err));
