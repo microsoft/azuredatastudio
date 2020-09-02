@@ -131,7 +131,7 @@
                 "target": "**/{vs,sql}/base/node/**",
                 "restrictions": [
                     "vs/nls",
-					"**/{vs,sql}/base/{common,node}/**",
+                    "**/{vs,sql}/base/{common,node}/**",
                     "*" // node modules
                 ]
             },
@@ -243,8 +243,8 @@
             {
                 "target": "**/{vs,sql}/platform/*/node/**",
                 "restrictions": [
-					"vs/nls",
-					"azdata",
+                    "vs/nls",
+                    "azdata",
                     "**/{vs,sql}/base/{common,node}/**",
                     "**/{vs,sql}/base/parts/*/{common,node}/**",
                     "**/{vs,sql}/platform/*/{common,node}/**",
@@ -276,8 +276,8 @@
             {
                 "target": "**/{vs,sql}/platform/*/electron-main/**",
                 "restrictions": [
-					"vs/nls",
-					"azdata",
+                    "vs/nls",
+                    "azdata",
                     "**/{vs,sql}/base/{common,node,electron-main}/**",
                     "**/{vs,sql}/base/parts/*/{common,node,electron-main}/**",
                     "**/{vs,sql}/platform/*/{common,node,electron-main}/**",
@@ -651,7 +651,7 @@
                     "**/{vs,sql}/editor/**",
                     "**/{vs,sql}/workbench/{common,browser}/**",
                     "**/{vs,sql}/workbench/contrib/**/{common,browser}/**",
-					"**/{vs,sql}/workbench/services/**/{common,browser}/**"
+                    "**/{vs,sql}/workbench/services/**/{common,browser}/**"
                 ]
             },
             {
@@ -686,8 +686,8 @@
                 "target": "**/{vs,sql}/workbench/contrib/**/common/**",
                 "restrictions": [
                     "vs/nls",
-					"vs/css!./**/*",
-					"azdata",
+                    "vs/css!./**/*",
+                    "azdata",
                     "**/{vs,sql}/base/**/common/**",
                     "**/{vs,sql}/platform/**/common/**",
                     "**/{vs,sql}/editor/**",
@@ -702,22 +702,22 @@
                 "restrictions": [
                     "vs/nls",
                     "vs/css!./**/*",
-					"azdata",
-					"vscode",
+                    "azdata",
+                    "vscode",
                     "**/{vs,sql}/base/**/{common,browser}/**",
                     "**/{vs,sql}/platform/**/{common,browser}/**",
                     "**/{vs,sql}/editor/**",
                     "**/{vs,sql}/workbench/{common,browser}/**",
                     "**/{vs,sql}/workbench/api/{common,browser}/**",
                     "**/{vs,sql}/workbench/services/**/{common,browser}/**",
-					"**/{vs,sql}/workbench/contrib/**/{common,browser}/**",
-					"@angular/*",
-					"rxjs/**",
-					"ng2-charts",
-					"chart.js",
-					"plotly.js-dist-min",
-					"angular2-grid",
-					"html-query-plan"
+                    "**/{vs,sql}/workbench/contrib/**/{common,browser}/**",
+                    "@angular/*",
+                    "rxjs/**",
+                    "ng2-charts",
+                    "chart.js",
+                    "plotly.js-dist-min",
+                    "angular2-grid",
+                    "html-query-plan"
                 ]
             },
             {
@@ -915,9 +915,9 @@
                     "assert",
                     "sinon",
                     "crypto",
-					"vscode",
-					"typemoq",
-					"azdata"
+                    "vscode",
+                    "typemoq",
+                    "azdata"
                 ]
             },
             {
@@ -945,12 +945,12 @@
                 "target": "**/**.test.ts",
                 "restrictions": [
                     "**/{vs,sql}/**",
-					"assert",
-					"typemoq",
+                    "assert",
+                    "typemoq",
                     "sinon",
                     "crypto",
-					"xterm*",
-					"azdata"
+                    "xterm*",
+                    "azdata"
                 ]
             },
             {
@@ -958,7 +958,7 @@
                 "restrictions": [
                     "**/{vs,sql}/**",
                     "assert",
-					"typemoq",
+                    "typemoq",
                     "sinon",
                     "crypto",
                     "xterm*"
@@ -982,7 +982,13 @@
             "rules": {
                 "no-sync": "warn",
                 "strict": ["warn", "never"],
-                "no-console": "warn"
+                "no-console": "warn",
+                "@typescript-eslint/no-floating-promises": [
+                    "error",
+                    {
+                        "ignoreVoid": true
+                    }
+                ]
             }
         },
         {

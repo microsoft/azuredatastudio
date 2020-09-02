@@ -3,7 +3,7 @@
 	"parserOptions": {
 		"ecmaVersion": 6,
 		"sourceType": "module",
-		"project": "./tsconfig.sql.json"
+		"project": "./src/tsconfig.json"
 	},
 	"plugins": [
 		"@typescript-eslint",
