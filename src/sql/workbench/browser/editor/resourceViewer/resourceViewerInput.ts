@@ -16,8 +16,7 @@ export interface ColumnDefinition extends Slick.Column<Slick.SlickData> {
 
 export class ResourceViewerInput extends EditorInput {
 
-	public static ID: string = 'workbench.editorinputs.resourceviewerinputs';
-	public static SCHEMA: string = 'resource-viewer';
+	public static ID: string = 'workbench.editorInput.resourceViewerInput';
 	private _data: TableDataView<Slick.SlickData>;
 	private _columns: string[] = [];
 	private _state: ResourceViewerState;
@@ -80,5 +79,9 @@ export class ResourceViewerInput extends EditorInput {
 
 	isDirty(): boolean {
 		return false; // TODO chgagnon implement
+	}
+
+	public get resource(): URI | undefined {
+		return undefined;
 	}
 }
