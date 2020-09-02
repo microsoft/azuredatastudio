@@ -39,9 +39,10 @@ export class RestoreAction extends Task {
 		});
 	}
 
-	runTask(accessor: ServicesAccessor, profile: IConnectionProfile): void | Promise<void> {
+	runTask(accessor: ServicesAccessor, withProfile?: IConnectionProfile): void | Promise<void> {
+		let profile = withProfile;
 		const configurationService = accessor.get<IConfigurationService>(IConfigurationService);
-		const previewFeaturesEnabled: boolean = configurationService.getValue('workbench')['enablePreviewFeatures'];
+		const previewFeaturesEnabled: boolean = configurationService.getValue<{ enablePreviewFeatures: boolean }>('workbench').enablePreviewFeatures;
 		if (!previewFeaturesEnabled) {
 			return accessor.get<INotificationService>(INotificationService).info(localize('restore.isPreviewFeature', "You must enable preview features in order to use restore"));
 		}

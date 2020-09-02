@@ -73,9 +73,7 @@
 		"./sql/workbench/contrib/profiler/**/*.ts", // 114 errors
 		"./sql/workbench/contrib/query/**/*.ts", // 3191 errors
 		"./sql/workbench/contrib/queryHistory/**/*.ts", // 305 errors
-		"./sql/workbench/contrib/restore/**/*.ts", // 28 errors
 		"./sql/workbench/contrib/scripting/**/*.ts", // 195 errors
-		"./sql/workbench/contrib/views/**/*.ts", // 19 errors
 		"./sql/workbench/contrib/welcome/**/*.ts", // 66 errors
 		"./sql/workbench/services/connection/**/*.ts", // 3244 errors
 		"./sql/workbench/services/dialog/**/*.ts", // 3109 errors
