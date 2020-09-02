@@ -5,8 +5,6 @@
 
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IContextKeyService, IContextKey, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import * as DOM from 'vs/base/browser/dom';
@@ -19,13 +17,6 @@ import { IResourceViewerStateChangedEvent } from 'sql/workbench/common/editor/re
 import { ResourceViewerInput } from 'sql/workbench/browser/editor/resourceViewer/resourceViewerInput';
 import { ResourceViewerTable } from 'sql/workbench/contrib/resourceViewer/browser/resourceViewerTable';
 
-export const CONTEXT_RESOURCE_VIEWER_EDITOR = new RawContextKey<boolean>('inResourceViewerEditor', false);
-
-export interface ResourceViewerTableViewState {
-	scrollTop: number;
-	scrollLeft: number;
-}
-
 export class ResourceViewerEditor extends BaseEditor {
 	public static readonly ID: string = 'workbench.editor.resource-viewer';
 
@@ -37,31 +28,13 @@ export class ResourceViewerEditor extends BaseEditor {
 	private _rowCountChangeListener: IDisposable | undefined;
 	private _filterStateChangeListener: IDisposable | undefined;
 
-	private _resourceViewerEditorContextKey: IContextKey<boolean>;
-
-	private _savedTableViewStates = new Map<ResourceViewerInput, ResourceViewerTableViewState>();
-
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IWorkbenchThemeService themeService: IWorkbenchThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IContextKeyService private _contextKeyService: IContextKeyService,
-		@IEditorService editorService: IEditorService,
 		@IStorageService storageService: IStorageService
 	) {
 		super(ResourceViewerEditor.ID, telemetryService, themeService, storageService);
-		this._resourceViewerEditorContextKey = CONTEXT_RESOURCE_VIEWER_EDITOR.bindTo(this._contextKeyService);
-
-		if (editorService) {
-			editorService.overrideOpenEditor({
-				open: (editor, options, group) => {
-					if (this.isVisible() && (editor !== this.input || group !== this.group)) {
-						this.saveEditorViewState();
-					}
-					return {};
-				}
-			});
-		}
 	}
 
 	protected createEditor(parent: HTMLElement): void {
@@ -103,16 +76,6 @@ export class ResourceViewerEditor extends BaseEditor {
 	}
 
 	public async setInput(input: ResourceViewerInput, options?: EditorOptions): Promise<void> {
-		let savedViewState = this._savedTableViewStates.get(input);
-
-		this._resourceViewerEditorContextKey.set(true);
-		if (input instanceof ResourceViewerInput && input.matches(this.input)) {
-			if (savedViewState) {
-				this._resourceViewerTable.restoreViewState(savedViewState);
-			}
-			return undefined;
-		}
-
 		await super.setInput(input, options, CancellationToken.None);
 
 		this._resourceViewerTable.data = input.data;
@@ -140,13 +103,10 @@ export class ResourceViewerEditor extends BaseEditor {
 		});
 
 		this._resourceViewerTable.focus();
-		if (savedViewState) {
-			this._resourceViewerTable.restoreViewState(savedViewState);
-		}
-	}
 
-	public clearInput(): void {
-		this._resourceViewerEditorContextKey.set(false);
+		input.columns = ['c1', 'c2', 'c3'];
+		input.data.push([{ c1: 'c1.1', c2: 'c2.1', c3: 'c3.1' }, { c1: 'c1.2', c2: 'c2.2', 'c3': 'c3.2' }]);
+		input.data.filter();
 	}
 
 
@@ -157,20 +117,5 @@ export class ResourceViewerEditor extends BaseEditor {
 	public layout(dimension: DOM.Dimension): void {
 		this._container.style.width = dimension.width + 'px';
 		this._container.style.height = dimension.height + 'px';
-	}
-
-	private saveEditorViewState(): void {
-		if (this.input && this._resourceViewerTable) {
-			this._savedTableViewStates.set(this.input, this._resourceViewerTable.saveViewState());
-		}
-	}
-
-	public focus() {
-		this._resourceViewerEditorContextKey.set(true);
-		super.focus();
-		let savedViewState = this._savedTableViewStates.get(this.input);
-		if (savedViewState) {
-			this._resourceViewerTable.restoreViewState(savedViewState);
-		}
 	}
 }

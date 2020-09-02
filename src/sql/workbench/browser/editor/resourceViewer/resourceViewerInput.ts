@@ -50,13 +50,6 @@ export class ResourceViewerInput extends EditorInput {
 		return nls.localize('resourceViewerInput.resourceViewer', "Resource Viewer");
 	}
 
-	public getResource(): URI {
-		return URI.from({
-			scheme: ResourceViewerInput.SCHEMA,
-			path: 'resource-viewer'
-		});
-	}
-
 	public get data(): TableDataView<Slick.SlickData> {
 		return this._data;
 	}
@@ -87,9 +80,5 @@ export class ResourceViewerInput extends EditorInput {
 
 	isDirty(): boolean {
 		return false; // TODO chgagnon implement
-	}
-
-	get resource(): URI | undefined {
-		return undefined;
 	}
 }

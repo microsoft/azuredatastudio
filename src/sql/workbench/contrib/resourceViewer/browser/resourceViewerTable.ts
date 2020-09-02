@@ -21,15 +21,8 @@ export class ResourceViewerTable {
 
 	private _resourceViewerTable!: Table<Slick.SlickData>;
 	private _data: TableDataView<Slick.SlickData> | undefined;
-	private _overlay: HTMLElement;
 
 	constructor(parent: HTMLElement, @IWorkbenchThemeService private _themeService: IWorkbenchThemeService) {
-		this._overlay = document.createElement('div');
-		this._overlay.className = 'overlayWidgets';
-		this._overlay.style.width = '100%';
-		this._overlay.style.zIndex = '4';
-		parent.appendChild(this._overlay);
-
 		this._resourceViewerTable = new Table(parent, {
 			sorter: (args) => {
 				this._data?.sort(args);
