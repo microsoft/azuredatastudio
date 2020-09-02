@@ -46,8 +46,8 @@
     "web": "node resources/web/code-web.js",
     "compile-web": "gulp compile-web --max_old_space_size=4095",
     "watch-web": "gulp watch-web --max_old_space_size=4095",
-    "eslint": "eslint -c .eslintrc.json --rulesdir ./build/lib/eslint --ext .ts --ext .js -ext .tsx ./src/vs ./extensions",
-    "sqllint": "eslint --no-eslintrc -c .eslintrc.sql.ts.json --rulesdir ./build/lib/eslint --ext .ts -ext .tsx ./src/sql"
+    "eslint": "eslint -c .eslintrc.json --rulesdir ./build/lib/eslint --ext .ts --ext .js --ext .tsx ./src/vs ./extensions",
+    "sqllint": "eslint --no-eslintrc -c .eslintrc.sql.ts.json --rulesdir ./build/lib/eslint --ext .ts --ext .tsx ./src/sql"
   },
   "dependencies": {
     "@angular/animations": "~4.1.3",
