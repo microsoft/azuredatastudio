@@ -208,12 +208,47 @@ describe('Project: sqlproj content operations', function (): void {
 		should(projFileText).containEql(convertSlashesForSqlProj(project.getSystemDacpacUri(constants.msdb).fsPath.substring(1)));
 		should(projFileText).containEql(convertSlashesForSqlProj(project.getSystemDacpacSsdtUri(constants.msdb).fsPath.substring(1)));
 
-		await project.addDatabaseReference({ dacpacFileLocation: Uri.file('test.dacpac'), databaseLocation: DatabaseReferenceLocation.sameDatabase });
-		should(project.databaseReferences.length).equal(3, 'There should be three database references after adding a reference to test');
-		should(project.databaseReferences[2].databaseName).equal('test', 'The database reference should be test');
+		// add database reference in the same database
+		await project.addDatabaseReference({ dacpacFileLocation: Uri.file('test1.dacpac'), databaseLocation: DatabaseReferenceLocation.sameDatabase });
+		should(project.databaseReferences.length).equal(3, 'There should be three database references after adding a reference to test1');
+		should(project.databaseReferences[2].databaseName).equal('test1', 'The database reference should be test1');
 		// make sure reference to test.dacpac was added
 		projFileText = (await fs.readFile(projFilePath)).toString();
-		should(projFileText).containEql('test.dacpac');
+		should(projFileText).containEql('test1.dacpac');
+
+		// add database reference to a different database on the same server
+		await project.addDatabaseReference({
+			dacpacFileLocation: Uri.file('test2.dacpac'),
+			databaseLocation: DatabaseReferenceLocation.differentDatabaseSameServer,
+			databaseName: 'test2DbName',
+			databaseVariable: 'test2Db'
+		});
+		should(project.databaseReferences.length).equal(4, 'There should be four database references after adding a reference to test2');
+		should(project.databaseReferences[3].databaseName).equal('test2', 'The database reference should be test2');
+		// make sure reference to test2.dacpac and SQLCMD variable was added
+		projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText).containEql('test2.dacpac');
+		should(projFileText).containEql('<DatabaseSqlCmdVariable>test2Db</DatabaseSqlCmdVariable>');
+		should(projFileText).containEql('<SqlCmdVariable Include="test2Db">');
+
+		// add database reference to a different database on a different server
+		await project.addDatabaseReference({
+			dacpacFileLocation: Uri.file('test3.dacpac'),
+			databaseLocation: DatabaseReferenceLocation.differentDatabaseDifferentServer,
+			databaseName: 'test3DbName',
+			databaseVariable: 'test3Db',
+			serverName: 'otherServerName',
+			serverVariable: 'otherServer'
+		});
+		should(project.databaseReferences.length).equal(5, 'There should be five database references after adding a reference to test3');
+		should(project.databaseReferences[4].databaseName).equal('test3', 'The database reference should be test3');
+		// make sure reference to test2.dacpac and SQLCMD variables were added
+		projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText).containEql('test3.dacpac');
+		should(projFileText).containEql('<DatabaseSqlCmdVariable>test3Db</DatabaseSqlCmdVariable>');
+		should(projFileText).containEql('<SqlCmdVariable Include="test3Db">');
+		should(projFileText).containEql('<ServerSqlCmdVariable>otherServer</ServerSqlCmdVariable>');
+		should(projFileText).containEql('<SqlCmdVariable Include="otherServer">');
 	});
 
 	it('Should not allow adding duplicate database references', async function (): Promise<void> {
