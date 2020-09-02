@@ -3655,8 +3655,8 @@
 				{
 					"extensionId": "74",
 					"extensionName": "kusto",
-					"displayName": "Kusto",
-					"shortDescription": "Kusto extension for Azure Data Studio",
+					"displayName": "Kusto (KQL)",
+					"shortDescription": "Kusto (KQL) extension for Azure Data Studio",
 					"publisher": {
 						"displayName": "Microsoft",
 						"publisherId": "Microsoft",
