@@ -1,7 +1,7 @@
 // This code is originally from https://github.com/DonJayamanne/bowerVSCode
 // License: https://github.com/DonJayamanne/bowerVSCode/blob/master/LICENSE
 
-import vscode = require('vscode');
+import * as vscode from 'vscode';
 import Prompt from './prompt';
 import EscapeException from './escapeException';
 import { INameValueChoice } from './question';

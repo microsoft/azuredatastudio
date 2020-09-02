@@ -10,7 +10,7 @@ import { ManagePackagesDialogModel } from '../../dialog/managePackages/managePac
 import { IPackageManageProvider, IPackageLocation } from '../../types';
 import { LocalCondaPackageManageProvider } from '../../jupyter/localCondaPackageManageProvider';
 import { InstalledPackagesTab } from '../../dialog/managePackages/installedPackagesTab';
-import should = require('should');
+import * as should from 'should';
 
 interface TestContext {
 	view: azdata.ModelView;

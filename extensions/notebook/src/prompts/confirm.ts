@@ -5,7 +5,7 @@
 
 import { window } from 'vscode';
 import Prompt from './prompt';
-import LocalizedConstants = require('../common/localizedConstants');
+import * as LocalizedConstants  from '../common/localizedConstants';
 import EscapeException from './escapeException';
 
 export default class ConfirmPrompt extends Prompt {

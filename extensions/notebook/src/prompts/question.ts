@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import vscode = require('vscode');
+import * as vscode from  'vscode';
 
 export class QuestionTypes {
 	public static get input(): string { return 'input'; }
