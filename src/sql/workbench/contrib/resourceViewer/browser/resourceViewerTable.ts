@@ -11,25 +11,22 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 import { Dimension } from 'vs/base/browser/dom';
 import { textFormatter, slickGridDataItemColumnValueExtractor } from 'sql/base/browser/ui/table/formatters';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
+import { Disposable } from 'vs/base/common/lifecycle';
 
-export interface ResourceViewerTableViewState {
-	scrollTop: number;
-	scrollLeft: number;
-}
-
-export class ResourceViewerTable {
+export class ResourceViewerTable extends Disposable {
 
 	private _resourceViewerTable!: Table<Slick.SlickData>;
 	private _data: TableDataView<Slick.SlickData> | undefined;
 
 	constructor(parent: HTMLElement, @IWorkbenchThemeService private _themeService: IWorkbenchThemeService) {
-		this._resourceViewerTable = new Table(parent, {
+		super();
+		this._resourceViewerTable = this._register(new Table(parent, {
 			sorter: (args) => {
 				this._data?.sort(args);
 			}
 		}, {
 			dataItemColumnValueExtractor: slickGridDataItemColumnValueExtractor
-		});
+		}));
 		this._resourceViewerTable.setSelectionModel(new RowSelectionModel());
 		attachTableStyler(this._resourceViewerTable, this._themeService);
 	}
@@ -66,22 +63,5 @@ export class ResourceViewerTable {
 	public layout(dimension: Dimension): void {
 		this._resourceViewerTable.layout(dimension);
 		this._resourceViewerTable.autosizeColumns();
-	}
-
-	public saveViewState(): ResourceViewerTableViewState {
-		const viewElement = this._resourceViewerTable.grid.getCanvasNode().parentElement;
-		return {
-			scrollTop: viewElement?.scrollTop ?? -1,
-			scrollLeft: viewElement?.scrollLeft ?? -1
-		};
-	}
-
-	public restoreViewState(state: ResourceViewerTableViewState): void {
-		const viewElement = this._resourceViewerTable.grid.getCanvasNode().parentElement;
-		if (viewElement) {
-			viewElement.scrollTop = state.scrollTop;
-			viewElement.scrollLeft = state.scrollLeft;
-		}
-
 	}
 }

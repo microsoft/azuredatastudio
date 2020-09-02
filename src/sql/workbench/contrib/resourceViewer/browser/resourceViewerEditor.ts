@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { IDisposable } from 'vs/base/common/lifecycle';
+import { DisposableStore } from 'vs/base/common/lifecycle';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import * as DOM from 'vs/base/browser/dom';
@@ -23,10 +23,7 @@ export class ResourceViewerEditor extends BaseEditor {
 	private _container!: HTMLElement;
 	private _actionBar!: Taskbar;
 	private _resourceViewerTable!: ResourceViewerTable;
-	private _stateListener: IDisposable | undefined;
-	private _columnChangeListener: IDisposable | undefined;
-	private _rowCountChangeListener: IDisposable | undefined;
-	private _filterStateChangeListener: IDisposable | undefined;
+	private _inputDisposables = this._register(new DisposableStore());
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -53,7 +50,7 @@ export class ResourceViewerEditor extends BaseEditor {
 		const header = document.createElement('div');
 		header.className = 'resource-viewer-header';
 		this._container.appendChild(header);
-		this._actionBar = new Taskbar(header);
+		this._actionBar = this._register(new Taskbar(header));
 
 		this._actionBar.setContent([
 			// TODO - chgagnon add actions
@@ -67,7 +64,7 @@ export class ResourceViewerEditor extends BaseEditor {
 		resourceViewerTableContainer.style.height = '100%';
 		resourceViewerTableContainer.style.overflow = 'hidden';
 		resourceViewerTableContainer.style.position = 'relative';
-		this._resourceViewerTable = this._instantiationService.createInstance(ResourceViewerTable, resourceViewerTableContainer);
+		this._resourceViewerTable = this._register(this._instantiationService.createInstance(ResourceViewerTable, resourceViewerTableContainer));
 		return resourceViewerTableContainer;
 	}
 
@@ -78,35 +75,29 @@ export class ResourceViewerEditor extends BaseEditor {
 	public async setInput(input: ResourceViewerInput, options?: EditorOptions): Promise<void> {
 		await super.setInput(input, options, CancellationToken.None);
 
+		this._inputDisposables.clear();
+
 		this._resourceViewerTable.data = input.data;
-		this._columnChangeListener?.dispose();
-		this._columnChangeListener = input.onColumnsChanged(columns => {
+		this._inputDisposables.add(input.onColumnsChanged(columns => {
 			this._resourceViewerTable.columns = columns;
-		});
+		}));
 
-		this._rowCountChangeListener?.dispose();
-		this._rowCountChangeListener = input.data.onRowCountChange(() => {
+		this._inputDisposables.add(input.data.onRowCountChange(() => {
 			this._resourceViewerTable.updateRowCount();
-		});
+		}));
 
-		this._filterStateChangeListener?.dispose();
-		this._filterStateChangeListener = input.data.onFilterStateChange(() => {
+		this._inputDisposables.add(input.data.onFilterStateChange(() => {
 			this._resourceViewerTable.invalidateAllRows();
 			this._resourceViewerTable.updateRowCount();
-		});
+		}));
 
 		this._actionBar.context = input;
 
-		this._stateListener?.dispose();
-		this._stateListener = input.state.onResourceViewerStateChange(e => this.onStateChange(e));
+		this._inputDisposables.add(input.state.onResourceViewerStateChange(e => this.onStateChange(e)));
 		this.onStateChange({
 		});
 
 		this._resourceViewerTable.focus();
-
-		input.columns = ['c1', 'c2', 'c3'];
-		input.data.push([{ c1: 'c1.1', c2: 'c2.1', c3: 'c3.1' }, { c1: 'c1.2', c2: 'c2.2', 'c3': 'c3.2' }]);
-		input.data.filter();
 	}
 
 
