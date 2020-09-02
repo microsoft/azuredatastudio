@@ -3693,7 +3693,7 @@
 							"properties": [
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.22.0"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
