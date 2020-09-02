@@ -43,7 +43,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	private _gatheringInformationError: string | undefined;
 	private _skuRecommendations: SKURecommendations | undefined;
 
-	constructor(private readonly _sourceConnection: azdata.connection.Connection) {
+	constructor(
+		private readonly _extensionContext: vscode.ExtensionContext,
+		private readonly _sourceConnection: azdata.connection.Connection
+	) {
 		this._currentState = State.INIT;
 	}
 
@@ -85,5 +88,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	dispose() {
 		this._stateChangeEventEmitter.dispose();
+	}
+
+	public getExtensionPath(): string {
+		return this._extensionContext.extensionPath;
 	}
 }
