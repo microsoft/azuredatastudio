@@ -17,7 +17,7 @@ import * as azdata from 'azdata';
 
 import { promises as fs } from 'fs';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
-import { Project, ProjectEntry, reservedProjectFolders, SqlProjectReferenceProjectEntry } from '../models/project';
+import { Project, reservedProjectFolders, FileProjectEntry, SqlProjectReferenceProjectEntry } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
 import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
@@ -283,17 +283,20 @@ export class ProjectsController {
 
 	public async addFolderPrompt(treeNode: BaseProjectTreeItem) {
 		const project = this.getProjectFromContext(treeNode);
-		const newFolderName = await this.promptForNewObjectName(new templates.ProjectScriptType(templates.folder, constants.folderFriendlyName, ''), project);
+		const relativePathToParent = this.getRelativePath(treeNode);
+		const absolutePathToParent = path.join(project.projectFolderPath, relativePathToParent);
+		const newFolderName = await this.promptForNewObjectName(new templates.ProjectScriptType(templates.folder, constants.folderFriendlyName, ''),
+			project, absolutePathToParent);
 
 		if (!newFolderName) {
 			return; // user cancelled
 		}
 
-		const relativeFolderPath = path.join(this.getRelativePath(treeNode), newFolderName);
+		const relativeFolderPath = path.join(relativePathToParent, newFolderName);
 
 		try {
 			// check if folder already exists or is a reserved folder
-			const absoluteFolderPath = path.join(project.projectFolderPath, relativeFolderPath);
+			const absoluteFolderPath = path.join(absolutePathToParent, newFolderName);
 			const folderExists = await utils.exists(absoluteFolderPath);
 
 			if (folderExists || this.isReservedFolder(absoluteFolderPath, project.projectFolderPath)) {
@@ -335,7 +338,8 @@ export class ProjectsController {
 		}
 
 		const itemType = templates.projectScriptTypeMap()[itemTypeName.toLocaleLowerCase()];
-		let itemObjectName = await this.promptForNewObjectName(itemType, project);
+		const absolutePathToParent = path.join(project.projectFolderPath, relativePath);
+		let itemObjectName = await this.promptForNewObjectName(itemType, project, absolutePathToParent, constants.sqlFileExtension);
 
 		itemObjectName = itemObjectName?.trim();
 
@@ -368,7 +372,7 @@ export class ProjectsController {
 	public async exclude(context: FileNode | FolderNode): Promise<void> {
 		const project = this.getProjectFromContext(context);
 
-		const fileEntry = this.getProjectEntry(project, context);
+		const fileEntry = this.getFileProjectEntry(project, context);
 
 		if (fileEntry) {
 			await project.exclude(fileEntry);
@@ -392,7 +396,7 @@ export class ProjectsController {
 		let success = false;
 
 		if (context instanceof FileNode || FolderNode) {
-			const fileEntry = this.getProjectEntry(project, context);
+			const fileEntry = this.getFileProjectEntry(project, context);
 
 			if (fileEntry) {
 				await project.deleteFileFolder(fileEntry);
@@ -407,7 +411,7 @@ export class ProjectsController {
 		}
 	}
 
-	private getProjectEntry(project: Project, context: BaseProjectTreeItem): ProjectEntry | undefined {
+	private getFileProjectEntry(project: Project, context: BaseProjectTreeItem): FileProjectEntry | undefined {
 		const root = context.root as ProjectRootTreeItem;
 		const fileOrFolder = context as FileNode ? context as FileNode : context as FolderNode;
 
@@ -521,13 +525,18 @@ export class ProjectsController {
 		return output;
 	}
 
-	private async promptForNewObjectName(itemType: templates.ProjectScriptType, _project: Project): Promise<string | undefined> {
-		// TODO: ask project for suggested name that doesn't conflict
-		const suggestedName = itemType.friendlyName.replace(/\s+/g, '') + '1';
+	private async promptForNewObjectName(itemType: templates.ProjectScriptType, _project: Project, folderPath: string, fileExtension?: string): Promise<string | undefined> {
+		const suggestedName = itemType.friendlyName.replace(/\s+/g, '');
+		let counter: number = 0;
+
+		do {
+			counter++;
+		} while (counter < Number.MAX_SAFE_INTEGER
+			&& await utils.exists(path.join(folderPath, `${suggestedName}${counter}${(fileExtension ?? '')}`)));
 
 		const itemObjectName = await vscode.window.showInputBox({
 			prompt: constants.newObjectNamePrompt(itemType.friendlyName),
-			value: suggestedName,
+			value: `${suggestedName}${counter}`,
 		});
 
 		return itemObjectName;
