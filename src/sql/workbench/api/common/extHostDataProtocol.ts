@@ -173,6 +173,11 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		this._proxy.$registerSqlAssessmentServicesProvider(provider.providerId, provider.handle);
 		return rt;
 	}
+	$registerResourceDataProvider<T extends azdata.Resource>(provider: azdata.ResourceDataProvider<T>): vscode.Disposable {
+		let rt = this.registerProvider(provider, DataProviderType.ResourceDataProvider);
+		this._proxy.$registerResourceDataProvider(provider.providerId, provider.handle);
+		return rt;
+	}
 	$registerCapabilitiesServiceProvider(provider: azdata.CapabilitiesProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.CapabilitiesProvider);
 		this._proxy.$registerCapabilitiesServiceProvider(provider.providerId, provider.handle);
@@ -855,5 +860,9 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	public $generateAssessmentScript(handle: number, items: azdata.SqlAssessmentResultItem[]): Thenable<azdata.ResultStatus> {
 		return this._resolveProvider<azdata.SqlAssessmentServicesProvider>(handle).generateAssessmentScript(items);
+	}
+
+	public $getResources<T extends azdata.Resource>(handle: number): Thenable<T[]> {
+		return this._resolveProvider<azdata.ResourceDataProvider<T>>(handle).getResources();
 	}
 }

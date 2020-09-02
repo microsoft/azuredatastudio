@@ -6,6 +6,7 @@
 // This is the place for API experiments and proposal.
 
 import * as vscode from 'vscode';
+import { DataProvider } from 'azdata';
 
 declare module 'azdata' {
 	/**
@@ -95,6 +96,43 @@ declare module 'azdata' {
 	export namespace dataprotocol {
 		export function registerSerializationProvider(provider: SerializationProvider): vscode.Disposable;
 		export function registerSqlAssessmentServicesProvider(provider: SqlAssessmentServicesProvider): vscode.Disposable;
+		/**
+		 * Registers a ResourceDataProvider which is used to provide lists of different types of resources
+		 * @param provider The provider implementation
+		 */
+		export function registerResourceDataProvider<T extends Resource>(provider: ResourceDataProvider<T>): vscode.Disposable;
+	}
+
+	export enum DataProviderType {
+		ResourceDataProvider = 'ResourceDataProvider'
+	}
+
+	/**
+	 * A resource
+	 */
+	export interface Resource {
+		/**
+		 * A unique identifier for this resource
+		 */
+		id: string;
+		/**
+		 * An identifier for the type of resource this is
+		 */
+		typeId: string;
+		/**
+		 * A set of properties for this resource
+		 */
+		properties: { [key: string]: string };
+	}
+
+	/**
+	 * A data provider that provides lists of resources
+	 */
+	export interface ResourceDataProvider<T extends Resource> extends DataProvider {
+		/**
+		 * Gets the list of resources for this provider
+		 */
+		getResources(): Thenable<T[]>;
 	}
 
 	export interface HyperlinkComponent {
@@ -532,5 +570,4 @@ declare module 'azdata' {
 		 */
 		delete?: boolean;
 	}
-
 }

@@ -28,6 +28,7 @@ import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { assign } from 'vs/base/common/objects';
 import { serializableToMap } from 'sql/base/common/map';
 import { IAssessmentService } from 'sql/workbench/services/assessment/common/interfaces';
+import { IResourceDataProviderService } from 'sql/workbench/services/resourceDataProvider/common/resourceDataProviderService';
 
 /**
  * Main thread class for handling data protocol management registration.
@@ -55,7 +56,8 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		@IProfilerService private _profilerService: IProfilerService,
 		@ISerializationService private _serializationService: ISerializationService,
 		@IFileBrowserService private _fileBrowserService: IFileBrowserService,
-		@IAssessmentService private _assessmentService: IAssessmentService
+		@IAssessmentService private _assessmentService: IAssessmentService,
+		@IResourceDataProviderService private _resourceDataProviderService: IResourceDataProviderService
 	) {
 		super();
 		if (extHostContext) {
@@ -466,6 +468,17 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 
 		return undefined;
 	}
+
+	public $registerResourceDataProvider<T extends azdata.Resource>(providerId: string, handle: number): void {
+		const self = this;
+		this._resourceDataProviderService.registerProvider(providerId, <azdata.ResourceDataProvider<T>>{
+			providerId: providerId,
+			getResources(): Thenable<T[]> {
+				return self._proxy.$getResources(handle);
+			}
+		});
+	}
+
 	public $registerCapabilitiesServiceProvider(providerId: string, handle: number): Promise<any> {
 		const self = this;
 		this._capabilitiesService.registerProvider(<azdata.CapabilitiesProvider>{

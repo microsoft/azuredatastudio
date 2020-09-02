@@ -25,6 +25,7 @@ export const CancelQuery = 'CancelQuery';
 export const NewQuery = 'NewQuery';
 export const FirewallRuleRequested = 'FirewallRuleCreated';
 export const DashboardNavigated = 'DashboardNavigated';
+export const GetResources = 'GetResources';
 
 // Telemetry Properties
 
