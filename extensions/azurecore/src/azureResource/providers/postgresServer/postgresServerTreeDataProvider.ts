@@ -34,7 +34,7 @@ export class PostgresServerTreeDataProvider extends ResourceTreeDataProviderBase
 				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_server_inverse.svg'),
 				light: this._extensionContext.asAbsolutePath('resources/light/sql_server.svg')
 			},
-			collapsibleState: vscode.workspace.getConfiguration('connection').get<boolean>('dialog.browser') ? TreeItemCollapsibleState.None : TreeItemCollapsibleState.Collapsed,
+			collapsibleState: workspace.getConfiguration('connection').get<boolean>('dialog.browser') ? TreeItemCollapsibleState.None : TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.databaseServer,
 			payload: {
 				id: generateGuid(),
