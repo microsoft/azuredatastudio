@@ -33,7 +33,7 @@ export class AzureResourceDatabaseTreeDataProvider extends ResourceTreeDataProvi
 				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_database_inverse.svg'),
 				light: this._extensionContext.asAbsolutePath('resources/light/sql_database.svg')
 			},
-			collapsibleState: vscode.workspace.getConfiguration('workbench').get<boolean>('enablePreviewFeatures') ? vscode.TreeItemCollapsibleState.None : vscode.TreeItemCollapsibleState.Collapsed,
+			collapsibleState: vscode.workspace.getConfiguration('connection').get<boolean>('dialog.browse') ? vscode.TreeItemCollapsibleState.None : vscode.TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.database,
 			payload: {
 				id: generateGuid(),

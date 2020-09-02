@@ -14,6 +14,7 @@ import { SubscriptionSelectionPage } from './subscriptionSelectionPage';
 
 export class WizardController {
 	constructor(private readonly extensionContext: vscode.ExtensionContext) {
+
 	}
 
 	public async openWizard(profile: azdata.connection.Connection): Promise<void> {
