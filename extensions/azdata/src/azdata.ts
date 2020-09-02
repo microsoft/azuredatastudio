@@ -251,7 +251,7 @@ export async function checkAndUpgradeAzdata(currentAzdata?: IAzdataTool, userReq
 		const newVersion = await discoverLatestAvailableAzdataVersion();
 		if (newVersion.compare(currentAzdata.cachedVersion) === 1) {
 			Logger.log(loc.foundAzdataVersionToUpgradeTo(newVersion.raw, currentAzdata.cachedVersion.raw));
-			return await promptToUpgradeAzdata(userRequested);
+			return await promptToUpgradeAzdata(newVersion.raw, userRequested);
 		} else {
 			Logger.log(loc.currentlyInstalledVersionIsLatest(currentAzdata.cachedVersion.raw));
 		}
@@ -279,7 +279,7 @@ async function promptToInstallAzdata(userRequested: boolean = false): Promise<bo
 		return false;
 	}
 	if (config === AzdataDeployOption.askAgain) {
-		response = await vscode.window.showErrorMessage(loc.couldNotFindAzdataWithPrompt, ...getResponses(userRequested));
+		response = await vscode.window.showErrorMessage(loc.promptForAzdataInstall, ...getResponses(userRequested));
 		Logger.log(loc.userResponseToInstallPrompt(response));
 	}
 	if (response === loc.doNotAskAgain) {
@@ -304,11 +304,12 @@ async function promptToInstallAzdata(userRequested: boolean = false): Promise<bo
 
 /**
  * prompt user to upgrade Azdata.
+ * @param newVersion - provides the new version that the user will be prompted to upgrade to
  * @param userRequested - if true this operation was requested in response to a user issued command, if false it was issued at startup by system
  * @param responses - list of choices to present to the user when issuing the prompt
  * returns true if upgrade was done and false otherwise.
  */
-async function promptToUpgradeAzdata(userRequested: boolean = false): Promise<boolean> {
+async function promptToUpgradeAzdata(newVersion: string, userRequested: boolean = false): Promise<boolean> {
 	let response: string | undefined = loc.yes;
 	const config = <AzdataDeployOption>getConfig(azdataAutoUpgradeKey);
 	Logger.log(loc.autoDeployConfig(azdataAutoUpgradeKey, config));
@@ -320,7 +321,7 @@ async function promptToUpgradeAzdata(userRequested: boolean = false): Promise<bo
 		return false;
 	}
 	if (config === AzdataDeployOption.askAgain) {
-		response = await vscode.window.showInformationMessage(loc.foundAzdataUpgradePrompt, ...getResponses(userRequested));
+		response = await vscode.window.showInformationMessage(loc.promptForAzdataUpgrade(newVersion), ...getResponses(userRequested));
 		Logger.log(loc.userResponseToUpgradePrompt(response));
 	}
 	if (response === loc.doNotAskAgain) {
@@ -329,8 +330,8 @@ async function promptToUpgradeAzdata(userRequested: boolean = false): Promise<bo
 	if (response === loc.yes) {
 		try {
 			await upgradeAzdata();
-			vscode.window.showInformationMessage(loc.azdataUpgraded);
-			Logger.log(loc.azdataUpgraded);
+			vscode.window.showInformationMessage(loc.azdataUpgraded(newVersion));
+			Logger.log(loc.azdataUpgraded(newVersion));
 			return true;
 		} catch (err) {
 			// Windows: 1602 is User cancelling installation/upgrade - not unexpected so don't display
