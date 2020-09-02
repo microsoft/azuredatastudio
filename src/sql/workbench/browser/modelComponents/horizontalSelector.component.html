@@ -13,8 +13,8 @@
 		<div class="horizontal-text-container">
 			<div *ngFor="let textContent of card.textContents" class="inner-text-content">
 				<span class="horizontal-text-value" [ngStyle]="textContent.textStyles">{{textContent.textValue}}</span>
-				<a class="horizontal-link-value" *ngIf="textContent.linkDisplayValue" href="#"
-					(click)="onLinkClick(card.id, textContent)" [ngStyle]="textContent.linkStyles">
+				<a *ngIf="textContent.linkDisplayValue"  class="horizontal-link-value" href="#"
+					(click)="onLinkClick(card.id, textContent);$event.stopPropagation()" [ngStyle]="textContent.linkStyles">
 					{{textContent.linkDisplayValue}}
 					<span *ngIf="textContent.displayLinkCodicon" class="codicon codicon-link-external"
 						[ngStyle]="textContent.linkCodiconStyles"></span>
