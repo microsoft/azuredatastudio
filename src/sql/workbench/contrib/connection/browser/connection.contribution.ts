@@ -130,6 +130,11 @@ configurationRegistry.registerConfiguration({
 			'type': 'boolean',
 			'default': true,
 			'description': localize('connection.parseClipboardForConnectionStringDescription', "Attempt to parse the contents of the clipboard when the connection dialog is opened or a paste is performed.")
+		},
+		'connection.dialog.browser': {
+			'type': 'boolean',
+			'default': false,
+			'description': localize('connection.dialog.browser', "(Experimental) Show the browser tab in the connection dialog for discovering new connections")
 		}
 	}
 });
