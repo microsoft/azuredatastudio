@@ -9,6 +9,7 @@ import * as types from 'vs/base/common/types';
 
 import { Event, Emitter } from 'vs/base/common/event';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { coalesce } from 'vs/base/common/arrays';
 
 export interface RestoreOptionsElement {
 	optionMetadata: azdata.ServiceOption;
@@ -30,21 +31,21 @@ export interface RestoreOptionParam {
  */
 export interface SouceDatabaseNamesParam {
 	databaseNames: string[];
-	selectedDatabase: string;
+	selectedDatabase?: string;
 }
 
 /**
  * View model for restore dialog
  */
 export class RestoreViewModel {
-	public filePath: string;
-	public sourceDatabaseName: string;
-	public targetDatabaseName: string;
-	public lastBackupTaken: string;
-	public databaseList: string[];
-	public readHeaderFromMedia: boolean;
-	public selectedBackupSets: string[];
-	public defaultBackupFolder: string;
+	public filePath?: string;
+	public sourceDatabaseName?: string;
+	public targetDatabaseName?: string;
+	public lastBackupTaken?: string;
+	public databaseList?: string[];
+	public readHeaderFromMedia?: boolean;
+	public selectedBackupSets?: string[];
+	public defaultBackupFolder?: string;
 
 	private _onSetLastBackupTaken = new Emitter<string>();
 	public onSetLastBackupTaken: Event<string> = this._onSetLastBackupTaken.event;
@@ -111,14 +112,14 @@ export class RestoreViewModel {
 			this.updateFilePath('');
 			this.updateSourceDatabaseNames([], undefined);
 		} else {
-			this.updateSourceDatabaseNames(this.databaseList, this.databaseList[0]);
+			this.updateSourceDatabaseNames(this.databaseList!, this.databaseList![0]);
 		}
 	}
 
 	/**
 	* Get option metadata from the option map
 	*/
-	public getOptionMetadata(optionName: string): azdata.ServiceOption {
+	public getOptionMetadata(optionName: string): azdata.ServiceOption | undefined {
 		return this._optionsMap[optionName] ? this._optionsMap[optionName].optionMetadata : undefined;
 	}
 
@@ -234,14 +235,9 @@ export class RestoreViewModel {
 	* Update backup sets to restore
 	*/
 	public updateBackupSetsToRestore(backupSetsToRestore: azdata.DatabaseFileInfo[]): void {
-		this.selectedBackupSets = null;
+		this.selectedBackupSets = undefined;
 		if (backupSetsToRestore) {
-			this.selectedBackupSets = [];
-			backupSetsToRestore.forEach(backupFile => {
-				if (backupFile.isSelected) {
-					this.selectedBackupSets.push(backupFile.id);
-				}
-			});
+			this.selectedBackupSets = coalesce(backupSetsToRestore.map(f => f.isSelected ? f.id : undefined));
 			this._onUpdateBackupSetsToRestore.fire(backupSetsToRestore);
 		}
 	}
@@ -256,7 +252,7 @@ export class RestoreViewModel {
 		this.updateFilePath('');
 		this.updateLastBackupTaken('');
 		this.databaseList = [];
-		this.selectedBackupSets = null;
+		this.selectedBackupSets = undefined;
 		for (let key in this._optionsMap) {
 			this._optionsMap[key].defaultValue = this.getDisplayValue(this._optionsMap[key].optionMetadata, this._optionsMap[key].optionMetadata.defaultValue);
 			this._optionsMap[key].currentValue = this._optionsMap[key].defaultValue;
@@ -283,7 +279,7 @@ export class RestoreViewModel {
 	/**
 	* Update source database names and selected database
 	*/
-	public updateSourceDatabaseNames(options: string[], selectedDatabase: string) {
+	public updateSourceDatabaseNames(options: string[], selectedDatabase?: string) {
 		this.sourceDatabaseName = selectedDatabase;
 		this._onSetSourceDatabaseNames.fire({ databaseNames: options, selectedDatabase: selectedDatabase });
 	}
