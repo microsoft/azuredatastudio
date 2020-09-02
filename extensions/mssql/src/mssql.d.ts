@@ -527,7 +527,7 @@ export interface SqlMigrationAssessmentResultItem {
 	message: string;
 	appliesToMigrationTargetPlatform: string;
 	issueCategory: string;
-	impactedObjects: SqlMigrationImpactedObjectInfo;
+	impactedObjects: SqlMigrationImpactedObjectInfo[];
 }
 
 export interface SqlMigrationAssessmentResult extends azdata.ResultStatus {

@@ -42,7 +42,7 @@ export class AssessmentResultsDialog {
 						'Impacted Objects'
 					],
 					data: [],
-					height: 300,
+					height: 700,
 					width: 1100
 				}).component();
 
@@ -64,37 +64,36 @@ export class AssessmentResultsDialog {
 			let data = this.convertAssessmentToData(this.model.assessmentResults);
 			this.assessmentTable.data = data;
 		});
-
-		/*
-		dialog.registerCloseValidator(async () => {
-			this.updateModel();
-			let validationResult = await this.model.validate();
-			if (!validationResult.valid) {
-				// TODO: Show Error Messages
-				dialog.message = { text: validationResult.errorMessages[0] };
-				console.error(validationResult.errorMessages.join(','));
-			}
-
-			return validationResult.valid;
-		});
-		*/
 	}
 
 	private convertAssessmentToData(assessments: mssql.SqlMigrationAssessmentResultItem[] | undefined): Array<string | number>[] {
 		let result: Array<string | number>[] = [];
 		if (assessments) {
 			assessments.forEach(assessment => {
-				let cols = [];
-				cols.push(assessment.appliesToMigrationTargetPlatform);
-				cols.push(assessment.displayName);
-				cols.push(assessment.checkId);
-				cols.push(assessment.rulesetName);
-				cols.push(assessment.description);
-				cols.push('Impacted Objects');
-				result.push(cols);
+				if (assessment.impactedObjects && assessment.impactedObjects.length > 0) {
+					assessment.impactedObjects.forEach(impactedObject => {
+						this.addAssessmentColumn(result, assessment, impactedObject);
+					});
+				} else {
+					this.addAssessmentColumn(result, assessment, undefined);
+				}
 			});
 		}
 		return result;
+	}
+
+	private addAssessmentColumn(
+		result: Array<string | number>[],
+		assessment: mssql.SqlMigrationAssessmentResultItem,
+		impactedObject: mssql.SqlMigrationImpactedObjectInfo | undefined): void {
+		let cols = [];
+		cols.push(assessment.appliesToMigrationTargetPlatform);
+		cols.push(assessment.displayName);
+		cols.push(assessment.checkId);
+		cols.push(assessment.rulesetName);
+		cols.push(assessment.description);
+		cols.push(impactedObject?.name ?? '');
+		result.push(cols);
 	}
 
 	public async openDialog(dialogName?: string) {
