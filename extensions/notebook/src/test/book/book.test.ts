@@ -435,6 +435,20 @@ describe('BooksTreeViewTests', function () {
 					'config' :  'title: Test Book',
 					'toc' : '- title: Notebook1\n  url: /notebook1\n  sections:\n  - title: Notebook2\n    url: /notebook2\n  - title: Notebook3\n    url: /notebook3\n- title: Markdown\n  url: /markdown\n- title: GitHub\n  url: https://github.com/\n  external: true'
 				}
+			},
+			{
+				it: 'v2',
+				folderPaths : {
+					'dataFolderPath' : path.join(rootFolderPath, '_data'),
+					'configFile' : path.join(rootFolderPath, '_config.yml'),
+					'tableOfContentsFile' : path.join(rootFolderPath, '_toc.yml'),
+					'notebook2File' : path.join(rootFolderPath,'notebook2.ipynb'),
+					'tableOfContentsFileIgnore' : path.join(rootFolderPath, '_data', 'toc.yml')
+				},
+				contents : {
+					'config' :  'title: Test Book',
+					'toc' : '- title: Notebook1\n  file: /notebook1\n  sections:\n  - title: Notebook2\n    file: /notebook2\n  - title: Notebook3\n    file: /notebook3\n- title: Markdown\n  file: /markdown\n- title: GitHub\n  url: https://github.com/\n'
+				}
 			}
 		];
 		runs.forEach(function (run){
@@ -499,6 +513,17 @@ describe('BooksTreeViewTests', function () {
 					'config' :  'title: Test Book',
 					'toc' : '- title: Notebook1\n  url: /notebook1\n- title: Notebook2\n  url: /notebook2'
 				}
+			}, {
+				it: 'v2',
+				folderPaths : {
+					'configFile' : path.join(rootFolderPath, '_config.yml'),
+					'tableofContentsFile' : path.join(rootFolderPath, '_toc.yml'),
+					'notebook2File' : path.join(rootFolderPath, 'notebook2.ipynb'),
+				},
+				contents : {
+					'config' :  'title: Test Book',
+					'toc' : '- title: Notebook1\n  file: /notebook1\n- title: Notebook2\n  file: /notebook2'
+				}
 			}
 		];
 		runs.forEach(function (run){
@@ -506,7 +531,9 @@ describe('BooksTreeViewTests', function () {
 				let folder: vscode.WorkspaceFolder;
 				before(async () => {
 					await fs.mkdir(rootFolderPath);
-					await fs.mkdir(run.folderPaths.dataFolderPath);
+					if(run.it === 'v1'){
+						await fs.mkdir(run.folderPaths.dataFolderPath);
+					}
 					await fs.writeFile(run.folderPaths.tableofContentsFile, run.contents.config);
 					const mockExtensionContext = new MockExtensionContext();
 					folder = {
@@ -521,7 +548,7 @@ describe('BooksTreeViewTests', function () {
 
 				it('should show error message if config.yml file not found', async () => {
 					await bookTreeViewProvider.currentBook.readBooks();
-					should(bookTreeViewProvider.currentBook.errorMessage).equal(readBookError(bookTreeViewProvider.currentBook.bookPath, `ENOENT: no such file or directory, open '${configFile}'`));
+					should(bookTreeViewProvider.currentBook.errorMessage).equal(readBookError(bookTreeViewProvider.currentBook.bookPath, `ENOENT: no such file or directory, open '${run.folderPaths.configFile}'`));
 				});
 
 				it('should show error if toc.yml file format is invalid', async function (): Promise<void> {
@@ -555,6 +582,17 @@ describe('BooksTreeViewTests', function () {
 					'config' :  'title: Test Book',
 					'toc' : '- title: Notebook1\n  url: /notebook1\n- title: Notebook2\n  url: /notebook2'
 				}
+			},{
+				it: 'v2',
+				folderPaths : {
+					'configFile' : path.join(rootFolderPath, '_config.yml'),
+					'tableofContentsFile' : path.join(rootFolderPath,'_toc.yml'),
+					'notebook2File' : path.join(rootFolderPath,'notebook2.ipynb'),
+				},
+				contents : {
+					'config' :  'title: Test Book',
+					'toc' : '- title: Notebook1\n  file: /notebook1\n- title: Notebook2\n  file: /notebook2'
+				}
 			}
 		];
 		runs.forEach(function (run){
@@ -570,8 +608,10 @@ describe('BooksTreeViewTests', function () {
 					nextUri: undefined
 				};
 				await fs.mkdir(rootFolderPath);
-				await fs.mkdir(run.folderPaths.dataFolderPath);
-				await fs.mkdir(run.folderPaths.contentFolderPath);
+				if(run.it === 'v1'){
+					await fs.mkdir(run.folderPaths.dataFolderPath);
+					await fs.mkdir(run.folderPaths.contentFolderPath);
+				}
 				await fs.writeFile(run.folderPaths.configFile, run.contents.config);
 				await fs.writeFile(run.folderPaths.tableofContentsFile, run.contents.toc);
 				await fs.writeFile(run.folderPaths.notebook2File, '');
@@ -619,6 +659,20 @@ describe('BooksTreeViewTests', function () {
 				contents : {
 					'config' :  'title: Test Book',
 					'toc' : '- title: Home\n  url: /readme\n- title: Notebook1\n  url: /notebook1\n- title: Notebook2\n  url: /notebook2'
+				}
+			},
+			{
+				it: 'v2',
+				folderPaths : {
+					'configFile' : path.join(rootFolderPath, '_config.yml'),
+					'tableofContentsFile' : path.join(rootFolderPath, '_toc.yml'),
+					'notebook1File' : path.join(rootFolderPath, 'notebook1.ipynb'),
+					'notebook2File' : path.join(rootFolderPath, 'notebook2.ipynb'),
+					'markdownFile' : path.join(rootFolderPath, 'readme.md')
+				},
+				contents : {
+					'config' :  'title: Test Book',
+					'toc' : '- title: Home\n  file: /readme\n- title: Notebook1\n  file: /notebook1\n- title: Notebook2\n  file: /notebook2'
 				}
 			}
 		];
@@ -811,7 +865,7 @@ describe('BooksTreeViewTests', function () {
 				},
 				contents : {
 					'config' :  'title: Test Book',
-					'toc' : '- title: Notebook1\n  url: /notebook1',
+					'toc' : '- title: Notebook1\n  file: /notebook1',
 					'bookTitle' : 'Test Book',
 					'standaloneNotebookTitle' : 'notebook2'
 				}

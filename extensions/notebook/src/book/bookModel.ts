@@ -50,7 +50,7 @@ export class BookModel {
 		let isOlderVersion: boolean;
 		this._configPath = path.posix.join(folderPath, '_config.yml');
 		try {
-			isOlderVersion = (await fs.stat(path.posix.join(folderPath, '_data'))).isDirectory();
+			isOlderVersion = (await fs.stat(path.posix.join(folderPath, '_data'))).isDirectory() && (await fs.stat(path.posix.join(folderPath, 'content'))).isDirectory();
 		} catch {
 			isOlderVersion = false;
 		}
@@ -143,7 +143,6 @@ export class BookModel {
 				const config = yaml.safeLoad(fileContents.toString());
 				fileContents = await fsPromises.readFile(this._tableOfContentsPath, 'utf-8');
 				let tableOfContents: any = yaml.safeLoad(fileContents.toString());
-				tableOfContents = this._bookVersion === 'v2' ? tableOfContents.sections : tableOfContents;
 				let book: BookTreeItem = new BookTreeItem({
 					version: this._bookVersion,
 					title: config.title,
