@@ -120,6 +120,7 @@ function main() {
 		const modulesToLoad = tests.map(function (test) {
 			test = test.replace(/^src/, 'out');
 			test = test.replace(/\.ts$/, '.js');
+			test = test.replace(/\.tsx$/, '.jsx');
 			return path.relative(src, path.resolve(test)).replace(/(\.js)|(\.js\.map)$/, '').replace(/\\/g, '/');
 		});
 		loadFunc = (cb) => {

@@ -80,6 +80,7 @@ function loadTestModules(opts) {
 		const modules = files.map(file => {
 			file = file.replace(/^src/, 'out');
 			file = file.replace(/\.ts$/, '.js');
+			file = file.replace(/\.tsx$/, '.jsx');
 			return path.relative(_out, file).replace(/\.js$/, '');
 		});
 		return new Promise((resolve, reject) => {

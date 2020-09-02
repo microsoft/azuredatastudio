@@ -97,6 +97,7 @@ const testModules = (async function () {
 		promise = Promise.resolve(ensureIsArray(argv.run).map(file => {
 			file = file.replace(/^src/, 'out');
 			file = file.replace(/\.ts$/, '.js');
+			file = file.replace(/\.tsx$/, '.jsx');
 			return path.relative(out, file);
 		}));
 

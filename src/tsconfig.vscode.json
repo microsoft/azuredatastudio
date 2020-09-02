@@ -42,7 +42,7 @@
 	},
 	"include": [
 		"./**/*.d.ts",
-		"./sql/**/*.ts",
+		"./sql/**/*.{ts,tsx}",
 		"./vs/base/**/*.ts",
 		// "./vs/code/**/*.ts",
 		"./vs/editor/**/*.ts",

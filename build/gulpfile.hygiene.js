@@ -198,7 +198,7 @@ const jsHygieneFilter = [
 ];
 
 const tsHygieneFilter = [
-	'src/**/*.ts',
+	'src/**/*.{ts,tsx}',
 	'test/**/*.ts',
 	'extensions/**/*.ts',
 	'!**/fixtures/**',
