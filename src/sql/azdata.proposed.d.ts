@@ -34,7 +34,7 @@ declare module 'azdata' {
 			/**
 			 * Sets the trust mode for the notebook document.
 			 */
-			setTrusted(state: boolean);
+			setTrusted(state: boolean): void;
 		}
 
 		export interface IStandardKernel {
