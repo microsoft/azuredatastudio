@@ -6,6 +6,8 @@
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
+export const standardWidth: string = '480px';
+
 // Deploy Azure SQL VM wizard constants
 export const WizardTitle = localize('deployAzureSQLVM.NewSQLVMTitle', "Deploy Azure SQL VM");
 export const WizardDoneButtonLabel = localize('deployAzureSQLVM.ScriptToNotebook', "Script to Notebook");
@@ -34,8 +36,11 @@ export const VmSizeDropdownLabel = localize('deployAzureSQLVM.VmSizeDropdownLabe
 // Network settings page constants
 export const NetworkSettingsPageTitle = localize('deployAzureSQLVM.NetworkSettingsPageTitle', "Networking");
 export const NetworkSettingsPageDescription = localize('deployAzureSQLVM.NetworkSettingsPageDescription', "Configure network settings");
+export const NetworkSettingsUseExistingVirtualNetwork = localize('deployAzureSQLVM.NetworkSettingsUseExistingVirtualNetwork', 'Use existing virtual network');
 export const VirtualNetworkDropdownLabel = localize('deployAzureSQLVM.VirtualNetworkDropdownLabel', "Virtual Network");
+export const SubnetDropdownLabel = localize('deployAzureSQLVM.SubnetDropdownLabel', "Subnet");
 export const PublicIPDropdownLabel = localize('deployAzureSQLVM.PublicIPDropdownLabel', "Public IP");
+export const NetworkSettingsUseExistingPublicIp = localize('deployAzureSQLVM.NetworkSettingsUseExistingPublicIp', 'Use existing public IP');
 export const RDPAllowCheckboxLabel = localize('deployAzureSQLVM.VmRDPAllowCheckboxLabel', "Enable RDP(3389) inbound Port");
 
 // SQL Server settings page constants
