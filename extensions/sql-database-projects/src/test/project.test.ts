@@ -187,11 +187,11 @@ describe('Project: sqlproj content operations', function (): void {
 		await testUtils.shouldThrowSpecificError(async () => await project.getSystemDacpacUri(constants.masterDacpac), constants.invalidDataSchemaProvider);
 	});
 
-	it('Should add database references correctly', async function (): Promise<void> {
+	it('Should add system database references correctly', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const project = await Project.openProject(projFilePath);
 
-		should(project.databaseReferences.length).equal(0, 'There should be no datbase references to start with');
+		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
 		await project.addSystemDatabaseReference({ databaseName: 'master', systemDb: SystemDatabase.master });
 		should(project.databaseReferences.length).equal(1, 'There should be one database reference after adding a reference to master');
 		should(project.databaseReferences[0].databaseName).equal(constants.master, 'The database reference should be master');
@@ -207,31 +207,49 @@ describe('Project: sqlproj content operations', function (): void {
 		projFileText = (await fs.readFile(projFilePath)).toString();
 		should(projFileText).containEql(convertSlashesForSqlProj(project.getSystemDacpacUri(constants.msdb).fsPath.substring(1)));
 		should(projFileText).containEql(convertSlashesForSqlProj(project.getSystemDacpacSsdtUri(constants.msdb).fsPath.substring(1)));
+	});
+
+	it('Should add a dacpac reference to the same database correctly', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project = await Project.openProject(projFilePath);
 
 		// add database reference in the same database
+		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
 		await project.addDatabaseReference({ dacpacFileLocation: Uri.file('test1.dacpac'), databaseLocation: DatabaseReferenceLocation.sameDatabase });
-		should(project.databaseReferences.length).equal(3, 'There should be three database references after adding a reference to test1');
-		should(project.databaseReferences[2].databaseName).equal('test1', 'The database reference should be test1');
+		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to test1');
+		should(project.databaseReferences[0].databaseName).equal('test1', 'The database reference should be test1');
 		// make sure reference to test.dacpac was added
-		projFileText = (await fs.readFile(projFilePath)).toString();
+		let projFileText = (await fs.readFile(projFilePath)).toString();
 		should(projFileText).containEql('test1.dacpac');
+	});
+
+	it('Should add a dacpac reference to a different database in the same server correctly', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project = await Project.openProject(projFilePath);
 
 		// add database reference to a different database on the same server
+		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
 		await project.addDatabaseReference({
 			dacpacFileLocation: Uri.file('test2.dacpac'),
 			databaseLocation: DatabaseReferenceLocation.differentDatabaseSameServer,
 			databaseName: 'test2DbName',
 			databaseVariable: 'test2Db'
 		});
-		should(project.databaseReferences.length).equal(4, 'There should be four database references after adding a reference to test2');
-		should(project.databaseReferences[3].databaseName).equal('test2', 'The database reference should be test2');
+		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to test2');
+		should(project.databaseReferences[0].databaseName).equal('test2', 'The database reference should be test2');
 		// make sure reference to test2.dacpac and SQLCMD variable was added
-		projFileText = (await fs.readFile(projFilePath)).toString();
+		let projFileText = (await fs.readFile(projFilePath)).toString();
 		should(projFileText).containEql('test2.dacpac');
 		should(projFileText).containEql('<DatabaseSqlCmdVariable>test2Db</DatabaseSqlCmdVariable>');
 		should(projFileText).containEql('<SqlCmdVariable Include="test2Db">');
+	});
+
+	it('Should add a dacpac reference to a different database in a different server correctly', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project = await Project.openProject(projFilePath);
 
 		// add database reference to a different database on a different server
+		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
 		await project.addDatabaseReference({
 			dacpacFileLocation: Uri.file('test3.dacpac'),
 			databaseLocation: DatabaseReferenceLocation.differentDatabaseDifferentServer,
@@ -240,10 +258,10 @@ describe('Project: sqlproj content operations', function (): void {
 			serverName: 'otherServerName',
 			serverVariable: 'otherServer'
 		});
-		should(project.databaseReferences.length).equal(5, 'There should be five database references after adding a reference to test3');
-		should(project.databaseReferences[4].databaseName).equal('test3', 'The database reference should be test3');
+		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to test3');
+		should(project.databaseReferences[0].databaseName).equal('test3', 'The database reference should be test3');
 		// make sure reference to test2.dacpac and SQLCMD variables were added
-		projFileText = (await fs.readFile(projFilePath)).toString();
+		let projFileText = (await fs.readFile(projFilePath)).toString();
 		should(projFileText).containEql('test3.dacpac');
 		should(projFileText).containEql('<DatabaseSqlCmdVariable>test3Db</DatabaseSqlCmdVariable>');
 		should(projFileText).containEql('<SqlCmdVariable Include="test3Db">');
