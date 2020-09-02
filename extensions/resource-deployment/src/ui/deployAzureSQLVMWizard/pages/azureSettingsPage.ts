@@ -59,23 +59,19 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 				.withFormItems(
 					[
 						{
-							title: constants.AzureAccountDropdownLabel,
-							component: this._azureAccountsLoader,
+							component: this.wizard.createFormRowComponent(view, constants.AzureAccountDropdownLabel, '', this._azureAccountsLoader, true)
 						},
 						{
 							component: this.buttonFlexContainer
 						},
 						{
-							title: constants.AzureAccountSubscriptionDropdownLabel,
-							component: this._azureSubscriptionLoader
+							component: this.wizard.createFormRowComponent(view, constants.AzureAccountSubscriptionDropdownLabel, '', this._azureSubscriptionLoader, true)
 						},
 						{
-							title: constants.AzureAccountResourceGroupDropdownLabel,
-							component: this._resourceGroupLoader
+							component: this.wizard.createFormRowComponent(view, constants.AzureAccountRegionDropdownLabel, '', this._resourceGroupDropdown, true)
 						},
 						{
-							title: constants.AzureAccountRegionDropdownLabel,
-							component: this._azureRegionsLoader
+							component: this.wizard.createFormRowComponent(view, constants.AzureAccountRegionDropdownLabel, '', this._azureRegionsLoader, true)
 						}
 					],
 					{
@@ -84,7 +80,15 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 					})
 				.withLayout({ width: '100%' })
 				.component();
-
+			setTimeout(() => {
+				this._resourceGroupDropdown.required = false;
+				// this._form.items[3].updateCssStyles({
+				// 	display: 'none'
+				// });
+				// this._form.items[3].updateProperties({
+				// 	required: false
+				// });
+			}, 10000);
 			return view.initializeModel(this._form);
 		});
 	}
@@ -146,16 +150,17 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 	private async populateAzureAccountsDropdown() {
 		this._azureAccountsLoader.loading = true;
 		let accounts = await azdata.accounts.getAllAccounts();
-		this._azureAccountsDropdown.updateProperties({
-			values: accounts.map((account): azdata.CategoryValue => {
+		this.wizard.addDropdownValues(
+			this._azureAccountsDropdown,
+			accounts.map((account): azdata.CategoryValue => {
 				let accountCategoryValue = {
 					displayName: account.displayInfo.displayName,
 					name: account.displayInfo.displayName
 				};
 				this._accountsMap.set(accountCategoryValue.displayName, account);
 				return accountCategoryValue;
-			})
-		});
+			}),
+		);
 		this.wizard.model.azureAccount = accounts[0];
 		this._azureAccountsLoader.loading = false;
 		await this.populateAzureSubscriptionsDropdown();
@@ -229,7 +234,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 	private async createResourceDropdown(view: azdata.ModelView) {
 		this._resourceGroupDropdown = view.modelBuilder.dropDown().withProperties({
-			//required: true
+			required: true
 		}).component();
 		this._resourceGroupLoader = view.modelBuilder.loadingComponent().withItem(this._resourceGroupDropdown).component();
 		this._resourceGroupDropdown.onValueChanged(async (value) => {
