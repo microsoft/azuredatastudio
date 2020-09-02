@@ -33,7 +33,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this.chooseTargetComponent = this.createChooseTargetComponent(view);
 
 
-		/* const assessmentLink = view.modelBuilder.hyperlink()
+		const assessmentLink = view.modelBuilder.hyperlink()
 			.withProperties<azdata.HyperlinkComponentProperties>({
 				label: 'View Assessment Results',
 				url: ''
@@ -46,14 +46,15 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		const assessmentFormLink = {
 			title: '',
 			component: assessmentLink,
-		}; */
+		};
 
 		this.view = view;
 		const form = view.modelBuilder.formContainer().withFormItems(
 			[
 				this.igComponent,
 				this.detailsComponent,
-				this.chooseTargetComponent
+				this.chooseTargetComponent,
+				assessmentFormLink
 			]
 		);
 
