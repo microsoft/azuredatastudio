@@ -385,7 +385,8 @@ export class AddDatabaseReferenceDialog {
 
 	private createExampleUsage(): azdata.FormComponent {
 		this.exampleUsage = this.view!.modelBuilder.text().withProperties({
-			value: constants.systemDatabaseReferenceRequired
+			value: constants.systemDatabaseReferenceRequired,
+			CSSStyles: { 'user-select': 'text' }
 		}).component();
 
 		const exampleUsageWrapper = this.view!.modelBuilder.flexContainer().withItems([this.exampleUsage], { CSSStyles: { 'width': '415px', 'height': '80px', 'padding': '0 10px', 'border': '1px solid #8a8886', 'font-style': 'italic' } }).component();
