@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import * as constants from './constants';
 import { INotebookService } from '../../services/notebookService';
 import { IToolsService } from '../../services/toolsService';
@@ -62,22 +63,17 @@ export class DeployAzureSQLVMWizard extends WizardBase<DeployAzureSQLVMWizard, W
 	private async scriptToNotebook(): Promise<void> {
 		this.setEnvironmentVariables(process.env);
 		const variableValueStatements = this.model.getCodeCellContentForNotebook();
-		const insertionPosition = 5; // Cell number 5 is the position where the python variable setting statements need to be inserted in this.wizardInfo.notebook.
+		const insertionPosition = 3; // Cell number 5 is the position where the python variable setting statements need to be inserted in this.wizardInfo.notebook.
 		try {
 			await this.notebookService.launchNotebookWithEdits(this.wizardInfo.notebook, variableValueStatements, insertionPosition);
 		} catch (error) {
-			// vscode.window.showErrorMessage(getErrorMessage(error));
+			vscode.window.showErrorMessage(error);
 		}
 	}
 
 	private setEnvironmentVariables(env: NodeJS.ProcessEnv): void {
 		env['AZDATA_NB_VAR_AZURE_SQLVM_PASSWORD'] = this.model.vmPassword;
 		env['AZDATA_NB_VAR_AZURE_SQLVM_SQL_PASSWORD'] = this.model.sqlAuthenticationPassword;
-
-		// env[VariableNames.DockerPassword_VariableName] = this.model.getStringValue(VariableNames.DockerPassword_VariableName);
-		// if (this.model.authenticationMode === AuthenticationMode.ActiveDirectory) {
-		// 	env[VariableNames.DomainServiceAccountPassword_VariableName] = this.model.getStringValue(VariableNames.DomainServiceAccountPassword_VariableName);
-		// }
 	}
 
 	public async getRequest(url: string): Promise<any> {
@@ -165,6 +161,11 @@ export class DeployAzureSQLVMWizard extends WizardBase<DeployAzureSQLVMWizard, W
 	}
 
 	public validatePassword(password: string): string {
+		/**
+		 * 1. Password length should be between 12 and 123.
+		 * 2. Password must have 3 of the following: 1 lower case character, 1 upper case character, 1 number, and 1 special character.
+		 */
+
 		let errorMessage = '';
 
 		if (password.length < 12 || password.length > 123) {
