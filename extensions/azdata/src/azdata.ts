@@ -267,14 +267,13 @@ export async function checkAndUpgradeAzdata(currentAzdata?: IAzdataTool, userReq
 /**
  * prompt user to install Azdata.
  * @param userRequested - if true this operation was requested in response to a user issued command, if false it was issued at startup by system
- * @param responses - list of choices to present to the user when issuing the prompt
  * returns true if installation was done and false otherwise.
  */
 async function promptToInstallAzdata(userRequested: boolean = false): Promise<boolean> {
 	let response: string | undefined = loc.yes;
 	const config = <AzdataDeployOption>getConfig(azdataInstallKey);
-	Logger.log(loc.azdataUserSettingLog(azdataInstallKey, config));
 	if (userRequested) {
+		Logger.show();
 		Logger.log(loc.userRequestedInstall);
 	}
 	if (config === AzdataDeployOption.dontPrompt && !userRequested) {
@@ -309,14 +308,13 @@ async function promptToInstallAzdata(userRequested: boolean = false): Promise<bo
  * prompt user to upgrade Azdata.
  * @param newVersion - provides the new version that the user will be prompted to upgrade to
  * @param userRequested - if true this operation was requested in response to a user issued command, if false it was issued at startup by system
- * @param responses - list of choices to present to the user when issuing the prompt
  * returns true if upgrade was done and false otherwise.
  */
 async function promptToUpgradeAzdata(newVersion: string, userRequested: boolean = false): Promise<boolean> {
 	let response: string | undefined = loc.yes;
 	const config = <AzdataDeployOption>getConfig(azdataUpgradeKey);
-	Logger.log(loc.azdataUserSettingLog(azdataUpgradeKey, config));
 	if (userRequested) {
+		Logger.show();
 		Logger.log(loc.userRequestedUpgrade);
 	}
 	if (config === AzdataDeployOption.dontPrompt && !userRequested) {
@@ -351,21 +349,20 @@ async function promptToUpgradeAzdata(newVersion: string, userRequested: boolean 
  * Prompts user to accept EULA it if was not previously accepted. Stores and returns the user response to EULA prompt.
  * @param memento - memento where the user response is stored.
  * @param userRequested - if true this operation was requested in response to a user issued command, if false it was issued at startup by system
- * @param responses - list of choices to present to the user when issuing the prompt
  * pre-requisite, the calling code has to ensure that the eula has not yet been previously accepted by the user.
  * returns true if the user accepted the EULA.
  */
 
 export async function promptForEula(memento: vscode.Memento, userRequested: boolean = false): Promise<boolean> {
-	let response: string | undefined = loc.yes;
+	let response: string | undefined = loc.no;
 	const config = <AzdataDeployOption>getConfig(azdataAcceptEulaKey);
-	Logger.log(loc.azdataUserSettingLog(azdataInstallKey, config));
 	if (userRequested) {
+		Logger.show();
 		Logger.log(loc.userRequestedAcceptEula);
 	}
-	Logger.show();
-	Logger.log(loc.promptForEulaLog(microsoftPrivacyStatementUrl, eulaUrl));
-	if (config === AzdataDeployOption.prompt) {
+	if (config === AzdataDeployOption.prompt || userRequested) {
+		Logger.show();
+		Logger.log(loc.promptForEulaLog(microsoftPrivacyStatementUrl, eulaUrl));
 		response = await vscode.window.showInformationMessage(loc.promptForEula(microsoftPrivacyStatementUrl, eulaUrl), ...getResponses(userRequested));
 		Logger.log(loc.userResponseToEulaPrompt(response));
 	}
@@ -377,7 +374,6 @@ export async function promptForEula(memento: vscode.Memento, userRequested: bool
 		await vscode.commands.executeCommand('setContext', eulaAccepted, true); // save a context key that eula was accepted so that command for accepting eula is no longer available in commandPalette
 		return true;
 	}
-	await vscode.commands.executeCommand('setContext', eulaAccepted, false); // save a context key that eula was not accepted so that command for accepting eula is available in commandPalette
 	return false;
 }
 
@@ -442,12 +438,15 @@ async function findSpecificAzdata(): Promise<IAzdataTool> {
 
 function getConfig(key: string): AzdataDeployOption | undefined {
 	const config = vscode.workspace.getConfiguration(azdataConfigSection);
-	return config.get<AzdataDeployOption>(key);
+	const value = <AzdataDeployOption>config.get<AzdataDeployOption>(key);
+	Logger.log(loc.azdataUserSettingRead(key, value));
+	return value;
 }
 
 async function setConfig(key: string, value: string): Promise<void> {
 	const config = vscode.workspace.getConfiguration(azdataConfigSection);
 	await config.update(key, value, vscode.ConfigurationTarget.Global);
+	Logger.log(loc.azdataUserSettingUpdated(key, value));
 }
 
 /**
@@ -494,6 +493,7 @@ function parseVersion(raw: string): string {
 	const lines = raw.split(os.EOL);
 	return lines[0].trim();
 }
+
 /**
  * Gets the latest azdata version for MacOs clients
  */
