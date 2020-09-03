@@ -5,7 +5,7 @@
 
 import * as azdataExt from 'azdata-ext';
 import * as vscode from 'vscode';
-import { checkAndInstallAzdata, checkAndUpgradeAzdata, findAzdata, IAzdataTool, promptForEula } from './azdata';
+import { checkAndInstallAzdata, checkAndUpdateAzdata, findAzdata, IAzdataTool, promptForEula } from './azdata';
 import Logger from './common/logger';
 import * as constants from './constants';
 import * as loc from './localizedConstants';
@@ -20,11 +20,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 	});
 
 	vscode.commands.registerCommand('azdata.install', async () => {
-		await checkAndInstallAzdata(true /* userRequested */);
+		localAzdata = await checkAndInstallAzdata(true /* userRequested */);
 	});
 
-	vscode.commands.registerCommand('azdata.upgrade', async () => {
-		if (await checkAndUpgradeAzdata(localAzdata, true /* userRequested */)) { // if an upgrade was performed
+	vscode.commands.registerCommand('azdata.update', async () => {
+		if (await checkAndUpdateAzdata(localAzdata, true /* userRequested */)) { // if an update was performed
 			localAzdata = await findAzdata(); // find and save the currently installed azdata
 		}
 	});
@@ -49,11 +49,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 			if (localAzdata !== undefined) {
 				try {
 					//update if available and user wants it.
-					if (await checkAndUpgradeAzdata(localAzdata)) { // if an upgrade was performed
+					if (await checkAndUpdateAzdata(localAzdata)) { // if an update was performed
 						localAzdata = await findAzdata(); // find and save the currently installed azdata
 					}
 				} catch (err) {
-					vscode.window.showWarningMessage(loc.upgradeError(err));
+					vscode.window.showWarningMessage(loc.updateError(err));
 				}
 			}
 		});
@@ -63,22 +63,22 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 			arc: {
 				dc: {
 					create: async (namespace: string, name: string, connectivityMode: string, resourceGroup: string, location: string, subscription: string, profileName?: string, storageClass?: string) => {
-						throwIfNoAzdataOrEulaNotAccepted();
+						await throwIfNoAzdataOrEulaNotAccepted();
 						return localAzdata!.arc.dc.create(namespace, name, connectivityMode, resourceGroup, location, subscription, profileName, storageClass);
 					},
 					endpoint: {
 						list: async () => {
-							throwIfNoAzdataOrEulaNotAccepted();
+							await throwIfNoAzdataOrEulaNotAccepted();
 							return localAzdata!.arc.dc.endpoint.list();
 						}
 					},
 					config: {
 						list: async () => {
-							throwIfNoAzdataOrEulaNotAccepted();
+							await throwIfNoAzdataOrEulaNotAccepted();
 							return localAzdata!.arc.dc.config.list();
 						},
 						show: async () => {
-							throwIfNoAzdataOrEulaNotAccepted();
+							await throwIfNoAzdataOrEulaNotAccepted();
 							return localAzdata!.arc.dc.config.show();
 						}
 					}
@@ -86,11 +86,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 				postgres: {
 					server: {
 						list: async () => {
-							throwIfNoAzdataOrEulaNotAccepted();
+							await throwIfNoAzdataOrEulaNotAccepted();
 							return localAzdata!.arc.postgres.server.list();
 						},
 						show: async (name: string) => {
-							throwIfNoAzdataOrEulaNotAccepted();
+							await throwIfNoAzdataOrEulaNotAccepted();
 							return localAzdata!.arc.postgres.server.show(name);
 						}
 					}
@@ -98,33 +98,33 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 				sql: {
 					mi: {
 						delete: async (name: string) => {
-							throwIfNoAzdataOrEulaNotAccepted();
+							await throwIfNoAzdataOrEulaNotAccepted();
 							return localAzdata!.arc.sql.mi.delete(name);
 						},
 						list: async () => {
-							throwIfNoAzdataOrEulaNotAccepted();
+							await throwIfNoAzdataOrEulaNotAccepted();
 							return localAzdata!.arc.sql.mi.list();
 						},
 						show: async (name: string) => {
-							throwIfNoAzdataOrEulaNotAccepted();
+							await throwIfNoAzdataOrEulaNotAccepted();
 							return localAzdata!.arc.sql.mi.show(name);
 						}
 					}
 				}
 			},
 			login: async (endpoint: string, username: string, password: string) => {
-				throwIfNoAzdataOrEulaNotAccepted();
+				await throwIfNoAzdataOrEulaNotAccepted();
 				return localAzdata!.login(endpoint, username, password);
 			},
 			version: async () => {
-				throwIfNoAzdataOrEulaNotAccepted();
+				await throwIfNoAzdataOrEulaNotAccepted();
 				return localAzdata!.version();
 			}
 		}
 	};
 }
 
-function throwIfNoAzdataOrEulaNotAccepted(): void {
+async function throwIfNoAzdataOrEulaNotAccepted(): Promise<void> {
 	if (!localAzdata) {
 		Logger.log(loc.noAzdata);
 		throw new Error(loc.noAzdata);

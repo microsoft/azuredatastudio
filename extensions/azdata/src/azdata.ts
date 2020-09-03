@@ -11,7 +11,7 @@ import { executeCommand, executeSudoCommand, ExitCodeError, ProcessOutput } from
 import { HttpClient } from './common/httpClient';
 import Logger from './common/logger';
 import { getErrorMessage, searchForCmd } from './common/utils';
-import { azdataAcceptEulaKey, azdataConfigSection, azdataFound, azdataHostname, azdataInstallKey, azdataReleaseJson, azdataUpgradeKey, azdataUri, debugConfigKey, eulaAccepted, eulaUrl, microsoftPrivacyStatementUrl } from './constants';
+import { azdataAcceptEulaKey, azdataConfigSection, azdataFound, azdataHostname, azdataInstallKey, azdataReleaseJson, azdataUpdateKey, azdataUri, debugConfigKey, eulaAccepted, eulaUrl, microsoftPrivacyStatementUrl } from './constants';
 import * as loc from './localizedConstants';
 import * as fs from 'fs';
 
@@ -180,6 +180,7 @@ export async function findAzdata(): Promise<IAzdataTool> {
 		return azdata;
 	} catch (err) {
 		Logger.log(loc.couldNotFindAzdata(err));
+		Logger.log(loc.noAzdata);
 		await vscode.commands.executeCommand('setContext', azdataFound, false);// save a context key that azdata was not found so that command for installing azdata is available in commandPalette and that for upgrading it is no longer available.
 		throw err;
 	}
@@ -212,9 +213,9 @@ export async function installAzdata(): Promise<void> {
 }
 
 /**
- * Upgrades the azdata using os appropriate method
+ * Updates the azdata using os appropriate method
  */
-export async function upgradeAzdata(): Promise<void> {
+export async function updateAzdata(): Promise<void> {
 	const statusDisposable = vscode.window.setStatusBarMessage(loc.upgradingAzdata);
 	Logger.show();
 	Logger.log(loc.upgradingAzdata);
@@ -224,7 +225,7 @@ export async function upgradeAzdata(): Promise<void> {
 				await downloadAndInstallAzdataWin32();
 				break;
 			case 'darwin':
-				await upgradeAzdataDarwin();
+				await updateAzdataDarwin();
 				break;
 			case 'linux':
 				await installAzdataLinux();
@@ -254,22 +255,22 @@ export async function checkAndInstallAzdata(userRequested: boolean = false): Pro
 }
 
 /**
- * Checks whether a newer version of azdata is available - and if it is then invokes the process of azdata upgrade.
+ * Checks whether a newer version of azdata is available - and if it is then invokes the process of azdata update.
  * @param currentAzdata The current version of azdata to check against
  * @param userRequested true means that this operation by was requested by a user by executing an ads command.
- * returns true if upgrade was done and false otherwise.
+ * returns true if update was done and false otherwise.
  */
-export async function checkAndUpgradeAzdata(currentAzdata?: IAzdataTool, userRequested: boolean = false): Promise<boolean> {
+export async function checkAndUpdateAzdata(currentAzdata?: IAzdataTool, userRequested: boolean = false): Promise<boolean> {
 	if (currentAzdata !== undefined) {
 		const newVersion = await discoverLatestAvailableAzdataVersion();
 		if (newVersion.compare(currentAzdata.cachedVersion) === 1) {
-			Logger.log(loc.foundAzdataVersionToUpgradeTo(newVersion.raw, currentAzdata.cachedVersion.raw));
-			return await promptToUpgradeAzdata(newVersion.raw, userRequested);
+			Logger.log(loc.foundAzdataVersionToUpdateTo(newVersion.raw, currentAzdata.cachedVersion.raw));
+			return await promptToUpdateAzdata(newVersion.raw, userRequested);
 		} else {
 			Logger.log(loc.currentlyInstalledVersionIsLatest(currentAzdata.cachedVersion.raw));
 		}
 	} else {
-		Logger.log(loc.upgradeCheckSkipped);
+		Logger.log(loc.updateCheckSkipped);
 		Logger.log(loc.noAzdata);
 		await vscode.commands.executeCommand('setContext', azdataFound, false);
 	}
@@ -298,15 +299,14 @@ async function promptToInstallAzdata(userRequested: boolean = false): Promise<bo
 	}
 	if (response === loc.doNotAskAgain) {
 		await setConfig(azdataInstallKey, AzdataDeployOption.dontPrompt);
-	}
-	if (response === loc.yes) {
+	} else if (response === loc.yes) {
 		try {
 			await installAzdata();
 			vscode.window.showInformationMessage(loc.azdataInstalled);
 			Logger.log(loc.azdataInstalled);
 			return true;
 		} catch (err) {
-			// Windows: 1602 is User cancelling installation/upgrade - not unexpected so don't display
+			// Windows: 1602 is User cancelling installation/update - not unexpected so don't display
 			if (!(err instanceof ExitCodeError) || err.code !== 1602) {
 				vscode.window.showWarningMessage(loc.installError(err));
 				Logger.log(loc.installError(err));
@@ -317,40 +317,39 @@ async function promptToInstallAzdata(userRequested: boolean = false): Promise<bo
 }
 
 /**
- * prompt user to upgrade Azdata.
- * @param newVersion - provides the new version that the user will be prompted to upgrade to
+ * prompt user to update Azdata.
+ * @param newVersion - provides the new version that the user will be prompted to update to
  * @param userRequested - if true this operation was requested in response to a user issued command, if false it was issued at startup by system
- * returns true if upgrade was done and false otherwise.
+ * returns true if update was done and false otherwise.
  */
-async function promptToUpgradeAzdata(newVersion: string, userRequested: boolean = false): Promise<boolean> {
+async function promptToUpdateAzdata(newVersion: string, userRequested: boolean = false): Promise<boolean> {
 	let response: string | undefined = loc.yes;
-	const config = <AzdataDeployOption>getConfig(azdataUpgradeKey);
+	const config = <AzdataDeployOption>getConfig(azdataUpdateKey);
 	if (userRequested) {
 		Logger.show();
-		Logger.log(loc.userRequestedUpgrade);
+		Logger.log(loc.userRequestedUpdate);
 	}
 	if (config === AzdataDeployOption.dontPrompt && !userRequested) {
-		Logger.log(loc.skipUpgrade(config));
+		Logger.log(loc.skipUpdate(config));
 		return false;
 	}
 	if (config === AzdataDeployOption.prompt) {
-		response = await vscode.window.showInformationMessage(loc.promptForAzdataUpgrade(newVersion), ...getResponses(userRequested));
-		Logger.log(loc.userResponseToUpgradePrompt(response));
+		response = await vscode.window.showInformationMessage(loc.promptForAzdataUpdate(newVersion), ...getResponses(userRequested));
+		Logger.log(loc.userResponseToUpdatePrompt(response));
 	}
 	if (response === loc.doNotAskAgain) {
-		await setConfig(azdataUpgradeKey, AzdataDeployOption.dontPrompt);
-	}
-	if (response === loc.yes) {
+		await setConfig(azdataUpdateKey, AzdataDeployOption.dontPrompt);
+	} else if (response === loc.yes) {
 		try {
-			await upgradeAzdata();
-			vscode.window.showInformationMessage(loc.azdataUpgraded(newVersion));
-			Logger.log(loc.azdataUpgraded(newVersion));
+			await updateAzdata();
+			vscode.window.showInformationMessage(loc.azdataUpdated(newVersion));
+			Logger.log(loc.azdataUpdated(newVersion));
 			return true;
 		} catch (err) {
-			// Windows: 1602 is User cancelling installation/upgrade - not unexpected so don't display
+			// Windows: 1602 is User cancelling installation/update - not unexpected so don't display
 			if (!(err instanceof ExitCodeError) || err.code !== 1602) {
-				vscode.window.showWarningMessage(loc.upgradeError(err));
-				Logger.log(loc.upgradeError(err));
+				vscode.window.showWarningMessage(loc.updateError(err));
+				Logger.log(loc.updateError(err));
 			}
 		}
 	}
@@ -380,8 +379,7 @@ export async function promptForEula(memento: vscode.Memento, userRequested: bool
 	}
 	if (response === loc.doNotAskAgain) {
 		await setConfig(azdataAcceptEulaKey, AzdataDeployOption.dontPrompt);
-	}
-	if (response === loc.yes) {
+	} else if (response === loc.yes) {
 		await memento.update(eulaAccepted, true); // save a memento that eula was accepted
 		await vscode.commands.executeCommand('setContext', eulaAccepted, true); // save a context key that eula was accepted so that command for accepting eula is no longer available in commandPalette
 		return true;
@@ -414,9 +412,9 @@ async function installAzdataDarwin(): Promise<void> {
 }
 
 /**
- * Runs commands to upgrade azdata on MacOS
+ * Runs commands to update azdata on MacOS
  */
-async function upgradeAzdataDarwin(): Promise<void> {
+async function updateAzdataDarwin(): Promise<void> {
 	await executeCommand('brew', ['tap', 'microsoft/azdata-cli-release']);
 	await executeCommand('brew', ['update']);
 	await executeCommand('brew', ['upgrade', 'azdata-cli']);

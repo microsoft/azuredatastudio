@@ -61,7 +61,7 @@ describe('azdata', function () {
 			sinon.stub(utils, 'searchForCmd').returns(Promise.resolve('/path/to/azdata'));
 		});
 
-		it('successful install', async function (): Promise<void> {
+		it.skip('successful install', async function (): Promise<void> {
 			switch (process.platform) {
 				case 'win32':
 					await testWin32SuccessfulInstall();
@@ -98,37 +98,37 @@ describe('azdata', function () {
 		});
 	});
 
-	describe('upgradeAzdata', function (): void {
+	describe('updateAzdata', function (): void {
 		beforeEach(function (): void {
 			sinon.stub(vscode.window, 'showInformationMessage').returns(Promise.resolve(<any>loc.yes));
 		});
 
-		it('successful upgrade', async function (): Promise<void> {
+		it('successful update', async function (): Promise<void> {
 			switch (process.platform) {
 				case 'win32':
-					await testWin32SuccessfulUpgrade();
+					await testWin32SuccessfulUpdate();
 					break;
 
 				case 'darwin':
-					await testDarwinSuccessfulUpgrade();
+					await testDarwinSuccessfulUpdate();
 					break;
 				case 'linux':
-					await testLinuxSuccessfulUpgrade();
+					await testLinuxSuccessfulUpdate();
 					break;
 			}
 		});
 
 
-		it.skip('unsuccessful upgrade', async function (): Promise<void> {
+		it.skip('unsuccessful update', async function (): Promise<void> {
 			switch (process.platform) {
 				case 'win32':
-					await testWin32UnsuccessfulUpgrade();
+					await testWin32UnsuccessfulUpdate();
 					break;
 				case 'darwin':
-					await testDarwinUnsuccessfulUpgrade();
+					await testDarwinUnsuccessfulUpdate();
 					break;
 				case 'linux':
-					await testLinuxUnsuccessfulUpgrade();
+					await testLinuxUnsuccessfulUpdate();
 			}
 		});
 
@@ -142,37 +142,37 @@ describe('azdata', function () {
 	});
 });
 
-async function testLinuxUnsuccessfulUpgrade() {
+async function testLinuxUnsuccessfulUpdate() {
 	const executeSudoCommandStub = sinon.stub(childProcess, 'executeSudoCommand').rejects();
-	const upgradePromise = azdata.checkAndUpgradeAzdata(oldAzdataMock);
-	await should(upgradePromise).be.rejected();
+	const updatePromise = azdata.checkAndUpdateAzdata(oldAzdataMock);
+	await should(updatePromise).be.rejected();
 	should(executeSudoCommandStub.calledOnce).be.true();
 }
 
-async function testDarwinUnsuccessfulUpgrade() {
+async function testDarwinUnsuccessfulUpdate() {
 	const executeCommandStub = sinon.stub(childProcess, 'executeCommand').rejects();
-	const upgradePromise = azdata.checkAndUpgradeAzdata(oldAzdataMock);
-	await should(upgradePromise).be.rejected();
+	const updatePromise = azdata.checkAndUpdateAzdata(oldAzdataMock);
+	await should(updatePromise).be.rejected();
 	should(executeCommandStub.calledOnce).be.true();
 }
 
-async function testWin32UnsuccessfulUpgrade() {
+async function testWin32UnsuccessfulUpdate() {
 	sinon.stub(HttpClient, 'downloadFile').returns(Promise.resolve(__filename));
 	sinon.stub(childProcess, 'executeCommand').rejects();
-	const upgradePromise = azdata.checkAndUpgradeAzdata(oldAzdataMock);
-	await should(upgradePromise).be.rejected();
+	const updatePromise = azdata.checkAndUpdateAzdata(oldAzdataMock);
+	await should(updatePromise).be.rejected();
 }
 
-async function testLinuxSuccessfulUpgrade() {
+async function testLinuxSuccessfulUpdate() {
 	sinon.stub(HttpClient, 'getTextContent').returns(Promise.resolve(JSON.stringify(releaseJson)));
 	const executeCommandStub = sinon.stub(childProcess, 'executeCommand').returns(Promise.resolve({ stdout: '0.0.0', stderr: '' }));
 	const executeSudoCommandStub = sinon.stub(childProcess, 'executeSudoCommand').returns(Promise.resolve({ stdout: '0.0.0', stderr: '' }));
-	await azdata.checkAndUpgradeAzdata(oldAzdataMock);
+	await azdata.checkAndUpdateAzdata(oldAzdataMock);
 	should(executeSudoCommandStub.callCount).be.equal(6);
 	should(executeCommandStub.calledOnce).be.true();
 }
 
-async function testDarwinSuccessfulUpgrade() {
+async function testDarwinSuccessfulUpdate() {
 	const brewInfoOutput = [{
 		name: 'azdata-cli',
 		full_name: 'microsoft/azdata-cli-release/azdata-cli',
@@ -196,11 +196,11 @@ async function testDarwinSuccessfulUpgrade() {
 		.callsFake(async (_command: string, _args: string[]) => { // return success on all other command executions
 			return Promise.resolve({ stdout: '0.0.0', stderr: '' });
 		});
-	await azdata.checkAndUpgradeAzdata(oldAzdataMock);
+	await azdata.checkAndUpdateAzdata(oldAzdataMock);
 	should(executeCommandStub.callCount).be.equal(6);
 }
 
-async function testWin32SuccessfulUpgrade() {
+async function testWin32SuccessfulUpdate() {
 	sinon.stub(HttpClient, 'getTextContent').returns(Promise.resolve(JSON.stringify(releaseJson)));
 	sinon.stub(HttpClient, 'downloadFile').returns(Promise.resolve(__filename));
 	const executeCommandStub = sinon.stub(childProcess, 'executeCommand').callsFake(async (command: string, args: string[]) => {
@@ -210,7 +210,7 @@ async function testWin32SuccessfulUpgrade() {
 		should(path.basename(args[2])).be.equal(constants.azdataUri);
 		return { stdout: '0.0.0', stderr: '' };
 	});
-	await azdata.checkAndUpgradeAzdata(oldAzdataMock);
+	await azdata.checkAndUpdateAzdata(oldAzdataMock);
 	should(executeCommandStub.calledOnce).be.true();
 }
 

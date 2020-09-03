@@ -56,7 +56,7 @@
             ],
             "description": "%azdata.install.description%"
           },
-          "azdata.upgrade": {
+          "azdata.update": {
             "type": "string",
             "default": "prompt",
             "enum": [
@@ -64,10 +64,10 @@
               "prompt"
             ],
             "enumDescriptions": [
-              "%azdata.upgrade.dontPrompt.description%",
-              "%azdata.upgrade.prompt.description%"
+              "%azdata.update.dontPrompt.description%",
+              "%azdata.update.prompt.description%"
             ],
-            "description": "%azdata.upgrade.description%"
+            "description": "%azdata.update.description%"
           }
         }
       }
@@ -84,8 +84,8 @@
         "category": "%command.category%"
       },
       {
-        "command": "azdata.upgrade",
-        "title": "%azdata.upgrade.command.name%",
+        "command": "azdata.update",
+        "title": "%azdata.update.command.name%",
         "category": "%command.category%"
       }
     ],
@@ -100,7 +100,7 @@
           "when": "!azdata.found"
         },
         {
-          "command": "azdata.upgrade",
+          "command": "azdata.update",
           "when": "azdata.found"
         }
       ]
