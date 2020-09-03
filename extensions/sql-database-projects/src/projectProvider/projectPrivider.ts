@@ -24,9 +24,12 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 		return provider;
 	}
 
+	/**
+	 * Gets the supported project types
+	 */
 	get supportedProjectTypes(): dataworkspace.IProjectType[] {
 		return [{
-			projectFileExtension: sqlprojExtension,
+			projectFileExtension: sqlprojExtension.replace(/./g, ''),
 			displayName: projectTypeDisplayName,
 			icon: IconPathHelper.databaseProject
 		}];
