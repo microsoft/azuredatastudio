@@ -91,6 +91,29 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 		this.populateVirtualNetworkDropdown();
 		this.populatePublicIpkDropdown();
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
+			let errorMessage = '';
+			if (this.wizard.model.existingVirtualNetwork === 'False') {
+				if (this.wizard.model.virtualNetworkName.length < 2 || this.wizard.model.virtualNetworkName.length > 64) {
+					errorMessage += 'Virtual Network name must be between 2 and 64 characters long\n';
+				}
+			}
+
+			if (this.wizard.model.existingSubnet === 'False') {
+				if (this.wizard.model.subnetName.length < 1 || this.wizard.model.virtualNetworkName.length > 80) {
+					errorMessage += 'Virtual Network name must be between 1 and 80 characters long\n';
+				}
+			}
+
+			if (this.wizard.model.existingPublicIp === 'False') {
+				if (this.wizard.model.publicIpName.length < 1 || this.wizard.model.publicIpName.length > 80) {
+					errorMessage += 'Virtual Network name must be between 1 and 80 characters long\n';
+				}
+			}
+
+			if (errorMessage !== '') {
+				this.wizard.showErrorMessage(errorMessage);
+				return false;
+			}
 			return true;
 		});
 	}
