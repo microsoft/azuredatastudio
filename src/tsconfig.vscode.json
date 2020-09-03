@@ -58,7 +58,6 @@
 		"./sql/workbench/api/common/**/*.ts", // 300 errors
 		"./sql/workbench/browser/**/*.ts", // 2988 errors
 		"./sql/workbench/contrib/assessment/**/*.ts", // 2990 errors
-		"./sql/workbench/contrib/backup/**/*.ts", // 89 errors
 		"./sql/workbench/contrib/charts/**/*.ts", // 2988 errors
 		"./sql/workbench/contrib/commandLine/**/*.ts", // 3014 errors
 		"./sql/workbench/contrib/connection/**/*.ts", // 244 errors
