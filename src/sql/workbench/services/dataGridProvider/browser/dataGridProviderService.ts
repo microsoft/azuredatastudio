@@ -12,7 +12,7 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 export class DataGridProviderService implements IDataGridProviderService {
 
 	public _serviceBrand: undefined;
-	private _providers: { [handle: string]: azdata.DataGridProvider; } = Object.create(null);
+	private _providers = new Map<string, azdata.DataGridProvider>();
 
 	constructor(
 		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService
@@ -22,15 +22,18 @@ export class DataGridProviderService implements IDataGridProviderService {
 	 * Register a data grid provider
 	 */
 	public registerProvider(providerId: string, provider: azdata.DataGridProvider): void {
-		this._providers[providerId] = provider;
+		if (this._providers.has(providerId)) {
+			throw new Error(`A DataGridProvider with id "${providerId}" is already registered`);
+		}
+		this._providers.set(providerId, provider);
 	}
 
 	public unregisterProvider(providerId: string): void {
-		delete this._providers[providerId];
+		this._providers.delete(providerId);
 	}
 
 	public async getDataGridItems(providerId: string): Promise<azdata.DataGridItem[]> {
-		const provider = this._providers[providerId];
+		const provider = this._providers.get(providerId);
 		if (provider) {
 			this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.GetDataGridItems)
 				.withAdditionalProperties({
@@ -42,7 +45,7 @@ export class DataGridProviderService implements IDataGridProviderService {
 	}
 
 	public async getDataGridColumns(providerId: string): Promise<azdata.DataGridColumn[]> {
-		const provider = this._providers[providerId];
+		const provider = this._providers.get(providerId);
 		if (provider) {
 			this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.GetDataGridColumns)
 				.withAdditionalProperties({

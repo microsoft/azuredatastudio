@@ -134,9 +134,9 @@ declare module 'azdata' {
 		 */
 		id: string;
 		/**
-		 * A set of properties for this item
+		 * The other properties that will be displayed in the grid
 		 */
-		properties: { [key: string]: string };
+		[key: string]: string;
 	}
 
 	/**
