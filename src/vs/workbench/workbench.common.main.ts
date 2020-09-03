@@ -438,6 +438,9 @@ import 'sql/workbench/contrib/accounts/browser/accountManagement.contribution';
 import 'sql/workbench/contrib/profiler/browser/profiler.contribution';
 import 'sql/workbench/contrib/profiler/browser/profilerActions.contribution';
 
+// resource viewer
+import 'sql/workbench/contrib/resourceViewer/browser/resourceViewer.contribution';
+
 // dashboard
 import 'sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/types/barChart.contribution';
 import 'sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/types/doughnutChart.contribution';
