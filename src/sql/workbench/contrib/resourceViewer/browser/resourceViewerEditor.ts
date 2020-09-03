@@ -8,16 +8,16 @@ import { DisposableStore } from 'vs/base/common/lifecycle';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import * as DOM from 'vs/base/browser/dom';
-import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
-import { EditorOptions } from 'vs/workbench/common/editor';
+import { EditorOptions, IEditorOpenContext } from 'vs/workbench/common/editor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IResourceViewerStateChangedEvent } from 'sql/workbench/common/editor/resourceViewer/resourceViewerState';
 import { ResourceViewerInput } from 'sql/workbench/browser/editor/resourceViewer/resourceViewerInput';
 import { ResourceViewerTable } from 'sql/workbench/contrib/resourceViewer/browser/resourceViewerTable';
+import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 
-export class ResourceViewerEditor extends BaseEditor {
+export class ResourceViewerEditor extends EditorPane {
 	public static readonly ID: string = 'workbench.editor.resource-viewer';
 
 	private _container!: HTMLElement;
@@ -72,8 +72,8 @@ export class ResourceViewerEditor extends BaseEditor {
 		return this._input as ResourceViewerInput;
 	}
 
-	public async setInput(input: ResourceViewerInput, options?: EditorOptions): Promise<void> {
-		await super.setInput(input, options, CancellationToken.None);
+	async setInput(input: ResourceViewerInput, options: EditorOptions | undefined, context: IEditorOpenContext, token: CancellationToken): Promise<void> {
+		await super.setInput(input, options, context, token);
 
 		this._inputDisposables.clear();
 
