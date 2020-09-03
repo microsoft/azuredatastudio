@@ -307,36 +307,6 @@ export interface DialogMessage {
 	description?: string;
 }
 
-/// Card-related APIs that need to be here to avoid early load issues
-// with enums causing requiring of sqlops API to fail.
-export enum StatusIndicator {
-	None = 0,
-	Ok = 1,
-	Warning = 2,
-	Error = 3
-}
-
-export interface CardProperties {
-	label: string;
-	value?: string;
-	actions?: ActionDescriptor[];
-	descriptions?: CardDescriptionItem[];
-	status?: StatusIndicator;
-	selected?: boolean;
-	cardType: CardType;
-}
-
-export interface CardDescriptionItem {
-	label: string;
-	value?: string;
-}
-
-export interface ActionDescriptor {
-	label: string;
-	actionTitle?: string;
-	callbackData?: any;
-}
-
 export enum DataProviderType {
 	ConnectionProvider = 'ConnectionProvider',
 	BackupProvider = 'BackupProvider',
@@ -363,12 +333,6 @@ export enum DeclarativeDataType {
 	boolean = 'boolean',
 	editableCategory = 'editableCategory',
 	component = 'component'
-}
-
-export enum CardType {
-	VerticalButton = 'VerticalButton',
-	Details = 'Details',
-	ListItem = 'ListItem'
 }
 
 export enum Orientation {

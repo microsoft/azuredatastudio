@@ -2560,10 +2560,6 @@ declare module 'azdata' {
 		flexContainer(): FlexBuilder;
 		splitViewContainer(): SplitViewBuilder;
 		dom(): ComponentBuilder<DomComponent>;
-		/**
-		 * @deprecated please use radioCardGroup component.
-		 */
-		card(): ComponentBuilder<CardComponent>;
 		inputBox(): ComponentBuilder<InputBoxComponent>;
 		checkBox(): ComponentBuilder<CheckBoxComponent>;
 		radioButton(): ComponentBuilder<RadioButtonComponent>;
@@ -3049,71 +3045,6 @@ declare module 'azdata' {
 	export interface ToolbarContainer extends Container<ToolbarLayout, any> {
 	}
 
-	/**
-	 * Describes an action to be shown in the UI, with a user-readable label
-	 * and a callback to execute the action
-	 */
-	export interface ActionDescriptor {
-		/**
-		 * User-visible label to display
-		 */
-		label: string;
-		/**
-		 * Name of the clickable action. If not defined then no action will be shown
-		 */
-		actionTitle?: string;
-		/**
-		 * Data sent on callback being run.
-		 */
-		callbackData?: any;
-	}
-
-	/**
-	 * Defines status indicators that can be shown to the user as part of
-	 * components such as the Card UI
-	 */
-	export enum StatusIndicator {
-		None = 0,
-		Ok = 1,
-		Warning = 2,
-		Error = 3
-	}
-
-	export enum CardType {
-		VerticalButton = 'VerticalButton',
-		Details = 'Details',
-		ListItem = 'ListItem'
-	}
-
-	/**
-	 * Properties representing the card component, can be used
-	 * when using ModelBuilder to create the component
-	 */
-	export interface CardProperties extends ComponentProperties, ComponentWithIcon {
-		label: string;
-		value?: string;
-		actions?: ActionDescriptor[];
-		descriptions?: CardDescriptionItem[];
-		status?: StatusIndicator;
-
-		/**
-		 * Returns true if the card is selected
-		 */
-		selected?: boolean;
-
-		/**
-		 * Card Type, default: Details
-		 */
-		cardType?: CardType;
-	}
-
-	export interface CardDescriptionItem {
-		label: string;
-		value?: string;
-		tooltip?: string;
-		fontWeight?: 'normal' | 'bold';
-	}
-
 	export type InputBoxInputType = 'color' | 'date' | 'datetime-local' | 'email' | 'month' | 'number' | 'password' | 'range' | 'search' | 'text' | 'time' | 'url' | 'week';
 
 	export interface ComponentProperties {
@@ -3406,11 +3337,6 @@ declare module 'azdata' {
 		 * The title for the component. This title will show when hovered over
 		 */
 		title?: string;
-	}
-
-	export interface CardComponent extends Component, CardProperties {
-		onDidActionClick: vscode.Event<ActionDescriptor>;
-		onCardSelectedChanged: vscode.Event<any>;
 	}
 
 	export interface DomComponent extends Component, DomProperties {
