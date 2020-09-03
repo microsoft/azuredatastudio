@@ -441,15 +441,26 @@ export class ProjectsController {
 				const result = await vscode.window.showInformationMessage(constants.reloadProject, constants.yesString, constants.noString);
 
 				if (result === constants.yesString) {
-					const project: Project = this.projects.filter((e) => { return e.projectFilePath === projectFileUri.fsPath; })[0];
-
-					// won't open any newly referenced projects, but otherwise matches the behavior of reopening the project
-					await project.readProjFile();
-					this.refreshProjectsTree();
+					this.reloadProject(projectFileUri);
 				}
 			});
 		} catch (err) {
 			vscode.window.showErrorMessage(utils.getErrorMessage(err));
+		}
+	}
+
+	/**
+	 * Reloads the given project. Throws an error if given project is not a valid open project.
+	 * @param projectFileUri the uri of the project to be reloaded
+	 */
+	public async reloadProject(projectFileUri: vscode.Uri) {
+		const project = this.projects.find((e) => e.projectFilePath === projectFileUri.fsPath);
+		if (project) {
+			// won't open any newly referenced projects, but otherwise matches the behavior of reopening the project
+			await project.readProjFile();
+			this.refreshProjectsTree();
+		} else {
+			throw new Error(constants.invalidProjectReload);
 		}
 	}
 

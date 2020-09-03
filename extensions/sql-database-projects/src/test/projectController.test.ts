@@ -243,6 +243,27 @@ describe('ProjectsController', function (): void {
 
 				should(await exists(scriptEntry.fsUri.fsPath)).equal(true, 'script is supposed to still exist on disk');
 			});
+
+			// TODO - change to just test reloadProject!!
+			it('Should reload correctly after changing sqlproj file', async function (): Promise<void> {
+				// create project
+				const folderPath = await testUtils.generateTestFolderPath();
+				const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline, folderPath);
+				const treeProvider = new SqlDatabaseProjectTreeViewProvider();
+				const projController = new ProjectsController(treeProvider);
+				const project = await projController.openProject(vscode.Uri.file(sqlProjPath));
+
+				// change the sql project file
+				await fs.writeFile(sqlProjPath, baselines.newProjectFileWithScriptBaseline);
+				should(project.files.length).equal(0);
+
+				// call reload project
+				await projController.reloadProject(vscode.Uri.file(project.projectFilePath));
+				should(project.files.length).equal(1);
+
+				// check that the new project is in the tree
+				should(treeProvider.getChildren()[0].children.find(c => c.friendlyName === 'Script1.sql')).not.equal(undefined);
+			});
 		});
 
 		describe('Publishing and script generation', function (): void {
