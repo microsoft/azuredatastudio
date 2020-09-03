@@ -20,6 +20,7 @@ export let publishProfileIntegratedSecurityBaseline: string;
 export let publishProfileSqlLoginBaseline: string;
 export let openProjectWithProjectReferencesBaseline: string;
 export let openSqlProjectWithPrePostDeploymentError: string;
+export let openSqlProjectWithAdditionalSqlCmdVariablesBaseline: string;
 
 const baselineFolderPath = __dirname;
 
@@ -37,6 +38,7 @@ export async function loadBaselines() {
 	publishProfileSqlLoginBaseline = await loadBaseline(baselineFolderPath, 'publishProfileSqlLoginBaseline.publish.xml');
 	openProjectWithProjectReferencesBaseline = await loadBaseline(baselineFolderPath, 'openSqlProjectWithProjectReferenceBaseline.xml');
 	openSqlProjectWithPrePostDeploymentError = await loadBaseline(baselineFolderPath, 'openSqlProjectWithPrePostDeploymentError.xml');
+	openSqlProjectWithAdditionalSqlCmdVariablesBaseline = await loadBaseline(baselineFolderPath, 'openSqlProjectWithAdditionalSqlCmdVariablesBaseline.xml');
 }
 
 async function loadBaseline(baselineFolderPath: string, fileName: string): Promise<string> {
