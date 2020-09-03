@@ -222,11 +222,12 @@ export class VmSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 			`?api-version=2019-12-01`;
 
 		let response = await this.wizard.getRequest(url);
+		response.data = response.data.reverse();
 		this.wizard.addDropdownValues(
 			this._vmImageDropdown,
 			response.data.map((value: any) => {
 				let sqlServerVersion = value.name.toLowerCase().match(new RegExp('sql(.*?)-'))[1];
-				let osVersion = value.name.toLowerCase().replace(new RegExp('-byol'), '').replace(new RegExp('sql(.*?)-'), '');
+				let osVersion = value.name.toLowerCase().replace(new RegExp('sql(.*?)-'), '');
 				osVersion = osVersion.replace(new RegExp('ws'), 'Windows Server ');
 				osVersion = osVersion.replace(new RegExp('ubuntu'), 'Ubuntu Server ');
 				osVersion = osVersion.replace(new RegExp('sles'), 'SUSE Linux Enterprise Server (SLES) ');
