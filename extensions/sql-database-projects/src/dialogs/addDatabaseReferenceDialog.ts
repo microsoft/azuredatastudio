@@ -126,7 +126,9 @@ export class AddDatabaseReferenceDialog {
 				databaseName: <string>this.databaseNameTextbox?.value,
 				databaseLocation: <DatabaseReferenceLocation>this.referenceLocationMap.get(<string>this.locationDropdown?.value),
 				dacpacFileLocation: vscode.Uri.file(<string>this.dacpacTextbox?.value),
-				databaseVariable: <string>this.databaseVariableTextbox?.value
+				databaseVariable: <string>this.databaseVariableTextbox?.value,
+				serverName: <string>this.serverNameTextbox?.value,
+				serverVariable: <string>this.serverVariableTextbox?.value
 			};
 			// TODO: add project reference support
 		}
