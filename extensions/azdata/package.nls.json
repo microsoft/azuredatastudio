@@ -4,6 +4,7 @@
 	"azdata.config.title": "Azure Data CLI Configuration",
 	"azdata.config.debug": "Log debug info to the output channel for all executed azdata commands",
 
+	"command.category": "Azure Data CLI",
 	"azdata.acceptEula.command.name": "Accept Eula",
 	"azdata.install.command.name": "Install",
 	"azdata.upgrade.command.name": "Check for Upgrade",

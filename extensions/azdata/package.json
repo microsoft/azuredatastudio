@@ -52,7 +52,7 @@
             ],
             "enumDescriptions": [
               "%azdata.install.dontPrompt.description%",
-              "%azdata.install.prompt.description%%"
+              "%azdata.install.prompt.description%"
             ],
             "description": "%azdata.install.description%"
           },
@@ -65,7 +65,7 @@
             ],
             "enumDescriptions": [
               "%azdata.upgrade.dontPrompt.description%",
-              "%azdata.upgrade.prompt.description%%"
+              "%azdata.upgrade.prompt.description%"
             ],
             "description": "%azdata.upgrade.description%"
           }
@@ -76,19 +76,19 @@
       {
         "command": "azdata.acceptEula",
         "title": "%azdata.acceptEula.command.name%",
-        "category": "%deployment.category%",
+        "category": "%command.category%",
         "when": "!azdata.eulaAccepted"
       },
       {
         "command": "azdata.install",
         "title": "%azdata.install.command.name%",
-        "category": "%deployment.category%",
+        "category": "%command.category%",
         "when": "!azdata.found"
       },
       {
         "command": "azdata.upgrade",
         "title": "%azdata.upgrade.command.name%",
-        "category": "%deployment.category%",
+        "category": "%command.category%",
         "when": "azdata.found"
       }
     ]
