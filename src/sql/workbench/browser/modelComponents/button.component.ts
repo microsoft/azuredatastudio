@@ -174,9 +174,9 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 			} else {
 				if (!this._iconClass) {
 					super.updateIcon();
-					this._infoButton.icon = this._iconClass + ' icon';
+					this._button.icon = this._iconClass + ' icon';
 					// Styling for icon button
-					this._register(attachButtonStyler(this._infoButton, this.themeService, {
+					this._register(attachButtonStyler(this._button, this.themeService, {
 						buttonBackground: Color.transparent.toString(),
 						buttonHoverBackground: Color.transparent.toString(),
 						buttonFocusOutline: focusBorder,
