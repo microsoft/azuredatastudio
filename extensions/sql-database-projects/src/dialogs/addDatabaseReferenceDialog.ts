@@ -37,6 +37,8 @@ export class AddDatabaseReferenceDialog {
 	public databaseVariableTextbox: azdata.InputBoxComponent | undefined;
 	public serverNameTextbox: azdata.InputBoxComponent | undefined;
 	public serverVariableTextbox: azdata.InputBoxComponent | undefined;
+	public suppressMissingDependenciesErrorsCheckbox: azdata.CheckBoxComponent | undefined;
+	public exampleUsage: azdata.TextComponent | undefined;
 
 	public currentReferenceType: ReferenceType | undefined;
 	private referenceLocationMap: Map<string, DatabaseReferenceLocation>;
@@ -87,6 +89,10 @@ export class AddDatabaseReferenceDialog {
 			this.dacpacFormComponent = this.createDacpacTextbox();
 			const locationDropdown = this.createLocationDropdown();
 			const variableSection = this.createVariableSection();
+			this.suppressMissingDependenciesErrorsCheckbox = view.modelBuilder.checkBox().withProperties({
+				label: constants.suppressMissingDependenciesErrors
+			}).component();
+			const exampleUsage = this.createExampleUsage();
 
 			this.formBuilder = <azdata.FormBuilder>view.modelBuilder.formContainer()
 				.withFormItems([
@@ -96,7 +102,11 @@ export class AddDatabaseReferenceDialog {
 							radioButtonGroup,
 							this.systemDatabaseFormComponent,
 							locationDropdown,
-							variableSection
+							variableSection,
+							exampleUsage,
+							{
+								component: this.suppressMissingDependenciesErrorsCheckbox
+							}
 						]
 					}
 				], {
@@ -119,7 +129,8 @@ export class AddDatabaseReferenceDialog {
 		if (this.currentReferenceType === ReferenceType.systemDb) {
 			referenceSettings = {
 				databaseName: <string>this.databaseNameTextbox?.value,
-				systemDb: <string>this.systemDatabaseDropdown?.value === constants.master ? SystemDatabase.master : SystemDatabase.msdb
+				systemDb: <string>this.systemDatabaseDropdown?.value === constants.master ? SystemDatabase.master : SystemDatabase.msdb,
+				suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
 			};
 		} else { // this.currentReferenceType === ReferenceType.dacpac
 			referenceSettings = {
@@ -128,7 +139,8 @@ export class AddDatabaseReferenceDialog {
 				dacpacFileLocation: vscode.Uri.file(<string>this.dacpacTextbox?.value),
 				databaseVariable: <string>this.databaseVariableTextbox?.value,
 				serverName: <string>this.serverNameTextbox?.value,
-				serverVariable: <string>this.serverVariableTextbox?.value
+				serverVariable: <string>this.serverVariableTextbox?.value,
+				suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
 			};
 			// TODO: add project reference support
 		}
@@ -184,6 +196,7 @@ export class AddDatabaseReferenceDialog {
 		this.currentReferenceType = ReferenceType.systemDb;
 		this.updateEnabledInputBoxes(true);
 		this.tryEnableAddReferenceButton();
+		this.updateExampleUsage();
 	}
 
 	public dacpacRadioButtonClick(): void {
@@ -196,6 +209,7 @@ export class AddDatabaseReferenceDialog {
 		this.currentReferenceType = ReferenceType.dacpac;
 		this.updateEnabledInputBoxes();
 		this.tryEnableAddReferenceButton();
+		this.updateExampleUsage();
 	}
 
 	private createSystemDatabaseDropdown(): azdata.FormComponent {
@@ -219,11 +233,12 @@ export class AddDatabaseReferenceDialog {
 		this.dacpacTextbox = this.view!.modelBuilder.inputBox().withProperties({
 			ariaLabel: constants.dacpacText,
 			placeHolder: constants.dacpacPlaceholder,
-			width: '405px'
+			width: '400px'
 		}).component();
 
 		this.dacpacTextbox.onTextChanged(() => {
 			this.tryEnableAddReferenceButton();
+			this.updateExampleUsage();
 		});
 
 		const loadDacpacButton = this.createLoadDacpacButton();
@@ -239,9 +254,9 @@ export class AddDatabaseReferenceDialog {
 	private createLoadDacpacButton(): azdata.ButtonComponent {
 		const loadDacpacButton = this.view!.modelBuilder.button().withProperties({
 			ariaLabel: constants.loadDacpacButton,
-			iconPath: IconPathHelper.folder,
+			iconPath: IconPathHelper.folder_blue,
 			height: '16px',
-			width: '15px'
+			width: '16px'
 		}).component();
 
 		loadDacpacButton.onDidClick(async () => {
@@ -277,6 +292,7 @@ export class AddDatabaseReferenceDialog {
 		this.locationDropdown.onValueChanged(() => {
 			this.updateEnabledInputBoxes();
 			this.tryEnableAddReferenceButton();
+			this.updateExampleUsage();
 		});
 
 		return {
@@ -336,7 +352,7 @@ export class AddDatabaseReferenceDialog {
 		this.serverVariableTextbox = this.createInputBox(constants.serverVariable, false);
 		const serverVariableRow = this.view!.modelBuilder.flexContainer().withItems([this.createLabel(constants.serverVariable, true), this.serverVariableTextbox], { flex: '0 0 auto' }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
-		const variableSection = this.view!.modelBuilder.flexContainer().withItems([databaseNameRow, databaseVariableRow, serverNameRow, serverVariableRow]).withLayout({ flexFlow: 'column' }).component();
+		const variableSection = this.view!.modelBuilder.flexContainer().withItems([databaseNameRow, databaseVariableRow, serverNameRow, serverVariableRow]).withLayout({ flexFlow: 'column' }).withProperties({ CSSStyles: { 'margin-bottom': '25px' } }).component();
 
 		return {
 			component: variableSection,
@@ -363,9 +379,60 @@ export class AddDatabaseReferenceDialog {
 
 		inputBox.onTextChanged(() => {
 			this.tryEnableAddReferenceButton();
+			this.updateExampleUsage();
 		});
 
 		return inputBox;
+	}
+
+	private createExampleUsage(): azdata.FormComponent {
+		this.exampleUsage = this.view!.modelBuilder.text().withProperties({
+			value: constants.systemDatabaseReferenceRequired,
+			CSSStyles: { 'user-select': 'text' }
+		}).component();
+
+		const exampleUsageWrapper = this.view!.modelBuilder.flexContainer().withItems([this.exampleUsage], { CSSStyles: { 'width': '415px', 'height': '80px', 'padding': '0 10px', 'border': '1px solid #8a8886', 'font-style': 'italic' } }).component();
+
+		return {
+			component: exampleUsageWrapper,
+			title: constants.exampleUsage
+		};
+	}
+
+	private updateExampleUsage(): void {
+		let newText = '';
+		let fontStyle = cssStyles.fontStyle.normal; // font-style should be normal for example usage and italics if showing message that a required field needs to be filled
+
+		switch (this.locationDropdown!.value) {
+			case constants.sameDatabase: {
+				newText = constants.sameDatabaseExampleUsage;
+				break;
+			}
+			case constants.differentDbSameServer: {
+				if (!this.databaseNameTextbox?.value) {
+					newText = this.currentReferenceType === ReferenceType.systemDb ? constants.enterSystemDbName : constants.databaseNameRequiredVariableOptional;
+					fontStyle = cssStyles.fontStyle.italics;
+				} else {
+					const db = this.databaseVariableTextbox?.value ? this.databaseVariableTextbox?.value : this.databaseNameTextbox.value;
+					newText = constants.differentDbSameServerExampleUsage(db);
+				}
+				break;
+			}
+			case constants.differentDbDifferentServer: {
+				if (!this.databaseNameTextbox?.value || !this.serverNameTextbox?.value || !this.serverVariableTextbox?.value) {
+					newText = constants.databaseNameServerNameVariableRequired;
+					fontStyle = cssStyles.fontStyle.italics;
+				} else {
+					const server = this.serverVariableTextbox.value;
+					const db = this.databaseVariableTextbox?.value ? this.databaseVariableTextbox?.value : this.databaseNameTextbox.value;
+					newText = constants.differentDbDifferentServerExampleUsage(server, db);
+				}
+				break;
+			}
+		}
+
+		this.exampleUsage!.value = newText;
+		this.exampleUsage?.updateCssStyles({ 'font-style': fontStyle });
 	}
 
 	/**
