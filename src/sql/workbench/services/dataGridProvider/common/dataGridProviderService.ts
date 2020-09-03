@@ -6,16 +6,16 @@
 import * as azdata from 'azdata';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
-export const SERVICE_ID = 'resourceDataProviderService';
-export const IResourceDataProviderService = createDecorator<IResourceDataProviderService>(SERVICE_ID);
+export const SERVICE_ID = 'dataGridProviderService';
+export const IDataGridProviderService = createDecorator<IDataGridProviderService>(SERVICE_ID);
 
-export interface IResourceDataProviderService {
+export interface IDataGridProviderService {
 	_serviceBrand: undefined;
 
 	/**
-	 * Register a resource data provider
+	 * Register a data grid provider
 	 */
-	registerProvider<T extends azdata.Resource>(providerId: string, provider: azdata.ResourceDataProvider<T>): void;
+	registerProvider(providerId: string, provider: azdata.DataGridProvider): void;
 
 	/**
 	 * Unregister a resource data provider
@@ -23,7 +23,12 @@ export interface IResourceDataProviderService {
 	unregisterProvider(providerId: string): void;
 
 	/**
-	 * Gets a list of resources from the specified provider
+	 * Gets a list of data grid items from the specified provider
 	 */
-	getResources<T extends azdata.Resource>(providerId: string): Promise<T[]>;
+	getDataGridItems(providerId: string): Promise<azdata.DataGridItem[]>;
+
+	/**
+	* Gets a list of data grid columns from the specified provider
+	*/
+	getDataGridColumns(providerId: string): Promise<azdata.DataGridColumn[]>;
 }

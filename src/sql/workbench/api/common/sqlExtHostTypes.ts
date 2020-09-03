@@ -355,7 +355,7 @@ export enum DataProviderType {
 	SerializationProvider = 'SerializationProvider',
 	IconProvider = 'IconProvider',
 	SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider',
-	ResourceDataProvider = 'ResourceDataProvider'
+	DataGridProvider = 'DataGridProvider'
 }
 
 export enum DeclarativeDataType {

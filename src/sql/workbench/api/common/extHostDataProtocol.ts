@@ -173,9 +173,9 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		this._proxy.$registerSqlAssessmentServicesProvider(provider.providerId, provider.handle);
 		return rt;
 	}
-	$registerResourceDataProvider<T extends azdata.Resource>(provider: azdata.ResourceDataProvider<T>): vscode.Disposable {
-		let rt = this.registerProvider(provider, DataProviderType.ResourceDataProvider);
-		this._proxy.$registerResourceDataProvider(provider.providerId, provider.handle);
+	$registerDataGridProvider(provider: azdata.DataGridProvider): vscode.Disposable {
+		let rt = this.registerProvider(provider, DataProviderType.DataGridProvider);
+		this._proxy.$registerDataGridProvider(provider.providerId, provider.handle);
 		return rt;
 	}
 	$registerCapabilitiesServiceProvider(provider: azdata.CapabilitiesProvider): vscode.Disposable {
@@ -862,7 +862,11 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<azdata.SqlAssessmentServicesProvider>(handle).generateAssessmentScript(items);
 	}
 
-	public $getResources<T extends azdata.Resource>(handle: number): Thenable<T[]> {
-		return this._resolveProvider<azdata.ResourceDataProvider<T>>(handle).getResources();
+	public $getDataGridItems(handle: number): Thenable<azdata.DataGridItem[]> {
+		return this._resolveProvider<azdata.DataGridProvider>(handle).getDataGridItems();
+	}
+
+	public $getDataGridColumns(handle: number): Thenable<azdata.DataGridColumn[]> {
+		return this._resolveProvider<azdata.DataGridProvider>(handle).getDataGridColumns();
 	}
 }

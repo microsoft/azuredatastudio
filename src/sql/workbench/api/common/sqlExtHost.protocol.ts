@@ -510,7 +510,15 @@ export abstract class ExtHostDataProtocolShape {
 	 */
 	$generateAssessmentScript(handle: number, items: azdata.SqlAssessmentResultItem[]): Thenable<azdata.ResultStatus> { throw ni(); }
 
-	$getResources<T extends azdata.Resource>(handle: number): Thenable<T[]> { throw ni(); }
+	/**
+	 * Gets the list of items for a data grid
+	 */
+	$getDataGridItems(handle: number): Thenable<azdata.DataGridItem[]> { throw ni(); }
+
+	/**
+	 * Gets the list of columns for a data grid
+	 */
+	$getDataGridColumns(handle: number): Thenable<azdata.DataGridColumn[]> { throw ni(); }
 }
 
 /**
@@ -575,7 +583,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerAgentServicesProvider(providerId: string, handle: number): Promise<any>;
 	$registerSerializationProvider(providerId: string, handle: number): Promise<any>;
 	$registerSqlAssessmentServicesProvider(providerId: string, handle: number): Promise<any>;
-	$registerResourceDataProvider(providerId: string, handle: number): void;
+	$registerDataGridProvider(providerId: string, handle: number): void;
 	$unregisterProvider(handle: number): Promise<any>;
 	$onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void;
 	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;

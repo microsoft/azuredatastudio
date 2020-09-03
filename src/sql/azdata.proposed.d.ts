@@ -97,28 +97,42 @@ declare module 'azdata' {
 		export function registerSerializationProvider(provider: SerializationProvider): vscode.Disposable;
 		export function registerSqlAssessmentServicesProvider(provider: SqlAssessmentServicesProvider): vscode.Disposable;
 		/**
-		 * Registers a ResourceDataProvider which is used to provide lists of different types of resources
+		 * Registers a DataGridProvider which is used to provide lists of items to a data grid
 		 * @param provider The provider implementation
 		 */
-		export function registerResourceDataProvider<T extends Resource>(provider: ResourceDataProvider<T>): vscode.Disposable;
+		export function registerDataGridProvider(provider: DataGridProvider): vscode.Disposable;
 	}
 
 	export enum DataProviderType {
-		ResourceDataProvider = 'ResourceDataProvider'
+		DataGridProvider = 'DataGridProvider'
 	}
 
 	/**
-	 * A resource
+	 * A column in a data grid
 	 */
-	export interface Resource {
+	export interface DataGridColumn {
 		/**
-		 * A unique identifier for this resource
+		* The text to display on the column heading.
+		**/
+		name: string;
+		/**
+		* The property name in the DataGridItem
+		**/
+		field: string;
+		/**
+		* A unique identifier for the column within the grid.
+		*/
+		id: string;
+	}
+
+	/**
+	 * An item for displaying in a data grid
+	 */
+	export interface DataGridItem {
+		/**
+		 * A unique identifier for this item
 		 */
 		id: string;
-		/**
-		 * An identifier for the type of resource this is
-		 */
-		typeId: string;
 		/**
 		 * A set of properties for this resource
 		 */
@@ -126,13 +140,17 @@ declare module 'azdata' {
 	}
 
 	/**
-	 * A data provider that provides lists of resources
+	 * A data provider that provides lists of resource items for a data grid
 	 */
-	export interface ResourceDataProvider<T extends Resource> extends DataProvider {
+	export interface DataGridProvider extends DataProvider {
 		/**
-		 * Gets the list of resources for this provider
+		 * Gets the list of data grid items for this provider
 		 */
-		getResources(): Thenable<T[]>;
+		getDataGridItems(): Thenable<DataGridItem[]>;
+		/**
+		 * Gets the list of data grid columns for this provider
+		 */
+		getDataGridColumns(): Thenable<DataGridColumn[]>;
 	}
 
 	export interface HyperlinkComponent {

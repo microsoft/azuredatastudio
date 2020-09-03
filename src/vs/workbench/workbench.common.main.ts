@@ -198,8 +198,8 @@ import { INotebookService } from 'sql/workbench/services/notebook/browser/notebo
 import { IScriptingService, ScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import { IAssessmentService } from 'sql/workbench/services/assessment/common/interfaces';
 import { AssessmentService } from 'sql/workbench/services/assessment/common/assessmentService';
-import { ResourceDataProviderService } from 'sql/workbench/services/resourceDataProvider/browser/resourceDataProviderService';
-import { IResourceDataProviderService } from 'sql/workbench/services/resourceDataProvider/common/resourceDataProviderService';
+import { DataGridProviderService } from 'sql/workbench/services/dataGridProvider/browser/dataGridProviderService';
+import { IDataGridProviderService } from 'sql/workbench/services/dataGridProvider/common/dataGridProviderService';
 
 registerSingleton(IDashboardService, DashboardService);
 registerSingleton(IDashboardViewService, DashboardViewService);
@@ -238,7 +238,7 @@ registerSingleton(IAdsTelemetryService, AdsTelemetryService);
 registerSingleton(IObjectExplorerService, ObjectExplorerService);
 registerSingleton(IOEShimService, OEShimService);
 registerSingleton(IAssessmentService, AssessmentService);
-registerSingleton(IResourceDataProviderService, ResourceDataProviderService);
+registerSingleton(IDataGridProviderService, DataGridProviderService);
 
 //#endregion
 

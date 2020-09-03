@@ -28,7 +28,7 @@ import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { assign } from 'vs/base/common/objects';
 import { serializableToMap } from 'sql/base/common/map';
 import { IAssessmentService } from 'sql/workbench/services/assessment/common/interfaces';
-import { IResourceDataProviderService } from 'sql/workbench/services/resourceDataProvider/common/resourceDataProviderService';
+import { IDataGridProviderService } from 'sql/workbench/services/dataGridProvider/common/dataGridProviderService';
 
 /**
  * Main thread class for handling data protocol management registration.
@@ -57,7 +57,7 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		@ISerializationService private _serializationService: ISerializationService,
 		@IFileBrowserService private _fileBrowserService: IFileBrowserService,
 		@IAssessmentService private _assessmentService: IAssessmentService,
-		@IResourceDataProviderService private _resourceDataProviderService: IResourceDataProviderService
+		@IDataGridProviderService private _dataGridProviderService: IDataGridProviderService
 	) {
 		super();
 		if (extHostContext) {
@@ -469,12 +469,15 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		return undefined;
 	}
 
-	public $registerResourceDataProvider<T extends azdata.Resource>(providerId: string, handle: number): void {
+	public $registerDataGridProvider(providerId: string, handle: number): void {
 		const self = this;
-		this._resourceDataProviderService.registerProvider(providerId, <azdata.ResourceDataProvider<T>>{
+		this._dataGridProviderService.registerProvider(providerId, <azdata.DataGridProvider>{
 			providerId: providerId,
-			getResources(): Thenable<T[]> {
-				return self._proxy.$getResources(handle);
+			getDataGridItems(): Thenable<azdata.DataGridItem[]> {
+				return self._proxy.$getDataGridItems(handle);
+			},
+			getDataGridColumns(): Thenable<azdata.DataGridColumn[]> {
+				return self._proxy.$getDataGridColumns(handle);
 			}
 		});
 	}
