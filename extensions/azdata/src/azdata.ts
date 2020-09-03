@@ -13,6 +13,7 @@ import Logger from './common/logger';
 import { getErrorMessage, searchForCmd } from './common/utils';
 import { azdataAcceptEulaKey, azdataConfigSection, azdataFound, azdataHostname, azdataInstallKey, azdataReleaseJson, azdataUpgradeKey, azdataUri, debugConfigKey, eulaAccepted, eulaUrl, microsoftPrivacyStatementUrl } from './constants';
 import * as loc from './localizedConstants';
+import * as fs from 'fs';
 
 const enum AzdataDeployOption {
 	dontPrompt = 'dontPrompt',
@@ -129,7 +130,6 @@ export class AzdataTool implements IAzdataTool {
 				result: <R>output.result
 			};
 		} catch (err) {
-
 			if (err instanceof ExitCodeError) {
 				try {
 					// For azdata internal errors the output is JSON and so we need to do some extra parsing here
@@ -138,7 +138,17 @@ export class AzdataTool implements IAzdataTool {
 					// so we also need to trim off the start that isn't a valid JSON blob
 					err.stderr = JSON.parse(err.stderr.substring(err.stderr.indexOf('{'))).stderr;
 				} catch (err) {
-					// no op - it means this was probably some other generic error (such as command not being found)
+					// it means this was probably some other generic error (such as command not being found)
+					// check if azdata still exists if it does then rethrow the original error if not then emit a new specific error.
+					try {
+						await fs.promises.access(this.path);
+						//this.path exists
+						throw err; // rethrow the error
+					} catch (e) {
+						// this.path does not exist
+						await vscode.commands.executeCommand('setContext', azdataFound, false);
+						throw (loc.noAzdata);
+					}
 				}
 
 			}
@@ -260,6 +270,8 @@ export async function checkAndUpgradeAzdata(currentAzdata?: IAzdataTool, userReq
 		}
 	} else {
 		Logger.log(loc.upgradeCheckSkipped);
+		Logger.log(loc.noAzdata);
+		await vscode.commands.executeCommand('setContext', azdataFound, false);
 	}
 	return false;
 }
