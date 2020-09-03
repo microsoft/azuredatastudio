@@ -29,7 +29,6 @@
           "dataworkspace.projects": {
             "type": "array",
             "default": [],
-            "scope": "machine-overridable",
             "description": ""
           }
         }
