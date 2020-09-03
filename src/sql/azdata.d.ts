@@ -4748,6 +4748,8 @@ declare module 'azdata' {
 			 * Number of times the cell was executed
 			 */
 			execution_count: number;
+			batchId?: number;
+			id?: number;
 		}
 		export interface IErrorResult extends ICellOutput {
 			/**

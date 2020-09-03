@@ -91,6 +91,8 @@ suite('Data Resource Data Provider', function () {
 		_instantiationService.setup(x => x.createInstance(TypeMoq.It.isValue(ResultSerializer)))
 			.returns(() => serializer);
 		dataResourceDataProvider = new DataResourceDataProvider(
+			0, // batchId
+			0, // id
 			queryRunner.object,
 			source,
 			resultSet,
@@ -100,7 +102,6 @@ suite('Data Resource Data Provider', function () {
 			undefined, // IConfigurationService
 			undefined, // ITextResourcePropertiesService
 			_serializationService,
-			_instantiationService.object
 		);
 	});
 

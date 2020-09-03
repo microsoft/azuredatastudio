@@ -42,6 +42,8 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 	private _initialized: boolean = false;
 	private _activeCellId: string;
 	private _componentInstance: IMimeComponent;
+	private _batchId?: number;
+	private _id?: number;
 	private _queryRunner?: QueryRunner;
 	public errorText: string;
 
@@ -102,6 +104,14 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 			this.loadComponent();
 		}
 		return this._componentInstance;
+	}
+
+	@Input() set batchId(value: number) {
+		this._batchId = value;
+	}
+
+	@Input() set id(value: number) {
+		this._id = value;
 	}
 
 	@Input() set queryRunner(value: QueryRunner) {
@@ -181,6 +191,8 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 			this._componentInstance.cellOutput = this.cellOutput;
 			this._componentInstance.bundleOptions = options;
 			if (this._queryRunner) {
+				this._componentInstance.batchId = this._batchId;
+				this._componentInstance.id = this._id;
 				this._componentInstance.queryRunner = this._queryRunner;
 			}
 			this._changeref.detectChanges();
