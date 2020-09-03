@@ -155,6 +155,7 @@ export type AzdataDarwinPackageVersionInfo = {
 		bottle: boolean
 	}
 };
+
 /**
  * Finds the existing installation of azdata, or throws an error if it couldn't find it
  * or encountered an unexpected error.
@@ -164,10 +165,12 @@ export async function findAzdata(): Promise<IAzdataTool> {
 	Logger.log(loc.searchingForAzdata);
 	try {
 		const azdata = await findSpecificAzdata();
+		await vscode.commands.executeCommand('setContext', azdataFound, true);
 		Logger.log(loc.foundExistingAzdata(azdata.path, azdata.cachedVersion.raw));
 		return azdata;
 	} catch (err) {
 		Logger.log(loc.couldNotFindAzdata(err));
+		await vscode.commands.executeCommand('setContext', azdataFound, false);
 		throw err;
 	}
 }
@@ -289,7 +292,6 @@ async function promptToInstallAzdata(userRequested: boolean = false): Promise<bo
 		try {
 			await installAzdata();
 			vscode.window.showInformationMessage(loc.azdataInstalled);
-			await vscode.commands.executeCommand('setContext', azdataFound, true);
 			Logger.log(loc.azdataInstalled);
 			return true;
 		} catch (err) {
