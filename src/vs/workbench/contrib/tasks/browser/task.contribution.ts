@@ -271,7 +271,7 @@ quickAccessRegistry.registerQuickAccessProvider({
 	helpEntries: [{ description: nls.localize('tasksQuickAccessHelp', "Run Task"), needsEditor: false }]
 });
 
-//  validation
+//  tasks.json validation
 let schema: IJSONSchema = {
 	id: tasksSchemaId,
 	description: 'Task definition file',
