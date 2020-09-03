@@ -20,6 +20,13 @@ export class IconPathHelper {
 	public static referenceGroup: IconPath;
 	public static referenceDatabase: IconPath;
 
+	public static refresh: IconPath;
+	public static folder_blue: IconPath;
+	public static selectConnection: IconPath;
+	public static connect: IconPath;
+
+	public static folder: IconPath;
+
 	public static setExtensionContext(extensionContext: vscode.ExtensionContext) {
 		IconPathHelper.extensionContext = extensionContext;
 
@@ -30,14 +37,28 @@ export class IconPathHelper {
 
 		IconPathHelper.referenceGroup = IconPathHelper.makeIcon('referenceGroup');
 		IconPathHelper.referenceDatabase = IconPathHelper.makeIcon('reference-database');
+
+		IconPathHelper.refresh = IconPathHelper.makeIcon('refresh', true);
+		IconPathHelper.folder_blue = IconPathHelper.makeIcon('folder_blue', true);
+		IconPathHelper.selectConnection = IconPathHelper.makeIcon('selectConnection', true);
+		IconPathHelper.connect = IconPathHelper.makeIcon('connect', true);
+
+		IconPathHelper.folder = IconPathHelper.makeIcon('folder');
 	}
 
-	private static makeIcon(name: string) {
+	private static makeIcon(name: string, sameIcon: boolean = false) {
 		const folder = 'images';
 
-		return {
-			dark: IconPathHelper.extensionContext.asAbsolutePath(`${folder}/dark/${name}.svg`),
-			light: IconPathHelper.extensionContext.asAbsolutePath(`${folder}/light/${name}.svg`)
-		};
+		if (sameIcon) {
+			return {
+				dark: IconPathHelper.extensionContext.asAbsolutePath(`${folder}/${name}.svg`),
+				light: IconPathHelper.extensionContext.asAbsolutePath(`${folder}/${name}.svg`)
+			};
+		} else {
+			return {
+				dark: IconPathHelper.extensionContext.asAbsolutePath(`${folder}/dark/${name}.svg`),
+				light: IconPathHelper.extensionContext.asAbsolutePath(`${folder}/light/${name}.svg`)
+			};
+		}
 	}
 }

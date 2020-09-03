@@ -175,10 +175,18 @@
       }
     ],
     "dataExplorer": {
-      "azureResource": [
+      "dialog/connection": [
+        {
+          "id": "azureResourceExplorer_dialog",
+          "name": "%azure.resource.explorer.title%",
+          "when": "config.connection.dialog.browse"
+        }
+      ],
+      "dataExplorer": [
         {
           "id": "azureResourceExplorer",
-          "name": "%azure.resource.explorer.title%"
+          "name": "%azure.resource.explorer.title%",
+          "when": "!config.connection.dialog.browse"
         }
       ]
     },
@@ -254,6 +262,11 @@
           "group": "inline"
         },
         {
+          "command": "azure.resource.connectsqlserver",
+          "when": "viewItem == azure.resource.itemType.azureDataExplorer",
+          "group": "inline"
+        },
+        {
           "command": "azure.resource.startterminal",
           "when": "viewItem == azure.resource.itemType.account",
           "group": "azurecore"
@@ -284,6 +297,6 @@
     "should": "^13.2.1",
     "sinon": "^9.0.2",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "^1.0.9"
+    "vscodetestcover": "^1.1.0"
   }
 }

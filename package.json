@@ -1,6 +1,6 @@
 {
   "name": "azuredatastudio",
-  "version": "1.21.0",
+  "version": "1.22.0",
   "distro": "facf51cc91bfb7ca0d4f5904480c1e7f09c3c115",
   "author": {
     "name": "Microsoft Corporation"
@@ -43,7 +43,7 @@
     "valid-layers-check": "node build/lib/layersChecker.js",
     "strict-function-types-watch": "tsc --watch -p src/tsconfig.json --noEmit --strictFunctionTypes",
     "update-distro": "node build/npm/update-distro.js",
-    "web": "node resources/serverless/code-web.js",
+    "web": "node resources/web/code-web.js",
     "compile-web": "gulp compile-web --max_old_space_size=4095",
     "watch-web": "gulp watch-web --max_old_space_size=4095",
     "eslint": "eslint -c .eslintrc.json --rulesdir ./build/lib/eslint --ext .ts --ext .js ./src/vs ./extensions",
@@ -136,7 +136,7 @@
     "css-loader": "^3.2.0",
     "debounce": "^1.0.0",
     "deemon": "^1.4.0",
-    "electron": "7.3.2",
+    "electron": "9.2.0",
     "eslint": "6.8.0",
     "eslint-plugin-jsdoc": "^19.1.0",
     "event-stream": "3.3.4",
@@ -193,7 +193,7 @@
     "temp-write": "^3.4.0",
     "ts-loader": "^4.4.2",
     "typemoq": "^0.3.2",
-    "typescript": "^3.9.3",
+    "typescript": "^4.0.1-rc",
     "typescript-formatter": "7.1.0",
     "underscore": "^1.8.2",
     "vinyl": "^2.0.0",

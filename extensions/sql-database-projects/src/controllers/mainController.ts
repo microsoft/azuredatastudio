@@ -9,6 +9,7 @@ import * as templates from '../templates/templates';
 import * as constants from '../common/constants';
 import * as path from 'path';
 import * as glob from 'fast-glob';
+import * as newProjectTool from '../tools/newProjectTool';
 
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { getErrorMessage } from '../common/utils';
@@ -62,6 +63,8 @@ export default class MainController implements vscode.Disposable {
 		vscode.commands.registerCommand('sqlDatabaseProjects.importDatabase', async (profile: azdata.IConnectionProfile) => { await this.projectsController.importNewDatabaseProject(profile); });
 
 		vscode.commands.registerCommand('sqlDatabaseProjects.newScript', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.script); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.newPreDeploymentScript', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.preDeployScript); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.newPostDeploymentScript', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.postDeployScript); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.newTable', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.table); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.newView', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.view); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.newStoredProcedure', async (node: BaseProjectTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.storedProcedure); });
@@ -70,13 +73,17 @@ export default class MainController implements vscode.Disposable {
 
 		vscode.commands.registerCommand('sqlDatabaseProjects.addDatabaseReference', async (node: BaseProjectTreeItem) => { await this.projectsController.addDatabaseReference(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.openContainingFolder', async (node: BaseProjectTreeItem) => { await this.projectsController.openContainingFolder(node); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.editProjectFile', async (node: BaseProjectTreeItem) => { await this.projectsController.editProjectFile(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.delete', async (node: BaseProjectTreeItem) => { await this.projectsController.delete(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.exclude', async (node: FileNode | FolderNode) => { await this.projectsController.exclude(node); });
 
 		IconPathHelper.setExtensionContext(this.extensionContext);
 
 		// init view
-		const treeView = vscode.window.createTreeView(SQL_DATABASE_PROJECTS_VIEW_ID, { treeDataProvider: this.dbProjectTreeViewProvider });
+		const treeView = vscode.window.createTreeView(SQL_DATABASE_PROJECTS_VIEW_ID, {
+			treeDataProvider: this.dbProjectTreeViewProvider,
+			showCollapseAll: true
+		});
 		this.dbProjectTreeViewProvider.setTreeView(treeView);
 
 		this.extensionContext.subscriptions.push(treeView);
@@ -85,6 +92,9 @@ export default class MainController implements vscode.Disposable {
 
 		// ensure .net core is installed
 		await this.netcoreTool.findOrInstallNetCore();
+
+		// set the user settings around saving new projects to default value
+		await newProjectTool.initializeSaveLocationSetting();
 
 		// load any sql projects that are open in workspace folder
 		await this.loadProjectsInWorkspace();
@@ -141,8 +151,7 @@ export default class MainController implements vscode.Disposable {
 		try {
 			let newProjName = await vscode.window.showInputBox({
 				prompt: constants.newDatabaseProjectName,
-				value: `DatabaseProject${this.projectsController.projects.length + 1}`
-				// TODO: Smarter way to suggest a name.  Easy if we prompt for location first, but that feels odd...
+				value: newProjectTool.defaultProjectNameNewProj()
 			});
 
 			newProjName = newProjName?.trim();
@@ -157,7 +166,7 @@ export default class MainController implements vscode.Disposable {
 				canSelectFiles: false,
 				canSelectFolders: true,
 				canSelectMany: false,
-				defaultUri: vscode.workspace.workspaceFolders ? (vscode.workspace.workspaceFolders as vscode.WorkspaceFolder[])[0].uri : undefined
+				defaultUri: newProjectTool.defaultProjectSaveLocation()
 			});
 
 			if (!selectionResult) {
@@ -170,6 +179,8 @@ export default class MainController implements vscode.Disposable {
 			const newProjFolderUri = (selectionResult as vscode.Uri[])[0];
 			const newProjFilePath = await this.projectsController.createNewProject(<string>newProjName, newProjFolderUri, true);
 			const proj = await this.projectsController.openProject(vscode.Uri.file(newProjFilePath));
+
+			newProjectTool.updateSaveLocationSetting();
 
 			return proj;
 		}

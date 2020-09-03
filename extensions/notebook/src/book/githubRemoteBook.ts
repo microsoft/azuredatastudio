@@ -9,7 +9,6 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as zip from 'adm-zip';
 import * as tar from 'tar';
-import * as utils from '../common/utils';
 import { RemoteBook } from './remoteBook';
 import { IAsset } from './remoteBookController';
 import * as constants from '../common/constants';
@@ -76,7 +75,7 @@ export class GitHubRemoteBook extends RemoteBook {
 	}
 	public async extractFiles(remoteBookFullPath: vscode.Uri): Promise<void> {
 		try {
-			if (utils.getOSPlatform() === utils.Platform.Windows || utils.getOSPlatform() === utils.Platform.Mac) {
+			if (process.platform === constants.winPlatform || process.platform === constants.macPlatform) {
 				let zippedFile = new zip(remoteBookFullPath.fsPath);
 				zippedFile.extractAllTo(this._localPath.fsPath);
 			} else {

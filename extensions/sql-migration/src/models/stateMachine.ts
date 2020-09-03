@@ -5,6 +5,8 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import * as mssql from '../../../mssql';
+import { SKURecommendations } from './externalContract';
 
 export enum State {
 	INIT,
@@ -27,6 +29,8 @@ export enum State {
 export interface Model {
 	readonly sourceConnection: azdata.connection.Connection;
 	readonly currentState: State;
+	gatheringInformationError: string | undefined;
+	skuRecommendations: SKURecommendations | undefined;
 }
 
 export interface StateChangeEvent {
@@ -37,8 +41,15 @@ export interface StateChangeEvent {
 export class MigrationStateModel implements Model, vscode.Disposable {
 	private _stateChangeEventEmitter = new vscode.EventEmitter<StateChangeEvent>();
 	private _currentState: State;
+	private _gatheringInformationError: string | undefined;
+	private _skuRecommendations: SKURecommendations | undefined;
+	private _assessmentResults: mssql.SqlMigrationAssessmentResultItem[] | undefined;
 
-	constructor(private readonly _sourceConnection: azdata.connection.Connection) {
+	constructor(
+		private readonly _extensionContext: vscode.ExtensionContext,
+		private readonly _sourceConnection: azdata.connection.Connection,
+		public readonly migrationService: mssql.ISqlMigrationService
+	) {
 		this._currentState = State.INIT;
 	}
 
@@ -58,11 +69,39 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		this._stateChangeEventEmitter.fire({ oldState, newState: this.currentState });
 	}
 
+	public get assessmentResults(): mssql.SqlMigrationAssessmentResultItem[] | undefined {
+		return this._assessmentResults;
+	}
+
+	public set assessmentResults(assessmentResults: mssql.SqlMigrationAssessmentResultItem[] | undefined) {
+		this._assessmentResults = assessmentResults;
+	}
+
+	public get gatheringInformationError(): string | undefined {
+		return this._gatheringInformationError;
+	}
+
+	public set gatheringInformationError(error: string | undefined) {
+		this._gatheringInformationError = error;
+	}
+
+	public get skuRecommendations(): SKURecommendations | undefined {
+		return this._skuRecommendations;
+	}
+
+	public set skuRecommendations(recommendations: SKURecommendations | undefined) {
+		this._skuRecommendations = recommendations;
+	}
+
 	public get stateChangeEvent(): vscode.Event<StateChangeEvent> {
 		return this._stateChangeEventEmitter.event;
 	}
 
 	dispose() {
 		this._stateChangeEventEmitter.dispose();
+	}
+
+	public getExtensionPath(): string {
+		return this._extensionContext.extensionPath;
 	}
 }

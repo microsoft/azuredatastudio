@@ -10,7 +10,7 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import { AppContext } from '../appContext';
-import { azureResource } from './azure-resource';
+import { azureResource } from 'azureResource';
 import { TreeNode } from './treeNode';
 import { AzureResourceCredentialError } from './errors';
 import { AzureResourceTreeProvider } from './tree/treeProvider';
@@ -167,7 +167,6 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 	});
 
 	vscode.commands.registerCommand('azure.resource.openInAzurePortal', async (connectionProfile: azdata.IConnectionProfile) => {
-
 		if (
 			!connectionProfile.azureResourceId ||
 			!connectionProfile.azurePortalEndpoint ||

@@ -6,6 +6,7 @@
 import 'vs/css!./media/queryEditor';
 
 import * as DOM from 'vs/base/browser/dom';
+import * as path from 'vs/base/common/path';
 import { EditorOptions, IEditorControl, IEditorMemento } from 'vs/workbench/common/editor';
 import { BaseEditor, EditorMemento } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { Orientation } from 'vs/base/browser/ui/sash/sash';
@@ -29,13 +30,15 @@ import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { URI } from 'vs/base/common/uri';
 import { IFileService, FileChangesEvent } from 'vs/platform/files/common/files';
-
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { IModeService } from 'vs/editor/common/services/modeService';
 import { QueryEditorInput, IQueryEditorStateChange } from 'sql/workbench/common/editor/query/queryEditorInput';
 import { QueryResultsEditor } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
 import * as queryContext from 'sql/workbench/contrib/query/common/queryContext';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import * as actions from 'sql/workbench/contrib/query/browser/queryActions';
 import { IRange } from 'vs/editor/common/core/range';
+import { UntitledQueryEditorInput } from 'sql/workbench/common/editor/query/untitledQueryEditorInput';
 
 const QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY = 'queryEditorViewState';
 
@@ -95,9 +98,11 @@ export class QueryEditor extends BaseEditor {
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IEditorGroupsService editorGroupService: IEditorGroupsService,
 		@IFileService fileService: IFileService,
+		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IEditorService private readonly editorService: IEditorService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
-		@IConfigurationService private readonly configurationService: IConfigurationService
+		@IConfigurationService private readonly configurationService: IConfigurationService,
+		@IModeService private readonly modeService: IModeService,
 	) {
 		super(QueryEditor.ID, telemetryService, themeService, storageService);
 
@@ -185,9 +190,7 @@ export class QueryEditor extends BaseEditor {
 		this._actualQueryPlanAction = this.instantiationService.createInstance(actions.ActualQueryPlanAction, this);
 		this._toggleSqlcmdMode = this.instantiationService.createInstance(actions.ToggleSqlCmdModeAction, this, false);
 		this._exportAsNotebookAction = this.instantiationService.createInstance(actions.ExportAsNotebookAction, this);
-
 		this.setTaskbarContent();
-
 		this._register(this.configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('workbench.enablePreviewFeatures')) {
 				this.setTaskbarContent();
@@ -202,6 +205,7 @@ export class QueryEditor extends BaseEditor {
 		if (stateChangeEvent.connectedChange) {
 			this._toggleConnectDatabaseAction.connected = this.input.state.connected;
 			this._changeConnectionAction.enabled = this.input.state.connected;
+			this.setTaskbarContent();
 			if (this.input.state.connected) {
 				this.listDatabasesActionItem.onConnected();
 			} else {
@@ -259,20 +263,15 @@ export class QueryEditor extends BaseEditor {
 		const separator = Taskbar.createTaskbarSeparator();
 		let content: ITaskbarContent[];
 		const previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
-		if (previewFeaturesEnabled) {
-			content = [
-				{ action: this._runQueryAction },
-				{ action: this._cancelQueryAction },
-				{ element: separator },
-				{ action: this._toggleConnectDatabaseAction },
-				{ action: this._changeConnectionAction },
-				{ action: this._listDatabasesAction },
-				{ element: separator },
-				{ action: this._estimatedQueryPlanAction }, // Preview
-				{ action: this._toggleSqlcmdMode }, // Preview
-				{ action: this._exportAsNotebookAction } // Preview
-			];
-		} else {
+		let connectionProfile = this.connectionManagementService.getConnectionProfile(this.input?.uri);
+		let fileExtension = path.extname(this.input?.uri || '');
+
+		// TODO: Make it more generic, some way for extensions to register the commands it supports
+		if ((!fileExtension && connectionProfile?.providerName === 'KUSTO') || this.modeService.getExtensions('Kusto').indexOf(fileExtension) > -1) {
+			if (this.input instanceof UntitledQueryEditorInput) {		// Sets proper language mode for untitled query editor based on the connection selected by user.
+				this.input.setMode('kusto');
+			}
+
 			content = [
 				{ action: this._runQueryAction },
 				{ action: this._cancelQueryAction },
@@ -281,6 +280,41 @@ export class QueryEditor extends BaseEditor {
 				{ action: this._changeConnectionAction },
 				{ action: this._listDatabasesAction }
 			];
+		}
+		else {
+			const notebookConvertActionsEnabled = this.configurationService.getValue('notebook')['showNotebookConvertActions'];
+			if (previewFeaturesEnabled) {
+				content = [
+					{ action: this._runQueryAction },
+					{ action: this._cancelQueryAction },
+					{ element: separator },
+					{ action: this._toggleConnectDatabaseAction },
+					{ action: this._changeConnectionAction },
+					{ action: this._listDatabasesAction },
+					{ element: separator },
+					{ action: this._estimatedQueryPlanAction }, // Preview
+					{ action: this._toggleSqlcmdMode }, // Preview
+				];
+
+				if (notebookConvertActionsEnabled) {
+					content.push({ action: this._exportAsNotebookAction });
+				}
+			} else {
+				content = [
+					{ action: this._runQueryAction },
+					{ action: this._cancelQueryAction },
+					{ element: separator },
+					{ action: this._toggleConnectDatabaseAction },
+					{ action: this._changeConnectionAction },
+					{ action: this._listDatabasesAction }
+				];
+				const notebookConvertActionsEnabled = this.configurationService.getValue('notebook')['notebook.showNotebookConvertActions'];
+				if (notebookConvertActionsEnabled) {
+					content.push(
+						{ element: separator },
+						{ action: this._exportAsNotebookAction });
+				}
+			}
 		}
 
 		this.taskbar.setContent(content);

@@ -8,6 +8,8 @@ import { Action } from 'vs/base/common/actions';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IExtensionsWorkbenchService, VIEWLET_ID, IExtensionsViewPaneContainer } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IExtensionRecommendation } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
+import { IOpenerService } from 'vs/platform/opener/common/opener';
+import { URI } from 'vs/base/common/uri';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { PagedModel } from 'vs/base/common/paging';
 
@@ -65,5 +67,24 @@ export class InstallRecommendedExtensionsByScenarioAction extends Action {
 					return Promise.all(installPromises);
 				});
 			});
+	}
+}
+
+export class OpenExtensionAuthoringDocsAction extends Action {
+
+	static readonly ID = 'workbench.extensions.action.openExtensionAuthoringDocs';
+	static readonly LABEL = localize('openExtensionAuthoringDocs', "Author an Extension...");
+	private static readonly extensionAuthoringDocsURI = 'https://docs.microsoft.com/sql/azure-data-studio/extension-authoring';
+
+	constructor(
+		id: string = OpenExtensionAuthoringDocsAction.ID,
+		label: string = OpenExtensionAuthoringDocsAction.LABEL,
+		@IOpenerService private readonly openerService: IOpenerService,
+	) {
+		super(id, label);
+	}
+
+	run(): Promise<boolean> {
+		return this.openerService.open(URI.parse(OpenExtensionAuthoringDocsAction.extensionAuthoringDocsURI));
 	}
 }
