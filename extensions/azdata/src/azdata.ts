@@ -165,12 +165,12 @@ export async function findAzdata(): Promise<IAzdataTool> {
 	Logger.log(loc.searchingForAzdata);
 	try {
 		const azdata = await findSpecificAzdata();
-		await vscode.commands.executeCommand('setContext', azdataFound, true);
+		await vscode.commands.executeCommand('setContext', azdataFound, true); // save a context key that azdata was found so that command for installing azdata is no longer available in commandPalette and that for upgrading it is.
 		Logger.log(loc.foundExistingAzdata(azdata.path, azdata.cachedVersion.raw));
 		return azdata;
 	} catch (err) {
 		Logger.log(loc.couldNotFindAzdata(err));
-		await vscode.commands.executeCommand('setContext', azdataFound, false);
+		await vscode.commands.executeCommand('setContext', azdataFound, false);// save a context key that azdata was not found so that command for installing azdata is available in commandPalette and that for upgrading it is no longer available.
 		throw err;
 	}
 }
@@ -374,9 +374,10 @@ export async function promptForEula(memento: vscode.Memento, userRequested: bool
 	}
 	if (response === loc.yes) {
 		await memento.update(eulaAccepted, true); // save a memento that eula was accepted
-		await vscode.commands.executeCommand('setContext', eulaAccepted, true); // save a context key that eula was accepted so that command for accepting eula is no longer visible
+		await vscode.commands.executeCommand('setContext', eulaAccepted, true); // save a context key that eula was accepted so that command for accepting eula is no longer available in commandPalette
 		return true;
 	}
+	await vscode.commands.executeCommand('setContext', eulaAccepted, false); // save a context key that eula was not accepted so that command for accepting eula is available in commandPalette
 	return false;
 }
 
