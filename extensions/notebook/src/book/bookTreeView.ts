@@ -553,7 +553,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	getParent(element?: BookTreeItem): vscode.ProviderResult<BookTreeItem> {
 		if (element?.uri) {
 			let parentPath: string;
-			parentPath = path.join(element.book.contentPath, element.uri.substring(0, element.uri.lastIndexOf(path.posix.sep)));
+			let contentFolder = element.book.version === 'v1' ? path.join(element.book.root, 'content') : element.book.root;
+			parentPath = path.join(contentFolder, element.uri.substring(0, element.uri.lastIndexOf(path.posix.sep)));
 			if (parentPath === element.root) {
 				return undefined;
 			}
