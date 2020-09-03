@@ -29,7 +29,6 @@ export class EditCellAction extends ToggleableAction {
 	private static readonly editCssClass = 'edit';
 	private static readonly closeCssClass = 'close';
 	private static readonly maskedIconClass = 'masked-icon';
-	private static readonly moreActionsLabel = localize('moreActionsLabel', "More");
 
 	constructor(
 		id: string, toggleTooltip: boolean, isEditMode: boolean
@@ -156,7 +155,7 @@ export class CellToggleMoreActions {
 		if (this._moreActionsElement.childNodes.length > 0) {
 			this._moreActionsElement.removeChild(this._moreActionsElement.childNodes[0]);
 		}
-		this._moreActions = new ActionBar(this._moreActionsElement, { orientation: ActionsOrientation.VERTICAL, ariaLabel: moreActionsLabel });
+		this._moreActions = new ActionBar(this._moreActionsElement, { orientation: ActionsOrientation.VERTICAL, ariaLabel: localize('moreActionsLabel', "More") });
 		this._moreActions.context = { target: this._moreActionsElement };
 		let validActions = this._actions.filter(a => a instanceof Separator || a instanceof CellActionBase && a.canRun(context));
 		removeDuplicatedAndStartingSeparators(validActions);
@@ -345,6 +344,7 @@ export class CollapseCellAction extends CellActionBase {
 export class ToggleMoreActions extends Action {
 
 	private static readonly ID = 'toggleMore';
+	private static readonly LABEL = localize('toggleMore', "More");
 	private static readonly ICON = 'masked-icon more';
 
 	constructor(
@@ -352,7 +352,7 @@ export class ToggleMoreActions extends Action {
 		private readonly _context: CellContext,
 		@IContextMenuService private readonly _contextMenuService: IContextMenuService
 	) {
-		super(ToggleMoreActions.ID, ToggleMoreActions.moreActionsLabel, ToggleMoreActions.ICON);
+		super(ToggleMoreActions.ID, ToggleMoreActions.LABEL, ToggleMoreActions.ICON);
 	}
 
 	run(context: StandardKeyboardEvent): Promise<boolean> {
