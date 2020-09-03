@@ -8,6 +8,7 @@ import { Uri } from 'vscode';
 
 export interface IDatabaseReferenceSettings {
 	databaseName?: string;
+	suppressMissingDependenciesErrors: boolean;
 }
 
 export interface ISystemDatabaseReferenceSettings extends IDatabaseReferenceSettings {
