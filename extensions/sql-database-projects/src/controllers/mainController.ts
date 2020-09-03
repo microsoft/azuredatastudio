@@ -75,6 +75,7 @@ export default class MainController implements vscode.Disposable {
 
 		vscode.commands.registerCommand('sqlDatabaseProjects.addDatabaseReference', async (node: BaseProjectTreeItem) => { await this.projectsController.addDatabaseReference(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.openContainingFolder', async (node: BaseProjectTreeItem) => { await this.projectsController.openContainingFolder(node); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.editProjectFile', async (node: BaseProjectTreeItem) => { await this.projectsController.editProjectFile(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.delete', async (node: BaseProjectTreeItem) => { await this.projectsController.delete(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.exclude', async (node: FileNode | FolderNode) => { await this.projectsController.exclude(node); });
 

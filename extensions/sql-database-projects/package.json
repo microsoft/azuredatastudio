@@ -154,6 +154,11 @@
         "command": "sqlDatabaseProjects.openContainingFolder",
         "title": "%sqlDatabaseProjects.openContainingFolder%",
         "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.editProjectFile",
+        "title": "%sqlDatabaseProjects.editProjectFile%",
+        "category": "%sqlDatabaseProjects.displayName%"
       }
     ],
     "menus": {
@@ -232,6 +237,10 @@
           "when": "false"
         },
         {
+          "command": "sqlDatabaseProjects.editProjectFile",
+          "when": "false"
+        },
+        {
           "command": "sqlDatabaseProjects.exclude",
           "when": "false"
         }
@@ -306,6 +315,11 @@
           "command": "sqlDatabaseProjects.delete",
           "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.folder || viewItem == databaseProject.itemType.file",
           "group": "9_dbProjectsLast@2"
+        },
+        {
+          "command": "sqlDatabaseProjects.editProjectFile",
+          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project",
+          "group": "9_dbProjectsLast@7"
         },
         {
           "command": "sqlDatabaseProjects.openContainingFolder",
