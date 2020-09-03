@@ -21,6 +21,7 @@ import { InfoButton } from 'sql/base/browser/ui/infoButton/infoButton';
 import { Color } from 'vs/base/common/color';
 import { IComponentDescriptor, IComponent, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSize } from 'sql/base/browser/dom';
+import { createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
 
 @Component({
 	selector: 'modelview-button',
@@ -118,6 +119,11 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 		if (this._informationalInputContainer) {
 			let button = this._button as InfoButton;
 			button.textTitle = this.properties.title;
+			button.description = this.properties.description;
+			button.iconClass = this.properties.iconClass;
+			button.iconPath = createIconCssClass(this.properties.iconPath);
+			button.iconHeight = this.properties.iconHeight;
+			button.iconWidth = this.properties.iconWidth;
 		} else {
 			this._button.enabled = this.enabled;
 			this._button.label = this.label;
@@ -139,7 +145,6 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 			if (this.height) {
 				this._button.setHeight(convertSize(this.height.toString()));
 			}
-
 		}
 
 		this.updateIcon();
