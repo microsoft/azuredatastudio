@@ -165,8 +165,8 @@ async function testWin32UnsuccessfulUpgrade() {
 
 async function testLinuxSuccessfulUpgrade() {
 	sinon.stub(HttpClient, 'getTextContent').returns(Promise.resolve(JSON.stringify(releaseJson)));
-	const executeCommandStub = sinon.stub(childProcess, 'executeCommand').returns(Promise.resolve({ stdout: 'success', stderr: '' }));
-	const executeSudoCommandStub = sinon.stub(childProcess, 'executeSudoCommand').returns(Promise.resolve({ stdout: 'success', stderr: '' }));
+	const executeCommandStub = sinon.stub(childProcess, 'executeCommand').returns(Promise.resolve({ stdout: '0.0.0', stderr: '' }));
+	const executeSudoCommandStub = sinon.stub(childProcess, 'executeSudoCommand').returns(Promise.resolve({ stdout: '0.0.0', stderr: '' }));
 	await azdata.checkAndUpgradeAzdata(oldAzdataMock);
 	should(executeSudoCommandStub.callCount).be.equal(6);
 	should(executeCommandStub.calledOnce).be.true();
@@ -194,7 +194,7 @@ async function testDarwinSuccessfulUpgrade() {
 			});
 		})
 		.callsFake(async (_command: string, _args: string[]) => { // return success on all other command executions
-			return Promise.resolve({ stdout: 'success', stderr: '' });
+			return Promise.resolve({ stdout: '0.0.0', stderr: '' });
 		});
 	await azdata.checkAndUpgradeAzdata(oldAzdataMock);
 	should(executeCommandStub.callCount).be.equal(6);
@@ -208,7 +208,7 @@ async function testWin32SuccessfulUpgrade() {
 		should(args[0]).be.equal('/qn');
 		should(args[1]).be.equal('/i');
 		should(path.basename(args[2])).be.equal(constants.azdataUri);
-		return { stdout: 'success', stderr: '' };
+		return { stdout: '0.0.0', stderr: '' };
 	});
 	await azdata.checkAndUpgradeAzdata(oldAzdataMock);
 	should(executeCommandStub.calledOnce).be.true();
@@ -216,29 +216,35 @@ async function testWin32SuccessfulUpgrade() {
 
 async function testWin32SuccessfulInstall() {
 	sinon.stub(HttpClient, 'downloadFile').returns(Promise.resolve(__filename));
-	const executeCommandStub = sinon.stub(childProcess, 'executeCommand').callsFake(async (command: string, args: string[]) => {
-		should(command).be.equal('msiexec');
-		should(args[0]).be.equal('/qn');
-		should(args[1]).be.equal('/i');
-		should(path.basename(args[2])).be.equal(constants.azdataUri);
-		return { stdout: 'success', stderr: '' };
-	});
+	const executeCommandStub = sinon.stub(childProcess, 'executeCommand')
+		.onFirstCall().rejects('not Found')
+		.callsFake(async (command: string, args: string[]) => {
+			should(command).be.equal('msiexec');
+			should(args[0]).be.equal('/qn');
+			should(args[1]).be.equal('/i');
+			should(path.basename(args[2])).be.equal(constants.azdataUri);
+			return { stdout: '0.0.0', stderr: '' };
+		});
 	await azdata.checkAndInstallAzdata();
-	should(executeCommandStub.calledOnce).be.true();
+	should(executeCommandStub.calledTwice).be.true();
 }
 
 async function testDarwinSuccessfulInstall() {
-	const executeCommandStub = sinon.stub(childProcess, 'executeCommand').callsFake(async (command: string, _args: string[]) => {
-		should(command).be.equal('brew');
-		return { stdout: 'success', stderr: '' };
-	});
+	const executeCommandStub = sinon.stub(childProcess, 'executeCommand')
+		.onFirstCall().rejects('not Found')
+		.callsFake(async (_command: string, _args: string[]) => {
+			//should(_command).be.equal('brew');
+			return { stdout: '0.0.0', stderr: '' };
+		});
 	await azdata.checkAndInstallAzdata();
-	should(executeCommandStub.callCount).be.equal(4);
+	should(executeCommandStub.callCount).be.equal(5);
 }
 
 async function testLinuxSuccessfulInstall() {
-	const executeCommandStub = sinon.stub(childProcess, 'executeCommand').returns(Promise.resolve({ stdout: 'success', stderr: '' }));
-	const executeSudoCommandStub = sinon.stub(childProcess, 'executeSudoCommand').returns(Promise.resolve({ stdout: 'success', stderr: '' }));
+	const executeCommandStub = sinon.stub(childProcess, 'executeCommand')
+		.onFirstCall().rejects('not Found')
+		.returns(Promise.resolve({ stdout: '0.0.0', stderr: '' }));
+	const executeSudoCommandStub = sinon.stub(childProcess, 'executeSudoCommand').returns(Promise.resolve({ stdout: '0.0.0', stderr: '' }));
 	await azdata.checkAndInstallAzdata();
 	should(executeSudoCommandStub.callCount).be.equal(6);
 	should(executeCommandStub.calledTwice).be.true();
