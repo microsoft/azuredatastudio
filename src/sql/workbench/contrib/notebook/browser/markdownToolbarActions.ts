@@ -36,13 +36,68 @@ export class TransformMarkdownAction extends Action {
 	public run(context: any): Promise<boolean> {
 		return new Promise<boolean>(async (resolve, reject) => {
 			try {
-				let markdownTextTransformer = new MarkdownTextTransformer(this._notebookService, this._cellModel, this._instantiationService);
-				await markdownTextTransformer.transformText(this._type);
+				if (!context?.cellModel?.isEditMode) {
+					this.executeDocumentCommand();
+				} else {
+					let markdownTextTransformer = new MarkdownTextTransformer(this._notebookService, this._cellModel, this._instantiationService);
+					await markdownTextTransformer.transformText(this._type);
+				}
 				resolve(true);
 			} catch (e) {
 				reject(e);
 			}
 		});
+	}
+
+	private executeDocumentCommand() {
+		switch (this._type) {
+			case MarkdownButtonType.BOLD:
+				document.execCommand('bold');
+				break;
+			case MarkdownButtonType.CODE:
+				document.execCommand('');
+				break;
+			case MarkdownButtonType.HEADING1:
+				document.execCommand('formatBlock', false, 'H1');
+				break;
+			case MarkdownButtonType.HEADING2:
+				document.execCommand('formatBlock', false, 'H2');
+				break;
+			case MarkdownButtonType.HEADING3:
+				document.execCommand('formatBlock', false, 'H3');
+				break;
+			case MarkdownButtonType.HIGHLIGHT:
+				// The following doesn't work and requires investigation
+				// document.execCommand('formatBlock', false, 'MARK');
+
+				// Can probably use window.getSelection and then do a
+				// document.execCommand('insertHTML', false, '<mark>' + window.getSelection() + '</mark>' worst case
+
+				// For now, let's just test undo
+				document.execCommand('undo');
+				break;
+			case MarkdownButtonType.IMAGE:
+				document.execCommand('bold');
+				break;
+			case MarkdownButtonType.ITALIC:
+				document.execCommand('italic');
+				break;
+			case MarkdownButtonType.LINK:
+				document.execCommand('createLink');
+				break;
+			case MarkdownButtonType.ORDERED_LIST:
+				document.execCommand('insertOrderedList');
+				break;
+			case MarkdownButtonType.PARAGRAPH:
+				document.execCommand('formatBlock', false, 'p');
+				break;
+			case MarkdownButtonType.UNDERLINE:
+				document.execCommand('underline');
+				break;
+			case MarkdownButtonType.UNORDERED_LIST:
+				document.execCommand('insertUnorderedList');
+				break;
+		}
 	}
 }
 
@@ -498,17 +553,18 @@ export class ToggleMarkdownViewAction extends Action {
 		label: string,
 		cssClass: string,
 		tooltip: string,
-		private _cellModel: ICellModel,
+		// private _cellModel: ICellModel,
 	) {
 		super(id, label, cssClass);
 		this._tooltip = tooltip;
 	}
 
-	public async run(context: ICellModel): Promise<boolean> {
-		context = this._cellModel;
+	public async run(context: any): Promise<boolean> {
+		// context = this._cellModel;
 		this.class += ' active';
-		context.showPreview = false;
-		context.showTextView = false;
+		context.cellModel.showPreview = false;
+		context.cellModel.isEditMode = true;
+		// context.cellModel.showTextView = false;
 		// When this button is clicked, the perceived results are the same as when the textview button is clicked. However, the above values set are different than that of ToggleTextViewAction.
 		return true;
 	}
@@ -520,16 +576,17 @@ export class ToggleSplitViewAction extends Action {
 		label: string,
 		cssClass: string,
 		tooltip: string,
-		private _cellModel: ICellModel,
+		// private _cellModel: ICellModel,
 	) {
 		super(id, label, cssClass);
 		this._tooltip = tooltip;
 	}
-	public async run(context: ICellModel): Promise<boolean> {
-		context = this._cellModel;
+	public async run(context: any): Promise<boolean> {
+		// context = this._cellModel;
 		this.class += ' active';
-		context.showPreview = true;
-		context.showTextView = false;
+		context.cellModel.showPreview = true;
+		context.cellModel.isEditMode = true;
+		// context.cellModelshowTextView = false;
 		return true;
 	}
 }
@@ -539,16 +596,17 @@ export class ToggleTextViewAction extends Action {
 		label: string,
 		cssClass: string,
 		tooltip: string,
-		private _cellModel: ICellModel,
+		// private _cellModel: ICellModel,
 	) {
 		super(id, label, cssClass);
 		this._tooltip = tooltip;
 	}
-	public async run(context: ICellModel): Promise<boolean> {
-		context = this._cellModel;
+	public async run(context: any): Promise<boolean> {
+		// context = this._cellModel;
 		this.class += ' active';
-		context.showPreview = false;
-		context.showTextView = true;
+		context.cellModel.showPreview = true;
+		context.cellModel.isEditMode = false;
+		// context.cellModel.showTextView = true;
 		return true;
 	}
 }

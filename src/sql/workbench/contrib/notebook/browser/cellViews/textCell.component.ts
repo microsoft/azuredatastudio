@@ -28,10 +28,12 @@ import { NotebookRange, ICellEditorProvider } from 'sql/workbench/services/noteb
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import TurndownService = require('turndown');
-import { TextModel } from 'vs/editor/common/model/textModel';
+import turndownPluginGfm = require('turndown-plugin-gfm');
+
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
+const ADD_CONTENT = localize('addContent', "<i>Add content here...</i>");
 
 @Component({
 	selector: TEXT_SELECTOR,
@@ -39,7 +41,6 @@ const USER_SELECT_CLASS = 'actionselect';
 })
 export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	@ViewChild('preview', { read: ElementRef }) private output: ElementRef;
-	@ViewChild('textview', { read: ElementRef }) private texteditor: ElementRef;
 	@ViewChildren(CodeComponent) private markdowncodeCell: QueryList<CodeComponent>;
 
 	@Input() cellModel: ICellModel;
@@ -73,7 +74,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private _lastTrustedMode: boolean;
 	private isEditMode: boolean;
 	private showPreview: boolean;
-	private showTextView: boolean;
 	private _sanitizer: ISanitizer;
 	private _model: NotebookModel;
 	private _activeCellId: string;
@@ -91,9 +91,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		@Inject(IConfigurationService) private _configurationService: IConfigurationService
 	) {
 		super();
-		this.isEditMode = true;
-		this.showPreview = false;
-		this.showTextView = true;
+		this.turnDownService.use(turndownPluginGfm.gfm);
 		this.markdownRenderer = this._instantiationService.createInstance(NotebookMarkdownRenderer);
 		this._register(toDisposable(() => {
 			if (this.markdownResult) {
@@ -139,6 +137,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
 		this.setFocusAndScroll();
+		this.cellModel.isEditMode = true;
+		this.cellModel.showPreview = true;
 		this._register(this.cellModel.onOutputsChanged(e => {
 			this.updatePreview();
 		}));
@@ -146,9 +146,13 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			if (mode !== this.isEditMode) {
 				this.toggleEditMode(mode);
 			}
+			this._changeRef.detectChanges();
 		}));
 		this._register(this.cellModel.onCellPreviewChanged(preview => {
-			this.previewMode = preview;
+			if (this.previewMode !== preview) {
+				this.previewMode = preview;
+			}
+			this._changeRef.detectChanges();
 		}));
 	}
 
@@ -193,7 +197,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		if (trustedChanged || contentChanged) {
 			this._lastTrustedMode = this.cellModel.trustedMode;
 			if ((!cellModelSourceJoined) && !this.isEditMode) {
-				this._content = localize('addContent', "Add content here...");
+				this._content = ADD_CONTENT;
 			} else {
 				this._content = this.cellModel.source;
 			}
@@ -210,26 +214,14 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				outputElement.innerHTML = this.markdownResult.element.innerHTML;
 				this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
 			}
-			if (this.showTextView) {
-				let textViewElement = <HTMLElement>this.texteditor.nativeElement;
-				textViewElement.innerHTML = this.markdownResult.element.innerHTML;
-				this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
-			}
 		}
 	}
 
 	private updateCellSource(): void {
-		let textOutputElement = <HTMLElement>this.texteditor.nativeElement;
-		let editor = this.cellEditors.find(c => c.cellGuid() === this.cellModel.cellGuid);
-		if (editor) {
-			let textModel = (editor.getEditor().getControl()?.getModel() as TextModel);
-			if (textModel) {
-				let newCellSource: string = this.turnDownService.turndown(textOutputElement.innerHTML);
-				if (textModel.getValue() !== newCellSource) {
-					this.cellModel.source = newCellSource;
-				}
-			}
-		}
+		let textOutputElement = <HTMLElement>this.output.nativeElement;
+		let newCellSource: string = this.turnDownService.turndown(textOutputElement.innerHTML, { gfm: true });
+		this.cellModel.source = newCellSource;
+		this._changeRef.detectChanges();
 	}
 
 	//Sanitizes the content based on trusted mode of Cell Model
@@ -262,6 +254,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	public toggleEditMode(editMode?: boolean): void {
 		this.isEditMode = editMode !== undefined ? editMode : !this.isEditMode;
 		this.cellModel.isEditMode = this.isEditMode;
+		if (!this.isEditMode) {
+			this.previewMode = true;
+		}
 		this.updatePreview();
 		this._changeRef.detectChanges();
 	}
@@ -270,18 +265,11 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		return this.showPreview;
 	}
 	public set previewMode(value: boolean) {
-		this.showPreview = value;
-		this._changeRef.detectChanges();
-		this.updatePreview();
-	}
-
-	public get textViewMode(): boolean {
-		return this.showTextView;
-	}
-	public set textViewMode(value: boolean) {
-		this.showTextView = value;
-		this._changeRef.detectChanges();
-		this.updatePreview();
+		if (this.showPreview !== value) {
+			this.showPreview = value;
+			this.updatePreview();
+			this._changeRef.detectChanges();
+		}
 	}
 
 	private toggleUserSelect(userSelect: boolean): void {
@@ -289,6 +277,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			return;
 		}
 		if (userSelect) {
+			this._content = '';
 			DOM.addClass(this.output.nativeElement, USER_SELECT_CLASS);
 		} else {
 			DOM.removeClass(this.output.nativeElement, USER_SELECT_CLASS);
@@ -303,8 +292,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		}
 	}
 
-	protected isActive() {
-		return this.cellModel && this.cellModel.id === this.activeCellId;
+	public isActive(): boolean {
+		return this.cellModel && !!this.cellModel.active;
 	}
 
 	public deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void {

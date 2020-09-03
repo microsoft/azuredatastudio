@@ -20,25 +20,15 @@ text-cell-component .notebook-preview {
 	user-select: none;
 	width: 100%;
 }
-text-cell-component .text-view {
-	flex-direction: column;
-	padding-left: 8px;
-	padding-right: 8px;
-	user-select: none;
-	width: 100%;
-}
 
 /* Hide Markdown view initially */
 text-cell-component .edit-mode code-component {
-	display: none;
 	width: 100%;
 }
 
 text-cell-component .show-preview.edit-mode code-component {
 	display: initial;
-}
-text-cell-component .show-preview .text-view {
-	display: none;
+	width: 50%
 }
 
 text-cell-component .edit-mode .notebook-preview {
@@ -46,13 +36,7 @@ text-cell-component .edit-mode .notebook-preview {
 	border-left-width: 1px;
 	border-style: solid;
 	border-top-width: 0;
-}
-text-cell-component .edit-mode:not(.show-preview) .text-view {
-	border-color: transparent;
-	border-left-width: 1px;
-	border-style: solid;
-	border-top-width: 0;
-	display: block;
+	width: 50%
 }
 
 .notebook-preview.actionselect {

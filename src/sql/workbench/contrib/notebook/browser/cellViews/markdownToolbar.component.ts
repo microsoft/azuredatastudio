@@ -73,9 +73,9 @@ export class MarkdownToolbarComponent {
 		let heading3 = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading3', this.optionHeading3, 'heading 3', this.optionHeading3, this.cellModel, MarkdownButtonType.HEADING3);
 		let paragraph = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.paragraph', this.optionParagraph, 'paragraph', this.optionParagraph, this.cellModel, MarkdownButtonType.PARAGRAPH);
 
-		let toggleTextView = this._instantiationService.createInstance(ToggleTextViewAction, 'notebook.toggleTextView', '', 'masked-icon show-text', this.textViewButton, this.cellModel);
-		let toggleSplitView = this._instantiationService.createInstance(ToggleSplitViewAction, 'notebook.toggleSplitView', '', 'masked-icon split-toggle-on', this.splitViewButton, this.cellModel);
-		let toggleMarkdownView = this._instantiationService.createInstance(ToggleMarkdownViewAction, 'notebook.toggleMarkdownView', '', 'masked-icon show-markdown', this.markdownButton, this.cellModel);
+		let toggleTextView = this._instantiationService.createInstance(ToggleTextViewAction, 'notebook.toggleTextView', '', 'masked-icon show-text', this.textViewButton);
+		let toggleSplitView = this._instantiationService.createInstance(ToggleSplitViewAction, 'notebook.toggleSplitView', '', 'masked-icon split-toggle-on', this.splitViewButton);
+		let toggleMarkdownView = this._instantiationService.createInstance(ToggleMarkdownViewAction, 'notebook.toggleMarkdownView', '', 'masked-icon show-markdown', this.markdownButton);
 
 		let taskbar = <HTMLElement>this.mdtoolbar.nativeElement;
 		this._actionBar = new Taskbar(taskbar);
