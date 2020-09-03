@@ -61,7 +61,7 @@ describe('azdata', function () {
 			sinon.stub(utils, 'searchForCmd').returns(Promise.resolve('/path/to/azdata'));
 		});
 
-		it.skip('successful install', async function (): Promise<void> {
+		it('successful install', async function (): Promise<void> {
 			switch (process.platform) {
 				case 'win32':
 					await testWin32SuccessfulInstall();
@@ -119,7 +119,7 @@ describe('azdata', function () {
 		});
 
 
-		it.skip('unsuccessful update', async function (): Promise<void> {
+		it('unsuccessful update', async function (): Promise<void> {
 			switch (process.platform) {
 				case 'win32':
 					await testWin32UnsuccessfulUpdate();
@@ -147,6 +147,7 @@ async function testLinuxUnsuccessfulUpdate() {
 	const updatePromise = azdata.checkAndUpdateAzdata(oldAzdataMock);
 	await should(updatePromise).be.rejected();
 	should(executeSudoCommandStub.calledOnce).be.true();
+	console.log(`TCL::: testLinuxUnsuccessfulUpdate -> executeSudoCommandStub.callCount`, executeSudoCommandStub.callCount);
 }
 
 async function testDarwinUnsuccessfulUpdate() {
@@ -255,6 +256,7 @@ async function testLinuxUnsuccessfulInstall() {
 	const downloadPromise = azdata.installAzdata();
 	await should(downloadPromise).be.rejected();
 	should(executeSudoCommandStub.calledOnce).be.true();
+	console.log(`TCL::: testLinuxUnsuccessfulInstall -> executeSudoCommandStub.callCount`, executeSudoCommandStub.callCount);
 }
 
 async function testDarwinUnsuccessfulInstall() {
