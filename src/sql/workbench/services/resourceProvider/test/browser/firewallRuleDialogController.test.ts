@@ -106,7 +106,7 @@ suite('Firewall rule dialog controller tests', () => {
 
 		// ... Create instance of the controller with an opened dialog
 		let controller = new FirewallRuleDialogController(instantiationService.object, undefined!, undefined!, mockErrorMessageService.object);
-		await controller.openFirewallRuleDialog(connectionProfile, IPAddress, 'resourceID');
+		void controller.openFirewallRuleDialog(connectionProfile, IPAddress, 'resourceID');
 
 		// If: The firewall rule dialog reports a failure
 
@@ -132,7 +132,7 @@ suite('Firewall rule dialog controller tests', () => {
 
 		// ... Create instance of the controller with an opened dialog
 		let controller = new FirewallRuleDialogController(instantiationService.object, mockResourceProvider.object, mockAccountManagementService.object, undefined!);
-		await controller.openFirewallRuleDialog(connectionProfile, IPAddress, 'resourceID');
+		void controller.openFirewallRuleDialog(connectionProfile, IPAddress, 'resourceID');
 
 		// If: The firewall rule dialog's create firewall rule get fired
 		mockOnCreateFirewallRule.fire();
@@ -159,7 +159,7 @@ suite('Firewall rule dialog controller tests', () => {
 
 		// ... Create instance of the controller with an opened dialog
 		let controller = new FirewallRuleDialogController(instantiationService.object, mockResourceProvider.object, mockAccountManagementService.object, mockErrorMessageService.object);
-		await controller.openFirewallRuleDialog(connectionProfile, IPAddress, 'resourceID');
+		void controller.openFirewallRuleDialog(connectionProfile, IPAddress, 'resourceID');
 
 		// If: The firewall rule dialog's create firewall rule get fired
 		mockOnCreateFirewallRule.fire();
@@ -185,7 +185,7 @@ suite('Firewall rule dialog controller tests', () => {
 
 		// ... Create instance of the controller with an opened dialog
 		let controller = new FirewallRuleDialogController(instantiationService.object, mockResourceProvider.object, mockAccountManagementService.object, mockErrorMessageService.object);
-		await controller.openFirewallRuleDialog(connectionProfile, IPAddress, 'resourceID');
+		void controller.openFirewallRuleDialog(connectionProfile, IPAddress, 'resourceID');
 
 		// If: The firewall rule dialog's create firewall rule get fired
 		mockOnCreateFirewallRule.fire();
@@ -212,7 +212,7 @@ suite('Firewall rule dialog controller tests', () => {
 
 		// ... Create instance of the controller with an opened dialog
 		let controller = new FirewallRuleDialogController(instantiationService.object, mockResourceProvider.object, mockAccountManagementService.object, mockErrorMessageService.object);
-		await controller.openFirewallRuleDialog(connectionProfile, IPAddress, 'resourceID');
+		void controller.openFirewallRuleDialog(connectionProfile, IPAddress, 'resourceID');
 
 		// If: The firewall rule dialog's create firewall rule get fired
 		mockOnCreateFirewallRule.fire();
