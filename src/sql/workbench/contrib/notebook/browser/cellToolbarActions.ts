@@ -20,6 +20,7 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { MoveDirection } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 
+const moreActionsLabel = localize('moreActionsLabel', "More");
 
 export class EditCellAction extends ToggleableAction {
 	// Constants
@@ -155,7 +156,7 @@ export class CellToggleMoreActions {
 		if (this._moreActionsElement.childNodes.length > 0) {
 			this._moreActionsElement.removeChild(this._moreActionsElement.childNodes[0]);
 		}
-		this._moreActions = new ActionBar(this._moreActionsElement, { orientation: ActionsOrientation.VERTICAL, ariaLabel: localize('moreActionsLabel', "More") });
+		this._moreActions = new ActionBar(this._moreActionsElement, { orientation: ActionsOrientation.VERTICAL, ariaLabel: moreActionsLabel });
 		this._moreActions.context = { target: this._moreActionsElement };
 		let validActions = this._actions.filter(a => a instanceof Separator || a instanceof CellActionBase && a.canRun(context));
 		removeDuplicatedAndStartingSeparators(validActions);
@@ -344,7 +345,7 @@ export class CollapseCellAction extends CellActionBase {
 export class ToggleMoreActions extends Action {
 
 	private static readonly ID = 'toggleMore';
-	private static readonly LABEL = localize('toggleMore', "More");
+	private static readonly LABEL = moreActionsLabel;
 	private static readonly ICON = 'masked-icon more';
 
 	constructor(
