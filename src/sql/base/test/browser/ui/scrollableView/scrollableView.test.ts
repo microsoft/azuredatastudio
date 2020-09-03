@@ -8,6 +8,7 @@ import { Emitter } from 'vs/base/common/event';
 import * as assert from 'assert';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { timeout } from 'vs/base/common/async';
+import { scheduleAtNextAnimationFrame } from 'vs/base/browser/dom';
 
 class TestView extends Disposable implements IView {
 
@@ -180,14 +181,18 @@ suite('ScrollableView', () => {
 		scrollableView.setScrollTop(100);
 
 		await waitForAnimation();
+
 		assert.equal(view2.size, 100, 'view2 is minimum size');
 		assert.equal(view3.size, 100, 'view3 is minimum size');
 		assert.equal(getViewChildren(container).length, 2, 'only 2 views are rendered');
 	});
 });
 
-function waitForAnimation(): Promise<void> {
-	return timeout(200);
+async function waitForAnimation(): Promise<void> {
+	await timeout(50);
+	await new Promise<void>(r => scheduleAtNextAnimationFrame(r, -1000));
+	await new Promise<void>(r => scheduleAtNextAnimationFrame(r, -1000));
+	await timeout(50);
 }
 
 function getViewChildren(container: HTMLElement): NodeListOf<Element> {
