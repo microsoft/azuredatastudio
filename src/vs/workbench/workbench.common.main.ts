@@ -309,6 +309,7 @@ import 'vs/workbench/contrib/url/browser/url.contribution';
 
 // Webview
 import 'vs/workbench/contrib/webview/browser/webview.contribution';
+import 'vs/workbench/contrib/webviewView/browser/webviewView.contribution';
 import 'vs/workbench/contrib/customEditor/browser/customEditor.contribution';
 
 // Extensions Management
@@ -407,7 +408,6 @@ import 'sql/workbench/contrib/query/common/resultsGrid.contribution';
 // data explorer
 import 'sql/workbench/contrib/dataExplorer/browser/dataExplorer.contribution';
 import 'sql/workbench/contrib/dataExplorer/browser/nodeActions.common.contribution';
-import 'sql/workbench/contrib/dataExplorer/browser/extensions.contribution';
 
 //editor replacement
 import 'sql/workbench/contrib/editorReplacement/common/editorReplacer.contribution';
@@ -440,6 +440,9 @@ import 'sql/workbench/contrib/accounts/browser/accountManagement.contribution';
 // profiler
 import 'sql/workbench/contrib/profiler/browser/profiler.contribution';
 import 'sql/workbench/contrib/profiler/browser/profilerActions.contribution';
+
+// resource viewer
+import 'sql/workbench/contrib/resourceViewer/browser/resourceViewer.contribution';
 
 // dashboard
 import 'sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/types/barChart.contribution';

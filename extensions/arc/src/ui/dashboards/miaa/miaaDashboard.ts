@@ -14,7 +14,7 @@ import { MiaaModel } from '../../../models/miaaModel';
 export class MiaaDashboard extends Dashboard {
 
 	constructor(private _controllerModel: ControllerModel, private _miaaModel: MiaaModel) {
-		super(loc.miaaDashboard);
+		super(loc.miaaDashboard(_miaaModel.info.name));
 	}
 
 	public async showDashboard(): Promise<void> {

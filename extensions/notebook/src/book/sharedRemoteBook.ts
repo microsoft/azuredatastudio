@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 
 
 export class SharedRemoteBook extends RemoteBook {
-	constructor(public remotePath: URL, public outputChannel: vscode.OutputChannel) {
+	constructor(public remotePath: vscode.Uri, public outputChannel: vscode.OutputChannel) {
 		super(remotePath, outputChannel);
 	}
 	public async createLocalCopy(): Promise<void> {

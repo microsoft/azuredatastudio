@@ -225,6 +225,14 @@ export class CellModel extends Disposable implements ICellModel {
 		return this._cellType;
 	}
 
+	public set cellType(type: CellType) {
+		if (type !== this._cellType) {
+			this._cellType = type;
+			// Regardless, get rid of outputs; this matches Jupyter behavior
+			this._outputs = [];
+		}
+	}
+
 	public get source(): string | string[] {
 		return this._source;
 	}

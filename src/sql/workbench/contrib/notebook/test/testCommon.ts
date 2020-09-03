@@ -5,7 +5,7 @@
 
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import * as stubs from 'sql/workbench/contrib/notebook/test/stubs';
-import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { INotebookModel, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookParams } from 'sql/workbench/services/notebook/browser/notebookService';
 import * as dom from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -19,14 +19,11 @@ import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServic
 export class NotebookEditorStub extends stubs.NotebookEditorStub {
 	cellEditors: CellEditorProviderStub[];
 	model: INotebookModel | undefined;
+	cells?: ICellModel[] = [];
 
-	get id(): string {
-		return this.notebookParams?.notebookUri?.toString();
-	}
+	public readonly id = this.notebookParams?.notebookUri?.toString();
 
-	get modelReady(): Promise<INotebookModel> {
-		return Promise.resolve(this.model);
-	}
+	public readonly modelReady: Promise<INotebookModel> = Promise.resolve(this.model);
 
 	// Normally one needs to provide either the editor or the instantiationService as the constructor parameter
 	constructor({ cellGuid, instantiationService, editor, model, notebookParams }: { cellGuid?: string; instantiationService?: IInstantiationService; editor?: QueryTextEditor; model?: INotebookModel, notebookParams?: INotebookParams } = {}) {

@@ -4,12 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 class RunTimeInformation {
-	runtimePerThreads: RuntimePerThread[];
+	constructor(public runtimePerThreads?: RuntimePerThread[]) { }
+
 	public get actualRows(): number {
 		let total = 0;
 		if (this.runtimePerThreads) {
 			this.runtimePerThreads.forEach(element => {
-				total += element.actualRow;
+				total += element.actualRow ?? 0;
 			});
 		}
 
@@ -20,26 +21,26 @@ class RunTimeInformation {
 		let total = 0;
 		if (this.runtimePerThreads) {
 			this.runtimePerThreads.forEach(element => {
-				total += element.actualExecutions;
+				total += element.actualExecutions ?? 0;
 			});
 		}
 		return total;
 	}
 }
 
-class RuntimePerThread {
-	threadId: number;
-	actualRow: number;
-	actualExecutionMode: string;
-	actualExecutions: number;
+interface RuntimePerThread {
+	threadId?: number;
+	actualRow?: number;
+	actualExecutionMode?: string;
+	actualExecutions?: number;
 }
 
 class IndexObject {
-	database: string;
-	schema: string;
-	table: string;
-	index: string;
-	indexKind: string;
+	public database?: string;
+	public schema?: string;
+	public table?: string;
+	public index?: string;
+	public indexKind?: string;
 
 	public get title() {
 		let title: string = '';
@@ -54,22 +55,23 @@ class IndexObject {
 }
 
 class PlanNode {
-	root: PlanNode;
-	subtreeCost: number;
-	private childrenNodes: PlanNode[];
-	parent: PlanNode;
-	physicalOp: string;
-	logicalOp: string;
-	id: number;
-	estimateRows: string;
-	estimateIo: string;
-	estimateCpu: string;
-	parallel: boolean;
-	partitioned: boolean;
-	estimateRewinds: string;
-	estimateRebinds: string;
-	runtimeInfo: RunTimeInformation;
-	indexObject: IndexObject;
+	private childrenNodes: PlanNode[] = [];
+
+	public root?: PlanNode;
+	public subtreeCost?: number;
+	public parent?: PlanNode;
+	public physicalOp?: string;
+	public logicalOp?: string;
+	public id?: number;
+	public estimateRows?: string;
+	public estimateIo?: string;
+	public estimateCpu?: string;
+	public parallel?: boolean;
+	public partitioned?: boolean;
+	public estimateRewinds?: string;
+	public estimateRebinds?: string;
+	public runtimeInfo?: RunTimeInformation;
+	public indexObject?: IndexObject;
 
 	public addChildren(children: PlanNode[]): void {
 		if (children) {
@@ -81,10 +83,10 @@ class PlanNode {
 	}
 
 	public get totalSubTreeCost(): number {
-		let total = this.subtreeCost;
+		let total = this.subtreeCost ?? 0;
 		if (total === 0) {
 			this.children.forEach(element => {
-				total += element.subtreeCost;
+				total += element.subtreeCost ?? 0;
 			});
 		}
 		return total;
@@ -95,17 +97,17 @@ class PlanNode {
 	}
 
 	public get cost(): number {
-		let total = this.subtreeCost;
+		let total = this.subtreeCost ?? 0;
 		if (this.children && total !== 0) {
 			this.children.forEach(element => {
-				total -= element.subtreeCost;
+				total -= element.subtreeCost ?? 0;
 			});
 		}
 		return total;
 	}
 
 	public get relativeCost(): number {
-		let overallCost = this.root.totalSubTreeCost;
+		let overallCost = this.root?.totalSubTreeCost ?? 0;
 		return overallCost > 0 ? this.cost / overallCost : 0;
 	}
 
@@ -125,7 +127,7 @@ class PlanNode {
 
 	public get title(): string {
 		if (this.physicalOp === this.logicalOp) {
-			return this.physicalOp;
+			return this.physicalOp ?? '';
 		} else {
 			return `${this.physicalOp}(${this.logicalOp})`;
 		}
@@ -141,10 +143,10 @@ class PlanNode {
 }
 
 export class PlanXmlParser {
-	parser: DOMParser = new DOMParser();
-	doc: Document;
-	planXml: string;
-	root: PlanNode;
+	public parser: DOMParser = new DOMParser();
+	public doc?: Document;
+	public planXml?: string;
+	public root?: PlanNode;
 
 	constructor(planXml: string) {
 
@@ -179,7 +181,9 @@ export class PlanXmlParser {
 
 	public get toTreeViewList(): PlanNode[] {
 		let operations: PlanNode[] = [];
-		operations = this.addOperationsToList(operations, this.root.children);
+		if (this.root) {
+			operations = this.addOperationsToList(operations, this.root.children);
+		}
 
 		return operations;
 	}
@@ -192,7 +196,7 @@ export class PlanXmlParser {
 		return list;
 	}
 
-	private findChildren(element: Element, elementName: string, untilNode: string = undefined): Element[] {
+	private findChildren(element: Element, elementName: string, untilNode: string | undefined = undefined): Element[] | undefined {
 		let elements: Element[] = [];
 		if (element === undefined) {
 			return undefined;
@@ -251,10 +255,10 @@ export class PlanXmlParser {
 
 	private convertToPlanNode(element: Element): PlanNode {
 		let planNode = new PlanNode();
-		planNode.id = this.findAttribute(element.attributes, 'NodeId');
+		planNode.id = Number(this.findAttribute(element.attributes, 'NodeId'));
 		planNode.logicalOp = this.findAttribute(element.attributes, 'LogicalOp');
 		planNode.physicalOp = this.findAttribute(element.attributes, 'PhysicalOp');
-		planNode.subtreeCost = +this.findAttribute(element.attributes, 'EstimatedTotalSubtreeCost');
+		planNode.subtreeCost = Number(this.findAttribute(element.attributes, 'EstimatedTotalSubtreeCost'));
 		planNode.estimateRows = this.findAttribute(element.attributes, 'EstimateRows');
 		planNode.estimateCpu = this.findAttribute(element.attributes, 'EstimateCPU');
 		planNode.estimateIo = this.findAttribute(element.attributes, 'EstimateIO');
@@ -266,12 +270,12 @@ export class PlanXmlParser {
 	}
 
 	private convertToRuntimeInfo(element: Element): RuntimePerThread {
-		let runtimeNode = new RuntimePerThread();
-		runtimeNode.actualExecutionMode = this.findAttribute(element.attributes, 'ActualExecutionMode');
-		runtimeNode.actualExecutions = +this.findAttribute(element.attributes, 'ActualExecutions');
-		runtimeNode.actualRow = +this.findAttribute(element.attributes, 'ActualRows');
-		runtimeNode.threadId = +this.findAttribute(element.attributes, 'Thread');
-		return runtimeNode;
+		return {
+			actualExecutionMode: this.findAttribute(element.attributes, 'ActualExecutionMode'),
+			actualExecutions: Number(this.findAttribute(element.attributes, 'ActualExecutions')),
+			actualRow: Number(this.findAttribute(element.attributes, 'ActualRows')),
+			threadId: Number(this.findAttribute(element.attributes, 'Thread'))
+		};
 	}
 
 	private convertToObject(element: Element): IndexObject {
@@ -284,12 +288,13 @@ export class PlanXmlParser {
 		return objectNode;
 	}
 
-	private findAttribute(attributes: NamedNodeMap, attName: string): any {
+	private findAttribute(attributes: NamedNodeMap, attName: string): string | undefined {
 		for (let index = 0; index < attributes.length; index++) {
 			let attribute = attributes[index];
 			if (attribute.name === attName) {
 				return attribute.value;
 			}
 		}
+		return undefined;
 	}
 }

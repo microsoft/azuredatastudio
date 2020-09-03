@@ -42,8 +42,8 @@ const indentationFilter = [
 	'**',
 
 	// except specific files
-	'!ThirdPartyNotices.txt',
-	'!LICENSE.{txt,rtf}',
+	'!**/ThirdPartyNotices.txt',
+	'!**/LICENSE.{txt,rtf}',
 	'!LICENSES.chromium.html',
 	'!**/LICENSE',
 	'!src/vs/nls.js',
@@ -138,6 +138,7 @@ const copyrightFilter = [
 	'!resources/linux/snap/snapcraft.yaml',
 	'!resources/linux/snap/electron-launch',
 	'!resources/win32/bin/code.js',
+	'!resources/web/code-web.js',
 	'!resources/completions/**',
 	'!extensions/markdown-language-features/media/highlight.css',
 	'!extensions/html-language-features/server/src/modes/typescript/*',
@@ -145,6 +146,7 @@ const copyrightFilter = [
 	'!src/vs/editor/test/node/classification/typescript-test.ts',
 	'!scripts/code-web.js',
 	'!resources/serverless/code-web.js',
+	'!src/vs/editor/test/node/classification/typescript-test.ts',
 	// {{SQL CARBON EDIT}}
 	'!extensions/notebook/src/intellisense/text.ts',
 	'!extensions/mssql/src/hdfs/webhdfs.ts',
@@ -172,6 +174,7 @@ const copyrightFilter = [
 	'!extensions/import/flatfileimportservice/**',
 	'!extensions/notebook/src/prompts/**',
 	'!extensions/mssql/src/prompts/**',
+	'!extensions/kusto/src/prompts/**',
 	'!extensions/notebook/resources/jupyter_config/**',
 	'!extensions/query-history/images/**',
 	'!**/*.gif',

@@ -107,6 +107,21 @@ describe('Dacfx Wizard Pages', function (): void {
 		should(importConfigPage.Model.filePath).equal(dacpacPath);
 		should(importConfigPage.Model.database).equal('myDatabase');
 	});
+
+	it('Should filter out system dbs', async () => {
+		testContext = createContext();
+		wizard.setPages();
+
+		sinon.stub(azdata.connection, 'getConnections').resolves([mockConnectionProfile]);
+		sinon.stub(azdata.connection, 'listDatabases').resolves(['fakeDatabaseName', 'master', 'msdb', 'tempdb', 'model']);
+
+		let extractConfigPage = new TestExtractConfigPage(wizard, wizard.pages.get(PageName.deployConfig).wizardPage, wizard.model, testContext.viewContext.view);
+		await extractConfigPage.start();
+		await extractConfigPage.onPageEnter();
+
+		should(extractConfigPage.databaseValues.length).equal(1);
+		should(extractConfigPage.databaseValues[0]).equal('fakeDatabaseName');
+	});
 });
 
 

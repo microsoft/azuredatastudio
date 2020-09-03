@@ -35,6 +35,15 @@
           "sqlDatabaseProjects.netCoreSDKLocation": {
             "type": "string",
             "description": "%sqlDatabaseProjects.netCoreInstallLocation%"
+          },
+          "sqlDatabaseProjects.defaultProjectSaveLocation": {
+            "type": "string",
+            "description": "%sqlDatabaseProjects.defaultProjectSaveLocation%"
+          },
+          "sqlDatabaseProjects.showUpdateSaveLocationPrompt": {
+            "type": "boolean",
+            "description": "%sqlDatabaseProjects.showUpdateSaveLocationPrompt%",
+            "default": true
           }
         }
       }
@@ -58,6 +67,16 @@
       {
         "command": "sqlDatabaseProjects.newScript",
         "title": "%sqlDatabaseProjects.newScript%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.newPreDeploymentScript",
+        "title": "%sqlDatabaseProjects.newPreDeploymentScript%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.newPostDeploymentScript",
+        "title": "%sqlDatabaseProjects.newPostDeploymentScript%",
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
@@ -119,10 +138,7 @@
         "command": "sqlDatabaseProjects.importDatabase",
         "title": "%sqlDatabaseProjects.importDatabase%",
         "category": "%sqlDatabaseProjects.displayName%",
-          "icon": {
-            "dark": "images/dark/databaseProject.svg",
-            "light": "images/light/databaseProject.svg"
-          }
+          "icon": "images/databaseProjectToolbar.svg"
       },
       {
         "command": "sqlDatabaseProjects.addDatabaseReference",
@@ -132,6 +148,11 @@
       {
         "command": "sqlDatabaseProjects.openContainingFolder",
         "title": "%sqlDatabaseProjects.openContainingFolder%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.editProjectFile",
+        "title": "%sqlDatabaseProjects.editProjectFile%",
         "category": "%sqlDatabaseProjects.displayName%"
       }
     ],
@@ -149,6 +170,14 @@
         },
         {
           "command": "sqlDatabaseProjects.newScript",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.newPreDeploymentScript",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.newPostDeploymentScript",
           "when": "false"
         },
         {
@@ -201,6 +230,14 @@
         {
           "command": "sqlDatabaseProjects.openContainingFolder",
           "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.editProjectFile",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.exclude",
+          "when": "false"
         }
       ],
       "view/item/context": [
@@ -247,6 +284,16 @@
         {
           "command": "sqlDatabaseProjects.newScript",
           "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
+          "group": "3_dbProjects_newItem@7"
+        },
+        {
+          "command": "sqlDatabaseProjects.newPreDeploymentScript",
+          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
+          "group": "3_dbProjects_newItem@8"
+        },
+        {
+          "command": "sqlDatabaseProjects.newPostDeploymentScript",
+          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
           "group": "3_dbProjects_newItem@9"
         },
         {
@@ -265,6 +312,11 @@
           "group": "9_dbProjectsLast@2"
         },
         {
+          "command": "sqlDatabaseProjects.editProjectFile",
+          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project",
+          "group": "9_dbProjectsLast@7"
+        },
+        {
           "command": "sqlDatabaseProjects.openContainingFolder",
           "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project",
           "group": "9_dbProjectsLast@8"
@@ -279,6 +331,24 @@
         {
           "command": "sqlDatabaseProjects.importDatabase",
           "when": "connectionProvider == MSSQL && nodeType && nodeType == Database && mssql:engineedition != 11",
+          "group": "export"
+        },
+        {
+          "command": "sqlDatabaseProjects.importDatabase",
+          "when": "connectionProvider == MSSQL && nodeType && nodeType == Server && mssql:engineedition != 11",
+          "group": "export"
+        }
+      ],
+
+      "dataExplorer/context": [
+        {
+          "command": "sqlDatabaseProjects.importDatabase",
+          "when": "connectionProvider == MSSQL && nodeType && nodeType == Database && mssql:engineedition != 11",
+          "group": "export"
+        },
+        {
+          "command": "sqlDatabaseProjects.importDatabase",
+          "when": "connectionProvider == MSSQL && nodeType && nodeType == Server && mssql:engineedition != 11",
           "group": "export"
         }
       ],
@@ -324,6 +394,6 @@
     "tslint": "^5.8.0",
     "typemoq": "^2.1.0",
     "typescript": "^2.6.1",
-    "vscodetestcover": "^1.0.9"
+    "vscodetestcover": "^1.1.0"
   }
 }

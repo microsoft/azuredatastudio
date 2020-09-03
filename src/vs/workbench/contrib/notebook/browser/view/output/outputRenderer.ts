@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IProcessedOutput, IRenderOutput } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import { IProcessedOutput, IRenderOutput, RenderOutputType } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import { NotebookRegistry } from 'vs/workbench/contrib/notebook/browser/notebookRegistry';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { INotebookEditor, IOutputTransformContribution } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
@@ -20,7 +20,7 @@ export class OutputRenderer {
 		this._contributions = {};
 		this._mimeTypeMapping = {};
 
-		let contributions = NotebookRegistry.getOutputTransformContributions();
+		const contributions = NotebookRegistry.getOutputTransformContributions();
 
 		for (const desc of contributions) {
 			try {
@@ -38,13 +38,11 @@ export class OutputRenderer {
 
 		contentNode.innerText = `No renderer could be found for output. It has the following output type: ${output.outputKind}`;
 		container.appendChild(contentNode);
-		return {
-			hasDynamicHeight: false
-		};
+		return { type: RenderOutputType.None, hasDynamicHeight: false };
 	}
 
 	render(output: IProcessedOutput, container: HTMLElement, preferredMimeType: string | undefined): IRenderOutput {
-		let transform = this._mimeTypeMapping[output.outputKind];
+		const transform = this._mimeTypeMapping[output.outputKind];
 
 		if (transform) {
 			return transform.render(output, container, preferredMimeType);

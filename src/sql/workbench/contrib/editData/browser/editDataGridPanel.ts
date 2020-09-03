@@ -39,7 +39,8 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 export class EditDataGridPanel extends GridParentComponent {
 	// The time(in milliseconds) we wait before refreshing the grid.
 	// We use clearTimeout and setTimeout pair to avoid unnecessary refreshes.
-	private refreshGridTimeoutInMs = 200;
+	// Timeout is set to allow the grid to refresh fully before allowing a manual refresh.
+	private refreshGridTimeoutInMs = 1000;
 
 	// The timeout handle for the refresh grid task
 	private refreshGridTimeoutHandle: any;
@@ -78,6 +79,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	public loadDataFunction: (offset: number, count: number) => Promise<{}[]>;
 	public onBeforeAppendCell: (row: number, column: number) => string;
 	public onGridRendered: (event: Slick.OnRenderedEventArgs<any>) => void;
+	public onRefreshComplete: Promise<void>;
 
 	private savedViewState: {
 		gridSelections: Slick.Range[];
@@ -132,7 +134,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					self.handleMessage(self, event);
 					break;
 				case 'resultSet':
-					self.handleResultSet(self, event);
+					this.onRefreshComplete = self.handleResultSet(self, event);
 					break;
 				case 'editSessionReady':
 					self.handleEditSessionReady(self, event);
@@ -358,7 +360,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		}
 	}
 
-	handleResultSet(self: EditDataGridPanel, event: any): void {
+	async handleResultSet(self: EditDataGridPanel, event: any): Promise<void> {
 		// Clone the data before altering it to avoid impacting other subscribers
 		let resultSet = assign({}, event.data);
 		if (!resultSet.complete) {
@@ -385,7 +387,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				self.windowSize,
 				index => { return {}; },
 				resultSet.rowCount,
-				this.loadDataFunction,
+				await this.loadDataFunction,
 			),
 			columnDefinitions: [rowNumberColumn.getColumnDefinition()].concat(resultSet.columnInfo.map((c, i) => {
 				let columnIndex = (i + 1).toString();
@@ -410,14 +412,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		if (self.placeHolderDataSets[0]) {
 			this.refreshDatasets();
 		}
-		self.refreshGrid();
-
-		// Setup the state of the selected cell
-		this.resetCurrentCell();
-		this.removingNewRow = false;
-		this.newRowVisible = false;
-		this.dirtyCells = [];
-
+		await self.refreshGrid(true);
 	}
 
 	/**
@@ -440,7 +435,11 @@ export class EditDataGridPanel extends GridParentComponent {
 		return inputStr.replace(/(\r\n|\n|\r)/g, '\u0000');
 	}
 
-	private refreshGrid(): Thenable<void> {
+	/**
+	 * Code that handles the refresh of the grid.
+	 * @param isManual flag used when called by handleResultSet, for required additional processing.
+	 */
+	private refreshGrid(isManual?: boolean): Thenable<void> {
 		return new Promise<void>(async (resolve, reject) => {
 
 			clearTimeout(this.refreshGridTimeoutHandle);
@@ -462,11 +461,18 @@ export class EditDataGridPanel extends GridParentComponent {
 					this.logService.error('data set is empty, refresh cancelled.');
 					reject();
 				}
-
 				if (this.firstRender) {
-					setTimeout(() => this.setActive());
+					this.resetCurrentCell();
+					this.setActive();
 				}
-				resolve();
+				else if (isManual) {
+					this.resetCurrentCell();
+					this.removingNewRow = false;
+					this.newRowVisible = false;
+					this.dirtyCells = [];
+				}
+				//allow for the grid to render fully before returning.
+				setTimeout(() => resolve(), 500);
 			}, this.refreshGridTimeoutInMs);
 		});
 	}

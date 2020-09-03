@@ -118,6 +118,7 @@ export class FileConfigPage extends ImportPage {
 	}
 
 	async onPageEnter(): Promise<boolean> {
+		this.serverDropdown.focus();
 		let r1 = await this.populateServerDropdown();
 		let r2 = await this.populateDatabaseDropdown();
 		let r3 = await this.populateSchemaDropdown();

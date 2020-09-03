@@ -110,6 +110,7 @@ export class SearchView extends ViewPane {
 	private folderMatchFocused: IContextKey<boolean>;
 	private matchFocused: IContextKey<boolean>;
 	protected hasSearchResultsKey: IContextKey<boolean>; // {{SQL CARBON EDIT}}
+	private lastFocusState: 'input' | 'tree' = 'input';
 
 	protected state: SearchUIState = SearchUIState.Idle; // {{SQL CARBON EDIT}}
 
@@ -380,6 +381,9 @@ export class SearchView extends ViewPane {
 				this.updateActions();
 				this.updatedActionsWhileHidden = false;
 			}
+		} else {
+			// Reset last focus to input to preserve opening the viewlet always focusing the query editor.
+			this.lastFocusState = 'input';
 		}
 
 		// Enable highlights if there are searchresults
@@ -480,6 +484,7 @@ export class SearchView extends ViewPane {
 
 	private trackInputBox(inputFocusTracker: dom.IFocusTracker, contextKey?: IContextKey<boolean>): void {
 		this._register(inputFocusTracker.onDidFocus(() => {
+			this.lastFocusState = 'input';
 			this.inputBoxFocused.set(true);
 			if (contextKey) {
 				contextKey.set(true);
@@ -755,6 +760,7 @@ export class SearchView extends ViewPane {
 				this.matchFocused.set(focus instanceof Match);
 				this.fileMatchOrFolderMatchFocus.set(focus instanceof FileMatch || focus instanceof FolderMatch);
 				this.fileMatchOrFolderMatchWithResourceFocus.set(focus instanceof FileMatch || focus instanceof FolderMatchWithResource);
+				this.lastFocusState = 'tree';
 			}
 		}));
 
@@ -802,7 +808,7 @@ export class SearchView extends ViewPane {
 			}
 		}
 
-		let navigator = this.tree.navigate(selected);
+		const navigator = this.tree.navigate(selected);
 
 		let next = navigator.next();
 		if (!next) {
@@ -878,8 +884,12 @@ export class SearchView extends ViewPane {
 
 	focus(): void {
 		super.focus();
-		const updatedText = this.searchConfig.seedOnFocus ? this.updateTextFromSelection({ allowSearchOnType: false }) : false;
-		this.searchWidget.focus(undefined, undefined, updatedText);
+		if (this.lastFocusState === 'input' || !this.hasSearchResults()) {
+			const updatedText = this.searchConfig.seedOnFocus ? this.updateTextFromSelection({ allowSearchOnType: false }) : false;
+			this.searchWidget.focus(undefined, undefined, updatedText);
+		} else {
+			this.tree.domFocus();
+		}
 	}
 
 	updateTextFromSelection({ allowUnselectedWord = true, allowSearchOnType = true }): boolean {
@@ -1726,7 +1736,7 @@ export class SearchView extends ViewPane {
 					const selections = fileMatch.matches().map(m => new Selection(m.range().startLineNumber, m.range().startColumn, m.range().endLineNumber, m.range().endColumn));
 					const codeEditor = getCodeEditor(editor.getControl());
 					if (codeEditor) {
-						let multiCursorController = MultiCursorSelectionController.get(codeEditor);
+						const multiCursorController = MultiCursorSelectionController.get(codeEditor);
 						multiCursorController.selectAllUsingSelections(selections);
 					}
 				}

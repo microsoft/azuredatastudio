@@ -11,11 +11,11 @@ import { IModeService } from 'vs/editor/common/services/modeService';
 import * as nls from 'vs/nls';
 import { IQuickInputService, IQuickPickItem } from 'vs/platform/quickinput/common/quickInput';
 import { EDITOR_BOTTOM_PADDING, EDITOR_TOP_PADDING } from 'vs/workbench/contrib/notebook/browser/constants';
-import { CellCollapseState, CellFocusMode, CodeCellRenderTemplate, INotebookEditor } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
+import { CellFocusMode, CodeCellRenderTemplate, INotebookEditor } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
 import { INotebookService } from 'vs/workbench/contrib/notebook/common/notebookService';
 import { getResizesObserver } from 'vs/workbench/contrib/notebook/browser/view/renderers/sizeObserver';
 import { CodeCellViewModel } from 'vs/workbench/contrib/notebook/browser/viewModel/codeCellViewModel';
-import { CellOutputKind, IProcessedOutput, IRenderOutput, ITransformedDisplayOutputDto, BUILTIN_RENDERER_ID } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import { CellOutputKind, IProcessedOutput, IRenderOutput, ITransformedDisplayOutputDto, BUILTIN_RENDERER_ID, RenderOutputType, outputHasDynamicHeight } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { IDimension } from 'vs/editor/common/editorCommon';
@@ -91,18 +91,18 @@ export class CodeCell extends Disposable {
 			if (e.focusModeChanged) {
 				updateForFocusMode();
 			}
-
-			if (e.collapseStateChanged) {
-				updateForCollapseState();
-			}
 		}));
 		updateForFocusMode();
-		updateForCollapseState();
 
 		templateData.editor?.updateOptions({ readOnly: !(viewCell.getEvaluatedMetadata(notebookEditor.viewModel!.metadata).editable) });
 		this._register(viewCell.onDidChangeState((e) => {
 			if (e.metadataChanged) {
 				templateData.editor?.updateOptions({ readOnly: !(viewCell.getEvaluatedMetadata(notebookEditor.viewModel!.metadata).editable) });
+
+				// TODO@rob this isn't nice
+				this.viewCell.layoutChange({});
+				updateForCollapseState();
+				this.relayoutCell();
 			}
 		}));
 
@@ -110,12 +110,6 @@ export class CodeCell extends Disposable {
 			if (e.languageChanged) {
 				const mode = this._modeService.create(viewCell.language);
 				templateData.editor?.getModel()?.setMode(mode.languageIdentifier);
-			}
-
-			if (e.collapseStateChanged) {
-				// meh
-				this.viewCell.layoutChange({});
-				this.relayoutCell();
 			}
 		}));
 
@@ -162,13 +156,13 @@ export class CodeCell extends Disposable {
 				this.templateData.outputContainer!.style.display = 'none';
 			}
 
-			let reversedSplices = splices.reverse();
+			const reversedSplices = splices.reverse();
 
 			reversedSplices.forEach(splice => {
 				viewCell.spliceOutputHeights(splice[0], splice[1], splice[2].map(_ => 0));
 			});
 
-			let removedKeys: IProcessedOutput[] = [];
+			const removedKeys: IProcessedOutput[] = [];
 
 			this.outputElements.forEach((value, key) => {
 				if (viewCell.outputs.indexOf(key) < 0) {
@@ -197,12 +191,12 @@ export class CodeCell extends Disposable {
 				}
 
 				// newly added element
-				let currIndex = this.viewCell.outputs.indexOf(output);
+				const currIndex = this.viewCell.outputs.indexOf(output);
 				this.renderOutput(output, currIndex, prevElement);
 				prevElement = this.outputElements.get(output)!.element;
 			});
 
-			let editorHeight = templateData.editor!.getContentHeight();
+			const editorHeight = templateData.editor!.getContentHeight();
 			viewCell.editorHeight = editorHeight;
 
 			if (previousOutputHeight === 0 || this.viewCell.outputs.length === 0) {
@@ -305,20 +299,83 @@ export class CodeCell extends Disposable {
 			this.relayoutCell();
 			this.templateData.outputContainer!.style.display = 'none';
 		}
+
+		// Need to do this after the intial renderOutput
+		updateForCollapseState();
 	}
 
 	private viewUpdate(): void {
-		if (this.viewCell.collapseState === CellCollapseState.Collapsed) {
-			this.viewUpdateCollapsed();
+		if (this.viewCell.metadata?.inputCollapsed && this.viewCell.metadata.outputCollapsed) {
+			this.viewUpdateAllCollapsed();
+		} else if (this.viewCell.metadata?.inputCollapsed) {
+			this.viewUpdateInputCollapsed();
+		} else if (this.viewCell.metadata?.outputCollapsed && this.viewCell.outputs.length) {
+			this.viewUpdateOutputCollapsed();
 		} else {
 			this.viewUpdateExpanded();
 		}
 	}
 
-	private viewUpdateCollapsed(): void {
+	private viewUpdateShowOutputs(): void {
+		for (let index = 0; index < this.viewCell.outputs.length; index++) {
+			const currOutput = this.viewCell.outputs[index];
+
+			const renderedOutput = this.outputElements.get(currOutput);
+			if (renderedOutput) {
+				if (renderedOutput.renderResult.type !== RenderOutputType.None) {
+					// Show inset in webview, or render output that isn't rendered
+					// TODO@roblou skipHeightInit flag is a hack - the webview only sends the real height once. Don't wipe it out here.
+					this.renderOutput(currOutput, index, undefined, true);
+				} else {
+					// Anything else, just update the height
+					this.viewCell.updateOutputHeight(index, renderedOutput.element.clientHeight);
+				}
+			}
+		}
+
+		this.relayoutCell();
+	}
+
+	private viewUpdateInputCollapsed(): void {
 		DOM.hide(this.templateData.cellContainer);
 		DOM.show(this.templateData.collapsedPart);
+		DOM.show(this.templateData.outputContainer);
 		this.templateData.container.classList.toggle('collapsed', true);
+
+		this.viewUpdateShowOutputs();
+
+		this.relayoutCell();
+	}
+
+	private viewUpdateHideOuputs(): void {
+		for (const e of this.outputElements.keys()) {
+			this.notebookEditor.hideInset(e);
+		}
+	}
+
+	private viewUpdateOutputCollapsed(): void {
+		DOM.show(this.templateData.cellContainer);
+		DOM.show(this.templateData.collapsedPart);
+		DOM.hide(this.templateData.outputContainer);
+
+		this.viewUpdateHideOuputs();
+
+		this.templateData.container.classList.toggle('collapsed', false);
+		this.templateData.container.classList.toggle('output-collapsed', true);
+
+		this.relayoutCell();
+	}
+
+	private viewUpdateAllCollapsed(): void {
+		DOM.hide(this.templateData.cellContainer);
+		DOM.show(this.templateData.collapsedPart);
+		DOM.hide(this.templateData.outputContainer);
+		this.templateData.container.classList.toggle('collapsed', true);
+		this.templateData.container.classList.toggle('output-collapsed', true);
+
+		for (const e of this.outputElements.keys()) {
+			this.notebookEditor.hideInset(e);
+		}
 
 		this.relayoutCell();
 	}
@@ -326,7 +383,11 @@ export class CodeCell extends Disposable {
 	private viewUpdateExpanded(): void {
 		DOM.show(this.templateData.cellContainer);
 		DOM.hide(this.templateData.collapsedPart);
+		DOM.show(this.templateData.outputContainer);
 		this.templateData.container.classList.toggle('collapsed', false);
+		this.templateData.container.classList.toggle('output-collapsed', false);
+
+		this.viewUpdateShowOutputs();
 
 		this.relayoutCell();
 	}
@@ -348,9 +409,10 @@ export class CodeCell extends Disposable {
 			}
 		);
 
+		// for contents for which we don't observe for dynamic height, update them manually
 		this.viewCell.outputs.forEach((o, i) => {
 			const renderedOutput = this.outputElements.get(o);
-			if (renderedOutput && !renderedOutput.renderResult.hasDynamicHeight && !renderedOutput.renderResult.shadowContent) {
+			if (renderedOutput && renderedOutput.renderResult.type === RenderOutputType.None && !renderedOutput.renderResult.hasDynamicHeight) {
 				this.viewCell.updateOutputHeight(i, renderedOutput.element.clientHeight);
 			}
 		});
@@ -368,16 +430,16 @@ export class CodeCell extends Disposable {
 		);
 	}
 
-	private renderOutput(currOutput: IProcessedOutput, index: number, beforeElement?: HTMLElement) {
+	private renderOutput(currOutput: IProcessedOutput, index: number, beforeElement?: HTMLElement, skipHeightInit = false) {
 		if (!this.outputResizeListeners.has(currOutput)) {
 			this.outputResizeListeners.set(currOutput, new DisposableStore());
 		}
 
-		let outputItemDiv = document.createElement('div');
+		const outputItemDiv = document.createElement('div');
 		let result: IRenderOutput | undefined = undefined;
 
 		if (currOutput.outputKind === CellOutputKind.Rich) {
-			let transformedDisplayOutput = currOutput as ITransformedDisplayOutputDto;
+			const transformedDisplayOutput = currOutput as ITransformedDisplayOutputDto;
 
 			if (transformedDisplayOutput.orderedMimeTypes!.length > 1) {
 				outputItemDiv.style.position = 'relative';
@@ -404,14 +466,17 @@ export class CodeCell extends Disposable {
 				})));
 
 			}
-			let pickedMimeTypeRenderer = currOutput.orderedMimeTypes![currOutput.pickedMimeTypeIndex!];
+			const pickedMimeTypeRenderer = currOutput.orderedMimeTypes![currOutput.pickedMimeTypeIndex!];
 
 			const innerContainer = DOM.$('.output-inner-container');
 			DOM.append(outputItemDiv, innerContainer);
 
-			if (pickedMimeTypeRenderer.isResolved) {
-				// html
-				result = this.notebookEditor.getOutputRenderer().render({ outputId: currOutput.outputId, outputKind: CellOutputKind.Rich, data: { 'text/html': pickedMimeTypeRenderer.output! } }, innerContainer, 'text/html');
+
+			if (pickedMimeTypeRenderer.rendererId !== BUILTIN_RENDERER_ID) {
+				const renderer = this.notebookService.getRendererInfo(pickedMimeTypeRenderer.rendererId);
+				result = renderer
+					? { type: RenderOutputType.Extension, renderer, source: currOutput, mimeType: pickedMimeTypeRenderer.mimeType }
+					: this.notebookEditor.getOutputRenderer().render(currOutput, innerContainer, pickedMimeTypeRenderer.mimeType);
 			} else {
 				result = this.notebookEditor.getOutputRenderer().render(currOutput, innerContainer, pickedMimeTypeRenderer.mimeType);
 			}
@@ -436,52 +501,46 @@ export class CodeCell extends Disposable {
 			this.templateData.outputContainer?.appendChild(outputItemDiv);
 		}
 
-		if (result.shadowContent) {
+		if (result.type !== RenderOutputType.None) {
 			this.viewCell.selfSizeMonitoring = true;
-			this.notebookEditor.createInset(this.viewCell, currOutput, result.shadowContent, this.viewCell.getOutputOffset(index));
+			this.notebookEditor.createInset(this.viewCell, result, this.viewCell.getOutputOffset(index));
 		} else {
 			DOM.addClass(outputItemDiv, 'foreground');
 			DOM.addClass(outputItemDiv, 'output-element');
 			outputItemDiv.style.position = 'absolute';
 		}
 
-		let hasDynamicHeight = result.hasDynamicHeight;
+		if (!skipHeightInit) {
+			if (outputHasDynamicHeight(result)) {
+				this.viewCell.selfSizeMonitoring = true;
 
-		if (hasDynamicHeight) {
-			this.viewCell.selfSizeMonitoring = true;
+				const clientHeight = outputItemDiv.clientHeight;
+				const dimension = {
+					width: this.viewCell.layoutInfo.editorWidth,
+					height: clientHeight
+				};
+				const elementSizeObserver = getResizesObserver(outputItemDiv, dimension, () => {
+					if (this.templateData.outputContainer && document.body.contains(this.templateData.outputContainer!)) {
+						const height = Math.ceil(elementSizeObserver.getHeight());
 
-			let clientHeight = outputItemDiv.clientHeight;
-			let dimension = {
-				width: this.viewCell.layoutInfo.editorWidth,
-				height: clientHeight
-			};
-			const elementSizeObserver = getResizesObserver(outputItemDiv, dimension, () => {
-				if (this.templateData.outputContainer && document.body.contains(this.templateData.outputContainer!)) {
-					let height = Math.ceil(elementSizeObserver.getHeight());
+						if (clientHeight === height) {
+							return;
+						}
 
-					if (clientHeight === height) {
-						return;
+						const currIndex = this.viewCell.outputs.indexOf(currOutput);
+						if (currIndex < 0) {
+							return;
+						}
+
+						this.viewCell.updateOutputHeight(currIndex, height);
+						this.relayoutCell();
 					}
-
-					const currIndex = this.viewCell.outputs.indexOf(currOutput);
-					if (currIndex < 0) {
-						return;
-					}
-
-					this.viewCell.updateOutputHeight(currIndex, height);
-					this.relayoutCell();
-				}
-			});
-			elementSizeObserver.startObserving();
-			this.outputResizeListeners.get(currOutput)!.add(elementSizeObserver);
-			this.viewCell.updateOutputHeight(index, clientHeight);
-		} else {
-			if (result.shadowContent) {
-				// webview
-				// noop
-			} else {
-				// static output
-				let clientHeight = Math.ceil(outputItemDiv.clientHeight);
+				});
+				elementSizeObserver.startObserving();
+				this.outputResizeListeners.get(currOutput)!.add(elementSizeObserver);
+				this.viewCell.updateOutputHeight(index, clientHeight);
+			} else if (result.type !== RenderOutputType.None) { // no-op if it's a webview
+				const clientHeight = Math.ceil(outputItemDiv.clientHeight);
 				this.viewCell.updateOutputHeight(index, clientHeight);
 
 				const top = this.viewCell.getOutputOffsetInContainer(index);
@@ -495,17 +554,18 @@ export class CodeCell extends Disposable {
 			return nls.localize('builtinRenderInfo', "built-in");
 		}
 
-		let renderInfo = this.notebookService.getRendererInfo(renderId);
+		const renderInfo = this.notebookService.getRendererInfo(renderId);
 
 		if (renderInfo) {
-			return `${renderId} (${renderInfo.extensionId.value})`;
+			const displayName = renderInfo.displayName !== '' ? renderInfo.displayName : renderInfo.id;
+			return `${displayName} (${renderInfo.extensionId.value})`;
 		}
 
 		return nls.localize('builtinRenderInfo', "built-in");
 	}
 
 	async pickActiveMimeTypeRenderer(output: ITransformedDisplayOutputDto) {
-		let currIndex = output.pickedMimeTypeIndex;
+		const currIndex = output.pickedMimeTypeIndex;
 		const items = output.orderedMimeTypes!.map((mimeType, index): IMimeTypeRenderer => ({
 			label: mimeType.mimeType,
 			id: mimeType.mimeType,
@@ -534,27 +594,16 @@ export class CodeCell extends Disposable {
 
 		if (pick !== currIndex) {
 			// user chooses another mimetype
-			let index = this.viewCell.outputs.indexOf(output);
-			let nextElement = index + 1 < this.viewCell.outputs.length ? this.outputElements.get(this.viewCell.outputs[index + 1])?.element : undefined;
+			const index = this.viewCell.outputs.indexOf(output);
+			const nextElement = index + 1 < this.viewCell.outputs.length ? this.outputElements.get(this.viewCell.outputs[index + 1])?.element : undefined;
 			this.outputResizeListeners.get(output)?.clear();
-			let element = this.outputElements.get(output)?.element;
+			const element = this.outputElements.get(output)?.element;
 			if (element) {
 				this.templateData?.outputContainer?.removeChild(element);
 				this.notebookEditor.removeInset(output);
 			}
 
 			output.pickedMimeTypeIndex = pick;
-
-			if (!output.orderedMimeTypes![pick].isResolved && output.orderedMimeTypes![pick].rendererId !== BUILTIN_RENDERER_ID) {
-				// since it's not build in renderer and not resolved yet
-				// let's see if we can activate the extension and then render
-				// await this.notebookService.transformSpliceOutputs(this.notebookEditor.textModel!, [[0, 0, output]])
-				const outputRet = await this.notebookService.transformSingleOutput(this.notebookEditor.textModel!, output, output.orderedMimeTypes![pick].rendererId!, output.orderedMimeTypes![pick].mimeType);
-				if (outputRet) {
-					output.orderedMimeTypes![pick] = outputRet;
-				}
-			}
-
 			this.renderOutput(output, index, nextElement);
 			this.relayoutCell();
 		}
@@ -587,7 +636,7 @@ export class CodeCell extends Disposable {
 			value.dispose();
 		});
 
-		this.templateData.focusIndicator!.style.height = 'initial';
+		this.templateData.focusIndicatorLeft!.style.height = 'initial';
 
 		super.dispose();
 	}

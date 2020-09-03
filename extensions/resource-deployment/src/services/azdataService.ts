@@ -18,7 +18,6 @@ export interface BdcEndpoint {
 
 export interface IAzdataService {
 	getDeploymentProfiles(deploymentType: BdcDeploymentType): Promise<BigDataClusterDeploymentProfile[]>;
-	getEndpoints(clusterName: string, userName: string, password: string): Promise<BdcEndpoint[]>;
 }
 
 export class AzdataService implements IAzdataService {
@@ -72,17 +71,5 @@ export class AzdataService implements IAzdataService {
 
 	private async getJsonObjectFromFile(path: string): Promise<any> {
 		return JSON.parse(await this.platformService.readTextFile(path));
-	}
-
-	public async getEndpoints(clusterName: string, userName: string, password: string): Promise<BdcEndpoint[]> {
-		const env: NodeJS.ProcessEnv = {};
-		env['AZDATA_USERNAME'] = userName;
-		env['AZDATA_PASSWORD'] = password;
-		env['ACCEPT_EULA'] = 'yes';
-		let cmd = 'azdata login -n ' + clusterName;
-		await this.platformService.runCommand(cmd, { additionalEnvironmentVariables: env });
-		cmd = 'azdata bdc endpoint list';
-		const stdout = await this.platformService.runCommand(cmd, { additionalEnvironmentVariables: env });
-		return <BdcEndpoint[]>JSON.parse(stdout);
 	}
 }

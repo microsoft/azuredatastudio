@@ -12,6 +12,7 @@
 		"strictNullChecks": false,
 		"strictPropertyInitialization": false,
 		"strict": false,
+		"allowUnreachableCode": false,
 		"forceConsistentCasingInFileNames": true,
 		"baseUrl": ".",
 		"paths": {

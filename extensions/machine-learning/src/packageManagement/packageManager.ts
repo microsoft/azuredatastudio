@@ -71,12 +71,10 @@ export class PackageManager {
 			// Only execute the command if there's a valid connection with ml configuration enabled
 			//
 			let connection = await this.getCurrentConnection();
-			let isPythonInstalled = await this._service.isPythonInstalled(connection);
-			let isRInstalled = await this._service.isRInstalled(connection);
 			let defaultProvider: SqlRPackageManageProvider | SqlPythonPackageManageProvider | undefined;
-			if (connection && isPythonInstalled && this._sqlPythonPackagePackageManager.canUseProvider) {
+			if (connection && await this._sqlPythonPackagePackageManager.canUseProvider()) {
 				defaultProvider = this._sqlPythonPackagePackageManager;
-			} else if (connection && isRInstalled && this._sqlRPackageManager.canUseProvider) {
+			} else if (connection && await this._sqlRPackageManager.canUseProvider()) {
 				defaultProvider = this._sqlRPackageManager;
 			}
 			if (connection && defaultProvider) {
@@ -119,7 +117,9 @@ export class PackageManager {
 	public async installDependencies(): Promise<void> {
 		await utils.executeTasks(this._apiWrapper, constants.installPackageMngDependenciesMsgTaskName, [
 			this.installRequiredPythonPackages(this._config.requiredSqlPythonPackages),
-			this.installRequiredRPackages()], true);
+			this.installRequiredRPackages()], false);
+
+		await this.verifyOdbcInstalled();
 	}
 
 	private async installRequiredRPackages(): Promise<void> {
@@ -133,7 +133,31 @@ export class PackageManager {
 
 		await utils.createFolder(utils.getRPackagesFolderPath(this._rootFolder));
 		const packages = this._config.requiredSqlRPackages.filter(p => !p.platform || p.platform === process.platform);
-		await Promise.all(packages.map(x => this.installRPackage(x)));
+		let packagesToInstall: PackageConfigModel[] = [];
+
+		for (let index = 0; index < packages.length; index++) {
+			const packageDetail = packages[index];
+			const isInstalled = await this.verifyRPackageInstalled(packageDetail.name);
+			if (!isInstalled) {
+				packagesToInstall.push(packageDetail);
+			}
+		}
+
+		if (packagesToInstall.length > 0) {
+			this._apiWrapper.showInfoMessage(constants.confirmInstallRPackagesDetails(packagesToInstall.map(x => x.name).join(', ')));
+			let confirmed = await utils.promptConfirm(constants.confirmInstallPythonPackages, this._apiWrapper);
+			if (confirmed) {
+				this._outputChannel.appendLine(constants.installDependenciesPackages);
+				// Installs packages in order of listed in the config. The order specifies the dependency of the packages and
+				// packages cannot install as parallel because of the dependency for each other
+				for (let index = 0; index < packagesToInstall.length; index++) {
+					const packageName = packagesToInstall[index];
+					await this.installRPackage(packageName);
+				}
+			} else {
+				throw Error(constants.requiredPackagesNotInstalled);
+			}
+		}
 	}
 
 	/**
@@ -180,6 +204,45 @@ export class PackageManager {
 		}
 	}
 
+	private async verifyOdbcInstalled(): Promise<void> {
+		let connection = await this.getCurrentConnection();
+		if (connection) {
+			let credentials = await this._apiWrapper.getCredentials(connection.connectionId);
+			const separator = '=';
+			let connectionParts: string[] = [];
+			if (connection) {
+				connectionParts.push(utils.getKeyValueString('DRIVER', `{${constants.supportedODBCDriver}}`, separator));
+
+				if (connection.userName) {
+					connectionParts.push(utils.getKeyValueString('UID', connection.userName, separator));
+					connectionParts.push(utils.getKeyValueString('PWD', credentials[azdata.ConnectionOptionSpecialType.password], separator));
+				} else {
+					connectionParts.push(utils.getKeyValueString('Trusted_Connection', 'yes', separator));
+
+				}
+
+				connectionParts.push(utils.getKeyValueString('SERVER', connection.serverName, separator));
+			}
+
+			let scripts: string[] = [
+				'import pyodbc',
+				`connection = pyodbc.connect('${connectionParts.join(';')}')`,
+				'cursor = connection.cursor()',
+				'cursor.execute("SELECT @@version;")'
+			];
+			let pythonExecutable = await this._config.getPythonExecutable(true);
+			try {
+				await this._processService.execScripts(pythonExecutable, scripts, [], this._outputChannel);
+			} catch (err) {
+				const result = await this._apiWrapper.showErrorMessage(constants.verifyOdbcDriverError, constants.learnMoreTitle);
+				if (result === constants.learnMoreTitle) {
+					await this._apiWrapper.openExternal(vscode.Uri.parse(constants.odbcDriverDocuments));
+				}
+				throw err;
+			}
+		}
+	}
+
 	private async getInstalledPipPackages(): Promise<nbExtensionApis.IPackageDetails[]> {
 		try {
 			let pythonExecutable = await this.getPythonExecutable();
@@ -205,6 +268,23 @@ export class PackageManager {
 		let pythonExecutable = await this.getPythonExecutable();
 		let cmd = `"${pythonExecutable}" -m pip install -r "${requirementFilePath}"`;
 		return await this._processService.executeBufferedCommand(cmd, this._outputChannel);
+	}
+
+	private async verifyRPackageInstalled(packageName: string): Promise<boolean> {
+		let rExecutable = await this.getRExecutable();
+
+		let scripts: string[] = [
+			'formals(quit)$save <- formals(q)$save <- "no"',
+			`library(${packageName})`,
+			'q()'
+		];
+
+		try {
+			await this._processService.execScripts(rExecutable, scripts, ['--vanilla'], undefined);
+			return true;
+		} catch {
+			return false;
+		}
 	}
 
 	private async installRPackage(model: PackageConfigModel): Promise<string> {

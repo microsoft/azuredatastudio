@@ -18,6 +18,7 @@ import Severity from 'vs/base/common/severity';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { MoveDirection } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 
 
 export class EditCellAction extends ToggleableAction {
@@ -65,6 +66,35 @@ export class EditCellAction extends ToggleableAction {
 	}
 }
 
+export class MoveCellAction extends CellActionBase {
+	constructor(
+		id: string,
+		cssClass: string,
+		label: string,
+		@INotificationService notificationService: INotificationService
+	) {
+		super(id, label, undefined, notificationService);
+		this._cssClass = cssClass;
+		this._tooltip = label;
+		this._label = '';
+	}
+
+	doRun(context: CellContext): Promise<void> {
+		let moveDirection = this._cssClass.includes('move-down') ? MoveDirection.Down : MoveDirection.Up;
+		try {
+			context.model.moveCell(context.cell, moveDirection);
+		} catch (error) {
+			let message = getErrorMessage(error);
+
+			this.notificationService.notify({
+				severity: Severity.Error,
+				message: message
+			});
+		}
+		return Promise.resolve();
+	}
+}
+
 export class DeleteCellAction extends CellActionBase {
 	constructor(
 		id: string,
@@ -101,6 +131,8 @@ export class CellToggleMoreActions {
 		@IInstantiationService private instantiationService: IInstantiationService
 	) {
 		this._actions.push(
+			instantiationService.createInstance(ConvertCellAction, 'convertCell', localize('convertCell', "Convert Cell")),
+			new Separator(),
 			instantiationService.createInstance(RunCellsAction, 'runAllAbove', localize('runAllAbove', "Run Cells Above"), false),
 			instantiationService.createInstance(RunCellsAction, 'runAllBelow', localize('runAllBelow', "Run Cells Below"), true),
 			new Separator(),
@@ -148,6 +180,28 @@ export function removeDuplicatedAndStartingSeparators(actions: (Action | CellAct
 	}
 	if (actions[actions.length - 1] instanceof Separator) {
 		actions.splice(actions.length - 1, 1);
+	}
+}
+
+export class ConvertCellAction extends CellActionBase {
+	constructor(id: string, label: string,
+		@INotificationService notificationService: INotificationService
+	) {
+		super(id, label, undefined, notificationService);
+	}
+
+	doRun(context: CellContext): Promise<void> {
+		try {
+			context?.model?.convertCellType(context?.cell);
+		} catch (error) {
+			let message = getErrorMessage(error);
+
+			this.notificationService.notify({
+				severity: Severity.Error,
+				message: message
+			});
+		}
+		return Promise.resolve();
 	}
 }
 

@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import * as azurecore from '../../../azurecore/src/azurecore';
+import * as azurecore from 'azurecore';
 
 /**
  * Wrapper class to act as a facade over VSCode and Data APIs and allow us to test / mock callbacks into
@@ -99,8 +99,8 @@ export class ApiWrapper {
 		return azdata.accounts.getAllAccounts();
 	}
 
-	public getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Thenable<{ [key: string]: any }> {
-		return azdata.accounts.getSecurityToken(account, resource);
+	public getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Thenable<{ token: string, tokenType?: string } | undefined> {
+		return azdata.accounts.getAccountSecurityToken(account, tenant, resource);
 	}
 
 	public showQuickPick<T extends vscode.QuickPickItem>(items: T[] | Thenable<T[]>, options?: vscode.QuickPickOptions, token?: vscode.CancellationToken): Thenable<T | undefined> {
