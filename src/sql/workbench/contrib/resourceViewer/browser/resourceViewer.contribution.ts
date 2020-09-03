@@ -14,12 +14,12 @@ import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/commo
 
 CommandsRegistry.registerCommand({
 	id: 'resourceViewer.newResourceViewer',
-	handler: (accessor: ServicesAccessor, ...args: any[]): void => {
+	handler: (accessor: ServicesAccessor, ...args: any[]): Promise<void> => {
 		const instantiationService: IInstantiationService = accessor.get(IInstantiationService);
 		const editorService: IEditorService = accessor.get(IEditorService);
 
 		const resourceViewerInput = instantiationService.createInstance(ResourceViewerInput);
-		editorService.openEditor(resourceViewerInput, { pinned: true }, ACTIVE_GROUP);
+		return editorService.openEditor(resourceViewerInput, { pinned: true }, ACTIVE_GROUP).then();
 	}
 });
 
@@ -31,4 +31,3 @@ const resourceViewerDescriptor = EditorDescriptor.create(
 
 Registry.as<IEditorRegistry>(EditorExtensions.Editors)
 	.registerEditor(resourceViewerDescriptor, [new SyncDescriptor(ResourceViewerInput)]);
-

@@ -280,7 +280,7 @@ export class RestoreDialogController implements IRestoreDialogController {
 		let restoreInfo = new MssqlRestoreInfo(TaskExecutionMode.execute);
 		restoreInfo.sessionId = this._sessionId!;
 		void this._restoreService.cancelRestorePlan(this._ownerUri!, restoreInfo).then(() => {
-			this._connectionService.disconnect(this._ownerUri!);
+			return this._connectionService.disconnect(this._ownerUri!);
 		});
 	}
 
