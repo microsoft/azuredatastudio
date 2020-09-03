@@ -154,7 +154,7 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 		if (this._informationalInputContainer) {
 			this._infoButton.description = this.description;
 			this._infoButton.title = this.title;
-			this._infoButton._iconPath = this.iconPath;
+			this._infoButton.iconPath = this.iconPath;
 		}
 
 		this.updateIcon();
