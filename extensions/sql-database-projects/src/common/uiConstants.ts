@@ -15,4 +15,10 @@ export namespace cssStyles {
 
 	export const addDatabaseReferenceDialogLabelWidth = '215px';
 	export const addDatabaseReferenceInputboxWidth = '220px';
+
+	// font-styles
+	export namespace fontStyle {
+		export const normal = 'normal';
+		export const italics = 'italic';
+	}
 }
