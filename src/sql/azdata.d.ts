@@ -1901,7 +1901,7 @@ declare module 'azdata' {
 
 	export interface RestoreInfo {
 		options: { [key: string]: any };
-		taskExecutionMode: TaskExecutionMode;
+		taskExecutionMode?: TaskExecutionMode;
 	}
 
 	export interface RestoreDatabaseFileInfo {
@@ -1939,7 +1939,7 @@ declare module 'azdata' {
 		sessionId: string;
 		backupSetsToRestore: DatabaseFileInfo[];
 		canRestore: boolean;
-		errorMessage: string;
+		errorMessage?: string;
 		dbFiles: RestoreDatabaseFileInfo[];
 		databaseNamesFromBackupSets: string[];
 		planDetails: { [key: string]: RestorePlanDetailInfo };

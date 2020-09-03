@@ -306,6 +306,7 @@ import 'vs/workbench/contrib/url/browser/url.contribution';
 
 // Webview
 import 'vs/workbench/contrib/webview/browser/webview.contribution';
+import 'vs/workbench/contrib/webviewView/browser/webviewView.contribution';
 import 'vs/workbench/contrib/customEditor/browser/customEditor.contribution';
 
 // Extensions Management
@@ -436,6 +437,9 @@ import 'sql/workbench/contrib/accounts/browser/accountManagement.contribution';
 // profiler
 import 'sql/workbench/contrib/profiler/browser/profiler.contribution';
 import 'sql/workbench/contrib/profiler/browser/profilerActions.contribution';
+
+// resource viewer
+import 'sql/workbench/contrib/resourceViewer/browser/resourceViewer.contribution';
 
 // dashboard
 import 'sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/types/barChart.contribution';

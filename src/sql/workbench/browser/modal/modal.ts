@@ -171,12 +171,12 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Build and render the modal, will call {@link Modal#renderBody}
 	 */
 	public render() {
-		let builderClass = 'modal fade';
+		let builderClass = '.modal.fade';
 		if (this._modalOptions.isFlyout) {
-			builderClass += ' flyout-dialog';
+			builderClass += '.flyout-dialog';
 		}
 
-		this._bodyContainer = DOM.$(`.${builderClass}`, { role: 'dialog', 'aria-label': this._title });
+		this._bodyContainer = DOM.$(`${builderClass}`, { role: 'dialog', 'aria-label': this._title });
 		const top = this.layoutService.offset?.top ?? 0;
 		this._bodyContainer.style.top = `${top}px`;
 		this._modalDialog = DOM.append(this._bodyContainer, DOM.$('.modal-dialog'));
