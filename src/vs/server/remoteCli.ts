@@ -35,6 +35,8 @@ const isSupportedForCmd = (optionId: keyof ParsedArgs) => {
 		case 'crash-reporter-directory':
 		case 'extensions-download-dir':
 		case 'builtin-extensions-dir':
+		case 'telemetry':
+		case 'category':
 			return false;
 		default:
 			return true;

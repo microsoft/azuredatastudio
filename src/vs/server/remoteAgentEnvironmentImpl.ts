@@ -19,7 +19,7 @@ import { ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensio
 import { transformOutgoingURIs } from 'vs/base/common/uriIpc';
 import { ILogService } from 'vs/platform/log/common/log';
 import { getNLSConfiguration, InternalNLSConfiguration } from 'vs/server/remoteLanguagePacks';
-import { ContextKeyExpr, ContextKeyDefinedExpr, ContextKeyNotExpr, ContextKeyEqualsExpr, ContextKeyNotEqualsExpr, ContextKeyRegexExpr, IContextKeyExprMapper, ContextKeyExpression } from 'vs/platform/contextkey/common/contextkey';
+import { ContextKeyExpr, ContextKeyDefinedExpr, ContextKeyNotExpr, ContextKeyEqualsExpr, ContextKeyNotEqualsExpr, ContextKeyRegexExpr, IContextKeyExprMapper, ContextKeyExpression, ContextKeyInExpr } from 'vs/platform/contextkey/common/contextkey';
 import { listProcesses } from 'vs/base/node/ps';
 import { getMachineInfo, collectWorkspaceStats } from 'vs/platform/diagnostics/node/diagnosticsService';
 import { IDiagnosticInfoOptions, IDiagnosticInfo } from 'vs/platform/diagnostics/common/diagnostics';
@@ -212,6 +212,9 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 				} else {
 					return ContextKeyRegexExpr.create(key, regexp);
 				}
+			}
+			mapIn(key: string, valueKey: string): ContextKeyInExpr {
+				return ContextKeyInExpr.create(key, valueKey);
 			}
 		};
 
