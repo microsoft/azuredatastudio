@@ -56,6 +56,8 @@ export class Project {
 	 * Reads the project setting and contents from the file
 	 */
 	public async readProjFile() {
+		this.resetProject();
+
 		const projFileText = await fs.readFile(this.projectFilePath);
 		this.projFileXmlDoc = new xmldom.DOMParser().parseFromString(projFileText.toString());
 
@@ -145,6 +147,17 @@ export class Project {
 			const name = nameNodes[0].childNodes[0].nodeValue;
 			this.databaseReferences.push(new SqlProjectReferenceProjectEntry(Uri.file(utils.getPlatformSafeFileEntryPath(filepath)), name));
 		}
+	}
+
+	private resetProject() {
+		this.files = [];
+		this.importedTargets = [];
+		this.databaseReferences = [];
+		this.sqlCmdVariables = {};
+		this.preDeployScripts = [];
+		this.postDeployScripts = [];
+		this.noneDeployScripts = [];
+		this.projFileXmlDoc = undefined;
 	}
 
 	public async updateProjectForRoundTrip() {
