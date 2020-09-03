@@ -517,22 +517,23 @@ export class DashboardWidget {
 	private createTaskButton(view: azdata.ModelView, taskMetaData: IActionMetadata): azdata.Component {
 		const maxHeight = 116;
 		const maxWidth = 250;
-		const buttonContainer = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		const buttonContainer = view.modelBuilder.button().withProperties<any>({
 			description: taskMetaData.description,
 			height: maxHeight,
 			iconHeight: '32px',
 			iconPath: taskMetaData.iconPath,
 			iconWidth: '32px',
 			title: taskMetaData.title,
-			buttonType: azdata.ButtonType.Normal,
-			width: maxWidth
+			buttonType: azdata.ButtonType.Informational,
+			width: maxWidth,
+			label: taskMetaData.title
 		}).component();
 		buttonContainer.onDidClick(async () => {
 			if (buttonContainer.enabled && taskMetaData.command) {
 				await this._apiWrapper.executeCommand(taskMetaData.command);
 			}
 		});
-		return buttonContainer;
+		return view.modelBuilder.divContainer().withItems([buttonContainer]).component();
 
 
 		// const mainContainer = view.modelBuilder.divContainer().withLayout({

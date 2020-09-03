@@ -5,9 +5,10 @@
 
 import { Button as sqlButton } from 'sql/base/browser/ui/button/button';
 import * as DOM from 'vs/base/browser/dom';
-import { createIconCssClass, IUserFriendlyIcon } from 'sql/workbench/browser/modelComponents/iconUtils';
-import { URI } from 'vs/base/common/uri';
 import { IButtonOptions } from 'vs/base/browser/ui/button/button';
+import { URI } from 'vs/base/common/uri';
+
+type IUserFriendlyIcon = string | URI | { light: string | URI; dark: string | URI };
 
 export interface IInfoButtonOptions extends IButtonOptions {
 	description: string,
@@ -20,44 +21,50 @@ export interface IInfoButtonOptions extends IButtonOptions {
 
 export class InfoButton extends sqlButton {
 	private _infoElement: HTMLElement;
-	private _infoOptions: IInfoButtonOptions;
-	// private options: IInfoButtonOptions;
 
-	// private _description: string;
+	private _description?: string;
 	// private _iconClass: string;
 	// private _iconHeight: string | number;
 	// private _iconPath: IUserFriendlyIcon;
 	// private _iconWidth: string | number;
-	private _textTitle: string;
+	private _textTitle?: string;
 
 	constructor(container: HTMLElement, options?: IInfoButtonOptions) {
 		super(container, options);
-		this._infoOptions = options;
 
-		// this._description = this._infoOptions.description;
-		// this._iconPath = this._infoOptions.iconPath;
-		// this._iconClass = createIconCssClass(this._infoOptions.iconPath);
-		// this._iconHeight = this._infoOptions.iconHeight;
-		// this._iconWidth = this._infoOptions.iconWidth;
-		//this._textTitle = this._infoOptions.textTitle;
-
-		this._infoElement = document.createElement('div');
-		DOM.addClass(this._infoElement, 'wrapper');
-
-		//this._infoElement.innerText = this.textTitle;
-
-		this.element.appendChild(this._infoElement);
+		{ // Creates the elements
+			this._infoElement = document.createElement('div');
+			DOM.addClass(this._infoElement, 'wrapper');
+			this.element.appendChild(this._infoElement);
+		}
+		this.infoButtonOptions = options;
 	}
+
 	public get textTitle(): string {
 		return this._textTitle;
 	}
-	public set textTitle(value: string) {
+
+	public set textTitle(value: string | undefined) {
 		this._textTitle = value;
 		this._infoElement.innerText = this.textTitle;
-
-		// Also change element
-		// eg. this.button.innerText = title
 	}
+
+	public get description(): string | undefined {
+		return this._description;
+	}
+
+	public set description(value: string | undefined) {
+		this._description = value;
+	}
+
+	public set infoButtonOptions(options: IInfoButtonOptions | undefined) {
+		if (!options) {
+			return;
+		}
+		this.textTitle = options.textTitle; // Will call line 46
+		this.description = options.description; // will call line 51
+	}
+
 	// public setHeight(value: string) {
 	// 	this.element.style.height = value;
 	// }

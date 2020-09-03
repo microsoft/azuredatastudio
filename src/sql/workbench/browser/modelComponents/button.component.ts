@@ -41,8 +41,7 @@ import { convertSize } from 'sql/base/browser/dom';
 export default class ButtonComponent extends ComponentWithIconBase implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
-	private _button: Button;
-	private _infoButton: InfoButton;
+	private _button: Button | InfoButton;
 	public fileType: string = '.sql';
 
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
@@ -65,56 +64,42 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 	ngAfterViewInit(): void {
 		if (this._inputContainer) {
 			this._button = new Button(this._inputContainer.nativeElement);
-
-			this._register(this._button);
-			this._register(attachButtonStyler(this._button, this.themeService, {
-				buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND, buttonForeground: SIDE_BAR_TITLE_FOREGROUND
-			}));
-			this._register(this._button.onDidClick(e => {
-				if (this._fileInputContainer) {
-					const self = this;
-					this._fileInputContainer.nativeElement.onchange = () => {
-						let file = self._fileInputContainer.nativeElement.files[0];
-						let reader = new FileReader();
-						reader.onload = (e) => {
-							let text = (<FileReader>e.target).result;
-							self.fileContent = text.toString();
-							self.fireEvent({
-								eventType: ComponentEventType.onDidClick,
-								args: {
-									filePath: file.path,
-									fileContent: self.fileContent
-								}
-							});
-						};
-						reader.readAsText(file);
-					};
-				} else {
-					this.fireEvent({
-						eventType: ComponentEventType.onDidClick,
-						args: e
-					});
-				}
-			}));
 		}
-		if (this._informationalInputContainer) {
-			this._infoButton = new InfoButton(this._informationalInputContainer.nativeElement, {
-				description: this.properties.description,
-				iconClass: this.properties._iconClass,
-				iconHeight: this.properties.iconHeight,
-				iconPath: this.properties.iconPath,
-				iconWidth: this.properties.iconWidth,
-				textTitle: this.properties.title
-			});
 
-			this._register(this._infoButton);
-			this._register(this._infoButton.onDidClick(e => {
+		if (this._informationalInputContainer) {
+			this._button = new InfoButton(this._informationalInputContainer.nativeElement);
+		}
+
+		this._register(this._button);
+		this._register(attachButtonStyler(this._button, this.themeService, {
+			buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND, buttonForeground: SIDE_BAR_TITLE_FOREGROUND
+		}));
+		this._register(this._button.onDidClick(e => {
+			if (this._fileInputContainer) {
+				const self = this;
+				this._fileInputContainer.nativeElement.onchange = () => {
+					let file = self._fileInputContainer.nativeElement.files[0];
+					let reader = new FileReader();
+					reader.onload = (e) => {
+						let text = (<FileReader>e.target).result;
+						self.fileContent = text.toString();
+						self.fireEvent({
+							eventType: ComponentEventType.onDidClick,
+							args: {
+								filePath: file.path,
+								fileContent: self.fileContent
+							}
+						});
+					};
+					reader.readAsText(file);
+				};
+			} else {
 				this.fireEvent({
 					eventType: ComponentEventType.onDidClick,
 					args: e
 				});
-			}));
-		}
+			}
+		}));
 	}
 
 	ngOnDestroy(): void {
@@ -130,31 +115,31 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
-		this._button.enabled = this.enabled;
-		this._button.label = this.label;
-
-		if (this.properties.fileType) {
-			this.fileType = properties.fileType;
-		}
-		this._button.title = this.title;
-
-		// Button's ariaLabel gets set to the label by default.
-		// We only want to override that if buttonComponent's ariaLabel is set explicitly.
-		if (this.ariaLabel) {
-			this._button.ariaLabel = this.ariaLabel;
-		}
-
-		if (this.width) {
-			this._button.setWidth(convertSize(this.width.toString()));
-		}
-		if (this.height) {
-			this._button.setHeight(convertSize(this.height.toString()));
-		}
-
 		if (this._informationalInputContainer) {
-			//this._infoButton.description = this.properties.description;
-			this._infoButton.textTitle = this.properties.title;
-			//this._infoButton.iconPath = this.properties.iconPath;
+			let button = this._button as InfoButton;
+			button.textTitle = this.properties.title;
+		} else {
+			this._button.enabled = this.enabled;
+			this._button.label = this.label;
+
+			if (this.properties.fileType) {
+				this.fileType = properties.fileType;
+			}
+			this._button.title = this.title;
+
+			// Button's ariaLabel gets set to the label by default.
+			// We only want to override that if buttonComponent's ariaLabel is set explicitly.
+			if (this.ariaLabel) {
+				this._button.ariaLabel = this.ariaLabel;
+			}
+
+			if (this.width) {
+				this._button.setWidth(convertSize(this.width.toString()));
+			}
+			if (this.height) {
+				this._button.setHeight(convertSize(this.height.toString()));
+			}
+
 		}
 
 		this.updateIcon();
@@ -184,9 +169,9 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 			} else {
 				if (!this._iconClass) {
 					super.updateIcon();
-					this._infoButton.icon = this._iconClass + ' icon';
+					this._button.icon = this._iconClass + ' icon';
 					// Styling for icon button
-					this._register(attachButtonStyler(this._infoButton, this.themeService, {
+					this._register(attachButtonStyler(this._button, this.themeService, {
 						buttonBackground: Color.transparent.toString(),
 						buttonHoverBackground: Color.transparent.toString(),
 						buttonFocusOutline: focusBorder,
@@ -211,9 +196,9 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 
 	public get buttonType(): azdata.ButtonType {
 		if (this.isFile === true) {
-			return <azdata.ButtonType>'File';
+			return 'File' as azdata.ButtonType;
 		} else {
-			return this.getPropertyOrDefault<azdata.ButtonProperties, azdata.ButtonType>((props) => props.buttonType, <azdata.ButtonType>'Normal');
+			return this.getPropertyOrDefault<azdata.ButtonProperties, azdata.ButtonType>((props) => props.buttonType, 'Normal' as azdata.ButtonType);
 		}
 	}
 
