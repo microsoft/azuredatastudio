@@ -185,7 +185,8 @@ export class BookModel {
 						page: sections[i],
 						type: BookTreeItemType.ExternalLink,
 						treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
-						isUntitled: this.openAsUntitled
+						isUntitled: this.openAsUntitled,
+						version: book.version
 					},
 						{
 							light: this._extensionContext.asAbsolutePath('resources/light/link.svg'),

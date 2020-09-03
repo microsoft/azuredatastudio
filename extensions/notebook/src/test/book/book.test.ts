@@ -47,7 +47,6 @@ export function equalBookItems(book: BookTreeItem, expectedBook: IExpectedBookIt
 
 describe('BooksTreeViewTests', function () {
 	describe('BookTreeViewProvider', () => {
-
 		let mockExtensionContext: vscode.ExtensionContext;
 		let appContext: AppContext;
 		let nonBookFolderPath: string;
@@ -417,6 +416,7 @@ describe('BooksTreeViewTests', function () {
 		});
 
 	});
+
 	describe('BookTreeViewProvider.getTableOfContentFiles', function() {
 		let rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
 		let bookTreeViewProvider: BookTreeViewProvider;
@@ -458,8 +458,13 @@ describe('BooksTreeViewTests', function () {
 				before(async () => {
 					await fs.mkdir(rootFolderPath);
 					await fs.mkdir(run.folderPaths.dataFolderPath);
+					if(run.it === 'v1') {
+						await fs.mkdir(run.folderPaths.contentFolderPath);
+					}
 					await fs.writeFile(run.folderPaths.tableOfContentsFile, run.contents.toc);
 					await fs.writeFile(run.folderPaths.tableOfContentsFileIgnore, '');
+					await fs.writeFile(run.folderPaths.notebook2File, '');
+
 					const mockExtensionContext = new MockExtensionContext();
 					folder = {
 						uri: vscode.Uri.file(rootFolderPath),
@@ -533,6 +538,7 @@ describe('BooksTreeViewTests', function () {
 					await fs.mkdir(rootFolderPath);
 					if(run.it === 'v1'){
 						await fs.mkdir(run.folderPaths.dataFolderPath);
+						await fs.mkdir(run.folderPaths.contentFolderPath);
 					}
 					await fs.writeFile(run.folderPaths.tableofContentsFile, run.contents.config);
 					const mockExtensionContext = new MockExtensionContext();
@@ -748,25 +754,25 @@ describe('BooksTreeViewTests', function () {
 					should(showPreviewSpy.calledOnce).be.true('Should have called showPreviewFile.');
 				});
 
-				// it('should add book when bookPath contains special characters on openBook', async () => {
-				// 	let rootFolderPath2 = path.join(os.tmpdir(), `BookTestData(1)_${uuid.v4()}`);
-				// 	let dataFolderPath2 = path.join(rootFolderPath2, '_data');
-				// 	let contentFolderPath2 = path.join(rootFolderPath2, 'content');
-				// 	let configFile2 = path.join(rootFolderPath2, '_config.yml');
-				// 	let tableOfContentsFile2 = path.join(dataFolderPath2, 'toc.yml');
-				// 	let notebook2File2 = path.join(contentFolderPath2, 'notebook2.ipynb');
-				// 	await fs.mkdir(rootFolderPath2);
-				// 	await fs.mkdir(dataFolderPath2);
-				// 	await fs.mkdir(contentFolderPath2);
-				// 	await fs.writeFile(configFile2, 'title: Test Book');
-				// 	await fs.writeFile(tableOfContentsFile2, '- title: Notebook1\n  url: /notebook1\n- title: Notebook2\n  url: /notebook2');
-				// 	await fs.writeFile(notebook2File2, '');
+				it('should add book when bookPath contains special characters on openBook', async () => {
+					let rootFolderPath2 = path.join(os.tmpdir(), `BookTestData(1)_${uuid.v4()}`);
+					let dataFolderPath2 = path.join(rootFolderPath2, '_data');
+					let contentFolderPath2 = path.join(rootFolderPath2, 'content');
+					let configFile2 = path.join(rootFolderPath2, '_config.yml');
+					let tableOfContentsFile2 = path.join(dataFolderPath2, 'toc.yml');
+					let notebook2File2 = path.join(contentFolderPath2, 'notebook2.ipynb');
+					await fs.mkdir(rootFolderPath2);
+					await fs.mkdir(dataFolderPath2);
+					await fs.mkdir(contentFolderPath2);
+					await fs.writeFile(configFile2, 'title: Test Book');
+					await fs.writeFile(tableOfContentsFile2, '- title: Notebook1\n  url: /notebook1\n- title: Notebook2\n  url: /notebook2');
+					await fs.writeFile(notebook2File2, '');
 
-				// 	await bookTreeViewProvider.openBook(rootFolderPath2);
-				// 	should(bookTreeViewProvider.books.length).equal(2, 'Failed to initialize the book on open');
+					await bookTreeViewProvider.openBook(rootFolderPath2);
+					should(bookTreeViewProvider.books.length).equal(2, 'Failed to initialize the book on open');
 
-				// 	await promisify(rimraf)(rootFolderPath2);
-				// });
+					await promisify(rimraf)(rootFolderPath2);
+				});
 
 				it('should get notebook path with untitled schema on openNotebookAsUntitled', async () => {
 					let notebookUri = bookTreeViewProvider.getUntitledNotebookUri(run.folderPaths.notebook2File);
