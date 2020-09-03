@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vscode-nls';
-import { deploymentConfigurationKey, azdataAutoInstallKey, azdataAutoUpgradeKey } from './constants';
+import { azdataConfigSection, azdataInstallKey, azdataUpgradeKey } from './constants';
 const localize = nls.loadMessageBundle();
 
 export const searchingForAzdata = localize('azdata.searchingForAzdata', "Searching for existing Azure Data CLI installation...");
@@ -43,9 +43,9 @@ export const platformUnsupported = (platform: string): string => localize('azdat
 export const unexpectedCommandError = (errMsg: string): string => localize('azdata.unexpectedCommandError', "Unexpected error executing command: {0}", errMsg);
 export const unexpectedExitCode = (code: number, err: string): string => localize('azdata.unexpectedExitCode', "Unexpected exit code from command: {1} ({0})", code, err);
 export const noAzdata = localize('azdata.NoAzdata', "No Azure Data CLI is available, execute command 'Azure Data CLI: Install' to unlock some functionality of Azure Data CLI to enable related features.");
-export const skipInstall = (config: string): string => localize('azdata.skipInstall', "Skipping installation of azdata, since the operation was not user requested and config option: {0}.{1} is {2}", deploymentConfigurationKey, azdataAutoInstallKey, config);
-export const skipUpgrade = (config: string): string => localize('azdata.skipUpgrade', "Skipping upgrade of azdata, since the operation was not user requested and config option: {0}.{1} is {2}", deploymentConfigurationKey, azdataAutoUpgradeKey, config);
-export const autoDeployConfig = (configName: string, configValue: string): string => localize('azdata.autoDeployConfig', "Azure Data CLI auto deployment setting: {0}.{1} is {2}", deploymentConfigurationKey, configName, configValue);
+export const skipInstall = (config: string): string => localize('azdata.skipInstall', "Skipping installation of azdata, since the operation was not user requested and config option: {0}.{1} is {2}", azdataConfigSection, azdataInstallKey, config);
+export const skipUpgrade = (config: string): string => localize('azdata.skipUpgrade', "Skipping upgrade of azdata, since the operation was not user requested and config option: {0}.{1} is {2}", azdataConfigSection, azdataUpgradeKey, config);
+export const azdataUserSettingLog = (configName: string, configValue: string): string => localize('azdata.azdataUserSettingLog', "Azure Data CLI user setting: {0}.{1} is {2}", azdataConfigSection, configName, configValue);
 export const userResponseToInstallPrompt = (response: string | undefined): string => localize('azdata.userResponseInstall', "User Response on prompt to install azdata: {0}", response);
 export const userResponseToUpgradePrompt = (response: string | undefined): string => localize('azdata.userResponseUpgrade', "User Response on prompt to upgrade azdata: {0}", response);
 export const userRequestedInstall = localize('azdata.userRequestedInstall', "User requested to install Azure Data CLI using 'Azure Data CLI: Install' command");

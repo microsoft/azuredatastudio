@@ -11,12 +11,12 @@ import { executeCommand, executeSudoCommand, ExitCodeError, ProcessOutput } from
 import { HttpClient } from './common/httpClient';
 import Logger from './common/logger';
 import { getErrorMessage, searchForCmd } from './common/utils';
-import { acceptEula, azdataAutoInstallKey, azdataAutoUpgradeKey, azdataConfigSection, azdataHostname, azdataReleaseJson, azdataUri, debugConfigKey, deploymentConfigurationKey, eulaUrl, microsoftPrivacyStatementUrl } from './constants';
+import { azdataAcceptEulaKey, azdataConfigSection, azdataFound, azdataHostname, azdataInstallKey, azdataReleaseJson, azdataUpgradeKey, azdataUri, debugConfigKey, eulaAccepted, eulaUrl, microsoftPrivacyStatementUrl } from './constants';
 import * as loc from './localizedConstants';
 
 const enum AzdataDeployOption {
-	doNotAskAgain = 'Don\'t Ask Again',
-	askLater = 'Ask Later'
+	dontPrompt = 'dontPrompt',
+	prompt = 'prompt'
 }
 
 /**
@@ -269,26 +269,27 @@ export async function checkAndUpgradeAzdata(currentAzdata?: IAzdataTool, userReq
  */
 async function promptToInstallAzdata(userRequested: boolean = false): Promise<boolean> {
 	let response: string | undefined = loc.yes;
-	const config = <AzdataDeployOption>getConfig(azdataAutoInstallKey);
-	Logger.log(loc.autoDeployConfig(azdataAutoInstallKey, config));
+	const config = <AzdataDeployOption>getConfig(azdataInstallKey);
+	Logger.log(loc.azdataUserSettingLog(azdataInstallKey, config));
 	if (userRequested) {
 		Logger.log(loc.userRequestedInstall);
 	}
-	if (config === AzdataDeployOption.doNotAskAgain && !userRequested) {
+	if (config === AzdataDeployOption.dontPrompt && !userRequested) {
 		Logger.log(loc.skipInstall(config));
 		return false;
 	}
-	if (config === AzdataDeployOption.askLater) {
+	if (config === AzdataDeployOption.prompt) {
 		response = await vscode.window.showErrorMessage(loc.promptForAzdataInstall, ...getResponses(userRequested));
 		Logger.log(loc.userResponseToInstallPrompt(response));
 	}
 	if (response === loc.doNotAskAgain) {
-		await setConfig(azdataAutoInstallKey, response);
+		await setConfig(azdataInstallKey, AzdataDeployOption.dontPrompt);
 	}
 	if (response === loc.yes) {
 		try {
 			await installAzdata();
 			vscode.window.showInformationMessage(loc.azdataInstalled);
+			await vscode.commands.executeCommand('setContext', azdataFound, true);
 			Logger.log(loc.azdataInstalled);
 			return true;
 		} catch (err) {
@@ -311,21 +312,21 @@ async function promptToInstallAzdata(userRequested: boolean = false): Promise<bo
  */
 async function promptToUpgradeAzdata(newVersion: string, userRequested: boolean = false): Promise<boolean> {
 	let response: string | undefined = loc.yes;
-	const config = <AzdataDeployOption>getConfig(azdataAutoUpgradeKey);
-	Logger.log(loc.autoDeployConfig(azdataAutoUpgradeKey, config));
+	const config = <AzdataDeployOption>getConfig(azdataUpgradeKey);
+	Logger.log(loc.azdataUserSettingLog(azdataUpgradeKey, config));
 	if (userRequested) {
 		Logger.log(loc.userRequestedUpgrade);
 	}
-	if (config === AzdataDeployOption.doNotAskAgain && !userRequested) {
+	if (config === AzdataDeployOption.dontPrompt && !userRequested) {
 		Logger.log(loc.skipUpgrade(config));
 		return false;
 	}
-	if (config === AzdataDeployOption.askLater) {
+	if (config === AzdataDeployOption.prompt) {
 		response = await vscode.window.showInformationMessage(loc.promptForAzdataUpgrade(newVersion), ...getResponses(userRequested));
 		Logger.log(loc.userResponseToUpgradePrompt(response));
 	}
 	if (response === loc.doNotAskAgain) {
-		await setConfig(azdataAutoUpgradeKey, response);
+		await setConfig(azdataUpgradeKey, AzdataDeployOption.dontPrompt);
 	}
 	if (response === loc.yes) {
 		try {
@@ -354,19 +355,27 @@ async function promptToUpgradeAzdata(newVersion: string, userRequested: boolean 
  */
 
 export async function promptForEula(memento: vscode.Memento, userRequested: boolean = false): Promise<boolean> {
+	let response: string | undefined = loc.yes;
+	const config = <AzdataDeployOption>getConfig(azdataAcceptEulaKey);
+	Logger.log(loc.azdataUserSettingLog(azdataInstallKey, config));
 	if (userRequested) {
 		Logger.log(loc.userRequestedAcceptEula);
 	}
 	Logger.show();
 	Logger.log(loc.promptForEulaLog(microsoftPrivacyStatementUrl, eulaUrl));
-	const reply = await vscode.window.showInformationMessage(loc.promptForEula(microsoftPrivacyStatementUrl, eulaUrl), ...getResponses(userRequested));
-	Logger.log(loc.userResponseToEulaPrompt(reply));
-	if (reply === loc.yes) {
-		await memento.update(acceptEula, true);
-		return true;
-	} else {
-		return false;
+	if (config === AzdataDeployOption.prompt) {
+		response = await vscode.window.showInformationMessage(loc.promptForEula(microsoftPrivacyStatementUrl, eulaUrl), ...getResponses(userRequested));
+		Logger.log(loc.userResponseToEulaPrompt(response));
 	}
+	if (response === loc.doNotAskAgain) {
+		await setConfig(azdataAcceptEulaKey, AzdataDeployOption.dontPrompt);
+	}
+	if (response === loc.yes) {
+		await memento.update(eulaAccepted, true); // save a memento that eula was accepted
+		await vscode.commands.executeCommand('setContext', eulaAccepted, true); // save a context key that eula was accepted so that command for accepting eula is no longer visible
+		return true;
+	}
+	return false;
 }
 
 function getResponses(userRequested: boolean): string[] {
@@ -429,12 +438,12 @@ async function findSpecificAzdata(): Promise<IAzdataTool> {
 }
 
 function getConfig(key: string): AzdataDeployOption | undefined {
-	const config = vscode.workspace.getConfiguration(deploymentConfigurationKey);
+	const config = vscode.workspace.getConfiguration(azdataConfigSection);
 	return config.get<AzdataDeployOption>(key);
 }
 
 async function setConfig(key: string, value: string): Promise<void> {
-	const config = vscode.workspace.getConfiguration(deploymentConfigurationKey);
+	const config = vscode.workspace.getConfiguration(azdataConfigSection);
 	await config.update(key, value, vscode.ConfigurationTarget.Global);
 }
 

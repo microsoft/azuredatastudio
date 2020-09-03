@@ -16,7 +16,7 @@ let eulaAccepted: boolean = false;
 export async function activate(context: vscode.ExtensionContext): Promise<azdataExt.IExtension> {
 	vscode.commands.registerCommand('azdata.acceptEula', async () => {
 		eulaAccepted = await promptForEula(context.globalState, true /* userRequested */);
-		await vscode.commands.executeCommand('setContext', 'azdata.eulaAccepted', eulaAccepted);
+
 	});
 
 	vscode.commands.registerCommand('azdata.install', async () => {
@@ -34,7 +34,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 		.then(async azdataTool => {
 			localAzdata = azdataTool;
 			if (localAzdata !== undefined) {
-				await vscode.commands.executeCommand('setContext', 'azdata.found', true);
 				try {
 					//update if available and user wants it.
 					if (await checkAndUpgradeAzdata(localAzdata)) { // if an upgrade was performed
@@ -46,7 +45,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 			}
 		});
 
-	eulaAccepted = !!context.globalState.get<boolean>(constants.acceptEula);
+	await context.globalState.update(constants.eulaAccepted, undefined);
+	eulaAccepted = !!context.globalState.get<boolean>(constants.eulaAccepted); // fetch state from memento
 	Logger.log(`eulaAccepted state on startup: ${eulaAccepted}`);
 	if (!eulaAccepted) {
 		// Don't block on this since we want extension to finish activating without requiring user actions.
@@ -56,7 +56,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 				eulaAccepted = userResponse;
 				await vscode.commands.executeCommand('setContext', 'azdata.eulaAccepted', true);
 			})
-			.catch((err: any) => console.log(err));
+			.catch((err) => console.log(err));
 	}
 
 	return {

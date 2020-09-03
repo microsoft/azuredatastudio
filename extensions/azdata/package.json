@@ -32,30 +32,42 @@
           },
           "azdata.acceptEula": {
             "type": "string",
-            "default": "Ask Later",
+            "default": "prompt",
             "enum": [
-              "Don't Ask Again",
-              "Ask Later"
+              "dontPrompt",
+              "prompt"
+            ],
+            "enumDescriptions": [
+              "%azdata.acceptEula.dontPrompt.description%",
+              "%azdata.acceptEula.prompt.description%"
             ],
             "description": "%azdata.acceptEula.description%"
           },
-          "azdata.auto.install": {
+          "azdata.install": {
             "type": "string",
-            "default": "Ask Later",
+            "default": "prompt",
             "enum": [
-              "Don't Ask Again",
-              "Ask Later"
+              "dontPrompt",
+              "prompt"
             ],
-            "description": "%azdata.auto.install.description%"
+            "enumDescriptions": [
+              "%azdata.install.dontPrompt.description%",
+              "%azdata.install.prompt.description%%"
+            ],
+            "description": "%azdata.install.description%"
           },
-          "azdata.auto.upgrade": {
+          "azdata.upgrade": {
             "type": "string",
-            "default": "Ask Later",
+            "default": "prompt",
             "enum": [
-              "Don't Ask Again",
-              "Ask Later"
+              "dontPrompt",
+              "prompt"
             ],
-            "description": "%azdata.auto.upgrade.description%"
+            "enumDescriptions": [
+              "%azdata.upgrade.dontPrompt.description%",
+              "%azdata.upgrade.prompt.description%%"
+            ],
+            "description": "%azdata.upgrade.description%"
           }
         }
       }

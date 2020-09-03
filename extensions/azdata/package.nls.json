@@ -9,7 +9,15 @@
 	"azdata.upgrade.command.name": "Check for Upgrade",
 	"azdata.category": "Azure Data CLI",
 
-	"azdata.acceptEula.description": "Choose acceptance of the Azure Data CLI is done",
-	"azdata.auto.install.description": "Choose how automatic install of Azure Data CLI is done",
-	"azdata.auto.upgrade.description": "Choose how automatic upgrade of Azure Data CLI tool is done"
+	"azdata.acceptEula.description": "Choose how acceptance of EULA for the Azure Data CLI is done",
+	"azdata.acceptEula.prompt.description": "The user will be prompted for acceptance of EULA for the Azure Data CLI",
+	"azdata.acceptEula.dontPrompt.description": "The user will not be prompted for acceptance of EULA for the Azure Data CLI",
+
+	"azdata.install.description": "Choose how install of Azure Data CLI is done",
+	"azdata.install.prompt.description": "The user will be prompted for installation of the Azure Data CLI",
+	"azdata.install.dontPrompt.description": "The user will not be prompted for installation of the Azure Data CLI",
+
+	"azdata.upgrade.description": "Choose how upgrade of Azure Data CLI tool is done",
+	"azdata.upgrade.prompt.description": "The user will be prompted for upgrade of the Azure Data CLI",
+	"azdata.upgrade.dontPrompt.description": "The user will not be prompted for upgrade of the Azure Data CLI"
 }
