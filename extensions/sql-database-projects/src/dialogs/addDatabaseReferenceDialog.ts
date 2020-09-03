@@ -5,12 +5,14 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import * as path from 'path';
 import * as constants from '../common/constants';
 
 import { Project, SystemDatabase, DatabaseReferenceLocation } from '../models/project';
 import { cssStyles } from '../common/uiConstants';
 import { IconPathHelper } from '../common/iconHelper';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings } from '../models/IDatabaseReferenceSettings';
+import { getSqlProjectFilesInFolder } from '../common/utils';
 
 export enum ReferenceType {
 	project,
@@ -28,6 +30,8 @@ export class AddDatabaseReferenceDialog {
 	public addDatabaseReferenceTab: azdata.window.DialogTab;
 	private view: azdata.ModelView | undefined;
 	private formBuilder: azdata.FormBuilder | undefined;
+	private projectDropdown: azdata.DropDownComponent | undefined;
+	private projectFormComponent: azdata.FormComponent | undefined;
 	private systemDatabaseDropdown: azdata.DropDownComponent | undefined;
 	private systemDatabaseFormComponent: azdata.FormComponent | undefined;
 	public dacpacTextbox: azdata.InputBoxComponent | undefined;
@@ -84,6 +88,7 @@ export class AddDatabaseReferenceDialog {
 	private initializeTab(): void {
 		this.addDatabaseReferenceTab.registerContent(async view => {
 			this.view = view;
+			this.projectFormComponent = await this.createProjectDropdown();
 			const radioButtonGroup = this.createRadioButtons();
 			this.systemDatabaseFormComponent = this.createSystemDatabaseDropdown();
 			this.dacpacFormComponent = this.createDacpacTextbox();
@@ -100,7 +105,7 @@ export class AddDatabaseReferenceDialog {
 						title: '',
 						components: [
 							radioButtonGroup,
-							this.systemDatabaseFormComponent,
+							this.currentReferenceType === ReferenceType.project ? this.projectFormComponent : this.systemDatabaseFormComponent,
 							locationDropdown,
 							variableSection,
 							exampleUsage,
@@ -151,14 +156,22 @@ export class AddDatabaseReferenceDialog {
 	}
 
 	private createRadioButtons(): azdata.FormComponent {
-		// TODO: add project reference button
+		const projectRadioButton = this.view!.modelBuilder.radioButton()
+			.withProperties({
+				name: 'referenceType',
+				label: constants.projectRadioButtonTitle
+			}).component();
+
+		projectRadioButton.onDidClick(() => {
+			this.projectRadioButtonClick();
+		});
+
 		const systemDatabaseRadioButton = this.view!.modelBuilder.radioButton()
 			.withProperties({
 				name: 'referenceType',
 				label: constants.systemDatabaseRadioButtonTitle
 			}).component();
 
-		systemDatabaseRadioButton.checked = true;
 		systemDatabaseRadioButton.onDidClick(() => {
 			this.systemDbRadioButtonClick();
 		});
@@ -173,10 +186,17 @@ export class AddDatabaseReferenceDialog {
 			this.dacpacRadioButtonClick();
 		});
 
-		this.currentReferenceType = ReferenceType.systemDb;
+		if (this.projectDropdown?.values?.length) {
+			projectRadioButton.checked = true;
+			this.currentReferenceType = ReferenceType.project;
+		} else {
+			systemDatabaseRadioButton.checked = true;
+			this.currentReferenceType = ReferenceType.systemDb;
+		}
+
 		let flexRadioButtonsModel: azdata.FlexContainer = this.view!.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
-			.withItems([systemDatabaseRadioButton, dacpacRadioButton])
+			.withItems([projectRadioButton, systemDatabaseRadioButton, dacpacRadioButton])
 			.withProperties({ ariaRole: 'radiogroup' })
 			.component();
 
@@ -186,8 +206,20 @@ export class AddDatabaseReferenceDialog {
 		};
 	}
 
+	public projectRadioButtonClick(): void {
+		this.formBuilder!.removeFormItem(<azdata.FormComponent>this.dacpacFormComponent);
+		this.formBuilder!.removeFormItem(<azdata.FormComponent>this.systemDatabaseFormComponent);
+		this.formBuilder!.insertFormItem(<azdata.FormComponent>this.projectFormComponent, 2);
+
+		this.currentReferenceType = ReferenceType.project;
+		this.updateEnabledInputBoxes();
+		this.tryEnableAddReferenceButton();
+		this.updateExampleUsage();
+	}
+
 	public systemDbRadioButtonClick(): void {
 		this.formBuilder!.removeFormItem(<azdata.FormComponent>this.dacpacFormComponent);
+		this.formBuilder!.removeFormItem(<azdata.FormComponent>this.projectFormComponent);
 		this.formBuilder!.insertFormItem(<azdata.FormComponent>this.systemDatabaseFormComponent, 2);
 
 		// update dropdown values because only different database, same server is a valid location for system db references
@@ -201,6 +233,7 @@ export class AddDatabaseReferenceDialog {
 
 	public dacpacRadioButtonClick(): void {
 		this.formBuilder!.removeFormItem(<azdata.FormComponent>this.systemDatabaseFormComponent);
+		this.formBuilder!.removeFormItem(<azdata.FormComponent>this.projectFormComponent);
 		this.formBuilder!.insertFormItem(<azdata.FormComponent>this.dacpacFormComponent, 2);
 
 		this.locationDropdown!.values = constants.locationDropdownValues;
@@ -211,6 +244,32 @@ export class AddDatabaseReferenceDialog {
 		this.tryEnableAddReferenceButton();
 		this.updateExampleUsage();
 	}
+
+	private async createProjectDropdown(): Promise<azdata.FormComponent> {
+		this.projectDropdown = this.view!.modelBuilder.dropDown().withProperties({
+			ariaLabel: constants.databaseProject
+		}).component();
+
+		// get projects in workspace
+		const workspaceFolders = vscode.workspace.workspaceFolders;
+		if (workspaceFolders?.length) {
+			let projectFiles = await getSqlProjectFilesInFolder(workspaceFolders[0].uri.fsPath);
+			projectFiles.forEach(p => {
+				projectFiles[projectFiles.indexOf(p)] = path.parse(p).name;
+			});
+
+			// filter out current project
+			projectFiles = projectFiles.filter(p => p !== this.project.projectFileName);
+
+			this.projectDropdown.values = projectFiles;
+		}
+
+		return {
+			component: this.projectDropdown,
+			title: constants.databaseProject
+		};
+	}
+
 
 	private createSystemDatabaseDropdown(): azdata.FormComponent {
 		this.systemDatabaseDropdown = this.view!.modelBuilder.dropDown().withProperties({
@@ -387,7 +446,7 @@ export class AddDatabaseReferenceDialog {
 
 	private createExampleUsage(): azdata.FormComponent {
 		this.exampleUsage = this.view!.modelBuilder.text().withProperties({
-			value: constants.systemDatabaseReferenceRequired,
+			value: this.currentReferenceType === ReferenceType.project ? constants.databaseNameRequiredVariableOptional : constants.systemDatabaseReferenceRequired,
 			CSSStyles: { 'user-select': 'text' }
 		}).component();
 
@@ -440,22 +499,30 @@ export class AddDatabaseReferenceDialog {
 	 */
 	public tryEnableAddReferenceButton(): void {
 		switch (this.currentReferenceType) {
+			case ReferenceType.project: {
+				this.dialog.okButton.enabled = this.projectRequiredFieldsFilled();
+				break;
+			}
 			case ReferenceType.systemDb: {
 				this.dialog.okButton.enabled = !!this.databaseNameTextbox?.value;
 				break;
 			}
 			case ReferenceType.dacpac: {
-				this.dialog.okButton.enabled = this.dacpacFieldsRequiredFieldsFilled();
+				this.dialog.okButton.enabled = this.dacpacRequiredFieldsFilled();
 				break;
-			}
-			case ReferenceType.project: {
-				// TODO
 			}
 		}
 	}
 
-	private dacpacFieldsRequiredFieldsFilled(): boolean {
+	private dacpacRequiredFieldsFilled(): boolean {
 		return !!this.dacpacTextbox?.value &&
+			((this.locationDropdown?.value === constants.sameDatabase)
+				|| (this.locationDropdown?.value === constants.differentDbSameServer && this.differentDatabaseSameServerRequiredFieldsFilled())
+				|| ((this.locationDropdown?.value === constants.differentDbDifferentServer && this.differentDatabaseDifferentServerRequiredFieldsFilled())));
+	}
+
+	private projectRequiredFieldsFilled(): boolean {
+		return !!this.projectDropdown?.value &&
 			((this.locationDropdown?.value === constants.sameDatabase)
 				|| (this.locationDropdown?.value === constants.differentDbSameServer && this.differentDatabaseSameServerRequiredFieldsFilled())
 				|| ((this.locationDropdown?.value === constants.differentDbDifferentServer && this.differentDatabaseDifferentServerRequiredFieldsFilled())));

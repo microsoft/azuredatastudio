@@ -96,6 +96,7 @@ export const defaultUser = localize('default', "default");
 export const addDatabaseReferenceDialogName = localize('addDatabaseReferencedialogName', "Add database reference");
 export const addDatabaseReferenceOkButtonText = localize('addDatabaseReferenceOkButtonText', "Add reference");
 export const referenceRadioButtonsGroupTitle = localize('referenceRadioButtonsGroupTitle', "Type");
+export const projectRadioButtonTitle = localize('projectRadioButtonTitle', "Database project in same workspace");
 export const systemDatabaseRadioButtonTitle = localize('systemDatabaseRadioButtonTitle', "System database");
 export const dacpacText = localize('dacpacText', "Data-tier application (.dacpac)");
 export const dacpacPlaceholder = localize('dacpacPlaceholder', "Select .dacpac");
@@ -115,6 +116,7 @@ export const exampleUsage = localize('exampleUsage', "Example Usage");
 export const enterSystemDbName = localize('enterSystemDbName', "Enter a database name for this system database");
 export const databaseNameRequiredVariableOptional = localize('databaseNameRequiredVariableOptional', "A database name is required. The database variable is optional.");
 export const databaseNameServerNameVariableRequired = localize('databaseNameServerNameVariableRequired', "A database name, server name, and server variable are required. The database variable is optional");
+export const databaseProject = localize('databaseProject', "Database project");
 
 // Error messages
 

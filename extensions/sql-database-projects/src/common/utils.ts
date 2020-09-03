@@ -6,8 +6,9 @@
 import * as vscode from 'vscode';
 import * as os from 'os';
 import * as constants from './constants';
-import { promises as fs } from 'fs';
 import * as path from 'path';
+import * as glob from 'fast-glob';
+import { promises as fs } from 'fs';
 
 /**
  * Consolidates on the error message string
@@ -142,4 +143,13 @@ export function readSqlCmdVariables(xmlDoc: any): Record<string, string> {
 	}
 
 	return sqlCmdVariables;
+}
+
+export async function getSqlProjectFilesInFolder(folderPath: string): Promise<string[]> {
+	// path needs to use forward slashes for glob to work
+	let escapedPath = glob.escapePath(folderPath.replace(/\\/g, '/'));
+	let sqlprojFilter = path.posix.join(escapedPath, '**', '*.sqlproj');
+	let results = await glob(sqlprojFilter);
+
+	return results;
 }

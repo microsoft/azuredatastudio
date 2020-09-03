@@ -8,11 +8,10 @@ import * as vscode from 'vscode';
 import * as templates from '../templates/templates';
 import * as constants from '../common/constants';
 import * as path from 'path';
-import * as glob from 'fast-glob';
 import * as newProjectTool from '../tools/newProjectTool';
 
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
-import { getErrorMessage } from '../common/utils';
+import { getErrorMessage, getSqlProjectFilesInFolder } from '../common/utils';
 import { ProjectsController } from './projectController';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { NetCoreTool } from '../tools/netcoreTool';
@@ -110,10 +109,7 @@ export default class MainController implements vscode.Disposable {
 	}
 
 	public async loadProjectsInFolder(folderPath: string): Promise<void> {
-		// path needs to use forward slashes for glob to work
-		let escapedPath = glob.escapePath(folderPath.replace(/\\/g, '/'));
-		let sqlprojFilter = path.posix.join(escapedPath, '**', '*.sqlproj');
-		let results = await glob(sqlprojFilter);
+		const results = await getSqlProjectFilesInFolder(folderPath);
 
 		for (let f in results) {
 			// open the project, but don't switch focus to the file explorer viewlet
