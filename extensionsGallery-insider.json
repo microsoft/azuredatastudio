@@ -3318,14 +3318,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.3.3",
-							"lastUpdated": "9/1/2020",
+							"version": "0.3.4",
+							"lastUpdated": "9/3/2020",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/arc/arc-0.3.3.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/arc/arc-0.3.4.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -3347,7 +3347,7 @@
 							"properties": [
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.20.0"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
