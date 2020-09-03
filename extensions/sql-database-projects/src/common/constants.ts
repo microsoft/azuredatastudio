@@ -61,6 +61,7 @@ export const newDefaultProjectSaveLocation = localize('newDefaultProjectSaveLoca
 export const invalidDefaultProjectSaveLocation = localize('invalidDefaultProjectSaveLocation', "Default location to save new database projects is invalid. Would you like to update it?");
 export const openWorkspaceSettings = localize('openWorkspaceSettings', "Yes, open Settings");
 export const doNotPromptAgain = localize('doNotPromptAgain', "Don't ask again");
+export const reloadProject = localize('reloadProject', "Would you like to reload your database project?");
 export function newObjectNamePrompt(objectType: string) { return localize('newObjectNamePrompt', 'New {0} name:', objectType); }
 export function deleteConfirmation(toDelete: string) { return localize('deleteConfirmation', "Are you sure you want to delete {0}?", toDelete); }
 export function deleteConfirmationContents(toDelete: string) { return localize('deleteConfirmationContents', "Are you sure you want to delete {0} and all of its contents?", toDelete); }
@@ -109,6 +110,11 @@ export const databaseName = localize('databaseName', "Database name");
 export const databaseVariable = localize('databaseVariable', "Database variable");
 export const serverName = localize('serverName', "Server name");
 export const serverVariable = localize('serverVariable', "Server variable");
+export const suppressMissingDependenciesErrors = localize('suppressMissingDependenciesErrors', "Suppress errors caused by unresolved references in the referenced project");
+export const exampleUsage = localize('exampleUsage', "Example Usage");
+export const enterSystemDbName = localize('enterSystemDbName', "Enter a database name for this system database");
+export const databaseNameRequiredVariableOptional = localize('databaseNameRequiredVariableOptional', "A database name is required. The database variable is optional.");
+export const databaseNameServerNameVariableRequired = localize('databaseNameServerNameVariableRequired', "A database name, server name, and server variable are required. The database variable is optional");
 
 // Error messages
 
@@ -139,6 +145,7 @@ export const databaseReferenceAlreadyExists = localize('databaseReferenceAlready
 export const ousiderFolderPath = localize('outsideFolderPath', "Items with absolute path outside project folder are not supported. Please make sure the paths in the project file are relative to project folder.");
 export const parentTreeItemUnknown = localize('parentTreeItemUnknown', "Cannot access parent of provided tree item");
 export const prePostDeployCount = localize('prePostDeployCount', "To successfully build, update the project to have one pre-deployment script and/or one post-deployment script");
+export const invalidProjectReload = localize('invalidProjectReload', "Cannot access provided database project. Only valid, open database projects can be reloaded.");
 export function projectAlreadyOpened(path: string) { return localize('projectAlreadyOpened', "Project '{0}' is already opened.", path); }
 export function projectAlreadyExists(name: string, path: string) { return localize('projectAlreadyExists', "A project named {0} already exists in {1}.", name, path); }
 export function noFileExist(fileName: string) { return localize('noFileExist', "File {0} doesn't exist", fileName); }
@@ -195,6 +202,8 @@ export const Value = 'Value';
 export const ArtifactReference = 'ArtifactReference';
 export const SuppressMissingDependenciesErrors = 'SuppressMissingDependenciesErrors';
 export const DatabaseVariableLiteralValue = 'DatabaseVariableLiteralValue';
+export const DatabaseSqlCmdVariable = 'DatabaseSqlCmdVariable';
+export const ServerSqlCmdVariable = 'ServerSqlCmdVariable';
 export const DSP = 'DSP';
 export const Properties = 'Properties';
 export const RelativeOuterPath = '..';
@@ -203,6 +212,8 @@ export const TargetConnectionString = 'TargetConnectionString';
 export const PreDeploy = 'PreDeploy';
 export const PostDeploy = 'PostDeploy';
 export const None = 'None';
+export const True = 'True';
+export const False = 'False';
 
 // SqlProj File targets
 export const NetCoreTargets = '$(NETCoreTargetsPath)\\Microsoft.Data.Tools.Schema.SqlTasks.targets';
@@ -258,3 +269,8 @@ export enum DatabaseProjectItemType {
 
 // System dbs
 export const systemDbs = ['master', 'msdb', 'tempdb', 'model'];
+
+// SQL queries
+export const sameDatabaseExampleUsage = 'SELECT * FROM [Schema1].[Table1]';
+export function differentDbSameServerExampleUsage(db: string) { return `SELECT * FROM [${db}].[Schema1].[Table1]"`; }
+export function differentDbDifferentServerExampleUsage(server: string, db: string) { return `SELECT * FROM [${server}].[${db}].[Schema1].[Table1]`; }

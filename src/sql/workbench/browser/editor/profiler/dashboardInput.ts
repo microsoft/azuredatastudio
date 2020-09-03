@@ -122,12 +122,12 @@ export class DashboardInput extends EditorInput {
 		}
 	}
 
-	set container(container: HTMLElement) {
+	set container(container: HTMLElement | undefined) {
 		this._disposeContainer();
 		this._parentContainer = container;
 	}
 
-	getContainer(): HTMLElement | undefined {
+	get container(): HTMLElement | undefined {
 		return this._parentContainer;
 	}
 
