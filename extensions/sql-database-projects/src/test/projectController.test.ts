@@ -264,7 +264,7 @@ describe('ProjectsController', function (): void {
 
 				// check that the new project is in the tree
 				should(treeProvider.getChildren()[0].children.find(c => c.friendlyName === 'Script1.sql')).not.equal(undefined);
-      });
+			});
 
 			it('Should be able to add pre deploy and post deploy script', async function (): Promise<void> {
 				const preDeployScriptName = 'PreDeployScript1.sql';
