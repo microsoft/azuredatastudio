@@ -20,7 +20,7 @@ export class SqlServerSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard
 	private _sqlAuthenticationPasswordTextRow!: azdata.FlexContainer;
 	private _sqlAuthenticationPasswordConfirmationTextbox!: azdata.InputBoxComponent;
 	private _sqlAuthenticationPasswordConfirmationTextRow!: azdata.FlexContainer;
-	private _sqlStorageOptimiazationDropdown!: azdata.DropDownComponent;
+	//private _sqlStorageOptimiazationDropdown!: azdata.DropDownComponent;
 	//private sqlStorageContainer!: azdata.FlexContainer;
 
 	private _form!: azdata.FormContainer;
@@ -41,26 +41,26 @@ export class SqlServerSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard
 			this.createPortText(view);
 			this.createSqlAuthentication(view);
 
-			this._sqlStorageOptimiazationDropdown = view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
-				values: [{
-					displayName: 'General',
-					name: 'GENERAL',
-				},
-				{
-					displayName: 'Transactional Processing',
-					name: 'OLTP',
-				},
-				{
-					displayName: 'Data Warehousing',
-					name: 'DW',
-				}]
-			}).component();
+			// this._sqlStorageOptimiazationDropdown = view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
+			// 	values: [{
+			// 		displayName: 'General',
+			// 		name: 'GENERAL',
+			// 	},
+			// 	{
+			// 		displayName: 'Transactional Processing',
+			// 		name: 'OLTP',
+			// 	},
+			// 	{
+			// 		displayName: 'Data Warehousing',
+			// 		name: 'DW',
+			// 	}]
+			// }).component();
 
-			this._sqlStorageOptimiazationDropdown.onValueChanged((value) => {
-				this.wizard.model.sqlOptimizationDropdown = (this._sqlStorageOptimiazationDropdown.value as azdata.CategoryValue).name;
-			});
+			// this._sqlStorageOptimiazationDropdown.onValueChanged((value) => {
+			// 	this.wizard.model.sqlOptimizationDropdown = (this._sqlStorageOptimiazationDropdown.value as azdata.CategoryValue).name;
+			// });
 
-			this.wizard.model.sqlOptimizationDropdown = (this._sqlStorageOptimiazationDropdown.value as azdata.CategoryValue).name;
+			// this.wizard.model.sqlOptimizationDropdown = (this._sqlStorageOptimiazationDropdown.value as azdata.CategoryValue).name;
 
 
 			this._form = view.modelBuilder.formContainer()
@@ -83,11 +83,11 @@ export class SqlServerSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard
 						},
 						{
 							component: this._sqlAuthenticationPasswordConfirmationTextRow
-						},
-						{
-							component: this.wizard.createFormRowComponent(view, 'SQL Storage Optimization Type', '', this._sqlStorageOptimiazationDropdown, true)
-
 						}
+						// {
+						// 	component: this.wizard.createFormRowComponent(view, 'SQL Storage Optimization Type', '', this._sqlStorageOptimiazationDropdown, true)
+
+						// }
 					],
 					{
 						horizontal: false,
