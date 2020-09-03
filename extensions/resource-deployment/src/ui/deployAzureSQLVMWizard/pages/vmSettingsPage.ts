@@ -104,23 +104,48 @@ export class VmSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 		this.populateVmImageDropdown();
 		this.populateVmSizeDropdown();
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
-			// if(this._vmNameTextBox.value!.match(new RegExp(''))){
-			// 	this.wizard.showErrorMessage('VM name can\'t start with underscore. Can\'t end with period or hyphen.');
-			// 	return false;
-			// }
-			// if(this._adminUsernameTextBox.value!.match(new RegExp(''))){
-			// 	this.wizard.showErrorMessage('Username cannot contain special characters \/""[]:|<>+=;,?*@& or end with \'.\'');
-			// 	return false;
-			// }
-			// if(this._adminPasswordTextBox.value!.match(new RegExp(''))){
-			// 	this.wizard.showErrorMessage('Password must have 3 of the following: 1 lower case character, 1 upper case character, 1 number, and 1 special character. The value must be between 12 and 123 characters long.')
-			// 	return false;
-			// }
-			// if(this._adminPasswordTextBox.value !== this._adminComfirmPasswordTextBox.value){
-			// 	this.wizard.showErrorMessage('Password and confirm password must match.')
-			// 	return false;
-			// }
-			// this.wizard.showErrorMessage('');
+
+			let showErrorMessage = '';
+
+			let vmname = this._vmNameTextBox.value!;
+
+			if (vmname.length < 1 && vmname.length > 15) {
+				showErrorMessage += 'Virtual machine name must be between 1 and 15 characters long.\n';
+			}
+
+			if (/^\d+$/.test(vmname)) {
+				showErrorMessage += 'Virtual machine name cannot contain only numbers.\n';
+			}
+
+			if (vmname.charAt(0) === '_' || vmname.slice(-1) === '.' || vmname.slice(-1) === '-') {
+				showErrorMessage += 'Virtual machine name Can\'t start with underscore. Can\'t end with period or hyphen\n';
+			}
+
+			if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(vmname)) {
+				showErrorMessage += 'Virtual machine name cannot contain special characters \/""[]:|<>+=;,?* .\n';
+			}
+
+			let username = this._adminUsernameTextBox.value!;
+
+			if (username.length < 1 || username.length > 20) {
+				showErrorMessage += 'Username must be between 1 and 20 characters long.\n';
+			}
+
+			if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(username)) {
+				showErrorMessage += 'Username cannot contain special characters \/""[]:|<>+=;,?* .\n';
+			}
+
+			showErrorMessage += this.wizard.validatePassword(this._adminPasswordTextBox.value!);
+
+			if (this._adminPasswordTextBox.value !== this._adminComfirmPasswordTextBox.value) {
+				showErrorMessage += 'Password and confirm password must match.\n';
+			}
+
+			this.wizard.showErrorMessage(showErrorMessage);
+
+			if (showErrorMessage !== '') {
+				return false;
+			}
 			return true;
 		});
 	}
@@ -173,6 +198,9 @@ export class VmSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 		this._vmImageDropdown.onValueChanged((value) => {
 			this.wizard.model.vmImage = (this._vmImageDropdown.value as azdata.CategoryValue).name;
+			this._vmImageSkuDropdownLoader.loading = true;
+			this._vmImageVersionDropdownLoader.loading = true;
+			this._vmImageVersionDropdownLoader.loading = true;
 			this.populateVmImageSkuDropdown();
 		});
 
@@ -181,6 +209,9 @@ export class VmSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 	private async populateVmImageDropdown() {
 		this._vmImageDropdownLoader.loading = true;
+		this._vmImageSkuDropdownLoader.loading = true;
+		this._vmImageVersionDropdownLoader.loading = true;
+		this._vmImageVersionDropdownLoader.loading = true;
 
 		let url = `https://management.azure.com` +
 			`/subscriptions/${this.wizard.model.azureSubscription}` +
@@ -191,13 +222,18 @@ export class VmSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 			`?api-version=2019-12-01`;
 
 		let response = await this.wizard.getRequest(url);
-
 		this.wizard.addDropdownValues(
 			this._vmImageDropdown,
 			response.data.map((value: any) => {
+				let sqlServerVersion = value.name.toLowerCase().match(new RegExp('sql(.*?)-'))[1];
+				let osVersion = value.name.toLowerCase().replace(new RegExp('-byol'), '').replace(new RegExp('sql(.*?)-'), '');
+				osVersion = osVersion.replace(new RegExp('ws'), 'Windows Server ');
+				osVersion = osVersion.replace(new RegExp('ubuntu'), 'Ubuntu Server ');
+				osVersion = osVersion.replace(new RegExp('sles'), 'SUSE Linux Enterprise Server (SLES) ');
+				osVersion = osVersion.replace(new RegExp('rhel'), 'Red Hat Enterprise Linux ');
 				return {
-					name: value.name,
-					displayName: value.name
+					displayName: `SQL Server ${sqlServerVersion.toUpperCase()} on ${osVersion}`,
+					name: value.name
 				};
 			})
 		);

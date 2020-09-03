@@ -102,6 +102,27 @@ export class SqlServerSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard
 
 	public async onEnter(): Promise<void> {
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
+
+			let username = this._sqlAuthenticationTextbox.value!;
+
+			if (username.length < 2 || username.length > 128) {
+				this.wizard.showErrorMessage('Username must be between 2 and 128 characters long.');
+			}
+
+			if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(username)) {
+				this.wizard.showErrorMessage('Username cannot contain special characters \/""[]:|<>+=;,?* .');
+			}
+
+
+			if (!this.wizard.validatePassword(this._sqlAuthenticationPasswordTextbox.value!)) {
+				return false;
+			}
+
+			if (this._sqlAuthenticationPasswordTextbox.value !== this._sqlAuthenticationPasswordConfirmationTextbox.value) {
+				this.wizard.showErrorMessage('Password and confirm password must match.');
+				return false;
+			}
+
 			return true;
 		});
 	}

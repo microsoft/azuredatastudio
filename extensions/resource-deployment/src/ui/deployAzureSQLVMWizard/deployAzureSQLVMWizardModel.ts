@@ -25,6 +25,7 @@ export class DeployAzureSQLVMWizardModel extends Model {
 	public virtualNetworkName!: string;
 	public existingVirtualNetwork!: 'True' | 'False';
 	public subnetName!: string;
+	public existingSubnet!: 'True' | 'False';
 	public publicIpName!: string;
 	public existingPublicIp!: 'True' | 'False';
 	public allowRDP!: 'True' | 'False';
@@ -57,10 +58,11 @@ export class DeployAzureSQLVMWizardModel extends Model {
 			statements.push(`azure_sqlvm_image_version = '${this.vmImageVersion}'`);
 			statements.push(`azure_sqlvm_vmsize = '${this.vmSize}'`);
 			statements.push(`azure_sqlvm_virtnet = '${this.virtualNetworkName}'`);
-			statements.push(`azure_sqlvm_virtnetold = ${this.existingVirtualNetwork}`);
+			statements.push(`azure_sqlvm_existingVirtualNetwork = ${this.existingVirtualNetwork}`);
+			statements.push(`azure_sqlvm_existingsubnet = '${this.existingSubnet}'`);
 			statements.push(`azure_sqlvm_subnet = '${this.subnetName}'`);
 			statements.push(`azure_sqlvm_publicip = '${this.publicIpName}'`);
-			statements.push(`azure_sqlvm_publicipold = ${this.existingPublicIp}`);
+			statements.push(`azure_sqlvm_existingPublicIp = ${this.existingPublicIp}`);
 			statements.push(`azure_sqlvm_allow_rdp = ${this.allowRDP}`);
 			statements.push(`azure_sqlvm_sqlConnectivityType = '${this.sqlConnectivityType}'`);
 			statements.push(`azure_sqlvm_port = '${this.port}'`);
