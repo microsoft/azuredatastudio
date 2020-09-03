@@ -21,7 +21,7 @@ export class DataGridProviderService implements IDataGridProviderService {
 	/**
 	 * Register a data grid provider
 	 */
-	public registerProvider<T extends azdata.DataGridItem>(providerId: string, provider: azdata.DataGridProvider<T>): void {
+	public registerProvider(providerId: string, provider: azdata.DataGridProvider): void {
 		this._providers[providerId] = provider;
 	}
 

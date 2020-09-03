@@ -134,7 +134,7 @@ declare module 'azdata' {
 		 */
 		id: string;
 		/**
-		 * A set of properties for this resource
+		 * A set of properties for this item
 		 */
 		properties: { [key: string]: string };
 	}
