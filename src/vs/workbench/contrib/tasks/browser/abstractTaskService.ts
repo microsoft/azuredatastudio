@@ -1577,8 +1577,7 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 		executeResult.promise.then((summary: ITaskSummary) => {
 			let args: TaskStatusChangeArgs = {
 				taskId: taskNodeId ? taskNodeId : executeResult.task._id,
-				status: undefined,
-				message: 'Building the project failed'
+				status: undefined
 			};
 			if (summary.exitCode === 0) {
 				args.status = TaskStatus.Succeeded;
