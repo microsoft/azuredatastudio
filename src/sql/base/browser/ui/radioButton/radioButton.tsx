@@ -6,6 +6,7 @@
 import { Event, Emitter } from 'vs/base/common/event';
 import { Widget } from 'vs/base/browser/ui/widget';
 import { withNullAsUndefined } from 'vs/base/common/types';
+import { $, append } from 'vs/base/browser/dom';
 
 export interface IRadioButtonOptions {
 	label: string;
@@ -22,21 +23,14 @@ export class RadioButton extends Widget {
 
 	constructor(container: HTMLElement, opts: IRadioButtonOptions) {
 		super();
-		this.inputElement = document.createElement('input');
-		this.inputElement.type = 'radio';
-		this.inputElement.style.verticalAlign = 'middle';
-		this.inputElement.style.margin = '3px';
+		this.inputElement = append(container, <input type='radio' style='vertical-align: middle; margin: 3px'></input>);
 
-		this._label = document.createElement('span');
-		this._label.style.verticalAlign = 'middle';
+		this._label = append(container, <span style='vertical-align: middle'></span>);
 
 		this.label = opts.label;
 		this.enabled = opts.enabled || true;
 		this.checked = opts.checked || false;
 		this.onclick(this.inputElement, () => this._onClicked.fire());
-
-		container.appendChild(this.inputElement);
-		container.appendChild(this._label);
 	}
 
 	public set name(value: string | undefined) {

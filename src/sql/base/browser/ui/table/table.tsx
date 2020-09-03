@@ -20,8 +20,10 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { range } from 'vs/base/common/arrays';
 import { AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 
+const $ = DOM.$;
+
 function getDefaultOptions<T>(): Slick.GridOptions<T> {
-	return <Slick.GridOptions<T>>{
+	return {
 		syncColumnCellResize: true,
 		enableColumnReorder: false,
 		emulatePagingWhenScrolling: false
@@ -76,8 +78,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 		let newOptions = mixin(options || {}, getDefaultOptions<T>(), false);
 
-		this._container = document.createElement('div');
-		this._container.className = 'monaco-table';
+		this._container = DOM.append(parent, <div class='monaco-table'></div>);
 		this._register(DOM.addDisposableListener(this._container, DOM.EventType.FOCUS, () => {
 			clearTimeout(this._classChangeTimeout);
 			this._classChangeTimeout = setTimeout(() => {
@@ -92,11 +93,8 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 			}, 100);
 		}, true));
 
-		parent.appendChild(this._container);
 		this.styleElement = DOM.createStyleSheet(this._container);
-		this._tableContainer = document.createElement('div');
-		this._container.appendChild(this._tableContainer);
-		this.styleElement = DOM.createStyleSheet(this._container);
+		this._tableContainer = DOM.append(this._container, <div></div>);
 		this._grid = new Slick.Grid<T>(this._tableContainer, this._data, this._columns, newOptions);
 		this.idPrefix = this._tableContainer.classList[0];
 		DOM.addClass(this._container, this.idPrefix);
@@ -217,12 +215,12 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		return this._grid.getSelectionModel();
 	}
 
-	getSelectedRanges(): Slick.Range[] {
+	getSelectedRanges(): Slick.Range[] | undefined {
 		let selectionModel = this._grid.getSelectionModel();
 		if (selectionModel && selectionModel.getSelectedRanges) {
 			return selectionModel.getSelectedRanges();
 		}
-		return <Slick.Range[]><unknown>undefined;
+		return undefined;
 	}
 
 	focus(): void {

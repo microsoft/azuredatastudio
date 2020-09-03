@@ -4,14 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Disposable } from 'vs/base/common/lifecycle';
+import { $, append } from 'vs/base/browser/dom';
 
 export class Separator extends Disposable {
-	private readonly element: HTMLHRElement;
 
 	constructor(container: HTMLElement) {
 		super();
 
-		this.element = document.createElement('hr');
-		container.append(this.element);
+		append(container, <hr></hr>);
 	}
 }

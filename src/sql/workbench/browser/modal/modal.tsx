@@ -29,6 +29,8 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { alert } from 'vs/base/browser/ui/aria/aria';
 
+const $ = DOM.$;
+
 export enum MessageLevel {
 	Error = 0,
 	Warning = 1,
@@ -171,16 +173,9 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Build and render the modal, will call {@link Modal#renderBody}
 	 */
 	public render() {
-		let builderClass = '.modal.fade';
-		if (this._modalOptions.isFlyout) {
-			builderClass += '.flyout-dialog';
-		}
-
-		this._bodyContainer = DOM.$(`${builderClass}`, { role: 'dialog', 'aria-label': this._title });
-		const top = this.layoutService.offset?.top ?? 0;
-		this._bodyContainer.style.top = `${top}px`;
-		this._modalDialog = DOM.append(this._bodyContainer, DOM.$('.modal-dialog'));
-		this._modalContent = DOM.append(this._modalDialog, DOM.$('.modal-content'));
+		this._bodyContainer = <div class={this._modalOptions.isFlyout ? 'modal fase flyout-dialog' : 'modal fade'} role='dialog' aria-label={this._title} style={`top: ${this.layoutService.offset?.top ?? 0}px`}></div>;
+		this._modalDialog = DOM.append(this._bodyContainer, <div class='modal-dialog'></div>);
+		this._modalContent = DOM.append(this._modalDialog, <div class='modal-content'></div>);
 
 		if (typeof this._modalOptions.width === 'number') {
 			this._modalDialog.style.width = `${this._modalOptions.width}px`;
@@ -189,38 +184,37 @@ export abstract class Modal extends Disposable implements IThemable {
 		}
 
 		if (!isUndefinedOrNull(this._title)) {
-			this._modalHeaderSection = DOM.append(this._modalContent, DOM.$('.modal-header'));
+			this._modalHeaderSection = DOM.append(this._modalContent, <div class='modal-header'></div>);
 			if (this._modalOptions.hasBackButton) {
-				const container = DOM.append(this._modalHeaderSection, DOM.$('.modal-go-back'));
-				this._backButton = new Button(container);
+				this._backButton = new Button(DOM.append(this._modalHeaderSection, <div class='modal-go-back'></div>));
 				this._backButton.icon = 'backButtonIcon';
 				this._backButton.title = localize('modal.back', "Back");
 			}
 
 			if (this._modalOptions.hasTitleIcon) {
-				this._modalTitleIcon = DOM.append(this._modalHeaderSection, DOM.$('.modal-title-icon'));
+				this._modalTitleIcon = DOM.append(this._modalHeaderSection, <div class='modal-title-icon'></div>);
 			}
 
-			this._modalTitle = DOM.append(this._modalHeaderSection, DOM.$('h1.modal-title'));
+			this._modalTitle = DOM.append(this._modalHeaderSection, <h1 class='modal-title'></h1>);
 			this._modalTitle.innerText = this._title;
 		}
 
 		if (!this._modalOptions.isAngular && this._modalOptions.hasErrors) {
-			this._messageElement = DOM.$('.dialog-message.error', { role: 'alert' });
-			const headerContainer = DOM.append(this._messageElement, DOM.$('.dialog-message-header'));
-			this._messageIcon = DOM.append(headerContainer, DOM.$('.dialog-message-icon'));
-			this._messageSeverity = DOM.append(headerContainer, DOM.$('.dialog-message-severity'));
-			this._detailsButtonContainer = DOM.append(headerContainer, DOM.$('.dialog-message-button'));
+			this._messageElement = <div class='dialog-message error' role='alert'></div>;
+			const headerContainer = DOM.append(this._messageElement, <div class='dialog-message-header'></div>);
+			this._messageIcon = DOM.append(headerContainer, <div class='dialog-message-icon'></div>);
+			this._messageSeverity = DOM.append(headerContainer, <div class='dialog-message-severity'></div>);
+			this._detailsButtonContainer = DOM.append(headerContainer, <div class='dialog-message-button'></div>);
 			this._toggleMessageDetailButton = new Button(this._detailsButtonContainer);
 			this._toggleMessageDetailButton.icon = 'message-details-icon';
 			this._toggleMessageDetailButton.label = SHOW_DETAILS_TEXT;
 			this._register(this._toggleMessageDetailButton.onDidClick(() => this.toggleMessageDetail()));
-			const copyMessageButtonContainer = DOM.append(headerContainer, DOM.$('.dialog-message-button'));
+			const copyMessageButtonContainer = DOM.append(headerContainer, <div class='dialog-message-button'></div>);
 			this._copyMessageButton = new Button(copyMessageButtonContainer);
 			this._copyMessageButton.icon = 'copy-message-icon';
 			this._copyMessageButton.label = COPY_TEXT;
 			this._register(this._copyMessageButton.onDidClick(() => this._clipboardService.writeText(this.getTextForClipboard())));
-			const closeMessageButtonContainer = DOM.append(headerContainer, DOM.$('.dialog-message-button'));
+			const closeMessageButtonContainer = DOM.append(headerContainer, <div class='dialog-message-button'></div>);
 			this._closeMessageButton = new Button(closeMessageButtonContainer);
 			this._closeMessageButton.icon = 'close-message-icon';
 			this._closeMessageButton.label = CLOSE_TEXT;
@@ -230,28 +224,27 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._register(attachButtonStyler(this._copyMessageButton, this._themeService));
 			this._register(attachButtonStyler(this._closeMessageButton, this._themeService));
 
-			this._messageBody = DOM.append(this._messageElement, DOM.$('.dialog-message-body'));
-			this._messageSummary = DOM.append(this._messageBody, DOM.$('.dialog-message-summary'));
+			this._messageBody = DOM.append(this._messageElement, <div class='dialog-message-body'></div>);
+			this._messageSummary = DOM.append(this._messageBody, <div class='dialog-message-summary'></div>);
 			this._register(DOM.addDisposableListener(this._messageSummary, DOM.EventType.CLICK, () => this.toggleMessageDetail()));
 
-			this._messageDetail = DOM.$('.dialog-message-detail');
+			this._messageDetail = <div class='dialog-message-detail'></div>;
 		}
 
 		const modalBodyClass = (this._modalOptions.isAngular === false ? 'modal-body' : 'modal-body-and-footer');
 
-		this._modalBodySection = DOM.append(this._modalContent, DOM.$(`.${modalBodyClass}`));
+		this._modalBodySection = DOM.append(this._modalContent, <div class={modalBodyClass}></div>);
 		this.renderBody(this._modalBodySection);
 
 		// This modal footer section refers to the footer of of the dialog
 		if (!this._modalOptions.isAngular) {
-			this._modalFooterSection = DOM.append(this._modalContent, DOM.$('.modal-footer'));
+			this._modalFooterSection = DOM.append(this._modalContent, <div class='modal-footer'></div>);
 			if (this._modalOptions.hasSpinner) {
-				this._spinnerElement = DOM.append(this._modalFooterSection, DOM.$('.codicon.in-progress'));
-				this._spinnerElement.setAttribute('title', this._modalOptions.spinnerTitle ?? '');
+				this._spinnerElement = DOM.append(this._modalFooterSection, <div class='codicon in-progress' title={this._modalOptions.spinnerTitle ?? ''}></div>);
 				DOM.hide(this._spinnerElement);
 			}
-			this._leftFooter = DOM.append(this._modalFooterSection, DOM.$('.left-footer'));
-			this._rightFooter = DOM.append(this._modalFooterSection, DOM.$('.right-footer'));
+			this._leftFooter = DOM.append(this._modalFooterSection, <div class='left-footer'></div>);
+			this._rightFooter = DOM.append(this._modalFooterSection, <div class='right-footer'></div>);
 		}
 	}
 
@@ -330,8 +323,8 @@ export abstract class Modal extends Disposable implements IThemable {
 	public setFirstLastTabbableElement() {
 		const tabbableElements = this._bodyContainer!.querySelectorAll(tabbableElementsQuerySelector);
 		if (tabbableElements && tabbableElements.length > 0) {
-			this._firstTabbableElement = <HTMLElement>tabbableElements[0];
-			this._lastTabbableElement = <HTMLElement>tabbableElements[tabbableElements.length - 1];
+			this._firstTabbableElement = tabbableElements[0] as HTMLElement;
+			this._lastTabbableElement = tabbableElements[tabbableElements.length - 1] as HTMLElement;
 		}
 	}
 
@@ -346,7 +339,7 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._bodyContainer!.querySelectorAll(tabbableElementsQuerySelector);
 
 		if (focusableElements && focusableElements.length > 0) {
-			(<HTMLElement>focusableElements[0]).focus();
+			(focusableElements[0] as HTMLElement).focus();
 		}
 	}
 
@@ -354,7 +347,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Shows the modal and attaches key listeners
 	 */
 	protected show() {
-		this._focusedElementBeforeOpen = <HTMLElement>document.activeElement;
+		this._focusedElementBeforeOpen = document.activeElement as HTMLElement;
 		this._modalShowingContext.get()!.push(this._staticKey);
 		DOM.append(this.layoutService.container, this._bodyContainer!);
 		this.setInitialFocusedElement();
@@ -414,7 +407,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * @param onSelect The callback to call when the button is selected
 	 */
 	protected addFooterButton(label: string, onSelect: () => void, orientation: 'left' | 'right' = 'right'): Button {
-		let footerButton = DOM.$('.footer-button');
+		let footerButton = <div class='footer-button'></div>;
 		let button = this._register(new Button(footerButton));
 		button.label = label;
 		button.onDidClick(() => onSelect()); // @todo this should be registered to dispose but that brakes some dialogs
