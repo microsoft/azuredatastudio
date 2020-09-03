@@ -13,7 +13,7 @@ export const foundExistingAzdata = (path: string, version: string): string => lo
 export const downloadingProgressMb = (currentMb: string, totalMb: string): string => localize('azdata.downloadingProgressMb', "Downloading ({0} / {1} MB)", currentMb, totalMb);
 export const downloadFinished = localize('azdata.downloadFinished', "Download finished");
 export const installingAzdata = localize('azdata.installingAzdata', "Installing azdata...");
-export const upgradingAzdata = localize('azdata.upgradingAzdata', "Upgrading azdata...");
+export const updatingAzdata = localize('azdata.updatingAzdata', "updating azdata...");
 export const azdataInstalled = localize('azdata.azdataInstalled', "Azure Data CLI was successfully installed. Restarting Azure Data Studio is required to complete configuration - features will not be activated until this is done.");
 export const azdataUpdated = (version: string) => localize('azdata.azdataUpdated', "Azure Data CLI was successfully updated to version: {0}.", version);
 export const yes = localize('azdata.yes', "Yes");
@@ -38,7 +38,7 @@ export const promptForAzdataUpdateLog = (version: string): string => promptLog(p
 
 export const downloadError = localize('azdata.downloadError', "Error while downloading");
 export const installError = (err: any): string => localize('azdata.installError', "Error installing azdata: {0}", err.message ?? err);
-export const updateError = (err: any): string => localize('azdata.updateError', "Error upgrading azdata: {0}", err.message ?? err);
+export const updateError = (err: any): string => localize('azdata.updateError', "Error updating azdata: {0}", err.message ?? err);
 export const platformUnsupported = (platform: string): string => localize('azdata.platformUnsupported', "Platform '{0}' is currently unsupported", platform);
 export const unexpectedCommandError = (errMsg: string): string => localize('azdata.unexpectedCommandError', "Unexpected error executing command: {0}", errMsg);
 export const unexpectedExitCode = (code: number, err: string): string => localize('azdata.unexpectedExitCode', "Unexpected exit code from command: {1} ({0})", code, err);

@@ -175,13 +175,13 @@ export async function findAzdata(): Promise<IAzdataTool> {
 	Logger.log(loc.searchingForAzdata);
 	try {
 		const azdata = await findSpecificAzdata();
-		await vscode.commands.executeCommand('setContext', azdataFound, true); // save a context key that azdata was found so that command for installing azdata is no longer available in commandPalette and that for upgrading it is.
+		await vscode.commands.executeCommand('setContext', azdataFound, true); // save a context key that azdata was found so that command for installing azdata is no longer available in commandPalette and that for updating it is.
 		Logger.log(loc.foundExistingAzdata(azdata.path, azdata.cachedVersion.raw));
 		return azdata;
 	} catch (err) {
 		Logger.log(loc.couldNotFindAzdata(err));
 		Logger.log(loc.noAzdata);
-		await vscode.commands.executeCommand('setContext', azdataFound, false);// save a context key that azdata was not found so that command for installing azdata is available in commandPalette and that for upgrading it is no longer available.
+		await vscode.commands.executeCommand('setContext', azdataFound, false);// save a context key that azdata was not found so that command for installing azdata is available in commandPalette and that for updating it is no longer available.
 		throw err;
 	}
 }
@@ -216,9 +216,9 @@ export async function installAzdata(): Promise<void> {
  * Updates the azdata using os appropriate method
  */
 export async function updateAzdata(): Promise<void> {
-	const statusDisposable = vscode.window.setStatusBarMessage(loc.upgradingAzdata);
+	const statusDisposable = vscode.window.setStatusBarMessage(loc.updatingAzdata);
 	Logger.show();
-	Logger.log(loc.upgradingAzdata);
+	Logger.log(loc.updatingAzdata);
 	try {
 		switch (process.platform) {
 			case 'win32':
