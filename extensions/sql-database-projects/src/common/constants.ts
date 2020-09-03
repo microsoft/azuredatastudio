@@ -114,9 +114,6 @@ export const exampleUsage = localize('exampleUsage', "Example Usage");
 export const enterSystemDbName = localize('enterSystemDbName', "Enter a database name for this system database");
 export const databaseNameRequiredVariableOptional = localize('databaseNameRequiredVariableOptional', "A database name is required. The database variable is optional.");
 export const databaseNameServerNameVariableRequired = localize('databaseNameServerNameVariableRequired', "A database name, server name, and server variable are required. The database variable is optional");
-export const sameDatabaseExampleUsage = 'SELECT * FROM [Schema1].[Table1]';
-export function differentDbSameServerExampleUsage(db: string) { return `SELECT * FROM [${db}].[Schema1].[Table1]"`; }
-export function differentDbDifferentServerExampleUsage(server: string, db: string) { return `SELECT * FROM [${server}].[${db}].[Schema1].[Table1]`; }
 
 // Error messages
 
@@ -268,3 +265,8 @@ export enum DatabaseProjectItemType {
 
 // System dbs
 export const systemDbs = ['master', 'msdb', 'tempdb', 'model'];
+
+// SQL queries
+export const sameDatabaseExampleUsage = 'SELECT * FROM [Schema1].[Table1]';
+export function differentDbSameServerExampleUsage(db: string) { return `SELECT * FROM [${db}].[Schema1].[Table1]"`; }
+export function differentDbDifferentServerExampleUsage(server: string, db: string) { return `SELECT * FROM [${server}].[${db}].[Schema1].[Table1]`; }
