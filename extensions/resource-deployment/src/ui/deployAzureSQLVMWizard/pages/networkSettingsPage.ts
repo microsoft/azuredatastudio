@@ -16,9 +16,11 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 	private _virtualNetworkDropdown!: azdata.DropDownComponent;
 	private _virtualNetworkDropdownLoader!: azdata.LoadingComponent;
 	private _newVirtualNetworkText!: azdata.InputBoxComponent;
-	private _subnetDropdown!: azdata.DropDownComponent;
 
 	// subnet network components
+	private _existingsubnetCheckbox!: azdata.CheckBoxComponent;
+	private _subnetDropdown!: azdata.DropDownComponent;
+
 
 	// public ip components
 	private _existingPublicIpCheckbox!: azdata.CheckBoxComponent;
@@ -44,6 +46,7 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 		this.pageObject.registerContent(async (view: azdata.ModelView) => {
 
 			await this.createVirtualNetworkDropdown(view);
+			await this.createSubnetDropdown(view);
 			await this.createPublicIPDropdown(view);
 			await this.createVmRDPAllowCheckbox(view);
 
@@ -56,6 +59,9 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 						},
 						{
 							component: this.wizard.createFormRowComponent(view, constants.VirtualNetworkDropdownLabel, '', this._virtualNetworkFlexContainer, true)
+						},
+						{
+							component: this._existingsubnetCheckbox
 						},
 						{
 							component: this.wizard.createFormRowComponent(view, constants.SubnetDropdownLabel, '', this._subnetDropdown, true)
@@ -104,6 +110,10 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 
 		this._existingVirtualNetworkCheckbox.onChanged((event) => {
 			this.wizard.model.existingVirtualNetwork = event ? 'True' : 'False';
+			this._existingsubnetCheckbox.updateProperties({
+				enabled: event,
+				checked: event
+			});
 			this._subnetDropdown.updateProperties({
 				enabled: event
 			});
@@ -114,12 +124,16 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 			} else {
 				this.wizard.changeComponentDisplay(this._virtualNetworkDropdown, 'none');
 				this.wizard.changeComponentDisplay(this._newVirtualNetworkText, 'block');
+				this.wizard.model.existingSubnet = 'False';
+				this.wizard.model.subnetName = this.wizard.model.vmName + 'subnet';
 				this._subnetDropdown.updateProperties({
+					enabled: false,
 					values: [{
-						name: 'default',
-						displayName: 'default'
-					}],
+						name: `(new) ` + this.wizard.model.subnetName,
+						displayName: `(new) ` + this.wizard.model.subnetName
+					}]
 				});
+				this.wizard.model.subnetName = 'default';
 			}
 		});
 
@@ -155,8 +169,7 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 			[this._virtualNetworkDropdown, this._newVirtualNetworkText]
 		).component();
 
-		this._subnetDropdown = view.modelBuilder.dropDown().withProperties(<azdata.DropDownProperties>{
-		}).component();
+
 	}
 
 	private async populateVirtualNetworkDropdown() {
@@ -182,6 +195,36 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 		this.wizard.model.virtualNetworkName = (this._virtualNetworkDropdown.value as azdata.CategoryValue).name;
 		this._virtualNetworkDropdownLoader.loading = false;
 		await this.populateSubnetDropdown();
+	}
+
+	private async createSubnetDropdown(view: azdata.ModelView) {
+
+		this._existingsubnetCheckbox = view.modelBuilder.checkBox().withProperties<azdata.CheckBoxProperties>({
+			label: 'Use existing subnet',
+			checked: true
+		}).component();
+		this._subnetDropdown = view.modelBuilder.dropDown().withProperties(<azdata.DropDownProperties>{
+		}).component();
+
+		this._existingsubnetCheckbox.onChanged((value) => {
+			if (value) {
+				this.wizard.model.existingSubnet = 'True';
+				this._subnetDropdown.updateProperties({
+					enabled: true
+				});
+				this.populateSubnetDropdown();
+			} else {
+				this.wizard.model.existingSubnet = 'False';
+				this.wizard.model.subnetName = this.wizard.model.vmName + 'subnet';
+				this._subnetDropdown.updateProperties({
+					enabled: false,
+					values: [{
+						name: `(new) ` + this.wizard.model.subnetName,
+						displayName: `(new) ` + this.wizard.model.subnetName
+					}]
+				});
+			}
+		});
 	}
 
 
