@@ -76,22 +76,35 @@
       {
         "command": "azdata.acceptEula",
         "title": "%azdata.acceptEula.command.name%",
-        "category": "%command.category%",
-        "when": "!azdata.eulaAccepted"
+        "category": "%command.category%"
       },
       {
         "command": "azdata.install",
         "title": "%azdata.install.command.name%",
-        "category": "%command.category%",
-        "when": "!azdata.found"
+        "category": "%command.category%"
       },
       {
         "command": "azdata.upgrade",
         "title": "%azdata.upgrade.command.name%",
-        "category": "%command.category%",
-        "when": "azdata.found"
+        "category": "%command.category%"
       }
-    ]
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "azdata.acceptEula",
+          "when": "!azdata.eulaAccepted"
+        },
+        {
+          "command": "azdata.install",
+          "when": "!azdata.found"
+        },
+        {
+          "command": "azdata.upgrade",
+          "when": "azdata.found"
+        }
+      ]
+    }
   },
   "dependencies": {
     "request": "^2.88.2",

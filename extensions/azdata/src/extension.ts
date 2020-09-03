@@ -45,8 +45,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 			}
 		});
 
+	// TODO - remove the next line before merging in.
 	await context.globalState.update(constants.eulaAccepted, undefined);
-	eulaAccepted = !!context.globalState.get<boolean>(constants.eulaAccepted); // fetch state from memento
+	eulaAccepted = !!context.globalState.get<boolean>(constants.eulaAccepted); // fetch eula acceptance state from memento
 	Logger.log(`eulaAccepted state on startup: ${eulaAccepted}`);
 	if (!eulaAccepted) {
 		// Don't block on this since we want extension to finish activating without requiring user actions.
