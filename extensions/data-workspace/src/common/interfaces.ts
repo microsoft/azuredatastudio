@@ -17,6 +17,11 @@ export interface IProjectProviderRegistry {
 	registerProvider(provider: dataworkspace.IProjectProvider): vscode.Disposable;
 
 	/**
+	 * Clear the providers
+	 */
+	clear(): void;
+
+	/**
 	 * Gets all the registered providers
 	 */
 	readonly providers: dataworkspace.IProjectProvider[];
@@ -25,11 +30,11 @@ export interface IProjectProviderRegistry {
 /**
  * Defines the project service
  */
-export interface IProjectService {
+export interface IWorkspaceService {
 	/**
 	 * Gets all supported project types
 	 */
-	getProjectTypes(): Promise<dataworkspace.IProjectType[]>;
+	getAllProjectTypes(): Promise<dataworkspace.IProjectType[]>;
 
 	/**
 	 * Gets the project files in current workspace
@@ -44,9 +49,9 @@ export interface IProjectService {
 }
 
 /**
- * Represents the item for the project tree
+ * Represents the item for the workspace tree
  */
-export interface ProjectTreeItem {
+export interface WorkspaceTreeItem {
 	/**
 	 * Gets the tree data provider
 	 */
@@ -56,8 +61,4 @@ export interface ProjectTreeItem {
 	 * Gets the raw element returned by the tree data provider
 	 */
 	element: any;
-}
-
-export interface DataWorkspace {
-	projects: string[];
 }

@@ -25,6 +25,10 @@ export const ProjectProviderRegistry: IProjectProviderRegistry = new class imple
 		return this._providers.slice(0);
 	}
 
-	private validateProvider(provider: dataworkspace.IProjectProvider): void {
+	clear(): void {
+		this._providers.length = 0;
+	}
+
+	validateProvider(provider: dataworkspace.IProjectProvider): void {
 	}
 };

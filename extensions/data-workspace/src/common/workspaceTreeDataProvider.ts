@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { IProjectService, ProjectTreeItem as WorkspaceTreeItem } from './interfaces';
+import { IWorkspaceService, WorkspaceTreeItem as WorkspaceTreeItem } from './interfaces';
 import * as nls from 'vscode-nls';
 import { EOL } from 'os';
 const localize = nls.loadMessageBundle();
@@ -13,7 +13,7 @@ const localize = nls.loadMessageBundle();
  * Tree data provider for the workspace main view
  */
 export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<WorkspaceTreeItem>{
-	constructor(private _projectService: IProjectService) { }
+	constructor(private _workspaceService: IWorkspaceService) { }
 
 	private _onDidChangeTreeData: vscode.EventEmitter<void | WorkspaceTreeItem | null | undefined> | undefined = new vscode.EventEmitter<WorkspaceTreeItem | undefined | void>();
 	readonly onDidChangeTreeData?: vscode.Event<void | WorkspaceTreeItem | null | undefined> | undefined = this._onDidChangeTreeData?.event;
@@ -33,12 +33,12 @@ export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<Worksp
 		}
 		else {
 			// if the element is undefined return the project tree items
-			const projects = await this._projectService.getProjectsInWorkspace();
+			const projects = await this._workspaceService.getProjectsInWorkspace();
 			const unknownProjects: string[] = [];
 			const treeItems: WorkspaceTreeItem[] = [];
 			for (let index = 0; index < projects.length; index++) {
 				const project = projects[index];
-				const projectProvider = await this._projectService.getProjectProvider(project);
+				const projectProvider = await this._workspaceService.getProjectProvider(project);
 				if (projectProvider === undefined) {
 					unknownProjects.push(project);
 					continue;

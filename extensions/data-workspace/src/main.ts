@@ -5,13 +5,13 @@
 
 import * as vscode from 'vscode';
 import * as dataworkspace from 'dataworkspace';
-import { ProjectProviderRegistry } from './common/projectProviderRegistry';
-import { WorkspaceTreeDataProvider } from './common/projectTreeDataProvider';
-import { ProjectService } from './services/projectService';
+import { WorkspaceTreeDataProvider } from './common/workspaceTreeDataProvider';
+import { WorkspaceService } from './services/workspaceService';
+import { DataWorkspaceExtension } from './dataWorkspaceExtension';
 
 export async function activate(context: vscode.ExtensionContext): Promise<dataworkspace.IExtension> {
-	const projectService = new ProjectService();
-	const workspaceTreeDataProvider = new WorkspaceTreeDataProvider(projectService);
+	const workspaceService = new WorkspaceService();
+	const workspaceTreeDataProvider = new WorkspaceTreeDataProvider(workspaceService);
 	context.subscriptions.push(vscode.window.registerTreeDataProvider('dataworkspace.views.main', workspaceTreeDataProvider));
 	context.subscriptions.push(vscode.commands.registerCommand('projects.addProject', () => {
 	}));
@@ -20,11 +20,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<datawo
 		workspaceTreeDataProvider.refresh();
 	}));
 
-	return {
-		registerProjectProvider: (provider: dataworkspace.IProjectProvider): vscode.Disposable => {
-			return ProjectProviderRegistry.registerProvider(provider);
-		}
-	};
+	return new DataWorkspaceExtension();
 }
 
 export function deactivate(): void {

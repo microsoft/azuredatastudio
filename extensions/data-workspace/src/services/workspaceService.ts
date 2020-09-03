@@ -6,14 +6,14 @@
 import * as vscode from 'vscode';
 import * as dataworkspace from 'dataworkspace';
 import * as path from 'path';
-import { IProjectService } from '../common/interfaces';
+import { IWorkspaceService } from '../common/interfaces';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
 
 const WorkspaceConfigurationName = 'dataworkspace';
 const ProjectsConfigurationName = 'projects';
 
-export class ProjectService implements IProjectService {
-	async getProjectTypes(): Promise<dataworkspace.IProjectType[]> {
+export class WorkspaceService implements IWorkspaceService {
+	async getAllProjectTypes(): Promise<dataworkspace.IProjectType[]> {
 		await this.ensureProviderExtensionLoaded();
 		const projectTypes: dataworkspace.IProjectType[] = [];
 		ProjectProviderRegistry.providers.forEach(provider => {
