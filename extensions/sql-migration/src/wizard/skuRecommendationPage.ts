@@ -10,6 +10,7 @@ import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import { Product, ProductLookupTable } from '../models/product';
 import { SKU_RECOMMENDATION_PAGE_TITLE, SKU_RECOMMENDATION_CHOOSE_A_TARGET } from '../models/strings';
 import { Disposable } from 'vscode';
+import { AssessmentResultsDialog } from './assessmentResultsDialog';
 
 export class SKURecommendationPage extends MigrationWizardPage {
 	// For future reference: DO NOT EXPOSE WIZARD DIRECTLY THROUGH HERE.
@@ -30,14 +31,30 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this.igComponent = this.createStatusComponent(view); // The first component giving basic information
 		this.detailsComponent = this.createDetailsComponent(view); // The details of what can be moved
 		this.chooseTargetComponent = this.createChooseTargetComponent(view);
+
+
+		const assessmentLink = view.modelBuilder.hyperlink()
+			.withProperties<azdata.HyperlinkComponentProperties>({
+				label: 'View Assessment Results',
+				url: ''
+			}).component();
+		assessmentLink.onDidClick(async () => {
+			let dialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, 'Assessment Dialog');
+			dialog.openDialog();
+		});
+
+		const assessmentFormLink = {
+			title: '',
+			component: assessmentLink,
+		};
+
 		this.view = view;
-
-
 		const form = view.modelBuilder.formContainer().withFormItems(
 			[
 				this.igComponent,
 				this.detailsComponent,
-				this.chooseTargetComponent
+				this.chooseTargetComponent,
+				assessmentFormLink
 			]
 		);
 
@@ -95,7 +112,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			rbg.component().cards.push({
 				id: product.name,
 				icon: imagePath,
-				label: 'Some Label'
+				label: product.name
 			});
 		});
 

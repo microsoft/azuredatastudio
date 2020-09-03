@@ -56,40 +56,37 @@
 		"./vs/workbench/services/**/*.ts"
 	],
 	"exclude": [
-		"./sql/workbench/api/browser/**/*.ts", // 1014 errors
+		"./sql/workbench/api/browser/**/*.ts", // 999 errors
 		"./sql/workbench/api/common/**/*.ts", // 300 errors
-		"./sql/workbench/browser/**/*.ts", // 3102 errors
-		"./sql/workbench/contrib/assessment/**/*.ts", // 3104 errors
-		"./sql/workbench/contrib/backup/**/*.ts", // 134 errors
-		"./sql/workbench/contrib/charts/**/*.ts", // 3102 errors
-		"./sql/workbench/contrib/commandLine/**/*.ts", // 3128 errors
-		"./sql/workbench/contrib/connection/**/*.ts", // 274 errors
-		"./sql/workbench/contrib/dashboard/**/*.ts", // 1150 errors
-		"./sql/workbench/contrib/dataExplorer/**/*.ts", // 3123 errors
-		"./sql/workbench/contrib/editData/**/*.ts", // 452 errors
-		"./sql/workbench/contrib/editorReplacement/**/*.ts", // 3164 errors
+		"./sql/workbench/browser/**/*.ts", // 2988 errors
+		"./sql/workbench/contrib/assessment/**/*.ts", // 2990 errors
+		"./sql/workbench/contrib/backup/**/*.ts", // 89 errors
+		"./sql/workbench/contrib/charts/**/*.ts", // 2988 errors
+		"./sql/workbench/contrib/commandLine/**/*.ts", // 3014 errors
+		"./sql/workbench/contrib/connection/**/*.ts", // 244 errors
+		"./sql/workbench/contrib/dashboard/**/*.ts", // 1102 errors
+		"./sql/workbench/contrib/dataExplorer/**/*.ts", // 3009 errors
+		"./sql/workbench/contrib/editData/**/*.ts", // 437 errors
+		"./sql/workbench/contrib/editorReplacement/**/*.ts", // 3050 errors
 		"./sql/workbench/contrib/jobManagement/**/*.ts", // 315 errors
-		"./sql/workbench/contrib/modelView/**/*.ts", // 3102 errors
-		"./sql/workbench/contrib/notebook/**/*.ts", // 3590 errors
-		"./sql/workbench/contrib/objectExplorer/**/*.ts", // 3176 errors
-		"./sql/workbench/contrib/profiler/**/*.ts", // 114 errors
-		"./sql/workbench/contrib/query/**/*.ts", // 3191 errors
-		"./sql/workbench/contrib/queryHistory/**/*.ts", // 305 errors
-		"./sql/workbench/contrib/restore/**/*.ts", // 28 errors
-		"./sql/workbench/contrib/scripting/**/*.ts", // 195 errors
-		"./sql/workbench/contrib/views/**/*.ts", // 19 errors
+		"./sql/workbench/contrib/modelView/**/*.ts", // 2988 errors
+		"./sql/workbench/contrib/notebook/**/*.ts", // 3476 errors
+		"./sql/workbench/contrib/objectExplorer/**/*.ts", // 3062 errors
+		"./sql/workbench/contrib/profiler/**/*.ts", // 100 errors
+		"./sql/workbench/contrib/query/**/*.ts", // 3077 errors
+		"./sql/workbench/contrib/queryHistory/**/*.ts", // 290 errors
+		"./sql/workbench/contrib/scripting/**/*.ts", // 179 errors
 		"./sql/workbench/contrib/welcome/**/*.ts", // 66 errors
-		"./sql/workbench/services/connection/**/*.ts", // 3244 errors
-		"./sql/workbench/services/dialog/**/*.ts", // 3109 errors
-		"./sql/workbench/services/fileBrowser/**/*.ts", // 3102 errors
-		"./sql/workbench/services/insights/**/*.ts", // 3113 errors
+		"./sql/workbench/services/connection/**/*.ts", // 3130 errors
+		"./sql/workbench/services/dialog/**/*.ts", // 2995 errors
+		"./sql/workbench/services/fileBrowser/**/*.ts", // 2988 errors
+		"./sql/workbench/services/insights/**/*.ts", // 2999 errors
 		"./sql/workbench/services/notebook/**/*.ts", // 200 errors
-		"./sql/workbench/services/objectExplorer/**/*.ts", // 301 errors
-		"./sql/workbench/services/query/**/*.ts", // 3127 errors
-		"./sql/workbench/services/queryEditor/**/*.ts", // 3127 errors
-		"./sql/workbench/services/restore/**/*.ts", // 83 errors
-		"./sql/workbench/test/**/*.ts", // 3461 errors
-		"./sql/workbench/update/**/*.ts", // 3102 errors
+		"./sql/workbench/services/objectExplorer/**/*.ts", // 285 errors
+		"./sql/workbench/services/query/**/*.ts", // 3013 errors
+		"./sql/workbench/services/queryEditor/**/*.ts", // 3013 errors
+		"./sql/workbench/test/**/*.ts", // 3347 errors
+		"./sql/workbench/update/**/*.ts", // 2988 errors
 		"./vs/workbench/api/browser/**/*.ts", // 3187 errors
 		"./vs/workbench/api/common/**/*.ts", // 323 errors
 		"./vs/workbench/api/node/**/*.ts", // 328 errors
