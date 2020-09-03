@@ -82,12 +82,11 @@ import { isWorkspaceFolder, TaskQuickPickEntry, QUICKOPEN_DETAIL_CONFIG, TaskQui
 import { ILogService } from 'vs/platform/log/common/log';
 import { once } from 'vs/base/common/functional';
 
-// {{ SQL CARBON EDIT }} START
+// {{ SQL CARBON EDIT }}
 // integration with tasks view panel
 import { ITaskService as ISqlTaskService, TaskStatusChangeArgs } from 'sql/workbench/services/tasks/common/tasksService';
 import { TaskStatus } from 'sql/workbench/api/common/extHostBackgroundTaskManagement';
 import { TaskInfo } from 'azdata';
-// {{ SQL CARBON EDIT }}  END
 
 const QUICKOPEN_HISTORY_LIMIT_CONFIG = 'task.quickOpen.history';
 const PROBLEM_MATCHER_NEVER_CONFIG = 'task.problemMatchers.neverPrompt';
@@ -233,6 +232,9 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 	protected readonly _onDidStateChange: Emitter<TaskEvent>;
 	private _waitForSupportedExecutions: Promise<void>;
 	private _onDidRegisterSupportedExecutions: Emitter<void> = new Emitter();
+
+	// {{SQL CARBON EDIT}}
+	private lastRunTasksViewTask: TaskInfo;
 
 	constructor(
 		@IConfigurationService private readonly configurationService: IConfigurationService,
@@ -1481,21 +1483,24 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 		const execTask = async (task: Task, resolver: ITaskResolver): Promise<ITaskSummary> => {
 			return ProblemMatcherRegistry.onReady().then(() => {
 				// {{ SQL CARBON EDIT }}
+				const taskNodeId = UUID.generateUuid();
 				let taskInfo: TaskInfo = {
 					databaseName: undefined,
 					serverName: undefined,
-					description: '',
-					isCancelable: true,
+					description: undefined,
+					isCancelable: false,
 					name: task._label,
 					providerName: undefined,
 					taskExecutionMode: 0,
-					taskId: task._id,
-					status: TaskStatus.NotStarted,
-					connection: undefined
+					taskId: taskNodeId,
+					status: TaskStatus.NotStarted
 				};
 				this.sqlTaskService.createNewTask(taskInfo);
+				this.lastRunTasksViewTask = taskInfo;
+
 				let executeResult = this.getTaskSystem().run(task, resolver);
-				return this.handleExecuteResult(executeResult, runSource);
+				// {{ SQL CARBON EDIT }}
+				return this.handleExecuteResult(executeResult, runSource, taskNodeId);
 			});
 		};
 
@@ -1532,7 +1537,8 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 		}
 	}
 
-	private async handleExecuteResult(executeResult: ITaskExecuteResult, runSource?: TaskRunSource): Promise<ITaskSummary> {
+	// {{SQL CARBON EDIT}}
+	private async handleExecuteResult(executeResult: ITaskExecuteResult, runSource?: TaskRunSource, taskNodeId?: string): Promise<ITaskSummary> {
 		if (executeResult.task.taskLoadMessages && executeResult.task.taskLoadMessages.length > 0) {
 			executeResult.task.taskLoadMessages.forEach(loadMessage => {
 				this._outputChannel.append(loadMessage + '\n');
@@ -1570,7 +1576,7 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 		// {{ SQL CARBON EDIT }}
 		executeResult.promise.then((summary: ITaskSummary) => {
 			let args: TaskStatusChangeArgs = {
-				taskId: executeResult.task._id,
+				taskId: taskNodeId ? taskNodeId : executeResult.task._id,
 				status: undefined,
 				message: 'Building the project failed'
 			};
@@ -2590,9 +2596,16 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 
 		ProblemMatcherRegistry.onReady().then(() => {
 			return this.editorService.saveAll({ reason: SaveReason.AUTO }).then(() => { // make sure all dirty editors are saved
+				// {{SQL CARBON EDIT}}
+				let lastRunTasksViewTask = this.lastRunTasksViewTask;
+				lastRunTasksViewTask.taskId = UUID.generateUuid();
+				this.sqlTaskService.createNewTask(lastRunTasksViewTask);
+				this.lastRunTasksViewTask = lastRunTasksViewTask;
+
 				let executeResult = this.getTaskSystem().rerun();
 				if (executeResult) {
-					return this.handleExecuteResult(executeResult);
+					// {{SQL CARBON EDIT}}
+					return this.handleExecuteResult(executeResult, undefined, lastRunTasksViewTask.taskId);
 				} else {
 					this.doRunTaskCommand();
 					return Promise.resolve(undefined);
