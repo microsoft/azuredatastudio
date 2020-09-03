@@ -10,6 +10,8 @@ import { DeployAzureSQLVMWizard } from '../deployAzureSQLVMWizard';
 
 export class VmSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
+	private _vmSize: string[] = [];
+
 	// textbox for vm name
 	private _vmNameTextBox!: azdata.InputBoxComponent;
 
@@ -135,10 +137,14 @@ export class VmSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 				showErrorMessage += 'Username cannot contain special characters \/""[]:|<>+=;,?* .\n';
 			}
 
-			showErrorMessage += this.wizard.validatePassword(this._adminPasswordTextBox.value!);
+			//showErrorMessage += this.wizard.validatePassword(this._adminPasswordTextBox.value!);
 
 			if (this._adminPasswordTextBox.value !== this._adminComfirmPasswordTextBox.value) {
 				showErrorMessage += 'Password and confirm password must match.\n';
+			}
+
+			if (this._vmSize.includes((this._vmSizeDropdown.value as azdata.CategoryValue).name)) {
+				showErrorMessage += 'Select a virtual machine size.\n';
 			}
 
 			this.wizard.showErrorMessage(showErrorMessage);
@@ -339,21 +345,44 @@ export class VmSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 		let url = `https://management.azure.com` +
 			`/subscriptions/${this.wizard.model.azureSubscription}` +
 			`/providers/Microsoft.Compute` +
-			`/locations/${this.wizard.model.azureRegion}` +
-			`/vmSizes?api-version=2019-12-01`;
+			`/skus?api-version=2019-04-01` +
+			`&$filter=location eq '${this.wizard.model.azureRegion}'`;
 
 		let response = await this.wizard.getRequest(url);
-		this._vmSizeDropdown.updateProperties({
-			value: {
-				name: response.data.value[0].name,
-				displayName: response.data.value[0].name
-			},
-			values: response.data.value.map((value: any) => {
+
+		let vmResouces: any[] = [];
+		response.data.value.map((res: any) => {
+			if (res.resourceType === 'virtualMachines') {
+				vmResouces.push(res);
+			}
+		});
+
+		let dropDownValues = vmResouces.map((value: any) => {
+			if (value.capabilities) {
+				let cores;
+				if (value.capabilities.filter((c: any) => { return c.name === 'vCPUsAvailable'; }).length !== 0) {
+					cores = value.capabilities.filter((c: any) => { return c.name === 'vCPUsAvailable'; })[0].value;
+				} else {
+					cores = value.capabilities.filter((c: any) => { return c.name === 'vCPUs'; })[0].value;
+				}
+				const memory = value.capabilities.filter((c: any) => { return c.name === 'MemoryGB'; })[0].value;
+				const discCount = Number(value.capabilities.filter((c: any) => { return c.name === 'OSVhdSizeMB'; })[0].value) / 1024;
+				const discSize = value.capabilities.filter((c: any) => { return c.name === 'MaxDataDiskCount'; })[0].value;
+				const displayText = `${value.name}	Cores:${cores}	Memory:${memory}	discCount:${discCount}	discSize:${discSize}`;
+				this._vmSize.push(displayText);
 				return {
 					name: value.name,
-					displayName: value.name + '\tDisks:' + value.maxDataDiskCount + '\tMemory:' + (Number(value.memoryInMB) / 1024) + 'GB\tCores:' + value.numberOfCores
+					displayName: displayText
 				};
-			}),
+			}
+			return;
+		});
+
+		this._vmSize = [];
+
+		this._vmSizeDropdown.updateProperties({
+			values: dropDownValues,
+			value: dropDownValues[0],
 			width: '480px'
 		});
 		this.wizard.model.vmSize = (this._vmSizeDropdown.value as azdata.CategoryValue).name;
