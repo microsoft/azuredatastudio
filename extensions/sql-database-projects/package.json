@@ -16,7 +16,8 @@
     "onCommand:sqlDatabaseProjects.new",
     "onCommand:sqlDatabaseProjects.open",
     "onCommand:sqlDatabaseProjects.importDatabase",
-    "workspaceContains:**/*.sqlproj"
+    "workspaceContains:**/*.sqlproj",
+    "onView:dataworkspace.views.main"
   ],
   "main": "./out/extension",
   "repository": {
@@ -25,9 +26,13 @@
   },
   "extensionDependencies": [
     "Microsoft.mssql",
-    "Microsoft.schema-compare"
+    "Microsoft.schema-compare",
+    "Microsoft.data-workspace"
   ],
   "contributes": {
+    "projects": [
+      "sqlproj"
+    ],
     "configuration": [
       {
         "title": "%sqlDatabaseProjects.Settings%",
@@ -138,7 +143,7 @@
         "command": "sqlDatabaseProjects.importDatabase",
         "title": "%sqlDatabaseProjects.importDatabase%",
         "category": "%sqlDatabaseProjects.displayName%",
-          "icon": "images/databaseProjectToolbar.svg"
+        "icon": "images/databaseProjectToolbar.svg"
       },
       {
         "command": "sqlDatabaseProjects.addDatabaseReference",
@@ -339,7 +344,6 @@
           "group": "export"
         }
       ],
-
       "dataExplorer/context": [
         {
           "command": "sqlDatabaseProjects.importDatabase",
@@ -354,8 +358,8 @@
       ],
       "dashboard/toolbar": [
         {
-            "command": "sqlDatabaseProjects.importDatabase",
-            "when": "connectionProvider == 'MSSQL' && mssql:engineedition != 11"
+          "command": "sqlDatabaseProjects.importDatabase",
+          "when": "connectionProvider == 'MSSQL' && mssql:engineedition != 11"
         }
       ]
     },
